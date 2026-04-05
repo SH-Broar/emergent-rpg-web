@@ -14,7 +14,7 @@ export function createMainMenuScreen(
     render(el) {
       el.innerHTML = `
         <div class="screen menu-screen">
-          <h1 class="game-title">EmergentRPG</h1>
+          <h1 class="game-title">rove-due-colorz</h1>
           <p class="subtitle">엘리메스 마을의 이야기</p>
           <div class="menu-buttons">
             <button class="btn btn-primary" data-action="new">1. 새 게임</button>
