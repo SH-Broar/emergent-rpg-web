@@ -10,7 +10,7 @@ export function createWorldMapScreen(session: GameSession, onDone: () => void): 
   let panY = 0;
 
   const W = 580, H = 500;
-  const MIN_ZOOM = 0.5, MAX_ZOOM = 4;
+  const MIN_ZOOM = 0.5, MAX_ZOOM = 12;
 
   return {
     id: 'world-map',
@@ -70,10 +70,9 @@ export function createWorldMapScreen(session: GameSession, onDone: () => void): 
         const fill = isPlayer ? '#e94560' : isVisited ? '#4ecca3' : '#555577';
         svgContent += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}" stroke="#fff" stroke-width="${isPlayer ? 2 : 0.5}"/>`;
         const name = locationName(loc.id);
-        const shortName = name.length > 6 ? name.slice(0, 5) + '…' : name;
         const fontSize = isPlayer ? 11 : 9;
         const textFill = isPlayer ? '#e94560' : isVisited ? '#aaaacc' : '#666688';
-        svgContent += `<text x="${cx}" y="${cy - r - 3}" text-anchor="middle" font-size="${fontSize}" fill="${textFill}" font-family="var(--font-main)">${shortName}</text>`;
+        svgContent += `<text x="${cx}" y="${cy - r - 3}" text-anchor="middle" font-size="${fontSize}" fill="${textFill}" font-family="var(--font-main)" data-fullname="${name}">${name}</text>`;
       }
 
       function getViewBox(): string {
