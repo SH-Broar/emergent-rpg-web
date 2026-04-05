@@ -68,7 +68,7 @@ export function createBaseProperty(race = Race.Human): BaseProperty {
   return {
     race, hp: 100, maxHp: 100, mp: 30, maxMp: 30,
     attack: 10, defense: 5, vigor: 100, maxVigor: 100,
-    ap: 3, maxAp: 3,
+    ap: 5, maxAp: 5,
     strength: 0.5, age: 25, level: 1, exp: 0, sleeping: false, mood: 0,
   };
 }

@@ -25,8 +25,8 @@ const ACTION_TIME: Partial<Record<GameAction, number>> = {
 };
 
 const AP_COST: Partial<Record<GameAction, number>> = {
-  idle: 0, move: 1, talk: 0, trade: 0, eat: 0,
-  rest: 1, dungeon: 2, gather: 1, quest: 0,
+  idle: 0, move: 0, talk: 0, trade: 0, eat: 0,
+  rest: 1, dungeon: 0, gather: 1, quest: 0,
   activity: 1, gift: 0, home: 1, memory_spring: 0,
 };
 

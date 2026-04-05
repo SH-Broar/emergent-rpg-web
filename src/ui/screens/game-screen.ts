@@ -19,9 +19,11 @@ interface ActionDef {
 
 function atHome(session: GameSession) { return session.player.currentLocation === session.player.homeLocation; }
 function atMemorySpring(session: GameSession) { return session.player.currentLocation === 'Memory_Spring'; }
-function hasMerchants(session: GameSession) {
+function canTrade(session: GameSession) {
   const loc = session.player.currentLocation;
-  return loc === 'Market_Square' || session.actors.some(a =>
+  // 시장에서는 항상 거래 가능, 그 외에는 주변 상인 NPC가 있을 때만
+  if (loc === 'Market_Square') return true;
+  return session.actors.some(a =>
     a !== session.player && a.currentLocation === loc && a.spirit.role === 1 /* Merchant */);
 }
 function nearDungeon(session: GameSession) {
@@ -40,7 +42,7 @@ const MAIN_ACTIONS: ActionDef[] = [
   { key: '2', label: '이동', action: 'move', icon: '🚶' },
   { key: '3', label: '살펴보기', action: 'look', icon: '👁' },
   { key: '4', label: '대화', action: 'talk', icon: '💬', visible: hasNpcsHere },
-  { key: '5', label: '거래', action: 'trade', icon: '💰', visible: hasMerchants },
+  { key: '5', label: '거래', action: 'trade', icon: '💰', visible: canTrade },
   { key: '6', label: '식사', action: 'eat', icon: '🍖' },
   { key: '7', label: '휴식', action: 'rest', icon: '💤' },
   { key: '8', label: '던전', action: 'dungeon', icon: '⚔', visible: nearDungeon },
