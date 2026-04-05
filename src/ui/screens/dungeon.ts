@@ -54,12 +54,15 @@ export function createDungeonScreen(
               const isCleared = progress >= 100;
               const progressColor = isCleared ? 'var(--success)' : 'var(--warning)';
               const progressLabel = isCleared ? `✦ 클리어 (${progress}%)` : `진행: ${progress}%`;
+              const best = p.dungeonBestTurns.get(d.id);
+              const bestLabel = best ? `최단: ${best}턴` : '';
               return `<button class="btn dungeon-item" data-idx="${i}" style="${isCleared ? 'border-color:var(--success)' : ''}">
                 <div class="dungeon-name">${i + 1}. ${d.name} ${isCleared ? '<span style="color:var(--success);font-size:12px">✦</span>' : ''}</div>
                 <div class="dungeon-meta">
                   <span>난이도: ${'★'.repeat(stars)}${'☆'.repeat(Math.max(0, 5 - stars))}</span>
                   <span>${maxDepth}층</span>
                   <span style="color:${progressColor}">${progressLabel}</span>
+                  ${bestLabel ? `<span style="color:var(--warning)">${bestLabel}</span>` : ''}
                 </div>
                 <div class="dungeon-desc">${isCleared ? d.deepDescription || d.description : d.description}</div>
               </button>`;
@@ -419,16 +422,28 @@ export function createDungeonScreen(
       '행동',
     );
 
+    // 전투 턴 누적
+    runState.totalTurns += combatState.turn;
+
     if (isBoss) {
       runState.bossDefeated = true;
       session.knowledge.trackDungeonClear();
-      session.backlog.add(session.gameTime, `${selectedDungeon.name} 클리어!`, '행동');
+      // 최단 기록 갱신
+      const prev = p.dungeonBestTurns.get(selectedDungeon.id);
+      const isNewRecord = !prev || runState.totalTurns < prev;
+      if (isNewRecord) p.dungeonBestTurns.set(selectedDungeon.id, runState.totalTurns);
+      session.backlog.add(session.gameTime, `${selectedDungeon.name} 클리어! (${runState.totalTurns}턴)${isNewRecord ? ' ★신기록!' : ''}`, '행동');
     }
 
     phase = 'victory';
     el.innerHTML = '';
     const wrap = document.createElement('div');
     wrap.className = 'screen info-screen';
+
+    const bestTurns = p.dungeonBestTurns.get(selectedDungeon.id);
+    const recordHtml = isBoss
+      ? `<p style="color:var(--warning);font-size:13px">클리어 턴: ${runState.totalTurns}${bestTurns === runState.totalTurns ? ' ★신기록!' : ` (최단: ${bestTurns}턴)`}</p>`
+      : '';
 
     wrap.innerHTML = `
       <h2>${isBoss ? '★ 보스 격파!' : '승리!'}</h2>
@@ -437,6 +452,7 @@ export function createDungeonScreen(
         <p>EXP +${Math.round(expGain)} | ${Math.round(goldGain)}G</p>
         ${leveledUp ? `<p style="color:var(--success)">레벨 업! Lv.${p.base.level}</p>` : ''}
         <p style="color:var(--text-dim)">진행도: ${p.getDungeonProgress(selectedDungeon.id)}%</p>
+        ${recordHtml}
       </div>
       ${isBoss ? `
         <button class="btn btn-primary" data-action="clear">던전 클리어! [Enter]</button>

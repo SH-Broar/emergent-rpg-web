@@ -115,6 +115,8 @@ export class Actor {
   relationships = new Map<string, Relationship>();
   memories: Memory[] = [];
   dungeonProgress = new Map<string, number>();
+  /** 던전별 최단 클리어 턴 수 */
+  dungeonBestTurns = new Map<string, number>();
   background = '';
   acquisitionMethod = '';
   acquisitionDifficulty = 0;
@@ -142,6 +144,8 @@ export class Actor {
   equippedArmor = '';
   /** 장착 악세서리 ID */
   equippedAccessory = '';
+  /** 장착 악세서리2 ID */
+  equippedAccessory2 = '';
 
   static readonly MAX_MEMORIES = 100;
 
@@ -261,8 +265,9 @@ export class Actor {
   }
   getEffectiveDefense(): number {
     const armorBonus = this.equippedArmor ? (getArmorDef(this.equippedArmor)?.defense ?? 0) : 0;
-    const accessoryBonus = this.equippedAccessory ? (getArmorDef(this.equippedAccessory)?.defense ?? 0) : 0;
-    return this.base.defense + this.hyperionLevel * 1 + armorBonus + accessoryBonus;
+    const acc1Bonus = this.equippedAccessory ? (getArmorDef(this.equippedAccessory)?.defense ?? 0) : 0;
+    const acc2Bonus = this.equippedAccessory2 ? (getArmorDef(this.equippedAccessory2)?.defense ?? 0) : 0;
+    return this.base.defense + this.hyperionLevel * 1 + armorBonus + acc1Bonus + acc2Bonus;
   }
   getEffectiveMaxVigor(): number { return this.base.maxVigor + this.hyperionLevel * 5; }
 

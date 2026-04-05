@@ -120,6 +120,7 @@ export interface DungeonRunState {
   hasSidePath: boolean;
   bossDefeated: boolean;
   roomsCleared: number;
+  totalTurns: number;
 }
 
 export class DungeonSystem {
@@ -275,6 +276,7 @@ export class DungeonSystem {
       hasSidePath: randomFloat(0, 1) < 0.4,
       bossDefeated: false,
       roomsCleared: 0,
+      totalTurns: 0,
     };
   }
 

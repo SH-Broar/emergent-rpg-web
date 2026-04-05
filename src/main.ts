@@ -28,6 +28,7 @@ import { createSaveLoadScreen, saveToSlot, loadFromSlot } from './ui/screens/sav
 import { createWorldMapScreen } from './ui/screens/world-map';
 import { createMemorySpringScreen } from './ui/screens/memory-spring';
 import { createSkillManageScreen } from './ui/screens/skill-manage';
+import { createEquipmentScreen } from './ui/screens/equipment';
 import { createDataPackScreen } from './ui/screens/datapack-select';
 import { fastForwardWorld } from './systems/world-simulation';
 import { seasonName } from './types/enums';
@@ -235,6 +236,9 @@ async function boot() {
           break;
         case 'info_skills':
           sm.push(createSkillManageScreen(session, () => sm.pop()));
+          break;
+        case 'info_inventory':
+          sm.push(createEquipmentScreen(session, () => sm.pop()));
           break;
         case 'save':
           sm.push(createSaveLoadScreen(session, true, () => sm.pop()));
