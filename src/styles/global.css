@@ -90,6 +90,14 @@ html, body {
 .hud-color-pip { font-size: 11px; color: var(--text-dim); display: flex; align-items: center; gap: 2px; }
 .hud-color-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
 
+/* Game screen layout: fixed bottom buttons */
+.game-screen {
+  display: flex; flex-direction: column; height: 100%;
+}
+.game-screen .log-area { flex: 1; min-height: 0; }
+.game-screen .action-grid { flex-shrink: 0; }
+.game-screen .info-bar { flex-shrink: 0; }
+
 /* Log area */
 .log-area {
   flex: 1; overflow-y: auto;

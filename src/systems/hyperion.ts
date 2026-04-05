@@ -149,6 +149,9 @@ export function updateHyperionLevels(
   const messages: string[] = [];
 
   for (const actor of allActors) {
+    // 플레이어 자신이거나, 플레이어가 만난 NPC만 히페리온 판정
+    if (actor !== player && !knowledge.knownActorNames.has(actor.name)) continue;
+
     const entry = getHyperionEntry(actor.name);
     if (!entry) continue;
 

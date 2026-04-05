@@ -19,12 +19,11 @@ export function createWorldMapScreen(session: GameSession, onDone: () => void): 
       const playerLoc = session.player.currentLocation;
       const allLocs = [...world.getAllLocations().values()];
 
-      // 좌표 범위 계산 (5배 확대)
-      const COORD_SCALE = 5;
+      // 좌표 범위 계산
       let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
       for (const loc of allLocs) {
-        const gx = loc.gridX * COORD_SCALE;
-        const gy = loc.gridY * COORD_SCALE;
+        const gx = loc.gridX;
+        const gy = loc.gridY;
         if (gx < minX) minX = gx;
         if (gx > maxX) maxX = gx;
         if (gy < minY) minY = gy;
@@ -46,27 +45,27 @@ export function createWorldMapScreen(session: GameSession, onDone: () => void): 
       // 경로 선 그리기
       const drawn = new Set<string>();
       for (const loc of allLocs) {
-        const [x1, y1] = toScreen(loc.gridX * COORD_SCALE, loc.gridY * COORD_SCALE);
+        const [x1, y1] = toScreen(loc.gridX, loc.gridY);
         for (const link of loc.linksBidirectional) {
           const target = world.getAllLocations().get(link.target);
           if (!target) continue;
           const edgeKey = [loc.id, link.target].sort().join('-');
           if (drawn.has(edgeKey)) continue;
           drawn.add(edgeKey);
-          const [x2, y2] = toScreen(target.gridX * COORD_SCALE, target.gridY * COORD_SCALE);
+          const [x2, y2] = toScreen(target.gridX, target.gridY);
           svgContent += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#333355" stroke-width="1"/>`;
         }
         for (const link of loc.linksOneWayOut) {
           const target = world.getAllLocations().get(link.target);
           if (!target) continue;
-          const [x2, y2] = toScreen(target.gridX * COORD_SCALE, target.gridY * COORD_SCALE);
+          const [x2, y2] = toScreen(target.gridX, target.gridY);
           svgContent += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#333355" stroke-width="1" stroke-dasharray="4"/>`;
         }
       }
 
       // 장소 점 + 이름 그리기
       for (const loc of allLocs) {
-        const [cx, cy] = toScreen(loc.gridX * COORD_SCALE, loc.gridY * COORD_SCALE);
+        const [cx, cy] = toScreen(loc.gridX, loc.gridY);
         const isPlayer = loc.id === playerLoc;
         const isVisited = session.knowledge.visitedLocations.has(loc.id);
         const r = isPlayer ? 6 : 4;

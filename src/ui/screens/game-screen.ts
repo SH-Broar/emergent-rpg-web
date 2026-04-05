@@ -145,8 +145,8 @@ export function createGameScreen(
 
   function handleAction(action: GameAction, el: HTMLElement) {
     const result = processTurn(session, action);
-    // 새 메시지를 누적 로그에 추가
-    for (const m of result.messages) accumulatedLog.push(m);
+    // 새 메시지를 누적 로그 맨 위에 추가 (최신이 위)
+    for (let i = result.messages.length - 1; i >= 0; i--) accumulatedLog.unshift(result.messages[i]);
     if (result.screenChange) {
       onScreenChange(result.screenChange);
       onAfterTurn?.();

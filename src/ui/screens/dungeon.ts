@@ -4,7 +4,7 @@ import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
 import type { CombatState, DungeonDef } from '../../models/dungeon';
 
-type DungeonPhase = 'list' | 'combat';
+type DungeonPhase = 'list' | 'combat' | 'continue';
 
 export function createDungeonScreen(
   session: GameSession,
@@ -206,11 +206,12 @@ export function createDungeonScreen(
       session.gameTime.advance(30);
       p.adjustVigor(-10);
 
-      // 전투 종료 - 리스트로
-      phase = 'list';
-      combatState = null;
-      selectedDungeon = null;
-      renderList(el);
+      // 전투 승리 — 계속 진행할지 선택
+      const progress = p.getDungeonProgress(selectedDungeon.id);
+      combatMessages.push(`진행도: ${progress}%`);
+      combatState.combatLog.push(...combatMessages);
+      combatMessages = [];
+      showContinueChoice(el);
       return;
     }
 
@@ -238,10 +239,61 @@ export function createDungeonScreen(
     renderCombat(el);
   }
 
+  function showContinueChoice(el: HTMLElement) {
+    if (!selectedDungeon) return;
+    phase = 'continue';
+    el.innerHTML = '';
+    const wrap = document.createElement('div');
+    wrap.className = 'screen info-screen';
+
+    const progress = p.getDungeonProgress(selectedDungeon.id);
+    const hpPct = Math.round((p.base.hp / p.getEffectiveMaxHp()) * 100);
+
+    wrap.innerHTML = `
+      <h2>${selectedDungeon.name}</h2>
+      <div style="text-align:center;margin:12px 0">
+        <p>진행도: ${progress}%</p>
+        <div class="stat-bar">
+          <span class="stat-label">HP</span>
+          <div class="bar"><div class="bar-fill hp-bar" style="width:${hpPct}%"></div></div>
+          <span class="stat-val">${Math.round(p.base.hp)}/${Math.round(p.getEffectiveMaxHp())}</span>
+        </div>
+        <p style="color:var(--text-dim);margin-top:8px">기력: ${Math.round(p.base.vigor)}/${Math.round(p.getEffectiveMaxVigor())}</p>
+      </div>
+      <div class="menu-buttons" style="margin-top:12px">
+        <button class="btn btn-primary" data-choice="advance">1. 더 깊이 나아가기</button>
+        <button class="btn" data-choice="rest">2. 휴식하기 (HP+10, 기력+20)</button>
+        <button class="btn" data-choice="retreat">3. 돌아 나가기</button>
+      </div>
+      <p class="hint">1=나아가기 2=휴식 3=후퇴</p>
+    `;
+
+    wrap.querySelector('[data-choice="advance"]')?.addEventListener('click', () => {
+      startCombat(allDungeons.indexOf(selectedDungeon!), el);
+    });
+    wrap.querySelector('[data-choice="rest"]')?.addEventListener('click', () => {
+      p.adjustHp(10);
+      p.adjustVigor(20);
+      session.gameTime.advance(15);
+      session.backlog.add(session.gameTime, `${p.name}이(가) 던전에서 휴식했다.`, '행동');
+      showContinueChoice(el);
+    });
+    wrap.querySelector('[data-choice="retreat"]')?.addEventListener('click', () => {
+      session.backlog.add(session.gameTime, `${p.name}이(가) ${selectedDungeon!.name}에서 후퇴했다.`, '행동');
+      phase = 'list';
+      combatState = null;
+      selectedDungeon = null;
+      renderList(el);
+    });
+
+    el.appendChild(wrap);
+  }
+
   return {
     id: 'dungeon',
     render(el) {
       if (phase === 'combat') renderCombat(el);
+      else if (phase === 'continue') showContinueChoice(el);
       else renderList(el);
     },
     onKey(key) {
@@ -252,8 +304,33 @@ export function createDungeonScreen(
       if (key === 'Escape') {
         if (phase === 'combat') {
           handleCombatAction('flee', container);
+        } else if (phase === 'continue') {
+          session.backlog.add(session.gameTime, `${p.name}이(가) ${selectedDungeon?.name ?? '던전'}에서 후퇴했다.`, '행동');
+          phase = 'list';
+          combatState = null;
+          selectedDungeon = null;
+          renderList(container);
         } else {
           onDone();
+        }
+        return;
+      }
+
+      if (phase === 'continue') {
+        if (key === '1') {
+          startCombat(allDungeons.indexOf(selectedDungeon!), container);
+        } else if (key === '2') {
+          p.adjustHp(10);
+          p.adjustVigor(20);
+          session.gameTime.advance(15);
+          session.backlog.add(session.gameTime, `${p.name}이(가) 던전에서 휴식했다.`, '행동');
+          showContinueChoice(container);
+        } else if (key === '3') {
+          session.backlog.add(session.gameTime, `${p.name}이(가) ${selectedDungeon?.name ?? '던전'}에서 후퇴했다.`, '행동');
+          phase = 'list';
+          combatState = null;
+          selectedDungeon = null;
+          renderList(container);
         }
         return;
       }
