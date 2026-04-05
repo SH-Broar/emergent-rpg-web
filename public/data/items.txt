@@ -1,37 +1,2595 @@
 # ============================================================
-# items.txt — 아이템 타입 정의
-# 새 아이템을 추가하려면 섹션을 추가하세요.
-# key는 코드의 ItemType enum 값과 대응합니다.
+# items.txt — 아이템 타입 정의 (엘리메스 세계관)
+# 각 섹션 [item_id] 는 고유 아이템을 정의합니다.
+# category: Food|Herb|OreCommon|OreRare|MonsterLoot|Potion|Equipment|GuildCard
 # ============================================================
 
-[Food]
-name = 음식
+# ============================================================
+# FOOD — 음식류 (35개)
+# ============================================================
+
+[red_apple]
+name = 붉은 사과
+category = Food
+price = 4
+tags = /edible/organic/raw/fruit/
+description = 엘리메스 평원에서 자라는 새빨간 사과. 아삭하고 달콤하다.
+rarity = common
+source = gather:Wilderness
+eatVigor = 5
+eatHp = 8
+eatMp = 0
+eatMood = 0.05
+eatMessage = 새콤달콤한 사과 맛이 입안 가득 퍼진다.
+
+[green_apple]
+name = 초록 사과
+category = Food
+price = 3
+tags = /edible/organic/raw/fruit/
+description = 약간 시큼한 맛이 나는 풋사과. 먹으면 정신이 맑아지는 기분이다.
+rarity = common
+source = gather:Wilderness
+eatVigor = 4
+eatHp = 5
+eatMp = 3
+eatMood = 0.03
+eatMessage = 상큼한 풋내가 코를 찌른다.
+
+[sweet_berry]
+name = 달콤 딸기
+category = Food
 price = 5
+tags = /edible/organic/raw/fruit/
+description = 숲 가장자리에서 자라는 작고 붉은 열매. 단맛이 강하다.
+rarity = common
+source = gather:Wilderness
+eatVigor = 3
+eatHp = 6
+eatMp = 2
+eatMood = 0.08
+eatMessage = 달콤한 즙이 입안에 넘쳐흐른다.
 
-[Herb]
-name = 약초
-price = 8
+[golden_pear]
+name = 황금 배
+category = Food
+price = 18
+tags = /edible/organic/raw/fruit/
+description = 황금빛을 띠는 귀한 배. 과즙이 풍부하며 달콤한 향기가 멀리 퍼진다.
+rarity = uncommon
+source = gather:Eldenmoor_Grove
+eatVigor = 10
+eatHp = 15
+eatMp = 5
+eatMood = 0.12
+eatMessage = 황금빛 과즙이 온몸에 따뜻함을 불어넣는다.
 
-[OreCommon]
-name = 일반 광석
-price = 15
+[moonlit_grape]
+name = 달빛 포도
+category = Food
+price = 35
+tags = /edible/organic/raw/fruit/rare/
+description = 보름달 아래에서만 열리는 신비로운 포도. 자줏빛 껍질 안에 은빛 과즙이 가득하다.
+rarity = rare
+source = gather:Moonveil_Vineyard
+eatVigor = 15
+eatHp = 20
+eatMp = 20
+eatMood = 0.20
+eatMessage = 은빛 과즙이 마음속 어두운 곳까지 환히 밝혀준다.
 
-[OreRare]
-name = 희귀 광석
-price = 80
+[fire_peach]
+name = 화염 복숭아
+category = Food
+price = 28
+tags = /edible/organic/raw/fruit/rare/
+description = 화산 지대 근처에서 자라는 붉은 복숭아. 먹으면 몸 안에서 불꽃이 이는 듯 뜨거워진다.
+rarity = rare
+source = gather:Volcanic_Highlands
+eatVigor = 20
+eatHp = 25
+eatMp = 0
+eatMood = 0.15
+eatMessage = 뜨거운 열기가 목구멍을 타고 위장까지 내려간다!
 
-[MonsterLoot]
-name = 몬스터 전리품
+[frost_plum]
+name = 서리 자두
+category = Food
+price = 25
+tags = /edible/organic/raw/fruit/rare/
+description = 만년설 산기슭에서 자라는 짙은 청보라빛 자두. 먹으면 청량하고 상쾌한 한기가 온몸에 퍼진다.
+rarity = rare
+source = gather:Frostpeak_Range
+eatVigor = 15
+eatHp = 10
+eatMp = 30
+eatMood = 0.18
+eatMessage = 서늘한 냉기가 온몸을 감싸며 정신이 맑아진다.
+
+[raw_meat]
+name = 날고기
+category = Food
+price = 6
+tags = /edible/organic/raw/meat/
+rarity = common
+source = gather:Wilderness
+eatVigor = 8
+eatHp = 5
+eatMp = 0
+eatMood = -0.05
+eatMessage = 비린내가 강하지만 배는 채워진다.
+eatStatus = stomachache
+
+[cooked_meat]
+name = 구운 고기
+category = Food
+price = 12
+tags = /edible/organic/cooked/meat/
+rarity = common
+source = shop:Tavern_Row
+eatVigor = 15
+eatHp = 20
+eatMp = 0
+eatMood = 0.10
+eatMessage = 노릇하게 구운 고기가 허기를 든든하게 채워준다.
+
+[smoked_fish]
+name = 훈제 생선
+category = Food
+price = 10
+tags = /edible/organic/cooked/meat/
+rarity = common
+source = shop:Dockside_Market
+eatVigor = 12
+eatHp = 15
+eatMp = 5
+eatMood = 0.07
+eatMessage = 은은한 훈연 향이 식욕을 자극한다.
+
+[grilled_steak]
+name = 철판 스테이크
+category = Food
 price = 30
+tags = /edible/organic/cooked/meat/
+description = 숙련된 요리사가 불판에 구워낸 두툼한 스테이크. 엘리메스 전사들이 즐겨 먹는다.
+rarity = uncommon
+source = shop:Golden_Fork_Inn
+eatVigor = 25
+eatHp = 30
+eatMp = 0
+eatMood = 0.15
+eatMessage = 육즙이 풍부한 스테이크가 몸에 기운을 불어넣는다.
 
-[Potion]
-name = 물약
+[dragon_steak]
+name = 드래곤 스테이크
+category = Food
+price = 300
+tags = /edible/organic/cooked/meat/rare/
+description = 용의 고기를 특수 향신료로 재워 구워낸 전설의 요리. 한 점만 먹어도 온종일 힘이 넘친다.
+rarity = epic
+source = shop:Royal_Banquet_Hall
+eatVigor = 80
+eatHp = 100
+eatMp = 50
+eatMood = 0.50
+eatMessage = 용의 불꽃이 혈관 속에서 타오르는 듯한 강렬한 힘이 솟구친다!
+
+[wheat_bread]
+name = 밀빵
+category = Food
+price = 3
+tags = /edible/organic/cooked/bread/
+rarity = common
+source = shop:Market_Square
+eatVigor = 8
+eatHp = 10
+eatMp = 0
+eatMood = 0.04
+eatMessage = 소박하지만 든든한 밀빵으로 배를 채운다.
+
+[honey_bread]
+name = 꿀빵
+category = Food
+price = 8
+tags = /edible/organic/cooked/bread/
+rarity = common
+source = shop:Bakery_Lane
+eatVigor = 12
+eatHp = 12
+eatMp = 5
+eatMood = 0.12
+eatMessage = 달콤한 꿀 향기와 함께 행복한 기분이 든다.
+
+[elven_wafer]
+name = 요정의 웨이퍼
+category = Food
+price = 45
+tags = /edible/organic/cooked/bread/rare/
+description = 숲의 요정들이 구워낸 얇고 바삭한 웨이퍼. 마나를 담아 구워 마법사들에게 인기가 높다.
+rarity = rare
+source = shop:Elven_Outpost
+eatVigor = 10
+eatHp = 15
+eatMp = 40
+eatMood = 0.25
+eatMessage = 마나가 담긴 웨이퍼가 사르르 녹으며 마음이 고요해진다.
+
+[dwarf_hardtack]
+name = 드워프 건빵
+category = Food
+price = 5
+tags = /edible/organic/cooked/bread/
+description = 드워프 광부들이 장기 원정에 챙겨가는 딱딱하고 영양 가득한 건빵.
+rarity = common
+source = shop:Dwarven_Supply
+eatVigor = 18
+eatHp = 8
+eatMp = 0
+eatMood = -0.02
+eatMessage = 너무 딱딱해서 씹는 데 힘이 들지만, 그만큼 든든하다.
+
+[vegetable_stew]
+name = 야채 스튜
+category = Food
+price = 15
+tags = /edible/organic/cooked/dish/
+rarity = common
+source = shop:Tavern_Row
+eatVigor = 20
+eatHp = 25
+eatMp = 8
+eatMood = 0.10
+eatMessage = 따뜻한 스튜 한 그릇이 여행의 피로를 씻어준다.
+
+[mushroom_soup]
+name = 버섯 수프
+category = Food
+price = 18
+tags = /edible/organic/cooked/dish/
+description = 숲에서 채취한 버섯들로 끓인 진한 수프. 영양이 풍부하다.
+rarity = common
+source = shop:Woodside_Tavern
+eatVigor = 18
+eatHp = 20
+eatMp = 15
+eatMood = 0.12
+eatMessage = 구수한 버섯 향기가 온몸을 따뜻하게 감싼다.
+
+[herb_salad]
+name = 약초 샐러드
+category = Food
+price = 12
+tags = /edible/organic/raw/dish/medicine/
+rarity = common
+source = shop:Herbalist_Corner
+eatVigor = 10
+eatHp = 12
+eatMp = 12
+eatMood = 0.08
+eatMessage = 신선한 약초의 향이 기분을 상쾌하게 만든다.
+
+[cheese_platter]
+name = 치즈 모둠
+category = Food
+price = 22
+tags = /edible/organic/cooked/dish/
+rarity = uncommon
+source = shop:Golden_Fork_Inn
+eatVigor = 15
+eatHp = 18
+eatMp = 10
+eatMood = 0.15
+eatMessage = 숙성된 치즈의 풍미가 입안에 오래 남는다.
+
+[festival_feast]
+name = 축제 요리
+category = Food
+price = 60
+tags = /edible/organic/cooked/dish/rare/
+description = 엘리메스 축제 때만 맛볼 수 있는 특별 요리 모음. 다양한 음식이 정성스레 담겨있다.
+rarity = rare
+source = event:Harvest_Festival
+eatVigor = 50
+eatHp = 60
+eatMp = 30
+eatMood = 0.40
+eatMessage = 축제의 열기와 함께 온몸에 활기가 넘쳐흐른다!
+
+[royal_banquet]
+name = 왕실 연회 코스
+category = Food
+price = 500
+tags = /edible/organic/cooked/dish/rare/
+description = 왕궁의 요리사가 정성껏 준비한 최고급 코스 요리. 귀족들만이 맛볼 수 있는 특별한 음식.
+rarity = legendary
+source = event:Royal_Banquet
+eatVigor = 100
+eatHp = 120
+eatMp = 80
+eatMood = 0.80
+eatMessage = 황홀한 맛이 온몸의 세포를 깨우며 의기양양해진다!
+
+[fresh_water]
+name = 맑은 물
+category = Food
+price = 1
+tags = /edible/liquid/raw/drink/
+rarity = common
+source = gather:Wilderness
+eatVigor = 3
+eatHp = 3
+eatMp = 5
+eatMood = 0.02
+eatMessage = 시원한 물이 목을 적신다.
+
+[herbal_tea]
+name = 약초차
+category = Food
+price = 8
+tags = /edible/liquid/cooked/drink/medicine/
+rarity = common
+source = shop:Herbalist_Corner
+eatVigor = 8
+eatHp = 10
+eatMp = 15
+eatMood = 0.15
+eatMessage = 따뜻하고 은은한 약초차가 긴장을 풀어준다.
+
+[ale]
+name = 맥주
+category = Food
+price = 6
+tags = /edible/liquid/cooked/drink/
+rarity = common
+source = shop:Tavern_Row
+eatVigor = 5
+eatHp = 5
+eatMp = 0
+eatMood = 0.20
+eatMessage = 탁한 맥주가 하루의 피로를 씻어내는 듯하다.
+
+[moonshine]
+name = 달빛 증류주
+category = Food
+price = 25
+tags = /edible/liquid/cooked/drink/rare/
+description = 달빛을 받아 발효시킨 독특한 술. 마시면 달빛이 몸속에 스며드는 느낌이 든다.
+rarity = uncommon
+source = shop:Midnight_Brew_Cellar
+eatVigor = 10
+eatHp = 5
+eatMp = 20
+eatMood = 0.30
+eatMessage = 달빛처럼 은은한 취기가 온몸에 퍼진다.
+
+[starlight_nectar]
+name = 별빛 넥타르
+category = Food
+price = 120
+tags = /edible/liquid/raw/drink/rare/
+description = 별이 맑은 밤에만 채취할 수 있는 신비로운 꿀물. 마시면 별빛처럼 온몸이 빛나는 듯하다.
+rarity = epic
+source = event:Starfall_Night
+eatVigor = 40
+eatHp = 50
+eatMp = 60
+eatMood = 0.60
+eatMessage = 별빛 같은 빛이 온몸을 감싸며 알 수 없는 힘이 용솟음친다!
+
+[mana_water]
+name = 마나수
+category = Food
+price = 35
+tags = /edible/liquid/raw/drink/medicine/
+description = 마나 결정이 녹아든 신비로운 물. 마법사들이 특히 좋아한다.
+rarity = uncommon
+source = gather:Crystal_Spring
+eatVigor = 5
+eatHp = 5
+eatMp = 50
+eatMood = 0.10
+eatMessage = 마나가 온몸의 흐름을 타고 순환하는 것이 느껴진다.
+
+[farm_milk]
+name = 농장 우유
+category = Food
+price = 4
+tags = /edible/liquid/raw/drink/
+rarity = common
+source = shop:Sunfield_Farm
+eatVigor = 8
+eatHp = 10
+eatMp = 5
+eatMood = 0.08
+eatMessage = 신선한 우유가 고소하게 목을 넘어간다.
+
+[farm_cheese]
+name = 농장 치즈
+category = Food
+price = 9
+tags = /edible/organic/cooked/dish/
+rarity = common
+source = shop:Sunfield_Farm
+eatVigor = 12
+eatHp = 12
+eatMp = 0
+eatMood = 0.08
+eatMessage = 쫄깃한 치즈 한 조각이 소소한 행복감을 준다.
+
+[lake_trout]
+name = 호수 송어
+category = Food
+price = 14
+tags = /edible/organic/raw/meat/
+rarity = common
+source = gather:Crystal_Lake
+eatVigor = 10
+eatHp = 12
+eatMp = 3
+eatMood = 0.05
+eatMessage = 담백한 송어살이 입에서 살살 녹는다.
+
+[lake_salmon]
+name = 호수 연어
+category = Food
 price = 20
+tags = /edible/organic/raw/meat/
+rarity = uncommon
+source = gather:Crystal_Lake
+eatVigor = 15
+eatHp = 18
+eatMp = 5
+eatMood = 0.10
+eatMessage = 진한 연어살의 기름기가 온몸에 활력을 준다.
 
-[Equipment]
-name = 장비
-price = 100
+[tavern_special]
+name = 주막 특선 요리
+category = Food
+price = 35
+tags = /edible/organic/cooked/dish/
+description = 주막 주인이 자랑하는 비법 요리. 레시피는 절대 공개하지 않는다.
+rarity = uncommon
+source = shop:Tavern_Row
+eatVigor = 30
+eatHp = 35
+eatMp = 15
+eatMood = 0.25
+eatMessage = 이 맛... 다른 어디서도 먹어본 적 없는 묘한 조화가 느껴진다.
 
-[GuildCard]
-name = 길드 멤버 확인증
+[guild_ration]
+name = 길드 보급 식량
+category = Food
+price = 15
+tags = /edible/organic/cooked/bread/
+description = 길드에서 탐험가들에게 지급하는 표준 보급품. 영양가는 충분하지만 맛은 보장 못 한다.
+rarity = common
+source = shop:Guild_Hall
+eatVigor = 20
+eatHp = 15
+eatMp = 5
+eatMood = -0.03
+eatMessage = 맛은 없지만 확실히 든든하다.
+
+[market_candy]
+name = 시장 사탕
+category = Food
+price = 2
+tags = /edible/organic/cooked/
+rarity = common
+source = shop:Market_Square
+eatVigor = 2
+eatHp = 3
+eatMp = 0
+eatMood = 0.15
+eatMessage = 달콤한 사탕 하나가 잠깐의 행복을 준다.
+
+# ============================================================
+# HERB — 약초류 (25개)
+# ============================================================
+
+[common_herb]
+name = 흔한 약초
+category = Herb
+price = 5
+tags = /edible/organic/raw/medicine/herb/healing/
+rarity = common
+source = gather:Wilderness
+eatVigor = 5
+eatHp = 8
+eatMp = 3
+eatMood = 0.02
+eatMessage = 쌉쌀한 약초를 씹으니 상처가 조금 가라앉는다.
+
+[healing_leaf]
+name = 치유 잎사귀
+category = Herb
+price = 10
+tags = /edible/organic/raw/medicine/herb/healing/
+description = 초록빛이 진한 타원형 잎. 상처에 붙이거나 먹으면 빠른 회복을 돕는다.
+rarity = common
+source = gather:Wilderness
+eatVigor = 8
+eatHp = 20
+eatMp = 5
+eatMood = 0.05
+eatMessage = 청량한 약기운이 상처 부위로 집중되는 느낌이다.
+
+[vigor_moss]
+name = 활력 이끼
+category = Herb
+price = 8
+tags = /edible/organic/raw/medicine/herb/healing/
+rarity = common
+source = gather:Misty_Forest
+eatVigor = 20
+eatHp = 5
+eatMp = 5
+eatMood = 0.05
+eatMessage = 이끼에서 나오는 생명력이 피로를 밀어낸다.
+
+[calming_flower]
+name = 진정 꽃
+category = Herb
+price = 12
+tags = /edible/organic/raw/medicine/herb/healing/
+rarity = common
+source = gather:Meadow_Plain
+eatVigor = 5
+eatHp = 8
+eatMp = 10
+eatMood = 0.20
+eatMessage = 꽃잎을 씹으니 마음이 잔잔해진다.
+
+[bitter_root]
+name = 쓴 뿌리
+category = Herb
+price = 7
+tags = /edible/organic/raw/medicine/herb/
+rarity = common
+source = gather:Wilderness
+eatVigor = 3
+eatHp = 5
+eatMp = 8
+eatMood = -0.05
+eatMessage = 극도로 쓴 맛이지만 독을 해독하는 효과가 있다.
+
+[antidote_herb]
+name = 해독초
+category = Herb
+price = 20
+tags = /edible/organic/raw/medicine/herb/healing/
+description = 독을 무력화하는 성분이 담긴 약초. 뱀에 물리거나 독에 걸렸을 때 즉시 씹어 먹으면 효과가 있다.
+rarity = uncommon
+source = gather:Wilderness
+eatVigor = 5
+eatHp = 10
+eatMp = 5
+eatMood = 0.02
+eatMessage = 독기가 가시며 몸이 정상으로 돌아오는 것이 느껴진다.
+
+[fever_herb]
+name = 해열초
+category = Herb
+price = 15
+tags = /edible/organic/raw/medicine/herb/healing/
+rarity = common
+source = gather:Wilderness
+eatVigor = 8
+eatHp = 15
+eatMp = 5
+eatMood = 0.05
+eatMessage = 열기가 가라앉으며 몸이 시원해진다.
+
+[wound_herb]
+name = 지혈초
+category = Herb
+price = 18
+tags = /edible/organic/raw/medicine/herb/healing/
+rarity = common
+source = gather:Wilderness
+eatVigor = 5
+eatHp = 30
+eatMp = 0
+eatMood = 0.05
+eatMessage = 상처가 빠르게 아무는 것이 느껴진다.
+
+[sleep_herb]
+name = 수면초
+category = Herb
+price = 12
+tags = /edible/organic/raw/medicine/herb/
+rarity = common
+source = gather:Misty_Forest
+eatVigor = 5
+eatHp = 5
+eatMp = 5
+eatMood = 0.10
+eatMessage = 나른한 졸음이 밀려온다...
+eatStatus = sleep
+
+[clarity_herb]
+name = 명료초
+category = Herb
+price = 22
+tags = /edible/organic/raw/medicine/herb/healing/
+rarity = uncommon
+source = gather:Crystal_Spring
+eatVigor = 10
+eatHp = 5
+eatMp = 25
+eatMood = 0.15
+eatMessage = 머릿속의 안개가 걷히듯 사고가 맑아진다.
+
+[moonpetal]
+name = 달꽃잎
+category = Herb
+price = 55
+tags = /edible/organic/raw/medicine/herb/healing/rare/
+description = 보름달이 뜨는 밤에만 피는 신비로운 꽃. 달의 기운을 담고 있어 마력 회복에 탁월하다.
+rarity = rare
+source = gather:Moonveil_Vineyard
+eatVigor = 15
+eatHp = 20
+eatMp = 50
+eatMood = 0.25
+eatMessage = 달빛이 몸속 마력의 흐름을 부드럽게 정화시킨다.
+
+[sunbloom]
+name = 태양화
+category = Herb
+price = 60
+tags = /edible/organic/raw/medicine/herb/healing/rare/
+description = 정오의 햇빛 아래에서만 꽃을 피우는 황금빛 꽃. 기력 회복에 매우 효과적이다.
+rarity = rare
+source = gather:Sunfield_Highlands
+eatVigor = 50
+eatHp = 30
+eatMp = 10
+eatMood = 0.30
+eatMessage = 태양의 에너지가 몸속 깊이 스며들어 피로가 씻겨 내려간다.
+
+[thundergrass]
+name = 번개풀
+category = Herb
+price = 45
+tags = /edible/organic/raw/medicine/herb/rare/
+description = 폭풍이 자주 치는 고지대에서만 자라는 뾰족한 잎의 풀. 미세한 전기를 품고 있어 몸을 예민하게 만든다.
+rarity = rare
+source = gather:Storm_Ridge
+eatVigor = 30
+eatHp = 10
+eatMp = 30
+eatMood = 0.10
+eatMessage = 찌릿한 전류가 전신을 타고 흐르며 감각이 예민해진다.
+
+[frostmint]
+name = 서리 박하
+category = Herb
+price = 40
+tags = /edible/organic/raw/medicine/herb/rare/
+description = 혹한의 산악지대에서 자라는 박하. 얼음처럼 차갑고 청량한 향이 두통과 피로를 해소한다.
+rarity = rare
+source = gather:Frostpeak_Range
+eatVigor = 15
+eatHp = 15
+eatMp = 35
+eatMood = 0.25
+eatMessage = 얼음처럼 차가운 청량함이 머리끝부터 발끝까지 퍼진다.
+
+[shadow_orchid]
+name = 그림자 난초
+category = Herb
+price = 80
+tags = /edible/organic/raw/medicine/herb/rare/
+description = 빛이 닿지 않는 어둠 속에서 피어나는 검보라색 난초. 그림자의 힘을 흡수해 독특한 마력을 지닌다.
+rarity = epic
+source = dungeon:Shadow_Cavern
+eatVigor = 20
+eatHp = 25
+eatMp = 60
+eatMood = 0.20
+eatMessage = 어둠의 기운이 온몸에 스며들며 감추어진 힘이 깨어나는 것을 느낀다.
+
+[poison_mushroom]
+name = 독버섯
+category = Herb
+price = 3
+tags = /edible/organic/raw/herb/toxic/
+rarity = common
+source = gather:Dark_Forest
+eatVigor = -5
+eatHp = -15
+eatMp = 0
+eatMood = -0.20
+eatMessage = 이상한 맛이 나더니 몸이 이상해진다...
+eatStatus = poison
+
+[numb_vine]
+name = 마비 덩굴
+category = Herb
+price = 8
+tags = /edible/organic/raw/herb/toxic/
+rarity = common
+source = gather:Misty_Forest
+eatVigor = -10
+eatHp = -5
+eatMp = 0
+eatMood = -0.15
+eatMessage = 혀와 손발이 점점 감각을 잃어간다...
+eatStatus = poison
+
+[hallucination_spore]
+name = 환각 포자
+category = Herb
+price = 15
+tags = /edible/organic/raw/herb/toxic/rare/
+description = 고대 유적 근처에서 자라는 이상한 버섯에서 채취한 포자. 먹으면 현실과 환상의 경계가 흐려진다.
+rarity = uncommon
+source = gather:Ancient_Ruins
+eatVigor = 0
+eatHp = -5
+eatMp = 20
+eatMood = 0.30
+eatMessage = 세상이 뒤틀리고 색이 바뀌며... 이상한 환영이 보이기 시작한다.
+
+[toxic_berry]
+name = 독성 열매
+category = Herb
+price = 2
+tags = /edible/organic/raw/herb/toxic/
+rarity = common
+source = gather:Dark_Forest
+eatVigor = -8
+eatHp = -20
+eatMp = 0
+eatMood = -0.30
+eatMessage = 강한 쓴맛과 함께 독이 온몸에 퍼진다!
+eatStatus = poison
+
+[death_cap]
+name = 죽음의 갓버섯
+category = Herb
 price = 50
+tags = /edible/organic/raw/herb/toxic/rare/
+description = 엘리메스에서 가장 치명적인 독을 품은 버섯. 독 제조에 사용되며 소량으로도 생명을 위협한다.
+rarity = rare
+source = gather:Cursed_Bog
+eatVigor = -30
+eatHp = -80
+eatMp = -20
+eatMood = -0.80
+eatMessage = 극독이 온몸에 퍼지며 의식이 아득해진다...
+eatStatus = poison
+
+[world_tree_leaf]
+name = 세계수 잎사귀
+category = Herb
+price = 500
+tags = /edible/organic/raw/medicine/herb/healing/rare/
+description = 엘리메스 세계의 중심에 자리한 거대한 세계수에서 떨어진 잎. 담긴 생명 에너지가 압도적이다.
+rarity = legendary
+source = gather:World_Tree_Sanctuary
+eatVigor = 100
+eatHp = 150
+eatMp = 100
+eatMood = 0.80
+eatMessage = 세계수의 근원적인 생명 에너지가 온몸을 가득 채우며 모든 상처가 아문다!
+
+[ancient_moss]
+name = 고대 이끼
+category = Herb
+price = 200
+tags = /edible/organic/raw/medicine/herb/healing/rare/
+description = 수천 년 된 고대 유적의 돌벽을 뒤덮은 이끼. 세월의 힘을 흡수해 불가사의한 치유력을 지닌다.
+rarity = epic
+source = gather:Ancient_Ruins
+eatVigor = 60
+eatHp = 80
+eatMp = 60
+eatMood = 0.40
+eatMessage = 수천 년의 세월이 담긴 생명력이 천천히 온몸에 스며든다.
+
+[starfall_petal]
+name = 유성 꽃잎
+category = Herb
+price = 350
+tags = /edible/organic/raw/medicine/herb/healing/rare/
+description = 유성이 떨어진 자리에서 피어나는 은백색 꽃의 꽃잎. 하늘의 에너지를 품고 있다.
+rarity = epic
+source = event:Starfall_Night
+eatVigor = 50
+eatHp = 70
+eatMp = 80
+eatMood = 0.60
+eatMessage = 별빛의 에너지가 온몸을 감싸며 하늘을 날 수 있을 것 같은 기분이 든다!
+
+[phoenix_herb]
+name = 불사조 약초
+category = Herb
+price = 800
+tags = /edible/organic/raw/medicine/herb/healing/rare/
+description = 불사조가 불꽃 속에서 재생할 때 피어나는 전설의 약초. 죽음의 문턱에서 생환시킨다고 전해진다.
+rarity = legendary
+source = dungeon:Phoenix_Cradle
+eatVigor = 150
+eatHp = 200
+eatMp = 100
+eatMood = 1.00
+eatMessage = 불사조의 불꽃이 전신을 감싸며 죽음의 기운이 완전히 사라진다!
+
+[unicorn_tear_herb]
+name = 유니콘의 눈물 약초
+category = Herb
+price = 1200
+tags = /edible/organic/raw/medicine/herb/healing/rare/
+description = 유니콘이 흘린 눈물이 닿아 자란 전설의 약초. 그 눈물에는 순수한 치유의 힘이 담겨있다.
+rarity = legendary
+source = event:Unicorn_Blessing
+eatVigor = 200
+eatHp = 250
+eatMp = 150
+eatMood = 1.00
+eatMessage = 유니콘의 순수한 힘이 온몸의 모든 상처와 독을 완전히 치유한다!
+
+# ============================================================
+# OreCommon — 일반 광석류 (15개)
+# ============================================================
+
+[iron_ore]
+name = 철광석
+category = OreCommon
+price = 12
+tags = /inedible/mineral/metallic/common/
+rarity = common
+source = gather:Iron_Mine
+
+[copper_ore]
+name = 구리 광석
+category = OreCommon
+price = 10
+tags = /inedible/mineral/metallic/common/
+rarity = common
+source = gather:Copper_Quarry
+
+[tin_ore]
+name = 주석 광석
+category = OreCommon
+price = 9
+tags = /inedible/mineral/metallic/common/
+rarity = common
+source = gather:Stone_Quarry
+
+[coal]
+name = 석탄
+category = OreCommon
+price = 6
+tags = /inedible/mineral/common/
+rarity = common
+source = gather:Coal_Seam
+
+[sandstone]
+name = 사암
+category = OreCommon
+price = 4
+tags = /inedible/mineral/common/
+rarity = common
+source = gather:Desert_Cliffs
+
+[limestone]
+name = 석회암
+category = OreCommon
+price = 5
+tags = /inedible/mineral/common/
+rarity = common
+source = gather:Stone_Quarry
+
+[quartz]
+name = 석영
+category = OreCommon
+price = 14
+tags = /inedible/mineral/crystal/common/
+rarity = common
+source = gather:Crystal_Cave
+
+[obsidian]
+name = 흑요석
+category = OreCommon
+price = 25
+tags = /inedible/mineral/crystal/common/
+description = 화산 활동으로 생성된 검고 날카로운 유리질 광석. 무기 제작에 사용된다.
+rarity = uncommon
+source = gather:Volcanic_Highlands
+
+[silver_ore]
+name = 은광석
+category = OreCommon
+price = 30
+tags = /inedible/mineral/metallic/common/
+rarity = uncommon
+source = gather:Silver_Mine
+
+[sulfur]
+name = 황
+category = OreCommon
+price = 8
+tags = /inedible/mineral/common/
+rarity = common
+source = gather:Volcanic_Highlands
+
+[flint]
+name = 부싯돌
+category = OreCommon
+price = 5
+tags = /inedible/mineral/common/
+rarity = common
+source = gather:Stone_Quarry
+
+[granite]
+name = 화강암
+category = OreCommon
+price = 7
+tags = /inedible/mineral/common/
+rarity = common
+source = gather:Stone_Quarry
+
+[marble]
+name = 대리석
+category = OreCommon
+price = 18
+tags = /inedible/mineral/common/
+rarity = uncommon
+source = gather:Mountain_Quarry
+
+[clay]
+name = 점토
+category = OreCommon
+price = 3
+tags = /inedible/mineral/common/
+rarity = common
+source = gather:Riverbank
+
+[saltpeter]
+name = 초석
+category = OreCommon
+price = 15
+tags = /inedible/mineral/common/
+rarity = common
+source = gather:Cave_System
+
+# ============================================================
+# OreRare — 희귀 광석류 (12개)
+# ============================================================
+
+[moonstone]
+name = 달의 돌
+category = OreRare
+price = 85
+tags = /inedible/mineral/crystal/rare/
+description = 보름달 빛을 받으면 은은하게 빛나는 신비로운 광석. 마법 도구 제작에 필수적이다.
+rarity = rare
+source = gather:Moonveil_Cave
+
+[sunstone]
+name = 태양석
+category = OreRare
+price = 95
+tags = /inedible/mineral/crystal/rare/
+description = 낮 동안 태양 에너지를 흡수해 빛을 뿜어내는 황금빛 광석.
+rarity = rare
+source = gather:Sunpeak_Mine
+
+[adamantite]
+name = 아다만티트
+category = OreRare
+price = 250
+tags = /inedible/mineral/metallic/rare/
+description = 엘리메스에서 발견되는 가장 단단한 금속 광석. 최고급 갑옷과 무기를 만드는 데 사용된다.
+rarity = epic
+source = dungeon:Deep_Vein_Mine
+
+[mithril]
+name = 미스릴
+category = OreRare
+price = 300
+tags = /inedible/mineral/metallic/rare/
+description = 가볍고 단단한 은빛 광석. 요정 장인들이 최고로 치는 금속 재료다.
+rarity = epic
+source = dungeon:Elven_Deep_Mine
+
+[orichalcum]
+name = 오리하르콘
+category = OreRare
+price = 500
+tags = /inedible/mineral/metallic/rare/
+description = 전설 속의 신비로운 금속. 황금빛과 붉은빛이 섞인 색을 띠며 신화적인 힘을 품고 있다.
+rarity = legendary
+source = dungeon:Ancient_Forge
+
+[dragon_crystal]
+name = 용의 결정석
+category = OreRare
+price = 400
+tags = /inedible/mineral/crystal/rare/
+description = 용이 사는 동굴 깊은 곳에서만 형성되는 심홍색 결정. 강렬한 화염 에너지가 응축되어 있다.
+rarity = epic
+source = dungeon:Dragon_Lair
+
+[star_fragment]
+name = 별 조각
+category = OreRare
+price = 180
+tags = /inedible/mineral/crystal/rare/
+description = 하늘에서 떨어진 유성의 파편. 은빛으로 빛나며 강력한 마법 에너지를 방출한다.
+rarity = rare
+source = event:Starfall_Night
+
+[void_stone]
+name = 허공석
+category = OreRare
+price = 350
+tags = /inedible/mineral/crystal/rare/
+description = 공간이 뒤틀린 곳에서 형성되는 검고 공허한 광석. 보는 이의 눈에 어지러움을 준다.
+rarity = epic
+source = dungeon:Void_Rift
+
+[thunder_gem]
+name = 천둥 보석
+category = OreRare
+price = 220
+tags = /inedible/mineral/crystal/rare/
+description = 번개를 직접 맞은 수정이 변형되어 형성된 보석. 내부에서 끊임없이 전기가 방전된다.
+rarity = rare
+source = gather:Storm_Ridge
+
+[frost_crystal]
+name = 서리 결정
+category = OreRare
+price = 200
+tags = /inedible/mineral/crystal/rare/
+description = 영구 동토층 깊은 곳에서 자라나는 얼음 같은 결정. 절대 녹지 않으며 강렬한 냉기를 뿜는다.
+rarity = rare
+source = dungeon:Frozen_Depths
+
+[blood_ruby]
+name = 혈홍석
+category = OreRare
+price = 450
+tags = /inedible/mineral/crystal/rare/
+description = 고대 전장에서 흘린 피가 땅속에서 천천히 결정화된 루비. 생명력을 흡수하는 성질이 있다.
+rarity = epic
+source = dungeon:Battlefield_Tomb
+
+[phantom_pearl]
+name = 환영 진주
+category = OreRare
+price = 380
+tags = /inedible/mineral/crystal/rare/
+description = 유령이 자주 출몰하는 해저 동굴에서 발견되는 신비로운 진주. 영혼의 에너지를 담고 있다.
+rarity = epic
+source = dungeon:Haunted_Depths
+
+# ============================================================
+# MonsterLoot — 몬스터 전리품 (30개)
+# ============================================================
+
+[wolf_pelt]
+name = 늑대 가죽
+category = MonsterLoot
+price = 15
+tags = /raw/organic/monster/pelt/
+rarity = common
+source = dungeon:Larmen_Forest
+
+[slime_jelly]
+name = 슬라임 젤리
+category = MonsterLoot
+price = 8
+tags = /raw/organic/monster/
+rarity = common
+source = dungeon:Slime_Cave
+
+[goblin_ear]
+name = 고블린 귀
+category = MonsterLoot
+price = 12
+tags = /raw/organic/monster/
+rarity = common
+source = dungeon:Goblin_Hideout
+
+[bat_wing]
+name = 박쥐 날개
+category = MonsterLoot
+price = 10
+tags = /raw/organic/monster/
+rarity = common
+source = dungeon:Shadow_Cavern
+
+[spider_silk]
+name = 거미 실크
+category = MonsterLoot
+price = 18
+tags = /raw/organic/monster/
+description = 거대 거미에서 채취한 강도 높은 실크. 장비 제작 재료로 쓰인다.
+rarity = common
+source = dungeon:Spider_Nest
+
+[bone_fragment]
+name = 뼛조각
+category = MonsterLoot
+price = 7
+tags = /raw/organic/monster/bone/
+rarity = common
+source = dungeon:Undead_Crypt
+
+[lizard_scale]
+name = 도마뱀 비늘
+category = MonsterLoot
+price = 25
+tags = /raw/organic/monster/scale/
+rarity = uncommon
+source = dungeon:Desert_Ruins
+
+[orc_fang]
+name = 오크 어금니
+category = MonsterLoot
+price = 30
+tags = /raw/organic/monster/
+description = 오크 전사의 어금니. 강한 힘의 상징으로 여겨져 트로피로 수집하는 이들이 많다.
+rarity = uncommon
+source = dungeon:Orc_Stronghold
+
+[troll_blood]
+name = 트롤 피
+category = MonsterLoot
+price = 35
+tags = /raw/organic/monster/
+description = 재생 능력이 있는 트롤에서 채취한 피. 회복 물약 제조에 사용된다.
+rarity = uncommon
+source = dungeon:Troll_Bridge
+
+[harpy_feather]
+name = 하피 깃털
+category = MonsterLoot
+price = 28
+tags = /raw/organic/monster/
+rarity = uncommon
+source = dungeon:Sky_Cliff_Nest
+
+[golem_core]
+name = 골렘 핵
+category = MonsterLoot
+price = 60
+tags = /inedible/monster/
+description = 마법으로 만들어진 골렘의 중심에 박힌 마법석. 골렘을 움직이게 하는 에너지가 응축되어 있다.
+rarity = rare
+source = dungeon:Ancient_Fortress
+
+[shadow_essence]
+name = 그림자 정수
+category = MonsterLoot
+price = 55
+tags = /raw/organic/monster/essence/
+description = 그림자 몬스터에서 추출한 어두운 에너지 결정체. 어둠 마법 연구에 귀중한 재료다.
+rarity = rare
+source = dungeon:Shadow_Cavern
+
+[dragon_scale]
+name = 용 비늘
+category = MonsterLoot
+price = 200
+tags = /raw/organic/monster/scale/
+description = 드래곤의 단단한 비늘. 일반 무기로는 흠집조차 내기 어려울 정도로 단단하다. 최고급 갑옷 재료.
+rarity = epic
+source = dungeon:Dragon_Lair
+
+[demon_horn]
+name = 악마의 뿔
+category = MonsterLoot
+price = 180
+tags = /raw/organic/monster/
+description = 강력한 악마에서 뽑아낸 뿔. 안에서 강한 마력이 방출되어 빛을 내기도 한다.
+rarity = epic
+source = dungeon:Demon_Abyss
+
+[phoenix_ash]
+name = 불사조 재
+category = MonsterLoot
+price = 250
+tags = /raw/organic/monster/
+description = 불사조가 재생할 때 남기는 황금빛 재. 강력한 재생 능력을 품고 있어 최고급 물약 재료가 된다.
+rarity = epic
+source = dungeon:Phoenix_Cradle
+
+[angel_feather]
+name = 천사의 깃털
+category = MonsterLoot
+price = 220
+tags = /raw/organic/monster/
+description = 빛의 천사에서 채취한 새하얀 깃털. 신성한 힘이 깃들어 있어 빛의 마법 강화에 사용된다.
+rarity = epic
+source = dungeon:Celestial_Spire
+
+[kraken_ink]
+name = 크라켄 먹물
+category = MonsterLoot
+price = 160
+tags = /raw/organic/monster/
+description = 심해의 거대 크라켄에서 채취한 칠흑 같은 먹물. 독성이 있으나 특수 마법 잉크 제조에 쓰인다.
+rarity = rare
+source = dungeon:Abyssal_Sea
+
+[chimera_mane]
+name = 키메라 갈기
+category = MonsterLoot
+price = 140
+tags = /raw/organic/monster/pelt/
+description = 여러 짐승의 특성을 가진 키메라의 갈기. 여러 원소의 힘이 뒤섞여 있다.
+rarity = rare
+source = dungeon:Chaos_Labyrinth
+
+[monster_hide]
+name = 몬스터 가죽
+category = MonsterLoot
+price = 20
+tags = /raw/organic/monster/pelt/
+rarity = common
+source = dungeon:Larmen_Forest
+
+[venomous_fang]
+name = 독니
+category = MonsterLoot
+price = 30
+tags = /raw/organic/monster/
+description = 독을 품은 뱀이나 괴물에서 뽑아낸 독니. 독 물약 제조에 필수 재료다.
+rarity = uncommon
+source = dungeon:Poison_Swamp
+
+[cursed_bone]
+name = 저주받은 뼈
+category = MonsterLoot
+price = 45
+tags = /raw/organic/monster/bone/
+description = 불사 언데드의 뼈. 저주의 에너지가 스며들어 있어 저주 마법 연구에 사용된다.
+rarity = rare
+source = dungeon:Undead_Crypt
+
+[ethereal_dust]
+name = 에테르 가루
+category = MonsterLoot
+price = 50
+tags = /inedible/monster/essence/
+description = 유령이나 에테르 몬스터에서 채취한 투명한 가루. 공간 마법 연구에 귀중한 재료다.
+rarity = rare
+source = dungeon:Haunted_Depths
+
+[elemental_shard]
+name = 원소 파편
+category = MonsterLoot
+price = 70
+tags = /inedible/monster/essence/
+description = 원소 정령이나 원소 몬스터를 쓰러뜨렸을 때 남는 순수한 원소 에너지 결정체.
+rarity = rare
+source = dungeon:Elemental_Sanctum
+
+[beast_heart]
+name = 야수의 심장
+category = MonsterLoot
+price = 85
+tags = /raw/organic/monster/
+description = 강력한 야수의 심장. 생명 에너지가 가득 차 있어 생명 관련 연구에 귀한 재료가 된다.
+rarity = rare
+source = dungeon:Beast_Den
+
+[ancient_dragon_eye]
+name = 고룡의 눈
+category = MonsterLoot
+price = 1500
+tags = /raw/organic/monster/rare/
+description = 수백 년을 산 고룡에서만 얻을 수 있는 눈. 세상의 진리를 담고 있다고 전해진다. 전설 등급의 아이템.
+rarity = legendary
+source = dungeon:Ancient_Dragon_Tomb
+
+[abyssal_pearl]
+name = 심연의 진주
+category = MonsterLoot
+price = 900
+tags = /raw/organic/monster/rare/
+description = 심해 최하층에 사는 신비로운 생명체에서 얻어지는 진주. 심연의 무한한 어둠을 담고 있다.
+rarity = legendary
+source = dungeon:Abyssal_Sea
+
+[celestial_fragment]
+name = 천계 조각
+category = MonsterLoot
+price = 800
+tags = /inedible/monster/essence/rare/
+description = 천계에서 내려온 존재를 쓰러뜨렸을 때 남는 찬란한 조각. 성스러운 빛이 끊임없이 방출된다.
+rarity = legendary
+source = dungeon:Celestial_Spire
+
+[void_crystal]
+name = 허공 결정
+category = MonsterLoot
+price = 750
+tags = /inedible/monster/essence/rare/
+description = 허공에서 소환된 존재가 남긴 결정체. 존재와 비존재의 경계에 있는 신비로운 물건이다.
+rarity = epic
+source = dungeon:Void_Rift
+
+[world_serpent_scale]
+name = 세계뱀 비늘
+category = MonsterLoot
+price = 2000
+tags = /raw/organic/monster/scale/rare/
+description = 세계를 감싸고 있다는 전설의 거대 뱀에서 얻은 비늘. 세계의 근원 에너지를 담고 있다.
+rarity = legendary
+source = dungeon:World_Serpent_Lair
+
+[leviathan_tooth]
+name = 레비아탄의 이빨
+category = MonsterLoot
+price = 1800
+tags = /raw/organic/monster/bone/rare/
+description = 바다의 신 레비아탄의 거대한 이빨. 이것이 실존한다는 것 자체가 기적으로 여겨진다.
+rarity = legendary
+source = dungeon:Abyssal_Sea
+
+# ============================================================
+# POTION — 물약류 (25개)
+# ============================================================
+
+[health_potion]
+name = 체력 물약
+category = Potion
+price = 20
+tags = /edible/liquid/medicine/healing/
+rarity = common
+source = shop:Alchemist_Shop
+eatHp = 30
+eatMp = 0
+eatVigor = 5
+eatMood = 0.05
+eatMessage = 빨간 물약이 상처를 빠르게 아물게 한다.
+
+[mana_potion]
+name = 마나 물약
+category = Potion
+price = 20
+tags = /edible/liquid/medicine/healing/
+rarity = common
+source = shop:Alchemist_Shop
+eatHp = 0
+eatMp = 30
+eatVigor = 5
+eatMood = 0.05
+eatMessage = 파란 물약이 소진된 마력을 빠르게 채워준다.
+
+[vigor_potion]
+name = 기력 물약
+category = Potion
+price = 18
+tags = /edible/liquid/medicine/healing/
+rarity = common
+source = shop:Alchemist_Shop
+eatHp = 5
+eatMp = 5
+eatVigor = 40
+eatMood = 0.10
+eatMessage = 초록빛 물약을 마시자 피로가 씻겨 내려가는 기분이다.
+
+[antidote]
+name = 해독제
+category = Potion
+price = 25
+tags = /edible/liquid/medicine/healing/
+rarity = common
+source = shop:Alchemist_Shop
+eatHp = 5
+eatMp = 0
+eatVigor = 5
+eatMood = 0.05
+eatMessage = 독기가 빠르게 중화되며 몸이 편안해진다.
+
+[stamina_tonic]
+name = 지구력 강장제
+category = Potion
+price = 22
+tags = /edible/liquid/medicine/buff/
+rarity = common
+source = shop:Alchemist_Shop
+eatHp = 10
+eatMp = 0
+eatVigor = 30
+eatMood = 0.08
+eatMessage = 근육에 힘이 불어넣어지는 것이 느껴진다.
+
+[greater_health_potion]
+name = 고급 체력 물약
+category = Potion
+price = 60
+tags = /edible/liquid/medicine/healing/
+rarity = uncommon
+source = shop:Alchemist_Shop
+eatHp = 80
+eatMp = 0
+eatVigor = 10
+eatMood = 0.08
+eatMessage = 강력한 치유 물약이 큰 상처도 빠르게 아물게 한다.
+
+[greater_mana_potion]
+name = 고급 마나 물약
+category = Potion
+price = 60
+tags = /edible/liquid/medicine/healing/
+rarity = uncommon
+source = shop:Alchemist_Shop
+eatHp = 0
+eatMp = 80
+eatVigor = 10
+eatMood = 0.08
+eatMessage = 마나가 폭발적으로 회복되며 마력이 충전된다.
+
+[elixir_of_life]
+name = 생명의 비약
+category = Potion
+price = 120
+tags = /edible/liquid/medicine/healing/rare/
+description = 최고급 재료만을 사용해 제조한 생명 강화 물약. 체력과 마나를 동시에 크게 회복시킨다.
+rarity = rare
+source = shop:Master_Alchemist
+eatHp = 150
+eatMp = 80
+eatVigor = 50
+eatMood = 0.30
+eatMessage = 생명 에너지가 온몸에 차오르며 전투에서 입은 상처가 모두 아문다!
+
+[iron_skin_potion]
+name = 철피 물약
+category = Potion
+price = 80
+tags = /edible/liquid/medicine/buff/
+description = 마시면 잠시 동안 피부가 철처럼 단단해지는 물약. 방어가 중요한 상황에 유용하다.
+rarity = uncommon
+source = shop:Alchemist_Shop
+eatHp = 20
+eatMp = 0
+eatVigor = 10
+eatMood = 0.05
+eatMessage = 피부가 굳어지며 단단해지는 감각이 든다.
+
+[full_restore]
+name = 완전 회복약
+category = Potion
+price = 250
+tags = /edible/liquid/medicine/healing/rare/
+description = HP, MP, 기력을 모두 완전히 회복시키는 궁극의 물약. 재료 구하기가 매우 어렵다.
+rarity = epic
+source = shop:Master_Alchemist
+eatHp = 300
+eatMp = 300
+eatVigor = 100
+eatMood = 0.50
+eatMessage = 몸과 마음이 완전히 회복되며 최상의 상태가 된다!
+
+[heroes_draught]
+name = 영웅의 묘약
+category = Potion
+price = 300
+tags = /edible/liquid/medicine/buff/rare/
+description = 전설의 영웅들이 마셨다는 강화 물약. 일시적으로 모든 능력치를 크게 향상시킨다.
+rarity = epic
+source = event:Hero_Tournament
+eatHp = 100
+eatMp = 100
+eatVigor = 80
+eatMood = 0.60
+eatMessage = 전설 속 영웅들의 힘이 온몸에 스며드는 것 같다!
+
+[mana_overflow]
+name = 마나 범람약
+category = Potion
+price = 180
+tags = /edible/liquid/medicine/buff/magical/
+description = 마나를 한계 이상으로 채워주는 위험한 물약. 강력하지만 반동이 있다.
+rarity = rare
+source = shop:Master_Alchemist
+eatHp = -20
+eatMp = 200
+eatVigor = 0
+eatMood = 0.20
+eatMessage = 마나가 폭발적으로 넘쳐흐르지만, 그 반동으로 몸이 약간 손상된다.
+
+[berserker_brew]
+name = 광전사 양조주
+category = Potion
+price = 150
+tags = /edible/liquid/medicine/buff/
+description = 분노와 힘을 극대화하는 붉은 양조주. 마시면 무섭게 강해지지만 이성을 잃을 위험이 있다.
+rarity = rare
+source = shop:Warriors_Forge
+eatHp = 50
+eatMp = -30
+eatVigor = 60
+eatMood = -0.20
+eatMessage = 분노가 끓어오르며 전투력이 극도로 높아진다! 하지만 이성이 흐릿해지는 것 같다.
+
+[invisibility_potion]
+name = 투명 물약
+category = Potion
+price = 200
+tags = /edible/liquid/medicine/buff/magical/
+description = 마시면 잠시 동안 투명해지는 신비로운 물약. 은밀한 임무에 필수품이다.
+rarity = rare
+source = shop:Shadow_Guild
+eatHp = 0
+eatMp = -30
+eatVigor = 5
+eatMood = 0.15
+eatMessage = 몸이 서서히 투명해지며 존재감이 사라진다.
+
+[flight_potion]
+name = 비행 물약
+category = Potion
+price = 350
+tags = /edible/liquid/medicine/buff/magical/
+description = 마시면 하늘을 날 수 있게 되는 꿈의 물약. 지속 시간은 짧지만 높은 곳으로의 이동을 가능하게 한다.
+rarity = epic
+source = shop:Sky_Mage_Tower
+eatHp = 0
+eatMp = -50
+eatVigor = 10
+eatMood = 0.50
+eatMessage = 몸이 가벼워지며 발이 땅에서 떠오른다!
+
+[transformation_potion]
+name = 변신 물약
+category = Potion
+price = 280
+tags = /edible/liquid/medicine/magical/
+description = 잠시 다른 생명체의 모습으로 변신할 수 있게 해주는 물약. 용도가 무궁무진하다.
+rarity = epic
+source = shop:Alchemist_Shop
+eatHp = 0
+eatMp = -40
+eatVigor = 0
+eatMood = 0.20
+eatMessage = 몸의 형태가 흘러내리듯 변형되기 시작한다...
+
+[love_potion]
+name = 사랑의 묘약
+category = Potion
+price = 100
+tags = /edible/liquid/medicine/magical/
+description = 마시면 무드가 극도로 좋아지는 묘약. 관계 개선에 사용되지만 윤리적 논란이 있다.
+rarity = uncommon
+source = shop:Mystic_Bazaar
+eatHp = 0
+eatMp = 0
+eatVigor = 5
+eatMood = 0.80
+eatMessage = 세상 모든 것이 아름답게 느껴지며 마음이 행복으로 넘쳐흐른다.
+
+[weak_poison]
+name = 약한 독약
+category = Potion
+price = 15
+tags = /edible/liquid/medicine/debuff/
+rarity = common
+source = shop:Shadow_Guild
+eatHp = -20
+eatMp = 0
+eatVigor = -10
+eatMood = -0.20
+eatMessage = 독기가 온몸에 퍼지기 시작한다...
+eatStatus = poison
+
+[paralysis_venom]
+name = 마비독
+category = Potion
+price = 40
+tags = /edible/liquid/medicine/debuff/
+description = 몸의 움직임을 마비시키는 독. 무기에 바르거나 적에게 먹이는 용도로 사용된다.
+rarity = uncommon
+source = shop:Shadow_Guild
+eatHp = -10
+eatMp = 0
+eatVigor = -20
+eatMood = -0.30
+eatMessage = 팔다리가 굳어가며 몸을 움직일 수 없게 된다...
+eatStatus = poison
+
+[confusion_draft]
+name = 혼란약
+category = Potion
+price = 35
+tags = /edible/liquid/medicine/debuff/magical/
+description = 마시면 방향감각과 판단력이 흐려지는 물약. 적의 전투력을 낮추는 데 사용된다.
+rarity = uncommon
+source = shop:Shadow_Guild
+eatHp = -5
+eatMp = -20
+eatVigor = -10
+eatMood = -0.40
+eatMessage = 머릿속이 뒤죽박죽이 되며 무엇을 해야 할지 알 수 없게 된다...
+
+[sleep_draught]
+name = 수면약
+category = Potion
+price = 30
+tags = /edible/liquid/medicine/debuff/
+rarity = common
+source = shop:Alchemist_Shop
+eatHp = 0
+eatMp = 0
+eatVigor = -15
+eatMood = 0.10
+eatMessage = 강한 졸음이 밀려오며 눈꺼풀이 무거워진다...
+eatStatus = sleep
+
+[phoenix_tears]
+name = 불사조의 눈물
+category = Potion
+price = 1000
+tags = /edible/liquid/medicine/healing/rare/
+description = 불사조가 흘린 눈물로 만든 극희귀 물약. 죽음의 문턱에서 완전히 부활시킨다고 전해진다.
+rarity = legendary
+source = dungeon:Phoenix_Cradle
+eatHp = 500
+eatMp = 300
+eatVigor = 150
+eatMood = 1.00
+eatMessage = 붉은 불꽃과 함께 온몸이 재생되며 죽음의 기운이 완전히 사라진다!
+
+[ambrosia]
+name = 암브로시아
+category = Potion
+price = 2000
+tags = /edible/liquid/medicine/healing/buff/rare/
+description = 신들의 음식이라 불리는 전설의 액체. 마시면 신에 가까운 힘을 얻는다고 한다.
+rarity = legendary
+source = event:Divine_Blessing
+eatHp = 999
+eatMp = 999
+eatVigor = 200
+eatMood = 1.00
+eatMessage = 신성한 힘이 온몸에 퍼지며 불가능했던 일들이 가능해질 것만 같다!
+
+[liquid_starlight]
+name = 액체 별빛
+category = Potion
+price = 500
+tags = /edible/liquid/medicine/healing/magical/rare/
+description = 별빛을 응축시켜 만든 신비로운 물약. 마나와 정신력을 극도로 강화시킨다.
+rarity = epic
+source = event:Starfall_Night
+eatHp = 50
+eatMp = 250
+eatVigor = 50
+eatMood = 0.70
+eatMessage = 별빛이 온몸을 감싸며 마력이 한없이 넘쳐흐른다!
+
+[void_essence_potion]
+name = 허공 정수 물약
+category = Potion
+price = 600
+tags = /edible/liquid/medicine/buff/magical/rare/
+description = 허공의 에너지를 액체화한 극도로 위험한 물약. 마시면 공간을 조종할 수 있게 된다고 하나 부작용이 크다.
+rarity = epic
+source = dungeon:Void_Rift
+eatHp = -50
+eatMp = 300
+eatVigor = 30
+eatMood = -0.10
+eatMessage = 공간이 뒤틀리며 주위 현실이 출렁인다. 엄청난 마력과 함께 어지러움이 밀려온다.
+
+[eternal_youth]
+name = 영원의 젊음
+category = Potion
+price = 5000
+tags = /edible/liquid/medicine/buff/magical/rare/
+description = 시간의 여신이 비밀을 담아 만들었다는 전설의 물약. 마시는 자에게 영원한 젊음을 준다고 전해진다.
+rarity = legendary
+source = event:Time_Goddess_Blessing
+eatHp = 300
+eatMp = 300
+eatVigor = 200
+eatMood = 1.00
+eatMessage = 세월이 거꾸로 흐르는 듯한 감각과 함께 몸과 마음이 완전히 되살아난다!
+
+# ============================================================
+# EQUIPMENT — Weapons (35개)
+# ============================================================
+
+[rusty_sword]
+name = 녹슨 검
+category = Equipment
+price = 15
+tags = /inedible/metallic/crafted/weapon/sword/
+rarity = common
+source = shop:Market_Square
+equipSlot = weapon
+equipAttack = 5
+equipDefense = 0
+
+[iron_sword]
+name = 철검
+category = Equipment
+price = 80
+tags = /inedible/metallic/crafted/weapon/sword/
+rarity = common
+source = shop:Blacksmith_Quarter
+equipSlot = weapon
+equipAttack = 12
+equipDefense = 1
+
+[steel_longsword]
+name = 강철 장검
+category = Equipment
+price = 200
+tags = /inedible/metallic/crafted/weapon/sword/
+description = 숙련된 대장장이가 정련한 강철로 만든 장검. 균형이 잘 잡혀 있어 전사들이 선호한다.
+rarity = uncommon
+source = shop:Blacksmith_Quarter
+equipSlot = weapon
+equipAttack = 22
+equipDefense = 2
+
+[flame_edge]
+name = 화염날
+category = Equipment
+price = 550
+tags = /inedible/metallic/crafted/weapon/sword/
+description = 화산석과 불의 정령석으로 만든 검. 날에 끊임없이 불꽃이 일렁인다.
+rarity = rare
+source = dungeon:Volcanic_Highlands
+equipSlot = weapon
+equipAttack = 40
+equipDefense = 0
+
+[frost_brand]
+name = 서리 낙인검
+category = Equipment
+price = 500
+tags = /inedible/metallic/crafted/weapon/sword/
+description = 영원의 얼음으로 단조된 검. 베인 상처에서 서리가 피어오른다.
+rarity = rare
+source = dungeon:Frozen_Depths
+equipSlot = weapon
+equipAttack = 38
+equipDefense = 3
+
+[thunder_blade]
+name = 천둥 칼날
+category = Equipment
+price = 620
+tags = /inedible/metallic/crafted/weapon/sword/
+description = 번개를 흡수하는 천둥석으로 만든 검. 휘두를 때마다 전류가 튀어나온다.
+rarity = epic
+source = dungeon:Storm_Ridge
+equipSlot = weapon
+equipAttack = 50
+equipDefense = 2
+
+[holy_sword_luminas]
+name = 성검 루미나스
+category = Equipment
+price = 2500
+tags = /inedible/metallic/crafted/weapon/sword/rare/
+description = 빛의 신전에서 선택받은 자에게 하사된 전설의 성검. 악과 어둠을 정화하는 신성한 힘이 깃들어 있다.
+rarity = legendary
+source = event:Divine_Blessing
+equipSlot = weapon
+equipAttack = 100
+equipDefense = 20
+
+[dark_blade_noctis]
+name = 암흑검 녹티스
+category = Equipment
+price = 2800
+tags = /inedible/metallic/crafted/weapon/sword/rare/
+description = 심연의 어둠에서 단조된 전설의 검. 베인 적에게서 생명력을 흡수한다.
+rarity = legendary
+source = dungeon:Demon_Abyss
+equipSlot = weapon
+equipAttack = 110
+equipDefense = 5
+
+[wooden_spear]
+name = 나무 창
+category = Equipment
+price = 20
+tags = /inedible/crafted/weapon/spear/
+rarity = common
+source = shop:Market_Square
+equipSlot = weapon
+equipAttack = 7
+equipDefense = 0
+
+[iron_lance]
+name = 철 창
+category = Equipment
+price = 120
+tags = /inedible/metallic/crafted/weapon/spear/
+rarity = common
+source = shop:Blacksmith_Quarter
+equipSlot = weapon
+equipAttack = 18
+equipDefense = 1
+
+[gale_spear]
+name = 질풍 창
+category = Equipment
+price = 400
+tags = /inedible/metallic/crafted/weapon/spear/
+description = 바람의 정령이 깃든 가볍고 빠른 창. 돌진 공격 시 바람을 타고 날아가는 듯하다.
+rarity = rare
+source = dungeon:Windy_Cliff
+equipSlot = weapon
+equipAttack = 35
+equipDefense = 0
+
+[lightning_javelin]
+name = 번개 투창
+category = Equipment
+price = 700
+tags = /inedible/metallic/crafted/weapon/spear/
+description = 던지면 번개가 되어 날아가는 신비로운 투창. 정확도와 관통력이 매우 높다.
+rarity = epic
+source = dungeon:Storm_Ridge
+equipSlot = weapon
+equipAttack = 65
+equipDefense = 0
+
+[dragon_slayer]
+name = 용살자
+category = Equipment
+price = 3000
+tags = /inedible/metallic/crafted/weapon/spear/rare/
+description = 용을 잡기 위해 특별히 제작된 전설의 창. 용에 대한 특수 데미지를 부여한다.
+rarity = legendary
+source = event:Dragon_Hunt
+equipSlot = weapon
+equipAttack = 120
+equipDefense = 5
+
+[short_bow]
+name = 단궁
+category = Equipment
+price = 50
+tags = /inedible/crafted/weapon/bow/
+rarity = common
+source = shop:Hunting_Goods
+equipSlot = weapon
+equipAttack = 10
+equipDefense = 0
+
+[hunters_bow]
+name = 사냥꾼의 활
+category = Equipment
+price = 150
+tags = /inedible/crafted/weapon/bow/
+description = 숲의 사냥꾼들이 즐겨 사용하는 잘 만들어진 활. 사거리와 정확도가 뛰어나다.
+rarity = uncommon
+source = shop:Hunting_Goods
+equipSlot = weapon
+equipAttack = 20
+equipDefense = 0
+
+[elven_longbow]
+name = 요정의 장궁
+category = Equipment
+price = 500
+tags = /inedible/crafted/weapon/bow/rare/
+description = 요정 장인이 마법의 나무로 만든 장궁. 화살을 쏘면 공기 저항 없이 날아간다.
+rarity = rare
+source = shop:Elven_Outpost
+equipSlot = weapon
+equipAttack = 42
+equipDefense = 0
+
+[storm_bow]
+name = 폭풍 활
+category = Equipment
+price = 900
+tags = /inedible/crafted/weapon/bow/rare/
+description = 폭풍의 기운이 담긴 특수 활. 화살에 전류를 실어 보낸다.
+rarity = epic
+source = dungeon:Storm_Ridge
+equipSlot = weapon
+equipAttack = 70
+equipDefense = 0
+
+[celestial_bow]
+name = 천계 활
+category = Equipment
+price = 2000
+tags = /inedible/crafted/weapon/bow/rare/
+description = 별의 빛을 담아 만든 전설의 활. 쏜 화살이 별빛처럼 빛나며 날아간다.
+rarity = legendary
+source = dungeon:Celestial_Spire
+equipSlot = weapon
+equipAttack = 95
+equipDefense = 5
+
+[wooden_staff]
+name = 나무 지팡이
+category = Equipment
+price = 30
+tags = /inedible/crafted/weapon/staff/
+rarity = common
+source = shop:Magic_Goods
+equipSlot = weapon
+equipAttack = 6
+equipDefense = 0
+
+[mage_staff]
+name = 마법사 지팡이
+category = Equipment
+price = 180
+tags = /inedible/crafted/weapon/staff/
+description = 마법 증폭 결정이 박힌 지팡이. 마법 공격력을 높여준다.
+rarity = uncommon
+source = shop:Magic_Goods
+equipSlot = weapon
+equipAttack = 25
+equipDefense = 0
+
+[crystal_staff]
+name = 수정 지팡이
+category = Equipment
+price = 450
+tags = /inedible/crafted/weapon/staff/
+description = 순수 수정으로 만들어진 지팡이. 마력 전도율이 매우 높다.
+rarity = rare
+source = shop:Mage_Tower
+equipSlot = weapon
+equipAttack = 45
+equipDefense = 3
+
+[arcane_scepter]
+name = 비술 홀
+category = Equipment
+price = 1200
+tags = /inedible/crafted/weapon/staff/rare/
+description = 금지된 마법 지식이 봉인된 고대의 홀. 강력하지만 다루기 어렵다.
+rarity = epic
+source = dungeon:Ancient_Tower
+equipSlot = weapon
+equipAttack = 80
+equipDefense = 5
+
+[world_tree_staff]
+name = 세계수 지팡이
+category = Equipment
+price = 3500
+tags = /inedible/crafted/weapon/staff/rare/
+description = 세계수의 가지로 만들어진 전설의 지팡이. 자연과 생명의 모든 마법을 완벽하게 다룰 수 있다.
+rarity = legendary
+source = event:World_Tree_Blessing
+equipSlot = weapon
+equipAttack = 130
+equipDefense = 15
+
+[rusty_dagger]
+name = 녹슨 단검
+category = Equipment
+price = 10
+tags = /inedible/metallic/crafted/weapon/dagger/
+rarity = common
+source = shop:Market_Square
+equipSlot = weapon
+equipAttack = 4
+equipDefense = 0
+
+[assassin_blade]
+name = 암살자의 검
+category = Equipment
+price = 300
+tags = /inedible/metallic/crafted/weapon/dagger/
+description = 그림자 속에서 완벽하게 단조된 단검. 선제 공격 시 높은 치명타 확률을 가진다.
+rarity = rare
+source = shop:Shadow_Guild
+equipSlot = weapon
+equipAttack = 32
+equipDefense = 0
+
+[shadow_knife]
+name = 그림자 나이프
+category = Equipment
+price = 450
+tags = /inedible/metallic/crafted/weapon/dagger/rare/
+description = 그림자 원소로 단조된 나이프. 어둠 속에서 사실상 보이지 않으며 공격 시 방어를 무시한다.
+rarity = epic
+source = dungeon:Shadow_Cavern
+equipSlot = weapon
+equipAttack = 55
+equipDefense = 0
+
+[mithril_stiletto]
+name = 미스릴 스틸레토
+category = Equipment
+price = 1500
+tags = /inedible/metallic/crafted/weapon/dagger/rare/
+description = 미스릴로 만든 가늘고 긴 단검. 가볍고 날카로우며 갑옷도 쉽게 꿰뚫는다.
+rarity = epic
+source = shop:Master_Craftsman
+equipSlot = weapon
+equipAttack = 72
+equipDefense = 2
+
+[blacksmith_hammer]
+name = 대장장이 망치
+category = Equipment
+price = 120
+tags = /inedible/metallic/crafted/weapon/tool/
+description = 대장장이가 쓰는 무거운 망치. 전투에서도 쓸 수 있지만 주 용도는 금속 가공이다.
+rarity = uncommon
+source = shop:Blacksmith_Quarter
+equipSlot = weapon
+equipAttack = 18
+equipDefense = 3
+
+[mining_pickaxe]
+name = 채광 곡괭이
+category = Equipment
+price = 80
+tags = /inedible/metallic/crafted/weapon/tool/
+description = 광석을 캐내기 위한 곡괭이. 광물 채취량이 늘어난다.
+rarity = common
+source = shop:Mining_Supply
+equipSlot = weapon
+equipAttack = 10
+equipDefense = 0
+
+[fishing_rod]
+name = 낚싯대
+category = Equipment
+price = 40
+tags = /inedible/crafted/weapon/tool/
+description = 물고기를 낚기 위한 도구. 낚시 성공률과 희귀 물고기 포획 확률이 높아진다.
+rarity = common
+source = shop:Dockside_Market
+equipSlot = weapon
+equipAttack = 2
+equipDefense = 0
+
+[herbalist_sickle]
+name = 약초꾼 낫
+category = Equipment
+price = 60
+tags = /inedible/metallic/crafted/weapon/tool/
+description = 약초를 수확하기 위한 소형 낫. 약초 채취량이 늘어나고 품질이 좋아진다.
+rarity = common
+source = shop:Herbalist_Corner
+equipSlot = weapon
+equipAttack = 8
+equipDefense = 0
+
+[sistema_pistol]
+name = 시스테마 권총
+category = Equipment
+price = 1800
+tags = /inedible/crafted/weapon/tool/
+description = 엘리메스의 비밀 조직 시스테마가 개발한 마법 동력 권총. 마나를 소모해 빛의 탄환을 발사한다.
+rarity = epic
+source = event:Sistema_Contact
+equipSlot = weapon
+equipAttack = 68
+equipDefense = 0
+
+[abyssal_scythe]
+name = 심연의 낫
+category = Equipment
+price = 3200
+tags = /inedible/metallic/crafted/weapon/rare/
+description = 심연의 어둠에서 형성된 낫. 베면 영혼에 직접 데미지를 준다고 알려진 공포의 무기.
+rarity = legendary
+source = dungeon:Demon_Abyss
+equipSlot = weapon
+equipAttack = 125
+equipDefense = 0
+
+[void_gauntlet]
+name = 허공 건틀릿
+category = Equipment
+price = 2600
+tags = /inedible/metallic/crafted/weapon/rare/
+description = 허공석으로 만든 장갑 형태의 무기. 공간을 뒤트는 공격을 가한다.
+rarity = legendary
+source = dungeon:Void_Rift
+equipSlot = weapon
+equipAttack = 105
+equipDefense = 15
+
+# ============================================================
+# EQUIPMENT — Armor (25개)
+# ============================================================
+
+[traveler_clothes]
+name = 여행자 옷
+category = Equipment
+price = 25
+tags = /inedible/crafted/armor/cloth/
+rarity = common
+source = shop:Market_Square
+equipSlot = armor
+equipAttack = 0
+equipDefense = 3
+
+[cotton_robe]
+name = 면 로브
+category = Equipment
+price = 60
+tags = /inedible/crafted/armor/cloth/
+rarity = common
+source = shop:Tailor_Shop
+equipSlot = armor
+equipAttack = 0
+equipDefense = 5
+
+[silk_garment]
+name = 실크 의복
+category = Equipment
+price = 150
+tags = /inedible/crafted/armor/cloth/
+description = 최고급 실크로 짠 의복. 가볍고 우아하다.
+rarity = uncommon
+source = shop:Tailor_Shop
+equipSlot = armor
+equipAttack = 0
+equipDefense = 8
+
+[mage_robe]
+name = 마법사 로브
+category = Equipment
+price = 220
+tags = /inedible/crafted/armor/cloth/
+description = 마력 증폭 문양이 새겨진 마법사 전용 로브. 마법 방어력이 높다.
+rarity = uncommon
+source = shop:Mage_Tower
+equipSlot = armor
+equipAttack = 5
+equipDefense = 12
+
+[starweave_robe]
+name = 별실 로브
+category = Equipment
+price = 1500
+tags = /inedible/crafted/armor/cloth/rare/
+description = 별빛을 실처럼 짜 만든 전설의 로브. 마법을 부분적으로 흡수하고 마력을 증폭시킨다.
+rarity = epic
+source = dungeon:Celestial_Spire
+equipSlot = armor
+equipAttack = 20
+equipDefense = 35
+
+[leather_armor]
+name = 가죽 갑옷
+category = Equipment
+price = 90
+tags = /inedible/crafted/armor/leather/
+rarity = common
+source = shop:Blacksmith_Quarter
+equipSlot = armor
+equipAttack = 0
+equipDefense = 10
+
+[studded_leather]
+name = 징박이 가죽 갑옷
+category = Equipment
+price = 160
+tags = /inedible/crafted/armor/leather/
+description = 금속 징을 박아 방어력을 높인 가죽 갑옷.
+rarity = uncommon
+source = shop:Blacksmith_Quarter
+equipSlot = armor
+equipAttack = 0
+equipDefense = 15
+
+[ranger_vest]
+name = 레인저 조끼
+category = Equipment
+price = 280
+tags = /inedible/crafted/armor/leather/
+description = 숲을 누비는 레인저들이 즐겨 입는 경량 조끼. 민첩성을 높이도록 설계되었다.
+rarity = rare
+source = shop:Hunting_Goods
+equipSlot = armor
+equipAttack = 3
+equipDefense = 20
+
+[scout_armor]
+name = 정찰대 갑옷
+category = Equipment
+price = 350
+tags = /inedible/crafted/armor/leather/
+description = 정찰 임무에 최적화된 경량 갑옷. 소리가 거의 나지 않아 은밀 이동에 유리하다.
+rarity = rare
+source = shop:Military_Supply
+equipSlot = armor
+equipAttack = 2
+equipDefense = 25
+
+[wind_dancer]
+name = 바람의 무희 갑옷
+category = Equipment
+price = 900
+tags = /inedible/crafted/armor/leather/rare/
+description = 바람의 요정에게 받은 기술로 만든 가죽 갑옷. 바람처럼 가볍고 자유롭다.
+rarity = epic
+source = dungeon:Windy_Cliff
+equipSlot = armor
+equipAttack = 8
+equipDefense = 38
+
+[chain_mail]
+name = 사슬 갑옷
+category = Equipment
+price = 300
+tags = /inedible/metallic/crafted/armor/chain/
+rarity = uncommon
+source = shop:Blacksmith_Quarter
+equipSlot = armor
+equipAttack = 0
+equipDefense = 22
+
+[scale_armor]
+name = 비늘 갑옷
+category = Equipment
+price = 450
+tags = /inedible/metallic/crafted/armor/chain/
+description = 금속 비늘을 겹겹이 이어 만든 갑옷. 유연하면서도 방어력이 높다.
+rarity = rare
+source = shop:Blacksmith_Quarter
+equipSlot = armor
+equipAttack = 0
+equipDefense = 30
+
+[plate_armor]
+name = 판금 갑옷
+category = Equipment
+price = 700
+tags = /inedible/metallic/crafted/armor/plate/
+description = 전신을 금속 판으로 덮는 중갑옷. 무겁지만 방어력이 매우 높다.
+rarity = rare
+source = shop:Master_Craftsman
+equipSlot = armor
+equipAttack = 0
+equipDefense = 40
+
+[knight_armor]
+name = 기사 갑옷
+category = Equipment
+price = 1000
+tags = /inedible/metallic/crafted/armor/plate/
+description = 왕국 기사단 전용으로 제작된 고급 판금 갑옷. 기사의 자부심을 상징한다.
+rarity = epic
+source = shop:Royal_Armory
+equipSlot = armor
+equipAttack = 5
+equipDefense = 50
+
+[royal_guard_armor]
+name = 왕실 근위대 갑옷
+category = Equipment
+price = 2000
+tags = /inedible/metallic/crafted/armor/plate/rare/
+description = 왕실 근위대만이 착용하는 특별 제작 갑옷. 왕을 지키기 위한 최고의 방어력을 자랑한다.
+rarity = epic
+source = event:Royal_Appointment
+equipSlot = armor
+equipAttack = 8
+equipDefense = 65
+
+[dragon_scale_mail]
+name = 용 비늘 갑옷
+category = Equipment
+price = 3000
+tags = /inedible/metallic/crafted/armor/plate/rare/
+description = 드래곤의 비늘을 겹겹이 이어 만든 갑옷. 불과 원소 공격에 강한 저항력을 가진다.
+rarity = legendary
+source = dungeon:Dragon_Lair
+equipSlot = armor
+equipAttack = 10
+equipDefense = 80
+
+[adamantite_plate]
+name = 아다만티트 전신갑옷
+category = Equipment
+price = 5000
+tags = /inedible/metallic/crafted/armor/plate/rare/
+description = 가장 단단한 금속 아다만티트로 만든 전신갑옷. 왕국 역사상 최강의 갑옷으로 불린다.
+rarity = legendary
+source = dungeon:Deep_Vein_Mine
+equipSlot = armor
+equipAttack = 5
+equipDefense = 100
+
+[void_armor]
+name = 허공 갑옷
+category = Equipment
+price = 4500
+tags = /inedible/metallic/crafted/armor/plate/rare/
+description = 허공의 에너지로 만들어진 갑옷. 물리적 공격의 일부를 허공으로 흘려보낸다.
+rarity = legendary
+source = dungeon:Void_Rift
+equipSlot = armor
+equipAttack = 15
+equipDefense = 90
+
+[wooden_shield]
+name = 나무 방패
+category = Equipment
+price = 20
+tags = /inedible/crafted/armor/shield/
+rarity = common
+source = shop:Market_Square
+equipSlot = armor
+equipAttack = 0
+equipDefense = 5
+
+[iron_shield]
+name = 철 방패
+category = Equipment
+price = 100
+tags = /inedible/metallic/crafted/armor/shield/
+rarity = common
+source = shop:Blacksmith_Quarter
+equipSlot = armor
+equipAttack = 0
+equipDefense = 15
+
+[tower_shield]
+name = 탑 방패
+category = Equipment
+price = 400
+tags = /inedible/metallic/crafted/armor/shield/
+description = 성탑의 흉벽처럼 큰 대형 방패. 무겁지만 방어력이 탁월하다.
+rarity = rare
+source = shop:Military_Supply
+equipSlot = armor
+equipAttack = 0
+equipDefense = 35
+
+[holy_aegis]
+name = 성스러운 이지스
+category = Equipment
+price = 2500
+tags = /inedible/metallic/crafted/armor/shield/rare/
+description = 빛의 신전에서 축복받은 신성한 방패. 어둠의 공격을 완전히 차단한다.
+rarity = legendary
+source = event:Divine_Blessing
+equipSlot = armor
+equipAttack = 10
+equipDefense = 75
+
+[lucky_charm]
+name = 행운의 부적
+category = Equipment
+price = 80
+tags = /inedible/crafted/armor/accessory/
+description = 운좋은 모험가들이 애용하는 부적. 착용하면 왠지 행운이 따르는 것 같다.
+rarity = uncommon
+source = shop:Mystic_Bazaar
+equipSlot = accessory
+equipAttack = 0
+equipDefense = 3
+
+[mana_ring]
+name = 마나 반지
+category = Equipment
+price = 350
+tags = /inedible/metallic/crafted/armor/accessory/
+description = 마나 결정이 박힌 반지. 착용하면 마나 회복 속도가 빨라진다.
+rarity = rare
+source = shop:Mage_Tower
+equipSlot = accessory
+equipAttack = 8
+equipDefense = 5
+
+[strength_amulet]
+name = 힘의 목걸이
+category = Equipment
+price = 420
+tags = /inedible/metallic/crafted/armor/accessory/
+description = 힘의 정령이 봉인된 목걸이. 착용하면 근력이 크게 향상된다.
+rarity = rare
+source = shop:Warriors_Forge
+equipSlot = accessory
+equipAttack = 15
+equipDefense = 5
+
+[speed_boots]
+name = 질주 장화
+category = Equipment
+price = 380
+tags = /inedible/crafted/armor/accessory/
+description = 바람의 마력이 깃든 장화. 착용하면 이동 속도와 회피율이 높아진다.
+rarity = rare
+source = shop:Enchanted_Goods
+equipSlot = accessory
+equipAttack = 5
+equipDefense = 8
+
+# ============================================================
+# GuildCard / Special — 특수 아이템 (20개)
+# ============================================================
+
+[guild_card]
+name = 길드 멤버 확인증
+category = GuildCard
+price = 50
+tags = /inedible/special/document/
+description = 모험가 길드의 정식 회원임을 증명하는 카드. 길드 시설 이용과 의뢰 수주에 필요하다.
+rarity = common
+source = shop:Guild_Hall
+
+[adventurer_license]
+name = 모험가 면허증
+category = GuildCard
+price = 100
+tags = /inedible/special/document/
+description = 왕국 공식 모험가 자격을 증명하는 면허증. 등급에 따라 출입 가능한 던전이 달라진다.
+rarity = uncommon
+source = shop:Guild_Hall
+
+[merchant_permit]
+name = 상인 허가증
+category = GuildCard
+price = 150
+tags = /inedible/special/document/
+description = 왕국 시장에서의 상업 활동을 허가하는 증명서. 이것 없이 거래를 하면 벌금을 물 수 있다.
+rarity = uncommon
+source = shop:Trade_Guild
+
+[dungeon_map]
+name = 던전 지도
+category = GuildCard
+price = 80
+tags = /inedible/special/document/quest/
+description = 특정 던전의 구조와 함정 위치가 기록된 지도. 던전 탐험 전 구해두면 안전하다.
+rarity = uncommon
+source = shop:Map_Maker
+
+[treasure_map]
+name = 보물 지도
+category = GuildCard
+price = 200
+tags = /inedible/special/document/quest/
+description = 어딘가에 숨겨진 보물의 위치가 표시된 낡은 지도. 진짜인지 가짜인지는 직접 확인해야 안다.
+rarity = rare
+source = event:Random_Encounter
+
+[rusty_key]
+name = 녹슨 열쇠
+category = GuildCard
+price = 10
+tags = /inedible/special/key/
+rarity = common
+source = dungeon:Goblin_Hideout
+
+[silver_key]
+name = 은 열쇠
+category = GuildCard
+price = 80
+tags = /inedible/special/key/
+description = 특정 잠긴 문이나 보물 상자를 여는 데 사용되는 은빛 열쇠.
+rarity = uncommon
+source = dungeon:Ancient_Ruins
+
+[golden_key]
+name = 황금 열쇠
+category = GuildCard
+price = 300
+tags = /inedible/special/key/
+description = 왕국 내의 중요 시설 문을 여는 데 사용되는 황금 열쇠. 귀족들만 소지할 수 있다.
+rarity = rare
+source = event:Royal_Reward
+
+[crystal_key]
+name = 수정 열쇠
+category = GuildCard
+price = 500
+tags = /inedible/special/key/
+description = 마법으로 봉인된 고대 문을 여는 수정 열쇠. 특정 고대 유적에만 사용할 수 있다.
+rarity = epic
+source = dungeon:Ancient_Tower
+
+[void_key]
+name = 허공 열쇠
+category = GuildCard
+price = 1000
+tags = /inedible/special/key/rare/
+description = 공간의 균열을 여는 특수한 열쇠. 일반 세계와 이면 세계를 연결하는 문을 열 수 있다.
+rarity = legendary
+source = dungeon:Void_Rift
+
+[festival_ticket]
+name = 축제 입장권
+category = GuildCard
+price = 30
+tags = /inedible/special/event/
+description = 엘리메스 대축제의 입장권. 축제 기간에만 얻을 수 있는 특별한 티켓이다.
+rarity = uncommon
+source = event:Harvest_Festival
+
+[love_letter]
+name = 연애 편지
+category = GuildCard
+price = 5
+tags = /inedible/special/event/
+description = 누군가가 정성스럽게 쓴 연애 편지. 전달하면 상대방의 마음을 살짝 움직일 수 있을지도 모른다.
+rarity = common
+source = event:Valentines_Day
+
+[ancient_scroll]
+name = 고대 두루마리
+category = GuildCard
+price = 250
+tags = /inedible/special/document/quest/
+description = 고대 문명의 비밀이 기록된 낡은 두루마리. 해독하면 잊혀진 지식을 얻을 수 있다.
+rarity = rare
+source = dungeon:Ancient_Ruins
+
+[prophecy_stone]
+name = 예언석
+category = GuildCard
+price = 800
+tags = /inedible/special/rare/
+description = 미래의 일부를 볼 수 있다는 전설의 돌. 보는 이마다 다른 환영을 보여준다고 한다.
+rarity = epic
+source = event:Oracle_Gathering
+
+[hero_medal]
+name = 영웅 훈장
+category = GuildCard
+price = 1000
+tags = /inedible/special/event/rare/
+description = 왕국에서 탁월한 공적을 세운 영웅에게 수여되는 훈장. 착용자에게 특별한 경의를 표하는 이들이 많다.
+rarity = epic
+source = event:Hero_Tournament
+
+[memory_crystal]
+name = 기억 결정
+category = GuildCard
+price = 500
+tags = /inedible/special/rare/
+description = 과거의 중요한 기억이 봉인된 수정. 손에 쥐면 그 기억의 파편이 느껴진다.
+rarity = epic
+source = event:Past_Life_Festival
+
+[soul_gem]
+name = 영혼석
+category = GuildCard
+price = 1500
+tags = /inedible/special/rare/
+description = 강력한 존재의 영혼이 담긴 보석. 사용자에게 그 존재의 힘을 일부 빌려준다.
+rarity = legendary
+source = dungeon:Soul_Realm
+
+[world_seed]
+name = 세계의 씨앗
+category = GuildCard
+price = 10000
+tags = /inedible/special/rare/
+description = 엘리메스 세계가 탄생하기 이전부터 존재했다는 전설의 씨앗. 이것이 무엇으로 자랄지는 아무도 모른다.
+rarity = unique
+source = event:World_Creation_Echo
+
+[chaos_orb]
+name = 혼돈의 구슬
+category = GuildCard
+price = 3000
+tags = /inedible/special/rare/
+description = 세상 모든 혼돈의 에너지가 응축된 구슬. 무엇을 일으킬지 예측 불가능하지만 엄청난 힘을 품고 있다.
+rarity = legendary
+source = dungeon:Chaos_Labyrinth
+
+[harmony_bell]
+name = 조화의 종
+category = GuildCard
+price = 5000
+tags = /inedible/special/rare/
+description = 세상의 모든 것을 조화롭게 만드는 전설의 종. 울리면 주변의 갈등과 적대감이 가라앉는다.
+rarity = unique
+source = event:Peace_Summit
