@@ -148,27 +148,39 @@ export function createHyperionScreen(
     `;
     wrap.appendChild(info);
 
-    // Hyperion missions
+    // Hyperion missions — 친한 사이/동행 이상만 공개
     const entry = getHyperionEntry(actor.name);
+    const isPlayer = actor === p;
+    const isCloseOrCompanion = isPlayer || stage === '\uce5c\ud55c \uc0ac\uc774' || stage === '\ub3d9\ud589 \uc911';
     if (entry) {
       const mTitle = document.createElement('div');
       mTitle.style.cssText = 'margin-top:12px;font-weight:600;font-size:13px;color:var(--warning)';
       mTitle.textContent = '\ud788\ud398\ub9ac\uc628 \ubbf8\uc158';
       wrap.appendChild(mTitle);
 
-      const mList = document.createElement('div');
-      mList.style.cssText = 'display:flex;flex-direction:column;gap:4px;margin-top:4px';
-      for (let i = 0; i < entry.conditions.length; i++) {
-        const cond = entry.conditions[i];
-        const cleared = i < level;
-        const isCurrent = i === level;
-        const row = document.createElement('div');
-        row.style.cssText = `font-size:12px;padding:4px 8px;border-radius:4px;background:${cleared ? 'rgba(78,204,163,0.15)' : isCurrent ? 'rgba(255,200,87,0.15)' : 'var(--bg-card)'};color:${cleared ? 'var(--success)' : isCurrent ? 'var(--warning)' : 'var(--text-dim)'}`;
-        const icon = cleared ? '\u2713' : isCurrent ? '\u25b6' : '\u25cb';
-        row.textContent = `${icon} Lv.${i + 1}: ${cond.description || '???'}`;
-        mList.appendChild(row);
+      if (!isCloseOrCompanion && !isPlayer) {
+        const locked = document.createElement('p');
+        locked.style.cssText = 'font-size:12px;color:var(--text-dim);padding:4px 8px';
+        locked.textContent = '\uce5c\ud55c \uc0ac\uc774\uac00 \ub418\uba74 \ubbf8\uc158\uc774 \uacf5\uac1c\ub429\ub2c8\ub2e4.';
+        wrap.appendChild(locked);
+      } else {
+        const mList = document.createElement('div');
+        mList.style.cssText = 'display:flex;flex-direction:column;gap:4px;margin-top:4px';
+        for (let i = 0; i < entry.conditions.length; i++) {
+          const cond = entry.conditions[i];
+          const cleared = i < level;
+          const isCurrent = i === level;
+          // 클리어한 것과 현재 목표만 공개, 나머지는 ???
+          const revealed = cleared || isCurrent;
+          const desc = revealed ? (cond.description || '???') : '???';
+          const row = document.createElement('div');
+          row.style.cssText = `font-size:12px;padding:4px 8px;border-radius:4px;background:${cleared ? 'rgba(78,204,163,0.15)' : isCurrent ? 'rgba(255,200,87,0.15)' : 'var(--bg-card)'};color:${cleared ? 'var(--success)' : isCurrent ? 'var(--warning)' : 'var(--text-dim)'}`;
+          const icon = cleared ? '\u2713' : isCurrent ? '\u25b6' : '\u25cb';
+          row.textContent = `${icon} Lv.${i + 1}: ${desc}`;
+          mList.appendChild(row);
+        }
+        wrap.appendChild(mList);
       }
-      wrap.appendChild(mList);
     }
 
     // Acquisition conditions (입수 조건)

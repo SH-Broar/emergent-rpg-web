@@ -6,6 +6,7 @@ import { Actor } from '../models/actor';
 import { PlayerKnowledge } from '../models/knowledge';
 import { DungeonSystem } from '../models/dungeon';
 import { GameTime } from '../types/game-time';
+import { areAcquisitionConditionsMet } from './npc-interaction';
 
 export interface HyperionCondition {
   description: string;
@@ -254,6 +255,14 @@ export function updateHyperionLevels(
   for (const actor of allActors) {
     // 플레이어 자신이거나, 플레이어가 만난 NPC만 히페리온 판정
     if (actor !== player && !knowledge.knownActorNames.has(actor.name)) continue;
+
+    // 친한 사이(입수 조건 달성) 또는 동료가 아닌 NPC는 히페리온 레벨업 불가
+    if (actor !== player) {
+      const isCompanion = knowledge.isCompanion(actor.name);
+      const isRecruited = knowledge.recruitedEver.has(actor.name);
+      const acqMet = !actor.acquisitionMethod || areAcquisitionConditionsMet(actor, player, allActors, knowledge);
+      if (!isCompanion && !isRecruited && !acqMet) continue;
+    }
 
     const entry = getHyperionEntry(actor.name);
     if (!entry) continue;
