@@ -70,13 +70,19 @@ export function createGameScreen(
   onScreenChange: (target: string) => void,
   onAfterTurn?: () => void,
 ): Screen {
-  let lastMessages: string[] = [];
+  let accumulatedLog: string[] = [];
+  let lastLocation = session.player?.currentLocation ?? '';
 
   function renderHud(el: HTMLElement) {
     const p = session.player;
     const hpPct = Math.round((p.base.hp / p.getEffectiveMaxHp()) * 100);
     const vigorPct = Math.round((p.base.vigor / p.getEffectiveMaxVigor()) * 100);
-    const recentLog = session.backlog.getRecent(5).map(e => e.text);
+
+    // 지역 이동 시 로그 초기화
+    if (p.currentLocation !== lastLocation) {
+      accumulatedLog = [];
+      lastLocation = p.currentLocation;
+    }
 
     el.innerHTML = `
       <div class="screen game-screen">
@@ -101,19 +107,17 @@ export function createGameScreen(
           <div class="hud-colors">
             ${[0,1,2,3,4,5,6,7].map(i => {
               const val = p.color.values[i];
-              const pct = Math.round(val * 100);
+              const scaled = Math.round((val - 0.5) * 200);
+              const sign = scaled > 0 ? '+' : '';
               const delta = session.gaugeState.deltas[i];
               const arrow = delta > 0.01 ? '▲' : delta < -0.01 ? '▼' : '';
-              return `<span class="hud-color-pip" title="${elementName(i as Element)}"><span class="hud-color-dot" style="background:var(--el-${i})"></span>${pct}${arrow}</span>`;
+              return `<span class="hud-color-pip" title="${elementName(i as Element)}"><span class="hud-color-dot" style="background:var(--el-${i})"></span>${sign}${scaled}${arrow}</span>`;
             }).join('')}
           </div>
         </div>
 
-        <div class="log-area">
-          ${lastMessages.length > 0
-            ? lastMessages.map(m => `<div class="log-msg">${m}</div>`).join('')
-            : recentLog.map(t => `<div class="log-entry">${t}</div>`).join('')
-          }
+        <div class="log-area" style="max-height:30vh;overflow-y:auto">
+          ${accumulatedLog.map(m => `<div class="log-msg">${m}</div>`).join('')}
         </div>
 
         <div class="action-grid">
@@ -141,7 +145,8 @@ export function createGameScreen(
 
   function handleAction(action: GameAction, el: HTMLElement) {
     const result = processTurn(session, action);
-    lastMessages = result.messages;
+    // 새 메시지를 누적 로그에 추가
+    for (const m of result.messages) accumulatedLog.push(m);
     if (result.screenChange) {
       onScreenChange(result.screenChange);
       onAfterTurn?.();
@@ -207,11 +212,13 @@ export function createInfoScreen(
           html += `<h2>컬러 속성</h2><div class="color-list">`;
           for (let i = 0; i < ELEMENT_COUNT; i++) {
             const val = p.color.values[i];
-            const pct = Math.round(val * 100);
+            const scaled = Math.round((val - 0.5) * 200);
+            const sign = scaled > 0 ? '+' : '';
+            const barPct = Math.round(val * 100);
             html += `<div class="color-row">
               <span class="el-name">${elementName(i as Element)}</span>
-              <div class="bar"><div class="bar-fill" style="width:${pct}%;background:var(--el-${i})"></div></div>
-              <span>${val.toFixed(2)}</span>
+              <div class="bar"><div class="bar-fill" style="width:${barPct}%;background:var(--el-${i})"></div></div>
+              <span>${sign}${scaled}</span>
             </div>`;
           }
           html += '</div>';

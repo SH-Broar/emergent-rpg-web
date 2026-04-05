@@ -77,8 +77,9 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
       const item = randomInt(0, 1); // Food or Herb
       const amount = randomInt(1, 3);
       p.addItem(item, amount);
-      session.backlog.add(session.gameTime, `${p.name}이(가) 자원을 채집했다.`, '행동');
-      result.messages.push(`채집 완료! +${amount}개 획득`);
+      const itemLabel = item === 0 ? '식량' : '약초';
+      session.backlog.add(session.gameTime, `${p.name}이(가) ${itemLabel}을(를) ${amount}개 채집했다.`, '행동');
+      result.messages.push(`채집 완료! ${itemLabel} +${amount}개 획득`);
       break;
     }
 

@@ -5,7 +5,6 @@ import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
 
 const HYPERION_MAX_LEVEL = 5;
-const HYPERION_TOTAL_ACTORS = 47;
 
 interface HyperionBonus {
   maxHp: number;
@@ -45,7 +44,7 @@ export function createHyperionScreen(
     wrap.appendChild(backBtn);
 
     const title = document.createElement('h2');
-    title.textContent = '\ud558\uc774\ud398\ub9ac\uc628';
+    title.textContent = '\ud788\ud398\ub9ac\uc628';
     wrap.appendChild(title);
 
     // Player hyperion level
@@ -56,7 +55,7 @@ export function createHyperionScreen(
     playerInfo.className = 'hyperion-player';
     const levelBar = '\u2605'.repeat(playerLevel) + '\u2606'.repeat(HYPERION_MAX_LEVEL - playerLevel);
     playerInfo.innerHTML = `
-      <p><strong>${p.name}</strong> \ud558\uc774\ud398\ub9ac\uc628 \ub808\ubca8: ${playerLevel}/${HYPERION_MAX_LEVEL}</p>
+      <p><strong>${p.name}</strong> \ud788\ud398\ub9ac\uc628 \ub808\ubca8: ${playerLevel}/${HYPERION_MAX_LEVEL}</p>
       <p class="hyperion-bar">${levelBar}</p>
       <div class="hyperion-bonus">
         <p>\uc2a4\ud0ef \ubcf4\ub108\uc2a4:</p>
@@ -66,14 +65,17 @@ export function createHyperionScreen(
     wrap.appendChild(playerInfo);
 
     // All actors hyperion list
+    const knownActors = session.actors.filter(a =>
+      a === p || session.knowledge.knownActorNames.has(a.name)
+    );
+
     const listTitle = document.createElement('h3');
-    listTitle.textContent = `\uc804\uccb4 \uc778\ubb3c (${Math.min(session.actors.length, HYPERION_TOTAL_ACTORS)}\uba85)`;
+    listTitle.textContent = `\uc54c\uace0 \uc788\ub294 \uc778\ubb3c (${knownActors.length}\uba85)`;
     wrap.appendChild(listTitle);
 
     const list = document.createElement('div');
     list.className = 'npc-list';
-    const actorsToShow = session.actors.slice(0, HYPERION_TOTAL_ACTORS);
-    for (const actor of actorsToShow) {
+    for (const actor of knownActors) {
       const item = document.createElement('div');
       item.className = 'npc-item';
       const stars = '\u2605'.repeat(actor.hyperionLevel) + '\u2606'.repeat(HYPERION_MAX_LEVEL - actor.hyperionLevel);
