@@ -123,15 +123,24 @@ export function createGameScreen(
             <span class="stat-val">${p.base.ap}/${p.getEffectiveMaxAp()}</span>
           </div>
           <div class="hud-mini">Lv.${p.base.level} · ${raceName(p.base.race)} · ${spiritRoleName(p.spirit.role)} · 💰${p.spirit.gold}G</div>
-          <div class="hud-colors">
-            ${[0,1,2,3,4,5,6,7].map(i => {
-              const val = p.color.values[i];
-              const scaled = Math.round((val - 0.5) * 200);
-              const sign = scaled > 0 ? '+' : '';
-              const delta = session.gaugeState.deltas[i];
-              const arrow = delta > 0.01 ? '▲' : delta < -0.01 ? '▼' : '';
-              return `<span class="hud-color-pip" title="${elementName(i as Element)}"><span class="hud-color-dot" style="background:var(--el-${i})"></span>${sign}${scaled}${arrow}</span>`;
-            }).join('')}
+          <div class="hud-colors" style="justify-content:center;gap:12px">
+            ${(() => {
+              // 가장 높은 속성 계산
+              const scaled = p.color.values.map((v, i) => ({ i, s: Math.round((v - 0.5) * 200) }));
+              scaled.sort((a, b) => b.s - a.s);
+              const top = scaled[0].s;
+              const near = scaled.filter(x => top - x.s <= 1);
+              let elemLabel: string;
+              if (near.length >= 3) {
+                elemLabel = '<span style="color:var(--text-dim)">속성 : 무속성</span>';
+              } else if (near.length === 2) {
+                elemLabel = `<span>속성 : <span style="color:var(--el-${near[0].i})">${elementName(near[0].i as Element)}</span> · <span style="color:var(--el-${near[1].i})">${elementName(near[1].i as Element)}</span></span>`;
+              } else {
+                elemLabel = `<span>속성 : <span style="color:var(--el-${near[0].i})">${elementName(near[0].i as Element)}</span></span>`;
+              }
+              const titleStr = session.knowledge.activeTitle ? ` · ${session.knowledge.activeTitle}` : '';
+              return `${elemLabel} <span style="color:var(--warning)">✦Lv.${p.hyperionLevel}</span>${titleStr}`;
+            })()}
           </div>
         </div>
 
