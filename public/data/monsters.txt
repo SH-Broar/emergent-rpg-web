@@ -1,0 +1,232 @@
+; ============================================================
+; EmergentRPG Monster Definitions
+; Format: [MonsterID]
+;         name    = 한글 이름
+;         attack  = int
+;         defense = int
+;         hp      = int
+;         loot    = ItemType:amount:chance, ...
+;
+; Dungeons (8) ordered by difficulty:
+;   Larmen_Forest  (0.15) | Forgotten_Shaft (0.30)
+;   Mist_Marsh     (0.40) | Bandit_Den      (0.50)
+;   Thunder_Valley (0.60) | Flame_Cavern    (0.72)
+;   Iron_Fortress  (0.85) | Dark_Abyss      (0.95)
+;
+; Loot types: Food, Herb, OreCommon, OreRare,
+;             MonsterLoot, Equipment
+; ============================================================
+
+; -------------------------------------------------------
+; Larmen_Forest  (difficulty 0.15)
+; -------------------------------------------------------
+
+[Forest_Slime]
+name = 숲 슬라임
+attack = 6
+defense = 2
+hp = 25
+loot = Food:1:0.40, Herb:1:0.30, MonsterLoot:1:0.20
+
+[Wild_Boar]
+name = 야생 멧돼지
+attack = 10
+defense = 4
+hp = 40
+loot = Food:2:0.50, MonsterLoot:1:0.25, Herb:1:0.15
+
+[Treant_Sapling]
+name = 나무정령 새싹
+attack = 8
+defense = 6
+hp = 50
+loot = Herb:2:0.45, Food:1:0.30, MonsterLoot:1:0.20
+
+; -------------------------------------------------------
+; Forgotten_Shaft  (difficulty 0.30)
+; -------------------------------------------------------
+
+[Cave_Bat]
+name = 동굴 박쥐
+attack = 8
+defense = 3
+hp = 20
+loot = Food:1:0.35, MonsterLoot:1:0.30, Herb:1:0.15
+
+[Rock_Golem_Small]
+name = 작은 바위골렘
+attack = 12
+defense = 8
+hp = 60
+loot = OreCommon:2:0.50, MonsterLoot:1:0.30, OreRare:1:0.08
+
+[Mine_Spider]
+name = 광산 거미
+attack = 11
+defense = 4
+hp = 35
+loot = MonsterLoot:1:0.40, Herb:1:0.25, OreCommon:1:0.20
+
+; -------------------------------------------------------
+; Mist_Marsh  (difficulty 0.40)
+; -------------------------------------------------------
+
+[Poison_Toad]
+name = 독두꺼비
+attack = 10
+defense = 5
+hp = 45
+loot = Herb:2:0.50, MonsterLoot:1:0.30, Food:1:0.20
+
+[Marsh_Serpent]
+name = 늪지 독사
+attack = 14
+defense = 6
+hp = 55
+loot = MonsterLoot:2:0.35, Herb:1:0.30, Equipment:1:0.05
+
+[Fog_Wraith]
+name = 안개 망령
+attack = 12
+defense = 3
+hp = 40
+loot = MonsterLoot:1:0.45, Herb:1:0.25, Equipment:1:0.06
+
+; -------------------------------------------------------
+; Bandit_Den  (difficulty 0.50)
+; -------------------------------------------------------
+
+[Bandit_Scout]
+name = 산적 정찰병
+attack = 13
+defense = 7
+hp = 50
+loot = Food:2:0.40, MonsterLoot:1:0.30, Equipment:1:0.08
+
+[Bandit_Warrior]
+name = 산적 전사
+attack = 16
+defense = 10
+hp = 70
+loot = Equipment:1:0.12, MonsterLoot:2:0.35, Food:1:0.25
+
+[Bandit_Mage]
+name = 산적 마법사
+attack = 18
+defense = 5
+hp = 45
+loot = Herb:2:0.40, MonsterLoot:1:0.35, Equipment:1:0.10
+
+[Bandit_Leader]
+name = 산적 두목
+attack = 20
+defense = 12
+hp = 90
+loot = Equipment:1:0.20, MonsterLoot:2:0.40, OreRare:1:0.10, Food:2:0.25
+
+; -------------------------------------------------------
+; Thunder_Valley  (difficulty 0.60)
+; -------------------------------------------------------
+
+[Storm_Lizard]
+name = 폭풍 도마뱀
+attack = 15
+defense = 8
+hp = 60
+loot = MonsterLoot:2:0.40, OreCommon:1:0.30, Equipment:1:0.08
+
+[Lightning_Elemental]
+name = 번개 정령
+attack = 20
+defense = 6
+hp = 50
+loot = MonsterLoot:2:0.45, OreRare:1:0.12, Equipment:1:0.10
+
+[Thunder_Eagle]
+name = 천둥 독수리
+attack = 18
+defense = 7
+hp = 55
+loot = MonsterLoot:2:0.40, Food:2:0.30, Equipment:1:0.09
+
+; -------------------------------------------------------
+; Flame_Cavern  (difficulty 0.72)
+; -------------------------------------------------------
+
+[Fire_Salamander]
+name = 화염 도롱뇽
+attack = 18
+defense = 10
+hp = 70
+loot = MonsterLoot:2:0.45, OreCommon:2:0.35, Herb:1:0.20
+
+[Lava_Golem]
+name = 용암 골렘
+attack = 22
+defense = 15
+hp = 100
+loot = OreRare:2:0.20, OreCommon:3:0.45, MonsterLoot:2:0.35, Equipment:1:0.10
+
+[Ember_Spirit]
+name = 잔불 영혼
+attack = 20
+defense = 8
+hp = 60
+loot = MonsterLoot:2:0.45, Herb:2:0.30, Equipment:1:0.12
+
+[Flame_Wyrm]
+name = 화염 비룡
+attack = 25
+defense = 12
+hp = 85
+loot = MonsterLoot:3:0.40, OreRare:1:0.18, Equipment:1:0.15, Food:2:0.20
+
+; -------------------------------------------------------
+; Iron_Fortress  (difficulty 0.85)
+; -------------------------------------------------------
+
+[Iron_Automaton]
+name = 강철 자동인형
+attack = 22
+defense = 18
+hp = 120
+loot = OreCommon:3:0.50, OreRare:1:0.20, Equipment:1:0.15, MonsterLoot:2:0.35
+
+[Siege_Golem]
+name = 공성 골렘
+attack = 28
+defense = 20
+hp = 150
+loot = OreRare:2:0.25, Equipment:1:0.20, MonsterLoot:3:0.40, OreCommon:2:0.40
+
+[Clockwork_Sentinel]
+name = 태엽 파수꾼
+attack = 25
+defense = 16
+hp = 100
+loot = OreCommon:2:0.45, OreRare:1:0.18, Equipment:1:0.16, MonsterLoot:2:0.35
+
+; -------------------------------------------------------
+; Dark_Abyss  (difficulty 0.95)
+; -------------------------------------------------------
+
+[Shadow_Wraith]
+name = 그림자 망령
+attack = 25
+defense = 12
+hp = 80
+loot = MonsterLoot:3:0.50, Equipment:1:0.18, Herb:2:0.25, OreRare:1:0.15
+
+[Void_Stalker]
+name = 공허의 추적자
+attack = 30
+defense = 15
+hp = 120
+loot = MonsterLoot:3:0.50, Equipment:1:0.22, OreRare:2:0.20, Herb:2:0.20
+
+[Abyssal_Lord]
+name = 심연의 군주
+attack = 35
+defense = 20
+hp = 180
+loot = Equipment:1:0.30, MonsterLoot:4:0.55, OreRare:2:0.25, Herb:3:0.20, Food:3:0.15

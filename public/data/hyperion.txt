@@ -1,0 +1,634 @@
+# ============================================================
+# hyperion.txt — 히페리온 시스템 정의
+# 각 캐릭터의 히페리온 레벨 조건 (5단계)
+# 조건 충족 시 레벨당: HP +10, MP +5, Attack +2, Defense +1, Vigor +5
+#
+# [__default__] = 탄생 캐릭터용 범용 히페리온 (이름 매칭 없을 때 사용)
+# condition_N = 조건 설명문 (UI 표시용)
+# condition_N_type = 조건 타입:파라미터
+#
+# --- 기본 조건 타입 ---
+#   manual                       — 수동 확인 (미구현 시스템)
+#   days_passed:N                — 게임 N일 경과
+#   hyperion_total:N             — 전체 히페리온 레벨 합 N 달성
+#   actor_recruited:이름         — 해당 NPC 동료(존재) 확인
+#   all_recruited:이름1,이름2    — 모든 NPC 동료 확인
+#   recruited_count:N            — 역대 동료 수 N명 이상
+#   all_races_recruited          — 모든 종족의 동료 보유
+#   all_elements_recruited       — 모든 속성의 동료 보유
+#   gold_owned:N                 — 골드 N 이상 보유
+#   location_visited:ID          — 해당 지역 방문 기록
+#   all_locations_visited        — 모든 장소 방문
+#   visited_count:N              — N곳 이상 방문
+#   conversation_with:이름       — 해당 NPC와 대화
+#   conversation_count:N         — 총 대화 N회 이상
+#   dungeon_clear_count:N        — 던전 N회 이상 클리어
+#   hyperion_levels:이름1:N1,이름2:N2 — 특정 캐릭터들의 히페리온 레벨 확인
+#
+# --- 전투·탐험 추적 ---
+#   monsters_killed:N            — 몬스터 총 N마리 처치
+#   monster_types:N              — 서로 다른 N종 몬스터 사냥
+#   damage_dealt:N               — 누적 데미지 N 이상
+#   damage_taken:N               — 누적 피격 데미지 N 이상
+#   max_damage:N                 — 단일 최대 데미지 N 이상
+#   treasure_found:N             — 보물상자 N회 발견
+#
+# --- 경제·활동 ---
+#   gold_spent:N                 — 골드 총 N 이상 소비
+#   items_sold:N                 — 아이템 총 N개 판매
+#   items_crafted:N              — 아이템 총 N회 제작
+#   activities_done:N            — 지역 활동 총 N회 수행
+#   food_eaten:N                 — 서로 다른 음식 N종 섭취
+#   vigor_spent:N                — 기력 총 N 이상 소비
+#
+# --- 관계·동료 ---
+#   friend_count:N               — 호감도 0.3+ NPC N명 이상
+#   companion_days:이름:N        — 이름과 총 N일 동행
+#   relationship:이름:F          — 이름과의 호감도 F 이상
+#
+# --- 스탯·속성 ---
+#   stat_total:N                 — 자신의 공격+방어 합 N 이상
+#   party_stat_total:N           — 파티 전원 공격+방어 합 N 이상
+#   color_value:속성:F           — 특정 속성 값 F 이상
+# ============================================================
+
+# 탄생 캐릭터용 범용 히페리온
+[__default__]
+condition_1 = 5곳의 지역을 방문했다
+condition_1_type = visited_count:5
+condition_2 = NPC 10명과 대화했다
+condition_2_type = conversation_count:10
+condition_3 = 몬스터 30마리를 처치했다
+condition_3_type = monsters_killed:30
+condition_4 = 던전을 3회 클리어했다
+condition_4_type = dungeon_clear_count:3
+condition_5 = 호감도가 높은 NPC가 5명 이상이다
+condition_5_type = friend_count:5
+
+[니아 이유르]
+condition_1 = 5곳의 지역을 탐험했다
+condition_1_type = visited_count:5
+condition_2 = NPC 5명과 대화했다
+condition_2_type = conversation_count:5
+condition_3 = 총 접속일 10일 달성
+condition_3_type = days_passed:10
+condition_4 = 15곳 이상의 지역에 발자취를 남겼다
+condition_4_type = visited_count:15
+condition_5 = 히페리온 레벨 99 달성
+condition_5_type = hyperion_total:99
+
+[하코]
+condition_1 = 에크레스 지역을 발견했다
+condition_1_type = location_visited:Ekres
+condition_2 = 유스제리아 지역을 발견했다
+condition_2_type = location_visited:Yusejeria
+condition_3 = 하나브릿지를 발견했다
+condition_3_type = location_visited:Hanabridge
+condition_4 = 팔콘 가든 제도를 발견했다
+condition_4_type = location_visited:Falcon_Garden
+condition_5 = 세상의 모든 지역을 밟았다
+condition_5_type = all_locations_visited
+
+[리엔카이]
+condition_1 = 허공 숲 지역을 발견했다
+condition_1_type = location_visited:Void_Forest
+condition_2 = 몬스터 50마리를 처치했다
+condition_2_type = monsters_killed:50
+condition_3 = 전투에서 누적 데미지 5,000을 달성했다
+condition_3_type = damage_dealt:5000
+condition_4 = 서로 다른 10종의 몬스터를 사냥했다
+condition_4_type = monster_types:10
+condition_5 = 한 번의 공격으로 500 이상의 데미지를 입혔다
+condition_5_type = max_damage:500
+
+[모노]
+condition_1 = 골드를 500 이상 소비했다
+condition_1_type = gold_spent:500
+condition_2 = 던전을 5회 클리어했다
+condition_2_type = dungeon_clear_count:5
+condition_3 = 전투에서 누적 데미지 10,000을 달성했다
+condition_3_type = damage_dealt:10000
+condition_4 = 몬스터 500마리를 처치했다
+condition_4_type = monsters_killed:500
+condition_5 = 던전을 50회 클리어했다
+condition_5_type = dungeon_clear_count:50
+
+[마로 엔야]
+condition_1 = NPC 5명과 대화했다
+condition_1_type = conversation_count:5
+condition_2 = 지역 활동을 10회 수행했다
+condition_2_type = activities_done:10
+condition_3 = 히페리온 레벨 합 10 달성
+condition_3_type = hyperion_total:10
+condition_4 = 공격+방어 합이 50을 넘었다
+condition_4_type = stat_total:50
+condition_5 = 전투에서 누적 데미지 20,000을 달성했다
+condition_5_type = damage_dealt:20000
+
+[아르바로 엔야]
+condition_1 = 지역 활동을 5회 수행했다
+condition_1_type = activities_done:5
+condition_2 = 마법사의 탑을 방문했다
+condition_2_type = location_visited:Wizard_Tower
+condition_3 = NPC 10명과 대화했다
+condition_3_type = conversation_count:10
+condition_4 = 공격+방어 합이 40을 넘었다
+condition_4_type = stat_total:40
+condition_5 = 던전을 10회 클리어했다
+condition_5_type = dungeon_clear_count:10
+
+[크루하]
+condition_1 = 지역 활동을 30회 수행했다
+condition_1_type = activities_done:30
+condition_2 = 15곳 이상의 지역을 방문했다
+condition_2_type = visited_count:15
+condition_3 = 히페리온 레벨 합 25 달성
+condition_3_type = hyperion_total:25
+condition_4 = 전투에서 누적 데미지 50,000을 달성했다
+condition_4_type = damage_dealt:50000
+condition_5 = 동료를 20명 이상 모집한 적이 있다
+condition_5_type = recruited_count:20
+
+[루디]
+condition_1 = 상점에서 아이템을 3개 이상 판매했다
+condition_1_type = items_sold:3
+condition_2 = 상점에서 아이템을 10개 이상 판매했다
+condition_2_type = items_sold:10
+condition_3 = 보물상자를 5회 발견했다
+condition_3_type = treasure_found:5
+condition_4 = 골드를 300 이상 소비했다
+condition_4_type = gold_spent:300
+condition_5 = 골드를 1,000 이상 소비했다
+condition_5_type = gold_spent:1000
+
+[리비트]
+condition_1 = 서로 다른 5종의 몬스터를 사냥했다
+condition_1_type = monster_types:5
+condition_2 = 15곳 이상의 지역을 방문했다
+condition_2_type = visited_count:15
+condition_3 = 전투에서 누적 데미지 8,000을 달성했다
+condition_3_type = damage_dealt:8000
+condition_4 = 화이트 팡을 동료로 들였다
+condition_4_type = actor_recruited:화이트 팡
+condition_5 = 던전을 20회 클리어했다
+condition_5_type = dungeon_clear_count:20
+
+[화이트 팡]
+condition_1 = 지역 활동을 20회 수행했다
+condition_1_type = activities_done:20
+condition_2 = 전투에서 총 5,000 이상의 피해를 입었다
+condition_2_type = damage_taken:5000
+condition_3 = 호감도가 높은 NPC가 5명 이상이다
+condition_3_type = friend_count:5
+condition_4 = 히페리온 레벨 합 30 달성
+condition_4_type = hyperion_total:30
+condition_5 = 한 번의 공격으로 1,000 이상의 데미지를 입혔다
+condition_5_type = max_damage:1000
+
+[윤희원]
+condition_1 = 서로 다른 3종의 몬스터를 사냥했다
+condition_1_type = monster_types:3
+condition_2 = 윤희원과 10일 이상 동행했다
+condition_2_type = companion_days:윤희원:10
+condition_3 = 파티 전원의 공격+방어 합이 100을 넘었다
+condition_3_type = party_stat_total:100
+condition_4 = 20곳 이상의 지역을 방문했다
+condition_4_type = visited_count:20
+condition_5 = 몬스터 1,000마리를 처치했다
+condition_5_type = monsters_killed:1000
+
+[카요]
+condition_1 = 던전을 3회 클리어했다
+condition_1_type = dungeon_clear_count:3
+condition_2 = 마을 사람들과 100번 대화했다
+condition_2_type = conversation_count:100
+condition_3 = 호감도가 높은 NPC가 3명 이상이다
+condition_3_type = friend_count:3
+condition_4 = 한 번의 공격으로 300 이상의 데미지를 입혔다
+condition_4_type = max_damage:300
+condition_5 = 히페리온 레벨 합 50 달성
+condition_5_type = hyperion_total:50
+
+[시이드]
+condition_1 = 시이드를 동료로 들였다
+condition_1_type = actor_recruited:시이드
+condition_2 = 10곳 이상의 지역을 방문했다
+condition_2_type = visited_count:10
+condition_3 = 게임 30일이 경과했다
+condition_3_type = days_passed:30
+condition_4 = 시이드와 15일 이상 동행했다
+condition_4_type = companion_days:시이드:15
+condition_5 = 히페리온 레벨 합 40 달성
+condition_5_type = hyperion_total:40
+
+[네토 로크]
+condition_1 = 기력을 총 1,000 이상 소비했다
+condition_1_type = vigor_spent:1000
+condition_2 = 리문 유적을 발견했다
+condition_2_type = location_visited:Limun_Ruins
+condition_3 = 전투에서 총 10,000 이상의 피해를 입었다
+condition_3_type = damage_taken:10000
+condition_4 = 던전을 30회 클리어했다
+condition_4_type = dungeon_clear_count:30
+condition_5 = 골드를 2,000 이상 소비했다
+condition_5_type = gold_spent:2000
+
+[리제]
+condition_1 = 동료를 5명 이상 모집한 적이 있다
+condition_1_type = recruited_count:5
+condition_2 = 몬스터 2,000마리를 처치했다
+condition_2_type = monsters_killed:2000
+condition_3 = 30곳 이상의 지역을 방문했다
+condition_3_type = visited_count:30
+condition_4 = 지역 활동을 50회 수행했다
+condition_4_type = activities_done:50
+condition_5 = 히페리온 레벨 합 60 달성
+condition_5_type = hyperion_total:60
+
+[칼리번]
+condition_1 = 모스를 방문했다
+condition_1_type = location_visited:Moss
+condition_2 = 엘네스트의 히페리온 레벨 1 달성
+condition_2_type = hyperion_levels:엘네스트:1
+condition_3 = 보물상자를 10회 발견했다
+condition_3_type = treasure_found:10
+condition_4 = 기력을 총 5,000 이상 소비했다
+condition_4_type = vigor_spent:5000
+condition_5 = 히페리온 레벨 합 70 달성
+condition_5_type = hyperion_total:70
+
+[엘네스트]
+condition_1 = 동료를 3명 이상 모집한 적이 있다
+condition_1_type = recruited_count:3
+condition_2 = 기력을 총 2,000 이상 소비했다
+condition_2_type = vigor_spent:2000
+condition_3 = 보물상자를 20회 발견했다
+condition_3_type = treasure_found:20
+condition_4 = 히페리온 레벨 합 20 달성
+condition_4_type = hyperion_total:20
+condition_5 = 전투에서 누적 데미지 100,000을 달성했다
+condition_5_type = damage_dealt:100000
+
+[임페리시아]
+condition_1 = 전투에서 총 50,000 이상의 피해를 입었다
+condition_1_type = damage_taken:50000
+condition_2 = 동료를 10명 이상 모집한 적이 있다
+condition_2_type = recruited_count:10
+condition_3 = 지역 활동을 20회 수행했다
+condition_3_type = activities_done:20
+condition_4 = 던전을 50회 클리어했다
+condition_4_type = dungeon_clear_count:50
+condition_5 = 공격+방어 합이 100을 넘었다
+condition_5_type = stat_total:100
+
+[제로]
+condition_1 = 알티 알타를 동료로 들였다
+condition_1_type = actor_recruited:알티 알타
+condition_2 = 전투에서 총 3,000 이상의 피해를 입었다
+condition_2_type = damage_taken:3000
+condition_3 = 아이템을 10회 이상 제작했다
+condition_3_type = items_crafted:10
+condition_4 = 전기 속성이 0.7을 넘었다
+condition_4_type = color_value:Electric:0.7
+condition_5 = 골드를 3,000 이상 소비했다
+condition_5_type = gold_spent:3000
+
+[알티 알타]
+condition_1 = NPC 5명과 대화했다
+condition_1_type = conversation_count:5
+condition_2 = 게임 7일이 경과했다
+condition_2_type = days_passed:7
+condition_3 = 10곳 이상의 지역을 방문했다
+condition_3_type = visited_count:10
+condition_4 = 동료를 5명 이상 모집한 적이 있다
+condition_4_type = recruited_count:5
+condition_5 = 히페리온 레벨 합 30 달성
+condition_5_type = hyperion_total:30
+
+[미유]
+condition_1 = 서로 다른 3종의 음식을 먹었다
+condition_1_type = food_eaten:3
+condition_2 = 20곳 이상의 지역을 방문했다
+condition_2_type = visited_count:20
+condition_3 = 피닉스를 동료로 들였다
+condition_3_type = actor_recruited:피닉스
+condition_4 = 아이템을 5회 이상 제작했다
+condition_4_type = items_crafted:5
+condition_5 = 던전을 30회 클리어했다
+condition_5_type = dungeon_clear_count:30
+
+[페비엘]
+condition_1 = 마법사의 탑을 방문했다
+condition_1_type = location_visited:Wizard_Tower
+condition_2 = 히페리온 레벨 합 50 달성
+condition_2_type = hyperion_total:50
+condition_3 = 스텔라 빌을 방문했다
+condition_3_type = location_visited:Stella_Ville
+condition_4 = 마로 엔야의 히페리온 레벨 4 달성, 크루하의 히페리온 레벨 3 달성
+condition_4_type = hyperion_levels:마로 엔야:4,크루하:3
+condition_5 = 히페리온 레벨 합 80 달성
+condition_5_type = hyperion_total:80
+
+[루핀]
+condition_1 = 루핀과 3일 이상 동행했다
+condition_1_type = companion_days:루핀:3
+condition_2 = 서로 다른 5종의 음식을 먹었다
+condition_2_type = food_eaten:5
+condition_3 = 호감도가 높은 NPC가 3명 이상이다
+condition_3_type = friend_count:3
+condition_4 = 리제와 대화했다
+condition_4_type = conversation_with:리제
+condition_5 = 히페리온 레벨 합 45 달성
+condition_5_type = hyperion_total:45
+
+[피닉스]
+condition_1 = 탐사 완료한 지역 20곳 달성
+condition_1_type = visited_count:20
+condition_2 = 획득 동료 수 38 달성
+condition_2_type = recruited_count:38
+condition_3 = 방문한 마을 수 45 달성
+condition_3_type = visited_count:45
+condition_4 = 히페리온 레벨 140 달성
+condition_4_type = hyperion_total:140
+condition_5 = 게임 100일이 경과했다
+condition_5_type = days_passed:100
+
+[쿠르쿠마]
+condition_1 = 크루하와 대화했다
+condition_1_type = conversation_with:크루하
+condition_2 = 세계수를 방문했다
+condition_2_type = location_visited:World_Tree
+condition_3 = 히페리온 레벨 합 30 달성
+condition_3_type = hyperion_total:30
+condition_4 = 전투에서 누적 데미지 15,000을 달성했다
+condition_4_type = damage_dealt:15000
+condition_5 = 히페리온 레벨 합 60 달성
+condition_5_type = hyperion_total:60
+
+[카미키]
+condition_1 = 지역 활동을 10회 수행했다
+condition_1_type = activities_done:10
+condition_2 = 아이템을 5회 이상 제작했다
+condition_2_type = items_crafted:5
+condition_3 = 모노와 대화했다
+condition_3_type = conversation_with:모노
+condition_4 = 지역 활동을 30회 수행했다
+condition_4_type = activities_done:30
+condition_5 = 전투에서 누적 데미지 30,000을 달성했다
+condition_5_type = damage_dealt:30000
+
+[발렌시아]
+condition_1 = 아이템을 3회 이상 제작했다
+condition_1_type = items_crafted:3
+condition_2 = 카요의 히페리온 레벨 3, 에코의 히페리온 레벨 1 달성
+condition_2_type = hyperion_levels:카요:3,에코:1
+condition_3 = 던전을 40회 클리어했다
+condition_3_type = dungeon_clear_count:40
+condition_4 = 전투에서 누적 데미지 200,000을 달성했다
+condition_4_type = damage_dealt:200000
+condition_5 = 아이템을 50회 이상 제작했다
+condition_5_type = items_crafted:50
+
+[커트래빗]
+condition_1 = 던전 누적 100회 클리어
+condition_1_type = dungeon_clear_count:100
+condition_2 = 호감도가 높은 NPC가 3명 이상이다
+condition_2_type = friend_count:3
+condition_3 = 한 번의 공격으로 200 이상의 데미지를 입혔다
+condition_3_type = max_damage:200
+condition_4 = 어둠 속성이 0.5를 넘었다
+condition_4_type = color_value:Dark:0.5
+condition_5 = 히페리온 레벨 합 90 달성
+condition_5_type = hyperion_total:90
+
+[아카샤]
+condition_1 = 지역 활동을 15회 수행했다
+condition_1_type = activities_done:15
+condition_2 = NPC 30명과 대화했다
+condition_2_type = conversation_count:30
+condition_3 = 모든 속성 분류의 캐릭터를 한 명 이상 동료로 들였다
+condition_3_type = all_elements_recruited
+condition_4 = 모든 종족 분류의 캐릭터를 한 명 이상 동료로 들였다
+condition_4_type = all_races_recruited
+condition_5 = 히페리온 레벨 합 100 달성
+condition_5_type = hyperion_total:100
+
+[이연]
+condition_1 = 던전 1회 클리어
+condition_1_type = dungeon_clear_count:1
+condition_2 = 기력을 총 1,000 이상 소비했다
+condition_2_type = vigor_spent:1000
+condition_3 = 10곳 이상의 지역을 방문했다
+condition_3_type = visited_count:10
+condition_4 = 지역 활동을 15회 수행했다
+condition_4_type = activities_done:15
+condition_5 = 동료를 10명 이상 모집한 적이 있다
+condition_5_type = recruited_count:10
+
+[노노]
+condition_1 = 서로 다른 2종의 음식을 먹었다
+condition_1_type = food_eaten:2
+condition_2 = NPC 15명과 대화했다
+condition_2_type = conversation_count:15
+condition_3 = 20곳 이상의 지역을 방문했다
+condition_3_type = visited_count:20
+condition_4 = 던전을 10회 클리어했다
+condition_4_type = dungeon_clear_count:10
+condition_5 = 호감도가 높은 NPC가 5명 이상이다
+condition_5_type = friend_count:5
+
+[테오]
+condition_1 = 서로 다른 3종의 음식을 먹었다
+condition_1_type = food_eaten:3
+condition_2 = 서로 다른 5종의 음식을 먹었다
+condition_2_type = food_eaten:5
+condition_3 = 지역 활동을 20회 수행했다
+condition_3_type = activities_done:20
+condition_4 = 서로 다른 8종의 음식을 먹었다
+condition_4_type = food_eaten:8
+condition_5 = 지역 활동을 50회 수행했다
+condition_5_type = activities_done:50
+
+[모나토]
+condition_1 = 카르디에게 점을 쳤다
+condition_1_type = conversation_with:카르디
+condition_2 = 전투에서 총 20,000 이상의 피해를 입었다
+condition_2_type = damage_taken:20000
+condition_3 = 카미키를 찾아가 상담했다
+condition_3_type = conversation_with:카미키
+condition_4 = 윤희원의 히페리온 레벨 3 달성
+condition_4_type = hyperion_levels:윤희원:3
+condition_5 = 모든 지역을 방문했다
+condition_5_type = all_locations_visited
+
+[카르디]
+condition_1 = 전투에서 누적 데미지 3,000을 달성했다
+condition_1_type = damage_dealt:3000
+condition_2 = 보물상자를 15회 발견했다
+condition_2_type = treasure_found:15
+condition_3 = 던전을 15회 클리어했다
+condition_3_type = dungeon_clear_count:15
+condition_4 = 전투에서 총 30,000 이상의 피해를 입었다
+condition_4_type = damage_taken:30000
+condition_5 = 골드를 5,000 이상 소비했다
+condition_5_type = gold_spent:5000
+
+[에코]
+condition_1 = 시아를 동료로 들였다
+condition_1_type = actor_recruited:시아
+condition_2 = 사천왕 모두와 모노를 동료로 들였다
+condition_2_type = all_recruited:카시스,시아,리무,모노
+condition_3 = 아이템을 10회 이상 제작했다
+condition_3_type = items_crafted:10
+condition_4 = 다른 사천왕 모두의 히페리온 레벨 3 달성
+condition_4_type = hyperion_levels:카시스:3,시아:3,리무:3
+condition_5 = 에코와 깊은 유대를 맺었다
+condition_5_type = relationship:에코:0.8
+
+[카시스]
+condition_1 = 리무를 동료로 들였다
+condition_1_type = actor_recruited:리무
+condition_2 = 사천왕 모두와 모노를 동료로 들였다
+condition_2_type = all_recruited:에코,시아,리무,모노
+condition_3 = 골드를 2,000 이상 소비했다
+condition_3_type = gold_spent:2000
+condition_4 = 다른 사천왕 모두의 히페리온 레벨 3 달성
+condition_4_type = hyperion_levels:에코:3,시아:3,리무:3
+condition_5 = 카시스와 깊은 유대를 맺었다
+condition_5_type = relationship:카시스:0.8
+
+[시아]
+condition_1 = 에코를 동료로 들였다
+condition_1_type = actor_recruited:에코
+condition_2 = 사천왕 모두와 모노를 동료로 들였다
+condition_2_type = all_recruited:에코,카시스,리무,모노
+condition_3 = 서로 다른 20종의 몬스터를 사냥했다
+condition_3_type = monster_types:20
+condition_4 = 다른 사천왕 모두의 히페리온 레벨 3 달성
+condition_4_type = hyperion_levels:에코:3,카시스:3,리무:3
+condition_5 = 시아와 깊은 유대를 맺었다
+condition_5_type = relationship:시아:0.8
+
+[리무]
+condition_1 = 카시스를 동료로 들였다
+condition_1_type = actor_recruited:카시스
+condition_2 = 사천왕 모두와 모노를 동료로 들였다
+condition_2_type = all_recruited:에코,카시스,시아,모노
+condition_3 = 25곳 이상의 지역을 방문했다
+condition_3_type = visited_count:25
+condition_4 = 다른 사천왕 모두의 히페리온 레벨 3 달성
+condition_4_type = hyperion_levels:에코:3,카시스:3,시아:3
+condition_5 = 리무와 깊은 유대를 맺었다
+condition_5_type = relationship:리무:0.8
+
+# ============================================================
+# 엘리메스 플레이어블 NPC — 히페리온 진행
+# ============================================================
+
+[세리나]
+condition_1 = NPC 10명과 대화했다
+condition_1_type = conversation_count:10
+condition_2 = 길드 홀에서 퀘스트를 5회 완료했다
+condition_2_type = dungeon_clear_count:5
+condition_3 = 골드를 500 이상 소비했다
+condition_3_type = gold_spent:500
+condition_4 = 호감도가 높은 NPC가 5명 이상이다
+condition_4_type = friend_count:5
+condition_5 = 모든 장소를 방문했다
+condition_5_type = all_locations_visited
+
+[카엘]
+condition_1 = 몬스터 20마리를 처치했다
+condition_1_type = monsters_killed:20
+condition_2 = 던전을 3회 클리어했다
+condition_2_type = dungeon_clear_count:3
+condition_3 = 서로 다른 5종의 몬스터를 사냥했다
+condition_3_type = monster_types:5
+condition_4 = 전투에서 누적 데미지 5,000을 달성했다
+condition_4_type = damage_dealt:5000
+condition_5 = 한 번의 공격으로 300 이상의 데미지를 입혔다
+condition_5_type = max_damage:300
+
+[로쉔]
+condition_1 = 상점에서 아이템을 5개 이상 판매했다
+condition_1_type = items_sold:5
+condition_2 = 골드를 300 이상 소비했다
+condition_2_type = gold_spent:300
+condition_3 = NPC 15명과 대화했다
+condition_3_type = conversation_count:15
+condition_4 = 지역 활동을 20회 수행했다
+condition_4_type = activities_done:20
+condition_5 = 골드를 2,000 이상 소비했다
+condition_5_type = gold_spent:2000
+
+[브로크]
+condition_1 = 아이템을 3회 이상 제작했다
+condition_1_type = items_crafted:3
+condition_2 = 기력을 총 1,000 이상 소비했다
+condition_2_type = vigor_spent:1000
+condition_3 = 아이템을 10회 이상 제작했다
+condition_3_type = items_crafted:10
+condition_4 = 전투에서 누적 데미지 8,000을 달성했다
+condition_4_type = damage_dealt:8000
+condition_5 = 아이템을 30회 이상 제작했다
+condition_5_type = items_crafted:30
+
+[이리엘]
+condition_1 = 지역 활동을 5회 수행했다
+condition_1_type = activities_done:5
+condition_2 = 서로 다른 3종의 음식을 먹었다
+condition_2_type = food_eaten:3
+condition_3 = 15곳 이상의 지역을 방문했다
+condition_3_type = visited_count:15
+condition_4 = 호감도가 높은 NPC가 3명 이상이다
+condition_4_type = friend_count:3
+condition_5 = 지역 활동을 30회 수행했다
+condition_5_type = activities_done:30
+
+[유린]
+condition_1 = 상점에서 아이템을 3개 이상 판매했다
+condition_1_type = items_sold:3
+condition_2 = NPC 10명과 대화했다
+condition_2_type = conversation_count:10
+condition_3 = 골드를 500 이상 소비했다
+condition_3_type = gold_spent:500
+condition_4 = 보물상자를 5회 발견했다
+condition_4_type = treasure_found:5
+condition_5 = 상점에서 아이템을 30개 이상 판매했다
+condition_5_type = items_sold:30
+
+[드라카]
+condition_1 = 몬스터 50마리를 처치했다
+condition_1_type = monsters_killed:50
+condition_2 = 던전을 5회 클리어했다
+condition_2_type = dungeon_clear_count:5
+condition_3 = 전투에서 누적 데미지 10,000을 달성했다
+condition_3_type = damage_dealt:10000
+condition_4 = 전투에서 총 5,000 이상의 피해를 입었다
+condition_4_type = damage_taken:5000
+condition_5 = 한 번의 공격으로 500 이상의 데미지를 입혔다
+condition_5_type = max_damage:500
+
+[리엘]
+condition_1 = 지역 활동을 10회 수행했다
+condition_1_type = activities_done:10
+condition_2 = 호감도가 높은 NPC가 3명 이상이다
+condition_2_type = friend_count:3
+condition_3 = NPC 20명과 대화했다
+condition_3_type = conversation_count:20
+condition_4 = 전투에서 총 3,000 이상의 피해를 입었다
+condition_4_type = damage_taken:3000
+condition_5 = 히페리온 레벨 합 30 달성
+condition_5_type = hyperion_total:30
+
+[아제르]
+condition_1 = 골드를 200 이상 소비했다
+condition_1_type = gold_spent:200
+condition_2 = 상점에서 아이템을 10개 이상 판매했다
+condition_2_type = items_sold:10
+condition_3 = 던전을 5회 클리어했다
+condition_3_type = dungeon_clear_count:5
+condition_4 = 10곳 이상의 지역을 방문했다
+condition_4_type = visited_count:10
+condition_5 = 골드를 3,000 이상 소비했다
+condition_5_type = gold_spent:3000

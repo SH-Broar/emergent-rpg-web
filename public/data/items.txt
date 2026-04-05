@@ -1,0 +1,37 @@
+# ============================================================
+# items.txt — 아이템 타입 정의
+# 새 아이템을 추가하려면 섹션을 추가하세요.
+# key는 코드의 ItemType enum 값과 대응합니다.
+# ============================================================
+
+[Food]
+name = 음식
+price = 5
+
+[Herb]
+name = 약초
+price = 8
+
+[OreCommon]
+name = 일반 광석
+price = 15
+
+[OreRare]
+name = 희귀 광석
+price = 80
+
+[MonsterLoot]
+name = 몬스터 전리품
+price = 30
+
+[Potion]
+name = 물약
+price = 20
+
+[Equipment]
+name = 장비
+price = 100
+
+[GuildCard]
+name = 길드 멤버 확인증
+price = 50

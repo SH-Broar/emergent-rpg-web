@@ -1,0 +1,304 @@
+# ============================================================
+# titles.txt — 칭호 시스템 정의
+# 조건 충족 시 자동 획득. 하나를 활성 칭호로 설정 가능.
+# 조건 타입은 hyperion.txt와 동일한 형식 사용.
+#
+# name        : 칭호 표시 이름
+# description : 칭호 설명 (UI)
+# condition   : 획득 조건 타입:파라미터 (hyperion 조건 동일)
+# priority    : 숫자가 높을수록 우선 자동 장착 (동시 획득 시)
+# ============================================================
+
+[beginner_explorer]
+name = 초보 탐험가
+description = 5곳 이상의 장소를 방문했다.
+condition = visited_count:5
+priority = 10
+
+[seasoned_traveler]
+name = 숙련된 여행자
+description = 15곳 이상의 장소를 방문했다.
+condition = visited_count:15
+priority = 30
+
+[world_wanderer]
+name = 세계의 방랑자
+description = 모든 장소를 방문했다.
+condition = all_locations_visited
+priority = 80
+
+[social_butterfly]
+name = 사교가
+description = NPC 10명 이상과 대화했다.
+condition = conversation_count:10
+priority = 15
+
+[peoples_friend]
+name = 모두의 벗
+description = 호감도 0.3 이상인 NPC가 5명 이상.
+condition = friend_count:5
+priority = 40
+
+[beloved_of_all]
+name = 만인의 사랑
+description = 호감도 0.3 이상인 NPC가 15명 이상.
+condition = friend_count:15
+priority = 70
+
+[monster_hunter]
+name = 몬스터 사냥꾼
+description = 몬스터 30마리 이상 처치.
+condition = monsters_killed:30
+priority = 20
+
+[beast_slayer]
+name = 맹수 도살자
+description = 몬스터 100마리 이상 처치.
+condition = monsters_killed:100
+priority = 50
+
+[legend_of_the_blade]
+name = 칼날의 전설
+description = 단일 최대 데미지 50 이상 기록.
+condition = max_damage:50
+priority = 45
+
+[living_weapon]
+name = 살아있는 무기
+description = 누적 데미지 3000 이상.
+condition = damage_dealt:3000
+priority = 65
+
+[iron_wall]
+name = 철벽
+description = 누적 피격 데미지 2000 이상을 견뎌냈다.
+condition = damage_taken:2000
+priority = 55
+
+[dungeon_conqueror]
+name = 던전 정복자
+description = 던전을 5회 이상 클리어.
+condition = dungeon_clear_count:5
+priority = 50
+
+[abyss_walker]
+name = 심연을 걸은 자
+description = 던전을 15회 이상 클리어.
+condition = dungeon_clear_count:15
+priority = 75
+
+[treasure_seeker]
+name = 보물 사냥꾼
+description = 보물상자 10회 이상 발견.
+condition = treasure_found:10
+priority = 35
+
+[herbalist]
+name = 약초의 손
+description = 서로 다른 음식 3종 이상 섭취.
+condition = food_eaten:3
+priority = 15
+
+[gourmand]
+name = 미식가
+description = 서로 다른 음식 8종 이상 섭취.
+condition = food_eaten:8
+priority = 40
+
+[shrewd_merchant]
+name = 노련한 상인
+description = 아이템 20개 이상 판매.
+condition = items_sold:20
+priority = 25
+
+[trade_baron]
+name = 교역의 거물
+description = 골드 총 1000 이상 소비.
+condition = gold_spent:1000
+priority = 55
+
+[master_craftsman]
+name = 장인의 경지
+description = 아이템 10회 이상 제작.
+condition = items_crafted:10
+priority = 35
+
+[busy_bee]
+name = 일벌레
+description = 지역 활동 20회 이상 수행.
+condition = activities_done:20
+priority = 30
+
+[tireless_worker]
+name = 지치지 않는 자
+description = 기력 총 500 이상 소비.
+condition = vigor_spent:500
+priority = 35
+
+[companion_leader]
+name = 동료의 지도자
+description = 역대 동료 수 3명 이상.
+condition = recruited_count:3
+priority = 40
+
+[party_master]
+name = 파티 마스터
+description = 역대 동료 수 8명 이상.
+condition = recruited_count:8
+priority = 60
+
+[diverse_hunter]
+name = 다종 사냥꾼
+description = 서로 다른 몬스터 10종 이상 사냥.
+condition = monster_types:10
+priority = 45
+
+[old_timer]
+name = 고참 모험가
+description = 게임 30일 이상 경과.
+condition = days_passed:30
+priority = 25
+
+[veteran]
+name = 백전노장
+description = 게임 100일 이상 경과.
+condition = days_passed:100
+priority = 60
+
+[hyperion_awakened]
+name = 히페리온의 각성자
+description = 전체 히페리온 레벨 합 5 이상.
+condition = hyperion_total:5
+priority = 50
+
+[hyperion_transcendent]
+name = 히페리온의 초월자
+description = 전체 히페리온 레벨 합 20 이상.
+condition = hyperion_total:20
+priority = 85
+
+[guardian_fire]
+name = 불꽃의 수호자
+description = 불 속성이 최대치에 도달했다.
+condition = color_value:Fire:1.0
+priority = 40
+
+[guardian_water]
+name = 물의 수호자
+description = 물 속성이 최대치에 도달했다.
+condition = color_value:Water:1.0
+priority = 40
+
+[guardian_electric]
+name = 번개의 수호자
+description = 전기 속성이 최대치에 도달했다.
+condition = color_value:Electric:1.0
+priority = 40
+
+[guardian_iron]
+name = 철의 수호자
+description = 철 속성이 최대치에 도달했다.
+condition = color_value:Iron:1.0
+priority = 40
+
+[guardian_earth]
+name = 대지의 수호자
+description = 흙 속성이 최대치에 도달했다.
+condition = color_value:Earth:1.0
+priority = 40
+
+[guardian_wind]
+name = 바람의 수호자
+description = 바람 속성이 최대치에 도달했다.
+condition = color_value:Wind:1.0
+priority = 40
+
+[guardian_light]
+name = 빛의 수호자
+description = 빛 속성이 최대치에 도달했다.
+condition = color_value:Light:1.0
+priority = 40
+
+[guardian_dark]
+name = 어둠의 수호자
+description = 어둠 속성이 최대치에 도달했다.
+condition = color_value:Dark:1.0
+priority = 40
+
+[adversary_fire]
+name = 불꽃의 대적자
+description = 불 속성이 최저치에 도달했다.
+condition = color_value_low:Fire:0.0
+priority = 40
+
+[adversary_water]
+name = 물의 대적자
+description = 물 속성이 최저치에 도달했다.
+condition = color_value_low:Water:0.0
+priority = 40
+
+[adversary_electric]
+name = 번개의 대적자
+description = 전기 속성이 최저치에 도달했다.
+condition = color_value_low:Electric:0.0
+priority = 40
+
+[adversary_iron]
+name = 철의 대적자
+description = 철 속성이 최저치에 도달했다.
+condition = color_value_low:Iron:0.0
+priority = 40
+
+[adversary_earth]
+name = 대지의 대적자
+description = 흙 속성이 최저치에 도달했다.
+condition = color_value_low:Earth:0.0
+priority = 40
+
+[adversary_wind]
+name = 바람의 대적자
+description = 바람 속성이 최저치에 도달했다.
+condition = color_value_low:Wind:0.0
+priority = 40
+
+[adversary_light]
+name = 빛의 대적자
+description = 빛 속성이 최저치에 도달했다.
+condition = color_value_low:Light:0.0
+priority = 40
+
+[adversary_dark]
+name = 어둠의 대적자
+description = 어둠 속성이 최저치에 도달했다.
+condition = color_value_low:Dark:0.0
+priority = 40
+
+[mighty_warrior]
+name = 강철의 전사
+description = 공격+방어 합 40 이상.
+condition = stat_total:40
+priority = 50
+
+[gift_giver]
+name = 관대한 자
+description = 선물 5회 이상.
+condition = gifts_given:5
+priority = 20
+
+[generous_soul]
+name = 베풂의 화신
+description = 선물 20회 이상.
+condition = gifts_given:20
+priority = 50
+
+[reputable]
+name = 명망가
+description = 평판이 높은 장소 5곳 이상.
+condition = high_reputation_count:5
+priority = 45
+
+[renowned]
+name = 전설의 이름
+description = 평판이 높은 장소 10곳 이상.
+condition = high_reputation_count:10
+priority = 75

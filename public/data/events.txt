@@ -1,0 +1,368 @@
+# ============================================================
+# events.txt — 이벤트 정의
+# triggerDay >= 0 : 해당 일차에 발생하는 스케줄 이벤트
+# triggerDay = -1 : 랜덤 이벤트 풀에 등록
+# colorInfluence : 원소키:수치 (쉼표 구분)
+# addResource    : 장소키:아이템키:수량 (쉼표 구분)
+# adjustSupply   : 아이템키:수치 (쉼표 구분)
+# adjustDemand   : 아이템키:수치 (쉼표 구분)
+# dangerDelta    : 이벤트 장소의 위험도 변동
+# weight         : 랜덤 이벤트 가중치 (기본 1.0, 낮을수록 희귀. 예: 0.05 = 매우 희귀)
+# blockRouteFrom / blockRouteTo / blockRouteDays : 해당 방향 간선 막기(일차까지)
+#   (코드에서도 희귀 랜덤으로 자동 생성됨 — 둘 다 사용 가능)
+# ============================================================
+
+# ---- 스케줄 이벤트 ----
+
+[희귀 광맥 발견]
+description = 던전 깊은 곳에서 희귀 광맥이 발견되었다! 희귀 광석의 가치가 요동칠 것이다.
+location = Dungeon_Interior
+triggerDay = 2
+triggerHour = 8
+colorInfluence = Earth:0.15, Fire:0.1
+addResource = Dungeon_Interior:OreRare:10
+adjustSupply = OreRare:0.5
+adjustDemand = OreRare:0.3
+
+[대장간 축제]
+description = 브로크의 대장간에서 연례 단조 축제가 열린다! 장비 가격이 잠시 내려간다.
+location = Blacksmith
+triggerDay = 3
+triggerHour = 10
+colorInfluence = Fire:0.12, Iron:0.15
+addResource = Blacksmith:Equipment:8
+adjustSupply = Equipment:0.6
+
+[엘프 약초사의 강연]
+description = 이리엘이 약초의 효능에 대한 특별 강연을 연다. 약초에 대한 관심이 높아진다.
+location = Herb_Garden
+triggerDay = 4
+triggerHour = 14
+colorInfluence = Earth:0.08, Water:0.1, Light:0.05
+adjustDemand = Herb:0.4, Potion:0.3
+
+# ---- 랜덤 이벤트 풀 ----
+
+[상인 행렬 도착]
+description = 먼 곳에서 상인 행렬이 엘리메스에 도착했다. 물건이 풍부해졌다.
+location = Market_Square
+triggerDay = -1
+colorInfluence = Wind:0.1, Earth:0.05
+addResource = Market_Square:Food:20, Market_Square:Equipment:2
+adjustSupply = Food:0.3
+
+[던전 몬스터 급증]
+description = 던전의 몬스터가 갑자기 늘어났다! 위험하지만 전리품이 풍부해질 수 있다.
+location = Dungeon_Interior
+triggerDay = -1
+colorInfluence = Fire:0.15, Dark:0.1
+addResource = Dungeon_Interior:MonsterLoot:8
+dangerDelta = 0.2
+
+[약초 군락지 발견]
+description = 야생지대에서 약초 군락지가 발견되었다!
+location = Wilderness
+triggerDay = -1
+colorInfluence = Earth:0.1, Water:0.08
+addResource = Wilderness:Herb:25
+adjustSupply = Herb:0.4
+
+[식량 부족 징조]
+description = 이상 기후로 인해 식량 수확이 좋지 않다는 소문이 돌고 있다.
+location = Town_Elimes
+triggerDay = -1
+colorInfluence = Earth:-0.1, Dark:0.12
+adjustSupply = Food:-0.4
+adjustDemand = Food:0.3
+
+[길드 현상금 증가]
+description = 길드에서 특정 몬스터에 대한 현상금을 올렸다. 모험가들의 사기가 올라간다.
+location = Guild_Hall
+triggerDay = -1
+colorInfluence = Fire:0.1, Light:0.08
+adjustDemand = MonsterLoot:0.5
+
+[도적단 출몰]
+description = 무역로에서 도적단이 활개를 치고 있다! 상인들이 불안에 떨고 있다.
+location = Trade_Route
+triggerDay = -1
+colorInfluence = Dark:0.18, Fire:0.08
+dangerDelta = 0.3
+adjustSupply = Equipment:-0.2, Food:-0.15
+
+[폐광 붕괴]
+description = 폐광의 일부 구간이 붕괴했다! 그런데 새로운 광맥이 드러났다.
+location = Abandoned_Mine
+triggerDay = -1
+colorInfluence = Earth:0.2, Iron:0.12
+addResource = Abandoned_Mine:OreRare:7, Abandoned_Mine:OreCommon:15
+dangerDelta = 0.15
+
+[호수의 이상 현상]
+description = 호수의 물이 기이하게 빛나기 시작했다. 물고기가 유난히 많이 잡힌다.
+location = Lake
+triggerDay = -1
+colorInfluence = Water:0.2, Light:0.1
+addResource = Lake:Food:30
+
+[마법사의 탑에서 폭발]
+description = 마법사의 탑에서 원인 불명의 폭발이 일어났다! 이상한 안개가 퍼지고 있다.
+location = Wizard_Tower
+triggerDay = -1
+colorInfluence = Electric:0.18, Dark:0.12, Fire:0.08
+addResource = Wizard_Tower:Potion:15
+dangerDelta = 0.2
+
+[풍년 소식]
+description = 올해 농장의 수확이 유난히 풍성하다. 마을에 활기가 넘친다!
+location = Farm
+triggerDay = -1
+colorInfluence = Earth:0.15, Light:0.1, Wind:0.05
+addResource = Farm:Food:40, Farm:Herb:10
+adjustSupply = Food:0.5
+
+[순례자 행렬]
+description = 빛의 교단 순례자들이 엘리메스 교회를 방문했다. 축복의 기운이 감돈다.
+location = Church
+triggerDay = -1
+colorInfluence = Light:0.2, Water:0.08
+adjustDemand = Potion:0.3
+
+[산사태 경고]
+description = 산길에서 소규모 산사태가 발생했다. 당분간 통행이 위험하다.
+location = Mountain_Path
+triggerDay = -1
+colorInfluence = Earth:0.12, Iron:-0.08
+dangerDelta = 0.25
+addResource = Mountain_Path:OreCommon:8
+
+[밀수꾼 체포]
+description = 경비대가 무역로에서 밀수꾼을 체포했다! 압수된 물자가 시장에 풀렸다.
+location = Trade_Route
+triggerDay = -1
+colorInfluence = Light:0.12, Iron:0.1
+addResource = Market_Square:Equipment:4, Market_Square:Potion:6
+adjustSupply = Equipment:0.3
+
+[전염병 소문]
+description = 인근 마을에서 전염병이 돌고 있다는 소문이 퍼졌다. 약초 수요가 급증한다.
+location = Town_Elimes
+triggerDay = -1
+colorInfluence = Dark:0.15, Water:-0.1
+adjustDemand = Herb:0.6, Potion:0.5
+adjustSupply = Herb:-0.2
+
+[달빛 아래 야생동물]
+description = 보름달 밤, 야생지대에서 희귀한 동물들이 목격되었다.
+location = Wilderness
+triggerDay = -1
+colorInfluence = Dark:0.08, Wind:0.12, Earth:0.05
+addResource = Wilderness:MonsterLoot:5, Wilderness:Food:12
+
+[이상 고온 경보]
+description = 화염기 기운이 한껏 드리운 날, 마을회관에서 더위 대비 물과 그늘을 나눈다. 사람들의 숨이 가빠 보인다.
+location = Town_Elimes
+triggerDay = -1
+colorInfluence = Fire:0.08, Water:-0.05
+adjustDemand = Potion:0.25, Food:0.1
+
+[서리 아침]
+description = 밤새 기온이 떨어져 이슬이 얼었다. 야생지대의 풀줄기에 서리가 열린다.
+location = Wilderness
+triggerDay = -1
+colorInfluence = Water:0.1, Iron:0.06, Light:0.04
+addResource = Wilderness:Herb:8
+
+[뇌운이 몰아온 날]
+description = 검은 구름이 산 너머에서 솟아 무역로 위로 번개가 꺾인다. 상인들이 길을 미룬다.
+location = Trade_Route
+triggerDay = -1
+colorInfluence = Electric:0.12, Wind:0.1, Dark:0.05
+adjustSupply = Food:-0.15
+dangerDelta = 0.1
+
+[장마의 끝자락]
+description = 며칠 이어지던 비가 그치고, 시장 돌바닥이 마르기 시작한다. 장이 조금 살아난다.
+location = Market_Square
+triggerDay = -1
+colorInfluence = Water:0.06, Earth:0.08, Light:0.06
+adjustSupply = Food:0.2, Herb:0.15
+
+# ---- 풍광 명소 희귀 이벤트 ----
+
+[공중군도의 하늘고래]
+description = 팔콘 가든 공중군도의 구름 사이에서 거대한 하늘고래가 모습을 드러냈다! 반투명한 몸체가 무지개빛으로 빛나며 군도를 천천히 돌고 있다. 고래가 지나간 자리에서 희귀한 약초와 빛나는 비늘이 떨어진다.
+location = Falcon_Garden
+triggerDay = -1
+weight = 0.05
+colorInfluence = Wind:0.2, Water:0.15, Light:0.12
+addResource = Falcon_Garden:Herb:20, Falcon_Garden:Potion:5
+adjustDemand = Herb:0.3
+
+[별빛 분지의 유성우]
+description = 별빛 분지 위로 찬란한 유성우가 쏟아진다! 수정 결정이 유성의 빛을 받아 공명하며, 분지 전체가 눈부시게 빛난다. 제단 위에서 이상한 기운이 느껴지며, 떨어진 유성 파편 속에서 희귀한 광석이 발견된다.
+location = Starfall_Basin
+triggerDay = -1
+weight = 0.05
+colorInfluence = Light:0.18, Electric:0.15, Fire:0.1
+addResource = Starfall_Basin:OreRare:8
+
+[신기루 오아시스의 진실의 물결]
+description = 신기루 오아시스의 수면이 기이하게 일렁이며, 수면 아래에서 고대 석상의 눈이 완전히 빛나기 시작했다! 물에 비친 것은 오아시스가 아니라 먼 과거의 풍경이다. 석상 발치에서 오래된 보물 상자가 떠올랐다.
+location = Mirage_Oasis
+triggerDay = -1
+weight = 0.05
+colorInfluence = Water:0.18, Earth:0.1, Dark:0.08
+addResource = Mirage_Oasis:Equipment:2, Mirage_Oasis:Potion:8
+
+[황혼의 첨탑에 울리는 종소리]
+description = 아무도 치지 않은 황혼의 첨탑 종이 길게, 길게 울렸다. 종소리를 들은 모든 이에게 잊혀진 기억의 파편이 떠올랐으며, 첨탑 주변의 밤꽃이 일제히 활짝 피어 향기가 마을까지 퍼졌다. 첨탑 입구에 이전에 없던 통로가 열려 있다.
+location = Twilight_Spire
+triggerDay = -1
+weight = 0.05
+colorInfluence = Light:0.12, Dark:0.12, Wind:0.08
+addResource = Twilight_Spire:Potion:6, Twilight_Spire:Herb:10
+
+[고대수의 각성]
+description = 고대수의 왕관에서 나무 전체가 미세하게 진동하며, 수관 위의 균류가 밤낮으로 찬란하게 빛나기 시작했다! 나무의 수액에서 만병통치약의 향기가 나며, 정령들의 속삭임이 바람을 타고 들려온다. 세계수가 새 잎을 틔우며 주변의 생명력이 폭발적으로 증가한다.
+location = Ancient_Tree_Crown
+triggerDay = -1
+weight = 0.05
+colorInfluence = Earth:0.2, Wind:0.12, Light:0.1
+addResource = Ancient_Tree_Crown:Herb:30
+adjustSupply = Herb:0.5
+
+[수정 동굴의 공명]
+description = 수정 동굴의 결정들이 일제히 공명을 시작했다! 종소리보다 맑은 화음이 동굴을 가득 채우며, 수정 결정 사이에서 이전에 보이지 않던 희귀 광맥이 빛을 발한다. 드워프들조차 '백 년에 한 번'이라 경탄하는 장관이다.
+location = Crystal_Cavern
+triggerDay = -1
+weight = 0.05
+colorInfluence = Iron:0.2, Water:0.12, Electric:0.1
+addResource = Crystal_Cavern:OreRare:10, Crystal_Cavern:OreCommon:20
+
+# 길 막힘 (데이터에서 blockRouteFrom/To 지정 — 자동 랜덤 발생과 별개)
+[산길 방향 통제]
+description = 산길 일부가 통제되어 특정 방향으로의 이동이 제한된다.
+location = Mountain_Path
+triggerDay = -1
+colorInfluence = Earth:0.06, Iron:-0.05
+blockRouteFrom = Mountain_Path
+blockRouteTo = Bandit_Hideout
+blockRouteDays = 2
+
+# ---- 추가 랜덤 이벤트 ----
+
+[약초원의 요정 가루]
+description = 피올라가 약초원에 반짝이는 가루를 뿌렸다! 약초가 더 잘 자란다.
+location = Herb_Garden
+triggerDay = -1
+colorInfluence = Earth:0.1, Light:0.08, Wind:0.05
+addResource = Herb_Garden:Herb:15, Herb_Garden:Potion:3
+adjustSupply = Herb:0.3
+
+[호수의 인어 노래]
+description = 코랄리스의 노래가 호수 위를 감싸며, 물고기들이 수면 가까이 올라왔다.
+location = Lake
+triggerDay = -1
+colorInfluence = Water:0.15, Wind:0.08, Light:0.05
+addResource = Lake:Food:20
+
+[대장간의 발명 소동]
+description = 그릭이 또 위험천만한 발명을 했다! 폭발음 속에서 뜻밖의 장비가 탄생했다.
+location = Blacksmith
+triggerDay = -1
+colorInfluence = Fire:0.12, Electric:0.1, Iron:0.08
+addResource = Blacksmith:Equipment:3
+dangerDelta = 0.1
+
+[유적에서 온 바람]
+description = 리문 유적에서 이상한 바람이 불어와 마을 전체에 고대의 기운이 퍼졌다.
+location = Limun_Ruins
+triggerDay = -1
+colorInfluence = Wind:0.15, Dark:0.1, Light:0.08
+addResource = Limun_Ruins:Herb:8, Limun_Ruins:Potion:2
+
+[주점의 밤 이야기]
+description = 발터 크로이츠가 340년 전의 이야기를 들려주었다. 모험가들의 사기가 올랐다.
+location = Tavern
+triggerDay = -1
+colorInfluence = Dark:0.08, Fire:0.06, Light:0.04
+
+[마을 축제]
+description = 엘리메스에서 작은 축제가 열렸다! 음식과 음악, 웃음이 넘친다.
+location = Town_Elimes
+triggerDay = -1
+weight = 0.3
+colorInfluence = Fire:0.1, Light:0.12, Wind:0.08
+addResource = Market_Square:Food:30
+adjustDemand = Food:0.4
+
+[보름달의 야생]
+description = 보름달이 떠오르자 야생지대의 몬스터들이 활발해졌다. 위험하지만 전리품도 풍부하다.
+location = Wilderness
+triggerDay = -1
+colorInfluence = Dark:0.12, Fire:0.08
+addResource = Wilderness:MonsterLoot:10
+dangerDelta = 0.2
+
+[기억의 샘의 공명]
+description = 기억의 샘의 물이 기이하게 빛나며 공명하기 시작했다. 샘 근처에 있는 자에게 활력이 깃든다.
+location = Memory_Spring
+triggerDay = -1
+weight = 0.3
+colorInfluence = Light:0.15, Water:0.12, Wind:0.05
+
+# ---- 신규 종족 관련 이벤트 ----
+
+[비단 공방의 걸작]
+description = 아리엔이 밤새 짠 거미줄 직물이 완성되었다! 은빛으로 빛나는 천이 마을에 화제가 되었다.
+location = Silk_Workshop
+triggerDay = -1
+weight = 0.4
+colorInfluence = Iron:0.1, Light:0.08, Dark:0.05
+addResource = Silk_Workshop:Equipment:2
+
+[포피의 빵 축제]
+description = 포피가 시장에서 갓 구운 빵 축제를 열었다! 달콤한 향기가 마을 전체에 퍼진다.
+location = Market_Square
+triggerDay = -1
+weight = 0.3
+colorInfluence = Fire:0.08, Earth:0.06, Light:0.04
+addResource = Market_Square:Food:25
+
+[보름달의 울음]
+description = 야생지대의 달빛 빈터에서 먼 울음소리가 들려왔다. 늑대인간의 변신이 시작된 것일까.
+location = Moonlit_Clearing
+triggerDay = -1
+weight = 0.3
+colorInfluence = Dark:0.12, Wind:0.08
+
+[알라우네의 대개화]
+description = 꽃피는 테라스의 꽃들이 일제히 만개했다! 플로라의 기운이 최고조에 달해 약초의 효능이 극대화되었다.
+location = Bloom_Terrace
+triggerDay = -1
+weight = 0.2
+colorInfluence = Earth:0.15, Light:0.1, Water:0.08
+addResource = Bloom_Terrace:Herb:20, Bloom_Terrace:Potion:5
+
+[밀라의 치즈 잔치]
+description = 밀라가 갓 만든 치즈를 마을에 나누었다! 고소한 향기에 모두가 행복해졌다.
+location = Farm
+triggerDay = -1
+weight = 0.3
+colorInfluence = Earth:0.08, Light:0.06, Water:0.04
+addResource = Farm:Food:20
+
+[슬라임의 분열 소동]
+description = 푸니가 놀라서 잠시 셋으로 분열했다! 기억의 샘 근처에서 세 명의 슬라임이 우왕좌왕하는 소동이 벌어졌다.
+location = Memory_Spring
+triggerDay = -1
+weight = 0.3
+colorInfluence = Water:0.1, Electric:0.05, Light:0.05
+
+[사이렌의 저녁 콘서트]
+description = 멜로디아가 호수에서 저녁 노래를 불렀다. 마을 사람들이 호숫가에 모여 잔잔한 시간을 보냈다.
+location = Lake
+triggerDay = -1
+weight = 0.3
+colorInfluence = Water:0.1, Wind:0.08, Light:0.06

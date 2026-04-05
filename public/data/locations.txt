@@ -1,0 +1,284 @@
+# ============================================================
+# locations.txt — 장소 정의
+# [World] gridMinutesPerUnit : 격자 1단위당 이동 시간(분). links 생략 시 x,y 거리×이 값.
+# x, y : 이동 시간 계산용 격자 좌표 (유클리드 거리)
+# links : 양방향 연결 (쉼표). 각 항목은 LocationKey 또는 LocationKey:분(수동 덮어쓰기)
+# links_one_way : 이 장소에서만 나가는 일방통행 (이동 시 경고)
+# resources: 아이템키:수량 (쉼표 구분)
+# ============================================================
+
+[World]
+gridMinutesPerUnit = 2.0
+
+[Town_Elimes]
+name = 엘리메스 마을
+description = 엘리메스 마을의 중심부. 소박하지만 활기찬 거리.
+x = 0
+y = 0
+links = Guild_Hall, Market_Square, Tavern, Church, Blacksmith, Farm, Herb_Garden, Lake, Wilderness, Trade_Route, Mountain_Path, Wizard_Tower, Dungeon_Entrance
+resources = Food:50
+monsterLevel = 0
+dangerLevel = 0.0
+
+[Guild_Hall]
+name = 길드 홀
+description = 모험가 길드. 의뢰가 게시되는 곳.
+x = 3
+y = 2
+links = Market_Square
+monsterLevel = 0
+dangerLevel = 0.0
+
+[Market_Square]
+name = 시장
+description = 엘리메스의 시장. 다양한 물건이 거래된다.
+x = 3
+y = -2
+links = Guild_Hall
+resources = Food:30, Herb:10, Potion:5, Equipment:3
+monsterLevel = 0
+dangerLevel = 0.0
+
+[Dungeon_Entrance]
+name = 던전 입구
+description = 마을 외곽의 던전 입구. 어두운 기운이 감돈다.
+x = 10
+y = 2
+links = Wilderness
+links_one_way = Dungeon_Interior:18
+monsterLevel = 3
+dangerLevel = 0.4
+
+[Dungeon_Interior]
+name = 던전 내부
+description = 던전 깊숙한 곳. 몬스터와 보물이 공존한다.
+x = 14
+y = 2
+links_one_way = Dungeon_Entrance:15
+resources = OreCommon:20, OreRare:3, MonsterLoot:10
+monsterLevel = 5
+dangerLevel = 0.7
+
+[Tavern]
+name = 주점
+description = 여행자의 쉼터. 맥주와 소문이 넘쳐 흐른다.
+x = 5
+y = 0
+resources = Food:20
+monsterLevel = 0
+dangerLevel = 0.0
+
+[Wilderness]
+name = 야생지대
+description = 마을 주변의 야생 지역. 약초와 작은 동물이 있다.
+x = 0
+y = 7
+resources = Herb:30, Food:15
+monsterLevel = 1
+dangerLevel = 0.15
+
+[Blacksmith]
+name = 대장간
+description = 드워프 장인이 운영하는 대장간. 망치 소리가 끊이지 않는다.
+x = 1
+y = -3
+resources = Equipment:5, OreCommon:8
+monsterLevel = 0
+dangerLevel = 0.0
+
+[Herb_Garden]
+name = 약초원
+description = 마을 뒤편에 조성된 약초 재배지. 은은한 풀 향기가 감돈다.
+x = -2
+y = -1
+resources = Herb:40, Potion:3
+monsterLevel = 0
+dangerLevel = 0.0
+
+[Church]
+name = 교회
+description = 빛의 신전. 부상자를 치료하고 축복을 내린다. 마을의 정신적 지주.
+x = 1
+y = 3
+monsterLevel = 0
+dangerLevel = 0.0
+
+[Abandoned_Mine]
+name = 폐광
+description = 오래 전 버려진 광산. 아직 광맥이 남아있지만 무너질 위험이 있다.
+x = 5
+y = 12
+resources = OreCommon:35, OreRare:5
+monsterLevel = 4
+dangerLevel = 0.55
+
+[Lake]
+name = 호수
+description = 맑은 물이 잔잔히 흐르는 호수. 낚시와 명상의 장소.
+x = -4
+y = -5
+resources = Food:25
+monsterLevel = 0
+dangerLevel = 0.05
+
+[Mountain_Path]
+name = 산길
+description = 엘리메스 뒤편의 험준한 산길. 다른 지역으로 이어진다.
+x = 3
+y = 10
+links = Abandoned_Mine, Bandit_Hideout, Lake
+resources = Herb:10, OreCommon:5
+monsterLevel = 2
+dangerLevel = 0.3
+
+[Bandit_Hideout]
+name = 도적 소굴
+description = 산길 깊숙이 숨겨진 도적들의 은신처. 위험하지만 약탈품이 있다.
+x = 2
+y = 13
+resources = Equipment:3, MonsterLoot:8, Food:10
+monsterLevel = 6
+dangerLevel = 0.8
+
+[Wizard_Tower]
+name = 마법사의 탑
+description = 마을 외곽에 홀로 서 있는 기이한 탑. 이상한 빛이 가끔 번쩍인다.
+x = -5
+y = 1
+resources = Potion:10, Herb:5
+monsterLevel = 0
+dangerLevel = 0.1
+
+[Farm]
+name = 농장
+description = 마을에 식량을 공급하는 넓은 농장. 계절마다 다른 작물이 자란다.
+x = -3
+y = 2
+links = Herb_Garden
+resources = Food:60, Herb:5
+monsterLevel = 0
+dangerLevel = 0.0
+
+[Trade_Route]
+name = 무역로
+description = 엘리메스와 다른 마을을 잇는 교역로. 상인과 여행자가 오간다.
+x = 8
+y = 3
+resources = Food:10, Equipment:2
+monsterLevel = 2
+dangerLevel = 0.25
+
+[Memory_Spring]
+name = 기억의 샘
+description = 엘리메스와 아르카디아 사이, 깊은 숲속에 숨겨진 신비로운 샘. 이곳에서 영혼을 보존할 수 있다고 전해진다.
+x = 0
+y = 18
+links = Town_Elimes, Arcadia
+monsterLevel = 0
+dangerLevel = 0.0
+
+[Limun_Ruins]
+name = 리문 유적
+description = 마을에서 꽤 떨어진 고대 유적. 무너진 관측탑 꼭대기에서 어린 기상학자가 하늘을 읽는다.
+x = -8
+y = 6
+links = Wilderness:25
+monsterLevel = 1
+dangerLevel = 0.15
+
+# ============================================================
+# 풍광 명소 — 자세한 배경 묘사, 희귀 exclusive 이벤트 가능
+# ============================================================
+
+[Falcon_Garden]
+name = 팔콘 가든 공중군도
+description = 바다 한가운데에 떠 있는 구름과 섬의 군도. 거대한 폭포가 구름 아래로 쏟아지고, 공중에 떠다니는 작은 섬들 사이로 무지개빛 다리가 걸려 있다. 하피와 천사들이 바람을 타고 섬 사이를 오가며, 바다 위 안개 속에서 고래의 울음 같은 저음이 간간이 들려온다. 섬 중앙의 고대 정원에는 이름 모를 꽃들이 사계절 피어 있으며, 바람이 지날 때마다 꽃잎이 소용돌이를 이루어 하늘 위로 올라간다.
+x = -15
+y = 18
+links = Wilderness:40
+resources = Herb:15, Food:10
+monsterLevel = 0
+dangerLevel = 0.05
+
+[Starfall_Basin]
+name = 별빛 분지
+description = 깊은 산골짜기에 숨겨진 원형 분지. 밤이면 하늘의 별빛이 분지 바닥의 수정 결정에 반사되어, 마치 별이 쏟아져 내린 것처럼 온 사방이 은빛으로 반짝인다. 분지 중앙에는 고대의 별자리 문양이 새겨진 제단이 있으며, 보름달 밤에는 제단 위에서 미세한 진동과 함께 온기가 느껴진다고 한다. 드래곤의 전설에 따르면, 이곳은 태초에 별의 조각이 떨어진 자리이다.
+x = 8
+y = 16
+links = Mountain_Path:30
+resources = OreRare:3
+monsterLevel = 0
+dangerLevel = 0.1
+
+[Mirage_Oasis]
+name = 신기루 오아시스
+description = 무역로 너머 사막 지대의 경계에 홀연히 나타나는 오아시스. 야자수가 아지랑이 속에 일렁이고, 수면은 거울처럼 하늘을 비춘다. 물가에는 정체를 알 수 없는 고대 석상이 반쯤 모래에 묻혀 있으며, 해 질 녘이면 석상의 눈에서 금빛이 잠깐 깜빡인다는 소문이 있다. 여우 수인 상인들은 이곳을 '속지 않는 거울'이라 부르며, 진실만을 비춘다고 믿는다.
+x = 15
+y = 5
+links = Trade_Route:35
+resources = Food:8, Potion:5
+monsterLevel = 0
+dangerLevel = 0.08
+
+[Twilight_Spire]
+name = 황혼의 첨탑
+description = 마법사의 탑 너머 안개 속에 우뚝 솟은 기이한 첨탑. 천사와 악마의 오래된 조약이 새겨진 벽면이 해질녘 붉은빛에 물들면, 첨탑 전체가 어둠과 빛의 경계에서 흔들리는 것처럼 보인다. 꼭대기의 종은 바람이 불지 않아도 간간이 울리며, 그 소리를 들은 자는 잊고 있던 오래된 기억이 떠오른다고 한다. 첨탑 주변의 돌길에는 밤꽃이 피어 낮에도 은은한 달빛 같은 향기를 풍긴다.
+x = -9
+y = 3
+links = Wizard_Tower:20
+resources = Potion:3, Herb:5
+monsterLevel = 0
+dangerLevel = 0.12
+
+[Ancient_Tree_Crown]
+name = 고대수의 왕관
+description = 야생지대 깊은 곳에 뿌리를 내린 거대한 세계수의 꼭대기. 줄기 하나가 마을만 한 이 나무의 수관(樹冠) 위에는 작은 생태계가 형성되어 있다. 이끼 위에 핀 야생화, 나뭇가지 사이를 흐르는 실개천, 그리고 수백 년간 자라난 균류가 밤이면 청록색으로 빛난다. 엘프들은 이곳을 '태초의 기억'이라 부르며, 정령들이 처음 태어난 곳이라 전한다.
+x = -4
+y = 12
+links = Wilderness:30
+resources = Herb:20
+monsterLevel = 0
+dangerLevel = 0.03
+
+[Crystal_Cavern]
+name = 수정 동굴
+description = 산길 아래 깊숙이 뻗은 자연 동굴. 동굴 벽면을 뒤덮은 거대한 수정 결정이 외부의 미세한 빛조차 증폭시켜, 동굴 안은 영롱한 보랏빛과 청록빛이 교차하는 환상적인 공간이다. 수정 사이로 맑은 지하수가 흐르며, 물방울이 수정에 부딪힐 때마다 맑은 종소리 같은 울림이 퍼진다. 드워프 광부들은 이곳의 수정에는 손대지 않는 것이 불문율이며, '땅의 심장'이라 부른다.
+x = 5
+y = 14
+links = Mountain_Path:25, Abandoned_Mine:15
+resources = OreCommon:10, OreRare:5
+monsterLevel = 0
+dangerLevel = 0.1
+
+# ============================================================
+# 신규 종족 관련 장소 (actors+newrace.txt 연동)
+# ============================================================
+
+[Silk_Workshop]
+name = 비단 공방
+description = 아리엔이 거미줄로 마법 직물을 짜는 아늑한 공방. 천장에서 은빛 실이 반짝이고, 구석마다 완성된 직물이 소복이 쌓여 있다.
+x = 3
+y = 2
+links = Blacksmith
+resources = Equipment:3
+monsterLevel = 0
+dangerLevel = 0.0
+
+[Moonlit_Clearing]
+name = 달빛 빈터
+description = 보름달이 유난히 밝게 비추는 숲속 빈터. 늑대인간들의 모임 장소라는 소문이 있다.
+x = -2
+y = 3
+links = Wilderness
+monsterLevel = 0
+dangerLevel = 0.15
+
+[Bloom_Terrace]
+name = 꽃피는 테라스
+description = 알라우네들이 뿌리를 내리고 사는 꽃밭 테라스. 사계절 꽃이 만발해 향기가 가득하다.
+x = 2
+y = -1
+links = Herb_Garden
+resources = Herb:15
+monsterLevel = 0
+dangerLevel = 0.0

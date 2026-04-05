@@ -1,0 +1,435 @@
+# ============================================================
+# gift_preferences.txt — NPC 선물 선호도
+# 종족/역할별 좋아하는 아이템과 싫어하는 아이템 정의.
+#
+# [Race_종족명] 또는 [Role_역할명]
+# loved = ItemType (가장 좋아함: 호감 +0.15, 신뢰 +0.10)
+# liked = ItemType (좋아함: 호감 +0.08, 신뢰 +0.05)
+# disliked = ItemType (싫어함: 호감 +0.01, 신뢰 +0.00)
+#
+# 기본 (매칭 없음): 호감 +0.04, 신뢰 +0.03
+# 종족과 역할이 모두 매칭되면 더 높은 쪽 적용.
+# ============================================================
+
+# ============================================================
+# 종족별 선호
+# ============================================================
+
+[Race_Human]
+loved = Food
+liked = Equipment
+disliked = MonsterLoot
+
+[Race_Elf]
+loved = Herb
+liked = Potion
+disliked = OreCommon
+
+[Race_Dwarf]
+loved = OreRare
+liked = OreCommon
+disliked = Herb
+
+[Race_Beastkin]
+loved = Food
+liked = MonsterLoot
+disliked = OreCommon
+
+[Race_Harpy]
+loved = Food
+liked = Herb
+disliked = OreCommon
+
+[Race_Centaur]
+loved = Food
+liked = Herb
+disliked = OreRare
+
+[Race_Nekomimi]
+loved = Food
+liked = Potion
+disliked = OreCommon
+
+[Race_Spirit]
+loved = Herb
+liked = Potion
+disliked = Equipment
+
+[Race_Foxkin]
+loved = Equipment
+liked = Food
+disliked = OreCommon
+
+[Race_Dragon]
+loved = OreRare
+liked = MonsterLoot
+disliked = Herb
+
+[Race_Angel]
+loved = Potion
+liked = Herb
+disliked = MonsterLoot
+
+[Race_Demon]
+loved = MonsterLoot
+liked = OreRare
+disliked = Herb
+
+[Race_Arcana]
+loved = Potion
+liked = OreRare
+disliked = Food
+
+[Race_Construct]
+loved = OreCommon
+liked = OreRare
+disliked = Food
+
+[Race_Moth]
+loved = Herb
+liked = Food
+disliked = Equipment
+
+[Race_Dryad]
+loved = Herb
+liked = Food
+disliked = OreCommon
+
+[Race_FallenAngel]
+loved = Potion
+liked = MonsterLoot
+disliked = Food
+
+[Race_Phantom]
+loved = MonsterLoot
+liked = Potion
+disliked = Food
+
+[Race_Merfolk]
+loved = Food
+liked = Herb
+disliked = OreRare
+
+[Race_Goblin]
+loved = OreCommon
+liked = Equipment
+disliked = Herb
+
+[Race_Vampire]
+loved = Potion
+liked = MonsterLoot
+disliked = Food
+
+[Race_Lamia]
+loved = Herb
+liked = OreRare
+disliked = Equipment
+
+[Race_Fairy]
+loved = Herb
+liked = Food
+disliked = OreCommon
+
+# ============================================================
+# 역할별 선호 (종족보다 우선하지 않음, 더 높은 쪽 적용)
+# ============================================================
+
+[Role_Adventurer]
+loved = Equipment
+liked = Potion
+
+[Role_Merchant]
+loved = OreRare
+liked = Equipment
+
+[Role_Farmer]
+loved = Food
+liked = Herb
+
+[Role_Guard]
+loved = Equipment
+liked = Food
+
+[Role_Priest]
+loved = Potion
+liked = Herb
+
+[Role_Craftsman]
+loved = OreRare
+liked = OreCommon
+
+[Role_Miner]
+loved = OreCommon
+liked = Equipment
+
+[Role_Fisher]
+loved = Food
+liked = Herb
+
+[Role_Meteorologist]
+loved = Herb
+liked = Potion
+
+[Role_GuildClerk]
+loved = Potion
+liked = Food
+
+[Role_Villager]
+loved = Food
+liked = Herb
+
+# ============================================================
+# 캐릭터 개인 선호 (종족/역할보다 우선)
+# ============================================================
+
+# -- 엘리메스 마을 NPC --
+
+[세리나]
+loved = Potion
+liked = Food
+disliked = MonsterLoot
+; 퇴근 후 따뜻한 차를 좋아하는 길드 직원
+
+[카엘]
+loved = Equipment
+liked = Food
+disliked = Herb
+; 모험에 굶주린 켄타우로스에게 좋은 장비만한 선물은 없다
+
+[로쉔]
+loved = OreRare
+liked = Equipment
+disliked = OreCommon
+; 귀한 물건을 알아보는 상인의 눈
+
+[브로크]
+loved = OreRare
+liked = OreCommon
+disliked = Potion
+; 광석이면 눈이 돌아가는 대장장이
+
+[이리엘]
+loved = Herb
+liked = Food
+disliked = MonsterLoot
+; 약초원의 하피는 좋은 씨앗과 허브에 감동한다
+
+[피리]
+loved = Herb
+liked = Food
+disliked = Equipment
+; 바람과 풀의 향기를 좋아하는 소녀 기상학자
+
+[가론]
+loved = OreRare
+liked = OreCommon
+disliked = Herb
+; 광석이라면 무뚝뚝한 얼굴이 환해진다
+
+[나탈리]
+loved = Food
+liked = Herb
+disliked = OreCommon
+; 신선한 재료와 맛있는 음식을 좋아하는 어부
+
+[오르시아]
+loved = Herb
+liked = Potion
+disliked = MonsterLoot
+; 약초학에 조예가 깊은 엘프 사제
+
+[한셀]
+loved = Food
+liked = Equipment
+disliked = Potion
+; 든든한 한 끼를 가장 좋아하는 경비 대장
+
+[리라]
+loved = OreRare
+liked = Equipment
+disliked = Food
+; 좋은 재료가 있으면 밤새 작업하는 장인
+
+[유린]
+loved = OreRare
+liked = Potion
+disliked = OreCommon
+; 희���한 것에 눈이 번쩍 뜨이는 여우 상인
+
+[타미]
+loved = Food
+liked = Potion
+disliked = OreCommon
+; 맛있는 간식이면 꼬리를 흔드는 어린 여우
+
+[드라카]
+loved = Food
+liked = Potion
+disliked = OreCommon
+; 삼백 년을 살아도 새로운 맛에 감탄하는 미식가
+
+[크론]
+loved = Equipment
+liked = Food
+disliked = Herb
+; 좋은 장비는 순찰의 든든한 동반자
+
+[리엘]
+loved = Herb
+liked = Potion
+disliked = MonsterLoot
+; 치유의 재료가 되는 약초와 물약을 기뻐한다
+
+[세라핌]
+loved = Food
+liked = Herb
+disliked = Equipment
+; 소박한 음식을 조용히 기뻐하는 천사
+
+[아제르]
+loved = OreRare
+liked = Equipment
+disliked = Herb
+; 희귀한 교역품에 상인의 눈이 빛난다
+
+[멜리사]
+loved = OreRare
+liked = OreCommon
+disliked = Food
+; 마력 부여의 재료가 되는 광석을 반긴다
+
+# -- 추가 종족 NPC --
+
+[코랄리스]
+loved = Food
+liked = Potion
+disliked = OreCommon
+; 맛있는 생선 요리... 아니, 물고기 친구가 아닌 음식!
+
+[그릭]
+loved = OreCommon
+liked = Equipment
+disliked = Herb
+; ��명의 재료가 되는 것이면 ��든 환영
+
+[발터 크로이츠]
+loved = Potion
+liked = OreRare
+disliked = Food
+; 붉은 포션을 특히 좋아한다... 이유는 묻지 마라
+
+[세피라]
+loved = Herb
+liked = Potion
+disliked = Equipment
+; 고대의 약초학 지식을 가진 현자
+
+[피올라]
+loved = Herb
+liked = Food
+disliked = OreCommon
+; 꽃과 약초면 날개가 반짝반짝
+
+# ============================================================
+# 신규 종족별 선호 (actors+newrace.txt 연동)
+# ============================================================
+
+[Race_Arachne]
+loved = OreRare
+liked = Equipment
+disliked = Food
+; 희귀한 재료로 더 아름다운 직물을 짠다
+
+[Race_Slime]
+loved = Food
+liked = Potion
+disliked = OreCommon
+; 먹는 것이 곧 자신이 되는 슬라임에게 음식은 소중하다
+
+[Race_Lizardfolk]
+loved = Equipment
+liked = Food
+disliked = Herb
+; 전투에 필요한 장비를 가장 가치 있게 여긴다
+
+[Race_Minotaur]
+loved = Food
+liked = Herb
+disliked = OreRare
+; 신선한 먹을거리와 목초가 곧 삶이다
+
+[Race_Werewolf]
+loved = Food
+liked = Equipment
+disliked = OreCommon
+; 든든한 식사와 좋은 무기가 모험의 기본
+
+[Race_Halfling]
+loved = Food
+liked = Herb
+disliked = MonsterLoot
+; 재료만 좋으면 어떤 음식이든 만들어 낸다
+
+[Race_Siren]
+loved = Herb
+liked = Food
+disliked = OreCommon
+; 물가의 허브와 신선한 생선이 삶의 낙
+
+[Race_Alraune]
+loved = Herb
+liked = Potion
+disliked = OreRare
+; 흙과 식물이 존재의 전부인 알라우네
+
+# ============================================================
+# 신규 NPC 개인 선호 (actors+newrace.txt 연동)
+# ============================================================
+
+[아리엔]
+loved = OreRare
+liked = Equipment
+disliked = Food
+; 희귀한 광물 가루로 직물에 마력을 입힌다
+
+[푸니]
+loved = Food
+liked = Potion
+disliked = OreCommon
+; 뭐든 흡수하지만 맛있는 건 역시 달라
+
+[이그나]
+loved = Equipment
+liked = Food
+disliked = Herb
+; 사막 출신 전사에게 좋은 장비가 최고의 선물
+
+[밀라]
+loved = Food
+liked = Herb
+disliked = OreRare
+; 신선한 먹을거리를 나누는 것이 낙인 농부
+
+[루나르]
+loved = Food
+liked = Equipment
+disliked = OreCommon
+; 든든하게 먹어야 밤에 변신해도 힘이 난다
+
+[포피]
+loved = Herb
+liked = Food
+disliked = MonsterLoot
+; 새로운 허브는 새로운 레시피의 시작
+
+[멜로디아]
+loved = Herb
+liked = Food
+disliked = OreCommon
+; 호수 옆 약초는 노래의 재료이기도 하다
+
+[플로라]
+loved = Herb
+liked = Potion
+disliked = OreRare
+; 같은 식물끼리 통하는 것이 있다

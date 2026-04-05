@@ -1,0 +1,131 @@
+# ============================================================
+# productions.txt — 장소별 생산 레시피
+# 직업 효율 배율: roleEfficiency = 역할:배율 (쉼표 구분)
+# 해당하지 않는 직업은 defaultEfficiency 사용
+# inputs: 필요 재료 (없으면 순수 채취)
+# outputs: 기본 생산량
+# bonusOutputs: 추가 획득 (확률적)
+# colorInfluence: 속성 영향 (Fire:0.03 등)
+# ============================================================
+
+[Farm_Farming]
+name = 농사
+location = Farm
+vigorCost = 15
+timeCost = 30
+outputs = Food:3
+bonusOutputs = Food:2
+defaultEfficiency = 0.6
+roleEfficiency = Farmer:2.0, Villager:1.0, Guard:0.5
+colorInfluence = Earth:0.03, Water:0.02
+
+[Herb_Garden_Cultivate]
+name = 약초 재배
+location = Herb_Garden
+vigorCost = 12
+timeCost = 25
+outputs = Herb:2
+bonusOutputs = Herb:1
+defaultEfficiency = 0.6
+roleEfficiency = Farmer:2.0, Priest:1.5, Villager:1.0
+colorInfluence = Earth:0.02, Wind:0.02
+
+[Lake_Fishing]
+name = 낚시
+location = Lake
+vigorCost = 10
+timeCost = 35
+outputs = Food:2
+bonusOutputs = Food:2
+defaultEfficiency = 0.7
+roleEfficiency = Fisher:2.5, Farmer:1.2, Villager:1.0
+colorInfluence = Water:0.04, Wind:0.01
+
+[Mountain_Mining]
+name = 채굴
+location = Mountain_Path
+vigorCost = 20
+timeCost = 40
+outputs = OreCommon:2
+bonusOutputs = OreRare:1
+defaultEfficiency = 0.5
+roleEfficiency = Miner:2.5, Craftsman:1.5, Adventurer:1.0
+colorInfluence = Iron:0.04, Earth:0.02
+
+[Blacksmith_Craft]
+name = 장비 제작
+location = Blacksmith
+vigorCost = 18
+timeCost = 45
+inputs = OreCommon:2
+outputs = Equipment:1
+defaultEfficiency = 0.5
+roleEfficiency = Craftsman:2.0, Miner:1.3, Merchant:0.8
+colorInfluence = Iron:0.03, Fire:0.03
+
+[Church_Brew]
+name = 치유약 조제
+location = Church
+vigorCost = 10
+timeCost = 25
+inputs = Herb:2
+outputs = Potion:1
+bonusOutputs = Potion:1
+defaultEfficiency = 0.5
+roleEfficiency = Priest:2.5, Farmer:1.0, Villager:0.8
+colorInfluence = Light:0.04, Water:0.02
+
+[Wilderness_Forage]
+name = 야생 채집
+location = Wilderness
+vigorCost = 12
+timeCost = 20
+outputs = Food:1
+bonusOutputs = Herb:1
+defaultEfficiency = 0.8
+roleEfficiency = Adventurer:1.5, Farmer:1.3, Villager:1.0, Fisher:1.2
+colorInfluence = Wind:0.02, Earth:0.01
+
+[Trade_Route_Scavenge]
+name = 무역로 수색
+location = Trade_Route
+vigorCost = 15
+timeCost = 30
+outputs = Food:1
+bonusOutputs = Equipment:1
+defaultEfficiency = 0.5
+roleEfficiency = Adventurer:1.5, Merchant:1.8, Guard:1.2
+colorInfluence = Wind:0.02, Fire:0.01
+
+[Silk_Workshop_Weaving]
+name = 비단 직조
+location = Silk_Workshop
+vigorCost = 15
+timeCost = 40
+inputs = OreCommon:1
+outputs = Equipment:1
+defaultEfficiency = 0.4
+roleEfficiency = Craftsman:2.5, Merchant:1.2
+colorInfluence = Iron:0.02, Dark:0.02
+
+[Bloom_Terrace_Cultivate]
+name = 꽃밭 재배
+location = Bloom_Terrace
+vigorCost = 10
+timeCost = 25
+outputs = Herb:3
+bonusOutputs = Potion:1
+defaultEfficiency = 0.7
+roleEfficiency = Farmer:2.0, Priest:1.5, Villager:1.0
+colorInfluence = Earth:0.03, Light:0.02
+
+[Farm_Livestock]
+name = 목축
+location = Farm
+vigorCost = 12
+timeCost = 30
+outputs = Food:4
+bonusOutputs = Food:2
+defaultEfficiency = 0.6
+roleEfficiency = Farmer:2.5, Villager:1.0
+colorInfluence = Earth:0.03, Water:0.02

@@ -1,0 +1,504 @@
+# ============================================================
+# locations+rdc.txt — rove due colorz 세계 지역 정의
+# 엘리메스 기본 지역은 locations.txt 참조
+# ============================================================
+
+# ============================================================
+# 일루네온 지구 — 세계의 중심 도시
+# ============================================================
+
+[Iluneon]
+name = 일루네온
+description = 컬러즈 세계의 중심 도시. 거대한 시계탑이 하늘을 찌르고, 다양한 종족이 어우러져 산다.
+x = 50
+y = 0
+links = Iluneon_Square, Riagralta, Lar_Forest:30, Kanon:15, Hanabridge:25, Arukea:20, World_Tree:35
+monsterLevel = 0
+dangerLevel = 0.0
+
+[Iluneon_Square]
+name = 일루네온 광장
+description = 일루네온의 중앙 광장. 분수대를 중심으로 상점과 길드가 즐비하며, 여행자들이 모여드는 만남의 장소.
+x = 50
+y = 2
+links = Iluneon
+resources = Food:30, Potion:10
+monsterLevel = 0
+dangerLevel = 0.0
+
+[Riagralta]
+name = 리아그랄타 평원
+description = 일루네온 남쪽으로 펼쳐진 드넓은 평원. 바람이 풀을 쓸어가는 소리가 끊이지 않는다.
+x = 50
+y = -10
+links = Iluneon, Enicham:40
+resources = Herb:15, Food:20
+monsterLevel = 1
+dangerLevel = 0.1
+
+[Kanon]
+name = 카논
+description = 일루네온의 위성도시. 상업 중심지로, 무역상들이 분주히 오간다.
+x = 60
+y = 5
+links = Iluneon
+resources = Food:20, Equipment:3
+monsterLevel = 0
+dangerLevel = 0.0
+
+[Erumen]
+name = 에루멘 분지
+description = 산맥에 둘러싸인 깊은 분지. 고대의 기운이 서려 있어 마력 연구에 적합하다.
+x = 55
+y = 10
+links = Iluneon:25, Navrit:20
+resources = Herb:20, OreCommon:10
+monsterLevel = 2
+dangerLevel = 0.15
+
+[Hanabridge]
+name = 하나브릿지 신전
+description = 세계에서 가장 오래된 신전 중 하나. 기투회장이 있어 전사들이 모여든다.
+x = 40
+y = 8
+links = Iluneon, Arukea:15
+resources = Potion:5
+monsterLevel = 0
+dangerLevel = 0.0
+
+[Arukea]
+name = 아르케아 가도
+description = 일루네온과 다른 지역을 잇는 대로. 몬스터가 출몰하지만 경비대가 순찰한다.
+x = 45
+y = 5
+links = Iluneon, Hanabridge
+resources = Food:10
+monsterLevel = 3
+dangerLevel = 0.25
+
+[Navrit]
+name = 나브릿트 전기지대
+description = 자연적으로 전기가 방전되는 기이한 지대. 전기 공학 연구의 중심지.
+x = 60
+y = 15
+links = Erumen, Enicham:30
+resources = OreCommon:15, OreRare:3
+monsterLevel = 3
+dangerLevel = 0.3
+
+[Ode_Mountain]
+name = 오드 산
+description = 일루네온 북쪽의 거대한 산. 정상에는 만년설이 쌓여 있다.
+x = 48
+y = 18
+links = Iluneon:30, Erumen:20
+resources = OreCommon:20, Herb:5
+monsterLevel = 4
+dangerLevel = 0.35
+
+# ============================================================
+# 라르 포레스트 지구 — 고대 숲
+# ============================================================
+
+[Lar_Forest]
+name = 라르 포레스트
+description = 일루네온 서쪽의 울창한 고대 숲. 수백 년 된 거목들이 하늘을 가리고, 숲의 정령과 동물들이 깃들어 산다.
+x = 30
+y = -5
+links = Iluneon:30, Void_Forest:20, World_Tree:25
+resources = Herb:30, Food:15
+monsterLevel = 2
+dangerLevel = 0.2
+
+[Void_Forest]
+name = 허공 숲
+description = 라르 포레스트 안쪽의 미지의 숲. 나무들이 공중에 떠 있고, 중력이 왜곡된 공간이 곳곳에 존재한다.
+x = 22
+y = -8
+links = Lar_Forest
+resources = Herb:20, OreRare:2
+monsterLevel = 4
+dangerLevel = 0.4
+
+# ============================================================
+# 세계수 지구
+# ============================================================
+
+[World_Tree]
+name = 세계수
+description = 세계의 중심에 뿌리를 내린 거대한 나무 위에 형성된 마을. 드라이어드와 정령들이 나무와 함께 살아간다.
+x = 35
+y = 5
+links = Lar_Forest:25, Iluneon:35, Luna_Academy:30
+resources = Herb:40, Food:20
+monsterLevel = 0
+dangerLevel = 0.0
+
+# ============================================================
+# 마법학교 루나 지구
+# ============================================================
+
+[Luna_Academy]
+name = 마법학교 루나
+description = 대륙에서 가장 권위 있는 마법 학교. 다양한 종족의 학생과 교수가 마법의 진리를 탐구한다. 풍신 크루하가 교장을 맡고 있다.
+x = 38
+y = -10
+links = Iluneon:25, Lar_Forest:20, Moss:20, Stella_Ville:30
+resources = Potion:15, Herb:10
+monsterLevel = 0
+dangerLevel = 0.0
+
+# ============================================================
+# 마틴 항 지구 — 항구와 바다
+# ============================================================
+
+[Martin_Port]
+name = 마틴 항
+description = 바다에 면한 활기찬 항구도시. 대형 선박이 드나들고, 어시장의 활기가 새벽부터 밤까지 이어진다.
+x = 50
+y = -35
+links = Iluneon:40, Valkyr_Canal:20, Kishina:15, Falcon_Garden:30
+resources = Food:40, Equipment:5
+monsterLevel = 0
+dangerLevel = 0.0
+
+[Manyu]
+name = 마뉴 수몰도시
+description = 바다 아래에 가라앉은 고대 도시. 특수한 마법 장벽 덕분에 일부 구역에 진입할 수 있다.
+x = 55
+y = -45
+links = Martin_Port:25
+resources = OreRare:5, Equipment:3
+monsterLevel = 5
+dangerLevel = 0.6
+
+[Valkyr_Canal]
+name = 발키리 운하
+description = 대륙을 횡단하는 거대한 운하. 정기 운행 배편이 여러 도시를 연결한다.
+x = 45
+y = -30
+links = Martin_Port, Kishina:15
+resources = Food:10
+monsterLevel = 1
+dangerLevel = 0.1
+
+[Penta]
+name = 펜타 섬
+description = 마틴 항에서 배를 타고 갈 수 있는 작은 섬. 온화한 기후와 아름다운 해변이 특징.
+x = 60
+y = -40
+links = Martin_Port:25
+resources = Food:20, Herb:10
+monsterLevel = 1
+dangerLevel = 0.05
+
+[Halpia]
+name = 할퓌아 부유 섬
+description = 하늘에 떠 있는 신비로운 섬. 천사와 조류 종족이 주로 거주하며, 지상과는 마법의 승강기로 연결된다.
+x = 55
+y = -25
+links = Martin_Port:30, Riel_Sky:25
+resources = Herb:15, Food:10
+monsterLevel = 2
+dangerLevel = 0.1
+
+[Riel_Sky]
+name = 천공성 리엘
+description = 구름 위에 떠 있는 드래곤의 성. 리제 공주의 고향이지만, 그녀는 지금 이곳을 떠나 있다.
+x = 58
+y = -20
+links = Halpia:25
+resources = Equipment:5, OreRare:3
+monsterLevel = 6
+dangerLevel = 0.5
+
+[Stella_Ville]
+name = 스텔라 빌
+description = 대변동 당시 결계에 의해 고립되었던 마을의 유적. 최근 결계가 풀리면서 다시 모습을 드러냈다. 밤하늘이 특히 아름답다.
+x = 35
+y = -18
+links = Luna_Academy:30, Lar_Forest:25
+resources = Herb:15, OreRare:2
+monsterLevel = 3
+dangerLevel = 0.25
+
+# ============================================================
+# 알리메스 지구 — 설산과 산맥
+# ============================================================
+
+[Alimes]
+name = 알리메스
+description = 알리메 설산 기슭에 자리 잡은 마을. 추운 기후 탓에 단단한 돌집이 많고, 계약 악마가 높은 곳에서 마을을 내려다본다.
+x = -30
+y = 30
+links = Alime_Mountain:15, Gelider:20, Moss:25, Puchi_Tower:20, Kishina:30
+resources = Food:25, Equipment:3
+monsterLevel = 0
+dangerLevel = 0.0
+
+[Alime_Mountain]
+name = 알리메 설산
+description = 만년설이 뒤덮인 거대한 설산. 산 정상을 향한 등반 루트가 있지만, 혹한과 몬스터가 기다린다.
+x = -35
+y = 35
+links = Alimes
+resources = OreCommon:20, OreRare:5
+monsterLevel = 5
+dangerLevel = 0.5
+
+[Gelider]
+name = 겔리더 산맥
+description = 알리메스 뒤편으로 이어지는 험준한 산맥. 드래곤의 전설이 서려 있다.
+x = -25
+y = 38
+links = Alimes, Bagreat:15
+resources = OreCommon:15
+monsterLevel = 4
+dangerLevel = 0.4
+
+[Moss]
+name = 모스
+description = 알리메스 남쪽의 작은 마을. 과수원과 풍연 축제로 유명하며, 카미키와 카르디의 고향이다.
+x = -20
+y = 25
+links = Alimes:25, Luna_Academy:20, Kishina:20
+resources = Food:30, Herb:15
+monsterLevel = 0
+dangerLevel = 0.0
+
+[Bagreat]
+name = 바그레트 산맥
+description = 겔리더 산맥에서 이어지는 험한 산악 지대. 광맥이 풍부하다.
+x = -22
+y = 42
+links = Gelider
+resources = OreCommon:25, OreRare:8
+monsterLevel = 5
+dangerLevel = 0.5
+
+[Puchi_Tower]
+name = 푸치 탑
+description = 리제가 세운 거대한 탑. 도전자들이 층을 올라가며 시련에 맞서고, 꼭대기에서는 리제 본인이 기다린다. 중간층에 칵테일 바가 있다.
+x = -28
+y = 22
+links = Alimes
+resources = Potion:5, Equipment:2
+monsterLevel = 6
+dangerLevel = 0.6
+
+[Kishina]
+name = 키시나 해안
+description = 알리메스와 마틴 항 사이의 아름다운 해안가. 온화한 해풍이 불어오며 휴양지로 인기가 높다.
+x = -15
+y = -20
+links = Alimes:30, Martin_Port:25, Moss:20
+resources = Food:20
+monsterLevel = 0
+dangerLevel = 0.05
+
+# ============================================================
+# 마노니클라 지구 — 리문 유적 인근
+# ============================================================
+
+[Manonickla]
+name = 마노니클라
+description = 리문 유적 인근의 마을. 오래된 역사를 가진 고요한 곳으로, 가끔 빛이 쏟아지는 밤이 찾아온다.
+x = 20
+y = 30
+links = Old_Eas:10, Clutch_Gorge:15, Tacomi:20, Limun_Ruins:20
+resources = Food:20, Herb:10
+monsterLevel = 0
+dangerLevel = 0.0
+
+[Old_Eas]
+name = 구 에아스 거주지
+description = 오래 전 버려진 마을의 잔해. 폐허 사이로 야생 식물이 자라나 독특한 풍경을 이룬다.
+x = 22
+y = 35
+links = Manonickla
+resources = Herb:15
+monsterLevel = 2
+dangerLevel = 0.2
+
+[Clutch_Gorge]
+name = 클러치 협곡
+description = 마노니클라 외곽의 깊은 협곡. 빛이 쏟아지는 밤의 다음 날 새벽, 꼬마정령 베텔게우스를 만날 수 있다고 한다.
+x = 18
+y = 35
+links = Manonickla
+resources = OreCommon:10
+monsterLevel = 3
+dangerLevel = 0.3
+
+[Tacomi]
+name = 타코미
+description = 마노니클라 근처의 작은 마을. 낮에는 평화롭지만, 밤이 되면 다른 분위기가 된다.
+x = 25
+y = 25
+links = Manonickla, Night_Tacomi:5, Kazed:10
+resources = Food:15
+monsterLevel = 0
+dangerLevel = 0.0
+
+[Night_Tacomi]
+name = 나이트 타코미
+description = 타코미의 밤 거리. 네온사인과 음악이 가득한 번화가로, 클럽과 라이브 하우스가 즐비하다. 제로와 알타가 활동하는 곳.
+x = 26
+y = 24
+links = Tacomi
+resources = Food:10, Equipment:2
+monsterLevel = 0
+dangerLevel = 0.05
+
+[Kazed]
+name = 카제드
+description = 타코미의 위성도시. 조용한 주거 지역이다.
+x = 28
+y = 28
+links = Tacomi
+resources = Food:10
+monsterLevel = 0
+dangerLevel = 0.0
+
+# ============================================================
+# 에니챰 지구 — 기술과 에너지
+# ============================================================
+
+[Enicham]
+name = 에니챰 발전소
+description = 거대한 전기 발전 시설이 있는 공업 지구. 제로의 공방이 이곳에 있으며, 기계 문명의 최첨단을 달린다.
+x = 60
+y = -10
+links = Riagralta:40, Navrit:30, Night_Tacomi:35
+resources = OreCommon:20, Equipment:5
+monsterLevel = 3
+dangerLevel = 0.2
+
+# ============================================================
+# 외곽 지역 — 고난이도
+# ============================================================
+
+[Triflower]
+name = 트리플라워 화산
+description = 세 개의 화구가 나란히 솟은 활화산. 불의 사천왕 카시스의 영역이며, 전설의 검이 잠들어 있다고 전해진다.
+x = -40
+y = -15
+links = Alimes:35, Stella_Ville:30
+resources = OreRare:8, MonsterLoot:10
+monsterLevel = 7
+dangerLevel = 0.7
+
+[Yusejeria]
+name = 유스제리아 설원
+description = 세계 남서쪽의 광활한 설원. 영원히 녹지 않는 눈이 쌓여 있고, 고대의 사당이 곳곳에 숨겨져 있다.
+x = -50
+y = -25
+links = Triflower:30
+resources = Herb:10, OreRare:3
+monsterLevel = 6
+dangerLevel = 0.6
+
+[Haratikus]
+name = 하라티쿠스 폐허
+description = 대변동 이전의 문명이 남긴 거대한 폐허. 위험하지만 고대의 유물이 잠들어 있다.
+x = -45
+y = 10
+links = Gelider:30
+resources = OreRare:5, Equipment:3
+monsterLevel = 7
+dangerLevel = 0.7
+
+[Desperia]
+name = 데스페리아
+description = 지하 깊은 곳에 형성된 거대한 던전 도시. 커트래빗이 한때 살았던 어둠의 세계.
+x = 65
+y = -20
+links = Enicham:30
+resources = MonsterLoot:15, OreRare:5
+monsterLevel = 8
+dangerLevel = 0.8
+
+[Bug_Sea]
+name = 버그의 바다
+description = 세계의 가장자리에 존재하는 기이한 공간. 물리 법칙이 무너진 우주적 장소로, 버그 생명체의 고향이다.
+x = 0
+y = -50
+links = Desperia:40
+resources = MonsterLoot:20, OreRare:10
+monsterLevel = 10
+dangerLevel = 0.95
+
+[Uppio_Swamp]
+name = 우피오 늪
+description = 뒤틀린 취향의 주민들이 계속해서 헛된 관광지 마케팅을 하는, 고레벨 던전으로 오해받는 안전한 지역.
+x = 10
+y = 50
+links = Manonickla:40
+resources = Food:30, Herb:20
+monsterLevel = 0
+dangerLevel = 0.01
+
+[Demon_Castle]
+name = 마왕성
+description = 세계의 북동쪽 끝에 세워진 거대한 성. 마왕 모노와 사천왕 시아가 거주하며, 의외로 서류 냄새가 진하다.
+x = 70
+y = 40
+links = Enicham:50
+resources = MonsterLoot:10
+monsterLevel = 8
+dangerLevel = 0.7
+
+[Hologram_Field]
+name = 홀로그램 필드
+description = 마왕성 근처에 펼쳐진 가상 공간. 홀로그램처럼 일렁이는 풍경 속에 임페리시아가 거주한다.
+x = 68
+y = 38
+links = Demon_Castle:10
+monsterLevel = 4
+dangerLevel = 0.3
+
+[Windfall_Valley]
+name = 풍혈지대
+description = 강한 바람이 끊임없이 불어치는 계곡. 밤참새 리엔카이가 조용히 살아가는 곳.
+x = 15
+y = 20
+links = Manonickla:20, Lar_Forest:25
+resources = Herb:10
+monsterLevel = 3
+dangerLevel = 0.25
+
+[Arcadia]
+name = 아르카디아
+description = 전설 속에만 등장하던 이상향. 최근 그 입구가 발견되었다는 소문이 있다.
+x = 0
+y = 40
+links = Hanabridge:40
+resources = Herb:20, OreRare:5
+monsterLevel = 5
+dangerLevel = 0.45
+
+[Ikar]
+name = 이카르
+description = 하늘 높이 솟은 고대의 탑 유적. 태양에 가장 가까운 장소라 불린다.
+x = -30
+y = -35
+links = Yusejeria:25
+resources = OreRare:3
+monsterLevel = 7
+dangerLevel = 0.65
+
+# ============================================================
+# 엘리메스 ↔ 일루네온 연결
+# Town_Elimes 기존 links에 Iluneon 추가 안 함 (원거리 무역로로 연결)
+# Trade_Route를 통해 간접 연결
+# ============================================================
+
+[Ekres]
+name = 에크레스
+description = 엘리메스와 일루네온 사이에 있는 작은 경유지. 여행자들이 잠시 쉬어가는 곳.
+x = 25
+y = 0
+links = Iluneon:25, Trade_Route:20
+resources = Food:15
+monsterLevel = 1
+dangerLevel = 0.1

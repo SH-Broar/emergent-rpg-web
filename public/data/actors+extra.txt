@@ -1,0 +1,130 @@
+# ============================================================
+# actors+extra.txt — 신규 종족 캐릭터 (5종족 × 1명)
+# 종족: Merfolk(인어), Goblin(고블린), Vampire(뱀파이어),
+#        Lamia(라미아), Fairy(요정)
+# ============================================================
+
+# ============================================================
+# 인어 — 코랄리스 (호수의 가수)
+# ============================================================
+
+[코랄리스]
+playable = 0
+race = Merfolk
+role = Fisher
+strength = 0.4
+gold = 30
+location = Lake
+homeLocation = Lake
+age = 90
+hp = 90
+maxHp = 90
+mp = 45
+maxMp = 45
+attack = 7
+defense = 6
+colorValues = 0.2,0.9,0.3,0.2,0.4,0.6,0.5,0.2
+domainHigh = Calm,Empathetic,Adaptable,Flexible,Patient,Freesprited,Hopeful,Secretive
+domainLow = Passionate,Rigid,Stagnant,Stubborn,Restless,Withdrawn,Cynical,Honest
+inventory = Food:8, Herb:3
+background = 먼 바다에서 강을 따라 호수까지 떠내려온 인어로, 물 밖에서는 부유 마법으로 동동 떠다니며 호수가를 천천히 순회한다.|아침이면 수면 위에 앉아 흥얼거리는 노래는 아무도 멜로디를 기억 못 하는데, 그래도 들은 사람은 하루 종일 기분이 좋아진다.|물고기와 대화할 수 있다고 주장하면서도 낚시 실력이 꽤 훌륭해, 물고기 쪽에서는 배신감을 느끼고 있을지도 모른다.
+
+# ============================================================
+# 고블린 — 그릭 (대장간의 발명가)
+# ============================================================
+
+[그릭]
+playable = 0
+race = Goblin
+role = Craftsman
+strength = 0.3
+gold = 80
+location = Blacksmith
+homeLocation = Blacksmith
+age = 45
+hp = 70
+maxHp = 70
+mp = 20
+maxMp = 20
+attack = 8
+defense = 4
+colorValues = 0.6,0.2,0.5,0.8,0.4,0.3,0.2,0.4
+domainHigh = Inventive,Indifferent,Excited,Stubborn,Restless,Freesprited,Cunning,Greedy
+domainLow = Cautious,Melancholy,Methodical,Flexible,Grounded,Rigid,Naive,Honest
+inventory = OreCommon:5, Equipment:1
+background = 대장간 한쪽 구석에 '연구실' 팻말을 붙이고 눌러앉은 고블린 발명가로, 그 작은 공간에서 나오는 발명품의 크기는 도무지 예측이 안 된다.|손가락 끝 감각만큼은 대장간 누구에게도 안 진다는 자부심이 넘쳐흐르며, 실제로 가끔씩 진짜 걸작을 만들어내기도 한다.|브로크와는 하루에도 몇 번씩 티격태격하지만, 중요한 의뢰가 들어오면 어느새 나란히 앉아 뚝딱거리고 있는 사이다.
+
+# ============================================================
+# 뱀파이어 — 발터 크로이츠 (밤의 중개인)
+# ============================================================
+
+[발터 크로이츠]
+playable = 0
+race = Vampire
+role = Merchant
+strength = 0.7
+gold = 200
+location = Tavern
+homeLocation = Tavern
+age = 340
+hp = 120
+maxHp = 120
+mp = 50
+maxMp = 50
+attack = 14
+defense = 10
+colorValues = 0.5,0.3,0.3,0.4,0.2,0.3,0.1,0.8
+domainHigh = Calm,Indifferent,Cunning,Reliable,Patient,Withdrawn,Cynical,Secretive
+domainLow = Passionate,Empathetic,Impulsive,Stubborn,Restless,Freesprited,Naive,Aggressive
+inventory = Potion:5, Food:3, Equipment:1
+background = 340년 세월을 품은 뱀파이어로, 낮에는 주점 2층에서 커튼을 꼭 닫고 잠들고 해 질 무렵에야 느긋하게 나타나 와인 잔을 기울인다.|수백 년간 이 마을 저 마을을 오가며 쌓아온 정보망이 있어, 무언가 알고 싶다면 그에게 물어보는 것이 가장 빠른 길이다.|대가를 바라긴 하지만 형편에 맞춰 받는 편이라, 단골들은 그를 꽤 믿음직한 정보 창구로 여긴다.|붉은 포션만 따로 챙겨두는 것이 간식 취향인지 다른 이유인지, 본인은 끝내 밝히지 않는다.
+
+# ============================================================
+# 라미아 — 세피라 (유적의 현자)
+# ============================================================
+
+[세피라]
+playable = 0
+race = Lamia
+role = Priest
+strength = 0.5
+gold = 20
+location = Limun_Ruins
+homeLocation = Limun_Ruins
+age = 210
+hp = 100
+maxHp = 100
+mp = 60
+maxMp = 60
+attack = 11
+defense = 8
+colorValues = 0.3,0.4,0.2,0.3,0.7,0.3,0.4,0.6
+domainHigh = Calm,Empathetic,Inventive,Reliable,Patient,Withdrawn,Righteous,Secretive
+domainLow = Passionate,Rigid,Stagnant,Flexible,Generous,Freesprited,Cynical,Naive
+inventory = Herb:5, Potion:3
+background = 리문 유적에 오래전부터 자리를 잡은 라미아 현자로, 유적의 돌바닥 위를 미끄러지듯 오가는 모습이 유적 풍경의 일부처럼 자연스럽다.|고대 관측 비문을 읽을 수 있는 몇 안 되는 존재로, 계절의 흐름과 날씨 변화에 관해서라면 두꺼운 책 한 권 분량의 이야기를 풀어낼 수 있다.|처음엔 조용히 관찰하다가, 진심으로 배우러 온 사람임을 알아채면 차 한 잔을 내밀며 이야기보따리를 풀기 시작한다.
+
+# ============================================================
+# 요정 — 피올라 (약초원의 장난꾸러기)
+# ============================================================
+
+[피올라]
+playable = 0
+race = Fairy
+role = Farmer
+strength = 0.2
+gold = 10
+location = Herb_Garden
+homeLocation = Herb_Garden
+age = 150
+hp = 50
+maxHp = 50
+mp = 55
+maxMp = 55
+attack = 4
+defense = 3
+colorValues = 0.3,0.4,0.4,0.2,0.6,0.7,0.9,0.2
+domainHigh = Excited,Empathetic,Inventive,Adaptable,Freesprited,Flighty,Hopeful,Cunning
+domainLow = Cautious,Melancholy,Methodical,Stubborn,Grounded,Withdrawn,Cynical,Aggressive
+inventory = Herb:10, Food:3
+background = 약초원 꽃 사이를 보금자리로 삼은 손바닥만 한 요정으로, 반짝이는 날개로 꽃 위를 날아다니며 식물 하나하나를 손수 돌본다.|덕분에 약초원의 수확량은 어느 해든 풍성하고, 이리엘은 피올라가 있는 한 걱정 없다고 말한다.|장난기가 넘쳐서 지나가는 사람 모자를 슬쩍 들고 도망치거나 신발 끈을 몰래 묶어두는 것이 일과인데, 정작 들키면 빛가루를 팡 뿌리고 꽃 뒤로 숨어버린다.

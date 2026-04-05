@@ -1,0 +1,311 @@
+# ============================================================
+# activities.txt — 지역별 활동 정의
+# 각 섹션명 = LocationID
+# activity_N_name       : 활동 이름
+# activity_N_key        : 내부 키
+# activity_N_time       : 소요 시간 (분)
+# activity_N_vigor      : 기력 소모
+# activity_N_gold       : 골드 비용 (선택)
+# activity_N_desc       : 설명
+# activity_N_requires   : 필요 아이템 — ItemType:amount (쉼표 구분)
+# activity_N_condition  : 특수 조건 (crop_ready 등)
+# activity_N_effect     : 효과 키워드 (heal_hp, restore_vigor, give, random_loot, start_crop, buff_attack, buff_defense, learn_spell, restore_mp, hear_rumor)
+# activity_N_gives      : 확정 지급 — ItemType:amount (쉼표 구분)
+# activity_N_loot       : 랜덤 지급 — ItemType:amount:chance (쉼표 구분)
+# activity_N_colorInfluence : 컬러 영향 — Element:float (쉼표 구분)
+# ============================================================
+
+[Farm]
+activity_1_name = 작물 심기
+activity_1_key = plant_crop
+activity_1_time = 30
+activity_1_vigor = 15
+activity_1_desc = 밭에 작물을 심는다. 시간이 지나면 수확할 수 있다.
+activity_1_requires = Food:1
+activity_1_effect = start_crop:180
+activity_1_colorInfluence = Earth:0.04, Wind:0.02
+
+activity_2_name = 수확
+activity_2_key = harvest_crop
+activity_2_time = 20
+activity_2_vigor = 10
+activity_2_desc = 다 자란 작물을 수확한다.
+activity_2_condition = crop_ready
+activity_2_effect = give
+activity_2_gives = Food:3, Herb:1
+activity_2_colorInfluence = Earth:0.03, Light:0.02
+
+[Church]
+activity_1_name = 치유 기도
+activity_1_key = heal
+activity_1_time = 20
+activity_1_vigor = 5
+activity_1_gold = 10
+activity_1_desc = 빛의 신전에서 치유를 받는다.
+activity_1_effect = heal_hp:30
+activity_1_colorInfluence = Light:0.05, Water:0.03
+
+activity_2_name = 축복
+activity_2_key = bless
+activity_2_time = 30
+activity_2_vigor = 10
+activity_2_gold = 25
+activity_2_desc = 신관의 축복. 방어력이 일시적으로 상승한다.
+activity_2_effect = buff_defense:5:3
+activity_2_colorInfluence = Light:0.04, Iron:0.02
+
+[Wizard_Tower]
+activity_1_name = 마법 수련
+activity_1_key = learn_magic
+activity_1_time = 60
+activity_1_vigor = 20
+activity_1_gold = 50
+activity_1_desc = 마법사에게 마법을 배운다.
+activity_1_effect = learn_spell
+activity_1_colorInfluence = Electric:0.05, Dark:0.03
+
+activity_2_name = 마나 충전
+activity_2_key = recharge_mp
+activity_2_time = 30
+activity_2_vigor = 5
+activity_2_gold = 15
+activity_2_desc = 마나석으로 MP를 회복한다.
+activity_2_effect = restore_mp:20
+activity_2_colorInfluence = Electric:0.03, Water:0.02
+
+[Lake]
+activity_1_name = 낚시
+activity_1_key = fishing
+activity_1_time = 40
+activity_1_vigor = 8
+activity_1_desc = 호수에서 낚시를 한다.
+activity_1_effect = random_loot
+activity_1_loot = Food:1:0.7, Food:2:0.2, Herb:1:0.3
+activity_1_colorInfluence = Water:0.04, Wind:0.02
+
+[Blacksmith]
+activity_1_name = 장비 제작
+activity_1_key = craft
+activity_1_time = 45
+activity_1_vigor = 20
+activity_1_gold = 30
+activity_1_desc = 광석으로 장비를 만든다.
+activity_1_requires = OreCommon:3
+activity_1_effect = give
+activity_1_gives = Equipment:1
+activity_1_colorInfluence = Iron:0.05, Fire:0.03
+
+activity_2_name = 장비 강화
+activity_2_key = upgrade
+activity_2_time = 30
+activity_2_vigor = 15
+activity_2_gold = 50
+activity_2_desc = 장비를 강화한다. 공격력이 영구적으로 소폭 상승한다.
+activity_2_requires = Equipment:1, OreCommon:1
+activity_2_effect = buff_attack:2:permanent
+activity_2_colorInfluence = Iron:0.04, Fire:0.02
+
+[Tavern]
+activity_1_name = 소문 듣기
+activity_1_key = rumors
+activity_1_time = 15
+activity_1_vigor = 3
+activity_1_gold = 5
+activity_1_desc = 주점에서 소문을 듣는다.
+activity_1_effect = hear_rumor
+activity_1_colorInfluence = Water:0.02, Fire:0.02
+
+activity_2_name = 숙박
+activity_2_key = tavern_rest
+activity_2_time = 60
+activity_2_gold = 15
+activity_2_desc = 주점에서 푹 쉰다.
+activity_2_effect = restore_vigor:50
+activity_2_colorInfluence = Water:0.03, Light:0.02
+
+[Trade_Route]
+activity_1_name = 대상단 수색
+activity_1_key = caravan
+activity_1_time = 30
+activity_1_vigor = 10
+activity_1_desc = 무역로에서 대상단을 찾아 물건을 교환한다.
+activity_1_effect = random_loot
+activity_1_loot = Equipment:1:0.15, OreRare:1:0.1, Potion:2:0.3, Food:3:0.5
+activity_1_colorInfluence = Wind:0.03, Earth:0.02
+
+[Herb_Garden]
+activity_1_name = 약초 재배
+activity_1_key = cultivate_herb
+activity_1_time = 30
+activity_1_vigor = 10
+activity_1_desc = 약초를 정성껏 가꾼다.
+activity_1_effect = start_crop:120
+activity_1_colorInfluence = Earth:0.04, Water:0.03
+
+activity_2_name = 약초 수확
+activity_2_key = harvest_herb
+activity_2_time = 15
+activity_2_vigor = 5
+activity_2_condition = crop_ready
+activity_2_effect = give
+activity_2_gives = Herb:2, Potion:1
+activity_2_colorInfluence = Earth:0.03, Light:0.02
+
+[Guild_Hall]
+activity_1_name = 길드 가입증 구매
+activity_1_key = buy_guild_card
+activity_1_time = 10
+activity_1_vigor = 0
+activity_1_gold = 50
+activity_1_desc = 길드 멤버 확인증을 구매한다. 던전 난이도를 확인할 수 있다.
+activity_1_effect = give
+activity_1_gives = GuildCard:1
+activity_1_colorInfluence = Light:0.02, Iron:0.01
+
+[Memory_Spring]
+activity_1_name = 영혼 보존
+activity_1_key = soul_save
+activity_1_time = 30
+activity_1_vigor = 10
+activity_1_desc = 기억의 샘에서 현재의 자아를 세계의 기억 속에 각인한다.
+activity_1_effect = heal_hp:50
+activity_1_colorInfluence = Light:0.06, Water:0.04
+
+activity_2_name = 명상
+activity_2_key = meditate
+activity_2_time = 40
+activity_2_vigor = 0
+activity_2_desc = 샘물 소리를 들으며 깊이 명상한다. 기력이 크게 회복된다.
+activity_2_effect = restore_vigor:40
+activity_2_colorInfluence = Water:0.04, Light:0.03, Wind:0.02
+
+[Limun_Ruins]
+activity_1_name = 고대 비문 해독
+activity_1_key = read_inscription
+activity_1_time = 45
+activity_1_vigor = 15
+activity_1_desc = 무너진 관측탑의 비석을 해독한다. 약초나 희귀한 발견이 있을 수 있다.
+activity_1_effect = random_loot
+activity_1_loot = Herb:2:0.5, Potion:1:0.3, OreRare:1:0.1
+activity_1_colorInfluence = Light:0.04, Dark:0.03, Wind:0.02
+
+activity_2_name = 유적 탐사
+activity_2_key = ruin_explore
+activity_2_time = 60
+activity_2_vigor = 20
+activity_2_desc = 유적의 미지의 구역을 탐사한다. 위험하지만 보상이 있을 수 있다.
+activity_2_effect = random_loot
+activity_2_loot = Equipment:1:0.12, OreRare:1:0.15, MonsterLoot:2:0.35, Potion:1:0.25
+activity_2_colorInfluence = Dark:0.05, Earth:0.03, Iron:0.02
+
+[Mountain_Path]
+activity_1_name = 채굴
+activity_1_key = mining
+activity_1_time = 40
+activity_1_vigor = 20
+activity_1_desc = 산길의 암벽에서 광석을 채굴한다.
+activity_1_effect = random_loot
+activity_1_loot = OreCommon:2:0.6, OreCommon:1:0.3, OreRare:1:0.08
+activity_1_colorInfluence = Iron:0.05, Earth:0.03
+
+activity_2_name = 산약초 채집
+activity_2_key = mountain_herb
+activity_2_time = 30
+activity_2_vigor = 12
+activity_2_desc = 산길에 자생하는 약초를 채집한다. 평지보다 질이 좋다.
+activity_2_effect = random_loot
+activity_2_loot = Herb:2:0.6, Herb:1:0.3, Potion:1:0.15
+activity_2_colorInfluence = Earth:0.03, Wind:0.03
+
+[Wilderness]
+activity_1_name = 야생 채집
+activity_1_key = forage
+activity_1_time = 25
+activity_1_vigor = 10
+activity_1_desc = 야생지대에서 먹을 수 있는 것을 찾는다.
+activity_1_effect = random_loot
+activity_1_loot = Food:2:0.6, Herb:1:0.4, Food:1:0.3
+activity_1_colorInfluence = Earth:0.03, Wind:0.02
+
+activity_2_name = 몬스터 추적
+activity_2_key = track_monsters
+activity_2_time = 45
+activity_2_vigor = 18
+activity_2_desc = 야생지대의 몬스터 흔적을 추적한다. 전리품을 얻을 수 있다.
+activity_2_effect = random_loot
+activity_2_loot = MonsterLoot:1:0.4, Food:2:0.5, Equipment:1:0.06
+activity_2_colorInfluence = Fire:0.03, Dark:0.02, Wind:0.02
+
+[Market_Square]
+activity_1_name = 시세 확인
+activity_1_key = check_prices
+activity_1_time = 10
+activity_1_vigor = 2
+activity_1_desc = 시장의 현재 물가를 살펴본다.
+activity_1_effect = hear_rumor
+activity_1_colorInfluence = Wind:0.02, Earth:0.01
+
+activity_2_name = 포피의 빵 시식
+activity_2_key = popi_bread
+activity_2_time = 15
+activity_2_vigor = 0
+activity_2_gold = 8
+activity_2_desc = 하프링 포피의 갓 구운 빵을 사 먹는다. 기력이 회복된다.
+activity_2_effect = restore_vigor:25
+activity_2_colorInfluence = Fire:0.02, Earth:0.02, Light:0.01
+
+[Silk_Workshop]
+activity_1_name = 직물 주문
+activity_1_key = order_silk
+activity_1_time = 45
+activity_1_vigor = 10
+activity_1_gold = 40
+activity_1_desc = 아리엔에게 거미줄 직물 제작을 의뢰한다. 장비가 완성된다.
+activity_1_requires = OreCommon:2
+activity_1_effect = give
+activity_1_gives = Equipment:1
+activity_1_colorInfluence = Iron:0.03, Dark:0.02
+
+activity_2_name = 직물 감상
+activity_2_key = admire_silk
+activity_2_time = 15
+activity_2_vigor = 3
+activity_2_desc = 천장에서 내려오는 은빛 거미줄을 감상한다. 마음이 차분해진다.
+activity_2_effect = restore_vigor:15
+activity_2_colorInfluence = Light:0.03, Water:0.02
+
+[Moonlit_Clearing]
+activity_1_name = 달빛 명상
+activity_1_key = moonlit_meditate
+activity_1_time = 30
+activity_1_vigor = 0
+activity_1_desc = 달빛 아래에서 명상한다. HP와 기력이 회복된다.
+activity_1_effect = heal_hp:20
+activity_1_colorInfluence = Dark:0.04, Light:0.03, Wind:0.02
+
+activity_2_name = 야생 탐색
+activity_2_key = clearing_explore
+activity_2_time = 35
+activity_2_vigor = 15
+activity_2_desc = 빈터 주변의 숲을 탐색한다.
+activity_2_effect = random_loot
+activity_2_loot = Herb:2:0.5, MonsterLoot:1:0.3, Food:2:0.4
+activity_2_colorInfluence = Wind:0.03, Earth:0.02
+
+[Bloom_Terrace]
+activity_1_name = 꽃향기 치유
+activity_1_key = flower_heal
+activity_1_time = 25
+activity_1_vigor = 5
+activity_1_desc = 플로라의 꽃향기에 둘러싸여 몸과 마음을 치유한다.
+activity_1_effect = heal_hp:35
+activity_1_colorInfluence = Earth:0.04, Light:0.03, Water:0.02
+
+activity_2_name = 특수 약초 채집
+activity_2_key = bloom_herb
+activity_2_time = 30
+activity_2_vigor = 10
+activity_2_desc = 테라스의 특별한 약초를 채집한다. 효능이 뛰어나다.
+activity_2_effect = give
+activity_2_gives = Herb:3, Potion:1
+activity_2_colorInfluence = Earth:0.03, Wind:0.02

@@ -1,0 +1,69 @@
+; ============================================================
+; combat_behavior.txt
+; Combat behavior rules for NPC AI decision-making.
+;
+; [Default]       Base thresholds applied to all NPCs.
+; [<RoleType>]    Per-role overrides (inherits from Default).
+; [ColorRules]    Color-element thresholds that grant bonuses
+;                 or impose restrictions in combat.
+;
+; ColorRules format:
+;   Element_condition = threshold:effect:value
+;     threshold  - color intensity required (0.0~1.0)
+;     effect     - bonus_attack | bonus_defense | hp_regen
+;                  | no_rest | no_retreat
+;     value      - multiplier or flat amount (omit for flags)
+; ============================================================
+
+[Default]
+hpThresholdRetreat = 20
+hpThresholdRest = 40
+vigorMinimum = 10
+mpCostPerTurn = 5
+
+[Adventurer]
+hpThresholdRetreat = 15
+hpThresholdRest = 35
+
+[Guard]
+hpThresholdRetreat = 25
+hpThresholdRest = 50
+
+[Priest]
+hpThresholdRetreat = 30
+hpThresholdRest = 55
+mpCostPerTurn = 8
+
+[Merchant]
+hpThresholdRetreat = 30
+hpThresholdRest = 50
+
+[Farmer]
+hpThresholdRetreat = 25
+hpThresholdRest = 45
+
+[Craftsman]
+hpThresholdRetreat = 20
+hpThresholdRest = 40
+
+[Miner]
+hpThresholdRetreat = 15
+hpThresholdRest = 35
+
+[Fisher]
+hpThresholdRetreat = 25
+hpThresholdRest = 45
+
+[ColorRules]
+Fire_high = 0.7:bonus_attack:1.2
+Fire_high_reckless = 0.85:no_retreat
+Iron_high = 0.7:bonus_defense:1.2
+Light_high = 0.7:hp_regen:2
+Dark_high = 0.7:bonus_attack:1.15
+Dark_high_bold = 0.85:no_rest
+Water_high = 0.7:hp_regen:1
+Water_low = 0.3:no_rest
+Earth_high = 0.7:bonus_defense:1.15
+Wind_high = 0.7:bonus_attack:1.1
+Electric_high = 0.7:bonus_attack:1.15
+Electric_high_surge = 0.85:bonus_attack:1.3

@@ -1,0 +1,337 @@
+# ============================================================
+# actors.txt — NPC 정의
+# race: Human, Elf, Dwarf, Beastkin, Harpy, Centaur, Nekomimi, Spirit, Foxkin, Dragon, Angel, Demon
+# role: GuildClerk, Adventurer, Merchant, Farmer, Guard, Villager
+# inventory: 아이템키:수량 (쉼표 구분)
+# background: 캐릭터 소개 ('|' = 줄바꿈). 판타지·이종족 세계관 묘사용.
+# playable: 1(또는 생략) = 새 게임 시 플레이어로 선택 가능, 0 = 월드에만 존재하는 NPC(선택 목록 제외)
+# ============================================================
+
+[세리나]
+playable = 1
+race = Human
+role = GuildClerk
+strength = 0.3
+gold = 200
+location = Guild_Hall
+age = 28
+inventory = GuildCard:1
+colorValues = 0.3,0.7,0.4,0.6,0.5,0.4,0.7,0.3
+domainHigh = Calm,Empathetic,Inventive,Reliable,Patient,Freesprited,Righteous,Secretive
+domainLow = Melancholy,Rigid,Methodical,Flexible,Generous,Grounded,Cynical,Honest
+background = 엘리메스 길드 홀의 창구를 지키는 인간 여성.|하피의 깃털 서류와 켄타우로스 상단의 징표가 한꺼번에 쌓여도, 미소를 잃지 않는 든든한 길드의 기둥이다.|어릴 적부터 다양한 종족의 친구들과 자라며, ‘다르다’는 건 ‘풍요롭다’는 뜻임을 자연스럽게 배웠다.|퇴근 후에는 주점에서 따��한 차 한 잔을 즐기는 게 그녀의 작은 낙.
+
+[카엘]
+playable = 1
+race = Centaur
+role = Adventurer
+strength = 0.7
+gold = 30
+location = Tavern
+age = 24
+colorValues = 0.8,0.4,0.5,0.7,0.3,0.9,0.6,0.4
+domainHigh = Passionate,Adaptable,Impulsive,Stubborn,Greedy,Freesprited,Hopeful,Cunning
+domainLow = Cautious,Indifferent,Stagnant,Fragile,Restless,Withdrawn,Apathetic,Naive
+inventory = Potion:2, Equipment:1, Food:3
+background = 북쪽 초원에서 온 젊은 켄타우로스 모험가.|좁은 문과 계단 투성이인 이 마을에 적응하느라 고생했지만, 여러 종족이 한 테이블에 둘러앉는 주점의 분위기가 고향의 넓은 풀밭만큼이나 마음에 들었다.|모험에 목이 마른 나머지 의뢰가 들어오면 발굽이 먼저 달려간다.|하피 노래에 맞춰 몰래 박자를 맞추는 건 비밀.
+
+[로쉔]
+playable = 1
+race = Nekomimi
+role = Merchant
+strength = 0.2
+gold = 300
+location = Market_Square
+age = 35
+colorValues = 0.4,0.5,0.6,0.5,0.8,0.3,0.4,0.6
+domainHigh = Excited,Empathetic,Inventive,Reliable,Greedy,Flighty,Cynical,Cunning
+domainLow = Calm,Rigid,Methodical,Flexible,Generous,Grounded,Apathetic,Honest
+inventory = Food:10, Potion:5, Herb:8
+background = 시장에서 가장 귀가 빠른 네코미미 상인.|손님의 심장 박동으로 거짓과 진심을 구분하는 게 자칭 ‘장사의 재능’이다.|하피의 깃털 부적부터 드워프의 광석까지, 진열대엔 온갖 종족의 물건이 뒤섞여 있다.|장사 끝나면 지붕 위에서 낮잠 자는 게 최고의 힐링. 고양이 피는 못 속인다.
+
+[브로크]
+playable = 1
+race = Dwarf
+role = Merchant
+strength = 0.8
+gold = 150
+location = Blacksmith
+age = 95
+colorValues = 0.7,0.3,0.3,0.9,0.7,0.2,0.5,0.4
+domainHigh = Aggressive,Adaptable,Inventive,Stubborn,Patient,Freesprited,Hopeful,Secretive
+domainLow = Cautious,Indifferent,Stagnant,Fragile,Restless,Withdrawn,Cynical,Naive
+inventory = Equipment:6, OreCommon:12, OreRare:2
+background = 엘리메스 대장간의 주인장. 숯빛 수염에 불꽃이 어른거린다.|켄타우로스의 편자도, 하피의 가벼운 흉갑도 척척 만들어내는 장인이다.|’혈통이 뭐 중해, 쇠가 알아서 말하잖나.’ 그 한마디가 그의 영업 방침.|맥주 한 잔과 좋은 광석이면 하루가 완벽하다는 소박한 사람.
+
+[이리엘]
+playable = 1
+race = Harpy
+role = Farmer
+strength = 0.4
+gold = 80
+location = Herb_Garden
+age = 142
+colorValues = 0.3,0.6,0.4,0.4,0.8,0.7,0.8,0.2
+domainHigh = Passionate,Empathetic,Inventive,Reliable,Patient,Freesprited,Righteous,Secretive
+domainLow = Melancholy,Rigid,Stagnant,Flexible,Generous,Grounded,Apathetic,Honest
+inventory = Herb:20, Potion:8, Food:5
+background = 약초원을 돌보는 하피 농부. ‘바람을 심는 자’라 불리는 가문의 후예다.|날갯짓으로 씨앗을 넓게 뿌리고, 잎사귀의 떨림으로 날씨를 짐작하는 하피식 농법의 달인.|약초원의 아침 안개 속에서 차를 끓여 마을 사람들에게 나누어 주는 것이 그녀의 일상이다.|수확한 약초로 만든 블렌드 차는 마을 최고의 인기 메뉴.
+
+[피리]
+playable = 0
+race = Harpy
+role = Meteorologist
+strength = 0.3
+gold = 40
+location = Limun_Ruins
+homeLocation = Limun_Ruins
+age = 14
+colorValues = 0.3,0.4,0.8,0.3,0.4,0.9,0.6,0.2
+domainHigh = Excited,Adaptable,Inventive,Reliable,Patient,Freesprited,Hopeful,Cunning
+domainLow = Melancholy,Rigid,Methodical,Flexible,Generous,Grounded,Cynical,Naive
+inventory = Food:3, Herb:5
+background = 리문 유적의 낡은 관측탑 꼭대기에 포근한 둥지를 틀고 사는 어린 하피 기상사.|바람 한 줄기만 맡아도 내일 날씨를 알아맞히며, 유적에 남은 빛바랜 관측 기록들을 소중한 친구처럼 아낀다.|처음 만나는 사람 앞에서는 깃털을 잔뜩 부풀리고 고개를 숨기지만, 구름이나 바람 이야기가 나오면 눈을 반짝이며 수다가 멈추질 않는다.|매일 아침 탑 꼭대기에서 하늘 일기를 꾹꾹 적는 것이 그녀의 가장 소중한 의식이다.
+
+# ============================================================
+# 생산 체인 NPC — 마을 경제의 핵심 인력
+# ============================================================
+
+[가론]
+playable = 0
+race = Dwarf
+role = Miner
+strength = 0.8
+gold = 60
+location = Mountain_Path
+homeLocation = Mountain_Path
+age = 78
+colorValues = 0.6,0.3,0.3,0.9,0.7,0.2,0.5,0.3
+domainHigh = Passionate,Adaptable,Methodical,Stubborn,Patient,Grounded,Hopeful,Honest
+domainLow = Cautious,Indifferent,Stagnant,Fragile,Generous,Withdrawn,Cynical,Naive
+inventory = OreCommon:5, Food:3
+background = 산길 갱도를 제 집처럼 드나드는 드워프 광부로, 바위 틈에서 좋은 광맥을 찾아내는 일을 세상에서 가장 즐거운 놀이라 여긴다.|말은 많지 않지만, 광석 이야기가 나오면 눈빛이 살아나며 한 시간도 거뜬히 얘기한다.|하루 일과를 마치고 갱도 입구에 걸터앉아 산 바람을 맞으며 파이프를 피우는 것이 그의 소박한 행복이다.
+
+[나탈리]
+playable = 0
+race = Human
+role = Fisher
+strength = 0.3
+gold = 40
+location = Lake
+homeLocation = Lake
+age = 32
+colorValues = 0.3,0.7,0.4,0.4,0.5,0.6,0.6,0.2
+domainHigh = Calm,Empathetic,Inventive,Flexible,Patient,Freesprited,Hopeful,Honest
+domainLow = Melancholy,Rigid,Stagnant,Fragile,Generous,Grounded,Cynical,Naive
+inventory = Food:8
+background = 호수가 작은 오두막에서 살아가는 어부로, 새벽 안개 속에서 낚싯줄을 드리우는 모습이 마을의 아침 풍경이 되었다.|낚시하는 동안은 온 세상이 고요해지는 기분이라며, 그 시간을 누구에게도 양보하지 않는다.|갓 잡은 생선을 마을 사람들에게 나눠주고 받는 고맙다는 인사 한 마디가 하루의 가장 큰 보람이다.
+
+[오르시아]
+playable = 0
+race = Elf
+role = Priest
+strength = 0.3
+gold = 80
+location = Church
+homeLocation = Church
+age = 247
+colorValues = 0.2,0.8,0.3,0.4,0.6,0.4,0.9,0.1
+domainHigh = Calm,Empathetic,Methodical,Reliable,Patient,Grounded,Righteous,Honest
+domainLow = Melancholy,Rigid,Stagnant,Fragile,Generous,Withdrawn,Apathetic,Naive
+inventory = Herb:5, Potion:3
+background = 수백 년의 세월을 교회 약초 정원과 함께 보내온 엘프 사제로, 어떤 풀이 두통에 좋고 어떤 꽃이 마음을 달래는지 손금 보듯 안다.|느릿느릿 말하고 느릿느릿 걷지만, 필요한 이에게 꼭 맞는 약차를 한 잔 내미는 타이밍만큼은 누구보다 정확하다.|오래 살았다는 것은 그만큼 많은 사람을 아꼈다는 뜻이라며, 오늘도 조용히 미소 짓는다.
+
+[한셀]
+playable = 0
+race = Human
+role = Guard
+strength = 0.6
+gold = 70
+location = Town_Elimes
+homeLocation = Town_Elimes
+age = 38
+colorValues = 0.5,0.4,0.3,0.8,0.6,0.3,0.7,0.3
+domainHigh = Passionate,Adaptable,Methodical,Stubborn,Patient,Grounded,Righteous,Honest
+domainLow = Cautious,Indifferent,Stagnant,Fragile,Generous,Withdrawn,Cynical,Naive
+inventory = Equipment:1, Food:4
+background = 엘리메스 마을 골목골목을 손바닥처럼 아는 경비로, 오늘 날씨가 맑으면 마을 광장에서, 비가 오면 처마 아래에서 그를 찾을 수 있다.|무뚝뚝해 보여도 길을 잃은 아이나 무거운 짐을 든 어르신이 있으면 먼저 다가가는 다정한 면이 있다.|마을이 조용하고 사람들이 편안한 것, 그게 자신에게 가장 좋은 하루라고 말한다.
+
+[리라]
+playable = 0
+race = Beastkin
+role = Craftsman
+strength = 0.5
+gold = 100
+location = Blacksmith
+homeLocation = Blacksmith
+age = 29
+colorValues = 0.6,0.4,0.5,0.7,0.5,0.4,0.5,0.4
+domainHigh = Passionate,Adaptable,Inventive,Stubborn,Patient,Grounded,Hopeful,Cunning
+domainLow = Cautious,Indifferent,Stagnant,Fragile,Generous,Withdrawn,Cynical,Naive
+inventory = OreCommon:8, Equipment:2
+background = 브로크의 대장간에서 일하는 수인 장인으로, 짐승의 예민한 귀로 금속 두드리는 소리만 들어도 작업이 잘 되고 있는지 알아챈다.|엘프 활이든 드워프 갑옷이든 손에 잡힌 것은 뭐든 정성스럽게 만들어내며, 완성품을 건네줄 때 살짝 귀를 세우는 것이 만족한 표정 대신이다.|말은 적지만 매일 퇴근 전 작업대를 꼼꼼히 닦는 그 습관이, 말보다 더 많은 것을 전한다.
+
+# ============================================================
+# 신규 종족 NPC — 여우 수인, 드래곤, 천사, 악마
+# ============================================================
+
+[유린]
+playable = 1
+race = Foxkin
+role = Merchant
+strength = 0.4
+gold = 180
+location = Market_Square
+age = 22
+colorValues = 0.5,0.6,0.7,0.5,0.4,0.7,0.5,0.5
+domainHigh = Excited,Adaptable,Inventive,Flexible,Greedy,Freesprited,Cynical,Cunning
+domainLow = Cautious,Rigid,Methodical,Stubborn,Generous,Grounded,Apathetic,Honest
+inventory = Herb:6, Potion:4, Food:5
+background = 아홉 갈래 꼬리 전설의 후손이라고 당당히 주장하는 여우 수인 상인으로, 귀 두 개 꼬리 하나뿐이지만 자신감만큼은 아홉 배다.|냄새 하나로 약초의 신선도를 가려내고, 손님의 표정만 봐도 무엇이 필요한지 딱 알아채는 상인 본능을 타고났다.|'좋은 장사는 서로 기분 좋게 헤어지는 것'이라는 신조 덕에, 그녀의 단골손님은 날이 갈수록 늘어만 간다.
+
+[타미]
+playable = 0
+race = Foxkin
+role = Villager
+strength = 0.3
+gold = 30
+location = Tavern
+homeLocation = Tavern
+age = 16
+colorValues = 0.4,0.5,0.8,0.3,0.3,0.8,0.6,0.4
+domainHigh = Excited,Adaptable,Inventive,Flexible,Generous,Freesprited,Hopeful,Cunning
+domainLow = Melancholy,Rigid,Stagnant,Stubborn,Restless,Grounded,Cynical,Naive
+inventory = Food:3, Herb:2
+background = 주점에서 심부름을 도맡아 하는 어린 여우 수인으로, 모험가들의 이야기를 들을 때면 귀가 두 배는 커지는 것 같다.|주문을 받고 음식을 나르는 틈틈이 새로운 이야기 조각을 모으는 것이 그녀의 진짜 일과다.|언젠가 직접 먼 곳을 여행하겠다는 꿈을 꼬리를 바짝 세우고 이야기하는 모습이 어찌나 귀여운지, 주점 단골들의 사랑을 듬뿍 받는다.
+
+[드라카]
+playable = 1
+race = Dragon
+role = Adventurer
+strength = 0.9
+gold = 100
+location = Tavern
+age = 312
+colorValues = 0.9,0.3,0.6,0.8,0.4,0.5,0.3,0.6
+domainHigh = Passionate,Adaptable,Impulsive,Stubborn,Patient,Freesprited,Cynical,Secretive
+domainLow = Cautious,Indifferent,Stagnant,Fragile,Restless,Withdrawn,Apathetic,Honest
+inventory = Equipment:2, OreRare:1, MonsterLoot:3
+background = 수백 년을 살아온 고대 드래곤이지만, 지금은 인간 모습으로 주점 단골 자리를 차지한 미식가다.|뿔과 비늘 일부는 모자와 옷깃으로 가리지만, 새 요리가 나왔다는 소리에 귀가 번쩍 뜨이는 반응은 숨기질 못한다.|마을 식당이면 어디든 적어도 한 번씩은 들러봤고, 맛집 추천만큼은 누구보다 믿음직하다.|오랜 세월이 가르쳐 준 건 강해지는 법이 아니라, 매일 밥상에서 소소한 즐거움을 찾는 법이었다고 한다.
+
+[크론]
+playable = 0
+race = Dragon
+role = Guard
+strength = 0.85
+gold = 50
+location = Town_Elimes
+homeLocation = Town_Elimes
+age = 198
+colorValues = 0.7,0.4,0.5,0.9,0.6,0.3,0.4,0.5
+domainHigh = Passionate,Adaptable,Methodical,Stubborn,Patient,Grounded,Hopeful,Honest
+domainLow = Cautious,Indifferent,Stagnant,Fragile,Generous,Withdrawn,Cynical,Naive
+inventory = Equipment:1, Food:3
+background = 한셀 옆에서 마을 경비를 맡은 드래곤 청년으로, 드래곤 치고는 아직 어린 축에 든다.|세로 동공과 목덜미 비늘이 정체를 살짝 드러내지만, 마을 사람들은 이미 그냥 '동네 든든한 청년'으로 여긴다.|추운 밤 순찰 때 콧김에서 모락모락 연기가 새어 나오는 덕분에, 겨울철엔 마을 주민들에게 은근히 인기가 있다.
+
+[리엘]
+playable = 1
+race = Angel
+role = Priest
+strength = 0.5
+gold = 60
+location = Church
+age = 150
+colorValues = 0.3,0.7,0.4,0.4,0.5,0.6,0.9,0.1
+domainHigh = Calm,Empathetic,Methodical,Reliable,Generous,Grounded,Righteous,Honest
+domainLow = Melancholy,Rigid,Stagnant,Flexible,Restless,Withdrawn,Apathetic,Naive
+inventory = Potion:5, Herb:3
+background = 교회의 스테인드글라스 빛을 받으면 깃털 날개가 무지개빛으로 물드는 천사 사제로, 본인은 그게 특별한 일이 아니라고 담담하게 말한다.|오르시아와 함께 아픈 이들을 돌보며, 치유 후 환자가 밝아진 얼굴로 돌아가는 모습을 보는 것이 가장 큰 기쁨이다.|일과를 마치면 날개를 살짝 접고 시장에 나가 제철 과일을 사 먹는 소박한 낙을 즐긴다.
+
+[세라핌]
+playable = 0
+race = Angel
+role = Villager
+strength = 0.4
+gold = 40
+location = Lake
+homeLocation = Lake
+age = 88
+colorValues = 0.2,0.8,0.3,0.3,0.6,0.7,0.8,0.1
+domainHigh = Calm,Empathetic,Inventive,Flexible,Patient,Freesprited,Righteous,Honest
+domainLow = Melancholy,Rigid,Stagnant,Stubborn,Generous,Grounded,Apathetic,Naive
+inventory = Food:4, Herb:2
+background = 호수가를 보금자리로 삼은 천사로, 새벽마다 수면 위를 낮게 날며 물안개를 가르는 모습이 마을 사람들이 기다리는 아침 풍경이 되었다.|말수가 적어 처음엔 어렵게 느껴지지만, 나탈리 옆에 조용히 앉아 함께 낚싯줄을 드리우는 모습을 보면 생각이 달라진다.|물고기가 잘 잡히는 날, 세라핌이 살며시 미소 짓는 것을 알아채는 것은 호수가 주민들만의 작은 즐거움이다.
+
+[아제르]
+playable = 1
+race = Demon
+role = Merchant
+strength = 0.6
+gold = 250
+location = Trade_Route
+age = 207
+colorValues = 0.7,0.3,0.5,0.6,0.4,0.5,0.2,0.9
+domainHigh = Passionate,Adaptable,Inventive,Reliable,Greedy,Freesprited,Cynical,Cunning
+domainLow = Cautious,Indifferent,Stagnant,Fragile,Generous,Withdrawn,Apathetic,Naive
+inventory = Equipment:3, OreRare:2, Potion:4, MonsterLoot:2
+background = '계약의 악마'라는 별명이 붙었지만, 실제로는 계약서를 한 글자도 흐리게 쓰지 않는 신용 제일의 무역상이다.|작은 뿔 두 개와 화살표 꼬리가 악마임을 드러내지만, 먼 도시에서도 그의 이름은 믿을 수 있는 상인으로 통한다.|무역로를 따라 이 마을 저 마을을 오가며 진귀한 물건을 실어 나르고, 방문할 때마다 어디선가 구해온 간식 보따리를 챙겨오는 것이 그만의 인사법이다.
+
+[멜리사]
+playable = 0
+race = Demon
+role = Craftsman
+strength = 0.5
+gold = 90
+location = Blacksmith
+homeLocation = Blacksmith
+age = 134
+colorValues = 0.6,0.3,0.6,0.7,0.3,0.4,0.3,0.8
+domainHigh = Passionate,Adaptable,Inventive,Stubborn,Patient,Grounded,Cynical,Cunning
+domainLow = Cautious,Indifferent,Stagnant,Fragile,Generous,Withdrawn,Apathetic,Naive
+inventory = OreCommon:6, Equipment:2
+background = 브로크의 대장간에서 마력 부여를 맡은 악마 장인으로, 완성된 장비에 손을 얹어 은은한 문양을 새기는 솜씨가 일품이다.|리라가 형태를 빚으면 멜리사가 마력을 입히는 콤비 작업은 대장간의 명물이 되었고, 둘이 나란히 집중하는 모습은 꽤 보기 좋다.|말은 짧고 건조하지만 자신이 손댄 물건에는 누구보다 정성을 쏟으며, 완성품을 쓱 내밀며 '됐어'라고 말할 때의 표정이 가장 따뜻하다.
+
+# 디버그 전용 — 선택 목록에는 나오지 않음. 캐릭터 선택에서 -1 입력 시에만 플레이 가능.
+[디버그_모노]
+playable = 0
+race = Human
+role = Villager
+strength = 0.2
+gold = 10
+location = Town_Elimes
+age = 18
+background = 관찰자.|전 장소의 NPC 행동이 시야·집중 규칙 없이 기록된다.|이 캐릭터는 공개 선택 목록에 표시되지 않는다.
+
+# ============================================================
+# 던전 심부 정령 NPC — 이동하지 않으며 대화 가능
+# ============================================================
+
+[에리스]
+playable = 0
+race = Spirit
+role = Villager
+stationary = 1
+strength = 0.8
+gold = 0
+location = Larmen_Forest_Deep
+homeLocation = Larmen_Forest_Deep
+age = 999
+colorValues = 0.2,0.6,0.3,0.3,0.9,0.8,0.7,0.2
+domainHigh = Calm,Empathetic,Inventive,Flexible,Patient,Freesprited,Hopeful,Honest
+domainLow = Cautious,Rigid,Stagnant,Fragile,Generous,Grounded,Apathetic,Naive
+background = 라르멘 숲 깊은 곳에 오래전부터 깃들어 있는 숲의 정령으로, 나무 한 그루 풀 한 포기의 이름을 모두 알고 있다.|처음 만나는 이에게는 숲처럼 조용히 거리를 두지만, 꽃을 꺾지 않고 발소리를 낮춰 걷는 모습을 보면 슬며시 나무 뒤에서 얼굴을 내민다.|숲을 소중히 여기는 이에게는 어느 계절에 어떤 약초가 피는지, 어디에 맑은 샘이 숨어 있는지를 조근조근 알려준다.
+
+[미르]
+playable = 0
+race = Spirit
+role = Villager
+stationary = 1
+strength = 0.7
+gold = 0
+location = Mist_Marsh_Deep
+homeLocation = Mist_Marsh_Deep
+age = 999
+colorValues = 0.3,0.9,0.5,0.2,0.4,0.3,0.4,0.6
+domainHigh = Calm,Adaptable,Inventive,Flexible,Generous,Grounded,Cynical,Cunning
+domainLow = Cautious,Indifferent,Stagnant,Fragile,Restless,Withdrawn,Apathetic,Naive
+background = 안개 습지 깊숙이 자리한 안개의 정령으로, 모습이 늘 안개처럼 은은하게 일렁여 있어 처음엔 눈을 비비게 된다.|느긋하고 유유자적한 성격이라 서두르는 손님을 살짝 어리둥절하게 만들기도 하지만, 악의는 손톱만큼도 없다.|습지 안쪽에 숨어 있는 맑은 샘물이나 희귀한 수초의 위치를 알고 있으며, 조용히 곁에 앉아 이야기를 나누다 보면 슬며시 가르쳐 준다.

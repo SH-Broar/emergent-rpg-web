@@ -1,0 +1,296 @@
+# ============================================================
+# diagnostic.txt — 코어 매트릭스 성격 진단 질문
+#
+# A 선택 시: colorA 적용 + influences에 +weight
+# B 선택 시: colorB 적용 + influences에 -weight
+#
+# 설계 원칙:
+#   - 컬러 시작값 0.5 기준, 극단적 답변만 0.8+ 도달
+#   - A가 올리는 컬러를 B가 내림 (제로섬 방향)
+#   - 질문은 구체적 상황이어야 함 (평범한 이분법 금지)
+#   - delta 최대 ±0.03, 보통 ±0.02
+# ============================================================
+
+# ────────────────────────────────────────
+# 불(퍼지는 것) ↔ 물(모여드는 것)
+# ────────────────────────────────────────
+
+[q01]
+text = 친구가 만든 요리가 맛이 없다. 솔직히 말하겠는가?
+optionA = 웃으면서 괜찮다고 한다
+optionB = 맛없다고 솔직히 말한다
+influences = 0:0:0.15, 0:1:0.10, 1:0:0.10
+colorA = Water:0.02, Light:0.01
+colorB = Fire:0.02, Iron:0.01
+
+[q02]
+text = 동창회에서 한 명도 아는 사람이 없다. 어떻게 하겠는가?
+optionA = 아무에게나 먼저 말을 건다
+optionB = 조용히 음료를 마시며 기다린다
+influences = 0:0:0.12, 0:6:0.10, 7:0:0.08
+colorA = Fire:0.02, Wind:0.01
+colorB = Dark:0.02, Earth:0.01
+
+[q03]
+text = 공원에서 비둘기 떼가 다가온다. 반응은?
+optionA = 빵 부스러기를 뿌려준다
+optionB = 피해서 다른 길로 간다
+influences = 0:2:0.12, 1:2:0.10, 6:0:0.08
+colorA = Water:0.02, Earth:0.01
+colorB = Wind:0.01, Dark:0.01
+
+[q04]
+text = 엘리베이터에서 모르는 사람과 단둘이 됐다. 30층까지 올라간다.
+optionA = 날씨 이야기라도 꺼낸다
+optionB = 폰만 본다
+influences = 0:1:0.15, 0:3:0.10, 7:1:0.10
+colorA = Fire:0.02
+colorB = Dark:0.02
+
+# ────────────────────────────────────────
+# 전기(도움받을 때 빛남) ↔ 철(도움줄 때 빛남)
+# ────────────────────────────────────────
+
+[q05]
+text = 길에서 무거운 짐을 든 노인을 봤다.
+optionA = 달려가서 짐을 들어드린다
+optionB = 노인이 도움을 요청하면 돕겠다
+influences = 3:0:0.15, 3:1:0.10, 2:0:0.10
+colorA = Iron:0.03
+colorB = Electric:0.01, Dark:0.01
+
+[q06]
+text = 친구가 이사를 돕는다며 피자를 사주겠다고 한다. 가겠는가?
+optionA = 피자 없어도 간다
+optionB = 피자가 있으니까 간다
+influences = 3:2:0.12, 3:3:0.10, 2:2:0.08
+colorA = Iron:0.02, Water:0.01
+colorB = Electric:0.02, Fire:0.01
+
+[q07]
+text = 프로젝트에서 자기 파트가 끝났는데, 팀원이 고전하고 있다.
+optionA = 남아서 도와준다
+optionB = 칼퇴한다 — 내 파트는 끝났으니
+influences = 3:4:0.15, 3:5:0.12, 2:4:0.08
+colorA = Iron:0.02, Water:0.01
+colorB = Wind:0.02, Fire:0.01
+
+[q08]
+text = 도움을 받은 뒤 보답하고 싶을 때, 더 자연스러운 방법은?
+optionA = 다음에 밥 한번 사겠다고 한다
+optionB = 바로 그 자리에서 감사를 표현한다
+influences = 2:0:0.12, 2:1:0.10, 3:6:0.08
+colorA = Earth:0.01, Iron:0.01
+colorB = Electric:0.02, Light:0.01
+
+# ────────────────────────────────────────
+# 흙(지속성) ↔ 바람(변화)
+# ────────────────────────────────────────
+
+[q09]
+text = 10년 다닌 단골 식당이 메뉴를 완전히 바꿨다.
+optionA = 섭섭하지만 새 메뉴를 시도해본다
+optionB = 옛날 메뉴가 더 좋았다고 말한다
+influences = 5:0:0.10, 4:0:0.10, 5:1:0.08, 4:1:0.08
+colorA = Wind:0.02
+colorB = Earth:0.02
+
+[q10]
+text = 휴대폰 바탕화면을 바꾸는 빈도는?
+optionA = 거의 안 바꾼다 — 익숙한 게 편하다
+optionB = 자주 바꾼다 — 질리니까
+influences = 4:2:0.15, 5:2:0.12, 4:3:0.08
+colorA = Earth:0.02, Iron:0.01
+colorB = Wind:0.02, Electric:0.01
+
+[q11]
+text = 이사할 때 짐을 정리하면서, 5년 넘게 안 쓴 물건이 나왔다.
+optionA = 추억이니까 가져간다
+optionB = 안 쓰니까 버린다
+influences = 4:4:0.12, 4:5:0.10, 5:4:0.10
+colorA = Earth:0.02, Water:0.01
+colorB = Wind:0.02, Fire:0.01
+
+[q12]
+text = 잠들기 전 루틴이 있는가?
+optionA = 매일 같은 순서로 한다
+optionB = 그때그때 다르다
+influences = 4:6:0.15, 5:6:0.10, 3:0:0.08
+colorA = Earth:0.02, Iron:0.01
+colorB = Wind:0.01, Electric:0.01
+
+# ────────────────────────────────────────
+# 빛(포용/상상력) ↔ 어둠(목적 지향)
+# ────────────────────────────────────────
+
+[q13]
+text = 카페에서 옆 테이블의 아기가 계속 쳐다본다. 반응은?
+optionA = 손을 흔들어준다
+optionB = 무시한다 — 내 커피에 집중
+influences = 6:0:0.15, 6:1:0.10, 7:0:0.10
+colorA = Light:0.02, Water:0.01
+colorB = Dark:0.02, Iron:0.01
+
+[q14]
+text = 목표를 세울 때 더 자연스러운 방식은?
+optionA = 큰 그림을 먼저 그린다
+optionB = 오늘 할 일부터 정한다
+influences = 6:2:0.12, 7:2:0.12, 6:3:0.08
+colorA = Light:0.02, Wind:0.01
+colorB = Dark:0.02, Earth:0.01
+
+[q15]
+text = 영화를 볼 때 '현실에선 말도 안 되는 장면'이 나왔다.
+optionA = 그래도 재밌으면 됐지
+optionB = 왜 저러는지 이해가 안 된다
+influences = 6:4:0.15, 7:4:0.10, 2:6:0.08
+colorA = Light:0.02, Electric:0.01
+colorB = Dark:0.01, Iron:0.01
+
+[q16]
+text = 버스를 놓쳤다. 다음 버스는 40분 뒤.
+optionA = 주변을 산책하며 시간을 보낸다
+optionB = 택시를 잡는다
+influences = 6:6:0.10, 7:6:0.10, 5:7:0.08, 4:7:0.08
+colorA = Light:0.01, Wind:0.01
+colorB = Dark:0.02
+
+# ────────────────────────────────────────
+# 복합 차원 — 3x3/2x2 패턴
+# ────────────────────────────────────────
+
+[q17]
+text = 수족관에서 해파리를 한 시간째 보고 있을 수 있는가?
+optionA = 충분히 가능하다
+optionB = 5분이면 충분하다
+influences = 1:0:0.06, 1:1:0.06, 1:2:0.06, 4:0:0.06, 4:1:0.06, 4:2:0.06
+colorA = Water:0.02, Earth:0.01
+colorB = Fire:0.01, Wind:0.01
+
+[q18]
+text = 한밤중에 갑자기 아이스크림이 먹고 싶다.
+optionA = 편의점에 간다
+optionB = 참고 잔다
+influences = 0:4:0.06, 0:5:0.06, 5:4:0.06, 5:5:0.06, 0:6:0.06, 5:6:0.06
+colorA = Fire:0.02, Wind:0.01
+colorB = Earth:0.02, Iron:0.01
+
+[q19]
+text = 쇼핑몰에서 전혀 계획에 없던 예쁜 물건을 발견했다.
+optionA = 즉석에서 산다
+optionB = 사진만 찍고 집에 가서 생각한다
+influences = 0:2:0.08, 0:3:0.08, 5:2:0.08, 5:3:0.08, 2:2:0.06
+colorA = Fire:0.01, Electric:0.01
+colorB = Earth:0.01, Iron:0.01
+
+[q20]
+text = 비행기 옆자리 사람이 말을 걸어온다. 12시간 비행이다.
+optionA = 좋은 기회라고 생각하고 대화한다
+optionB = 이어폰을 끼고 영화를 본다
+influences = 0:0:0.06, 0:1:0.06, 1:0:0.06, 1:1:0.06, 7:0:0.06, 7:1:0.06
+colorA = Fire:0.01, Water:0.01
+colorB = Dark:0.02
+
+# ────────────────────────────────────────
+# 2x2 정밀 패턴
+# ────────────────────────────────────────
+
+[q21]
+text = 우산을 안 가져왔는데 갑자기 비가 온다.
+optionA = 그냥 맞고 뛰어간다
+optionB = 처마 밑에서 그칠 때까지 기다린다
+influences = 0:6:0.12, 0:7:0.12, 5:6:0.12, 5:7:0.12
+colorA = Fire:0.01, Wind:0.01
+colorB = Earth:0.01, Water:0.01
+
+[q22]
+text = 냉장고에 재료가 애매하게 남아있다.
+optionA = 있는 걸로 창작 요리를 한다
+optionB = 배달시킨다
+influences = 2:4:0.12, 2:5:0.12, 6:4:0.12, 6:5:0.12
+colorA = Electric:0.01, Light:0.01
+colorB = Dark:0.01, Iron:0.01
+
+[q23]
+text = SNS에서 오래된 친구의 게시물을 발견했다. 5년째 연락이 없다.
+optionA = 좋아요를 누르고 DM을 보낸다
+optionB = 조용히 넘긴다
+influences = 1:4:0.12, 1:5:0.12, 3:4:0.12, 3:5:0.12
+colorA = Water:0.01, Iron:0.01
+colorB = Dark:0.01, Wind:0.01
+
+[q24]
+text = 출근길에 새끼 고양이가 울고 있다. 지각 5분 전이다.
+optionA = 지각하더라도 일단 고양이를 본다
+optionB = 퇴근 후에 와서 확인한다
+influences = 6:0:0.12, 6:1:0.12, 3:0:0.12, 3:1:0.12
+colorA = Light:0.01, Iron:0.01
+colorB = Dark:0.01, Earth:0.01
+
+# ────────────────────────────────────────
+# 단일 셀 정밀
+# ────────────────────────────────────────
+
+[q25]
+text = 자판기에서 500원이 거스름돈으로 더 나왔다.
+optionA = 관리실에 돌려준다
+optionB = 행운이라고 생각하고 가져간다
+influences = 6:6:0.15, 3:7:0.12, 7:3:0.10
+colorA = Light:0.02, Iron:0.01
+colorB = Dark:0.01, Fire:0.01
+
+[q26]
+text = 누군가가 당신의 취미를 유치하다고 했다.
+optionA = 신경 안 쓴다 — 내가 좋으면 된다
+optionB = 기분이 살짝 나쁘다
+influences = 7:7:0.15, 0:5:0.10, 4:5:0.08
+colorA = Dark:0.01, Fire:0.01
+colorB = Water:0.01, Earth:0.01
+
+[q27]
+text = 절친이 당신 몰래 서프라이즈 파티를 준비했다.
+optionA = 감동받아서 울 것 같다
+optionB = 고맙지만 사전에 말해줬으면 좋겠다
+influences = 1:6:0.12, 1:7:0.10, 2:7:0.10
+colorA = Water:0.02, Light:0.01
+colorB = Iron:0.01, Earth:0.01
+
+[q28]
+text = 지금 당장 무인도에 간다면 가장 먼저 할 일은?
+optionA = 높은 곳에 올라가서 주변을 살핀다
+optionB = 물과 그늘을 찾는다
+influences = 5:7:0.12, 5:6:0.10, 4:7:0.10
+colorA = Wind:0.02, Light:0.01
+colorB = Earth:0.02
+
+[q29]
+text = 좋아하는 가수의 콘서트 티켓이 매진이다. 2배 가격의 리셀이 있다.
+optionA = 산다 — 이 기회는 다시 없다
+optionB = 다음 기회를 기다린다
+influences = 0:3:0.10, 2:3:0.10, 5:3:0.10, 7:5:0.08
+colorA = Fire:0.01, Electric:0.01
+colorB = Earth:0.01, Dark:0.01
+
+[q30]
+text = 3일 연속 비가 온다. 기분이?
+optionA = 운치 있어서 나쁘지 않다
+optionB = 밖에 못 나가서 답답하다
+influences = 1:3:0.12, 7:4:0.12, 4:6:0.10
+colorA = Water:0.01, Dark:0.01
+colorB = Fire:0.01, Wind:0.01
+
+[q31]
+text = 밤에 혼자 산길을 걷게 되었다. 무섭기보다는?
+optionA = 별이 잘 보여서 좋다
+optionB = 빨리 집에 가고 싶다
+influences = 7:0:0.10, 7:1:0.10, 6:7:0.08, 5:0:0.08
+colorA = Dark:0.01, Light:0.01
+colorB = Earth:0.01, Fire:0.01
+
+[q32]
+text = 10년 뒤의 나는 어떤 사람이 되어 있을까?
+optionA = 지금보다 따뜻한 사람
+optionB = 지금보다 단단한 사람
+influences = 1:7:0.08, 6:7:0.08, 3:7:0.08, 7:7:0.08, 0:7:0.08
+colorA = Water:0.01, Light:0.01
+colorB = Iron:0.01, Dark:0.01

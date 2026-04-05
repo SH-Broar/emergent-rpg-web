@@ -1,0 +1,378 @@
+# ============================================================
+# weapons.txt — 무기 정의
+# type: Sword, Spear, Bow, Staff, Gun, Heavy, Fist, Dagger, Instrument, Special
+# grade: Common, Uncommon, Rare, Epic, Legendary
+# element: Fire, Water, Electric, Iron, Earth, Wind, Light, Dark, None
+# attack: 기본 공격력 보정
+# speed: 공격 속도 (1.0 = 기본, 낮을수록 빠름)
+# ============================================================
+
+# ============================================================
+# 검 (Sword)
+# ============================================================
+
+[Iron_Sword]
+name = 철검
+type = Sword
+grade = Common
+element = None
+attack = 10
+speed = 1.0
+price = 100
+description = 대장간에서 흔히 만드는 무난한 검.
+
+[Wind_Blade]
+name = 바람의 검
+type = Sword
+grade = Uncommon
+element = Wind
+attack = 18
+speed = 0.8
+price = 350
+description = 바람의 기운이 깃든 가벼운 검. 베어낸 자리에 바람이 일렁인다.
+
+[Flame_Edge]
+name = 화염검
+type = Sword
+grade = Rare
+element = Fire
+attack = 28
+speed = 1.0
+price = 800
+description = 불꽃이 칼날을 따라 타오르는 검. 트리플라워 화산의 용암으로 단련되었다.
+
+[Silence_Fragment]
+name = 사일런스의 파편
+type = Sword
+grade = Legendary
+element = Dark
+attack = 50
+speed = 0.9
+price = 0
+description = 봉인되면서 부서진 사일런스의 일부. 어둠 속에서 희미하게 맥동한다.
+
+# ============================================================
+# 창 (Spear)
+# ============================================================
+
+[Training_Spear]
+name = 연습용 창
+type = Spear
+grade = Common
+element = None
+attack = 12
+speed = 1.1
+price = 80
+description = 나무로 만든 연습용 창. 가볍지만 내구성이 부족하다.
+
+[Steel_Lance]
+name = 강철 창
+type = Spear
+grade = Uncommon
+element = Iron
+attack = 22
+speed = 1.1
+price = 400
+description = 단단한 강철로 만든 장창. 찌르기에 특화되어 있다.
+
+[Valencia_Replica]
+name = 발렌시아 복제창
+type = Spear
+grade = Epic
+element = Iron
+attack = 40
+speed = 1.0
+price = 2000
+description = 창의 정령 발렌시아를 본떠 만든 명창. 원본에는 미치지 못하지만 충분히 강하다.
+
+# ============================================================
+# 활 (Bow)
+# ============================================================
+
+[Hunting_Bow]
+name = 사냥용 활
+type = Bow
+grade = Common
+element = None
+attack = 8
+speed = 1.3
+price = 90
+description = 가죽끈과 나뭇가지로 만든 기본적인 활.
+
+[Wind_Whisper]
+name = 바람의 속삭임
+type = Bow
+grade = Rare
+element = Wind
+attack = 25
+speed = 1.1
+price = 700
+description = 화살이 바람을 타고 날아가는 마법의 활. 이연의 가문에서 전해지는 양식으로 만들어졌다.
+
+# ============================================================
+# 지팡이 (Staff)
+# ============================================================
+
+[Wooden_Staff]
+name = 나무 지팡이
+type = Staff
+grade = Common
+element = None
+attack = 5
+speed = 1.2
+price = 60
+magicBonus = 10
+description = 마법 초보자용 지팡이. 마력 증폭이 미미하다.
+
+[Water_Crystal_Staff]
+name = 수정 지팡이
+type = Staff
+grade = Uncommon
+element = Water
+attack = 8
+speed = 1.2
+price = 300
+magicBonus = 25
+description = 물의 수정이 박힌 지팡이. 수계 마법의 위력이 증가한다.
+
+[Cruha_Cane]
+name = 크루하의 지팡이
+type = Staff
+grade = Epic
+element = Wind
+attack = 15
+speed = 1.0
+magicBonus = 50
+price = 0
+description = 풍신 크루하가 사용하는 키만 한 지팡이. 칠판 위의 분필을 집을 때도 쓴다.
+
+# ============================================================
+# 총 (Gun)
+# ============================================================
+
+[System_Pistol]
+name = 시스템 권총
+type = Gun
+grade = Rare
+element = Electric
+attack = 30
+speed = 0.7
+price = 1200
+description = 제로가 만든 시스템 탄을 발사하는 특수 권총. 커트래빗의 주무기.
+
+# ============================================================
+# 중장비 (Heavy)
+# ============================================================
+
+[Iron_Mace]
+name = 쇠뭉치
+type = Heavy
+grade = Common
+element = Iron
+attack = 15
+speed = 1.5
+price = 120
+description = 무겁지만 한 방의 위력은 확실한 둔기.
+
+[Miyu_Hammer]
+name = 미유의 워해머
+type = Heavy
+grade = Rare
+element = Iron
+attack = 35
+speed = 1.4
+price = 900
+description = 미유의 체구에 비해 말도 안 되게 큰 전투 망치. 어떻게 들고 다니는지 미스터리.
+
+# ============================================================
+# 격투 (Fist)
+# ============================================================
+
+[Leather_Gloves]
+name = 가죽 장갑
+type = Fist
+grade = Common
+element = None
+attack = 6
+speed = 0.6
+price = 50
+description = 기본적인 전투용 가죽 장갑.
+
+[Dragon_Gauntlet]
+name = 용의 건틀릿
+type = Fist
+grade = Epic
+element = Fire
+attack = 38
+speed = 0.7
+price = 1800
+description = 드래곤의 비늘로 만든 건틀릿. 리제가 가끔 사용한다.
+
+# ============================================================
+# 단검 (Dagger)
+# ============================================================
+
+[Throwing_Knife]
+name = 투척 나이프
+type = Dagger
+grade = Common
+element = None
+attack = 7
+speed = 0.5
+price = 40
+description = 가볍고 빠른 투척용 나이프.
+
+[Shadow_Blade]
+name = 그림자 단검
+type = Dagger
+grade = Uncommon
+element = Dark
+attack = 15
+speed = 0.5
+price = 350
+description = 어둠에 녹아드는 검은 단검. 루디가 모험가 시절 사용했다.
+
+# ============================================================
+# 악기 (Instrument)
+# ============================================================
+
+[Basic_Amp]
+name = 기본 앰프
+type = Instrument
+grade = Common
+element = Electric
+attack = 8
+speed = 1.0
+price = 200
+magicBonus = 15
+description = 제로가 사용하는 기본 앰프. 음파로 적을 공격한다.
+
+[Alta_Core]
+name = 알타 코어
+type = Instrument
+grade = Legendary
+element = Electric
+attack = 45
+speed = 0.8
+magicBonus = 40
+price = 0
+description = 알티 알타의 본체인 앰프 코어. 기억을 되찾을수록 강해진다.
+
+# ============================================================
+# 특수 (Special)
+# ============================================================
+
+[Fox_Fire_Orb]
+name = 여우불 구슬
+type = Special
+grade = Rare
+element = Fire
+attack = 25
+speed = 0.9
+price = 600
+description = 카시스의 여우불을 담은 구슬. 불의 마법을 증폭시킨다.
+
+[Gear_Arm]
+name = 기어 암
+type = Special
+grade = Rare
+element = Iron
+attack = 20
+speed = 0.8
+price = 500
+description = 제로가 사용하는 의수 겸 무기. 다양한 파츠를 교체할 수 있다.
+
+# ============================================================
+# 등급 보강 — 빈 등급 채우기
+# ============================================================
+
+[Earth_Cleaver]
+name = 대지의 파검
+type = Sword
+grade = Epic
+element = Earth
+attack = 38
+speed = 1.0
+price = 1500
+description = 대지의 기운을 응축한 무거운 검. 내리칠 때마다 바닥이 갈라진다.
+
+[Storm_Halberd]
+name = 폭풍 할버드
+type = Spear
+grade = Rare
+element = Wind
+attack = 30
+speed = 1.1
+price = 700
+description = 바람의 힘을 담은 장창. 던지면 바람을 타고 되돌아온다.
+
+[Lightning_Bow]
+name = 번개의 활
+type = Bow
+grade = Uncommon
+element = Electric
+attack = 15
+speed = 1.2
+price = 300
+description = 활시위를 당기면 전기가 흐르는 마법의 활.
+
+[Celestial_Longbow]
+name = 천궁
+type = Bow
+grade = Epic
+element = Light
+attack = 35
+speed = 1.0
+price = 1800
+description = 빛의 화살을 쏘는 전설적인 장궁. 맞은 자에게 정화의 빛이 흐른다.
+
+[Thunder_Staff]
+name = 뇌전의 지팡이
+type = Staff
+grade = Rare
+element = Electric
+attack = 12
+speed = 1.1
+price = 650
+magicBonus = 35
+description = 번개의 힘을 다루는 지팡이. 마력 증폭이 뛰어나다.
+
+[Heavy_Gauntlet]
+name = 강철 건틀릿
+type = Fist
+grade = Uncommon
+element = Iron
+attack = 14
+speed = 0.7
+price = 250
+description = 손등에 강철판을 덧댄 전투용 건틀릿.
+
+[Assassin_Blade]
+name = 암살자의 검
+type = Dagger
+grade = Rare
+element = Dark
+attack = 22
+speed = 0.4
+price = 600
+description = 어둠 속에서 빛나는 검은 단검. 한 번의 공격으로 적을 침묵시킨다.
+
+[Iron_Maul]
+name = 철퇴
+type = Heavy
+grade = Uncommon
+element = Iron
+attack = 22
+speed = 1.4
+price = 300
+description = 육중한 철퇴. 맞으면 갑옷 위로도 충격이 전해진다.
+
+[Abyssal_Scythe]
+name = 심연의 낫
+type = Special
+grade = Legendary
+element = Dark
+attack = 48
+speed = 0.9
+price = 0
+description = 어둠의 심연에서 건져 올린 무기. 이것을 휘두르면 공간이 갈라진다.

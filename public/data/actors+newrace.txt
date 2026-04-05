@@ -1,0 +1,207 @@
+# ============================================================
+# actors+newrace.txt — 신규 종족 캐릭터 (8종족 × 1명)
+# 종족: Arachne(아라크네), Slime(슬라임), Lizardfolk(리자드맨),
+#        Minotaur(미노타우로스), Werewolf(늑대인간),
+#        Halfling(하프링), Siren(사이렌), Alraune(알라우네)
+# ============================================================
+
+# ============================================================
+# 아라크네 — 아리엔 (비단 공방의 직조 장인)
+# ============================================================
+
+[아리엔]
+playable = 0
+race = Arachne
+role = Craftsman
+strength = 0.5
+gold = 60
+location = Blacksmith
+homeLocation = Silk_Workshop
+age = 120
+hp = 95
+maxHp = 95
+mp = 40
+maxMp = 40
+attack = 10
+defense = 8
+colorValues = 0.3,0.4,0.3,0.5,0.5,0.4,0.6,0.3
+domainHigh = Calm,Patient,Reliable,Inventive,Methodical,Withdrawn,Righteous,Secretive
+domainLow = Aggressive,Impulsive,Restless,Flighty,Greedy,Indifferent,Cynical,Stagnant
+inventory = Equipment:2, OreRare:1
+background = 거미의 몸 아래쪽 여덟 개의 다리로 공방을 조용히 오가며, 손에서 뽑아낸 은빛 거미줄로 세상에서 가장 따뜻한 직물을 짠다.|처음 보는 사람 앞에서는 몸을 잔뜩 움츠리지만, 자신이 짠 천을 칭찬받는 순간만큼은 눈이 반짝인다.|120년을 이 공방에서 보냈고, 한 번도 같은 무늬를 두 번 쓴 적이 없다는 것이 그의 가장 큰 자랑이다.|브로크와는 가끔 재료를 교환하는 사이로, 대장간 구석에 아리엔의 직물 조각이 몇 개 걸려 있다.
+
+# ============================================================
+# 슬라임 — 푸니 (기억의 샘 주민)
+# ============================================================
+
+[푸니]
+playable = 0
+race = Slime
+role = Villager
+strength = 0.2
+gold = 5
+location = Memory_Spring
+homeLocation = Memory_Spring
+age = 50
+hp = 60
+maxHp = 60
+mp = 35
+maxMp = 35
+attack = 3
+defense = 5
+colorValues = 0.4,0.7,0.4,0.2,0.3,0.5,0.5,0.3
+domainHigh = Excited,Empathetic,Adaptable,Hopeful,Freesprited,Curious,Flexible,Cheerful
+domainLow = Rigid,Cynical,Withdrawn,Stagnant,Aggressive,Melancholy,Stubborn,Secretive
+inventory = Food:4, Potion:2
+background = 기억의 샘 가에 사는 반투명 슬라임으로, 오늘은 파란색이었다가 내일은 분홍색이 되는 몸 색깔 때문에 본인도 가끔 자신을 못 알아본다.|어제 팔이었던 부위가 오늘은 머리가 되기도 하는 터라, 대화 도중 갑자기 '어? 나 지금 어떤 모양이야?'라고 스스로에게 묻는 일이 잦다.|나이를 물으면 '한 오십 살쯤? 아니면 열 살? 세포가 분열했으니까 사실 나이가 몇인지 잘 모르겠어~'라고 답한다.|호기심이 넘쳐 기억의 샘 주변을 매일 탐험하지만, 항상 샘 근처로 돌아온다.
+
+# ============================================================
+# 리자드맨 — 이그나 (야생지대의 국경 경비)
+# ============================================================
+
+[이그나]
+playable = 0
+race = Lizardfolk
+role = Guard
+strength = 0.7
+gold = 40
+location = Wilderness
+homeLocation = Wilderness
+age = 45
+hp = 130
+maxHp = 130
+mp = 20
+maxMp = 20
+attack = 16
+defense = 14
+colorValues = 0.7,0.3,0.4,0.6,0.8,0.3,0.3,0.3
+domainHigh = Calm,Patient,Reliable,Grounded,Methodical,Indifferent,Stubborn,Righteous
+domainLow = Excited,Impulsive,Flighty,Restless,Cynical,Aggressive,Freesprited,Melancholy
+inventory = Equipment:3, Food:5
+background = 사막 너머에서 왔다는 리자드맨 전사로, 햇볕이 강한 바위 위에 앉아 순찰 임무를 수행하는 것이 그의 가장 좋아하는 일이다.|파충류 특유의 무표정 때문에 처음 보는 사람들은 화가 났다고 오해하지만, 사실 그냥 그게 기본 표정이다.|한낮 바위의 온기를 '태양의 선물'이라 부르며, 흐린 날에는 평소보다 말수가 줄어 동료들이 날씨 예보로 이그나를 쓴다고 농담한다.|조용하고 믿음직하며, 맡은 구역에서 이상한 일이 생긴 적이 한 번도 없다.
+
+# ============================================================
+# 미노타우로스 — 밀라 (농장의 목동 농부)
+# ============================================================
+
+[밀라]
+playable = 0
+race = Minotaur
+role = Farmer
+strength = 0.9
+gold = 35
+location = Farm
+homeLocation = Farm
+age = 28
+hp = 180
+maxHp = 180
+mp = 15
+maxMp = 15
+attack = 20
+defense = 16
+colorValues = 0.5,0.3,0.4,0.7,0.8,0.3,0.4,0.2
+domainHigh = Reliable,Patient,Empathetic,Grounded,Generous,Calm,Hopeful,Righteous
+domainLow = Cynical,Aggressive,Cunning,Restless,Flighty,Indifferent,Stagnant,Secretive
+inventory = Food:15, Herb:3
+background = 농장에서 가축을 돌보는 젊은 미노타우로스로, 거대한 몸집에도 불구하고 새끼 양을 다루는 손길은 솜털처럼 부드럽다.|매일 아침 신선한 우유를 짜고, 그 우유로 만든 치즈를 마을 주민들에게 나누어 주는 것이 가장 큰 기쁨이다.|'힘이 세다고 함부로 쓰면 안 돼. 약한 것들이 무서워하거든'이라는 철학을 지니고 있으며, 실제로 아이들에게 인기가 많다.|목초지 뒤편의 해바라기 밭을 혼자 가꾸는데, 그 이유를 물으면 그냥 수줍게 웃기만 한다.
+
+# ============================================================
+# 늑대인간 — 루나르 (야생지대의 모험자)
+# ============================================================
+
+[루나르]
+playable = 0
+race = Werewolf
+role = Adventurer
+strength = 0.6
+gold = 55
+location = Wilderness
+homeLocation = Wilderness
+age = 22
+hp = 110
+maxHp = 110
+mp = 25
+maxMp = 25
+attack = 18
+defense = 10
+colorValues = 0.4,0.3,0.5,0.5,0.4,0.6,0.4,0.5
+domainHigh = Excited,Empathetic,Reliable,Hopeful,Freesprited,Aggressive,Adaptable,Generous
+domainLow = Calm,Withdrawn,Methodical,Cynical,Patient,Indifferent,Secretive,Stagnant
+inventory = Equipment:2, Potion:3, Food:3
+background = 낮에는 그냥 귀가 뾰족한 청년처럼 보이지만 보름달이 뜨는 밤이면 이야기가 달라지는 늑대인간으로, 그 사실을 들키는 것을 무척 부끄러워한다.|'어제 밤에 어디 있었냐'고 물으면 '그냥 산책'이라고 얼버무리는데, 발자국 크기가 사람의 세 배라 아무도 안 믿는다.|수줍음이 많고 쉽게 얼굴이 빨개지지만, 동료가 위험에 처하면 아무 말 없이 몸으로 막는 타입이다.|밤에 짖었다는 소문이 돌면 다음 날 내내 귀를 접고 다닌다.
+
+# ============================================================
+# 하프링 — 포피 (시장의 미식 제과상)
+# ============================================================
+
+[포피]
+playable = 0
+race = Halfling
+role = Merchant
+strength = 0.2
+gold = 90
+location = Market_Square
+homeLocation = Market_Square
+age = 35
+hp = 55
+maxHp = 55
+mp = 20
+maxMp = 20
+attack = 4
+defense = 4
+colorValues = 0.6,0.3,0.4,0.3,0.5,0.5,0.7,0.2
+domainHigh = Excited,Inventive,Generous,Hopeful,Empathetic,Adaptable,Cunning,Freesprited
+domainLow = Cynical,Withdrawn,Aggressive,Melancholy,Stagnant,Rigid,Patient,Secretive
+inventory = Food:20, Herb:5
+background = 무릎 높이밖에 안 되는 작은 하프링이지만 시장에서 가장 목소리가 큰 상인으로, 새벽 네 시부터 빵을 굽기 시작해 해가 뜰 때쯤 시장에 도착한다.|버터 롤, 허브 빵, 치즈 타르트 등 날마다 새로운 메뉴를 선보이며, 한 번도 같은 레시피를 두 번 쓴 적이 없다고 자랑한다.|몸집이 작다고 무시하는 손님에게는 특대 사이즈 시나몬 번을 얼굴에 내밀어 침묵시키는 기술이 있다.|밀라의 치즈와 포피의 빵이 만나면 마을 최고의 간식이 탄생한다는 것이 마을의 통설이다.
+
+# ============================================================
+# 사이렌 — 멜로디아 (호수의 물새 낚시꾼)
+# ============================================================
+
+[멜로디아]
+playable = 0
+race = Siren
+role = Fisher
+strength = 0.4
+gold = 45
+location = Lake
+homeLocation = Lake
+age = 60
+hp = 85
+maxHp = 85
+mp = 55
+maxMp = 55
+attack = 8
+defense = 7
+colorValues = 0.2,0.7,0.5,0.3,0.3,0.8,0.7,0.2
+domainHigh = Calm,Empathetic,Freesprited,Hopeful,Adaptable,Patient,Secretive,Inventive
+domainLow = Aggressive,Rigid,Cynical,Stagnant,Withdrawn,Melancholy,Greedy,Stubborn
+inventory = Food:10, Herb:4
+background = 날개도 있고 물속도 헤엄칠 수 있는 사이렌으로, 하늘에서 물고기 떼를 확인한 뒤 호수에 뛰어들어 노래를 불러 물고기를 낚시 자리로 유인하는 독특한 방식으로 조업한다.|멜로디아가 노래를 시작하면 호수 전체가 잔잔해지고, 심지어 바람도 멈춘다고 나탈리가 증언한 바 있다.|코랄리스와는 가끔 이중창을 하는 사이인데, 두 사람이 동시에 노래하면 물고기들이 너무 넋을 잃어 그냥 수면으로 떠오른다는 소문이 있다.|꿈결 같은 눈빛으로 먼 하늘을 바라보다가도, 낚싯대에 무언가 걸리는 순간 눈이 매처럼 날카로워진다.
+
+# ============================================================
+# 알라우네 — 플로라 (꽃피는 테라스의 꽃 정원사)
+# ============================================================
+
+[플로라]
+playable = 0
+race = Alraune
+role = Farmer
+strength = 0.3
+gold = 20
+location = Herb_Garden
+homeLocation = Bloom_Terrace
+age = 200
+hp = 70
+maxHp = 70
+mp = 70
+maxMp = 70
+attack = 5
+defense = 9
+colorValues = 0.3,0.5,0.3,0.3,0.9,0.6,0.7,0.2
+domainHigh = Calm,Patient,Empathetic,Grounded,Righteous,Methodical,Hopeful,Reliable
+domainLow = Restless,Flighty,Aggressive,Cynical,Impulsive,Greedy,Stagnant,Withdrawn
+stationary = 1
+inventory = Herb:12, Food:6, Potion:2
+background = 꽃피는 테라스에 뿌리를 내리고 피어난 알라우네로, 거대한 꽃봉오리에서 태어나 200년째 같은 자리에서 사계절을 맞이하고 있다.|멀리 이동하지 못하지만, 자신이 내려보내는 뿌리로 토양의 상태를 느끼기 때문에 마을 전체의 농작물 건강을 거의 실시간으로 파악하고 있다.|꽃 언어로 대화하는 것이 더 편하다고 하지만, 방문자를 위해 꾹 참고 말로 한다.|200년을 한 자리에서 살았으니 그동안 바뀐 것과 바뀌지 않은 것이 무엇인지, 마을 역사를 가장 잘 아는 존재 중 하나이다.

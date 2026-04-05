@@ -1,0 +1,179 @@
+; ============================================================
+; dungeon_events.txt
+; Random events that can occur during dungeon exploration.
+; Each event has a per-advance-turn chance of triggering.
+;
+; Format:
+;   [event_id]
+;   name          = 한글 이름
+;   description   = 설명
+;   chance        = 0.0~1.0 (per advance turn)
+;   type          = treasure | hazard | heal | discovery
+;   gives         = ItemType:amount   (treasure / discovery)
+;   hpDamage      = int               (hazard)
+;   vigorDamage   = int               (hazard)
+;   hpHeal        = int               (heal)
+;   vigorHeal     = int               (heal)
+;   colorInfluence = Element:float, Element:float
+; ============================================================
+
+[treasure_chest]
+name = 보물 상자 발견!
+description = 먼지 쌓인 상자에서 장비가 발견되었다.
+chance = 0.08
+type = treasure
+gives = Equipment:1
+colorInfluence = Light:0.2, Iron:0.1
+
+[sudden_gust]
+name = 돌풍!
+description = 갑작스런 돌풍이 불어와 몸을 가누기 힘들다.
+chance = 0.07
+type = hazard
+hpDamage = 8
+vigorDamage = 5
+colorInfluence = Water:0.3, Dark:0.1
+
+[gold_pouch]
+name = 금화 주머니
+description = 누군가 떨어뜨린 금화 주머니가 놓여 있다.
+chance = 0.06
+type = treasure
+gives = Food:3
+colorInfluence = Light:0.1, Fire:0.1
+
+[rockfall]
+name = 낙석!
+description = 천장에서 바위가 무너져 내린다!
+chance = 0.07
+type = hazard
+hpDamage = 12
+vigorDamage = 8
+colorInfluence = Iron:0.3, Dark:0.2
+
+[healing_spring]
+name = 치유의 샘
+description = 맑은 물이 솟아오르는 샘이 몸과 마음을 회복시켜 준다.
+chance = 0.05
+type = heal
+hpHeal = 25
+vigorHeal = 15
+colorInfluence = Water:0.4, Light:0.3
+
+[strange_light]
+name = 수상한 빛
+description = 기묘한 빛이 어둠 속에서 빛나며 포션 하나를 드러낸다.
+chance = 0.06
+type = discovery
+gives = Potion:1
+colorInfluence = Light:0.3, Dark:0.2
+
+[hidden_trap]
+name = 함정!
+description = 바닥이 갈라지며 숨겨진 함정이 발동한다.
+chance = 0.08
+type = hazard
+hpDamage = 10
+vigorDamage = 6
+colorInfluence = Dark:0.3, Iron:0.2
+
+[rare_vein]
+name = 희귀 광맥
+description = 벽면에서 희귀한 광물이 반짝이고 있다.
+chance = 0.04
+type = discovery
+gives = OreRare:1
+colorInfluence = Iron:0.4, Fire:0.2
+
+[ambush]
+name = 기습!
+description = 어둠 속에서 적이 기습해 온다!
+chance = 0.06
+type = hazard
+hpDamage = 15
+vigorDamage = 10
+colorInfluence = Dark:0.4, Fire:0.2
+
+[ancient_inscription]
+name = 고대 비문
+description = 벽에 새겨진 고대 문자가 약초의 위치를 알려준다.
+chance = 0.05
+type = discovery
+gives = Herb:2
+colorInfluence = Light:0.2, Water:0.2
+
+[wandering_merchant]
+name = 떠돌이 상인
+description = 던전 안에서 떠돌이 상인을 만났다. 희귀한 물건을 건네준다.
+chance = 0.04
+type = treasure
+gives = Equipment:1, Potion:1
+colorInfluence = Wind:0.2, Light:0.1
+
+[mysterious_altar]
+name = 신비로운 제단
+description = 어둠 속에서 빛나는 제단이 몸에 활력을 불어넣는다.
+chance = 0.04
+type = heal
+hpHeal = 35
+vigorHeal = 20
+colorInfluence = Light:0.3, Earth:0.2
+
+[crumbling_floor]
+name = 무너지는 바닥!
+description = 발밑이 갈라지며 아래층으로 떨어진다!
+chance = 0.06
+type = hazard
+hpDamage = 14
+vigorDamage = 8
+colorInfluence = Earth:0.3, Dark:0.15
+
+[glowing_mushrooms]
+name = 빛나는 버섯
+description = 은은하게 빛나는 버섯이 군락을 이루고 있다. 약초로 쓸 수 있을 것 같다.
+chance = 0.05
+type = discovery
+gives = Herb:3
+colorInfluence = Earth:0.2, Water:0.15, Light:0.1
+
+[monster_nest]
+name = 몬스터 둥지
+description = 몬스터의 둥지를 발견했다! 전리품이 흩어져 있다.
+chance = 0.04
+type = treasure
+gives = MonsterLoot:3
+colorInfluence = Dark:0.2, Fire:0.15
+
+[ancient_weapon_rack]
+name = 고대 무기 거치대
+description = 먼지 쌓인 무기 거치대에서 아직 쓸 만한 장비를 발견했다.
+chance = 0.03
+type = treasure
+gives = Equipment:2
+colorInfluence = Iron:0.3, Fire:0.1
+
+[poisonous_gas]
+name = 독가스!
+description = 바위 틈에서 독가스가 새어 나온다!
+chance = 0.06
+type = hazard
+hpDamage = 10
+vigorDamage = 12
+colorInfluence = Dark:0.3, Water:0.1
+
+[refreshing_breeze]
+name = 시원한 바람
+description = 어디선가 불어오는 시원한 바람이 피로를 씻어준다.
+chance = 0.05
+type = heal
+hpHeal = 15
+vigorHeal = 25
+colorInfluence = Wind:0.3, Water:0.2
+
+[elemental_crystal]
+name = 원소 결정
+description = 벽면에 원소의 기운이 응축된 결정이 박혀 있다. 희귀한 광석이다.
+chance = 0.03
+type = discovery
+gives = OreRare:2
+colorInfluence = Electric:0.3, Iron:0.2

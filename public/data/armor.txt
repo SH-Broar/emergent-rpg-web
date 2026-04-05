@@ -1,0 +1,307 @@
+# ============================================================
+# armor.txt — 방어구 정의
+# type: Cloth, Light, Heavy, Robe, Shield, Accessory
+# grade: Common, Uncommon, Rare, Epic, Legendary
+# element: Fire, Water, Electric, Iron, Earth, Wind, Light, Dark, None
+# defense: 기본 방어력 보정
+# ============================================================
+
+# ============================================================
+# 일반복 (Cloth)
+# ============================================================
+
+[Traveler_Clothes]
+name = 여행자의 옷
+type = Cloth
+grade = Common
+element = None
+defense = 3
+price = 50
+description = 어디서나 볼 수 있는 평범한 여행복.
+
+[Luna_Uniform]
+name = 루나 교복
+type = Cloth
+grade = Common
+element = None
+defense = 5
+magicDefense = 8
+price = 80
+description = 마법학교 루나의 교복. 약간의 마법 저항이 있다.
+
+[Night_Tacomi_Jacket]
+name = 나이트 타코미 재킷
+type = Cloth
+grade = Uncommon
+element = Electric
+defense = 8
+price = 200
+description = 나이트 타코미의 클럽 거리에서 유행하는 네온 포인트 재킷.
+
+# ============================================================
+# 경갑 (Light)
+# ============================================================
+
+[Leather_Armor]
+name = 가죽 갑옷
+type = Light
+grade = Common
+element = None
+defense = 8
+price = 120
+description = 가죽으로 만든 기본적인 방어구. 움직임을 방해하지 않는다.
+
+[Wind_Cloak]
+name = 바람의 망토
+type = Light
+grade = Uncommon
+element = Wind
+defense = 12
+evasion = 10
+price = 350
+description = 바람의 기운이 깃든 망토. 착용자의 움직임이 빨라진다.
+
+[Red_Hood]
+name = 붉은 망토
+type = Light
+grade = Rare
+element = Fire
+defense = 18
+price = 600
+description = 엘네스트의 상징인 붉은 망토. 화염에 대한 내성이 있다.
+
+[Shadow_Mantle]
+name = 그림자 망토
+type = Light
+grade = Rare
+element = Dark
+defense = 15
+evasion = 15
+price = 700
+description = 루디가 모험가 시절 입었던 어두운 색 망토. 어둠 속에서 존재감이 희미해진다.
+
+# ============================================================
+# 중갑 (Heavy)
+# ============================================================
+
+[Iron_Plate]
+name = 철판 갑옷
+type = Heavy
+grade = Common
+element = Iron
+defense = 15
+price = 250
+description = 무겁지만 튼튼한 기본 철갑.
+
+[Alime_Plate]
+name = 알리메 빙갑
+type = Heavy
+grade = Uncommon
+element = Water
+defense = 20
+price = 500
+description = 알리메 설산의 만년빙으로 단련된 갑옷. 냉기에 강하다.
+
+[Miyu_Armor]
+name = 미유의 중장갑
+type = Heavy
+grade = Rare
+element = Iron
+defense = 30
+price = 1000
+description = 미유가 직접 개조한 전신 중장비. 작은 체구를 완전히 감싸는 거대한 갑옷.
+
+[Construct_Shell]
+name = 인공물 외장
+type = Heavy
+grade = Epic
+element = Electric
+defense = 35
+price = 2000
+description = 임페리시아의 외장 데이터를 기반으로 만든 인공 갑옷.
+
+# ============================================================
+# 로브 (Robe)
+# ============================================================
+
+[Apprentice_Robe]
+name = 견습 마법사 로브
+type = Robe
+grade = Common
+element = None
+defense = 4
+magicDefense = 12
+price = 100
+description = 마법 수련을 시작하는 이들이 입는 기본 로브.
+
+[Maro_Robe]
+name = 마로의 로브
+type = Robe
+grade = Rare
+element = Water
+defense = 8
+magicDefense = 30
+price = 800
+description = 물의 대정령의 축복이 깃든 로브. 물의 마법 위력이 크게 증가한다.
+
+[Pebiel_Dress]
+name = 페비엘의 드레스
+type = Robe
+grade = Epic
+element = Dark
+defense = 12
+magicDefense = 40
+price = 1500
+description = 결계 마법에 특화된 흑마법사의 드레스. 스텔라 빌의 별빛이 수놓아져 있다.
+
+[Caliban_Hat]
+name = 칼리번의 마법사 모자
+type = Robe
+grade = Uncommon
+element = Fire
+defense = 5
+magicDefense = 20
+price = 400
+description = 칼리번의 트레이드마크인 커다란 마법사 모자. 몸집보다 크다.
+
+# ============================================================
+# 방패 (Shield)
+# ============================================================
+
+[Wooden_Shield]
+name = 나무 방패
+type = Shield
+grade = Common
+element = None
+defense = 10
+price = 80
+description = 나무로 깎아 만든 기본 방패.
+
+[Rock_Shield]
+name = 바위의 방패
+type = Shield
+grade = Rare
+element = Earth
+defense = 25
+price = 600
+description = 네토 로크가 리문 유적의 돌로 만든 방패. 암벽 방어에 사용된다.
+
+# ============================================================
+# 장신구 (Accessory)
+# ============================================================
+
+[Cat_Bell]
+name = 고양이 방울
+type = Accessory
+grade = Uncommon
+element = Light
+defense = 3
+price = 150
+description = 맑은 소리가 나는 작은 방울. 화이트 팡을 만나기 위한 열쇠라고 한다.
+
+[Firefly_Hairpin]
+name = 반딧불 머리핀
+type = Accessory
+grade = Uncommon
+element = Wind
+defense = 2
+evasion = 5
+price = 200
+description = 반딧불처럼 은은하게 빛나는 머리핀. 리엔카이를 만나기 위한 열쇠.
+
+[Mono_Brooch]
+name = 모노의 브로치
+type = Accessory
+grade = Legendary
+element = Dark
+defense = 5
+price = 0
+description = 에코가 고쳐준 모노의 브로치. 시간의 파편이 깃들어 있다.
+
+[Dimensional_Cube]
+name = 영차원 입자붕괴 큐브
+type = Accessory
+grade = Rare
+element = Electric
+defense = 0
+price = 500
+description = 스티아네 잡화점에서 판매하는 신비한 큐브. 카미키를 만나기 위한 열쇠.
+
+[Phoenix_Camera]
+name = 피닉스의 카메라
+type = Accessory
+grade = Rare
+element = Fire
+defense = 0
+price = 0
+description = 피닉스가 항상 들고 다니는 사진기. 높은 곳에서 찍은 사진은 언제나 아름답다.
+
+# ============================================================
+# 등급 보강 — 빈 등급 채우기
+# ============================================================
+
+[Adventurer_Garb]
+name = 모험가의 복장
+type = Cloth
+grade = Rare
+element = Wind
+defense = 10
+evasion = 8
+price = 400
+description = 바람의 축복이 깃든 모험가의 옷. 빠르게 움직일 수 있다.
+
+[Dragon_Scale_Mail]
+name = 용비늘 갑옷
+type = Heavy
+grade = Legendary
+element = Fire
+defense = 45
+price = 0
+description = 고대 드래곤의 비늘로 만든 전설의 갑옷. 불꽃에 면역이다.
+
+[Starweave_Robe]
+name = 별빛 로브
+type = Robe
+grade = Legendary
+element = Light
+defense = 15
+magicDefense = 50
+price = 0
+description = 별빛 분지의 유성 파편으로 짠 로브. 모든 마법에 대한 저항이 극대화된다.
+
+[Guardian_Shield]
+name = 수호자의 방패
+type = Shield
+grade = Uncommon
+element = Iron
+defense = 15
+price = 300
+description = 경비대에서 사용하는 표준 방패. 견고하고 믿음직하다.
+
+[Fortress_Shield]
+name = 요새의 방패
+type = Shield
+grade = Epic
+element = Earth
+defense = 35
+price = 1500
+description = 철벽 요새에서 출토된 고대의 방패. 들고 있으면 성벽이 된다.
+
+[Crystal_Light_Cloak]
+name = 수정 빛 망토
+type = Light
+grade = Legendary
+element = Light
+defense = 25
+evasion = 20
+price = 0
+description = 수정 동굴의 공명으로 태어난 망토. 빛을 굴절시켜 착용자를 보호한다.
+
+[Elimes_Guard_Plate]
+name = 엘리메스 경비 갑옷
+type = Heavy
+grade = Uncommon
+element = None
+defense = 18
+price = 400
+description = 엘리메스 경비대의 표준 갑옷. 한셀이 디자인했다.

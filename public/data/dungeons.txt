@@ -1,0 +1,138 @@
+# ============================================================
+# dungeons.txt — 던전 정의
+# 각 섹션은 하나의 던전을 정의합니다.
+#
+# name             : 던전 이름 (한글)
+# deepName         : 심부 이름 — 던전 후반부/깊은 구역 이름
+# description      : 입구 진입 시 표시되는 설명
+# deepDescription  : 심부 진입 시 표시되는 설명
+# difficulty       : 난이도 (0.0 ~ 1.0)
+# progressPerAdvance : 한 번 진행 시 탐색 진행도 증가량 (쉬운 던전일수록 높음)
+# accessFrom       : 이 던전에 접근 가능한 장소 (LocationID)
+# enemies          : 출현 몬스터 목록 (쉼표 구분, MonsterID)
+# lootOnClear      : 클리어 시 확정 보상 — ItemType:amount (쉼표 구분)
+# lootPerAdvance   : 진행마다 드롭 — ItemType:amount:chance (쉼표 구분)
+# lootRareChance   : 레어 드롭 확률 (0.0 ~ 1.0)
+# lootRare         : 레어 드롭 아이템 — ItemType:amount
+# colorInfluence   : 원소 영향 — Element:float (쉼표 구분)
+# ============================================================
+
+[Larmen_Forest]
+name = 라르멘 숲
+deepName = 라르멘 심림
+description = 마을 외곽의 울창한 숲. 나무 사이로 스며드는 햇살이 부드럽지만, 깊이 들어갈수록 야생의 기운이 짙어진다.
+deepDescription = 빛이 거의 닿지 않는 숲의 심부. 고목의 뿌리가 길을 가로막고, 어디선가 낮은 울음소리가 들려온다.
+difficulty = 0.15
+progressPerAdvance = 14.0
+accessFrom = Wilderness
+enemies = Forest_Slime, Wild_Boar, Treant_Sapling
+lootOnClear = MonsterLoot:8, Herb:12
+lootPerAdvance = Food:2:0.6, Herb:3:0.5, MonsterLoot:1:0.3
+lootRareChance = 0.08
+lootRare = Equipment:1
+colorInfluence = Earth:0.15, Wind:0.10
+
+[Forgotten_Shaft]
+name = 잊혀진 갱도
+deepName = 봉인된 수갱
+description = 산길 깊숙이 숨겨진 오래된 갱도. 녹슨 광차 궤도가 어둠 속으로 이어진다.
+deepDescription = 갱도 최하층. 고인 지하수에 광물 빛이 일렁이고, 암석 사이에서 기이한 벌레들이 기어 나온다.
+difficulty = 0.30
+progressPerAdvance = 12.0
+accessFrom = Mountain_Path
+enemies = Cave_Bat, Rock_Golem_Small, Mine_Spider
+lootOnClear = OreCommon:15, OreRare:3
+lootPerAdvance = OreCommon:3:0.55, MonsterLoot:1:0.4, OreRare:1:0.1
+lootRareChance = 0.10
+lootRare = OreRare:2
+colorInfluence = Earth:0.20, Iron:0.15
+
+[Mist_Marsh]
+name = 안개 습지
+deepName = 독무의 늪
+description = 야생지대 너머로 펼쳐진 습지. 짙은 안개가 시야를 가리고, 발밑에서 거품이 올라온다.
+deepDescription = 안개가 독기로 변하는 늪의 중심부. 썩은 나무들이 비틀린 채 솟아 있고, 물 아래서 무언가가 꿈틀댄다.
+difficulty = 0.40
+progressPerAdvance = 11.0
+accessFrom = Wilderness
+enemies = Poison_Toad, Marsh_Serpent, Fog_Wraith
+lootOnClear = Herb:15, Potion:5, MonsterLoot:6
+lootPerAdvance = Herb:2:0.5, Potion:1:0.3, MonsterLoot:2:0.35
+lootRareChance = 0.10
+lootRare = Potion:5
+colorInfluence = Water:0.20, Earth:0.10, Dark:0.08
+
+[Bandit_Den]
+name = 도적 소굴
+deepName = 두목의 거처
+description = 산길 옆 바위틈에 숨겨진 도적들의 근거지. 횃불 연기가 새어 나오고, 경비가 삼엄하다.
+deepDescription = 도적단 두목이 머무는 깊은 방. 약탈한 보물이 쌓여 있고, 정예 도적들이 최후의 방어선을 펼친다.
+difficulty = 0.50
+progressPerAdvance = 10.0
+accessFrom = Mountain_Path
+enemies = Bandit_Scout, Bandit_Warrior, Bandit_Mage, Bandit_Leader
+lootOnClear = Equipment:3, Food:10, MonsterLoot:8
+lootPerAdvance = Food:2:0.5, Equipment:1:0.15, MonsterLoot:2:0.4
+lootRareChance = 0.12
+lootRare = Equipment:2
+colorInfluence = Iron:0.15, Fire:0.10, Dark:0.05
+
+[Thunder_Valley]
+name = 뇌명 계곡
+deepName = 번개의 제단
+description = 산 너머 깊은 계곡. 바위 사이로 번개가 내리꽂히며, 대기가 정전기로 가득하다.
+deepDescription = 계곡 최심부의 고대 제단. 끊임없이 번개가 낙하하고, 전기를 머금은 괴물들이 제단을 지킨다.
+difficulty = 0.60
+progressPerAdvance = 9.0
+accessFrom = Mountain_Path
+enemies = Storm_Lizard, Lightning_Elemental, Thunder_Eagle
+lootOnClear = OreRare:4, MonsterLoot:10, Equipment:2
+lootPerAdvance = OreCommon:2:0.45, MonsterLoot:2:0.4, OreRare:1:0.12
+lootRareChance = 0.12
+lootRare = OreRare:3
+colorInfluence = Electric:0.25, Wind:0.15, Earth:0.05
+
+[Flame_Cavern]
+name = 불꽃 동굴
+deepName = 용암의 심장
+description = 무역로 끝자락에서 발견된 동굴. 입구부터 열기가 뿜어져 나오며, 벽면이 붉게 달아올라 있다.
+deepDescription = 동굴 최심부. 용암이 강처럼 흐르고, 불꽃 정령들이 춤추듯 떠다닌다. 극한의 열기가 갑옷까지 달군다.
+difficulty = 0.72
+progressPerAdvance = 8.0
+accessFrom = Trade_Route
+enemies = Fire_Salamander, Lava_Golem, Ember_Spirit, Flame_Wyrm
+lootOnClear = OreRare:5, Equipment:3, MonsterLoot:12
+lootPerAdvance = OreCommon:3:0.4, OreRare:1:0.15, MonsterLoot:2:0.45
+lootRareChance = 0.14
+lootRare = Equipment:3
+colorInfluence = Fire:0.30, Earth:0.10, Iron:0.08
+
+[Iron_Fortress]
+name = 철벽 요새
+deepName = 동력의 핵
+description = 무역로 변방에 버려진 고대 요새. 녹슨 톱니바퀴가 아직도 돌아가고, 기계 수호자들이 침입자를 감지한다.
+deepDescription = 요새의 동력 중심부. 거대한 마력 엔진이 작동하며, 가장 강력한 골렘이 최후의 방어 프로토콜을 가동한다.
+difficulty = 0.85
+progressPerAdvance = 6.0
+accessFrom = Trade_Route
+enemies = Iron_Automaton, Siege_Golem, Clockwork_Sentinel
+lootOnClear = Equipment:5, OreRare:6, MonsterLoot:15
+lootPerAdvance = OreRare:1:0.2, Equipment:1:0.18, MonsterLoot:3:0.45
+lootRareChance = 0.15
+lootRare = Equipment:4
+colorInfluence = Iron:0.30, Electric:0.15, Fire:0.08
+
+[Dark_Abyss]
+name = 어둠의 심연
+deepName = 종말의 왕좌
+description = 리문 유적 지하에 봉인되어 있던 심연으로의 입구. 빛조차 삼키는 어둠이 끝없이 이어진다.
+deepDescription = 심연의 최심부. 고대의 어둠이 실체를 갖추어 왕좌에 앉아 있다. 세계의 끝을 마주하는 듯한 압도적 공포가 밀려온다.
+difficulty = 0.95
+progressPerAdvance = 5.0
+accessFrom = Limun_Ruins
+enemies = Shadow_Wraith, Void_Stalker, Abyssal_Lord
+lootOnClear = Equipment:6, OreRare:8, MonsterLoot:20, Potion:10
+lootPerAdvance = OreRare:2:0.2, MonsterLoot:3:0.5, Equipment:1:0.15, Potion:1:0.25
+lootRareChance = 0.18
+lootRare = Equipment:5
+colorInfluence = Dark:0.35, Fire:0.10, Iron:0.08

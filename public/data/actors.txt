@@ -1,0 +1,629 @@
+# ============================================================
+# actors.txt — rove due colorz 캐릭터 정의
+# 원작 캐릭터 데이터 기반. 엘리메스 기본 NPC는 actors+first.txt 참조.
+# race: Human, Elf, Dwarf, Beastkin, Harpy, Centaur, Nekomimi, Spirit,
+#        Foxkin, Dragon, Angel, Demon, Arcana, Construct, Moth, Dryad,
+#        FallenAngel, Phantom
+# 속성 컬러 순서: Fire, Water, Electric, Iron, Earth, Wind, Light, Dark
+# ============================================================
+
+# ============================================================
+# 주인공급 캐릭터 — 일루네온
+# ============================================================
+
+[니아 이유르]
+playable = 1
+race = Arcana
+role = Villager
+strength = 0.6
+gold = 0
+location = Iluneon_Square
+homeLocation = Iluneon_Square
+age = 999
+colorValues = 0.3,0.5,0.4,0.4,0.5,0.5,0.9,0.3
+domainHigh = Calm,Empathetic,Inventive,Reliable,Patient,Freesprited,Righteous,Secretive
+domainLow = Melancholy,Rigid,Stagnant,Flexible,Generous,Grounded,Apathetic,Honest
+background = 지상에 내려온 신적 존재.|일루네온 광장에서 처음 만나게 되는 유령 같은 소년으로, 아무것도 모르는 듯하면서도 세계의 모든 것을 이해하는 눈빛을 가졌다.|말수가 적고 표정 변화도 거의 없지만, 누군가 위험에 처하면 망설임 없이 몸을 움직인다.|자신을 위해 안전한 공간을 만든 것이 이 세계로 발전되었다는 비밀을 품고 있다.
+
+[하코]
+playable = 1
+race = Human
+role = Adventurer
+strength = 0.5
+gold = 50
+location = Iluneon_Square
+homeLocation = Iluneon_Square
+age = 17
+colorValues = 0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5
+domainHigh = Passionate,Adaptable,Inventive,Flexible,Patient,Freesprited,Hopeful,Honest
+domainLow = Cautious,Indifferent,Methodical,Stubborn,Restless,Grounded,Cynical,Naive
+inventory = Food:5, Potion:2
+background = 어딘가에서 흘러들어온 모험가.|머리에 작은 뿔이 있지만 인간이냐는 질문에는 대수롭지 않게 넘긴다.|상황에 빠르게 익숙해지는 타입이라 넘어온 세계에서도 잘 지낸다.|목표는 모든 마을을 둘러보고 떠나는 것. 이 세계의 주인공 취급이지만, 히페리온 레벨 1도 찍기 힘들다.
+
+# ============================================================
+# 풍혈지대 · 마왕성 — 챕터 제로 관련
+# ============================================================
+
+[리엔카이]
+playable = 0
+race = Harpy
+role = Villager
+strength = 0.6
+gold = 40
+location = Windfall_Valley
+homeLocation = Windfall_Valley
+age = 25
+colorValues = 0.3,0.4,0.5,0.3,0.4,0.9,0.5,0.3
+domainHigh = Calm,Adaptable,Inventive,Flexible,Patient,Freesprited,Cynical,Cunning
+domainLow = Passionate,Rigid,Stagnant,Stubborn,Restless,Grounded,Apathetic,Honest
+background = 밤참새로서의 삶을 살아가려 노력하는 시민.|정체를 숨기고 싶어 하지만 습관이나 주변인의 반응 때문에 자꾸 들키는 게 요즘의 고민이다.|자신의 능력을 아끼지는 않지만, 중요한 부분에서는 슬며시 손을 뗀다.|뒷처리는 다른 누군가가 해 주겠지.
+
+[모노]
+playable = 0
+race = Construct
+role = Villager
+stationary = 1
+strength = 0.9
+gold = 0
+location = Demon_Castle
+homeLocation = Demon_Castle
+age = 999
+colorValues = 0.5,0.3,0.6,0.5,0.3,0.3,0.2,0.9
+domainHigh = Calm,Adaptable,Inventive,Reliable,Patient,Grounded,Cynical,Secretive
+domainLow = Passionate,Indifferent,Stagnant,Fragile,Generous,Freesprited,Apathetic,Honest
+background = 무엇이든 될 수 있다는 얘기는 그것 자체로 아무것도 될 수 없다는 뜻이다.|시간 축을 마음대로 움직일 수 있는 시스템 관리자로, 마왕직을 맡고 있다.|어차피 언젠가 사라질 이 세계의 시기를 즐기는 중이며, 겉으로는 무심하지만 세계의 균형에 누구보다 신경 쓴다.|마왕성에서 네 명의 사천왕과 함께 머무른다.
+
+[임페리시아]
+playable = 0
+race = Construct
+role = Villager
+strength = 0.6
+gold = 10
+location = Hologram_Field
+homeLocation = Hologram_Field
+age = 100
+colorValues = 0.4,0.3,0.8,0.5,0.3,0.4,0.4,0.4
+domainHigh = Calm,Adaptable,Inventive,Reliable,Patient,Grounded,Hopeful,Cunning
+domainLow = Passionate,Rigid,Stagnant,Fragile,Restless,Freesprited,Cynical,Naive
+background = 모노가 만들었다가 없애 버린 인공지능을 이유르의 제안으로 과거에서 데려온 시스템.|자신의 역할이나 행동 당위성에 대해 고민하지만 겉으로 드러내진 않는다.|바깥 세계에서 날아온 하코에게 많은 호기심을 보이며, 자신도 밖으로 나가고 싶어하는 눈치.|의외로 호기심이 많아 약간 귀찮은 성격이다.
+
+# ============================================================
+# 마법학교 루나 관련 캐릭터
+# ============================================================
+
+[마로 엔야]
+playable = 1
+race = Human
+role = Villager
+strength = 0.4
+gold = 30
+location = Luna_Academy
+homeLocation = Luna_Academy
+age = 16
+colorValues = 0.2,0.9,0.4,0.3,0.5,0.4,0.6,0.2
+domainHigh = Calm,Empathetic,Inventive,Reliable,Patient,Freesprited,Righteous,Honest
+domainLow = Melancholy,Rigid,Stagnant,Flexible,Generous,Grounded,Apathetic,Naive
+inventory = Herb:3, Potion:2
+background = 대변동에 의해 결계 속으로 사라진 스텔라 빌에서 물의 대정령 가젤리아에게 구해진 아이.|라르 숲의 오두막에서 자랐으며, 마법학교 루나에 입학했다.|전공 분야에서는 이미 가르칠 선생님이 없을 정도의 재능을 가졌지만, 성격은 엄청나게 착하다.|쌍둥이 동생 아르바로가 있다.
+
+[아르바로 엔야]
+playable = 0
+race = Human
+role = Villager
+strength = 0.4
+gold = 20
+location = Lar_Forest
+homeLocation = Lar_Forest
+age = 16
+colorValues = 0.3,0.4,0.3,0.3,0.8,0.5,0.5,0.3
+domainHigh = Excited,Adaptable,Impulsive,Flexible,Patient,Freesprited,Hopeful,Cunning
+domainLow = Cautious,Rigid,Methodical,Stubborn,Restless,Grounded,Cynical,Naive
+inventory = Food:5
+background = 마로의 쌍둥이 동생이지만, 마로의 강한 마력에 영향을 받아 생겨난 정령에 가까운 존재다.|마법 전개의 로우 레벨에 접근할 수 있지만, 지금은 마로의 의향으로 인간 취급이 되어 있다.|장난꾸러기 기질이 강하고, 학교도 가지 않고 마로네 집에서 뒹굴뒹굴하는 게 일상.|기본적으로는 남을 좋아하고 친하게 지내고 싶어한다.
+
+[크루하]
+playable = 0
+race = Spirit
+role = Priest
+stationary = 1
+strength = 0.8
+gold = 0
+location = Luna_Academy
+homeLocation = Luna_Academy
+age = 999
+colorValues = 0.3,0.4,0.5,0.3,0.4,0.9,0.6,0.3
+domainHigh = Calm,Empathetic,Methodical,Reliable,Patient,Grounded,Righteous,Cunning
+domainLow = Passionate,Rigid,Stagnant,Flexible,Generous,Freesprited,Cynical,Honest
+background = 바람의 대정령이자 현 풍신.|마법학교 루나의 상급 바람마법 선생님이며, 기초이론 과목도 담당하지만 난이도가 너무 높아 악명이 자자하다.|사실 루나의 교장이기도 하다.|키가 칠판보다도 작아서 귀엽다는 평가를 받으며, 책장에 책을 못 올리는 일이 잦다.
+
+[이연]
+playable = 1
+race = Moth
+role = Villager
+strength = 0.4
+gold = 20
+location = Luna_Academy
+homeLocation = Luna_Academy
+age = 16
+colorValues = 0.3,0.4,0.4,0.3,0.4,0.7,0.5,0.3
+domainHigh = Passionate,Adaptable,Inventive,Flexible,Patient,Freesprited,Hopeful,Honest
+domainLow = Cautious,Rigid,Stagnant,Stubborn,Restless,Grounded,Cynical,Naive
+inventory = Equipment:1, Food:3
+background = 나비 날개가 달린 아인.|무술인 집안에서 태어났지만 활을 쏘는 캐릭터로, 같이 활을 연습하는 여동생이 하나 있다.|꽤나 작은 몸집이라 잘 꾸미면 여성처럼 보일 수 있을 것 같다.|스토리도 짧고 내용도 많지 않은 튜토리얼 캐릭터.
+
+[루핀]
+playable = 0
+race = Dragon
+role = Villager
+strength = 0.6
+gold = 10
+location = Luna_Academy
+homeLocation = Triflower
+age = 14
+colorValues = 0.8,0.2,0.3,0.4,0.3,0.3,0.3,0.4
+domainHigh = Calm,Adaptable,Impulsive,Stubborn,Patient,Withdrawn,Hopeful,Secretive
+domainLow = Passionate,Indifferent,Stagnant,Fragile,Restless,Freesprited,Cynical,Naive
+inventory = Food:3
+background = 버려진 드래곤 알에서 태어난, 정신적으로 불안정한 어린 드래곤.|인간들이 알을 훔쳤다가 죽는 바람에 마을에서 혼자 태어나 떠돌다 크루하에게 발견되었다.|내성적이고 말수가 적어 교실에 있다는 걸 아는 사람이 거의 없을 정도로 겉돈다.|자신의 힘을 미워해서 드래곤이라는 것을 받아들이려 하지 않고, 평범한 도마뱀이라고 소개한다.
+
+[미유]
+playable = 0
+race = Beastkin
+role = Villager
+strength = 0.5
+gold = 30
+location = Luna_Academy
+homeLocation = Luna_Academy
+age = 15
+colorValues = 0.5,0.3,0.4,0.8,0.4,0.3,0.4,0.3
+domainHigh = Excited,Adaptable,Inventive,Flexible,Patient,Freesprited,Hopeful,Cunning
+domainLow = Cautious,Rigid,Stagnant,Stubborn,Restless,Grounded,Cynical,Naive
+inventory = Equipment:2
+background = 컬러즈 최단신의 뛰는 쥐.|온 몸에 무거운 장비를 둘둘 감고 다니며, 학교 친구들에겐 짐꾼 이미지가 강하게 박혀 있다.|어렸을 적 작은 몸집으로 박해당하던 기억이 있어 중장비를 다루게 되었지만, 루나에서는 오히려 재능으로 인정하고 갈고 닦는 중.|마로와 같이 다니며, 호기심이 많고 취미도 다양한 학생이다.
+
+[페비엘]
+playable = 0
+race = Elf
+role = Villager
+strength = 0.5
+gold = 40
+location = Luna_Academy
+homeLocation = Stella_Ville
+age = 200
+colorValues = 0.3,0.3,0.4,0.3,0.3,0.3,0.3,0.8
+domainHigh = Passionate,Adaptable,Inventive,Reliable,Patient,Grounded,Cynical,Secretive
+domainLow = Cautious,Rigid,Stagnant,Fragile,Restless,Freesprited,Apathetic,Honest
+inventory = Herb:5, Potion:3
+background = 대변동 당시 결계로 고립된 스텔라 빌 출신.|미래로 튕겨나와 살아남았지만, 고향 사람들은 이미 오래 전 사람들이 되었다.|고향을 되찾기 위해 결계에 관련된 흑마법을 연구하고 있다.|딱 한 명, 마로만이 같은 고향 사람이다.
+
+[쿠르쿠마]
+playable = 0
+race = Dryad
+role = Villager
+strength = 0.3
+gold = 0
+location = Luna_Academy
+homeLocation = World_Tree
+age = 3
+colorValues = 0.2,0.4,0.3,0.3,0.9,0.4,0.5,0.2
+domainHigh = Excited,Empathetic,Inventive,Flexible,Patient,Freesprited,Hopeful,Honest
+domainLow = Melancholy,Rigid,Stagnant,Stubborn,Generous,Grounded,Cynical,Naive
+inventory = Herb:3
+background = 루나의 교실에서 세계수의 씨앗이 부화한 모습.|미유가 단순히 희귀한 꽃이라 생각해서 주워왔는데, 만드라고라인 줄 알았더니 선생님도 모르는 무언가가 자랐다.|전직에 따라 성격이 바뀌지만, 어느 쪽으로 가든 엄마(세계수)의 도움이 되고 싶다는 마음은 같다.|특정 속성 과일을 사용하는 꼬마 드라이어드.
+
+[카미키]
+playable = 0
+race = Nekomimi
+role = Craftsman
+strength = 0.4
+gold = 50
+location = Luna_Academy
+homeLocation = Moss
+age = 17
+colorValues = 0.6,0.3,0.5,0.5,0.3,0.4,0.4,0.4
+domainHigh = Excited,Adaptable,Inventive,Reliable,Greedy,Freesprited,Hopeful,Cunning
+domainLow = Cautious,Rigid,Stagnant,Fragile,Restless,Grounded,Cynical,Naive
+inventory = OreCommon:3, Potion:2
+background = 루나의 과학실에 틀어박혀 수상한 짓을 하는 네코마타.|자기 몸보다 훨씬 큰 실험 가운을 걸치고 있으며, 스토리를 진행하면 과학실에 아예 눌러앉는다.|루나의 거의 유일한 순수과학 연구자로, 아직 2학년이지만 대학원 진학은 확정.|시간 도약 연구가 꿈이지만 어렵다는 걸 알고 있어서 요즘 고민 중이다.
+
+[아카샤]
+playable = 0
+race = Arcana
+role = Priest
+strength = 0.3
+gold = 20
+location = Luna_Academy
+homeLocation = Luna_Academy
+age = 200
+colorValues = 0.3,0.3,0.7,0.3,0.3,0.3,0.3,0.5
+domainHigh = Calm,Empathetic,Inventive,Flexible,Patient,Grounded,Cynical,Secretive
+domainLow = Melancholy,Rigid,Stagnant,Stubborn,Generous,Freesprited,Apathetic,Honest
+inventory = Herb:3
+background = 명계의 유령.|죽은 사람의 영혼과 소통할 수 있고 그들을 위한 일을 한다.|병약한 속성의 무녀 스타일이지만 이미 유령인 몸이라 건강 걱정은 하지 않는다.|학교의 지박령인 연기를 하고 있지만, 눈치 챈 사람들은 평범한 유령이 아니라는 걸 알고 있다.
+
+[모나토]
+playable = 0
+race = Demon
+role = Villager
+strength = 0.5
+gold = 30
+location = Luna_Academy
+homeLocation = Luna_Academy
+age = 17
+colorValues = 0.4,0.6,0.4,0.4,0.4,0.4,0.4,0.5
+domainHigh = Passionate,Adaptable,Inventive,Flexible,Generous,Freesprited,Hopeful,Honest
+domainLow = Cautious,Rigid,Stagnant,Stubborn,Restless,Grounded,Cynical,Naive
+inventory = Food:3, Potion:2
+background = 평범한 인간이지만, 태어날 때의 점성술적 파장이 고대의 악마 '트립스'와 동일해 몸에 깃들었다.|치명상을 입으면 눈 색이 붉게 변하며 트립스가 깨어나고, 공격력이 극도로 강해지지만 시간제한이 있다.|트립스는 위해를 가할 생각이 없고 오히려 재밌을 것 같다며 주인이라 부른다.|달라진 세상을 구경시켜 달라고 한다.
+
+[노노]
+playable = 0
+race = FallenAngel
+role = Villager
+strength = 0.4
+gold = 15
+location = Luna_Academy
+homeLocation = Luna_Academy
+age = 15
+colorValues = 0.3,0.3,0.4,0.3,0.3,0.4,0.4,0.7
+domainHigh = Calm,Adaptable,Inventive,Flexible,Generous,Freesprited,Hopeful,Honest
+domainLow = Melancholy,Rigid,Stagnant,Stubborn,Restless,Grounded,Cynical,Naive
+inventory = Food:3
+background = 타천사 계보에서 태어난 루나의 저학년 학생.|천계의 일은 잘 모르며, 미유와 같이 다닌다.|마법학교에서 열심히 공부하고 있지만, 가끔 이상한 일에 휘말린다.|깃털갈이를 하는 시기가 있다고 한다.
+
+# ============================================================
+# 마노니클라 관련 캐릭터
+# ============================================================
+
+[카요]
+playable = 0
+race = Dragon
+role = Craftsman
+strength = 0.8
+gold = 60
+location = Manonickla
+homeLocation = Manonickla
+age = 300
+colorValues = 0.5,0.3,0.4,0.9,0.5,0.3,0.4,0.4
+domainHigh = Passionate,Adaptable,Inventive,Stubborn,Patient,Grounded,Hopeful,Secretive
+domainLow = Melancholy,Indifferent,Stagnant,Fragile,Restless,Freesprited,Cynical,Honest
+inventory = OreCommon:5, Equipment:2
+background = 항상 과거에 얽매여 사는 드래곤.|대변동에 불씨를 제공한 것에 대한 죄책감에 시달리지만, 마노니클라 조를 만나고는 훨씬 밝아졌다.|모노와 함께 과거로 돌아가 자신을 때려눕히고 나서는 좀 해소가 된 듯하다.|날뛰면 막아낼 사람이 없는 강력한 존재이지만, 지금은 조용히 지내고 있다.
+
+[시이드]
+playable = 0
+race = Harpy
+role = Meteorologist
+strength = 0.3
+gold = 30
+location = Manonickla
+homeLocation = Manonickla
+age = 19
+colorValues = 0.3,0.4,0.5,0.3,0.3,0.9,0.5,0.2
+domainHigh = Excited,Adaptable,Inventive,Flexible,Generous,Freesprited,Hopeful,Honest
+domainLow = Cautious,Rigid,Stagnant,Stubborn,Restless,Grounded,Cynical,Naive
+inventory = Food:3, Herb:2
+background = 사천왕 시아의 여동생이자 기상학 학자 하피.|엄청난 스펙이지만 정작 본인은 신경도 쓰지 않으며, 항상 하이 텐션으로 마노니클라를 돌아다닌다.|전공 분야 외에는 아무것도 걱정하지 않고 상식도 부족하다.|단순히 하고 싶은 걸 하는 일차원적인 사람이다.
+
+[네토 로크]
+playable = 0
+race = Construct
+role = Guard
+strength = 0.7
+gold = 0
+location = Limun_Ruins
+homeLocation = Limun_Ruins
+age = 500
+colorValues = 0.3,0.4,0.3,0.5,0.9,0.3,0.5,0.3
+domainHigh = Calm,Adaptable,Methodical,Stubborn,Patient,Grounded,Hopeful,Honest
+domainLow = Passionate,Indifferent,Stagnant,Fragile,Restless,Freesprited,Cynical,Naive
+background = 고대 골렘.|최근까지 바위의 정령 정도로 알려져 있었으나, 리문 유적이 발견되면서 그곳을 지키던 경비 역할이었다는 게 밝혀졌다.|유적 심층에 아직 많은 유물이 남아있다는 걸 알게 된 로크는 유적을 재건할 계획을 세우고 있다.|평소에는 마노니클라에서 빈둥빈둥 놀고 있다.
+
+# ============================================================
+# 마틴 항 관련 캐릭터
+# ============================================================
+
+[루디]
+playable = 0
+race = Harpy
+role = Villager
+strength = 0.5
+gold = 80
+location = Martin_Port
+homeLocation = Martin_Port
+age = 23
+colorValues = 0.3,0.7,0.4,0.4,0.4,0.5,0.5,0.3
+domainHigh = Passionate,Adaptable,Methodical,Reliable,Patient,Grounded,Hopeful,Honest
+domainLow = Cautious,Indifferent,Stagnant,Flexible,Restless,Freesprited,Cynical,Naive
+inventory = Food:5, Equipment:1
+background = 항구도시 마틴의 씩씩한 선원.|화물의 상하선을 담당하는 부서에서 근무하며, 관리감독이나 작은 화물 위주로 일한다.|어두운 색 망토와 표창을 사용하던 모험가 시절과는 연을 끊었다고 하지만, 가끔 모험가 길드에 놀러간다.|투박하지만 열심히 사는 사람.
+
+[테오]
+playable = 0
+race = Human
+role = Merchant
+strength = 0.4
+gold = 120
+location = Martin_Port
+homeLocation = Martin_Port
+age = 26
+colorValues = 0.7,0.3,0.3,0.3,0.4,0.4,0.4,0.3
+domainHigh = Passionate,Adaptable,Inventive,Flexible,Patient,Freesprited,Hopeful,Honest
+domainLow = Cautious,Rigid,Stagnant,Stubborn,Restless,Grounded,Cynical,Naive
+inventory = Food:10, Herb:5
+background = 탐험과 미식에 미쳐있는 요리사.|루디와 아는 사이로, 마틴 항에서 주로 활동한다.|요리 대회 '마이너 테이블'에 참가하는 것이 꿈이며, 한정된 시간대에서만 구할 수 있는 재료를 찾아다닌다.|만든 음식은 1시간 이내에 먹지 않으면 효과가 사라진다는 철학을 가지고 있다.
+
+# ============================================================
+# 할퓌아 (부유 섬) 관련 캐릭터
+# ============================================================
+
+[리비트]
+playable = 0
+race = Angel
+role = Villager
+strength = 0.6
+gold = 20
+location = Halpia
+homeLocation = Halpia
+age = 200
+colorValues = 0.3,0.5,0.3,0.3,0.4,0.5,0.9,0.3
+domainHigh = Calm,Adaptable,Inventive,Flexible,Generous,Freesprited,Righteous,Honest
+domainLow = Passionate,Rigid,Stagnant,Stubborn,Restless,Grounded,Cynical,Naive
+background = 지상에 내려와서 살고 있는 천사.|천계의 일은 파업하고 내려왔다고 하지만, 실은 화이트 팡의 인과를 확정하고 자립할 때까지 관리하는 역할이다.|순수 천사라기엔 약간 게으름뱅이 기질이 있고 천계로도 그다지 돌아가고 싶지 않아 한다.|옛날부터 많은 사람과 친하며, 일부 지역에서는 천사님으로 불린다.
+
+[화이트 팡]
+playable = 0
+race = Beastkin
+role = Adventurer
+strength = 0.9
+gold = 10
+location = Halpia
+homeLocation = Luna_Academy
+age = 15
+colorValues = 0.4,0.4,0.4,0.4,0.4,0.4,0.8,0.3
+domainHigh = Calm,Adaptable,Impulsive,Stubborn,Patient,Freesprited,Hopeful,Secretive
+domainLow = Passionate,Indifferent,Stagnant,Fragile,Restless,Grounded,Apathetic,Honest
+inventory = Equipment:1
+background = 무속성의 수인 검사.|버그의 바다 출신 버그 생명체이며, 물리 법칙을 무시하고 가냘픈 몸으로 말도 안 되는 속도의 검을 휘두른다.|자신의 존재에 대한 궁금증과 증명을 위해 끊임없이 노력하지만, 결국 해답을 주변에서 찾게 된다.|루나에 눌러앉아 학생 신분으로 연구를 지원받고 있다.
+
+# ============================================================
+# 알리메스 관련 캐릭터
+# ============================================================
+
+[윤희원]
+playable = 0
+race = Demon
+role = Guard
+strength = 0.7
+gold = 100
+location = Alimes
+homeLocation = Alimes
+age = 150
+colorValues = 0.3,0.7,0.5,0.5,0.4,0.4,0.4,0.5
+domainHigh = Calm,Adaptable,Methodical,Reliable,Patient,Grounded,Cynical,Secretive
+domainLow = Passionate,Indifferent,Stagnant,Flexible,Restless,Freesprited,Apathetic,Honest
+inventory = Equipment:1, Potion:3
+background = 계약에 죽고 사는 악마족.|업무 할 때는 아주 낮은 텐션으로 무거운 말투를 쓰지만, 평소에는 그렇게까지 딱딱하진 않다.|이유르에게 계약되어 아이리의 감시 역을 맡고 있으며, 알리메스 꼭대기에 거주 중.|종신 계약이라 힘들 법도 하지만, 눌러앉아 있을 수 있는 건 최고의 복지라고 한다.
+
+# ============================================================
+# 라르 포레스트 관련 캐릭터
+# ============================================================
+
+[칼리번]
+playable = 0
+race = Beastkin
+role = Adventurer
+strength = 0.5
+gold = 60
+location = Lar_Forest
+homeLocation = Lar_Forest
+age = 22
+colorValues = 0.7,0.3,0.4,0.4,0.4,0.5,0.4,0.4
+domainHigh = Passionate,Adaptable,Inventive,Flexible,Patient,Freesprited,Hopeful,Cunning
+domainLow = Cautious,Rigid,Stagnant,Stubborn,Restless,Grounded,Cynical,Naive
+inventory = Equipment:1, Herb:5
+background = 전설의 마법을 찾아 떠나는 여행자.|루나에서 엘네스트를 만나 목적이 비슷한 그와 여행을 시작했으며, 훗날 결혼까지 하는 공식 커플이다.|몸집이 작고 커다란 마법사 모자를 쓰고 다니며, 높은 마법 재능으로 점차 성장해 나간다.|그들의 목적은 마왕을 쓰러뜨리는 것이 아니라 전설의 발자취를 따라가는 것이다.
+
+[엘네스트]
+playable = 0
+race = Beastkin
+role = Adventurer
+strength = 0.7
+gold = 40
+location = Void_Forest
+homeLocation = Void_Forest
+age = 24
+colorValues = 0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5
+domainHigh = Passionate,Adaptable,Impulsive,Flexible,Generous,Freesprited,Hopeful,Honest
+domainLow = Cautious,Rigid,Methodical,Stubborn,Restless,Grounded,Cynical,Naive
+inventory = Equipment:2, Food:5
+background = 전설의 검을 찾아 떠나는 수인 검사.|칼리번과 동행하며, 모든 모험이 끝나면 결혼하는 공식 커플이다.|눈치가 부족하고 대차며 활발한 성격으로, 허공 숲 출신이라 키가 꽤 훤칠하다.|담배와 화약 연기는 질색이라고 한다. 모든 속성을 사용할 수 있는 드문 검사.
+
+# ============================================================
+# 리엘 · 푸치 탑 관련 캐릭터
+# ============================================================
+
+[리제]
+playable = 0
+race = Dragon
+role = Adventurer
+strength = 0.9
+gold = 200
+location = Puchi_Tower
+homeLocation = Riel_Sky
+age = 400
+colorValues = 0.4,0.4,0.5,0.4,0.3,0.8,0.5,0.3
+domainHigh = Passionate,Adaptable,Inventive,Flexible,Patient,Freesprited,Hopeful,Cunning
+domainLow = Cautious,Rigid,Stagnant,Stubborn,Restless,Grounded,Cynical,Honest
+inventory = Equipment:3, Potion:5
+background = 천공성 리엘의 공주이자 파란색 무투가 드래곤.|성에서 몰래 빠져나와 푸치 탑을 세워, 도전자들에게 시련을 내리며 마지막 층에서 직접 싸운다.|지상에선 모르는 사람이 없을 정도로 강하고 두려운 존재지만, 실제로는 호기심이 많고 쾌활한 성격.|하나브릿지의 기투회장에 가끔 등장한다는 소문이 있다.
+
+# ============================================================
+# 에니챰 · 나이트 타코미 관련 캐릭터
+# ============================================================
+
+[제로]
+playable = 0
+race = Human
+role = Craftsman
+strength = 0.5
+gold = 100
+location = Enicham
+homeLocation = Enicham
+age = 21
+colorValues = 0.4,0.3,0.9,0.4,0.3,0.4,0.4,0.3
+domainHigh = Passionate,Adaptable,Inventive,Flexible,Patient,Freesprited,Hopeful,Honest
+domainLow = Cautious,Rigid,Stagnant,Stubborn,Restless,Grounded,Cynical,Naive
+inventory = Equipment:2, OreCommon:5
+background = 전기 공학자이자 작곡가.|신형 앰프를 샀으나 기계소녀가 들어 있는 기묘한 사건을 겪었다.|사고로 팔다리를 잃고 의족 의수를 달게 되었지만, 긍정적인 사람이라 파츠만 갈아끼우면 키가 커졌다 작아졌다 한다며 자랑한다.|의외로 피닉스와 막역한 사이이다.
+
+[알티 알타]
+playable = 0
+race = Construct
+role = Villager
+strength = 0.4
+gold = 0
+location = Night_Tacomi
+homeLocation = Night_Tacomi
+age = 50
+colorValues = 0.4,0.3,0.9,0.5,0.3,0.4,0.4,0.3
+domainHigh = Calm,Adaptable,Methodical,Reliable,Patient,Grounded,Cynical,Secretive
+domainLow = Passionate,Indifferent,Stagnant,Fragile,Restless,Freesprited,Apathetic,Honest
+background = 기억을 잃어버린 인공지능 앰프.|다른 인공물과 달리 진짜 생명체라 해도 될 정도로 정교하며, 감정도 생각도 있다.|표현이 서툴러 딱딱하고 냉소적으로 보이지만, 속으로는 이런저런 생각을 다 한다.|루나에서 지내면서 조금씩 기억을 되찾고 있다.
+
+[커트래빗]
+playable = 0
+race = Human
+role = Villager
+strength = 0.4
+gold = 5
+location = Enicham
+homeLocation = Enicham
+age = 14
+colorValues = 0.4,0.3,0.4,0.7,0.4,0.3,0.3,0.4
+domainHigh = Calm,Adaptable,Inventive,Flexible,Patient,Withdrawn,Hopeful,Secretive
+domainLow = Passionate,Indifferent,Stagnant,Stubborn,Restless,Freesprited,Cynical,Naive
+inventory = Equipment:1
+background = 바깥에서 흘러들어온 전 데스페리아 거주자이자 고아.|상당히 어두운 과거를 가지고 있으며, 의기소침해져 있다.|유일하게 총을 다루며 시스템 탄을 사용하는데, 다 제로의 작품이다.|어둠의 정령과 크루하의 도움으로 불안한 성격을 다스리고 강한 스나이퍼가 되어간다.
+
+# ============================================================
+# 트리플라워 화산 관련 캐릭터
+# ============================================================
+
+[카시스]
+playable = 0
+race = Foxkin
+role = Adventurer
+strength = 0.8
+gold = 100
+location = Triflower
+homeLocation = Triflower
+age = 400
+colorValues = 0.8,0.3,0.4,0.4,0.3,0.4,0.4,0.3
+domainHigh = Passionate,Adaptable,Inventive,Flexible,Patient,Freesprited,Cynical,Cunning
+domainLow = Cautious,Rigid,Stagnant,Stubborn,Restless,Grounded,Apathetic,Honest
+inventory = MonsterLoot:3, Herb:5
+background = 불의 사천왕이자 구미호.|정령과 마법에 정통하며 마나 시스템에 대해 이유르에게 조언을 많이 해 준 인연이 있다.|트리플라워 출신이라 빠르게 불타고 빠르게 식는 성격이며, 구미호다운 일면도 보이지만 선을 넘지는 않는다.|자유롭게 마법 연구를 하는 타입으로, 가끔 루나에도 얼굴을 비춘다.
+
+[발렌시아]
+playable = 0
+race = Spirit
+role = Guard
+strength = 0.8
+gold = 0
+location = Triflower
+homeLocation = Triflower
+age = 500
+colorValues = 0.5,0.3,0.3,0.9,0.4,0.3,0.4,0.3
+domainHigh = Passionate,Adaptable,Methodical,Stubborn,Patient,Grounded,Hopeful,Honest
+domainLow = Cautious,Indifferent,Stagnant,Fragile,Restless,Freesprited,Cynical,Naive
+inventory = Equipment:2
+background = 인간 형상을 하고 있지만 사실 오래된 창의 정령.|창을 들고 있는 여기사처럼 보이지만, 사실은 창이 본체이다.|무기로서의 본질은 사용되는 것이지만 발렌시아는 그 자체로 완전한 창이어서 다른 사람에게 사용될 필요가 없다.|향상심 있는 전사들을 도와주는 것을 좋아하는 지원가.
+
+# ============================================================
+# 모스 관련 캐릭터
+# ============================================================
+
+[카르디]
+playable = 0
+race = Phantom
+role = Merchant
+strength = 0.4
+gold = 80
+location = Moss
+homeLocation = Moss
+age = 18
+colorValues = 0.4,0.3,0.8,0.4,0.3,0.4,0.4,0.4
+domainHigh = Excited,Adaptable,Inventive,Flexible,Generous,Freesprited,Hopeful,Cunning
+domainLow = Cautious,Rigid,Stagnant,Stubborn,Restless,Grounded,Cynical,Naive
+inventory = Potion:5, Herb:3
+background = 모두가 인간 마술사로 알고 있지만 사실 팬텀이라는 종족.|남을 속이길 좋아하고 신출귀몰한 트릭스터스러운 종족이지만, 나름 사회화가 많이 된 편이다.|온전히 마술사로서의 자신을 봐주었으면 하며, 팬텀이라는 걸 밝히기 꺼려한다.|같이 다니면 항상 재밌는 일들이 많이 일어나 친구들로부터 인기가 좋다.
+
+# ============================================================
+# 일루네온 · 기타 지역 캐릭터
+# ============================================================
+
+[피닉스]
+playable = 0
+race = Harpy
+role = Villager
+strength = 0.5
+gold = 80
+location = Iluneon_Square
+homeLocation = Iluneon_Square
+age = 300
+colorValues = 0.7,0.3,0.4,0.3,0.3,0.5,0.5,0.3
+domainHigh = Calm,Adaptable,Inventive,Flexible,Patient,Freesprited,Hopeful,Honest
+domainLow = Passionate,Rigid,Stagnant,Stubborn,Restless,Grounded,Cynical,Naive
+inventory = Food:5
+background = 스팀펑크 스타일의 전설 속 조류계 아인.|날개 한 쪽을 다쳐 톱니바퀴로 고쳤으며, 체공에 자신이 있다.|사진기를 들고 다니면서 높은 곳에서 사진을 찍고, 최근엔 사진첩을 만들어 꽤나 많은 돈을 벌고 있다.|전투에 관심이 없지만, 진지하게 임하면 든든하고 강력한 지원군이 된다.
+
+[에코]
+playable = 0
+race = Dwarf
+role = Craftsman
+strength = 0.7
+gold = 50
+location = Iluneon_Square
+homeLocation = Iluneon_Square
+age = 80
+colorValues = 0.4,0.3,0.3,0.5,0.8,0.3,0.4,0.3
+domainHigh = Calm,Adaptable,Inventive,Stubborn,Patient,Grounded,Hopeful,Honest
+domainLow = Passionate,Indifferent,Stagnant,Fragile,Restless,Freesprited,Cynical,Naive
+inventory = OreCommon:10, Equipment:3
+background = 땅의 사천왕이자 드워프 소녀 대장장이.|모노의 브로치를 고쳐 준 인연이 있으며, 장비 만지는 일에 목숨을 건다.|사천왕 타이틀을 전혀 개의치 않아 문제가 되고 있다.|말수가 아주 적고 직설적이며, 구석진 곳에서 조용히 일하지만 실력은 최정상급이다.
+
+# ============================================================
+# 사천왕 — 마왕성 · 각지
+# ============================================================
+
+[시아]
+playable = 0
+race = Harpy
+role = Villager
+stationary = 1
+strength = 0.7
+gold = 30
+location = Demon_Castle
+homeLocation = Demon_Castle
+age = 25
+colorValues = 0.3,0.4,0.4,0.3,0.3,0.8,0.5,0.4
+domainHigh = Calm,Empathetic,Methodical,Reliable,Patient,Grounded,Righteous,Secretive
+domainLow = Passionate,Rigid,Stagnant,Fragile,Restless,Freesprited,Cynical,Honest
+inventory = Food:3, Potion:2
+background = 바람의 사천왕이자 시이드의 언니.|사천왕 중 나이가 제일 어리지만 제일 성숙하고 정신적 지주 포지션으로, 모르는 사람이 보면 시아가 마왕 같아 보인다.|마왕성에서 서류 작업을 도맡아 하며, 나머지 사천왕이 놀러다니기만 하는 것을 생각하면 일은 이쪽이 다 하는 셈.|항상 시이드에게 더 잘해주지 못한 것을 미안해 한다.
+
+[리무]
+playable = 0
+race = Moth
+role = Villager
+strength = 0.5
+gold = 10
+location = Lar_Forest
+homeLocation = Lar_Forest
+age = 300
+colorValues = 0.3,0.7,0.3,0.3,0.4,0.4,0.5,0.3
+domainHigh = Calm,Empathetic,Inventive,Flexible,Patient,Freesprited,Hopeful,Honest
+domainLow = Melancholy,Rigid,Stagnant,Stubborn,Generous,Grounded,Cynical,Naive
+inventory = Herb:5, Food:3
+background = 물의 사천왕이자 도토리를 좋아하는 나방.|라르 숲 출신으로 숲에서 노는 것을 좋아하며, 의외로 나이가 꽤 있지만 아주 어린 모습이다.|숲의 동물들과 낮잠을 즐기는 모습이 자주 포착되며, 말수가 적고 느긋한 성격이지만 호기심이 많다.|푹신푹신한 털이 특징이고, 물 마법의 수준이 아주 높아 일루네온에 눈을 오게 할 수도 있다.
