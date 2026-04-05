@@ -109,6 +109,7 @@ export class PlayerKnowledge {
   maxSingleDamage = 0;
   totalTreasureFound = 0;
   monsterTypesKilled = new Set<string>();
+  discoveredItems = new Set<string>();
   totalGoldSpent = 0;
   totalItemsSold = 0;
   totalItemsCrafted = 0;
@@ -177,4 +178,6 @@ export class PlayerKnowledge {
     this.companionDaysMap.set(name, (this.companionDaysMap.get(name) ?? 0) + 1);
   }
   trackGiftGiven(): void { this.totalGiftsGiven++; }
+  discoverItem(itemId: string): void { this.discoveredItems.add(itemId); }
+  isItemDiscovered(itemId: string): boolean { return this.discoveredItems.has(itemId); }
 }

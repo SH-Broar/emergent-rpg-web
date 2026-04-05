@@ -13,7 +13,7 @@ export type GameAction =
   | 'rest' | 'dungeon' | 'gather' | 'quest' | 'activity'
   | 'gift' | 'home' | 'memory_spring'
   | 'info_status' | 'info_color' | 'info_relations' | 'info_world'
-  | 'info_backlog' | 'info_hyperion' | 'info_party' | 'info_titles' | 'info_map'
+  | 'info_backlog' | 'info_hyperion' | 'info_party' | 'info_titles' | 'info_map' | 'info_encyclopedia'
   | 'save';
 
 const ACTION_TIME: Partial<Record<GameAction, number>> = {
@@ -117,6 +117,7 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
     case 'info_party':
     case 'info_titles':
     case 'info_map':
+    case 'info_encyclopedia':
       result.screenChange = action;
       return result; // 시간 경과 없이 리턴
 

@@ -19,6 +19,7 @@ import { createBirthScreen, createCustomCharScreen } from './ui/screens/characte
 import { createActivityScreen } from './ui/screens/activity';
 import { createGiftScreen } from './ui/screens/gift';
 import { createEatScreen } from './ui/screens/eat';
+import { createEncyclopediaScreen } from './ui/screens/encyclopedia';
 import { createHomeScreen } from './ui/screens/home';
 import { createHyperionScreen } from './ui/screens/hyperion';
 import { createTitlesScreen } from './ui/screens/titles';
@@ -196,6 +197,9 @@ async function boot() {
           break;
         case 'info_map':
           sm.push(createWorldMapScreen(session, () => sm.pop()));
+          break;
+        case 'info_encyclopedia':
+          sm.push(createEncyclopediaScreen(session, () => sm.pop()));
           break;
         case 'save':
           sm.push(createSaveLoadScreen(session, true, () => sm.pop()));

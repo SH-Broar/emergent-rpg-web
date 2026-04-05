@@ -11,6 +11,7 @@ import { EventSystem, createGameEvent } from '../models/event';
 import { DungeonSystem, DungeonEventType } from '../models/dungeon';
 import { ActivitySystem } from '../models/activity';
 import { loadHyperion } from '../systems/hyperion';
+import { loadItemDefs } from '../types/item-defs';
 import type { GameDataFiles } from './loader';
 
 // --- items.txt ---
@@ -361,6 +362,9 @@ export function initAll(data: GameDataFiles): InitResult {
 
   GameRegistry.I.initDefaults();
   initItems(data.items);
+
+  // 개별 아이템 정의 로드
+  try { loadItemDefs(data.items); } catch { /* items.txt가 새 포맷이 아니면 무시 */ }
 
   const world = new World();
   initLocations(data.locations, world);

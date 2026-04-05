@@ -61,6 +61,7 @@ const INFO_ACTIONS: ActionDef[] = [
   { key: 'p', label: '동료', action: 'info_party', icon: '👥' },
   { key: 't', label: '칭호', action: 'info_titles', icon: '🏅' },
   { key: 'M', label: '지도', action: 'info_map', icon: '🧭' },
+  { key: 'e', label: '도감', action: 'info_encyclopedia', icon: '📚' },
   { key: 'S', label: '저장', action: 'save', icon: '💾' },
 ];
 

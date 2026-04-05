@@ -77,6 +77,16 @@ export class Actor {
   hyperionFlags: boolean[] = [false, false, false, false, false];
   lastTickHour = 6;
 
+  /** 개별 아이템 인벤토리 (ItemID → 수량) */
+  items = new Map<string, number>();
+
+  /** 장착 무기 ID (없으면 빈 문자열) */
+  equippedWeapon = '';
+  /** 장착 방어구 ID */
+  equippedArmor = '';
+  /** 장착 악세서리 ID */
+  equippedAccessory = '';
+
   static readonly MAX_MEMORIES = 100;
 
   constructor(name: string, race: Race, role: SpiritRole) {
@@ -149,6 +159,25 @@ export class Actor {
   }
   addDungeonProgress(dungeonId: string, amount: number): void {
     this.dungeonProgress.set(dungeonId, (this.dungeonProgress.get(dungeonId) ?? 0) + amount);
+  }
+
+  // --- 개별 아이템 인벤토리 메서드 ---
+  addItemById(id: string, amount = 1): void {
+    this.items.set(id, (this.items.get(id) ?? 0) + amount);
+  }
+  removeItemById(id: string, amount = 1): boolean {
+    const cur = this.items.get(id) ?? 0;
+    if (cur < amount) return false;
+    const next = cur - amount;
+    if (next <= 0) this.items.delete(id);
+    else this.items.set(id, next);
+    return true;
+  }
+  getItemCount(id: string): number {
+    return this.items.get(id) ?? 0;
+  }
+  hasItem(id: string): boolean {
+    return (this.items.get(id) ?? 0) > 0;
   }
 
   getEffectiveMaxHp(): number { return this.base.maxHp + this.hyperionLevel * 10; }
