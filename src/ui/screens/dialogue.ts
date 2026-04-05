@@ -73,7 +73,7 @@ export function createDialogueScreen(
 
     const rel = p.relationships.get(npc.name);
     const overall = rel ? getRelationshipOverall(rel) : 0;
-    const stage = getRelationshipStage(p, npc.name, session.knowledge);
+    const stage = getRelationshipStage(p, npc.name, session.knowledge, session.actors);
     const stageLabel = getRelationshipStageLabel(stage);
 
     if (dialogueLines.length === 0) {
@@ -147,7 +147,7 @@ export function createDialogueScreen(
         const npcAct = npcsHere[selectedIdx];
         if (npcAct) {
           const isComp = session.knowledge.isCompanion(npcName);
-          const curStage = isComp ? 'companion' as const : getRelationshipStage(p, npcName, session.knowledge);
+          const curStage = isComp ? 'companion' as const : getRelationshipStage(p, npcName, session.knowledge, session.actors);
           const contLine = getContinueDialogue(npcAct, curStage);
           dialogueLines.push(`\u300c${contLine}\u300d`);
         }
@@ -158,7 +158,7 @@ export function createDialogueScreen(
       case 'recruit': {
         const npcActor = npcsHere[selectedIdx];
         if (npcActor) {
-          const result = tryRecruitCompanion(p, npcActor, session.knowledge, session.backlog, session.gameTime);
+          const result = tryRecruitCompanion(p, npcActor, session.knowledge, session.backlog, session.gameTime, session.actors);
           if (result.success) {
             callbacks.onRecruit(npcName);
           } else if (result.messages.length > 0) {

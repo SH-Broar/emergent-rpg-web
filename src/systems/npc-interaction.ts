@@ -456,27 +456,138 @@ export interface RecruitResult {
 
 // ============================================================
 // 관계 단계 시스템
-// 모르는 사이 → 아는 사이(대화 1회) → 친한 사이(상호작용 5회+호감도) → 동료 가능
+// 모르는 사이 → 아는 사이(대화 1회) → 친한 사이(입수 조건 달성) → 동료 가능
 // ============================================================
 export type RelationshipStage = 'unknown' | 'known' | 'close' | 'companion';
+
+/** 입수 조건 한 줄 평가 결과 */
+export interface AcquisitionCheck {
+  text: string;
+  met: boolean;
+  evaluable: boolean;
+}
+
+/** 입수 조건 한 줄을 파싱하여 자동 평가 시도 */
+export function evaluateAcquisitionLine(
+  line: string,
+  _player: Actor,
+  allActors: Actor[],
+  knowledge: PlayerKnowledge,
+): AcquisitionCheck {
+  const t = line.trim();
+  if (!t || t.startsWith('상기의')) return { text: t, met: true, evaluable: true };
+
+  // 히페리온 레벨 N 이상 (전체)
+  const hlTotal = t.match(/히페리온 레벨\s*(\d+)\s*이상/);
+  if (hlTotal && !t.includes('의 히페리온')) {
+    const total = allActors.reduce((s, a) => s + a.hyperionLevel, 0);
+    return { text: t, met: total >= parseInt(hlTotal[1], 10), evaluable: true };
+  }
+
+  // X의 히페리온 레벨(이) N 이상
+  const actorHl = t.match(/(.+?)의\s*히페리온\s*레벨이?\s*(\d+)\s*이상/);
+  if (actorHl) {
+    const name = actorHl[1].trim().replace(/^\d+\.\s*/, '');
+    const actor = allActors.find(a => a.name === name);
+    return { text: t, met: actor ? actor.hyperionLevel >= parseInt(actorHl[2], 10) : false, evaluable: true };
+  }
+
+  // X와/과 동행 중
+  const comp = t.match(/(.+?)[와과이가]\s*동행\s*중/);
+  if (comp) {
+    const name = comp[1].trim().replace(/^\d+\.\s*/, '');
+    return { text: t, met: knowledge.isCompanion(name), evaluable: true };
+  }
+
+  // 동료가 N명 이상
+  const recCnt = t.match(/동료가?\s*(\d+)\s*명\s*이상/);
+  if (recCnt) {
+    return { text: t, met: knowledge.recruitedEver.size >= parseInt(recCnt[1], 10), evaluable: true };
+  }
+
+  // 사천왕이 모두 동료
+  if (t.includes('사천왕이 모두 동료')) {
+    const four = ['에코', '카시스', '시아', '리무'];
+    return { text: t, met: four.every(n => knowledge.recruitedEver.has(n)), evaluable: true };
+  }
+
+  // 방문한 마을 수 N곳 이상
+  const visit = t.match(/방문한\s*마을\s*수\s*(\d+)\s*곳\s*이상/);
+  if (visit) {
+    return { text: t, met: knowledge.visitedLocations.size >= parseInt(visit[1], 10), evaluable: true };
+  }
+
+  // 몬스터 종류 N종 이상
+  const monType = t.match(/몬스터\s*종류\s*(\d+)\s*종\s*이상/);
+  if (monType) {
+    return { text: t, met: knowledge.monsterTypesKilled.size >= parseInt(monType[1], 10), evaluable: true };
+  }
+
+  // 클리어한 던전 수 N 이상
+  const dc = t.match(/클리어한\s*던전\s*수\s*(\d+)\s*이상/);
+  if (dc) {
+    return { text: t, met: knowledge.totalDungeonsCleared >= parseInt(dc[1], 10), evaluable: true };
+  }
+
+  // 획득 동료 수 N 이상
+  const acqRec = t.match(/획득\s*동료\s*수\s*(\d+)\s*이상/);
+  if (acqRec) {
+    return { text: t, met: knowledge.recruitedEver.size >= parseInt(acqRec[1], 10), evaluable: true };
+  }
+
+  // 탐사 완료한 지역 N 이상
+  const explore = t.match(/탐사\s*완료한\s*지역\s*(\d+)/);
+  if (explore) {
+    return { text: t, met: knowledge.visitedLocations.size >= parseInt(explore[1], 10), evaluable: true };
+  }
+
+  // 자동 평가 불가능
+  return { text: t, met: false, evaluable: false };
+}
+
+/** NPC의 전체 입수 조건 평가 */
+export function evaluateAcquisitionConditions(
+  actor: Actor, player: Actor, allActors: Actor[], knowledge: PlayerKnowledge,
+): AcquisitionCheck[] {
+  if (!actor.acquisitionMethod) return [];
+  return actor.acquisitionMethod.split('|')
+    .map(line => evaluateAcquisitionLine(line, player, allActors, knowledge));
+}
+
+/** 입수 조건이 모두 충족되었는지 */
+export function areAcquisitionConditionsMet(
+  actor: Actor, player: Actor, allActors: Actor[], knowledge: PlayerKnowledge,
+): boolean {
+  if (!actor.acquisitionMethod) return true;
+  const checks = evaluateAcquisitionConditions(actor, player, allActors, knowledge);
+  return checks.every(c => c.met);
+}
 
 export function getRelationshipStage(
   player: Actor,
   targetName: string,
   knowledge: PlayerKnowledge,
+  allActors?: Actor[],
 ): RelationshipStage {
-  // 대화한 적 없으면 모르는 사이
   if (!knowledge.conversationPartners.has(targetName) && !knowledge.isKnown(targetName)) {
     return 'unknown';
   }
-  // 대화한 적 있으면 아는 사이, 친밀도 조건 충족 시 친한 사이
-  const rel = player.relationships.get(targetName);
-  if (!rel) return 'known';
-  const overall = getRelationshipOverall(rel);
-  const alreadyRecruited = knowledge.recruitedEver.has(targetName);
-  // 친한 사이 조건: 상호작용 5회 이상 + 호감도 0.30 이상 (재영입은 0.15)
-  const threshold = alreadyRecruited ? 0.15 : 0.30;
-  if (rel.interactionCount >= 5 && overall >= threshold) return 'close';
+  if (knowledge.recruitedEver.has(targetName)) return 'close';
+
+  if (allActors) {
+    const target = allActors.find(a => a.name === targetName);
+    if (target && target.acquisitionMethod) {
+      if (areAcquisitionConditionsMet(target, player, allActors, knowledge)) return 'close';
+      return 'known';
+    }
+    // 입수 조건이 없는 NPC는 호감도 기반 폴백
+    const rel = player.relationships.get(targetName);
+    if (rel) {
+      const overall = getRelationshipOverall(rel);
+      if (rel.interactionCount >= 5 && overall >= 0.30) return 'close';
+    }
+  }
+
   return 'known';
 }
 
@@ -499,6 +610,7 @@ export function tryRecruitCompanion(
   knowledge: PlayerKnowledge,
   backlog: Backlog,
   gameTime: GameTime,
+  allActors?: Actor[],
 ): RecruitResult {
   const tgtName = target.name;
 
@@ -510,17 +622,20 @@ export function tryRecruitCompanion(
     return { success: false, messages: ['동료가 이미 가득 찼다.'] };
   }
 
-  const stage = getRelationshipStage(player, tgtName, knowledge);
+  const stage = getRelationshipStage(player, tgtName, knowledge, allActors);
   if (stage === 'unknown') {
     return { success: false, messages: ['아직 모르는 사이다. 먼저 대화를 나눠보자.'] };
   }
   if (stage === 'known') {
-    const rel = player.relationships.get(tgtName);
-    const count = rel?.interactionCount ?? 0;
-    if (count < 5) {
-      return { success: false, messages: [`아직 친하지 않다. (대화 ${count}/5)`] };
+    // 입수 조건 미충족 안내
+    if (target.acquisitionMethod) {
+      const checks = evaluateAcquisitionConditions(target, player, allActors ?? [], knowledge);
+      const unmet = checks.filter(c => !c.met);
+      if (unmet.length > 0) {
+        return { success: false, messages: [`입수 조건을 달성해야 한다. (히페리온 메뉴에서 확인)`] };
+      }
     }
-    return { success: false, messages: ['좀 더 친해져야 한다. 호감을 높여보자.'] };
+    return { success: false, messages: ['아직 충분히 친하지 않다.'] };
   }
 
   // 친한 사이 → 영입 가능
