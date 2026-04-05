@@ -288,7 +288,7 @@ function getSaveMeta(slot: number): SaveMeta | null {
   }
 }
 
-function saveToSlot(slot: number, session: GameSession): void {
+export function saveToSlot(slot: number, session: GameSession): void {
   const p = session.player;
   const actors = session.actors.map(serializeActor);
   const data: SaveData = {

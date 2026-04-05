@@ -68,6 +68,7 @@ const INFO_ACTIONS: ActionDef[] = [
 export function createGameScreen(
   session: GameSession,
   onScreenChange: (target: string) => void,
+  onAfterTurn?: () => void,
 ): Screen {
   let lastMessages: string[] = [];
 
@@ -143,9 +144,11 @@ export function createGameScreen(
     lastMessages = result.messages;
     if (result.screenChange) {
       onScreenChange(result.screenChange);
-      return; // 화면 전환 시 HUD 재렌더 하지 않음
+      onAfterTurn?.();
+      return;
     }
     renderHud(el);
+    onAfterTurn?.();
   }
 
   // 키 매핑

@@ -22,7 +22,7 @@ import { createHomeScreen } from './ui/screens/home';
 import { createHyperionScreen } from './ui/screens/hyperion';
 import { createTitlesScreen } from './ui/screens/titles';
 import { createPartyScreen } from './ui/screens/party';
-import { createSaveLoadScreen } from './ui/screens/save-load';
+import { createSaveLoadScreen, saveToSlot } from './ui/screens/save-load';
 import { createWorldMapScreen } from './ui/screens/world-map';
 
 const app = document.getElementById('app')!;
@@ -121,10 +121,15 @@ async function boot() {
     }
   }
 
+  function autosave() {
+    if (session.isValid) saveToSlot(0, session);
+  }
+
   function enterGame() {
     session.knowledge.addKnownName(session.player.name);
     session.knowledge.trackVisit(session.player.currentLocation);
     session.backlog.add(session.gameTime, `${session.player.name}의 이야기가 시작된다.`, '시스템');
+    autosave();
     showGame();
   }
 
@@ -198,9 +203,10 @@ async function boot() {
           }
           break;
       }
-    }));
+    }, autosave));
     input.setIdleCallback(() => {
       processTurn(session, 'idle');
+      autosave();
       sm.render();
     }, 10000);
   }
