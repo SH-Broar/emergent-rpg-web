@@ -132,6 +132,12 @@ async function boot() {
   function enterGame() {
     session.knowledge.addKnownName(session.player.name);
     session.knowledge.trackVisit(session.player.currentLocation);
+    // Give starter items
+    const starterItems = ['wheat_bread', 'wheat_bread', 'wheat_bread', 'fresh_water', 'fresh_water', 'common_herb'];
+    for (const id of starterItems) {
+      session.player.addItemById(id, 1);
+      session.knowledge.discoverItem(id);
+    }
     session.backlog.add(session.gameTime, `${session.player.name}의 이야기가 시작된다.`, '시스템');
     autosave();
     showGame();
