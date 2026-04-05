@@ -5,7 +5,7 @@ import type { GameSession } from '../../systems/game-session';
 import type { Actor } from '../../models/actor';
 import { raceName, spiritRoleName } from '../../types/enums';
 import { getRelationshipOverall } from '../../models/social';
-import { getDialogue, tryRecruitCompanion, getRelationshipStage, getRelationshipStageLabel } from '../../systems/npc-interaction';
+import { getDialogue, getContinueDialogue, tryRecruitCompanion, getRelationshipStage, getRelationshipStageLabel } from '../../systems/npc-interaction';
 import { createNpcList } from '../components/npc-list';
 
 type DialogueAction = 'continue' | 'recruit' | 'info';
@@ -80,7 +80,9 @@ export function createDialogueScreen(
       // 대화하면 이름을 알게 됨
       session.knowledge.addKnownName(npc.name);
       session.knowledge.trackConversation(npc.name);
-      const line = getDialogue(npc);
+      const isCompanion = session.knowledge.isCompanion(npc.name);
+      const effectiveStage = isCompanion ? 'companion' as const : stage;
+      const line = getDialogue(npc, effectiveStage);
       dialogueLines = [
         `\u300c${line}\u300d`,
       ];
@@ -141,11 +143,18 @@ export function createDialogueScreen(
 
   function handleDialogueAction(action: DialogueAction, npcName: string, el: HTMLElement) {
     switch (action) {
-      case 'continue':
-        dialogueLines.push(`\u300c...\ub610 \ubb34\uc2a8 \uc774\uc57c\uae30\ub97c \ud560\uae4c?\u300d`);
+      case 'continue': {
+        const npcAct = npcsHere[selectedIdx];
+        if (npcAct) {
+          const isComp = session.knowledge.isCompanion(npcName);
+          const curStage = isComp ? 'companion' as const : getRelationshipStage(p, npcName, session.knowledge);
+          const contLine = getContinueDialogue(npcAct, curStage);
+          dialogueLines.push(`\u300c${contLine}\u300d`);
+        }
         p.adjustRelationship(npcName, 0.02, 0.01);
         renderDialogue(el);
         break;
+      }
       case 'recruit': {
         const npcActor = npcsHere[selectedIdx];
         if (npcActor) {

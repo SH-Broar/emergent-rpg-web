@@ -80,15 +80,15 @@ function pickRandom(lines: string[]): string {
 }
 
 /**
- * NPC 상태/역할/성향에 따른 대사 선택
- * 원본: GameData::GetDialogue
+ * NPC 상태/역할/성향/관계 단계에 따른 대사 선택
+ * 조회 우선순위: status → 캐릭터명.stage → stage.X → 캐릭터명 → role → trait → default
  */
-export function getDialogue(actor: Actor): string {
+export function getDialogue(actor: Actor, stage: RelationshipStage = 'unknown'): string {
   const base = actor.base;
   const spirit = actor.spirit;
   const dominant = actor.color.getDominantTrait();
 
-  // 상태 기반 대사
+  // 상태 기반 대사 (모든 단계에서 우선)
   if (base.vigor < 15) {
     const lines = dialogueDB.get('status.starving');
     if (lines && lines.length > 0) return pickRandom(lines);
@@ -101,6 +101,20 @@ export function getDialogue(actor: Actor): string {
     const lines = dialogueDB.get('status.depressed');
     if (lines && lines.length > 0) return pickRandom(lines);
   }
+
+  // 캐릭터별 단계 대사 (최우선)
+  const charStageLines = dialogueDB.get(actor.name + '.' + stage);
+  if (charStageLines && charStageLines.length > 0) return pickRandom(charStageLines);
+
+  // 범용 단계 대사
+  const stageLines = dialogueDB.get('stage.' + stage);
+  if (stageLines && stageLines.length > 0 && randomFloat(0, 1) < 0.6) {
+    return pickRandom(stageLines);
+  }
+
+  // 캐릭터 고유 대사 (단계 무관)
+  const charLines = dialogueDB.get(actor.name);
+  if (charLines && charLines.length > 0) return pickRandom(charLines);
 
   // 역할 기반 대사
   const roleKey = spiritRoleKey(spirit.role);
@@ -119,6 +133,20 @@ export function getDialogue(actor: Actor): string {
   if (defaultLines && defaultLines.length > 0) return pickRandom(defaultLines);
 
   return '...';
+}
+
+/** 대화 계속 시 단계별 응답 생성 */
+export function getContinueDialogue(actor: Actor, stage: RelationshipStage): string {
+  // 캐릭터별 계속 대사
+  const charContLines = dialogueDB.get(actor.name + '.continue.' + stage);
+  if (charContLines && charContLines.length > 0) return pickRandom(charContLines);
+
+  // 범용 계속 대사
+  const contLines = dialogueDB.get('continue.' + stage);
+  if (contLines && contLines.length > 0) return pickRandom(contLines);
+
+  // 폴백: 일반 대사
+  return getDialogue(actor, stage);
 }
 
 function spiritRoleKey(role: SpiritRole): string {
@@ -430,7 +458,7 @@ export interface RecruitResult {
 // 관계 단계 시스템
 // 모르는 사이 → 아는 사이(대화 1회) → 친한 사이(상호작용 5회+호감도) → 동료 가능
 // ============================================================
-export type RelationshipStage = 'unknown' | 'known' | 'close';
+export type RelationshipStage = 'unknown' | 'known' | 'close' | 'companion';
 
 export function getRelationshipStage(
   player: Actor,
@@ -457,6 +485,7 @@ export function getRelationshipStageLabel(stage: RelationshipStage): string {
     case 'unknown': return '모르는 사이';
     case 'known': return '아는 사이';
     case 'close': return '친한 사이';
+    case 'companion': return '동행 중';
   }
 }
 
