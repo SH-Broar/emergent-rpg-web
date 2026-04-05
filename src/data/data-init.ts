@@ -495,6 +495,15 @@ export function initAll(data: GameDataFiles): InitResult {
 
   loadHyperion(data.hyperion);
 
+  // 입수 조건 로드
+  for (const s of data.acquisition) {
+    const actor = actors.find(a => a.name === s.name);
+    if (actor) {
+      actor.acquisitionMethod = s.get('method', '');
+      actor.acquisitionDifficulty = s.getInt('difficulty', 0);
+    }
+  }
+
   const diagnosticQuestions = parseDiagnosticQuestions(data.diagnostic);
 
   return { actors, world, events, dungeonSystem, activitySystem, diagnosticQuestions, warnings };

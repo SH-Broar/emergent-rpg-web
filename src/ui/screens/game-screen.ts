@@ -491,6 +491,18 @@ export function createNpcInfoScreen(
       }
       let html = '<div class="screen info-screen">';
       html += `<button class="btn back-btn" data-back>← 뒤로 [Esc]</button>`;
+      // 입수 조건 표시
+      let acqHtml = '';
+      if (npc.acquisitionMethod) {
+        const d = npc.acquisitionDifficulty;
+        const stars = d > 0 ? '(난이도 ' + '\u2605'.repeat(Math.min(d, 6)) + ')' : '';
+        const lines = npc.acquisitionMethod.split('|').map(l =>
+          '<div style="color:var(--text-dim)">' + l.trim() + '</div>'
+        ).join('');
+        acqHtml = '<div style="margin-top:8px;padding:8px;background:var(--bg-panel);border-radius:8px;font-size:12px">'
+          + '<div style="color:var(--warning);margin-bottom:4px">입수 조건 ' + stars + '</div>'
+          + lines + '</div>';
+      }
       html += `<h2>${npc.name} 정보</h2>
         <div class="info-grid">
           <div>종족: ${raceName(npc.base.race)}</div>
@@ -502,6 +514,7 @@ export function createNpcInfoScreen(
           <div>관계: ${overall.toFixed(2)}</div>
           <div>히페리온: Lv.${npc.hyperionLevel}</div>
         </div>
+        ${acqHtml}
         <div class="cm-grid">${gridCells.join('')}</div>`;
       html += '</div>';
       el.innerHTML = html;

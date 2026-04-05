@@ -323,7 +323,7 @@ export function createDungeonScreen(
       </div>
 
       <div class="combat-log">
-        ${cs.combatLog.slice(-8).map(l => {
+        ${cs.combatLog.slice(-8).reverse().map(l => {
           const isParty = l.startsWith('★');
           const isEnemy = l.includes('의 공격!') || l.includes('의 ');
           const color = isParty ? 'color:var(--accent2)' : isEnemy ? 'color:var(--warning)' : '';

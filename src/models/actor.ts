@@ -116,6 +116,8 @@ export class Actor {
   memories: Memory[] = [];
   dungeonProgress = new Map<string, number>();
   background = '';
+  acquisitionMethod = '';
+  acquisitionDifficulty = 0;
   hasLearnedMagic = false;
   stationary = false;
   hyperionLevel = 0;
