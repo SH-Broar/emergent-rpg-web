@@ -22,8 +22,10 @@ import { createHomeScreen } from './ui/screens/home';
 import { createHyperionScreen } from './ui/screens/hyperion';
 import { createTitlesScreen } from './ui/screens/titles';
 import { createPartyScreen } from './ui/screens/party';
-import { createSaveLoadScreen, saveToSlot } from './ui/screens/save-load';
+import { createSaveLoadScreen, saveToSlot, loadFromSlot } from './ui/screens/save-load';
 import { createWorldMapScreen } from './ui/screens/world-map';
+import { fastForwardWorld } from './systems/world-simulation';
+import { seasonName } from './types/enums';
 
 const app = document.getElementById('app')!;
 
@@ -453,19 +455,66 @@ async function boot() {
       switch (choice) {
         case 'new': showCharSelect(); break;
         case 'connect': {
-          // 오토세이브 로드
-          const saved = localStorage.getItem('emergent_save_0');
-          if (saved) {
+          if (!loadFromSlot(0, session)) { showCharSelect(); break; }
+          if (!session.isValid) { showCharSelect(); break; }
+
+          // 경과 시간 계산 (세이브 시각 → 현재)
+          const raw = localStorage.getItem('emergent_save_0');
+          let elapsedMinutes = 0;
+          if (raw) {
             try {
-              const state = JSON.parse(saved);
-              if (state.playerIdx !== undefined) {
-                session.playerIdx = state.playerIdx;
-                session.gameTime.day = state.day ?? 1;
-                session.gameTime.hour = state.hour ?? 6;
-                session.gameTime.minute = state.minute ?? 0;
-                showGame();
+              const parsed = JSON.parse(raw);
+              const savedAt = parsed?.meta?.savedAt as string | undefined;
+              if (savedAt) {
+                const savedDate = new Date(savedAt);
+                if (!isNaN(savedDate.getTime())) {
+                  elapsedMinutes = Math.floor((Date.now() - savedDate.getTime()) / 60000);
+                }
               }
-            } catch { showCharSelect(); }
+            } catch { /* ignore */ }
+          }
+
+          // 최소 5분 경과 시 오프라인 시뮬레이션 실행
+          if (elapsedMinutes >= 5) {
+            const prevDay = session.gameTime.day;
+            const prevLevel = session.player.base.level;
+            const prevSeason = session.world.getCurrentSeason();
+
+            fastForwardWorld(
+              elapsedMinutes, session.gameTime, session.world,
+              session.events, session.actors, session.social,
+              session.backlog, session.knowledge,
+            );
+
+            const daysPassed = session.gameTime.day - prevDay;
+            const levelsGained = session.player.base.level - prevLevel;
+            const newSeason = session.world.getCurrentSeason();
+            const seasonChanged = newSeason !== prevSeason;
+
+            // 요약 화면 표시
+            sm.push({
+              id: 'offline-summary',
+              render(el) {
+                let summary = '';
+                summary += `<p>부재 시간: 약 ${elapsedMinutes >= 60 ? Math.floor(elapsedMinutes / 60) + '시간 ' + (elapsedMinutes % 60) + '분' : elapsedMinutes + '분'}</p>`;
+                if (daysPassed > 0) summary += `<p>${daysPassed}일이 흘렀다.</p>`;
+                if (levelsGained > 0) summary += `<p>레벨이 ${levelsGained} 올랐다! (Lv.${session.player.base.level})</p>`;
+                if (seasonChanged) summary += `<p>계절이 ${seasonName(newSeason)}(으)로 바뀌었다.</p>`;
+                summary += `<p>현재: ${session.gameTime.toString()}</p>`;
+                summary += `<p>HP: ${Math.round(session.player.base.hp)}/${Math.round(session.player.getEffectiveMaxHp())} · 기력: ${Math.round(session.player.base.vigor)}/${Math.round(session.player.getEffectiveMaxVigor())}</p>`;
+
+                el.innerHTML = `
+                  <div class="screen info-screen" style="justify-content:center;text-align:center">
+                    <h2>재접속</h2>
+                    <div class="text-display" style="line-height:1.8">${summary}</div>
+                    <button class="btn btn-primary" data-start>계속하기 [Enter]</button>
+                  </div>`;
+                el.querySelector('[data-start]')?.addEventListener('click', () => { sm.pop(); autosave(); showGame(); });
+              },
+              onKey(key) { if (key === 'Enter' || key === ' ') { sm.pop(); autosave(); showGame(); } },
+            });
+          } else {
+            showGame();
           }
           break;
         }

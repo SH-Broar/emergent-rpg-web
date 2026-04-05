@@ -314,7 +314,7 @@ export function saveToSlot(slot: number, session: GameSession): void {
   localStorage.setItem(`${SAVE_PREFIX}${slot}`, JSON.stringify(data));
 }
 
-function loadFromSlot(slot: number, session: GameSession): boolean {
+export function loadFromSlot(slot: number, session: GameSession): boolean {
   const raw = localStorage.getItem(`${SAVE_PREFIX}${slot}`);
   if (!raw) return false;
   try {
