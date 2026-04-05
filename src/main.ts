@@ -181,9 +181,8 @@ async function boot() {
         case 'talk':
           sm.push(createDialogueScreen(session, {
             onTalk() { /* backlog에 이미 기록됨 */ },
-            onRecruit(npcName) {
-              session.knowledge.recruitCompanion(npcName);
-              session.backlog.add(session.gameTime, `${npcName}이(가) 동료가 되었다!`, '행동');
+            onRecruit(_npcName) {
+              // 영입은 dialogue 내부에서 tryRecruitCompanion으로 처리됨
               sm.pop();
             },
             onInfo(_npcName, npcActor) {

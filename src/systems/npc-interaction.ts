@@ -426,9 +426,43 @@ export interface RecruitResult {
   messages: string[];
 }
 
+// ============================================================
+// 관계 단계 시스템
+// 모르는 사이 → 아는 사이(대화 1회) → 친한 사이(상호작용 5회+호감도) → 동료 가능
+// ============================================================
+export type RelationshipStage = 'unknown' | 'known' | 'close';
+
+export function getRelationshipStage(
+  player: Actor,
+  targetName: string,
+  knowledge: PlayerKnowledge,
+): RelationshipStage {
+  // 대화한 적 없으면 모르는 사이
+  if (!knowledge.conversationPartners.has(targetName) && !knowledge.isKnown(targetName)) {
+    return 'unknown';
+  }
+  // 대화한 적 있으면 아는 사이, 친밀도 조건 충족 시 친한 사이
+  const rel = player.relationships.get(targetName);
+  if (!rel) return 'known';
+  const overall = getRelationshipOverall(rel);
+  const alreadyRecruited = knowledge.recruitedEver.has(targetName);
+  // 친한 사이 조건: 상호작용 5회 이상 + 호감도 0.30 이상 (재영입은 0.15)
+  const threshold = alreadyRecruited ? 0.15 : 0.30;
+  if (rel.interactionCount >= 5 && overall >= threshold) return 'close';
+  return 'known';
+}
+
+export function getRelationshipStageLabel(stage: RelationshipStage): string {
+  switch (stage) {
+    case 'unknown': return '모르는 사이';
+    case 'known': return '아는 사이';
+    case 'close': return '친한 사이';
+  }
+}
+
 /**
  * 대화 후 동료 영입 가능 여부 판정 + 실행
- * 조건: 호감도 >= threshold, 파티 여유, 비정주 NPC
+ * 조건: 친한 사이 이상, 파티 여유, 비정주 NPC
  */
 export function tryRecruitCompanion(
   player: Actor,
@@ -443,17 +477,24 @@ export function tryRecruitCompanion(
     return { success: false, messages: [] };
   }
 
-  let overall = 0;
-  const rel = player.relationships.get(tgtName);
-  if (rel) overall = getRelationshipOverall(rel);
-
-  const alreadyRecruited = knowledge.recruitedEver.has(tgtName);
-  const threshold = alreadyRecruited ? 0.15 : 0.30;
-
-  if (overall < threshold || knowledge.partyMembers.length >= PlayerKnowledge.MAX_PARTY_SIZE) {
-    return { success: false, messages: [] };
+  if (knowledge.partyMembers.length >= PlayerKnowledge.MAX_PARTY_SIZE) {
+    return { success: false, messages: ['동료가 이미 가득 찼다.'] };
   }
 
+  const stage = getRelationshipStage(player, tgtName, knowledge);
+  if (stage === 'unknown') {
+    return { success: false, messages: ['아직 모르는 사이다. 먼저 대화를 나눠보자.'] };
+  }
+  if (stage === 'known') {
+    const rel = player.relationships.get(tgtName);
+    const count = rel?.interactionCount ?? 0;
+    if (count < 5) {
+      return { success: false, messages: [`아직 친하지 않다. (대화 ${count}/5)`] };
+    }
+    return { success: false, messages: ['좀 더 친해져야 한다. 호감을 높여보자.'] };
+  }
+
+  // 친한 사이 → 영입 가능
   if (knowledge.recruitCompanion(tgtName)) {
     backlog.add(gameTime, `${tgtName}이(가) 동료로 합류했다.`, '시스템');
     return {

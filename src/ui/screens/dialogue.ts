@@ -5,7 +5,7 @@ import type { GameSession } from '../../systems/game-session';
 import type { Actor } from '../../models/actor';
 import { raceName, spiritRoleName } from '../../types/enums';
 import { getRelationshipOverall } from '../../models/social';
-import { getDialogue } from '../../systems/npc-interaction';
+import { getDialogue, tryRecruitCompanion, getRelationshipStage, getRelationshipStageLabel } from '../../systems/npc-interaction';
 import { createNpcList } from '../components/npc-list';
 
 type DialogueAction = 'continue' | 'recruit' | 'info';
@@ -44,11 +44,14 @@ export function createDialogueScreen(
     title.textContent = '\ub300\ud654 \uc0c1\ub300 \uc120\ud0dd';
     wrap.appendChild(title);
 
-    const npcEntries = npcsHere.map(a => ({
-      name: a.name,
-      race: raceName(a.base.race),
-      role: spiritRoleName(a.spirit.role),
-    }));
+    const npcEntries = npcsHere.map(a => {
+      const known = session.knowledge.isKnown(a.name);
+      return {
+        name: known ? a.name : '???',
+        race: known ? raceName(a.base.race) : '???',
+        role: known ? spiritRoleName(a.spirit.role) : '',
+      };
+    });
 
     const list = createNpcList(npcEntries, (idx) => {
       selectedIdx = idx;
@@ -70,10 +73,13 @@ export function createDialogueScreen(
 
     const rel = p.relationships.get(npc.name);
     const overall = rel ? getRelationshipOverall(rel) : 0;
-    const affinityLabel = overall >= 0.5 ? '\u2665 \uce5c\ubc00' :
-      overall >= 0 ? '\u25cb \ubcf4\ud1b5' : '\u25cb \ub0ae\uc74c';
+    const stage = getRelationshipStage(p, npc.name, session.knowledge);
+    const stageLabel = getRelationshipStageLabel(stage);
 
     if (dialogueLines.length === 0) {
+      // 대화하면 이름을 알게 됨
+      session.knowledge.addKnownName(npc.name);
+      session.knowledge.trackConversation(npc.name);
       const line = getDialogue(npc);
       dialogueLines = [
         `\u300c${line}\u300d`,
@@ -96,7 +102,7 @@ export function createDialogueScreen(
       <div class="dialogue-header">
         <h2>${npc.name}</h2>
         <span class="dialogue-npc-info">${raceName(npc.base.race)} / ${spiritRoleName(npc.spirit.role)}</span>
-        <span class="dialogue-affinity">${affinityLabel} (${overall.toFixed(2)})</span>
+        <span class="dialogue-affinity">${stageLabel} (${overall.toFixed(2)})</span>
       </div>
       <div class="dialogue-box">
         ${dialogueLines.map(l => `<div class="dialogue-line">${l}</div>`).join('')}
@@ -140,9 +146,19 @@ export function createDialogueScreen(
         p.adjustRelationship(npcName, 0.02, 0.01);
         renderDialogue(el);
         break;
-      case 'recruit':
-        callbacks.onRecruit(npcName);
+      case 'recruit': {
+        const npcActor = npcsHere[selectedIdx];
+        if (npcActor) {
+          const result = tryRecruitCompanion(p, npcActor, session.knowledge, session.backlog, session.gameTime);
+          if (result.success) {
+            callbacks.onRecruit(npcName);
+          } else if (result.messages.length > 0) {
+            dialogueLines.push(result.messages[0]);
+            renderDialogue(el);
+          }
+        }
         break;
+      }
       case 'info': {
         const npcActor = npcsHere[selectedIdx];
         if (npcActor) callbacks.onInfo(npcName, npcActor);

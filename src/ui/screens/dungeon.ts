@@ -50,13 +50,18 @@ export function createDungeonScreen(
             ${allDungeons.map((d, i) => {
               const stars = ds.calcDifficultyStars(d);
               const maxDepth = ds.calcMaxDepth(d);
-              return `<button class="btn dungeon-item" data-idx="${i}">
-                <div class="dungeon-name">${i + 1}. ${d.name}</div>
+              const progress = p.getDungeonProgress(d.id);
+              const isCleared = progress >= 100;
+              const progressColor = isCleared ? 'var(--success)' : 'var(--warning)';
+              const progressLabel = isCleared ? `✦ 클리어 (${progress}%)` : `진행: ${progress}%`;
+              return `<button class="btn dungeon-item" data-idx="${i}" style="${isCleared ? 'border-color:var(--success)' : ''}">
+                <div class="dungeon-name">${i + 1}. ${d.name} ${isCleared ? '<span style="color:var(--success);font-size:12px">✦</span>' : ''}</div>
                 <div class="dungeon-meta">
                   <span>난이도: ${'★'.repeat(stars)}${'☆'.repeat(Math.max(0, 5 - stars))}</span>
                   <span>${maxDepth}층</span>
+                  <span style="color:${progressColor}">${progressLabel}</span>
                 </div>
-                <div class="dungeon-desc">${d.description}</div>
+                <div class="dungeon-desc">${isCleared ? d.deepDescription || d.description : d.description}</div>
               </button>`;
             }).join('')}
           </div>`
@@ -522,16 +527,18 @@ export function createDungeonScreen(
       resultText += `HP -${evt.hpDamage} `;
     }
     if (evt.vigorDamage > 0) {
-      p.adjustVigor(-evt.vigorDamage);
-      resultText += `기력 -${evt.vigorDamage} `;
+      const tpCost = Math.ceil(evt.vigorDamage / 10);
+      p.adjustAp(-tpCost);
+      resultText += `TP -${tpCost} `;
     }
     if (evt.hpHeal > 0) {
       p.adjustHp(evt.hpHeal);
       resultText += `HP +${evt.hpHeal} `;
     }
     if (evt.vigorHeal > 0) {
-      p.adjustVigor(evt.vigorHeal);
-      resultText += `기력 +${evt.vigorHeal} `;
+      const tpGain = Math.ceil(evt.vigorHeal / 10);
+      p.adjustAp(tpGain);
+      resultText += `TP +${tpGain} `;
     }
     // 컬러 영향
     for (let i = 0; i < evt.colorInfluence.length; i++) {

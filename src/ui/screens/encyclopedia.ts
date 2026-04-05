@@ -23,6 +23,7 @@ export function createEncyclopediaScreen(
 ): Screen {
   let activeTab: Tab = 'items';
   let selectedIdx = 0;
+  let savedScrollTop = 0;
 
   // ----------------------------------------------------------------
   // helpers
@@ -284,6 +285,9 @@ export function createEncyclopediaScreen(
   // ----------------------------------------------------------------
 
   function render(el: HTMLElement): void {
+    // 스크롤 위치 저장
+    const prevList = el.querySelector('.npc-list') as HTMLElement | null;
+    if (prevList) savedScrollTop = prevList.scrollTop;
     el.innerHTML = '';
     const wrap = document.createElement('div');
     wrap.className = 'screen info-screen encyclopedia-screen';
@@ -320,6 +324,12 @@ export function createEncyclopediaScreen(
     wrap.appendChild(hint);
 
     el.appendChild(wrap);
+
+    // 스크롤 위치 복원
+    requestAnimationFrame(() => {
+      const list = el.querySelector('.npc-list') as HTMLElement | null;
+      if (list && savedScrollTop > 0) list.scrollTop = savedScrollTop;
+    });
   }
 
   // ----------------------------------------------------------------

@@ -141,7 +141,12 @@ export function createGameScreen(
               a !== p && a.currentLocation === p.currentLocation && a.isAlive() && !a.base.sleeping
             );
             return npcsHere.length > 0
-              ? npcsHere.map(a => `<span class="nearby-npc" title="${raceName(a.base.race)} ${spiritRoleName(a.spirit.role)}">${a.name}</span>`).join('')
+              ? npcsHere.map(a => {
+                  const known = session.knowledge.isKnown(a.name);
+                  const displayName = known ? a.name : '???';
+                  const title = known ? `${raceName(a.base.race)} ${spiritRoleName(a.spirit.role)}` : '';
+                  return `<span class="nearby-npc" title="${title}">${displayName}</span>`;
+                }).join('')
               : '<span style="color:var(--text-dim);font-size:11px">주변에 아무도 없다</span>';
           })()}
         </div>
@@ -382,6 +387,31 @@ export function createInfoScreen(
   };
 }
 
+// --- Location type colors ---
+const LOCATION_TYPE_COLORS: Record<string, string> = {
+  town: '#4ecca3',    // 마을 - 초록
+  nature: '#87ceeb',  // 자연 - 하늘색
+  dungeon: '#e94560', // 던전 - 빨강
+  special: '#ffe66d', // 특수 - 노랑
+  trade: '#ffc857',   // 상업 - 주황
+};
+
+const LOCATION_TYPES: Record<string, string> = {
+  Town_Elimes: 'town', Guild_Hall: 'town', Market_Square: 'trade',
+  Tavern: 'town', Church: 'town', Farm: 'nature', Blacksmith: 'trade',
+  Herb_Garden: 'nature', Lake: 'nature', Wilderness: 'nature',
+  Mountain_Path: 'nature', Trade_Route: 'trade', Memory_Spring: 'special',
+  Wizard_Tower: 'special', Falcon_Garden: 'nature', Starfall_Basin: 'special',
+  Mirage_Oasis: 'nature', Ancient_Tree_Crown: 'special', Crystal_Cavern: 'dungeon',
+  Limun_Ruins: 'dungeon', Dungeon_Entrance: 'dungeon', Dungeon_Interior: 'dungeon',
+  Abandoned_Mine: 'dungeon', Bandit_Hideout: 'dungeon', Twilight_Spire: 'dungeon',
+};
+
+function getLocationColor(locId: string): string {
+  const type = LOCATION_TYPES[locId] ?? 'nature';
+  return LOCATION_TYPE_COLORS[type] ?? LOCATION_TYPE_COLORS.nature;
+}
+
 // --- Move screen ---
 export function createMoveScreen(
   session: GameSession,
@@ -398,9 +428,14 @@ export function createMoveScreen(
           <h2>이동</h2>
           <p>현재: ${locationName(p.currentLocation)}</p>
           <div class="menu-buttons">
-            ${routes.map(([loc, mins], i) => `
-              <button class="btn" data-loc="${loc}">${i + 1}. ${locationName(loc)} (${mins}분)</button>
-            `).join('')}
+            ${routes.map(([loc, mins], i) => {
+              const color = getLocationColor(loc);
+              // 던전 입구인 경우 표시
+              const isDungeon = session.dungeonSystem.isDungeonEntrance(loc);
+              const dungeonBadge = isDungeon ? ' <span style="color:var(--accent)">⚔</span>' : '';
+              return `
+              <button class="btn" data-loc="${loc}" style="border-left:4px solid ${color}">${i + 1}. ${locationName(loc)} (${mins}분)${dungeonBadge}</button>
+            `;}).join('')}
           </div>
         </div>`;
       el.querySelector('[data-back]')?.addEventListener('click', onDone);

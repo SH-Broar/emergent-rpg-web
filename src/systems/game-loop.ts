@@ -77,10 +77,10 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
     case 'eat': result.messages.push('식사를 준비한다...'); result.screenChange = 'eat'; break;
 
     case 'rest':
-      p.adjustVigor(40);
+      p.adjustVigor(20);
       p.adjustHp(10);
       session.backlog.add(session.gameTime, `${p.name}이(가) 휴식을 취했다.`, '행동');
-      result.messages.push('휴식을 취했다. 기력 +40, HP +10');
+      result.messages.push('휴식을 취했다. 기력 +20, HP +10');
       break;
 
     case 'gather': {
