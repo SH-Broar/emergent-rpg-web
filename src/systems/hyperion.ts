@@ -4,6 +4,7 @@
 import { DataSection, parseStringList } from '../data/parser';
 import { Actor } from '../models/actor';
 import { PlayerKnowledge } from '../models/knowledge';
+import { DungeonSystem } from '../models/dungeon';
 import { GameTime } from '../types/game-time';
 
 export interface HyperionCondition {
@@ -43,6 +44,7 @@ export function checkHyperionCondition(
   allActors: Actor[],
   knowledge: PlayerKnowledge,
   gameTime: GameTime,
+  dungeonSystem?: DungeonSystem,
 ): boolean {
   const t = cond.type.trim();
   if (!t || t === 'manual') return false;
@@ -134,6 +136,106 @@ export function checkHyperionCondition(
       });
     }
 
+    // --- 아이템 소지 ---
+    case 'has_item': {
+      // "아이템ID" 또는 "아이템ID:수량"
+      const parts = param.split(':').map(s => s.trim());
+      const itemId = parts[0];
+      const amount = parts.length > 1 ? parseInt(parts[1], 10) : 1;
+      return player.getItemCount(itemId) >= amount;
+    }
+
+    // --- 퀘스트 완료 수 ---
+    case 'quest_count':
+      return knowledge.completedQuestCount >= parseInt(param, 10);
+
+    // --- 칭호 소지 ---
+    case 'has_title':
+      return knowledge.hasTitle(param.trim());
+
+    // --- 지역 진행률 (해당 지역 던전 평균 진행도) ---
+    case 'location_progress': {
+      // "지역ID:N" (N은 퍼센트)
+      const [locId, pctStr] = param.split(':').map(s => s.trim());
+      const requiredPct = parseInt(pctStr, 10);
+      if (!dungeonSystem) return false;
+      const dungeons = dungeonSystem.getAllDungeons().filter(d => d.accessFrom === locId);
+      if (dungeons.length === 0) return false;
+      const avg = dungeons.reduce((sum, d) => sum + player.getDungeonProgress(d.id), 0) / dungeons.length;
+      return avg >= requiredPct;
+    }
+
+    // --- 관계 호감도 ---
+    case 'relationship': {
+      // "이름:F"
+      const [rName, fStr] = param.split(':').map(s => s.trim());
+      const threshold = parseFloat(fStr);
+      const rel = player.relationships.get(rName);
+      if (!rel) return false;
+      return (rel.trust + rel.affinity) / 2 >= threshold;
+    }
+
+    // --- 스탯 합 ---
+    case 'stat_total':
+      return (player.getEffectiveAttack() + player.getEffectiveDefense()) >= parseInt(param, 10);
+
+    case 'party_stat_total': {
+      let total = player.getEffectiveAttack() + player.getEffectiveDefense();
+      for (const compName of knowledge.partyMembers) {
+        const comp = allActors.find(a => a.name === compName);
+        if (comp) total += comp.getEffectiveAttack() + comp.getEffectiveDefense();
+      }
+      return total >= parseInt(param, 10);
+    }
+
+    // --- 컬러 속성 값 ---
+    case 'color_value': {
+      // "속성이름:F"
+      const [elemName, valStr] = param.split(':').map(s => s.trim());
+      const elemIdx = ['Fire','Water','Electric','Iron','Earth','Wind','Light','Dark'].indexOf(elemName);
+      if (elemIdx < 0) return false;
+      return (player.color.values[elemIdx] ?? 0.5) >= parseFloat(valStr);
+    }
+
+    // --- 음식 종류 ---
+    case 'food_eaten':
+      return knowledge.foodTypesEaten.size >= parseInt(param, 10);
+
+    // --- 기력 소비 ---
+    case 'vigor_spent':
+      return knowledge.totalVigorSpent >= parseInt(param, 10);
+
+    // --- 동료 동행 일수 ---
+    case 'companion_days': {
+      // "이름:N"
+      const [cdName, cdDays] = param.split(':').map(s => s.trim());
+      return (knowledge.companionDaysMap.get(cdName) ?? 0) >= parseInt(cdDays, 10);
+    }
+
+    // --- 모든 종족/속성 동료 ---
+    case 'all_races_recruited': {
+      const races = new Set(allActors.filter(a => knowledge.recruitedEver.has(a.name)).map(a => a.base.race));
+      return races.size >= 8;
+    }
+    case 'all_elements_recruited': {
+      const elems = new Set<number>();
+      for (const a of allActors) {
+        if (!knowledge.recruitedEver.has(a.name)) continue;
+        const dom = a.color.getDominantTrait();
+        elems.add(dom);
+      }
+      return elems.size >= 8;
+    }
+
+    // --- 호감도 높은 NPC 수 ---
+    case 'friend_count': {
+      let cnt = 0;
+      for (const [, rel] of player.relationships) {
+        if ((rel.trust + rel.affinity) / 2 >= 0.3) cnt++;
+      }
+      return cnt >= parseInt(param, 10);
+    }
+
     default:
       return false;
   }
@@ -145,6 +247,7 @@ export function updateHyperionLevels(
   allActors: Actor[],
   knowledge: PlayerKnowledge,
   gameTime: GameTime,
+  dungeonSystem?: DungeonSystem,
 ): string[] {
   const messages: string[] = [];
 
@@ -171,7 +274,7 @@ export function updateHyperionLevels(
       continue;
     }
 
-    if (checkHyperionCondition(nextCond, actor.name, player, allActors, knowledge, gameTime)) {
+    if (checkHyperionCondition(nextCond, actor.name, player, allActors, knowledge, gameTime, dungeonSystem)) {
       actor.hyperionLevel = currentLevel + 1;
       messages.push(`${actor.name}의 히페리온이 Lv.${actor.hyperionLevel}로 상승했다!`);
     }

@@ -126,6 +126,8 @@ export class PlayerKnowledge {
   companionDaysMap = new Map<string, number>();
   locationReputation = new Map<string, number>();
   totalGiftsGiven = 0;
+  completedQuestCount = 0;
+  completedQuestNames = new Set<string>();
   earnedTitles: string[] = [];
   activeTitle = '';
 
@@ -185,6 +187,10 @@ export class PlayerKnowledge {
     this.companionDaysMap.set(name, (this.companionDaysMap.get(name) ?? 0) + 1);
   }
   trackGiftGiven(): void { this.totalGiftsGiven++; }
+  trackQuestCompleted(questTitle: string): void {
+    this.completedQuestCount++;
+    this.completedQuestNames.add(questTitle);
+  }
   discoverItem(itemId: string): void { this.discoveredItems.add(itemId); }
   isItemDiscovered(itemId: string): boolean { return this.discoveredItems.has(itemId); }
 }

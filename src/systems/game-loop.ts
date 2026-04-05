@@ -179,11 +179,29 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
       result.messages.push(`🌿 ${seasonName(newSeason)} 시작`);
     }
 
+    // 퀘스트 자동 완료 체크
+    const activeQid = p.spirit.activeQuestId;
+    if (activeQid >= 0) {
+      const quest = session.social.getQuest(activeQid);
+      if (quest && quest.currentAmount >= quest.targetAmount && quest.status === 1 /* Accepted */) {
+        quest.status = 2; // Completed
+        p.spirit.activeQuestId = -1;
+        p.addGold(quest.rewardGold);
+        session.knowledge.trackQuestCompleted(quest.title);
+        session.backlog.add(session.gameTime, `퀘스트 "${quest.title}" 완료! +${quest.rewardGold}G`, '시스템', p.name);
+        result.messages.push(`퀘스트 "${quest.title}" 완료! +${quest.rewardGold}G`);
+      }
+    }
+
     // 히페리온 자동 판정
-    const hyperionMsgs = updateHyperionLevels(p, session.actors, session.knowledge, session.gameTime);
+    const hyperionMsgs = updateHyperionLevels(p, session.actors, session.knowledge, session.gameTime, session.dungeonSystem);
     for (const msg of hyperionMsgs) {
       session.backlog.add(session.gameTime, msg, '시스템');
       result.messages.push(msg);
+    }
+    // 히페리온 레벨업 시 별도 화면 전환
+    if (hyperionMsgs.length > 0) {
+      result.screenChange = 'hyperion_levelup';
     }
   }
 

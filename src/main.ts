@@ -242,6 +242,31 @@ async function boot() {
         case 'level_up':
           sm.push(createLevelUpScreen(session, () => sm.pop()));
           break;
+        case 'hyperion_levelup':
+          // 히페리온 레벨업 강조 오버레이
+          sm.push({
+            id: 'hyperion-levelup',
+            render(el) {
+              // 최근 히페리온 레벨업 메시지 수집
+              const recent = session.backlog.getPlayerVisible(session.player.name)
+                .filter(e => e.text.includes('히페리온') && e.text.includes('상승'))
+                .slice(-5);
+              const msgs = recent.map(e => e.text);
+              el.innerHTML = `
+                <div class="screen" style="justify-content:center;align-items:center;text-align:center;background:var(--bg)">
+                  <div style="font-size:40px;margin-bottom:12px">\u2728</div>
+                  <h2 style="color:var(--warning);margin-bottom:16px">\ud788\ud398\ub9ac\uc628 \ub808\ubca8 \uc0c1\uc2b9!</h2>
+                  <div style="margin-bottom:20px">
+                    ${msgs.map(m => '<p style="font-size:15px;margin:4px 0;color:var(--success)">' + m + '</p>').join('')}
+                  </div>
+                  <p style="color:var(--text-dim);font-size:13px;margin-bottom:16px">HP, MP, \uacf5\uaca9, \ubc29\uc5b4\uac00 \uc0c1\uc2b9\ud569\ub2c8\ub2e4!</p>
+                  <button class="btn btn-primary" data-ok style="min-width:160px">\ud655\uc778 [Enter]</button>
+                </div>`;
+              el.querySelector('[data-ok]')?.addEventListener('click', () => sm.pop());
+            },
+            onKey(key) { if (key === 'Enter' || key === ' ' || key === 'Escape') sm.pop(); },
+          });
+          break;
         default:
           if (target.startsWith('info_')) {
             sm.push(createInfoScreen(session, target, () => sm.pop()));
