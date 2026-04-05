@@ -126,6 +126,11 @@ export class Actor {
 
   lifeData: NpcLifeData = defaultLifeData(SpiritRole.Villager, Loc.Town_Elimes);
 
+  /** 스킬 시스템 */
+  learnedSkills = new Map<string, number>();  // skillId → 레벨 (1-5)
+  skillOrder: string[] = [];                   // 선택 우선순위 정렬된 스킬 ID
+  skillUsage = new Map<string, number>();       // skillId → 총 사용 횟수 (레벨업용)
+
   /** 개별 아이템 인벤토리 (ItemID → 수량) */
   items = new Map<string, number>();
 

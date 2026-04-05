@@ -161,6 +161,12 @@ export function initActors(sections: DataSection[]): Actor[] {
     // Background (pipe = newline)
     actor.background = s.get('background', '');
 
+    // 기본 스킬 초기화
+    actor.learnedSkills.set('slash', 1);
+    actor.learnedSkills.set('guard', 1);
+    actor.learnedSkills.set('heal', 1);
+    actor.skillOrder = ['slash', 'guard', 'heal'];
+
     actors.push(actor);
   }
   return actors;

@@ -251,6 +251,19 @@ html, body {
 }
 .combat-actions { margin-top: 8px; }
 
+/* Skill slots — 4-column grid (3 skills + flee) */
+.skill-slots { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 8px; }
+.skill-btn { display: flex; flex-direction: column; align-items: center; padding: 8px 4px; min-height: 60px; font-size: 12px; }
+.skill-btn.disabled { opacity: 0.4; pointer-events: none; }
+.skill-name { font-weight: 600; font-size: 13px; }
+.skill-cost { color: var(--text-dim); font-size: 11px; }
+.skill-key { color: var(--text-dim); font-size: 10px; }
+.flee-btn { border-color: var(--accent); }
+.combat-buffs, .combat-debuffs { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
+.buff-tag { font-size: 10px; padding: 1px 6px; border-radius: 8px; background: var(--success); color: #000; }
+.debuff-tag { font-size: 10px; padding: 1px 6px; border-radius: 8px; background: var(--accent); color: #fff; }
+.delay-indicator { text-align: center; color: var(--warning); font-size: 13px; padding: 4px 0; }
+
 /* Trade */
 .trade-screen { gap: 10px; }
 .trade-tabs { display: flex; gap: 6px; }
