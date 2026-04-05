@@ -18,6 +18,7 @@ import { createLevelUpScreen } from './ui/screens/level-up';
 import { createBirthScreen, createCustomCharScreen } from './ui/screens/character-creation';
 import { createActivityScreen } from './ui/screens/activity';
 import { createGiftScreen } from './ui/screens/gift';
+import { createEatScreen } from './ui/screens/eat';
 import { createHomeScreen } from './ui/screens/home';
 import { createHyperionScreen } from './ui/screens/hyperion';
 import { createTitlesScreen } from './ui/screens/titles';
@@ -155,6 +156,9 @@ async function boot() {
             },
             onBack() { sm.pop(); },
           }));
+          break;
+        case 'eat':
+          sm.push(createEatScreen(session, (_statusMsg) => { sm.pop(); }));
           break;
         case 'trade':
           sm.push(createTradeScreen(session, () => { session.gameTime.advance(15); sm.pop(); }));

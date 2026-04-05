@@ -4,7 +4,7 @@
 import { GameSession } from './game-session';
 import { weatherName, seasonName } from '../types/enums';
 import { locationName } from '../types/registry';
-import { randomInt } from '../types/rng';
+import { randomInt, randomFloat } from '../types/rng';
 import { updateHyperionLevels } from './hyperion';
 import { advanceTurn } from './world-simulation';
 
@@ -57,13 +57,7 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
     }
 
     case 'eat':
-      if (p.consumeItem(0 /* Food */, 1)) {
-        p.adjustVigor(40);
-        session.backlog.add(session.gameTime, `${p.name}이(가) 식사를 했다.`, '행동');
-        result.messages.push('식사를 했다. 기력 +40');
-      } else {
-        result.messages.push('음식이 없다!');
-      }
+      result.screenChange = 'eat';
       break;
 
     case 'rest':
@@ -74,12 +68,30 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
       break;
 
     case 'gather': {
-      const item = randomInt(0, 1); // Food or Herb
+      // 지역 자원 기반 채집 + 레벨 성공률
+      const loc = session.world.getLocation(p.currentLocation);
+      const availableRes: [number, number][] = [];
+      for (const [type, qty] of loc.resources) {
+        if (qty > 0) availableRes.push([type, qty]);
+      }
+      if (availableRes.length === 0) {
+        result.messages.push('이 지역에는 채집할 자원이 없다.');
+        break;
+      }
+      const [item] = availableRes[randomInt(0, availableRes.length - 1)];
+      // 성공률: 레벨차 보정
+      const levelDiff = p.base.level - (loc.monsterLevel || 1);
+      const chance = Math.max(0.2, Math.min(0.95, 0.7 + levelDiff * 0.03));
+      if (randomFloat(0, 1) > chance) {
+        result.messages.push('채집에 실패했다...');
+        break;
+      }
       const amount = randomInt(1, 3);
       p.addItem(item, amount);
-      const itemLabel = item === 0 ? '식량' : '약초';
+      session.world.removeResource(p.currentLocation, item, Math.min(amount, loc.resources.get(item) ?? 0));
+      const itemLabel = item === 0 ? '식량' : item === 1 ? '약초' : item === 2 ? '광석' : '자원';
       session.backlog.add(session.gameTime, `${p.name}이(가) ${itemLabel}을(를) ${amount}개 채집했다.`, '행동');
-      result.messages.push(`채집 완료! ${itemLabel} +${amount}개 획득`);
+      result.messages.push(`채집 완료! ${itemLabel} +${amount}개`);
       break;
     }
 

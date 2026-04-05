@@ -24,8 +24,7 @@ function hasMerchants(session: GameSession) {
     a !== session.player && a.currentLocation === loc && a.spirit.role === 1 /* Merchant */);
 }
 function nearDungeon(session: GameSession) {
-  return session.dungeonSystem.isDungeonEntrance(session.player.currentLocation) ||
-    session.dungeonSystem.getAllDungeons().some(d => d.accessFrom === session.player.currentLocation);
+  return session.dungeonSystem.getAllDungeons().some(d => d.accessFrom === session.player.currentLocation);
 }
 function hasNpcsHere(session: GameSession) {
   return session.actors.some(a => a !== session.player && a.currentLocation === session.player.currentLocation && a.isAlive());
@@ -72,6 +71,7 @@ export function createGameScreen(
 ): Screen {
   let accumulatedLog: string[] = [];
   let lastLocation = session.player?.currentLocation ?? '';
+  let statusMessage = '';
 
   function renderHud(el: HTMLElement) {
     const p = session.player;
@@ -116,9 +116,11 @@ export function createGameScreen(
           </div>
         </div>
 
-        <div class="log-area" style="max-height:30vh;overflow-y:auto">
+        <div class="log-area" style="max-height:25vh;overflow-y:auto">
           ${accumulatedLog.map(m => `<div class="log-msg">${m}</div>`).join('')}
         </div>
+
+        <div class="status-bar">${statusMessage ? `${session.gameTime.toString()} ${statusMessage}` : session.gameTime.toString()}</div>
 
         <div class="action-grid">
           ${MAIN_ACTIONS.filter(a => !a.visible || a.visible(session)).map(a => `
@@ -145,8 +147,17 @@ export function createGameScreen(
 
   function handleAction(action: GameAction, el: HTMLElement) {
     const result = processTurn(session, action);
-    // 새 메시지를 누적 로그 맨 위에 추가 (최신이 위)
-    for (let i = result.messages.length - 1; i >= 0; i--) accumulatedLog.unshift(result.messages[i]);
+    // 상태바에 최근 행동 결과 표시
+    if (result.messages.length > 0) {
+      statusMessage = result.messages[result.messages.length - 1];
+    }
+    // 시스템/이벤트 메시지는 로그에 누적
+    for (let i = result.messages.length - 1; i >= 0; i--) {
+      const m = result.messages[i];
+      if (m.includes('✦') || m.includes('🌿') || m.includes('히페리온') || m.includes('레벨')) {
+        accumulatedLog.unshift(m);
+      }
+    }
     if (result.screenChange) {
       onScreenChange(result.screenChange);
       onAfterTurn?.();

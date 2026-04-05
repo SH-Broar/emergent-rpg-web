@@ -12,7 +12,7 @@ export function createDungeonScreen(
 ): Screen {
   const p = session.player;
   const ds = session.dungeonSystem;
-  const allDungeons = ds.getAllDungeons();
+  const allDungeons = ds.getAllDungeons().filter(d => d.accessFrom === p.currentLocation);
 
   let phase: DungeonPhase = 'list';
   let combatState: CombatState | null = null;

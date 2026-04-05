@@ -70,11 +70,14 @@ export function createWorldMapScreen(session: GameSession, onDone: () => void): 
         const isVisited = session.knowledge.visitedLocations.has(loc.id);
         const r = isPlayer ? 6 : 4;
         const fill = isPlayer ? '#e94560' : isVisited ? '#4ecca3' : '#555577';
-        svgContent += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}" stroke="#fff" stroke-width="${isPlayer ? 2 : 0.5}"/>`;
+        const desc = (loc as unknown as Record<string, unknown>).description as string || '';
+        svgContent += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}" stroke="#fff" stroke-width="${isPlayer ? 2 : 0.5}" class="map-dot" data-loc="${loc.id}" data-name="${locationName(loc.id)}" data-desc="${desc.replace(/"/g, '&quot;')}" style="cursor:pointer"/>`;
         const name = locationName(loc.id);
+        const shortName = name.length > 4 ? name.slice(0, 4) + '…' : name;
         const fontSize = isPlayer ? 11 : 9;
         const textFill = isPlayer ? '#e94560' : isVisited ? '#aaaacc' : '#666688';
-        svgContent += `<text x="${cx}" y="${cy - r - 3}" text-anchor="middle" font-size="${fontSize}" fill="${textFill}" font-family="var(--font-main)" data-fullname="${name}">${name}</text>`;
+        const labelClass = isPlayer ? 'map-label-player' : isVisited ? 'map-label-visited' : 'map-label-other';
+        svgContent += `<text x="${cx}" y="${cy - r - 3}" text-anchor="middle" font-size="${fontSize}" fill="${textFill}" font-family="var(--font-main)" class="${labelClass}" data-shortname="${shortName}" data-fullname="${name}">${name}</text>`;
       }
 
       function getViewBox(): string {
@@ -91,6 +94,7 @@ export function createWorldMapScreen(session: GameSession, onDone: () => void): 
           <h2>세계 지도</h2>
           <div class="map-container" style="position:relative;touch-action:none;overflow:hidden;border-radius:8px;background:var(--bg-card)">
             <svg id="world-svg" viewBox="${getViewBox()}" width="100%" style="max-height:65vh;display:block;cursor:grab">${svgContent}</svg>
+            <div id="map-tooltip" style="display:none;position:absolute;background:rgba(20,20,40,0.95);color:#e0e0f0;border:1px solid #4ecca3;border-radius:6px;padding:6px 10px;font-size:12px;max-width:180px;pointer-events:none;z-index:10;line-height:1.4"></div>
           </div>
           <div style="display:flex;gap:8px;justify-content:center;margin-top:6px">
             <button class="btn" data-zoom="in" style="min-width:44px;font-size:18px">+</button>
@@ -111,9 +115,73 @@ export function createWorldMapScreen(session: GameSession, onDone: () => void): 
       const svg = el.querySelector('#world-svg') as SVGSVGElement | null;
       if (!svg) return;
 
+      const tooltip = el.querySelector('#map-tooltip') as HTMLDivElement | null;
+      let tooltipTimer: ReturnType<typeof setTimeout> | null = null;
+
+      function hideTooltip() {
+        if (tooltip) tooltip.style.display = 'none';
+        if (tooltipTimer) { clearTimeout(tooltipTimer); tooltipTimer = null; }
+      }
+
+      function updateLabels() {
+        svg!.querySelectorAll<SVGTextElement>('.map-label-player').forEach(t => {
+          t.style.display = '';
+          t.textContent = t.dataset.fullname ?? t.textContent;
+        });
+        svg!.querySelectorAll<SVGTextElement>('.map-label-visited').forEach(t => {
+          if (zoom < 2) {
+            t.style.display = 'none';
+          } else if (zoom < 4) {
+            t.style.display = '';
+            t.textContent = t.dataset.shortname ?? t.textContent;
+          } else {
+            t.style.display = '';
+            t.textContent = t.dataset.fullname ?? t.textContent;
+          }
+        });
+        svg!.querySelectorAll<SVGTextElement>('.map-label-other').forEach(t => {
+          if (zoom < 4) {
+            t.style.display = 'none';
+          } else {
+            t.style.display = '';
+            t.textContent = t.dataset.fullname ?? t.textContent;
+          }
+        });
+      }
+
       function updateView() {
         svg!.setAttribute('viewBox', getViewBox());
+        updateLabels();
       }
+
+      // 클릭 툴팁
+      svg.addEventListener('click', (e) => {
+        const circle = (e.target as Element).closest('.map-dot') as SVGCircleElement | null;
+        if (!circle || !tooltip) { hideTooltip(); return; }
+        const name = circle.dataset.name ?? '';
+        const desc = circle.dataset.desc ?? '';
+        tooltip.innerHTML = `<strong style="color:#4ecca3">${name}</strong>${desc ? '<br><span style="color:#aaaacc">' + desc + '</span>' : ''}`;
+        const container = tooltip.parentElement!.getBoundingClientRect();
+        const cx = parseFloat(circle.getAttribute('cx') ?? '0');
+        const cy = parseFloat(circle.getAttribute('cy') ?? '0');
+        // convert SVG coords to container-relative pixel coords
+        const pt = svg!.createSVGPoint();
+        pt.x = cx; pt.y = cy;
+        const screenPt = pt.matrixTransform(svg!.getScreenCTM()!);
+        let left = screenPt.x - container.left + 10;
+        let top = screenPt.y - container.top - 10;
+        tooltip.style.display = 'block';
+        // keep within container bounds after display
+        const tw = tooltip.offsetWidth;
+        const th = tooltip.offsetHeight;
+        if (left + tw > container.width - 4) left = screenPt.x - container.left - tw - 10;
+        if (top + th > container.height - 4) top = screenPt.y - container.top - th - 10;
+        tooltip.style.left = left + 'px';
+        tooltip.style.top = top + 'px';
+        if (tooltipTimer) clearTimeout(tooltipTimer);
+        tooltipTimer = setTimeout(hideTooltip, 3000);
+        e.stopPropagation();
+      });
 
       // 줌 버튼
       el.querySelectorAll<HTMLButtonElement>('[data-zoom]').forEach(btn => {
@@ -200,19 +268,33 @@ export function createWorldMapScreen(session: GameSession, onDone: () => void): 
       }, { passive: false });
 
       svg.addEventListener('touchend', () => { lastTouchDist = 0; }, { passive: true });
+
+      // apply initial label visibility
+      updateLabels();
     },
     onKey(key) {
       if (key === 'Escape') onDone();
       if (key === '+' || key === '=') { zoom = Math.min(MAX_ZOOM, zoom * 1.4); }
       if (key === '-') { zoom = Math.max(MIN_ZOOM, zoom / 1.4); }
       if (key === '0') { zoom = 1; panX = 0; panY = 0; }
-      const svg = document.querySelector('#world-svg');
-      if (svg) {
+      const svgEl = document.querySelector('#world-svg') as SVGSVGElement | null;
+      if (svgEl) {
         const vw = W / zoom;
         const vh = H / zoom;
         const vx = (W - vw) / 2 + panX;
         const vy = (H - vh) / 2 + panY;
-        svg.setAttribute('viewBox', `${vx} ${vy} ${vw} ${vh}`);
+        svgEl.setAttribute('viewBox', `${vx} ${vy} ${vw} ${vh}`);
+        // update label visibility for keyboard zoom
+        svgEl.querySelectorAll<SVGTextElement>('.map-label-player').forEach(t => { t.style.display = ''; t.textContent = t.dataset.fullname ?? t.textContent; });
+        svgEl.querySelectorAll<SVGTextElement>('.map-label-visited').forEach(t => {
+          if (zoom < 2) { t.style.display = 'none'; }
+          else if (zoom < 4) { t.style.display = ''; t.textContent = t.dataset.shortname ?? t.textContent; }
+          else { t.style.display = ''; t.textContent = t.dataset.fullname ?? t.textContent; }
+        });
+        svgEl.querySelectorAll<SVGTextElement>('.map-label-other').forEach(t => {
+          t.style.display = zoom < 4 ? 'none' : '';
+          if (zoom >= 4) t.textContent = t.dataset.fullname ?? t.textContent;
+        });
       }
     },
   };
