@@ -15,7 +15,7 @@ export type GameAction =
   | 'gift' | 'home' | 'memory_spring'
   | 'info_status' | 'info_color' | 'info_relations' | 'info_world'
   | 'info_backlog' | 'info_hyperion' | 'info_party' | 'info_titles' | 'info_map' | 'info_encyclopedia'
-  | 'info_inventory'
+  | 'info_skills' | 'info_inventory'
   | 'save';
 
 const ACTION_TIME: Partial<Record<GameAction, number>> = {
@@ -136,6 +136,7 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
     case 'info_titles':
     case 'info_map':
     case 'info_encyclopedia':
+    case 'info_skills':
     case 'info_inventory':
       result.screenChange = action;
       return result; // 시간 경과 없이 리턴

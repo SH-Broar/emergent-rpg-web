@@ -1,8 +1,10 @@
-// level-up.ts — 레벨업 화면
+// level-up.ts — 레벨업 화면 (스탯 → 컬러 → 스킬)
 
 import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
 import { elementName, Element, ELEMENT_COUNT } from '../../types/enums';
+import { SkillDef, skillTypeName, skillElementName } from '../../models/skill';
+import { getLearnableSkills, learnSkill } from '../../systems/skill-learning';
 
 export function createLevelUpScreen(
   session: GameSession,
@@ -11,10 +13,14 @@ export function createLevelUpScreen(
   const p = session.player;
   let statPoints = 3;
   let colorPoints = 2;
-  let phase: 'stat' | 'color' | 'done' = 'stat';
+  let phase: 'stat' | 'color' | 'skill' | 'done' = 'stat';
 
-  // 임시 추적용
   const statAlloc = { hp: 0, attack: 0, defense: 0 };
+
+  // 스킬 선택 상태
+  let learnableSkills: SkillDef[] = [];
+  let skillPage = 0;
+  const SKILLS_PER_PAGE = 6;
 
   function renderStat(el: HTMLElement) {
     el.innerHTML = '';
@@ -65,8 +71,7 @@ export function createLevelUpScreen(
         phase = 'color';
         renderColor(el);
       } else {
-        phase = 'done';
-        onDone();
+        trySkillPhase(el);
       }
     });
 
@@ -127,8 +132,7 @@ export function createLevelUpScreen(
     });
 
     wrap.querySelector('[data-confirm]')?.addEventListener('click', () => {
-      phase = 'done';
-      onDone();
+      trySkillPhase(el);
     });
 
     el.appendChild(wrap);
@@ -147,10 +151,89 @@ export function createLevelUpScreen(
     renderColor(el);
   }
 
+  function trySkillPhase(el: HTMLElement) {
+    learnableSkills = getLearnableSkills(p);
+    if (learnableSkills.length > 0) {
+      phase = 'skill';
+      skillPage = 0;
+      renderSkill(el);
+    } else {
+      phase = 'done';
+      onDone();
+    }
+  }
+
+  function renderSkill(el: HTMLElement) {
+    el.innerHTML = '';
+    const wrap = document.createElement('div');
+    wrap.className = 'screen info-screen levelup-screen';
+
+    const totalPages = Math.max(1, Math.ceil(learnableSkills.length / SKILLS_PER_PAGE));
+    const start = skillPage * SKILLS_PER_PAGE;
+    const pageSkills = learnableSkills.slice(start, start + SKILLS_PER_PAGE);
+
+    let skillsHtml = '';
+    for (let i = 0; i < pageSkills.length; i++) {
+      const s = pageSkills[i];
+      const typeLabel = skillTypeName(s.type);
+      const elemLabel = skillElementName(s.element);
+      const costLabel = s.tpCost > 0 ? `MP${s.mpCost} TP${s.tpCost}` : `MP${s.mpCost}`;
+      skillsHtml += `
+        <button class="btn skill-learn-btn" data-learn="${start + i}" style="text-align:left;padding:8px 12px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-weight:bold">${i + 1}. ${s.name}</span>
+            <span style="font-size:11px;color:var(--text-dim)">[${typeLabel}] ${elemLabel} ${costLabel}</span>
+          </div>
+          <div style="font-size:12px;color:var(--text-dim);margin-top:2px">${s.description}</div>
+        </button>
+      `;
+    }
+
+    wrap.innerHTML = `
+      <h2>새 스킬 습득</h2>
+      <p class="levelup-subtitle">배울 수 있는 스킬 (${learnableSkills.length}개) — 1개를 선택하세요</p>
+      <div class="skill-learn-list" style="display:flex;flex-direction:column;gap:6px;margin:8px 0">
+        ${skillsHtml}
+      </div>
+      ${totalPages > 1 ? `<div style="text-align:center;font-size:12px;color:var(--text-dim);margin:4px 0">${skillPage + 1}/${totalPages} 페이지 (←→ 이동)</div>` : ''}
+      <button class="btn levelup-confirm" data-skip style="margin-top:8px">건너뛰기 [0]</button>
+      <p class="hint">1~${pageSkills.length} 선택, 0=건너뛰기${totalPages > 1 ? ', ←→=페이지' : ''}</p>
+    `;
+
+    wrap.querySelectorAll<HTMLButtonElement>('[data-learn]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.dataset.learn!, 10);
+        selectSkill(idx, el);
+      });
+    });
+
+    wrap.querySelector('[data-skip]')?.addEventListener('click', () => {
+      phase = 'done';
+      onDone();
+    });
+
+    el.appendChild(wrap);
+  }
+
+  function selectSkill(index: number, _el: HTMLElement) {
+    const skill = learnableSkills[index];
+    if (!skill) return;
+    if (learnSkill(p, skill.id)) {
+      session.backlog.add(
+        session.gameTime,
+        `${p.name}이(가) ${skill.name}을(를) 습득했다!`,
+        '시스템',
+      );
+    }
+    phase = 'done';
+    onDone();
+  }
+
   return {
     id: 'level-up',
     render(el) {
       if (phase === 'color') renderColor(el);
+      else if (phase === 'skill') renderSkill(el);
       else renderStat(el);
     },
     onKey(key) {
@@ -167,16 +250,35 @@ export function createLevelUpScreen(
             phase = 'color';
             renderColor(container);
           } else {
-            phase = 'done';
-            onDone();
+            trySkillPhase(container);
           }
         }
       } else if (phase === 'color') {
         if (/^[1-8]$/.test(key)) {
           allocColor(parseInt(key, 10) - 1, container);
         } else if (key === 'Enter' && colorPoints <= 0) {
+          trySkillPhase(container);
+        }
+      } else if (phase === 'skill') {
+        if (key === '0') {
           phase = 'done';
           onDone();
+        } else if (/^[1-9]$/.test(key)) {
+          const idx = skillPage * SKILLS_PER_PAGE + parseInt(key, 10) - 1;
+          if (idx < learnableSkills.length) {
+            selectSkill(idx, container);
+          }
+        } else if (key === 'ArrowRight' || key === 'ArrowDown') {
+          const totalPages = Math.ceil(learnableSkills.length / SKILLS_PER_PAGE);
+          if (skillPage < totalPages - 1) {
+            skillPage++;
+            renderSkill(container);
+          }
+        } else if (key === 'ArrowLeft' || key === 'ArrowUp') {
+          if (skillPage > 0) {
+            skillPage--;
+            renderSkill(container);
+          }
         }
       }
     },

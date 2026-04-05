@@ -63,6 +63,7 @@ const INFO_ACTIONS: ActionDef[] = [
   { key: 't', label: '칭호', action: 'info_titles', icon: '🏅' },
   { key: 'M', label: '지도', action: 'info_map', icon: '🧭' },
   { key: 'e', label: '도감', action: 'info_encyclopedia', icon: '📚' },
+  { key: 'k', label: '스킬', action: 'info_skills' as GameAction, icon: '⚡' },
   { key: 'v', label: '소지품', action: 'info_inventory' as GameAction, icon: '🎒' },
   { key: 'S', label: '저장', action: 'save', icon: '💾' },
 ];

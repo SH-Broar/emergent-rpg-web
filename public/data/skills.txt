@@ -1,0 +1,1779 @@
+# ============================================================
+# skills.txt — 스킬 정의 (rove-due-colorz)
+# ============================================================
+# type: Attack | Defense | Buff | Debuff
+# element: Fire|Water|Electric|Iron|Earth|Wind|Light|Dark|None
+# raceTagExpr: 종족 태그 표현식 (빈=제한없음)
+# basicForRace: 종족 전용 기본 스킬일 때 종족 키
+# isBasicSkill: 1=기본 스킬 (자동 습득)
+# colorReq: 8원소 최소값 (Fire,Water,Electric,Iron,Earth,Wind,Light,Dark)
+# roleAffinity: NPC 우선 배정 역할 (쉼표 구분)
+# ============================================================
+
+# ============================================================
+# 인간 기본 스킬 (Human)
+# ============================================================
+
+[human_slash]
+name = 베기
+description = 기본 검격. 빠르고 안정적이다.
+type = Attack
+damageMultiplier = 1.2
+mpCost = 5
+appearRate = 0.8
+maxUsesPerCombat = 99
+element = None
+isBasicSkill = 1
+basicForRace = Human
+
+[human_guard]
+name = 방어태세
+description = 1턴 동안 방어력을 높인다.
+type = Defense
+defenseMultiplier = 2.0
+buffDuration = 1
+mpCost = 5
+appearRate = 0.7
+maxUsesPerCombat = 99
+element = None
+isBasicSkill = 1
+basicForRace = Human
+
+[human_heal]
+name = 치유
+description = HP를 25 회복한다.
+type = Buff
+healHp = 25
+mpCost = 10
+postDelay = 1
+appearRate = 0.7
+maxUsesPerCombat = 5
+element = None
+isBasicSkill = 1
+basicForRace = Human
+
+# ============================================================
+# 엘프 기본 스킬 (Elf)
+# ============================================================
+
+[elf_spirit_slash]
+name = 정령참
+description = 정령의 바람을 실은 우아한 베기.
+type = Attack
+damageMultiplier = 1.15
+flatDamage = 3
+mpCost = 6
+appearRate = 0.8
+maxUsesPerCombat = 99
+element = Wind
+isBasicSkill = 1
+basicForRace = Elf
+
+[elf_wind_barrier]
+name = 바람의 장막
+description = 바람이 몸을 감싸 1턴 동안 보호한다.
+type = Defense
+defenseMultiplier = 2.2
+buffDuration = 1
+mpCost = 6
+appearRate = 0.7
+maxUsesPerCombat = 99
+element = Wind
+isBasicSkill = 1
+basicForRace = Elf
+
+[elf_nature_heal]
+name = 자연 치유
+description = 숲의 기운으로 HP를 28 회복한다.
+type = Buff
+healHp = 28
+mpCost = 9
+postDelay = 1
+appearRate = 0.7
+maxUsesPerCombat = 5
+element = Earth
+isBasicSkill = 1
+basicForRace = Elf
+
+# ============================================================
+# 드워프 기본 스킬 (Dwarf)
+# ============================================================
+
+[dwarf_hammer_swing]
+name = 해머 스윙
+description = 묵직한 해머를 휘두른다. 느리지만 강하다.
+type = Attack
+damageMultiplier = 1.4
+mpCost = 7
+postDelay = 1
+appearRate = 0.75
+maxUsesPerCombat = 99
+element = Iron
+isBasicSkill = 1
+basicForRace = Dwarf
+
+[dwarf_stone_wall]
+name = 돌벽
+description = 단단한 돌벽을 세워 2턴 동안 방어한다.
+type = Defense
+defenseMultiplier = 2.5
+buffDuration = 2
+mpCost = 8
+preDelay = 1
+appearRate = 0.6
+maxUsesPerCombat = 99
+element = Earth
+isBasicSkill = 1
+basicForRace = Dwarf
+
+[dwarf_forge_mend]
+name = 대장장이의 손길
+description = 장비를 수리하듯 HP를 22 회복한다.
+type = Buff
+healHp = 22
+mpCost = 8
+appearRate = 0.7
+maxUsesPerCombat = 5
+element = Iron
+isBasicSkill = 1
+basicForRace = Dwarf
+
+# ============================================================
+# 수인류 기본 스킬 (Beastkin/Nekomimi/Foxkin/Lamia/Werewolf — keen_senses)
+# ============================================================
+
+[keen_claw_strike]
+name = 발톱 찍기
+description = 날카로운 발톱으로 빠르게 할퀸다.
+type = Attack
+damageMultiplier = 1.25
+mpCost = 4
+appearRate = 0.85
+maxUsesPerCombat = 99
+element = None
+isBasicSkill = 1
+basicForRace = Beastkin
+
+[keen_claw_strike_neko]
+name = 고양이 할퀴기
+description = 재빠른 손길로 할퀸다.
+type = Attack
+damageMultiplier = 1.2
+flatDamage = 2
+mpCost = 4
+appearRate = 0.85
+maxUsesPerCombat = 99
+element = None
+isBasicSkill = 1
+basicForRace = Nekomimi
+
+[keen_fox_strike]
+name = 여우 일섬
+description = 교활한 움직임으로 빈틈을 노린다.
+type = Attack
+damageMultiplier = 1.2
+flatDamage = 3
+mpCost = 5
+appearRate = 0.85
+maxUsesPerCombat = 99
+element = None
+isBasicSkill = 1
+basicForRace = Foxkin
+
+[keen_fang_strike]
+name = 송곳니
+description = 날카로운 이빨로 물어뜯는다.
+type = Attack
+damageMultiplier = 1.3
+mpCost = 5
+appearRate = 0.8
+maxUsesPerCombat = 99
+element = None
+isBasicSkill = 1
+basicForRace = Lamia
+
+[keen_wolf_fang]
+name = 늑대 송곳니
+description = 야수의 본능으로 급소를 노린다.
+type = Attack
+damageMultiplier = 1.35
+mpCost = 6
+appearRate = 0.8
+maxUsesPerCombat = 99
+element = None
+isBasicSkill = 1
+basicForRace = Werewolf
+
+[keen_sense_dodge]
+name = 본능적 회피
+description = 예리한 감각으로 공격을 피한다.
+type = Defense
+defenseMultiplier = 2.5
+buffDuration = 1
+mpCost = 4
+appearRate = 0.7
+maxUsesPerCombat = 99
+element = None
+isBasicSkill = 1
+basicForRace = Beastkin
+
+[keen_sense_dodge_neko]
+name = 날렵한 회피
+description = 고양이처럼 가볍게 피한다.
+type = Defense
+defenseMultiplier = 2.8
+buffDuration = 1
+mpCost = 5
+appearRate = 0.7
+maxUsesPerCombat = 99
+element = None
+isBasicSkill = 1
+basicForRace = Nekomimi
+
+[keen_sense_dodge_fox]
+name = 여우걸음
+description = 가볍게 몸을 비틀어 피한다.
+type = Defense
+defenseMultiplier = 2.5
+buffDuration = 1
+mpCost = 4
+appearRate = 0.7
+maxUsesPerCombat = 99
+element = None
+isBasicSkill = 1
+basicForRace = Foxkin
+
+[keen_sense_dodge_lamia]
+name = 뱀의 회전
+description = 유연하게 몸을 말아 피한다.
+type = Defense
+defenseMultiplier = 2.3
+buffDuration = 1
+mpCost = 5
+appearRate = 0.7
+maxUsesPerCombat = 99
+element = None
+isBasicSkill = 1
+basicForRace = Lamia
+
+[keen_sense_dodge_wolf]
+name = 야수의 반사
+description = 야생의 반사신경으로 피한다.
+type = Defense
+defenseMultiplier = 2.5
+buffDuration = 1
+mpCost = 5
+appearRate = 0.7
+maxUsesPerCombat = 99
+element = None
+isBasicSkill = 1
+basicForRace = Werewolf
+
+[keen_lick_wound]
+name = 상처 핥기
+description = 본능적으로 상처를 치유한다. HP 20 회복.
+type = Buff
+healHp = 20
+mpCost = 6
+appearRate = 0.7
+maxUsesPerCombat = 5
+element = None
+isBasicSkill = 1
+basicForRace = Beastkin
+
+[keen_purr_heal]
+name = 골골송
+description = 나른한 진동으로 HP를 20 회복한다.
+type = Buff
+healHp = 20
+mpCost = 6
+appearRate = 0.7
+maxUsesPerCombat = 5
+element = None
+isBasicSkill = 1
+basicForRace = Nekomimi
+
+[keen_fox_heal]
+name = 여우불
+description = 은은한 여우불로 HP를 22 회복한다.
+type = Buff
+healHp = 22
+mpCost = 7
+appearRate = 0.7
+maxUsesPerCombat = 5
+element = Fire
+isBasicSkill = 1
+basicForRace = Foxkin
+
+[keen_shed_heal]
+name = 허물벗기
+description = 낡은 비늘을 벗어 HP를 20 회복한다.
+type = Buff
+healHp = 20
+mpCost = 7
+appearRate = 0.7
+maxUsesPerCombat = 5
+element = None
+isBasicSkill = 1
+basicForRace = Lamia
+
+[keen_howl_heal]
+name = 달빛 울음
+description = 달빛 아래 치유의 울음. HP 22 회복.
+type = Buff
+healHp = 22
+mpCost = 7
+appearRate = 0.7
+maxUsesPerCombat = 5
+element = Light
+isBasicSkill = 1
+basicForRace = Werewolf
+
+# ============================================================
+# 하피/켄타우로스 (flight/quadruped 계열)
+# ============================================================
+
+[harpy_talon_dive]
+name = 발톱 급강하
+description = 하늘에서 발톱을 세워 급강하한다.
+type = Attack
+damageMultiplier = 1.35
+mpCost = 6
+postDelay = 1
+appearRate = 0.75
+maxUsesPerCombat = 99
+element = Wind
+isBasicSkill = 1
+basicForRace = Harpy
+
+[harpy_wing_shield]
+name = 날개 방패
+description = 넓은 날개로 공격을 막는다.
+type = Defense
+defenseMultiplier = 2.0
+buffDuration = 1
+mpCost = 5
+appearRate = 0.7
+maxUsesPerCombat = 99
+element = Wind
+isBasicSkill = 1
+basicForRace = Harpy
+
+[harpy_feather_heal]
+name = 깃털 치유
+description = 치유의 깃털로 HP 22 회복.
+type = Buff
+healHp = 22
+mpCost = 8
+appearRate = 0.7
+maxUsesPerCombat = 5
+element = Wind
+isBasicSkill = 1
+basicForRace = Harpy
+
+[centaur_lance_charge]
+name = 돌격 찌르기
+description = 전속력으로 돌격하며 찌른다.
+type = Attack
+damageMultiplier = 1.5
+mpCost = 8
+postDelay = 1
+appearRate = 0.7
+maxUsesPerCombat = 99
+element = None
+isBasicSkill = 1
+basicForRace = Centaur
+
+[centaur_iron_hide]
+name = 철갑 가죽
+description = 단단한 가죽이 2턴 동안 보호한다.
+type = Defense
+defenseMultiplier = 2.3
+buffDuration = 2
+mpCost = 7
+appearRate = 0.65
+maxUsesPerCombat = 99
+element = Iron
+isBasicSkill = 1
+basicForRace = Centaur
+
+[centaur_herb_poultice]
+name = 약초 찜질
+description = 약초를 이용해 HP 24 회복.
+type = Buff
+healHp = 24
+mpCost = 8
+appearRate = 0.7
+maxUsesPerCombat = 5
+element = Earth
+isBasicSkill = 1
+basicForRace = Centaur
+
+# ============================================================
+# 드래곤 기본 스킬 (Dragon)
+# ============================================================
+
+[dragon_flame_strike]
+name = 화염 일격
+description = 용의 화염을 응축한 일격.
+type = Attack
+damageMultiplier = 1.5
+mpCost = 8
+appearRate = 0.75
+maxUsesPerCombat = 99
+element = Fire
+isBasicSkill = 1
+basicForRace = Dragon
+
+[dragon_scale_armor]
+name = 용린 방어
+description = 단단한 비늘이 2턴 동안 보호한다.
+type = Defense
+defenseMultiplier = 2.8
+buffDuration = 2
+mpCost = 7
+appearRate = 0.65
+maxUsesPerCombat = 99
+element = Iron
+isBasicSkill = 1
+basicForRace = Dragon
+
+[dragon_regenerate]
+name = 용의 재생
+description = 용족의 재생력으로 HP 30 회복.
+type = Buff
+healHp = 30
+mpCost = 10
+appearRate = 0.7
+maxUsesPerCombat = 3
+element = Fire
+isBasicSkill = 1
+basicForRace = Dragon
+
+# ============================================================
+# 천사/타천사 (Angel/FallenAngel)
+# ============================================================
+
+[angel_holy_smite]
+name = 성스러운 일격
+description = 빛의 힘으로 강타한다.
+type = Attack
+damageMultiplier = 1.3
+flatDamage = 5
+mpCost = 7
+appearRate = 0.8
+maxUsesPerCombat = 99
+element = Light
+isBasicSkill = 1
+basicForRace = Angel
+
+[angel_divine_shield]
+name = 신성 결계
+description = 빛의 결계가 1턴 동안 보호한다.
+type = Defense
+defenseMultiplier = 2.5
+buffDuration = 1
+mpCost = 7
+appearRate = 0.7
+maxUsesPerCombat = 99
+element = Light
+isBasicSkill = 1
+basicForRace = Angel
+
+[angel_blessing]
+name = 축복
+description = 신성한 축복으로 HP 30 회복.
+type = Buff
+healHp = 30
+mpCost = 10
+appearRate = 0.7
+maxUsesPerCombat = 5
+element = Light
+isBasicSkill = 1
+basicForRace = Angel
+
+[fallen_shadow_strike]
+name = 그림자 일격
+description = 어둠의 힘을 실은 일격.
+type = Attack
+damageMultiplier = 1.35
+flatDamage = 3
+mpCost = 7
+appearRate = 0.8
+maxUsesPerCombat = 99
+element = Dark
+isBasicSkill = 1
+basicForRace = FallenAngel
+
+[fallen_dark_veil]
+name = 어둠의 장막
+description = 어둠에 몸을 숨겨 1턴 보호.
+type = Defense
+defenseMultiplier = 2.5
+buffDuration = 1
+mpCost = 6
+appearRate = 0.7
+maxUsesPerCombat = 99
+element = Dark
+isBasicSkill = 1
+basicForRace = FallenAngel
+
+[fallen_dark_heal]
+name = 어둠 흡수
+description = 어둠에서 생명력을 흡수. HP 25 회복.
+type = Buff
+healHp = 25
+mpCost = 9
+appearRate = 0.7
+maxUsesPerCombat = 5
+element = Dark
+isBasicSkill = 1
+basicForRace = FallenAngel
+
+# ============================================================
+# 악마 (Demon)
+# ============================================================
+
+[demon_dark_claw]
+name = 마수의 손톱
+description = 어둠에 물든 손톱으로 찢는다.
+type = Attack
+damageMultiplier = 1.35
+mpCost = 6
+appearRate = 0.8
+maxUsesPerCombat = 99
+element = Dark
+isBasicSkill = 1
+basicForRace = Demon
+
+[demon_curse_shield]
+name = 저주 방벽
+description = 저주의 기운이 1턴 동안 보호.
+type = Defense
+defenseMultiplier = 2.2
+buffDuration = 1
+mpCost = 6
+appearRate = 0.7
+maxUsesPerCombat = 99
+element = Dark
+isBasicSkill = 1
+basicForRace = Demon
+
+[demon_drain_life]
+name = 생명 흡수
+description = 적의 생명력을 빼앗아 HP 20 회복.
+type = Buff
+healHp = 20
+mpCost = 8
+appearRate = 0.7
+maxUsesPerCombat = 5
+element = Dark
+isBasicSkill = 1
+basicForRace = Demon
+
+# ============================================================
+# 정령/요정/아르카나 (magic_affinity/elemental 계열)
+# ============================================================
+
+[spirit_elemental_bolt]
+name = 원소 탄환
+description = 순수한 원소 에너지를 발사한다.
+type = Attack
+damageMultiplier = 1.25
+flatDamage = 5
+mpCost = 6
+appearRate = 0.8
+maxUsesPerCombat = 99
+element = None
+isBasicSkill = 1
+basicForRace = Spirit
+
+[spirit_mana_shield]
+name = 마력 보호막
+description = 마력으로 만든 보호막. 1턴 방어.
+type = Defense
+defenseMultiplier = 2.5
+buffDuration = 1
+mpCost = 7
+appearRate = 0.7
+maxUsesPerCombat = 99
+element = None
+isBasicSkill = 1
+basicForRace = Spirit
+
+[spirit_essence_heal]
+name = 정수 치유
+description = 원소의 정수로 HP 28 회복.
+type = Buff
+healHp = 28
+mpCost = 8
+appearRate = 0.7
+maxUsesPerCombat = 5
+element = None
+isBasicSkill = 1
+basicForRace = Spirit
+
+[fairy_sparkle]
+name = 반짝이 가루
+description = 빛나는 가루를 뿌려 타격한다.
+type = Attack
+damageMultiplier = 1.1
+flatDamage = 5
+mpCost = 4
+appearRate = 0.85
+maxUsesPerCombat = 99
+element = Light
+isBasicSkill = 1
+basicForRace = Fairy
+
+[fairy_pixie_dust]
+name = 요정의 먼지
+description = 요정 먼지로 1턴 보호.
+type = Defense
+defenseMultiplier = 2.5
+buffDuration = 1
+mpCost = 5
+appearRate = 0.7
+maxUsesPerCombat = 99
+element = Light
+isBasicSkill = 1
+basicForRace = Fairy
+
+[fairy_wish_heal]
+name = 소원의 빛
+description = 작은 소원으로 HP 26 회복.
+type = Buff
+healHp = 26
+mpCost = 8
+appearRate = 0.7
+maxUsesPerCombat = 5
+element = Light
+isBasicSkill = 1
+basicForRace = Fairy
+
+[arcana_rune_strike]
+name = 룬 타격
+description = 고대 룬의 힘으로 타격한다.
+type = Attack
+damageMultiplier = 1.3
+flatDamage = 4
+mpCost = 7
+appearRate = 0.8
+maxUsesPerCombat = 99
+element = None
+isBasicSkill = 1
+basicForRace = Arcana
+
+[arcana_rune_ward]
+name = 룬 결계
+description = 룬 결계로 2턴 보호.
+type = Defense
+defenseMultiplier = 2.3
+buffDuration = 2
+mpCost = 8
+preDelay = 1
+appearRate = 0.6
+maxUsesPerCombat = 99
+element = None
+isBasicSkill = 1
+basicForRace = Arcana
+
+[arcana_rune_restore]
+name = 룬 수복
+description = 룬의 힘으로 HP 25 회복.
+type = Buff
+healHp = 25
+mpCost = 9
+appearRate = 0.7
+maxUsesPerCombat = 5
+element = None
+isBasicSkill = 1
+basicForRace = Arcana
+
+# ============================================================
+# 기타 종족 기본 스킬
+# ============================================================
+
+# Construct
+[construct_piston_punch]
+name = 피스톤 펀치
+description = 기계적 정밀도로 타격한다.
+type = Attack
+damageMultiplier = 1.4
+mpCost = 7
+appearRate = 0.75
+maxUsesPerCombat = 99
+element = Iron
+isBasicSkill = 1
+basicForRace = Construct
+
+[construct_armor_plate]
+name = 장갑판
+description = 장갑판을 전개해 2턴 방어.
+type = Defense
+defenseMultiplier = 2.8
+buffDuration = 2
+mpCost = 8
+preDelay = 1
+appearRate = 0.6
+maxUsesPerCombat = 99
+element = Iron
+isBasicSkill = 1
+basicForRace = Construct
+
+[construct_self_repair]
+name = 자가 수리
+description = 내부 기구를 수리. HP 20 회복.
+type = Buff
+healHp = 20
+mpCost = 8
+appearRate = 0.7
+maxUsesPerCombat = 5
+element = Iron
+isBasicSkill = 1
+basicForRace = Construct
+
+# Moth
+[moth_wing_slash]
+name = 날개 가르기
+description = 날카로운 날개로 베어낸다.
+type = Attack
+damageMultiplier = 1.2
+flatDamage = 2
+mpCost = 5
+appearRate = 0.8
+maxUsesPerCombat = 99
+element = Wind
+isBasicSkill = 1
+basicForRace = Moth
+
+[moth_scale_cloud]
+name = 인분 구름
+description = 비늘가루를 뿌려 1턴 보호.
+type = Defense
+defenseMultiplier = 2.2
+buffDuration = 1
+mpCost = 5
+appearRate = 0.7
+maxUsesPerCombat = 99
+element = Wind
+isBasicSkill = 1
+basicForRace = Moth
+
+[moth_moon_dust]
+name = 달빛 가루
+description = 달빛 가루로 HP 22 회복.
+type = Buff
+healHp = 22
+mpCost = 7
+appearRate = 0.7
+maxUsesPerCombat = 5
+element = Light
+isBasicSkill = 1
+basicForRace = Moth
+
+# Dryad / Alraune (plant)
+[plant_vine_whip]
+name = 덩굴 채찍
+description = 날카로운 덩굴로 휘두른다.
+type = Attack
+damageMultiplier = 1.2
+flatDamage = 3
+mpCost = 5
+appearRate = 0.8
+maxUsesPerCombat = 99
+element = Earth
+isBasicSkill = 1
+basicForRace = Dryad
+
+[plant_bark_shield]
+name = 나무껍질 방패
+description = 단단한 껍질로 2턴 보호.
+type = Defense
+defenseMultiplier = 2.3
+buffDuration = 2
+mpCost = 7
+appearRate = 0.65
+maxUsesPerCombat = 99
+element = Earth
+isBasicSkill = 1
+basicForRace = Dryad
+
+[plant_photosynthesis]
+name = 광합성
+description = 빛을 흡수해 HP 28 회복.
+type = Buff
+healHp = 28
+mpCost = 7
+appearRate = 0.7
+maxUsesPerCombat = 5
+element = Light
+isBasicSkill = 1
+basicForRace = Dryad
+
+[alraune_thorn_lash]
+name = 가시채찍
+description = 독가시 달린 덩굴로 공격.
+type = Attack
+damageMultiplier = 1.2
+flatDamage = 4
+mpCost = 6
+appearRate = 0.8
+maxUsesPerCombat = 99
+element = Earth
+isBasicSkill = 1
+basicForRace = Alraune
+
+[alraune_petal_guard]
+name = 꽃잎 방어
+description = 꽃잎이 감싸 1턴 보호.
+type = Defense
+defenseMultiplier = 2.2
+buffDuration = 1
+mpCost = 5
+appearRate = 0.7
+maxUsesPerCombat = 99
+element = Earth
+isBasicSkill = 1
+basicForRace = Alraune
+
+[alraune_nectar_heal]
+name = 꿀물 치유
+description = 달콤한 꿀물로 HP 26 회복.
+type = Buff
+healHp = 26
+mpCost = 8
+appearRate = 0.7
+maxUsesPerCombat = 5
+element = Earth
+isBasicSkill = 1
+basicForRace = Alraune
+
+# Phantom
+[phantom_ghost_touch]
+name = 유령의 손길
+description = 비물질적 손길로 생명력을 빼앗는다.
+type = Attack
+damageMultiplier = 1.2
+flatDamage = 5
+mpCost = 6
+appearRate = 0.8
+maxUsesPerCombat = 99
+element = Dark
+isBasicSkill = 1
+basicForRace = Phantom
+
+[phantom_phase_shift]
+name = 위상 변환
+description = 몸을 투명하게 만들어 1턴 회피.
+type = Defense
+defenseMultiplier = 999
+buffDuration = 1
+mpCost = 7
+appearRate = 0.6
+maxUsesPerCombat = 5
+element = Dark
+isBasicSkill = 1
+basicForRace = Phantom
+
+[phantom_ectoplasm]
+name = 에크토플라즘
+description = 영혼 물질로 HP 20 회복.
+type = Buff
+healHp = 20
+mpCost = 8
+appearRate = 0.7
+maxUsesPerCombat = 5
+element = Dark
+isBasicSkill = 1
+basicForRace = Phantom
+
+# Merfolk / Siren (aquatic)
+[merfolk_trident_thrust]
+name = 삼지창 찌르기
+description = 물살을 타고 삼지창으로 찌른다.
+type = Attack
+damageMultiplier = 1.3
+mpCost = 6
+appearRate = 0.8
+maxUsesPerCombat = 99
+element = Water
+isBasicSkill = 1
+basicForRace = Merfolk
+
+[merfolk_water_wall]
+name = 물의 벽
+description = 물의 벽이 1턴 동안 보호한다.
+type = Defense
+defenseMultiplier = 2.3
+buffDuration = 1
+mpCost = 6
+appearRate = 0.7
+maxUsesPerCombat = 99
+element = Water
+isBasicSkill = 1
+basicForRace = Merfolk
+
+[merfolk_tidal_heal]
+name = 조수 치유
+description = 바다의 힘으로 HP 25 회복.
+type = Buff
+healHp = 25
+mpCost = 8
+appearRate = 0.7
+maxUsesPerCombat = 5
+element = Water
+isBasicSkill = 1
+basicForRace = Merfolk
+
+[siren_sonic_wave]
+name = 음파 공격
+description = 강렬한 음파로 적을 타격한다.
+type = Attack
+damageMultiplier = 1.2
+flatDamage = 5
+mpCost = 6
+appearRate = 0.8
+maxUsesPerCombat = 99
+element = Wind
+isBasicSkill = 1
+basicForRace = Siren
+
+[siren_lullaby]
+name = 자장가
+description = 노래로 적의 공격을 둔화시킨다.
+type = Defense
+defenseMultiplier = 2.0
+buffDuration = 1
+mpCost = 5
+appearRate = 0.7
+maxUsesPerCombat = 99
+element = Wind
+isBasicSkill = 1
+basicForRace = Siren
+
+[siren_healing_song]
+name = 치유의 노래
+description = 노래로 HP 26 회복.
+type = Buff
+healHp = 26
+mpCost = 8
+appearRate = 0.7
+maxUsesPerCombat = 5
+element = Water
+isBasicSkill = 1
+basicForRace = Siren
+
+# Goblin
+[goblin_shiv]
+name = 작은 칼
+description = 작은 칼로 빠르게 찌른다.
+type = Attack
+damageMultiplier = 1.1
+flatDamage = 3
+mpCost = 3
+appearRate = 0.9
+maxUsesPerCombat = 99
+element = None
+isBasicSkill = 1
+basicForRace = Goblin
+
+[goblin_duck]
+name = 납작 엎드리기
+description = 재빠르게 엎드려 피한다.
+type = Defense
+defenseMultiplier = 2.5
+buffDuration = 1
+mpCost = 3
+appearRate = 0.7
+maxUsesPerCombat = 99
+element = None
+isBasicSkill = 1
+basicForRace = Goblin
+
+[goblin_scrounged_potion]
+name = 주운 물약
+description = 어디선가 주운 물약으로 HP 18 회복.
+type = Buff
+healHp = 18
+mpCost = 5
+appearRate = 0.7
+maxUsesPerCombat = 5
+element = None
+isBasicSkill = 1
+basicForRace = Goblin
+
+# Vampire
+[vampire_blood_fang]
+name = 피의 송곳니
+description = 피를 빨며 적에게 데미지를 준다.
+type = Attack
+damageMultiplier = 1.3
+flatDamage = 2
+mpCost = 6
+appearRate = 0.8
+maxUsesPerCombat = 99
+element = Dark
+isBasicSkill = 1
+basicForRace = Vampire
+
+[vampire_mist_form]
+name = 안개 변신
+description = 안개가 되어 1턴 완전 회피.
+type = Defense
+defenseMultiplier = 999
+buffDuration = 1
+mpCost = 8
+appearRate = 0.6
+maxUsesPerCombat = 3
+element = Dark
+isBasicSkill = 1
+basicForRace = Vampire
+
+[vampire_blood_drain]
+name = 흡혈
+description = 적의 피를 마셔 HP 22 회복.
+type = Buff
+healHp = 22
+mpCost = 7
+appearRate = 0.7
+maxUsesPerCombat = 5
+element = Dark
+isBasicSkill = 1
+basicForRace = Vampire
+
+# Arachne
+[arachne_fang_bite]
+name = 독니
+description = 독이 묻은 이빨로 물어뜯는다.
+type = Attack
+damageMultiplier = 1.25
+flatDamage = 3
+mpCost = 5
+appearRate = 0.8
+maxUsesPerCombat = 99
+element = None
+isBasicSkill = 1
+basicForRace = Arachne
+
+[arachne_web_trap]
+name = 거미줄 방어
+description = 거미줄로 감싸 2턴 보호.
+type = Defense
+defenseMultiplier = 2.0
+buffDuration = 2
+mpCost = 6
+appearRate = 0.65
+maxUsesPerCombat = 99
+element = None
+isBasicSkill = 1
+basicForRace = Arachne
+
+[arachne_silk_bandage]
+name = 명주실 붕대
+description = 명주실로 상처를 감싸 HP 22 회복.
+type = Buff
+healHp = 22
+mpCost = 7
+appearRate = 0.7
+maxUsesPerCombat = 5
+element = None
+isBasicSkill = 1
+basicForRace = Arachne
+
+# Slime
+[slime_acid_splash]
+name = 산성 튀기기
+description = 산성 액체를 튀긴다.
+type = Attack
+damageMultiplier = 1.15
+flatDamage = 5
+mpCost = 4
+appearRate = 0.85
+maxUsesPerCombat = 99
+element = Water
+isBasicSkill = 1
+basicForRace = Slime
+
+[slime_absorb]
+name = 흡수
+description = 몸을 변형시켜 충격 흡수. 2턴 보호.
+type = Defense
+defenseMultiplier = 2.0
+buffDuration = 2
+mpCost = 5
+appearRate = 0.65
+maxUsesPerCombat = 99
+element = Water
+isBasicSkill = 1
+basicForRace = Slime
+
+[slime_regenerate]
+name = 재생
+description = 몸을 재생해 HP 25 회복.
+type = Buff
+healHp = 25
+mpCost = 6
+appearRate = 0.7
+maxUsesPerCombat = 5
+element = Water
+isBasicSkill = 1
+basicForRace = Slime
+
+# Lizardfolk
+[lizard_tail_sweep]
+name = 꼬리 휩쓸기
+description = 강인한 꼬리로 휘두른다.
+type = Attack
+damageMultiplier = 1.3
+mpCost = 5
+appearRate = 0.8
+maxUsesPerCombat = 99
+element = None
+isBasicSkill = 1
+basicForRace = Lizardfolk
+
+[lizard_scale_defense]
+name = 비늘 방어
+description = 단단한 비늘로 2턴 보호.
+type = Defense
+defenseMultiplier = 2.3
+buffDuration = 2
+mpCost = 6
+appearRate = 0.65
+maxUsesPerCombat = 99
+element = Earth
+isBasicSkill = 1
+basicForRace = Lizardfolk
+
+[lizard_sunbathe]
+name = 일광욕
+description = 햇볕을 쬐어 HP 22 회복.
+type = Buff
+healHp = 22
+mpCost = 6
+appearRate = 0.7
+maxUsesPerCombat = 5
+element = Light
+isBasicSkill = 1
+basicForRace = Lizardfolk
+
+# Minotaur
+[minotaur_horn_charge]
+name = 뿔 돌격
+description = 거대한 뿔로 돌진한다.
+type = Attack
+damageMultiplier = 1.5
+mpCost = 8
+postDelay = 1
+appearRate = 0.7
+maxUsesPerCombat = 99
+element = None
+isBasicSkill = 1
+basicForRace = Minotaur
+
+[minotaur_muscle_guard]
+name = 근육 방어
+description = 두꺼운 근육이 2턴 보호.
+type = Defense
+defenseMultiplier = 2.5
+buffDuration = 2
+mpCost = 7
+appearRate = 0.65
+maxUsesPerCombat = 99
+element = Iron
+isBasicSkill = 1
+basicForRace = Minotaur
+
+[minotaur_battle_cry]
+name = 전투 함성
+description = 함성으로 기운을 북돋운다. HP 20 회복.
+type = Buff
+healHp = 20
+mpCost = 8
+appearRate = 0.7
+maxUsesPerCombat = 5
+element = None
+isBasicSkill = 1
+basicForRace = Minotaur
+
+# Halfling
+[halfling_sling_shot]
+name = 돌팔매
+description = 정확한 돌팔매로 타격한다.
+type = Attack
+damageMultiplier = 1.15
+flatDamage = 4
+mpCost = 4
+appearRate = 0.85
+maxUsesPerCombat = 99
+element = None
+isBasicSkill = 1
+basicForRace = Halfling
+
+[halfling_nimble_dodge]
+name = 재빠른 회피
+description = 작은 몸으로 기민하게 피한다.
+type = Defense
+defenseMultiplier = 2.8
+buffDuration = 1
+mpCost = 4
+appearRate = 0.7
+maxUsesPerCombat = 99
+element = None
+isBasicSkill = 1
+basicForRace = Halfling
+
+[halfling_snack_heal]
+name = 간식 시간
+description = 주머니 속 간식으로 HP 20 회복.
+type = Buff
+healHp = 20
+mpCost = 5
+appearRate = 0.7
+maxUsesPerCombat = 5
+element = None
+isBasicSkill = 1
+basicForRace = Halfling
+
+# ============================================================
+# 학습 가능 스킬 — 공격 (12)
+# ============================================================
+
+[heavy_strike]
+name = 강타
+description = 강력한 일격. 사용 후 잠시 행동 불가.
+type = Attack
+damageMultiplier = 1.8
+mpCost = 10
+postDelay = 1
+appearRate = 0.6
+maxUsesPerCombat = 5
+element = Iron
+minLevel = 3
+roleAffinity = Adventurer,Guard
+
+[flame_slash]
+name = 화염참
+description = 불꽃을 실은 베기. 기력을 소모한다.
+type = Attack
+damageMultiplier = 2.0
+mpCost = 15
+tpCost = 1
+postDelay = 1
+appearRate = 0.5
+maxUsesPerCombat = 3
+element = Fire
+minLevel = 5
+colorReq = 0.3,0,0,0,0,0,0,0
+roleAffinity = Adventurer
+
+[thunder_bolt]
+name = 번개
+description = 번개를 소환해 강타한다.
+type = Attack
+damageMultiplier = 2.5
+mpCost = 20
+tpCost = 1
+preDelay = 1
+postDelay = 1
+appearRate = 0.4
+maxUsesPerCombat = 2
+element = Electric
+raceTagExpr = /magic_affinity/ | /elemental/
+minLevel = 7
+colorReq = 0,0,0.4,0,0,0,0,0
+roleAffinity = Adventurer
+
+[light_arrow]
+name = 빛의 화살
+description = 빛 속성 화살. 빠르게 날아간다.
+type = Attack
+damageMultiplier = 1.5
+mpCost = 8
+appearRate = 0.7
+maxUsesPerCombat = 8
+element = Light
+minLevel = 3
+colorReq = 0,0,0,0,0,0,0.3,0
+
+[shadow_strike]
+name = 그림자 베기
+description = 어둠 속에서 날카롭게 벤다.
+type = Attack
+damageMultiplier = 1.7
+mpCost = 10
+appearRate = 0.6
+maxUsesPerCombat = 5
+element = Dark
+minLevel = 5
+colorReq = 0,0,0,0,0,0,0,0.3
+raceTagExpr = /dark_affinity/ | /nocturnal/
+
+[aqua_lance]
+name = 수창
+description = 물을 창 형태로 응축해 찌른다.
+type = Attack
+damageMultiplier = 1.8
+mpCost = 12
+appearRate = 0.55
+maxUsesPerCombat = 4
+element = Water
+minLevel = 5
+colorReq = 0,0.35,0,0,0,0,0,0
+raceTagExpr = /aquatic/ | /magic_affinity/
+
+[earth_hammer]
+name = 대지의 망치
+description = 흙과 돌이 뭉쳐 내리친다.
+type = Attack
+damageMultiplier = 2.0
+mpCost = 14
+preDelay = 1
+postDelay = 1
+appearRate = 0.45
+maxUsesPerCombat = 3
+element = Earth
+minLevel = 7
+colorReq = 0,0,0,0,0.4,0,0,0
+
+[wind_blade]
+name = 바람의 칼날
+description = 바람을 칼날로 만들어 날린다.
+type = Attack
+damageMultiplier = 1.6
+mpCost = 10
+appearRate = 0.6
+maxUsesPerCombat = 5
+element = Wind
+minLevel = 5
+colorReq = 0,0,0,0,0,0.3,0,0
+
+[iron_fist]
+name = 철권
+description = 철처럼 단단한 주먹으로 강타한다.
+type = Attack
+damageMultiplier = 1.9
+mpCost = 12
+postDelay = 1
+appearRate = 0.55
+maxUsesPerCombat = 4
+element = Iron
+minLevel = 5
+colorReq = 0,0,0,0.35,0,0,0,0
+raceTagExpr = /strength/ | /forge_affinity/
+
+[holy_smite]
+name = 신성 강타
+description = 빛의 힘으로 강력하게 내리친다.
+type = Attack
+damageMultiplier = 2.2
+mpCost = 18
+tpCost = 1
+preDelay = 1
+appearRate = 0.4
+maxUsesPerCombat = 2
+element = Light
+raceTagExpr = /holy/ | /magic_affinity/
+minLevel = 8
+colorReq = 0,0,0,0,0,0,0.5,0
+
+[dark_nova]
+name = 어둠 폭발
+description = 어둠의 에너지를 폭발시킨다.
+type = Attack
+damageMultiplier = 2.3
+mpCost = 20
+tpCost = 1
+postDelay = 1
+appearRate = 0.4
+maxUsesPerCombat = 2
+element = Dark
+raceTagExpr = /dark_affinity/
+minLevel = 8
+colorReq = 0,0,0,0,0,0,0,0.5
+
+[dual_strike]
+name = 이연격
+description = 빠르게 두 번 연속 공격한다.
+type = Attack
+damageMultiplier = 0.8
+flatDamage = 8
+mpCost = 10
+appearRate = 0.6
+maxUsesPerCombat = 5
+element = None
+minLevel = 4
+
+# ============================================================
+# 학습 가능 스킬 — 방어 (8)
+# ============================================================
+
+[iron_wall]
+name = 철벽
+description = 2턴 동안 방어력을 3배로 높인다.
+type = Defense
+defenseMultiplier = 3.0
+buffDuration = 2
+mpCost = 15
+tpCost = 1
+preDelay = 1
+appearRate = 0.4
+maxUsesPerCombat = 2
+element = Iron
+minLevel = 5
+colorReq = 0,0,0,0.3,0,0,0,0
+roleAffinity = Guard
+
+[dodge]
+name = 회피
+description = 1턴 동안 모든 데미지를 무효화한다.
+type = Defense
+defenseMultiplier = 999
+buffDuration = 1
+mpCost = 8
+appearRate = 0.6
+maxUsesPerCombat = 5
+element = None
+minLevel = 3
+roleAffinity = Adventurer
+
+[water_mirror]
+name = 수경 방어
+description = 물의 거울이 2턴 보호한다.
+type = Defense
+defenseMultiplier = 2.5
+buffDuration = 2
+mpCost = 10
+appearRate = 0.5
+maxUsesPerCombat = 3
+element = Water
+minLevel = 5
+colorReq = 0,0.3,0,0,0,0,0,0
+
+[flame_barrier]
+name = 화염 장벽
+description = 불꽃 장벽이 1턴 강력하게 보호.
+type = Defense
+defenseMultiplier = 3.5
+buffDuration = 1
+mpCost = 12
+appearRate = 0.5
+maxUsesPerCombat = 3
+element = Fire
+minLevel = 5
+colorReq = 0.35,0,0,0,0,0,0,0
+
+[earth_shell]
+name = 대지의 갑옷
+description = 흙과 돌이 몸을 감싼다. 3턴 보호.
+type = Defense
+defenseMultiplier = 2.0
+buffDuration = 3
+mpCost = 14
+preDelay = 1
+appearRate = 0.4
+maxUsesPerCombat = 2
+element = Earth
+minLevel = 7
+colorReq = 0,0,0,0,0.4,0,0,0
+
+[wind_step]
+name = 바람걸음
+description = 바람처럼 가볍게 피한다.
+type = Defense
+defenseMultiplier = 999
+buffDuration = 1
+mpCost = 7
+appearRate = 0.6
+maxUsesPerCombat = 4
+element = Wind
+minLevel = 4
+colorReq = 0,0,0,0,0,0.3,0,0
+
+[holy_aegis]
+name = 신성 방패
+description = 빛의 방패가 2턴 보호.
+type = Defense
+defenseMultiplier = 3.0
+buffDuration = 2
+mpCost = 14
+tpCost = 1
+appearRate = 0.4
+maxUsesPerCombat = 2
+element = Light
+raceTagExpr = /holy/ | /magic_affinity/
+minLevel = 8
+colorReq = 0,0,0,0,0,0,0.4,0
+
+[shadow_cloak]
+name = 그림자 외투
+description = 어둠에 몸을 숨겨 1턴 완전 회피.
+type = Defense
+defenseMultiplier = 999
+buffDuration = 1
+mpCost = 9
+appearRate = 0.55
+maxUsesPerCombat = 3
+element = Dark
+minLevel = 5
+colorReq = 0,0,0,0,0,0,0,0.3
+raceTagExpr = /dark_affinity/ | /nocturnal/
+
+# ============================================================
+# 학습 가능 스킬 — 버프 (10)
+# ============================================================
+
+[focus]
+name = 집중
+description = 3턴 동안 공격력을 1.5배로 높인다.
+type = Buff
+attackMultiplier = 1.5
+buffDuration = 3
+mpCost = 12
+appearRate = 0.5
+maxUsesPerCombat = 3
+element = None
+minLevel = 3
+roleAffinity = Adventurer
+
+[mana_charge]
+name = 마력충전
+description = MP를 20 회복한다. 기력이 필요하다.
+type = Buff
+healMp = 20
+mpCost = 0
+tpCost = 1
+appearRate = 0.5
+maxUsesPerCombat = 2
+element = None
+raceTagExpr = /magic_affinity/ | /elemental/
+minLevel = 5
+roleAffinity = Priest
+
+[vigor_up]
+name = 기합
+description = 기력을 15 회복한다.
+type = Buff
+mpCost = 8
+appearRate = 0.6
+maxUsesPerCombat = 5
+element = None
+minLevel = 3
+
+[greater_heal]
+name = 대치유
+description = HP를 60 회복한다.
+type = Buff
+healHp = 60
+mpCost = 20
+tpCost = 1
+postDelay = 1
+appearRate = 0.4
+maxUsesPerCombat = 2
+element = Light
+minLevel = 8
+colorReq = 0,0,0,0,0,0,0.3,0
+roleAffinity = Priest
+
+[battle_hymn]
+name = 전투 찬가
+description = 3턴 동안 공격력과 방어력을 높인다.
+type = Buff
+attackMultiplier = 1.3
+buffDuration = 3
+mpCost = 15
+tpCost = 1
+appearRate = 0.4
+maxUsesPerCombat = 2
+element = None
+minLevel = 7
+raceTagExpr = /voice/ | /holy/
+
+[water_heal]
+name = 치유의 물결
+description = 물의 힘으로 HP 40 회복.
+type = Buff
+healHp = 40
+mpCost = 14
+postDelay = 1
+appearRate = 0.5
+maxUsesPerCombat = 3
+element = Water
+minLevel = 5
+colorReq = 0,0.3,0,0,0,0,0,0
+
+[fire_enchant]
+name = 화염 부여
+description = 3턴 동안 공격에 화염을 부여.
+type = Buff
+attackMultiplier = 1.4
+buffDuration = 3
+mpCost = 12
+appearRate = 0.5
+maxUsesPerCombat = 3
+element = Fire
+minLevel = 5
+colorReq = 0.3,0,0,0,0,0,0,0
+
+[earth_fortify]
+name = 대지 강화
+description = 대지의 힘으로 3턴 방어 강화.
+type = Buff
+attackMultiplier = 1.0
+buffDuration = 3
+mpCost = 10
+appearRate = 0.5
+maxUsesPerCombat = 3
+element = Earth
+minLevel = 5
+colorReq = 0,0,0,0,0.3,0,0,0
+
+[lightning_charge]
+name = 전기 충전
+description = 전기로 3턴 공격력 강화.
+type = Buff
+attackMultiplier = 1.4
+buffDuration = 3
+mpCost = 12
+appearRate = 0.5
+maxUsesPerCombat = 3
+element = Electric
+minLevel = 5
+colorReq = 0,0,0.3,0,0,0,0,0
+
+[iron_body]
+name = 철신
+description = 몸을 철처럼 단단하게. 3턴 방어 2배.
+type = Buff
+attackMultiplier = 1.0
+buffDuration = 3
+mpCost = 12
+appearRate = 0.5
+maxUsesPerCombat = 3
+element = Iron
+minLevel = 5
+colorReq = 0,0,0,0.3,0,0,0,0
+raceTagExpr = /strength/ | /forge_affinity/ | /metallic_digest/
+
+# ============================================================
+# 학습 가능 스킬 — 디버프 (8)
+# ============================================================
+
+[poison_mist]
+name = 독안개
+description = 3턴 동안 매 턴 5의 독 데미지.
+type = Debuff
+debuffType = poison
+debuffValue = 5
+debuffDuration = 3
+mpCost = 12
+postDelay = 1
+appearRate = 0.5
+maxUsesPerCombat = 3
+element = None
+minLevel = 5
+roleAffinity = Adventurer
+
+[weaken]
+name = 약화
+description = 3턴 동안 적 공격력을 0.7배로 낮춘다.
+type = Debuff
+debuffType = weaken
+debuffValue = 0.7
+debuffDuration = 3
+mpCost = 10
+preDelay = 1
+appearRate = 0.5
+maxUsesPerCombat = 3
+element = None
+minLevel = 5
+
+[slow]
+name = 둔화
+description = 3턴 동안 적의 후딜레이 +1.
+type = Debuff
+debuffType = slow
+debuffValue = 1
+debuffDuration = 3
+mpCost = 8
+appearRate = 0.6
+maxUsesPerCombat = 5
+element = None
+minLevel = 3
+
+[venom_fang]
+name = 맹독 이빨
+description = 4턴 동안 매 턴 8의 강한 독.
+type = Debuff
+debuffType = poison
+debuffValue = 8
+debuffDuration = 4
+mpCost = 16
+tpCost = 1
+postDelay = 1
+appearRate = 0.4
+maxUsesPerCombat = 2
+element = None
+minLevel = 7
+raceTagExpr = /toxic_resist/ | /acid_body/ | /keen_senses/
+
+[curse_of_darkness]
+name = 어둠의 저주
+description = 4턴 동안 적 공격력을 0.5배로.
+type = Debuff
+debuffType = weaken
+debuffValue = 0.5
+debuffDuration = 4
+mpCost = 16
+tpCost = 1
+preDelay = 1
+appearRate = 0.35
+maxUsesPerCombat = 2
+element = Dark
+minLevel = 8
+colorReq = 0,0,0,0,0,0,0,0.4
+raceTagExpr = /dark_affinity/
+
+[frost_bind]
+name = 서리 결박
+description = 3턴 동안 적의 후딜레이 +2.
+type = Debuff
+debuffType = slow
+debuffValue = 2
+debuffDuration = 3
+mpCost = 14
+preDelay = 1
+appearRate = 0.4
+maxUsesPerCombat = 2
+element = Water
+minLevel = 6
+colorReq = 0,0.35,0,0,0,0,0,0
+
+[thunder_shock]
+name = 감전
+description = 전기 충격으로 3턴 약화.
+type = Debuff
+debuffType = weaken
+debuffValue = 0.6
+debuffDuration = 3
+mpCost = 14
+appearRate = 0.45
+maxUsesPerCombat = 3
+element = Electric
+minLevel = 6
+colorReq = 0,0,0.35,0,0,0,0,0
+
+[sandstorm]
+name = 모래폭풍
+description = 3턴 동안 매 턴 3 데미지 + 둔화.
+type = Debuff
+debuffType = slow
+debuffValue = 1
+debuffDuration = 3
+mpCost = 10
+appearRate = 0.5
+maxUsesPerCombat = 3
+element = Earth
+minLevel = 5
+colorReq = 0,0,0,0,0.3,0,0,0

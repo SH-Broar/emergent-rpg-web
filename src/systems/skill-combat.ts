@@ -1,7 +1,7 @@
 // skill-combat.ts — 스킬 전투 시스템
 // 실시간 자동 공격 전투에서 스킬을 인터럽트로 사용하는 시스템
 
-import { SkillDef, SkillType, getSkillDef } from '../models/skill';
+import { SkillDef, SkillType, getSkillDef, getSkillLevelMultiplier, getSkillCostReduction, checkSkillLevelUp, SKILL_MAX_LEVEL } from '../models/skill';
 import { Actor } from '../models/actor';
 import { CombatState } from '../models/dungeon';
 
@@ -148,6 +148,8 @@ function applySkillEffect(
 ): string[] {
   const messages: string[] = [];
   const e = skill.effect;
+  const level = actor.learnedSkills.get(skill.id) ?? 1;
+  const levelMult = getSkillLevelMultiplier(level);
 
   switch (skill.type) {
     case SkillType.Attack: {
@@ -155,10 +157,10 @@ function applySkillEffect(
       const buffedAtk = getBuffedAttack(baseAtk, skillState);
       let dmg = 0;
       if (e.damageMultiplier !== undefined) {
-        dmg += Math.round(buffedAtk * e.damageMultiplier);
+        dmg += Math.round(buffedAtk * e.damageMultiplier * levelMult);
       }
       if (e.flatDamage !== undefined) {
-        dmg += e.flatDamage;
+        dmg += Math.round(e.flatDamage * levelMult);
       }
       const finalDmg = Math.max(1, dmg - Math.floor(combatState.currentEnemy.defense * 0.5));
       combatState.enemyHp -= finalDmg;
@@ -177,21 +179,27 @@ function applySkillEffect(
 
     case SkillType.Buff: {
       if (e.healHp !== undefined && e.healHp > 0) {
-        actor.adjustHp(e.healHp);
-        messages.push(`${skill.name}: HP ${e.healHp} 회복`);
+        const healAmt = Math.round(e.healHp * levelMult);
+        actor.adjustHp(healAmt);
+        messages.push(`${skill.name}: HP ${healAmt} 회복`);
       }
       if (e.healMp !== undefined && e.healMp > 0) {
-        actor.adjustMp(e.healMp);
-        messages.push(`${skill.name}: MP ${e.healMp} 회복`);
+        const mpAmt = Math.round(e.healMp * levelMult);
+        actor.adjustMp(mpAmt);
+        messages.push(`${skill.name}: MP ${mpAmt} 회복`);
       }
       if (e.attackMultiplier !== undefined) {
         const duration = e.buffDuration ?? 1;
         skillState.activeBuffs.push({ type: 'attack', multiplier: e.attackMultiplier, turnsLeft: duration });
         messages.push(`${skill.name}: 공격력 ${e.attackMultiplier}배 (${duration}턴)`);
       }
-      if (skill.id === 'vigor_up') {
-        actor.adjustVigor(15);
-        messages.push(`${skill.name}: 기력 15 회복`);
+      // vigor_up 계열 (id가 vigor를 포함하는 스킬)
+      if (skill.id === 'vigor_up' || (e.healHp === 0 && e.healMp === undefined && e.attackMultiplier === undefined && !e.healHp)) {
+        if (skill.id.includes('vigor') || skill.id === 'vigor_up') {
+          const vigorAmt = Math.round(15 * levelMult);
+          actor.adjustVigor(vigorAmt);
+          messages.push(`${skill.name}: 기력 ${vigorAmt} 회복`);
+        }
       }
       break;
     }
@@ -233,14 +241,17 @@ export function useSkill(
   const check = canUseSkill(skill, actor, skillState);
   if (!check.ok) return [check.reason ?? '스킬 사용 불가'];
 
-  // 자원 소모
-  actor.adjustMp(-skill.mpCost);
+  // 자원 소모 (레벨별 코스트 감소 적용)
+  const skillLevel = actor.learnedSkills.get(skill.id) ?? 1;
+  const costMult = getSkillCostReduction(skillLevel);
+  actor.adjustMp(-Math.ceil(skill.mpCost * costMult));
   if (skill.tpCost > 0) actor.adjustVigor(-skill.tpCost * 20);
   if (skill.hpCost > 0) actor.adjustHp(-skill.hpCost);
 
   // 사용 횟수 증가
   skillState.usesThisCombat.set(skill.id, (skillState.usesThisCombat.get(skill.id) ?? 0) + 1);
-  actor.skillUsage.set(skill.id, (actor.skillUsage.get(skill.id) ?? 0) + 1);
+  const newUsage = (actor.skillUsage.get(skill.id) ?? 0) + 1;
+  actor.skillUsage.set(skill.id, newUsage);
 
   let messages: string[];
 
@@ -253,6 +264,12 @@ export function useSkill(
     // 즉시 발동
     messages = applySkillEffect(skill, actor, combatState, skillState);
     skillState.postDelayTurns = skill.postDelay;
+  }
+
+  // 스킬 레벨업 체크
+  if (checkSkillLevelUp(skill.id, skillLevel, newUsage) && skillLevel < SKILL_MAX_LEVEL) {
+    actor.learnedSkills.set(skill.id, skillLevel + 1);
+    messages.push(`${skill.name} 숙련도 상승! Lv.${skillLevel + 1}`);
   }
 
   // 슬롯 재롤

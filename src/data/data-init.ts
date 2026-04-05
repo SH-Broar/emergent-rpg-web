@@ -12,6 +12,9 @@ import { DungeonSystem, DungeonEventType } from '../models/dungeon';
 import { ActivitySystem } from '../models/activity';
 import { loadHyperion } from '../systems/hyperion';
 import { loadItemDefs, loadWeaponDefs, loadArmorDefs } from '../types/item-defs';
+import { loadSkillDefs, getBasicSkillsForRace } from '../models/skill';
+import { assignNpcSkills } from '../systems/skill-learning';
+import { raceToKey } from '../types/enums';
 import type { GameDataFiles } from './loader';
 
 // --- items.txt ---
@@ -161,11 +164,26 @@ export function initActors(sections: DataSection[]): Actor[] {
     // Background (pipe = newline)
     actor.background = s.get('background', '');
 
-    // 기본 스킬 초기화
-    actor.learnedSkills.set('slash', 1);
-    actor.learnedSkills.set('guard', 1);
-    actor.learnedSkills.set('heal', 1);
-    actor.skillOrder = ['slash', 'guard', 'heal'];
+    // 종족별 기본 스킬 초기화
+    const raceKey = raceToKey(race);
+    const basics = getBasicSkillsForRace(raceKey);
+    if (basics.length > 0) {
+      for (const skill of basics) {
+        actor.learnedSkills.set(skill.id, 1);
+        actor.skillOrder.push(skill.id);
+      }
+    } else {
+      // 폴백: 공용 기본 스킬
+      actor.learnedSkills.set('slash', 1);
+      actor.learnedSkills.set('guard', 1);
+      actor.learnedSkills.set('heal', 1);
+      actor.skillOrder = ['slash', 'guard', 'heal'];
+    }
+
+    // 비플레이어블 NPC에게 역할 기반 추가 스킬 배정
+    if (!actor.playable) {
+      assignNpcSkills(actor);
+    }
 
     actors.push(actor);
   }
@@ -237,8 +255,26 @@ export function initDungeonSystem(
   combatSections: DataSection[],
   dungeon: DungeonSystem,
 ): void {
-  // monsters — loot는 "Item:amount:chance" 3항 형식
+  // monsters — loot는 "Item:amount:chance" 3항 형식, 스킬은 skill_N_* 키
   for (const s of monsterSections) {
+    // 몬스터 스킬 파싱
+    const skills: { name: string; type: 'attack' | 'heal' | 'buff'; value: number; description: string }[] = [];
+    const skillNums = new Set<number>();
+    for (const key of s.values.keys()) {
+      const m = key.match(/^skill_(\d+)_/);
+      if (m) skillNums.add(parseInt(m[1], 10));
+    }
+    for (const n of [...skillNums].sort((a, b) => a - b)) {
+      const name = s.get(`skill_${n}_name`, '');
+      if (!name) continue;
+      skills.push({
+        name,
+        type: s.get(`skill_${n}_type`, 'attack') as 'attack' | 'heal' | 'buff',
+        value: s.getFloat(`skill_${n}_value`, 1.5),
+        description: s.get(`skill_${n}_desc`, ''),
+      });
+    }
+
     dungeon.addMonster({
       id: s.name,
       name: s.get('name', s.name),
@@ -248,6 +284,8 @@ export function initDungeonSystem(
       lootTable: parseLootList(s.get('loot', '')).map(l => ({
         item: parseItemType(l.item), amount: l.amount, chance: l.chance,
       })),
+      skills,
+      skillChance: s.getFloat('skillChance', 0),
     });
   }
 
@@ -436,6 +474,9 @@ export function initAll(data: GameDataFiles): InitResult {
   // 무기 / 방어구 정의 로드
   loadWeaponDefs(data.weapons);
   loadArmorDefs(data.armor);
+
+  // 스킬 정의 로드 (initActors 전에 호출해야 종족별 기본 스킬 배정 가능)
+  try { loadSkillDefs(data.skills); } catch { /* skills.txt 없으면 폴백 사용 */ }
 
   const world = new World();
   initLocations(data.locations, world);

@@ -41,6 +41,11 @@ attack = 8
 defense = 6
 hp = 50
 loot = Herb:2:0.45, Food:1:0.30, MonsterLoot:1:0.20
+skillChance = 0.1
+skill_1_name = 뿌리 휘감기
+skill_1_type = attack
+skill_1_value = 1.3
+skill_1_desc = 뿌리로 감아 조인다!
 
 ; -------------------------------------------------------
 ; Forgotten_Shaft  (difficulty 0.30)
@@ -59,6 +64,11 @@ attack = 12
 defense = 8
 hp = 60
 loot = OreCommon:2:0.50, MonsterLoot:1:0.30, OreRare:1:0.08
+skillChance = 0.15
+skill_1_name = 바위 던지기
+skill_1_type = attack
+skill_1_value = 1.5
+skill_1_desc = 바위를 들어 던진다!
 
 [Mine_Spider]
 name = 광산 거미
@@ -84,6 +94,11 @@ attack = 14
 defense = 6
 hp = 55
 loot = MonsterLoot:2:0.35, Herb:1:0.30, Equipment:1:0.05
+skillChance = 0.2
+skill_1_name = 독 물기
+skill_1_type = attack
+skill_1_value = 1.6
+skill_1_desc = 독이 묻은 이빨로 문다!
 
 [Fog_Wraith]
 name = 안개 망령
@@ -109,6 +124,11 @@ attack = 16
 defense = 10
 hp = 70
 loot = Equipment:1:0.12, MonsterLoot:2:0.35, Food:1:0.25
+skillChance = 0.2
+skill_1_name = 강타
+skill_1_type = attack
+skill_1_value = 1.6
+skill_1_desc = 무거운 일격!
 
 [Bandit_Mage]
 name = 산적 마법사
@@ -116,6 +136,15 @@ attack = 18
 defense = 5
 hp = 45
 loot = Herb:2:0.40, MonsterLoot:1:0.35, Equipment:1:0.10
+skillChance = 0.3
+skill_1_name = 화염구
+skill_1_type = attack
+skill_1_value = 1.8
+skill_1_desc = 화염구를 날린다!
+skill_2_name = 치유술
+skill_2_type = heal
+skill_2_value = 15
+skill_2_desc = 주문으로 상처를 치유한다.
 
 [Bandit_Leader]
 name = 산적 두목
@@ -123,6 +152,15 @@ attack = 20
 defense = 12
 hp = 90
 loot = Equipment:1:0.20, MonsterLoot:2:0.40, OreRare:1:0.10, Food:2:0.25
+skillChance = 0.3
+skill_1_name = 연속 베기
+skill_1_type = attack
+skill_1_value = 2.0
+skill_1_desc = 빠르게 두 번 벤다!
+skill_2_name = 위협
+skill_2_type = buff
+skill_2_value = 1.3
+skill_2_desc = 위협적인 기합으로 공격력 상승!
 
 ; -------------------------------------------------------
 ; Thunder_Valley  (difficulty 0.60)
@@ -141,6 +179,11 @@ attack = 20
 defense = 6
 hp = 50
 loot = MonsterLoot:2:0.45, OreRare:1:0.12, Equipment:1:0.10
+skillChance = 0.3
+skill_1_name = 전격 방전
+skill_1_type = attack
+skill_1_value = 2.0
+skill_1_desc = 몸 전체에서 전기를 방출한다!
 
 [Thunder_Eagle]
 name = 천둥 독수리
@@ -166,6 +209,11 @@ attack = 22
 defense = 15
 hp = 100
 loot = OreRare:2:0.20, OreCommon:3:0.45, MonsterLoot:2:0.35, Equipment:1:0.10
+skillChance = 0.25
+skill_1_name = 용암 분출
+skill_1_type = attack
+skill_1_value = 2.2
+skill_1_desc = 몸에서 용암이 분출된다!
 
 [Ember_Spirit]
 name = 잔불 영혼
@@ -180,6 +228,15 @@ attack = 25
 defense = 12
 hp = 85
 loot = MonsterLoot:3:0.40, OreRare:1:0.18, Equipment:1:0.15, Food:2:0.20
+skillChance = 0.35
+skill_1_name = 화염 브레스
+skill_1_type = attack
+skill_1_value = 2.5
+skill_1_desc = 강렬한 화염을 내뿜는다!
+skill_2_name = 용의 포효
+skill_2_type = buff
+skill_2_value = 1.4
+skill_2_desc = 포효하며 공격력이 상승한다!
 
 ; -------------------------------------------------------
 ; Iron_Fortress  (difficulty 0.85)
@@ -198,6 +255,15 @@ attack = 28
 defense = 20
 hp = 150
 loot = OreRare:2:0.25, Equipment:1:0.20, MonsterLoot:3:0.40, OreCommon:2:0.40
+skillChance = 0.3
+skill_1_name = 파쇄 충격
+skill_1_type = attack
+skill_1_value = 2.5
+skill_1_desc = 거대한 주먹으로 내리친다!
+skill_2_name = 자가 수복
+skill_2_type = heal
+skill_2_value = 25
+skill_2_desc = 손상된 부위를 스스로 수리한다.
 
 [Clockwork_Sentinel]
 name = 태엽 파수꾼
@@ -223,6 +289,15 @@ attack = 30
 defense = 15
 hp = 120
 loot = MonsterLoot:3:0.50, Equipment:1:0.22, OreRare:2:0.20, Herb:2:0.20
+skillChance = 0.35
+skill_1_name = 공허 일격
+skill_1_type = attack
+skill_1_value = 2.3
+skill_1_desc = 공허의 기운을 실어 베어낸다!
+skill_2_name = 차원 이동
+skill_2_type = buff
+skill_2_value = 1.5
+skill_2_desc = 순간이동으로 공격력 상승!
 
 [Abyssal_Lord]
 name = 심연의 군주
@@ -230,3 +305,16 @@ attack = 35
 defense = 20
 hp = 180
 loot = Equipment:1:0.30, MonsterLoot:4:0.55, OreRare:2:0.25, Herb:3:0.20, Food:3:0.15
+skillChance = 0.4
+skill_1_name = 심연의 포옹
+skill_1_type = attack
+skill_1_value = 3.0
+skill_1_desc = 어둠이 모든 것을 삼킨다!
+skill_2_name = 종말의 선언
+skill_2_type = attack
+skill_2_value = 2.5
+skill_2_desc = 절대적 공포가 밀려온다!
+skill_3_name = 어둠 재생
+skill_3_type = heal
+skill_3_value = 30
+skill_3_desc = 심연의 힘으로 상처를 회복한다.

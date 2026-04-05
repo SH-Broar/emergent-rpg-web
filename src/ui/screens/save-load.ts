@@ -5,10 +5,11 @@ import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
 import { Actor } from '../../models/actor';
 import { PlayerKnowledge } from '../../models/knowledge';
-import { ItemType } from '../../types/enums';
+import { ItemType, raceToKey } from '../../types/enums';
+import { getBasicSkillsForRace } from '../../models/skill';
 
 const SAVE_PREFIX = 'emergent_save_';
-const SAVE_VERSION = 5;
+const SAVE_VERSION = 6;
 
 interface SaveMeta {
   playerName: string;
@@ -47,6 +48,9 @@ interface ActorSaveData {
   relationships: [string, number, number, number][];
   dungeonProgress: [string, number][];
   actionCooldown: number;
+  learnedSkills?: [string, number][];
+  skillOrder?: string[];
+  skillUsage?: [string, number][];
 }
 
 interface KnowledgeSaveData {
@@ -160,6 +164,9 @@ function serializeActor(actor: Actor): ActorSaveData {
     relationships,
     dungeonProgress,
     actionCooldown: actor.actionCooldown,
+    learnedSkills: [...actor.learnedSkills.entries()],
+    skillOrder: [...actor.skillOrder],
+    skillUsage: [...actor.skillUsage.entries()],
   };
 }
 
@@ -217,6 +224,23 @@ function deserializeActor(data: ActorSaveData, target: Actor): void {
   target.dungeonProgress.clear();
   for (const [id, progress] of data.dungeonProgress) {
     target.dungeonProgress.set(id, progress);
+  }
+
+  // Restore skill data (v6+)
+  if (data.learnedSkills) {
+    target.learnedSkills.clear();
+    for (const [id, level] of data.learnedSkills) {
+      target.learnedSkills.set(id, level);
+    }
+  }
+  if (data.skillOrder) {
+    target.skillOrder = [...data.skillOrder];
+  }
+  if (data.skillUsage) {
+    target.skillUsage.clear();
+    for (const [id, uses] of data.skillUsage) {
+      target.skillUsage.set(id, uses);
+    }
   }
 }
 
@@ -369,6 +393,18 @@ export function loadFromSlot(slot: number, session: GameSession): boolean {
     session.world.seasonSchedule.weekStartDay = data.seasonWeekStartDay;
     session.world.worldColor = [...data.worldColor];
     session.world.weather = data.weather;
+
+    // v5 → v6 마이그레이션: 스킬 데이터 없는 액터에 기본 스킬 부여
+    for (const actor of session.actors) {
+      if (actor.learnedSkills.size === 0) {
+        const raceKey = raceToKey(actor.base.race);
+        const basics = getBasicSkillsForRace(raceKey);
+        for (const skill of basics) {
+          actor.learnedSkills.set(skill.id, 1);
+          actor.skillOrder.push(skill.id);
+        }
+      }
+    }
 
     return true;
   } catch {

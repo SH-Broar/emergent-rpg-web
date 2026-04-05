@@ -26,6 +26,8 @@ import { createTitlesScreen } from './ui/screens/titles';
 import { createPartyScreen } from './ui/screens/party';
 import { createSaveLoadScreen, saveToSlot, loadFromSlot } from './ui/screens/save-load';
 import { createWorldMapScreen } from './ui/screens/world-map';
+import { createSkillManageScreen } from './ui/screens/skill-manage';
+import { createDataPackScreen } from './ui/screens/datapack-select';
 import { fastForwardWorld } from './systems/world-simulation';
 import { seasonName } from './types/enums';
 import { CoreMatrix, PlayerKnowledge } from './models/knowledge';
@@ -209,6 +211,9 @@ async function boot() {
           break;
         case 'info_encyclopedia':
           sm.push(createEncyclopediaScreen(session, () => sm.pop()));
+          break;
+        case 'info_skills':
+          sm.push(createSkillManageScreen(session, () => sm.pop()));
           break;
         case 'save':
           sm.push(createSaveLoadScreen(session, true, () => sm.pop()));
@@ -561,6 +566,12 @@ async function boot() {
         case 'tutorial': showTutorial(); break;
         case 'corematrix':
           showCoreMatrix();
+          break;
+        case 'datapack':
+          sm.push(createDataPackScreen((_config) => {
+            sm.pop();
+            // 설정 저장 후 메뉴로 복귀 (새 게임 시 반영됨)
+          }));
           break;
       }
     });

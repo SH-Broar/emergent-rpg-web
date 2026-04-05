@@ -40,11 +40,39 @@ export async function loadDataFile(
   return loadFileFromText(baseText, addonTexts);
 }
 
-/** 알려진 확장 파일 태그 매핑 */
-const ADDON_TAGS: Record<string, string[]> = {
-  actors: ['first', 'extra', 'newrace'],
-  locations: ['rdc'],
-};
+/** 데이터팩 설정 */
+export interface DataPackConfig {
+  first: boolean;
+  extra: boolean;
+  newrace: boolean;
+}
+
+const DATA_PACK_KEY = 'rdc-datapacks';
+
+export function getDataPackConfig(): DataPackConfig {
+  try {
+    const raw = localStorage.getItem(DATA_PACK_KEY);
+    if (!raw) return { first: true, extra: true, newrace: true };
+    return JSON.parse(raw) as DataPackConfig;
+  } catch { return { first: true, extra: true, newrace: true }; }
+}
+
+export function saveDataPackConfig(config: DataPackConfig): void {
+  localStorage.setItem(DATA_PACK_KEY, JSON.stringify(config));
+}
+
+/** 활성 애드온 태그 (데이터팩 설정 반영) */
+function getActiveAddonTags(): Record<string, string[]> {
+  const config = getDataPackConfig();
+  const actorTags: string[] = [];
+  if (config.first) actorTags.push('first');
+  if (config.extra) actorTags.push('extra');
+  if (config.newrace) actorTags.push('newrace');
+  return {
+    actors: actorTags,
+    locations: ['rdc'],
+  };
+}
 
 /**
  * 전체 데이터 로딩 — GameData::InitAll 대응.
@@ -69,18 +97,21 @@ export interface GameDataFiles {
   armor: DataSection[];
   lore: DataSection[];
   diagnostic: DataSection[];
+  skills: DataSection[];
 }
 
 export async function loadAllData(): Promise<GameDataFiles> {
+  const addons = getActiveAddonTags();
   const [
     items, locations, actors, events, dialogues,
     dungeons, monsters, dungeonEvents, combatBehavior,
     activities, productions, hyperion, titles,
     giftPreferences, weapons, armor, lore, diagnostic,
+    skills,
   ] = await Promise.all([
     loadDataFile('items'),
-    loadDataFile('locations', ADDON_TAGS.locations ?? []),
-    loadDataFile('actors', ADDON_TAGS.actors ?? []),
+    loadDataFile('locations', addons.locations ?? []),
+    loadDataFile('actors', addons.actors ?? []),
     loadDataFile('events'),
     loadDataFile('dialogues'),
     loadDataFile('dungeons'),
@@ -96,6 +127,7 @@ export async function loadAllData(): Promise<GameDataFiles> {
     loadDataFile('armor'),
     loadDataFile('lore'),
     loadDataFile('diagnostic'),
+    loadDataFile('skills'),
   ]);
 
   return {
@@ -103,5 +135,6 @@ export async function loadAllData(): Promise<GameDataFiles> {
     dungeons, monsters, dungeonEvents, combatBehavior,
     activities, productions, hyperion, titles,
     giftPreferences, weapons, armor, lore, diagnostic,
+    skills,
   };
 }
