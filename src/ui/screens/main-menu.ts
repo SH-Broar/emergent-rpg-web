@@ -3,6 +3,8 @@
 
 import type { Screen } from '../screen-manager';
 
+declare const __APP_VERSION__: string;
+
 export type MenuChoice = 'new' | 'connect' | 'transition' | 'lore' | 'tutorial' | 'corematrix';
 
 export function createMainMenuScreen(
@@ -25,6 +27,7 @@ export function createMainMenuScreen(
             <button class="btn" data-action="corematrix">6. 코어 매트릭스 진단</button>
           </div>
           <p class="hint">키보드: 1~6 선택</p>
+          <div style="position:fixed;right:8px;bottom:8px;font-size:10px;color:#555577">${__APP_VERSION__}</div>
         </div>`;
       el.querySelectorAll<HTMLButtonElement>('[data-action]').forEach(btn => {
         btn.addEventListener('click', () => onSelect(btn.dataset.action as MenuChoice));
