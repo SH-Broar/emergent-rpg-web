@@ -15,12 +15,19 @@ export type GameAction =
   | 'gift' | 'home' | 'memory_spring'
   | 'info_status' | 'info_color' | 'info_relations' | 'info_world'
   | 'info_backlog' | 'info_hyperion' | 'info_party' | 'info_titles' | 'info_map' | 'info_encyclopedia'
+  | 'info_inventory'
   | 'save';
 
 const ACTION_TIME: Partial<Record<GameAction, number>> = {
   idle: 30, move: 0, talk: 20, trade: 15, eat: 10,
   rest: 60, dungeon: 60, gather: 30, quest: 10,
   activity: 30, gift: 20, home: 60,
+};
+
+const AP_COST: Partial<Record<GameAction, number>> = {
+  idle: 0, move: 1, talk: 0, trade: 0, eat: 0,
+  rest: 1, dungeon: 2, gather: 1, quest: 0,
+  activity: 1, gift: 0, home: 1, memory_spring: 0,
 };
 
 export interface TurnResult {
@@ -35,6 +42,16 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
   if (!p) return result;
 
   const minutes = ACTION_TIME[action] ?? 0;
+
+  // AP 검사 및 차감
+  const apCost = AP_COST[action] ?? 0;
+  if (apCost > 0 && !p.hasAp(apCost)) {
+    result.messages.push('기력(TP)이 부족합니다. 자택에서 잠을 자면 회복됩니다.');
+    return result;
+  }
+  if (apCost > 0) {
+    p.adjustAp(-apCost);
+  }
 
   // 컬러 게이지 스냅샷
   session.gaugeState.snapshot(p.color.values);
@@ -57,9 +74,7 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
       break;
     }
 
-    case 'eat':
-      result.screenChange = 'eat';
-      break;
+    case 'eat': result.messages.push('식사를 준비한다...'); result.screenChange = 'eat'; break;
 
     case 'rest':
       p.adjustVigor(40);
@@ -94,17 +109,21 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
       break;
     }
 
-    case 'move':
-    case 'talk':
-    case 'trade':
-    case 'dungeon':
-    case 'quest':
-    case 'activity':
-    case 'gift':
+    case 'move': result.messages.push('발걸음을 옮긴다.'); result.screenChange = 'move'; break;
+    case 'talk': result.messages.push('대화를 시작한다.'); result.screenChange = 'talk'; break;
+    case 'trade': result.messages.push('거래를 시작한다.'); result.screenChange = 'trade'; break;
+    case 'dungeon': result.messages.push('던전으로 향한다.'); result.screenChange = 'dungeon'; break;
+    case 'quest': result.messages.push('퀘스트 게시판을 확인한다.'); result.screenChange = 'quest'; break;
+    case 'activity': result.messages.push('활동을 시작한다.'); result.screenChange = 'activity'; break;
+    case 'gift': result.messages.push('선물을 고른다.'); result.screenChange = 'gift'; break;
     case 'home':
-    case 'memory_spring':
-      result.screenChange = action;
+      if (p.currentLocation === p.homeLocation) {
+        p.base.ap = p.getEffectiveMaxAp(); // Full AP recovery on sleeping at home
+      }
+      result.messages.push('자택으로 돌아간다.');
+      result.screenChange = 'home';
       break;
+    case 'memory_spring': result.messages.push('기억의 샘에 다가간다.'); result.screenChange = 'memory_spring'; break;
 
     // 정보 화면 (시간 소모 없음)
     case 'info_status':
@@ -117,6 +136,7 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
     case 'info_titles':
     case 'info_map':
     case 'info_encyclopedia':
+    case 'info_inventory':
       result.screenChange = action;
       return result; // 시간 경과 없이 리턴
 

@@ -85,6 +85,10 @@ html, body {
 .bar-fill { height: 100%; border-radius: 7px; transition: width 0.3s; }
 .hp-bar { background: var(--accent); }
 .vigor-bar { background: var(--success); }
+.ap-bar { display: flex; gap: 3px; flex: 1; align-items: center; padding: 0 4px; }
+.ap-pip { width: 14px; height: 14px; border-radius: 3px; border: 1px solid var(--border); }
+.ap-full { background: var(--warning); border-color: var(--warning); }
+.ap-empty { background: var(--bg-card); }
 .hud-mini { font-size: 12px; color: var(--text-dim); text-align: center; }
 .hud-colors { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
 .hud-color-pip { font-size: 11px; color: var(--text-dim); display: flex; align-items: center; gap: 2px; }
@@ -105,7 +109,9 @@ html, body {
   padding: 8px 12px; min-height: 80px;
 }
 .log-msg { padding: 2px 0; color: var(--warning); }
-.log-entry { padding: 2px 0; color: var(--text-dim); font-size: 13px; }
+.log-entry { display: flex; gap: 8px; padding: 2px 0; font-size: 13px; }
+.log-time { color: var(--text-dim); font-size: 11px; white-space: nowrap; min-width: 50px; }
+.log-text { color: var(--warning); flex: 1; }
 
 /* Status bar */
 .status-bar {
@@ -121,6 +127,7 @@ html, body {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 6px;
+  min-height: 130px;
 }
 .action-btn {
   display: flex; flex-direction: column; align-items: center;
@@ -297,6 +304,16 @@ html, body {
   border-radius: 2px;
   aspect-ratio: 1;
 }
+
+/* Inventory */
+.inv-grid { display: flex; flex-direction: column; gap: 4px; }
+.inv-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 8px; background: var(--bg-panel); border-radius: 6px; font-size: 13px; }
+.inv-name { font-weight: 500; }
+.inv-count { color: var(--text-dim); }
+
+/* Nearby NPCs */
+.hud-nearby { display: flex; flex-wrap: wrap; gap: 4px; padding: 4px 0; font-size: 12px; min-height: 20px; }
+.nearby-npc { background: var(--bg-card); padding: 2px 8px; border-radius: 10px; color: var(--text-dim); white-space: nowrap; }
 
 /* Desktop: wider layout */
 @media (min-width: 769px) {

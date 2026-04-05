@@ -5,7 +5,8 @@ import type { GameSession } from '../../systems/game-session';
 import type { GameAction } from '../../systems/game-loop';
 import { processTurn } from '../../systems/game-loop';
 import { locationName } from '../../types/registry';
-import { weatherName, seasonName, raceName, spiritRoleName, elementName, Element, ELEMENT_COUNT } from '../../types/enums';
+import { weatherName, seasonName, raceName, spiritRoleName, elementName, Element, ELEMENT_COUNT, ItemType } from '../../types/enums';
+import { getItemDef, getWeaponDef, getArmorDef, categoryName } from '../../types/item-defs';
 
 interface ActionDef {
   key: string;
@@ -62,6 +63,7 @@ const INFO_ACTIONS: ActionDef[] = [
   { key: 't', label: '칭호', action: 'info_titles', icon: '🏅' },
   { key: 'M', label: '지도', action: 'info_map', icon: '🧭' },
   { key: 'e', label: '도감', action: 'info_encyclopedia', icon: '📚' },
+  { key: 'v', label: '소지품', action: 'info_inventory' as GameAction, icon: '🎒' },
   { key: 'S', label: '저장', action: 'save', icon: '💾' },
 ];
 
@@ -70,7 +72,7 @@ export function createGameScreen(
   onScreenChange: (target: string) => void,
   onAfterTurn?: () => void,
 ): Screen {
-  let accumulatedLog: string[] = [];
+  let accumulatedLog: { time: string; text: string }[] = [];
   let lastLocation = session.player?.currentLocation ?? '';
   let statusMessage = '';
 
@@ -84,6 +86,9 @@ export function createGameScreen(
       accumulatedLog = [];
       lastLocation = p.currentLocation;
     }
+
+    const INFO_ROW1 = INFO_ACTIONS.slice(0, 6);
+    const INFO_ROW2 = INFO_ACTIONS.slice(6);
 
     el.innerHTML = `
       <div class="screen game-screen">
@@ -104,6 +109,15 @@ export function createGameScreen(
             <div class="bar"><div class="bar-fill vigor-bar" style="width:${vigorPct}%"></div></div>
             <span class="stat-val">${Math.round(p.base.vigor)}/${Math.round(p.getEffectiveMaxVigor())}</span>
           </div>
+          <div class="stat-bar">
+            <span class="stat-label">TP</span>
+            <div class="ap-bar">
+              ${Array.from({length: p.getEffectiveMaxAp()}, (_, i) =>
+                `<div class="ap-pip ${i < p.base.ap ? 'ap-full' : 'ap-empty'}"></div>`
+              ).join('')}
+            </div>
+            <span class="stat-val">${p.base.ap}/${p.getEffectiveMaxAp()}</span>
+          </div>
           <div class="hud-mini">Lv.${p.base.level} · ${raceName(p.base.race)} · ${spiritRoleName(p.spirit.role)} · 💰${p.spirit.gold}G</div>
           <div class="hud-colors">
             ${[0,1,2,3,4,5,6,7].map(i => {
@@ -117,24 +131,48 @@ export function createGameScreen(
           </div>
         </div>
 
-        <div class="log-area" style="max-height:25vh;overflow-y:auto">
-          ${accumulatedLog.map(m => `<div class="log-msg">${m}</div>`).join('')}
+        <div class="hud-nearby">
+          ${(() => {
+            const npcsHere = session.actors.filter(a =>
+              a !== p && a.currentLocation === p.currentLocation && a.isAlive() && !a.base.sleeping
+            );
+            return npcsHere.length > 0
+              ? npcsHere.map(a => `<span class="nearby-npc" title="${raceName(a.base.race)} ${spiritRoleName(a.spirit.role)}">${a.name}</span>`).join('')
+              : '<span style="color:var(--text-dim);font-size:11px">주변에 아무도 없다</span>';
+          })()}
+        </div>
+
+        <div class="log-area">
+          ${accumulatedLog.map(m => `
+            <div class="log-entry">
+              <span class="log-time">${m.time}</span>
+              <span class="log-text">${m.text}</span>
+            </div>
+          `).join('')}
         </div>
 
         <div class="status-bar">${statusMessage ? `${session.gameTime.toString()} ${statusMessage}` : session.gameTime.toString()}</div>
 
         <div class="action-grid">
-          ${MAIN_ACTIONS.filter(a => !a.visible || a.visible(session)).map(a => `
-            <button class="btn action-btn" data-action="${a.action}" title="[${a.key}]">
-              <span class="action-icon">${a.icon}</span>
-              <span class="action-label">${a.label}</span>
-              <span class="action-key">${a.key}</span>
-            </button>
-          `).join('')}
+          ${MAIN_ACTIONS.map(a => {
+            const show = !a.visible || a.visible(session);
+            return `
+              <button class="btn action-btn" data-action="${a.action}" title="[${a.key}]"
+                style="${show ? '' : 'visibility:hidden;pointer-events:none'}">
+                <span class="action-icon">${a.icon}</span>
+                <span class="action-label">${a.label}</span>
+                <span class="action-key">${a.key}</span>
+              </button>`;
+          }).join('')}
         </div>
 
         <div class="info-bar">
-          ${INFO_ACTIONS.map(a => `
+          ${INFO_ROW1.map(a => `
+            <button class="btn info-btn" data-action="${a.action}" title="[${a.key}]">${a.label}</button>
+          `).join('')}
+        </div>
+        <div class="info-bar">
+          ${INFO_ROW2.map(a => `
             <button class="btn info-btn" data-action="${a.action}" title="[${a.key}]">${a.label}</button>
           `).join('')}
         </div>
@@ -152,12 +190,9 @@ export function createGameScreen(
     if (result.messages.length > 0) {
       statusMessage = result.messages[result.messages.length - 1];
     }
-    // 시스템/이벤트 메시지는 로그에 누적
-    for (let i = result.messages.length - 1; i >= 0; i--) {
-      const m = result.messages[i];
-      if (m.includes('✦') || m.includes('🌿') || m.includes('히페리온') || m.includes('레벨')) {
-        accumulatedLog.unshift(m);
-      }
+    // 모든 메시지를 로그에 누적
+    for (const m of result.messages) {
+      accumulatedLog.push({ time: session.gameTime.toString(), text: m });
     }
     if (result.screenChange) {
       onScreenChange(result.screenChange);
@@ -279,6 +314,52 @@ export function createInfoScreen(
             html += `<div class="backlog-entry"><span class="bl-time">${e.time.toString()}</span> ${e.text}</div>`;
           }
           html += '</div>';
+          break;
+        }
+
+        case 'info_inventory': {
+          html += `<h2>소지품</h2>`;
+
+          // Equipped items
+          const weapon = p.equippedWeapon ? getWeaponDef(p.equippedWeapon) : null;
+          const armor = p.equippedArmor ? getArmorDef(p.equippedArmor) : null;
+          const accessory = p.equippedAccessory ? getArmorDef(p.equippedAccessory) : null;
+          html += `<div class="inv-section-title" style="color:var(--text-dim);font-size:12px;margin-bottom:4px">장착</div>`;
+          html += `<div class="inv-grid">`;
+          html += `<div class="inv-item"><span class="inv-name">⚔ 무기</span><span class="inv-count">${weapon ? weapon.name : '없음'}</span></div>`;
+          html += `<div class="inv-item"><span class="inv-name">🛡 방어구</span><span class="inv-count">${armor ? armor.name : '없음'}</span></div>`;
+          html += `<div class="inv-item"><span class="inv-name">💍 악세서리</span><span class="inv-count">${accessory ? accessory.name : '없음'}</span></div>`;
+          html += `</div>`;
+
+          // Gold
+          html += `<div class="inv-item" style="margin-top:8px"><span class="inv-name">💰 골드</span><span class="inv-count">${p.spirit.gold}G</span></div>`;
+
+          // Individual items (p.items Map<string, number>)
+          if (p.items.size > 0) {
+            html += `<div class="inv-section-title" style="color:var(--text-dim);font-size:12px;margin:8px 0 4px">아이템</div>`;
+            html += `<div class="inv-grid">`;
+            for (const [id, count] of p.items) {
+              const def = getItemDef(id);
+              const name = def ? def.name : id;
+              html += `<div class="inv-item"><span class="inv-name">${name}</span><span class="inv-count">x${count}</span></div>`;
+            }
+            html += `</div>`;
+          }
+
+          // Category items (p.spirit.inventory Map<ItemType, number>)
+          const invEntries = [...p.spirit.inventory.entries()].filter(([, n]) => n > 0);
+          if (invEntries.length > 0) {
+            html += `<div class="inv-section-title" style="color:var(--text-dim);font-size:12px;margin:8px 0 4px">재고</div>`;
+            html += `<div class="inv-grid">`;
+            for (const [type, count] of invEntries) {
+              html += `<div class="inv-item"><span class="inv-name">${categoryName(type as ItemType)}</span><span class="inv-count">x${count}</span></div>`;
+            }
+            html += `</div>`;
+          }
+
+          if (p.items.size === 0 && invEntries.length === 0) {
+            html += `<p style="color:var(--text-dim);font-size:13px">소지품이 없습니다.</p>`;
+          }
           break;
         }
 

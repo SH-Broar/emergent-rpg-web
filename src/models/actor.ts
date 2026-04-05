@@ -56,6 +56,7 @@ export interface BaseProperty {
   mp: number; maxMp: number;
   attack: number; defense: number;
   vigor: number; maxVigor: number;
+  ap: number; maxAp: number;
   strength: number;
   age: number;
   level: number; exp: number;
@@ -67,6 +68,7 @@ export function createBaseProperty(race = Race.Human): BaseProperty {
   return {
     race, hp: 100, maxHp: 100, mp: 30, maxMp: 30,
     attack: 10, defense: 5, vigor: 100, maxVigor: 100,
+    ap: 3, maxAp: 3,
     strength: 0.5, age: 25, level: 1, exp: 0, sleeping: false, mood: 0,
   };
 }
@@ -197,6 +199,10 @@ export class Actor {
     if (this.base.exp >= needed) {
       this.base.exp -= needed;
       this.base.level++;
+      const newLevel = this.base.level;
+      if (newLevel % 3 === 0 && this.base.maxAp < 10) {
+        this.base.maxAp++;
+      }
       return true;
     }
     return false;
@@ -226,6 +232,18 @@ export class Actor {
   }
   hasItem(id: string): boolean {
     return (this.items.get(id) ?? 0) > 0;
+  }
+
+  getEffectiveMaxAp(): number {
+    return this.base.maxAp + this.hyperionLevel;
+  }
+
+  adjustAp(delta: number): void {
+    this.base.ap = Math.max(0, Math.min(this.getEffectiveMaxAp(), this.base.ap + delta));
+  }
+
+  hasAp(cost: number = 1): boolean {
+    return this.base.ap >= cost;
   }
 
   getEffectiveMaxHp(): number { return this.base.maxHp + this.hyperionLevel * 10; }
