@@ -206,3 +206,124 @@ export const RARITY_COLORS: Record<ItemRarity, string> = {
   legendary: '#ffc857',
   unique: '#e94560',
 };
+
+// ============================================================
+// 무기 정의
+// ============================================================
+
+export interface WeaponDef {
+  id: string;
+  name: string;
+  type: string;       // Sword, Spear, Bow, Staff, Gun, Heavy, Fist, Dagger, Instrument, Special
+  grade: string;      // Common, Uncommon, Rare, Epic, Legendary
+  element: number;    // Element enum value, -1 for None
+  attack: number;
+  speed: number;
+  magicBonus: number;
+  price: number;
+  description: string;
+}
+
+const weaponRegistry = new Map<string, WeaponDef>();
+
+/** weapons.txt DataSection[] 에서 무기 로드 */
+export function loadWeaponDefs(sections: DataSection[]): void {
+  weaponRegistry.clear();
+  for (const s of sections) {
+    if (s.name.startsWith('#') || s.name === 'Meta') continue;
+    const elementStr = s.get('element', 'None');
+    const def: WeaponDef = {
+      id: s.name,
+      name: s.get('name', s.name),
+      type: s.get('type', 'Sword'),
+      grade: s.get('grade', 'Common'),
+      element: parseElementString(elementStr),
+      attack: s.getFloat('attack', 0),
+      speed: s.getFloat('speed', 1.0),
+      magicBonus: s.getFloat('magicBonus', 0),
+      price: s.getInt('price', 0),
+      description: s.get('description', ''),
+    };
+    weaponRegistry.set(def.id, def);
+  }
+}
+
+export function getWeaponDef(id: string): WeaponDef | undefined {
+  return weaponRegistry.get(id);
+}
+
+export function getAllWeaponDefs(): ReadonlyMap<string, WeaponDef> {
+  return weaponRegistry;
+}
+
+export function getWeaponCount(): number {
+  return weaponRegistry.size;
+}
+
+// ============================================================
+// 방어구 정의
+// ============================================================
+
+export interface ArmorDef {
+  id: string;
+  name: string;
+  type: string;       // Cloth, Light, Heavy, Robe, Shield, Accessory
+  grade: string;
+  element: number;
+  defense: number;
+  magicDefense: number;
+  evasion: number;
+  price: number;
+  description: string;
+}
+
+const armorRegistry = new Map<string, ArmorDef>();
+
+/** armor.txt DataSection[] 에서 방어구 로드 */
+export function loadArmorDefs(sections: DataSection[]): void {
+  armorRegistry.clear();
+  for (const s of sections) {
+    if (s.name.startsWith('#') || s.name === 'Meta') continue;
+    const elementStr = s.get('element', 'None');
+    const def: ArmorDef = {
+      id: s.name,
+      name: s.get('name', s.name),
+      type: s.get('type', 'Cloth'),
+      grade: s.get('grade', 'Common'),
+      element: parseElementString(elementStr),
+      defense: s.getFloat('defense', 0),
+      magicDefense: s.getFloat('magicDefense', 0),
+      evasion: s.getFloat('evasion', 0),
+      price: s.getInt('price', 0),
+      description: s.get('description', ''),
+    };
+    armorRegistry.set(def.id, def);
+  }
+}
+
+export function getArmorDef(id: string): ArmorDef | undefined {
+  return armorRegistry.get(id);
+}
+
+export function getAllArmorDefs(): ReadonlyMap<string, ArmorDef> {
+  return armorRegistry;
+}
+
+export function getArmorCount(): number {
+  return armorRegistry.size;
+}
+
+// ============================================================
+// 요소 파싱 헬퍼 (enums.ts의 Element와 동기화)
+// ============================================================
+
+const ELEMENT_STRING_MAP: Record<string, number> = {
+  Fire: 0, Water: 1, Electric: 2, Iron: 3,
+  Earth: 4, Wind: 5, Light: 6, Dark: 7,
+};
+
+function parseElementString(s: string): number {
+  const trimmed = s.trim();
+  if (trimmed === 'None') return -1;
+  return ELEMENT_STRING_MAP[trimmed] ?? -1;
+}

@@ -204,7 +204,16 @@ export function createInfoScreen(
       html += `<button class="btn back-btn" data-back>← 뒤로 [Esc]</button>`;
 
       switch (type) {
-        case 'info_status':
+        case 'info_status': {
+          const gridCells: string[] = [];
+          for (let r = 0; r < 8; r++) {
+            for (let c = 0; c < 8; c++) {
+              const on = p.coreMatrix.getCell(r, c);
+              const bg = on ? `var(--el-${r})` : 'var(--bg-card)';
+              const border = on ? 'transparent' : 'var(--border)';
+              gridCells.push(`<div class="cm-cell" style="background:${bg};border:1px solid ${border}"></div>`);
+            }
+          }
           html += `<h2>${p.name} 상태</h2>
             <div class="info-grid">
               <div>종족: ${raceName(p.base.race)}</div>
@@ -217,8 +226,10 @@ export function createInfoScreen(
               <div>방어: ${p.getEffectiveDefense().toFixed(1)}</div>
               <div>골드: ${p.spirit.gold}G</div>
               <div>히페리온: Lv.${p.hyperionLevel}</div>
-            </div>`;
+            </div>
+            <div class="cm-grid">${gridCells.join('')}</div>`;
           break;
+        }
 
         case 'info_color':
           html += `<h2>컬러 속성</h2><div class="color-list">`;

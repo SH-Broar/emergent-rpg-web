@@ -68,6 +68,7 @@ export interface GameDataFiles {
   weapons: DataSection[];
   armor: DataSection[];
   lore: DataSection[];
+  diagnostic: DataSection[];
 }
 
 export async function loadAllData(): Promise<GameDataFiles> {
@@ -75,7 +76,7 @@ export async function loadAllData(): Promise<GameDataFiles> {
     items, locations, actors, events, dialogues,
     dungeons, monsters, dungeonEvents, combatBehavior,
     activities, productions, hyperion, titles,
-    giftPreferences, weapons, armor, lore,
+    giftPreferences, weapons, armor, lore, diagnostic,
   ] = await Promise.all([
     loadDataFile('items'),
     loadDataFile('locations', ADDON_TAGS.locations ?? []),
@@ -94,12 +95,13 @@ export async function loadAllData(): Promise<GameDataFiles> {
     loadDataFile('weapons'),
     loadDataFile('armor'),
     loadDataFile('lore'),
+    loadDataFile('diagnostic'),
   ]);
 
   return {
     items, locations, actors, events, dialogues,
     dungeons, monsters, dungeonEvents, combatBehavior,
     activities, productions, hyperion, titles,
-    giftPreferences, weapons, armor, lore,
+    giftPreferences, weapons, armor, lore, diagnostic,
   };
 }

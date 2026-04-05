@@ -2,6 +2,7 @@
 // 원본: PlayerKnowledge.h, CoreMatrix.h
 
 import { ELEMENT_COUNT } from '../types/enums';
+import { generateDefaultCellConditions, generateDefaultRowConditions, generateDefaultColConditions } from './core-matrix-conditions';
 
 // ============================================================
 // CoreMatrix
@@ -27,6 +28,12 @@ export class CoreMatrix {
   private cellConditions: CellCondition[] = [];
   private rowConditions: LineCondition[] = [];
   private colConditions: LineCondition[] = [];
+
+  constructor() {
+    this.setCellConditions(generateDefaultCellConditions());
+    this.setRowConditions(generateDefaultRowConditions());
+    this.setColConditions(generateDefaultColConditions());
+  }
 
   recalculate(colorValues: number[]): void {
     let bits = 0n;

@@ -284,6 +284,20 @@ html, body {
 /* Backlog screen */
 .backlog-screen { gap: 10px; }
 
+/* Core Matrix 8x8 grid */
+.cm-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 2px;
+  width: 200px;
+  height: 200px;
+  margin: 12px auto;
+}
+.cm-cell {
+  border-radius: 2px;
+  aspect-ratio: 1;
+}
+
 /* Desktop: wider layout */
 @media (min-width: 769px) {
   #app { max-width: 700px; }

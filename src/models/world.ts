@@ -7,6 +7,7 @@ import { GameTime } from '../types/game-time';
 import { GameRegistry } from '../types/registry';
 import { randomInt, randomFloat } from '../types/rng';
 import { SeasonSchedule, getSeasonEffect } from './season';
+import { rollDailyWeather } from '../systems/weather';
 
 export interface TravelLinkSpec {
   target: LocationID;
@@ -237,13 +238,7 @@ export class World {
   }
 
   updateWeatherAndTemp(): void {
-    const roll = randomInt(0, 100);
-    if (roll < 40) this.weather = Weather.Clear;
-    else if (roll < 65) this.weather = Weather.Cloudy;
-    else if (roll < 80) this.weather = Weather.Rain;
-    else if (roll < 90) this.weather = Weather.Fog;
-    else if (roll < 96) this.weather = Weather.Storm;
-    else this.weather = Weather.Snow;
+    this.weather = rollDailyWeather(this.getCurrentSeason(), this.weather);
     this.temperature = randomFloat(5, 30);
   }
 
@@ -258,8 +253,9 @@ export class World {
       this.updateWeatherAndTemp();
     }
 
-    // Daily resource regeneration at 6:00 AM
+    // Daily weather roll + resource regeneration at 6:00 AM
     if (time.hour === 6 && time.minute === 0) {
+      this.updateWeatherAndTemp();
       const effect = this.getCurrentSeasonEffect();
       const wcEarth = this.worldColor[Element.Earth as number];
       const wcWater = this.worldColor[Element.Water as number];

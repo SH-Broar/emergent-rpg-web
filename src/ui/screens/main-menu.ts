@@ -5,7 +5,7 @@ import type { Screen } from '../screen-manager';
 
 declare const __APP_VERSION__: string;
 
-export type MenuChoice = 'new' | 'connect' | 'transition' | 'lore' | 'tutorial' | 'corematrix';
+export type MenuChoice = 'new' | 'connect' | 'lore' | 'tutorial' | 'corematrix';
 
 export function createMainMenuScreen(
   hasAutosave: boolean,
@@ -17,16 +17,14 @@ export function createMainMenuScreen(
       el.innerHTML = `
         <div class="screen menu-screen">
           <h1 class="game-title">rove-due-colorz</h1>
-          <p class="subtitle">엘리메스 마을의 이야기</p>
           <div class="menu-buttons">
-            <button class="btn btn-primary" data-action="new">1. 새 게임</button>
+            <button class="btn btn-primary" data-action="new">1. 새 게임 (새 캐릭터)</button>
             ${hasAutosave ? '<button class="btn" data-action="connect">2. 접속 (이어하기)</button>' : ''}
-            <button class="btn" data-action="transition">3. 천도제 (세계 전환)</button>
-            <button class="btn" data-action="lore">4. 로어</button>
-            <button class="btn" data-action="tutorial">5. 튜토리얼</button>
-            <button class="btn" data-action="corematrix">6. 코어 매트릭스 진단</button>
+            <button class="btn" data-action="lore">${hasAutosave ? '3' : '2'}. 로어</button>
+            <button class="btn" data-action="tutorial">${hasAutosave ? '4' : '3'}. 튜토리얼</button>
+            <button class="btn" data-action="corematrix">${hasAutosave ? '5' : '4'}. 코어 매트릭스 진단</button>
           </div>
-          <p class="hint">키보드: 1~6 선택</p>
+          <p class="hint">키보드: 1~${hasAutosave ? '5' : '4'} 선택</p>
           <div style="position:fixed;right:8px;bottom:8px;font-size:10px;color:#555577">${__APP_VERSION__}</div>
         </div>`;
       el.querySelectorAll<HTMLButtonElement>('[data-action]').forEach(btn => {
@@ -36,10 +34,15 @@ export function createMainMenuScreen(
     onKey(key) {
       if (key === '1') onSelect('new');
       if (key === '2' && hasAutosave) onSelect('connect');
-      if (key === '3') onSelect('transition');
-      if (key === '4') onSelect('lore');
-      if (key === '5') onSelect('tutorial');
-      if (key === '6') onSelect('corematrix');
+      if (hasAutosave) {
+        if (key === '3') onSelect('lore');
+        if (key === '4') onSelect('tutorial');
+        if (key === '5') onSelect('corematrix');
+      } else {
+        if (key === '2') onSelect('lore');
+        if (key === '3') onSelect('tutorial');
+        if (key === '4') onSelect('corematrix');
+      }
     },
   };
 }

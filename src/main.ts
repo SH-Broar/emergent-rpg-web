@@ -28,6 +28,7 @@ import { createSaveLoadScreen, saveToSlot, loadFromSlot } from './ui/screens/sav
 import { createWorldMapScreen } from './ui/screens/world-map';
 import { fastForwardWorld } from './systems/world-simulation';
 import { seasonName } from './types/enums';
+import { CoreMatrix, PlayerKnowledge } from './models/knowledge';
 
 const app = document.getElementById('app')!;
 
@@ -50,8 +51,10 @@ async function boot() {
   const sm = new ScreenManager(app);
   const input = new InputHandler(sm);
 
-  // 오토세이브 존재 여부 확인
-  const hasAutosave = localStorage.getItem('emergent_save_0') !== null;
+  // 오토세이브 존재 여부 확인 (동적으로 매번 재평가)
+  function checkHasAutosave(): boolean {
+    return localStorage.getItem('emergent_save_0') !== null;
+  }
 
   // --- 주민 수 지정 ---
   function showPopulationSelect(afterDone: () => void) {
@@ -227,8 +230,13 @@ async function boot() {
     }, 10000);
   }
 
-  // --- 캐릭터 선택 ---
-  function showCharSelect() {
+  // --- 새 게임: 이전 캐릭터 NPC화 선택 후 캐릭터 생성으로 이동 ---
+  function proceedToCharCreate() {
+    // 플레이어별 상태 초기화 (세계는 유지)
+    session.backlog.clear();
+    session.knowledge = new PlayerKnowledge();
+    session.playerIdx = -1;
+
     sm.replace(createCharacterSelectScreen(
       session.actors,
       (idx) => { session.playerIdx = idx; showPopulationSelect(() => showBackgroundThenGame()); },
@@ -248,6 +256,62 @@ async function boot() {
       },
       () => showMainMenu(),
     ));
+  }
+
+  // --- 캐릭터 선택 (새 게임 진입점) ---
+  function showCharSelect() {
+    const currentPlayer = session.isValid ? session.player : null;
+
+    if (currentPlayer && currentPlayer.isCustom) {
+      // 커스텀 캐릭터 → NPC화 여부 묻기
+      sm.push({
+        id: 'npc-choice',
+        render(el) {
+          el.innerHTML = `
+            <div class="screen info-screen" style="justify-content:center;text-align:center">
+              <h2>새로운 시작</h2>
+              <p>${currentPlayer.name}을(를) 이 세계의 주민으로 남기시겠습니까?</p>
+              <p class="hint">NPC로 남기면 이 세계에서 계속 살아갑니다.</p>
+              <div class="menu-buttons" style="margin-top:16px">
+                <button class="btn btn-primary" data-choice="npc">1. 주민으로 남긴다</button>
+                <button class="btn" data-choice="remove">2. 떠나보낸다</button>
+              </div>
+              <p class="hint">1=주민으로, 2=떠나보내기, Esc=취소</p>
+            </div>`;
+          el.querySelector('[data-choice="npc"]')?.addEventListener('click', () => {
+            currentPlayer.playable = false;
+            currentPlayer.isCustom = false;
+            currentPlayer.coreMatrix.recalculate(currentPlayer.color.values);
+            sm.pop();
+            proceedToCharCreate();
+          });
+          el.querySelector('[data-choice="remove"]')?.addEventListener('click', () => {
+            const idx = session.actors.indexOf(currentPlayer);
+            if (idx >= 0) session.actors.splice(idx, 1);
+            sm.pop();
+            proceedToCharCreate();
+          });
+        },
+        onKey(key) {
+          if (key === '1') {
+            const btn = document.querySelector<HTMLButtonElement>('[data-choice="npc"]');
+            btn?.click();
+          } else if (key === '2') {
+            const btn = document.querySelector<HTMLButtonElement>('[data-choice="remove"]');
+            btn?.click();
+          } else if (key === 'Escape') {
+            sm.pop();
+          }
+        },
+      });
+    } else {
+      // 기존 NPC를 플레이어로 했거나 세션 없음 → 조용히 복귀
+      if (currentPlayer) {
+        currentPlayer.playable = false;
+        currentPlayer.coreMatrix.recalculate(currentPlayer.color.values);
+      }
+      proceedToCharCreate();
+    }
   }
 
   // --- 로어 화면 (트리 구조) ---
@@ -344,28 +408,29 @@ async function boot() {
 
   // --- 코어 매트릭스 진단 ---
   function showCoreMatrix() {
-    const questions = [
-      { text: '낯선 사람이 도움을 구한다', a: '즉시 돕는다', b: '상황을 먼저 파악한다', elements: [0, 6] as const, dir: [0.05, 0.03] },
-      { text: '중요한 약속과 하고 싶은 일이 겹쳤다', a: '약속을 지킨다', b: '하고 싶은 일을 한다', elements: [4, 5] as const, dir: [0.05, -0.03] },
-      { text: '팀에서 의견이 갈릴 때', a: '다수 의견을 따른다', b: '내 의견을 끝까지 주장한다', elements: [1, 3] as const, dir: [0.04, 0.04] },
-      { text: '실패했을 때', a: '원인을 분석한다', b: '빠르게 다음으로 넘어간다', elements: [2, 5] as const, dir: [0.04, 0.03] },
-      { text: '비밀을 알게 되었을 때', a: '신뢰할 수 있는 사람에게 말한다', b: '혼자만 알고 있는다', elements: [6, 7] as const, dir: [-0.03, 0.05] },
-      { text: '위험한 상황에서', a: '정면 돌파한다', b: '우회로를 찾는다', elements: [0, 7] as const, dir: [0.05, 0.03] },
-      { text: '누군가 부당한 대우를 받고 있다', a: '나서서 항의한다', b: '조용히 도울 방법을 찾는다', elements: [6, 1] as const, dir: [0.04, 0.04] },
-      { text: '여유 시간이 생겼을 때', a: '사람들과 어울린다', b: '혼자만의 시간을 보낸다', elements: [0, 5] as const, dir: [0.04, -0.03] },
-    ];
+    const questions = initResult.diagnosticQuestions;
     let qIdx = 0;
-    const colorResult = new Array(8).fill(0.5);
+    const colorValues = new Array(8).fill(0.5);
+    const diagScores: number[][] = Array.from({ length: 8 }, () => new Array(8).fill(0));
 
     function renderQ(el: HTMLElement) {
       if (qIdx >= questions.length) {
-        // 완료 — 결과 표시
+        // 완료 — 8x8 결과 매트릭스 표시
+        const matrix = new CoreMatrix();
+        matrix.recalculate(colorValues);
+        const gridCells: string[] = [];
+        for (let r = 0; r < 8; r++) {
+          for (let c = 0; c < 8; c++) {
+            const on = matrix.getCell(r, c);
+            const bg = on ? `var(--el-${r})` : 'var(--bg-card)';
+            const border = on ? 'transparent' : 'var(--border)';
+            gridCells.push(`<div class="cm-cell" style="background:${bg};border:1px solid ${border}"></div>`);
+          }
+        }
         el.innerHTML = `
           <div class="screen info-screen" style="justify-content:center;text-align:center">
             <h2>진단 완료</h2>
-            <div class="hud-colors" style="justify-content:center;margin:12px 0">
-              ${colorResult.map((v, i) => `<span class="hud-color-pip"><span class="hud-color-dot" style="background:var(--el-${i})"></span>${Math.round(v * 100)}</span>`).join('')}
-            </div>
+            <div class="cm-grid">${gridCells.join('')}</div>
             <p>이 결과는 탄생 시 캐릭터에 적용됩니다.</p>
             <button class="btn btn-primary" data-done>확인 [Enter]</button>
           </div>`;
@@ -378,8 +443,8 @@ async function boot() {
           <h2>코어 매트릭스 진단 (${qIdx + 1}/${questions.length})</h2>
           <p style="font-size:16px;text-align:center;margin:16px 0">${q.text}</p>
           <div class="menu-buttons" style="width:100%">
-            <button class="btn" data-choice="a">A. ${q.a}</button>
-            <button class="btn" data-choice="b">B. ${q.b}</button>
+            <button class="btn" data-choice="a">A. ${q.optionA}</button>
+            <button class="btn" data-choice="b">B. ${q.optionB}</button>
           </div>
           <button class="btn back-btn" data-cancel style="margin-top:12px">취소하고 나가기 [Esc]</button>
           <p class="hint">1=A, 2=B, Esc=취소</p>
@@ -391,9 +456,21 @@ async function boot() {
 
     function applyChoice(choice: 'a' | 'b') {
       const q = questions[qIdx];
-      const sign = choice === 'a' ? 1 : -1;
-      colorResult[q.elements[0]] = Math.max(0, Math.min(1, colorResult[q.elements[0]] + q.dir[0] * sign));
-      colorResult[q.elements[1]] = Math.max(0, Math.min(1, colorResult[q.elements[1]] + q.dir[1] * sign));
+      if (choice === 'a') {
+        for (const { element, value } of q.colorA) {
+          colorValues[element] = Math.max(0, Math.min(1, colorValues[element] + value));
+        }
+        for (const { row, col, weight } of q.influences) {
+          diagScores[row][col] += weight;
+        }
+      } else {
+        for (const { element, value } of q.colorB) {
+          colorValues[element] = Math.max(0, Math.min(1, colorValues[element] + value));
+        }
+        for (const { row, col, weight } of q.influences) {
+          diagScores[row][col] -= weight;
+        }
+      }
       qIdx++;
     }
 
@@ -411,61 +488,9 @@ async function boot() {
     });
   }
 
-  // --- 천도제 (세계 전환) ---
-  function showTransition() {
-    sm.push({
-      id: 'transition',
-      render(el) {
-        const customCount = session.actors.filter(a => a.isCustom).length;
-        el.innerHTML = `
-          <div class="screen info-screen" style="justify-content:center">
-            <h2>천도제 — 세계 전환</h2>
-            <div class="text-display" style="text-align:center">
-              <p>세계를 새로 시작합니다.</p>
-              <p>모든 NPC의 상태, 관계, 히페리온 진행도가 초기화됩니다.</p>
-              <p>수동 세이브 데이터는 유지됩니다.</p>
-              <p style="color:var(--warning)">커스텀 캐릭터 ${customCount}명은 보존됩니다.</p>
-            </div>
-            <div class="menu-buttons" style="margin-top:16px;width:100%">
-              <button class="btn btn-primary" data-confirm>전환 실행</button>
-              <button class="btn" data-cancel>취소 [Esc]</button>
-            </div>
-          </div>`;
-        el.querySelector('[data-cancel]')?.addEventListener('click', () => sm.pop());
-        el.querySelector('[data-confirm]')?.addEventListener('click', () => {
-          // 커스텀 캐릭터 보존, 나머지 재초기화
-          const customActors = session.actors.filter(a => a.isCustom);
-          const freshResult = initAll(data);
-          session.actors = freshResult.actors;
-          session.world = freshResult.world;
-          session.events = freshResult.events;
-          session.dungeonSystem = freshResult.dungeonSystem;
-          session.activitySystem = freshResult.activitySystem;
-          session.gameTime.day = 1;
-          session.gameTime.hour = 6;
-          session.gameTime.minute = 0;
-          session.world.seasonSchedule.init(1);
-          session.world.updateWeatherAndTemp();
-          session.backlog = new (session.backlog.constructor as new () => typeof session.backlog)();
-          session.knowledge = new (session.knowledge.constructor as new () => typeof session.knowledge)();
-          // 커스텀 캐릭터 복원
-          for (const c of customActors) {
-            c.playable = true;
-            session.actors.push(c);
-          }
-          // 오토세이브 삭제
-          localStorage.removeItem('emergent_save_0');
-          sm.pop();
-          showCharSelect();
-        });
-      },
-      onKey(key) { if (key === 'Escape') sm.pop(); },
-    });
-  }
-
   // --- 메인 메뉴 ---
   function showMainMenu() {
-    const menu = createMainMenuScreen(hasAutosave, (choice) => {
+    const menu = createMainMenuScreen(checkHasAutosave(), (choice) => {
       switch (choice) {
         case 'new': showCharSelect(); break;
         case 'connect': {
@@ -537,7 +562,6 @@ async function boot() {
         case 'corematrix':
           showCoreMatrix();
           break;
-        case 'transition': showTransition(); break;
       }
     });
     sm.replace(menu);

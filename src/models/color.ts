@@ -5,6 +5,15 @@
 
 import { Element, Trait, ELEMENT_COUNT } from '../types/enums';
 import { randomFloat, randomInt } from '../types/rng';
+import type { CoreMatrix } from './knowledge';
+
+export enum ColorChangeContext {
+  Routine = 0, // ±0.005~0.01 — routine daily actions
+  Event   = 1, // ±0.02~0.05 — non-routine events
+  Major   = 2, // ±0.1~0.5  — unexpected major events
+}
+
+const CONTEXT_SCALE = [0.2, 1.0, 5.0]; // Routine, Event, Major
 
 export interface ElementDomain {
   highTrait: Trait;
@@ -103,6 +112,35 @@ export class ColorProfile {
       } else if (inf < 0) {
         inf *= (0.5 + this.values[i]);
       }
+      this.values[i] = Math.max(0, Math.min(1, this.values[i] + inf));
+    }
+  }
+
+  applyInfluenceWithMatrix(influence: number[], matrix: CoreMatrix, context: ColorChangeContext): void {
+    for (let i = 0; i < ELEMENT_COUNT; i++) {
+      let inf = influence[i];
+      if (inf === 0) continue;
+
+      // Matrix rate modulation: count ON cells in row i (0-8), convert to 0.25-1.0 range
+      let onCount = 0;
+      for (let c = 0; c < 8; c++) {
+        if (matrix.getCell(i, c)) onCount++;
+      }
+      const matrixRateMod = 0.25 + (onCount / 8) * 0.75; // 0.25 (0 ON) to 1.0 (8 ON)
+
+      // Context scale
+      const contextScale = CONTEXT_SCALE[context];
+
+      // Apply resistance curve (from existing applyInfluence)
+      if (inf > 0) {
+        inf *= (1.5 - this.values[i]);
+      } else {
+        inf *= (0.5 + this.values[i]);
+      }
+
+      // Final: base * matrix * context
+      inf *= matrixRateMod * contextScale;
+
       this.values[i] = Math.max(0, Math.min(1, this.values[i] + inf));
     }
   }

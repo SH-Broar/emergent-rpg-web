@@ -6,6 +6,49 @@ import { LocationID, Loc } from '../types/location';
 import { GameTime } from '../types/game-time';
 import { ColorProfile } from './color';
 import { Relationship, Memory, createRelationship } from './social';
+import { CoreMatrix } from './knowledge';
+import { getWeaponDef, getArmorDef } from '../types/item-defs';
+
+export enum IncomeSource {
+  Trade, Craft, Quest, Dungeon, Farming, Fishing, Service, None,
+}
+
+export interface NpcLifeData {
+  livingPlace: LocationID;
+  dailyExpense: number;
+  incomeSource: IncomeSource;
+  dietPreference: number[];  // ItemType values (up to 3)
+  comfortLevel: number;      // 0-1
+  daysSinceLastMeal: number;
+  lastExpenseDay: number;    // game day on which daily expense was last deducted
+}
+
+function defaultLifeData(role: SpiritRole, home: LocationID): NpcLifeData {
+  let dailyExpense: number;
+  let incomeSource: IncomeSource;
+  switch (role) {
+    case SpiritRole.Merchant:      dailyExpense = 5; incomeSource = IncomeSource.Trade;   break;
+    case SpiritRole.Farmer:        dailyExpense = 2; incomeSource = IncomeSource.Farming; break;
+    case SpiritRole.Adventurer:    dailyExpense = 3; incomeSource = IncomeSource.Dungeon; break;
+    case SpiritRole.Guard:         dailyExpense = 3; incomeSource = IncomeSource.Service; break;
+    case SpiritRole.Priest:        dailyExpense = 2; incomeSource = IncomeSource.Service; break;
+    case SpiritRole.Craftsman:     dailyExpense = 4; incomeSource = IncomeSource.Craft;   break;
+    case SpiritRole.Miner:         dailyExpense = 3; incomeSource = IncomeSource.Craft;   break;
+    case SpiritRole.Fisher:        dailyExpense = 2; incomeSource = IncomeSource.Fishing; break;
+    case SpiritRole.GuildClerk:    dailyExpense = 3; incomeSource = IncomeSource.Service; break;
+    case SpiritRole.Meteorologist: dailyExpense = 3; incomeSource = IncomeSource.Service; break;
+    default:                       dailyExpense = 2; incomeSource = IncomeSource.None;    break;
+  }
+  return {
+    livingPlace: home,
+    dailyExpense,
+    incomeSource,
+    dietPreference: [ItemType.Food],
+    comfortLevel: 0.5,
+    daysSinceLastMeal: 0,
+    lastExpenseDay: -1,
+  };
+}
 
 export interface BaseProperty {
   race: Race;
@@ -77,6 +120,10 @@ export class Actor {
   hyperionFlags: boolean[] = [false, false, false, false, false];
   lastTickHour = 6;
 
+  coreMatrix = new CoreMatrix();
+
+  lifeData: NpcLifeData = defaultLifeData(SpiritRole.Villager, Loc.Town_Elimes);
+
   /** 개별 아이템 인벤토리 (ItemID → 수량) */
   items = new Map<string, number>();
 
@@ -94,6 +141,7 @@ export class Actor {
     this.base = createBaseProperty(race);
     this.spirit = createSpiritProperty(role);
     this.color = new ColorProfile();
+    this.lifeData = defaultLifeData(role, this.homeLocation);
   }
 
   isAlive(): boolean { return this.base.hp > 0; }
@@ -182,8 +230,15 @@ export class Actor {
 
   getEffectiveMaxHp(): number { return this.base.maxHp + this.hyperionLevel * 10; }
   getEffectiveMaxMp(): number { return this.base.maxMp + this.hyperionLevel * 5; }
-  getEffectiveAttack(): number { return this.base.attack + this.hyperionLevel * 2; }
-  getEffectiveDefense(): number { return this.base.defense + this.hyperionLevel * 1; }
+  getEffectiveAttack(): number {
+    const weaponBonus = this.equippedWeapon ? (getWeaponDef(this.equippedWeapon)?.attack ?? 0) : 0;
+    return this.base.attack + this.hyperionLevel * 2 + weaponBonus;
+  }
+  getEffectiveDefense(): number {
+    const armorBonus = this.equippedArmor ? (getArmorDef(this.equippedArmor)?.defense ?? 0) : 0;
+    const accessoryBonus = this.equippedAccessory ? (getArmorDef(this.equippedAccessory)?.defense ?? 0) : 0;
+    return this.base.defense + this.hyperionLevel * 1 + armorBonus + accessoryBonus;
+  }
   getEffectiveMaxVigor(): number { return this.base.maxVigor + this.hyperionLevel * 5; }
 
   receiveEventInfluence(influence: number[], _eventName: string, _time: GameTime): void {

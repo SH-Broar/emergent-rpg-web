@@ -7,7 +7,6 @@ import { Actor } from '../../models/actor';
 import { PlayerKnowledge } from '../../models/knowledge';
 import { ItemType } from '../../types/enums';
 
-const MAX_SLOTS = 5;
 const SAVE_PREFIX = 'emergent_save_';
 const SAVE_VERSION = 5;
 
@@ -398,7 +397,7 @@ export function createSaveLoadScreen(
     wrap.appendChild(backBtn);
 
     const title = document.createElement('h2');
-    title.textContent = isSave ? '\uc138\uc774\ube0c' : '\ub85c\ub4dc';
+    title.textContent = '\uc624\ud1a0\uc138\uc774\ube0c';
     wrap.appendChild(title);
 
     if (message) {
@@ -409,61 +408,57 @@ export function createSaveLoadScreen(
       wrap.appendChild(msg);
     }
 
+    // Autosave-only: show slot 0 only
+    const meta = getSaveMeta(0);
     const list = document.createElement('div');
     list.className = 'npc-list';
 
-    for (let i = 0; i < MAX_SLOTS; i++) {
-      const meta = getSaveMeta(i);
-      const btn = document.createElement('button');
-      btn.className = 'btn npc-item';
-      btn.style.minHeight = '44px';
-      btn.dataset.slot = String(i);
+    const btn = document.createElement('button');
+    btn.className = 'btn npc-item';
+    btn.style.minHeight = '44px';
+    btn.dataset.slot = '0';
 
-      const slotLabel = i === 0 ? 'A' : String(i);
-      if (meta) {
-        const timeStr = `${String(meta.hour).padStart(2, '0')}:${String(meta.minute).padStart(2, '0')}`;
-        btn.innerHTML = `
-          <span class="npc-num">${slotLabel}</span>
-          <span class="npc-name">${meta.playerName} \u2014 ${meta.day}\uc77c\ucc28 ${timeStr}</span>
-          <span class="npc-detail">${meta.savedAt}</span>
-        `;
-      } else {
-        btn.innerHTML = `
-          <span class="npc-num">${slotLabel}</span>
-          <span class="npc-name">\ube48 \uc2ac\ub86f</span>
-          <span class="npc-detail"></span>
-        `;
-      }
-
-      btn.addEventListener('click', () => executeSlot(i, el));
-      list.appendChild(btn);
+    if (meta) {
+      const timeStr = `${String(meta.hour).padStart(2, '0')}:${String(meta.minute).padStart(2, '0')}`;
+      btn.innerHTML = `
+        <span class="npc-num">A</span>
+        <span class="npc-name">${meta.playerName} \u2014 ${meta.day}\uc77c\ucc28 ${timeStr}</span>
+        <span class="npc-detail">${meta.savedAt}</span>
+      `;
+    } else {
+      btn.innerHTML = `
+        <span class="npc-num">A</span>
+        <span class="npc-name">\uc800\uc7a5 \ub370\uc774\ud130 \uc5c6\uc74c</span>
+        <span class="npc-detail"></span>
+      `;
     }
 
+    btn.addEventListener('click', () => executeAutosave(el));
+    list.appendChild(btn);
     wrap.appendChild(list);
 
     const hint = document.createElement('p');
     hint.className = 'hint';
-    hint.textContent = '1~5 \uc2ac\ub86f \uc120\ud0dd, Esc \ub4a4\ub85c';
+    hint.textContent = 'Enter \ub610\ub294 \ubc84\ud2bc\uc73c\ub85c \uc624\ud1a0\uc138\uc774\ube0c \ubd88\ub7ec\uc624\uae30, Esc \ub4a4\ub85c';
     wrap.appendChild(hint);
 
     el.appendChild(wrap);
   }
 
-  function executeSlot(slot: number, el: HTMLElement): void {
+  function executeAutosave(el: HTMLElement): void {
     if (isSave) {
-      saveToSlot(slot, session);
-      const slotLabel = slot === 0 ? '\uc624\ud1a0' : String(slot);
-      message = `\uc2ac\ub86f ${slotLabel}\uc5d0 \uc800\uc7a5 \uc644\ub8cc!`;
+      saveToSlot(0, session);
+      message = '\uc624\ud1a0\uc138\uc774\ube0c \uc644\ub8cc!';
       session.backlog.add(session.gameTime, message, '\uc2dc\uc2a4\ud15c');
       renderSaveLoad(el);
     } else {
-      const meta = getSaveMeta(slot);
+      const meta = getSaveMeta(0);
       if (!meta) {
-        message = '\ube48 \uc2ac\ub86f\uc785\ub2c8\ub2e4.';
+        message = '\uc800\uc7a5 \ub370\uc774\ud130\uac00 \uc5c6\uc2b5\ub2c8\ub2e4.';
         renderSaveLoad(el);
         return;
       }
-      if (loadFromSlot(slot, session)) {
+      if (loadFromSlot(0, session)) {
         message = '\ub85c\ub4dc \uc644\ub8cc!';
         session.backlog.add(session.gameTime, '\uac8c\uc784\uc744 \ub85c\ub4dc\ud588\ub2e4.', '\uc2dc\uc2a4\ud15c');
         onDone();
@@ -482,8 +477,8 @@ export function createSaveLoadScreen(
       if (!(container instanceof HTMLElement)) return;
 
       if (key === 'Escape') { onDone(); return; }
-      if (/^[1-5]$/.test(key)) {
-        executeSlot(parseInt(key, 10) - 1, container);
+      if (key === 'Enter' || key === '1') {
+        executeAutosave(container);
       }
     },
   };

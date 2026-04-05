@@ -45,4 +45,6 @@ export class Backlog {
   }
 
   size(): number { return this.entries.length; }
+
+  clear(): void { this.entries = []; }
 }

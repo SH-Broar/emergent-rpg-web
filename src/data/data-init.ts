@@ -3,7 +3,7 @@
 
 import { DataSection, parsePairList, parseFloatList, parseStringList, parseColorInfluence, parseLootList, parseTripleList } from './parser';
 import { GameRegistry } from '../types/registry';
-import { parseRace, parseSpiritRole, parseItemType, parseTrait, ELEMENT_COUNT } from '../types/enums';
+import { parseRace, parseSpiritRole, parseItemType, parseTrait, ELEMENT_COUNT, parseElement } from '../types/enums';
 import { parseLocationID } from '../types/location';
 import { Actor } from '../models/actor';
 import { World, createLocationData } from '../models/world';
@@ -11,7 +11,7 @@ import { EventSystem, createGameEvent } from '../models/event';
 import { DungeonSystem, DungeonEventType } from '../models/dungeon';
 import { ActivitySystem } from '../models/activity';
 import { loadHyperion } from '../systems/hyperion';
-import { loadItemDefs } from '../types/item-defs';
+import { loadItemDefs, loadWeaponDefs, loadArmorDefs } from '../types/item-defs';
 import type { GameDataFiles } from './loader';
 
 // --- items.txt ---
@@ -104,6 +104,7 @@ export function initActors(sections: DataSection[]): Actor[] {
     actor.playable = s.getInt('playable', 0) === 1;
     actor.currentLocation = parseLocationID(s.get('location', 'Town_Elimes'));
     actor.homeLocation = parseLocationID(s.get('homeLocation', actor.currentLocation));
+    actor.lifeData.livingPlace = actor.homeLocation;
     actor.stationary = s.getInt('stationary', 0) === 1;
     actor.isCustom = s.getInt('custom', 0) === 1;
 
@@ -131,6 +132,7 @@ export function initActors(sections: DataSection[]): Actor[] {
     } else {
       actor.color.randomizeValues();
     }
+    actor.coreMatrix.recalculate(actor.color.values);
 
     // Domain traits
     const domHigh = s.get('domainHigh', '');
@@ -347,6 +349,64 @@ export function initActivities(sections: DataSection[], activity: ActivitySystem
   }
 }
 
+// --- diagnostic.txt ---
+export interface DiagnosticQuestion {
+  id: string;
+  text: string;
+  optionA: string;
+  optionB: string;
+  influences: { row: number; col: number; weight: number }[];
+  colorA: { element: number; value: number }[];
+  colorB: { element: number; value: number }[];
+}
+
+export function parseDiagnosticQuestions(sections: DataSection[]): DiagnosticQuestion[] {
+  const questions: DiagnosticQuestion[] = [];
+  for (const s of sections) {
+    const influences: { row: number; col: number; weight: number }[] = [];
+    const infStr = s.get('influences', '');
+    if (infStr) {
+      for (const token of infStr.split(',')) {
+        const parts = token.trim().split(':');
+        if (parts.length === 3) {
+          const row = parseInt(parts[0], 10);
+          const col = parseInt(parts[1], 10);
+          const weight = parseFloat(parts[2]);
+          if (!isNaN(row) && !isNaN(col) && !isNaN(weight)) {
+            influences.push({ row, col, weight });
+          }
+        }
+      }
+    }
+
+    const parseColorPairs = (key: string): { element: number; value: number }[] => {
+      const pairs: { element: number; value: number }[] = [];
+      const str = s.get(key, '');
+      if (!str) return pairs;
+      for (const token of str.split(',')) {
+        const t = token.trim();
+        const colon = t.indexOf(':');
+        if (colon === -1) continue;
+        const element = parseElement(t.slice(0, colon).trim());
+        const value = parseFloat(t.slice(colon + 1));
+        if (!isNaN(value)) pairs.push({ element, value });
+      }
+      return pairs;
+    };
+
+    questions.push({
+      id: s.name,
+      text: s.get('text', ''),
+      optionA: s.get('optionA', ''),
+      optionB: s.get('optionB', ''),
+      influences,
+      colorA: parseColorPairs('colorA'),
+      colorB: parseColorPairs('colorB'),
+    });
+  }
+  return questions;
+}
+
 // --- 결과 ---
 export interface InitResult {
   actors: Actor[];
@@ -354,6 +414,7 @@ export interface InitResult {
   events: EventSystem;
   dungeonSystem: DungeonSystem;
   activitySystem: ActivitySystem;
+  diagnosticQuestions: DiagnosticQuestion[];
   warnings: string[];
 }
 
@@ -365,6 +426,10 @@ export function initAll(data: GameDataFiles): InitResult {
 
   // 개별 아이템 정의 로드
   try { loadItemDefs(data.items); } catch { /* items.txt가 새 포맷이 아니면 무시 */ }
+
+  // 무기 / 방어구 정의 로드
+  loadWeaponDefs(data.weapons);
+  loadArmorDefs(data.armor);
 
   const world = new World();
   initLocations(data.locations, world);
@@ -383,5 +448,7 @@ export function initAll(data: GameDataFiles): InitResult {
 
   loadHyperion(data.hyperion);
 
-  return { actors, world, events, dungeonSystem, activitySystem, warnings };
+  const diagnosticQuestions = parseDiagnosticQuestions(data.diagnostic);
+
+  return { actors, world, events, dungeonSystem, activitySystem, diagnosticQuestions, warnings };
 }

@@ -133,116 +133,118 @@ function spiritRoleKey(role: SpiritRole): string {
 // NPC가 먼저 말을 거는 시스템
 // 원본: TryNpcInitiatedConversation()
 // ============================================================
+
+// --- 인사말 템플릿 ---
+const GREETINGS_BRIGHT = [
+  '안녕하세요! 오늘 기분이 정말 좋아요!',
+  '반가워요! 좋은 하루 보내고 계신가요?',
+  '어머, 마침 만났네요! 이야기 좀 할까요?',
+];
+
+const GREETINGS_NEUTRAL = [
+  '안녕하세요.',
+  '좋은 하루예요.',
+  '만나서 반가워요.',
+];
+
+const GREETINGS_GLOOMY = [
+  '...안녕하세요. 조금 힘든 하루예요.',
+  '아, 반가워요... 좀 지쳤지만 괜찮아요.',
+  '...고마워요, 말 걸어줘서.',
+];
+
 export interface NpcConversationResult {
-  occurred: boolean;
-  npcName: string;
-  dialogue: string;
-  rumorShared: string;
-  moodDescription: string;
-  messages: string[];
+  npc: Actor;
+  greeting: string;
+  sharedRumor?: string;
+  moodDisplay: 'bright' | 'neutral' | 'gloomy';
 }
 
 export function tryNpcInitiatedConversation(
-  actors: Actor[],
-  playerIdx: number,
-  gameTime: GameTime,
+  player: Actor,
+  allActors: Actor[],
   social: SocialHub,
-  backlog: Backlog,
-  knowledge: PlayerKnowledge,
-): NpcConversationResult {
-  const noResult: NpcConversationResult = {
-    occurred: false, npcName: '', dialogue: '', rumorShared: '', moodDescription: '', messages: [],
-  };
+  _time: GameTime,
+): NpcConversationResult | null {
+  // 1. Base chance
+  let chance = 0.03;
 
-  const player = actors[playerIdx];
-  const playerColor = player.color.values;
+  // 2. Player color adjustment
+  chance += player.color.values[Element.Water] * 0.02;  // Water = sociability
+  chance += player.color.values[Element.Wind]  * 0.01;  // Wind  = openness
 
-  // 같은 장소, 깨어 있는 NPC 후보
-  const candidates: number[] = [];
-  for (let i = 0; i < actors.length; i++) {
-    if (i === playerIdx) continue;
-    if (actors[i].currentLocation !== player.currentLocation) continue;
-    if (actors[i].base.sleeping) continue;
-    candidates.push(i);
-  }
-  if (candidates.length === 0) return noResult;
+  // Clamp to [0.02, 0.22]
+  chance = Math.max(0.02, Math.min(0.22, chance));
 
-  // 확률 계산: 물(Water) + 바람(Wind) 기반
-  let baseChance = 0.03;
-  const playerApproach =
-    playerColor[Element.Water] * 0.02 +
-    playerColor[Element.Wind] * 0.01;
-  baseChance += playerApproach;
-  baseChance = Math.max(0.02, Math.min(0.22, baseChance));
+  // 3. Roll
+  if (randomFloat(0, 1) > chance) return null;
 
-  if (randomFloat(0, 1) >= baseChance) return noResult;
-
-  // NPC별 가중치 계산
+  // 4. Find candidate NPCs (same location, alive, not sleeping, not player)
+  const candidates: Actor[] = [];
   const weights: number[] = [];
-  for (const idx of candidates) {
-    const npc = actors[idx];
-    const npcColor = npc.color.values;
+
+  for (const actor of allActors) {
+    if (actor.name === player.name) continue;
+    if (actor.currentLocation !== player.currentLocation) continue;
+    if (!actor.isAlive()) continue;
+    if (actor.base.sleeping) continue;
+
     let w = 1.0;
-    w += npcColor[Element.Water] * 0.5 + npcColor[Element.Light] * 0.3;
-    w += npc.base.mood * 0.3;
-    const rel = npc.relationships.get(player.name);
+    w += actor.color.values[Element.Water] * 0.5;
+    w += actor.color.values[Element.Light] * 0.3;
+    w += actor.base.mood * 0.3;
+
+    const rel = actor.relationships.get(player.name);
     if (rel) w += getRelationshipOverall(rel) * 0.5;
+
     if (w < 0.1) w = 0.1;
+    candidates.push(actor);
     weights.push(w);
   }
 
+  if (candidates.length === 0) return null;
+
+  // 5. Weighted random selection
   const chosenIdx = weightedRandomChoice(weights);
-  const npcActorIdx = candidates[chosenIdx];
-  const npc = actors[npcActorIdx];
-  const npcName = npc.name;
+  const npc = candidates[chosenIdx];
 
-  // 이름 발견
-  knowledge.addKnownName(npcName);
+  // 6. Relationship update (both directions)
+  player.adjustRelationship(npc.name, 0.02, 0.03);
+  npc.adjustRelationship(player.name, 0.02, 0.03);
 
-  // 대사 가져오기
-  const dialogue = getDialogue(npc);
-
-  const messages: string[] = [];
-  messages.push(`${npcName}이(가) 말을 걸어왔다.`);
-  messages.push(`${npcName}: ${dialogue}`);
-
-  // 소문 공유
-  let rumorShared = '';
-  const unheard = social.getUnheardRumors(player.name);
-  for (const rumor of unheard) {
-    if (rumor.originActor === npcName || randomFloat(0, 1) < 0.3) {
-      rumorShared = rumor.content;
-      messages.push(`${npcName}: "참, ${rumor.content}"`);
-      break;
+  // 7. Rumor sharing (30% chance)
+  let sharedRumor: string | undefined;
+  if (randomFloat(0, 1) < 0.3) {
+    const unheard = social.getUnheardRumors(player.name);
+    if (unheard.length > 0) {
+      const rumor = unheard[randomInt(0, unheard.length - 1)];
+      sharedRumor = rumor.content;
+      const allRumors = social.getRumors();
+      const rumorIndex = (allRumors as readonly typeof rumor[]).indexOf(rumor);
+      if (rumorIndex >= 0) social.markRumorHeard(player.name, rumorIndex);
     }
   }
 
-  // 기분 표현
-  let moodDescription = '';
-  if (npc.base.mood > 0.3) {
-    moodDescription = `(${npcName}의 표정이 밝다.)`;
-    messages.push(moodDescription);
-  } else if (npc.base.mood < -0.3) {
-    moodDescription = `(${npcName}의 표정이 어둡다.)`;
-    messages.push(moodDescription);
+  // 8. Mood display
+  const mood = npc.base.mood;
+  let moodDisplay: 'bright' | 'neutral' | 'gloomy';
+  if (mood > 0.3) {
+    moodDisplay = 'bright';
+  } else if (mood < -0.3) {
+    moodDisplay = 'gloomy';
+  } else {
+    moodDisplay = 'neutral';
   }
 
-  // 관계 변화 + 추적
-  knowledge.trackConversation(npcName);
-  player.adjustRelationship(npcName, 0.02, 0.03);
-  npc.adjustRelationship(player.name, 0.02, 0.03);
-  knowledge.adjustReputation(player.currentLocation, 0.005);
+  // 9. Greeting based on mood
+  let pool: string[];
+  if (moodDisplay === 'bright') pool = GREETINGS_BRIGHT;
+  else if (moodDisplay === 'gloomy') pool = GREETINGS_GLOOMY;
+  else pool = GREETINGS_NEUTRAL;
 
-  backlog.add(gameTime, `${npcName}이(가) ${player.name}에게 말을 걸었다.`, '대화');
+  const greeting = pool[randomInt(0, pool.length - 1)];
 
-  return {
-    occurred: true,
-    npcName,
-    dialogue,
-    rumorShared,
-    moodDescription,
-    messages,
-  };
+  return { npc, greeting, sharedRumor, moodDisplay };
 }
 
 // ============================================================
