@@ -25,7 +25,7 @@ export function createBacklogScreen(
       title.textContent = '\ubc31\ub85c\uadf8';
       wrap.appendChild(title);
 
-      const entries = session.backlog.getAll();
+      const entries = session.backlog.getPlayerVisible(session.player.name);
       const lines = entries.map(e => `${e.time.toString()} [${e.category}] ${e.text}`);
 
       const display = createTextDisplay(lines, 100);

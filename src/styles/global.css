@@ -352,3 +352,37 @@ html, body {
   .game-title { font-size: 1.5rem; }
   .item-grid { grid-template-columns: 1fr; }
 }
+
+/* Tall narrow screens (19.5:9 and similar mobile) */
+@media (max-height: 800px) and (max-width: 500px) {
+  .game-screen { gap: 4px; padding: 8px; }
+  .hud-bar { padding: 4px 8px; font-size: 12px; }
+  .hud-stats { gap: 2px; }
+  .stat-bar { font-size: 12px; }
+  .stat-label { width: 24px; font-size: 11px; }
+  .stat-val { width: 55px; font-size: 11px; }
+  .bar { height: 10px; }
+  .ap-pip { width: 12px; height: 12px; }
+  .hud-mini { font-size: 11px; }
+  .hud-colors { gap: 4px; }
+  .hud-color-pip { font-size: 10px; }
+  .hud-nearby { font-size: 11px; padding: 2px 0; min-height: 16px; }
+  .nearby-npc { padding: 1px 6px; font-size: 11px; }
+  .log-area { padding: 6px 8px; min-height: 60px; }
+  .log-entry { font-size: 12px; }
+  .status-bar { padding: 4px 8px; font-size: 11px; }
+  .action-grid { grid-template-columns: repeat(5, 1fr); gap: 4px; min-height: auto; }
+  .action-btn { padding: 4px 2px; gap: 1px; font-size: 10px; min-height: 40px; }
+  .action-icon { font-size: 14px; }
+  .action-label { font-size: 9px; }
+  .action-key { font-size: 8px; }
+  .info-bar { gap: 3px; }
+  .info-btn { font-size: 10px; padding: 4px 2px; min-height: 32px; }
+}
+
+/* Extra-tall screens (aspect > 2:1) - further compact */
+@media (min-aspect-ratio: 1/2) and (max-width: 500px) and (max-height: 950px) {
+  .action-grid { grid-template-columns: repeat(5, 1fr); }
+  .action-btn { min-height: 36px; padding: 3px 2px; }
+  .info-btn { min-height: 28px; padding: 3px 2px; font-size: 10px; }
+}

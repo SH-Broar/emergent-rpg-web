@@ -2,8 +2,10 @@
 
 import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
+import type { Actor } from '../../models/actor';
 import { raceName, spiritRoleName } from '../../types/enums';
 import { getRelationshipOverall } from '../../models/social';
+import { getDialogue } from '../../systems/npc-interaction';
 import { createNpcList } from '../components/npc-list';
 
 type DialogueAction = 'continue' | 'recruit' | 'info';
@@ -11,7 +13,7 @@ type DialogueAction = 'continue' | 'recruit' | 'info';
 interface DialogueCallbacks {
   onTalk: (npcName: string) => void;
   onRecruit: (npcName: string) => void;
-  onInfo: (npcName: string) => void;
+  onInfo: (npcName: string, npcActor: Actor) => void;
   onBack: () => void;
 }
 
@@ -71,10 +73,10 @@ export function createDialogueScreen(
     const affinityLabel = overall >= 0.5 ? '\u2665 \uce5c\ubc00' :
       overall >= 0 ? '\u25cb \ubcf4\ud1b5' : '\u25cb \ub0ae\uc74c';
 
-    // mock 대사 (나중에 실제 대화 시스템 연결)
     if (dialogueLines.length === 0) {
+      const line = getDialogue(npc);
       dialogueLines = [
-        `\u300c\uc548\ub155, ${p.name}. \uc624\ub298\ub3c4 \uc88b\uc740 \ud558\ub8e8\ub124.\u300d`,
+        `\u300c${line}\u300d`,
       ];
       session.backlog.add(
         session.gameTime,
@@ -141,9 +143,11 @@ export function createDialogueScreen(
       case 'recruit':
         callbacks.onRecruit(npcName);
         break;
-      case 'info':
-        callbacks.onInfo(npcName);
+      case 'info': {
+        const npcActor = npcsHere[selectedIdx];
+        if (npcActor) callbacks.onInfo(npcName, npcActor);
         break;
+      }
     }
   }
 

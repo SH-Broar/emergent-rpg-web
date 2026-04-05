@@ -36,6 +36,15 @@ export class Backlog {
     return this.entries.filter(e => e.category === category);
   }
 
+  /** 플레이어가 직접 목격한 엔트리만 반환 */
+  getPlayerVisible(playerName: string): BacklogEntry[] {
+    return this.entries.filter(e =>
+      e.sourceActorName === playerName ||
+      e.sourceActorName === '' ||
+      e.category === '시스템'
+    );
+  }
+
   formatRecent(count: number, textTransform?: (s: string) => string): string {
     const recent = this.getRecent(count);
     return recent.map(e => {

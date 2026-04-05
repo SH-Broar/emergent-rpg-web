@@ -3,6 +3,7 @@
 import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
 import type { GameAction } from '../../systems/game-loop';
+import type { Actor } from '../../models/actor';
 import { processTurn } from '../../systems/game-loop';
 import { locationName } from '../../types/registry';
 import { weatherName, seasonName, raceName, spiritRoleName, elementName, Element, ELEMENT_COUNT, ItemType } from '../../types/enums';
@@ -312,7 +313,8 @@ export function createInfoScreen(
 
         case 'info_backlog': {
           html += `<h2>백로그</h2><div class="backlog-list">`;
-          const entries = session.backlog.getRecent(30);
+          const allVisible = session.backlog.getPlayerVisible(p.name);
+          const entries = allVisible.slice(-30);
           for (const e of entries.reverse()) {
             html += `<div class="backlog-entry"><span class="bl-time">${e.time.toString()}</span> ${e.text}</div>`;
           }
@@ -427,6 +429,51 @@ export function createMoveScreen(
           onDone();
         }
       }
+    },
+  };
+}
+
+// --- NPC Info screen ---
+export function createNpcInfoScreen(
+  session: GameSession,
+  npc: Actor,
+  onBack: () => void,
+): Screen {
+  return {
+    id: 'npc-info',
+    render(el) {
+      const p = session.player;
+      const rel = p.relationships.get(npc.name);
+      const overall = rel ? (rel.trust + rel.affinity) / 2 : 0;
+      const gridCells: string[] = [];
+      for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+          const on = npc.coreMatrix.getCell(r, c);
+          const bg = on ? `var(--el-${r})` : 'var(--bg-card)';
+          const border = on ? 'transparent' : 'var(--border)';
+          gridCells.push(`<div class="cm-cell" style="background:${bg};border:1px solid ${border}"></div>`);
+        }
+      }
+      let html = '<div class="screen info-screen">';
+      html += `<button class="btn back-btn" data-back>← 뒤로 [Esc]</button>`;
+      html += `<h2>${npc.name} 정보</h2>
+        <div class="info-grid">
+          <div>종족: ${raceName(npc.base.race)}</div>
+          <div>역할: ${spiritRoleName(npc.spirit.role)}</div>
+          <div>레벨: ${npc.base.level}</div>
+          <div>HP: ${Math.round(npc.base.hp)}/${Math.round(npc.getEffectiveMaxHp())}</div>
+          <div>공격: ${npc.getEffectiveAttack().toFixed(1)}</div>
+          <div>방어: ${npc.getEffectiveDefense().toFixed(1)}</div>
+          <div>관계: ${overall.toFixed(2)}</div>
+          <div>히페리온: Lv.${npc.hyperionLevel}</div>
+        </div>
+        <div class="cm-grid">${gridCells.join('')}</div>`;
+      html += '</div>';
+      el.innerHTML = html;
+      el.querySelector('[data-back]')?.addEventListener('click', onBack);
+    },
+    onKey(key) {
+      if (key === 'Escape' || key === 'q') onBack();
     },
   };
 }

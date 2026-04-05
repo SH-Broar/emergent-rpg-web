@@ -27,7 +27,7 @@ const ACTION_TIME: Partial<Record<GameAction, number>> = {
 const AP_COST: Partial<Record<GameAction, number>> = {
   idle: 0, move: 0, talk: 0, trade: 0, eat: 0,
   rest: 1, dungeon: 0, gather: 1, quest: 0,
-  activity: 1, gift: 0, home: 1, memory_spring: 0,
+  activity: 1, gift: 0, home: 0, memory_spring: 0,
 };
 
 export interface TurnResult {
@@ -89,6 +89,8 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
       const gatherItems = findItemsBySource('gather:' + p.currentLocation);
       // Also include items from the location's resource types
       if (gatherItems.length === 0) {
+        // 채집 불가 시 TP 환불
+        if (apCost > 0) p.adjustAp(apCost);
         result.messages.push('이 지역에는 채집할 자원이 없다.');
         break;
       }

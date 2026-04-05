@@ -8,7 +8,7 @@ import { GameSession } from './systems/game-session';
 import { processTurn } from './systems/game-loop';
 import { createMainMenuScreen } from './ui/screens/main-menu';
 import { createCharacterSelectScreen } from './ui/screens/character-select';
-import { createGameScreen, createInfoScreen, createMoveScreen } from './ui/screens/game-screen';
+import { createGameScreen, createInfoScreen, createMoveScreen, createNpcInfoScreen } from './ui/screens/game-screen';
 import { createDialogueScreen } from './ui/screens/dialogue';
 import { createDungeonScreen } from './ui/screens/dungeon';
 import { createTradeScreen } from './ui/screens/trade';
@@ -26,6 +26,7 @@ import { createTitlesScreen } from './ui/screens/titles';
 import { createPartyScreen } from './ui/screens/party';
 import { createSaveLoadScreen, saveToSlot, loadFromSlot } from './ui/screens/save-load';
 import { createWorldMapScreen } from './ui/screens/world-map';
+import { createMemorySpringScreen } from './ui/screens/memory-spring';
 import { createSkillManageScreen } from './ui/screens/skill-manage';
 import { createDataPackScreen } from './ui/screens/datapack-select';
 import { fastForwardWorld } from './systems/world-simulation';
@@ -135,6 +136,28 @@ async function boot() {
   }
 
   function enterGame() {
+    // 코어 매트릭스 진단 결과 적용
+    const diagColors = (session as any)._diagColorValues as number[] | undefined;
+    const diagScoresStored = (session as any)._diagScores as number[][] | undefined;
+    if (diagColors) {
+      for (let i = 0; i < 8; i++) {
+        session.player.color.values[i] = Math.max(0, Math.min(1,
+          (session.player.color.values[i] + diagColors[i]) / 2
+        ));
+      }
+    }
+    if (diagScoresStored) {
+      for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+          session.player.coreMatrix.diagScores[r][c] = diagScoresStored[r][c];
+        }
+      }
+    }
+    session.player.coreMatrix.recalculate(session.player.color.values);
+    // 진단 결과 소비 후 제거
+    delete (session as any)._diagColorValues;
+    delete (session as any)._diagScores;
+
     session.knowledge.addKnownName(session.player.name);
     session.knowledge.trackVisit(session.player.currentLocation);
     // Give starter items
@@ -163,8 +186,8 @@ async function boot() {
               session.backlog.add(session.gameTime, `${npcName}이(가) 동료가 되었다!`, '행동');
               sm.pop();
             },
-            onInfo() {
-              sm.push(createInfoScreen(session, 'info_status', () => sm.pop()));
+            onInfo(_npcName, npcActor) {
+              sm.push(createNpcInfoScreen(session, npcActor, () => sm.pop()));
             },
             onBack() { sm.pop(); },
           }));
@@ -191,8 +214,7 @@ async function boot() {
           sm.push(createHomeScreen(session, () => sm.pop()));
           break;
         case 'memory_spring':
-          // 기억의 샘 — 간소화 버전
-          sm.push(createInfoScreen(session, 'info_status', () => sm.pop()));
+          sm.push(createMemorySpringScreen(session, () => sm.pop()));
           break;
         case 'info_backlog':
           sm.push(createBacklogScreen(session, () => sm.pop()));
@@ -420,9 +442,17 @@ async function boot() {
 
     function renderQ(el: HTMLElement) {
       if (qIdx >= questions.length) {
-        // 완료 — 8x8 결과 매트릭스 표시
+        // 완료 — 8x8 결과 매트릭스 표시 (diagScores 적용)
         const matrix = new CoreMatrix();
+        for (let r = 0; r < 8; r++) {
+          for (let c = 0; c < 8; c++) {
+            matrix.diagScores[r][c] = diagScores[r][c];
+          }
+        }
         matrix.recalculate(colorValues);
+        // 결과 저장 (캐릭터 생성 시 적용)
+        (session as any)._diagColorValues = colorValues.slice();
+        (session as any)._diagScores = diagScores.map(row => row.slice());
         const gridCells: string[] = [];
         for (let r = 0; r < 8; r++) {
           for (let c = 0; c < 8; c++) {

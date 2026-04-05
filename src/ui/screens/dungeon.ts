@@ -115,7 +115,7 @@ export function createDungeonScreen(
         <span>MP: ${Math.round(p.base.mp)}/${Math.round(p.getEffectiveMaxMp())}
           <span style="display:inline-block;width:${Math.min(60, mpPct)}px;height:4px;background:var(--accent2);border-radius:2px;vertical-align:middle;margin-left:2px"></span>
         </span>
-        <span style="color:var(--warning)">기력: ${Math.round(p.base.vigor)}</span>
+        <span style="color:var(--warning)">TP: ${p.base.ap}/${p.getEffectiveMaxAp()}</span>
       </div>
 
       ${isBossFloor ? `
@@ -336,7 +336,7 @@ export function createDungeonScreen(
           <span>MP: ${Math.round(p.base.mp)}/${Math.round(p.getEffectiveMaxMp())}
             <span style="display:inline-block;width:${Math.min(60, mpPct)}px;height:4px;background:var(--accent2);border-radius:2px;vertical-align:middle;margin-left:2px"></span>
           </span>
-          <span style="color:var(--warning)">기력: ${Math.round(p.base.vigor)}</span>
+          <span style="color:var(--warning)">TP: ${p.base.ap}/${p.getEffectiveMaxAp()}</span>
         </div>
         ${buffTags ? `<div class="combat-buffs">${buffTags}</div>` : ''}
         ${partyHtml}
@@ -586,7 +586,7 @@ export function createDungeonScreen(
           <div class="bar"><div class="bar-fill hp-bar" style="width:${hpPct}%"></div></div>
           <span class="stat-val">${Math.round(p.base.hp)}/${Math.round(p.getEffectiveMaxHp())}</span>
         </div>
-        <p style="color:var(--text-dim)">기력: ${Math.round(p.base.vigor)}/${Math.round(p.getEffectiveMaxVigor())}</p>
+        <p style="color:var(--text-dim)">TP: ${p.base.ap}/${p.getEffectiveMaxAp()}</p>
       </div>
       <div class="menu-buttons" style="margin-top:12px">
         <button class="btn btn-primary" data-action="rest">1. 휴식하기 (HP+20, MP+10, 기력 소모 없음)</button>
