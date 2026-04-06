@@ -5,7 +5,7 @@ import type { GameSession } from '../../systems/game-session';
 import { locationName } from '../../types/registry';
 
 // 마을 구역별 색상 매핑
-function getZoneColor(locationId: string): string {
+export function getZoneColor(locationId: string): string {
   // 일루네온 — 하늘색
   if (locationId.startsWith('Iluneon') || locationId === 'Memory_Spring')
     return '#87CEEB';

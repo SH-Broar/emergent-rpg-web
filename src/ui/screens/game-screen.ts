@@ -7,6 +7,7 @@ import type { Actor } from '../../models/actor';
 import { processTurn } from '../../systems/game-loop';
 import { moveCompanions } from '../../systems/npc-interaction';
 import { locationName } from '../../types/registry';
+import { getZoneColor } from './world-map';
 import { weatherName, seasonName, raceName, spiritRoleName, elementName, Element, ELEMENT_COUNT, ItemType } from '../../types/enums';
 import { getItemDef, getWeaponDef, getArmorDef, categoryName } from '../../types/item-defs';
 
@@ -82,6 +83,98 @@ const INFO_ACTIONS: ActionDef[] = [
   { key: 'S', label: '저장', action: 'save', icon: '💾' },
 ];
 
+// ============================================================
+// HUD 미니맵 — 현재 위치 중심 BFS 2홉 이내 장소
+// ============================================================
+function buildMiniMapSvg(session: GameSession, W = 130, H = 78): string {
+  const playerLoc = session.player.currentLocation;
+  const world = session.world;
+  const allLocs = world.getAllLocations();
+  const playerData = allLocs.get(playerLoc);
+  if (!playerData) return '';
+
+  // BFS 깊이 ≤ 2로 주변 장소 수집
+  const nearby = new Map(allLocs);
+  // 실제로는 2홉 이내만 표시
+  const inRange = new Map<string, typeof playerData>();
+  inRange.set(playerLoc, playerData);
+  const queue: [string, number][] = [[playerLoc, 0]];
+  while (queue.length > 0) {
+    const [locId, depth] = queue.shift()!;
+    if (depth >= 2) continue;
+    const loc = allLocs.get(locId);
+    if (!loc) continue;
+    for (const link of [...loc.linksBidirectional, ...loc.linksOneWayOut]) {
+      if (!inRange.has(link.target)) {
+        const target = allLocs.get(link.target);
+        if (target) { inRange.set(link.target, target); queue.push([link.target, depth + 1]); }
+      }
+    }
+  }
+  void nearby;
+
+  const locs = [...inRange.values()];
+  if (locs.length <= 1) return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="display:block;border-radius:4px;background:rgba(5,5,20,0.85);border:1px solid #2a2a4a;flex-shrink:0"><text x="${W/2}" y="${H/2+4}" text-anchor="middle" font-size="9" fill="#555577" font-family="monospace">연결 없음</text></svg>`;
+
+  // 좌표 범위 계산
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  for (const loc of locs) {
+    if (loc.gridX < minX) minX = loc.gridX;
+    if (loc.gridX > maxX) maxX = loc.gridX;
+    if (loc.gridY < minY) minY = loc.gridY;
+    if (loc.gridY > maxY) maxY = loc.gridY;
+  }
+  const span = Math.max(maxX - minX, maxY - minY, 1);
+  const pad = span * 0.18;
+  minX -= pad; maxX += pad; minY -= pad; maxY += pad;
+
+  const M = 10;
+  function toSvg(gx: number, gy: number): [number, number] {
+    const sx = M + ((gx - minX) / (maxX - minX)) * (W - M * 2);
+    const sy = (H - M) - ((gy - minY) / (maxY - minY)) * (H - M * 2);
+    return [+sx.toFixed(1), +sy.toFixed(1)];
+  }
+
+  let svg = '';
+
+  // 연결선
+  const drawn = new Set<string>();
+  for (const loc of locs) {
+    const [x1, y1] = toSvg(loc.gridX, loc.gridY);
+    for (const link of [...loc.linksBidirectional, ...loc.linksOneWayOut]) {
+      if (!inRange.has(link.target)) continue;
+      const key = [loc.id, link.target].sort().join('|');
+      if (drawn.has(key)) continue;
+      drawn.add(key);
+      const t = allLocs.get(link.target);
+      if (!t) continue;
+      const [x2, y2] = toSvg(t.gridX, t.gridY);
+      const isOneWay = loc.linksOneWayOut.some(l => l.target === link.target);
+      svg += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#2a2a4a" stroke-width="1"${isOneWay ? ' stroke-dasharray="3,2"' : ''}/>`;
+    }
+  }
+
+  // 장소 점
+  for (const loc of locs) {
+    const [cx, cy] = toSvg(loc.gridX, loc.gridY);
+    const isPlayer = loc.id === playerLoc;
+    const isVisited = session.knowledge.visitedLocations.has(loc.id);
+    const color = isPlayer ? '#e94560' : getZoneColor(loc.id);
+    const r = isPlayer ? 5 : 3;
+    const opacity = isPlayer || isVisited ? 1 : 0.25;
+    if (isPlayer) svg += `<circle cx="${cx}" cy="${cy}" r="9" fill="none" stroke="#e94560" stroke-width="0.7" opacity="0.35"/>`;
+    svg += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${color}" opacity="${opacity}" stroke="${isPlayer ? '#fff' : '#0a0a1a'}" stroke-width="${isPlayer ? 1.2 : 0.4}"/>`;
+  }
+
+  // 현재 위치 이름
+  const [pcx, pcy] = toSvg(playerData.gridX, playerData.gridY);
+  const name = locationName(playerLoc);
+  const ly = pcy - 8 > M + 4 ? pcy - 8 : pcy + 14;
+  svg += `<text x="${pcx}" y="${ly}" text-anchor="middle" font-size="8" fill="#e94560" font-family="monospace" font-weight="bold">${name}</text>`;
+
+  return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="display:block;border-radius:4px;background:rgba(5,5,20,0.85);border:1px solid #2a2a4a;flex-shrink:0">${svg}</svg>`;
+}
+
 export function createGameScreen(
   session: GameSession,
   onScreenChange: (target: string) => void,
@@ -90,6 +183,21 @@ export function createGameScreen(
   let accumulatedLog: { time: string; text: string }[] = [];
   let lastLocation = session.player?.currentLocation ?? '';
   let statusMessage = '';
+  let lastBacklogSync = 0;
+
+  /** 대사(dialogue) backlog 엔트리를 HUD 로그에 동기화 */
+  function syncDialogueToLog(): void {
+    const total = session.backlog.size();
+    if (total <= lastBacklogSync) return;
+    const all = session.backlog.getAll();
+    for (let i = lastBacklogSync; i < all.length; i++) {
+      const e = all[i];
+      if (e.category === '대사') {
+        accumulatedLog.push({ time: e.time.toString(), text: e.text });
+      }
+    }
+    lastBacklogSync = total;
+  }
 
   function renderHud(el: HTMLElement) {
     const p = session.player;
@@ -99,7 +207,11 @@ export function createGameScreen(
     if (p.currentLocation !== lastLocation) {
       accumulatedLog = [];
       lastLocation = p.currentLocation;
+      lastBacklogSync = session.backlog.size(); // 이전 지역 대사 무시
     }
+
+    // 서브화면(대화 등)에서 돌아올 때 대사 로그 동기화
+    syncDialogueToLog();
 
     const INFO_ROW1 = INFO_ACTIONS.slice(0, 6);
     const INFO_ROW2 = INFO_ACTIONS.slice(6);
@@ -155,20 +267,24 @@ export function createGameScreen(
           </div>
         </div>
 
-        <div class="hud-nearby">
-          ${(() => {
-            const npcsHere = session.actors.filter(a =>
-              a !== p && a.currentLocation === p.currentLocation && a.isAlive() && !a.base.sleeping
-            );
-            return npcsHere.length > 0
-              ? npcsHere.map(a => {
-                  const known = session.knowledge.isKnown(a.name);
-                  const displayName = known ? a.name : '???';
-                  const title = known ? `${raceName(a.base.race)} ${spiritRoleName(a.spirit.role)}` : '';
-                  return `<span class="nearby-npc" title="${title}">${displayName}</span>`;
-                }).join('')
-              : '<span style="color:var(--text-dim);font-size:11px">주변에 아무도 없다</span>';
-          })()}
+        <div style="display:flex;gap:6px;align-items:flex-start;min-height:78px">
+          <div title="현재 위치 주변 지도 (M키로 전체 지도)">${buildMiniMapSvg(session)}</div>
+          <div class="hud-nearby" style="flex:1;min-width:0">
+            <div style="color:var(--text-dim);font-size:10px;margin-bottom:3px">주변 인물</div>
+            ${(() => {
+              const npcsHere = session.actors.filter(a =>
+                a !== p && a.currentLocation === p.currentLocation && a.isAlive() && !a.base.sleeping
+              );
+              return npcsHere.length > 0
+                ? npcsHere.map(a => {
+                    const known = session.knowledge.isKnown(a.name);
+                    const displayName = known ? a.name : '???';
+                    const title = known ? `${raceName(a.base.race)} ${spiritRoleName(a.spirit.role)}` : '';
+                    return `<span class="nearby-npc" title="${title}">${displayName}</span>`;
+                  }).join('')
+                : '<span style="color:var(--text-dim);font-size:11px">아무도 없다</span>';
+            })()}
+          </div>
         </div>
 
         <div class="log-area">

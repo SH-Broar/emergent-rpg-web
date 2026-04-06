@@ -132,29 +132,71 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
 
     case 'gather': {
       const loc = session.world.getLocation(p.currentLocation);
-      // Find items with source matching this location
       const gatherItems = findItemsBySource('gather:' + p.currentLocation);
-      // Also include items from the location's resource types
       if (gatherItems.length === 0) {
-        // 채집 불가 시 TP 환불
         if (apCost > 0) p.adjustAp(apCost);
         result.messages.push('이 지역에는 채집할 자원이 없다.');
         break;
       }
-      // Level-based success rate
+
+      // 히페리온 레벨 합계 계산
+      const totalHyperion = session.actors.reduce((s, a) => s + a.hyperionLevel, 0);
+
+      // 히페리온 레벨로 채집 가능한 아이템 필터
+      const availableItems = gatherItems.filter(item => (item.minHyperion ?? 0) <= totalHyperion);
+      const lockedItems = gatherItems.filter(item => (item.minHyperion ?? 0) > totalHyperion);
+
+      if (availableItems.length === 0) {
+        if (apCost > 0) p.adjustAp(apCost);
+        const minRequired = Math.min(...gatherItems.map(g => g.minHyperion ?? 0));
+        result.messages.push(`이 지역은 히페리온 레벨 합계 ${minRequired} 이상이어야 채집할 수 있다. (현재 ✦${totalHyperion})`);
+        break;
+      }
+
+      // 성공률 계산 (레벨 기반)
       const levelDiff = p.base.level - (loc.monsterLevel || 1);
       const chance = Math.max(0.2, Math.min(0.95, 0.7 + levelDiff * 0.03));
       if (randomFloat(0, 1) > chance) {
         result.messages.push('채집에 실패했다...');
+        if (lockedItems.length > 0) {
+          const minNext = Math.min(...lockedItems.map(g => g.minHyperion ?? 0));
+          result.messages.push(`(히페리온 ✦${minNext}에 도달하면 더 많은 자원을 채집할 수 있다)`);
+        }
         break;
       }
-      // Pick random item from available
-      const picked = gatherItems[randomInt(0, gatherItems.length - 1)];
+
+      // 희귀도 가중치로 아이템 선택 (common 4배, uncommon 2배, rare 1배)
+      const weights = availableItems.map(item => {
+        switch (item.rarity) {
+          case 'common': return 4;
+          case 'uncommon': return 2;
+          case 'rare': return 1;
+          default: return 3;
+        }
+      });
+      const totalWeight = weights.reduce((a, b) => a + b, 0);
+      let rand = randomFloat(0, totalWeight);
+      let picked = availableItems[0];
+      for (let i = 0; i < availableItems.length; i++) {
+        rand -= weights[i];
+        if (rand <= 0) { picked = availableItems[i]; break; }
+      }
+
       const amount = picked.rarity === 'rare' ? 1 : randomInt(1, 2);
       p.addItemById(picked.id, amount);
       session.knowledge.discoverItem(picked.id);
       session.backlog.add(session.gameTime, `${p.name}이(가) ${picked.name}을(를) ${amount}개 채집했다.`, '행동');
-      result.messages.push(`채집 완료! ${picked.name} +${amount}개`);
+
+      let rarityLabel = '';
+      if (picked.rarity === 'uncommon') rarityLabel = ' [특산물]';
+      else if (picked.rarity === 'rare') rarityLabel = ' [희귀]';
+      result.messages.push(`채집 완료! ${picked.name}${rarityLabel} +${amount}개`);
+
+      // 잠긴 자원 힌트 (30% 확률)
+      if (lockedItems.length > 0 && randomFloat(0, 1) < 0.3) {
+        const minNext = Math.min(...lockedItems.map(g => g.minHyperion ?? 0));
+        result.messages.push(`(히페리온 ✦${minNext}에 도달하면 더 희귀한 자원도 채집할 수 있다)`);
+      }
       break;
     }
 

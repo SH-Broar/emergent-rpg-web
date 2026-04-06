@@ -35,6 +35,9 @@ export interface ItemDef {
 
   // 획득처
   source: string;               // 'gather:Wilderness', 'dungeon:Larmen_Forest', 'shop:Market' 등
+
+  // 채집 제한
+  minHyperion: number;          // 채집에 필요한 최소 히페리온 레벨 합계 (0=제한 없음)
 }
 
 export type ItemRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'unique';
@@ -46,7 +49,7 @@ export function createDefaultItemDef(id: string): ItemDef {
     tags: '', description: '', rarity: 'common', stackable: true,
     eatVigor: 0, eatHp: 0, eatMp: 0, eatMood: 0, eatMessage: '', eatStatus: '',
     equipSlot: 'none', equipAttack: 0, equipDefense: 0, equipMagic: 0, equipSpeed: 0,
-    source: '',
+    source: '', minHyperion: 0,
   };
 }
 
@@ -92,6 +95,8 @@ export function loadItemDefs(sections: DataSection[]): void {
     def.equipDefense = s.getFloat('equipDefense', 0);
     def.equipMagic = s.getFloat('equipMagic', 0);
     def.equipSpeed = s.getFloat('equipSpeed', 0);
+
+    def.minHyperion = s.getInt('minHyperion', 0);
 
     registerItem(def);
   }

@@ -2593,3 +2593,475 @@ tags = /inedible/special/rare/
 description = 세상의 모든 것을 조화롭게 만드는 전설의 종. 울리면 주변의 갈등과 적대감이 가라앉는다.
 rarity = unique
 source = event:Peace_Summit
+
+# ============================================================
+# GATHER ITEMS — 지역 채집 자원
+# common(일반) / uncommon(특산물) / rare(희귀)
+# minHyperion: 채집에 필요한 히페리온 레벨 합계
+# ============================================================
+
+# ---- Wilderness (야생지대) ----
+
+[wild_mushroom]
+name = 야생 버섯
+category = Food
+price = 6
+tags = /edible/organic/raw/mushroom/
+description = 야생지대 그늘진 곳에서 자라는 버섯. 향이 진하고 영양가가 높다.
+rarity = common
+source = gather:Wilderness
+minHyperion = 0
+eatVigor = 6
+eatHp = 10
+eatMp = 2
+eatMood = 0.03
+eatMessage = 흙 냄새 나는 버섯이 씹힌다. 진한 맛이 퍼진다.
+
+[wild_herb]
+name = 야생 약초
+category = Herb
+price = 5
+tags = /organic/raw/herb/
+description = 야생지대 어디서나 자라는 흔한 약초. 소독과 응급 처치에 쓰인다.
+rarity = common
+source = gather:Wilderness
+minHyperion = 0
+
+[forest_berry]
+name = 숲 딸기
+category = Food
+price = 12
+tags = /edible/organic/raw/fruit/specialty/
+description = 야생지대 깊숙이 자라는 특별한 딸기. 일반 딸기보다 달고 향이 풍부하다.
+rarity = uncommon
+source = gather:Wilderness
+minHyperion = 0
+eatVigor = 5
+eatHp = 8
+eatMp = 4
+eatMood = 0.10
+eatMessage = 진한 과일향이 코를 간지럽힌다. 달콤함이 오래 남는다.
+
+# ---- Herb_Garden (약초원) ----
+
+[garden_lavender]
+name = 약초원 라벤더
+category = Herb
+price = 8
+tags = /organic/raw/herb/aromatic/
+description = 이리엘이 가꾼 약초원의 라벤더. 은은한 향이 마음을 안정시킨다.
+rarity = common
+source = gather:Herb_Garden
+minHyperion = 0
+
+[healing_herb]
+name = 치유 약초
+category = Herb
+price = 20
+tags = /organic/raw/herb/specialty/healing/
+description = 약초원에서만 자라는 특산 약초. 상처 회복 효과가 일반 약초보다 훨씬 뛰어나다.
+rarity = uncommon
+source = gather:Herb_Garden
+minHyperion = 0
+
+[magic_herb]
+name = 마력 허브
+category = Herb
+price = 80
+tags = /organic/raw/herb/magic/rare/
+description = 약초원 깊은 곳에서 피올라의 빛가루를 받고 자란 희귀 허브. MP 회복 효과가 탁월하다.
+rarity = rare
+source = gather:Herb_Garden
+minHyperion = 5
+
+# ---- Farm (농장) ----
+
+[wheat_bundle]
+name = 밀 묶음
+category = Food
+price = 4
+tags = /edible/organic/raw/grain/
+description = 밀라가 돌보는 농장에서 수확한 신선한 밀. 빵과 요리의 기본 재료가 된다.
+rarity = common
+source = gather:Farm
+minHyperion = 0
+eatVigor = 8
+eatHp = 5
+eatMp = 0
+eatMood = 0.02
+eatMessage = 고소한 곡물 냄새가 난다.
+
+[seasonal_vegetable]
+name = 계절 채소
+category = Food
+price = 15
+tags = /edible/organic/raw/vegetable/specialty/
+description = 농장의 계절을 담은 특산 채소. 제철에만 수확할 수 있으며 신선도가 다르다.
+rarity = uncommon
+source = gather:Farm
+minHyperion = 0
+eatVigor = 12
+eatHp = 15
+eatMp = 5
+eatMood = 0.06
+eatMessage = 신선한 채소의 단맛이 입안에 가득 찬다.
+
+# ---- Lake (호수) ----
+
+[freshwater_fish]
+name = 민물고기
+category = Food
+price = 10
+tags = /edible/organic/raw/fish/
+description = 나탈리가 즐겨 낚는 호수의 민물고기. 담백하고 영양이 풍부하다.
+rarity = common
+source = gather:Lake
+minHyperion = 0
+eatVigor = 10
+eatHp = 12
+eatMp = 3
+eatMood = 0.04
+eatMessage = 담백한 생선 맛이 입안에 퍼진다.
+
+[lake_herb]
+name = 수변 약초
+category = Herb
+price = 7
+tags = /organic/raw/herb/water/
+description = 호수 갈대 사이에서 자라는 약초. 수분이 많아 부드럽고 독특한 약효가 있다.
+rarity = common
+source = gather:Lake
+minHyperion = 0
+
+[pearl_clam]
+name = 진주 조개
+category = OreRare
+price = 150
+tags = /inedible/organic/rare/gem/
+description = 호수 바닥에서 자라는 희귀 조개. 내부에 작은 진주가 들어 있을 때도 있다.
+rarity = rare
+source = gather:Lake
+minHyperion = 8
+
+# ---- Mountain_Path (산길) ----
+
+[mountain_ore]
+name = 산맥 광석
+category = OreCommon
+price = 12
+tags = /inedible/mineral/ore/
+description = 산길 바위에서 채취할 수 있는 광석. 품질은 보통이지만 안정적으로 구할 수 있다.
+rarity = common
+source = gather:Mountain_Path
+minHyperion = 3
+
+[iron_stone]
+name = 철 원석
+category = OreCommon
+price = 35
+tags = /inedible/mineral/ore/specialty/iron/
+description = 산길 특산 철광석. 가론이 광맥의 소리를 듣는다는 바위에서 채취된다. 순도가 높다.
+rarity = uncommon
+source = gather:Mountain_Path
+minHyperion = 5
+
+[crystal_shard]
+name = 수정 조각
+category = OreRare
+price = 120
+tags = /inedible/mineral/crystal/rare/
+description = 산길 깊은 곳에서 발견되는 수정 파편. 마력을 담을 수 있어 마법 도구 재료로 쓰인다.
+rarity = rare
+source = gather:Mountain_Path
+minHyperion = 10
+
+# ---- Bloom_Terrace (꽃피는 테라스) ----
+
+[healing_petal]
+name = 치유 꽃잎
+category = Herb
+price = 9
+tags = /organic/raw/herb/flower/healing/
+description = 플로라가 가꾸는 테라스에서 피어나는 꽃잎. 살짝 갈아서 상처에 바르면 잘 낫는다.
+rarity = common
+source = gather:Bloom_Terrace
+minHyperion = 0
+
+[bloom_essence]
+name = 꽃 정수
+category = Herb
+price = 45
+tags = /organic/raw/herb/flower/specialty/aromatic/
+description = 테라스 특산 꽃에서 추출한 정수. 바람이 불면 향기가 멀리 퍼지고 기분을 밝게 한다.
+rarity = uncommon
+source = gather:Bloom_Terrace
+minHyperion = 0
+
+# ---- Ancient_Tree_Crown (고대수의 왕관) ----
+
+[world_tree_leaf]
+name = 세계수 잎
+category = Herb
+price = 60
+tags = /organic/raw/herb/specialty/ancient/spirit/
+description = 야생지대의 고대 세계수 수관에서 채취한 잎. 정령들의 기운이 서려 있다.
+rarity = uncommon
+source = gather:Ancient_Tree_Crown
+minHyperion = 5
+
+[spirit_dew]
+name = 정령의 이슬
+category = Herb
+price = 200
+tags = /organic/raw/herb/rare/spirit/magic/
+description = 세계수 수관의 이끼에서 모인 이슬. 정령이 직접 만졌다고 전해지며 강한 마력이 담겨 있다.
+rarity = rare
+source = gather:Ancient_Tree_Crown
+minHyperion = 10
+
+# ---- Moonlit_Clearing (달빛 빈터) ----
+
+[moonlit_dew]
+name = 달빛 이슬
+category = Herb
+price = 50
+tags = /organic/raw/herb/specialty/moon/magic/
+description = 보름달 밤 달빛 빈터의 풀잎에 맺히는 이슬. 달빛이 정화한 물이라 특별한 효능이 있다.
+rarity = uncommon
+source = gather:Moonlit_Clearing
+minHyperion = 3
+
+[lunar_flower]
+name = 달빛 꽃
+category = Herb
+price = 180
+tags = /organic/raw/herb/rare/moon/spirit/
+description = 달빛 빈터 깊은 곳에서만 피는 희귀한 꽃. 루나르가 가끔 찾는다는 전설이 있다.
+rarity = rare
+source = gather:Moonlit_Clearing
+minHyperion = 8
+
+# ---- Falcon_Garden (팔콘 가든 공중군도) ----
+
+[sky_flower]
+name = 하늘 꽃
+category = Herb
+price = 70
+tags = /organic/raw/herb/specialty/sky/wind/
+description = 공중군도의 부유 섬에서만 자라는 특산 꽃. 하피들이 좋아하며 바람의 향기가 난다.
+rarity = uncommon
+source = gather:Falcon_Garden
+minHyperion = 5
+
+[cloud_fruit]
+name = 구름 열매
+category = Food
+price = 130
+tags = /edible/organic/raw/fruit/rare/sky/
+description = 구름에 가장 가까운 섬의 나무에서 열리는 열매. 먹으면 몸이 가벼워지는 느낌이 든다.
+rarity = rare
+source = gather:Falcon_Garden
+minHyperion = 8
+eatVigor = 20
+eatHp = 25
+eatMp = 15
+eatMood = 0.15
+eatMessage = 달콤한 향이 구름처럼 입안에 퍼진다. 몸이 가벼워지는 느낌이다.
+
+# ---- Starfall_Basin (별빛 분지) ----
+
+[meteor_shard]
+name = 운석 파편
+category = OreRare
+price = 90
+tags = /inedible/mineral/ore/specialty/star/
+description = 별빛 분지에 떨어진 운석의 파편. 별의 조각이 담겨 있다는 전설이 있다.
+rarity = uncommon
+source = gather:Starfall_Basin
+minHyperion = 5
+
+[starlight_crystal]
+name = 별빛 수정
+category = OreRare
+price = 250
+tags = /inedible/mineral/crystal/rare/star/magic/
+description = 분지 바닥의 수정 결정 중 가장 투명한 것. 별빛을 영구히 담아두고 있다.
+rarity = rare
+source = gather:Starfall_Basin
+minHyperion = 8
+
+# ---- Wizard_Tower (마법사의 탑) ----
+
+[arcane_herb]
+name = 마법 약초
+category = Herb
+price = 35
+tags = /organic/raw/herb/specialty/magic/arcane/
+description = 마법사의 탑 주변에서 자라는 특산 약초. 마력 잔류 영향으로 보통 약초와 다른 효능이 생겼다.
+rarity = uncommon
+source = gather:Wizard_Tower
+minHyperion = 3
+
+[mana_crystal]
+name = 마나 수정
+category = OreRare
+price = 160
+tags = /inedible/mineral/crystal/rare/magic/mana/
+description = 탑의 마법 실험 부산물로 생성된 수정. 순수한 마력이 결정화된 것이다.
+rarity = rare
+source = gather:Wizard_Tower
+minHyperion = 8
+
+# ---- Limun_Ruins (리문 유적) ----
+
+[ancient_herb]
+name = 고대 약초
+category = Herb
+price = 40
+tags = /organic/raw/herb/specialty/ancient/
+description = 리문 유적 이끼 낀 돌기둥 사이에서 자라는 약초. 수백 년의 역사를 품은 듯한 깊은 향이 난다.
+rarity = uncommon
+source = gather:Limun_Ruins
+minHyperion = 5
+
+[ruin_fragment]
+name = 유적 파편
+category = OreRare
+price = 110
+tags = /inedible/mineral/ancient/rare/
+description = 리문 유적의 부서진 관측탑 파편. 고대 문명의 기술이 담긴 특수한 광물로 이루어져 있다.
+rarity = rare
+source = gather:Limun_Ruins
+minHyperion = 10
+
+# ---- RDC 세계 지역 채집 자원 ----
+
+[lar_forest_herb]
+name = 라르 숲 약초
+category = Herb
+price = 18
+tags = /organic/raw/herb/forest/ancient/
+description = 일루네온 서쪽 고대 숲에서 자라는 약초. 수백 년 된 거목의 기운을 받아 효능이 강하다.
+rarity = common
+source = gather:Lar_Forest
+minHyperion = 5
+
+[ancient_wood]
+name = 고대 목재
+category = OreCommon
+price = 55
+tags = /inedible/organic/specialty/wood/ancient/
+description = 라르 포레스트의 수백 년 된 고목에서 채취한 목재. 단단하고 마력 친화성이 높다.
+rarity = uncommon
+source = gather:Lar_Forest
+minHyperion = 8
+
+[forest_spirit_fruit]
+name = 숲 정령 과실
+category = Food
+price = 200
+tags = /edible/organic/raw/fruit/rare/spirit/forest/
+description = 라르 포레스트 깊은 곳의 나무에서만 열리는 희귀 과실. 숲의 정령이 선물한다고 전해진다.
+rarity = rare
+source = gather:Lar_Forest
+minHyperion = 12
+eatVigor = 30
+eatHp = 40
+eatMp = 20
+eatMood = 0.20
+eatMessage = 말로 표현할 수 없는 깊고 신비로운 맛. 숲 전체의 생명력이 느껴진다.
+
+[world_tree_blossom]
+name = 세계수 꽃
+category = Herb
+price = 120
+tags = /organic/raw/herb/specialty/spirit/divine/
+description = 세계수 마을의 거대한 세계수에서 피어나는 꽃. 드라이어드들이 신성하게 여긴다.
+rarity = uncommon
+source = gather:World_Tree
+minHyperion = 10
+
+[divine_fruit]
+name = 신성한 열매
+category = Food
+price = 350
+tags = /edible/organic/raw/fruit/rare/divine/spirit/
+description = 세계수의 뿌리 가까이에서만 열리는 전설의 열매. 먹으면 영혼이 정화된다고 한다.
+rarity = rare
+source = gather:World_Tree
+minHyperion = 15
+eatVigor = 50
+eatHp = 60
+eatMp = 40
+eatMood = 0.30
+eatMessage = 따뜻한 빛이 온몸으로 퍼진다. 오래된 피로가 사라지는 느낌이다.
+
+[wind_herb]
+name = 바람 약초
+category = Herb
+price = 22
+tags = /organic/raw/herb/wind/specialty/
+description = 풍혈지대의 강한 바람 속에서 자라는 약초. 바람의 기운을 담아 특별한 향기가 난다.
+rarity = common
+source = gather:Windfall_Valley
+minHyperion = 5
+
+[gale_feather]
+name = 돌풍 깃털
+category = OreCommon
+price = 65
+tags = /inedible/organic/specialty/feather/wind/
+description = 풍혈지대 절벽에 걸린 희귀 새의 깃털. 바람을 타고 날아온 것으로, 풍속성 마법 재료로 쓰인다.
+rarity = uncommon
+source = gather:Windfall_Valley
+minHyperion = 8
+
+[moss_fruit]
+name = 모스 과실
+category = Food
+price = 25
+tags = /edible/organic/raw/fruit/specialty/
+description = 모스 마을 과수원의 특산 과실. 풍연 축제 때 가장 많이 팔리는 달콤한 열매다.
+rarity = uncommon
+source = gather:Moss
+minHyperion = 5
+eatVigor = 15
+eatHp = 18
+eatMp = 8
+eatMood = 0.12
+eatMessage = 축제의 분위기가 느껴지는 달콤한 맛이다.
+
+[festival_flower]
+name = 풍연 꽃
+category = Herb
+price = 14
+tags = /organic/raw/herb/flower/festival/
+description = 모스 마을 풍연 축제의 상징인 꽃. 가볍고 향기로우며 연에 매달아 날리기도 한다.
+rarity = common
+source = gather:Moss
+minHyperion = 3
+
+[plain_herb]
+name = 평원 약초
+category = Herb
+price = 10
+tags = /organic/raw/herb/plain/
+description = 리아그랄타 평원에 흔히 자라는 약초. 바람에 쓸리면서도 꿋꿋이 자란다.
+rarity = common
+source = gather:Riagralta
+minHyperion = 3
+
+[riagralta_wheat]
+name = 리아그랄타 밀
+category = Food
+price = 18
+tags = /edible/organic/raw/grain/specialty/
+description = 일루네온 남쪽 드넓은 평원에서 자라는 특산 밀. 일루네온 제과점들이 선호하는 품종이다.
+rarity = uncommon
+source = gather:Riagralta
+minHyperion = 5
+eatVigor = 10
+eatHp = 8
+eatMp = 2
+eatMood = 0.03
+eatMessage = 고소하고 든든한 맛이다.
