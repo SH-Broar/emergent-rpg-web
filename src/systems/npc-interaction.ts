@@ -505,10 +505,22 @@ export function evaluateAcquisitionLine(
     return { text: t, met: knowledge.recruitedEver.size >= parseInt(recCnt[1], 10), evaluable: true };
   }
 
+  // 시작 캐릭터
+  if (t.includes('시작 캐릭터') || t.includes('원작:')) {
+    return { text: t, met: true, evaluable: true };
+  }
+
   // 사천왕이 모두 동료
-  if (t.includes('사천왕이 모두 동료')) {
+  if (t.includes('사천왕') && t.includes('동료')) {
     const four = ['에코', '카시스', '시아', '리무'];
     return { text: t, met: four.every(n => knowledge.recruitedEver.has(n)), evaluable: true };
+  }
+
+  // X가/이 동료 (단일 이름)
+  const singleRecruit = t.match(/^(?:\d+\.\s*)?(.+?)[가이]\s*동료$/);
+  if (singleRecruit) {
+    const name = singleRecruit[1].trim();
+    return { text: t, met: knowledge.recruitedEver.has(name), evaluable: true };
   }
 
   // 방문한 마을 수 N곳 이상
