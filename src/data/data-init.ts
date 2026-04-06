@@ -11,6 +11,7 @@ import { EventSystem, createGameEvent } from '../models/event';
 import { DungeonSystem, DungeonEventType } from '../models/dungeon';
 import { ActivitySystem } from '../models/activity';
 import { loadHyperion } from '../systems/hyperion';
+import { setDialogueLines } from '../systems/npc-interaction';
 import { loadItemDefs, loadWeaponDefs, loadArmorDefs } from '../types/item-defs';
 import { loadSkillDefs, getBasicSkillsForRace } from '../models/skill';
 import { assignNpcSkills } from '../systems/skill-learning';
@@ -494,6 +495,23 @@ export function initAll(data: GameDataFiles): InitResult {
   initActivities(data.activities, activitySystem);
 
   loadHyperion(data.hyperion);
+
+  // 대사 DB 로드
+  for (const s of data.dialogues) {
+    const lines: string[] = [];
+    for (let i = 1; i <= 20; i++) {
+      const line = s.get(String(i), '');
+      if (line) lines.push(line);
+    }
+    if (lines.length > 0) setDialogueLines(s.name, lines);
+  }
+
+  // 히페리온 존재 여부 플래그 설정
+  for (const s of data.hyperion) {
+    if (s.name === '__default__') continue;
+    const actor = actors.find(a => a.name === s.name);
+    if (actor) actor.hasHyperion = true;
+  }
 
   // 입수 조건 로드
   for (const s of data.acquisition) {

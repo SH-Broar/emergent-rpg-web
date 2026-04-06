@@ -35,6 +35,11 @@ export function loadHyperion(sections: DataSection[]): void {
 }
 
 export function getHyperionEntry(actorName: string): HyperionEntry | undefined {
+  return hyperionDB.get(actorName);
+}
+
+/** __default__ 포함 폴백 (플레이어 전용) */
+export function getHyperionEntryWithDefault(actorName: string): HyperionEntry | undefined {
   return hyperionDB.get(actorName) ?? hyperionDB.get('__default__');
 }
 

@@ -120,6 +120,7 @@ export class Actor {
   background = '';
   acquisitionMethod = '';
   acquisitionDifficulty = 0;
+  hasHyperion = false;
   hasLearnedMagic = false;
   stationary = false;
   hyperionLevel = 0;

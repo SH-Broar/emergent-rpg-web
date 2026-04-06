@@ -207,9 +207,14 @@ export function createGameScreen(
     if (result.messages.length > 0) {
       statusMessage = result.messages[result.messages.length - 1];
     }
-    // 모든 메시지를 로그에 누적
+    // 메시지를 로그 + 백로그에 동기화
     for (const m of result.messages) {
       accumulatedLog.push({ time: session.gameTime.toString(), text: m });
+      // 백로그에 아직 없는 메시지만 추가
+      const recent = session.backlog.getRecent(3);
+      if (!recent.some(e => e.text === m)) {
+        session.backlog.add(session.gameTime, m, '행동', session.player.name);
+      }
     }
     if (result.screenChange) {
       onScreenChange(result.screenChange);

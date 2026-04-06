@@ -588,15 +588,14 @@ export function getRelationshipStage(
 
   if (allActors) {
     const target = allActors.find(a => a.name === targetName);
+
+    // 히페리온 데이터가 없는 NPC → 영원히 아는 사이 (동료화 불가)
+    if (target && !target.hasHyperion) return 'known';
+
     if (target && target.acquisitionMethod) {
+      // 입수 조건이 있는 NPC — 조건 충족 시 친한 사이
       if (areAcquisitionConditionsMet(target, player, allActors, knowledge)) return 'close';
       return 'known';
-    }
-    // 입수 조건이 없는 NPC는 호감도 기반 폴백
-    const rel = player.relationships.get(targetName);
-    if (rel) {
-      const overall = getRelationshipOverall(rel);
-      if (rel.interactionCount >= 5 && overall >= 0.30) return 'close';
     }
   }
 
