@@ -222,7 +222,9 @@ async function boot() {
               current.playable = false;
               current.isCustom = false;
               current.coreMatrix.recalculate(current.color.values);
-              autosave();
+              session.playerIdx = -1;
+              // 오토세이브 삭제 (이어하기 방지)
+              localStorage.removeItem('emergent_save_0');
               sm.pop(); // memory spring 닫기
               proceedToCharCreate();
             },
@@ -232,7 +234,8 @@ async function boot() {
               const idx = session.actors.indexOf(current);
               if (idx >= 0) session.actors.splice(idx, 1);
               session.playerIdx = -1;
-              autosave();
+              // 오토세이브 삭제 (이어하기 방지)
+              localStorage.removeItem('emergent_save_0');
               sm.pop(); // memory spring 닫기
               proceedToCharCreate();
             },
@@ -653,9 +656,55 @@ async function boot() {
             // 설정 저장 후 메뉴로 복귀 (새 게임 시 반영됨)
           }));
           break;
+        case 'debug_reset':
+          sm.push({
+            id: 'debug-reset',
+            render(el) {
+              el.innerHTML = `
+                <div class="screen info-screen" style="justify-content:center;text-align:center">
+                  <h2 style="color:var(--accent)">⚠ 세계 리셋 (디버그)</h2>
+                  <p style="color:var(--text-dim);line-height:1.8;margin:16px 0">
+                    모든 NPC의 관계, 히페리온, 컬러, 레벨 등<br>
+                    세계 전체를 초기 상태로 되돌립니다.<br>
+                    오토세이브 데이터도 삭제됩니다.<br><br>
+                    <strong style="color:var(--accent)">이 작업은 되돌릴 수 없습니다.</strong>
+                  </p>
+                  <div style="display:flex;gap:8px;justify-content:center">
+                    <button class="btn" data-cancel style="min-width:120px">취소 [Esc]</button>
+                    <button class="btn btn-primary" data-confirm style="min-width:120px">리셋 실행 [Enter]</button>
+                  </div>
+                </div>`;
+              el.querySelector('[data-cancel]')?.addEventListener('click', () => sm.pop());
+              el.querySelector('[data-confirm]')?.addEventListener('click', executeDebugReset);
+            },
+            onKey(key) {
+              if (key === 'Escape') sm.pop();
+              if (key === 'Enter') executeDebugReset();
+            },
+          });
+          break;
       }
     });
     sm.replace(menu);
+  }
+
+  function executeDebugReset(): void {
+    // 세이브 데이터 삭제
+    localStorage.removeItem('emergent_save_0');
+    // 세계 완전 재초기화
+    const freshResult = initAll(data);
+    session.actors = freshResult.actors;
+    session.world = freshResult.world;
+    session.events = freshResult.events;
+    session.dungeonSystem = freshResult.dungeonSystem;
+    session.activitySystem = freshResult.activitySystem;
+    session.world.seasonSchedule.init(1);
+    session.world.updateWeatherAndTemp();
+    session.playerIdx = -1;
+    session.backlog.clear();
+    session.knowledge = new PlayerKnowledge();
+    sm.pop(); // debug-reset 화면 닫기
+    showMainMenu();
   }
 
   showMainMenu();

@@ -4,12 +4,14 @@ import type { Screen } from '../screen-manager';
 
 declare const __APP_VERSION__: string;
 
-export type MenuChoice = 'new' | 'connect' | 'lore' | 'tutorial' | 'corematrix' | 'datapack';
+export type MenuChoice = 'new' | 'connect' | 'lore' | 'tutorial' | 'corematrix' | 'datapack' | 'debug_reset';
 
 export function createMainMenuScreen(
   hasAutosave: boolean,
   onSelect: (choice: MenuChoice) => void,
 ): Screen {
+  let debugBuffer = '';
+
   return {
     id: 'main-menu',
     render(el) {
@@ -33,6 +35,17 @@ export function createMainMenuScreen(
       });
     },
     onKey(key) {
+      // 디버그 커맨드: "debug" 입력 → 세계 리셋
+      if (key.length === 1 && /^[a-z]$/i.test(key)) {
+        debugBuffer += key.toLowerCase();
+        if (debugBuffer.length > 10) debugBuffer = debugBuffer.slice(-10);
+        if (debugBuffer.endsWith('debug')) {
+          debugBuffer = '';
+          onSelect('debug_reset');
+          return;
+        }
+      }
+
       if (hasAutosave) {
         if (key === '1') onSelect('connect');
         if (key === '2') onSelect('lore');

@@ -137,8 +137,9 @@ export function createGameScreen(
               } else {
                 elemLabel = `<span>속성 : <span style="color:var(--el-${near[0].i})">${elementName(near[0].i as Element)}</span></span>`;
               }
+              const totalHyperion = session.actors.reduce((sum, a) => sum + a.hyperionLevel, 0);
               const titleStr = session.knowledge.activeTitle ? ` · ${session.knowledge.activeTitle}` : '';
-              return `${elemLabel} <span style="color:var(--warning)">✦Lv.${p.hyperionLevel}</span>${titleStr}`;
+              return `${elemLabel} <span style="color:var(--warning)">✦Lv.${totalHyperion}</span>${titleStr}`;
             })()}
           </div>
         </div>

@@ -86,9 +86,9 @@ export function createHyperionScreen(
     `;
     wrap.appendChild(playerInfo);
 
-    // NPC list
+    // NPC list — 플레이어 + 히페리온이 있고 이름을 아는 NPC만 표시
     const knownActors = session.actors.filter(a =>
-      a === p || session.knowledge.knownActorNames.has(a.name)
+      a === p || (a.hasHyperion && session.knowledge.knownActorNames.has(a.name))
     );
 
     const listTitle = document.createElement('h3');
