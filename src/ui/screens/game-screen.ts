@@ -86,7 +86,7 @@ const INFO_ACTIONS: ActionDef[] = [
 // ============================================================
 // HUD 미니맵 — 현재 위치 중심 BFS 2홉 이내 장소
 // ============================================================
-function buildMiniMapSvg(session: GameSession, W = 130, H = 78): string {
+function buildMiniMapSvg(session: GameSession, W = 200, H = 120): string {
   const playerLoc = session.player.currentLocation;
   const world = session.world;
   const allLocs = world.getAllLocations();
@@ -267,7 +267,7 @@ export function createGameScreen(
           </div>
         </div>
 
-        <div style="display:flex;gap:6px;align-items:flex-start;min-height:78px">
+        <div style="display:flex;gap:6px;align-items:flex-start;min-height:120px">
           <div title="현재 위치 주변 지도 (M키로 전체 지도)">${buildMiniMapSvg(session)}</div>
           <div class="hud-nearby" style="flex:1;min-width:0">
             <div style="color:var(--text-dim);font-size:10px;margin-bottom:3px">주변 인물</div>
