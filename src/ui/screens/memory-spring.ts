@@ -1,5 +1,6 @@
 // memory-spring.ts — 기억의 샘 화면
 // 플레이어의 여정과 기억을 되돌아보는 장소
+// 영혼 각인(NPC화 후 새 캐릭터) / 천도제(완전 새 게임) 기능 포함
 
 import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
@@ -7,13 +8,22 @@ import { locationName } from '../../types/registry';
 import { raceName, spiritRoleName, elementName, Element } from '../../types/enums';
 import { getItemDef } from '../../types/item-defs';
 
-type SpringTab = 'journey' | 'relations' | 'knowledge';
+type SpringTab = 'journey' | 'relations' | 'knowledge' | 'soul';
+
+export interface MemorySpringCallbacks {
+  onBack: () => void;
+  /** 영혼 각인: 현재 캐릭터를 NPC화하고 새 캐릭터 선택으로 */
+  onSoulImprint: () => void;
+  /** 천도제: 세계를 유지하되 새 캐릭터로 시작 */
+  onRebirth: () => void;
+}
 
 export function createMemorySpringScreen(
   session: GameSession,
-  onBack: () => void,
+  callbacks: MemorySpringCallbacks,
 ): Screen {
   let tab: SpringTab = 'journey';
+  let confirmMode: 'none' | 'imprint' | 'rebirth' = 'none';
 
   function render(el: HTMLElement) {
     el.innerHTML = '';
@@ -33,6 +43,7 @@ export function createMemorySpringScreen(
         <button class="btn info-btn ${tab === 'journey' ? 'active' : ''}" data-tab="journey">1. \uc5ec\uc815</button>
         <button class="btn info-btn ${tab === 'relations' ? 'active' : ''}" data-tab="relations">2. \uc778\uc5f0</button>
         <button class="btn info-btn ${tab === 'knowledge' ? 'active' : ''}" data-tab="knowledge">3. \uc9c0\uc2dd</button>
+        <button class="btn info-btn ${tab === 'soul' ? 'active' : ''}" data-tab="soul">4. \uc601\ud63c</button>
       </div>
     `;
 
@@ -135,25 +146,145 @@ export function createMemorySpringScreen(
         content.innerHTML = lines.join('');
         break;
       }
+
+      case 'soul': {
+        if (confirmMode !== 'none') {
+          renderConfirm(content);
+        } else {
+          renderSoulTab(content);
+        }
+        break;
+      }
     }
 
     wrap.appendChild(content);
 
     const hint = document.createElement('p');
     hint.className = 'hint';
-    hint.textContent = '1=\uc5ec\uc815 2=\uc778\uc5f0 3=\uc9c0\uc2dd Esc=\ub4a4\ub85c';
+    hint.textContent = '1=\uc5ec\uc815 2=\uc778\uc5f0 3=\uc9c0\uc2dd 4=\uc601\ud63c Esc=\ub4a4\ub85c';
     wrap.appendChild(hint);
 
     el.appendChild(wrap);
 
     // Event bindings
-    wrap.querySelector('[data-back]')?.addEventListener('click', onBack);
+    wrap.querySelector('[data-back]')?.addEventListener('click', () => {
+      if (confirmMode !== 'none') { confirmMode = 'none'; render(el); }
+      else callbacks.onBack();
+    });
     wrap.querySelectorAll<HTMLButtonElement>('[data-tab]').forEach(btn => {
       btn.addEventListener('click', () => {
+        confirmMode = 'none';
         tab = btn.dataset.tab as SpringTab;
         render(el);
       });
     });
+  }
+
+  function renderSoulTab(content: HTMLElement): void {
+    const p = session.player;
+    const k = session.knowledge;
+
+    const lines: string[] = [];
+    lines.push(`<div style="margin-bottom:12px"><b>영혼의 의식</b></div>`);
+    lines.push(`<div style="color:var(--text-dim);font-size:13px;margin-bottom:16px;line-height:1.6">
+      잔잔한 샘물이 당신의 영혼에 속삭입니다.<br>
+      이곳에서 현재의 여정을 마무리하고 새로운 시작을 할 수 있습니다.
+    </div>`);
+
+    // 여정 요약
+    lines.push(`<div style="padding:8px;background:var(--bg-card);border-radius:8px;margin-bottom:12px;font-size:12px;line-height:1.8">
+      <div>${p.name} · Lv.${p.base.level} · 히페리온 Lv.${p.hyperionLevel}</div>
+      <div>여정 ${session.gameTime.day}일차 · 방문 ${k.visitedLocations.size}곳 · 던전 클리어 ${k.totalDungeonsCleared}회</div>
+      <div>동료 ${k.recruitedEver.size}명 영입 · 대화 ${k.totalConversations}회</div>
+      ${k.earnedTitles.length > 0 ? `<div>칭호 ${k.earnedTitles.length}개 획득</div>` : ''}
+    </div>`);
+
+    content.innerHTML = lines.join('');
+
+    // 영혼 각인 버튼
+    const imprintBtn = document.createElement('button');
+    imprintBtn.className = 'btn';
+    imprintBtn.style.cssText = 'width:100%;text-align:left;padding:12px;margin-bottom:8px;border-left:4px solid var(--warning)';
+    imprintBtn.innerHTML = `
+      <div style="font-weight:bold;color:var(--warning)">✦ 영혼 각인</div>
+      <div style="font-size:12px;color:var(--text-dim);margin-top:4px">
+        ${p.name}의 영혼을 세계에 각인합니다.<br>
+        ${p.name}은(는) 이 세계의 주민(NPC)이 되어 살아가며,<br>
+        당신은 새로운 캐릭터로 여정을 시작합니다.
+      </div>`;
+    imprintBtn.addEventListener('click', () => { confirmMode = 'imprint'; render(content.closest('.memory-spring-screen')?.parentElement as HTMLElement); });
+    content.appendChild(imprintBtn);
+
+    // 천도제 버튼
+    const rebirthBtn = document.createElement('button');
+    rebirthBtn.className = 'btn';
+    rebirthBtn.style.cssText = 'width:100%;text-align:left;padding:12px;margin-bottom:8px;border-left:4px solid var(--accent)';
+    rebirthBtn.innerHTML = `
+      <div style="font-weight:bold;color:var(--accent)">☽ 천도제</div>
+      <div style="font-size:12px;color:var(--text-dim);margin-top:4px">
+        ${p.name}의 영혼을 떠나보냅니다.<br>
+        캐릭터는 세계에서 사라지며,<br>
+        당신은 새로운 캐릭터로 여정을 시작합니다.
+      </div>`;
+    rebirthBtn.addEventListener('click', () => { confirmMode = 'rebirth'; render(content.closest('.memory-spring-screen')?.parentElement as HTMLElement); });
+    content.appendChild(rebirthBtn);
+  }
+
+  function renderConfirm(content: HTMLElement): void {
+    const p = session.player;
+    const isImprint = confirmMode === 'imprint';
+
+    const lines: string[] = [];
+    if (isImprint) {
+      lines.push(`<div style="text-align:center;font-size:28px;margin-bottom:8px">✦</div>`);
+      lines.push(`<div style="text-align:center;font-weight:bold;color:var(--warning);margin-bottom:12px;font-size:16px">영혼 각인</div>`);
+      lines.push(`<div style="text-align:center;color:var(--text-dim);line-height:1.8;margin-bottom:16px">
+        ${p.name}의 영혼이 이 세계에 각인됩니다.<br>
+        ${p.name}은(는) NPC로서 이 세계에서 계속 살아갑니다.<br>
+        당신은 새로운 캐릭터를 선택하게 됩니다.<br><br>
+        <span style="color:var(--accent)">이 선택은 되돌릴 수 없습니다.</span>
+      </div>`);
+    } else {
+      lines.push(`<div style="text-align:center;font-size:28px;margin-bottom:8px">☽</div>`);
+      lines.push(`<div style="text-align:center;font-weight:bold;color:var(--accent);margin-bottom:12px;font-size:16px">천도제</div>`);
+      lines.push(`<div style="text-align:center;color:var(--text-dim);line-height:1.8;margin-bottom:16px">
+        ${p.name}의 영혼이 세계를 떠납니다.<br>
+        캐릭터는 이 세계에서 완전히 사라집니다.<br>
+        당신은 새로운 캐릭터를 선택하게 됩니다.<br><br>
+        <span style="color:var(--accent)">이 선택은 되돌릴 수 없습니다.</span>
+      </div>`);
+    }
+
+    content.innerHTML = lines.join('');
+
+    const btnWrap = document.createElement('div');
+    btnWrap.style.cssText = 'display:flex;gap:8px;justify-content:center;margin-top:8px';
+
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'btn';
+    cancelBtn.style.minWidth = '120px';
+    cancelBtn.textContent = '취소 [Esc]';
+    cancelBtn.addEventListener('click', () => { confirmMode = 'none'; render(content.closest('.memory-spring-screen')?.parentElement as HTMLElement); });
+    btnWrap.appendChild(cancelBtn);
+
+    const confirmBtn = document.createElement('button');
+    confirmBtn.className = 'btn btn-primary';
+    confirmBtn.style.minWidth = '120px';
+    confirmBtn.textContent = isImprint ? '각인한다 [Enter]' : '떠나보낸다 [Enter]';
+    confirmBtn.addEventListener('click', () => {
+      if (isImprint) {
+        // 영혼 각인: 현재 캐릭터를 NPC로 변환
+        session.backlog.add(session.gameTime, `${p.name}의 영혼이 기억의 샘에 각인되었다.`, '시스템');
+        callbacks.onSoulImprint();
+      } else {
+        // 천도제: 캐릭터 제거
+        session.backlog.add(session.gameTime, `${p.name}의 영혼이 세계를 떠났다.`, '시스템');
+        callbacks.onRebirth();
+      }
+    });
+    btnWrap.appendChild(confirmBtn);
+
+    content.appendChild(btnWrap);
   }
 
   return {
@@ -162,10 +293,28 @@ export function createMemorySpringScreen(
     onKey(key) {
       const container = document.querySelector('.memory-spring-screen')?.parentElement;
       if (!(container instanceof HTMLElement)) return;
-      if (key === 'Escape' || key === 'q') { onBack(); return; }
+      if (key === 'Escape' || key === 'q') {
+        if (confirmMode !== 'none') { confirmMode = 'none'; render(container); }
+        else callbacks.onBack();
+        return;
+      }
+      if (confirmMode !== 'none') {
+        if (key === 'Enter') {
+          const p = session.player;
+          if (confirmMode === 'imprint') {
+            session.backlog.add(session.gameTime, `${p.name}의 영혼이 기억의 샘에 각인되었다.`, '시스템');
+            callbacks.onSoulImprint();
+          } else {
+            session.backlog.add(session.gameTime, `${p.name}의 영혼이 세계를 떠났다.`, '시스템');
+            callbacks.onRebirth();
+          }
+        }
+        return;
+      }
       if (key === '1') { tab = 'journey'; render(container); }
       else if (key === '2') { tab = 'relations'; render(container); }
       else if (key === '3') { tab = 'knowledge'; render(container); }
+      else if (key === '4') { tab = 'soul'; render(container); }
     },
   };
 }

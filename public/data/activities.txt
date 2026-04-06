@@ -163,21 +163,13 @@ activity_1_gives = GuildCard:1
 activity_1_colorInfluence = Light:0.02, Iron:0.01
 
 [Memory_Spring]
-activity_1_name = 영혼 보존
-activity_1_key = soul_save
-activity_1_time = 30
-activity_1_vigor = 10
-activity_1_desc = 기억의 샘에서 현재의 자아를 세계의 기억 속에 각인한다.
-activity_1_effect = heal_hp:50
-activity_1_colorInfluence = Light:0.06, Water:0.04
-
-activity_2_name = 명상
-activity_2_key = meditate
-activity_2_time = 40
-activity_2_vigor = 0
-activity_2_desc = 샘물 소리를 들으며 깊이 명상한다. 기력이 크게 회복된다.
-activity_2_effect = restore_vigor:40
-activity_2_colorInfluence = Water:0.04, Light:0.03, Wind:0.02
+activity_1_name = 명상
+activity_1_key = meditate
+activity_1_time = 40
+activity_1_vigor = 0
+activity_1_desc = 샘물 소리를 들으며 깊이 명상한다. 기력이 크게 회복된다.
+activity_1_effect = restore_vigor:40
+activity_1_colorInfluence = Water:0.04, Light:0.03, Wind:0.02
 
 [Limun_Ruins]
 activity_1_name = 고대 비문 해독

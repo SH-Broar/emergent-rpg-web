@@ -214,7 +214,29 @@ async function boot() {
           sm.push(createHomeScreen(session, () => sm.pop()));
           break;
         case 'memory_spring':
-          sm.push(createMemorySpringScreen(session, () => sm.pop()));
+          sm.push(createMemorySpringScreen(session, {
+            onBack: () => sm.pop(),
+            onSoulImprint: () => {
+              // 영혼 각인: 현재 캐릭터를 NPC로 변환 후 캐릭터 선택
+              const current = session.player;
+              current.playable = false;
+              current.isCustom = false;
+              current.coreMatrix.recalculate(current.color.values);
+              autosave();
+              sm.pop(); // memory spring 닫기
+              proceedToCharCreate();
+            },
+            onRebirth: () => {
+              // 천도제: 현재 캐릭터 제거 후 캐릭터 선택
+              const current = session.player;
+              const idx = session.actors.indexOf(current);
+              if (idx >= 0) session.actors.splice(idx, 1);
+              session.playerIdx = -1;
+              autosave();
+              sm.pop(); // memory spring 닫기
+              proceedToCharCreate();
+            },
+          }));
           break;
         case 'info_backlog':
           sm.push(createBacklogScreen(session, () => sm.pop()));
