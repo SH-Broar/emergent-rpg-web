@@ -86,11 +86,8 @@ export function createDialogueScreen(
       dialogueLines = [
         `\u300c${line}\u300d`,
       ];
-      session.backlog.add(
-        session.gameTime,
-        `${p.name}\uc774(\uac00) ${npc.name}\uc640(\uacfc) \ub300\ud654\ud588\ub2e4.`,
-        '\ud589\ub3d9',
-      );
+      session.backlog.add(session.gameTime, `${p.name}\uc774(\uac00) ${npc.name}\uc640(\uacfc) \ub300\ud654\ud588\ub2e4.`, '\ud589\ub3d9', p.name);
+      session.backlog.add(session.gameTime, `${npc.name}: \u300c${line}\u300d`, '\ub300\uc0ac', p.name);
       callbacks.onTalk(npc.name);
     }
 
@@ -150,6 +147,7 @@ export function createDialogueScreen(
           const curStage = isComp ? 'companion' as const : getRelationshipStage(p, npcName, session.knowledge, session.actors);
           const contLine = getContinueDialogue(npcAct, curStage);
           dialogueLines.push(`\u300c${contLine}\u300d`);
+          session.backlog.add(session.gameTime, `${npcName}: \u300c${contLine}\u300d`, '\ub300\uc0ac', p.name);
         }
         p.adjustRelationship(npcName, 0.02, 0.01);
         renderDialogue(el);

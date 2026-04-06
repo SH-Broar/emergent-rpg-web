@@ -64,24 +64,60 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
 
     case 'look': {
       const loc = session.world.getLocation(p.currentLocation);
-      const npcsHere = session.actors.filter(a => a !== p && a.currentLocation === p.currentLocation);
-      result.messages.push(`📍 ${locationName(p.currentLocation)}`);
+      const npcsHere = session.actors.filter(a => a !== p && a.currentLocation === p.currentLocation && a.isAlive() && !a.base.sleeping);
+      const locLabel = locationName(p.currentLocation);
+
+      result.messages.push(`📍 ${locLabel}`);
       if (loc.description) result.messages.push(loc.description);
+
+      // 주변 NPC
       if (npcsHere.length > 0) {
-        result.messages.push(`이곳에 있는 사람: ${npcsHere.map(a => a.name).join(', ')}`);
+        const names = npcsHere.map(a => session.knowledge.isKnown(a.name) ? a.name : '???');
+        result.messages.push(`주변 인물 (${npcsHere.length}명): ${names.join(', ')}`);
+      } else {
+        result.messages.push('주변에 아무도 없다.');
       }
+
+      // 날씨/계절
       result.messages.push(`날씨: ${weatherName(session.world.weather)}, 계절: ${seasonName(session.world.getCurrentSeason())}`);
+
+      // 근처 던전
+      const nearbyDungeons = session.dungeonSystem.getAllDungeons().filter(d => d.accessFrom === p.currentLocation);
+      if (nearbyDungeons.length > 0) {
+        result.messages.push(`던전: ${nearbyDungeons.map(d => d.name).join(', ')}`);
+      }
+
+      // 채집 가능 여부
+      const gatherHere = findItemsBySource('gather:' + p.currentLocation);
+      if (gatherHere.length > 0) {
+        result.messages.push(`채집 가능: ${gatherHere.map(g => g.name).join(', ')}`);
+      }
+
+      // 자원 현황
+      const resources = [...loc.resources.entries()].filter(([, n]) => n > 0);
+      if (resources.length > 0) {
+        result.messages.push(`지역 자원: ${resources.length}종`);
+      }
+
+      // 로그에 기록
+      for (const msg of result.messages) {
+        session.backlog.add(session.gameTime, msg, '행동', p.name);
+      }
       break;
     }
 
     case 'eat': result.messages.push('식사를 준비한다...'); result.screenChange = 'eat'; break;
 
-    case 'rest':
-      p.adjustMp(20);
-      p.adjustHp(10);
-      session.backlog.add(session.gameTime, `${p.name}이(가) 휴식을 취했다.`, '행동');
-      result.messages.push('휴식을 취했다. MP +20, HP +10');
+    case 'rest': {
+      const hpRecover = Math.round(p.getEffectiveMaxHp() * 0.2);
+      const mpRecover = Math.round(p.getEffectiveMaxMp() * 0.2);
+      p.adjustHp(hpRecover);
+      p.adjustMp(mpRecover);
+      const restMsg = `휴식을 취했다. HP +${hpRecover}, MP +${mpRecover}`;
+      session.backlog.add(session.gameTime, `${p.name}이(가) ${restMsg}`, '행동', p.name);
+      result.messages.push(restMsg);
       break;
+    }
 
     case 'gather': {
       const loc = session.world.getLocation(p.currentLocation);
