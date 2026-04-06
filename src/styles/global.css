@@ -178,8 +178,8 @@ html, body {
   text-align: left; min-height: 44px;
 }
 .npc-num { width: 20px; color: var(--text-dim); font-size: 13px; }
-.npc-name { font-weight: 600; flex: 1; }
-.npc-detail { color: var(--text-dim); font-size: 12px; }
+.npc-name { font-weight: 600; flex-shrink: 0; }
+.npc-detail { color: var(--text-dim); font-size: 12px; flex: 1; min-width: 0; }
 
 /* Item grid */
 .item-grid {

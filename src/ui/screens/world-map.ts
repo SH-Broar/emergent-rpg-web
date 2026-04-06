@@ -9,8 +9,10 @@ export function getZoneColor(locationId: string): string {
   // 일루네온 — 하늘색
   if (locationId.startsWith('Iluneon') || locationId === 'Memory_Spring')
     return '#87CEEB';
-  // 엘리메스 — 초록
-  if (['Town_Elimes','Guild_Hall','Market_Square','Tavern','Blacksmith','Herb_Garden','Church','Farm','Lake'].includes(locationId))
+  // 엘리메스 마을 및 근처 야외 — 초록
+  if (['Town_Elimes','Guild_Hall','Market_Square','Tavern','Blacksmith','Herb_Garden','Church','Farm','Lake',
+       'Wilderness','Mountain_Path','Trade_Route','Abandoned_Mine','Bandit_Hideout',
+       'Silk_Workshop','Moonlit_Clearing','Bloom_Terrace'].includes(locationId))
     return '#4ecca3';
   // 루나 (마법학교) — 보라
   if (['Luna_Academy','Wizard_Tower','Stella_Ville'].includes(locationId))
@@ -48,9 +50,9 @@ export function getZoneColor(locationId: string): string {
   // 팔콘 가든 등 특수지역 — 연분홍
   if (['Falcon_Garden','Starfall_Basin','Mirage_Oasis','Twilight_Spire','Crystal_Cavern'].includes(locationId))
     return '#d4a0c0';
-  // 던전/야생 — 어두운 회색
-  if (['Dungeon_Entrance','Dungeon_Interior','Abandoned_Mine','Bandit_Hideout','Wilderness','Mountain_Path','Trade_Route'].includes(locationId))
-    return '#666677';
+  // 던전 — 심홍
+  if (['Dungeon_Entrance','Dungeon_Interior'].includes(locationId))
+    return '#c0392b';
   // 기본
   return '#888899';
 }

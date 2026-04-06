@@ -531,37 +531,6 @@ export function createInfoScreen(
   };
 }
 
-// --- Location type colors ---
-const LOCATION_TYPE_COLORS: Record<string, string> = {
-  home: '#ff9ff3',     // 자택 - 분홍
-  town: '#4ecca3',     // 마을 중심 - 초록
-  guild: '#ffc857',    // 길드 - 주황
-  trade: '#f9ca24',    // 상업 - 금색
-  craft: '#cd6133',    // 공방 - 구리
-  nature: '#7bed9f',   // 자연 - 연두
-  water: '#74b9ff',    // 물가 - 파랑
-  mountain: '#a29bfe', // 산 - 보라
-  dungeon: '#e94560',  // 던전 - 빨강
-  special: '#ffe66d',  // 특수 - 노랑
-  holy: '#dfe6e9',     // 신성 - 흰색
-};
-
-const LOCATION_TYPES: Record<string, string> = {
-  Town_Elimes: 'town', Guild_Hall: 'guild', Market_Square: 'trade',
-  Tavern: 'town', Church: 'holy', Farm: 'nature', Blacksmith: 'craft',
-  Herb_Garden: 'nature', Lake: 'water', Wilderness: 'nature',
-  Mountain_Path: 'mountain', Trade_Route: 'trade', Memory_Spring: 'special',
-  Wizard_Tower: 'special', Falcon_Garden: 'nature', Starfall_Basin: 'special',
-  Mirage_Oasis: 'water', Ancient_Tree_Crown: 'special', Crystal_Cavern: 'dungeon',
-  Limun_Ruins: 'dungeon', Dungeon_Entrance: 'dungeon', Dungeon_Interior: 'dungeon',
-  Abandoned_Mine: 'dungeon', Bandit_Hideout: 'dungeon', Twilight_Spire: 'dungeon',
-};
-
-function getLocationColor(locId: string, homeLocation?: string): string {
-  if (homeLocation && locId === homeLocation) return LOCATION_TYPE_COLORS.home;
-  const type = LOCATION_TYPES[locId] ?? 'nature';
-  return LOCATION_TYPE_COLORS[type] ?? LOCATION_TYPE_COLORS.nature;
-}
 
 // --- Move screen ---
 export function createMoveScreen(
@@ -580,7 +549,7 @@ export function createMoveScreen(
           <p>현재: ${locationName(p.currentLocation)}</p>
           <div class="menu-buttons">
             ${routes.map(([loc, mins], i) => {
-              const color = getLocationColor(loc, p.homeLocation);
+              const color = loc === p.homeLocation ? '#ff9ff3' : getZoneColor(loc);
               // 던전 입구인 경우 표시
               const isDungeon = session.dungeonSystem.isDungeonEntrance(loc);
               const dungeonBadge = isDungeon ? ' <span style="color:var(--accent)">⚔</span>' : '';
