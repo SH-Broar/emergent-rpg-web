@@ -442,7 +442,7 @@ async function boot() {
               <p>• S=세이브/로드, Esc=뒤로</p>
               <p></p>
               <p><b>게임 흐름</b></p>
-              <p>• 행동마다 시간이 경과하고 기력이 소모됩니다</p>
+              <p>• 행동마다 시간이 경과하고 TP가 소모됩니다</p>
               <p>• NPC와 대화하여 관계를 쌓으세요</p>
               <p>• 던전에서 전투하고 자원을 모으세요</p>
               <p>• 10초간 입력이 없으면 자동으로 대기합니다</p>
@@ -603,7 +603,7 @@ async function boot() {
                 if (levelsGained > 0) summary += `<p>레벨이 ${levelsGained} 올랐다! (Lv.${session.player.base.level})</p>`;
                 if (seasonChanged) summary += `<p>계절이 ${seasonName(newSeason)}(으)로 바뀌었다.</p>`;
                 summary += `<p>현재: ${session.gameTime.toString()}</p>`;
-                summary += `<p>HP: ${Math.round(session.player.base.hp)}/${Math.round(session.player.getEffectiveMaxHp())} · 기력: ${Math.round(session.player.base.vigor)}/${Math.round(session.player.getEffectiveMaxVigor())}</p>`;
+                summary += `<p>HP: ${Math.round(session.player.base.hp)}/${Math.round(session.player.getEffectiveMaxHp())} · MP: ${Math.round(session.player.base.mp)}/${Math.round(session.player.getEffectiveMaxMp())} · TP: ${session.player.base.ap}/${session.player.getEffectiveMaxAp()}</p>`;
 
                 el.innerHTML = `
                   <div class="screen info-screen" style="justify-content:center;text-align:center">

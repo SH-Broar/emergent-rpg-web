@@ -191,11 +191,12 @@ export interface CraftCheck {
  * 장소 제약은 여기서 검사하지 않는다 — 호출측이 location 을 별도로 처리한다.
  */
 export function canCraft(actor: Actor, recipe: CraftRecipe): CraftCheck {
-  // 기력 확인
-  if (actor.base.vigor < recipe.vigorCost) {
+  // TP 확인
+  const tpCost = Math.ceil(recipe.vigorCost / 10);
+  if (!actor.hasAp(tpCost)) {
     return {
       possible: false,
-      reason: `기력이 부족하다. (필요: ${recipe.vigorCost}, 현재: ${Math.floor(actor.base.vigor)})`,
+      reason: `TP가 부족하다. (필요: ${tpCost}, 현재: ${actor.base.ap})`,
     };
   }
 
@@ -241,8 +242,8 @@ export function executeCraft(actor: Actor, recipe: CraftRecipe): CraftResult {
     actor.spirit.inventory.set(type, cur - input.amount);
   }
 
-  // 기력 소모
-  actor.adjustVigor(-recipe.vigorCost);
+  // TP 소모
+  actor.adjustAp(-Math.ceil(recipe.vigorCost / 10));
 
   // 기본 출력량 계산
   const outputType = resolveItemType(recipe.output.item);

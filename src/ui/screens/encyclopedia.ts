@@ -130,7 +130,7 @@ export function createEncyclopediaScreen(
       }
       if (sel.eatVigor || sel.eatHp || sel.eatMp) {
         html += `<p style="font-size:13px">섭취 효과:`;
-        if (sel.eatVigor) html += ` 기력+${sel.eatVigor}`;
+        if (sel.eatVigor) html += ` MP+${sel.eatVigor}`;
         if (sel.eatHp) html += ` HP+${sel.eatHp}`;
         if (sel.eatMp) html += ` MP+${sel.eatMp}`;
         html += `</p>`;

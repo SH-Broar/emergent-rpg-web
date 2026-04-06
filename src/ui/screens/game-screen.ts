@@ -83,7 +83,6 @@ export function createGameScreen(
   function renderHud(el: HTMLElement) {
     const p = session.player;
     const hpPct = Math.round((p.base.hp / p.getEffectiveMaxHp()) * 100);
-    const vigorPct = Math.round((p.base.vigor / p.getEffectiveMaxVigor()) * 100);
 
     // 지역 이동 시 로그 초기화
     if (p.currentLocation !== lastLocation) {
@@ -109,9 +108,9 @@ export function createGameScreen(
             <span class="stat-val">${Math.round(p.base.hp)}/${Math.round(p.getEffectiveMaxHp())}</span>
           </div>
           <div class="stat-bar">
-            <span class="stat-label">기력</span>
-            <div class="bar"><div class="bar-fill vigor-bar" style="width:${vigorPct}%"></div></div>
-            <span class="stat-val">${Math.round(p.base.vigor)}/${Math.round(p.getEffectiveMaxVigor())}</span>
+            <span class="stat-label">MP</span>
+            <div class="bar"><div class="bar-fill vigor-bar" style="width:${Math.round((p.base.mp / p.getEffectiveMaxMp()) * 100)}%"></div></div>
+            <span class="stat-val">${Math.round(p.base.mp)}/${Math.round(p.getEffectiveMaxMp())}</span>
           </div>
           <div class="stat-bar">
             <span class="stat-label">TP</span>
@@ -274,7 +273,6 @@ export function createInfoScreen(
               <div>레벨: ${p.base.level} (EXP ${p.base.exp})</div>
               <div>HP: ${Math.round(p.base.hp)}/${Math.round(p.getEffectiveMaxHp())}</div>
               <div>MP: ${Math.round(p.base.mp)}/${Math.round(p.getEffectiveMaxMp())}</div>
-              <div>기력: ${Math.round(p.base.vigor)}/${Math.round(p.getEffectiveMaxVigor())}</div>
               <div>공격: ${p.getEffectiveAttack().toFixed(1)}</div>
               <div>방어: ${p.getEffectiveDefense().toFixed(1)}</div>
               <div>골드: ${p.spirit.gold}G</div>

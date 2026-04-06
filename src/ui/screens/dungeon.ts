@@ -612,7 +612,7 @@ export function createDungeonScreen(
         <p style="color:var(--text-dim)">TP: ${p.base.ap}/${p.getEffectiveMaxAp()}</p>
       </div>
       <div class="menu-buttons" style="margin-top:12px">
-        <button class="btn btn-primary" data-action="rest">1. 휴식하기 (HP+20, MP+10, 기력 소모 없음)</button>
+        <button class="btn btn-primary" data-action="rest">1. 휴식하기 (HP+20, MP+10, TP 소모 없음)</button>
         <button class="btn" data-action="skip">2. 그냥 지나치기</button>
       </div>
       <p class="hint">1=휴식, 2=지나침</p>

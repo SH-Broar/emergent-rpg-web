@@ -30,7 +30,7 @@ export function createInitialStatSlots(): StatSlot[] {
     { name: 'MP', allocated: 0, perPoint: 5 },
     { name: '공격', allocated: 0, perPoint: 2 },
     { name: '방어', allocated: 0, perPoint: 1 },
-    { name: '기력', allocated: 0, perPoint: 10 },
+    { name: 'MP', allocated: 0, perPoint: 10 },
     { name: '골드', allocated: 0, perPoint: 30 },
   ];
 }
@@ -107,7 +107,7 @@ export function createLevelUpStatSlots(): StatSlot[] {
     { name: '최대MP', allocated: 0, perPoint: 4 },
     { name: '공격', allocated: 0, perPoint: 1.5 },
     { name: '방어', allocated: 0, perPoint: 1 },
-    { name: '최대기력', allocated: 0, perPoint: 8 },
+    { name: '최대MP', allocated: 0, perPoint: 8 },
   ];
 }
 

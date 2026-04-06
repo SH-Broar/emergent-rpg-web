@@ -33,7 +33,7 @@ export function createHomeScreen(
 
     if (isHome) {
       const info = document.createElement('p');
-      info.textContent = `HP: ${Math.round(p.base.hp)}/${p.getEffectiveMaxHp()} | \uae30\ub825: ${Math.round(p.base.vigor)}/${p.getEffectiveMaxVigor()} | TP: ${p.base.ap}/${p.getEffectiveMaxAp()}`;
+      info.textContent = `HP: ${Math.round(p.base.hp)}/${p.getEffectiveMaxHp()} | MP: ${Math.round(p.base.mp)}/${p.getEffectiveMaxMp()} | TP: ${p.base.ap}/${p.getEffectiveMaxAp()}`;
       wrap.appendChild(info);
 
       const sleepBtn = document.createElement('button');
@@ -121,8 +121,8 @@ export function createHomeScreen(
       <p style="font-size:18px;margin-bottom:4px">${gt.day}\uc77c\uc9f8 \u00b7 ${seasonStr}</p>
       <p style="color:var(--text-dim);margin-bottom:16px">${gt.toString()}</p>
       <div style="font-size:14px;color:var(--text-dim);margin-bottom:20px">
-        <p>HP ${Math.round(p.base.hp)}/${Math.round(p.getEffectiveMaxHp())} \u00b7 \uae30\ub825 ${Math.round(p.base.vigor)}/${Math.round(p.getEffectiveMaxVigor())} \u00b7 TP ${p.base.ap}/${p.getEffectiveMaxAp()}</p>
-        <p style="color:var(--success)">\uccb4\ub825\uacfc \uae30\ub825\uc774 \ubaa8\ub450 \ud68c\ubcf5\ub418\uc5c8\ub2e4!</p>
+        <p>HP ${Math.round(p.base.hp)}/${Math.round(p.getEffectiveMaxHp())} \u00b7 MP ${Math.round(p.base.mp)}/${Math.round(p.getEffectiveMaxMp())} \u00b7 TP ${p.base.ap}/${p.getEffectiveMaxAp()}</p>
+        <p style="color:var(--success)">\ubaa8\ub4e0 \uc0c1\ud0dc\uac00 \ud68c\ubcf5\ub418\uc5c8\ub2e4!</p>
       </div>
       <button class="btn btn-primary" data-ok style="min-width:160px">\ubc16\uc73c\ub85c [Enter]</button>
     `;

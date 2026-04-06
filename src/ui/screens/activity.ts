@@ -48,7 +48,7 @@ export function createActivityScreen(
         btn.innerHTML = `
           <span class="npc-num">${i + 1}.</span>
           <span class="npc-name">${act.name}</span>
-          <span class="npc-detail">${act.description} (\uc2dc\uac04:${act.timeCost}\ubd84, \uae30\ub825:${act.vigorCost}${act.goldCost > 0 ? `, ${act.goldCost}G` : ''})</span>
+          <span class="npc-detail">${act.description} (\uc2dc\uac04:${act.timeCost}\ubd84, TP:${Math.ceil(act.vigorCost / 10)}${act.goldCost > 0 ? `, ${act.goldCost}G` : ''})</span>
         `;
         btn.addEventListener('click', () => executeActivity(i, el));
         list.appendChild(btn);
@@ -66,7 +66,8 @@ export function createActivityScreen(
   }
 
   function checkRequirements(act: ActivityDef): string | null {
-    if (p.base.vigor < act.vigorCost) return '\uae30\ub825\uc774 \ubd80\uc871\ud569\ub2c8\ub2e4!';
+    const tpCost = Math.ceil(act.vigorCost / 10);
+    if (!p.hasAp(tpCost)) return 'TP\uac00 \ubd80\uc871\ud569\ub2c8\ub2e4!';
     if (act.goldCost > 0 && p.spirit.gold < act.goldCost) return '\uace8\ub4dc\uac00 \ubd80\uc871\ud569\ub2c8\ub2e4!';
     for (const req of act.itemReqs) {
       const have = p.spirit.inventory.get(req.item) ?? 0;
@@ -138,8 +139,9 @@ export function createActivityScreen(
       return;
     }
 
-    // Consume resources
-    p.adjustVigor(-act.vigorCost);
+    // Consume TP
+    const tpNeeded = Math.ceil(act.vigorCost / 10);
+    p.adjustAp(-tpNeeded);
     if (act.goldCost > 0) p.addGold(-act.goldCost);
     for (const req of act.itemReqs) {
       p.consumeItem(req.item, req.amount);
@@ -163,7 +165,7 @@ export function createActivityScreen(
 
     // Track
     session.knowledge.trackActivityDone();
-    session.knowledge.trackVigorSpent(act.vigorCost);
+    session.knowledge.trackVigorSpent(Math.ceil(act.vigorCost / 10));
 
     // Backlog
     session.backlog.add(

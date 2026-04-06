@@ -124,8 +124,8 @@ export function canUseSkill(
   if (actor.base.mp < skill.mpCost) {
     return { ok: false, reason: `MP 부족 (필요: ${skill.mpCost}, 현재: ${actor.base.mp})` };
   }
-  if (skill.tpCost > 0 && actor.base.vigor < skill.tpCost * 20) {
-    return { ok: false, reason: `기력 부족 (필요 기력: ${skill.tpCost * 20})` };
+  if (skill.tpCost > 0 && !actor.hasAp(skill.tpCost)) {
+    return { ok: false, reason: `TP 부족 (필요: ${skill.tpCost})` };
   }
   if (skill.hpCost > 0 && actor.base.hp <= skill.hpCost) {
     return { ok: false, reason: `HP 부족 (필요: ${skill.hpCost + 1} 이상)` };
@@ -197,8 +197,8 @@ function applySkillEffect(
       if (skill.id === 'vigor_up' || (e.healHp === 0 && e.healMp === undefined && e.attackMultiplier === undefined && !e.healHp)) {
         if (skill.id.includes('vigor') || skill.id === 'vigor_up') {
           const vigorAmt = Math.round(15 * levelMult);
-          actor.adjustVigor(vigorAmt);
-          messages.push(`${skill.name}: 기력 ${vigorAmt} 회복`);
+          actor.adjustMp(vigorAmt);
+          messages.push(`${skill.name}: MP ${vigorAmt} 회복`);
         }
       }
       break;

@@ -262,8 +262,8 @@ export function processTick(
   state.enemyHp = dummyCombatState.enemyHp; // 독 데미지 반영
   messages.push(...effectMsgs);
 
-  // --- 7. 기력 소모 ---
-  player.adjustVigor(-3);
+  // --- 7. MP 소모 ---
+  player.adjustMp(-3);
 
   // --- 8. 최종 승패 체크 ---
   if (state.enemyHp <= 0) {
@@ -359,8 +359,8 @@ export function usePlayerSkill(
         }
         if (skill.id.includes('vigor') || skill.id === 'vigor_up') {
           const amt = Math.round(15 * levelMult);
-          player.adjustVigor(amt);
-          messages.push(`${skill.name}: 기력 ${amt} 회복`);
+          player.adjustMp(amt);
+          messages.push(`${skill.name}: MP ${amt} 회복`);
         }
         break;
       }

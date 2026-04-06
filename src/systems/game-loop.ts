@@ -46,7 +46,7 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
   // AP 검사 및 차감
   const apCost = AP_COST[action] ?? 0;
   if (apCost > 0 && !p.hasAp(apCost)) {
-    result.messages.push('기력(TP)이 부족합니다. 자택에서 잠을 자면 회복됩니다.');
+    result.messages.push('TP가 부족합니다. 자택에서 잠을 자면 회복됩니다.');
     return result;
   }
   if (apCost > 0) {
@@ -77,10 +77,10 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
     case 'eat': result.messages.push('식사를 준비한다...'); result.screenChange = 'eat'; break;
 
     case 'rest':
-      p.adjustVigor(20);
+      p.adjustMp(20);
       p.adjustHp(10);
       session.backlog.add(session.gameTime, `${p.name}이(가) 휴식을 취했다.`, '행동');
-      result.messages.push('휴식을 취했다. 기력 +20, HP +10');
+      result.messages.push('휴식을 취했다. MP +20, HP +10');
       break;
 
     case 'gather': {

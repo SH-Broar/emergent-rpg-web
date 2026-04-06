@@ -120,8 +120,8 @@ export function createEatScreen(
 
     // Build status message for the status bar
     const statusParts: string[] = [message];
-    if (vigor > 0) statusParts.push(`기력 +${vigor}`);
-    if (vigor < 0) statusParts.push(`기력 ${vigor}`);
+    if (vigor > 0) statusParts.push(`MP +${vigor}`);
+    if (vigor < 0) statusParts.push(`MP ${vigor}`);
     if (hp > 0) statusParts.push(`HP +${hp}`);
     if (hp < 0) statusParts.push(`HP ${hp}`);
     if (mp > 0) statusParts.push(`MP +${mp}`);
