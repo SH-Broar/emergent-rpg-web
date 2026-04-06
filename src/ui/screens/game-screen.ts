@@ -5,6 +5,7 @@ import type { GameSession } from '../../systems/game-session';
 import type { GameAction } from '../../systems/game-loop';
 import type { Actor } from '../../models/actor';
 import { processTurn } from '../../systems/game-loop';
+import { moveCompanions } from '../../systems/npc-interaction';
 import { locationName } from '../../types/registry';
 import { weatherName, seasonName, raceName, spiritRoleName, elementName, Element, ELEMENT_COUNT, ItemType } from '../../types/enums';
 import { getItemDef, getWeaponDef, getArmorDef, categoryName } from '../../types/item-defs';
@@ -478,6 +479,7 @@ export function createMoveScreen(
           const loc = btn.dataset.loc!;
           const mins = routes.find(r => r[0] === loc)?.[1] ?? 30;
           p.currentLocation = loc;
+          moveCompanions(session.actors, session.knowledge, loc);
           session.gameTime.advance(mins);
           session.backlog.add(session.gameTime, `${p.name}이(가) ${locationName(loc)}(으)로 이동했다.`, '행동');
           session.knowledge.trackVisit(loc);
@@ -493,6 +495,7 @@ export function createMoveScreen(
         if (i < routes.length) {
           const [loc, mins] = routes[i];
           session.player.currentLocation = loc;
+          moveCompanions(session.actors, session.knowledge, loc);
           session.gameTime.advance(mins);
           session.backlog.add(session.gameTime, `${session.player.name}이(가) ${locationName(loc)}(으)로 이동했다.`, '행동');
           onDone();
