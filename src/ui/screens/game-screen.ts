@@ -84,6 +84,17 @@ const INFO_ACTIONS: ActionDef[] = [
 ];
 
 // ============================================================
+// 미니맵 표시 설정 (localStorage 영구 저장)
+// ============================================================
+const MINIMAP_KEY = 'rdc-minimap-visible';
+function isMinimapOn(): boolean {
+  try { return localStorage.getItem(MINIMAP_KEY) !== 'false'; } catch { return true; }
+}
+function toggleMinimap(): void {
+  try { localStorage.setItem(MINIMAP_KEY, isMinimapOn() ? 'false' : 'true'); } catch {}
+}
+
+// ============================================================
 // HUD 미니맵 — 현재 위치 중심 BFS 2홉 이내 장소
 // ============================================================
 function buildMiniMapSvg(session: GameSession, W = 200, H = 120): string {
@@ -267,8 +278,14 @@ export function createGameScreen(
           </div>
         </div>
 
-        <div style="display:flex;gap:6px;align-items:flex-start;min-height:120px">
-          <div title="현재 위치 주변 지도 (M키로 전체 지도)">${buildMiniMapSvg(session)}</div>
+        <div style="display:flex;gap:6px;align-items:flex-start;${isMinimapOn() ? 'min-height:120px' : ''}">
+          ${isMinimapOn()
+            ? `<div style="display:flex;flex-direction:column;gap:2px;flex-shrink:0">
+                 <div title="현재 위치 주변 지도 (M키로 전체 지도)">${buildMiniMapSvg(session)}</div>
+                 <button data-toggle-minimap class="btn" style="font-size:10px;padding:1px 4px;min-height:18px;color:var(--text-dim)">지도 끄기</button>
+               </div>`
+            : `<button data-toggle-minimap class="btn" style="font-size:10px;padding:4px 6px;min-height:48px;color:var(--text-dim);flex-shrink:0">지도<br>켜기</button>`
+          }
           <div class="hud-nearby" style="flex:1;min-width:0">
             <div style="color:var(--text-dim);font-size:10px;margin-bottom:3px">주변 인물</div>
             ${(() => {
@@ -326,6 +343,11 @@ export function createGameScreen(
     // 버튼 이벤트
     el.querySelectorAll<HTMLButtonElement>('[data-action]').forEach(btn => {
       btn.addEventListener('click', () => handleAction(btn.dataset.action as GameAction, el));
+    });
+    // 미니맵 토글
+    el.querySelector<HTMLButtonElement>('[data-toggle-minimap]')?.addEventListener('click', () => {
+      toggleMinimap();
+      renderHud(el);
     });
   }
 
@@ -547,6 +569,7 @@ export function createMoveScreen(
           <button class="btn back-btn" data-back>← 뒤로 [Esc]</button>
           <h2>이동</h2>
           <p>현재: ${locationName(p.currentLocation)}</p>
+          ${isMinimapOn() ? `<div style="align-self:center">${buildMiniMapSvg(session)}</div>` : ''}
           <div class="menu-buttons">
             ${routes.map(([loc, mins], i) => {
               const color = loc === p.homeLocation ? '#ff9ff3' : getZoneColor(loc);
