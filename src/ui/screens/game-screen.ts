@@ -324,16 +324,26 @@ export function createGameScreen(
           <div class="hud-nearby" style="flex:1;min-width:0">
             <div style="color:var(--text-dim);font-size:10px;margin-bottom:3px">주변 인물</div>
             ${(() => {
+              const partyHere = session.actors.filter(a =>
+                a !== p && a.isAlive() && session.knowledge.isCompanion(a.name)
+              );
               const npcsHere = session.actors.filter(a =>
                 a !== p && a.currentLocation === p.currentLocation && a.isAlive() && !a.base.sleeping
+                  && !session.knowledge.isCompanion(a.name)
               );
-              return npcsHere.length > 0
-                ? npcsHere.map(a => {
-                    const known = session.knowledge.isKnown(a.name);
-                    const displayName = known ? a.name : '???';
-                    const title = known ? `${raceName(a.base.race)} ${spiritRoleName(a.spirit.role)}` : '';
-                    return `<span class="nearby-npc" title="${title}">${displayName}</span>`;
-                  }).join('')
+              const partySpans = partyHere.map(a => {
+                const title = `${raceName(a.base.race)} ${spiritRoleName(a.spirit.role)}${a.base.sleeping ? ' (수면 중)' : ''}`;
+                return `<span class="nearby-npc" style="color:var(--success)" title="${title}">★${a.name}</span>`;
+              });
+              const npcSpans = npcsHere.map(a => {
+                const known = session.knowledge.isKnown(a.name);
+                const displayName = known ? a.name : '???';
+                const title = known ? `${raceName(a.base.race)} ${spiritRoleName(a.spirit.role)}` : '';
+                return `<span class="nearby-npc" title="${title}">${displayName}</span>`;
+              });
+              const all = [...partySpans, ...npcSpans];
+              return all.length > 0
+                ? all.join('')
                 : '<span style="color:var(--text-dim);font-size:11px">아무도 없다</span>';
             })()}
           </div>
