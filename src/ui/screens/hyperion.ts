@@ -109,12 +109,9 @@ export function createHyperionScreen(
         session.knowledge.isCompanion(actor.name) ? 'companion' :
         getRelationshipStage(p, actor.name, session.knowledge, session.actors)
       );
-      const diffStars = actor.acquisitionDifficulty > 0
-        ? ' \u96e3' + '\u2605'.repeat(Math.min(actor.acquisitionDifficulty, 6))
-        : '';
       item.innerHTML = `
         <span class="npc-name">${actor.name}</span>
-        <span class="npc-detail">${stars} ${stage}${diffStars}</span>
+        <span class="npc-detail">${stars} ${stage}</span>
       `;
       item.addEventListener('click', () => { selectedActor = actor.name; renderHyperion(el); });
       list.appendChild(item);
@@ -141,10 +138,14 @@ export function createHyperionScreen(
 
     // Hyperion info
     const info = document.createElement('div');
+    const diffLabel = actor.acquisitionDifficulty > 0
+      ? `<p style="font-size:12px;color:var(--warning);margin-top:4px">영입 난이도 ${'★'.repeat(Math.min(actor.acquisitionDifficulty, 6))}${'☆'.repeat(Math.max(0, 6 - actor.acquisitionDifficulty))}</p>`
+      : '';
     info.innerHTML = `
       <h3>${actor.name} ${stars}</h3>
       <p style="font-size:13px;color:var(--text-dim)">\ud788\ud398\ub9ac\uc628 Lv.${level} ${stage ? '· ' + stage : ''}</p>
       <p style="font-size:12px;color:var(--text-dim)">HP+${bonus.maxHp} MP+${bonus.maxMp} \uacf5+${bonus.attack} \ubc29+${bonus.defense}</p>
+      ${actor !== p ? diffLabel : ''}
     `;
     wrap.appendChild(info);
 
