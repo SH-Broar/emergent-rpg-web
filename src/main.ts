@@ -28,6 +28,7 @@ import { createSaveLoadScreen, saveToSlot, loadFromSlot } from './ui/screens/sav
 import { createWorldMapScreen } from './ui/screens/world-map';
 import { createMemorySpringScreen } from './ui/screens/memory-spring';
 import { createSkillManageScreen } from './ui/screens/skill-manage';
+import { createLoreScreen } from './ui/screens/lore';
 import { createRealEstateScreen } from './ui/screens/real-estate';
 import { createStorageScreen } from './ui/screens/storage';
 import { createCookingScreen } from './ui/screens/cooking';
@@ -410,61 +411,9 @@ async function boot() {
     }
   }
 
-  // --- 로어 화면 (트리 구조) ---
+  // --- 로어 화면 ---
   function showLore() {
-    const loreData = data.lore;
-    let openIdx = -1; // 열린 섹션 인덱스 (-1 = 목차)
-
-    function renderLore(el: HTMLElement) {
-      if (openIdx === -1) {
-        // 목차 (섹션 제목 목록)
-        el.innerHTML = `
-          <div class="screen info-screen">
-            <button class="btn back-btn" data-back>← 뒤로 [Esc]</button>
-            <h2>로어</h2>
-            <div class="npc-list">
-              ${loreData.map((s, i) => `
-                <button class="btn npc-item" data-lore="${i}">
-                  <span class="npc-num">${i + 1}</span>
-                  <span class="npc-name">${s.name}</span>
-                </button>
-              `).join('')}
-            </div>
-          </div>`;
-        el.querySelector('[data-back]')?.addEventListener('click', () => sm.pop());
-        el.querySelectorAll<HTMLButtonElement>('[data-lore]').forEach(btn => {
-          btn.addEventListener('click', () => { openIdx = parseInt(btn.dataset.lore!, 10); renderLore(el); });
-        });
-      } else {
-        // 개별 섹션 내용
-        const s = loreData[openIdx];
-        const content = s.rawLines.length > 0
-          ? s.rawLines.map((l: string) => `<p>${l}</p>`).join('')
-          : [...s.values.values()].map(v => `<p>${v.replace(/\|/g, '<br>')}</p>`).join('');
-        el.innerHTML = `
-          <div class="screen info-screen">
-            <button class="btn back-btn" data-back>← 목차로 [Esc]</button>
-            <h2>${s.name}</h2>
-            <div class="text-display">${content}</div>
-          </div>`;
-        el.querySelector('[data-back]')?.addEventListener('click', () => { openIdx = -1; renderLore(el); });
-      }
-    }
-
-    sm.push({
-      id: 'lore',
-      render: renderLore,
-      onKey(key) {
-        if (key === 'Escape') {
-          if (openIdx === -1) sm.pop();
-          else { openIdx = -1; const c = document.querySelector('.info-screen')?.parentElement; if (c instanceof HTMLElement) renderLore(c); }
-        }
-        if (openIdx === -1 && /^[1-9]$/.test(key)) {
-          const i = parseInt(key, 10) - 1;
-          if (i < loreData.length) { openIdx = i; const c = document.querySelector('.info-screen')?.parentElement; if (c instanceof HTMLElement) renderLore(c); }
-        }
-      },
-    });
+    sm.push(createLoreScreen(data.lore, () => sm.pop()));
   }
 
   // --- 튜토리얼 화면 ---

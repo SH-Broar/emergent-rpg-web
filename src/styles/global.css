@@ -380,6 +380,89 @@ html, body {
   .info-btn { font-size: 10px; padding: 4px 2px; min-height: 32px; }
 }
 
+/* === Lore screen === */
+.lore-screen { gap: 10px; }
+
+.lore-title { text-align: center; font-size: 1.3rem; }
+
+.lore-tab-bar {
+  display: flex; gap: 6px; flex-wrap: wrap;
+}
+.lore-tab {
+  flex: 1; min-width: 0; text-align: center;
+  font-size: 13px; padding: 8px 6px;
+}
+
+.lore-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  overflow-y: auto;
+  flex: 1;
+}
+.lore-card {
+  display: flex; flex-direction: column; align-items: flex-start;
+  text-align: left; gap: 6px;
+  padding: 10px 12px; min-height: 68px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.lore-card:hover, .lore-card:active {
+  border-color: var(--accent);
+  background: var(--accent2);
+}
+.lore-card-title {
+  font-weight: 700; font-size: 13px; line-height: 1.3;
+}
+.lore-card-preview {
+  font-size: 11px; color: var(--text-dim);
+  line-height: 1.4; word-break: keep-all;
+}
+
+.lore-detail-header {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.lore-detail-header h2 { flex: 1; min-width: 0; }
+
+.lore-badge {
+  font-size: 11px; padding: 2px 10px;
+  background: var(--accent2); color: var(--text-dim);
+  border: 1px solid var(--border); border-radius: 12px;
+  white-space: nowrap; flex-shrink: 0;
+}
+
+.lore-content { flex: 1; max-height: 58vh; }
+.lore-line {
+  font-size: 14px; line-height: 1.75; padding: 1px 0;
+  color: var(--text); word-break: keep-all;
+}
+.lore-line-indent {
+  padding-left: 14px; color: var(--text-dim);
+}
+.lore-spacer { height: 8px; }
+
+.lore-nav {
+  display: flex; justify-content: space-between;
+  gap: 8px; margin-top: 4px; flex-shrink: 0;
+}
+.lore-nav-btn {
+  font-size: 12px; padding: 6px 10px;
+  flex: 1; max-width: 48%;
+}
+.lore-nav-next { text-align: right; }
+
+@media (min-width: 769px) {
+  .lore-grid { grid-template-columns: repeat(3, 1fr); }
+  .lore-line { font-size: 15px; }
+}
+@media (max-width: 360px) {
+  .lore-grid { grid-template-columns: 1fr; }
+  .lore-tab { font-size: 11px; padding: 6px 4px; }
+}
+
 /* Extra-tall screens (aspect > 2:1) - further compact */
 @media (min-aspect-ratio: 1/2) and (max-width: 500px) and (max-height: 950px) {
   .action-grid { grid-template-columns: repeat(5, 1fr); }
