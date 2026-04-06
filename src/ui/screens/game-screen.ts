@@ -243,6 +243,7 @@ export function createGameScreen(
       ];
       const companions = session.actors.filter(
         a => a !== p && a.currentLocation === p.currentLocation && a.isAlive() && !a.base.sleeping
+          && session.knowledge.isCompanion(a.name)
       );
       const shuffled = companions.sort(() => Math.random() - 0.5).slice(0, 2);
       for (const companion of shuffled) {
