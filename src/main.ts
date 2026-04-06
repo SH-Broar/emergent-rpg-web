@@ -28,6 +28,10 @@ import { createSaveLoadScreen, saveToSlot, loadFromSlot } from './ui/screens/sav
 import { createWorldMapScreen } from './ui/screens/world-map';
 import { createMemorySpringScreen } from './ui/screens/memory-spring';
 import { createSkillManageScreen } from './ui/screens/skill-manage';
+import { createRealEstateScreen } from './ui/screens/real-estate';
+import { createStorageScreen } from './ui/screens/storage';
+import { createCookingScreen } from './ui/screens/cooking';
+import { createNpcInviteScreen } from './ui/screens/npc-invite';
 import { createEquipmentScreen } from './ui/screens/equipment';
 import { createDataPackScreen } from './ui/screens/datapack-select';
 import { fastForwardWorld } from './systems/world-simulation';
@@ -212,6 +216,18 @@ async function boot() {
           break;
         case 'home':
           sm.push(createHomeScreen(session, () => sm.pop()));
+          break;
+        case 'storage':
+          sm.push(createStorageScreen(session, () => sm.pop()));
+          break;
+        case 'realestate':
+          sm.push(createRealEstateScreen(session, () => sm.pop()));
+          break;
+        case 'cooking':
+          sm.push(createCookingScreen(session, () => sm.pop()));
+          break;
+        case 'npc_invite':
+          sm.push(createNpcInviteScreen(session, () => sm.pop()));
           break;
         case 'memory_spring':
           sm.push(createMemorySpringScreen(session, {

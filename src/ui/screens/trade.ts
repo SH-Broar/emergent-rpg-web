@@ -105,6 +105,17 @@ export function createTradeScreen(
                 </button>`).join('')
           }
         </div>
+        ${(() => {
+          const bagCap = session.knowledge.bagCapacity;
+          if (bagCap >= 40) return '<div style="margin-top:8px;color:var(--text-dim);font-size:12px;text-align:center">가방 최대 확장 완료 (40칸)</div>';
+          const price = (bagCap - 5) * 40 + 200;
+          const canAfford = p.spirit.gold >= price;
+          return `<div style="margin-top:12px;text-align:center">
+            <button class="btn" data-bag-upgrade ${canAfford ? '' : 'disabled'} style="opacity:${canAfford ? '1' : '0.5'}">
+              가방 확장 (+5칸) — ${price}G (현재 ${bagCap}칸)
+            </button>
+          </div>`;
+        })()}
         <p class="hint">Tab=탭 전환, 1~9 선택, Esc 뒤로</p>
       </div>`;
 
@@ -133,6 +144,20 @@ export function createTradeScreen(
         }
         renderTrade(el);
       });
+    });
+    el.querySelector<HTMLButtonElement>('[data-bag-upgrade]')?.addEventListener('click', () => {
+      const bagCap = session.knowledge.bagCapacity;
+      if (bagCap >= 40) return;
+      const price = (bagCap - 5) * 40 + 200;
+      if (p.spirit.gold < price) { message = '골드가 부족합니다!'; }
+      else {
+        p.addGold(-price);
+        session.knowledge.bagCapacity += 5;
+        session.knowledge.trackGoldSpent(price);
+        session.backlog.add(session.gameTime, `가방을 확장했다. (${session.knowledge.bagCapacity}칸) -${price}G`, '행동');
+        message = `가방 확장 완료! ${session.knowledge.bagCapacity}칸 (-${price}G)`;
+      }
+      renderTrade(el);
     });
     el.querySelectorAll<HTMLButtonElement>('[data-sell]').forEach(btn => {
       btn.addEventListener('click', () => {

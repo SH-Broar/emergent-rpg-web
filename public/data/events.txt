@@ -41,6 +41,38 @@ triggerHour = 14
 colorInfluence = Earth:0.08, Water:0.1, Light:0.05
 adjustDemand = Herb:0.4, Potion:0.3
 
+[봄맞이 꽃피움 축제]
+description = 엘리메스 마을 광장에 온갖 꽃이 만개한다. 이리엘이 약초원에서 기른 꽃을 나눠주고, 피올라가 반짝이 가루로 장식한다.|마을 전체가 꽃향기에 감싸이는 이 축제에서는 특별한 음식과 음료가 제공된다.
+location = Town_Elimes
+triggerDay = 8
+triggerHour = 10
+colorInfluence = Wind:0.15, Water:0.1
+addResource = Town_Elimes:Herb:10, Town_Elimes:Food:5
+
+[호수의 밤 축제]
+description = 호수 위에 수백 개의 등불이 떠오르는 여름밤 축제.|나탈리가 잡은 물고기를 테오가 특별 요리로 만들고, 코랄리스와 멜로디아가 수면 위에서 이중창을 부른다.|밤하늘의 별과 호수의 등불이 하나가 되는 환상적인 밤.
+location = Lake
+triggerDay = 23
+triggerHour = 10
+colorInfluence = Water:0.2, Light:0.1
+addResource = Lake:Food:8
+
+[수확 감사제]
+description = 한 해의 수확에 감사하며 농장에서 열리는 마을 행사.|올해 가장 큰 작물을 선보이는 대회가 열리고, 유린과 로쉔이 특가 장터를 연다.|브로크가 만든 특별 주조 맥주가 주점에서 무한 제공된다.
+location = Farm
+triggerDay = 38
+triggerHour = 10
+colorInfluence = Earth:0.15, Fire:0.1
+addResource = Farm:Food:10, Farm:OreCommon:3
+
+[별빛 서약제]
+description = 교회에서 열리는 겨울 축제. 오르시아가 주관하며, 리엘이 축복의 빛으로 교회를 밝힌다.|마을 사람들이 모여 지난 한 해를 돌아보고, 새해에 대한 소망을 서약문에 적어 교회 벽에 건다.|발터 크로이츠가 삼백 년간의 겨울 이야기를 들려주는 것도 빠질 수 없는 행사.
+location = Church
+triggerDay = 53
+triggerHour = 10
+colorInfluence = Light:0.2, Dark:0.1
+addResource = Church:Potion:3
+
 # ---- 랜덤 이벤트 풀 ----
 
 [상인 행렬 도착]

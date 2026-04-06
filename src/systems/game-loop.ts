@@ -13,6 +13,7 @@ export type GameAction =
   | 'idle' | 'move' | 'look' | 'talk' | 'trade' | 'eat'
   | 'rest' | 'dungeon' | 'gather' | 'quest' | 'activity'
   | 'gift' | 'home' | 'memory_spring'
+  | 'storage' | 'realestate' | 'cooking' | 'npc_invite'
   | 'info_status' | 'info_color' | 'info_relations' | 'info_world'
   | 'info_backlog' | 'info_hyperion' | 'info_party' | 'info_titles' | 'info_map' | 'info_encyclopedia'
   | 'info_skills' | 'info_inventory'
@@ -99,6 +100,16 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
         result.messages.push(`지역 자원: ${resources.length}종`);
       }
 
+      // 거점 정보
+      if (session.knowledge.ownedBases.has(p.currentLocation)) {
+        const level = session.knowledge.getBaseLevel(p.currentLocation);
+        const invitedNpcs = session.knowledge.getBaseNpcs(p.currentLocation);
+        result.messages.push(`🏘 거점 Lv.${level}`);
+        if (invitedNpcs.length > 0) {
+          result.messages.push(`초대된 NPC: ${invitedNpcs.join(', ')}`);
+        }
+      }
+
       // 로그에 기록
       for (const msg of result.messages) {
         session.backlog.add(session.gameTime, msg, '행동', p.name);
@@ -155,12 +166,16 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
     case 'activity': result.messages.push('활동을 시작한다.'); result.screenChange = 'activity'; break;
     case 'gift': result.messages.push('선물을 고른다.'); result.screenChange = 'gift'; break;
     case 'home':
-      if (p.currentLocation === p.homeLocation) {
-        p.base.ap = p.getEffectiveMaxAp(); // Full AP recovery on sleeping at home
+      if (p.currentLocation === p.homeLocation || session.knowledge.ownedBases.has(p.currentLocation)) {
+        p.base.ap = p.getEffectiveMaxAp();
       }
       result.messages.push('자택으로 돌아간다.');
       result.screenChange = 'home';
       break;
+    case 'storage': result.screenChange = 'storage'; return result;
+    case 'realestate': result.screenChange = 'realestate'; return result;
+    case 'cooking': result.screenChange = 'cooking'; return result;
+    case 'npc_invite': result.screenChange = 'npc_invite'; return result;
     case 'memory_spring': result.messages.push('기억의 샘에 다가간다.'); result.screenChange = 'memory_spring'; break;
 
     // 정보 화면 (시간 소모 없음)

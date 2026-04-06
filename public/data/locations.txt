@@ -12,7 +12,7 @@ gridMinutesPerUnit = 0.05
 
 [Town_Elimes]
 name = 엘리메스 마을
-description = 엘리메스 마을의 중심부. 소박하지만 활기찬 거리.
+description = 일곱 종족이 어울려 사는 작은 마을. 길드 홀의 종소리가 아침을 알리고, 브로크의 모루 소리가 하루를 채운다.|마을 중앙 광장에는 오래된 느티나무가 서 있으며, 그 아래서 마을 사람들이 모여 이야기꽃을 피운다.
 x = 0
 y = 0
 links = Guild_Hall, Market_Square, Tavern, Church, Blacksmith, Farm, Herb_Garden, Lake, Wilderness, Trade_Route, Mountain_Path, Wizard_Tower, Dungeon_Entrance
@@ -22,7 +22,7 @@ dangerLevel = 0.0
 
 [Guild_Hall]
 name = 길드 홀
-description = 모험가 길드. 의뢰가 게시되는 곳.
+description = 모험가들의 발걸음이 끊이지 않는 엘리메스 길드의 심장부.|벽면을 가득 채운 의뢰 게시판과 세리나가 지키는 창구가 언제나 활기를 불어넣는다.|오래된 참나무 테이블 위에는 성공한 모험가들의 이름이 새겨져 있다.
 x = 200
 y = 100
 links = Market_Square
@@ -31,7 +31,7 @@ dangerLevel = 0.0
 
 [Market_Square]
 name = 시장
-description = 엘리메스의 시장. 다양한 물건이 거래된다.
+description = 온갖 종족의 상인들이 모여드는 엘리메스의 활기찬 시장.|로쉔의 잡화점과 유린의 약초 가판대가 나란히 늘어서고, 이국적인 향신료 냄새와 흥정 소리가 뒤섞인다.|비 온 뒤에는 돌바닥에 물빛이 반짝여 마치 보석 위를 걷는 것 같다.
 x = 200
 y = -150
 links = Guild_Hall
@@ -41,7 +41,7 @@ dangerLevel = 0.0
 
 [Dungeon_Entrance]
 name = 던전 입구
-description = 마을 외곽의 던전 입구. 어두운 기운이 감돈다.
+description = 마을 외곽 절벽에 뚫린 거대한 동굴 입구. 안쪽에서 차가운 바람이 끊임없이 불어나오며 어두운 기운이 감돈다.|이끼 낀 석벽에는 누군가 새긴 경고문이 희미하게 남아 있고, 입구 옆에는 돌아오지 못한 모험가들을 위한 작은 위령비가 세워져 있다.
 x = 500
 y = 100
 links = Wilderness
@@ -51,7 +51,7 @@ dangerLevel = 0.4
 
 [Dungeon_Interior]
 name = 던전 내부
-description = 던전 깊숙한 곳. 몬스터와 보물이 공존한다.
+description = 횃불 없이는 한 치 앞도 보이지 않는 던전의 심부. 몬스터의 으르렁거림이 벽을 타고 울려 퍼진다.|무너진 기둥 사이에서 희귀한 광석이 빛을 발하고, 더 깊은 곳에서는 이름 모를 존재의 숨소리가 들려온다.
 x = 650
 y = 100
 links_one_way = Dungeon_Entrance:15
@@ -61,7 +61,7 @@ dangerLevel = 0.7
 
 [Tavern]
 name = 주점
-description = 여행자의 쉼터. 맥주와 소문이 넘쳐 흐른다.
+description = 켄타우로스도 편히 앉을 수 있는 넓은 의자가 마련된 엘리메스 유일의 주점.|테오가 만든 오늘의 요리 냄새와 발터 크로이츠의 삼백 년 묵은 옛이야기가 어우러져, 모험가와 마을 사람 모두의 저녁을 따뜻하게 채운다.|드라카의 단골 자리에는 언제나 빈 접시가 쌓여 있다.
 x = 350
 y = 0
 resources = Food:20
@@ -70,7 +70,7 @@ dangerLevel = 0.0
 
 [Wilderness]
 name = 야생지대
-description = 마을 주변의 야생 지역. 약초와 작은 동물이 있다.
+description = 엘리메스 마을 너머로 펼쳐진 울창한 야생지대. 낮에는 약초와 산딸기를 캘 수 있지만, 해가 지면 수풀 사이에서 붉은 눈이 번뜩인다.|보름달 밤이면 늑대 울음소리가 바람을 타고 마을까지 들려오며, 숙련된 모험가조차 긴장을 늦추지 못한다.
 x = 0
 y = 400
 resources = Herb:30, Food:15
@@ -79,7 +79,7 @@ dangerLevel = 0.15
 
 [Blacksmith]
 name = 대장간
-description = 드워프 장인이 운영하는 대장간. 망치 소리가 끊이지 않는다.
+description = 브로크가 이끄는 엘리메스의 대장간. 새벽부터 밤까지 망치 소리와 화덕의 열기가 끊이지 않는다.|리라가 형태를 빚고 멜리사가 마력을 새기는 콤비 작업은 마을의 명물이며, 켄타우로스의 편자부터 하피의 경량 흉갑까지 못 만드는 것이 없다.
 x = -50
 y = -200
 resources = Equipment:5, OreCommon:8
@@ -88,7 +88,7 @@ dangerLevel = 0.0
 
 [Herb_Garden]
 name = 약초원
-description = 마을 뒤편에 조성된 약초 재배지. 은은한 풀 향기가 감돈다.
+description = 이리엘이 하피식 농법으로 가꾸는 마을 뒤편의 약초 재배지. 바람에 실린 은은한 풀 향기가 마을 중심까지 퍼진다.|아침 안개가 걷히면 이슬 맺힌 약초 잎이 보석처럼 반짝이고, 이리엘이 끓여주는 블렌드 차 한 잔에 마을 사람들이 하나둘 모여든다.
 x = -250
 y = -100
 resources = Herb:40, Potion:3
@@ -97,7 +97,7 @@ dangerLevel = 0.0
 
 [Church]
 name = 교회
-description = 빛의 신전. 부상자를 치료하고 축복을 내린다. 마을의 정신적 지주.
+description = 빛의 신전이자 엘리메스의 정신적 지주. 오르시아와 리엘이 부상자를 치료하고 축복을 내린다.|스테인드글라스를 통해 쏟아지는 무지개빛 속에서 리엘의 날개가 은은히 빛나고, 예배당에는 수백 년간 이어져 온 향초의 잔향이 감돈다.
 x = -50
 y = 200
 monsterLevel = 0
@@ -105,7 +105,7 @@ dangerLevel = 0.0
 
 [Abandoned_Mine]
 name = 폐광
-description = 오래 전 버려진 광산. 아직 광맥이 남아있지만 무너질 위험이 있다.
+description = 오래 전 버려진 광산. 아직 광맥이 남아 있지만, 지지대가 삐걱거리며 언제 무너질지 모른다.|깊은 곳에서는 희미한 광석의 빛이 어둠 속에서 깜빡이고, 간간이 정체 모를 발소리가 갱도를 타고 울려온다.
 x = 150
 y = 360
 resources = OreCommon:35, OreRare:5
@@ -114,7 +114,7 @@ dangerLevel = 0.55
 
 [Lake]
 name = 호수
-description = 맑은 물이 잔잔히 흐르는 호수. 낚시와 명상의 장소.
+description = 산자락에서 흘러내린 맑은 물이 모인 고요한 호수. 나탈리의 낚싯배가 수면 위에 떠 있고, 새벽이면 세라핌이 물안개를 가르며 날아오른다.|여름밤에는 코랄리스의 노래가 수면을 타고 퍼지며, 호숫가 오두막에서 피어오르는 연기가 평화로운 풍경을 완성한다.
 x = -350
 y = -300
 resources = Food:25
@@ -123,7 +123,7 @@ dangerLevel = 0.05
 
 [Mountain_Path]
 name = 산길
-description = 엘리메스 뒤편의 험준한 산길. 다른 지역으로 이어진다.
+description = 엘리메스 뒤편으로 이어지는 험준한 산길. 가파른 바위 사이로 난 좁은 길에는 가론의 곡괭이 자국이 여기저기 남아 있다.|날씨가 맑은 날에는 꼭대기에서 먼 산맥의 만년설이 보이지만, 안개가 끼면 한 발짝도 내딛기 어려울 만큼 위험해진다.
 x = 150
 y = 500
 links = Abandoned_Mine, Bandit_Hideout, Lake
@@ -133,7 +133,7 @@ dangerLevel = 0.3
 
 [Bandit_Hideout]
 name = 도적 소굴
-description = 산길 깊숙이 숨겨진 도적들의 은신처. 위험하지만 약탈품이 있다.
+description = 산길 깊숙이 바위 틈에 숨겨진 도적들의 은신처. 함정과 망루가 곳곳에 설치되어 있어 함부로 접근하기 어렵다.|그러나 도적들이 모아둔 약탈품이 상당하여, 위험을 무릅쓰고 찾아오는 모험가가 끊이지 않는다.
 x = 60
 y = 390
 resources = Equipment:3, MonsterLoot:8, Food:10
@@ -142,7 +142,7 @@ dangerLevel = 0.8
 
 [Wizard_Tower]
 name = 마법사의 탑
-description = 마을 외곽에 홀로 서 있는 기이한 탑. 이상한 빛이 가끔 번쩍인다.
+description = 마을 외곽에 홀로 우뚝 선 기이한 탑. 꼭대기에서 가끔 이상한 빛이 번쩍이며, 때때로 원인 모를 폭발음이 들려온다.|탑 주변에는 마력이 스민 약초가 자생하고, 그릭의 기상천외한 발명품 시험 소리가 간간이 울려 퍼진다.
 x = -400
 y = 50
 resources = Potion:10, Herb:5
@@ -151,7 +151,7 @@ dangerLevel = 0.1
 
 [Farm]
 name = 농장
-description = 마을에 식량을 공급하는 넓은 농장. 계절마다 다른 작물이 자란다.
+description = 엘리메스의 식량을 책임지는 넓은 농장. 계절마다 밀, 호박, 사과 등 다른 작물이 들판을 물들인다.|밀라의 목장에서는 갓 짠 우유와 치즈 냄새가 풍기고, 수확철이면 마을 사람들이 모여 함께 거두는 풍경이 펼쳐진다.
 x = -250
 y = 100
 links = Herb_Garden
@@ -161,7 +161,7 @@ dangerLevel = 0.0
 
 [Trade_Route]
 name = 무역로
-description = 엘리메스와 다른 마을을 잇는 교역로. 상인과 여행자가 오간다.
+description = 엘리메스와 먼 도시들을 잇는 교역로. 아제르의 상단 마차가 먼지를 일으키며 오가고, 이국적인 물건을 실은 여행자들이 쉬어가는 작은 쉼터가 곳곳에 있다.|그러나 해가 지면 도적의 그림자가 어른거리니, 무장 없이 밤길을 걷는 것은 삼가야 한다.
 x = 500
 y = -100
 resources = Food:10, Equipment:2
@@ -266,7 +266,7 @@ dangerLevel = 0.0
 
 [Moonlit_Clearing]
 name = 달빛 빈터
-description = 보름달이 유난히 밝게 비추는 숲속 빈터. 늑대인간들의 모임 장소라는 소문이 있다.
+description = 보름달이 유난히 밝게 비추는 숲속 빈터. 늑대인간들의 모임 장소라는 소문이 있어 보름달 밤이면 마을 사람들이 꺼리는 곳이다.|은빛 풀잎 위에 맺힌 이슬이 달빛에 반짝이고, 바람이 멎으면 먼 곳에서 낮은 울음소리가 들려온다.
 x = -200
 y = 250
 links = Wilderness
@@ -275,7 +275,7 @@ dangerLevel = 0.15
 
 [Bloom_Terrace]
 name = 꽃피는 테라스
-description = 알라우네들이 뿌리를 내리고 사는 꽃밭 테라스. 사계절 꽃이 만발해 향기가 가득하다.
+description = 알라우네들이 뿌리를 내리고 사는 꽃밭 테라스. 사계절 꽃이 만발하여 마을 어디서든 바람에 실린 꽃향기를 맡을 수 있다.|플로라가 기르는 희귀 약초꽃이 피어날 때면 나비와 벌이 구름처럼 몰려들어, 테라스 전체가 살아 움직이는 정원이 된다.
 x = 150
 y = -300
 links = Herb_Garden

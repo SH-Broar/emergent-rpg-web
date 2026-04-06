@@ -263,8 +263,19 @@ function serializeKnowledge(k: PlayerKnowledge): object {
     companionDaysMap: [...k.companionDaysMap.entries()],
     locationReputation: [...k.locationReputation.entries()],
     totalGiftsGiven: k.totalGiftsGiven,
+    completedQuestCount: k.completedQuestCount,
+    completedQuestNames: [...k.completedQuestNames],
     earnedTitles: [...k.earnedTitles],
     activeTitle: k.activeTitle,
+    ownedBases: [...k.ownedBases],
+    bagCapacity: k.bagCapacity,
+    storage: [...k.storage.entries()].map(([loc, zones]) => [loc, {
+      cold: [...zones.cold.entries()],
+      room: [...zones.room.entries()],
+      warm: [...zones.warm.entries()],
+    }]),
+    baseLevels: [...k.baseLevels.entries()],
+    baseInvitedNpcs: [...k.baseInvitedNpcs.entries()],
   };
 }
 
@@ -293,8 +304,21 @@ function deserializeKnowledge(d: any): PlayerKnowledge {
   k.companionDaysMap = new Map(d.companionDaysMap ?? []);
   k.locationReputation = new Map(d.locationReputation ?? []);
   k.totalGiftsGiven = d.totalGiftsGiven ?? 0;
+  k.completedQuestCount = d.completedQuestCount ?? 0;
+  k.completedQuestNames = new Set(d.completedQuestNames ?? []);
   k.earnedTitles = d.earnedTitles ?? [];
   k.activeTitle = d.activeTitle ?? '';
+  k.ownedBases = new Set(d.ownedBases ?? []);
+  k.bagCapacity = d.bagCapacity ?? 10;
+  k.storage = new Map(
+    (d.storage ?? []).map(([loc, zones]: [string, any]) => [loc, {
+      cold: new Map(zones?.cold ?? []),
+      room: new Map(zones?.room ?? []),
+      warm: new Map(zones?.warm ?? []),
+    }])
+  );
+  k.baseLevels = new Map(d.baseLevels ?? []);
+  k.baseInvitedNpcs = new Map(d.baseInvitedNpcs ?? []);
   return k;
 }
 

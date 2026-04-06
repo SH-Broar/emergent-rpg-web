@@ -164,6 +164,67 @@ export class PlayerKnowledge {
     if (!this.hasTitle(titleId)) this.earnedTitles.push(titleId);
   }
 
+  // 거점 시스템
+  ownedBases = new Set<string>(); // 소유한 거점 LocationID들
+
+  // 인벤토리 제한
+  bagCapacity = 10; // 기본 가방 크기 10칸, 가방 구매로 확장
+
+  // 거점 창고 (locationId -> 온도구역 -> 아이템 맵)
+  storage = new Map<string, {
+    cold: Map<string, number>,   // 냉장
+    room: Map<string, number>,   // 실온
+    warm: Map<string, number>,   // 온장
+  }>();
+
+  // 거점 레벨 (locationId -> level 1~5)
+  baseLevels = new Map<string, number>();
+
+  ownsBase(locationId: string): boolean { return this.ownedBases.has(locationId); }
+
+  purchaseBase(locationId: string): void {
+    this.ownedBases.add(locationId);
+    if (!this.storage.has(locationId)) {
+      this.storage.set(locationId, { cold: new Map(), room: new Map(), warm: new Map() });
+    }
+    if (!this.baseLevels.has(locationId)) {
+      this.baseLevels.set(locationId, 1);
+    }
+  }
+
+  getBaseLevel(locationId: string): number {
+    return this.baseLevels.get(locationId) ?? 0;
+  }
+
+  upgradeBase(locationId: string): boolean {
+    const cur = this.getBaseLevel(locationId);
+    if (cur >= 5) return false;
+    this.baseLevels.set(locationId, cur + 1);
+    return true;
+  }
+
+  getStorage(locationId: string): { cold: Map<string, number>, room: Map<string, number>, warm: Map<string, number> } | undefined {
+    return this.storage.get(locationId);
+  }
+
+  addToStorage(locationId: string, zone: 'cold' | 'room' | 'warm', itemId: string, amount: number): boolean {
+    const s = this.storage.get(locationId);
+    if (!s) return false;
+    s[zone].set(itemId, (s[zone].get(itemId) ?? 0) + amount);
+    return true;
+  }
+
+  removeFromStorage(locationId: string, zone: 'cold' | 'room' | 'warm', itemId: string, amount: number): boolean {
+    const s = this.storage.get(locationId);
+    if (!s) return false;
+    const cur = s[zone].get(itemId) ?? 0;
+    if (cur < amount) return false;
+    const next = cur - amount;
+    if (next <= 0) s[zone].delete(itemId);
+    else s[zone].set(itemId, next);
+    return true;
+  }
+
   trackVisit(locationId: string): void { this.visitedLocations.add(locationId); }
   trackConversation(actorName: string): void {
     this.conversationPartners.add(actorName); this.totalConversations++;
@@ -190,6 +251,18 @@ export class PlayerKnowledge {
   trackQuestCompleted(questTitle: string): void {
     this.completedQuestCount++;
     this.completedQuestNames.add(questTitle);
+  }
+
+  // NPC 거점 초대 시스템
+  baseInvitedNpcs = new Map<string, string[]>(); // locationId -> NPC 이름 배열
+
+  inviteNpcToBase(locationId: string, npcName: string): void {
+    const list = this.baseInvitedNpcs.get(locationId) ?? [];
+    if (!list.includes(npcName)) list.push(npcName);
+    this.baseInvitedNpcs.set(locationId, list);
+  }
+  getBaseNpcs(locationId: string): string[] {
+    return this.baseInvitedNpcs.get(locationId) ?? [];
   }
   discoverItem(itemId: string): void { this.discoveredItems.add(itemId); }
   isItemDiscovered(itemId: string): boolean { return this.discoveredItems.has(itemId); }

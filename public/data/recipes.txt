@@ -1,0 +1,62 @@
+# recipes.txt — 요리 레시피
+# result = 결과 아이템ID
+# ingredients = 재료1:수량, 재료2:수량
+# buff = 버프 효과 (hp, mp, vigor, attack, defense)
+# buffDuration = 버프 지속 시간(분)
+# description = 설명
+
+[허브 샐러드]
+result = herb_salad
+ingredients = Herb:2
+buff = vigor:20
+buffDuration = 120
+description = 신선한 허브로 만든 가벼운 샐러드. 기력을 회복시킨다.
+
+[약초 수프]
+result = herb_soup
+ingredients = Herb:3, Food:1
+buff = hp:30, vigor:15
+buffDuration = 180
+description = 따뜻한 약초 수프. 체력과 기력을 함께 회복시킨다.
+
+[강화 포션]
+result = enhanced_potion
+ingredients = Herb:2, Potion:1
+buff = attack:5
+buffDuration = 300
+description = 약초를 첨가한 강화 포션. 공격력이 일시적으로 오른다.
+
+[방어의 식사]
+result = defense_meal
+ingredients = Food:3, Herb:1
+buff = defense:3, hp:20
+buffDuration = 240
+description = 든든한 식사. 방어력과 체력을 동시에 올려준다.
+
+[활력의 빵]
+result = vigor_bread
+ingredients = Food:2
+buff = vigor:30
+buffDuration = 120
+description = 갓 구운 빵. 기력이 크게 회복된다.
+
+[마나 티]
+result = mana_tea
+ingredients = Herb:2, Potion:1
+buff = mp:25
+buffDuration = 180
+description = 허브를 우린 마나 회복 차.
+
+[모험가의 도시락]
+result = adventure_lunch
+ingredients = Food:2, Herb:1, Potion:1
+buff = hp:20, mp:10, vigor:20, attack:2
+buffDuration = 360
+description = 온갖 재료를 넣은 든든한 도시락. 종합 버프를 준다.
+
+[드래곤 스튜]
+result = dragon_stew
+ingredients = Food:5, Herb:3
+buff = hp:50, attack:5, defense:3
+buffDuration = 480
+description = 드라카가 즐겨 먹는 묵직한 스튜. 강력한 효과를 낸다.

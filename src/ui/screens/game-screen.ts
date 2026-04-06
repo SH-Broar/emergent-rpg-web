@@ -18,8 +18,14 @@ interface ActionDef {
   visible?: (session: GameSession) => boolean;
 }
 
-function atHome(session: GameSession) { return session.player.currentLocation === session.player.homeLocation; }
+function atHome(session: GameSession) {
+  return session.player.currentLocation === session.player.homeLocation
+    || session.knowledge.ownedBases.has(session.player.currentLocation);
+}
 function atMemorySpring(session: GameSession) { return session.player.currentLocation === 'Memory_Spring'; }
+function atBase(session: GameSession) {
+  return session.knowledge.ownedBases.has(session.player.currentLocation);
+}
 function canTrade(session: GameSession) {
   const loc = session.player.currentLocation;
   // 시장에서는 항상 거래 가능, 그 외에는 주변 상인 NPC가 있을 때만
@@ -52,6 +58,10 @@ const MAIN_ACTIONS: ActionDef[] = [
   { key: 'a', label: '활동', action: 'activity', icon: '🔨', visible: hasActivities },
   { key: 'g', label: '선물', action: 'gift', icon: '🎁', visible: hasNpcsHere },
   { key: 'h', label: '자택', action: 'home', icon: '🏠', visible: atHome },
+  { key: 'j', label: '창고', action: 'storage' as GameAction, icon: '📦', visible: atBase },
+  { key: 'n', label: '부동산', action: 'realestate' as GameAction, icon: '🏘', visible: atGuildHall },
+  { key: 'x', label: '요리', action: 'cooking' as GameAction, icon: '🍳', visible: atBase },
+  { key: 'f', label: '초대', action: 'npc_invite' as GameAction, icon: '🏡', visible: atBase },
   { key: 'm', label: '기억의 샘', action: 'memory_spring', icon: '💧', visible: atMemorySpring },
 ];
 
@@ -341,7 +351,11 @@ export function createInfoScreen(
         }
 
         case 'info_inventory': {
+          const totalItemCount = [...p.items.values()].reduce((s, n) => s + n, 0)
+            + [...p.spirit.inventory.entries()].filter(([, n]) => n > 0).reduce((s, [, n]) => s + n, 0);
+          const bagCap = session.knowledge.bagCapacity ?? 10;
           html += `<h2>소지품</h2>`;
+          html += `<p style="text-align:center;font-size:11px;color:${totalItemCount >= bagCap ? 'var(--accent)' : 'var(--text-dim)'}">가방 ${totalItemCount}/${bagCap}칸</p>`;
 
           // Equipped items
           const weapon = p.equippedWeapon ? getWeaponDef(p.equippedWeapon) : null;

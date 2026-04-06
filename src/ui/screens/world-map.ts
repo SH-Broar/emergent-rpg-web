@@ -4,6 +4,57 @@ import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
 import { locationName } from '../../types/registry';
 
+// 마을 구역별 색상 매핑
+function getZoneColor(locationId: string): string {
+  // 일루네온 — 하늘색
+  if (locationId.startsWith('Iluneon') || locationId === 'Memory_Spring')
+    return '#87CEEB';
+  // 엘리메스 — 초록
+  if (['Town_Elimes','Guild_Hall','Market_Square','Tavern','Blacksmith','Herb_Garden','Church','Farm','Lake'].includes(locationId))
+    return '#4ecca3';
+  // 루나 (마법학교) — 보라
+  if (['Luna_Academy','Wizard_Tower','Stella_Ville'].includes(locationId))
+    return '#9b59b6';
+  // 마노니클라 — 주황
+  if (['Manonickla','Limun_Ruins'].includes(locationId))
+    return '#e67e22';
+  // 마틴 항 — 남색
+  if (locationId.startsWith('Martin'))
+    return '#2980b9';
+  // 할퓌아 — 밝은 하늘
+  if (locationId === 'Halpia')
+    return '#5dade2';
+  // 알리메스 — 금빛
+  if (locationId === 'Alimes')
+    return '#f1c40f';
+  // 라르/허공 숲 — 진초록
+  if (['Lar_Forest','Void_Forest','World_Tree','Ancient_Tree_Crown'].includes(locationId))
+    return '#27ae60';
+  // 마왕성 — 심홍
+  if (locationId === 'Demon_Castle')
+    return '#c0392b';
+  // 리엘 / 푸치탑 — 연보라
+  if (['Puchi_Tower','Riel_Sky'].includes(locationId))
+    return '#bb8fce';
+  // 에니챰 — 노랑/전기
+  if (['Enicham','Night_Tacomi'].includes(locationId))
+    return '#f39c12';
+  // 기타 도시 — 연회색
+  if (['Ekres','Yusejeria','Hanabridge','Moss','Triflower'].includes(locationId))
+    return '#95a5a6';
+  // 풍혈지대 — 하늘+바람
+  if (locationId === 'Windfall_Valley' || locationId === 'Hologram_Field')
+    return '#76d7c4';
+  // 팔콘 가든 등 특수지역 — 연분홍
+  if (['Falcon_Garden','Starfall_Basin','Mirage_Oasis','Twilight_Spire','Crystal_Cavern'].includes(locationId))
+    return '#d4a0c0';
+  // 던전/야생 — 어두운 회색
+  if (['Dungeon_Entrance','Dungeon_Interior','Abandoned_Mine','Bandit_Hideout','Wilderness','Mountain_Path','Trade_Route'].includes(locationId))
+    return '#666677';
+  // 기본
+  return '#888899';
+}
+
 export function createWorldMapScreen(session: GameSession, onDone: () => void): Screen {
   let zoom = 1;
   let panX = 0;
@@ -68,14 +119,22 @@ export function createWorldMapScreen(session: GameSession, onDone: () => void): 
         const [cx, cy] = toScreen(loc.gridX, loc.gridY);
         const isPlayer = loc.id === playerLoc;
         const isVisited = session.knowledge.visitedLocations.has(loc.id);
+        const isBase = (session.knowledge as unknown as Record<string, unknown>).ownedBases instanceof Set
+          ? ((session.knowledge as unknown as Record<string, { has(id: string): boolean }>).ownedBases).has(loc.id)
+          : false;
         const r = isPlayer ? 6 : 4;
-        const fill = isPlayer ? '#e94560' : isVisited ? '#4ecca3' : '#555577';
+        const zoneColor = getZoneColor(loc.id);
+        const fill = isPlayer ? '#e94560' : zoneColor;
+        const opacity = isPlayer ? 1.0 : isVisited ? 1.0 : 0.3;
         const desc = (loc as unknown as Record<string, unknown>).description as string || '';
-        svgContent += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}" stroke="#fff" stroke-width="${isPlayer ? 2 : 0.5}" class="map-dot" data-loc="${loc.id}" data-name="${locationName(loc.id)}" data-desc="${desc.replace(/"/g, '&quot;')}" style="cursor:pointer"/>`;
+        svgContent += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}" opacity="${opacity}" stroke="#fff" stroke-width="${isPlayer ? 2 : 0.5}" class="map-dot" data-loc="${loc.id}" data-name="${locationName(loc.id)}" data-desc="${desc.replace(/"/g, '&quot;')}" style="cursor:pointer"/>`;
+        if (isBase) {
+          svgContent += `<polygon points="${cx},${cy-5} ${cx+4},${cy} ${cx},${cy+5} ${cx-4},${cy}" fill="#2ecc71" stroke="#fff" stroke-width="0.5"/>`;
+        }
         const name = locationName(loc.id);
         const shortName = name.length > 4 ? name.slice(0, 4) + '…' : name;
         const fontSize = isPlayer ? 11 : 9;
-        const textFill = isPlayer ? '#e94560' : isVisited ? '#aaaacc' : '#666688';
+        const textFill = isPlayer ? '#e94560' : isVisited ? zoneColor : `${zoneColor}55`;
         const labelClass = isPlayer ? 'map-label-player' : isVisited ? 'map-label-visited' : 'map-label-other';
         svgContent += `<text x="${cx}" y="${cy - r - 3}" text-anchor="middle" font-size="${fontSize}" fill="${textFill}" font-family="var(--font-main)" class="${labelClass}" data-shortname="${shortName}" data-fullname="${name}">${name}</text>`;
       }
@@ -101,10 +160,15 @@ export function createWorldMapScreen(session: GameSession, onDone: () => void): 
             <button class="btn" data-zoom="reset" style="min-width:60px;font-size:12px">초기화</button>
             <button class="btn" data-zoom="out" style="min-width:44px;font-size:18px">−</button>
           </div>
-          <div style="display:flex;gap:12px;justify-content:center;font-size:11px;color:var(--text-dim);margin-top:4px">
-            <span><span style="color:#e94560">●</span> 현재 위치</span>
-            <span><span style="color:#4ecca3">●</span> 방문한 곳</span>
-            <span><span style="color:#555577">●</span> 미방문</span>
+          <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;font-size:10px;color:var(--text-dim);margin-top:4px">
+            <span><span style="color:#e94560">●</span> 현재</span>
+            <span><span style="color:#4ecca3">●</span> 엘리메스</span>
+            <span><span style="color:#87CEEB">●</span> 일루네온</span>
+            <span><span style="color:#9b59b6">●</span> 루나</span>
+            <span><span style="color:#e67e22">●</span> 마노니클라</span>
+            <span><span style="color:#2980b9">●</span> 마틴</span>
+            <span><span style="color:#27ae60">●</span> 숲</span>
+            <span><span style="color:#666677">●</span> 야외</span>
             <span>— 양방향 ┄ 일방통행</span>
           </div>
           <p class="hint" style="text-align:center;margin-top:2px">마우스 휠/핀치로 확대, 드래그로 이동</p>

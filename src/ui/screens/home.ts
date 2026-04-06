@@ -26,10 +26,11 @@ export function createHomeScreen(
     wrap.appendChild(backBtn);
 
     const title = document.createElement('h2');
-    title.textContent = '\uc9d1';
+    const isOwned = session.knowledge.ownedBases.has(p.currentLocation);
+    title.textContent = isOwned ? '거점' : '집';
     wrap.appendChild(title);
 
-    const isHome = p.currentLocation === p.homeLocation;
+    const isHome = p.currentLocation === p.homeLocation || session.knowledge.ownedBases.has(p.currentLocation);
 
     if (isHome) {
       const info = document.createElement('p');
@@ -45,7 +46,7 @@ export function createHomeScreen(
     } else {
       const hint = document.createElement('p');
       hint.className = 'hint';
-      hint.textContent = '\uc9d1\uc774 \uc544\ub2cc \uc7a5\uc18c\uc5d0\uc11c\ub294 \uc7a0\uc744 \uc794 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4.';
+      hint.textContent = '거점이 아닌 장소에서는 잠을 잘 수 없습니다. 마을 길드에서 거점을 구매할 수 있습니다.';
       wrap.appendChild(hint);
     }
 
@@ -144,7 +145,7 @@ export function createHomeScreen(
 
       if (phase === 'menu') {
         if (key === 'Escape') { onDone(); return; }
-        if (key === '1' && p.currentLocation === p.homeLocation) {
+        if (key === '1' && (p.currentLocation === p.homeLocation || session.knowledge.ownedBases.has(p.currentLocation))) {
           startSleep(container);
         }
       } else if (phase === 'wakeup') {
