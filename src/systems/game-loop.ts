@@ -10,11 +10,11 @@ import { advanceTurn } from './world-simulation';
 import { findItemsBySource } from '../types/item-defs';
 
 export type GameAction =
-  | 'idle' | 'move' | 'look' | 'talk' | 'trade' | 'eat'
+  | 'idle' | 'move' | 'talk' | 'trade' | 'eat'
   | 'rest' | 'dungeon' | 'gather' | 'quest' | 'activity'
   | 'gift' | 'home' | 'memory_spring'
   | 'storage' | 'realestate' | 'cooking' | 'npc_invite'
-  | 'info_status' | 'info_color' | 'info_relations' | 'info_world'
+  | 'info_status' | 'info_color' | 'info_relations'
   | 'info_backlog' | 'info_hyperion' | 'info_party' | 'info_titles' | 'info_map' | 'info_encyclopedia'
   | 'info_skills' | 'info_inventory'
   | 'save';
@@ -63,59 +63,6 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
       result.messages.push('주변을 관찰하며 시간을 보냈다.');
       break;
 
-    case 'look': {
-      const loc = session.world.getLocation(p.currentLocation);
-      const npcsHere = session.actors.filter(a => a !== p && a.currentLocation === p.currentLocation && a.isAlive() && !a.base.sleeping);
-      const locLabel = locationName(p.currentLocation);
-
-      result.messages.push(`📍 ${locLabel}`);
-      if (loc.description) result.messages.push(loc.description);
-
-      // 주변 NPC
-      if (npcsHere.length > 0) {
-        const names = npcsHere.map(a => session.knowledge.isKnown(a.name) ? a.name : '???');
-        result.messages.push(`주변 인물 (${npcsHere.length}명): ${names.join(', ')}`);
-      } else {
-        result.messages.push('주변에 아무도 없다.');
-      }
-
-      // 날씨/계절
-      result.messages.push(`날씨: ${weatherName(session.world.weather)}, 계절: ${seasonName(session.world.getCurrentSeason())}`);
-
-      // 근처 던전
-      const nearbyDungeons = session.dungeonSystem.getAllDungeons().filter(d => d.accessFrom === p.currentLocation);
-      if (nearbyDungeons.length > 0) {
-        result.messages.push(`던전: ${nearbyDungeons.map(d => d.name).join(', ')}`);
-      }
-
-      // 채집 가능 여부
-      const gatherHere = findItemsBySource('gather:' + p.currentLocation);
-      if (gatherHere.length > 0) {
-        result.messages.push(`채집 가능: ${gatherHere.map(g => g.name).join(', ')}`);
-      }
-
-      // 자원 현황
-      const resources = [...loc.resources.entries()].filter(([, n]) => n > 0);
-      if (resources.length > 0) {
-        result.messages.push(`지역 자원: ${resources.length}종`);
-      }
-
-      // 거점 정보
-      if (session.knowledge.ownedBases.has(p.currentLocation)) {
-        const level = session.knowledge.getBaseLevel(p.currentLocation);
-        const invitedNpcs = session.knowledge.getBaseNpcs(p.currentLocation);
-        result.messages.push(`🏘 거점 Lv.${level}`);
-        if (invitedNpcs.length > 0) {
-          result.messages.push(`초대된 NPC: ${invitedNpcs.join(', ')}`);
-        }
-      }
-
-      // 로그에 기록
-      for (const msg of result.messages) {
-        session.backlog.add(session.gameTime, msg, '행동', p.name);
-      }
-      break;
-    }
 
     case 'eat': result.messages.push('식사를 준비한다...'); result.screenChange = 'eat'; break;
 

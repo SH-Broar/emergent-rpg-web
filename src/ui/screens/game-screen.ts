@@ -49,15 +49,14 @@ function atGuildHall(session: GameSession) { return session.player.currentLocati
 const MAIN_ACTIONS: ActionDef[] = [
   { key: '1', label: '대기', action: 'idle', icon: '⏳' },
   { key: '2', label: '이동', action: 'move', icon: '🚶' },
-  { key: '3', label: '살펴보기', action: 'look', icon: '👁' },
-  { key: '4', label: '대화', action: 'talk', icon: '💬', visible: hasNpcsHere },
-  { key: '5', label: '거래', action: 'trade', icon: '💰', visible: canTrade },
-  { key: '6', label: '식사', action: 'eat', icon: '🍖' },
-  { key: '7', label: '휴식', action: 'rest', icon: '💤' },
-  { key: '8', label: '던전', action: 'dungeon', icon: '⚔', visible: nearDungeon },
-  { key: '9', label: '채집', action: 'gather', icon: '🌿' },
-  { key: '0', label: '퀘스트', action: 'quest', icon: '📜', visible: atGuildHall },
-  { key: 'a', label: '활동', action: 'activity', icon: '🔨', visible: hasActivities },
+  { key: '3', label: '대화', action: 'talk', icon: '💬', visible: hasNpcsHere },
+  { key: '4', label: '거래', action: 'trade', icon: '💰', visible: canTrade },
+  { key: '5', label: '식사', action: 'eat', icon: '🍖' },
+  { key: '6', label: '휴식', action: 'rest', icon: '💤' },
+  { key: '7', label: '던전', action: 'dungeon', icon: '⚔', visible: nearDungeon },
+  { key: '8', label: '채집', action: 'gather', icon: '🌿' },
+  { key: '9', label: '퀘스트', action: 'quest', icon: '📜', visible: atGuildHall },
+  { key: '0', label: '활동', action: 'activity', icon: '🔨', visible: hasActivities },
   { key: 'g', label: '선물', action: 'gift', icon: '🎁', visible: hasNpcsHere },
   { key: 'h', label: '자택', action: 'home', icon: '🏠', visible: atHome },
   { key: 'j', label: '창고', action: 'storage' as GameAction, icon: '📦', visible: atBase },
@@ -69,9 +68,9 @@ const MAIN_ACTIONS: ActionDef[] = [
 
 const INFO_ACTIONS: ActionDef[] = [
   { key: 'i', label: '상태', action: 'info_status', icon: '📊' },
+  { key: 'v', label: '소지품', action: 'info_inventory' as GameAction, icon: '🎒' },
   { key: 'c', label: '컬러', action: 'info_color', icon: '🎨' },
   { key: 'r', label: '관계', action: 'info_relations', icon: '💕' },
-  { key: 'w', label: '월드', action: 'info_world', icon: '🗺' },
   { key: 'b', label: '백로그', action: 'info_backlog', icon: '📖' },
   { key: 'y', label: '히페리온', action: 'info_hyperion', icon: '✦' },
   { key: 'p', label: '동료', action: 'info_party', icon: '👥' },
@@ -79,7 +78,6 @@ const INFO_ACTIONS: ActionDef[] = [
   { key: 'M', label: '지도', action: 'info_map', icon: '🧭' },
   { key: 'e', label: '도감', action: 'info_encyclopedia', icon: '📚' },
   { key: 'k', label: '스킬', action: 'info_skills' as GameAction, icon: '⚡' },
-  { key: 'v', label: '소지품', action: 'info_inventory' as GameAction, icon: '🎒' },
   { key: 'S', label: '저장', action: 'save', icon: '💾' },
 ];
 
@@ -214,11 +212,47 @@ export function createGameScreen(
     const p = session.player;
     const hpPct = Math.round((p.base.hp / p.getEffectiveMaxHp()) * 100);
 
-    // 지역 이동 시 로그 초기화
+    // 지역 이동 시 로그 초기화 + 자동 지역 설명 + 동료 대사
     if (p.currentLocation !== lastLocation) {
       accumulatedLog = [];
       lastLocation = p.currentLocation;
-      lastBacklogSync = session.backlog.size(); // 이전 지역 대사 무시
+      lastBacklogSync = session.backlog.size();
+
+      // 지역 이름 및 설명 자동 표시
+      const arrivedLoc = session.world.getLocation(p.currentLocation);
+      const timeStr = session.gameTime.toString();
+      accumulatedLog.push({ time: timeStr, text: `📍 ${locationName(p.currentLocation)}` });
+      if (arrivedLoc?.description) {
+        accumulatedLog.push({ time: timeStr, text: arrivedLoc.description });
+      }
+
+      // 동료 자동 한두마디
+      const COMPANION_LINES: string[] = [
+        '...조용하네요.',
+        '어떤 곳인지 느껴지나요?',
+        '여기서 잠깐 쉬어가도 좋을 것 같아요.',
+        '계속 나아갈까요?',
+        '이 근처는 조심해야 할 것 같아요.',
+        '...바람이 불어오네요.',
+        '이런 곳에도 이야기가 있겠죠.',
+        '신기한 느낌이 나는 곳이에요.',
+        '서두르지 않아도 괜찮을 것 같아요.',
+        '뭔가... 기억에 남을 것 같아요.',
+        '여기, 처음 오는 곳 같은 느낌이 들어요.',
+        '발걸음이 절로 멈추게 되는 곳이네요.',
+      ];
+      const companions = session.actors.filter(
+        a => a !== p && a.currentLocation === p.currentLocation && a.isAlive() && !a.base.sleeping
+      );
+      const shuffled = companions.sort(() => Math.random() - 0.5).slice(0, 2);
+      for (const companion of shuffled) {
+        if (Math.random() < 0.65) {
+          const line = COMPANION_LINES[Math.floor(Math.random() * COMPANION_LINES.length)];
+          const text = `${companion.name}: "${line}"`;
+          accumulatedLog.push({ time: timeStr, text });
+          session.backlog.add(session.gameTime, text, '대사', companion.name);
+        }
+      }
     }
 
     // 서브화면(대화 등)에서 돌아올 때 대사 로그 동기화
@@ -465,16 +499,6 @@ export function createInfoScreen(
             </div>`;
           }
           html += '</div>';
-          break;
-        }
-
-        case 'info_world': {
-          html += `<h2>월드 정보</h2>`;
-          html += `<div>계절: ${seasonName(session.world.getCurrentSeason())} (${session.world.seasonSchedule.daysLeft(session.gameTime.day)}일 남음)</div>`;
-          html += `<div>날씨: ${weatherName(session.world.weather)}</div>`;
-          html += `<div>장소 수: ${session.world.getAllLocations().size}</div>`;
-          const neighbors = session.world.getNeighbors(p.currentLocation, session.gameTime.day);
-          html += `<div>인접 장소: ${neighbors.map(n => locationName(n)).join(', ')}</div>`;
           break;
         }
 
