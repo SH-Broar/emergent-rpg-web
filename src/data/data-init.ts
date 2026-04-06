@@ -389,6 +389,8 @@ export function initActivities(sections: DataSection[], activity: ActivitySystem
           item: parseItemType(l.item), amount: l.amount, chance: l.chance,
         })),
         colorInfluence: parseColorInfluence(s.get(`${prefix}colorInfluence`, '')),
+        unique: s.get(`${prefix}unique`, '') === 'true',
+        stock: s.getInt(`${prefix}stock`, -1),
       });
     }
   }

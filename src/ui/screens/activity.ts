@@ -17,7 +17,22 @@ export function createActivityScreen(
   let activities: readonly ActivityDef[] = [];
 
   function refresh(): void {
-    activities = session.activitySystem.getActivitiesForLocation(p.currentLocation);
+    // 재고 보충 체크
+    session.activitySystem.restockIfNewDay(session.gameTime.day);
+    // unique 아이템을 이미 소지 중이면 숨기고, 재고 0이면 숨김
+    activities = session.activitySystem.getActivitiesForLocation(p.currentLocation)
+      .filter(act => {
+        // unique 활동: gives 아이템을 이미 소지 중이면 숨김
+        if (act.unique && act.gives.length > 0) {
+          const alreadyHas = act.gives.every(g => (p.spirit.inventory.get(g.item) ?? 0) >= g.amount);
+          if (alreadyHas) return false;
+        }
+        // 재고가 0이면 숨김 (재고 무제한 = -1은 표시)
+        if (act.stock > 0 && !session.activitySystem.hasStock(p.currentLocation, act.key)) {
+          return false;
+        }
+        return true;
+      });
   }
 
   function renderActivity(el: HTMLElement): void {
@@ -45,9 +60,11 @@ export function createActivityScreen(
         btn.className = 'btn npc-item';
         btn.style.minHeight = '44px';
         btn.dataset.idx = String(i);
+        const stockNum = session.activitySystem.getStock(p.currentLocation, act.key);
+        const stockLabel = stockNum >= 0 ? ` [재고:${stockNum}]` : '';
         btn.innerHTML = `
           <span class="npc-num">${i + 1}.</span>
-          <span class="npc-name">${act.name}</span>
+          <span class="npc-name">${act.name}${stockLabel}</span>
           <span class="npc-detail">${act.description} (\uc2dc\uac04:${act.timeCost}\ubd84, TP:${Math.ceil(act.vigorCost / 10)}${act.goldCost > 0 ? `, ${act.goldCost}G` : ''})</span>
         `;
         btn.addEventListener('click', () => executeActivity(i, el));
@@ -139,12 +156,24 @@ export function createActivityScreen(
       return;
     }
 
+    // 재고 체크
+    if (act.stock > 0 && !session.activitySystem.hasStock(p.currentLocation, act.key)) {
+      message = '재고가 없습니다!';
+      renderActivity(el);
+      return;
+    }
+
     // Consume TP
     const tpNeeded = Math.ceil(act.vigorCost / 10);
     p.adjustAp(-tpNeeded);
     if (act.goldCost > 0) p.addGold(-act.goldCost);
     for (const req of act.itemReqs) {
       p.consumeItem(req.item, req.amount);
+    }
+
+    // 재고 소모
+    if (act.stock > 0) {
+      session.activitySystem.consumeStock(p.currentLocation, act.key);
     }
 
     // Apply effect
