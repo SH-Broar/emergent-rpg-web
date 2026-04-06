@@ -2,8 +2,7 @@
 // 원본: GameLoop.cpp 핵심 분기
 
 import { GameSession } from './game-session';
-import { weatherName, seasonName } from '../types/enums';
-import { locationName } from '../types/registry';
+import { seasonName } from '../types/enums';
 import { randomInt, randomFloat } from '../types/rng';
 import { updateHyperionLevels } from './hyperion';
 import { advanceTurn } from './world-simulation';
@@ -14,7 +13,7 @@ export type GameAction =
   | 'rest' | 'dungeon' | 'gather' | 'quest' | 'activity'
   | 'gift' | 'home' | 'memory_spring'
   | 'storage' | 'realestate' | 'cooking' | 'npc_invite'
-  | 'info_status' | 'info_color' | 'info_relations'
+  | 'info_status' | 'info_color' | 'info_relations' | 'info_world'
   | 'info_backlog' | 'info_hyperion' | 'info_party' | 'info_titles' | 'info_map' | 'info_encyclopedia'
   | 'info_skills' | 'info_inventory'
   | 'save';
