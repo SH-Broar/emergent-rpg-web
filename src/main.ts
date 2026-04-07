@@ -663,7 +663,7 @@ async function boot() {
           });
           break;
       }
-    });
+    }, session.gameTime);
     sm.replace(menu);
   }
 
