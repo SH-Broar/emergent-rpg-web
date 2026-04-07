@@ -555,6 +555,27 @@ async function boot() {
     });
   }
 
+  // --- 메인 메뉴용 시간 계산 ---
+  function getMenuGameTime(): GameTime {
+    const raw = localStorage.getItem('emergent_save_0');
+    if (raw) {
+      try {
+        const parsed = JSON.parse(raw);
+        const t = new GameTime();
+        t.day    = parsed.gameTimeDay    ?? 1;
+        t.hour   = parsed.gameTimeHour   ?? 6;
+        t.minute = parsed.gameTimeMinute ?? 0;
+        return t;
+      } catch { /* fallthrough */ }
+    }
+    // 세이브 없으면 실제 KST(UTC+9) 시간
+    const t = new GameTime();
+    const now = new Date();
+    t.hour   = (now.getUTCHours() + 9) % 24;
+    t.minute = now.getUTCMinutes();
+    return t;
+  }
+
   // --- 메인 메뉴 ---
   function showMainMenu() {
     const menu = createMainMenuScreen(checkHasAutosave(), (choice) => {
@@ -663,7 +684,7 @@ async function boot() {
           });
           break;
       }
-    }, session.gameTime);
+    }, getMenuGameTime());
     sm.replace(menu);
   }
 
