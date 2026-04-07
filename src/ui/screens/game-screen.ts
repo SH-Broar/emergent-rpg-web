@@ -219,7 +219,6 @@ export function createGameScreen(
     if (p.currentLocation !== lastLocation) {
       accumulatedLog = [];
       lastLocation = p.currentLocation;
-      lastBacklogSync = session.backlog.size();
 
       // 지역 이름 및 설명 자동 표시
       const arrivedLoc = session.world.getLocation(p.currentLocation);
@@ -257,6 +256,10 @@ export function createGameScreen(
           session.backlog.add(session.gameTime, text, '대사', companion.name);
         }
       }
+
+      // 동료 대사를 backlog에 추가한 뒤 sync 기준점 갱신
+      // (이 시점 이전 항목은 이미 accumulatedLog에 직접 넣었으므로 syncDialogueToLog가 중복 읽지 않도록)
+      lastBacklogSync = session.backlog.size();
     }
 
     // 서브화면(대화 등)에서 돌아올 때 대사 로그 동기화
