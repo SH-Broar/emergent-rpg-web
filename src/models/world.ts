@@ -47,13 +47,14 @@ export interface LocationData {
   linksOneWayOut: TravelLinkSpec[];
   resourceCaps: Map<ItemType, ResourceCapacity>;
   racialSynergy: number;
+  gatherEnv: string[];
 }
 
 export function createLocationData(id: LocationID): LocationData {
   return {
     id, description: '', resources: new Map(), monsterLevel: 0, dangerLevel: 0,
     gridX: 0, gridY: 0, linksBidirectional: [], linksOneWayOut: [],
-    resourceCaps: new Map(), racialSynergy: 0,
+    resourceCaps: new Map(), racialSynergy: 0, gatherEnv: [],
   };
 }
 

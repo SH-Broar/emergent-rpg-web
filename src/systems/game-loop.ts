@@ -36,6 +36,15 @@ export interface TurnResult {
   screenChange?: string;
 }
 
+const GATHER_HINT_FALLBACK_ENV = ['풀숲', '덤불', '흙'];
+
+function pickGatherHint(templates: string[], envs: string[]): string {
+  const pool = envs.length > 0 ? envs : GATHER_HINT_FALLBACK_ENV;
+  const env = pool[randomInt(0, pool.length - 1)];
+  const tpl = templates[randomInt(0, templates.length - 1)];
+  return tpl.replace('{g}', env);
+}
+
 export function processTurn(session: GameSession, action: GameAction): TurnResult {
   const result: TurnResult = { messages: [], levelUp: false };
   const p = session.player;
@@ -105,14 +114,13 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
       if (randomFloat(0, 1) > chance) {
         result.messages.push('채집에 실패했다...');
         if (lockedItems.length > 0) {
-          const hints = [
-            '손이 닿을 듯 말 듯... 무언가가 그 너머에 있는 것 같았다.',
-            '저 깊은 곳에 뭔가 있는 것 같았지만, 오늘은 아닌 것 같다.',
+          result.messages.push(pickGatherHint([
+            '{g} 깊은 곳에 뭔가 있는 것 같았지만, 오늘은 아닌 것 같다.',
             '뭔가를 놓친 기분이 들었지만, 무엇인지는 알 수 없었다.',
-            '손끝에 스친 것 같았지만, 아무것도 쥐지 못했다.',
-            '근처에 뭔가가 있었던 것 같은데... 사라졌다.',
-          ];
-          result.messages.push(hints[randomInt(0, hints.length - 1)]);
+            '{g} 너머에서 손이 닿을 듯 말 듯 무언가가 느껴졌다.',
+            '{g} 속에서 뭔가가 스쳐 지나간 것 같았다.',
+            '분명히 뭔가가 있었는데... 사라졌다.',
+          ], loc.gatherEnv));
         }
         break;
       }
@@ -146,17 +154,16 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
 
       // 잠긴 자원 힌트 (30% 확률)
       if (lockedItems.length > 0 && randomFloat(0, 1) < 0.3) {
-        const hints = [
+        result.messages.push(pickGatherHint([
           '무언가 반짝인 것 같았지만, 대수롭지 않게 넘겼다.',
-          '풀숲 깊은 곳에서 뭔가가 움직인 것 같았다... 착각이었을까.',
+          '{g} 깊은 곳에서 뭔가가 움직인 것 같았다... 착각이었을까.',
           '이상한 기운이 느껴졌다가 사라졌다.',
+          '{g} 사이에서 무언가가 빛을 반사한 것 같았는데... 기분 탓인가.',
           '눈 끝에 무언가가 걸렸지만, 돌아봤을 땐 아무것도 없었다.',
-          '손이 닿을 것 같은 곳에 뭔가가 있었지만, 그냥 지나쳤다.',
-          '흙 사이에서 무언가가 빛을 반사한 것 같았는데... 기분 탓인가.',
+          '{g} 어딘가에서 작은 소리가 들린 것 같았다.',
           '낯선 냄새가 코끝을 스쳤지만, 이내 사라졌다.',
-          '어딘가에서 작은 소리가 들린 것 같았다. 아무것도 없었다.',
-        ];
-        result.messages.push(hints[randomInt(0, hints.length - 1)]);
+          '손이 닿을 것 같은 곳에 뭔가가 있었지만, 그냥 지나쳤다.',
+        ], loc.gatherEnv));
       }
       break;
     }

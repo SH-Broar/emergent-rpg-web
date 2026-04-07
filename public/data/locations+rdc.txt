@@ -144,6 +144,7 @@ links = Iluneon, Navrit:12, Yusejeria:16
 resources = Herb:15, Food:20
 monsterLevel = 1
 dangerLevel = 0.1
+gather_env = 풀밭, 바람 속, 언덕 너머
 
 [Navrit]
 name = 나브릿트 전기지대
@@ -168,6 +169,7 @@ links = Iluneon:12, World_Tree, Moss:10, Windfall_Valley:10
 resources = Herb:30, Food:15
 monsterLevel = 2
 dangerLevel = 0.2
+gather_env = 나무뿌리 사이, 낙엽 더미, 이끼 낀 바닥
 
 [World_Tree]
 name = 세계수
@@ -178,6 +180,7 @@ links = Lar_Forest
 resources = Herb:40, Food:20
 monsterLevel = 0
 dangerLevel = 0.0
+gather_env = 뿌리 사이, 가지 위, 수피 틈
 
 # ============================================================
 # 모스 권역 — 라르 북쪽, 불의 도시
@@ -192,6 +195,7 @@ links = Lar_Forest:10, Moss_Forge, Farm, Moss_Tavern, Triflower:12, Luna_Academy
 resources = Food:30, Equipment:8
 monsterLevel = 0
 dangerLevel = 0.0
+gather_env = 화산재 더미, 용암 바위 틈, 검댕 속
 
 [Moss_Forge]
 name = 모스 대장간
@@ -212,6 +216,7 @@ links = Moss
 resources = Food:50, Herb:10
 monsterLevel = 0
 dangerLevel = 0.0
+gather_env = 밭이랑, 퇴비 더미, 흙 속
 
 [Moss_Tavern]
 name = 화산재 부뚜막
@@ -305,6 +310,7 @@ links = Tacomi
 resources = Herb:15, Food:5
 monsterLevel = 0
 dangerLevel = 0.0
+gather_env = 꽃밭, 꽃잎 사이, 꽃술 깊은 곳
 
 [Tacomi_Cafe]
 name = 레이저빔 카페
@@ -427,6 +433,7 @@ links = Martin_Port:16, Bug_Sea:24
 resources = MonsterLoot:15, OreRare:5
 monsterLevel = 7
 dangerLevel = 0.7
+gather_env = 바위 틈, 물가, 파도 아래
 
 [Bug_Sea]
 name = 버그의 바다
@@ -471,6 +478,7 @@ links = Manonickla
 resources = OreRare:5, Herb:10
 monsterLevel = 3
 dangerLevel = 0.3
+gather_env = 폐허 돌 사이, 이끼 낀 벽, 무너진 기둥 아래
 
 [Old_Eas]
 name = 구 에아스 거주지
@@ -595,6 +603,7 @@ links = Enicham:8, Lar_Forest:10
 resources = Herb:10
 monsterLevel = 3
 dangerLevel = 0.25
+gather_env = 바람길, 계곡 바닥, 풍혈 입구
 
 # ============================================================
 # 경유지

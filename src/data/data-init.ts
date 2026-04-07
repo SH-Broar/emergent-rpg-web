@@ -45,6 +45,10 @@ export function initLocations(sections: DataSection[], world: World): void {
     data.gridY = s.getFloat('y', 0);
     data.monsterLevel = s.getInt('monsterLevel', 0);
     data.dangerLevel = s.getFloat('dangerLevel', 0);
+    const gatherEnvRaw = s.get('gather_env', '');
+    if (gatherEnvRaw) {
+      data.gatherEnv = gatherEnvRaw.split(',').map(e => e.trim()).filter(Boolean);
+    }
 
     reg.locationNames.set(id, s.get('name', id));
     if (s.has('description')) reg.locationDescs.set(id, s.get('description'));

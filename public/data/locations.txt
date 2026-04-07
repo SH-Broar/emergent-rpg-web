@@ -36,6 +36,7 @@ y = -1200
 resources = Herb:40, Potion:3
 monsterLevel = 0
 dangerLevel = 0.0
+gather_env = 약초 사이, 풀잎 아래, 이슬 맺힌 잎
 
 [Silk_Workshop]
 name = 비단 공방
@@ -53,6 +54,7 @@ x = -3600
 y = -1800
 monsterLevel = 0
 dangerLevel = 0.15
+gather_env = 풀밭, 나무 그늘, 뿌리 근처
 
 [Cyan_Dunes]
 name = 시안 사구
