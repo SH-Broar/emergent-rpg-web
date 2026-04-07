@@ -321,7 +321,7 @@ export function saveToSlot(slot: number, session: GameSession): void {
       day: session.gameTime.day,
       hour: session.gameTime.hour,
       minute: session.gameTime.minute,
-      savedAt: new Date().toLocaleString('ko-KR'),
+      savedAt: new Date().toISOString(),
     },
     playerIdx: session.playerIdx,
     gameTimeDay: session.gameTime.day,
