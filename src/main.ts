@@ -34,6 +34,7 @@ import { createStorageScreen } from './ui/screens/storage';
 import { createCookingScreen } from './ui/screens/cooking';
 import { createNpcInviteScreen } from './ui/screens/npc-invite';
 import { createEquipmentScreen } from './ui/screens/equipment';
+import { createTravelScreen } from './ui/screens/travel';
 import { createDataPackScreen } from './ui/screens/datapack-select';
 import { fastForwardWorld } from './systems/world-simulation';
 import { seasonName } from './types/enums';
@@ -182,7 +183,10 @@ async function boot() {
     sm.replace(createGameScreen(session, (target) => {
       switch (target) {
         case 'move':
-          sm.push(createMoveScreen(session, () => sm.pop()));
+          sm.push(createMoveScreen(session, () => sm.pop(), (fromId, toId, minutes) => {
+            sm.pop(); // move 화면 닫기
+            sm.push(createTravelScreen(session, fromId, toId, minutes, () => sm.pop()));
+          }));
           break;
         case 'talk':
           sm.push(createDialogueScreen(session, {

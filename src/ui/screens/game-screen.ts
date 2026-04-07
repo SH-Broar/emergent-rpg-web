@@ -10,6 +10,8 @@ import { locationName } from '../../types/registry';
 import { getZoneColor } from './world-map';
 import { weatherName, seasonName, raceName, spiritRoleName, elementName, Element, ELEMENT_COUNT, ItemType } from '../../types/enums';
 import { getItemDef, getWeaponDef, getArmorDef, categoryName } from '../../types/item-defs';
+import { applyTimeTheme } from '../time-theme';
+import { TRAVEL_OVERLAY_THRESHOLD } from './travel';
 
 interface ActionDef {
   key: string;
@@ -209,6 +211,7 @@ export function createGameScreen(
   }
 
   function renderHud(el: HTMLElement) {
+    applyTimeTheme(session.gameTime);
     const p = session.player;
     const hpPct = Math.round((p.base.hp / p.getEffectiveMaxHp()) * 100);
 
@@ -593,7 +596,22 @@ export function createInfoScreen(
 export function createMoveScreen(
   session: GameSession,
   onDone: () => void,
+  onTravel?: (fromId: string, toId: string, minutes: number) => void,
 ): Screen {
+  function doMove(fromId: string, loc: string, mins: number) {
+    if (onTravel && mins > TRAVEL_OVERLAY_THRESHOLD) {
+      onTravel(fromId, loc, mins);
+    } else {
+      // 10분 이하: 즉시 이동
+      session.player.currentLocation = loc;
+      moveCompanions(session.actors, session.knowledge, loc);
+      session.gameTime.advance(mins);
+      session.backlog.add(session.gameTime, `${session.player.name}이(가) ${locationName(loc)}(으)로 이동했다.`, '행동');
+      session.knowledge.trackVisit(loc);
+      onDone();
+    }
+  }
+
   return {
     id: 'move',
     render(el) {
@@ -608,11 +626,13 @@ export function createMoveScreen(
           <div class="menu-buttons">
             ${routes.map(([loc, mins], i) => {
               const color = loc === p.homeLocation ? '#ff9ff3' : getZoneColor(loc);
-              // 던전 입구인 경우 표시
               const isDungeon = session.dungeonSystem.isDungeonEntrance(loc);
               const dungeonBadge = isDungeon ? ' <span style="color:var(--accent)">⚔</span>' : '';
+              const travelBadge = mins > TRAVEL_OVERLAY_THRESHOLD
+                ? ` <span style="color:var(--text-dim);font-size:11px">🚶 ${mins}분</span>`
+                : ` <span style="color:var(--text-dim);font-size:11px">${mins}분</span>`;
               return `
-              <button class="btn" data-loc="${loc}" style="border-left:4px solid ${color}">${i + 1}. ${locationName(loc)} (${mins}분)${dungeonBadge}</button>
+              <button class="btn" data-loc="${loc}" data-mins="${mins}" style="border-left:4px solid ${color}">${i + 1}. ${locationName(loc)}${travelBadge}${dungeonBadge}</button>
             `;}).join('')}
           </div>
         </div>`;
@@ -620,28 +640,20 @@ export function createMoveScreen(
       el.querySelectorAll<HTMLButtonElement>('[data-loc]').forEach(btn => {
         btn.addEventListener('click', () => {
           const loc = btn.dataset.loc!;
-          const mins = routes.find(r => r[0] === loc)?.[1] ?? 30;
-          p.currentLocation = loc;
-          moveCompanions(session.actors, session.knowledge, loc);
-          session.gameTime.advance(mins);
-          session.backlog.add(session.gameTime, `${p.name}이(가) ${locationName(loc)}(으)로 이동했다.`, '행동');
-          session.knowledge.trackVisit(loc);
-          onDone();
+          const mins = parseInt(btn.dataset.mins ?? '30', 10);
+          doMove(p.currentLocation, loc, mins);
         });
       });
     },
     onKey(key) {
       if (key === 'Escape') onDone();
       if (/^[1-9]$/.test(key)) {
-        const routes = session.world.getOutgoingRoutes(session.player.currentLocation, session.gameTime.day);
+        const p = session.player;
+        const routes = session.world.getOutgoingRoutes(p.currentLocation, session.gameTime.day);
         const i = parseInt(key, 10) - 1;
         if (i < routes.length) {
           const [loc, mins] = routes[i];
-          session.player.currentLocation = loc;
-          moveCompanions(session.actors, session.knowledge, loc);
-          session.gameTime.advance(mins);
-          session.backlog.add(session.gameTime, `${session.player.name}이(가) ${locationName(loc)}(으)로 이동했다.`, '행동');
-          onDone();
+          doMove(p.currentLocation, loc, mins);
         }
       }
     },
