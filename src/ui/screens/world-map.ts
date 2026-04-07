@@ -50,8 +50,8 @@ export function getZoneColor(locationId: string): string {
   // 팔콘 가든 등 특수지역 — 연분홍
   if (['Falcon_Garden','Starfall_Basin','Mirage_Oasis','Twilight_Spire','Crystal_Cavern'].includes(locationId))
     return '#d4a0c0';
-  // 던전 — 심홍
-  if (['Dungeon_Entrance','Dungeon_Interior'].includes(locationId))
+  // 고위험 야외 — 심홍
+  if (['Erumen_Mistwood','Bandit_Hideout','Ode_Mountain'].includes(locationId))
     return '#c0392b';
   // 기본
   return '#888899';

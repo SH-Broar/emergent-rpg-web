@@ -146,7 +146,7 @@ const DAILY_SCHEDULE: Record<number, ScheduleEntry[]> = {
   ],
   [SpiritRole.Adventurer]: [
     { location: Loc.Guild_Hall,    bonuses: { [ActionType.CheckQuests]: 1.5 } },
-    { location: Loc.Dungeon_Entrance, bonuses: { [ActionType.ExploreDungeon]: 1.5 } },
+    { location: Loc.Tiklit_Range, bonuses: { [ActionType.ExploreDungeon]: 1.5 } },
     { location: Loc.Alimes,        bonuses: { [ActionType.Socialize]: 1.4, [ActionType.ShareRumor]: 1.3 } },
     { location: Loc.Alimes,        bonuses: {} },
   ],
@@ -591,7 +591,7 @@ export function evaluateActions(
     if (hasActiveQuest) dungeonScore += 35;
     dungeonScore *= getMatrixModifier(actor, ActionType.ExploreDungeon);
     candidates.push(make(ActionType.ExploreDungeon, dungeonScore, {
-      targetLocation: Loc.Dungeon_Entrance,
+      targetLocation: Loc.Tiklit_Range,
       reason: '던전 탐험',
     }));
   }
@@ -929,7 +929,7 @@ export function executeAction(
     }
 
     case ActionType.ExploreDungeon: {
-      const nearDungeon = loc === Loc.Dungeon_Entrance || loc === Loc.Dungeon_Interior || loc === Loc.Cyan_Dunes;
+      const nearDungeon = loc === Loc.Tiklit_Range || loc === Loc.Cyan_Dunes || loc === Loc.Bandit_Hideout;
       if (!nearDungeon) {
         const next = world.getNextStep(loc, Loc.Cyan_Dunes, time.day);
         if (next) actor.currentLocation = next;

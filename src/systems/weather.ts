@@ -231,7 +231,7 @@ const OUTDOOR_LOCATIONS = new Set<string>([
   Loc.Ekres,
   Loc.Memory_Spring,
   Loc.Limun_Ruins,
-  Loc.Dungeon_Entrance,
+  Loc.Tiklit_Range,
   Loc.Falcon_Garden,
 ]);
 

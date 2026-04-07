@@ -13,9 +13,9 @@ gridMinutesPerUnit = 0.04
 [Alimes]
 name = 알리메스
 description = 바그레트 산맥과 겔리더 산맥이 병풍처럼 둘러싼 오지 마을. 서쪽으로는 시안 사구 너머로 바다가 보이고, 돌로 포장된 작은 광장에는 서른한 종족의 발자국이 뒤섞여 있다. 대장간에서 흘러나오는 망치 소리와 시장의 흥정 소리가 골목에 메아리치며, 산골의 차가운 공기에는 약초와 비단실의 은은한 향이 감돈다. 외진 만큼 단단하게 얽힌 공동체가 이곳의 가장 큰 자산이다.
-x = -2800
+x = -3000
 y = -1500
-links = Guild_Hall, Herb_Garden, Silk_Workshop, Moonlit_Clearing, Cyan_Dunes, Tiklit_Range, Dungeon_Entrance, Bagreat, Gelider
+links = Guild_Hall, Herb_Garden, Silk_Workshop, Moonlit_Clearing, Cyan_Dunes, Tiklit_Range, Bagreat, Gelider
 resources = Food:50
 monsterLevel = 0
 dangerLevel = 0.0
@@ -24,15 +24,15 @@ dangerLevel = 0.0
 name = 길드 소규모 지부
 description = 참나무 문을 열면 잉크와 양피지 냄새가 코끝을 스친다. 벽면 가득 붙은 의뢰서들이 바람에 펄럭이고, 창구 너머로 접수 담당관이 꼼꼼히 서류를 정리하는 모습이 보인다. 본부에 비하면 작고 소박하지만, 알리메스 모험가들에게는 이곳이 첫 발걸음의 시작점이다. 천장에 걸린 길드 휘장 아래로 낡은 장비와 빛바랜 공적 기록이 조용히 지부의 역사를 말해준다.
 x = -2500
-y = -1300
+y = -1200
 monsterLevel = 0
 dangerLevel = 0.0
 
 [Herb_Garden]
 name = 약초원
 description = 마을 근교에 자리 잡은 정갈한 약초밭. 아침이면 이슬방울이 잎사귀 위에서 보석처럼 반짝이고, 간간이 정령의 빛가루가 공기 중에 어른거린다. 라벤더, 바질, 이름 모를 이종 약초까지 줄지어 자라며, 은은한 허브 향이 바람을 타고 마을까지 흘러간다. 수확한 약초로 끓인 블렌드 차는 알리메스 최고의 인기 메뉴다.
-x = -3100
-y = -1300
+x = -3500
+y = -1200
 resources = Herb:40, Potion:3
 monsterLevel = 0
 dangerLevel = 0.0
@@ -41,7 +41,7 @@ dangerLevel = 0.0
 name = 비단 공방
 description = 천장에서 은빛 거미줄이 커튼처럼 드리워진 아늑한 공방. 숙련된 직조사가 물레를 돌리면, 거미줄 한 올 한 올이 마법을 머금은 직물로 변해간다. 구석에 소복이 쌓인 완성품은 세상에서 가장 가볍고 질긴 비단으로, 한 올의 무게에도 달빛이 비치는 것 같다. 알리메스의 비단은 르슈드 분기를 통해 먼 도시까지 이름이 알려져 있다.
 x = -2700
-y = -1800
+y = -2000
 resources = Equipment:3
 monsterLevel = 0
 dangerLevel = 0.0
@@ -49,15 +49,15 @@ dangerLevel = 0.0
 [Moonlit_Clearing]
 name = 달빛 빈터
 description = 나무들이 원형으로 비켜 선 숲속 빈터. 보름달 밤이면 달빛이 쏟아져 풀잎 하나하나에 은빛이 맺히고, 이슬에 젖은 풀밭 위로 짐승의 조용한 발소리가 지나간다. 낮에는 평범한 공터지만 밤이면 다른 세계처럼 변하는 곳. 가끔 여러 발자국이 원을 그리며 남아 있는 것을 보면, 여기서 무슨 일이 있었는지 짐작만 할 뿐이다.
-x = -3150
-y = -1700
+x = -3600
+y = -1800
 monsterLevel = 0
 dangerLevel = 0.15
 
 [Cyan_Dunes]
 name = 시안 사구
 description = 알리메스 서쪽 해안에 펼쳐진 청록빛 모래사장. 밀려드는 파도가 고운 모래를 적실 때마다, 사구 전체가 시안색으로 빛나는 기이한 광경이 연출된다. 해안가에는 조개와 해초, 표류한 광석 조각이 흩어져 있어 초보 채집가들의 연습터로 안성맞춤이다. 바람이 강한 날이면 모래 알갱이가 만들어내는 낮은 노래 소리가 해안을 따라 울려 퍼진다.
-x = -3400
+x = -4200
 y = -1500
 resources = Herb:15, OreCommon:10, Food:10
 monsterLevel = 1
@@ -66,37 +66,18 @@ dangerLevel = 0.1
 [Tiklit_Range]
 name = 티클릿 산맥
 description = 알리메스 남쪽에 솟아오른 험준한 산줄기. 날카로운 바위 능선이 톱니처럼 하늘을 찌르고, 산 사이 골짜기에는 항상 안개가 걸려 있다. 중급 모험가들이 실력을 시험하는 곳으로, 산길 곳곳에 야생 몬스터의 발톱 자국이 바위에 깊이 패어 있다. 정상 부근에서는 알리메스 마을이 아득히 작게 내려다보인다.
-x = -2800
-y = -2200
+x = -3000
+y = -2800
 links = Bandit_Hideout
 resources = Herb:10, OreCommon:8
 monsterLevel = 3
 dangerLevel = 0.4
 
-[Dungeon_Entrance]
-name = 던전 입구
-description = 이끼 낀 돌계단이 어둠 속으로 빨려 들어간다. 입구 주변에는 선배 모험가들이 새긴 경고문과 무사귀환 기원의 낙서가 빼곡하고, 안쪽에서 불어오는 바람에서는 흙과 쇠, 그리고 이름 모를 것의 냄새가 섞여 있다. 돌아올 수 있을지 모르는 어둠의 입구이지만, 모험가의 가슴을 두근거리게 하는 곳.
-x = -2450
-y = -1700
-links_one_way = Dungeon_Interior:7
-monsterLevel = 3
-dangerLevel = 0.4
-
-[Dungeon_Interior]
-name = 던전 내부
-description = 횃불 빛이 축축한 벽을 핥고, 발밑의 웅덩이에서 물소리가 울린다. 갈림길마다 어둠이 팔을 벌리고, 먼 곳에서 들리는 긁는 소리가 심장을 조인다. 하지만 벽 틈새에서 반짝이는 광석과 먼지 쌓인 상자들이 그 공포의 대가를 약속한다.
-x = -2200
-y = -1900
-links_one_way = Dungeon_Entrance:6
-resources = OreCommon:20, OreRare:3, MonsterLoot:10
-monsterLevel = 5
-dangerLevel = 0.7
-
 [Abandoned_Mine]
 name = 폐광
 description = 녹슨 광차가 기울어진 채 멈춰 있는 오래된 갱도. 바그레트 산맥 방면으로 뻗은 이 폐광은 목재 지지대가 삐걱거리고, 천장에서 간간이 흙이 떨어진다. 위험하지만 벽면에는 아직 캐지지 않은 광맥이 어둠 속에서 둔하게 빛나고 있어, 용기 있는 광부에게는 포기할 수 없는 유혹이다.
-x = -2300
-y = -1200
+x = -1800
+y = -1000
 resources = OreCommon:35, OreRare:5
 monsterLevel = 4
 dangerLevel = 0.55
@@ -104,8 +85,8 @@ dangerLevel = 0.55
 [Bandit_Hideout]
 name = 도적 소굴
 description = 티클릿 산맥 깊은 바위 틈새에 가려진 은밀한 동굴. 입구에는 경비의 흔적이 남아 있고, 안쪽으로 들어갈수록 횃불 그을음과 식은 모닥불 냄새가 짙어진다. 약탈한 물건이 어수선하게 쌓여 있으며, 벽에는 도적 특유의 암호가 긁혀 있다. 위험하지만 보상도 큰 곳.
-x = -3100
-y = -2200
+x = -3800
+y = -2800
 resources = Equipment:3, MonsterLoot:8, Food:10
 monsterLevel = 6
 dangerLevel = 0.8
@@ -113,7 +94,7 @@ dangerLevel = 0.8
 [Bagreat]
 name = 바그레트 산맥
 description = 알리메스 동쪽을 병풍처럼 가로막는 거대한 산맥. 화강암 절벽이 구름을 찌르고, 산 사이 협곡에는 옛 교역로의 흔적이 남아 있다. 르슈드 분기로 향하는 길목이자, 알리메 설산과 에루멘 미스트우드로 들어가는 관문이기도 하다. 산맥 곳곳에 드워프의 오래된 채굴 흔적이 바위에 새겨져 있으며, 높은 곳에서 내려다보면 알리메스가 얼마나 깊은 산 속에 자리 잡았는지 실감하게 된다.
-x = -2100
+x = -1800
 y = -1500
 links = Alimes, Reshud_Junction:16, Alime_Mountain, Abandoned_Mine, Erumen_Mistwood
 resources = OreCommon:15
@@ -123,8 +104,8 @@ dangerLevel = 0.35
 [Reshud_Junction]
 name = 르슈드 분기
 description = 바그레트 산맥을 빠져나온 곳에 자리한 교차로. 알리메스와 일루네온, 그리고 먼 지방을 잇는 환승 거점으로, 이정표가 여러 방향을 가리키고 있다. 여행자를 위한 작은 쉼터와 마차 정거장이 있으며, 간간이 행상의 종소리가 바람에 실려 온다. 오가는 상인과 모험가들의 발길이 끊이지 않아, 외진 산골에서 세상과 이어지는 유일한 실낱 같은 곳이다.
-x = -1400
-y = -1300
+x = -1000
+y = -1200
 links = Bagreat:16
 resources = Food:10
 monsterLevel = 2
@@ -133,8 +114,8 @@ dangerLevel = 0.2
 [Alime_Mountain]
 name = 알리메 설산
 description = 바그레트 산맥의 최고봉. 만년설이 정상을 덮고, 산허리에는 칼바람이 끊이지 않는다. 등반길에는 동결된 폭포와 얼어붙은 호수가 기이한 풍경을 만들어내고, 정상 부근에서는 숨이 막힐 만큼 투명한 공기 너머로 세계의 끝이 보이는 듯한 착각에 빠진다. 고레벨 모험가만이 도전할 수 있는 극한의 영역이며, 에루멘 미스트우드로 내려가는 비밀 산길이 어딘가에 숨겨져 있다고 전해진다.
-x = -1900
-y = -1100
+x = -1200
+y = -800
 links = Bagreat, Erumen_Mistwood
 resources = OreRare:5
 monsterLevel = 7
@@ -143,8 +124,8 @@ dangerLevel = 0.7
 [Erumen_Mistwood]
 name = 에루멘 미스트우드
 description = 바그레트 산맥 깊은 골짜기에 자리한 안개의 숲. 나무 한 그루 한 그루가 수백 년을 살았으며, 가지 사이로 영겁의 안개가 흐른다. 시야가 열 발자국을 넘지 못하는 이 숲에는 고대의 몬스터와 잊힌 보물이 안개 뒤에 숨어 있다. 알리메스 출신 모험가들만이 입산 허가를 받을 수 있는 전용 고레벨 던전이며, 안쪽 깊은 곳에는 신성한 호수가 잠들어 있다는 전설이 있다.
-x = -2000
-y = -1200
+x = -1500
+y = -1000
 links_one_way = Erumen_Seoncheon
 resources = Herb:20, MonsterLoot:15, OreRare:5
 monsterLevel = 8
@@ -153,8 +134,8 @@ dangerLevel = 0.85
 [Erumen_Seoncheon]
 name = 에루멘 성천호
 description = 미스트우드 가장 깊은 곳에 숨겨진 신성한 호수. 안개가 걷히는 찰나, 수면이 하늘보다 맑은 빛을 품고 드러난다. 호수 주변의 고목에는 고대 문자가 새겨져 있고, 물가에 서면 세상의 모든 소리가 멈추는 듯한 정적이 내려앉는다. 이곳의 물은 치유와 정화의 힘을 지녔다고 전해지며, 호수 바닥에서 은은하게 빛나는 무언가가 간간이 목격된다. 성천호에 도달하는 것 자체가 모험가의 자격을 증명하는 일이다.
-x = -1750
-y = -950
+x = -800
+y = -500
 resources = Potion:10, Herb:10
 monsterLevel = 0
 dangerLevel = 0.1
@@ -162,8 +143,8 @@ dangerLevel = 0.1
 [Gelider]
 name = 겔리더 산맥
 description = 알리메스 북쪽을 가로막는 험준한 산맥. 바그레트와 달리 화산 지형이 섞여 있어, 눈 덮인 봉우리 사이로 간간이 유황 냄새가 피어오른다. 산길은 좁고 가파르며, 산적과 야생 몬스터가 곳곳에 도사리고 있다. 산맥 너머에는 대절곡이 기다리고 있으며, 오드 산으로 향하는 갈림길이 중턱에서 갈라진다.
-x = -2800
-y = -800
+x = -3000
+y = -200
 links = Alimes, Grand_Crack, Ode_Mountain
 resources = OreCommon:10
 monsterLevel = 4
@@ -172,8 +153,8 @@ dangerLevel = 0.45
 [Grand_Crack]
 name = 대절곡
 description = 겔리더 산맥 너머에 펼쳐진 거대한 절벽 지대. 대지가 갈라진 듯한 수백 미터 깊이의 협곡이 끝없이 이어지고, 절벽 사이로 불어오는 바람이 울부짖는 소리를 낸다. 협곡 바닥에는 미지의 생태계가 존재한다는 소문이 있으며, 절벽 위에서 내려다보면 어둠만이 보일 뿐이다. 북쪽으로는 아직 탐험되지 않은 영역이 펼쳐져 있으며, 언젠가 그 너머의 길이 열릴 것이라는 예언이 전해진다.
-x = -2600
-y = -100
+x = -2800
+y = 1000
 links = Gelider
 resources = OreRare:3, MonsterLoot:10
 monsterLevel = 7
@@ -182,8 +163,8 @@ dangerLevel = 0.75
 [Ode_Mountain]
 name = 오드 산
 description = 겔리더 산맥에서 갈라져 나온 독립 봉우리. 산 전체가 기묘한 자기장에 감싸여 있어, 나침반이 제 기능을 잃고 마법 도구가 오작동하는 것으로 악명 높다. 정상에는 원인을 알 수 없는 고대 석조물이 서 있으며, 보름달 밤이면 석조물에서 낮은 진동이 느껴진다고 한다. 고레벨 모험가들 사이에서 '감각만으로 싸워야 하는 산'이라 불리는 난이도 높은 사냥터이다.
-x = -2400
-y = -500
+x = -2300
+y = 200
 links = Gelider
 resources = OreRare:5, MonsterLoot:12
 monsterLevel = 8

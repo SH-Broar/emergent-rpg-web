@@ -14,8 +14,6 @@ export const Loc = {
   Moonlit_Clearing: 'Moonlit_Clearing',
   Cyan_Dunes: 'Cyan_Dunes',
   Tiklit_Range: 'Tiklit_Range',
-  Dungeon_Entrance: 'Dungeon_Entrance',
-  Dungeon_Interior: 'Dungeon_Interior',
   Abandoned_Mine: 'Abandoned_Mine',
   Bandit_Hideout: 'Bandit_Hideout',
   Bagreat: 'Bagreat',
