@@ -217,7 +217,12 @@ export function createGameScreen(
 
     // 지역 이동 시 로그 초기화 + 자동 지역 설명 + 동료 대사
     if (p.currentLocation !== lastLocation) {
-      accumulatedLog = [];
+      // 이동 중 backlog에 쌓인 '이동' 이벤트를 먼저 수집 (여행 로그 보존)
+      const allEntries = session.backlog.getAll();
+      const travelEvents = allEntries.slice(lastBacklogSync)
+        .filter(e => e.category === '이동')
+        .map(e => ({ time: e.time.toString(), text: e.text }));
+      accumulatedLog = travelEvents;
       lastLocation = p.currentLocation;
 
       // 지역 이름 및 설명 자동 표시
