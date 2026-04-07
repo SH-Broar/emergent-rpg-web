@@ -2,6 +2,7 @@ import './styles/global.css';
 import { loadAllData } from './data/loader';
 import { initAll } from './data/data-init';
 import { seedRNG } from './types/rng';
+import { GameTime } from './types/game-time';
 import { ScreenManager } from './ui/screen-manager';
 import { InputHandler } from './ui/input-handler';
 import { GameSession } from './systems/game-session';
