@@ -11,7 +11,7 @@ import { getZoneColor } from './world-map';
 import { weatherName, seasonName, raceName, spiritRoleName, elementName, Element, ELEMENT_COUNT, ItemType } from '../../types/enums';
 import { getItemDef, getWeaponDef, getArmorDef, categoryName } from '../../types/item-defs';
 import { applyTimeTheme } from '../time-theme';
-import { TRAVEL_OVERLAY_THRESHOLD } from './travel';
+import { TRAVEL_OVERLAY_THRESHOLD_MINUTES } from './travel';
 
 interface ActionDef {
   key: string;
@@ -599,7 +599,7 @@ export function createMoveScreen(
   onTravel?: (fromId: string, toId: string, minutes: number) => void,
 ): Screen {
   function doMove(fromId: string, loc: string, mins: number) {
-    if (onTravel && mins > TRAVEL_OVERLAY_THRESHOLD) {
+    if (onTravel && mins > TRAVEL_OVERLAY_THRESHOLD_MINUTES) {
       onTravel(fromId, loc, mins);
     } else {
       // 10분 이하: 즉시 이동
@@ -628,7 +628,7 @@ export function createMoveScreen(
               const color = loc === p.homeLocation ? '#ff9ff3' : getZoneColor(loc);
               const isDungeon = session.dungeonSystem.isDungeonEntrance(loc);
               const dungeonBadge = isDungeon ? ' <span style="color:var(--accent)">⚔</span>' : '';
-              const travelBadge = mins > TRAVEL_OVERLAY_THRESHOLD
+              const travelBadge = mins > TRAVEL_OVERLAY_THRESHOLD_MINUTES
                 ? ` <span style="color:var(--text-dim);font-size:11px">🚶 ${mins}분</span>`
                 : ` <span style="color:var(--text-dim);font-size:11px">${mins}분</span>`;
               return `

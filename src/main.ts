@@ -34,7 +34,17 @@ import { createStorageScreen } from './ui/screens/storage';
 import { createCookingScreen } from './ui/screens/cooking';
 import { createNpcInviteScreen } from './ui/screens/npc-invite';
 import { createEquipmentScreen } from './ui/screens/equipment';
-import { createTravelScreen } from './ui/screens/travel';
+import { createTravelScreen, type TravelOptions } from './ui/screens/travel';
+
+/** 플레이어 아이템/스킬에 따른 이동 속도 계산 (게임 1분당 실제 ms) */
+function computeTravelSpeed(_session: GameSession): TravelOptions {
+  // 기본값: 100ms/game-min (현실 1초 = 게임 10분)
+  // 추후 이동속도 아이템/스킬 효과를 여기서 적용
+  let msPerGameMinute = 100;
+  // 예시 (추후 아이템 시스템 연동):
+  // if (session.player.hasItem('swift_boots')) msPerGameMinute *= 0.5;
+  return { msPerGameMinute };
+}
 import { createDataPackScreen } from './ui/screens/datapack-select';
 import { fastForwardWorld } from './systems/world-simulation';
 import { seasonName } from './types/enums';
@@ -185,7 +195,7 @@ async function boot() {
         case 'move':
           sm.push(createMoveScreen(session, () => sm.pop(), (fromId, toId, minutes) => {
             sm.pop(); // move 화면 닫기
-            sm.push(createTravelScreen(session, fromId, toId, minutes, () => sm.pop()));
+            sm.push(createTravelScreen(session, fromId, toId, minutes, () => sm.pop(), computeTravelSpeed(session)));
           }));
           break;
         case 'talk':
