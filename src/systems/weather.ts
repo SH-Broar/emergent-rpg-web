@@ -224,18 +224,15 @@ export function getWeatherFlavorText(weather: Weather, season: Season): string {
 
 const OUTDOOR_LOCATIONS = new Set<string>([
   Loc.Farm,
-  Loc.Lake,
-  Loc.Mountain_Path,
-  Loc.Wilderness,
+  Loc.Erumen_Seoncheon,
+  Loc.Tiklit_Range,
+  Loc.Cyan_Dunes,
   Loc.Herb_Garden,
-  Loc.Trade_Route,
+  Loc.Ekres,
   Loc.Memory_Spring,
   Loc.Limun_Ruins,
   Loc.Dungeon_Entrance,
   Loc.Falcon_Garden,
-  Loc.Starfall_Basin,
-  Loc.Mirage_Oasis,
-  Loc.Ancient_Tree_Crown,
 ]);
 
 export function isOutdoorLocation(locationId: string): boolean {

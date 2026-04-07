@@ -16,8 +16,8 @@ import { iGa, eulReul } from '../data/josa';
 // ============================================================
 
 const SETTLEMENT_LOCATIONS = new Set<string>([
-  Loc.Town_Elimes, Loc.Guild_Hall, Loc.Market_Square,
-  Loc.Tavern, Loc.Church, Loc.Farm, Loc.Blacksmith,
+  Loc.Alimes, Loc.Guild_Hall, Loc.Market_Square,
+  Loc.Hanabridge, Loc.Farm, Loc.Moss_Forge,
 ]);
 
 // ============================================================

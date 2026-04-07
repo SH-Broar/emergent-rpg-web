@@ -390,7 +390,7 @@ const LIFE_EVENTS: NpcLifeEvent[] = [
     },
   },
 
-  // 5. 이야기 나눔 — Story Sharing (requires a third actor at Tavern in the evening)
+  // 5. 이야기 나눔 — Story Sharing (requires a third actor at Alimes in the evening)
   {
     id: 'story_sharing',
     name: '이야기 나눔',
@@ -399,8 +399,8 @@ const LIFE_EVENTS: NpcLifeEvent[] = [
     cooldownDays: 4,
     check(a1, a2, _social) {
       return (
-        a1.currentLocation === Loc.Tavern &&
-        a2.currentLocation === Loc.Tavern &&
+        a1.currentLocation === Loc.Alimes &&
+        a2.currentLocation === Loc.Alimes &&
         a1.lastTickHour >= 18 &&
         a1.lastTickHour < 22
       );
@@ -412,7 +412,7 @@ const LIFE_EVENTS: NpcLifeEvent[] = [
       a2.adjustRelationship(a1.name, 0, 0.03);
 
       const msg = `선술집에서 ${a1.name}와(과) ${a2.name}이(가) 오래된 이야기를 나누며 웃음꽃이 피었다.`;
-      backlog.add(time, msg, '이벤트', a1.name, Loc.Tavern);
+      backlog.add(time, msg, '이벤트', a1.name, Loc.Alimes);
 
       a1.addMemory({
         type: MemoryType.CelebratedTogether,
@@ -484,8 +484,8 @@ const LIFE_EVENTS: NpcLifeEvent[] = [
     cooldownDays: 3,
     check(a1, a2, _social) {
       const workLocations = [
-        Loc.Blacksmith, Loc.Farm, Loc.Herb_Garden,
-        Loc.Abandoned_Mine, Loc.Lake,
+        Loc.Moss_Forge, Loc.Farm, Loc.Herb_Garden,
+        Loc.Abandoned_Mine, Loc.Erumen_Seoncheon,
       ] as string[];
       return (
         a1.currentLocation === a2.currentLocation &&

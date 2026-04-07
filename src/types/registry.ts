@@ -22,11 +22,10 @@ export class GameRegistry {
   }
 
   initDefaults(): void {
-    this.locationNames.set(Loc.Town_Elimes, '엘리메스 마을');
+    this.locationNames.set(Loc.Alimes, '알리메스');
     this.locationNames.set(Loc.Guild_Hall, '길드 홀');
     this.locationNames.set(Loc.Market_Square, '시장');
-    this.locationNames.set(Loc.Tavern, '주점');
-    this.locationNames.set(Loc.Wilderness, '야생지대');
+    this.locationNames.set(Loc.Cyan_Dunes, '시안 듄즈');
     this.locationNames.set(Loc.Memory_Spring, '기억의 샘');
     this.locationNames.set(Loc.Limun_Ruins, '리문 유적');
 

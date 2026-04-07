@@ -106,7 +106,7 @@ export function initActors(sections: DataSection[]): Actor[] {
     const actor = new Actor(s.name, race, role);
 
     actor.playable = s.getInt('playable', 0) === 1;
-    actor.currentLocation = parseLocationID(s.get('location', 'Town_Elimes'));
+    actor.currentLocation = parseLocationID(s.get('location', 'Alimes'));
     actor.homeLocation = parseLocationID(s.get('homeLocation', actor.currentLocation));
     actor.lifeData.livingPlace = actor.homeLocation;
     actor.stationary = s.getInt('stationary', 0) === 1;
@@ -195,7 +195,7 @@ export function initActors(sections: DataSection[]): Actor[] {
 export function initEvents(sections: DataSection[], events: EventSystem, _world: World): void {
   for (const s of sections) {
     const ev = createGameEvent(s.name, s.get('description', ''));
-    ev.location = parseLocationID(s.get('location', 'Town_Elimes'));
+    ev.location = parseLocationID(s.get('location', 'Alimes'));
 
     // colorInfluence — "Element:float" 형식
     ev.colorInfluence = parseColorInfluence(s.get('colorInfluence', ''));

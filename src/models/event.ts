@@ -21,7 +21,7 @@ export function createGameEvent(name = '', description = ''): GameEvent {
     name,
     description,
     colorInfluence: new Array(ELEMENT_COUNT).fill(0),
-    location: Loc.Town_Elimes,
+    location: Loc.Alimes,
     poolWeight: 1.0,
     triggered: false,
     triggeredAt: new GameTime(),

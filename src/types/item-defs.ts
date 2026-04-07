@@ -34,7 +34,7 @@ export interface ItemDef {
   equipSpeed: number;
 
   // 획득처
-  source: string;               // 'gather:Wilderness', 'dungeon:Larmen_Forest', 'shop:Market' 등
+  source: string;               // 'gather:Cyan_Dunes', 'dungeon:Larmen_Forest', 'shop:Market' 등
 
   // 채집 제한
   minHyperion: number;          // 채집에 필요한 최소 히페리온 레벨 합계 (0=제한 없음)

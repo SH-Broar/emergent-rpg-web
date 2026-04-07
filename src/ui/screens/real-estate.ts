@@ -11,7 +11,7 @@ interface BaseOption {
 }
 
 const PURCHASABLE_BASES: BaseOption[] = [
-  { locationId: 'Town_Elimes', price: 500, description: '엘리메스 마을 중심가의 작은 집' },
+  { locationId: 'Alimes', price: 500, description: '알리메스 중심가의 작은 집' },
   { locationId: 'Luna_Academy', price: 800, description: '마법학교 루나 기숙사 한 칸' },
   { locationId: 'Manonickla', price: 600, description: '마노니클라의 아담한 거처' },
   { locationId: 'Martin_Port', price: 700, description: '마틴 항구 근처 선원 숙소' },

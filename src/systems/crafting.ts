@@ -90,7 +90,7 @@ const RECIPES: CraftRecipe[] = [
     inputs: [{ item: 'OreCommon', amount: 3 }],
     output: { item: 'OreRare', amount: 1 },
     vigorCost: 20,
-    requiredLocation: 'Blacksmith',
+    requiredLocation: 'Moss_Forge',
     colorBonus: [3],   // Iron: 단련
   },
   {
@@ -100,7 +100,7 @@ const RECIPES: CraftRecipe[] = [
     inputs: [{ item: 'OreCommon', amount: 2 }],
     output: { item: 'Equipment', amount: 1 },
     vigorCost: 15,
-    requiredLocation: 'Blacksmith',
+    requiredLocation: 'Moss_Forge',
   },
 
   // --- 선물 & 장식 (따뜻한 테마) ---

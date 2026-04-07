@@ -106,12 +106,12 @@ export class Actor {
   base: BaseProperty;
   spirit: SpiritProperty;
   color: ColorProfile;
-  currentLocation: LocationID = Loc.Town_Elimes;
+  currentLocation: LocationID = Loc.Alimes;
   moveDestination = '';
   actionCooldown = 0;
   playable = true;
   isCustom = false;
-  homeLocation: LocationID = Loc.Town_Elimes;
+  homeLocation: LocationID = Loc.Alimes;
   relationships = new Map<string, Relationship>();
   memories: Memory[] = [];
   dungeonProgress = new Map<string, number>();
@@ -129,7 +129,7 @@ export class Actor {
 
   coreMatrix = new CoreMatrix();
 
-  lifeData: NpcLifeData = defaultLifeData(SpiritRole.Villager, Loc.Town_Elimes);
+  lifeData: NpcLifeData = defaultLifeData(SpiritRole.Villager, Loc.Alimes);
 
   /** 스킬 시스템 */
   learnedSkills = new Map<string, number>();  // skillId → 레벨 (1-5)

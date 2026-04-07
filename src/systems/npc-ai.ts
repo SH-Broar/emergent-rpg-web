@@ -44,11 +44,11 @@ function pickSocialLocation(role: SpiritRole): LocationID {
     case SpiritRole.GuildClerk:  return Loc.Guild_Hall;
     case SpiritRole.Merchant:    return Loc.Market_Square;
     case SpiritRole.Farmer:      return Loc.Farm;
-    case SpiritRole.Miner:       return Loc.Mountain_Path;
-    case SpiritRole.Fisher:      return Loc.Lake;
-    case SpiritRole.Priest:      return Loc.Church;
-    case SpiritRole.Adventurer:  return Loc.Tavern;
-    default:                     return Loc.Tavern;
+    case SpiritRole.Miner:       return Loc.Tiklit_Range;
+    case SpiritRole.Fisher:      return Loc.Erumen_Seoncheon;
+    case SpiritRole.Priest:      return Loc.Hanabridge;
+    case SpiritRole.Adventurer:  return Loc.Alimes;
+    default:                     return Loc.Alimes;
   }
 }
 
@@ -141,68 +141,68 @@ const DAILY_SCHEDULE: Record<number, ScheduleEntry[]> = {
   [SpiritRole.GuildClerk]: [
     { location: Loc.Guild_Hall,    bonuses: { [ActionType.PostQuest]: 1.5 } },
     { location: Loc.Guild_Hall,    bonuses: { [ActionType.Socialize]: 1.2 } },
-    { location: Loc.Tavern,        bonuses: { [ActionType.Socialize]: 1.3 } },
-    { location: Loc.Town_Elimes,   bonuses: {} },
+    { location: Loc.Alimes,        bonuses: { [ActionType.Socialize]: 1.3 } },
+    { location: Loc.Alimes,        bonuses: {} },
   ],
   [SpiritRole.Adventurer]: [
     { location: Loc.Guild_Hall,    bonuses: { [ActionType.CheckQuests]: 1.5 } },
     { location: Loc.Dungeon_Entrance, bonuses: { [ActionType.ExploreDungeon]: 1.5 } },
-    { location: Loc.Tavern,        bonuses: { [ActionType.Socialize]: 1.4, [ActionType.ShareRumor]: 1.3 } },
-    { location: Loc.Tavern,        bonuses: {} },
+    { location: Loc.Alimes,        bonuses: { [ActionType.Socialize]: 1.4, [ActionType.ShareRumor]: 1.3 } },
+    { location: Loc.Alimes,        bonuses: {} },
   ],
   [SpiritRole.Merchant]: [
     { location: Loc.Market_Square, bonuses: { [ActionType.Trade_Buy]: 1.4 } },
     { location: Loc.Market_Square, bonuses: { [ActionType.Trade_Sell]: 1.5 } },
-    { location: Loc.Tavern,        bonuses: { [ActionType.Socialize]: 1.2 } },
-    { location: Loc.Town_Elimes,   bonuses: {} },
+    { location: Loc.Alimes,        bonuses: { [ActionType.Socialize]: 1.2 } },
+    { location: Loc.Alimes,        bonuses: {} },
   ],
   [SpiritRole.Farmer]: [
     { location: Loc.Farm,          bonuses: { [ActionType.Produce]: 1.5 } },
     { location: Loc.Farm,          bonuses: { [ActionType.Produce]: 1.3 } },
-    { location: Loc.Town_Elimes,   bonuses: { [ActionType.Socialize]: 1.3 } },
+    { location: Loc.Alimes,        bonuses: { [ActionType.Socialize]: 1.3 } },
     { location: Loc.Farm,          bonuses: {} },
   ],
   [SpiritRole.Guard]: [
-    { location: Loc.Town_Elimes,   bonuses: { [ActionType.CooperateWork]: 1.3 } },
-    { location: Loc.Wilderness,    bonuses: { [ActionType.ExploreDungeon]: 1.3 } },
-    { location: Loc.Town_Elimes,   bonuses: { [ActionType.Socialize]: 1.2 } },
-    { location: Loc.Town_Elimes,   bonuses: {} },
+    { location: Loc.Alimes,        bonuses: { [ActionType.CooperateWork]: 1.3 } },
+    { location: Loc.Cyan_Dunes,    bonuses: { [ActionType.ExploreDungeon]: 1.3 } },
+    { location: Loc.Alimes,        bonuses: { [ActionType.Socialize]: 1.2 } },
+    { location: Loc.Alimes,        bonuses: {} },
   ],
   [SpiritRole.Villager]: [
-    { location: Loc.Town_Elimes,   bonuses: {} },
+    { location: Loc.Alimes,        bonuses: {} },
     { location: Loc.Market_Square, bonuses: { [ActionType.Trade_Buy]: 1.2 } },
-    { location: Loc.Town_Elimes,   bonuses: { [ActionType.Socialize]: 1.3 } },
-    { location: Loc.Town_Elimes,   bonuses: {} },
+    { location: Loc.Alimes,        bonuses: { [ActionType.Socialize]: 1.3 } },
+    { location: Loc.Alimes,        bonuses: {} },
   ],
   [SpiritRole.Meteorologist]: [
-    { location: Loc.Wilderness,    bonuses: { [ActionType.Produce]: 1.3 } },
+    { location: Loc.Cyan_Dunes,    bonuses: { [ActionType.Produce]: 1.3 } },
     { location: Loc.Guild_Hall,    bonuses: { [ActionType.Socialize]: 1.3 } },
-    { location: Loc.Tavern,        bonuses: { [ActionType.Socialize]: 1.2 } },
-    { location: Loc.Wizard_Tower,  bonuses: {} },
+    { location: Loc.Alimes,        bonuses: { [ActionType.Socialize]: 1.2 } },
+    { location: Loc.Phantom_Spire, bonuses: {} },
   ],
   [SpiritRole.Miner]: [
-    { location: Loc.Mountain_Path, bonuses: { [ActionType.Produce]: 1.5 } },
-    { location: Loc.Mountain_Path, bonuses: { [ActionType.Produce]: 1.3 } },
-    { location: Loc.Blacksmith,    bonuses: { [ActionType.Trade_Sell]: 1.3 } },
-    { location: Loc.Town_Elimes,   bonuses: {} },
+    { location: Loc.Tiklit_Range,  bonuses: { [ActionType.Produce]: 1.5 } },
+    { location: Loc.Tiklit_Range,  bonuses: { [ActionType.Produce]: 1.3 } },
+    { location: Loc.Moss_Forge,    bonuses: { [ActionType.Trade_Sell]: 1.3 } },
+    { location: Loc.Alimes,        bonuses: {} },
   ],
   [SpiritRole.Fisher]: [
-    { location: Loc.Lake,          bonuses: { [ActionType.Produce]: 1.5 } },
-    { location: Loc.Lake,          bonuses: { [ActionType.Produce]: 1.2 } },
-    { location: Loc.Lake,          bonuses: { [ActionType.Socialize]: 1.3 } },
-    { location: Loc.Town_Elimes,   bonuses: {} },
+    { location: Loc.Erumen_Seoncheon, bonuses: { [ActionType.Produce]: 1.5 } },
+    { location: Loc.Erumen_Seoncheon, bonuses: { [ActionType.Produce]: 1.2 } },
+    { location: Loc.Erumen_Seoncheon, bonuses: { [ActionType.Socialize]: 1.3 } },
+    { location: Loc.Alimes,        bonuses: {} },
   ],
   [SpiritRole.Priest]: [
-    { location: Loc.Church,        bonuses: { [ActionType.Produce]: 1.4 } },
-    { location: Loc.Church,        bonuses: { [ActionType.ShareMeal]: 1.3, [ActionType.TeachSkill]: 1.2 } },
-    { location: Loc.Church,        bonuses: { [ActionType.Socialize]: 1.3 } },
-    { location: Loc.Church,        bonuses: {} },
+    { location: Loc.Hanabridge,    bonuses: { [ActionType.Produce]: 1.4 } },
+    { location: Loc.Hanabridge,    bonuses: { [ActionType.ShareMeal]: 1.3, [ActionType.TeachSkill]: 1.2 } },
+    { location: Loc.Hanabridge,    bonuses: { [ActionType.Socialize]: 1.3 } },
+    { location: Loc.Hanabridge,    bonuses: {} },
   ],
   [SpiritRole.Craftsman]: [
-    { location: Loc.Blacksmith,    bonuses: { [ActionType.Produce]: 1.4 } },
-    { location: Loc.Blacksmith,    bonuses: { [ActionType.Produce]: 1.3 } },
+    { location: Loc.Moss_Forge,    bonuses: { [ActionType.Produce]: 1.4 } },
+    { location: Loc.Moss_Forge,    bonuses: { [ActionType.Produce]: 1.3 } },
     { location: Loc.Market_Square, bonuses: { [ActionType.Trade_Sell]: 1.3 } },
-    { location: Loc.Town_Elimes,   bonuses: {} },
+    { location: Loc.Alimes,        bonuses: {} },
   ],
 };
 
@@ -237,14 +237,14 @@ function getScheduleEntry(actor: Actor, time: GameTime): ScheduleEntry {
 
   // Weekend override (non-exempt roles)
   if (isWeekend && !WEEKEND_EXEMPT.has(role)) {
-    const baseEntry = DAILY_SCHEDULE[role]?.[period] ?? { location: Loc.Town_Elimes, bonuses: {} };
+    const baseEntry = DAILY_SCHEDULE[role]?.[period] ?? { location: Loc.Alimes, bonuses: {} };
     return {
       location: baseEntry.location,
       bonuses: WEEKEND_BONUSES[period] ?? {},
     };
   }
 
-  return DAILY_SCHEDULE[role]?.[period] ?? { location: Loc.Town_Elimes, bonuses: {} };
+  return DAILY_SCHEDULE[role]?.[period] ?? { location: Loc.Alimes, bonuses: {} };
 }
 
 export function getRoutineMultiplier(actor: Actor, action: ActionType, time: GameTime): number {
@@ -780,7 +780,7 @@ export function executeAction(
 
   switch (action.type) {
     case ActionType.Sleep: {
-      if (loc === actor.homeLocation || loc === Loc.Tavern) {
+      if (loc === actor.homeLocation || loc === Loc.Alimes) {
         actor.base.sleeping = true;
         actor.actionCooldown = 10;
         log.add(time, `${name}이${iGa(name)} 잠자리에 들었다.`, '행동', name, loc);
@@ -929,9 +929,9 @@ export function executeAction(
     }
 
     case ActionType.ExploreDungeon: {
-      const nearDungeon = loc === Loc.Dungeon_Entrance || loc === Loc.Dungeon_Interior || loc === Loc.Wilderness;
+      const nearDungeon = loc === Loc.Dungeon_Entrance || loc === Loc.Dungeon_Interior || loc === Loc.Cyan_Dunes;
       if (!nearDungeon) {
-        const next = world.getNextStep(loc, Loc.Wilderness, time.day);
+        const next = world.getNextStep(loc, Loc.Cyan_Dunes, time.day);
         if (next) actor.currentLocation = next;
         break;
       }

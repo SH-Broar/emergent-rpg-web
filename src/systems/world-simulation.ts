@@ -50,30 +50,30 @@ function buildLocInfluence(
 
   // Location-type color pulls
   switch (location) {
-    case Loc.Church:
+    case Loc.Hanabridge:
       inf[Element.Light] += scale;
       break;
-    case Loc.Wilderness:
-    case Loc.Mountain_Path:
+    case Loc.Cyan_Dunes:
+    case Loc.Tiklit_Range:
       inf[Element.Wind] += scale;
       break;
-    case Loc.Lake:
+    case Loc.Erumen_Seoncheon:
       inf[Element.Water] += scale;
       break;
     case Loc.Farm:
       inf[Element.Earth] += scale;
       break;
-    case Loc.Blacksmith:
+    case Loc.Moss_Forge:
       inf[Element.Iron] += scale;
       break;
-    case Loc.Tavern:
+    case Loc.Alimes:
       inf[Element.Fire] += 0.5 * scale;
       break;
     case Loc.Memory_Spring:
       inf[Element.Light] += scale;
       inf[Element.Water] += 0.5 * scale;
       break;
-    case Loc.Wizard_Tower:
+    case Loc.Phantom_Spire:
       inf[Element.Electric] += scale;
       break;
   }

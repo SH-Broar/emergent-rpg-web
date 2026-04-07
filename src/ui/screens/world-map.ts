@@ -10,12 +10,12 @@ export function getZoneColor(locationId: string): string {
   if (locationId.startsWith('Iluneon') || locationId === 'Memory_Spring')
     return '#87CEEB';
   // 엘리메스 마을 및 근처 야외 — 초록
-  if (['Town_Elimes','Guild_Hall','Market_Square','Tavern','Blacksmith','Herb_Garden','Church','Farm','Lake',
-       'Wilderness','Mountain_Path','Trade_Route','Abandoned_Mine','Bandit_Hideout',
+  if (['Alimes','Guild_Hall','Market_Square','Herb_Garden','Farm','Erumen_Seoncheon',
+       'Cyan_Dunes','Tiklit_Range','Ekres','Abandoned_Mine','Bandit_Hideout',
        'Silk_Workshop','Moonlit_Clearing','Bloom_Terrace'].includes(locationId))
     return '#4ecca3';
   // 루나 (마법학교) — 보라
-  if (['Luna_Academy','Wizard_Tower','Stella_Ville'].includes(locationId))
+  if (['Luna_Academy','Phantom_Spire','Stella_Ville'].includes(locationId))
     return '#9b59b6';
   // 마노니클라 — 주황
   if (['Manonickla','Limun_Ruins'].includes(locationId))

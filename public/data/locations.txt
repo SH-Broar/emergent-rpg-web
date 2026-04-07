@@ -1,5 +1,5 @@
 # ============================================================
-# locations.txt — 장소 정의
+# locations.txt — 장소 정의 (알리메스 권역)
 # [World] gridMinutesPerUnit : 격자 1단위당 이동 시간(분). links 생략 시 x,y 거리×이 값.
 # x, y : 이동 시간 계산용 격자 좌표 (유클리드 거리)
 # links : 양방향 연결 (쉼표). 각 항목은 LocationKey 또는 LocationKey:분(수동 덮어쓰기)
@@ -8,43 +8,76 @@
 # ============================================================
 
 [World]
-gridMinutesPerUnit = 0.067
+gridMinutesPerUnit = 0.1
 
-[Town_Elimes]
-name = 엘리메스 마을
-description = 돌로 포장된 광장을 중심으로 형형색색의 지붕이 펼쳐진 작은 마을. 하피의 깃털이 바람에 날리고, 켄타우로스의 발굽 소리가 골목에 울린다. 대장간에서 흘러나오는 망치 소리와 시장의 흥정 소리가 뒤섞여 활기찬 하루를 알린다. 서른한 종족이 어울려 살아가는 이곳은 작지만, 어떤 대도시보다 다채로운 풍경을 품고 있다.
-x = 0
-y = 0
-links = Guild_Hall, Market_Square, Tavern, Church, Blacksmith, Farm, Herb_Garden, Lake, Wilderness, Trade_Route, Mountain_Path, Wizard_Tower, Dungeon_Entrance
+[Alimes]
+name = 알리메스
+description = 바그레트 산맥과 겔리더 산맥이 병풍처럼 둘러싼 오지 마을. 서쪽으로는 시안 사구 너머로 바다가 보이고, 돌로 포장된 작은 광장에는 서른한 종족의 발자국이 뒤섞여 있다. 대장간에서 흘러나오는 망치 소리와 시장의 흥정 소리가 골목에 메아리치며, 산골의 차가운 공기에는 약초와 비단실의 은은한 향이 감돈다. 외진 만큼 단단하게 얽힌 공동체가 이곳의 가장 큰 자산이다.
+x = -600
+y = -400
+links = Guild_Hall, Herb_Garden, Silk_Workshop, Moonlit_Clearing, Cyan_Dunes, Tiklit_Range, Dungeon_Entrance, Bagreat, Gelider
 resources = Food:50
 monsterLevel = 0
 dangerLevel = 0.0
 
 [Guild_Hall]
-name = 길드 홀
-description = 참나무 문을 열면 잉크와 양피지 냄새가 코끝을 스친다. 벽면 가득 붙은 의뢰서들이 바람에 펄럭이고, 창구 너머로 세리나가 꼼꼼히 서류를 정리하는 모습이 보인다. 천장에 걸린 길드 휘장 아래로 모험가들의 낡은 장비와 빛바랜 공적 기록이 조용히 이 홀의 역사를 말해준다.
-x = 90
-y = 60
-links = Market_Square
+name = 길드 소규모 지부
+description = 참나무 문을 열면 잉크와 양피지 냄새가 코끝을 스친다. 벽면 가득 붙은 의뢰서들이 바람에 펄럭이고, 창구 너머로 접수 담당관이 꼼꼼히 서류를 정리하는 모습이 보인다. 본부에 비하면 작고 소박하지만, 알리메스 모험가들에게는 이곳이 첫 발걸음의 시작점이다. 천장에 걸린 길드 휘장 아래로 낡은 장비와 빛바랜 공적 기록이 조용히 지부의 역사를 말해준다.
+x = -590
+y = -395
 monsterLevel = 0
 dangerLevel = 0.0
 
-[Market_Square]
-name = 시장
-description = 천막과 좌판이 빼곡히 늘어선 시장. 로쉔의 귀가 쫑긋 서 있고 유린이 능글맞은 미소로 손님을 맞는다. 하피 깃털 부적부터 드워프 광석, 여우족이 감별한 약초까지 온갖 종족의 물건이 뒤섞여 있다. 흥정 소리와 동전 소리가 끊이지 않는 마을의 심장.
-x = 90
-y = -60
-links = Guild_Hall
-resources = Food:30, Herb:10, Potion:5, Equipment:3
+[Herb_Garden]
+name = 약초원
+description = 마을 근교에 자리 잡은 정갈한 약초밭. 아침이면 이슬방울이 잎사귀 위에서 보석처럼 반짝이고, 간간이 정령의 빛가루가 공기 중에 어른거린다. 라벤더, 바질, 이름 모를 이종 약초까지 줄지어 자라며, 은은한 허브 향이 바람을 타고 마을까지 흘러간다. 수확한 약초로 끓인 블렌드 차는 알리메스 최고의 인기 메뉴다.
+x = -630
+y = -380
+resources = Herb:40, Potion:3
 monsterLevel = 0
 dangerLevel = 0.0
+
+[Silk_Workshop]
+name = 비단 공방
+description = 천장에서 은빛 거미줄이 커튼처럼 드리워진 아늑한 공방. 숙련된 직조사가 물레를 돌리면, 거미줄 한 올 한 올이 마법을 머금은 직물로 변해간다. 구석에 소복이 쌓인 완성품은 세상에서 가장 가볍고 질긴 비단으로, 한 올의 무게에도 달빛이 비치는 것 같다. 알리메스의 비단은 르슈드 분기를 통해 먼 도시까지 이름이 알려져 있다.
+x = -585
+y = -410
+resources = Equipment:3
+monsterLevel = 0
+dangerLevel = 0.0
+
+[Moonlit_Clearing]
+name = 달빛 빈터
+description = 나무들이 원형으로 비켜 선 숲속 빈터. 보름달 밤이면 달빛이 쏟아져 풀잎 하나하나에 은빛이 맺히고, 이슬에 젖은 풀밭 위로 짐승의 조용한 발소리가 지나간다. 낮에는 평범한 공터지만 밤이면 다른 세계처럼 변하는 곳. 가끔 여러 발자국이 원을 그리며 남아 있는 것을 보면, 여기서 무슨 일이 있었는지 짐작만 할 뿐이다.
+x = -635
+y = -425
+monsterLevel = 0
+dangerLevel = 0.15
+
+[Cyan_Dunes]
+name = 시안 사구
+description = 알리메스 서쪽 해안에 펼쳐진 청록빛 모래사장. 밀려드는 파도가 고운 모래를 적실 때마다, 사구 전체가 시안색으로 빛나는 기이한 광경이 연출된다. 해안가에는 조개와 해초, 표류한 광석 조각이 흩어져 있어 초보 채집가들의 연습터로 안성맞춤이다. 바람이 강한 날이면 모래 알갱이가 만들어내는 낮은 노래 소리가 해안을 따라 울려 퍼진다.
+x = -700
+y = -400
+resources = Herb:15, OreCommon:10, Food:10
+monsterLevel = 1
+dangerLevel = 0.1
+
+[Tiklit_Range]
+name = 티클릿 산맥
+description = 알리메스 남쪽에 솟아오른 험준한 산줄기. 날카로운 바위 능선이 톱니처럼 하늘을 찌르고, 산 사이 골짜기에는 항상 안개가 걸려 있다. 중급 모험가들이 실력을 시험하는 곳으로, 산길 곳곳에 야생 몬스터의 발톱 자국이 바위에 깊이 패어 있다. 정상 부근에서는 알리메스 마을이 아득히 작게 내려다보인다.
+x = -600
+y = -510
+links = Bandit_Hideout
+resources = Herb:10, OreCommon:8
+monsterLevel = 3
+dangerLevel = 0.4
 
 [Dungeon_Entrance]
 name = 던전 입구
 description = 이끼 낀 돌계단이 어둠 속으로 빨려 들어간다. 입구 주변에는 선배 모험가들이 새긴 경고문과 무사귀환 기원의 낙서가 빼곡하고, 안쪽에서 불어오는 바람에서는 흙과 쇠, 그리고 이름 모를 것의 냄새가 섞여 있다. 돌아올 수 있을지 모르는 어둠의 입구이지만, 모험가의 가슴을 두근거리게 하는 곳.
-x = 300
-y = 60
-links = Wilderness
+x = -555
+y = -440
 links_one_way = Dungeon_Interior:18
 monsterLevel = 3
 dangerLevel = 0.4
@@ -52,233 +85,106 @@ dangerLevel = 0.4
 [Dungeon_Interior]
 name = 던전 내부
 description = 횃불 빛이 축축한 벽을 핥고, 발밑의 웅덩이에서 물소리가 울린다. 갈림길마다 어둠이 팔을 벌리고, 먼 곳에서 들리는 긁는 소리가 심장을 조인다. 하지만 벽 틈새에서 반짝이는 광석과 먼지 쌓인 상자들이 그 공포의 대가를 약속한다.
-x = 420
-y = 60
+x = -530
+y = -460
 links_one_way = Dungeon_Entrance:15
 resources = OreCommon:20, OreRare:3, MonsterLoot:10
 monsterLevel = 5
 dangerLevel = 0.7
 
-[Tavern]
-name = 주점
-description = 나무 문을 열면 훈훈한 온기와 맥주 거품 냄새가 밀려온다. 벽난로 앞에서 카엘이 서서 잔을 기울이고, 구석에서는 드라카가 300년치 이야기를 풀어놓고 있다. 천장에 매달린 등불이 주황색 그림자를 드리우는 이곳은 모든 종족의 이야기가 시작되고 끝나는 곳이다. 해 질 무렵이면 발터의 와인 잔이 조용히 등장한다.
-x = 150
-y = 0
-resources = Food:20
-monsterLevel = 0
-dangerLevel = 0.0
-
-[Wilderness]
-name = 야생지대
-description = 마을의 경계를 넘어서면 풀숲이 허리까지 차오르는 야생지대가 펼쳐진다. 덤불 사이에서 야생 약초가 자라고, 작은 동물들이 발소리에 놀라 달아난다. 루나르가 보름달 아래 달리는 곳이기도 하다. 멀리서 바람이 불면 라르멘 숲의 낮은 울음소리가 들려오고, 길 없는 풀밭에는 모험의 냄새가 서려 있다.
-x = 0
-y = 210
-resources = Herb:30, Food:15
-monsterLevel = 1
-dangerLevel = 0.15
-
-[Blacksmith]
-name = 대장간
-description = 용광로의 붉은 불빛이 그을린 벽을 물들이는 대장간. 브로크의 묵직한 망치 소리가 새벽부터 저녁까지 마을의 심장 박동처럼 울린다. 한쪽에서는 리라가 예민한 귀로 금속의 음을 맞추고, 반대편 구석 '연구실'에서는 그릭의 발명품이 간간이 폭발한다. 쇳가루와 숯 냄새가 뒤섞인 뜨거운 공기 속에서, 쇠는 말 없이 형태를 찾아간다.
-x = 30
-y = -90
-resources = Equipment:5, OreCommon:8
-monsterLevel = 0
-dangerLevel = 0.0
-
-[Herb_Garden]
-name = 약초원
-description = 이리엘의 날갯짓으로 씨앗이 뿌려진 정갈한 약초밭. 아침이면 이슬방울이 잎사귀 위에서 보석처럼 반짝이고, 피올라의 빛가루가 간간이 공기 중에 반짝인다. 라벤더, 바질, 이름 모를 이종 약초까지 줄지어 자라는 이곳에서 은은한 허브 향이 바람을 타고 마을까지 흘러간다. 수확한 약초로 끓인 블렌드 차는 마을 최고의 인기 메뉴다.
-x = -60
-y = -30
-resources = Herb:40, Potion:3
-monsterLevel = 0
-dangerLevel = 0.0
-
-[Church]
-name = 교회
-description = 스테인드글라스 사이로 무지개빛이 쏟아지는 고요한 신전. 오르시아가 수백 년의 지식으로 약초차를 끓이고, 리엘의 무지개빛 날개가 어둠 속에서 은은하게 빛난다. 나무 벤치에 앉으면 향의 연기가 천장으로 피어오르며, 세상의 소음이 문 밖에 멈춰 선다. 상처 입은 몸과 지친 마음이 쉬어가는 곳.
-x = 30
-y = 90
-monsterLevel = 0
-dangerLevel = 0.0
-
 [Abandoned_Mine]
 name = 폐광
-description = 녹슨 광차가 기울어진 채 멈춰 있는 오래된 갱도. 목재 지지대가 삐걱거리고, 천장에서 간간이 흙이 떨어진다. 위험하지만 벽면에는 아직 캐지지 않은 광맥이 어둠 속에서 둔하게 빛나고 있어, 용기 있는 광부에게는 포기할 수 없는 유혹이다.
-x = 150
-y = 360
+description = 녹슨 광차가 기울어진 채 멈춰 있는 오래된 갱도. 바그레트 산맥 방면으로 뻗은 이 폐광은 목재 지지대가 삐걱거리고, 천장에서 간간이 흙이 떨어진다. 위험하지만 벽면에는 아직 캐지지 않은 광맥이 어둠 속에서 둔하게 빛나고 있어, 용기 있는 광부에게는 포기할 수 없는 유혹이다.
+x = -510
+y = -370
 resources = OreCommon:35, OreRare:5
 monsterLevel = 4
 dangerLevel = 0.55
 
-[Lake]
-name = 호수
-description = 새벽 안개가 수면 위에 얇게 깔리는 고요한 호수. 갈대 사이에서 나탈리가 조용히 낚싯줄을 드리우고, 어딘가에서 코랄리스의 콧노래가 물결처럼 번져 온다. 수면에 비친 하늘이 일렁일 때마다 세계가 두 개인 것 같은 착각이 든다. 멜로디아의 노래가 울리는 저녁이면, 물고기들이 수면 위로 고개를 내밀기도 한다.
-x = -120
-y = -150
-resources = Food:25
-monsterLevel = 0
-dangerLevel = 0.05
-
-[Mountain_Path]
-name = 산길
-description = 가파른 바위 사이로 뻗은 좁은 산길. 가론이 광맥의 소리를 듣는다는 바위벽이 양옆으로 솟아 있고, 발밑의 자갈이 걸음마다 달그락거린다. 높이 오를수록 공기가 차가워지며, 아래로는 엘리메스의 지붕들이 장난감처럼 작게 보인다. 갱도 입구에서 새어나오는 바람에는 광석의 날카로운 냄새가 섞여 있다.
-x = 90
-y = 300
-links = Abandoned_Mine, Bandit_Hideout, Lake
-resources = Herb:10, OreCommon:5
-monsterLevel = 2
-dangerLevel = 0.3
-
 [Bandit_Hideout]
 name = 도적 소굴
-description = 바위 틈새에 가려진 은밀한 동굴. 입구에는 경비의 흔적이 남아 있고, 안쪽으로 들어갈수록 횃불 그을음과 식은 모닥불 냄새가 짙어진다. 약탈한 물건이 어수선하게 쌓여 있으며, 벽에는 도적 특유의 암호가 긁혀 있다. 위험하지만 보상도 큰 곳.
-x = 60
-y = 390
+description = 티클릿 산맥 깊은 바위 틈새에 가려진 은밀한 동굴. 입구에는 경비의 흔적이 남아 있고, 안쪽으로 들어갈수록 횃불 그을음과 식은 모닥불 냄새가 짙어진다. 약탈한 물건이 어수선하게 쌓여 있으며, 벽에는 도적 특유의 암호가 긁혀 있다. 위험하지만 보상도 큰 곳.
+x = -620
+y = -520
 resources = Equipment:3, MonsterLoot:8, Food:10
 monsterLevel = 6
 dangerLevel = 0.8
 
-[Wizard_Tower]
-name = 마법사의 탑
-description = 마을 외곽의 안개 속에 홀로 서 있는 뒤틀린 첨탑. 창문에서 간간이 푸른 빛이 번쩍이고, 지붕의 풍향계는 바람과 상관없이 제멋대로 돈다. 입구의 문고리를 잡으면 미세한 전류가 손끝을 간지럽히며, 안에서는 물약이 보글거리는 소리와 알 수 없는 주문 소리가 끊이지 않는다. 마법을 배우고 싶은 자에게 열린 문이지만, 들어서는 순간 평범함은 문밖에 두고 와야 한다.
-x = -150
-y = 30
-resources = Potion:10, Herb:5
-monsterLevel = 0
-dangerLevel = 0.1
+[Bagreat]
+name = 바그레트 산맥
+description = 알리메스 동쪽을 병풍처럼 가로막는 거대한 산맥. 화강암 절벽이 구름을 찌르고, 산 사이 협곡에는 옛 교역로의 흔적이 남아 있다. 르슈드 분기로 향하는 길목이자, 알리메 설산과 에루멘 미스트우드로 들어가는 관문이기도 하다. 산맥 곳곳에 드워프의 오래된 채굴 흔적이 바위에 새겨져 있으며, 높은 곳에서 내려다보면 알리메스가 얼마나 깊은 산 속에 자리 잡았는지 실감하게 된다.
+x = -480
+y = -400
+links = Alimes, Reshud_Junction:40, Alime_Mountain, Abandoned_Mine, Erumen_Mistwood
+resources = OreCommon:15
+monsterLevel = 3
+dangerLevel = 0.35
 
-[Farm]
-name = 농장
-description = 넓게 펼쳐진 밭 위로 계절마다 다른 빛깔이 물드는 농장. 밀라가 온화한 거인의 손으로 작물을 돌보고, 바람이 불면 곡식 이삭이 파도처럼 일렁인다. 울타리 너머로는 밀라의 소들이 한가로이 풀을 뜯고, 수확철이면 갓 딴 작물의 신선한 흙 냄새가 마을까지 퍼진다. 해 질 무렵 들판에 내려앉는 황금빛은 이 마을에서 가장 평화로운 풍경이다.
-x = -90
-y = 60
-links = Herb_Garden
-resources = Food:60, Herb:5
-monsterLevel = 0
-dangerLevel = 0.0
-
-[Trade_Route]
-name = 무역로
-description = 마차 바퀴 자국이 깊이 팬 교역로. 아제르의 상단 깃발이 바람에 펄럭이고, 먼 곳에서 온 행상의 종소리가 간간이 울린다. 길가에는 여행자를 위한 이정표와 쉼터가 드문드문 세워져 있고, 해 질 무렵이면 귀로에 오른 상인들의 등불이 길 위에 점점이 켜진다. 엘리메스와 넓은 세계를 잇는 실낱 같은 줄.
-x = 240
-y = 90
-resources = Food:10, Equipment:2
+[Reshud_Junction]
+name = 르슈드 분기
+description = 바그레트 산맥을 빠져나온 곳에 자리한 교차로. 알리메스와 일루네온, 그리고 먼 지방을 잇는 환승 거점으로, 이정표가 여러 방향을 가리키고 있다. 여행자를 위한 작은 쉼터와 마차 정거장이 있으며, 간간이 행상의 종소리가 바람에 실려 온다. 오가는 상인과 모험가들의 발길이 끊이지 않아, 외진 산골에서 세상과 이어지는 유일한 실낱 같은 곳이다.
+x = -380
+y = -370
+links = Bagreat:40
+resources = Food:10
 monsterLevel = 2
-dangerLevel = 0.25
+dangerLevel = 0.2
 
-[Memory_Spring]
-name = 기억의 샘
-description = 깊은 숲속 고목들 사이에 숨어 있는 신비로운 샘. 수면이 거울처럼 맑아 바닥까지 들여다보이지만, 비치는 것은 풍경이 아니라 보는 이의 기억이라고 한다. 샘 주변에는 푸니가 매일 다른 모양으로 어슬렁거리며, 물가의 돌에는 읽을 수 없는 고대 문자가 새겨져 있다. 이곳에서 영혼을 보존하면 시간이 흘러도 돌아올 수 있다는 전설이 남아 있다.
-x = 0
-y = 540
-links = Town_Elimes, Arcadia
-monsterLevel = 0
-dangerLevel = 0.0
-
-[Limun_Ruins]
-name = 리문 유적
-description = 이끼 낀 돌기둥이 하늘을 향해 서 있는 고대 관측소의 잔해. 무너진 벽 사이로 바람이 불면 돌 틈에서 낮은 울림이 퍼지고, 반쯤 부서진 관측탑 꼭대기에서는 피리가 포근한 둥지를 틀고 오늘의 하늘을 읽고 있다. 탑 아래에서는 세피라가 210년의 지혜로 비문을 해독하며, 유적 지하로 이어지는 계단 끝에는 어둠의 심연으로 향하는 봉인된 문이 잠들어 있다.
-x = -240
-y = 180
-links = Wilderness:25
-monsterLevel = 1
-dangerLevel = 0.15
-
-# ============================================================
-# 풍광 명소 — 자세한 배경 묘사, 희귀 exclusive 이벤트 가능
-# ============================================================
-
-[Falcon_Garden]
-name = 팔콘 가든 공중군도
-description = 바다 한가운데에 떠 있는 구름과 섬의 군도. 거대한 폭포가 구름 아래로 쏟아지고, 공중에 떠다니는 작은 섬들 사이로 무지개빛 다리가 걸려 있다. 하피와 천사들이 바람을 타고 섬 사이를 오가며, 바다 위 안개 속에서 고래의 울음 같은 저음이 간간이 들려온다. 섬 중앙의 고대 정원에는 이름 모를 꽃들이 사계절 피어 있으며, 바람이 지날 때마다 꽃잎이 소용돌이를 이루어 하늘 위로 올라간다.
+[Alime_Mountain]
+name = 알리메 설산
+description = 바그레트 산맥의 최고봉. 만년설이 정상을 덮고, 산허리에는 칼바람이 끊이지 않는다. 등반길에는 동결된 폭포와 얼어붙은 호수가 기이한 풍경을 만들어내고, 정상 부근에서는 숨이 막힐 만큼 투명한 공기 너머로 세계의 끝이 보이는 듯한 착각에 빠진다. 고레벨 모험가만이 도전할 수 있는 극한의 영역이며, 에루멘 미스트우드로 내려가는 비밀 산길이 어딘가에 숨겨져 있다고 전해진다.
 x = -450
-y = 540
-links = Wilderness:40
-resources = Herb:15, Food:10
-monsterLevel = 0
-dangerLevel = 0.05
+y = -340
+links = Bagreat, Erumen_Mistwood
+resources = OreRare:5
+monsterLevel = 7
+dangerLevel = 0.7
 
-[Starfall_Basin]
-name = 별빛 분지
-description = 깊은 산골짜기에 숨겨진 원형 분지. 밤이면 하늘의 별빛이 분지 바닥의 수정 결정에 반사되어, 마치 별이 쏟아져 내린 것처럼 온 사방이 은빛으로 반짝인다. 분지 중앙에는 고대의 별자리 문양이 새겨진 제단이 있으며, 보름달 밤에는 제단 위에서 미세한 진동과 함께 온기가 느껴진다고 한다. 드래곤의 전설에 따르면, 이곳은 태초에 별의 조각이 떨어진 자리이다.
-x = 240
-y = 480
-links = Mountain_Path:30
-resources = OreRare:3
-monsterLevel = 0
-dangerLevel = 0.1
+[Erumen_Mistwood]
+name = 에루멘 미스트우드
+description = 바그레트 산맥 깊은 골짜기에 자리한 안개의 숲. 나무 한 그루 한 그루가 수백 년을 살았으며, 가지 사이로 영겁의 안개가 흐른다. 시야가 열 발자국을 넘지 못하는 이 숲에는 고대의 몬스터와 잊힌 보물이 안개 뒤에 숨어 있다. 알리메스 출신 모험가들만이 입산 허가를 받을 수 있는 전용 고레벨 던전이며, 안쪽 깊은 곳에는 신성한 호수가 잠들어 있다는 전설이 있다.
+x = -470
+y = -360
+links_one_way = Erumen_Seoncheon
+resources = Herb:20, MonsterLoot:15, OreRare:5
+monsterLevel = 8
+dangerLevel = 0.85
 
-[Mirage_Oasis]
-name = 신기루 오아시스
-description = 무역로 너머 사막 지대의 경계에 홀연히 나타나는 오아시스. 야자수가 아지랑이 속에 일렁이고, 수면은 거울처럼 하늘을 비춘다. 물가에는 정체를 알 수 없는 고대 석상이 반쯤 모래에 묻혀 있으며, 해 질 녘이면 석상의 눈에서 금빛이 잠깐 깜빡인다는 소문이 있다. 여우 수인 상인들은 이곳을 '속지 않는 거울'이라 부르며, 진실만을 비춘다고 믿는다.
-x = 450
-y = 150
-links = Trade_Route:35
-resources = Food:8, Potion:5
-monsterLevel = 0
-dangerLevel = 0.08
-
-[Twilight_Spire]
-name = 황혼의 첨탑
-description = 마법사의 탑 너머 안개 속에 우뚝 솟은 기이한 첨탑. 천사와 악마의 오래된 조약이 새겨진 벽면이 해질녘 붉은빛에 물들면, 첨탑 전체가 어둠과 빛의 경계에서 흔들리는 것처럼 보인다. 꼭대기의 종은 바람이 불지 않아도 간간이 울리며, 그 소리를 들은 자는 잊고 있던 오래된 기억이 떠오른다고 한다. 첨탑 주변의 돌길에는 밤꽃이 피어 낮에도 은은한 달빛 같은 향기를 풍긴다.
-x = -270
-y = 90
-links = Wizard_Tower:20
-resources = Potion:3, Herb:5
-monsterLevel = 0
-dangerLevel = 0.12
-
-[Ancient_Tree_Crown]
-name = 고대수의 왕관
-description = 야생지대 깊은 곳에 뿌리를 내린 거대한 세계수의 꼭대기. 줄기 하나가 마을만 한 이 나무의 수관(樹冠) 위에는 작은 생태계가 형성되어 있다. 이끼 위에 핀 야생화, 나뭇가지 사이를 흐르는 실개천, 그리고 수백 년간 자라난 균류가 밤이면 청록색으로 빛난다. 엘프들은 이곳을 '태초의 기억'이라 부르며, 정령들이 처음 태어난 곳이라 전한다.
-x = -120
-y = 360
-links = Wilderness:30
-resources = Herb:20
-monsterLevel = 0
-dangerLevel = 0.03
-
-[Crystal_Cavern]
-name = 수정 동굴
-description = 산길 아래 깊숙이 뻗은 자연 동굴. 동굴 벽면을 뒤덮은 거대한 수정 결정이 외부의 미세한 빛조차 증폭시켜, 동굴 안은 영롱한 보랏빛과 청록빛이 교차하는 환상적인 공간이다. 수정 사이로 맑은 지하수가 흐르며, 물방울이 수정에 부딪힐 때마다 맑은 종소리 같은 울림이 퍼진다. 드워프 광부들은 이곳의 수정에는 손대지 않는 것이 불문율이며, '땅의 심장'이라 부른다.
-x = 150
-y = 420
-links = Mountain_Path:25, Abandoned_Mine:15
-resources = OreCommon:10, OreRare:5
+[Erumen_Seoncheon]
+name = 에루멘 성천호
+description = 미스트우드 가장 깊은 곳에 숨겨진 신성한 호수. 안개가 걷히는 찰나, 수면이 하늘보다 맑은 빛을 품고 드러난다. 호수 주변의 고목에는 고대 문자가 새겨져 있고, 물가에 서면 세상의 모든 소리가 멈추는 듯한 정적이 내려앉는다. 이곳의 물은 치유와 정화의 힘을 지녔다고 전해지며, 호수 바닥에서 은은하게 빛나는 무언가가 간간이 목격된다. 성천호에 도달하는 것 자체가 모험가의 자격을 증명하는 일이다.
+x = -460
+y = -345
+resources = Potion:10, Herb:10
 monsterLevel = 0
 dangerLevel = 0.1
 
-# ============================================================
-# 신규 종족 관련 장소 (actors+newrace.txt 연동)
-# ============================================================
+[Gelider]
+name = 겔리더 산맥
+description = 알리메스 북쪽을 가로막는 험준한 산맥. 바그레트와 달리 화산 지형이 섞여 있어, 눈 덮인 봉우리 사이로 간간이 유황 냄새가 피어오른다. 산길은 좁고 가파르며, 산적과 야생 몬스터가 곳곳에 도사리고 있다. 산맥 너머에는 대절곡이 기다리고 있으며, 오드 산으로 향하는 갈림길이 중턱에서 갈라진다.
+x = -600
+y = -290
+links = Alimes, Grand_Crack, Ode_Mountain
+resources = OreCommon:10
+monsterLevel = 4
+dangerLevel = 0.45
 
-[Silk_Workshop]
-name = 비단 공방
-description = 천장에서 은빛 거미줄이 커튼처럼 드리워진 아늑한 공방. 아리엔이 수줍게 고개를 숙이고 물레를 돌리면, 거미줄 한 올 한 올이 마법을 머금은 직물로 변해간다. 구석에 소복이 쌓인 완성품은 세상에서 가장 가볍고 질긴 비단으로, 한 올의 무게에도 달빛이 비치는 것 같다. 방문객에게 차를 내어줄 때 살짝 미소 짓는 것이 아리엔의 환대.
-x = 90
-y = 60
-links = Blacksmith
-resources = Equipment:3
-monsterLevel = 0
-dangerLevel = 0.0
+[Grand_Crack]
+name = 대절곡
+description = 겔리더 산맥 너머에 펼쳐진 거대한 절벽 지대. 대지가 갈라진 듯한 수백 미터 깊이의 협곡이 끝없이 이어지고, 절벽 사이로 불어오는 바람이 울부짖는 소리를 낸다. 협곡 바닥에는 미지의 생태계가 존재한다는 소문이 있으며, 절벽 위에서 내려다보면 어둠만이 보일 뿐이다. 북쪽으로는 아직 탐험되지 않은 영역이 펼쳐져 있으며, 언젠가 그 너머의 길이 열릴 것이라는 예언이 전해진다.
+x = -580
+y = -180
+links = Gelider
+resources = OreRare:3, MonsterLoot:10
+monsterLevel = 7
+dangerLevel = 0.75
 
-[Moonlit_Clearing]
-name = 달빛 빈터
-description = 나무들이 원형으로 비켜 선 숲속 빈터. 보름달 밤이면 달빛이 쏟아져 풀잎 하나하나에 은빛이 맺히고, 이슬에 젖은 풀밭 위로 루나르의 조용한 발소리가 지나간다. 낮에는 평범한 공터지만 밤이면 다른 세계처럼 변하는 곳. 가끔 여러 발자국이 원을 그리며 남아 있는 것을 보면, 여기서 무슨 일이 있었는지 짐작만 할 뿐이다.
-x = -60
-y = 90
-links = Wilderness
-monsterLevel = 0
-dangerLevel = 0.15
-
-[Bloom_Terrace]
-name = 꽃피는 테라스
-description = 계단식 언덕에 사계절 꽃이 만발한 테라스. 플로라가 뿌리를 내린 자리에서는 치유의 향기가 피어오르고, 꽃잎 사이로 나비와 벌이 부지런히 오간다. 바람이 불면 꽃잎이 폭포처럼 쏟아져 내리며, 그 향기를 맡은 이는 아무리 지쳐도 발걸음이 가벼워진다. 꽃의 현자 플로라는 이곳을 떠나지 못하지만, 세상 사람들이 이곳을 찾아온다.
-x = 60
-y = -30
-links = Herb_Garden
-resources = Herb:15
-monsterLevel = 0
-dangerLevel = 0.0
+[Ode_Mountain]
+name = 오드 산
+description = 겔리더 산맥에서 갈라져 나온 독립 봉우리. 산 전체가 기묘한 자기장에 감싸여 있어, 나침반이 제 기능을 잃고 마법 도구가 오작동하는 것으로 악명 높다. 정상에는 원인을 알 수 없는 고대 석조물이 서 있으며, 보름달 밤이면 석조물에서 낮은 진동이 느껴진다고 한다. 고레벨 모험가들 사이에서 '감각만으로 싸워야 하는 산'이라 불리는 난이도 높은 사냥터이다.
+x = -520
+y = -240
+links = Gelider
+resources = OreRare:5, MonsterLoot:12
+monsterLevel = 8
+dangerLevel = 0.8

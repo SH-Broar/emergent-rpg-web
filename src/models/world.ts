@@ -265,10 +265,10 @@ export class World {
       // Natural resource regen
       const herbBase = Math.floor(randomInt(0, 2) * resMul);
       const foodBase = Math.floor(randomInt(0, 3) * resMul);
-      this.addResource('Wilderness', ItemType.Herb, Math.max(0, herbBase));
-      this.addResource('Wilderness', ItemType.Food, Math.max(0, foodBase));
-      this.addResource('Wilderness', ItemType.MonsterLoot, randomInt(0, 1));
-      this.addResource('Mountain_Path', ItemType.OreCommon, randomInt(0, 2));
+      this.addResource('Cyan_Dunes', ItemType.Herb, Math.max(0, herbBase));
+      this.addResource('Cyan_Dunes', ItemType.Food, Math.max(0, foodBase));
+      this.addResource('Cyan_Dunes', ItemType.MonsterLoot, randomInt(0, 1));
+      this.addResource('Tiklit_Range', ItemType.OreCommon, randomInt(0, 2));
 
       // Fertility regen
       this.dailyResourceRegen();

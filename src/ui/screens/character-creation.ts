@@ -19,8 +19,8 @@ const RACE_COUNT = Race.Count as number;
 const ROLE_COUNT = SpiritRole.Count as number;
 
 const BIRTH_RANDOM_LOCATIONS = [
-  Loc.Town_Elimes, Loc.Guild_Hall, Loc.Market_Square,
-  Loc.Tavern, Loc.Farm, Loc.Lake, Loc.Wilderness,
+  Loc.Alimes, Loc.Guild_Hall, Loc.Market_Square,
+  Loc.Farm, Loc.Erumen_Seoncheon, Loc.Cyan_Dunes,
 ] as const;
 
 /** Re-render helper: finds the parent container and calls renderFn. */
@@ -183,7 +183,7 @@ export function createBirthScreen(
 
   function finalizeBirth(method: string): void {
     let role = SpiritRole.Villager;
-    let location: LocationID = Loc.Town_Elimes;
+    let location: LocationID = Loc.Alimes;
 
     switch (method) {
       case 'npc': {
@@ -460,8 +460,8 @@ export function createCustomCharScreen(
     const actor = new Actor(charName, charRace, charRole);
     actor.playable = true;
     actor.isCustom = true;
-    actor.currentLocation = Loc.Town_Elimes;
-    actor.homeLocation = Loc.Town_Elimes;
+    actor.currentLocation = Loc.Alimes;
+    actor.homeLocation = Loc.Alimes;
 
     // Apply color setup
     for (let i = 0; i < ELEMENT_COUNT; i++) {
