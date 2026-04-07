@@ -526,3 +526,147 @@ option_3 = 계약 없이도 그냥 믿어줄 수 있어요.
 option_3_response = 아제르가 잠깐 당신을 바라본다. 「…그 말, 들어본 적 없어.」 그가 계약서를 내려놓는다. 꼬리가 천천히 멈췄다.
 option_3_relationship = 0.06
 option_3_color = Dark:0.04
+
+[니아 이유르_C1]
+npc = 니아 이유르
+trigger = relationship:0.10
+context = 하나브릿지 대신전 근처에서 이유르가 혼자 서 있을 때
+prompt_text = 「왔구나. 여기 처음이야? 신전 안에 볼 만한 게 있어. 오래된 벽화인데, 읽을 줄 아는 사람이 이 마을에 별로 없거든.」
+option_1 = 같이 봐도 될까요?
+option_1_response = 「그래.」 이유르가 먼저 걷기 시작한다. 신전 안쪽 벽에는 오래된 문자들이 빼곡하게 새겨져 있었다. 「이 중에 지금도 쓰이는 문자는 두 줄뿐이야.」
+option_1_relationship = 0.05
+option_1_color = Light:0.03
+option_2 = 여기 자주 오나요?
+option_2_response = 「자주 있어.」 이유르가 간단하게 답하고 신전 쪽을 바라본다. 「볼 거 있으면 들어가봐. 설명 필요하면 말하고.」
+option_2_relationship = 0.03
+option_2_color = Wind:0.02
+option_3 = 기도하러 온 건 아니에요.
+option_3_response = 「그래도 괜찮아.」 이유르가 잠깐 신전 쪽을 보고 다시 돌아온다. 「기도 말고 볼 것도 많으니까.」
+option_3_relationship = 0.02
+option_3_color = Earth:0.01
+
+[니아 이유르_C2]
+npc = 니아 이유르
+trigger = relationship:0.20
+context = 이유르가 지역 지도를 보며 무언가를 확인하고 있을 때
+prompt_text = 「이 지도, 오래됐어. 실제랑 다른 부분이 몇 군데 있거든. 어디 갈 계획이야?」
+option_1 = 동쪽으로 가려고 했어요.
+option_1_response = 「동쪽 고개는 날씨 좋을 때만 넘어야 해.」 이유르가 지도의 한 부분을 짚는다. 「이 표시된 길보다 여기서 꺾는 게 실제로는 더 안전해. 지도에는 없는 길인데.」
+option_1_relationship = 0.05
+option_1_color = Wind:0.03
+option_2 = 지도에 없는 곳도 알아요?
+option_2_response = 「꽤 알아.」 이유르가 지도를 접는다. 「어디 가고 싶은 데 있어? 아는 데면 알려줄게.」
+option_2_relationship = 0.04
+option_2_color = Light:0.02
+option_3 = 지도가 잘못됐으면 위험하지 않나요?
+option_3_response = 「그래서 말해주는 거야.」 이유르가 특별한 표정 없이 답한다. 「직접 가보기 전에 아는 게 좋으니까.」
+option_3_relationship = 0.03
+option_3_color = Earth:0.02
+
+[니아 이유르_C3]
+npc = 니아 이유르
+trigger = relationship:0.35
+context = 플레이어가 신전에서 이유르에게 같이 기도하자고 권할 때
+prompt_text = 이유르가 신전 입구 앞에 서 있다. 「들어가려고?」
+option_1 = 같이 기도해요.
+option_1_response = 이유르가 잠깐 신전을 바라보다가 말한다. 「난 안 해.」 그게 전부다. 거절도 아닌 것 같고, 설명도 아닌 것 같은 그 말에 더 묻기가 어렵다.
+option_1_relationship = 0.02
+option_1_color = Light:0.01
+option_2 = 신을 믿지 않나요?
+option_2_response = 「그런 건 아니야.」 이유르가 조용히 답한다. 「그냥 나한테 기도는 좀 다른 의미야. 나중에 설명할게.」
+option_2_relationship = 0.04
+option_2_color = Wind:0.02
+option_3 = 그냥 같이 서 있어도 돼요.
+option_3_response = 「그래.」 이유르가 입구 옆 기둥에 기대어 선다. 딱히 불편해 보이지 않는다. 「천천히 해.」
+option_3_relationship = 0.05
+option_3_color = Water:0.03
+
+[니아 이유르_C4]
+npc = 니아 이유르
+trigger = relationship:0.50
+context = 이유르가 버그의 바다 방향을 바라보고 있을 때
+prompt_text = 「버그의 바다에 대해 들어본 적 있어? 저쪽 방향이야.」
+option_1 = 가봐도 될까요?
+option_1_response = 「혼자는 비추야.」 이유르가 그 방향을 보면서 말한다. 「거기는 길을 안다고 안전한 게 아니야. 가려면 같이 가.」
+option_1_relationship = 0.05
+option_1_color = Wind:0.02
+option_2 = 어떤 곳이에요?
+option_2_response = 「일반적인 자연법칙이 좀 달리 적용되는 곳이야.」 이유르가 잠깐 생각하다 덧붙인다. 「왜 그런지는 설명하기가 길어. 근데 위험한 곳인 건 맞아.」
+option_2_relationship = 0.04
+option_2_color = Dark:0.02
+option_3 = 이유르는 거기 가봤어요?
+option_3_response = 「가봤어.」 짧은 대답이다. 이유르의 눈빛이 아주 잠깐 다른 무언가를 담았다가 돌아온다. 「자주는 아니야.」
+option_3_relationship = 0.05
+option_3_color = Earth:0.03
+
+[니아 이유르_C5]
+npc = 니아 이유르
+trigger = relationship:0.60
+context = 루나 마법학교에서 소동이 있고 난 뒤 이유르가 조용히 나타났을 때
+prompt_text = 이유르가 어느새 근처에 서 있다. 소동이 마무리된 직후다. 「봤어?」
+option_1 = 어디서 나타난 거예요?
+option_1_response = 「있었어.」 이유르가 특별한 설명 없이 답한다. 「루나 학생들 가끔 이래. 뒷수습이 되면 조용해지더라고.」
+option_1_relationship = 0.04
+option_1_color = Wind:0.02
+option_2 = 소동 알고 있었어요?
+option_2_response = 「어느 정도.」 이유르가 조용히 말한다. 「막을 정도는 아니었어. 다들 괜찮았고.」
+option_2_relationship = 0.05
+option_2_color = Light:0.03
+option_3 = 왜 도와주지 않았어요?
+option_3_response = 「도움이 필요했으면 했겠지.」 이유르가 담담하게 답한다. 「알아서 해결했잖아. 그게 더 중요한 거야.」
+option_3_relationship = 0.03
+option_3_color = Earth:0.02
+
+[니아 이유르_C6]
+npc = 니아 이유르
+trigger = relationship:0.70
+context = 이유르가 평소와 다른 방향을 바라보며 서 있을 때
+prompt_text = 「지도에 없는 곳 가보고 싶어? 위험하지 않은 데 중에 좋은 데가 몇 있어.」
+option_1 = 같이 가요.
+option_1_response = 「그래.」 이유르가 먼저 걷기 시작한다. 지름길인지 아닌지도 모를 방향이다. 「이 길, 기억해둬. 나중에 혼자도 올 수 있을 거야.」
+option_1_relationship = 0.06
+option_1_color = Wind:0.04
+option_2 = 어떤 곳이에요?
+option_2_response = 「가보면 알아.」 이유르가 짧게 답한다. 「말로 설명하는 게 별로 의미 없는 곳이야.」
+option_2_relationship = 0.04
+option_2_color = Light:0.03
+option_3 = 왜 지도에 없어요?
+option_3_response = 「아직 발견 안 됐거나, 일부러 없는 거거나.」 이유르가 잠깐 생각하다 말한다. 「이쪽은 전자야.」
+option_3_relationship = 0.04
+option_3_color = Earth:0.02
+
+[니아 이유르_C7]
+npc = 니아 이유르
+trigger = relationship:0.80
+context = 이유르가 신전 안쪽 오래된 기초 부분을 바라보고 있을 때
+prompt_text = 「이 기초, 건물보다 훨씬 오래됐어. 건물이 기초에 맞춰서 지어진 거야. 기초가 먼저 있었거든.」
+option_1 = 얼마나 오래됐어요?
+option_1_response = 이유르가 잠깐 기초를 바라본다. 「세어본 적 없어.」 특별한 표정 없이 말한다. 「그냥 오래됐다는 거 알아.」
+option_1_relationship = 0.05
+option_1_color = Earth:0.04
+option_2 = 이유르가 알아요?
+option_2_response = 「어느 정도.」 이유르가 기초에 손을 올렸다가 뗀다. 「다 아는 건 아니야. 근데 이게 왜 여기 있는지는 알아.」
+option_2_relationship = 0.06
+option_2_color = Light:0.04
+option_3 = 신전이 특별한 건가요?
+option_3_response = 「나한테는 그래.」 이유르가 조용히 답한다. 더 이상 말하지 않는다. 눈빛이 아주 잠깐 달랐다가 돌아온다.
+option_3_relationship = 0.06
+option_3_color = Wind:0.03
+
+[니아 이유르_C8]
+npc = 니아 이유르
+trigger = relationship:0.85
+context = 이유르가 신전 안에서 기도하지 않고 그냥 서 있는 것을 플레이어가 발견했을 때
+prompt_text = 「아, 왔구나.」 이유르가 신전 안쪽에 있다. 기도하는 것 같지는 않다. 그냥 서 있다.
+option_1 = 기도 안 해요?
+option_1_response = 「안 해.」 이유르가 신전 중앙을 바라보며 말한다. 「여기서 기도하면 어디로 가는지 알거든. 나한테 오는 거야.」 특별한 표정 없이 말하지만, 그 말의 무게는 가볍지 않다.
+option_1_relationship = 0.07
+option_1_color = Light:0.05
+option_2 = 그럼 왜 여기 있어요?
+option_2_response = 「그냥 좋아서.」 이유르가 천장을 올려다보다 말한다. 「여기 공간이 오래됐어. 그 오래된 게 느껴지는 게 나쁘지 않아.」
+option_2_relationship = 0.06
+option_2_color = Earth:0.04
+option_3 = 같이 있어도 돼요?
+option_3_response = 「그래.」 이유르가 바닥에 앉는다. 함께 앉아도 된다는 뜻인 것 같다. 「시끄럽지만 않으면.」
+option_3_relationship = 0.07
+option_3_color = Water:0.04
