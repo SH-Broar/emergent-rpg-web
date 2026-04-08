@@ -282,6 +282,7 @@ export function createGameScreen(
         </div>
 
         <div class="hud-stats">
+          <div style="font-size:13px;font-weight:bold;color:var(--text);margin-bottom:4px">${p.name}</div>
           <div class="stat-bar">
             <span class="stat-label">HP</span>
             <div class="bar"><div class="bar-fill hp-bar" style="width:${hpPct}%"></div></div>
@@ -517,8 +518,11 @@ export function createInfoScreen(
           for (const [name, rel] of p.relationships) {
             const stage = getRelationshipStage(p, name, session.knowledge, session.actors);
             const npcActor = session.actors.find(a => a.name === name);
+            const isCompanionNow = session.knowledge.isCompanion(name);
             const showLoc = (stage === 'close' || stage === 'companion') && npcActor;
-            const locLabel = showLoc ? ` · 📍 ${locationName(npcActor.currentLocation)}` : '';
+            const locLabel = isCompanionNow
+              ? ' · 동행 중'
+              : showLoc ? ` · 📍 ${locationName(npcActor.currentLocation)}` : '';
             html += `<div class="rel-row">
               <span>${name}${locLabel}</span>
               <span>신뢰 ${rel.trust.toFixed(2)} · 호감 ${rel.affinity.toFixed(2)}</span>
