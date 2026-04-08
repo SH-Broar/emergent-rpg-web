@@ -638,7 +638,15 @@ export function createMoveScreen(
     id: 'move',
     render(el) {
       const p = session.player;
-      const routes = session.world.getOutgoingRoutes(p.currentLocation, session.gameTime.day);
+      const baseRoutes = session.world.getOutgoingRoutes(p.currentLocation, session.gameTime.day);
+      // 자택이 이미 포함되어 있지 않고, 현재 위치가 자택이 아닐 때 맨 아래에 추가
+      const homeAlreadyListed = p.currentLocation === p.homeLocation
+        || baseRoutes.some(([loc]) => loc === p.homeLocation);
+      const homeMins = homeAlreadyListed ? 0
+        : session.world.getShortestMinutes(p.currentLocation, p.homeLocation, session.gameTime.day);
+      const routes: [string, number][] = homeAlreadyListed
+        ? baseRoutes
+        : [...baseRoutes, [p.homeLocation, homeMins]];
       el.innerHTML = `
         <div class="screen info-screen">
           <button class="btn back-btn" data-back>← 뒤로 [Esc]</button>
@@ -647,14 +655,16 @@ export function createMoveScreen(
           ${isMinimapOn() ? `<div style="align-self:center">${buildMiniMapSvg(session)}</div>` : ''}
           <div class="menu-buttons">
             ${routes.map(([loc, mins], i) => {
-              const color = loc === p.homeLocation ? '#ff9ff3' : getZoneColor(loc);
+              const isHome = loc === p.homeLocation;
+              const color = isHome ? '#ff9ff3' : getZoneColor(loc);
               const isDungeon = session.dungeonSystem.isDungeonEntrance(loc);
               const dungeonBadge = isDungeon ? ' <span style="color:var(--accent)">⚔</span>' : '';
+              const homeBadge = isHome ? ' <span style="color:#ff9ff3">🏠</span>' : '';
               const travelBadge = mins > TRAVEL_OVERLAY_THRESHOLD_MINUTES
                 ? ` <span style="color:var(--text-dim);font-size:11px">🚶 ${mins}분</span>`
                 : ` <span style="color:var(--text-dim);font-size:11px">${mins}분</span>`;
               return `
-              <button class="btn" data-loc="${loc}" data-mins="${mins}" style="border-left:4px solid ${color}">${i + 1}. ${locationName(loc)}${travelBadge}${dungeonBadge}</button>
+              <button class="btn" data-loc="${loc}" data-mins="${mins}" style="border-left:4px solid ${color}">${i + 1}. ${locationName(loc)}${travelBadge}${dungeonBadge}${homeBadge}</button>
             `;}).join('')}
           </div>
         </div>`;
@@ -671,7 +681,14 @@ export function createMoveScreen(
       if (key === 'Escape') onDone();
       if (/^[1-9]$/.test(key)) {
         const p = session.player;
-        const routes = session.world.getOutgoingRoutes(p.currentLocation, session.gameTime.day);
+        const baseRoutes = session.world.getOutgoingRoutes(p.currentLocation, session.gameTime.day);
+        const homeAlreadyListed = p.currentLocation === p.homeLocation
+          || baseRoutes.some(([loc]) => loc === p.homeLocation);
+        const homeMins = homeAlreadyListed ? 0
+          : session.world.getShortestMinutes(p.currentLocation, p.homeLocation, session.gameTime.day);
+        const routes: [string, number][] = homeAlreadyListed
+          ? baseRoutes
+          : [...baseRoutes, [p.homeLocation, homeMins]];
         const i = parseInt(key, 10) - 1;
         if (i < routes.length) {
           const [loc, mins] = routes[i];

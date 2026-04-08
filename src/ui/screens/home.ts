@@ -4,13 +4,14 @@
 import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
 import { seasonName } from '../../types/enums';
+import { advanceTurn } from '../../systems/world-simulation';
 
 export function createHomeScreen(
   session: GameSession,
   onDone: () => void,
 ): Screen {
   const p = session.player;
-  let phase: 'menu' | 'sleeping' | 'wakeup' = 'menu';
+  let phase: 'menu' | 'sleeping' | 'wakeup' | 'nap_done' = 'menu';
 
   function renderMenu(el: HTMLElement): void {
     el.innerHTML = '';
@@ -20,7 +21,7 @@ export function createHomeScreen(
     const backBtn = document.createElement('button');
     backBtn.className = 'btn back-btn';
     backBtn.dataset.back = '';
-    backBtn.textContent = '\u2190 \ub4a4\ub85c [Esc]';
+    backBtn.textContent = '← 뒤로 [Esc]';
     backBtn.style.minHeight = '44px';
     backBtn.addEventListener('click', onDone);
     wrap.appendChild(backBtn);
@@ -34,15 +35,41 @@ export function createHomeScreen(
 
     if (isHome) {
       const info = document.createElement('p');
-      info.textContent = `HP: ${Math.round(p.base.hp)}/${p.getEffectiveMaxHp()} | MP: ${Math.round(p.base.mp)}/${p.getEffectiveMaxMp()} | TP: ${p.base.ap}/${p.getEffectiveMaxAp()}`;
+      info.textContent = `HP: ${Math.round(p.base.hp)}/${p.getEffectiveMaxHp()} | MP: ${Math.round(p.base.mp)}/${p.getEffectiveMaxMp()} | TP: ${p.base.ap}/${p.getEffectiveMaxAp()} | 기력: ${Math.round(p.base.vigor)}`;
       wrap.appendChild(info);
 
+      // 잠자기 (다음 날 아침, 완전 회복)
       const sleepBtn = document.createElement('button');
       sleepBtn.className = 'btn btn-primary';
       sleepBtn.style.minHeight = '44px';
-      sleepBtn.innerHTML = `<span>\uc7a0\uc790\uae30</span> <span class="key-hint">[1]</span>`;
+      sleepBtn.innerHTML = `<span>🌙 잠자기 — 다음 날 아침까지 (완전 회복)</span> <span class="key-hint">[1]</span>`;
       sleepBtn.addEventListener('click', () => startSleep(el));
       wrap.appendChild(sleepBtn);
+
+      // 짧은 휴식 (2시간, 30% 회복)
+      const napBtn = document.createElement('button');
+      napBtn.className = 'btn';
+      napBtn.style.minHeight = '44px';
+      napBtn.innerHTML = `<span>💤 짧은 휴식 — 2시간 (HP·MP 30% 회복)</span> <span class="key-hint">[2]</span>`;
+      napBtn.addEventListener('click', () => doNap(el));
+      wrap.appendChild(napBtn);
+
+      // 창고 (거점일 때만)
+      if (isOwned) {
+        const storageBtn = document.createElement('button');
+        storageBtn.className = 'btn';
+        storageBtn.style.minHeight = '44px';
+        storageBtn.innerHTML = `<span>📦 창고 확인</span> <span class="key-hint">[3]</span>`;
+        storageBtn.dataset.homeAction = 'storage';
+        wrap.appendChild(storageBtn);
+
+        const cookBtn = document.createElement('button');
+        cookBtn.className = 'btn';
+        cookBtn.style.minHeight = '44px';
+        cookBtn.innerHTML = `<span>🍳 요리하기</span> <span class="key-hint">[4]</span>`;
+        cookBtn.dataset.homeAction = 'cooking';
+        wrap.appendChild(cookBtn);
+      }
     } else {
       const hint = document.createElement('p');
       hint.className = 'hint';
@@ -52,9 +79,58 @@ export function createHomeScreen(
 
     const hint = document.createElement('p');
     hint.className = 'hint';
-    hint.textContent = 'Esc \ub4a4\ub85c';
+    hint.textContent = 'Esc 뒤로';
     wrap.appendChild(hint);
 
+    el.appendChild(wrap);
+
+    // 거점 액션 버튼 이벤트
+    wrap.querySelectorAll<HTMLButtonElement>('[data-home-action]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const act = btn.dataset.homeAction!;
+        onDone(); // home 화면 닫고
+        // screenChange는 외부에서 처리할 수 없으므로 직접 처리
+        // main.ts의 onScreenChange 콜백이 없어서 임시 메시지 표시
+        if (act === 'storage') {
+          // 창고는 HUD의 j키로 접근 가능함을 안내
+          alert('창고는 메인 화면의 [j] 키로 접근할 수 있습니다.');
+        } else if (act === 'cooking') {
+          alert('요리는 메인 화면의 [x] 키로 접근할 수 있습니다.');
+        }
+      });
+    });
+  }
+
+  function doNap(el: HTMLElement): void {
+    const napMinutes = 120; // 2시간
+    advanceTurn(
+      napMinutes, session.gameTime, session.world, session.events,
+      session.actors, session.playerIdx, session.backlog,
+      session.social, session.knowledge,
+    );
+    const hpRecover = Math.round(p.getEffectiveMaxHp() * 0.3);
+    const mpRecover = Math.round(p.getEffectiveMaxMp() * 0.3);
+    const vigorRecover = Math.round(p.getEffectiveMaxVigor() * 0.2);
+    p.adjustHp(hpRecover);
+    p.adjustMp(mpRecover);
+    p.adjustVigor(vigorRecover);
+    session.backlog.add(session.gameTime, `${p.name}이(가) 잠시 휴식을 취했다.`, '행동');
+    phase = 'nap_done';
+
+    el.innerHTML = '';
+    const wrap = document.createElement('div');
+    wrap.className = 'screen';
+    wrap.style.cssText = 'justify-content:center;align-items:center;text-align:center;background:var(--bg);';
+    wrap.innerHTML = `
+      <div style="font-size:28px;margin-bottom:12px">💤</div>
+      <h2 style="color:var(--success);margin-bottom:8px">잠시 쉬었다</h2>
+      <p style="color:var(--text-dim);margin-bottom:16px">${session.gameTime.toString()}</p>
+      <div style="font-size:14px;color:var(--text-dim);margin-bottom:20px">
+        <p>HP +${hpRecover} · MP +${mpRecover} · 기력 +${vigorRecover}</p>
+      </div>
+      <button class="btn btn-primary" data-ok style="min-width:160px">확인 [Enter]</button>
+    `;
+    wrap.querySelector('[data-ok]')?.addEventListener('click', () => onDone());
     el.appendChild(wrap);
   }
 
@@ -143,12 +219,13 @@ export function createHomeScreen(
         ?? document.querySelector('.screen')?.parentElement;
       if (!(container instanceof HTMLElement)) return;
 
+      const isHome = p.currentLocation === p.homeLocation || session.knowledge.ownedBases.has(p.currentLocation);
+
       if (phase === 'menu') {
         if (key === 'Escape') { onDone(); return; }
-        if (key === '1' && (p.currentLocation === p.homeLocation || session.knowledge.ownedBases.has(p.currentLocation))) {
-          startSleep(container);
-        }
-      } else if (phase === 'wakeup') {
+        if (key === '1' && isHome) { startSleep(container); }
+        if (key === '2' && isHome) { doNap(container); }
+      } else if (phase === 'wakeup' || phase === 'nap_done') {
         if (key === 'Enter' || key === ' ' || key === 'Escape') {
           onDone();
         }

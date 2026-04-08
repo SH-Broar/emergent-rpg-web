@@ -204,6 +204,24 @@ export class World {
     return r ? r[1] : 30;
   }
 
+  /** BFS로 from→to 최단 이동 시간(분)을 계산한다. 경로 없으면 120을 반환. */
+  getShortestMinutes(from: LocationID, to: LocationID, currentDay = 0): number {
+    if (from === to) return 0;
+    const dist = new Map<string, number>();
+    const queue: [LocationID, number][] = [[from, 0]];
+    dist.set(from, 0);
+    while (queue.length > 0) {
+      const [cur, d] = queue.shift()!;
+      for (const [next, mins] of this.getOutgoingRoutes(cur, currentDay)) {
+        if (!dist.has(next)) {
+          dist.set(next, d + mins);
+          queue.push([next, d + mins]);
+        }
+      }
+    }
+    return dist.get(to) ?? 120;
+  }
+
   getNextStep(from: LocationID, to: LocationID, currentDay = 0): LocationID {
     if (from === to) return from;
     const visited = new Set<LocationID>([from]);

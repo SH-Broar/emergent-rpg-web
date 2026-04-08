@@ -26,7 +26,8 @@ export function createDialogueScreen(
 ): Screen {
   const p = session.player;
   const npcsHere = session.actors.filter(
-    a => a !== p && a.currentLocation === p.currentLocation && a.isAlive() && !a.base.sleeping,
+    a => a !== p && a.isAlive() && !a.base.sleeping &&
+    (a.currentLocation === p.currentLocation || session.knowledge.isCompanion(a.name)),
   );
 
   let selectedIdx = -1;

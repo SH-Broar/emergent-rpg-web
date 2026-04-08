@@ -125,6 +125,8 @@ export class Actor {
   stationary = false;
   hyperionLevel = 0;
   hyperionFlags: boolean[] = [false, false, false, false, false];
+  /** 플레이어 전용: 다른 액터들의 히페리온 레벨 합산 보너스 */
+  hyperionBonus = 0;
   lastTickHour = 6;
 
   coreMatrix = new CoreMatrix();
@@ -247,7 +249,7 @@ export class Actor {
   }
 
   getEffectiveMaxAp(): number {
-    return this.base.maxAp + this.hyperionLevel;
+    return this.base.maxAp + this.hyperionLevel + this.hyperionBonus;
   }
 
   adjustAp(delta: number): void {
@@ -258,19 +260,19 @@ export class Actor {
     return this.base.ap >= cost;
   }
 
-  getEffectiveMaxHp(): number { return this.base.maxHp + this.hyperionLevel * 10; }
-  getEffectiveMaxMp(): number { return this.base.maxMp + this.hyperionLevel * 5; }
+  getEffectiveMaxHp(): number { return this.base.maxHp + (this.hyperionLevel + this.hyperionBonus) * 10; }
+  getEffectiveMaxMp(): number { return this.base.maxMp + (this.hyperionLevel + this.hyperionBonus) * 5; }
   getEffectiveAttack(): number {
     const weaponBonus = this.equippedWeapon ? (getWeaponDef(this.equippedWeapon)?.attack ?? 0) : 0;
-    return this.base.attack + this.hyperionLevel * 2 + weaponBonus;
+    return this.base.attack + (this.hyperionLevel + this.hyperionBonus) * 2 + weaponBonus;
   }
   getEffectiveDefense(): number {
     const armorBonus = this.equippedArmor ? (getArmorDef(this.equippedArmor)?.defense ?? 0) : 0;
     const acc1Bonus = this.equippedAccessory ? (getArmorDef(this.equippedAccessory)?.defense ?? 0) : 0;
     const acc2Bonus = this.equippedAccessory2 ? (getArmorDef(this.equippedAccessory2)?.defense ?? 0) : 0;
-    return this.base.defense + this.hyperionLevel * 1 + armorBonus + acc1Bonus + acc2Bonus;
+    return this.base.defense + (this.hyperionLevel + this.hyperionBonus) * 1 + armorBonus + acc1Bonus + acc2Bonus;
   }
-  getEffectiveMaxVigor(): number { return this.base.maxVigor + this.hyperionLevel * 5; }
+  getEffectiveMaxVigor(): number { return this.base.maxVigor + (this.hyperionLevel + this.hyperionBonus) * 5; }
 
   receiveEventInfluence(influence: number[], _eventName: string, _time: GameTime): void {
     this.color.applyInfluence(influence);

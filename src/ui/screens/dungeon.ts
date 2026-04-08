@@ -482,10 +482,12 @@ export function createDungeonScreen(
   function handleDefeat(el: HTMLElement) {
     if (combatState) stopCombatTimer(combatState);
 
-    // 자택 복귀, 하루 경과, HP 50% 회복
+    // 자택 복귀: 이동 시간 + 8시간 회복 시간 경과
     p.base.hp = Math.max(1, Math.round(p.getEffectiveMaxHp() * 0.5));
+    const travelMins = session.world.getShortestMinutes(p.currentLocation, p.homeLocation, session.gameTime.day);
+    const recoveryMins = 8 * 60;
+    session.gameTime.advance(travelMins + recoveryMins);
     p.currentLocation = p.homeLocation;
-    session.gameTime.advance(60 * 24); // 하루
     // 컬러 영향
     p.color.values[7] = Math.min(1, (p.color.values[7] ?? 0.5) + 0.05); // Dark +0.05
     p.color.values[6] = Math.max(0, (p.color.values[6] ?? 0.5) - 0.03); // Light -0.03

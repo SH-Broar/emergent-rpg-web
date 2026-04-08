@@ -107,7 +107,7 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
       if (gatherItems.length === 0) {
         if (apCost > 0) p.adjustAp(apCost);
         result.messages.push('이 지역에는 채집할 자원이 없다.');
-        break;
+        return result; // 시간 경과 없이 리턴
       }
 
       // 히페리온 레벨 합계 계산
@@ -121,7 +121,7 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
         if (apCost > 0) p.adjustAp(apCost);
         const minRequired = Math.min(...gatherItems.map(g => g.minHyperion ?? 0));
         result.messages.push(`이 지역은 히페리온 레벨 합계 ${minRequired} 이상이어야 채집할 수 있다. (현재 ✦${totalHyperion})`);
-        break;
+        return result; // 시간 경과 없이 리턴
       }
 
       // 성공률 계산 (레벨 기반)
@@ -239,6 +239,21 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
       session.social, session.knowledge,
     );
 
+    // HP 0 패배 처리 (밤 기력 고갈 등)
+    if (p.base.hp <= 0) {
+      p.base.hp = Math.max(1, Math.round(p.getEffectiveMaxHp() * 0.5));
+      const travelHome = session.world.getShortestMinutes(p.currentLocation, p.homeLocation, session.gameTime.day);
+      const recoveryMinutes = 8 * 60; // 8시간 회복
+      session.gameTime.advance(travelHome + recoveryMinutes);
+      p.currentLocation = p.homeLocation;
+      p.base.vigor = Math.round(p.getEffectiveMaxVigor() * 0.5);
+      const defeatMsg = '기력이 다해 쓰러졌다... 눈을 떠보니 자택이었다.';
+      session.backlog.add(session.gameTime, `${p.name}이(가) 쓰러져 자택에서 깨어났다...`, '행동');
+      result.messages.push(defeatMsg);
+      result.screenChange = 'home';
+      return result;
+    }
+
     // 이벤트 메시지 (backlog에서 최근 이벤트 확인)
     const recentLogs = session.backlog.getRecent(5);
     for (const entry of recentLogs) {
@@ -272,6 +287,9 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
 
     // 히페리온 자동 판정
     const hyperionMsgs = updateHyperionLevels(p, session.actors, session.knowledge, session.gameTime, session.dungeonSystem);
+    // 플레이어 히페리온 보너스 = 전체 총합 (자신 포함)에서 자신 레벨을 뺀 나머지
+    const hyperionTotal = session.actors.reduce((s, a) => s + a.hyperionLevel, 0);
+    p.hyperionBonus = hyperionTotal - p.hyperionLevel;
     for (const msg of hyperionMsgs) {
       session.backlog.add(session.gameTime, msg, '시스템');
       result.messages.push(msg);

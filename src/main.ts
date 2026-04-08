@@ -153,6 +153,13 @@ async function boot() {
     if (session.isValid) saveToSlot(0, session);
   }
 
+  /** 플레이어의 hyperionBonus를 전체 총합 기준으로 초기화/갱신 */
+  function syncHyperionBonus() {
+    if (!session.isValid) return;
+    const total = session.actors.reduce((s, a) => s + a.hyperionLevel, 0);
+    session.player.hyperionBonus = total - session.player.hyperionLevel;
+  }
+
   function enterGame() {
     // 코어 매트릭스 진단 결과 적용
     const diagColors = (session as any)._diagColorValues as number[] | undefined;
@@ -191,6 +198,7 @@ async function boot() {
 
   // --- 게임 메인 화면 ---
   function showGame() {
+    syncHyperionBonus();
     sm.replace(createGameScreen(session, (target) => {
       switch (target) {
         case 'move':
@@ -339,7 +347,7 @@ async function boot() {
       processTurn(session, 'idle');
       autosave();
       sm.render();
-    }, 10000);
+    }, 30000);
   }
 
   // --- 새 게임: 이전 캐릭터 NPC화 선택 후 캐릭터 생성으로 이동 ---
