@@ -29,6 +29,31 @@ export class GameRegistry {
     this.locationNames.set(Loc.Memory_Spring, '기억의 샘');
     this.locationNames.set(Loc.Limun_Ruins, '리문 유적');
 
+    // 일루네온 지역
+    this.locationNames.set('Iluneon', '일루네온');
+    this.locationNames.set('Iluneon_Square', '일루네온 광장');
+    this.locationNames.set('Iluneon_Diner', '일루네온 식당가');
+    // 타코미
+    this.locationNames.set('Tacomi', '타코미');
+    this.locationNames.set('Night_Tacomi', '나이트 타코미');
+    this.locationNames.set('Tacomi_Cafe', '타코미 카페');
+    // 기타 주요 지역
+    this.locationNames.set('Kanon', '카논');
+    this.locationNames.set('Arukea_1', '아루케아 북부');
+    this.locationNames.set('Arukea_2', '아루케아 중부');
+    this.locationNames.set('Arukea_3', '아루케아 남부');
+    this.locationNames.set('Hanabridge', '하나브릿지');
+    this.locationNames.set('Riagralta', '리아그랄타');
+    this.locationNames.set('Lar_Forest', '라르 숲');
+    this.locationNames.set('World_Tree', '세계수');
+    this.locationNames.set('Ekres', '에크레스');
+    this.locationNames.set('Moss', '모스');
+    this.locationNames.set('Moss_Forge', '모스 대장간');
+    this.locationNames.set('Moss_Tavern', '모스 주막');
+    this.locationNames.set('Enicham', '에니챰');
+    this.locationNames.set('Farm', '농장');
+    this.locationNames.set('Herb_Garden', '약초원');
+
     this.itemNames.set(ItemType.Food, '음식');
     this.itemNames.set(ItemType.Herb, '약초');
     this.itemNames.set(ItemType.OreCommon, '일반 광석');
@@ -50,7 +75,7 @@ export class GameRegistry {
 }
 
 export function locationName(id: LocationID): string {
-  return GameRegistry.I.locationNames.get(id) ?? '???';
+  return GameRegistry.I.locationNames.get(id) ?? id;
 }
 
 export function itemName(type: ItemType): string {

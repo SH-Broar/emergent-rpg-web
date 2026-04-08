@@ -271,6 +271,7 @@ links = Enicham, Kazed, Bloom_Terrace, Tacomi_Cafe, Night_Tacomi:2
 resources = Food:15
 monsterLevel = 0
 dangerLevel = 0.0
+timeVisible = 6:18
 
 [Night_Tacomi]
 name = 나이트 타코미
@@ -281,6 +282,7 @@ links = Tacomi, Hologram_Field
 resources = Food:10, Equipment:2
 monsterLevel = 0
 dangerLevel = 0.05
+timeVisible = 18:6
 
 [Kazed]
 name = 카제드

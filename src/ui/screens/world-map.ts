@@ -71,7 +71,20 @@ export function createWorldMapScreen(session: GameSession, onDone: () => void): 
     render(el) {
       const world = session.world;
       const playerLoc = session.player.currentLocation;
-      const allLocs = [...world.getAllLocations().values()];
+
+      function isLocationVisible(loc: { timeVisible?: { fromHour: number; toHour: number } }): boolean {
+        if (!loc.timeVisible) return true;
+        const hour = session.gameTime.hour;
+        const { fromHour, toHour } = loc.timeVisible;
+        if (fromHour < toHour) {
+          return hour >= fromHour && hour < toHour;
+        } else {
+          // 자정 넘는 경우 (18~6 등)
+          return hour >= fromHour || hour < toHour;
+        }
+      }
+
+      const allLocs = [...world.getAllLocations().values()].filter(isLocationVisible);
 
       // 최초 진입 시 플레이어 위치로 선택 초기화
       const playerIdx = allLocs.findIndex(l => l.id === playerLoc);
@@ -143,7 +156,7 @@ export function createWorldMapScreen(session: GameSession, onDone: () => void): 
         const fontSize = isPlayer ? 11 : 9;
         const textFill = isPlayer ? '#e94560' : isVisited ? zoneColor : `${zoneColor}55`;
         const labelClass = isPlayer ? 'map-label-player' : isVisited ? 'map-label-visited' : 'map-label-other';
-        svgContent += `<text x="${cx}" y="${cy - r - 3}" text-anchor="middle" font-size="${fontSize}" fill="${textFill}" font-family="var(--font-main)" class="${labelClass}" data-shortname="${shortName}" data-fullname="${name}">${name}</text>`;
+        svgContent += `<text x="${cx}" y="${cy - r - 3}" text-anchor="middle" font-size="${fontSize}" fill="${textFill}" font-family="var(--font-main)" class="${labelClass}" data-shortname="${shortName}" data-fullname="${name}" pointer-events="none">${name}</text>`;
       }
 
       function getViewBox(): string {

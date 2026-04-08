@@ -393,7 +393,7 @@ export function generateTalkTopic(
       `${dispName}이(가) 눈을 빛내며 이야기했다. 가슴 깊이 와닿았다.`,
     ];
     reaction = r[randomInt(0, 2)];
-    colorDelta = 0.06;
+    colorDelta = 0.03;
   } else if (diff >= 0.1) {
     const r = [
       `${dispName}의 이야기에 고개를 끄덕이게 된다.`,
@@ -401,7 +401,7 @@ export function generateTalkTopic(
       `${dispName}의 시선에서 따뜻한 무언가를 느꼈다.`,
     ];
     reaction = r[randomInt(0, 2)];
-    colorDelta = 0.04;
+    colorDelta = 0.02;
   } else if (diff > -0.1) {
     const r = [
       '서로 비슷한 생각을 하고 있었다. 웃음이 번졌다.',
@@ -409,7 +409,7 @@ export function generateTalkTopic(
       '말하지 않아도 통하는 순간이 있다.',
     ];
     reaction = r[randomInt(0, 2)];
-    colorDelta = 0.02;
+    colorDelta = 0.01;
   } else if (diff > -0.3) {
     const r = [
       `${dispName}은(는) 다른 관점으로 이야기했다. 생각해 볼 만하다.`,
@@ -417,7 +417,7 @@ export function generateTalkTopic(
       `${dispName}이(가) 고개를 갸웃거렸지만, 이야기는 즐거웠다.`,
     ];
     reaction = r[randomInt(0, 2)];
-    colorDelta = 0.01;
+    colorDelta = 0.005;
   } else {
     const r = [
       `${dispName}과(와) 전혀 다른 세계의 이야기를 나눴다. 낯설지만 흥미롭다.`,
@@ -425,7 +425,7 @@ export function generateTalkTopic(
       `${dispName}이(가) 한참을 생각하더니 '그런 생각도 있구나'라고 말했다.`,
     ];
     reaction = r[randomInt(0, 2)];
-    colorDelta = -0.01;
+    colorDelta = -0.005;
   }
 
   // 컬러 영향 적용

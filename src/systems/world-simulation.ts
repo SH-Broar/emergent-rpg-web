@@ -149,6 +149,15 @@ export function advanceTurn(
   );
   player.color.applyInfluence(locInfluence);
 
+  // 자연 드리프트: 컬러 값이 중립(0.5)으로 서서히 회귀
+  // 분당 0.00005씩 — 하루(1440분)에 약 0.072 감소 (매우 완만)
+  const driftRate = minutes * 0.00005;
+  for (let i = 0; i < player.color.values.length; i++) {
+    const v = player.color.values[i];
+    if (v > 0.5) player.color.values[i] = Math.max(0.5, v - driftRate);
+    else if (v < 0.5) player.color.values[i] = Math.min(0.5, v + driftRate);
+  }
+
   // 5. Event check (예약 + 랜덤 풀)
   const triggered = events.checkAndTrigger(gameTime);
   applyEventInfluences(triggered, events, actors, gameTime, log, world);

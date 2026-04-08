@@ -95,6 +95,15 @@ export function initLocations(sections: DataSection[], world: World): void {
       }
     }
 
+    // timeVisible = "18:6" (18시~익일6시) 또는 "6:18" (6시~18시)
+    const tvRaw = s.get('timeVisible', '');
+    if (tvRaw) {
+      const parts = tvRaw.split(':').map(p => parseInt(p.trim(), 10));
+      if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+        data.timeVisible = { fromHour: parts[0], toHour: parts[1] };
+      }
+    }
+
     world.setLocation(id, data);
   }
   world.rebuildTravelGraph();
