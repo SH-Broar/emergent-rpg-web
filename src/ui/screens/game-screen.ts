@@ -5,7 +5,7 @@ import type { GameSession } from '../../systems/game-session';
 import type { GameAction } from '../../systems/game-loop';
 import type { Actor } from '../../models/actor';
 import { processTurn } from '../../systems/game-loop';
-import { moveCompanions } from '../../systems/npc-interaction';
+import { moveCompanions, getRelationshipStage } from '../../systems/npc-interaction';
 import { locationName } from '../../types/registry';
 import { getZoneColor } from './world-map';
 import { weatherName, seasonName, raceName, spiritRoleName, elementName, Element, ELEMENT_COUNT, ItemType } from '../../types/enums';
@@ -361,7 +361,7 @@ export function createGameScreen(
         </div>
 
         <div class="log-area">
-          ${accumulatedLog.map(m => `
+          ${[...accumulatedLog].reverse().map(m => `
             <div class="log-entry">
               <span class="log-time">${m.time}</span>
               <span class="log-text">${m.text}</span>
@@ -515,8 +515,12 @@ export function createInfoScreen(
             html += '<p>아직 형성된 관계가 없습니다.</p>';
           }
           for (const [name, rel] of p.relationships) {
+            const stage = getRelationshipStage(p, name, session.knowledge, session.actors);
+            const npcActor = session.actors.find(a => a.name === name);
+            const showLoc = (stage === 'close' || stage === 'companion') && npcActor;
+            const locLabel = showLoc ? ` · 📍 ${locationName(npcActor.currentLocation)}` : '';
             html += `<div class="rel-row">
-              <span>${name}</span>
+              <span>${name}${locLabel}</span>
               <span>신뢰 ${rel.trust.toFixed(2)} · 호감 ${rel.affinity.toFixed(2)}</span>
             </div>`;
           }

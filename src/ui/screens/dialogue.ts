@@ -107,7 +107,7 @@ export function createDialogueScreen(
         <span class="dialogue-affinity">${stageLabel} (${overall.toFixed(2)})</span>
       </div>
       <div class="dialogue-box">
-        ${dialogueLines.map(l => `<div class="dialogue-line">${l}</div>`).join('')}
+        ${[...dialogueLines].reverse().map(l => `<div class="dialogue-line">${l}</div>`).join('')}
       </div>
       <div class="button-grid dialogue-actions">
         <button class="btn action-button" data-daction="continue" ${dialogueLines.length >= MAX_DIALOGUE_LINES ? 'disabled style="opacity:0.4;cursor:not-allowed"' : ''}>
