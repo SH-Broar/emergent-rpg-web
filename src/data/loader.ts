@@ -99,6 +99,8 @@ export interface GameDataFiles {
   diagnostic: DataSection[];
   skills: DataSection[];
   acquisition: DataSection[];
+  actionTexts: DataSection[];
+  combatTexts: DataSection[];
 }
 
 export async function loadAllData(): Promise<GameDataFiles> {
@@ -108,7 +110,7 @@ export async function loadAllData(): Promise<GameDataFiles> {
     dungeons, monsters, dungeonEvents, combatBehavior,
     activities, productions, hyperion, titles,
     giftPreferences, weapons, armor, lore, diagnostic,
-    skills, acquisition,
+    skills, acquisition, actionTexts, combatTexts,
   ] = await Promise.all([
     loadDataFile('items'),
     loadDataFile('locations', addons.locations ?? []),
@@ -130,6 +132,8 @@ export async function loadAllData(): Promise<GameDataFiles> {
     loadDataFile('diagnostic'),
     loadDataFile('skills'),
     loadDataFile('acquisition'),
+    loadDataFile('action_texts'),
+    loadDataFile('combat_texts'),
   ]);
 
   return {
@@ -137,6 +141,6 @@ export async function loadAllData(): Promise<GameDataFiles> {
     dungeons, monsters, dungeonEvents, combatBehavior,
     activities, productions, hyperion, titles,
     giftPreferences, weapons, armor, lore, diagnostic,
-    skills, acquisition,
+    skills, acquisition, actionTexts, combatTexts,
   };
 }

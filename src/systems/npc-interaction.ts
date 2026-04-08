@@ -763,3 +763,15 @@ export function getNearbyNpcs(
     !a.base.sleeping,
   );
 }
+
+/**
+ * action_texts/combat_texts에서 우선순위 키 순으로 텍스트를 조회한다.
+ * keys: ['action.wait.Lake.카엘', 'action.wait.카엘', 'action.wait.Lake', 'action.wait']
+ */
+export function getActionText(keys: string[]): string {
+  for (const key of keys) {
+    const lines = dialogueDB.get(key);
+    if (lines && lines.length > 0) return pickRandom(lines);
+  }
+  return '';
+}

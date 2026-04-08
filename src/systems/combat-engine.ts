@@ -8,6 +8,7 @@ import {
   tickPreDelay, tickEffects, getBuffedAttack, getBuffedDefense, getEnemyAttackMod,
 } from './skill-combat';
 import { randomFloat } from '../types/rng';
+import { getActionText } from './npc-interaction';
 
 // ============================================================
 // 동료 슬롯
@@ -174,13 +175,15 @@ export function processTick(
   const enemyDef = state.enemy.defense;
   const playerDmg = Math.max(1, Math.round(buffedAtk - enemyDef * 0.5));
   state.enemyHp -= playerDmg;
-  messages.push(`${player.name}의 공격! ${playerDmg} 데미지`);
+  const atkTxt = getActionText(['combat.player_attack']) || '공격했다.';
+  messages.push(`${player.name}의 ${atkTxt} ${playerDmg} 데미지`);
 
   // 승리 체크
   if (state.enemyHp <= 0) {
     state.finished = true;
     state.victory = true;
-    messages.push(`${state.enemy.name}을(를) 쓰러뜨렸다!`);
+    const defeatTxt1 = getActionText(['combat.enemy_defeated']) || '처치했다.';
+    messages.push(`${state.enemy.name}을(를) ${defeatTxt1}`);
     return messages;
   }
 
@@ -221,7 +224,8 @@ export function processTick(
   if (state.enemyHp <= 0) {
     state.finished = true;
     state.victory = true;
-    messages.push(`${state.enemy.name}을(를) 쓰러뜨렸다!`);
+    const defeatTxt2 = getActionText(['combat.enemy_defeated']) || '처치했다.';
+    messages.push(`${state.enemy.name}을(를) ${defeatTxt2}`);
     return messages;
   }
 
@@ -234,7 +238,8 @@ export function processTick(
   const rawEnemyDmg = Math.max(0, Math.round(state.enemy.attack * enemyAtkMod - buffedDef * 0.5));
   if (rawEnemyDmg > 0) {
     player.adjustHp(-rawEnemyDmg);
-    messages.push(`${state.enemy.name}의 공격! ${rawEnemyDmg} 데미지`);
+    const hitTxt = getActionText(['combat.player_hit']) || '피격당했다.';
+    messages.push(`${state.enemy.name}의 공격! ${hitTxt} ${rawEnemyDmg} 데미지`);
   }
 
   // --- 5. 적 스킬 발동 ---
@@ -269,7 +274,8 @@ export function processTick(
   if (state.enemyHp <= 0) {
     state.finished = true;
     state.victory = true;
-    messages.push(`${state.enemy.name}을(를) 쓰러뜨렸다!`);
+    const defeatTxt3 = getActionText(['combat.enemy_defeated']) || '처치했다.';
+    messages.push(`${state.enemy.name}을(를) ${defeatTxt3}`);
   } else if (player.base.hp <= 0) {
     state.finished = true;
     state.victory = false;

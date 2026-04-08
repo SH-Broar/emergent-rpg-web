@@ -7,7 +7,7 @@ import { randomInt, randomFloat } from '../types/rng';
 import { updateHyperionLevels } from './hyperion';
 import { advanceTurn } from './world-simulation';
 import { findItemsBySource } from '../types/item-defs';
-import { tryNpcInitiatedConversation, getDialogue, getRelationshipStage } from './npc-interaction';
+import { tryNpcInitiatedConversation, getDialogue, getRelationshipStage, getActionText } from './npc-interaction';
 
 export type GameAction =
   | 'idle' | 'move' | 'talk' | 'trade' | 'eat'
@@ -68,8 +68,19 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
 
   switch (action) {
     case 'idle': {
-      session.backlog.add(session.gameTime, `${p.name}은(는) 주변을 둘러보며 시간을 보냈다.`, '행동');
-      result.messages.push('주변을 관찰하며 시간을 보냈다.');
+      // 우선순위: action.wait.장소.동료, action.wait.동료, action.wait.장소, action.wait
+      const companions = session.actors
+        .filter(a => a !== p && session.knowledge.isCompanion(a.name))
+        .map(a => a.name);
+      const loc = p.currentLocation;
+      const keys: string[] = [];
+      for (const c of companions) {
+        keys.push(`action.wait.${loc}.${c}`, `action.wait.${c}`);
+      }
+      keys.push(`action.wait.${loc}`, 'action.wait');
+      const txt = getActionText(keys) || '주변을 관찰하며 시간을 보냈다.';
+      session.backlog.add(session.gameTime, `${p.name}은(는) ${txt}`, '행동');
+      result.messages.push(txt);
       const idleConv = tryNpcInitiatedConversation(p, session.actors, session.social, session.gameTime);
       if (idleConv) {
         const line = `${idleConv.npc.name}: 「${idleConv.greeting}」`;
@@ -88,7 +99,17 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
       const mpRecover = Math.round(p.getEffectiveMaxMp() * 0.2);
       p.adjustHp(hpRecover);
       p.adjustMp(mpRecover);
-      const restMsg = `휴식을 취했다. HP +${hpRecover}, MP +${mpRecover}`;
+      const companions = session.actors
+        .filter(a => a !== p && session.knowledge.isCompanion(a.name))
+        .map(a => a.name);
+      const loc = p.currentLocation;
+      const keys: string[] = [];
+      for (const c of companions) {
+        keys.push(`action.rest.${loc}.${c}`, `action.rest.${c}`);
+      }
+      keys.push(`action.rest.${loc}`, 'action.rest');
+      const restTxt = getActionText(keys) || `휴식을 취했다. HP +${hpRecover}, MP +${mpRecover}`;
+      const restMsg = restTxt.includes('HP') ? restTxt : `${restTxt} (HP +${hpRecover}, MP +${mpRecover})`;
       session.backlog.add(session.gameTime, `${p.name}이(가) ${restMsg}`, '행동', p.name);
       result.messages.push(restMsg);
       const restConv = tryNpcInitiatedConversation(p, session.actors, session.social, session.gameTime);

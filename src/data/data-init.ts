@@ -512,6 +512,26 @@ export function initAll(data: GameDataFiles): InitResult {
     if (lines.length > 0) setDialogueLines(s.name, lines);
   }
 
+  // 행동 묘사문 로드 (action_texts.txt)
+  for (const s of data.actionTexts) {
+    const lines: string[] = [];
+    for (let i = 1; i <= 30; i++) {
+      const line = s.get(String(i), '');
+      if (line) lines.push(line);
+    }
+    if (lines.length > 0) setDialogueLines('action.' + s.name, lines);
+  }
+
+  // 전투 묘사문 로드 (combat_texts.txt)
+  for (const s of data.combatTexts) {
+    const lines: string[] = [];
+    for (let i = 1; i <= 30; i++) {
+      const line = s.get(String(i), '');
+      if (line) lines.push(line);
+    }
+    if (lines.length > 0) setDialogueLines('combat.' + s.name, lines);
+  }
+
   // 선물 선호도 DB 로드
   clearGiftPreferences();
   for (const s of data.giftPreferences) {
