@@ -373,16 +373,23 @@ export function createGameScreen(
         <div class="status-bar">${statusMessage ? `${session.gameTime.toString()} ${statusMessage}` : session.gameTime.toString()}</div>
 
         <div class="action-grid">
-          ${MAIN_ACTIONS.map(a => {
-            const show = !a.visible || a.visible(session);
-            return `
-              <button class="btn action-btn" data-action="${a.action}" title="[${a.key}]"
-                style="${show ? '' : 'visibility:hidden;pointer-events:none'}">
-                <span class="action-icon">${a.icon}</span>
-                <span class="action-label">${a.label}</span>
-                <span class="action-key">${a.key}</span>
-              </button>`;
-          }).join('')}
+          ${(() => {
+            // 마지막으로 표시되는 버튼 인덱스까지만 렌더링
+            // → 빈 행이 사라지고 log-area가 남은 공간을 채움
+            const lastVisible = MAIN_ACTIONS.reduce(
+              (last, a, i) => (!a.visible || a.visible(session)) ? i : last, -1,
+            );
+            return MAIN_ACTIONS.slice(0, lastVisible + 1).map(a => {
+              const show = !a.visible || a.visible(session);
+              return `
+                <button class="btn action-btn" data-action="${a.action}" title="[${a.key}]"
+                  style="${show ? '' : 'visibility:hidden;pointer-events:none'}">
+                  <span class="action-icon">${a.icon}</span>
+                  <span class="action-label">${a.label}</span>
+                  <span class="action-key">${a.key}</span>
+                </button>`;
+            }).join('');
+          })()}
         </div>
 
         <div class="info-bar">
