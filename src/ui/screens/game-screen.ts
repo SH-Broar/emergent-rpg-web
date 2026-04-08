@@ -282,7 +282,7 @@ export function createGameScreen(
         </div>
 
         <div class="hud-stats">
-          <div style="font-size:13px;font-weight:bold;color:var(--text);margin-bottom:4px">${p.name}</div>
+          <div style="font-size:13px;font-weight:bold;color:var(--text);margin-bottom:4px;text-align:center">${p.name}</div>
           <div class="stat-bar">
             <span class="stat-label">HP</span>
             <div class="bar"><div class="bar-fill hp-bar" style="width:${hpPct}%"></div></div>
