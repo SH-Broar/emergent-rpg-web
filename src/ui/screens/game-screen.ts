@@ -282,7 +282,6 @@ export function createGameScreen(
         </div>
 
         <div class="hud-stats">
-          <div style="font-size:13px;font-weight:bold;color:var(--text);margin-bottom:4px;text-align:center">${p.name}</div>
           <div class="stat-bar">
             <span class="stat-label">HP</span>
             <div class="bar"><div class="bar-fill hp-bar" style="width:${hpPct}%"></div></div>
@@ -302,7 +301,7 @@ export function createGameScreen(
             </div>
             <span class="stat-val">${p.base.ap}/${p.getEffectiveMaxAp()}</span>
           </div>
-          <div class="hud-mini">Lv.${p.base.level} · ${raceName(p.base.race)} · ${spiritRoleName(p.spirit.role)} · 💰${p.spirit.gold}G</div>
+          <div class="hud-mini"><strong>${p.name}</strong> · Lv.${p.base.level} · ${raceName(p.base.race)} · ${spiritRoleName(p.spirit.role)} · 💰${p.spirit.gold}G</div>
           <div class="hud-colors" style="justify-content:center;gap:12px">
             ${(() => {
               // 가장 높은 속성 계산
