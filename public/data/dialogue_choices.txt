@@ -1106,3 +1106,219 @@ option_3 = 지도 완성되면 또 어디 가?
 option_3_response = 하코가 지도를 본다. 한참. 「…처음부터 다시 돌자. 너랑.」 하코가 지도를 가슴에 안는다. 「…지도는 끝나도 길은 안 끝나니까.」 하코가 이쪽을 본다. 앞머리 사이로 시선이 닿는다. 「…같이 있으면 어디든 괜찮아.」
 option_3_relationship = 0.07
 option_3_color = Earth:0.07
+
+[모노_C1]
+npc = 모노
+trigger = relationship:0.10
+context = 플레이어가 처음으로 마왕성을 방문한다. 모노가 기다리고 있었다는 듯이 맞이한다.
+prompt_text = 마왕성 안. 겉의 위압적인 외관과 달리 안은 아늑하다. 소파, 허브차 향, 창문으로 들어오는 빛. 모노가 소파에 앉아 있다. 흰 머리, 금빛 테 검은 망토. 어린 소녀처럼 보이지만 눈이 다르다. 모노가 이쪽을 본다. 「드디어 왔네. 어땠어?」
+option_1 = 여기가 마왕성이야? 생각보다 아늑한데
+option_1_response = 모노가 고개를 살짝 기울인다. 「겉은 마왕성이니까 분위기 맞춘 거야. 안은 내 취향. 편하지?」 모노가 옆자리를 가리킨다. 「앉아. 차 줄게.」
+option_1_relationship = 0.03
+option_1_color = Light:0.03
+option_2 = 마왕이 이렇게 생겼어?
+option_2_response = 모노가 잠깐 자기를 내려다본다. 「기대한 게 뭔데. 뿔? 날개?」 모노가 아무렇지 않게 말한다. 「이게 나야. 실망이면 미안.」 미안해 보이지는 않는다.
+option_2_relationship = 0.05
+option_2_color = Fire:0.05
+option_3 = (주위를 둘러본다)
+option_3_response = 모노가 시선을 따라간다. 「구경해. 천천히.」 모노가 허브차를 한 잔 따른다. 「다 보면 앉아. 차 식기 전에.」 급하지 않은 톤이다.
+option_3_relationship = 0.02
+option_3_color = Water:0.02
+
+[모노_C2]
+npc = 모노
+trigger = relationship:0.20
+context = 모노가 갑자기 기분을 물어본다. 늘 그렇듯 담담하게.
+prompt_text = 마왕성 소파. 모노가 차를 마시다가 잔을 내려놓는다. 이쪽을 본다. 「기분은?」 아무런 맥락 없이. 갑자기. 그게 모노의 방식이다.
+option_1 = 좋아
+option_1_response = 모노가 고개를 살짝 끄덕인다. 「좋다. 좋은 답이야.」 모노가 다시 차를 든다. 「좋은 기분이 어떤 건지 설명해줄 수 있어? 궁금해서.」
+option_1_relationship = 0.05
+option_1_color = Light:0.05
+option_2 = 글쎄, 모르겠어
+option_2_response = 모노가 잠깐 생각한다. 「모르는 것도 답이야. 나쁘지 않아.」 모노가 차를 한 모금 마신다. 「나도 내 기분을 모를 때가 있어. 999년째지만.」
+option_2_relationship = 0.04
+option_2_color = Water:0.04
+option_3 = 왜 맨날 물어봐?
+option_3_response = 모노가 담담하게 답한다. 「궁금하니까. 인간의 기분은 매번 달라서.」 모노가 이쪽을 본다. 「나는 거의 안 변해. 그래서 네가 신기한 거야.」
+option_3_relationship = 0.03
+option_3_color = Wind:0.03
+
+[모노_C3]
+npc = 모노
+trigger = relationship:0.30
+context = 마왕성 정원을 발견한다. 마왕성 외관과 전혀 다른 아늑한 공간.
+prompt_text = 마왕성 뒤편. 문을 열자 정원이 나온다. 꽃이 피어 있고, 벤치가 있고, 나비가 날아다닌다. 마왕성이라는 게 믿기지 않는다. 모노가 뒤에서 걸어온다. 「찾았네.」
+option_1 = 여기 진짜 마왕성 맞아?
+option_1_response = 모노가 주위를 둘러본다. 「맞아. 내가 가꾸는 거야.」 모노가 꽃 하나를 만진다. 「마왕이 정원 가꾸는 거. 초월자 유머야. 웃어.」
+option_1_relationship = 0.05
+option_1_color = Earth:0.05
+option_2 = 예쁘다
+option_2_response = 모노가 잠깐 멈춘다. 「…그래? 고마워.」 모노가 벤치를 가리킨다. 「앉아. 여기가 제일 좋아. 해가 잘 들어.」 목소리가 평소보다 조금 부드럽다.
+option_2_relationship = 0.05
+option_2_color = Light:0.05
+option_3 = 혼자 가꾸는 거야?
+option_3_response = 모노가 고개를 끄덕인다. 「시아가 가끔 도와주지만 대부분 나야.」 모노가 잡초를 하나 뽑는다. 「이게 내 일과야. 서류 미루고 정원 돌보는 거.」
+option_3_relationship = 0.03
+option_3_color = Earth:0.03
+
+[모노_C4]
+npc = 모노
+trigger = relationship:0.40
+context = 모노가 초월자 유머를 하고 본인이 직접 해설한다.
+prompt_text = 마왕성 거실. 모노가 서류를 넘기다가 멈춘다. 「서류에 '마왕 승인'이라고 도장 찍는 거 있지.」 모노가 도장을 들어 보인다. 귀여운 별 모양이다. 「마왕의 도장이 별 모양이야. 초월자 유머야. 웃어.」
+option_1 = (웃는다)
+option_1_response = 모노가 이쪽을 본다. 표정 변화가 거의 없지만 어딘가 만족스러워 보인다. 「웃어줬네. 고마워.」 모노가 도장을 다시 찍는다. 「시아는 안 웃어. 진지하게 받아들이거든.」
+option_1_relationship = 0.05
+option_1_color = Light:0.05
+option_2 = 그게 유머야?
+option_2_response = 모노가 담담하게 답한다. 「유머야. 내 기준에서.」 모노가 도장을 내려놓는다. 「기준이 다른 건 당연해. 999년 살면 유머 감각도 달라져.」
+option_2_relationship = 0.03
+option_2_color = Fire:0.03
+option_3 = 별 모양 귀엽다
+option_3_response = 모노가 도장을 내려다본다. 「…귀엽다는 말은 처음 듣네. 도장한테.」 모노가 도장을 살짝 돌려본다. 「귀여운 마왕의 귀여운 도장. 이것도 초월자 유머야.」
+option_3_relationship = 0.04
+option_3_color = Water:0.04
+
+[모노_C5]
+npc = 모노
+trigger = relationship:0.45
+context = 시아와 모노의 관계를 관찰하는 상황. 시아가 모노를 마왕으로 모시는 모습.
+prompt_text = 마왕성 복도. 시아가 서류를 안고 급하게 걸어온다. 날개가 파닥거린다. 「마왕님, 오늘 카오스 보고서입니다!」 모노가 받아든다. 「고마워, 시아. 그리고 그냥 모노라고 해.」 시아가 고개를 젓는다. 「안 됩니다, 마왕님!」 모노가 이쪽을 본다.
+option_1 = 시아가 열심이네
+option_1_response = 모노가 고개를 끄덕인다. 「열심이야. 너무 열심이야.」 모노가 서류를 넘긴다. 「편하게 하라고 하는데 안 들어. 보좌의 긍지래.」 모노가 작게 한숨 쉰다. 한숨이라기엔 여유롭지만.
+option_1_relationship = 0.03
+option_1_color = Wind:0.03
+option_2 = 왜 이름으로 안 불러?
+option_2_response = 모노가 시아가 간 방향을 본다. 「이름으로 부르라고 했어. 여러 번.」 모노가 돌아선다. 「안 돼요 마왕님, 이러면서 날개 파닥거려. 포기했어.」
+option_2_relationship = 0.05
+option_2_color = Light:0.05
+option_3 = 좋은 관계 같아
+option_3_response = 모노가 잠깐 생각한다. 「좋은 관계. 맞을 거야.」 모노가 서류를 탁자에 놓는다. 「시아가 있어서 마왕성이 돌아가. 고마운 거야. 말을 잘 안 하지만.」
+option_3_relationship = 0.04
+option_3_color = Earth:0.04
+
+[모노_C6]
+npc = 모노
+trigger = relationship:0.50
+context = 루나 학원 학생이 마왕성에 와서 모노를 마왕이라고 안 믿는 상황.
+prompt_text = 마왕성 입구. 루나 학원 학생이 서 있다. 길을 잃고 왔다. 모노를 보더니 고개를 갸웃한다. 「마왕이요? 이 꼬마가?」 모노가 담담하게 서 있다. 표정 변화 없음. 시아가 뒤에서 당황하고 있다. 모노가 이쪽을 본다.
+option_1 = (웃음을 참는다)
+option_1_response = 모노가 이쪽을 본다. 「웃어도 돼.」 모노가 학생을 다시 본다. 「꼬마는 아니야. 나이로 따지면 네 할머니의 할머니의… 길어지니까 그만할게.」 학생이 더 혼란스러워한다.
+option_1_relationship = 0.05
+option_1_color = Fire:0.05
+option_2 = 진짜 마왕이야
+option_2_response = 모노가 이쪽을 본다. 살짝 의외라는 눈빛. 「대신 말해주네.」 모노가 학생을 본다. 「들었지? 마왕이야. 믿든 말든 상관없지만.」 학생이 반신반의하며 물러난다. 시아가 안내한다.
+option_2_relationship = 0.04
+option_2_color = Light:0.04
+option_3 = 마왕이 어떻게 생겨야 하는데?
+option_3_response = 모노가 학생 대신 답한다. 「뿔, 날개, 붉은 눈. 그런 거 기대했겠지.」 모노가 자기 망토를 잡는다. 「이게 내 최대 연출이야. 금빛 테 망토.」 학생이 어리둥절하게 돌아간다. 모노가 이쪽을 본다. 「꼬마래. 초월자 유머야.」
+option_3_relationship = 0.03
+option_3_color = Wind:0.03
+
+[모노_C7]
+npc = 모노
+trigger = relationship:0.60
+context = 플레이어가 힘든 선택을 한 뒤 마왕성에 온다. 모노가 심리 상담을 해주는 상황.
+prompt_text = 마왕성 소파. 모노가 차를 내려놓는다. 이쪽을 본다. 잠깐 침묵. 「표정이 달라.」 모노가 옆에 앉는다. 평소보다 가까이. 「무슨 일 있었어?」 묻는 톤이 담담하지만 기다려주는 느낌이다.
+option_1 = 어려운 선택을 했어
+option_1_response = 모노가 고개를 끄덕인다. 「선택은 원래 어려워. 인간이니까.」 모노가 차를 건넨다. 「정답은 없어. 그 순간 네가 고른 게 답이야.」 모노가 잠깐 쉰다. 「그걸 알면서도 힘든 거지. 알아.」
+option_1_relationship = 0.05
+option_1_color = Water:0.05
+option_2 = 괜찮아
+option_2_response = 모노가 이쪽을 본다. 「괜찮지 않은 얼굴로 괜찮다고 하네.」 모노가 차를 건넨다. 「괜찮지 않아도 돼. 여기서는.」 모노가 창밖을 본다. 「시간 멈춰놨으니까. 천천히 있어.」
+option_2_relationship = 0.05
+option_2_color = Light:0.05
+option_3 = (아무 말도 하지 않는다)
+option_3_response = 모노가 아무 말 없이 앉아 있는다. 차를 옆에 놓아준다. 침묵이 흐른다. 불편하지 않은 침묵. 한참 뒤에 모노가 말한다. 「말 안 해도 돼. 여기 있으면 돼.」
+option_3_relationship = 0.05
+option_3_color = Dark:0.05
+
+[모노_C8]
+npc = 모노
+trigger = relationship:0.65
+context = 모노가 몬스터 서류 작업 중인 상황. 서류 더미에 파묻혀 있다.
+prompt_text = 마왕성 집무실. 서류가 탁자 위에 쌓여 있다. 모노가 서류 사이에 앉아 있다. 도장을 찍고 있다. 별 모양 도장. 모노가 이쪽을 보지 않고 말한다. 「와도 재미없을 거야. 서류밖에 없어.」
+option_1 = 도와줄까?
+option_1_response = 모노가 잠깐 손을 멈춘다. 이쪽을 본다. 「도와주겠다고? 진심?」 모노가 서류 한 장을 건넨다. 「여기 종류 이름 읽어봐. 읽을 수 있으면 합격이야.」 알 수 없는 문자다. 모노가 서류를 도로 가져간다. 「불합격. 마음만 받을게.」
+option_1_relationship = 0.05
+option_1_color = Light:0.05
+option_2 = 힘들어 보여
+option_2_response = 모노가 도장을 찍으며 답한다. 「힘들지는 않아. 귀찮을 뿐.」 모노가 서류를 넘긴다. 「카오스가 매일 오니까 서류도 매일 와. 반복이야.」 모노가 잠깐 쉰다. 「반복이 평화야. 귀찮은 평화.」
+option_2_relationship = 0.03
+option_2_color = Water:0.03
+option_3 = 쉬면서 해
+option_3_response = 모노가 손을 멈춘다. 「쉬라고? 시아한테는 못 들은 말인데.」 모노가 도장을 내려놓는다. 「좋아. 쉴까. 네가 와서 핑계도 있고.」 모노가 소파로 이동한다. 「핑계가 좋은 거야. 쉴 수 있으니까.」
+option_3_relationship = 0.04
+option_3_color = Wind:0.04
+
+[모노_C9]
+npc = 모노
+trigger = relationship:0.70
+context = 모노가 잠깐 시간을 멈추는 것을 목격하는 상황.
+prompt_text = 마왕성 복도. 창밖으로 새가 날아간다. 모노가 창가에 서 있다. 모노가 손을 살짝 든다. 새가 멈춘다. 공중에서. 나뭇잎도 멈춘다. 바람도 멈춘다. 모든 게 멈춘다. 잠깐 뒤에 다시 움직인다. 모노가 이쪽을 본다. 「봤어?」
+option_1 = 지금 시간을 멈춘 거야?
+option_1_response = 모노가 담담하게 답한다. 「잠깐. 새를 좀 더 보고 싶어서.」 모노가 창밖을 다시 본다. 「크게 건드린 건 아니야. 살짝 느리게 한 것뿐.」 모노가 돌아선다. 「놀랐어?」
+option_1_relationship = 0.05
+option_1_color = Dark:0.05
+option_2 = 대단하다
+option_2_response = 모노가 고개를 젓는다. 「대단한 건 아니야. 할 수 있으니까 하는 거야.」 모노가 걷기 시작한다. 「숨 쉬는 것처럼 자연스러운 거야. 나한테는.」 잠깐 뒤에 덧붙인다. 「근데 고마워.」
+option_2_relationship = 0.04
+option_2_color = Light:0.04
+option_3 = (가만히 본다)
+option_3_response = 모노가 시선을 느끼고 이쪽을 본다. 「무서워? 안 무서워 보이는데.」 모노가 걷기 시작한다. 「무서워하지 않는 거 좋아. 편하거든.」 모노가 앞서 걸으며 말한다. 「차 마시러 가자.」
+option_3_relationship = 0.03
+option_3_color = Water:0.03
+
+[모노_C10]
+npc = 모노
+trigger = relationship:0.75
+context = 이유르와 모노의 관계에 대해 물어보는 상황.
+prompt_text = 마왕성 정원. 모노가 벤치에 앉아 편지를 읽고 있다. 한 줄짜리 편지. 모노가 편지를 접으며 말한다. 「이유르한테서 왔어.」 모노가 편지를 주머니에 넣는다. 「매번 같은 말이야. '잘 지내지?' 한 줄.」
+option_1 = 이유르랑 친해?
+option_1_response = 모노가 잠깐 생각한다. 「친하다는 표현이 맞나 모르겠어.」 모노가 하늘을 본다. 「이 세계가 생기기 전부터 알았어. 친하다보다 오래됐어. 설명하기 어려운 거야.」
+option_1_relationship = 0.05
+option_1_color = Light:0.05
+option_2 = 한 줄이면 충분해?
+option_2_response = 모노가 고개를 끄덕인다. 「충분해. 오래 알면 그래.」 모노가 편지가 있던 주머니를 만진다. 「한 줄이면 다 들어 있어. '잘 지내지?' 안에 전부.」 모노가 이쪽을 본다. 「이해돼?」
+option_2_relationship = 0.05
+option_2_color = Water:0.05
+option_3 = 답장은 뭐라고 해?
+option_3_response = 모노가 담담하게 답한다. 「'별일 없어.' 한 줄.」 모노가 꽃을 본다. 「매번 같은 질문, 같은 답. 그게 좋아.」 모노가 작게 말한다. 「변하지 않는 건 편한 거야.」
+option_3_relationship = 0.04
+option_3_color = Earth:0.04
+
+[모노_C11]
+npc = 모노
+trigger = relationship:0.80
+context = 모노가 이 순간이 좋다는 감정을 아주 담담하게 표현하는 상황.
+prompt_text = 마왕성 소파. 해가 지고 있다. 창문으로 주황빛이 들어온다. 모노가 차를 내려놓고 창밖을 본다. 그림자 고양이가 모노의 무릎 위에서 잔다. 조용하다. 모노가 작게 말한다. 「평화롭다. 좋아.」
+option_1 = 나도 좋아
+option_1_response = 모노가 이쪽을 본다. 잠깐. 시선이 평소보다 부드럽다. 「…그래?」 모노가 다시 창밖을 본다. 「좋다는 말을 같이 하는 거. 처음이야.」 모노가 작게 말한다. 「나쁘지 않네.」
+option_1_relationship = 0.07
+option_1_color = Light:0.07
+option_2 = 이런 시간이 계속되면 좋겠다
+option_2_response = 모노가 잠깐 멈춘다. 「…계속.」 모노가 그 단어를 되뇌듯 말한다. 「계속이라는 말은 무거워. 근데 좋은 무게야.」 모노가 그림자 고양이를 쓰다듬는다. 「시간은 있으니까. 이번엔 진심으로.」
+option_2_relationship = 0.06
+option_2_color = Water:0.06
+option_3 = (같이 해 지는 걸 본다)
+option_3_response = 같이 앉아서 해가 지는 것을 본다. 주황이 보라로 바뀐다. 모노가 아무 말 없이 옆에 있다. 한참 뒤에 모노가 말한다. 「이 순간. 기억할게.」 모노가 이쪽을 본다. 「리셋돼도.」
+option_3_relationship = 0.06
+option_3_color = Dark:0.06
+
+[모노_C12]
+npc = 모노
+trigger = relationship:0.90
+context = 플레이어가 모노의 진짜 정체에 대해 물어보는 상황. 모노는 부정하지 않지만 직접 말하지도 않는다.
+prompt_text = 마왕성 탑 꼭대기. 밤. 별이 가득하다. 이유르 전체가 내려다보인다. 모노가 난간에 기대 서 있다. 바람이 흰 머리를 흔든다. 모노가 세계를 내려다본다. 그 눈에 별빛이 비친다. 모든 것을 담고 있는 것 같은 눈. 「뭐 물어보고 싶은 거 있지?」
+option_1 = 너 진짜 뭐야?
+option_1_response = 모노가 이쪽을 본다. 담담하게. 「뭘까.」 모노가 다시 세계를 내려다본다. 「대답을 기대한 거야?」 모노가 작게 웃는다. 웃는 것 같다. 「직접 말하면 재미없잖아. 네가 느끼는 대로가 답이야.」
+option_1_relationship = 0.05
+option_1_color = Dark:0.05
+option_2 = 이 세계 전부를 알고 있어?
+option_2_response = 모노가 세계를 내려다본다. 잠깐 침묵. 「…알고 있는 것과 말하는 건 다른 거야.」 모노가 이쪽을 본다. 「네가 물어보는 건 자유야. 내가 답하는 것도 자유고.」 모노가 돌아선다. 「지금은 별이나 보자. 대답보다 예쁘니까.」
+option_2_relationship = 0.05
+option_2_color = Light:0.05
+option_3 = (묻지 않는다)
+option_3_response = 모노가 이쪽을 본다. 잠깐. 뭔가 읽은 것 같다. 「…안 물어보는 거야?」 모노가 다시 별을 본다. 「그것도 좋아. 답을 몰라도 여기 있을 수 있으니까.」 모노가 작게 말한다. 「그게 제일 좋은 거야. 아마.」
+option_3_relationship = 0.07
+option_3_color = Water:0.07
