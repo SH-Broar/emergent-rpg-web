@@ -214,6 +214,7 @@ export function createGameScreen(
       const evText = `✦ ${randomEv.name}: ${randomEv.description}`;
       session.backlog.add(session.gameTime, `[이벤트] ${randomEv.name}: ${randomEv.description}`, '이벤트');
       accumulatedLog.push({ time: session.gameTime.toString(), text: evText });
+      randomEv.worldScript?.(session.world, session.gameTime);
       for (const actor of session.actors) {
         if (actor.currentLocation === randomEv.location) {
           actor.receiveEventInfluence(randomEv.colorInfluence, randomEv.name, session.gameTime);

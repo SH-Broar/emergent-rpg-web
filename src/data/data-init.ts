@@ -11,7 +11,7 @@ import { EventSystem, createGameEvent } from '../models/event';
 import { DungeonSystem, DungeonEventType } from '../models/dungeon';
 import { ActivitySystem } from '../models/activity';
 import { loadHyperion } from '../systems/hyperion';
-import { setDialogueLines } from '../systems/npc-interaction';
+import { setDialogueLines, clearGiftPreferences, setGiftPreference } from '../systems/npc-interaction';
 import { loadItemDefs, loadWeaponDefs, loadArmorDefs } from '../types/item-defs';
 import { loadSkillDefs, getBasicSkillsForRace } from '../models/skill';
 import { assignNpcSkills } from '../systems/skill-learning';
@@ -510,6 +510,16 @@ export function initAll(data: GameDataFiles): InitResult {
       if (line) lines.push(line);
     }
     if (lines.length > 0) setDialogueLines(s.name, lines);
+  }
+
+  // 선물 선호도 DB 로드
+  clearGiftPreferences();
+  for (const s of data.giftPreferences) {
+    const key = s.name;
+    const loved = s.has('loved') ? parseItemType(s.get('loved', '')) : null;
+    const liked = s.has('liked') ? parseItemType(s.get('liked', '')) : null;
+    const disliked = s.has('disliked') ? parseItemType(s.get('disliked', '')) : null;
+    setGiftPreference(key, { loved, liked, disliked });
   }
 
   // 히페리온 존재 여부 플래그 설정

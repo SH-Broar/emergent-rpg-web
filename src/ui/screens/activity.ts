@@ -176,6 +176,12 @@ export function createActivityScreen(
       session.activitySystem.consumeStock(p.currentLocation, act.key);
     }
 
+    // 효과 적용 전 스냅샷
+    const hpBefore = p.base.hp;
+    const mpBefore = p.base.mp;
+    const vigorBefore = p.base.vigor;
+    const invBefore = new Map(p.spirit.inventory);
+
     // Apply effect
     applyEffect(act);
 
@@ -203,7 +209,38 @@ export function createActivityScreen(
       '\ud589\ub3d9',
     );
 
-    message = `${act.name} \uc644\ub8cc!`;
+    // 결과 메시지 구성
+    const lines: string[] = [`\u2713 ${act.name} \uc644\ub8cc (${act.timeCost}\ubd84 \uacbd\uacfc)`];
+
+    // 확정 아이템 지급
+    if (act.gives.length > 0) {
+      lines.push('\ud68d\ub4dd: ' + act.gives.map(g => `${itemName(g.item)} \xd7${g.amount}`).join(', '));
+    }
+
+    // 인벤토리 변화 감지 (random_loot 등)
+    if (act.effect === 'random_loot') {
+      const gained: string[] = [];
+      for (const [type, count] of p.spirit.inventory) {
+        const before = invBefore.get(type) ?? 0;
+        if (count > before) gained.push(`${itemName(type)} \xd7${count - before}`);
+      }
+      lines.push(gained.length > 0 ? '\ubc1c\uacac: ' + gained.join(', ') : '\ud2b9\ubcc4\ud55c \uc218\ud655\uc740 \uc5c6\uc5c8\ub2e4.');
+    }
+
+    // HP/MP/기력 변화
+    const hpDelta = Math.round(p.base.hp - hpBefore);
+    const mpDelta = Math.round(p.base.mp - mpBefore);
+    const vigorDelta = Math.round(p.base.vigor - vigorBefore);
+    if (hpDelta > 0) lines.push(`HP +${hpDelta}`);
+    if (mpDelta > 0) lines.push(`MP +${mpDelta}`);
+    if (vigorDelta > 0) lines.push(`\uae30\ub825 +${vigorDelta}`);
+
+    // 버프
+    if (act.effect.startsWith('buff_attack:')) lines.push('\uacf5\uaca9\ub825 \ubc84\ud504 \uc801\uc6a9');
+    if (act.effect.startsWith('buff_defense:')) lines.push('\ubc29\uc5b4\ub825 \ubc84\ud504 \uc801\uc6a9');
+    if (act.effect.startsWith('start_crop:')) lines.push('\uc791\ubb3c\uc744 \uc2ec\uc5c8\ub2e4. \uc2dc\uac04\uc774 \uc9c0\ub098\uba74 \uc218\ud655\ud560 \uc218 \uc788\ub2e4.');
+
+    message = lines.join(' \xb7 ');
     renderActivity(el);
   }
 

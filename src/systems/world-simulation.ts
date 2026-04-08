@@ -26,10 +26,12 @@ function applyEventInfluences(
   actors: Actor[],
   gameTime: GameTime,
   log: Backlog,
+  world: World,
 ): void {
   for (const idx of triggered) {
     const ev = events.getEvent(idx);
-    log.add(gameTime, `[이벤트] ${ev.name}: ${ev.description}`, '이벤트');
+    log.add(gameTime, `[이벤트] ${ev.name} (${ev.location}): ${ev.description}`, '이벤트');
+    ev.worldScript?.(world, gameTime);
     for (const actor of actors) {
       if (actor.currentLocation === ev.location) {
         actor.receiveEventInfluence(ev.colorInfluence, ev.name, gameTime);
@@ -149,11 +151,12 @@ export function advanceTurn(
 
   // 5. Event check (예약 + 랜덤 풀)
   const triggered = events.checkAndTrigger(gameTime);
-  applyEventInfluences(triggered, events, actors, gameTime, log);
+  applyEventInfluences(triggered, events, actors, gameTime, log, world);
 
   const randomEv = events.rollRandomEvent(gameTime);
   if (randomEv) {
     log.add(gameTime, `[이벤트] ${randomEv.name}: ${randomEv.description}`, '이벤트');
+    randomEv.worldScript?.(world, gameTime);
     for (const actor of actors) {
       if (actor.currentLocation === randomEv.location) {
         actor.receiveEventInfluence(randomEv.colorInfluence, randomEv.name, gameTime);
@@ -202,7 +205,7 @@ export function fastForwardWorld(
     social.updateQuests(gameTime);
 
     const triggered = events.checkAndTrigger(gameTime);
-    applyEventInfluences(triggered, events, actors, gameTime, backlog);
+    applyEventInfluences(triggered, events, actors, gameTime, backlog, world);
 
     for (const actor of actors) {
       if (knowledge?.isCompanion(actor.name)) continue;
@@ -218,7 +221,7 @@ export function fastForwardWorld(
     social.updateQuests(gameTime);
 
     const triggered = events.checkAndTrigger(gameTime);
-    applyEventInfluences(triggered, events, actors, gameTime, backlog);
+    applyEventInfluences(triggered, events, actors, gameTime, backlog, world);
 
     for (const actor of actors) {
       if (knowledge?.isCompanion(actor.name)) continue;
