@@ -169,11 +169,9 @@ export function createWorldMapScreen(session: GameSession, onDone: () => void): 
             <button class="btn" data-zoom="out" style="min-width:44px;font-size:18px">−</button>
             <button class="btn" id="nav-next" style="min-width:36px;font-size:16px" title="다음 장소 [→]">▶</button>
           </div>
-          <div id="nav-panel" style="display:flex;align-items:center;gap:10px;margin-top:6px;background:rgba(20,20,40,0.6);border:1px solid #333355;border-radius:8px;padding:8px 14px;min-height:44px">
-            <div style="flex:1;overflow:hidden">
-              <div id="nav-name" style="color:#4ecca3;font-weight:bold;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
-              <div id="nav-desc" style="color:#aaaacc;font-size:11px;margin-top:2px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden"></div>
-            </div>
+          <div id="nav-panel" style="margin-top:6px;background:rgba(20,20,40,0.6);border:1px solid #333355;border-radius:8px;padding:8px 14px">
+            <div id="nav-name" style="color:#4ecca3;font-weight:bold;font-size:13px"></div>
+            <div id="nav-desc" style="color:#aaaacc;font-size:11px;margin-top:4px;line-height:1.5"></div>
           </div>
           <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;font-size:10px;color:var(--text-dim);margin-top:4px">
             <span><span style="color:#e94560">●</span> 현재</span>
@@ -199,6 +197,40 @@ export function createWorldMapScreen(session: GameSession, onDone: () => void): 
 
       function hideTooltip() {
         if (tooltip) tooltip.style.display = 'none';
+        if (tooltipTimer) { clearTimeout(tooltipTimer); tooltipTimer = null; }
+      }
+
+      // 도트를 뷰포트 내 (fx, fy) 비율 위치에 오도록 팬 이동
+      function panToLocation(dotCx: number, dotCy: number, fx = 0.45, fy = 0.48) {
+        panX = dotCx - fx * (W / zoom) - (W - W / zoom) / 2;
+        panY = dotCy - fy * (H / zoom) - (H - H / zoom) / 2;
+        updateView();
+      }
+
+      // 도트 위치에 팝업 표시 (자동 종료 없음)
+      function showTooltipForDot(dot: SVGCircleElement) {
+        if (!tooltip) return;
+        const name = dot.dataset.name ?? '';
+        const desc = dot.dataset.desc ?? '';
+        tooltip.innerHTML = `<strong style="color:#4ecca3">${name}</strong>${desc ? '<br><span style="color:#aaaacc">' + desc + '</span>' : ''}`;
+        const container = tooltip.parentElement!.getBoundingClientRect();
+        const cx = parseFloat(dot.getAttribute('cx') ?? '0');
+        const cy = parseFloat(dot.getAttribute('cy') ?? '0');
+        const pt = svg!.createSVGPoint();
+        pt.x = cx; pt.y = cy;
+        const screenPt = pt.matrixTransform(svg!.getScreenCTM()!);
+        tooltip.style.display = 'block';
+        const tw = tooltip.offsetWidth;
+        const th = tooltip.offsetHeight;
+        // 도트 우측하단 기본, 경계 초과 시 좌측/상단으로 전환
+        let left = screenPt.x - container.left + 12;
+        let top  = screenPt.y - container.top  + 8;
+        if (left + tw > container.width  - 4) left = screenPt.x - container.left - tw - 12;
+        if (top  + th > container.height - 4) top  = screenPt.y - container.top  - th - 8;
+        if (left < 4) left = 4;
+        if (top  < 4) top  = 4;
+        tooltip.style.left = left + 'px';
+        tooltip.style.top  = top  + 'px';
         if (tooltipTimer) { clearTimeout(tooltipTimer); tooltipTimer = null; }
       }
 
@@ -237,7 +269,7 @@ export function createWorldMapScreen(session: GameSession, onDone: () => void): 
       const navNameEl = el.querySelector('#nav-name') as HTMLElement | null;
       const navDescEl = el.querySelector('#nav-desc') as HTMLElement | null;
 
-      function updateNavPanel() {
+      function updateNavPanel(pan = false) {
         const loc = allLocs[selectedLocIndex];
         if (!loc || !navNameEl || !navDescEl) return;
         const name = locationName(loc.id);
@@ -254,52 +286,39 @@ export function createWorldMapScreen(session: GameSession, onDone: () => void): 
         if (dot) {
           dot.setAttribute('stroke', '#ffdd00');
           dot.setAttribute('stroke-width', '3');
+          if (pan) {
+            // 도트를 뷰포트 55%, 52% 위치(중앙 우측하단)에 배치
+            panToLocation(
+              parseFloat(dot.getAttribute('cx') ?? '0'),
+              parseFloat(dot.getAttribute('cy') ?? '0'),
+              0.45, 0.48,
+            );
+            showTooltipForDot(dot);
+          }
         }
       }
 
       function navigate(dir: 1 | -1) {
         selectedLocIndex = (selectedLocIndex + dir + allLocs.length) % allLocs.length;
-        updateNavPanel();
+        updateNavPanel(true);
       }
 
       el.querySelector('#nav-prev')?.addEventListener('click', () => navigate(-1));
       el.querySelector('#nav-next')?.addEventListener('click', () => navigate(1));
 
-      // 클릭 툴팁
+      // 클릭: nav 패널 반영 + 팝업 표시 (자동 종료 없음)
       svg.addEventListener('click', (e) => {
         const circle = (e.target as Element).closest('.map-dot') as SVGCircleElement | null;
-        if (!circle || !tooltip) { hideTooltip(); return; }
-        // 클릭한 장소를 nav 패널에도 반영
+        if (!circle) { hideTooltip(); return; }
         const locId = circle.dataset.loc ?? '';
         const idx = allLocs.findIndex(l => l.id === locId);
-        if (idx >= 0) { selectedLocIndex = idx; updateNavPanel(); }
-        const name = circle.dataset.name ?? '';
-        const desc = circle.dataset.desc ?? '';
-        tooltip.innerHTML = `<strong style="color:#4ecca3">${name}</strong>${desc ? '<br><span style="color:#aaaacc">' + desc + '</span>' : ''}`;
-        const container = tooltip.parentElement!.getBoundingClientRect();
-        const cx = parseFloat(circle.getAttribute('cx') ?? '0');
-        const cy = parseFloat(circle.getAttribute('cy') ?? '0');
-        const pt = svg!.createSVGPoint();
-        pt.x = cx; pt.y = cy;
-        const screenPt = pt.matrixTransform(svg!.getScreenCTM()!);
-        tooltip.style.display = 'block';
-        const tw = tooltip.offsetWidth;
-        const th = tooltip.offsetHeight;
-        // 도트 위쪽에 표시, 공간 없으면 아래쪽
-        let left = screenPt.x - container.left - tw / 2;
-        let top = screenPt.y - container.top - th - 14;
-        if (top < 4) top = screenPt.y - container.top + 14;
-        if (left < 4) left = 4;
-        if (left + tw > container.width - 4) left = container.width - tw - 4;
-        tooltip.style.left = left + 'px';
-        tooltip.style.top = top + 'px';
-        if (tooltipTimer) clearTimeout(tooltipTimer);
-        tooltipTimer = setTimeout(hideTooltip, 3000);
+        if (idx >= 0) { selectedLocIndex = idx; updateNavPanel(false); }
+        showTooltipForDot(circle);
         e.stopPropagation();
       });
 
-      // 초기 패널 표시
-      updateNavPanel();
+      // 초기 패널 표시 (팬 없음)
+      updateNavPanel(false);
 
       // 줌 버튼
       el.querySelectorAll<HTMLButtonElement>('[data-zoom]').forEach(btn => {
@@ -396,28 +415,54 @@ export function createWorldMapScreen(session: GameSession, onDone: () => void): 
       if (key === '-') { zoom = Math.max(MIN_ZOOM, zoom / 1.4); }
       if (key === '0') { zoom = 1; panX = 0; panY = 0; }
 
-      // 좌우 방향키로 장소 탐색
+      // 좌우 방향키로 장소 탐색 (render()의 navigate와 동일 동작)
       if (key === 'ArrowLeft' || key === 'ArrowRight') {
-        const allLocs = [...session.world.getAllLocations().values()];
+        const allLocs2 = [...session.world.getAllLocations().values()];
         const dir = key === 'ArrowLeft' ? -1 : 1;
-        selectedLocIndex = (selectedLocIndex + dir + allLocs.length) % allLocs.length;
-        // DOM에서 직접 패널 업데이트
+        selectedLocIndex = (selectedLocIndex + dir + allLocs2.length) % allLocs2.length;
+        const loc = allLocs2[selectedLocIndex];
         const svgEl2 = document.querySelector('#world-svg') as SVGSVGElement | null;
-        const navNameEl = document.querySelector('#nav-name') as HTMLElement | null;
-        const navDescEl = document.querySelector('#nav-desc') as HTMLElement | null;
-        const loc = allLocs[selectedLocIndex];
-        if (loc && navNameEl && navDescEl) {
-          const playerLoc = session.player.currentLocation;
-          navNameEl.textContent = locationName(loc.id) + (loc.id === playerLoc ? ' ★' : '');
-          navDescEl.textContent = ((loc as unknown as Record<string, unknown>).description as string) || '설명 없음';
-          svgEl2?.querySelectorAll<SVGCircleElement>('.map-dot').forEach(c => {
+        const navNameEl2 = document.querySelector('#nav-name') as HTMLElement | null;
+        const navDescEl2 = document.querySelector('#nav-desc') as HTMLElement | null;
+        const tooltipEl2 = document.querySelector('#map-tooltip') as HTMLDivElement | null;
+        const playerLoc2 = session.player.currentLocation;
+        if (loc && navNameEl2 && navDescEl2 && svgEl2) {
+          navNameEl2.textContent = locationName(loc.id) + (loc.id === playerLoc2 ? ' ★' : '');
+          navDescEl2.textContent = ((loc as unknown as Record<string, unknown>).description as string) || '설명 없음';
+          svgEl2.querySelectorAll<SVGCircleElement>('.map-dot').forEach(c => {
             c.setAttribute('stroke', '#fff');
-            c.setAttribute('stroke-width', c.dataset.loc === playerLoc ? '2' : '0.5');
+            c.setAttribute('stroke-width', c.dataset.loc === playerLoc2 ? '2' : '0.5');
           });
-          svgEl2?.querySelector<SVGCircleElement>(`.map-dot[data-loc="${loc.id}"]`)
-            ?.setAttribute('stroke', '#ffdd00');
-          svgEl2?.querySelector<SVGCircleElement>(`.map-dot[data-loc="${loc.id}"]`)
-            ?.setAttribute('stroke-width', '3');
+          const dot2 = svgEl2.querySelector<SVGCircleElement>(`.map-dot[data-loc="${loc.id}"]`);
+          if (dot2 && tooltipEl2) {
+            dot2.setAttribute('stroke', '#ffdd00');
+            dot2.setAttribute('stroke-width', '3');
+            // 팬: 도트를 (45%, 48%) 위치에
+            const cx2 = parseFloat(dot2.getAttribute('cx') ?? '0');
+            const cy2 = parseFloat(dot2.getAttribute('cy') ?? '0');
+            panX = cx2 - 0.45 * (W / zoom) - (W - W / zoom) / 2;
+            panY = cy2 - 0.48 * (H / zoom) - (H - H / zoom) / 2;
+            const vw2 = W / zoom, vh2 = H / zoom;
+            svgEl2.setAttribute('viewBox', `${(W - vw2) / 2 + panX} ${(H - vh2) / 2 + panY} ${vw2} ${vh2}`);
+            // 팝업
+            const name2 = dot2.dataset.name ?? '';
+            const desc2 = dot2.dataset.desc ?? '';
+            tooltipEl2.innerHTML = `<strong style="color:#4ecca3">${name2}</strong>${desc2 ? '<br><span style="color:#aaaacc">' + desc2 + '</span>' : ''}`;
+            const container2 = tooltipEl2.parentElement!.getBoundingClientRect();
+            const pt2 = svgEl2.createSVGPoint();
+            pt2.x = cx2; pt2.y = cy2;
+            const sp2 = pt2.matrixTransform(svgEl2.getScreenCTM()!);
+            tooltipEl2.style.display = 'block';
+            const tw2 = tooltipEl2.offsetWidth, th2 = tooltipEl2.offsetHeight;
+            let l2 = sp2.x - container2.left + 12;
+            let t2 = sp2.y - container2.top  + 8;
+            if (l2 + tw2 > container2.width  - 4) l2 = sp2.x - container2.left - tw2 - 12;
+            if (t2 + th2 > container2.height - 4) t2 = sp2.y - container2.top  - th2 - 8;
+            if (l2 < 4) l2 = 4;
+            if (t2 < 4) t2 = 4;
+            tooltipEl2.style.left = l2 + 'px';
+            tooltipEl2.style.top  = t2 + 'px';
+          }
         }
         return;
       }
