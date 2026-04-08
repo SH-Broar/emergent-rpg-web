@@ -243,7 +243,7 @@ export function createTravelScreen(
         if (companions.length > 0) {
           const comp = companions[randomInt(0, companions.length - 1)];
           const stage = getRelationshipStage(session.player, comp.name, session.knowledge, session.actors);
-          const line = getDialogue(comp, stage);
+          const line = getDialogue(comp, stage, 'travel');
           const entry = `${comp.name}: 「${line}」`;
           eventLog.push({ time: session.gameTime.toString(), text: entry, isMonster: false });
           session.backlog.add(session.gameTime, entry, '대사', session.player.name);

@@ -51,6 +51,8 @@ interface ActorSaveData {
   learnedSkills?: [string, number][];
   skillOrder?: string[];
   skillUsage?: [string, number][];
+  flags?: [string, boolean][];
+  variables?: [string, number][];
 }
 
 interface KnowledgeSaveData {
@@ -167,6 +169,8 @@ function serializeActor(actor: Actor): ActorSaveData {
     learnedSkills: [...actor.learnedSkills.entries()],
     skillOrder: [...actor.skillOrder],
     skillUsage: [...actor.skillUsage.entries()],
+    flags: [...actor.flags.entries()],
+    variables: [...actor.variables.entries()],
   };
 }
 
@@ -241,6 +245,14 @@ function deserializeActor(data: ActorSaveData, target: Actor): void {
     for (const [id, uses] of data.skillUsage) {
       target.skillUsage.set(id, uses);
     }
+  }
+  if (data.flags) {
+    target.flags.clear();
+    for (const [key, val] of data.flags) target.flags.set(key, val);
+  }
+  if (data.variables) {
+    target.variables.clear();
+    for (const [key, val] of data.variables) target.variables.set(key, val);
   }
 }
 

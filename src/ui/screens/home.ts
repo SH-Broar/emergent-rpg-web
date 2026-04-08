@@ -5,6 +5,7 @@ import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
 import { seasonName } from '../../types/enums';
 import { advanceTurn } from '../../systems/world-simulation';
+import { applyTimeTheme } from '../time-theme';
 
 export function createHomeScreen(
   session: GameSession,
@@ -103,6 +104,9 @@ export function createHomeScreen(
 
   function doNap(el: HTMLElement): void {
     const napMinutes = 120; // 2시간
+    // 회복 전 hyperionBonus 갱신 (스탯 제공자 동기화)
+    const napHyperionTotal = session.actors.reduce((s, a) => s + a.hyperionLevel, 0);
+    p.hyperionBonus = napHyperionTotal - p.hyperionLevel;
     advanceTurn(
       napMinutes, session.gameTime, session.world, session.events,
       session.actors, session.playerIdx, session.backlog,
@@ -170,6 +174,10 @@ export function createHomeScreen(
     session.gameTime.advance(minuteAdvance);
     p.base.sleeping = false;
 
+    // 회복 전 hyperionBonus 갱신 (스탯 제공자 동기화)
+    const sleepHyperionTotal = session.actors.reduce((s, a) => s + a.hyperionLevel, 0);
+    p.hyperionBonus = sleepHyperionTotal - p.hyperionLevel;
+
     // 전체 회복
     p.base.hp = p.getEffectiveMaxHp();
     p.base.vigor = p.getEffectiveMaxVigor();
@@ -184,6 +192,7 @@ export function createHomeScreen(
   }
 
   function renderWakeup(el: HTMLElement): void {
+    applyTimeTheme(session.gameTime);
     el.innerHTML = '';
     const wrap = document.createElement('div');
     wrap.className = 'screen';

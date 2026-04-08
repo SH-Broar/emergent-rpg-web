@@ -138,6 +138,10 @@ export class Actor {
   skillOrder: string[] = [];                   // 선택 우선순위 정렬된 스킬 ID
   skillUsage = new Map<string, number>();       // skillId → 총 사용 횟수 (레벨업용)
 
+  /** 내러티브 상태 저장 — 키워드/스위치 (boolean) & 변수 (number) */
+  flags = new Map<string, boolean>();      // 스토리 플래그, 이벤트 발생 여부 등
+  variables = new Map<string, number>(); // 수치 추적 변수 (카운터, 점수 등)
+
   /** 개별 아이템 인벤토리 (ItemID → 수량) */
   items = new Map<string, number>();
 
@@ -260,17 +264,28 @@ export class Actor {
     return this.base.ap >= cost;
   }
 
+  // --- 플래그/변수 ---
+  setFlag(key: string, value: boolean): void { this.flags.set(key, value); }
+  getFlag(key: string): boolean { return this.flags.get(key) ?? false; }
+  setVariable(key: string, value: number): void { this.variables.set(key, value); }
+  getVariable(key: string): number { return this.variables.get(key) ?? 0; }
+  adjustVariable(key: string, delta: number): void {
+    this.variables.set(key, (this.variables.get(key) ?? 0) + delta);
+  }
+
   getEffectiveMaxHp(): number { return this.base.maxHp + (this.hyperionLevel + this.hyperionBonus) * 10; }
   getEffectiveMaxMp(): number { return this.base.maxMp + (this.hyperionLevel + this.hyperionBonus) * 5; }
   getEffectiveAttack(): number {
     const weaponBonus = this.equippedWeapon ? (getWeaponDef(this.equippedWeapon)?.attack ?? 0) : 0;
-    return this.base.attack + (this.hyperionLevel + this.hyperionBonus) * 2 + weaponBonus;
+    const buffBonus = this.getVariable('buff_attack');
+    return this.base.attack + (this.hyperionLevel + this.hyperionBonus) * 2 + weaponBonus + buffBonus;
   }
   getEffectiveDefense(): number {
     const armorBonus = this.equippedArmor ? (getArmorDef(this.equippedArmor)?.defense ?? 0) : 0;
     const acc1Bonus = this.equippedAccessory ? (getArmorDef(this.equippedAccessory)?.defense ?? 0) : 0;
     const acc2Bonus = this.equippedAccessory2 ? (getArmorDef(this.equippedAccessory2)?.defense ?? 0) : 0;
-    return this.base.defense + (this.hyperionLevel + this.hyperionBonus) * 1 + armorBonus + acc1Bonus + acc2Bonus;
+    const buffBonus = this.getVariable('buff_defense');
+    return this.base.defense + (this.hyperionLevel + this.hyperionBonus) * 1 + armorBonus + acc1Bonus + acc2Bonus + buffBonus;
   }
   getEffectiveMaxVigor(): number { return this.base.maxVigor + (this.hyperionLevel + this.hyperionBonus) * 5; }
 

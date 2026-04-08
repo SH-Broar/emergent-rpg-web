@@ -314,6 +314,29 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
       session.social, session.knowledge,
     );
 
+    // 버프 틱 처리
+    if (session.playerBuffs.length > 0) {
+      session.playerBuffs = session.playerBuffs.filter(b => {
+        if (b.remainingTurns < 0) return true; // 영구 버프
+        b.remainingTurns--;
+        return b.remainingTurns >= 0;
+      });
+      // 버프 합산을 player variables에 반영
+      const buffTotals: Record<string, number> = {};
+      for (const b of session.playerBuffs) {
+        buffTotals[b.type] = (buffTotals[b.type] ?? 0) + b.amount;
+      }
+      p.setVariable('buff_attack', buffTotals['attack'] ?? 0);
+      p.setVariable('buff_defense', buffTotals['defense'] ?? 0);
+      p.setVariable('buff_vigor_regen', buffTotals['vigor_regen'] ?? 0);
+      p.setVariable('buff_mp_regen', buffTotals['mp_regen'] ?? 0);
+      // vigor_regen/mp_regen 버프 즉시 적용
+      const vRegen = buffTotals['vigor_regen'] ?? 0;
+      const mRegen = buffTotals['mp_regen'] ?? 0;
+      if (vRegen > 0) p.adjustVigor(vRegen);
+      if (mRegen > 0) p.adjustMp(mRegen);
+    }
+
     // HP 0 패배 처리 (밤 기력 고갈 등)
     if (p.base.hp <= 0) {
       p.base.hp = Math.max(1, Math.round(p.getEffectiveMaxHp() * 0.5));

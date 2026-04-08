@@ -142,24 +142,34 @@ function pickGiftReaction(tier: 'loved' | 'liked' | 'disliked' | 'neutral', acto
 /**
  * NPC 상태/역할/성향/관계 단계에 따른 대사 선택
  * 조회 우선순위: status → 캐릭터명.stage → stage.X → 캐릭터명 → role → trait → default
+ * context: 'travel' 시 이동 전용 키를 먼저 시도하고 상태 기반 대사를 건너뜀
  */
-export function getDialogue(actor: Actor, stage: RelationshipStage = 'unknown'): string {
+export function getDialogue(actor: Actor, stage: RelationshipStage = 'unknown', context: 'normal' | 'travel' = 'normal'): string {
   const base = actor.base;
   const spirit = actor.spirit;
   const dominant = actor.color.getDominantTrait();
 
-  // 상태 기반 대사 (모든 단계에서 우선)
-  if (base.vigor < 15) {
-    const lines = dialogueDB.get('status.starving');
-    if (lines && lines.length > 0) return pickRandom(lines);
-  }
-  if (base.vigor < 40) {
-    const lines = dialogueDB.get('status.hungry');
-    if (lines && lines.length > 0) return pickRandom(lines);
-  }
-  if (base.mood < -0.3) {
-    const lines = dialogueDB.get('status.depressed');
-    if (lines && lines.length > 0) return pickRandom(lines);
+  // 이동 컨텍스트: 캐릭터 전용 이동 대사 우선 (배고픔/상태 대사와 혼용 방지)
+  if (context === 'travel') {
+    const travelCharLines = dialogueDB.get(actor.name + '.travel');
+    if (travelCharLines && travelCharLines.length > 0) return pickRandom(travelCharLines);
+    const travelLines = dialogueDB.get('travel');
+    if (travelLines && travelLines.length > 0) return pickRandom(travelLines);
+    // 이동 중에는 상태 기반 대사(배고픔 등) 건너뜀 — 아래 캐릭터/역할 단계로 바로 진입
+  } else {
+    // 일반 대화: 상태 기반 대사 우선 적용
+    if (base.vigor < 15) {
+      const lines = dialogueDB.get('status.starving');
+      if (lines && lines.length > 0) return pickRandom(lines);
+    }
+    if (base.vigor < 40) {
+      const lines = dialogueDB.get('status.hungry');
+      if (lines && lines.length > 0) return pickRandom(lines);
+    }
+    if (base.mood < -0.3) {
+      const lines = dialogueDB.get('status.depressed');
+      if (lines && lines.length > 0) return pickRandom(lines);
+    }
   }
 
   // 캐릭터별 단계 대사 (최우선)

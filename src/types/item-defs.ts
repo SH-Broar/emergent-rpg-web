@@ -25,6 +25,9 @@ export interface ItemDef {
   eatMood: number;
   eatMessage: string;
   eatStatus: string;            // 'poison', 'stomachache', '' 등
+  eatBuffType: string;          // 'attack', 'defense', 'vigor_regen', 'mp_regen', 'speed', ''
+  eatBuffAmount: number;
+  eatBuffDuration: number;      // 턴 수, 0이면 버프 없음
 
   // 장비 스탯 (장비 아이템)
   equipSlot: EquipSlot;         // 'none', 'weapon', 'armor', 'accessory'
@@ -48,6 +51,7 @@ export function createDefaultItemDef(id: string): ItemDef {
     id, name: id, category: ItemType.Food, price: 1,
     tags: '', description: '', rarity: 'common', stackable: true,
     eatVigor: 0, eatHp: 0, eatMp: 0, eatMood: 0, eatMessage: '', eatStatus: '',
+    eatBuffType: '', eatBuffAmount: 0, eatBuffDuration: 0,
     equipSlot: 'none', equipAttack: 0, equipDefense: 0, equipMagic: 0, equipSpeed: 0,
     source: '', minHyperion: 0,
   };
@@ -88,6 +92,9 @@ export function loadItemDefs(sections: DataSection[]): void {
     def.eatMood = s.getFloat('eatMood', 0);
     def.eatMessage = s.get('eatMessage', '');
     def.eatStatus = s.get('eatStatus', '');
+    def.eatBuffType = s.get('eatBuffType', '');
+    def.eatBuffAmount = s.getFloat('eatBuffAmount', 0);
+    def.eatBuffDuration = s.getInt('eatBuffDuration', 0);
 
     // 장비
     def.equipSlot = (s.get('equipSlot', 'none') as EquipSlot);
