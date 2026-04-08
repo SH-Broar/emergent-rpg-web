@@ -147,9 +147,19 @@ export function advanceTurn(
   );
   player.color.applyInfluence(locInfluence);
 
-  // 5. Event check
+  // 5. Event check (예약 + 랜덤 풀)
   const triggered = events.checkAndTrigger(gameTime);
   applyEventInfluences(triggered, events, actors, gameTime, log);
+
+  const randomEv = events.rollRandomEvent(gameTime);
+  if (randomEv) {
+    log.add(gameTime, `[이벤트] ${randomEv.name}: ${randomEv.description}`, '이벤트');
+    for (const actor of actors) {
+      if (actor.currentLocation === randomEv.location) {
+        actor.receiveEventInfluence(randomEv.colorInfluence, randomEv.name, gameTime);
+      }
+    }
+  }
 
   // 6. NPC tick loop (TICK_CHUNK-sized chunks)
   const chunks = Math.floor(minutes / TICK_CHUNK);

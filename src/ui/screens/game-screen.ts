@@ -5,7 +5,7 @@ import type { GameSession } from '../../systems/game-session';
 import type { GameAction } from '../../systems/game-loop';
 import type { Actor } from '../../models/actor';
 import { processTurn } from '../../systems/game-loop';
-import { moveCompanions, getRelationshipStage } from '../../systems/npc-interaction';
+import { moveCompanions, getRelationshipStage, tryNpcInitiatedConversation } from '../../systems/npc-interaction';
 import { locationName } from '../../types/registry';
 import { getZoneColor } from './world-map';
 import { weatherName, seasonName, raceName, spiritRoleName, elementName, Element, ELEMENT_COUNT, ItemType } from '../../types/enums';
@@ -195,6 +195,68 @@ export function createGameScreen(
   let lastLocation = session.player?.currentLocation ?? '';
   let statusMessage = '';
   let lastBacklogSync = 0;
+  let hudContainer: HTMLElement | null = null;
+  let bgTickHandle: ReturnType<typeof setInterval> | null = null;
+
+  /** 5초 백그라운드 틱: 시간 진행 + 이벤트·대사 롤 (조용히) */
+  function bgTick(): void {
+    const p = session.player;
+    if (!p) return;
+
+    // 5 게임 분 조용히 진행
+    session.gameTime.advance(5);
+    session.world.onTick(session.gameTime);
+    applyTimeTheme(session.gameTime);
+
+    // 랜덤 이벤트 롤
+    const randomEv = session.events.rollRandomEvent(session.gameTime);
+    if (randomEv) {
+      const evText = `✦ ${randomEv.name}: ${randomEv.description}`;
+      session.backlog.add(session.gameTime, `[이벤트] ${randomEv.name}: ${randomEv.description}`, '이벤트');
+      accumulatedLog.push({ time: session.gameTime.toString(), text: evText });
+      for (const actor of session.actors) {
+        if (actor.currentLocation === randomEv.location) {
+          actor.receiveEventInfluence(randomEv.colorInfluence, randomEv.name, session.gameTime);
+        }
+      }
+    }
+
+    // NPC 자발 대사 롤 (8% 확률)
+    let hasNewLog = !!randomEv;
+    if (Math.random() < 0.08) {
+      const conv = tryNpcInitiatedConversation(p, session.actors, session.social, session.gameTime);
+      if (conv) {
+        const line = `${conv.npc.name}: 「${conv.greeting}」`;
+        accumulatedLog.push({ time: session.gameTime.toString(), text: line });
+        session.backlog.add(session.gameTime, line, '대사', p.name);
+        if (conv.sharedRumor) {
+          accumulatedLog.push({ time: session.gameTime.toString(), text: `소문: ${conv.sharedRumor}` });
+        }
+        hasNewLog = true;
+      }
+    }
+
+    // HUD 시간 표시 갱신 (항상)
+    if (hudContainer) {
+      const timeEl = hudContainer.querySelector('.hud-time');
+      if (timeEl) timeEl.textContent = session.gameTime.toString();
+      const statusEl = hudContainer.querySelector('.status-bar');
+      if (statusEl) statusEl.textContent = session.gameTime.toString();
+
+      // 새 로그 항목이 추가된 경우에만 로그 영역 갱신
+      if (hasNewLog) {
+        const logEl = hudContainer.querySelector('.log-area');
+        if (logEl) {
+          logEl.innerHTML = [...accumulatedLog].reverse().map(m => `
+            <div class="log-entry">
+              <span class="log-time">${m.time}</span>
+              <span class="log-text">${m.text}</span>
+            </div>
+          `).join('');
+        }
+      }
+    }
+  }
 
   /** 대사(dialogue) backlog 엔트리를 HUD 로그에 동기화 */
   function syncDialogueToLog(): void {
@@ -448,7 +510,18 @@ export function createGameScreen(
 
   return {
     id: 'game',
-    render: renderHud,
+    render(el) {
+      hudContainer = el;
+      renderHud(el);
+    },
+    onEnter() {
+      if (bgTickHandle !== null) clearInterval(bgTickHandle);
+      bgTickHandle = setInterval(bgTick, 5000);
+    },
+    onExit() {
+      if (bgTickHandle !== null) { clearInterval(bgTickHandle); bgTickHandle = null; }
+      hudContainer = null;
+    },
     onKey(key) {
       const action = keyMap.get(key);
       if (action) {
