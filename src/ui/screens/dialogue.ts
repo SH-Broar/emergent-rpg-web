@@ -114,16 +114,16 @@ export function createDialogueScreen(
           <span class="action-label">\ub300\ud654 \uacc4\uc18d</span>
           <span class="key-hint">[1]</span>
         </button>
-        <button class="btn action-button" data-daction="recruit">
-          <span class="action-label">\ub3d9\ub8cc \uc601\uc785</span>
+        ${!session.knowledge.isCompanion(npc.name) ? `<button class="btn action-button" data-daction="recruit">
+          <span class="action-label">동료 영입</span>
           <span class="key-hint">[2]</span>
-        </button>
+        </button>` : ''}
         <button class="btn action-button" data-daction="info">
           <span class="action-label">\uc815\ubcf4</span>
           <span class="key-hint">[3]</span>
         </button>
       </div>
-      <p class="hint">${dialogueLines.length >= MAX_DIALOGUE_LINES ? '\uc624\ub298\uc740 \uc774\ub9cc \uc774\uc57c\uae30\ub97c \ub098\ub208 \uac83 \uac19\ub2e4.' : '1=\ub300\ud654 2=\uc601\uc785 3=\uc815\ubcf4 Esc=\ub4a4\ub85c'}</p>
+      <p class="hint">${dialogueLines.length >= MAX_DIALOGUE_LINES ? '충분히 얘기를 나눈 것 같다.' : '1=대화 2=영입 3=정보 Esc=뒤로'}</p>
     `;
 
     wrap.querySelector('[data-back]')?.addEventListener('click', () => {
