@@ -171,6 +171,36 @@ html, body {
 
 .hint { font-size: 11px; color: var(--text-dim); text-align: center; margin-top: 8px; }
 
+/* === Activity / Gather Simulation === */
+.sim-dialogue {
+  flex: 1; overflow-y: auto; min-height: 80px;
+  display: flex; flex-direction: column; gap: 8px;
+  padding: 4px 2px;
+}
+.sim-line {
+  font-size: 14px; color: var(--text); line-height: 1.6;
+  margin: 0; padding: 0;
+}
+.sim-reward-area {
+  min-height: 56px; display: flex; align-items: center; justify-content: center;
+}
+.sim-reward {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--bg-card); border: 1px solid var(--accent);
+  border-radius: 10px; padding: 10px 18px;
+  font-size: 15px; font-weight: bold; color: var(--accent);
+}
+.sim-reward-empty {
+  color: var(--text-dim); font-weight: normal; font-size: 13px;
+  background: var(--bg-panel); border-color: var(--border);
+}
+.sim-reward-icon { font-size: 22px; line-height: 1; }
+.sim-reward-text { color: var(--warning); }
+.sim-skip-btn {
+  font-size: 11px; color: var(--text-dim); padding: 6px 12px;
+  align-self: center; opacity: 0.7;
+}
+
 /* === Components === */
 
 /* Action button */

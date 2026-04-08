@@ -7,10 +7,22 @@ import type { ActivityDef, CropState } from '../../models/activity';
 import { gameTimeToMinute, updateCropReady } from '../../models/activity';
 import { itemName } from '../../types/registry';
 import { randomFloat } from '../../types/rng';
+import type { ActivitySimConfig } from './activity-sim';
+
+/** 활동 실행 아이콘 (effectType 기반) */
+const ACTIVITY_ICON: Record<string, string> = {
+  random_loot: '🔍', give: '📦', heal_hp: '💚', restore_vigor: '💛',
+  restore_mp: '💙', start_crop: '🌱', buff_attack: '⚔️', buff_defense: '🛡️',
+  hear_rumor: '💬', learn_spell: '✨',
+};
+function resolveActivityIcon(effectType: string): string {
+  return ACTIVITY_ICON[effectType] ?? '🔨';
+}
 
 export function createActivityScreen(
   session: GameSession,
   onDone: () => void,
+  onSimulate: (config: ActivitySimConfig) => void,
 ): Screen {
   const p = session.player;
   let message = '';
@@ -209,39 +221,51 @@ export function createActivityScreen(
       '\ud589\ub3d9',
     );
 
-    // 결과 메시지 구성
-    const lines: string[] = [`\u2713 ${act.name} \uc644\ub8cc (${act.timeCost}\ubd84 \uacbd\uacfc)`];
+    // 결과 텍스트 구성 (시뮬레이션 화면에 표시할 요약)
+    const rewardParts: string[] = [];
 
-    // 확정 아이템 지급
+    // 확정 아이템
     if (act.gives.length > 0) {
-      lines.push('\ud68d\ub4dd: ' + act.gives.map(g => `${itemName(g.item)} \xd7${g.amount}`).join(', '));
+      rewardParts.push(act.gives.map(g => `${itemName(g.item)} ×${g.amount}`).join(', '));
     }
 
-    // 인벤토리 변화 감지 (random_loot 등)
+    // 랜덤 루트 결과
     if (act.effect === 'random_loot') {
       const gained: string[] = [];
       for (const [type, count] of p.spirit.inventory) {
         const before = invBefore.get(type) ?? 0;
-        if (count > before) gained.push(`${itemName(type)} \xd7${count - before}`);
+        if (count > before) gained.push(`${itemName(type)} ×${count - before}`);
       }
-      lines.push(gained.length > 0 ? '\ubc1c\uacac: ' + gained.join(', ') : '\ud2b9\ubcc4\ud55c \uc218\ud655\uc740 \uc5c6\uc5c8\ub2e4.');
+      rewardParts.push(gained.length > 0 ? gained.join(', ') : '수확 없음');
     }
 
     // HP/MP/기력 변화
-    const hpDelta = Math.round(p.base.hp - hpBefore);
-    const mpDelta = Math.round(p.base.mp - mpBefore);
-    const vigorDelta = Math.round(p.base.vigor - vigorBefore);
-    if (hpDelta > 0) lines.push(`HP +${hpDelta}`);
-    if (mpDelta > 0) lines.push(`MP +${mpDelta}`);
-    if (vigorDelta > 0) lines.push(`\uae30\ub825 +${vigorDelta}`);
+    const hpDelta  = Math.round(p.base.hp    - hpBefore);
+    const mpDelta  = Math.round(p.base.mp    - mpBefore);
+    const vigDelta = Math.round(p.base.vigor - vigorBefore);
+    if (hpDelta  > 0) rewardParts.push(`HP +${hpDelta}`);
+    if (mpDelta  > 0) rewardParts.push(`MP +${mpDelta}`);
+    if (vigDelta > 0) rewardParts.push(`기력 +${vigDelta}`);
 
-    // 버프
-    if (act.effect.startsWith('buff_attack:')) lines.push('\uacf5\uaca9\ub825 \ubc84\ud504 \uc801\uc6a9');
-    if (act.effect.startsWith('buff_defense:')) lines.push('\ubc29\uc5b4\ub825 \ubc84\ud504 \uc801\uc6a9');
-    if (act.effect.startsWith('start_crop:')) lines.push('\uc791\ubb3c\uc744 \uc2ec\uc5c8\ub2e4. \uc2dc\uac04\uc774 \uc9c0\ub098\uba74 \uc218\ud655\ud560 \uc218 \uc788\ub2e4.');
+    // 버프·작물
+    if (act.effect.startsWith('buff_attack:'))  rewardParts.push('공격력 버프 적용');
+    if (act.effect.startsWith('buff_defense:')) rewardParts.push('방어력 버프 적용');
+    if (act.effect.startsWith('start_crop:'))   rewardParts.push('작물을 심었다.');
+    if (act.effect === 'hear_rumor')             rewardParts.push('소문을 들었다.');
+    if (act.effect === 'learn_spell')            rewardParts.push('새로운 마법을 배웠다.');
 
-    message = lines.join(' \xb7 ');
-    renderActivity(el);
+    const effectType = act.effect.split(':')[0];
+    const isEmpty = act.effect === 'random_loot'
+      && rewardParts.length === 1 && rewardParts[0] === '수확 없음';
+
+    onSimulate({
+      icon:        resolveActivityIcon(effectType),
+      title:       act.name,
+      activityKey: act.key,
+      effectType,
+      rewardText:  rewardParts.join(' · ') || `${act.name} 완료`,
+      isEmpty,
+    });
   }
 
   return {

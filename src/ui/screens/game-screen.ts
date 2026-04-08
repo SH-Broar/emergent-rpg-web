@@ -493,6 +493,7 @@ export function createGameScreen(
       }
     }
     if (result.screenChange) {
+      if (result.gatherSim) (session as any)._pendingGatherSim = result.gatherSim;
       onScreenChange(result.screenChange);
       onAfterTurn?.();
       return;

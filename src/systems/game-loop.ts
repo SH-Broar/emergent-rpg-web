@@ -20,9 +20,9 @@ export type GameAction =
   | 'save';
 
 const ACTION_TIME: Partial<Record<GameAction, number>> = {
-  idle: 30, move: 0, talk: 20, trade: 15, eat: 10,
+  idle: 30, move: 0, talk: 20, trade: 15, eat: 0,
   rest: 60, dungeon: 60, gather: 30, quest: 10,
-  activity: 30, gift: 20, home: 60,
+  activity: 30, gift: 0, home: 60,
 };
 
 const AP_COST: Partial<Record<GameAction, number>> = {
@@ -31,13 +31,43 @@ const AP_COST: Partial<Record<GameAction, number>> = {
   activity: 1, gift: 0, home: 0, memory_spring: 0,
 };
 
+export interface GatherSimResult {
+  icon: string;
+  title: string;
+  activityKey: string;  // 'gather_<locationId>'
+  effectType: string;   // 항상 'random_loot'
+  rewardText: string;
+  isEmpty: boolean;
+}
+
 export interface TurnResult {
   messages: string[];
   levelUp: boolean;
   screenChange?: string;
+  gatherSim?: GatherSimResult;
 }
 
 const GATHER_HINT_FALLBACK_ENV = ['풀숲', '덤불', '흙'];
+
+const GATHER_ICON: Record<string, string> = {
+  Lake: '🎣', Mountain_Path: '⛏️', Herb_Garden: '🌿',
+  Wilderness: '🌾', Limun_Ruins: '🏛️', Bloom_Terrace: '🌸',
+  Moonlit_Clearing: '🌙', Cyan_Dunes: '🏜️', Tiklit_Range: '⛰️',
+  Bandit_Hideout: '🗡️', Trade_Route: '🛒',
+};
+const GATHER_TITLE: Record<string, string> = {
+  Lake: '낚시', Mountain_Path: '채굴 · 채집', Herb_Garden: '약초 채집',
+  Wilderness: '야생 채집', Limun_Ruins: '유적 탐사', Bloom_Terrace: '특수 약초 채집',
+  Moonlit_Clearing: '야간 탐색', Cyan_Dunes: '황야 채집', Tiklit_Range: '고산 채집',
+  Bandit_Hideout: '은신처 수색', Trade_Route: '노변 채집',
+};
+
+export function resolveGatherIcon(locationId: string): string {
+  return GATHER_ICON[locationId] ?? '🌿';
+}
+export function resolveGatherTitle(locationId: string): string {
+  return GATHER_TITLE[locationId] ?? '채집';
+}
 
 function pickGatherHint(templates: string[], envs: string[]): string {
   const pool = envs.length > 0 ? envs : GATHER_HINT_FALLBACK_ENV;
@@ -50,6 +80,10 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
   const result: TurnResult = { messages: [], levelUp: false };
   const p = session.player;
   if (!p) return result;
+
+  // hyperionBonus를 항상 최신 값으로 갱신 (로드 직후, 수면/휴식 전 포함)
+  const hyperionTotal = session.actors.reduce((s, a) => s + a.hyperionLevel, 0);
+  p.hyperionBonus = hyperionTotal - p.hyperionLevel;
 
   const minutes = ACTION_TIME[action] ?? 0;
 
@@ -92,7 +126,7 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
     }
 
 
-    case 'eat': result.messages.push('식사를 준비한다...'); result.screenChange = 'eat'; break;
+    case 'eat': result.screenChange = 'eat'; return result;
 
     case 'rest': {
       const hpRecover = Math.round(p.getEffectiveMaxHp() * 0.2);
@@ -159,6 +193,15 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
             '분명히 뭔가가 있었는데... 사라졌다.',
           ], loc.gatherEnv));
         }
+        result.gatherSim = {
+          icon: resolveGatherIcon(p.currentLocation),
+          title: resolveGatherTitle(p.currentLocation),
+          activityKey: `gather_${p.currentLocation}`,
+          effectType: 'random_loot',
+          rewardText: '수확 없음',
+          isEmpty: true,
+        };
+        result.screenChange = 'gather';
         break;
       }
 
@@ -187,7 +230,8 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
       let rarityLabel = '';
       if (picked.rarity === 'uncommon') rarityLabel = ' [특산물]';
       else if (picked.rarity === 'rare') rarityLabel = ' [희귀]';
-      result.messages.push(`채집 완료! ${picked.name}${rarityLabel} +${amount}개`);
+      const rewardText = `${picked.name}${rarityLabel} ×${amount}`;
+      result.messages.push(`채집 완료! ${rewardText}`);
 
       // 잠긴 자원 힌트 (30% 확률)
       if (lockedItems.length > 0 && randomFloat(0, 1) < 0.3) {
@@ -202,6 +246,16 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
           '손이 닿을 것 같은 곳에 뭔가가 있었지만, 그냥 지나쳤다.',
         ], loc.gatherEnv));
       }
+
+      result.gatherSim = {
+        icon: resolveGatherIcon(p.currentLocation),
+        title: resolveGatherTitle(p.currentLocation),
+        activityKey: `gather_${p.currentLocation}`,
+        effectType: 'random_loot',
+        rewardText,
+        isEmpty: false,
+      };
+      result.screenChange = 'gather';
       break;
     }
 
@@ -211,7 +265,7 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
     case 'dungeon': result.messages.push('던전으로 향한다.'); result.screenChange = 'dungeon'; break;
     case 'quest': result.messages.push('퀘스트 게시판을 확인한다.'); result.screenChange = 'quest'; break;
     case 'activity': result.messages.push('활동을 시작한다.'); result.screenChange = 'activity'; break;
-    case 'gift': result.messages.push('선물을 고른다.'); result.screenChange = 'gift'; break;
+    case 'gift': result.screenChange = 'gift'; return result;
     case 'home':
       if (p.currentLocation === p.homeLocation || session.knowledge.ownedBases.has(p.currentLocation)) {
         p.base.ap = p.getEffectiveMaxAp();
@@ -306,11 +360,10 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
       }
     }
 
-    // 히페리온 자동 판정
+    // 히페리온 자동 판정 (레벨업 후 보너스 재갱신)
     const hyperionMsgs = updateHyperionLevels(p, session.actors, session.knowledge, session.gameTime, session.dungeonSystem);
-    // 플레이어 히페리온 보너스 = 전체 총합 (자신 포함)에서 자신 레벨을 뺀 나머지
-    const hyperionTotal = session.actors.reduce((s, a) => s + a.hyperionLevel, 0);
-    p.hyperionBonus = hyperionTotal - p.hyperionLevel;
+    const newHyperionTotal = session.actors.reduce((s, a) => s + a.hyperionLevel, 0);
+    p.hyperionBonus = newHyperionTotal - p.hyperionLevel;
     for (const msg of hyperionMsgs) {
       session.backlog.add(session.gameTime, msg, '시스템');
       result.messages.push(msg);

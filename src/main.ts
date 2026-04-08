@@ -18,6 +18,7 @@ import { createBacklogScreen } from './ui/screens/backlog';
 import { createLevelUpScreen } from './ui/screens/level-up';
 import { createBirthScreen, createCustomCharScreen } from './ui/screens/character-creation';
 import { createActivityScreen } from './ui/screens/activity';
+import { createActivitySimScreen } from './ui/screens/activity-sim';
 import { createGiftScreen } from './ui/screens/gift';
 import { createEatScreen } from './ui/screens/eat';
 import { createEncyclopediaScreen } from './ui/screens/encyclopedia';
@@ -233,8 +234,17 @@ async function boot() {
           sm.push(createQuestBoardScreen(session, () => sm.pop()));
           break;
         case 'activity':
-          sm.push(createActivityScreen(session, () => sm.pop()));
+          sm.push(createActivityScreen(session, () => sm.pop(), (config) => {
+            sm.pop(); // 활동 목록 닫기
+            sm.push(createActivitySimScreen(session, config, () => sm.pop()));
+          }));
           break;
+        case 'gather': {
+          const gs = (session as any)._pendingGatherSim;
+          delete (session as any)._pendingGatherSim;
+          if (gs) sm.push(createActivitySimScreen(session, gs, () => sm.pop()));
+          break;
+        }
         case 'gift':
           sm.push(createGiftScreen(session, () => sm.pop()));
           break;
