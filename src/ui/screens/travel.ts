@@ -8,7 +8,7 @@ import type { GameSession } from '../../systems/game-session';
 import type { LocationID } from '../../types/location';
 import { locationName } from '../../types/registry';
 import { applyTimeTheme } from '../time-theme';
-import { moveCompanions } from '../../systems/npc-interaction';
+import { moveCompanions, getDialogue, getRelationshipStage } from '../../systems/npc-interaction';
 import { randomInt, randomFloat } from '../../types/rng';
 
 // ============================================================
@@ -159,6 +159,9 @@ export function createTravelScreen(
   // ── rAF ─────────────────────────────────────────────────────
   let rafHandle: number | null = null;
 
+  // ── 동료 대사 (이동 중 1회만) ───────────────────────────────
+  let companionSpoke = false;
+
   // ── DOM refs ────────────────────────────────────────────────
   let progressBarEl: HTMLElement | null = null;
   let timeDisplayEl: HTMLElement | null = null;
@@ -229,6 +232,23 @@ export function createTravelScreen(
         } else {
           eventLog.push({ time: session.gameTime.toString(), text: evt.body, isMonster: (evt.hpDelta ?? 0) < 0 });
           updateLog();
+        }
+      }
+
+      // 동료 대사 — 이동 중 1회, 30% 확률
+      if (!companionSpoke && randomFloat(0, 1) < 0.30) {
+        const companions = session.actors.filter(a =>
+          a !== session.player && session.knowledge.isCompanion(a.name),
+        );
+        if (companions.length > 0) {
+          const comp = companions[randomInt(0, companions.length - 1)];
+          const stage = getRelationshipStage(session.player, comp.name, session.knowledge, session.actors);
+          const line = getDialogue(comp, stage);
+          const entry = `${comp.name}: 「${line}」`;
+          eventLog.push({ time: session.gameTime.toString(), text: entry, isMonster: false });
+          session.backlog.add(session.gameTime, entry, '대사', session.player.name);
+          updateLog();
+          companionSpoke = true;
         }
       }
 

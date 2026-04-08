@@ -7,6 +7,7 @@ import { randomInt, randomFloat } from '../types/rng';
 import { updateHyperionLevels } from './hyperion';
 import { advanceTurn } from './world-simulation';
 import { findItemsBySource } from '../types/item-defs';
+import { tryNpcInitiatedConversation, getDialogue, getRelationshipStage } from './npc-interaction';
 
 export type GameAction =
   | 'idle' | 'move' | 'talk' | 'trade' | 'eat'
@@ -66,10 +67,18 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
   session.gaugeState.snapshot(p.color.values);
 
   switch (action) {
-    case 'idle':
+    case 'idle': {
       session.backlog.add(session.gameTime, `${p.name}은(는) 주변을 둘러보며 시간을 보냈다.`, '행동');
       result.messages.push('주변을 관찰하며 시간을 보냈다.');
+      const idleConv = tryNpcInitiatedConversation(p, session.actors, session.social, session.gameTime);
+      if (idleConv) {
+        const line = `${idleConv.npc.name}: 「${idleConv.greeting}」`;
+        result.messages.push(line);
+        if (idleConv.sharedRumor) result.messages.push(`소문: ${idleConv.sharedRumor}`);
+        session.backlog.add(session.gameTime, line, '대사', p.name);
+      }
       break;
+    }
 
 
     case 'eat': result.messages.push('식사를 준비한다...'); result.screenChange = 'eat'; break;
@@ -82,6 +91,13 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
       const restMsg = `휴식을 취했다. HP +${hpRecover}, MP +${mpRecover}`;
       session.backlog.add(session.gameTime, `${p.name}이(가) ${restMsg}`, '행동', p.name);
       result.messages.push(restMsg);
+      const restConv = tryNpcInitiatedConversation(p, session.actors, session.social, session.gameTime);
+      if (restConv) {
+        const line = `쉬는 동안 ${restConv.npc.name}이(가) 다가왔다. 「${restConv.greeting}」`;
+        result.messages.push(line);
+        if (restConv.sharedRumor) result.messages.push(`소문: ${restConv.sharedRumor}`);
+        session.backlog.add(session.gameTime, `${restConv.npc.name}: 「${restConv.greeting}」`, '대사', p.name);
+      }
       break;
     }
 
@@ -260,8 +276,19 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
       session.backlog.add(session.gameTime, msg, '시스템');
       result.messages.push(msg);
     }
-    // 히페리온 레벨업 시 별도 화면 전환
+    // 히페리온 레벨업 시 동료 축하 대사
     if (hyperionMsgs.length > 0) {
+      const companions = session.actors.filter(a =>
+        a !== p && session.knowledge.isCompanion(a.name) && a.currentLocation === p.currentLocation,
+      );
+      if (companions.length > 0) {
+        const comp = companions[randomInt(0, companions.length - 1)];
+        const stage = getRelationshipStage(p, comp.name, session.knowledge, session.actors);
+        const raw = getDialogue(comp, stage);
+        const celebLine = `${comp.name}: 「${raw}」`;
+        result.messages.push(celebLine);
+        session.backlog.add(session.gameTime, celebLine, '대사', p.name);
+      }
       result.screenChange = 'hyperion_levelup';
     }
   }

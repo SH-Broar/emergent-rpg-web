@@ -17,6 +17,9 @@ interface DialogueCallbacks {
   onBack: () => void;
 }
 
+/** 한 대화 행동당 최대 대사 줄 수 (첫 대사 1 + 계속 3) */
+const MAX_DIALOGUE_LINES = 4;
+
 export function createDialogueScreen(
   session: GameSession,
   callbacks: DialogueCallbacks,
@@ -107,7 +110,7 @@ export function createDialogueScreen(
         ${dialogueLines.map(l => `<div class="dialogue-line">${l}</div>`).join('')}
       </div>
       <div class="button-grid dialogue-actions">
-        <button class="btn action-button" data-daction="continue">
+        <button class="btn action-button" data-daction="continue" ${dialogueLines.length >= MAX_DIALOGUE_LINES ? 'disabled style="opacity:0.4;cursor:not-allowed"' : ''}>
           <span class="action-label">\ub300\ud654 \uacc4\uc18d</span>
           <span class="key-hint">[1]</span>
         </button>
@@ -120,7 +123,7 @@ export function createDialogueScreen(
           <span class="key-hint">[3]</span>
         </button>
       </div>
-      <p class="hint">1=\ub300\ud654 2=\uc601\uc785 3=\uc815\ubcf4 Esc=\ub4a4\ub85c</p>
+      <p class="hint">${dialogueLines.length >= MAX_DIALOGUE_LINES ? '\uc624\ub298\uc740 \uc774\ub9cc \uc774\uc57c\uae30\ub97c \ub098\ub208 \uac83 \uac19\ub2e4.' : '1=\ub300\ud654 2=\uc601\uc785 3=\uc815\ubcf4 Esc=\ub4a4\ub85c'}</p>
     `;
 
     wrap.querySelector('[data-back]')?.addEventListener('click', () => {
