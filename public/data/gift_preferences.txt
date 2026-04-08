@@ -433,3 +433,11 @@ loved = Herb
 liked = Potion
 disliked = OreRare
 ; 같은 식물끼리 통하는 것이 있다
+
+# -- 메인 캐릭터 --
+
+[니아 이유르]
+loved = Herb
+liked = Potion
+disliked = Food
+; 세계를 만든 아르카나에게 자연의 재료가 가장 의미 있다. 음식엔 큰 관심이 없다.

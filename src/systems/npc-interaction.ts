@@ -79,6 +79,66 @@ function pickRandom(lines: string[]): string {
   return lines[randomInt(0, lines.length - 1)];
 }
 
+// ============================================================
+// 선물 반응 풀 (10종 × 4단계)
+// ============================================================
+const GIFT_REACTION_POOLS: Record<string, string[]> = {
+  loved: [
+    '눈이 반짝이며 두 손으로 조심스럽게 받았다.',
+    '기대 이상이라는 듯 잠시 말을 잃었다.',
+    '천천히 고개를 끄덕이며 기쁜 기색을 감추지 못했다.',
+    '이런 걸 어떻게 알았냐며 기뻐했다.',
+    '뭐라 말하기 어렵다는 듯 환하게 미소를 지었다.',
+    '눈가가 살짝 붉어지며 받았다.',
+    '이걸 받게 될 줄은 몰랐다며 진심으로 기뻐했다.',
+    '잠시 멍하니 바라보더니 기쁜 표정으로 고개를 들었다.',
+    '마음이 전해졌다는 듯 따뜻하게 받았다.',
+    '오래 쓸게, 라고 조용히 말하며 받았다.',
+  ],
+  liked: [
+    '기쁜 표정으로 받았다.',
+    '고맙다며 조용히 미소를 보였다.',
+    '마음에 든다며 받아들었다.',
+    '기분 좋게 챙겨들었다.',
+    '좋은 선택이라며 고마워했다.',
+    '마음 써줘서 고맙다고 했다.',
+    '이게 마음에 든다고 말했다.',
+    '반갑게 받아들었다.',
+    '기쁜 기색으로 감사를 표했다.',
+    '고마워, 잘 쓸게, 라고 했다.',
+  ],
+  disliked: [
+    '살짝 난처한 표정을 지었다.',
+    '어색하게 웃으며 받았다.',
+    '고맙긴 한데 어색한 표정이었다.',
+    '말없이 받아들었지만 내키지 않는 눈치였다.',
+    '받긴 했지만 아쉬운 기색이 역력했다.',
+    '잠시 망설이다 받았다.',
+    '천천히 받으며 특별한 말이 없었다.',
+    '감사하다고 했지만 반응이 미묘했다.',
+    '더 말하려다 그냥 받아들었다.',
+    '억지 미소를 보이며 고맙다고 했다.',
+  ],
+  neutral: [
+    '고맙다며 받았다.',
+    '조용히 고마움을 표했다.',
+    '마음이 담겼다며 받았다.',
+    '받아들고 미소를 보였다.',
+    '정중하게 고마움을 표했다.',
+    '담담하게 받으며 감사를 전했다.',
+    '특별한 말 없이 받아들었다.',
+    '고맙다고 간단히 말했다.',
+    '차분하게 받아들었다.',
+    '뭐든 고마운 법이라며 웃었다.',
+  ],
+};
+
+function pickGiftReaction(tier: 'loved' | 'liked' | 'disliked' | 'neutral', actorName: string): string {
+  const charLines = dialogueDB.get(actorName + '.gift.' + tier);
+  if (charLines && charLines.length > 0) return pickRandom(charLines);
+  return pickRandom(GIFT_REACTION_POOLS[tier]);
+}
+
 /**
  * NPC 상태/역할/성향/관계 단계에 따른 대사 선택
  * 조회 우선순위: status → 캐릭터명.stage → stage.X → 캐릭터명 → role → trait → default
@@ -413,17 +473,17 @@ export function giveGift(
   if (pref.loved !== null && giftItem === pref.loved) {
     trustBoost = 0.10;
     affinityBoost = 0.15;
-    reaction = '매우 기뻐하며 받았다!';
+    reaction = pickGiftReaction('loved', target.name);
   } else if (pref.liked !== null && giftItem === pref.liked) {
     trustBoost = 0.05;
     affinityBoost = 0.08;
-    reaction = '기쁜 표정으로 받았다.';
+    reaction = pickGiftReaction('liked', target.name);
   } else if (pref.disliked !== null && giftItem === pref.disliked) {
     trustBoost = 0.00;
     affinityBoost = 0.01;
-    reaction = '살짝 난처한 표정을 짓는다.';
+    reaction = pickGiftReaction('disliked', target.name);
   } else {
-    reaction = '고맙다며 받았다.';
+    reaction = pickGiftReaction('neutral', target.name);
   }
 
   player.adjustRelationship(target.name, trustBoost, affinityBoost);
