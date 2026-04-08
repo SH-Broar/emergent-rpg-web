@@ -73,16 +73,17 @@ export function createHyperionScreen(
   }
 
   function renderList(wrap: HTMLElement, el: HTMLElement): void {
-    // Player hyperion level
+    // 총합 히페리온 레벨 (플레이어 스탯에 실제 적용되는 값)
+    const totalLevel = session.actors.reduce((s, a) => s + a.hyperionLevel, 0);
     const playerLevel = p.hyperionLevel;
-    const bonus = getBonusForLevel(playerLevel);
+    const bonus = getBonusForLevel(totalLevel);
 
     const playerInfo = document.createElement('div');
-    const levelBar = '\u2605'.repeat(playerLevel) + '\u2606'.repeat(HYPERION_MAX_LEVEL - playerLevel);
     playerInfo.innerHTML = `
-      <p><strong>${p.name}</strong> \ud788\ud398\ub9ac\uc628 Lv.${playerLevel}/${HYPERION_MAX_LEVEL}</p>
-      <p style="font-size:14px">${levelBar}</p>
-      <p style="font-size:12px;color:var(--text-dim)">HP+${bonus.maxHp} MP+${bonus.maxMp} \uacf5+${bonus.attack} \ubc29+${bonus.defense} \uae30\ub825+${bonus.maxVigor}</p>
+      <p><strong>✦ 히페리온 총합 Lv.${totalLevel}</strong>
+        <span style="font-size:12px;color:var(--text-dim);margin-left:6px">(내 레벨: ${playerLevel}/${HYPERION_MAX_LEVEL})</span>
+      </p>
+      <p style="font-size:12px;color:var(--text-dim);margin-top:2px">플레이어 적용 보너스 — HP+${bonus.maxHp} MP+${bonus.maxMp} 공+${bonus.attack} 방+${bonus.defense} 기력+${bonus.maxVigor}</p>
     `;
     wrap.appendChild(playerInfo);
 
