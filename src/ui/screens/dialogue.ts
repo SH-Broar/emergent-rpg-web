@@ -124,7 +124,7 @@ export function createDialogueScreen(
           <span class="key-hint">[3]</span>
         </button>
       </div>
-      <p class="hint">${dialogueLines.length >= MAX_DIALOGUE_LINES ? '충분히 얘기를 나눈 것 같다.' : '1=대화 2=영입 3=정보 Esc=뒤로'}</p>
+      <p class="hint">${dialogueLines.length >= MAX_DIALOGUE_LINES ? '충분히 대화를 나눈 것 같다.' : '1=대화 2=영입 3=정보 Esc=뒤로'}</p>
     `;
 
     wrap.querySelector('[data-back]')?.addEventListener('click', () => {
