@@ -187,12 +187,22 @@ export function createBirthScreen(
 
     switch (method) {
       case 'npc': {
-        // Pick a random non-playable NPC and borrow role + location
-        const npcs = actors.filter(a => !a.playable);
+        // Pick a random non-playable NPC and borrow role + homeLocation
+        // homeLocation은 currentLocation보다 안정적 (이동 중 미정의 지역 방지)
+        const VALID_LOC_PREFIXES = ['Alimes','Iluneon','Luna','Martin','Manonickla','Halpia',
+          'Lar','Enicham','Hanabridge','Moss','Ekres','Kanon','Riagralta','Navrit',
+          'Arcadia','Farm','Herb_Garden','Market','Guild','Memory','Windfall','Hologram',
+          'Stella','Triflower','Limun','Abandoned','Silk','Moonlit','Bloom','Ode',
+          'Bandit','Trade_Route','World_Tree','Ancient','Void','Phantom','Puchi','Riel',
+          'Cyan_Dunes','Tiklit','Erumen','Crystal','Falcon','Starfall','Mirage','Twilight',
+          'Demon','Kazed','Arukea','Tacomi'];
+        const isValidLocation = (loc: string) =>
+          VALID_LOC_PREFIXES.some(p => loc.startsWith(p));
+        const npcs = actors.filter(a => !a.playable && isValidLocation(a.homeLocation));
         if (npcs.length > 0) {
           const npc = npcs[randomInt(0, npcs.length - 1)];
           role = npc.spirit.role;
-          location = npc.currentLocation;
+          location = npc.homeLocation;
         } else {
           role = randomInt(0, ROLE_COUNT - 1) as SpiritRole;
           location = BIRTH_RANDOM_LOCATIONS[randomInt(0, BIRTH_RANDOM_LOCATIONS.length - 1)];
