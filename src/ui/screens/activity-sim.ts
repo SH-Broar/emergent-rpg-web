@@ -120,7 +120,8 @@ export function createActivitySimScreen(
 ): Screen {
   let startTime = 0;
   let rafHandle: number | null = null;
-  let done = false;
+  let animDone = false;
+  let readyToClose = false;
   let revealShown = false;
   let lastLineIdx = -1;
 
@@ -137,12 +138,21 @@ export function createActivitySimScreen(
     return Math.min((Date.now() - startTime) / TOTAL_REAL_MS, 1);
   }
 
-  function finalize() {
-    if (done) return;
-    done = true;
+  function completeAnimation() {
+    if (animDone) return;
+    animDone = true;
+    readyToClose = true;
     if (rafHandle !== null) { cancelAnimationFrame(rafHandle); rafHandle = null; }
     applyTimeTheme(session.gameTime);
-    onComplete();
+    if (rewardEl && !rewardEl.querySelector('[data-complete]')) {
+      const btn = document.createElement('button');
+      btn.className = 'btn btn-primary';
+      btn.dataset.complete = 'true';
+      btn.style.minWidth = '160px';
+      btn.textContent = '확인 [Enter]';
+      btn.addEventListener('click', () => onComplete());
+      rewardEl.appendChild(btn);
+    }
   }
 
   function showAllDialogue() {
@@ -184,15 +194,18 @@ export function createActivitySimScreen(
   }
 
   function skipToEnd() {
-    if (done) return;
+    if (readyToClose) {
+      onComplete();
+      return;
+    }
     showAllDialogue();
     showReward();
     if (barEl) barEl.style.width = '100%';
-    finalize();
+    completeAnimation();
   }
 
   function rafLoop() {
-    if (done) return;
+    if (animDone) return;
     rafHandle = requestAnimationFrame(rafLoop);
 
     const p = pct();
@@ -228,7 +241,7 @@ export function createActivitySimScreen(
     // 보상 공개
     if (p >= REVEAL_PCT) showReward();
 
-    if (p >= 1) finalize();
+    if (p >= 1) completeAnimation();
   }
 
   return {
@@ -267,7 +280,8 @@ export function createActivitySimScreen(
     },
 
     onEnter() {
-      done = false;
+      animDone = false;
+      readyToClose = false;
       revealShown = false;
       lastLineIdx = -1;
       startTime = Date.now();
