@@ -10,6 +10,7 @@ import { applyTimeTheme } from '../time-theme';
 export function createHomeScreen(
   session: GameSession,
   onDone: () => void,
+  onNavigate?: (screen: 'storage' | 'cooking') => void,
 ): Screen {
   const p = session.player;
   let phase: 'menu' | 'sleeping' | 'wakeup' | 'nap_done' = 'menu';
@@ -88,16 +89,9 @@ export function createHomeScreen(
     // 거점 액션 버튼 이벤트
     wrap.querySelectorAll<HTMLButtonElement>('[data-home-action]').forEach(btn => {
       btn.addEventListener('click', () => {
-        const act = btn.dataset.homeAction!;
-        onDone(); // home 화면 닫고
-        // screenChange는 외부에서 처리할 수 없으므로 직접 처리
-        // main.ts의 onScreenChange 콜백이 없어서 임시 메시지 표시
-        if (act === 'storage') {
-          // 창고는 HUD의 j키로 접근 가능함을 안내
-          alert('창고는 메인 화면의 [j] 키로 접근할 수 있습니다.');
-        } else if (act === 'cooking') {
-          alert('요리는 메인 화면의 [x] 키로 접근할 수 있습니다.');
-        }
+        const act = btn.dataset.homeAction! as 'storage' | 'cooking';
+        onDone();
+        onNavigate?.(act);
       });
     });
   }

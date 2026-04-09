@@ -249,7 +249,10 @@ async function boot() {
           sm.push(createGiftScreen(session, () => sm.pop()));
           break;
         case 'home':
-          sm.push(createHomeScreen(session, () => sm.pop()));
+          sm.push(createHomeScreen(session, () => sm.pop(), (screen) => {
+            if (screen === 'storage') sm.push(createStorageScreen(session, () => sm.pop()));
+            else if (screen === 'cooking') sm.push(createCookingScreen(session, () => sm.pop()));
+          }));
           break;
         case 'storage':
           sm.push(createStorageScreen(session, () => sm.pop()));
