@@ -146,12 +146,14 @@ html, body {
 }
 .action-btn {
   display: flex; flex-direction: column; align-items: center;
+  text-align: center;
   padding: 8px 4px; gap: 2px; font-size: 12px; min-height: 56px;
 }
 .action-icon { font-size: 18px; }
 .action-label { font-size: 11px; }
-.action-label-row { display: flex; align-items: center; justify-content: space-between; gap: 4px; width: 100%; }
-.action-label-row .action-label { flex: 0 1 auto; min-width: 0; }
+.action-label-row { display: flex; align-items: center; justify-content: center; gap: 4px; width: 100%; position: relative; }
+.action-label-row .action-label { flex: 0 1 auto; min-width: 0; text-align: center; }
+.action-label-row .tp-cost-stack { position: absolute; right: 0; top: 50%; transform: translateY(-50%); }
 .action-key { font-size: 10px; color: var(--text-dim); }
 
 .tp-cost-stack {
