@@ -364,7 +364,7 @@ export function createGameScreen(
             </div>
             <span class="stat-val">${p.base.ap}/${p.getEffectiveMaxAp()}</span>
           </div>
-          <div class="hud-mini"><strong>${p.name}</strong> · Lv.${p.base.level} · ${raceName(p.base.race)} · ${spiritRoleName(p.spirit.role)} · 💰${p.spirit.gold}G</div>
+          <div class="hud-mini"><strong>${p.name}</strong> · ${raceName(p.base.race)} · ${spiritRoleName(p.spirit.role)} · 💰${p.spirit.gold}G</div>
           <div class="hud-colors" style="justify-content:center;gap:12px">
             ${(() => {
               // 가장 높은 속성 계산
@@ -563,7 +563,6 @@ export function createInfoScreen(
             <div class="info-grid">
               <div>종족: ${raceName(p.base.race)}</div>
               <div>역할: ${spiritRoleName(p.spirit.role)}</div>
-              <div>레벨: ${p.base.level} (EXP ${p.base.exp})</div>
               <div>HP: ${Math.round(p.base.hp)}/${Math.round(p.getEffectiveMaxHp())}</div>
               <div>MP: ${Math.round(p.base.mp)}/${Math.round(p.getEffectiveMaxMp())}</div>
               <div>공격: ${p.getEffectiveAttack().toFixed(1)}</div>

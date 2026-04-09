@@ -55,7 +55,7 @@ export function createMemorySpringScreen(
       case 'journey': {
         const lines: string[] = [];
         lines.push(`<div style="margin-bottom:8px"><b>${p.name}\uc758 \uc5ec\uc815</b></div>`);
-        lines.push(`<div>\ub808\ubca8: ${p.base.level} | \ud788\ud398\ub9ac\uc628: Lv.${p.hyperionLevel}</div>`);
+        lines.push(`<div>\ud788\ud398\ub9ac\uc628: Lv.${p.hyperionLevel}</div>`);
         lines.push(`<div>\ubc29\ubb38\ud55c \uc7a5\uc18c: ${k.visitedLocations.size}\uacf3</div>`);
         if (k.visitedLocations.size > 0) {
           const locNames = [...k.visitedLocations].map(id => locationName(id)).join(', ');
@@ -193,7 +193,7 @@ export function createMemorySpringScreen(
 
     // 여정 요약
     lines.push(`<div style="padding:8px;background:var(--bg-card);border-radius:8px;margin-bottom:12px;font-size:12px;line-height:1.8">
-      <div>${p.name} · Lv.${p.base.level} · 히페리온 Lv.${p.hyperionLevel}</div>
+      <div>${p.name} · 히페리온 Lv.${p.hyperionLevel}</div>
       <div>여정 ${session.gameTime.day}일차 · 방문 ${k.visitedLocations.size}곳 · 던전 클리어 ${k.totalDungeonsCleared}회</div>
       <div>동료 ${k.recruitedEver.size}명 영입 · 대화 ${k.totalConversations}회</div>
       ${k.earnedTitles.length > 0 ? `<div>칭호 ${k.earnedTitles.length}개 획득</div>` : ''}
