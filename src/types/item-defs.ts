@@ -41,10 +41,17 @@ export interface ItemDef {
 
   // 채집 제한
   minHyperion: number;          // 채집에 필요한 최소 히페리온 레벨 합계 (0=제한 없음)
+
+  // 보관 선호
+  preferredStorage: StorageZone[];
+  avoidedStorage: StorageZone[];
+  badStorageEffect: StoragePenalty;
 }
 
 export type ItemRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'unique';
 export type EquipSlot = 'none' | 'weapon' | 'armor' | 'accessory';
+export type StorageZone = 'cold' | 'room' | 'warm';
+export type StoragePenalty = 'none' | 'spoil' | 'disable';
 
 export function createDefaultItemDef(id: string): ItemDef {
   return {
@@ -54,6 +61,7 @@ export function createDefaultItemDef(id: string): ItemDef {
     eatBuffType: '', eatBuffAmount: 0, eatBuffDuration: 0,
     equipSlot: 'none', equipAttack: 0, equipDefense: 0, equipMagic: 0, equipSpeed: 0,
     source: '', minHyperion: 0,
+    preferredStorage: [], avoidedStorage: [], badStorageEffect: 'none',
   };
 }
 
@@ -104,6 +112,10 @@ export function loadItemDefs(sections: DataSection[]): void {
     def.equipSpeed = s.getFloat('equipSpeed', 0);
 
     def.minHyperion = s.getInt('minHyperion', 0);
+    const inferred = inferStorageProfile(def.category, def.tags);
+    def.preferredStorage = parseStorageZones(s.get('preferredStorage', ''), inferred.preferredStorage);
+    def.avoidedStorage = parseStorageZones(s.get('avoidedStorage', ''), inferred.avoidedStorage);
+    def.badStorageEffect = parseStoragePenalty(s.get('badStorageEffect', ''), inferred.badStorageEffect);
 
     registerItem(def);
   }
@@ -169,6 +181,50 @@ export function findItemsBySource(sourcePrefix: string): ItemDef[] {
   return result;
 }
 
+export interface StorageProfile {
+  preferredStorage: StorageZone[];
+  avoidedStorage: StorageZone[];
+  badStorageEffect: StoragePenalty;
+}
+
+export function getStorageProfileForCategory(category: ItemType): StorageProfile {
+  switch (category) {
+    case ItemType.Food:
+      return { preferredStorage: ['room'], avoidedStorage: ['warm'], badStorageEffect: 'spoil' };
+    case ItemType.Herb:
+      return { preferredStorage: ['cold'], avoidedStorage: ['warm'], badStorageEffect: 'spoil' };
+    case ItemType.MonsterLoot:
+      return { preferredStorage: ['cold'], avoidedStorage: ['warm'], badStorageEffect: 'spoil' };
+    case ItemType.Potion:
+      return { preferredStorage: ['room'], avoidedStorage: ['warm'], badStorageEffect: 'disable' };
+    case ItemType.Equipment:
+      return { preferredStorage: ['room'], avoidedStorage: ['warm'], badStorageEffect: 'disable' };
+    case ItemType.GuildCard:
+      return { preferredStorage: ['room'], avoidedStorage: ['warm'], badStorageEffect: 'disable' };
+    case ItemType.OreCommon:
+    case ItemType.OreRare:
+      return { preferredStorage: ['room'], avoidedStorage: [], badStorageEffect: 'none' };
+    default:
+      return { preferredStorage: ['room'], avoidedStorage: [], badStorageEffect: 'none' };
+  }
+}
+
+export function getStorageProfileForItem(id: string): StorageProfile {
+  const def = getItemDef(id);
+  if (def) {
+    return {
+      preferredStorage: [...def.preferredStorage],
+      avoidedStorage: [...def.avoidedStorage],
+      badStorageEffect: def.badStorageEffect,
+    };
+  }
+  const numericId = Number(id);
+  if (Number.isInteger(numericId)) {
+    return getStorageProfileForCategory(numericId as ItemType);
+  }
+  return { preferredStorage: ['room'], avoidedStorage: [], badStorageEffect: 'none' };
+}
+
 // ============================================================
 // 카테고리 헬퍼
 // ============================================================
@@ -185,6 +241,53 @@ function parseCategoryString(s: string): ItemType {
     case 'GuildCard': return ItemType.GuildCard;
     default: return ItemType.Food;
   }
+}
+
+function parseStorageZones(raw: string, fallback: StorageZone[]): StorageZone[] {
+  if (!raw.trim()) return [...fallback];
+  return raw
+    .split(',')
+    .map(zone => zone.trim().toLowerCase())
+    .filter((zone): zone is StorageZone => zone === 'cold' || zone === 'room' || zone === 'warm');
+}
+
+function parseStoragePenalty(raw: string, fallback: StoragePenalty): StoragePenalty {
+  const normalized = raw.trim().toLowerCase();
+  if (normalized === 'spoil' || normalized === 'disable' || normalized === 'none') return normalized;
+  return fallback;
+}
+
+function inferStorageProfile(category: ItemType, tags: string): StorageProfile {
+  if (category === ItemType.Food) {
+    if (tags.includes('/raw/') || tags.includes('/fruit/') || tags.includes('/meat/')) {
+      return { preferredStorage: ['cold'], avoidedStorage: ['warm'], badStorageEffect: 'spoil' };
+    }
+    if (tags.includes('/dish/')) {
+      return { preferredStorage: ['warm'], avoidedStorage: ['cold'], badStorageEffect: 'disable' };
+    }
+    if (tags.includes('/drink/')) {
+      return { preferredStorage: ['room'], avoidedStorage: ['warm'], badStorageEffect: 'disable' };
+    }
+    if (tags.includes('/bread/')) {
+      return { preferredStorage: ['room'], avoidedStorage: ['warm'], badStorageEffect: 'spoil' };
+    }
+  }
+  if (category === ItemType.Herb) {
+    return { preferredStorage: ['cold'], avoidedStorage: ['warm'], badStorageEffect: 'spoil' };
+  }
+  if (category === ItemType.MonsterLoot) {
+    return { preferredStorage: ['cold'], avoidedStorage: ['warm'], badStorageEffect: 'spoil' };
+  }
+  if (category === ItemType.Potion) {
+    return { preferredStorage: ['room'], avoidedStorage: ['warm'], badStorageEffect: 'disable' };
+  }
+  if (category === ItemType.Equipment || category === ItemType.GuildCard) {
+    return { preferredStorage: ['room'], avoidedStorage: ['warm'], badStorageEffect: 'disable' };
+  }
+  if (category === ItemType.OreCommon || category === ItemType.OreRare) {
+    return { preferredStorage: ['room'], avoidedStorage: [], badStorageEffect: 'none' };
+  }
+  return getStorageProfileForCategory(category);
 }
 
 export function categoryName(cat: ItemType): string {

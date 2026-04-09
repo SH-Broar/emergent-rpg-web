@@ -272,16 +272,6 @@ weight = 0.05
 colorInfluence = Iron:0.2, Water:0.12, Electric:0.1
 addResource = Crystal_Cavern:OreRare:10, Crystal_Cavern:OreCommon:20
 
-# 길 막힘 (데이터에서 blockRouteFrom/To 지정 — 자동 랜덤 발생과 별개)
-[산길 방향 통제]
-description = 산길 일부가 통제되어 특정 방향으로의 이동이 제한된다.
-location = Mountain_Path
-triggerDay = -1
-colorInfluence = Earth:0.06, Iron:-0.05
-blockRouteFrom = Mountain_Path
-blockRouteTo = Bandit_Hideout
-blockRouteDays = 2
-
 # ---- 추가 랜덤 이벤트 ----
 
 [약초원의 요정 가루]

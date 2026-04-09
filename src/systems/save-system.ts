@@ -83,10 +83,14 @@ function serializeActor(a: Actor): object {
     hyperionLevel: a.hyperionLevel,
     hyperionFlags: [...a.hyperionFlags],
     lastTickHour: a.lastTickHour,
+    lifeData: { ...a.lifeData },
+    flags: [...a.flags.entries()],
+    variables: [...a.variables.entries()],
     items: [...a.items.entries()],
     equippedWeapon: a.equippedWeapon,
     equippedArmor: a.equippedArmor,
     equippedAccessory: a.equippedAccessory,
+    equippedAccessory2: a.equippedAccessory2,
   };
 }
 
@@ -115,10 +119,14 @@ function deserializeActor(d: any): Actor {
   a.hyperionLevel = d.hyperionLevel ?? 0;
   a.hyperionFlags = d.hyperionFlags ?? [false, false, false, false, false];
   a.lastTickHour = d.lastTickHour ?? 6;
+  a.lifeData = { ...a.lifeData, ...(d.lifeData ?? {}) };
+  a.flags = new Map(d.flags ?? []);
+  a.variables = new Map(d.variables ?? []);
   a.items = new Map(d.items ?? []);
   a.equippedWeapon = d.equippedWeapon ?? '';
   a.equippedArmor = d.equippedArmor ?? '';
   a.equippedAccessory = d.equippedAccessory ?? '';
+  a.equippedAccessory2 = d.equippedAccessory2 ?? '';
   return a;
 }
 

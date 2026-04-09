@@ -32,6 +32,7 @@ export function createDialogueScreen(
 
   let selectedIdx = -1;
   let dialogueLines: string[] = [];
+  let actionMessage = '';
 
   function renderNpcSelect(el: HTMLElement) {
     el.innerHTML = '';
@@ -75,17 +76,12 @@ export function createDialogueScreen(
     const npc = npcsHere[selectedIdx];
     if (!npc) { renderNpcSelect(el); return; }
 
-    const rel = p.relationships.get(npc.name);
-    const overall = rel ? getRelationshipOverall(rel) : 0;
-    const stage = getRelationshipStage(p, npc.name, session.knowledge, session.actors);
-    const stageLabel = getRelationshipStageLabel(stage);
-
     if (dialogueLines.length === 0) {
       // 대화하면 이름을 알게 됨
       session.knowledge.addKnownName(npc.name);
       session.knowledge.trackConversation(npc.name);
       const isCompanion = session.knowledge.isCompanion(npc.name);
-      const effectiveStage = isCompanion ? 'companion' as const : stage;
+      const effectiveStage = isCompanion ? 'companion' as const : getRelationshipStage(p, npc.name, session.knowledge, session.actors);
       const line = getDialogue(npc, effectiveStage);
       dialogueLines = [
         `\u300c${line}\u300d`,
@@ -94,6 +90,13 @@ export function createDialogueScreen(
       session.backlog.add(session.gameTime, `${npc.name}: \u300c${line}\u300d`, '\ub300\uc0ac', p.name);
       callbacks.onTalk(npc.name);
     }
+
+    const rel = p.relationships.get(npc.name);
+    const overall = rel ? getRelationshipOverall(rel) : 0;
+    const stage = session.knowledge.isCompanion(npc.name)
+      ? 'companion' as const
+      : getRelationshipStage(p, npc.name, session.knowledge, session.actors);
+    const stageLabel = getRelationshipStageLabel(stage);
 
     el.innerHTML = '';
     const wrap = document.createElement('div');
@@ -107,6 +110,7 @@ export function createDialogueScreen(
         <span class="dialogue-npc-info">${raceName(npc.base.race)} / ${spiritRoleName(npc.spirit.role)}</span>
         <span class="dialogue-affinity">${stageLabel} (${overall.toFixed(2)})</span>
       </div>
+      ${actionMessage ? `<div class="trade-message">${actionMessage}</div>` : ''}
       <div class="dialogue-box">
         ${[...dialogueLines].reverse().map(l => `<div class="dialogue-line">${l}</div>`).join('')}
       </div>
@@ -130,6 +134,7 @@ export function createDialogueScreen(
     wrap.querySelector('[data-back]')?.addEventListener('click', () => {
       selectedIdx = -1;
       dialogueLines = [];
+      actionMessage = '';
       renderNpcSelect(el);
     });
 
@@ -145,6 +150,7 @@ export function createDialogueScreen(
   function handleDialogueAction(action: DialogueAction, npcName: string, el: HTMLElement) {
     switch (action) {
       case 'continue': {
+        actionMessage = '';
         const npcAct = npcsHere[selectedIdx];
         if (npcAct) {
           const isComp = session.knowledge.isCompanion(npcName);
@@ -162,15 +168,17 @@ export function createDialogueScreen(
         if (npcActor) {
           const result = tryRecruitCompanion(p, npcActor, session.knowledge, session.backlog, session.gameTime, session.actors);
           if (result.success) {
+            actionMessage = '';
             callbacks.onRecruit(npcName);
           } else if (result.messages.length > 0) {
-            dialogueLines.push(result.messages[0]);
+            actionMessage = result.messages[0];
             renderDialogue(el);
           }
         }
         break;
       }
       case 'info': {
+        actionMessage = '';
         const npcActor = npcsHere[selectedIdx];
         if (npcActor) callbacks.onInfo(npcName, npcActor);
         break;
@@ -193,6 +201,7 @@ export function createDialogueScreen(
         if (selectedIdx >= 0) {
           selectedIdx = -1;
           dialogueLines = [];
+          actionMessage = '';
           renderNpcSelect(container);
         } else {
           callbacks.onBack();
@@ -206,6 +215,7 @@ export function createDialogueScreen(
           const idx = parseInt(key, 10) - 1;
           if (idx < npcsHere.length) {
             selectedIdx = idx;
+            actionMessage = '';
             renderDialogue(container);
           }
         }

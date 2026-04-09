@@ -15,11 +15,13 @@ function getSessionCrops(session: GameSession): CropState[] {
 import { itemName } from '../../types/registry';
 import { randomFloat } from '../../types/rng';
 import type { ActivitySimConfig } from './activity-sim';
+import { getItemDef } from '../../types/item-defs';
 
 /** 활동 실행 아이콘 (effectType 기반) */
 const ACTIVITY_ICON: Record<string, string> = {
   random_loot: '🔍', give: '📦', heal_hp: '💚',
-  restore_mp: '💙', start_crop: '🌱', buff_attack: '⚔️', buff_defense: '🛡️',
+  restore_vigor: '💛', restore_mp: '💙', gain_gold: '💰',
+  start_crop: '🌱', buff_attack: '⚔️', buff_defense: '🛡️',
   hear_rumor: '💬', learn_spell: '✨',
 };
 function resolveActivityIcon(effectType: string): string {
@@ -81,10 +83,10 @@ export function createActivityScreen(
       wrap.appendChild(hint);
     } else {
       const list = document.createElement('div');
-      list.className = 'menu-buttons';
+      list.className = 'menu-buttons activity-list';
       activities.forEach((act, i) => {
         const btn = document.createElement('button');
-        btn.className = 'btn npc-item';
+        btn.className = 'btn npc-item activity-item';
         btn.style.minHeight = '44px';
         btn.dataset.idx = String(i);
         const stockNum = session.activitySystem.getStock(p.currentLocation, act.key);
@@ -123,6 +125,10 @@ export function createActivityScreen(
       const have = p.spirit.inventory.get(req.item) ?? 0;
       if (have < req.amount) return `${itemName(req.item)}\uc774(\uac00) \ubd80\uc871\ud569\ub2c8\ub2e4!`;
     }
+    for (const req of act.itemReqsById) {
+      const have = p.getItemCount(req.itemId);
+      if (have < req.amount) return `${getItemDef(req.itemId)?.name ?? req.itemId}\uc774(\uac00) \ubd80\uc871\ud569\ub2c8\ub2e4!`;
+    }
     return null;
   }
 
@@ -132,6 +138,9 @@ export function createActivityScreen(
     // give items
     for (const give of act.gives) {
       p.addItem(give.item, give.amount);
+    }
+    for (const give of act.givesById) {
+      p.addItemById(give.itemId, give.amount);
     }
 
     if (effect.startsWith('start_crop:')) {
@@ -152,9 +161,15 @@ export function createActivityScreen(
     } else if (effect.startsWith('heal_hp:')) {
       const amount = parseInt(effect.split(':')[1], 10) || 0;
       p.adjustHp(amount);
+    } else if (effect.startsWith('restore_vigor:')) {
+      const amount = parseInt(effect.split(':')[1], 10) || 0;
+      p.adjustAp(Math.ceil(amount / 10));
     } else if (effect.startsWith('restore_mp:')) {
       const amount = parseInt(effect.split(':')[1], 10) || 0;
       p.adjustMp(amount);
+    } else if (effect.startsWith('gain_gold:')) {
+      const amount = parseInt(effect.split(':')[1], 10) || 0;
+      p.addGold(amount);
     } else if (effect.startsWith('buff_attack:')) {
       const amount = parseInt(effect.split(':')[1], 10) || 0;
       session.playerBuffs.push({ type: 'attack', amount, remainingTurns: -1 });
@@ -165,6 +180,11 @@ export function createActivityScreen(
       for (const entry of act.lootTable) {
         if (randomFloat(0, 1) <= entry.chance) {
           p.addItem(entry.item, entry.amount);
+        }
+      }
+      for (const entry of act.lootTableById) {
+        if (randomFloat(0, 1) <= entry.chance) {
+          p.addItemById(entry.itemId, entry.amount);
         }
       }
     }
@@ -200,6 +220,9 @@ export function createActivityScreen(
     for (const req of act.itemReqs) {
       p.consumeItem(req.item, req.amount);
     }
+    for (const req of act.itemReqsById) {
+      p.removeItemById(req.itemId, req.amount);
+    }
 
     // 재고 소모
     if (act.stock > 0) {
@@ -210,6 +233,7 @@ export function createActivityScreen(
     const hpBefore = p.base.hp;
     const mpBefore = p.base.mp;
     const invBefore = new Map(p.spirit.inventory);
+    const itemIdBefore = new Map(p.items);
 
     // Apply effect
     applyEffect(act);
@@ -244,6 +268,9 @@ export function createActivityScreen(
     if (act.gives.length > 0) {
       rewardParts.push(act.gives.map(g => `${itemName(g.item)} ×${g.amount}`).join(', '));
     }
+    if (act.givesById.length > 0) {
+      rewardParts.push(act.givesById.map(g => `${getItemDef(g.itemId)?.name ?? g.itemId} ×${g.amount}`).join(', '));
+    }
 
     // 랜덤 루트 결과
     if (act.effect === 'random_loot') {
@@ -251,6 +278,10 @@ export function createActivityScreen(
       for (const [type, count] of p.spirit.inventory) {
         const before = invBefore.get(type) ?? 0;
         if (count > before) gained.push(`${itemName(type)} ×${count - before}`);
+      }
+      for (const [id, count] of p.items) {
+        const before = itemIdBefore.get(id) ?? 0;
+        if (count > before) gained.push(`${getItemDef(id)?.name ?? id} ×${count - before}`);
       }
       rewardParts.push(gained.length > 0 ? gained.join(', ') : '수확 없음');
     }
@@ -260,6 +291,14 @@ export function createActivityScreen(
     const mpDelta = Math.round(p.base.mp - mpBefore);
     if (hpDelta > 0) rewardParts.push(`HP +${hpDelta}`);
     if (mpDelta > 0) rewardParts.push(`MP +${mpDelta}`);
+    if (act.effect.startsWith('restore_vigor:')) {
+      const amount = parseInt(act.effect.split(':')[1], 10) || 0;
+      rewardParts.push(`TP +${Math.ceil(amount / 10)}`);
+    }
+    if (act.effect.startsWith('gain_gold:')) {
+      const amount = parseInt(act.effect.split(':')[1], 10) || 0;
+      rewardParts.push(`${amount}G 획득`);
+    }
 
     // 버프·작물
     if (act.effect.startsWith('buff_attack:'))  rewardParts.push('공격력 버프 적용');

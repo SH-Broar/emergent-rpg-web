@@ -1,9 +1,10 @@
 import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
 import { ItemType } from '../../types/enums';
-import { computeEatEffect } from '../../types/eat-system';
+import { applyRecovery, computeEatEffect } from '../../types/eat-system';
 import { getArmorDef, getItemDef, getWeaponDef, categoryName, type ItemDef } from '../../types/item-defs';
 import { getRaceCapabilitySet, parseTags } from '../../types/tag-system';
+import { advanceTurn } from '../../systems/world-simulation';
 
 type EquipSlot = 'weapon' | 'armor' | 'accessory' | 'accessory2';
 type CarryEntry =
@@ -45,6 +46,14 @@ function getSlotLabel(slot: EquipSlot): string {
     case 'accessory': return '💍 악세서리 1';
     case 'accessory2': return '💍 악세서리 2';
   }
+}
+
+function getEquipSlotForItemId(itemId: string): EquipSlot | null {
+  const weapon = getWeaponDef(itemId);
+  if (weapon) return 'weapon';
+  const armor = getArmorDef(itemId);
+  if (!armor) return null;
+  return armor.type === 'Accessory' ? 'accessory' : 'armor';
 }
 
 export function createInventoryScreen(
@@ -189,8 +198,12 @@ export function createInventoryScreen(
     return entries;
   }
 
-  function getConsumableEntries(): CarryEntry[] {
-    return getCarryEntries().filter(entry => entry.consumable);
+  function getCarryEntryDetail(entry: CarryEntry): string {
+    if (entry.consumable) {
+      const warning = getConsumeWarning(entry);
+      return warning ? `사용/식사 가능 · ${warning}` : '사용/식사 가능';
+    }
+    return entry.detail || '장비는 위 슬롯에서 변경';
   }
 
   function getConsumeWarning(entry: CarryEntry): string {
@@ -210,7 +223,7 @@ export function createInventoryScreen(
     showResult = false;
     resultMessage = '';
     resultStats = [];
-    consumeMode = false;
+    consumeMode = true;
     render(el);
   }
 
@@ -264,12 +277,19 @@ export function createInventoryScreen(
       }
     }
 
-    if (tp) p.adjustAp(tp);
-    if (hp) p.adjustHp(hp);
-    if (mp) p.adjustMp(mp);
-    if (mood) p.adjustMood(mood);
+    const applied = applyRecovery(p, { tp, hp, mp, mood });
 
-    session.gameTime.advance(10);
+    advanceTurn(
+      10,
+      session.gameTime,
+      session.world,
+      session.events,
+      session.actors,
+      session.playerIdx,
+      session.backlog,
+      session.social,
+      session.knowledge,
+    );
     session.backlog.add(session.gameTime, `${p.name}: ${message}`, '행동');
 
     if (statusEffect === 'poison') {
@@ -279,12 +299,12 @@ export function createInventoryScreen(
     }
 
     const statLines: string[] = [];
-    if (tp > 0) statLines.push(`TP +${tp}`);
-    else if (tp < 0) statLines.push(`TP ${tp}`);
-    if (hp > 0) statLines.push(`HP +${hp}`);
-    else if (hp < 0) statLines.push(`HP ${hp}`);
-    if (mp > 0) statLines.push(`MP +${mp}`);
-    else if (mp < 0) statLines.push(`MP ${mp}`);
+    if (applied.tp > 0) statLines.push(`TP +${applied.tp}`);
+    else if (applied.tp < 0) statLines.push(`TP ${applied.tp}`);
+    if (applied.hp > 0) statLines.push(`HP +${applied.hp}`);
+    else if (applied.hp < 0) statLines.push(`HP ${applied.hp}`);
+    if (applied.mp > 0) statLines.push(`MP +${applied.mp}`);
+    else if (applied.mp < 0) statLines.push(`MP ${applied.mp}`);
     if (statusEffect === 'poison') statLines.push('중독!');
     if (statusEffect === 'stomachache') statLines.push('배탈!');
 
@@ -321,32 +341,33 @@ export function createInventoryScreen(
         가방 ${bagCount}/${bagCap}칸 · 공격 ${p.getEffectiveAttack().toFixed(1)} · 방어 ${p.getEffectiveDefense().toFixed(1)} · 💰${p.spirit.gold}G
       </div>
       <div class="menu-buttons" style="margin-top:4px">
-        <button class="btn" data-consume>1. 사용 / 식사</button>
+        <button class="btn inventory-main-btn" data-consume>
+          <span class="inventory-main-title">1. 보유품 리스트</span>
+          <span class="inventory-main-subtitle">먹거나 사용할 수 있는 물건은 리스트에서 바로 처리</span>
+        </button>
       </div>
       <div style="font-size:12px;color:var(--text-dim)">장착 중</div>
       <div class="menu-buttons">
         ${slots.map((slot, index) => `
-          <button class="btn" data-slot="${slot}" style="text-align:left">
-            <div style="display:flex;justify-content:space-between;gap:8px">
-              <span>${index + 2}. <strong>${getSlotLabel(slot)}</strong></span>
-              <span>${getEquippedName(slot)}</span>
-            </div>
-            <div style="font-size:11px;color:var(--text-dim);margin-top:2px">${getEquippedStats(slot) || '장착 없음'}</div>
+          <button class="btn inventory-main-btn" data-slot="${slot}">
+            <span class="inventory-main-title">${index + 2}. ${getSlotLabel(slot)}</span>
+            <span class="inventory-main-subtitle">${getEquippedName(slot)}</span>
+            <span class="inventory-main-subtitle">${getEquippedStats(slot) || '장착 없음'}</span>
           </button>
         `).join('')}
       </div>
-      <div style="font-size:12px;color:var(--text-dim)">전체 보유품</div>
+      <div style="font-size:12px;color:var(--text-dim)">보유품 미리보기</div>
       ${entries.length === 0 ? '<p class="hint">가방이 비어 있다.</p>' : `
-        <div class="inv-grid" style="max-height:38vh;overflow-y:auto">
-          ${entries.map(entry => `
+        <div class="inv-grid">
+          ${entries.slice(0, 4).map(entry => `
             <div class="inv-item">
               <span class="inv-name">${entry.label}</span>
-              <span class="inv-count">x${entry.qty}${entry.detail ? ` · ${entry.detail}` : ''}</span>
+              <span class="inv-count">x${entry.qty}</span>
             </div>
           `).join('')}
         </div>
       `}
-      <p class="hint">1=사용/식사, 2~5=장비 슬롯, Esc=닫기</p>
+      <p class="hint">1=보유품 리스트, 2~5=장비 슬롯, Esc=닫기</p>
     `;
 
     wrap.querySelector('[data-back]')?.addEventListener('click', onDone);
@@ -365,7 +386,7 @@ export function createInventoryScreen(
   }
 
   function renderConsume(el: HTMLElement): void {
-    const entries = getConsumableEntries();
+    const entries = getCarryEntries();
 
     el.innerHTML = '';
     const wrap = document.createElement('div');
@@ -373,17 +394,17 @@ export function createInventoryScreen(
 
     wrap.innerHTML = `
       <button class="btn back-btn" data-back>← 뒤로 [Esc]</button>
-      <h2>사용 / 식사</h2>
-      <p style="color:var(--text-dim);font-size:12px;text-align:center">음식, 재료, 약초, 물약 등을 여기서 사용한다.</p>
-      ${entries.length === 0 ? '<p class="hint">사용할 수 있는 소지품이 없습니다.</p>' : `
-        <div class="npc-list">
+      <h2>보유품 리스트</h2>
+      <p style="color:var(--text-dim);font-size:12px;text-align:center">먹거나 사용할 수 있는 소지품은 목록에서 바로 처리한다.</p>
+      ${entries.length === 0 ? '<p class="hint">가방이 비어 있다.</p>' : `
+        <div class="inventory-entry-list">
           ${entries.map((entry, index) => `
-            <button class="btn npc-item" data-consume-entry="${index}">
-              <span class="npc-num">${index + 1}.</span>
-              <span class="npc-name-row">
-                <span class="npc-name">${entry.label} x${entry.qty}</span>
+            <button class="btn inventory-entry-btn" data-carry-entry="${index}">
+              <span class="inventory-entry-top">
+                <span class="inventory-entry-title">${index + 1}. ${entry.label}</span>
+                <span class="inventory-entry-count">x${entry.qty}</span>
               </span>
-              <span class="npc-detail">${getConsumeWarning(entry)}</span>
+              <span class="inventory-entry-detail">${getCarryEntryDetail(entry)}</span>
             </button>
           `).join('')}
         </div>
@@ -395,10 +416,26 @@ export function createInventoryScreen(
       consumeMode = false;
       render(el);
     });
-    wrap.querySelectorAll<HTMLButtonElement>('[data-consume-entry]').forEach(btn => {
+    wrap.querySelectorAll<HTMLButtonElement>('[data-carry-entry]').forEach(btn => {
       btn.addEventListener('click', () => {
-        const idx = parseInt(btn.dataset.consumeEntry ?? '-1', 10);
-        if (idx >= 0 && idx < entries.length) doConsume(entries[idx], el);
+        const idx = parseInt(btn.dataset.carryEntry ?? '-1', 10);
+        if (idx < 0 || idx >= entries.length) return;
+        const entry = entries[idx];
+        if (entry.consumable) {
+          doConsume(entry, el);
+          return;
+        }
+        if (entry.kind === 'item') {
+          const slot = getEquipSlotForItemId(entry.id);
+          if (slot) {
+            selectedSlot = slot;
+            consumeMode = false;
+            render(el);
+            return;
+          }
+        }
+        statusMessage = '이 소지품은 바로 사용할 수 없다.';
+        render(el);
       });
     });
 
@@ -433,11 +470,9 @@ export function createInventoryScreen(
         <div style="font-size:12px;color:var(--text-dim)">장착 가능 (${candidates.length})</div>
         <div class="menu-buttons">
           ${candidates.map((candidate, index) => `
-            <button class="btn" data-equip="${index}" style="text-align:left">
-              <div style="display:flex;justify-content:space-between;gap:8px">
-                <span>${index + 1}. ${candidate.name}</span>
-                <span style="color:var(--success);font-size:12px">${candidate.stats}</span>
-              </div>
+            <button class="btn inventory-main-btn" data-equip="${index}">
+              <span class="inventory-main-title">${index + 1}. ${candidate.name}</span>
+              <span class="inventory-main-subtitle" style="color:var(--success)">${candidate.stats}</span>
             </button>
           `).join('')}
         </div>
@@ -543,9 +578,26 @@ export function createInventoryScreen(
           return;
         }
         if (/^[1-9]$/.test(key)) {
-          const entries = getConsumableEntries();
+          const entries = getCarryEntries();
           const idx = parseInt(key, 10) - 1;
-          if (idx < entries.length) doConsume(entries[idx], container);
+          if (idx < entries.length) {
+            const entry = entries[idx];
+            if (entry.consumable) {
+              doConsume(entry, container);
+              return;
+            }
+            if (entry.kind === 'item') {
+              const slot = getEquipSlotForItemId(entry.id);
+              if (slot) {
+                selectedSlot = slot;
+                consumeMode = false;
+                render(container);
+                return;
+              }
+            }
+            statusMessage = '이 소지품은 바로 사용할 수 없다.';
+            render(container);
+          }
         }
         return;
       }

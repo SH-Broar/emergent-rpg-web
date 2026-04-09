@@ -23,9 +23,10 @@ export class GameRegistry {
 
   initDefaults(): void {
     this.locationNames.set(Loc.Alimes, '알리메스');
-    this.locationNames.set(Loc.Guild_Hall, '길드 홀');
+    this.locationNames.set(Loc.Guild_Hall, '길드 홀 본부');
+    this.locationNames.set(Loc.Guild_Branch, '길드 알리메스 지부');
     this.locationNames.set(Loc.Market_Square, '시장');
-    this.locationNames.set(Loc.Cyan_Dunes, '시안 듄즈');
+    this.locationNames.set(Loc.Cyan_Dunes, '시안 사구');
     this.locationNames.set(Loc.Memory_Spring, '기억의 샘');
     this.locationNames.set(Loc.Limun_Ruins, '리문 유적');
 
@@ -52,7 +53,7 @@ export class GameRegistry {
     this.locationNames.set('Moss_Tavern', '모스 주막');
     this.locationNames.set('Enicham', '에니챰');
     this.locationNames.set('Farm', '농장');
-    this.locationNames.set('Herb_Garden', '약초원');
+    this.locationNames.set('Herb_Garden', '플루엔 약초원');
 
     this.itemNames.set(ItemType.Food, '음식');
     this.itemNames.set(ItemType.Herb, '약초');

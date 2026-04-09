@@ -397,13 +397,92 @@ role = Guard
 strength = 0.7
 gold = 100
 location = Alimes
-homeLocation = Alimes
+homeLocation = Summit
 age = 150
 colorValues = 0.3,0.7,0.5,0.5,0.4,0.4,0.4,0.5
 domainHigh = Calm,Adaptable,Methodical,Reliable,Patient,Grounded,Cynical,Secretive
 domainLow = Passionate,Indifferent,Stagnant,Flexible,Restless,Freesprited,Apathetic,Honest
 inventory = Equipment:1, Potion:3
 background = 계약에 죽고 사는 악마족.|업무 할 때는 아주 낮은 텐션으로 무거운 말투를 쓰지만, 평소에는 그렇게까지 딱딱하진 않다.|이유르에게 계약되어 아이리의 감시 역을 맡고 있으며, 알리메스 꼭대기에 거주 중.|종신 계약이라 힘들 법도 하지만, 눌러앉아 있을 수 있는 건 최고의 복지라고 한다.
+
+[아이리]
+playable = 0
+race = Spirit
+role = Villager
+strength = 0.95
+gold = 0
+location = Summit
+homeLocation = Summit
+stationary = 1
+age = 21
+colorValues = 0.3,0.6,0.4,0.5,0.7,0.4,0.8,0.6
+domainHigh = Calm,Adaptable,Methodical,Reliable,Patient,Grounded,Hopeful,Secretive
+domainLow = Passionate,Indifferent,Impulsive,Flexible,Restless,Freesprited,Cynical,Honest
+inventory = Potion:4, Herb:8
+background = 설산 정상에 머무는 설녀.|알리메 설산의 바람과 눈발이 가장 잦아드는 순간에만 모습을 드러내며, 정상에 다다른 자의 발걸음을 조용히 지켜본다.|윤희원의 감시 대상이지만 완전히 적대적인 존재는 아니며, 설산의 균형이 무너질 때만 직접 움직인다고 한다.
+
+[연월]
+playable = 0
+race = Spirit
+role = Priest
+strength = 0.52
+gold = 30
+location = Moonlit_Clearing
+homeLocation = Fullmoon_Pavilion
+age = 37
+colorValues = 0.4,0.5,0.4,0.4,0.5,0.6,0.8,0.7
+domainHigh = Calm,Adaptable,Methodical,Reliable,Patient,Freesprited,Hopeful,Secretive
+domainLow = Passionate,Indifferent,Impulsive,Fragile,Restless,Grounded,Cynical,Honest
+inventory = Herb:4, Potion:2
+background = 달빛 빈터 낮 시간을 지키는 월견인.|해가 떠 있는 동안에는 빈터를 정돈하고, 밤이 되면 만월정으로 돌아가 달의 흐름을 읽는다.|누구에게나 친절하지만, 달빛 아래에서만 보이는 것들에 대해서는 쉽게 말하지 않는다.
+
+[호연]
+playable = 0
+race = Foxkin
+role = Villager
+strength = 0.58
+gold = 45
+location = Fox_Village
+homeLocation = Fox_Village
+stationary = 1
+age = 24
+colorValues = 0.4,0.4,0.5,0.4,0.6,0.7,0.5,0.5
+domainHigh = Adaptable,Inventive,Flexible,Patient,Freesprited,Hopeful,Cunning
+domainLow = Rigid,Stagnant,Stubborn,Restless,Grounded,Cynical,Naive
+inventory = Food:4, Herb:3
+background = 조용한 언덕 너머 여우 마을의 길잡이.|티클릿 산맥의 숨은 샛길과 여우불의 흐름을 읽는 데 능숙하며, 낯선 손님이 길을 잃지 않도록 한 번쯤은 도와준다.|말수는 적지 않지만 중요한 비밀은 가볍게 흘리지 않는다.
+
+[미르테]
+playable = 0
+race = Dryad
+role = Villager
+strength = 0.54
+gold = 20
+location = Mistpond
+homeLocation = Mistpond
+stationary = 1
+age = 61
+colorValues = 0.3,0.7,0.4,0.4,0.8,0.4,0.6,0.5
+domainHigh = Calm,Adaptable,Methodical,Patient,Grounded,Hopeful,Secretive
+domainLow = Passionate,Indifferent,Impulsive,Restless,Freesprited,Cynical,Honest
+inventory = Herb:6, Potion:2
+background = 미스트폰드의 습기를 돌보는 수목 정령.|안개가 지나치게 짙어지면 수초를 정리하고, 연못에 사는 작은 생명들이 떠밀려 나가지 않도록 수면을 안정시킨다.|사람에게 우호적이지만 소란스러운 방문객은 좋아하지 않는다.
+
+[세라핀]
+playable = 0
+race = Spirit
+role = Priest
+strength = 0.63
+gold = 35
+location = Starlit_Mirrorway
+homeLocation = Starlit_Mirrorway
+stationary = 1
+age = 48
+colorValues = 0.4,0.8,0.5,0.4,0.5,0.6,0.9,0.4
+domainHigh = Calm,Adaptable,Methodical,Reliable,Patient,Freesprited,Hopeful,Honest
+domainLow = Passionate,Indifferent,Impulsive,Fragile,Restless,Grounded,Cynical,Secretive
+inventory = Potion:4, Herb:4
+background = 성야 경면길의 수면 사제.|밤이 되어 별빛 수로가 열리면 가장 먼저 길 상태를 살피고, 잘못 들어온 이가 물에 빠지지 않도록 호면의 흐름을 안정시킨다.|말투는 부드럽지만, 경면길을 함부로 대하는 사람에게는 단호하다.
 
 # ============================================================
 # 라르 포레스트 관련 캐릭터

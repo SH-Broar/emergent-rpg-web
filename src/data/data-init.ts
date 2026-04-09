@@ -103,11 +103,28 @@ export function initLocations(sections: DataSection[], world: World): void {
         data.timeVisible = { fromHour: parts[0], toHour: parts[1] };
       }
     }
+    data.hidden = s.getInt('hidden', 0) === 1;
 
     world.setLocation(id, data);
   }
   world.rebuildTravelGraph();
   world.initMarketFromRegistry();
+}
+
+function hasLoadedLocation(world: World, locationId: string): boolean {
+  return world.getAllLocations().has(locationId);
+}
+
+function filterActorsByLoadedLocations(actors: Actor[], world: World, warnings: string[]): Actor[] {
+  const filtered = actors.filter(actor =>
+    hasLoadedLocation(world, actor.currentLocation)
+    && hasLoadedLocation(world, actor.homeLocation),
+  );
+  const removed = actors.length - filtered.length;
+  if (removed > 0) {
+    warnings.push(`Skipped ${removed} actor(s) outside loaded RDC locations`);
+  }
+  return filtered;
 }
 
 // --- actors.txt ---
@@ -203,8 +220,10 @@ export function initActors(sections: DataSection[]): Actor[] {
 }
 
 // --- events.txt ---
-export function initEvents(sections: DataSection[], events: EventSystem, _world: World): void {
+export function initEvents(sections: DataSection[], events: EventSystem, world: World): void {
   for (const s of sections) {
+    const rawLocation = s.get('location', '').trim();
+    if (rawLocation && !hasLoadedLocation(world, rawLocation)) continue;
     const ev = createGameEvent(s.name, s.get('description', ''));
     ev.location = parseLocationID(s.get('location', 'Alimes'));
 
@@ -266,6 +285,7 @@ export function initDungeonSystem(
   dungeonEventSections: DataSection[],
   combatSections: DataSection[],
   dungeon: DungeonSystem,
+  world: World,
 ): void {
   // monsters — loot는 "Item:amount:chance" 3항 형식, 스킬은 skill_N_* 키
   for (const s of monsterSections) {
@@ -303,6 +323,8 @@ export function initDungeonSystem(
 
   // dungeons — colorInfluence는 "Element:float", lootPerAdvance는 3항
   for (const s of dungeonSections) {
+    const rawAccessFrom = s.get('accessFrom', '').trim();
+    if (rawAccessFrom && !hasLoadedLocation(world, rawAccessFrom)) continue;
     dungeon.addDungeon({
       id: s.name,
       name: s.get('name', s.name),
@@ -312,6 +334,27 @@ export function initDungeonSystem(
       difficulty: s.getFloat('difficulty', 0.5),
       progressPerAdvance: s.getFloat('progressPerAdvance', 10),
       accessFrom: parseLocationID(s.get('accessFrom', '')),
+      availableHours: (() => {
+        const raw = s.get('availableHours', '').trim();
+        if (!raw) return undefined;
+        const parts = raw.split(':').map(v => parseInt(v.trim(), 10));
+        if (parts.length !== 2 || Number.isNaN(parts[0]) || Number.isNaN(parts[1])) return undefined;
+        return { fromHour: parts[0], toHour: parts[1] };
+      })(),
+      hiddenLocation: s.get('hiddenLocation', '').trim() ? parseLocationID(s.get('hiddenLocation', '')) : undefined,
+      hiddenUnlockProgress: s.getFloat('hiddenUnlockProgress', 100),
+      rule: (() => {
+        const template = s.get('ruleTemplate', '').trim();
+        if (!template) return undefined;
+        return {
+          template,
+          rank: s.getInt('ruleRank', 1),
+          valueA: s.getFloat('ruleValueA', 0),
+          valueB: s.getFloat('ruleValueB', 0),
+          valueC: s.getFloat('ruleValueC', 0),
+          hint: s.get('ruleHint', '').trim(),
+        };
+      })(),
       enemyIds: parseStringList(s.get('enemies', '')),
       lootOnClear: parseLootList(s.get('lootOnClear', '')).map(l => ({
         item: parseItemType(l.item), amount: l.amount, chance: l.chance,
@@ -345,6 +388,9 @@ export function initDungeonSystem(
       hpDamage: s.getInt('hpDamage', 0), vigorDamage: s.getInt('vigorDamage', 0),
       hpHeal: s.getInt('hpHeal', 0), vigorHeal: s.getInt('vigorHeal', 0),
       colorInfluence: parseColorInfluence(s.get('colorInfluence', '')),
+      ruleTemplates: parseStringList(s.get('ruleTemplates', '')),
+      dungeonIds: parseStringList(s.get('dungeonIds', '')),
+      accessFrom: parseStringList(s.get('accessFrom', '')).map(v => parseLocationID(v)),
     });
   }
 
@@ -365,9 +411,10 @@ export function initDungeonSystem(
 }
 
 // --- activities.txt --- 각 섹션은 LocationID, 내부에 activity_N_* 키로 복수 활동
-export function initActivities(sections: DataSection[], activity: ActivitySystem): void {
+export function initActivities(sections: DataSection[], activity: ActivitySystem, world: World): void {
   for (const s of sections) {
     const locationId = s.name;
+    if (!hasLoadedLocation(world, locationId)) continue;
 
     // activity_N 번호 수집
     const activityNums = new Set<number>();
@@ -393,11 +440,20 @@ export function initActivities(sections: DataSection[], activity: ActivitySystem
         itemReqs: parsePairList(s.get(`${prefix}requires`, '')).map(([item, amt]) => ({
           item: parseItemType(item), amount: parseInt(amt, 10) || 1,
         })),
+        itemReqsById: parsePairList(s.get(`${prefix}requireItems`, '')).map(([itemId, amt]) => ({
+          itemId, amount: parseInt(amt, 10) || 1,
+        })),
         gives: parsePairList(s.get(`${prefix}gives`, '')).map(([item, amt]) => ({
           item: parseItemType(item), amount: parseInt(amt, 10) || 1,
         })),
+        givesById: parsePairList(s.get(`${prefix}giveItems`, '')).map(([itemId, amt]) => ({
+          itemId, amount: parseInt(amt, 10) || 1,
+        })),
         lootTable: parseLootList(s.get(`${prefix}loot`, '')).map(l => ({
           item: parseItemType(l.item), amount: l.amount, chance: l.chance,
+        })),
+        lootTableById: parseLootList(s.get(`${prefix}lootItems`, '')).map(l => ({
+          itemId: l.item, amount: l.amount, chance: l.chance,
         })),
         colorInfluence: parseColorInfluence(s.get(`${prefix}colorInfluence`, '')),
         unique: s.get(`${prefix}unique`, '') === 'true',
@@ -495,17 +551,17 @@ export function initAll(data: GameDataFiles): InitResult {
   const world = new World();
   initLocations(data.locations, world);
 
-  const actors = initActors(data.actors);
+  const actors = filterActorsByLoadedLocations(initActors(data.actors), world, warnings);
   if (actors.length === 0) warnings.push('No actors loaded');
 
   const events = new EventSystem();
   initEvents(data.events, events, world);
 
   const dungeonSystem = new DungeonSystem();
-  initDungeonSystem(data.dungeons, data.monsters, data.dungeonEvents, data.combatBehavior, dungeonSystem);
+  initDungeonSystem(data.dungeons, data.monsters, data.dungeonEvents, data.combatBehavior, dungeonSystem, world);
 
   const activitySystem = new ActivitySystem();
-  initActivities(data.activities, activitySystem);
+  initActivities(data.activities, activitySystem, world);
 
   loadHyperion(data.hyperion);
 

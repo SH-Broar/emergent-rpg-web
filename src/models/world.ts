@@ -50,13 +50,14 @@ export interface LocationData {
   gatherEnv: string[];
   /** 이 지역이 보이는 시간대. null = 항상 표시. */
   timeVisible?: { fromHour: number; toHour: number };
+  hidden?: boolean;
 }
 
 export function createLocationData(id: LocationID): LocationData {
   return {
     id, description: '', resources: new Map(), monsterLevel: 0, dangerLevel: 0,
     gridX: 0, gridY: 0, linksBidirectional: [], linksOneWayOut: [],
-    resourceCaps: new Map(), racialSynergy: 0, gatherEnv: [], timeVisible: undefined,
+    resourceCaps: new Map(), racialSynergy: 0, gatherEnv: [], timeVisible: undefined, hidden: false,
   };
 }
 

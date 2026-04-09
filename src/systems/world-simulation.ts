@@ -11,6 +11,7 @@ import { GameTime } from '../types/game-time';
 import { Element, ELEMENT_COUNT, seasonName } from '../types/enums';
 import { Loc, type LocationID } from '../types/location';
 import { npcOnTick } from './npc-ai';
+import { checkNpcLifeEvents } from './npc-life';
 import { tickFarm } from '../models/farming';
 import { getCropDef } from '../data/crop-defs';
 
@@ -118,11 +119,7 @@ export function canNotifyRandomEvent(
   return world.getNeighbors(eventLocation, currentDay).includes(playerLocation);
 }
 
-// ============================================================
-// advanceTurn
-// ============================================================
-
-export function advanceTurn(
+function simulateAdvanceStep(
   minutes: number,
   gameTime: GameTime,
   world: World,
@@ -133,17 +130,18 @@ export function advanceTurn(
   social: SocialHub,
   knowledge: PlayerKnowledge,
 ): void {
+  if (minutes <= 0) return;
+
   const player = actors[playerIdx];
+  const prevTotalMinutes = (gameTime.day - 1) * 1440 + gameTime.hour * 60 + gameTime.minute;
   const factor = minutes / 5;
 
-  // 1. Advance time
   gameTime.advance(minutes);
+  for (const actor of actors) actor.lastTickHour = gameTime.hour;
 
-  // 2. World + quest tick
   world.onTick(gameTime);
   social.updateQuests(gameTime);
 
-  // 3. Location color influence
   const locData = world.getLocation(player.currentLocation);
   const locInfluence = buildLocInfluence(
     player.currentLocation,
@@ -154,8 +152,6 @@ export function advanceTurn(
   );
   player.color.applyInfluence(locInfluence);
 
-  // 자연 드리프트: 컬러 값이 중립(0.5)으로 서서히 회귀
-  // 분당 0.00005씩 — 하루(1440분)에 약 0.072 감소 (매우 완만)
   const driftRate = minutes * 0.00005;
   for (let i = 0; i < player.color.values.length; i++) {
     const v = player.color.values[i];
@@ -163,7 +159,6 @@ export function advanceTurn(
     else if (v < 0.5) player.color.values[i] = Math.min(0.5, v + driftRate);
   }
 
-  // 5. Event check (예약 + 랜덤 풀)
   const triggered = events.checkAndTrigger(gameTime);
   applyEventInfluences(triggered, events, actors, gameTime, log, world);
 
@@ -180,26 +175,25 @@ export function advanceTurn(
     }
   }
 
-  // 6. NPC tick loop (TICK_CHUNK-sized chunks)
-  const chunks = Math.floor(minutes / TICK_CHUNK);
-  for (let c = 0; c < chunks; c++) {
-    for (let i = 0; i < actors.length; i++) {
-      if (i === playerIdx) continue;
-      const actor = actors[i];
-      if (knowledge.isCompanion(actor.name)) continue;
-      npcOnTick(actor, gameTime, world, log, social, actors, TICK_CHUNK);
-    }
+  for (let i = 0; i < actors.length; i++) {
+    if (i === playerIdx) continue;
+    const actor = actors[i];
+    if (knowledge.isCompanion(actor.name)) continue;
+    npcOnTick(actor, gameTime, world, log, social, actors, minutes);
   }
 
-  // 7. Season check
   if (world.seasonSchedule.advanceIfNeeded(gameTime.day)) {
     log.add(gameTime, `계절이 ${seasonName(world.getCurrentSeason())}(으)로 바뀌었다.`, '시스템');
     world.updateWeatherAndTemp();
   }
 
-  // 8. 일별 농장 틱 (날이 바뀌었는지 확인)
   const curTotalMinutes = (gameTime.day - 1) * 1440 + gameTime.hour * 60 + gameTime.minute;
-  const prevDay = Math.floor((curTotalMinutes - minutes) / 1440);
+  const prevHour = Math.floor(prevTotalMinutes / 60);
+  const curHour = Math.floor(curTotalMinutes / 60);
+  if (curHour > prevHour) {
+    checkNpcLifeEvents(actors, social, log, gameTime);
+  }
+  const prevDay = Math.floor(prevTotalMinutes / 1440);
   const curDay = Math.floor(curTotalMinutes / 1440);
   if (curDay > prevDay) {
     for (const [locId, farm] of knowledge.farmStates) {
@@ -230,6 +224,45 @@ export function advanceTurn(
 }
 
 // ============================================================
+// advanceTurn
+// ============================================================
+
+export function advanceTurn(
+  minutes: number,
+  gameTime: GameTime,
+  world: World,
+  events: EventSystem,
+  actors: Actor[],
+  playerIdx: number,
+  log: Backlog,
+  social: SocialHub,
+  knowledge: PlayerKnowledge,
+): void {
+  simulateAdvanceStep(minutes, gameTime, world, events, actors, playerIdx, log, social, knowledge);
+}
+
+export function advanceTurnByChunks(
+  minutes: number,
+  gameTime: GameTime,
+  world: World,
+  events: EventSystem,
+  actors: Actor[],
+  playerIdx: number,
+  log: Backlog,
+  social: SocialHub,
+  knowledge: PlayerKnowledge,
+  chunkMinutes = TICK_CHUNK,
+): void {
+  const safeChunk = Math.max(1, chunkMinutes);
+  let remaining = minutes;
+  while (remaining > 0) {
+    const step = Math.min(safeChunk, remaining);
+    simulateAdvanceStep(step, gameTime, world, events, actors, playerIdx, log, social, knowledge);
+    remaining -= step;
+  }
+}
+
+// ============================================================
 // fastForwardWorld
 // ============================================================
 
@@ -244,6 +277,22 @@ export function fastForwardWorld(
   knowledge?: PlayerKnowledge,
 ): void {
   const clamped = Math.min(elapsedMinutes, FF_MAX_MINUTES);
+  const playerIdx = actors.findIndex(actor => actor.playable);
+  if (knowledge && playerIdx >= 0) {
+    advanceTurnByChunks(
+      clamped,
+      gameTime,
+      world,
+      events,
+      actors,
+      playerIdx,
+      backlog,
+      social,
+      knowledge,
+      FF_CHUNK_MINUTES,
+    );
+    return;
+  }
   const totalChunks = Math.floor(clamped / FF_CHUNK_MINUTES);
 
   for (let c = 0; c < totalChunks; c++) {

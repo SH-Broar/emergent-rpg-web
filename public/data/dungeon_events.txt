@@ -177,3 +177,265 @@ chance = 0.03
 type = discovery
 gives = OreRare:2
 colorInfluence = Electric:0.3, Iron:0.2
+
+[moonlit_traces]
+name = 달토끼의 발자국
+description = 은빛 발자국을 따라가자 먹을 수 있는 풀과 열매가 모여 있었다.
+chance = 0.05
+type = Discovery
+gives = Food:2, Herb:1
+colorInfluence = Light:0.2, Wind:0.1
+
+[silver_moon_blessing]
+name = 은월의 축복
+description = 달빛이 직접 내려앉은 듯 몸이 가벼워진다.
+chance = 0.04
+type = Heal
+hpHeal = 18
+vigorHeal = 20
+colorInfluence = Light:0.25, Water:0.1
+
+[cliffside_rockfall]
+name = 절벽 낙반
+description = 절벽 위에서 바위 조각이 쏟아져 내린다.
+chance = 0.05
+type = Hazard
+hpDamage = 16
+vigorDamage = 10
+colorInfluence = Earth:0.25, Wind:0.12
+
+[sea_mist_cache]
+name = 파도밀수 자루
+description = 바다 안개 속에 숨겨진 방수 자루에서 쓸 만한 물건이 나왔다.
+chance = 0.04
+type = Treasure
+gives = Food:2, Potion:1
+colorInfluence = Water:0.18, Iron:0.08
+
+[foxfire_lantern]
+name = 여우불 초롱
+description = 사당의 여우불이 남긴 푸른 잔광 속에서 특이한 약재를 찾았다.
+chance = 0.04
+type = Discovery
+gives = Herb:2, Potion:1
+colorInfluence = Light:0.18, Dark:0.12
+
+[abandoned_offering]
+name = 버려진 공양상
+description = 오래된 사당의 공양상 위에 아직 쓸 만한 소모품이 남아 있었다.
+chance = 0.03
+type = Treasure
+gives = Food:2, Equipment:1
+colorInfluence = Light:0.12, Earth:0.10
+
+[mountain_shelter]
+name = 산중 피난처
+description = 바람을 피할 수 있는 작은 암굴을 발견했다.
+chance = 0.05
+type = Heal
+hpHeal = 22
+vigorHeal = 16
+colorInfluence = Earth:0.18, Light:0.08
+
+[snowblind_burst]
+name = 설맹 폭풍
+description = 순식간에 시야를 가리는 폭설이 몰아친다.
+chance = 0.05
+type = Hazard
+hpDamage = 18
+vigorDamage = 14
+colorInfluence = Water:0.24, Wind:0.18
+
+[frozen_supply]
+name = 얼어붙은 보급품
+description = 버려진 베이스 캠프의 얼어붙은 상자에서 쓸 만한 물건을 챙겼다.
+chance = 0.03
+type = Treasure
+gives = Potion:2, Food:2
+colorInfluence = Iron:0.10, Water:0.16
+
+[mistwood_bloom]
+name = 미스트우드 개화
+description = 안개를 먹고 피어난 특수 식물이 손이 닿는 높이에 매달려 있었다.
+chance = 0.04
+type = Discovery
+gives = Herb:3
+colorInfluence = Water:0.18, Earth:0.14
+
+[mirror_lake_reflection]
+name = 경면 반사
+description = 호수 같은 수면에 손을 담그자 정신이 맑아졌다.
+chance = 0.04
+type = Heal
+hpHeal = 20
+vigorHeal = 18
+colorInfluence = Water:0.22, Light:0.16
+
+[ember_vent]
+name = 화염 분기공
+description = 땅속에서 뜨거운 증기가 폭발하듯 뿜어져 오른다.
+chance = 0.05
+type = Hazard
+hpDamage = 15
+vigorDamage = 12
+colorInfluence = Fire:0.24, Earth:0.12
+
+[wolf_den_cache]
+name = 늑대 굴 비축분
+description = 늑대들이 모아둔 먹이와 사냥감이 굴 한편에 쌓여 있었다.
+chance = 0.04
+type = Treasure
+gives = Food:3, MonsterLoot:2
+colorInfluence = Dark:0.12, Earth:0.10
+
+[moon_shadow_crossroad]
+name = 달그늘 갈림길
+description = 달빛 각도에 따라 잠시 다른 길이 드러났다. 숨겨진 흔적과 약초를 챙길 수 있었다.
+chance = 0.05
+type = Discovery
+gives = Herb:2, Potion:1
+colorInfluence = Light:0.20, Dark:0.14
+ruleTemplates = MoonPhase
+
+[tide_cut_passage]
+name = 물러난 조수길
+description = 물이 잠시 빠지며 평소에는 보이지 않던 바위 틈 길이 드러났다.
+chance = 0.04
+type = Treasure
+gives = Food:2, OreCommon:1
+colorInfluence = Water:0.18, Wind:0.10
+ruleTemplates = TidalRoute
+
+[ceiling_collapse]
+name = 천장 붕락
+description = 오래 버티지 못한 천장이 갈라지며 돌가루와 파편이 쏟아졌다.
+chance = 0.05
+type = Hazard
+hpDamage = 15
+vigorDamage = 10
+colorInfluence = Earth:0.22, Iron:0.08
+ruleTemplates = CollapsingPath
+
+[mist_double_path]
+name = 안개 속 이중 길
+description = 같은 길이 두 겹으로 보이는 착시 속에서 우연히 숨은 자원을 손에 넣었다.
+chance = 0.04
+type = Discovery
+gives = Herb:2, MonsterLoot:1
+colorInfluence = Water:0.14, Dark:0.18
+ruleTemplates = DeepFog
+
+[frostbite_squall]
+name = 동상성 돌풍
+description = 차가운 돌풍이 장비 틈으로 파고들어 몸의 감각을 무디게 만든다.
+chance = 0.05
+type = Hazard
+hpDamage = 12
+vigorDamage = 12
+colorInfluence = Water:0.22, Wind:0.16
+ruleTemplates = FrostPressure
+
+[predator_marking]
+name = 포식자의 냄새표식
+description = 영역 표식을 밟아 버렸다. 주위의 기척이 갑자기 훨씬 가까워진다.
+chance = 0.05
+type = Hazard
+hpDamage = 11
+vigorDamage = 8
+colorInfluence = Dark:0.20, Earth:0.12
+ruleTemplates = PredatorTerritory
+
+[fresh_tracks]
+name = 선명한 흔적
+description = 막 남겨진 발자국과 긁힌 나무 껍질이 다음 갈림길의 실마리를 준다.
+chance = 0.05
+type = Discovery
+gives = Herb:1, Food:1
+colorInfluence = Wind:0.12, Earth:0.14
+ruleTemplates = TraceHunt
+
+[resonant_altar]
+name = 공명의 제단
+description = 손을 얹자 오래된 제단이 미세하게 울리며 몸의 리듬을 정돈해 주었다.
+chance = 0.04
+type = Heal
+hpHeal = 20
+vigorHeal = 16
+colorInfluence = Light:0.18, Earth:0.16
+ruleTemplates = AncientResonance
+
+[boiling_vent]
+name = 끓어오르는 분기공
+description = 지면 균열에서 뜨거운 증기가 분출해 숨 돌릴 틈을 빼앗는다.
+chance = 0.05
+type = Hazard
+hpDamage = 13
+vigorDamage = 10
+colorInfluence = Fire:0.22, Wind:0.10
+ruleTemplates = HeatGauge
+
+[clearwater_respite]
+name = 맑은 수맥
+description = 정화된 물줄기가 스쳐 지나가며 피로와 상처를 조금 씻어냈다.
+chance = 0.04
+type = Heal
+hpHeal = 18
+vigorHeal = 18
+colorInfluence = Water:0.20, Light:0.18
+ruleTemplates = PurityCurrent
+
+[overstuffed_cache]
+name = 과적된 은닉처
+description = 누군가 욕심내 모아둔 보관처를 찾았다. 챙길 것은 많지만 오래 머물긴 위험하다.
+chance = 0.04
+type = Treasure
+gives = OreRare:1, MonsterLoot:2
+colorInfluence = Iron:0.14, Dark:0.10
+ruleTemplates = GreedRisk
+
+[hidden_campfire]
+name = 숨은 야영 흔적
+description = 먼저 지나간 이들이 남긴 작은 쉼터 덕분에 잠시 숨을 돌릴 수 있었다.
+chance = 0.04
+type = Heal
+hpHeal = 16
+vigorHeal = 14
+colorInfluence = Earth:0.16, Light:0.10
+ruleTemplates = ShelterWindow
+
+[fullmoon_petal]
+name = 만월정 꽃잎
+description = 달빛에만 반응하는 꽃잎이 바람을 타고 흘러와, 빈터 안쪽 길을 잠시 비춰 주었다.
+chance = 0.03
+type = Discovery
+gives = Herb:2, Potion:1
+colorInfluence = Light:0.20, Wind:0.12
+accessFrom = Moonlit_Clearing
+
+[quiet_hill_echo]
+name = 언덕 메아리
+description = 바람을 타고 온 메아리 속에서 누군가 남긴 조심스러운 안내를 읽어냈다.
+chance = 0.03
+type = Heal
+hpHeal = 14
+vigorHeal = 12
+colorInfluence = Wind:0.14, Earth:0.10
+accessFrom = Tiklit_Range
+
+[mistpond_drift]
+name = 연못 안개 조류
+description = 안개가 한쪽으로 갈라지며 특수 수초와 젖은 흔적 몇 개를 드러냈다.
+chance = 0.03
+type = Discovery
+gives = Herb:2, MonsterLoot:1
+colorInfluence = Water:0.18, Earth:0.10
+accessFrom = Erumen_Mistwood
+
+[mirrorway_glimmer]
+name = 경면 잔광
+description = 호면 위를 스치는 별빛 잔광이 정화된 결정 조각 하나를 남기고 사라졌다.
+chance = 0.03
+type = Treasure
+gives = Potion:1, OreRare:1
+colorInfluence = Water:0.16, Light:0.18
+accessFrom = Erumen_Seoncheon

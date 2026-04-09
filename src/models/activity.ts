@@ -9,8 +9,19 @@ export interface ItemRequirement {
   amount: number;
 }
 
+export interface ItemIdAmount {
+  itemId: string;
+  amount: number;
+}
+
 export interface LootTableEntry {
   item: ItemType;
+  amount: number;
+  chance: number;
+}
+
+export interface ItemIdLootTableEntry {
+  itemId: string;
   amount: number;
   chance: number;
 }
@@ -25,8 +36,11 @@ export interface ActivityDef {
   condition: string;
   effect: string;
   itemReqs: ItemRequirement[];
+  itemReqsById: ItemIdAmount[];
   gives: ItemRequirement[];
+  givesById: ItemIdAmount[];
   lootTable: LootTableEntry[];
+  lootTableById: ItemIdLootTableEntry[];
   colorInfluence: number[];
   /** true이면 gives 아이템을 이미 소지 중일 때 활동 목록에서 숨김 */
   unique: boolean;

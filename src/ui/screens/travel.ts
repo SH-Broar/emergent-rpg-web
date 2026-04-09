@@ -10,6 +10,7 @@ import { locationName } from '../../types/registry';
 import { applyTimeTheme } from '../time-theme';
 import { moveCompanions, getDialogue, getRelationshipStage } from '../../systems/npc-interaction';
 import { randomInt, randomFloat } from '../../types/rng';
+import { advanceTurnByChunks } from '../../systems/world-simulation';
 
 // ============================================================
 // 이동 설정
@@ -183,7 +184,20 @@ export function createTravelScreen(
     stopTimers();
     // 남은 게임 시간 보정
     const remaining = totalMinutes - gameElapsedMinutes;
-    if (remaining > 0) session.gameTime.advance(remaining);
+    if (remaining > 0) {
+      advanceTurnByChunks(
+        remaining,
+        session.gameTime,
+        session.world,
+        session.events,
+        session.actors,
+        session.playerIdx,
+        session.backlog,
+        session.social,
+        session.knowledge,
+      );
+      gameElapsedMinutes += remaining;
+    }
     applyTimeTheme(session.gameTime);
     session.player.currentLocation = toId;
     moveCompanions(session.actors, session.knowledge, toId);
@@ -218,7 +232,17 @@ export function createTravelScreen(
     tickHandle = setInterval(() => {
       if (paused || done) return;
       const step = Math.min(GAME_MINS_PER_TICK, totalMinutes - gameElapsedMinutes);
-      session.gameTime.advance(step);
+      advanceTurnByChunks(
+        step,
+        session.gameTime,
+        session.world,
+        session.events,
+        session.actors,
+        session.playerIdx,
+        session.backlog,
+        session.social,
+        session.knowledge,
+      );
       gameElapsedMinutes += step;
       applyTimeTheme(session.gameTime);
 

@@ -15,21 +15,23 @@ name = 알리메스
 description = 바그레트 산맥과 겔리더 산맥이 병풍처럼 둘러싼 오지 마을. 서쪽으로는 시안 사구 너머로 바다가 보이고, 돌로 포장된 작은 광장에는 서른한 종족의 발자국이 뒤섞여 있다. 대장간에서 흘러나오는 망치 소리와 시장의 흥정 소리가 골목에 메아리치며, 산골의 차가운 공기에는 약초와 비단실의 은은한 향이 감돈다. 외진 만큼 단단하게 얽힌 공동체가 이곳의 가장 큰 자산이다.
 x = -3000
 y = -1500
-links = Guild_Hall, Herb_Garden, Silk_Workshop, Moonlit_Clearing, Cyan_Dunes, Tiklit_Range, Bagreat, Gelider
+links = Guild_Branch, Herb_Garden, Silk_Workshop, Moonlit_Clearing, Cyan_Dunes, Tiklit_Range, Bagreat, Gelider
 resources = Food:50
 monsterLevel = 0
 dangerLevel = 0.0
 
-[Guild_Hall]
-name = 길드 소규모 지부
-description = 참나무 문을 열면 잉크와 양피지 냄새가 코끝을 스친다. 벽면 가득 붙은 의뢰서들이 바람에 펄럭이고, 창구 너머로 접수 담당관이 꼼꼼히 서류를 정리하는 모습이 보인다. 본부에 비하면 작고 소박하지만, 알리메스 모험가들에게는 이곳이 첫 발걸음의 시작점이다. 천장에 걸린 길드 휘장 아래로 낡은 장비와 빛바랜 공적 기록이 조용히 지부의 역사를 말해준다.
+[Guild_Branch]
+name = 길드 알리메스 지부
+description = 알리메스 모험가들을 위한 작은 길드 지부. 본부만큼 거대하지는 않지만 의뢰 접수와 기본 서류 업무를 처리할 수 있으며, 산골 마을답게 서로의 얼굴을 다 아는 분위기가 남아 있다. 먼 원정을 앞둔 이들이 마지막으로 장비와 정보를 정리하는 장소이기도 하다.
 x = -2500
 y = -1200
+links = Alimes
+resources = Equipment:1
 monsterLevel = 0
 dangerLevel = 0.0
 
 [Herb_Garden]
-name = 약초원
+name = 플루엔 약초원
 description = 마을 근교에 자리 잡은 정갈한 약초밭. 아침이면 이슬방울이 잎사귀 위에서 보석처럼 반짝이고, 간간이 정령의 빛가루가 공기 중에 어른거린다. 라벤더, 바질, 이름 모를 이종 약초까지 줄지어 자라며, 은은한 허브 향이 바람을 타고 마을까지 흘러간다. 수확한 약초로 끓인 블렌드 차는 알리메스 최고의 인기 메뉴다.
 x = -3500
 y = -1200
@@ -58,7 +60,7 @@ gather_env = 풀밭, 나무 그늘, 뿌리 근처
 
 [Cyan_Dunes]
 name = 시안 사구
-description = 알리메스 서쪽 해안에 펼쳐진 청록빛 모래사장. 밀려드는 파도가 고운 모래를 적실 때마다, 사구 전체가 시안색으로 빛나는 기이한 광경이 연출된다. 해안가에는 조개와 해초, 표류한 광석 조각이 흩어져 있어 초보 채집가들의 연습터로 안성맞춤이다. 바람이 강한 날이면 모래 알갱이가 만들어내는 낮은 노래 소리가 해안을 따라 울려 퍼진다.
+description = 알리메스 서쪽 해안 절벽지대에 펼쳐진 청록빛 사구. 키시나 해변보다 훨씬 거칠고 높낮이 차가 큰 바위 절벽 사이로 시안색 모래가 층층이 쌓여 있으며, 파도가 부서질 때마다 절벽 아래가 푸르게 반짝인다. 해안가에는 조개와 해초, 표류한 광석 조각이 흩어져 있어 초보 채집가들의 연습터로도 알려져 있지만, 조금만 깊이 들어가면 절벽 아래로 떨어지는 위험한 구간이 많다.
 x = -4200
 y = -1500
 resources = Herb:15, OreCommon:10, Food:10
@@ -67,10 +69,9 @@ dangerLevel = 0.1
 
 [Tiklit_Range]
 name = 티클릿 산맥
-description = 알리메스 남쪽에 솟아오른 험준한 산줄기. 날카로운 바위 능선이 톱니처럼 하늘을 찌르고, 산 사이 골짜기에는 항상 안개가 걸려 있다. 중급 모험가들이 실력을 시험하는 곳으로, 산길 곳곳에 야생 몬스터의 발톱 자국이 바위에 깊이 패어 있다. 정상 부근에서는 알리메스 마을이 아득히 작게 내려다보인다.
+description = 르슈드 분기 근처에 이어지는 비교적 낮은 산들이 모인 산지. 울창한 묘목림과 계절 따라 색이 달라지는 꽃나무 지대, 버려진 사당 같은 이질적인 구역이 서로 가까이 붙어 있어 지형 변화가 잦다. 중급 모험가들이 실력을 시험하는 곳으로, 산길 곳곳에 야생 몬스터의 발톱 자국이 바위에 깊이 패어 있다.
 x = -3000
 y = -2800
-links = Bandit_Hideout
 resources = Herb:10, OreCommon:8
 monsterLevel = 3
 dangerLevel = 0.4
@@ -83,15 +84,6 @@ y = -1000
 resources = OreCommon:35, OreRare:5
 monsterLevel = 4
 dangerLevel = 0.55
-
-[Bandit_Hideout]
-name = 도적 소굴
-description = 티클릿 산맥 깊은 바위 틈새에 가려진 은밀한 동굴. 입구에는 경비의 흔적이 남아 있고, 안쪽으로 들어갈수록 횃불 그을음과 식은 모닥불 냄새가 짙어진다. 약탈한 물건이 어수선하게 쌓여 있으며, 벽에는 도적 특유의 암호가 긁혀 있다. 위험하지만 보상도 큰 곳.
-x = -3800
-y = -2800
-resources = Equipment:3, MonsterLoot:8, Food:10
-monsterLevel = 6
-dangerLevel = 0.8
 
 [Bagreat]
 name = 바그레트 산맥
@@ -164,10 +156,91 @@ dangerLevel = 0.75
 
 [Ode_Mountain]
 name = 오드 산
-description = 겔리더 산맥에서 갈라져 나온 독립 봉우리. 산 전체가 기묘한 자기장에 감싸여 있어, 나침반이 제 기능을 잃고 마법 도구가 오작동하는 것으로 악명 높다. 정상에는 원인을 알 수 없는 고대 석조물이 서 있으며, 보름달 밤이면 석조물에서 낮은 진동이 느껴진다고 한다. 고레벨 모험가들 사이에서 '감각만으로 싸워야 하는 산'이라 불리는 난이도 높은 사냥터이다.
+description = 리아그랄타에 맞닿은 거친 산봉우리. 늑대 떼의 흔적이 산책로부터 정상 부근까지 선명하게 남아 있어, 모험가들 사이에서는 '늑대의 산'으로 더 자주 불린다. 바위 능선과 비탈이 반복되는 지형이라 방심하면 짐승에게 포위되기 쉽지만, 그만큼 수렵과 추적을 익히기에는 더없이 좋은 장소다.
 x = -2300
 y = 200
-links = Gelider
+links = Gelider, Riagralta
 resources = OreRare:5, MonsterLoot:12
 monsterLevel = 8
 dangerLevel = 0.8
+
+[Fullmoon_Pavilion]
+name = 만월정
+description = 달빛 빈터 심부에서만 닿을 수 있는 은빛 정자. 밤이면 정자 아래로 맺힌 이슬이 작은 거울처럼 빛나고, 낮에는 흔적만 남긴 채 길이 닫힌다.
+x = -3740
+y = -1910
+links_one_way = Moonlit_Clearing
+resources = Herb:8, Potion:2
+monsterLevel = 0
+dangerLevel = 0.05
+timeVisible = 18:6
+hidden = 1
+
+[Quiet_Hill]
+name = 조용한 언덕
+description = 티클릿 산맥의 숨은 마을권으로 이어지는 낮은 언덕. 바람이 거의 멈춘 것처럼 고요해 여우불조차 천천히 흘러간다.
+x = -3180
+y = -2970
+links = Fox_Village, Hill_Herb_Grove
+links_one_way = Tiklit_Range
+resources = Herb:8, Food:6
+monsterLevel = 0
+dangerLevel = 0.08
+hidden = 1
+
+[Fox_Village]
+name = 여우 마을
+description = 사람보다 여우의 흔적이 더 자연스럽게 어울리는 비밀 정착지. 작은 제단과 등롱 사이로 약한 온기가 감돈다.
+x = -3300
+y = -3080
+links = Quiet_Hill
+resources = Food:10, Herb:6
+monsterLevel = 0
+dangerLevel = 0.0
+hidden = 1
+
+[Hill_Herb_Grove]
+name = 언덕 채집터
+description = 조용한 언덕 뒤편의 작은 채집지. 사람이 거의 드나들지 않아 약초와 들열매가 천천히 쌓인다.
+x = -3060
+y = -3100
+links = Quiet_Hill
+resources = Herb:16, Food:8
+monsterLevel = 0
+dangerLevel = 0.0
+gather_env = 낮은 풀숲, 돌무더기 틈, 오래된 목책 아래
+hidden = 1
+
+[Summit]
+name = 산정
+description = 화이트아웃 너머의 설산 정상. 세상의 바람이 한 점으로 모이는 듯한 눈부신 곳이며, 깊은 고요 속에서 아이리가 머무는 영역이 시작된다.
+x = -1100
+y = -620
+links_one_way = Alime_Mountain
+resources = OreRare:6, Potion:3
+monsterLevel = 0
+dangerLevel = 0.18
+hidden = 1
+
+[Mistpond]
+name = 미스트폰드
+description = 미스트우드 안개가 수면처럼 고여 만들어진 숨은 연못. 물과 안개의 경계가 흐려져, 발을 들이면 허공을 걷는 듯한 감각이 밀려온다.
+x = -1620
+y = -870
+links_one_way = Erumen_Mistwood
+resources = Herb:18, Potion:4
+monsterLevel = 0
+dangerLevel = 0.12
+hidden = 1
+
+[Starlit_Mirrorway]
+name = 성야 경면길
+description = 밤이 되면 성천호 수면 위에만 드러나는 은빛 수로. 하늘의 별빛이 수면에 겹쳐져, 어디가 위고 아래인지 순간적으로 헷갈릴 만큼 맑다.
+x = -720
+y = -430
+links_one_way = Erumen_Seoncheon
+resources = Potion:6, Herb:10, OreRare:2
+monsterLevel = 0
+dangerLevel = 0.06
+timeVisible = 18:6
+hidden = 1

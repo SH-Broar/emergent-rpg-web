@@ -4,9 +4,7 @@ import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
 import { locationName } from '../../types/registry';
 import { ItemType } from '../../types/enums';
-import { getItemDef, categoryName } from '../../types/item-defs';
-
-type StorageZone = 'cold' | 'room' | 'warm';
+import { getItemDef, categoryName, getStorageProfileForItem, type StorageZone } from '../../types/item-defs';
 
 const ZONE_LABELS: Record<StorageZone, string> = {
   cold: '❄ 냉장',
@@ -31,6 +29,20 @@ export function createStorageScreen(
   function getItemName(id: string): string {
     const def = getItemDef(id);
     return def ? def.name : id;
+  }
+
+  function getStorageHint(id: string, zone: StorageZone): string {
+    const profile = getStorageProfileForItem(id);
+    const preferred = profile.preferredStorage.map(z => ZONE_LABELS[z].replace(/^[^\s]+\s/, '')).join(', ');
+    const avoided = profile.avoidedStorage.map(z => ZONE_LABELS[z].replace(/^[^\s]+\s/, '')).join(', ');
+    const state = profile.avoidedStorage.includes(zone)
+      ? ` · 기피 (${profile.badStorageEffect === 'spoil' ? '상함 위험' : profile.badStorageEffect === 'disable' ? '비활성 위험' : '주의'})`
+      : profile.preferredStorage.includes(zone)
+        ? ' · 권장'
+        : '';
+    const parts = [`권장: ${preferred || '없음'}`];
+    if (avoided) parts.push(`기피: ${avoided}`);
+    return parts.join(' / ') + state;
   }
 
   function render(el: HTMLElement) {
@@ -91,7 +103,14 @@ export function createStorageScreen(
       } else {
         contentHtml = '<div class="inv-grid">';
         for (const [id, count] of zoneItems) {
-          contentHtml += `<div class="inv-item"><span class="inv-name">${getItemName(id)}</span><span class="inv-count">x${count}</span></div>`;
+          contentHtml += `
+            <div class="inv-item" style="display:flex;flex-direction:column;align-items:flex-start;gap:2px">
+              <div style="display:flex;justify-content:space-between;width:100%">
+                <span class="inv-name">${getItemName(id)}</span>
+                <span class="inv-count">x${count}</span>
+              </div>
+              <span style="font-size:11px;color:var(--text-dim)">${getStorageHint(id, activeZone)}</span>
+            </div>`;
         }
         contentHtml += '</div>';
       }
@@ -104,9 +123,12 @@ export function createStorageScreen(
           const item = invItems[i];
           contentHtml += `
             <button class="btn npc-item" data-deposit="${i}" style="min-height:36px">
-              <div style="display:flex;justify-content:space-between;width:100%">
-                <span><span class="npc-num">${i + 1}</span> ${item.name}</span>
-                <span style="color:var(--text-dim)">x${item.count}</span>
+              <div style="display:flex;flex-direction:column;gap:2px;width:100%">
+                <div style="display:flex;justify-content:space-between;width:100%">
+                  <span><span class="npc-num">${i + 1}</span> ${item.name}</span>
+                  <span style="color:var(--text-dim)">x${item.count}</span>
+                </div>
+                <span style="font-size:11px;color:var(--text-dim);text-align:left">${getStorageHint(item.id, activeZone)}</span>
               </div>
             </button>`;
         }
@@ -123,9 +145,12 @@ export function createStorageScreen(
           const [id, count] = items[i];
           contentHtml += `
             <button class="btn npc-item" data-withdraw="${i}" style="min-height:36px">
-              <div style="display:flex;justify-content:space-between;width:100%">
-                <span><span class="npc-num">${i + 1}</span> ${getItemName(id)}</span>
-                <span style="color:var(--text-dim)">x${count}</span>
+              <div style="display:flex;flex-direction:column;gap:2px;width:100%">
+                <div style="display:flex;justify-content:space-between;width:100%">
+                  <span><span class="npc-num">${i + 1}</span> ${getItemName(id)}</span>
+                  <span style="color:var(--text-dim)">x${count}</span>
+                </div>
+                <span style="font-size:11px;color:var(--text-dim);text-align:left">${getStorageHint(id, activeZone)}</span>
               </div>
             </button>`;
         }

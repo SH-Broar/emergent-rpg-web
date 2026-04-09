@@ -84,7 +84,10 @@ export function createWorldMapScreen(session: GameSession, onDone: () => void): 
         }
       }
 
-      const allLocs = [...world.getAllLocations().values()].filter(isLocationVisible);
+      const allLocs = [...world.getAllLocations().values()].filter(loc =>
+        isLocationVisible(loc)
+        && (!loc.hidden || loc.id === playerLoc || session.knowledge.visitedLocations.has(loc.id)),
+      );
 
       // 최초 진입 시 플레이어 위치로 선택 초기화
       const playerIdx = allLocs.findIndex(l => l.id === playerLoc);

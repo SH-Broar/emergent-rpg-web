@@ -12,7 +12,7 @@ import { weatherName, seasonName, raceName, spiritRoleName, elementName, Element
 import { getItemDef, getWeaponDef, getArmorDef, categoryName } from '../../types/item-defs';
 import { applyTimeTheme } from '../time-theme';
 import { TRAVEL_OVERLAY_THRESHOLD_MINUTES } from './travel';
-import { canNotifyRandomEvent } from '../../systems/world-simulation';
+import { advanceTurn, canNotifyRandomEvent } from '../../systems/world-simulation';
 
 interface ActionDef {
   key: string;
@@ -69,10 +69,10 @@ const MAIN_ACTIONS: ActionDef[] = [
 
 const INFO_ACTIONS: ActionDef[] = [
   { key: 'i', label: '상태', action: 'info_status', icon: '📊' },
-  { key: 'r', label: '관계', action: 'info_relations', icon: '💕' },
-  { key: 'b', label: '백로그', action: 'info_backlog', icon: '📖' },
   { key: 'y', label: '히페리온', action: 'info_hyperion', icon: '✦' },
   { key: 'p', label: '동료', action: 'info_party', icon: '👥' },
+  { key: 'r', label: '관계', action: 'info_relations', icon: '💕' },
+  { key: 'b', label: '백로그', action: 'info_backlog', icon: '📖' },
   { key: 't', label: '칭호', action: 'info_titles', icon: '🏅' },
   { key: 'M', label: '지도', action: 'info_map', icon: '🧭' },
   { key: 'e', label: '도감', action: 'info_encyclopedia', icon: '📚' },
@@ -96,22 +96,22 @@ function renderTpCostPips(tpCost: number): string {
 // ============================================================
 // HUD 미니맵 — 현재 위치 중심 BFS 2홉 이내 장소
 // ============================================================
-function buildMiniMapSvg(session: GameSession, W = 200, H = 120): string {
+function buildMiniMapSvg(session: GameSession, W = 200, H = 120, maxDepth = 2): string {
   const playerLoc = session.player.currentLocation;
   const world = session.world;
   const allLocs = world.getAllLocations();
   const playerData = allLocs.get(playerLoc);
   if (!playerData) return '';
 
-  // BFS 깊이 ≤ 2로 주변 장소 수집
+  // BFS 깊이 제한으로 주변 장소 수집
   const nearby = new Map(allLocs);
-  // 실제로는 2홉 이내만 표시
+  // 실제로는 maxDepth 홉 이내만 표시
   const inRange = new Map<string, typeof playerData>();
   inRange.set(playerLoc, playerData);
   const queue: [string, number][] = [[playerLoc, 0]];
   while (queue.length > 0) {
     const [locId, depth] = queue.shift()!;
-    if (depth >= 2) continue;
+    if (depth >= maxDepth) continue;
     const loc = allLocs.get(locId);
     if (!loc) continue;
     for (const link of [...loc.linksBidirectional, ...loc.linksOneWayOut]) {
@@ -550,6 +550,7 @@ export function createInfoScreen(
         case 'info_status':
         case 'info_color': {
           const gridCells: string[] = [];
+          const matrixLines = p.coreMatrix.toDisplayLines();
           for (let r = 0; r < 8; r++) {
             for (let c = 0; c < 8; c++) {
               const on = p.coreMatrix.getCell(r, c);
@@ -588,16 +589,19 @@ export function createInfoScreen(
               <div>히페리온: Lv.${p.hyperionLevel}</div>
             </div>
             <div class="info-section-title">코어 매트릭스</div>
-            <div class="cm-grid">${gridCells.join('')}</div>`;
+            <div class="cm-grid">${gridCells.join('')}</div>
+            <div class="cm-summary">활성 셀 ${p.coreMatrix.countOn()}/64</div>
+            <div class="cm-text-lines">${matrixLines.map(line => `<div class="cm-text-line">${line}</div>`).join('')}</div>`;
           break;
         }
 
         case 'info_relations': {
+          const visibleRelations = [...p.relationships.entries()].filter(([name]) => session.knowledge.isKnown(name));
           html += `<h2>관계</h2><div class="rel-list">`;
-          if (p.relationships.size === 0) {
+          if (visibleRelations.length === 0) {
             html += '<p>아직 형성된 관계가 없습니다.</p>';
           }
-          for (const [name, rel] of p.relationships) {
+          for (const [name, rel] of visibleRelations) {
             const stage = getRelationshipStage(p, name, session.knowledge, session.actors);
             const npcActor = session.actors.find(a => a.name === name);
             const isCompanionNow = session.knowledge.isCompanion(name);
@@ -701,9 +705,19 @@ export function createMoveScreen(
       onTravel(fromId, loc, mins);
     } else {
       // 10분 이하: 즉시 이동
+      advanceTurn(
+        mins,
+        session.gameTime,
+        session.world,
+        session.events,
+        session.actors,
+        session.playerIdx,
+        session.backlog,
+        session.social,
+        session.knowledge,
+      );
       session.player.currentLocation = loc;
       moveCompanions(session.actors, session.knowledge, loc);
-      session.gameTime.advance(mins);
       session.backlog.add(session.gameTime, `${session.player.name}이(가) ${locationName(loc)}(으)로 이동했다.`, '행동');
       session.knowledge.trackVisit(loc);
       onDone();
@@ -722,14 +736,16 @@ export function createMoveScreen(
       const routes: [string, number][] = homeAlreadyListed
         ? routesWithoutHome
         : [...routesWithoutHome, [p.homeLocation, homeMins]];
+      const normalRoutes = routes.filter(([loc]) => loc !== p.homeLocation);
+      const homeRoute = routes.find(([loc]) => loc === p.homeLocation) ?? null;
       el.innerHTML = `
-        <div class="screen info-screen">
+        <div class="screen info-screen move-screen">
           <button class="btn back-btn" data-back>← 뒤로 [Esc]</button>
           <h2>이동</h2>
           <p>현재: ${locationName(p.currentLocation)}</p>
-          <div style="align-self:center">${buildMiniMapSvg(session)}</div>
-          <div class="menu-buttons">
-            ${routes.map(([loc, mins], i) => {
+          <div style="align-self:center">${buildMiniMapSvg(session, 200, 120, 1)}</div>
+          <div class="menu-buttons move-route-list">
+            ${normalRoutes.map(([loc, mins], i) => {
               const isHome = loc === p.homeLocation;
               const color = isHome ? '#ff9ff3' : getZoneColor(loc);
               const isDungeon = session.dungeonSystem.isDungeonEntrance(loc);
@@ -742,6 +758,17 @@ export function createMoveScreen(
               <button class="btn" data-loc="${loc}" data-mins="${mins}" style="border-left:4px solid ${color}">${i + 1}. ${locationName(loc)}${travelBadge}${dungeonBadge}${homeBadge}</button>
             `;}).join('')}
           </div>
+          ${homeRoute ? (() => {
+            const [loc, mins] = homeRoute;
+            const travelBadge = mins > TRAVEL_OVERLAY_THRESHOLD_MINUTES
+              ? ` <span style="color:var(--text-dim);font-size:11px">🚶 ${mins}분</span>`
+              : ` <span style="color:var(--text-dim);font-size:11px">${mins}분</span>`;
+            return `
+              <div class="move-home-dock">
+                <button class="btn" data-loc="${loc}" data-mins="${mins}" style="border-left:4px solid #ff9ff3">${normalRoutes.length + 1}. ${locationName(loc)}${travelBadge} <span style="color:#ff9ff3">🏠</span></button>
+              </div>
+            `;
+          })() : ''}
         </div>`;
       el.querySelector('[data-back]')?.addEventListener('click', onDone);
       el.querySelectorAll<HTMLButtonElement>('[data-loc]').forEach(btn => {

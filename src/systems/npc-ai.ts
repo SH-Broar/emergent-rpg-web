@@ -8,11 +8,12 @@ import { Backlog } from '../models/backlog';
 import { GameTime } from '../types/game-time';
 import { ItemType, Element, SpiritRole, Race, DayOfWeek } from '../types/enums';
 import { LocationID, Loc } from '../types/location';
-import { locationName } from '../types/registry';
+import { itemName, locationName } from '../types/registry';
 import { randomInt, randomFloat } from '../types/rng';
 import { iGa, eulReul, euroRo, gwaWa } from '../data/josa';
 import { getWeatherEffect } from './weather';
 import { ColorChangeContext } from '../models/color';
+import { type AppliedRecovery, applyEatEffect, applyFullSleepRecovery, applyRatioRecovery, computeEatEffect } from '../types/eat-system';
 
 export interface ActionCandidate {
   type: ActionType;
@@ -115,6 +116,79 @@ function getPreferredWakeHour(role: SpiritRole, actor?: Actor): number {
     base = Math.max(5, Math.min(9, base));
   }
   return Math.round(base);
+}
+
+function getRoutineHome(actor: Actor): LocationID {
+  return actor.lifeData.livingPlace || actor.homeLocation;
+}
+
+function describeRecovery(applied: AppliedRecovery): string {
+  const parts: string[] = [];
+  if (applied.hp > 0) parts.push(`HP +${applied.hp}`);
+  if (applied.mp > 0) parts.push(`MP +${applied.mp}`);
+  if (applied.tp > 0) parts.push(`TP +${applied.tp}`);
+  return parts.length > 0 ? ` (${parts.join(' · ')})` : '';
+}
+
+function getMealPriority(actor: Actor): ItemType[] {
+  const ordered = [...actor.lifeData.dietPreference, ItemType.Food, ItemType.Herb, ItemType.Potion, ItemType.MonsterLoot];
+  return [...new Set(ordered)];
+}
+
+function chooseMealItem(actor: Actor): ItemType | null {
+  for (const item of getMealPriority(actor)) {
+    if ((actor.spirit.inventory.get(item) ?? 0) <= 0) continue;
+    const result = computeEatEffect(item, actor.base.race, '', actor.isNight());
+    if (result.success) return item;
+  }
+  return null;
+}
+
+function chooseBuyTarget(actor: Actor, world: World): ItemType | null {
+  const candidates: { item: ItemType; score: number; price: number }[] = [];
+  const hpRatio = actor.base.hp / Math.max(1, actor.getEffectiveMaxHp());
+  const mpRatio = actor.base.mp / Math.max(1, actor.getEffectiveMaxMp());
+  const isHungry = actor.lifeData.daysSinceLastMeal > 0;
+
+  for (let i = 0; i < ItemType.Count; i++) {
+    const item = i as ItemType;
+    const stock = world.getResourceCount(Loc.Market_Square, item);
+    const price = world.getPrice(item);
+    if (stock <= 0 || actor.spirit.gold < price) continue;
+
+    let score = 0;
+    if (item === ItemType.Food) score += 20;
+    if (isHungry && item === ItemType.Food) score += 140;
+    if (hpRatio < 0.55 && item === ItemType.Potion) score += 100;
+    if (hpRatio < 0.75 && item === ItemType.Herb) score += 70;
+    if (mpRatio < 0.5 && item === ItemType.Potion) score += 40;
+    if (score <= 0) score = 10 - price * 0.1;
+    candidates.push({ item, score, price });
+  }
+
+  candidates.sort((a, b) => (b.score - a.score) || (a.price - b.price));
+  return candidates[0]?.item ?? null;
+}
+
+function chooseSellTarget(actor: Actor, world: World): ItemType | null {
+  const candidates: { item: ItemType; score: number }[] = [];
+  const isHungry = actor.lifeData.daysSinceLastMeal > 0;
+
+  for (const [item, count] of actor.spirit.inventory) {
+    if (count <= 0) continue;
+    const reserve = item === ItemType.Food ? (isHungry ? 2 : 1) : (item === ItemType.Herb || item === ItemType.Potion ? 1 : 0);
+    if (count <= reserve) continue;
+
+    let score = world.getPrice(item);
+    if (item === ItemType.MonsterLoot) score += 40;
+    if (item === ItemType.OreRare) score += 35;
+    if (item === ItemType.OreCommon) score += 20;
+    if (item === ItemType.Food) score -= 15;
+    candidates.push({ item, score });
+  }
+
+  candidates.sort((a, b) => b.score - a.score);
+  return candidates[0]?.item ?? null;
 }
 
 // ============================================================
@@ -223,9 +297,14 @@ const MARKET_DAY_ROLES = new Set([SpiritRole.Merchant, SpiritRole.Craftsman, Spi
 function getScheduleEntry(actor: Actor, time: GameTime): ScheduleEntry {
   const role = actor.spirit.role;
   const period = getTimePeriod(time.hour);
+  const home = getRoutineHome(actor);
   const dow = time.getDayOfWeek();
   const isWed = dow === DayOfWeek.Wed;
   const isWeekend = time.isWeekend();
+
+  if (period === 3 || time.hour >= getPreferredSleepHour(role, actor) - 2) {
+    return { location: home, bonuses: { [ActionType.Sleep]: 1.5, [ActionType.Rest]: 1.2 } };
+  }
 
   // Wednesday market day override for Merchant/Craftsman/Farmer (morning/afternoon only)
   if (isWed && MARKET_DAY_ROLES.has(role) && (period === 0 || period === 1)) {
@@ -442,9 +521,14 @@ export function evaluateActions(
   const hour = time.hour;
   const sleepHour = getPreferredSleepHour(role, actor);
   const wakeHour = getPreferredWakeHour(role, actor);
-  const nearBedtime = hour >= sleepHour - 1;
+  const home = getRoutineHome(actor);
+  const nearBedtime = hour >= sleepHour - 2;
   const pastBedtime = hour >= sleepHour || (hour < wakeHour);
   const isHungry = actor.lifeData.daysSinceLastMeal > 0;
+  const mealItem = chooseMealItem(actor);
+  const hpRatio = actor.base.hp / Math.max(1, actor.getEffectiveMaxHp());
+  const mpRatio = actor.base.mp / Math.max(1, actor.getEffectiveMaxMp());
+  const tpRatio = actor.base.ap / Math.max(1, actor.getEffectiveMaxAp());
 
   function make(
     type: ActionType,
@@ -479,37 +563,55 @@ export function evaluateActions(
     return candidates;
   }
 
+  if (actor.stationary) {
+    let eatScore = actor.lifeData.daysSinceLastMeal > 0 && chooseMealItem(actor) ? 70 : 0;
+    if (eatScore > 0) {
+      candidates.push(make(ActionType.Eat, eatScore, { targetItem: chooseMealItem(actor) ?? ItemType.Food, reason: '고정 NPC 식사' }));
+    }
+    let restScore = 8;
+    const hpRatio = actor.base.hp / Math.max(1, actor.getEffectiveMaxHp());
+    if (hpRatio < 0.85) restScore += (0.85 - hpRatio) * 40;
+    candidates.push(make(ActionType.Rest, restScore, { reason: '고정 NPC 휴식' }));
+    candidates.push(make(ActionType.Idle, 10, { reason: '고정 NPC 대기' }));
+    return candidates;
+  }
+
   // 3. Sleep
-  {
+  if (loc === home) {
     let sleepScore = 5;
     if (nearBedtime) sleepScore += 30;
     if (pastBedtime) sleepScore += 80;
     if (hour === 0) sleepScore += 60; // midnight
+    if (hpRatio < 0.6) sleepScore += 15;
+    if (tpRatio < 0.35) sleepScore += 15;
     sleepScore *= getMatrixModifier(actor, ActionType.Sleep);
     candidates.push(make(ActionType.Sleep, sleepScore, { reason: '취침' }));
   }
 
   // 4. GoHome (near bedtime, not at home)
-  if (nearBedtime && loc !== actor.homeLocation) {
-    const goHomeScore = 60;
+  if (nearBedtime && loc !== home) {
+    const goHomeScore = pastBedtime ? 110 : 70;
     candidates.push(make(ActionType.GoToLocation, goHomeScore, {
-      targetLocation: actor.homeLocation,
+      targetLocation: home,
       reason: '귀가',
     }));
   }
 
   // 5. Eat
   {
-    let eatScore = isHungry ? 80 : 10;
-    const hasFood = (actor.spirit.inventory.get(ItemType.Food) ?? 0) > 0;
-    if (!hasFood) eatScore *= 0.3;
-    candidates.push(make(ActionType.Eat, eatScore, { targetItem: ItemType.Food, reason: '식사' }));
+    let eatScore = isHungry ? 80 : 8;
+    if (!mealItem) eatScore *= 0.25;
+    if (hpRatio < 0.7) eatScore += 8;
+    candidates.push(make(ActionType.Eat, eatScore, { targetItem: mealItem ?? ItemType.Food, reason: '식사' }));
   }
 
   // 6. Rest
   {
-    let restScore = 20;
-    if (isNight) restScore += 20;
+    let restScore = 10;
+    if (isNight) restScore += 10;
+    if (hpRatio < 0.8) restScore += (0.8 - hpRatio) * 60;
+    if (mpRatio < 0.7) restScore += (0.7 - mpRatio) * 40;
+    if (tpRatio < 0.5) restScore += (0.5 - tpRatio) * 50;
     restScore *= getMatrixModifier(actor, ActionType.Rest);
     candidates.push(make(ActionType.Rest, restScore, { reason: '휴식' }));
   }
@@ -544,9 +646,9 @@ export function evaluateActions(
 
   // 10. Trade_Buy
   {
-    const hasFood = (actor.spirit.inventory.get(ItemType.Food) ?? 0) > 0;
     let buyScore = 10;
-    if (isHungry && !hasFood) buyScore += 60;
+    if (isHungry && !mealItem) buyScore += 75;
+    if (hpRatio < 0.55 || mpRatio < 0.45) buyScore += 30;
     buyScore += getRoleBonus(role, ActionType.Trade_Buy);
     buyScore *= getMatrixModifier(actor, ActionType.Trade_Buy);
     candidates.push(make(ActionType.Trade_Buy, buyScore, {
@@ -561,6 +663,7 @@ export function evaluateActions(
     for (const [, count] of actor.spirit.inventory) totalItems += count;
     let sellScore = 5;
     if (totalItems > 5) sellScore += 20;
+    if (actor.spirit.gold < actor.lifeData.dailyExpense * 2) sellScore += 20;
     sellScore += getRoleBonus(role, ActionType.Trade_Sell);
     sellScore *= getMatrixModifier(actor, ActionType.Trade_Sell);
     candidates.push(make(ActionType.Trade_Sell, sellScore, {
@@ -573,7 +676,8 @@ export function evaluateActions(
   {
     let dungeonScore = 10;
     dungeonScore += getRoleBonus(role, ActionType.ExploreDungeon);
-    if (isNight) dungeonScore *= 0.5;
+    if (isNight || nearBedtime) dungeonScore *= 0.25;
+    if (isHungry && !mealItem) dungeonScore *= 0.4;
     const hasActiveQuest = actor.spirit.activeQuestId >= 0;
     if (hasActiveQuest) dungeonScore += 35;
     dungeonScore *= getMatrixModifier(actor, ActionType.ExploreDungeon);
@@ -729,7 +833,7 @@ export function evaluateActions(
     if (loc !== scheduledEntry.location) {
       const ironVal = color[Element.Iron] ?? 0;
       // Iron discipline increases the pull toward scheduled location
-      const scheduledLocScore = 25 * (1.0 + ironVal * 0.2);
+      const scheduledLocScore = (scheduledEntry.location === home && nearBedtime ? 70 : 25) * (1.0 + ironVal * 0.2);
       candidates.push(make(ActionType.GoToLocation, scheduledLocScore, {
         targetLocation: scheduledEntry.location,
         reason: '일과 장소로 이동',
@@ -767,12 +871,14 @@ export function executeAction(
 
   switch (action.type) {
     case ActionType.Sleep: {
-      if (loc === actor.homeLocation || loc === Loc.Alimes) {
+      const home = getRoutineHome(actor);
+      if (loc === home) {
         actor.base.sleeping = true;
-        actor.actionCooldown = 10;
+        actor.moveDestination = '';
+        actor.actionCooldown = 12;
         log.add(time, `${name}이${iGa(name)} 잠자리에 들었다.`, '행동', name, loc);
       } else {
-        const next = world.getNextStep(loc, actor.homeLocation, time.day);
+        const next = world.getNextStep(loc, home, time.day);
         if (next) actor.currentLocation = next;
       }
       break;
@@ -780,15 +886,20 @@ export function executeAction(
 
     case ActionType.WakeUp: {
       actor.base.sleeping = false;
-      log.add(time, `${name}이${iGa(name)} 일어났다.`, '행동', name, loc);
+      const applied = applyFullSleepRecovery(actor, 0.03);
+      log.add(time, `${name}이${iGa(name)} 일어났다.${describeRecovery(applied)}`, '행동', name, loc);
       break;
     }
 
     case ActionType.Eat: {
-      const hasFood = actor.consumeItem(ItemType.Food, 1);
-      if (hasFood) {
-        actor.adjustMood(0.05);
-        log.add(time, `${name}이${iGa(name)} 식사했다.`, '행동', name, loc);
+      const mealItem = (actor.spirit.inventory.get(action.targetItem) ?? 0) > 0
+        ? action.targetItem
+        : chooseMealItem(actor);
+      if (mealItem !== null && actor.consumeItem(mealItem, 1)) {
+        const result = computeEatEffect(mealItem, actor.base.race, '', actor.isNight());
+        const applied = applyEatEffect(actor, result, true);
+        actor.actionCooldown = 2;
+        log.add(time, `${name}이${iGa(name)} ${itemName(mealItem)}을(를) 먹었다. ${result.message}${describeRecovery(applied)}`, '행동', name, loc);
       } else {
         actor.addMemory({
           type: MemoryType.WentHungry,
@@ -802,15 +913,17 @@ export function executeAction(
     }
 
     case ActionType.Rest: {
-      actor.adjustMood(0.03);
+      const restRatio = loc === getRoutineHome(actor) ? 0.25 : 0.12;
+      const applied = applyRatioRecovery(actor, restRatio, restRatio, 0.2, 0.03);
       actor.actionCooldown = 3;
-      log.add(time, `${name}이${iGa(name)} 휴식을 취했다.`, '행동', name, loc);
+      log.add(time, `${name}이${iGa(name)} 휴식을 취했다.${describeRecovery(applied)}`, '행동', name, loc);
       break;
     }
 
     case ActionType.GoToLocation: {
       const dest = action.targetLocation;
       if (!dest) break;
+      actor.moveDestination = dest;
       if (loc === dest) {
         actor.moveDestination = '';
         break;
@@ -819,6 +932,11 @@ export function executeAction(
       if (next && next !== loc) {
         actor.currentLocation = next;
         if (next === dest) {
+          const visitedKey = `npc_visited:${dest}`;
+          if (!actor.getFlag(visitedKey)) {
+            actor.setFlag(visitedKey, true);
+            actor.adjustVariable('npc_locations_visited', 1);
+          }
           actor.moveDestination = '';
           log.add(time, `${name}이${iGa(name)} ${locationName(dest)}에 도착했다.`, '행동', name, next);
         } else {
@@ -865,24 +983,22 @@ export function executeAction(
     case ActionType.Trade_Buy: {
       if (loc !== Loc.Market_Square) {
         const next = world.getNextStep(loc, Loc.Market_Square, time.day);
-        if (next) actor.currentLocation = next;
+        if (next) {
+          actor.moveDestination = Loc.Market_Square;
+          actor.currentLocation = next;
+        }
         break;
       }
-      // Buy cheapest available item
-      let cheapestItem: ItemType = ItemType.Food;
-      let cheapestPrice = Infinity;
-      for (let i = 0; i < ItemType.Count; i++) {
-        const price = world.getPrice(i as ItemType);
-        if (price < cheapestPrice && actor.spirit.gold >= price) {
-          cheapestPrice = price;
-          cheapestItem = i as ItemType;
+      const targetItem = chooseBuyTarget(actor, world);
+      if (targetItem !== null) {
+        const price = world.getPrice(targetItem);
+        if (world.removeResource(Loc.Market_Square, targetItem, 1)) {
+          actor.addGold(-price);
+          actor.addItem(targetItem, 1);
+          world.adjustSupply(targetItem, -0.05);
+          actor.actionCooldown = 2;
+          log.add(time, `${name}이${iGa(name)} 시장에서 ${itemName(targetItem)}을(를) ${price}골드에 구매했다.`, '거래', name, loc);
         }
-      }
-      if (actor.spirit.gold >= cheapestPrice && cheapestPrice < Infinity) {
-        actor.addGold(-cheapestPrice);
-        actor.addItem(cheapestItem, 1);
-        world.adjustSupply(cheapestItem, -0.05);
-        log.add(time, `${name}이${iGa(name)} 시장에서 아이템을 구매했다.`, '거래', name, loc);
       }
       break;
     }
@@ -890,25 +1006,22 @@ export function executeAction(
     case ActionType.Trade_Sell: {
       if (loc !== Loc.Market_Square) {
         const next = world.getNextStep(loc, Loc.Market_Square, time.day);
-        if (next) actor.currentLocation = next;
+        if (next) {
+          actor.moveDestination = Loc.Market_Square;
+          actor.currentLocation = next;
+        }
         break;
       }
-      // Sell most valuable item
-      let bestItem: ItemType | null = null;
-      let bestPrice = 0;
-      for (const [item, count] of actor.spirit.inventory) {
-        if (count <= 0) continue;
-        const price = world.getPrice(item);
-        if (price > bestPrice) {
-          bestPrice = price;
-          bestItem = item;
+      const targetItem = chooseSellTarget(actor, world);
+      if (targetItem !== null) {
+        const price = world.getPrice(targetItem);
+        if (actor.consumeItem(targetItem, 1)) {
+          actor.addGold(price);
+          world.addResource(Loc.Market_Square, targetItem, 1);
+          world.adjustSupply(targetItem, 0.05);
+          actor.actionCooldown = 2;
+          log.add(time, `${name}이${iGa(name)} 시장에서 ${itemName(targetItem)}을(를) ${price}골드에 판매했다.`, '거래', name, loc);
         }
-      }
-      if (bestItem !== null && bestPrice > 0) {
-        actor.consumeItem(bestItem, 1);
-        actor.addGold(bestPrice);
-        world.adjustSupply(bestItem, 0.05);
-        log.add(time, `${name}이${iGa(name)} 시장에서 아이템을 판매했다.`, '거래', name, loc);
       }
       break;
     }
@@ -998,7 +1111,15 @@ export function executeAction(
     case ActionType.Produce: {
       const recipes = world.getProductionRecipes(loc);
       if (recipes.length === 0) break;
-      const recipe = recipes[0];
+      const craftable = recipes
+        .filter(recipe => recipe.inputs.every(([item, amount]) => (actor.spirit.inventory.get(item) ?? 0) >= amount))
+        .sort((a, b) => {
+          const aValue = a.outputs.reduce((sum, [item, amount]) => sum + world.getPrice(item) * amount, 0);
+          const bValue = b.outputs.reduce((sum, [item, amount]) => sum + world.getPrice(item) * amount, 0);
+          return bValue - aValue;
+        });
+      const recipe = craftable[0];
+      if (!recipe) break;
       // Check inputs
       for (const [item, amount] of recipe.inputs) {
         if ((actor.spirit.inventory.get(item) ?? 0) < amount) return;
@@ -1018,6 +1139,7 @@ export function executeAction(
         when: time.clone(),
         emotionalWeight: 0.2,
       });
+      actor.actionCooldown = 4;
       log.add(time, `${name}이${iGa(name)} ${recipe.name}${eulReul(recipe.name)} 생산했다.`, '행동', name, loc);
       break;
     }
@@ -1026,8 +1148,10 @@ export function executeAction(
       const targetName = action.targetActor;
       const target = allActors.find(a => a.name === targetName);
       if (!target) break;
-      const consumed = actor.consumeItem(ItemType.Food, 1);
-      if (!consumed) break;
+      const mealItem = chooseMealItem(actor);
+      if (mealItem === null || !actor.consumeItem(mealItem, 1)) break;
+      const sharedMeal = computeEatEffect(mealItem, target.base.race, '', target.isNight());
+      applyEatEffect(target, sharedMeal, true);
       actor.adjustRelationship(targetName, 0.05, 0.05);
       target.adjustRelationship(name, 0.05, 0.05);
       actor.adjustMood(0.04);
@@ -1200,6 +1324,7 @@ export function npcOnTick(
   minutesElapsed: number,
 ): void {
   if (!actor.isAlive()) return;
+  actor.lastTickHour = time.hour;
 
   const factor = minutesElapsed / 5;
 
@@ -1250,9 +1375,17 @@ export function npcOnTick(
 
   // If sleeping: check wake condition
   if (actor.base.sleeping) {
-    const wakeHour = getPreferredWakeHour(actor.spirit.role);
+    const wakeHour = getPreferredWakeHour(actor.spirit.role, actor);
     if (time.hour >= wakeHour) {
-      actor.base.sleeping = false;
+      executeAction(actor, {
+        type: ActionType.WakeUp,
+        score: 0,
+        targetLocation: '',
+        targetItem: ItemType.Food,
+        targetActor: '',
+        targetQuestId: -1,
+        reason: '기상',
+      }, world, log, time, social, allActors);
     }
     return;
   }

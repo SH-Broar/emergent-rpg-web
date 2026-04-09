@@ -318,3 +318,558 @@ skill_3_name = 어둠 재생
 skill_3_type = heal
 skill_3_value = 30
 skill_3_desc = 심연의 힘으로 상처를 회복한다.
+
+; -------------------------------------------------------
+; RDC 지역 몬스터
+; -------------------------------------------------------
+
+[Moon_Rabbit]
+name = 월광 토끼
+attack = 14
+defense = 6
+hp = 46
+loot = Food:2:0.45, Herb:1:0.35, MonsterLoot:1:0.20
+
+[Dew_Moth]
+name = 이슬나방
+attack = 16
+defense = 5
+hp = 42
+loot = Herb:2:0.40, Potion:1:0.15, MonsterLoot:1:0.18
+skillChance = 0.18
+skill_1_name = 은분 살포
+skill_1_type = attack
+skill_1_value = 1.4
+skill_1_desc = 은빛 가루를 흩뿌려 시야를 흐린다.
+
+[Moon_Wolf]
+name = 월야 늑대
+attack = 24
+defense = 10
+hp = 78
+loot = Food:2:0.35, MonsterLoot:2:0.42, Equipment:1:0.06
+skillChance = 0.22
+skill_1_name = 달빛 돌진
+skill_1_type = attack
+skill_1_value = 1.7
+skill_1_desc = 달빛을 따라 몸을 날린다.
+
+[Silver_Fang]
+name = 은아 늑대
+attack = 32
+defense = 14
+hp = 110
+loot = MonsterLoot:3:0.48, Food:2:0.25, Equipment:1:0.10
+skillChance = 0.26
+skill_1_name = 은송곳니
+skill_1_type = attack
+skill_1_value = 2.0
+skill_1_desc = 번뜩이는 송곳니로 급소를 노린다.
+
+[Lunar_Stag]
+name = 월윤 사슴
+attack = 38
+defense = 16
+hp = 132
+loot = Herb:3:0.34, MonsterLoot:3:0.46, Potion:1:0.18
+skillChance = 0.28
+skill_1_name = 월륜 뿔격
+skill_1_type = attack
+skill_1_value = 2.1
+skill_1_desc = 달빛을 머금은 뿔로 돌격한다.
+
+[Moonshade_Warden]
+name = 달그늘 수호수
+attack = 48
+defense = 22
+hp = 188
+loot = MonsterLoot:4:0.50, Potion:2:0.25, Equipment:1:0.16
+skillChance = 0.32
+skill_1_name = 흑은 장막
+skill_1_type = buff
+skill_1_value = 1.4
+skill_1_desc = 몸을 감싼 달그늘로 힘을 끌어올린다.
+skill_2_name = 만월 파쇄
+skill_2_type = attack
+skill_2_value = 2.4
+skill_2_desc = 한가운데를 꿰뚫는 만월의 일격.
+
+[Cliff_Crab]
+name = 절벽 집게게
+attack = 8
+defense = 6
+hp = 36
+loot = Food:2:0.45, OreCommon:1:0.18, MonsterLoot:1:0.18
+
+[Spray_Gull]
+name = 물보라 갈매기
+attack = 10
+defense = 4
+hp = 32
+loot = Food:1:0.40, Herb:1:0.18, MonsterLoot:1:0.15
+skillChance = 0.12
+skill_1_name = 파도 긁기
+skill_1_type = attack
+skill_1_value = 1.3
+skill_1_desc = 날개 끝으로 물방울을 휘감아 후려친다.
+
+[Salt_Jackal]
+name = 소금자칼
+attack = 16
+defense = 7
+hp = 50
+loot = Food:2:0.35, MonsterLoot:1:0.28, OreCommon:1:0.16
+
+[Blueback_Lurker]
+name = 청등 잠복자
+attack = 22
+defense = 9
+hp = 74
+loot = MonsterLoot:2:0.35, OreCommon:2:0.28, Equipment:1:0.06
+skillChance = 0.18
+skill_1_name = 절벽 매복
+skill_1_type = attack
+skill_1_value = 1.8
+skill_1_desc = 사각에서 몸을 날려 덮친다.
+
+[Tide_Hermit]
+name = 쇄파 도사게
+attack = 28
+defense = 14
+hp = 96
+loot = Food:2:0.30, MonsterLoot:2:0.38, OreRare:1:0.08
+skillChance = 0.22
+skill_1_name = 조수 껍질막
+skill_1_type = buff
+skill_1_value = 1.3
+skill_1_desc = 단단한 껍질과 물막으로 몸을 감싼다.
+
+[Sprout_Fox]
+name = 묘목 여우
+attack = 18
+defense = 7
+hp = 52
+loot = Food:2:0.40, Herb:1:0.30, MonsterLoot:1:0.20
+
+[Hill_Hare]
+name = 언덕 토끼
+attack = 12
+defense = 5
+hp = 34
+loot = Food:2:0.42, Herb:1:0.22, MonsterLoot:1:0.12
+
+[Foxfire_Moth]
+name = 여우불 나방
+attack = 20
+defense = 6
+hp = 48
+loot = Herb:2:0.36, Potion:1:0.12, MonsterLoot:1:0.18
+skillChance = 0.16
+skill_1_name = 청염 비산
+skill_1_type = attack
+skill_1_value = 1.5
+skill_1_desc = 푸른 불씨를 흩뿌린다.
+
+[Blossom_Bear]
+name = 낙화곰
+attack = 28
+defense = 12
+hp = 98
+loot = Food:3:0.35, MonsterLoot:2:0.38, Herb:2:0.24
+skillChance = 0.20
+skill_1_name = 꽃잎 후려치기
+skill_1_type = attack
+skill_1_value = 1.9
+skill_1_desc = 꽃비와 함께 거대한 앞발을 휘두른다.
+
+[Shrine_Crow]
+name = 사당까마귀
+attack = 30
+defense = 11
+hp = 88
+loot = MonsterLoot:2:0.40, Herb:2:0.22, Potion:1:0.16
+skillChance = 0.22
+skill_1_name = 흉조 울음
+skill_1_type = buff
+skill_1_value = 1.3
+skill_1_desc = 불길한 울음으로 사기를 끌어올린다.
+
+[Hill_Guardian]
+name = 언덕 수호령
+attack = 38
+defense = 18
+hp = 142
+loot = MonsterLoot:3:0.45, Potion:1:0.18, Equipment:1:0.12
+skillChance = 0.26
+skill_1_name = 돌제단 격돌
+skill_1_type = attack
+skill_1_value = 2.2
+skill_1_desc = 봉인석 같은 팔로 내려찍는다.
+
+[Ridge_Goat]
+name = 능선 산양
+attack = 30
+defense = 12
+hp = 92
+loot = Food:2:0.28, MonsterLoot:2:0.34, OreCommon:1:0.20
+
+[Crag_Raptor]
+name = 절암 맹금
+attack = 34
+defense = 13
+hp = 104
+loot = MonsterLoot:2:0.38, OreCommon:2:0.22, Equipment:1:0.08
+skillChance = 0.20
+skill_1_name = 활강 급습
+skill_1_type = attack
+skill_1_value = 2.0
+skill_1_desc = 급강하하며 발톱을 꽂는다.
+
+[Stonehorn]
+name = 암각 우각수
+attack = 40
+defense = 18
+hp = 132
+loot = OreCommon:2:0.38, MonsterLoot:2:0.34, OreRare:1:0.10
+skillChance = 0.24
+skill_1_name = 석벽 들이박기
+skill_1_type = attack
+skill_1_value = 2.1
+skill_1_desc = 바위벽을 밀듯 돌진한다.
+
+[Canyon_Harpy]
+name = 협곡 하피
+attack = 44
+defense = 16
+hp = 124
+loot = MonsterLoot:3:0.38, Herb:2:0.18, Equipment:1:0.12
+skillChance = 0.25
+skill_1_name = 절풍 비명
+skill_1_type = attack
+skill_1_value = 2.1
+skill_1_desc = 고막을 찢는 비명과 함께 칼바람을 날린다.
+
+[Bagreat_Giant]
+name = 바그레트 거암인
+attack = 52
+defense = 24
+hp = 196
+loot = OreCommon:3:0.36, MonsterLoot:3:0.42, OreRare:1:0.14, Equipment:1:0.12
+skillChance = 0.28
+skill_1_name = 협벽 투척
+skill_1_type = attack
+skill_1_value = 2.4
+skill_1_desc = 거대한 암석을 움켜쥐어 던진다.
+
+[Ancient_Ram]
+name = 고벽 숫양
+attack = 58
+defense = 26
+hp = 210
+loot = OreRare:1:0.16, MonsterLoot:3:0.40, Equipment:1:0.14
+skillChance = 0.30
+skill_1_name = 고벽 분쇄
+skill_1_type = attack
+skill_1_value = 2.5
+skill_1_desc = 천년 풍화를 버틴 뿔로 산벽을 깨부순다.
+
+[Frost_Hare]
+name = 서리토끼
+attack = 26
+defense = 10
+hp = 78
+loot = Food:2:0.28, Herb:2:0.24, MonsterLoot:2:0.28
+
+[Ice_Wolf]
+name = 빙랑
+attack = 34
+defense = 14
+hp = 110
+loot = MonsterLoot:2:0.36, Food:2:0.20, Potion:1:0.10
+skillChance = 0.20
+skill_1_name = 설빙 송곳니
+skill_1_type = attack
+skill_1_value = 1.9
+skill_1_desc = 냉기를 머금은 이빨로 문다.
+
+[Cold_Ring_Serpent]
+name = 환한 독사
+attack = 38
+defense = 15
+hp = 116
+loot = MonsterLoot:2:0.38, Herb:2:0.18, Potion:1:0.14
+skillChance = 0.22
+skill_1_name = 동결 호흡
+skill_1_type = attack
+skill_1_value = 2.0
+skill_1_desc = 얼어붙은 숨결을 뿜어낸다.
+
+[Snowdrift_Golem]
+name = 설퇴 골렘
+attack = 46
+defense = 22
+hp = 158
+loot = OreCommon:2:0.30, MonsterLoot:3:0.40, OreRare:1:0.10
+skillChance = 0.24
+skill_1_name = 설사태 밀어내기
+skill_1_type = attack
+skill_1_value = 2.2
+skill_1_desc = 눈더미와 함께 몸통박치기를 한다.
+
+[Blizzard_Stag]
+name = 설풍 수사슴
+attack = 52
+defense = 21
+hp = 176
+loot = MonsterLoot:3:0.42, Potion:1:0.16, Herb:2:0.16
+skillChance = 0.26
+skill_1_name = 설풍 난격
+skill_1_type = attack
+skill_1_value = 2.3
+skill_1_desc = 눈보라를 두른 뿔로 휩쓴다.
+
+[Whiteout_Wraith]
+name = 화이트아웃 망령
+attack = 60
+defense = 24
+hp = 188
+loot = MonsterLoot:3:0.46, Potion:2:0.22, OreRare:1:0.14
+skillChance = 0.30
+skill_1_name = 실명한기
+skill_1_type = attack
+skill_1_value = 2.5
+skill_1_desc = 시야를 앗아가는 냉기의 폭풍.
+
+[Icebound_Sentry]
+name = 결빙 수호병
+attack = 64
+defense = 28
+hp = 212
+loot = MonsterLoot:3:0.42, Equipment:1:0.16, OreRare:1:0.18
+skillChance = 0.32
+skill_1_name = 동상 결계
+skill_1_type = buff
+skill_1_value = 1.4
+skill_1_desc = 얼음 갑주를 두껍게 덧씌운다.
+
+[Summit_Devourer]
+name = 산정 포식자
+attack = 72
+defense = 30
+hp = 236
+loot = MonsterLoot:4:0.48, Equipment:1:0.20, OreRare:2:0.22
+skillChance = 0.35
+skill_1_name = 설산 포식
+skill_1_type = attack
+skill_1_value = 2.8
+skill_1_desc = 눈보라 한복판에서 그대로 집어삼킨다.
+
+[Mist_Boar]
+name = 안개 멧돼지
+attack = 44
+defense = 18
+hp = 146
+loot = Food:2:0.30, Herb:2:0.28, MonsterLoot:2:0.34
+
+[Fog_Panther]
+name = 포그 팬서
+attack = 52
+defense = 20
+hp = 164
+loot = MonsterLoot:3:0.40, Herb:2:0.24, Equipment:1:0.10
+skillChance = 0.26
+skill_1_name = 무형 잠행
+skill_1_type = buff
+skill_1_value = 1.35
+skill_1_desc = 안개와 하나가 되어 움직인다.
+
+[Dew_Dryad]
+name = 수적 드라이어드
+attack = 48
+defense = 22
+hp = 156
+loot = Herb:3:0.40, Potion:1:0.18, MonsterLoot:2:0.30
+skillChance = 0.24
+skill_1_name = 안개 씨앗
+skill_1_type = attack
+skill_1_value = 2.0
+skill_1_desc = 수분을 머금은 씨앗을 폭발시킨다.
+
+[Mistwood_Warden]
+name = 미스트우드 수문장
+attack = 60
+defense = 26
+hp = 198
+loot = Herb:3:0.34, MonsterLoot:3:0.40, Equipment:1:0.14
+skillChance = 0.30
+skill_1_name = 수관 장막
+skill_1_type = heal
+skill_1_value = 24
+skill_1_desc = 숲의 습기를 끌어모아 몸을 회복한다.
+
+[Sky_Koi]
+name = 천광 잉어
+attack = 50
+defense = 18
+hp = 150
+loot = Food:2:0.22, Potion:1:0.20, MonsterLoot:2:0.34
+
+[Mirror_Wisp]
+name = 경면 도깨비불
+attack = 56
+defense = 20
+hp = 148
+loot = Potion:1:0.24, MonsterLoot:2:0.36, Herb:2:0.18
+skillChance = 0.26
+skill_1_name = 굴절 광선
+skill_1_type = attack
+skill_1_value = 2.1
+skill_1_desc = 빛을 비틀어 날카로운 광선으로 쏜다.
+
+[Water_Deer]
+name = 수면 사슴
+attack = 58
+defense = 22
+hp = 170
+loot = Herb:2:0.26, MonsterLoot:3:0.38, Potion:1:0.18
+skillChance = 0.24
+skill_1_name = 수광 돌파
+skill_1_type = attack
+skill_1_value = 2.1
+skill_1_desc = 맑은 수광을 두른 채 돌진한다.
+
+[Crystal_Serpent]
+name = 수정 수룡
+attack = 66
+defense = 25
+hp = 204
+loot = OreRare:1:0.20, MonsterLoot:3:0.42, Potion:1:0.20
+skillChance = 0.30
+skill_1_name = 수정파문
+skill_1_type = attack
+skill_1_value = 2.4
+skill_1_desc = 수정 조각과 함께 파문을 터뜨린다.
+
+[Lake_Oracle]
+name = 성천 예언어
+attack = 72
+defense = 28
+hp = 220
+loot = Potion:2:0.24, MonsterLoot:4:0.44, OreRare:1:0.22
+skillChance = 0.34
+skill_1_name = 천호의 응시
+skill_1_type = attack
+skill_1_value = 2.6
+skill_1_desc = 호수처럼 맑은 눈동자로 정신을 꿰뚫는다.
+
+[Cinder_Mole]
+name = 잿더미 두더지
+attack = 18
+defense = 8
+hp = 60
+loot = OreCommon:2:0.34, Food:1:0.18, MonsterLoot:1:0.18
+
+[Magma_Hound]
+name = 마그마 하운드
+attack = 24
+defense = 10
+hp = 82
+loot = MonsterLoot:2:0.34, OreCommon:1:0.26, Food:1:0.16
+skillChance = 0.16
+skill_1_name = 화열 추격
+skill_1_type = attack
+skill_1_value = 1.7
+skill_1_desc = 달아오른 발톱으로 연속 추격한다.
+
+[Flame_Ram]
+name = 화염 숫양
+attack = 28
+defense = 12
+hp = 90
+loot = MonsterLoot:2:0.30, OreCommon:2:0.22, Herb:1:0.12
+
+[Sulfur_Golem]
+name = 유황 골렘
+attack = 36
+defense = 18
+hp = 138
+loot = OreCommon:2:0.36, MonsterLoot:2:0.34, OreRare:1:0.10
+skillChance = 0.22
+skill_1_name = 황기 폭발
+skill_1_type = attack
+skill_1_value = 2.0
+skill_1_desc = 유황 가스를 폭발시킨다.
+
+[Charred_Harpy]
+name = 탄흔 하피
+attack = 42
+defense = 16
+hp = 128
+loot = MonsterLoot:3:0.38, Herb:1:0.12, Equipment:1:0.08
+skillChance = 0.24
+skill_1_name = 화분 강하
+skill_1_type = attack
+skill_1_value = 2.1
+skill_1_desc = 불씨를 두른 채 급강하한다.
+
+[Ember_Tyrant]
+name = 잔화 군주
+attack = 50
+defense = 22
+hp = 182
+loot = MonsterLoot:3:0.42, OreRare:1:0.14, Equipment:1:0.12
+skillChance = 0.30
+skill_1_name = 용열 포효
+skill_1_type = buff
+skill_1_value = 1.4
+skill_1_desc = 타오르는 포효로 자신을 강화한다.
+
+[Trail_Wolf]
+name = 산책로 늑대
+attack = 18
+defense = 8
+hp = 58
+loot = Food:2:0.30, MonsterLoot:1:0.28, Herb:1:0.14
+
+[Grey_Fang]
+name = 회색 송곳니
+attack = 24
+defense = 11
+hp = 84
+loot = MonsterLoot:2:0.34, Food:2:0.20, Equipment:1:0.06
+skillChance = 0.18
+skill_1_name = 군체 엄니
+skill_1_type = attack
+skill_1_value = 1.8
+skill_1_desc = 무리의 틈을 파고드는 송곳니 공격.
+
+[Stone_Prowler]
+name = 암벽 배회자
+attack = 20
+defense = 10
+hp = 72
+loot = OreCommon:1:0.22, MonsterLoot:1:0.26, Food:1:0.18
+
+[Cliff_Alpha]
+name = 절벽 우두머리
+attack = 30
+defense = 14
+hp = 112
+loot = MonsterLoot:3:0.40, Food:2:0.18, Equipment:1:0.08
+skillChance = 0.22
+skill_1_name = 낭떠러지 포효
+skill_1_type = buff
+skill_1_value = 1.35
+skill_1_desc = 울음소리로 무리의 기세를 끌어올린다.
+
+[Wolfpeak_Stalker]
+name = 봉우리 추적자
+attack = 38
+defense = 16
+hp = 136
+loot = MonsterLoot:3:0.42, OreCommon:1:0.20, Equipment:1:0.10
+skillChance = 0.26
+skill_1_name = 고지 사냥
+skill_1_type = attack
+skill_1_value = 2.1
+skill_1_desc = 높은 곳에서 덮쳐 숨통을 노린다.

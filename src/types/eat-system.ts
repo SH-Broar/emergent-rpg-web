@@ -3,6 +3,7 @@
 
 import { ItemType, Race } from './enums';
 import { randomFloat } from './rng';
+import type { Actor } from '../models/actor';
 import {
   getItemPropertyTags, getItemPropertySet,
   getRaceCapabilitySet, parseTags,
@@ -20,6 +21,13 @@ export interface EatResult {
   buffType?: string;      // 'attack', 'defense', 'tp_regen', 'mp_regen', 'speed'
   buffAmount?: number;
   buffDuration?: number;  // 턴 수 (기본 3)
+}
+
+export interface AppliedRecovery {
+  tp: number;
+  hp: number;
+  mp: number;
+  mood: number;
 }
 
 // 아이템별 기본 섭취 효과
@@ -286,6 +294,71 @@ export function computeEatEffect(item: ItemType, race: Race, itemTags?: string, 
   }
 
   return result;
+}
+
+export function applyRecovery(
+  actor: Actor,
+  effect: {
+    tp?: number;
+    hp?: number;
+    mp?: number;
+    mood?: number;
+    resetMeal?: boolean;
+  },
+): AppliedRecovery {
+  const beforeTp = actor.base.ap;
+  const beforeHp = actor.base.hp;
+  const beforeMp = actor.base.mp;
+  const beforeMood = actor.base.mood;
+
+  if (effect.tp) actor.adjustAp(effect.tp);
+  if (effect.hp) actor.adjustHp(effect.hp);
+  if (effect.mp) actor.adjustMp(effect.mp);
+  if (effect.mood) actor.adjustMood(effect.mood);
+  if (effect.resetMeal) actor.lifeData.daysSinceLastMeal = 0;
+
+  return {
+    tp: actor.base.ap - beforeTp,
+    hp: actor.base.hp - beforeHp,
+    mp: actor.base.mp - beforeMp,
+    mood: actor.base.mood - beforeMood,
+  };
+}
+
+export function applyEatEffect(
+  actor: Actor,
+  result: EatResult,
+  resetMeal = result.success,
+): AppliedRecovery {
+  return applyRecovery(actor, {
+    tp: result.tp,
+    hp: result.hp,
+    mp: result.mp,
+    mood: result.mood,
+    resetMeal,
+  });
+}
+
+export function applyRatioRecovery(
+  actor: Actor,
+  hpRatio: number,
+  mpRatio: number,
+  tpRatio = 0,
+  mood = 0,
+): AppliedRecovery {
+  const hp = Math.round(actor.getEffectiveMaxHp() * hpRatio);
+  const mp = Math.round(actor.getEffectiveMaxMp() * mpRatio);
+  const tp = Math.round(actor.getEffectiveMaxAp() * tpRatio);
+  return applyRecovery(actor, { hp, mp, tp, mood });
+}
+
+export function applyFullSleepRecovery(actor: Actor, mood = 0.05): AppliedRecovery {
+  return applyRecovery(actor, {
+    hp: actor.getEffectiveMaxHp(),
+    mp: actor.getEffectiveMaxMp(),
+    tp: actor.getEffectiveMaxAp(),
+    mood,
+  });
 }
 
 /** 아이템 식사 표시 라벨 */

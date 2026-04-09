@@ -10,8 +10,10 @@ import {
 } from '../../systems/combat-engine';
 import { canUseSkill } from '../../systems/skill-combat';
 import { randomFloat } from '../../types/rng';
+import { locationName } from '../../types/registry';
+import { moveCompanions } from '../../systems/npc-interaction';
 
-type DungeonPhase = 'list' | 'navigate' | 'combat' | 'event' | 'rest' | 'victory' | 'defeat';
+type DungeonPhase = 'list' | 'entry' | 'navigate' | 'combat' | 'event' | 'rest' | 'victory' | 'defeat';
 
 export function createDungeonScreen(
   session: GameSession,
@@ -19,7 +21,197 @@ export function createDungeonScreen(
 ): Screen {
   const p = session.player;
   const ds = session.dungeonSystem;
-  const allDungeons = ds.getAllDungeons().filter(d => d.accessFrom === p.currentLocation);
+  function roomIcon(room: DungeonRoom): string {
+    switch (room.type) {
+      case RoomType.Combat: return '⚔';
+      case RoomType.Event: return '✦';
+      case RoomType.Rest: return '💤';
+    }
+  }
+
+  function isTimeWindowOpen(timeWindow?: { fromHour: number; toHour: number }): boolean {
+    if (!timeWindow) return true;
+    const hour = session.gameTime.hour;
+    const { fromHour, toHour } = timeWindow;
+    if (fromHour < toHour) return hour >= fromHour && hour < toHour;
+    return hour >= fromHour || hour < toHour;
+  }
+
+  function isDungeonAvailableNow(d: DungeonDef): boolean {
+    return isTimeWindowOpen(d.availableHours);
+  }
+
+  function isHiddenLocationAvailable(locationId?: string): boolean {
+    if (!locationId) return false;
+    const location = session.world.getLocation(locationId);
+    return !!location && isTimeWindowOpen(location.timeVisible);
+  }
+
+  const localDungeons = ds.getAllDungeons().filter(d => d.accessFrom === p.currentLocation);
+  const allDungeons = localDungeons.filter(isDungeonAvailableNow);
+  function getRuleStatusText(): string {
+    if (!selectedDungeon || !runState) return '';
+    return ds.getRuleStatus(selectedDungeon, runState, session.gameTime.hour);
+  }
+
+  function isFoggedRoom(side: 'left' | 'right'): boolean {
+    if (!selectedDungeon?.rule || !runState) return false;
+    if (selectedDungeon.rule.template !== 'DeepFog') return false;
+    if (runState.depth >= runState.maxDepth) return false;
+    const rank = selectedDungeon.rule.rank;
+    if (rank <= 2) return false;
+    const maskLeft = ((runState.depth + runState.roomsCleared) % 2) === 0;
+    return side === 'left' ? maskLeft : !maskLeft;
+  }
+
+  function getRoomButtonLabel(room: DungeonRoom, side: 'left' | 'right'): string {
+    if (!isFoggedRoom(side)) return `${roomIcon(room)} ${room.label}`;
+    switch (room.type) {
+      case RoomType.Combat: return `${roomIcon(room)} 짙은 안개 속 기척`;
+      case RoomType.Event: return `${roomIcon(room)} 짙은 안개 속 흔들림`;
+      case RoomType.Rest: return `${roomIcon(room)} 안개 낀 쉼터`;
+    }
+  }
+
+  function getPredatorRestPenalty(): { hp: number; mp: number; note: string } {
+    let hp = 20;
+    let mp = 10;
+    let note = '안전한 장소를 찾아 쉬어간다.';
+    if (!selectedDungeon?.rule || !runState) return { hp, mp, note };
+
+    switch (selectedDungeon.rule.template) {
+      case 'PredatorTerritory': {
+        const rank = selectedDungeon.rule.rank;
+        hp = Math.max(14, hp - rank * 2);
+        mp = Math.max(7, mp - rank);
+        note = '짐승의 울음이 가까워 깊게 쉬지 못한다.';
+        break;
+      }
+      case 'FrostPressure': {
+        const chill = Math.max(1, Math.round(selectedDungeon.rule.valueA + runState.depth * 0.5));
+        hp = Math.max(12, hp - chill);
+        mp = Math.max(6, mp - Math.ceil(chill / 2));
+        note = '차가운 공기 때문에 회복 효율이 조금 떨어진다.';
+        break;
+      }
+      case 'PurityCurrent': {
+        hp += Math.min(10, runState.purity * 2 + selectedDungeon.rule.rank);
+        mp += Math.min(6, runState.purity + selectedDungeon.rule.rank);
+        note = '정화의 흐름이 몸을 감싸 회복이 조금 더 좋아진다.';
+        break;
+      }
+      case 'ShelterWindow': {
+        const cycle = Math.max(2, Math.round(selectedDungeon.rule.valueA || 3));
+        if (runState.depth % cycle === 0) {
+          hp += 8 + selectedDungeon.rule.rank;
+          mp += 4 + Math.floor(selectedDungeon.rule.rank / 2);
+          note = '은신처 구간이라 편하게 숨을 고를 수 있다.';
+        } else {
+          note = '아직 제대로 쉴 만한 은신처는 보이지 않는다.';
+        }
+        break;
+      }
+      case 'HeatGauge': {
+        hp += Math.min(6, runState.heat);
+        mp += Math.min(4, Math.floor(runState.heat / 2));
+        note = '열기가 빠져나가며 몸이 조금 가벼워진다.';
+        break;
+      }
+    }
+    return { hp, mp, note };
+  }
+
+  function getSidePathConfig(): { hpCostRatio: number; note: string } {
+    let hpCostRatio = 0.1;
+    let note = '샛길을 탐색한다.';
+    if (!selectedDungeon?.rule || !runState) return { hpCostRatio, note };
+    switch (selectedDungeon.rule.template) {
+      case 'TidalRoute': {
+        const cycle = Math.max(2, Math.round(selectedDungeon.rule.valueA || 2));
+        const highTide = runState.depth % cycle === 0;
+        hpCostRatio = highTide ? 0.12 : 0.07;
+        note = highTide ? '밀물 사이를 비집고 샛길을 탐색한다.' : '썰물에 드러난 샛길을 탐색한다.';
+        break;
+      }
+      case 'CollapsingPath':
+        hpCostRatio = 0.12 + selectedDungeon.rule.rank * 0.005;
+        note = '무너지는 길 틈으로 억지로 몸을 비집고 들어간다.';
+        break;
+      case 'FrostPressure':
+        hpCostRatio = 0.11;
+        note = '차가운 바람을 버티며 샛길을 더듬는다.';
+        break;
+      case 'GreedRisk':
+        hpCostRatio = 0.10;
+        note = '더 많은 보상을 노리고 위험한 샛길을 고른다.';
+        break;
+    }
+    return { hpCostRatio, note };
+  }
+
+  function applyRuleAdvanceEffects(el: HTMLElement): boolean {
+    if (!selectedDungeon?.rule || !runState) return false;
+    const rule = selectedDungeon.rule;
+    switch (rule.template) {
+      case 'CollapsingPath': {
+        const chip = Math.max(1, Math.round(rule.rank + runState.depth * 0.5));
+        p.adjustHp(-chip);
+        if (chip > 0) {
+          session.backlog.add(session.gameTime, `무너지는 잔해가 스쳐 HP ${chip}를 잃었다.`, '행동');
+        }
+        break;
+      }
+      case 'FrostPressure': {
+        const mpLoss = Math.max(1, Math.round(rule.rank / 2));
+        p.adjustMp(-mpLoss);
+        session.backlog.add(session.gameTime, `혹한 때문에 MP ${mpLoss}가 줄었다.`, '행동');
+        break;
+      }
+      case 'TraceHunt': {
+        runState.tracePoints += Math.max(1, Math.round(rule.valueA || 1));
+        const target = Math.max(2, Math.round(rule.valueB || 3));
+        if (runState.tracePoints >= target) {
+          runState.hasSidePath = true;
+          session.backlog.add(session.gameTime, '충분한 흔적을 모아 다음 층에서 샛길을 포착했다.', '행동');
+          runState.tracePoints -= target;
+        }
+        break;
+      }
+      case 'HeatGauge': {
+        runState.heat = Math.min(9, runState.heat + Math.max(1, Math.round(rule.valueA || 1)));
+        if (runState.heat >= 5) {
+          const chip = Math.max(1, Math.floor(runState.heat / 2));
+          p.adjustHp(-chip);
+          session.backlog.add(session.gameTime, `축적된 열기로 HP ${chip}를 잃었다.`, '행동');
+        }
+        break;
+      }
+      case 'PurityCurrent':
+        runState.purity = Math.min(9, runState.purity + 1);
+        break;
+      case 'ShelterWindow': {
+        const cycle = Math.max(2, Math.round(rule.valueA || 3));
+        if (runState.depth % cycle === 0) {
+          p.adjustHp(4 + rule.rank);
+          p.adjustMp(2 + Math.floor(rule.rank / 2));
+          session.backlog.add(session.gameTime, '은신처 구간을 지나며 잠시 호흡을 가다듬었다.', '행동');
+        }
+        break;
+      }
+    }
+
+    if (p.base.hp <= 0) {
+      handleDefeat(el);
+      return true;
+    }
+    return false;
+  }
+
+  function hasHiddenRoute(dungeon: DungeonDef | null): dungeon is DungeonDef {
+    if (!dungeon?.hiddenLocation) return false;
+    const unlock = dungeon.hiddenUnlockProgress ?? 100;
+    return p.getDungeonProgress(dungeon.id) >= unlock;
+  }
 
   let phase: DungeonPhase = 'list';
   let selectedDungeon: DungeonDef | null = null;
@@ -45,7 +237,11 @@ export function createDungeonScreen(
       <button class="btn back-btn" data-back>← 뒤로 [Esc]</button>
       <h2>던전</h2>
       ${allDungeons.length === 0
-        ? '<p class="hint">접근 가능한 던전이 없습니다.</p>'
+        ? `<p class="hint">${
+          localDungeons.length > 0
+            ? '지금 시간에는 입장 가능한 던전이 없습니다.'
+            : '접근 가능한 던전이 없습니다.'
+        }</p>`
         : `<div class="dungeon-list">
             ${allDungeons.map((d, i) => {
               const stars = ds.calcDifficultyStars(d);
@@ -56,15 +252,24 @@ export function createDungeonScreen(
               const progressLabel = isCleared ? `✦ 클리어 (${progress}%)` : `진행: ${progress}%`;
               const best = p.dungeonBestTurns.get(d.id);
               const bestLabel = best ? `최단: ${best}턴` : '';
+              const hiddenOpen = hasHiddenRoute(d) && isHiddenLocationAvailable(d.hiddenLocation);
+              const hiddenLabel = hasHiddenRoute(d)
+                ? hiddenOpen
+                  ? `숨은 지역: ${locationName(d.hiddenLocation!)}`
+                  : `숨은 지역: ${locationName(d.hiddenLocation!)} (지금은 닫힘)`
+                : '';
               return `<button class="btn dungeon-item" data-idx="${i}" style="${isCleared ? 'border-color:var(--success)' : ''}">
                 <div class="dungeon-name">${i + 1}. ${d.name} ${isCleared ? '<span style="color:var(--success);font-size:12px">✦</span>' : ''}</div>
                 <div class="dungeon-meta">
                   <span>난이도: ${'★'.repeat(stars)}${'☆'.repeat(Math.max(0, 5 - stars))}</span>
                   <span>${maxDepth}층</span>
                   <span style="color:${progressColor}">${progressLabel}</span>
+                  ${d.rule ? `<span style="color:var(--accent2)">규칙 ${d.rule.rank}: ${d.rule.template}</span>` : ''}
+                  ${hiddenLabel ? `<span style="color:${hiddenOpen ? 'var(--accent2)' : 'var(--text-dim)'}">${hiddenLabel}</span>` : ''}
                   ${bestLabel ? `<span style="color:var(--warning)">${bestLabel}</span>` : ''}
                 </div>
                 <div class="dungeon-desc">${isCleared ? d.deepDescription || d.description : d.description}</div>
+                ${d.rule?.hint ? `<div class="dungeon-desc" style="color:var(--accent2)">${d.rule.hint}</div>` : ''}
               </button>`;
             }).join('')}
           </div>`
@@ -76,23 +281,73 @@ export function createDungeonScreen(
     wrap.querySelectorAll<HTMLButtonElement>('[data-idx]').forEach(btn => {
       btn.addEventListener('click', () => {
         const idx = parseInt(btn.dataset.idx!, 10);
-        enterDungeon(idx, el);
+        chooseDungeon(idx, el);
       });
     });
 
     el.appendChild(wrap);
   }
 
-  function enterDungeon(dungeonIdx: number, el: HTMLElement) {
+  function chooseDungeon(dungeonIdx: number, el: HTMLElement) {
     const dungeon = allDungeons[dungeonIdx];
     if (!dungeon) return;
     selectedDungeon = dungeon;
+    if (hasHiddenRoute(dungeon)) {
+      phase = 'entry';
+      renderEntry(el);
+      return;
+    }
+    enterDungeon(dungeon, el);
+  }
+
+  function renderEntry(el: HTMLElement) {
+    if (!selectedDungeon) return;
+    el.innerHTML = '';
+    const wrap = document.createElement('div');
+    wrap.className = 'screen info-screen';
+    const hiddenName = selectedDungeon.hiddenLocation ? locationName(selectedDungeon.hiddenLocation) : '';
+    const hiddenOpen = isHiddenLocationAvailable(selectedDungeon.hiddenLocation);
+
+    wrap.innerHTML = `
+      <button class="btn back-btn" data-back>← 뒤로 [Esc]</button>
+      <h2>${selectedDungeon.name}</h2>
+      <p class="hint">완전히 공략한 던전이다. 어디로 들어갈지 선택한다.</p>
+      ${selectedDungeon.rule ? `<p class="hint" style="color:var(--accent2)">규칙 ${selectedDungeon.rule.rank}: ${selectedDungeon.rule.hint || selectedDungeon.rule.template}</p>` : ''}
+      ${hiddenName && !hiddenOpen ? `<p class="hint" style="color:var(--text-dim)">${hiddenName}은(는) 지금 시간에는 모습을 드러내지 않는다.</p>` : ''}
+      <div class="menu-buttons" style="margin-top:12px">
+        <button class="btn btn-primary" data-action="dungeon">1. 던전 입장</button>
+        ${hiddenName ? `<button class="btn" data-action="hidden" ${hiddenOpen ? '' : 'disabled style="opacity:0.45;cursor:not-allowed"'}>2. 숨겨진 지역 입장: ${hiddenName}</button>` : ''}
+      </div>
+    `;
+
+    wrap.querySelector('[data-back]')?.addEventListener('click', () => {
+      selectedDungeon = null;
+      phase = 'list';
+      renderList(el);
+    });
+    wrap.querySelector('[data-action="dungeon"]')?.addEventListener('click', () => enterDungeon(selectedDungeon!, el));
+    wrap.querySelector('[data-action="hidden"]')?.addEventListener('click', () => enterHiddenArea(el));
+    el.appendChild(wrap);
+  }
+
+  function enterDungeon(dungeon: DungeonDef, el: HTMLElement) {
     const progress = p.getDungeonProgress(dungeon.id);
-    runState = ds.createRunState(dungeon, progress);
+    runState = ds.createRunState(dungeon, progress, session.gameTime.hour);
 
     session.backlog.add(session.gameTime, `${p.name}이(가) ${dungeon.name}에 입장했다.`, '행동');
     phase = 'navigate';
     renderNavigate(el);
+  }
+
+  function enterHiddenArea(_el: HTMLElement) {
+    if (!selectedDungeon?.hiddenLocation) return;
+    const hidden = selectedDungeon.hiddenLocation;
+    if (!isHiddenLocationAvailable(hidden)) return;
+    p.currentLocation = hidden;
+    moveCompanions(session.actors, session.knowledge, hidden);
+    session.knowledge.trackVisit(hidden);
+    session.backlog.add(session.gameTime, `${p.name}이(가) ${locationName(hidden)}에 입장했다.`, '행동');
+    onDone();
   }
 
   // ================================================================ navigate
@@ -106,14 +361,6 @@ export function createDungeonScreen(
     const hpPct = Math.round((p.base.hp / p.getEffectiveMaxHp()) * 100);
     const mpPct = Math.round((p.base.mp / p.getEffectiveMaxMp()) * 100);
 
-    const roomIcon = (room: DungeonRoom) => {
-      switch (room.type) {
-        case RoomType.Combat: return '⚔';
-        case RoomType.Event: return '✦';
-        case RoomType.Rest: return '💤';
-      }
-    };
-
     wrap.innerHTML = `
       <h2>${selectedDungeon.name} — ${isBossFloor ? '보스 출현!' : `${runState.depth + 1}층`}</h2>
       <div style="display:flex;gap:12px;font-size:12px;margin:8px 0">
@@ -125,6 +372,7 @@ export function createDungeonScreen(
         </span>
         <span style="color:var(--warning)">TP: ${p.base.ap}/${p.getEffectiveMaxAp()}</span>
       </div>
+      ${getRuleStatusText() ? `<p class="hint" style="color:var(--accent2);margin:6px 0">${getRuleStatusText()}</p>` : ''}
 
       ${isBossFloor ? `
         <div class="menu-buttons" style="margin:16px 0">
@@ -134,9 +382,9 @@ export function createDungeonScreen(
         <p class="hint">1=보스 도전, 2=후퇴</p>
       ` : `
         <div class="menu-buttons" style="margin:16px 0">
-          <button class="btn" data-choice="left">1. ← ${roomIcon(runState.leftRoom)} ${runState.leftRoom.label}</button>
-          <button class="btn" data-choice="right">2. → ${roomIcon(runState.rightRoom)} ${runState.rightRoom.label}</button>
-          ${runState.hasSidePath ? '<button class="btn" data-choice="side">3. ↗ 샛길 (HP -10%)</button>' : ''}
+          <button class="btn" data-choice="left">1. ← ${getRoomButtonLabel(runState.leftRoom, 'left')}</button>
+          <button class="btn" data-choice="right">2. → ${getRoomButtonLabel(runState.rightRoom, 'right')}</button>
+          ${runState.hasSidePath ? `<button class="btn" data-choice="side">3. ↗ 샛길 (HP -${Math.round(getSidePathConfig().hpCostRatio * 100)}%)</button>` : ''}
           <button class="btn" data-choice="retreat">${runState.hasSidePath ? '4' : '3'}. ↩ 되돌아가기</button>
         </div>
         <p class="hint">1=왼쪽, 2=오른쪽${runState.hasSidePath ? ', 3=샛길, 4=후퇴' : ', 3=후퇴'}</p>
@@ -175,9 +423,21 @@ export function createDungeonScreen(
 
   function handleSidePath(el: HTMLElement) {
     if (!selectedDungeon || !runState) return;
-    // HP 10% 소모
-    const hpCost = Math.round(p.getEffectiveMaxHp() * 0.1);
+    const sidePath = getSidePathConfig();
+    const hpCost = Math.round(p.getEffectiveMaxHp() * sidePath.hpCostRatio);
     p.adjustHp(-hpCost);
+    if (selectedDungeon.rule?.template === 'AncientResonance') {
+      runState.resonance += Math.max(1, Math.round(selectedDungeon.rule.valueA || 1));
+    }
+    if (selectedDungeon.rule?.template === 'GreedRisk') {
+      runState.greed = Math.min(9, runState.greed + 1);
+    }
+    if (selectedDungeon.rule?.template === 'HeatGauge') {
+      runState.heat = Math.min(9, runState.heat + 1);
+    }
+    if (selectedDungeon.rule?.template === 'TraceHunt') {
+      runState.tracePoints += 1;
+    }
 
     if (p.base.hp <= 0) {
       handleDefeat(el);
@@ -185,10 +445,10 @@ export function createDungeonScreen(
     }
 
     // 랜덤 이벤트
-    const event = ds.rollDungeonEvent();
+    const event = ds.rollDungeonEvent(selectedDungeon);
     if (event) {
       currentEvent = event;
-      eventMessage = `샛길을 탐색했다. (HP -${hpCost})`;
+      eventMessage = `${sidePath.note} (HP -${hpCost})`;
       phase = 'event';
       renderEvent(el);
     } else {
@@ -216,7 +476,8 @@ export function createDungeonScreen(
   function advanceToNext(el: HTMLElement) {
     if (!selectedDungeon || !runState) return;
     const progress = p.getDungeonProgress(selectedDungeon.id);
-    ds.advanceRun(runState, selectedDungeon, progress);
+    ds.advanceRun(runState, selectedDungeon, progress, session.gameTime.hour);
+    if (applyRuleAdvanceEffects(el)) return;
     phase = 'navigate';
     renderNavigate(el);
   }
@@ -408,12 +669,35 @@ export function createDungeonScreen(
     stopCombatTimer(combatState);
 
     const isBoss = combatState.isBoss;
-    const expGain = isBoss ? 50 + selectedDungeon.difficulty * 30 : 20 + selectedDungeon.difficulty * 10;
-    const goldGain = isBoss ? 30 + selectedDungeon.difficulty * 20 : 10 + selectedDungeon.difficulty * 5;
+    const baseExpGain = isBoss ? 50 + selectedDungeon.difficulty * 30 : 20 + selectedDungeon.difficulty * 10;
+    const baseGoldGain = isBoss ? 30 + selectedDungeon.difficulty * 20 : 10 + selectedDungeon.difficulty * 5;
+    const prevProgress = p.getDungeonProgress(selectedDungeon.id);
+    let expGain = baseExpGain;
+    let goldGain = baseGoldGain;
+    let bonusText = '';
+
+    if (selectedDungeon.rule?.template === 'GreedRisk' && runState.greed > 0) {
+      const greedBonus = Math.round(runState.greed * (4 + selectedDungeon.rule.rank));
+      goldGain += greedBonus;
+      bonusText = `욕심 보너스 +${greedBonus}G`;
+    }
+    if (selectedDungeon.rule?.template === 'PurityCurrent' && runState.purity > 0) {
+      p.adjustHp(runState.purity * 2);
+      p.adjustMp(runState.purity);
+      bonusText = bonusText ? `${bonusText} | 정화 회복` : '정화 회복';
+    }
+    if (selectedDungeon.rule?.template === 'AncientResonance' && runState.resonance >= 3) {
+      p.adjustHp(8 + selectedDungeon.rule.rank);
+      p.adjustMp(4 + Math.floor(selectedDungeon.rule.rank / 2));
+      runState.resonance = Math.max(0, runState.resonance - 3);
+      bonusText = bonusText ? `${bonusText} | 공명 회복` : '공명 회복';
+    }
 
     p.addGold(Math.round(goldGain));
     const leveledUp = p.gainExp(Math.round(expGain));
     p.addDungeonProgress(selectedDungeon.id, selectedDungeon.progressPerAdvance);
+    const curProgress = p.getDungeonProgress(selectedDungeon.id);
+    const unlockedHidden = isBoss && hasHiddenRoute(selectedDungeon) && prevProgress < (selectedDungeon.hiddenUnlockProgress ?? 100);
     session.gameTime.advance(30);
 
     session.backlog.add(
@@ -450,8 +734,10 @@ export function createDungeonScreen(
       <div style="text-align:center;margin:12px 0">
         <p>${combatState.enemy.name}을(를) 쓰러뜨렸다!</p>
         <p>EXP +${Math.round(expGain)} | ${Math.round(goldGain)}G</p>
+        ${bonusText ? `<p style="color:var(--accent2)">${bonusText}</p>` : ''}
         ${leveledUp ? `<p style="color:var(--success)">레벨 업! Lv.${p.base.level}</p>` : ''}
-        <p style="color:var(--text-dim)">진행도: ${p.getDungeonProgress(selectedDungeon.id)}%</p>
+        <p style="color:var(--text-dim)">진행도: ${curProgress}%</p>
+        ${unlockedHidden && selectedDungeon.hiddenLocation ? `<p style="color:var(--accent2)">숨겨진 지역 ${locationName(selectedDungeon.hiddenLocation)} 이(가) 열렸다.</p>` : ''}
         ${recordHtml}
       </div>
       ${isBoss ? `
@@ -470,6 +756,9 @@ export function createDungeonScreen(
       renderList(el);
     });
     wrap.querySelector('[data-action="continue"]')?.addEventListener('click', () => {
+      if (selectedDungeon?.rule?.template === 'GreedRisk' && runState) {
+        runState.greed = Math.min(9, runState.greed + 1);
+      }
       combatState = null;
       advanceToNext(el);
     });
@@ -540,6 +829,12 @@ export function createDungeonScreen(
     const evt = currentEvent;
     // 이벤트 효과 적용
     let resultText = '';
+    if (selectedDungeon?.rule?.template === 'AncientResonance' && runState) {
+      runState.resonance += 1;
+    }
+    if (selectedDungeon?.rule?.template === 'PurityCurrent' && runState) {
+      runState.purity = Math.min(9, runState.purity + 1);
+    }
     if (evt.hpDamage > 0) {
       p.adjustHp(-evt.hpDamage);
       resultText += `HP -${evt.hpDamage} `;
@@ -601,11 +896,12 @@ export function createDungeonScreen(
     wrap.className = 'screen info-screen';
 
     const hpPct = Math.round((p.base.hp / p.getEffectiveMaxHp()) * 100);
+    const restRecovery = getPredatorRestPenalty();
 
     wrap.innerHTML = `
       <h2>휴식</h2>
       <div style="text-align:center;margin:16px 0">
-        <p>안전한 장소를 찾아 쉬어간다.</p>
+        <p>${restRecovery.note}</p>
         <div class="stat-bar" style="margin:8px auto;max-width:200px">
           <span class="stat-label">HP</span>
           <div class="bar"><div class="bar-fill hp-bar" style="width:${hpPct}%"></div></div>
@@ -614,21 +910,28 @@ export function createDungeonScreen(
         <p style="color:var(--text-dim)">TP: ${p.base.ap}/${p.getEffectiveMaxAp()}</p>
       </div>
       <div class="menu-buttons" style="margin-top:12px">
-        <button class="btn btn-primary" data-action="rest">1. 휴식하기 (HP+20, MP+10, TP 소모 없음)</button>
+        <button class="btn btn-primary" data-action="rest">1. 휴식하기 (HP+${restRecovery.hp}, MP+${restRecovery.mp}, TP 소모 없음)</button>
         <button class="btn" data-action="skip">2. 그냥 지나치기</button>
       </div>
       <p class="hint">1=휴식, 2=지나침</p>
     `;
 
     wrap.querySelector('[data-action="rest"]')?.addEventListener('click', () => {
-      p.adjustHp(20);
-      p.adjustMp(10);
+      if (!selectedDungeon) return;
+      p.adjustHp(restRecovery.hp);
+      p.adjustMp(restRecovery.mp);
+      if (selectedDungeon?.rule?.template === 'HeatGauge' && runState) {
+        runState.heat = Math.max(0, runState.heat - (2 + Math.floor(selectedDungeon.rule.rank / 2)));
+      }
+      if (selectedDungeon?.rule?.template === 'PurityCurrent' && runState) {
+        runState.purity = Math.min(9, runState.purity + 2);
+      }
       session.gameTime.advance(10);
       session.backlog.add(session.gameTime, `${p.name}이(가) 던전에서 휴식했다.`, '행동');
 
       // 특수 이벤트 10% 확률
       if (randomFloat(0, 1) < 0.10) {
-        const event = ds.rollDungeonEvent();
+        const event = ds.rollDungeonEvent(selectedDungeon);
         if (event) {
           currentEvent = event;
           eventMessage = '휴식 중 무언가가 일어났다!';
@@ -652,6 +955,7 @@ export function createDungeonScreen(
     id: 'dungeon',
     render(el) {
       switch (phase) {
+        case 'entry': renderEntry(el); break;
         case 'combat': renderCombat(el); break;
         case 'navigate': renderNavigate(el); break;
         case 'event': renderEvent(el); break;
@@ -670,6 +974,10 @@ export function createDungeonScreen(
           handleFlee(container);
         } else if (phase === 'navigate') {
           handleRetreat(container);
+        } else if (phase === 'entry') {
+          selectedDungeon = null;
+          phase = 'list';
+          renderList(container);
         } else if (phase === 'list') {
           onDone();
         }
@@ -679,7 +987,15 @@ export function createDungeonScreen(
       if (phase === 'list') {
         if (/^[1-9]$/.test(key)) {
           const idx = parseInt(key, 10) - 1;
-          if (idx < allDungeons.length) enterDungeon(idx, container);
+          if (idx < allDungeons.length) chooseDungeon(idx, container);
+        }
+      } else if (phase === 'entry') {
+        if (key === '1') {
+          const btn = container.querySelector('[data-action="dungeon"]') as HTMLButtonElement | null;
+          btn?.click();
+        } else if (key === '2') {
+          const btn = container.querySelector('[data-action="hidden"]') as HTMLButtonElement | null;
+          btn?.click();
         }
       } else if (phase === 'navigate') {
         const isBossFloor = runState && runState.depth >= runState.maxDepth;

@@ -10,6 +10,7 @@ export const Loc = {
   Alimes: 'Alimes',
   Alimes_High: 'Alimes_High',
   Guild_Hall: 'Guild_Hall',
+  Guild_Branch: 'Guild_Branch',
   Herb_Garden: 'Herb_Garden',
   Silk_Workshop: 'Silk_Workshop',
   Moonlit_Clearing: 'Moonlit_Clearing',

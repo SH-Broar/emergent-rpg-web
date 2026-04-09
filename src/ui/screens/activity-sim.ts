@@ -129,6 +129,7 @@ export function createActivitySimScreen(
   let dialogueEl: HTMLElement | null = null;
   let rewardEl:   HTMLElement | null = null;
   let timeEl:     HTMLElement | null = null;
+  let actionBtnEl: HTMLButtonElement | null = null;
 
   const lines = pickDialogue(config.activityKey, config.effectType);
   const rewardIcon = REWARD_ICON[config.effectType] ?? '✨';
@@ -144,14 +145,9 @@ export function createActivitySimScreen(
     readyToClose = true;
     if (rafHandle !== null) { cancelAnimationFrame(rafHandle); rafHandle = null; }
     applyTimeTheme(session.gameTime);
-    if (rewardEl && !rewardEl.querySelector('[data-complete]')) {
-      const btn = document.createElement('button');
-      btn.className = 'btn btn-primary';
-      btn.dataset.complete = 'true';
-      btn.style.minWidth = '160px';
-      btn.textContent = '확인 [Enter]';
-      btn.addEventListener('click', () => onComplete());
-      rewardEl.appendChild(btn);
+    if (actionBtnEl) {
+      actionBtnEl.className = 'btn btn-primary sim-skip-btn';
+      actionBtnEl.textContent = '확인 [Enter]';
     }
   }
 
@@ -275,8 +271,9 @@ export function createActivitySimScreen(
       dialogueEl = el.querySelector('[data-dialogue]');
       rewardEl   = el.querySelector('[data-reward]');
       timeEl     = el.querySelector('[data-time]');
+      actionBtnEl = el.querySelector('[data-skip]');
 
-      el.querySelector('[data-skip]')?.addEventListener('click', skipToEnd);
+      actionBtnEl?.addEventListener('click', skipToEnd);
     },
 
     onEnter() {
@@ -285,6 +282,10 @@ export function createActivitySimScreen(
       revealShown = false;
       lastLineIdx = -1;
       startTime = Date.now();
+      if (actionBtnEl) {
+        actionBtnEl.className = 'btn sim-skip-btn';
+        actionBtnEl.textContent = '건너뛰기 [Enter]';
+      }
       rafLoop();
     },
 

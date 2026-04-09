@@ -4,8 +4,9 @@
 import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
 import { seasonName } from '../../types/enums';
-import { advanceTurn } from '../../systems/world-simulation';
+import { advanceTurnByChunks } from '../../systems/world-simulation';
 import { applyTimeTheme } from '../time-theme';
+import { applyFullSleepRecovery, applyRatioRecovery } from '../../types/eat-system';
 
 export function createHomeScreen(
   session: GameSession,
@@ -131,15 +132,12 @@ export function createHomeScreen(
     // 회복 전 hyperionBonus 갱신 (스탯 제공자 동기화)
     const napHyperionTotal = session.actors.reduce((s, a) => s + a.hyperionLevel, 0);
     p.hyperionBonus = napHyperionTotal - p.hyperionLevel;
-    advanceTurn(
+    advanceTurnByChunks(
       napMinutes, session.gameTime, session.world, session.events,
       session.actors, session.playerIdx, session.backlog,
       session.social, session.knowledge,
     );
-    const hpRecover = Math.round(p.getEffectiveMaxHp() * 0.3);
-    const mpRecover = Math.round(p.getEffectiveMaxMp() * 0.3);
-    p.adjustHp(hpRecover);
-    p.adjustMp(mpRecover);
+    const applied = applyRatioRecovery(p, 0.3, 0.3);
     session.backlog.add(session.gameTime, `${p.name}이(가) 잠시 휴식을 취했다.`, '행동');
     phase = 'nap_done';
 
@@ -152,7 +150,7 @@ export function createHomeScreen(
       <h2 style="color:var(--success);margin-bottom:8px">잠시 쉬었다</h2>
       <p style="color:var(--text-dim);margin-bottom:16px">${session.gameTime.toString()}</p>
       <div style="font-size:14px;color:var(--text-dim);margin-bottom:20px">
-        <p>HP +${hpRecover} · MP +${mpRecover}</p>
+        <p>HP +${applied.hp} · MP +${applied.mp}</p>
       </div>
       <button class="btn btn-primary" data-ok style="min-width:160px">확인 [Enter]</button>
     `;
@@ -193,17 +191,24 @@ export function createHomeScreen(
     const minuteAdvance = hoursUntilMorning * 60 - gt.minute;
 
     p.base.sleeping = true;
-    session.gameTime.advance(minuteAdvance);
+    advanceTurnByChunks(
+      minuteAdvance,
+      session.gameTime,
+      session.world,
+      session.events,
+      session.actors,
+      session.playerIdx,
+      session.backlog,
+      session.social,
+      session.knowledge,
+    );
     p.base.sleeping = false;
 
     // 회복 전 hyperionBonus 갱신 (스탯 제공자 동기화)
     const sleepHyperionTotal = session.actors.reduce((s, a) => s + a.hyperionLevel, 0);
     p.hyperionBonus = sleepHyperionTotal - p.hyperionLevel;
 
-    // 전체 회복
-    p.base.hp = p.getEffectiveMaxHp();
-    p.base.mp = p.getEffectiveMaxMp();
-    p.base.ap = p.getEffectiveMaxAp();
+    applyFullSleepRecovery(p, 0);
 
     session.backlog.add(
       session.gameTime,

@@ -109,9 +109,7 @@ export function updateNpcGoal(actor: Actor, goal: NpcGoal): void {
       break;
 
     case NpcGoalType.ExploreWorld: {
-      // Count distinct visited locations via dungeonProgress keys as a proxy;
-      // use actor.dungeonProgress size as a measure of explored areas
-      const explored = actor.dungeonProgress.size;
+      const explored = actor.getVariable('npc_locations_visited');
       goal.progress = Math.min(100, Math.round((explored / goal.target) * 100));
       break;
     }
@@ -584,7 +582,7 @@ export function checkNpcLifeEvents(
 
   // First, update all goals
   for (const actor of actors) {
-    if (!actor.playable) continue; // skip player character
+    if (actor.playable) continue; // skip player character
     let goal = npcGoals.get(actor.name);
     if (!goal) {
       goal = assignNpcGoal(actor);
