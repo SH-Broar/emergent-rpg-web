@@ -217,10 +217,6 @@ export class Actor {
     if (this.base.exp >= needed) {
       this.base.exp -= needed;
       this.base.level++;
-      const newLevel = this.base.level;
-      if (newLevel % 3 === 0 && this.base.maxAp < 10) {
-        this.base.maxAp++;
-      }
       return true;
     }
     return false;
@@ -253,7 +249,9 @@ export class Actor {
   }
 
   getEffectiveMaxAp(): number {
-    return this.base.maxAp + this.hyperionLevel + this.hyperionBonus;
+    // 히페리온 10레벨당 +1 TP, 상한 20
+    const hyperionTp = Math.floor((this.hyperionLevel + this.hyperionBonus) / 10);
+    return Math.min(20, this.base.maxAp + hyperionTp);
   }
 
   adjustAp(delta: number): void {
