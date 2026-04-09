@@ -5,6 +5,7 @@
 import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
 import { locationName } from '../../types/registry';
+import { eunNeun } from '../../data/josa';
 import { raceName, spiritRoleName, elementName, Element } from '../../types/enums';
 import { getItemDef } from '../../types/item-defs';
 
@@ -245,7 +246,7 @@ export function createMemorySpringScreen(
         lines.push(`<div style="text-align:center;font-weight:bold;color:var(--warning);margin-bottom:12px;font-size:16px">영혼 각인</div>`);
         lines.push(`<div style="text-align:center;color:var(--text-dim);line-height:1.8;margin-bottom:16px">
           ${p.name}의 영혼이 이 세계에 각인됩니다.<br>
-          ${p.name}은(는) NPC로서 이 세계에서 계속 살아갑니다.<br>
+          ${p.name}${eunNeun(p.name)} NPC로서 이 세계에서 계속 살아갑니다.<br>
           당신은 새로운 캐릭터를 선택하게 됩니다.
         </div>`);
       } else {
@@ -263,7 +264,7 @@ export function createMemorySpringScreen(
       lines.push(`<div style="text-align:center;font-weight:bold;color:var(--accent);margin-bottom:12px;font-size:15px">정말 실행하시겠습니까?</div>`);
       lines.push(`<div style="text-align:center;color:var(--accent);font-size:14px;line-height:1.8;margin-bottom:16px">
         이 선택은 <b>되돌릴 수 없습니다.</b><br>
-        ${isImprint ? `${p.name}은(는) NPC가 됩니다.` : `${p.name}은(는) 영원히 사라집니다.`}
+        ${isImprint ? `${p.name}${eunNeun(p.name)} NPC가 됩니다.` : `${p.name}${eunNeun(p.name)} 영원히 사라집니다.`}
       </div>`);
     }
 

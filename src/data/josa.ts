@@ -36,6 +36,12 @@ export function gwaWa(noun: string): string {
   return '와';
 }
 
+export function eunNeun(noun: string): string {
+  const ch = lastCodepoint(noun);
+  if (hangulJongseongIndex(ch) >= 0) return hasBatchim(ch) ? '은' : '는';
+  return '는';
+}
+
 export function euroRo(noun: string): string {
   const ch = lastCodepoint(noun);
   const j = hangulJongseongIndex(ch);
