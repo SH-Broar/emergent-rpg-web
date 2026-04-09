@@ -127,7 +127,7 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
     }
 
 
-    case 'eat': result.screenChange = 'eat'; return result;
+    case 'eat': result.screenChange = 'info_inventory'; return result;
 
     case 'rest': {
       const hpRecover = Math.round(p.getEffectiveMaxHp() * 0.2);

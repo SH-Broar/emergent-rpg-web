@@ -20,7 +20,7 @@ import { createBirthScreen, createCustomCharScreen } from './ui/screens/characte
 import { createActivityScreen } from './ui/screens/activity';
 import { createActivitySimScreen } from './ui/screens/activity-sim';
 import { createGiftScreen } from './ui/screens/gift';
-import { createEatScreen } from './ui/screens/eat';
+import { createInventoryScreen } from './ui/screens/inventory';
 import { createEncyclopediaScreen } from './ui/screens/encyclopedia';
 import { createHomeScreen } from './ui/screens/home';
 import { createHyperionScreen } from './ui/screens/hyperion';
@@ -36,7 +36,6 @@ import { createStorageScreen } from './ui/screens/storage';
 import { createCookingScreen } from './ui/screens/cooking';
 import { createFarmScreen } from './ui/screens/farm';
 import { createNpcInviteScreen } from './ui/screens/npc-invite';
-import { createEquipmentScreen } from './ui/screens/equipment';
 import { createTravelScreen, type TravelOptions } from './ui/screens/travel';
 
 /** 플레이어 아이템/스킬에 따른 이동 속도 계산 (게임 1분당 실제 ms) */
@@ -244,7 +243,7 @@ async function boot() {
           }));
           break;
         case 'eat':
-          sm.push(createEatScreen(session, (_statusMsg) => { sm.pop(); }));
+          sm.push(createInventoryScreen(session, () => sm.pop()));
           break;
         case 'trade':
           sm.push(createTradeScreen(session, () => { session.gameTime.advance(15); sm.pop(); }));
@@ -339,7 +338,7 @@ async function boot() {
           sm.push(createSkillManageScreen(session, () => sm.pop()));
           break;
         case 'info_inventory':
-          sm.push(createEquipmentScreen(session, () => sm.pop()));
+          sm.push(createInventoryScreen(session, () => sm.pop()));
           break;
         case 'save':
           sm.push(createSaveLoadScreen(session, true, () => sm.pop()));
@@ -487,7 +486,7 @@ async function boot() {
             <div class="text-display">
               <p><b>기본 조작</b></p>
               <p>• 1~9, 0, a, g 키 또는 버튼 터치로 행동 선택</p>
-              <p>• i=상태, c=컬러, r=관계, w=월드, b=백로그</p>
+              <p>• i=상태(컬러 포함), c=상태 바로가기, r=관계, w=월드, b=백로그</p>
               <p>• S=세이브/로드, Esc=뒤로</p>
               <p></p>
               <p><b>게임 흐름</b></p>

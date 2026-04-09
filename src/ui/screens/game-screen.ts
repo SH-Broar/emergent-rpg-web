@@ -53,7 +53,7 @@ const MAIN_ACTIONS: ActionDef[] = [
   { key: '2', label: '이동', action: 'move', icon: '🚶' },
   { key: '3', label: '대화', action: 'talk', icon: '💬', visible: hasNpcsHere },
   { key: '4', label: '거래', action: 'trade', icon: '💰', visible: canTrade },
-  { key: '5', label: '식사', action: 'eat', icon: '🍖' },
+  { key: '5', label: '소지품', action: 'info_inventory' as GameAction, icon: '🎒' },
   { key: '6', label: '휴식', action: 'rest', icon: '💤' },
   { key: '7', label: '던전', action: 'dungeon', icon: '⚔', visible: nearDungeon },
   { key: '8', label: '채집', action: 'gather', icon: '🌿' },
@@ -68,8 +68,6 @@ const MAIN_ACTIONS: ActionDef[] = [
 
 const INFO_ACTIONS: ActionDef[] = [
   { key: 'i', label: '상태', action: 'info_status', icon: '📊' },
-  { key: 'v', label: '소지품', action: 'info_inventory' as GameAction, icon: '🎒' },
-  { key: 'c', label: '컬러', action: 'info_color', icon: '🎨' },
   { key: 'r', label: '관계', action: 'info_relations', icon: '💕' },
   { key: 'b', label: '백로그', action: 'info_backlog', icon: '📖' },
   { key: 'y', label: '히페리온', action: 'info_hyperion', icon: '✦' },
@@ -92,17 +90,6 @@ function renderTpCostPips(tpCost: number): string {
     { length: tpCost },
     () => '<span class="tp-cost-pip"></span>'
   ).join('')}</span>`;
-}
-
-// ============================================================
-// 미니맵 표시 설정 (localStorage 영구 저장)
-// ============================================================
-const MINIMAP_KEY = 'rdc-minimap-visible';
-function isMinimapOn(): boolean {
-  try { return localStorage.getItem(MINIMAP_KEY) !== 'false'; } catch { return true; }
-}
-function toggleMinimap(): void {
-  try { localStorage.setItem(MINIMAP_KEY, isMinimapOn() ? 'false' : 'true'); } catch {}
 }
 
 // ============================================================
@@ -398,14 +385,7 @@ export function createGameScreen(
           </div>
         </div>
 
-        <div style="display:flex;gap:6px;align-items:flex-start;${isMinimapOn() ? 'min-height:120px' : ''}">
-          ${isMinimapOn()
-            ? `<div style="display:flex;flex-direction:column;gap:2px;flex-shrink:0">
-                 <div title="현재 위치 주변 지도 (M키로 전체 지도)">${buildMiniMapSvg(session)}</div>
-                 <button data-toggle-minimap class="btn" style="font-size:10px;padding:1px 4px;min-height:18px;color:var(--text-dim)">지도 끄기</button>
-               </div>`
-            : `<button data-toggle-minimap class="btn" style="font-size:10px;padding:4px 6px;min-height:48px;color:var(--text-dim);flex-shrink:0">지도<br>켜기</button>`
-          }
+        <div style="display:flex;gap:6px;align-items:flex-start">
           <div class="hud-nearby" style="flex:1;min-width:0">
             <div style="color:var(--text-dim);font-size:10px;margin-bottom:3px">주변 인물</div>
             ${(() => {
@@ -485,11 +465,6 @@ export function createGameScreen(
     el.querySelectorAll<HTMLButtonElement>('[data-action]').forEach(btn => {
       btn.addEventListener('click', () => handleAction(btn.dataset.action as GameAction, el));
     });
-    // 미니맵 토글
-    el.querySelector<HTMLButtonElement>('[data-toggle-minimap]')?.addEventListener('click', () => {
-      toggleMinimap();
-      renderHud(el);
-    });
   }
 
   function handleAction(action: GameAction, el: HTMLElement) {
@@ -522,6 +497,8 @@ export function createGameScreen(
   for (const a of [...MAIN_ACTIONS, ...INFO_ACTIONS]) {
     keyMap.set(a.key, a.action);
   }
+  keyMap.set('c', 'info_status');
+  keyMap.set('C', 'info_status');
   keyMap.set('S', 'save');
   keyMap.set('s', 'save');
 
@@ -564,7 +541,8 @@ export function createInfoScreen(
       html += `<button class="btn back-btn" data-back>← 뒤로 [Esc]</button>`;
 
       switch (type) {
-        case 'info_status': {
+        case 'info_status':
+        case 'info_color': {
           const gridCells: string[] = [];
           for (let r = 0; r < 8; r++) {
             for (let c = 0; c < 8; c++) {
@@ -574,7 +552,25 @@ export function createInfoScreen(
               gridCells.push(`<div class="cm-cell" style="background:${bg};border:1px solid ${border}"></div>`);
             }
           }
+          const colorCols: string[] = [];
+          for (let i = 0; i < ELEMENT_COUNT; i++) {
+            const val = p.color.values[i];
+            const scaled = Math.round((val - 0.5) * 200);
+            const sign = scaled > 0 ? '+' : '';
+            const barPct = Math.max(4, Math.round(val * 100));
+            colorCols.push(`
+              <div class="color-col">
+                <div class="color-col-name" style="color:var(--el-${i})">${elementName(i as Element)}</div>
+                <div class="color-bar-vertical">
+                  <div class="color-bar-vertical-fill" style="height:${barPct}%;background:var(--el-${i})"></div>
+                </div>
+                <div class="color-col-value">${sign}${scaled}</div>
+              </div>
+            `);
+          }
           html += `<h2>${p.name} 상태</h2>
+            <div class="info-section-title">컬러 속성</div>
+            <div class="color-list-vertical">${colorCols.join('')}</div>
             <div class="info-grid">
               <div>종족: ${raceName(p.base.race)}</div>
               <div>역할: ${spiritRoleName(p.spirit.role)}</div>
@@ -585,25 +581,10 @@ export function createInfoScreen(
               <div>골드: ${p.spirit.gold}G</div>
               <div>히페리온: Lv.${p.hyperionLevel}</div>
             </div>
+            <div class="info-section-title">코어 매트릭스</div>
             <div class="cm-grid">${gridCells.join('')}</div>`;
           break;
         }
-
-        case 'info_color':
-          html += `<h2>컬러 속성</h2><div class="color-list">`;
-          for (let i = 0; i < ELEMENT_COUNT; i++) {
-            const val = p.color.values[i];
-            const scaled = Math.round((val - 0.5) * 200);
-            const sign = scaled > 0 ? '+' : '';
-            const barPct = Math.round(val * 100);
-            html += `<div class="color-row">
-              <span class="el-name">${elementName(i as Element)}</span>
-              <div class="bar"><div class="bar-fill" style="width:${barPct}%;background:var(--el-${i})"></div></div>
-              <span>${sign}${scaled}</span>
-            </div>`;
-          }
-          html += '</div>';
-          break;
 
         case 'info_relations': {
           html += `<h2>관계</h2><div class="rel-list">`;
@@ -740,7 +721,7 @@ export function createMoveScreen(
           <button class="btn back-btn" data-back>← 뒤로 [Esc]</button>
           <h2>이동</h2>
           <p>현재: ${locationName(p.currentLocation)}</p>
-          ${isMinimapOn() ? `<div style="align-self:center">${buildMiniMapSvg(session)}</div>` : ''}
+          <div style="align-self:center">${buildMiniMapSvg(session)}</div>
           <div class="menu-buttons">
             ${routes.map(([loc, mins], i) => {
               const isHome = loc === p.homeLocation;
