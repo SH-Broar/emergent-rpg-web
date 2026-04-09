@@ -187,6 +187,12 @@ async function boot() {
 
     session.knowledge.addKnownName(session.player.name);
     session.knowledge.trackVisit(session.player.currentLocation);
+    // 시작 거점: homeLocation을 Lv.1 거점으로 자동 등록
+    const homeLocId = session.player.homeLocation;
+    if (!session.knowledge.ownedBases.has(homeLocId)) {
+      session.knowledge.purchaseBase(homeLocId);
+      // purchaseBase는 Lv.1 설정, 창고/요리/수면 즉시 이용 가능
+    }
     // Give starter items
     const starterItems = ['wheat_bread', 'wheat_bread', 'wheat_bread', 'fresh_water', 'fresh_water', 'common_herb'];
     for (const id of starterItems) {
