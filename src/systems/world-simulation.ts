@@ -11,6 +11,8 @@ import { GameTime } from '../types/game-time';
 import { Element, ELEMENT_COUNT, seasonName } from '../types/enums';
 import { Loc } from '../types/location';
 import { npcOnTick } from './npc-ai';
+import { tickFarm } from '../models/farming';
+import { getCropDef } from '../data/crop-defs';
 
 const TICK_CHUNK = 5;
 const FF_CHUNK_MINUTES = 5;
@@ -188,6 +190,37 @@ export function advanceTurn(
   if (world.seasonSchedule.advanceIfNeeded(gameTime.day)) {
     log.add(gameTime, `계절이 ${seasonName(world.getCurrentSeason())}(으)로 바뀌었다.`, '시스템');
     world.updateWeatherAndTemp();
+  }
+
+  // 8. 일별 농장 틱 (날이 바뀌었는지 확인)
+  const curTotalMinutes = (gameTime.day - 1) * 1440 + gameTime.hour * 60 + gameTime.minute;
+  const prevDay = Math.floor((curTotalMinutes - minutes) / 1440);
+  const curDay = Math.floor(curTotalMinutes / 1440);
+  if (curDay > prevDay) {
+    for (const [locId, farm] of knowledge.farmStates) {
+      const baseLevel = knowledge.getBaseLevel(locId);
+      const result = tickFarm(
+        farm,
+        gameTime.day,
+        world.getCurrentSeason(),
+        world.weather,
+        baseLevel,
+        null,
+        Math.random,
+        (cropId) => getCropDef(cropId)?.basePrice ?? 30,
+        (cropId) => getCropDef(cropId)?.seasonBonus ?? {},
+        (cropId) => getCropDef(cropId)?.weatherBonus ?? {},
+        (cropId) => getCropDef(cropId)?.name ?? cropId,
+        locId,
+      );
+      if (result.harvestedGold > 0) {
+        const playerActor = actors[playerIdx];
+        if (playerActor) playerActor.addGold(result.harvestedGold);
+        for (const msg of result.harvestLog) {
+          log.add(gameTime, msg, '농장');
+        }
+      }
+    }
   }
 }
 

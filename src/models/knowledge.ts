@@ -3,6 +3,7 @@
 
 import { ELEMENT_COUNT } from '../types/enums';
 import { generateDefaultCellConditions, generateDefaultRowConditions, generateDefaultColConditions } from './core-matrix-conditions';
+import { FarmState, createFarmState, expandFarm } from './farming';
 
 // ============================================================
 // CoreMatrix
@@ -196,11 +197,34 @@ export class PlayerKnowledge {
     return this.baseLevels.get(locationId) ?? 0;
   }
 
-  upgradeBase(locationId: string): boolean {
-    const cur = this.getBaseLevel(locationId);
-    if (cur >= 5) return false;
-    this.baseLevels.set(locationId, cur + 1);
-    return true;
+  upgradeBase(locationId: string): void {
+    const cur = this.baseLevels.get(locationId) ?? 1;
+    const next = Math.min(5, cur + 1);
+    this.baseLevels.set(locationId, next);
+
+    // Lv.3 달성 시 농장 생성
+    if (next === 3) {
+      this.initFarm(locationId);
+    }
+    // Lv.4 달성 시 농장 확장 (+2칸)
+    if (next === 4) {
+      const farm = this.farmStates.get(locationId);
+      if (farm) expandFarm(farm, 2);
+    }
+  }
+
+  /** 농장 초기화 (Lv.3 달성 시 호출) */
+  initFarm(locationId: string): void {
+    if (this.farmStates.has(locationId)) return;
+    // 비싼 집: Halpia, Alimes_High, Enicham → 3x3
+    const expensiveIds = new Set(['Halpia', 'Alimes_High', 'Enicham']);
+    const [w, h] = expensiveIds.has(locationId) ? [3, 3] : [2, 2];
+    this.farmStates.set(locationId, createFarmState(locationId, w, h));
+  }
+
+  /** 농장 상태 조회 */
+  getFarm(locationId: string): FarmState | undefined {
+    return this.farmStates.get(locationId);
   }
 
   getStorage(locationId: string): { cold: Map<string, number>, room: Map<string, number>, warm: Map<string, number> } | undefined {
@@ -252,6 +276,12 @@ export class PlayerKnowledge {
     this.completedQuestCount++;
     this.completedQuestNames.add(questTitle);
   }
+
+  /** 거점별 농장 상태 (Lv.3 활성화 시 생성) */
+  farmStates = new Map<string, FarmState>();
+
+  /** 비소유 homeLocation에서의 마지막 낮잠 일자 */
+  lastNapDay = -1;
 
   // NPC 거점 초대 시스템
   baseInvitedNpcs = new Map<string, string[]>(); // locationId -> NPC 이름 배열

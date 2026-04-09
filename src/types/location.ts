@@ -8,6 +8,7 @@ export type LocationID = string;
 export const Loc = {
   // === 알리메스 권역 (locations.txt) ===
   Alimes: 'Alimes',
+  Alimes_High: 'Alimes_High',
   Guild_Hall: 'Guild_Hall',
   Herb_Garden: 'Herb_Garden',
   Silk_Workshop: 'Silk_Workshop',

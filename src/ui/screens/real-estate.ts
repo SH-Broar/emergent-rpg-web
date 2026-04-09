@@ -1,25 +1,40 @@
-// real-estate.ts — 부동산 구매 화면 (길드에서 거점 구매)
+// real-estate.ts — 부동산 구매/업그레이드 화면 (현재 마을 기준 필터)
 
 import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
 import { locationName } from '../../types/registry';
+import { BASE_DEFS, getUpgradeCost, type BaseDef } from '../../data/base-defs';
 
-interface BaseOption {
-  locationId: string;
-  price: number;
-  description: string;
+/** 현재 위치가 속한 마을 그룹 결정 */
+function getVillageForLocation(locationId: string): string {
+  // base-defs의 village 필드와 매핑
+  for (const def of BASE_DEFS) {
+    if (def.locationId === locationId || def.village === locationId) {
+      return def.village;
+    }
+  }
+  // 위치 ID로 village 추론 (접두사 매칭)
+  if (locationId.startsWith('Alimes')) return 'Alimes';
+  if (locationId.startsWith('Luna')) return 'Luna';
+  if (locationId.startsWith('Martin')) return 'Martin';
+  if (locationId.startsWith('Manonickla')) return 'Manonickla';
+  if (locationId.startsWith('Halpia')) return 'Halpia';
+  if (locationId.startsWith('Lar')) return 'LarForest';
+  if (locationId.startsWith('Enicham')) return 'Enicham';
+  if (locationId === 'Guild_Hall' || locationId === 'Market_Square') return 'Alimes';
+  return '';
 }
 
-const PURCHASABLE_BASES: BaseOption[] = [
-  { locationId: 'Alimes', price: 500, description: '알리메스 중심가의 작은 집' },
-  { locationId: 'Luna_Academy', price: 800, description: '마법학교 루나 기숙사 한 칸' },
-  { locationId: 'Manonickla', price: 600, description: '마노니클라의 아담한 거처' },
-  { locationId: 'Martin_Port', price: 700, description: '마틴 항구 근처 선원 숙소' },
-  { locationId: 'Halpia', price: 1200, description: '할퓌아 부유 섬의 구름 위 거처' },
-  { locationId: 'Alimes', price: 1000, description: '알리메스 고지대의 전망 좋은 방' },
-  { locationId: 'Lar_Forest', price: 400, description: '라르 숲 속 오두막' },
-  { locationId: 'Enicham', price: 900, description: '에니챰 공방 옆 작업실 겸 거처' },
-];
+/** 레벨별 기능 설명 */
+function getLevelFeatures(level: number, def: BaseDef): string {
+  const lines: string[] = [];
+  if (level >= 1) lines.push('수면, 창고, 요리');
+  if (level >= 2) lines.push('채집 효율 +10% (해당 지역)');
+  if (level >= 3) lines.push('농장 활성화 (2×2 격자)');
+  if (level >= 4) lines.push('농장 확장 (+2칸), 요리 효과 +20%, 짧은 휴식 TP 회복');
+  if (level >= 5) lines.push(`✨ 특수: ${def.lv5Ability.description}`);
+  return lines.join(' · ');
+}
 
 export function createRealEstateScreen(
   session: GameSession,
@@ -28,63 +43,58 @@ export function createRealEstateScreen(
   function render(el: HTMLElement) {
     const k = session.knowledge;
     const gold = session.player.spirit.gold;
+    const currentLoc = session.player.currentLocation;
+    const village = getVillageForLocation(currentLoc);
+
+    // 현재 마을의 매물만 필터
+    const localBases = village
+      ? BASE_DEFS.filter(b => b.village === village)
+      : BASE_DEFS; // 마을 특정 불가 시 전체 표시 (길드 홀 등)
 
     let listHtml = '';
-    for (let i = 0; i < PURCHASABLE_BASES.length; i++) {
-      const base = PURCHASABLE_BASES[i];
-      const owned = k.ownedBases.has(base.locationId)
-        || session.player.homeLocation === base.locationId;
-      const canAfford = gold >= base.price;
-      const name = locationName(base.locationId) || base.locationId;
-      const level = k.getBaseLevel(base.locationId);
+    for (const def of localBases) {
+      const owned = k.ownedBases.has(def.locationId) || session.player.homeLocation === def.locationId;
+      const level = k.getBaseLevel(def.locationId);
+      const name = locationName(def.locationId) || def.locationId;
 
       if (owned) {
+        // 소유 중 — 업그레이드 버튼
+        const upgradeCost = level < 5 ? getUpgradeCost(def, level) : 0;
+        const canUpgrade = level < 5 && gold >= upgradeCost;
         listHtml += `
-          <button class="btn npc-item" disabled style="min-height:50px;border-left:3px solid var(--success);opacity:0.7">
-            <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
-              <div>
-                <span class="npc-num">${i + 1}</span>
-                <span style="font-weight:bold">${name}</span>
-                <span style="font-size:10px;color:var(--success);margin-left:4px">Lv.${level} 보유중</span>
-              </div>
-              <span style="font-size:12px;color:var(--success)">✓</span>
+          <div style="border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:8px;background:var(--bg-panel)">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+              <span style="font-weight:bold;color:var(--success)">✓ ${name} — Lv.${level}/5</span>
+              <span style="font-size:11px;color:var(--text-dim)">${def.description}</span>
             </div>
-            <div style="font-size:11px;color:var(--text-dim);margin-top:2px;text-align:left">${base.description}</div>
-          </button>`;
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px">${getLevelFeatures(level, def)}</div>
+            ${level < 5
+              ? `<button class="btn" data-upgrade="${def.locationId}" style="font-size:12px;${canUpgrade ? '' : 'opacity:0.5'}">
+                  Lv.${level + 1}로 업그레이드 (${upgradeCost}G) ${canUpgrade ? '' : '— 골드 부족'}
+                </button>`
+              : '<span style="font-size:11px;color:var(--success)">최대 레벨 도달</span>'
+            }
+          </div>`;
       } else {
+        // 미구매 — 구매 버튼
+        const canAfford = gold >= def.contractPrice;
         listHtml += `
-          <button class="btn npc-item" data-buy="${i}" style="min-height:50px;border-left:3px solid ${canAfford ? 'var(--warning)' : 'var(--border)'}">
-            <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
-              <div>
-                <span class="npc-num">${i + 1}</span>
-                <span style="font-weight:bold">${name}</span>
-              </div>
-              <span style="font-size:12px;font-weight:bold;color:${canAfford ? 'var(--warning)' : 'var(--text-dim)'}">${base.price}G</span>
+          <div style="border:1px solid ${canAfford ? 'var(--warning)' : 'var(--border)'};border-radius:8px;padding:10px 12px;margin-bottom:8px;background:var(--bg-card)">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+              <span style="font-weight:bold">${name}</span>
+              <span style="font-weight:bold;color:${canAfford ? 'var(--warning)' : 'var(--text-dim)'}">${def.contractPrice}G</span>
             </div>
-            <div style="font-size:11px;color:var(--text-dim);margin-top:2px;text-align:left">${base.description}</div>
-          </button>`;
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:4px">${def.description}</div>
+            <div style="font-size:10px;color:var(--text-dim);margin-bottom:6px">Lv.1: ${getLevelFeatures(1, def)}</div>
+            <button class="btn" data-buy="${def.locationId}" style="${canAfford ? '' : 'opacity:0.5'}">
+              계약 (${def.contractPrice}G)${canAfford ? '' : ' — 골드 부족'}
+            </button>
+          </div>`;
       }
     }
 
-    // 거점 업그레이드 섹션
-    const currentLoc = session.player.currentLocation;
-    const currentOwned = k.ownedBases.has(currentLoc) || session.player.homeLocation === currentLoc;
-    let upgradeHtml = '';
-    if (currentOwned) {
-      const level = k.getBaseLevel(currentLoc);
-      const upgradeCost = level * 300 + 200;
-      const canUpgrade = level < 5 && gold >= upgradeCost;
-      upgradeHtml = `
-        <div style="margin-top:12px;padding:8px;background:var(--bg-panel);border-radius:8px">
-          <div style="font-size:13px;font-weight:bold;margin-bottom:4px">현재 거점 업그레이드</div>
-          <div style="font-size:11px;color:var(--text-dim)">${locationName(currentLoc)} — Lv.${level}/5</div>
-          ${level < 5
-            ? `<button class="btn" data-upgrade style="margin-top:6px;font-size:12px;${canUpgrade ? '' : 'opacity:0.5'}"">
-                업그레이드 → Lv.${level + 1} (${upgradeCost}G)
-              </button>`
-            : '<div style="font-size:11px;color:var(--success);margin-top:4px">최대 레벨 도달</div>'
-          }
-        </div>`;
+    if (localBases.length === 0) {
+      listHtml = '<p style="text-align:center;color:var(--text-dim);padding:20px">이 지역에 매물이 없습니다.<br>길드 홀이나 각 마을에서 확인하세요.</p>';
     }
 
     el.innerHTML = '';
@@ -93,48 +103,49 @@ export function createRealEstateScreen(
     wrap.innerHTML = `
       <button class="btn back-btn" data-back>← 뒤로 [Esc]</button>
       <h2>🏘 부동산</h2>
-      <p style="text-align:center;color:var(--text-dim);font-size:12px">
-        소지금: ${gold}G · 보유 거점: ${k.ownedBases.size + 1}곳
+      <p style="text-align:center;color:var(--text-dim);font-size:12px;margin-bottom:8px">
+        소지금: ${gold}G · 보유 거점: ${k.ownedBases.size + 1}곳 · 현재 지역: ${locationName(currentLoc)}
       </p>
-      <div class="npc-list" style="margin:12px 0">${listHtml}</div>
-      ${upgradeHtml}
-      <p class="hint">번호키로 구매 · Esc 뒤로</p>
+      <div>${listHtml}</div>
+      <p class="hint" style="text-align:center">Esc 뒤로</p>
     `;
 
     wrap.querySelector('[data-back]')?.addEventListener('click', onDone);
 
+    // 구매 버튼
     wrap.querySelectorAll<HTMLButtonElement>('[data-buy]').forEach(btn => {
       btn.addEventListener('click', () => {
-        const idx = parseInt(btn.dataset.buy!, 10);
-        const base = PURCHASABLE_BASES[idx];
-        if (session.player.spirit.gold >= base.price) {
-          session.player.spirit.gold -= base.price;
-          k.trackGoldSpent(base.price);
-          k.purchaseBase(base.locationId);
-          session.backlog.add(
-            session.gameTime,
-            `${locationName(base.locationId)}에 거점을 마련했다.`,
-            '시스템',
-          );
-          render(el);
-        }
+        const locId = btn.dataset.buy!;
+        const def = BASE_DEFS.find(b => b.locationId === locId);
+        if (!def) return;
+        if (session.player.spirit.gold < def.contractPrice) return;
+        session.player.spirit.gold -= def.contractPrice;
+        k.trackGoldSpent(def.contractPrice);
+        k.purchaseBase(locId);
+        session.backlog.add(session.gameTime, `${locationName(locId)}에 거점을 마련했다.`, '시스템');
+        render(el);
       });
     });
 
-    wrap.querySelector('[data-upgrade]')?.addEventListener('click', () => {
-      const level = k.getBaseLevel(currentLoc);
-      const cost = level * 300 + 200;
-      if (level < 5 && session.player.spirit.gold >= cost) {
+    // 업그레이드 버튼
+    wrap.querySelectorAll<HTMLButtonElement>('[data-upgrade]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const locId = btn.dataset.upgrade!;
+        const def = BASE_DEFS.find(b => b.locationId === locId);
+        if (!def) return;
+        const level = k.getBaseLevel(locId);
+        const cost = getUpgradeCost(def, level);
+        if (level >= 5 || session.player.spirit.gold < cost) return;
         session.player.spirit.gold -= cost;
         k.trackGoldSpent(cost);
-        k.upgradeBase(currentLoc);
+        k.upgradeBase(locId);
         session.backlog.add(
           session.gameTime,
-          `${locationName(currentLoc)} 거점을 Lv.${level + 1}로 업그레이드했다.`,
+          `${locationName(locId)} 거점을 Lv.${level + 1}로 업그레이드했다.`,
           '시스템',
         );
         render(el);
-      }
+      });
     });
 
     el.appendChild(wrap);
@@ -144,28 +155,7 @@ export function createRealEstateScreen(
     id: 'realestate',
     render,
     onKey(key) {
-      if (key === 'Escape') { onDone(); return; }
-      if (/^[1-8]$/.test(key)) {
-        const idx = parseInt(key, 10) - 1;
-        if (idx < PURCHASABLE_BASES.length) {
-          const base = PURCHASABLE_BASES[idx];
-          const k = session.knowledge;
-          if (!k.ownedBases.has(base.locationId)
-            && session.player.homeLocation !== base.locationId
-            && session.player.spirit.gold >= base.price) {
-            session.player.spirit.gold -= base.price;
-            k.trackGoldSpent(base.price);
-            k.purchaseBase(base.locationId);
-            session.backlog.add(
-              session.gameTime,
-              `${locationName(base.locationId)}에 거점을 마련했다.`,
-              '시스템',
-            );
-            const c = document.querySelector('.info-screen')?.parentElement;
-            if (c instanceof HTMLElement) render(c);
-          }
-        }
-      }
+      if (key === 'Escape') onDone();
     },
   };
 }

@@ -34,6 +34,7 @@ import { createLoreScreen } from './ui/screens/lore';
 import { createRealEstateScreen } from './ui/screens/real-estate';
 import { createStorageScreen } from './ui/screens/storage';
 import { createCookingScreen } from './ui/screens/cooking';
+import { createFarmScreen } from './ui/screens/farm';
 import { createNpcInviteScreen } from './ui/screens/npc-invite';
 import { createEquipmentScreen } from './ui/screens/equipment';
 import { createTravelScreen, type TravelOptions } from './ui/screens/travel';
@@ -252,6 +253,7 @@ async function boot() {
           sm.push(createHomeScreen(session, () => sm.pop(), (screen) => {
             if (screen === 'storage') sm.push(createStorageScreen(session, () => sm.pop()));
             else if (screen === 'cooking') sm.push(createCookingScreen(session, () => sm.pop()));
+            else if (screen === 'farm') sm.push(createFarmScreen(session, session.player.currentLocation, () => sm.pop()));
           }));
           break;
         case 'storage':

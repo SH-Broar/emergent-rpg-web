@@ -5,6 +5,13 @@ import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
 import type { ActivityDef, CropState } from '../../models/activity';
 import { gameTimeToMinute, updateCropReady } from '../../models/activity';
+
+/** 활동 기반 농작물 추적 (구형 CropState; 세션 외부 유지) */
+const _sessionCrops = new Map<GameSession, CropState[]>();
+function getSessionCrops(session: GameSession): CropState[] {
+  if (!_sessionCrops.has(session)) _sessionCrops.set(session, []);
+  return _sessionCrops.get(session)!;
+}
 import { itemName } from '../../types/registry';
 import { randomFloat } from '../../types/rng';
 import type { ActivitySimConfig } from './activity-sim';
@@ -127,7 +134,7 @@ export function createActivityScreen(
         growthMinutes,
         ready: false,
       };
-      session.playerCrops.push(crop);
+      getSessionCrops(session).push(crop);
     } else if (effect.startsWith('heal_hp:')) {
       const amount = parseInt(effect.split(':')[1], 10) || 0;
       p.adjustHp(amount);
@@ -206,7 +213,7 @@ export function createActivityScreen(
       session.gameTime.hour,
       session.gameTime.minute,
     );
-    for (const crop of session.playerCrops) {
+    for (const crop of getSessionCrops(session)) {
       updateCropReady(crop, currentMin);
     }
 

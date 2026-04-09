@@ -10,7 +10,7 @@ import { applyTimeTheme } from '../time-theme';
 export function createHomeScreen(
   session: GameSession,
   onDone: () => void,
-  onNavigate?: (screen: 'storage' | 'cooking') => void,
+  onNavigate?: (screen: 'storage' | 'cooking' | 'farm') => void,
 ): Screen {
   const p = session.player;
   let phase: 'menu' | 'sleeping' | 'wakeup' | 'nap_done' = 'menu';
@@ -33,9 +33,9 @@ export function createHomeScreen(
     title.textContent = isOwned ? '거점' : '집';
     wrap.appendChild(title);
 
-    const isHome = p.currentLocation === p.homeLocation || session.knowledge.ownedBases.has(p.currentLocation);
+    const isHome = p.currentLocation === p.homeLocation;
 
-    if (isHome) {
+    if (isOwned) {
       const info = document.createElement('p');
       info.textContent = `HP: ${Math.round(p.base.hp)}/${p.getEffectiveMaxHp()} | MP: ${Math.round(p.base.mp)}/${p.getEffectiveMaxMp()} | TP: ${p.base.ap}/${p.getEffectiveMaxAp()} | 기력: ${Math.round(p.base.vigor)}`;
       wrap.appendChild(info);
@@ -56,26 +56,56 @@ export function createHomeScreen(
       napBtn.addEventListener('click', () => doNap(el));
       wrap.appendChild(napBtn);
 
-      // 창고 (거점일 때만)
-      if (isOwned) {
-        const storageBtn = document.createElement('button');
-        storageBtn.className = 'btn';
-        storageBtn.style.minHeight = '44px';
-        storageBtn.innerHTML = `<span>📦 창고 확인</span> <span class="key-hint">[3]</span>`;
-        storageBtn.dataset.homeAction = 'storage';
-        wrap.appendChild(storageBtn);
+      // 창고 (항상 표시)
+      const storageBtn = document.createElement('button');
+      storageBtn.className = 'btn';
+      storageBtn.style.minHeight = '44px';
+      storageBtn.innerHTML = `<span>📦 창고 확인</span> <span class="key-hint">[3]</span>`;
+      storageBtn.dataset.homeAction = 'storage';
+      wrap.appendChild(storageBtn);
 
-        const cookBtn = document.createElement('button');
-        cookBtn.className = 'btn';
-        cookBtn.style.minHeight = '44px';
-        cookBtn.innerHTML = `<span>🍳 요리하기</span> <span class="key-hint">[4]</span>`;
-        cookBtn.dataset.homeAction = 'cooking';
-        wrap.appendChild(cookBtn);
+      // 요리 (항상 표시)
+      const cookBtn = document.createElement('button');
+      cookBtn.className = 'btn';
+      cookBtn.style.minHeight = '44px';
+      cookBtn.innerHTML = `<span>🍳 요리하기</span> <span class="key-hint">[4]</span>`;
+      cookBtn.dataset.homeAction = 'cooking';
+      wrap.appendChild(cookBtn);
+
+      // 농장 (Lv.3 이상)
+      const baseLevel = session.knowledge.getBaseLevel(p.currentLocation);
+      if (baseLevel >= 3 && onNavigate) {
+        const farmBtn = document.createElement('button');
+        farmBtn.className = 'btn';
+        farmBtn.style.minHeight = '44px';
+        farmBtn.innerHTML = `<span>🌾 농장 관리</span> <span class="key-hint">[5]</span>`;
+        farmBtn.dataset.homeAction = 'farm';
+        wrap.appendChild(farmBtn);
       }
+
+    } else if (isHome) {
+      // 기본 homeLocation (소유 거점 아님): 하루 1번 짧은 휴식만
+      const lastNapDay = session.knowledge.lastNapDay;
+      const todayDay = session.gameTime.day;
+      const canNap = lastNapDay !== todayDay;
+
+      const napBtn = document.createElement('button');
+      napBtn.className = 'btn';
+      napBtn.style.minHeight = '44px';
+      napBtn.innerHTML = canNap
+        ? `<span>💤 짧은 휴식 — 2시간 (HP·MP 30% 회복)</span> <span class="key-hint">[1]</span>`
+        : `<span style="color:var(--text-dim)">💤 오늘은 이미 쉬었다. (낮잠 1회/일)</span>`;
+      if (canNap) napBtn.addEventListener('click', () => {
+        session.knowledge.lastNapDay = todayDay;
+        doNap(el);
+      });
+      wrap.appendChild(napBtn);
+
     } else {
+      // 아무 거점도 아닌 곳
       const hint = document.createElement('p');
       hint.className = 'hint';
-      hint.textContent = '거점이 아닌 장소에서는 잠을 잘 수 없습니다. 마을 길드에서 거점을 구매할 수 있습니다.';
+      hint.textContent = '거점이 아닌 장소입니다. 마을 길드에서 거점을 구매할 수 있습니다.';
       wrap.appendChild(hint);
     }
 
@@ -89,7 +119,7 @@ export function createHomeScreen(
     // 거점 액션 버튼 이벤트
     wrap.querySelectorAll<HTMLButtonElement>('[data-home-action]').forEach(btn => {
       btn.addEventListener('click', () => {
-        const act = btn.dataset.homeAction! as 'storage' | 'cooking';
+        const act = btn.dataset.homeAction! as 'storage' | 'cooking' | 'farm';
         onDone();
         onNavigate?.(act);
       });
@@ -222,12 +252,25 @@ export function createHomeScreen(
         ?? document.querySelector('.screen')?.parentElement;
       if (!(container instanceof HTMLElement)) return;
 
-      const isHome = p.currentLocation === p.homeLocation || session.knowledge.ownedBases.has(p.currentLocation);
+      const isOwned = session.knowledge.ownedBases.has(p.currentLocation);
+      const isHome = p.currentLocation === p.homeLocation;
 
       if (phase === 'menu') {
         if (key === 'Escape') { onDone(); return; }
-        if (key === '1' && isHome) { startSleep(container); }
-        if (key === '2' && isHome) { doNap(container); }
+        if (key === '1' && isOwned) { startSleep(container); }
+        if (key === '2' && isOwned) { doNap(container); }
+        if (key === '1' && isHome && !isOwned) {
+          const lastNapDay = session.knowledge.lastNapDay;
+          const todayDay = session.gameTime.day;
+          if (lastNapDay !== todayDay) {
+            session.knowledge.lastNapDay = todayDay;
+            doNap(container);
+          }
+        }
+        if (key === '5' && isOwned && onNavigate) {
+          const level = session.knowledge.getBaseLevel(p.currentLocation);
+          if (level >= 3) { onDone(); onNavigate('farm'); }
+        }
       } else if (phase === 'wakeup' || phase === 'nap_done') {
         if (key === 'Enter' || key === ' ' || key === 'Escape') {
           onDone();

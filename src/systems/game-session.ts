@@ -11,7 +11,7 @@ import { SocialHub } from '../models/social';
 import { PlayerKnowledge } from '../models/knowledge';
 import { ColorGaugeState } from '../models/color';
 import { GameTime } from '../types/game-time';
-import type { CropState, BuffState } from '../models/activity';
+import type { BuffState } from '../models/activity';
 
 export class GameSession {
   actors: Actor[] = [];
@@ -25,7 +25,6 @@ export class GameSession {
   social = new SocialHub();
   knowledge = new PlayerKnowledge();
   gaugeState = new ColorGaugeState();
-  playerCrops: CropState[] = [];
   playerBuffs: BuffState[] = [];
 
   get player(): Actor { return this.actors[this.playerIdx]; }

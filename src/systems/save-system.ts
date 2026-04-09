@@ -276,6 +276,11 @@ function serializeKnowledge(k: PlayerKnowledge): object {
     }]),
     baseLevels: [...k.baseLevels.entries()],
     baseInvitedNpcs: [...k.baseInvitedNpcs.entries()],
+    farmStates: [...k.farmStates.entries()].map(([loc, farm]) => [loc, {
+      ...farm,
+      cells: farm.cells.map(c => ({ ...c })),
+    }]),
+    lastNapDay: k.lastNapDay,
   };
 }
 
@@ -319,6 +324,15 @@ function deserializeKnowledge(d: any): PlayerKnowledge {
   );
   k.baseLevels = new Map(d.baseLevels ?? []);
   k.baseInvitedNpcs = new Map(d.baseInvitedNpcs ?? []);
+  if (d.farmStates) {
+    k.farmStates = new Map(
+      (d.farmStates as [string, any][]).map(([loc, farm]) => [loc, {
+        ...farm,
+        cells: (farm.cells ?? []).map((c: any) => ({ ...c })),
+      }])
+    );
+  }
+  if (d.lastNapDay !== undefined) k.lastNapDay = d.lastNapDay;
   return k;
 }
 
@@ -371,7 +385,6 @@ function serializeSession(session: GameSession): object {
     knowledge: serializeKnowledge(session.knowledge),
     backlog: serializeBacklog(session.backlog),
     gaugeState: serializeGaugeState(session.gaugeState),
-    playerCrops: session.playerCrops.map(c => ({ ...c })),
     playerBuffs: session.playerBuffs.map(b => ({ ...b })),
   };
 }
@@ -386,7 +399,6 @@ function deserializeSession(data: any): GameSession {
   session.knowledge = deserializeKnowledge(data.knowledge ?? {});
   session.backlog = deserializeBacklog(data.backlog ?? {});
   session.gaugeState = deserializeGaugeState(data.gaugeState ?? {});
-  session.playerCrops = (data.playerCrops ?? []).map((c: any) => ({ ...c }));
   session.playerBuffs = (data.playerBuffs ?? []).map((b: any) => ({ ...b }));
 
   // EventSystem, DungeonSystem, ActivitySystem are runtime-only;

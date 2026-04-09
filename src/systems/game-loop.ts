@@ -6,6 +6,7 @@ import { seasonName } from '../types/enums';
 import { randomInt, randomFloat } from '../types/rng';
 import { updateHyperionLevels } from './hyperion';
 import { advanceTurn } from './world-simulation';
+import { applyDailyBaseEffects } from './base-effects';
 import { findItemsBySource } from '../types/item-defs';
 import { tryNpcInitiatedConversation, getDialogue, getRelationshipStage, getActionText } from './npc-interaction';
 
@@ -306,6 +307,7 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
   // 시간 경과 + NPC 시뮬레이션
   if (minutes > 0) {
     const prevSeason = session.world.getCurrentSeason();
+    const prevDay = session.gameTime.day;
 
     // 월드 시뮬레이션: 시간 진행, 플레이어 기력 감소, 장소 컬러 영향, 이벤트, NPC 틱
     advanceTurn(
@@ -313,6 +315,15 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
       session.actors, session.playerIdx, session.backlog,
       session.social, session.knowledge,
     );
+
+    // 날이 바뀌었으면 거점 패시브 효과 적용
+    if (session.gameTime.day !== prevDay) {
+      const beMsgs = applyDailyBaseEffects(session);
+      for (const msg of beMsgs) {
+        session.backlog.add(session.gameTime, msg, '시스템');
+        result.messages.push(msg);
+      }
+    }
 
     // 버프 틱 처리
     if (session.playerBuffs.length > 0) {
