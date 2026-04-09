@@ -207,10 +207,6 @@ export function checkHyperionCondition(
     case 'food_eaten':
       return knowledge.foodTypesEaten.size >= parseInt(param, 10);
 
-    // --- 기력 소비 ---
-    case 'vigor_spent':
-      return knowledge.totalVigorSpent >= parseInt(param, 10);
-
     // --- 동료 동행 일수 ---
     case 'companion_days': {
       // "이름:N"

@@ -11,7 +11,7 @@ import { LocationID, Loc } from '../types/location';
 import { locationName } from '../types/registry';
 import { randomInt, randomFloat } from '../types/rng';
 import { iGa, eulReul, euroRo, gwaWa } from '../data/josa';
-import { getWeatherEffect, isOutdoorLocation } from './weather';
+import { getWeatherEffect } from './weather';
 import { ColorChangeContext } from '../models/color';
 
 export interface ActionCandidate {
@@ -433,8 +433,6 @@ export function evaluateActions(
 ): ActionCandidate[] {
   const candidates: ActionCandidate[] = [];
   const role = actor.spirit.role;
-  const vigor = actor.base.vigor;
-  const maxVigor = actor.base.maxVigor;
   const loc = actor.currentLocation;
   const color = actor.color.values;
 
@@ -446,8 +444,7 @@ export function evaluateActions(
   const wakeHour = getPreferredWakeHour(role, actor);
   const nearBedtime = hour >= sleepHour - 1;
   const pastBedtime = hour >= sleepHour || (hour < wakeHour);
-  const isTired = vigor < 40;
-  const isExhausted = vigor < 20;
+  const isHungry = actor.lifeData.daysSinceLastMeal > 0;
 
   function make(
     type: ActionType,
@@ -478,7 +475,6 @@ export function evaluateActions(
     let wakeScore = 5;
     if (hour >= wakeHour) wakeScore += 50;
     if (hour >= wakeHour + 2) wakeScore += 30; // past wake hour by 2h → +80 total
-    if (vigor > 50) wakeScore += 30;
     candidates.push(make(ActionType.WakeUp, wakeScore, { reason: '기상 시간' }));
     return candidates;
   }
@@ -489,16 +485,13 @@ export function evaluateActions(
     if (nearBedtime) sleepScore += 30;
     if (pastBedtime) sleepScore += 80;
     if (hour === 0) sleepScore += 60; // midnight
-    if (isTired) sleepScore += 30;
-    if (isExhausted) sleepScore += 30; // exhausted gives extra 60 total
     sleepScore *= getMatrixModifier(actor, ActionType.Sleep);
     candidates.push(make(ActionType.Sleep, sleepScore, { reason: '취침' }));
   }
 
   // 4. GoHome (near bedtime, not at home)
   if (nearBedtime && loc !== actor.homeLocation) {
-    let goHomeScore = 60;
-    if (isTired) goHomeScore += 20;
+    const goHomeScore = 60;
     candidates.push(make(ActionType.GoToLocation, goHomeScore, {
       targetLocation: actor.homeLocation,
       reason: '귀가',
@@ -507,9 +500,7 @@ export function evaluateActions(
 
   // 5. Eat
   {
-    const vigorRatio = vigor / maxVigor;
-    let eatScore = (1 - vigorRatio) * 80;
-    if (vigor < 15) eatScore += 50; // starving
+    let eatScore = isHungry ? 80 : 10;
     const hasFood = (actor.spirit.inventory.get(ItemType.Food) ?? 0) > 0;
     if (!hasFood) eatScore *= 0.3;
     candidates.push(make(ActionType.Eat, eatScore, { targetItem: ItemType.Food, reason: '식사' }));
@@ -517,9 +508,7 @@ export function evaluateActions(
 
   // 6. Rest
   {
-    const vigorRatio = vigor / maxVigor;
-    let restScore = (1 - vigorRatio) * 60;
-    if (isTired) restScore += 40;
+    let restScore = 20;
     if (isNight) restScore += 20;
     restScore *= getMatrixModifier(actor, ActionType.Rest);
     candidates.push(make(ActionType.Rest, restScore, { reason: '휴식' }));
@@ -555,10 +544,9 @@ export function evaluateActions(
 
   // 10. Trade_Buy
   {
-    const hungry = vigor < 40;
     const hasFood = (actor.spirit.inventory.get(ItemType.Food) ?? 0) > 0;
     let buyScore = 10;
-    if (hungry && !hasFood) buyScore += 60;
+    if (isHungry && !hasFood) buyScore += 60;
     buyScore += getRoleBonus(role, ActionType.Trade_Buy);
     buyScore *= getMatrixModifier(actor, ActionType.Trade_Buy);
     candidates.push(make(ActionType.Trade_Buy, buyScore, {
@@ -585,8 +573,7 @@ export function evaluateActions(
   {
     let dungeonScore = 10;
     dungeonScore += getRoleBonus(role, ActionType.ExploreDungeon);
-    if (isTired) dungeonScore *= 0.2;
-    else if (isNight) dungeonScore *= 0.5;
+    if (isNight) dungeonScore *= 0.5;
     const hasActiveQuest = actor.spirit.activeQuestId >= 0;
     if (hasActiveQuest) dungeonScore += 35;
     dungeonScore *= getMatrixModifier(actor, ActionType.ExploreDungeon);
@@ -652,7 +639,7 @@ export function evaluateActions(
     {
       const hasFood = (actor.spirit.inventory.get(ItemType.Food) ?? 0) > 0;
       if (hasFood) {
-        const isHungry = bestNeighbor.base.vigor < 40;
+        const isHungry = bestNeighbor.lifeData.daysSinceLastMeal > 0;
         let score = 10
           + 15 // different race bonus
           + (isHungry ? 20 : 0)
@@ -800,7 +787,6 @@ export function executeAction(
     case ActionType.Eat: {
       const hasFood = actor.consumeItem(ItemType.Food, 1);
       if (hasFood) {
-        actor.adjustVigor(40);
         actor.adjustMood(0.05);
         log.add(time, `${name}이${iGa(name)} 식사했다.`, '행동', name, loc);
       } else {
@@ -816,7 +802,6 @@ export function executeAction(
     }
 
     case ActionType.Rest: {
-      actor.adjustVigor(30);
       actor.adjustMood(0.03);
       actor.actionCooldown = 3;
       log.add(time, `${name}이${iGa(name)} 휴식을 취했다.`, '행동', name, loc);
@@ -935,7 +920,6 @@ export function executeAction(
         if (next) actor.currentLocation = next;
         break;
       }
-      actor.adjustVigor(-25);
       const attackRoll = randomFloat(0, 1);
       const successThreshold = 0.4 + (actor.base.attack / 100) * 0.2;
       if (attackRoll >= successThreshold) {
@@ -1027,7 +1011,6 @@ export function executeAction(
       for (const [item, amount] of recipe.outputs) {
         actor.addItem(item, amount);
       }
-      actor.adjustVigor(-recipe.vigorCost);
       actor.addMemory({
         type: MemoryType.Produced,
         subject: recipe.name,
@@ -1220,19 +1203,8 @@ export function npcOnTick(
 
   const factor = minutesElapsed / 5;
 
-  // Update vigor (with weather drain modifier)
-  const weatherEffect = getWeatherEffect(world.weather);
-  const isOutdoor = isOutdoorLocation(actor.currentLocation);
-  const vigorDrainBase = 0.12 * factor;
-  const vigorDrain = isOutdoor
-    ? vigorDrainBase * weatherEffect.vigorDrainMod
-    : vigorDrainBase;
-  actor.adjustVigor(-vigorDrain);
-  if (actor.base.vigor < 10) {
-    actor.adjustHp(-0.3 * factor);
-  }
-
   // Weather mood effect
+  const weatherEffect = getWeatherEffect(world.weather);
   if (weatherEffect.moodEffect !== 0) {
     actor.adjustMood(weatherEffect.moodEffect * factor);
   }
@@ -1279,7 +1251,7 @@ export function npcOnTick(
   // If sleeping: check wake condition
   if (actor.base.sleeping) {
     const wakeHour = getPreferredWakeHour(actor.spirit.role);
-    if (time.hour >= wakeHour && actor.base.vigor > 50) {
+    if (time.hour >= wakeHour) {
       actor.base.sleeping = false;
     }
     return;

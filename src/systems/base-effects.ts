@@ -34,8 +34,8 @@ export function applyDailyBaseEffects(session: GameSession): string[] {
       }
 
       case 'herb_bonus':
-        p.adjustVigor(5);
-        messages.push(`✨ ${locId} 거점 효과: 기력 +5 자연 회복`);
+        p.adjustHp(5);
+        messages.push(`✨ ${locId} 거점 효과: HP +5 자연 회복`);
         break;
 
       case 'event_alert': {

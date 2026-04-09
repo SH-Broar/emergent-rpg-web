@@ -15,7 +15,7 @@ import { getActionText } from './npc-interaction';
 // ============================================================
 
 export interface PartyStatBonus {
-  hp: number; mp: number; attack: number; defense: number; vigor: number;
+  hp: number; mp: number; attack: number; defense: number;
 }
 
 export interface PartyMemberSlot {
@@ -27,12 +27,12 @@ export interface PartyMemberSlot {
 }
 
 const PARTY_HYPERION_TABLE: { chance: number; bonus: PartyStatBonus }[] = [
-  { chance: 0,    bonus: { hp: 0,  mp: 0,  attack: 0, defense: 0, vigor: 0 } },  // Lv0
-  { chance: 0.10, bonus: { hp: 0,  mp: 0,  attack: 0, defense: 0, vigor: 0 } },  // Lv1
-  { chance: 0.15, bonus: { hp: 0,  mp: 0,  attack: 0, defense: 0, vigor: 0 } },  // Lv2
-  { chance: 0.20, bonus: { hp: 10, mp: 0,  attack: 2, defense: 1, vigor: 0 } },  // Lv3
-  { chance: 0.25, bonus: { hp: 20, mp: 5,  attack: 4, defense: 2, vigor: 0 } },  // Lv4
-  { chance: 0.30, bonus: { hp: 30, mp: 10, attack: 6, defense: 3, vigor: 10 } }, // Lv5
+  { chance: 0,    bonus: { hp: 0,  mp: 0,  attack: 0, defense: 0 } },  // Lv0
+  { chance: 0.10, bonus: { hp: 0,  mp: 0,  attack: 0, defense: 0 } },  // Lv1
+  { chance: 0.15, bonus: { hp: 0,  mp: 0,  attack: 0, defense: 0 } },  // Lv2
+  { chance: 0.20, bonus: { hp: 10, mp: 0,  attack: 2, defense: 1 } },  // Lv3
+  { chance: 0.25, bonus: { hp: 20, mp: 5,  attack: 4, defense: 2 } },  // Lv4
+  { chance: 0.30, bonus: { hp: 30, mp: 10, attack: 6, defense: 3 } },  // Lv5
 ];
 
 function getPartyHyperionData(level: number) {
@@ -69,13 +69,12 @@ export function createPartySlot(actor: Actor): PartyMemberSlot {
 
 /** 전체 동료 스탯 보너스 합산 */
 export function calcPartyBonuses(slots: PartyMemberSlot[]): PartyStatBonus {
-  const total: PartyStatBonus = { hp: 0, mp: 0, attack: 0, defense: 0, vigor: 0 };
+  const total: PartyStatBonus = { hp: 0, mp: 0, attack: 0, defense: 0 };
   for (const s of slots) {
     total.hp += s.statBonus.hp;
     total.mp += s.statBonus.mp;
     total.attack += s.statBonus.attack;
     total.defense += s.statBonus.defense;
-    total.vigor += s.statBonus.vigor;
   }
   return total;
 }
@@ -309,7 +308,6 @@ export function usePlayerSkill(
   const skillLevel = player.learnedSkills.get(skill.id) ?? 1;
   const costMult = getSkillCostReduction(skillLevel);
   player.adjustMp(-Math.ceil(skill.mpCost * costMult));
-  if (skill.tpCost > 0) player.adjustVigor(-skill.tpCost * 20);
   if (skill.hpCost > 0) player.adjustHp(-skill.hpCost);
 
   // 사용 횟수

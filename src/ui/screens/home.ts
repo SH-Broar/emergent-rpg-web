@@ -37,7 +37,7 @@ export function createHomeScreen(
 
     if (isOwned) {
       const info = document.createElement('p');
-      info.textContent = `HP: ${Math.round(p.base.hp)}/${p.getEffectiveMaxHp()} | MP: ${Math.round(p.base.mp)}/${p.getEffectiveMaxMp()} | TP: ${p.base.ap}/${p.getEffectiveMaxAp()} | 기력: ${Math.round(p.base.vigor)}`;
+      info.textContent = `HP: ${Math.round(p.base.hp)}/${p.getEffectiveMaxHp()} | MP: ${Math.round(p.base.mp)}/${p.getEffectiveMaxMp()} | TP: ${p.base.ap}/${p.getEffectiveMaxAp()}`;
       wrap.appendChild(info);
 
       // 잠자기 (다음 날 아침, 완전 회복)
@@ -138,10 +138,8 @@ export function createHomeScreen(
     );
     const hpRecover = Math.round(p.getEffectiveMaxHp() * 0.3);
     const mpRecover = Math.round(p.getEffectiveMaxMp() * 0.3);
-    const vigorRecover = Math.round(p.getEffectiveMaxVigor() * 0.2);
     p.adjustHp(hpRecover);
     p.adjustMp(mpRecover);
-    p.adjustVigor(vigorRecover);
     session.backlog.add(session.gameTime, `${p.name}이(가) 잠시 휴식을 취했다.`, '행동');
     phase = 'nap_done';
 
@@ -154,7 +152,7 @@ export function createHomeScreen(
       <h2 style="color:var(--success);margin-bottom:8px">잠시 쉬었다</h2>
       <p style="color:var(--text-dim);margin-bottom:16px">${session.gameTime.toString()}</p>
       <div style="font-size:14px;color:var(--text-dim);margin-bottom:20px">
-        <p>HP +${hpRecover} · MP +${mpRecover} · 기력 +${vigorRecover}</p>
+        <p>HP +${hpRecover} · MP +${mpRecover}</p>
       </div>
       <button class="btn btn-primary" data-ok style="min-width:160px">확인 [Enter]</button>
     `;
@@ -204,7 +202,6 @@ export function createHomeScreen(
 
     // 전체 회복
     p.base.hp = p.getEffectiveMaxHp();
-    p.base.vigor = p.getEffectiveMaxVigor();
     p.base.mp = p.getEffectiveMaxMp();
     p.base.ap = p.getEffectiveMaxAp();
 

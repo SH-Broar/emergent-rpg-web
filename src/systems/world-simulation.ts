@@ -133,14 +133,7 @@ export function advanceTurn(
   world.onTick(gameTime);
   social.updateQuests(gameTime);
 
-  // 3. Player vigor drain
-  const vigorDrain = 0.12 * factor;
-  player.adjustVigor(-vigorDrain);
-  if (player.base.vigor < 10) {
-    player.adjustHp(-0.3 * factor);
-  }
-
-  // 4. Location color influence
+  // 3. Location color influence
   const locData = world.getLocation(player.currentLocation);
   const locInfluence = buildLocInfluence(
     player.currentLocation,

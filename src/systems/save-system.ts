@@ -258,7 +258,6 @@ function serializeKnowledge(k: PlayerKnowledge): object {
     totalItemsSold: k.totalItemsSold,
     totalItemsCrafted: k.totalItemsCrafted,
     totalActivitiesDone: k.totalActivitiesDone,
-    totalVigorSpent: k.totalVigorSpent,
     foodTypesEaten: [...k.foodTypesEaten],
     companionDaysMap: [...k.companionDaysMap.entries()],
     locationReputation: [...k.locationReputation.entries()],
@@ -304,7 +303,6 @@ function deserializeKnowledge(d: any): PlayerKnowledge {
   k.totalItemsSold = d.totalItemsSold ?? 0;
   k.totalItemsCrafted = d.totalItemsCrafted ?? 0;
   k.totalActivitiesDone = d.totalActivitiesDone ?? 0;
-  k.totalVigorSpent = d.totalVigorSpent ?? 0;
   k.foodTypesEaten = new Set(d.foodTypesEaten ?? []);
   k.companionDaysMap = new Map(d.companionDaysMap ?? []);
   k.locationReputation = new Map(d.locationReputation ?? []);

@@ -8,7 +8,6 @@ import { randomFloat, weightedRandomChoice } from '../types/rng';
 export interface DungeonOutcome {
   message: string;
   hpChange?: number;
-  vigorChange?: number;
   moodChange?: number;
   itemReward?: { type: string; amount: number };
   progressBonus?: number;  // bonus dungeon progress
@@ -41,12 +40,12 @@ const EVENTS: DungeonExplorationEvent[] = [
       {
         label: '꽃을 감상한다',
         description: '잠시 쉬어가기',
-        outcome: { message: '아름다운 꽃에 마음이 편안해졌다.', moodChange: 0.1, vigorChange: 15 },
+        outcome: { message: '아름다운 꽃에 마음이 편안해졌다.', moodChange: 0.1 },
       },
       {
         label: '약초를 채집한다',
         description: '허브 획득',
-        outcome: { message: '귀한 약초를 발견했다!', itemReward: { type: 'Herb', amount: 2 }, vigorChange: -5 },
+        outcome: { message: '귀한 약초를 발견했다!', itemReward: { type: 'Herb', amount: 2 } },
       },
     ],
     weight: 15,
@@ -79,7 +78,7 @@ const EVENTS: DungeonExplorationEvent[] = [
       {
         label: '마신다',
         description: '기운이 솟을 것 같다',
-        outcome: { message: '시원한 물이 온몸에 활력을 준다!', vigorChange: 25, hpChange: 10 },
+        outcome: { message: '시원한 물이 온몸에 활력을 준다!', hpChange: 10 },
       },
       {
         label: '물병에 담는다',
@@ -141,7 +140,7 @@ const EVENTS: DungeonExplorationEvent[] = [
       {
         label: '관찰한다',
         description: '신비로운 풍경',
-        outcome: { message: '빛나는 버섯들 사이에서 마음이 평온해졌다.', moodChange: 0.08, vigorChange: 10 },
+        outcome: { message: '빛나는 버섯들 사이에서 마음이 평온해졌다.', moodChange: 0.08 },
       },
     ],
     weight: 12,
@@ -181,7 +180,7 @@ const EVENTS: DungeonExplorationEvent[] = [
       {
         label: '다른 길을 찾는다',
         description: '우회',
-        outcome: { message: '돌아가는 길을 찾았다.', vigorChange: -5, progressBonus: 3 },
+        outcome: { message: '돌아가는 길을 찾았다.', progressBonus: 3 },
       },
     ],
     weight: 10,
@@ -229,9 +228,6 @@ export function rollDungeonExplorationEvent(progress: number): DungeonExploratio
 export function applyDungeonOutcome(actor: Actor, outcome: DungeonOutcome): string {
   if (outcome.hpChange !== undefined && outcome.hpChange !== 0) {
     actor.adjustHp(outcome.hpChange);
-  }
-  if (outcome.vigorChange !== undefined && outcome.vigorChange !== 0) {
-    actor.adjustVigor(outcome.vigorChange);
   }
   if (outcome.moodChange !== undefined && outcome.moodChange !== 0) {
     actor.adjustMood(outcome.moodChange);

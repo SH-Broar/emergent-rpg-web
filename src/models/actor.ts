@@ -55,7 +55,6 @@ export interface BaseProperty {
   hp: number; maxHp: number;
   mp: number; maxMp: number;
   attack: number; defense: number;
-  vigor: number; maxVigor: number;
   ap: number; maxAp: number;
   strength: number;
   age: number;
@@ -67,7 +66,7 @@ export interface BaseProperty {
 export function createBaseProperty(race = Race.Human): BaseProperty {
   return {
     race, hp: 100, maxHp: 100, mp: 30, maxMp: 30,
-    attack: 10, defense: 5, vigor: 100, maxVigor: 100,
+    attack: 10, defense: 5,
     ap: 5, maxAp: 5,
     strength: 0.5, age: 25, level: 1, exp: 0, sleeping: false, mood: 0,
   };
@@ -165,11 +164,7 @@ export class Actor {
   }
 
   isAlive(): boolean { return this.base.hp > 0; }
-  isLowVigor(): boolean { return this.base.vigor < 40; }
-  isHungry(): boolean { return this.base.vigor < 40; }
-  isTired(): boolean { return this.base.vigor < 40; }
-  isExhausted(): boolean { return this.base.vigor < 15; }
-  isStarving(): boolean { return this.base.vigor < 20; }
+  isHungry(): boolean { return this.lifeData.daysSinceLastMeal > 0; }
   isNight(): boolean { return this.lastTickHour >= 21 || this.lastTickHour < 5; }
 
   adjustRelationship(otherName: string, trustDelta: number, affinityDelta: number): void {
@@ -198,14 +193,11 @@ export class Actor {
 
   addGold(amount: number): void { this.spirit.gold += amount; }
 
-  adjustVigor(delta: number): void {
-    this.base.vigor = Math.max(0, Math.min(this.base.maxVigor, this.base.vigor + delta));
-  }
   adjustHp(delta: number): void {
-    this.base.hp = Math.max(0, Math.min(this.base.maxHp, this.base.hp + delta));
+    this.base.hp = Math.max(0, Math.min(this.getEffectiveMaxHp(), this.base.hp + delta));
   }
   adjustMp(delta: number): void {
-    this.base.mp = Math.max(0, Math.min(this.base.maxMp, this.base.mp + delta));
+    this.base.mp = Math.max(0, Math.min(this.getEffectiveMaxMp(), this.base.mp + delta));
   }
   adjustMood(delta: number): void {
     this.base.mood = Math.max(-1, Math.min(1, this.base.mood + delta));
@@ -285,8 +277,6 @@ export class Actor {
     const buffBonus = this.getVariable('buff_defense');
     return this.base.defense + (this.hyperionLevel + this.hyperionBonus) * 1 + armorBonus + acc1Bonus + acc2Bonus + buffBonus;
   }
-  getEffectiveMaxVigor(): number { return this.base.maxVigor + (this.hyperionLevel + this.hyperionBonus) * 5; }
-
   receiveEventInfluence(influence: number[], _eventName: string, _time: GameTime): void {
     this.color.applyInfluence(influence);
   }

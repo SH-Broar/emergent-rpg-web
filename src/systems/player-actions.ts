@@ -56,11 +56,10 @@ const hostFestival: PlayerAction = {
     const npcs = getNPCsAtLocation(actor, allActors);
     const hour = actor.lastTickHour;
     const isEvening = hour >= 18 && hour < 24;
-    return npcs.length >= 5 && isEvening && actor.spirit.gold >= 50 && actor.base.vigor >= 20;
+    return npcs.length >= 5 && isEvening && actor.spirit.gold >= 50;
   },
   execute: (actor, _world, social, allActors, backlog, time) => {
     actor.spirit.gold -= 50;
-    actor.adjustVigor(-20);
 
     const locId = actor.currentLocation;
     const locLabel = locationName(locId);
@@ -116,10 +115,9 @@ const shareNews: PlayerAction = {
   goldCost: 0,
   requirements: (actor, _world, _social, allActors) => {
     const npcs = getNPCsAtLocation(actor, allActors);
-    return npcs.length >= 1 && actor.base.vigor >= 5;
+    return npcs.length >= 1;
   },
   execute: (actor, _world, social, allActors, backlog, time) => {
-    actor.adjustVigor(-5);
 
     const locId = actor.currentLocation;
     const npcs = getNPCsAtLocation(actor, allActors);
@@ -169,13 +167,11 @@ const improveVillage: PlayerAction = {
     return (
       isSettlement &&
       actor.spirit.gold >= 100 &&
-      actor.base.vigor >= 30 &&
       hasOre >= 5
     );
   },
   execute: (actor, world, _social, _allActors, backlog, time) => {
     actor.spirit.gold -= 100;
-    actor.adjustVigor(-30);
     actor.consumeItem(ItemType.OreCommon, 5);
 
     const locId = actor.currentLocation;
@@ -214,10 +210,9 @@ const communityMeal: PlayerAction = {
   requirements: (actor, _world, _social, allActors) => {
     const npcs = getNPCsAtLocation(actor, allActors);
     const foodCount = actor.spirit.inventory.get(ItemType.Food) ?? 0;
-    return npcs.length >= 3 && foodCount >= 3 && actor.base.vigor >= 10;
+    return npcs.length >= 3 && foodCount >= 3;
   },
   execute: (actor, _world, _social, allActors, backlog, time) => {
-    actor.adjustVigor(-10);
     actor.consumeItem(ItemType.Food, 3);
 
     const locId = actor.currentLocation;
@@ -225,7 +220,6 @@ const communityMeal: PlayerAction = {
 
     for (const npc of npcs) {
       npc.adjustMood(0.08);
-      npc.adjustVigor(20);
       npc.adjustRelationship(actor.name, 0.05, 0.05);
       actor.adjustRelationship(npc.name, 0.05, 0.05);
       npc.addMemory({
@@ -266,14 +260,12 @@ const formExpedition: PlayerAction = {
     return (
       isAtGuild &&
       actor.spirit.gold >= 30 &&
-      actor.base.vigor >= 15 &&
       adventurers.length >= 1 &&
       !actor.hasItem(EXPEDITION_FLAG)
     );
   },
   execute: (actor, _world, _social, allActors, backlog, time) => {
     actor.spirit.gold -= 30;
-    actor.adjustVigor(-15);
 
     const locId = actor.currentLocation;
     const adventurers = allActors.filter(

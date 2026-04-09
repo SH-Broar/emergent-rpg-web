@@ -132,8 +132,6 @@ export function initActors(sections: DataSection[]): Actor[] {
     actor.base.maxMp = s.getFloat('maxMp', actor.base.mp);
     actor.base.attack = s.getFloat('attack', 10);
     actor.base.defense = s.getFloat('defense', 5);
-    actor.base.vigor = s.getFloat('vigor', 100);
-    actor.base.maxVigor = s.getFloat('maxVigor', 100);
     actor.base.strength = s.getFloat('strength', 0.5);
     actor.base.age = s.getInt('age', 25);
     actor.base.level = s.getInt('level', 1);

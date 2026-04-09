@@ -30,7 +30,6 @@ export function createInitialStatSlots(): StatSlot[] {
     { name: 'MP', allocated: 0, perPoint: 5 },
     { name: '공격', allocated: 0, perPoint: 2 },
     { name: '방어', allocated: 0, perPoint: 1 },
-    { name: 'MP', allocated: 0, perPoint: 10 },
     { name: '골드', allocated: 0, perPoint: 30 },
   ];
 }
@@ -46,7 +45,7 @@ export function createInitialInvestmentState(actor: Actor): InitialInvestmentSta
   return {
     slots: createInitialStatSlots(),
     remaining: STAT_TOTAL_POINTS,
-    baseValues: [b.maxHp, b.maxMp, b.attack, b.defense, b.maxVigor, actor.spirit.gold],
+    baseValues: [b.maxHp, b.maxMp, b.attack, b.defense, actor.spirit.gold],
   };
 }
 
@@ -92,9 +91,7 @@ export function applyInitialInvestment(actor: Actor, state: InitialInvestmentSta
   actor.base.mp = actor.base.maxMp;
   actor.base.attack = bv[2] + s[2].allocated * s[2].perPoint;
   actor.base.defense = bv[3] + s[3].allocated * s[3].perPoint;
-  actor.base.maxVigor = bv[4] + s[4].allocated * s[4].perPoint;
-  actor.base.vigor = actor.base.maxVigor;
-  actor.spirit.gold = bv[5] + s[5].allocated * s[5].perPoint;
+  actor.spirit.gold = bv[4] + s[4].allocated * s[4].perPoint;
 }
 
 // ============================================================
@@ -107,7 +104,6 @@ export function createLevelUpStatSlots(): StatSlot[] {
     { name: '최대MP', allocated: 0, perPoint: 4 },
     { name: '공격', allocated: 0, perPoint: 1.5 },
     { name: '방어', allocated: 0, perPoint: 1 },
-    { name: '최대MP', allocated: 0, perPoint: 8 },
   ];
 }
 
@@ -123,7 +119,7 @@ export function createLevelUpStatState(actor: Actor, totalPoints = 0): LevelUpSt
   return {
     slots: createLevelUpStatSlots(),
     remaining: totalPoints > 0 ? totalPoints : LEVELUP_STAT_POINTS,
-    baseValues: [b.maxHp, b.maxMp, b.attack, b.defense, b.maxVigor],
+    baseValues: [b.maxHp, b.maxMp, b.attack, b.defense],
     level: b.level,
   };
 }
@@ -158,7 +154,6 @@ export function applyLevelUpStats(actor: Actor, state: LevelUpStatState): void {
   actor.base.maxMp = bv[1] + s[1].allocated * s[1].perPoint;
   actor.base.attack = bv[2] + s[2].allocated * s[2].perPoint;
   actor.base.defense = bv[3] + s[3].allocated * s[3].perPoint;
-  actor.base.maxVigor = bv[4] + s[4].allocated * s[4].perPoint;
 }
 
 // ============================================================

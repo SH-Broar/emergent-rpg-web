@@ -364,7 +364,6 @@ const LIFE_EVENTS: NpcLifeEvent[] = [
     },
     execute(a1, a2, _social, backlog, time) {
       a1.consumeItem(ItemType.Food, 1);
-      a2.adjustVigor(30);
       a1.adjustMood(0.08);
       a2.adjustMood(0.1);
       a1.adjustRelationship(a2.name, 0.05, 0.05);
@@ -490,9 +489,7 @@ const LIFE_EVENTS: NpcLifeEvent[] = [
       return (
         a1.currentLocation === a2.currentLocation &&
         workLocations.includes(a1.currentLocation) &&
-        !a1.isNight() &&
-        a1.base.vigor >= 40 &&
-        a2.base.vigor >= 40
+        !a1.isNight()
       );
     },
     execute(a1, a2, _social, backlog, time) {

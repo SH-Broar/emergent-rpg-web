@@ -122,7 +122,6 @@ export class PlayerKnowledge {
   totalItemsSold = 0;
   totalItemsCrafted = 0;
   totalActivitiesDone = 0;
-  totalVigorSpent = 0;
   foodTypesEaten = new Set<string>();
   companionDaysMap = new Map<string, number>();
   locationReputation = new Map<string, number>();
@@ -266,7 +265,6 @@ export class PlayerKnowledge {
   trackItemSold(count = 1): void { this.totalItemsSold += count; }
   trackItemCrafted(count = 1): void { this.totalItemsCrafted += count; }
   trackActivityDone(): void { this.totalActivitiesDone++; }
-  trackVigorSpent(amount: number): void { this.totalVigorSpent += Math.round(amount); }
   trackFoodEaten(name: string): void { this.foodTypesEaten.add(name); }
   trackCompanionDay(name: string): void {
     this.companionDaysMap.set(name, (this.companionDaysMap.get(name) ?? 0) + 1);
