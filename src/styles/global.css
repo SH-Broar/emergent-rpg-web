@@ -150,24 +150,25 @@ html, body {
 }
 .action-icon { font-size: 18px; }
 .action-label { font-size: 11px; }
-.action-label-row { display: flex; align-items: center; gap: 4px; }
+.action-label-row { display: flex; align-items: center; justify-content: space-between; gap: 4px; width: 100%; }
 .action-label-row .action-label { flex: 0 1 auto; min-width: 0; }
 .action-key { font-size: 10px; color: var(--text-dim); }
 
-.tp-cost-badge {
+.tp-cost-stack {
   display: inline-flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-width: 22px;
-  height: 18px;
-  padding: 0 4px;
-  border-radius: 4px;
-  background: var(--warning);
-  color: #111;
-  font-size: 10px;
-  font-weight: 700;
-  line-height: 1;
+  gap: 2px;
   flex-shrink: 0;
+}
+
+.tp-cost-pip {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  border: 1px solid var(--warning);
+  background: var(--warning);
 }
 
 /* Info bar */
@@ -242,7 +243,7 @@ html, body {
 }
 .npc-num { width: 20px; color: var(--text-dim); font-size: 13px; }
 .npc-name { font-weight: 600; flex-shrink: 0; }
-.npc-name-row { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.npc-name-row { display: flex; align-items: center; justify-content: space-between; gap: 6px; min-width: 0; width: 100%; }
 .npc-name-row .npc-name { flex: 1; min-width: 0; }
 .npc-detail { color: var(--text-dim); font-size: 12px; flex: 1; min-width: 0; }
 

@@ -86,6 +86,14 @@ const ACTION_TP_COST: Partial<Record<GameAction, number>> = {
   gather: 1,
 };
 
+function renderTpCostPips(tpCost: number): string {
+  if (tpCost <= 0) return '';
+  return `<span class="tp-cost-stack" aria-label="TP ${tpCost}" title="TP ${tpCost}">${Array.from(
+    { length: tpCost },
+    () => '<span class="tp-cost-pip"></span>'
+  ).join('')}</span>`;
+}
+
 // ============================================================
 // 미니맵 표시 설정 (localStorage 영구 저장)
 // ============================================================
@@ -453,7 +461,7 @@ export function createGameScreen(
                   <span class="action-icon">${a.icon}</span>
                   <span class="action-label-row">
                     <span class="action-label">${a.label}</span>
-                    ${tpCost > 0 ? `<span class="tp-cost-badge" title="TP ${tpCost}">TP${tpCost}</span>` : ''}
+                    ${renderTpCostPips(tpCost)}
                   </span>
                   <span class="action-key">${a.key}</span>
                 </button>`;

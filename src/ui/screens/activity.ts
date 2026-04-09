@@ -26,6 +26,14 @@ function resolveActivityIcon(effectType: string): string {
   return ACTIVITY_ICON[effectType] ?? '🔨';
 }
 
+function renderTpCostPips(tpCost: number): string {
+  if (tpCost <= 0) return '';
+  return `<span class="tp-cost-stack" aria-label="TP ${tpCost}" title="TP ${tpCost}">${Array.from(
+    { length: tpCost },
+    () => '<span class="tp-cost-pip"></span>'
+  ).join('')}</span>`;
+}
+
 export function createActivityScreen(
   session: GameSession,
   onDone: () => void,
@@ -83,13 +91,12 @@ export function createActivityScreen(
         const stockLabel = stockNum >= 0 ? ` [재고:${stockNum}]` : '';
         const tpCost = Math.ceil(act.vigorCost / 10);
         const costParts = [`시간:${act.timeCost}분`];
-        if (tpCost > 0) costParts.push(`TP:${tpCost}`);
         if (act.goldCost > 0) costParts.push(`${act.goldCost}G`);
         btn.innerHTML = `
           <span class="npc-num">${i + 1}.</span>
           <span class="npc-name-row">
             <span class="npc-name">${act.name}${stockLabel}</span>
-            ${tpCost > 0 ? `<span class="tp-cost-badge" title="TP ${tpCost}">TP${tpCost}</span>` : ''}
+            ${renderTpCostPips(tpCost)}
           </span>
           <span class="npc-detail">${act.description} (${costParts.join(', ')})</span>
         `;
