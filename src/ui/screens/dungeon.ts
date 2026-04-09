@@ -281,7 +281,7 @@ export function createDungeonScreen(
       }
       const blocked = ss.preDelayTurns > 0 || ss.postDelayTurns > 0;
       const noMp = p.base.mp < def.mpCost;
-      const noTp = def.tpCost > 0 && p.base.vigor < def.tpCost * 20;
+      const noTp = def.tpCost > 0 && !p.hasAp(def.tpCost);
       const disabled = blocked || noMp || noTp;
       const tpLabel = def.tpCost > 0 ? ` TP${def.tpCost}` : '';
       return `<button class="btn skill-btn${disabled ? ' disabled' : ''}" data-slot="${i}"${disabled ? ' disabled' : ''}>

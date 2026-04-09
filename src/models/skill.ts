@@ -210,7 +210,7 @@ const ALL_SKILLS: SkillDef[] = [
     raceTagExpr: '', minLevel: 3, colorReq: [], isBasicSkill: false, basicForRace: '', roleAffinity: ['Adventurer', 'Guard'],
   },
   {
-    id: 'flame_slash', name: '화염참', description: '불꽃을 실은 베기. 기력을 소모한다.',
+    id: 'flame_slash', name: '화염참', description: '불꽃을 실은 베기. TP를 소모한다.',
     type: SkillType.Attack, effect: { damageMultiplier: 2.0 },
     mpCost: 15, tpCost: 1, hpCost: 0, preDelay: 0, postDelay: 1,
     appearRate: 0.5, maxUsesPerCombat: 3, element: 0,
@@ -270,14 +270,14 @@ const ALL_SKILLS: SkillDef[] = [
     raceTagExpr: '', minLevel: 3, colorReq: [], isBasicSkill: false, basicForRace: '', roleAffinity: ['Adventurer'],
   },
   {
-    id: 'mana_charge', name: '마력충전', description: 'MP를 20 회복한다. 기력이 필요하다.',
+    id: 'mana_charge', name: '마력충전', description: 'MP를 20 회복한다. TP가 필요하다.',
     type: SkillType.Buff, effect: { healMp: 20 },
     mpCost: 0, tpCost: 1, hpCost: 0, preDelay: 0, postDelay: 0,
     appearRate: 0.5, maxUsesPerCombat: 2, element: -1,
     raceTagExpr: '/magic_affinity/', minLevel: 5, colorReq: [], isBasicSkill: false, basicForRace: '', roleAffinity: ['Priest'],
   },
   {
-    id: 'vigor_up', name: '기합', description: '기력을 15 회복한다.',
+    id: 'vigor_up', name: '기합', description: 'MP를 15 회복한다.',
     type: SkillType.Buff, effect: { healHp: 0 },
     mpCost: 8, tpCost: 0, hpCost: 0, preDelay: 0, postDelay: 0,
     appearRate: 0.6, maxUsesPerCombat: 5, element: -1,

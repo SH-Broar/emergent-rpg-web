@@ -1,9 +1,8 @@
-// hud-bar.ts — 상단 HUD 바 (HP, 기력, 시간, 날씨, 장소)
+// hud-bar.ts — 상단 HUD 바 (HP, 시간, 날씨, 장소)
 
 export interface HudBarData {
   hp: number;
   maxHp: number;
-  vigor: number;
   gold: number;
   time: string;
   weather: string;

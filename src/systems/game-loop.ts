@@ -309,7 +309,7 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
     const prevSeason = session.world.getCurrentSeason();
     const prevDay = session.gameTime.day;
 
-    // 월드 시뮬레이션: 시간 진행, 플레이어 기력 감소, 장소 컬러 영향, 이벤트, NPC 틱
+    // 월드 시뮬레이션: 시간 진행, 장소 컬러 영향, 이벤트, NPC 틱
     advanceTurn(
       minutes, session.gameTime, session.world, session.events,
       session.actors, session.playerIdx, session.backlog,
@@ -345,7 +345,7 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
       if (mRegen > 0) p.adjustMp(mRegen);
     }
 
-    // HP 0 패배 처리 (밤 기력 고갈 등)
+    // HP 0 패배 처리
     if (p.base.hp <= 0) {
       p.base.hp = Math.max(1, Math.round(p.getEffectiveMaxHp() * 0.5));
       const travelHome = session.world.getShortestMinutes(p.currentLocation, p.homeLocation, session.gameTime.day);

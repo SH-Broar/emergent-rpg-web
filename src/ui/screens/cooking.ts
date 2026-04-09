@@ -19,17 +19,17 @@ const RECIPES: Recipe[] = [
     name: '허브 샐러드',
     resultId: 'herb_salad',
     ingredients: [{ type: ItemType.Herb, amount: 2 }],
-    buff: [{ stat: 'vigor', value: 20 }],
+    buff: [{ stat: 'tp', value: 2 }],
     buffDuration: 120,
-    description: '신선한 허브로 만든 가벼운 샐러드. 기력을 회복시킨다.',
+    description: '신선한 허브로 만든 가벼운 샐러드. TP를 회복시킨다.',
   },
   {
     name: '약초 수프',
     resultId: 'herb_soup',
     ingredients: [{ type: ItemType.Herb, amount: 3 }, { type: ItemType.Food, amount: 1 }],
-    buff: [{ stat: 'hp', value: 30 }, { stat: 'vigor', value: 15 }],
+    buff: [{ stat: 'hp', value: 30 }, { stat: 'tp', value: 2 }],
     buffDuration: 180,
-    description: '따뜻한 약초 수프. 체력과 기력을 함께 회복시킨다.',
+    description: '따뜻한 약초 수프. 체력과 TP를 함께 회복시킨다.',
   },
   {
     name: '강화 포션',
@@ -51,9 +51,9 @@ const RECIPES: Recipe[] = [
     name: '활력의 빵',
     resultId: 'vigor_bread',
     ingredients: [{ type: ItemType.Food, amount: 2 }],
-    buff: [{ stat: 'vigor', value: 30 }],
+    buff: [{ stat: 'tp', value: 3 }],
     buffDuration: 120,
-    description: '갓 구운 빵. 기력이 크게 회복된다.',
+    description: '갓 구운 빵. TP가 크게 회복된다.',
   },
   {
     name: '마나 티',
@@ -67,7 +67,7 @@ const RECIPES: Recipe[] = [
     name: '모험가의 도시락',
     resultId: 'adventure_lunch',
     ingredients: [{ type: ItemType.Food, amount: 2 }, { type: ItemType.Herb, amount: 1 }, { type: ItemType.Potion, amount: 1 }],
-    buff: [{ stat: 'hp', value: 20 }, { stat: 'mp', value: 10 }, { stat: 'vigor', value: 20 }, { stat: 'attack', value: 2 }],
+    buff: [{ stat: 'hp', value: 20 }, { stat: 'mp', value: 10 }, { stat: 'tp', value: 2 }, { stat: 'attack', value: 2 }],
     buffDuration: 360,
     description: '온갖 재료를 넣은 든든한 도시락. 종합 버프를 준다.',
   },
@@ -82,7 +82,7 @@ const RECIPES: Recipe[] = [
 ];
 
 const STAT_LABELS: Record<string, string> = {
-  hp: 'HP', mp: 'MP', vigor: '기력', attack: '공격', defense: '방어',
+  hp: 'HP', mp: 'MP', tp: 'TP', attack: '공격', defense: '방어',
 };
 
 export function createCookingScreen(

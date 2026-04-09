@@ -27,7 +27,6 @@ interface ActorSaveData {
   hp: number; maxHp: number;
   mp: number; maxMp: number;
   attack: number; defense: number;
-  vigor: number; maxVigor: number;
   strength: number;
   age: number;
   sleeping: boolean;
@@ -73,13 +72,20 @@ interface KnowledgeSaveData {
   totalItemsSold: number;
   totalItemsCrafted: number;
   totalActivitiesDone: number;
-  totalVigorSpent: number;
   foodTypesEaten: string[];
   companionDays: [string, number][];
   locationReputation: [string, number][];
   totalGiftsGiven: number;
+  discoveredItems: string[];
   earnedTitles: string[];
   activeTitle: string;
+  ownedBases: string[];
+  bagCapacity: number;
+  storage: [string, { cold: [string, number][], room: [string, number][], warm: [string, number][] }][];
+  baseLevels: [string, number][];
+  baseInvitedNpcs: [string, string[]][];
+  farmStates: [string, any][];
+  lastNapDay: number;
 }
 
 interface SaveData {
@@ -107,7 +113,6 @@ interface LegacySaveData {
   gold: number;
   hp: number;
   mp: number;
-  vigor: number;
   level: number;
   exp: number;
   currentLocation: string;
@@ -143,8 +148,6 @@ function serializeActor(actor: Actor): ActorSaveData {
     maxMp: actor.base.maxMp,
     attack: actor.base.attack,
     defense: actor.base.defense,
-    vigor: actor.base.vigor,
-    maxVigor: actor.base.maxVigor,
     strength: actor.base.strength,
     age: actor.base.age,
     sleeping: actor.base.sleeping,
@@ -185,8 +188,6 @@ function deserializeActor(data: ActorSaveData, target: Actor): void {
   target.base.maxMp = data.maxMp;
   target.base.attack = data.attack;
   target.base.defense = data.defense;
-  target.base.vigor = data.vigor;
-  target.base.maxVigor = data.maxVigor;
   target.base.strength = data.strength;
   target.base.age = data.age;
   target.base.sleeping = data.sleeping;
@@ -275,13 +276,27 @@ function serializeKnowledge(k: PlayerKnowledge): KnowledgeSaveData {
     totalItemsSold: k.totalItemsSold,
     totalItemsCrafted: k.totalItemsCrafted,
     totalActivitiesDone: k.totalActivitiesDone,
-    totalVigorSpent: k.totalVigorSpent,
     foodTypesEaten: [...k.foodTypesEaten],
     companionDays: [...k.companionDaysMap.entries()],
     locationReputation: [...k.locationReputation.entries()],
     totalGiftsGiven: k.totalGiftsGiven,
+    discoveredItems: [...k.discoveredItems],
     earnedTitles: [...k.earnedTitles],
     activeTitle: k.activeTitle,
+    ownedBases: [...k.ownedBases],
+    bagCapacity: k.bagCapacity,
+    storage: [...k.storage.entries()].map(([loc, zones]) => [loc, {
+      cold: [...zones.cold.entries()],
+      room: [...zones.room.entries()],
+      warm: [...zones.warm.entries()],
+    }]),
+    baseLevels: [...k.baseLevels.entries()],
+    baseInvitedNpcs: [...k.baseInvitedNpcs.entries()],
+    farmStates: [...k.farmStates.entries()].map(([loc, farm]) => [loc, {
+      ...farm,
+      cells: farm.cells.map(c => ({ ...c })),
+    }]),
+    lastNapDay: k.lastNapDay,
   };
 }
 
@@ -303,13 +318,31 @@ function deserializeKnowledge(data: KnowledgeSaveData, target: PlayerKnowledge):
   target.totalItemsSold = data.totalItemsSold;
   target.totalItemsCrafted = data.totalItemsCrafted;
   target.totalActivitiesDone = data.totalActivitiesDone;
-  target.totalVigorSpent = data.totalVigorSpent;
   target.foodTypesEaten = new Set(data.foodTypesEaten);
   target.companionDaysMap = new Map(data.companionDays);
   target.locationReputation = new Map(data.locationReputation);
   target.totalGiftsGiven = data.totalGiftsGiven;
+  target.discoveredItems = new Set(data.discoveredItems ?? []);
   target.earnedTitles = [...data.earnedTitles];
   target.activeTitle = data.activeTitle;
+  target.ownedBases = new Set(data.ownedBases ?? []);
+  target.bagCapacity = data.bagCapacity ?? 10;
+  target.storage = new Map(
+    (data.storage ?? []).map(([loc, zones]) => [loc, {
+      cold: new Map(zones?.cold ?? []),
+      room: new Map(zones?.room ?? []),
+      warm: new Map(zones?.warm ?? []),
+    }])
+  );
+  target.baseLevels = new Map(data.baseLevels ?? []);
+  target.baseInvitedNpcs = new Map(data.baseInvitedNpcs ?? []);
+  target.farmStates = new Map(
+    (data.farmStates ?? []).map(([loc, farm]) => [loc, {
+      ...farm,
+      cells: (farm?.cells ?? []).map((c: any) => ({ ...c })),
+    }])
+  );
+  target.lastNapDay = data.lastNapDay ?? -1;
 }
 
 function getSaveMeta(slot: number): SaveMeta | null {
@@ -367,7 +400,6 @@ export function loadFromSlot(slot: number, session: GameSession): boolean {
         p.spirit.gold = legacy.gold;
         p.base.hp = legacy.hp;
         p.base.mp = legacy.mp;
-        p.base.vigor = legacy.vigor;
         p.base.level = legacy.level;
         p.base.exp = legacy.exp;
         if (legacy.currentLocation) p.currentLocation = legacy.currentLocation;

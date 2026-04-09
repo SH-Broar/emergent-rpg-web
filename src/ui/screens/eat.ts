@@ -8,7 +8,7 @@ function buffLabel(type: string): string {
   switch (type) {
     case 'attack': return '공격력';
     case 'defense': return '방어력';
-    case 'vigor_regen': return '기력 재생';
+    case 'vigor_regen': return 'TP 재생';
     case 'mp_regen': return 'MP 재생';
     case 'speed': return '이동속도';
     default: return type;
@@ -47,7 +47,7 @@ export function createEatScreen(
       if (resultStats.length > 0) {
         html += `<div style="color:var(--warning);font-size:13px;margin-bottom:16px">${resultStats.join(' · ')}</div>`;
       }
-      html += `<div style="color:var(--text-dim);font-size:12px;margin-bottom:4px">HP ${Math.round(p.base.hp)}/${Math.round(p.getEffectiveMaxHp())} · 기력 ${Math.round(p.base.vigor)}/${Math.round(p.base.maxVigor)}</div>`;
+      html += `<div style="color:var(--text-dim);font-size:12px;margin-bottom:4px">HP ${Math.round(p.base.hp)}/${Math.round(p.getEffectiveMaxHp())} · MP ${Math.round(p.base.mp)}/${Math.round(p.getEffectiveMaxMp())}</div>`;
       html += '<button class="btn btn-primary" data-ok style="min-width:140px;margin-top:8px">확인 [Enter]</button>';
       wrap.innerHTML = html;
       const statusLine = resultStats.length > 0 ? `${resultMsg} · ${resultStats.join(' · ')}` : resultMsg;
@@ -109,13 +109,12 @@ export function createEatScreen(
     }
 
     const def = getItemDef(itemId);
-    let vigor = 0, hp = 0, mp = 0, mood = 0, message = '', statusEffect: 'poison' | 'stomachache' | undefined;
+    let hp = 0, mp = 0, mood = 0, message = '', statusEffect: 'poison' | 'stomachache' | undefined;
     let pendingBuffType = '', pendingBuffAmount = 0, pendingBuffDuration = 0;
 
     const isNight = session.gameTime.hour >= 21 || session.gameTime.hour < 5;
 
-    if (def && (def.eatVigor !== 0 || def.eatHp !== 0 || def.eatMp !== 0 || def.eatMood !== 0 || def.eatMessage)) {
-      vigor = def.eatVigor;
+    if (def && (def.eatHp !== 0 || def.eatMp !== 0 || def.eatMood !== 0 || def.eatMessage)) {
       hp = def.eatHp;
       mp = def.eatMp;
       mood = def.eatMood;
@@ -129,7 +128,6 @@ export function createEatScreen(
     } else {
       const fallbackType = def?.category ?? 0;
       const result = computeEatEffect(fallbackType, p.base.race, def?.tags ?? '', isNight);
-      vigor = result.vigor;
       hp = result.hp;
       mp = result.mp;
       mood = result.mood;
@@ -142,7 +140,6 @@ export function createEatScreen(
       }
     }
 
-    if (vigor) p.adjustVigor(vigor);
     if (hp) p.adjustHp(hp);
     if (mp) p.adjustMp(mp);
     if (mood) p.adjustMood(mood);
@@ -158,8 +155,6 @@ export function createEatScreen(
 
     // 결과 요약 구성
     const statLines: string[] = [];
-    if (vigor > 0) statLines.push(`기력 +${vigor}`);
-    else if (vigor < 0) statLines.push(`기력 ${vigor}`);
     if (hp > 0) statLines.push(`HP +${hp}`);
     else if (hp < 0) statLines.push(`HP ${hp}`);
     if (mp > 0) statLines.push(`MP +${mp}`);

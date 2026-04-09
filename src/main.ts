@@ -162,6 +162,15 @@ async function boot() {
     session.player.hyperionBonus = total - session.player.hyperionLevel;
   }
 
+  function ensureHomeBase() {
+    if (!session.isValid) return;
+    const homeLocId = session.player.homeLocation;
+    if (!homeLocId) return;
+    if (!session.knowledge.ownedBases.has(homeLocId)) {
+      session.knowledge.purchaseBase(homeLocId);
+    }
+  }
+
   function enterGame() {
     // 코어 매트릭스 진단 결과 적용
     const diagColors = (session as any)._diagColorValues as number[] | undefined;
@@ -188,11 +197,7 @@ async function boot() {
     session.knowledge.addKnownName(session.player.name);
     session.knowledge.trackVisit(session.player.currentLocation);
     // 시작 거점: homeLocation을 Lv.1 거점으로 자동 등록
-    const homeLocId = session.player.homeLocation;
-    if (!session.knowledge.ownedBases.has(homeLocId)) {
-      session.knowledge.purchaseBase(homeLocId);
-      // purchaseBase는 Lv.1 설정, 창고/요리/수면 즉시 이용 가능
-    }
+    ensureHomeBase();
     // Give starter items
     const starterItems = ['wheat_bread', 'wheat_bread', 'wheat_bread', 'fresh_water', 'fresh_water', 'common_herb'];
     for (const id of starterItems) {
@@ -207,6 +212,7 @@ async function boot() {
   // --- 게임 메인 화면 ---
   function showGame() {
     syncHyperionBonus();
+    ensureHomeBase();
     // 미정의/링크 없는 지역에 있으면 Alimes로 이동 (레거시 저장 파일 대응)
     const p = session.player;
     const locData = session.world.getAllLocations().get(p.currentLocation);
@@ -623,6 +629,7 @@ async function boot() {
         case 'connect': {
           if (!loadFromSlot(0, session)) { showCharSelect(); break; }
           if (!session.isValid) { showCharSelect(); break; }
+          ensureHomeBase();
 
           // 경과 시간 계산 (세이브 시각 → 현재)
           const raw = localStorage.getItem('emergent_save_0');

@@ -193,7 +193,7 @@ function applySkillEffect(
         skillState.activeBuffs.push({ type: 'attack', multiplier: e.attackMultiplier, turnsLeft: duration });
         messages.push(`${skill.name}: 공격력 ${e.attackMultiplier}배 (${duration}턴)`);
       }
-      // vigor_up 계열 (id가 vigor를 포함하는 스킬)
+      // TP 계열에서 MP 회복으로 전환된 스킬 폴백 처리
       if (skill.id === 'vigor_up' || (e.healHp === 0 && e.healMp === undefined && e.attackMultiplier === undefined && !e.healHp)) {
         if (skill.id.includes('vigor') || skill.id === 'vigor_up') {
           const vigorAmt = Math.round(15 * levelMult);
@@ -245,7 +245,6 @@ export function useSkill(
   const skillLevel = actor.learnedSkills.get(skill.id) ?? 1;
   const costMult = getSkillCostReduction(skillLevel);
   actor.adjustMp(-Math.ceil(skill.mpCost * costMult));
-  if (skill.tpCost > 0) actor.adjustVigor(-skill.tpCost * 20);
   if (skill.hpCost > 0) actor.adjustHp(-skill.hpCost);
 
   // 사용 횟수 증가

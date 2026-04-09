@@ -12,26 +12,26 @@ import {
 export interface EatResult {
   success: boolean;
   message: string;
-  vigor: number;
+  tp: number;
   hp: number;
   mp: number;
   mood: number;
   statusEffect?: 'poison' | 'stomachache';
-  buffType?: string;      // 'attack', 'defense', 'vigor_regen', 'mp_regen', 'speed'
+  buffType?: string;      // 'attack', 'defense', 'tp_regen', 'mp_regen', 'speed'
   buffAmount?: number;
   buffDuration?: number;  // 턴 수 (기본 3)
 }
 
 // 아이템별 기본 섭취 효과
 const BASE_EFFECTS: Record<number, Omit<EatResult, 'success'>> = {
-  [ItemType.Food]:        { message: '식사를 했다.', vigor: 40, hp: 0, mp: 0, mood: 0.05 },
-  [ItemType.Herb]:        { message: '약초를 먹었다. 쓴 맛이다.', vigor: 10, hp: 15, mp: 0, mood: -0.02 },
-  [ItemType.Potion]:      { message: '물약을 마셨다.', vigor: 0, hp: 10, mp: 20, mood: 0.03 },
-  [ItemType.OreCommon]:   { message: '이가 아프다!', vigor: 0, hp: -10, mp: 0, mood: -0.1 },
-  [ItemType.OreRare]:     { message: '독성 광물이다!', vigor: 0, hp: -20, mp: 0, mood: -0.15, statusEffect: 'poison' },
-  [ItemType.MonsterLoot]: { message: '맛이 이상하다...', vigor: 0, hp: 0, mp: 0, mood: -0.05 },
-  [ItemType.Equipment]:   { message: '씹을 수 없다!', vigor: 0, hp: -5, mp: 0, mood: -0.08 },
-  [ItemType.GuildCard]:   { message: '종이 맛이다.', vigor: 0, hp: 0, mp: 0, mood: -0.02 },
+  [ItemType.Food]:        { message: '식사를 했다.', tp: 4, hp: 0, mp: 0, mood: 0.05 },
+  [ItemType.Herb]:        { message: '약초를 먹었다. 쓴 맛이다.', tp: 1, hp: 15, mp: 0, mood: -0.02 },
+  [ItemType.Potion]:      { message: '물약을 마셨다.', tp: 0, hp: 10, mp: 20, mood: 0.03 },
+  [ItemType.OreCommon]:   { message: '이가 아프다!', tp: 0, hp: -10, mp: 0, mood: -0.1 },
+  [ItemType.OreRare]:     { message: '독성 광물이다!', tp: 0, hp: -20, mp: 0, mood: -0.15, statusEffect: 'poison' },
+  [ItemType.MonsterLoot]: { message: '맛이 이상하다...', tp: 0, hp: 0, mp: 0, mood: -0.05 },
+  [ItemType.Equipment]:   { message: '씹을 수 없다!', tp: 0, hp: -5, mp: 0, mood: -0.08 },
+  [ItemType.GuildCard]:   { message: '종이 맛이다.', tp: 0, hp: 0, mp: 0, mood: -0.02 },
 };
 
 /** 식용 가능 여부 판정 (태그 기반) */
@@ -53,12 +53,12 @@ export function computeEatEffect(item: ItemType, race: Race, itemTags?: string, 
     itemProps = baseItemProps;
   }
 
-  const base = BASE_EFFECTS[item] ?? { message: '???', vigor: 0, hp: 0, mp: 0, mood: 0 };
+  const base = BASE_EFFECTS[item] ?? { message: '???', tp: 0, hp: 0, mp: 0, mood: 0 };
   const result: EatResult = { success: true, ...base };
 
   // --- 비물질 존재 (potion_only): 물약만 가능 ---
   if (raceCaps.has('potion_only') && !itemProps.has('liquid')) {
-    return { success: false, message: '비물질 존재라 섭취할 수 없다.', vigor: 0, hp: 0, mp: 0, mood: 0 };
+    return { success: false, message: '비물질 존재라 섭취할 수 없다.', tp: 0, hp: 0, mp: 0, mood: 0 };
   }
 
   // --- acid_body (Slime): 독/배탈 없음 ---
@@ -66,7 +66,7 @@ export function computeEatEffect(item: ItemType, race: Race, itemTags?: string, 
 
   // --- 전소화 (digest_all): 뭐든 먹지만 효과 50% ---
   if (raceCaps.has('digest_all')) {
-    result.vigor = Math.round(result.vigor * 0.5);
+    result.tp = Math.round(result.tp * 0.5);
     result.hp = Math.round(result.hp * 0.5);
     result.mp = Math.round(result.mp * 0.5);
     result.statusEffect = undefined;
@@ -78,7 +78,7 @@ export function computeEatEffect(item: ItemType, race: Race, itemTags?: string, 
   if ((itemProps.has('mineral') && raceCaps.has('mineral_digest')) ||
       (itemProps.has('metallic') && raceCaps.has('metallic_digest'))) {
     result.hp = Math.abs(result.hp) + 10;
-    result.vigor = 20;
+    result.tp = 2;
     result.mood = 0.05;
     result.statusEffect = undefined;
     result.message = itemProps.has('metallic') ? '철분 보충!' : '광석을 씹어 먹었다. 힘이 솟는다!';
@@ -87,25 +87,25 @@ export function computeEatEffect(item: ItemType, race: Race, itemTags?: string, 
 
   // --- 조리 보너스 ---
   if (itemProps.has('cooked')) {
-    result.vigor = Math.round(result.vigor * 1.2);
+    result.tp = Math.round(result.tp * 1.2);
     result.mood += 0.03;
   }
 
   // --- 날것 페널티 (raw_affinity 종족 제외) ---
   if (itemProps.has('raw') && !raceCaps.has('raw_affinity') && !raceCaps.has('toxic_immune') && !raceCaps.has('mineral_digest')) {
-    result.vigor = Math.round(result.vigor * 0.8);
+    result.tp = Math.round(result.tp * 0.8);
   }
 
   // --- 피식 (blood_diet) ---
   if (isBloodDiet(race)) {
     if (itemProps.has('raw') && itemProps.has('monster')) {
-      result.vigor += 40; result.hp += 15; result.mood += 0.1;
+      result.tp += 4; result.hp += 15; result.mood += 0.1;
       result.message = '피의 맛이다... 좋군.';
     } else if (itemProps.has('cooked')) {
-      result.vigor = Math.round(result.vigor * 0.4);
+      result.tp = Math.round(result.tp * 0.4);
       result.message = '평범한 음식은 별로다.';
     } else if (itemProps.has('monster')) {
-      result.vigor = 20; result.hp = 10; result.mood = 0.05;
+      result.tp = 2; result.hp = 10; result.mood = 0.05;
       result.message = '피의 맛이다... 좋군.';
     }
   }
@@ -140,7 +140,7 @@ export function computeEatEffect(item: ItemType, race: Race, itemTags?: string, 
 
   // --- grain_bonus ---
   if (raceCaps.has('grain_bonus') && itemProps.has('grain')) {
-    result.vigor += 50;
+    result.tp += 5;
     result.mood += 0.05;
     result.buffType = 'attack';
     result.buffAmount = 2;
@@ -149,20 +149,20 @@ export function computeEatEffect(item: ItemType, race: Race, itemTags?: string, 
 
   // --- fish_affinity ---
   if (raceCaps.has('fish_affinity') && itemProps.has('fish')) {
-    result.vigor = Math.round(result.vigor * 2);
+    result.tp = Math.round(result.tp * 2);
     result.hp += 5;
     result.message = '신선한 생선이다!';
   }
 
   // --- bird_diet + seed ---
   if (raceCaps.has('bird_diet') && itemProps.has('seed')) {
-    result.vigor += 30;
+    result.tp += 3;
     result.mood += 0.1;
   }
 
   // --- raw_affinity + raw ---
   if (raceCaps.has('raw_affinity') && itemProps.has('raw')) {
-    result.vigor += 10;
+    result.tp += 1;
     result.message = result.message || '야생의 맛!';
     if (!result.message.includes('야생')) result.message += ' 야생의 맛!';
   }
@@ -170,7 +170,7 @@ export function computeEatEffect(item: ItemType, race: Race, itemTags?: string, 
   // --- strong_stomach ---
   if (raceCaps.has('strong_stomach')) {
     if (itemProps.has('fermented')) {
-      result.vigor += 30;
+      result.tp += 3;
       result.mood += 0.1;
       result.statusEffect = undefined;
     }
@@ -178,7 +178,7 @@ export function computeEatEffect(item: ItemType, race: Race, itemTags?: string, 
 
   // --- spicy_bonus + spicy ---
   if (raceCaps.has('spicy_bonus') && itemProps.has('spicy')) {
-    result.vigor += 30;
+    result.tp += 3;
     result.hp += 5;
     result.buffType = 'attack';
     result.buffAmount = 3;
@@ -187,7 +187,7 @@ export function computeEatEffect(item: ItemType, race: Race, itemTags?: string, 
 
   // --- night_eater + isNight ---
   if (raceCaps.has('night_eater') && isNight) {
-    result.vigor = Math.round(result.vigor * 1.5);
+    result.tp = Math.round(result.tp * 1.5);
     result.hp = Math.round(result.hp * 1.5);
   }
 
@@ -215,7 +215,7 @@ export function computeEatEffect(item: ItemType, race: Race, itemTags?: string, 
 
   // --- dark_affinity + cursed or spicy ---
   if (raceCaps.has('dark_affinity') && (itemProps.has('cursed') || itemProps.has('spicy'))) {
-    result.vigor += 30;
+    result.tp += 3;
     result.buffType = 'attack';
     result.buffAmount = 4;
     result.buffDuration = 3;
@@ -223,31 +223,31 @@ export function computeEatEffect(item: ItemType, race: Race, itemTags?: string, 
 
   // --- nocturnal + isNight ---
   if (raceCaps.has('nocturnal') && isNight) {
-    result.vigor += 15;
+    result.tp += 2;
   }
 
   // --- alcohol_resist + fermented ---
   if (raceCaps.has('alcohol_resist') && itemProps.has('fermented')) {
     result.statusEffect = undefined;
-    result.vigor += 25;
+    result.tp += 3;
   }
 
   // --- aquatic + fish ---
   if (raceCaps.has('aquatic') && itemProps.has('fish')) {
-    result.vigor += 40;
+    result.tp += 4;
     result.hp += 10;
     result.message = '바다의 맛!';
   }
 
   // --- plant + herb or flower ---
   if (raceCaps.has('plant') && (itemProps.has('herb') || itemProps.has('flower'))) {
-    result.vigor += 20;
+    result.tp += 2;
     result.hp += 15;
   }
 
   // --- cold_blood + raw ---
   if (raceCaps.has('cold_blood') && itemProps.has('raw')) {
-    result.vigor = Math.round(result.vigor * 1.3);
+    result.tp = Math.round(result.tp * 1.3);
     result.hp = Math.round(result.hp * 1.3);
   }
 
@@ -279,9 +279,9 @@ export function computeEatEffect(item: ItemType, race: Race, itemTags?: string, 
   // --- 몬스터 전리품 랜덤 효과 (blood_diet 아닌 경우) ---
   if (itemProps.has('monster') && !isBloodDiet(race)) {
     if (randomFloat(0, 1) < 0.5) {
-      result.vigor = 20; result.hp = 5;
+      result.tp = 2; result.hp = 5;
     } else {
-      result.hp = -10; result.vigor = -5;
+      result.hp = -10; result.tp = -1;
     }
   }
 

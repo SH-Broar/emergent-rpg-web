@@ -25,7 +25,7 @@ export interface ItemDef {
   eatMood: number;
   eatMessage: string;
   eatStatus: string;            // 'poison', 'stomachache', '' 등
-  eatBuffType: string;          // 'attack', 'defense', 'vigor_regen', 'mp_regen', 'speed', ''
+  eatBuffType: string;          // 'attack', 'defense', 'tp_regen', 'mp_regen', 'speed', ''
   eatBuffAmount: number;
   eatBuffDuration: number;      // 턴 수, 0이면 버프 없음
 

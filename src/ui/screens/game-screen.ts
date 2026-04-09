@@ -61,9 +61,7 @@ const MAIN_ACTIONS: ActionDef[] = [
   { key: '0', label: '활동', action: 'activity', icon: '🔨', visible: hasActivities },
   { key: 'g', label: '선물', action: 'gift', icon: '🎁', visible: hasNpcsHere },
   { key: 'h', label: '자택', action: 'home', icon: '🏠', visible: atHome },
-  { key: 'j', label: '창고', action: 'storage' as GameAction, icon: '📦', visible: atBase },
   { key: 'n', label: '부동산', action: 'realestate' as GameAction, icon: '🏘', visible: atGuildHall },
-  { key: 'x', label: '요리', action: 'cooking' as GameAction, icon: '🍳', visible: atBase },
   { key: 'f', label: '초대', action: 'npc_invite' as GameAction, icon: '🏡', visible: atBase },
   { key: 'm', label: '기억의 샘', action: 'memory_spring', icon: '💧', visible: atMemorySpring },
 ];
@@ -357,7 +355,7 @@ export function createGameScreen(
           </div>
           <div class="stat-bar">
             <span class="stat-label">MP</span>
-            <div class="bar"><div class="bar-fill vigor-bar" style="width:${Math.round((p.base.mp / p.getEffectiveMaxMp()) * 100)}%"></div></div>
+            <div class="bar"><div class="bar-fill mp-bar" style="width:${Math.round((p.base.mp / p.getEffectiveMaxMp()) * 100)}%"></div></div>
             <span class="stat-val">${Math.round(p.base.mp)}/${Math.round(p.getEffectiveMaxMp())}</span>
           </div>
           <div class="stat-bar">
@@ -722,14 +720,13 @@ export function createMoveScreen(
     render(el) {
       const p = session.player;
       const baseRoutes = session.world.getOutgoingRoutes(p.currentLocation, session.gameTime.day);
-      // 자택이 이미 포함되어 있지 않고, 현재 위치가 자택이 아닐 때 맨 아래에 추가
-      const homeAlreadyListed = p.currentLocation === p.homeLocation
-        || baseRoutes.some(([loc]) => loc === p.homeLocation);
+      const routesWithoutHome = baseRoutes.filter(([loc]) => loc !== p.homeLocation);
+      const homeAlreadyListed = p.currentLocation === p.homeLocation;
       const homeMins = homeAlreadyListed ? 0
         : session.world.getShortestMinutes(p.currentLocation, p.homeLocation, session.gameTime.day);
       const routes: [string, number][] = homeAlreadyListed
-        ? baseRoutes
-        : [...baseRoutes, [p.homeLocation, homeMins]];
+        ? routesWithoutHome
+        : [...routesWithoutHome, [p.homeLocation, homeMins]];
       el.innerHTML = `
         <div class="screen info-screen">
           <button class="btn back-btn" data-back>← 뒤로 [Esc]</button>
@@ -765,13 +762,13 @@ export function createMoveScreen(
       if (/^[1-9]$/.test(key)) {
         const p = session.player;
         const baseRoutes = session.world.getOutgoingRoutes(p.currentLocation, session.gameTime.day);
-        const homeAlreadyListed = p.currentLocation === p.homeLocation
-          || baseRoutes.some(([loc]) => loc === p.homeLocation);
+        const routesWithoutHome = baseRoutes.filter(([loc]) => loc !== p.homeLocation);
+        const homeAlreadyListed = p.currentLocation === p.homeLocation;
         const homeMins = homeAlreadyListed ? 0
           : session.world.getShortestMinutes(p.currentLocation, p.homeLocation, session.gameTime.day);
         const routes: [string, number][] = homeAlreadyListed
-          ? baseRoutes
-          : [...baseRoutes, [p.homeLocation, homeMins]];
+          ? routesWithoutHome
+          : [...routesWithoutHome, [p.homeLocation, homeMins]];
         const i = parseInt(key, 10) - 1;
         if (i < routes.length) {
           const [loc, mins] = routes[i];

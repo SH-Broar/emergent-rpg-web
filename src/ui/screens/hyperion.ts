@@ -13,7 +13,6 @@ interface HyperionBonus {
   maxMp: number;
   attack: number;
   defense: number;
-  maxVigor: number;
 }
 
 function getBonusForLevel(level: number): HyperionBonus {
@@ -22,7 +21,6 @@ function getBonusForLevel(level: number): HyperionBonus {
     maxMp: level * 5,
     attack: level * 2,
     defense: level * 1,
-    maxVigor: level * 5,
   };
 }
 
@@ -83,7 +81,7 @@ export function createHyperionScreen(
       <p><strong>✦ 히페리온 총합 Lv.${totalLevel}</strong>
         <span style="font-size:12px;color:var(--text-dim);margin-left:6px">(내 레벨: ${playerLevel}/${HYPERION_MAX_LEVEL})</span>
       </p>
-      <p style="font-size:12px;color:var(--text-dim);margin-top:2px">플레이어 적용 보너스 — HP+${bonus.maxHp} MP+${bonus.maxMp} 공+${bonus.attack} 방+${bonus.defense} 기력+${bonus.maxVigor}</p>
+      <p style="font-size:12px;color:var(--text-dim);margin-top:2px">플레이어 적용 보너스 — HP+${bonus.maxHp} MP+${bonus.maxMp} 공+${bonus.attack} 방+${bonus.defense}</p>
     `;
     wrap.appendChild(playerInfo);
 

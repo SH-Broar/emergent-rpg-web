@@ -7,7 +7,7 @@ export type Lv5AbilityType =
   | 'fish_bonus'        // 어류 수익 +20%, 창고 용량 +50%
   | 'rare_gather'       // 채집 레어 아이템 출현율 +15%
   | 'event_alert'       // 하루 한 번 활성 이벤트 알림
-  | 'herb_bonus'        // 약초 수익 +30%, 기력 자연 회복 +5/day
+  | 'herb_bonus'        // 약초 수익 +30%, HP 자연 회복 +5/day
   | 'cooking_bonus';    // 요리 효과 +20%, 공방 시간 단축
 
 export interface Lv5Ability {
@@ -99,7 +99,7 @@ export const BASE_DEFS: BaseDef[] = [
     description: '라르 숲 속 오두막',
     initialFarmGrid: [2, 2],
     village: 'LarForest',
-    lv5Ability: { type: 'herb_bonus', description: '약초 수익 +30%, 기력 +5/day 자연 회복' },
+    lv5Ability: { type: 'herb_bonus', description: '약초 수익 +30%, HP +5/day 자연 회복' },
   },
   {
     locationId: 'Enicham',
