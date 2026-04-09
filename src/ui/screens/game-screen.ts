@@ -12,6 +12,7 @@ import { weatherName, seasonName, raceName, spiritRoleName, elementName, Element
 import { getItemDef, getWeaponDef, getArmorDef, categoryName } from '../../types/item-defs';
 import { applyTimeTheme } from '../time-theme';
 import { TRAVEL_OVERLAY_THRESHOLD_MINUTES } from './travel';
+import { canNotifyRandomEvent } from '../../systems/world-simulation';
 
 interface ActionDef {
   key: string;
@@ -208,10 +209,15 @@ export function createGameScreen(
 
     // 랜덤 이벤트 롤
     const randomEv = session.events.rollRandomEvent(session.gameTime);
+    const canHearRandomEvent = randomEv
+      ? canNotifyRandomEvent(session.world, p.currentLocation, randomEv.location, session.gameTime.day)
+      : false;
     if (randomEv) {
       const evText = `✦ ${randomEv.name}: ${randomEv.description}`;
-      session.backlog.add(session.gameTime, `[이벤트] ${randomEv.name}: ${randomEv.description}`, '이벤트');
-      accumulatedLog.push({ time: session.gameTime.toString(), text: evText });
+      if (canHearRandomEvent) {
+        session.backlog.add(session.gameTime, `[이벤트] ${randomEv.name}: ${randomEv.description}`, '이벤트');
+        accumulatedLog.push({ time: session.gameTime.toString(), text: evText });
+      }
       randomEv.worldScript?.(session.world, session.gameTime);
       for (const actor of session.actors) {
         if (actor.currentLocation === randomEv.location) {
@@ -221,7 +227,7 @@ export function createGameScreen(
     }
 
     // NPC 자발 대사 롤 (8% 확률)
-    let hasNewLog = !!randomEv;
+    let hasNewLog = canHearRandomEvent;
     if (Math.random() < 0.08) {
       const conv = tryNpcInitiatedConversation(p, session.actors, session.social, session.gameTime);
       if (conv) {

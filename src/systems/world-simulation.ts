@@ -9,7 +9,7 @@ import { Backlog } from '../models/backlog';
 import { PlayerKnowledge } from '../models/knowledge';
 import { GameTime } from '../types/game-time';
 import { Element, ELEMENT_COUNT, seasonName } from '../types/enums';
-import { Loc } from '../types/location';
+import { Loc, type LocationID } from '../types/location';
 import { npcOnTick } from './npc-ai';
 import { tickFarm } from '../models/farming';
 import { getCropDef } from '../data/crop-defs';
@@ -108,6 +108,16 @@ function buildLocInfluence(
   return inf;
 }
 
+export function canNotifyRandomEvent(
+  world: World,
+  playerLocation: LocationID,
+  eventLocation: LocationID,
+  currentDay: number,
+): boolean {
+  if (playerLocation === eventLocation) return true;
+  return world.getNeighbors(eventLocation, currentDay).includes(playerLocation);
+}
+
 // ============================================================
 // advanceTurn
 // ============================================================
@@ -159,7 +169,9 @@ export function advanceTurn(
 
   const randomEv = events.rollRandomEvent(gameTime);
   if (randomEv) {
-    log.add(gameTime, `[이벤트] ${randomEv.name}: ${randomEv.description}`, '이벤트');
+    if (canNotifyRandomEvent(world, player.currentLocation, randomEv.location, gameTime.day)) {
+      log.add(gameTime, `[이벤트] ${randomEv.name}: ${randomEv.description}`, '이벤트');
+    }
     randomEv.worldScript?.(world, gameTime);
     for (const actor of actors) {
       if (actor.currentLocation === randomEv.location) {
