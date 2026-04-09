@@ -62,7 +62,7 @@ export function createInventoryScreen(
 ): Screen {
   const p = session.player;
   let selectedSlot: EquipSlot | null = null;
-  let consumeMode = false;
+  let consumeSection: 'food' | 'other' | null = null;
   let showResult = false;
   let statusMessage = '';
   let resultMessage = '';
@@ -217,13 +217,38 @@ export function createInventoryScreen(
     return def?.description ?? '';
   }
 
+  function isEquipmentEntry(entry: CarryEntry): boolean {
+    return entry.kind === 'item' && getEquipSlotForItemId(entry.id) !== null;
+  }
+
+  function isFoodEntry(entry: CarryEntry): boolean {
+    if (isEquipmentEntry(entry)) return false;
+    if (entry.kind === 'category') return entry.itemType === ItemType.Food;
+    return entry.def?.category === ItemType.Food;
+  }
+
+  function getSectionEntries(section: 'food' | 'other'): CarryEntry[] {
+    return getCarryEntries().filter(entry => {
+      if (isEquipmentEntry(entry)) return false;
+      return section === 'food' ? isFoodEntry(entry) : !isFoodEntry(entry);
+    });
+  }
+
+  function getSectionSummary(section: 'food' | 'other'): string {
+    const entries = getSectionEntries(section);
+    if (entries.length === 0) return '비어 있음';
+    const preview = entries.slice(0, 2).map(entry => entry.label).join(', ');
+    const extra = entries.length > 2 ? ` 외 ${entries.length - 2}종` : '';
+    return `${preview}${extra}`;
+  }
+
   function closeResult(el: HTMLElement): void {
     const statusLine = resultStats.length > 0 ? `${resultMessage} · ${resultStats.join(' · ')}` : resultMessage;
     statusMessage = statusLine;
     showResult = false;
     resultMessage = '';
     resultStats = [];
-    consumeMode = true;
+    if (consumeSection === null) consumeSection = 'food';
     render(el);
   }
 
@@ -340,40 +365,39 @@ export function createInventoryScreen(
       <div style="font-size:12px;color:var(--text-dim);text-align:center">
         가방 ${bagCount}/${bagCap}칸 · 공격 ${p.getEffectiveAttack().toFixed(1)} · 방어 ${p.getEffectiveDefense().toFixed(1)} · 💰${p.spirit.gold}G
       </div>
-      <div class="menu-buttons" style="margin-top:4px">
-        <button class="btn inventory-main-btn" data-consume>
-          <span class="inventory-main-title">1. 보유품 리스트</span>
-          <span class="inventory-main-subtitle">먹거나 사용할 수 있는 물건은 리스트에서 바로 처리</span>
-        </button>
-      </div>
-      <div style="font-size:12px;color:var(--text-dim)">장착 중</div>
+      <div style="font-size:12px;color:var(--text-dim)">장비</div>
       <div class="menu-buttons">
         ${slots.map((slot, index) => `
           <button class="btn inventory-main-btn" data-slot="${slot}">
-            <span class="inventory-main-title">${index + 2}. ${getSlotLabel(slot)}</span>
+            <span class="inventory-main-title">${index + 1}. ${getSlotLabel(slot)}</span>
             <span class="inventory-main-subtitle">${getEquippedName(slot)}</span>
             <span class="inventory-main-subtitle">${getEquippedStats(slot) || '장착 없음'}</span>
           </button>
         `).join('')}
       </div>
-      <div style="font-size:12px;color:var(--text-dim)">보유품 미리보기</div>
-      ${entries.length === 0 ? '<p class="hint">가방이 비어 있다.</p>' : `
-        <div class="inv-grid">
-          ${entries.slice(0, 4).map(entry => `
-            <div class="inv-item">
-              <span class="inv-name">${entry.label}</span>
-              <span class="inv-count">x${entry.qty}</span>
-            </div>
-          `).join('')}
-        </div>
-      `}
-      <p class="hint">1=보유품 리스트, 2~5=장비 슬롯, Esc=닫기</p>
+      <div style="font-size:12px;color:var(--text-dim)">음식</div>
+      <div class="menu-buttons">
+        <button class="btn inventory-main-btn" data-open-section="food">
+          <span class="inventory-main-title">5. 음식 목록</span>
+          <span class="inventory-main-subtitle">${getSectionSummary('food')}</span>
+        </button>
+      </div>
+      <div style="font-size:12px;color:var(--text-dim)">기타</div>
+      <div class="menu-buttons">
+        <button class="btn inventory-main-btn" data-open-section="other">
+          <span class="inventory-main-title">6. 기타 목록</span>
+          <span class="inventory-main-subtitle">${getSectionSummary('other')}</span>
+        </button>
+      </div>
+      <p class="hint">1~4=장비, 5=음식, 6=기타, Esc=닫기</p>
     `;
 
     wrap.querySelector('[data-back]')?.addEventListener('click', onDone);
-    wrap.querySelector('[data-consume]')?.addEventListener('click', () => {
-      consumeMode = true;
-      render(el);
+    wrap.querySelectorAll<HTMLButtonElement>('[data-open-section]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        consumeSection = (btn.dataset.openSection as 'food' | 'other') ?? null;
+        render(el);
+      });
     });
     wrap.querySelectorAll<HTMLButtonElement>('[data-slot]').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -386,7 +410,9 @@ export function createInventoryScreen(
   }
 
   function renderConsume(el: HTMLElement): void {
-    const entries = getCarryEntries();
+    const section = consumeSection ?? 'food';
+    const entries = getSectionEntries(section);
+    const title = section === 'food' ? '음식' : '기타';
 
     el.innerHTML = '';
     const wrap = document.createElement('div');
@@ -394,8 +420,7 @@ export function createInventoryScreen(
 
     wrap.innerHTML = `
       <button class="btn back-btn" data-back>← 뒤로 [Esc]</button>
-      <h2>보유품 리스트</h2>
-      <p style="color:var(--text-dim);font-size:12px;text-align:center">먹거나 사용할 수 있는 소지품은 목록에서 바로 처리한다.</p>
+      <h2>${title}</h2>
       ${entries.length === 0 ? '<p class="hint">가방이 비어 있다.</p>' : `
         <div class="inventory-entry-list">
           ${entries.map((entry, index) => `
@@ -413,7 +438,7 @@ export function createInventoryScreen(
     `;
 
     wrap.querySelector('[data-back]')?.addEventListener('click', () => {
-      consumeMode = false;
+      consumeSection = null;
       render(el);
     });
     wrap.querySelectorAll<HTMLButtonElement>('[data-carry-entry]').forEach(btn => {
@@ -429,7 +454,7 @@ export function createInventoryScreen(
           const slot = getEquipSlotForItemId(entry.id);
           if (slot) {
             selectedSlot = slot;
-            consumeMode = false;
+            consumeSection = null;
             render(el);
             return;
           }
@@ -530,7 +555,7 @@ export function createInventoryScreen(
       renderSlotDetail(el);
       return;
     }
-    if (consumeMode) {
+    if (consumeSection) {
       renderConsume(el);
       return;
     }
@@ -571,14 +596,14 @@ export function createInventoryScreen(
         return;
       }
 
-      if (consumeMode) {
+      if (consumeSection) {
         if (key === 'Escape') {
-          consumeMode = false;
+          consumeSection = null;
           render(container);
           return;
         }
         if (/^[1-9]$/.test(key)) {
-          const entries = getCarryEntries();
+          const entries = getSectionEntries(consumeSection);
           const idx = parseInt(key, 10) - 1;
           if (idx < entries.length) {
             const entry = entries[idx];
@@ -590,7 +615,7 @@ export function createInventoryScreen(
               const slot = getEquipSlotForItemId(entry.id);
               if (slot) {
                 selectedSlot = slot;
-                consumeMode = false;
+                consumeSection = null;
                 render(container);
                 return;
               }
@@ -606,20 +631,25 @@ export function createInventoryScreen(
         onDone();
         return;
       }
-      if (key === '1') {
-        consumeMode = true;
-        render(container);
-        return;
-      }
       const slotMap: Record<string, EquipSlot> = {
-        '2': 'weapon',
-        '3': 'armor',
-        '4': 'accessory',
-        '5': 'accessory2',
+        '1': 'weapon',
+        '2': 'armor',
+        '3': 'accessory',
+        '4': 'accessory2',
       };
       const slot = slotMap[key];
       if (slot) {
         selectedSlot = slot;
+        render(container);
+        return;
+      }
+      if (key === '5') {
+        consumeSection = 'food';
+        render(container);
+        return;
+      }
+      if (key === '6') {
+        consumeSection = 'other';
         render(container);
       }
     },
