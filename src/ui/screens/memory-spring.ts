@@ -23,7 +23,7 @@ export function createMemorySpringScreen(
   callbacks: MemorySpringCallbacks,
 ): Screen {
   let tab: SpringTab = 'journey';
-  let confirmMode: 'none' | 'imprint' | 'rebirth' = 'none';
+  let confirmMode: 'none' | 'imprint' | 'rebirth' | 'imprint_final' | 'rebirth_final' = 'none';
 
   function render(el: HTMLElement) {
     el.innerHTML = '';
@@ -232,26 +232,38 @@ export function createMemorySpringScreen(
 
   function renderConfirm(content: HTMLElement): void {
     const p = session.player;
-    const isImprint = confirmMode === 'imprint';
+    const isFinal = confirmMode === 'imprint_final' || confirmMode === 'rebirth_final';
+    const isImprint = confirmMode === 'imprint' || confirmMode === 'imprint_final';
+    const container = () => content.closest('.memory-spring-screen')?.parentElement as HTMLElement;
 
     const lines: string[] = [];
-    if (isImprint) {
-      lines.push(`<div style="text-align:center;font-size:28px;margin-bottom:8px">✦</div>`);
-      lines.push(`<div style="text-align:center;font-weight:bold;color:var(--warning);margin-bottom:12px;font-size:16px">영혼 각인</div>`);
-      lines.push(`<div style="text-align:center;color:var(--text-dim);line-height:1.8;margin-bottom:16px">
-        ${p.name}의 영혼이 이 세계에 각인됩니다.<br>
-        ${p.name}은(는) NPC로서 이 세계에서 계속 살아갑니다.<br>
-        당신은 새로운 캐릭터를 선택하게 됩니다.<br><br>
-        <span style="color:var(--accent)">이 선택은 되돌릴 수 없습니다.</span>
-      </div>`);
+
+    if (!isFinal) {
+      // 1차 확인
+      if (isImprint) {
+        lines.push(`<div style="text-align:center;font-size:28px;margin-bottom:8px">✦</div>`);
+        lines.push(`<div style="text-align:center;font-weight:bold;color:var(--warning);margin-bottom:12px;font-size:16px">영혼 각인</div>`);
+        lines.push(`<div style="text-align:center;color:var(--text-dim);line-height:1.8;margin-bottom:16px">
+          ${p.name}의 영혼이 이 세계에 각인됩니다.<br>
+          ${p.name}은(는) NPC로서 이 세계에서 계속 살아갑니다.<br>
+          당신은 새로운 캐릭터를 선택하게 됩니다.
+        </div>`);
+      } else {
+        lines.push(`<div style="text-align:center;font-size:28px;margin-bottom:8px">☽</div>`);
+        lines.push(`<div style="text-align:center;font-weight:bold;color:var(--accent);margin-bottom:12px;font-size:16px">천도제</div>`);
+        lines.push(`<div style="text-align:center;color:var(--text-dim);line-height:1.8;margin-bottom:16px">
+          ${p.name}의 영혼이 세계를 떠납니다.<br>
+          캐릭터는 이 세계에서 완전히 사라집니다.<br>
+          당신은 새로운 캐릭터를 선택하게 됩니다.
+        </div>`);
+      }
     } else {
-      lines.push(`<div style="text-align:center;font-size:28px;margin-bottom:8px">☽</div>`);
-      lines.push(`<div style="text-align:center;font-weight:bold;color:var(--accent);margin-bottom:12px;font-size:16px">천도제</div>`);
-      lines.push(`<div style="text-align:center;color:var(--text-dim);line-height:1.8;margin-bottom:16px">
-        ${p.name}의 영혼이 세계를 떠납니다.<br>
-        캐릭터는 이 세계에서 완전히 사라집니다.<br>
-        당신은 새로운 캐릭터를 선택하게 됩니다.<br><br>
-        <span style="color:var(--accent)">이 선택은 되돌릴 수 없습니다.</span>
+      // 2차 최종 확인
+      lines.push(`<div style="text-align:center;font-size:22px;margin-bottom:8px">⚠</div>`);
+      lines.push(`<div style="text-align:center;font-weight:bold;color:var(--accent);margin-bottom:12px;font-size:15px">정말 실행하시겠습니까?</div>`);
+      lines.push(`<div style="text-align:center;color:var(--accent);font-size:14px;line-height:1.8;margin-bottom:16px">
+        이 선택은 <b>되돌릴 수 없습니다.</b><br>
+        ${isImprint ? `${p.name}은(는) NPC가 됩니다.` : `${p.name}은(는) 영원히 사라집니다.`}
       </div>`);
     }
 
@@ -264,26 +276,32 @@ export function createMemorySpringScreen(
     cancelBtn.className = 'btn';
     cancelBtn.style.minWidth = '120px';
     cancelBtn.textContent = '취소 [Esc]';
-    cancelBtn.addEventListener('click', () => { confirmMode = 'none'; render(content.closest('.memory-spring-screen')?.parentElement as HTMLElement); });
+    cancelBtn.addEventListener('click', () => { confirmMode = 'none'; render(container()); });
     btnWrap.appendChild(cancelBtn);
 
     const confirmBtn = document.createElement('button');
     confirmBtn.className = 'btn btn-primary';
     confirmBtn.style.minWidth = '120px';
-    confirmBtn.textContent = isImprint ? '각인한다 [Enter]' : '떠나보낸다 [Enter]';
-    confirmBtn.addEventListener('click', () => {
-      if (isImprint) {
-        // 영혼 각인: 현재 캐릭터를 NPC로 변환
-        session.backlog.add(session.gameTime, `${p.name}의 영혼이 기억의 샘에 각인되었다.`, '시스템');
-        callbacks.onSoulImprint();
-      } else {
-        // 천도제: 캐릭터 제거
-        session.backlog.add(session.gameTime, `${p.name}의 영혼이 세계를 떠났다.`, '시스템');
-        callbacks.onRebirth();
-      }
-    });
+    if (!isFinal) {
+      confirmBtn.textContent = '계속 [Enter]';
+      confirmBtn.addEventListener('click', () => {
+        confirmMode = isImprint ? 'imprint_final' : 'rebirth_final';
+        render(container());
+      });
+    } else {
+      confirmBtn.textContent = isImprint ? '각인한다 [Enter]' : '떠나보낸다 [Enter]';
+      confirmBtn.style.background = 'var(--accent)';
+      confirmBtn.addEventListener('click', () => {
+        if (isImprint) {
+          session.backlog.add(session.gameTime, `${p.name}의 영혼이 기억의 샘에 각인되었다.`, '시스템');
+          callbacks.onSoulImprint();
+        } else {
+          session.backlog.add(session.gameTime, `${p.name}의 영혼이 세계를 떠났다.`, '시스템');
+          callbacks.onRebirth();
+        }
+      });
+    }
     btnWrap.appendChild(confirmBtn);
-
     content.appendChild(btnWrap);
   }
 
@@ -302,9 +320,13 @@ export function createMemorySpringScreen(
         if (key === 'Enter') {
           const p = session.player;
           if (confirmMode === 'imprint') {
+            confirmMode = 'imprint_final'; render(container);
+          } else if (confirmMode === 'rebirth') {
+            confirmMode = 'rebirth_final'; render(container);
+          } else if (confirmMode === 'imprint_final') {
             session.backlog.add(session.gameTime, `${p.name}의 영혼이 기억의 샘에 각인되었다.`, '시스템');
             callbacks.onSoulImprint();
-          } else {
+          } else if (confirmMode === 'rebirth_final') {
             session.backlog.add(session.gameTime, `${p.name}의 영혼이 세계를 떠났다.`, '시스템');
             callbacks.onRebirth();
           }

@@ -207,6 +207,15 @@ async function boot() {
   // --- 게임 메인 화면 ---
   function showGame() {
     syncHyperionBonus();
+    // 미정의/링크 없는 지역에 있으면 Alimes로 이동 (레거시 저장 파일 대응)
+    const p = session.player;
+    const locData = session.world.getAllLocations().get(p.currentLocation);
+    if (!locData || (locData.linksBidirectional.length === 0 && locData.linksOneWayOut.length === 0)) {
+      p.currentLocation = p.homeLocation;
+      // homeLocation도 미정의면 Alimes로
+      const homeData = session.world.getAllLocations().get(p.homeLocation);
+      if (!homeData) { p.currentLocation = 'Alimes'; p.homeLocation = 'Alimes'; }
+    }
     sm.replace(createGameScreen(session, (target) => {
       switch (target) {
         case 'move':
