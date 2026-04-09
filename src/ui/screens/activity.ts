@@ -18,7 +18,7 @@ import type { ActivitySimConfig } from './activity-sim';
 
 /** 활동 실행 아이콘 (effectType 기반) */
 const ACTIVITY_ICON: Record<string, string> = {
-  random_loot: '🔍', give: '📦', heal_hp: '💚', restore_vigor: '💛',
+  random_loot: '🔍', give: '📦', heal_hp: '💚',
   restore_mp: '💙', start_crop: '🌱', buff_attack: '⚔️', buff_defense: '🛡️',
   hear_rumor: '💬', learn_spell: '✨',
 };
@@ -81,10 +81,17 @@ export function createActivityScreen(
         btn.dataset.idx = String(i);
         const stockNum = session.activitySystem.getStock(p.currentLocation, act.key);
         const stockLabel = stockNum >= 0 ? ` [재고:${stockNum}]` : '';
+        const tpCost = Math.ceil(act.vigorCost / 10);
+        const costParts = [`시간:${act.timeCost}분`];
+        if (tpCost > 0) costParts.push(`TP:${tpCost}`);
+        if (act.goldCost > 0) costParts.push(`${act.goldCost}G`);
         btn.innerHTML = `
           <span class="npc-num">${i + 1}.</span>
-          <span class="npc-name">${act.name}${stockLabel}</span>
-          <span class="npc-detail">${act.description} (\uc2dc\uac04:${act.timeCost}\ubd84, TP:${Math.ceil(act.vigorCost / 10)}${act.goldCost > 0 ? `, ${act.goldCost}G` : ''})</span>
+          <span class="npc-name-row">
+            <span class="npc-name">${act.name}${stockLabel}</span>
+            ${tpCost > 0 ? `<span class="tp-cost-badge" title="TP ${tpCost}">TP${tpCost}</span>` : ''}
+          </span>
+          <span class="npc-detail">${act.description} (${costParts.join(', ')})</span>
         `;
         btn.addEventListener('click', () => executeActivity(i, el));
         list.appendChild(btn);
@@ -138,9 +145,6 @@ export function createActivityScreen(
     } else if (effect.startsWith('heal_hp:')) {
       const amount = parseInt(effect.split(':')[1], 10) || 0;
       p.adjustHp(amount);
-    } else if (effect.startsWith('restore_vigor:')) {
-      const amount = parseInt(effect.split(':')[1], 10) || 0;
-      p.adjustVigor(amount);
     } else if (effect.startsWith('restore_mp:')) {
       const amount = parseInt(effect.split(':')[1], 10) || 0;
       p.adjustMp(amount);
@@ -198,7 +202,6 @@ export function createActivityScreen(
     // 효과 적용 전 스냅샷
     const hpBefore = p.base.hp;
     const mpBefore = p.base.mp;
-    const vigorBefore = p.base.vigor;
     const invBefore = new Map(p.spirit.inventory);
 
     // Apply effect
@@ -219,7 +222,6 @@ export function createActivityScreen(
 
     // Track
     session.knowledge.trackActivityDone();
-    session.knowledge.trackVigorSpent(Math.ceil(act.vigorCost / 10));
 
     // Backlog
     session.backlog.add(
@@ -246,13 +248,11 @@ export function createActivityScreen(
       rewardParts.push(gained.length > 0 ? gained.join(', ') : '수확 없음');
     }
 
-    // HP/MP/기력 변화
-    const hpDelta  = Math.round(p.base.hp    - hpBefore);
-    const mpDelta  = Math.round(p.base.mp    - mpBefore);
-    const vigDelta = Math.round(p.base.vigor - vigorBefore);
-    if (hpDelta  > 0) rewardParts.push(`HP +${hpDelta}`);
-    if (mpDelta  > 0) rewardParts.push(`MP +${mpDelta}`);
-    if (vigDelta > 0) rewardParts.push(`기력 +${vigDelta}`);
+    // HP/MP 변화
+    const hpDelta = Math.round(p.base.hp - hpBefore);
+    const mpDelta = Math.round(p.base.mp - mpBefore);
+    if (hpDelta > 0) rewardParts.push(`HP +${hpDelta}`);
+    if (mpDelta > 0) rewardParts.push(`MP +${mpDelta}`);
 
     // 버프·작물
     if (act.effect.startsWith('buff_attack:'))  rewardParts.push('공격력 버프 적용');

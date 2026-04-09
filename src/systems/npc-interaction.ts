@@ -158,11 +158,11 @@ export function getDialogue(actor: Actor, stage: RelationshipStage = 'unknown', 
     // 이동 중에는 상태 기반 대사(배고픔 등) 건너뜀 — 아래 캐릭터/역할 단계로 바로 진입
   } else {
     // 일반 대화: 상태 기반 대사 우선 적용
-    if (base.vigor < 15) {
+    if (actor.lifeData.daysSinceLastMeal > 1) {
       const lines = dialogueDB.get('status.starving');
       if (lines && lines.length > 0) return pickRandom(lines);
     }
-    if (base.vigor < 40) {
+    if (actor.lifeData.daysSinceLastMeal > 0) {
       const lines = dialogueDB.get('status.hungry');
       if (lines && lines.length > 0) return pickRandom(lines);
     }
@@ -471,6 +471,17 @@ export function giveGift(
   backlog: Backlog,
   gameTime: GameTime,
 ): GiftResult {
+  const stage = getRelationshipStage(player, target.name, knowledge);
+  if (stage === 'unknown') {
+    return {
+      success: false,
+      reaction: '',
+      trustBoost: 0,
+      affinityBoost: 0,
+      messages: ['선물은 아는 사이부터 줄 수 있다. 먼저 대화를 나눠보자.'],
+    };
+  }
+
   if (!player.consumeItem(giftItem, 1)) {
     return { success: false, reaction: '', trustBoost: 0, affinityBoost: 0, messages: ['아이템이 부족하다.'] };
   }

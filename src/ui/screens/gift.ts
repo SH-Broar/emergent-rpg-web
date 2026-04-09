@@ -6,7 +6,7 @@ import { raceName, spiritRoleName, ItemType, raceToKey, SpiritRole } from '../..
 import { itemName } from '../../types/registry';
 import { createNpcList, type NpcEntry } from '../components/npc-list';
 import { createItemGrid, type ItemEntry } from '../components/item-grid';
-import { giveGift } from '../../systems/npc-interaction';
+import { getRelationshipStage, giveGift } from '../../systems/npc-interaction';
 
 type GiftStep = 'select-npc' | 'select-item' | 'result';
 
@@ -26,7 +26,8 @@ export function createGiftScreen(
       const a = session.actors[i];
       // 동료는 위치 무관, 일반 NPC는 같은 위치
       const isCompanion = session.knowledge.isCompanion(a.name);
-      if ((isCompanion || a.currentLocation === p.currentLocation) && a.isAlive()) {
+      const stage = getRelationshipStage(p, a.name, session.knowledge, session.actors);
+      if ((isCompanion || a.currentLocation === p.currentLocation) && a.isAlive() && stage !== 'unknown') {
         result.push({ actor: a, idx: i });
       }
     }
@@ -70,22 +71,30 @@ export function createGiftScreen(
     if (step === 'select-npc') {
       const sub = document.createElement('p');
       sub.className = 'hint';
-      sub.textContent = '선물을 줄 상대를 선택하세요.';
+      sub.textContent = '선물을 줄 상대를 선택하세요. 아는 사이부터 선물이 가능합니다.';
       wrap.appendChild(sub);
 
       const npcsHere = getNpcsAtLocation();
-      const entries: NpcEntry[] = npcsHere.map(n => ({
-        name: n.actor.name,
-        race: raceName(n.actor.base.race),
-        role: spiritRoleName(n.actor.spirit.role),
-      }));
-      const list = createNpcList(entries, (i) => {
-        selectedNpcIdx = i;
-        step = 'select-item';
-        message = '';
-        renderGift(el);
-      });
-      wrap.appendChild(list);
+      if (npcsHere.length === 0) {
+        const empty = document.createElement('p');
+        empty.className = 'hint';
+        empty.textContent = '선물을 줄 수 있는 상대가 없습니다. 먼저 대화를 나눠보세요.';
+        wrap.appendChild(empty);
+      }
+      if (npcsHere.length > 0) {
+        const entries: NpcEntry[] = npcsHere.map(n => ({
+          name: n.actor.name,
+          race: raceName(n.actor.base.race),
+          role: spiritRoleName(n.actor.spirit.role),
+        }));
+        const list = createNpcList(entries, (i) => {
+          selectedNpcIdx = i;
+          step = 'select-item';
+          message = '';
+          renderGift(el);
+        });
+        wrap.appendChild(list);
+      }
     } else if (step === 'select-item') {
       const npcsHere = getNpcsAtLocation();
       const npc = npcsHere[selectedNpcIdx];

@@ -83,6 +83,11 @@ const INFO_ACTIONS: ActionDef[] = [
   { key: 'S', label: '저장', action: 'save', icon: '💾' },
 ];
 
+const ACTION_TP_COST: Partial<Record<GameAction, number>> = {
+  rest: 1,
+  gather: 1,
+};
+
 // ============================================================
 // 미니맵 표시 설정 (localStorage 영구 저장)
 // ============================================================
@@ -443,11 +448,15 @@ export function createGameScreen(
             );
             return MAIN_ACTIONS.slice(0, lastVisible + 1).map(a => {
               const show = !a.visible || a.visible(session);
+              const tpCost = ACTION_TP_COST[a.action] ?? 0;
               return `
                 <button class="btn action-btn" data-action="${a.action}" title="[${a.key}]"
                   style="${show ? '' : 'visibility:hidden;pointer-events:none'}">
                   <span class="action-icon">${a.icon}</span>
-                  <span class="action-label">${a.label}</span>
+                  <span class="action-label-row">
+                    <span class="action-label">${a.label}</span>
+                    ${tpCost > 0 ? `<span class="tp-cost-badge" title="TP ${tpCost}">TP${tpCost}</span>` : ''}
+                  </span>
                   <span class="action-key">${a.key}</span>
                 </button>`;
             }).join('');

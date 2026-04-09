@@ -23,13 +23,13 @@ export type GameAction =
 const ACTION_TIME: Partial<Record<GameAction, number>> = {
   idle: 30, move: 0, talk: 20, trade: 15, eat: 0,
   rest: 60, dungeon: 60, gather: 30, quest: 10,
-  activity: 30, gift: 0, home: 60,
+  activity: 0, gift: 0, home: 60,
 };
 
 const AP_COST: Partial<Record<GameAction, number>> = {
   idle: 0, move: 0, talk: 0, trade: 0, eat: 0,
   rest: 1, dungeon: 0, gather: 1, quest: 0,
-  activity: 1, gift: 0, home: 0, memory_spring: 0,
+  activity: 0, gift: 0, home: 0, memory_spring: 0,
 };
 
 export interface GatherSimResult {
@@ -265,7 +265,7 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
     case 'trade': result.messages.push('거래를 시작한다.'); result.screenChange = 'trade'; break;
     case 'dungeon': result.messages.push('던전으로 향한다.'); result.screenChange = 'dungeon'; break;
     case 'quest': result.messages.push('퀘스트 게시판을 확인한다.'); result.screenChange = 'quest'; break;
-    case 'activity': result.messages.push('활동을 시작한다.'); result.screenChange = 'activity'; break;
+    case 'activity': result.screenChange = 'activity'; return result;
     case 'gift': result.screenChange = 'gift'; return result;
     case 'home':
       if (p.currentLocation === p.homeLocation || session.knowledge.ownedBases.has(p.currentLocation)) {
@@ -339,12 +339,9 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
       }
       p.setVariable('buff_attack', buffTotals['attack'] ?? 0);
       p.setVariable('buff_defense', buffTotals['defense'] ?? 0);
-      p.setVariable('buff_vigor_regen', buffTotals['vigor_regen'] ?? 0);
       p.setVariable('buff_mp_regen', buffTotals['mp_regen'] ?? 0);
-      // vigor_regen/mp_regen 버프 즉시 적용
-      const vRegen = buffTotals['vigor_regen'] ?? 0;
+      // mp_regen 버프 즉시 적용
       const mRegen = buffTotals['mp_regen'] ?? 0;
-      if (vRegen > 0) p.adjustVigor(vRegen);
       if (mRegen > 0) p.adjustMp(mRegen);
     }
 
@@ -355,8 +352,7 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
       const recoveryMinutes = 8 * 60; // 8시간 회복
       session.gameTime.advance(travelHome + recoveryMinutes);
       p.currentLocation = p.homeLocation;
-      p.base.vigor = Math.round(p.getEffectiveMaxVigor() * 0.5);
-      const defeatMsg = '기력이 다해 쓰러졌다... 눈을 떠보니 자택이었다.';
+      const defeatMsg = '쓰러졌다... 눈을 떠보니 자택이었다.';
       session.backlog.add(session.gameTime, `${p.name}이(가) 쓰러져 자택에서 깨어났다...`, '행동');
       result.messages.push(defeatMsg);
       result.screenChange = 'home';

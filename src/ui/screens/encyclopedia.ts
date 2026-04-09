@@ -17,6 +17,13 @@ const TAB_LABELS: Record<Tab, string> = {
 
 const TAB_KEYS: Tab[] = ['items', 'monsters', 'npcs', 'locations'];
 
+function describeDanger(dangerLevel: number): string {
+  if (dangerLevel >= 3) return '매우 높음';
+  if (dangerLevel >= 2) return '높음';
+  if (dangerLevel >= 1) return '보통';
+  return '낮음';
+}
+
 export function createEncyclopediaScreen(
   session: GameSession,
   onDone: () => void,
@@ -246,6 +253,10 @@ export function createEncyclopediaScreen(
 
     allLocs.forEach(([id, locData], i) => {
       const isVisited = visited.has(id);
+      const routeCount = locData.linksBidirectional.length + locData.linksOneWayOut.length;
+      const dungeonCount = session.dungeonSystem.getAllDungeons()
+        .filter(d => d.accessFrom === id)
+        .length;
       const row = document.createElement('div');
       row.className = 'npc-item' + (i === selectedIdx ? ' active' : '');
       row.style.cursor = 'pointer';
@@ -256,7 +267,7 @@ export function createEncyclopediaScreen(
       } else {
         row.innerHTML = `
           <span class="npc-name">${locationName(id)}</span>
-          <span class="npc-detail" style="color:#888;font-size:12px">${locData.description || ''}</span>`;
+          <span class="npc-detail" style="color:#888;font-size:12px">연결 ${routeCount} · 던전 ${dungeonCount} · 위험 ${describeDanger(locData.dangerLevel)}</span>`;
       }
       row.addEventListener('click', () => { selectedIdx = i; render(wrap.parentElement!); });
       list.appendChild(row);
