@@ -14,18 +14,15 @@ export function getZoneColor(locationId: string): string {
        'Cyan_Dunes','Tiklit_Range','Ekres','Abandoned_Mine','Bandit_Hideout',
        'Silk_Workshop','Moonlit_Clearing','Bloom_Terrace'].includes(locationId))
     return '#4ecca3';
-  // 루나 (마법학교) — 보라
-  if (['Luna_Academy','Phantom_Spire','Stella_Ville'].includes(locationId))
+  // 루나 권역 — 보라
+  if (['Luna_Academy','Phantom_Spire','Stella_Ville','Puchi_Tower','Riel_Sky'].includes(locationId))
     return '#9b59b6';
   // 마노니클라 — 주황
   if (['Manonickla','Limun_Ruins'].includes(locationId))
     return '#e67e22';
-  // 마틴 항 — 남색
-  if (locationId.startsWith('Martin'))
+  // 마틴 권역 — 남색
+  if (locationId.startsWith('Martin') || locationId === 'Halpia')
     return '#2980b9';
-  // 할퓌아 — 밝은 하늘
-  if (locationId === 'Halpia')
-    return '#5dade2';
   // 알리메스 — 금빛
   if (locationId === 'Alimes')
     return '#f1c40f';
@@ -35,9 +32,6 @@ export function getZoneColor(locationId: string): string {
   // 마왕성 — 심홍
   if (locationId === 'Demon_Castle')
     return '#c0392b';
-  // 리엘 / 푸치탑 — 연보라
-  if (['Puchi_Tower','Riel_Sky'].includes(locationId))
-    return '#bb8fce';
   // 에니챰 — 노랑/전기
   if (['Enicham','Night_Tacomi'].includes(locationId))
     return '#f39c12';

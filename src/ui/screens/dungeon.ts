@@ -5,7 +5,7 @@ import type { GameSession } from '../../systems/game-session';
 import type { DungeonDef, DungeonRunState, DungeonRoom, DungeonEventDef } from '../../models/dungeon';
 import { RoomType } from '../../models/dungeon';
 import {
-  RealtimeCombatState, TICK_MS,
+  RealtimeCombatState, getCombatTickMs,
   createCombatState, stopCombatTimer, processTick, usePlayerSkill,
 } from '../../systems/combat-engine';
 import { canUseSkill } from '../../systems/skill-combat';
@@ -518,7 +518,7 @@ export function createDungeonScreen(
       } else {
         renderCombat(el);
       }
-    }, TICK_MS);
+    }, getCombatTickMs(p));
   }
 
   function renderCombat(el: HTMLElement) {
@@ -530,8 +530,8 @@ export function createDungeonScreen(
     const cs = combatState;
     const ss = cs.playerSkills;
     const enemyHpPct = Math.max(0, Math.round((cs.enemyHp / cs.enemyMaxHp) * 100));
-    const playerHpPct = Math.round((p.base.hp / p.getEffectiveMaxHp()) * 100);
-    const mpPct = Math.round((p.base.mp / p.getEffectiveMaxMp()) * 100);
+    const playerHpPct = Math.max(0, Math.min(100, Math.round((p.base.hp / p.getEffectiveMaxHp()) * 100)));
+    const mpPct = Math.max(0, Math.min(100, Math.round((p.base.mp / p.getEffectiveMaxMp()) * 100)));
 
     // 스킬 슬롯
     const skillBtns = ss.slots.map((def, i) => {
@@ -598,14 +598,18 @@ export function createDungeonScreen(
       ${delayHtml}
 
       <div class="combat-player">
-        <div style="display:flex;gap:12px;font-size:12px;margin:4px 0">
-          <span>HP: ${Math.round(p.base.hp)}/${Math.round(p.getEffectiveMaxHp())}
-            <span style="display:inline-block;width:${Math.min(80, playerHpPct)}px;height:4px;background:var(--hp-color,#e94560);border-radius:2px;vertical-align:middle;margin-left:2px"></span>
-          </span>
-          <span>MP: ${Math.round(p.base.mp)}/${Math.round(p.getEffectiveMaxMp())}
-            <span style="display:inline-block;width:${Math.min(60, mpPct)}px;height:4px;background:var(--accent2);border-radius:2px;vertical-align:middle;margin-left:2px"></span>
-          </span>
-          <span style="color:var(--warning)">TP: ${p.base.ap}/${p.getEffectiveMaxAp()}</span>
+        <div class="combat-resource-list">
+          <div class="stat-bar combat-stat-bar">
+            <span class="combat-stat-label">HP</span>
+            <div class="bar"><div class="bar-fill hp-bar combat-player-hp-bar" style="width:${playerHpPct}%"></div></div>
+            <span class="stat-val">${Math.round(p.base.hp)}/${Math.round(p.getEffectiveMaxHp())}</span>
+          </div>
+          <div class="stat-bar combat-stat-bar">
+            <span class="combat-stat-label">MP</span>
+            <div class="bar"><div class="bar-fill combat-player-mp-bar" style="width:${mpPct}%"></div></div>
+            <span class="stat-val">${Math.round(p.base.mp)}/${Math.round(p.getEffectiveMaxMp())}</span>
+          </div>
+          <div class="combat-tp-line">TP: ${p.base.ap}/${p.getEffectiveMaxAp()}</div>
         </div>
         ${buffTags ? `<div class="combat-buffs">${buffTags}</div>` : ''}
         ${partyHtml}

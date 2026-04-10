@@ -102,7 +102,18 @@ export interface RealtimeCombatState {
   isBoss: boolean;
 }
 
-export const TICK_MS = 1500;
+const BASE_TICK_MS = 1500;
+const DEFAULT_COMBAT_SLOWDOWN = 10;
+
+export function getCombatSpeedMultiplier(player: Actor): number {
+  // 향후 악세서리/옵션에서 2배, 3배 가속을 붙일 때 이 변수만 바꾸면 된다.
+  const configured = player.getVariable('combat_speed_multiplier');
+  return Number.isFinite(configured) && configured > 0 ? configured : 1;
+}
+
+export function getCombatTickMs(player: Actor): number {
+  return Math.round((BASE_TICK_MS * DEFAULT_COMBAT_SLOWDOWN) / getCombatSpeedMultiplier(player));
+}
 
 // ============================================================
 // 전투 시작/종료
