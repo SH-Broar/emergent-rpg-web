@@ -2,6 +2,7 @@
 // 원본: DungeonSystem.h
 
 import { ItemType, Element } from '../types/enums';
+import { TimeWindow } from '../types/game-time';
 import { LocationID } from '../types/location';
 import { randomInt, randomFloat } from '../types/rng';
 
@@ -80,7 +81,7 @@ export interface DungeonDef {
   difficulty: number;
   progressPerAdvance: number;
   accessFrom: LocationID;
-  availableHours?: { fromHour: number; toHour: number };
+  availableHours?: TimeWindow;
   hiddenLocation?: LocationID;
   hiddenUnlockProgress?: number;
   rule?: DungeonRuleConfig;

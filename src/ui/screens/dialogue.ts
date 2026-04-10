@@ -2,6 +2,7 @@
 
 import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
+import { isActorVisibleToPlayer } from '../../systems/actor-visibility';
 import type { Actor } from '../../models/actor';
 import { raceName, spiritRoleName } from '../../types/enums';
 import { getRelationshipOverall } from '../../models/social';
@@ -27,6 +28,7 @@ export function createDialogueScreen(
   const p = session.player;
   const npcsHere = session.actors.filter(
     a => a !== p && a.isAlive() && !a.base.sleeping &&
+    isActorVisibleToPlayer(session, a) &&
     (a.currentLocation === p.currentLocation || session.knowledge.isCompanion(a.name)),
   );
 
@@ -80,6 +82,10 @@ export function createDialogueScreen(
       // 대화하면 이름을 알게 됨
       session.knowledge.addKnownName(npc.name);
       session.knowledge.trackConversation(npc.name);
+      if (npc.name === '베텔게우스' && !session.knowledge.hasTitle('대지의 목격자')) {
+        session.knowledge.addTitle('대지의 목격자');
+        session.backlog.add(session.gameTime, '칭호 "대지의 목격자"를 획득했다.', '시스템', p.name);
+      }
       const isCompanion = session.knowledge.isCompanion(npc.name);
       const effectiveStage = isCompanion ? 'companion' as const : getRelationshipStage(p, npc.name, session.knowledge, session.actors);
       const line = getDialogue(npc, effectiveStage);

@@ -13,7 +13,7 @@ name = 일루네온
 description = 컬러즈 세계의 중심 도시. 거대한 시계탑이 하늘을 찌르고, 다양한 종족이 어우러져 산다. 광장에서 뻗어나간 대로가 사방으로 세계를 잇는다.
 x = 0
 y = 0
-links = Iluneon_Square, Market_Square, Guild_Hall, Kanon:6, Arukea_1, Riagralta, Lar_Forest:12, Ekres:10, Iluneon_Diner
+links = Iluneon_Square, Market_Square, Guild_Hall, Kanon:6, Arukea_1, Riagralta, Lar_Forest:12, Ekres:10, Iluneon_Diner, Iluneon_Clocktower
 monsterLevel = 0
 dangerLevel = 0.0
 
@@ -66,6 +66,16 @@ links = Iluneon
 resources = Food:30
 monsterLevel = 0
 dangerLevel = 0.0
+
+[Iluneon_Clocktower]
+name = 일루네온 시계탑
+description = 일루네온 중심부의 상징인 거대한 시계탑. 평소에는 봉인된 듯 잠잠하지만, 매 정각마다 아주 짧은 순간만 내부 길과 기믹이 열리며 선택받은 탐색자만 발을 들일 수 있다.
+x = 120
+y = 120
+links = Iluneon
+monsterLevel = 0
+dangerLevel = 0.0
+timeVisible = hourly:0:5
 
 # ============================================================
 # 아르케아 가도 — 일루네온에서 뻗어나가는 대로
@@ -146,6 +156,17 @@ monsterLevel = 1
 dangerLevel = 0.1
 gather_env = 풀밭, 바람 속, 언덕 너머
 
+[Riagralta_Deep]
+name = 리아그랄타 평원 심부
+description = 평원 깊숙이 들어간 이들만 닿는 숨은 구획. 들판 끝에 묻혀 있던 고대 유적 잔해와 정체불명의 기계 구조물이 드러나며, 평원의 얼굴이 완전히 달라진다.
+x = 260
+y = 2640
+links_one_way = Riagralta
+resources = OreCommon:12, OreRare:4, MonsterLoot:12
+monsterLevel = 7
+dangerLevel = 0.62
+hidden = 1
+
 [Navrit]
 name = 나브릿트 전기지대
 description = 리아그랄타 평원 너머 자연적으로 전기가 방전되는 기이한 지대. 지표면에서 수시로 정전기가 튀고, 폭풍 없이도 번개가 친다. 전기 공학 연구자와 번개 마법사들의 성지.
@@ -170,6 +191,17 @@ resources = Herb:30, Food:15
 monsterLevel = 2
 dangerLevel = 0.2
 gather_env = 나무뿌리 사이, 낙엽 더미, 이끼 낀 바닥
+
+[Caliburn_House]
+name = 칼리번의 집
+description = 도토리나무 숲 안쪽에 숨은 작은 집. 여행 도중 모아 온 마법 재료와 필기 노트가 정갈하게 놓여 있고, 숲을 오래 본 사람만 찾을 수 있는 조용한 쉼터다.
+x = 2440
+y = 120
+links_one_way = Lar_Forest
+resources = Herb:10, Potion:3
+monsterLevel = 0
+dangerLevel = 0.0
+hidden = 1
 
 [World_Tree]
 name = 세계수
@@ -315,7 +347,7 @@ dangerLevel = 0.0
 gather_env = 꽃밭, 꽃잎 사이, 꽃술 깊은 곳
 
 [Tacomi_Cafe]
-name = 레이저빔 카페
+name = 하이 빔 카페
 description = 타코미의 간판 카페. 낮에는 꽃차와 수제 케이크를 내놓는 평화로운 찻집이지만, 밤이 되면 천장의 레이저 조명이 켜지며 클럽 분위기로 전환된다. 타코미의 이중성을 한 잔에 담은 곳.
 x = -1700
 y = 4200
@@ -367,7 +399,7 @@ name = 마틴 항
 description = 대륙에서 가장 내륙 깊은 곳의 해안선에 자리한 현대화된 항구. 모래사장 따위는 없고, 콘크리트 부두와 크레인이 하늘을 향해 뻗어 있다. 대형 화물선이 드나들며, 화물 컨테이너 사이로 바닷바람이 짠내를 몰고 온다.
 x = 0
 y = -2700
-links = Valkyr_Canal:8, Kishina:6, Falcon_Garden:16, Manyu:10, Halpia:12, Manonickla:80
+links = Valkyr_Canal:8, Kishina:6, Falcon_Garden:16, Manyu:10, Manonickla:80
 resources = Food:40, Equipment:5
 monsterLevel = 0
 dangerLevel = 0.0
@@ -394,13 +426,23 @@ dangerLevel = 0.6
 
 [Halpia]
 name = 할퓌아 부유섬
-description = 하늘에 떠 있는 신비로운 섬. 천사와 조류 종족이 주로 거주하며, 지상과는 마법의 승강기로 연결된다. 구름 사이로 폭포가 떨어져 내린다.
-x = 1200
-y = -2900
-links = Martin_Port:12, Riel_Sky:10
+description = 팔콘 가든 군도 근처 상공에 떠 있는 신비로운 부유섬. 천사와 조류 종족이 주로 드나들며, 구름 사이 정원과 공중 회랑이 섬의 외곽을 감싼다. 쉽게 닿을 수 없는 특수 지역답게 접근 자체가 작은 모험처럼 여겨진다.
+x = 4050
+y = -3320
+links = Falcon_Garden:10, Riel_Sky:10, Halpia_Garden
 resources = Herb:15, Food:10
 monsterLevel = 2
 dangerLevel = 0.1
+
+[Halpia_Garden]
+name = 하르피아의 정원
+description = 할퓌아 안쪽에 숨은 공중 정원. 꽃과 빛, 잔잔한 바람으로 채워진 고요한 공간이라, 외부인에게는 더더욱 특별한 장소로 여겨진다.
+x = 4210
+y = -3230
+links = Halpia
+resources = Herb:12, Food:6
+monsterLevel = 0
+dangerLevel = 0.0
 
 [Riel_Sky]
 name = 천공성 리엘
@@ -431,7 +473,7 @@ name = 팔콘 가든 군도
 description = 남쪽 바다에 흩어진 군도. 각 섬마다 상급 던전이 자리하고 있으며, 섬 사이를 잇는 현수교 위에서도 전투가 벌어진다. 바다 안개 속에서 괴조의 울음소리가 들려온다.
 x = 3500
 y = -3800
-links = Martin_Port:16, Bug_Sea:24
+links = Martin_Port:16, Halpia:10, Bug_Sea:24
 resources = MonsterLoot:15, OreRare:5
 monsterLevel = 7
 dangerLevel = 0.7
@@ -462,12 +504,22 @@ monsterLevel = 0
 dangerLevel = 0.0
 
 [Manonickla_Forge]
-name = 드래곤 카요 특수공방
+name = 카요 공방
 description = 마노니클라의 전설적인 공방. 드래곤의 화염으로만 가공할 수 있는 특수 광물을 다루며, 이곳에서 만들어진 장비는 대륙 어디서도 구할 수 없는 유일무이한 것이다. 공방 안은 항상 용의 숨결처럼 뜨겁다.
 x = 5400
 y = -500
-links = Manonickla
+links = Manonickla, Valencia_Armory
 resources = Equipment:8, OreRare:5
+monsterLevel = 0
+dangerLevel = 0.0
+
+[Valencia_Armory]
+name = 발렌시아의 무기고
+description = 카요 공방 깊은 곳에 따로 이어진 발렌시아의 개인 무기고. 걸린 무기 하나하나에 전쟁과 수련의 기록이 남아 있어, 아무나 들일 수 없는 특수 장소다.
+x = 5490
+y = -420
+links = Manonickla_Forge
+resources = Equipment:8, OreRare:4
 monsterLevel = 0
 dangerLevel = 0.0
 
@@ -513,7 +565,7 @@ monsterLevel = 2
 dangerLevel = 0.2
 
 [Manonickla_Tavern]
-name = 석양빛 주막
+name = 석양 주막
 description = 마노니클라 절벽 끝자락에 자리한 식당. 테라스에서 바다로 지는 석양을 바라보며 식사할 수 있는 대륙 유일의 명소. 해산물 요리와 이 섬에서만 나는 열대 과일주가 명물이다.
 x = 5100
 y = -500

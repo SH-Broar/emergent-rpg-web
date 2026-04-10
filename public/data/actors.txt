@@ -319,6 +319,22 @@ domainHigh = Calm,Adaptable,Methodical,Stubborn,Patient,Grounded,Hopeful,Honest
 domainLow = Passionate,Indifferent,Stagnant,Fragile,Restless,Freesprited,Cynical,Naive
 background = 고대 골렘.|최근까지 바위의 정령 정도로 알려져 있었으나, 리문 유적이 발견되면서 그곳을 지키던 경비 역할이었다는 게 밝혀졌다.|유적 심층에 아직 많은 유물이 남아있다는 걸 알게 된 로크는 유적을 재건할 계획을 세우고 있다.|평소에는 마노니클라에서 빈둥빈둥 놀고 있다.
 
+[베텔게우스]
+playable = 0
+race = Spirit
+role = Priest
+stationary = 1
+strength = 0.9
+gold = 0
+location = Clutch_Gorge
+homeLocation = Clutch_Gorge
+age = 999
+colorValues = 0.2,0.3,0.2,0.2,1.0,0.3,0.4,0.2
+domainHigh = Calm,Empathetic,Methodical,Reliable,Patient,Grounded,Hopeful,Honest
+domainLow = Passionate,Impulsive,Stagnant,Fragile,Restless,Freesprited,Cynical,Naive
+inventory = OreRare:1, Herb:2
+background = 흙의 정령이자 아주 드물게만 모습을 드러내는 관측자.|마노니클라의 '빛이 쏟아지는 날'을 본 자에게만 다음날 클러치 협곡에서 말을 건다고 전해진다.| 말수는 적지만 대지와 협곡의 결을 정확히 읽으며, 오래된 바위와 유적의 숨결을 이해하는 몇 안 되는 존재다.|정령과 대화하는 경험은 세계 안에서도 흔치 않은 축에 속한다.
+
 # ============================================================
 # 마틴 항 관련 캐릭터
 # ============================================================
@@ -377,7 +393,7 @@ race = Beastkin
 role = Adventurer
 strength = 0.9
 gold = 10
-location = Halpia
+location = Halpia_Garden
 homeLocation = Luna_Academy
 age = 15
 colorValues = 0.4,0.4,0.4,0.4,0.4,0.4,0.8,0.3
@@ -608,10 +624,11 @@ background = 불의 사천왕이자 구미호.|정령과 마법에 정통하며 
 playable = 0
 race = Spirit
 role = Guard
+stationary = 1
 strength = 0.8
 gold = 0
-location = Triflower
-homeLocation = Triflower
+location = Valencia_Armory
+homeLocation = Valencia_Armory
 age = 500
 colorValues = 0.5,0.3,0.3,0.9,0.4,0.3,0.4,0.3
 domainHigh = Passionate,Adaptable,Methodical,Stubborn,Patient,Grounded,Hopeful,Honest

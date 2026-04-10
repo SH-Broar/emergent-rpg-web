@@ -231,6 +231,7 @@ export function createTravelScreen(
     if (tickHandle !== null) return;
     tickHandle = setInterval(() => {
       if (paused || done) return;
+      session.player.adjustMp(1);
       const step = Math.min(GAME_MINS_PER_TICK, totalMinutes - gameElapsedMinutes);
       advanceTurnByChunks(
         step,

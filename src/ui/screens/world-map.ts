@@ -2,6 +2,7 @@
 
 import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
+import { isTimeWindowOpen } from '../../types/game-time';
 import { locationName } from '../../types/registry';
 
 // 마을 구역별 색상 매핑
@@ -18,17 +19,23 @@ export function getZoneColor(locationId: string): string {
   if (['Luna_Academy','Phantom_Spire','Stella_Ville','Puchi_Tower','Riel_Sky'].includes(locationId))
     return '#9b59b6';
   // 마노니클라 — 주황
-  if (['Manonickla','Limun_Ruins'].includes(locationId))
+  if (['Manonickla','Manonickla_Forge','Manonickla_Tavern','Limun_Ruins','Old_Eas','Clutch_Gorge','Sand_Dunes','Valencia_Armory'].includes(locationId))
     return '#e67e22';
   // 마틴 권역 — 남색
-  if (locationId.startsWith('Martin') || locationId === 'Halpia')
+  if (locationId.startsWith('Martin'))
     return '#2980b9';
   // 알리메스 — 금빛
   if (locationId === 'Alimes')
     return '#f1c40f';
   // 라르/허공 숲 — 진초록
-  if (['Lar_Forest','Void_Forest','World_Tree','Ancient_Tree_Crown'].includes(locationId))
+  if (['Lar_Forest','Void_Forest','World_Tree','Ancient_Tree_Crown','Caliburn_House'].includes(locationId))
     return '#27ae60';
+  // 리아그랄타 평원 — 초원색
+  if (['Riagralta', 'Riagralta_Deep', 'Navrit'].includes(locationId))
+    return '#7fbf6a';
+  // 아르케아 3번 가도 — 잿빛 보라
+  if (locationId === 'Arukea_3')
+    return '#7f6a93';
   // 마왕성 — 심홍
   if (locationId === 'Demon_Castle')
     return '#c0392b';
@@ -42,7 +49,7 @@ export function getZoneColor(locationId: string): string {
   if (locationId === 'Windfall_Valley' || locationId === 'Hologram_Field')
     return '#76d7c4';
   // 팔콘 가든 등 특수지역 — 연분홍
-  if (['Falcon_Garden','Starfall_Basin','Mirage_Oasis','Twilight_Spire','Crystal_Cavern'].includes(locationId))
+  if (['Falcon_Garden','Halpia','Halpia_Garden','Starfall_Basin','Mirage_Oasis','Twilight_Spire','Crystal_Cavern'].includes(locationId))
     return '#d4a0c0';
   // 고위험 야외 — 심홍
   if (['Erumen_Mistwood','Bandit_Hideout','Ode_Mountain'].includes(locationId))
@@ -66,16 +73,9 @@ export function createWorldMapScreen(session: GameSession, onDone: () => void): 
       const world = session.world;
       const playerLoc = session.player.currentLocation;
 
-      function isLocationVisible(loc: { timeVisible?: { fromHour: number; toHour: number } }): boolean {
-        if (!loc.timeVisible) return true;
-        const hour = session.gameTime.hour;
-        const { fromHour, toHour } = loc.timeVisible;
-        if (fromHour < toHour) {
-          return hour >= fromHour && hour < toHour;
-        } else {
-          // 자정 넘는 경우 (18~6 등)
-          return hour >= fromHour || hour < toHour;
-        }
+      function isLocationVisible(loc: { id?: string; timeVisible?: Parameters<typeof isTimeWindowOpen>[0] }): boolean {
+        if (loc.id === playerLoc) return true;
+        return isTimeWindowOpen(loc.timeVisible, session.gameTime.hour, session.gameTime.minute);
       }
 
       const allLocs = [...world.getAllLocations().values()].filter(loc =>

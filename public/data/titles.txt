@@ -207,6 +207,12 @@ description = 흙 속성이 최대치에 도달했다.
 condition = color_value:Earth:1.0
 priority = 40
 
+[earth_witness]
+name = 대지의 목격자
+description = 흙의 정령 베텔게우스와 대화했다.
+condition = conversation_with:베텔게우스
+priority = 45
+
 [guardian_wind]
 name = 바람의 수호자
 description = 바람 속성이 최대치에 도달했다.

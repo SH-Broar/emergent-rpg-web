@@ -334,6 +334,13 @@ triggerDay = -1
 weight = 0.3
 colorInfluence = Light:0.15, Water:0.12, Wind:0.05
 
+[빛이 쏟아지는 날]
+description = 마노니클라 상공에서 빛이 폭포처럼 쏟아지며 섬 전체가 황금빛으로 물들었다. 절벽과 협곡의 바위결까지 선명하게 드러나, 오래된 존재들조차 잠시 모습을 비춘다는 소문이 돈다.
+location = Manonickla
+triggerDay = -1
+weight = 0.08
+colorInfluence = Light:0.18, Earth:0.12, Wind:0.08
+
 # ---- 신규 종족 관련 이벤트 ----
 
 [비단 공방의 걸작]

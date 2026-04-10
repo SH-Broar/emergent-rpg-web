@@ -27,6 +27,11 @@ export interface CombatSkillState {
   pendingSkill: SkillDef | null;       // pre-delay 중 대기 스킬
 }
 
+export interface SkillUseOptions {
+  mpCostMultiplier?: number;
+  ignoreMaxUses?: boolean;
+}
+
 export function createCombatSkillState(): CombatSkillState {
   return {
     slots: [null, null, null],
@@ -114,6 +119,7 @@ export function canUseSkill(
   skill: SkillDef,
   actor: Actor,
   state: CombatSkillState,
+  options?: SkillUseOptions,
 ): { ok: boolean; reason?: string } {
   if (state.postDelayTurns > 0) {
     return { ok: false, reason: '행동 불가 상태입니다.' };
@@ -121,8 +127,9 @@ export function canUseSkill(
   if (state.preDelayTurns > 0) {
     return { ok: false, reason: '다른 스킬 준비 중입니다.' };
   }
-  if (actor.base.mp < skill.mpCost) {
-    return { ok: false, reason: `MP 부족 (필요: ${skill.mpCost}, 현재: ${actor.base.mp})` };
+  const effectiveMpCost = Math.max(0, Math.ceil(skill.mpCost * (options?.mpCostMultiplier ?? 1)));
+  if (actor.base.mp < effectiveMpCost) {
+    return { ok: false, reason: `MP 부족 (필요: ${effectiveMpCost}, 현재: ${actor.base.mp})` };
   }
   if (skill.tpCost > 0 && !actor.hasAp(skill.tpCost)) {
     return { ok: false, reason: `TP 부족 (필요: ${skill.tpCost})` };
@@ -130,7 +137,7 @@ export function canUseSkill(
   if (skill.hpCost > 0 && actor.base.hp <= skill.hpCost) {
     return { ok: false, reason: `HP 부족 (필요: ${skill.hpCost + 1} 이상)` };
   }
-  if (skill.maxUsesPerCombat !== -1) {
+  if (!options?.ignoreMaxUses && skill.maxUsesPerCombat !== -1) {
     const uses = state.usesThisCombat.get(skill.id) ?? 0;
     if (uses >= skill.maxUsesPerCombat) {
       return { ok: false, reason: `이번 전투에서 최대 사용 횟수 초과 (${skill.maxUsesPerCombat}회)` };
@@ -234,17 +241,19 @@ export function useSkill(
   actor: Actor,
   combatState: CombatState,
   skillState: CombatSkillState,
+  options?: SkillUseOptions,
 ): string[] {
   const skill = skillState.slots[slotIndex];
   if (!skill) return ['스킬 슬롯이 비어 있습니다.'];
 
-  const check = canUseSkill(skill, actor, skillState);
+  const check = canUseSkill(skill, actor, skillState, options);
   if (!check.ok) return [check.reason ?? '스킬 사용 불가'];
 
   // 자원 소모 (레벨별 코스트 감소 적용)
   const skillLevel = actor.learnedSkills.get(skill.id) ?? 1;
   const costMult = getSkillCostReduction(skillLevel);
-  actor.adjustMp(-Math.ceil(skill.mpCost * costMult));
+  const effectiveMpCost = Math.max(0, Math.ceil(skill.mpCost * costMult * (options?.mpCostMultiplier ?? 1)));
+  actor.adjustMp(-effectiveMpCost);
   if (skill.hpCost > 0) actor.adjustHp(-skill.hpCost);
 
   // 사용 횟수 증가

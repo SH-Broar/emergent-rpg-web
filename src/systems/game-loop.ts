@@ -10,11 +10,26 @@ import { applyDailyBaseEffects } from './base-effects';
 import { findItemsBySource } from '../types/item-defs';
 import { tryNpcInitiatedConversation, getDialogue, getRelationshipStage, getActionText } from './npc-interaction';
 
+function syncPlayerHyperionBonus(session: GameSession): void {
+  if (!session.isValid) return;
+  const p = session.player;
+  const oldMaxHp = Math.max(1, p.getEffectiveMaxHp());
+  const oldMaxMp = Math.max(1, p.getEffectiveMaxMp());
+  const hpRatio = Math.max(0, Math.min(1, p.base.hp / oldMaxHp));
+  const mpRatio = Math.max(0, Math.min(1, p.base.mp / oldMaxMp));
+  const hyperionTotal = session.actors.reduce((s, a) => s + a.hyperionLevel, 0);
+
+  p.hyperionBonus = hyperionTotal - p.hyperionLevel;
+
+  p.base.hp = Math.round(p.getEffectiveMaxHp() * hpRatio);
+  p.base.mp = Math.round(p.getEffectiveMaxMp() * mpRatio);
+}
+
 export type GameAction =
   | 'idle' | 'move' | 'talk' | 'trade' | 'eat'
   | 'rest' | 'dungeon' | 'gather' | 'quest' | 'activity'
   | 'gift' | 'home' | 'memory_spring'
-  | 'storage' | 'realestate' | 'cooking' | 'npc_invite'
+  | 'storage' | 'realestate' | 'cooking'
   | 'info_status' | 'info_color' | 'info_relations' | 'info_world'
   | 'info_backlog' | 'info_hyperion' | 'info_party' | 'info_titles' | 'info_map' | 'info_encyclopedia'
   | 'info_skills' | 'info_inventory'
@@ -83,8 +98,7 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
   if (!p) return result;
 
   // hyperionBonus를 항상 최신 값으로 갱신 (로드 직후, 수면/휴식 전 포함)
-  const hyperionTotal = session.actors.reduce((s, a) => s + a.hyperionLevel, 0);
-  p.hyperionBonus = hyperionTotal - p.hyperionLevel;
+  syncPlayerHyperionBonus(session);
 
   const minutes = ACTION_TIME[action] ?? 0;
 
@@ -277,7 +291,6 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
     case 'storage': result.screenChange = 'storage'; return result;
     case 'realestate': result.screenChange = 'realestate'; return result;
     case 'cooking': result.screenChange = 'cooking'; return result;
-    case 'npc_invite': result.screenChange = 'npc_invite'; return result;
     case 'memory_spring': result.messages.push('기억의 샘에 다가간다.'); result.screenChange = 'memory_spring'; break;
 
     // 정보 화면 (시간 소모 없음)
@@ -392,8 +405,7 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
 
     // 히페리온 자동 판정 (레벨업 후 보너스 재갱신)
     const hyperionMsgs = updateHyperionLevels(p, session.actors, session.knowledge, session.gameTime, session.dungeonSystem);
-    const newHyperionTotal = session.actors.reduce((s, a) => s + a.hyperionLevel, 0);
-    p.hyperionBonus = newHyperionTotal - p.hyperionLevel;
+    syncPlayerHyperionBonus(session);
     for (const msg of hyperionMsgs) {
       session.backlog.add(session.gameTime, msg, '시스템');
       result.messages.push(msg);

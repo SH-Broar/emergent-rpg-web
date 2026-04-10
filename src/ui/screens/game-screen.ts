@@ -5,11 +5,13 @@ import type { GameSession } from '../../systems/game-session';
 import type { GameAction } from '../../systems/game-loop';
 import type { Actor } from '../../models/actor';
 import { processTurn } from '../../systems/game-loop';
+import { isActorVisibleToPlayer } from '../../systems/actor-visibility';
 import { moveCompanions, getRelationshipStage, tryNpcInitiatedConversation } from '../../systems/npc-interaction';
 import { locationName } from '../../types/registry';
 import { getZoneColor } from './world-map';
 import { weatherName, seasonName, raceName, spiritRoleName, elementName, Element, ELEMENT_COUNT, ItemType } from '../../types/enums';
 import { getItemDef, getWeaponDef, getArmorDef, categoryName } from '../../types/item-defs';
+import { isTimeWindowOpen } from '../../types/game-time';
 import { applyTimeTheme } from '../time-theme';
 import { TRAVEL_OVERLAY_THRESHOLD_MINUTES } from './travel';
 import { advanceTurn, canNotifyRandomEvent } from '../../systems/world-simulation';
@@ -28,9 +30,6 @@ function atHome(session: GameSession) {
     || session.knowledge.ownedBases.has(session.player.currentLocation);
 }
 function atMemorySpring(session: GameSession) { return session.player.currentLocation === 'Memory_Spring'; }
-function atBase(session: GameSession) {
-  return session.knowledge.ownedBases.has(session.player.currentLocation);
-}
 function canTrade(session: GameSession) {
   const loc = session.player.currentLocation;
   // 시장에서는 항상 거래 가능, 그 외에는 주변 상인 NPC가 있을 때만
@@ -39,10 +38,18 @@ function canTrade(session: GameSession) {
     a !== session.player && a.currentLocation === loc && a.spirit.role === 1 /* Merchant */);
 }
 function nearDungeon(session: GameSession) {
-  return session.dungeonSystem.getAllDungeons().some(d => d.accessFrom === session.player.currentLocation);
+  return session.dungeonSystem.getAllDungeons().some(d =>
+    d.accessFrom === session.player.currentLocation
+    && isTimeWindowOpen(d.availableHours, session.gameTime.hour, session.gameTime.minute),
+  );
 }
 function hasNpcsHere(session: GameSession) {
-  return session.actors.some(a => a !== session.player && a.currentLocation === session.player.currentLocation && a.isAlive());
+  return session.actors.some(a =>
+    a !== session.player
+    && a.currentLocation === session.player.currentLocation
+    && a.isAlive()
+    && isActorVisibleToPlayer(session, a),
+  );
 }
 function hasActivities(session: GameSession) {
   return session.activitySystem.hasActivities(session.player.currentLocation);
@@ -63,7 +70,6 @@ const MAIN_ACTIONS: ActionDef[] = [
   { key: 'g', label: '선물', action: 'gift', icon: '🎁', visible: hasNpcsHere },
   { key: 'h', label: '자택', action: 'home', icon: '🏠', visible: atHome },
   { key: 'n', label: '부동산', action: 'realestate' as GameAction, icon: '🏘', visible: atGuildHall },
-  { key: 'f', label: '초대', action: 'npc_invite' as GameAction, icon: '🏡', visible: atBase },
   { key: 'm', label: '기억의 샘', action: 'memory_spring', icon: '💧', visible: atMemorySpring },
 ];
 
@@ -103,6 +109,12 @@ function compareMoveRoutes(a: MoveRouteEntry, b: MoveRouteEntry): number {
   return a.mins - b.mins || locationName(a.loc).localeCompare(locationName(b.loc), 'ko');
 }
 
+function isLocationOpenNow(session: GameSession, locationId: string): boolean {
+  const loc = session.world.getLocation(locationId);
+  if (!loc) return false;
+  return isTimeWindowOpen(loc.timeVisible, session.gameTime.hour, session.gameTime.minute);
+}
+
 function getMoveRouteSections(session: GameSession): {
   sortedRoutes: MoveRouteEntry[];
   dockedHomeRoute: MoveRouteEntry | null;
@@ -111,6 +123,7 @@ function getMoveRouteSections(session: GameSession): {
   const sortedRoutes = session.world
     .getOutgoingRoutes(p.currentLocation, session.gameTime.day)
     .map(([loc, mins]) => ({ loc, mins, isHome: loc === p.homeLocation }))
+    .filter(route => isLocationOpenNow(session, route.loc))
     .sort(compareMoveRoutes);
 
   if (p.currentLocation === p.homeLocation || sortedRoutes.some(route => route.isHome)) {
@@ -119,11 +132,13 @@ function getMoveRouteSections(session: GameSession): {
 
   return {
     sortedRoutes,
-    dockedHomeRoute: {
-      loc: p.homeLocation,
-      mins: session.world.getShortestMinutes(p.currentLocation, p.homeLocation, session.gameTime.day),
-      isHome: true,
-    },
+    dockedHomeRoute: isLocationOpenNow(session, p.homeLocation)
+      ? {
+          loc: p.homeLocation,
+          mins: session.world.getShortestMinutes(p.currentLocation, p.homeLocation, session.gameTime.day),
+          isHome: true,
+        }
+      : null,
   };
 }
 
@@ -143,6 +158,8 @@ export function createGameScreen(
   function bgTick(): void {
     const p = session.player;
     if (!p) return;
+
+    p.adjustMp(5);
 
     // 5 게임 분 조용히 진행
     session.gameTime.advance(5);
@@ -342,6 +359,7 @@ export function createGameScreen(
               );
               const npcsHere = session.actors.filter(a =>
                 a !== p && a.currentLocation === p.currentLocation && a.isAlive() && !a.base.sleeping
+                  && isActorVisibleToPlayer(session, a)
                   && !session.knowledge.isCompanion(a.name)
               );
               const partySpans = partyHere.map(a => {

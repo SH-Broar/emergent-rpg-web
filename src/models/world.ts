@@ -3,7 +3,7 @@
 
 import { ItemType, Element, ELEMENT_COUNT, Weather, Season } from '../types/enums';
 import { LocationID } from '../types/location';
-import { GameTime } from '../types/game-time';
+import { GameTime, TimeWindow } from '../types/game-time';
 import { GameRegistry } from '../types/registry';
 import { randomInt, randomFloat } from '../types/rng';
 import { SeasonSchedule, getSeasonEffect } from './season';
@@ -49,7 +49,7 @@ export interface LocationData {
   racialSynergy: number;
   gatherEnv: string[];
   /** 이 지역이 보이는 시간대. null = 항상 표시. */
-  timeVisible?: { fromHour: number; toHour: number };
+  timeVisible?: TimeWindow;
   hidden?: boolean;
 }
 

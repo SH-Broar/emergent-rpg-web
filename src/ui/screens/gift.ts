@@ -6,6 +6,7 @@ import { raceName, spiritRoleName, ItemType, raceToKey, SpiritRole } from '../..
 import { itemName } from '../../types/registry';
 import { createNpcList, type NpcEntry } from '../components/npc-list';
 import { createItemGrid, type ItemEntry } from '../components/item-grid';
+import { isActorVisibleToPlayer } from '../../systems/actor-visibility';
 import { getRelationshipStage, giveGift } from '../../systems/npc-interaction';
 
 type GiftStep = 'select-npc' | 'select-item' | 'result';
@@ -27,7 +28,7 @@ export function createGiftScreen(
       // 동료는 위치 무관, 일반 NPC는 같은 위치
       const isCompanion = session.knowledge.isCompanion(a.name);
       const stage = getRelationshipStage(p, a.name, session.knowledge, session.actors);
-      if ((isCompanion || a.currentLocation === p.currentLocation) && a.isAlive() && stage !== 'unknown') {
+      if ((isCompanion || a.currentLocation === p.currentLocation) && a.isAlive() && stage !== 'unknown' && isActorVisibleToPlayer(session, a)) {
         result.push({ actor: a, idx: i });
       }
     }

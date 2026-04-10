@@ -16,7 +16,39 @@ import { loadItemDefs, loadWeaponDefs, loadArmorDefs } from '../types/item-defs'
 import { loadSkillDefs, getBasicSkillsForRace } from '../models/skill';
 import { assignNpcSkills } from '../systems/skill-learning';
 import { raceToKey } from '../types/enums';
+import type { TimeWindow } from '../types/game-time';
 import type { GameDataFiles } from './loader';
+
+function parseTimeWindow(raw: string): TimeWindow | undefined {
+  const value = raw.trim();
+  if (!value) return undefined;
+  if (value.startsWith('hourly:')) {
+    const parts = value.slice('hourly:'.length).split(':').map(v => parseInt(v.trim(), 10));
+    if (parts.length !== 2 || parts.some(Number.isNaN)) return undefined;
+    return {
+      fromHour: 0,
+      fromMinute: parts[0],
+      toHour: 0,
+      toMinute: parts[1],
+      repeatHourly: true,
+    };
+  }
+  if (value.includes('-')) {
+    const [fromRaw, toRaw] = value.split('-').map(v => v.trim());
+    const parsePoint = (part: string): [number, number] | null => {
+      const pieces = part.split(':').map(v => parseInt(v.trim(), 10));
+      if (pieces.length !== 2 || pieces.some(Number.isNaN)) return null;
+      return [pieces[0], pieces[1]];
+    };
+    const from = parsePoint(fromRaw);
+    const to = parsePoint(toRaw);
+    if (!from || !to) return undefined;
+    return { fromHour: from[0], fromMinute: from[1], toHour: to[0], toMinute: to[1] };
+  }
+  const parts = value.split(':').map(v => parseInt(v.trim(), 10));
+  if (parts.length !== 2 || parts.some(Number.isNaN)) return undefined;
+  return { fromHour: parts[0], fromMinute: 0, toHour: parts[1], toMinute: 0 };
+}
 
 // --- items.txt ---
 export function initItems(sections: DataSection[]): void {
@@ -95,14 +127,8 @@ export function initLocations(sections: DataSection[], world: World): void {
       }
     }
 
-    // timeVisible = "18:6" (18시~익일6시) 또는 "6:18" (6시~18시)
-    const tvRaw = s.get('timeVisible', '');
-    if (tvRaw) {
-      const parts = tvRaw.split(':').map(p => parseInt(p.trim(), 10));
-      if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
-        data.timeVisible = { fromHour: parts[0], toHour: parts[1] };
-      }
-    }
+    // timeVisible = "18:6" 또는 "00:00-00:05"
+    data.timeVisible = parseTimeWindow(s.get('timeVisible', ''));
     data.hidden = s.getInt('hidden', 0) === 1;
 
     world.setLocation(id, data);
@@ -334,13 +360,7 @@ export function initDungeonSystem(
       difficulty: s.getFloat('difficulty', 0.5),
       progressPerAdvance: s.getFloat('progressPerAdvance', 10),
       accessFrom: parseLocationID(s.get('accessFrom', '')),
-      availableHours: (() => {
-        const raw = s.get('availableHours', '').trim();
-        if (!raw) return undefined;
-        const parts = raw.split(':').map(v => parseInt(v.trim(), 10));
-        if (parts.length !== 2 || Number.isNaN(parts[0]) || Number.isNaN(parts[1])) return undefined;
-        return { fromHour: parts[0], toHour: parts[1] };
-      })(),
+      availableHours: parseTimeWindow(s.get('availableHours', '')),
       hiddenLocation: s.get('hiddenLocation', '').trim() ? parseLocationID(s.get('hiddenLocation', '')) : undefined,
       hiddenUnlockProgress: s.getFloat('hiddenUnlockProgress', 100),
       rule: (() => {

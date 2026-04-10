@@ -873,3 +873,295 @@ skill_1_name = 고지 사냥
 skill_1_type = attack
 skill_1_value = 2.1
 skill_1_desc = 높은 곳에서 덮쳐 숨통을 노린다.
+
+; -------------------------------------------------------
+; 일루네온 외곽 확장 몬스터
+; -------------------------------------------------------
+
+[Meadow_Howler]
+name = 들판 하울러
+attack = 18
+defense = 7
+hp = 68
+loot = Food:2:0.30, MonsterLoot:2:0.34, Herb:1:0.18
+skillChance = 0.16
+skill_1_name = 장거리 울음
+skill_1_type = buff
+skill_1_value = 1.25
+skill_1_desc = 멀리 퍼지는 울음으로 기세를 끌어올린다.
+
+[Relic_Ram]
+name = 유적 숫양
+attack = 28
+defense = 13
+hp = 108
+loot = MonsterLoot:2:0.34, OreCommon:2:0.28, Equipment:1:0.08
+skillChance = 0.20
+skill_1_name = 돌파 뿔받이
+skill_1_type = attack
+skill_1_value = 1.9
+skill_1_desc = 돌기둥처럼 단단한 뿔로 정면을 꿰뚫는다.
+
+[Ruin_Scout]
+name = 유적 정찰기
+attack = 42
+defense = 18
+hp = 150
+loot = OreCommon:2:0.32, MonsterLoot:2:0.34, Equipment:1:0.10
+skillChance = 0.24
+skill_1_name = 주시 광선
+skill_1_type = attack
+skill_1_value = 2.0
+skill_1_desc = 고대 감시광선을 좁게 모아 발사한다.
+
+[Sector_Overseer]
+name = 구역 감찰자
+attack = 74
+defense = 30
+hp = 248
+loot = OreRare:1:0.22, Equipment:1:0.20, MonsterLoot:4:0.42
+skillChance = 0.32
+skill_1_name = 구획 봉쇄
+skill_1_type = attack
+skill_1_value = 2.7
+skill_1_desc = 침입자를 특정 구획에 몰아넣듯 압박한다.
+skill_2_name = 자가 재정렬
+skill_2_type = heal
+skill_2_value = 28
+skill_2_desc = 손상된 고대 부품을 맞물리며 자세를 바로잡는다.
+
+[Lantern_Ghost]
+name = 안개등 유령
+attack = 30
+defense = 10
+hp = 96
+loot = MonsterLoot:2:0.40, Herb:1:0.20, Potion:1:0.12
+skillChance = 0.24
+skill_1_name = 혼란 점멸
+skill_1_type = attack
+skill_1_value = 1.9
+skill_1_desc = 눈앞에서 번뜩이며 방향 감각을 흐트러뜨린다.
+
+[Midnight_Devil]
+name = 심야 악마
+attack = 46
+defense = 18
+hp = 156
+loot = MonsterLoot:3:0.42, Equipment:1:0.12, Potion:1:0.14
+skillChance = 0.26
+skill_1_name = 악몽 압박
+skill_1_type = attack
+skill_1_value = 2.2
+skill_1_desc = 정신을 짓누르는 악몽을 들이민다.
+
+[Vanishing_Revenant]
+name = 소실 망령
+attack = 62
+defense = 24
+hp = 220
+loot = MonsterLoot:4:0.44, OreRare:1:0.18, Equipment:1:0.16
+skillChance = 0.30
+skill_1_name = 경계 지우기
+skill_1_type = attack
+skill_1_value = 2.5
+skill_1_desc = 공간의 경계를 흐리며 치명적인 일격을 남긴다.
+
+[Bell_Keeper]
+name = 종각 수호기
+attack = 40
+defense = 18
+hp = 150
+loot = OreCommon:2:0.30, Potion:1:0.18, Equipment:1:0.12
+skillChance = 0.24
+skill_1_name = 공명 타종
+skill_1_type = attack
+skill_1_value = 2.0
+skill_1_desc = 종소리 진동을 한 점에 모아 적중시킨다.
+
+[Pendulum_Executor]
+name = 추심 집행기
+attack = 68
+defense = 28
+hp = 232
+loot = OreRare:1:0.20, Equipment:1:0.18, MonsterLoot:4:0.40
+skillChance = 0.30
+skill_1_name = 진자 단죄
+skill_1_type = attack
+skill_1_value = 2.6
+skill_1_desc = 거대한 진자 궤적으로 궤멸적인 베기를 남긴다.
+
+[Mana_Sprite]
+name = 마나 스프라이트
+attack = 34
+defense = 14
+hp = 126
+loot = Potion:1:0.24, Herb:2:0.26, MonsterLoot:2:0.30
+skillChance = 0.28
+skill_1_name = 잔광 탄주
+skill_1_type = attack
+skill_1_value = 1.9
+skill_1_desc = 흩어진 마력 파편을 좁게 모아 쏘아낸다.
+skill_2_name = 마력 고임
+skill_2_type = heal
+skill_2_value = 12
+skill_2_desc = 주변 잔광을 모아 몸을 가볍게 복원한다.
+
+[Howling_Wraith]
+name = 울음 망령
+attack = 42
+defense = 16
+hp = 144
+loot = MonsterLoot:3:0.34, Herb:1:0.16, Potion:1:0.16
+skillChance = 0.24
+skill_1_name = 메아리 공포
+skill_1_type = attack
+skill_1_value = 2.0
+skill_1_desc = 방향을 잃게 만드는 울음 메아리를 퍼뜨린다.
+
+[Fluff_Fairy]
+name = 털뭉치 요정
+attack = 40
+defense = 14
+hp = 136
+loot = Herb:2:0.28, Potion:1:0.18, MonsterLoot:2:0.28
+skillChance = 0.24
+skill_1_name = 포자 부유
+skill_1_type = heal
+skill_1_value = 12
+skill_1_desc = 솜털 같은 마력 가루를 흩뿌려 몸을 가볍게 회복한다.
+
+[Void_Hornet]
+name = 허공 호넷
+attack = 56
+defense = 18
+hp = 172
+loot = MonsterLoot:3:0.34, Herb:1:0.12, Potion:1:0.16
+skillChance = 0.26
+skill_1_name = 무중력 침폭
+skill_1_type = attack
+skill_1_value = 2.25
+skill_1_desc = 방향을 비틀며 날아와 연속으로 독침을 꽂는다.
+
+[Cloud_Leaper]
+name = 운상 도약수
+attack = 68
+defense = 22
+hp = 214
+loot = MonsterLoot:4:0.38, Food:2:0.18, OreRare:1:0.12
+skillChance = 0.28
+skill_1_name = 구름 박차
+skill_1_type = attack
+skill_1_value = 2.45
+skill_1_desc = 허공을 차고 올라 순식간에 급강하한다.
+
+[Canopy_Colossus]
+name = 수관 거신
+attack = 82
+defense = 30
+hp = 276
+loot = MonsterLoot:5:0.40, Herb:2:0.20, OreRare:1:0.18
+skillChance = 0.30
+skill_1_name = 천공 압괴
+skill_1_type = attack
+skill_1_value = 2.75
+skill_1_desc = 거대한 가지 팔로 공중 전체를 눌러 찍는다.
+
+[Beat_Drone]
+name = 비트 드론
+attack = 46
+defense = 16
+hp = 156
+loot = MonsterLoot:2:0.28, Equipment:1:0.14, OreCommon:2:0.24
+skillChance = 0.24
+skill_1_name = 베이스 진동
+skill_1_type = attack
+skill_1_value = 2.0
+skill_1_desc = 저음 파동을 울려 감각을 흐트러뜨린다.
+
+[Neon_Hound]
+name = 네온 하운드
+attack = 54
+defense = 18
+hp = 176
+loot = MonsterLoot:3:0.34, Food:2:0.14, Equipment:1:0.12
+skillChance = 0.26
+skill_1_name = 사인 추격
+skill_1_type = attack
+skill_1_value = 2.2
+skill_1_desc = 번쩍이는 궤적을 남기며 먹잇감을 물어뜯는다.
+
+[Sign_Prowler]
+name = 사인 클로
+attack = 62
+defense = 20
+hp = 194
+loot = MonsterLoot:3:0.36, Equipment:1:0.16, OreCommon:2:0.20
+skillChance = 0.28
+skill_1_name = 황금 발톱
+skill_1_type = attack
+skill_1_value = 2.35
+skill_1_desc = 금빛 간판 조각처럼 번쩍이는 발톱을 휘두른다.
+
+[Ruin_Moss_Golem]
+name = 유적 이끼골렘
+attack = 58
+defense = 24
+hp = 196
+loot = OreCommon:2:0.30, Herb:2:0.26, MonsterLoot:3:0.36
+skillChance = 0.24
+skill_1_name = 균열 압쇄
+skill_1_type = attack
+skill_1_value = 2.2
+skill_1_desc = 돌과 뿌리가 뒤섞인 팔로 무겁게 내려친다.
+
+[Temple_Warden]
+name = 신전 수문장
+attack = 72
+defense = 30
+hp = 240
+loot = OreRare:1:0.20, Equipment:1:0.18, MonsterLoot:4:0.40
+skillChance = 0.30
+skill_1_name = 봉인 파동
+skill_1_type = attack
+skill_1_value = 2.6
+skill_1_desc = 오래된 봉인의 힘을 파동으로 방출한다.
+skill_2_name = 유적 수복
+skill_2_type = heal
+skill_2_value = 24
+skill_2_desc = 벽면의 문양을 끌어와 몸체를 복원한다.
+
+[Razorvine_Bloom]
+name = 예도덩굴화
+attack = 44
+defense = 16
+hp = 148
+loot = Herb:3:0.38, MonsterLoot:2:0.28, Potion:1:0.14
+skillChance = 0.26
+skill_1_name = 덩굴 칼비
+skill_1_type = attack
+skill_1_value = 2.0
+skill_1_desc = 꽃잎처럼 펼쳐진 날덩굴이 사방에서 스친다.
+
+[Dune_Stalker]
+name = 사구 추적자
+attack = 48
+defense = 18
+hp = 164
+loot = MonsterLoot:3:0.38, Food:2:0.18, OreCommon:2:0.22
+skillChance = 0.22
+skill_1_name = 모래 잠행
+skill_1_type = buff
+skill_1_value = 1.35
+skill_1_desc = 모래 아래로 몸을 숨기며 다음 습격을 준비한다.
+
+[Sandglass_Serpent]
+name = 사금 유리뱀
+attack = 56
+defense = 20
+hp = 182
+loot = OreCommon:2:0.26, OreRare:1:0.14, MonsterLoot:3:0.34
+skillChance = 0.26
+skill_1_name = 유리 비늘파
+skill_1_type = attack
+skill_1_value = 2.2
+skill_1_desc = 유리처럼 반짝이는 비늘 조각을 튕겨낸다.

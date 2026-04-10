@@ -6,6 +6,7 @@ import { SkillDef, SkillType, getSkillDef, getSkillLevelMultiplier, getSkillCost
 import {
   CombatSkillState, rollInitialSkills, canUseSkill, rerollSlot,
   tickPreDelay, tickEffects, getBuffedAttack, getBuffedDefense, getEnemyAttackMod,
+  type SkillUseOptions,
 } from './skill-combat';
 import { randomFloat } from '../types/rng';
 import { getActionText } from './npc-interaction';
@@ -303,6 +304,7 @@ export function usePlayerSkill(
   state: RealtimeCombatState,
   slotIndex: number,
   player: Actor,
+  options?: SkillUseOptions,
 ): string[] {
   if (state.finished) return [];
 
@@ -310,7 +312,7 @@ export function usePlayerSkill(
   const skill = ss.slots[slotIndex];
   if (!skill) return ['스킬 슬롯이 비어 있습니다.'];
 
-  const check = canUseSkill(skill, player, ss);
+  const check = canUseSkill(skill, player, ss, options);
   if (!check.ok) return [check.reason ?? '스킬 사용 불가'];
 
   const messages: string[] = [];
@@ -318,7 +320,8 @@ export function usePlayerSkill(
   // 자원 소모 (레벨별 코스트 감소)
   const skillLevel = player.learnedSkills.get(skill.id) ?? 1;
   const costMult = getSkillCostReduction(skillLevel);
-  player.adjustMp(-Math.ceil(skill.mpCost * costMult));
+  const effectiveMpCost = Math.max(0, Math.ceil(skill.mpCost * costMult * (options?.mpCostMultiplier ?? 1)));
+  player.adjustMp(-effectiveMpCost);
   if (skill.hpCost > 0) player.adjustHp(-skill.hpCost);
 
   // 사용 횟수

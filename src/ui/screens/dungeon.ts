@@ -4,6 +4,7 @@ import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
 import type { DungeonDef, DungeonRunState, DungeonRoom, DungeonEventDef } from '../../models/dungeon';
 import { RoomType } from '../../models/dungeon';
+import { isTimeWindowOpen } from '../../types/game-time';
 import {
   RealtimeCombatState, getCombatTickMs,
   createCombatState, stopCombatTimer, processTick, usePlayerSkill,
@@ -29,22 +30,45 @@ export function createDungeonScreen(
     }
   }
 
-  function isTimeWindowOpen(timeWindow?: { fromHour: number; toHour: number }): boolean {
-    if (!timeWindow) return true;
-    const hour = session.gameTime.hour;
-    const { fromHour, toHour } = timeWindow;
-    if (fromHour < toHour) return hour >= fromHour && hour < toHour;
-    return hour >= fromHour || hour < toHour;
+  function getDifficultyPoints(dungeon: DungeonDef): number {
+    return Math.max(1, Math.min(20, Math.round(dungeon.difficulty * 20)));
+  }
+
+  function renderDifficultyIcons(dungeon: DungeonDef): string {
+    const points = getDifficultyPoints(dungeon);
+    const major = Math.floor(points / 10);
+    const remainder = points % 10;
+    const full = Math.floor(remainder / 2);
+    const half = remainder % 2;
+    const majorStars = Array.from(
+      { length: major },
+      () => '<span style="color:#ff6b6b;font-size:16px;font-weight:700">★</span>',
+    ).join('');
+    return `${majorStars}${'★'.repeat(full)}${'☆'.repeat(half)}`;
+  }
+
+  function isZeroGravityDungeon(dungeon: DungeonDef | null | undefined): boolean {
+    return dungeon?.accessFrom === 'Void_Forest';
+  }
+
+  function getSkillUseOptions(dungeon: DungeonDef | null | undefined) {
+    if (!isZeroGravityDungeon(dungeon)) return {};
+    return { mpCostMultiplier: 1 / 3, ignoreMaxUses: true };
+  }
+
+  function getDisplayedSkillMpCost(mpCost: number, dungeon: DungeonDef | null | undefined): number {
+    const multiplier = isZeroGravityDungeon(dungeon) ? 1 / 3 : 1;
+    return Math.max(0, Math.ceil(mpCost * multiplier));
   }
 
   function isDungeonAvailableNow(d: DungeonDef): boolean {
-    return isTimeWindowOpen(d.availableHours);
+    return isTimeWindowOpen(d.availableHours, session.gameTime.hour, session.gameTime.minute);
   }
 
   function isHiddenLocationAvailable(locationId?: string): boolean {
     if (!locationId) return false;
     const location = session.world.getLocation(locationId);
-    return !!location && isTimeWindowOpen(location.timeVisible);
+    return !!location && isTimeWindowOpen(location.timeVisible, session.gameTime.hour, session.gameTime.minute);
   }
 
   const localDungeons = ds.getAllDungeons().filter(d => d.accessFrom === p.currentLocation);
@@ -244,7 +268,6 @@ export function createDungeonScreen(
         }</p>`
         : `<div class="dungeon-list">
             ${allDungeons.map((d, i) => {
-              const stars = ds.calcDifficultyStars(d);
               const maxDepth = ds.calcMaxDepth(d);
               const progress = p.getDungeonProgress(d.id);
               const isCleared = progress >= 100;
@@ -261,7 +284,7 @@ export function createDungeonScreen(
               return `<button class="btn dungeon-item" data-idx="${i}" style="${isCleared ? 'border-color:var(--success)' : ''}">
                 <div class="dungeon-name">${i + 1}. ${d.name} ${isCleared ? '<span style="color:var(--success);font-size:12px">✦</span>' : ''}</div>
                 <div class="dungeon-meta">
-                  <span>난이도: ${'★'.repeat(stars)}${'☆'.repeat(Math.max(0, 5 - stars))}</span>
+                  <span>난이도: ${renderDifficultyIcons(d)}</span>
                   <span>${maxDepth}층</span>
                   <span style="color:${progressColor}">${progressLabel}</span>
                   ${d.rule ? `<span style="color:var(--accent2)">규칙 ${d.rule.rank}: ${d.rule.template}</span>` : ''}
@@ -519,6 +542,17 @@ export function createDungeonScreen(
         renderCombat(el);
       }
     }, getCombatTickMs(p));
+    if (isZeroGravityDungeon(selectedDungeon)) {
+      const regenTick = setInterval(() => {
+        if (!combatState || combatState.finished) {
+          clearInterval(regenTick);
+          return;
+        }
+        const before = p.base.mp;
+        p.adjustMp(1);
+        if (p.base.mp !== before) renderCombat(el);
+      }, 1000);
+    }
   }
 
   function renderCombat(el: HTMLElement) {
@@ -541,13 +575,16 @@ export function createDungeonScreen(
         </button>`;
       }
       const blocked = ss.preDelayTurns > 0 || ss.postDelayTurns > 0;
-      const noMp = p.base.mp < def.mpCost;
+      const skillUseOptions = getSkillUseOptions(selectedDungeon);
+      const noMp = !canUseSkill(def, p, ss, skillUseOptions).ok
+        && p.base.mp < getDisplayedSkillMpCost(def.mpCost, selectedDungeon);
       const noTp = def.tpCost > 0 && !p.hasAp(def.tpCost);
       const disabled = blocked || noMp || noTp;
       const tpLabel = def.tpCost > 0 ? ` TP${def.tpCost}` : '';
+      const mpCostLabel = getDisplayedSkillMpCost(def.mpCost, selectedDungeon);
       return `<button class="btn skill-btn${disabled ? ' disabled' : ''}" data-slot="${i}"${disabled ? ' disabled' : ''}>
         <div class="skill-name">${def.name}</div>
-        <div class="skill-cost">MP${def.mpCost}${tpLabel}</div>
+        <div class="skill-cost">MP${mpCostLabel}${tpLabel}</div>
         <div class="skill-key">[${i + 1}]</div>
       </button>`;
     }).join('');
@@ -613,6 +650,7 @@ export function createDungeonScreen(
         </div>
         ${buffTags ? `<div class="combat-buffs">${buffTags}</div>` : ''}
         ${partyHtml}
+        ${isZeroGravityDungeon(selectedDungeon) ? '<div class="combat-buffs"><span class="buff-tag">저중력 · MP 1/3 · 횟수 제한 해제 · MP 1초 회복</span></div>' : ''}
       </div>
 
       <div class="skill-slots">
@@ -640,9 +678,10 @@ export function createDungeonScreen(
     if (!combatState || combatState.finished) return;
     const ss = combatState.playerSkills;
     const def = ss.slots[slot];
-    if (!def || !canUseSkill(def, p, ss).ok) return;
+    const skillUseOptions = getSkillUseOptions(selectedDungeon);
+    if (!def || !canUseSkill(def, p, ss, skillUseOptions).ok) return;
 
-    const msgs = usePlayerSkill(combatState, slot, p);
+    const msgs = usePlayerSkill(combatState, slot, p, skillUseOptions);
     for (const m of msgs) combatState.combatLog.push(m);
 
     if (combatState.finished) {

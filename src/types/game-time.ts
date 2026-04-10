@@ -5,6 +5,31 @@
 
 import { DayOfWeek, dayOfWeekName } from './enums';
 
+export interface TimeWindow {
+  fromHour: number;
+  fromMinute: number;
+  toHour: number;
+  toMinute: number;
+  repeatHourly?: boolean;
+}
+
+export function isTimeWindowOpen(window: TimeWindow | undefined, hour: number, minute: number): boolean {
+  if (!window) return true;
+  if (window.repeatHourly) {
+    const from = window.fromMinute;
+    const to = window.toMinute;
+    if (from === to) return true;
+    if (from < to) return minute >= from && minute < to;
+    return minute >= from || minute < to;
+  }
+  const current = hour * 60 + minute;
+  const from = window.fromHour * 60 + window.fromMinute;
+  const to = window.toHour * 60 + window.toMinute;
+  if (from === to) return true;
+  if (from < to) return current >= from && current < to;
+  return current >= from || current < to;
+}
+
 export class GameTime {
   day = 1;
   hour = 6;

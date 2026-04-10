@@ -35,7 +35,6 @@ import { createRealEstateScreen } from './ui/screens/real-estate';
 import { createStorageScreen } from './ui/screens/storage';
 import { createCookingScreen } from './ui/screens/cooking';
 import { createFarmScreen } from './ui/screens/farm';
-import { createNpcInviteScreen } from './ui/screens/npc-invite';
 import { createTravelScreen, type TravelOptions } from './ui/screens/travel';
 
 /** 플레이어 아이템/스킬에 따른 이동 속도 계산 (게임 1분당 실제 ms) */
@@ -157,8 +156,16 @@ async function boot() {
   /** 플레이어의 hyperionBonus를 전체 총합 기준으로 초기화/갱신 */
   function syncHyperionBonus() {
     if (!session.isValid) return;
+    const player = session.player;
+    const oldMaxHp = Math.max(1, player.getEffectiveMaxHp());
+    const oldMaxMp = Math.max(1, player.getEffectiveMaxMp());
+    const hpRatio = Math.max(0, Math.min(1, player.base.hp / oldMaxHp));
+    const mpRatio = Math.max(0, Math.min(1, player.base.mp / oldMaxMp));
     const total = session.actors.reduce((s, a) => s + a.hyperionLevel, 0);
-    session.player.hyperionBonus = total - session.player.hyperionLevel;
+
+    player.hyperionBonus = total - player.hyperionLevel;
+    player.base.hp = Math.round(player.getEffectiveMaxHp() * hpRatio);
+    player.base.mp = Math.round(player.getEffectiveMaxMp() * mpRatio);
   }
 
   function ensureHomeBase() {
@@ -284,9 +291,6 @@ async function boot() {
           break;
         case 'cooking':
           sm.push(createCookingScreen(session, () => sm.pop()));
-          break;
-        case 'npc_invite':
-          sm.push(createNpcInviteScreen(session, () => sm.pop()));
           break;
         case 'memory_spring':
           sm.push(createMemorySpringScreen(session, {
@@ -628,6 +632,7 @@ async function boot() {
         case 'connect': {
           if (!loadFromSlot(0, session)) { showCharSelect(); break; }
           if (!session.isValid) { showCharSelect(); break; }
+          syncHyperionBonus();
           ensureHomeBase();
 
           // 경과 시간 계산 (세이브 시각 → 현재)

@@ -118,6 +118,23 @@ interface LegacySaveData {
   currentLocation: string;
 }
 
+function syncLoadedPlayerHyperion(session: GameSession): void {
+  if (!session.isValid) return;
+  const player = session.player;
+  const oldMaxHp = Math.max(1, player.getEffectiveMaxHp());
+  const oldMaxMp = Math.max(1, player.getEffectiveMaxMp());
+  const hpRatio = Math.max(0, Math.min(1, player.base.hp / oldMaxHp));
+  const mpRatio = Math.max(0, Math.min(1, player.base.mp / oldMaxMp));
+  const totalHyperion = session.actors.reduce((sum, actor) => sum + actor.hyperionLevel, 0);
+
+  player.hyperionBonus = totalHyperion - player.hyperionLevel;
+
+  const newMaxHp = player.getEffectiveMaxHp();
+  const newMaxMp = player.getEffectiveMaxMp();
+  player.base.hp = Math.round(newMaxHp * hpRatio);
+  player.base.mp = Math.round(newMaxMp * mpRatio);
+}
+
 function serializeActor(actor: Actor): ActorSaveData {
   const inventory: [number, number][] = [];
   for (const [item, qty] of actor.spirit.inventory) {
@@ -449,6 +466,8 @@ export function loadFromSlot(slot: number, session: GameSession): boolean {
         }
       }
     }
+
+    syncLoadedPlayerHyperion(session);
 
     return true;
   } catch {

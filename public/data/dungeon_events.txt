@@ -439,3 +439,214 @@ type = Treasure
 gives = Potion:1, OreRare:1
 colorInfluence = Water:0.16, Light:0.18
 accessFrom = Erumen_Seoncheon
+
+[grassland_waymark]
+name = 풀빛 표지석
+description = 바람에 드러난 오래된 표지석이 다음 구역의 방향과 얕은 보급품 은닉처를 알려 주었다.
+chance = 0.04
+type = Discovery
+gives = Food:1, Herb:1
+colorInfluence = Wind:0.14, Earth:0.10
+accessFrom = Riagralta
+
+[buried_control_node]
+name = 묻힌 제어핵
+description = 흙에 반쯤 잠긴 제어장치를 발견했다. 아직 작동 가능한 부품 몇 개를 챙길 수 있었다.
+chance = 0.03
+type = Treasure
+gives = OreCommon:2, OreRare:1
+colorInfluence = Iron:0.18, Electric:0.14
+accessFrom = Riagralta_Deep
+
+[lar_forest_blessing]
+name = 숲의 미약한 축복
+description = 나뭇잎 사이로 스며든 빛이 발걸음을 잠시 가볍게 만들어 주었다.
+chance = 0.04
+type = Heal
+hpHeal = 16
+vigorHeal = 14
+colorInfluence = Light:0.16, Earth:0.12
+accessFrom = Lar_Forest
+
+[acorn_trail]
+name = 도토리 자취
+description = 누군가 남겨 둔 듯한 도토리 자취를 따라가자 숲 안쪽 샛길과 채집거리가 눈에 띄었다.
+chance = 0.03
+type = Discovery
+gives = Food:2, Herb:1
+colorInfluence = Earth:0.14, Wind:0.10
+accessFrom = Lar_Forest
+
+[ruined_lamp_flicker]
+name = 깨진 가로등 점멸
+description = 부서진 가로등이 갑자기 켜지며 허상을 비추었다. 정신을 놓치면 그대로 길을 잃을 뻔했다.
+chance = 0.04
+type = Hazard
+hpDamage = 14
+vigorDamage = 12
+colorInfluence = Dark:0.18, Light:0.08
+accessFrom = Arukea_3
+
+[farshore_whisper]
+name = 피안의 속삭임
+description = 들리지 말아야 할 목소리가 귓가를 스치며 발걸음을 멈추게 했다.
+chance = 0.03
+type = Hazard
+hpDamage = 18
+vigorDamage = 14
+colorInfluence = Dark:0.22, Water:0.08
+accessFrom = Arukea_3
+
+[clocktower_chime]
+name = 시계종 공명
+description = 정각의 잔향이 남긴 짧은 공명 덕분에 기어의 움직임이 한순간 또렷하게 읽혔다.
+chance = 0.04
+type = Heal
+hpHeal = 14
+vigorHeal = 16
+colorInfluence = Iron:0.14, Light:0.14
+accessFrom = Iluneon_Clocktower
+
+[gear_cache]
+name = 기어 틈 은닉함
+description = 맞물린 기어 사이에 숨겨진 작은 보관함에서 오래된 보급품과 부품을 발견했다.
+chance = 0.03
+type = Treasure
+gives = OreCommon:2, Potion:1
+colorInfluence = Iron:0.18, Electric:0.10
+accessFrom = Iluneon_Clocktower
+
+[limun_waterline]
+name = 되살아난 수로
+description = 무너진 수로에 물이 다시 차오르며 숨겨진 약초와 오래된 석판 일부가 드러났다.
+chance = 0.04
+type = Discovery
+gives = Herb:2, OreCommon:1
+colorInfluence = Water:0.18, Earth:0.10
+accessFrom = Limun_Ruins
+
+[temple_resonance]
+name = 잠긴 공명실
+description = 무너진 신전의 제단이 순간 공명하며 몸의 리듬과 주변 기류를 정돈해 주었다.
+chance = 0.03
+type = Heal
+hpHeal = 20
+vigorHeal = 16
+colorInfluence = Earth:0.16, Light:0.12
+accessFrom = Limun_Ruins
+
+[eas_overgrowth]
+name = 폐원의 과성장
+description = 예측보다 빠르게 자란 덩굴이 길을 틀어막으며 작은 포자 폭발을 일으켰다.
+chance = 0.04
+type = Hazard
+hpDamage = 14
+vigorDamage = 10
+colorInfluence = Earth:0.18, Dark:0.08
+accessFrom = Old_Eas
+
+[clutch_earthsong]
+name = 협곡의 지층 울림
+description = 바위층 깊은 곳에서 울림이 전해져 잠시 길의 결이 또렷하게 읽혔다.
+chance = 0.03
+type = Heal
+hpHeal = 16
+vigorHeal = 14
+colorInfluence = Earth:0.20, Wind:0.08
+accessFrom = Clutch_Gorge
+
+[dune_glass_shard]
+name = 사금 파편
+description = 빛나는 모래층 아래에서 유리처럼 굳은 광물 파편과 은닉품을 찾았다.
+chance = 0.04
+type = Treasure
+gives = OreCommon:2, OreRare:1
+colorInfluence = Earth:0.16, Light:0.12
+accessFrom = Sand_Dunes
+
+[mana_backflow]
+name = 마력 역류
+description = 골짜기 측면의 마력 맥이 일시적으로 역류하며 감각이 어지러워졌지만, 흐름을 붙잡는 데 성공해 일부를 회복했다.
+chance = 0.03
+type = Heal
+hpHeal = 12
+vigorHeal = 14
+colorInfluence = Light:0.12, Electric:0.08
+accessFrom = Luna_Academy
+
+[howling_echo]
+name = 울음의 메아리
+description = 멀리서 들린 울음이 숲 전체를 타고 퍼지며 적의 위치와 길의 방향을 동시에 뒤틀었다.
+chance = 0.04
+type = Hazard
+hpDamage = 12
+vigorDamage = 12
+colorInfluence = Dark:0.14, Wind:0.10
+accessFrom = Ode_Mountain
+
+[void_updraft]
+name = 상승 기류
+description = 갑작스럽게 올라오는 기류가 몸을 띄우며 마력 순환까지 가볍게 만들어 주었다.
+chance = 0.04
+type = Heal
+hpHeal = 12
+vigorHeal = 18
+colorInfluence = Wind:0.20, Light:0.10
+accessFrom = Void_Forest
+
+[floating_cache]
+name = 공중 잔해 상자
+description = 부유하던 집터 잔해 사이에서 아직 쓸 만한 보급품과 마력 약병을 건졌다.
+chance = 0.03
+type = Treasure
+gives = Potion:1, Equipment:1
+colorInfluence = Wind:0.16, Electric:0.08
+accessFrom = Void_Forest
+
+[neon_feedback]
+name = 네온 피드백
+description = 과도한 조명과 저음 진동이 겹쳐 순간적으로 감각이 어긋났다.
+chance = 0.04
+type = Hazard
+hpDamage = 10
+vigorDamage = 12
+colorInfluence = Electric:0.16, Dark:0.10
+accessFrom = Night_Tacomi
+
+[vip_bar_tab]
+name = 미정산 바 탭
+description = 누군가 남기고 간 전용석 계산서와 보급품을 주웠다. 이상하게도 아직 유효해 보인다.
+chance = 0.03
+type = Treasure
+gives = Food:2, Potion:1
+colorInfluence = Light:0.12, Electric:0.12
+accessFrom = Night_Tacomi
+
+[enicham_arc_flash]
+name = 아크 방전
+description = 점검용 레일 사이에서 순간적인 아크 방전이 터졌다. 타이밍을 잘 맞추면 자원을 챙길 수 있지만, 무리하면 크게 다칠 수 있다.
+chance = 0.04
+type = Hazard
+hpDamage = 14
+vigorDamage = 10
+colorInfluence = Electric:0.20, Iron:0.10
+accessFrom = Enicham
+
+[enicham_control_log]
+name = 제어 기록
+description = 오래된 제어 기록이 남아 있는 단말기를 찾았다. 내부 흐름을 읽어 다음 구간을 조금 더 빠르게 파악할 수 있다.
+chance = 0.03
+type = Discovery
+gives = OreCommon:2
+colorInfluence = Electric:0.12, Light:0.08
+accessFrom = Enicham
+
+[enicham_cooling_line]
+name = 냉각 라인
+description = 고열 설비 옆으로 냉각 라인이 살아 있었다. 잠시 몸을 식히고 소모품도 챙길 수 있었다.
+chance = 0.03
+type = Heal
+hpHeal = 18
+vigorHeal = 14
+colorInfluence = Water:0.10, Iron:0.12
+accessFrom = Enicham
