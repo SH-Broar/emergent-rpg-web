@@ -808,7 +808,7 @@ export function createDungeonScreen(
       </div>
 
       <div class="tick-bar">
-        <div class="tick-bar-fill" style="animation:tick-countdown ${getCombatTickMs(p)}ms linear forwards"></div>
+        <div class="tick-bar-fill" style="animation:tick-countdown ${getCombatTickMs(p)}ms linear forwards;animation-delay:-${Date.now() - cs.lastTickTime}ms"></div>
       </div>
       <p class="hint">1/2/3=스킬 (자동 공격 진행 중)${cs.skillUsedThisTurn ? ' · 스킬 대기 중' : ''} Esc=도주</p>
     `;
