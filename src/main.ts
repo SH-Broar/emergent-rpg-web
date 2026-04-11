@@ -39,6 +39,7 @@ import { createGuildDungeonScreen } from './ui/screens/guild-dungeon';
 import { createLifeJobScreen } from './ui/screens/life-job';
 import { createFarmScreen } from './ui/screens/farm';
 import { createTravelScreen, type TravelOptions } from './ui/screens/travel';
+import { createFerryScreen } from './ui/screens/ferry';
 
 /** 플레이어 아이템/스킬에 따른 이동 속도 계산 (게임 1분당 실제 ms) */
 function computeTravelSpeed(_session: GameSession): TravelOptions {
@@ -303,6 +304,12 @@ async function boot() {
           break;
         case 'life_job':
           sm.push(createLifeJobScreen(session, () => sm.pop()));
+          break;
+        case 'ferry':
+          sm.push(createFerryScreen(session, () => sm.pop(), (fromId, toId, minutes) => {
+            sm.pop(); // ferry 화면 닫기
+            sm.push(createTravelScreen(session, fromId, toId, minutes, () => sm.pop(), computeTravelSpeed(session)));
+          }));
           break;
         case 'memory_spring':
           sm.push(createMemorySpringScreen(session, {

@@ -177,6 +177,53 @@ resources = OreCommon:15, OreRare:3
 monsterLevel = 3
 dangerLevel = 0.3
 
+[Clocktower_Observatory]
+name = 시계탑 관측실
+description = 시계탑 최상층에서 한 번 더 올라가야 닿는 숨겨진 천문 관측 공간. 거대한 톱니바퀴 사이로 밤하늘이 원형으로 열리며, 별의 궤도를 기록한 오래된 천구의가 아직도 느리게 돌아가고 있다. 정각이 지나면 입구가 다시 닫힌다.
+x = 140
+y = 200
+links_one_way = Iluneon_Clocktower
+resources = Potion:4, OreRare:2
+monsterLevel = 0
+dangerLevel = 0.05
+timeVisible = hourly:0:5
+hidden = 1
+
+[Arukea_Underground]
+name = 아루케아 심층 수로
+description = 2번 가도 중간의 무너진 돌다리 아래로 이어지는 옛 수로. 천장에서 스며든 지하수가 조용히 흐르고, 이끼 낀 벽면에는 건설 당시 새긴 고대 문자가 남아 있다. 수로 끝에는 작은 마력 웅덩이가 빛을 머금고 있다.
+x = -1450
+y = -1680
+links_one_way = Arukea_2
+resources = Herb:12, Potion:4
+monsterLevel = 2
+dangerLevel = 0.18
+gather_env = 수로 바닥, 이끼 낀 벽, 물가
+hidden = 1
+
+[Kanon_Secret_Garden]
+name = 카논 비밀정원
+description = 카논 골목 막다른 길에 숨겨진 작은 정원. 좁은 담벼락 틈을 빠져나가면, 누군가 오래전부터 가꿔 온 화분과 약초밭이 햇빛 아래 조용히 자라고 있다. 벽 위로 삐져나온 넝쿨 말고는 밖에서 이곳의 존재를 알 수 있는 방법이 없다.
+x = 1260
+y = 1020
+links_one_way = Kanon
+resources = Herb:10, Food:8
+monsterLevel = 0
+dangerLevel = 0.0
+gather_env = 화분 사이, 넝쿨 아래, 담벼락 틈
+hidden = 1
+
+[Navrit_Crystal_Field]
+name = 나브릿트 결정 지대
+description = 전기지대 깊은 곳에서 정전기가 결정화된 기이한 구역. 투명한 전기 결정이 지표면을 뚫고 군데군데 솟아 있으며, 가까이 가면 머리카락이 곤두서고 피부 위로 미약한 방전이 튄다. 연구자들이 탐내지만, 결정 사이에서 불쑥 나타나는 전기 생물이 접근을 쉽게 허락하지 않는다.
+x = 920
+y = 3520
+links_one_way = Navrit
+resources = OreRare:4, OreCommon:8
+monsterLevel = 5
+dangerLevel = 0.45
+hidden = 1
+
 # ============================================================
 # 라르 포레스트 권역 — 일루네온 동쪽 고대 숲
 # ============================================================
@@ -356,6 +403,41 @@ resources = Food:15
 monsterLevel = 0
 dangerLevel = 0.0
 
+[Enicham_Scrap_Yard]
+name = 에니챰 폐기장
+description = 발전소 외곽 울타리 너머의 폐기 설비 집적지. 녹슨 터빈과 뒤틀린 배관이 산처럼 쌓여 있고, 그 사이에서 아직 쓸 만한 부품과 희귀 합금 조각이 간간이 나온다. 발전소 직원조차 잘 오지 않는 구역이라 조용하지만, 가끔 폐기 자동인형이 혼자 움직이는 것이 목격된다.
+x = -2520
+y = 3560
+links_one_way = Enicham
+resources = OreCommon:10, Equipment:2, OreRare:2
+monsterLevel = 3
+dangerLevel = 0.25
+hidden = 1
+
+[Night_Backstreet]
+name = 네온 뒷골목
+description = 나이트 타코미의 화려한 메인 스트리트에서 한 블록만 벗어나면 나타나는 좁은 뒷골목. 간판 불빛이 겨우 닿는 이곳에는 비공식 바와 암시장 노점이 늘어서 있고, 무대 위에서는 볼 수 없는 타코미의 진짜 밤이 숨 쉬고 있다. 아는 사람만 찾아오는 곳.
+x = -2220
+y = 4620
+links_one_way = Night_Tacomi
+resources = Food:6, Equipment:3
+monsterLevel = 0
+dangerLevel = 0.08
+timeVisible = 18:6
+hidden = 1
+
+[Void_Forest_Crown]
+name = 허공 수관정
+description = 허공 숲에서 가장 높이 떠 있는 나무의 꼭대기. 구름 위로 머리를 내민 수관에는 바람 대신 고요만이 감돌고, 발아래로 숲 전체가 녹색 바다처럼 흔들린다. 만년수의 마력이 가장 순수하게 닿는 자리라, 이곳에서 채집한 약초는 평지와 비교할 수 없는 농도를 지닌다.
+x = -2680
+y = 2380
+links_one_way = Void_Forest
+resources = Herb:18, Potion:5
+monsterLevel = 0
+dangerLevel = 0.10
+gather_env = 수관 위, 이파리 사이, 바람길
+hidden = 1
+
 # ============================================================
 # 마법학교 루나 — 대절곡 따라 올라감, 모스 살짝 서쪽
 # ============================================================
@@ -389,6 +471,28 @@ links = Luna_Academy
 resources = OreRare:3, Potion:5
 monsterLevel = 6
 dangerLevel = 0.55
+
+[Luna_Underground_Library]
+name = 루나 지하서고
+description = 마법학교 본관 지하 깊은 곳에 봉인되어 있던 서고. 금박 문양이 새겨진 무거운 문 너머에는 수백 년 전의 마도서와 실험 기록이 먼지를 뒤집어쓴 채 빼곡하게 꽂혀 있다. 책장 사이에서 마력이 미세하게 진동하며, 간간이 저절로 책장이 넘어가는 소리가 들린다.
+x = -1380
+y = 4920
+links_one_way = Luna_Academy
+resources = Potion:6, Herb:8
+monsterLevel = 0
+dangerLevel = 0.05
+hidden = 1
+
+[Phantom_Apex]
+name = 첨탑 꼭대기
+description = 환영의 첨탑 최상층 너머에 숨겨진 마지막 공간. 탑의 환영이 모두 걷힌 자리에 작은 원형 테라스가 남아 있고, 하늘과 맞닿은 높이에서 세계의 마력선이 맨눈으로 보인다고 전해진다. 이곳에 도달한 기록은 루나 전체에서도 손에 꼽을 정도다.
+x = -760
+y = 5220
+links_one_way = Phantom_Spire
+resources = OreRare:4, Potion:4
+monsterLevel = 0
+dangerLevel = 0.12
+hidden = 1
 
 # ============================================================
 # 마틴 항 권역 — 남쪽 해안
@@ -469,7 +573,7 @@ name = 펜타 섬
 description = 마틴 항에서 배를 타고 갈 수 있는 작은 섬. 온화한 기후와 투명한 바다가 특징이며, 시간이 느리게 흘러가는 듯한 고요함이 있다.
 x = 1800
 y = -3500
-links = Martin_Port:10
+links = Martin_Port:10, Kishina:12
 resources = Food:20, Herb:10
 monsterLevel = 1
 dangerLevel = 0.05
@@ -583,6 +687,40 @@ links = Manonickla
 resources = Food:25
 monsterLevel = 0
 dangerLevel = 0.0
+
+[Limun_Sealed_Chamber]
+name = 리문 봉인의 방
+description = 리문 유적 가장 깊은 곳에서 우연히 드러난 봉인된 석실. 벽면 전체에 새겨진 고대 문양이 희미하게 맥동하며, 방 중앙의 제단 위에는 아직 해독되지 않은 석판 조각이 놓여 있다. 봉인이 불완전해진 틈으로만 진입할 수 있어, 유적을 깊이 탐사한 이들만이 이곳의 존재를 안다.
+x = 5720
+y = -320
+links_one_way = Limun_Ruins
+resources = OreRare:5, Potion:4
+monsterLevel = 4
+dangerLevel = 0.35
+hidden = 1
+
+[Sand_Dunes_Oasis]
+name = 사구 오아시스
+description = 사구지대 한가운데 모래 아래 숨겨진 작은 오아시스. 모래바람이 잦아드는 순간에만 지표면의 균열 사이로 물빛이 비치며, 그 틈을 따라 내려가면 야자나무와 맑은 샘이 기다리고 있다. 사막의 열기가 거짓말처럼 사라지는 쉼터.
+x = 5020
+y = -1560
+links_one_way = Sand_Dunes
+resources = Herb:12, Food:10, Potion:3
+monsterLevel = 0
+dangerLevel = 0.0
+gather_env = 샘물가, 야자나무 아래, 모래 틈
+hidden = 1
+
+[Clutch_Gorge_Bottom]
+name = 클러치 협곡 바닥
+description = 협곡 절벽을 타고 내려가야 닿는 빛 없는 바닥. 오랜 세월 풍화된 암석 사이에 광맥이 드러나 있고, 어둠 속에서 적응한 특이한 생물들이 서식한다. 절벽 중간에 숨겨진 발판을 찾지 못하면 내려갈 수조차 없다.
+x = 4420
+y = -1140
+links_one_way = Clutch_Gorge
+resources = OreRare:4, OreCommon:10, MonsterLoot:8
+monsterLevel = 5
+dangerLevel = 0.50
+hidden = 1
 
 # ============================================================
 # 외곽 고레벨 지역

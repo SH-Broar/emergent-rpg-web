@@ -477,6 +477,8 @@ export function initDungeonSystem(
         return defs;
       })(),
       sRankTurnLimit,
+      itemBan: s.get('itemBan', '').trim().toLowerCase() === 'true',
+      randomSkillCount: s.has('randomSkillCount') ? parseInt(s.get('randomSkillCount', '0'), 10) : 0,
     });
     if (sRankTurnLimit) registerDungeonSRankLimit(s.name, sRankTurnLimit);
   }

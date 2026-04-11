@@ -142,6 +142,10 @@ export interface DungeonDef {
   restWeight: number;
   /** S랭크: 보스 클리어까지 총 턴 수가 이 값 이하이면 달성 (입수·연출용) */
   sRankTurnLimit?: number;
+  /** 버그의 바다 등 특수 던전: 아이템 사용 금지 */
+  itemBan?: boolean;
+  /** 버그의 바다 등 특수 던전: 런 시작 시 전체 스킬에서 N개 랜덤 선택 */
+  randomSkillCount?: number;
 }
 
 export interface CombatBehaviorRule {
@@ -218,6 +222,10 @@ export interface DungeonRunState {
   heat: number;
   purity: number;
   greed: number;
+  /** itemBan 던전에서 true */
+  itemBanned?: boolean;
+  /** randomSkillCount 던전에서 선택된 랜덤 스킬 ID 목록 */
+  randomSkills?: string[];
 }
 
 export class DungeonSystem {

@@ -875,6 +875,220 @@ skill_1_value = 2.1
 skill_1_desc = 높은 곳에서 덮쳐 숨통을 노린다.
 
 ; -------------------------------------------------------
+; 해안권 — 저레벨 해안 몬스터
+; -------------------------------------------------------
+
+[Sand_Crab]
+name = 모래 게
+attack = 8
+defense = 4
+hp = 30
+loot = Food:1:0.50, MonsterLoot:1:0.30
+
+[Tide_Sprite]
+name = 조수 정령
+attack = 10
+defense = 3
+hp = 40
+evasionChance = 0.10
+loot = Herb:1:0.40, MonsterLoot:1:0.30
+
+[Shore_Wyvern]
+name = 해안 와이번
+attack = 14
+defense = 6
+hp = 55
+loot = MonsterLoot:2:0.50, Equipment:1:0.08
+
+[Storm_Sprite]
+name = 폭풍 정령
+attack = 16
+defense = 5
+hp = 65
+evasionChance = 0.15
+loot = Herb:1:0.30, MonsterLoot:1:0.40
+
+; -------------------------------------------------------
+; 해안권 — 마뉴 수몰도시 몬스터
+; -------------------------------------------------------
+
+[Drowned_Knight]
+name = 익사한 기사
+attack = 28
+defense = 18
+hp = 120
+burstHitCount = 2
+burstHitDamage = 12
+burstOnce = true
+loot = Equipment:1:0.12, MonsterLoot:3:0.50
+
+[Coral_Golem]
+name = 산호 골렘
+attack = 22
+defense = 30
+hp = 180
+tickPressureDamage = 3
+loot = OreCommon:3:0.50, MonsterLoot:3:0.40, OreRare:1:0.08
+
+[Deep_Angler]
+name = 심해 아귀
+attack = 35
+defense = 20
+hp = 200
+evasionChance = 0.12
+skillChance = 0.25
+skill_1_name = 발광 유인
+skill_1_type = buff
+skill_1_value = 0.15
+skill_1_desc = 적의 방어력을 15% 감소시키는 발광으로 유인한다.
+loot = MonsterLoot:3:0.50, OreRare:1:0.10
+
+[Abyssal_Shade]
+name = 심연의 그림자
+attack = 45
+defense = 15
+hp = 250
+evasionChance = 0.20
+tickPressureDamage = 5
+loot = MonsterLoot:4:0.50, OreRare:1:0.12
+
+[Ancient_Leviathan]
+name = 고대 레비아탄
+attack = 60
+defense = 35
+hp = 400
+burstHitCount = 3
+burstHitDamage = 20
+burstOnce = true
+skillChance = 0.30
+skill_1_name = 심해 포효
+skill_1_type = attack
+skill_1_value = 2.5
+skill_1_desc = 바다 전체를 울리는 포효로 대미지를 준다.
+loot = MonsterLoot:5:0.50, OreRare:2:0.15, Equipment:1:0.10
+
+; -------------------------------------------------------
+; 해안권 — 할퓌아 공중 몬스터
+; -------------------------------------------------------
+
+[Wind_Elemental]
+name = 바람 정령
+attack = 12
+defense = 4
+hp = 50
+evasionChance = 0.18
+loot = Herb:2:0.40, MonsterLoot:1:0.35
+
+[Cloud_Serpent]
+name = 구름 뱀
+attack = 20
+defense = 10
+hp = 90
+evasionChance = 0.15
+loot = MonsterLoot:2:0.40, OreRare:1:0.07
+
+[Edge_Wyvern]
+name = 가장자리 와이번
+attack = 30
+defense = 16
+hp = 140
+openingAttackMultiplier = 1.8
+loot = MonsterLoot:3:0.50, Equipment:1:0.09, OreRare:1:0.08
+
+; -------------------------------------------------------
+; 해안권 — 팔콘 가든 고레벨 몬스터
+; -------------------------------------------------------
+
+[Great_Falcon]
+name = 대형 매
+attack = 55
+defense = 30
+hp = 300
+evasionChance = 0.20
+skillChance = 0.25
+skill_1_name = 급강하
+skill_1_type = attack
+skill_1_value = 2.0
+skill_1_desc = 수직으로 급강하하는 강습 공격.
+loot = MonsterLoot:5:0.50, OreRare:2:0.12
+
+[Sea_Drake]
+name = 바다 드레이크
+attack = 65
+defense = 38
+hp = 380
+tickPressureDamage = 8
+loot = MonsterLoot:5:0.50, OreRare:2:0.14, Equipment:1:0.08
+
+[Storm_Giant]
+name = 폭풍 거인
+attack = 75
+defense = 45
+hp = 450
+burstHitCount = 2
+burstHitDamage = 30
+burstOnce = true
+loot = MonsterLoot:6:0.50, OreRare:3:0.14, Equipment:1:0.10
+
+[Falcon_Elder]
+name = 매 장로
+attack = 90
+defense = 50
+hp = 550
+evasionChance = 0.22
+skillChance = 0.30
+skill_1_name = 영역 지배
+skill_1_type = buff
+skill_1_value = 0.25
+skill_1_desc = 자신의 공격력을 25% 올리는 영역 지배 압박.
+loot = MonsterLoot:6:0.50, OreRare:3:0.16, Equipment:2:0.12
+
+; -------------------------------------------------------
+; 해안권 — 버그의 바다 몬스터
+; -------------------------------------------------------
+
+[Glitch_Wraith]
+name = 오류 유령
+attack = 100
+defense = 20
+hp = 600
+evasionChance = 0.25
+tickPressureDamage = 10
+loot = OreRare:3:0.40, MonsterLoot:6:0.50, Equipment:2:0.12
+
+[Inverse_Knight]
+name = 역전 기사
+attack = 110
+defense = 55
+hp = 700
+burstHitCount = 2
+burstHitDamage = 40
+burstOnce = true
+openingAttackMultiplier = 2.0
+loot = OreRare:3:0.40, MonsterLoot:7:0.50, Equipment:2:0.14
+
+[Null_Golem]
+name = 공허 골렘
+attack = 95
+defense = 80
+hp = 900
+tickPressureDamage = 15
+loot = OreRare:4:0.40, MonsterLoot:7:0.50, Equipment:2:0.12
+
+[Phase_Serpent]
+name = 위상 뱀
+attack = 120
+defense = 35
+hp = 750
+evasionChance = 0.30
+skillChance = 0.35
+skill_1_name = 위상 전이
+skill_1_type = attack
+skill_1_value = 3.0
+skill_1_desc = 물리 법칙을 무시하는 위상 전이 공격. 방어 무시.
+loot = OreRare:4:0.40, MonsterLoot:8:0.50, Equipment:3:0.15
+
+; -------------------------------------------------------
 ; 일루네온 외곽 확장 몬스터
 ; -------------------------------------------------------
 

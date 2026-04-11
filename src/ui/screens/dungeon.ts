@@ -14,7 +14,7 @@ import { canUseSkill } from '../../systems/skill-combat';
 import { locationName } from '../../types/registry';
 import { moveCompanions } from '../../systems/npc-interaction';
 import { iGa, eulReul, eunNeun } from '../../data/josa';
-import { randomFloat } from '../../types/rng';
+import { randomFloat, randomInt } from '../../types/rng';
 
 type DungeonPhase = 'list' | 'entry' | 'navigate' | 'combat' | 'event' | 'rest' | 'victory' | 'defeat' | 'midBoss' | 'map' | 'giveUpConfirm';
 
@@ -345,6 +345,23 @@ export function createDungeonScreen(
 
   function enterDungeon(dungeon: DungeonDef, el: HTMLElement) {
     runState = ds.createRunState(dungeon, session.gameTime.hour);
+    // 특수 던전: 아이템 금지
+    if (dungeon.itemBan) {
+      runState.itemBanned = true;
+    }
+    // 특수 던전: 랜덤 스킬 선택
+    if (dungeon.randomSkillCount && dungeon.randomSkillCount > 0) {
+      const allSkillIds = [...p.learnedSkills.keys()];
+      const count = Math.min(dungeon.randomSkillCount, allSkillIds.length);
+      const picked: string[] = [];
+      const pool = [...allSkillIds];
+      for (let i = 0; i < count; i++) {
+        const idx = randomInt(0, pool.length - 1);
+        picked.push(pool[idx]);
+        pool.splice(idx, 1);
+      }
+      runState.randomSkills = picked;
+    }
     session.backlog.add(session.gameTime, `${p.name}${iGa(p.name)} ${dungeon.name}에 입장했다.`, '행동');
     phase = 'navigate';
     renderNavigate(el);
@@ -434,6 +451,8 @@ export function createDungeonScreen(
         <span style="color:var(--warning)">TP: ${p.base.ap}/${p.getEffectiveMaxAp()}</span>
       </div>
       ${getRuleStatusText() ? `<p class="hint" style="color:#6ba3d6;margin:6px 0">${getRuleStatusText()}</p>` : ''}
+      ${runState.itemBanned ? '<p class="hint" style="color:var(--accent);margin:4px 0;font-weight:700">⚠ 아이템 사용 금지</p>' : ''}
+      ${runState.randomSkills ? `<p class="hint" style="color:var(--warning);margin:4px 0">🎲 랜덤 스킬 ${runState.randomSkills.length}개 선택됨</p>` : ''}
 
       <div class="menu-buttons" style="margin:12px 0;gap:6px">
         ${choiceButtons}
@@ -696,7 +715,19 @@ export function createDungeonScreen(
       : actualEnemy;
 
     const partyActors = getPartyActors();
+
+    // randomSkills 제한: 전투 중 사용 가능한 스킬만 노출
+    const savedSkillOrder = p.skillOrder;
+    const savedLearnedSkills = p.learnedSkills;
+    if (runState.randomSkills) {
+      const allowed = new Set(runState.randomSkills);
+      p.skillOrder = savedSkillOrder.filter(id => allowed.has(id));
+      p.learnedSkills = new Map([...savedLearnedSkills].filter(([id]) => allowed.has(id)));
+    }
     combatState = createCombatState(p, combatEnemy, partyActors, selectedDungeon.id, isBoss || isMidBossFight);
+    // 복원
+    p.skillOrder = savedSkillOrder;
+    p.learnedSkills = savedLearnedSkills;
 
     phase = 'combat';
     renderCombat(el);

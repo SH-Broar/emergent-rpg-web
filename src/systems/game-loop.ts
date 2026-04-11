@@ -34,7 +34,7 @@ export type GameAction =
   | 'info_backlog' | 'info_hyperion' | 'info_party' | 'info_titles' | 'info_map' | 'info_encyclopedia'
   | 'info_skills' | 'info_inventory'
   | 'save'
-  | 'skill_shop' | 'guild_dungeon' | 'life_job';
+  | 'skill_shop' | 'guild_dungeon' | 'life_job' | 'ferry';
 
 const ACTION_TIME: Partial<Record<GameAction, number>> = {
   idle: 30, move: 0, talk: 20, trade: 15, eat: 0,
@@ -301,6 +301,7 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
     case 'skill_shop': result.screenChange = 'skill_shop'; return result;
     case 'guild_dungeon': result.screenChange = 'guild_dungeon'; return result;
     case 'life_job': result.screenChange = 'life_job'; return result;
+    case 'ferry': result.messages.push('배편 창구로 향한다.'); result.screenChange = 'ferry'; break;
 
     // 정보 화면 (시간 소모 없음)
     case 'info_status':

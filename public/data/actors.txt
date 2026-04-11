@@ -271,6 +271,22 @@ domainLow = Melancholy,Rigid,Stagnant,Stubborn,Restless,Grounded,Cynical,Naive
 inventory = Food:3
 background = 타천사 계보에서 태어난 루나의 저학년 학생.|천계의 일은 잘 모르며, 미유와 같이 다닌다.|마법학교에서 열심히 공부하고 있지만, 가끔 이상한 일에 휘말린다.|깃털갈이를 하는 시기가 있다고 한다.
 
+[파피루스]
+playable = 0
+race = Phantom
+role = Priest
+stationary = 1
+strength = 0.50
+gold = 0
+location = Luna_Underground_Library
+homeLocation = Luna_Underground_Library
+age = 350
+colorValues = 0.3,0.5,0.4,0.3,0.4,0.4,0.7,0.5
+domainHigh = Calm,Empathetic,Methodical,Reliable,Patient,Grounded,Hopeful,Secretive
+domainLow = Passionate,Indifferent,Impulsive,Fragile,Restless,Freesprited,Cynical,Honest
+inventory = Potion:3, Herb:4
+background = 루나 지하서고에 머무는 유령 사서.|생전에는 루나의 교수였으나, 서고와 함께 봉인되어 유령이 된 뒤에도 서가를 정리하는 일을 멈추지 않았다.|오래된 마도서의 위치를 정확히 알고 있으며, 예의를 갖춘 방문자에게는 원하는 책을 찾아준다.|목소리가 아주 작아서 가까이 귀를 대야 들린다.
+
 # ============================================================
 # 마노니클라 관련 캐릭터
 # ============================================================
@@ -335,6 +351,38 @@ domainLow = Passionate,Impulsive,Stagnant,Fragile,Restless,Freesprited,Cynical,N
 inventory = OreRare:1, Herb:2
 background = 흙의 정령이자 아주 드물게만 모습을 드러내는 관측자.|마노니클라의 '빛이 쏟아지는 날'을 본 자에게만 다음날 클러치 협곡에서 말을 건다고 전해진다.| 말수는 적지만 대지와 협곡의 결을 정확히 읽으며, 오래된 바위와 유적의 숨결을 이해하는 몇 안 되는 존재다.|정령과 대화하는 경험은 세계 안에서도 흔치 않은 축에 속한다.
 
+[리문의 눈]
+playable = 0
+race = Construct
+role = Guard
+stationary = 1
+strength = 0.60
+gold = 0
+location = Limun_Sealed_Chamber
+homeLocation = Limun_Sealed_Chamber
+age = 800
+colorValues = 0.3,0.4,0.3,0.6,0.8,0.3,0.5,0.4
+domainHigh = Calm,Empathetic,Methodical,Reliable,Patient,Grounded,Hopeful,Secretive
+domainLow = Passionate,Indifferent,Impulsive,Fragile,Restless,Freesprited,Cynical,Honest
+inventory = OreRare:1
+background = 봉인의 방을 지키는 소형 석상.|네토 로크와 같은 시대에 만들어진 것으로 추정되나, 로크보다 훨씬 작고 말이 느리다.|봉인이 풀린 뒤에도 방을 떠나지 않으며, 석판에 새겨진 문양의 의미를 조금씩 읊조린다.|로크가 찾아오면 눈빛이 밝아지지만, 그 외에는 거의 움직이지 않는다.
+
+[살마]
+playable = 0
+race = Beastkin
+role = Villager
+stationary = 1
+strength = 0.42
+gold = 15
+location = Sand_Dunes_Oasis
+homeLocation = Sand_Dunes_Oasis
+age = 45
+colorValues = 0.5,0.4,0.3,0.3,0.6,0.5,0.5,0.3
+domainHigh = Calm,Adaptable,Methodical,Reliable,Patient,Grounded,Hopeful,Honest
+domainLow = Passionate,Indifferent,Impulsive,Fragile,Restless,Freesprited,Cynical,Naive
+inventory = Food:6, Herb:4
+background = 사구 오아시스에서 혼자 살고 있는 은둔 수의사.|한때 마노니클라에서 동물을 돌봤으나, 사람보다 모래바람이 편하다며 오아시스로 내려왔다.|사구지대의 야생 동물을 치료하며 조용히 지내고 있으며, 길을 잃은 여행자에게 물과 약초를 나눠준다.|말이 느리고 표정 변화가 거의 없지만, 동물 앞에서는 완전히 다른 사람이 된다.
+
 # ============================================================
 # 마틴 항 관련 캐릭터
 # ============================================================
@@ -368,6 +416,21 @@ domainHigh = Passionate,Adaptable,Inventive,Flexible,Patient,Freesprited,Hopeful
 domainLow = Cautious,Rigid,Stagnant,Stubborn,Restless,Grounded,Cynical,Naive
 inventory = Food:10, Herb:5
 background = 탐험과 미식에 미쳐있는 요리사.|루디와 아는 사이로, 마틴 항에서 주로 활동한다.|요리 대회 '마이너 테이블'에 참가하는 것이 꿈이며, 한정된 시간대에서만 구할 수 있는 재료를 찾아다닌다.|만든 음식은 1시간 이내에 먹지 않으면 효과가 사라진다는 철학을 가지고 있다.
+
+[타르코]
+playable = 0
+race = Human
+role = Researcher
+strength = 0.3
+gold = 80
+location = Martin_Port
+homeLocation = Martin_Port
+age = 44
+colorValues = 0.4,0.3,0.6,0.5,0.6,0.4,0.4,0.4
+domainHigh = Calm,Adaptable,Methodical,Reliable,Patient,Grounded,Hopeful,Honest
+domainLow = Passionate,Indifferent,Stagnant,Flexible,Restless,Freesprited,Cynical,Naive
+inventory = Food:3, Herb:2
+background = 마틴 항 기상청 소속 구름 예측 전문가.|천공성 리엘의 존재를 학술적으로 파악하고 있으며, 특정 기상 조건이 갖춰지면 위치를 알려줄 수 있다고 한다.|항상 바람 방향을 관찰하며 중얼거린다.|리엘 상공의 구름 패턴을 10년째 추적하고 있다.
 
 # ============================================================
 # 할퓌아 (부유 섬) 관련 캐릭터
@@ -554,6 +617,26 @@ inventory = Equipment:3, Potion:5
 background = 천공성 리엘의 공주이자 파란색 무투가 드래곤.|성에서 몰래 빠져나와 푸치 탑을 세워, 도전자들에게 시련을 내리며 마지막 층에서 직접 싸운다.|지상에선 모르는 사람이 없을 정도로 강하고 두려운 존재지만, 실제로는 호기심이 많고 쾌활한 성격.|하나브릿지의 기투회장에 가끔 등장한다는 소문이 있다.
 
 # ============================================================
+# 천공성 리엘 관련 캐릭터
+# ============================================================
+
+[마르코스]
+playable = 0
+race = Dragon
+role = Guard
+strength = 0.8
+gold = 300
+location = Riel_Sky
+homeLocation = Riel_Sky
+age = 600
+colorValues = 0.3,0.4,0.5,0.6,0.6,0.3,0.4,0.5
+domainHigh = Calm,Adaptable,Methodical,Reliable,Patient,Grounded,Hopeful,Secretive
+domainLow = Passionate,Indifferent,Stagnant,Flexible,Restless,Freesprited,Cynical,Honest
+stationary = 1
+inventory = Equipment:3, Potion:5
+background = 천공성 리엘의 시종장이자 수문장.|리제가 자리를 비울 때 성의 모든 일을 관리한다.|낯선 방문객에게는 경계심을 보이지만, 리제를 알면 이야기가 달라진다.|오래된 드래곤답게 말이 없고 위압감이 있다.|성의 역사를 모두 기억하고 있으며, 리제를 자식처럼 아끼고 있다.
+
+# ============================================================
 # 에니챰 · 나이트 타코미 관련 캐릭터
 # ============================================================
 
@@ -600,6 +683,38 @@ domainHigh = Calm,Adaptable,Inventive,Flexible,Patient,Withdrawn,Hopeful,Secreti
 domainLow = Passionate,Indifferent,Stagnant,Stubborn,Restless,Freesprited,Cynical,Naive
 inventory = Equipment:1
 background = 바깥에서 흘러들어온 전 데스페리아 거주자이자 고아.|상당히 어두운 과거를 가지고 있으며, 의기소침해져 있다.|유일하게 총을 다루며 시스템 탄을 사용하는데, 다 제로의 작품이다.|어둠의 정령과 크루하의 도움으로 불안한 성격을 다스리고 강한 스나이퍼가 되어간다.
+
+[볼트]
+playable = 0
+race = Construct
+role = Villager
+stationary = 1
+strength = 0.35
+gold = 0
+location = Enicham_Scrap_Yard
+homeLocation = Enicham_Scrap_Yard
+age = 80
+colorValues = 0.3,0.3,0.7,0.8,0.5,0.3,0.3,0.4
+domainHigh = Calm,Adaptable,Methodical,Reliable,Patient,Grounded,Hopeful,Secretive
+domainLow = Passionate,Indifferent,Impulsive,Fragile,Restless,Freesprited,Cynical,Honest
+inventory = OreCommon:6, Equipment:1
+background = 에니챰 폐기장에 버려진 뒤 스스로 재가동한 구형 자동인형.|폐기된 부품을 주워 모아 자기 몸을 수리하며, 작동 가능한 장비를 분류해 놓는 습관이 있다.|말은 못 하지만 제스처로 의사소통이 가능하며, 찾아오는 사람에게 쓸 만한 부품을 골라 건네준다.|제로가 가끔 들러 정비해 주는 사이.
+
+[로지]
+playable = 0
+race = Nekomimi
+role = Merchant
+stationary = 1
+strength = 0.4
+gold = 60
+location = Night_Backstreet
+homeLocation = Night_Backstreet
+age = 28
+colorValues = 0.4,0.3,0.7,0.3,0.3,0.4,0.4,0.6
+domainHigh = Calm,Adaptable,Inventive,Flexible,Patient,Freesprited,Cynical,Cunning
+domainLow = Passionate,Rigid,Stagnant,Stubborn,Restless,Grounded,Apathetic,Naive
+inventory = Food:4, Equipment:2
+background = 네온 뒷골목에서 비공식 바를 운영하는 네코미미.|메인 스트리트의 소란을 싫어해 뒷골목에 자리 잡았으며, 손님을 가린다.|술보다 정보가 더 잘 나오는 가게라는 소문이 있고, 타코미의 밤 사정에 대해서는 누구보다 밝다.|겉으로는 무심해 보이지만, 단골에게는 의외로 잘 챙겨준다.
 
 # ============================================================
 # 트리플라워 화산 관련 캐릭터
@@ -688,6 +803,38 @@ domainHigh = Calm,Adaptable,Inventive,Stubborn,Patient,Grounded,Hopeful,Honest
 domainLow = Passionate,Indifferent,Stagnant,Fragile,Restless,Freesprited,Cynical,Naive
 inventory = OreCommon:10, Equipment:3
 background = 땅의 사천왕이자 드워프 소녀 대장장이.|모노의 브로치를 고쳐 준 인연이 있으며, 장비 만지는 일에 목숨을 건다.|사천왕 타이틀을 전혀 개의치 않아 문제가 되고 있다.|말수가 아주 적고 직설적이며, 구석진 곳에서 조용히 일하지만 실력은 최정상급이다.
+
+[올뤼]
+playable = 0
+race = Dwarf
+role = Craftsman
+stationary = 1
+strength = 0.55
+gold = 30
+location = Clocktower_Observatory
+homeLocation = Clocktower_Observatory
+age = 120
+colorValues = 0.3,0.3,0.6,0.5,0.7,0.3,0.5,0.3
+domainHigh = Calm,Adaptable,Methodical,Reliable,Patient,Grounded,Hopeful,Secretive
+domainLow = Passionate,Indifferent,Impulsive,Fragile,Restless,Freesprited,Cynical,Honest
+inventory = OreCommon:3, Equipment:1
+background = 시계탑 관측실에 은거하는 드워프 시계공 겸 천문학자.|시계탑의 톱니바퀴를 정비하면서, 밤이면 천구의를 들여다보며 별의 흐름을 기록한다.|정각에 맞춰 열리는 관측실 입구의 구조를 누구보다 잘 알고 있지만, 그 비밀을 쉽게 알려주지는 않는다.|에코와는 오래된 장인 동료 사이.
+
+[란트]
+playable = 0
+race = Human
+role = Villager
+stationary = 1
+strength = 0.45
+gold = 25
+location = Navrit_Crystal_Field
+homeLocation = Navrit_Crystal_Field
+age = 34
+colorValues = 0.3,0.3,0.8,0.4,0.3,0.4,0.5,0.3
+domainHigh = Excited,Adaptable,Inventive,Flexible,Patient,Freesprited,Hopeful,Honest
+domainLow = Cautious,Rigid,Stagnant,Stubborn,Restless,Grounded,Cynical,Naive
+inventory = OreCommon:4, OreRare:1
+background = 나브릿트 결정 지대에 텐트를 치고 사는 전기 광물 연구자.|결정화된 정전기의 구조를 해독하는 데 몰두하고 있으며, 연구 성과는 아직 없지만 본인은 아주 행복해 보인다.|번개에 맞은 적이 세 번이나 되는데, 그때마다 새로운 발견을 했다고 주장한다.
 
 # ============================================================
 # 사천왕 — 마왕성 · 각지

@@ -58,6 +58,7 @@ function atGuildHall(session: GameSession) { return session.player.currentLocati
 function atGuild(session: GameSession) { return session.player.currentLocation === 'Guild_Hall' || session.player.currentLocation === 'Guild_Branch'; }
 function atLunaAcademy(session: GameSession) { return session.player.currentLocation === 'Luna_Academy'; }
 function atHanabridge(session: GameSession) { return session.player.currentLocation === 'Hanabridge'; }
+function atMartinPort(session: GameSession) { return session.player.currentLocation === 'Martin_Port'; }
 
 const MAIN_ACTIONS: ActionDef[] = [
   { key: '1', label: '대기', action: 'idle', icon: '⏳' },
@@ -77,6 +78,7 @@ const MAIN_ACTIONS: ActionDef[] = [
   { key: 'l', label: '생활 직업', action: 'life_job' as GameAction, icon: '🌿', visible: atHanabridge },
   { key: 'j', label: '던전 정보', action: 'guild_dungeon' as GameAction, icon: '🗺', visible: atGuild },
   { key: 'm', label: '기억의 샘', action: 'memory_spring', icon: '💧', visible: atMemorySpring },
+  { key: 'f', label: '배편', action: 'ferry' as GameAction, icon: '⛵', visible: atMartinPort },
 ];
 
 const INFO_ACTIONS: ActionDef[] = [
