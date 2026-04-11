@@ -72,6 +72,16 @@ export interface DungeonRuleConfig {
   hint: string;
 }
 
+export interface MidBossDef {
+  afterFloor: number;
+  enemyId: string;
+}
+
+export interface DungeonFloorDef {
+  floor: number;
+  enemyIds: string[];
+}
+
 export interface DungeonDef {
   id: string;
   name: string;
@@ -91,6 +101,12 @@ export interface DungeonDef {
   lootRareChance: number;
   lootRare: LootEntry[];
   colorInfluence: number[];
+  floors: number;
+  progressSteps: number;
+  choicesPerStep: number;
+  requiredClears: number;
+  midBosses: MidBossDef[];
+  floorDefs: DungeonFloorDef[];
 }
 
 export interface CombatBehaviorRule {
@@ -142,13 +158,22 @@ export interface DungeonRoom {
   eventIdx?: number;
 }
 
+export interface StepChoice {
+  type: RoomType;
+  label: string;
+  enemyId?: string;
+  eventIdx?: number;
+  cleared: boolean;
+}
+
 export interface DungeonRunState {
   dungeonId: string;
-  depth: number;
-  maxDepth: number;
-  leftRoom: DungeonRoom;
-  rightRoom: DungeonRoom;
-  hasSidePath: boolean;
+  floor: number;
+  maxFloor: number;
+  step: number;
+  maxStep: number;
+  choices: StepChoice[];
+  requiredClears: number;
   bossDefeated: boolean;
   roomsCleared: number;
   totalTurns: number;
@@ -195,16 +220,14 @@ export class DungeonSystem {
     return loc.endsWith('_Deep');
   }
 
-  selectEnemy(dungeon: DungeonDef, progress: number): MonsterDef {
-    if (dungeon.enemyIds.length === 0) {
+  selectEnemy(dungeon: DungeonDef, floor = 0): MonsterDef {
+    const floorDef = dungeon.floorDefs.find(f => f.floor === floor);
+    const enemyIds = floorDef?.enemyIds ?? dungeon.enemyIds;
+    if (enemyIds.length === 0) {
       return { id: 'unknown', name: '???', attack: 5, defense: 3, hp: 20, lootTable: [], skills: [], skillChance: 0 };
     }
-    const maxIdx = Math.min(
-      dungeon.enemyIds.length - 1,
-      Math.floor((progress / 100) * dungeon.enemyIds.length)
-    );
-    const idx = randomInt(0, maxIdx);
-    const id = dungeon.enemyIds[idx];
+    const idx = randomInt(0, enemyIds.length - 1);
+    const id = enemyIds[idx];
     return this.monsters.get(id) ?? { id, name: id, attack: 10, defense: 5, hp: 30, lootTable: [], skills: [], skillChance: 0 };
   }
 
@@ -352,6 +375,7 @@ export class DungeonSystem {
     return { combat: combat / total, event: event / total, rest: rest / total };
   }
 
+  // @ts-ignore — reserved for future rule use
   private getSidePathChance(dungeon: DungeonDef, depth: number, hour: number): number {
     let chance = 0.40;
     const rule = dungeon.rule;
@@ -404,16 +428,21 @@ export class DungeonSystem {
     return this.clamp(chance, 0.10, 0.75);
   }
 
+  getEffectiveDepth(run: DungeonRunState): number {
+    return run.floor * run.maxStep + run.step;
+  }
+
   getRuleStatus(dungeon: DungeonDef, run: DungeonRunState, hour: number): string {
     const rule = dungeon.rule;
     if (!rule) return '';
-    const intensity = this.computeRuleIntensity(dungeon, run.depth, hour);
+    const depth = this.getEffectiveDepth(run);
+    const intensity = this.computeRuleIntensity(dungeon, depth, hour);
     switch (rule.template) {
       case 'MoonPhase':
         return `달빛 농도 ${Math.round(intensity * 100)}% · 밤일수록 샛길과 특수 이벤트가 늘어난다.`;
       case 'TidalRoute': {
         const cycle = Math.max(2, Math.round(rule.valueA || 2));
-        const highTide = run.depth % cycle === 0;
+        const highTide = depth % cycle === 0;
         return `${highTide ? '밀물' : '썰물'} 흐름 · ${highTide ? '전투 압박이 높다.' : '샛길과 이벤트가 늘어난다.'}`;
       }
       case 'CollapsingPath':
@@ -438,8 +467,8 @@ export class DungeonSystem {
         return `욕심 ${run.greed}단계 · 더 노릴수록 보상과 위험이 함께 커진다.`;
       case 'ShelterWindow': {
         const cycle = Math.max(2, Math.round(rule.valueA || 3));
-        const next = cycle - (run.depth % cycle);
-        return run.depth % cycle === 0
+        const next = cycle - (depth % cycle);
+        return depth % cycle === 0
           ? '은신처 구간 · 이번 층은 휴식 방과 회복 효율이 좋아진다.'
           : `다음 은신처까지 ${next}층 · 지금은 장기 탐사 압박이 더 크다.`;
       }
@@ -514,31 +543,27 @@ export class DungeonSystem {
   // 방 기반 던전 탐색
   // ============================================================
 
-  /** 던전 난이도 기반 최대 깊이 (보스 등장 층) */
+  /** 던전 총 층 수 */
   calcMaxDepth(dungeon: DungeonDef): number {
-    return Math.round(5 + dungeon.difficulty * 3);
+    return dungeon.floors;
   }
 
   /** 랜덤 방 생성 (전투 50%, 이벤트 25%, 휴식 25%) */
-  generateRoom(dungeon: DungeonDef, progress: number, depth = 0, hour = 12): DungeonRoom {
+  generateRoom(dungeon: DungeonDef, floor: number, depth = 0, hour = 12): DungeonRoom {
     const weights = this.getRoomWeights(dungeon, depth, hour);
     const roll = randomFloat(0, 1);
     if (roll < weights.combat) {
-      // 전투 방
-      const enemy = this.selectEnemy(dungeon, progress);
+      const enemy = this.selectEnemy(dungeon, floor);
       return { type: RoomType.Combat, label: `전투: ${enemy.name}`, enemyId: enemy.id };
     } else if (roll < weights.combat + weights.event) {
-      // 이벤트 방
       const event = this.rollDungeonEvent(dungeon);
       if (event) {
         const idx = this.dungeonEvents.indexOf(event);
         return { type: RoomType.Event, label: `이벤트: ${event.name}`, eventIdx: idx };
       }
-      // 이벤트 없으면 전투로 대체
-      const enemy = this.selectEnemy(dungeon, progress);
+      const enemy = this.selectEnemy(dungeon, floor);
       return { type: RoomType.Combat, label: `전투: ${enemy.name}`, enemyId: enemy.id };
     } else {
-      // 휴식 방
       return { type: RoomType.Rest, label: '휴식' };
     }
   }
@@ -551,15 +576,34 @@ export class DungeonSystem {
     return { type: RoomType.Combat, label: `보스: ${bossName}`, enemyId: lastEnemyId };
   }
 
+  /** N개 선택지 생성 */
+  generateChoices(dungeon: DungeonDef, floor: number, step: number, hour: number): StepChoice[] {
+    const n = dungeon.choicesPerStep;
+    const depth = floor * dungeon.progressSteps + step;
+    const choices: StepChoice[] = [];
+    for (let i = 0; i < n; i++) {
+      const room = this.generateRoom(dungeon, floor, depth, hour);
+      choices.push({
+        type: room.type,
+        label: room.label,
+        enemyId: room.enemyId,
+        eventIdx: room.eventIdx,
+        cleared: false,
+      });
+    }
+    return choices;
+  }
+
   /** 던전 탐색 초기 상태 생성 */
-  createRunState(dungeon: DungeonDef, progress: number, hour = 12): DungeonRunState {
+  createRunState(dungeon: DungeonDef, hour = 12): DungeonRunState {
     return {
       dungeonId: dungeon.id,
-      depth: 0,
-      maxDepth: this.calcMaxDepth(dungeon),
-      leftRoom: this.generateRoom(dungeon, progress, 0, hour),
-      rightRoom: this.generateRoom(dungeon, progress, 0, hour),
-      hasSidePath: randomFloat(0, 1) < this.getSidePathChance(dungeon, 0, hour),
+      floor: 0,
+      maxFloor: dungeon.floors,
+      step: 0,
+      maxStep: dungeon.progressSteps,
+      choices: this.generateChoices(dungeon, 0, 0, hour),
+      requiredClears: dungeon.requiredClears,
       bossDefeated: false,
       roomsCleared: 0,
       totalTurns: 0,
@@ -572,21 +616,44 @@ export class DungeonSystem {
     };
   }
 
-  /** 방 클리어 후 다음 방 생성 */
-  advanceRun(run: DungeonRunState, dungeon: DungeonDef, progress: number, hour = 12): void {
-    run.depth++;
-    run.roomsCleared++;
-    run.ruleIntensity = this.computeRuleIntensity(dungeon, run.depth, hour);
-    if (run.depth >= run.maxDepth) {
-      // 보스 방
-      run.leftRoom = this.generateBossRoom(dungeon);
-      run.rightRoom = this.generateBossRoom(dungeon);
-      run.hasSidePath = false;
-    } else {
-      run.leftRoom = this.generateRoom(dungeon, progress, run.depth, hour);
-      run.rightRoom = this.generateRoom(dungeon, progress, run.depth, hour);
-      run.hasSidePath = randomFloat(0, 1) < this.getSidePathChance(dungeon, run.depth, hour);
+  /** 다음 진행 단계 또는 층으로 전진 */
+  advanceStep(run: DungeonRunState, dungeon: DungeonDef, hour = 12): 'nextStep' | 'nextFloor' | 'midBoss' | 'boss' {
+    run.step++;
+    const depth = run.floor * run.maxStep + run.step;
+    run.ruleIntensity = this.computeRuleIntensity(dungeon, depth, hour);
+
+    if (run.step >= run.maxStep) {
+      const prevFloor = run.floor;
+      run.floor++;
+      run.step = 0;
+
+      if (run.floor >= run.maxFloor) {
+        return 'boss';
+      }
+
+      const midBoss = dungeon.midBosses.find(m => m.afterFloor === prevFloor);
+      if (midBoss) {
+        return 'midBoss';
+      }
+
+      run.choices = this.generateChoices(dungeon, run.floor, 0, hour);
+      return 'nextFloor';
     }
+
+    run.choices = this.generateChoices(dungeon, run.floor, run.step, hour);
+    return 'nextStep';
+  }
+
+  /** 중간 보스 격파 후 계속 진행 */
+  continueAfterMidBoss(run: DungeonRunState, dungeon: DungeonDef, hour = 12): void {
+    run.choices = this.generateChoices(dungeon, run.floor, run.step, hour);
+  }
+
+  /** 중간 보스 조회 */
+  getMidBoss(dungeon: DungeonDef, afterFloor: number): MonsterDef | null {
+    const mb = dungeon.midBosses.find(m => m.afterFloor === afterFloor);
+    if (!mb) return null;
+    return this.monsters.get(mb.enemyId) ?? null;
   }
 
   /** 이벤트 인덱스로 이벤트 조회 */

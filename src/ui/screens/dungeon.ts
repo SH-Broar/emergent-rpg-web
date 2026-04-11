@@ -1,4 +1,4 @@
-// dungeon.ts — 던전 화면 (방 기반 탐색 + 실시간 전투)
+// dungeon.ts — 던전 화면 (층·진행도 기반 탐색 + 실시간 전투)
 
 import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
@@ -10,11 +10,10 @@ import {
   createCombatState, stopCombatTimer, processTick, usePlayerSkill,
 } from '../../systems/combat-engine';
 import { canUseSkill } from '../../systems/skill-combat';
-import { randomFloat } from '../../types/rng';
 import { locationName } from '../../types/registry';
 import { moveCompanions } from '../../systems/npc-interaction';
 
-type DungeonPhase = 'list' | 'entry' | 'navigate' | 'combat' | 'event' | 'rest' | 'victory' | 'defeat';
+type DungeonPhase = 'list' | 'entry' | 'navigate' | 'combat' | 'event' | 'rest' | 'victory' | 'defeat' | 'midBoss' | 'map' | 'giveUpConfirm';
 
 export function createDungeonScreen(
   session: GameSession,
@@ -22,11 +21,20 @@ export function createDungeonScreen(
 ): Screen {
   const p = session.player;
   const ds = session.dungeonSystem;
-  function roomIcon(room: DungeonRoom): string {
-    switch (room.type) {
+
+  function choiceIcon(type: RoomType): string {
+    switch (type) {
       case RoomType.Combat: return '⚔';
       case RoomType.Event: return '✦';
       case RoomType.Rest: return '💤';
+    }
+  }
+
+  function choiceLabel(type: RoomType): string {
+    switch (type) {
+      case RoomType.Combat: return '전투';
+      case RoomType.Event: return '이벤트';
+      case RoomType.Rest: return '휴식';
     }
   }
 
@@ -73,28 +81,10 @@ export function createDungeonScreen(
 
   const localDungeons = ds.getAllDungeons().filter(d => d.accessFrom === p.currentLocation);
   const allDungeons = localDungeons.filter(isDungeonAvailableNow);
+
   function getRuleStatusText(): string {
     if (!selectedDungeon || !runState) return '';
     return ds.getRuleStatus(selectedDungeon, runState, session.gameTime.hour);
-  }
-
-  function isFoggedRoom(side: 'left' | 'right'): boolean {
-    if (!selectedDungeon?.rule || !runState) return false;
-    if (selectedDungeon.rule.template !== 'DeepFog') return false;
-    if (runState.depth >= runState.maxDepth) return false;
-    const rank = selectedDungeon.rule.rank;
-    if (rank <= 2) return false;
-    const maskLeft = ((runState.depth + runState.roomsCleared) % 2) === 0;
-    return side === 'left' ? maskLeft : !maskLeft;
-  }
-
-  function getRoomButtonLabel(room: DungeonRoom, side: 'left' | 'right'): string {
-    if (!isFoggedRoom(side)) return `${roomIcon(room)} ${room.label}`;
-    switch (room.type) {
-      case RoomType.Combat: return `${roomIcon(room)} 짙은 안개 속 기척`;
-      case RoomType.Event: return `${roomIcon(room)} 짙은 안개 속 흔들림`;
-      case RoomType.Rest: return `${roomIcon(room)} 안개 낀 쉼터`;
-    }
   }
 
   function getPredatorRestPenalty(): { hp: number; mp: number; note: string } {
@@ -112,7 +102,7 @@ export function createDungeonScreen(
         break;
       }
       case 'FrostPressure': {
-        const chill = Math.max(1, Math.round(selectedDungeon.rule.valueA + runState.depth * 0.5));
+        const chill = Math.max(1, Math.round(selectedDungeon.rule.valueA + runState.floor * 0.5));
         hp = Math.max(12, hp - chill);
         mp = Math.max(6, mp - Math.ceil(chill / 2));
         note = '차가운 공기 때문에 회복 효율이 조금 떨어진다.';
@@ -126,7 +116,7 @@ export function createDungeonScreen(
       }
       case 'ShelterWindow': {
         const cycle = Math.max(2, Math.round(selectedDungeon.rule.valueA || 3));
-        if (runState.depth % cycle === 0) {
+        if (runState.floor % cycle === 0) {
           hp += 8 + selectedDungeon.rule.rank;
           mp += 4 + Math.floor(selectedDungeon.rule.rank / 2);
           note = '은신처 구간이라 편하게 숨을 고를 수 있다.';
@@ -145,40 +135,13 @@ export function createDungeonScreen(
     return { hp, mp, note };
   }
 
-  function getSidePathConfig(): { hpCostRatio: number; note: string } {
-    let hpCostRatio = 0.1;
-    let note = '샛길을 탐색한다.';
-    if (!selectedDungeon?.rule || !runState) return { hpCostRatio, note };
-    switch (selectedDungeon.rule.template) {
-      case 'TidalRoute': {
-        const cycle = Math.max(2, Math.round(selectedDungeon.rule.valueA || 2));
-        const highTide = runState.depth % cycle === 0;
-        hpCostRatio = highTide ? 0.12 : 0.07;
-        note = highTide ? '밀물 사이를 비집고 샛길을 탐색한다.' : '썰물에 드러난 샛길을 탐색한다.';
-        break;
-      }
-      case 'CollapsingPath':
-        hpCostRatio = 0.12 + selectedDungeon.rule.rank * 0.005;
-        note = '무너지는 길 틈으로 억지로 몸을 비집고 들어간다.';
-        break;
-      case 'FrostPressure':
-        hpCostRatio = 0.11;
-        note = '차가운 바람을 버티며 샛길을 더듬는다.';
-        break;
-      case 'GreedRisk':
-        hpCostRatio = 0.10;
-        note = '더 많은 보상을 노리고 위험한 샛길을 고른다.';
-        break;
-    }
-    return { hpCostRatio, note };
-  }
-
   function applyRuleAdvanceEffects(el: HTMLElement): boolean {
     if (!selectedDungeon?.rule || !runState) return false;
     const rule = selectedDungeon.rule;
+    const depth = ds.getEffectiveDepth(runState);
     switch (rule.template) {
       case 'CollapsingPath': {
-        const chip = Math.max(1, Math.round(rule.rank + runState.depth * 0.5));
+        const chip = Math.max(1, Math.round(rule.rank + depth * 0.5));
         p.adjustHp(-chip);
         if (chip > 0) {
           session.backlog.add(session.gameTime, `무너지는 잔해가 스쳐 HP ${chip}를 잃었다.`, '행동');
@@ -193,12 +156,6 @@ export function createDungeonScreen(
       }
       case 'TraceHunt': {
         runState.tracePoints += Math.max(1, Math.round(rule.valueA || 1));
-        const target = Math.max(2, Math.round(rule.valueB || 3));
-        if (runState.tracePoints >= target) {
-          runState.hasSidePath = true;
-          session.backlog.add(session.gameTime, '충분한 흔적을 모아 다음 층에서 샛길을 포착했다.', '행동');
-          runState.tracePoints -= target;
-        }
         break;
       }
       case 'HeatGauge': {
@@ -215,7 +172,7 @@ export function createDungeonScreen(
         break;
       case 'ShelterWindow': {
         const cycle = Math.max(2, Math.round(rule.valueA || 3));
-        if (runState.depth % cycle === 0) {
+        if (runState.floor % cycle === 0) {
           p.adjustHp(4 + rule.rank);
           p.adjustMp(2 + Math.floor(rule.rank / 2));
           session.backlog.add(session.gameTime, '은신처 구간을 지나며 잠시 호흡을 가다듬었다.', '행동');
@@ -223,7 +180,6 @@ export function createDungeonScreen(
         break;
       }
     }
-
     if (p.base.hp <= 0) {
       handleDefeat(el);
       return true;
@@ -237,14 +193,18 @@ export function createDungeonScreen(
     return p.getDungeonProgress(dungeon.id) >= unlock;
   }
 
+  // ================================================================ state
   let phase: DungeonPhase = 'list';
   let selectedDungeon: DungeonDef | null = null;
   let runState: DungeonRunState | null = null;
   let combatState: RealtimeCombatState | null = null;
   let currentEvent: DungeonEventDef | null = null;
   let eventMessage = '';
+  let pendingProgress = 0;
+  let selectedChoiceIdx = -1;
+  let isBossFight = false;
+  let isMidBossFight = false;
 
-  // 동료 목록
   function getPartyActors() {
     return session.knowledge.partyMembers
       .map(name => session.actors.find(a => a.name === name))
@@ -268,7 +228,6 @@ export function createDungeonScreen(
         }</p>`
         : `<div class="dungeon-list">
             ${allDungeons.map((d, i) => {
-              const maxDepth = ds.calcMaxDepth(d);
               const progress = p.getDungeonProgress(d.id);
               const isCleared = progress >= 100;
               const progressColor = isCleared ? 'var(--success)' : 'var(--warning)';
@@ -285,14 +244,14 @@ export function createDungeonScreen(
                 <div class="dungeon-name">${i + 1}. ${d.name} ${isCleared ? '<span style="color:var(--success);font-size:12px">✦</span>' : ''}</div>
                 <div class="dungeon-meta">
                   <span>난이도: ${renderDifficultyIcons(d)}</span>
-                  <span>${maxDepth}층</span>
+                  <span>${d.floors}층</span>
                   <span style="color:${progressColor}">${progressLabel}</span>
-                  ${d.rule ? `<span style="color:var(--accent2)">규칙 ${d.rule.rank}: ${d.rule.template}</span>` : ''}
-                  ${hiddenLabel ? `<span style="color:${hiddenOpen ? 'var(--accent2)' : 'var(--text-dim)'}">${hiddenLabel}</span>` : ''}
+                  ${d.rule ? `<span style="color:#6ba3d6">특수 ${'◆'.repeat(d.rule.rank)}${'◇'.repeat(Math.max(0, 5 - d.rule.rank))}</span>` : ''}
+                  ${hiddenLabel ? `<span style="color:${hiddenOpen ? '#6ba3d6' : 'var(--text-dim)'}">${hiddenLabel}</span>` : ''}
                   ${bestLabel ? `<span style="color:var(--warning)">${bestLabel}</span>` : ''}
                 </div>
                 <div class="dungeon-desc">${isCleared ? d.deepDescription || d.description : d.description}</div>
-                ${d.rule?.hint ? `<div class="dungeon-desc" style="color:var(--accent2)">${d.rule.hint}</div>` : ''}
+                ${d.rule?.hint ? `<div class="dungeon-desc" style="color:#6ba3d6">${d.rule.hint}</div>` : ''}
               </button>`;
             }).join('')}
           </div>`
@@ -335,7 +294,7 @@ export function createDungeonScreen(
       <button class="btn back-btn" data-back>← 뒤로 [Esc]</button>
       <h2>${selectedDungeon.name}</h2>
       <p class="hint">완전히 공략한 던전이다. 어디로 들어갈지 선택한다.</p>
-      ${selectedDungeon.rule ? `<p class="hint" style="color:var(--accent2)">규칙 ${selectedDungeon.rule.rank}: ${selectedDungeon.rule.hint || selectedDungeon.rule.template}</p>` : ''}
+      ${selectedDungeon.rule ? `<p class="hint" style="color:#6ba3d6">특수 ${'◆'.repeat(selectedDungeon.rule.rank)}${'◇'.repeat(Math.max(0, 5 - selectedDungeon.rule.rank))} — ${selectedDungeon.rule.hint || selectedDungeon.rule.template}</p>` : ''}
       ${hiddenName && !hiddenOpen ? `<p class="hint" style="color:var(--text-dim)">${hiddenName}은(는) 지금 시간에는 모습을 드러내지 않는다.</p>` : ''}
       <div class="menu-buttons" style="margin-top:12px">
         <button class="btn btn-primary" data-action="dungeon">1. 던전 입장</button>
@@ -354,9 +313,7 @@ export function createDungeonScreen(
   }
 
   function enterDungeon(dungeon: DungeonDef, el: HTMLElement) {
-    const progress = p.getDungeonProgress(dungeon.id);
-    runState = ds.createRunState(dungeon, progress, session.gameTime.hour);
-
+    runState = ds.createRunState(dungeon, session.gameTime.hour);
     session.backlog.add(session.gameTime, `${p.name}이(가) ${dungeon.name}에 입장했다.`, '행동');
     phase = 'navigate';
     renderNavigate(el);
@@ -380,60 +337,88 @@ export function createDungeonScreen(
     const wrap = document.createElement('div');
     wrap.className = 'screen info-screen dungeon-navigate';
 
-    const isBossFloor = runState.depth >= runState.maxDepth;
+    const clearedCount = runState.choices.filter(c => c.cleared).length;
+    const canAdvance = clearedCount >= runState.requiredClears;
     const hpPct = Math.round((p.base.hp / p.getEffectiveMaxHp()) * 100);
     const mpPct = Math.round((p.base.mp / p.getEffectiveMaxMp()) * 100);
+    const overallProgress = Math.round(((runState.floor * runState.maxStep + runState.step) / (runState.maxFloor * runState.maxStep)) * 100);
+    const remainingCount = runState.choices.filter(c => !c.cleared).length;
+    const exploreCost = Math.round(remainingCount * 0.10 * p.getEffectiveMaxHp());
+
+    const choiceButtons = runState.choices.map((c, i) => {
+      const icon = choiceIcon(c.type);
+      const label = choiceLabel(c.type);
+      if (c.cleared) {
+        return `<button class="btn" disabled style="opacity:0.35">${icon} ${label} ✓</button>`;
+      }
+      return `<button class="btn" data-choice="${i}">${i + 1}. ${icon} ${label}</button>`;
+    }).join('');
+
+    const advanceHtml = canAdvance
+      ? `<button class="btn btn-primary" data-action="advance" style="margin-top:8px">→ 다음으로 [Enter]</button>`
+      : `<div class="hint" style="margin-top:8px">${runState.requiredClears - clearedCount}개 더 클리어 필요</div>`;
 
     wrap.innerHTML = `
-      <h2>${selectedDungeon.name} — ${isBossFloor ? '보스 출현!' : `${runState.depth + 1}층`}</h2>
+      <h2>${selectedDungeon.name} — ${runState.floor + 1}/${runState.maxFloor}층 · ${runState.step + 1}/${runState.maxStep}단계</h2>
       <div style="display:flex;gap:12px;font-size:12px;margin:8px 0">
         <span>HP: ${Math.round(p.base.hp)}/${Math.round(p.getEffectiveMaxHp())}
           <span style="display:inline-block;width:${Math.min(80, hpPct)}px;height:4px;background:var(--hp-color,#e94560);border-radius:2px;vertical-align:middle;margin-left:2px"></span>
         </span>
         <span>MP: ${Math.round(p.base.mp)}/${Math.round(p.getEffectiveMaxMp())}
-          <span style="display:inline-block;width:${Math.min(60, mpPct)}px;height:4px;background:var(--accent2);border-radius:2px;vertical-align:middle;margin-left:2px"></span>
+          <span style="display:inline-block;width:${Math.min(60, mpPct)}px;height:4px;background:#4a6fa5;border-radius:2px;vertical-align:middle;margin-left:2px"></span>
         </span>
         <span style="color:var(--warning)">TP: ${p.base.ap}/${p.getEffectiveMaxAp()}</span>
       </div>
-      ${getRuleStatusText() ? `<p class="hint" style="color:var(--accent2);margin:6px 0">${getRuleStatusText()}</p>` : ''}
+      ${getRuleStatusText() ? `<p class="hint" style="color:#6ba3d6;margin:6px 0">${getRuleStatusText()}</p>` : ''}
 
-      ${isBossFloor ? `
-        <div class="menu-buttons" style="margin:16px 0">
-          <button class="btn btn-primary" data-choice="boss">1. ${roomIcon(runState.leftRoom)} ${runState.leftRoom.label} [보스]</button>
-          <button class="btn" data-choice="retreat">2. ↩ 되돌아가기</button>
-        </div>
-        <p class="hint">1=보스 도전, 2=후퇴</p>
-      ` : `
-        <div class="menu-buttons" style="margin:16px 0">
-          <button class="btn" data-choice="left">1. ← ${getRoomButtonLabel(runState.leftRoom, 'left')}</button>
-          <button class="btn" data-choice="right">2. → ${getRoomButtonLabel(runState.rightRoom, 'right')}</button>
-          ${runState.hasSidePath ? `<button class="btn" data-choice="side">3. ↗ 샛길 (HP -${Math.round(getSidePathConfig().hpCostRatio * 100)}%)</button>` : ''}
-          <button class="btn" data-choice="retreat">${runState.hasSidePath ? '4' : '3'}. ↩ 되돌아가기</button>
-        </div>
-        <p class="hint">1=왼쪽, 2=오른쪽${runState.hasSidePath ? ', 3=샛길, 4=후퇴' : ', 3=후퇴'}</p>
-      `}
+      <div class="menu-buttons" style="margin:12px 0;gap:6px">
+        ${choiceButtons}
+      </div>
+      ${advanceHtml}
 
-      <div style="font-size:11px;color:var(--text-dim);margin-top:8px">
-        진행: ${runState.roomsCleared}방 / 보스: ${runState.maxDepth}층
-        ${getPartyActors().length > 0 ? ` | 동료: ${getPartyActors().map(a => `${a.name}(★${a.hyperionLevel})`).join(', ')}` : ''}
+      <div style="margin-top:auto;padding-top:12px;border-top:1px solid var(--border)">
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+          <span>${runState.floor + 1}/${runState.maxFloor}층 · ${runState.step + 1}/${runState.maxStep}단계</span>
+          <span style="color:var(--text-dim)">처치 ${runState.roomsCleared} · ${runState.totalTurns}턴</span>
+        </div>
+        <div style="height:6px;background:var(--bg-panel);border-radius:3px;overflow:hidden">
+          <div style="height:100%;width:${overallProgress}%;background:var(--warning);border-radius:3px;transition:width 0.3s"></div>
+        </div>
+        ${getPartyActors().length > 0 ? `<div style="font-size:11px;color:var(--text-dim);margin-top:4px">동료: ${getPartyActors().map(a => `${a.name}(★${a.hyperionLevel})`).join(', ')}</div>` : ''}
+        <div class="menu-buttons" style="margin-top:8px;gap:6px">
+          <button class="btn" data-action="explore" ${remainingCount === 0 ? 'disabled' : ''}>탐색 (HP -${exploreCost})</button>
+          <button class="btn" data-action="map">던전 지도</button>
+          <button class="btn" data-action="giveup" style="border-color:var(--accent)">포기</button>
+        </div>
       </div>
     `;
 
-    wrap.querySelector('[data-choice="left"]')?.addEventListener('click', () => enterRoom(runState!.leftRoom, false, el));
-    wrap.querySelector('[data-choice="right"]')?.addEventListener('click', () => enterRoom(runState!.rightRoom, false, el));
-    wrap.querySelector('[data-choice="side"]')?.addEventListener('click', () => handleSidePath(el));
-    wrap.querySelector('[data-choice="boss"]')?.addEventListener('click', () => enterRoom(runState!.leftRoom, true, el));
-    wrap.querySelector('[data-choice="retreat"]')?.addEventListener('click', () => handleRetreat(el));
+    wrap.querySelectorAll<HTMLButtonElement>('[data-choice]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.dataset.choice!, 10);
+        enterChoice(idx, el);
+      });
+    });
+    wrap.querySelector('[data-action="advance"]')?.addEventListener('click', () => handleAdvanceStep(el));
+    wrap.querySelector('[data-action="explore"]')?.addEventListener('click', () => handleExplore(el));
+    wrap.querySelector('[data-action="map"]')?.addEventListener('click', () => { phase = 'map'; renderDungeonMap(el); });
+    wrap.querySelector('[data-action="giveup"]')?.addEventListener('click', () => { phase = 'giveUpConfirm'; renderGiveUpConfirm(el); });
 
     el.appendChild(wrap);
   }
 
-  function enterRoom(room: DungeonRoom, isBoss: boolean, el: HTMLElement) {
+  function enterChoice(idx: number, el: HTMLElement) {
     if (!selectedDungeon || !runState) return;
+    const choice = runState.choices[idx];
+    if (!choice || choice.cleared) return;
+    selectedChoiceIdx = idx;
+    isBossFight = false;
+    isMidBossFight = false;
 
-    switch (room.type) {
+    const room: DungeonRoom = { type: choice.type, label: choice.label, enemyId: choice.enemyId, eventIdx: choice.eventIdx };
+    switch (choice.type) {
       case RoomType.Combat:
-        startCombat(room, isBoss, el);
+        startCombat(room, false, el);
         break;
       case RoomType.Event:
         startEvent(room, el);
@@ -444,45 +429,66 @@ export function createDungeonScreen(
     }
   }
 
-  function handleSidePath(el: HTMLElement) {
+  function markChoiceCleared() {
+    if (!runState || selectedChoiceIdx < 0) return;
+    const choice = runState.choices[selectedChoiceIdx];
+    if (choice) choice.cleared = true;
+    runState.roomsCleared++;
+    selectedChoiceIdx = -1;
+  }
+
+  function handleAdvanceStep(el: HTMLElement) {
     if (!selectedDungeon || !runState) return;
-    const sidePath = getSidePathConfig();
-    const hpCost = Math.round(p.getEffectiveMaxHp() * sidePath.hpCostRatio);
+    pendingProgress += selectedDungeon.progressPerAdvance;
+    if (applyRuleAdvanceEffects(el)) return;
+
+    const result = ds.advanceStep(runState, selectedDungeon, session.gameTime.hour);
+    switch (result) {
+      case 'nextStep':
+      case 'nextFloor':
+        phase = 'navigate';
+        renderNavigate(el);
+        break;
+      case 'midBoss': {
+        const mb = ds.getMidBoss(selectedDungeon, runState.floor - 1);
+        if (mb) {
+          phase = 'midBoss';
+          renderMidBoss(el, mb);
+        } else {
+          ds.continueAfterMidBoss(runState, selectedDungeon, session.gameTime.hour);
+          phase = 'navigate';
+          renderNavigate(el);
+        }
+        break;
+      }
+      case 'boss': {
+        isBossFight = true;
+        isMidBossFight = false;
+        selectedChoiceIdx = -1;
+        const bossRoom = ds.generateBossRoom(selectedDungeon);
+        startCombat(bossRoom, true, el);
+        break;
+      }
+    }
+  }
+
+  function handleExplore(el: HTMLElement) {
+    if (!selectedDungeon || !runState) return;
+    const remainingCount = runState.choices.filter(c => !c.cleared).length;
+    if (remainingCount === 0) return;
+    const hpCost = Math.round(remainingCount * 0.10 * p.getEffectiveMaxHp());
     p.adjustHp(-hpCost);
-    if (selectedDungeon.rule?.template === 'AncientResonance') {
-      runState.resonance += Math.max(1, Math.round(selectedDungeon.rule.valueA || 1));
-    }
-    if (selectedDungeon.rule?.template === 'GreedRisk') {
-      runState.greed = Math.min(9, runState.greed + 1);
-    }
-    if (selectedDungeon.rule?.template === 'HeatGauge') {
-      runState.heat = Math.min(9, runState.heat + 1);
-    }
-    if (selectedDungeon.rule?.template === 'TraceHunt') {
-      runState.tracePoints += 1;
-    }
+    session.backlog.add(session.gameTime, `${p.name}이(가) 탐색을 강행했다. (HP -${hpCost})`, '행동');
 
     if (p.base.hp <= 0) {
       handleDefeat(el);
       return;
     }
-
-    // 랜덤 이벤트
-    const event = ds.rollDungeonEvent(selectedDungeon);
-    if (event) {
-      currentEvent = event;
-      eventMessage = `${sidePath.note} (HP -${hpCost})`;
-      phase = 'event';
-      renderEvent(el);
-    } else {
-      // 이벤트 없으면 보상 없이 다음 층
-      session.backlog.add(session.gameTime, `${p.name}이(가) 샛길을 탐색했지만 아무것도 없었다. (HP -${hpCost})`, '행동');
-      advanceToNext(el);
-    }
+    handleAdvanceStep(el);
   }
 
-  function handleRetreat(el: HTMLElement) {
-    session.backlog.add(session.gameTime, `${p.name}이(가) ${selectedDungeon?.name ?? '던전'}에서 후퇴했다.`, '행동');
+  function handleGiveUp(el: HTMLElement) {
+    session.backlog.add(session.gameTime, `${p.name}이(가) ${selectedDungeon?.name ?? '던전'}에서 포기했다.`, '행동');
     resetDungeon();
     renderList(el);
   }
@@ -494,15 +500,113 @@ export function createDungeonScreen(
     runState = null;
     selectedDungeon = null;
     currentEvent = null;
+    pendingProgress = 0;
+    selectedChoiceIdx = -1;
+    isBossFight = false;
+    isMidBossFight = false;
   }
 
-  function advanceToNext(el: HTMLElement) {
+  // ================================================================ giveup confirm
+  function renderGiveUpConfirm(el: HTMLElement) {
+    el.innerHTML = '';
+    const wrap = document.createElement('div');
+    wrap.className = 'screen info-screen';
+
+    wrap.innerHTML = `
+      <h2>포기</h2>
+      <div style="text-align:center;margin:24px 0">
+        <p>정말 포기하시겠습니까?</p>
+        <p style="color:var(--warning);margin-top:8px">진행도와 기록은 저장되지 않습니다.</p>
+      </div>
+      <div class="menu-buttons" style="margin-top:12px">
+        <button class="btn" data-action="cancel">1. 아니오</button>
+        <button class="btn" data-action="confirm" style="border-color:var(--accent)">2. 예, 포기</button>
+      </div>
+      <p class="hint">1=취소, 2=포기</p>
+    `;
+
+    wrap.querySelector('[data-action="cancel"]')?.addEventListener('click', () => {
+      phase = 'navigate';
+      renderNavigate(el);
+    });
+    wrap.querySelector('[data-action="confirm"]')?.addEventListener('click', () => handleGiveUp(el));
+    el.appendChild(wrap);
+  }
+
+  // ================================================================ dungeon map
+  function renderDungeonMap(el: HTMLElement) {
     if (!selectedDungeon || !runState) return;
-    const progress = p.getDungeonProgress(selectedDungeon.id);
-    ds.advanceRun(runState, selectedDungeon, progress, session.gameTime.hour);
-    if (applyRuleAdvanceEffects(el)) return;
-    phase = 'navigate';
-    renderNavigate(el);
+    el.innerHTML = '';
+    const wrap = document.createElement('div');
+    wrap.className = 'screen info-screen';
+
+    const floorRows = [];
+    for (let f = 0; f < runState.maxFloor; f++) {
+      const isCurrent = f === runState.floor;
+      const isCleared = f < runState.floor;
+      const marker = isCurrent ? '▶' : isCleared ? '✓' : '·';
+      const color = isCurrent ? 'var(--warning)' : isCleared ? 'var(--success)' : 'var(--text-dim)';
+      const stepInfo = isCurrent ? ` (${runState.step + 1}/${runState.maxStep}단계)` : '';
+      floorRows.push(`<div style="padding:4px 8px;color:${color};font-size:13px">${marker} ${f + 1}층${stepInfo}</div>`);
+
+      // mid-boss indicator
+      const mb = selectedDungeon.midBosses.find(m => m.afterFloor === f);
+      if (mb) {
+        const mbMonster = (ds as any).monsters?.get(mb.enemyId);
+        const mbName = mbMonster?.name ?? mb.enemyId;
+        const mbCleared = f < runState.floor;
+        const mbColor = mbCleared ? 'var(--success)' : 'var(--accent)';
+        floorRows.push(`<div style="padding:2px 20px;color:${mbColor};font-size:12px">⚔ 중간 보스: ${mbName}${mbCleared ? ' ✓' : ''}</div>`);
+      }
+    }
+    // Boss
+    const bossRoom = ds.generateBossRoom(selectedDungeon);
+    floorRows.push(`<div style="padding:4px 8px;color:${runState.bossDefeated ? 'var(--success)' : 'var(--accent)'};font-size:13px;font-weight:600">★ 보스: ${bossRoom.label.replace('보스: ', '')}${runState.bossDefeated ? ' ✓' : ''}</div>`);
+
+    wrap.innerHTML = `
+      <h2>${selectedDungeon.name} — 던전 지도</h2>
+      <div style="margin:16px 0;padding:12px;background:var(--bg-card);border-radius:6px">
+        ${floorRows.join('')}
+      </div>
+      <div style="font-size:12px;color:var(--text-dim);text-align:center">
+        처치 ${runState.roomsCleared} · ${runState.totalTurns}턴
+      </div>
+      <button class="btn btn-primary" data-action="close" style="margin-top:12px">닫기 [Esc]</button>
+    `;
+
+    wrap.querySelector('[data-action="close"]')?.addEventListener('click', () => {
+      phase = 'navigate';
+      renderNavigate(el);
+    });
+    el.appendChild(wrap);
+  }
+
+  // ================================================================ mid-boss
+  function renderMidBoss(el: HTMLElement, boss: import('../../models/dungeon').MonsterDef) {
+    el.innerHTML = '';
+    const wrap = document.createElement('div');
+    wrap.className = 'screen info-screen';
+
+    wrap.innerHTML = `
+      <h2>⚔ 중간 보스!</h2>
+      <div style="text-align:center;margin:24px 0">
+        <p style="font-size:18px;font-weight:600">${boss.name}</p>
+        <p style="color:var(--text-dim);margin-top:8px">다음 층으로 가려면 이 적을 쓰러뜨려야 한다.</p>
+        <div style="margin-top:12px;font-size:12px;color:var(--text-dim)">
+          HP: ${Math.round(p.base.hp)}/${Math.round(p.getEffectiveMaxHp())} · MP: ${Math.round(p.base.mp)}/${Math.round(p.getEffectiveMaxMp())}
+        </div>
+      </div>
+      <button class="btn btn-primary" data-action="fight">전투 시작 [Enter]</button>
+    `;
+
+    wrap.querySelector('[data-action="fight"]')?.addEventListener('click', () => {
+      isMidBossFight = true;
+      isBossFight = false;
+      selectedChoiceIdx = -1;
+      const room: DungeonRoom = { type: RoomType.Combat, label: `중간 보스: ${boss.name}`, enemyId: boss.id };
+      startCombat(room, true, el);
+    });
+    el.appendChild(wrap);
   }
 
   // ================================================================ combat
@@ -510,19 +614,22 @@ export function createDungeonScreen(
     if (!selectedDungeon || !runState) return;
 
     const enemyId = room.enemyId ?? selectedDungeon.enemyIds[0];
-    const enemy = ds.selectEnemy(selectedDungeon, p.getDungeonProgress(selectedDungeon.id));
-    // 보스면 마지막 적 사용
+    const enemy = ds.selectEnemy(selectedDungeon, runState.floor);
     const actualEnemy = isBoss
       ? (ds as any).monsters?.get(selectedDungeon.enemyIds[selectedDungeon.enemyIds.length - 1]) ?? enemy
       : (ds as any).monsters?.get(enemyId) ?? enemy;
 
+    // 중간 보스는 mid-boss 전용 적 사용
+    const combatEnemy = isMidBossFight
+      ? ((ds as any).monsters?.get(enemyId) ?? actualEnemy)
+      : actualEnemy;
+
     const partyActors = getPartyActors();
-    combatState = createCombatState(p, actualEnemy, partyActors, selectedDungeon.id, isBoss);
+    combatState = createCombatState(p, combatEnemy, partyActors, selectedDungeon.id, isBoss || isMidBossFight);
 
     phase = 'combat';
     renderCombat(el);
 
-    // 실시간 틱 시작
     combatState.tickTimer = setInterval(() => {
       if (!combatState || combatState.finished) {
         if (combatState) stopCombatTimer(combatState);
@@ -567,7 +674,6 @@ export function createDungeonScreen(
     const playerHpPct = Math.max(0, Math.min(100, Math.round((p.base.hp / p.getEffectiveMaxHp()) * 100)));
     const mpPct = Math.max(0, Math.min(100, Math.round((p.base.mp / p.getEffectiveMaxMp()) * 100)));
 
-    // 스킬 슬롯
     const skillBtns = ss.slots.map((def, i) => {
       if (!def) {
         return `<button class="btn skill-btn disabled" disabled>
@@ -589,19 +695,16 @@ export function createDungeonScreen(
       </button>`;
     }).join('');
 
-    // 딜레이 표시
     let delayHtml = '';
     if (ss.preDelayTurns > 0) delayHtml = `<div class="delay-indicator">준비 중... (${ss.preDelayTurns}턴)</div>`;
     else if (ss.postDelayTurns > 0) delayHtml = `<div class="delay-indicator">회복 중... (${ss.postDelayTurns}턴)</div>`;
 
-    // 동료 표시
     const partyHtml = cs.partySlots.length > 0
       ? `<div style="font-size:11px;margin-top:4px;color:var(--accent2)">동료: ${cs.partySlots.map(s =>
           `${s.actor.name}(${'★'.repeat(s.hyperionLevel)})`
         ).join(' ')}</div>`
       : '';
 
-    // 버프/디버프
     const buffTags = ss.activeBuffs.map(b =>
       `<span class="buff-tag">${b.type === 'attack' ? '공↑' : '방↑'} ${b.turnsLeft}턴</span>`
     ).join('');
@@ -609,9 +712,11 @@ export function createDungeonScreen(
       `<span class="debuff-tag">${d.type} ${d.turnsLeft}턴</span>`
     ).join('');
 
+    const bossLabel = isMidBossFight ? '⚔ 중간 보스: ' : isBossFight ? '★ 보스: ' : '';
+
     wrap.innerHTML = `
       <div class="combat-header">
-        <h2>${cs.isBoss ? '★ 보스: ' : ''}${cs.enemy.name}</h2>
+        <h2>${bossLabel}${cs.enemy.name}</h2>
         <span class="combat-turn">턴 ${cs.turn}</span>
       </div>
 
@@ -645,6 +750,7 @@ export function createDungeonScreen(
             <span class="combat-stat-label">MP</span>
             <div class="bar"><div class="bar-fill combat-player-mp-bar" style="width:${mpPct}%"></div></div>
             <span class="stat-val">${Math.round(p.base.mp)}/${Math.round(p.getEffectiveMaxMp())}</span>
+          </div>
           </div>
           <div class="combat-tp-line">TP: ${p.base.ap}/${p.getEffectiveMaxAp()}</div>
         </div>
@@ -702,8 +808,17 @@ export function createDungeonScreen(
       combatState.combatLog.push(`${p.name}이(가) 도주했다!`);
     }
     session.backlog.add(session.gameTime, `${p.name}이(가) 전투에서 도주했다.`, '행동');
-    // 도주 → 한 층 올라가기 (후퇴)
-    handleRetreat(el);
+    combatState = null;
+
+    if (isBossFight || isMidBossFight) {
+      // 보스/중간보스 도주 → 포기
+      handleGiveUp(el);
+    } else {
+      // 일반 전투 도주 → 선택지 미클리어로 되돌아감
+      selectedChoiceIdx = -1;
+      phase = 'navigate';
+      renderNavigate(el);
+    }
   }
 
   // ================================================================ victory
@@ -711,9 +826,10 @@ export function createDungeonScreen(
     if (!selectedDungeon || !runState || !combatState) return;
     stopCombatTimer(combatState);
 
-    const isBoss = combatState.isBoss;
-    const baseExpGain = isBoss ? 50 + selectedDungeon.difficulty * 30 : 20 + selectedDungeon.difficulty * 10;
-    const baseGoldGain = isBoss ? 30 + selectedDungeon.difficulty * 20 : 10 + selectedDungeon.difficulty * 5;
+    const isBoss = isBossFight;
+    const isMidBoss = isMidBossFight;
+    const baseExpGain = (isBoss || isMidBoss) ? 50 + selectedDungeon.difficulty * 30 : 20 + selectedDungeon.difficulty * 10;
+    const baseGoldGain = (isBoss || isMidBoss) ? 30 + selectedDungeon.difficulty * 20 : 10 + selectedDungeon.difficulty * 5;
     const prevProgress = p.getDungeonProgress(selectedDungeon.id);
     let expGain = baseExpGain;
     let goldGain = baseGoldGain;
@@ -724,7 +840,7 @@ export function createDungeonScreen(
       goldGain += greedBonus;
       bonusText = `욕심 보너스 +${greedBonus}G`;
     }
-    if (selectedDungeon.rule?.template === 'PurityCurrent' && runState.purity > 0) {
+    if (selectedDungeon.rule?.template === 'PurityCurrent' && runState.purity > 0 && (isBoss || isMidBoss)) {
       p.adjustHp(runState.purity * 2);
       p.adjustMp(runState.purity);
       bonusText = bonusText ? `${bonusText} | 정화 회복` : '정화 회복';
@@ -738,9 +854,6 @@ export function createDungeonScreen(
 
     p.addGold(Math.round(goldGain));
     const leveledUp = p.gainExp(Math.round(expGain));
-    p.addDungeonProgress(selectedDungeon.id, selectedDungeon.progressPerAdvance);
-    const curProgress = p.getDungeonProgress(selectedDungeon.id);
-    const unlockedHidden = isBoss && hasHiddenRoute(selectedDungeon) && prevProgress < (selectedDungeon.hiddenUnlockProgress ?? 100);
     session.gameTime.advance(30);
 
     session.backlog.add(
@@ -749,80 +862,109 @@ export function createDungeonScreen(
       '행동',
     );
 
-    // 전투 턴 누적
     runState.totalTurns += combatState.turn;
 
     if (isBoss) {
+      // 최종 보스 격파 → 클리어
+      pendingProgress += selectedDungeon.progressPerAdvance;
       runState.bossDefeated = true;
       session.knowledge.trackDungeonClear();
-      // 최단 기록 갱신
+      p.addDungeonProgress(selectedDungeon.id, pendingProgress);
       const prev = p.dungeonBestTurns.get(selectedDungeon.id);
       const isNewRecord = !prev || runState.totalTurns < prev;
       if (isNewRecord) p.dungeonBestTurns.set(selectedDungeon.id, runState.totalTurns);
       session.backlog.add(session.gameTime, `${selectedDungeon.name} 클리어! (${runState.totalTurns}턴)${isNewRecord ? ' ★신기록!' : ''}`, '행동');
-    }
 
-    phase = 'victory';
-    el.innerHTML = '';
-    const wrap = document.createElement('div');
-    wrap.className = 'screen info-screen';
+      const curProgress = p.getDungeonProgress(selectedDungeon.id);
+      const unlockedHidden = hasHiddenRoute(selectedDungeon) && prevProgress < (selectedDungeon.hiddenUnlockProgress ?? 100);
+      const bestTurns = p.dungeonBestTurns.get(selectedDungeon.id);
 
-    const bestTurns = p.dungeonBestTurns.get(selectedDungeon.id);
-    const recordHtml = isBoss
-      ? `<p style="color:var(--warning);font-size:13px">클리어 턴: ${runState.totalTurns}${bestTurns === runState.totalTurns ? ' ★신기록!' : ` (최단: ${bestTurns}턴)`}</p>`
-      : '';
-
-    wrap.innerHTML = `
-      <h2>${isBoss ? '★ 보스 격파!' : '승리!'}</h2>
-      <div style="text-align:center;margin:12px 0">
-        <p>${combatState.enemy.name}을(를) 쓰러뜨렸다!</p>
-        <p>EXP +${Math.round(expGain)} | ${Math.round(goldGain)}G</p>
-        ${bonusText ? `<p style="color:var(--accent2)">${bonusText}</p>` : ''}
-        ${leveledUp ? `<p style="color:var(--success)">레벨 업! Lv.${p.base.level}</p>` : ''}
-        <p style="color:var(--text-dim)">진행도: ${curProgress}%</p>
-        ${unlockedHidden && selectedDungeon.hiddenLocation ? `<p style="color:var(--accent2)">숨겨진 지역 ${locationName(selectedDungeon.hiddenLocation)} 이(가) 열렸다.</p>` : ''}
-        ${recordHtml}
-      </div>
-      ${isBoss ? `
-        <button class="btn btn-primary" data-action="clear">던전 클리어! [Enter]</button>
-      ` : `
-        <div class="menu-buttons" style="margin-top:12px">
-          <button class="btn btn-primary" data-action="continue">1. 계속 전진</button>
-          <button class="btn" data-action="retreat">2. 돌아 나가기</button>
+      phase = 'victory';
+      el.innerHTML = '';
+      const wrap = document.createElement('div');
+      wrap.className = 'screen info-screen';
+      wrap.innerHTML = `
+        <h2>★ 보스 격파!</h2>
+        <div style="text-align:center;margin:12px 0">
+          <p>${combatState.enemy.name}을(를) 쓰러뜨렸다!</p>
+          <p>EXP +${Math.round(expGain)} | ${Math.round(goldGain)}G</p>
+          ${bonusText ? `<p style="color:var(--accent2)">${bonusText}</p>` : ''}
+          ${leveledUp ? `<p style="color:var(--success)">레벨 업! Lv.${p.base.level}</p>` : ''}
+          <p style="color:var(--text-dim)">진행도: ${curProgress}%</p>
+          ${unlockedHidden && selectedDungeon.hiddenLocation ? `<p style="color:#6ba3d6">숨겨진 지역 ${locationName(selectedDungeon.hiddenLocation)} 이(가) 열렸다.</p>` : ''}
+          <p style="color:var(--warning);font-size:13px">클리어 턴: ${runState.totalTurns}${bestTurns === runState.totalTurns ? ' ★신기록!' : ` (최단: ${bestTurns}턴)`}</p>
         </div>
-        <p class="hint">1=전진, 2=후퇴</p>
-      `}
-    `;
+        <button class="btn btn-primary" data-action="clear">던전 클리어! [Enter]</button>
+      `;
+      wrap.querySelector('[data-action="clear"]')?.addEventListener('click', () => {
+        resetDungeon();
+        renderList(el);
+      });
+      el.appendChild(wrap);
 
-    wrap.querySelector('[data-action="clear"]')?.addEventListener('click', () => {
-      resetDungeon();
-      renderList(el);
-    });
-    wrap.querySelector('[data-action="continue"]')?.addEventListener('click', () => {
-      if (selectedDungeon?.rule?.template === 'GreedRisk' && runState) {
-        runState.greed = Math.min(9, runState.greed + 1);
-      }
+    } else if (isMidBoss) {
+      // 중간 보스 격파 → 다음 층으로
+      phase = 'victory';
+      el.innerHTML = '';
+      const wrap = document.createElement('div');
+      wrap.className = 'screen info-screen';
+      wrap.innerHTML = `
+        <h2>⚔ 중간 보스 격파!</h2>
+        <div style="text-align:center;margin:12px 0">
+          <p>${combatState.enemy.name}을(를) 쓰러뜨렸다!</p>
+          <p>EXP +${Math.round(expGain)} | ${Math.round(goldGain)}G</p>
+          ${bonusText ? `<p style="color:var(--accent2)">${bonusText}</p>` : ''}
+          ${leveledUp ? `<p style="color:var(--success)">레벨 업! Lv.${p.base.level}</p>` : ''}
+        </div>
+        <button class="btn btn-primary" data-action="continue">${runState.floor + 1}층으로 전진 [Enter]</button>
+      `;
+      wrap.querySelector('[data-action="continue"]')?.addEventListener('click', () => {
+        combatState = null;
+        isMidBossFight = false;
+        ds.continueAfterMidBoss(runState!, selectedDungeon!, session.gameTime.hour);
+        phase = 'navigate';
+        renderNavigate(el);
+      });
+      el.appendChild(wrap);
+
+    } else {
+      // 일반 전투 승리 → 선택지 클리어, 탐색 화면으로
+      markChoiceCleared();
       combatState = null;
-      advanceToNext(el);
-    });
-    wrap.querySelector('[data-action="retreat"]')?.addEventListener('click', () => handleRetreat(el));
 
-    el.appendChild(wrap);
+      phase = 'victory';
+      el.innerHTML = '';
+      const wrap = document.createElement('div');
+      wrap.className = 'screen info-screen';
+      wrap.innerHTML = `
+        <h2>승리!</h2>
+        <div style="text-align:center;margin:12px 0">
+          <p>적을 쓰러뜨렸다!</p>
+          <p>EXP +${Math.round(expGain)} | ${Math.round(goldGain)}G</p>
+          ${bonusText ? `<p style="color:var(--accent2)">${bonusText}</p>` : ''}
+          ${leveledUp ? `<p style="color:var(--success)">레벨 업! Lv.${p.base.level}</p>` : ''}
+        </div>
+        <button class="btn btn-primary" data-action="continue">계속 [Enter]</button>
+      `;
+      wrap.querySelector('[data-action="continue"]')?.addEventListener('click', () => {
+        phase = 'navigate';
+        renderNavigate(el);
+      });
+      el.appendChild(wrap);
+    }
   }
 
   // ================================================================ defeat
   function handleDefeat(el: HTMLElement) {
     if (combatState) stopCombatTimer(combatState);
 
-    // 자택 복귀: 이동 시간 + 8시간 회복 시간 경과
     p.base.hp = Math.max(1, Math.round(p.getEffectiveMaxHp() * 0.5));
     const travelMins = session.world.getShortestMinutes(p.currentLocation, p.homeLocation, session.gameTime.day);
     const recoveryMins = 8 * 60;
     session.gameTime.advance(travelMins + recoveryMins);
     p.currentLocation = p.homeLocation;
-    // 컬러 영향
-    p.color.values[7] = Math.min(1, (p.color.values[7] ?? 0.5) + 0.05); // Dark +0.05
-    p.color.values[6] = Math.max(0, (p.color.values[6] ?? 0.5) - 0.03); // Light -0.03
+    p.color.values[7] = Math.min(1, (p.color.values[7] ?? 0.5) + 0.05);
+    p.color.values[6] = Math.max(0, (p.color.values[6] ?? 0.5) - 0.03);
 
     session.backlog.add(session.gameTime, `${p.name}이(가) 쓰러져 자택에서 깨어났다...`, '행동');
 
@@ -854,8 +996,9 @@ export function createDungeonScreen(
     const evtIdx = room.eventIdx;
     currentEvent = evtIdx !== undefined ? ds.getDungeonEventByIndex(evtIdx) : null;
     if (!currentEvent) {
-      // 이벤트 없으면 다음 방
-      advanceToNext(el);
+      markChoiceCleared();
+      phase = 'navigate';
+      renderNavigate(el);
       return;
     }
     eventMessage = '';
@@ -870,7 +1013,6 @@ export function createDungeonScreen(
     wrap.className = 'screen info-screen';
 
     const evt = currentEvent;
-    // 이벤트 효과 적용
     let resultText = '';
     if (selectedDungeon?.rule?.template === 'AncientResonance' && runState) {
       runState.resonance += 1;
@@ -896,7 +1038,6 @@ export function createDungeonScreen(
       p.adjustAp(tpGain);
       resultText += `TP +${tpGain} `;
     }
-    // 컬러 영향
     for (let i = 0; i < evt.colorInfluence.length; i++) {
       if (evt.colorInfluence[i] !== 0) {
         p.color.values[i] = Math.max(0, Math.min(1, (p.color.values[i] ?? 0.5) + evt.colorInfluence[i] * 0.1));
@@ -920,7 +1061,9 @@ export function createDungeonScreen(
       if (p.base.hp <= 0) {
         handleDefeat(el);
       } else {
-        advanceToNext(el);
+        markChoiceCleared();
+        phase = 'navigate';
+        renderNavigate(el);
       }
     });
 
@@ -953,7 +1096,7 @@ export function createDungeonScreen(
         <p style="color:var(--text-dim)">TP: ${p.base.ap}/${p.getEffectiveMaxAp()}</p>
       </div>
       <div class="menu-buttons" style="margin-top:12px">
-        <button class="btn btn-primary" data-action="rest">1. 휴식하기 (HP+${restRecovery.hp}, MP+${restRecovery.mp}, TP 소모 없음)</button>
+        <button class="btn btn-primary" data-action="rest">1. 휴식하기 (HP+${restRecovery.hp}, MP+${restRecovery.mp})</button>
         <button class="btn" data-action="skip">2. 그냥 지나치기</button>
       </div>
       <p class="hint">1=휴식, 2=지나침</p>
@@ -971,23 +1114,15 @@ export function createDungeonScreen(
       }
       session.gameTime.advance(10);
       session.backlog.add(session.gameTime, `${p.name}이(가) 던전에서 휴식했다.`, '행동');
-
-      // 특수 이벤트 10% 확률
-      if (randomFloat(0, 1) < 0.10) {
-        const event = ds.rollDungeonEvent(selectedDungeon);
-        if (event) {
-          currentEvent = event;
-          eventMessage = '휴식 중 무언가가 일어났다!';
-          phase = 'event';
-          renderEvent(el);
-          return;
-        }
-      }
-      advanceToNext(el);
+      markChoiceCleared();
+      phase = 'navigate';
+      renderNavigate(el);
     });
 
     wrap.querySelector('[data-action="skip"]')?.addEventListener('click', () => {
-      advanceToNext(el);
+      markChoiceCleared();
+      phase = 'navigate';
+      renderNavigate(el);
     });
 
     el.appendChild(wrap);
@@ -1003,6 +1138,9 @@ export function createDungeonScreen(
         case 'navigate': renderNavigate(el); break;
         case 'event': renderEvent(el); break;
         case 'rest': renderRest(el); break;
+        case 'midBoss': break; // rendered inline
+        case 'map': renderDungeonMap(el); break;
+        case 'giveUpConfirm': renderGiveUpConfirm(el); break;
         default: renderList(el); break;
       }
     },
@@ -1016,7 +1154,14 @@ export function createDungeonScreen(
         if (phase === 'combat') {
           handleFlee(container);
         } else if (phase === 'navigate') {
-          handleRetreat(container);
+          phase = 'giveUpConfirm';
+          renderGiveUpConfirm(container);
+        } else if (phase === 'giveUpConfirm') {
+          phase = 'navigate';
+          renderNavigate(container);
+        } else if (phase === 'map') {
+          phase = 'navigate';
+          renderNavigate(container);
         } else if (phase === 'entry') {
           selectedDungeon = null;
           phase = 'list';
@@ -1041,31 +1186,32 @@ export function createDungeonScreen(
           btn?.click();
         }
       } else if (phase === 'navigate') {
-        const isBossFloor = runState && runState.depth >= runState.maxDepth;
-        if (isBossFloor) {
-          if (key === '1') {
-            const btn = container.querySelector('[data-choice="boss"]') as HTMLButtonElement | null;
-            btn?.click();
-          } else if (key === '2') handleRetreat(container);
-        } else {
-          if (key === '1') enterRoom(runState!.leftRoom, false, container);
-          else if (key === '2') enterRoom(runState!.rightRoom, false, container);
-          else if (key === '3' && runState?.hasSidePath) handleSidePath(container);
-          else if (key === '3' && !runState?.hasSidePath) handleRetreat(container);
-          else if (key === '4' && runState?.hasSidePath) handleRetreat(container);
+        if (/^[1-9]$/.test(key)) {
+          const idx = parseInt(key, 10) - 1;
+          if (runState && idx < runState.choices.length && !runState.choices[idx].cleared) {
+            enterChoice(idx, container);
+          }
+        } else if (key === 'Enter') {
+          const btn = container.querySelector('[data-action="advance"]') as HTMLButtonElement | null;
+          btn?.click();
         }
       } else if (phase === 'combat') {
         if (key === '1') handleSkillUse(0, container);
         else if (key === '2') handleSkillUse(1, container);
         else if (key === '3') handleSkillUse(2, container);
-      } else if (phase === 'victory') {
+      } else if (phase === 'victory' || phase === 'midBoss') {
         if (key === 'Enter' || key === '1') {
           const btn = container.querySelector('[data-action="clear"]') as HTMLButtonElement
-            ?? container.querySelector('[data-action="continue"]') as HTMLButtonElement;
+            ?? container.querySelector('[data-action="continue"]') as HTMLButtonElement
+            ?? container.querySelector('[data-action="fight"]') as HTMLButtonElement;
           btn?.click();
+        }
+      } else if (phase === 'giveUpConfirm') {
+        if (key === '1') {
+          phase = 'navigate';
+          renderNavigate(container);
         } else if (key === '2') {
-          const btn = container.querySelector('[data-action="retreat"]') as HTMLButtonElement;
-          btn?.click();
+          handleGiveUp(container);
         }
       } else if (phase === 'event' || phase === 'defeat') {
         if (key === 'Enter') {
@@ -1083,7 +1229,6 @@ export function createDungeonScreen(
       }
     },
     onExit() {
-      // 화면 떠날 때 타이머 정리
       if (combatState) stopCombatTimer(combatState);
     },
   };

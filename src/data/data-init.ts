@@ -8,7 +8,7 @@ import { parseLocationID } from '../types/location';
 import { Actor } from '../models/actor';
 import { World, createLocationData } from '../models/world';
 import { EventSystem, createGameEvent } from '../models/event';
-import { DungeonSystem, DungeonEventType } from '../models/dungeon';
+import { DungeonSystem, DungeonEventType, MidBossDef, DungeonFloorDef } from '../models/dungeon';
 import { ActivitySystem } from '../models/activity';
 import { loadHyperion } from '../systems/hyperion';
 import { setDialogueLines, clearGiftPreferences, setGiftPreference } from '../systems/npc-interaction';
@@ -387,6 +387,57 @@ export function initDungeonSystem(
         item: parseItemType(l.item), amount: l.amount, chance: l.chance,
       })),
       colorInfluence: parseColorInfluence(s.get('colorInfluence', '')),
+      floors: s.getInt('floors', (() => {
+        const diff = s.getFloat('difficulty', 0.5);
+        if (diff <= 0.15) return 2;
+        if (diff <= 0.25) return 3;
+        if (diff <= 0.40) return 3;
+        if (diff <= 0.60) return 4;
+        if (diff <= 0.80) return 5;
+        return 6;
+      })()),
+      progressSteps: s.getInt('progressSteps', (() => {
+        const diff = s.getFloat('difficulty', 0.5);
+        return diff <= 0.25 ? 2 : 3;
+      })()),
+      choicesPerStep: s.getInt('choicesPerStep', (() => {
+        const diff = s.getFloat('difficulty', 0.5);
+        return diff > 0.60 ? 6 : 5;
+      })()),
+      requiredClears: s.getInt('requiredClears', s.getInt('choicesPerStep', (() => {
+        const diff = s.getFloat('difficulty', 0.5);
+        return diff > 0.60 ? 6 : 5;
+      })()) - 1),
+      midBosses: (() => {
+        const bosses: MidBossDef[] = [];
+        const nums = new Set<number>();
+        for (const key of s.values.keys()) {
+          const m = key.match(/^midBoss_(\d+)_/);
+          if (m) nums.add(parseInt(m[1], 10));
+        }
+        for (const n of [...nums].sort((a, b) => a - b)) {
+          const enemyId = s.get(`midBoss_${n}_enemy`, '').trim();
+          if (!enemyId) continue;
+          bosses.push({
+            afterFloor: s.getInt(`midBoss_${n}_afterFloor`, n),
+            enemyId,
+          });
+        }
+        return bosses;
+      })(),
+      floorDefs: (() => {
+        const defs: DungeonFloorDef[] = [];
+        const nums = new Set<number>();
+        for (const key of s.values.keys()) {
+          const m = key.match(/^floor_(\d+)_enemies$/);
+          if (m) nums.add(parseInt(m[1], 10));
+        }
+        for (const n of [...nums].sort((a, b) => a - b)) {
+          const enemies = parseStringList(s.get(`floor_${n}_enemies`, ''));
+          if (enemies.length > 0) defs.push({ floor: n, enemyIds: enemies });
+        }
+        return defs;
+      })(),
     });
   }
 
