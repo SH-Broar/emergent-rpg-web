@@ -6,7 +6,7 @@ import { seasonName } from '../types/enums';
 import { randomInt, randomFloat } from '../types/rng';
 import { updateHyperionLevels } from './hyperion';
 import { advanceTurn } from './world-simulation';
-import { applyDailyBaseEffects } from './base-effects';
+import { applyDailyBaseEffects, tickStoragePenalties } from './base-effects';
 import { findItemsBySource } from '../types/item-defs';
 import { tryNpcInitiatedConversation, getDialogue, getRelationshipStage, getActionText } from './npc-interaction';
 
@@ -33,7 +33,8 @@ export type GameAction =
   | 'info_status' | 'info_color' | 'info_relations' | 'info_world'
   | 'info_backlog' | 'info_hyperion' | 'info_party' | 'info_titles' | 'info_map' | 'info_encyclopedia'
   | 'info_skills' | 'info_inventory'
-  | 'save';
+  | 'save'
+  | 'skill_shop' | 'guild_dungeon';
 
 const ACTION_TIME: Partial<Record<GameAction, number>> = {
   idle: 30, move: 0, talk: 20, trade: 15, eat: 0,
@@ -292,6 +293,8 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
     case 'realestate': result.screenChange = 'realestate'; return result;
     case 'cooking': result.screenChange = 'cooking'; return result;
     case 'memory_spring': result.messages.push('기억의 샘에 다가간다.'); result.screenChange = 'memory_spring'; break;
+    case 'skill_shop': result.screenChange = 'skill_shop'; return result;
+    case 'guild_dungeon': result.screenChange = 'guild_dungeon'; return result;
 
     // 정보 화면 (시간 소모 없음)
     case 'info_status':
@@ -329,10 +332,11 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
       session.social, session.knowledge,
     );
 
-    // 날이 바뀌었으면 거점 패시브 효과 적용
+    // 날이 바뀌었으면 거점 패시브 효과 + 보관 패널티 적용
     if (session.gameTime.day !== prevDay) {
       const beMsgs = applyDailyBaseEffects(session);
-      for (const msg of beMsgs) {
+      const storageMsgs = tickStoragePenalties(session);
+      for (const msg of [...beMsgs, ...storageMsgs]) {
         session.backlog.add(session.gameTime, msg, '시스템');
         result.messages.push(msg);
       }

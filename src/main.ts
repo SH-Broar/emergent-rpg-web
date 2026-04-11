@@ -34,6 +34,8 @@ import { createLoreScreen } from './ui/screens/lore';
 import { createRealEstateScreen } from './ui/screens/real-estate';
 import { createStorageScreen } from './ui/screens/storage';
 import { createCookingScreen } from './ui/screens/cooking';
+import { createSkillShopScreen } from './ui/screens/skill-shop';
+import { createGuildDungeonScreen } from './ui/screens/guild-dungeon';
 import { createFarmScreen } from './ui/screens/farm';
 import { createTravelScreen, type TravelOptions } from './ui/screens/travel';
 
@@ -291,6 +293,12 @@ async function boot() {
           break;
         case 'cooking':
           sm.push(createCookingScreen(session, () => sm.pop()));
+          break;
+        case 'skill_shop':
+          sm.push(createSkillShopScreen(session, () => sm.pop()));
+          break;
+        case 'guild_dungeon':
+          sm.push(createGuildDungeonScreen(session, () => sm.pop()));
           break;
         case 'memory_spring':
           sm.push(createMemorySpringScreen(session, {

@@ -41,6 +41,13 @@ export interface SkillDef {
   isBasicSkill: boolean;      // 기본 스킬 (자동 습득, 제거 불가)
   basicForRace: string;       // 종족 키 (해당 종족 전용 기본 스킬, 빈=공용)
   roleAffinity: string[];     // NPC에게 우선 배정되는 역할 키
+
+  // --- 장소 학습 (스킬 상점) ---
+  learnLocation?: string;      // 학습 가능 장소 (LocationID, 빈=상점 불가)
+  learnCost?: { item: string; amount: number }[];  // 재료 비용
+  learnMinHyperion?: number;   // 최소 히페리온 레벨
+  replacesSkill?: string;      // 이전 단계 스킬 ID (빈=교체 없음)
+  shopTier?: number;            // 상점 표시용 단계 (0=상점 아님)
 }
 
 export interface PlayerSkillState {
@@ -88,6 +95,7 @@ function createDefaultSkillDef(id: string): SkillDef {
     preDelay: 0, postDelay: 0, appearRate: 0.5, maxUsesPerCombat: 99,
     element: -1, raceTagExpr: '', minLevel: 0, colorReq: [],
     isBasicSkill: false, basicForRace: '', roleAffinity: [],
+    learnLocation: '', learnCost: [], learnMinHyperion: 0, replacesSkill: '', shopTier: 0,
   };
 }
 
@@ -184,6 +192,19 @@ export function loadSkillDefs(sections: DataSection[]): void {
     def.basicForRace = s.get('basicForRace', '');
     const roleStr = s.get('roleAffinity', '');
     def.roleAffinity = roleStr ? parseStringList(roleStr) : [];
+
+    // Shop learning
+    def.learnLocation = s.get('learnLocation', '');
+    const costStr = s.get('learnCost', '');
+    if (costStr) {
+      def.learnCost = costStr.split(',').map(c => {
+        const [item, amt] = c.trim().split(':');
+        return { item: item.trim(), amount: parseInt(amt, 10) || 1 };
+      });
+    }
+    def.learnMinHyperion = s.getInt('learnMinHyperion', 0);
+    def.replacesSkill = s.get('replacesSkill', '');
+    def.shopTier = s.getInt('shopTier', 0);
 
     registerSkill(def);
   }
@@ -339,6 +360,12 @@ export function getAllSkillDefs(): ReadonlyMap<string, SkillDef> {
 export function getSkillsByType(type: SkillType): SkillDef[] {
   ensureFallback();
   return skillsByType.get(type) ?? [];
+}
+
+/** 장소에서 학습 가능한 스킬 목록 */
+export function getShopSkillsForLocation(locationId: string): SkillDef[] {
+  ensureFallback();
+  return [...skillRegistry.values()].filter(s => s.learnLocation === locationId && (s.shopTier ?? 0) > 0);
 }
 
 /** 종족별 기본 스킬 세트 반환 */

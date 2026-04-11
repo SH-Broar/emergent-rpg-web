@@ -1777,3 +1777,387 @@ maxUsesPerCombat = 3
 element = Earth
 minLevel = 5
 colorReq = 0,0,0,0,0.3,0,0,0
+
+# ============================================================
+# 마법학교 루나 스킬 (learnLocation = Luna_Academy)
+# ============================================================
+
+[luna_mana_arrow_1]
+name = 마력 화살
+description = 응축된 마나를 화살로 만들어 쏜다.
+type = Attack
+damageMultiplier = 1.8
+mpCost = 8
+appearRate = 0.85
+maxUsesPerCombat = 99
+element = None
+learnLocation = Luna_Academy
+learnCost = MonsterLoot:15, Herb:10
+learnMinHyperion = 5
+shopTier = 1
+
+[luna_mana_arrow_2]
+name = 마력 관통
+description = 적의 방어를 관통하는 고밀도 마나탄.
+type = Attack
+damageMultiplier = 2.5
+mpCost = 12
+appearRate = 0.85
+maxUsesPerCombat = 99
+element = None
+learnLocation = Luna_Academy
+learnCost = MonsterLoot:40, OreCommon:15
+learnMinHyperion = 20
+replacesSkill = luna_mana_arrow_1
+shopTier = 2
+
+[luna_mana_arrow_3]
+name = 마력 섬멸
+description = 파괴적인 마력 집속. 한 발로 전세를 뒤집는다.
+type = Attack
+damageMultiplier = 3.2
+mpCost = 16
+appearRate = 0.85
+maxUsesPerCombat = 99
+element = None
+learnLocation = Luna_Academy
+learnCost = MonsterLoot:80, OreRare:5
+learnMinHyperion = 40
+replacesSkill = luna_mana_arrow_2
+shopTier = 3
+
+[luna_elemental_burst_1]
+name = 원소 폭발
+description = 주변 원소를 모아 한꺼번에 터뜨린다.
+type = Attack
+damageMultiplier = 1.6
+flatDamage = 10
+mpCost = 10
+appearRate = 0.75
+maxUsesPerCombat = 99
+element = None
+learnLocation = Luna_Academy
+learnCost = MonsterLoot:15, OreCommon:8
+learnMinHyperion = 5
+shopTier = 1
+
+[luna_elemental_burst_2]
+name = 원소 격류
+description = 격렬한 원소 흐름이 적을 집어삼킨다.
+type = Attack
+damageMultiplier = 2.2
+flatDamage = 15
+mpCost = 14
+appearRate = 0.75
+maxUsesPerCombat = 99
+element = None
+learnLocation = Luna_Academy
+learnCost = MonsterLoot:45, OreCommon:20
+learnMinHyperion = 20
+replacesSkill = luna_elemental_burst_1
+shopTier = 2
+
+[luna_elemental_burst_3]
+name = 원소 붕괴
+description = 제어 불능의 원소가 적을 완전히 무너뜨린다.
+type = Attack
+damageMultiplier = 2.8
+flatDamage = 25
+mpCost = 18
+appearRate = 0.75
+maxUsesPerCombat = 99
+element = None
+learnLocation = Luna_Academy
+learnCost = MonsterLoot:90, OreRare:8
+learnMinHyperion = 40
+replacesSkill = luna_elemental_burst_2
+shopTier = 3
+
+[luna_mana_barrier_1]
+name = 마력 장막
+description = 마나로 방어막을 펼친다.
+type = Defense
+defenseMultiplier = 2.2
+buffDuration = 2
+mpCost = 8
+appearRate = 0.75
+maxUsesPerCombat = 99
+element = None
+learnLocation = Luna_Academy
+learnCost = Herb:15, MonsterLoot:10
+learnMinHyperion = 5
+shopTier = 1
+
+[luna_mana_barrier_2]
+name = 마력 성채
+description = 더 두텁고 견고한 마력 방벽.
+type = Defense
+defenseMultiplier = 2.8
+buffDuration = 2
+mpCost = 12
+appearRate = 0.75
+maxUsesPerCombat = 99
+element = None
+learnLocation = Luna_Academy
+learnCost = Herb:30, MonsterLoot:35
+learnMinHyperion = 20
+replacesSkill = luna_mana_barrier_1
+shopTier = 2
+
+[luna_mana_barrier_3]
+name = 마력 요새
+description = 어떤 공격도 막아내는 절대 방벽.
+type = Defense
+defenseMultiplier = 3.5
+buffDuration = 2
+mpCost = 16
+appearRate = 0.75
+maxUsesPerCombat = 99
+element = None
+learnLocation = Luna_Academy
+learnCost = Herb:50, OreRare:6
+learnMinHyperion = 40
+replacesSkill = luna_mana_barrier_2
+shopTier = 3
+
+[luna_mana_cycle_1]
+name = 마력 순환
+description = 마나 흐름을 가다듬어 HP와 MP를 회복한다.
+type = Buff
+healHp = 30
+healMp = 10
+mpCost = 6
+postDelay = 1
+appearRate = 0.75
+maxUsesPerCombat = 5
+element = None
+learnLocation = Luna_Academy
+learnCost = Herb:12, Potion:3
+learnMinHyperion = 5
+shopTier = 1
+
+[luna_mana_cycle_2]
+name = 마력 환류
+description = 깊은 마나 순환으로 대량 회복한다.
+type = Buff
+healHp = 55
+healMp = 18
+mpCost = 10
+postDelay = 1
+appearRate = 0.75
+maxUsesPerCombat = 5
+element = None
+learnLocation = Luna_Academy
+learnCost = Potion:8, MonsterLoot:30
+learnMinHyperion = 20
+replacesSkill = luna_mana_cycle_1
+shopTier = 2
+
+[luna_mana_cycle_3]
+name = 마력 초월
+description = 한계를 넘은 마나 순환. 전투 중 완전 회복에 가깝다.
+type = Buff
+healHp = 85
+healMp = 30
+mpCost = 14
+postDelay = 1
+appearRate = 0.75
+maxUsesPerCombat = 5
+element = None
+learnLocation = Luna_Academy
+learnCost = Potion:15, OreRare:4
+learnMinHyperion = 40
+replacesSkill = luna_mana_cycle_2
+shopTier = 3
+
+# ============================================================
+# 하나브릿지 신전 스킬 (learnLocation = Hanabridge)
+# ============================================================
+
+[hana_sacred_strike_1]
+name = 신성 타격
+description = 신앙의 힘을 실은 일격.
+type = Attack
+damageMultiplier = 1.7
+mpCost = 8
+appearRate = 0.80
+maxUsesPerCombat = 99
+element = Light
+learnLocation = Hanabridge
+learnCost = MonsterLoot:15, Herb:10
+learnMinHyperion = 5
+shopTier = 1
+
+[hana_sacred_strike_2]
+name = 신성 심판
+description = 더 강한 신성력이 적을 심판한다.
+type = Attack
+damageMultiplier = 2.4
+mpCost = 12
+appearRate = 0.80
+maxUsesPerCombat = 99
+element = Light
+learnLocation = Hanabridge
+learnCost = MonsterLoot:40, OreCommon:15
+learnMinHyperion = 20
+replacesSkill = hana_sacred_strike_1
+shopTier = 2
+
+[hana_sacred_strike_3]
+name = 신성 천벌
+description = 하늘의 심판. 어떤 적도 무릎 꿇린다.
+type = Attack
+damageMultiplier = 3.0
+mpCost = 16
+appearRate = 0.80
+maxUsesPerCombat = 99
+element = Light
+learnLocation = Hanabridge
+learnCost = MonsterLoot:80, OreRare:5
+learnMinHyperion = 40
+replacesSkill = hana_sacred_strike_2
+shopTier = 3
+
+[hana_blessed_shield_1]
+name = 축복의 방패
+description = 신전의 축복으로 방어력을 높인다.
+type = Defense
+defenseMultiplier = 2.0
+buffDuration = 2
+mpCost = 7
+appearRate = 0.75
+maxUsesPerCombat = 99
+element = Light
+learnLocation = Hanabridge
+learnCost = Herb:12, MonsterLoot:10
+learnMinHyperion = 5
+shopTier = 1
+
+[hana_blessed_shield_2]
+name = 축복의 장벽
+description = 더 넓고 강한 신성 장벽을 펼친다.
+type = Defense
+defenseMultiplier = 2.6
+buffDuration = 3
+mpCost = 11
+appearRate = 0.75
+maxUsesPerCombat = 99
+element = Light
+learnLocation = Hanabridge
+learnCost = Herb:28, MonsterLoot:35
+learnMinHyperion = 20
+replacesSkill = hana_blessed_shield_1
+shopTier = 2
+
+[hana_blessed_shield_3]
+name = 축복의 성역
+description = 절대적 신성 수호. 모든 해로움을 물리친다.
+type = Defense
+defenseMultiplier = 3.2
+buffDuration = 3
+mpCost = 15
+appearRate = 0.75
+maxUsesPerCombat = 99
+element = Light
+learnLocation = Hanabridge
+learnCost = Herb:50, OreRare:6
+learnMinHyperion = 40
+replacesSkill = hana_blessed_shield_2
+shopTier = 3
+
+[hana_healing_prayer_1]
+name = 치유의 기도
+description = 기도로 상처를 치유한다.
+type = Buff
+healHp = 40
+mpCost = 8
+postDelay = 1
+appearRate = 0.80
+maxUsesPerCombat = 5
+element = Light
+learnLocation = Hanabridge
+learnCost = Herb:15, Potion:3
+learnMinHyperion = 5
+shopTier = 1
+
+[hana_healing_prayer_2]
+name = 대치유
+description = 깊은 기도로 큰 상처도 낫게 한다.
+type = Buff
+healHp = 70
+mpCost = 12
+postDelay = 1
+appearRate = 0.80
+maxUsesPerCombat = 5
+element = Light
+learnLocation = Hanabridge
+learnCost = Potion:8, MonsterLoot:30
+learnMinHyperion = 20
+replacesSkill = hana_healing_prayer_1
+shopTier = 2
+
+[hana_healing_prayer_3]
+name = 기적
+description = 기적의 치유. 죽음의 문턱에서도 되살아난다.
+type = Buff
+healHp = 110
+mpCost = 16
+postDelay = 1
+appearRate = 0.80
+maxUsesPerCombat = 5
+element = Light
+learnLocation = Hanabridge
+learnCost = Potion:15, OreRare:4
+learnMinHyperion = 40
+replacesSkill = hana_healing_prayer_2
+shopTier = 3
+
+[hana_purify_1]
+name = 정화
+description = 신성력으로 적의 기세를 꺾는다.
+type = Debuff
+debuffType = weaken
+debuffValue = 0.20
+debuffDuration = 2
+mpCost = 8
+appearRate = 0.70
+maxUsesPerCombat = 99
+element = Light
+learnLocation = Hanabridge
+learnCost = Herb:10, MonsterLoot:12
+learnMinHyperion = 5
+shopTier = 1
+
+[hana_purify_2]
+name = 대정화
+description = 강력한 정화의 빛으로 적을 약화시킨다.
+type = Debuff
+debuffType = weaken
+debuffValue = 0.30
+debuffDuration = 3
+mpCost = 12
+appearRate = 0.70
+maxUsesPerCombat = 99
+element = Light
+learnLocation = Hanabridge
+learnCost = Herb:25, MonsterLoot:40
+learnMinHyperion = 20
+replacesSkill = hana_purify_1
+shopTier = 2
+
+[hana_purify_3]
+name = 성역의 빛
+description = 모든 불순함을 태워 없앤다. 적의 힘이 크게 꺾인다.
+type = Debuff
+debuffType = weaken
+debuffValue = 0.40
+debuffDuration = 3
+mpCost = 16
+appearRate = 0.70
+maxUsesPerCombat = 99
+element = Light
+learnLocation = Hanabridge
+learnCost = Potion:10, OreRare:5
+learnMinHyperion = 40
+replacesSkill = hana_purify_2
+shopTier = 3

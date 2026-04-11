@@ -221,6 +221,22 @@ export class Actor {
     this.dungeonProgress.set(dungeonId, (this.dungeonProgress.get(dungeonId) ?? 0) + amount);
   }
 
+  /** 스킬 교체 (상점 강화): 이전 스킬을 제거하고 새 스킬로 교체 */
+  replaceSkill(oldId: string, newId: string): void {
+    if (oldId && this.learnedSkills.has(oldId)) {
+      this.learnedSkills.delete(oldId);
+      const idx = this.skillOrder.indexOf(oldId);
+      if (idx >= 0) {
+        this.skillOrder[idx] = newId;
+      } else {
+        this.skillOrder.push(newId);
+      }
+    } else {
+      this.skillOrder.push(newId);
+    }
+    this.learnedSkills.set(newId, 1);
+  }
+
   // --- 개별 아이템 인벤토리 메서드 ---
   addItemById(id: string, amount = 1): void {
     this.items.set(id, (this.items.get(id) ?? 0) + amount);
@@ -267,15 +283,24 @@ export class Actor {
   getEffectiveMaxMp(): number { return this.base.maxMp + (this.hyperionLevel + this.hyperionBonus) * 5; }
   getEffectiveAttack(): number {
     const weaponBonus = this.equippedWeapon ? (getWeaponDef(this.equippedWeapon)?.attack ?? 0) : 0;
+    const weaponDegrade = this.getVariable('degrade_weapon');
     const buffBonus = this.getVariable('buff_attack');
-    return this.base.attack + (this.hyperionLevel + this.hyperionBonus) * 2 + weaponBonus + buffBonus;
+    return this.base.attack + (this.hyperionLevel + this.hyperionBonus) * 2
+      + weaponBonus * (1 - weaponDegrade / 100) + buffBonus;
   }
   getEffectiveDefense(): number {
     const armorBonus = this.equippedArmor ? (getArmorDef(this.equippedArmor)?.defense ?? 0) : 0;
+    const armorDegrade = this.getVariable('degrade_armor');
     const acc1Bonus = this.equippedAccessory ? (getArmorDef(this.equippedAccessory)?.defense ?? 0) : 0;
+    const acc1Degrade = this.getVariable('degrade_accessory');
     const acc2Bonus = this.equippedAccessory2 ? (getArmorDef(this.equippedAccessory2)?.defense ?? 0) : 0;
+    const acc2Degrade = this.getVariable('degrade_accessory2');
     const buffBonus = this.getVariable('buff_defense');
-    return this.base.defense + (this.hyperionLevel + this.hyperionBonus) * 1 + armorBonus + acc1Bonus + acc2Bonus + buffBonus;
+    return this.base.defense + (this.hyperionLevel + this.hyperionBonus) * 1
+      + armorBonus * (1 - armorDegrade / 100)
+      + acc1Bonus * (1 - acc1Degrade / 100)
+      + acc2Bonus * (1 - acc2Degrade / 100)
+      + buffBonus;
   }
   receiveEventInfluence(influence: number[], _eventName: string, _time: GameTime): void {
     this.color.applyInfluence(influence);

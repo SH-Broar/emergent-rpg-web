@@ -29,6 +29,17 @@ export function parseItemType(s: string): ItemType {
   return ITEM_TYPE_KEYS[s.trim()] ?? ItemType.Food;
 }
 
+const ITEM_TYPE_NAMES: Record<ItemType, string> = {
+  [ItemType.Food]: '식량', [ItemType.Herb]: '약초', [ItemType.OreCommon]: '광석',
+  [ItemType.OreRare]: '희귀 광석', [ItemType.MonsterLoot]: '몬스터 전리품',
+  [ItemType.Potion]: '포션', [ItemType.Equipment]: '장비', [ItemType.GuildCard]: '길드 카드',
+  [ItemType.Count]: '?',
+};
+
+export function itemTypeName(t: ItemType): string {
+  return ITEM_TYPE_NAMES[t] ?? '?';
+}
+
 // --- Element (Color.h:15) ---
 export enum Element {
   Fire = 0, Water, Electric, Iron, Earth, Wind, Light, Dark, Count,

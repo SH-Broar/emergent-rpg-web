@@ -55,6 +55,8 @@ function hasActivities(session: GameSession) {
   return session.activitySystem.hasActivities(session.player.currentLocation);
 }
 function atGuildHall(session: GameSession) { return session.player.currentLocation === 'Guild_Hall'; }
+function atGuild(session: GameSession) { return session.player.currentLocation === 'Guild_Hall' || session.player.currentLocation === 'Guild_Branch'; }
+function atSkillShop(session: GameSession) { return session.player.currentLocation === 'Luna_Academy' || session.player.currentLocation === 'Hanabridge'; }
 
 const MAIN_ACTIONS: ActionDef[] = [
   { key: '1', label: '대기', action: 'idle', icon: '⏳' },
@@ -70,6 +72,8 @@ const MAIN_ACTIONS: ActionDef[] = [
   { key: 'g', label: '선물', action: 'gift', icon: '🎁', visible: hasNpcsHere },
   { key: 'h', label: '자택', action: 'home', icon: '🏠', visible: atHome },
   { key: 'n', label: '부동산', action: 'realestate' as GameAction, icon: '🏘', visible: atGuildHall },
+  { key: 'l', label: '학습', action: 'skill_shop' as GameAction, icon: '📖', visible: atSkillShop },
+  { key: 'j', label: '던전 정보', action: 'guild_dungeon' as GameAction, icon: '🗺', visible: atGuild },
   { key: 'm', label: '기억의 샘', action: 'memory_spring', icon: '💧', visible: atMemorySpring },
 ];
 
