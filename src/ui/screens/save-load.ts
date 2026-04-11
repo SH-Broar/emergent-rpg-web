@@ -46,6 +46,7 @@ interface ActorSaveData {
   colorDomainsLow: number[];
   relationships: [string, number, number, number][];
   dungeonProgress: [string, number][];
+  dungeonBestTurns?: [string, number][];
   actionCooldown: number;
   learnedSkills?: [string, number][];
   skillOrder?: string[];
@@ -154,6 +155,11 @@ function serializeActor(actor: Actor): ActorSaveData {
     dungeonProgress.push([id, progress]);
   }
 
+  const dungeonBestTurns: [string, number][] = [];
+  for (const [id, turns] of actor.dungeonBestTurns) {
+    dungeonBestTurns.push([id, turns]);
+  }
+
   return {
     name: actor.name,
     race: actor.base.race as number,
@@ -185,6 +191,7 @@ function serializeActor(actor: Actor): ActorSaveData {
     colorDomainsLow,
     relationships,
     dungeonProgress,
+    dungeonBestTurns,
     actionCooldown: actor.actionCooldown,
     learnedSkills: [...actor.learnedSkills.entries()],
     skillOrder: [...actor.skillOrder],
@@ -246,6 +253,13 @@ function deserializeActor(data: ActorSaveData, target: Actor): void {
   target.dungeonProgress.clear();
   for (const [id, progress] of data.dungeonProgress) {
     target.dungeonProgress.set(id, progress);
+  }
+
+  target.dungeonBestTurns.clear();
+  if (data.dungeonBestTurns) {
+    for (const [id, turns] of data.dungeonBestTurns) {
+      target.dungeonBestTurns.set(id, turns);
+    }
   }
 
   // Restore skill data (v6+)

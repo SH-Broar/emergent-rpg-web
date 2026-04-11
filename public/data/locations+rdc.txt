@@ -365,8 +365,18 @@ name = 마법학교 루나
 description = 대륙에서 가장 권위 있는 마법 학교. 다양한 종족의 학생과 교수가 마법의 진리를 탐구한다. 첨탑에서 새어나오는 빛이 안개 낀 날에도 학교의 위치를 알려준다.
 x = -1300
 y = 4800
-links = Moss:14, Phantom_Spire
+links = Moss:14, Phantom_Spire, Luna_Practice_Hall:1
 resources = Potion:15, Herb:10
+monsterLevel = 0
+dangerLevel = 0.0
+
+[Luna_Practice_Hall]
+name = 루나 실습동
+description = 마법 실기와 마력 순환 수련이 이루어지는 구역. 실습동 뒤편으로 정원·골짜기·폭포에 이르는 마력로가 이어져, 교실 밖 커리큘럼이 펼쳐진다.
+x = -1288
+y = 4812
+links = Luna_Academy:1
+resources = Potion:10, Herb:10
 monsterLevel = 0
 dangerLevel = 0.0
 

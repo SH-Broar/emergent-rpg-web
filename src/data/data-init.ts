@@ -9,6 +9,7 @@ import { Actor } from '../models/actor';
 import { World, createLocationData } from '../models/world';
 import { EventSystem, createGameEvent } from '../models/event';
 import { DungeonSystem, DungeonEventType, MidBossDef, DungeonFloorDef } from '../models/dungeon';
+import { clearDungeonSRankRegistry, registerDungeonSRankLimit } from '../models/dungeon-s-rank-registry';
 import { ActivitySystem } from '../models/activity';
 import { loadHyperion } from '../systems/hyperion';
 import { setDialogueLines, clearGiftPreferences, setGiftPreference } from '../systems/npc-interaction';
@@ -313,6 +314,7 @@ export function initDungeonSystem(
   dungeon: DungeonSystem,
   world: World,
 ): void {
+  clearDungeonSRankRegistry();
   // monsters — loot는 "Item:amount:chance" 3항 형식, 스킬은 skill_N_* 키
   for (const s of monsterSections) {
     // 몬스터 스킬 파싱
@@ -367,6 +369,8 @@ export function initDungeonSystem(
   for (const s of dungeonSections) {
     const rawAccessFrom = s.get('accessFrom', '').trim();
     if (rawAccessFrom && !hasLoadedLocation(world, rawAccessFrom)) continue;
+    const sRankTurnLimitRaw = s.getInt('sRankTurnLimit', 0);
+    const sRankTurnLimit = sRankTurnLimitRaw > 0 ? sRankTurnLimitRaw : undefined;
     dungeon.addDungeon({
       id: s.name,
       name: s.get('name', s.name),
@@ -472,7 +476,9 @@ export function initDungeonSystem(
         }
         return defs;
       })(),
+      sRankTurnLimit,
     });
+    if (sRankTurnLimit) registerDungeonSRankLimit(s.name, sRankTurnLimit);
   }
 
   // dungeon events

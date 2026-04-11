@@ -77,6 +77,7 @@ function serializeActor(a: Actor): object {
     relationships: [...a.relationships.entries()].map(([k, v]) => [k, { ...v }]),
     memories: a.memories.map(m => ({ ...m, when: serializeGameTime(m.when) })),
     dungeonProgress: [...a.dungeonProgress.entries()],
+    dungeonBestTurns: [...a.dungeonBestTurns.entries()],
     background: a.background,
     hasLearnedMagic: a.hasLearnedMagic,
     stationary: a.stationary,
@@ -113,6 +114,7 @@ function deserializeActor(d: any): Actor {
   );
   a.memories = (d.memories ?? []).map((m: any) => ({ ...m, when: deserializeGameTime(m.when) }));
   a.dungeonProgress = new Map(d.dungeonProgress ?? []);
+  a.dungeonBestTurns = new Map(d.dungeonBestTurns ?? []);
   a.background = d.background ?? '';
   a.hasLearnedMagic = d.hasLearnedMagic ?? false;
   a.stationary = d.stationary ?? false;

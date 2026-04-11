@@ -69,6 +69,7 @@ export const Loc = {
 
   // === 마법학교 루나 ===
   Luna_Academy: 'Luna_Academy',
+  Luna_Practice_Hall: 'Luna_Practice_Hall',
   Phantom_Spire: 'Phantom_Spire',
 
   // === 마틴 항 · 남쪽 바다 ===

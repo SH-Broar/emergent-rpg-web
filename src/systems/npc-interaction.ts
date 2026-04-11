@@ -9,6 +9,7 @@ import { GameTime } from '../types/game-time';
 import { Element, ItemType, SpiritRole, ELEMENT_COUNT, elementName } from '../types/enums';
 import { itemName } from '../types/registry';
 import { randomFloat, randomInt, weightedRandomChoice } from '../types/rng';
+import { getDungeonSRankTurnLimit, resolveDungeonIdForSRankDisplayName } from '../models/dungeon-s-rank-registry';
 
 // ============================================================
 // 선물 선호도
@@ -551,7 +552,7 @@ export interface AcquisitionCheck {
 /** 입수 조건 한 줄을 파싱하여 자동 평가 시도 */
 export function evaluateAcquisitionLine(
   line: string,
-  _player: Actor,
+  player: Actor,
   allActors: Actor[],
   knowledge: PlayerKnowledge,
 ): AcquisitionCheck {
@@ -632,6 +633,21 @@ export function evaluateAcquisitionLine(
   const explore = t.match(/탐사\s*완료한\s*지역\s*(\d+)/);
   if (explore) {
     return { text: t, met: knowledge.visitedLocations.size >= parseInt(explore[1], 10), evaluable: true };
+  }
+
+  // (루나:)던전이름 S랭크 클리어 — S랭크 = 해당 던전 sRankTurnLimit 턴 이내 클리어(최단 기록 기준)
+  const sRank = t.match(/(?:^\d+\.\s*)?(?:루나[:：]\s*)?(.+?)\s*S랭크\s*클리어/);
+  if (sRank) {
+    const displayName = sRank[1].trim();
+    const dungeonId = resolveDungeonIdForSRankDisplayName(displayName);
+    const limit = dungeonId ? getDungeonSRankTurnLimit(dungeonId) : undefined;
+    if (!dungeonId || limit == null) {
+      return { text: t, met: false, evaluable: false };
+    }
+    const cleared = player.getDungeonProgress(dungeonId) >= 100;
+    const best = player.dungeonBestTurns.get(dungeonId);
+    const met = cleared && best != null && best <= limit;
+    return { text: t, met, evaluable: true };
   }
 
   // 자동 평가 불가능

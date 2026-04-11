@@ -572,7 +572,7 @@ type = Heal
 hpHeal = 12
 vigorHeal = 14
 colorInfluence = Light:0.12, Electric:0.08
-accessFrom = Luna_Academy
+accessFrom = Luna_Practice_Hall, Luna_Academy
 
 [howling_echo]
 name = 울음의 메아리

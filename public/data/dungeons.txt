@@ -15,6 +15,7 @@
 # lootRareChance   : 레어 드롭 확률 (0.0 ~ 1.0)
 # lootRare         : 레어 드롭 아이템 — ItemType:amount
 # colorInfluence   : 원소 영향 — Element:float (쉼표 구분)
+# sRankTurnLimit   : (선택) S랭크 — 보스 클리어까지 총 턴 수가 이 값 이하일 때 달성
 # ============================================================
 
 # ============================================================
@@ -1447,26 +1448,71 @@ lootRareChance = 0.16
 lootRare = Equipment:1
 colorInfluence = Dark:0.24, Light:0.05, Water:0.09
 
+[Mana_Garden]
+name = 마력 정원
+deepName = 순환 화단
+description = 루나 실습동에 붙은 마력 정원. 낮은 밀도의 마나가 화단처럼 고리를 이루며, 초보 수련생도 안전하게 리듬을 익히기 좋다.
+deepDescription = 정원 심부에서는 마력 고리가 조금씩 빨라진다. 호흡만 맞춰도 체내 순환이 따라붙는다는 말이 있을 정도로 온화한 구역이다.
+difficulty = 0.14
+progressPerAdvance = 10.5
+accessFrom = Luna_Practice_Hall
+sRankTurnLimit = 58
+ruleTemplate = AncientResonance
+ruleRank = 1
+ruleValueA = 1.5
+ruleValueB = 0.08
+ruleValueC = 0.03
+ruleHint = 권장 히페리온 약 10~30. S랭크는 클리어까지의 총 턴 수가 제한 이내일 때 부여된다.
+enemies = Mana_Sprite, Fluff_Fairy, Mirror_Wisp
+lootOnClear = Potion:5, Herb:10, MonsterLoot:6
+lootPerAdvance = Potion:1:0.32, Herb:2:0.32, MonsterLoot:1:0.30
+lootRareChance = 0.10
+lootRare = OreRare:1
+colorInfluence = Light:0.10, Wind:0.08, Electric:0.06
+
 [Mana_Valley]
 name = 마력 골짜기
 deepName = 잔광 유로
-description = 마법학교 루나 뒤편으로 이어지는 마력 농밀 지대. 지형 자체가 마법 회로처럼 반응해, 평범한 전투보다 마력 흐름을 읽는 감각이 중요하다.
+description = 실습동에서 이어지는 마력 골짜기. 지형 자체가 마법 회로처럼 반응해, 평범한 전투보다 마력 흐름을 읽는 감각이 중요하다.
 deepDescription = 마력이 계곡처럼 흘러내리는 루나의 실전 수련 심부. 통제되지 않은 잔광과 요정성 존재가 시전 리듬을 어지럽힌다.
 difficulty = 0.18
 progressPerAdvance = 9.2
-accessFrom = Luna_Academy
+accessFrom = Luna_Practice_Hall
+sRankTurnLimit = 52
 ruleTemplate = AncientResonance
 ruleRank = 2
 ruleValueA = 2
 ruleValueB = 0.10
 ruleValueC = 0.04
-ruleHint = 마력 흐름과 공명을 맞출수록 수련 효율이 올라가지만, 어긋나면 역류가 온다.
+ruleHint = 권장 히페리온 약 10~30. 마력 흐름과 공명을 맞출수록 수련 효율이 올라가지만, 어긋나면 역류가 온다. S랭크는 클리어 총 턴 제한 이내.
 enemies = Mana_Sprite, Mirror_Wisp, Shadow_Wraith
 lootOnClear = Potion:6, Herb:8, MonsterLoot:8
 lootPerAdvance = Potion:1:0.30, Herb:2:0.28, MonsterLoot:2:0.34
 lootRareChance = 0.12
 lootRare = OreRare:1
 colorInfluence = Electric:0.08, Wind:0.10, Light:0.12, Dark:0.06
+
+[Mana_Falls]
+name = 마력 폭포
+deepName = 낙수 심층
+description = 실습동 지하 수로와 맞닿은 마력 폭포대. 물줄기처럼 쏟아지는 마나가 시전 타이밍을 압박하고, 한 박자만 어긋나도 MP 소모가 크게 뛴다.
+deepDescription = 폭포 심층에서는 역류와 낙수가 겹쳐 공명 강도가 급변한다. 정원·골짜기보다 빠른 판단이 요구되는 마무리 구간이다.
+difficulty = 0.22
+progressPerAdvance = 8.4
+accessFrom = Luna_Practice_Hall
+sRankTurnLimit = 48
+ruleTemplate = AncientResonance
+ruleRank = 3
+ruleValueA = 2.4
+ruleValueB = 0.11
+ruleValueC = 0.05
+ruleHint = 권장 히페리온 약 10~30(상위 구간). S랭크는 클리어 총 턴 제한 이내.
+enemies = Mirror_Wisp, Shadow_Wraith, Mana_Sprite
+lootOnClear = Potion:7, Herb:7, MonsterLoot:9
+lootPerAdvance = Potion:1:0.28, Herb:2:0.26, MonsterLoot:2:0.36
+lootRareChance = 0.13
+lootRare = OreRare:1
+colorInfluence = Water:0.08, Electric:0.10, Wind:0.10, Light:0.08
 
 # ============================================================
 # 환영의 첨탑 — 구역 던전 3 + 상위 층(하·중·상) 3 (같은 장소 6종)

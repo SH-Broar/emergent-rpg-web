@@ -140,6 +140,8 @@ export interface DungeonDef {
   combatWeight: number;
   eventWeight: number;
   restWeight: number;
+  /** S랭크: 보스 클리어까지 총 턴 수가 이 값 이하이면 달성 (입수·연출용) */
+  sRankTurnLimit?: number;
 }
 
 export interface CombatBehaviorRule {

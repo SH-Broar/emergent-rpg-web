@@ -260,7 +260,10 @@ export function createDungeonScreen(
               const progressColor = isCleared ? 'var(--success)' : 'var(--warning)';
               const progressLabel = isCleared ? `✦ 클리어 (${progress}%)` : `진행: ${progress}%`;
               const best = p.dungeonBestTurns.get(d.id);
+              const sr = d.sRankTurnLimit;
+              const sEarned = sr != null && best != null && best <= sr;
               const bestLabel = best ? `최단: ${best}턴` : '';
+              const sRankLabel = sr != null ? (sEarned ? `S랭크 달성(≤${sr}턴)` : `S랭크: ≤${sr}턴`) : '';
               const hiddenOpen = hasHiddenRoute(d) && isHiddenLocationAvailable(d.hiddenLocation);
               const hiddenLabel = hasHiddenRoute(d)
                 ? hiddenOpen
@@ -276,6 +279,7 @@ export function createDungeonScreen(
                   ${d.rule ? `<span style="color:#6ba3d6">특수 ${ruleLevel(d.rule.rank)}</span>` : ''}
                   ${hiddenLabel ? `<span style="color:${hiddenOpen ? '#6ba3d6' : 'var(--text-dim)'}">${hiddenLabel}</span>` : ''}
                   ${bestLabel ? `<span style="color:var(--warning)">${bestLabel}</span>` : ''}
+                  ${sRankLabel ? `<span style="color:${sEarned ? 'var(--success)' : '#e6b422'}">${sRankLabel}</span>` : ''}
                 </div>
                 <div class="dungeon-desc">${isCleared ? d.deepDescription || d.description : d.description}</div>
                 ${d.rule?.hint ? `<div class="dungeon-desc" style="color:#6ba3d6">${d.rule.hint}</div>` : ''}
@@ -995,6 +999,8 @@ export function createDungeonScreen(
       const curProgress = p.getDungeonProgress(selectedDungeon.id);
       const unlockedHidden = hasHiddenRoute(selectedDungeon) && prevProgress < (selectedDungeon.hiddenUnlockProgress ?? 100);
       const bestTurns = p.dungeonBestTurns.get(selectedDungeon.id);
+      const srLimit = selectedDungeon.sRankTurnLimit;
+      const sRankThisRun = srLimit != null && runState.totalTurns <= srLimit;
 
       phase = 'victory';
       el.innerHTML = '';
@@ -1010,6 +1016,7 @@ export function createDungeonScreen(
           ${leveledUp ? `<p style="color:var(--success)">레벨 업! Lv.${p.base.level}</p>` : ''}
           <p style="color:var(--text-dim)">진행도: ${curProgress}%</p>
           ${unlockedHidden && selectedDungeon.hiddenLocation ? `<p style="color:#6ba3d6">숨겨진 지역 ${locationName(selectedDungeon.hiddenLocation)}${iGa(locationName(selectedDungeon.hiddenLocation!))} 열렸다.</p>` : ''}
+          ${sRankThisRun ? `<p style="color:var(--success);font-weight:700">★ S랭크! (클리어 ${runState.totalTurns}턴 / 제한 ${srLimit}턴 이내)</p>` : ''}
           <p style="color:var(--warning);font-size:13px">클리어 턴: ${runState.totalTurns}${bestTurns === runState.totalTurns ? ' ★신기록!' : ` (최단: ${bestTurns}턴)`}</p>
         </div>
         <button class="btn btn-primary" data-action="clear">던전 클리어! [Enter]</button>
