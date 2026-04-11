@@ -91,12 +91,13 @@ export const COMBAT_JOB_DESC: Record<CombatJob, string> = {
 export const ALL_COMBAT_JOBS: CombatJob[] = ['Warrior', 'Ranger', 'DarkMage', 'WhiteMage', 'Rogue'];
 
 // --- LifeJob ---
-export type LifeJob = '' | 'Meteorologist' | 'Herbalist' | 'Merchant' | 'Cook' | 'Miner'
+export type LifeJob = '' | 'Villager' | 'Meteorologist' | 'Herbalist' | 'Merchant' | 'Cook' | 'Miner'
   | 'Astrologer' | 'GuildClerk' | 'Guard' | 'Farmer' | 'Fisher' | 'Priest'
   | 'Craftsman' | 'Adventurer' | 'Bard' | 'Cartographer' | 'Veterinarian';
 
 export const LIFE_JOB_NAMES: Record<LifeJob, string> = {
   '': '없음',
+  Villager: '주민',
   Meteorologist: '기상학자',
   Herbalist: '약초꾼',
   Merchant: '상인',
@@ -117,6 +118,7 @@ export const LIFE_JOB_NAMES: Record<LifeJob, string> = {
 
 export const LIFE_JOB_DESC: Record<LifeJob, string> = {
   '': '생활 직업을 선택하지 않았습니다.',
+  Villager: '특별한 전문 분야 없이 평범하게 살아간다. 어떤 일이든 무난하게 해낸다.',
   Meteorologist: '날씨를 읽고 예측한다. 내일의 날씨를 미리 알 수 있다.',
   Herbalist: '약초와 포션에 정통하다. 채집 시 약초를 더 많이 얻고, 포션을 만들 수 있다.',
   Merchant: '거래와 흥정의 달인. 사고팔 때 가격이 유리해진다.',
@@ -130,12 +132,13 @@ export const LIFE_JOB_DESC: Record<LifeJob, string> = {
   Priest: '기도와 축복으로 사람을 돕는다. 휴식 시 HP 회복이 증가하고, Light 컬러가 서서히 오른다.',
   Craftsman: '손재주의 달인. 장비 수리와 제작 효율이 오르고, 제작 시 재료 절약 확률이 생긴다.',
   Adventurer: '끝없이 떠도는 자. 던전 탐색 HP 비용이 줄고, 미탐색 던전 진입 시 경험치 보너스를 얻는다.',
-  Bard: '노래와 이야기로 분위기를 바꾼다. 동료 히페리온 경험치 획득이 빨라지고, NPC 호감도 상승이 증가한다.',
-  Cartographer: '세상을 지도에 담는다. 이동 시간이 10% 줄고, 숨겨진 장소 발견 확률이 오른다.',
+  Bard: '노래와 이야기로 분위기를 바꾼다. NPC 호감도 상승이 가속되고, 대화 시 특별한 선택지가 열린다.',
+  Cartographer: '세상을 지도에 담는다. 이동 시간이 50% 줄고, 숨겨진 장소 발견 확률이 오른다.',
   Veterinarian: '동물과 정령을 돌본다. 킨·정령 계열 동료의 전투 발동 확률이 오르고, 야생 몬스터 드롭률이 증가한다.',
 };
 
 export const ALL_LIFE_JOBS: LifeJob[] = [
+  'Villager',
   'Meteorologist', 'Herbalist', 'Merchant', 'Cook', 'Miner', 'Astrologer',
   'GuildClerk', 'Guard', 'Farmer', 'Fisher', 'Priest', 'Craftsman',
   'Adventurer', 'Bard', 'Cartographer', 'Veterinarian',
