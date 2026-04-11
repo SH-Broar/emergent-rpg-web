@@ -91,7 +91,9 @@ export const COMBAT_JOB_DESC: Record<CombatJob, string> = {
 export const ALL_COMBAT_JOBS: CombatJob[] = ['Warrior', 'Ranger', 'DarkMage', 'WhiteMage', 'Rogue'];
 
 // --- LifeJob ---
-export type LifeJob = '' | 'Meteorologist' | 'Herbalist' | 'Merchant' | 'Cook' | 'Miner' | 'Astrologer';
+export type LifeJob = '' | 'Meteorologist' | 'Herbalist' | 'Merchant' | 'Cook' | 'Miner'
+  | 'Astrologer' | 'GuildClerk' | 'Guard' | 'Farmer' | 'Fisher' | 'Priest'
+  | 'Craftsman' | 'Adventurer' | 'Bard' | 'Cartographer' | 'Veterinarian';
 
 export const LIFE_JOB_NAMES: Record<LifeJob, string> = {
   '': '없음',
@@ -100,7 +102,17 @@ export const LIFE_JOB_NAMES: Record<LifeJob, string> = {
   Merchant: '상인',
   Cook: '요리사',
   Miner: '광부',
-  Astrologer: '별술사',
+  Astrologer: '점성술사',
+  GuildClerk: '길드 직원',
+  Guard: '경비병',
+  Farmer: '농부',
+  Fisher: '어부',
+  Priest: '사제',
+  Craftsman: '장인',
+  Adventurer: '모험가',
+  Bard: '음유시인',
+  Cartographer: '지도 제작자',
+  Veterinarian: '수의사',
 };
 
 export const LIFE_JOB_DESC: Record<LifeJob, string> = {
@@ -111,9 +123,23 @@ export const LIFE_JOB_DESC: Record<LifeJob, string> = {
   Cook: '음식으로 사람을 살린다. 다양한 요리를 만들 수 있고, 음식 효과가 증가한다.',
   Miner: '광석을 캐는 전문가. 채집 시 광석을 더 많이 얻고, 희귀 광석 확률이 오른다.',
   Astrologer: '별을 읽어 운명을 점친다. 던전 이벤트의 힌트를 얻고, 컬러 변화를 예측한다.',
+  GuildClerk: '길드 업무의 전문가. 퀘스트 보상이 증가하고, 길드 정보를 더 폭넓게 열람한다.',
+  Guard: '마을과 동료를 지킨다. 던전에서 동료의 방어력 보너스가 증가하고, 전투 시 선제 방어 확률이 오른다.',
+  Farmer: '땅을 일구는 사람. 농작물 수확량이 늘고, 음식 재료를 더 자주 발견한다.',
+  Fisher: '물가의 달인. 낚시 수확량이 늘고, 수상 던전에서 이동력 보너스를 얻는다.',
+  Priest: '기도와 축복으로 사람을 돕는다. 휴식 시 HP 회복이 증가하고, Light 컬러가 서서히 오른다.',
+  Craftsman: '손재주의 달인. 장비 수리와 제작 효율이 오르고, 제작 시 재료 절약 확률이 생긴다.',
+  Adventurer: '끝없이 떠도는 자. 던전 탐색 HP 비용이 줄고, 미탐색 던전 진입 시 경험치 보너스를 얻는다.',
+  Bard: '노래와 이야기로 분위기를 바꾼다. 동료 히페리온 경험치 획득이 빨라지고, NPC 호감도 상승이 증가한다.',
+  Cartographer: '세상을 지도에 담는다. 이동 시간이 10% 줄고, 숨겨진 장소 발견 확률이 오른다.',
+  Veterinarian: '동물과 정령을 돌본다. 킨·정령 계열 동료의 전투 발동 확률이 오르고, 야생 몬스터 드롭률이 증가한다.',
 };
 
-export const ALL_LIFE_JOBS: LifeJob[] = ['Meteorologist', 'Herbalist', 'Merchant', 'Cook', 'Miner', 'Astrologer'];
+export const ALL_LIFE_JOBS: LifeJob[] = [
+  'Meteorologist', 'Herbalist', 'Merchant', 'Cook', 'Miner', 'Astrologer',
+  'GuildClerk', 'Guard', 'Farmer', 'Fisher', 'Priest', 'Craftsman',
+  'Adventurer', 'Bard', 'Cartographer', 'Veterinarian',
+];
 
 // --- Trait (Color.h:47) ---
 export enum Trait {
