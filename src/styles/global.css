@@ -438,6 +438,10 @@ html, body {
 .buff-tag { font-size: 10px; padding: 1px 6px; border-radius: 8px; background: var(--success); color: #000; }
 .debuff-tag { font-size: 10px; padding: 1px 6px; border-radius: 8px; background: var(--accent); color: #fff; }
 .delay-indicator { text-align: center; color: var(--warning); font-size: 13px; padding: 4px 0; }
+.tick-bar { height: 3px; background: var(--bg-panel); border-radius: 2px; overflow: hidden; margin-top: 6px; }
+.tick-bar-fill { height: 100%; background: var(--warning); border-radius: 2px; }
+@keyframes tick-countdown { from { width: 100%; } to { width: 0%; } }
+.skill-btn.cooldown { opacity: 0.3; pointer-events: none; }
 
 /* Trade */
 .trade-screen { gap: 10px; }

@@ -387,6 +387,9 @@ export function initDungeonSystem(
         item: parseItemType(l.item), amount: l.amount, chance: l.chance,
       })),
       colorInfluence: parseColorInfluence(s.get('colorInfluence', '')),
+      combatWeight: s.getFloat('combatWeight', 0.70),
+      eventWeight: s.getFloat('eventWeight', 0.20),
+      restWeight: s.getFloat('restWeight', 0.10),
       floors: s.getInt('floors', (() => {
         const diff = s.getFloat('difficulty', 0.5);
         if (diff <= 0.15) return 2;

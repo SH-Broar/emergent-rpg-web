@@ -10,6 +10,7 @@ import {
 } from './skill-combat';
 import { randomFloat } from '../types/rng';
 import { getActionText } from './npc-interaction';
+import { iGa, eulReul } from '../data/josa';
 
 // ============================================================
 // 동료 슬롯
@@ -101,6 +102,8 @@ export interface RealtimeCombatState {
   finished: boolean;
   victory: boolean;
   isBoss: boolean;
+  skillUsedThisTurn: boolean;
+  lastTickTime: number;
 }
 
 const BASE_TICK_MS = 1500;
@@ -139,7 +142,7 @@ export function createCombatState(
     enemy,
     enemyHp: hp,
     enemyMaxHp: hp,
-    combatLog: [`${enemy.name}${isBoss ? ' (보스)' : ''}이(가) 나타났다!`],
+    combatLog: [`${enemy.name}${isBoss ? ' (보스)' : ''}${iGa(enemy.name)} 나타났다!`],
     turn: 0,
     playerSkills,
     partySlots,
@@ -149,6 +152,8 @@ export function createCombatState(
     finished: false,
     victory: false,
     isBoss,
+    skillUsedThisTurn: false,
+    lastTickTime: Date.now(),
   };
 }
 
@@ -169,6 +174,8 @@ export function processTick(
 ): string[] {
   if (state.finished || state.paused) return [];
   state.turn++;
+  state.skillUsedThisTurn = false;
+  state.lastTickTime = Date.now();
   const messages: string[] = [];
 
   // --- 1. Pre-delay 틱 (대기 스킬 발동) ---
@@ -194,7 +201,7 @@ export function processTick(
     state.finished = true;
     state.victory = true;
     const defeatTxt1 = getActionText(['combat.enemy_defeated']) || '처치했다.';
-    messages.push(`${state.enemy.name}을(를) ${defeatTxt1}`);
+    messages.push(`${state.enemy.name}${eulReul(state.enemy.name)} ${defeatTxt1}`);
     return messages;
   }
 
@@ -236,7 +243,7 @@ export function processTick(
     state.finished = true;
     state.victory = true;
     const defeatTxt2 = getActionText(['combat.enemy_defeated']) || '처치했다.';
-    messages.push(`${state.enemy.name}을(를) ${defeatTxt2}`);
+    messages.push(`${state.enemy.name}${eulReul(state.enemy.name)} ${defeatTxt2}`);
     return messages;
   }
 
@@ -286,11 +293,11 @@ export function processTick(
     state.finished = true;
     state.victory = true;
     const defeatTxt3 = getActionText(['combat.enemy_defeated']) || '처치했다.';
-    messages.push(`${state.enemy.name}을(를) ${defeatTxt3}`);
+    messages.push(`${state.enemy.name}${eulReul(state.enemy.name)} ${defeatTxt3}`);
   } else if (player.base.hp <= 0) {
     state.finished = true;
     state.victory = false;
-    messages.push(`${player.name}이(가) 쓰러졌다...`);
+    messages.push(`${player.name}${iGa(player.name)} 쓰러졌다...`);
   }
 
   return messages;
@@ -307,6 +314,7 @@ export function usePlayerSkill(
   options?: SkillUseOptions,
 ): string[] {
   if (state.finished) return [];
+  if (state.skillUsedThisTurn) return ['이번 턴에는 이미 스킬을 사용했다.'];
 
   const ss = state.playerSkills;
   const skill = ss.slots[slotIndex];
@@ -314,6 +322,8 @@ export function usePlayerSkill(
 
   const check = canUseSkill(skill, player, ss, options);
   if (!check.ok) return [check.reason ?? '스킬 사용 불가'];
+
+  state.skillUsedThisTurn = true;
 
   const messages: string[] = [];
 
@@ -408,7 +418,7 @@ export function usePlayerSkill(
   if (state.enemyHp <= 0) {
     state.finished = true;
     state.victory = true;
-    messages.push(`${state.enemy.name}을(를) 쓰러뜨렸다!`);
+    messages.push(`${state.enemy.name}${eulReul(state.enemy.name)} 쓰러뜨렸다!`);
   }
 
   return messages;

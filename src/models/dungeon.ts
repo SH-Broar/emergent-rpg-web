@@ -107,6 +107,9 @@ export interface DungeonDef {
   requiredClears: number;
   midBosses: MidBossDef[];
   floorDefs: DungeonFloorDef[];
+  combatWeight: number;
+  eventWeight: number;
+  restWeight: number;
 }
 
 export interface CombatBehaviorRule {
@@ -283,9 +286,9 @@ export class DungeonSystem {
   }
 
   private getRoomWeights(dungeon: DungeonDef, depth: number, hour: number): { combat: number; event: number; rest: number } {
-    let combat = 0.50;
-    let event = 0.25;
-    let rest = 0.25;
+    let combat = dungeon.combatWeight;
+    let event = dungeon.eventWeight;
+    let rest = dungeon.restWeight;
     const rule = dungeon.rule;
     const intensity = this.computeRuleIntensity(dungeon, depth, hour);
     if (!rule) return { combat, event, rest };
@@ -470,7 +473,7 @@ export class DungeonSystem {
         const next = cycle - (depth % cycle);
         return depth % cycle === 0
           ? '은신처 구간 · 이번 층은 휴식 방과 회복 효율이 좋아진다.'
-          : `다음 은신처까지 ${next}층 · 지금은 장기 탐사 압박이 더 크다.`;
+          : `다음 은신처까지 ${next}단계 · 지금은 장기 탐사 압박이 더 크다.`;
       }
       default:
         return rule.hint;

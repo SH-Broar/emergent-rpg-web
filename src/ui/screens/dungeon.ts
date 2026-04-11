@@ -12,6 +12,7 @@ import {
 import { canUseSkill } from '../../systems/skill-combat';
 import { locationName } from '../../types/registry';
 import { moveCompanions } from '../../systems/npc-interaction';
+import { iGa, eulReul, eunNeun } from '../../data/josa';
 
 type DungeonPhase = 'list' | 'entry' | 'navigate' | 'combat' | 'event' | 'rest' | 'victory' | 'defeat' | 'midBoss' | 'map' | 'giveUpConfirm';
 
@@ -204,6 +205,7 @@ export function createDungeonScreen(
   let selectedChoiceIdx = -1;
   let isBossFight = false;
   let isMidBossFight = false;
+  let tutorialShown = false;
 
   function getPartyActors() {
     return session.knowledge.partyMembers
@@ -295,7 +297,7 @@ export function createDungeonScreen(
       <h2>${selectedDungeon.name}</h2>
       <p class="hint">완전히 공략한 던전이다. 어디로 들어갈지 선택한다.</p>
       ${selectedDungeon.rule ? `<p class="hint" style="color:#6ba3d6">특수 ${'◆'.repeat(selectedDungeon.rule.rank)}${'◇'.repeat(Math.max(0, 5 - selectedDungeon.rule.rank))} — ${selectedDungeon.rule.hint || selectedDungeon.rule.template}</p>` : ''}
-      ${hiddenName && !hiddenOpen ? `<p class="hint" style="color:var(--text-dim)">${hiddenName}은(는) 지금 시간에는 모습을 드러내지 않는다.</p>` : ''}
+      ${hiddenName && !hiddenOpen ? `<p class="hint" style="color:var(--text-dim)">${hiddenName}${eunNeun(hiddenName)} 지금 시간에는 모습을 드러내지 않는다.</p>` : ''}
       <div class="menu-buttons" style="margin-top:12px">
         <button class="btn btn-primary" data-action="dungeon">1. 던전 입장</button>
         ${hiddenName ? `<button class="btn" data-action="hidden" ${hiddenOpen ? '' : 'disabled style="opacity:0.45;cursor:not-allowed"'}>2. 숨겨진 지역 입장: ${hiddenName}</button>` : ''}
@@ -314,7 +316,7 @@ export function createDungeonScreen(
 
   function enterDungeon(dungeon: DungeonDef, el: HTMLElement) {
     runState = ds.createRunState(dungeon, session.gameTime.hour);
-    session.backlog.add(session.gameTime, `${p.name}이(가) ${dungeon.name}에 입장했다.`, '행동');
+    session.backlog.add(session.gameTime, `${p.name}${iGa(p.name)} ${dungeon.name}에 입장했다.`, '행동');
     phase = 'navigate';
     renderNavigate(el);
   }
@@ -326,13 +328,46 @@ export function createDungeonScreen(
     p.currentLocation = hidden;
     moveCompanions(session.actors, session.knowledge, hidden);
     session.knowledge.trackVisit(hidden);
-    session.backlog.add(session.gameTime, `${p.name}이(가) ${locationName(hidden)}에 입장했다.`, '행동');
+    session.backlog.add(session.gameTime, `${p.name}${iGa(p.name)} ${locationName(hidden)}에 입장했다.`, '행동');
     onDone();
   }
 
   // ================================================================ navigate
+  function renderTutorial(el: HTMLElement) {
+    el.innerHTML = '';
+    const wrap = document.createElement('div');
+    wrap.className = 'screen info-screen';
+    wrap.innerHTML = `
+      <h2>던전 탐색 안내</h2>
+      <div style="margin:12px 0;font-size:13px;line-height:1.8">
+        <p>던전은 <b>층</b>과 <b>진행 단계</b>로 이루어져 있습니다.</p>
+        <p style="margin-top:8px">각 단계에서 여러 선택지가 나타나며, 일정 수를 클리어하면 다음으로 넘어갑니다.</p>
+        <div style="margin:12px 0;padding:8px 12px;background:var(--bg-card);border-radius:6px;font-size:12px">
+          <p>⚔ <b>전투</b> — 적과 실시간 전투</p>
+          <p>✦ <b>이벤트</b> — 탐험 중 일어나는 사건</p>
+          <p>💤 <b>휴식</b> — HP와 MP를 회복</p>
+        </div>
+        <p style="margin-top:8px"><b>하단 버튼:</b></p>
+        <p>· <b>탐색</b> — HP를 소모하고 즉시 다음 단계로 진행</p>
+        <p>· <b>던전 지도</b> — 현재 위치와 전체 구조 확인</p>
+        <p>· <b>포기</b> — 던전에서 나갑니다 (진행도 미저장)</p>
+        <p style="margin-top:8px;color:var(--warning)">마지막 층을 모두 통과하면 보스가 나타납니다!</p>
+      </div>
+      <button class="btn btn-primary" data-action="start">시작 [Enter]</button>
+    `;
+    wrap.querySelector('[data-action="start"]')?.addEventListener('click', () => {
+      tutorialShown = true;
+      renderNavigate(el);
+    });
+    el.appendChild(wrap);
+  }
+
   function renderNavigate(el: HTMLElement) {
     if (!selectedDungeon || !runState) return;
+    if (!tutorialShown) {
+      renderTutorial(el);
+      return;
+    }
     el.innerHTML = '';
     const wrap = document.createElement('div');
     wrap.className = 'screen info-screen dungeon-navigate';
@@ -440,9 +475,9 @@ export function createDungeonScreen(
   function handleAdvanceStep(el: HTMLElement) {
     if (!selectedDungeon || !runState) return;
     pendingProgress += selectedDungeon.progressPerAdvance;
-    if (applyRuleAdvanceEffects(el)) return;
 
     const result = ds.advanceStep(runState, selectedDungeon, session.gameTime.hour);
+    if (applyRuleAdvanceEffects(el)) return;
     switch (result) {
       case 'nextStep':
       case 'nextFloor':
@@ -478,7 +513,7 @@ export function createDungeonScreen(
     if (remainingCount === 0) return;
     const hpCost = Math.round(remainingCount * 0.10 * p.getEffectiveMaxHp());
     p.adjustHp(-hpCost);
-    session.backlog.add(session.gameTime, `${p.name}이(가) 탐색을 강행했다. (HP -${hpCost})`, '행동');
+    session.backlog.add(session.gameTime, `${p.name}${iGa(p.name)} 탐색을 강행했다. (HP -${hpCost})`, '행동');
 
     if (p.base.hp <= 0) {
       handleDefeat(el);
@@ -488,7 +523,7 @@ export function createDungeonScreen(
   }
 
   function handleGiveUp(el: HTMLElement) {
-    session.backlog.add(session.gameTime, `${p.name}이(가) ${selectedDungeon?.name ?? '던전'}에서 포기했다.`, '행동');
+    session.backlog.add(session.gameTime, `${p.name}${iGa(p.name)} ${selectedDungeon?.name ?? '던전'}에서 포기했다.`, '행동');
     resetDungeon();
     renderList(el);
   }
@@ -681,11 +716,12 @@ export function createDungeonScreen(
         </button>`;
       }
       const blocked = ss.preDelayTurns > 0 || ss.postDelayTurns > 0;
+      const cooldown = cs.skillUsedThisTurn;
       const skillUseOptions = getSkillUseOptions(selectedDungeon);
       const noMp = !canUseSkill(def, p, ss, skillUseOptions).ok
         && p.base.mp < getDisplayedSkillMpCost(def.mpCost, selectedDungeon);
       const noTp = def.tpCost > 0 && !p.hasAp(def.tpCost);
-      const disabled = blocked || noMp || noTp;
+      const disabled = blocked || cooldown || noMp || noTp;
       const tpLabel = def.tpCost > 0 ? ` TP${def.tpCost}` : '';
       const mpCostLabel = getDisplayedSkillMpCost(def.mpCost, selectedDungeon);
       return `<button class="btn skill-btn${disabled ? ' disabled' : ''}" data-slot="${i}"${disabled ? ' disabled' : ''}>
@@ -766,7 +802,10 @@ export function createDungeonScreen(
         </button>
       </div>
 
-      <p class="hint">1/2/3=스킬 (자동 공격 진행 중) Esc=도주</p>
+      <div class="tick-bar">
+        <div class="tick-bar-fill" style="animation:tick-countdown ${getCombatTickMs(p)}ms linear forwards"></div>
+      </div>
+      <p class="hint">1/2/3=스킬 (자동 공격 진행 중)${cs.skillUsedThisTurn ? ' · 스킬 대기 중' : ''} Esc=도주</p>
     `;
 
     wrap.querySelectorAll<HTMLButtonElement>('[data-slot]').forEach(btn => {
@@ -805,9 +844,9 @@ export function createDungeonScreen(
   function handleFlee(el: HTMLElement) {
     if (combatState) {
       stopCombatTimer(combatState);
-      combatState.combatLog.push(`${p.name}이(가) 도주했다!`);
+      combatState.combatLog.push(`${p.name}${iGa(p.name)} 도주했다!`);
     }
-    session.backlog.add(session.gameTime, `${p.name}이(가) 전투에서 도주했다.`, '행동');
+    session.backlog.add(session.gameTime, `${p.name}${iGa(p.name)} 전투에서 도주했다.`, '행동');
     combatState = null;
 
     if (isBossFight || isMidBossFight) {
@@ -858,7 +897,7 @@ export function createDungeonScreen(
 
     session.backlog.add(
       session.gameTime,
-      `${p.name}이(가) ${combatState.enemy.name}을(를) 토벌했다. EXP+${Math.round(expGain)}, ${Math.round(goldGain)}G`,
+      `${p.name}${iGa(p.name)} ${combatState.enemy.name}${eulReul(combatState.enemy.name)} 토벌했다. EXP+${Math.round(expGain)}, ${Math.round(goldGain)}G`,
       '행동',
     );
 
@@ -886,12 +925,12 @@ export function createDungeonScreen(
       wrap.innerHTML = `
         <h2>★ 보스 격파!</h2>
         <div style="text-align:center;margin:12px 0">
-          <p>${combatState.enemy.name}을(를) 쓰러뜨렸다!</p>
+          <p>${combatState.enemy.name}${eulReul(combatState.enemy.name)} 쓰러뜨렸다!</p>
           <p>EXP +${Math.round(expGain)} | ${Math.round(goldGain)}G</p>
           ${bonusText ? `<p style="color:var(--accent2)">${bonusText}</p>` : ''}
           ${leveledUp ? `<p style="color:var(--success)">레벨 업! Lv.${p.base.level}</p>` : ''}
           <p style="color:var(--text-dim)">진행도: ${curProgress}%</p>
-          ${unlockedHidden && selectedDungeon.hiddenLocation ? `<p style="color:#6ba3d6">숨겨진 지역 ${locationName(selectedDungeon.hiddenLocation)} 이(가) 열렸다.</p>` : ''}
+          ${unlockedHidden && selectedDungeon.hiddenLocation ? `<p style="color:#6ba3d6">숨겨진 지역 ${locationName(selectedDungeon.hiddenLocation)}${iGa(locationName(selectedDungeon.hiddenLocation!))} 열렸다.</p>` : ''}
           <p style="color:var(--warning);font-size:13px">클리어 턴: ${runState.totalTurns}${bestTurns === runState.totalTurns ? ' ★신기록!' : ` (최단: ${bestTurns}턴)`}</p>
         </div>
         <button class="btn btn-primary" data-action="clear">던전 클리어! [Enter]</button>
@@ -911,7 +950,7 @@ export function createDungeonScreen(
       wrap.innerHTML = `
         <h2>⚔ 중간 보스 격파!</h2>
         <div style="text-align:center;margin:12px 0">
-          <p>${combatState.enemy.name}을(를) 쓰러뜨렸다!</p>
+          <p>${combatState.enemy.name}${eulReul(combatState.enemy.name)} 쓰러뜨렸다!</p>
           <p>EXP +${Math.round(expGain)} | ${Math.round(goldGain)}G</p>
           ${bonusText ? `<p style="color:var(--accent2)">${bonusText}</p>` : ''}
           ${leveledUp ? `<p style="color:var(--success)">레벨 업! Lv.${p.base.level}</p>` : ''}
@@ -966,7 +1005,7 @@ export function createDungeonScreen(
     p.color.values[7] = Math.min(1, (p.color.values[7] ?? 0.5) + 0.05);
     p.color.values[6] = Math.max(0, (p.color.values[6] ?? 0.5) - 0.03);
 
-    session.backlog.add(session.gameTime, `${p.name}이(가) 쓰러져 자택에서 깨어났다...`, '행동');
+    session.backlog.add(session.gameTime, `${p.name}${iGa(p.name)} 쓰러져 자택에서 깨어났다...`, '행동');
 
     phase = 'defeat';
     el.innerHTML = '';
@@ -1113,7 +1152,7 @@ export function createDungeonScreen(
         runState.purity = Math.min(9, runState.purity + 2);
       }
       session.gameTime.advance(10);
-      session.backlog.add(session.gameTime, `${p.name}이(가) 던전에서 휴식했다.`, '행동');
+      session.backlog.add(session.gameTime, `${p.name}${iGa(p.name)} 던전에서 휴식했다.`, '행동');
       markChoiceCleared();
       phase = 'navigate';
       renderNavigate(el);
@@ -1184,6 +1223,11 @@ export function createDungeonScreen(
         } else if (key === '2') {
           const btn = container.querySelector('[data-action="hidden"]') as HTMLButtonElement | null;
           btn?.click();
+        }
+      } else if (phase === 'navigate' && !tutorialShown) {
+        if (key === 'Enter') {
+          tutorialShown = true;
+          renderNavigate(container);
         }
       } else if (phase === 'navigate') {
         if (/^[1-9]$/.test(key)) {
