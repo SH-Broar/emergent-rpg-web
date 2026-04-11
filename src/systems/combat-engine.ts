@@ -406,6 +406,8 @@ export function usePlayerSkill(
   player.skillUsage.set(skill.id, newUsage);
 
   const levelMult = getSkillLevelMultiplier(skillLevel);
+  // 전투 직업 보너스: 동일 직업군 스킬 +20%
+  const jobBonus = (player.combatJob && skill.jobAffinity === player.combatJob) ? 1.20 : 1.0;
 
   if (skill.preDelay > 0) {
     ss.pendingSkill = skill;
@@ -425,8 +427,8 @@ export function usePlayerSkill(
           ss,
         );
         let dmg = 0;
-        if (e.damageMultiplier !== undefined) dmg += Math.round(buffedAtk * e.damageMultiplier * levelMult);
-        if (e.flatDamage !== undefined) dmg += Math.round(e.flatDamage * levelMult);
+        if (e.damageMultiplier !== undefined) dmg += Math.round(buffedAtk * e.damageMultiplier * levelMult * jobBonus);
+        if (e.flatDamage !== undefined) dmg += Math.round(e.flatDamage * levelMult * jobBonus);
         const finalDmg = Math.max(1, dmg - state.enemy.defense * 0.5);
         state.enemyHp -= finalDmg;
         messages.push(`${skill.name}: ${state.enemy.name}에게 ${Math.round(finalDmg)} 데미지!`);
@@ -434,19 +436,19 @@ export function usePlayerSkill(
       }
       case SkillType.Defense: {
         const duration = e.buffDuration ?? 1;
-        const mult = e.defenseMultiplier ?? 1.0;
+        const mult = (e.defenseMultiplier ?? 1.0) * (jobBonus > 1 ? 1 + (jobBonus - 1) * 0.5 : 1); // 방어는 절반 보너스
         ss.activeBuffs.push({ type: 'defense', multiplier: mult, turnsLeft: duration });
         messages.push(`${skill.name}: 방어력 ${mult}배 (${duration}턴)`);
         break;
       }
       case SkillType.Buff: {
         if (e.healHp !== undefined && e.healHp > 0) {
-          const amt = Math.round(e.healHp * levelMult);
+          const amt = Math.round(e.healHp * levelMult * jobBonus);
           player.adjustHp(amt);
           messages.push(`${skill.name}: HP ${amt} 회복`);
         }
         if (e.healMp !== undefined && e.healMp > 0) {
-          const amt = Math.round(e.healMp * levelMult);
+          const amt = Math.round(e.healMp * levelMult * jobBonus);
           player.adjustMp(amt);
           messages.push(`${skill.name}: MP ${amt} 회복`);
         }

@@ -67,6 +67,54 @@ export function parseElement(s: string): Element {
   return ELEMENT_KEYS[s.trim()] ?? Element.Fire;
 }
 
+// --- CombatJob ---
+export type CombatJob = '' | 'Warrior' | 'Ranger' | 'DarkMage' | 'WhiteMage' | 'Rogue';
+
+export const COMBAT_JOB_NAMES: Record<CombatJob, string> = {
+  '': '없음',
+  Warrior: '전사',
+  Ranger: '궁수',
+  DarkMage: '흑마법사',
+  WhiteMage: '백마법사',
+  Rogue: '도적',
+};
+
+export const COMBAT_JOB_DESC: Record<CombatJob, string> = {
+  '': '직업을 선택하지 않았습니다.',
+  Warrior: '근접 물리 전문. 높은 방어력과 강력한 일격으로 전장을 지배한다.',
+  Ranger: '원거리 공격과 기동력. 바람과 번개를 다루는 민첩한 사냥꾼.',
+  DarkMage: '파괴 마법과 저주. 적을 약화시키고 폭발적 피해를 입히는 전문가.',
+  WhiteMage: '회복과 축복. 아군을 지키고 전세를 뒤집는 수호자.',
+  Rogue: '회피와 독. 빠른 판단과 기습으로 승부를 가르는 달인.',
+};
+
+export const ALL_COMBAT_JOBS: CombatJob[] = ['Warrior', 'Ranger', 'DarkMage', 'WhiteMage', 'Rogue'];
+
+// --- LifeJob ---
+export type LifeJob = '' | 'Meteorologist' | 'Herbalist' | 'Merchant' | 'Cook' | 'Miner' | 'Astrologer';
+
+export const LIFE_JOB_NAMES: Record<LifeJob, string> = {
+  '': '없음',
+  Meteorologist: '기상학자',
+  Herbalist: '약초꾼',
+  Merchant: '상인',
+  Cook: '요리사',
+  Miner: '광부',
+  Astrologer: '별술사',
+};
+
+export const LIFE_JOB_DESC: Record<LifeJob, string> = {
+  '': '생활 직업을 선택하지 않았습니다.',
+  Meteorologist: '날씨를 읽고 예측한다. 내일의 날씨를 미리 알 수 있다.',
+  Herbalist: '약초와 포션에 정통하다. 채집 시 약초를 더 많이 얻고, 포션을 만들 수 있다.',
+  Merchant: '거래와 흥정의 달인. 사고팔 때 가격이 유리해진다.',
+  Cook: '음식으로 사람을 살린다. 다양한 요리를 만들 수 있고, 음식 효과가 증가한다.',
+  Miner: '광석을 캐는 전문가. 채집 시 광석을 더 많이 얻고, 희귀 광석 확률이 오른다.',
+  Astrologer: '별을 읽어 운명을 점친다. 던전 이벤트의 힌트를 얻고, 컬러 변화를 예측한다.',
+};
+
+export const ALL_LIFE_JOBS: LifeJob[] = ['Meteorologist', 'Herbalist', 'Merchant', 'Cook', 'Miner', 'Astrologer'];
+
 // --- Trait (Color.h:47) ---
 export enum Trait {
   Passionate, Aggressive, Excited, Calm, Melancholy, Cautious,

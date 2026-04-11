@@ -42,6 +42,9 @@ export interface SkillDef {
   basicForRace: string;       // 종족 키 (해당 종족 전용 기본 스킬, 빈=공용)
   roleAffinity: string[];     // NPC에게 우선 배정되는 역할 키
 
+  // --- 전투 직업 ---
+  jobAffinity?: string;        // CombatJob ID (빈=무소속)
+
   // --- 장소 학습 (스킬 상점) ---
   learnLocation?: string;      // 학습 가능 장소 (LocationID, 빈=상점 불가)
   learnCost?: { item: string; amount: number }[];  // 재료 비용
@@ -192,6 +195,9 @@ export function loadSkillDefs(sections: DataSection[]): void {
     def.basicForRace = s.get('basicForRace', '');
     const roleStr = s.get('roleAffinity', '');
     def.roleAffinity = roleStr ? parseStringList(roleStr) : [];
+
+    // Job affinity
+    def.jobAffinity = s.get('jobAffinity', '') || undefined;
 
     // Shop learning
     def.learnLocation = s.get('learnLocation', '');

@@ -57,7 +57,8 @@ export function rollInitialSkills(actor: Actor): CombatSkillState {
     const skill = getSkillDef(skillId);
     if (!skill) continue;
     const level = learnedSkills.get(skillId) ?? 1;
-    const adjustedRate = skill.appearRate + (level - 1) * 0.05;
+    const jobBoost = (actor.combatJob && skill.jobAffinity === actor.combatJob) ? 0.15 : 0;
+    const adjustedRate = skill.appearRate + (level - 1) * 0.05 + jobBoost;
     if (Math.random() < adjustedRate) {
       filled.push(skill);
     }
@@ -72,7 +73,8 @@ export function rollInitialSkills(actor: Actor): CombatSkillState {
       const skill = getSkillDef(skillId);
       if (!skill) continue;
       const level = learnedSkills.get(skillId) ?? 1;
-      const adjustedRate = skill.appearRate + (level - 1) * 0.05;
+      const jobBoost = (actor.combatJob && skill.jobAffinity === actor.combatJob) ? 0.15 : 0;
+    const adjustedRate = skill.appearRate + (level - 1) * 0.05 + jobBoost;
       if (Math.random() < adjustedRate) {
         filled.push(skill);
         filledIds.add(skillId);
@@ -103,7 +105,8 @@ export function rerollSlot(slotIndex: number, actor: Actor, state: CombatSkillSt
     const skill = getSkillDef(skillId);
     if (!skill) continue;
     const level = learnedSkills.get(skillId) ?? 1;
-    const adjustedRate = skill.appearRate + (level - 1) * 0.05;
+    const jobBoost = (actor.combatJob && skill.jobAffinity === actor.combatJob) ? 0.15 : 0;
+    const adjustedRate = skill.appearRate + (level - 1) * 0.05 + jobBoost;
     if (Math.random() < adjustedRate) {
       state.slots[slotIndex] = skill;
       return;

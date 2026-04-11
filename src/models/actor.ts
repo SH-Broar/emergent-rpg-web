@@ -126,6 +126,10 @@ export class Actor {
   hyperionFlags: boolean[] = [false, false, false, false, false];
   /** 플레이어 전용: 다른 액터들의 히페리온 레벨 합산 보너스 */
   hyperionBonus = 0;
+  /** 전투 직업 */
+  combatJob = '';
+  /** 생활 직업 */
+  lifeJob = '';
   lastTickHour = 6;
 
   coreMatrix = new CoreMatrix();

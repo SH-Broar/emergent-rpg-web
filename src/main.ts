@@ -36,6 +36,7 @@ import { createStorageScreen } from './ui/screens/storage';
 import { createCookingScreen } from './ui/screens/cooking';
 import { createSkillShopScreen } from './ui/screens/skill-shop';
 import { createGuildDungeonScreen } from './ui/screens/guild-dungeon';
+import { createLifeJobScreen } from './ui/screens/life-job';
 import { createFarmScreen } from './ui/screens/farm';
 import { createTravelScreen, type TravelOptions } from './ui/screens/travel';
 
@@ -299,6 +300,9 @@ async function boot() {
           break;
         case 'guild_dungeon':
           sm.push(createGuildDungeonScreen(session, () => sm.pop()));
+          break;
+        case 'life_job':
+          sm.push(createLifeJobScreen(session, () => sm.pop()));
           break;
         case 'memory_spring':
           sm.push(createMemorySpringScreen(session, {

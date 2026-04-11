@@ -50,6 +50,8 @@ interface ActorSaveData {
   actionCooldown: number;
   learnedSkills?: [string, number][];
   skillOrder?: string[];
+  combatJob?: string;
+  lifeJob?: string;
   skillUsage?: [string, number][];
   flags?: [string, boolean][];
   variables?: [string, number][];
@@ -195,6 +197,8 @@ function serializeActor(actor: Actor): ActorSaveData {
     actionCooldown: actor.actionCooldown,
     learnedSkills: [...actor.learnedSkills.entries()],
     skillOrder: [...actor.skillOrder],
+    combatJob: actor.combatJob || undefined,
+    lifeJob: actor.lifeJob || undefined,
     skillUsage: [...actor.skillUsage.entries()],
     flags: [...actor.flags.entries()],
     variables: [...actor.variables.entries()],
@@ -227,6 +231,8 @@ function deserializeActor(data: ActorSaveData, target: Actor): void {
   target.hyperionLevel = data.hyperionLevel;
   target.hyperionFlags = [...data.hyperionFlags];
   target.actionCooldown = data.actionCooldown;
+  target.combatJob = data.combatJob ?? '';
+  target.lifeJob = data.lifeJob ?? '';
 
   // Restore inventory
   target.spirit.inventory.clear();
