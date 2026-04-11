@@ -104,6 +104,10 @@ export interface RealtimeCombatState {
   isBoss: boolean;
   skillUsedThisTurn: boolean;
   lastTickTime: number;
+  /** openingAttackMultiplier 적용 여부(첫 본 공격 1회) */
+  openingEnemyStrikeDone: boolean;
+  /** burstOnce 연속타 적용 완료 여부 */
+  enemyBurstVolleyDone: boolean;
 }
 
 const BASE_TICK_MS = 1500;
@@ -154,6 +158,8 @@ export function createCombatState(
     isBoss,
     skillUsedThisTurn: false,
     lastTickTime: Date.now(),
+    openingEnemyStrikeDone: false,
+    enemyBurstVolleyDone: false,
   };
 }
 
@@ -252,12 +258,34 @@ export function processTick(
     player.getEffectiveDefense() + state.partyBonus.defense,
     state.playerSkills,
   );
-  const enemyAtkMod = getEnemyAttackMod(state.playerSkills);
-  const rawEnemyDmg = Math.max(0, Math.round(state.enemy.attack * enemyAtkMod - buffedDef * 0.5));
-  if (rawEnemyDmg > 0) {
-    player.adjustHp(-rawEnemyDmg);
-    const hitTxt = getActionText(['combat.player_hit']) || '피격당했다.';
-    messages.push(`${state.enemy.name}의 공격! ${hitTxt} ${rawEnemyDmg} 데미지`);
+  const burstN = state.enemy.burstHitCount ?? 0;
+  const burstD = state.enemy.burstHitDamage ?? 0;
+  const burstOnce = state.enemy.burstOnce === true;
+  const shouldBurst = burstN > 0 && burstD > 0 && (!burstOnce || !state.enemyBurstVolleyDone);
+
+  if (shouldBurst) {
+    let sum = 0;
+    for (let i = 0; i < burstN; i++) {
+      player.adjustHp(-burstD);
+      sum += burstD;
+    }
+    messages.push(`${state.enemy.name}의 연속타! ${burstN}회 × ${burstD} = ${sum} 데미지`);
+    if (burstOnce) state.enemyBurstVolleyDone = true;
+  } else {
+    let effAtk = state.enemy.attack;
+    const oam = state.enemy.openingAttackMultiplier ?? 0;
+    if (oam > 0 && !state.openingEnemyStrikeDone) {
+      effAtk = Math.round(state.enemy.attack * oam);
+      state.openingEnemyStrikeDone = true;
+      messages.push(`${state.enemy.name}의 단발 충전 사격!`);
+    }
+    const enemyAtkMod = getEnemyAttackMod(state.playerSkills);
+    const rawEnemyDmg = Math.max(0, Math.round(effAtk * enemyAtkMod - buffedDef * 0.5));
+    if (rawEnemyDmg > 0) {
+      player.adjustHp(-rawEnemyDmg);
+      const hitTxt = getActionText(['combat.player_hit']) || '피격당했다.';
+      messages.push(`${state.enemy.name}의 공격! ${hitTxt} ${rawEnemyDmg} 데미지`);
+    }
   }
 
   // --- 5. 적 스킬 발동 ---
@@ -274,6 +302,12 @@ export function processTick(
         messages.push(`${state.enemy.name}의 ${skill.name}! HP ${healAmt} 회복`);
       }
     }
+  }
+
+  const tickPress = state.enemy.tickPressureDamage ?? 0;
+  if (tickPress > 0) {
+    player.adjustHp(-tickPress);
+    messages.push(`${state.enemy.name}의 이상 신호! ${tickPress} 데미지`);
   }
 
   // --- 6. 효과 틱 (독 등) ---
@@ -324,6 +358,30 @@ export function usePlayerSkill(
   if (!check.ok) return [check.reason ?? '스킬 사용 불가'];
 
   state.skillUsedThisTurn = true;
+
+  // 스킬 타입/원소별 컬러 영향
+  // Fire=0, Water=1, Electric=2, Iron=3, Earth=4, Wind=5, Light=6, Dark=7
+  const cv = player.color.values;
+  const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
+  switch (skill.type) {
+    case SkillType.Attack:
+      cv[0] = clamp01((cv[0] ?? 0.5) + 0.003); // Fire+
+      break;
+    case SkillType.Defense:
+      cv[4] = clamp01((cv[4] ?? 0.5) + 0.003); // Earth+
+      cv[3] = clamp01((cv[3] ?? 0.5) + 0.003); // Iron+
+      break;
+    case SkillType.Buff:
+      cv[1] = clamp01((cv[1] ?? 0.5) + 0.003); // Water+
+      cv[6] = clamp01((cv[6] ?? 0.5) + 0.003); // Light+
+      break;
+    case SkillType.Debuff:
+      cv[7] = clamp01((cv[7] ?? 0.5) + 0.003); // Dark+
+      break;
+  }
+  if (skill.element >= 0 && skill.element < 8) {
+    cv[skill.element] = clamp01((cv[skill.element] ?? 0.5) + 0.005); // 스킬 원소+
+  }
 
   const messages: string[] = [];
 

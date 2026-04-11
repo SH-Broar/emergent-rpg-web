@@ -199,6 +199,14 @@ export function createDungeonScreen(
     return p.getDungeonProgress(dungeon.id) >= unlock;
   }
 
+  // ================================================================ color influence
+  // Fire=0, Water=1, Electric=2, Iron=3, Earth=4, Wind=5, Light=6, Dark=7
+  function nudgeColor(changes: [number, number][]): void {
+    for (const [i, amt] of changes) {
+      p.color.values[i] = Math.max(0, Math.min(1, (p.color.values[i] ?? 0.5) + amt));
+    }
+  }
+
   // ================================================================ state
   let phase: DungeonPhase = 'list';
   let selectedDungeon: DungeonDef | null = null;
@@ -211,6 +219,16 @@ export function createDungeonScreen(
   let isBossFight = false;
   let isMidBossFight = false;
   let tutorialShown = false;
+
+  function applyDungeonColorScaled(scale: number): void {
+    if (!selectedDungeon) return;
+    const inf = selectedDungeon.colorInfluence;
+    for (let i = 0; i < inf.length; i++) {
+      if (inf[i] !== 0) {
+        p.color.values[i] = Math.max(0, Math.min(1, (p.color.values[i] ?? 0.5) + inf[i] * scale));
+      }
+    }
+  }
 
   function getPartyActors() {
     return session.knowledge.partyMembers
@@ -456,14 +474,18 @@ export function createDungeonScreen(
     isMidBossFight = false;
 
     const room: DungeonRoom = { type: choice.type, label: choice.label, enemyId: choice.enemyId, eventIdx: choice.eventIdx };
+    // 선택 유형별 컬러 영향
     switch (choice.type) {
       case RoomType.Combat:
+        nudgeColor([[0, 0.005], [3, 0.003]]); // Fire+, Iron+
         startCombat(room, false, el);
         break;
       case RoomType.Event:
+        nudgeColor([[5, 0.005], [2, 0.003]]); // Wind+, Electric+
         startEvent(room, el);
         break;
       case RoomType.Rest:
+        nudgeColor([[1, 0.005], [6, 0.003]]); // Water+, Light+
         startRest(el);
         break;
     }
@@ -479,6 +501,7 @@ export function createDungeonScreen(
 
   function handleAdvanceStep(el: HTMLElement) {
     if (!selectedDungeon || !runState) return;
+    applyDungeonColorScaled(0.01); // 단계 진행 시 던전 영향
     pendingProgress += selectedDungeon.progressPerAdvance;
 
     const result = ds.advanceStep(runState, selectedDungeon, session.gameTime.hour);
@@ -518,6 +541,7 @@ export function createDungeonScreen(
     if (remainingCount === 0) return;
     const hpCost = Math.round(remainingCount * 0.10 * p.getEffectiveMaxHp());
     p.adjustHp(-hpCost);
+    nudgeColor([[5, 0.01], [4, 0.005]]); // Wind+, Earth+ (탐험심)
     session.backlog.add(session.gameTime, `${p.name}${iGa(p.name)} 탐색을 강행했다. (HP -${hpCost})`, '행동');
 
     if (p.base.hp <= 0) {
@@ -528,6 +552,7 @@ export function createDungeonScreen(
   }
 
   function handleGiveUp(el: HTMLElement) {
+    nudgeColor([[7, 0.03], [6, -0.02]]); // Dark+, Light- (포기의 그림자)
     session.backlog.add(session.gameTime, `${p.name}${iGa(p.name)} ${selectedDungeon?.name ?? '던전'}에서 포기했다.`, '행동');
     resetDungeon();
     renderList(el);
@@ -854,6 +879,8 @@ export function createDungeonScreen(
     session.backlog.add(session.gameTime, `${p.name}${iGa(p.name)} 전투에서 도주했다.`, '행동');
     combatState = null;
 
+    nudgeColor([[7, 0.01], [5, 0.005]]); // Dark+, Wind+ (도주 본능)
+
     if (isBossFight || isMidBossFight) {
       // 보스/중간보스 도주 → 포기
       handleGiveUp(el);
@@ -910,6 +937,8 @@ export function createDungeonScreen(
 
     if (isBoss) {
       // 최종 보스 격파 → 클리어
+      applyDungeonColorScaled(0.08); // 던전 특성 강하게 반영
+      nudgeColor([[6, 0.02]]); // Light+ (승리의 빛)
       pendingProgress += selectedDungeon.progressPerAdvance;
       runState.bossDefeated = true;
       session.knowledge.trackDungeonClear();
@@ -948,6 +977,8 @@ export function createDungeonScreen(
 
     } else if (isMidBoss) {
       // 중간 보스 격파 → 다음 층으로
+      applyDungeonColorScaled(0.04); // 중간 보스 영향
+      nudgeColor([[6, 0.01]]); // Light+
       phase = 'victory';
       el.innerHTML = '';
       const wrap = document.createElement('div');
@@ -973,6 +1004,7 @@ export function createDungeonScreen(
 
     } else {
       // 일반 전투 승리 → 선택지 클리어, 탐색 화면으로
+      applyDungeonColorScaled(0.02); // 전투 승리 영향
       markChoiceCleared();
       combatState = null;
 
@@ -1148,6 +1180,7 @@ export function createDungeonScreen(
 
     wrap.querySelector('[data-action="rest"]')?.addEventListener('click', () => {
       if (!selectedDungeon) return;
+      nudgeColor([[1, 0.01], [6, 0.005], [0, -0.003]]); // Water+, Light+, Fire- (평온한 휴식)
       p.adjustHp(restRecovery.hp);
       p.adjustMp(restRecovery.mp);
       if (selectedDungeon?.rule?.template === 'HeatGauge' && runState) {
