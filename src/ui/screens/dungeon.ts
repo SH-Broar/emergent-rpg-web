@@ -70,6 +70,11 @@ export function createDungeonScreen(
     return Math.max(0, Math.ceil(mpCost * multiplier));
   }
 
+  function ruleLevel(rank: number): string {
+    const lv = rank <= 2 ? 1 : rank <= 4 ? 2 : 3;
+    return '◆'.repeat(lv) + '◇'.repeat(3 - lv);
+  }
+
   function isDungeonAvailableNow(d: DungeonDef): boolean {
     return isTimeWindowOpen(d.availableHours, session.gameTime.hour, session.gameTime.minute);
   }
@@ -248,7 +253,7 @@ export function createDungeonScreen(
                   <span>난이도: ${renderDifficultyIcons(d)}</span>
                   <span>${d.floors}층</span>
                   <span style="color:${progressColor}">${progressLabel}</span>
-                  ${d.rule ? `<span style="color:#6ba3d6">특수 ${'◆'.repeat(d.rule.rank)}${'◇'.repeat(Math.max(0, 5 - d.rule.rank))}</span>` : ''}
+                  ${d.rule ? `<span style="color:#6ba3d6">특수 ${ruleLevel(d.rule.rank)}</span>` : ''}
                   ${hiddenLabel ? `<span style="color:${hiddenOpen ? '#6ba3d6' : 'var(--text-dim)'}">${hiddenLabel}</span>` : ''}
                   ${bestLabel ? `<span style="color:var(--warning)">${bestLabel}</span>` : ''}
                 </div>
@@ -296,7 +301,7 @@ export function createDungeonScreen(
       <button class="btn back-btn" data-back>← 뒤로 [Esc]</button>
       <h2>${selectedDungeon.name}</h2>
       <p class="hint">완전히 공략한 던전이다. 어디로 들어갈지 선택한다.</p>
-      ${selectedDungeon.rule ? `<p class="hint" style="color:#6ba3d6">특수 ${'◆'.repeat(selectedDungeon.rule.rank)}${'◇'.repeat(Math.max(0, 5 - selectedDungeon.rule.rank))} — ${selectedDungeon.rule.hint || selectedDungeon.rule.template}</p>` : ''}
+      ${selectedDungeon.rule ? `<p class="hint" style="color:#6ba3d6">특수 ${ruleLevel(selectedDungeon.rule.rank)} — ${selectedDungeon.rule.hint || selectedDungeon.rule.template}</p>` : ''}
       ${hiddenName && !hiddenOpen ? `<p class="hint" style="color:var(--text-dim)">${hiddenName}${eunNeun(hiddenName)} 지금 시간에는 모습을 드러내지 않는다.</p>` : ''}
       <div class="menu-buttons" style="margin-top:12px">
         <button class="btn btn-primary" data-action="dungeon">1. 던전 입장</button>
