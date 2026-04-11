@@ -88,6 +88,7 @@ lootOnClear = MonsterLoot:12, Herb:8, Potion:4
 lootPerAdvance = MonsterLoot:2:0.45, Food:2:0.30, Herb:2:0.35
 lootRareChance = 0.12
 lootRare = Equipment:1
+lootItemsRare = Shadow_Blade:1:0.08
 colorInfluence = Light:0.18, Dark:0.16, Wind:0.08
 
 [Longing_Moon]
@@ -301,6 +302,7 @@ ruleValueB = 0.10
 ruleValueC = 0.08
 ruleHint = 낙석 압박이 커서 빠른 돌파가 큰 이득이 된다.
 enemies = Stonehorn, Canyon_Harpy, Bagreat_Giant
+lootItemsRare = Iron_Maul:1:0.06, Heavy_Gauntlet:1:0.06
 lootOnClear = OreCommon:10, OreRare:2, MonsterLoot:12
 lootPerAdvance = OreCommon:3:0.45, MonsterLoot:2:0.42, OreRare:1:0.12
 lootRareChance = 0.13
@@ -414,6 +416,7 @@ lootOnClear = MonsterLoot:15, OreRare:2, Potion:4
 lootPerAdvance = MonsterLoot:3:0.45, Potion:1:0.24, OreRare:1:0.14
 lootRareChance = 0.14
 lootRare = Equipment:1
+lootItemsRare = Alime_Plate:1:0.06
 colorInfluence = Water:0.20, Wind:0.16, Dark:0.08
 midBoss_1_afterFloor = 2
 midBoss_1_enemy = Blizzard_Stag
@@ -456,6 +459,7 @@ ruleValueC = 0.18
 ruleHint = 시야와 한기 압박이 최고조에 달해, 짧은 판단 차이도 크게 벌어진다.
 enemies = Whiteout_Wraith, Icebound_Sentry, Summit_Devourer
 lootOnClear = Equipment:3, OreRare:4, MonsterLoot:18, Potion:6
+lootItemsOnClear = Wind_Cloak:1:0.15
 lootPerAdvance = MonsterLoot:3:0.46, Potion:1:0.25, OreRare:1:0.18
 lootRareChance = 0.18
 lootRare = Equipment:2
@@ -615,6 +619,7 @@ lootOnClear = MonsterLoot:10, OreCommon:8, Potion:2
 lootPerAdvance = MonsterLoot:2:0.38, OreCommon:2:0.35, Potion:1:0.20
 lootRareChance = 0.11
 lootRare = OreRare:1
+lootItemsRare = Fox_Fire_Orb:1:0.05
 colorInfluence = Fire:0.18, Iron:0.10, Dark:0.06
 
 [Molten_Ridge]
@@ -633,9 +638,11 @@ ruleValueC = 0.10
 ruleHint = 상층부일수록 과열 위험과 전투 압박이 함께 올라간다.
 enemies = Sulfur_Golem, Charred_Harpy, Ember_Tyrant
 lootOnClear = MonsterLoot:12, OreRare:2, Equipment:1
+lootItemsOnClear = Flame_Edge:1:0.10
 lootPerAdvance = MonsterLoot:2:0.42, OreCommon:2:0.25, OreRare:1:0.14
 lootRareChance = 0.12
 lootRare = Equipment:1
+lootItemsRare = Red_Hood:1:0.06
 colorInfluence = Fire:0.20, Iron:0.12, Wind:0.06
 
 [Trail_Walk]
@@ -796,6 +803,7 @@ lootOnClear = MonsterLoot:14, Potion:5, OreRare:2
 lootPerAdvance = MonsterLoot:3:0.40, Potion:1:0.22, OreRare:1:0.16
 lootRareChance = 0.15
 lootRare = Equipment:1
+lootItemsRare = Wind_Whisper:1:0.06
 colorInfluence = Earth:0.12, Wind:0.22, Light:0.10
 midBoss_1_afterFloor = 2
 midBoss_1_enemy = Void_Hornet
@@ -831,9 +839,11 @@ ruleRank = 6
 ruleHint = 마력 운용 자유도는 최고지만, 그만큼 적 압력과 요구 숙련도도 극단적으로 높다.
 enemies = Cloud_Leaper, Canopy_Colossus, Howling_Wraith
 lootOnClear = MonsterLoot:18, Potion:6, OreRare:3, Equipment:2
+lootItemsOnClear = Earth_Cleaver:1:0.08
 lootPerAdvance = MonsterLoot:3:0.44, Potion:1:0.24, OreRare:1:0.20
 lootRareChance = 0.18
 lootRare = Equipment:2
+lootItemsRare = Celestial_Longbow:1:0.04
 colorInfluence = Earth:0.14, Wind:0.24, Light:0.12, Dark:0.08
 midBoss_1_afterFloor = 2
 midBoss_1_enemy = Cloud_Leaper
@@ -1016,6 +1026,94 @@ lootPerAdvance = MonsterLoot:2:0.38, Equipment:1:0.14, Potion:1:0.18
 lootRareChance = 0.13
 lootRare = OreRare:1
 colorInfluence = Electric:0.20, Light:0.14, Dark:0.10
+
+# ============================================================
+# 홀로그램 필드 (가상 던전군)
+# ============================================================
+
+[Holo_Virtual_Iluneon]
+name = 버추얼 일루네온
+deepName = 광장 루프 무대
+description = VR 챗형 가상 세계로 재구성된 일루네온 광장. 건물과 인파가 과장된 셰이더로 빛나며, 현실과 다른 물리 규칙이 농담처럼 깔려 있다.
+deepDescription = 광장 중앙의 거대 UI와 떠다니는 안내판이 퍼즐처럼 맞물린다. 첫 승부에서 패턴을 읽지 못하면 단발 초고출력 같은 연출에 그대로 말려든다.
+difficulty = 0.38
+progressPerAdvance = 8.2
+accessFrom = Hologram_Field
+ruleTemplate = TraceHunt
+ruleRank = 3
+ruleValueA = 1
+ruleValueB = 6
+ruleValueC = 0.05
+ruleHint = 권장 히페리온 약 75~110. 단서·경로 읽기가 전투만큼 중요한, 시계탑보다 가벼운 퍼즐형 가상 구역이다.
+enemies = Holo_Sniper_Core, Holo_Glitch_Wisp, Mirror_Wisp
+lootOnClear = Potion:4, MonsterLoot:10, Equipment:1
+lootPerAdvance = Potion:1:0.26, MonsterLoot:2:0.36, Herb:1:0.18
+lootRareChance = 0.11
+lootRare = OreRare:1
+colorInfluence = Light:0.14, Wind:0.10, Electric:0.08
+
+[Holo_Virtual_Alimes]
+name = 버추얼 알리메스
+deepName = 산악 루프 트랙
+description = 험준한 알리메스 산악이 아케이드 트랙처럼 접혀 있는 구역. 절벽과 철교가 색역이 뒤틀린 채 반복된다.
+deepDescription = 한 번의 개시 연출로 100번의 미세 타격이 쏟아지는 적부터, 방어도가 비현실적으로 높은 장애물까지 섞여 있다.
+difficulty = 0.42
+progressPerAdvance = 7.4
+accessFrom = Hologram_Field
+ruleTemplate = DeepFog
+ruleRank = 3
+ruleValueA = 0.14
+ruleValueB = 0.10
+ruleValueC = 0.05
+ruleHint = 권장 히페리온 약 80~115. 시야와 거리감이 흔들리니, 방어·회복 타이밍을 따로 설계해야 한다.
+enemies = Holo_Nano_Cloud, Holo_Wall_Unit, Stone_Prowler
+lootOnClear = OreCommon:8, MonsterLoot:12, Potion:3
+lootPerAdvance = OreCommon:2:0.30, MonsterLoot:2:0.36, Potion:1:0.18
+lootRareChance = 0.12
+lootRare = Equipment:1
+colorInfluence = Earth:0.12, Iron:0.10, Wind:0.08
+
+[Holo_Virtual_Mos]
+name = 버추얼 모스
+deepName = 밀림 루프 돔
+description = 모스 지대의 밀림을 투명 돔 안에 가두어 둔 듯한 가상 생태. 식생과 안개가 UI 레이어처럼 겹쳐 진다.
+deepDescription = 글리치와 이상 신호가 끊이지 않는 중층. 상태이상에 가까운 압박이 턴마다 쌓이므로 정리 스킬이나 방어 버프가 체감으로 큰 차이를 만든다.
+difficulty = 0.46
+progressPerAdvance = 6.8
+accessFrom = Hologram_Field
+ruleTemplate = AncientResonance
+ruleRank = 4
+ruleValueA = 2
+ruleValueB = 0.14
+ruleValueC = 0.06
+ruleHint = 권장 히페리온 약 85~120. 공명·정리 타이밍을 맞추지 못하면 글리치 압박과 겹쳐 금방 무너진다.
+enemies = Holo_Glitch_Wisp, Holo_Wall_Unit, Mana_Sprite
+lootOnClear = Herb:10, MonsterLoot:12, Potion:3
+lootPerAdvance = Herb:2:0.28, MonsterLoot:2:0.36, Potion:1:0.20
+lootRareChance = 0.12
+lootRare = OreRare:1
+colorInfluence = Earth:0.10, Light:0.10, Dark:0.08
+
+[Holo_Virtual_Tacomi]
+name = 버추얼 타코미
+deepName = 네온 루프 시티
+description = 나이트 타코미의 네온과 빌딩을 축소해 둔 루프형 도시 무대. 거리마다 다른 미니게임 규칙이 겹쳐 있다.
+deepDescription = 스트림 쉐이드와 글리치가 동시에 몰려오는 최종 가상 권역. 박자·잔광·틱 압박이 겹쳐 시계탑 다음으로는 손에 꼽을 정도로 판단량이 많다.
+difficulty = 0.50
+progressPerAdvance = 6.2
+accessFrom = Hologram_Field
+ruleTemplate = GreedRisk
+ruleRank = 4
+ruleValueA = 0.12
+ruleValueB = 0.14
+ruleValueC = 0.08
+ruleHint = 권장 히페리온 약 90~125. 욕심내어 밀어붙이면 벌칙이 커지니, 자원과 리듬을 나눠 쓰는 설계가 필요하다.
+enemies = Holo_Stream_Shade, Holo_Glitch_Wisp, Beat_Drone
+lootOnClear = MonsterLoot:14, Equipment:2, Potion:4
+lootPerAdvance = MonsterLoot:2:0.36, Equipment:1:0.12, Potion:1:0.20
+lootRareChance = 0.13
+lootRare = OreRare:1
+colorInfluence = Electric:0.18, Light:0.12, Dark:0.10
 
 # ============================================================
 # 일루네온 외곽 던전군
@@ -1369,6 +1467,152 @@ lootPerAdvance = Potion:1:0.30, Herb:2:0.28, MonsterLoot:2:0.34
 lootRareChance = 0.12
 lootRare = OreRare:1
 colorInfluence = Electric:0.08, Wind:0.10, Light:0.12, Dark:0.06
+
+# ============================================================
+# 환영의 첨탑 — 구역 던전 3 + 상위 층(하·중·상) 3 (같은 장소 6종)
+# ============================================================
+
+[Phantom_Winding_Gallery]
+name = 나선 회랑
+deepName = 좁은 오르막
+description = 첨탑 초입의 나선 계단이 이어진 구간. 발판 폭이 좁아 몸을 크게 휘두르기 어렵고, 창 밖으로 비행체의 그림자가 자주 스친다.
+deepDescription = 층을 오를수록 공중에 떠 있는 적이 비중을 먹는다. 공격이 잔상에 빗맞기 쉬워, 타이밍과 버프를 나눠 쓰는 편이 유리하다.
+difficulty = 0.28
+progressPerAdvance = 7.0
+accessFrom = Phantom_Spire
+floors = 6
+choicesPerStep = 3
+ruleTemplate = CollapsingPath
+ruleRank = 2
+ruleValueA = 1
+ruleValueB = 0.07
+ruleValueC = 0.04
+ruleHint = 좁은 층을 많이 오르는 대신, 비행 적의 회피가 잦아 실질 DPS가 떨어진다. 권장 히페리온 약 55~85.
+enemies = Phantom_Veil_Sprite, Mirror_Wisp, Phantom_Glass_Kite
+lootOnClear = Potion:4, Herb:8, MonsterLoot:8
+lootPerAdvance = Potion:1:0.26, Herb:2:0.30, MonsterLoot:2:0.32
+lootRareChance = 0.10
+lootRare = OreRare:1
+colorInfluence = Wind:0.14, Light:0.12, Dark:0.06
+
+[Phantom_Aerial_Vestibule]
+name = 공중 받침대
+deepName = 난간 밖 발판
+description = 탑벽에서 돌출된 좁은 받침대만으로 이어지는 중층. 아래는 깊은 안개이고, 적은 대부분 난간 밖에서 몰려온다.
+deepDescription = 비행 환영이 회피를 무기처럼 쓰는 구간. 한 번에 크게 벌려 잡기보다, 짧은 턴을 여러 번 쌓는 싸움이 된다.
+difficulty = 0.34
+progressPerAdvance = 6.2
+accessFrom = Phantom_Spire
+floors = 6
+choicesPerStep = 3
+ruleTemplate = DeepFog
+ruleRank = 3
+ruleValueA = 0.14
+ruleValueB = 0.10
+ruleValueC = 0.05
+ruleHint = 시야가 자주 흔들려 거리 감각이 무너진다. 회피율 높은 적을 상대로 버티기 어렵다. 권장 히페리온 약 65~95.
+enemies = Phantom_Spire_Wing, Phantom_Veil_Sprite, Shadow_Wraith
+lootOnClear = MonsterLoot:10, Potion:4, OreCommon:6
+lootPerAdvance = MonsterLoot:2:0.34, Potion:1:0.22, Herb:1:0.18
+lootRareChance = 0.11
+lootRare = Equipment:1
+colorInfluence = Wind:0.16, Dark:0.10, Light:0.08
+
+[Phantom_Mirage_Pinnacle]
+name = 환영 끝
+deepName = 첨탑 최상의 거울바람
+description = 첨탑 최상층에 가까운 구간. 바람과 빛이 거울처럼 반사되어 적의 위치가 끊임없이 어긋나 보인다.
+deepDescription = 비행 환영과 망령이 섞여 회피 체감이 가장 심한 후반부. 층은 여전히 좁고, 한 번의 실수가 연속 빗맞으로 이어질 수 있다.
+difficulty = 0.40
+progressPerAdvance = 5.4
+accessFrom = Phantom_Spire
+floors = 7
+choicesPerStep = 3
+ruleTemplate = TraceHunt
+ruleRank = 4
+ruleValueA = 1
+ruleValueB = 7
+ruleValueC = 0.06
+ruleHint = 단서를 잃지 않을수록 불필요한 전투를 줄일 수 있다. 회피가 극단적으로 높은 적도 등장한다. 권장 히페리온 약 75~110.
+enemies = Phantom_Glass_Kite, Phantom_Spire_Wing, Phantom_Veil_Sprite
+lootOnClear = MonsterLoot:12, Equipment:1, Potion:5, OreRare:1
+lootItemsOnClear = Shadow_Mantle:1:0.08
+lootPerAdvance = MonsterLoot:2:0.36, Potion:1:0.20, Equipment:1:0.10
+lootRareChance = 0.13
+lootRare = OreRare:1
+lootItemsRare = Assassin_Blade:1:0.05
+colorInfluence = Light:0.14, Wind:0.14, Dark:0.10
+
+[Phantom_Stratum_Lower]
+name = 하층부
+deepName = 심층 나선 하층
+description = 환영의 첨탑에서 별도로 이어지는 상위 난이도 하층부. 나선 회랑과 비슷하게 좁은 층이 겹치지만, 환영의 밀도와 적 스펙이 한 단계 올라간다.
+deepDescription = 비행 환영이 회피에 특화되어 있어 장비 스펙이 부족하면 공격이 잇따라 빗맞는다. 나선 회랑을 넘긴 뒤 도전하기 좋다.
+difficulty = 0.72
+progressPerAdvance = 5.2
+accessFrom = Phantom_Spire
+floors = 6
+choicesPerStep = 3
+ruleTemplate = CollapsingPath
+ruleRank = 4
+ruleValueA = 2
+ruleValueB = 0.10
+ruleValueC = 0.06
+ruleHint = 나선 회랑보다 강한 심층 환영. 권장 히페리온 120~150.
+enemies = Phantom_Veil_Sprite_Depth, Mirror_Wisp, Phantom_Glass_Kite_Depth
+lootOnClear = Potion:6, Herb:10, MonsterLoot:12, OreRare:1
+lootPerAdvance = Potion:1:0.28, Herb:2:0.28, MonsterLoot:2:0.34
+lootRareChance = 0.14
+lootRare = OreRare:1
+colorInfluence = Wind:0.14, Light:0.12, Dark:0.08
+
+[Phantom_Stratum_Mid]
+name = 중층부
+deepName = 심층 난간 중층
+description = 상위 난이도 중층부. 공중 받침대와 마찬가지로 난간 밖 전투가 잦고, 안개와 반사가 더 거칠다.
+deepDescription = 공중 받침대보다 환영이 짙고, 심층 날개령이 회전축처럼 전장을 지배한다.
+difficulty = 0.76
+progressPerAdvance = 4.8
+accessFrom = Phantom_Spire
+floors = 6
+choicesPerStep = 3
+ruleTemplate = DeepFog
+ruleRank = 4
+ruleValueA = 0.18
+ruleValueB = 0.12
+ruleValueC = 0.06
+ruleHint = 공중 받침대의 상위 심층 구간. 권장 히페리온 120~150.
+enemies = Phantom_Spire_Wing_Depth, Phantom_Veil_Sprite_Depth, Shadow_Wraith
+lootOnClear = MonsterLoot:14, Potion:5, OreCommon:8, Equipment:1
+lootPerAdvance = MonsterLoot:2:0.36, Potion:1:0.22, Herb:1:0.16
+lootRareChance = 0.14
+lootRare = Equipment:1
+colorInfluence = Wind:0.16, Dark:0.12, Light:0.10
+
+[Phantom_Stratum_Upper]
+name = 상층부
+deepName = 심층 거울바람 상층
+description = 상위 난이도 상층부. 환영 끝에 대응하는 최종 심층으로, 거울바람과 망령이 한꺼번에 몰아친다.
+deepDescription = 환영 끝을 넘긴 뒤에도 남은 첨탑의 핵심 환상층. 회피와 판단이 동시에 시험된다.
+difficulty = 0.80
+progressPerAdvance = 4.4
+accessFrom = Phantom_Spire
+floors = 7
+choicesPerStep = 3
+ruleTemplate = TraceHunt
+ruleRank = 5
+ruleValueA = 1
+ruleValueB = 8
+ruleValueC = 0.08
+ruleHint = 환영 끝의 상위 심층. 권장 히페리온 120~150.
+enemies = Phantom_Glass_Kite_Depth, Phantom_Spire_Wing_Depth, Phantom_Veil_Sprite_Depth
+lootOnClear = MonsterLoot:16, Equipment:2, Potion:6, OreRare:2
+lootItemsOnClear = Pebiel_Dress:1:0.06
+lootPerAdvance = MonsterLoot:2:0.38, Potion:1:0.20, Equipment:1:0.12
+lootRareChance = 0.16
+lootRare = OreRare:1
+lootItemsRare = Fortress_Shield:1:0.04
+colorInfluence = Light:0.16, Wind:0.14, Dark:0.12
 
 [Clocktower_Outer]
 name = 외부

@@ -2797,6 +2797,26 @@ rarity = uncommon
 source = gather:Bloom_Terrace
 minHyperion = 0
 
+[terrace_spiral_petals]
+name = 소용돌이 꽃잎 다발
+category = Herb
+price = 14
+tags = /organic/raw/herb/flower/terrace/spiral/
+description = 테라스 언덕 바람이 꽃잎을 한곳으로 모아 만든 자연 다발. 말리면 차 향이 은은하게 난다.
+rarity = common
+source = gather:Bloom_Terrace
+minHyperion = 0
+
+[terrace_nectar_jelly]
+name = 꽃술 젤리
+category = Food
+price = 22
+tags = /organic/cooked/sweet/flower/terrace/jelly/
+description = 테라스에서만 익는 꽃술을 졸여 만든 반투명 젤리. 한 입에 향과 당도가 천천히 퍼진다.
+rarity = uncommon
+source = gather:Bloom_Terrace
+minHyperion = 0
+
 # ---- Ancient_Tree_Crown (고대수의 왕관) ----
 
 [world_tree_leaf]

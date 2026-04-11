@@ -7,7 +7,7 @@ import { randomInt, randomFloat } from '../types/rng';
 import { updateHyperionLevels } from './hyperion';
 import { advanceTurn } from './world-simulation';
 import { applyDailyBaseEffects, tickStoragePenalties } from './base-effects';
-import { findItemsBySource } from '../types/item-defs';
+import { findItemsBySource, getEquippedAccessoryEffects } from '../types/item-defs';
 import { tryNpcInitiatedConversation, getDialogue, getRelationshipStage, getActionText } from './npc-interaction';
 
 function syncPlayerHyperionBonus(session: GameSession): void {
@@ -145,8 +145,11 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
     case 'eat': result.screenChange = 'info_inventory'; return result;
 
     case 'rest': {
-      const hpRecover = Math.round(p.getEffectiveMaxHp() * 0.2);
-      const mpRecover = Math.round(p.getEffectiveMaxMp() * 0.2);
+      const accFx = getEquippedAccessoryEffects(p);
+      let hpRecover = Math.round(p.getEffectiveMaxHp() * 0.2);
+      let mpRecover = Math.round(p.getEffectiveMaxMp() * 0.2);
+      hpRecover += Math.round(hpRecover * (accFx.hpRegen ?? 0));
+      mpRecover += Math.round(mpRecover * (accFx.mpRegen ?? 0));
       p.adjustHp(hpRecover);
       p.adjustMp(mpRecover);
       const companions = session.actors
@@ -197,7 +200,9 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
 
       // 성공률 계산 (레벨 기반)
       const levelDiff = p.base.level - (loc.monsterLevel || 1);
-      const chance = Math.max(0.2, Math.min(0.95, 0.7 + levelDiff * 0.03));
+      const accFxGather = getEquippedAccessoryEffects(p);
+      const gatherMod = accFxGather.gatherBonus ?? 0;
+      const chance = Math.min(0.95, Math.max(0.2, 0.7 + levelDiff * 0.03) + gatherMod);
       if (randomFloat(0, 1) > chance) {
         result.messages.push('채집에 실패했다...');
         if (lockedItems.length > 0) {

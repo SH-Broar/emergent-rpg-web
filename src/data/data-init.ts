@@ -3,7 +3,7 @@
 
 import { DataSection, parsePairList, parseFloatList, parseStringList, parseColorInfluence, parseLootList, parseTripleList } from './parser';
 import { GameRegistry } from '../types/registry';
-import { parseRace, parseSpiritRole, parseItemType, parseTrait, ELEMENT_COUNT, parseElement } from '../types/enums';
+import { parseRace, parseSpiritRole, parseItemType, parseTrait, ELEMENT_COUNT, parseElement, ItemType } from '../types/enums';
 import { parseLocationID } from '../types/location';
 import { Actor } from '../models/actor';
 import { World, createLocationData } from '../models/world';
@@ -333,6 +333,13 @@ export function initDungeonSystem(
       });
     }
 
+    const openingMul = s.getFloat('openingAttackMultiplier', 0);
+    const burstHits = s.getInt('burstHitCount', 0);
+    const burstEach = s.getInt('burstHitDamage', 0);
+    const burstOnceRaw = s.get('burstOnce', '').trim().toLowerCase();
+    const burstExplicitOnce = burstOnceRaw === 'true' || burstOnceRaw === '1' || burstOnceRaw === 'yes';
+    const tickPress = s.getInt('tickPressureDamage', 0);
+
     dungeon.addMonster({
       id: s.name,
       name: s.get('name', s.name),
@@ -344,6 +351,15 @@ export function initDungeonSystem(
       })),
       skills,
       skillChance: s.getFloat('skillChance', 0),
+      openingAttackMultiplier: openingMul > 0 ? openingMul : undefined,
+      burstHitCount: burstHits > 0 ? burstHits : undefined,
+      burstHitDamage: burstEach > 0 ? burstEach : undefined,
+      burstOnce: burstHits > 0 && burstEach > 0 && burstExplicitOnce ? true : undefined,
+      tickPressureDamage: tickPress > 0 ? tickPress : undefined,
+      evasionChance: (() => {
+        const v = s.getFloat('evasionChance', 0);
+        return v > 0 ? Math.min(0.95, v) : undefined;
+      })(),
     });
   }
 
@@ -376,16 +392,31 @@ export function initDungeonSystem(
         };
       })(),
       enemyIds: parseStringList(s.get('enemies', '')),
-      lootOnClear: parseLootList(s.get('lootOnClear', '')).map(l => ({
-        item: parseItemType(l.item), amount: l.amount, chance: l.chance,
-      })),
-      lootPerAdvance: parseLootList(s.get('lootPerAdvance', '')).map(l => ({
-        item: parseItemType(l.item), amount: l.amount, chance: l.chance,
-      })),
+      lootOnClear: [
+        ...parseLootList(s.get('lootOnClear', '')).map(l => ({
+          item: parseItemType(l.item), amount: l.amount, chance: l.chance,
+        })),
+        ...parseLootList(s.get('lootItemsOnClear', '')).map(l => ({
+          item: 0 as ItemType, amount: l.amount, chance: l.chance, itemId: l.item,
+        })),
+      ],
+      lootPerAdvance: [
+        ...parseLootList(s.get('lootPerAdvance', '')).map(l => ({
+          item: parseItemType(l.item), amount: l.amount, chance: l.chance,
+        })),
+        ...parseLootList(s.get('lootItemsPerAdvance', '')).map(l => ({
+          item: 0 as ItemType, amount: l.amount, chance: l.chance, itemId: l.item,
+        })),
+      ],
       lootRareChance: s.getFloat('lootRareChance', 0.1),
-      lootRare: parseLootList(s.get('lootRare', '')).map(l => ({
-        item: parseItemType(l.item), amount: l.amount, chance: l.chance,
-      })),
+      lootRare: [
+        ...parseLootList(s.get('lootRare', '')).map(l => ({
+          item: parseItemType(l.item), amount: l.amount, chance: l.chance,
+        })),
+        ...parseLootList(s.get('lootItemsRare', '')).map(l => ({
+          item: 0 as ItemType, amount: l.amount, chance: l.chance, itemId: l.item,
+        })),
+      ],
       colorInfluence: parseColorInfluence(s.get('colorInfluence', '')),
       combatWeight: s.getFloat('combatWeight', 0.70),
       eventWeight: s.getFloat('eventWeight', 0.20),

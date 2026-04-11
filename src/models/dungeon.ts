@@ -10,6 +10,18 @@ export interface LootEntry {
   item: ItemType;
   amount: number;
   chance: number; // 0~1
+  itemId?: string; // 특정 아이템 ID (있으면 item 대신 사용)
+}
+
+/** 루트 테이블 판정 — 확률에 따라 획득 아이템 목록 반환 */
+export function rollLoot(table: LootEntry[]): LootEntry[] {
+  const result: LootEntry[] = [];
+  for (const entry of table) {
+    if (randomFloat(0, 1) <= entry.chance) {
+      result.push(entry);
+    }
+  }
+  return result;
 }
 
 export interface MonsterSkillDef {
@@ -28,6 +40,24 @@ export interface MonsterDef {
   lootTable: LootEntry[];
   skills: MonsterSkillDef[];
   skillChance: number;  // 0.0~1.0, 틱당 스킬 발동 확률
+  /** 첫 본 공격(버스트가 아닐 때)에만 적용되는 공격력 배율. 이후 턴은 기본 attack만 사용한다. */
+  openingAttackMultiplier?: number;
+  /** 턴당 연속 명중(방어 무시). burstOnce면 전투 중 첫 발동만. */
+  burstHitCount?: number;
+  burstHitDamage?: number;
+  burstOnce?: boolean;
+  /** 적 턴 처리 후 매 틱 추가로 들어오는 피해(이상 신호·도트 압박 등) */
+  tickPressureDamage?: number;
+  /** 0~1. 플레이어 자동 공격·동료 공격·공격 스킬이 빗맞을 확률(비행·환영 등) */
+  evasionChance?: number;
+}
+
+/** 플레이어 측 공격이 빗맞을지 굴림 */
+export function rollMonsterEvasionMiss(enemy: MonsterDef): boolean {
+  const raw = enemy.evasionChance ?? 0;
+  if (raw <= 0) return false;
+  const p = Math.min(0.92, raw);
+  return randomFloat(0, 1) < p;
 }
 
 export enum DungeonEventType { Treasure, Hazard, Heal, Discovery }

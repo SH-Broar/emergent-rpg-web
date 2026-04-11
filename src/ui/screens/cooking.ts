@@ -3,7 +3,7 @@
 import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
 import { ItemType } from '../../types/enums';
-import { categoryName } from '../../types/item-defs';
+import { categoryName, getEquippedAccessoryEffects } from '../../types/item-defs';
 
 interface Recipe {
   name: string;
@@ -141,10 +141,23 @@ export function createCookingScreen(
       p.consumeItem(ing.type, ing.amount);
     }
 
+    // Apply cookingBonus from accessories to buff values
+    const accFx = getEquippedAccessoryEffects(p);
+    const cookingMul = 1 + (accFx.cookingBonus ?? 0);
+
     // Add result item
     p.addItemById(recipe.resultId, 1);
     session.knowledge.discoverItem(recipe.resultId);
     session.knowledge.trackItemCrafted();
+
+    // Apply scaled buffs immediately (cookingBonus multiplies buff values)
+    for (const b of recipe.buff) {
+      session.playerBuffs.push({
+        type: b.stat,
+        amount: Math.round(b.value * cookingMul),
+        remainingTurns: recipe.buffDuration,
+      });
+    }
 
     session.backlog.add(session.gameTime, `${p.name}이(가) ${recipe.name}을(를) 만들었다.`, '행동');
     message = `${recipe.name} 제작 완료!`;

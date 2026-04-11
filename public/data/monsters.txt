@@ -1165,3 +1165,155 @@ skill_1_name = 유리 비늘파
 skill_1_type = attack
 skill_1_value = 2.2
 skill_1_desc = 유리처럼 반짝이는 비늘 조각을 튕겨낸다.
+
+; -------------------------------------------------------
+; 홀로그램 필드 (가상 던전 전용)
+; -------------------------------------------------------
+
+[Holo_Sniper_Core]
+name = 버추얼 저격핵
+attack = 7
+defense = 10
+hp = 140
+openingAttackMultiplier = 14
+loot = MonsterLoot:2:0.34, Potion:1:0.22, Equipment:1:0.08
+skillChance = 0
+
+[Holo_Nano_Cloud]
+name = 버추얼 나노구름
+attack = 5
+defense = 8
+hp = 200
+burstHitCount = 100
+burstHitDamage = 1
+burstOnce = true
+loot = MonsterLoot:2:0.36, Herb:1:0.20, OreCommon:1:0.18
+skillChance = 0
+
+[Holo_Wall_Unit]
+name = 버추얼 방벽유닛
+attack = 16
+defense = 58
+hp = 300
+loot = OreCommon:2:0.30, MonsterLoot:2:0.32, Equipment:1:0.10
+skillChance = 0.18
+skill_1_name = 구조 보강
+skill_1_type = heal
+skill_1_value = 26
+skill_1_desc = 가상 장벽을 재배열해 체력을 채운다.
+
+[Holo_Glitch_Wisp]
+name = 버추얼 글리치 위습
+attack = 11
+defense = 14
+hp = 150
+tickPressureDamage = 3
+loot = MonsterLoot:2:0.32, Potion:1:0.24, Herb:1:0.18
+skillChance = 0.44
+skill_1_name = 잔상 난사
+skill_1_type = attack
+skill_1_value = 0.45
+skill_1_desc = 수십 겹의 잔상이 동시에 스친다.
+skill_2_name = 노이즈 박음
+skill_2_type = attack
+skill_2_value = 0.55
+skill_2_desc = 시야를 어지럽히는 노이즈 파동이 겹친다.
+
+[Holo_Stream_Shade]
+name = 버추얼 스트림 쉐이드
+attack = 20
+defense = 18
+hp = 170
+tickPressureDamage = 2
+loot = MonsterLoot:2:0.34, Food:2:0.18, Potion:1:0.20
+skillChance = 0.32
+skill_1_name = 비트 절단
+skill_1_type = attack
+skill_1_value = 1.15
+skill_1_desc = 네온 박자에 맞춰 날카롭게 벤다.
+skill_2_name = 잔광 추적
+skill_2_type = attack
+skill_2_value = 1.25
+skill_2_desc = 잔광이 남은 자리를 따라 타격이 이어진다.
+
+; -------------------------------------------------------
+; 환영의 첨탑 (좁은 층·비행·고회피)
+; -------------------------------------------------------
+
+[Phantom_Veil_Sprite]
+name = 환영 베일 스프라이트
+attack = 24
+defense = 10
+hp = 165
+evasionChance = 0.38
+loot = MonsterLoot:2:0.34, Herb:1:0.22, Potion:1:0.14
+skillChance = 0.22
+skill_1_name = 베일 점멸
+skill_1_type = attack
+skill_1_value = 0.9
+skill_1_desc = 얇은 막이 순간적으로 겹치며 시야를 흐린다.
+
+[Phantom_Spire_Wing]
+name = 첨탑 날개령
+attack = 32
+defense = 14
+hp = 195
+evasionChance = 0.32
+loot = MonsterLoot:2:0.36, OreCommon:1:0.18, Potion:1:0.14
+skillChance = 0.24
+skill_1_name = 급강하
+skill_1_type = attack
+skill_1_value = 1.25
+skill_1_desc = 천장에서 수직으로 내려찍는다.
+
+[Phantom_Glass_Kite]
+name = 유리연 환상
+attack = 28
+defense = 12
+hp = 175
+evasionChance = 0.42
+loot = MonsterLoot:2:0.32, OreRare:1:0.08, Herb:1:0.16
+skillChance = 0.20
+skill_1_name = 연선 휘감기
+skill_1_type = attack
+skill_1_value = 1.05
+skill_1_desc = 투명한 실이 공중에서 궤적을 바꾼다.
+
+[Phantom_Veil_Sprite_Depth]
+name = 심층 환영 베일
+attack = 58
+defense = 32
+hp = 340
+evasionChance = 0.36
+loot = MonsterLoot:2:0.36, Herb:1:0.22, Potion:1:0.16
+skillChance = 0.24
+skill_1_name = 베일 점멸
+skill_1_type = attack
+skill_1_value = 1.05
+skill_1_desc = 막이 여러 겹으로 겹치며 공간을 뒤틴다.
+
+[Phantom_Spire_Wing_Depth]
+name = 심층 첨탑 날개령
+attack = 72
+defense = 38
+hp = 410
+evasionChance = 0.30
+loot = MonsterLoot:2:0.38, OreCommon:1:0.18, Potion:1:0.14
+skillChance = 0.26
+skill_1_name = 급강하
+skill_1_type = attack
+skill_1_value = 1.35
+skill_1_desc = 난간 밖에서 수직으로 내리꽂는다.
+
+[Phantom_Glass_Kite_Depth]
+name = 심층 유리연
+attack = 64
+defense = 30
+hp = 360
+evasionChance = 0.40
+loot = MonsterLoot:2:0.34, OreRare:1:0.12, Herb:1:0.16
+skillChance = 0.22
+skill_1_name = 연선 휘감기
+skill_1_type = attack
+skill_1_value = 1.15
+skill_1_desc = 거울바람에 실이 갈라져 동시에 여러 각도로 달려든다.

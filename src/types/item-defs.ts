@@ -390,6 +390,7 @@ export interface ArmorDef {
   evasion: number;
   price: number;
   description: string;
+  specialEffects: Record<string, number>; // 악세서리 특수 효과 (travelSpeed, gatherBonus 등)
 }
 
 const armorRegistry = new Map<string, ArmorDef>();
@@ -411,6 +412,7 @@ export function loadArmorDefs(sections: DataSection[]): void {
       evasion: s.getFloat('evasion', 0),
       price: s.getInt('price', 0),
       description: s.get('description', ''),
+      specialEffects: parseSpecialEffects(s.get('specialEffects', '')),
     };
     armorRegistry.set(def.id, def);
   }
@@ -426,6 +428,37 @@ export function getAllArmorDefs(): ReadonlyMap<string, ArmorDef> {
 
 export function getArmorCount(): number {
   return armorRegistry.size;
+}
+
+// ============================================================
+// 악세서리 특수 효과
+// ============================================================
+
+function parseSpecialEffects(raw: string): Record<string, number> {
+  const result: Record<string, number> = {};
+  if (!raw.trim()) return result;
+  for (const pair of raw.split(',')) {
+    const [key, val] = pair.split(':').map(s => s.trim());
+    if (key && val) result[key] = parseFloat(val) || 0;
+  }
+  return result;
+}
+
+/**
+ * 장착 중인 악세서리 2슬롯의 특수 효과를 합산하여 반환.
+ * 게임 시스템 각 지점에서 호출하여 보너스 적용.
+ */
+export function getEquippedAccessoryEffects(actor: { equippedAccessory: string; equippedAccessory2: string }): Record<string, number> {
+  const totals: Record<string, number> = {};
+  for (const id of [actor.equippedAccessory, actor.equippedAccessory2]) {
+    if (!id) continue;
+    const def = getArmorDef(id);
+    if (!def || !def.specialEffects) continue;
+    for (const [k, v] of Object.entries(def.specialEffects)) {
+      totals[k] = (totals[k] ?? 0) + v;
+    }
+  }
+  return totals;
 }
 
 // ============================================================

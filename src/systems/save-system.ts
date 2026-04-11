@@ -281,6 +281,12 @@ function serializeKnowledge(k: PlayerKnowledge): object {
       room: [...zones.room.entries()],
       warm: [...zones.warm.entries()],
     }]),
+    storageDegradation: [...k.storageDegradation.entries()].map(([loc, zones]) => [loc, {
+      cold: [...zones.cold.entries()],
+      room: [...zones.room.entries()],
+      warm: [...zones.warm.entries()],
+    }]),
+    withdrawnItemDegradation: [...k.withdrawnItemDegradation.entries()],
     baseLevels: [...k.baseLevels.entries()],
     baseInvitedNpcs: [...k.baseInvitedNpcs.entries()],
     farmStates: [...k.farmStates.entries()].map(([loc, farm]) => [loc, {
@@ -328,6 +334,14 @@ function deserializeKnowledge(d: any): PlayerKnowledge {
       warm: new Map(zones?.warm ?? []),
     }])
   );
+  k.storageDegradation = new Map(
+    (d.storageDegradation ?? []).map(([loc, zones]: [string, any]) => [loc, {
+      cold: new Map(zones?.cold ?? []),
+      room: new Map(zones?.room ?? []),
+      warm: new Map(zones?.warm ?? []),
+    }])
+  );
+  k.withdrawnItemDegradation = new Map(d.withdrawnItemDegradation ?? []);
   k.baseLevels = new Map(d.baseLevels ?? []);
   k.baseInvitedNpcs = new Map(d.baseInvitedNpcs ?? []);
   if (d.farmStates) {

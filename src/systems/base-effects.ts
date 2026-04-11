@@ -2,7 +2,9 @@
 
 import type { GameSession } from './game-session';
 import { getBaseDef } from '../data/base-defs';
-import { randomInt } from '../types/rng';
+import { randomInt, randomFloat } from '../types/rng';
+import { getStorageProfileForItem, getItemDef, categoryName, type StorageZone, getEquippedAccessoryEffects } from '../types/item-defs';
+import { ItemType } from '../types/enums';
 
 /**
  * 매일 6시 호출: 모든 소유 거점의 Lv.5 패시브 효과 적용.
@@ -103,10 +105,80 @@ export function getCookingMultiplier(session: GameSession): number {
 /** 특정 거점의 창고 용량 배율 */
 export function getStorageCapacityMultiplier(session: GameSession, locationId: string): number {
   const k = session.knowledge;
-  if (!k.ownedBases.has(locationId)) return 1.0;
-  if (k.getBaseLevel(locationId) >= 5) {
-    const def = getBaseDef(locationId);
-    if (def?.lv5Ability.type === 'fish_bonus') return 1.5;
+  let multiplier = 1.0;
+  if (k.ownedBases.has(locationId)) {
+    if (k.getBaseLevel(locationId) >= 5) {
+      const def = getBaseDef(locationId);
+      if (def?.lv5Ability.type === 'fish_bonus') multiplier = 1.5;
+    }
   }
-  return 1.0;
+  const accFx = getEquippedAccessoryEffects(session.player);
+  multiplier += accFx.storageBonus ?? 0;
+  return multiplier;
+}
+
+/**
+ * 매일 호출: 기피 구역 보관 아이템에 패널티 적용.
+ * - spoil: 15% 확률로 1개 소실
+ * - disable: 열화도 +5% 누적 (최대 50%)
+ */
+function resolveItemName(id: string): string {
+  const def = getItemDef(id);
+  if (def) return def.name;
+  const numId = parseInt(id, 10);
+  if (!isNaN(numId)) return categoryName(numId as ItemType);
+  return id;
+}
+
+const ZONE_NAME: Record<StorageZone, string> = { cold: '냉장', room: '실온', warm: '온장' };
+
+export function tickStoragePenalties(session: GameSession): string[] {
+  const messages: string[] = [];
+  const k = session.knowledge;
+  const zones: StorageZone[] = ['cold', 'room', 'warm'];
+
+  for (const locId of k.ownedBases) {
+    const storage = k.getStorage(locId);
+    if (!storage) continue;
+
+    for (const zone of zones) {
+      const zoneMap = storage[zone];
+      const toRemove: string[] = [];
+
+      for (const [itemId, count] of zoneMap) {
+        const profile = getStorageProfileForItem(itemId);
+        if (!profile.avoidedStorage.includes(zone)) continue;
+
+        if (profile.badStorageEffect === 'spoil') {
+          // 15% 확률로 1개 상함
+          if (randomFloat(0, 1) < 0.15) {
+            if (count <= 1) {
+              toRemove.push(itemId);
+            } else {
+              zoneMap.set(itemId, count - 1);
+            }
+            // 열화 기록도 정리
+            k.setStorageDegradation(locId, zone, itemId, 0);
+            const name = resolveItemName(itemId);
+            messages.push(`📦 ${name} 1개가 상했다... (${ZONE_NAME[zone]})`);
+          }
+        } else if (profile.badStorageEffect === 'disable') {
+          // 열화도 +5% 누적
+          const cur = k.getStorageDegradation(locId, zone, itemId);
+          const next = Math.min(50, cur + 5);
+          k.setStorageDegradation(locId, zone, itemId, next);
+          if (next >= 50 && cur < 50) {
+            const name = resolveItemName(itemId);
+            messages.push(`📦 ${name} 효과가 심하게 저하되었다! (열화 ${next}%, ${ZONE_NAME[zone]})`);
+          }
+        }
+      }
+
+      for (const id of toRemove) {
+        zoneMap.delete(id);
+      }
+    }
+  }
+
+  return messages;
 }

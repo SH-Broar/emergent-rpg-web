@@ -2,8 +2,9 @@
 
 import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
-import type { DungeonDef, DungeonRunState, DungeonRoom, DungeonEventDef } from '../../models/dungeon';
-import { RoomType } from '../../models/dungeon';
+import type { DungeonDef, DungeonRunState, DungeonRoom, DungeonEventDef, LootEntry } from '../../models/dungeon';
+import { RoomType, rollLoot } from '../../models/dungeon';
+import { getItemDef, getWeaponDef, getArmorDef, categoryName } from '../../types/item-defs';
 import { isTimeWindowOpen } from '../../types/game-time';
 import {
   RealtimeCombatState, getCombatTickMs,
@@ -13,6 +14,7 @@ import { canUseSkill } from '../../systems/skill-combat';
 import { locationName } from '../../types/registry';
 import { moveCompanions } from '../../systems/npc-interaction';
 import { iGa, eulReul, eunNeun } from '../../data/josa';
+import { randomFloat } from '../../types/rng';
 
 type DungeonPhase = 'list' | 'entry' | 'navigate' | 'combat' | 'event' | 'rest' | 'victory' | 'defeat' | 'midBoss' | 'map' | 'giveUpConfirm';
 
@@ -892,6 +894,23 @@ export function createDungeonScreen(
     }
   }
 
+  /** 루트 결과를 플레이어에게 지급하고 텍스트 반환 */
+  function applyLoot(drops: LootEntry[]): string[] {
+    const lines: string[] = [];
+    for (const d of drops) {
+      if (d.itemId) {
+        p.addItemById(d.itemId, d.amount);
+        session.knowledge.discoverItem(d.itemId);
+        const name = getItemDef(d.itemId)?.name ?? getWeaponDef(d.itemId)?.name ?? getArmorDef(d.itemId)?.name ?? d.itemId;
+        lines.push(`${name} ×${d.amount}`);
+      } else {
+        p.addItem(d.item, d.amount);
+        lines.push(`${categoryName(d.item)} ×${d.amount}`);
+      }
+    }
+    return lines;
+  }
+
   // ================================================================ victory
   function handleVictory(el: HTMLElement) {
     if (!selectedDungeon || !runState || !combatState) return;
@@ -927,9 +946,34 @@ export function createDungeonScreen(
     const leveledUp = p.gainExp(Math.round(expGain));
     session.gameTime.advance(30);
 
+    // 전투 보상 아이템 (매 전투)
+    const lootLines: string[] = [];
+    const advLoot = rollLoot(selectedDungeon.lootPerAdvance);
+    lootLines.push(...applyLoot(advLoot));
+
+    // 보스/중간보스 추가 보상
+    if (isBoss) {
+      const clearLoot = rollLoot(selectedDungeon.lootOnClear);
+      lootLines.push(...applyLoot(clearLoot));
+    }
+
+    // 레어 드롭
+    if (selectedDungeon.lootRare.length > 0 && randomFloat(0, 1) < selectedDungeon.lootRareChance) {
+      const rareLoot = rollLoot(selectedDungeon.lootRare);
+      lootLines.push(...applyLoot(rareLoot));
+    }
+
+    // 몬스터 고유 루트
+    if (combatState.enemy.lootTable.length > 0) {
+      const monsterLoot = rollLoot(combatState.enemy.lootTable);
+      lootLines.push(...applyLoot(monsterLoot));
+    }
+
+    const lootText = lootLines.length > 0 ? ` | 획득: ${lootLines.join(', ')}` : '';
+
     session.backlog.add(
       session.gameTime,
-      `${p.name}${iGa(p.name)} ${combatState.enemy.name}${eulReul(combatState.enemy.name)} 토벌했다. EXP+${Math.round(expGain)}, ${Math.round(goldGain)}G`,
+      `${p.name}${iGa(p.name)} ${combatState.enemy.name}${eulReul(combatState.enemy.name)} 토벌했다. EXP+${Math.round(expGain)}, ${Math.round(goldGain)}G${lootText}`,
       '행동',
     );
 
@@ -961,6 +1005,7 @@ export function createDungeonScreen(
         <div style="text-align:center;margin:12px 0">
           <p>${combatState.enemy.name}${eulReul(combatState.enemy.name)} 쓰러뜨렸다!</p>
           <p>EXP +${Math.round(expGain)} | ${Math.round(goldGain)}G</p>
+          ${lootLines.length > 0 ? `<p style="color:var(--accent)">획득: ${lootLines.join(', ')}</p>` : ''}
           ${bonusText ? `<p style="color:var(--accent2)">${bonusText}</p>` : ''}
           ${leveledUp ? `<p style="color:var(--success)">레벨 업! Lv.${p.base.level}</p>` : ''}
           <p style="color:var(--text-dim)">진행도: ${curProgress}%</p>
@@ -988,6 +1033,7 @@ export function createDungeonScreen(
         <div style="text-align:center;margin:12px 0">
           <p>${combatState.enemy.name}${eulReul(combatState.enemy.name)} 쓰러뜨렸다!</p>
           <p>EXP +${Math.round(expGain)} | ${Math.round(goldGain)}G</p>
+          ${lootLines.length > 0 ? `<p style="color:var(--accent)">획득: ${lootLines.join(', ')}</p>` : ''}
           ${bonusText ? `<p style="color:var(--accent2)">${bonusText}</p>` : ''}
           ${leveledUp ? `<p style="color:var(--success)">레벨 업! Lv.${p.base.level}</p>` : ''}
         </div>
@@ -1017,6 +1063,7 @@ export function createDungeonScreen(
         <div style="text-align:center;margin:12px 0">
           <p>적을 쓰러뜨렸다!</p>
           <p>EXP +${Math.round(expGain)} | ${Math.round(goldGain)}G</p>
+          ${lootLines.length > 0 ? `<p style="color:var(--accent)">획득: ${lootLines.join(', ')}</p>` : ''}
           ${bonusText ? `<p style="color:var(--accent2)">${bonusText}</p>` : ''}
           ${leveledUp ? `<p style="color:var(--success)">레벨 업! Lv.${p.base.level}</p>` : ''}
         </div>

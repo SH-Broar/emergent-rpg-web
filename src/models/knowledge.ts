@@ -180,12 +180,25 @@ export class PlayerKnowledge {
   // 거점 레벨 (locationId -> level 1~5)
   baseLevels = new Map<string, number>();
 
+  // 보관 열화도 (locationId -> zone -> itemId -> 열화 %)
+  storageDegradation = new Map<string, {
+    cold: Map<string, number>,
+    room: Map<string, number>,
+    warm: Map<string, number>,
+  }>();
+
+  // 꺼낸 아이템의 열화도 (itemId -> 열화 %)
+  withdrawnItemDegradation = new Map<string, number>();
+
   ownsBase(locationId: string): boolean { return this.ownedBases.has(locationId); }
 
   purchaseBase(locationId: string): void {
     this.ownedBases.add(locationId);
     if (!this.storage.has(locationId)) {
       this.storage.set(locationId, { cold: new Map(), room: new Map(), warm: new Map() });
+    }
+    if (!this.storageDegradation.has(locationId)) {
+      this.storageDegradation.set(locationId, { cold: new Map(), room: new Map(), warm: new Map() });
     }
     if (!this.baseLevels.has(locationId)) {
       this.baseLevels.set(locationId, 1);
@@ -245,7 +258,36 @@ export class PlayerKnowledge {
     const next = cur - amount;
     if (next <= 0) s[zone].delete(itemId);
     else s[zone].set(itemId, next);
+
+    // 열화도 이전: 꺼낸 아이템에 열화도 반영
+    const deg = this.getStorageDegradation(locationId, zone, itemId);
+    if (deg > 0) {
+      // 기존 인벤토리 열화도와 가중 평균
+      const existDeg = this.withdrawnItemDegradation.get(itemId) ?? 0;
+      // 단순화: 더 높은 쪽을 유지 (같은 아이템이 여러 창고에서 꺼내질 수 있으므로)
+      this.withdrawnItemDegradation.set(itemId, Math.max(existDeg, deg));
+      // 창고에서 전부 꺼냈으면 열화 기록 삭제
+      if (next <= 0) {
+        this.setStorageDegradation(locationId, zone, itemId, 0);
+      }
+    }
     return true;
+  }
+
+  getStorageDegradation(locationId: string, zone: 'cold' | 'room' | 'warm', itemId: string): number {
+    const d = this.storageDegradation.get(locationId);
+    if (!d) return 0;
+    return d[zone].get(itemId) ?? 0;
+  }
+
+  setStorageDegradation(locationId: string, zone: 'cold' | 'room' | 'warm', itemId: string, value: number): void {
+    let d = this.storageDegradation.get(locationId);
+    if (!d) {
+      d = { cold: new Map(), room: new Map(), warm: new Map() };
+      this.storageDegradation.set(locationId, d);
+    }
+    if (value <= 0) d[zone].delete(itemId);
+    else d[zone].set(itemId, Math.min(value, 50)); // 최대 50%
   }
 
   trackVisit(locationId: string): void { this.visitedLocations.add(locationId); }

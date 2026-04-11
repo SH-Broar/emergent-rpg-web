@@ -4,6 +4,9 @@
 import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
 import { getWeaponDef, getArmorDef } from '../../types/item-defs';
+import { ELEMENT_COUNT } from '../../types/enums';
+
+function degradeKey(slot: string): string { return `degrade_${slot}`; }
 
 type EquipSlot = 'weapon' | 'armor' | 'accessory' | 'accessory2';
 
@@ -66,16 +69,42 @@ export function createEquipmentScreen(
     if (id) {
       p.addItemById(id, 1);
       setEquip(slot, '');
+      p.setVariable(degradeKey(slot), 0);
     }
   }
 
   function equip(slot: EquipSlot, itemId: string): void {
     // Unequip current first (return to inventory)
     const currentId = getEquippedId(slot);
-    if (currentId) p.addItemById(currentId, 1);
+    if (currentId) {
+      p.addItemById(currentId, 1);
+      p.setVariable(degradeKey(slot), 0);
+    }
     // Remove from inventory and equip
     p.removeItemById(itemId, 1);
     setEquip(slot, itemId);
+
+    // 보관 열화도 이전
+    const deg = session.knowledge.withdrawnItemDegradation.get(itemId) ?? 0;
+    p.setVariable(degradeKey(slot), deg);
+    if (deg > 0) {
+      const remaining = p.getItemCount(itemId);
+      if (remaining <= 0) {
+        session.knowledge.withdrawnItemDegradation.delete(itemId);
+      }
+      // 열화 컬러 영향: 장비 원소에 비례하는 컬러 시프트
+      let elemIdx = -1;
+      if (slot === 'weapon') {
+        elemIdx = getWeaponDef(itemId)?.element ?? -1;
+      } else {
+        elemIdx = getArmorDef(itemId)?.element ?? -1;
+      }
+      if (elemIdx >= 0 && elemIdx < ELEMENT_COUNT) {
+        const influence = new Array(ELEMENT_COUNT).fill(0);
+        influence[elemIdx] = deg * 0.003;
+        p.color.applyInfluence(influence);
+      }
+    }
   }
 
   function getEquipCandidates(slot: EquipSlot): { id: string; name: string; stats: string }[] {
@@ -167,12 +196,18 @@ export function createEquipmentScreen(
     const currentName = getEquippedName(selectedSlot);
     const currentStats = getEquippedStats(selectedSlot);
 
+    const slotDeg = p.getVariable(degradeKey(selectedSlot));
+    const degHtml = slotDeg > 0
+      ? `<div style="font-size:11px;color:#e17055">⚠ 보관 열화 -${Math.round(slotDeg)}%</div>`
+      : '';
+
     wrap.innerHTML = `
       <button class="btn back-btn" data-back>\u2190 \ub4a4\ub85c [Esc]</button>
       <h2>${getSlotLabel(selectedSlot)}</h2>
       <div style="padding:8px;background:var(--bg-panel);border-radius:8px;margin-bottom:8px">
         <div style="font-size:13px">\ud604\uc7ac: <strong>${currentName}</strong></div>
         ${currentStats ? `<div style="font-size:12px;color:var(--text-dim)">${currentStats}</div>` : ''}
+        ${degHtml}
       </div>
     `;
 
@@ -203,7 +238,9 @@ export function createEquipmentScreen(
         const btn = document.createElement('button');
         btn.className = 'btn';
         btn.style.cssText = 'text-align:left;display:flex;justify-content:space-between';
-        btn.innerHTML = `<span>${i + 1}. ${c.name}</span><span style="color:var(--success);font-size:12px">${c.stats}</span>`;
+        const cDeg = session.knowledge.withdrawnItemDegradation.get(c.id) ?? 0;
+        const cDegLabel = cDeg > 0 ? ` <span style="color:#e17055;font-size:11px">열화-${Math.round(cDeg)}%</span>` : '';
+        btn.innerHTML = `<span>${i + 1}. ${c.name}${cDegLabel}</span><span style="color:var(--success);font-size:12px">${c.stats}</span>`;
         btn.addEventListener('click', () => {
           equip(selectedSlot!, c.id);
           renderSlotDetail(el);

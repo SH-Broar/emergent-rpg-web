@@ -28,21 +28,37 @@ export function createStorageScreen(
 
   function getItemName(id: string): string {
     const def = getItemDef(id);
-    return def ? def.name : id;
+    if (def) return def.name;
+    const numId = parseInt(id, 10);
+    if (!isNaN(numId)) return categoryName(numId as ItemType);
+    return id;
   }
 
   function getStorageHint(id: string, zone: StorageZone): string {
     const profile = getStorageProfileForItem(id);
     const preferred = profile.preferredStorage.map(z => ZONE_LABELS[z].replace(/^[^\s]+\s/, '')).join(', ');
     const avoided = profile.avoidedStorage.map(z => ZONE_LABELS[z].replace(/^[^\s]+\s/, '')).join(', ');
-    const state = profile.avoidedStorage.includes(zone)
-      ? ` · 기피 (${profile.badStorageEffect === 'spoil' ? '상함 위험' : profile.badStorageEffect === 'disable' ? '비활성 위험' : '주의'})`
-      : profile.preferredStorage.includes(zone)
-        ? ' · 권장'
-        : '';
+
+    const isAvoided = profile.avoidedStorage.includes(zone);
+    const isPreferred = profile.preferredStorage.includes(zone);
+
+    let stateHtml = '';
+    if (isAvoided) {
+      const reason = profile.badStorageEffect === 'spoil' ? '상함 위험'
+        : profile.badStorageEffect === 'disable' ? '효과 감소' : '주의';
+      stateHtml = ` · <span style="color:#e17055;font-weight:bold">⚠ 기피 (${reason})</span>`;
+      // 기피 중 열화도 표시
+      const deg = session.knowledge.getStorageDegradation(loc, zone, id);
+      if (deg > 0) {
+        stateHtml += ` <span style="color:#e17055">[-${Math.round(deg)}%]</span>`;
+      }
+    } else if (isPreferred) {
+      stateHtml = ` · <span style="color:#00b894;font-weight:bold">✓ 적정</span>`;
+    }
+
     const parts = [`권장: ${preferred || '없음'}`];
     if (avoided) parts.push(`기피: ${avoided}`);
-    return parts.join(' / ') + state;
+    return parts.join(' / ') + stateHtml;
   }
 
   function render(el: HTMLElement) {

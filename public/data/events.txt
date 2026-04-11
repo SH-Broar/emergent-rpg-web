@@ -374,6 +374,22 @@ weight = 0.2
 colorInfluence = Earth:0.15, Light:0.1, Water:0.08
 addResource = Bloom_Terrace:Herb:20, Bloom_Terrace:Potion:5
 
+[테라스 이슬 소용돌이]
+description = 이른 아침, 테라스 난간 아래로 이슬이 맺혀 작은 소용돌이를 이루었다. 채집하기 좋은 습기와 향이 한꺼번에 몰려든다.
+location = Bloom_Terrace
+triggerDay = -1
+weight = 0.18
+colorInfluence = Water:0.12, Light:0.1, Wind:0.06
+addResource = Bloom_Terrace:Herb:14, Bloom_Terrace:Potion:3
+
+[언덕 꽃바람 잔치]
+description = 돌풍이 테라스를 스치며 꽃잎이 연무처럼 흩날렸다. 방문객들이 잎을 주워 간식과 약재로 나누며 잠시 거리 축제가 된다.
+location = Bloom_Terrace
+triggerDay = -1
+weight = 0.17
+colorInfluence = Wind:0.14, Earth:0.08, Light:0.08
+addResource = Bloom_Terrace:Herb:10, Bloom_Terrace:Food:12
+
 [밀라의 치즈 잔치]
 description = 밀라가 갓 만든 치즈를 마을에 나누었다! 고소한 향기에 모두가 행복해졌다.
 location = Farm

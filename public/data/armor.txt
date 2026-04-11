@@ -305,3 +305,764 @@ element = None
 defense = 18
 price = 400
 description = 엘리메스 경비대의 표준 갑옷. 한셀이 디자인했다.
+
+# ============================================================
+# 모스 화염 시리즈 (Moss_Flame_*) — Fire, Heavy/Shield
+# ============================================================
+
+[Moss_Flame_Plate]
+name = 모스 화염 갑옷
+type = Heavy
+grade = Uncommon
+element = Fire
+defense = 22
+price = 450
+description = 모스의 용암 지대 대장간에서 단련된 갑옷. 표면이 항상 뜨겁게 달아올라 있다.
+
+[Moss_Flame_Shield]
+name = 모스 화염 방패
+type = Shield
+grade = Common
+element = Fire
+defense = 12
+price = 130
+description = 모스 화산 지대에서 채굴한 현무암으로 만든 방패. 불꽃 공격에 강한 내성을 가진다.
+
+[Moss_Blazing_Plate]
+name = 모스 열풍 중갑
+type = Heavy
+grade = Rare
+element = Fire
+defense = 28
+price = 750
+description = 모스의 전설적인 화염 단조사가 제작한 중갑. 갑옷 표면에 화염 문양이 새겨져 있다.
+
+[Moss_Ember_Shield]
+name = 모스 잿불 방패
+type = Shield
+grade = Uncommon
+element = Fire
+defense = 18
+price = 380
+description = 화산재와 철을 혼합해 만든 방패. 화염 마법을 일정량 흡수한다.
+
+# ============================================================
+# 알리메 빙결 시리즈 (Alime_Frost_*) — Water, Heavy/Robe
+# ============================================================
+
+[Alime_Frost_Plate]
+name = 알리메 빙결 갑옷
+type = Heavy
+grade = Rare
+element = Water
+defense = 27
+price = 800
+description = 알리메 설산 깊은 곳의 영구빙으로 만든 갑옷. 착용자 주변에 냉기 장막이 형성된다.
+
+[Alime_Frost_Robe]
+name = 알리메 서리 로브
+type = Robe
+grade = Uncommon
+element = Water
+defense = 6
+magicDefense = 22
+price = 420
+description = 알리메의 수도사들이 착용하는 서리 로브. 물의 마법 집중력을 높여준다.
+
+[Alime_Blizzard_Robe]
+name = 알리메 눈보라 로브
+type = Robe
+grade = Rare
+element = Water
+defense = 9
+magicDefense = 32
+price = 900
+description = 알리메 대설원을 헤쳐온 정예 마법사의 로브. 빙결 마법의 범위가 넓어진다.
+
+# ============================================================
+# 에니참 시스템 시리즈 (Enicham_System_*) — Electric, Light/Cloth
+# ============================================================
+
+[Enicham_System_Suit]
+name = 에니참 시스템 슈트
+type = Light
+grade = Rare
+element = Electric
+defense = 20
+evasion = 12
+price = 950
+description = 에니참 기술부가 개발한 전도성 슈트. 전기 신호를 감지해 위협을 먼저 파악한다.
+
+[Enicham_Circuit_Coat]
+name = 에니참 전자 코트
+type = Cloth
+grade = Epic
+element = Electric
+defense = 11
+evasion = 10
+price = 2000
+description = 에니참 최첨단 연구소의 결정체. 회로 패턴이 전기 충격을 무력화하고 착용자의 반응 속도를 배가시킨다.
+
+[Enicham_Conductor_Vest]
+name = 에니참 전도 조끼
+type = Cloth
+grade = Uncommon
+element = Electric
+defense = 7
+price = 280
+description = 에니참 공장 노동자들이 안전을 위해 착용하는 절연 조끼. 기본적인 전격 방어가 가능하다.
+
+[Enicham_Grid_Armor]
+name = 에니참 전력망 갑옷
+type = Light
+grade = Epic
+element = Electric
+defense = 24
+evasion = 15
+price = 2200
+description = 에니참 도시 전력망의 잉여 전기를 저장하는 특수 갑옷. 전기 공격을 흡수해 반격에 활용한다.
+
+# ============================================================
+# 아루케아 환영 시리즈 (Arukea_Phantom_*) — Dark, Light/Robe
+# ============================================================
+
+[Arukea_Phantom_Cloak]
+name = 아루케아 환영 망토
+type = Light
+grade = Rare
+element = Dark
+defense = 17
+evasion = 18
+price = 850
+description = 아루케아 어둠의 숲에서 채집한 환영 실로 짠 망토. 착용자의 실루엣이 흐릿해진다.
+
+[Arukea_Phantom_Robe]
+name = 아루케아 환영 로브
+type = Robe
+grade = Epic
+element = Dark
+defense = 13
+magicDefense = 42
+price = 1800
+description = 아루케아 심부의 고위 마법사가 착용하는 로브. 어둠 마법의 소비를 줄이고 위력을 극대화한다.
+
+[Arukea_Shadow_Wrap]
+name = 아루케아 그림자 겉옷
+type = Light
+grade = Uncommon
+element = Dark
+defense = 13
+evasion = 8
+price = 320
+description = 아루케아 숲 탐색자들이 즐겨 입는 어두운 색의 겉옷. 밤 사냥에 최적화되어 있다.
+
+# ============================================================
+# 세계수 시리즈 (WorldTree_*) — Earth/Wind, Robe/Light
+# ============================================================
+
+[WorldTree_Bark_Robe]
+name = 세계수 껍질 로브
+type = Robe
+grade = Uncommon
+element = Earth
+defense = 7
+magicDefense = 18
+price = 350
+description = 라르 포레스트의 세계수 껍질로 만든 로브. 대지의 힘이 깃들어 자연 마법이 강화된다.
+
+[WorldTree_Leaf_Cloak]
+name = 세계수 잎 망토
+type = Light
+grade = Rare
+element = Wind
+defense = 16
+evasion = 14
+price = 700
+description = 세계수의 거대한 잎으로 엮은 망토. 바람의 기운을 담아 착용자의 발걸음을 가볍게 한다.
+
+[WorldTree_Root_Vest]
+name = 세계수 뿌리 조끼
+type = Cloth
+grade = Common
+element = Earth
+defense = 5
+price = 90
+description = 라르 포레스트 주민들이 세계수 뿌리 섬유로 짠 조끼. 자연의 온기가 느껴진다.
+
+[WorldTree_Crown_Robe]
+name = 세계수 왕관 로브
+type = Robe
+grade = Rare
+element = Wind
+defense = 10
+magicDefense = 28
+price = 820
+description = 세계수 꼭대기의 가지로 만든 희귀한 로브. 바람의 마법 시전 속도가 빨라진다.
+
+# ============================================================
+# 마노니클라 용화 시리즈 (Dragon_*) — Fire/Iron, Heavy/Shield, Epic/Legendary
+# ============================================================
+
+[Dragon_Forge_Plate]
+name = 용화 중갑
+type = Heavy
+grade = Epic
+element = Fire
+defense = 40
+price = 2500
+description = 마노니클라의 드래곤 용광로에서 제련된 중갑. 드래곤 불꽃에도 끄떡없는 극한의 방어력을 자랑한다.
+
+[Dragon_Forge_Shield]
+name = 용화 대방패
+type = Shield
+grade = Epic
+element = Iron
+defense = 32
+price = 2300
+description = 마노니클라 용기사단의 상징인 대형 방패. 드래곤의 발톱도 튕겨낼 만큼 단단하다.
+
+[Dragon_Scale_Shield]
+name = 용비늘 방패
+type = Shield
+grade = Legendary
+element = Fire
+defense = 35
+price = 0
+description = 고대 드래곤의 비늘 하나를 통째로 가공한 전설의 방패. 화염 공격을 완전히 무효화한다.
+
+[Dragon_Iron_Plate]
+name = 용화 흑철 갑옷
+type = Heavy
+grade = Legendary
+element = Iron
+defense = 45
+price = 0
+description = 마노니클라 최고의 장인이 평생을 바쳐 완성한 흑철 갑옷. 어떠한 물리 공격도 꿰뚫지 못한다.
+
+# ============================================================
+# 독립 추가 — 빈 조합 채우기
+# ============================================================
+
+[Halpia_Garden_Robe]
+name = 할피아 정원 로브
+type = Robe
+grade = Common
+element = Wind
+defense = 4
+magicDefense = 14
+price = 110
+description = 할피아 화원에서 재배한 식물 섬유로 만든 로브. 봄바람 같은 청량함이 느껴진다.
+
+[Riagralta_Ruin_Robe]
+name = 리아그랄타 유적 로브
+type = Robe
+grade = Epic
+element = Light
+defense = 14
+magicDefense = 45
+price = 1600
+description = 리아그랄타 고대 유적에서 발굴된 로브. 빛의 고대 문자가 새겨져 마법 방어력이 경이롭다.
+
+[Luna_Arcane_Robe]
+name = 루나 마법진 로브
+type = Robe
+grade = Rare
+element = Light
+defense = 9
+magicDefense = 30
+price = 950
+description = 루나 아카데미 우등생에게만 주어지는 특별 로브. 마법진 문양이 마법 효율을 높인다.
+
+[Lar_Bark_Shield]
+name = 라르 나무껍질 방패
+type = Shield
+grade = Common
+element = Earth
+defense = 10
+price = 70
+description = 라르 포레스트의 거목 껍질로 만든 방패. 가볍고 질기다.
+
+[Lar_Vine_Armor]
+name = 라르 덩굴 갑옷
+type = Light
+grade = Common
+element = Earth
+defense = 9
+evasion = 5
+price = 100
+description = 라르 포레스트의 질긴 덩굴로 엮은 경갑. 숲 속에서는 완벽한 위장이 된다.
+
+[Tacomi_Street_Jacket]
+name = 타코미 거리 재킷
+type = Cloth
+grade = Common
+element = None
+defense = 4
+price = 60
+description = 타코미 시내에서 흔히 볼 수 있는 실용적인 재킷. 가볍고 어디서나 어울린다.
+
+[Tacomi_Tech_Coat]
+name = 타코미 테크 코트
+type = Cloth
+grade = Rare
+element = Electric
+defense = 9
+evasion = 6
+price = 500
+description = 타코미 첨단 소재 연구소의 경량 코트. 미세 진동을 감지해 회피 반응을 보조한다.
+
+[Riagralta_Dark_Mantle]
+name = 리아그랄타 암흑 망토
+type = Light
+grade = Rare
+element = Dark
+defense = 16
+evasion = 13
+price = 780
+description = 리아그랄타 유적의 어둠 제단에서 발견된 망토. 어둠 속에서 착용자의 기척을 완전히 지운다.
+
+[Arukea_Forest_Leather]
+name = 아루케아 숲 가죽 갑옷
+type = Light
+grade = Common
+element = Dark
+defense = 8
+evasion = 6
+price = 140
+description = 아루케아 숲에 서식하는 야수의 가죽으로 만든 경갑. 어둠 속 생물의 본능이 깃들어 있다.
+
+[Moss_Cinder_Cloth]
+name = 모스 잿빛 상의
+type = Cloth
+grade = Uncommon
+element = Fire
+defense = 6
+price = 220
+description = 모스 화산 지대의 내열 섬유로 짠 상의. 화염 피해를 소량 흡수한다.
+
+[Alime_Ice_Shield]
+name = 알리메 빙벽 방패
+type = Shield
+grade = Rare
+element = Water
+defense = 24
+price = 680
+description = 알리메의 영구동토에서 잘라낸 얼음 기둥을 마법으로 굳힌 방패. 차가운 냉기를 주변에 방출한다.
+
+[Luna_Scholar_Cloth]
+name = 루나 학자 가운
+type = Cloth
+grade = Uncommon
+element = Light
+defense = 6
+magicDefense = 10
+price = 240
+description = 루나 아카데미 연구원들이 즐겨 입는 학자풍 가운. 집중력을 높이는 마법 자수가 놓여 있다.
+
+[Halpia_Wind_Shield]
+name = 할피아 바람 방패
+type = Shield
+grade = Uncommon
+element = Wind
+defense = 16
+price = 330
+description = 할피아 정원사들이 사용하는 가볍고 둥근 방패. 바람의 힘으로 날아오는 화살을 편향시킨다.
+
+[Construct_Light_Suit]
+name = 인공물 경량 슈트
+type = Light
+grade = Rare
+element = Electric
+defense = 19
+evasion = 11
+price = 900
+description = 임페리시아의 설계 데이터를 바탕으로 소형화한 경갑. 전기 공격을 일정 부분 흡수한다.
+
+[Ancient_Iron_Shield]
+name = 고대 철방패
+type = Shield
+grade = Common
+element = Iron
+defense = 11
+price = 100
+description = 오래된 전장에서 발굴된 두꺼운 철방패. 군데군데 흠집이 있지만 여전히 견고하다.
+
+[Manonickla_Scale_Vest]
+name = 마노니클라 비늘 조끼
+type = Light
+grade = Uncommon
+element = Fire
+defense = 14
+evasion = 7
+price = 400
+description = 마노니클라 용기사단의 훈련생이 착용하는 조끼. 작은 용비늘 조각이 박혀 있다.
+
+# ============================================================
+# 악세서리 확장 — 특수 효과 포함
+# specialEffects: key:value,key:value
+# 지원 키: travelSpeed, combatSpeed, gatherBonus, goldBonus,
+#          hpRegen, mpRegen, tpRegen, magicPower, cookingBonus, storageBonus
+# ============================================================
+
+# --- 이동 계열 ---
+
+[Wind_Boots]
+name = 바람 장화
+type = Accessory
+grade = Uncommon
+element = Wind
+defense = 2
+evasion = 5
+price = 250
+description = 바람의 축복이 깃든 가벼운 장화. 여행이 빨라진다.
+specialEffects = travelSpeed:-0.10
+
+[Swift_Sandals]
+name = 신속의 샌들
+type = Accessory
+grade = Rare
+element = Wind
+defense = 3
+evasion = 8
+price = 600
+description = 할피아의 장인이 바람새 깃털로 엮은 샌들. 발을 디디면 바람이 밀어준다.
+specialEffects = travelSpeed:-0.15
+
+[Pegasus_Anklet]
+name = 페가서스 발찌
+type = Accessory
+grade = Epic
+element = Wind
+defense = 4
+evasion = 12
+price = 1800
+description = 페가서스의 갈기로 짠 발찌. 착용자가 구름 위를 걷는 것처럼 가볍게 만든다.
+specialEffects = travelSpeed:-0.20
+
+# --- 전투 속도 계열 ---
+
+[Lightning_Ring]
+name = 번개의 반지
+type = Accessory
+grade = Uncommon
+element = Electric
+defense = 2
+price = 280
+description = 작은 번개가 감도는 반지. 전투 반응 속도가 빨라진다.
+specialEffects = combatSpeed:-0.10
+
+[Quicksilver_Band]
+name = 수은의 팔찌
+type = Accessory
+grade = Rare
+element = Water
+defense = 3
+price = 650
+description = 수은처럼 흐르는 액체 금속 팔찌. 손목 움직임이 눈에 보이지 않을 정도로 빨라진다.
+specialEffects = combatSpeed:-0.15
+
+[Haste_Charm]
+name = 신속의 부적
+type = Accessory
+grade = Epic
+element = Wind
+defense = 3
+price = 1600
+description = 시간을 약간 왜곡하는 고대의 부적. 착용자의 행동이 상대보다 한 박자 빨라진다.
+specialEffects = combatSpeed:-0.20
+
+# --- 마력 강화 계열 ---
+
+[Mana_Crystal_Pendant]
+name = 마나석 목걸이
+type = Accessory
+grade = Uncommon
+element = Water
+defense = 1
+magicDefense = 8
+price = 300
+description = 맑은 마나석이 달린 목걸이. 마법의 위력이 약간 증가한다.
+specialEffects = magicPower:0.10
+
+[Arcane_Focus_Ring]
+name = 비전 집중 반지
+type = Accessory
+grade = Rare
+element = Electric
+defense = 2
+magicDefense = 12
+price = 700
+description = 마력을 응축하는 집중 반지. 루나 아카데미의 졸업 선물.
+specialEffects = magicPower:0.15
+
+[Starlight_Tiara]
+name = 별빛 티아라
+type = Accessory
+grade = Epic
+element = Light
+defense = 3
+magicDefense = 20
+price = 2000
+description = 스텔라 빌의 별빛을 엮어 만든 티아라. 착용하면 마법이 별빛처럼 빛난다.
+specialEffects = magicPower:0.25
+
+# --- 채집 계열 ---
+
+[Prospector_Gloves]
+name = 탐광 장갑
+type = Accessory
+grade = Common
+element = Earth
+defense = 2
+price = 80
+description = 광부들이 사용하는 튼튼한 가죽 장갑. 채집 성공률이 올라간다.
+specialEffects = gatherBonus:0.08
+
+[Herbalist_Satchel]
+name = 약초꾼의 가방
+type = Accessory
+grade = Uncommon
+element = Earth
+defense = 1
+price = 200
+description = 라르 포레스트 약초꾼이 쓰는 허리 가방. 채집 효율이 향상된다.
+specialEffects = gatherBonus:0.12
+
+[Gatherer_Ring]
+name = 채집왕의 반지
+type = Accessory
+grade = Rare
+element = Earth
+defense = 2
+price = 550
+description = 대지의 축복이 깃든 반지. 자원이 손에 저절로 달라붙는 것 같다.
+specialEffects = gatherBonus:0.18
+
+# --- 경제 계열 ---
+
+[Merchant_Badge]
+name = 상인의 배지
+type = Accessory
+grade = Uncommon
+element = Light
+defense = 1
+price = 250
+description = 길드에서 발행한 공식 상인 배지. 거래에서 약간의 이득을 볼 수 있다.
+specialEffects = goldBonus:0.10
+
+[Fortune_Coin]
+name = 행운의 동전
+type = Accessory
+grade = Rare
+element = Light
+defense = 2
+price = 600
+description = 한 면에만 그림이 있는 신비한 동전. 금전운이 따라온다.
+specialEffects = goldBonus:0.15
+
+[Midas_Pendant]
+name = 미다스의 목걸이
+type = Accessory
+grade = Epic
+element = Iron
+defense = 3
+price = 1800
+description = 만지는 것마다 금으로 변한다는 전설의 목걸이. 물론 실제로는 그렇지 않다.
+specialEffects = goldBonus:0.25
+
+# --- 요리 계열 ---
+
+[Chef_Apron]
+name = 요리사의 앞치마
+type = Accessory
+grade = Uncommon
+element = Fire
+defense = 1
+price = 200
+description = 모스 타번의 수석 요리사가 쓰던 앞치마. 요리 효과가 향상된다.
+specialEffects = cookingBonus:0.15
+
+[Gourmet_Ring]
+name = 미식가의 반지
+type = Accessory
+grade = Rare
+element = Fire
+defense = 2
+price = 500
+description = 음식의 맛을 극대화시키는 신비한 반지. 요리가 더 맛있어진다.
+specialEffects = cookingBonus:0.25
+
+# --- HP 회복 계열 ---
+
+[Vitality_Charm]
+name = 생명의 부적
+type = Accessory
+grade = Uncommon
+element = Earth
+defense = 2
+price = 250
+description = 대지의 생명력이 깃든 부적. 휴식 시 체력 회복이 증가한다.
+specialEffects = hpRegen:0.15
+
+[Phoenix_Feather_Pin]
+name = 불사조 깃털핀
+type = Accessory
+grade = Rare
+element = Fire
+defense = 3
+price = 700
+description = 피닉스가 떨어뜨린 깃털로 만든 머리핀. 상처가 빠르게 아문다.
+specialEffects = hpRegen:0.25
+
+[Heart_of_WorldTree]
+name = 세계수의 심장
+type = Accessory
+grade = Legendary
+element = Earth
+defense = 5
+price = 0
+description = 세계수의 핵심에서 결정화된 생명의 씨앗. 끊임없이 생명력을 불어넣는다.
+specialEffects = hpRegen:0.40
+
+# --- MP 회복 계열 ---
+
+[Mana_Bead_Bracelet]
+name = 마나구슬 팔찌
+type = Accessory
+grade = Uncommon
+element = Water
+defense = 1
+magicDefense = 6
+price = 260
+description = 작은 마나석 구슬을 엮은 팔찌. 마나가 천천히 회복된다.
+specialEffects = mpRegen:0.15
+
+[Ether_Pendant]
+name = 에테르 펜던트
+type = Accessory
+grade = Rare
+element = Electric
+defense = 2
+magicDefense = 10
+price = 650
+description = 에테르의 파편이 담긴 목걸이. 주변의 마나를 흡수한다.
+specialEffects = mpRegen:0.25
+
+[Luna_Moon_Earring]
+name = 루나의 달 귀걸이
+type = Accessory
+grade = Epic
+element = Light
+defense = 2
+magicDefense = 18
+price = 1800
+description = 루나 아카데미 학장이 만든 귀걸이. 달빛 아래에서 마나가 쏟아진다.
+specialEffects = mpRegen:0.40
+
+# --- TP 회복 계열 ---
+
+[Iron_Will_Ring]
+name = 철의 의지 반지
+type = Accessory
+grade = Uncommon
+element = Iron
+defense = 3
+price = 240
+description = 끈기를 상징하는 무거운 철 반지. 체력 소모를 줄여준다.
+specialEffects = tpRegen:0.15
+
+[Endurance_Pendant]
+name = 인내의 목걸이
+type = Accessory
+grade = Rare
+element = Earth
+defense = 3
+price = 600
+description = 대지의 인내를 담은 목걸이. 지치지 않는 힘을 준다.
+specialEffects = tpRegen:0.25
+
+# --- 창고 계열 ---
+
+[Expansion_Pouch]
+name = 확장 주머니
+type = Accessory
+grade = Uncommon
+element = None
+defense = 0
+price = 300
+description = 안쪽이 바깥보다 넓은 신비한 주머니. 창고 용량이 늘어난다.
+specialEffects = storageBonus:0.20
+
+[Dimensional_Bag]
+name = 차원 가방
+type = Accessory
+grade = Rare
+element = Dark
+defense = 1
+price = 800
+description = 작은 차원 공간이 연결된 가방. 넣으면 사라지고, 꺼내면 나타난다.
+specialEffects = storageBonus:0.40
+
+# --- 시리즈 악세서리 (복합 효과) ---
+
+[Moss_Flame_Ring]
+name = 모스 화염 반지
+type = Accessory
+grade = Rare
+element = Fire
+defense = 4
+price = 650
+description = 모스 대장간의 용암으로 단련된 반지. 화염의 기운이 전투를 돕고 체력을 회복시킨다.
+specialEffects = combatSpeed:-0.05,hpRegen:0.10
+
+[Alime_Frost_Pendant]
+name = 알리메 빙결 목걸이
+type = Accessory
+grade = Rare
+element = Water
+defense = 3
+magicDefense = 12
+price = 700
+description = 알리메 만년빙 결정으로 만든 목걸이. 차가운 마나가 흘러들어 마력이 강화된다.
+specialEffects = mpRegen:0.15,magicPower:0.10
+
+[Enicham_Circuit_Band]
+name = 에니참 회로 밴드
+type = Accessory
+grade = Epic
+element = Electric
+defense = 4
+price = 1600
+description = 에니참의 최첨단 회로가 내장된 팔찌. 신경 반응 속도와 마력 증폭을 동시에 제공한다.
+specialEffects = combatSpeed:-0.10,magicPower:0.10
+
+[Arukea_Shadow_Brooch]
+name = 아루케아 그림자 브로치
+type = Accessory
+grade = Rare
+element = Dark
+defense = 3
+evasion = 8
+price = 650
+description = 아루케아의 그림자가 깃든 브로치. 어둠 속을 걸으면 길이 짧아지고 자원이 눈에 띈다.
+specialEffects = travelSpeed:-0.10,gatherBonus:0.10
+
+[WorldTree_Seed_Charm]
+name = 세계수 씨앗 부적
+type = Accessory
+grade = Rare
+element = Earth
+defense = 3
+price = 600
+description = 세계수의 씨앗을 품은 자연의 부적. 생명과 마나를 고르게 회복시키고 자연의 혜택을 늘려준다.
+specialEffects = hpRegen:0.10,mpRegen:0.10,gatherBonus:0.05
+
+[Dragon_Heart_Gem]
+name = 용의 심장석
+type = Accessory
+grade = Legendary
+element = Fire
+defense = 8
+price = 0
+description = 드래곤 카요가 직접 연마한 심장석. 용의 심장처럼 뜨겁게 맥동하며, 착용자에게 용의 반사신경과 회복력을 부여한다.
+specialEffects = combatSpeed:-0.15,hpRegen:0.20

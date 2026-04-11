@@ -650,3 +650,51 @@ hpHeal = 18
 vigorHeal = 14
 colorInfluence = Water:0.10, Iron:0.12
 accessFrom = Enicham
+
+[holo_shader_drop]
+name = 떨어진 셰이더
+description = 공중에 떠 있던 텍스처 조각이 손에 잡혔다. 가상 세계의 잔재지만, 현실에서도 쓸 만한 자원으로 변환된다.
+chance = 0.04
+type = Discovery
+gives = OreCommon:2, MonsterLoot:1
+colorInfluence = Light:0.12, Electric:0.10
+accessFrom = Hologram_Field
+
+[holo_connection_spike]
+name = 핑 스파이크
+description = 순간적으로 지연과 잡음이 몰려왔다. 버티면 다음 구간 정보가 조금 선명해질지도 모른다.
+chance = 0.04
+type = Hazard
+hpDamage = 10
+vigorDamage = 14
+colorInfluence = Electric:0.14, Dark:0.08
+accessFrom = Hologram_Field
+
+[holo_safe_room]
+name = 세이프 룸 인스턴스
+description = 짧은 로딩 화면 뒤 조용한 대기 공간이 열렸다. 잠시 숨을 고르기에 좋다.
+chance = 0.03
+type = Heal
+hpHeal = 22
+vigorHeal = 18
+colorInfluence = Light:0.10, Wind:0.08
+accessFrom = Hologram_Field
+
+[phantom_mirror_shard]
+name = 거울 파편
+description = 난간 틈에 낀 작은 거울 조각이 빛을 반사하며 길을 비춘다. 잘 모으면 연금 재료로 쓸 만하다.
+chance = 0.04
+type = Discovery
+gives = OreCommon:1, Herb:1
+colorInfluence = Light:0.12, Wind:0.10
+accessFrom = Phantom_Spire
+
+[phantom_updraft]
+name = 상승 기류
+description = 탑 안쪽에서 위로 솟는 기류가 몸을 살짝 들어 올린다. 잠시 숨을 고르기엔 좋지만, 발을 헛디딜 수도 있다.
+chance = 0.04
+type = Heal
+hpHeal = 14
+vigorHeal = 16
+colorInfluence = Wind:0.14, Light:0.08
+accessFrom = Phantom_Spire

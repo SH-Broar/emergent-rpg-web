@@ -376,3 +376,326 @@ attack = 48
 speed = 0.9
 price = 0
 description = 어둠의 심연에서 건져 올린 무기. 이것을 휘두르면 공간이 갈라진다.
+
+# ============================================================
+# 모스 화염 시리즈 (Moss_Flame_*)
+# ============================================================
+
+[Moss_Flame_Sword]
+name = 모스 화염검
+type = Sword
+grade = Common
+element = Fire
+attack = 11
+speed = 1.0
+price = 130
+description = 모스 대장간의 용광로에서 갓 꺼낸 검. 붉게 달아오른 칼날이 식을 줄 모른다.
+
+[Moss_Flame_Hammer]
+name = 모스 화염 전투망치
+type = Heavy
+grade = Uncommon
+element = Fire
+attack = 20
+speed = 1.5
+price = 380
+description = 모스의 화산 용암을 틀에 부어 만든 전투 망치. 내리칠 때마다 불꽃이 튀어오른다.
+
+[Moss_Flame_Gauntlet]
+name = 모스 화염 건틀릿
+type = Fist
+grade = Rare
+element = Fire
+attack = 26
+speed = 0.7
+price = 750
+description = 모스 화산에서 채굴한 불꽃석으로 덧댄 건틀릿. 주먹을 쥘수록 열기가 집중된다.
+
+# ============================================================
+# 알리메 빙결 시리즈 (Alime_Frost_*)
+# ============================================================
+
+[Alime_Frost_Spear]
+name = 알리메 빙창
+type = Spear
+grade = Uncommon
+element = Water
+attack = 19
+speed = 1.1
+price = 420
+description = 알리메의 만년설을 녹여 단조한 창. 찌른 자리에 얼음꽃이 피어난다.
+
+[Alime_Frost_Bow]
+name = 알리메 서리 활
+type = Bow
+grade = Rare
+element = Water
+attack = 24
+speed = 1.2
+price = 680
+description = 알리메 설원의 고목으로 만든 활. 화살이 날아가며 얼어붙은 공기의 흔적을 남긴다.
+
+[Alime_Frost_Staff]
+name = 알리메 빙결 지팡이
+type = Staff
+grade = Rare
+element = Water
+attack = 10
+speed = 1.2
+magicBonus = 38
+price = 720
+description = 알리메 빙하의 심층에서 캐낸 빙정을 상단에 박은 지팡이. 수계 마법이 서릿발처럼 날카로워진다.
+
+# ============================================================
+# 에니참 시스템 시리즈 (Enicham_System_*)
+# ============================================================
+
+[Enicham_System_Rifle]
+name = 에니참 시스템 라이플
+type = Gun
+grade = Rare
+element = Electric
+attack = 28
+speed = 0.7
+price = 850
+description = 에니참 기술청이 개발한 표준형 전기충격 라이플. 탄약 대신 전하를 충전하여 발사한다.
+
+[Enicham_Core_Amp]
+name = 에니참 코어 앰프
+type = Instrument
+grade = Epic
+element = Electric
+attack = 22
+speed = 0.9
+magicBonus = 48
+price = 2200
+description = 에니참 연구소에서 설계한 고출력 앰프. 음파를 전기신호로 변환해 광역 충격파를 일으킨다.
+
+[Enicham_Elec_Blade]
+name = 에니참 전자 블레이드
+type = Dagger
+grade = Epic
+element = Electric
+attack = 36
+speed = 0.5
+price = 1900
+description = 에니참이 개발한 전도성 합금으로 만든 단검. 칼날에 흐르는 전류가 방어구를 무력화한다.
+
+# ============================================================
+# 아루케아 환영 시리즈 (Arukea_Phantom_*)
+# ============================================================
+
+[Arukea_Phantom_Dagger]
+name = 아루케아 환영 단검
+type = Dagger
+grade = Rare
+element = Dark
+attack = 23
+speed = 0.4
+price = 820
+description = 아루케아 암흑림에서 채취한 흑목으로 만든 단검. 그림자 속에서 완전히 모습을 감춘다.
+
+[Arukea_Phantom_Staff]
+name = 아루케아 환영 지팡이
+type = Staff
+grade = Epic
+element = Dark
+attack = 14
+speed = 1.1
+magicBonus = 52
+price = 2400
+description = 아루케아 폐허의 제단에서 발견된 지팡이. 이 지팡이로 시전한 마법은 환영과 실체를 구분할 수 없게 한다.
+
+[Arukea_Phantom_Bow]
+name = 아루케아 환영 활
+type = Bow
+grade = Epic
+element = Dark
+attack = 33
+speed = 1.0
+price = 1600
+description = 아루케아 숲의 영혼 나무로 만든 활. 시위를 놓는 순간 화살이 그림자로 분열해 날아간다.
+
+# ============================================================
+# 세계수 시리즈 (WorldTree_*)
+# ============================================================
+
+[WorldTree_Branch_Staff]
+name = 세계수 가지 지팡이
+type = Staff
+grade = Uncommon
+element = Earth
+attack = 9
+speed = 1.2
+magicBonus = 28
+price = 340
+description = 라르 포레스트 깊은 곳 세계수에서 떨어진 가지로 만든 지팡이. 대지의 생명력이 마력으로 변환된다.
+
+[WorldTree_Root_Spear]
+name = 세계수 뿌리 창
+type = Spear
+grade = Rare
+element = Earth
+attack = 27
+speed = 1.1
+price = 660
+description = 세계수의 뿌리를 다듬어 만든 창. 땅에 꽂으면 주위에 가시 뿌리가 솟아오른다.
+
+[WorldTree_Leaf_Bow]
+name = 세계수 잎 활
+type = Bow
+grade = Uncommon
+element = Wind
+attack = 17
+speed = 1.1
+price = 390
+description = 세계수의 커다란 이파리를 활채로 삼은 희귀한 활. 화살이 바람의 결을 타고 곡선으로 날아간다.
+
+# ============================================================
+# 마노니클라 용화 시리즈 (Dragon_*)
+# ============================================================
+
+[Dragon_Flame_Sword]
+name = 용화검
+type = Sword
+grade = Epic
+element = Fire
+attack = 42
+speed = 0.9
+price = 2500
+description = 마노니클라 용의 화로에서 단조된 검. 칼집에서 뽑는 순간 불꽃이 폭발적으로 분출한다.
+
+[Dragon_Flame_Maul]
+name = 용화 대망치
+type = Heavy
+grade = Legendary
+element = Fire
+attack = 55
+speed = 1.6
+price = 0
+description = 마노니클라 고룡이 직접 단조에 참여한 전설의 대망치. 한 번 휘두를 때마다 화산 폭발에 맞먹는 충격파가 발생한다.
+
+[Dragon_Breath]
+name = 용의 숨결
+type = Special
+grade = Legendary
+element = Fire
+attack = 50
+speed = 0.9
+price = 0
+description = 마노니클라 고룡의 브레스를 봉인한 구슬. 봉인을 풀면 사용자의 의지대로 화염이 분출된다.
+
+# ============================================================
+# 단독 보강 무기 (Gap Fillers)
+# ============================================================
+
+[Halpia_Wind_Blade]
+name = 할피아 풍인검
+type = Sword
+grade = Uncommon
+element = Wind
+attack = 16
+speed = 0.9
+price = 310
+description = 할피아 정원사들이 허리에 차고 다니는 날렵한 검. 칼날이 스치면 바람의 향기가 퍼진다.
+
+[Riagralta_Light_Sword]
+name = 리아그랄타 성광검
+type = Sword
+grade = Rare
+element = Light
+attack = 29
+speed = 1.0
+price = 780
+description = 리아그랄타 고대 유적에서 발굴된 검. 빛 속에서 칼날이 순수하게 빛나 적의 눈을 멀게 한다.
+
+[Tacomi_Rail_Gun]
+name = 타코미 레일건
+type = Gun
+grade = Epic
+element = Electric
+attack = 40
+speed = 0.8
+price = 2100
+description = 나이트타코미 기술자들이 설계한 고출력 레일건. 초음속 탄환이 전기 궤도를 따라 발사된다.
+
+[Lar_Earth_Fist]
+name = 라르 대지 건틀릿
+type = Fist
+grade = Uncommon
+element = Earth
+attack = 15
+speed = 0.7
+price = 260
+description = 라르 포레스트의 광물로 만든 묵직한 건틀릿. 주먹을 날릴 때마다 대지의 진동이 전달된다.
+
+[Arukea_Dark_Spear]
+name = 아루케아 암흑 장창
+type = Spear
+grade = Rare
+element = Dark
+attack = 26
+speed = 1.2
+price = 700
+description = 아루케아 숲의 저주받은 나무로 만든 장창. 찌른 상대에게 어둠의 독이 서서히 퍼진다.
+
+[Enicham_Shock_Fist]
+name = 에니참 쇼크 너클
+type = Fist
+grade = Rare
+element = Electric
+attack = 25
+speed = 0.6
+price = 580
+description = 에니참 공학자가 설계한 전기충격 너클. 타격 시 방전되어 상대의 근육을 마비시킨다.
+
+[Manonickla_Iron_Lance]
+name = 마노니클라 용철 창
+type = Spear
+grade = Rare
+element = Iron
+attack = 31
+speed = 1.0
+price = 890
+description = 마노니클라 용화로에서 제련한 특수 합금으로 만든 장창. 어떠한 방어구도 관통한다.
+
+[Alime_Ice_Dagger]
+name = 알리메 빙결 단검
+type = Dagger
+grade = Uncommon
+element = Water
+attack = 13
+speed = 0.5
+price = 280
+description = 알리메 설원에서 채취한 영구동토의 얼음 조각으로 만든 단검. 상처에 서리가 맺혀 지혈을 막는다.
+
+[Triflower_Lava_Heavy]
+name = 트리플라워 용암괴
+type = Heavy
+grade = Epic
+element = Fire
+attack = 41
+speed = 1.5
+price = 1400
+description = 트리플라워 화산 분화구에서 굳힌 용암덩이를 무기로 삼은 것. 내부에 용암이 흘러 휘두를수록 뜨거워진다.
+
+[Riagralta_Dark_Instrument]
+name = 리아그랄타 유물 류트
+type = Instrument
+grade = Rare
+element = Dark
+attack = 12
+speed = 1.1
+magicBonus = 36
+price = 640
+description = 리아그랄타 폐허에서 발굴된 고대 현악기. 연주하면 어둠의 공명이 일어나 주변을 불안으로 가득 채운다.
+
+[Halpia_Gale_Bow]
+name = 할피아 질풍 활
+type = Bow
+grade = Rare
+element = Wind
+attack = 22
+speed = 1.0
+price = 550
+description = 할피아 정원의 바람 속에서 숙성된 목재로 만든 활. 화살이 강풍을 동반해 날아가 사거리가 비약적으로 늘어난다.

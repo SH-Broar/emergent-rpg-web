@@ -3,7 +3,7 @@
 
 import { SkillDef, SkillType, getSkillDef, getSkillLevelMultiplier, getSkillCostReduction, checkSkillLevelUp, SKILL_MAX_LEVEL } from '../models/skill';
 import { Actor } from '../models/actor';
-import { CombatState } from '../models/dungeon';
+import { CombatState, rollMonsterEvasionMiss } from '../models/dungeon';
 
 export interface ActiveBuff {
   type: string;
@@ -160,6 +160,10 @@ function applySkillEffect(
 
   switch (skill.type) {
     case SkillType.Attack: {
+      if (rollMonsterEvasionMiss(combatState.currentEnemy)) {
+        messages.push(`${skill.name}: ${combatState.currentEnemy.name}이(가) 잔상으로 회피했다!`);
+        break;
+      }
       const baseAtk = actor.getEffectiveAttack();
       const buffedAtk = getBuffedAttack(baseAtk, skillState);
       let dmg = 0;

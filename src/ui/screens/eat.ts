@@ -3,6 +3,22 @@ import type { GameSession } from '../../systems/game-session';
 import { computeEatEffect } from '../../types/eat-system';
 import { getItemDef, type ItemDef } from '../../types/item-defs';
 import { getRaceCapabilitySet, parseTags } from '../../types/tag-system';
+import { ItemType, Element, ELEMENT_COUNT, elementName } from '../../types/enums';
+
+/** 아이템 카테고리 → 열화 시 방출되는 원소 */
+function degradeElement(cat: ItemType): Element {
+  switch (cat) {
+    case ItemType.Food: return Element.Fire;
+    case ItemType.Herb: return Element.Earth;
+    case ItemType.Potion: return Element.Water;
+    case ItemType.MonsterLoot: return Element.Dark;
+    case ItemType.Equipment: return Element.Iron;
+    case ItemType.OreCommon: return Element.Iron;
+    case ItemType.OreRare: return Element.Electric;
+    case ItemType.GuildCard: return Element.Light;
+    default: return Element.Earth;
+  }
+}
 
 function buffLabel(type: string): string {
   switch (type) {
@@ -81,6 +97,10 @@ export function createEatScreen(
         } else if (itemTags.has('raw')) {
           warning = '⚠ 날것이다.';
         }
+        const itemDeg = session.knowledge.withdrawnItemDegradation.get(item.id) ?? 0;
+        if (itemDeg > 0) {
+          warning += (warning ? ' · ' : '') + `⚠ 열화 -${Math.round(itemDeg)}%`;
+        }
         html += `<button class="btn npc-item" data-eat="${item.id}">
           <span class="npc-num">${i + 1}</span>
           <span class="npc-name">${item.label} x${item.qty}</span>
@@ -140,6 +160,21 @@ export function createEatScreen(
       }
     }
 
+    // 보관 열화도 적용
+    const deg = session.knowledge.withdrawnItemDegradation.get(itemId) ?? 0;
+    if (deg > 0) {
+      const mul = 1 - deg / 100;
+      hp = Math.round(hp * mul);
+      mp = Math.round(mp * mul);
+      mood = Math.round(mood * mul);
+      pendingBuffAmount = Math.round(pendingBuffAmount * mul * 10) / 10;
+      // 소비 후 열화도 정리
+      const remaining = p.getItemCount(itemId);
+      if (remaining <= 0) {
+        session.knowledge.withdrawnItemDegradation.delete(itemId);
+      }
+    }
+
     if (hp) p.adjustHp(hp);
     if (mp) p.adjustMp(mp);
     if (mood) p.adjustMood(mood);
@@ -161,6 +196,18 @@ export function createEatScreen(
     else if (mp < 0) statLines.push(`MP ${mp}`);
     if (statusEffect === 'poison') statLines.push('⚠ 중독!');
     if (statusEffect === 'stomachache') statLines.push('⚠ 배탈!');
+
+    if (deg > 0) {
+      statLines.push(`⚠ 보관 열화 -${Math.round(deg)}%`);
+      // 열화 컬러 영향: 카테고리 원소에 비례하는 컬러 시프트
+      const cat = def?.category ?? 0;
+      const elem = degradeElement(cat);
+      const colorShift = deg * 0.003;
+      const influence = new Array(ELEMENT_COUNT).fill(0);
+      influence[elem] = colorShift;
+      p.color.applyInfluence(influence);
+      statLines.push(`🎨 ${elementName(elem)} +${colorShift.toFixed(2)}`);
+    }
 
     // 버프 적용
     if (pendingBuffType && pendingBuffDuration > 0) {

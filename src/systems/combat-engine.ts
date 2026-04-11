@@ -1,7 +1,7 @@
 // combat-engine.ts — 실시간 틱 기반 전투 엔진
 
 import { Actor } from '../models/actor';
-import { MonsterDef } from '../models/dungeon';
+import { MonsterDef, rollMonsterEvasionMiss } from '../models/dungeon';
 import { SkillDef, SkillType, getSkillDef, getSkillLevelMultiplier, getSkillCostReduction, checkSkillLevelUp, SKILL_MAX_LEVEL } from '../models/skill';
 import {
   CombatSkillState, rollInitialSkills, canUseSkill, rerollSlot,
@@ -197,10 +197,14 @@ export function processTick(
     state.playerSkills,
   );
   const enemyDef = state.enemy.defense;
-  const playerDmg = Math.max(1, Math.round(buffedAtk - enemyDef * 0.5));
-  state.enemyHp -= playerDmg;
   const atkTxt = getActionText(['combat.player_attack']) || '공격했다.';
-  messages.push(`${player.name}의 ${atkTxt} ${playerDmg} 데미지`);
+  if (rollMonsterEvasionMiss(state.enemy)) {
+    messages.push(`${player.name}의 ${atkTxt} 그러나 ${state.enemy.name}이(가) 잔상으로 회피했다!`);
+  } else {
+    const playerDmg = Math.max(1, Math.round(buffedAtk - enemyDef * 0.5));
+    state.enemyHp -= playerDmg;
+    messages.push(`${player.name}의 ${atkTxt} ${playerDmg} 데미지`);
+  }
 
   // 승리 체크
   if (state.enemyHp <= 0) {
@@ -221,6 +225,10 @@ export function processTick(
       const mult = getSkillLevelMultiplier(level);
 
       if (skill.type === SkillType.Attack) {
+        if (rollMonsterEvasionMiss(state.enemy)) {
+          messages.push(`★ ${slot.actor.name}: ${skill.name}! 그러나 ${state.enemy.name}이(가) 회피했다.`);
+          continue;
+        }
         let dmg = 0;
         if (skill.effect.damageMultiplier !== undefined) {
           dmg += Math.round(companionAtk * skill.effect.damageMultiplier * mult);
@@ -408,6 +416,10 @@ export function usePlayerSkill(
     const e = skill.effect;
     switch (skill.type) {
       case SkillType.Attack: {
+        if (rollMonsterEvasionMiss(state.enemy)) {
+          messages.push(`${skill.name}: ${state.enemy.name}이(가) 잔상으로 회피했다!`);
+          break;
+        }
         const buffedAtk = getBuffedAttack(
           player.getEffectiveAttack() + state.partyBonus.attack,
           ss,
