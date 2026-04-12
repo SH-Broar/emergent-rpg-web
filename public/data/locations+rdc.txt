@@ -150,7 +150,7 @@ name = 리아그랄타 평원
 description = 일루네온 북쪽으로 끝없이 펼쳐진 초원. 바람이 풀을 쓸어가는 소리가 하루 종일 이어지고, 드넓은 하늘 아래 양 떼가 점점이 흩어져 있다. 이따금 전기 폭풍이 지평선에서 번쩍인다.
 x = 0
 y = 2200
-links = Iluneon, Navrit:12, Yusejeria:16, Ode_Mountain:12
+links = Iluneon, Navrit:12, Yusejeria:16, Ode_Slope:12
 resources = Herb:15, Food:20
 monsterLevel = 1
 dangerLevel = 0.1
@@ -166,6 +166,16 @@ resources = OreCommon:12, OreRare:4, MonsterLoot:12
 monsterLevel = 7
 dangerLevel = 0.62
 hidden = 1
+
+[Ode_Slope]
+name = 오드 산 기슭
+description = 리아그랄타 평원에서 오드 산으로 이어지는 완만한 남사면. 정상의 험준함과 달리 늑대 무리가 드문드문 나타나는 수준으로, 초원과 산이 맞닿는 경계 지역이다. 산 너머 겔리더 방면으로는 깎아지른 절벽이 가로막혀 건너갈 수 없다.
+x = -1200
+y = 1500
+links = Riagralta
+resources = Herb:8, MonsterLoot:6
+monsterLevel = 3
+dangerLevel = 0.3
 
 [Navrit]
 name = 나브릿트 전기지대
@@ -321,12 +331,22 @@ dangerLevel = 0.7
 # 대절곡 이북 — 타코미, 에니챰, 허공 숲
 # ============================================================
 
+[Grand_Crack_Abyss]
+name = 대절곡 심연부
+description = 대절곡 최하층. 절벽이 워낙 높아 낮에도 하늘이 보이지 않는다. 협곡 바닥에서 자란 기이한 생태계가 독자적인 세계를 이루고 있으며, 위에서 들어오는 빛 한 줄기를 두고 생물들이 격렬하게 경쟁한다. 허공 숲 방면으로 이어지는 출구가 협곡 북벽 깊숙이 숨겨져 있다.
+x = -2800
+y = 1600
+links = Grand_Crack, Void_Forest:8
+resources = OreRare:4, MonsterLoot:8
+monsterLevel = 8
+dangerLevel = 0.82
+
 [Void_Forest]
 name = 허공 숲
 description = 대절곡 너머에 펼쳐진 미지의 숲. 나무들이 공중에 떠 있고, 중력이 왜곡된 공간이 곳곳에 존재한다. 발밑으로 구름이 흘러가고, 위아래의 경계가 사라지는 경험을 하게 된다.
 x = -2600
 y = 2200
-links = Grand_Crack:8, Enicham:10
+links = Grand_Crack_Abyss:8, Enicham:10
 resources = Herb:20, OreRare:2
 monsterLevel = 4
 dangerLevel = 0.4
@@ -659,12 +679,22 @@ resources = Herb:15
 monsterLevel = 2
 dangerLevel = 0.2
 
+[Clutch_Landing]
+name = 클러치 외항
+description = 클러치 협곡 서쪽 해안에 자리한 작은 선착장. 마노니클라로 향하는 배편이 닿는 유일한 공식 항구다. 정박한 배들은 협곡 특유의 거센 바람을 피해 절벽 그늘에 모여 있다.
+x = 4000
+y = -1200
+links = Clutch_Gorge
+resources = Food:8
+monsterLevel = 1
+dangerLevel = 0.1
+
 [Clutch_Gorge]
 name = 클러치 협곡
 description = 마노니클라 서쪽의 깊은 협곡. 절벽 사이로 바람이 거세게 몰아치며, 협곡 바닥에는 빛이 닿지 않는 어둠이 깔려 있다.
 x = 4500
 y = -1000
-links = Manonickla
+links = Manonickla, Clutch_Landing
 resources = OreCommon:10
 monsterLevel = 3
 dangerLevel = 0.3
@@ -752,10 +782,20 @@ name = 마왕성
 description = 루나 북쪽, 유스제리아 동쪽에 세워진 거대한 성. 마왕과 사천왕이 거주하며, 의외로 서류와 행정 업무의 냄새가 진하다. 위엄 있는 외관과 달리 내부는 의외로 관료적이다.
 x = -1600
 y = 3500
-links = Luna_Academy:16, Yusejeria:14
+links = Forbidden_Corridor, Yusejeria:14
 resources = MonsterLoot:10
 monsterLevel = 8
 dangerLevel = 0.7
+
+[Forbidden_Corridor]
+name = 금지된 회랑
+description = 마법학교 루나 서편 지하에 숨겨진 암흑의 통로. 공식 지도에 표기되지 않으며, 학교 측도 존재를 부정한다. 마왕의 기척이 통로 전체에 스며들어 있고, 지나가는 것만으로 의지력이 시험된다.
+x = -1450
+y = 4150
+links = Luna_Academy, Demon_Castle
+monsterLevel = 7
+dangerLevel = 0.65
+hidden = 1
 
 [Puchi_Tower]
 name = 푸치 탑

@@ -20,7 +20,7 @@ export const FERRY_ROUTES: FerryRoute[] = [
   { destination: 'Alimes',        name: '알리메스행',       departureTimes: [8, 20],     price: 500,  travelMinutes: 300 },
   { destination: 'Falcon_Garden', name: '팔콘 가든행',      departureTimes: [6, 18],     price: 600,  travelMinutes: 360 },
   { destination: 'Tacomi',        name: '타코미행',         departureTimes: [10, 22],    price: 750,  travelMinutes: 480 },
-  { destination: 'Manonickla',    name: '마노니클라행',     departureTimes: [0, 12],     price: 900,  travelMinutes: 600 },
+  { destination: 'Clutch_Landing', name: '클러치 외항행',    departureTimes: [0, 12],     price: 900,  travelMinutes: 600 },
 ];
 
 export const FERRY_PASS_PRICE = 3000;
