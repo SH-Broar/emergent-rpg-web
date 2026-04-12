@@ -59,6 +59,15 @@ export const DUNGEON_MATERIAL_ITEM_IDS = {
   upgradeCostRareMetal: 'silver_ore',
 } as const;
 
+// 건설 재료 필드명 → 실제 items.txt 아이템 ID 매핑
+export const VILLAGE_BUILD_ITEM_IDS = {
+  buildCostWood: 'wood_log',
+  buildCostStone: 'stone_block',
+  buildCostWheat: 'wheat_bundle',
+} as const;
+
+export type VillageBuildMaterialKey = keyof typeof VILLAGE_BUILD_ITEM_IDS;
+
 export type DungeonMaterialKey = keyof typeof DUNGEON_MATERIAL_ITEM_IDS;
 
 // ============================================================

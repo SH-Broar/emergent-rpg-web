@@ -3,8 +3,8 @@
 import type { Screen } from '../screen-manager';
 import type { ScreenManager } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
-import { getAllFacilityDefs, getAllRoadDefs, getFacilityDef, getVillageEventDef, DUNGEON_MATERIAL_ITEM_IDS } from '../../data/village-defs';
-import { recalcVillageFinance } from '../../models/village';
+import { getAllFacilityDefs, getAllRoadDefs, getFacilityDef, getVillageEventDef, DUNGEON_MATERIAL_ITEM_IDS, VILLAGE_BUILD_ITEM_IDS } from '../../data/village-defs';
+import { recalcVillageFinance, recalcVillageStats } from '../../models/village';
 import { locationName } from '../../types/registry';
 import { createVillageBenzenScreen } from './village-benzen';
 import { createVillageEventScreen } from './village-event';
@@ -381,8 +381,9 @@ export function createVillageScreen(
         // 명성 증가
         village.reputation = Math.min(100, village.reputation + 3);
 
-        // 재무 갱신
+        // 재무 + stats 갱신
         recalcVillageFinance(village, getFacilityDef);
+        recalcVillageStats(village, getFacilityDef);
 
         session.backlog.add(
           session.gameTime,
@@ -405,8 +406,28 @@ export function createVillageScreen(
           render(el);
           return;
         }
+        // C5: 재료 보유량 확인
+        if (def.buildCostWood > 0 && p.getItemCount(VILLAGE_BUILD_ITEM_IDS.buildCostWood) < def.buildCostWood) {
+          statusMessage = `재료 부족: 목재 ×${def.buildCostWood} 필요`;
+          render(el);
+          return;
+        }
+        if (def.buildCostStone > 0 && p.getItemCount(VILLAGE_BUILD_ITEM_IDS.buildCostStone) < def.buildCostStone) {
+          statusMessage = `재료 부족: 석재 ×${def.buildCostStone} 필요`;
+          render(el);
+          return;
+        }
+        if (def.buildCostWheat > 0 && p.getItemCount(VILLAGE_BUILD_ITEM_IDS.buildCostWheat) < def.buildCostWheat) {
+          statusMessage = `재료 부족: 밀 ×${def.buildCostWheat} 필요`;
+          render(el);
+          return;
+        }
         p.addGold(-def.buildCostGold);
         knowledge.trackGoldSpent(def.buildCostGold);
+        // C5: 재료 차감
+        if (def.buildCostWood > 0) p.removeItemById(VILLAGE_BUILD_ITEM_IDS.buildCostWood, def.buildCostWood);
+        if (def.buildCostStone > 0) p.removeItemById(VILLAGE_BUILD_ITEM_IDS.buildCostStone, def.buildCostStone);
+        if (def.buildCostWheat > 0) p.removeItemById(VILLAGE_BUILD_ITEM_IDS.buildCostWheat, def.buildCostWheat);
         village.facilities.push({
           facilityId: def.id,
           builtDay: session.gameTime.day,
@@ -414,6 +435,7 @@ export function createVillageScreen(
           tier: 1,
         });
         recalcVillageFinance(village, getFacilityDef);
+        recalcVillageStats(village, getFacilityDef);
         session.backlog.add(
           session.gameTime,
           `개척 마을 "${village.name}"에 ${def.name}을(를) 건설했다. (-${def.buildCostGold}G)`,
@@ -437,6 +459,16 @@ export function createVillageScreen(
           return;
         }
         // iron_ore 보유량 확인 (등급 3~4)
+        if (def.buildCostWood > 0 && p.getItemCount(VILLAGE_BUILD_ITEM_IDS.buildCostWood) < def.buildCostWood) {
+          statusMessage = `재료 부족: 목재 ×${def.buildCostWood} 필요`;
+          render(el);
+          return;
+        }
+        if (def.buildCostStone > 0 && p.getItemCount(VILLAGE_BUILD_ITEM_IDS.buildCostStone) < def.buildCostStone) {
+          statusMessage = `재료 부족: 석재 ×${def.buildCostStone} 필요`;
+          render(el);
+          return;
+        }
         if (def.buildCostIron > 0 && p.getItemCount('iron_ore') < def.buildCostIron) {
           statusMessage = `재료 부족: 철광석 ×${def.buildCostIron} 필요`;
           render(el);
@@ -444,7 +476,9 @@ export function createVillageScreen(
         }
         p.addGold(-def.buildCostGold);
         knowledge.trackGoldSpent(def.buildCostGold);
-        // iron_ore 차감
+        // C6: 재료 차감
+        if (def.buildCostWood > 0) p.removeItemById(VILLAGE_BUILD_ITEM_IDS.buildCostWood, def.buildCostWood);
+        if (def.buildCostStone > 0) p.removeItemById(VILLAGE_BUILD_ITEM_IDS.buildCostStone, def.buildCostStone);
         if (def.buildCostIron > 0) {
           p.removeItemById('iron_ore', def.buildCostIron);
         }

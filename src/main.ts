@@ -42,6 +42,7 @@ import { createTravelScreen, type TravelOptions } from './ui/screens/travel';
 import { createFerryScreen } from './ui/screens/ferry';
 import { createVillageScreen } from './ui/screens/village';
 import { createVillageBuildScreen } from './ui/screens/village-build';
+import { createStatusScreen } from './ui/screens/status';
 import { getAllItemDefs } from './types/item-defs';
 import { getAllSkillDefs } from './models/skill';
 import { ItemType } from './types/enums';
@@ -516,6 +517,10 @@ async function boot() {
             },
             onKey(key) { if (key === 'Enter' || key === ' ' || key === 'Escape') sm.pop(); },
           });
+          break;
+        case 'info_status':
+        case 'info_color':
+          sm.push(createStatusScreen(session, () => sm.pop()));
           break;
         default:
           if (target.startsWith('info_')) {

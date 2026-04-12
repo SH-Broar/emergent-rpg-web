@@ -205,15 +205,37 @@ export function getVillageRoadMultiplier(
   return best;
 }
 
-/** 매력도 계산 */
+/** 활성 시설의 happiness/defense 보너스 합산 후 마을 stats 반영 */
+export function recalcVillageStats(
+  v: VillageState,
+  getFacilityDef: (id: string) => { happinessBonus?: number; defenseBonus?: number; tiers?: { happinessBonus: number; defenseBonus: number }[] } | undefined,
+): void {
+  let happinessBonus = 0;
+  let defenseBonus = 0;
+  for (const f of v.facilities) {
+    if (f.status !== 'active') continue;
+    const def = getFacilityDef(f.facilityId);
+    if (!def) continue;
+    const tier = f.tier ?? 1;
+    const tierDef = def.tiers?.[tier - 1];
+    happinessBonus += tierDef?.happinessBonus ?? def.happinessBonus ?? 0;
+    defenseBonus += tierDef?.defenseBonus ?? def.defenseBonus ?? 0;
+  }
+  v.happiness = Math.min(100, Math.max(0, 50 + happinessBonus));
+  v.defense = Math.min(100, Math.max(0, defenseBonus));
+}
+
+/** 매력도 계산 (M4: 시설 티어 합산 + 행복도/명성 반영) */
 export function calcVillageAttraction(v: VillageState): number {
-  const activeFacCount = getActiveFacilities(v).length;
-  return activeFacCount * 3 + v.happiness * 0.5;
+  const activeFacilities = getActiveFacilities(v);
+  const facilityScore = activeFacilities.reduce((sum, f) => sum + (f.tier ?? 1), 0);
+  return facilityScore * 4 + v.happiness * 0.5 + v.reputation * 0.3;
 }
 
 /** 일일 인구 증가량 계산 */
 export function calcPopGrowth(v: VillageState): number {
   const attraction = calcVillageAttraction(v);
   const raw = (attraction - v.population * 1.5) * 0.08;
-  return Math.min(2, Math.max(0, Math.floor(raw)));
+  const maxGrowthPerDay = Math.min(v.stage + 1, 5); // stage 1→2명, stage 4+→5명
+  return Math.min(maxGrowthPerDay, Math.max(0, Math.floor(raw)));
 }

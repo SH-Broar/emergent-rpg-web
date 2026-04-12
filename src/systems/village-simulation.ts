@@ -5,6 +5,7 @@ import {
   calcPopGrowth,
   checkVillageStageUp,
   recalcVillageFinance,
+  recalcVillageStats,
 } from '../models/village';
 import { getAllVillageEventDefs, getFacilityDef, getVillageEventDef } from '../data/village-defs';
 import { VillageEventDef } from '../models/village-event';
@@ -40,14 +41,29 @@ export function tickVillage(
     financeDelta: 0,
   };
 
-  // 1. 재무 정산
+  // 1. 재무 정산 + stats 갱신
   recalcVillageFinance(village, getFacilityDef);
+  recalcVillageStats(village, getFacilityDef);
   const net = village.finance.totalIncomePerDay - village.finance.totalMaintenancePerDay;
   if (net !== 0) {
     village.finance.treasury += net;
     result.financeDelta = net;
   }
   village.finance.lastSettledDay = currentDay;
+
+  // C1+C2: 금고 마이너스 시 유지비 높은 시설부터 suspended 처리
+  if (village.finance.treasury < 0) {
+    const activeFacilities = village.facilities
+      .filter(f => f.status === 'active')
+      .sort((a, b) => (getFacilityDef(b.facilityId)?.maintenancePerDay ?? 0) - (getFacilityDef(a.facilityId)?.maintenancePerDay ?? 0));
+    for (const f of activeFacilities) {
+      if (village.finance.treasury >= 0) break;
+      f.status = 'suspended';
+      recalcVillageFinance(village, getFacilityDef);
+      log.add(gameTime, `[${village.name}] ${getFacilityDef(f.facilityId)?.name ?? f.facilityId} 시설이 유지비 부족으로 정지됨`, '마을');
+    }
+    village.happiness = Math.max(0, village.happiness - 5);
+  }
 
   // 2. 인구 성장
   if (village.lastPopGrowthDay < currentDay) {
@@ -177,6 +193,13 @@ export function applyVillageEventChoice(
   }
 
   const choice = def.choices[choiceIndex];
+
+  // C7: goldCost 차감
+  const cost = choice.goldCost ?? 0;
+  if (cost > 0) {
+    village.finance.treasury -= cost;
+  }
+
   const success = Math.random() < choice.successChance;
   const effects = success ? choice.onSuccess : choice.onFailure;
   const msg = success ? choice.successMsg : choice.failureMsg;
@@ -196,6 +219,14 @@ export function applyVillageEventChoice(
   }
   if (effects.treasuryDelta) {
     village.finance.treasury += effects.treasuryDelta;
+  }
+
+  // C4: 칭호 카운터 갱신
+  if (success && def.category === 'crisis') {
+    village.crisisEventSuccessCount = (village.crisisEventSuccessCount ?? 0) + 1;
+  }
+  if (def.id === 'spring_festival' && success) {
+    village.springFestivalCount = (village.springFestivalCount ?? 0) + 1;
   }
 
   // 이벤트 완료 처리

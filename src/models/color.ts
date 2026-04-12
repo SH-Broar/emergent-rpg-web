@@ -108,9 +108,9 @@ export class ColorProfile {
     for (let i = 0; i < ELEMENT_COUNT; i++) {
       let inf = influence[i];
       if (inf > 0) {
-        inf *= (1.5 - this.values[i]);
+        inf *= Math.min(1.0, 1.5 - this.values[i]);
       } else if (inf < 0) {
-        inf *= (0.5 + this.values[i]);
+        inf *= Math.min(1.0, 0.5 + this.values[i]);
       }
       this.values[i] = Math.max(0, Math.min(1, this.values[i] + inf));
     }
@@ -131,11 +131,11 @@ export class ColorProfile {
       // Context scale
       const contextScale = CONTEXT_SCALE[context];
 
-      // Apply resistance curve (from existing applyInfluence)
+      // Apply resistance curve (증폭 없음, 극값 근처만 감쇠)
       if (inf > 0) {
-        inf *= (1.5 - this.values[i]);
+        inf *= Math.min(1.0, 1.5 - this.values[i]);
       } else {
-        inf *= (0.5 + this.values[i]);
+        inf *= Math.min(1.0, 0.5 + this.values[i]);
       }
 
       // Final: base * matrix * context
