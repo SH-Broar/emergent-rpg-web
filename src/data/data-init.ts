@@ -22,6 +22,9 @@ import type { GameDataFiles } from './loader';
 import { initVillageFacilities, initVillageRoads } from './village-init';
 import { initVillageEvents } from './village-event-init';
 import { initBenzenLines } from './benzen-init';
+import { initColorNarratives } from './color-narrative-init';
+import { clearNpcQuestDefs } from './npc-quest-defs';
+import { initNpcQuests } from './npc-quest-init';
 
 function parseTimeWindow(raw: string): TimeWindow | undefined {
   const value = raw.trim();
@@ -682,13 +685,30 @@ export function initAll(data: GameDataFiles): InitResult {
   loadHyperion(data.hyperion);
 
   // 대사 DB 로드
+  function remapStageKey(sectionName: string): string {
+    if (sectionName.endsWith('.친구')) return sectionName.slice(0, -3) + '.known';
+    if (sectionName.endsWith('.신뢰')) return sectionName.slice(0, -3) + '.close';
+    if (sectionName.endsWith('.깊은유대')) return sectionName.slice(0, -5) + '.companion';
+    return sectionName;
+  }
+
   for (const s of data.dialogues) {
     const lines: string[] = [];
     for (let i = 1; i <= 20; i++) {
       const line = s.get(String(i), '');
       if (line) lines.push(line);
     }
-    if (lines.length > 0) setDialogueLines(s.name, lines);
+    if (lines.length > 0) setDialogueLines(remapStageKey(s.name), lines);
+  }
+
+  // NPC 특별 대사 로드
+  for (const s of data.npcSpecialLines) {
+    const npcId = s.get('npcId', '');
+    const condition = s.get('condition', '');
+    const line = s.get('line', '');
+    if (npcId && condition && line) {
+      setDialogueLines(npcId + '.special.' + condition, [line]);
+    }
   }
 
   // 행동 묘사문 로드 (action_texts.txt)
@@ -744,6 +764,11 @@ export function initAll(data: GameDataFiles): InitResult {
   initVillageRoads(data.villageRoads);
   initVillageEvents(data.villageEvents);
   initBenzenLines(data.benzenLines);
+
+  // 컬러 서사 / NPC 퀘스트 로드
+  initColorNarratives(data.colorNarratives);
+  clearNpcQuestDefs();
+  initNpcQuests(data.npcQuests);
 
   return { actors, world, events, dungeonSystem, activitySystem, diagnosticQuestions, warnings };
 }

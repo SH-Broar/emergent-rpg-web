@@ -8,6 +8,7 @@ import { createNpcList, type NpcEntry } from '../components/npc-list';
 import { createItemGrid, type ItemEntry } from '../components/item-grid';
 import { isActorVisibleToPlayer } from '../../systems/actor-visibility';
 import { getRelationshipStage, giveGift } from '../../systems/npc-interaction';
+import { triggerNpcQuestEvent } from '../../data/npc-quest-defs';
 import { checkAndAwardTitles } from '../../systems/title-system';
 
 type GiftStep = 'select-npc' | 'select-item' | 'result';
@@ -149,6 +150,13 @@ export function createGiftScreen(
       renderGift(el);
       return;
     }
+
+    // NPC 퀘스트: gift 목표 체크
+    triggerNpcQuestEvent(session.knowledge, {
+      type: 'gift',
+      npcName: npc.actor.name,
+      itemKey: ItemType[selected.type],
+    });
 
     // 선물 증정: Water+, Earth-, Light+, Dark-
     const giftInfluence = new Array(8).fill(0);

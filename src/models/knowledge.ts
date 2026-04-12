@@ -5,6 +5,7 @@ import { ELEMENT_COUNT } from '../types/enums';
 import { generateDefaultCellConditions, generateDefaultRowConditions, generateDefaultColConditions } from './core-matrix-conditions';
 import { FarmState, createFarmState, expandFarm } from './farming';
 import { VillageState } from './village';
+import { NpcQuestState } from './npc-quest';
 
 // ============================================================
 // CoreMatrix
@@ -339,6 +340,42 @@ export class PlayerKnowledge {
 
   /** 비소유 homeLocation에서의 마지막 낮잠 일자 */
   lastNapDay = -1;
+
+  // ── NPC 개인 퀘스트 ──────────────────────────────────────────
+  activeNpcQuests: Map<string, NpcQuestState> = new Map(); // questId → state
+  completedNpcQuestIds: Set<string> = new Set();
+
+  getActiveQuestForNpc(npcName: string): NpcQuestState | undefined {
+    for (const state of this.activeNpcQuests.values()) {
+      if (state.npcName === npcName && state.accepted && !state.completed) return state;
+    }
+    return undefined;
+  }
+
+  acceptNpcQuest(questId: string, npcName: string, day: number): void {
+    this.activeNpcQuests.set(questId, {
+      questId, npcName, accepted: true, completed: false,
+      progressMet: false, acceptedDay: day,
+    });
+  }
+
+  markNpcQuestProgress(questId: string): void {
+    const s = this.activeNpcQuests.get(questId);
+    if (s && !s.completed) s.progressMet = true;
+  }
+
+  completeNpcQuest(questId: string): void {
+    const s = this.activeNpcQuests.get(questId);
+    if (s) {
+      s.completed = true;
+      this.completedNpcQuestIds.add(questId);
+      this.completedQuestCount++;
+    }
+  }
+
+  isNpcQuestCompleted(questId: string): boolean {
+    return this.completedNpcQuestIds.has(questId);
+  }
 
   // NPC 거점 초대 시스템
   baseInvitedNpcs = new Map<string, string[]>(); // locationId -> NPC 이름 배열

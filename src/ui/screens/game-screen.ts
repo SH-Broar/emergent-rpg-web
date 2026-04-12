@@ -7,6 +7,7 @@ import type { Actor } from '../../models/actor';
 import { processTurn } from '../../systems/game-loop';
 import { isActorVisibleToPlayer } from '../../systems/actor-visibility';
 import { moveCompanions, getRelationshipStage, tryNpcInitiatedConversation } from '../../systems/npc-interaction';
+import { triggerNpcQuestEvent } from '../../data/npc-quest-defs';
 import { locationName } from '../../types/registry';
 import { getZoneColor } from './world-map';
 import { weatherName, seasonName, raceName, spiritRoleName, elementName, Element, ELEMENT_COUNT, ItemType } from '../../types/enums';
@@ -694,6 +695,7 @@ export function createMoveScreen(
       moveCompanions(session.actors, session.knowledge, loc);
       session.backlog.add(session.gameTime, `${session.player.name}이(가) ${locationName(loc)}(으)로 이동했다.`, '행동');
       session.knowledge.trackVisit(loc);
+      triggerNpcQuestEvent(session.knowledge, { type: 'visit', locationId: loc });
       onDone();
     }
   }

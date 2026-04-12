@@ -9,6 +9,7 @@ import type { LocationID } from '../../types/location';
 import { locationName } from '../../types/registry';
 import { applyTimeTheme } from '../time-theme';
 import { moveCompanions, getDialogue, getRelationshipStage } from '../../systems/npc-interaction';
+import { triggerNpcQuestEvent } from '../../data/npc-quest-defs';
 import { randomInt, randomFloat } from '../../types/rng';
 import { advanceTurnByChunks } from '../../systems/world-simulation';
 
@@ -210,6 +211,7 @@ export function createTravelScreen(
     session.player.currentLocation = toId;
     moveCompanions(session.actors, session.knowledge, toId);
     session.knowledge.trackVisit(toId);
+    triggerNpcQuestEvent(session.knowledge, { type: 'visit', locationId: toId });
     session.backlog.add(session.gameTime, `${session.player.name}이(가) ${locationName(toId)}(으)로 이동했다.`, '행동');
     onDone();
   }

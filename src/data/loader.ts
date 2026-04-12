@@ -72,6 +72,7 @@ function getActiveAddonTags(): Record<string, string[]> {
   return {
     actors: actorTags,
     locations: ['rdc'],
+    dialogues: ['stages', 'rdc-deep'],
   };
 }
 
@@ -106,6 +107,9 @@ export interface GameDataFiles {
   villageRoads: DataSection[];
   villageEvents: DataSection[];
   benzenLines: DataSection[];
+  npcSpecialLines: DataSection[];
+  colorNarratives: DataSection[];
+  npcQuests: DataSection[];
 }
 
 export async function loadAllData(): Promise<GameDataFiles> {
@@ -117,13 +121,13 @@ export async function loadAllData(): Promise<GameDataFiles> {
     giftPreferences, weapons, armor, lore, diagnostic,
     skills, acquisition, actionTexts, combatTexts,
     villageFacilities, villageRoads, villageEvents,
-    benzenLines,
+    benzenLines, npcSpecialLines, colorNarratives, npcQuests,
   ] = await Promise.all([
     loadDataFile('items'),
     loadDataFile('locations', addons.locations ?? []),
     loadDataFile('actors', addons.actors ?? []),
     loadDataFile('events'),
-    loadDataFile('dialogues'),
+    loadDataFile('dialogues', addons.dialogues ?? []),
     loadDataFile('dungeons'),
     loadDataFile('monsters'),
     loadDataFile('dungeon_events'),
@@ -145,6 +149,9 @@ export async function loadAllData(): Promise<GameDataFiles> {
     loadDataFile('village-roads'),
     loadDataFile('village-events'),
     loadDataFile('benzen-lines'),
+    loadDataFile('npc_special_lines'),
+    loadDataFile('color_narratives'),
+    loadDataFile('npc_quests'),
   ]);
 
   return {
@@ -154,6 +161,6 @@ export async function loadAllData(): Promise<GameDataFiles> {
     giftPreferences, weapons, armor, lore, diagnostic,
     skills, acquisition, actionTexts, combatTexts,
     villageFacilities, villageRoads, villageEvents,
-    benzenLines,
+    benzenLines, npcSpecialLines, colorNarratives, npcQuests,
   };
 }

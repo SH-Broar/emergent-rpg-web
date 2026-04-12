@@ -7,6 +7,7 @@ import type { Actor } from '../../models/actor';
 import { raceName, spiritRoleName } from '../../types/enums';
 import { getRelationshipOverall } from '../../models/social';
 import { getDialogue, getContinueDialogue, tryRecruitCompanion, getRelationshipStage, getRelationshipStageLabel } from '../../systems/npc-interaction';
+import { triggerNpcQuestEvent } from '../../data/npc-quest-defs';
 import { createNpcList } from '../components/npc-list';
 
 type DialogueAction = 'continue' | 'recruit' | 'info';
@@ -82,6 +83,7 @@ export function createDialogueScreen(
       // 대화하면 이름을 알게 됨
       session.knowledge.addKnownName(npc.name);
       session.knowledge.trackConversation(npc.name);
+      triggerNpcQuestEvent(session.knowledge, { type: 'talk', npcName: npc.name });
       if (npc.name === '베텔게우스' && !session.knowledge.hasTitle('대지의 목격자')) {
         session.knowledge.addTitle('대지의 목격자');
         session.backlog.add(session.gameTime, '칭호 "대지의 목격자"를 획득했다.', '시스템', p.name);

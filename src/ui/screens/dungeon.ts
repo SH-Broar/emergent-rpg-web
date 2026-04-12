@@ -13,6 +13,7 @@ import {
 import { canUseSkill } from '../../systems/skill-combat';
 import { locationName } from '../../types/registry';
 import { moveCompanions } from '../../systems/npc-interaction';
+import { triggerNpcQuestEvent } from '../../data/npc-quest-defs';
 import { iGa, eulReul, eunNeun } from '../../data/josa';
 import { randomFloat, randomInt } from '../../types/rng';
 
@@ -1053,6 +1054,7 @@ export function createDungeonScreen(
       pendingProgress += selectedDungeon.progressPerAdvance;
       runState.bossDefeated = true;
       session.knowledge.trackDungeonClear();
+      triggerNpcQuestEvent(session.knowledge, { type: 'dungeon', dungeonId: selectedDungeon.id });
       p.addDungeonProgress(selectedDungeon.id, pendingProgress);
       const prev = p.dungeonBestTurns.get(selectedDungeon.id);
       const isNewRecord = !prev || runState.totalTurns < prev;
