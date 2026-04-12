@@ -15,6 +15,8 @@ import { isTimeWindowOpen } from '../../types/game-time';
 import { applyTimeTheme } from '../time-theme';
 import { TRAVEL_OVERLAY_THRESHOLD_MINUTES } from './travel';
 import { advanceTurn, canNotifyRandomEvent } from '../../systems/world-simulation';
+import { getVillageRoadMultiplier } from '../../models/village';
+import { getRoadDef } from '../../data/village-defs';
 
 interface ActionDef {
   key: string;
@@ -724,7 +726,9 @@ export function createMoveScreen(
             if (vs) {
               // 마을이 있으면 homeLocation 버튼 대신 마을 버튼 표시
               const villageLoc = vs.locationId;
-              const villageMins = session.world.getShortestMinutes(p.currentLocation, villageLoc, session.gameTime.day);
+              const rawVillageMins = session.world.getShortestMinutes(p.currentLocation, villageLoc, session.gameTime.day);
+              const roadMult = getVillageRoadMultiplier(vs, p.currentLocation, getRoadDef);
+              const villageMins = rawVillageMins < 9999 ? Math.max(1, Math.round(rawVillageMins * roadMult)) : 9999;
               if (villageMins < 9999 && !sortedRoutes.some(r => r.loc === villageLoc)) {
                 const travelBadge = villageMins > TRAVEL_OVERLAY_THRESHOLD_MINUTES
                   ? ` <span style="color:var(--text-dim);font-size:11px">🚶 ${villageMins}분</span>`

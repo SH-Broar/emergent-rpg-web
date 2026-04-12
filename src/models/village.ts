@@ -109,6 +109,7 @@ export function getActiveFacilities(v: VillageState): VillageFacilityInstance[] 
 export function recalcVillageFinance(
   v: VillageState,
   getFacilityDef: (id: string) => { incomePerDay: number; maintenancePerDay: number; tiers?: { incomePerDay: number; maintenancePerDay: number }[] } | undefined,
+  getRoadDef?: (id: string) => { maintenancePerDay: number } | undefined,
 ): void {
   let income = 0;
   let maintenance = 0;
@@ -164,6 +165,15 @@ export function recalcVillageFinance(
       }
     }
     income = boostedIncome + normalIncome;
+  }
+
+  // 도로 유지비 합산
+  if (getRoadDef) {
+    for (const r of v.roads) {
+      if (r.status !== 'active') continue;
+      const def = getRoadDef(r.roadId);
+      if (def) maintenance += def.maintenancePerDay;
+    }
   }
 
   v.finance.totalIncomePerDay = Math.floor(income);

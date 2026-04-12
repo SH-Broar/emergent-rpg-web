@@ -3,7 +3,7 @@
 import type { Screen } from '../screen-manager';
 import type { ScreenManager } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
-import { getAllFacilityDefs, getAllRoadDefs, getFacilityDef, getVillageEventDef, DUNGEON_MATERIAL_ITEM_IDS, VILLAGE_BUILD_ITEM_IDS } from '../../data/village-defs';
+import { getAllFacilityDefs, getAllRoadDefs, getFacilityDef, getRoadDef, getVillageEventDef, DUNGEON_MATERIAL_ITEM_IDS, VILLAGE_BUILD_ITEM_IDS } from '../../data/village-defs';
 import { recalcVillageFinance, recalcVillageStats } from '../../models/village';
 import { locationName } from '../../types/registry';
 import { createVillageBenzenScreen } from './village-benzen';
@@ -382,7 +382,7 @@ export function createVillageScreen(
         village.reputation = Math.min(100, village.reputation + 3);
 
         // 재무 + stats 갱신
-        recalcVillageFinance(village, getFacilityDef);
+        recalcVillageFinance(village, getFacilityDef, getRoadDef);
         recalcVillageStats(village, getFacilityDef);
 
         session.backlog.add(
@@ -434,7 +434,7 @@ export function createVillageScreen(
           status: 'active',
           tier: 1,
         });
-        recalcVillageFinance(village, getFacilityDef);
+        recalcVillageFinance(village, getFacilityDef, getRoadDef);
         recalcVillageStats(village, getFacilityDef);
         session.backlog.add(
           session.gameTime,

@@ -7,7 +7,7 @@ import {
   recalcVillageFinance,
   recalcVillageStats,
 } from '../models/village';
-import { getAllVillageEventDefs, getFacilityDef, getVillageEventDef } from '../data/village-defs';
+import { getAllVillageEventDefs, getFacilityDef, getRoadDef, getVillageEventDef } from '../data/village-defs';
 import { VillageEventDef } from '../models/village-event';
 import { Backlog } from '../models/backlog';
 import { GameTime } from '../types/game-time';
@@ -42,7 +42,7 @@ export function tickVillage(
   };
 
   // 1. 재무 정산 + stats 갱신
-  recalcVillageFinance(village, getFacilityDef);
+  recalcVillageFinance(village, getFacilityDef, getRoadDef);
   recalcVillageStats(village, getFacilityDef);
   const net = village.finance.totalIncomePerDay - village.finance.totalMaintenancePerDay;
   if (net !== 0) {
@@ -59,7 +59,7 @@ export function tickVillage(
     for (const f of activeFacilities) {
       if (village.finance.treasury >= 0) break;
       f.status = 'suspended';
-      recalcVillageFinance(village, getFacilityDef);
+      recalcVillageFinance(village, getFacilityDef, getRoadDef);
       log.add(gameTime, `[${village.name}] ${getFacilityDef(f.facilityId)?.name ?? f.facilityId} 시설이 유지비 부족으로 정지됨`, '마을');
     }
     village.happiness = Math.max(0, village.happiness - 5);
