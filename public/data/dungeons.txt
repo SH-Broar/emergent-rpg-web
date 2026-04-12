@@ -2868,13 +2868,13 @@ midBoss_1_enemy = Demon_Chamberlain
 # ============================================================
 
 [Puchi_Lower_Floors]
-name = 탑 하층부
-deepName = 입문 시련층
-description = 푸치 탑의 첫 시련 구간. 도전자들이 이미 수없이 밟고 지나간 흔적이 층마다 남아 있다.
-deepDescription = 무너지는 발판과 겹치는 시련이 어우러진 구간. 오래 머물면 길이 사라진다.
+name = 탑 외곽 잔해
+deepName = 무너진 기단 주변
+description = 이카르 탑 주변에 흩어진 고대 잔해층. 탑이 처음 세워졌을 때의 석재들이 쓰러진 채 수천 년을 버텨왔다.
+deepDescription = 잔해더미 사이로 무너진 발판이 이어진다. 발을 내딛을 때마다 돌이 아래로 굴러떨어진다.
 difficulty = 0.50
 progressPerAdvance = 7.0
-accessFrom = Puchi_Tower
+accessFrom = Ikar
 ruleTemplate = CollapsingPath
 ruleRank = 3
 ruleValueA = 2
@@ -2889,19 +2889,19 @@ lootRare = OreRare:1
 colorInfluence = Iron:0.16, Dark:0.10, Wind:0.08
 
 [Puchi_Mid_Floors]
-name = 탑 중층부
-deepName = 칵테일 바 구역
-description = 중층에 뜬금없이 자리 잡은 칵테일 바. 탐색자들이 여기서 휴식을 취하고 다시 위로 향한다.
-deepDescription = 칵테일 바 위아래로 이어지는 중간 시련층. 보상과 위험 사이에서 욕심이 판단을 흐린다.
+name = 탑 중간층 회랑
+deepName = 고층 접근로
+description = 이카르 탑 중간 높이의 회랑 구간. 바람이 강해지며 올라갈수록 발아래가 점점 멀어진다.
+deepDescription = 회랑 곳곳에 고대 수호 기계들이 잠들어 있다. 진동을 감지하면 깨어나 방어 태세를 취한다.
 difficulty = 0.65
 progressPerAdvance = 5.8
-accessFrom = Puchi_Tower
+accessFrom = Ikar
 ruleTemplate = GreedRisk
 ruleRank = 3
 ruleValueA = 0.14
 ruleValueB = 0.12
 ruleValueC = 0.08
-ruleHint = 중층부의 칵테일 바는 리소스 유혹이 크다. 욕심내면 상층부 진입 전에 탈진할 수 있다.
+ruleHint = 회랑에 방치된 고대 유물을 욕심내면 기계 수호자가 연쇄로 깨어난다.
 enemies = Clockwork_Knight, Trial_Golem, Tower_Sentinel
 lootOnClear = OreRare:2, MonsterLoot:16, Equipment:1, Potion:3
 lootPerAdvance = MonsterLoot:2:0.40, OreCommon:2:0.32, OreRare:1:0.14
@@ -2910,13 +2910,13 @@ lootRare = Equipment:1
 colorInfluence = Iron:0.18, Wind:0.12, Light:0.08
 
 [Puchi_Upper_Floors]
-name = 탑 상층부
-deepName = 세계 끝 전망대
-description = 꼭대기에 가까운 상층부. 이미 절반의 도전자는 여기 오기 전에 포기했다.
-deepDescription = 세계의 끝이 보인다는 전망대 직전 구간. 발판 붕락이 극적으로 빨라지며, 시련 골렘이 최후의 방어선을 친다.
+name = 탑 상층 파사드
+deepName = 태양 정상 직전
+description = 이카르 탑 정상에 가까워지는 상층부. 발아래로 세계 전체가 펼쳐지기 시작하며, 바람이 거의 서 있을 수 없을 만큼 거세진다.
+deepDescription = 붕락 속도가 극대화되는 상층 파사드. 시련 골렘이 정상으로 가는 마지막 길목을 지키고 있다.
 difficulty = 0.78
 progressPerAdvance = 4.6
-accessFrom = Puchi_Tower
+accessFrom = Ikar
 ruleTemplate = CollapsingPath
 ruleRank = 4
 ruleValueA = 3
@@ -2937,10 +2937,10 @@ midBoss_1_enemy = Trial_Golem
 # ============================================================
 
 [Haratikus_Surface]
-name = 표층 폐허
-deepName = 잔해 탐색로
-description = 하라티쿠스 폐허의 표면 잔해층. 대변동 이전 문명의 흔적이 어지럽게 쌓여 있다.
-deepDescription = 잔해 더미 사이에 흩어진 단서들. 무엇을 추적하느냐에 따라 발굴 결과가 달라진다.
+name = 잔해의 공백
+deepName = 아무것도 남지 않은 자리
+description = 하라티쿠스 표층. 한때 무언가가 있었다는 흔적만 남아 있다. 무엇이 있었는지는 이미 알 수 없고, 알고 싶어하는 이도 없다.
+deepDescription = 잔해를 따라가면 단서가 아니라 더 깊은 공백이 나온다. 여기서 발굴되는 것은 없음 그 자체다.
 difficulty = 0.88
 progressPerAdvance = 4.5
 accessFrom = Haratikus
@@ -2949,7 +2949,7 @@ ruleRank = 4
 ruleValueA = 2
 ruleValueB = 6
 ruleValueC = 0.08
-ruleHint = 폐허 속 흔적을 따라갈수록 고대 유물의 위치가 선명해진다.
+ruleHint = 흔적을 추적할수록 얻는 것은 더 많은 공백뿐이다.
 enemies = Ruin_Crawler, Corruption_Specter
 lootOnClear = OreRare:4, MonsterLoot:22, Equipment:2
 lootPerAdvance = OreRare:1:0.22, MonsterLoot:3:0.44, Equipment:1:0.12
@@ -2958,10 +2958,10 @@ lootRare = Equipment:2
 colorInfluence = Earth:0.20, Dark:0.14, Iron:0.10
 
 [Haratikus_Underground]
-name = 지하 유구층
-deepName = 봉인된 지하 문명
-description = 폐허 지하에 잠든 더 오래된 문명 층. 고대 자동인형들이 아직도 임무를 수행 중이다.
-deepDescription = 공명하는 유물들이 가득한 지하 심층부. 고대 기계의 반응이 강해질수록 탐색의 리듬도 흔들린다.
+name = 지워진 층
+deepName = 스스로를 지운 문명
+description = 지하로 내려갈수록 오히려 기록이 줄어든다. 이곳의 문명은 스스로를 지웠다. 남긴 것보다 지운 것이 더 많은 곳.
+deepDescription = 유물이 공명하는 것이 아니라 빈 자리가 공명한다. 있었던 것들의 부재가 하나의 울림이 되어 돌아온다.
 difficulty = 0.92
 progressPerAdvance = 4.0
 accessFrom = Haratikus
@@ -2970,7 +2970,7 @@ ruleRank = 5
 ruleValueA = 4
 ruleValueB = 0.17
 ruleValueC = 0.12
-ruleHint = 유물 공명이 강해질수록 유리한 기회가 열리지만 실패 반동도 크다.
+ruleHint = 공명은 유물이 아니라 그것이 없어진 자리에서 온다. 실패할수록 공백이 더 깊어진다.
 enemies = Ancient_Automaton, Relic_Golem, Ruin_Crawler
 lootOnClear = OreRare:5, MonsterLoot:24, Equipment:3
 lootPerAdvance = OreRare:2:0.24, MonsterLoot:4:0.46, Equipment:1:0.13
@@ -2979,10 +2979,10 @@ lootRare = Equipment:2
 colorInfluence = Earth:0.22, Iron:0.16, Dark:0.12
 
 [Haratikus_Vault]
-name = 고대 금고
-deepName = 문명의 마지막 방
-description = 하라티쿠스 최심부에 봉인된 고대 금고. 이 안에는 대변동 이전 문명의 마지막 유산이 잠들어 있다.
-deepDescription = 거인상이 금고 문을 지키고 있는 극한의 폐허 심부. 짙은 안개 속에서 경비 자동인형들이 끊임없이 순찰한다.
+name = 텅 빈 핵심
+deepName = 아무것도 없는 마지막 방
+description = 하라티쿠스 최심부. 무언가가 있었을 자리. 지금은 완전히 비어 있다. 무엇을 지키는지도, 무엇을 기다리는지도 알 수 없다.
+deepDescription = 안개 속에는 아무것도 없다. 그럼에도 거인상은 이 빈 공간을 지킨다. 없음을 지키는 것이 이 폐허의 마지막 의미다.
 difficulty = 0.96
 progressPerAdvance = 3.5
 accessFrom = Haratikus
@@ -2991,7 +2991,7 @@ ruleRank = 5
 ruleValueA = 5
 ruleValueB = 0.18
 ruleValueC = 0.13
-ruleHint = 짙은 안개가 최대에 달하면 경비대의 위치조차 파악할 수 없다.
+ruleHint = 안개가 짙어질수록 아무것도 보이지 않는다. 없음 속에서 길을 찾아야 한다.
 enemies = Haratikus_Colossus, Ancient_Automaton, Relic_Golem
 lootOnClear = OreRare:7, MonsterLoot:28, Equipment:3
 lootPerAdvance = OreRare:2:0.26, MonsterLoot:4:0.48, Equipment:1:0.15
