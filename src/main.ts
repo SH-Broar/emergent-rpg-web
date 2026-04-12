@@ -37,6 +37,7 @@ import { createCookingScreen } from './ui/screens/cooking';
 import { createSkillShopScreen } from './ui/screens/skill-shop';
 import { createGuildDungeonScreen } from './ui/screens/guild-dungeon';
 import { createLifeJobScreen } from './ui/screens/life-job';
+import { getHyperionEntry } from './systems/hyperion';
 import { createFarmScreen } from './ui/screens/farm';
 import { createTravelScreen, type TravelOptions } from './ui/screens/travel';
 import { createFerryScreen } from './ui/screens/ferry';
@@ -93,7 +94,7 @@ async function boot() {
     sm.push({
       id: 'population',
       render(el) {
-        const totalNpcs = session.actors.filter(a => !a.playable).length;
+        const totalNpcs = session.actors.filter(a => !a.playable && !getHyperionEntry(a.name)).length;
         el.innerHTML = `
           <div class="screen info-screen" style="justify-content:center">
             <h2>마을 인구 밀도</h2>
@@ -110,9 +111,11 @@ async function boot() {
             const pop = btn.dataset.pop!;
             const ratio = pop === 'low' ? 0.3 : pop === 'normal' ? 0.6 : 1.0;
             // 비플레이어블 NPC 중 일부만 활성 위치에 배치
+            // RDC(히페리온) 캐릭터는 비율과 무관하게 항상 활성 유지
             const npcs = session.actors.filter(a => !a.playable);
-            const activeCount = Math.floor(npcs.length * ratio);
-            npcs.forEach((npc, i) => {
+            const regularNpcs = npcs.filter(npc => !getHyperionEntry(npc.name));
+            const activeCount = Math.floor(regularNpcs.length * ratio);
+            regularNpcs.forEach((npc, i) => {
               if (i >= activeCount) {
                 npc.stationary = true; // 비활성 NPC는 고정
               }
