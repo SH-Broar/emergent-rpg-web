@@ -46,9 +46,58 @@ export interface VillageRoadDef {
   buildCostGold: number;
   buildCostWood: number;
   buildCostStone: number;
+  buildCostIron: number;   // 신규 — 등급 3~4에서 사용
   travelSpeedMultiplier: number; // 1.0 = 변화 없음, 0.75 = 25% 단축
   maintenancePerDay: number;
   description: string;
+}
+
+// 업그레이드 비용 필드명 → 실제 items.txt 아이템 ID 매핑
+export const DUNGEON_MATERIAL_ITEM_IDS = {
+  upgradeCostMonsterBone: 'bone_fragment',
+  upgradeCostMagicStone: 'moonstone',
+  upgradeCostRareMetal: 'silver_ore',
+} as const;
+
+export type DungeonMaterialKey = keyof typeof DUNGEON_MATERIAL_ITEM_IDS;
+
+// ============================================================
+// 벤젠 대사 정의
+// ============================================================
+
+export interface BenzenLineDef {
+  id: string;
+  condition: string;
+  text: string;
+  priority: number;
+}
+
+const benzenLineRegistry: BenzenLineDef[] = [];
+
+export function registerBenzenLine(def: BenzenLineDef): void {
+  benzenLineRegistry.push(def);
+}
+
+export function getBenzenLine(condition: string): string {
+  const matches = benzenLineRegistry
+    .filter(d => d.condition === condition)
+    .sort((a, b) => b.priority - a.priority);
+  if (matches.length > 0) {
+    // 동점이면 랜덤 선택
+    const top = matches[0].priority;
+    const topMatches = matches.filter(d => d.priority === top);
+    return topMatches[Math.floor(Math.random() * topMatches.length)].text;
+  }
+  // 폴백: default
+  const fallback = benzenLineRegistry
+    .filter(d => d.condition === 'default')
+    .sort((a, b) => b.priority - a.priority);
+  if (fallback.length > 0) return fallback[Math.floor(Math.random() * Math.min(3, fallback.length))].text;
+  return '...';
+}
+
+export function getBenzenLineCount(): number {
+  return benzenLineRegistry.length;
 }
 
 // ============================================================

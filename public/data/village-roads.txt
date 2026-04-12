@@ -5,6 +5,8 @@ name = 오솔길
 grade = 1
 buildCostGold = 200
 buildCostWood = 5
+buildCostStone = 0
+buildCostIron = 0
 travelSpeedMultiplier = 0.9
 description = 좁고 울퉁불퉁한 흙길. 이동 시간을 약간 단축시킨다.
 maintenancePerDay = 1
@@ -15,6 +17,29 @@ grade = 2
 buildCostGold = 500
 buildCostWood = 10
 buildCostStone = 5
+buildCostIron = 0
 travelSpeedMultiplier = 0.75
 description = 정비된 비포장 도로. 이동 시간을 상당히 단축시킨다.
 maintenancePerDay = 2
+
+[paved_road]
+name = 포장도로
+grade = 3
+buildCostGold = 500
+buildCostWood = 0
+buildCostStone = 20
+buildCostIron = 10
+travelSpeedMultiplier = 0.6
+maintenancePerDay = 4
+description = 석재와 철로 포장된 도로. 이동 시간을 40% 단축한다.
+
+[royal_highway]
+name = 대로
+grade = 4
+buildCostGold = 1500
+buildCostWood = 0
+buildCostStone = 40
+buildCostIron = 10
+travelSpeedMultiplier = 0.4
+maintenancePerDay = 8
+description = 왕국급 대로. 이동 시간을 60% 단축한다.

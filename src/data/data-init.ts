@@ -21,6 +21,7 @@ import type { TimeWindow } from '../types/game-time';
 import type { GameDataFiles } from './loader';
 import { initVillageFacilities, initVillageRoads } from './village-init';
 import { initVillageEvents } from './village-event-init';
+import { initBenzenLines } from './benzen-init';
 
 function parseTimeWindow(raw: string): TimeWindow | undefined {
   const value = raw.trim();
@@ -742,6 +743,7 @@ export function initAll(data: GameDataFiles): InitResult {
   initVillageFacilities(data.villageFacilities);
   initVillageRoads(data.villageRoads);
   initVillageEvents(data.villageEvents);
+  initBenzenLines(data.benzenLines);
 
   return { actors, world, events, dungeonSystem, activitySystem, diagnosticQuestions, warnings };
 }

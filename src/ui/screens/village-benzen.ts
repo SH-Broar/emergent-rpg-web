@@ -3,7 +3,7 @@
 import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
 import { VillageSpecialization } from '../../models/village';
-import { getFacilityDef } from '../../data/village-defs';
+import { getFacilityDef, getBenzenLine } from '../../data/village-defs';
 
 const SPEC_LABELS: Record<VillageSpecialization, string> = {
   none: '미선택',
@@ -94,7 +94,16 @@ export function createVillageBenzenScreen(
         }
       }
 
-      const benzenComment = getBriefingComment(village.population, village.happiness, net);
+      const STAGE_NAMES = ['', '야영지', '작은마을', '마을', '읍', '소도시', '도시', '왕도'];
+      const stageName = STAGE_NAMES[village.stage] ?? `단계 ${village.stage}`;
+      const currentDay = session.gameTime.day;
+      const benzenComment = getBriefingComment(
+        village.population,
+        village.happiness,
+        net,
+        village.visitingNpcCount ?? 0,
+        village.stage,
+      );
 
       wrap.innerHTML = `
         <button class="btn back-btn" data-back>← 뒤로 [Esc]</button>
@@ -130,6 +139,22 @@ export function createVillageBenzenScreen(
           <div style="padding:8px;background:var(--bg-panel);border-radius:8px;text-align:center">
             <div style="font-size:11px;color:var(--text-dim)">전문화</div>
             <div style="font-size:14px;font-weight:bold">${SPEC_LABELS[village.specialization]}</div>
+          </div>
+          <div style="padding:8px;background:var(--bg-panel);border-radius:8px;text-align:center">
+            <div style="font-size:11px;color:var(--text-dim)">단계</div>
+            <div style="font-size:14px;font-weight:bold">${stageName} <span style="color:var(--text-dim);font-size:11px">(${village.stage})</span></div>
+          </div>
+          <div style="padding:8px;background:var(--bg-panel);border-radius:8px;text-align:center">
+            <div style="font-size:11px;color:var(--text-dim)">설립 / 경과</div>
+            <div style="font-size:13px;font-weight:bold">${village.foundedDay}일차 / ${currentDay - village.foundedDay}일</div>
+          </div>
+          <div style="padding:8px;background:var(--bg-panel);border-radius:8px;text-align:center">
+            <div style="font-size:11px;color:var(--text-dim)">오늘 방문자</div>
+            <div style="font-size:16px;font-weight:bold;color:var(--success)">${village.visitingNpcCount ?? 0}명</div>
+          </div>
+          <div style="padding:8px;background:var(--bg-panel);border-radius:8px;text-align:center">
+            <div style="font-size:11px;color:var(--text-dim)">도로 연결</div>
+            <div style="font-size:16px;font-weight:bold">${village.roads.length}개</div>
           </div>
         </div>
 
@@ -311,10 +336,18 @@ export function createVillageBenzenScreen(
   };
 }
 
-function getBriefingComment(population: number, happiness: number, net: number): string {
-  if (net < 0) return '수입보다 지출이 많군. 이래서야 마을이 유지가 되겠어? 빨리 수익 구조를 개선해.';
-  if (population < 5) return '인구가 너무 적어. 시설을 더 지어서 사람들을 불러 모아야 해. 뭐, 당연한 소리지만.';
-  if (happiness < 30) return '행복도가 너무 낮아. 주민들이 이탈하기 시작하면 손쓰기 힘들어져. 편의 시설에 투자해.';
-  if (happiness > 70 && population > 10) return '오, 나쁘지 않은데? 뭐, 내가 관리하니까 당연한 결과지만.';
-  return '현재 마을 상태는... 무난해. 더 잘할 수 있어. 내가 여기 있는 이상 최선을 다해야 해.';
+function getBriefingComment(
+  population: number,
+  happiness: number,
+  net: number,
+  visitingNpcCount: number,
+  stage: number,
+): string {
+  if (net < 0) return getBenzenLine('net_negative');
+  if (population < 5) return getBenzenLine('low_population');
+  if (happiness < 30) return getBenzenLine('low_happiness');
+  if (happiness >= 70 && population > 10) return getBenzenLine('high_happiness');
+  if (visitingNpcCount >= 5) return getBenzenLine('visitor_many');
+  if (visitingNpcCount === 0 && stage >= 3) return getBenzenLine('visitor_zero');
+  return getBenzenLine('default');
 }

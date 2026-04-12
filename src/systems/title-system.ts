@@ -61,6 +61,48 @@ const TITLE_CONDITIONS: TitleCondition[] = [
   { id: '도움을 주는 사람', check: s => s.knowledge.completedQuestCount >= 5 },
   { id: '길드의 일꾼',      check: s => s.knowledge.completedQuestCount >= 20 },
 
+  // === 마을 관련 칭호 ===
+  {
+    id: '개척자',
+    check: s => s.knowledge.villageState !== null,
+  },
+  {
+    id: '마을 촌장',
+    check: s => (s.knowledge.villageState?.stage ?? 0) >= 2,
+  },
+  {
+    id: '읍장',
+    check: s => (s.knowledge.villageState?.stage ?? 0) >= 4,
+  },
+  {
+    id: '도시의 설계자',
+    check: s => (s.knowledge.villageState?.stage ?? 0) >= 6,
+  },
+  {
+    id: '왕도의 지배자',
+    check: s => (s.knowledge.villageState?.stage ?? 0) >= 7,
+  },
+  {
+    id: '교통왕',
+    check: s => (s.knowledge.villageState?.roads.length ?? 0) >= 4,
+  },
+  {
+    id: '번영의 설계사',
+    check: s => (s.knowledge.villageState?.totalVisitorIncome ?? 0) >= 100000,
+  },
+  {
+    id: '주민의 친구',
+    check: s => (s.knowledge.villageState?.totalVisitorDays ?? 0) >= 10,
+  },
+  {
+    id: '축제의 왕',
+    check: s => (s.knowledge.villageState?.springFestivalCount ?? 0) >= 5,
+  },
+  {
+    id: '위기를 넘은 자',
+    check: s => (s.knowledge.villageState?.crisisEventSuccessCount ?? 0) >= 5,
+  },
+
   // 종합
   {
     id: '여유로운 나날',

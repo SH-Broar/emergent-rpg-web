@@ -75,6 +75,7 @@ export function initVillageRoads(sections: DataSection[]): void {
       buildCostGold: s.getInt('buildCostGold', 0),
       buildCostWood: s.getInt('buildCostWood', 0),
       buildCostStone: s.getInt('buildCostStone', 0),
+      buildCostIron: s.getInt('buildCostIron', 0),
       travelSpeedMultiplier: s.getFloat('travelSpeedMultiplier', 1.0),
       maintenancePerDay: s.getInt('maintenancePerDay', 0),
       description: s.get('description', ''),

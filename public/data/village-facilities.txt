@@ -343,3 +343,1609 @@ tier3_upgradeCostWood = 50
 tier3_upgradeCostStone = 30
 tier3_upgradeCostMonsterBone = 5
 tier3_upgradeCostMagicStone = 2
+
+# ==========================================
+# 생산 시설 9개 (Phase 3)
+# ==========================================
+
+[quarry]
+name = 채석장
+category = production
+unlockStage = 2
+buildCostGold = 600
+buildCostWood = 10
+buildCostStone = 5
+incomePerDay = 18
+maintenancePerDay = 4
+description = 석재를 채굴한다. 건설 비용 절감 효과.
+
+tier1_incomePerDay = 18
+tier1_maintenancePerDay = 4
+tier1_happinessBonus = 0
+tier1_defenseBonus = 0
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 30
+tier2_maintenancePerDay = 6
+tier2_happinessBonus = 0
+tier2_defenseBonus = 0
+tier2_upgradeCostGold = 900
+tier2_upgradeCostStone = 30
+tier2_upgradeCostMonsterBone = 4
+
+tier3_incomePerDay = 48
+tier3_maintenancePerDay = 9
+tier3_happinessBonus = 0
+tier3_defenseBonus = 5
+tier3_upgradeCostGold = 2200
+tier3_upgradeCostStone = 60
+tier3_upgradeCostRareMetal = 2
+tier3_upgradeCostMagicStone = 2
+
+[fish_market]
+name = 어시장
+category = production
+unlockStage = 2
+buildCostGold = 550
+buildCostWood = 20
+buildCostStone = 5
+incomePerDay = 16
+maintenancePerDay = 3
+description = 해산물을 거래한다. 인구 행복도 소폭 상승.
+
+tier1_incomePerDay = 16
+tier1_maintenancePerDay = 3
+tier1_happinessBonus = 3
+tier1_defenseBonus = 0
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 28
+tier2_maintenancePerDay = 5
+tier2_happinessBonus = 6
+tier2_defenseBonus = 0
+tier2_upgradeCostGold = 800
+tier2_upgradeCostWood = 20
+tier2_upgradeCostMonsterBone = 3
+
+tier3_incomePerDay = 44
+tier3_maintenancePerDay = 8
+tier3_happinessBonus = 10
+tier3_defenseBonus = 0
+tier3_upgradeCostGold = 2000
+tier3_upgradeCostWood = 40
+tier3_upgradeCostRareMetal = 2
+tier3_upgradeCostMagicStone = 1
+
+[herb_garden]
+name = 약초원
+category = production
+unlockStage = 2
+buildCostGold = 400
+buildCostWood = 15
+buildCostStone = 0
+incomePerDay = 12
+maintenancePerDay = 2
+description = 약초를 재배한다. 치료 효율이 높아진다.
+
+tier1_incomePerDay = 12
+tier1_maintenancePerDay = 2
+tier1_happinessBonus = 2
+tier1_defenseBonus = 0
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 22
+tier2_maintenancePerDay = 4
+tier2_happinessBonus = 5
+tier2_defenseBonus = 0
+tier2_upgradeCostGold = 700
+tier2_upgradeCostWood = 15
+tier2_upgradeCostHerb = 20
+
+tier3_incomePerDay = 35
+tier3_maintenancePerDay = 6
+tier3_happinessBonus = 8
+tier3_defenseBonus = 0
+tier3_upgradeCostGold = 1700
+tier3_upgradeCostWood = 30
+tier3_upgradeCostHerb = 40
+tier3_upgradeCostMagicStone = 2
+
+[mine]
+name = 광산
+category = production
+unlockStage = 3
+buildCostGold = 1000
+buildCostWood = 20
+buildCostStone = 20
+incomePerDay = 25
+maintenancePerDay = 6
+description = 광물을 채굴한다. 희귀 자원 획득 확률 증가.
+
+tier1_incomePerDay = 25
+tier1_maintenancePerDay = 6
+tier1_happinessBonus = 0
+tier1_defenseBonus = 0
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 42
+tier2_maintenancePerDay = 9
+tier2_happinessBonus = 0
+tier2_defenseBonus = 0
+tier2_upgradeCostGold = 1500
+tier2_upgradeCostStone = 40
+tier2_upgradeCostMonsterBone = 5
+
+tier3_incomePerDay = 65
+tier3_maintenancePerDay = 14
+tier3_happinessBonus = 0
+tier3_defenseBonus = 0
+tier3_upgradeCostGold = 3500
+tier3_upgradeCostStone = 80
+tier3_upgradeCostRareMetal = 3
+tier3_upgradeCostMagicStone = 2
+
+[brewery]
+name = 양조장
+category = production
+unlockStage = 3
+buildCostGold = 700
+buildCostWood = 25
+buildCostStone = 10
+incomePerDay = 20
+maintenancePerDay = 5
+description = 맥주와 술을 양조한다. 주민 행복도 상승.
+
+tier1_incomePerDay = 20
+tier1_maintenancePerDay = 5
+tier1_happinessBonus = 5
+tier1_defenseBonus = 0
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 35
+tier2_maintenancePerDay = 8
+tier2_happinessBonus = 10
+tier2_defenseBonus = 0
+tier2_upgradeCostGold = 1100
+tier2_upgradeCostWood = 30
+tier2_upgradeCostWheat = 30
+
+tier3_incomePerDay = 55
+tier3_maintenancePerDay = 12
+tier3_happinessBonus = 18
+tier3_defenseBonus = 0
+tier3_upgradeCostGold = 2800
+tier3_upgradeCostWood = 60
+tier3_upgradeCostWheat = 60
+tier3_upgradeCostMagicStone = 2
+
+[pottery_workshop]
+name = 도자기공방
+category = production
+unlockStage = 3
+buildCostGold = 600
+buildCostWood = 15
+buildCostStone = 15
+incomePerDay = 18
+maintenancePerDay = 4
+description = 도자기를 제작한다. 명성 소폭 상승.
+
+tier1_incomePerDay = 18
+tier1_maintenancePerDay = 4
+tier1_happinessBonus = 2
+tier1_defenseBonus = 0
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 30
+tier2_maintenancePerDay = 6
+tier2_happinessBonus = 4
+tier2_defenseBonus = 0
+tier2_upgradeCostGold = 1000
+tier2_upgradeCostStone = 30
+tier2_upgradeCostMonsterBone = 3
+
+tier3_incomePerDay = 48
+tier3_maintenancePerDay = 9
+tier3_happinessBonus = 8
+tier3_defenseBonus = 0
+tier3_upgradeCostGold = 2500
+tier3_upgradeCostStone = 60
+tier3_upgradeCostRareMetal = 2
+tier3_upgradeCostMagicStone = 1
+
+[textile_workshop]
+name = 직물공방
+category = production
+unlockStage = 3
+buildCostGold = 650
+buildCostWood = 20
+buildCostStone = 5
+incomePerDay = 17
+maintenancePerDay = 4
+description = 옷감과 직물을 생산한다. 교역 수입 증가.
+
+tier1_incomePerDay = 17
+tier1_maintenancePerDay = 4
+tier1_happinessBonus = 2
+tier1_defenseBonus = 0
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 30
+tier2_maintenancePerDay = 6
+tier2_happinessBonus = 4
+tier2_defenseBonus = 0
+tier2_upgradeCostGold = 1000
+tier2_upgradeCostWood = 30
+tier2_upgradeCostHerb = 10
+
+tier3_incomePerDay = 48
+tier3_maintenancePerDay = 9
+tier3_happinessBonus = 7
+tier3_defenseBonus = 0
+tier3_upgradeCostGold = 2500
+tier3_upgradeCostWood = 60
+tier3_upgradeCostRareMetal = 2
+tier3_upgradeCostMagicStone = 1
+
+[stable]
+name = 마구간
+category = production
+unlockStage = 4
+buildCostGold = 1200
+buildCostWood = 40
+buildCostStone = 20
+incomePerDay = 22
+maintenancePerDay = 6
+description = 말과 가축을 사육한다. 이동속도 보너스.
+
+tier1_incomePerDay = 22
+tier1_maintenancePerDay = 6
+tier1_happinessBonus = 2
+tier1_defenseBonus = 0
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 38
+tier2_maintenancePerDay = 9
+tier2_happinessBonus = 5
+tier2_defenseBonus = 0
+tier2_upgradeCostGold = 1800
+tier2_upgradeCostWood = 50
+tier2_upgradeCostMonsterBone = 4
+
+tier3_incomePerDay = 60
+tier3_maintenancePerDay = 14
+tier3_happinessBonus = 8
+tier3_defenseBonus = 5
+tier3_upgradeCostGold = 4000
+tier3_upgradeCostWood = 80
+tier3_upgradeCostRareMetal = 3
+tier3_upgradeCostMagicStone = 2
+
+[shipyard]
+name = 조선소
+category = production
+unlockStage = 6
+buildCostGold = 5000
+buildCostWood = 100
+buildCostStone = 50
+incomePerDay = 60
+maintenancePerDay = 15
+description = 배를 건조한다. 교역로 확장에 기여.
+
+tier1_incomePerDay = 60
+tier1_maintenancePerDay = 15
+tier1_happinessBonus = 3
+tier1_defenseBonus = 5
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 100
+tier2_maintenancePerDay = 22
+tier2_happinessBonus = 6
+tier2_defenseBonus = 10
+tier2_upgradeCostGold = 7000
+tier2_upgradeCostWood = 150
+tier2_upgradeCostStone = 60
+tier2_upgradeCostMonsterBone = 8
+
+tier3_incomePerDay = 160
+tier3_maintenancePerDay = 32
+tier3_happinessBonus = 10
+tier3_defenseBonus = 15
+tier3_upgradeCostGold = 15000
+tier3_upgradeCostWood = 250
+tier3_upgradeCostStone = 100
+tier3_upgradeCostRareMetal = 5
+tier3_upgradeCostMagicStone = 5
+
+# ==========================================
+# 편의 시설 9개 (Phase 3)
+# ==========================================
+
+[temple]
+name = 신전
+category = amenity
+unlockStage = 2
+buildCostGold = 800
+buildCostWood = 20
+buildCostStone = 30
+incomePerDay = 5
+maintenancePerDay = 3
+description = 신자들의 기도를 받는다. 행복도와 명성 상승.
+
+tier1_incomePerDay = 5
+tier1_maintenancePerDay = 3
+tier1_happinessBonus = 10
+tier1_defenseBonus = 0
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 12
+tier2_maintenancePerDay = 5
+tier2_happinessBonus = 20
+tier2_defenseBonus = 0
+tier2_upgradeCostGold = 1200
+tier2_upgradeCostStone = 40
+tier2_upgradeCostMagicStone = 2
+
+tier3_incomePerDay = 22
+tier3_maintenancePerDay = 8
+tier3_happinessBonus = 35
+tier3_defenseBonus = 5
+tier3_upgradeCostGold = 3000
+tier3_upgradeCostStone = 80
+tier3_upgradeCostMagicStone = 4
+tier3_upgradeCostRareMetal = 1
+
+[bathhouse]
+name = 목욕탕
+category = amenity
+unlockStage = 3
+buildCostGold = 900
+buildCostWood = 25
+buildCostStone = 35
+incomePerDay = 15
+maintenancePerDay = 4
+description = 주민 위생과 휴식을 제공한다. 행복도 크게 상승.
+
+tier1_incomePerDay = 15
+tier1_maintenancePerDay = 4
+tier1_happinessBonus = 12
+tier1_defenseBonus = 0
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 26
+tier2_maintenancePerDay = 7
+tier2_happinessBonus = 22
+tier2_defenseBonus = 0
+tier2_upgradeCostGold = 1400
+tier2_upgradeCostStone = 45
+tier2_upgradeCostHerb = 15
+
+tier3_incomePerDay = 42
+tier3_maintenancePerDay = 11
+tier3_happinessBonus = 38
+tier3_defenseBonus = 0
+tier3_upgradeCostGold = 3500
+tier3_upgradeCostStone = 90
+tier3_upgradeCostMagicStone = 3
+tier3_upgradeCostRareMetal = 1
+
+[library]
+name = 도서관
+category = amenity
+unlockStage = 3
+buildCostGold = 1000
+buildCostWood = 30
+buildCostStone = 20
+incomePerDay = 8
+maintenancePerDay = 3
+description = 지식을 보관한다. 연구 효율과 명성 상승.
+
+tier1_incomePerDay = 8
+tier1_maintenancePerDay = 3
+tier1_happinessBonus = 8
+tier1_defenseBonus = 0
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 15
+tier2_maintenancePerDay = 5
+tier2_happinessBonus = 15
+tier2_defenseBonus = 0
+tier2_upgradeCostGold = 1500
+tier2_upgradeCostWood = 40
+tier2_upgradeCostMagicStone = 2
+
+tier3_incomePerDay = 28
+tier3_maintenancePerDay = 8
+tier3_happinessBonus = 25
+tier3_defenseBonus = 0
+tier3_upgradeCostGold = 3800
+tier3_upgradeCostWood = 80
+tier3_upgradeCostMagicStone = 5
+tier3_upgradeCostRareMetal = 1
+
+[hospital]
+name = 병원
+category = amenity
+unlockStage = 3
+buildCostGold = 1200
+buildCostWood = 30
+buildCostStone = 25
+incomePerDay = 10
+maintenancePerDay = 5
+description = 부상자를 치료한다. 전투 후 회복 속도 증가.
+
+tier1_incomePerDay = 10
+tier1_maintenancePerDay = 5
+tier1_happinessBonus = 10
+tier1_defenseBonus = 0
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 20
+tier2_maintenancePerDay = 8
+tier2_happinessBonus = 18
+tier2_defenseBonus = 0
+tier2_upgradeCostGold = 1800
+tier2_upgradeCostStone = 40
+tier2_upgradeCostHerb = 25
+
+tier3_incomePerDay = 35
+tier3_maintenancePerDay = 12
+tier3_happinessBonus = 30
+tier3_defenseBonus = 0
+tier3_upgradeCostGold = 4500
+tier3_upgradeCostStone = 80
+tier3_upgradeCostHerb = 50
+tier3_upgradeCostMagicStone = 3
+
+[school]
+name = 학교
+category = amenity
+unlockStage = 4
+buildCostGold = 1500
+buildCostWood = 40
+buildCostStone = 30
+incomePerDay = 8
+maintenancePerDay = 5
+description = 주민을 교육한다. 생산성과 인구 증가율 상승.
+
+tier1_incomePerDay = 8
+tier1_maintenancePerDay = 5
+tier1_happinessBonus = 10
+tier1_defenseBonus = 0
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 18
+tier2_maintenancePerDay = 8
+tier2_happinessBonus = 18
+tier2_defenseBonus = 0
+tier2_upgradeCostGold = 2200
+tier2_upgradeCostWood = 50
+tier2_upgradeCostStone = 30
+tier2_upgradeCostMagicStone = 2
+
+tier3_incomePerDay = 32
+tier3_maintenancePerDay = 12
+tier3_happinessBonus = 28
+tier3_defenseBonus = 0
+tier3_upgradeCostGold = 5000
+tier3_upgradeCostWood = 100
+tier3_upgradeCostStone = 60
+tier3_upgradeCostMagicStone = 4
+tier3_upgradeCostRareMetal = 1
+
+[plaza]
+name = 광장
+category = amenity
+unlockStage = 2
+buildCostGold = 300
+buildCostWood = 10
+buildCostStone = 20
+incomePerDay = 3
+maintenancePerDay = 1
+description = 주민들이 모이는 공간. 행복도와 공동체 의식 상승.
+
+tier1_incomePerDay = 3
+tier1_maintenancePerDay = 1
+tier1_happinessBonus = 8
+tier1_defenseBonus = 0
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 8
+tier2_maintenancePerDay = 2
+tier2_happinessBonus = 15
+tier2_defenseBonus = 0
+tier2_upgradeCostGold = 600
+tier2_upgradeCostStone = 30
+
+tier3_incomePerDay = 16
+tier3_maintenancePerDay = 4
+tier3_happinessBonus = 25
+tier3_defenseBonus = 0
+tier3_upgradeCostGold = 1600
+tier3_upgradeCostStone = 60
+tier3_upgradeCostMagicStone = 1
+
+[permanent_market]
+name = 상설시장
+category = amenity
+unlockStage = 4
+buildCostGold = 2000
+buildCostWood = 50
+buildCostStone = 40
+incomePerDay = 35
+maintenancePerDay = 8
+description = 연중 무휴로 운영되는 시장. 교역 수입 대폭 상승.
+
+tier1_incomePerDay = 35
+tier1_maintenancePerDay = 8
+tier1_happinessBonus = 8
+tier1_defenseBonus = 0
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 60
+tier2_maintenancePerDay = 13
+tier2_happinessBonus = 14
+tier2_defenseBonus = 0
+tier2_upgradeCostGold = 3000
+tier2_upgradeCostWood = 60
+tier2_upgradeCostStone = 50
+tier2_upgradeCostMonsterBone = 4
+
+tier3_incomePerDay = 95
+tier3_maintenancePerDay = 20
+tier3_happinessBonus = 22
+tier3_defenseBonus = 0
+tier3_upgradeCostGold = 7000
+tier3_upgradeCostWood = 100
+tier3_upgradeCostStone = 80
+tier3_upgradeCostRareMetal = 3
+tier3_upgradeCostMagicStone = 3
+
+[theater]
+name = 극장
+category = amenity
+unlockStage = 4
+buildCostGold = 1800
+buildCostWood = 60
+buildCostStone = 30
+incomePerDay = 25
+maintenancePerDay = 7
+description = 공연을 통해 수입과 행복도를 높인다.
+
+tier1_incomePerDay = 25
+tier1_maintenancePerDay = 7
+tier1_happinessBonus = 15
+tier1_defenseBonus = 0
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 42
+tier2_maintenancePerDay = 11
+tier2_happinessBonus = 25
+tier2_defenseBonus = 0
+tier2_upgradeCostGold = 2700
+tier2_upgradeCostWood = 70
+tier2_upgradeCostStone = 30
+tier2_upgradeCostMonsterBone = 3
+
+tier3_incomePerDay = 68
+tier3_maintenancePerDay = 17
+tier3_happinessBonus = 40
+tier3_defenseBonus = 0
+tier3_upgradeCostGold = 6500
+tier3_upgradeCostWood = 120
+tier3_upgradeCostStone = 60
+tier3_upgradeCostMagicStone = 4
+tier3_upgradeCostRareMetal = 2
+
+[hot_spring]
+name = 온천
+category = amenity
+unlockStage = 5
+buildCostGold = 3000
+buildCostWood = 30
+buildCostStone = 60
+incomePerDay = 40
+maintenancePerDay = 10
+description = 천연 온천. 방문객을 끌어들여 명성과 수입 대폭 상승.
+
+tier1_incomePerDay = 40
+tier1_maintenancePerDay = 10
+tier1_happinessBonus = 20
+tier1_defenseBonus = 0
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 68
+tier2_maintenancePerDay = 16
+tier2_happinessBonus = 35
+tier2_defenseBonus = 0
+tier2_upgradeCostGold = 4500
+tier2_upgradeCostStone = 80
+tier2_upgradeCostMagicStone = 3
+
+tier3_incomePerDay = 110
+tier3_maintenancePerDay = 24
+tier3_happinessBonus = 55
+tier3_defenseBonus = 0
+tier3_upgradeCostGold = 10000
+tier3_upgradeCostStone = 150
+tier3_upgradeCostMagicStone = 6
+tier3_upgradeCostRareMetal = 3
+
+# ==========================================
+# 방어 시설 8개 (Phase 3)
+# ==========================================
+
+[stone_wall]
+name = 석벽
+category = defense
+unlockStage = 3
+buildCostGold = 1200
+buildCostWood = 10
+buildCostStone = 60
+incomePerDay = 0
+maintenancePerDay = 3
+description = 단단한 석벽. 마을 방어도를 크게 높인다.
+
+tier1_incomePerDay = 0
+tier1_maintenancePerDay = 3
+tier1_happinessBonus = 0
+tier1_defenseBonus = 15
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 0
+tier2_maintenancePerDay = 5
+tier2_happinessBonus = 0
+tier2_defenseBonus = 28
+tier2_upgradeCostGold = 2000
+tier2_upgradeCostStone = 80
+tier2_upgradeCostMonsterBone = 6
+
+tier3_incomePerDay = 0
+tier3_maintenancePerDay = 8
+tier3_happinessBonus = 0
+tier3_defenseBonus = 45
+tier3_upgradeCostGold = 5000
+tier3_upgradeCostStone = 150
+tier3_upgradeCostRareMetal = 4
+tier3_upgradeCostMagicStone = 3
+
+[knight_barracks]
+name = 기사단숙소
+category = defense
+unlockStage = 4
+buildCostGold = 2500
+buildCostWood = 50
+buildCostStone = 50
+incomePerDay = 5
+maintenancePerDay = 10
+description = 기사단을 주둔시킨다. 방어도와 위기 대응 능력 상승.
+
+tier1_incomePerDay = 5
+tier1_maintenancePerDay = 10
+tier1_happinessBonus = 3
+tier1_defenseBonus = 8
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 10
+tier2_maintenancePerDay = 16
+tier2_happinessBonus = 5
+tier2_defenseBonus = 18
+tier2_upgradeCostGold = 3500
+tier2_upgradeCostStone = 60
+tier2_upgradeCostMonsterBone = 8
+
+tier3_incomePerDay = 18
+tier3_maintenancePerDay = 24
+tier3_happinessBonus = 8
+tier3_defenseBonus = 32
+tier3_upgradeCostGold = 8000
+tier3_upgradeCostStone = 100
+tier3_upgradeCostRareMetal = 4
+tier3_upgradeCostMagicStone = 3
+
+[magic_tower]
+name = 마법방어탑
+category = defense
+unlockStage = 4
+buildCostGold = 3000
+buildCostWood = 20
+buildCostStone = 40
+incomePerDay = 0
+maintenancePerDay = 8
+description = 마법 방어막을 생성한다. 마법 공격에 강한 방어력.
+
+tier1_incomePerDay = 0
+tier1_maintenancePerDay = 8
+tier1_happinessBonus = 2
+tier1_defenseBonus = 10
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 5
+tier2_maintenancePerDay = 13
+tier2_happinessBonus = 3
+tier2_defenseBonus = 22
+tier2_upgradeCostGold = 4500
+tier2_upgradeCostStone = 50
+tier2_upgradeCostMagicStone = 5
+
+tier3_incomePerDay = 12
+tier3_maintenancePerDay = 20
+tier3_happinessBonus = 5
+tier3_defenseBonus = 38
+tier3_upgradeCostGold = 10000
+tier3_upgradeCostStone = 80
+tier3_upgradeCostMagicStone = 10
+tier3_upgradeCostRareMetal = 3
+
+[castle_wall]
+name = 성벽
+category = defense
+unlockStage = 5
+buildCostGold = 5000
+buildCostWood = 20
+buildCostStone = 150
+incomePerDay = 0
+maintenancePerDay = 10
+description = 도시를 둘러싸는 거대한 성벽. 최고 수준의 방어력.
+
+tier1_incomePerDay = 0
+tier1_maintenancePerDay = 10
+tier1_happinessBonus = 0
+tier1_defenseBonus = 20
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 0
+tier2_maintenancePerDay = 16
+tier2_happinessBonus = 0
+tier2_defenseBonus = 35
+tier2_upgradeCostGold = 8000
+tier2_upgradeCostStone = 200
+tier2_upgradeCostMonsterBone = 10
+
+tier3_incomePerDay = 0
+tier3_maintenancePerDay = 24
+tier3_happinessBonus = 0
+tier3_defenseBonus = 55
+tier3_upgradeCostGold = 18000
+tier3_upgradeCostStone = 350
+tier3_upgradeCostRareMetal = 8
+tier3_upgradeCostMagicStone = 6
+
+[armory]
+name = 무기고
+category = defense
+unlockStage = 3
+buildCostGold = 800
+buildCostWood = 20
+buildCostStone = 30
+incomePerDay = 5
+maintenancePerDay = 3
+description = 무기를 보관하고 제작한다. 전투원 능력치 상승.
+
+tier1_incomePerDay = 5
+tier1_maintenancePerDay = 3
+tier1_happinessBonus = 0
+tier1_defenseBonus = 5
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 10
+tier2_maintenancePerDay = 5
+tier2_happinessBonus = 0
+tier2_defenseBonus = 12
+tier2_upgradeCostGold = 1500
+tier2_upgradeCostStone = 40
+tier2_upgradeCostMonsterBone = 5
+
+tier3_incomePerDay = 18
+tier3_maintenancePerDay = 8
+tier3_happinessBonus = 0
+tier3_defenseBonus = 22
+tier3_upgradeCostGold = 3500
+tier3_upgradeCostStone = 80
+tier3_upgradeCostRareMetal = 3
+tier3_upgradeCostMagicStone = 2
+
+[training_ground]
+name = 훈련장
+category = defense
+unlockStage = 3
+buildCostGold = 700
+buildCostWood = 30
+buildCostStone = 20
+incomePerDay = 3
+maintenancePerDay = 3
+description = 전투원을 훈련시킨다. 방어 효율 향상.
+
+tier1_incomePerDay = 3
+tier1_maintenancePerDay = 3
+tier1_happinessBonus = 2
+tier1_defenseBonus = 3
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 7
+tier2_maintenancePerDay = 5
+tier2_happinessBonus = 3
+tier2_defenseBonus = 8
+tier2_upgradeCostGold = 1200
+tier2_upgradeCostWood = 40
+tier2_upgradeCostMonsterBone = 4
+
+tier3_incomePerDay = 14
+tier3_maintenancePerDay = 8
+tier3_happinessBonus = 5
+tier3_defenseBonus = 15
+tier3_upgradeCostGold = 3000
+tier3_upgradeCostWood = 70
+tier3_upgradeCostRareMetal = 2
+tier3_upgradeCostMagicStone = 2
+
+[moat]
+name = 해자
+category = defense
+unlockStage = 5
+buildCostGold = 2000
+buildCostWood = 10
+buildCostStone = 80
+incomePerDay = 0
+maintenancePerDay = 5
+description = 마을을 둘러싸는 물길. 적의 침입을 늦춘다.
+
+tier1_incomePerDay = 0
+tier1_maintenancePerDay = 5
+tier1_happinessBonus = 0
+tier1_defenseBonus = 12
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 0
+tier2_maintenancePerDay = 8
+tier2_happinessBonus = 0
+tier2_defenseBonus = 22
+tier2_upgradeCostGold = 3500
+tier2_upgradeCostStone = 100
+tier2_upgradeCostMonsterBone = 6
+
+tier3_incomePerDay = 0
+tier3_maintenancePerDay = 12
+tier3_happinessBonus = 0
+tier3_defenseBonus = 38
+tier3_upgradeCostGold = 8000
+tier3_upgradeCostStone = 200
+tier3_upgradeCostRareMetal = 4
+tier3_upgradeCostMagicStone = 3
+
+[fortress_gate]
+name = 요새문
+category = defense
+unlockStage = 6
+buildCostGold = 4000
+buildCostWood = 30
+buildCostStone = 120
+incomePerDay = 0
+maintenancePerDay = 8
+description = 견고한 요새의 정문. 방어의 핵심 거점.
+
+tier1_incomePerDay = 0
+tier1_maintenancePerDay = 8
+tier1_happinessBonus = 2
+tier1_defenseBonus = 18
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 0
+tier2_maintenancePerDay = 13
+tier2_happinessBonus = 3
+tier2_defenseBonus = 32
+tier2_upgradeCostGold = 6000
+tier2_upgradeCostStone = 150
+tier2_upgradeCostMonsterBone = 10
+tier2_upgradeCostRareMetal = 3
+
+tier3_incomePerDay = 0
+tier3_maintenancePerDay = 20
+tier3_happinessBonus = 5
+tier3_defenseBonus = 50
+tier3_upgradeCostGold = 14000
+tier3_upgradeCostStone = 280
+tier3_upgradeCostRareMetal = 7
+tier3_upgradeCostMagicStone = 6
+
+# ==========================================
+# 행정 시설 5개 (Phase 3)
+# ==========================================
+
+[town_hall]
+name = 마을회관
+category = admin
+unlockStage = 3
+buildCostGold = 1500
+buildCostWood = 40
+buildCostStone = 50
+incomePerDay = 10
+maintenancePerDay = 5
+description = 행정 효율을 높인다. 인구 증가율과 명성 상승.
+
+tier1_incomePerDay = 10
+tier1_maintenancePerDay = 5
+tier1_happinessBonus = 5
+tier1_defenseBonus = 0
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 20
+tier2_maintenancePerDay = 8
+tier2_happinessBonus = 10
+tier2_defenseBonus = 0
+tier2_upgradeCostGold = 2200
+tier2_upgradeCostWood = 50
+tier2_upgradeCostStone = 60
+tier2_upgradeCostMonsterBone = 3
+
+tier3_incomePerDay = 35
+tier3_maintenancePerDay = 12
+tier3_happinessBonus = 18
+tier3_defenseBonus = 0
+tier3_upgradeCostGold = 5500
+tier3_upgradeCostWood = 80
+tier3_upgradeCostStone = 100
+tier3_upgradeCostMagicStone = 3
+tier3_upgradeCostRareMetal = 2
+
+[customs]
+name = 세관
+category = admin
+unlockStage = 4
+buildCostGold = 1800
+buildCostWood = 30
+buildCostStone = 40
+incomePerDay = 20
+maintenancePerDay = 6
+description = 교역품에 세금을 부과한다. 교역 수입 증가.
+
+tier1_incomePerDay = 20
+tier1_maintenancePerDay = 6
+tier1_happinessBonus = 0
+tier1_defenseBonus = 0
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 38
+tier2_maintenancePerDay = 10
+tier2_happinessBonus = 0
+tier2_defenseBonus = 0
+tier2_upgradeCostGold = 2800
+tier2_upgradeCostStone = 50
+tier2_upgradeCostMonsterBone = 4
+
+tier3_incomePerDay = 62
+tier3_maintenancePerDay = 15
+tier3_happinessBonus = 0
+tier3_defenseBonus = 0
+tier3_upgradeCostGold = 7000
+tier3_upgradeCostStone = 100
+tier3_upgradeCostRareMetal = 3
+tier3_upgradeCostMagicStone = 2
+
+[courthouse]
+name = 법원
+category = admin
+unlockStage = 5
+buildCostGold = 3000
+buildCostWood = 40
+buildCostStone = 60
+incomePerDay = 15
+maintenancePerDay = 8
+description = 질서를 유지한다. 마을 행복도와 안전도 상승.
+
+tier1_incomePerDay = 15
+tier1_maintenancePerDay = 8
+tier1_happinessBonus = 8
+tier1_defenseBonus = 5
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 28
+tier2_maintenancePerDay = 13
+tier2_happinessBonus = 15
+tier2_defenseBonus = 8
+tier2_upgradeCostGold = 4500
+tier2_upgradeCostStone = 70
+tier2_upgradeCostMagicStone = 3
+
+tier3_incomePerDay = 48
+tier3_maintenancePerDay = 20
+tier3_happinessBonus = 25
+tier3_defenseBonus = 13
+tier3_upgradeCostGold = 10000
+tier3_upgradeCostStone = 130
+tier3_upgradeCostMagicStone = 5
+tier3_upgradeCostRareMetal = 3
+
+[lords_manor]
+name = 영주관
+category = admin
+unlockStage = 6
+buildCostGold = 8000
+buildCostWood = 80
+buildCostStone = 120
+incomePerDay = 50
+maintenancePerDay = 20
+description = 영주의 거처. 지배력과 명성을 극대화한다.
+
+tier1_incomePerDay = 50
+tier1_maintenancePerDay = 20
+tier1_happinessBonus = 5
+tier1_defenseBonus = 10
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 85
+tier2_maintenancePerDay = 32
+tier2_happinessBonus = 10
+tier2_defenseBonus = 18
+tier2_upgradeCostGold = 12000
+tier2_upgradeCostStone = 150
+tier2_upgradeCostRareMetal = 5
+tier2_upgradeCostMagicStone = 4
+
+tier3_incomePerDay = 140
+tier3_maintenancePerDay = 50
+tier3_happinessBonus = 18
+tier3_defenseBonus = 30
+tier3_upgradeCostGold = 25000
+tier3_upgradeCostStone = 280
+tier3_upgradeCostRareMetal = 10
+tier3_upgradeCostMagicStone = 8
+
+[tax_office]
+name = 세무서
+category = admin
+unlockStage = 4
+buildCostGold = 1200
+buildCostWood = 20
+buildCostStone = 30
+incomePerDay = 25
+maintenancePerDay = 5
+description = 세금을 효율적으로 징수한다. 재정 수입 증가.
+
+tier1_incomePerDay = 25
+tier1_maintenancePerDay = 5
+tier1_happinessBonus = 0
+tier1_defenseBonus = 0
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 45
+tier2_maintenancePerDay = 8
+tier2_happinessBonus = 0
+tier2_defenseBonus = 0
+tier2_upgradeCostGold = 2000
+tier2_upgradeCostStone = 40
+tier2_upgradeCostMonsterBone = 3
+
+tier3_incomePerDay = 72
+tier3_maintenancePerDay = 13
+tier3_happinessBonus = 0
+tier3_defenseBonus = 0
+tier3_upgradeCostGold = 5000
+tier3_upgradeCostStone = 80
+tier3_upgradeCostRareMetal = 3
+tier3_upgradeCostMagicStone = 2
+
+# ==========================================
+# 문화 시설 7개 (Phase 3)
+# ==========================================
+
+[art_gallery]
+name = 미술관
+category = culture
+unlockStage = 4
+buildCostGold = 2000
+buildCostWood = 40
+buildCostStone = 50
+incomePerDay = 20
+maintenancePerDay = 6
+description = 예술 작품을 전시한다. 명성과 방문객 수 상승.
+
+tier1_incomePerDay = 20
+tier1_maintenancePerDay = 6
+tier1_happinessBonus = 12
+tier1_defenseBonus = 0
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 36
+tier2_maintenancePerDay = 10
+tier2_happinessBonus = 22
+tier2_defenseBonus = 0
+tier2_upgradeCostGold = 3000
+tier2_upgradeCostWood = 50
+tier2_upgradeCostStone = 50
+tier2_upgradeCostMagicStone = 3
+
+tier3_incomePerDay = 58
+tier3_maintenancePerDay = 15
+tier3_happinessBonus = 35
+tier3_defenseBonus = 0
+tier3_upgradeCostGold = 7500
+tier3_upgradeCostWood = 80
+tier3_upgradeCostStone = 80
+tier3_upgradeCostMagicStone = 5
+tier3_upgradeCostRareMetal = 2
+
+[myth_monument]
+name = 신화기념비
+category = culture
+unlockStage = 5
+buildCostGold = 4000
+buildCostWood = 20
+buildCostStone = 100
+incomePerDay = 15
+maintenancePerDay = 4
+description = 영웅의 업적을 기린다. 명성과 관광 수입 대폭 상승.
+
+tier1_incomePerDay = 15
+tier1_maintenancePerDay = 4
+tier1_happinessBonus = 10
+tier1_defenseBonus = 5
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 28
+tier2_maintenancePerDay = 7
+tier2_happinessBonus = 20
+tier2_defenseBonus = 8
+tier2_upgradeCostGold = 6000
+tier2_upgradeCostStone = 130
+tier2_upgradeCostMagicStone = 4
+
+tier3_incomePerDay = 48
+tier3_maintenancePerDay = 11
+tier3_happinessBonus = 35
+tier3_defenseBonus = 12
+tier3_upgradeCostGold = 14000
+tier3_upgradeCostStone = 240
+tier3_upgradeCostMagicStone = 8
+tier3_upgradeCostRareMetal = 4
+
+[festival_square]
+name = 축제광장
+category = culture
+unlockStage = 3
+buildCostGold = 1000
+buildCostWood = 30
+buildCostStone = 20
+incomePerDay = 10
+maintenancePerDay = 3
+description = 축제를 여는 광장. 봄 축제 수입과 행복도 증가.
+
+tier1_incomePerDay = 10
+tier1_maintenancePerDay = 3
+tier1_happinessBonus = 12
+tier1_defenseBonus = 0
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 20
+tier2_maintenancePerDay = 5
+tier2_happinessBonus = 22
+tier2_defenseBonus = 0
+tier2_upgradeCostGold = 1800
+tier2_upgradeCostWood = 40
+tier2_upgradeCostStone = 30
+
+tier3_incomePerDay = 35
+tier3_maintenancePerDay = 8
+tier3_happinessBonus = 38
+tier3_defenseBonus = 0
+tier3_upgradeCostGold = 4500
+tier3_upgradeCostWood = 70
+tier3_upgradeCostStone = 60
+tier3_upgradeCostMagicStone = 3
+
+[adventurers_guild_branch]
+name = 모험가길드분소
+category = culture
+unlockStage = 3
+buildCostGold = 1500
+buildCostWood = 35
+buildCostStone = 20
+incomePerDay = 18
+maintenancePerDay = 5
+description = 모험가들이 모이는 분소. 던전 정보와 의뢰를 공유한다.
+
+tier1_incomePerDay = 18
+tier1_maintenancePerDay = 5
+tier1_happinessBonus = 8
+tier1_defenseBonus = 3
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 32
+tier2_maintenancePerDay = 8
+tier2_happinessBonus = 14
+tier2_defenseBonus = 5
+tier2_upgradeCostGold = 2500
+tier2_upgradeCostWood = 45
+tier2_upgradeCostMonsterBone = 5
+
+tier3_incomePerDay = 52
+tier3_maintenancePerDay = 13
+tier3_happinessBonus = 22
+tier3_defenseBonus = 8
+tier3_upgradeCostGold = 6000
+tier3_upgradeCostWood = 80
+tier3_upgradeCostRareMetal = 3
+tier3_upgradeCostMagicStone = 3
+
+[mage_tower]
+name = 마법사탑
+category = culture
+unlockStage = 5
+buildCostGold = 5000
+buildCostWood = 30
+buildCostStone = 60
+incomePerDay = 30
+maintenancePerDay = 12
+description = 마법사들의 연구 거점. 마법 기술과 마을 방어력 상승.
+
+tier1_incomePerDay = 30
+tier1_maintenancePerDay = 12
+tier1_happinessBonus = 5
+tier1_defenseBonus = 8
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 52
+tier2_maintenancePerDay = 19
+tier2_happinessBonus = 10
+tier2_defenseBonus = 16
+tier2_upgradeCostGold = 7500
+tier2_upgradeCostStone = 70
+tier2_upgradeCostMagicStone = 6
+
+tier3_incomePerDay = 85
+tier3_maintenancePerDay = 29
+tier3_happinessBonus = 18
+tier3_defenseBonus = 28
+tier3_upgradeCostGold = 17000
+tier3_upgradeCostStone = 130
+tier3_upgradeCostMagicStone = 12
+tier3_upgradeCostRareMetal = 5
+
+[cultural_center]
+name = 문화회관
+category = culture
+unlockStage = 4
+buildCostGold = 2500
+buildCostWood = 60
+buildCostStone = 40
+incomePerDay = 22
+maintenancePerDay = 7
+description = 다양한 문화 활동을 지원한다. 행복도와 명성 전반 상승.
+
+tier1_incomePerDay = 22
+tier1_maintenancePerDay = 7
+tier1_happinessBonus = 15
+tier1_defenseBonus = 0
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 40
+tier2_maintenancePerDay = 11
+tier2_happinessBonus = 28
+tier2_defenseBonus = 0
+tier2_upgradeCostGold = 3800
+tier2_upgradeCostWood = 70
+tier2_upgradeCostStone = 40
+tier2_upgradeCostMagicStone = 3
+
+tier3_incomePerDay = 65
+tier3_maintenancePerDay = 17
+tier3_happinessBonus = 45
+tier3_defenseBonus = 0
+tier3_upgradeCostGold = 9000
+tier3_upgradeCostWood = 120
+tier3_upgradeCostStone = 70
+tier3_upgradeCostMagicStone = 6
+tier3_upgradeCostRareMetal = 2
+
+[grand_temple]
+name = 대신전
+category = culture
+unlockStage = 6
+buildCostGold = 7000
+buildCostWood = 50
+buildCostStone = 150
+incomePerDay = 45
+maintenancePerDay = 15
+description = 왕국 최대의 신전. 성지순례객들이 몰려든다.
+
+tier1_incomePerDay = 45
+tier1_maintenancePerDay = 15
+tier1_happinessBonus = 20
+tier1_defenseBonus = 5
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 78
+tier2_maintenancePerDay = 24
+tier2_happinessBonus = 38
+tier2_defenseBonus = 8
+tier2_upgradeCostGold = 10000
+tier2_upgradeCostStone = 180
+tier2_upgradeCostMagicStone = 6
+
+tier3_incomePerDay = 125
+tier3_maintenancePerDay = 37
+tier3_happinessBonus = 60
+tier3_defenseBonus = 12
+tier3_upgradeCostGold = 22000
+tier3_upgradeCostStone = 330
+tier3_upgradeCostMagicStone = 10
+tier3_upgradeCostRareMetal = 6
+
+# ==========================================
+# 특수 시설 8개 (Phase 3)
+# ==========================================
+
+[post_office]
+name = 우편배달소
+category = special
+unlockStage = 2
+buildCostGold = 350
+buildCostWood = 15
+buildCostStone = 5
+incomePerDay = 8
+maintenancePerDay = 2
+description = 편지와 소포를 배달한다. 교역 범위 확대.
+
+tier1_incomePerDay = 8
+tier1_maintenancePerDay = 2
+tier1_happinessBonus = 3
+tier1_defenseBonus = 0
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 16
+tier2_maintenancePerDay = 3
+tier2_happinessBonus = 6
+tier2_defenseBonus = 0
+tier2_upgradeCostGold = 700
+tier2_upgradeCostWood = 20
+tier2_upgradeCostStone = 10
+
+tier3_incomePerDay = 28
+tier3_maintenancePerDay = 5
+tier3_happinessBonus = 10
+tier3_defenseBonus = 0
+tier3_upgradeCostGold = 1800
+tier3_upgradeCostWood = 40
+tier3_upgradeCostStone = 20
+tier3_upgradeCostMagicStone = 2
+
+[immigrant_inn]
+name = 이민자숙소
+category = special
+unlockStage = 3
+buildCostGold = 1000
+buildCostWood = 40
+buildCostStone = 15
+incomePerDay = 12
+maintenancePerDay = 4
+description = 이민자들의 임시 거처. 인구 증가율 대폭 상승.
+
+tier1_incomePerDay = 12
+tier1_maintenancePerDay = 4
+tier1_happinessBonus = 5
+tier1_defenseBonus = 0
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 22
+tier2_maintenancePerDay = 7
+tier2_happinessBonus = 8
+tier2_defenseBonus = 0
+tier2_upgradeCostGold = 1600
+tier2_upgradeCostWood = 50
+tier2_upgradeCostMonsterBone = 3
+
+tier3_incomePerDay = 38
+tier3_maintenancePerDay = 11
+tier3_happinessBonus = 14
+tier3_defenseBonus = 0
+tier3_upgradeCostGold = 4000
+tier3_upgradeCostWood = 90
+tier3_upgradeCostRareMetal = 2
+tier3_upgradeCostMagicStone = 2
+
+[irrigation]
+name = 관개시설
+category = special
+unlockStage = 3
+buildCostGold = 800
+buildCostWood = 10
+buildCostStone = 30
+incomePerDay = 10
+maintenancePerDay = 2
+description = 농경지에 물을 공급한다. 농업 생산성 대폭 상승.
+
+tier1_incomePerDay = 10
+tier1_maintenancePerDay = 2
+tier1_happinessBonus = 3
+tier1_defenseBonus = 0
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 20
+tier2_maintenancePerDay = 4
+tier2_happinessBonus = 5
+tier2_defenseBonus = 0
+tier2_upgradeCostGold = 1400
+tier2_upgradeCostStone = 40
+tier2_upgradeCostWheat = 20
+
+tier3_incomePerDay = 35
+tier3_maintenancePerDay = 6
+tier3_happinessBonus = 8
+tier3_defenseBonus = 0
+tier3_upgradeCostGold = 3500
+tier3_upgradeCostStone = 80
+tier3_upgradeCostWheat = 40
+tier3_upgradeCostMagicStone = 2
+
+[trade_hub]
+name = 교역로허브
+category = special
+unlockStage = 4
+buildCostGold = 3000
+buildCostWood = 50
+buildCostStone = 50
+incomePerDay = 40
+maintenancePerDay = 10
+description = 교역로의 중심지. 모든 수입 시설 효율 증가.
+
+tier1_incomePerDay = 40
+tier1_maintenancePerDay = 10
+tier1_happinessBonus = 5
+tier1_defenseBonus = 0
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 70
+tier2_maintenancePerDay = 16
+tier2_happinessBonus = 10
+tier2_defenseBonus = 0
+tier2_upgradeCostGold = 5000
+tier2_upgradeCostWood = 60
+tier2_upgradeCostStone = 60
+tier2_upgradeCostMonsterBone = 5
+
+tier3_incomePerDay = 115
+tier3_maintenancePerDay = 25
+tier3_happinessBonus = 16
+tier3_defenseBonus = 0
+tier3_upgradeCostGold = 12000
+tier3_upgradeCostWood = 100
+tier3_upgradeCostStone = 100
+tier3_upgradeCostRareMetal = 5
+tier3_upgradeCostMagicStone = 4
+
+[research_lab]
+name = 연구소
+category = special
+unlockStage = 5
+buildCostGold = 4500
+buildCostWood = 40
+buildCostStone = 60
+incomePerDay = 25
+maintenancePerDay = 12
+description = 선진 기술을 연구한다. 모든 시설 효율 소폭 상승.
+
+tier1_incomePerDay = 25
+tier1_maintenancePerDay = 12
+tier1_happinessBonus = 5
+tier1_defenseBonus = 0
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 45
+tier2_maintenancePerDay = 19
+tier2_happinessBonus = 10
+tier2_defenseBonus = 0
+tier2_upgradeCostGold = 7000
+tier2_upgradeCostStone = 70
+tier2_upgradeCostMagicStone = 5
+
+tier3_incomePerDay = 75
+tier3_maintenancePerDay = 29
+tier3_happinessBonus = 18
+tier3_defenseBonus = 0
+tier3_upgradeCostGold = 16000
+tier3_upgradeCostStone = 130
+tier3_upgradeCostMagicStone = 10
+tier3_upgradeCostRareMetal = 5
+
+[signal_tower]
+name = 신호탑
+category = special
+unlockStage = 3
+buildCostGold = 600
+buildCostWood = 20
+buildCostStone = 25
+incomePerDay = 5
+maintenancePerDay = 2
+description = 원거리 신호를 송수신한다. 위기 이벤트 대응 속도 상승.
+
+tier1_incomePerDay = 5
+tier1_maintenancePerDay = 2
+tier1_happinessBonus = 0
+tier1_defenseBonus = 5
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 10
+tier2_maintenancePerDay = 3
+tier2_happinessBonus = 0
+tier2_defenseBonus = 10
+tier2_upgradeCostGold = 1000
+tier2_upgradeCostStone = 30
+tier2_upgradeCostMonsterBone = 3
+
+tier3_incomePerDay = 18
+tier3_maintenancePerDay = 5
+tier3_happinessBonus = 0
+tier3_defenseBonus = 18
+tier3_upgradeCostGold = 2500
+tier3_upgradeCostStone = 60
+tier3_upgradeCostRareMetal = 2
+tier3_upgradeCostMagicStone = 3
+
+[tourism_office]
+name = 관광안내소
+category = special
+unlockStage = 4
+buildCostGold = 1000
+buildCostWood = 25
+buildCostStone = 15
+incomePerDay = 15
+maintenancePerDay = 4
+description = 방문객을 안내한다. 방문자 수입과 명성 상승.
+
+tier1_incomePerDay = 15
+tier1_maintenancePerDay = 4
+tier1_happinessBonus = 5
+tier1_defenseBonus = 0
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 28
+tier2_maintenancePerDay = 6
+tier2_happinessBonus = 10
+tier2_defenseBonus = 0
+tier2_upgradeCostGold = 1700
+tier2_upgradeCostWood = 30
+tier2_upgradeCostStone = 20
+tier2_upgradeCostMonsterBone = 2
+
+tier3_incomePerDay = 48
+tier3_maintenancePerDay = 10
+tier3_happinessBonus = 18
+tier3_defenseBonus = 0
+tier3_upgradeCostGold = 4500
+tier3_upgradeCostWood = 60
+tier3_upgradeCostStone = 40
+tier3_upgradeCostMagicStone = 3
+tier3_upgradeCostRareMetal = 1
+
+[triumphal_arch]
+name = 기념아치
+category = special
+unlockStage = 5
+buildCostGold = 3500
+buildCostWood = 20
+buildCostStone = 100
+incomePerDay = 20
+maintenancePerDay = 5
+description = 승리를 기념하는 아치. 명성과 관광 수입 대폭 상승.
+
+tier1_incomePerDay = 20
+tier1_maintenancePerDay = 5
+tier1_happinessBonus = 10
+tier1_defenseBonus = 3
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 38
+tier2_maintenancePerDay = 8
+tier2_happinessBonus = 20
+tier2_defenseBonus = 5
+tier2_upgradeCostGold = 5500
+tier2_upgradeCostStone = 130
+tier2_upgradeCostMagicStone = 3
+
+tier3_incomePerDay = 65
+tier3_maintenancePerDay = 13
+tier3_happinessBonus = 35
+tier3_defenseBonus = 8
+tier3_upgradeCostGold = 13000
+tier3_upgradeCostStone = 240
+tier3_upgradeCostMagicStone = 7
+tier3_upgradeCostRareMetal = 4

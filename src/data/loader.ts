@@ -105,6 +105,7 @@ export interface GameDataFiles {
   villageFacilities: DataSection[];
   villageRoads: DataSection[];
   villageEvents: DataSection[];
+  benzenLines: DataSection[];
 }
 
 export async function loadAllData(): Promise<GameDataFiles> {
@@ -116,6 +117,7 @@ export async function loadAllData(): Promise<GameDataFiles> {
     giftPreferences, weapons, armor, lore, diagnostic,
     skills, acquisition, actionTexts, combatTexts,
     villageFacilities, villageRoads, villageEvents,
+    benzenLines,
   ] = await Promise.all([
     loadDataFile('items'),
     loadDataFile('locations', addons.locations ?? []),
@@ -142,6 +144,7 @@ export async function loadAllData(): Promise<GameDataFiles> {
     loadDataFile('village-facilities'),
     loadDataFile('village-roads'),
     loadDataFile('village-events'),
+    loadDataFile('benzen-lines'),
   ]);
 
   return {
@@ -151,5 +154,6 @@ export async function loadAllData(): Promise<GameDataFiles> {
     giftPreferences, weapons, armor, lore, diagnostic,
     skills, acquisition, actionTexts, combatTexts,
     villageFacilities, villageRoads, villageEvents,
+    benzenLines,
   };
 }

@@ -57,6 +57,12 @@ export interface VillageState {
   eventHistory: VillageActiveEvent[];
   benzenAppeared: boolean;               // 벤젠 첫 등장 여부
   lastPopGrowthDay: number;              // 마지막 인구 증가 처리일
+  // Phase 3 추가
+  visitingNpcCount: number;             // 오늘 방문 중인 NPC 수
+  totalVisitorIncome: number;           // 누계 방문자 수입 (칭호용)
+  totalVisitorDays: number;             // 누계 방문자-일 (주민의 친구 칭호용)
+  crisisEventSuccessCount: number;      // 위기 이벤트 성공 횟수
+  springFestivalCount: number;          // 봄 축제 성공 횟수
 }
 
 export function createVillageState(
@@ -86,6 +92,11 @@ export function createVillageState(
     eventHistory: [],
     benzenAppeared: false,
     lastPopGrowthDay: foundedDay,
+    visitingNpcCount: 0,
+    totalVisitorIncome: 0,
+    totalVisitorDays: 0,
+    crisisEventSuccessCount: 0,
+    springFestivalCount: 0,
   };
 }
 
@@ -165,7 +176,33 @@ export function checkVillageStageUp(v: VillageState): boolean {
   if (v.stage === 1 && activeFacilityCount >= 1) return true;
   if (v.stage === 2 && activeFacilityCount >= 3 && v.population >= 5) return true;
   if (v.stage === 3 && activeFacilityCount >= 8 && v.population >= 15) return true;
+  // Phase 3 신규
+  if (v.stage === 4 && activeFacilityCount >= 15 && v.population >= 35) return true;
+  if (v.stage === 5 && activeFacilityCount >= 25 && v.population >= 70) return true;
+  if (v.stage === 6 && activeFacilityCount >= 50 && v.population >= 200) return true;
+  // stage === 7은 최대 단계
   return false;
+}
+
+/**
+ * 마을 도로 중 특정 연결에 적용되는 최고 등급 도로의 speedMultiplier 반환.
+ * 도로가 없으면 1.0 반환.
+ */
+export function getVillageRoadMultiplier(
+  v: VillageState,
+  targetLocationId: string,
+  getRoadDef: (id: string) => { grade: number; travelSpeedMultiplier: number } | undefined,
+): number {
+  const roadsToTarget = v.roads.filter(
+    r => r.status === 'active' && r.connectedLocationId === targetLocationId,
+  );
+  if (roadsToTarget.length === 0) return 1.0;
+  let best = 1.0;
+  for (const r of roadsToTarget) {
+    const def = getRoadDef(r.roadId);
+    if (def && def.travelSpeedMultiplier < best) best = def.travelSpeedMultiplier;
+  }
+  return best;
 }
 
 /** 매력도 계산 */

@@ -61,11 +61,13 @@ export function tickVillage(
   }
 
   // 3. 단계 승급 체크
+  const STAGE_NAMES = ['', '야영지', '작은마을', '마을', '읍', '소도시', '도시', '왕도'];
   if (checkVillageStageUp(village)) {
     village.stage = (village.stage + 1) as any;
     result.stageUp = true;
     result.newStage = village.stage;
-    log.add(gameTime, `[${village.name}] 마을이 단계 ${village.stage}로 성장했다!`, '마을');
+    const stageName = STAGE_NAMES[village.stage] ?? `단계 ${village.stage}`;
+    log.add(gameTime, `[${village.name}] 마을이 "${stageName}"(으)로 성장했다!`, '마을');
   }
 
   // 4. 벤젠 등장 트리거 (시설 1개 이상 건설 후 1회)
@@ -82,7 +84,20 @@ export function tickVillage(
     }
   }
 
-  // 5. 이벤트 트리거 체크 (activeEvent 없을 때만)
+  // 5. NPC 방문 수입 (단계 3+)
+  if (village.stage >= 3) {
+    // visitingNpcCount는 tickVillage 호출 전 외부에서 갱신됨
+    const visitCount = village.visitingNpcCount;
+    if (visitCount > 0) {
+      const income = visitCount * 2;
+      village.finance.treasury += income;
+      village.totalVisitorIncome += income;
+      village.totalVisitorDays += visitCount;
+      result.financeDelta += income;
+    }
+  }
+
+  // 6. 이벤트 트리거 체크 (activeEvent 없을 때만)
   if (!village.activeEvent) {
     const triggered = rollVillageEvent(village, currentDay, currentSeason);
     if (triggered) {

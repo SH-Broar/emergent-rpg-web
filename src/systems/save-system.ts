@@ -17,7 +17,7 @@ import { VillageState } from '../models/village';
 // Constants
 // ============================================================
 
-export const SAVE_VERSION = 3;
+export const SAVE_VERSION = 4;
 export const SLOT_COUNT = 4; // 0 = autosave, 1-3 = manual
 export const STORAGE_KEY_PREFIX = 'rdc-save-';
 
@@ -411,6 +411,12 @@ function serializeVillageState(v: VillageState): object {
     eventHistory: v.eventHistory.map(e => ({ ...e })),
     benzenAppeared: v.benzenAppeared,
     lastPopGrowthDay: v.lastPopGrowthDay,
+    // Phase 3 필드
+    visitingNpcCount: v.visitingNpcCount ?? 0,
+    totalVisitorIncome: v.totalVisitorIncome ?? 0,
+    totalVisitorDays: v.totalVisitorDays ?? 0,
+    crisisEventSuccessCount: v.crisisEventSuccessCount ?? 0,
+    springFestivalCount: v.springFestivalCount ?? 0,
   };
 }
 
@@ -444,6 +450,12 @@ function deserializeVillageState(d: any): VillageState {
     eventHistory: d.eventHistory ?? [],
     benzenAppeared: d.benzenAppeared ?? false,
     lastPopGrowthDay: d.lastPopGrowthDay ?? d.foundedDay ?? 1,
+    // Phase 3 필드 — 구버전 세이브는 기본값
+    visitingNpcCount: d.visitingNpcCount ?? 0,
+    totalVisitorIncome: d.totalVisitorIncome ?? 0,
+    totalVisitorDays: d.totalVisitorDays ?? 0,
+    crisisEventSuccessCount: d.crisisEventSuccessCount ?? 0,
+    springFestivalCount: d.springFestivalCount ?? 0,
   };
 }
 

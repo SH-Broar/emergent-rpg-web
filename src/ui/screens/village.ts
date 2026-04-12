@@ -3,7 +3,7 @@
 import type { Screen } from '../screen-manager';
 import type { ScreenManager } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
-import { getAllFacilityDefs, getAllRoadDefs, getFacilityDef, getVillageEventDef } from '../../data/village-defs';
+import { getAllFacilityDefs, getAllRoadDefs, getFacilityDef, getVillageEventDef, DUNGEON_MATERIAL_ITEM_IDS } from '../../data/village-defs';
 import { recalcVillageFinance } from '../../models/village';
 import { locationName } from '../../types/registry';
 import { createVillageBenzenScreen } from './village-benzen';
@@ -17,6 +17,8 @@ const FACILITY_CATEGORY_LABEL: Record<string, string> = {
   culture: '문화',
   special: '특수',
 };
+
+const STAGE_NAMES = ['', '야영지', '작은마을', '마을', '읍', '소도시', '도시', '왕도'];
 
 export function createVillageScreen(
   session: GameSession,
@@ -75,11 +77,15 @@ export function createVillageScreen(
           if (costStone > 0) costParts.push(`석재×${costStone}`);
           if (costWheat > 0) costParts.push(`밀×${costWheat}`);
           if (costHerb > 0) costParts.push(`약초×${costHerb}`);
-          if (nextTier.upgradeCostMonsterBone > 0) costParts.push(`몬스터뼈×${nextTier.upgradeCostMonsterBone}(던전)`);
-          if (nextTier.upgradeCostMagicStone > 0) costParts.push(`마법석×${nextTier.upgradeCostMagicStone}(던전)`);
-          if (nextTier.upgradeCostRareMetal > 0) costParts.push(`희귀광물×${nextTier.upgradeCostRareMetal}(던전)`);
+          if (nextTier.upgradeCostMonsterBone > 0) costParts.push(`뼈조각×${nextTier.upgradeCostMonsterBone}`);
+          if (nextTier.upgradeCostMagicStone > 0) costParts.push(`문스톤×${nextTier.upgradeCostMagicStone}`);
+          if (nextTier.upgradeCostRareMetal > 0) costParts.push(`은광석×${nextTier.upgradeCostRareMetal}`);
 
-          const canAfford = gold >= costGold;
+          const canAffordGold = gold >= costGold;
+          const canAffordBone = nextTier.upgradeCostMonsterBone === 0 || p.getItemCount(DUNGEON_MATERIAL_ITEM_IDS.upgradeCostMonsterBone) >= nextTier.upgradeCostMonsterBone;
+          const canAffordMagic = nextTier.upgradeCostMagicStone === 0 || p.getItemCount(DUNGEON_MATERIAL_ITEM_IDS.upgradeCostMagicStone) >= nextTier.upgradeCostMagicStone;
+          const canAffordRare = nextTier.upgradeCostRareMetal === 0 || p.getItemCount(DUNGEON_MATERIAL_ITEM_IDS.upgradeCostRareMetal) >= nextTier.upgradeCostRareMetal;
+          const canAfford = canAffordGold && canAffordBone && canAffordMagic && canAffordRare;
           upgradeBtn = `
             <button class="btn" data-upgrade-facility="${inst.facilityId}"
               style="font-size:10px;padding:2px 6px;margin-left:6px;${canAfford ? '' : 'opacity:0.5'}">
@@ -154,7 +160,10 @@ export function createVillageScreen(
         const costParts: string[] = [`${def.buildCostGold}G`];
         if (def.buildCostWood > 0) costParts.push(`목재×${def.buildCostWood}`);
         if (def.buildCostStone > 0) costParts.push(`석재×${def.buildCostStone}`);
-        const canAfford = gold >= def.buildCostGold;
+        if (def.buildCostIron > 0) costParts.push(`철광석×${def.buildCostIron}`);
+        const canAffordGoldRoad = gold >= def.buildCostGold;
+        const canAffordIronRoad = def.buildCostIron === 0 || p.getItemCount('iron_ore') >= def.buildCostIron;
+        const canAfford = canAffordGoldRoad && canAffordIronRoad;
         let targetHtml = '';
         if (adjacentRoutes.length > 0) {
           targetHtml = adjacentRoutes.map(([locId]) => {
@@ -219,7 +228,7 @@ export function createVillageScreen(
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px">
         <div style="padding:8px;background:var(--bg-panel);border-radius:8px;text-align:center">
           <div style="font-size:11px;color:var(--text-dim)">단계</div>
-          <div style="font-size:18px;font-weight:bold">Lv.${village.stage}</div>
+          <div style="font-size:16px;font-weight:bold">${STAGE_NAMES[village.stage] ?? `단계 ${village.stage}`} <span style="font-size:12px;color:var(--text-dim)">(${village.stage})</span></div>
         </div>
         <div style="padding:8px;background:var(--bg-panel);border-radius:8px;text-align:center">
           <div style="font-size:11px;color:var(--text-dim)">인구</div>
@@ -240,6 +249,14 @@ export function createVillageScreen(
         <div style="padding:8px;background:var(--bg-panel);border-radius:8px;text-align:center">
           <div style="font-size:11px;color:var(--text-dim)">전문화</div>
           <div style="font-size:14px;font-weight:bold">${village.specialization === 'none' ? '없음' : village.specialization}</div>
+        </div>
+        <div style="padding:8px;background:var(--bg-panel);border-radius:8px;text-align:center">
+          <div style="font-size:11px;color:var(--text-dim)">오늘 방문자</div>
+          <div style="font-size:16px;font-weight:bold;color:var(--success)">${village.visitingNpcCount ?? 0}명</div>
+        </div>
+        <div style="padding:8px;background:var(--bg-panel);border-radius:8px;text-align:center">
+          <div style="font-size:11px;color:var(--text-dim)">설립 경과</div>
+          <div style="font-size:14px;font-weight:bold">${session.gameTime.day - village.foundedDay}일</div>
         </div>
       </div>
 
@@ -327,9 +344,35 @@ export function createVillageScreen(
           return;
         }
 
+        // 던전재료 보유량 확인
+        const dungeonChecks: [keyof typeof DUNGEON_MATERIAL_ITEM_IDS, number][] = [
+          ['upgradeCostMonsterBone', nextTierDef.upgradeCostMonsterBone],
+          ['upgradeCostMagicStone', nextTierDef.upgradeCostMagicStone],
+          ['upgradeCostRareMetal', nextTierDef.upgradeCostRareMetal],
+        ];
+        const ITEM_NAMES: Record<keyof typeof DUNGEON_MATERIAL_ITEM_IDS, string> = {
+          upgradeCostMonsterBone: '뼈 조각',
+          upgradeCostMagicStone: '문스톤',
+          upgradeCostRareMetal: '은광석',
+        };
+        for (const [key, amount] of dungeonChecks) {
+          if (amount > 0 && p.getItemCount(DUNGEON_MATERIAL_ITEM_IDS[key]) < amount) {
+            statusMessage = `재료 부족: ${ITEM_NAMES[key]} ×${amount} 필요`;
+            render(el);
+            return;
+          }
+        }
+
         // 골드 차감
         p.addGold(-nextTierDef.upgradeCostGold);
         knowledge.trackGoldSpent(nextTierDef.upgradeCostGold);
+
+        // 던전재료 차감
+        for (const [key, amount] of dungeonChecks) {
+          if (amount > 0) {
+            p.removeItemById(DUNGEON_MATERIAL_ITEM_IDS[key], amount);
+          }
+        }
 
         // 티어 업
         inst.tier = (currentTier + 1) as 1 | 2 | 3;
@@ -393,8 +436,18 @@ export function createVillageScreen(
           render(el);
           return;
         }
+        // iron_ore 보유량 확인 (등급 3~4)
+        if (def.buildCostIron > 0 && p.getItemCount('iron_ore') < def.buildCostIron) {
+          statusMessage = `재료 부족: 철광석 ×${def.buildCostIron} 필요`;
+          render(el);
+          return;
+        }
         p.addGold(-def.buildCostGold);
         knowledge.trackGoldSpent(def.buildCostGold);
+        // iron_ore 차감
+        if (def.buildCostIron > 0) {
+          p.removeItemById('iron_ore', def.buildCostIron);
+        }
         village.roads.push({
           roadId: def.id,
           connectedLocationId: targetLocId,
