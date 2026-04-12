@@ -1,700 +1,311 @@
-; ============================================================
-; dungeon_events.txt
-; Random events that can occur during dungeon exploration.
-; Each event has a per-advance-turn chance of triggering.
-;
-; Format:
-;   [event_id]
-;   name          = 한글 이름
-;   description   = 설명
-;   chance        = 0.0~1.0 (per advance turn)
-;   type          = treasure | hazard | heal | discovery
-;   gives         = ItemType:amount   (treasure / discovery)
-;   hpDamage      = int               (hazard)
-;   vigorDamage   = int               (hazard)
-;   hpHeal        = int               (heal)
-;   vigorHeal     = int               (heal)
-;   colorInfluence = Element:float, Element:float
-; ============================================================
+# ============================================================
+# dungeon_events.txt — 던전 탐색 이벤트 정의
+#
+# 필드:
+#   name          : 이벤트 이름
+#   description   : 설명
+#   chance        : 발동 확률 (0.0~1.0)
+#   type          : Treasure | Hazard | Heal | Discovery
+#   gives         : ItemType:amount:chance, ... (보상)
+#   hpDamage      : HP 피해 (양수)
+#   vigorDamage   : 기력 피해
+#   hpHeal        : HP 회복
+#   vigorHeal     : 기력 회복
+#   colorInfluence: Element:float, ...
+#   ruleTemplates : 필터 — 해당 룰 템플릿 던전에서만 발동
+#   dungeonIds    : 필터 — 특정 던전 ID에서만 발동
+#   accessFrom    : 필터 — 특정 지역 접근 던전에서만 발동
+# ============================================================
 
-[treasure_chest]
-name = 보물 상자 발견!
-description = 먼지 쌓인 상자에서 장비가 발견되었다.
-chance = 0.08
-type = treasure
-gives = Equipment:1
-colorInfluence = Light:0.2, Iron:0.1
+# ============================================================
+# HeatGauge 던전 이벤트
+# ============================================================
 
-[sudden_gust]
-name = 돌풍!
-description = 갑작스런 돌풍이 불어와 몸을 가누기 힘들다.
-chance = 0.07
-type = hazard
+[Heat_Vent_Cache]
+name = 용암 분출구 유물
+description = 분출구 가장자리에 열기에 달궈진 금속 유물이 박혀 있다. 빠르게 뽑아낼 수 있을 것 같다.
+chance = 0.10
+type = Treasure
+gives = OreRare:1:0.70, MonsterLoot:1:0.90
 hpDamage = 8
-vigorDamage = 5
-colorInfluence = Water:0.3, Dark:0.1
-
-[gold_pouch]
-name = 금화 주머니
-description = 누군가 떨어뜨린 금화 주머니가 놓여 있다.
-chance = 0.06
-type = treasure
-gives = Food:3
-colorInfluence = Light:0.1, Fire:0.1
-
-[rockfall]
-name = 낙석!
-description = 천장에서 바위가 무너져 내린다!
-chance = 0.07
-type = hazard
-hpDamage = 12
-vigorDamage = 8
-colorInfluence = Iron:0.3, Dark:0.2
-
-[healing_spring]
-name = 치유의 샘
-description = 맑은 물이 솟아오르는 샘이 몸과 마음을 회복시켜 준다.
-chance = 0.05
-type = heal
-hpHeal = 25
-vigorHeal = 15
-colorInfluence = Water:0.4, Light:0.3
-
-[strange_light]
-name = 수상한 빛
-description = 기묘한 빛이 어둠 속에서 빛나며 포션 하나를 드러낸다.
-chance = 0.06
-type = discovery
-gives = Potion:1
-colorInfluence = Light:0.3, Dark:0.2
-
-[hidden_trap]
-name = 함정!
-description = 바닥이 갈라지며 숨겨진 함정이 발동한다.
-chance = 0.08
-type = hazard
-hpDamage = 10
-vigorDamage = 6
-colorInfluence = Dark:0.3, Iron:0.2
-
-[rare_vein]
-name = 희귀 광맥
-description = 벽면에서 희귀한 광물이 반짝이고 있다.
-chance = 0.04
-type = discovery
-gives = OreRare:1
-colorInfluence = Iron:0.4, Fire:0.2
-
-[ambush]
-name = 기습!
-description = 어둠 속에서 적이 기습해 온다!
-chance = 0.06
-type = hazard
-hpDamage = 15
-vigorDamage = 10
-colorInfluence = Dark:0.4, Fire:0.2
-
-[ancient_inscription]
-name = 고대 비문
-description = 벽에 새겨진 고대 문자가 약초의 위치를 알려준다.
-chance = 0.05
-type = discovery
-gives = Herb:2
-colorInfluence = Light:0.2, Water:0.2
-
-[wandering_merchant]
-name = 떠돌이 상인
-description = 던전 안에서 떠돌이 상인을 만났다. 희귀한 물건을 건네준다.
-chance = 0.04
-type = treasure
-gives = Equipment:1, Potion:1
-colorInfluence = Wind:0.2, Light:0.1
-
-[mysterious_altar]
-name = 신비로운 제단
-description = 어둠 속에서 빛나는 제단이 몸에 활력을 불어넣는다.
-chance = 0.04
-type = heal
-hpHeal = 35
-vigorHeal = 20
-colorInfluence = Light:0.3, Earth:0.2
-
-[crumbling_floor]
-name = 무너지는 바닥!
-description = 발밑이 갈라지며 아래층으로 떨어진다!
-chance = 0.06
-type = hazard
-hpDamage = 14
-vigorDamage = 8
-colorInfluence = Earth:0.3, Dark:0.15
-
-[glowing_mushrooms]
-name = 빛나는 버섯
-description = 은은하게 빛나는 버섯이 군락을 이루고 있다. 약초로 쓸 수 있을 것 같다.
-chance = 0.05
-type = discovery
-gives = Herb:3
-colorInfluence = Earth:0.2, Water:0.15, Light:0.1
-
-[monster_nest]
-name = 몬스터 둥지
-description = 몬스터의 둥지를 발견했다! 전리품이 흩어져 있다.
-chance = 0.04
-type = treasure
-gives = MonsterLoot:3
-colorInfluence = Dark:0.2, Fire:0.15
-
-[ancient_weapon_rack]
-name = 고대 무기 거치대
-description = 먼지 쌓인 무기 거치대에서 아직 쓸 만한 장비를 발견했다.
-chance = 0.03
-type = treasure
-gives = Equipment:2
-colorInfluence = Iron:0.3, Fire:0.1
-
-[poisonous_gas]
-name = 독가스!
-description = 바위 틈에서 독가스가 새어 나온다!
-chance = 0.06
-type = hazard
-hpDamage = 10
-vigorDamage = 12
-colorInfluence = Dark:0.3, Water:0.1
-
-[refreshing_breeze]
-name = 시원한 바람
-description = 어디선가 불어오는 시원한 바람이 피로를 씻어준다.
-chance = 0.05
-type = heal
-hpHeal = 15
-vigorHeal = 25
-colorInfluence = Wind:0.3, Water:0.2
-
-[elemental_crystal]
-name = 원소 결정
-description = 벽면에 원소의 기운이 응축된 결정이 박혀 있다. 희귀한 광석이다.
-chance = 0.03
-type = discovery
-gives = OreRare:2
-colorInfluence = Electric:0.3, Iron:0.2
-
-[moonlit_traces]
-name = 달토끼의 발자국
-description = 은빛 발자국을 따라가자 먹을 수 있는 풀과 열매가 모여 있었다.
-chance = 0.05
-type = Discovery
-gives = Food:2, Herb:1
-colorInfluence = Light:0.2, Wind:0.1
-
-[silver_moon_blessing]
-name = 은월의 축복
-description = 달빛이 직접 내려앉은 듯 몸이 가벼워진다.
-chance = 0.04
-type = Heal
-hpHeal = 18
-vigorHeal = 20
-colorInfluence = Light:0.25, Water:0.1
-
-[cliffside_rockfall]
-name = 절벽 낙반
-description = 절벽 위에서 바위 조각이 쏟아져 내린다.
-chance = 0.05
-type = Hazard
-hpDamage = 16
-vigorDamage = 10
-colorInfluence = Earth:0.25, Wind:0.12
-
-[sea_mist_cache]
-name = 파도밀수 자루
-description = 바다 안개 속에 숨겨진 방수 자루에서 쓸 만한 물건이 나왔다.
-chance = 0.04
-type = Treasure
-gives = Food:2, Potion:1
-colorInfluence = Water:0.18, Iron:0.08
-
-[foxfire_lantern]
-name = 여우불 초롱
-description = 사당의 여우불이 남긴 푸른 잔광 속에서 특이한 약재를 찾았다.
-chance = 0.04
-type = Discovery
-gives = Herb:2, Potion:1
-colorInfluence = Light:0.18, Dark:0.12
-
-[abandoned_offering]
-name = 버려진 공양상
-description = 오래된 사당의 공양상 위에 아직 쓸 만한 소모품이 남아 있었다.
-chance = 0.03
-type = Treasure
-gives = Food:2, Equipment:1
-colorInfluence = Light:0.12, Earth:0.10
-
-[mountain_shelter]
-name = 산중 피난처
-description = 바람을 피할 수 있는 작은 암굴을 발견했다.
-chance = 0.05
-type = Heal
-hpHeal = 22
-vigorHeal = 16
-colorInfluence = Earth:0.18, Light:0.08
-
-[snowblind_burst]
-name = 설맹 폭풍
-description = 순식간에 시야를 가리는 폭설이 몰아친다.
-chance = 0.05
-type = Hazard
-hpDamage = 18
-vigorDamage = 14
-colorInfluence = Water:0.24, Wind:0.18
-
-[frozen_supply]
-name = 얼어붙은 보급품
-description = 버려진 베이스 캠프의 얼어붙은 상자에서 쓸 만한 물건을 챙겼다.
-chance = 0.03
-type = Treasure
-gives = Potion:2, Food:2
-colorInfluence = Iron:0.10, Water:0.16
-
-[mistwood_bloom]
-name = 미스트우드 개화
-description = 안개를 먹고 피어난 특수 식물이 손이 닿는 높이에 매달려 있었다.
-chance = 0.04
-type = Discovery
-gives = Herb:3
-colorInfluence = Water:0.18, Earth:0.14
-
-[mirror_lake_reflection]
-name = 경면 반사
-description = 호수 같은 수면에 손을 담그자 정신이 맑아졌다.
-chance = 0.04
-type = Heal
-hpHeal = 20
-vigorHeal = 18
-colorInfluence = Water:0.22, Light:0.16
-
-[ember_vent]
-name = 화염 분기공
-description = 땅속에서 뜨거운 증기가 폭발하듯 뿜어져 오른다.
-chance = 0.05
-type = Hazard
-hpDamage = 15
-vigorDamage = 12
-colorInfluence = Fire:0.24, Earth:0.12
-
-[wolf_den_cache]
-name = 늑대 굴 비축분
-description = 늑대들이 모아둔 먹이와 사냥감이 굴 한편에 쌓여 있었다.
-chance = 0.04
-type = Treasure
-gives = Food:3, MonsterLoot:2
-colorInfluence = Dark:0.12, Earth:0.10
-
-[moon_shadow_crossroad]
-name = 달그늘 갈림길
-description = 달빛 각도에 따라 잠시 다른 길이 드러났다. 숨겨진 흔적과 약초를 챙길 수 있었다.
-chance = 0.05
-type = Discovery
-gives = Herb:2, Potion:1
-colorInfluence = Light:0.20, Dark:0.14
-ruleTemplates = MoonPhase
-
-[tide_cut_passage]
-name = 물러난 조수길
-description = 물이 잠시 빠지며 평소에는 보이지 않던 바위 틈 길이 드러났다.
-chance = 0.04
-type = Treasure
-gives = Food:2, OreCommon:1
-colorInfluence = Water:0.18, Wind:0.10
-ruleTemplates = TidalRoute
-
-[ceiling_collapse]
-name = 천장 붕락
-description = 오래 버티지 못한 천장이 갈라지며 돌가루와 파편이 쏟아졌다.
-chance = 0.05
-type = Hazard
-hpDamage = 15
-vigorDamage = 10
-colorInfluence = Earth:0.22, Iron:0.08
-ruleTemplates = CollapsingPath
-
-[mist_double_path]
-name = 안개 속 이중 길
-description = 같은 길이 두 겹으로 보이는 착시 속에서 우연히 숨은 자원을 손에 넣었다.
-chance = 0.04
-type = Discovery
-gives = Herb:2, MonsterLoot:1
-colorInfluence = Water:0.14, Dark:0.18
-ruleTemplates = DeepFog
-
-[frostbite_squall]
-name = 동상성 돌풍
-description = 차가운 돌풍이 장비 틈으로 파고들어 몸의 감각을 무디게 만든다.
-chance = 0.05
-type = Hazard
-hpDamage = 12
-vigorDamage = 12
-colorInfluence = Water:0.22, Wind:0.16
-ruleTemplates = FrostPressure
-
-[predator_marking]
-name = 포식자의 냄새표식
-description = 영역 표식을 밟아 버렸다. 주위의 기척이 갑자기 훨씬 가까워진다.
-chance = 0.05
-type = Hazard
-hpDamage = 11
-vigorDamage = 8
-colorInfluence = Dark:0.20, Earth:0.12
-ruleTemplates = PredatorTerritory
-
-[fresh_tracks]
-name = 선명한 흔적
-description = 막 남겨진 발자국과 긁힌 나무 껍질이 다음 갈림길의 실마리를 준다.
-chance = 0.05
-type = Discovery
-gives = Herb:1, Food:1
-colorInfluence = Wind:0.12, Earth:0.14
-ruleTemplates = TraceHunt
-
-[resonant_altar]
-name = 공명의 제단
-description = 손을 얹자 오래된 제단이 미세하게 울리며 몸의 리듬을 정돈해 주었다.
-chance = 0.04
-type = Heal
-hpHeal = 20
-vigorHeal = 16
-colorInfluence = Light:0.18, Earth:0.16
-ruleTemplates = AncientResonance
-
-[boiling_vent]
-name = 끓어오르는 분기공
-description = 지면 균열에서 뜨거운 증기가 분출해 숨 돌릴 틈을 빼앗는다.
-chance = 0.05
-type = Hazard
-hpDamage = 13
-vigorDamage = 10
-colorInfluence = Fire:0.22, Wind:0.10
+colorInfluence = Fire:0.02
 ruleTemplates = HeatGauge
 
-[clearwater_respite]
-name = 맑은 수맥
-description = 정화된 물줄기가 스쳐 지나가며 피로와 상처를 조금 씻어냈다.
-chance = 0.04
-type = Heal
-hpHeal = 18
-vigorHeal = 18
-colorInfluence = Water:0.20, Light:0.18
-ruleTemplates = PurityCurrent
-
-[overstuffed_cache]
-name = 과적된 은닉처
-description = 누군가 욕심내 모아둔 보관처를 찾았다. 챙길 것은 많지만 오래 머물긴 위험하다.
-chance = 0.04
-type = Treasure
-gives = OreRare:1, MonsterLoot:2
-colorInfluence = Iron:0.14, Dark:0.10
-ruleTemplates = GreedRisk
-
-[hidden_campfire]
-name = 숨은 야영 흔적
-description = 먼저 지나간 이들이 남긴 작은 쉼터 덕분에 잠시 숨을 돌릴 수 있었다.
-chance = 0.04
-type = Heal
-hpHeal = 16
-vigorHeal = 14
-colorInfluence = Earth:0.16, Light:0.10
-ruleTemplates = ShelterWindow
-
-[fullmoon_petal]
-name = 만월정 꽃잎
-description = 달빛에만 반응하는 꽃잎이 바람을 타고 흘러와, 빈터 안쪽 길을 잠시 비춰 주었다.
-chance = 0.03
-type = Discovery
-gives = Herb:2, Potion:1
-colorInfluence = Light:0.20, Wind:0.12
-accessFrom = Moonlit_Clearing
-
-[quiet_hill_echo]
-name = 언덕 메아리
-description = 바람을 타고 온 메아리 속에서 누군가 남긴 조심스러운 안내를 읽어냈다.
-chance = 0.03
-type = Heal
-hpHeal = 14
-vigorHeal = 12
-colorInfluence = Wind:0.14, Earth:0.10
-accessFrom = Tiklit_Range
-
-[mistpond_drift]
-name = 연못 안개 조류
-description = 안개가 한쪽으로 갈라지며 특수 수초와 젖은 흔적 몇 개를 드러냈다.
-chance = 0.03
-type = Discovery
-gives = Herb:2, MonsterLoot:1
-colorInfluence = Water:0.18, Earth:0.10
-accessFrom = Erumen_Mistwood
-
-[mirrorway_glimmer]
-name = 경면 잔광
-description = 호면 위를 스치는 별빛 잔광이 정화된 결정 조각 하나를 남기고 사라졌다.
-chance = 0.03
-type = Treasure
-gives = Potion:1, OreRare:1
-colorInfluence = Water:0.16, Light:0.18
-accessFrom = Erumen_Seoncheon
-
-[grassland_waymark]
-name = 풀빛 표지석
-description = 바람에 드러난 오래된 표지석이 다음 구역의 방향과 얕은 보급품 은닉처를 알려 주었다.
-chance = 0.04
-type = Discovery
-gives = Food:1, Herb:1
-colorInfluence = Wind:0.14, Earth:0.10
-accessFrom = Riagralta
-
-[buried_control_node]
-name = 묻힌 제어핵
-description = 흙에 반쯤 잠긴 제어장치를 발견했다. 아직 작동 가능한 부품 몇 개를 챙길 수 있었다.
-chance = 0.03
-type = Treasure
-gives = OreCommon:2, OreRare:1
-colorInfluence = Iron:0.18, Electric:0.14
-accessFrom = Riagralta_Deep
-
-[lar_forest_blessing]
-name = 숲의 미약한 축복
-description = 나뭇잎 사이로 스며든 빛이 발걸음을 잠시 가볍게 만들어 주었다.
-chance = 0.04
-type = Heal
-hpHeal = 16
-vigorHeal = 14
-colorInfluence = Light:0.16, Earth:0.12
-accessFrom = Lar_Forest
-
-[acorn_trail]
-name = 도토리 자취
-description = 누군가 남겨 둔 듯한 도토리 자취를 따라가자 숲 안쪽 샛길과 채집거리가 눈에 띄었다.
-chance = 0.03
-type = Discovery
-gives = Food:2, Herb:1
-colorInfluence = Earth:0.14, Wind:0.10
-accessFrom = Lar_Forest
-
-[ruined_lamp_flicker]
-name = 깨진 가로등 점멸
-description = 부서진 가로등이 갑자기 켜지며 허상을 비추었다. 정신을 놓치면 그대로 길을 잃을 뻔했다.
-chance = 0.04
-type = Hazard
-hpDamage = 14
-vigorDamage = 12
-colorInfluence = Dark:0.18, Light:0.08
-accessFrom = Arukea_3
-
-[farshore_whisper]
-name = 피안의 속삭임
-description = 들리지 말아야 할 목소리가 귓가를 스치며 발걸음을 멈추게 했다.
-chance = 0.03
-type = Hazard
-hpDamage = 18
-vigorDamage = 14
-colorInfluence = Dark:0.22, Water:0.08
-accessFrom = Arukea_3
-
-[clocktower_chime]
-name = 시계종 공명
-description = 정각의 잔향이 남긴 짧은 공명 덕분에 기어의 움직임이 한순간 또렷하게 읽혔다.
-chance = 0.04
-type = Heal
-hpHeal = 14
-vigorHeal = 16
-colorInfluence = Iron:0.14, Light:0.14
-accessFrom = Iluneon_Clocktower
-
-[gear_cache]
-name = 기어 틈 은닉함
-description = 맞물린 기어 사이에 숨겨진 작은 보관함에서 오래된 보급품과 부품을 발견했다.
-chance = 0.03
-type = Treasure
-gives = OreCommon:2, Potion:1
-colorInfluence = Iron:0.18, Electric:0.10
-accessFrom = Iluneon_Clocktower
-
-[limun_waterline]
-name = 되살아난 수로
-description = 무너진 수로에 물이 다시 차오르며 숨겨진 약초와 오래된 석판 일부가 드러났다.
-chance = 0.04
-type = Discovery
-gives = Herb:2, OreCommon:1
-colorInfluence = Water:0.18, Earth:0.10
-accessFrom = Limun_Ruins
-
-[temple_resonance]
-name = 잠긴 공명실
-description = 무너진 신전의 제단이 순간 공명하며 몸의 리듬과 주변 기류를 정돈해 주었다.
-chance = 0.03
-type = Heal
-hpHeal = 20
-vigorHeal = 16
-colorInfluence = Earth:0.16, Light:0.12
-accessFrom = Limun_Ruins
-
-[eas_overgrowth]
-name = 폐원의 과성장
-description = 예측보다 빠르게 자란 덩굴이 길을 틀어막으며 작은 포자 폭발을 일으켰다.
-chance = 0.04
-type = Hazard
-hpDamage = 14
-vigorDamage = 10
-colorInfluence = Earth:0.18, Dark:0.08
-accessFrom = Old_Eas
-
-[clutch_earthsong]
-name = 협곡의 지층 울림
-description = 바위층 깊은 곳에서 울림이 전해져 잠시 길의 결이 또렷하게 읽혔다.
-chance = 0.03
-type = Heal
-hpHeal = 16
-vigorHeal = 14
-colorInfluence = Earth:0.20, Wind:0.08
-accessFrom = Clutch_Gorge
-
-[dune_glass_shard]
-name = 사금 파편
-description = 빛나는 모래층 아래에서 유리처럼 굳은 광물 파편과 은닉품을 찾았다.
-chance = 0.04
-type = Treasure
-gives = OreCommon:2, OreRare:1
-colorInfluence = Earth:0.16, Light:0.12
-accessFrom = Sand_Dunes
-
-[mana_backflow]
-name = 마력 역류
-description = 골짜기 측면의 마력 맥이 일시적으로 역류하며 감각이 어지러워졌지만, 흐름을 붙잡는 데 성공해 일부를 회복했다.
-chance = 0.03
-type = Heal
-hpHeal = 12
-vigorHeal = 14
-colorInfluence = Light:0.12, Electric:0.08
-accessFrom = Luna_Practice_Hall, Luna_Academy
-
-[howling_echo]
-name = 울음의 메아리
-description = 멀리서 들린 울음이 숲 전체를 타고 퍼지며 적의 위치와 길의 방향을 동시에 뒤틀었다.
-chance = 0.04
-type = Hazard
-hpDamage = 12
-vigorDamage = 12
-colorInfluence = Dark:0.14, Wind:0.10
-accessFrom = Ode_Mountain
-
-[void_updraft]
-name = 상승 기류
-description = 갑작스럽게 올라오는 기류가 몸을 띄우며 마력 순환까지 가볍게 만들어 주었다.
-chance = 0.04
-type = Heal
-hpHeal = 12
-vigorHeal = 18
-colorInfluence = Wind:0.20, Light:0.10
-accessFrom = Void_Forest
-
-[floating_cache]
-name = 공중 잔해 상자
-description = 부유하던 집터 잔해 사이에서 아직 쓸 만한 보급품과 마력 약병을 건졌다.
-chance = 0.03
-type = Treasure
-gives = Potion:1, Equipment:1
-colorInfluence = Wind:0.16, Electric:0.08
-accessFrom = Void_Forest
-
-[neon_feedback]
-name = 네온 피드백
-description = 과도한 조명과 저음 진동이 겹쳐 순간적으로 감각이 어긋났다.
-chance = 0.04
-type = Hazard
-hpDamage = 10
-vigorDamage = 12
-colorInfluence = Electric:0.16, Dark:0.10
-accessFrom = Night_Tacomi
-
-[vip_bar_tab]
-name = 미정산 바 탭
-description = 누군가 남기고 간 전용석 계산서와 보급품을 주웠다. 이상하게도 아직 유효해 보인다.
-chance = 0.03
-type = Treasure
-gives = Food:2, Potion:1
-colorInfluence = Light:0.12, Electric:0.12
-accessFrom = Night_Tacomi
-
-[enicham_arc_flash]
-name = 아크 방전
-description = 점검용 레일 사이에서 순간적인 아크 방전이 터졌다. 타이밍을 잘 맞추면 자원을 챙길 수 있지만, 무리하면 크게 다칠 수 있다.
-chance = 0.04
-type = Hazard
-hpDamage = 14
-vigorDamage = 10
-colorInfluence = Electric:0.20, Iron:0.10
-accessFrom = Enicham
-
-[enicham_control_log]
-name = 제어 기록
-description = 오래된 제어 기록이 남아 있는 단말기를 찾았다. 내부 흐름을 읽어 다음 구간을 조금 더 빠르게 파악할 수 있다.
-chance = 0.03
-type = Discovery
-gives = OreCommon:2
-colorInfluence = Electric:0.12, Light:0.08
-accessFrom = Enicham
-
-[enicham_cooling_line]
-name = 냉각 라인
-description = 고열 설비 옆으로 냉각 라인이 살아 있었다. 잠시 몸을 식히고 소모품도 챙길 수 있었다.
-chance = 0.03
-type = Heal
-hpHeal = 18
-vigorHeal = 14
-colorInfluence = Water:0.10, Iron:0.12
-accessFrom = Enicham
-
-[holo_shader_drop]
-name = 떨어진 셰이더
-description = 공중에 떠 있던 텍스처 조각이 손에 잡혔다. 가상 세계의 잔재지만, 현실에서도 쓸 만한 자원으로 변환된다.
-chance = 0.04
-type = Discovery
-gives = OreCommon:2, MonsterLoot:1
-colorInfluence = Light:0.12, Electric:0.10
-accessFrom = Hologram_Field
-
-[holo_connection_spike]
-name = 핑 스파이크
-description = 순간적으로 지연과 잡음이 몰려왔다. 버티면 다음 구간 정보가 조금 선명해질지도 모른다.
-chance = 0.04
-type = Hazard
-hpDamage = 10
-vigorDamage = 14
-colorInfluence = Electric:0.14, Dark:0.08
-accessFrom = Hologram_Field
-
-[holo_safe_room]
-name = 세이프 룸 인스턴스
-description = 짧은 로딩 화면 뒤 조용한 대기 공간이 열렸다. 잠시 숨을 고르기에 좋다.
-chance = 0.03
+[Cooling_Alcove]
+name = 냉각 틈새
+description = 화산 벽 사이에서 이상하게 시원한 틈새가 발견됐다. 열기를 잠시 피할 수 있다.
+chance = 0.10
 type = Heal
 hpHeal = 22
-vigorHeal = 18
-colorInfluence = Light:0.10, Wind:0.08
-accessFrom = Hologram_Field
+vigorHeal = 12
+colorInfluence = Water:0.01
+ruleTemplates = HeatGauge
 
-[phantom_mirror_shard]
-name = 거울 파편
-description = 난간 틈에 낀 작은 거울 조각이 빛을 반사하며 길을 비춘다. 잘 모으면 연금 재료로 쓸 만하다.
-chance = 0.04
-type = Discovery
-gives = OreCommon:1, Herb:1
-colorInfluence = Light:0.12, Wind:0.10
-accessFrom = Phantom_Spire
+# ============================================================
+# FrostPressure 던전 이벤트
+# ============================================================
 
-[phantom_updraft]
-name = 상승 기류
-description = 탑 안쪽에서 위로 솟는 기류가 몸을 살짝 들어 올린다. 잠시 숨을 고르기엔 좋지만, 발을 헛디딜 수도 있다.
-chance = 0.04
+[Ice_Crystal_Cache]
+name = 빙결 결정 채취
+description = 벽면에 박힌 희귀한 빙결 결정. 손이 시려울 정도지만 가치는 충분하다.
+chance = 0.10
+type = Treasure
+gives = OreRare:1:0.80
+hpDamage = 5
+ruleTemplates = FrostPressure
+
+[Frost_Hollow]
+name = 서리 빈 동굴
+description = 한기가 유독 낮은 작은 동굴. 잠시 숨을 고르면 체온이 회복된다.
+chance = 0.10
 type = Heal
-hpHeal = 14
-vigorHeal = 16
-colorInfluence = Wind:0.14, Light:0.08
-accessFrom = Phantom_Spire
+hpHeal = 20
+vigorHeal = 10
+ruleTemplates = FrostPressure
+
+# ============================================================
+# MoonPhase 던전 이벤트
+# ============================================================
+
+[Moonlit_Herb_Patch]
+name = 달빛 약초밭
+description = 달빛이 내리쬐는 곳에 희귀한 약초가 무리 지어 자라고 있다.
+chance = 0.10
+type = Treasure
+gives = Herb:3:0.90
+hpHeal = 5
+ruleTemplates = MoonPhase
+
+[Night_Sprite_Guide]
+name = 밤 정령의 안내
+description = 작은 야광 정령이 발아래를 밝혀준다. 어딘가로 안내하려는 것 같다.
+chance = 0.10
+type = Discovery
+gives = MonsterLoot:1:0.70
+hpHeal = 10
+colorInfluence = Light:0.01, Dark:0.01
+ruleTemplates = MoonPhase
+
+# ============================================================
+# TidalRoute 던전 이벤트
+# ============================================================
+
+[Ebb_Tide_Cache]
+name = 썰물이 드러낸 유물
+description = 썰물이 빠지면서 바닥에 숨어 있던 금속 파편이 드러났다.
+chance = 0.10
+type = Treasure
+gives = OreCommon:2:0.90, MonsterLoot:1:0.60
+ruleTemplates = TidalRoute
+
+[Surge_Warning]
+name = 조류 경고
+description = 갑작스러운 조류 변화! 황급히 피했지만 조금 다쳤다.
+chance = 0.08
+type = Hazard
+gives = Herb:1:0.60
+hpDamage = 12
+ruleTemplates = TidalRoute
+
+# ============================================================
+# CollapsingPath 던전 이벤트
+# ============================================================
+
+[Rubble_Find]
+name = 잔해 속 유물
+description = 무너진 잔해 더미 속에 옛 탐색자가 남긴 물건이 들어 있다.
+chance = 0.10
+type = Treasure
+gives = OreCommon:2:0.80, Equipment:1:0.20
+hpDamage = 5
+ruleTemplates = CollapsingPath
+
+[Collapse_Shortcut]
+name = 붕락 지름길
+description = 이미 무너진 구역이 오히려 지름길을 만들었다.
+chance = 0.10
+type = Discovery
+gives = MonsterLoot:1:0.60
+ruleTemplates = CollapsingPath
+
+# ============================================================
+# ShelterWindow 던전 이벤트
+# ============================================================
+
+[Shelter_Respite]
+name = 은신처 발견
+description = 폭풍과 압박이 미치지 않는 작은 은신처. 잠시 쉬어 체력을 회복한다.
+chance = 0.12
+type = Heal
+hpHeal = 25
+vigorHeal = 15
+ruleTemplates = ShelterWindow
+
+[Window_Stash]
+name = 안전 창 숨겨진 보물
+description = 안전 구간이 열리는 특이한 지점 뒤에 누군가 숨겨둔 상자가 있다.
+chance = 0.08
+type = Treasure
+gives = Equipment:1:0.35, OreRare:1:0.55
+ruleTemplates = ShelterWindow
+
+# ============================================================
+# AncientResonance 던전 이벤트
+# ============================================================
+
+[Resonance_Shard]
+name = 공명 파편
+description = 벽면에서 고대 공명에 반응하는 파편이 떨어져 나왔다.
+chance = 0.10
+type = Discovery
+gives = OreRare:1:0.60
+colorInfluence = Light:0.01
+ruleTemplates = AncientResonance
+
+[Ancient_Offering]
+name = 고대 봉납물
+description = 제단 위에 오래된 봉납물이 놓여 있다. 손대도 될지 망설여진다.
+chance = 0.10
+type = Treasure
+gives = MonsterLoot:2:0.80, Herb:2:0.60
+ruleTemplates = AncientResonance
+
+# ============================================================
+# TraceHunt 던전 이벤트
+# ============================================================
+
+[Beast_Lair]
+name = 짐승의 보금자리
+description = 추적하던 짐승의 보금자리를 발견했다. 식재료와 털이 쌓여 있다.
+chance = 0.10
+type = Treasure
+gives = Food:3:0.90, MonsterLoot:1:0.70
+ruleTemplates = TraceHunt
+
+[Fresh_Trail]
+name = 신선한 발자국
+description = 아직 마르지 않은 발자국. 이 흔적을 따라가면 목표물을 빨리 찾을 것 같다.
+chance = 0.10
+type = Discovery
+hpHeal = 5
+ruleTemplates = TraceHunt
+
+# ============================================================
+# GreedRisk 던전 이벤트
+# ============================================================
+
+[Jackpot_Vein]
+name = 대박 광맥
+description = 엄청난 광맥이 발견됐다. 채굴하다가 마물을 건드렸지만 수확은 컸다.
+chance = 0.08
+type = Treasure
+gives = OreRare:2:0.80, OreCommon:3:0.90
+hpDamage = 15
+ruleTemplates = GreedRisk
+
+[Trapped_Stash]
+name = 함정 보물 상자
+description = 낡은 상자가 보인다. 열자마자 가시 함정이 튀어나왔지만 그 안의 장비는 쓸만하다.
+chance = 0.08
+type = Hazard
+gives = Equipment:1:0.60
+hpDamage = 20
+ruleTemplates = GreedRisk
+
+# ============================================================
+# DeepFog 던전 이벤트
+# ============================================================
+
+[Fog_Clearing_Find]
+name = 안개 속 빈터
+description = 안개가 잠시 걷히며 작은 빈터가 드러났다. 기묘하게 평화로운 공간이다.
+chance = 0.10
+type = Heal
+gives = Herb:2:0.70
+hpHeal = 18
+ruleTemplates = DeepFog
+
+[Lost_Pack]
+name = 안개 속 유실된 짐
+description = 안개 속에 누군가 잃어버린 짐이 있다. 식량과 잡화가 들어 있다.
+chance = 0.10
+type = Treasure
+gives = Food:2:0.90, MonsterLoot:1:0.70
+ruleTemplates = DeepFog
+
+# ============================================================
+# PredatorTerritory 던전 이벤트
+# ============================================================
+
+[Predator_Loot]
+name = 포식자의 전리품
+description = 마왕 계열 마물이 모아둔 전리품 더미. 자리를 피하며 최대한 챙겼다.
+chance = 0.08
+type = Treasure
+gives = MonsterLoot:3:0.90, Equipment:1:0.25
+hpDamage = 10
+ruleTemplates = PredatorTerritory
+
+[Territorial_Mark]
+name = 영역 경고
+description = 영역 표시가 새겨진 벽. 이 길이 영역 경계라는 뜻이다. 조심스럽게 통과했다.
+chance = 0.10
+type = Discovery
+colorInfluence = Dark:0.01
+ruleTemplates = PredatorTerritory
+
+# ============================================================
+# PurityCurrent 던전 이벤트
+# ============================================================
+
+[Pure_Spring_Find]
+name = 정화 샘물
+description = 정화 기류를 따라 흐르는 맑은 샘물을 발견했다. 마시면 온몸이 정화되는 느낌이다.
+chance = 0.10
+type = Heal
+hpHeal = 28
+vigorHeal = 18
+colorInfluence = Light:0.01
+ruleTemplates = PurityCurrent
+
+[Current_Offering]
+name = 기류의 선물
+description = 정화 기류가 유독 강하게 부는 지점. 그 흐름을 타자 작은 선물이 남겨졌다.
+chance = 0.10
+type = Treasure
+gives = Herb:2:0.80, OreRare:1:0.50
+ruleTemplates = PurityCurrent
+
+# ============================================================
+# 범용 이벤트 (모든 던전 적용)
+# ============================================================
+
+[Supply_Cache]
+name = 보급품 캐시
+description = 이전 탐색자가 남겨둔 보급품이 발견됐다. 아직 쓸 만한 물건들이 남아 있다.
+chance = 0.08
+type = Treasure
+gives = Food:2:0.80, Potion:1:0.50
+
+[Dungeon_Bloom]
+name = 던전 꽃
+description = 깊은 곳에서 홀로 피어 있는 신비한 꽃. 향기를 맡자 기운이 차오른다.
+chance = 0.08
+type = Heal
+gives = Herb:1:0.80
+hpHeal = 12
+
+[Trophy_Pile]
+name = 전투 전리품
+description = 이전 탐색자가 처치한 마물의 전리품 더미. 알뜰하게 챙겼다.
+chance = 0.08
+type = Treasure
+gives = MonsterLoot:2:0.90
+
+[Wandering_Scholar]
+name = 방랑 학자
+description = 던전 안에서 연구 중인 이상한 학자를 만났다. 알 수 없는 조언을 남기고 사라졌다.
+chance = 0.06
+type = Discovery
+hpHeal = 8
+colorInfluence = Light:0.01, Earth:0.01

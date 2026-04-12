@@ -1804,3 +1804,28 @@ defense = 22
 hp = 170
 evasionChance = 0.16
 loot = MonsterLoot:2:0.40, OreRare:1:0.10
+
+; -------------------------------------------------------
+; World_Tree (difficulty 0.97)
+; -------------------------------------------------------
+
+[Verdant_Colossus]
+name = 세계수 수호 거인
+attack = 122
+defense = 58
+hp = 940
+burstHitCount = 2
+burstHitDamage = 50
+loot = MonsterLoot:4:0.60, OreRare:2:0.30, Equipment:1:0.14
+
+[Primal_Root_Wyrm]
+name = 원시 뿌리 와이번
+attack = 112
+defense = 42
+hp = 860
+skillChance = 0.25
+skill_1_name = 세계수 흡기
+skill_1_type = attack
+skill_1_value = 2.6
+skill_1_desc = 세계수의 원시 힘을 빨아들여 강렬한 흡기 공격을 가한다.
+loot = MonsterLoot:4:0.55, OreRare:2:0.28, Equipment:1:0.12
