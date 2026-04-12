@@ -4460,6 +4460,52 @@ rarity = rare
 source = craft:Starlit_Mirrorway
 
 
+# ============================================================
+# 푸치 탑 칵테일 바 전용 음료
+# ============================================================
+
+[tower_draft]
+name = 탑 등반가의 드래프트
+category = Food
+price = 30
+tags = /edible/liquid/cooked/drink/
+description = 푸치 탑 바에서 파는 기본 맥주. 도전 후의 쓴맛과 잘 어울린다.
+rarity = common
+source = shop:Puchi_Tower_Bar
+eatVigor = 8
+eatHp = 10
+eatMp = 5
+eatMood = 0.20
+eatMessage = 시원한 맥주 한 모금이 탑 등반의 고단함을 날려 보낸다.
+
+[azure_dragon_fizz]
+name = 푸른 용의 피즈
+category = Food
+price = 80
+tags = /edible/liquid/cooked/drink/rare/
+description = 탑 바의 간판 칵테일. 푸른 빛깔의 탄산 음료로, 마시면 기분이 맑아지며 몸이 가벼워진다. 누가 만들었는지는 아무도 모른다.
+rarity = uncommon
+source = shop:Puchi_Tower_Bar
+eatVigor = 20
+eatHp = 15
+eatMp = 30
+eatMood = 0.35
+eatMessage = 짙은 파란빛 탄산이 온몸을 타고 흐르며 이상한 활력이 솟구친다.
+
+[summit_mist]
+name = 정상의 안개
+category = Food
+price = 200
+tags = /edible/liquid/cooked/drink/rare/
+description = 탑 최상층의 안개를 담아 만들었다는 전설의 칵테일. 마신 사람은 잠시 세계의 끝을 엿보는 듯한 감각을 경험한다.
+rarity = rare
+source = shop:Puchi_Tower_Bar
+eatVigor = 35
+eatHp = 30
+eatMp = 60
+eatMood = 0.50
+eatMessage = 차갑고 투명한 안개가 목을 타고 내려가며, 순간 세계의 끝이 눈앞에 펼쳐지는 듯한 착각이 든다.
+
 [pioneer_plan]
 name = 개척 계획서
 category = Special

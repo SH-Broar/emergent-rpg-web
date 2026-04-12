@@ -1290,3 +1290,47 @@ activity_10_giveItems = Merchant_Badge:1
 activity_10_unique = true
 activity_10_stock = 1
 activity_10_colorInfluence = Light:0.02
+
+# ============================================================
+# 푸치 탑 칵테일 바 (Puchi_Tower_Bar) — 매일 밤 영업
+# ============================================================
+
+[Puchi_Tower_Bar]
+activity_1_name = 탑 등반가의 드래프트 구매
+activity_1_key = buy_tower_draft
+activity_1_time = 10
+activity_1_vigor = 0
+activity_1_gold = 30
+activity_1_desc = 시원한 기본 맥주 한 잔. 탑 등반 후의 피로를 씻어낸다.
+activity_1_effect = give
+activity_1_gives = tower_draft:1
+activity_1_colorInfluence = Water:0.02, Fire:0.01
+
+activity_2_name = 푸른 용의 피즈 구매
+activity_2_key = buy_azure_dragon_fizz
+activity_2_time = 10
+activity_2_vigor = 0
+activity_2_gold = 80
+activity_2_desc = 탑 바의 간판 칵테일. 푸른 탄산이 몸을 가볍게 한다.
+activity_2_effect = give
+activity_2_gives = azure_dragon_fizz:1
+activity_2_colorInfluence = Water:0.03, Wind:0.02
+
+activity_3_name = 정상의 안개 구매
+activity_3_key = buy_summit_mist
+activity_3_time = 10
+activity_3_vigor = 0
+activity_3_gold = 200
+activity_3_desc = 탑 최상층의 안개를 담은 전설의 칵테일. 세계의 끝을 엿보는 기분이 든다.
+activity_3_effect = give
+activity_3_gives = summit_mist:1
+activity_3_colorInfluence = Water:0.03, Light:0.03, Wind:0.02
+
+activity_4_name = 바에서 쉬기
+activity_4_key = rest_at_bar
+activity_4_time = 30
+activity_4_vigor = 0
+activity_4_gold = 0
+activity_4_desc = 바 구석 자리에 앉아 분위기를 즐기며 쉰다. 오늘 밤 바텐더가 심상치 않은 날이라면 더욱 특별한 시간이 될지도.
+activity_4_effect = heal_hp:20, restore_mp:15
+activity_4_colorInfluence = Water:0.02, Earth:0.01

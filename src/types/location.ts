@@ -97,6 +97,7 @@ export const Loc = {
   Uppio_Swamp: 'Uppio_Swamp',
   Demon_Castle: 'Demon_Castle',
   Puchi_Tower: 'Puchi_Tower',
+  Puchi_Tower_Bar: 'Puchi_Tower_Bar',
   Stella_Ville: 'Stella_Ville',
   Haratikus: 'Haratikus',
   Ikar: 'Ikar',

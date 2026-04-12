@@ -39,6 +39,10 @@ export class GameRegistry {
     this.locationNames.set('Night_Tacomi', '나이트 타코미');
     this.locationNames.set('Tacomi_Cafe', '하이 빔 카페');
     // 기타 주요 지역
+    // 푸치 탑
+    this.locationNames.set('Puchi_Tower', '푸치 탑');
+    this.locationNames.set('Puchi_Tower_Bar', '푸치 탑 칵테일 바');
+    // 기타 주요 지역
     this.locationNames.set('Kanon', '카논');
     this.locationNames.set('Arukea_1', '아루케아 북부');
     this.locationNames.set('Arukea_2', '아루케아 중부');

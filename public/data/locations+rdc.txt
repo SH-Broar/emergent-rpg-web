@@ -799,13 +799,24 @@ hidden = 1
 
 [Puchi_Tower]
 name = 푸치 탑
-description = 극남서쪽에 솟은 거대한 탑. 도전자들이 층을 올라가며 시련에 맞서고, 중간층에는 칵테일 바가 있다. 꼭대기에서는 세계의 끝이 보인다는 전설이 있다.
+description = 극남서쪽에 솟은 거대한 탑. 도전자들이 층을 올라가며 시련에 맞서고, 꼭대기에서는 세계의 끝이 보인다는 전설이 있다.
 x = -3500
 y = -3500
-links = Tiklit_Range:20, Stella_Ville:8
+links = Tiklit_Range:20, Stella_Ville:8, Puchi_Tower_Bar:1
 resources = Potion:5, Equipment:2
 monsterLevel = 6
 dangerLevel = 0.6
+
+[Puchi_Tower_Bar]
+name = 푸치 탑 칵테일 바
+description = 푸치 탑 중간층에 자리한 바. 매일 밤 도전자들이 하루의 피로를 씻으러 찾아온다. 어딘가 분위기가 심상치 않은 바텐더가 서 있는 날이 가끔 있다고.
+x = -3500
+y = -3500
+links = Puchi_Tower:1
+timeVisible = 18:6
+resources = Potion:2
+monsterLevel = 0
+dangerLevel = 0.0
 
 [Stella_Ville]
 name = 스텔라 빌
