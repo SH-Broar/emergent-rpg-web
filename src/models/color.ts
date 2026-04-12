@@ -121,10 +121,18 @@ export class ColorProfile {
       let inf = influence[i];
       if (inf === 0) continue;
 
-      // Matrix rate modulation: count ON cells in row i (0-8), convert to 0.25-1.0 range
+      // Matrix rate modulation:
+      //   가로(row i) ON 셀 수 → 상승량(inf > 0)에 영향
+      //   세로(col i) ON 셀 수 → 감소량(inf < 0)에 영향
       let onCount = 0;
-      for (let c = 0; c < 8; c++) {
-        if (matrix.getCell(i, c)) onCount++;
+      if (inf > 0) {
+        for (let c = 0; c < 8; c++) {
+          if (matrix.getCell(i, c)) onCount++;
+        }
+      } else {
+        for (let r = 0; r < 8; r++) {
+          if (matrix.getCell(r, i)) onCount++;
+        }
       }
       const matrixRateMod = 0.25 + (onCount / 8) * 0.75; // 0.25 (0 ON) to 1.0 (8 ON)
 
