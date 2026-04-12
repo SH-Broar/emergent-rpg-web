@@ -212,9 +212,22 @@ function simulateAdvanceStep(
         (cropId) => getCropDef(cropId)?.name ?? cropId,
         locId,
       );
-      if (result.harvestedGold > 0) {
+      if (result.harvestedGold > 0 || result.harvestedCount > 0) {
         const playerActor = actors[playerIdx];
-        if (playerActor) playerActor.addGold(result.harvestedGold);
+        if (playerActor) {
+          if (result.harvestedGold > 0) playerActor.addGold(result.harvestedGold);
+          if (result.harvestedCount > 0) {
+            // 농장 수확: Earth+, Light+, Dark-
+            const harvestInfluence = new Array(8).fill(0);
+            harvestInfluence[4] = 0.012;
+            harvestInfluence[6] = 0.008;
+            harvestInfluence[7] = -0.005;
+            playerActor.color.applyInfluence(harvestInfluence);
+            for (let i = 0; i < result.harvestedCount; i++) {
+              knowledge.trackFarmHarvest();
+            }
+          }
+        }
         for (const msg of result.harvestLog) {
           log.add(gameTime, msg, '농장');
         }

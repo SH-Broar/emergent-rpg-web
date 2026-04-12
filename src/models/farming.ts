@@ -99,6 +99,7 @@ export interface FarmTickResult {
   harvestedGold: number;
   harvestLog: string[];
   destroyedCells: number;
+  harvestedCount: number;
 }
 
 export function createEmptyCell(): FarmCell {
@@ -204,6 +205,7 @@ export function tickFarm(
   let harvestedGold = 0;
   const harvestLog: string[] = [];
   let destroyedCells = 0;
+  let harvestedCount = 0;
 
   // 관리도 일별 감소 (-25/day)
   for (const cell of farm.cells) {
@@ -242,6 +244,7 @@ export function tickFarm(
     );
 
     harvestedGold += gold;
+    harvestedCount++;
     const name = getCropName(cell.cropId);
     harvestLog.push(`🌾 ${locationId} 농장에서 ${name} 수확! +${gold}G 자동 판매`);
 
@@ -259,7 +262,7 @@ export function tickFarm(
     farm.lastTendDay = currentDay;
   }
 
-  return { harvestedGold, harvestLog, destroyedCells };
+  return { harvestedGold, harvestLog, destroyedCells, harvestedCount };
 }
 
 /**

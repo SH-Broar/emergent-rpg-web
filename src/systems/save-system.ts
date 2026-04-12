@@ -272,6 +272,9 @@ function serializeKnowledge(k: PlayerKnowledge): object {
     companionDaysMap: [...k.companionDaysMap.entries()],
     locationReputation: [...k.locationReputation.entries()],
     totalGiftsGiven: k.totalGiftsGiven,
+    totalGathersDone: k.totalGathersDone,
+    totalCooksDone: k.totalCooksDone,
+    totalFarmHarvests: k.totalFarmHarvests,
     completedQuestCount: k.completedQuestCount,
     completedQuestNames: [...k.completedQuestNames],
     earnedTitles: [...k.earnedTitles],
@@ -323,6 +326,9 @@ function deserializeKnowledge(d: any): PlayerKnowledge {
   k.companionDaysMap = new Map(d.companionDaysMap ?? []);
   k.locationReputation = new Map(d.locationReputation ?? []);
   k.totalGiftsGiven = d.totalGiftsGiven ?? 0;
+  k.totalGathersDone = d.totalGathersDone ?? 0;
+  k.totalCooksDone = d.totalCooksDone ?? 0;
+  k.totalFarmHarvests = d.totalFarmHarvests ?? 0;
   k.completedQuestCount = d.completedQuestCount ?? 0;
   k.completedQuestNames = new Set(d.completedQuestNames ?? []);
   k.earnedTitles = d.earnedTitles ?? [];

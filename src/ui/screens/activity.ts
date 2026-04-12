@@ -16,6 +16,7 @@ import { itemName } from '../../types/registry';
 import { randomFloat } from '../../types/rng';
 import type { ActivitySimConfig } from './activity-sim';
 import { getItemDef } from '../../types/item-defs';
+import { checkAndAwardTitles } from '../../systems/title-system';
 
 /** 활동 실행 아이콘 (effectType 기반) */
 const ACTIVITY_ICON: Record<string, string> = {
@@ -261,6 +262,17 @@ export function createActivityScreen(
 
     // Track
     session.knowledge.trackActivityDone();
+
+    // 활동 완료: Electric+, Iron-, Wind+
+    const actInfluence = new Array(8).fill(0);
+    actInfluence[2] = 0.008;
+    actInfluence[3] = -0.005;
+    actInfluence[5] = 0.007;
+    p.color.applyInfluence(actInfluence);
+    const actTitles = checkAndAwardTitles(session);
+    for (const t of actTitles) {
+      session.backlog.add(session.gameTime, `✦ 칭호 획득: "${t}"`, '시스템');
+    }
 
     // Backlog
     session.backlog.add(

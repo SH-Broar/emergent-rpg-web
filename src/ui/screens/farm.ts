@@ -4,6 +4,7 @@ import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
 import { tendFarm, type FarmCell, type FarmPlan, FARM_PLANS } from '../../models/farming';
 import { getAvailableCrops, getCropDef } from '../../data/crop-defs';
+import { checkAndAwardTitles } from '../../systems/title-system';
 
 export function createFarmScreen(
   session: GameSession,
@@ -134,6 +135,16 @@ export function createFarmScreen(
       wrap.querySelector('[data-tend]')?.addEventListener('click', () => {
         if (tendFarm(farm, currentDay)) {
           session.backlog.add(session.gameTime, `${locationId} 농장을 관리했다. (오늘 ${farm.tendCountToday}회)`, '농장');
+          // 농장 관리: Iron+, Earth+, Wind-
+          const tendInfluence = new Array(8).fill(0);
+          tendInfluence[3] = 0.005;
+          tendInfluence[4] = 0.01;
+          tendInfluence[5] = -0.007;
+          session.player.color.applyInfluence(tendInfluence);
+          const tendTitles = checkAndAwardTitles(session);
+          for (const t of tendTitles) {
+            session.backlog.add(session.gameTime, `✦ 칭호 획득: "${t}"`, '시스템');
+          }
           renderFarm(el);
         }
       });

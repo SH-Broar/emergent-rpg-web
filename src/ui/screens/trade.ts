@@ -5,6 +5,7 @@ import type { GameSession } from '../../systems/game-session';
 import { ItemType, SpiritRole, raceName, spiritRoleName } from '../../types/enums';
 import { itemName, basePrice } from '../../types/registry';
 import { Actor } from '../../models/actor';
+import { checkAndAwardTitles } from '../../systems/title-system';
 
 type TradePhase = 'npc-select' | 'trade';
 type TradeTab = 'buy' | 'sell';
@@ -170,7 +171,17 @@ export function createTradeScreen(
           session.knowledge.trackItemSold();
           if (selectedNpc) { p.adjustRelationship(selectedNpc.name, 0.01, 0.01); }
           session.backlog.add(session.gameTime, `${p.name}이(가) ${item.name}을(를) 판매했다. (+${item.price}G)`, '행동');
-          message = `${item.name} 판매! +${item.price}G`;
+          // 아이템 판매: Water-, Iron+, Dark+
+          const sellInfluence = new Array(8).fill(0);
+          sellInfluence[1] = -0.005;
+          sellInfluence[3] = 0.008;
+          sellInfluence[7] = 0.005;
+          p.color.applyInfluence(sellInfluence);
+          const sellTitles = checkAndAwardTitles(session);
+          for (const t of sellTitles) {
+            session.backlog.add(session.gameTime, `✦ 칭호 획득: "${t}"`, '시스템');
+          }
+          message = `${item.name} 판매! +${item.price}G${sellTitles.length > 0 ? ' ✦ 칭호: "' + sellTitles[sellTitles.length - 1] + '"' : ''}`;
         }
         renderTrade(el);
       });

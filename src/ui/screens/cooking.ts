@@ -4,6 +4,7 @@ import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
 import { ItemType } from '../../types/enums';
 import { categoryName, getEquippedAccessoryEffects } from '../../types/item-defs';
+import { checkAndAwardTitles } from '../../systems/title-system';
 
 interface Recipe {
   name: string;
@@ -165,7 +166,20 @@ export function createCookingScreen(
     }
 
     session.backlog.add(session.gameTime, `${p.name}이(가) ${recipe.name}을(를) 만들었다.`, '행동');
-    message = `${recipe.name} 제작 완료!`;
+
+    // 요리 완료: Fire+, Water+, Electric-
+    const cookInfluence = new Array(8).fill(0);
+    cookInfluence[0] = 0.007;
+    cookInfluence[1] = 0.01;
+    cookInfluence[2] = -0.005;
+    p.color.applyInfluence(cookInfluence);
+    session.knowledge.trackCookDone();
+    const cookTitles = checkAndAwardTitles(session);
+    for (const t of cookTitles) {
+      session.backlog.add(session.gameTime, `✦ 칭호 획득: "${t}"`, '시스템');
+    }
+
+    message = `${recipe.name} 제작 완료!${cookTitles.length > 0 ? ' ✦ 칭호 획득: "' + cookTitles[cookTitles.length - 1] + '"' : ''}`;
     renderCooking(el);
   }
 

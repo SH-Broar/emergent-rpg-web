@@ -8,6 +8,7 @@ import { createNpcList, type NpcEntry } from '../components/npc-list';
 import { createItemGrid, type ItemEntry } from '../components/item-grid';
 import { isActorVisibleToPlayer } from '../../systems/actor-visibility';
 import { getRelationshipStage, giveGift } from '../../systems/npc-interaction';
+import { checkAndAwardTitles } from '../../systems/title-system';
 
 type GiftStep = 'select-npc' | 'select-item' | 'result';
 
@@ -149,8 +150,21 @@ export function createGiftScreen(
       return;
     }
 
+    // 선물 증정: Water+, Earth-, Light+, Dark-
+    const giftInfluence = new Array(8).fill(0);
+    giftInfluence[1] = 0.012;
+    giftInfluence[4] = -0.005;
+    giftInfluence[6] = 0.008;
+    giftInfluence[7] = -0.005;
+    p.color.applyInfluence(giftInfluence);
+    const giftTitles = checkAndAwardTitles(session);
+    for (const t of giftTitles) {
+      session.backlog.add(session.gameTime, `✦ 칭호 획득: "${t}"`, '시스템');
+    }
+
     // 선물은 시간 소모 없음
-    message = result.messages.join(' ');
+    const titleMsg = giftTitles.length > 0 ? ` ✦ 칭호: "${giftTitles[giftTitles.length - 1]}"` : '';
+    message = result.messages.join(' ') + titleMsg;
     step = 'result';
     renderGift(el);
   }

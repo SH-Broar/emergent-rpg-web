@@ -311,6 +311,14 @@ export class PlayerKnowledge {
   trackCompanionDay(name: string): void {
     this.companionDaysMap.set(name, (this.companionDaysMap.get(name) ?? 0) + 1);
   }
+  totalGathersDone = 0;
+  totalCooksDone = 0;
+  totalFarmHarvests = 0;
+
+  trackGatherDone(): void { this.totalGathersDone++; }
+  trackCookDone(): void { this.totalCooksDone++; }
+  trackFarmHarvest(): void { this.totalFarmHarvests++; }
+
   trackGiftGiven(): void { this.totalGiftsGiven++; }
   trackQuestCompleted(questTitle: string): void {
     this.completedQuestCount++;

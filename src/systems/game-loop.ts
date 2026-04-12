@@ -9,6 +9,7 @@ import { advanceTurn } from './world-simulation';
 import { applyDailyBaseEffects, tickStoragePenalties } from './base-effects';
 import { findItemsBySource, getEquippedAccessoryEffects } from '../types/item-defs';
 import { tryNpcInitiatedConversation, getDialogue, getRelationshipStage, getActionText } from './npc-interaction';
+import { checkAndAwardTitles } from './title-system';
 
 function syncPlayerHyperionBonus(session: GameSession): void {
   if (!session.isValid) return;
@@ -214,6 +215,12 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
             '분명히 뭔가가 있었는데... 사라졌다.',
           ], loc.gatherEnv));
         }
+        // 채집 실패: Earth-, Wind-
+        const gatherFailInfluence = new Array(8).fill(0);
+        gatherFailInfluence[4] = -0.003;
+        gatherFailInfluence[5] = -0.005;
+        p.color.applyInfluence(gatherFailInfluence);
+
         result.gatherSim = {
           icon: resolveGatherIcon(p.currentLocation),
           title: resolveGatherTitle(p.currentLocation),
@@ -251,6 +258,19 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
       p.addItemById(picked.id, amount);
       session.knowledge.discoverItem(picked.id);
       session.backlog.add(session.gameTime, `${p.name}이(가) ${picked.name}을(를) ${amount}개 채집했다.`, '행동');
+
+      // 채집 성공: Earth+, Wind+, Fire-
+      const gatherSuccessInfluence = new Array(8).fill(0);
+      gatherSuccessInfluence[0] = -0.003;
+      gatherSuccessInfluence[4] = 0.008;
+      gatherSuccessInfluence[5] = 0.005;
+      p.color.applyInfluence(gatherSuccessInfluence);
+      session.knowledge.trackGatherDone();
+      const gatherTitles = checkAndAwardTitles(session);
+      for (const t of gatherTitles) {
+        session.backlog.add(session.gameTime, `✦ 칭호 획득: "${t}"`, '시스템');
+        result.messages.push(`✦ 칭호 획득: "${t}"`);
+      }
 
       let rarityLabel = '';
       if (picked.rarity === 'uncommon') rarityLabel = ' [특산물]';
@@ -350,6 +370,12 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
       for (const msg of [...beMsgs, ...storageMsgs]) {
         session.backlog.add(session.gameTime, msg, '시스템');
         result.messages.push(msg);
+      }
+      // 농장 수확 후 칭호 체크
+      const farmTitles = checkAndAwardTitles(session);
+      for (const t of farmTitles) {
+        session.backlog.add(session.gameTime, `✦ 칭호 획득: "${t}"`, '시스템');
+        result.messages.push(`✦ 칭호 획득: "${t}"`);
       }
     }
 

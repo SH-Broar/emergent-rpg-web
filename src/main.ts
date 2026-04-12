@@ -57,6 +57,7 @@ import { createDataPackScreen } from './ui/screens/datapack-select';
 import { fastForwardWorld } from './systems/world-simulation';
 import { seasonName } from './types/enums';
 import { CoreMatrix, PlayerKnowledge } from './models/knowledge';
+import { locationName } from './types/registry';
 
 const app = document.getElementById('app')!;
 
@@ -224,6 +225,53 @@ async function boot() {
     p.hasHyperion = true;
   }
 
+  function showWelcomePopup() {
+    const p = session.player;
+    const locDisplay = locationName(p.currentLocation) || p.currentLocation;
+    const homeDisplay = locationName(p.homeLocation) || p.homeLocation;
+
+    sm.push({
+      id: 'welcome',
+      render(el) {
+        el.innerHTML = `
+          <div class="screen info-screen" style="justify-content:center">
+            <h2>⭐ ${p.name}의 이야기</h2>
+            <p style="text-align:center;color:var(--text-dim);margin-bottom:12px">
+              세계에 오신 것을 환영합니다.
+            </p>
+            <div style="font-size:13px;margin-bottom:12px;padding:8px 12px;background:var(--bg-card);border-radius:6px">
+              <p>📍 현재 위치: <b>${locDisplay}</b></p>
+              <p style="margin-top:4px">🏠 첫 거점: <b>${homeDisplay}</b> <span style="color:var(--text-dim);font-size:11px">(길드에서 업그레이드 가능)</span></p>
+            </div>
+
+            <div style="margin:8px 0;padding:8px 12px;background:var(--bg-card);border-radius:6px;border-left:3px solid var(--accent)">
+              <p style="font-weight:600;margin-bottom:6px">⚔ 전투 플레이</p>
+              <p style="font-size:12px;color:var(--text-dim)">NPC와 대화해 <b>동료로 영입</b>하고, <b>히페리온 레벨</b>을 높여 능력치를 강화하세요.</p>
+              <p style="font-size:12px;color:var(--text-dim);margin-top:4px">장비를 갖추고 던전에 도전해 더 깊은 층을 클리어하는 것이 목표입니다.</p>
+            </div>
+
+            <div style="margin:8px 0;padding:8px 12px;background:var(--bg-card);border-radius:6px;border-left:3px solid var(--success)">
+              <p style="font-weight:600;margin-bottom:6px">🌿 생활 플레이</p>
+              <p style="font-size:12px;color:var(--text-dim)">채집·요리·농장으로 <b>돈을 모으고</b>, <b>생활 직업 레벨</b>을 올려 수익을 높이세요.</p>
+              <p style="font-size:12px;color:var(--text-dim);margin-top:4px">NPC들과 친밀도를 쌓아 영향력을 높이고, 여러 <b>거점을 구매·업그레이드</b>하는 것이 목표입니다.</p>
+              <p style="font-size:11px;color:var(--warning);margin-top:6px">소목표: NPC 전원과 친해지기 · 모든 지역에 거점 마련 · 생활 직업 최고 레벨 달성</p>
+            </div>
+
+            <button class="btn btn-primary" data-start style="margin-top:12px;min-height:44px">시작하기 [Enter]</button>
+            <p class="hint">Enter 또는 터치로 계속</p>
+          </div>
+        `;
+        el.querySelector('[data-start]')?.addEventListener('click', () => { sm.pop(); showGame(); });
+      },
+      onKey(key) {
+        if (key === 'Enter' || key === ' ' || key === 'Escape') {
+          sm.pop();
+          showGame();
+        }
+      },
+    });
+  }
+
   function enterGame() {
     // 코어 매트릭스 진단 결과 적용
     const diagColors = (session as any)._diagColorValues as number[] | undefined;
@@ -265,7 +313,11 @@ async function boot() {
     }
     session.backlog.add(session.gameTime, `${session.player.name}의 이야기가 시작된다.`, '시스템');
     autosave();
-    showGame();
+    if (session.player.name === '디버그-모노') {
+      showGame();
+    } else {
+      showWelcomePopup();
+    }
   }
 
   // --- 게임 메인 화면 ---
