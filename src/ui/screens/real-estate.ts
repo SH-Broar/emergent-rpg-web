@@ -21,7 +21,7 @@ function getVillageForLocation(locationId: string): string {
   if (locationId.startsWith('Halpia')) return 'Halpia';
   if (locationId.startsWith('Lar')) return 'LarForest';
   if (locationId.startsWith('Enicham')) return 'Enicham';
-  if (locationId === 'Guild_Hall' || locationId === 'Market_Square') return 'Alimes';
+  if (locationId === 'Market_Square') return 'Iluneon';
   return '';
 }
 
