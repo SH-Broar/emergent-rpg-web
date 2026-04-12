@@ -294,7 +294,25 @@ const WEEKEND_BONUSES: ScheduleEntry['bonuses'][] = [
 // Wednesday market day roles
 const MARKET_DAY_ROLES = new Set([SpiritRole.Merchant, SpiritRole.Craftsman, SpiritRole.Farmer]);
 
+// 리제 전용 스케줄: 주로 Puchi_Tower(정상), 토요일 오후만 Hanabridge(기투회장)
+const RIZE_SCHEDULE: ScheduleEntry[] = [
+  { location: Loc.Puchi_Tower, bonuses: { [ActionType.CooperateWork]: 1.3 } }, // Morning
+  { location: Loc.Puchi_Tower, bonuses: { [ActionType.Socialize]: 1.2 } },     // Afternoon
+  { location: Loc.Puchi_Tower, bonuses: { [ActionType.Socialize]: 1.3 } },     // Evening
+  { location: Loc.Puchi_Tower, bonuses: {} },                                   // Night
+];
+
 function getScheduleEntry(actor: Actor, time: GameTime): ScheduleEntry {
+  // 리제: 토요일 오후에만 기투회장, 나머지는 푸치 탑 상주
+  if (actor.name === '리제') {
+    const dow = time.getDayOfWeek();
+    const period = getTimePeriod(time.hour);
+    if (dow === DayOfWeek.Sat && period === 1) {
+      return { location: Loc.Hanabridge, bonuses: { [ActionType.Socialize]: 1.5 } };
+    }
+    return RIZE_SCHEDULE[period] ?? { location: Loc.Puchi_Tower, bonuses: {} };
+  }
+
   const role = actor.spirit.role;
   const period = getTimePeriod(time.hour);
   const home = getRoutineHome(actor);

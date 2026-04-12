@@ -36,7 +36,7 @@ hp = 80
 loot = Food:2:0.50, MonsterLoot:1:0.25, Herb:1:0.15
 
 [Treant_Sapling]
-name = 나무정령 새싹
+name = 나무요정 새싹
 attack = 16
 defense = 12
 hp = 100
@@ -174,7 +174,7 @@ hp = 120
 loot = MonsterLoot:2:0.40, OreCommon:1:0.30, Equipment:1:0.08
 
 [Lightning_Elemental]
-name = 번개 정령
+name = 번개 요정
 attack = 34
 defense = 10
 hp = 85
@@ -902,7 +902,7 @@ hp = 30
 loot = Food:1:0.50, MonsterLoot:1:0.30
 
 [Tide_Sprite]
-name = 조수 정령
+name = 조수 요정
 attack = 10
 defense = 3
 hp = 40
@@ -917,7 +917,7 @@ hp = 55
 loot = MonsterLoot:2:0.50, Equipment:1:0.08
 
 [Storm_Sprite]
-name = 폭풍 정령
+name = 폭풍 요정
 attack = 16
 defense = 5
 hp = 65
@@ -988,7 +988,7 @@ loot = MonsterLoot:5:0.50, OreRare:2:0.15, Equipment:1:0.10
 ; -------------------------------------------------------
 
 [Wind_Elemental]
-name = 바람 정령
+name = 바람 요정
 attack = 12
 defense = 4
 hp = 50
@@ -1682,6 +1682,315 @@ evasionChance = 0.24
 loot = MonsterLoot:3:0.44, OreRare:1:0.12
 
 ; -------------------------------------------------------
+; 푸치 탑 전용 보스 (30층~)
+; -------------------------------------------------------
+
+[Tower_Revenant]
+name = 탑의 망령
+attack = 185
+defense = 88
+hp = 2200
+burstHitCount = 2
+burstHitDamage = 65
+burstOnce = true
+skillChance = 0.22
+skill_1_name = 망령의 포효
+skill_1_type = attack
+skill_1_value = 1.8
+skill_1_desc = 망령이 공허한 포효로 영혼을 흔든다.
+loot = OreRare:5:0.45, MonsterLoot:10:0.55, Equipment:2:0.18
+
+[Abyss_Crawler]
+name = 심연 배회자
+attack = 195
+defense = 90
+hp = 2400
+evasionChance = 0.18
+tickPressureDamage = 18
+skillChance = 0.24
+skill_1_name = 심연의 침식
+skill_1_type = attack
+skill_1_value = 2.0
+skill_1_desc = 심연의 어둠이 방어를 갉아먹는다.
+loot = OreRare:5:0.46, MonsterLoot:10:0.55, Equipment:2:0.18
+
+[Sky_Titan]
+name = 천공 거인
+attack = 205
+defense = 95
+hp = 2600
+openingAttackMultiplier = 1.6
+skillChance = 0.22
+skill_1_name = 하늘 가르기
+skill_1_type = attack
+skill_1_value = 2.2
+skill_1_desc = 거인이 하늘을 가르는 일격을 내려친다.
+loot = OreRare:6:0.46, MonsterLoot:11:0.56, Equipment:2:0.19
+
+[Stone_Revenant]
+name = 석조 망령
+attack = 215
+defense = 105
+hp = 2800
+skillChance = 0.23
+skill_1_name = 돌폭풍
+skill_1_type = attack
+skill_1_value = 1.9
+skill_1_desc = 석조 파편이 폭풍처럼 날아든다.
+loot = OreRare:6:0.47, MonsterLoot:11:0.56, Equipment:2:0.19
+
+[Iron_Colossus]
+name = 철제 거상
+attack = 225
+defense = 112
+hp = 3000
+burstHitCount = 2
+burstHitDamage = 80
+burstOnce = true
+loot = OreRare:6:0.47, MonsterLoot:12:0.57, Equipment:2:0.20
+
+[Shadow_Drake]
+name = 그림자 용
+attack = 235
+defense = 108
+hp = 3200
+evasionChance = 0.20
+openingAttackMultiplier = 1.8
+skillChance = 0.25
+skill_1_name = 어둠 숨결
+skill_1_type = attack
+skill_1_value = 2.4
+skill_1_desc = 그림자 용이 어둠의 숨결을 뿜어낸다.
+loot = OreRare:7:0.48, MonsterLoot:12:0.57, Equipment:2:0.20
+
+[Eternal_Warden]
+name = 영원의 수호자
+attack = 245
+defense = 118
+hp = 3400
+tickPressureDamage = 22
+skillChance = 0.24
+skill_1_name = 영원의 봉인
+skill_1_type = attack
+skill_1_value = 2.1
+skill_1_desc = 수호자가 영원의 봉인으로 행동을 제한한다.
+loot = OreRare:7:0.48, MonsterLoot:13:0.58, Equipment:3:0.21
+
+[Void_Reaper]
+name = 공허 낫잡이
+attack = 255
+defense = 115
+hp = 3600
+evasionChance = 0.22
+skillChance = 0.26
+skill_1_name = 공허의 낫
+skill_1_type = attack
+skill_1_value = 2.5
+skill_1_desc = 공허에서 소환된 낫이 존재를 베어낸다.
+loot = OreRare:7:0.49, MonsterLoot:13:0.58, Equipment:3:0.21
+
+[Thunder_Golem]
+name = 뇌격 골렘
+attack = 268
+defense = 122
+hp = 3850
+burstHitCount = 3
+burstHitDamage = 70
+burstOnce = true
+loot = OreRare:8:0.49, MonsterLoot:14:0.59, Equipment:3:0.22
+
+[Crystal_Titan]
+name = 수정 거인
+attack = 280
+defense = 128
+hp = 4100
+skillChance = 0.25
+skill_1_name = 수정 폭발
+skill_1_type = attack
+skill_1_value = 2.3
+skill_1_desc = 수정 파편이 사방으로 폭발한다.
+loot = OreRare:8:0.50, MonsterLoot:14:0.59, Equipment:3:0.22
+
+[Hyperion_Shade]
+name = 히페리온의 잔상
+attack = 295
+defense = 135
+hp = 4400
+openingAttackMultiplier = 2.0
+tickPressureDamage = 25
+skillChance = 0.26
+skill_1_name = 히페리온 파동
+skill_1_type = attack
+skill_1_value = 2.6
+skill_1_desc = 히페리온의 힘이 잔상으로 남아 폭발한다.
+loot = OreRare:9:0.50, MonsterLoot:15:0.60, Equipment:3:0.23
+
+[Ruin_Sovereign]
+name = 폐허의 군주
+attack = 310
+defense = 142
+hp = 4700
+skillChance = 0.27
+skill_1_name = 군주의 압제
+skill_1_type = attack
+skill_1_value = 2.8
+skill_1_desc = 폐허의 군주가 압도적인 힘으로 짓누른다.
+loot = OreRare:9:0.51, MonsterLoot:15:0.60, Equipment:3:0.23
+
+[Storm_Titan]
+name = 폭풍 거인
+attack = 322
+defense = 148
+hp = 5000
+burstHitCount = 2
+burstHitDamage = 95
+burstOnce = true
+evasionChance = 0.15
+loot = OreRare:9:0.51, MonsterLoot:16:0.61, Equipment:3:0.24
+
+[Abyss_Knight]
+name = 심연 기사
+attack = 335
+defense = 155
+hp = 5300
+openingAttackMultiplier = 1.9
+skillChance = 0.27
+skill_1_name = 심연검
+skill_1_type = attack
+skill_1_value = 2.7
+skill_1_desc = 심연에서 담금질된 검이 방어를 꿰뚫는다.
+loot = OreRare:10:0.52, MonsterLoot:16:0.61, Equipment:4:0.24
+
+[Shadow_Colossus]
+name = 그림자 거상
+attack = 348
+defense = 160
+hp = 5600
+evasionChance = 0.24
+tickPressureDamage = 30
+skillChance = 0.28
+skill_1_name = 그림자 포식
+skill_1_type = attack
+skill_1_value = 3.0
+skill_1_desc = 그림자가 빛을 빨아들이며 덮쳐온다.
+loot = OreRare:10:0.52, MonsterLoot:17:0.62, Equipment:4:0.25
+
+[Ancient_Guardian]
+name = 고대 수호신
+attack = 362
+defense = 168
+hp = 6000
+skillChance = 0.28
+skill_1_name = 고대의 심판
+skill_1_type = attack
+skill_1_value = 2.9
+skill_1_desc = 고대에서 깨어난 수호신이 심판을 내린다.
+loot = OreRare:10:0.53, MonsterLoot:17:0.62, Equipment:4:0.25
+
+[Celestial_Golem]
+name = 천상 골렘
+attack = 375
+defense = 175
+hp = 6400
+burstHitCount = 3
+burstHitDamage = 110
+burstOnce = true
+loot = OreRare:11:0.53, MonsterLoot:18:0.63, Equipment:4:0.26
+
+[World_Eater]
+name = 세계 삼키는 자
+attack = 390
+defense = 180
+hp = 6900
+openingAttackMultiplier = 2.2
+tickPressureDamage = 35
+skillChance = 0.30
+skill_1_name = 세계 침식
+skill_1_type = attack
+skill_1_value = 3.2
+skill_1_desc = 세계 자체를 갉아먹는 힘이 쏟아진다.
+loot = OreRare:11:0.54, MonsterLoot:18:0.63, Equipment:4:0.26
+
+[Tower_Sovereign]
+name = 탑의 군주
+attack = 405
+defense = 188
+hp = 7400
+skillChance = 0.30
+skill_1_name = 군주의 영역
+skill_1_type = attack
+skill_1_value = 3.4
+skill_1_desc = 탑의 군주가 자신의 영역을 선포하며 공격한다.
+loot = OreRare:12:0.54, MonsterLoot:19:0.64, Equipment:5:0.27
+
+[Prime_Revenant]
+name = 원초의 망령
+attack = 420
+defense = 195
+hp = 8000
+evasionChance = 0.18
+burstHitCount = 2
+burstHitDamage = 130
+burstOnce = true
+skillChance = 0.30
+skill_1_name = 원초의 공허
+skill_1_type = attack
+skill_1_value = 3.5
+skill_1_desc = 태초의 공허에서 소환된 힘이 폭발한다.
+loot = OreRare:12:0.55, MonsterLoot:20:0.65, Equipment:5:0.28
+
+[Hyperion_Avatar]
+name = 히페리온의 화신
+attack = 450
+defense = 205
+hp = 9000
+openingAttackMultiplier = 2.5
+tickPressureDamage = 40
+burstHitCount = 3
+burstHitDamage = 140
+burstOnce = true
+skillChance = 0.32
+skill_1_name = 히페리온 폭풍
+skill_1_type = attack
+skill_1_value = 3.8
+skill_1_desc = 히페리온의 모든 힘이 폭풍처럼 쏟아진다.
+loot = OreRare:15:0.60, MonsterLoot:25:0.70, Equipment:6:0.30
+
+[Tower_Deity]
+name = 탑의 신격
+attack = 490
+defense = 218
+hp = 10500
+openingAttackMultiplier = 2.8
+tickPressureDamage = 45
+burstHitCount = 3
+burstHitDamage = 155
+burstOnce = true
+skillChance = 0.33
+skill_1_name = 신격의 강림
+skill_1_type = attack
+skill_1_value = 4.0
+skill_1_desc = 탑에 깃든 신격이 강림하여 존재 자체를 공격한다.
+loot = OreRare:18:0.65, MonsterLoot:30:0.75, Equipment:7:0.32
+
+[Dragon_Rize]
+name = 드래곤 리제
+attack = 540
+defense = 230
+hp = 12000
+openingAttackMultiplier = 3.0
+tickPressureDamage = 50
+burstHitCount = 4
+burstHitDamage = 170
+burstOnce = true
+skillChance = 0.35
+skill_1_name = 하늘 용의 포효
+skill_1_type = attack
+skill_1_value = 4.5
+skill_1_desc = 하늘 용의 혈통에서 비롯된 절대적인 힘이 폭발한다.
+loot = OreRare:25:0.70, MonsterLoot:40:0.80, Equipment:10:0.40
+
+; -------------------------------------------------------
 ; 하라티쿠스 폐허 몬스터
 ; -------------------------------------------------------
 
@@ -1735,7 +2044,7 @@ loot = OreRare:5:0.30, MonsterLoot:8:0.52, Equipment:2:0.15
 ; -------------------------------------------------------
 
 [Ikar_Wind_Sprite]
-name = 이카르 바람 정령
+name = 이카르 바람 요정
 attack = 68
 defense = 20
 hp = 250
@@ -1776,7 +2085,7 @@ loot = OreRare:3:0.40, MonsterLoot:6:0.48, Equipment:2:0.14
 ; -------------------------------------------------------
 
 [Starlit_Sprite]
-name = 별빛 정령
+name = 별빛 요정
 attack = 35
 defense = 12
 hp = 112
@@ -1851,7 +2160,7 @@ tickPressureDamage = 6
 loot = MonsterLoot:2:0.45, OreCommon:1:0.30
 
 [Overload_Elemental]
-name = 과부하 정령
+name = 과부하 요정
 attack = 55
 defense = 25
 hp = 280
@@ -1986,7 +2295,7 @@ loot = OreCommon:2:0.45, MonsterLoot:1:0.40
 ; -------------------------------------------------------
 
 [Worldseed_Sprite]
-name = 세계씨앗 정령
+name = 세계씨앗 요정
 attack = 40
 defense = 22
 hp = 240
@@ -1994,7 +2303,7 @@ evasionChance = 0.18
 loot = Herb:2:0.50, MonsterLoot:1:0.40
 
 [Ancient_Treant]
-name = 고대 나무 정령
+name = 고목 요정
 attack = 52
 defense = 45
 hp = 380
@@ -2244,7 +2553,7 @@ tickPressureDamage = 3
 loot = Herb:2:0.55, Food:1:0.40
 
 [Treant_Elder]
-name = 나무정령 장로
+name = 나무요정 장로
 attack = 36
 defense = 28
 hp = 220

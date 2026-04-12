@@ -83,6 +83,7 @@ const MAIN_ACTIONS: ActionDef[] = [
   { key: 'l', label: '학습', action: 'skill_shop' as GameAction, icon: '📖', visible: atLunaAcademy },
   { key: 'l', label: '생활 직업', action: 'life_job' as GameAction, icon: '🌿', visible: atHanabridge },
   { key: 'j', label: '던전 정보', action: 'guild_dungeon' as GameAction, icon: '🗺', visible: atGuild },
+  { key: 'T', label: '푸치 탑', action: 'puchi_tower' as GameAction, icon: '🗼', visible: (session: GameSession) => session.player.currentLocation === 'Puchi_Tower' },
   { key: 'm', label: '기억의 샘', action: 'memory_spring', icon: '💧', visible: atMemorySpring },
   { key: 'f', label: '배편', action: 'ferry' as GameAction, icon: '⛵', visible: atMartinPort },
   { key: 'v', label: '마을', action: 'village' as GameAction, icon: '🏘', visible: atVillage },

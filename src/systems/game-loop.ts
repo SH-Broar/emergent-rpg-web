@@ -36,7 +36,7 @@ export type GameAction =
   | 'info_skills' | 'info_inventory'
   | 'save'
   | 'skill_shop' | 'guild_dungeon' | 'life_job' | 'ferry'
-  | 'village';
+  | 'village' | 'puchi_tower';
 
 const ACTION_TIME: Partial<Record<GameAction, number>> = {
   idle: 30, move: 0, talk: 20, trade: 15, eat: 0,

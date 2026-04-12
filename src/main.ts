@@ -42,6 +42,7 @@ import { createFarmScreen } from './ui/screens/farm';
 import { createTravelScreen, type TravelOptions } from './ui/screens/travel';
 import { createFerryScreen } from './ui/screens/ferry';
 import { createVillageScreen } from './ui/screens/village';
+import { createPuchiTowerScreen } from './ui/screens/puchi-tower';
 import { createVillageBuildScreen } from './ui/screens/village-build';
 import { createStatusScreen } from './ui/screens/status';
 import { getAllItemDefs } from './types/item-defs';
@@ -416,6 +417,9 @@ async function boot() {
           break;
         case 'guild_dungeon':
           sm.push(createGuildDungeonScreen(session, () => sm.pop()));
+          break;
+        case 'puchi_tower':
+          sm.push(createPuchiTowerScreen(session, () => sm.pop()));
           break;
         case 'life_job':
           sm.push(createLifeJobScreen(session, () => sm.pop()));

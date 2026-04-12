@@ -244,6 +244,7 @@ export class DungeonSystem {
   setDefaultRule(r: CombatBehaviorRule): void { this.defaultRule = r; }
   setRoleRule(role: string, r: CombatBehaviorRule): void { this.roleRules.set(role, r); }
   addColorRule(r: ColorCombatRule): void { this.colorRules.push(r); }
+  getMonster(id: string): MonsterDef | undefined { return this.monsters.get(id); }
 
   getDungeon(id: string): DungeonDef | undefined {
     return this.dungeons.find(d => d.id === id);

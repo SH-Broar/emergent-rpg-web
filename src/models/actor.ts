@@ -126,6 +126,8 @@ export class Actor {
   hyperionFlags: boolean[] = [false, false, false, false, false];
   /** 플레이어 전용: 다른 액터들의 히페리온 레벨 합산 보너스 */
   hyperionBonus = 0;
+  /** 푸치 탑: 이번 실행에서 도달한 최고 층 */
+  puchiTowerHighestFloor = 0;
   /** 전투 직업 */
   combatJob = '';
   /** 생활 직업 */

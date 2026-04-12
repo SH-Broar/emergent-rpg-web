@@ -93,6 +93,7 @@ function serializeActor(a: Actor): object {
     equippedArmor: a.equippedArmor,
     equippedAccessory: a.equippedAccessory,
     equippedAccessory2: a.equippedAccessory2,
+    puchiTowerHighestFloor: a.puchiTowerHighestFloor,
   };
 }
 
@@ -130,6 +131,7 @@ function deserializeActor(d: any): Actor {
   a.equippedArmor = d.equippedArmor ?? '';
   a.equippedAccessory = d.equippedAccessory ?? '';
   a.equippedAccessory2 = d.equippedAccessory2 ?? '';
+  a.puchiTowerHighestFloor = d.puchiTowerHighestFloor ?? 0;
   return a;
 }
 
