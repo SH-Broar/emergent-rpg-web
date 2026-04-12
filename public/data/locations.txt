@@ -15,8 +15,17 @@ name = 알리메스
 description = 바그레트 산맥과 겔리더 산맥이 병풍처럼 둘러싼 오지 마을. 서쪽으로는 시안 사구 너머로 바다가 보이고, 돌로 포장된 작은 광장에는 서른한 종족의 발자국이 뒤섞여 있다. 대장간에서 흘러나오는 망치 소리와 시장의 흥정 소리가 골목에 메아리치며, 산골의 차가운 공기에는 약초와 비단실의 은은한 향이 감돈다. 외진 만큼 단단하게 얽힌 공동체가 이곳의 가장 큰 자산이다.
 x = -3000
 y = -1500
-links = Guild_Branch, Herb_Garden, Silk_Workshop, Moonlit_Clearing, Cyan_Dunes, Tiklit_Range, Bagreat, Gelider
+links = Guild_Branch, Herb_Garden, Silk_Workshop, Moonlit_Clearing, Cyan_Dunes, Tiklit_Range, Bagreat, Gelider, Alimes_High
 resources = Food:50
+monsterLevel = 0
+dangerLevel = 0.0
+
+[Alimes_High]
+name = 알리메스 고지대
+description = 알리메스 마을에서 산 쪽으로 조금 올라간 고지대 구역. 집세는 중심가보다 비싸지만 탁 트인 전망이 그 값을 한다. 맑은 날이면 시안 사구 너머 수평선까지 보이고, 새벽엔 산골의 운무가 발아래로 깔린다. 조용히 혼자 지내고 싶은 여행자들이 즐겨 찾는다.
+x = -3200
+y = -1700
+links = Alimes
 monsterLevel = 0
 dangerLevel = 0.0
 
