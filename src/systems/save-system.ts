@@ -417,6 +417,8 @@ function serializeVillageState(v: VillageState): object {
     totalVisitorDays: v.totalVisitorDays ?? 0,
     crisisEventSuccessCount: v.crisisEventSuccessCount ?? 0,
     springFestivalCount: v.springFestivalCount ?? 0,
+    benzenAffinity: v.benzenAffinity ?? 0,
+    lastBenzenVisitDay: v.lastBenzenVisitDay ?? 0,
   };
 }
 
@@ -456,6 +458,8 @@ function deserializeVillageState(d: any): VillageState {
     totalVisitorDays: d.totalVisitorDays ?? 0,
     crisisEventSuccessCount: d.crisisEventSuccessCount ?? 0,
     springFestivalCount: d.springFestivalCount ?? 0,
+    benzenAffinity: d.benzenAffinity ?? 0,
+    lastBenzenVisitDay: d.lastBenzenVisitDay ?? 0,
   };
 }
 

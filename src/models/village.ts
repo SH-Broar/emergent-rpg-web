@@ -63,6 +63,8 @@ export interface VillageState {
   totalVisitorDays: number;             // 누계 방문자-일 (주민의 친구 칭호용)
   crisisEventSuccessCount: number;      // 위기 이벤트 성공 횟수
   springFestivalCount: number;          // 봄 축제 성공 횟수
+  benzenAffinity: number;          // 벤젠 친밀도 0~100
+  lastBenzenVisitDay: number;      // 마지막으로 벤젠을 방문한 날 (0=미방문)
 }
 
 export function createVillageState(
@@ -97,6 +99,8 @@ export function createVillageState(
     totalVisitorDays: 0,
     crisisEventSuccessCount: 0,
     springFestivalCount: 0,
+    benzenAffinity: 0,
+    lastBenzenVisitDay: 0,
   };
 }
 
@@ -185,12 +189,10 @@ export function checkVillageStageUp(v: VillageState): boolean {
   const activeFacilityCount = getActiveFacilities(v).length;
   if (v.stage === 1 && activeFacilityCount >= 1) return true;
   if (v.stage === 2 && activeFacilityCount >= 3 && v.population >= 5) return true;
-  if (v.stage === 3 && activeFacilityCount >= 8 && v.population >= 15) return true;
-  // Phase 3 신규
-  if (v.stage === 4 && activeFacilityCount >= 15 && v.population >= 35) return true;
-  if (v.stage === 5 && activeFacilityCount >= 25 && v.population >= 70) return true;
-  if (v.stage === 6 && activeFacilityCount >= 50 && v.population >= 200) return true;
-  // stage === 7은 최대 단계
+  if (v.stage === 3 && activeFacilityCount >= 8 && v.population >= 15 && v.happiness >= 40) return true;
+  if (v.stage === 4 && activeFacilityCount >= 15 && v.population >= 35 && v.reputation >= 20 && v.happiness >= 45) return true;
+  if (v.stage === 5 && activeFacilityCount >= 25 && v.population >= 70 && v.reputation >= 40 && v.happiness >= 50) return true;
+  if (v.stage === 6 && activeFacilityCount >= 50 && v.population >= 200 && v.reputation >= 60 && v.happiness >= 60) return true;
   return false;
 }
 

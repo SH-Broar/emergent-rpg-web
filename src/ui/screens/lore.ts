@@ -18,7 +18,7 @@ function getCategory(name: string): LoreCategory {
   if (name === '엘리메스의 세계') return '세계관';
   if (/사람들/.test(name)) return '사람들';
   if (/종족|역할|세계의 구조|정령과 신|마왕|넓은 세계/.test(name)) return '세계관';
-  if (/컬러|매트릭스|계절|날씨|시간의 흐름|인식과 정보|지역 활동|평판|선물|칭호|히페리온|동료|스킬|제작|퀘스트/.test(name)) return '시스템';
+  if (/컬러|매트릭스|계절|날씨|시간의 흐름|인식과 정보|지역 활동|평판|선물|칭호|히페리온|동료|스킬|제작|퀘스트|부동산|거점|창고|보관함|생활 직업|마을 건설|기력/.test(name)) return '시스템';
   return '장소';
 }
 

@@ -3,7 +3,8 @@
 import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
 import { VillageSpecialization } from '../../models/village';
-import { getFacilityDef, getBenzenLine } from '../../data/village-defs';
+import { getFacilityDef, getBenzenLine, getBenzenLineByPrefix, buildBenzenGreetCondition } from '../../data/village-defs';
+import { toSeasonKey } from '../../systems/village-simulation';
 
 const SPEC_LABELS: Record<VillageSpecialization, string> = {
   none: '미선택',
@@ -27,7 +28,7 @@ export function createVillageBenzenScreen(
   onEventRequested: () => void,
 ): Screen {
   let statusMessage = '';
-  let currentView: 'main' | 'briefing' | 'upgrade' | 'spec' = 'main';
+  let currentView: 'main' | 'briefing' | 'upgrade' | 'spec' | 'chat' = 'main';
 
   function render(el: HTMLElement): void {
     const village = session.knowledge.villageState;
@@ -42,12 +43,29 @@ export function createVillageBenzenScreen(
 
     if (currentView === 'main') {
       const hasEvent = village.activeEvent !== null;
+      // 동적 인삿말 계산
+      const gt = session.gameTime;
+      const season = toSeasonKey(Math.floor((gt.day - 1) / 91) % 4);
+      let greetExtra: 'first_visit' | 'long_absence' | 'repeated_today' | 'after_crisis' | undefined;
+      if (!village.benzenAppeared) greetExtra = 'first_visit';
+      else if (village.lastBenzenVisitDay > 0 && gt.day - village.lastBenzenVisitDay > 7) greetExtra = 'long_absence';
+      else if (village.lastBenzenVisitDay === gt.day) greetExtra = 'repeated_today';
+      const greetCondition = buildBenzenGreetCondition(gt.isMorning(), gt.isAfternoon(), gt.isEvening(), gt.isNight(), season, greetExtra);
+      const greetLine = getBenzenLine(greetCondition);
+      // 친밀도 증가 + 방문일 기록
+      village.lastBenzenVisitDay = gt.day;
+      if (village.benzenAffinity < 100) {
+        village.benzenAffinity = Math.min(100, (village.benzenAffinity ?? 0) + 1);
+      }
       wrap.innerHTML = `
         <button class="btn back-btn" data-back>← 뒤로 [Esc]</button>
         <h2 style="text-align:center">벤젠</h2>
         <div style="padding:12px;background:var(--bg-panel);border-radius:10px;margin:10px 0;
                     font-size:13px;line-height:1.6;color:var(--text-dim);font-style:italic;text-align:center">
-          "뭐, 이 정도 마을 관리야 당연하지. 특별히 봐주는 거라고."
+          "${greetLine}"
+        </div>
+        <div style="text-align:center;font-size:11px;color:var(--text-dim);margin-bottom:8px">
+          친밀도: ${'★'.repeat(Math.floor((village.benzenAffinity ?? 0) / 20))}${'☆'.repeat(5 - Math.floor((village.benzenAffinity ?? 0) / 20))} (${village.benzenAffinity ?? 0}/100)
         </div>
         ${statusMessage ? `<div style="color:var(--warning);text-align:center;margin-bottom:8px;font-size:13px">${statusMessage}</div>` : ''}
         ${hasEvent ? `
@@ -61,10 +79,11 @@ export function createVillageBenzenScreen(
           <button class="btn" data-view="briefing">[1] 마을 현황 브리핑</button>
           <button class="btn" data-view="upgrade">[2] 시설 업그레이드 가이드</button>
           <button class="btn" data-view="spec">[3] 마을 전문화 선택</button>
+          <button class="btn" data-view="chat">[4] 벤젠에게 말 걸기</button>
           ${hasEvent ? `<button class="btn" style="border-color:var(--accent)" data-event>[!] 이벤트 처리하기</button>` : ''}
-          <button class="btn" data-back>[4] 뒤로</button>
+          <button class="btn" data-back>[5] 뒤로</button>
         </div>
-        <p class="hint">1~4 키 또는 버튼 클릭</p>
+        <p class="hint">1~5 키 또는 버튼 클릭</p>
       `;
 
       wrap.querySelector('[data-back]')?.addEventListener('click', onDone);
@@ -103,6 +122,8 @@ export function createVillageBenzenScreen(
         net,
         village.visitingNpcCount ?? 0,
         village.stage,
+        village.facilities.length,
+        village.reputation,
       );
 
       wrap.innerHTML = `
@@ -241,6 +262,57 @@ export function createVillageBenzenScreen(
         currentView = 'main'; render(el);
       });
 
+    } else if (currentView === 'chat') {
+      const af = village.benzenAffinity ?? 0;
+      const net = village.finance.totalIncomePerDay - village.finance.totalMaintenancePerDay;
+
+      // 현재 상황에 맞는 대사 조건 우선순위 선택
+      let chatCondition = 'personal:self:reflection';
+      if (af >= 50) chatCondition = getBenzenChatCondition(village, net, 'high');
+      else if (af >= 30) chatCondition = getBenzenChatCondition(village, net, 'mid');
+      else if (af >= 10) chatCondition = getBenzenChatCondition(village, net, 'low');
+      else chatCondition = `affinity:lv0`;
+
+      const chatLine = getBenzenLine(chatCondition);
+      const affinityLevel = af >= 50 ? '절친' : af >= 30 ? '신뢰' : af >= 10 ? '지인' : '초면';
+
+      wrap.innerHTML = `
+        <button class="btn back-btn" data-back>← 뒤로 [Esc]</button>
+        <h2>벤젠에게 말 걸기</h2>
+        <div style="padding:14px;background:var(--bg-panel);border-radius:10px;margin:10px 0;
+                    font-size:13px;line-height:1.7;color:var(--text-main);font-style:italic;text-align:center;
+                    border-left:3px solid var(--info)">
+          "...${chatLine}"
+        </div>
+        <div style="text-align:center;font-size:11px;color:var(--text-dim);margin:6px 0 12px">
+          [친밀도 ${af}/100 · ${affinityLevel}]
+        </div>
+        <div class="menu-buttons">
+          <button class="btn" data-chat-random>[다른 말 듣기]</button>
+          <button class="btn" data-chat-personal>[개인적인 이야기]</button>
+          <button class="btn" data-chat-magic>[마법 이론 이야기]</button>
+          <button class="btn" data-back>← 뒤로</button>
+        </div>
+      `;
+      wrap.querySelector('[data-back]')?.addEventListener('click', () => { currentView = 'main'; render(el); });
+      wrap.querySelector('[data-chat-random]')?.addEventListener('click', () => render(el));
+      wrap.querySelector('[data-chat-personal]')?.addEventListener('click', () => {
+        const line = getBenzenLineByPrefix('personal');
+        const el2 = document.querySelector<HTMLElement>('#app');
+        if (el2) {
+          const chatDiv = el2.querySelector<HTMLElement>('[style*="border-left:3px"]');
+          if (chatDiv) chatDiv.innerHTML = `"...${line}"`;
+        }
+      });
+      wrap.querySelector('[data-chat-magic]')?.addEventListener('click', () => {
+        const line = getBenzenLineByPrefix('personal:magic');
+        const el2 = document.querySelector<HTMLElement>('#app');
+        if (el2) {
+          const chatDiv = el2.querySelector<HTMLElement>('[style*="border-left:3px"]');
+          if (chatDiv) chatDiv.innerHTML = `"...${line}"`;
+        }
+      });
+
     } else if (currentView === 'spec') {
       const current = village.specialization;
       const alreadyChosen = current !== 'none';
@@ -283,6 +355,13 @@ export function createVillageBenzenScreen(
                       text-align:center;font-size:12px;color:var(--success)">
             현재 전문화: ${SPEC_LABELS[current]}
           </div>
+          <div style="padding:8px;background:rgba(255,150,0,0.08);border-radius:8px;margin-bottom:10px;
+                      text-align:center;font-size:11px;color:var(--text-dim)">
+            재전문화: 500G + 명성 -15 소모. 단계 3 이상 필요.
+            ${village.stage >= 3 && session.player.spirit.gold >= 500
+              ? `<button class="btn" data-respec style="margin-left:8px;font-size:11px">재전문화 시작</button>`
+              : `(조건 미충족)`}
+          </div>
         ` : ''}
         ${specHtml}
         <button class="btn" data-back style="margin-top:8px">← 뒤로</button>
@@ -309,6 +388,18 @@ export function createVillageBenzenScreen(
           });
         });
       }
+      const respecBtn = wrap.querySelector<HTMLButtonElement>('[data-respec]');
+      if (respecBtn) {
+        respecBtn.addEventListener('click', () => {
+          village.specialization = 'none';
+          session.player.spirit.gold -= 500;
+          village.reputation = Math.max(0, village.reputation - 15);
+          const respecLine = getBenzenLine('specialization:change:warning');
+          statusMessage = `재전문화 완료. 벤젠: "${respecLine}"`;
+          currentView = 'spec';
+          render(el);
+        });
+      }
     }
 
     el.appendChild(wrap);
@@ -330,7 +421,8 @@ export function createVillageBenzenScreen(
         if (key === '1') { currentView = 'briefing'; const el = document.querySelector<HTMLElement>('#app'); if (el) render(el); }
         else if (key === '2') { currentView = 'upgrade'; const el = document.querySelector<HTMLElement>('#app'); if (el) render(el); }
         else if (key === '3') { currentView = 'spec'; const el = document.querySelector<HTMLElement>('#app'); if (el) render(el); }
-        else if (key === '4') onDone();
+        else if (key === '4') { currentView = 'chat'; const el = document.querySelector<HTMLElement>('#app'); if (el) render(el); }
+        else if (key === '5') onDone();
       }
     },
   };
@@ -340,14 +432,64 @@ function getBriefingComment(
   population: number,
   happiness: number,
   net: number,
-  visitingNpcCount: number,
-  stage: number,
+  _visitingNpcCount: number,
+  _stage: number,
+  facilityCount: number,
+  _reputation: number,
 ): string {
-  if (net < 0) return getBenzenLine('net_negative');
-  if (population < 5) return getBenzenLine('low_population');
-  if (happiness < 30) return getBenzenLine('low_happiness');
-  if (happiness >= 70 && population > 10) return getBenzenLine('high_happiness');
-  if (visitingNpcCount >= 5) return getBenzenLine('visitor_many');
-  if (visitingNpcCount === 0 && stage >= 3) return getBenzenLine('visitor_zero');
-  return getBenzenLine('default');
+  // 재정 상태
+  if (net < -50) return getBenzenLine('brief:income:crisis');
+  if (net < 0) return getBenzenLine('brief:income:tight');
+  if (net > 100) return getBenzenLine('brief:income:prosperous');
+  if (net > 0) return getBenzenLine('brief:income:stable');
+
+  // 인구 구간
+  if (population <= 5) return getBenzenLine('brief:population:0to5');
+  if (population <= 15) return getBenzenLine('brief:population:6to15');
+  if (population <= 35) return getBenzenLine('brief:population:16to35');
+  if (population <= 70) return getBenzenLine('brief:population:36to70');
+  if (population <= 120) return getBenzenLine('brief:population:71to120');
+  if (population > 120) return getBenzenLine('brief:population:120plus');
+
+  // 행복도
+  if (happiness < 30) return getBenzenLine('brief:happiness:low');
+  if (happiness >= 70) return getBenzenLine('brief:happiness:high');
+
+  // 시설 수
+  if (facilityCount <= 2) return getBenzenLine('brief:facilities:0to2');
+  if (facilityCount <= 7) return getBenzenLine('brief:facilities:3to7');
+  if (facilityCount <= 14) return getBenzenLine('brief:facilities:8to14');
+
+  return getBenzenLine('brief:overall:good');
+}
+
+/** 친밀도 레벨에 따른 chat 조건 선택 */
+function getBenzenChatCondition(
+  village: import('../../models/village').VillageState,
+  _net: number,
+  _level: 'high' | 'mid' | 'low',
+): string {
+  const af = village.benzenAffinity ?? 0;
+
+  if (af >= 50) {
+    const opts = ['affinity:lv50:opening', 'affinity:lv50:rare', 'personal:past:reason', 'personal:settling:attachment', 'affinity:trust_moment'];
+    return opts[Math.floor(Math.random() * opts.length)];
+  }
+  if (af >= 40) {
+    const opts = ['affinity:lv40', 'affinity:lv40:b', 'personal:future', 'personal:self:reflection'];
+    return opts[Math.floor(Math.random() * opts.length)];
+  }
+  if (af >= 30) {
+    const opts = ['affinity:lv30', 'affinity:lv30:b', 'personal:settling:growth', 'personal:past:wandering'];
+    return opts[Math.floor(Math.random() * opts.length)];
+  }
+  if (af >= 20) {
+    const opts = ['affinity:lv20', 'affinity:lv20:b', 'personal:settling:reason'];
+    return opts[Math.floor(Math.random() * opts.length)];
+  }
+  if (af >= 10) {
+    const opts = ['affinity:lv10', 'affinity:lv10:b', 'personal:magic:mutter:calculation', 'personal:magic:mutter:formula'];
+    return opts[Math.floor(Math.random() * opts.length)];
+  }
+  return 'affinity:lv0';
 }

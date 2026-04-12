@@ -88,21 +88,46 @@ export function registerBenzenLine(def: BenzenLineDef): void {
 }
 
 export function getBenzenLine(condition: string): string {
-  const matches = benzenLineRegistry
-    .filter(d => d.condition === condition)
-    .sort((a, b) => b.priority - a.priority);
-  if (matches.length > 0) {
-    // 동점이면 랜덤 선택
-    const top = matches[0].priority;
-    const topMatches = matches.filter(d => d.priority === top);
-    return topMatches[Math.floor(Math.random() * topMatches.length)].text;
+  const parts = condition.split(':');
+  // 가장 구체적인 조건부터 점진적으로 좁혀가며 매칭
+  for (let len = parts.length; len > 0; len--) {
+    const key = parts.slice(0, len).join(':');
+    const matches = benzenLineRegistry
+      .filter(d => d.condition === key)
+      .sort((a, b) => b.priority - a.priority);
+    if (matches.length > 0) {
+      const top = matches[0].priority;
+      const topMatches = matches.filter(d => d.priority === top);
+      return topMatches[Math.floor(Math.random() * topMatches.length)].text;
+    }
   }
-  // 폴백: default
-  const fallback = benzenLineRegistry
-    .filter(d => d.condition === 'default')
-    .sort((a, b) => b.priority - a.priority);
+  const fallback = benzenLineRegistry.filter(d => d.condition === 'default');
   if (fallback.length > 0) return fallback[Math.floor(Math.random() * Math.min(3, fallback.length))].text;
   return '...';
+}
+
+/** prefix로 시작하는 조건들 중 랜덤 1개 반환 */
+export function getBenzenLineByPrefix(prefix: string): string {
+  const matches = benzenLineRegistry.filter(d => d.condition.startsWith(prefix + ':') || d.condition === prefix);
+  if (matches.length === 0) return getBenzenLine('default');
+  const pick = matches[Math.floor(Math.random() * matches.length)];
+  return pick.text;
+}
+
+/** 게임 컨텍스트로 greet 조건 문자열 생성 */
+export function buildBenzenGreetCondition(
+  isMorning: boolean,
+  isAfternoon: boolean,
+  isEvening: boolean,
+  _isNight: boolean,
+  season: string,
+  extra?: 'first_visit' | 'long_absence' | 'repeated_today' | 'after_crisis' | 'holiday',
+): string {
+  if (extra) return `greet:${extra}`;
+  if (isMorning) return `greet:morning:season:${season}`;
+  if (isAfternoon) return `greet:noon:season:${season}`;
+  if (isEvening) return `greet:evening:season:${season}`;
+  return `greet:night:season:${season}`;
 }
 
 export function getBenzenLineCount(): number {

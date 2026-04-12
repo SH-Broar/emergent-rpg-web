@@ -7,7 +7,7 @@ import {
   recalcVillageFinance,
   recalcVillageStats,
 } from '../models/village';
-import { getAllVillageEventDefs, getFacilityDef, getRoadDef, getVillageEventDef } from '../data/village-defs';
+import { getAllVillageEventDefs, getFacilityDef, getRoadDef, getVillageEventDef, getBenzenLine } from '../data/village-defs';
 import { VillageEventDef } from '../models/village-event';
 import { Backlog } from '../models/backlog';
 import { GameTime } from '../types/game-time';
@@ -84,6 +84,11 @@ export function tickVillage(
     result.newStage = village.stage;
     const stageName = STAGE_NAMES[village.stage] ?? `단계 ${village.stage}`;
     log.add(gameTime, `[${village.name}] 마을이 "${stageName}"(으)로 성장했다!`, '마을');
+    const stageKey = `stage:${village.stage - 1}to${village.stage}`;
+    const benzenComment = getBenzenLine(stageKey);
+    if (benzenComment && benzenComment !== '...') {
+      log.add(gameTime, `[벤젠] "${benzenComment}"`, '마을');
+    }
   }
 
   // 4. 벤젠 등장 트리거 (시설 1개 이상 건설 후 1회)
@@ -105,7 +110,8 @@ export function tickVillage(
     // visitingNpcCount는 tickVillage 호출 전 외부에서 갱신됨
     const visitCount = village.visitingNpcCount;
     if (visitCount > 0) {
-      const income = visitCount * 2;
+      const incomePerVisitor = Math.max(2, Math.floor(2 + village.stage * 0.5 + village.reputation * 0.05));
+      const income = visitCount * incomePerVisitor;
       village.finance.treasury += income;
       village.totalVisitorIncome += income;
       village.totalVisitorDays += visitCount;
@@ -169,8 +175,9 @@ function rollVillageEvent(
   const growthCandidate = candidates.find(c => c.category === 'growth');
   if (growthCandidate) return growthCandidate;
 
-  // 일반 이벤트: 5% 확률
-  if (Math.random() > 0.05) return null;
+  // 일반 이벤트: 명성·단계 반영 동적 확률 (최소 3%, 최대 15%)
+  const eventChance = Math.min(0.15, 0.03 + village.reputation * 0.0004 + village.stage * 0.002);
+  if (Math.random() > eventChance) return null;
   return candidates[Math.floor(Math.random() * candidates.length)];
 }
 
