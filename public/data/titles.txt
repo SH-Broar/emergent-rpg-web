@@ -213,6 +213,54 @@ description = 흙의 정령 베텔게우스와 대화했다.
 condition = conversation_with:베텔게우스
 priority = 45
 
+[fire_witness]
+name = 불꽃의 목격자
+description = 불의 정령 위멜과 대화했다.
+condition = conversation_with:위멜
+priority = 45
+
+[water_witness]
+name = 물결의 목격자
+description = 물의 정령 가즈리와 대화했다.
+condition = conversation_with:가즈리
+priority = 45
+
+[wind_witness]
+name = 바람의 목격자
+description = 바람의 정령 츠요사이와 대화했다.
+condition = conversation_with:츠요사이
+priority = 45
+
+[electric_witness]
+name = 번개의 목격자
+description = 번개의 정령 발티아와 대화했다.
+condition = conversation_with:발티아
+priority = 45
+
+[iron_witness]
+name = 철의 목격자
+description = 철의 정령 에퀴아와 대화했다.
+condition = conversation_with:에퀴아
+priority = 45
+
+[light_witness]
+name = 빛의 목격자
+description = 빛의 정령 레테언과 대화했다.
+condition = conversation_with:레테언
+priority = 45
+
+[dark_witness]
+name = 어둠의 목격자
+description = 어둠의 정령 반타와 대화했다.
+condition = conversation_with:반타
+priority = 45
+
+[all_spirits_witness]
+name = 정령들의 벗
+description = 여덟 정령 모두와 대화했다.
+condition = manual
+priority = 60
+
 [guardian_wind]
 name = 바람의 수호자
 description = 바람 속성이 최대치에 도달했다.
