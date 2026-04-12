@@ -700,6 +700,44 @@ export function createDungeonScreen(
   }
 
   // ================================================================ combat
+  /** 한 턴의 자동 전투 계산(processTick)을 즉시 실행한다. */
+  function runOneCombatTick(el: HTMLElement): void {
+    if (!combatState || combatState.finished) {
+      if (combatState) stopCombatTimer(combatState);
+      return;
+    }
+    const msgs = processTick(combatState, p);
+    for (const m of msgs) combatState.combatLog.push(m);
+
+    if (combatState.finished) {
+      stopCombatTimer(combatState);
+      if (combatState.victory) {
+        handleVictory(el);
+      } else {
+        handleDefeat(el);
+      }
+    } else {
+      renderCombat(el);
+    }
+  }
+
+  /** 다음 자동 턴까지 대기 타이머를 시작한다(이미 있으면 교체). */
+  function beginCombatTickLoop(el: HTMLElement): void {
+    if (!combatState || combatState.finished) return;
+    stopCombatTimer(combatState);
+    combatState.tickTimer = setInterval(() => {
+      runOneCombatTick(el);
+    }, getCombatTickMs(p));
+  }
+
+  /** 남은 대기 시간을 건너뛰고 바로 다음 턴 계산으로 진행한다. */
+  function skipCombatWait(el: HTMLElement): void {
+    if (!combatState || combatState.finished) return;
+    stopCombatTimer(combatState);
+    runOneCombatTick(el);
+    if (combatState && !combatState.finished) beginCombatTickLoop(el);
+  }
+
   function startCombat(room: DungeonRoom, isBoss: boolean, el: HTMLElement) {
     if (!selectedDungeon || !runState) return;
 
@@ -732,25 +770,7 @@ export function createDungeonScreen(
     phase = 'combat';
     renderCombat(el);
 
-    combatState.tickTimer = setInterval(() => {
-      if (!combatState || combatState.finished) {
-        if (combatState) stopCombatTimer(combatState);
-        return;
-      }
-      const msgs = processTick(combatState, p);
-      for (const m of msgs) combatState.combatLog.push(m);
-
-      if (combatState.finished) {
-        stopCombatTimer(combatState);
-        if (combatState.victory) {
-          handleVictory(el);
-        } else {
-          handleDefeat(el);
-        }
-      } else {
-        renderCombat(el);
-      }
-    }, getCombatTickMs(p));
+    beginCombatTickLoop(el);
     if (isZeroGravityDungeon(selectedDungeon)) {
       const regenTick = setInterval(() => {
         if (!combatState || combatState.finished) {
@@ -820,7 +840,10 @@ export function createDungeonScreen(
     wrap.innerHTML = `
       <div class="combat-header">
         <h2>${bossLabel}${cs.enemy.name}</h2>
-        <span class="combat-turn">턴 ${cs.turn}</span>
+        <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+          <button type="button" class="btn" data-action="skip-tick" style="font-size:12px;padding:4px 12px">Skip</button>
+          <span class="combat-turn">턴 ${cs.turn}</span>
+        </div>
       </div>
 
       <div class="combat-enemy">
@@ -872,7 +895,7 @@ export function createDungeonScreen(
       <div class="tick-bar">
         <div class="tick-bar-fill" style="animation:tick-countdown ${getCombatTickMs(p)}ms linear forwards;animation-delay:-${Date.now() - cs.lastTickTime}ms"></div>
       </div>
-      <p class="hint">1/2/3=스킬 (자동 공격 진행 중)${cs.skillUsedThisTurn ? ' · 스킬 대기 중' : ''} Esc=도주</p>
+      <p class="hint">1/2/3=스킬 (자동 공격 진행 중)${cs.skillUsedThisTurn ? ' · 스킬 대기 중' : ''} · Skip 또는 s=즉시 턴 · Esc=도주</p>
     `;
 
     wrap.querySelectorAll<HTMLButtonElement>('[data-slot]').forEach(btn => {
@@ -882,6 +905,7 @@ export function createDungeonScreen(
       });
     });
     wrap.querySelector('[data-action="flee"]')?.addEventListener('click', () => handleFlee(el));
+    wrap.querySelector('[data-action="skip-tick"]')?.addEventListener('click', () => skipCombatWait(el));
 
     el.appendChild(wrap);
   }
@@ -1370,6 +1394,7 @@ export function createDungeonScreen(
         if (key === '1') handleSkillUse(0, container);
         else if (key === '2') handleSkillUse(1, container);
         else if (key === '3') handleSkillUse(2, container);
+        else if (key === 's' || key === 'S') skipCombatWait(container);
       } else if (phase === 'victory' || phase === 'midBoss') {
         if (key === 'Enter' || key === '1') {
           const btn = container.querySelector('[data-action="clear"]') as HTMLButtonElement
