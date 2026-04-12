@@ -4,8 +4,10 @@ import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
 import { isActorVisibleToPlayer } from '../../systems/actor-visibility';
 import type { Actor } from '../../models/actor';
-import { raceName, spiritRoleName } from '../../types/enums';
+import { raceName, spiritRoleName, parseElement, ELEMENT_COUNT } from '../../types/enums';
 import { getRelationshipOverall } from '../../models/social';
+import { pickAvailableChoice } from '../../data/dialogue-choice-defs';
+import type { DialogueChoiceDef } from '../../models/dialogue-choice';
 import { getDialogue, getContinueDialogue, tryRecruitCompanion, getRelationshipStage, getRelationshipStageLabel } from '../../systems/npc-interaction';
 import { triggerNpcQuestEvent } from '../../data/npc-quest-defs';
 import { createNpcList } from '../components/npc-list';
@@ -36,6 +38,7 @@ export function createDialogueScreen(
   let selectedIdx = -1;
   let dialogueLines: string[] = [];
   let actionMessage = '';
+  let pendingChoice: DialogueChoiceDef | null = null;
 
   function renderNpcSelect(el: HTMLElement) {
     el.innerHTML = '';
@@ -75,6 +78,78 @@ export function createDialogueScreen(
     el.appendChild(wrap);
   }
 
+  function renderChoiceDialogue(npc: typeof npcsHere[0], choice: DialogueChoiceDef, el: HTMLElement) {
+    el.innerHTML = '';
+    const wrap = document.createElement('div');
+    wrap.className = 'screen info-screen dialogue-screen';
+
+    const rel = p.relationships.get(npc.name);
+    const overall = rel ? getRelationshipOverall(rel) : 0;
+    const stage = session.knowledge.isCompanion(npc.name)
+      ? 'companion' as const
+      : getRelationshipStage(p, npc.name, session.knowledge, session.actors);
+    const stageLabel = getRelationshipStageLabel(stage);
+
+    wrap.innerHTML = `
+      <button class="btn back-btn" data-back>← 뒤로 [Esc]</button>
+      <div class="dialogue-header">
+        <h2>${npc.name}</h2>
+        <span class="dialogue-npc-info">${raceName(npc.base.race)} / ${spiritRoleName(npc.spirit.role)}</span>
+        <span class="dialogue-affinity">${stageLabel} (${overall.toFixed(2)})</span>
+      </div>
+      <div class="dialogue-box" style="margin-bottom:12px">
+        <div class="dialogue-line" style="color:var(--text-dim);font-size:11px;margin-bottom:6px">${choice.context}</div>
+        <div class="dialogue-line">${choice.promptText}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        ${choice.options.map((opt, i) => `
+          <button class="btn" data-choice-idx="${i}" style="text-align:left;padding:10px 14px;line-height:1.5">
+            <span style="color:var(--text-dim);font-size:11px">[${i + 1}]</span> ${opt.text}
+          </button>
+        `).join('')}
+      </div>
+      <p class="hint">1~3 선택, Esc 건너뜀</p>
+    `;
+
+    wrap.querySelector('[data-back]')?.addEventListener('click', () => {
+      // 선택지 건너뜀 — 일반 대사로 진행
+      pendingChoice = null;
+      renderDialogue(el);
+    });
+
+    wrap.querySelectorAll<HTMLButtonElement>('[data-choice-idx]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.dataset.choiceIdx!, 10);
+        const opt = choice.options[idx];
+        if (!opt) return;
+
+        // 효과 적용
+        p.adjustRelationship(npc.name, opt.relationshipDelta, opt.relationshipDelta * 0.5);
+        if (opt.colorEffects.length > 0) {
+          const influence = new Array(ELEMENT_COUNT).fill(0);
+          for (const { elementKey, delta } of opt.colorEffects) {
+            const elemIdx = parseElement(elementKey);
+            influence[elemIdx] = delta;
+          }
+          p.color.applyInfluence(influence);
+        }
+
+        // 선택지 기록
+        session.knowledge.markChoiceSeen(choice.id);
+        session.backlog.add(session.gameTime,
+          `${p.name}: ${opt.text}\n${npc.name}: ${opt.response}`,
+          '대사', p.name);
+
+        // 응답을 대사로 추가 후 일반 화면으로
+        pendingChoice = null;
+        dialogueLines = [`「${opt.response}」`];
+        renderDialogue(el);
+      });
+    });
+
+    el.appendChild(wrap);
+  }
+
   function renderDialogue(el: HTMLElement) {
     const npc = npcsHere[selectedIdx];
     if (!npc) { renderNpcSelect(el); return; }
@@ -84,6 +159,16 @@ export function createDialogueScreen(
       session.knowledge.addKnownName(npc.name);
       session.knowledge.trackConversation(npc.name);
       triggerNpcQuestEvent(session.knowledge, { type: 'talk', npcName: npc.name });
+
+      // 대화 선택지 확인
+      const rel = p.relationships.get(npc.name);
+      const overall = rel ? getRelationshipOverall(rel) : 0;
+      const choice = pickAvailableChoice(npc.name, overall, session.knowledge.seenDialogueChoices);
+      if (choice) {
+        pendingChoice = choice;
+        renderChoiceDialogue(npc, choice, el);
+        return;
+      }
       if (npc.name === '베텔게우스' && !session.knowledge.hasTitle('대지의 목격자')) {
         session.knowledge.addTitle('대지의 목격자');
         session.backlog.add(session.gameTime, '칭호 "대지의 목격자"를 획득했다.', '시스템', p.name);
@@ -206,7 +291,11 @@ export function createDialogueScreen(
       if (!(container instanceof HTMLElement)) return;
 
       if (key === 'Escape') {
-        if (selectedIdx >= 0) {
+        if (pendingChoice) {
+          // 선택지 건너뜀 → 일반 대사
+          pendingChoice = null;
+          renderDialogue(container);
+        } else if (selectedIdx >= 0) {
           selectedIdx = -1;
           dialogueLines = [];
           actionMessage = '';
@@ -226,6 +315,15 @@ export function createDialogueScreen(
             actionMessage = '';
             renderDialogue(container);
           }
+        }
+      } else if (pendingChoice) {
+        // 선택지 모드: 1~3으로 옵션 선택
+        const npc = npcsHere[selectedIdx];
+        if (!npc) return;
+        if (/^[1-3]$/.test(key)) {
+          const optIdx = parseInt(key, 10) - 1;
+          const btn = container.querySelector<HTMLButtonElement>(`[data-choice-idx="${optIdx}"]`);
+          btn?.click();
         }
       } else {
         // 대화 모드

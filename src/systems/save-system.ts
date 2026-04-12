@@ -301,6 +301,7 @@ function serializeKnowledge(k: PlayerKnowledge): object {
     }]),
     lastNapDay: k.lastNapDay,
     villageState: k.villageState ? serializeVillageState(k.villageState) : null,
+    seenDialogueChoices: [...k.seenDialogueChoices],
     activeNpcQuests: [...k.activeNpcQuests.entries()].map(([id, s]) => [id, { ...s }]),
     completedNpcQuestIds: [...k.completedNpcQuestIds],
   };
@@ -368,6 +369,7 @@ function deserializeKnowledge(d: any): PlayerKnowledge {
   if (d.villageState) {
     k.villageState = deserializeVillageState(d.villageState);
   }
+  k.seenDialogueChoices = new Set(d.seenDialogueChoices ?? []);
   k.activeNpcQuests = new Map(
     (d.activeNpcQuests ?? []).map(([id, s]: any) => [id, { ...s }])
   );

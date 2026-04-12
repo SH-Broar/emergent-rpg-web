@@ -341,6 +341,12 @@ export class PlayerKnowledge {
   /** 비소유 homeLocation에서의 마지막 낮잠 일자 */
   lastNapDay = -1;
 
+  // ── 대화 선택지 ──────────────────────────────────────────────
+  seenDialogueChoices: Set<string> = new Set(); // choiceId → 이미 본 선택지
+
+  markChoiceSeen(choiceId: string): void { this.seenDialogueChoices.add(choiceId); }
+  hasSeenChoice(choiceId: string): boolean { return this.seenDialogueChoices.has(choiceId); }
+
   // ── NPC 개인 퀘스트 ──────────────────────────────────────────
   activeNpcQuests: Map<string, NpcQuestState> = new Map(); // questId → state
   completedNpcQuestIds: Set<string> = new Set();

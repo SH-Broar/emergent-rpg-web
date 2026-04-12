@@ -25,6 +25,7 @@ import { initBenzenLines } from './benzen-init';
 import { initColorNarratives } from './color-narrative-init';
 import { clearNpcQuestDefs } from './npc-quest-defs';
 import { initNpcQuests } from './npc-quest-init';
+import { initDialogueChoices } from './dialogue-choice-init';
 
 function parseTimeWindow(raw: string): TimeWindow | undefined {
   const value = raw.trim();
@@ -765,10 +766,11 @@ export function initAll(data: GameDataFiles): InitResult {
   initVillageEvents(data.villageEvents);
   initBenzenLines(data.benzenLines);
 
-  // 컬러 서사 / NPC 퀘스트 로드
+  // 컬러 서사 / NPC 퀘스트 / 대화 선택지 로드
   initColorNarratives(data.colorNarratives);
   clearNpcQuestDefs();
   initNpcQuests(data.npcQuests);
+  initDialogueChoices(data.dialogueChoices);
 
   return { actors, world, events, dungeonSystem, activitySystem, diagnosticQuestions, warnings };
 }
