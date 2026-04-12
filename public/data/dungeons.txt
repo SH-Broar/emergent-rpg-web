@@ -731,6 +731,188 @@ lootRare = Equipment:1
 colorInfluence = Dark:0.14, Wind:0.10, Earth:0.08
 
 # ============================================================
+# 대절곡 던전군
+# ============================================================
+
+[Grand_Crack_Rim]
+name = 절벽 테두리
+deepName = 낙풍 절벽로
+description = 대절곡 가장자리를 따라 이어지는 좁은 절벽길. 강한 기류가 아래로 잡아당기며, 발판이 언제 떨어질지 알 수 없다.
+deepDescription = 발판 붕락 속도가 빠른 협곡 절벽 외권. 아래를 내려다보면 어둠뿐이며, 잠시 멈추는 것조차 위험하다.
+difficulty = 0.55
+progressPerAdvance = 6.5
+accessFrom = Grand_Crack
+ruleTemplate = CollapsingPath
+ruleRank = 3
+ruleValueA = 2
+ruleValueB = 0.10
+ruleValueC = 0.06
+ruleHint = 발판 붕락 압력이 커질수록 쉬기 선택의 비용이 급격히 오른다.
+enemies = Canyon_Harpy, Stonehorn, Crag_Raptor
+lootOnClear = OreCommon:10, MonsterLoot:14, Equipment:1
+lootPerAdvance = OreCommon:2:0.36, MonsterLoot:2:0.40, Equipment:1:0.08
+lootRareChance = 0.12
+lootRare = OreRare:1
+colorInfluence = Earth:0.18, Wind:0.16, Dark:0.08
+
+[Grand_Crack_Wall]
+name = 협곡 절벽면
+deepName = 수직 암벽대
+description = 대절곡 수직 절벽면을 따라 내려가는 구간. 간헐적으로 불어오는 강풍이 유일한 쉴 틈이다.
+deepDescription = 절벽 요철 사이에서 틈새 바람이 부는 짧은 안전 창을 노려야 한다. 강풍이 오면 버티고, 잔잔할 때 밀어붙이는 리듬이 핵심이다.
+difficulty = 0.65
+progressPerAdvance = 5.5
+accessFrom = Grand_Crack
+ruleTemplate = ShelterWindow
+ruleRank = 3
+ruleValueA = 3
+ruleValueB = 0.12
+ruleValueC = 0.07
+ruleHint = 안전 창이 열릴 때 공격을 집중하고, 닫히면 즉시 버텨야 한다.
+enemies = Canyon_Harpy, Ancient_Ram, Stonehorn
+lootOnClear = OreCommon:10, OreRare:2, MonsterLoot:16
+lootPerAdvance = OreCommon:2:0.34, OreRare:1:0.12, MonsterLoot:2:0.42
+lootRareChance = 0.14
+lootRare = Equipment:1
+colorInfluence = Earth:0.20, Wind:0.18, Dark:0.10
+
+[Grand_Crack_Abyss]
+name = 협곡 심연
+deepName = 암흑 협곡저
+description = 협곡 바닥에 가까운 어둠 구역. 빛이 닿지 않으며, 아래에서 올라오는 기류가 방향 감각을 완전히 빼앗는다.
+deepDescription = 협곡 최저부의 완전한 어둠. 짙은 안개와 상승 기류가 뒤섞여 어디가 위아래인지조차 불분명해진다.
+difficulty = 0.75
+progressPerAdvance = 5.0
+accessFrom = Grand_Crack
+ruleTemplate = DeepFog
+ruleRank = 3
+ruleValueA = 3
+ruleValueB = 0.14
+ruleValueC = 0.09
+ruleHint = 안개 농도가 최고에 달하면 어떤 선택지도 결과를 예측할 수 없다.
+enemies = Ancient_Ram, Howling_Wraith, Canyon_Harpy
+lootOnClear = OreRare:3, MonsterLoot:18, Equipment:2
+lootPerAdvance = OreRare:1:0.16, MonsterLoot:3:0.44, Equipment:1:0.09
+lootRareChance = 0.15
+lootRare = Equipment:1
+colorInfluence = Dark:0.24, Earth:0.18, Wind:0.12
+
+# ============================================================
+# 풍혈지대 던전군
+# ============================================================
+
+[Windfall_Gorge]
+name = 풍혈 협곡
+deepName = 바람 입구
+description = 풍혈지대 초입의 좁은 협곡. 강한 바람이 밀려오는 주기 사이 짧은 고요가 찾아오는데, 그 틈을 잡아야 한다.
+deepDescription = 바람 주기가 불규칙해지는 협곡 심부. 쉬어가는 타이밍 하나가 전체 탐색을 가른다.
+difficulty = 0.27
+progressPerAdvance = 15.0
+accessFrom = Windfall_Valley
+ruleTemplate = ShelterWindow
+ruleRank = 1
+ruleValueA = 2
+ruleValueB = 0.08
+ruleValueC = 0.04
+ruleHint = 바람이 잠시 멈출 때 빠르게 전진하면 손실 없이 돌파할 수 있다.
+enemies = Ridge_Goat, Canyon_Harpy, Storm_Lizard
+lootOnClear = Herb:12, MonsterLoot:8, OreCommon:4
+lootPerAdvance = Herb:2:0.40, MonsterLoot:2:0.32, OreCommon:1:0.22
+lootRareChance = 0.08
+lootRare = OreRare:1
+colorInfluence = Wind:0.22, Earth:0.10, Light:0.06
+
+[Windfall_Cave]
+name = 풍혈 동굴
+deepName = 마력 풍혈
+description = 풍혈지대 안쪽의 바람구멍 동굴. 마력을 머금은 바람이 동굴 내부에 축적되어 희귀한 채집물이 생성된다.
+deepDescription = 바람 압력이 교차하는 동굴 심부. 마력 광석이 풍혈 벽에 달라붙어 자라며, 안전 창이 짧아 집중력이 필요하다.
+difficulty = 0.33
+progressPerAdvance = 13.0
+accessFrom = Windfall_Valley
+ruleTemplate = ShelterWindow
+ruleRank = 2
+ruleValueA = 2
+ruleValueB = 0.10
+ruleValueC = 0.06
+ruleHint = 안전 창이 더 짧아졌다. 타이밍 실수가 곧바로 추가 전투로 이어진다.
+enemies = Canyon_Harpy, Ridge_Goat, Howling_Wraith
+lootOnClear = Herb:10, OreRare:2, MonsterLoot:10
+lootPerAdvance = Herb:2:0.36, OreRare:1:0.12, MonsterLoot:2:0.34
+lootRareChance = 0.12
+lootRare = OreRare:1
+colorInfluence = Wind:0.24, Earth:0.08, Light:0.08
+
+# ============================================================
+# 오드 산 — 중·상위 던전군
+# ============================================================
+
+[Ode_Peak_Trail]
+name = 정상 능선
+deepName = 늑대 고지
+description = 오드 산 중상부의 능선. 무리의 우두머리권에 진입하며, 하위 구역과는 비교할 수 없는 압박이 시작된다.
+deepDescription = 봉우리 추적자들이 집중 배치된 고지 영역. 영토 긴장도가 높아질수록 우두머리가 직접 개입한다.
+difficulty = 0.35
+progressPerAdvance = 9.0
+accessFrom = Ode_Mountain
+ruleTemplate = PredatorTerritory
+ruleRank = 3
+ruleValueA = 0.15
+ruleValueB = 0.10
+ruleValueC = 0.06
+ruleHint = 포식자 긴장도가 오를수록 전투 회피가 점점 불가능해진다.
+enemies = Wolfpeak_Stalker, Cliff_Alpha, Grey_Fang
+lootOnClear = MonsterLoot:12, OreCommon:5, Equipment:1
+lootPerAdvance = MonsterLoot:2:0.44, OreCommon:1:0.24, Equipment:1:0.10
+lootRareChance = 0.11
+lootRare = OreRare:1
+colorInfluence = Earth:0.14, Dark:0.12, Wind:0.10
+
+[Ode_Wolfpack_Domain]
+name = 무리의 영역
+deepName = 군상 심지
+description = 오드 산 상부의 늑대 집단 심지. 개체보다 무리 단위 압박이 본격화되며, 퇴각조차 쉽지 않다.
+deepDescription = 수십 마리의 발소리가 사방에서 들려오는 무리 심부. 어느 방향을 선택해도 다음 전투가 이어진다.
+difficulty = 0.50
+progressPerAdvance = 7.0
+accessFrom = Ode_Mountain
+ruleTemplate = PredatorTerritory
+ruleRank = 4
+ruleValueA = 0.18
+ruleValueB = 0.12
+ruleValueC = 0.08
+ruleHint = 포식자 긴장도가 최고조에 달하면 어떤 행동도 전투를 피할 수 없다.
+enemies = Wolfpeak_Stalker, Cliff_Alpha, Pack_Tyrant
+lootOnClear = MonsterLoot:16, OreRare:2, Equipment:2
+lootPerAdvance = MonsterLoot:3:0.46, OreRare:1:0.14, Equipment:1:0.11
+lootRareChance = 0.14
+lootRare = Equipment:1
+colorInfluence = Dark:0.16, Earth:0.14, Wind:0.10
+
+[Ode_Alpha_Throne]
+name = 우두머리의 자리
+deepName = 폭군 고봉
+description = 오드 산 정상 부근. 산 전체 무리를 통솔하는 절대 우두머리의 거점으로, 도달 자체가 시험이다.
+deepDescription = 무리 폭군과 그 직계 수호자들이 지키는 정점. 강한 자만이 이 자리까지 오를 자격이 있다.
+difficulty = 0.65
+progressPerAdvance = 5.8
+accessFrom = Ode_Mountain
+ruleTemplate = PredatorTerritory
+ruleRank = 5
+ruleValueA = 0.20
+ruleValueB = 0.14
+ruleValueC = 0.10
+ruleHint = 최고 긴장도 상태로 시작한다. 물러서는 선택지의 비용이 극단적으로 높다.
+enemies = Pack_Tyrant, Wolfpeak_Stalker, Cliff_Alpha
+lootOnClear = MonsterLoot:20, OreRare:3, Equipment:2
+lootPerAdvance = MonsterLoot:3:0.48, OreRare:1:0.18, Equipment:1:0.13
+lootRareChance = 0.16
+lootRare = Equipment:2
+colorInfluence = Dark:0.18, Earth:0.16, Wind:0.10
+midBoss_1_afterFloor = 2
+midBoss_1_enemy = Pack_Tyrant
+
+# ============================================================
 # 대절곡 이북/타코미/루나 던전군
 # ============================================================
 
@@ -2544,3 +2726,392 @@ lootPerAdvance = OreRare:3:0.30, MonsterLoot:5:0.52, Equipment:1:0.18
 lootRareChance = 0.30
 lootRare = Equipment:3
 colorInfluence = Dark:0.40, Light:0.20, Wind:0.15
+
+# ============================================================
+# 유스제리아 설원 던전군
+# ============================================================
+
+[Yusejeria_Burial_Path]
+name = 고분 순례길
+deepName = 설원 고분로
+description = 유스제리아 설원 깊숙이 이어진 고분군 사이의 길. 영원히 녹지 않는 눈 속에 고대 사당들이 묻혀 있다.
+deepDescription = 눈 속에 반쯤 잠긴 고분들이 이어지는 고위험 구간. 발소리를 들은 종령이 하나둘 깨어난다.
+difficulty = 0.55
+progressPerAdvance = 6.5
+accessFrom = Yusejeria
+ruleTemplate = FrostPressure
+ruleRank = 3
+ruleValueA = 3
+ruleValueB = 0.10
+ruleValueC = 0.12
+ruleHint = 설원의 한기가 쌓일수록 종령의 활동이 활발해진다.
+enemies = Blizzard_Hound, Frost_Sentinel, Snowfield_Wraith
+lootOnClear = OreCommon:10, MonsterLoot:14, Potion:3
+lootPerAdvance = OreCommon:2:0.38, MonsterLoot:2:0.42, Potion:1:0.18
+lootRareChance = 0.12
+lootRare = OreRare:1
+colorInfluence = Water:0.18, Dark:0.12, Wind:0.10
+
+[Yusejeria_Bell_Shrine]
+name = 종령 사당
+deepName = 공명의 설원 사당
+description = 눈보라 사이로 종소리가 들려오는 신비한 사당. 어느 방향에서도 종소리의 근원을 찾을 수 없다.
+deepDescription = 사당 안쪽으로 들어갈수록 종소리의 공명이 강해진다. 고대 유물의 기운이 진동하며 탐색자에게 반응한다.
+difficulty = 0.65
+progressPerAdvance = 5.5
+accessFrom = Yusejeria
+ruleTemplate = AncientResonance
+ruleRank = 3
+ruleValueA = 2
+ruleValueB = 0.12
+ruleValueC = 0.08
+ruleHint = 제단의 종소리와 공명할수록 회복 기회가 늘어나지만 실패 시 한기도 빠르게 쌓인다.
+enemies = Frost_Sentinel, Ancient_Bell_Spirit, Yusejeria_Mammoth
+lootOnClear = OreRare:2, MonsterLoot:16, Potion:4
+lootPerAdvance = OreCommon:2:0.32, MonsterLoot:2:0.44, OreRare:1:0.14
+lootRareChance = 0.14
+lootRare = Equipment:1
+colorInfluence = Water:0.20, Dark:0.14, Light:0.08
+
+[Yusejeria_Blizzard_Core]
+name = 영구 눈보라 핵
+deepName = 설원 심층 핵
+description = 유스제리아에서도 가장 깊은 곳에 있는 영구 눈보라 구역. 이곳의 눈은 수천 년째 녹은 적이 없다.
+deepDescription = 눈보라가 그 자체로 생명인 것처럼 움직이는 설원 최심부. 한기 압박이 극도로 높으며, 정지하는 순간 얼어붙는다.
+difficulty = 0.77
+progressPerAdvance = 4.8
+accessFrom = Yusejeria
+ruleTemplate = FrostPressure
+ruleRank = 4
+ruleValueA = 4
+ruleValueB = 0.12
+ruleValueC = 0.14
+ruleHint = 눈보라 핵심부에서는 한기 누적이 극도로 빠르다. 쉬기보다 밀어붙이는 선택이 생존을 가른다.
+enemies = Snowfield_Wraith, Yusejeria_Mammoth, Ancient_Bell_Spirit
+lootOnClear = OreRare:3, MonsterLoot:18, Equipment:1, Potion:4
+lootPerAdvance = MonsterLoot:3:0.45, OreRare:1:0.18, Potion:1:0.22
+lootRareChance = 0.16
+lootRare = Equipment:1
+colorInfluence = Water:0.24, Dark:0.16, Wind:0.12
+
+# ============================================================
+# 마왕성 던전군
+# ============================================================
+
+[Demon_Gatehouse]
+name = 성문 주둔소
+deepName = 마왕성 외곽 방어선
+description = 마왕성 정문을 지키는 병사들의 주둔 구역. 의외로 교대 근무 일정과 서류 처리로 분주하다.
+deepDescription = 표면상 행정 업무로 돌아가지만, 침입자에 대한 대응은 체계적이고 가혹하다.
+difficulty = 0.70
+progressPerAdvance = 5.2
+accessFrom = Demon_Castle
+ruleTemplate = PredatorTerritory
+ruleRank = 4
+ruleValueA = 0.20
+ruleValueB = 0.12
+ruleValueC = 0.08
+ruleHint = 마왕성 병사들의 영역 감지가 뛰어나 머무를수록 조우가 급격히 늘어난다.
+enemies = Castle_Footsoldier, Demon_Scribe, Tower_Sentinel
+lootOnClear = OreRare:2, MonsterLoot:16, Equipment:1
+lootPerAdvance = MonsterLoot:3:0.44, OreCommon:2:0.30, OreRare:1:0.14
+lootRareChance = 0.14
+lootRare = Equipment:1
+colorInfluence = Dark:0.20, Fire:0.14, Iron:0.10
+
+[Demon_Hall]
+name = 마왕성 대전
+deepName = 권위의 홀
+description = 마왕성의 중앙 대전. 화려한 장식과 달리 안에서 이루어지는 업무는 지극히 관료적이다.
+deepDescription = 위계 질서가 서릿발처럼 서 있는 공간. 상관을 보좌하는 관료들의 압박이 물결처럼 밀려온다.
+difficulty = 0.80
+progressPerAdvance = 4.5
+accessFrom = Demon_Castle
+ruleTemplate = PredatorTerritory
+ruleRank = 5
+ruleValueA = 0.25
+ruleValueB = 0.15
+ruleValueC = 0.10
+ruleHint = 마왕성 관료들의 텃세가 강하다. 영역 안에 머무를수록 압박이 기하급수적으로 증가한다.
+enemies = Castle_Footsoldier, Demon_Officer, Demon_Scribe
+lootOnClear = OreRare:3, MonsterLoot:20, Equipment:2
+lootPerAdvance = MonsterLoot:3:0.45, OreRare:1:0.20, Equipment:1:0.12
+lootRareChance = 0.16
+lootRare = Equipment:2
+colorInfluence = Dark:0.24, Fire:0.16, Iron:0.12
+
+[Demon_Throne_Chamber]
+name = 옥좌간
+deepName = 마왕의 집무실
+description = 마왕이 실제로 집무를 보는 공간. 들어오는 서류보다 나가는 서류가 많다는 마왕성 최심부.
+deepDescription = 옥좌를 지키는 수호자들과 시종장이 버티는 극한의 공간. 열기와 권위가 동시에 짓누른다.
+difficulty = 0.90
+progressPerAdvance = 4.0
+accessFrom = Demon_Castle
+ruleTemplate = HeatGauge
+ruleRank = 5
+ruleValueA = 5
+ruleValueB = 3
+ruleValueC = 0.12
+ruleHint = 마왕성 중심부의 열기가 극도로 높다. 과열되기 전에 물러서거나 밀어붙이는 판단이 핵심이다.
+enemies = Demon_Officer, Throne_Guardian, Demon_Chamberlain
+lootOnClear = OreRare:5, MonsterLoot:24, Equipment:3
+lootPerAdvance = MonsterLoot:4:0.46, OreRare:2:0.22, Equipment:1:0.14
+lootRareChance = 0.20
+lootRare = Equipment:2
+colorInfluence = Dark:0.28, Fire:0.20, Iron:0.14
+midBoss_1_afterFloor = 2
+midBoss_1_enemy = Demon_Chamberlain
+
+# ============================================================
+# 푸치 탑 던전군
+# ============================================================
+
+[Puchi_Lower_Floors]
+name = 탑 하층부
+deepName = 입문 시련층
+description = 푸치 탑의 첫 시련 구간. 도전자들이 이미 수없이 밟고 지나간 흔적이 층마다 남아 있다.
+deepDescription = 무너지는 발판과 겹치는 시련이 어우러진 구간. 오래 머물면 길이 사라진다.
+difficulty = 0.50
+progressPerAdvance = 7.0
+accessFrom = Puchi_Tower
+ruleTemplate = CollapsingPath
+ruleRank = 3
+ruleValueA = 2
+ruleValueB = 0.10
+ruleValueC = 0.06
+ruleHint = 발판이 빠르게 무너진다. 망설임보다 빠른 전진이 효과적이다.
+enemies = Tower_Sentinel, Floor_Phantom, Clockwork_Knight
+lootOnClear = OreCommon:10, MonsterLoot:12, Equipment:1
+lootPerAdvance = OreCommon:2:0.40, MonsterLoot:2:0.38, Equipment:1:0.10
+lootRareChance = 0.10
+lootRare = OreRare:1
+colorInfluence = Iron:0.16, Dark:0.10, Wind:0.08
+
+[Puchi_Mid_Floors]
+name = 탑 중층부
+deepName = 칵테일 바 구역
+description = 중층에 뜬금없이 자리 잡은 칵테일 바. 탐색자들이 여기서 휴식을 취하고 다시 위로 향한다.
+deepDescription = 칵테일 바 위아래로 이어지는 중간 시련층. 보상과 위험 사이에서 욕심이 판단을 흐린다.
+difficulty = 0.65
+progressPerAdvance = 5.8
+accessFrom = Puchi_Tower
+ruleTemplate = GreedRisk
+ruleRank = 3
+ruleValueA = 0.14
+ruleValueB = 0.12
+ruleValueC = 0.08
+ruleHint = 중층부의 칵테일 바는 리소스 유혹이 크다. 욕심내면 상층부 진입 전에 탈진할 수 있다.
+enemies = Clockwork_Knight, Trial_Golem, Tower_Sentinel
+lootOnClear = OreRare:2, MonsterLoot:16, Equipment:1, Potion:3
+lootPerAdvance = MonsterLoot:2:0.40, OreCommon:2:0.32, OreRare:1:0.14
+lootRareChance = 0.14
+lootRare = Equipment:1
+colorInfluence = Iron:0.18, Wind:0.12, Light:0.08
+
+[Puchi_Upper_Floors]
+name = 탑 상층부
+deepName = 세계 끝 전망대
+description = 꼭대기에 가까운 상층부. 이미 절반의 도전자는 여기 오기 전에 포기했다.
+deepDescription = 세계의 끝이 보인다는 전망대 직전 구간. 발판 붕락이 극적으로 빨라지며, 시련 골렘이 최후의 방어선을 친다.
+difficulty = 0.78
+progressPerAdvance = 4.6
+accessFrom = Puchi_Tower
+ruleTemplate = CollapsingPath
+ruleRank = 4
+ruleValueA = 3
+ruleValueB = 0.14
+ruleValueC = 0.08
+ruleHint = 발판 붕락 속도가 극대화된다. 한 발 내딛는 속도가 승패를 가른다.
+enemies = Trial_Golem, Floor_Phantom, Clockwork_Knight
+lootOnClear = OreRare:4, MonsterLoot:20, Equipment:2
+lootPerAdvance = MonsterLoot:3:0.44, OreRare:1:0.20, Equipment:1:0.12
+lootRareChance = 0.17
+lootRare = Equipment:2
+colorInfluence = Iron:0.20, Dark:0.14, Wind:0.10
+midBoss_1_afterFloor = 2
+midBoss_1_enemy = Trial_Golem
+
+# ============================================================
+# 하라티쿠스 폐허 던전군
+# ============================================================
+
+[Haratikus_Surface]
+name = 표층 폐허
+deepName = 잔해 탐색로
+description = 하라티쿠스 폐허의 표면 잔해층. 대변동 이전 문명의 흔적이 어지럽게 쌓여 있다.
+deepDescription = 잔해 더미 사이에 흩어진 단서들. 무엇을 추적하느냐에 따라 발굴 결과가 달라진다.
+difficulty = 0.60
+progressPerAdvance = 6.0
+accessFrom = Haratikus
+ruleTemplate = TraceHunt
+ruleRank = 3
+ruleValueA = 2
+ruleValueB = 5
+ruleValueC = 0.06
+ruleHint = 폐허 속 흔적을 따라갈수록 고대 유물의 위치가 선명해진다.
+enemies = Ruin_Crawler, Corruption_Specter
+lootOnClear = OreRare:2, MonsterLoot:14, Equipment:1
+lootPerAdvance = OreCommon:2:0.38, MonsterLoot:2:0.40, OreRare:1:0.12
+lootRareChance = 0.13
+lootRare = Equipment:1
+colorInfluence = Earth:0.20, Dark:0.14, Iron:0.10
+
+[Haratikus_Underground]
+name = 지하 유구층
+deepName = 봉인된 지하 문명
+description = 폐허 지하에 잠든 더 오래된 문명 층. 고대 자동인형들이 아직도 임무를 수행 중이다.
+deepDescription = 공명하는 유물들이 가득한 지하 심층부. 고대 기계의 반응이 강해질수록 탐색의 리듬도 흔들린다.
+difficulty = 0.75
+progressPerAdvance = 5.0
+accessFrom = Haratikus
+ruleTemplate = AncientResonance
+ruleRank = 4
+ruleValueA = 3
+ruleValueB = 0.15
+ruleValueC = 0.10
+ruleHint = 유물 공명이 강해질수록 유리한 기회가 열리지만 실패 반동도 크다.
+enemies = Ancient_Automaton, Relic_Golem, Ruin_Crawler
+lootOnClear = OreRare:3, MonsterLoot:18, Equipment:2
+lootPerAdvance = MonsterLoot:3:0.44, OreRare:1:0.20, Equipment:1:0.12
+lootRareChance = 0.16
+lootRare = Equipment:2
+colorInfluence = Earth:0.22, Iron:0.16, Dark:0.12
+
+[Haratikus_Vault]
+name = 고대 금고
+deepName = 문명의 마지막 방
+description = 하라티쿠스 최심부에 봉인된 고대 금고. 이 안에는 대변동 이전 문명의 마지막 유산이 잠들어 있다.
+deepDescription = 거인상이 금고 문을 지키고 있는 극한의 폐허 심부. 짙은 안개 속에서 경비 자동인형들이 끊임없이 순찰한다.
+difficulty = 0.85
+progressPerAdvance = 4.2
+accessFrom = Haratikus
+ruleTemplate = DeepFog
+ruleRank = 4
+ruleValueA = 4
+ruleValueB = 0.16
+ruleValueC = 0.11
+ruleHint = 짙은 안개가 최대에 달하면 경비대의 위치조차 파악할 수 없다.
+enemies = Haratikus_Colossus, Ancient_Automaton, Relic_Golem
+lootOnClear = OreRare:5, MonsterLoot:22, Equipment:3
+lootPerAdvance = OreRare:2:0.22, MonsterLoot:4:0.46, Equipment:1:0.14
+lootRareChance = 0.19
+lootRare = Equipment:2
+colorInfluence = Earth:0.24, Iron:0.18, Dark:0.16
+midBoss_1_afterFloor = 2
+midBoss_1_enemy = Haratikus_Colossus
+
+# ============================================================
+# 이카르 던전군
+# ============================================================
+
+[Ikar_Base]
+name = 이카르 기단부
+deepName = 천공 탑 하층
+description = 이카르 탑의 기단 구역. 오래전 무너진 계단과 벽 사이로 바람 정령들이 서식한다.
+deepDescription = 탑 하층의 붕락 구간. 발판이 좁고 무너지기 쉬우며, 바람 정령이 이동을 방해한다.
+difficulty = 0.62
+progressPerAdvance = 5.8
+accessFrom = Ikar
+ruleTemplate = CollapsingPath
+ruleRank = 3
+ruleValueA = 2
+ruleValueB = 0.10
+ruleValueC = 0.07
+ruleHint = 탑 구조물이 무너지기 직전의 상태. 멈추는 순간 길이 사라진다.
+enemies = Ikar_Wind_Sprite, Skystone_Gargoyle
+lootOnClear = OreCommon:10, MonsterLoot:14, OreRare:1
+lootPerAdvance = OreCommon:2:0.36, MonsterLoot:2:0.42, OreRare:1:0.12
+lootRareChance = 0.12
+lootRare = Equipment:1
+colorInfluence = Wind:0.20, Earth:0.14, Light:0.10
+
+[Ikar_Ascent]
+name = 이카르 상승로
+deepName = 태양 근접 구간
+description = 이카르 탑의 상층으로 올라가는 좁은 통로. 고도가 높아질수록 바람이 거세진다.
+deepDescription = 태양 가까이 올라갈수록 드레이크와 정령들의 기세가 강해진다. 안전 창을 노려야 진행할 수 있다.
+difficulty = 0.75
+progressPerAdvance = 5.0
+accessFrom = Ikar
+ruleTemplate = ShelterWindow
+ruleRank = 4
+ruleValueA = 4
+ruleValueB = 0.14
+ruleValueC = 0.08
+ruleHint = 강한 바람 사이 짧은 고요가 찾아온다. 그 순간을 놓치면 압박이 커진다.
+enemies = Skystone_Gargoyle, Solar_Drake, Ikar_Wind_Sprite
+lootOnClear = OreRare:3, MonsterLoot:18, Equipment:1
+lootPerAdvance = MonsterLoot:3:0.44, OreRare:1:0.18, Equipment:1:0.12
+lootRareChance = 0.15
+lootRare = Equipment:1
+colorInfluence = Wind:0.24, Light:0.16, Earth:0.10
+
+[Ikar_Solar_Summit]
+name = 태양 정상
+deepName = 이카르 최정상
+description = 세계에서 태양에 가장 가깝다는 이카르 탑 꼭대기. 발아래 세계 전체가 펼쳐진다.
+deepDescription = 태양 거인상이 꼭대기를 지키는 극한의 구간. 태양의 정화 기류가 쉴 새 없이 흘러 탐색자를 시험한다.
+difficulty = 0.88
+progressPerAdvance = 4.0
+accessFrom = Ikar
+ruleTemplate = PurityCurrent
+ruleRank = 4
+ruleValueA = 3
+ruleValueB = 0.16
+ruleValueC = 0.08
+ruleHint = 정화 흐름을 잘 타면 회복이 뛰어나지만, 흐름을 거스르면 극적인 반동이 온다.
+enemies = Solar_Drake, Sun_Colossus
+lootOnClear = OreRare:6, MonsterLoot:24, Equipment:3
+lootPerAdvance = OreRare:2:0.24, MonsterLoot:4:0.48, Equipment:1:0.14
+lootRareChance = 0.20
+lootRare = Equipment:2
+colorInfluence = Light:0.26, Wind:0.20, Fire:0.10
+midBoss_1_afterFloor = 2
+midBoss_1_enemy = Sun_Colossus
+
+# ============================================================
+# 스텔라 빌 던전군
+# ============================================================
+
+[Stella_Sealed_Quarter]
+name = 봉인된 구도심
+deepName = 결계 잔류 구역
+description = 대변동 당시 결계로 봉인된 스텔라 빌의 구도심 구역. 결계가 풀렸지만 잔류 에너지가 서려 있다.
+deepDescription = 봉인 잔여물과 함께 잠들었다 깨어난 정령들이 구도심 안을 배회하고 있다.
+difficulty = 0.28
+progressPerAdvance = 12.0
+accessFrom = Stella_Ville
+ruleTemplate = AncientResonance
+ruleRank = 1
+ruleValueA = 1
+ruleValueB = 0.08
+ruleValueC = 0.05
+ruleHint = 결계 잔류물이 공명하는 구간. 반응을 잘 이용하면 탐색이 순조롭다.
+enemies = Starlit_Sprite, Sealed_Shade, Nova_Wisp
+lootOnClear = Herb:8, MonsterLoot:8, Potion:2
+lootPerAdvance = Herb:2:0.45, MonsterLoot:1:0.35, Potion:1:0.20
+lootRareChance = 0.09
+lootRare = OreRare:1
+colorInfluence = Light:0.14, Dark:0.10, Wind:0.06
+
+[Stella_Observatory]
+name = 천문대 터
+deepName = 별자리 관측 폐허
+description = 스텔라 빌 외곽에 있는 오래된 천문대 폐허. 결계 기간 동안 별을 연구하던 학자들의 흔적이 남아 있다.
+deepDescription = 달빛과 별빛이 유독 강하게 드는 천문대 심부. 밤이 되면 봉인됐던 별자리 망령이 깨어난다.
+difficulty = 0.38
+progressPerAdvance = 9.5
+accessFrom = Stella_Ville
+ruleTemplate = MoonPhase
+ruleRank = 2
+ruleValueA = 0.12
+ruleValueB = 0.08
+ruleValueC = 0.05
+ruleHint = 달의 위상에 따라 별자리 망령의 활동이 달라진다. 초승달 때 가장 잠잠하다.
+enemies = Constellation_Specter, Sealed_Shade, Starlit_Sprite
+lootOnClear = Herb:10, MonsterLoot:10, OreRare:1, Potion:3
+lootPerAdvance = Herb:2:0.40, MonsterLoot:2:0.38, Potion:1:0.22
+lootRareChance = 0.12
+lootRare = Equipment:1
+colorInfluence = Light:0.18, Dark:0.12, Water:0.08

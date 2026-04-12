@@ -874,6 +874,22 @@ skill_1_type = attack
 skill_1_value = 2.1
 skill_1_desc = 높은 곳에서 덮쳐 숨통을 노린다.
 
+[Pack_Tyrant]
+name = 무리 폭군
+attack = 72
+defense = 31
+hp = 285
+loot = MonsterLoot:4:0.46, OreRare:1:0.14, Equipment:1:0.12
+skillChance = 0.32
+skill_1_name = 군림 포효
+skill_1_type = buff
+skill_1_value = 1.50
+skill_1_desc = 오드 산 전체 무리를 지배하는 군림 포효. 자신의 공격력을 50% 끌어올린다.
+skill_2_name = 폭군 강습
+skill_2_type = attack
+skill_2_value = 2.4
+skill_2_desc = 무게와 속도를 합친 최상위 포식자의 돌진 강습.
+
 ; -------------------------------------------------------
 ; 해안권 — 저레벨 해안 몬스터
 ; -------------------------------------------------------
@@ -1531,3 +1547,259 @@ skill_1_name = 연선 휘감기
 skill_1_type = attack
 skill_1_value = 1.15
 skill_1_desc = 거울바람에 실이 갈라져 동시에 여러 각도로 달려든다.
+
+; -------------------------------------------------------
+; 유스제리아 설원 몬스터
+; -------------------------------------------------------
+
+[Blizzard_Hound]
+name = 눈보라 사냥개
+attack = 62
+defense = 18
+hp = 195
+evasionChance = 0.15
+loot = Food:2:0.35, MonsterLoot:2:0.40, Herb:1:0.18
+
+[Frost_Sentinel]
+name = 설원 수호자
+attack = 55
+defense = 28
+hp = 240
+loot = OreCommon:2:0.35, MonsterLoot:3:0.42, OreRare:1:0.10
+
+[Ancient_Bell_Spirit]
+name = 고분 종령
+attack = 50
+defense = 32
+hp = 270
+evasionChance = 0.18
+loot = OreRare:1:0.20, MonsterLoot:3:0.44
+
+[Snowfield_Wraith]
+name = 설원 유령
+attack = 68
+defense = 15
+hp = 215
+evasionChance = 0.22
+tickPressureDamage = 6
+loot = MonsterLoot:3:0.45, OreRare:1:0.14
+
+[Yusejeria_Mammoth]
+name = 설원 매머드
+attack = 58
+defense = 38
+hp = 320
+burstHitCount = 2
+burstHitDamage = 25
+burstOnce = true
+loot = MonsterLoot:4:0.45, OreCommon:2:0.30, Equipment:1:0.10
+
+; -------------------------------------------------------
+; 마왕성 몬스터
+; -------------------------------------------------------
+
+[Demon_Scribe]
+name = 마왕성 서기
+attack = 68
+defense = 25
+hp = 280
+tickPressureDamage = 8
+loot = MonsterLoot:3:0.42, OreCommon:2:0.28
+
+[Castle_Footsoldier]
+name = 성문 병사
+attack = 78
+defense = 35
+hp = 320
+loot = MonsterLoot:4:0.44, OreCommon:2:0.28, Equipment:1:0.10
+
+[Demon_Officer]
+name = 마왕성 관료
+attack = 90
+defense = 42
+hp = 410
+skillChance = 0.28
+skill_1_name = 행정 압박
+skill_1_type = buff
+skill_1_value = 1.35
+skill_1_desc = 마왕성 관료의 압도적인 행정력으로 자신을 강화한다.
+loot = MonsterLoot:5:0.46, OreRare:2:0.16, Equipment:1:0.11
+
+[Throne_Guardian]
+name = 옥좌 수호자
+attack = 98
+defense = 55
+hp = 520
+burstHitCount = 2
+burstHitDamage = 35
+burstOnce = true
+loot = OreRare:3:0.40, MonsterLoot:6:0.48, Equipment:2:0.13
+
+[Demon_Chamberlain]
+name = 마왕의 시종장
+attack = 108
+defense = 50
+hp = 490
+skillChance = 0.35
+skill_1_name = 왕령 강격
+skill_1_type = attack
+skill_1_value = 2.8
+skill_1_desc = 마왕의 뜻을 받들어 적의 방어를 꿰뚫는 일격.
+loot = OreRare:4:0.44, MonsterLoot:7:0.50, Equipment:2:0.14
+
+; -------------------------------------------------------
+; 푸치 탑 몬스터
+; -------------------------------------------------------
+
+[Tower_Sentinel]
+name = 탑의 수호자
+attack = 65
+defense = 28
+hp = 255
+loot = MonsterLoot:3:0.42, OreCommon:2:0.28, Equipment:1:0.10
+
+[Clockwork_Knight]
+name = 태엽 기사
+attack = 72
+defense = 32
+hp = 290
+loot = MonsterLoot:4:0.44, OreCommon:2:0.30, Equipment:1:0.11
+
+[Trial_Golem]
+name = 시련 골렘
+attack = 80
+defense = 38
+hp = 340
+loot = MonsterLoot:4:0.44, OreRare:1:0.14, Equipment:1:0.12
+
+[Floor_Phantom]
+name = 층의 환영
+attack = 60
+defense = 18
+hp = 260
+evasionChance = 0.24
+loot = MonsterLoot:3:0.44, OreRare:1:0.12
+
+; -------------------------------------------------------
+; 하라티쿠스 폐허 몬스터
+; -------------------------------------------------------
+
+[Corruption_Specter]
+name = 오염 유령
+attack = 65
+defense = 16
+hp = 240
+evasionChance = 0.20
+tickPressureDamage = 7
+loot = MonsterLoot:3:0.44, OreRare:1:0.12
+
+[Ruin_Crawler]
+name = 폐허 배회자
+attack = 70
+defense = 22
+hp = 270
+loot = MonsterLoot:3:0.42, OreCommon:2:0.28, OreRare:1:0.10
+
+[Relic_Golem]
+name = 유물 골렘
+attack = 82
+defense = 48
+hp = 400
+loot = OreRare:2:0.18, MonsterLoot:5:0.46, Equipment:1:0.12
+
+[Ancient_Automaton]
+name = 고대 자동인형
+attack = 88
+defense = 40
+hp = 370
+skillChance = 0.28
+skill_1_name = 자동 연사
+skill_1_type = attack
+skill_1_value = 1.8
+skill_1_desc = 고대 기계 기관이 자동으로 연속 타격을 가한다.
+loot = OreRare:2:0.20, MonsterLoot:5:0.46, Equipment:1:0.12
+
+[Haratikus_Colossus]
+name = 하라티쿠스 거인상
+attack = 100
+defense = 46
+hp = 460
+burstHitCount = 2
+burstHitDamage = 40
+burstOnce = true
+loot = OreRare:3:0.40, MonsterLoot:6:0.48, Equipment:2:0.14
+
+; -------------------------------------------------------
+; 이카르 몬스터
+; -------------------------------------------------------
+
+[Ikar_Wind_Sprite]
+name = 이카르 바람 정령
+attack = 68
+defense = 20
+hp = 250
+evasionChance = 0.22
+loot = MonsterLoot:3:0.42, Herb:1:0.20, OreRare:1:0.10
+
+[Skystone_Gargoyle]
+name = 천공석 가고일
+attack = 76
+defense = 32
+hp = 300
+loot = MonsterLoot:4:0.44, OreCommon:2:0.28, OreRare:1:0.12
+
+[Solar_Drake]
+name = 태양 드레이크
+attack = 90
+defense = 38
+hp = 380
+skillChance = 0.28
+skill_1_name = 태양 강하
+skill_1_type = attack
+skill_1_value = 2.5
+skill_1_desc = 태양의 열기를 담아 강렬한 급강하를 가한다.
+loot = OreRare:2:0.20, MonsterLoot:5:0.46, Equipment:1:0.12
+
+[Sun_Colossus]
+name = 태양 거인상
+attack = 104
+defense = 44
+hp = 500
+burstHitCount = 2
+burstHitDamage = 38
+burstOnce = true
+loot = OreRare:3:0.40, MonsterLoot:6:0.48, Equipment:2:0.14
+
+; -------------------------------------------------------
+; 스텔라 빌 몬스터
+; -------------------------------------------------------
+
+[Starlit_Sprite]
+name = 별빛 정령
+attack = 35
+defense = 12
+hp = 112
+loot = Food:1:0.35, Herb:1:0.40, MonsterLoot:1:0.25
+
+[Nova_Wisp]
+name = 성운 요정
+attack = 38
+defense = 10
+hp = 125
+evasionChance = 0.18
+loot = Herb:1:0.42, MonsterLoot:1:0.30, OreRare:1:0.06
+
+[Sealed_Shade]
+name = 봉인된 그늘
+attack = 44
+defense = 18
+hp = 152
+loot = MonsterLoot:2:0.38, OreCommon:1:0.28, Herb:1:0.22
+
+[Constellation_Specter]
+name = 별자리 망령
+attack = 50
+defense = 22
+hp = 170
+evasionChance = 0.16
+loot = MonsterLoot:2:0.40, OreRare:1:0.10
