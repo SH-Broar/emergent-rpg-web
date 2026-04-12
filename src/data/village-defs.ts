@@ -1,4 +1,26 @@
-// village-defs.ts — 시설/도로 정의 레지스트리
+// village-defs.ts — 시설/도로/이벤트 정의 레지스트리
+
+import { VillageEventDef } from '../models/village-event';
+
+// ============================================================
+// 시설 티어 정의
+// ============================================================
+
+export interface FacilityTierDef {
+  incomePerDay: number;
+  maintenancePerDay: number;
+  happinessBonus: number;
+  defenseBonus: number;
+  // 업그레이드 비용 (이 티어로 올리는 비용)
+  upgradeCostGold: number;
+  upgradeCostWood: number;
+  upgradeCostStone: number;
+  upgradeCostWheat: number;
+  upgradeCostHerb: number;
+  upgradeCostMonsterBone: number;
+  upgradeCostMagicStone: number;
+  upgradeCostRareMetal: number;
+}
 
 export interface VillageFacilityDef {
   id: string;
@@ -9,9 +31,12 @@ export interface VillageFacilityDef {
   buildCostWood: number;
   buildCostStone: number;
   buildCostWheat: number;
+  // Tier 1 기본값 (하위 호환)
   incomePerDay: number;
   maintenancePerDay: number;
   description: string;
+  // Phase 2: 티어 배열 [tier1, tier2, tier3]
+  tiers: FacilityTierDef[];
 }
 
 export interface VillageRoadDef {
@@ -26,8 +51,13 @@ export interface VillageRoadDef {
   description: string;
 }
 
+// ============================================================
+// 레지스트리
+// ============================================================
+
 const facilityRegistry = new Map<string, VillageFacilityDef>();
 const roadRegistry = new Map<string, VillageRoadDef>();
+const eventRegistry = new Map<string, VillageEventDef>();
 
 export function registerFacilityDef(def: VillageFacilityDef): void {
   facilityRegistry.set(def.id, def);
@@ -51,4 +81,16 @@ export function getRoadDef(id: string): VillageRoadDef | undefined {
 
 export function getAllRoadDefs(): VillageRoadDef[] {
   return [...roadRegistry.values()];
+}
+
+export function registerVillageEventDef(def: VillageEventDef): void {
+  eventRegistry.set(def.id, def);
+}
+
+export function getVillageEventDef(id: string): VillageEventDef | undefined {
+  return eventRegistry.get(id);
+}
+
+export function getAllVillageEventDefs(): VillageEventDef[] {
+  return [...eventRegistry.values()];
 }

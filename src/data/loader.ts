@@ -68,6 +68,7 @@ function getActiveAddonTags(): Record<string, string[]> {
   if (config.first) actorTags.push('first');
   if (config.extra) actorTags.push('extra');
   if (config.newrace) actorTags.push('newrace');
+  actorTags.push('village'); // 마을 상주 NPC (벤젠 등)
   return {
     actors: actorTags,
     locations: ['rdc'],
@@ -103,6 +104,7 @@ export interface GameDataFiles {
   combatTexts: DataSection[];
   villageFacilities: DataSection[];
   villageRoads: DataSection[];
+  villageEvents: DataSection[];
 }
 
 export async function loadAllData(): Promise<GameDataFiles> {
@@ -113,7 +115,7 @@ export async function loadAllData(): Promise<GameDataFiles> {
     activities, productions, hyperion, titles,
     giftPreferences, weapons, armor, lore, diagnostic,
     skills, acquisition, actionTexts, combatTexts,
-    villageFacilities, villageRoads,
+    villageFacilities, villageRoads, villageEvents,
   ] = await Promise.all([
     loadDataFile('items'),
     loadDataFile('locations', addons.locations ?? []),
@@ -139,6 +141,7 @@ export async function loadAllData(): Promise<GameDataFiles> {
     loadDataFile('combat_texts'),
     loadDataFile('village-facilities'),
     loadDataFile('village-roads'),
+    loadDataFile('village-events'),
   ]);
 
   return {
@@ -147,6 +150,6 @@ export async function loadAllData(): Promise<GameDataFiles> {
     activities, productions, hyperion, titles,
     giftPreferences, weapons, armor, lore, diagnostic,
     skills, acquisition, actionTexts, combatTexts,
-    villageFacilities, villageRoads,
+    villageFacilities, villageRoads, villageEvents,
   };
 }

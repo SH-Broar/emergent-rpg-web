@@ -1,4 +1,4 @@
-# village-facilities.txt — Phase 1 시설 정의
+# village-facilities.txt — Phase 2 시설 정의 (티어 포함)
 
 [lumber_mill]
 name = 목재소
@@ -8,8 +8,33 @@ buildCostGold = 500
 buildCostWood = 15
 buildCostStone = 5
 incomePerDay = 15
-description = 인근 숲 자원으로 목재를 생산한다.
 maintenancePerDay = 3
+description = 인근 숲 자원으로 목재를 생산한다.
+
+tier1_incomePerDay = 15
+tier1_maintenancePerDay = 3
+tier1_happinessBonus = 0
+tier1_defenseBonus = 0
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 25
+tier2_maintenancePerDay = 5
+tier2_happinessBonus = 2
+tier2_defenseBonus = 0
+tier2_upgradeCostGold = 800
+tier2_upgradeCostWood = 30
+tier2_upgradeCostStone = 10
+tier2_upgradeCostMonsterBone = 5
+
+tier3_incomePerDay = 40
+tier3_maintenancePerDay = 8
+tier3_happinessBonus = 5
+tier3_defenseBonus = 0
+tier3_upgradeCostGold = 2000
+tier3_upgradeCostWood = 60
+tier3_upgradeCostStone = 20
+tier3_upgradeCostMagicStone = 3
+tier3_upgradeCostRareMetal = 1
 
 [village_farm]
 name = 농장
@@ -19,8 +44,32 @@ buildCostGold = 400
 buildCostWood = 20
 buildCostWheat = 10
 incomePerDay = 10
-description = 마을 식량을 공급한다. 수확도 가능하다.
 maintenancePerDay = 2
+description = 마을 식량을 공급한다. 수확도 가능하다.
+
+tier1_incomePerDay = 10
+tier1_maintenancePerDay = 2
+tier1_happinessBonus = 0
+tier1_defenseBonus = 0
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 18
+tier2_maintenancePerDay = 4
+tier2_happinessBonus = 3
+tier2_defenseBonus = 0
+tier2_upgradeCostGold = 600
+tier2_upgradeCostWood = 20
+tier2_upgradeCostWheat = 20
+tier2_upgradeCostHerb = 5
+
+tier3_incomePerDay = 30
+tier3_maintenancePerDay = 6
+tier3_happinessBonus = 8
+tier3_defenseBonus = 0
+tier3_upgradeCostGold = 1500
+tier3_upgradeCostWood = 40
+tier3_upgradeCostWheat = 40
+tier3_upgradeCostMonsterBone = 3
 
 [well]
 name = 우물
@@ -29,8 +78,30 @@ unlockStage = 1
 buildCostGold = 200
 buildCostStone = 15
 incomePerDay = 0
-description = 마을 위생도 +10. 주민 HP 회복 속도를 높인다.
 maintenancePerDay = 1
+description = 마을 위생도 +10. 주민 HP 회복 속도를 높인다.
+
+tier1_incomePerDay = 0
+tier1_maintenancePerDay = 1
+tier1_happinessBonus = 5
+tier1_defenseBonus = 0
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 0
+tier2_maintenancePerDay = 2
+tier2_happinessBonus = 12
+tier2_defenseBonus = 0
+tier2_upgradeCostGold = 500
+tier2_upgradeCostStone = 25
+tier2_upgradeCostHerb = 10
+
+tier3_incomePerDay = 5
+tier3_maintenancePerDay = 3
+tier3_happinessBonus = 20
+tier3_defenseBonus = 0
+tier3_upgradeCostGold = 1200
+tier3_upgradeCostStone = 50
+tier3_upgradeCostMagicStone = 2
 
 [inn]
 name = 여관
@@ -40,8 +111,33 @@ buildCostGold = 800
 buildCostWood = 30
 buildCostStone = 10
 incomePerDay = 20
-description = NPC 방문 빈도 +30%. 숙박 수입을 얻는다.
 maintenancePerDay = 5
+description = NPC 방문 빈도 +30%. 숙박 수입을 얻는다.
+
+tier1_incomePerDay = 20
+tier1_maintenancePerDay = 5
+tier1_happinessBonus = 5
+tier1_defenseBonus = 0
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 35
+tier2_maintenancePerDay = 8
+tier2_happinessBonus = 12
+tier2_defenseBonus = 0
+tier2_upgradeCostGold = 1200
+tier2_upgradeCostWood = 40
+tier2_upgradeCostStone = 20
+tier2_upgradeCostMonsterBone = 3
+
+tier3_incomePerDay = 55
+tier3_maintenancePerDay = 12
+tier3_happinessBonus = 20
+tier3_defenseBonus = 0
+tier3_upgradeCostGold = 3000
+tier3_upgradeCostWood = 80
+tier3_upgradeCostStone = 40
+tier3_upgradeCostRareMetal = 1
+tier3_upgradeCostMagicStone = 2
 
 [palisade]
 name = 목책
@@ -50,8 +146,32 @@ unlockStage = 1
 buildCostGold = 100
 buildCostWood = 20
 incomePerDay = 0
-description = 기본 방어도를 부여하고 마을 경계를 설정한다.
 maintenancePerDay = 1
+description = 기본 방어도를 부여하고 마을 경계를 설정한다.
+
+tier1_incomePerDay = 0
+tier1_maintenancePerDay = 1
+tier1_happinessBonus = 0
+tier1_defenseBonus = 5
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 0
+tier2_maintenancePerDay = 2
+tier2_happinessBonus = 0
+tier2_defenseBonus = 12
+tier2_upgradeCostGold = 400
+tier2_upgradeCostWood = 40
+tier2_upgradeCostStone = 15
+tier2_upgradeCostMonsterBone = 5
+
+tier3_incomePerDay = 0
+tier3_maintenancePerDay = 3
+tier3_happinessBonus = 0
+tier3_defenseBonus = 22
+tier3_upgradeCostGold = 1000
+tier3_upgradeCostWood = 60
+tier3_upgradeCostStone = 30
+tier3_upgradeCostRareMetal = 2
 
 [watchtower]
 name = 감시탑
@@ -61,8 +181,32 @@ buildCostGold = 400
 buildCostWood = 30
 buildCostStone = 10
 incomePerDay = 0
-description = 위기 이벤트 조기 경보. 방어도 +5.
 maintenancePerDay = 2
+description = 위기 이벤트 조기 경보. 방어도 +5.
+
+tier1_incomePerDay = 0
+tier1_maintenancePerDay = 2
+tier1_happinessBonus = 0
+tier1_defenseBonus = 8
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 0
+tier2_maintenancePerDay = 4
+tier2_happinessBonus = 0
+tier2_defenseBonus = 18
+tier2_upgradeCostGold = 800
+tier2_upgradeCostWood = 30
+tier2_upgradeCostStone = 20
+tier2_upgradeCostMonsterBone = 8
+
+tier3_incomePerDay = 5
+tier3_maintenancePerDay = 6
+tier3_happinessBonus = 0
+tier3_defenseBonus = 30
+tier3_upgradeCostGold = 2000
+tier3_upgradeCostStone = 50
+tier3_upgradeCostRareMetal = 2
+tier3_upgradeCostMagicStone = 3
 
 [notice_board]
 name = 마을 게시판
@@ -71,8 +215,30 @@ unlockStage = 1
 buildCostGold = 50
 buildCostWood = 10
 incomePerDay = 0
-description = 마을 퀘스트를 발생시키고 소문을 공유한다.
 maintenancePerDay = 0
+description = 마을 퀘스트를 발생시키고 소문을 공유한다.
+
+tier1_incomePerDay = 0
+tier1_maintenancePerDay = 0
+tier1_happinessBonus = 2
+tier1_defenseBonus = 0
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 5
+tier2_maintenancePerDay = 1
+tier2_happinessBonus = 5
+tier2_defenseBonus = 0
+tier2_upgradeCostGold = 300
+tier2_upgradeCostWood = 15
+tier2_upgradeCostStone = 5
+
+tier3_incomePerDay = 10
+tier3_maintenancePerDay = 2
+tier3_happinessBonus = 10
+tier3_defenseBonus = 0
+tier3_upgradeCostGold = 800
+tier3_upgradeCostWood = 30
+tier3_upgradeCostMagicStone = 1
 
 [warehouse]
 name = 창고
@@ -82,8 +248,32 @@ buildCostGold = 500
 buildCostWood = 25
 buildCostStone = 10
 incomePerDay = 0
-description = 마을 자원을 공동 보관한다. 생산 효율을 높인다.
 maintenancePerDay = 2
+description = 마을 자원을 공동 보관한다. 생산 효율을 높인다.
+
+tier1_incomePerDay = 0
+tier1_maintenancePerDay = 2
+tier1_happinessBonus = 0
+tier1_defenseBonus = 0
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 8
+tier2_maintenancePerDay = 3
+tier2_happinessBonus = 0
+tier2_defenseBonus = 0
+tier2_upgradeCostGold = 700
+tier2_upgradeCostWood = 35
+tier2_upgradeCostStone = 15
+tier2_upgradeCostMonsterBone = 3
+
+tier3_incomePerDay = 18
+tier3_maintenancePerDay = 5
+tier3_happinessBonus = 3
+tier3_defenseBonus = 0
+tier3_upgradeCostGold = 1800
+tier3_upgradeCostWood = 60
+tier3_upgradeCostStone = 30
+tier3_upgradeCostRareMetal = 1
 
 [music_hall]
 name = 음악당
@@ -92,8 +282,31 @@ unlockStage = 1
 buildCostGold = 300
 buildCostWood = 20
 incomePerDay = 5
-description = 행복도 +8. 음유시인 NPC를 유치한다.
 maintenancePerDay = 2
+description = 행복도 +8. 음유시인 NPC를 유치한다.
+
+tier1_incomePerDay = 5
+tier1_maintenancePerDay = 2
+tier1_happinessBonus = 8
+tier1_defenseBonus = 0
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 12
+tier2_maintenancePerDay = 4
+tier2_happinessBonus = 18
+tier2_defenseBonus = 0
+tier2_upgradeCostGold = 700
+tier2_upgradeCostWood = 25
+tier2_upgradeCostHerb = 5
+
+tier3_incomePerDay = 22
+tier3_maintenancePerDay = 6
+tier3_happinessBonus = 30
+tier3_defenseBonus = 0
+tier3_upgradeCostGold = 1800
+tier3_upgradeCostWood = 50
+tier3_upgradeCostMagicStone = 2
+tier3_upgradeCostRareMetal = 1
 
 [mill]
 name = 방앗간
@@ -103,5 +316,30 @@ buildCostGold = 500
 buildCostWood = 20
 buildCostStone = 10
 incomePerDay = 12
-description = 밀을 밀가루로 변환한다. 요리 효율 보너스.
 maintenancePerDay = 3
+description = 밀을 밀가루로 변환한다. 요리 효율 보너스.
+
+tier1_incomePerDay = 12
+tier1_maintenancePerDay = 3
+tier1_happinessBonus = 0
+tier1_defenseBonus = 0
+tier1_upgradeCostGold = 0
+
+tier2_incomePerDay = 22
+tier2_maintenancePerDay = 5
+tier2_happinessBonus = 2
+tier2_defenseBonus = 0
+tier2_upgradeCostGold = 700
+tier2_upgradeCostWood = 25
+tier2_upgradeCostStone = 15
+tier2_upgradeCostWheat = 20
+
+tier3_incomePerDay = 35
+tier3_maintenancePerDay = 7
+tier3_happinessBonus = 5
+tier3_defenseBonus = 0
+tier3_upgradeCostGold = 1800
+tier3_upgradeCostWood = 50
+tier3_upgradeCostStone = 30
+tier3_upgradeCostMonsterBone = 5
+tier3_upgradeCostMagicStone = 2

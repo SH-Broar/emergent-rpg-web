@@ -1,0 +1,408 @@
+# village-events.txt — 마을 이벤트 15종
+
+# ============================================================
+# 계절 이벤트 4종
+# ============================================================
+
+[spring_festival]
+name = 봄 축제
+category = seasonal
+triggerSeason = spring
+triggerStageMin = 2
+triggerStageMax = 7
+triggerPopMin = 3
+triggerRepMin = 0
+cooldownDays = 90
+description = 봄 햇살 아래 주민들이 축제를 열고 싶어 한다. 허락하겠는가?
+choice1_label = 축제를 열어라 (50G)
+choice1_goldCost = 50
+choice1_successChance = 0.9
+choice1_successMsg = 축제가 성황리에 끝났다. 주민들의 행복도가 크게 올랐다.
+choice1_failureMsg = 예상치 못한 비로 축제가 망쳤다. 주민들이 실망했다.
+choice1_success_happinessDelta = 15
+choice1_success_reputationDelta = 5
+choice1_success_populationDelta = 1
+choice1_failure_happinessDelta = -5
+choice1_failure_reputationDelta = -2
+choice2_label = 지금은 아니다
+choice2_goldCost = 0
+choice2_successChance = 1.0
+choice2_successMsg = 주민들이 아쉬워하지만 이해한다.
+choice2_failureMsg = 주민들이 아쉬워하지만 이해한다.
+choice2_success_happinessDelta = -3
+choice2_success_reputationDelta = 0
+
+[summer_drought]
+name = 여름 가뭄
+category = seasonal
+triggerSeason = summer
+triggerStageMin = 1
+triggerStageMax = 7
+triggerPopMin = 1
+triggerRepMin = 0
+cooldownDays = 90
+description = 무더위와 가뭄이 마을을 위협한다. 비상 식량을 비축하겠는가?
+choice1_label = 식량 비축 (200G)
+choice1_goldCost = 200
+choice1_successChance = 1.0
+choice1_successMsg = 비축 덕분에 가뭄을 무사히 넘겼다.
+choice1_failureMsg = 비축 덕분에 가뭄을 무사히 넘겼다.
+choice1_success_happinessDelta = 5
+choice1_success_treasuryDelta = -200
+choice2_label = 그냥 버틴다
+choice2_goldCost = 0
+choice2_successChance = 0.5
+choice2_successMsg = 운 좋게 비가 내렸다. 위기를 넘겼다.
+choice2_failureMsg = 가뭄이 심해졌다. 주민들이 고통받고 있다.
+choice2_success_happinessDelta = 0
+choice2_failure_happinessDelta = -12
+choice2_failure_populationDelta = -1
+
+[autumn_harvest]
+name = 가을 풍년
+category = seasonal
+triggerSeason = autumn
+triggerStageMin = 2
+triggerStageMax = 7
+triggerPopMin = 5
+triggerRepMin = 0
+cooldownDays = 90
+description = 풍년이 들었다. 잉여 작물을 어떻게 처리하겠는가?
+choice1_label = 시장에 판다
+choice1_goldCost = 0
+choice1_successChance = 0.85
+choice1_successMsg = 작물이 좋은 가격에 팔렸다.
+choice1_failureMsg = 시장 가격이 좋지 않아 이익이 적었다.
+choice1_success_treasuryDelta = 300
+choice1_success_reputationDelta = 3
+choice1_failure_treasuryDelta = 80
+choice2_label = 주민에게 나눠준다
+choice2_goldCost = 0
+choice2_successChance = 1.0
+choice2_successMsg = 주민들의 행복도가 크게 올랐다.
+choice2_failureMsg = 주민들의 행복도가 크게 올랐다.
+choice2_success_happinessDelta = 20
+choice2_success_reputationDelta = 5
+
+[winter_blizzard]
+name = 겨울 눈보라
+category = seasonal
+triggerSeason = winter
+triggerStageMin = 1
+triggerStageMax = 7
+triggerPopMin = 1
+triggerRepMin = 0
+cooldownDays = 90
+description = 강한 눈보라가 마을을 덮쳤다. 주민들을 어떻게 보호하겠는가?
+choice1_label = 창고 식량을 개방한다 (100G)
+choice1_goldCost = 100
+choice1_successChance = 1.0
+choice1_successMsg = 주민들이 따뜻하게 겨울을 났다.
+choice1_failureMsg = 주민들이 따뜻하게 겨울을 났다.
+choice1_success_happinessDelta = 10
+choice1_success_defenseDelta = 2
+choice2_label = 각자도생을 권한다
+choice2_goldCost = 0
+choice2_successChance = 0.4
+choice2_successMsg = 주민들이 스스로 버텼다.
+choice2_failureMsg = 눈보라로 주민 일부가 마을을 떠났다.
+choice2_failure_populationDelta = -2
+choice2_failure_happinessDelta = -15
+
+# ============================================================
+# 위기 이벤트 6종
+# ============================================================
+
+[bandit_raid]
+name = 도적 습격
+category = crisis
+triggerSeason =
+triggerStageMin = 1
+triggerStageMax = 7
+triggerPopMin = 3
+triggerRepMin = 0
+cooldownDays = 40
+description = 도적 무리가 마을 주변에 출몰하고 있다. 어떻게 대응하겠는가?
+choice1_label = 의용대를 조직한다 (150G)
+choice1_goldCost = 150
+choice1_successChance = 0.75
+choice1_successMsg = 의용대가 도적을 격퇴했다. 마을 방어도가 올랐다.
+choice1_failureMsg = 도적과 싸웠지만 패배했다. 마을이 약탈당했다.
+choice1_success_defenseDelta = 8
+choice1_success_reputationDelta = 5
+choice1_failure_treasuryDelta = -200
+choice1_failure_happinessDelta = -10
+choice2_label = 도적에게 통행세를 낸다 (300G)
+choice2_goldCost = 300
+choice2_successChance = 0.9
+choice2_successMsg = 도적들이 물러났다. 일시적인 평화가 찾아왔다.
+choice2_failureMsg = 통행세를 냈지만 도적이 더 요구한다.
+choice2_success_treasuryDelta = -300
+choice2_failure_treasuryDelta = -500
+choice2_failure_reputationDelta = -5
+
+[plague]
+name = 전염병 창궐
+category = crisis
+triggerSeason =
+triggerStageMin = 2
+triggerStageMax = 7
+triggerPopMin = 8
+triggerRepMin = 0
+cooldownDays = 60
+description = 마을에 열병이 돌기 시작했다. 즉각 대응하겠는가?
+choice1_label = 약초를 구해 치료한다
+choice1_goldCost = 0
+choice1_successChance = 0.8
+choice1_successMsg = 치료에 성공했다. 전염병이 잡혔다.
+choice1_failureMsg = 약초로는 역부족이었다. 전염병이 확산됐다.
+choice1_success_happinessDelta = 10
+choice1_success_reputationDelta = 8
+choice1_failure_populationDelta = -3
+choice1_failure_happinessDelta = -20
+choice2_label = 격리 구역을 설치한다
+choice2_goldCost = 0
+choice2_successChance = 0.65
+choice2_successMsg = 격리 조치로 확산을 막았다.
+choice2_failureMsg = 격리가 너무 늦었다. 주민 여럿이 쓰러졌다.
+choice2_success_happinessDelta = -5
+choice2_success_populationDelta = 0
+choice2_failure_populationDelta = -2
+choice2_failure_happinessDelta = -15
+
+[poor_harvest]
+name = 흉작
+category = crisis
+triggerSeason = autumn
+triggerStageMin = 2
+triggerStageMax = 7
+triggerPopMin = 5
+triggerRepMin = 0
+cooldownDays = 90
+description = 올해 수확이 형편없다. 식량 부족이 우려된다.
+choice1_label = 인근 마을에서 식량을 사온다 (400G)
+choice1_goldCost = 400
+choice1_successChance = 0.95
+choice1_successMsg = 식량을 확보해 위기를 넘겼다.
+choice1_failureMsg = 식량을 확보해 위기를 넘겼다.
+choice1_success_happinessDelta = 0
+choice1_success_treasuryDelta = -400
+choice2_label = 배급제를 시행한다
+choice2_goldCost = 0
+choice2_successChance = 0.6
+choice2_successMsg = 배급제 덕분에 겨울을 났다. 주민들이 다소 불만이다.
+choice2_failureMsg = 배급제도 역부족이었다. 주민들이 마을을 떠났다.
+choice2_success_happinessDelta = -10
+choice2_failure_populationDelta = -2
+choice2_failure_happinessDelta = -20
+
+[storm_damage]
+name = 폭풍 피해
+category = crisis
+triggerSeason =
+triggerStageMin = 1
+triggerStageMax = 7
+triggerPopMin = 1
+triggerRepMin = 0
+cooldownDays = 45
+description = 큰 폭풍이 마을 시설 일부를 망가뜨렸다. 복구하겠는가?
+choice1_label = 즉시 복구한다 (300G)
+choice1_goldCost = 300
+choice1_successChance = 1.0
+choice1_successMsg = 신속히 복구해 피해를 최소화했다.
+choice1_failureMsg = 신속히 복구해 피해를 최소화했다.
+choice1_success_happinessDelta = 5
+choice1_success_reputationDelta = 3
+choice2_label = 천천히 복구한다
+choice2_goldCost = 0
+choice2_successChance = 1.0
+choice2_successMsg = 시간이 걸렸지만 복구됐다. 그동안 수입이 줄었다.
+choice2_failureMsg = 시간이 걸렸지만 복구됐다.
+choice2_success_treasuryDelta = -150
+choice2_success_happinessDelta = -5
+
+[migration_crisis]
+name = 이민 위기
+category = crisis
+triggerSeason =
+triggerStageMin = 3
+triggerStageMax = 7
+triggerPopMin = 10
+triggerRepMin = 0
+cooldownDays = 50
+description = 인근 지역 난민들이 마을 앞에 모여들었다. 받아들이겠는가?
+choice1_label = 난민을 받아들인다
+choice1_goldCost = 0
+choice1_successChance = 0.7
+choice1_successMsg = 난민들이 정착해 마을 인구가 늘었다.
+choice1_failureMsg = 난민 유입으로 식량 부족과 갈등이 생겼다.
+choice1_success_populationDelta = 3
+choice1_success_reputationDelta = 10
+choice1_failure_happinessDelta = -15
+choice1_failure_treasuryDelta = -200
+choice2_label = 정중히 돌려보낸다
+choice2_goldCost = 0
+choice2_successChance = 1.0
+choice2_successMsg = 마을 질서는 유지됐다.
+choice2_failureMsg = 마을 질서는 유지됐다.
+choice2_success_reputationDelta = -8
+choice2_success_happinessDelta = -3
+
+[merchant_conflict]
+name = 상인 갈등
+category = crisis
+triggerSeason =
+triggerStageMin = 2
+triggerStageMax = 7
+triggerPopMin = 5
+triggerRepMin = 10
+cooldownDays = 40
+description = 두 상인 집단이 마을 시장 이권을 두고 다툰다. 중재하겠는가?
+choice1_label = 공개 경쟁을 허용한다
+choice1_goldCost = 0
+choice1_successChance = 0.75
+choice1_successMsg = 공정한 경쟁으로 시장이 활성화됐다.
+choice1_failureMsg = 과열 경쟁으로 약자가 쫓겨나 마을 분위기가 험악해졌다.
+choice1_success_treasuryDelta = 200
+choice1_success_reputationDelta = 5
+choice1_failure_happinessDelta = -10
+choice1_failure_reputationDelta = -5
+choice2_label = 한쪽 편을 든다
+choice2_goldCost = 0
+choice2_successChance = 0.6
+choice2_successMsg = 지지한 상인이 고마움을 표했다.
+choice2_failureMsg = 지지를 받은 상인이 독점을 시작했다.
+choice2_success_treasuryDelta = 100
+choice2_failure_happinessDelta = -8
+choice2_failure_reputationDelta = -8
+
+# ============================================================
+# 성장 이벤트 3종 (인구 도달 시 1회성)
+# ============================================================
+
+[growth_pop10]
+name = 마을이 커지다 (인구 10)
+category = growth
+triggerSeason =
+triggerStageMin = 1
+triggerStageMax = 7
+triggerPopMin = 10
+triggerRepMin = 0
+cooldownDays = 999
+description = 마을 인구가 10명에 달했다. 주민들이 마을의 미래를 논하고 있다.
+choice1_label = 마을 발전 계획을 발표한다
+choice1_goldCost = 0
+choice1_successChance = 1.0
+choice1_successMsg = 주민들이 환호했다. 마을의 방향이 정해졌다.
+choice1_failureMsg = 주민들이 환호했다.
+choice1_success_happinessDelta = 10
+choice1_success_reputationDelta = 10
+choice2_label = 조용히 넘어간다
+choice2_goldCost = 0
+choice2_successChance = 1.0
+choice2_successMsg = 평온한 일상이 계속된다.
+choice2_failureMsg = 평온한 일상이 계속된다.
+choice2_success_happinessDelta = 0
+
+[growth_pop50]
+name = 중견 마을 (인구 50)
+category = growth
+triggerSeason =
+triggerStageMin = 1
+triggerStageMax = 7
+triggerPopMin = 50
+triggerRepMin = 0
+cooldownDays = 999
+description = 마을 인구가 50명을 넘었다. 이제 작은 마을이 아니다.
+choice1_label = 마을 전문화를 선언한다
+choice1_goldCost = 0
+choice1_successChance = 1.0
+choice1_successMsg = 마을의 정체성이 확립됐다.
+choice1_failureMsg = 마을의 정체성이 확립됐다.
+choice1_success_happinessDelta = 15
+choice1_success_reputationDelta = 15
+choice2_label = 균형 발전을 유지한다
+choice2_goldCost = 0
+choice2_successChance = 1.0
+choice2_successMsg = 안정된 성장이 계속된다.
+choice2_failureMsg = 안정된 성장이 계속된다.
+choice2_success_happinessDelta = 5
+choice2_success_reputationDelta = 5
+
+[growth_pop100]
+name = 도시로의 발걸음 (인구 100)
+category = growth
+triggerSeason =
+triggerStageMin = 1
+triggerStageMax = 7
+triggerPopMin = 100
+triggerRepMin = 0
+cooldownDays = 999
+description = 인구 100명. 마을은 이제 도시로 발전할 기로에 섰다.
+choice1_label = 도시 선포식을 연다 (500G)
+choice1_goldCost = 500
+choice1_successChance = 1.0
+choice1_successMsg = 세계 각지에 마을의 이름이 알려졌다.
+choice1_failureMsg = 세계 각지에 마을의 이름이 알려졌다.
+choice1_success_reputationDelta = 30
+choice1_success_happinessDelta = 20
+choice2_label = 내실을 다진다
+choice2_goldCost = 0
+choice2_successChance = 1.0
+choice2_successMsg = 마을이 조용히 강해졌다.
+choice2_failureMsg = 마을이 조용히 강해졌다.
+choice2_success_reputationDelta = 10
+choice2_success_happinessDelta = 10
+
+# ============================================================
+# 특수 이벤트 2종 — 벤젠 관련
+# ============================================================
+
+[benzen_arrival]
+name = 수상한 요정의 방문
+category = special
+triggerSeason =
+triggerStageMin = 1
+triggerStageMax = 7
+triggerPopMin = 0
+triggerRepMin = 0
+cooldownDays = 999
+description = 어느 날 아침, 이상한 요정 하나가 마을 광장 한가운데 앉아 있다. "여기가 내가 관리할 마을이냐? 흠, 기대 이하군." 받아들이겠는가?
+choice1_label = "...환영합니다"
+choice1_goldCost = 0
+choice1_successChance = 1.0
+choice1_successMsg = 벤젠이 마을 관리인으로 취임했다. 어딘가 불안하지만, 믿어보기로 했다.
+choice1_failureMsg = 벤젠이 마을 관리인으로 취임했다.
+choice1_success_happinessDelta = 0
+choice1_success_reputationDelta = 5
+choice2_label = "당신은 누구입니까?"
+choice2_goldCost = 0
+choice2_successChance = 1.0
+choice2_successMsg = 벤젠이 콧방귀를 뀌며 "어쨌든 여기 있을 거야"라고 답했다.
+choice2_failureMsg = 벤젠이 콧방귀를 뀌며 "어쨌든 여기 있을 거야"라고 답했다.
+choice2_success_happinessDelta = 0
+
+[benzen_special_quest]
+name = 벤젠의 특별 의뢰
+category = special
+triggerSeason =
+triggerStageMin = 2
+triggerStageMax = 7
+triggerPopMin = 5
+triggerRepMin = 20
+cooldownDays = 30
+description = 벤젠이 심각한 표정으로 말한다. "마법진 재료가 필요해. 마법석 5개를 구해주면... 마을에 특별한 보호막을 쳐 줄게."
+choice1_label = 마법석을 구해드린다
+choice1_goldCost = 0
+choice1_successChance = 1.0
+choice1_successMsg = 벤젠이 마법진을 완성했다. 마을 방어도가 크게 올랐다.
+choice1_failureMsg = 벤젠이 마법진을 완성했다. 마을 방어도가 크게 올랐다.
+choice1_success_defenseDelta = 15
+choice1_success_happinessDelta = 5
+choice1_success_reputationDelta = 10
+choice2_label = 지금은 어렵다
+choice2_goldCost = 0
+choice2_successChance = 1.0
+choice2_successMsg = 벤젠이 어깨를 으쓱하며 "그래, 나중에 부탁이나 해" 한다.
+choice2_failureMsg = 벤젠이 어깨를 으쓱하며 말한다.
+choice2_success_happinessDelta = -2

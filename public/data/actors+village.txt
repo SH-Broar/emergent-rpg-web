@@ -1,0 +1,14 @@
+# actors+village.txt — 마을 상주 NPC 정의
+
+[벤젠]
+race = Elf
+role = Villager
+strength = 0.8
+gold = 0
+location =
+homeLocation =
+age = 312
+colorValues = 0.3,0.6,0.7,0.3,0.3,0.8,0.9,0.2
+domainHigh = Calm,Inventive,Reliable,Righteous,Methodical,Adaptable,Honest,Cunning
+domainLow = Melancholy,Flexible,Patient,Generous,Passionate,Grounded,Apathetic,Naive
+background = 자칭 세계 최고의 요정 마법사.|어쩌다 한 마을의 관리인을 맡게 됐지만, 사실 이 일에 은근히 흥미를 느끼고 있다.|천재지만 오만하며 직설적이다. 그러나 맡은 일은 완벽하게 해낸다.|마을이 성장할수록 조금씩 애정이 생기는 중이지만, 절대 티 내지 않는다.

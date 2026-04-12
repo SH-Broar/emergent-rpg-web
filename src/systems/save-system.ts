@@ -17,7 +17,7 @@ import { VillageState } from '../models/village';
 // Constants
 // ============================================================
 
-export const SAVE_VERSION = 2;
+export const SAVE_VERSION = 3;
 export const SLOT_COUNT = 4; // 0 = autosave, 1-3 = manual
 export const STORAGE_KEY_PREFIX = 'rdc-save-';
 
@@ -404,6 +404,13 @@ function serializeVillageState(v: VillageState): object {
     facilities: v.facilities.map(f => ({ ...f })),
     roads: v.roads.map(r => ({ ...r })),
     finance: { ...v.finance },
+    // Phase 2 필드
+    reputation: v.reputation,
+    specialization: v.specialization,
+    activeEvent: v.activeEvent ? { ...v.activeEvent } : null,
+    eventHistory: v.eventHistory.map(e => ({ ...e })),
+    benzenAppeared: v.benzenAppeared,
+    lastPopGrowthDay: v.lastPopGrowthDay,
   };
 }
 
@@ -416,7 +423,13 @@ function deserializeVillageState(d: any): VillageState {
     population: d.population ?? 1,
     happiness: d.happiness ?? 50,
     defense: d.defense ?? 0,
-    facilities: (d.facilities ?? []).map((f: any) => ({ ...f })),
+    facilities: (d.facilities ?? []).map((f: any) => ({
+      facilityId: f.facilityId ?? '',
+      builtDay: f.builtDay ?? 1,
+      status: f.status ?? 'active',
+      tier: f.tier ?? 1,          // Phase 1 세이브 마이그레이션
+      upgradedDay: f.upgradedDay,
+    })),
     roads: (d.roads ?? []).map((r: any) => ({ ...r })),
     finance: {
       totalIncomePerDay: d.finance?.totalIncomePerDay ?? 0,
@@ -424,6 +437,13 @@ function deserializeVillageState(d: any): VillageState {
       treasury: d.finance?.treasury ?? 0,
       lastSettledDay: d.finance?.lastSettledDay ?? d.foundedDay ?? 1,
     },
+    // Phase 2 필드 — 구버전 세이브는 기본값
+    reputation: d.reputation ?? 0,
+    specialization: d.specialization ?? 'none',
+    activeEvent: d.activeEvent ?? null,
+    eventHistory: d.eventHistory ?? [],
+    benzenAppeared: d.benzenAppeared ?? false,
+    lastPopGrowthDay: d.lastPopGrowthDay ?? d.foundedDay ?? 1,
   };
 }
 

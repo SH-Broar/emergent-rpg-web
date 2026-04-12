@@ -484,7 +484,7 @@ async function boot() {
           break;
         case 'village':
           if (!session.knowledge.villageState) break;
-          sm.push(createVillageScreen(session, () => sm.pop()));
+          sm.push(createVillageScreen(session, () => sm.pop(), sm));
           break;
         case 'save':
           sm.push(createSaveLoadScreen(session, true, () => sm.pop()));

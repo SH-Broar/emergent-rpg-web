@@ -14,8 +14,7 @@ import { npcOnTick } from './npc-ai';
 import { checkNpcLifeEvents } from './npc-life';
 import { tickFarm } from '../models/farming';
 import { getCropDef } from '../data/crop-defs';
-import { recalcVillageFinance } from '../models/village';
-import { getFacilityDef } from '../data/village-defs';
+import { tickVillage, toSeasonKey } from './village-simulation';
 
 const TICK_CHUNK = 5;
 const FF_CHUNK_MINUTES = 5;
@@ -240,17 +239,12 @@ function simulateAdvanceStep(
     if (knowledge.villageState) {
       const village = knowledge.villageState;
       if (village.finance.lastSettledDay < curDay + 1) {
-        recalcVillageFinance(village, getFacilityDef);
-        const net = village.finance.totalIncomePerDay - village.finance.totalMaintenancePerDay;
-        if (net !== 0) {
-          village.finance.treasury += net;
-          // 유지비 > 수입 → 시설 정지 처리는 Phase 2
-        }
-        village.finance.lastSettledDay = curDay + 1;
-        if (net !== 0) {
+        const seasonKey = toSeasonKey(world.getCurrentSeason());
+        const result = tickVillage(village, curDay + 1, seasonKey, log, gameTime);
+        if (result.financeDelta !== 0) {
           log.add(
             gameTime,
-            `[개척 마을] ${village.name} 정산: ${net > 0 ? '+' : ''}${net}G (금고 ${village.finance.treasury}G)`,
+            `[${village.name}] 정산: ${result.financeDelta > 0 ? '+' : ''}${result.financeDelta}G (금고 ${village.finance.treasury}G)`,
             '마을',
           );
         }

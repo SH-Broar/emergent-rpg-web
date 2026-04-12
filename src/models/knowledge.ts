@@ -170,6 +170,9 @@ export class PlayerKnowledge {
 
   hasVillage(): boolean { return this.villageState !== null; }
 
+  // Phase 2: 벤젠 친밀도 0~100
+  benzenAffinity: number = 0;
+
   // 거점 시스템
   ownedBases = new Set<string>(); // 소유한 거점 LocationID들
 
