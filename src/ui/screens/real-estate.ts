@@ -4,6 +4,7 @@ import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
 import { locationName } from '../../types/registry';
 import { BASE_DEFS, getUpgradeCost, type BaseDef } from '../../data/base-defs';
+import { checkAndAwardTitles } from '../../systems/title-system';
 
 /** 현재 위치가 속한 마을 그룹 결정 */
 function getVillageForLocation(locationId: string): string {
@@ -123,6 +124,9 @@ export function createRealEstateScreen(
         k.trackGoldSpent(def.contractPrice);
         k.purchaseBase(locId);
         session.backlog.add(session.gameTime, `${locationName(locId)}에 거점을 마련했다.`, '시스템');
+        for (const t of checkAndAwardTitles(session)) {
+          session.backlog.add(session.gameTime, `✦ 칭호 획득: "${t}"`, '시스템');
+        }
         render(el);
       });
     });

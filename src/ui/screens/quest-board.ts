@@ -6,6 +6,7 @@ import { QuestStatus } from '../../models/social';
 import { getAllNpcQuestNpcs, getNpcQuestsForNpc, getNpcQuestDef } from '../../data/npc-quest-defs';
 import { getRelationshipOverall } from '../../models/social';
 import type { NpcQuestDef } from '../../models/npc-quest';
+import { checkAndAwardTitles } from '../../systems/title-system';
 
 type QuestTab = 'available' | 'active' | 'completed' | 'npc';
 
@@ -206,6 +207,10 @@ export function createQuestBoardScreen(
         k.completeNpcQuest(questId);
         session.backlog.add(session.gameTime, `${def.npc}의 의뢰 "${def.title}"을(를) 완료했다.\n${def.completionText}`, '퀘스트');
         message = `"${def.title}" 완료! +${def.rewardGold}G`;
+        for (const t of checkAndAwardTitles(session)) {
+          session.backlog.add(session.gameTime, `✦ 칭호 획득: "${t}"`, '시스템');
+          message += ` ✦ 칭호: "${t}"`;
+        }
         renderBoard(el);
       });
     });

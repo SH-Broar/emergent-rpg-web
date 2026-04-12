@@ -443,6 +443,10 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
         session.knowledge.trackQuestCompleted(quest.title);
         session.backlog.add(session.gameTime, `퀘스트 "${quest.title}" 완료! +${quest.rewardGold}G`, '시스템', p.name);
         result.messages.push(`퀘스트 "${quest.title}" 완료! +${quest.rewardGold}G`);
+        for (const t of checkAndAwardTitles(session)) {
+          session.backlog.add(session.gameTime, `✦ 칭호 획득: "${t}"`, '시스템');
+          result.messages.push(`✦ 칭호 획득: "${t}"`);
+        }
       }
     }
 

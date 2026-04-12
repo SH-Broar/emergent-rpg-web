@@ -11,6 +11,7 @@ import type { DialogueChoiceDef } from '../../models/dialogue-choice';
 import { getDialogue, getContinueDialogue, tryRecruitCompanion, getRelationshipStage, getRelationshipStageLabel } from '../../systems/npc-interaction';
 import { triggerNpcQuestEvent } from '../../data/npc-quest-defs';
 import { createNpcList } from '../components/npc-list';
+import { checkAndAwardTitles } from '../../systems/title-system';
 
 type DialogueAction = 'continue' | 'recruit' | 'info';
 
@@ -159,6 +160,9 @@ export function createDialogueScreen(
       session.knowledge.addKnownName(npc.name);
       session.knowledge.trackConversation(npc.name);
       triggerNpcQuestEvent(session.knowledge, { type: 'talk', npcName: npc.name });
+      for (const t of checkAndAwardTitles(session)) {
+        session.backlog.add(session.gameTime, `✦ 칭호 획득: "${t}"`, '시스템');
+      }
 
       // 대화 선택지 확인
       const rel = p.relationships.get(npc.name);

@@ -3,6 +3,7 @@
 
 import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
+import { TITLE_DESCRIPTIONS } from '../../systems/title-system';
 
 export function createTitlesScreen(
   session: GameSession,
@@ -62,10 +63,12 @@ export function createTitlesScreen(
         btn.className = `btn npc-item${t === activeTitle ? ' active' : ''}`;
         btn.style.minHeight = '44px';
         btn.dataset.idx = String(i);
+        const desc = TITLE_DESCRIPTIONS[t] ?? '';
         btn.innerHTML = `
           <span class="npc-num">${i + 1}.</span>
           <span class="npc-name">${t}</span>
           ${t === activeTitle ? '<span class="npc-detail">[\ud65c\uc131]</span>' : ''}
+          ${desc ? `<span class="npc-detail" style="color:var(--text-dim);font-size:11px">${desc}</span>` : ''}
         `;
         btn.addEventListener('click', () => selectTitle(i, el));
         list.appendChild(btn);
@@ -77,6 +80,29 @@ export function createTitlesScreen(
     hint.className = 'hint';
     hint.textContent = '1~9 \uce6d\ud638 \uc120\ud0dd, Esc \ub4a4\ub85c';
     wrap.appendChild(hint);
+
+    // 미획득 칭호 목록
+    const allTitles = Object.keys(TITLE_DESCRIPTIONS);
+    const unearnedTitles = allTitles.filter(t => !session.knowledge.hasTitle(t));
+    if (unearnedTitles.length > 0) {
+      const secTitle = document.createElement('p');
+      secTitle.style.cssText = 'margin-top:16px;font-weight:bold;font-size:13px;color:var(--text-dim)';
+      secTitle.textContent = `미획득 칭호 (${unearnedTitles.length}개)`;
+      wrap.appendChild(secTitle);
+
+      const ulist = document.createElement('div');
+      ulist.className = 'npc-list';
+      unearnedTitles.forEach(t => {
+        const row = document.createElement('div');
+        row.style.cssText = 'padding:6px 8px;border-bottom:1px solid var(--border);opacity:0.55';
+        row.innerHTML = `
+          <span style="color:var(--text-dim)">[ ? ] ${t}</span>
+          <span style="display:block;font-size:11px;color:var(--text-dim);margin-top:2px">${TITLE_DESCRIPTIONS[t]}</span>
+        `;
+        ulist.appendChild(row);
+      });
+      wrap.appendChild(ulist);
+    }
 
     el.appendChild(wrap);
   }

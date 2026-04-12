@@ -7,6 +7,7 @@ import {
   hasFerryPass, buyTicket, buyFerryPass, canBoardNow, boardFerry, nextDeparture,
 } from '../../systems/ferry';
 import { locationName } from '../../types/registry';
+import { checkAndAwardTitles } from '../../systems/title-system';
 
 export function createFerryScreen(
   session: GameSession,
@@ -133,6 +134,9 @@ export function createFerryScreen(
       session.gameTime.advance(result.travelMinutes);
       p.currentLocation = result.destination;
       session.knowledge.trackVisit(result.destination);
+      for (const t of checkAndAwardTitles(session)) {
+        session.backlog.add(session.gameTime, `✦ 칭호 획득: "${t}"`, '시스템');
+      }
       onDone();
     }
   }

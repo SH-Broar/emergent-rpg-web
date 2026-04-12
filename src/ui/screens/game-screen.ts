@@ -10,7 +10,8 @@ import { moveCompanions, getRelationshipStage, tryNpcInitiatedConversation } fro
 import { triggerNpcQuestEvent } from '../../data/npc-quest-defs';
 import { locationName } from '../../types/registry';
 import { getZoneColor } from './world-map';
-import { weatherName, seasonName, raceName, spiritRoleName, elementName, Element, ELEMENT_COUNT, ItemType } from '../../types/enums';
+import { weatherName, seasonName, raceName, spiritRoleName, elementName, Element, ELEMENT_COUNT, ItemType, COMBAT_JOB_NAMES, LIFE_JOB_NAMES } from '../../types/enums';
+import type { CombatJob, LifeJob } from '../../types/enums';
 import { getItemDef, getWeaponDef, getArmorDef, categoryName } from '../../types/item-defs';
 import { isTimeWindowOpen } from '../../types/game-time';
 import { applyTimeTheme } from '../time-theme';
@@ -18,6 +19,7 @@ import { TRAVEL_OVERLAY_THRESHOLD_MINUTES } from './travel';
 import { advanceTurn, canNotifyRandomEvent } from '../../systems/world-simulation';
 import { getVillageRoadMultiplier } from '../../models/village';
 import { getRoadDef } from '../../data/village-defs';
+import { checkAndAwardTitles } from '../../systems/title-system';
 
 interface ActionDef {
   key: string;
@@ -343,25 +345,19 @@ export function createGameScreen(
             </div>
             <span class="stat-val">${p.base.ap}/${p.getEffectiveMaxAp()}</span>
           </div>
-          <div class="hud-mini"><strong>${p.name}</strong> · ${raceName(p.base.race)} · ${spiritRoleName(p.spirit.role)} · 💰${p.spirit.gold}G</div>
-          <div class="hud-colors" style="justify-content:center;gap:12px">
+          <div class="hud-mini"><strong>${p.name}</strong>${session.knowledge.activeTitle ? ` 「${session.knowledge.activeTitle}」` : ''} · ${raceName(p.base.race)} · 💰${p.spirit.gold}G</div>
+          <div class="hud-colors" style="justify-content:center;gap:8px;align-items:center">
             ${(() => {
-              // 가장 높은 속성 계산
-              const scaled = p.color.values.map((v, i) => ({ i, s: Math.round((v - 0.5) * 200) }));
-              scaled.sort((a, b) => b.s - a.s);
-              const top = scaled[0].s;
-              const near = scaled.filter(x => top - x.s <= 1);
-              let elemLabel: string;
-              if (near.length >= 3) {
-                elemLabel = '<span style="color:var(--text-dim)">속성 : 무속성</span>';
-              } else if (near.length === 2) {
-                elemLabel = `<span>속성 : <span style="color:var(--el-${near[0].i})">${elementName(near[0].i as Element)}</span> · <span style="color:var(--el-${near[1].i})">${elementName(near[1].i as Element)}</span></span>`;
-              } else {
-                elemLabel = `<span>속성 : <span style="color:var(--el-${near[0].i})">${elementName(near[0].i as Element)}</span></span>`;
-              }
+              const combatLabel = p.combatJob ? COMBAT_JOB_NAMES[p.combatJob as CombatJob] : '';
+              const lifeLabel   = p.lifeJob   ? LIFE_JOB_NAMES[p.lifeJob as LifeJob]       : '';
+              const jobStr = [combatLabel, lifeLabel].filter(Boolean).join(' · ');
+              const colorDots = p.color.values.map((v, i) => {
+                const s = Math.max(0, (v - 0.5) * 2);
+                const opacity = Math.max(0.15, Math.min(1, s * 1.4 + 0.15));
+                return `<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--el-${i});opacity:${opacity}"></span>`;
+              }).join('');
               const totalHyperion = session.actors.reduce((sum, a) => sum + a.hyperionLevel, 0);
-              const titleStr = session.knowledge.activeTitle ? ` · ${session.knowledge.activeTitle}` : '';
-              return `${elemLabel} <span style="color:var(--warning)">✦Lv.${totalHyperion}</span>${titleStr}`;
+              return `${jobStr ? `<span>${jobStr}</span> · ` : ''}<span style="display:inline-flex;gap:2px;align-items:center">${colorDots}</span> · <span style="color:var(--warning)">✦Lv.${totalHyperion}</span>`;
             })()}
           </div>
         </div>
@@ -697,6 +693,9 @@ export function createMoveScreen(
       session.backlog.add(session.gameTime, `${session.player.name}이(가) ${locationName(loc)}(으)로 이동했다.`, '행동');
       session.knowledge.trackVisit(loc);
       triggerNpcQuestEvent(session.knowledge, { type: 'visit', locationId: loc });
+      for (const t of checkAndAwardTitles(session)) {
+        session.backlog.add(session.gameTime, `✦ 칭호 획득: "${t}"`, '시스템');
+      }
       onDone();
     }
   }

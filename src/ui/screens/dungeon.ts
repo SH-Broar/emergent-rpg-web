@@ -13,6 +13,7 @@ import {
 import { canUseSkill } from '../../systems/skill-combat';
 import { locationName } from '../../types/registry';
 import { moveCompanions } from '../../systems/npc-interaction';
+import { checkAndAwardTitles } from '../../systems/title-system';
 import { triggerNpcQuestEvent } from '../../data/npc-quest-defs';
 import { iGa, eulReul, eunNeun } from '../../data/josa';
 import { randomFloat, randomInt } from '../../types/rng';
@@ -375,6 +376,9 @@ export function createDungeonScreen(
     p.currentLocation = hidden;
     moveCompanions(session.actors, session.knowledge, hidden);
     session.knowledge.trackVisit(hidden);
+    for (const t of checkAndAwardTitles(session)) {
+      session.backlog.add(session.gameTime, `✦ 칭호 획득: "${t}"`, '시스템');
+    }
     session.backlog.add(session.gameTime, `${p.name}${iGa(p.name)} ${locationName(hidden)}에 입장했다.`, '행동');
     onDone();
   }
