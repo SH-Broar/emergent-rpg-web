@@ -4,6 +4,7 @@
 import { ELEMENT_COUNT } from '../types/enums';
 import { generateDefaultCellConditions, generateDefaultRowConditions, generateDefaultColConditions } from './core-matrix-conditions';
 import { FarmState, createFarmState, expandFarm } from './farming';
+import { VillageState } from './village';
 
 // ============================================================
 // CoreMatrix
@@ -163,6 +164,11 @@ export class PlayerKnowledge {
   addTitle(titleId: string): void {
     if (!this.hasTitle(titleId)) this.earnedTitles.push(titleId);
   }
+
+  // 개척 마을 상태 (game당 1개, null = 미건설)
+  villageState: VillageState | null = null;
+
+  hasVillage(): boolean { return this.villageState !== null; }
 
   // 거점 시스템
   ownedBases = new Set<string>(); // 소유한 거점 LocationID들

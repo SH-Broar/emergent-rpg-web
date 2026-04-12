@@ -101,6 +101,8 @@ export interface GameDataFiles {
   acquisition: DataSection[];
   actionTexts: DataSection[];
   combatTexts: DataSection[];
+  villageFacilities: DataSection[];
+  villageRoads: DataSection[];
 }
 
 export async function loadAllData(): Promise<GameDataFiles> {
@@ -111,6 +113,7 @@ export async function loadAllData(): Promise<GameDataFiles> {
     activities, productions, hyperion, titles,
     giftPreferences, weapons, armor, lore, diagnostic,
     skills, acquisition, actionTexts, combatTexts,
+    villageFacilities, villageRoads,
   ] = await Promise.all([
     loadDataFile('items'),
     loadDataFile('locations', addons.locations ?? []),
@@ -134,6 +137,8 @@ export async function loadAllData(): Promise<GameDataFiles> {
     loadDataFile('acquisition'),
     loadDataFile('action_texts'),
     loadDataFile('combat_texts'),
+    loadDataFile('village-facilities'),
+    loadDataFile('village-roads'),
   ]);
 
   return {
@@ -142,5 +147,6 @@ export async function loadAllData(): Promise<GameDataFiles> {
     activities, productions, hyperion, titles,
     giftPreferences, weapons, armor, lore, diagnostic,
     skills, acquisition, actionTexts, combatTexts,
+    villageFacilities, villageRoads,
   };
 }

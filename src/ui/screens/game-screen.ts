@@ -59,6 +59,9 @@ function atGuild(session: GameSession) { return session.player.currentLocation =
 function atLunaAcademy(session: GameSession) { return session.player.currentLocation === 'Luna_Academy'; }
 function atHanabridge(session: GameSession) { return session.player.currentLocation === 'Hanabridge'; }
 function atMartinPort(session: GameSession) { return session.player.currentLocation === 'Martin_Port'; }
+function atVillage(session: GameSession) {
+  return session.knowledge.villageState?.locationId === session.player.currentLocation;
+}
 
 const MAIN_ACTIONS: ActionDef[] = [
   { key: '1', label: '대기', action: 'idle', icon: '⏳' },
@@ -79,6 +82,7 @@ const MAIN_ACTIONS: ActionDef[] = [
   { key: 'j', label: '던전 정보', action: 'guild_dungeon' as GameAction, icon: '🗺', visible: atGuild },
   { key: 'm', label: '기억의 샘', action: 'memory_spring', icon: '💧', visible: atMemorySpring },
   { key: 'f', label: '배편', action: 'ferry' as GameAction, icon: '⛵', visible: atMartinPort },
+  { key: 'v', label: '마을', action: 'village' as GameAction, icon: '🏘', visible: atVillage },
 ];
 
 const INFO_ACTIONS: ActionDef[] = [
@@ -715,17 +719,39 @@ export function createMoveScreen(
               <button class="btn" data-loc="${loc}" data-mins="${mins}" style="border-left:4px solid ${color}">${i + 1}. ${locationName(loc)}${travelBadge}${dungeonBadge}${homeBadge}</button>
             `;}).join('')}
           </div>
-          ${dockedHomeRoute ? (() => {
-            const { loc, mins } = dockedHomeRoute;
-            const travelBadge = mins > TRAVEL_OVERLAY_THRESHOLD_MINUTES
-              ? ` <span style="color:var(--text-dim);font-size:11px">🚶 ${mins}분</span>`
-              : ` <span style="color:var(--text-dim);font-size:11px">${mins}분</span>`;
-            return `
-              <div class="move-home-dock">
-                <button class="btn" data-loc="${loc}" data-mins="${mins}" style="border-left:4px solid #ff9ff3">${sortedRoutes.length + 1}. ${locationName(loc)}${travelBadge} <span style="color:#ff9ff3">🏠</span></button>
-              </div>
-            `;
-          })() : ''}
+          ${(() => {
+            const vs = session.knowledge.villageState;
+            if (vs) {
+              // 마을이 있으면 homeLocation 버튼 대신 마을 버튼 표시
+              const villageLoc = vs.locationId;
+              const villageMins = session.world.getShortestMinutes(p.currentLocation, villageLoc, session.gameTime.day);
+              if (villageMins < 9999 && !sortedRoutes.some(r => r.loc === villageLoc)) {
+                const travelBadge = villageMins > TRAVEL_OVERLAY_THRESHOLD_MINUTES
+                  ? ` <span style="color:var(--text-dim);font-size:11px">🚶 ${villageMins}분</span>`
+                  : ` <span style="color:var(--text-dim);font-size:11px">${villageMins}분</span>`;
+                return `
+                  <div class="move-village-dock">
+                    <button class="btn" data-loc="${villageLoc}" data-mins="${villageMins}"
+                      style="border-left:4px solid #ffd700">
+                      ${sortedRoutes.length + 1}. 개척 마을: ${vs.name}${travelBadge} <span style="color:#ffd700">🏘</span>
+                    </button>
+                  </div>`;
+              }
+              return '';
+            }
+            // 마을 없으면 기존 homeLocation 버튼
+            if (dockedHomeRoute) {
+              const { loc, mins } = dockedHomeRoute;
+              const travelBadge = mins > TRAVEL_OVERLAY_THRESHOLD_MINUTES
+                ? ` <span style="color:var(--text-dim);font-size:11px">🚶 ${mins}분</span>`
+                : ` <span style="color:var(--text-dim);font-size:11px">${mins}분</span>`;
+              return `
+                <div class="move-home-dock">
+                  <button class="btn" data-loc="${loc}" data-mins="${mins}" style="border-left:4px solid #ff9ff3">${sortedRoutes.length + 1}. ${locationName(loc)}${travelBadge} <span style="color:#ff9ff3">🏠</span></button>
+                </div>`;
+            }
+            return '';
+          })()}
         </div>`;
       el.querySelector('[data-back]')?.addEventListener('click', onDone);
       el.querySelectorAll<HTMLButtonElement>('[data-loc]').forEach(btn => {

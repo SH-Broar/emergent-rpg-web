@@ -19,6 +19,7 @@ import { assignNpcSkills } from '../systems/skill-learning';
 import { raceToKey } from '../types/enums';
 import type { TimeWindow } from '../types/game-time';
 import type { GameDataFiles } from './loader';
+import { initVillageFacilities, initVillageRoads } from './village-init';
 
 function parseTimeWindow(raw: string): TimeWindow | undefined {
   const value = raw.trim();
@@ -735,6 +736,10 @@ export function initAll(data: GameDataFiles): InitResult {
   }
 
   const diagnosticQuestions = parseDiagnosticQuestions(data.diagnostic);
+
+  // 마을 시설/도로 정의 로드
+  initVillageFacilities(data.villageFacilities);
+  initVillageRoads(data.villageRoads);
 
   return { actors, world, events, dungeonSystem, activitySystem, diagnosticQuestions, warnings };
 }

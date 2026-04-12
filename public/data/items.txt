@@ -4458,3 +4458,13 @@ tags = /inedible/document/hidden/light/
 description = 수면에 비친 별자리 위치를 옮겨 적은 얇은 별도표.
 rarity = rare
 source = craft:Starlit_Mirrorway
+
+
+[pioneer_plan]
+name = 개척 계획서
+category = Special
+price = 3000
+tags = /special/document/pioneer/
+description = 미개척 땅에 마을을 세울 권리가 기록된 계획서. 사용하면 마을 건설 절차가 시작된다. 게임당 한 번만 사용 가능.
+rarity = rare
+source = shop:Guild_Hall

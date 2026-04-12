@@ -11,12 +11,13 @@ import { GameTime } from '../types/game-time';
 import { ActivitySystem } from '../models/activity';
 import { EventSystem } from '../models/event';
 import { DungeonSystem } from '../models/dungeon';
+import { VillageState } from '../models/village';
 
 // ============================================================
 // Constants
 // ============================================================
 
-export const SAVE_VERSION = 1;
+export const SAVE_VERSION = 2;
 export const SLOT_COUNT = 4; // 0 = autosave, 1-3 = manual
 export const STORAGE_KEY_PREFIX = 'rdc-save-';
 
@@ -299,6 +300,7 @@ function serializeKnowledge(k: PlayerKnowledge): object {
       cells: farm.cells.map(c => ({ ...c })),
     }]),
     lastNapDay: k.lastNapDay,
+    villageState: k.villageState ? serializeVillageState(k.villageState) : null,
   };
 }
 
@@ -361,6 +363,9 @@ function deserializeKnowledge(d: any): PlayerKnowledge {
     );
   }
   if (d.lastNapDay !== undefined) k.lastNapDay = d.lastNapDay;
+  if (d.villageState) {
+    k.villageState = deserializeVillageState(d.villageState);
+  }
   return k;
 }
 
@@ -385,6 +390,41 @@ function deserializeBacklog(d: any): Backlog {
     );
   }
   return b;
+}
+
+function serializeVillageState(v: VillageState): object {
+  return {
+    locationId: v.locationId,
+    name: v.name,
+    foundedDay: v.foundedDay,
+    stage: v.stage,
+    population: v.population,
+    happiness: v.happiness,
+    defense: v.defense,
+    facilities: v.facilities.map(f => ({ ...f })),
+    roads: v.roads.map(r => ({ ...r })),
+    finance: { ...v.finance },
+  };
+}
+
+function deserializeVillageState(d: any): VillageState {
+  return {
+    locationId: d.locationId ?? '',
+    name: d.name ?? '이름없는 마을',
+    foundedDay: d.foundedDay ?? 1,
+    stage: d.stage ?? 1,
+    population: d.population ?? 1,
+    happiness: d.happiness ?? 50,
+    defense: d.defense ?? 0,
+    facilities: (d.facilities ?? []).map((f: any) => ({ ...f })),
+    roads: (d.roads ?? []).map((r: any) => ({ ...r })),
+    finance: {
+      totalIncomePerDay: d.finance?.totalIncomePerDay ?? 0,
+      totalMaintenancePerDay: d.finance?.totalMaintenancePerDay ?? 0,
+      treasury: d.finance?.treasury ?? 0,
+      lastSettledDay: d.finance?.lastSettledDay ?? d.foundedDay ?? 1,
+    },
+  };
 }
 
 function serializeGaugeState(g: ColorGaugeState): object {
@@ -488,9 +528,8 @@ export function loadFromSlot(slot: number): GameSession | null {
     const raw = localStorage.getItem(dataKey(slot));
     if (!raw) return null;
     const data = JSON.parse(raw);
-    if (data.version !== SAVE_VERSION) {
-      console.warn(`[save-system] loadFromSlot(${slot}): version mismatch (got ${data.version}, expected ${SAVE_VERSION})`);
-      return null;
+    if (data.version < SAVE_VERSION) {
+      console.warn(`[save-system] loadFromSlot(${slot}): old save version ${data.version} (current ${SAVE_VERSION}), loading with defaults for new fields`);
     }
     return deserializeSession(data);
   } catch (err) {

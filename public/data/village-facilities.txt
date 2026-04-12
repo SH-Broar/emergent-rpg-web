@@ -1,0 +1,107 @@
+# village-facilities.txt — Phase 1 시설 정의
+
+[lumber_mill]
+name = 목재소
+category = production
+unlockStage = 1
+buildCostGold = 500
+buildCostWood = 15
+buildCostStone = 5
+incomePerDay = 15
+description = 인근 숲 자원으로 목재를 생산한다.
+maintenancePerDay = 3
+
+[village_farm]
+name = 농장
+category = production
+unlockStage = 1
+buildCostGold = 400
+buildCostWood = 20
+buildCostWheat = 10
+incomePerDay = 10
+description = 마을 식량을 공급한다. 수확도 가능하다.
+maintenancePerDay = 2
+
+[well]
+name = 우물
+category = amenity
+unlockStage = 1
+buildCostGold = 200
+buildCostStone = 15
+incomePerDay = 0
+description = 마을 위생도 +10. 주민 HP 회복 속도를 높인다.
+maintenancePerDay = 1
+
+[inn]
+name = 여관
+category = amenity
+unlockStage = 1
+buildCostGold = 800
+buildCostWood = 30
+buildCostStone = 10
+incomePerDay = 20
+description = NPC 방문 빈도 +30%. 숙박 수입을 얻는다.
+maintenancePerDay = 5
+
+[palisade]
+name = 목책
+category = defense
+unlockStage = 1
+buildCostGold = 100
+buildCostWood = 20
+incomePerDay = 0
+description = 기본 방어도를 부여하고 마을 경계를 설정한다.
+maintenancePerDay = 1
+
+[watchtower]
+name = 감시탑
+category = defense
+unlockStage = 1
+buildCostGold = 400
+buildCostWood = 30
+buildCostStone = 10
+incomePerDay = 0
+description = 위기 이벤트 조기 경보. 방어도 +5.
+maintenancePerDay = 2
+
+[notice_board]
+name = 마을 게시판
+category = admin
+unlockStage = 1
+buildCostGold = 50
+buildCostWood = 10
+incomePerDay = 0
+description = 마을 퀘스트를 발생시키고 소문을 공유한다.
+maintenancePerDay = 0
+
+[warehouse]
+name = 창고
+category = admin
+unlockStage = 1
+buildCostGold = 500
+buildCostWood = 25
+buildCostStone = 10
+incomePerDay = 0
+description = 마을 자원을 공동 보관한다. 생산 효율을 높인다.
+maintenancePerDay = 2
+
+[music_hall]
+name = 음악당
+category = culture
+unlockStage = 1
+buildCostGold = 300
+buildCostWood = 20
+incomePerDay = 5
+description = 행복도 +8. 음유시인 NPC를 유치한다.
+maintenancePerDay = 2
+
+[mill]
+name = 방앗간
+category = production
+unlockStage = 1
+buildCostGold = 500
+buildCostWood = 20
+buildCostStone = 10
+incomePerDay = 12
+description = 밀을 밀가루로 변환한다. 요리 효율 보너스.
+maintenancePerDay = 3

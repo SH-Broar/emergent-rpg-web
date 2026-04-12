@@ -40,6 +40,8 @@ import { createLifeJobScreen } from './ui/screens/life-job';
 import { createFarmScreen } from './ui/screens/farm';
 import { createTravelScreen, type TravelOptions } from './ui/screens/travel';
 import { createFerryScreen } from './ui/screens/ferry';
+import { createVillageScreen } from './ui/screens/village';
+import { createVillageBuildScreen } from './ui/screens/village-build';
 import { getAllItemDefs } from './types/item-defs';
 import { getAllSkillDefs } from './models/skill';
 import { ItemType } from './types/enums';
@@ -355,7 +357,15 @@ async function boot() {
           }));
           break;
         case 'eat':
-          sm.push(createInventoryScreen(session, () => sm.pop()));
+          sm.push(createInventoryScreen(session, () => sm.pop(), (itemId) => {
+            sm.pop();
+            if (itemId === 'pioneer_plan') {
+              sm.push(createVillageBuildScreen(session, () => sm.pop(), () => {
+                sm.pop();
+                sm.render();
+              }));
+            }
+          }));
           break;
         case 'trade':
           sm.push(createTradeScreen(session, () => { session.gameTime.advance(15); sm.pop(); }));
@@ -462,7 +472,19 @@ async function boot() {
           sm.push(createSkillManageScreen(session, () => sm.pop()));
           break;
         case 'info_inventory':
-          sm.push(createInventoryScreen(session, () => sm.pop()));
+          sm.push(createInventoryScreen(session, () => sm.pop(), (itemId) => {
+            sm.pop(); // inventory 닫기
+            if (itemId === 'pioneer_plan') {
+              sm.push(createVillageBuildScreen(session, () => sm.pop(), () => {
+                sm.pop(); // build 화면 닫기
+                sm.render(); // game-screen 갱신
+              }));
+            }
+          }));
+          break;
+        case 'village':
+          if (!session.knowledge.villageState) break;
+          sm.push(createVillageScreen(session, () => sm.pop()));
           break;
         case 'save':
           sm.push(createSaveLoadScreen(session, true, () => sm.pop()));

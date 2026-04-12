@@ -59,6 +59,7 @@ function getEquipSlotForItemId(itemId: string): EquipSlot | null {
 export function createInventoryScreen(
   session: GameSession,
   onDone: () => void,
+  onSpecialItemUse?: (itemId: string) => void,
 ): Screen {
   const p = session.player;
   let selectedSlot: EquipSlot | null = null;
@@ -253,6 +254,19 @@ export function createInventoryScreen(
   }
 
   function doConsume(entry: CarryEntry, el: HTMLElement): void {
+    // pioneer_plan 특수 처리
+    if (entry.kind === 'item' && entry.id === 'pioneer_plan') {
+      if (session.knowledge.hasVillage()) {
+        statusMessage = '이미 개척 마을이 존재한다. 다시 건설할 수 없다.';
+        render(el);
+        return;
+      }
+      if (onSpecialItemUse) {
+        onSpecialItemUse('pioneer_plan');
+      }
+      return;
+    }
+
     const removed = entry.kind === 'item'
       ? p.removeItemById(entry.id, 1)
       : p.consumeItem(entry.itemType, 1);
