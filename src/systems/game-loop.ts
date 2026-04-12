@@ -244,6 +244,10 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
       }
 
       const amount = picked.rarity === 'rare' ? 1 : randomInt(1, 2);
+      if (p.isBagFull(session.knowledge.bagCapacity, picked.id)) {
+        result.messages.push('⚠ 인벤토리가 가득 찼습니다! 아이템을 획득할 수 없었다.');
+        return result;
+      }
       p.addItemById(picked.id, amount);
       session.knowledge.discoverItem(picked.id);
       session.backlog.add(session.gameTime, `${p.name}이(가) ${picked.name}을(를) ${amount}개 채집했다.`, '행동');

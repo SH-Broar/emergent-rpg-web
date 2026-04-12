@@ -934,6 +934,10 @@ export function createDungeonScreen(
     const lines: string[] = [];
     for (const d of drops) {
       if (d.itemId) {
+        if (p.isBagFull(session.knowledge.bagCapacity, d.itemId)) {
+          lines.push(`⚠ 인벤토리 가득 참 — ${getItemDef(d.itemId)?.name ?? d.itemId} 획득 불가`);
+          continue;
+        }
         p.addItemById(d.itemId, d.amount);
         session.knowledge.discoverItem(d.itemId);
         const name = getItemDef(d.itemId)?.name ?? getWeaponDef(d.itemId)?.name ?? getArmorDef(d.itemId)?.name ?? d.itemId;

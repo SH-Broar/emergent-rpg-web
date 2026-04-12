@@ -40,6 +40,9 @@ import { createLifeJobScreen } from './ui/screens/life-job';
 import { createFarmScreen } from './ui/screens/farm';
 import { createTravelScreen, type TravelOptions } from './ui/screens/travel';
 import { createFerryScreen } from './ui/screens/ferry';
+import { getAllItemDefs } from './types/item-defs';
+import { getAllSkillDefs } from './models/skill';
+import { ItemType } from './types/enums';
 
 /** 플레이어 아이템/스킬에 따른 이동 속도 계산 (게임 1분당 실제 ms) */
 function computeTravelSpeed(_session: GameSession): TravelOptions {
@@ -181,6 +184,46 @@ async function boot() {
     }
   }
 
+  /** 디버그 캐릭터 "디버그-모노" 초기 세팅: 모든 아이템·스킬·동료, 히페리온 200 */
+  function setupDebugCharacter() {
+    const p = session.player;
+
+    // 인벤토리 무제한 (디버그 전용)
+    session.knowledge.bagCapacity = 9999;
+
+    // 골드 99999G
+    p.addGold(99999);
+
+    // 모든 개별 아이템 (ID 기반) 지급
+    for (const [id] of getAllItemDefs()) {
+      p.addItemById(id, 99);
+      session.knowledge.discoverItem(id);
+    }
+
+    // 모든 스택형 아이템 타입 지급
+    for (let t = 0; t < (ItemType.Count as number); t++) {
+      p.addItem(t as ItemType, 99);
+    }
+
+    // 모든 스킬 최대 레벨(5)로 습득
+    for (const [id] of getAllSkillDefs()) {
+      p.learnedSkills.set(id, 5);
+      if (!p.skillOrder.includes(id)) p.skillOrder.push(id);
+    }
+
+    // 모든 NPC를 동료로 등록 (파티 제한 우회)
+    for (const actor of session.actors) {
+      if (!actor.playable && !session.knowledge.partyMembers.includes(actor.name)) {
+        session.knowledge.partyMembers.push(actor.name);
+        session.knowledge.recruitedEver.add(actor.name);
+      }
+    }
+
+    // 히페리온 레벨 200
+    p.hyperionLevel = 200;
+    p.hasHyperion = true;
+  }
+
   function enterGame() {
     // 코어 매트릭스 진단 결과 적용
     const diagColors = (session as any)._diagColorValues as number[] | undefined;
@@ -208,11 +251,17 @@ async function boot() {
     session.knowledge.trackVisit(session.player.currentLocation);
     // 시작 거점: homeLocation을 Lv.1 거점으로 자동 등록
     ensureHomeBase();
-    // Give starter items
-    const starterItems = ['wheat_bread', 'wheat_bread', 'wheat_bread', 'fresh_water', 'fresh_water', 'common_herb'];
-    for (const id of starterItems) {
-      session.player.addItemById(id, 1);
-      session.knowledge.discoverItem(id);
+
+    if (session.player.name === '디버그-모노') {
+      // 디버그 캐릭터: 모든 아이템, 스킬, 동료, 히페리온 레벨 200 세팅
+      setupDebugCharacter();
+    } else {
+      // Give starter items
+      const starterItems = ['wheat_bread', 'wheat_bread', 'wheat_bread', 'fresh_water', 'fresh_water', 'common_herb'];
+      for (const id of starterItems) {
+        session.player.addItemById(id, 1);
+        session.knowledge.discoverItem(id);
+      }
     }
     session.backlog.add(session.gameTime, `${session.player.name}의 이야기가 시작된다.`, '시스템');
     autosave();

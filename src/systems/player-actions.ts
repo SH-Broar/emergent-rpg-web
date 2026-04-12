@@ -59,7 +59,7 @@ const hostFestival: PlayerAction = {
     return npcs.length >= 5 && isEvening && actor.spirit.gold >= 50;
   },
   execute: (actor, _world, social, allActors, backlog, time) => {
-    actor.spirit.gold -= 50;
+    actor.addGold(-50);
 
     const locId = actor.currentLocation;
     const locLabel = locationName(locId);
@@ -171,7 +171,7 @@ const improveVillage: PlayerAction = {
     );
   },
   execute: (actor, world, _social, _allActors, backlog, time) => {
-    actor.spirit.gold -= 100;
+    actor.addGold(-100);
     actor.consumeItem(ItemType.OreCommon, 5);
 
     const locId = actor.currentLocation;
@@ -265,7 +265,7 @@ const formExpedition: PlayerAction = {
     );
   },
   execute: (actor, _world, _social, allActors, backlog, time) => {
-    actor.spirit.gold -= 30;
+    actor.addGold(-30);
 
     const locId = actor.currentLocation;
     const adventurers = allActors.filter(

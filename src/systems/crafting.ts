@@ -640,10 +640,18 @@ export interface CraftResult {
  * - 출력 아이템 추가
  * - 색상 친화도 보너스 수율 (colorBonus 원소의 값 > 0.6 이면 30% 확률로 +1)
  */
-export function executeCraft(actor: Actor, recipe: CraftRecipe): CraftResult {
+export function executeCraft(actor: Actor, recipe: CraftRecipe, bagCapacity?: number): CraftResult {
   const check = canCraft(actor, recipe);
   if (!check.possible) {
     return { success: false, message: check.reason ?? '제작할 수 없다.', bonusYield: false };
+  }
+
+  // 출력 아이템이 개별 아이템(ID)인 경우 인벤토리 공간 확인
+  if (bagCapacity !== undefined) {
+    const ref = resolveItemRef(recipe.output.item);
+    if (ref.kind === 'id' && actor.isBagFull(bagCapacity, ref.id)) {
+      return { success: false, message: '⚠ 인벤토리가 가득 찼습니다!', bonusYield: false };
+    }
   }
 
   // 재료 소모

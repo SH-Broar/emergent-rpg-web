@@ -195,7 +195,13 @@ export class Actor {
     this.spirit.inventory.set(type, (this.spirit.inventory.get(type) ?? 0) + amount);
   }
 
-  addGold(amount: number): void { this.spirit.gold += amount; }
+  addGold(amount: number): void { this.spirit.gold = Math.max(0, this.spirit.gold + amount); }
+
+  /** 개별 아이템 가방이 꽉 찼는지 확인. newId를 지정하면 해당 ID가 이미 있을 경우 false(여유) 반환 */
+  isBagFull(bagCapacity: number, newId?: string): boolean {
+    if (newId !== undefined && this.items.has(newId)) return false;
+    return this.items.size >= bagCapacity;
+  }
 
   adjustHp(delta: number): void {
     this.base.hp = Math.max(0, Math.min(this.getEffectiveMaxHp(), this.base.hp + delta));

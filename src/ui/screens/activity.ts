@@ -140,6 +140,10 @@ export function createActivityScreen(
       p.addItem(give.item, give.amount);
     }
     for (const give of act.givesById) {
+      if (p.isBagFull(session.knowledge.bagCapacity, give.itemId)) {
+        message = '⚠ 인벤토리가 가득 찼습니다!';
+        continue;
+      }
       p.addItemById(give.itemId, give.amount);
     }
 
@@ -184,7 +188,11 @@ export function createActivityScreen(
       }
       for (const entry of act.lootTableById) {
         if (randomFloat(0, 1) <= entry.chance) {
-          p.addItemById(entry.itemId, entry.amount);
+          if (p.isBagFull(session.knowledge.bagCapacity, entry.itemId)) {
+            message = '⚠ 인벤토리가 가득 찼습니다!';
+          } else {
+            p.addItemById(entry.itemId, entry.amount);
+          }
         }
       }
     }

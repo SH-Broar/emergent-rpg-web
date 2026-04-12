@@ -136,6 +136,13 @@ export function createCookingScreen(
     const recipe = RECIPES[idx];
     if (!recipe || !canCraft(recipe)) return;
 
+    // 인벤토리 공간 확인 (재료 소모 전)
+    if (p.isBagFull(session.knowledge.bagCapacity, recipe.resultId)) {
+      message = '⚠ 인벤토리가 가득 찼습니다! 요리를 완성할 수 없었다.';
+      renderCooking(el);
+      return;
+    }
+
     // Consume ingredients
     for (const ing of recipe.ingredients) {
       p.consumeItem(ing.type, ing.amount);
@@ -144,8 +151,6 @@ export function createCookingScreen(
     // Apply cookingBonus from accessories to buff values
     const accFx = getEquippedAccessoryEffects(p);
     const cookingMul = 1 + (accFx.cookingBonus ?? 0);
-
-    // Add result item
     p.addItemById(recipe.resultId, 1);
     session.knowledge.discoverItem(recipe.resultId);
     session.knowledge.trackItemCrafted();

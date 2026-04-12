@@ -119,7 +119,7 @@ export function createRealEstateScreen(
         const def = BASE_DEFS.find(b => b.locationId === locId);
         if (!def) return;
         if (session.player.spirit.gold < def.contractPrice) return;
-        session.player.spirit.gold -= def.contractPrice;
+        session.player.addGold(-def.contractPrice);
         k.trackGoldSpent(def.contractPrice);
         k.purchaseBase(locId);
         session.backlog.add(session.gameTime, `${locationName(locId)}에 거점을 마련했다.`, '시스템');
@@ -136,7 +136,7 @@ export function createRealEstateScreen(
         const level = k.getBaseLevel(locId);
         const cost = getUpgradeCost(def, level);
         if (level >= 5 || session.player.spirit.gold < cost) return;
-        session.player.spirit.gold -= cost;
+        session.player.addGold(-cost);
         k.trackGoldSpent(cost);
         k.upgradeBase(locId);
         session.backlog.add(
