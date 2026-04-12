@@ -1829,3 +1829,532 @@ skill_1_type = attack
 skill_1_value = 2.6
 skill_1_desc = 세계수의 원시 힘을 빨아들여 강렬한 흡기 공격을 가한다.
 loot = MonsterLoot:4:0.55, OreRare:2:0.28, Equipment:1:0.12
+
+; -------------------------------------------------------
+; Navrit 전기지대 (difficulty 0.38–0.68)
+; -------------------------------------------------------
+
+[Arc_Beetle]
+name = 아크 딱정벌레
+attack = 30
+defense = 14
+hp = 140
+evasionChance = 0.14
+loot = MonsterLoot:1:0.45, OreCommon:1:0.30
+
+[Static_Hound]
+name = 정전 하운드
+attack = 40
+defense = 20
+hp = 200
+tickPressureDamage = 6
+loot = MonsterLoot:2:0.45, OreCommon:1:0.30
+
+[Overload_Elemental]
+name = 과부하 정령
+attack = 55
+defense = 25
+hp = 280
+skillChance = 0.20
+skill_1_name = 과부하 방전
+skill_1_type = attack
+skill_1_value = 1.8
+skill_1_desc = 축적된 전류를 한꺼번에 방전한다.
+loot = MonsterLoot:2:0.50, OreRare:1:0.15
+
+; -------------------------------------------------------
+; Navrit 결정지대 (difficulty 0.55–0.72)
+; -------------------------------------------------------
+
+[Crystal_Golem]
+name = 결정 골렘
+attack = 35
+defense = 35
+hp = 260
+loot = OreCommon:2:0.55, OreRare:1:0.20
+
+[Resonance_Wisp]
+name = 공명 위스프
+attack = 38
+defense = 18
+hp = 190
+evasionChance = 0.18
+loot = MonsterLoot:1:0.45, OreRare:1:0.18
+
+[Prism_Drake]
+name = 프리즘 드레이크
+attack = 58
+defense = 30
+hp = 320
+burstHitCount = 2
+burstHitDamage = 22
+loot = OreRare:1:0.30, MonsterLoot:2:0.50
+
+; -------------------------------------------------------
+; Triflower 화산 (difficulty 0.42–0.74)
+; -------------------------------------------------------
+
+[Triflower_Salamander]
+name = 트리플라워 도롱뇽
+attack = 32
+defense = 16
+hp = 160
+tickPressureDamage = 5
+loot = MonsterLoot:1:0.45, OreCommon:1:0.35
+
+[Volcano_Serpent]
+name = 화산 뱀
+attack = 44
+defense = 18
+hp = 220
+evasionChance = 0.16
+loot = MonsterLoot:2:0.45, OreRare:1:0.14
+
+[Caldera_Drake]
+name = 칼데라 드레이크
+attack = 65
+defense = 32
+hp = 380
+skillChance = 0.22
+skill_1_name = 분화 강타
+skill_1_type = attack
+skill_1_value = 2.2
+skill_1_desc = 분화구의 에너지를 담아 강렬하게 내리친다.
+loot = OreRare:2:0.35, MonsterLoot:3:0.55
+
+; -------------------------------------------------------
+; 천공성 리엘 (difficulty 0.72–0.90)
+; -------------------------------------------------------
+
+[Sky_Knight]
+name = 천공 기사
+attack = 50
+defense = 38
+hp = 300
+loot = OreRare:1:0.22, MonsterLoot:2:0.48, Equipment:1:0.08
+
+[Aerial_Sentinel]
+name = 공중 파수꾼
+attack = 56
+defense = 28
+hp = 320
+evasionChance = 0.16
+loot = MonsterLoot:2:0.48, OreRare:1:0.20
+
+[Tempest_Lord]
+name = 폭풍 군주
+attack = 76
+defense = 42
+hp = 480
+burstHitCount = 2
+burstHitDamage = 35
+skillChance = 0.22
+skill_1_name = 천공 강풍
+skill_1_type = attack
+skill_1_value = 2.4
+skill_1_desc = 천공성의 강풍을 모아 강력한 일격을 날린다.
+loot = OreRare:2:0.32, MonsterLoot:3:0.55, Equipment:1:0.12
+
+; -------------------------------------------------------
+; 우피오 늪 (difficulty 0.22)
+; -------------------------------------------------------
+
+[Swamp_Toad_King]
+name = 늪 두꺼비 왕
+attack = 18
+defense = 12
+hp = 100
+loot = MonsterLoot:1:0.40, Herb:1:0.40, Food:1:0.35
+
+[Bog_Leech]
+name = 수렁 거머리
+attack = 14
+defense = 8
+hp = 75
+tickPressureDamage = 3
+loot = MonsterLoot:1:0.45, Herb:1:0.35
+
+[Mud_Golem]
+name = 진흙 골렘
+attack = 32
+defense = 28
+hp = 220
+loot = OreCommon:2:0.45, MonsterLoot:1:0.40
+
+; -------------------------------------------------------
+; 세계수 (difficulty 0.55–0.78)
+; -------------------------------------------------------
+
+[Worldseed_Sprite]
+name = 세계씨앗 정령
+attack = 40
+defense = 22
+hp = 240
+evasionChance = 0.18
+loot = Herb:2:0.50, MonsterLoot:1:0.40
+
+[Ancient_Treant]
+name = 고대 나무 정령
+attack = 52
+defense = 45
+hp = 380
+skillChance = 0.20
+skill_1_name = 뿌리 압박
+skill_1_type = attack
+skill_1_value = 1.9
+skill_1_desc = 거대한 뿌리로 대지를 진동시켜 압박한다.
+loot = Herb:2:0.55, OreRare:1:0.22
+
+; -------------------------------------------------------
+; 리문 유적 (difficulty 0.70–0.85)
+; -------------------------------------------------------
+
+[Limun_Revenant]
+name = 리문 망령
+attack = 55
+defense = 22
+hp = 320
+evasionChance = 0.20
+tickPressureDamage = 8
+loot = MonsterLoot:2:0.50, OreRare:1:0.20
+
+[Ruin_Gargoyle]
+name = 유적 가고일
+attack = 60
+defense = 38
+hp = 360
+loot = OreRare:1:0.25, MonsterLoot:2:0.50
+
+[Sealed_Construct]
+name = 봉인 구조체
+attack = 72
+defense = 50
+hp = 480
+skillChance = 0.18
+skill_1_name = 봉인 해제 충격
+skill_1_type = attack
+skill_1_value = 2.3
+skill_1_desc = 고대 봉인이 해제되며 폭발적인 에너지를 방출한다.
+loot = OreRare:2:0.30, MonsterLoot:3:0.55, Equipment:1:0.10
+
+; -------------------------------------------------------
+; 구 에아스 거주지 (difficulty 0.45–0.55)
+; -------------------------------------------------------
+
+[Eas_Shade]
+name = 에아스 그림자
+attack = 42
+defense = 20
+hp = 220
+evasionChance = 0.18
+loot = MonsterLoot:2:0.45, OreCommon:1:0.30
+
+[Ruin_Lurker]
+name = 폐허 잠복자
+attack = 46
+defense = 24
+hp = 250
+loot = MonsterLoot:2:0.48, OreCommon:1:0.32
+
+; -------------------------------------------------------
+; 클러치 협곡 (difficulty 0.30–0.50)
+; -------------------------------------------------------
+
+[Gorge_Raptor]
+name = 협곡 랩터
+attack = 36
+defense = 16
+hp = 180
+evasionChance = 0.14
+loot = MonsterLoot:1:0.45, Food:1:0.35
+
+[Boulder_Troll]
+name = 바위 트롤
+attack = 42
+defense = 32
+hp = 260
+loot = OreCommon:2:0.50, MonsterLoot:1:0.40
+
+; -------------------------------------------------------
+; 사구지대 (difficulty 0.50–0.60)
+; -------------------------------------------------------
+
+[Sand_Wraith]
+name = 모래 망령
+attack = 44
+defense = 18
+hp = 230
+evasionChance = 0.20
+loot = MonsterLoot:2:0.45, OreCommon:1:0.30
+
+[Dune_Scorpion]
+name = 사구 전갈
+attack = 48
+defense = 22
+hp = 240
+tickPressureDamage = 7
+loot = MonsterLoot:2:0.48, OreCommon:1:0.32
+
+[Desert_Viper]
+name = 사막 독사
+attack = 44
+defense = 16
+hp = 220
+tickPressureDamage = 8
+evasionChance = 0.16
+loot = MonsterLoot:2:0.45, Herb:1:0.30
+
+[Dune_Colossus]
+name = 사구 거신
+attack = 60
+defense = 42
+hp = 380
+loot = OreRare:1:0.22, MonsterLoot:3:0.52
+
+; -------------------------------------------------------
+; 마뉴 수몰도시 (difficulty 0.68–0.80)
+; -------------------------------------------------------
+
+[Sunken_Wraith]
+name = 침수 망령
+attack = 58
+defense = 24
+hp = 340
+evasionChance = 0.18
+loot = MonsterLoot:2:0.50, OreRare:1:0.18
+
+[Coral_Colossus]
+name = 산호 거신
+attack = 70
+defense = 52
+hp = 460
+burstHitCount = 2
+burstHitDamage = 32
+loot = OreRare:2:0.30, MonsterLoot:3:0.52
+
+; -------------------------------------------------------
+; 키시나 해안 (difficulty 0.10–0.16)
+; -------------------------------------------------------
+
+[Tide_Crab]
+name = 조류 게
+attack = 16
+defense = 12
+hp = 80
+loot = Food:1:0.50, MonsterLoot:1:0.35
+
+[Shore_Wisp]
+name = 해안 위스프
+attack = 22
+defense = 10
+hp = 110
+evasionChance = 0.16
+loot = MonsterLoot:1:0.40, Herb:1:0.30
+
+; -------------------------------------------------------
+; 펜타 섬 (difficulty 0.22–0.38)
+; -------------------------------------------------------
+
+[Island_Boar]
+name = 섬 멧돼지
+attack = 26
+defense = 14
+hp = 140
+loot = Food:2:0.55, MonsterLoot:1:0.35
+
+[Reef_Serpent]
+name = 암초 뱀
+attack = 34
+defense = 16
+hp = 170
+evasionChance = 0.14
+loot = MonsterLoot:1:0.45, OreCommon:1:0.28
+
+; -------------------------------------------------------
+; 할퓌아 부유섬 (difficulty 0.28–0.52)
+; -------------------------------------------------------
+
+[Cloud_Ray]
+name = 구름 가오리
+attack = 38
+defense = 16
+hp = 200
+evasionChance = 0.20
+loot = MonsterLoot:1:0.45, OreCommon:1:0.32
+
+[Aerial_Jellyfish]
+name = 공중 해파리
+attack = 48
+defense = 20
+hp = 260
+tickPressureDamage = 7
+evasionChance = 0.18
+loot = MonsterLoot:2:0.48, OreRare:1:0.16
+
+; -------------------------------------------------------
+; 에루멘 미스트우드/선천 (difficulty 0.40–0.55)
+; -------------------------------------------------------
+
+[Mist_Wisp]
+name = 안개 위스프
+attack = 28
+defense = 14
+hp = 150
+evasionChance = 0.20
+loot = Herb:2:0.50, MonsterLoot:1:0.38
+
+[Mistwood_Revenant]
+name = 미스트우드 망령
+attack = 44
+defense = 20
+hp = 230
+evasionChance = 0.18
+tickPressureDamage = 5
+loot = MonsterLoot:2:0.45, Herb:1:0.35
+
+; -------------------------------------------------------
+; 오데 산 (difficulty 0.35–0.65)
+; -------------------------------------------------------
+
+[Mountain_Bear]
+name = 산악 곰
+attack = 34
+defense = 20
+hp = 190
+loot = Food:2:0.50, MonsterLoot:1:0.40
+
+[Peak_Stalker]
+name = 정상 스토커
+attack = 55
+defense = 28
+hp = 320
+evasionChance = 0.14
+loot = MonsterLoot:2:0.48, OreCommon:1:0.35
+
+; -------------------------------------------------------
+; 라르 포레스트 (difficulty 0.05–0.25)
+; -------------------------------------------------------
+
+[Spore_Mushroom]
+name = 포자 버섯
+attack = 12
+defense = 6
+hp = 60
+tickPressureDamage = 3
+loot = Herb:2:0.55, Food:1:0.40
+
+[Treant_Elder]
+name = 나무정령 장로
+attack = 36
+defense = 28
+hp = 220
+skillChance = 0.15
+skill_1_name = 고대 뿌리
+skill_1_type = attack
+skill_1_value = 1.7
+skill_1_desc = 오래된 뿌리로 땅을 진동시킨다.
+loot = Herb:2:0.50, MonsterLoot:1:0.38
+
+; -------------------------------------------------------
+; 허공 숲 (difficulty 0.38–0.85)
+; -------------------------------------------------------
+
+[Void_Moth]
+name = 허공 나방
+attack = 28
+defense = 12
+hp = 150
+evasionChance = 0.22
+loot = MonsterLoot:1:0.42, Herb:1:0.32
+
+[Forest_Specter]
+name = 숲 스펙터
+attack = 58
+defense = 24
+hp = 340
+evasionChance = 0.22
+loot = MonsterLoot:2:0.50, OreRare:1:0.18
+
+; -------------------------------------------------------
+; 스텔라 빌 (difficulty 0.28–0.38)
+; -------------------------------------------------------
+
+[Starfall_Wisp]
+name = 유성 위스프
+attack = 32
+defense = 14
+hp = 160
+evasionChance = 0.18
+loot = MonsterLoot:1:0.42, OreRare:1:0.12
+
+[Astral_Knight]
+name = 성계 기사
+attack = 46
+defense = 28
+hp = 260
+loot = MonsterLoot:2:0.48, OreRare:1:0.18, Equipment:1:0.08
+
+; -------------------------------------------------------
+; 팔콘 가든 (difficulty 0.72–0.88)
+; -------------------------------------------------------
+
+[Sea_Hawk]
+name = 해상 매
+attack = 62
+defense = 28
+hp = 360
+evasionChance = 0.18
+loot = MonsterLoot:2:0.50, OreRare:1:0.20
+
+[Gale_Drake]
+name = 돌풍 드레이크
+attack = 75
+defense = 40
+hp = 460
+burstHitCount = 2
+burstHitDamage = 32
+loot = OreRare:2:0.30, MonsterLoot:3:0.52
+
+; -------------------------------------------------------
+; 환영의 첨탑 (difficulty 0.28–0.80)
+; -------------------------------------------------------
+
+[Phantom_Stalker]
+name = 환영 추적자
+attack = 40
+defense = 20
+hp = 210
+evasionChance = 0.24
+loot = MonsterLoot:2:0.45, OreRare:1:0.15
+
+[Mirage_Golem]
+name = 신기루 골렘
+attack = 62
+defense = 44
+hp = 400
+loot = OreRare:1:0.25, MonsterLoot:2:0.50
+
+; -------------------------------------------------------
+; 일루네온 시계탑 (difficulty 0.45–0.65)
+; -------------------------------------------------------
+
+[Clockwork_Spider]
+name = 태엽 거미
+attack = 38
+defense = 24
+hp = 210
+burstHitCount = 2
+burstHitDamage = 18
+loot = OreCommon:2:0.45, MonsterLoot:1:0.40
+
+[Gear_Colossus]
+name = 기어 거신
+attack = 65
+defense = 48
+hp = 420
+skillChance = 0.18
+skill_1_name = 톱니 분쇄
+skill_1_type = attack
+skill_1_value = 2.0
+skill_1_desc = 거대한 톱니로 강력하게 분쇄한다.
+loot = OreRare:1:0.25, MonsterLoot:2:0.50, Equipment:1:0.09
