@@ -1,7 +1,7 @@
 import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
 import { ItemType } from '../../types/enums';
-import { applyRecovery, computeEatEffect } from '../../types/eat-system';
+import { applyRecovery, computeEatEffect, applyDailyMealBuff, getRemainingMeals, mealBuffLabel } from '../../types/eat-system';
 import { getArmorDef, getItemDef, getWeaponDef, categoryName, type ItemDef } from '../../types/item-defs';
 import { getRaceCapabilitySet, parseTags } from '../../types/tag-system';
 import { advanceTurn } from '../../systems/world-simulation';
@@ -267,6 +267,18 @@ export function createInventoryScreen(
       return;
     }
 
+    // 하루 3식 제한 체크 (Food 카테고리 아이템만 적용)
+    const consumeItemDef = entry.kind === 'item' ? getItemDef(entry.id) : undefined;
+    const consumeCategory = entry.kind === 'category' ? entry.itemType : (consumeItemDef?.category ?? ItemType.Food);
+    if (consumeCategory === ItemType.Food) {
+      const remaining = getRemainingMeals(p);
+      if (remaining <= 0) {
+        statusMessage = '오늘은 더 이상 먹을 수 없다. (하루 3식 제한)';
+        render(el);
+        return;
+      }
+    }
+
     const removed = entry.kind === 'item'
       ? p.removeItemById(entry.id, 1)
       : p.consumeItem(entry.itemType, 1);
@@ -318,6 +330,11 @@ export function createInventoryScreen(
 
     const applied = applyRecovery(p, { tp, hp, mp, mood });
 
+    // 하루 지속 식사 버프 적용
+    if (def && consumeCategory === ItemType.Food) {
+      applyDailyMealBuff(p, def);
+    }
+
     advanceTurn(
       10,
       session.gameTime,
@@ -354,6 +371,13 @@ export function createInventoryScreen(
         remainingTurns: pendingBuffDuration,
       });
       statLines.push(`${buffLabel(pendingBuffType)} +${pendingBuffAmount} (${pendingBuffDuration}턴)`);
+    }
+
+    // 하루 지속 버프 표시
+    if (def && consumeCategory === ItemType.Food) {
+      const mealLabel = mealBuffLabel(def);
+      if (mealLabel) statLines.push(mealLabel);
+      statLines.push(`오늘 남은 식사: ${getRemainingMeals(p)}/3`);
     }
 
     resultMessage = message;

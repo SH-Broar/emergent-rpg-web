@@ -4,6 +4,7 @@
 import { ItemType, Race } from './enums';
 import { randomFloat } from './rng';
 import type { Actor } from '../models/actor';
+import { type ItemDef } from './item-defs';
 import {
   getItemPropertyTags, getItemPropertySet,
   getRaceCapabilitySet, parseTags,
@@ -353,6 +354,14 @@ export function applyRatioRecovery(
 }
 
 export function applyFullSleepRecovery(actor: Actor, mood = 0.05): AppliedRecovery {
+  // 수면 시 하루 식사 버프 변수 초기화
+  actor.setVariable('meal_count', 0);
+  actor.setVariable('meal_atk', 0);
+  actor.setVariable('meal_def', 0);
+  actor.setVariable('meal_mp_pct', 0);
+  actor.setVariable('meal_hp_pct', 0);
+  actor.setVariable('meal_combat_speed', 0);
+
   return applyRecovery(actor, {
     hp: actor.getEffectiveMaxHp(),
     mp: actor.getEffectiveMaxMp(),
@@ -360,6 +369,48 @@ export function applyFullSleepRecovery(actor: Actor, mood = 0.05): AppliedRecove
     mood,
   });
 }
+
+/** 하루 식사 버프 적용. 최대 3식 초과 시 ok:false 반환 */
+export function applyDailyMealBuff(actor: Actor, def: ItemDef): { ok: boolean; message: string } {
+  const count = actor.getVariable('meal_count');
+  if (count >= 3) {
+    return { ok: false, message: '오늘은 더 이상 먹을 수 없다. (하루 3식 제한)' };
+  }
+
+  actor.adjustVariable('meal_count', 1);
+
+  if (def.mealBuffAtk)  actor.adjustVariable('meal_atk', def.mealBuffAtk);
+  if (def.mealBuffDef)  actor.adjustVariable('meal_def', def.mealBuffDef);
+  if (def.mealMpMaxPct) actor.adjustVariable('meal_mp_pct', def.mealMpMaxPct);
+  if (def.mealHpMaxPct) actor.adjustVariable('meal_hp_pct', def.mealHpMaxPct);
+  if (def.mealCombatSpeed > 0) {
+    const current = actor.getVariable('meal_combat_speed');
+    if (def.mealCombatSpeed > current) {
+      actor.setVariable('meal_combat_speed', def.mealCombatSpeed);
+    }
+  }
+
+  return { ok: true, message: '' };
+}
+
+/** 오늘 남은 식사 횟수 (3 - meal_count) */
+export function getRemainingMeals(actor: Actor): number {
+  return Math.max(0, 3 - actor.getVariable('meal_count'));
+}
+
+/** ItemDef의 하루 버프 요약 라벨 (없으면 빈 문자열) */
+export function mealBuffLabel(def: ItemDef): string {
+  const parts: string[] = [];
+  if (def.mealBuffAtk)      parts.push(`ATK+${def.mealBuffAtk}`);
+  if (def.mealBuffDef !== 0) {
+    parts.push(def.mealBuffDef > 0 ? `DEF+${def.mealBuffDef}` : `DEF${def.mealBuffDef}`);
+  }
+  if (def.mealMpMaxPct)     parts.push(`MP상한+${Math.round(def.mealMpMaxPct * 100)}%`);
+  if (def.mealHpMaxPct)     parts.push(`HP상한+${Math.round(def.mealHpMaxPct * 100)}%`);
+  if (def.mealCombatSpeed > 0) parts.push(`전투속도x${def.mealCombatSpeed}`);
+  return parts.length > 0 ? `하루 버프: ${parts.join(', ')}` : '';
+}
+
 
 /** 아이템 식사 표시 라벨 */
 export function itemEatLabel(item: ItemType): string {

@@ -339,7 +339,7 @@ eatMessage = 따뜻하고 은은한 약초차가 긴장을 풀어준다.
 name = 맥주
 category = Food
 price = 6
-tags = /edible/liquid/cooked/drink/
+tags = /edible/liquid/cooked/drink/fermented/
 rarity = common
 source = shop:Tavern_Row
 eatVigor = 5
@@ -347,12 +347,13 @@ eatHp = 5
 eatMp = 0
 eatMood = 0.20
 eatMessage = 탁한 맥주가 하루의 피로를 씻어내는 듯하다.
+mealCombatSpeed = 3.0
 
 [moonshine]
 name = 달빛 증류주
 category = Food
 price = 25
-tags = /edible/liquid/cooked/drink/rare/
+tags = /edible/liquid/cooked/drink/fermented/rare/
 description = 달빛을 받아 발효시킨 독특한 술. 마시면 달빛이 몸속에 스며드는 느낌이 든다.
 rarity = uncommon
 source = shop:Midnight_Brew_Cellar
@@ -361,6 +362,8 @@ eatHp = 5
 eatMp = 20
 eatMood = 0.30
 eatMessage = 달빛처럼 은은한 취기가 온몸에 퍼진다.
+mealBuffAtk = 8
+mealCombatSpeed = 4.5
 
 [starlight_nectar]
 name = 별빛 넥타르
@@ -4468,7 +4471,7 @@ source = craft:Starlit_Mirrorway
 name = 탑 등반가의 드래프트
 category = Food
 price = 30
-tags = /edible/liquid/cooked/drink/
+tags = /edible/liquid/cooked/drink/fermented/
 description = 푸치 탑 바에서 파는 기본 맥주. 도전 후의 쓴맛과 잘 어울린다.
 rarity = common
 source = shop:Puchi_Tower_Bar
@@ -4477,6 +4480,8 @@ eatHp = 10
 eatMp = 5
 eatMood = 0.20
 eatMessage = 시원한 맥주 한 모금이 탑 등반의 고단함을 날려 보낸다.
+mealBuffAtk = 5
+mealCombatSpeed = 3.0
 
 [azure_dragon_fizz]
 name = 푸른 용의 피즈
@@ -4491,6 +4496,9 @@ eatHp = 15
 eatMp = 30
 eatMood = 0.35
 eatMessage = 짙은 파란빛 탄산이 온몸을 타고 흐르며 이상한 활력이 솟구친다.
+mealBuffAtk = 10
+mealMpMaxPct = 0.10
+mealCombatSpeed = 3.5
 
 [summit_mist]
 name = 정상의 안개
@@ -4505,6 +4513,10 @@ eatHp = 30
 eatMp = 60
 eatMood = 0.50
 eatMessage = 차갑고 투명한 안개가 목을 타고 내려가며, 순간 세계의 끝이 눈앞에 펼쳐지는 듯한 착각이 든다.
+mealBuffAtk = 15
+mealBuffDef = 8
+mealMpMaxPct = 0.15
+mealCombatSpeed = 4.0
 
 [pioneer_plan]
 name = 개척 계획서
@@ -4514,3 +4526,87 @@ tags = /special/document/pioneer/
 description = 미개척 땅에 마을을 세울 권리가 기록된 계획서. 사용하면 마을 건설 절차가 시작된다. 게임당 한 번만 사용 가능.
 rarity = rare
 source = shop:Guild_Hall
+
+# ============================================================
+# 특수 효과 요리
+# ============================================================
+
+[warriors_stew]
+name = 전사의 스튜
+category = Food
+price = 120
+tags = /edible/cooked/dish/meat/
+description = 전투에 특화된 고칼로리 스튜. 하루 종일 힘이 솟는 느낌이 지속된다.
+rarity = uncommon
+source = craft:any
+eatVigor = 20
+eatHp = 30
+eatMp = 0
+eatMood = 0.15
+eatMessage = 뜨거운 스튜가 온몸에 전사의 힘을 불어넣는다.
+mealBuffAtk = 18
+mealBuffDef = 8
+
+[mages_feast]
+name = 마법사의 만찬
+category = Food
+price = 160
+tags = /edible/cooked/dish/magical/
+description = 마력이 깃든 재료로 만든 풀코스 요리. 하루 종일 마나 상한이 크게 오른다.
+rarity = uncommon
+source = craft:any
+eatVigor = 15
+eatHp = 0
+eatMp = 40
+eatMood = 0.20
+eatMessage = 음식 속 마력이 몸 전체에 흡수되어 마나 그릇이 넓어진 느낌이 든다.
+mealMpMaxPct = 0.25
+
+[iron_ration]
+name = 전투 식량
+category = Food
+price = 40
+tags = /edible/cooked/grain/
+description = 군용으로 개발된 고밀도 전투 식량. 빠르게 먹고 전투에 들어갈 수 있도록 설계됐다. 전투 반응 속도가 빨라진다.
+rarity = common
+source = craft:any
+eatVigor = 12
+eatHp = 10
+eatMp = 5
+eatMood = 0.05
+eatMessage = 딱딱하지만 씹을수록 집중력이 높아지는 느낌이다.
+mealBuffDef = 15
+mealCombatSpeed = 2.0
+
+[healers_broth]
+name = 치유사의 국
+category = Food
+price = 90
+tags = /edible/cooked/dish/herb/
+description = 약초를 듬뿍 넣어 끓인 진한 국. 하루 종일 체력 상한이 높아진다.
+rarity = uncommon
+source = craft:any
+eatVigor = 10
+eatHp = 50
+eatMp = 10
+eatMood = 0.20
+eatMessage = 따뜻한 국물이 몸속 깊이 스며들며 생명력이 차오르는 것 같다.
+mealHpMaxPct = 0.20
+mealBuffDef = 5
+
+[berserker_brew]
+name = 광전사의 양조주
+category = Food
+price = 50
+tags = /edible/liquid/cooked/drink/fermented/rare/
+description = 극도로 독한 양조주. 마시면 이성이 흐릿해지는 대신 공격 본능이 극대화된다. 전투가 눈 깜짝할 사이에 지나간다.
+rarity = uncommon
+source = craft:any
+eatVigor = 25
+eatHp = 0
+eatMp = 0
+eatMood = 0.10
+eatMessage = 타오르는 듯한 알코올이 목을 타고 내려가며, 세상이 빠르게 돌아가기 시작한다.
+mealBuffAtk = 35
+mealBuffDef = -20
+mealCombatSpeed = 5.0

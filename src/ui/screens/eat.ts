@@ -1,6 +1,6 @@
 import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
-import { computeEatEffect } from '../../types/eat-system';
+import { computeEatEffect, applyDailyMealBuff, getRemainingMeals, mealBuffLabel } from '../../types/eat-system';
 import { getItemDef, type ItemDef } from '../../types/item-defs';
 import { getRaceCapabilitySet, parseTags } from '../../types/tag-system';
 import { ItemType, Element, ELEMENT_COUNT, elementName } from '../../types/enums';
@@ -122,6 +122,18 @@ export function createEatScreen(
   }
 
   function doEat(itemId: string, el: HTMLElement) {
+    // 하루 3식 제한 체크 (Food 카테고리만)
+    const eatDef = getItemDef(itemId);
+    if (!eatDef || eatDef.category === ItemType.Food) {
+      if (getRemainingMeals(p) <= 0) {
+        resultMsg = '오늘은 더 이상 먹을 수 없다. (하루 3식 제한)';
+        showResult = true;
+        resultStats = [];
+        renderEat(el);
+        return;
+      }
+    }
+
     if (!p.removeItemById(itemId, 1)) {
       resultMsg = '아이템이 없다!';
       renderEat(el);
@@ -217,6 +229,14 @@ export function createEatScreen(
         remainingTurns: pendingBuffDuration,
       });
       statLines.push(`✨ ${buffLabel(pendingBuffType)} +${pendingBuffAmount} (${pendingBuffDuration}턴)`);
+    }
+
+    // 하루 지속 식사 버프 적용 및 표시
+    if (def && def.category === ItemType.Food) {
+      applyDailyMealBuff(p, def);
+      const mealLabel = mealBuffLabel(def);
+      if (mealLabel) statLines.push(mealLabel);
+      statLines.push(`오늘 남은 식사: ${getRemainingMeals(p)}/3`);
     }
 
     // 결과 화면으로 전환 (즉시 닫지 않음)

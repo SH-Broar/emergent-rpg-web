@@ -29,6 +29,13 @@ export interface ItemDef {
   eatBuffAmount: number;
   eatBuffDuration: number;      // 턴 수, 0이면 버프 없음
 
+  // 하루 지속 식사 버프
+  mealBuffAtk: number;          // 하루 ATK 보너스 (flat, actor variable 'meal_atk'에 누적)
+  mealBuffDef: number;          // 하루 DEF 보너스 (flat, actor variable 'meal_def'에 누적)
+  mealMpMaxPct: number;         // 하루 MP 상한 % 보너스 (0.25 = +25%)
+  mealHpMaxPct: number;         // 하루 HP 상한 % 보너스
+  mealCombatSpeed: number;      // 전투 속도 배수 (0 = 효과 없음, 3.0 = 3배 빠름)
+
   // 장비 스탯 (장비 아이템)
   equipSlot: EquipSlot;         // 'none', 'weapon', 'armor', 'accessory'
   equipAttack: number;
@@ -59,6 +66,7 @@ export function createDefaultItemDef(id: string): ItemDef {
     tags: '', description: '', rarity: 'common', stackable: true,
     eatVigor: 0, eatHp: 0, eatMp: 0, eatMood: 0, eatMessage: '', eatStatus: '',
     eatBuffType: '', eatBuffAmount: 0, eatBuffDuration: 0,
+    mealBuffAtk: 0, mealBuffDef: 0, mealMpMaxPct: 0, mealHpMaxPct: 0, mealCombatSpeed: 0,
     equipSlot: 'none', equipAttack: 0, equipDefense: 0, equipMagic: 0, equipSpeed: 0,
     source: '', minHyperion: 0,
     preferredStorage: [], avoidedStorage: [], badStorageEffect: 'none',
@@ -103,6 +111,13 @@ export function loadItemDefs(sections: DataSection[]): void {
     def.eatBuffType = s.get('eatBuffType', '');
     def.eatBuffAmount = s.getFloat('eatBuffAmount', 0);
     def.eatBuffDuration = s.getInt('eatBuffDuration', 0);
+
+    // 하루 지속 식사 버프
+    def.mealBuffAtk     = s.getFloat('mealBuffAtk', 0);
+    def.mealBuffDef     = s.getFloat('mealBuffDef', 0);
+    def.mealMpMaxPct    = s.getFloat('mealMpMaxPct', 0);
+    def.mealHpMaxPct    = s.getFloat('mealHpMaxPct', 0);
+    def.mealCombatSpeed = s.getFloat('mealCombatSpeed', 0);
 
     // 장비
     def.equipSlot = (s.get('equipSlot', 'none') as EquipSlot);

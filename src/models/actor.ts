@@ -291,14 +291,23 @@ export class Actor {
     this.variables.set(key, (this.variables.get(key) ?? 0) + delta);
   }
 
-  getEffectiveMaxHp(): number { return this.base.maxHp + (this.hyperionLevel + this.hyperionBonus) * 10; }
-  getEffectiveMaxMp(): number { return this.base.maxMp + (this.hyperionLevel + this.hyperionBonus) * 5; }
+  getEffectiveMaxHp(): number {
+    const base = this.base.maxHp + (this.hyperionLevel + this.hyperionBonus) * 10;
+    const pct = this.getVariable('meal_hp_pct');
+    return pct > 0 ? Math.round(base * (1 + pct)) : base;
+  }
+  getEffectiveMaxMp(): number {
+    const base = this.base.maxMp + (this.hyperionLevel + this.hyperionBonus) * 5;
+    const pct = this.getVariable('meal_mp_pct');
+    return pct > 0 ? Math.round(base * (1 + pct)) : base;
+  }
   getEffectiveAttack(): number {
     const weaponBonus = this.equippedWeapon ? (getWeaponDef(this.equippedWeapon)?.attack ?? 0) : 0;
     const weaponDegrade = this.getVariable('degrade_weapon');
     const buffBonus = this.getVariable('buff_attack');
+    const mealAtk = this.getVariable('meal_atk');
     return this.base.attack + (this.hyperionLevel + this.hyperionBonus) * 2
-      + weaponBonus * (1 - weaponDegrade / 100) + buffBonus;
+      + weaponBonus * (1 - weaponDegrade / 100) + buffBonus + mealAtk;
   }
   getEffectiveDefense(): number {
     const armorBonus = this.equippedArmor ? (getArmorDef(this.equippedArmor)?.defense ?? 0) : 0;
@@ -308,11 +317,12 @@ export class Actor {
     const acc2Bonus = this.equippedAccessory2 ? (getArmorDef(this.equippedAccessory2)?.defense ?? 0) : 0;
     const acc2Degrade = this.getVariable('degrade_accessory2');
     const buffBonus = this.getVariable('buff_defense');
+    const mealDef = this.getVariable('meal_def');
     return this.base.defense + (this.hyperionLevel + this.hyperionBonus) * 1
       + armorBonus * (1 - armorDegrade / 100)
       + acc1Bonus * (1 - acc1Degrade / 100)
       + acc2Bonus * (1 - acc2Degrade / 100)
-      + buffBonus;
+      + buffBonus + mealDef;
   }
   receiveEventInfluence(influence: number[], _eventName: string, _time: GameTime): void {
     this.color.applyInfluence(influence);

@@ -116,7 +116,10 @@ const DEFAULT_COMBAT_SLOWDOWN = 10;
 export function getCombatSpeedMultiplier(player: Actor): number {
   // 향후 악세서리/옵션에서 2배, 3배 가속을 붙일 때 이 변수만 바꾸면 된다.
   const configured = player.getVariable('combat_speed_multiplier');
-  return Number.isFinite(configured) && configured > 0 ? configured : 1;
+  const mealSpeed  = player.getVariable('meal_combat_speed');
+  const base = Number.isFinite(configured) && configured > 0 ? configured : 1;
+  const meal = Number.isFinite(mealSpeed)  && mealSpeed  > 0 ? mealSpeed  : 1;
+  return base * meal;
 }
 
 export function getCombatTickMs(player: Actor): number {
