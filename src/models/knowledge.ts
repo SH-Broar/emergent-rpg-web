@@ -214,8 +214,8 @@ export class PlayerKnowledge {
     const next = Math.min(5, cur + 1);
     this.baseLevels.set(locationId, next);
 
-    // Lv.3 달성 시 농장 생성
-    if (next === 3) {
+    // Lv.2 달성 시 농장 생성
+    if (next === 2) {
       this.initFarm(locationId);
     }
     // Lv.4 달성 시 농장 확장 (+2칸)
@@ -225,7 +225,7 @@ export class PlayerKnowledge {
     }
   }
 
-  /** 농장 초기화 (Lv.3 달성 시 호출) */
+  /** 농장 초기화 (Lv.2 달성 시 호출) */
   initFarm(locationId: string): void {
     if (this.farmStates.has(locationId)) return;
     // 비싼 집: Halpia, Alimes_High, Enicham → 3x3

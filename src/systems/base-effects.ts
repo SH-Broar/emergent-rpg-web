@@ -71,8 +71,8 @@ export function getGatherBonus(session: GameSession, locationId: string): number
   let bonus = 0;
   const k = session.knowledge;
 
-  // Lv.2 이상 해당 위치 거점: +10%
-  if (k.ownedBases.has(locationId) && k.getBaseLevel(locationId) >= 2) {
+  // Lv.3 이상 해당 위치 거점: +10%
+  if (k.ownedBases.has(locationId) && k.getBaseLevel(locationId) >= 3) {
     bonus += 0.1;
   }
 
@@ -94,7 +94,7 @@ export function getCookingMultiplier(session: GameSession): number {
 
   const level = k.getBaseLevel(locId);
   let mul = 1.0;
-  if (level >= 4) mul += 0.2; // Lv.4 요리 강화
+  if (level >= 3) mul += 0.2; // Lv.3 요리 강화
   if (level >= 5) {
     const def = getBaseDef(locId);
     if (def?.lv5Ability.type === 'cooking_bonus') mul += 0.2; // Lv.5 추가

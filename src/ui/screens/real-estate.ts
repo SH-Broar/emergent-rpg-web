@@ -29,9 +29,9 @@ function getVillageForLocation(locationId: string): string {
 function getLevelFeatures(level: number, def: BaseDef): string {
   const lines: string[] = [];
   if (level >= 1) lines.push('수면, 창고, 요리');
-  if (level >= 2) lines.push('채집 효율 +10% (해당 지역)');
-  if (level >= 3) lines.push('농장 활성화 (2×2 격자)');
-  if (level >= 4) lines.push('농장 확장 (+2칸), 요리 효과 +20%, 짧은 휴식 TP 회복');
+  if (level >= 2) lines.push('농장 활성화 (2×2 격자)');
+  if (level >= 3) lines.push('채집 효율 +10%, 요리 효과 +20% (해당 지역)');
+  if (level >= 4) lines.push('농장 확장 (+2칸), 짧은 휴식 TP 회복');
   if (level >= 5) lines.push(`✨ 특수: ${def.lv5Ability.description}`);
   return lines.join(' · ');
 }

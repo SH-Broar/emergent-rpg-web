@@ -379,7 +379,7 @@ export function createDungeonScreen(
   }
 
   // ================================================================ navigate
-  function renderTutorial(el: HTMLElement) {
+  function renderTutorial(el: HTMLElement, fromHelp = false) {
     el.innerHTML = '';
     const wrap = document.createElement('div');
     wrap.className = 'screen info-screen';
@@ -399,10 +399,10 @@ export function createDungeonScreen(
         <p>· <b>포기</b> — 던전에서 나갑니다 (진행도 미저장)</p>
         <p style="margin-top:8px;color:var(--warning)">마지막 층을 모두 통과하면 보스가 나타납니다!</p>
       </div>
-      <button class="btn btn-primary" data-action="start">시작 [Enter]</button>
+      <button class="btn btn-primary" data-action="start">${fromHelp ? '닫기 [Esc]' : '시작 [Enter]'}</button>
     `;
     wrap.querySelector('[data-action="start"]')?.addEventListener('click', () => {
-      tutorialShown = true;
+      if (!fromHelp) tutorialShown = true;
       renderNavigate(el);
     });
     el.appendChild(wrap);
@@ -473,6 +473,9 @@ export function createDungeonScreen(
           <button class="btn" data-action="map">던전 지도</button>
           <button class="btn" data-action="giveup" style="border-color:var(--accent)">포기</button>
         </div>
+        <div style="margin-top:6px;text-align:left">
+          <button class="btn" data-action="help" style="font-size:11px;padding:3px 8px;min-height:unset;opacity:0.65">? 던전 도움말</button>
+        </div>
       </div>
     `;
 
@@ -486,6 +489,7 @@ export function createDungeonScreen(
     wrap.querySelector('[data-action="explore"]')?.addEventListener('click', () => handleExplore(el));
     wrap.querySelector('[data-action="map"]')?.addEventListener('click', () => { phase = 'map'; renderDungeonMap(el); });
     wrap.querySelector('[data-action="giveup"]')?.addEventListener('click', () => { phase = 'giveUpConfirm'; renderGiveUpConfirm(el); });
+    wrap.querySelector('[data-action="help"]')?.addEventListener('click', () => renderTutorial(el, true));
 
     el.appendChild(wrap);
   }
@@ -1381,6 +1385,7 @@ export function createDungeonScreen(
           renderNavigate(container);
         }
       } else if (phase === 'navigate') {
+        if (key === '?') { renderTutorial(container, true); return; }
         if (/^[1-9]$/.test(key)) {
           const idx = parseInt(key, 10) - 1;
           if (runState && idx < runState.choices.length && !runState.choices[idx].cleared) {

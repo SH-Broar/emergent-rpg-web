@@ -15,8 +15,91 @@ export function createHomeScreen(
 ): Screen {
   const p = session.player;
   let phase: 'menu' | 'sleeping' | 'wakeup' | 'nap_done' = 'menu';
+  let helpShown = false;
+
+  function renderBaseHelp(el: HTMLElement, onClose: () => void): void {
+    const currentLevel = session.knowledge.getBaseLevel(p.currentLocation);
+    el.innerHTML = '';
+    const wrap = document.createElement('div');
+    wrap.className = 'screen info-screen';
+
+    const levels: Array<{ level: number; name: string; features: string[] }> = [
+      {
+        level: 1, name: 'Lv.1 — 거점 구매',
+        features: [
+          '🌙 잠자기 — 다음 날 아침까지 완전 회복',
+          '💤 짧은 휴식 — 2시간, HP·MP 30% 회복',
+          '📦 창고 — 냉장·상온·온장 보관',
+          '🍳 요리 — 재료로 음식 조리',
+        ],
+      },
+      {
+        level: 2, name: 'Lv.2 — 농장 해금',
+        features: [
+          '🌾 농장 (2×2 격자) 활성화',
+          '작물 파종·관리·수확 후 판매 가능',
+        ],
+      },
+      {
+        level: 3, name: 'Lv.3 — 거점 확장 I',
+        features: [
+          '🌿 채집 효율 +10% (이 거점 주변 지역)',
+          '🍳 요리 효과 +20% 강화',
+        ],
+      },
+      {
+        level: 4, name: 'Lv.4 — 농장 확장',
+        features: [
+          '🌾 농장 격자 +2칸 확장',
+        ],
+      },
+      {
+        level: 5, name: 'Lv.5 — 거점 특화',
+        features: [
+          '✦ 거점별 고유 특수 능력 해금',
+          '예) 시장 할인 · 매일 MP 회복 · 수입 발생 등',
+        ],
+      },
+    ];
+
+    let html = `
+      <button class="btn back-btn" data-close>← 뒤로 [Esc]</button>
+      <h2>거점 도움말</h2>
+      <div style="font-size:13px;line-height:1.8;margin:8px 0">
+    `;
+
+    for (const lvl of levels) {
+      const isCurrent = lvl.level === currentLevel;
+      const isUnlocked = lvl.level <= currentLevel;
+      const borderColor = isCurrent ? 'var(--warning)' : isUnlocked ? 'var(--success)' : 'var(--border)';
+      const dimStyle = isUnlocked ? '' : 'opacity:0.45;';
+      const badge = isCurrent ? ` <span style="color:var(--warning);font-size:11px">← 현재</span>` : '';
+      html += `
+        <div style="margin:6px 0;padding:8px 12px;background:var(--bg-card);border-radius:6px;border-left:3px solid ${borderColor};${dimStyle}">
+          <p style="font-weight:600;margin-bottom:4px">${lvl.name}${badge}</p>
+          ${lvl.features.map(f => `<p style="font-size:12px;color:var(--text-dim)">${f}</p>`).join('')}
+        </div>
+      `;
+    }
+
+    html += `
+      </div>
+      <button class="btn btn-primary" data-close style="margin-top:8px">확인 [Enter]</button>
+    `;
+
+    wrap.innerHTML = html;
+    wrap.querySelectorAll<HTMLElement>('[data-close]').forEach(btn => {
+      btn.addEventListener('click', onClose);
+    });
+    el.appendChild(wrap);
+  }
 
   function renderMenu(el: HTMLElement): void {
+    if (session.knowledge.ownedBases.has(p.currentLocation) && !helpShown) {
+      helpShown = true;
+      renderBaseHelp(el, () => renderMenu(el));
+      return;
+    }
     el.innerHTML = '';
     const wrap = document.createElement('div');
     wrap.className = 'screen info-screen home-screen';
@@ -73,9 +156,9 @@ export function createHomeScreen(
       cookBtn.dataset.homeAction = 'cooking';
       wrap.appendChild(cookBtn);
 
-      // 농장 (Lv.3 이상)
+      // 농장 (Lv.2 이상)
       const baseLevel = session.knowledge.getBaseLevel(p.currentLocation);
-      if (baseLevel >= 3 && onNavigate) {
+      if (baseLevel >= 2 && onNavigate) {
         const farmBtn = document.createElement('button');
         farmBtn.className = 'btn';
         farmBtn.style.minHeight = '44px';
@@ -110,9 +193,19 @@ export function createHomeScreen(
       wrap.appendChild(hint);
     }
 
+    const bottomBar = document.createElement('div');
+    bottomBar.style.cssText = 'margin-top:auto;padding-top:8px;display:flex;justify-content:flex-start;';
+    const helpBtn = document.createElement('button');
+    helpBtn.className = 'btn';
+    helpBtn.style.cssText = 'font-size:11px;padding:3px 8px;min-height:unset;opacity:0.65;';
+    helpBtn.textContent = '? 도움말';
+    helpBtn.addEventListener('click', () => renderBaseHelp(el, () => renderMenu(el)));
+    bottomBar.appendChild(helpBtn);
+    wrap.appendChild(bottomBar);
+
     const hint = document.createElement('p');
     hint.className = 'hint';
-    hint.textContent = 'Esc 뒤로';
+    hint.textContent = 'Esc 뒤로 · ? 도움말';
     wrap.appendChild(hint);
 
     el.appendChild(wrap);
@@ -259,6 +352,7 @@ export function createHomeScreen(
 
       if (phase === 'menu') {
         if (key === 'Escape') { onDone(); return; }
+        if (key === '?' && isOwned) { renderBaseHelp(container, () => renderMenu(container)); return; }
         if (key === '1' && isOwned) { startSleep(container); }
         if (key === '2' && isOwned) { doNap(container); }
         if (key === '1' && isHome && !isOwned) {
@@ -271,7 +365,7 @@ export function createHomeScreen(
         }
         if (key === '5' && isOwned && onNavigate) {
           const level = session.knowledge.getBaseLevel(p.currentLocation);
-          if (level >= 3) { onDone(); onNavigate('farm'); }
+          if (level >= 2) { onDone(); onNavigate('farm'); }
         }
       } else if (phase === 'wakeup' || phase === 'nap_done') {
         if (key === 'Enter' || key === ' ' || key === 'Escape') {
