@@ -324,10 +324,28 @@ export class PlayerKnowledge {
   totalGathersDone = 0;
   totalCooksDone = 0;
   totalFarmHarvests = 0;
+  totalFishCaught = 0;
+  totalWeatherChecked = 0;
+  totalPotionsMade = 0;
+  totalSongsPlayed = 0;
+  totalMapsDrawn = 0;
+  totalBlessingsGiven = 0;
+  totalEquipRepaired = 0;
+  totalMovesDone = 0;
+  totalDungeonBattlesWithCompanion = 0;
 
   trackGatherDone(): void { this.totalGathersDone++; }
   trackCookDone(): void { this.totalCooksDone++; }
   trackFarmHarvest(): void { this.totalFarmHarvests++; }
+  trackFishCaught(): void { this.totalFishCaught++; }
+  trackWeatherChecked(): void { this.totalWeatherChecked++; }
+  trackPotionMade(): void { this.totalPotionsMade++; }
+  trackSongPlayed(): void { this.totalSongsPlayed++; }
+  trackMapDrawn(): void { this.totalMapsDrawn++; }
+  trackBlessingGiven(): void { this.totalBlessingsGiven++; }
+  trackEquipRepaired(): void { this.totalEquipRepaired++; }
+  trackMoveDone(): void { this.totalMovesDone++; }
+  trackDungeonBattleWithCompanion(): void { this.totalDungeonBattlesWithCompanion++; }
 
   trackGiftGiven(): void { this.totalGiftsGiven++; }
   trackQuestCompleted(questTitle: string): void {

@@ -6,6 +6,7 @@ import { ItemType, SpiritRole, raceName, spiritRoleName } from '../../types/enum
 import { itemName, basePrice } from '../../types/registry';
 import { Actor } from '../../models/actor';
 import { checkAndAwardTitles } from '../../systems/title-system';
+import { getLifeJobModifiers } from '../../systems/life-job-system';
 
 type TradePhase = 'npc-select' | 'trade';
 type TradeTab = 'buy' | 'sell';
@@ -34,11 +35,13 @@ export function createTradeScreen(
   }
 
   function getBuyPrice(type: ItemType): number {
-    return Math.round(basePrice(type) * getRepMultiplier());
+    const ljMod = getLifeJobModifiers(session);
+    return Math.max(1, Math.round(basePrice(type) * getRepMultiplier() * (1 - ljMod.buyPriceDiscount)));
   }
 
   function getSellPrice(type: ItemType): number {
-    return Math.max(1, Math.round(basePrice(type) * 0.6 / getRepMultiplier()));
+    const ljMod = getLifeJobModifiers(session);
+    return Math.max(1, Math.round(basePrice(type) * 0.6 / getRepMultiplier() * (1 + ljMod.sellPriceBonus)));
   }
 
   function renderNpcSelect(el: HTMLElement) {

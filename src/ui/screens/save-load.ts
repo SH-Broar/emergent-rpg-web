@@ -9,7 +9,7 @@ import { ItemType, raceToKey } from '../../types/enums';
 import { getBasicSkillsForRace } from '../../models/skill';
 
 const SAVE_PREFIX = 'emergent_save_';
-const SAVE_VERSION = 6;
+const SAVE_VERSION = 7;
 
 interface SaveMeta {
   playerName: string;
@@ -55,6 +55,8 @@ interface ActorSaveData {
   skillUsage?: [string, number][];
   flags?: [string, boolean][];
   variables?: [string, number][];
+  lifeJobLevels?: [string, number][];
+  lifeJobMissionProgress?: [string, number][];
 }
 
 interface KnowledgeSaveData {
@@ -89,6 +91,15 @@ interface KnowledgeSaveData {
   baseInvitedNpcs: [string, string[]][];
   farmStates: [string, any][];
   lastNapDay: number;
+  totalFishCaught?: number;
+  totalWeatherChecked?: number;
+  totalPotionsMade?: number;
+  totalSongsPlayed?: number;
+  totalMapsDrawn?: number;
+  totalBlessingsGiven?: number;
+  totalEquipRepaired?: number;
+  totalMovesDone?: number;
+  totalDungeonBattlesWithCompanion?: number;
 }
 
 interface SaveData {
@@ -202,6 +213,8 @@ function serializeActor(actor: Actor): ActorSaveData {
     skillUsage: [...actor.skillUsage.entries()],
     flags: [...actor.flags.entries()],
     variables: [...actor.variables.entries()],
+    lifeJobLevels: [...actor.lifeJobLevels.entries()],
+    lifeJobMissionProgress: [...actor.lifeJobMissionProgress.entries()],
   };
 }
 
@@ -292,6 +305,14 @@ function deserializeActor(data: ActorSaveData, target: Actor): void {
     target.variables.clear();
     for (const [key, val] of data.variables) target.variables.set(key, val);
   }
+  if (data.lifeJobLevels) {
+    target.lifeJobLevels.clear();
+    for (const [key, val] of data.lifeJobLevels) target.lifeJobLevels.set(key, val);
+  }
+  if (data.lifeJobMissionProgress) {
+    target.lifeJobMissionProgress.clear();
+    for (const [key, val] of data.lifeJobMissionProgress) target.lifeJobMissionProgress.set(key, val);
+  }
 }
 
 function serializeKnowledge(k: PlayerKnowledge): KnowledgeSaveData {
@@ -334,6 +355,15 @@ function serializeKnowledge(k: PlayerKnowledge): KnowledgeSaveData {
       cells: farm.cells.map(c => ({ ...c })),
     }]),
     lastNapDay: k.lastNapDay,
+    totalFishCaught: k.totalFishCaught,
+    totalWeatherChecked: k.totalWeatherChecked,
+    totalPotionsMade: k.totalPotionsMade,
+    totalSongsPlayed: k.totalSongsPlayed,
+    totalMapsDrawn: k.totalMapsDrawn,
+    totalBlessingsGiven: k.totalBlessingsGiven,
+    totalEquipRepaired: k.totalEquipRepaired,
+    totalMovesDone: k.totalMovesDone,
+    totalDungeonBattlesWithCompanion: k.totalDungeonBattlesWithCompanion,
   };
 }
 
@@ -380,6 +410,15 @@ function deserializeKnowledge(data: KnowledgeSaveData, target: PlayerKnowledge):
     }])
   );
   target.lastNapDay = data.lastNapDay ?? -1;
+  target.totalFishCaught = data.totalFishCaught ?? 0;
+  target.totalWeatherChecked = data.totalWeatherChecked ?? 0;
+  target.totalPotionsMade = data.totalPotionsMade ?? 0;
+  target.totalSongsPlayed = data.totalSongsPlayed ?? 0;
+  target.totalMapsDrawn = data.totalMapsDrawn ?? 0;
+  target.totalBlessingsGiven = data.totalBlessingsGiven ?? 0;
+  target.totalEquipRepaired = data.totalEquipRepaired ?? 0;
+  target.totalMovesDone = data.totalMovesDone ?? 0;
+  target.totalDungeonBattlesWithCompanion = data.totalDungeonBattlesWithCompanion ?? 0;
 }
 
 function getSaveMeta(slot: number): SaveMeta | null {

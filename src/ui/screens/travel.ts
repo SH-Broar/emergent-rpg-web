@@ -13,6 +13,7 @@ import { triggerNpcQuestEvent } from '../../data/npc-quest-defs';
 import { randomInt, randomFloat } from '../../types/rng';
 import { checkAndAwardTitles } from '../../systems/title-system';
 import { advanceTurnByChunks } from '../../systems/world-simulation';
+import { trackLocationVisit } from '../../systems/life-job-system';
 
 // ============================================================
 // 이동 설정
@@ -212,6 +213,7 @@ export function createTravelScreen(
     session.player.currentLocation = toId;
     moveCompanions(session.actors, session.knowledge, toId);
     session.knowledge.trackVisit(toId);
+    trackLocationVisit(session, toId);
     triggerNpcQuestEvent(session.knowledge, { type: 'visit', locationId: toId });
     for (const t of checkAndAwardTitles(session)) {
       session.backlog.add(session.gameTime, `✦ 칭호 획득: "${t}"`, '시스템');

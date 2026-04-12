@@ -10,6 +10,7 @@ import { applyDailyBaseEffects, tickStoragePenalties } from './base-effects';
 import { findItemsBySource, getEquippedAccessoryEffects } from '../types/item-defs';
 import { tryNpcInitiatedConversation, getDialogue, getRelationshipStage, getActionText } from './npc-interaction';
 import { checkAndAwardTitles } from './title-system';
+import { getLifeJobModifiers } from './life-job-system';
 
 function syncPlayerHyperionBonus(session: GameSession): void {
   if (!session.isValid) return;
@@ -148,10 +149,13 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
 
     case 'rest': {
       const accFx = getEquippedAccessoryEffects(p);
+      const ljModRest = getLifeJobModifiers(session);
       let hpRecover = Math.round(p.getEffectiveMaxHp() * 0.2);
       let mpRecover = Math.round(p.getEffectiveMaxMp() * 0.2);
       hpRecover += Math.round(hpRecover * (accFx.hpRegen ?? 0));
       mpRecover += Math.round(mpRecover * (accFx.mpRegen ?? 0));
+      // 사제 패시브: 휴식 HP 회복 보너스
+      hpRecover += Math.round(hpRecover * ljModRest.restHpBonus);
       p.adjustHp(hpRecover);
       p.adjustMp(mpRecover);
       const companions = session.actors
@@ -256,9 +260,16 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
         result.messages.push('⚠ 인벤토리가 가득 찼습니다! 아이템을 획득할 수 없었다.');
         return result;
       }
-      p.addItemById(picked.id, amount);
+      // 생활 직업 패시브 보너스: 약초가/광부 추가 획득
+      const ljMod = getLifeJobModifiers(session);
+      let bonusAmount = 0;
+      if (picked.id.includes('herb') || picked.id.includes('flower')) bonusAmount += ljMod.gatherHerbBonus;
+      if (picked.id.includes('ore') || picked.id.includes('crystal')) bonusAmount += ljMod.gatherOreBonus;
+      const finalAmount = amount + bonusAmount;
+
+      p.addItemById(picked.id, finalAmount);
       session.knowledge.discoverItem(picked.id);
-      session.backlog.add(session.gameTime, `${p.name}이(가) ${picked.name}을(를) ${amount}개 채집했다.`, '행동');
+      session.backlog.add(session.gameTime, `${p.name}이(가) ${picked.name}을(를) ${finalAmount}개 채집했다.`, '행동');
 
       // 채집 성공: Earth+, Wind+, Fire-
       const gatherSuccessInfluence = new Array(8).fill(0);
@@ -276,7 +287,7 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
       let rarityLabel = '';
       if (picked.rarity === 'uncommon') rarityLabel = ' [특산물]';
       else if (picked.rarity === 'rare') rarityLabel = ' [희귀]';
-      const rewardText = `${picked.name}${rarityLabel} ×${amount}`;
+      const rewardText = `${picked.name}${rarityLabel} ×${finalAmount}`;
       result.messages.push(`채집 완료! ${rewardText}`);
 
       // 잠긴 자원 힌트 (30% 확률)

@@ -20,6 +20,7 @@ import { advanceTurn, canNotifyRandomEvent } from '../../systems/world-simulatio
 import { getVillageRoadMultiplier } from '../../models/village';
 import { getRoadDef } from '../../data/village-defs';
 import { checkAndAwardTitles } from '../../systems/title-system';
+import { getLifeJobModifiers, trackLocationVisit } from '../../systems/life-job-system';
 
 interface ActionDef {
   key: string;
@@ -62,7 +63,6 @@ function hasActivities(session: GameSession) {
 function atGuildHall(session: GameSession) { return session.player.currentLocation === 'Guild_Hall'; }
 function atGuild(session: GameSession) { return session.player.currentLocation === 'Guild_Hall' || session.player.currentLocation === 'Guild_Branch'; }
 function atLunaAcademy(session: GameSession) { return session.player.currentLocation === 'Luna_Academy'; }
-function atHanabridge(session: GameSession) { return session.player.currentLocation === 'Hanabridge'; }
 function atMartinPort(session: GameSession) { return session.player.currentLocation === 'Martin_Port'; }
 function atVillage(session: GameSession) {
   return session.knowledge.villageState?.locationId === session.player.currentLocation;
@@ -83,7 +83,6 @@ const MAIN_ACTIONS: ActionDef[] = [
   { key: 'h', label: '자택', action: 'home', icon: '🏠', visible: atHome },
   { key: 'n', label: '부동산', action: 'realestate' as GameAction, icon: '🏘', visible: atGuildHall },
   { key: 'l', label: '학습', action: 'skill_shop' as GameAction, icon: '📖', visible: atLunaAcademy },
-  { key: 'l', label: '생활 직업', action: 'life_job' as GameAction, icon: '🌿', visible: atHanabridge },
   { key: 'j', label: '던전 정보', action: 'guild_dungeon' as GameAction, icon: '🗺', visible: atGuild },
   { key: 'T', label: '푸치 탑', action: 'puchi_tower' as GameAction, icon: '🗼', visible: (session: GameSession) => session.player.currentLocation === 'Puchi_Tower' },
   { key: 'm', label: '기억의 샘', action: 'memory_spring', icon: '💧', visible: atMemorySpring },
@@ -101,6 +100,7 @@ const INFO_ACTIONS: ActionDef[] = [
   { key: 'M', label: '지도', action: 'info_map', icon: '🧭' },
   { key: 'e', label: '도감', action: 'info_encyclopedia', icon: '📚' },
   { key: 'k', label: '스킬', action: 'info_skills' as GameAction, icon: '⚡' },
+  { key: 'J', label: '직업', action: 'life_job' as GameAction, icon: '🌿' },
   { key: 'S', label: '저장', action: 'save', icon: '💾' },
 ];
 
@@ -138,9 +138,11 @@ function getMoveRouteSections(session: GameSession): {
   dockedHomeRoute: MoveRouteEntry | null;
 } {
   const p = session.player;
+  const ljMod = getLifeJobModifiers(session);
+  const travelMult = 1 - ljMod.travelTimeReduction; // 지도제작자 패시브
   const sortedRoutes = session.world
     .getOutgoingRoutes(p.currentLocation, session.gameTime.day)
-    .map(([loc, mins]) => ({ loc, mins, isHome: loc === p.homeLocation }))
+    .map(([loc, mins]) => ({ loc, mins: Math.max(1, Math.round(mins * travelMult)), isHome: loc === p.homeLocation }))
     .filter(route => isLocationOpenNow(session, route.loc))
     .sort(compareMoveRoutes);
 
@@ -699,6 +701,7 @@ export function createMoveScreen(
       moveCompanions(session.actors, session.knowledge, loc);
       session.backlog.add(session.gameTime, `${session.player.name}이(가) ${locationName(loc)}(으)로 이동했다.`, '행동');
       session.knowledge.trackVisit(loc);
+      trackLocationVisit(session, loc);
       triggerNpcQuestEvent(session.knowledge, { type: 'visit', locationId: loc });
       for (const t of checkAndAwardTitles(session)) {
         session.backlog.add(session.gameTime, `✦ 칭호 획득: "${t}"`, '시스템');

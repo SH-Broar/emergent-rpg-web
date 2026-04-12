@@ -132,6 +132,10 @@ export class Actor {
   combatJob = '';
   /** 생활 직업 */
   lifeJob = '';
+  /** 생활 직업 레벨 (직업ID → 1~3) */
+  lifeJobLevels = new Map<string, number>();
+  /** 생활 직업 승단 미션 진행도 (직업ID → 누적 진행값) */
+  lifeJobMissionProgress = new Map<string, number>();
   lastTickHour = 6;
 
   coreMatrix = new CoreMatrix();
