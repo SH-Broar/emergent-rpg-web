@@ -7,13 +7,20 @@ import { raceName, spiritRoleName } from '../../types/enums';
 import { locationName } from '../../types/registry';
 import { getHyperionEntry } from '../../systems/hyperion';
 
-// 기본 NPC 수 (삭제 불가)
+export interface CharSelectOptions {
+  /** true이면 하코만 표시하고 탄생/커스텀 버튼을 숨긴다 (최초 플레이) */
+  isFirstPlay?: boolean;
+  /** 활성화된 RDC팩에서 추가된 플레이어블 캐릭터 이름 집합 */
+  extraPlayableNames?: Set<string>;
+}
+
 export function createCharacterSelectScreen(
   actors: Actor[],
   onSelect: (index: number) => void,
   onBirth: () => void,
   onCustom: () => void,
   onBack: () => void,
+  options: CharSelectOptions = {},
 ): Screen {
   let cursor = 0;
   let hyperionOnly = false;
@@ -21,7 +28,8 @@ export function createCharacterSelectScreen(
   function getPlayable() {
     return actors
       .map((a, i) => ({ actor: a, idx: i }))
-      .filter(x => x.actor.playable)
+      .filter(x => x.actor.playable || (options.extraPlayableNames?.has(x.actor.name) ?? false))
+      .filter(x => !options.isFirstPlay || x.actor.name === '하코')
       .filter(x => !hyperionOnly || getHyperionEntry(x.actor.name) !== undefined);
   }
 
@@ -46,15 +54,21 @@ export function createCharacterSelectScreen(
             </button>
           `).join('')}
         </div>
+        ${options.isFirstPlay ? `
+        <p style="text-align:center;color:var(--text-dim);font-size:12px;margin-top:8px">
+          첫 번째 이야기는 하코의 모험으로 시작됩니다.
+        </p>` : `
         <div class="menu-buttons" style="margin-top:8px">
           <button class="btn" data-action="birth">탄생 — 빈 영혼으로 세계에 태어나기</button>
           <button class="btn" data-action="custom">나만의 캐릭터 만들기</button>
-        </div>
+        </div>`}
         <div class="menu-buttons" style="margin-top:8px">
           <button class="btn" data-action="back">뒤로 [Esc]</button>
           <button class="btn btn-primary" data-action="confirm">선택 [Enter]</button>
         </div>
-        <p class="hint">↑↓ 이동 · Enter 선택 · b 탄생 · 0 커스텀 · H 히페리온 필터 · Esc 뒤로</p>
+        <p class="hint">${options.isFirstPlay
+          ? '↑↓ 이동 · Enter 선택 · Esc 뒤로'
+          : '↑↓ 이동 · Enter 선택 · b 탄생 · 0 커스텀 · H 히페리온 필터 · Esc 뒤로'}</p>
       </div>`;
 
     el.querySelectorAll<HTMLButtonElement>('.char-btn').forEach(btn => {
@@ -69,8 +83,10 @@ export function createCharacterSelectScreen(
       cursor = 0;
       renderList(el);
     });
-    el.querySelector('[data-action="birth"]')?.addEventListener('click', onBirth);
-    el.querySelector('[data-action="custom"]')?.addEventListener('click', onCustom);
+    if (!options.isFirstPlay) {
+      el.querySelector('[data-action="birth"]')?.addEventListener('click', onBirth);
+      el.querySelector('[data-action="custom"]')?.addEventListener('click', onCustom);
+    }
     el.querySelector('[data-action="back"]')?.addEventListener('click', onBack);
     el.querySelector('[data-action="confirm"]')?.addEventListener('click', () => {
       const playableNow = getPlayable();
@@ -94,9 +110,9 @@ export function createCharacterSelectScreen(
         if (cursor < playable.length) onSelect(playable[cursor].idx);
       } else if (key === 'Escape') {
         onBack();
-      } else if (key === 'b' || key === 'B') {
+      } else if ((key === 'b' || key === 'B') && !options.isFirstPlay) {
         onBirth();
-      } else if (key === '0') {
+      } else if (key === '0' && !options.isFirstPlay) {
         onCustom();
       } else if (key === 'h' || key === 'H') {
         hyperionOnly = !hyperionOnly;

@@ -3,6 +3,7 @@
 import type { Screen } from '../screen-manager';
 import type { GameTime } from '../../types/game-time';
 import { applyTimeTheme, toggleColorMode, getColorMode } from '../time-theme';
+import type { PackProgress } from '../../data/rdc-packs';
 
 declare const __APP_VERSION__: string;
 
@@ -12,9 +13,33 @@ export function createMainMenuScreen(
   hasAutosave: boolean,
   onSelect: (choice: MenuChoice) => void,
   gameTime: GameTime,
+  packProgress: PackProgress[] = [],
 ): Screen {
   let debugBuffer = '';
   let container: HTMLElement | null = null;
+
+  function buildPackStatusHtml(): string {
+    if (packProgress.length === 0) return '';
+
+    const unlockedCount = packProgress.filter(p => p.unlocked).length;
+
+    const rows = packProgress.map(pp => {
+      const barFilled = Math.round((pp.done / pp.total) * 5);
+      const bar = '█'.repeat(barFilled) + '░'.repeat(5 - barFilled);
+      if (pp.unlocked) {
+        return `<span style="color:var(--success)">✦ ${pp.pack.label}</span>`;
+      }
+      return `<span style="color:var(--text-dim)">${pp.pack.label} <span style="font-family:monospace">${bar}</span> ${pp.done}/${pp.total}</span>`;
+    }).join('<br>');
+
+    return `
+      <div style="margin-top:16px;padding:10px 12px;border:1px solid var(--border);border-radius:6px;font-size:11px;line-height:1.8;text-align:left">
+        <div style="font-size:12px;color:var(--text-dim);margin-bottom:4px">
+          RDC 캐릭터팩 &nbsp;<span style="color:var(--success)">${unlockedCount}</span>/<span>${packProgress.length}</span> 해금
+        </div>
+        ${rows}
+      </div>`;
+  }
 
   function doRender(el: HTMLElement) {
     applyTimeTheme(gameTime);
@@ -36,6 +61,7 @@ export function createMainMenuScreen(
           <button class="btn" data-action="datapack">${hasAutosave ? 5 : n + 5}. 데이터팩 설정</button>
         </div>
         <p class="hint">키보드: 1~${hasAutosave ? 5 : n + 5} 선택</p>
+        ${buildPackStatusHtml()}
 
         <!-- 모드 토글 + 버전 -->
         <div style="position:fixed;bottom:8px;left:0;right:0;display:flex;justify-content:space-between;padding:0 10px;pointer-events:none">

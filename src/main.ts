@@ -63,6 +63,8 @@ import { fastForwardWorld } from './systems/world-simulation';
 import { seasonName } from './types/enums';
 import { CoreMatrix, PlayerKnowledge } from './models/knowledge';
 import { locationName } from './types/registry';
+import { markHasEverStarted, getGlobalSave } from './data/global-save';
+import { getAllPackProgress, checkAndUnlockPacks, getActivePackPlayableNames } from './data/rdc-packs';
 
 const app = document.getElementById('app')!;
 
@@ -302,6 +304,7 @@ async function boot() {
     delete (session as any)._diagColorValues;
     delete (session as any)._diagScores;
 
+    markHasEverStarted();
     session.knowledge.addKnownName(session.player.name);
     session.knowledge.trackVisit(session.player.currentLocation);
     // 시작 거점: homeLocation을 Lv.1 거점으로 자동 등록
@@ -550,6 +553,10 @@ async function boot() {
     session.knowledge = new PlayerKnowledge();
     session.playerIdx = -1;
 
+    const gs = getGlobalSave();
+    const isFirstPlay = !gs.hasEverStarted;
+    const extraPlayableNames = isFirstPlay ? new Set<string>() : getActivePackPlayableNames(session.actors);
+
     sm.replace(createCharacterSelectScreen(
       session.actors,
       (idx) => { session.playerIdx = idx; showPopulationSelect(() => showBackgroundThenGame()); },
@@ -568,6 +575,7 @@ async function boot() {
         }, () => sm.pop()));
       },
       () => showMainMenu(),
+      { isFirstPlay, extraPlayableNames },
     ));
   }
 
@@ -815,6 +823,9 @@ async function boot() {
 
   // --- 메인 메뉴 ---
   function showMainMenu() {
+    // 메인 메뉴 진입 시 팩 해금 상태 재확인 (오프라인 중 조건 달성 가능성)
+    checkAndUnlockPacks(session.actors);
+    const packProgress = getAllPackProgress(session.actors);
     const menu = createMainMenuScreen(checkHasAutosave(), (choice) => {
       switch (choice) {
         case 'new': showCharSelect(); break;
@@ -893,7 +904,7 @@ async function boot() {
           sm.push(createDataPackScreen((_config) => {
             sm.pop();
             // 설정 저장 후 메뉴로 복귀 (새 게임 시 반영됨)
-          }));
+          }, session.actors));
           break;
         case 'debug_reset':
           sm.push({
@@ -923,7 +934,7 @@ async function boot() {
           });
           break;
       }
-    }, getMenuGameTime());
+    }, getMenuGameTime(), packProgress);
     sm.replace(menu);
   }
 

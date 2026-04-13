@@ -11,6 +11,7 @@ import { findItemsBySource, getEquippedAccessoryEffects } from '../types/item-de
 import { tryNpcInitiatedConversation, getDialogue, getRelationshipStage, getActionText } from './npc-interaction';
 import { checkAndAwardTitles } from './title-system';
 import { getLifeJobModifiers } from './life-job-system';
+import { checkAndUnlockPacks, RDC_PACKS } from '../data/rdc-packs';
 
 function syncPlayerHyperionBonus(session: GameSession): void {
   if (!session.isValid) return;
@@ -467,6 +468,18 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
     for (const msg of hyperionMsgs) {
       session.backlog.add(session.gameTime, msg, '시스템');
       result.messages.push(msg);
+    }
+    // RDC 캐릭터팩 해금 체크 (히페리온 레벨 변동 후)
+    if (hyperionMsgs.length > 0) {
+      const newlyUnlocked = checkAndUnlockPacks(session.actors);
+      for (const packId of newlyUnlocked) {
+        const pack = RDC_PACKS.find(pk => pk.id === packId);
+        if (pack) {
+          const msg = `✦ RDC 캐릭터팩 해금: "${pack.label}" — ${pack.playableNames.join(', ')} 플레이 가능!`;
+          session.backlog.add(session.gameTime, msg, '시스템');
+          result.messages.push(msg);
+        }
+      }
     }
     // 히페리온 레벨업 시 동료 축하 대사
     if (hyperionMsgs.length > 0) {
