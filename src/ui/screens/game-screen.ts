@@ -224,6 +224,9 @@ export function createGameScreen(
     if (hudContainer) {
       const timeEl = hudContainer.querySelector('.hud-time');
       if (timeEl) timeEl.textContent = session.gameTime.toString();
+      const gaugeEl = hudContainer.querySelector('.hud-time-bar-fill');
+      if (gaugeEl) (gaugeEl as HTMLElement).style.width =
+        `${Math.round((session.gameTime.hour * 60 + session.gameTime.minute) / 1440 * 100)}%`;
       const statusEl = hudContainer.querySelector('.status-bar');
       if (statusEl) statusEl.textContent = session.gameTime.toString();
 
@@ -323,7 +326,10 @@ export function createGameScreen(
       <div class="screen game-screen">
         <div class="hud-bar">
           <div class="hud-location">${locationName(p.currentLocation)}</div>
-          <div class="hud-time">${session.gameTime.toString()}</div>
+          <div class="hud-time-wrapper">
+            <span class="hud-time">${session.gameTime.toString()}</span>
+            <div class="hud-time-bar"><div class="hud-time-bar-fill" style="width:${Math.round((session.gameTime.hour * 60 + session.gameTime.minute) / 1440 * 100)}%"></div></div>
+          </div>
           <div class="hud-weather">${weatherName(session.world.weather)} · ${seasonName(session.world.getCurrentSeason())}</div>
         </div>
 

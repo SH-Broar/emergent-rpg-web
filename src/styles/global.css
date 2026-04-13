@@ -91,6 +91,14 @@ html, body {
 }
 .hud-location { font-weight: 600; color: var(--success); }
 .hud-time { color: var(--warning); }
+.hud-time-wrapper { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.hud-time-bar { width: 52px; height: 3px; background: var(--bg-card); border-radius: 2px; overflow: hidden; }
+.hud-time-bar-fill {
+  height: 100%; border-radius: 2px;
+  /* 하루 흐름 그라디언트: 자정→새벽→정오→저녁→자정 */
+  background: linear-gradient(to right, #2b2d7e 0%, #e77c6a 25%, #ffc857 50%, #e86b35 75%, #2b2d7e 100%);
+  transition: width 4.5s linear;
+}
 .hud-weather { color: var(--text-dim); }
 
 .hud-stats { display: flex; flex-direction: column; gap: 4px; }
