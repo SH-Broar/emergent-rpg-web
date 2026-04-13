@@ -20,24 +20,10 @@ export function createMainMenuScreen(
 
   function buildPackStatusHtml(): string {
     if (packProgress.length === 0) return '';
-
     const unlockedCount = packProgress.filter(p => p.unlocked).length;
-
-    const rows = packProgress.map(pp => {
-      const barFilled = Math.round((pp.done / pp.total) * 5);
-      const bar = '█'.repeat(barFilled) + '░'.repeat(5 - barFilled);
-      if (pp.unlocked) {
-        return `<span style="color:var(--success)">✦ ${pp.pack.label}</span>`;
-      }
-      return `<span style="color:var(--text-dim)">${pp.pack.label} <span style="font-family:monospace">${bar}</span> ${pp.done}/${pp.total}</span>`;
-    }).join('<br>');
-
     return `
-      <div style="margin-top:16px;padding:10px 12px;border:1px solid var(--border);border-radius:6px;font-size:11px;line-height:1.8;text-align:left">
-        <div style="font-size:12px;color:var(--text-dim);margin-bottom:4px">
-          RDC 캐릭터팩 &nbsp;<span style="color:var(--success)">${unlockedCount}</span>/<span>${packProgress.length}</span> 해금
-        </div>
-        ${rows}
+      <div style="margin-top:12px;font-size:11px;color:var(--text-dim)">
+        RDC 캐릭터팩 &nbsp;<span style="color:var(--success)">${unlockedCount}</span>/${packProgress.length} 해금
       </div>`;
   }
 
