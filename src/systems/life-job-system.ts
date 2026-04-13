@@ -99,9 +99,12 @@ export function learnJob(session: GameSession, jobId: string): string[] {
   return msgs;
 }
 
-/** 장착 직업 변경 (이미 배운 직업만) */
+/** 장착 직업 변경 (이미 배운 직업만, 하나브릿지 신전에서만 가능) */
 export function equipJob(session: GameSession, jobId: string): string[] {
   const p = session.player;
+  if (p.currentLocation !== 'Hanabridge') {
+    return ['직업 전환은 하나브릿지 신전에서만 가능합니다.'];
+  }
   if (jobId === '') {
     p.lifeJob = '';
     session.backlog.add(session.gameTime, '생활 직업을 해제했다.', '행동');

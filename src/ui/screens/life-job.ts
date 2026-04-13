@@ -109,6 +109,7 @@ export function createLifeJobScreen(
     }
 
     // 보유 직업 목록
+    const atHanabridge = p.currentLocation === 'Hanabridge';
     const learnedJobs = ALL_LIFE_JOBS.filter(j => p.lifeJobLevels.has(j));
     const learnedHtml = learnedJobs.length > 0
       ? learnedJobs.map(j => {
@@ -117,7 +118,11 @@ export function createLifeJobScreen(
         return `
           <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:var(--bg-card);border-radius:4px;margin-bottom:3px;${isCurrent ? 'border-left:3px solid var(--success,#6bff6b)' : ''}">
             <span style="font-size:13px">${LIFE_JOB_NAMES[j as LifeJob]} Lv.${jLv}${isCurrent ? ' (현재)' : ''}</span>
-            ${!isCurrent ? `<button class="btn" data-equip="${j}" style="font-size:11px;padding:2px 8px">전환</button>` : ''}
+            ${!isCurrent
+              ? atHanabridge
+                ? `<button class="btn" data-equip="${j}" style="font-size:11px;padding:2px 8px">전환</button>`
+                : `<span style="font-size:11px;color:var(--text-dim)">하나브릿지 신전</span>`
+              : ''}
           </div>`;
       }).join('')
       : '<div style="font-size:12px;color:var(--text-dim);text-align:center;padding:8px">배운 직업이 없습니다.</div>';
@@ -130,7 +135,7 @@ export function createLifeJobScreen(
       <div style="margin-bottom:6px">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
           <span style="font-weight:600;font-size:14px">보유 직업</span>
-          ${jobId ? `<button class="btn" data-equip="" style="font-size:11px;padding:2px 8px">직업 해제</button>` : ''}
+          ${jobId && atHanabridge ? `<button class="btn" data-equip="" style="font-size:11px;padding:2px 8px">직업 해제</button>` : ''}
         </div>
         ${learnedHtml}
       </div>

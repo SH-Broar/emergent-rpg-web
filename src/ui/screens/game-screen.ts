@@ -91,16 +91,18 @@ const MAIN_ACTIONS: ActionDef[] = [
 ];
 
 const INFO_ACTIONS: ActionDef[] = [
+  // ROW1: 캐릭터 관리
   { key: 'i', label: '상태', action: 'info_status', icon: '📊' },
-  { key: 'y', label: '히페리온', action: 'info_hyperion', icon: '✦' },
-  { key: 'p', label: '동료', action: 'info_party', icon: '👥' },
+  { key: 'k', label: '스킬', action: 'info_skills' as GameAction, icon: '⚡' },
+  { key: 'J', label: '직업', action: 'life_job' as GameAction, icon: '🌿' },
   { key: 'r', label: '관계', action: 'info_relations', icon: '💕' },
   { key: 'b', label: '백로그', action: 'info_backlog', icon: '📖' },
   { key: 't', label: '칭호', action: 'info_titles', icon: '🏅' },
+  // ROW2: 세계 / 유틸
+  { key: 'y', label: '히페리온', action: 'info_hyperion', icon: '✦' },
+  { key: 'p', label: '동료', action: 'info_party', icon: '👥' },
   { key: 'M', label: '지도', action: 'info_map', icon: '🧭' },
   { key: 'e', label: '도감', action: 'info_encyclopedia', icon: '📚' },
-  { key: 'k', label: '스킬', action: 'info_skills' as GameAction, icon: '⚡' },
-  { key: 'J', label: '직업', action: 'life_job' as GameAction, icon: '🌿' },
   { key: 'S', label: '저장', action: 'save', icon: '💾' },
 ];
 
@@ -225,7 +227,7 @@ export function createGameScreen(
       const timeEl = hudContainer.querySelector('.hud-time');
       if (timeEl) timeEl.textContent = session.gameTime.toString();
       const gaugeEl = hudContainer.querySelector('.hud-time-bar-fill');
-      if (gaugeEl) (gaugeEl as HTMLElement).style.width =
+      if (gaugeEl) (gaugeEl as HTMLElement).style.left =
         `${Math.round((session.gameTime.hour * 60 + session.gameTime.minute) / 1440 * 100)}%`;
       const statusEl = hudContainer.querySelector('.status-bar');
       if (statusEl) statusEl.textContent = session.gameTime.toString();
@@ -326,12 +328,10 @@ export function createGameScreen(
       <div class="screen game-screen">
         <div class="hud-bar">
           <div class="hud-location">${locationName(p.currentLocation)}</div>
-          <div class="hud-time-wrapper">
-            <span class="hud-time">${session.gameTime.toString()}</span>
-            <div class="hud-time-bar"><div class="hud-time-bar-fill" style="width:${Math.round((session.gameTime.hour * 60 + session.gameTime.minute) / 1440 * 100)}%"></div></div>
-          </div>
+          <span class="hud-time">${session.gameTime.toString()}</span>
           <div class="hud-weather">${weatherName(session.world.weather)} · ${seasonName(session.world.getCurrentSeason())}</div>
         </div>
+        <div class="hud-time-bar"><div class="hud-time-bar-fill" style="left:${Math.round((session.gameTime.hour * 60 + session.gameTime.minute) / 1440 * 100)}%"></div></div>
 
         <div class="hud-stats">
           <div class="stat-bar">
