@@ -58,10 +58,12 @@ export function createDialogueScreen(
 
     const npcEntries = npcsHere.map(a => {
       const known = session.knowledge.isKnown(a.name);
+      const talkedToday = p.variables.get(`last_talk_day_${a.name}`) === session.gameTime.day;
       return {
         name: known ? a.name : '???',
         race: known ? raceName(a.base.race) : '???',
         role: known ? spiritRoleName(a.spirit.role) : '',
+        suffix: talkedToday ? ' (오늘 대화 완료)' : '',
       };
     });
 
@@ -92,7 +94,6 @@ export function createDialogueScreen(
     const stageLabel = getRelationshipStageLabel(stage);
 
     wrap.innerHTML = `
-      <button class="btn back-btn" data-back>← 뒤로 [Esc]</button>
       <div class="dialogue-header">
         <h2>${npc.name}</h2>
         <span class="dialogue-npc-info">${raceName(npc.base.race)} / ${spiritRoleName(npc.spirit.role)}</span>
@@ -109,14 +110,8 @@ export function createDialogueScreen(
           </button>
         `).join('')}
       </div>
-      <p class="hint">1~3 선택, Esc 건너뜀</p>
+      <p class="hint">1~3 선택</p>
     `;
-
-    wrap.querySelector('[data-back]')?.addEventListener('click', () => {
-      // 선택지 건너뜀 — 일반 대사로 진행
-      pendingChoice = null;
-      renderDialogue(el);
-    });
 
     wrap.querySelectorAll<HTMLButtonElement>('[data-choice-idx]').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -156,6 +151,13 @@ export function createDialogueScreen(
     if (!npc) { renderNpcSelect(el); return; }
 
     if (dialogueLines.length === 0) {
+      // 하루 한 번 대화 제한
+      if (p.variables.get(`last_talk_day_${npc.name}`) === session.gameTime.day) {
+        selectedIdx = -1;
+        renderNpcSelect(el);
+        return;
+      }
+
       // 대화하면 이름을 알게 됨
       session.knowledge.addKnownName(npc.name);
       session.knowledge.trackConversation(npc.name);
@@ -185,6 +187,8 @@ export function createDialogueScreen(
       ];
       session.backlog.add(session.gameTime, `${p.name}\uc774(\uac00) ${npc.name}\uc640(\uacfc) \ub300\ud654\ud588\ub2e4.`, '\ud589\ub3d9', p.name);
       session.backlog.add(session.gameTime, `${npc.name}: \u300c${line}\u300d`, '\ub300\uc0ac', p.name);
+      // 오늘 대화 기록
+      p.variables.set(`last_talk_day_${npc.name}`, session.gameTime.day);
       // 실제 대화 시 10분 경과
       session.gameTime.advance(10);
       callbacks.onTalk(npc.name);
@@ -298,9 +302,8 @@ export function createDialogueScreen(
 
       if (key === 'Escape') {
         if (pendingChoice) {
-          // 선택지 건너뜀 → 일반 대사
-          pendingChoice = null;
-          renderDialogue(container);
+          // 선택지 진행 중 — 나가기 불가
+          return;
         } else if (selectedIdx >= 0) {
           selectedIdx = -1;
           dialogueLines = [];

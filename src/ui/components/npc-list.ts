@@ -4,6 +4,7 @@ export interface NpcEntry {
   name: string;
   race: string;
   role: string;
+  suffix?: string;
 }
 
 export function createNpcList(
@@ -24,7 +25,7 @@ export function createNpcList(
     btn.dataset.idx = String(i);
     btn.innerHTML = `
       <span class="npc-num">${i + 1}.</span>
-      <span class="npc-name">${npc.name}</span>
+      <span class="npc-name">${npc.name}${npc.suffix ? `<span style="color:var(--text-dim);font-size:11px">${npc.suffix}</span>` : ''}</span>
       <span class="npc-detail">${npc.race} / ${npc.role}</span>
     `;
     btn.addEventListener('click', () => onSelect(i));
