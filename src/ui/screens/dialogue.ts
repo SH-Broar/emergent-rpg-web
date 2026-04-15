@@ -94,6 +94,7 @@ export function createDialogueScreen(
     const stageLabel = getRelationshipStageLabel(stage);
 
     wrap.innerHTML = `
+      <button class="btn back-btn" data-back>← 건너뜀 [Esc]</button>
       <div class="dialogue-header">
         <h2>${npc.name}</h2>
         <span class="dialogue-npc-info">${raceName(npc.base.race)} / ${spiritRoleName(npc.spirit.role)}</span>
@@ -110,8 +111,13 @@ export function createDialogueScreen(
           </button>
         `).join('')}
       </div>
-      <p class="hint">1~3 선택</p>
+      <p class="hint">1~3 선택, Esc 건너뜀</p>
     `;
+
+    wrap.querySelector('[data-back]')?.addEventListener('click', () => {
+      pendingChoice = null;
+      renderDialogue(el);
+    });
 
     wrap.querySelectorAll<HTMLButtonElement>('[data-choice-idx]').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -302,7 +308,9 @@ export function createDialogueScreen(
 
       if (key === 'Escape') {
         if (pendingChoice) {
-          // 선택지 진행 중 — 나가기 불가
+          // 선택지 건너뜀 → 일반 대사
+          pendingChoice = null;
+          renderDialogue(container);
           return;
         } else if (selectedIdx >= 0) {
           selectedIdx = -1;
