@@ -117,6 +117,42 @@ function rollMonsterEvent(session: GameSession, avgMonster: number, avgDanger: n
   };
 }
 
+function rollNpcRoadEncounter(
+  session: GameSession,
+  fromId: LocationID,
+  toId: LocationID,
+): TravelEvent | null {
+  const p = session.player;
+  // 같은 경로를 이동 중인 NPC 탐색: 같은 방향(fromId→toId) 또는 반대 방향(toId→fromId)
+  const onSameRoad = session.actors.filter(a => {
+    if (a === p || a.base.sleeping || !a.isAlive()) return false;
+    if (a.travelRemainingMinutes <= 0) return false;
+    const sameDest = a.moveDestination === toId && a.currentLocation === fromId;
+    const oppDest  = a.moveDestination === fromId && a.currentLocation === toId;
+    const passing  = a.currentLocation === fromId && a.travelNextStep === toId;
+    return sameDest || oppDest || passing;
+  });
+  if (onSameRoad.length === 0) return null;
+  if (randomFloat(0, 1) > 0.65) return null;
+
+  const npc = onSameRoad[randomInt(0, onSameRoad.length - 1)];
+  const isKnown = session.knowledge.isKnown(npc.name);
+
+  if (!isKnown) {
+    return { kind: 'auto', icon: '👤', title: '길에서 마주침', body: '이동 중에 낯선 여행자와 우연히 마주쳤다.' };
+  }
+
+  p.adjustRelationship(npc.name, 0.01, 0.01);
+  const GREETINGS = [
+    `${npc.name}와(과) 같은 길을 걷게 됐다. 잠깐 이야기를 나눴다.`,
+    `이동 중에 ${npc.name}을(를) 만났다. 서로 목적지를 이야기하며 잠시 동행했다.`,
+    `길 위에서 ${npc.name}과(와) 우연히 조우했다. 반가운 얼굴이었다.`,
+  ];
+  const body = GREETINGS[randomInt(0, GREETINGS.length - 1)];
+  session.backlog.add(session.gameTime, body, '대화', p.name);
+  return { kind: 'auto', icon: '👋', title: `${npc.name}와 조우`, body };
+}
+
 function rollTravelEvent(
   session: GameSession,
   fromId: LocationID,
@@ -173,6 +209,8 @@ export function createTravelScreen(
 
   // ── 동료 대사 (이동 중 1회만) ───────────────────────────────
   let companionSpoke = false;
+  // ── NPC 조우 이벤트 (이동 중 1회만) ────────────────────────
+  let npcEncounterChecked = false;
 
   // ── DOM refs ────────────────────────────────────────────────
   let progressBarEl: HTMLElement | null = null;
@@ -272,6 +310,16 @@ export function createTravelScreen(
           showInteractiveOverlay(evt);
         } else {
           eventLog.push({ time: session.gameTime.toString(), text: evt.body, isMonster: (evt.hpDelta ?? 0) < 0 });
+          updateLog();
+        }
+      }
+
+      // NPC 조우 이벤트 — 이동 중 1회
+      if (!npcEncounterChecked) {
+        npcEncounterChecked = true;
+        const npcEvt = rollNpcRoadEncounter(session, fromId, toId);
+        if (npcEvt) {
+          eventLog.push({ time: session.gameTime.toString(), text: npcEvt.body, isMonster: false });
           updateLog();
         }
       }

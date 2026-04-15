@@ -593,9 +593,12 @@ export function createInfoScreen(
             const npcActor = session.actors.find(a => a.name === name);
             const isCompanionNow = session.knowledge.isCompanion(name);
             const showLoc = (stage === 'close' || stage === 'companion') && npcActor;
+            const isTraveling = npcActor && npcActor.travelRemainingMinutes > 0 && npcActor.moveDestination;
             const locLabel = isCompanionNow
               ? ' · 동행 중'
-              : showLoc ? ` · 📍 ${locationName(npcActor.currentLocation)}` : '';
+              : isTraveling
+                ? ` · 🚶 ${locationName(npcActor!.moveDestination)}(으)로 이동 중`
+                : showLoc ? ` · 📍 ${locationName(npcActor!.currentLocation)}` : '';
             html += `<div class="rel-row">
               <span>${name}${locLabel}</span>
               <span>신뢰 ${rel.trust.toFixed(2)} · 호감 ${rel.affinity.toFixed(2)}</span>

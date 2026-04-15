@@ -185,6 +185,8 @@ export function createDialogueScreen(
       ];
       session.backlog.add(session.gameTime, `${p.name}\uc774(\uac00) ${npc.name}\uc640(\uacfc) \ub300\ud654\ud588\ub2e4.`, '\ud589\ub3d9', p.name);
       session.backlog.add(session.gameTime, `${npc.name}: \u300c${line}\u300d`, '\ub300\uc0ac', p.name);
+      // 실제 대화 시 10분 경과
+      session.gameTime.advance(10);
       callbacks.onTalk(npc.name);
     }
 

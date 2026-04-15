@@ -107,6 +107,10 @@ export class Actor {
   color: ColorProfile;
   currentLocation: LocationID = Loc.Alimes;
   moveDestination = '';
+  /** NPC 이동 중: 다음 경유지 위치 ID (비어있으면 이동 중 아님) */
+  travelNextStep: LocationID = '';
+  /** NPC 이동 중: 다음 경유지까지 남은 게임 분 */
+  travelRemainingMinutes = 0;
   actionCooldown = 0;
   playable = true;
   isCustom = false;

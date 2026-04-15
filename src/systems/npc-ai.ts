@@ -952,20 +952,14 @@ export function executeAction(
         actor.moveDestination = '';
         break;
       }
+      // 이미 이동 중이면 중복 시작 방지
+      if (actor.travelRemainingMinutes > 0) break;
       const next = world.getNextStep(loc, dest, time.day);
       if (next && next !== loc) {
-        actor.currentLocation = next;
-        if (next === dest) {
-          const visitedKey = `npc_visited:${dest}`;
-          if (!actor.getFlag(visitedKey)) {
-            actor.setFlag(visitedKey, true);
-            actor.adjustVariable('npc_locations_visited', 1);
-          }
-          actor.moveDestination = '';
-          log.add(time, `${name}이${iGa(name)} ${locationName(dest)}에 도착했다.`, '행동', name, next);
-        } else {
-          log.add(time, `${name}이${iGa(name)} ${locationName(dest)}${euroRo(locationName(dest))} 이동 중이다.`, '행동', name, next);
-        }
+        const hopMinutes = world.getTravelMinutes(loc, next, time.day);
+        actor.travelNextStep = next;
+        actor.travelRemainingMinutes = hopMinutes;
+        log.add(time, `${name}이${iGa(name)} ${locationName(dest)}${euroRo(locationName(dest))} 이동을 시작했다.`, '행동', name, loc);
       }
       break;
     }
@@ -1412,6 +1406,30 @@ export function npcOnTick(
       }, world, log, time, social, allActors);
     }
     return;
+  }
+
+  // 이동 틱: 경로 이동 시간 차감
+  if (actor.travelRemainingMinutes > 0) {
+    actor.travelRemainingMinutes -= minutesElapsed;
+    if (actor.travelRemainingMinutes > 0) return; // 아직 이동 중
+    // 경유지 도착
+    actor.travelRemainingMinutes = 0;
+    const arrivedAt = actor.travelNextStep;
+    actor.travelNextStep = '';
+    if (arrivedAt) {
+      const npcName = actor.name;
+      actor.currentLocation = arrivedAt;
+      if (arrivedAt === actor.moveDestination) {
+        const visitedKey = `npc_visited:${arrivedAt}`;
+        if (!actor.getFlag(visitedKey)) {
+          actor.setFlag(visitedKey, true);
+          actor.adjustVariable('npc_locations_visited', 1);
+        }
+        actor.moveDestination = '';
+        log.add(time, `${npcName}이${iGa(npcName)} ${locationName(arrivedAt)}에 도착했다.`, '행동', npcName, arrivedAt);
+      }
+      // 중간 경유지면 다음 틱에서 다음 구간 시작 (fall through to action evaluation)
+    }
   }
 
   // Cooldown

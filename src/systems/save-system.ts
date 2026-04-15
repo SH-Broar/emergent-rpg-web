@@ -71,6 +71,8 @@ function serializeActor(a: Actor): object {
     color: serializeColorProfile(a.color),
     currentLocation: a.currentLocation,
     moveDestination: a.moveDestination,
+    travelNextStep: a.travelNextStep,
+    travelRemainingMinutes: a.travelRemainingMinutes,
     actionCooldown: a.actionCooldown,
     playable: a.playable,
     isCustom: a.isCustom,
@@ -107,6 +109,8 @@ function deserializeActor(d: any): Actor {
   a.color = deserializeColorProfile(d.color ?? {});
   a.currentLocation = d.currentLocation ?? '';
   a.moveDestination = d.moveDestination ?? '';
+  a.travelNextStep = d.travelNextStep ?? '';
+  a.travelRemainingMinutes = d.travelRemainingMinutes ?? 0;
   a.actionCooldown = d.actionCooldown ?? 0;
   a.playable = d.playable ?? true;
   a.isCustom = d.isCustom ?? false;
