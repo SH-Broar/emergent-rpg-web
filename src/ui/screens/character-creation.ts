@@ -5,7 +5,7 @@ import type { Screen } from '../screen-manager';
 import { Actor } from '../../models/actor';
 import {
   Race, SpiritRole, Element, ELEMENT_COUNT,
-  raceName, spiritRoleName, elementName, ItemType, traitName, Trait,
+  raceName, spiritRoleName, elementName, traitName, Trait,
 } from '../../types/enums';
 import { Loc, LocationID } from '../../types/location';
 import { randomInt, randomFloat } from '../../types/rng';
@@ -224,8 +224,9 @@ export function createBirthScreen(
     }
     actor.color.randomizeDomains();
 
-    // Starting inventory: Food x3
-    actor.addItem(ItemType.Food, 3);
+    // Starting inventory: Water x2, Bread x2
+    actor.addItemById('fresh_water', 2);
+    actor.addItemById('wheat_bread', 2);
 
     actors.push(actor);
     onComplete(actors.length - 1);

@@ -587,9 +587,19 @@ export function evaluateAcquisitionLine(
     return { text: t, met: knowledge.recruitedEver.size >= parseInt(recCnt[1], 10), evaluable: true };
   }
 
-  // 시작 캐릭터
-  if (t.includes('시작 캐릭터') || t.includes('원작:')) {
-    return { text: t, met: true, evaluable: true };
+  // 특정 장소 방문
+  const LOCATION_NAME_MAP: Record<string, string> = {
+    '마법학교 루나': 'Luna_Academy',
+    '마틴 항': 'Martin_Port',
+    '기억의 샘': 'Memory_Spring',
+  };
+  const locVisit = t.match(/(.+?)를?\s*방문했다/);
+  if (locVisit) {
+    const placeName = locVisit[1].trim().replace(/^\d+\.\s*/, '');
+    const locationId = LOCATION_NAME_MAP[placeName];
+    if (locationId) {
+      return { text: t, met: knowledge.visitedLocations.has(locationId), evaluable: true };
+    }
   }
 
   // 사천왕이 모두 동료

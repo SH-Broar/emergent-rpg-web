@@ -5,8 +5,6 @@ import type { Screen } from '../screen-manager';
 import { Actor } from '../../models/actor';
 import { raceName, spiritRoleName } from '../../types/enums';
 import { locationName } from '../../types/registry';
-import { getHyperionEntry } from '../../systems/hyperion';
-
 export interface CharSelectOptions {
   /** true이면 하코만 표시하고 탄생/커스텀 버튼을 숨긴다 (최초 플레이) */
   isFirstPlay?: boolean;
@@ -23,14 +21,12 @@ export function createCharacterSelectScreen(
   options: CharSelectOptions = {},
 ): Screen {
   let cursor = 0;
-  let hyperionOnly = false;
 
   function getPlayable() {
     return actors
       .map((a, i) => ({ actor: a, idx: i }))
       .filter(x => x.actor.playable || (options.extraPlayableNames?.has(x.actor.name) ?? false))
-      .filter(x => !options.isFirstPlay || x.actor.name === '하코')
-      .filter(x => !hyperionOnly || getHyperionEntry(x.actor.name) !== undefined);
+      .filter(x => !options.isFirstPlay || x.actor.name === '하코');
   }
 
   function renderList(el: HTMLElement) {
@@ -39,17 +35,12 @@ export function createCharacterSelectScreen(
     el.innerHTML = `
       <div class="screen select-screen">
         <h2>플레이할 캐릭터를 선택하세요</h2>
-        <div style="display:flex;justify-content:flex-end;margin-bottom:6px">
-          <button class="btn" data-action="toggle-hyperion" style="font-size:11px;padding:3px 10px;border-left:3px solid ${hyperionOnly ? 'var(--success)' : 'var(--border)'}">
-            히페리온 보유 [H] ${hyperionOnly ? '✓ ON' : 'OFF'}
-          </button>
-        </div>
         <div class="char-list">
           ${playable.length === 0
-            ? `<p style="color:var(--text-dim);text-align:center;padding:16px">히페리온 보유 캐릭터가 없습니다.</p>`
+            ? `<p style="color:var(--text-dim);text-align:center;padding:16px">캐릭터가 없습니다.</p>`
             : playable.map((p, i) => `
             <button class="btn char-btn ${i === cursor ? 'active' : ''}" data-idx="${i}">
-              <span class="char-name">${p.actor.name}${p.actor.isCustom ? ' ★' : ''}${getHyperionEntry(p.actor.name) ? ' <span style="color:var(--success);font-size:10px">히</span>' : ''}</span>
+              <span class="char-name">${p.actor.name}${p.actor.isCustom ? ' ★' : ''}</span>
               <span class="char-info">${raceName(p.actor.base.race)} · ${spiritRoleName(p.actor.spirit.role)} — ${locationName(p.actor.currentLocation)}</span>
             </button>
           `).join('')}
@@ -68,7 +59,7 @@ export function createCharacterSelectScreen(
         </div>
         <p class="hint">${options.isFirstPlay
           ? '↑↓ 이동 · Enter 선택 · Esc 뒤로'
-          : '↑↓ 이동 · Enter 선택 · b 탄생 · 0 커스텀 · H 히페리온 필터 · Esc 뒤로'}</p>
+          : '↑↓ 이동 · Enter 선택 · b 탄생 · 0 커스텀 · Esc 뒤로'}</p>
       </div>`;
 
     el.querySelectorAll<HTMLButtonElement>('.char-btn').forEach(btn => {
@@ -77,11 +68,6 @@ export function createCharacterSelectScreen(
         const playableNow = getPlayable();
         if (cursor < playableNow.length) onSelect(playableNow[cursor].idx);
       });
-    });
-    el.querySelector('[data-action="toggle-hyperion"]')?.addEventListener('click', () => {
-      hyperionOnly = !hyperionOnly;
-      cursor = 0;
-      renderList(el);
     });
     if (!options.isFirstPlay) {
       el.querySelector('[data-action="birth"]')?.addEventListener('click', onBirth);
@@ -114,10 +100,6 @@ export function createCharacterSelectScreen(
         onBirth();
       } else if (key === '0' && !options.isFirstPlay) {
         onCustom();
-      } else if (key === 'h' || key === 'H') {
-        hyperionOnly = !hyperionOnly;
-        cursor = 0;
-        if (c instanceof HTMLElement) renderList(c);
       } else if (/^[1-9]$/.test(key)) {
         const i = parseInt(key, 10) - 1;
         if (i < playable.length) {

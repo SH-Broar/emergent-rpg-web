@@ -263,7 +263,6 @@ async function boot() {
               <p style="font-weight:600;margin-bottom:6px">🌿 생활 플레이</p>
               <p style="font-size:12px;color:var(--text-dim)">채집·요리·농장으로 <b>돈을 모으고</b>, <b>생활 직업 레벨</b>을 올려 수익을 높이세요.</p>
               <p style="font-size:12px;color:var(--text-dim);margin-top:4px">NPC들과 친밀도를 쌓아 영향력을 높이고, 여러 <b>거점을 구매·업그레이드</b>하는 것이 목표입니다.</p>
-              <p style="font-size:11px;color:var(--warning);margin-top:6px">소목표: NPC 전원과 친해지기 · 모든 지역에 거점 마련 · 생활 직업 최고 레벨 달성</p>
             </div>
 
             <button class="btn btn-primary" data-start style="margin-top:12px;min-height:44px">시작하기 [Enter]</button>
@@ -448,6 +447,16 @@ async function boot() {
               sm.pop(); // memory spring 닫기
               proceedToCharCreate();
             },
+            onDeparture: () => {
+              // 이탈: 현재 캐릭터를 NPC로 복귀 (새 데이터 생성 없음)
+              const current = session.player;
+              current.playable = false;
+              session.playerIdx = -1;
+              // 오토세이브 삭제 (이어하기 방지)
+              localStorage.removeItem('emergent_save_0');
+              sm.pop(); // memory spring 닫기
+              proceedToCharCreate();
+            },
             onRebirth: () => {
               // 천도제: 현재 캐릭터 제거 후 캐릭터 선택
               const current = session.player;
@@ -559,7 +568,11 @@ async function boot() {
 
     sm.replace(createCharacterSelectScreen(
       session.actors,
-      (idx) => { session.playerIdx = idx; showPopulationSelect(() => showBackgroundThenGame()); },
+      (idx) => {
+        session.playerIdx = idx;
+        if (isFirstPlay) session.actors[idx].flags.set('first_run_hako', true);
+        showPopulationSelect(() => showBackgroundThenGame());
+      },
       () => {
         // 탄생
         sm.push(createBirthScreen(session.actors, (idx) => {
