@@ -17,6 +17,7 @@ import { isTimeWindowOpen } from '../../types/game-time';
 import { applyTimeTheme } from '../time-theme';
 import { TRAVEL_OVERLAY_THRESHOLD_MINUTES } from './travel';
 import { advanceTurn, canNotifyRandomEvent } from '../../systems/world-simulation';
+import { SEA_ONLY_LOCATIONS } from '../../systems/ferry';
 import { getVillageRoadMultiplier } from '../../models/village';
 import { getRoadDef } from '../../data/village-defs';
 import { checkAndAwardTitles } from '../../systems/title-system';
@@ -63,7 +64,10 @@ function hasActivities(session: GameSession) {
 function atGuildHall(session: GameSession) { return session.player.currentLocation === 'Guild_Hall'; }
 function atGuild(session: GameSession) { return session.player.currentLocation === 'Guild_Hall' || session.player.currentLocation === 'Guild_Branch'; }
 function atLunaAcademy(session: GameSession) { return session.player.currentLocation === 'Luna_Academy'; }
-function atMartinPort(session: GameSession) { return session.player.currentLocation === 'Martin_Port'; }
+function atFerryPort(session: GameSession) {
+  const loc = session.player.currentLocation;
+  return loc === 'Martin_Port' || SEA_ONLY_LOCATIONS.includes(loc);
+}
 function atVillage(session: GameSession) {
   return session.knowledge.villageState?.locationId === session.player.currentLocation;
 }
@@ -86,7 +90,7 @@ const MAIN_ACTIONS: ActionDef[] = [
   { key: 'j', label: '던전 정보', action: 'guild_dungeon' as GameAction, icon: '🗺', visible: atGuild },
   { key: 'T', label: '푸치 탑', action: 'puchi_tower' as GameAction, icon: '🗼', visible: (session: GameSession) => session.player.currentLocation === 'Puchi_Tower' },
   { key: 'm', label: '기억의 샘', action: 'memory_spring', icon: '💧', visible: atMemorySpring },
-  { key: 'f', label: '배편', action: 'ferry' as GameAction, icon: '⛵', visible: atMartinPort },
+  { key: 'f', label: '배편', action: 'ferry' as GameAction, icon: '⛵', visible: atFerryPort },
   { key: 'v', label: '마을', action: 'village' as GameAction, icon: '🏘', visible: atVillage },
 ];
 

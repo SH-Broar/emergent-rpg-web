@@ -6,11 +6,16 @@ import type { GameSession } from './game-session';
 
 export interface FerryRoute {
   destination: LocationID;
+  /** 출발지. 생략 시 Martin_Port(기본 항구)에서 출발 */
+  fromLocation?: LocationID;
   name: string;          // 노선명 (한국어)
   departureTimes: number[]; // 출발 시각 배열 (0~23 정수)
-  price: number;         // 1회 요금 (골드)
+  price: number;         // 1회 요금 (골드). 0이면 무료
   travelMinutes: number; // 소요 시간 (게임 내 분)
 }
+
+/** 배편으로만 접근 가능한 해상 전용 지역 */
+export const SEA_ONLY_LOCATIONS: LocationID[] = ['Manyu', 'Falcon_Garden', 'Clutch_Landing'];
 
 /** 도보로도 갈 수 있는 노선 — 2시간 간격 상시 운항, 저렴한 요금 */
 const FREQUENT = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22];
@@ -26,6 +31,10 @@ export const FERRY_ROUTES: FerryRoute[] = [
   { destination: 'Manyu',          name: '마뉴 수몰도시행', departureTimes: [7, 19],  price: 35,  travelMinutes: 120 },
   { destination: 'Falcon_Garden',  name: '팔콘 가든행',     departureTimes: [6, 18],  price: 60,  travelMinutes: 360 },
   { destination: 'Clutch_Landing', name: '클러치 외항행',   departureTimes: [0, 12],  price: 90,  travelMinutes: 600 },
+  // ── 마틴 항 복귀 노선 (무료) ────────────────────────────────
+  { fromLocation: 'Manyu',          destination: 'Martin_Port', name: '마틴 항 복귀행', departureTimes: [8, 20],  price: 0, travelMinutes: 120 },
+  { fromLocation: 'Falcon_Garden',  destination: 'Martin_Port', name: '마틴 항 복귀행', departureTimes: [7, 19],  price: 0, travelMinutes: 360 },
+  { fromLocation: 'Clutch_Landing', destination: 'Martin_Port', name: '마틴 항 복귀행', departureTimes: [6, 18],  price: 0, travelMinutes: 600 },
 ];
 
 export const FERRY_PASS_PRICE = 1500;
