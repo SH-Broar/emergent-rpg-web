@@ -12,18 +12,23 @@ export interface FerryRoute {
   travelMinutes: number; // 소요 시간 (게임 내 분)
 }
 
+/** 도보로도 갈 수 있는 노선 — 2시간 간격 상시 운항, 저렴한 요금 */
+const FREQUENT = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22];
+
 export const FERRY_ROUTES: FerryRoute[] = [
-  { destination: 'Kishina',       name: '키시나 해안행',    departureTimes: [8, 14, 20], price: 150,  travelMinutes: 90  },
-  { destination: 'Penta',         name: '펜타 섬행',        departureTimes: [9, 21],     price: 200,  travelMinutes: 150 },
-  { destination: 'Manyu',         name: '마뉴 수몰도시행',  departureTimes: [7, 19],     price: 350,  travelMinutes: 120 },
-  { destination: 'Iluneon',       name: '일루네온행',       departureTimes: [6, 14, 22], price: 400,  travelMinutes: 240 },
-  { destination: 'Alimes',        name: '알리메스행',       departureTimes: [8, 20],     price: 500,  travelMinutes: 300 },
-  { destination: 'Falcon_Garden', name: '팔콘 가든행',      departureTimes: [6, 18],     price: 600,  travelMinutes: 360 },
-  { destination: 'Tacomi',        name: '타코미행',         departureTimes: [10, 22],    price: 750,  travelMinutes: 480 },
-  { destination: 'Clutch_Landing', name: '클러치 외항행',    departureTimes: [0, 12],     price: 900,  travelMinutes: 600 },
+  // ── 도보 가능 노선 (1/20 가격, 상시 운항) ──────────────────
+  { destination: 'Kishina',        name: '키시나 해안행',   departureTimes: FREQUENT, price: 8,   travelMinutes: 90  },
+  { destination: 'Penta',          name: '펜타 섬행',       departureTimes: FREQUENT, price: 10,  travelMinutes: 150 },
+  { destination: 'Iluneon',        name: '일루네온행',      departureTimes: FREQUENT, price: 20,  travelMinutes: 240 },
+  { destination: 'Alimes',         name: '알리메스행',      departureTimes: FREQUENT, price: 25,  travelMinutes: 300 },
+  { destination: 'Tacomi',         name: '타코미행',        departureTimes: FREQUENT, price: 38,  travelMinutes: 480 },
+  // ── 해상 전용 노선 (1/10 가격, 정기 출항) ──────────────────
+  { destination: 'Manyu',          name: '마뉴 수몰도시행', departureTimes: [7, 19],  price: 35,  travelMinutes: 120 },
+  { destination: 'Falcon_Garden',  name: '팔콘 가든행',     departureTimes: [6, 18],  price: 60,  travelMinutes: 360 },
+  { destination: 'Clutch_Landing', name: '클러치 외항행',   departureTimes: [0, 12],  price: 90,  travelMinutes: 600 },
 ];
 
-export const FERRY_PASS_PRICE = 3000;
+export const FERRY_PASS_PRICE = 1500;
 export const FERRY_PASS_DAYS = 30;
 
 /** 현재 시각 기준 다음 출발 시각 계산 (당일 or 익일) */
