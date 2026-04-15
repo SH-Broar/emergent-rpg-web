@@ -17,6 +17,9 @@ import { checkAndAwardTitles } from '../../systems/title-system';
 import { triggerNpcQuestEvent } from '../../data/npc-quest-defs';
 import { iGa, eulReul, eunNeun } from '../../data/josa';
 import { randomFloat, randomInt } from '../../types/rng';
+import { createEquipmentScreen } from './equipment';
+import { createSkillManageScreen } from './skill-manage';
+import { SEA_ONLY_LOCATIONS } from '../../systems/ferry';
 
 type DungeonPhase = 'list' | 'entry' | 'navigate' | 'combat' | 'event' | 'rest' | 'victory' | 'defeat' | 'midBoss' | 'map' | 'giveUpConfirm';
 
@@ -307,12 +310,35 @@ export function createDungeonScreen(
     const dungeon = allDungeons[dungeonIdx];
     if (!dungeon) return;
     selectedDungeon = dungeon;
+    const lastEnteredDay = p.variables.get('dungeon_last_entered_day');
+    if (lastEnteredDay === session.gameTime.day) {
+      showDayLimitMessage(el);
+      return;
+    }
     if (hasHiddenRoute(dungeon)) {
       phase = 'entry';
       renderEntry(el);
       return;
     }
     enterDungeon(dungeon, el);
+  }
+
+  function showDayLimitMessage(el: HTMLElement) {
+    el.innerHTML = '';
+    const wrap = document.createElement('div');
+    wrap.className = 'screen info-screen';
+    wrap.innerHTML = `
+      <button class="btn back-btn" data-back>← 뒤로 [Esc]</button>
+      <h2>입장 불가</h2>
+      <div style="text-align:center;margin:32px 0">
+        <p>오늘은 이미 던전에 입장했습니다.</p>
+        <p style="color:var(--text-dim);margin-top:8px">내일 다시 시도하세요.</p>
+      </div>
+      <button class="btn btn-primary" data-action="back">확인 [Enter]</button>
+    `;
+    wrap.querySelector('[data-back]')?.addEventListener('click', () => { phase = 'list'; renderList(el); });
+    wrap.querySelector('[data-action="back"]')?.addEventListener('click', () => { phase = 'list'; renderList(el); });
+    el.appendChild(wrap);
   }
 
   function renderEntry(el: HTMLElement) {
@@ -365,6 +391,7 @@ export function createDungeonScreen(
       runState.randomSkills = picked;
     }
     session.backlog.add(session.gameTime, `${p.name}${iGa(p.name)} ${dungeon.name}에 입장했다.`, '행동');
+    p.variables.set('dungeon_last_entered_day', session.gameTime.day);
     phase = 'navigate';
     renderNavigate(el);
   }
@@ -476,6 +503,9 @@ export function createDungeonScreen(
         <div class="menu-buttons" style="margin-top:8px;gap:6px">
           <button class="btn" data-action="explore" ${remainingCount === 0 ? 'disabled' : ''}>탐색 (HP -${exploreCost})</button>
           <button class="btn" data-action="map">던전 지도</button>
+          ${!runState.itemBanned ? '<button class="btn" data-action="equip">장비 변경</button>' : ''}
+          ${!runState.itemBanned ? '<button class="btn" data-action="use-item">아이템 사용</button>' : ''}
+          ${!runState.randomSkills ? '<button class="btn" data-action="skill-manage">스킬 변경</button>' : ''}
           <button class="btn" data-action="giveup" style="border-color:var(--accent)">포기</button>
         </div>
         <div style="margin-top:6px;text-align:left">
@@ -493,8 +523,72 @@ export function createDungeonScreen(
     wrap.querySelector('[data-action="advance"]')?.addEventListener('click', () => handleAdvanceStep(el));
     wrap.querySelector('[data-action="explore"]')?.addEventListener('click', () => handleExplore(el));
     wrap.querySelector('[data-action="map"]')?.addEventListener('click', () => { phase = 'map'; renderDungeonMap(el); });
+    wrap.querySelector('[data-action="equip"]')?.addEventListener('click', () => {
+      const screen = createEquipmentScreen(session, () => renderNavigate(el));
+      el.innerHTML = '';
+      screen.render(el);
+    });
+    wrap.querySelector('[data-action="use-item"]')?.addEventListener('click', () => renderDungeonItemUse(el));
+    wrap.querySelector('[data-action="skill-manage"]')?.addEventListener('click', () => {
+      const screen = createSkillManageScreen(session, () => renderNavigate(el));
+      el.innerHTML = '';
+      screen.render(el);
+    });
     wrap.querySelector('[data-action="giveup"]')?.addEventListener('click', () => { phase = 'giveUpConfirm'; renderGiveUpConfirm(el); });
     wrap.querySelector('[data-action="help"]')?.addEventListener('click', () => renderTutorial(el, true));
+
+    el.appendChild(wrap);
+  }
+
+  function renderDungeonItemUse(el: HTMLElement) {
+    el.innerHTML = '';
+    const wrap = document.createElement('div');
+    wrap.className = 'screen info-screen';
+
+    const consumables: Array<{ id: string; name: string; qty: number; eatHp: number; eatMp: number; eatVigor: number }> = [];
+    p.items.forEach((qty, id) => {
+      if (qty <= 0) return;
+      const def = getItemDef(id);
+      if (def && (def.eatHp > 0 || def.eatMp > 0 || def.eatVigor > 0)) {
+        consumables.push({ id, name: def.name, qty, eatHp: def.eatHp, eatMp: def.eatMp, eatVigor: def.eatVigor ?? 0 });
+      }
+    });
+
+    const itemBtns = consumables.length > 0
+      ? consumables.map((item, i) => {
+          const effects = [
+            item.eatHp > 0 ? `HP+${item.eatHp}` : '',
+            item.eatMp > 0 ? `MP+${item.eatMp}` : '',
+            item.eatVigor > 0 ? `TP+${item.eatVigor}` : '',
+          ].filter(Boolean).join(', ');
+          return `<button class="btn" data-item-idx="${i}" style="text-align:left">
+            ${item.name} ×${item.qty} <span style="color:var(--success);font-size:11px">${effects}</span>
+          </button>`;
+        }).join('')
+      : '<p style="color:var(--text-dim);text-align:center">사용 가능한 소비 아이템이 없습니다.</p>';
+
+    wrap.innerHTML = `
+      <button class="btn back-btn" data-back>← 뒤로 [Esc]</button>
+      <h2>아이템 사용</h2>
+      <div style="font-size:12px;color:var(--text-dim);margin:4px 0">
+        HP: ${Math.round(p.base.hp)}/${Math.round(p.getEffectiveMaxHp())} · MP: ${Math.round(p.base.mp)}/${Math.round(p.getEffectiveMaxMp())} · TP: ${p.base.ap}/${p.getEffectiveMaxAp()}
+      </div>
+      <div class="menu-buttons" style="margin-top:12px;flex-direction:column">${itemBtns}</div>
+    `;
+
+    wrap.querySelector('[data-back]')?.addEventListener('click', () => renderNavigate(el));
+    wrap.querySelectorAll<HTMLButtonElement>('[data-item-idx]').forEach((btn, btnIdx) => {
+      btn.addEventListener('click', () => {
+        const item = consumables[btnIdx];
+        if (!item || (p.items.get(item.id) ?? 0) <= 0) return;
+        p.adjustHp(item.eatHp);
+        p.adjustMp(item.eatMp);
+        if (item.eatVigor > 0) p.adjustAp(item.eatVigor);
+        p.removeItemById(item.id, 1);
+        session.backlog.add(session.gameTime, `${item.name}${eulReul(item.name)} 사용했다.`, '행동');
+        renderDungeonItemUse(el);
+      });
+    });
 
     el.appendChild(wrap);
   }
@@ -827,6 +921,28 @@ export function createDungeonScreen(
       </button>`;
     }).join('');
 
+    const combatItems: Array<{ id: string; name: string; qty: number; eatHp: number; eatMp: number }> = [];
+    if (!runState?.itemBanned) {
+      p.items.forEach((qty, id) => {
+        if (qty <= 0) return;
+        const def = getItemDef(id);
+        if (def && (def.eatHp > 0 || def.eatMp > 0)) {
+          combatItems.push({ id, name: def.name, qty, eatHp: def.eatHp, eatMp: def.eatMp });
+        }
+      });
+    }
+
+    const combatItemBtns = combatItems.length > 0
+      ? `<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;padding:4px 0;border-top:1px solid var(--border)">
+          ${combatItems.map((item, i) =>
+            `<button class="btn" data-combat-item="${i}" style="font-size:11px;padding:3px 8px;min-height:unset">
+              ${item.name}×${item.qty}
+              <span style="color:var(--success);font-size:10px">${item.eatHp > 0 ? `HP+${item.eatHp}` : ''}${item.eatMp > 0 ? ` MP+${item.eatMp}` : ''}</span>
+            </button>`
+          ).join('')}
+        </div>`
+      : '';
+
     let delayHtml = '';
     if (ss.preDelayTurns > 0) delayHtml = `<div class="delay-indicator">준비 중... (${ss.preDelayTurns}턴)</div>`;
     else if (ss.postDelayTurns > 0) delayHtml = `<div class="delay-indicator">회복 중... (${ss.postDelayTurns}턴)</div>`;
@@ -901,6 +1017,8 @@ export function createDungeonScreen(
         </button>
       </div>
 
+      ${combatItemBtns}
+
       <div class="tick-bar">
         <div class="tick-bar-fill" style="animation:tick-countdown ${getCombatTickMs(p)}ms linear forwards;animation-delay:-${Date.now() - cs.lastTickTime}ms"></div>
       </div>
@@ -911,6 +1029,18 @@ export function createDungeonScreen(
       btn.addEventListener('click', () => {
         const slot = parseInt(btn.dataset.slot!, 10);
         handleSkillUse(slot, el);
+      });
+    });
+    wrap.querySelectorAll<HTMLButtonElement>('[data-combat-item]').forEach((btn, btnIdx) => {
+      btn.addEventListener('click', () => {
+        const item = combatItems[btnIdx];
+        if (!item || (p.items.get(item.id) ?? 0) <= 0) return;
+        p.adjustHp(item.eatHp);
+        p.adjustMp(item.eatMp);
+        p.items.set(item.id, Math.max(0, (p.items.get(item.id) ?? 1) - 1));
+        if ((p.items.get(item.id) ?? 0) === 0) p.items.delete(item.id);
+        combatState?.combatLog.push(`${item.name} 사용 — HP+${item.eatHp > 0 ? item.eatHp : 0}, MP+${item.eatMp > 0 ? item.eatMp : 0}`);
+        renderCombat(el);
       });
     });
     wrap.querySelector('[data-action="flee"]')?.addEventListener('click', () => handleFlee(el));
@@ -1157,15 +1287,28 @@ export function createDungeonScreen(
   function handleDefeat(el: HTMLElement) {
     if (combatState) stopCombatTimer(combatState);
 
-    p.base.hp = Math.max(1, Math.round(p.getEffectiveMaxHp() * 0.5));
-    const travelMins = session.world.getShortestMinutes(p.currentLocation, p.homeLocation, session.gameTime.day);
-    const recoveryMins = 8 * 60;
-    session.gameTime.advance(travelMins + recoveryMins);
-    p.currentLocation = p.homeLocation;
     p.color.values[7] = Math.min(1, (p.color.values[7] ?? 0.5) + 0.05);
     p.color.values[6] = Math.max(0, (p.color.values[6] ?? 0.5) - 0.03);
 
-    session.backlog.add(session.gameTime, `${p.name}${iGa(p.name)} 쓰러져 자택에서 깨어났다...`, '행동');
+    let defeatMessage: string;
+    let defeatSub: string;
+
+    if (SEA_ONLY_LOCATIONS.includes(p.currentLocation)) {
+      p.base.hp = Math.max(1, Math.round(p.getEffectiveMaxHp() * 0.1));
+      session.gameTime.advance(120);
+      session.backlog.add(session.gameTime, `${p.name}${iGa(p.name)} 던전에서 쓰러졌다가 제자리에서 깨어났다...`, '행동');
+      defeatMessage = '의식이 흐려지고... 눈을 떠보니 여전히 같은 자리였다.';
+      defeatSub = '2시간이 지났다.';
+    } else {
+      p.base.hp = Math.max(1, Math.round(p.getEffectiveMaxHp() * 0.5));
+      const travelMins = session.world.getShortestMinutes(p.currentLocation, p.homeLocation, session.gameTime.day);
+      const recoveryMins = 8 * 60;
+      session.gameTime.advance(travelMins + recoveryMins);
+      p.currentLocation = p.homeLocation;
+      session.backlog.add(session.gameTime, `${p.name}${iGa(p.name)} 쓰러져 자택에서 깨어났다...`, '행동');
+      defeatMessage = '의식이 흐려지고... 눈을 떠보니 자택이었다.';
+      defeatSub = '하루가 지났다.';
+    }
 
     phase = 'defeat';
     el.innerHTML = '';
@@ -1175,8 +1318,8 @@ export function createDungeonScreen(
     wrap.innerHTML = `
       <h2>패배...</h2>
       <div style="text-align:center;margin:16px 0">
-        <p>의식이 흐려지고... 눈을 떠보니 자택이었다.</p>
-        <p style="color:var(--text-dim)">하루가 지났다.</p>
+        <p>${defeatMessage}</p>
+        <p style="color:var(--text-dim)">${defeatSub}</p>
         <p>HP: ${Math.round(p.base.hp)}/${Math.round(p.getEffectiveMaxHp())}</p>
       </div>
       <button class="btn btn-primary" data-action="ok">확인 [Enter]</button>
@@ -1297,8 +1440,12 @@ export function createDungeonScreen(
       <div class="menu-buttons" style="margin-top:12px">
         <button class="btn btn-primary" data-action="rest">1. 휴식하기 (HP+${restRecovery.hp}, MP+${restRecovery.mp})</button>
         <button class="btn" data-action="skip">2. 그냥 지나치기</button>
+        ${p.base.ap >= 1
+          ? `<button class="btn" data-action="tp-rest">3. TP 집중 회복 (TP -1, HP+${Math.round(p.getEffectiveMaxHp() * 0.3)}, MP+${Math.round(p.getEffectiveMaxMp() * 0.3)})</button>`
+          : `<button class="btn" disabled style="opacity:0.45">3. TP 집중 회복 (TP 부족)</button>`
+        }
       </div>
-      <p class="hint">1=휴식, 2=지나침</p>
+      <p class="hint">1=휴식, 2=지나침, 3=TP집중회복</p>
     `;
 
     wrap.querySelector('[data-action="rest"]')?.addEventListener('click', () => {
@@ -1320,6 +1467,20 @@ export function createDungeonScreen(
     });
 
     wrap.querySelector('[data-action="skip"]')?.addEventListener('click', () => {
+      markChoiceCleared();
+      phase = 'navigate';
+      renderNavigate(el);
+    });
+
+    wrap.querySelector('[data-action="tp-rest"]')?.addEventListener('click', () => {
+      if (!selectedDungeon || p.base.ap < 1) return;
+      p.adjustAp(-1);
+      const hpGain = Math.round(p.getEffectiveMaxHp() * 0.3);
+      const mpGain = Math.round(p.getEffectiveMaxMp() * 0.3);
+      p.adjustHp(hpGain);
+      p.adjustMp(mpGain);
+      session.gameTime.advance(10);
+      session.backlog.add(session.gameTime, `${p.name}${iGa(p.name)} TP를 소모해 집중 회복했다. (HP+${hpGain}, MP+${mpGain}, TP-1)`, '행동');
       markChoiceCleared();
       phase = 'navigate';
       renderNavigate(el);
@@ -1431,6 +1592,9 @@ export function createDungeonScreen(
           btn?.click();
         } else if (key === '2') {
           const btn = container.querySelector('[data-action="skip"]') as HTMLButtonElement;
+          btn?.click();
+        } else if (key === '3') {
+          const btn = container.querySelector('[data-action="tp-rest"]') as HTMLButtonElement;
           btn?.click();
         }
       }

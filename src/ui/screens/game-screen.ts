@@ -156,6 +156,11 @@ function getMoveRouteSections(session: GameSession): {
     return { sortedRoutes, dockedHomeRoute: null };
   }
 
+  // 해상 전용 지역은 육로가 없으므로 자택 버튼 표시 안 함
+  if (SEA_ONLY_LOCATIONS.includes(p.currentLocation)) {
+    return { sortedRoutes, dockedHomeRoute: null };
+  }
+
   return {
     sortedRoutes,
     dockedHomeRoute: isLocationOpenNow(session, p.homeLocation)

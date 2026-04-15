@@ -12,6 +12,7 @@ import { tryNpcInitiatedConversation, getDialogue, getRelationshipStage, getActi
 import { checkAndAwardTitles } from './title-system';
 import { getLifeJobModifiers } from './life-job-system';
 import { checkAndUnlockPacks, RDC_PACKS } from '../data/rdc-packs';
+import { SEA_ONLY_LOCATIONS } from './ferry';
 
 function syncPlayerHyperionBonus(session: GameSession): void {
   if (!session.isValid) return;
@@ -415,15 +416,24 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
 
     // HP 0 패배 처리
     if (p.base.hp <= 0) {
-      p.base.hp = Math.max(1, Math.round(p.getEffectiveMaxHp() * 0.5));
-      const travelHome = session.world.getShortestMinutes(p.currentLocation, p.homeLocation, session.gameTime.day);
-      const recoveryMinutes = 8 * 60; // 8시간 회복
-      session.gameTime.advance(travelHome + recoveryMinutes);
-      p.currentLocation = p.homeLocation;
-      const defeatMsg = '쓰러졌다... 눈을 떠보니 자택이었다.';
-      session.backlog.add(session.gameTime, `${p.name}이(가) 쓰러져 자택에서 깨어났다...`, '행동');
-      result.messages.push(defeatMsg);
-      result.screenChange = 'home';
+      if (SEA_ONLY_LOCATIONS.includes(p.currentLocation)) {
+        // 해상 전용 지역: 그 자리에서 쓰러짐, 소량 회복, 자택으로 이동 불가
+        p.base.hp = Math.max(1, Math.round(p.getEffectiveMaxHp() * 0.1));
+        session.gameTime.advance(120); // 2시간 경과
+        const defeatMsg = '쓰러졌다... 정신을 차려보니 여전히 같은 자리였다.';
+        session.backlog.add(session.gameTime, `${p.name}이(가) 쓰러졌다가 제자리에서 깨어났다...`, '행동');
+        result.messages.push(defeatMsg);
+      } else {
+        p.base.hp = Math.max(1, Math.round(p.getEffectiveMaxHp() * 0.5));
+        const travelHome = session.world.getShortestMinutes(p.currentLocation, p.homeLocation, session.gameTime.day);
+        const recoveryMinutes = 8 * 60; // 8시간 회복
+        session.gameTime.advance(travelHome + recoveryMinutes);
+        p.currentLocation = p.homeLocation;
+        const defeatMsg = '쓰러졌다... 눈을 떠보니 자택이었다.';
+        session.backlog.add(session.gameTime, `${p.name}이(가) 쓰러져 자택에서 깨어났다...`, '행동');
+        result.messages.push(defeatMsg);
+        result.screenChange = 'home';
+      }
       return result;
     }
 
