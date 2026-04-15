@@ -1121,7 +1121,7 @@ export function createDungeonScreen(
     const isBoss = isBossFight;
     const isMidBoss = isMidBossFight;
     const baseExpGain = (isBoss || isMidBoss) ? 50 + selectedDungeon.difficulty * 30 : 20 + selectedDungeon.difficulty * 10;
-    const baseGoldGain = (isBoss || isMidBoss) ? 30 + selectedDungeon.difficulty * 20 : 10 + selectedDungeon.difficulty * 5;
+    const baseGoldGain = (isBoss || isMidBoss) ? 15 + selectedDungeon.difficulty * 285 : 5 + selectedDungeon.difficulty * 145;
     const prevProgress = p.getDungeonProgress(selectedDungeon.id);
     let expGain = baseExpGain;
     let goldGain = baseGoldGain;

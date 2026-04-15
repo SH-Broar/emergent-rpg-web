@@ -73,8 +73,8 @@ description = 일루네온 중심부의 상징인 거대한 시계탑. 평소에
 x = 120
 y = 120
 links = Iluneon_Square
-monsterLevel = 0
-dangerLevel = 0.0
+monsterLevel = 11
+dangerLevel = 0.55
 timeVisible = hourly:0:5
 
 # ============================================================
@@ -128,8 +128,8 @@ x = 1300
 y = -800
 links = Hanabridge
 resources = MonsterLoot:5
-monsterLevel = 4
-dangerLevel = 0.35
+monsterLevel = 10
+dangerLevel = 0.5
 
 [Arcadia]
 name = 아르카디아
@@ -152,8 +152,8 @@ x = 0
 y = 2200
 links = Iluneon_Square, Navrit:12, Yusejeria:16, Ode_Slope:12
 resources = Herb:15, Food:20
-monsterLevel = 1
-dangerLevel = 0.1
+monsterLevel = 4
+dangerLevel = 0.2
 gather_env = 풀밭, 바람 속, 언덕 너머
 
 [Riagralta_Deep]
@@ -163,8 +163,8 @@ x = 260
 y = 2640
 links_one_way = Riagralta
 resources = OreCommon:12, OreRare:4, MonsterLoot:12
-monsterLevel = 7
-dangerLevel = 0.62
+monsterLevel = 12
+dangerLevel = 0.6
 hidden = 1
 
 [Ode_Slope]
@@ -184,8 +184,8 @@ x = 800
 y = 3300
 links = Riagralta, Enicham:12
 resources = OreCommon:15, OreRare:3
-monsterLevel = 3
-dangerLevel = 0.3
+monsterLevel = 11
+dangerLevel = 0.55
 
 [Clocktower_Observatory]
 name = 시계탑 관측실
@@ -230,8 +230,8 @@ x = 920
 y = 3520
 links_one_way = Navrit
 resources = OreRare:4, OreCommon:8
-monsterLevel = 5
-dangerLevel = 0.45
+monsterLevel = 12
+dangerLevel = 0.6
 hidden = 1
 
 # ============================================================
@@ -245,8 +245,8 @@ x = 2200
 y = 0
 links = Iluneon_Square:12, World_Tree, Moss:10
 resources = Herb:30, Food:15
-monsterLevel = 2
-dangerLevel = 0.2
+monsterLevel = 3
+dangerLevel = 0.15
 gather_env = 나무뿌리 사이, 낙엽 더미, 이끼 낀 바닥
 
 [Caliburn_House]
@@ -267,8 +267,8 @@ x = 2700
 y = 500
 links = Lar_Forest
 resources = Herb:40, Food:20
-monsterLevel = 0
-dangerLevel = 0.0
+monsterLevel = 15
+dangerLevel = 0.75
 gather_env = 뿌리 사이, 가지 위, 수피 틈
 
 # ============================================================
@@ -324,8 +324,8 @@ x = 3200
 y = 3000
 links = Moss:12
 resources = OreRare:8, MonsterLoot:10
-monsterLevel = 7
-dangerLevel = 0.7
+monsterLevel = 12
+dangerLevel = 0.6
 
 # ============================================================
 # 대절곡 이북 — 타코미, 에니챰, 허공 숲
@@ -348,8 +348,8 @@ x = -2600
 y = 2200
 links = Grand_Crack_Abyss:8, Enicham:10
 resources = Herb:20, OreRare:2
-monsterLevel = 4
-dangerLevel = 0.4
+monsterLevel = 11
+dangerLevel = 0.55
 
 [Enicham]
 name = 에니챰 발전소
@@ -358,8 +358,8 @@ x = -2400
 y = 3400
 links = Void_Forest, Tacomi:6, Navrit:12, Windfall_Valley:8
 resources = OreCommon:20, Equipment:5
-monsterLevel = 3
-dangerLevel = 0.2
+monsterLevel = 10
+dangerLevel = 0.5
 
 [Tacomi]
 name = 타코미
@@ -379,8 +379,8 @@ x = -2100
 y = 4500
 links = Tacomi, Hologram_Field
 resources = Food:10, Equipment:2
-monsterLevel = 0
-dangerLevel = 0.05
+monsterLevel = 6
+dangerLevel = 0.3
 timeVisible = 18:6
 
 [Kazed]
@@ -399,8 +399,8 @@ description = 나이트 타코미 외곽에 펼쳐진 환상의 공간. 타코�
 x = -1650
 y = 5000
 links = Night_Tacomi
-monsterLevel = 4
-dangerLevel = 0.3
+monsterLevel = 9
+dangerLevel = 0.45
 
 [Bloom_Terrace]
 name = 꽃피는 테라스
@@ -454,8 +454,8 @@ x = -2680
 y = 2380
 links_one_way = Void_Forest
 resources = Herb:18, Potion:5
-monsterLevel = 0
-dangerLevel = 0.10
+monsterLevel = 14
+dangerLevel = 0.7
 gather_env = 수관 위, 이파리 사이, 바람길
 hidden = 1
 
@@ -480,8 +480,8 @@ x = -1288
 y = 4812
 links = Luna_Academy:1
 resources = Potion:10, Herb:10
-monsterLevel = 0
-dangerLevel = 0.0
+monsterLevel = 4
+dangerLevel = 0.2
 
 [Phantom_Spire]
 name = 환영의 첨탑
@@ -490,7 +490,7 @@ x = -800
 y = 5100
 links = Luna_Academy
 resources = OreRare:3, Potion:5
-monsterLevel = 6
+monsterLevel = 11
 dangerLevel = 0.55
 
 [Luna_Underground_Library]
@@ -511,8 +511,8 @@ x = -760
 y = 5220
 links_one_way = Phantom_Spire
 resources = OreRare:4, Potion:4
-monsterLevel = 0
-dangerLevel = 0.12
+monsterLevel = 14
+dangerLevel = 0.7
 hidden = 1
 
 # ============================================================
@@ -546,8 +546,8 @@ x = -1500
 y = -3400
 links = Martin_Port:6, Stella_Ville:10
 resources = Food:20
-monsterLevel = 0
-dangerLevel = 0.05
+monsterLevel = 2
+dangerLevel = 0.1
 
 [Manyu]
 name = 마뉴 수몰도시
@@ -555,7 +555,7 @@ description = 바다 아래에 가라앉은 고대 도시. 특수한 마법 장�
 x = 600
 y = -3300
 resources = OreRare:5, Equipment:3
-monsterLevel = 5
+monsterLevel = 12
 dangerLevel = 0.6
 
 [Halpia]
@@ -565,8 +565,8 @@ x = 4050
 y = -3320
 links = Falcon_Garden:10, Riel_Sky:10, Halpia_Garden
 resources = Herb:15, Food:10
-monsterLevel = 2
-dangerLevel = 0.1
+monsterLevel = 7
+dangerLevel = 0.35
 
 [Halpia_Garden]
 name = 하르피아의 정원
@@ -585,8 +585,8 @@ x = 1600
 y = -2400
 links = Halpia:10
 resources = Equipment:5, OreRare:3
-monsterLevel = 6
-dangerLevel = 0.5
+monsterLevel = 16
+dangerLevel = 0.8
 
 [Penta]
 name = 펜타 섬
@@ -595,8 +595,8 @@ x = 1800
 y = -3500
 links = Martin_Port:10, Kishina:12
 resources = Food:20, Herb:10
-monsterLevel = 1
-dangerLevel = 0.05
+monsterLevel = 6
+dangerLevel = 0.3
 
 # ============================================================
 # 팔콘 가든 + 버그의 바다 — 남쪽 바다
@@ -609,8 +609,8 @@ x = 3500
 y = -3800
 links = Halpia:10, Bug_Sea:24
 resources = MonsterLoot:15, OreRare:5
-monsterLevel = 7
-dangerLevel = 0.7
+monsterLevel = 16
+dangerLevel = 0.8
 gather_env = 바위 틈, 물가, 파도 아래
 
 [Bug_Sea]
@@ -620,7 +620,7 @@ x = 2500
 y = -4500
 links = Falcon_Garden:24
 resources = MonsterLoot:20, OreRare:10
-monsterLevel = 10
+monsterLevel = 19
 dangerLevel = 0.95
 
 # ============================================================
@@ -664,8 +664,8 @@ x = 5600
 y = -400
 links = Manonickla
 resources = OreRare:5, Herb:10
-monsterLevel = 3
-dangerLevel = 0.3
+monsterLevel = 16
+dangerLevel = 0.8
 gather_env = 폐허 돌 사이, 이끼 낀 벽, 무너진 기둥 아래
 
 [Old_Eas]
@@ -675,8 +675,8 @@ x = 5200
 y = -1300
 links = Manonickla
 resources = Herb:15
-monsterLevel = 2
-dangerLevel = 0.2
+monsterLevel = 10
+dangerLevel = 0.5
 
 [Clutch_Landing]
 name = 클러치 외항
@@ -694,8 +694,8 @@ x = 4500
 y = -1000
 links = Manonickla
 resources = OreCommon:10
-monsterLevel = 3
-dangerLevel = 0.3
+monsterLevel = 8
+dangerLevel = 0.4
 
 [Sand_Dunes]
 name = 사구지대
@@ -704,8 +704,8 @@ x = 5100
 y = -1400
 links = Manonickla
 resources = OreCommon:5
-monsterLevel = 2
-dangerLevel = 0.2
+monsterLevel = 11
+dangerLevel = 0.55
 
 [Manonickla_Tavern]
 name = 석양 주막
@@ -724,8 +724,8 @@ x = 5720
 y = -320
 links_one_way = Limun_Ruins
 resources = OreRare:5, Potion:4
-monsterLevel = 4
-dangerLevel = 0.35
+monsterLevel = 18
+dangerLevel = 0.9
 hidden = 1
 
 [Sand_Dunes_Oasis]
@@ -735,8 +735,8 @@ x = 5020
 y = -1560
 links_one_way = Sand_Dunes
 resources = Herb:12, Food:10, Potion:3
-monsterLevel = 0
-dangerLevel = 0.0
+monsterLevel = 11
+dangerLevel = 0.55
 gather_env = 샘물가, 야자나무 아래, 모래 틈
 hidden = 1
 
@@ -747,8 +747,8 @@ x = 4420
 y = -1140
 links_one_way = Clutch_Gorge
 resources = OreRare:4, OreCommon:10, MonsterLoot:8
-monsterLevel = 5
-dangerLevel = 0.50
+monsterLevel = 10
+dangerLevel = 0.5
 hidden = 1
 
 # ============================================================
@@ -762,8 +762,8 @@ x = -800
 y = 4000
 links = Riagralta:16, Uppio_Swamp:8, Demon_Castle:14, Ikar:12
 resources = Herb:10, OreRare:3
-monsterLevel = 6
-dangerLevel = 0.6
+monsterLevel = 18
+dangerLevel = 0.9
 
 [Uppio_Swamp]
 name = 우피오 늪
@@ -772,8 +772,8 @@ x = -1400
 y = 4800
 links = Yusejeria:8
 resources = Food:30, Herb:20
-monsterLevel = 0
-dangerLevel = 0.01
+monsterLevel = 4
+dangerLevel = 0.2
 
 [Demon_Castle]
 name = 마왕성
@@ -782,8 +782,8 @@ x = -1600
 y = 3500
 links = Forbidden_Corridor, Yusejeria:14
 resources = MonsterLoot:10
-monsterLevel = 8
-dangerLevel = 0.7
+monsterLevel = 16
+dangerLevel = 0.8
 
 [Forbidden_Corridor]
 name = 금지된 회랑
@@ -823,8 +823,8 @@ x = -2500
 y = -3200
 links = Puchi_Tower:8, Kishina:10
 resources = Herb:15, OreRare:2
-monsterLevel = 3
-dangerLevel = 0.25
+monsterLevel = 7
+dangerLevel = 0.35
 
 [Haratikus]
 name = 하라티쿠스 폐허
@@ -833,8 +833,8 @@ x = -4500
 y = -4200
 links = Puchi_Tower:16
 resources = OreRare:5, Equipment:3
-monsterLevel = 7
-dangerLevel = 0.7
+monsterLevel = 18
+dangerLevel = 0.9
 
 [Ikar]
 name = 이카르
@@ -843,8 +843,8 @@ x = 1500
 y = 3800
 links = Yusejeria:12
 resources = OreRare:3
-monsterLevel = 7
-dangerLevel = 0.65
+monsterLevel = 14
+dangerLevel = 0.7
 
 [Windfall_Valley]
 name = 풍혈지대
@@ -853,8 +853,8 @@ x = -600
 y = 1200
 links = Enicham:8, Riagralta:12
 resources = Herb:10
-monsterLevel = 3
-dangerLevel = 0.25
+monsterLevel = 6
+dangerLevel = 0.3
 gather_env = 바람길, 계곡 바닥, 풍혈 입구
 
 # ============================================================
