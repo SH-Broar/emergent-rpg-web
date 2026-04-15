@@ -220,7 +220,7 @@ export function initActors(sections: DataSection[]): Actor[] {
     const inv = s.get('inventory', '');
     if (inv) {
       for (const pair of parsePairList(inv)) {
-        actor.spirit.inventory.set(parseItemType(pair[0]), parseInt(pair[1], 10) || 0);
+        actor.addItem(parseItemType(pair[0]), parseInt(pair[1], 10) || 0);
       }
     }
 
@@ -355,9 +355,14 @@ export function initDungeonSystem(
       attack: s.getInt('attack', 10),
       defense: s.getInt('defense', 5),
       hp: s.getInt('hp', 30),
-      lootTable: parseLootList(s.get('loot', '')).map(l => ({
-        item: parseItemType(l.item), amount: l.amount, chance: l.chance,
-      })),
+      lootTable: [
+        ...parseLootList(s.get('loot', '')).map(l => ({
+          item: parseItemType(l.item), amount: l.amount, chance: l.chance,
+        })),
+        ...parseLootList(s.get('lootItems', '')).map(l => ({
+          item: 0 as ItemType, amount: l.amount, chance: l.chance, itemId: l.item,
+        })),
+      ],
       skills,
       skillChance: s.getFloat('skillChance', 0),
       openingAttackMultiplier: openingMul > 0 ? openingMul : undefined,

@@ -4657,3 +4657,4239 @@ eatMessage = 타오르는 듯한 알코올이 목을 타고 내려가며, 세상
 mealBuffAtk = 35
 mealBuffDef = -20
 mealCombatSpeed = 5.0
+
+# ============================================================
+# CATEGORY GENERIC — 카테고리 대응 범용 아이템 (8개)
+# 기존 카테고리형 인벤토리(spirit.inventory) 통합용
+# ============================================================
+
+[cat_food]
+name = 음식
+category = Food
+price = 5
+tags = /edible/organic/generic/
+description = 일반적인 식량. 허기를 달래기에 충분하다.
+rarity = common
+eatVigor = 5
+eatHp = 5
+eatMp = 0
+eatMood = 0.02
+eatMessage = 평범하지만 든든한 한 끼를 먹었다.
+
+[cat_herb]
+name = 약초
+category = Herb
+price = 8
+tags = /organic/herb/generic/
+description = 일반적인 약초. 다양한 용도로 사용된다.
+rarity = common
+
+[cat_ore_common]
+name = 일반 광석
+category = OreCommon
+price = 15
+tags = /ore/mineral/generic/
+description = 흔히 볼 수 있는 광석. 제련하면 다양한 재료로 쓸 수 있다.
+rarity = common
+
+[cat_ore_rare]
+name = 희귀 광석
+category = OreRare
+price = 80
+tags = /ore/mineral/rare/generic/
+description = 좀처럼 발견하기 어려운 귀한 광석.
+rarity = uncommon
+
+[cat_monster_loot]
+name = 몬스터 전리품
+category = MonsterLoot
+price = 30
+tags = /loot/monster/generic/
+description = 몬스터에게서 얻은 전리품.
+rarity = common
+
+[cat_potion]
+name = 물약
+category = Potion
+price = 20
+tags = /liquid/potion/generic/
+description = 기본적인 물약. 마시면 체력이 조금 회복된다.
+rarity = common
+eatVigor = 0
+eatHp = 15
+eatMp = 5
+eatMood = 0.01
+eatMessage = 물약의 쌉쌀한 맛이 입안을 감싼다.
+
+[cat_equipment]
+name = 장비
+category = Equipment
+price = 100
+tags = /equipment/generic/
+description = 평범한 장비 소재. 장인에게 가져가면 무언가를 만들 수 있을지도.
+rarity = common
+
+[cat_guild_card]
+name = 길드 카드
+category = GuildCard
+price = 50
+tags = /special/guild/generic/
+description = 길드에서 발급한 인증 카드.
+rarity = common
+
+; ============================================================
+; Monster Drop Items — 몬스터 전리품 (자동 생성)
+; ============================================================
+
+; --- Abyss_Crawler ---
+[crawler_shadow]
+name = 심연 그림자편
+category = MonsterLoot
+price = 58
+rarity = uncommon
+description = 심연을 기어다니던 그림자의 조각.
+source = monster:Abyss_Crawler
+
+
+; --- Abyss_Knight ---
+[abyss_sword]
+name = 심연검 파편
+category = MonsterLoot
+price = 135
+rarity = rare
+description = 심연에서 담금질된 검의 파편.
+source = monster:Abyss_Knight
+
+
+; --- Abyssal_Lord ---
+[abyss_horn]
+name = 심연 왕관편
+category = MonsterLoot
+price = 24
+rarity = common
+description = 군주의 왕관에서 떨어진 파편.
+source = monster:Abyssal_Lord
+
+[abyss_robe]
+name = 심연의 포편
+category = MonsterLoot
+price = 55
+rarity = uncommon
+description = 어둠 자체로 짜인 천 조각.
+source = monster:Abyssal_Lord
+
+[abyss_eye]
+name = 심연의 눈동자
+category = MonsterLoot
+price = 120
+rarity = rare
+description = 모든 것을 꿰뚫어 보는 듯한 보석.
+source = monster:Abyssal_Lord
+
+
+; --- Abyssal_Shade ---
+[shade_ink]
+name = 심연 먹물
+category = MonsterLoot
+price = 18
+rarity = common
+description = 어둠 자체처럼 짙은 검은 액체.
+source = monster:Abyssal_Shade
+
+[shade_veil]
+name = 심연 베일 조각
+category = MonsterLoot
+price = 42
+rarity = uncommon
+description = 빛조차 삼키는 천 파편.
+source = monster:Abyssal_Shade
+
+
+; --- Aerial_Jellyfish ---
+[jelly_tentacle]
+name = 공중 해파리 촉수
+category = MonsterLoot
+price = 14
+rarity = common
+description = 공중에 떠다니는 반투명 촉수.
+source = monster:Aerial_Jellyfish
+
+[jelly_bell]
+name = 해파리 갓
+category = MonsterLoot
+price = 32
+rarity = uncommon
+description = 빛을 투과하는 아름다운 갓.
+source = monster:Aerial_Jellyfish
+
+
+; --- Aerial_Sentinel ---
+[aerial_bolt]
+name = 공중 파수꾼 볼트
+category = MonsterLoot
+price = 20
+rarity = common
+description = 하늘을 감시하던 장치의 부품.
+source = monster:Aerial_Sentinel
+
+[aerial_lens]
+name = 공중 감시 렌즈
+category = MonsterLoot
+price = 44
+rarity = uncommon
+description = 하늘 전체를 조망하는 렌즈.
+source = monster:Aerial_Sentinel
+
+
+; --- Ancient_Automaton ---
+[ancient_gear]
+name = 고대 톱니
+category = MonsterLoot
+price = 30
+rarity = common
+description = 현대 기술로도 복제 불가한 정밀 톱니.
+source = monster:Ancient_Automaton
+
+[ancient_circuit]
+name = 고대 회로
+category = MonsterLoot
+price = 65
+rarity = uncommon
+description = 해독 불능의 고대 기술 결정.
+source = monster:Ancient_Automaton
+
+
+; --- Ancient_Bell_Spirit ---
+[bell_resonance]
+name = 종령 잔향
+category = MonsterLoot
+price = 14
+rarity = common
+description = 오래된 종소리가 응축된 파편.
+source = monster:Ancient_Bell_Spirit
+
+[bell_spirit_shard]
+name = 종령 혼편
+category = MonsterLoot
+price = 32
+rarity = uncommon
+description = 고분의 기운이 서린 영적 파편.
+source = monster:Ancient_Bell_Spirit
+
+
+; --- Ancient_Guardian ---
+[guardian_halo]
+name = 수호신 광륜편
+category = MonsterLoot
+price = 145
+rarity = rare
+description = 고대 수호신의 후광 파편.
+source = monster:Ancient_Guardian
+
+
+; --- Ancient_Leviathan ---
+[leviathan_scale]
+name = 레비아탄 비늘
+category = MonsterLoot
+price = 24
+rarity = common
+description = 고대 바다 괴물의 거대한 비늘.
+source = monster:Ancient_Leviathan
+
+[leviathan_tooth]
+name = 레비아탄 이빨
+category = MonsterLoot
+price = 55
+rarity = uncommon
+description = 배를 부수던 어금니의 파편.
+source = monster:Ancient_Leviathan
+
+[leviathan_heart]
+name = 심해의 심장
+category = MonsterLoot
+price = 120
+rarity = rare
+description = 태고의 바다 힘이 응축된 보석.
+source = monster:Ancient_Leviathan
+
+
+; --- Ancient_Ram ---
+[ancient_horn]
+name = 고벽 양뿔
+category = MonsterLoot
+price = 24
+rarity = common
+description = 천년 풍화를 견딘 거대한 뿔.
+source = monster:Ancient_Ram
+
+[ancient_fleece]
+name = 고벽 양모
+category = MonsterLoot
+price = 52
+rarity = uncommon
+description = 바위이끼가 엉킨 오래된 양모.
+source = monster:Ancient_Ram
+
+
+; --- Ancient_Treant ---
+[ancient_bark]
+name = 고목 수피
+category = MonsterLoot
+price = 24
+rarity = common
+description = 수천 년 된 나무의 신성한 껍질.
+source = monster:Ancient_Treant
+
+[ancient_sap]
+name = 고목 수액
+category = MonsterLoot
+price = 54
+rarity = uncommon
+description = 시간의 무게가 담긴 황금빛 수액.
+source = monster:Ancient_Treant
+
+
+; --- Arc_Beetle ---
+[arc_shell]
+name = 아크 딱지
+category = MonsterLoot
+price = 14
+rarity = common
+description = 전기가 흐르는 딱정벌레 껍질.
+source = monster:Arc_Beetle
+
+[arc_horn]
+name = 아크 뿔
+category = MonsterLoot
+price = 32
+rarity = uncommon
+description = 방전이 일어나는 뿔.
+source = monster:Arc_Beetle
+
+
+; --- Astral_Knight ---
+[astral_plate]
+name = 성계 갑편
+category = MonsterLoot
+price = 16
+rarity = common
+description = 별빛으로 단조된 갑옷 조각.
+source = monster:Astral_Knight
+
+[astral_sword_shard]
+name = 성계 검편
+category = MonsterLoot
+price = 38
+rarity = uncommon
+description = 별의 기운이 서린 검 파편.
+source = monster:Astral_Knight
+
+
+; --- Bagreat_Giant ---
+[giant_stone]
+name = 거암인 돌주먹
+category = MonsterLoot
+price = 22
+rarity = common
+description = 거인이 던지던 주먹만 한 바위.
+source = monster:Bagreat_Giant
+
+[giant_belt]
+name = 거암인 허리띠
+category = MonsterLoot
+price = 50
+rarity = uncommon
+description = 거대한 가죽 끈과 쇠장식 파편.
+source = monster:Bagreat_Giant
+
+[giant_eye_gem]
+name = 거암인 눈보석
+category = MonsterLoot
+price = 95
+rarity = rare
+description = 험준한 산의 기운이 응축된 보석.
+source = monster:Bagreat_Giant
+
+
+; --- Bandit_Leader ---
+[bandit_insignia]
+name = 산적 두목 문장
+category = MonsterLoot
+price = 18
+rarity = common
+description = 놋쇠로 만든 산적 두목의 표식.
+source = monster:Bandit_Leader
+
+[bandit_locket]
+name = 두목의 로켓
+category = MonsterLoot
+price = 40
+rarity = uncommon
+description = 열리지 않는 작은 목걸이 펜던트.
+source = monster:Bandit_Leader
+
+[bandit_treasure_key]
+name = 보물상자 열쇠
+category = MonsterLoot
+price = 80
+rarity = rare
+description = 두목이 숨겨둔 보물의 열쇠인 것 같다.
+source = monster:Bandit_Leader
+
+
+; --- Bandit_Mage ---
+[bandit_scroll]
+name = 산적 주문서 조각
+category = MonsterLoot
+price = 15
+rarity = common
+description = 반쯤 타버린 주문서 귀퉁이.
+source = monster:Bandit_Mage
+
+[bandit_catalyst]
+name = 산적 촉매석
+category = MonsterLoot
+price = 35
+rarity = uncommon
+description = 조잡하지만 마력이 깃든 돌.
+source = monster:Bandit_Mage
+
+
+; --- Bandit_Scout ---
+[bandit_dagger]
+name = 산적 단검 조각
+category = MonsterLoot
+price = 12
+rarity = common
+description = 망가진 단검의 칼날. 재련하면 쓸 수 있다.
+source = monster:Bandit_Scout
+
+[bandit_map]
+name = 산적 메모 쪽지
+category = MonsterLoot
+price = 22
+rarity = uncommon
+description = 알아보기 힘든 글씨의 산적 지도 조각.
+source = monster:Bandit_Scout
+
+
+; --- Bandit_Warrior ---
+[bandit_buckle]
+name = 산적 벨트 버클
+category = MonsterLoot
+price = 14
+rarity = common
+description = 무거운 쇠 버클. 재활용할 수 있다.
+source = monster:Bandit_Warrior
+
+[bandit_whetstone]
+name = 산적 숫돌
+category = MonsterLoot
+price = 28
+rarity = uncommon
+description = 여러 번 쓴 흔적이 있는 숫돌.
+source = monster:Bandit_Warrior
+
+
+; --- Beat_Drone ---
+[drone_speaker]
+name = 드론 스피커편
+category = MonsterLoot
+price = 14
+rarity = common
+description = 비트를 토해내던 소형 스피커 조각.
+source = monster:Beat_Drone
+
+[drone_beat_chip]
+name = 비트 칩
+category = MonsterLoot
+price = 32
+rarity = uncommon
+description = 리듬이 각인된 전자 칩.
+source = monster:Beat_Drone
+
+
+; --- Bell_Keeper ---
+[bell_gear]
+name = 종각 톱니
+category = MonsterLoot
+price = 16
+rarity = common
+description = 시계탑 종을 울리던 정밀 톱니.
+source = monster:Bell_Keeper
+
+[bell_chime]
+name = 종각 음편
+category = MonsterLoot
+price = 36
+rarity = uncommon
+description = 종소리가 응축된 금속 조각.
+source = monster:Bell_Keeper
+
+
+; --- Blizzard_Hound ---
+[blizzard_fang]
+name = 눈보라 이빨
+category = MonsterLoot
+price = 26
+rarity = common
+description = 영하 50도의 한기가 서린 이빨.
+source = monster:Blizzard_Hound
+
+[blizzard_fur]
+name = 눈보라 갈기
+category = MonsterLoot
+price = 55
+rarity = uncommon
+description = 폭설 속에서도 빛나는 은백 갈기.
+source = monster:Blizzard_Hound
+
+
+; --- Blizzard_Stag ---
+[blizzard_antler]
+name = 설풍 뿔가지
+category = MonsterLoot
+price = 20
+rarity = common
+description = 눈보라를 부르는 듯한 거대한 뿔.
+source = monster:Blizzard_Stag
+
+[blizzard_hide]
+name = 설풍 가죽
+category = MonsterLoot
+price = 44
+rarity = uncommon
+description = 한파에도 끄떡없는 사슴 가죽.
+source = monster:Blizzard_Stag
+
+
+; --- Blossom_Bear ---
+[bear_claw]
+name = 낙화곰 발톱
+category = MonsterLoot
+price = 14
+rarity = common
+description = 꽃잎 향이 배인 거대한 발톱.
+source = monster:Blossom_Bear
+
+[bear_fur_tuft]
+name = 낙화곰 꽃갈기
+category = MonsterLoot
+price = 34
+rarity = uncommon
+description = 꽃잎이 엉킨 곰의 갈기 뭉치.
+source = monster:Blossom_Bear
+
+
+; --- Blueback_Lurker ---
+[lurker_fin]
+name = 잠복자 지느러미
+category = MonsterLoot
+price = 10
+rarity = common
+description = 푸른빛 도는 등지느러미 조각.
+source = monster:Blueback_Lurker
+
+[lurker_scale]
+name = 잠복자 비늘
+category = MonsterLoot
+price = 24
+rarity = uncommon
+description = 매복에 적합한 보호색 비늘.
+source = monster:Blueback_Lurker
+
+
+; --- Bog_Leech ---
+[leech_blood]
+name = 거머리 피
+category = MonsterLoot
+price = 8
+rarity = common
+description = 영양이 풍부한 거머리의 흡혈액.
+source = monster:Bog_Leech
+
+[leech_sucker]
+name = 거머리 흡반
+category = MonsterLoot
+price = 20
+rarity = uncommon
+description = 무엇이든 달라붙는 흡반.
+source = monster:Bog_Leech
+
+
+; --- Boulder_Troll ---
+[troll_tooth]
+name = 트롤 이빨
+category = MonsterLoot
+price = 16
+rarity = common
+description = 바위처럼 단단한 트롤의 이빨.
+source = monster:Boulder_Troll
+
+[troll_hide]
+name = 트롤 가죽
+category = MonsterLoot
+price = 38
+rarity = uncommon
+description = 웬만한 공격엔 끄떡없는 가죽.
+source = monster:Boulder_Troll
+
+
+; --- Caldera_Drake ---
+[caldera_scale]
+name = 칼데라 비늘
+category = MonsterLoot
+price = 22
+rarity = common
+description = 화구에서 단련된 검붉은 비늘.
+source = monster:Caldera_Drake
+
+[caldera_fang]
+name = 칼데라 이빨
+category = MonsterLoot
+price = 50
+rarity = uncommon
+description = 용암을 씹어먹는 거대한 이빨.
+source = monster:Caldera_Drake
+
+[caldera_heart]
+name = 화산의 심장
+category = MonsterLoot
+price = 100
+rarity = rare
+description = 화산의 분노가 응축된 보석.
+source = monster:Caldera_Drake
+
+
+; --- Canopy_Colossus ---
+[colossus_bark]
+name = 거신 수피
+category = MonsterLoot
+price = 24
+rarity = common
+description = 하늘을 받치는 거대한 나무 껍질.
+source = monster:Canopy_Colossus
+
+[colossus_branch]
+name = 거신 가지
+category = MonsterLoot
+price = 52
+rarity = uncommon
+description = 산 위의 산처럼 거대한 가지 조각.
+source = monster:Canopy_Colossus
+
+[colossus_heart]
+name = 수관 심목
+category = MonsterLoot
+price = 105
+rarity = rare
+description = 허공 숲의 심장부 목재.
+source = monster:Canopy_Colossus
+
+
+; --- Canyon_Harpy ---
+[harpy_feather]
+name = 하피 깃털
+category = MonsterLoot
+price = 17
+rarity = common
+description = 절벽 바람을 가르는 날카로운 깃.
+source = monster:Canyon_Harpy
+
+[harpy_claw]
+name = 하피 발톱
+category = MonsterLoot
+price = 38
+rarity = uncommon
+description = 사냥감을 놓치지 않는 갈고리 발톱.
+source = monster:Canyon_Harpy
+
+
+; --- Castle_Footsoldier ---
+[demon_plate]
+name = 성문 갑편
+category = MonsterLoot
+price = 22
+rarity = common
+description = 마왕성 병사의 검은 갑옷 조각.
+source = monster:Castle_Footsoldier
+
+[demon_sword_shard]
+name = 병사 검 파편
+category = MonsterLoot
+price = 48
+rarity = uncommon
+description = 어둠에 물든 검날 조각.
+source = monster:Castle_Footsoldier
+
+
+; --- Cave_Bat ---
+[bat_membrane]
+name = 박쥐 날개막
+category = MonsterLoot
+price = 7
+rarity = common
+description = 얇지만 질긴 날개 조각. 가죽 세공에 쓰인다.
+source = monster:Cave_Bat
+
+[bat_fang]
+name = 박쥐 송곳니
+category = MonsterLoot
+price = 18
+rarity = uncommon
+description = 작지만 날카로운 이빨. 바늘 재료가 된다.
+source = monster:Cave_Bat
+
+
+; --- Celestial_Golem ---
+[celestial_core]
+name = 천상 핵
+category = MonsterLoot
+price = 150
+rarity = rare
+description = 하늘의 힘이 담긴 핵심.
+source = monster:Celestial_Golem
+
+
+; --- Charred_Harpy ---
+[charred_feather]
+name = 탄흔 깃털
+category = MonsterLoot
+price = 15
+rarity = common
+description = 그을음이 묻었지만 내화성이 있는 깃.
+source = monster:Charred_Harpy
+
+[charred_talon]
+name = 탄흔 발톱
+category = MonsterLoot
+price = 34
+rarity = uncommon
+description = 화산재에 담금질된 날카로운 발톱.
+source = monster:Charred_Harpy
+
+
+; --- Cinder_Mole ---
+[cinder_claw]
+name = 잿더미 발톱
+category = MonsterLoot
+price = 8
+rarity = common
+description = 열에 단련된 두더지의 삽날 같은 발톱.
+source = monster:Cinder_Mole
+
+[cinder_pelt]
+name = 잿더미 가죽
+category = MonsterLoot
+price = 20
+rarity = uncommon
+description = 그을음이 묻었지만 열에 강한 가죽.
+source = monster:Cinder_Mole
+
+
+; --- Cliff_Alpha ---
+[alpha_fang]
+name = 우두머리 엄니
+category = MonsterLoot
+price = 15
+rarity = common
+description = 절벽 무리를 이끄는 자의 큰 이빨.
+source = monster:Cliff_Alpha
+
+[alpha_mane]
+name = 우두머리 갈기
+category = MonsterLoot
+price = 36
+rarity = uncommon
+description = 위엄이 서린 풍성한 갈기.
+source = monster:Cliff_Alpha
+
+
+; --- Cliff_Crab ---
+[crab_shell_chip]
+name = 게딱지 조각
+category = MonsterLoot
+price = 7
+rarity = common
+description = 단단한 게 등껍질의 파편.
+source = monster:Cliff_Crab
+
+[crab_pincer]
+name = 집게발 끝
+category = MonsterLoot
+price = 18
+rarity = uncommon
+description = 날카롭고 단단한 집게의 끝부분.
+source = monster:Cliff_Crab
+
+
+; --- Clockwork_Knight ---
+[knight_gear]
+name = 기사 톱니
+category = MonsterLoot
+price = 20
+rarity = common
+description = 정밀하게 맞물리던 기사의 부품.
+source = monster:Clockwork_Knight
+
+[knight_plume]
+name = 기사 장식깃
+category = MonsterLoot
+price = 44
+rarity = uncommon
+description = 태엽으로 움직이는 금속 깃.
+source = monster:Clockwork_Knight
+
+
+; --- Clockwork_Sentinel ---
+[sentinel_bolt]
+name = 파수꾼 볼트
+category = MonsterLoot
+price = 15
+rarity = common
+description = 녹슬었지만 튼튼한 볼트.
+source = monster:Clockwork_Sentinel
+
+[sentinel_lens]
+name = 파수꾼 렌즈
+category = MonsterLoot
+price = 34
+rarity = uncommon
+description = 감시에 쓰이던 맑은 수정 렌즈.
+source = monster:Clockwork_Sentinel
+
+
+; --- Clockwork_Spider ---
+[spider_gear]
+name = 태엽거미 톱니
+category = MonsterLoot
+price = 14
+rarity = common
+description = 정교한 소형 톱니.
+source = monster:Clockwork_Spider
+
+[spider_silk_wire]
+name = 태엽 실
+category = MonsterLoot
+price = 32
+rarity = uncommon
+description = 금속으로 된 거미줄.
+source = monster:Clockwork_Spider
+
+
+; --- Cloud_Leaper ---
+[leaper_claw]
+name = 도약수 발톱
+category = MonsterLoot
+price = 20
+rarity = common
+description = 구름을 차고 오르는 날카로운 발톱.
+source = monster:Cloud_Leaper
+
+[leaper_tendon]
+name = 도약수 힘줄
+category = MonsterLoot
+price = 44
+rarity = uncommon
+description = 놀라운 탄성의 근육 섬유.
+source = monster:Cloud_Leaper
+
+
+; --- Cloud_Ray ---
+[ray_fin]
+name = 구름 가오리 지느러미
+category = MonsterLoot
+price = 12
+rarity = common
+description = 하늘을 나는 가오리의 넓은 지느러미.
+source = monster:Cloud_Ray
+
+[ray_membrane]
+name = 구름 가오리 막
+category = MonsterLoot
+price = 28
+rarity = uncommon
+description = 바람을 타는 반투명한 날개막.
+source = monster:Cloud_Ray
+
+
+; --- Cloud_Serpent ---
+[cloud_scale]
+name = 구름뱀 비늘
+category = MonsterLoot
+price = 12
+rarity = common
+description = 구름처럼 가볍고 하얀 비늘.
+source = monster:Cloud_Serpent
+
+[cloud_fang]
+name = 구름뱀 이빨
+category = MonsterLoot
+price = 28
+rarity = uncommon
+description = 수증기를 내뿜는 날카로운 이빨.
+source = monster:Cloud_Serpent
+
+
+; --- Cold_Ring_Serpent ---
+[cold_scale]
+name = 동결 비늘
+category = MonsterLoot
+price = 14
+rarity = common
+description = 서리 무늬가 새겨진 차가운 비늘.
+source = monster:Cold_Ring_Serpent
+
+[cold_venom]
+name = 냉독 결정
+category = MonsterLoot
+price = 32
+rarity = uncommon
+description = 얼음처럼 굳어진 독의 결정.
+source = monster:Cold_Ring_Serpent
+
+
+; --- Constellation_Specter ---
+[constellation_shard]
+name = 별자리 파편
+category = MonsterLoot
+price = 16
+rarity = common
+description = 밤하늘의 별자리가 깨진 조각.
+source = monster:Constellation_Specter
+
+[constellation_map]
+name = 별자리 지도편
+category = MonsterLoot
+price = 38
+rarity = uncommon
+description = 고대 천문도의 조각.
+source = monster:Constellation_Specter
+
+
+; --- Coral_Colossus ---
+[coral_plate]
+name = 산호 거신 갑편
+category = MonsterLoot
+price = 24
+rarity = common
+description = 살아있는 산호로 뒤덮인 갑편.
+source = monster:Coral_Colossus
+
+[coral_core]
+name = 산호 핵
+category = MonsterLoot
+price = 54
+rarity = uncommon
+description = 해저의 생명력이 응축된 핵.
+source = monster:Coral_Colossus
+
+
+; --- Coral_Golem ---
+[coral_chunk]
+name = 산호 덩어리
+category = MonsterLoot
+price = 12
+rarity = common
+description = 살아있는 산호가 붙은 암석 조각.
+source = monster:Coral_Golem
+
+[coral_pearl]
+name = 산호 진주
+category = MonsterLoot
+price = 30
+rarity = uncommon
+description = 산호 속에 맺힌 분홍빛 진주.
+source = monster:Coral_Golem
+
+
+; --- Corruption_Specter ---
+[corruption_ooze]
+name = 오염 점액
+category = MonsterLoot
+price = 26
+rarity = common
+description = 닿으면 부식하는 검은 점액.
+source = monster:Corruption_Specter
+
+[corruption_core]
+name = 오염 핵
+category = MonsterLoot
+price = 56
+rarity = uncommon
+description = 부패의 근원인 불안정한 구슬.
+source = monster:Corruption_Specter
+
+
+; --- Crag_Raptor ---
+[raptor_talon]
+name = 맹금 발톱
+category = MonsterLoot
+price = 16
+rarity = common
+description = 바위를 움켜쥐던 굽은 발톱.
+source = monster:Crag_Raptor
+
+[raptor_plume]
+name = 맹금 장식깃
+category = MonsterLoot
+price = 34
+rarity = uncommon
+description = 바람에 나부끼는 길고 아름다운 깃.
+source = monster:Crag_Raptor
+
+
+; --- Crystal_Golem ---
+[crystal_chip]
+name = 결정 골렘 조각
+category = MonsterLoot
+price = 18
+rarity = common
+description = 투명하게 빛나는 수정 파편.
+source = monster:Crystal_Golem
+
+[crystal_core]
+name = 결정 핵
+category = MonsterLoot
+price = 42
+rarity = uncommon
+description = 공명하는 수정의 핵심.
+source = monster:Crystal_Golem
+
+
+; --- Crystal_Serpent ---
+[crystal_fang]
+name = 수정 송곳니
+category = MonsterLoot
+price = 20
+rarity = common
+description = 수정처럼 투명하고 날카로운 이빨.
+source = monster:Crystal_Serpent
+
+[crystal_scale]
+name = 수정 비늘
+category = MonsterLoot
+price = 48
+rarity = uncommon
+description = 프리즘처럼 빛을 산란시키는 비늘.
+source = monster:Crystal_Serpent
+
+
+; --- Crystal_Titan ---
+[crystal_heart]
+name = 수정 거인 심장
+category = MonsterLoot
+price = 78
+rarity = uncommon
+description = 빛을 머금은 거인의 심장.
+source = monster:Crystal_Titan
+
+
+; --- Deep_Angler ---
+[angler_light]
+name = 아귀 발광체
+category = MonsterLoot
+price = 16
+rarity = common
+description = 어둠 속에서 빛나는 작은 돌기.
+source = monster:Deep_Angler
+
+[angler_jaw]
+name = 심해 아귀 턱뼈
+category = MonsterLoot
+price = 38
+rarity = uncommon
+description = 무엇이든 삼키는 거대한 턱뼈.
+source = monster:Deep_Angler
+
+
+; --- Demon_Chamberlain ---
+[chamberlain_ring]
+name = 시종장 반지
+category = MonsterLoot
+price = 28
+rarity = common
+description = 마왕의 신임을 상징하는 반지.
+source = monster:Demon_Chamberlain
+
+[chamberlain_key]
+name = 시종장 열쇠
+category = MonsterLoot
+price = 60
+rarity = uncommon
+description = 마왕성 깊은 곳의 문을 여는 열쇠.
+source = monster:Demon_Chamberlain
+
+[royal_decree]
+name = 마왕의 칙서
+category = MonsterLoot
+price = 130
+rarity = rare
+description = 마왕 직인이 찍힌 양피지 조각.
+source = monster:Demon_Chamberlain
+
+
+; --- Demon_Officer ---
+[officer_badge]
+name = 관료 배지
+category = MonsterLoot
+price = 24
+rarity = common
+description = 마왕성 관료의 직급 표식.
+source = monster:Demon_Officer
+
+[officer_seal]
+name = 관료 인장
+category = MonsterLoot
+price = 52
+rarity = uncommon
+description = 행정 압박의 힘이 남은 인장.
+source = monster:Demon_Officer
+
+
+; --- Demon_Scribe ---
+[scribe_quill]
+name = 서기 깃펜
+category = MonsterLoot
+price = 20
+rarity = common
+description = 마력 잉크가 묻은 깃펜.
+source = monster:Demon_Scribe
+
+[scribe_scroll]
+name = 서기 두루마리
+category = MonsterLoot
+price = 44
+rarity = uncommon
+description = 읽을 수 없는 문자의 양피지.
+source = monster:Demon_Scribe
+
+
+; --- Desert_Viper ---
+[viper_fang]
+name = 독사 이빨
+category = MonsterLoot
+price = 12
+rarity = common
+description = 치명적인 독이 묻은 이빨.
+source = monster:Desert_Viper
+
+[viper_scale]
+name = 독사 비늘
+category = MonsterLoot
+price = 28
+rarity = uncommon
+description = 사막 위장색의 거친 비늘.
+source = monster:Desert_Viper
+
+
+; --- Dew_Dryad ---
+[dryad_petal]
+name = 드라이어드 꽃잎
+category = MonsterLoot
+price = 14
+rarity = common
+description = 물기 머금은 투명한 꽃잎.
+source = monster:Dew_Dryad
+
+[dryad_sap]
+name = 드라이어드 수액
+category = MonsterLoot
+price = 32
+rarity = uncommon
+description = 숲의 생명력이 응축된 맑은 수액.
+source = monster:Dew_Dryad
+
+
+; --- Dew_Moth ---
+[moth_scale_dust]
+name = 나방 인분
+category = MonsterLoot
+price = 8
+rarity = common
+description = 은빛 가루처럼 반짝이는 나방 비늘.
+source = monster:Dew_Moth
+
+[moth_wing_shard]
+name = 나방 날개조각
+category = MonsterLoot
+price = 20
+rarity = uncommon
+description = 이슬 맺힌 반투명한 날개 파편.
+source = monster:Dew_Moth
+
+
+; --- Dragon_Rize ---
+[dragon_heart]
+name = 드래곤 심장
+category = MonsterLoot
+price = 250
+rarity = rare
+description = 하늘 용의 혈통에서 비롯된 보석.
+source = monster:Dragon_Rize
+
+
+; --- Drowned_Knight ---
+[rusted_plate]
+name = 녹슨 갑옷편
+category = MonsterLoot
+price = 14
+rarity = common
+description = 바닷물에 삭은 기사의 갑옷 조각.
+source = monster:Drowned_Knight
+
+[drowned_sigil]
+name = 익사 기사 문장
+category = MonsterLoot
+price = 34
+rarity = uncommon
+description = 해저에 잠긴 기사단의 문양.
+source = monster:Drowned_Knight
+
+
+; --- Dune_Colossus ---
+[dune_stone]
+name = 사구 거신 석편
+category = MonsterLoot
+price = 24
+rarity = common
+description = 모래폭풍에 깎인 거대한 돌.
+source = monster:Dune_Colossus
+
+[dune_core]
+name = 사구 핵
+category = MonsterLoot
+price = 54
+rarity = uncommon
+description = 사막의 심장처럼 뜨거운 핵.
+source = monster:Dune_Colossus
+
+
+; --- Dune_Scorpion ---
+[scorpion_stinger]
+name = 전갈 독침
+category = MonsterLoot
+price = 14
+rarity = common
+description = 맹독이 묻은 날카로운 꼬리 침.
+source = monster:Dune_Scorpion
+
+[scorpion_carapace]
+name = 전갈 갑각
+category = MonsterLoot
+price = 32
+rarity = uncommon
+description = 사막 열기에 단련된 갑각.
+source = monster:Dune_Scorpion
+
+
+; --- Dune_Stalker ---
+[dune_claw]
+name = 사구 발톱
+category = MonsterLoot
+price = 18
+rarity = common
+description = 모래 속에서 날카로워진 발톱.
+source = monster:Dune_Stalker
+
+[dune_hide]
+name = 사구 가죽
+category = MonsterLoot
+price = 40
+rarity = uncommon
+description = 사막 위장색의 거친 가죽.
+source = monster:Dune_Stalker
+
+
+; --- Eas_Shade ---
+[eas_wisp]
+name = 에아스 잔영
+category = MonsterLoot
+price = 16
+rarity = common
+description = 고대 에아스의 기억이 깃든 잔영.
+source = monster:Eas_Shade
+
+[eas_tear]
+name = 에아스 눈물
+category = MonsterLoot
+price = 36
+rarity = uncommon
+description = 과거의 슬픔이 응축된 투명한 방울.
+source = monster:Eas_Shade
+
+
+; --- Edge_Wyvern ---
+[edge_scale]
+name = 가장자리 비늘
+category = MonsterLoot
+price = 15
+rarity = common
+description = 하늘 끝의 바람에 깎인 비늘.
+source = monster:Edge_Wyvern
+
+[edge_membrane]
+name = 가장자리 날개막
+category = MonsterLoot
+price = 34
+rarity = uncommon
+description = 고도에 적응한 질긴 날개 조직.
+source = monster:Edge_Wyvern
+
+
+; --- Ember_Spirit ---
+[ember_ash]
+name = 잔불 잿가루
+category = MonsterLoot
+price = 12
+rarity = common
+description = 불꽃 영혼이 남긴 따뜻한 재.
+source = monster:Ember_Spirit
+
+[ember_wisp]
+name = 잔불 불씨
+category = MonsterLoot
+price = 30
+rarity = uncommon
+description = 꺼지지 않는 작은 불씨 한 점.
+source = monster:Ember_Spirit
+
+
+; --- Ember_Tyrant ---
+[tyrant_scale]
+name = 잔화 비늘
+category = MonsterLoot
+price = 20
+rarity = common
+description = 꺼지지 않는 잔불이 깃든 비늘.
+source = monster:Ember_Tyrant
+
+[tyrant_ember]
+name = 군주의 불씨
+category = MonsterLoot
+price = 46
+rarity = uncommon
+description = 잔화 군주의 몸에서 나온 불씨.
+source = monster:Ember_Tyrant
+
+[tyrant_crown]
+name = 잔화 왕관편
+category = MonsterLoot
+price = 90
+rarity = rare
+description = 용열의 기운이 서린 왕관 조각.
+source = monster:Ember_Tyrant
+
+
+; --- Eternal_Warden ---
+[eternal_seal]
+name = 영원의 인장
+category = MonsterLoot
+price = 70
+rarity = uncommon
+description = 영원을 지키던 봉인의 파편.
+source = monster:Eternal_Warden
+
+
+; --- Falcon_Elder ---
+[elder_plume]
+name = 장로매 장식깃
+category = MonsterLoot
+price = 28
+rarity = common
+description = 수십 년을 산 매의 위엄 서린 깃.
+source = monster:Falcon_Elder
+
+[elder_eye]
+name = 장로매 비전
+category = MonsterLoot
+price = 60
+rarity = uncommon
+description = 모든 것을 꿰뚫는 매의 눈 결정.
+source = monster:Falcon_Elder
+
+[elder_crown_feather]
+name = 하늘의 왕관깃
+category = MonsterLoot
+price = 120
+rarity = rare
+description = 팔콘 가든의 왕이 남긴 깃.
+source = monster:Falcon_Elder
+
+
+; --- Fire_Salamander ---
+[fire_newt_skin]
+name = 화염 도롱뇽 피막
+category = MonsterLoot
+price = 14
+rarity = common
+description = 열에 강한 붉은빛 피부 조각.
+source = monster:Fire_Salamander
+
+[fire_newt_oil]
+name = 도롱뇽 화유
+category = MonsterLoot
+price = 32
+rarity = uncommon
+description = 불에 닿으면 격렬히 타오르는 기름.
+source = monster:Fire_Salamander
+
+
+; --- Flame_Ram ---
+[flame_horn]
+name = 화염양 뿔
+category = MonsterLoot
+price = 12
+rarity = common
+description = 열기를 품은 구부러진 양 뿔.
+source = monster:Flame_Ram
+
+[flame_wool]
+name = 화염양 털
+category = MonsterLoot
+price = 28
+rarity = uncommon
+description = 불에 타지 않는 붉은 양모.
+source = monster:Flame_Ram
+
+
+; --- Flame_Wyrm ---
+[wyrm_scale]
+name = 비룡 비늘
+category = MonsterLoot
+price = 20
+rarity = common
+description = 붉은 광택이 도는 단단한 비늘.
+source = monster:Flame_Wyrm
+
+[wyrm_fang]
+name = 비룡 이빨
+category = MonsterLoot
+price = 48
+rarity = uncommon
+description = 열기가 서린 크고 날카로운 이빨.
+source = monster:Flame_Wyrm
+
+[wyrm_breath_gem]
+name = 화염 숨결석
+category = MonsterLoot
+price = 95
+rarity = rare
+description = 비룡의 브레스가 응축된 보석.
+source = monster:Flame_Wyrm
+
+
+; --- Floor_Phantom ---
+[phantom_wisp]
+name = 환영 잔상
+category = MonsterLoot
+price = 16
+rarity = common
+description = 층을 떠도는 희미한 빛 조각.
+source = monster:Floor_Phantom
+
+[phantom_chain]
+name = 환영 쇠사슬
+category = MonsterLoot
+price = 36
+rarity = uncommon
+description = 투명하지만 무거운 사슬 파편.
+source = monster:Floor_Phantom
+
+
+; --- Fluff_Fairy ---
+[fluff_down]
+name = 털뭉치 솜
+category = MonsterLoot
+price = 8
+rarity = common
+description = 허공에 떠다니는 가벼운 솜뭉치.
+source = monster:Fluff_Fairy
+
+[fluff_spore]
+name = 털뭉치 포자
+category = MonsterLoot
+price = 20
+rarity = uncommon
+description = 마력이 깃든 빛나는 포자.
+source = monster:Fluff_Fairy
+
+
+; --- Fog_Panther ---
+[panther_claw]
+name = 팬서 발톱
+category = MonsterLoot
+price = 18
+rarity = common
+description = 안개와 함께 스치는 날카로운 발톱.
+source = monster:Fog_Panther
+
+[panther_whisker]
+name = 팬서 수염
+category = MonsterLoot
+price = 40
+rarity = uncommon
+description = 안개 속 길잡이가 되는 긴 수염.
+source = monster:Fog_Panther
+
+
+; --- Fog_Wraith ---
+[wraith_mist]
+name = 안개 잔영
+category = MonsterLoot
+price = 10
+rarity = common
+description = 망령이 남긴 흐릿한 안개 조각.
+source = monster:Fog_Wraith
+
+[wraith_ectoplasm]
+name = 망령 잔액
+category = MonsterLoot
+price = 28
+rarity = uncommon
+description = 영체가 남긴 반투명한 점액질.
+source = monster:Fog_Wraith
+
+
+; --- Forest_Slime ---
+[slime_gel]
+name = 슬라임 젤리
+category = MonsterLoot
+price = 8
+rarity = common
+description = 투명한 젤리 덩어리. 접착제나 약품 재료로 쓰인다.
+source = monster:Forest_Slime
+
+[slime_core]
+name = 슬라임 핵
+category = MonsterLoot
+price = 22
+rarity = uncommon
+description = 슬라임 중심부의 응축된 구슬. 은은하게 빛난다.
+source = monster:Forest_Slime
+
+
+; --- Forest_Specter ---
+[specter_wisp]
+name = 숲 스펙터 잔상
+category = MonsterLoot
+price = 18
+rarity = common
+description = 숲에 남겨진 영체의 잔영.
+source = monster:Forest_Specter
+
+[specter_essence]
+name = 숲 영혼 정수
+category = MonsterLoot
+price = 40
+rarity = uncommon
+description = 숲의 원한이 응축된 구슬.
+source = monster:Forest_Specter
+
+
+; --- Foxfire_Moth ---
+[foxfire_dust]
+name = 여우불 인분
+category = MonsterLoot
+price = 10
+rarity = common
+description = 푸른 불빛을 머금은 나방 가루.
+source = monster:Foxfire_Moth
+
+[foxfire_wing]
+name = 여우불 날개
+category = MonsterLoot
+price = 26
+rarity = uncommon
+description = 어둠 속에서 은은하게 빛나는 날개.
+source = monster:Foxfire_Moth
+
+
+; --- Frost_Hare ---
+[frost_fur]
+name = 서리토끼 털
+category = MonsterLoot
+price = 12
+rarity = common
+description = 서리가 낀 듯 차가운 하얀 털.
+source = monster:Frost_Hare
+
+[frost_whisker]
+name = 서리 수염
+category = MonsterLoot
+price = 26
+rarity = uncommon
+description = 얼음 결정이 맺힌 긴 수염.
+source = monster:Frost_Hare
+
+
+; --- Frost_Sentinel ---
+[frost_plate]
+name = 설원 갑편
+category = MonsterLoot
+price = 26
+rarity = common
+description = 영구동토에서 단련된 금속 조각.
+source = monster:Frost_Sentinel
+
+[frost_core]
+name = 설원 수호핵
+category = MonsterLoot
+price = 58
+rarity = uncommon
+description = 영원히 녹지 않는 얼음 핵.
+source = monster:Frost_Sentinel
+
+
+; --- Gale_Drake ---
+[gale_scale]
+name = 돌풍 비늘
+category = MonsterLoot
+price = 24
+rarity = common
+description = 바람을 일으키는 드레이크의 비늘.
+source = monster:Gale_Drake
+
+[gale_fang]
+name = 돌풍 이빨
+category = MonsterLoot
+price = 52
+rarity = uncommon
+description = 회오리를 부르는 날카로운 이빨.
+source = monster:Gale_Drake
+
+
+; --- Gear_Colossus ---
+[gear_plate]
+name = 기어 거신 갑편
+category = MonsterLoot
+price = 24
+rarity = common
+description = 수천 개의 톱니로 이루어진 갑편.
+source = monster:Gear_Colossus
+
+[gear_core]
+name = 기어 핵
+category = MonsterLoot
+price = 54
+rarity = uncommon
+description = 거신을 구동하던 핵심 기관.
+source = monster:Gear_Colossus
+
+
+; --- Glitch_Wraith ---
+[glitch_fragment]
+name = 오류 파편
+category = MonsterLoot
+price = 28
+rarity = common
+description = 현실이 깨진 듯한 노이즈 조각.
+source = monster:Glitch_Wraith
+
+[glitch_code]
+name = 깨진 코드 결정
+category = MonsterLoot
+price = 60
+rarity = uncommon
+description = 세계의 틈에서 굳어진 결정.
+source = monster:Glitch_Wraith
+
+
+; --- Gorge_Raptor ---
+[gorge_talon]
+name = 협곡 랩터 발톱
+category = MonsterLoot
+price = 14
+rarity = common
+description = 좁은 협곡을 누비던 날카로운 발톱.
+source = monster:Gorge_Raptor
+
+[gorge_feather]
+name = 협곡 랩터 깃
+category = MonsterLoot
+price = 30
+rarity = uncommon
+description = 바람을 타는 유선형 깃.
+source = monster:Gorge_Raptor
+
+
+; --- Great_Falcon ---
+[falcon_feather]
+name = 대형매 깃털
+category = MonsterLoot
+price = 22
+rarity = common
+description = 하늘의 지배자가 남긴 거대한 깃.
+source = monster:Great_Falcon
+
+[falcon_talon]
+name = 대형매 발톱
+category = MonsterLoot
+price = 50
+rarity = uncommon
+description = 바위를 쪼개는 강철 같은 발톱.
+source = monster:Great_Falcon
+
+
+; --- Grey_Fang ---
+[grey_fang_tooth]
+name = 회색 송곳니
+category = MonsterLoot
+price = 11
+rarity = common
+description = 무리 생활로 단련된 날카로운 이빨.
+source = monster:Grey_Fang
+
+[grey_fang_hide]
+name = 회색 늑대 가죽
+category = MonsterLoot
+price = 26
+rarity = uncommon
+description = 회색빛이 도는 질긴 가죽.
+source = monster:Grey_Fang
+
+
+; --- Haratikus_Colossus ---
+[colossus_fragment]
+name = 거인상 파편
+category = MonsterLoot
+price = 32
+rarity = common
+description = 수백 톤 거인상의 깨진 조각.
+source = monster:Haratikus_Colossus
+
+[colossus_eye]
+name = 거인상 눈
+category = MonsterLoot
+price = 70
+rarity = uncommon
+description = 문명을 지켜보던 거대한 보석 눈.
+source = monster:Haratikus_Colossus
+
+[colossus_core]
+name = 하라티쿠스 핵
+category = MonsterLoot
+price = 150
+rarity = rare
+description = 멸망한 문명의 최후 기술 결정.
+source = monster:Haratikus_Colossus
+
+
+; --- Hill_Guardian ---
+[guardian_stone]
+name = 수호령 돌조각
+category = MonsterLoot
+price = 16
+rarity = common
+description = 제단처럼 새겨진 돌 파편.
+source = monster:Hill_Guardian
+
+[guardian_moss]
+name = 수호령 이끼
+category = MonsterLoot
+price = 36
+rarity = uncommon
+description = 오랜 세월 기운을 머금은 이끼.
+source = monster:Hill_Guardian
+
+[guardian_seal]
+name = 언덕 봉인석
+category = MonsterLoot
+price = 75
+rarity = rare
+description = 수호령이 지키던 봉인의 파편.
+source = monster:Hill_Guardian
+
+
+; --- Hill_Hare ---
+[hare_fur]
+name = 언덕토끼 털
+category = MonsterLoot
+price = 7
+rarity = common
+description = 가볍고 보온성이 좋은 토끼털.
+source = monster:Hill_Hare
+
+[hare_foot]
+name = 언덕토끼 뒷발
+category = MonsterLoot
+price = 18
+rarity = uncommon
+description = 행운의 부적이 될 것 같은 뒷발.
+source = monster:Hill_Hare
+
+
+; --- Holo_Glitch_Wisp ---
+[holo_glitch_code]
+name = 글리치 코드
+category = MonsterLoot
+price = 22
+rarity = uncommon
+description = 가상 현실의 오류 코드 결정.
+source = monster:Holo_Glitch_Wisp
+
+
+; --- Holo_Nano_Cloud ---
+[holo_nano_dust]
+name = 나노 가루
+category = MonsterLoot
+price = 8
+rarity = common
+description = 가상 나노 입자의 잔재.
+source = monster:Holo_Nano_Cloud
+
+
+; --- Holo_Sniper_Core ---
+[holo_data_chip]
+name = 버추얼 데이터 칩
+category = MonsterLoot
+price = 10
+rarity = common
+description = 가상 공간의 데이터가 담긴 칩.
+source = monster:Holo_Sniper_Core
+
+
+; --- Holo_Stream_Shade ---
+[holo_stream_data]
+name = 스트림 데이터
+category = MonsterLoot
+price = 24
+rarity = uncommon
+description = 네온 박자가 각인된 데이터.
+source = monster:Holo_Stream_Shade
+
+
+; --- Holo_Wall_Unit ---
+[holo_barrier_shard]
+name = 방벽 파편
+category = MonsterLoot
+price = 12
+rarity = common
+description = 가상 방벽의 깨진 조각.
+source = monster:Holo_Wall_Unit
+
+
+; --- Howling_Wraith ---
+[howl_echo]
+name = 울음 메아리
+category = MonsterLoot
+price = 14
+rarity = common
+description = 병 속에 담긴 듯한 울음소리 파편.
+source = monster:Howling_Wraith
+
+[howl_essence]
+name = 울음 정수
+category = MonsterLoot
+price = 32
+rarity = uncommon
+description = 공포와 슬픔이 응축된 투명한 구슬.
+source = monster:Howling_Wraith
+
+
+; --- Hyperion_Avatar ---
+[avatar_spark]
+name = 화신의 불꽃
+category = MonsterLoot
+price = 180
+rarity = rare
+description = 히페리온의 모든 힘이 담긴 불꽃.
+source = monster:Hyperion_Avatar
+
+
+; --- Hyperion_Shade ---
+[hyperion_shard]
+name = 히페리온 파편
+category = MonsterLoot
+price = 120
+rarity = rare
+description = 히페리온의 힘이 응축된 파편.
+source = monster:Hyperion_Shade
+
+
+; --- Ice_Wolf ---
+[ice_fang]
+name = 빙랑 이빨
+category = MonsterLoot
+price = 15
+rarity = common
+description = 냉기가 서린 푸른빛 송곳니.
+source = monster:Ice_Wolf
+
+[ice_pelt]
+name = 빙랑 가죽
+category = MonsterLoot
+price = 34
+rarity = uncommon
+description = 한기를 품은 은회색 늑대 가죽.
+source = monster:Ice_Wolf
+
+
+; --- Icebound_Sentry ---
+[sentry_ice_plate]
+name = 결빙 갑편
+category = MonsterLoot
+price = 21
+rarity = common
+description = 얼음으로 덮인 고대의 금속 파편.
+source = monster:Icebound_Sentry
+
+[sentry_frost_gem]
+name = 결빙 보석
+category = MonsterLoot
+price = 46
+rarity = uncommon
+description = 감시 장치에 박혀 있던 차가운 보석.
+source = monster:Icebound_Sentry
+
+
+; --- Ikar_Wind_Sprite ---
+[ikar_feather]
+name = 이카르 바람깃
+category = MonsterLoot
+price = 18
+rarity = common
+description = 하늘 섬의 바람이 깃든 깃털.
+source = monster:Ikar_Wind_Sprite
+
+[ikar_breeze]
+name = 이카르 미풍
+category = MonsterLoot
+price = 40
+rarity = uncommon
+description = 병에 담긴 하늘 섬의 바람.
+source = monster:Ikar_Wind_Sprite
+
+
+; --- Inverse_Knight ---
+[inverse_plate]
+name = 역전 갑편
+category = MonsterLoot
+price = 30
+rarity = common
+description = 물리 법칙이 뒤집힌 금속 조각.
+source = monster:Inverse_Knight
+
+[inverse_core]
+name = 역전 핵
+category = MonsterLoot
+price = 65
+rarity = uncommon
+description = 인과율이 꼬인 기이한 구슬.
+source = monster:Inverse_Knight
+
+
+; --- Iron_Automaton ---
+[automaton_gear]
+name = 자동인형 톱니
+category = MonsterLoot
+price = 16
+rarity = common
+description = 정밀하게 깎인 작은 쇠톱니.
+source = monster:Iron_Automaton
+
+[automaton_spring]
+name = 자동인형 태엽
+category = MonsterLoot
+price = 36
+rarity = uncommon
+description = 아직 탄성이 남은 소형 태엽.
+source = monster:Iron_Automaton
+
+
+; --- Iron_Colossus ---
+[colossus_gear]
+name = 거상 톱니
+category = MonsterLoot
+price = 65
+rarity = uncommon
+description = 철제 거상의 핵심 부품.
+source = monster:Iron_Colossus
+
+
+; --- Island_Boar ---
+[island_tusk]
+name = 섬 멧돼지 엄니
+category = MonsterLoot
+price = 8
+rarity = common
+description = 섬에서 자란 작지만 단단한 엄니.
+source = monster:Island_Boar
+
+[island_hide]
+name = 섬 멧돼지 가죽
+category = MonsterLoot
+price = 20
+rarity = uncommon
+description = 바다 소금기에 절여진 가죽.
+source = monster:Island_Boar
+
+
+; --- Lake_Oracle ---
+[oracle_pearl]
+name = 예언어 진주
+category = MonsterLoot
+price = 22
+rarity = common
+description = 미래가 비치는 듯한 맑은 진주.
+source = monster:Lake_Oracle
+
+[oracle_scale]
+name = 예언어 비늘
+category = MonsterLoot
+price = 52
+rarity = uncommon
+description = 별빛을 담은 거대한 비늘.
+source = monster:Lake_Oracle
+
+[oracle_eye]
+name = 성천의 눈
+category = MonsterLoot
+price = 105
+rarity = rare
+description = 호수의 모든 것을 아는 신비한 보석.
+source = monster:Lake_Oracle
+
+
+; --- Lantern_Ghost ---
+[lantern_flame]
+name = 안개등 불꽃
+category = MonsterLoot
+price = 14
+rarity = common
+description = 꺼지지 않는 유령의 불꽃 한 점.
+source = monster:Lantern_Ghost
+
+[lantern_glass]
+name = 유령 등잔 유리
+category = MonsterLoot
+price = 32
+rarity = uncommon
+description = 유령 빛에 물든 유리 조각.
+source = monster:Lantern_Ghost
+
+
+; --- Lava_Golem ---
+[magma_shard]
+name = 용암 파편
+category = MonsterLoot
+price = 18
+rarity = common
+description = 아직 따뜻한 검붉은 용암 조각.
+source = monster:Lava_Golem
+
+[lava_core]
+name = 용암 핵
+category = MonsterLoot
+price = 45
+rarity = uncommon
+description = 골렘 중심부의 뜨거운 구슬.
+source = monster:Lava_Golem
+
+[molten_heart]
+name = 용해 심장석
+category = MonsterLoot
+price = 90
+rarity = rare
+description = 아직도 붉게 달아오른 골렘의 핵심.
+source = monster:Lava_Golem
+
+
+; --- Lightning_Elemental ---
+[spark_dust]
+name = 방전 가루
+category = MonsterLoot
+price = 13
+rarity = common
+description = 번개 요정이 흩뿌린 빛나는 가루.
+source = monster:Lightning_Elemental
+
+[thunder_pearl]
+name = 뇌전 구슬
+category = MonsterLoot
+price = 38
+rarity = uncommon
+description = 응축된 전기가 깜박이는 구슬.
+source = monster:Lightning_Elemental
+
+
+; --- Limun_Revenant ---
+[limun_dust]
+name = 리문 잔재
+category = MonsterLoot
+price = 20
+rarity = common
+description = 리문 유적의 영체가 남긴 먼지.
+source = monster:Limun_Revenant
+
+[limun_seal]
+name = 리문 봉인편
+category = MonsterLoot
+price = 44
+rarity = uncommon
+description = 유적의 봉인이 깨진 파편.
+source = monster:Limun_Revenant
+
+
+; --- Lunar_Stag ---
+[lunar_antler_chip]
+name = 월록 뿔조각
+category = MonsterLoot
+price = 18
+rarity = common
+description = 달무늬가 아른거리는 뿔 파편.
+source = monster:Lunar_Stag
+
+[lunar_stag_hide]
+name = 월록 가죽
+category = MonsterLoot
+price = 40
+rarity = uncommon
+description = 보름달 아래서만 빛나는 사슴 가죽.
+source = monster:Lunar_Stag
+
+
+; --- Magma_Hound ---
+[magma_fang]
+name = 마그마 이빨
+category = MonsterLoot
+price = 11
+rarity = common
+description = 열기가 남아있는 붉은빛 이빨.
+source = monster:Magma_Hound
+
+[magma_fur]
+name = 마그마 갈기
+category = MonsterLoot
+price = 26
+rarity = uncommon
+description = 불꽃이 스치듯 뜨거운 갈기 뭉치.
+source = monster:Magma_Hound
+
+
+; --- Mana_Sprite ---
+[mana_dust]
+name = 마나 가루
+category = MonsterLoot
+price = 10
+rarity = common
+description = 마력이 응축된 반짝이는 가루.
+source = monster:Mana_Sprite
+
+[mana_droplet]
+name = 마나 물방울
+category = MonsterLoot
+price = 24
+rarity = uncommon
+description = 액체 마나 한 방울.
+source = monster:Mana_Sprite
+
+
+; --- Marsh_Serpent ---
+[serpent_scale]
+name = 독사 비늘
+category = MonsterLoot
+price = 12
+rarity = common
+description = 늪의 습기를 머금은 매끄러운 비늘.
+source = monster:Marsh_Serpent
+
+[serpent_fang]
+name = 독사 송곳이빨
+category = MonsterLoot
+price = 32
+rarity = uncommon
+description = 독이 배인 이빨. 무기에 바르면 효과적.
+source = monster:Marsh_Serpent
+
+
+; --- Meadow_Howler ---
+[howler_tooth]
+name = 하울러 이빨
+category = MonsterLoot
+price = 10
+rarity = common
+description = 들판에 울려 퍼지던 울음의 주인공 이빨.
+source = monster:Meadow_Howler
+
+[howler_vocal]
+name = 하울러 성대
+category = MonsterLoot
+price = 24
+rarity = uncommon
+description = 먼 곳까지 닿는 울음의 근원.
+source = monster:Meadow_Howler
+
+
+; --- Midnight_Devil ---
+[devil_horn]
+name = 심야 뿔
+category = MonsterLoot
+price = 18
+rarity = common
+description = 한밤중에만 보이는 검붉은 뿔.
+source = monster:Midnight_Devil
+
+[devil_ink]
+name = 심야 먹물
+category = MonsterLoot
+price = 40
+rarity = uncommon
+description = 악몽의 색깔인 검은 액체.
+source = monster:Midnight_Devil
+
+
+; --- Mine_Spider ---
+[spider_thread]
+name = 거미 실타래
+category = MonsterLoot
+price = 11
+rarity = common
+description = 끈적이지만 놀라울 만큼 질긴 실.
+source = monster:Mine_Spider
+
+[spider_venom]
+name = 거미 독낭
+category = MonsterLoot
+price = 30
+rarity = uncommon
+description = 소량이지만 강력한 독이 담긴 주머니.
+source = monster:Mine_Spider
+
+
+; --- Mirage_Golem ---
+[mirage_stone]
+name = 신기루 돌
+category = MonsterLoot
+price = 22
+rarity = common
+description = 보이지만 잡히지 않을 것 같은 돌.
+source = monster:Mirage_Golem
+
+[mirage_core]
+name = 신기루 핵
+category = MonsterLoot
+price = 48
+rarity = uncommon
+description = 현실과 환상 사이의 핵.
+source = monster:Mirage_Golem
+
+
+; --- Mirror_Wisp ---
+[wisp_light]
+name = 도깨비불 빛조각
+category = MonsterLoot
+price = 13
+rarity = common
+description = 경면에서 빛나던 불빛의 파편.
+source = monster:Mirror_Wisp
+
+[wisp_mirror]
+name = 도깨비불 거울편
+category = MonsterLoot
+price = 32
+rarity = uncommon
+description = 빛을 비트는 작은 거울 조각.
+source = monster:Mirror_Wisp
+
+
+; --- Mist_Boar ---
+[mist_tusk]
+name = 안개 엄니
+category = MonsterLoot
+price = 15
+rarity = common
+description = 안개 속에서 빛나는 크고 뭉툭한 엄니.
+source = monster:Mist_Boar
+
+[mist_boar_hide]
+name = 안개 멧돼지 가죽
+category = MonsterLoot
+price = 34
+rarity = uncommon
+description = 습기를 머금은 두꺼운 가죽.
+source = monster:Mist_Boar
+
+
+; --- Mist_Wisp ---
+[mist_light]
+name = 안개 빛조각
+category = MonsterLoot
+price = 10
+rarity = common
+description = 안개 속에서 깜박이는 빛 파편.
+source = monster:Mist_Wisp
+
+[mist_core]
+name = 안개 핵
+category = MonsterLoot
+price = 24
+rarity = uncommon
+description = 안개가 응축된 작은 구슬.
+source = monster:Mist_Wisp
+
+
+; --- Mistwood_Revenant ---
+[revenant_bark]
+name = 미스트우드 잔해
+category = MonsterLoot
+price = 18
+rarity = common
+description = 안개숲의 망령이 남긴 나무 파편.
+source = monster:Mistwood_Revenant
+
+[revenant_essence]
+name = 미스트우드 정수
+category = MonsterLoot
+price = 40
+rarity = uncommon
+description = 숲과 하나가 된 영혼의 정수.
+source = monster:Mistwood_Revenant
+
+
+; --- Mistwood_Warden ---
+[warden_bark]
+name = 수문장 수피
+category = MonsterLoot
+price = 20
+rarity = common
+description = 안개숲 최고 나무의 단단한 껍질.
+source = monster:Mistwood_Warden
+
+[warden_moss]
+name = 수문장 이끼
+category = MonsterLoot
+price = 44
+rarity = uncommon
+description = 수백 년 자란 형광빛 이끼.
+source = monster:Mistwood_Warden
+
+[warden_heartwood]
+name = 미스트우드 심재
+category = MonsterLoot
+price = 88
+rarity = rare
+description = 숲의 수호자 중심부의 빛나는 목재.
+source = monster:Mistwood_Warden
+
+
+; --- Moon_Rabbit ---
+[moon_rabbit_fluff]
+name = 달토끼 솜털
+category = MonsterLoot
+price = 9
+rarity = common
+description = 달빛을 머금은 부드러운 솜털.
+source = monster:Moon_Rabbit
+
+[moon_rabbit_claw]
+name = 달토끼 앞발톱
+category = MonsterLoot
+price = 22
+rarity = uncommon
+description = 작지만 은빛으로 빛나는 발톱.
+source = monster:Moon_Rabbit
+
+
+; --- Moon_Wolf ---
+[moon_wolf_fang]
+name = 월랑 이빨
+category = MonsterLoot
+price = 12
+rarity = common
+description = 달빛 아래 하얗게 빛나는 이빨.
+source = monster:Moon_Wolf
+
+[moon_wolf_pelt]
+name = 월랑 가죽
+category = MonsterLoot
+price = 28
+rarity = uncommon
+description = 은빛이 감도는 질긴 늑대 가죽.
+source = monster:Moon_Wolf
+
+
+; --- Moonshade_Warden ---
+[moonshade_bark]
+name = 달그늘 수피
+category = MonsterLoot
+price = 20
+rarity = common
+description = 수호수의 단단한 껍질 조각.
+source = monster:Moonshade_Warden
+
+[moonshade_resin]
+name = 달그늘 수지
+category = MonsterLoot
+price = 46
+rarity = uncommon
+description = 달빛이 굳어진 듯한 호박색 수지.
+source = monster:Moonshade_Warden
+
+[moonshade_heartwood]
+name = 달그늘 심목
+category = MonsterLoot
+price = 90
+rarity = rare
+description = 수호수 중심부의 빛나는 목재.
+source = monster:Moonshade_Warden
+
+
+; --- Mountain_Bear ---
+[mountain_claw]
+name = 산악곰 발톱
+category = MonsterLoot
+price = 16
+rarity = common
+description = 산을 오르내리며 단련된 발톱.
+source = monster:Mountain_Bear
+
+[mountain_fur]
+name = 산악곰 모피
+category = MonsterLoot
+price = 36
+rarity = uncommon
+description = 고산 추위를 버티는 두꺼운 모피.
+source = monster:Mountain_Bear
+
+
+; --- Mud_Golem ---
+[mud_chunk]
+name = 진흙 덩어리
+category = MonsterLoot
+price = 10
+rarity = common
+description = 마력이 스민 끈적한 진흙.
+source = monster:Mud_Golem
+
+[mud_core]
+name = 진흙 핵
+category = MonsterLoot
+price = 24
+rarity = uncommon
+description = 진흙 골렘의 부드럽지만 단단한 핵.
+source = monster:Mud_Golem
+
+
+; --- Neon_Hound ---
+[neon_fang]
+name = 네온 이빨
+category = MonsterLoot
+price = 16
+rarity = common
+description = 형광빛으로 빛나는 날카로운 이빨.
+source = monster:Neon_Hound
+
+[neon_collar]
+name = 네온 목줄 조각
+category = MonsterLoot
+price = 36
+rarity = uncommon
+description = 번쩍이는 전자 목줄의 파편.
+source = monster:Neon_Hound
+
+
+; --- Nova_Wisp ---
+[nova_spark]
+name = 성운 불꽃
+category = MonsterLoot
+price = 11
+rarity = common
+description = 작은 별이 터진 듯한 불꽃 파편.
+source = monster:Nova_Wisp
+
+[nova_essence]
+name = 성운 정수
+category = MonsterLoot
+price = 28
+rarity = uncommon
+description = 우주의 힘이 응축된 빛나는 구슬.
+source = monster:Nova_Wisp
+
+
+; --- Null_Golem ---
+[null_shard]
+name = 공허 조각
+category = MonsterLoot
+price = 28
+rarity = common
+description = 존재와 비존재 사이의 물질.
+source = monster:Null_Golem
+
+[null_eye]
+name = 공허 눈
+category = MonsterLoot
+price = 62
+rarity = uncommon
+description = 아무것도 비치지 않는 구슬.
+source = monster:Null_Golem
+
+
+; --- Overload_Elemental ---
+[overload_spark]
+name = 과부하 불꽃
+category = MonsterLoot
+price = 20
+rarity = common
+description = 제어 불능의 에너지 불꽃.
+source = monster:Overload_Elemental
+
+[overload_core]
+name = 과부하 핵
+category = MonsterLoot
+price = 46
+rarity = uncommon
+description = 폭주 직전의 에너지 구슬.
+source = monster:Overload_Elemental
+
+
+; --- Pack_Tyrant ---
+[tyrant_fang]
+name = 폭군 대이빨
+category = MonsterLoot
+price = 22
+rarity = common
+description = 산 전체를 지배하는 자의 거대한 이빨.
+source = monster:Pack_Tyrant
+
+[tyrant_pelt]
+name = 폭군 가죽
+category = MonsterLoot
+price = 50
+rarity = uncommon
+description = 수많은 전투 흉터가 남은 가죽.
+source = monster:Pack_Tyrant
+
+[tyrant_howl_stone]
+name = 울부짖음의 돌
+category = MonsterLoot
+price = 95
+rarity = rare
+description = 군림의 포효가 응축된 기이한 돌.
+source = monster:Pack_Tyrant
+
+
+; --- Peak_Stalker ---
+[peak_fang]
+name = 정상 추적자 이빨
+category = MonsterLoot
+price = 20
+rarity = common
+description = 산 꼭대기에서 사냥하는 자의 이빨.
+source = monster:Peak_Stalker
+
+[peak_hide]
+name = 정상 추적자 가죽
+category = MonsterLoot
+price = 44
+rarity = uncommon
+description = 최고봉의 바람에 단련된 가죽.
+source = monster:Peak_Stalker
+
+
+; --- Pendulum_Executor ---
+[pendulum_blade]
+name = 추심 칼날
+category = MonsterLoot
+price = 22
+rarity = common
+description = 진자처럼 흔들리던 거대한 칼날 조각.
+source = monster:Pendulum_Executor
+
+[pendulum_weight]
+name = 추심 추
+category = MonsterLoot
+price = 48
+rarity = uncommon
+description = 무겁고 정밀한 진자추.
+source = monster:Pendulum_Executor
+
+
+; --- Phantom_Glass_Kite ---
+[glass_string]
+name = 유리연 실
+category = MonsterLoot
+price = 13
+rarity = common
+description = 투명하지만 날카로운 실.
+source = monster:Phantom_Glass_Kite
+
+[glass_shard]
+name = 유리연 파편
+category = MonsterLoot
+price = 30
+rarity = uncommon
+description = 공중에서 빛을 굴절시키는 파편.
+source = monster:Phantom_Glass_Kite
+
+
+; --- Phantom_Spire_Wing ---
+[spire_feather]
+name = 첨탑 날개깃
+category = MonsterLoot
+price = 14
+rarity = common
+description = 좁은 첨탑을 누비던 날카로운 깃.
+source = monster:Phantom_Spire_Wing
+
+[spire_bone]
+name = 날개령 뼈
+category = MonsterLoot
+price = 32
+rarity = uncommon
+description = 가볍지만 단단한 영체의 뼈.
+source = monster:Phantom_Spire_Wing
+
+
+; --- Phantom_Stalker ---
+[stalker_shadow]
+name = 환영 그림자
+category = MonsterLoot
+price = 14
+rarity = common
+description = 어둠 속에서 움직이는 그림자 조각.
+source = monster:Phantom_Stalker
+
+[stalker_eye_gem]
+name = 추적자 눈보석
+category = MonsterLoot
+price = 34
+rarity = uncommon
+description = 추적 본능이 깃든 붉은 보석.
+source = monster:Phantom_Stalker
+
+
+; --- Phantom_Veil_Sprite ---
+[veil_thread]
+name = 베일 실
+category = MonsterLoot
+price = 12
+rarity = common
+description = 반투명한 환영의 실 한 올.
+source = monster:Phantom_Veil_Sprite
+
+[veil_shard]
+name = 베일 파편
+category = MonsterLoot
+price = 28
+rarity = uncommon
+description = 환영과 현실 사이의 유리 조각.
+source = monster:Phantom_Veil_Sprite
+
+
+; --- Phase_Serpent ---
+[phase_scale]
+name = 위상 비늘
+category = MonsterLoot
+price = 30
+rarity = common
+description = 만지면 손이 통과하는 비늘.
+source = monster:Phase_Serpent
+
+[phase_gem]
+name = 위상 전이석
+category = MonsterLoot
+price = 68
+rarity = uncommon
+description = 차원을 넘나드는 빛나는 보석.
+source = monster:Phase_Serpent
+
+[phase_heart]
+name = 위상의 심장
+category = MonsterLoot
+price = 140
+rarity = rare
+description = 물리 법칙을 무시하는 핵.
+source = monster:Phase_Serpent
+
+
+; --- Poison_Toad ---
+[toad_wart]
+name = 두꺼비 혹
+category = MonsterLoot
+price = 9
+rarity = common
+description = 약간 끈적이는 혹. 해독제 재료로 쓰인다.
+source = monster:Poison_Toad
+
+[toad_toxin]
+name = 두꺼비 독즙
+category = MonsterLoot
+price = 26
+rarity = uncommon
+description = 농축된 독 한 방울. 약사들이 찾는다.
+source = monster:Poison_Toad
+
+
+; --- Primal_Root_Wyrm ---
+[root_scale]
+name = 원시 뿌리 비늘
+category = MonsterLoot
+price = 28
+rarity = common
+description = 태초의 나무에서 자란 비늘.
+source = monster:Primal_Root_Wyrm
+
+[root_sap]
+name = 원시 수액
+category = MonsterLoot
+price = 62
+rarity = uncommon
+description = 세계의 시작부터 흘러온 수액.
+source = monster:Primal_Root_Wyrm
+
+
+; --- Prime_Revenant ---
+[prime_essence]
+name = 원초의 정수
+category = MonsterLoot
+price = 165
+rarity = rare
+description = 태초의 공허에서 온 정수.
+source = monster:Prime_Revenant
+
+
+; --- Prism_Drake ---
+[prism_scale]
+name = 프리즘 비늘
+category = MonsterLoot
+price = 22
+rarity = common
+description = 무지개빛으로 빛나는 비늘.
+source = monster:Prism_Drake
+
+[prism_fang]
+name = 프리즘 이빨
+category = MonsterLoot
+price = 50
+rarity = uncommon
+description = 빛을 분해하는 투명한 이빨.
+source = monster:Prism_Drake
+
+
+; --- Razorvine_Bloom ---
+[razor_thorn]
+name = 날덩굴 가시
+category = MonsterLoot
+price = 16
+rarity = common
+description = 면도날처럼 날카로운 식물 가시.
+source = monster:Razorvine_Bloom
+
+[razor_petal]
+name = 날덩굴 꽃잎
+category = MonsterLoot
+price = 34
+rarity = uncommon
+description = 아름답지만 위험한 붉은 꽃잎.
+source = monster:Razorvine_Bloom
+
+
+; --- Reef_Serpent ---
+[reef_scale]
+name = 암초뱀 비늘
+category = MonsterLoot
+price = 10
+rarity = common
+description = 산호와 같은 색의 위장 비늘.
+source = monster:Reef_Serpent
+
+[reef_fang]
+name = 암초뱀 이빨
+category = MonsterLoot
+price = 24
+rarity = uncommon
+description = 산호를 깨물어 먹는 단단한 이빨.
+source = monster:Reef_Serpent
+
+
+; --- Relic_Golem ---
+[relic_plate]
+name = 유물 장갑편
+category = MonsterLoot
+price = 28
+rarity = common
+description = 고대 문명의 합금 파편.
+source = monster:Relic_Golem
+
+[relic_eye]
+name = 유물 감시안
+category = MonsterLoot
+price = 60
+rarity = uncommon
+description = 수천 년을 지켜본 수정 눈.
+source = monster:Relic_Golem
+
+
+; --- Relic_Ram ---
+[relic_horn]
+name = 유적 양뿔
+category = MonsterLoot
+price = 12
+rarity = common
+description = 고대 유적에 살던 양의 뿔 파편.
+source = monster:Relic_Ram
+
+[relic_wool]
+name = 유적 양모
+category = MonsterLoot
+price = 26
+rarity = uncommon
+description = 폐허의 이끼가 엉킨 양모.
+source = monster:Relic_Ram
+
+
+; --- Resonance_Wisp ---
+[resonance_dust]
+name = 공명 가루
+category = MonsterLoot
+price = 14
+rarity = common
+description = 진동하며 빛나는 미세한 결정 가루.
+source = monster:Resonance_Wisp
+
+[resonance_gem]
+name = 공명 보석
+category = MonsterLoot
+price = 34
+rarity = uncommon
+description = 주변 수정과 공명하는 보석.
+source = monster:Resonance_Wisp
+
+
+; --- Ridge_Goat ---
+[goat_horn_chip]
+name = 산양 뿔조각
+category = MonsterLoot
+price = 14
+rarity = common
+description = 능선 바람에 단련된 뿔 파편.
+source = monster:Ridge_Goat
+
+[goat_wool]
+name = 산양 거친 털
+category = MonsterLoot
+price = 30
+rarity = uncommon
+description = 산악 한기에 적응한 두꺼운 양모.
+source = monster:Ridge_Goat
+
+
+; --- Rock_Golem_Small ---
+[golem_chip]
+name = 골렘 석편
+category = MonsterLoot
+price = 12
+rarity = common
+description = 바위 골렘에서 떨어진 단단한 돌조각.
+source = monster:Rock_Golem_Small
+
+[golem_dust]
+name = 골렘 분진
+category = MonsterLoot
+price = 28
+rarity = uncommon
+description = 마력이 스민 미세한 석분. 연금술 재료.
+source = monster:Rock_Golem_Small
+
+
+; --- Ruin_Crawler ---
+[crawler_chitin]
+name = 배회자 외골격
+category = MonsterLoot
+price = 24
+rarity = common
+description = 폐허를 기어다니던 딱딱한 껍질.
+source = monster:Ruin_Crawler
+
+[crawler_antenna]
+name = 배회자 촉수
+category = MonsterLoot
+price = 52
+rarity = uncommon
+description = 폐허의 위험을 감지하는 촉수.
+source = monster:Ruin_Crawler
+
+
+; --- Ruin_Gargoyle ---
+[gargoyle_stone]
+name = 가고일 석편
+category = MonsterLoot
+price = 22
+rarity = common
+description = 유적을 지키던 석상의 파편.
+source = monster:Ruin_Gargoyle
+
+[gargoyle_gem]
+name = 가고일 보석
+category = MonsterLoot
+price = 48
+rarity = uncommon
+description = 석상의 눈에 박혀 있던 보석.
+source = monster:Ruin_Gargoyle
+
+
+; --- Ruin_Lurker ---
+[lurker_claw]
+name = 잠복자 발톱
+category = MonsterLoot
+price = 16
+rarity = common
+description = 폐허 속에서 매복하던 날카로운 발톱.
+source = monster:Ruin_Lurker
+
+[lurker_eye]
+name = 잠복자 눈
+category = MonsterLoot
+price = 36
+rarity = uncommon
+description = 어둠 속에서 빛나는 붉은 눈.
+source = monster:Ruin_Lurker
+
+
+; --- Ruin_Moss_Golem ---
+[moss_stone]
+name = 이끼돌
+category = MonsterLoot
+price = 18
+rarity = common
+description = 유적 이끼가 뒤덮인 돌조각.
+source = monster:Ruin_Moss_Golem
+
+[moss_core]
+name = 이끼 핵
+category = MonsterLoot
+price = 40
+rarity = uncommon
+description = 뿌리와 돌이 엉킨 골렘의 핵.
+source = monster:Ruin_Moss_Golem
+
+
+; --- Ruin_Scout ---
+[scout_lens]
+name = 정찰기 렌즈
+category = MonsterLoot
+price = 16
+rarity = common
+description = 고대 감시 장치의 수정 렌즈.
+source = monster:Ruin_Scout
+
+[scout_circuit]
+name = 정찰기 회로
+category = MonsterLoot
+price = 36
+rarity = uncommon
+description = 아직 작동하는 고대 회로판 조각.
+source = monster:Ruin_Scout
+
+
+; --- Ruin_Sovereign ---
+[sovereign_crown]
+name = 군주의 왕관편
+category = MonsterLoot
+price = 125
+rarity = rare
+description = 폐허를 다스리던 왕관 조각.
+source = monster:Ruin_Sovereign
+
+
+; --- Salt_Jackal ---
+[jackal_tooth]
+name = 자칼 이빨
+category = MonsterLoot
+price = 8
+rarity = common
+description = 소금기 묻은 날카로운 이빨.
+source = monster:Salt_Jackal
+
+[jackal_hide]
+name = 자칼 가죽
+category = MonsterLoot
+price = 20
+rarity = uncommon
+description = 바다 소금에 절여진 질긴 가죽.
+source = monster:Salt_Jackal
+
+
+; --- Sand_Crab ---
+[sand_shell]
+name = 모래 게딱지
+category = MonsterLoot
+price = 5
+rarity = common
+description = 모래에 묻혀 있던 작은 게 껍데기.
+source = monster:Sand_Crab
+
+[sand_pincer]
+name = 모래 집게
+category = MonsterLoot
+price = 14
+rarity = uncommon
+description = 의외로 단단한 작은 집게.
+source = monster:Sand_Crab
+
+
+; --- Sand_Wraith ---
+[sand_ash]
+name = 모래 잔영
+category = MonsterLoot
+price = 16
+rarity = common
+description = 사막에 남겨진 유령의 모래 흔적.
+source = monster:Sand_Wraith
+
+[sand_gem]
+name = 사막 망령석
+category = MonsterLoot
+price = 38
+rarity = uncommon
+description = 사막의 원한이 응축된 보석.
+source = monster:Sand_Wraith
+
+
+; --- Sandglass_Serpent ---
+[glass_scale]
+name = 유리뱀 비늘
+category = MonsterLoot
+price = 20
+rarity = common
+description = 유리처럼 반짝이는 투명한 비늘.
+source = monster:Sandglass_Serpent
+
+[glass_fang]
+name = 유리뱀 이빨
+category = MonsterLoot
+price = 46
+rarity = uncommon
+description = 모래가 녹아 만들어진 유리 이빨.
+source = monster:Sandglass_Serpent
+
+
+; --- Sea_Drake ---
+[sea_scale]
+name = 바다 드레이크 비늘
+category = MonsterLoot
+price = 24
+rarity = common
+description = 파도빛으로 빛나는 거대한 비늘.
+source = monster:Sea_Drake
+
+[sea_fang]
+name = 바다 드레이크 이빨
+category = MonsterLoot
+price = 52
+rarity = uncommon
+description = 해류를 가르는 날카로운 이빨.
+source = monster:Sea_Drake
+
+
+; --- Sea_Hawk ---
+[hawk_feather]
+name = 해상매 깃
+category = MonsterLoot
+price = 22
+rarity = common
+description = 바다 위를 지배하는 매의 날카로운 깃.
+source = monster:Sea_Hawk
+
+[hawk_talon]
+name = 해상매 발톱
+category = MonsterLoot
+price = 48
+rarity = uncommon
+description = 바다 짐승을 낚는 강철 발톱.
+source = monster:Sea_Hawk
+
+
+; --- Sealed_Construct ---
+[construct_plate]
+name = 봉인 구조체 갑편
+category = MonsterLoot
+price = 24
+rarity = common
+description = 해제된 봉인의 금속 파편.
+source = monster:Sealed_Construct
+
+[construct_core]
+name = 봉인 핵
+category = MonsterLoot
+price = 54
+rarity = uncommon
+description = 봉인 에너지가 담긴 핵.
+source = monster:Sealed_Construct
+
+
+; --- Sealed_Shade ---
+[shade_seal]
+name = 봉인 파편
+category = MonsterLoot
+price = 12
+rarity = common
+description = 무언가를 가두던 봉인의 조각.
+source = monster:Sealed_Shade
+
+[shade_whisper]
+name = 그늘의 속삭임
+category = MonsterLoot
+price = 28
+rarity = uncommon
+description = 봉인된 어둠의 메아리.
+source = monster:Sealed_Shade
+
+
+; --- Sector_Overseer ---
+[overseer_plate]
+name = 감찰자 장갑편
+category = MonsterLoot
+price = 18
+rarity = common
+description = 구역을 지배하던 자의 금속 파편.
+source = monster:Sector_Overseer
+
+[overseer_core]
+name = 감찰자 핵
+category = MonsterLoot
+price = 42
+rarity = uncommon
+description = 감찰 프로그램이 담긴 핵.
+source = monster:Sector_Overseer
+
+
+; --- Shadow_Colossus ---
+[shadow_heart]
+name = 그림자 심장
+category = MonsterLoot
+price = 140
+rarity = rare
+description = 빛을 삼키는 어둠의 심장.
+source = monster:Shadow_Colossus
+
+
+; --- Shadow_Drake ---
+[drake_shadow]
+name = 그림자 용린
+category = MonsterLoot
+price = 68
+rarity = uncommon
+description = 어둠 자체로 이루어진 용의 비늘.
+source = monster:Shadow_Drake
+
+
+; --- Shadow_Wraith ---
+[shadow_thread]
+name = 그림자 실
+category = MonsterLoot
+price = 16
+rarity = common
+description = 어둠이 응축된 실 같은 잔영.
+source = monster:Shadow_Wraith
+
+[shadow_pearl]
+name = 그림자 진주
+category = MonsterLoot
+price = 40
+rarity = uncommon
+description = 칠흑빛으로 빛나는 구슬.
+source = monster:Shadow_Wraith
+
+
+; --- Shore_Wisp ---
+[shore_light]
+name = 해안 빛조각
+category = MonsterLoot
+price = 7
+rarity = common
+description = 물결 위에 떠다니는 빛 파편.
+source = monster:Shore_Wisp
+
+[shore_gem]
+name = 해안 보석
+category = MonsterLoot
+price = 18
+rarity = uncommon
+description = 파도에 깎인 반짝이는 돌.
+source = monster:Shore_Wisp
+
+
+; --- Shore_Wyvern ---
+[wyvern_scale]
+name = 해안 와이번 비늘
+category = MonsterLoot
+price = 10
+rarity = common
+description = 바닷바람에 단련된 초록빛 비늘.
+source = monster:Shore_Wyvern
+
+[wyvern_wing_membrane]
+name = 와이번 날개막
+category = MonsterLoot
+price = 24
+rarity = uncommon
+description = 질기고 방수가 되는 날개 조각.
+source = monster:Shore_Wyvern
+
+
+; --- Shrine_Crow ---
+[crow_feather]
+name = 사당 까마귀 깃
+category = MonsterLoot
+price = 12
+rarity = common
+description = 불길한 광택이 도는 검은 깃털.
+source = monster:Shrine_Crow
+
+[crow_talisman]
+name = 까마귀 부적편
+category = MonsterLoot
+price = 30
+rarity = uncommon
+description = 사당의 기운이 깃든 부적 조각.
+source = monster:Shrine_Crow
+
+
+; --- Siege_Golem ---
+[siege_plate]
+name = 공성 장갑편
+category = MonsterLoot
+price = 20
+rarity = common
+description = 두껍고 무거운 금속 장갑 조각.
+source = monster:Siege_Golem
+
+[siege_piston]
+name = 공성 피스톤
+category = MonsterLoot
+price = 45
+rarity = uncommon
+description = 강한 힘이 담겼던 구동부품.
+source = monster:Siege_Golem
+
+[siege_core]
+name = 공성 동력핵
+category = MonsterLoot
+price = 85
+rarity = rare
+description = 골렘을 움직이던 핵심 동력원.
+source = monster:Siege_Golem
+
+
+; --- Sign_Prowler ---
+[sign_claw]
+name = 사인 발톱
+category = MonsterLoot
+price = 16
+rarity = common
+description = 금빛 간판처럼 빛나는 발톱.
+source = monster:Sign_Prowler
+
+[sign_plate]
+name = 황금 사인판
+category = MonsterLoot
+price = 38
+rarity = uncommon
+description = 문자가 새겨진 빛나는 금속 조각.
+source = monster:Sign_Prowler
+
+
+; --- Silver_Fang ---
+[silver_fang_tooth]
+name = 은아 송곳니
+category = MonsterLoot
+price = 16
+rarity = common
+description = 달빛을 반사하는 은색 송곳니.
+source = monster:Silver_Fang
+
+[silver_fang_pelt]
+name = 은아 가죽
+category = MonsterLoot
+price = 36
+rarity = uncommon
+description = 은빛이 도는 고급스러운 가죽.
+source = monster:Silver_Fang
+
+
+; --- Sky_Knight ---
+[sky_plate]
+name = 천공 기사 갑편
+category = MonsterLoot
+price = 22
+rarity = common
+description = 하늘에서 전투하던 기사의 갑옷.
+source = monster:Sky_Knight
+
+[sky_plume]
+name = 천공 기사 깃
+category = MonsterLoot
+price = 48
+rarity = uncommon
+description = 구름 위를 나는 기사의 장식깃.
+source = monster:Sky_Knight
+
+
+; --- Sky_Koi ---
+[koi_scale]
+name = 천광 비늘
+category = MonsterLoot
+price = 16
+rarity = common
+description = 하늘빛을 반사하는 잉어 비늘.
+source = monster:Sky_Koi
+
+[koi_fin]
+name = 천광 지느러미
+category = MonsterLoot
+price = 36
+rarity = uncommon
+description = 빛을 머금은 반투명한 지느러미.
+source = monster:Sky_Koi
+
+
+; --- Sky_Titan ---
+[titan_bone]
+name = 거인 뼈조각
+category = MonsterLoot
+price = 60
+rarity = uncommon
+description = 하늘을 찌르던 거인의 뼈.
+source = monster:Sky_Titan
+
+
+; --- Skystone_Gargoyle ---
+[gargoyle_chip]
+name = 가고일 석편
+category = MonsterLoot
+price = 20
+rarity = common
+description = 하늘돌로 만들어진 가고일 파편.
+source = monster:Skystone_Gargoyle
+
+[gargoyle_eye]
+name = 가고일 눈
+category = MonsterLoot
+price = 46
+rarity = uncommon
+description = 하늘을 응시하던 석조 눈.
+source = monster:Skystone_Gargoyle
+
+
+; --- Snowdrift_Golem ---
+[snow_chunk]
+name = 설퇴 덩어리
+category = MonsterLoot
+price = 16
+rarity = common
+description = 녹지 않는 단단한 눈 뭉치.
+source = monster:Snowdrift_Golem
+
+[snow_core]
+name = 설퇴 핵
+category = MonsterLoot
+price = 38
+rarity = uncommon
+description = 골렘을 움직이던 얼음 구슬.
+source = monster:Snowdrift_Golem
+
+
+; --- Snowfield_Wraith ---
+[snowfield_mist]
+name = 설원 잔영
+category = MonsterLoot
+price = 28
+rarity = common
+description = 눈보라 속에 남은 유령의 흔적.
+source = monster:Snowfield_Wraith
+
+[snowfield_crystal]
+name = 설원 망령석
+category = MonsterLoot
+price = 60
+rarity = uncommon
+description = 한기와 원한이 응축된 결정.
+source = monster:Snowfield_Wraith
+
+
+; --- Solar_Drake ---
+[solar_scale]
+name = 태양 비늘
+category = MonsterLoot
+price = 24
+rarity = common
+description = 햇빛처럼 빛나는 따뜻한 비늘.
+source = monster:Solar_Drake
+
+[solar_fang]
+name = 태양 이빨
+category = MonsterLoot
+price = 54
+rarity = uncommon
+description = 빛의 열기가 서린 이빨.
+source = monster:Solar_Drake
+
+
+; --- Spore_Mushroom ---
+[spore_cap]
+name = 포자 갓
+category = MonsterLoot
+price = 6
+rarity = common
+description = 터지면 가루가 퍼지는 버섯 갓.
+source = monster:Spore_Mushroom
+
+[spore_powder]
+name = 포자 가루
+category = MonsterLoot
+price = 16
+rarity = uncommon
+description = 다양한 용도의 미세한 포자.
+source = monster:Spore_Mushroom
+
+
+; --- Spray_Gull ---
+[gull_feather]
+name = 갈매기 깃털
+category = MonsterLoot
+price = 6
+rarity = common
+description = 바닷바람에 단련된 질긴 깃털.
+source = monster:Spray_Gull
+
+[gull_beak]
+name = 갈매기 부리
+category = MonsterLoot
+price = 16
+rarity = uncommon
+description = 해산물을 깨뜨리던 단단한 부리.
+source = monster:Spray_Gull
+
+
+; --- Sprout_Fox ---
+[fox_tuft]
+name = 여우 꼬리털
+category = MonsterLoot
+price = 9
+rarity = common
+description = 묘목 향이 나는 부드러운 꼬리털.
+source = monster:Sprout_Fox
+
+[fox_amber]
+name = 여우 호박
+category = MonsterLoot
+price = 24
+rarity = uncommon
+description = 여우 왕관에 맺힌 수지 구슬.
+source = monster:Sprout_Fox
+
+
+; --- Starfall_Wisp ---
+[starfall_dust]
+name = 유성 가루
+category = MonsterLoot
+price = 12
+rarity = common
+description = 별이 떨어진 자리의 빛나는 가루.
+source = monster:Starfall_Wisp
+
+[starfall_gem]
+name = 유성 보석
+category = MonsterLoot
+price = 28
+rarity = uncommon
+description = 밤하늘에서 떨어진 작은 보석.
+source = monster:Starfall_Wisp
+
+
+; --- Starlit_Sprite ---
+[star_dust]
+name = 별빛 가루
+category = MonsterLoot
+price = 10
+rarity = common
+description = 밤하늘에서 떨어진 듯한 반짝이는 가루.
+source = monster:Starlit_Sprite
+
+[star_drop]
+name = 별빛 물방울
+category = MonsterLoot
+price = 24
+rarity = uncommon
+description = 별빛이 녹아내린 듯한 맑은 방울.
+source = monster:Starlit_Sprite
+
+
+; --- Static_Hound ---
+[static_fang]
+name = 정전 이빨
+category = MonsterLoot
+price = 16
+rarity = common
+description = 정전기가 튀는 날카로운 이빨.
+source = monster:Static_Hound
+
+[static_fur]
+name = 정전 갈기
+category = MonsterLoot
+price = 36
+rarity = uncommon
+description = 만지면 찌릿한 전하를 띤 갈기.
+source = monster:Static_Hound
+
+
+; --- Stone_Prowler ---
+[prowler_claw]
+name = 배회자 발톱
+category = MonsterLoot
+price = 10
+rarity = common
+description = 바위를 타던 마모된 발톱.
+source = monster:Stone_Prowler
+
+[prowler_fur]
+name = 배회자 가죽
+category = MonsterLoot
+price = 24
+rarity = uncommon
+description = 암벽 색으로 위장된 가죽 조각.
+source = monster:Stone_Prowler
+
+
+; --- Stone_Revenant ---
+[stone_soul]
+name = 석조 혼편
+category = MonsterLoot
+price = 62
+rarity = uncommon
+description = 돌에 갇힌 영혼의 파편.
+source = monster:Stone_Revenant
+
+
+; --- Stonehorn ---
+[stonehorn_chip]
+name = 우각수 뿔편
+category = MonsterLoot
+price = 18
+rarity = common
+description = 바위처럼 단단한 뿔의 파편.
+source = monster:Stonehorn
+
+[stonehorn_hide]
+name = 우각수 가죽
+category = MonsterLoot
+price = 40
+rarity = uncommon
+description = 돌처럼 두꺼운 갈색 가죽.
+source = monster:Stonehorn
+
+
+; --- Storm_Giant ---
+[giant_knuckle]
+name = 폭풍 거인 관절
+category = MonsterLoot
+price = 26
+rarity = common
+description = 번개를 품은 거인의 관절뼈.
+source = monster:Storm_Giant
+
+[giant_belt_shard]
+name = 폭풍 거인 띠조각
+category = MonsterLoot
+price = 55
+rarity = uncommon
+description = 구름을 엮어 만든 허리띠 파편.
+source = monster:Storm_Giant
+
+
+; --- Storm_Lizard ---
+[storm_scale]
+name = 뇌전 비늘
+category = MonsterLoot
+price = 14
+rarity = common
+description = 정전기를 머금은 도마뱀 비늘.
+source = monster:Storm_Lizard
+
+[storm_tail]
+name = 폭풍 꼬리
+category = MonsterLoot
+price = 32
+rarity = uncommon
+description = 잘리고도 한참 꿈틀거리는 꼬리.
+source = monster:Storm_Lizard
+
+
+; --- Storm_Sprite ---
+[storm_spark]
+name = 폭풍 불꽃
+category = MonsterLoot
+price = 8
+rarity = common
+description = 요정이 남긴 지직거리는 빛 조각.
+source = monster:Storm_Sprite
+
+[storm_essence]
+name = 폭풍 정수
+category = MonsterLoot
+price = 22
+rarity = uncommon
+description = 바람과 번개가 응축된 작은 구슬.
+source = monster:Storm_Sprite
+
+
+; --- Storm_Titan ---
+[storm_heart]
+name = 폭풍 거인 심장
+category = MonsterLoot
+price = 130
+rarity = rare
+description = 폭풍이 응축된 심장석.
+source = monster:Storm_Titan
+
+
+; --- Sulfur_Golem ---
+[sulfur_chunk]
+name = 유황 덩어리
+category = MonsterLoot
+price = 14
+rarity = common
+description = 노란빛 유황이 굳어진 암석 조각.
+source = monster:Sulfur_Golem
+
+[sulfur_core]
+name = 유황 핵
+category = MonsterLoot
+price = 34
+rarity = uncommon
+description = 유독 가스를 품은 골렘의 핵.
+source = monster:Sulfur_Golem
+
+
+; --- Summit_Devourer ---
+[devourer_fang]
+name = 포식자 어금니
+category = MonsterLoot
+price = 24
+rarity = common
+description = 산정에서 모든 것을 씹어먹던 이빨.
+source = monster:Summit_Devourer
+
+[devourer_claw]
+name = 포식자 발톱
+category = MonsterLoot
+price = 52
+rarity = uncommon
+description = 만년설을 갈라놓는 거대한 발톱.
+source = monster:Summit_Devourer
+
+[summit_heart]
+name = 산정의 심장
+category = MonsterLoot
+price = 110
+rarity = rare
+description = 설산 최상위 포식자의 심장석.
+source = monster:Summit_Devourer
+
+
+; --- Sun_Colossus ---
+[sun_plate]
+name = 태양 거인 갑편
+category = MonsterLoot
+price = 28
+rarity = common
+description = 정오의 빛처럼 뜨거운 금속 조각.
+source = monster:Sun_Colossus
+
+[sun_core]
+name = 태양 핵
+category = MonsterLoot
+price = 62
+rarity = uncommon
+description = 영원히 빛나는 거인의 동력원.
+source = monster:Sun_Colossus
+
+[sun_heart]
+name = 태양의 심장
+category = MonsterLoot
+price = 130
+rarity = rare
+description = 항성의 불꽃이 응축된 보석.
+source = monster:Sun_Colossus
+
+
+; --- Sunken_Wraith ---
+[sunken_coral]
+name = 침수 산호편
+category = MonsterLoot
+price = 16
+rarity = common
+description = 수몰도시에서 건져올린 산호.
+source = monster:Sunken_Wraith
+
+[sunken_pearl]
+name = 침수 진주
+category = MonsterLoot
+price = 38
+rarity = uncommon
+description = 가라앉은 도시의 슬픔이 맺힌 진주.
+source = monster:Sunken_Wraith
+
+
+; --- Swamp_Toad_King ---
+[toad_king_crown]
+name = 두꺼비왕 왕관편
+category = MonsterLoot
+price = 12
+rarity = common
+description = 늪의 왕 머리에서 떨어진 돌조각.
+source = monster:Swamp_Toad_King
+
+[toad_king_toxin]
+name = 왕독즙
+category = MonsterLoot
+price = 30
+rarity = uncommon
+description = 왕급 독두꺼비의 맹독.
+source = monster:Swamp_Toad_King
+
+
+; --- Tempest_Lord ---
+[tempest_shard]
+name = 폭풍 결정
+category = MonsterLoot
+price = 26
+rarity = common
+description = 폭풍의 힘이 응축된 결정 파편.
+source = monster:Tempest_Lord
+
+[tempest_crown]
+name = 폭풍 왕관편
+category = MonsterLoot
+price = 58
+rarity = uncommon
+description = 바람의 지배자가 쓰던 왕관 조각.
+source = monster:Tempest_Lord
+
+[tempest_eye]
+name = 폭풍의 눈
+category = MonsterLoot
+price = 120
+rarity = rare
+description = 태풍 중심의 고요가 응축된 보석.
+source = monster:Tempest_Lord
+
+
+; --- Temple_Warden ---
+[warden_seal]
+name = 수문장 봉인편
+category = MonsterLoot
+price = 22
+rarity = common
+description = 신전을 지키던 봉인의 파편.
+source = monster:Temple_Warden
+
+[warden_relic]
+name = 수문장 유물
+category = MonsterLoot
+price = 50
+rarity = uncommon
+description = 고대 신전의 수호력이 담긴 유물.
+source = monster:Temple_Warden
+
+
+; --- Throne_Guardian ---
+[guardian_shard]
+name = 수호자 파편
+category = MonsterLoot
+price = 12
+rarity = common
+description = 옥좌를 지키던 자의 갑옷 조각.
+source = monster:Throne_Guardian
+
+[guardian_gem]
+name = 수호자 보석
+category = MonsterLoot
+price = 28
+rarity = uncommon
+description = 충성의 빛이 깃든 어두운 보석.
+source = monster:Throne_Guardian
+
+
+; --- Thunder_Eagle ---
+[thunder_feather]
+name = 천둥 깃털
+category = MonsterLoot
+price = 15
+rarity = common
+description = 정전기에 서걱거리는 큰 깃털.
+source = monster:Thunder_Eagle
+
+[eagle_talon]
+name = 독수리 발톱
+category = MonsterLoot
+price = 34
+rarity = uncommon
+description = 단단하고 날카로운 맹금의 발톱.
+source = monster:Thunder_Eagle
+
+
+; --- Thunder_Golem ---
+[thunder_core]
+name = 뇌격 핵
+category = MonsterLoot
+price = 75
+rarity = uncommon
+description = 번개를 품은 골렘의 핵.
+source = monster:Thunder_Golem
+
+
+; --- Tide_Crab ---
+[tide_shell]
+name = 조류 게딱지
+category = MonsterLoot
+price = 6
+rarity = common
+description = 밀물에 밀려온 작은 게 껍데기.
+source = monster:Tide_Crab
+
+[tide_pearl]
+name = 조류 진주
+category = MonsterLoot
+price = 16
+rarity = uncommon
+description = 게가 품고 있던 작고 둥근 진주.
+source = monster:Tide_Crab
+
+
+; --- Tide_Hermit ---
+[hermit_shell]
+name = 도사게 껍데기
+category = MonsterLoot
+price = 11
+rarity = common
+description = 조개와 산호가 붙은 소라 껍데기.
+source = monster:Tide_Hermit
+
+[hermit_pearl]
+name = 쇄파 진주
+category = MonsterLoot
+price = 30
+rarity = uncommon
+description = 도사게가 품고 있던 작은 진주.
+source = monster:Tide_Hermit
+
+
+; --- Tide_Sprite ---
+[tide_drop]
+name = 조수 물방울
+category = MonsterLoot
+price = 6
+rarity = common
+description = 바닷물이 굳어진 듯한 맑은 구슬.
+source = monster:Tide_Sprite
+
+[tide_charm]
+name = 조수 요정 부적
+category = MonsterLoot
+price = 16
+rarity = uncommon
+description = 밀물과 썰물의 힘이 깃든 작은 패.
+source = monster:Tide_Sprite
+
+
+; --- Tower_Deity ---
+[deity_fragment]
+name = 신격 파편
+category = MonsterLoot
+price = 200
+rarity = rare
+description = 탑에 깃든 신격의 조각.
+source = monster:Tower_Deity
+
+
+; --- Tower_Revenant ---
+[revenant_chain]
+name = 망령의 쇠사슬
+category = MonsterLoot
+price = 55
+rarity = uncommon
+description = 탑에 묶인 영혼의 쇠사슬.
+source = monster:Tower_Revenant
+
+
+; --- Tower_Sentinel ---
+[tower_bolt]
+name = 탑 감시자 볼트
+category = MonsterLoot
+price = 18
+rarity = common
+description = 탑을 지키던 자의 금속 부품.
+source = monster:Tower_Sentinel
+
+[tower_lens]
+name = 탑 감시 렌즈
+category = MonsterLoot
+price = 40
+rarity = uncommon
+description = 탑 내부를 감시하던 수정 렌즈.
+source = monster:Tower_Sentinel
+
+
+; --- Tower_Sovereign ---
+[sovereign_seal]
+name = 탑 군주 인장
+category = MonsterLoot
+price = 160
+rarity = rare
+description = 탑 전체를 지배하던 인장.
+source = monster:Tower_Sovereign
+
+
+; --- Trail_Wolf ---
+[trail_fang]
+name = 산책로 늑대 이빨
+category = MonsterLoot
+price = 8
+rarity = common
+description = 산길에서 주운 작은 이빨.
+source = monster:Trail_Wolf
+
+[trail_pelt]
+name = 산책로 늑대 가죽
+category = MonsterLoot
+price = 20
+rarity = uncommon
+description = 아직 어린 늑대의 부드러운 가죽.
+source = monster:Trail_Wolf
+
+
+; --- Treant_Elder ---
+[elder_bark]
+name = 장로 수피
+category = MonsterLoot
+price = 14
+rarity = common
+description = 수백 년 된 나무의 단단한 껍질.
+source = monster:Treant_Elder
+
+[elder_sap]
+name = 장로 수액
+category = MonsterLoot
+price = 32
+rarity = uncommon
+description = 오래된 지혜가 담긴 듯한 금빛 수액.
+source = monster:Treant_Elder
+
+
+; --- Treant_Sapling ---
+[sapling_bark]
+name = 묘목 껍질
+category = MonsterLoot
+price = 9
+rarity = common
+description = 살아있는 나무의 부드러운 껍질 조각.
+source = monster:Treant_Sapling
+
+[sapling_sap]
+name = 묘목 수액
+category = MonsterLoot
+price = 24
+rarity = uncommon
+description = 은은한 초록빛이 도는 맑은 수액.
+source = monster:Treant_Sapling
+
+
+; --- Trial_Golem ---
+[trial_stone]
+name = 시련 돌
+category = MonsterLoot
+price = 22
+rarity = common
+description = 시련을 견딘 자만 얻는 돌.
+source = monster:Trial_Golem
+
+[trial_core]
+name = 시련 핵
+category = MonsterLoot
+price = 48
+rarity = uncommon
+description = 시련의 에너지가 담긴 핵.
+source = monster:Trial_Golem
+
+
+; --- Triflower_Salamander ---
+[triflower_skin]
+name = 트리플라워 피막
+category = MonsterLoot
+price = 16
+rarity = common
+description = 세 색 꽃의 기운을 품은 피부.
+source = monster:Triflower_Salamander
+
+[triflower_oil]
+name = 트리플라워 화유
+category = MonsterLoot
+price = 36
+rarity = uncommon
+description = 세 가지 원소가 섞인 기름.
+source = monster:Triflower_Salamander
+
+
+; --- Vanishing_Revenant ---
+[revenant_thread]
+name = 소실 실타래
+category = MonsterLoot
+price = 20
+rarity = common
+description = 존재와 부재 사이의 가는 실.
+source = monster:Vanishing_Revenant
+
+[revenant_pearl]
+name = 소실 진주
+category = MonsterLoot
+price = 46
+rarity = uncommon
+description = 잡으려 하면 사라질 것 같은 구슬.
+source = monster:Vanishing_Revenant
+
+
+; --- Verdant_Colossus ---
+[verdant_bark]
+name = 세계수 수피
+category = MonsterLoot
+price = 30
+rarity = common
+description = 세계수를 지키는 거인의 껍질.
+source = monster:Verdant_Colossus
+
+[verdant_core]
+name = 세계수 핵
+category = MonsterLoot
+price = 68
+rarity = uncommon
+description = 세계수의 생명력이 담긴 핵.
+source = monster:Verdant_Colossus
+
+
+; --- Void_Hornet ---
+[hornet_stinger]
+name = 호넷 독침
+category = MonsterLoot
+price = 18
+rarity = common
+description = 무중력에서 날아온 날카로운 침.
+source = monster:Void_Hornet
+
+[hornet_wing]
+name = 호넷 날개
+category = MonsterLoot
+price = 38
+rarity = uncommon
+description = 공중에서 방향을 바꾸는 투명한 날개.
+source = monster:Void_Hornet
+
+
+; --- Void_Moth ---
+[void_dust]
+name = 허공 인분
+category = MonsterLoot
+price = 16
+rarity = common
+description = 중력을 무시하고 떠다니는 가루.
+source = monster:Void_Moth
+
+[void_wing]
+name = 허공 날개
+category = MonsterLoot
+price = 36
+rarity = uncommon
+description = 공간을 비트는 반투명한 날개.
+source = monster:Void_Moth
+
+
+; --- Void_Reaper ---
+[reaper_blade]
+name = 공허 낫날
+category = MonsterLoot
+price = 72
+rarity = uncommon
+description = 존재를 베는 낫의 날 파편.
+source = monster:Void_Reaper
+
+
+; --- Void_Stalker ---
+[void_claw]
+name = 공허 발톱
+category = MonsterLoot
+price = 20
+rarity = common
+description = 차원을 가르던 날카로운 발톱.
+source = monster:Void_Stalker
+
+[void_shard]
+name = 공허 파편
+category = MonsterLoot
+price = 48
+rarity = uncommon
+description = 공허의 기운이 서린 결정 조각.
+source = monster:Void_Stalker
+
+
+; --- Volcano_Serpent ---
+[volcano_fang]
+name = 화산뱀 이빨
+category = MonsterLoot
+price = 18
+rarity = common
+description = 용암 온도의 열기를 품은 이빨.
+source = monster:Volcano_Serpent
+
+[volcano_scale]
+name = 화산뱀 비늘
+category = MonsterLoot
+price = 42
+rarity = uncommon
+description = 마그마빛으로 빛나는 비늘.
+source = monster:Volcano_Serpent
+
+
+; --- Water_Deer ---
+[water_antler]
+name = 수면 사슴뿔
+category = MonsterLoot
+price = 18
+rarity = common
+description = 물빛이 도는 반투명한 뿔.
+source = monster:Water_Deer
+
+[water_hide]
+name = 수면 사슴 가죽
+category = MonsterLoot
+price = 42
+rarity = uncommon
+description = 물에 젖지 않는 신기한 가죽.
+source = monster:Water_Deer
+
+
+; --- Whiteout_Wraith ---
+[whiteout_mist]
+name = 실명 한기 조각
+category = MonsterLoot
+price = 22
+rarity = common
+description = 시야를 앗아가는 백색 안개 파편.
+source = monster:Whiteout_Wraith
+
+[whiteout_crystal]
+name = 백설 결정
+category = MonsterLoot
+price = 48
+rarity = uncommon
+description = 모든 빛을 삼키는 순백의 수정.
+source = monster:Whiteout_Wraith
+
+
+; --- Wild_Boar ---
+[boar_tusk]
+name = 멧돼지 엄니
+category = MonsterLoot
+price = 10
+rarity = common
+description = 거칠지만 단단한 엄니. 도구 재료로 쓸 수 있다.
+source = monster:Wild_Boar
+
+[boar_pelt]
+name = 멧돼지 가죽
+category = MonsterLoot
+price = 25
+rarity = uncommon
+description = 두툼하고 질긴 가죽. 방한구를 만들기 좋다.
+source = monster:Wild_Boar
+
+
+; --- Wind_Elemental ---
+[wind_feather]
+name = 바람 요정 깃
+category = MonsterLoot
+price = 7
+rarity = common
+description = 공기 중에 떠다니는 반투명한 깃.
+source = monster:Wind_Elemental
+
+[wind_crystal]
+name = 바람 결정
+category = MonsterLoot
+price = 20
+rarity = uncommon
+description = 바람이 굳어진 듯한 투명한 수정.
+source = monster:Wind_Elemental
+
+
+; --- Wolfpeak_Stalker ---
+[stalker_claw]
+name = 추적자 발톱
+category = MonsterLoot
+price = 17
+rarity = common
+description = 먹잇감을 놓치지 않는 날카로운 발톱.
+source = monster:Wolfpeak_Stalker
+
+[stalker_eye]
+name = 추적자 눈
+category = MonsterLoot
+price = 40
+rarity = uncommon
+description = 어둠 속에서도 빛나는 호박색 눈.
+source = monster:Wolfpeak_Stalker
+
+
+; --- World_Eater ---
+[eater_tooth]
+name = 세계 어금니
+category = MonsterLoot
+price = 155
+rarity = rare
+description = 세계를 삼키던 이빨 파편.
+source = monster:World_Eater
+
+
+; --- Worldseed_Sprite ---
+[worldseed_pollen]
+name = 세계씨앗 꽃가루
+category = MonsterLoot
+price = 18
+rarity = common
+description = 세계수의 힘이 담긴 빛나는 꽃가루.
+source = monster:Worldseed_Sprite
+
+[worldseed_nectar]
+name = 세계씨앗 꿀
+category = MonsterLoot
+price = 42
+rarity = uncommon
+description = 만물의 생명력이 응축된 꿀.
+source = monster:Worldseed_Sprite
+
+
+; --- Yusejeria_Mammoth ---
+[mammoth_tusk]
+name = 매머드 상아
+category = MonsterLoot
+price = 30
+rarity = common
+description = 태고의 거대한 상아 파편.
+source = monster:Yusejeria_Mammoth
+
+[mammoth_fur]
+name = 매머드 모피
+category = MonsterLoot
+price = 65
+rarity = uncommon
+description = 역사 그 자체인 고대 모피.
+source = monster:Yusejeria_Mammoth
+
+[mammoth_heart]
+name = 원시의 심장
+category = MonsterLoot
+price = 140
+rarity = rare
+description = 빙하기를 살아남은 심장석.
+source = monster:Yusejeria_Mammoth

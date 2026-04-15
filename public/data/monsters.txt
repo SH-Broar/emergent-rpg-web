@@ -26,21 +26,24 @@ name = 숲 슬라임
 attack = 12
 defense = 4
 hp = 50
-loot = Food:1:0.40, Herb:1:0.30, MonsterLoot:1:0.20
+loot = Food:1:0.08, Herb:1:0.08, MonsterLoot:1:0.08
+lootItems = slime_gel:1:0.16, slime_core:1:0.08
 
 [Wild_Boar]
 name = 야생 멧돼지
 attack = 10
 defense = 5
 hp = 100
-loot = Food:2:0.50, MonsterLoot:1:0.25, Herb:1:0.15
+loot = Food:2:0.08, MonsterLoot:1:0.08, Herb:1:0.08
+lootItems = boar_tusk:1:0.15, boar_pelt:1:0.07
 
 [Treant_Sapling]
 name = 나무요정 새싹
 attack = 10
 defense = 5
 hp = 100
-loot = Herb:2:0.45, Food:1:0.30, MonsterLoot:1:0.20
+loot = Herb:2:0.08, Food:1:0.08, MonsterLoot:1:0.08
+lootItems = sapling_bark:1:0.14, sapling_sap:1:0.07
 skillChance = 0.1
 skill_1_name = 뿌리 휘감기
 skill_1_type = attack
@@ -57,7 +60,8 @@ name = 나무요정 새싹 (강화형)
 attack = 26
 defense = 13
 hp = 140
-loot = Herb:2:0.45, Food:1:0.30, MonsterLoot:1:0.20
+loot = Herb:2:0.08, Food:1:0.08, MonsterLoot:1:0.08
+lootItems = sapling_bark:1:0.14, sapling_sap:1:0.07
 skillChance = 0.1
 skill_1_name = 뿌리 휘감기
 skill_1_type = attack
@@ -73,14 +77,16 @@ name = 동굴 박쥐
 attack = 16
 defense = 6
 hp = 40
-loot = Food:1:0.35, MonsterLoot:1:0.30, Herb:1:0.15
+loot = Food:1:0.08, MonsterLoot:1:0.08, Herb:1:0.08
+lootItems = bat_membrane:1:0.16, bat_fang:1:0.08
 
 [Rock_Golem_Small]
 name = 작은 바위골렘
 attack = 24
 defense = 16
 hp = 120
-loot = OreCommon:2:0.50, MonsterLoot:1:0.30, OreRare:1:0.08
+loot = OreCommon:2:0.08, MonsterLoot:1:0.08, OreRare:1:0.08
+lootItems = golem_chip:1:0.14, golem_dust:1:0.06
 skillChance = 0.15
 skill_1_name = 바위 던지기
 skill_1_type = attack
@@ -92,7 +98,8 @@ name = 광산 거미
 attack = 22
 defense = 8
 hp = 70
-loot = MonsterLoot:1:0.40, Herb:1:0.25, OreCommon:1:0.20
+loot = MonsterLoot:1:0.08, Herb:1:0.08, OreCommon:1:0.08
+lootItems = spider_thread:1:0.15, spider_venom:1:0.06
 
 ; -------------------------------------------------------
 ; Mist_Marsh  (difficulty 0.40)
@@ -103,14 +110,16 @@ name = 독두꺼비
 attack = 20
 defense = 10
 hp = 90
-loot = Herb:2:0.50, MonsterLoot:1:0.30, Food:1:0.20
+loot = Herb:2:0.08, MonsterLoot:1:0.08, Food:1:0.08
+lootItems = toad_wart:1:0.15, toad_toxin:1:0.07
 
 [Marsh_Serpent]
 name = 늪지 독사
 attack = 28
 defense = 12
 hp = 110
-loot = MonsterLoot:2:0.35, Herb:1:0.30, Equipment:1:0.05
+loot = MonsterLoot:2:0.08, Herb:1:0.08, Equipment:1:0.05
+lootItems = serpent_scale:1:0.14, serpent_fang:1:0.06
 skillChance = 0.2
 skill_1_name = 독 물기
 skill_1_type = attack
@@ -122,14 +131,16 @@ name = 안개 망령
 attack = 24
 defense = 6
 hp = 80
-loot = MonsterLoot:1:0.45, Herb:1:0.25, Equipment:1:0.06
+loot = MonsterLoot:1:0.08, Herb:1:0.08, Equipment:1:0.06
+lootItems = wraith_mist:1:0.14, wraith_ectoplasm:1:0.06
 
 [Fog_Wraith_Enhanced]
 name = 안개 망령 (강화형)
 attack = 38
 defense = 18
 hp = 170
-loot = MonsterLoot:1:0.45, Herb:1:0.25, Equipment:1:0.06
+loot = MonsterLoot:1:0.08, Herb:1:0.08, Equipment:1:0.06
+lootItems = wraith_mist:1:0.14, wraith_ectoplasm:1:0.06
 
 ; -------------------------------------------------------
 ; Bandit_Den  (difficulty 0.50)
@@ -140,14 +151,16 @@ name = 산적 정찰병
 attack = 26
 defense = 14
 hp = 100
-loot = Food:2:0.40, MonsterLoot:1:0.30, Equipment:1:0.08
+loot = Food:2:0.08, MonsterLoot:1:0.08, Equipment:1:0.08
+lootItems = bandit_dagger:1:0.14, bandit_map:1:0.07
 
 [Bandit_Warrior]
 name = 산적 전사
 attack = 27
 defense = 17
 hp = 119
-loot = Equipment:1:0.12, MonsterLoot:2:0.35, Food:1:0.25
+loot = Equipment:1:0.08, MonsterLoot:2:0.08, Food:1:0.08
+lootItems = bandit_buckle:1:0.13, bandit_whetstone:1:0.06
 skillChance = 0.2
 skill_1_name = 강타
 skill_1_type = attack
@@ -159,7 +172,8 @@ name = 산적 마법사
 attack = 31
 defense = 8
 hp = 76
-loot = Herb:2:0.40, MonsterLoot:1:0.35, Equipment:1:0.10
+loot = Herb:2:0.08, MonsterLoot:1:0.08, Equipment:1:0.08
+lootItems = bandit_scroll:1:0.12, bandit_catalyst:1:0.05
 skillChance = 0.3
 skill_1_name = 화염구
 skill_1_type = attack
@@ -175,7 +189,8 @@ name = 산적 두목
 attack = 34
 defense = 20
 hp = 153
-loot = Equipment:1:0.20, MonsterLoot:2:0.40, OreRare:1:0.10, Food:2:0.25
+loot = Equipment:1:0.08, MonsterLoot:2:0.08, OreRare:1:0.08, Food:2:0.08
+lootItems = bandit_insignia:1:0.12, bandit_locket:1:0.05, bandit_treasure_key:1:0.02
 skillChance = 0.3
 skill_1_name = 연속 베기
 skill_1_type = attack
@@ -195,21 +210,24 @@ name = 폭풍 도마뱀
 attack = 14
 defense = 7
 hp = 110
-loot = MonsterLoot:2:0.40, OreCommon:1:0.30, Equipment:1:0.08
+loot = MonsterLoot:2:0.08, OreCommon:1:0.08, Equipment:1:0.08
+lootItems = storm_scale:1:0.14, storm_tail:1:0.06
 
 [Storm_Lizard_Enhanced]
 name = 폭풍 도마뱀 (강화형)
 attack = 42
 defense = 21
 hp = 180
-loot = MonsterLoot:2:0.40, OreCommon:1:0.30, Equipment:1:0.08
+loot = MonsterLoot:2:0.08, OreCommon:1:0.08, Equipment:1:0.08
+lootItems = storm_scale:1:0.14, storm_tail:1:0.06
 
 [Lightning_Elemental]
 name = 번개 요정
 attack = 12
 defense = 6
 hp = 105
-loot = MonsterLoot:2:0.45, OreRare:1:0.12, Equipment:1:0.10
+loot = MonsterLoot:2:0.08, OreRare:1:0.08, Equipment:1:0.08
+lootItems = spark_dust:1:0.14, thunder_pearl:1:0.05
 skillChance = 0.3
 skill_1_name = 전격 방전
 skill_1_type = attack
@@ -222,7 +240,8 @@ name = 번개 요정 (강화형)
 attack = 44
 defense = 22
 hp = 185
-loot = MonsterLoot:2:0.45, OreRare:1:0.12, Equipment:1:0.10
+loot = MonsterLoot:2:0.08, OreRare:1:0.08, Equipment:1:0.08
+lootItems = spark_dust:1:0.14, thunder_pearl:1:0.05
 skillChance = 0.3
 skill_1_name = 전격 방전
 skill_1_type = attack
@@ -234,7 +253,8 @@ name = 천둥 독수리
 attack = 31
 defense = 12
 hp = 94
-loot = MonsterLoot:2:0.40, Food:2:0.30, Equipment:1:0.09
+loot = MonsterLoot:2:0.08, Food:2:0.08, Equipment:1:0.08
+lootItems = thunder_feather:1:0.13, eagle_talon:1:0.06
 
 ; -------------------------------------------------------
 ; Flame_Cavern  (difficulty 0.72)
@@ -245,21 +265,24 @@ name = 화염 도롱뇽
 attack = 12
 defense = 6
 hp = 105
-loot = MonsterLoot:2:0.45, OreCommon:2:0.35, Herb:1:0.20
+loot = MonsterLoot:2:0.08, OreCommon:2:0.08, Herb:1:0.08
+lootItems = fire_newt_skin:1:0.14, fire_newt_oil:1:0.06
 
 [Fire_Salamander_Enhanced]
 name = 화염 도롱뇽 (강화형)
 attack = 34
 defense = 17
 hp = 160
-loot = MonsterLoot:2:0.45, OreCommon:2:0.35, Herb:1:0.20
+loot = MonsterLoot:2:0.08, OreCommon:2:0.08, Herb:1:0.08
+lootItems = fire_newt_skin:1:0.14, fire_newt_oil:1:0.06
 
 [Lava_Golem]
 name = 용암 골렘
 attack = 37
 defense = 26
 hp = 170
-loot = OreRare:2:0.20, OreCommon:3:0.45, MonsterLoot:2:0.35, Equipment:1:0.10
+loot = OreRare:2:0.08, OreCommon:3:0.08, MonsterLoot:2:0.08, Equipment:1:0.08
+lootItems = magma_shard:1:0.12, lava_core:1:0.04, molten_heart:1:0.02
 skillChance = 0.25
 skill_1_name = 용암 분출
 skill_1_type = attack
@@ -271,14 +294,16 @@ name = 잔불 영혼
 attack = 16
 defense = 8
 hp = 115
-loot = MonsterLoot:2:0.45, Herb:2:0.30, Equipment:1:0.12
+loot = MonsterLoot:2:0.08, Herb:2:0.08, Equipment:1:0.08
+lootItems = ember_ash:1:0.15, ember_wisp:1:0.07
 
 [Flame_Wyrm]
 name = 화염 비룡
 attack = 42
 defense = 20
 hp = 144
-loot = MonsterLoot:3:0.40, OreRare:1:0.18, Equipment:1:0.15, Food:2:0.20
+loot = MonsterLoot:3:0.08, OreRare:1:0.08, Equipment:1:0.08, Food:2:0.08
+lootItems = wyrm_scale:1:0.11, wyrm_fang:1:0.04, wyrm_breath_gem:1:0.02
 skillChance = 0.35
 skill_1_name = 화염 브레스
 skill_1_type = attack
@@ -298,7 +323,8 @@ name = 강철 자동인형
 attack = 12
 defense = 6
 hp = 105
-loot = OreCommon:3:0.50, OreRare:1:0.20, Equipment:1:0.15, MonsterLoot:2:0.35
+loot = OreCommon:3:0.08, OreRare:1:0.08, Equipment:1:0.08, MonsterLoot:2:0.08
+lootItems = automaton_gear:1:0.13, automaton_spring:1:0.05
 
 
 [Iron_Automaton_Enhanced]
@@ -306,14 +332,16 @@ name = 강철 자동인형 (강화형)
 attack = 30
 defense = 15
 hp = 150
-loot = OreCommon:3:0.50, OreRare:1:0.20, Equipment:1:0.15, MonsterLoot:2:0.35
+loot = OreCommon:3:0.08, OreRare:1:0.08, Equipment:1:0.08, MonsterLoot:2:0.08
+lootItems = automaton_gear:1:0.13, automaton_spring:1:0.05
 
 [Siege_Golem]
 name = 공성 골렘
 attack = 18
 defense = 9
 hp = 120
-loot = OreRare:2:0.25, Equipment:1:0.20, MonsterLoot:3:0.40, OreCommon:2:0.40
+loot = OreRare:2:0.08, Equipment:1:0.08, MonsterLoot:3:0.08, OreCommon:2:0.08
+lootItems = siege_plate:1:0.11, siege_piston:1:0.04, siege_core:1:0.02
 skillChance = 0.3
 skill_1_name = 파쇄 충격
 skill_1_type = attack
@@ -330,7 +358,8 @@ name = 공성 골렘 (강화형)
 attack = 44
 defense = 22
 hp = 185
-loot = OreRare:2:0.25, Equipment:1:0.20, MonsterLoot:3:0.40, OreCommon:2:0.40
+loot = OreRare:2:0.08, Equipment:1:0.08, MonsterLoot:3:0.08, OreCommon:2:0.08
+lootItems = siege_plate:1:0.11, siege_piston:1:0.04, siege_core:1:0.02
 skillChance = 0.3
 skill_1_name = 파쇄 충격
 skill_1_type = attack
@@ -346,7 +375,8 @@ name = 태엽 파수꾼
 attack = 12
 defense = 6
 hp = 105
-loot = OreCommon:2:0.45, OreRare:1:0.18, Equipment:1:0.16, MonsterLoot:2:0.35
+loot = OreCommon:2:0.08, OreRare:1:0.08, Equipment:1:0.08, MonsterLoot:2:0.08
+lootItems = sentinel_bolt:1:0.14, sentinel_lens:1:0.06
 
 ; -------------------------------------------------------
 ; Dark_Abyss  (difficulty 0.95)
@@ -358,7 +388,8 @@ name = 태엽 파수꾼 (강화형)
 attack = 32
 defense = 12
 hp = 182
-loot = OreCommon:2:0.45, OreRare:1:0.18, Equipment:1:0.16, MonsterLoot:2:0.35
+loot = OreCommon:2:0.08, OreRare:1:0.08, Equipment:1:0.08, MonsterLoot:2:0.08
+lootItems = sentinel_bolt:1:0.14, sentinel_lens:1:0.06
 
 ; -------------------------------------------------------
 ; Dark_Abyss  (difficulty 0.95)
@@ -369,7 +400,8 @@ name = 그림자 망령
 attack = 16
 defense = 8
 hp = 115
-loot = MonsterLoot:3:0.50, Equipment:1:0.18, Herb:2:0.25, OreRare:1:0.15
+loot = MonsterLoot:3:0.08, Equipment:1:0.08, Herb:2:0.08, OreRare:1:0.08
+lootItems = shadow_thread:1:0.13, shadow_pearl:1:0.05
 
 
 [Shadow_Wraith_Enhanced]
@@ -377,14 +409,16 @@ name = 그림자 망령 (강화형)
 attack = 38
 defense = 19
 hp = 170
-loot = MonsterLoot:3:0.50, Equipment:1:0.18, Herb:2:0.25, OreRare:1:0.15
+loot = MonsterLoot:3:0.08, Equipment:1:0.08, Herb:2:0.08, OreRare:1:0.08
+lootItems = shadow_thread:1:0.13, shadow_pearl:1:0.05
 
 [Void_Stalker]
 name = 공허의 추적자
 attack = 51
 defense = 26
 hp = 204
-loot = MonsterLoot:3:0.50, Equipment:1:0.22, OreRare:2:0.20, Herb:2:0.20
+loot = MonsterLoot:3:0.08, Equipment:1:0.08, OreRare:2:0.08, Herb:2:0.08
+lootItems = void_claw:1:0.11, void_shard:1:0.04
 skillChance = 0.35
 skill_1_name = 공허 일격
 skill_1_type = attack
@@ -400,7 +434,8 @@ name = 심연의 군주
 attack = 60
 defense = 34
 hp = 306
-loot = Equipment:1:0.30, MonsterLoot:4:0.55, OreRare:2:0.25, Herb:3:0.20, Food:3:0.15
+loot = Equipment:1:0.08, MonsterLoot:4:0.08, OreRare:2:0.08, Herb:3:0.08, Food:3:0.08
+lootItems = abyss_horn:1:0.10, abyss_robe:1:0.04, abyss_eye:1:0.02
 skillChance = 0.4
 skill_1_name = 심연의 포옹
 skill_1_type = attack
@@ -424,14 +459,16 @@ name = 월광 토끼
 attack = 14
 defense = 7
 hp = 110
-loot = Food:2:0.45, Herb:1:0.35, MonsterLoot:1:0.20
+loot = Food:2:0.08, Herb:1:0.08, MonsterLoot:1:0.08
+lootItems = moon_rabbit_fluff:1:0.16, moon_rabbit_claw:1:0.08
 
 [Dew_Moth]
 name = 이슬나방
 attack = 27
 defense = 8
 hp = 71
-loot = Herb:2:0.40, Potion:1:0.15, MonsterLoot:1:0.18
+loot = Herb:2:0.08, Potion:1:0.08, MonsterLoot:1:0.08
+lootItems = moth_scale_dust:1:0.16, moth_wing_shard:1:0.08
 skillChance = 0.18
 skill_1_name = 은분 살포
 skill_1_type = attack
@@ -443,7 +480,8 @@ name = 월야 늑대
 attack = 14
 defense = 7
 hp = 110
-loot = Food:2:0.35, MonsterLoot:2:0.42, Equipment:1:0.06
+loot = Food:2:0.08, MonsterLoot:2:0.08, Equipment:1:0.06
+lootItems = moon_wolf_fang:1:0.14, moon_wolf_pelt:1:0.06
 skillChance = 0.22
 skill_1_name = 달빛 돌진
 skill_1_type = attack
@@ -456,7 +494,8 @@ name = 월야 늑대 (강화형)
 attack = 20
 defense = 10
 hp = 125
-loot = Food:2:0.35, MonsterLoot:2:0.42, Equipment:1:0.06
+loot = Food:2:0.08, MonsterLoot:2:0.08, Equipment:1:0.06
+lootItems = moon_wolf_fang:1:0.14, moon_wolf_pelt:1:0.06
 skillChance = 0.22
 skill_1_name = 달빛 돌진
 skill_1_type = attack
@@ -468,7 +507,8 @@ name = 은아 늑대
 attack = 16
 defense = 8
 hp = 115
-loot = MonsterLoot:3:0.48, Food:2:0.25, Equipment:1:0.10
+loot = MonsterLoot:3:0.08, Food:2:0.08, Equipment:1:0.08
+lootItems = silver_fang_tooth:1:0.13, silver_fang_pelt:1:0.05
 skillChance = 0.26
 skill_1_name = 은송곳니
 skill_1_type = attack
@@ -481,7 +521,8 @@ name = 은아 늑대 (강화형)
 attack = 24
 defense = 12
 hp = 135
-loot = MonsterLoot:3:0.48, Food:2:0.25, Equipment:1:0.10
+loot = MonsterLoot:3:0.08, Food:2:0.08, Equipment:1:0.08
+lootItems = silver_fang_tooth:1:0.13, silver_fang_pelt:1:0.05
 skillChance = 0.26
 skill_1_name = 은송곳니
 skill_1_type = attack
@@ -493,7 +534,8 @@ name = 월윤 사슴
 attack = 14
 defense = 7
 hp = 110
-loot = Herb:3:0.34, MonsterLoot:3:0.46, Potion:1:0.18
+loot = Herb:3:0.08, MonsterLoot:3:0.08, Potion:1:0.08
+lootItems = lunar_antler_chip:1:0.12, lunar_stag_hide:1:0.05
 skillChance = 0.28
 skill_1_name = 월륜 뿔격
 skill_1_type = attack
@@ -506,7 +548,8 @@ name = 월윤 사슴 (강화형)
 attack = 30
 defense = 15
 hp = 150
-loot = Herb:3:0.34, MonsterLoot:3:0.46, Potion:1:0.18
+loot = Herb:3:0.08, MonsterLoot:3:0.08, Potion:1:0.08
+lootItems = lunar_antler_chip:1:0.12, lunar_stag_hide:1:0.05
 skillChance = 0.28
 skill_1_name = 월륜 뿔격
 skill_1_type = attack
@@ -518,7 +561,8 @@ name = 달그늘 수호수
 attack = 20
 defense = 10
 hp = 125
-loot = MonsterLoot:4:0.50, Potion:2:0.25, Equipment:1:0.16
+loot = MonsterLoot:4:0.08, Potion:2:0.08, Equipment:1:0.08
+lootItems = moonshade_bark:1:0.11, moonshade_resin:1:0.04, moonshade_heartwood:1:0.02
 skillChance = 0.32
 skill_1_name = 흑은 장막
 skill_1_type = buff
@@ -534,14 +578,16 @@ name = 절벽 집게게
 attack = 16
 defense = 12
 hp = 72
-loot = Food:2:0.45, OreCommon:1:0.18, MonsterLoot:1:0.18
+loot = Food:2:0.08, OreCommon:1:0.08, MonsterLoot:1:0.08
+lootItems = crab_shell_chip:1:0.16, crab_pincer:1:0.08
 
 [Spray_Gull]
 name = 물보라 갈매기
 attack = 10
 defense = 5
 hp = 100
-loot = Food:1:0.40, Herb:1:0.18, MonsterLoot:1:0.15
+loot = Food:1:0.08, Herb:1:0.08, MonsterLoot:1:0.08
+lootItems = gull_feather:1:0.16, gull_beak:1:0.08
 skillChance = 0.12
 skill_1_name = 파도 긁기
 skill_1_type = attack
@@ -554,7 +600,8 @@ name = 물보라 갈매기 (강화형)
 attack = 16
 defense = 8
 hp = 115
-loot = Food:1:0.40, Herb:1:0.18, MonsterLoot:1:0.15
+loot = Food:1:0.08, Herb:1:0.08, MonsterLoot:1:0.08
+lootItems = gull_feather:1:0.16, gull_beak:1:0.08
 skillChance = 0.12
 skill_1_name = 파도 긁기
 skill_1_type = attack
@@ -566,21 +613,24 @@ name = 소금자칼
 attack = 10
 defense = 5
 hp = 100
-loot = Food:2:0.35, MonsterLoot:1:0.28, OreCommon:1:0.16
+loot = Food:2:0.08, MonsterLoot:1:0.08, OreCommon:1:0.08
+lootItems = jackal_tooth:1:0.15, jackal_hide:1:0.07
 
 [Salt_Jackal_Enhanced]
 name = 소금자칼 (강화형)
 attack = 27
 defense = 12
 hp = 85
-loot = Food:2:0.35, MonsterLoot:1:0.28, OreCommon:1:0.16
+loot = Food:2:0.08, MonsterLoot:1:0.08, OreCommon:1:0.08
+lootItems = jackal_tooth:1:0.15, jackal_hide:1:0.07
 
 [Blueback_Lurker]
 name = 청등 잠복자
 attack = 14
 defense = 7
 hp = 110
-loot = MonsterLoot:2:0.35, OreCommon:2:0.28, Equipment:1:0.06
+loot = MonsterLoot:2:0.08, OreCommon:2:0.08, Equipment:1:0.06
+lootItems = lurker_fin:1:0.14, lurker_scale:1:0.06
 skillChance = 0.18
 skill_1_name = 절벽 매복
 skill_1_type = attack
@@ -592,7 +642,8 @@ name = 청등 잠복자 (강화형)
 attack = 37
 defense = 15
 hp = 126
-loot = MonsterLoot:2:0.35, OreCommon:2:0.28, Equipment:1:0.06
+loot = MonsterLoot:2:0.08, OreCommon:2:0.08, Equipment:1:0.06
+lootItems = lurker_fin:1:0.14, lurker_scale:1:0.06
 skillChance = 0.18
 skill_1_name = 절벽 매복
 skill_1_type = attack
@@ -604,7 +655,8 @@ name = 쇄파 도사게
 attack = 16
 defense = 9
 hp = 120
-loot = Food:2:0.30, MonsterLoot:2:0.38, OreRare:1:0.08
+loot = Food:2:0.08, MonsterLoot:2:0.08, OreRare:1:0.08
+lootItems = hermit_shell:1:0.14, hermit_pearl:1:0.05
 skillChance = 0.22
 skill_1_name = 조수 껍질막
 skill_1_type = buff
@@ -616,7 +668,8 @@ name = 쇄파 도사게 (강화형)
 attack = 48
 defense = 24
 hp = 163
-loot = Food:2:0.30, MonsterLoot:2:0.38, OreRare:1:0.08
+loot = Food:2:0.08, MonsterLoot:2:0.08, OreRare:1:0.08
+lootItems = hermit_shell:1:0.14, hermit_pearl:1:0.05
 skillChance = 0.22
 skill_1_name = 조수 껍질막
 skill_1_type = buff
@@ -628,7 +681,8 @@ name = 묘목 왕관 여우
 attack = 12
 defense = 6
 hp = 105
-loot = Food:2:0.40, Herb:1:0.30, MonsterLoot:1:0.20
+loot = Food:2:0.08, Herb:1:0.08, MonsterLoot:1:0.08
+lootItems = fox_tuft:1:0.15, fox_amber:1:0.07
 
 
 [Sprout_Fox_Enhanced]
@@ -636,21 +690,24 @@ name = 묘목 왕관 여우 (강화형)
 attack = 18
 defense = 9
 hp = 120
-loot = Food:2:0.40, Herb:1:0.30, MonsterLoot:1:0.20
+loot = Food:2:0.08, Herb:1:0.08, MonsterLoot:1:0.08
+lootItems = fox_tuft:1:0.15, fox_amber:1:0.07
 
 [Hill_Hare]
 name = 언덕 토끼
 attack = 24
 defense = 10
 hp = 68
-loot = Food:2:0.42, Herb:1:0.22, MonsterLoot:1:0.12
+loot = Food:2:0.08, Herb:1:0.08, MonsterLoot:1:0.08
+lootItems = hare_fur:1:0.16, hare_foot:1:0.08
 
 [Foxfire_Moth]
 name = 여우불 나방
 attack = 14
 defense = 7
 hp = 110
-loot = Herb:2:0.36, Potion:1:0.12, MonsterLoot:1:0.18
+loot = Herb:2:0.08, Potion:1:0.08, MonsterLoot:1:0.08
+lootItems = foxfire_dust:1:0.15, foxfire_wing:1:0.06
 skillChance = 0.16
 skill_1_name = 청염 비산
 skill_1_type = attack
@@ -662,7 +719,8 @@ name = 낙화곰
 attack = 16
 defense = 8
 hp = 115
-loot = Food:3:0.35, MonsterLoot:2:0.38, Herb:2:0.24
+loot = Food:3:0.08, MonsterLoot:2:0.08, Herb:2:0.08
+lootItems = bear_claw:1:0.13, bear_fur_tuft:1:0.05
 skillChance = 0.20
 skill_1_name = 꽃잎 후려치기
 skill_1_type = attack
@@ -674,7 +732,8 @@ name = 사당까마귀
 attack = 16
 defense = 8
 hp = 115
-loot = MonsterLoot:2:0.40, Herb:2:0.22, Potion:1:0.16
+loot = MonsterLoot:2:0.08, Herb:2:0.08, Potion:1:0.08
+lootItems = crow_feather:1:0.14, crow_talisman:1:0.06
 skillChance = 0.22
 skill_1_name = 흉조 울음
 skill_1_type = buff
@@ -686,7 +745,8 @@ name = 언덕 수호령
 attack = 20
 defense = 10
 hp = 125
-loot = MonsterLoot:3:0.45, Potion:1:0.18, Equipment:1:0.12
+loot = MonsterLoot:3:0.08, Potion:1:0.08, Equipment:1:0.08
+lootItems = guardian_stone:1:0.12, guardian_moss:1:0.05, guardian_seal:1:0.02
 skillChance = 0.26
 skill_1_name = 돌제단 격돌
 skill_1_type = attack
@@ -698,7 +758,8 @@ name = 능선 산양
 attack = 18
 defense = 9
 hp = 120
-loot = Food:2:0.28, MonsterLoot:2:0.34, OreCommon:1:0.20
+loot = Food:2:0.08, MonsterLoot:2:0.08, OreCommon:1:0.08
+lootItems = goat_horn_chip:1:0.13, goat_wool:1:0.06
 
 
 [Ridge_Goat_Enhanced]
@@ -706,14 +767,16 @@ name = 능선 산양 (강화형)
 attack = 28
 defense = 14
 hp = 145
-loot = Food:2:0.28, MonsterLoot:2:0.34, OreCommon:1:0.20
+loot = Food:2:0.08, MonsterLoot:2:0.08, OreCommon:1:0.08
+lootItems = goat_horn_chip:1:0.13, goat_wool:1:0.06
 
 [Crag_Raptor]
 name = 절암 맹금
 attack = 28
 defense = 14
 hp = 145
-loot = MonsterLoot:2:0.38, OreCommon:2:0.22, Equipment:1:0.08
+loot = MonsterLoot:2:0.08, OreCommon:2:0.08, Equipment:1:0.08
+lootItems = raptor_talon:1:0.13, raptor_plume:1:0.05
 skillChance = 0.20
 skill_1_name = 활강 급습
 skill_1_type = attack
@@ -725,7 +788,8 @@ name = 암각 우각수
 attack = 28
 defense = 14
 hp = 145
-loot = OreCommon:2:0.38, MonsterLoot:2:0.34, OreRare:1:0.10
+loot = OreCommon:2:0.08, MonsterLoot:2:0.08, OreRare:1:0.08
+lootItems = stonehorn_chip:1:0.12, stonehorn_hide:1:0.05
 skillChance = 0.24
 skill_1_name = 석벽 들이박기
 skill_1_type = attack
@@ -737,7 +801,8 @@ name = 협곡 하피
 attack = 18
 defense = 9
 hp = 120
-loot = MonsterLoot:3:0.38, Herb:2:0.18, Equipment:1:0.12
+loot = MonsterLoot:3:0.08, Herb:2:0.08, Equipment:1:0.08
+lootItems = harpy_feather:1:0.12, harpy_claw:1:0.05
 skillChance = 0.25
 skill_1_name = 절풍 비명
 skill_1_type = attack
@@ -750,7 +815,8 @@ name = 협곡 하피 (강화형)
 attack = 38
 defense = 19
 hp = 170
-loot = MonsterLoot:3:0.38, Herb:2:0.18, Equipment:1:0.12
+loot = MonsterLoot:3:0.08, Herb:2:0.08, Equipment:1:0.08
+lootItems = harpy_feather:1:0.12, harpy_claw:1:0.05
 skillChance = 0.25
 skill_1_name = 절풍 비명
 skill_1_type = attack
@@ -762,7 +828,8 @@ name = 바그레트 거암인
 attack = 34
 defense = 17
 hp = 160
-loot = OreCommon:3:0.36, MonsterLoot:3:0.42, OreRare:1:0.14, Equipment:1:0.12
+loot = OreCommon:3:0.08, MonsterLoot:3:0.08, OreRare:1:0.08, Equipment:1:0.08
+lootItems = giant_stone:1:0.10, giant_belt:1:0.04, giant_eye_gem:1:0.02
 skillChance = 0.28
 skill_1_name = 협벽 투척
 skill_1_type = attack
@@ -774,7 +841,8 @@ name = 고벽 숫양
 attack = 20
 defense = 10
 hp = 125
-loot = OreRare:1:0.16, MonsterLoot:3:0.40, Equipment:1:0.14
+loot = OreRare:1:0.08, MonsterLoot:3:0.08, Equipment:1:0.08
+lootItems = ancient_horn:1:0.10, ancient_fleece:1:0.04
 skillChance = 0.30
 skill_1_name = 고벽 분쇄
 skill_1_type = attack
@@ -787,7 +855,8 @@ name = 고벽 숫양 (강화형)
 attack = 38
 defense = 19
 hp = 170
-loot = OreRare:1:0.16, MonsterLoot:3:0.40, Equipment:1:0.14
+loot = OreRare:1:0.08, MonsterLoot:3:0.08, Equipment:1:0.08
+lootItems = ancient_horn:1:0.10, ancient_fleece:1:0.04
 skillChance = 0.30
 skill_1_name = 고벽 분쇄
 skill_1_type = attack
@@ -799,14 +868,16 @@ name = 서리토끼
 attack = 18
 defense = 9
 hp = 120
-loot = Food:2:0.28, Herb:2:0.24, MonsterLoot:2:0.28
+loot = Food:2:0.08, Herb:2:0.08, MonsterLoot:2:0.08
+lootItems = frost_fur:1:0.14, frost_whisker:1:0.06
 
 [Ice_Wolf]
 name = 빙랑
 attack = 18
 defense = 9
 hp = 120
-loot = MonsterLoot:2:0.36, Food:2:0.20, Potion:1:0.10
+loot = MonsterLoot:2:0.08, Food:2:0.08, Potion:1:0.08
+lootItems = ice_fang:1:0.13, ice_pelt:1:0.05
 skillChance = 0.20
 skill_1_name = 설빙 송곳니
 skill_1_type = attack
@@ -818,7 +889,8 @@ name = 환한 독사
 attack = 18
 defense = 9
 hp = 120
-loot = MonsterLoot:2:0.38, Herb:2:0.18, Potion:1:0.14
+loot = MonsterLoot:2:0.08, Herb:2:0.08, Potion:1:0.08
+lootItems = cold_scale:1:0.13, cold_venom:1:0.06
 skillChance = 0.22
 skill_1_name = 동결 호흡
 skill_1_type = attack
@@ -830,7 +902,8 @@ name = 설퇴 골렘
 attack = 20
 defense = 10
 hp = 125
-loot = OreCommon:2:0.30, MonsterLoot:3:0.40, OreRare:1:0.10
+loot = OreCommon:2:0.08, MonsterLoot:3:0.08, OreRare:1:0.08
+lootItems = snow_chunk:1:0.12, snow_core:1:0.05
 skillChance = 0.24
 skill_1_name = 설사태 밀어내기
 skill_1_type = attack
@@ -843,7 +916,8 @@ name = 설퇴 골렘 (강화형)
 attack = 40
 defense = 20
 hp = 175
-loot = OreCommon:2:0.30, MonsterLoot:3:0.40, OreRare:1:0.10
+loot = OreCommon:2:0.08, MonsterLoot:3:0.08, OreRare:1:0.08
+lootItems = snow_chunk:1:0.12, snow_core:1:0.05
 skillChance = 0.24
 skill_1_name = 설사태 밀어내기
 skill_1_type = attack
@@ -855,7 +929,8 @@ name = 설풍 수사슴
 attack = 22
 defense = 11
 hp = 130
-loot = MonsterLoot:3:0.42, Potion:1:0.16, Herb:2:0.16
+loot = MonsterLoot:3:0.08, Potion:1:0.08, Herb:2:0.08
+lootItems = blizzard_antler:1:0.11, blizzard_hide:1:0.04
 skillChance = 0.26
 skill_1_name = 설풍 난격
 skill_1_type = attack
@@ -868,7 +943,8 @@ name = 설풍 수사슴 (강화형)
 attack = 44
 defense = 22
 hp = 185
-loot = MonsterLoot:3:0.42, Potion:1:0.16, Herb:2:0.16
+loot = MonsterLoot:3:0.08, Potion:1:0.08, Herb:2:0.08
+lootItems = blizzard_antler:1:0.11, blizzard_hide:1:0.04
 skillChance = 0.26
 skill_1_name = 설풍 난격
 skill_1_type = attack
@@ -880,7 +956,8 @@ name = 화이트아웃 망령
 attack = 40
 defense = 20
 hp = 175
-loot = MonsterLoot:3:0.46, Potion:2:0.22, OreRare:1:0.14
+loot = MonsterLoot:3:0.08, Potion:2:0.08, OreRare:1:0.08
+lootItems = whiteout_mist:1:0.10, whiteout_crystal:1:0.04
 skillChance = 0.30
 skill_1_name = 실명한기
 skill_1_type = attack
@@ -892,7 +969,8 @@ name = 결빙 수호병
 attack = 83
 defense = 36
 hp = 276
-loot = MonsterLoot:3:0.42, Equipment:1:0.16, OreRare:1:0.18
+loot = MonsterLoot:3:0.08, Equipment:1:0.08, OreRare:1:0.08
+lootItems = sentry_ice_plate:1:0.11, sentry_frost_gem:1:0.04
 skillChance = 0.32
 skill_1_name = 동상 결계
 skill_1_type = buff
@@ -904,7 +982,8 @@ name = 산정 포식자
 attack = 94
 defense = 39
 hp = 307
-loot = MonsterLoot:4:0.48, Equipment:1:0.20, OreRare:2:0.22
+loot = MonsterLoot:4:0.08, Equipment:1:0.08, OreRare:2:0.08
+lootItems = devourer_fang:1:0.10, devourer_claw:1:0.04, summit_heart:1:0.01
 skillChance = 0.35
 skill_1_name = 설산 포식
 skill_1_type = attack
@@ -916,14 +995,16 @@ name = 안개 멧돼지
 attack = 24
 defense = 12
 hp = 135
-loot = Food:2:0.30, Herb:2:0.28, MonsterLoot:2:0.34
+loot = Food:2:0.08, Herb:2:0.08, MonsterLoot:2:0.08
+lootItems = mist_tusk:1:0.13, mist_boar_hide:1:0.05
 
 [Fog_Panther]
 name = 포그 팬서
 attack = 22
 defense = 11
 hp = 130
-loot = MonsterLoot:3:0.40, Herb:2:0.24, Equipment:1:0.10
+loot = MonsterLoot:3:0.08, Herb:2:0.08, Equipment:1:0.08
+lootItems = panther_claw:1:0.12, panther_whisker:1:0.04
 skillChance = 0.26
 skill_1_name = 무형 잠행
 skill_1_type = buff
@@ -935,7 +1016,8 @@ name = 수적 드라이어드
 attack = 24
 defense = 12
 hp = 135
-loot = Herb:3:0.40, Potion:1:0.18, MonsterLoot:2:0.30
+loot = Herb:3:0.08, Potion:1:0.08, MonsterLoot:2:0.08
+lootItems = dryad_petal:1:0.13, dryad_sap:1:0.06
 skillChance = 0.24
 skill_1_name = 안개 씨앗
 skill_1_type = attack
@@ -947,7 +1029,8 @@ name = 미스트우드 수문장
 attack = 28
 defense = 14
 hp = 145
-loot = Herb:3:0.34, MonsterLoot:3:0.40, Equipment:1:0.14
+loot = Herb:3:0.08, MonsterLoot:3:0.08, Equipment:1:0.08
+lootItems = warden_bark:1:0.11, warden_moss:1:0.04, warden_heartwood:1:0.02
 skillChance = 0.30
 skill_1_name = 수관 장막
 skill_1_type = heal
@@ -959,14 +1042,16 @@ name = 천광 잉어
 attack = 26
 defense = 13
 hp = 140
-loot = Food:2:0.22, Potion:1:0.20, MonsterLoot:2:0.34
+loot = Food:2:0.08, Potion:1:0.08, MonsterLoot:2:0.08
+lootItems = koi_scale:1:0.13, koi_fin:1:0.05
 
 [Mirror_Wisp]
 name = 경면 도깨비불
 attack = 20
 defense = 10
 hp = 130
-loot = Potion:1:0.24, MonsterLoot:2:0.36, Herb:2:0.18
+loot = Potion:1:0.08, MonsterLoot:2:0.08, Herb:2:0.08
+lootItems = wisp_light:1:0.14, wisp_mirror:1:0.05
 skillChance = 0.26
 skill_1_name = 굴절 광선
 skill_1_type = attack
@@ -978,7 +1063,8 @@ name = 경면 도깨비불 (강화형)
 attack = 40
 defense = 17
 hp = 203
-loot = Potion:1:0.24, MonsterLoot:2:0.36, Herb:2:0.18
+loot = Potion:1:0.08, MonsterLoot:2:0.08, Herb:2:0.08
+lootItems = wisp_light:1:0.14, wisp_mirror:1:0.05
 skillChance = 0.26
 skill_1_name = 굴절 광선
 skill_1_type = attack
@@ -990,7 +1076,8 @@ name = 수면 사슴
 attack = 26
 defense = 13
 hp = 140
-loot = Herb:2:0.26, MonsterLoot:3:0.38, Potion:1:0.18
+loot = Herb:2:0.08, MonsterLoot:3:0.08, Potion:1:0.08
+lootItems = water_antler:1:0.12, water_hide:1:0.04
 skillChance = 0.24
 skill_1_name = 수광 돌파
 skill_1_type = attack
@@ -1002,7 +1089,8 @@ name = 수정 수룡
 attack = 30
 defense = 15
 hp = 150
-loot = OreRare:1:0.20, MonsterLoot:3:0.42, Potion:1:0.20
+loot = OreRare:1:0.08, MonsterLoot:3:0.08, Potion:1:0.08
+lootItems = crystal_fang:1:0.11, crystal_scale:1:0.04
 skillChance = 0.30
 skill_1_name = 수정파문
 skill_1_type = attack
@@ -1014,7 +1102,8 @@ name = 성천 예언어
 attack = 30
 defense = 15
 hp = 150
-loot = Potion:2:0.24, MonsterLoot:4:0.44, OreRare:1:0.22
+loot = Potion:2:0.08, MonsterLoot:4:0.08, OreRare:1:0.08
+lootItems = oracle_pearl:1:0.10, oracle_scale:1:0.04, oracle_eye:1:0.01
 skillChance = 0.34
 skill_1_name = 천호의 응시
 skill_1_type = attack
@@ -1026,14 +1115,16 @@ name = 잿더미 두더지
 attack = 12
 defense = 6
 hp = 105
-loot = OreCommon:2:0.34, Food:1:0.18, MonsterLoot:1:0.18
+loot = OreCommon:2:0.08, Food:1:0.08, MonsterLoot:1:0.08
+lootItems = cinder_claw:1:0.16, cinder_pelt:1:0.08
 
 [Magma_Hound]
 name = 마그마 하운드
 attack = 12
 defense = 6
 hp = 105
-loot = MonsterLoot:2:0.34, OreCommon:1:0.26, Food:1:0.16
+loot = MonsterLoot:2:0.08, OreCommon:1:0.08, Food:1:0.08
+lootItems = magma_fang:1:0.15, magma_fur:1:0.07
 skillChance = 0.16
 skill_1_name = 화열 추격
 skill_1_type = attack
@@ -1046,7 +1137,8 @@ name = 마그마 하운드 (강화형)
 attack = 24
 defense = 12
 hp = 135
-loot = MonsterLoot:2:0.34, OreCommon:1:0.26, Food:1:0.16
+loot = MonsterLoot:2:0.08, OreCommon:1:0.08, Food:1:0.08
+lootItems = magma_fang:1:0.15, magma_fur:1:0.07
 skillChance = 0.16
 skill_1_name = 화열 추격
 skill_1_type = attack
@@ -1058,7 +1150,8 @@ name = 화염 숫양
 attack = 12
 defense = 6
 hp = 105
-loot = MonsterLoot:2:0.30, OreCommon:2:0.22, Herb:1:0.12
+loot = MonsterLoot:2:0.08, OreCommon:2:0.08, Herb:1:0.08
+lootItems = flame_horn:1:0.14, flame_wool:1:0.06
 
 
 [Flame_Ram_Enhanced]
@@ -1066,14 +1159,16 @@ name = 화염 숫양 (강화형)
 attack = 24
 defense = 12
 hp = 135
-loot = MonsterLoot:2:0.30, OreCommon:2:0.22, Herb:1:0.12
+loot = MonsterLoot:2:0.08, OreCommon:2:0.08, Herb:1:0.08
+lootItems = flame_horn:1:0.14, flame_wool:1:0.06
 
 [Sulfur_Golem]
 name = 유황 골렘
 attack = 16
 defense = 8
 hp = 115
-loot = OreCommon:2:0.36, MonsterLoot:2:0.34, OreRare:1:0.10
+loot = OreCommon:2:0.08, MonsterLoot:2:0.08, OreRare:1:0.08
+lootItems = sulfur_chunk:1:0.13, sulfur_core:1:0.05
 skillChance = 0.22
 skill_1_name = 황기 폭발
 skill_1_type = attack
@@ -1086,7 +1181,8 @@ name = 유황 골렘 (강화형)
 attack = 32
 defense = 16
 hp = 155
-loot = OreCommon:2:0.36, MonsterLoot:2:0.34, OreRare:1:0.10
+loot = OreCommon:2:0.08, MonsterLoot:2:0.08, OreRare:1:0.08
+lootItems = sulfur_chunk:1:0.13, sulfur_core:1:0.05
 skillChance = 0.22
 skill_1_name = 황기 폭발
 skill_1_type = attack
@@ -1098,7 +1194,8 @@ name = 탄흔 하피
 attack = 18
 defense = 9
 hp = 120
-loot = MonsterLoot:3:0.38, Herb:1:0.12, Equipment:1:0.08
+loot = MonsterLoot:3:0.08, Herb:1:0.08, Equipment:1:0.08
+lootItems = charred_feather:1:0.13, charred_talon:1:0.05
 skillChance = 0.24
 skill_1_name = 화분 강하
 skill_1_type = attack
@@ -1111,7 +1208,8 @@ name = 탄흔 하피 (강화형)
 attack = 32
 defense = 16
 hp = 155
-loot = MonsterLoot:3:0.38, Herb:1:0.12, Equipment:1:0.08
+loot = MonsterLoot:3:0.08, Herb:1:0.08, Equipment:1:0.08
+lootItems = charred_feather:1:0.13, charred_talon:1:0.05
 skillChance = 0.24
 skill_1_name = 화분 강하
 skill_1_type = attack
@@ -1123,7 +1221,8 @@ name = 잔화 군주
 attack = 20
 defense = 10
 hp = 125
-loot = MonsterLoot:3:0.42, OreRare:1:0.14, Equipment:1:0.12
+loot = MonsterLoot:3:0.08, OreRare:1:0.08, Equipment:1:0.08
+lootItems = tyrant_scale:1:0.11, tyrant_ember:1:0.04, tyrant_crown:1:0.02
 skillChance = 0.30
 skill_1_name = 용열 포효
 skill_1_type = buff
@@ -1136,7 +1235,8 @@ name = 잔화 군주 (강화형)
 attack = 38
 defense = 19
 hp = 170
-loot = MonsterLoot:3:0.42, OreRare:1:0.14, Equipment:1:0.12
+loot = MonsterLoot:3:0.08, OreRare:1:0.08, Equipment:1:0.08
+lootItems = tyrant_scale:1:0.11, tyrant_ember:1:0.04, tyrant_crown:1:0.02
 skillChance = 0.30
 skill_1_name = 용열 포효
 skill_1_type = buff
@@ -1148,14 +1248,16 @@ name = 산책로 늑대
 attack = 12
 defense = 6
 hp = 105
-loot = Food:2:0.30, MonsterLoot:1:0.28, Herb:1:0.14
+loot = Food:2:0.08, MonsterLoot:1:0.08, Herb:1:0.08
+lootItems = trail_fang:1:0.15, trail_pelt:1:0.07
 
 [Grey_Fang]
 name = 회색 송곳니
 attack = 12
 defense = 6
 hp = 105
-loot = MonsterLoot:2:0.34, Food:2:0.20, Equipment:1:0.06
+loot = MonsterLoot:2:0.08, Food:2:0.08, Equipment:1:0.06
+lootItems = grey_fang_tooth:1:0.14, grey_fang_hide:1:0.06
 skillChance = 0.18
 skill_1_name = 군체 엄니
 skill_1_type = attack
@@ -1168,7 +1270,8 @@ name = 회색 송곳니 (강화형)
 attack = 22
 defense = 11
 hp = 130
-loot = MonsterLoot:2:0.34, Food:2:0.20, Equipment:1:0.06
+loot = MonsterLoot:2:0.08, Food:2:0.08, Equipment:1:0.06
+lootItems = grey_fang_tooth:1:0.14, grey_fang_hide:1:0.06
 skillChance = 0.18
 skill_1_name = 군체 엄니
 skill_1_type = attack
@@ -1180,7 +1283,8 @@ name = 암벽 배회자
 attack = 12
 defense = 6
 hp = 105
-loot = OreCommon:1:0.22, MonsterLoot:1:0.26, Food:1:0.18
+loot = OreCommon:1:0.08, MonsterLoot:1:0.08, Food:1:0.08
+lootItems = prowler_claw:1:0.15, prowler_fur:1:0.07
 
 
 [Stone_Prowler_Enhanced]
@@ -1188,14 +1292,16 @@ name = 암벽 배회자 (강화형)
 attack = 24
 defense = 12
 hp = 135
-loot = OreCommon:1:0.22, MonsterLoot:1:0.26, Food:1:0.18
+loot = OreCommon:1:0.08, MonsterLoot:1:0.08, Food:1:0.08
+lootItems = prowler_claw:1:0.15, prowler_fur:1:0.07
 
 [Cliff_Alpha]
 name = 절벽 우두머리
 attack = 14
 defense = 7
 hp = 110
-loot = MonsterLoot:3:0.40, Food:2:0.18, Equipment:1:0.08
+loot = MonsterLoot:3:0.08, Food:2:0.08, Equipment:1:0.08
+lootItems = alpha_fang:1:0.12, alpha_mane:1:0.05
 skillChance = 0.22
 skill_1_name = 낭떠러지 포효
 skill_1_type = buff
@@ -1208,7 +1314,8 @@ name = 절벽 우두머리 (강화형)
 attack = 34
 defense = 17
 hp = 160
-loot = MonsterLoot:3:0.40, Food:2:0.18, Equipment:1:0.08
+loot = MonsterLoot:3:0.08, Food:2:0.08, Equipment:1:0.08
+lootItems = alpha_fang:1:0.12, alpha_mane:1:0.05
 skillChance = 0.22
 skill_1_name = 낭떠러지 포효
 skill_1_type = buff
@@ -1220,7 +1327,8 @@ name = 봉우리 추적자
 attack = 16
 defense = 8
 hp = 115
-loot = MonsterLoot:3:0.42, OreCommon:1:0.20, Equipment:1:0.10
+loot = MonsterLoot:3:0.08, OreCommon:1:0.08, Equipment:1:0.08
+lootItems = stalker_claw:1:0.12, stalker_eye:1:0.04
 skillChance = 0.26
 skill_1_name = 고지 사냥
 skill_1_type = attack
@@ -1233,7 +1341,8 @@ name = 봉우리 추적자 (강화형)
 attack = 34
 defense = 17
 hp = 160
-loot = MonsterLoot:3:0.42, OreCommon:1:0.20, Equipment:1:0.10
+loot = MonsterLoot:3:0.08, OreCommon:1:0.08, Equipment:1:0.08
+lootItems = stalker_claw:1:0.12, stalker_eye:1:0.04
 skillChance = 0.26
 skill_1_name = 고지 사냥
 skill_1_type = attack
@@ -1245,7 +1354,8 @@ name = 무리 폭군
 attack = 28
 defense = 14
 hp = 145
-loot = MonsterLoot:4:0.46, OreRare:1:0.14, Equipment:1:0.12
+loot = MonsterLoot:4:0.08, OreRare:1:0.08, Equipment:1:0.08
+lootItems = tyrant_fang:1:0.10, tyrant_pelt:1:0.04, tyrant_howl_stone:1:0.02
 skillChance = 0.32
 skill_1_name = 군림 포효
 skill_1_type = buff
@@ -1265,7 +1375,8 @@ name = 모래 게
 attack = 16
 defense = 8
 hp = 115
-loot = Food:1:0.50, MonsterLoot:1:0.30
+loot = Food:1:0.08, MonsterLoot:1:0.08
+lootItems = sand_shell:1:0.18, sand_pincer:1:0.09
 
 [Tide_Sprite]
 name = 조수 요정
@@ -1273,7 +1384,8 @@ attack = 16
 defense = 8
 hp = 115
 evasionChance = 0.10
-loot = Herb:1:0.40, MonsterLoot:1:0.30
+loot = Herb:1:0.08, MonsterLoot:1:0.08
+lootItems = tide_drop:1:0.17, tide_charm:1:0.08
 
 
 [Tide_Sprite_Enhanced]
@@ -1282,21 +1394,24 @@ attack = 24
 defense = 12
 hp = 135
 evasionChance = 0.10
-loot = Herb:1:0.40, MonsterLoot:1:0.30
+loot = Herb:1:0.08, MonsterLoot:1:0.08
+lootItems = tide_drop:1:0.17, tide_charm:1:0.08
 
 [Shore_Wyvern]
 name = 해안 와이번
 attack = 14
 defense = 6
 hp = 55
-loot = MonsterLoot:2:0.50, Equipment:1:0.08
+loot = MonsterLoot:2:0.08, Equipment:1:0.08
+lootItems = wyvern_scale:1:0.15, wyvern_wing_membrane:1:0.07
 
 [Shore_Wyvern_Enhanced]
 name = 해안 와이번 (강화형)
 attack = 29
 defense = 10
 hp = 175
-loot = MonsterLoot:2:0.50, Equipment:1:0.08
+loot = MonsterLoot:2:0.08, Equipment:1:0.08
+lootItems = wyvern_scale:1:0.15, wyvern_wing_membrane:1:0.07
 
 [Storm_Sprite]
 name = 폭풍 요정
@@ -1304,7 +1419,8 @@ attack = 16
 defense = 5
 hp = 65
 evasionChance = 0.15
-loot = Herb:1:0.30, MonsterLoot:1:0.40
+loot = Herb:1:0.08, MonsterLoot:1:0.08
+lootItems = storm_spark:1:0.16, storm_essence:1:0.07
 
 [Storm_Sprite_Enhanced]
 name = 폭풍 요정 (강화형)
@@ -1312,7 +1428,8 @@ attack = 36
 defense = 18
 hp = 165
 evasionChance = 0.15
-loot = Herb:1:0.30, MonsterLoot:1:0.40
+loot = Herb:1:0.08, MonsterLoot:1:0.08
+lootItems = storm_spark:1:0.16, storm_essence:1:0.07
 
 ; -------------------------------------------------------
 ; 해안권 — 마뉴 수몰도시 몬스터
@@ -1326,7 +1443,8 @@ hp = 120
 burstHitCount = 2
 burstHitDamage = 12
 burstOnce = true
-loot = Equipment:1:0.12, MonsterLoot:3:0.50
+loot = Equipment:1:0.08, MonsterLoot:3:0.08
+lootItems = rusted_plate:1:0.13, drowned_sigil:1:0.05
 
 [Coral_Golem]
 name = 산호 골렘
@@ -1334,7 +1452,8 @@ attack = 22
 defense = 11
 hp = 130
 tickPressureDamage = 3
-loot = OreCommon:3:0.50, MonsterLoot:3:0.40, OreRare:1:0.08
+loot = OreCommon:3:0.08, MonsterLoot:3:0.08, OreRare:1:0.08
+lootItems = coral_chunk:1:0.14, coral_pearl:1:0.06
 
 
 [Coral_Golem_Enhanced]
@@ -1343,7 +1462,8 @@ attack = 40
 defense = 20
 hp = 175
 tickPressureDamage = 3
-loot = OreCommon:3:0.50, MonsterLoot:3:0.40, OreRare:1:0.08
+loot = OreCommon:3:0.08, MonsterLoot:3:0.08, OreRare:1:0.08
+lootItems = coral_chunk:1:0.14, coral_pearl:1:0.06
 
 [Deep_Angler]
 name = 심해 아귀
@@ -1356,7 +1476,8 @@ skill_1_name = 발광 유인
 skill_1_type = buff
 skill_1_value = 0.15
 skill_1_desc = 적의 방어력을 15% 감소시키는 발광으로 유인한다.
-loot = MonsterLoot:3:0.50, OreRare:1:0.10
+loot = MonsterLoot:3:0.08, OreRare:1:0.08
+lootItems = angler_light:1:0.12, angler_jaw:1:0.05
 
 [Abyssal_Shade]
 name = 심연의 그림자
@@ -1365,7 +1486,8 @@ defense = 15
 hp = 250
 evasionChance = 0.20
 tickPressureDamage = 5
-loot = MonsterLoot:4:0.50, OreRare:1:0.12
+loot = MonsterLoot:4:0.08, OreRare:1:0.08
+lootItems = shade_ink:1:0.12, shade_veil:1:0.04
 
 [Ancient_Leviathan]
 name = 고대 레비아탄
@@ -1380,7 +1502,8 @@ skill_1_name = 심해 포효
 skill_1_type = attack
 skill_1_value = 2.5
 skill_1_desc = 바다 전체를 울리는 포효로 대미지를 준다.
-loot = MonsterLoot:5:0.50, OreRare:2:0.15, Equipment:1:0.10
+loot = MonsterLoot:5:0.08, OreRare:2:0.08, Equipment:1:0.08
+lootItems = leviathan_scale:1:0.09, leviathan_tooth:1:0.03, leviathan_heart:1:0.01
 
 ; -------------------------------------------------------
 ; 해안권 — 할퓌아 공중 몬스터
@@ -1392,7 +1515,8 @@ attack = 12
 defense = 4
 hp = 50
 evasionChance = 0.18
-loot = Herb:2:0.40, MonsterLoot:1:0.35
+loot = Herb:2:0.08, MonsterLoot:1:0.08
+lootItems = wind_feather:1:0.16, wind_crystal:1:0.07
 
 [Wind_Elemental_Enhanced]
 name = 바람 요정 (강화형)
@@ -1400,7 +1524,8 @@ attack = 36
 defense = 18
 hp = 165
 evasionChance = 0.18
-loot = Herb:2:0.40, MonsterLoot:1:0.35
+loot = Herb:2:0.08, MonsterLoot:1:0.08
+lootItems = wind_feather:1:0.16, wind_crystal:1:0.07
 
 [Cloud_Serpent]
 name = 구름 뱀
@@ -1408,7 +1533,8 @@ attack = 20
 defense = 10
 hp = 125
 evasionChance = 0.15
-loot = MonsterLoot:2:0.40, OreRare:1:0.07
+loot = MonsterLoot:2:0.08, OreRare:1:0.07
+lootItems = cloud_scale:1:0.14, cloud_fang:1:0.06
 
 [Edge_Wyvern]
 name = 가장자리 와이번
@@ -1416,7 +1542,8 @@ attack = 24
 defense = 12
 hp = 135
 openingAttackMultiplier = 1.8
-loot = MonsterLoot:3:0.50, Equipment:1:0.09, OreRare:1:0.08
+loot = MonsterLoot:3:0.08, Equipment:1:0.08, OreRare:1:0.08
+lootItems = edge_scale:1:0.13, edge_membrane:1:0.05
 
 ; -------------------------------------------------------
 ; 해안권 — 팔콘 가든 고레벨 몬스터
@@ -1429,7 +1556,8 @@ attack = 40
 defense = 20
 hp = 175
 openingAttackMultiplier = 1.8
-loot = MonsterLoot:3:0.50, Equipment:1:0.09, OreRare:1:0.08
+loot = MonsterLoot:3:0.08, Equipment:1:0.08, OreRare:1:0.08
+lootItems = edge_scale:1:0.13, edge_membrane:1:0.05
 
 ; -------------------------------------------------------
 ; 해안권 — 팔콘 가든 고레벨 몬스터
@@ -1446,7 +1574,8 @@ skill_1_name = 급강하
 skill_1_type = attack
 skill_1_value = 2.0
 skill_1_desc = 수직으로 급강하하는 강습 공격.
-loot = MonsterLoot:5:0.50, OreRare:2:0.12
+loot = MonsterLoot:5:0.08, OreRare:2:0.08
+lootItems = falcon_feather:1:0.10, falcon_talon:1:0.04
 
 [Sea_Drake]
 name = 바다 드레이크
@@ -1454,7 +1583,8 @@ attack = 65
 defense = 38
 hp = 380
 tickPressureDamage = 8
-loot = MonsterLoot:5:0.50, OreRare:2:0.14, Equipment:1:0.08
+loot = MonsterLoot:5:0.08, OreRare:2:0.08, Equipment:1:0.08
+lootItems = sea_scale:1:0.09, sea_fang:1:0.03
 
 [Storm_Giant]
 name = 폭풍 거인
@@ -1464,7 +1594,8 @@ hp = 450
 burstHitCount = 2
 burstHitDamage = 30
 burstOnce = true
-loot = MonsterLoot:6:0.50, OreRare:3:0.14, Equipment:1:0.10
+loot = MonsterLoot:6:0.08, OreRare:3:0.08, Equipment:1:0.08
+lootItems = giant_knuckle:1:0.08, giant_belt_shard:1:0.03
 
 [Falcon_Elder]
 name = 매 장로
@@ -1477,7 +1608,8 @@ skill_1_name = 영역 지배
 skill_1_type = buff
 skill_1_value = 0.25
 skill_1_desc = 자신의 공격력을 25% 올리는 영역 지배 압박.
-loot = MonsterLoot:6:0.50, OreRare:3:0.16, Equipment:2:0.12
+loot = MonsterLoot:6:0.08, OreRare:3:0.08, Equipment:2:0.08
+lootItems = elder_plume:1:0.08, elder_eye:1:0.03, elder_crown_feather:1:0.01
 
 ; -------------------------------------------------------
 ; 해안권 — 버그의 바다 몬스터
@@ -1490,7 +1622,8 @@ defense = 20
 hp = 600
 evasionChance = 0.25
 tickPressureDamage = 10
-loot = OreRare:3:0.40, MonsterLoot:6:0.50, Equipment:2:0.12
+loot = OreRare:3:0.08, MonsterLoot:6:0.08, Equipment:2:0.08
+lootItems = glitch_fragment:1:0.08, glitch_code:1:0.03
 
 [Inverse_Knight]
 name = 역전 기사
@@ -1501,7 +1634,8 @@ burstHitCount = 2
 burstHitDamage = 40
 burstOnce = true
 openingAttackMultiplier = 2.0
-loot = OreRare:3:0.40, MonsterLoot:7:0.50, Equipment:2:0.14
+loot = OreRare:3:0.08, MonsterLoot:7:0.08, Equipment:2:0.08
+lootItems = inverse_plate:1:0.07, inverse_core:1:0.03
 
 [Null_Golem]
 name = 공허 골렘
@@ -1509,7 +1643,8 @@ attack = 95
 defense = 80
 hp = 900
 tickPressureDamage = 15
-loot = OreRare:4:0.40, MonsterLoot:7:0.50, Equipment:2:0.12
+loot = OreRare:4:0.08, MonsterLoot:7:0.08, Equipment:2:0.08
+lootItems = null_shard:1:0.08, null_eye:1:0.03
 
 [Phase_Serpent]
 name = 위상 뱀
@@ -1522,7 +1657,8 @@ skill_1_name = 위상 전이
 skill_1_type = attack
 skill_1_value = 3.0
 skill_1_desc = 물리 법칙을 무시하는 위상 전이 공격. 방어 무시.
-loot = OreRare:4:0.40, MonsterLoot:8:0.50, Equipment:3:0.15
+loot = OreRare:4:0.08, MonsterLoot:8:0.08, Equipment:3:0.08
+lootItems = phase_scale:1:0.07, phase_gem:1:0.02, phase_heart:1:0.01
 
 ; -------------------------------------------------------
 ; 일루네온 외곽 확장 몬스터
@@ -1533,7 +1669,8 @@ name = 들판 하울러
 attack = 14
 defense = 7
 hp = 110
-loot = Food:2:0.30, MonsterLoot:2:0.34, Herb:1:0.18
+loot = Food:2:0.08, MonsterLoot:2:0.08, Herb:1:0.08
+lootItems = howler_tooth:1:0.15, howler_vocal:1:0.07
 skillChance = 0.16
 skill_1_name = 장거리 울음
 skill_1_type = buff
@@ -1545,7 +1682,8 @@ name = 유적 숫양
 attack = 16
 defense = 8
 hp = 115
-loot = MonsterLoot:2:0.34, OreCommon:2:0.28, Equipment:1:0.08
+loot = MonsterLoot:2:0.08, OreCommon:2:0.08, Equipment:1:0.08
+lootItems = relic_horn:1:0.14, relic_wool:1:0.06
 skillChance = 0.20
 skill_1_name = 돌파 뿔받이
 skill_1_type = attack
@@ -1557,7 +1695,8 @@ name = 유적 숫양 (강화형)
 attack = 36
 defense = 13
 hp = 192
-loot = MonsterLoot:2:0.34, OreCommon:2:0.28, Equipment:1:0.08
+loot = MonsterLoot:2:0.08, OreCommon:2:0.08, Equipment:1:0.08
+lootItems = relic_horn:1:0.14, relic_wool:1:0.06
 skillChance = 0.20
 skill_1_name = 돌파 뿔받이
 skill_1_type = attack
@@ -1569,7 +1708,8 @@ name = 유적 정찰기
 attack = 18
 defense = 9
 hp = 120
-loot = OreCommon:2:0.32, MonsterLoot:2:0.34, Equipment:1:0.10
+loot = OreCommon:2:0.08, MonsterLoot:2:0.08, Equipment:1:0.08
+lootItems = scout_lens:1:0.13, scout_circuit:1:0.05
 skillChance = 0.24
 skill_1_name = 주시 광선
 skill_1_type = attack
@@ -1582,7 +1722,8 @@ name = 유적 정찰기 (강화형)
 attack = 46
 defense = 23
 hp = 190
-loot = OreCommon:2:0.32, MonsterLoot:2:0.34, Equipment:1:0.10
+loot = OreCommon:2:0.08, MonsterLoot:2:0.08, Equipment:1:0.08
+lootItems = scout_lens:1:0.13, scout_circuit:1:0.05
 skillChance = 0.24
 skill_1_name = 주시 광선
 skill_1_type = attack
@@ -1594,7 +1735,8 @@ name = 구역 감찰자
 attack = 22
 defense = 12
 hp = 130
-loot = OreRare:1:0.22, Equipment:1:0.20, MonsterLoot:4:0.42
+loot = OreRare:1:0.08, Equipment:1:0.08, MonsterLoot:4:0.08
+lootItems = overseer_plate:1:0.12, overseer_core:1:0.04
 skillChance = 0.32
 skill_1_name = 구획 봉쇄
 skill_1_type = attack
@@ -1610,7 +1752,8 @@ name = 구역 감찰자 (강화형)
 attack = 51
 defense = 25
 hp = 230
-loot = OreRare:1:0.22, Equipment:1:0.20, MonsterLoot:4:0.42
+loot = OreRare:1:0.08, Equipment:1:0.08, MonsterLoot:4:0.08
+lootItems = overseer_plate:1:0.12, overseer_core:1:0.04
 skillChance = 0.32
 skill_1_name = 구획 봉쇄
 skill_1_type = attack
@@ -1626,7 +1769,8 @@ name = 안개등 유령
 attack = 22
 defense = 11
 hp = 130
-loot = MonsterLoot:2:0.40, Herb:1:0.20, Potion:1:0.12
+loot = MonsterLoot:2:0.08, Herb:1:0.08, Potion:1:0.08
+lootItems = lantern_flame:1:0.13, lantern_glass:1:0.06
 skillChance = 0.24
 skill_1_name = 혼란 점멸
 skill_1_type = attack
@@ -1638,7 +1782,8 @@ name = 심야 악마
 attack = 28
 defense = 14
 hp = 145
-loot = MonsterLoot:3:0.42, Equipment:1:0.12, Potion:1:0.14
+loot = MonsterLoot:3:0.08, Equipment:1:0.08, Potion:1:0.08
+lootItems = devil_horn:1:0.12, devil_ink:1:0.05
 skillChance = 0.26
 skill_1_name = 악몽 압박
 skill_1_type = attack
@@ -1650,7 +1795,8 @@ name = 소실 망령
 attack = 32
 defense = 16
 hp = 155
-loot = MonsterLoot:4:0.44, OreRare:1:0.18, Equipment:1:0.16
+loot = MonsterLoot:4:0.08, OreRare:1:0.08, Equipment:1:0.08
+lootItems = revenant_thread:1:0.11, revenant_pearl:1:0.04
 skillChance = 0.30
 skill_1_name = 경계 지우기
 skill_1_type = attack
@@ -1662,7 +1808,8 @@ name = 종각 수호기
 attack = 26
 defense = 13
 hp = 140
-loot = OreCommon:2:0.30, Potion:1:0.18, Equipment:1:0.12
+loot = OreCommon:2:0.08, Potion:1:0.08, Equipment:1:0.08
+lootItems = bell_gear:1:0.12, bell_chime:1:0.05
 skillChance = 0.24
 skill_1_name = 공명 타종
 skill_1_type = attack
@@ -1674,7 +1821,8 @@ name = 추심 집행기
 attack = 30
 defense = 15
 hp = 150
-loot = OreRare:1:0.20, Equipment:1:0.18, MonsterLoot:4:0.40
+loot = OreRare:1:0.08, Equipment:1:0.08, MonsterLoot:4:0.08
+lootItems = pendulum_blade:1:0.10, pendulum_weight:1:0.04
 skillChance = 0.30
 skill_1_name = 진자 단죄
 skill_1_type = attack
@@ -1686,7 +1834,8 @@ name = 마나 스프라이트
 attack = 20
 defense = 10
 hp = 130
-loot = Potion:1:0.24, Herb:2:0.26, MonsterLoot:2:0.30
+loot = Potion:1:0.08, Herb:2:0.08, MonsterLoot:2:0.08
+lootItems = mana_dust:1:0.15, mana_droplet:1:0.07
 skillChance = 0.28
 skill_1_name = 잔광 탄주
 skill_1_type = attack
@@ -1702,7 +1851,8 @@ name = 마나 스프라이트 (강화형)
 attack = 32
 defense = 15
 hp = 182
-loot = Potion:1:0.24, Herb:2:0.26, MonsterLoot:2:0.30
+loot = Potion:1:0.08, Herb:2:0.08, MonsterLoot:2:0.08
+lootItems = mana_dust:1:0.15, mana_droplet:1:0.07
 skillChance = 0.28
 skill_1_name = 잔광 탄주
 skill_1_type = attack
@@ -1718,7 +1868,8 @@ name = 울음 망령
 attack = 16
 defense = 8
 hp = 115
-loot = MonsterLoot:3:0.34, Herb:1:0.16, Potion:1:0.16
+loot = MonsterLoot:3:0.08, Herb:1:0.08, Potion:1:0.08
+lootItems = howl_echo:1:0.13, howl_essence:1:0.06
 skillChance = 0.24
 skill_1_name = 메아리 공포
 skill_1_type = attack
@@ -1731,7 +1882,8 @@ name = 울음 망령 (강화형)
 attack = 46
 defense = 23
 hp = 190
-loot = MonsterLoot:3:0.34, Herb:1:0.16, Potion:1:0.16
+loot = MonsterLoot:3:0.08, Herb:1:0.08, Potion:1:0.08
+lootItems = howl_echo:1:0.13, howl_essence:1:0.06
 skillChance = 0.24
 skill_1_name = 메아리 공포
 skill_1_type = attack
@@ -1743,7 +1895,8 @@ name = 털뭉치 요정
 attack = 18
 defense = 9
 hp = 120
-loot = Herb:2:0.28, Potion:1:0.18, MonsterLoot:2:0.28
+loot = Herb:2:0.08, Potion:1:0.08, MonsterLoot:2:0.08
+lootItems = fluff_down:1:0.16, fluff_spore:1:0.08
 skillChance = 0.24
 skill_1_name = 포자 부유
 skill_1_type = heal
@@ -1755,7 +1908,8 @@ name = 털뭉치 요정 (강화형)
 attack = 33
 defense = 15
 hp = 186
-loot = Herb:2:0.28, Potion:1:0.18, MonsterLoot:2:0.28
+loot = Herb:2:0.08, Potion:1:0.08, MonsterLoot:2:0.08
+lootItems = fluff_down:1:0.16, fluff_spore:1:0.08
 skillChance = 0.24
 skill_1_name = 포자 부유
 skill_1_type = heal
@@ -1767,7 +1921,8 @@ name = 허공 호넷
 attack = 24
 defense = 12
 hp = 135
-loot = MonsterLoot:3:0.34, Herb:1:0.12, Potion:1:0.16
+loot = MonsterLoot:3:0.08, Herb:1:0.08, Potion:1:0.08
+lootItems = hornet_stinger:1:0.12, hornet_wing:1:0.05
 skillChance = 0.26
 skill_1_name = 무중력 침폭
 skill_1_type = attack
@@ -1779,7 +1934,8 @@ name = 운상 도약수
 attack = 28
 defense = 14
 hp = 145
-loot = MonsterLoot:4:0.38, Food:2:0.18, OreRare:1:0.12
+loot = MonsterLoot:4:0.08, Food:2:0.08, OreRare:1:0.08
+lootItems = leaper_claw:1:0.11, leaper_tendon:1:0.04
 skillChance = 0.28
 skill_1_name = 구름 박차
 skill_1_type = attack
@@ -1792,7 +1948,8 @@ name = 운상 도약수 (강화형)
 attack = 42
 defense = 21
 hp = 180
-loot = MonsterLoot:4:0.38, Food:2:0.18, OreRare:1:0.12
+loot = MonsterLoot:4:0.08, Food:2:0.08, OreRare:1:0.08
+lootItems = leaper_claw:1:0.11, leaper_tendon:1:0.04
 skillChance = 0.28
 skill_1_name = 구름 박차
 skill_1_type = attack
@@ -1804,7 +1961,8 @@ name = 수관 거신
 attack = 30
 defense = 15
 hp = 150
-loot = MonsterLoot:5:0.40, Herb:2:0.20, OreRare:1:0.18
+loot = MonsterLoot:5:0.08, Herb:2:0.08, OreRare:1:0.08
+lootItems = colossus_bark:1:0.09, colossus_branch:1:0.03, colossus_heart:1:0.01
 skillChance = 0.30
 skill_1_name = 천공 압괴
 skill_1_type = attack
@@ -1816,7 +1974,8 @@ name = 비트 드론
 attack = 18
 defense = 9
 hp = 120
-loot = MonsterLoot:2:0.28, Equipment:1:0.14, OreCommon:2:0.24
+loot = MonsterLoot:2:0.08, Equipment:1:0.08, OreCommon:2:0.08
+lootItems = drone_speaker:1:0.13, drone_beat_chip:1:0.06
 skillChance = 0.24
 skill_1_name = 베이스 진동
 skill_1_type = attack
@@ -1829,7 +1988,8 @@ name = 비트 드론 (강화형)
 attack = 28
 defense = 14
 hp = 145
-loot = MonsterLoot:2:0.28, Equipment:1:0.14, OreCommon:2:0.24
+loot = MonsterLoot:2:0.08, Equipment:1:0.08, OreCommon:2:0.08
+lootItems = drone_speaker:1:0.13, drone_beat_chip:1:0.06
 skillChance = 0.24
 skill_1_name = 베이스 진동
 skill_1_type = attack
@@ -1841,7 +2001,8 @@ name = 네온 하운드
 attack = 18
 defense = 9
 hp = 120
-loot = MonsterLoot:3:0.34, Food:2:0.14, Equipment:1:0.12
+loot = MonsterLoot:3:0.08, Food:2:0.08, Equipment:1:0.08
+lootItems = neon_fang:1:0.12, neon_collar:1:0.05
 skillChance = 0.26
 skill_1_name = 사인 추격
 skill_1_type = attack
@@ -1853,7 +2014,8 @@ name = 사인 클로
 attack = 20
 defense = 10
 hp = 125
-loot = MonsterLoot:3:0.36, Equipment:1:0.16, OreCommon:2:0.20
+loot = MonsterLoot:3:0.08, Equipment:1:0.08, OreCommon:2:0.08
+lootItems = sign_claw:1:0.12, sign_plate:1:0.05
 skillChance = 0.28
 skill_1_name = 황금 발톱
 skill_1_type = attack
@@ -1865,7 +2027,8 @@ name = 유적 이끼골렘
 attack = 24
 defense = 12
 hp = 135
-loot = OreCommon:2:0.30, Herb:2:0.26, MonsterLoot:3:0.36
+loot = OreCommon:2:0.08, Herb:2:0.08, MonsterLoot:3:0.08
+lootItems = moss_stone:1:0.12, moss_core:1:0.05
 skillChance = 0.24
 skill_1_name = 균열 압쇄
 skill_1_type = attack
@@ -1878,7 +2041,8 @@ name = 유적 이끼골렘 (강화형)
 attack = 40
 defense = 20
 hp = 175
-loot = OreCommon:2:0.30, Herb:2:0.26, MonsterLoot:3:0.36
+loot = OreCommon:2:0.08, Herb:2:0.08, MonsterLoot:3:0.08
+lootItems = moss_stone:1:0.12, moss_core:1:0.05
 skillChance = 0.24
 skill_1_name = 균열 압쇄
 skill_1_type = attack
@@ -1890,7 +2054,8 @@ name = 신전 수문장
 attack = 18
 defense = 9
 hp = 120
-loot = OreRare:1:0.20, Equipment:1:0.18, MonsterLoot:4:0.40
+loot = OreRare:1:0.08, Equipment:1:0.08, MonsterLoot:4:0.08
+lootItems = warden_seal:1:0.10, warden_relic:1:0.04
 skillChance = 0.30
 skill_1_name = 봉인 파동
 skill_1_type = attack
@@ -1907,7 +2072,8 @@ name = 신전 수문장 (강화형)
 attack = 42
 defense = 21
 hp = 180
-loot = OreRare:1:0.20, Equipment:1:0.18, MonsterLoot:4:0.40
+loot = OreRare:1:0.08, Equipment:1:0.08, MonsterLoot:4:0.08
+lootItems = warden_seal:1:0.10, warden_relic:1:0.04
 skillChance = 0.30
 skill_1_name = 봉인 파동
 skill_1_type = attack
@@ -1923,7 +2089,8 @@ name = 예도덩굴화
 attack = 26
 defense = 13
 hp = 140
-loot = Herb:3:0.38, MonsterLoot:2:0.28, Potion:1:0.14
+loot = Herb:3:0.08, MonsterLoot:2:0.08, Potion:1:0.08
+lootItems = razor_thorn:1:0.13, razor_petal:1:0.05
 skillChance = 0.26
 skill_1_name = 덩굴 칼비
 skill_1_type = attack
@@ -1935,7 +2102,8 @@ name = 사구 추적자
 attack = 28
 defense = 14
 hp = 145
-loot = MonsterLoot:3:0.38, Food:2:0.18, OreCommon:2:0.22
+loot = MonsterLoot:3:0.08, Food:2:0.08, OreCommon:2:0.08
+lootItems = dune_claw:1:0.12, dune_hide:1:0.05
 skillChance = 0.22
 skill_1_name = 모래 잠행
 skill_1_type = buff
@@ -1947,7 +2115,8 @@ name = 사금 유리뱀
 attack = 28
 defense = 14
 hp = 145
-loot = OreCommon:2:0.26, OreRare:1:0.14, MonsterLoot:3:0.34
+loot = OreCommon:2:0.08, OreRare:1:0.08, MonsterLoot:3:0.08
+lootItems = glass_scale:1:0.11, glass_fang:1:0.04
 skillChance = 0.26
 skill_1_name = 유리 비늘파
 skill_1_type = attack
@@ -1964,7 +2133,8 @@ attack = 7
 defense = 10
 hp = 140
 openingAttackMultiplier = 14
-loot = MonsterLoot:2:0.34, Potion:1:0.22, Equipment:1:0.08
+loot = MonsterLoot:2:0.08, Potion:1:0.08, Equipment:1:0.08
+lootItems = holo_data_chip:1:0.14
 skillChance = 0
 
 [Holo_Nano_Cloud]
@@ -1975,7 +2145,8 @@ hp = 200
 burstHitCount = 100
 burstHitDamage = 1
 burstOnce = true
-loot = MonsterLoot:2:0.36, Herb:1:0.20, OreCommon:1:0.18
+loot = MonsterLoot:2:0.08, Herb:1:0.08, OreCommon:1:0.08
+lootItems = holo_nano_dust:1:0.15
 skillChance = 0
 
 [Holo_Wall_Unit]
@@ -1983,7 +2154,8 @@ name = 버추얼 방벽유닛
 attack = 16
 defense = 58
 hp = 300
-loot = OreCommon:2:0.30, MonsterLoot:2:0.32, Equipment:1:0.10
+loot = OreCommon:2:0.08, MonsterLoot:2:0.08, Equipment:1:0.08
+lootItems = holo_barrier_shard:1:0.13
 skillChance = 0.18
 skill_1_name = 구조 보강
 skill_1_type = heal
@@ -1996,7 +2168,8 @@ attack = 11
 defense = 14
 hp = 150
 tickPressureDamage = 3
-loot = MonsterLoot:2:0.32, Potion:1:0.24, Herb:1:0.18
+loot = MonsterLoot:2:0.08, Potion:1:0.08, Herb:1:0.08
+lootItems = holo_glitch_code:1:0.07
 skillChance = 0.44
 skill_1_name = 잔상 난사
 skill_1_type = attack
@@ -2013,7 +2186,8 @@ attack = 20
 defense = 18
 hp = 170
 tickPressureDamage = 2
-loot = MonsterLoot:2:0.34, Food:2:0.18, Potion:1:0.20
+loot = MonsterLoot:2:0.08, Food:2:0.08, Potion:1:0.08
+lootItems = holo_stream_data:1:0.07
 skillChance = 0.32
 skill_1_name = 비트 절단
 skill_1_type = attack
@@ -2034,7 +2208,8 @@ attack = 24
 defense = 10
 hp = 165
 evasionChance = 0.38
-loot = MonsterLoot:2:0.34, Herb:1:0.22, Potion:1:0.14
+loot = MonsterLoot:2:0.08, Herb:1:0.08, Potion:1:0.08
+lootItems = veil_thread:1:0.14, veil_shard:1:0.06
 skillChance = 0.22
 skill_1_name = 베일 점멸
 skill_1_type = attack
@@ -2047,7 +2222,8 @@ attack = 32
 defense = 14
 hp = 195
 evasionChance = 0.32
-loot = MonsterLoot:2:0.36, OreCommon:1:0.18, Potion:1:0.14
+loot = MonsterLoot:2:0.08, OreCommon:1:0.08, Potion:1:0.08
+lootItems = spire_feather:1:0.13, spire_bone:1:0.05
 skillChance = 0.24
 skill_1_name = 급강하
 skill_1_type = attack
@@ -2060,7 +2236,8 @@ attack = 28
 defense = 12
 hp = 175
 evasionChance = 0.42
-loot = MonsterLoot:2:0.32, OreRare:1:0.08, Herb:1:0.16
+loot = MonsterLoot:2:0.08, OreRare:1:0.08, Herb:1:0.08
+lootItems = glass_string:1:0.13, glass_shard:1:0.06
 skillChance = 0.20
 skill_1_name = 연선 휘감기
 skill_1_type = attack
@@ -2073,7 +2250,8 @@ attack = 58
 defense = 32
 hp = 340
 evasionChance = 0.36
-loot = MonsterLoot:2:0.36, Herb:1:0.22, Potion:1:0.16
+loot = MonsterLoot:2:0.08, Herb:1:0.08, Potion:1:0.08
+lootItems = veil_thread:1:0.14, veil_shard:1:0.06
 skillChance = 0.24
 skill_1_name = 베일 점멸
 skill_1_type = attack
@@ -2086,7 +2264,8 @@ attack = 72
 defense = 38
 hp = 410
 evasionChance = 0.30
-loot = MonsterLoot:2:0.38, OreCommon:1:0.18, Potion:1:0.14
+loot = MonsterLoot:2:0.08, OreCommon:1:0.08, Potion:1:0.08
+lootItems = spire_feather:1:0.13, spire_bone:1:0.05
 skillChance = 0.26
 skill_1_name = 급강하
 skill_1_type = attack
@@ -2099,7 +2278,8 @@ attack = 64
 defense = 30
 hp = 360
 evasionChance = 0.40
-loot = MonsterLoot:2:0.34, OreRare:1:0.12, Herb:1:0.16
+loot = MonsterLoot:2:0.08, OreRare:1:0.08, Herb:1:0.08
+lootItems = glass_string:1:0.13, glass_shard:1:0.06
 skillChance = 0.22
 skill_1_name = 연선 휘감기
 skill_1_type = attack
@@ -2116,14 +2296,16 @@ attack = 90
 defense = 22
 hp = 540
 evasionChance = 0.20
-loot = MonsterLoot:5:0.46, OreRare:2:0.18, Equipment:1:0.10
+loot = MonsterLoot:5:0.08, OreRare:2:0.08, Equipment:1:0.08
+lootItems = blizzard_fang:1:0.08, blizzard_fur:1:0.03
 
 [Frost_Sentinel]
 name = 설원 수호자
 attack = 82
 defense = 48
 hp = 680
-loot = OreRare:3:0.22, MonsterLoot:5:0.46, Equipment:1:0.12
+loot = OreRare:3:0.08, MonsterLoot:5:0.08, Equipment:1:0.08
+lootItems = frost_plate:1:0.08, frost_core:1:0.03
 
 [Ancient_Bell_Spirit]
 name = 고분 종령
@@ -2132,7 +2314,8 @@ defense = 13
 hp = 140
 evasionChance = 0.20
 tickPressureDamage = 8
-loot = OreRare:3:0.24, MonsterLoot:6:0.48, Equipment:1:0.12
+loot = OreRare:3:0.08, MonsterLoot:6:0.08, Equipment:1:0.08
+lootItems = bell_resonance:1:0.13, bell_spirit_shard:1:0.06
 
 [Ancient_Bell_Spirit_Enhanced]
 name = 고분 종령 (강화형)
@@ -2141,7 +2324,8 @@ defense = 52
 hp = 720
 evasionChance = 0.20
 tickPressureDamage = 8
-loot = OreRare:3:0.24, MonsterLoot:6:0.48, Equipment:1:0.12
+loot = OreRare:3:0.08, MonsterLoot:6:0.08, Equipment:1:0.08
+lootItems = bell_resonance:1:0.13, bell_spirit_shard:1:0.06
 
 [Snowfield_Wraith]
 name = 설원 유령
@@ -2150,7 +2334,8 @@ defense = 20
 hp = 600
 evasionChance = 0.26
 tickPressureDamage = 10
-loot = OreRare:3:0.22, MonsterLoot:6:0.48, Equipment:1:0.12
+loot = OreRare:3:0.08, MonsterLoot:6:0.08, Equipment:1:0.08
+lootItems = snowfield_mist:1:0.07, snowfield_crystal:1:0.03
 
 [Yusejeria_Mammoth]
 name = 설원 매머드
@@ -2160,7 +2345,8 @@ hp = 880
 burstHitCount = 2
 burstHitDamage = 45
 burstOnce = true
-loot = OreRare:4:0.26, MonsterLoot:7:0.50, Equipment:2:0.14
+loot = OreRare:4:0.08, MonsterLoot:7:0.08, Equipment:2:0.08
+lootItems = mammoth_tusk:1:0.07, mammoth_fur:1:0.03, mammoth_heart:1:0.01
 
 ; -------------------------------------------------------
 ; 마왕성 몬스터
@@ -2172,14 +2358,16 @@ attack = 68
 defense = 25
 hp = 280
 tickPressureDamage = 8
-loot = MonsterLoot:3:0.42, OreCommon:2:0.28
+loot = MonsterLoot:3:0.08, OreCommon:2:0.08
+lootItems = scribe_quill:1:0.11, scribe_scroll:1:0.04
 
 [Castle_Footsoldier]
 name = 성문 병사
 attack = 36
 defense = 18
 hp = 165
-loot = MonsterLoot:4:0.44, OreCommon:2:0.28, Equipment:1:0.10
+loot = MonsterLoot:4:0.08, OreCommon:2:0.08, Equipment:1:0.08
+lootItems = demon_plate:1:0.10, demon_sword_shard:1:0.04
 
 [Demon_Officer]
 name = 마왕성 관료
@@ -2191,7 +2379,8 @@ skill_1_name = 행정 압박
 skill_1_type = buff
 skill_1_value = 1.35
 skill_1_desc = 마왕성 관료의 압도적인 행정력으로 자신을 강화한다.
-loot = MonsterLoot:5:0.46, OreRare:2:0.16, Equipment:1:0.11
+loot = MonsterLoot:5:0.08, OreRare:2:0.08, Equipment:1:0.08
+lootItems = officer_badge:1:0.09, officer_seal:1:0.03
 
 [Throne_Guardian]
 name = 옥좌 수호자
@@ -2201,7 +2390,8 @@ hp = 105
 burstHitCount = 2
 burstHitDamage = 35
 burstOnce = true
-loot = OreRare:3:0.40, MonsterLoot:6:0.48, Equipment:2:0.13
+loot = OreRare:3:0.08, MonsterLoot:6:0.08, Equipment:2:0.08
+lootItems = guardian_shard:1:0.13, guardian_gem:1:0.06
 
 [Throne_Guardian_Enhanced]
 name = 옥좌 수호자 (강화형)
@@ -2211,7 +2401,8 @@ hp = 165
 burstHitCount = 2
 burstHitDamage = 35
 burstOnce = true
-loot = OreRare:3:0.40, MonsterLoot:6:0.48, Equipment:2:0.13
+loot = OreRare:3:0.08, MonsterLoot:6:0.08, Equipment:2:0.08
+lootItems = guardian_shard:1:0.13, guardian_gem:1:0.06
 
 [Demon_Chamberlain]
 name = 마왕의 시종장
@@ -2223,7 +2414,8 @@ skill_1_name = 왕령 강격
 skill_1_type = attack
 skill_1_value = 2.8
 skill_1_desc = 마왕의 뜻을 받들어 적의 방어를 꿰뚫는 일격.
-loot = OreRare:4:0.44, MonsterLoot:7:0.50, Equipment:2:0.14
+loot = OreRare:4:0.08, MonsterLoot:7:0.08, Equipment:2:0.08
+lootItems = chamberlain_ring:1:0.08, chamberlain_key:1:0.03, royal_decree:1:0.01
 
 ; -------------------------------------------------------
 ; 푸치 탑 몬스터
@@ -2234,21 +2426,24 @@ name = 탑의 수호자
 attack = 28
 defense = 14
 hp = 145
-loot = MonsterLoot:3:0.42, OreCommon:2:0.28, Equipment:1:0.10
+loot = MonsterLoot:3:0.08, OreCommon:2:0.08, Equipment:1:0.08
+lootItems = tower_bolt:1:0.12, tower_lens:1:0.05
 
 [Clockwork_Knight]
 name = 태엽 기사
 attack = 28
 defense = 14
 hp = 145
-loot = MonsterLoot:4:0.44, OreCommon:2:0.30, Equipment:1:0.11
+loot = MonsterLoot:4:0.08, OreCommon:2:0.08, Equipment:1:0.08
+lootItems = knight_gear:1:0.11, knight_plume:1:0.04
 
 [Trial_Golem]
 name = 시련 골렘
 attack = 34
 defense = 17
 hp = 160
-loot = MonsterLoot:4:0.44, OreRare:1:0.14, Equipment:1:0.12
+loot = MonsterLoot:4:0.08, OreRare:1:0.08, Equipment:1:0.08
+lootItems = trial_stone:1:0.10, trial_core:1:0.04
 
 [Floor_Phantom]
 name = 층의 환영
@@ -2256,7 +2451,8 @@ attack = 28
 defense = 14
 hp = 145
 evasionChance = 0.24
-loot = MonsterLoot:3:0.44, OreRare:1:0.12
+loot = MonsterLoot:3:0.08, OreRare:1:0.08
+lootItems = phantom_wisp:1:0.13, phantom_chain:1:0.05
 
 ; -------------------------------------------------------
 ; 푸치 탑 전용 보스 (30층~)
@@ -2275,7 +2471,8 @@ skill_1_name = 망령의 포효
 skill_1_type = attack
 skill_1_value = 1.8
 skill_1_desc = 망령이 공허한 포효로 영혼을 흔든다.
-loot = OreRare:5:0.45, MonsterLoot:10:0.55, Equipment:2:0.18
+loot = OreRare:5:0.08, MonsterLoot:10:0.08, Equipment:2:0.08
+lootItems = revenant_chain:1:0.04
 
 [Abyss_Crawler]
 name = 심연 배회자
@@ -2289,7 +2486,8 @@ skill_1_name = 심연의 침식
 skill_1_type = attack
 skill_1_value = 2.0
 skill_1_desc = 심연의 어둠이 방어를 갉아먹는다.
-loot = OreRare:5:0.46, MonsterLoot:10:0.55, Equipment:2:0.18
+loot = OreRare:5:0.08, MonsterLoot:10:0.08, Equipment:2:0.08
+lootItems = crawler_shadow:1:0.04
 
 [Sky_Titan]
 name = 천공 거인
@@ -2302,7 +2500,8 @@ skill_1_name = 하늘 가르기
 skill_1_type = attack
 skill_1_value = 2.2
 skill_1_desc = 거인이 하늘을 가르는 일격을 내려친다.
-loot = OreRare:6:0.46, MonsterLoot:11:0.56, Equipment:2:0.19
+loot = OreRare:6:0.08, MonsterLoot:11:0.08, Equipment:2:0.08
+lootItems = titan_bone:1:0.03
 
 [Stone_Revenant]
 name = 석조 망령
@@ -2314,7 +2513,8 @@ skill_1_name = 돌폭풍
 skill_1_type = attack
 skill_1_value = 1.9
 skill_1_desc = 석조 파편이 폭풍처럼 날아든다.
-loot = OreRare:6:0.47, MonsterLoot:11:0.56, Equipment:2:0.19
+loot = OreRare:6:0.08, MonsterLoot:11:0.08, Equipment:2:0.08
+lootItems = stone_soul:1:0.03
 
 [Iron_Colossus]
 name = 철제 거상
@@ -2324,7 +2524,8 @@ hp = 3000
 burstHitCount = 2
 burstHitDamage = 80
 burstOnce = true
-loot = OreRare:6:0.47, MonsterLoot:12:0.57, Equipment:2:0.20
+loot = OreRare:6:0.08, MonsterLoot:12:0.08, Equipment:2:0.08
+lootItems = colossus_gear:1:0.03
 
 [Shadow_Drake]
 name = 그림자 용
@@ -2338,7 +2539,8 @@ skill_1_name = 어둠 숨결
 skill_1_type = attack
 skill_1_value = 2.4
 skill_1_desc = 그림자 용이 어둠의 숨결을 뿜어낸다.
-loot = OreRare:7:0.48, MonsterLoot:12:0.57, Equipment:2:0.20
+loot = OreRare:7:0.08, MonsterLoot:12:0.08, Equipment:2:0.08
+lootItems = drake_shadow:1:0.03
 
 [Eternal_Warden]
 name = 영원의 수호자
@@ -2351,7 +2553,8 @@ skill_1_name = 영원의 봉인
 skill_1_type = attack
 skill_1_value = 2.1
 skill_1_desc = 수호자가 영원의 봉인으로 행동을 제한한다.
-loot = OreRare:7:0.48, MonsterLoot:13:0.58, Equipment:3:0.21
+loot = OreRare:7:0.08, MonsterLoot:13:0.08, Equipment:3:0.08
+lootItems = eternal_seal:1:0.02
 
 [Void_Reaper]
 name = 공허 낫잡이
@@ -2364,7 +2567,8 @@ skill_1_name = 공허의 낫
 skill_1_type = attack
 skill_1_value = 2.5
 skill_1_desc = 공허에서 소환된 낫이 존재를 베어낸다.
-loot = OreRare:7:0.49, MonsterLoot:13:0.58, Equipment:3:0.21
+loot = OreRare:7:0.08, MonsterLoot:13:0.08, Equipment:3:0.08
+lootItems = reaper_blade:1:0.02
 
 [Thunder_Golem]
 name = 뇌격 골렘
@@ -2374,7 +2578,8 @@ hp = 3850
 burstHitCount = 3
 burstHitDamage = 70
 burstOnce = true
-loot = OreRare:8:0.49, MonsterLoot:14:0.59, Equipment:3:0.22
+loot = OreRare:8:0.08, MonsterLoot:14:0.08, Equipment:3:0.08
+lootItems = thunder_core:1:0.02
 
 [Crystal_Titan]
 name = 수정 거인
@@ -2386,7 +2591,8 @@ skill_1_name = 수정 폭발
 skill_1_type = attack
 skill_1_value = 2.3
 skill_1_desc = 수정 파편이 사방으로 폭발한다.
-loot = OreRare:8:0.50, MonsterLoot:14:0.59, Equipment:3:0.22
+loot = OreRare:8:0.08, MonsterLoot:14:0.08, Equipment:3:0.08
+lootItems = crystal_heart:1:0.02
 
 [Hyperion_Shade]
 name = 히페리온의 잔상
@@ -2400,7 +2606,8 @@ skill_1_name = 히페리온 파동
 skill_1_type = attack
 skill_1_value = 2.6
 skill_1_desc = 히페리온의 힘이 잔상으로 남아 폭발한다.
-loot = OreRare:9:0.50, MonsterLoot:15:0.60, Equipment:3:0.23
+loot = OreRare:9:0.08, MonsterLoot:15:0.08, Equipment:3:0.08
+lootItems = hyperion_shard:1:0.01
 
 [Ruin_Sovereign]
 name = 폐허의 군주
@@ -2412,7 +2619,8 @@ skill_1_name = 군주의 압제
 skill_1_type = attack
 skill_1_value = 2.8
 skill_1_desc = 폐허의 군주가 압도적인 힘으로 짓누른다.
-loot = OreRare:9:0.51, MonsterLoot:15:0.60, Equipment:3:0.23
+loot = OreRare:9:0.08, MonsterLoot:15:0.08, Equipment:3:0.08
+lootItems = sovereign_crown:1:0.01
 
 [Storm_Titan]
 name = 폭풍 거인
@@ -2423,7 +2631,8 @@ burstHitCount = 2
 burstHitDamage = 95
 burstOnce = true
 evasionChance = 0.15
-loot = OreRare:9:0.51, MonsterLoot:16:0.61, Equipment:3:0.24
+loot = OreRare:9:0.08, MonsterLoot:16:0.08, Equipment:3:0.08
+lootItems = storm_heart:1:0.01
 
 [Abyss_Knight]
 name = 심연 기사
@@ -2436,7 +2645,8 @@ skill_1_name = 심연검
 skill_1_type = attack
 skill_1_value = 2.7
 skill_1_desc = 심연에서 담금질된 검이 방어를 꿰뚫는다.
-loot = OreRare:10:0.52, MonsterLoot:16:0.61, Equipment:4:0.24
+loot = OreRare:10:0.08, MonsterLoot:16:0.08, Equipment:4:0.08
+lootItems = abyss_sword:1:0.01
 
 [Shadow_Colossus]
 name = 그림자 거상
@@ -2450,7 +2660,8 @@ skill_1_name = 그림자 포식
 skill_1_type = attack
 skill_1_value = 3.0
 skill_1_desc = 그림자가 빛을 빨아들이며 덮쳐온다.
-loot = OreRare:10:0.52, MonsterLoot:17:0.62, Equipment:4:0.25
+loot = OreRare:10:0.08, MonsterLoot:17:0.08, Equipment:4:0.08
+lootItems = shadow_heart:1:0.01
 
 [Ancient_Guardian]
 name = 고대 수호신
@@ -2462,7 +2673,8 @@ skill_1_name = 고대의 심판
 skill_1_type = attack
 skill_1_value = 2.9
 skill_1_desc = 고대에서 깨어난 수호신이 심판을 내린다.
-loot = OreRare:10:0.53, MonsterLoot:17:0.62, Equipment:4:0.25
+loot = OreRare:10:0.08, MonsterLoot:17:0.08, Equipment:4:0.08
+lootItems = guardian_halo:1:0.01
 
 [Celestial_Golem]
 name = 천상 골렘
@@ -2472,7 +2684,8 @@ hp = 6400
 burstHitCount = 3
 burstHitDamage = 110
 burstOnce = true
-loot = OreRare:11:0.53, MonsterLoot:18:0.63, Equipment:4:0.26
+loot = OreRare:11:0.08, MonsterLoot:18:0.08, Equipment:4:0.08
+lootItems = celestial_core:1:0.01
 
 [World_Eater]
 name = 세계 삼키는 자
@@ -2486,7 +2699,8 @@ skill_1_name = 세계 침식
 skill_1_type = attack
 skill_1_value = 3.2
 skill_1_desc = 세계 자체를 갉아먹는 힘이 쏟아진다.
-loot = OreRare:11:0.54, MonsterLoot:18:0.63, Equipment:4:0.26
+loot = OreRare:11:0.08, MonsterLoot:18:0.08, Equipment:4:0.08
+lootItems = eater_tooth:1:0.01
 
 [Tower_Sovereign]
 name = 탑의 군주
@@ -2498,7 +2712,8 @@ skill_1_name = 군주의 영역
 skill_1_type = attack
 skill_1_value = 3.4
 skill_1_desc = 탑의 군주가 자신의 영역을 선포하며 공격한다.
-loot = OreRare:12:0.54, MonsterLoot:19:0.64, Equipment:5:0.27
+loot = OreRare:12:0.08, MonsterLoot:19:0.08, Equipment:5:0.08
+lootItems = sovereign_seal:1:0.01
 
 [Prime_Revenant]
 name = 원초의 망령
@@ -2514,7 +2729,8 @@ skill_1_name = 원초의 공허
 skill_1_type = attack
 skill_1_value = 3.5
 skill_1_desc = 태초의 공허에서 소환된 힘이 폭발한다.
-loot = OreRare:12:0.55, MonsterLoot:20:0.65, Equipment:5:0.28
+loot = OreRare:12:0.08, MonsterLoot:20:0.08, Equipment:5:0.08
+lootItems = prime_essence:1:0.01
 
 [Hyperion_Avatar]
 name = 히페리온의 화신
@@ -2531,7 +2747,8 @@ skill_1_name = 히페리온 폭풍
 skill_1_type = attack
 skill_1_value = 3.8
 skill_1_desc = 히페리온의 모든 힘이 폭풍처럼 쏟아진다.
-loot = OreRare:15:0.60, MonsterLoot:25:0.70, Equipment:6:0.30
+loot = OreRare:15:0.08, MonsterLoot:25:0.08, Equipment:6:0.08
+lootItems = avatar_spark:1:0.01
 
 [Tower_Deity]
 name = 탑의 신격
@@ -2548,7 +2765,8 @@ skill_1_name = 신격의 강림
 skill_1_type = attack
 skill_1_value = 4.0
 skill_1_desc = 탑에 깃든 신격이 강림하여 존재 자체를 공격한다.
-loot = OreRare:18:0.65, MonsterLoot:30:0.75, Equipment:7:0.32
+loot = OreRare:18:0.08, MonsterLoot:30:0.08, Equipment:7:0.08
+lootItems = deity_fragment:1:0.01
 
 [Dragon_Rize]
 name = 드래곤 리제
@@ -2565,7 +2783,8 @@ skill_1_name = 하늘 용의 포효
 skill_1_type = attack
 skill_1_value = 4.5
 skill_1_desc = 하늘 용의 혈통에서 비롯된 절대적인 힘이 폭발한다.
-loot = OreRare:25:0.70, MonsterLoot:40:0.80, Equipment:10:0.40
+loot = OreRare:25:0.08, MonsterLoot:40:0.08, Equipment:10:0.08
+lootItems = dragon_heart:1:0.01
 
 ; -------------------------------------------------------
 ; 하라티쿠스 폐허 몬스터
@@ -2578,21 +2797,24 @@ defense = 22
 hp = 620
 evasionChance = 0.24
 tickPressureDamage = 12
-loot = OreRare:3:0.22, MonsterLoot:6:0.48, Equipment:1:0.12
+loot = OreRare:3:0.08, MonsterLoot:6:0.08, Equipment:1:0.08
+lootItems = corruption_ooze:1:0.08, corruption_core:1:0.03
 
 [Ruin_Crawler]
 name = 폐허 배회자
 attack = 96
 defense = 38
 hp = 660
-loot = OreRare:3:0.22, MonsterLoot:5:0.46, Equipment:1:0.12
+loot = OreRare:3:0.08, MonsterLoot:5:0.08, Equipment:1:0.08
+lootItems = crawler_chitin:1:0.09, crawler_antenna:1:0.03
 
 [Relic_Golem]
 name = 유물 골렘
 attack = 108
 defense = 68
 hp = 820
-loot = OreRare:4:0.26, MonsterLoot:6:0.48, Equipment:2:0.14
+loot = OreRare:4:0.08, MonsterLoot:6:0.08, Equipment:2:0.08
+lootItems = relic_plate:1:0.08, relic_eye:1:0.03
 
 [Ancient_Automaton]
 name = 고대 자동인형
@@ -2604,7 +2826,8 @@ skill_1_name = 자동 연사
 skill_1_type = attack
 skill_1_value = 2.2
 skill_1_desc = 고대 기계 기관이 자동으로 연속 타격을 가한다.
-loot = OreRare:4:0.26, MonsterLoot:6:0.48, Equipment:2:0.14
+loot = OreRare:4:0.08, MonsterLoot:6:0.08, Equipment:2:0.08
+lootItems = ancient_gear:1:0.07, ancient_circuit:1:0.03
 
 [Haratikus_Colossus]
 name = 하라티쿠스 거인상
@@ -2614,7 +2837,8 @@ hp = 980
 burstHitCount = 2
 burstHitDamage = 55
 burstOnce = true
-loot = OreRare:5:0.30, MonsterLoot:8:0.52, Equipment:2:0.15
+loot = OreRare:5:0.08, MonsterLoot:8:0.08, Equipment:2:0.08
+lootItems = colossus_fragment:1:0.07, colossus_eye:1:0.02, colossus_core:1:0.01
 
 ; -------------------------------------------------------
 ; 이카르 몬스터
@@ -2626,14 +2850,16 @@ attack = 32
 defense = 16
 hp = 155
 evasionChance = 0.22
-loot = MonsterLoot:3:0.42, Herb:1:0.20, OreRare:1:0.10
+loot = MonsterLoot:3:0.08, Herb:1:0.08, OreRare:1:0.08
+lootItems = ikar_feather:1:0.12, ikar_breeze:1:0.05
 
 [Skystone_Gargoyle]
 name = 천공석 가고일
 attack = 32
 defense = 16
 hp = 155
-loot = MonsterLoot:4:0.44, OreCommon:2:0.28, OreRare:1:0.12
+loot = MonsterLoot:4:0.08, OreCommon:2:0.08, OreRare:1:0.08
+lootItems = gargoyle_chip:1:0.11, gargoyle_eye:1:0.04
 
 [Solar_Drake]
 name = 태양 드레이크
@@ -2645,7 +2871,8 @@ skill_1_name = 태양 강하
 skill_1_type = attack
 skill_1_value = 2.5
 skill_1_desc = 태양의 열기를 담아 강렬한 급강하를 가한다.
-loot = OreRare:2:0.20, MonsterLoot:5:0.46, Equipment:1:0.12
+loot = OreRare:2:0.08, MonsterLoot:5:0.08, Equipment:1:0.08
+lootItems = solar_scale:1:0.09, solar_fang:1:0.03
 
 [Sun_Colossus]
 name = 태양 거인상
@@ -2655,7 +2882,8 @@ hp = 500
 burstHitCount = 2
 burstHitDamage = 38
 burstOnce = true
-loot = OreRare:3:0.40, MonsterLoot:6:0.48, Equipment:2:0.14
+loot = OreRare:3:0.08, MonsterLoot:6:0.08, Equipment:2:0.08
+lootItems = sun_plate:1:0.08, sun_core:1:0.03, sun_heart:1:0.01
 
 ; -------------------------------------------------------
 ; 스텔라 빌 몬스터
@@ -2666,7 +2894,8 @@ name = 별빛 요정
 attack = 35
 defense = 12
 hp = 112
-loot = Food:1:0.35, Herb:1:0.40, MonsterLoot:1:0.25
+loot = Food:1:0.08, Herb:1:0.08, MonsterLoot:1:0.08
+lootItems = star_dust:1:0.15, star_drop:1:0.07
 
 [Nova_Wisp]
 name = 성운 요정
@@ -2674,14 +2903,16 @@ attack = 38
 defense = 10
 hp = 125
 evasionChance = 0.18
-loot = Herb:1:0.42, MonsterLoot:1:0.30, OreRare:1:0.06
+loot = Herb:1:0.08, MonsterLoot:1:0.08, OreRare:1:0.06
+lootItems = nova_spark:1:0.14, nova_essence:1:0.06
 
 [Sealed_Shade]
 name = 봉인된 그늘
 attack = 20
 defense = 10
 hp = 125
-loot = MonsterLoot:2:0.38, OreCommon:1:0.28, Herb:1:0.22
+loot = MonsterLoot:2:0.08, OreCommon:1:0.08, Herb:1:0.08
+lootItems = shade_seal:1:0.14, shade_whisper:1:0.06
 
 [Constellation_Specter]
 name = 별자리 망령
@@ -2689,7 +2920,8 @@ attack = 24
 defense = 12
 hp = 135
 evasionChance = 0.16
-loot = MonsterLoot:2:0.40, OreRare:1:0.10
+loot = MonsterLoot:2:0.08, OreRare:1:0.08
+lootItems = constellation_shard:1:0.12, constellation_map:1:0.05
 
 ; -------------------------------------------------------
 ; World_Tree (difficulty 0.97)
@@ -2702,7 +2934,8 @@ defense = 58
 hp = 940
 burstHitCount = 2
 burstHitDamage = 50
-loot = MonsterLoot:4:0.60, OreRare:2:0.30, Equipment:1:0.14
+loot = MonsterLoot:4:0.08, OreRare:2:0.08, Equipment:1:0.08
+lootItems = verdant_bark:1:0.07, verdant_core:1:0.02
 
 [Primal_Root_Wyrm]
 name = 원시 뿌리 와이번
@@ -2714,7 +2947,8 @@ skill_1_name = 세계수 흡기
 skill_1_type = attack
 skill_1_value = 2.6
 skill_1_desc = 세계수의 원시 힘을 빨아들여 강렬한 흡기 공격을 가한다.
-loot = MonsterLoot:4:0.55, OreRare:2:0.28, Equipment:1:0.12
+loot = MonsterLoot:4:0.08, OreRare:2:0.08, Equipment:1:0.08
+lootItems = root_scale:1:0.08, root_sap:1:0.03
 
 ; -------------------------------------------------------
 ; Navrit 전기지대 (difficulty 0.38–0.68)
@@ -2726,7 +2960,8 @@ attack = 30
 defense = 14
 hp = 140
 evasionChance = 0.14
-loot = MonsterLoot:1:0.45, OreCommon:1:0.30
+loot = MonsterLoot:1:0.08, OreCommon:1:0.08
+lootItems = arc_shell:1:0.13, arc_horn:1:0.06
 
 [Static_Hound]
 name = 정전 하운드
@@ -2734,7 +2969,8 @@ attack = 40
 defense = 20
 hp = 200
 tickPressureDamage = 6
-loot = MonsterLoot:2:0.45, OreCommon:1:0.30
+loot = MonsterLoot:2:0.08, OreCommon:1:0.08
+lootItems = static_fang:1:0.12, static_fur:1:0.05
 
 [Overload_Elemental]
 name = 과부하 요정
@@ -2746,7 +2982,8 @@ skill_1_name = 과부하 방전
 skill_1_type = attack
 skill_1_value = 1.8
 skill_1_desc = 축적된 전류를 한꺼번에 방전한다.
-loot = MonsterLoot:2:0.50, OreRare:1:0.15
+loot = MonsterLoot:2:0.08, OreRare:1:0.08
+lootItems = overload_spark:1:0.11, overload_core:1:0.04
 
 ; -------------------------------------------------------
 ; Navrit 결정지대 (difficulty 0.55–0.72)
@@ -2757,7 +2994,8 @@ name = 결정 골렘
 attack = 35
 defense = 35
 hp = 260
-loot = OreCommon:2:0.55, OreRare:1:0.20
+loot = OreCommon:2:0.08, OreRare:1:0.08
+lootItems = crystal_chip:1:0.12, crystal_core:1:0.04
 
 [Resonance_Wisp]
 name = 공명 위스프
@@ -2765,7 +3003,8 @@ attack = 38
 defense = 18
 hp = 190
 evasionChance = 0.18
-loot = MonsterLoot:1:0.45, OreRare:1:0.18
+loot = MonsterLoot:1:0.08, OreRare:1:0.08
+lootItems = resonance_dust:1:0.13, resonance_gem:1:0.05
 
 [Prism_Drake]
 name = 프리즘 드레이크
@@ -2774,7 +3013,8 @@ defense = 30
 hp = 320
 burstHitCount = 2
 burstHitDamage = 22
-loot = OreRare:1:0.30, MonsterLoot:2:0.50
+loot = OreRare:1:0.08, MonsterLoot:2:0.08
+lootItems = prism_scale:1:0.10, prism_fang:1:0.04
 
 ; -------------------------------------------------------
 ; Triflower 화산 (difficulty 0.42–0.74)
@@ -2786,7 +3026,8 @@ attack = 32
 defense = 16
 hp = 160
 tickPressureDamage = 5
-loot = MonsterLoot:1:0.45, OreCommon:1:0.35
+loot = MonsterLoot:1:0.08, OreCommon:1:0.08
+lootItems = triflower_skin:1:0.13, triflower_oil:1:0.05
 
 [Volcano_Serpent]
 name = 화산 뱀
@@ -2794,7 +3035,8 @@ attack = 44
 defense = 18
 hp = 220
 evasionChance = 0.16
-loot = MonsterLoot:2:0.45, OreRare:1:0.14
+loot = MonsterLoot:2:0.08, OreRare:1:0.08
+lootItems = volcano_fang:1:0.12, volcano_scale:1:0.04
 
 [Caldera_Drake]
 name = 칼데라 드레이크
@@ -2806,7 +3048,8 @@ skill_1_name = 분화 강타
 skill_1_type = attack
 skill_1_value = 2.2
 skill_1_desc = 분화구의 에너지를 담아 강렬하게 내리친다.
-loot = OreRare:2:0.35, MonsterLoot:3:0.55
+loot = OreRare:2:0.08, MonsterLoot:3:0.08
+lootItems = caldera_scale:1:0.10, caldera_fang:1:0.04, caldera_heart:1:0.02
 
 ; -------------------------------------------------------
 ; 천공성 리엘 (difficulty 0.72–0.90)
@@ -2817,7 +3060,8 @@ name = 천공 기사
 attack = 50
 defense = 38
 hp = 300
-loot = OreRare:1:0.22, MonsterLoot:2:0.48, Equipment:1:0.08
+loot = OreRare:1:0.08, MonsterLoot:2:0.08, Equipment:1:0.08
+lootItems = sky_plate:1:0.10, sky_plume:1:0.04
 
 [Aerial_Sentinel]
 name = 공중 파수꾼
@@ -2825,7 +3069,8 @@ attack = 56
 defense = 28
 hp = 320
 evasionChance = 0.16
-loot = MonsterLoot:2:0.48, OreRare:1:0.20
+loot = MonsterLoot:2:0.08, OreRare:1:0.08
+lootItems = aerial_bolt:1:0.11, aerial_lens:1:0.04
 
 [Tempest_Lord]
 name = 폭풍 군주
@@ -2839,7 +3084,8 @@ skill_1_name = 천공 강풍
 skill_1_type = attack
 skill_1_value = 2.4
 skill_1_desc = 천공성의 강풍을 모아 강력한 일격을 날린다.
-loot = OreRare:2:0.32, MonsterLoot:3:0.55, Equipment:1:0.12
+loot = OreRare:2:0.08, MonsterLoot:3:0.08, Equipment:1:0.08
+lootItems = tempest_shard:1:0.08, tempest_crown:1:0.03, tempest_eye:1:0.01
 
 ; -------------------------------------------------------
 ; 우피오 늪 (difficulty 0.22)
@@ -2850,7 +3096,8 @@ name = 늪 두꺼비 왕
 attack = 18
 defense = 12
 hp = 100
-loot = MonsterLoot:1:0.40, Herb:1:0.40, Food:1:0.35
+loot = MonsterLoot:1:0.08, Herb:1:0.08, Food:1:0.08
+lootItems = toad_king_crown:1:0.14, toad_king_toxin:1:0.06
 
 [Bog_Leech]
 name = 수렁 거머리
@@ -2858,14 +3105,16 @@ attack = 14
 defense = 8
 hp = 75
 tickPressureDamage = 3
-loot = MonsterLoot:1:0.45, Herb:1:0.35
+loot = MonsterLoot:1:0.08, Herb:1:0.08
+lootItems = leech_blood:1:0.16, leech_sucker:1:0.08
 
 [Mud_Golem]
 name = 진흙 골렘
 attack = 32
 defense = 28
 hp = 220
-loot = OreCommon:2:0.45, MonsterLoot:1:0.40
+loot = OreCommon:2:0.08, MonsterLoot:1:0.08
+lootItems = mud_chunk:1:0.15, mud_core:1:0.07
 
 ; -------------------------------------------------------
 ; 세계수 (difficulty 0.55–0.78)
@@ -2877,7 +3126,8 @@ attack = 40
 defense = 22
 hp = 240
 evasionChance = 0.18
-loot = Herb:2:0.50, MonsterLoot:1:0.40
+loot = Herb:2:0.08, MonsterLoot:1:0.08
+lootItems = worldseed_pollen:1:0.12, worldseed_nectar:1:0.04
 
 [Ancient_Treant]
 name = 고목 요정
@@ -2889,7 +3139,8 @@ skill_1_name = 뿌리 압박
 skill_1_type = attack
 skill_1_value = 1.9
 skill_1_desc = 거대한 뿌리로 대지를 진동시켜 압박한다.
-loot = Herb:2:0.55, OreRare:1:0.22
+loot = Herb:2:0.08, OreRare:1:0.08
+lootItems = ancient_bark:1:0.09, ancient_sap:1:0.03
 
 ; -------------------------------------------------------
 ; 리문 유적 (difficulty 0.70–0.85)
@@ -2902,14 +3153,16 @@ defense = 22
 hp = 320
 evasionChance = 0.20
 tickPressureDamage = 8
-loot = MonsterLoot:2:0.50, OreRare:1:0.20
+loot = MonsterLoot:2:0.08, OreRare:1:0.08
+lootItems = limun_dust:1:0.11, limun_seal:1:0.04
 
 [Ruin_Gargoyle]
 name = 유적 가고일
 attack = 60
 defense = 38
 hp = 360
-loot = OreRare:1:0.25, MonsterLoot:2:0.50
+loot = OreRare:1:0.08, MonsterLoot:2:0.08
+lootItems = gargoyle_stone:1:0.10, gargoyle_gem:1:0.04
 
 [Sealed_Construct]
 name = 봉인 구조체
@@ -2921,7 +3174,8 @@ skill_1_name = 봉인 해제 충격
 skill_1_type = attack
 skill_1_value = 2.3
 skill_1_desc = 고대 봉인이 해제되며 폭발적인 에너지를 방출한다.
-loot = OreRare:2:0.30, MonsterLoot:3:0.55, Equipment:1:0.10
+loot = OreRare:2:0.08, MonsterLoot:3:0.08, Equipment:1:0.08
+lootItems = construct_plate:1:0.09, construct_core:1:0.03
 
 ; -------------------------------------------------------
 ; 구 에아스 거주지 (difficulty 0.45–0.55)
@@ -2933,14 +3187,16 @@ attack = 42
 defense = 20
 hp = 220
 evasionChance = 0.18
-loot = MonsterLoot:2:0.45, OreCommon:1:0.30
+loot = MonsterLoot:2:0.08, OreCommon:1:0.08
+lootItems = eas_wisp:1:0.13, eas_tear:1:0.05
 
 [Ruin_Lurker]
 name = 폐허 잠복자
 attack = 46
 defense = 24
 hp = 250
-loot = MonsterLoot:2:0.48, OreCommon:1:0.32
+loot = MonsterLoot:2:0.08, OreCommon:1:0.08
+lootItems = lurker_claw:1:0.13, lurker_eye:1:0.05
 
 ; -------------------------------------------------------
 ; 클러치 협곡 (difficulty 0.30–0.50)
@@ -2952,14 +3208,16 @@ attack = 36
 defense = 16
 hp = 180
 evasionChance = 0.14
-loot = MonsterLoot:1:0.45, Food:1:0.35
+loot = MonsterLoot:1:0.08, Food:1:0.08
+lootItems = gorge_talon:1:0.13, gorge_feather:1:0.06
 
 [Boulder_Troll]
 name = 바위 트롤
 attack = 42
 defense = 32
 hp = 260
-loot = OreCommon:2:0.50, MonsterLoot:1:0.40
+loot = OreCommon:2:0.08, MonsterLoot:1:0.08
+lootItems = troll_tooth:1:0.12, troll_hide:1:0.05
 
 ; -------------------------------------------------------
 ; 사구지대 (difficulty 0.50–0.60)
@@ -2971,7 +3229,8 @@ attack = 44
 defense = 18
 hp = 230
 evasionChance = 0.20
-loot = MonsterLoot:2:0.45, OreCommon:1:0.30
+loot = MonsterLoot:2:0.08, OreCommon:1:0.08
+lootItems = sand_ash:1:0.12, sand_gem:1:0.05
 
 [Dune_Scorpion]
 name = 사구 전갈
@@ -2979,7 +3238,8 @@ attack = 48
 defense = 22
 hp = 240
 tickPressureDamage = 7
-loot = MonsterLoot:2:0.48, OreCommon:1:0.32
+loot = MonsterLoot:2:0.08, OreCommon:1:0.08
+lootItems = scorpion_stinger:1:0.13, scorpion_carapace:1:0.06
 
 [Desert_Viper]
 name = 사막 독사
@@ -2988,14 +3248,16 @@ defense = 16
 hp = 220
 tickPressureDamage = 8
 evasionChance = 0.16
-loot = MonsterLoot:2:0.45, Herb:1:0.30
+loot = MonsterLoot:2:0.08, Herb:1:0.08
+lootItems = viper_fang:1:0.14, viper_scale:1:0.06
 
 [Dune_Colossus]
 name = 사구 거신
 attack = 60
 defense = 42
 hp = 380
-loot = OreRare:1:0.22, MonsterLoot:3:0.52
+loot = OreRare:1:0.08, MonsterLoot:3:0.08
+lootItems = dune_stone:1:0.09, dune_core:1:0.03
 
 ; -------------------------------------------------------
 ; 마뉴 수몰도시 (difficulty 0.68–0.80)
@@ -3007,7 +3269,8 @@ attack = 58
 defense = 24
 hp = 340
 evasionChance = 0.18
-loot = MonsterLoot:2:0.50, OreRare:1:0.18
+loot = MonsterLoot:2:0.08, OreRare:1:0.08
+lootItems = sunken_coral:1:0.12, sunken_pearl:1:0.05
 
 [Coral_Colossus]
 name = 산호 거신
@@ -3016,7 +3279,8 @@ defense = 52
 hp = 460
 burstHitCount = 2
 burstHitDamage = 32
-loot = OreRare:2:0.30, MonsterLoot:3:0.52
+loot = OreRare:2:0.08, MonsterLoot:3:0.08
+lootItems = coral_plate:1:0.09, coral_core:1:0.03
 
 ; -------------------------------------------------------
 ; 키시나 해안 (difficulty 0.10–0.16)
@@ -3027,7 +3291,8 @@ name = 조류 게
 attack = 16
 defense = 12
 hp = 80
-loot = Food:1:0.50, MonsterLoot:1:0.35
+loot = Food:1:0.08, MonsterLoot:1:0.08
+lootItems = tide_shell:1:0.17, tide_pearl:1:0.08
 
 [Shore_Wisp]
 name = 해안 위스프
@@ -3035,7 +3300,8 @@ attack = 22
 defense = 10
 hp = 110
 evasionChance = 0.16
-loot = MonsterLoot:1:0.40, Herb:1:0.30
+loot = MonsterLoot:1:0.08, Herb:1:0.08
+lootItems = shore_light:1:0.16, shore_gem:1:0.08
 
 ; -------------------------------------------------------
 ; 펜타 섬 (difficulty 0.22–0.38)
@@ -3046,7 +3312,8 @@ name = 섬 멧돼지
 attack = 26
 defense = 14
 hp = 140
-loot = Food:2:0.55, MonsterLoot:1:0.35
+loot = Food:2:0.08, MonsterLoot:1:0.08
+lootItems = island_tusk:1:0.15, island_hide:1:0.07
 
 [Reef_Serpent]
 name = 암초 뱀
@@ -3054,7 +3321,8 @@ attack = 34
 defense = 16
 hp = 170
 evasionChance = 0.14
-loot = MonsterLoot:1:0.45, OreCommon:1:0.28
+loot = MonsterLoot:1:0.08, OreCommon:1:0.08
+lootItems = reef_scale:1:0.14, reef_fang:1:0.07
 
 ; -------------------------------------------------------
 ; 할퓌아 부유섬 (difficulty 0.28–0.52)
@@ -3066,7 +3334,8 @@ attack = 38
 defense = 16
 hp = 200
 evasionChance = 0.20
-loot = MonsterLoot:1:0.45, OreCommon:1:0.32
+loot = MonsterLoot:1:0.08, OreCommon:1:0.08
+lootItems = ray_fin:1:0.14, ray_membrane:1:0.06
 
 [Aerial_Jellyfish]
 name = 공중 해파리
@@ -3075,7 +3344,8 @@ defense = 20
 hp = 260
 tickPressureDamage = 7
 evasionChance = 0.18
-loot = MonsterLoot:2:0.48, OreRare:1:0.16
+loot = MonsterLoot:2:0.08, OreRare:1:0.08
+lootItems = jelly_tentacle:1:0.13, jelly_bell:1:0.05
 
 ; -------------------------------------------------------
 ; 에루멘 미스트우드/선천 (difficulty 0.40–0.55)
@@ -3087,7 +3357,8 @@ attack = 28
 defense = 14
 hp = 150
 evasionChance = 0.20
-loot = Herb:2:0.50, MonsterLoot:1:0.38
+loot = Herb:2:0.08, MonsterLoot:1:0.08
+lootItems = mist_light:1:0.15, mist_core:1:0.07
 
 [Mistwood_Revenant]
 name = 미스트우드 망령
@@ -3096,7 +3367,8 @@ defense = 20
 hp = 230
 evasionChance = 0.18
 tickPressureDamage = 5
-loot = MonsterLoot:2:0.45, Herb:1:0.35
+loot = MonsterLoot:2:0.08, Herb:1:0.08
+lootItems = revenant_bark:1:0.12, revenant_essence:1:0.04
 
 ; -------------------------------------------------------
 ; 오데 산 (difficulty 0.35–0.65)
@@ -3107,7 +3379,8 @@ name = 산악 곰
 attack = 34
 defense = 20
 hp = 190
-loot = Food:2:0.50, MonsterLoot:1:0.40
+loot = Food:2:0.08, MonsterLoot:1:0.08
+lootItems = mountain_claw:1:0.13, mountain_fur:1:0.05
 
 [Peak_Stalker]
 name = 정상 스토커
@@ -3115,7 +3388,8 @@ attack = 55
 defense = 28
 hp = 320
 evasionChance = 0.14
-loot = MonsterLoot:2:0.48, OreCommon:1:0.35
+loot = MonsterLoot:2:0.08, OreCommon:1:0.08
+lootItems = peak_fang:1:0.11, peak_hide:1:0.04
 
 ; -------------------------------------------------------
 ; 라르 포레스트 (difficulty 0.05–0.25)
@@ -3127,7 +3401,8 @@ attack = 12
 defense = 6
 hp = 60
 tickPressureDamage = 3
-loot = Herb:2:0.55, Food:1:0.40
+loot = Herb:2:0.08, Food:1:0.08
+lootItems = spore_cap:1:0.17, spore_powder:1:0.08
 
 [Treant_Elder]
 name = 나무요정 장로
@@ -3139,7 +3414,8 @@ skill_1_name = 고대 뿌리
 skill_1_type = attack
 skill_1_value = 1.7
 skill_1_desc = 오래된 뿌리로 땅을 진동시킨다.
-loot = Herb:2:0.50, MonsterLoot:1:0.38
+loot = Herb:2:0.08, MonsterLoot:1:0.08
+lootItems = elder_bark:1:0.13, elder_sap:1:0.06
 
 ; -------------------------------------------------------
 ; 허공 숲 (difficulty 0.38–0.85)
@@ -3151,7 +3427,8 @@ attack = 28
 defense = 12
 hp = 150
 evasionChance = 0.22
-loot = MonsterLoot:1:0.42, Herb:1:0.32
+loot = MonsterLoot:1:0.08, Herb:1:0.08
+lootItems = void_dust:1:0.12, void_wing:1:0.05
 
 [Forest_Specter]
 name = 숲 스펙터
@@ -3159,7 +3436,8 @@ attack = 58
 defense = 24
 hp = 340
 evasionChance = 0.22
-loot = MonsterLoot:2:0.50, OreRare:1:0.18
+loot = MonsterLoot:2:0.08, OreRare:1:0.08
+lootItems = specter_wisp:1:0.12, specter_essence:1:0.04
 
 ; -------------------------------------------------------
 ; 스텔라 빌 (difficulty 0.28–0.38)
@@ -3171,14 +3449,16 @@ attack = 32
 defense = 14
 hp = 160
 evasionChance = 0.18
-loot = MonsterLoot:1:0.42, OreRare:1:0.12
+loot = MonsterLoot:1:0.08, OreRare:1:0.08
+lootItems = starfall_dust:1:0.14, starfall_gem:1:0.06
 
 [Astral_Knight]
 name = 성계 기사
 attack = 46
 defense = 28
 hp = 260
-loot = MonsterLoot:2:0.48, OreRare:1:0.18, Equipment:1:0.08
+loot = MonsterLoot:2:0.08, OreRare:1:0.08, Equipment:1:0.08
+lootItems = astral_plate:1:0.12, astral_sword_shard:1:0.05
 
 ; -------------------------------------------------------
 ; 팔콘 가든 (difficulty 0.72–0.88)
@@ -3190,7 +3470,8 @@ attack = 62
 defense = 28
 hp = 360
 evasionChance = 0.18
-loot = MonsterLoot:2:0.50, OreRare:1:0.20
+loot = MonsterLoot:2:0.08, OreRare:1:0.08
+lootItems = hawk_feather:1:0.10, hawk_talon:1:0.04
 
 [Gale_Drake]
 name = 돌풍 드레이크
@@ -3199,7 +3480,8 @@ defense = 40
 hp = 460
 burstHitCount = 2
 burstHitDamage = 32
-loot = OreRare:2:0.30, MonsterLoot:3:0.52
+loot = OreRare:2:0.08, MonsterLoot:3:0.08
+lootItems = gale_scale:1:0.09, gale_fang:1:0.03
 
 ; -------------------------------------------------------
 ; 환영의 첨탑 (difficulty 0.28–0.80)
@@ -3211,14 +3493,16 @@ attack = 20
 defense = 10
 hp = 125
 evasionChance = 0.24
-loot = MonsterLoot:2:0.45, OreRare:1:0.15
+loot = MonsterLoot:2:0.08, OreRare:1:0.08
+lootItems = stalker_shadow:1:0.13, stalker_eye_gem:1:0.05
 
 [Mirage_Golem]
 name = 신기루 골렘
 attack = 62
 defense = 44
 hp = 400
-loot = OreRare:1:0.25, MonsterLoot:2:0.50
+loot = OreRare:1:0.08, MonsterLoot:2:0.08
+lootItems = mirage_stone:1:0.10, mirage_core:1:0.04
 
 ; -------------------------------------------------------
 ; 일루네온 시계탑 (difficulty 0.45–0.65)
@@ -3231,7 +3515,8 @@ defense = 24
 hp = 210
 burstHitCount = 2
 burstHitDamage = 18
-loot = OreCommon:2:0.45, MonsterLoot:1:0.40
+loot = OreCommon:2:0.08, MonsterLoot:1:0.08
+lootItems = spider_gear:1:0.13, spider_silk_wire:1:0.06
 
 [Gear_Colossus]
 name = 기어 거신
@@ -3243,4 +3528,5 @@ skill_1_name = 톱니 분쇄
 skill_1_type = attack
 skill_1_value = 2.0
 skill_1_desc = 거대한 톱니로 강력하게 분쇄한다.
-loot = OreRare:1:0.25, MonsterLoot:2:0.50, Equipment:1:0.09
+loot = OreRare:1:0.08, MonsterLoot:2:0.08, Equipment:1:0.08
+lootItems = gear_plate:1:0.09, gear_core:1:0.03
