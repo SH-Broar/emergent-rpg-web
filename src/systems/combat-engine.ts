@@ -330,9 +330,6 @@ export function processTick(
   state.enemyHp = dummyCombatState.enemyHp; // 독 데미지 반영
   messages.push(...effectMsgs);
 
-  // --- 7. MP 소모 ---
-  player.adjustMp(-3);
-
   // --- 8. 최종 승패 체크 ---
   if (state.enemyHp <= 0) {
     state.finished = true;

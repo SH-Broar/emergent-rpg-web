@@ -850,7 +850,7 @@ export function createDungeonScreen(
       <div class="combat-header">
         <h2>${bossLabel}${cs.enemy.name}</h2>
         <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
-          <button type="button" class="btn" data-action="skip-tick" style="font-size:12px;padding:4px 12px">Skip</button>
+          <button type="button" class="btn flee-btn" data-action="flee" style="font-size:12px;padding:4px 12px">도주 [Esc]</button>
           <span class="combat-turn">턴 ${cs.turn}</span>
         </div>
       </div>
@@ -896,8 +896,8 @@ export function createDungeonScreen(
 
       <div class="skill-slots">
         ${skillBtns}
-        <button class="btn skill-btn flee-btn" data-action="flee">
-          <div class="skill-name">도주</div><div class="skill-key">[Esc]</div>
+        <button class="btn skill-btn" data-action="skip-tick">
+          <div class="skill-name">Skip</div><div class="skill-key">[Space]</div>
         </button>
       </div>
 
