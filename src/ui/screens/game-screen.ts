@@ -10,9 +10,9 @@ import { moveCompanions, getRelationshipStage, tryNpcInitiatedConversation } fro
 import { triggerNpcQuestEvent } from '../../data/npc-quest-defs';
 import { locationName } from '../../types/registry';
 import { getZoneColor } from './world-map';
-import { weatherName, seasonName, raceName, spiritRoleName, elementName, Element, ELEMENT_COUNT, ItemType, COMBAT_JOB_NAMES, LIFE_JOB_NAMES } from '../../types/enums';
+import { weatherName, seasonName, raceName, spiritRoleName, elementName, Element, ELEMENT_COUNT, COMBAT_JOB_NAMES, LIFE_JOB_NAMES } from '../../types/enums';
 import type { CombatJob, LifeJob } from '../../types/enums';
-import { getItemDef, getWeaponDef, getArmorDef, categoryName } from '../../types/item-defs';
+import { getItemDef, getWeaponDef, getArmorDef, findItemsBySource } from '../../types/item-defs';
 import { isTimeWindowOpen } from '../../types/game-time';
 import { applyTimeTheme } from '../time-theme';
 import { TRAVEL_OVERLAY_THRESHOLD_MINUTES } from './travel';
@@ -30,6 +30,8 @@ interface ActionDef {
   icon: string;
   /** 이 액션이 보이려면 true를 반환해야 함. 없으면 항상 표시. */
   visible?: (session: GameSession) => boolean;
+  /** 동적 라벨 (있으면 label 대신 사용) */
+  dynamicLabel?: (session: GameSession) => string;
 }
 
 function atHome(session: GameSession) {
@@ -43,6 +45,13 @@ function canTrade(session: GameSession) {
   if (loc === 'Market_Square') return true;
   return session.actors.some(a =>
     a !== session.player && a.currentLocation === loc && a.spirit.role === 1 /* Merchant */);
+}
+function tradeLabel(session: GameSession): string {
+  const loc = session.player.currentLocation;
+  if (loc === 'Market_Square') return '거래';
+  const merchant = session.actors.find(a =>
+    a !== session.player && a.currentLocation === loc && a.spirit.role === 1 /* Merchant */);
+  return merchant ? `거래 · ${merchant.name}` : '거래';
 }
 function nearDungeon(session: GameSession) {
   return session.dungeonSystem.getAllDungeons().some(d =>
@@ -61,6 +70,9 @@ function hasNpcsHere(session: GameSession) {
 function hasActivities(session: GameSession) {
   return session.activitySystem.hasActivities(session.player.currentLocation);
 }
+function canGather(session: GameSession) {
+  return findItemsBySource('gather:' + session.player.currentLocation).length > 0;
+}
 function atGuildHall(session: GameSession) { return session.player.currentLocation === 'Guild_Hall'; }
 function atGuild(session: GameSession) { return session.player.currentLocation === 'Guild_Hall' || session.player.currentLocation === 'Guild_Branch'; }
 function atLunaAcademy(session: GameSession) { return session.player.currentLocation === 'Luna_Academy'; }
@@ -74,13 +86,13 @@ function atVillage(session: GameSession) {
 
 const MAIN_ACTIONS: ActionDef[] = [
   { key: '1', label: '대기', action: 'idle', icon: '⏳' },
-  { key: '2', label: '이동', action: 'move', icon: '🚶' },
-  { key: '3', label: '대화', action: 'talk', icon: '💬', visible: hasNpcsHere },
-  { key: '4', label: '거래', action: 'trade', icon: '💰', visible: canTrade },
-  { key: '5', label: '소지품', action: 'info_inventory' as GameAction, icon: '🎒' },
-  { key: '6', label: '휴식', action: 'rest', icon: '💤' },
+  { key: '2', label: '대화', action: 'talk', icon: '💬', visible: hasNpcsHere },
+  { key: '3', label: '소지품', action: 'info_inventory' as GameAction, icon: '🎒' },
+  { key: '4', label: '휴식', action: 'rest', icon: '💤' },
+  { key: '5', label: '이동', action: 'move', icon: '🚶' },
+  { key: '6', label: '거래', action: 'trade', icon: '💰', visible: canTrade, dynamicLabel: tradeLabel },
   { key: '7', label: '던전', action: 'dungeon', icon: '⚔', visible: nearDungeon },
-  { key: '8', label: '채집', action: 'gather', icon: '🌿' },
+  { key: '8', label: '채집', action: 'gather', icon: '🌿', visible: canGather },
   { key: '9', label: '퀘스트', action: 'quest', icon: '📜', visible: atGuildHall },
   { key: '0', label: '활동', action: 'activity', icon: '🔨', visible: hasActivities },
   { key: 'g', label: '선물', action: 'gift', icon: '🎁', visible: hasNpcsHere },
@@ -437,12 +449,13 @@ export function createGameScreen(
             return MAIN_ACTIONS.slice(0, lastVisible + 1).map(a => {
               const show = !a.visible || a.visible(session);
               const tpCost = ACTION_TP_COST[a.action] ?? 0;
+              const label = (show && a.dynamicLabel) ? a.dynamicLabel(session) : a.label;
               return `
                 <button class="btn action-btn" data-action="${a.action}" title="[${a.key}]"
                   style="${show ? '' : 'visibility:hidden;pointer-events:none'}">
                   <span class="action-icon">${a.icon}</span>
                   <span class="action-label-row">
-                    <span class="action-label">${a.label}</span>
+                    <span class="action-label">${label}</span>
                     ${renderTpCostPips(tpCost)}
                   </span>
                   <span class="action-key">${a.key}</span>
@@ -602,7 +615,7 @@ export function createInfoScreen(
             const npcActor = session.actors.find(a => a.name === name);
             const isCompanionNow = session.knowledge.isCompanion(name);
             const showLoc = (stage === 'close' || stage === 'companion') && npcActor;
-            const isTraveling = npcActor && npcActor.travelRemainingMinutes > 0 && npcActor.moveDestination;
+            const isTraveling = showLoc && npcActor!.travelRemainingMinutes > 0 && npcActor!.moveDestination;
             const locLabel = isCompanionNow
               ? ' · 동행 중'
               : isTraveling
@@ -629,8 +642,7 @@ export function createInfoScreen(
         }
 
         case 'info_inventory': {
-          const totalItemCount = [...p.items.values()].reduce((s, n) => s + n, 0)
-            + [...p.spirit.inventory.entries()].filter(([, n]) => n > 0).reduce((s, [, n]) => s + n, 0);
+          const totalItemCount = [...p.items.values()].reduce((s, n) => s + n, 0);
           const bagCap = session.knowledge.bagCapacity ?? 10;
           html += `<h2>소지품</h2>`;
           html += `<p style="text-align:center;font-size:11px;color:${totalItemCount >= bagCap ? 'var(--accent)' : 'var(--text-dim)'}">가방 ${totalItemCount}/${bagCap}칸</p>`;
@@ -661,18 +673,8 @@ export function createInfoScreen(
             html += `</div>`;
           }
 
-          // Category items (p.spirit.inventory Map<ItemType, number>)
-          const invEntries = [...p.spirit.inventory.entries()].filter(([, n]) => n > 0);
-          if (invEntries.length > 0) {
-            html += `<div class="inv-section-title" style="color:var(--text-dim);font-size:12px;margin:8px 0 4px">재고</div>`;
-            html += `<div class="inv-grid">`;
-            for (const [type, count] of invEntries) {
-              html += `<div class="inv-item"><span class="inv-name">${categoryName(type as ItemType)}</span><span class="inv-count">x${count}</span></div>`;
-            }
-            html += `</div>`;
-          }
 
-          if (p.items.size === 0 && invEntries.length === 0) {
+          if (p.items.size === 0) {
             html += `<p style="color:var(--text-dim);font-size:13px">소지품이 없습니다.</p>`;
           }
           break;
