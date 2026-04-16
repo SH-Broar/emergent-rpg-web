@@ -48,10 +48,10 @@ function canTrade(session: GameSession) {
 }
 function tradeLabel(session: GameSession): string {
   const loc = session.player.currentLocation;
-  if (loc === 'Market_Square') return '거래';
-  const merchant = session.actors.find(a =>
+  if (loc === 'Market_Square') return '거래 : 시장';
+  const hasMerchant = session.actors.some(a =>
     a !== session.player && a.currentLocation === loc && a.spirit.role === 1 /* Merchant */);
-  return merchant ? `거래 · ${merchant.name}` : '거래';
+  return hasMerchant ? '거래 : 상인' : '거래';
 }
 function nearDungeon(session: GameSession) {
   return session.dungeonSystem.getAllDungeons().some(d =>
