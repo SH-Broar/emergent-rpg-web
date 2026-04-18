@@ -72,7 +72,7 @@ export function createStatusScreen(
       let closeCount = 0;
       let companionRelCount = 0;
       for (const name of k.knownActorNames) {
-        const stage = getRelationshipStage(p, name, k, session.actors);
+        const stage = getRelationshipStage(p, name, k, session.actors, session.dungeonSystem);
         if (stage === 'close') closeCount++;
         if (stage === 'companion') companionRelCount++;
       }

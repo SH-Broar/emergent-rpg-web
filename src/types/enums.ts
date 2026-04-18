@@ -40,6 +40,33 @@ export function itemTypeName(t: ItemType): string {
   return ITEM_TYPE_NAMES[t] ?? '?';
 }
 
+// --- ItemType ↔ String ID 매핑 (인벤토리 통합용) ---
+const ITEM_TYPE_ID_MAP: Record<number, string> = {
+  [ItemType.Food]: 'cat_food',
+  [ItemType.Herb]: 'cat_herb',
+  [ItemType.OreCommon]: 'cat_ore_common',
+  [ItemType.OreRare]: 'cat_ore_rare',
+  [ItemType.MonsterLoot]: 'cat_monster_loot',
+  [ItemType.Potion]: 'cat_potion',
+  [ItemType.Equipment]: 'cat_equipment',
+  [ItemType.GuildCard]: 'cat_guild_card',
+};
+
+const ID_TO_ITEM_TYPE = new Map<string, ItemType>();
+for (const [type, id] of Object.entries(ITEM_TYPE_ID_MAP)) {
+  ID_TO_ITEM_TYPE.set(id, Number(type) as ItemType);
+}
+
+/** ItemType enum → 개별 아이템 ID (통합 인벤토리용) */
+export function itemTypeToId(type: ItemType): string {
+  return ITEM_TYPE_ID_MAP[type] ?? 'cat_food';
+}
+
+/** 개별 아이템 ID → ItemType (없으면 undefined) */
+export function itemIdToType(id: string): ItemType | undefined {
+  return ID_TO_ITEM_TYPE.get(id);
+}
+
 // --- Element (Color.h:15) ---
 export enum Element {
   Fire = 0, Water, Electric, Iron, Earth, Wind, Light, Dark, Count,

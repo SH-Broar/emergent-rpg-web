@@ -106,7 +106,7 @@ export function createHyperionScreen(
       const stars = '\u2605'.repeat(actor.hyperionLevel) + '\u2606'.repeat(HYPERION_MAX_LEVEL - actor.hyperionLevel);
       const stage = actor === p ? '' : getRelationshipStageLabel(
         session.knowledge.isCompanion(actor.name) ? 'companion' :
-        getRelationshipStage(p, actor.name, session.knowledge, session.actors)
+        getRelationshipStage(p, actor.name, session.knowledge, session.actors, session.dungeonSystem)
       );
       item.innerHTML = `
         <span class="npc-name">${actor.name}</span>
@@ -132,7 +132,7 @@ export function createHyperionScreen(
     const stars = '\u2605'.repeat(level) + '\u2606'.repeat(HYPERION_MAX_LEVEL - level);
     const stage = actor === p ? '' : getRelationshipStageLabel(
       session.knowledge.isCompanion(actor.name) ? 'companion' :
-      getRelationshipStage(p, actor.name, session.knowledge, session.actors)
+      getRelationshipStage(p, actor.name, session.knowledge, session.actors, session.dungeonSystem)
     );
 
     // Hyperion info
@@ -193,7 +193,7 @@ export function createHyperionScreen(
       acqTitle.textContent = '\uc785\uc218 \uc870\uac74' + diffLabel;
       wrap.appendChild(acqTitle);
 
-      const checks = evaluateAcquisitionConditions(actor, p, session.actors, session.knowledge);
+      const checks = evaluateAcquisitionConditions(actor, p, session.actors, session.knowledge, session.dungeonSystem);
       const acqList = document.createElement('div');
       acqList.style.cssText = 'display:flex;flex-direction:column;gap:3px;margin-top:4px';
 

@@ -4,30 +4,18 @@
 import { GameSession } from './game-session';
 import { seasonName } from '../types/enums';
 import { randomInt, randomFloat } from '../types/rng';
-import { updateHyperionLevels } from './hyperion';
 import { advanceTurn } from './world-simulation';
 import { applyDailyBaseEffects, tickStoragePenalties } from './base-effects';
 import { findItemsBySource, getEquippedAccessoryEffects } from '../types/item-defs';
 import { tryNpcInitiatedConversation, getDialogue, getRelationshipStage, getActionText } from './npc-interaction';
 import { checkAndAwardTitles } from './title-system';
 import { getLifeJobModifiers } from './life-job-system';
-import { checkAndUnlockPacks, RDC_PACKS } from '../data/rdc-packs';
 import { SEA_ONLY_LOCATIONS } from './ferry';
+import { checkAndQueueHyperionLevelUps, syncPlayerHyperionBonus } from './hyperion-trigger';
 
-function syncPlayerHyperionBonus(session: GameSession): void {
-  if (!session.isValid) return;
-  const p = session.player;
-  const oldMaxHp = Math.max(1, p.getEffectiveMaxHp());
-  const oldMaxMp = Math.max(1, p.getEffectiveMaxMp());
-  const hpRatio = Math.max(0, Math.min(1, p.base.hp / oldMaxHp));
-  const mpRatio = Math.max(0, Math.min(1, p.base.mp / oldMaxMp));
-  const hyperionTotal = session.actors.reduce((s, a) => s + a.hyperionLevel, 0);
-
-  p.hyperionBonus = hyperionTotal - p.hyperionLevel;
-
-  p.base.hp = Math.round(p.getEffectiveMaxHp() * hpRatio);
-  p.base.mp = Math.round(p.getEffectiveMaxMp() * mpRatio);
-}
+// syncPlayerHyperionBonus는 hyperion-trigger.ts로 이관됨 (다른 모듈에서도 사용)
+// 하위 호환: 기존 코드가 game-loop에서 import할 경우를 대비해 re-export
+export { syncPlayerHyperionBonus };
 
 export type GameAction =
   | 'idle' | 'move' | 'talk' | 'trade' | 'eat'
@@ -116,6 +104,7 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
   }
   if (apCost > 0) {
     p.adjustAp(-apCost);
+    session.knowledge.trackVigorSpent(apCost);
   }
 
   // 컬러 게이지 스냅샷
@@ -187,7 +176,11 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
       const loc = session.world.getLocation(p.currentLocation);
       const gatherItems = findItemsBySource('gather:' + p.currentLocation);
       if (gatherItems.length === 0) {
-        if (apCost > 0) p.adjustAp(apCost);
+        if (apCost > 0) {
+          p.adjustAp(apCost);
+          // AP 환불: totalVigorSpent도 되돌린다
+          session.knowledge.totalVigorSpent = Math.max(0, session.knowledge.totalVigorSpent - apCost);
+        }
         result.messages.push('이 지역에는 채집할 자원이 없다.');
         return result; // 시간 경과 없이 리턴
       }
@@ -200,7 +193,10 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
       const lockedItems = gatherItems.filter(item => (item.minHyperion ?? 0) > totalHyperion);
 
       if (availableItems.length === 0) {
-        if (apCost > 0) p.adjustAp(apCost);
+        if (apCost > 0) {
+          p.adjustAp(apCost);
+          session.knowledge.totalVigorSpent = Math.max(0, session.knowledge.totalVigorSpent - apCost);
+        }
         const minRequired = Math.min(...gatherItems.map(g => g.minHyperion ?? 0));
         result.messages.push(`이 지역은 히페리온 레벨 합계 ${minRequired} 이상이어야 채집할 수 있다. (현재 ✦${totalHyperion})`);
         return result; // 시간 경과 없이 리턴
@@ -472,38 +468,29 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
       }
     }
 
-    // 히페리온 자동 판정 (레벨업 후 보너스 재갱신)
-    const hyperionMsgs = updateHyperionLevels(p, session.actors, session.knowledge, session.gameTime, session.dungeonSystem);
-    syncPlayerHyperionBonus(session);
-    for (const msg of hyperionMsgs) {
-      session.backlog.add(session.gameTime, msg, '시스템');
-      result.messages.push(msg);
-    }
-    // RDC 캐릭터팩 해금 체크 (히페리온 레벨 변동 후)
-    if (hyperionMsgs.length > 0) {
-      const newlyUnlocked = checkAndUnlockPacks(session.actors);
-      for (const packId of newlyUnlocked) {
-        const pack = RDC_PACKS.find(pk => pk.id === packId);
-        if (pack) {
-          const msg = `✦ RDC 캐릭터팩 해금: "${pack.label}" — ${pack.playableNames.join(', ')} 플레이 가능!`;
-          session.backlog.add(session.gameTime, msg, '시스템');
-          result.messages.push(msg);
-        }
-      }
-    }
-    // 히페리온 레벨업 시 동료 축하 대사
-    if (hyperionMsgs.length > 0) {
+    // 히페리온 자동 판정 + 큐잉 + RDC 팩 해금 (공통 유틸)
+    // 히페리온 레벨업 메시지는 오버레이에서만 표시 → result.messages에 푸시하지 않는다.
+    // (단, 큐가 이미 외부 트리거로 채워졌다면 이번 턴에 오버레이를 띄운다.)
+    const leveledNow = checkAndQueueHyperionLevelUps(session);
+    const hasPending = session.pendingHyperionMsgs.length > 0;
+
+    if (leveledNow) {
+      // 히페리온 레벨업 시 동료 축하 대사 (result.messages + 백로그)
       const companions = session.actors.filter(a =>
         a !== p && session.knowledge.isCompanion(a.name) && a.currentLocation === p.currentLocation,
       );
       if (companions.length > 0) {
         const comp = companions[randomInt(0, companions.length - 1)];
-        const stage = getRelationshipStage(p, comp.name, session.knowledge, session.actors);
+        const stage = getRelationshipStage(p, comp.name, session.knowledge, session.actors, session.dungeonSystem);
         const raw = getDialogue(comp, stage);
         const celebLine = `${comp.name}: 「${raw}」`;
         result.messages.push(celebLine);
         session.backlog.add(session.gameTime, celebLine, '대사', p.name);
       }
+    }
+
+    // 외부(전투/상점/제작 등)에서 큐에 쌓인 메시지가 있거나 이번에 발생했으면 오버레이
+    if (hasPending) {
       result.screenChange = 'hyperion_levelup';
     }
   }

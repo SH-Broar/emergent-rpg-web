@@ -17,7 +17,7 @@ import { VillageState } from '../models/village';
 // Constants
 // ============================================================
 
-export const SAVE_VERSION = 4;
+export const SAVE_VERSION = 5;
 export const SLOT_COUNT = 4; // 0 = autosave, 1-3 = manual
 export const STORAGE_KEY_PREFIX = 'rdc-save-';
 
@@ -64,10 +64,7 @@ function serializeActor(a: Actor): object {
   return {
     name: a.name,
     base: { ...a.base },
-    spirit: {
-      ...a.spirit,
-      inventory: [...a.spirit.inventory.entries()],
-    },
+    spirit: { ...a.spirit },
     color: serializeColorProfile(a.color),
     currentLocation: a.currentLocation,
     moveDestination: a.moveDestination,
@@ -310,6 +307,8 @@ function serializeKnowledge(k: PlayerKnowledge): object {
     seenDialogueChoices: [...k.seenDialogueChoices],
     activeNpcQuests: [...k.activeNpcQuests.entries()].map(([id, s]) => [id, { ...s }]),
     completedNpcQuestIds: [...k.completedNpcQuestIds],
+    totalVigorSpent: k.totalVigorSpent,
+    completedEvents: [...k.completedEvents],
   };
 }
 
@@ -380,6 +379,8 @@ function deserializeKnowledge(d: any): PlayerKnowledge {
     (d.activeNpcQuests ?? []).map(([id, s]: any) => [id, { ...s }])
   );
   k.completedNpcQuestIds = new Set(d.completedNpcQuestIds ?? []);
+  k.totalVigorSpent = d.totalVigorSpent ?? 0;
+  k.completedEvents = new Set(d.completedEvents ?? []);
   return k;
 }
 

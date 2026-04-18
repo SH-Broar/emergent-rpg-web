@@ -85,14 +85,11 @@ export function createStorageScreen(
     const zoneItems = storage[activeZone];
     const totalCount = [...zoneItems.values()].reduce((s, n) => s + n, 0);
 
-    // 인벤토리 아이템 (개인 items + spirit.inventory)
+    // 인벤토리 아이템 (통합: items 맵)
     const p = session.player;
-    const invItems: { id: string; name: string; count: number; source: 'items' | 'spirit' }[] = [];
+    const invItems: { id: string; name: string; count: number }[] = [];
     for (const [id, count] of p.items) {
-      if (count > 0) invItems.push({ id, name: getItemName(id), count, source: 'items' });
-    }
-    for (const [type, count] of p.spirit.inventory) {
-      if (count > 0) invItems.push({ id: String(type), name: categoryName(type as ItemType), count, source: 'spirit' });
+      if (count > 0) invItems.push({ id, name: getItemName(id), count });
     }
 
     // 구역 탭
@@ -214,17 +211,9 @@ export function createStorageScreen(
         const item = invItems[idx];
         if (!item) return;
         // 1개씩 넣기
-        if (item.source === 'items') {
-          if (p.getItemCount(item.id) > 0) {
-            p.removeItemById(item.id, 1);
-            k.addToStorage(loc, activeZone, item.id, 1);
-          }
-        } else {
-          const type = parseInt(item.id, 10) as ItemType;
-          if ((p.spirit.inventory.get(type) ?? 0) > 0) {
-            p.consumeItem(type, 1);
-            k.addToStorage(loc, activeZone, item.id, 1);
-          }
+        if (p.getItemCount(item.id) > 0) {
+          p.removeItemById(item.id, 1);
+          k.addToStorage(loc, activeZone, item.id, 1);
         }
         render(el);
       });
@@ -239,13 +228,7 @@ export function createStorageScreen(
         if (!id) return;
         // 1개씩 빼기
         if (k.removeFromStorage(loc, activeZone, id, 1)) {
-          // 숫자 ID면 spirit.inventory, 아니면 items
-          const numId = parseInt(id, 10);
-          if (!isNaN(numId)) {
-            p.addItem(numId as ItemType, 1);
-          } else {
-            p.addItemById(id, 1);
-          }
+          p.addItemById(id, 1);
         }
         render(el);
       });

@@ -611,7 +611,7 @@ export function createInfoScreen(
             html += '<p>아직 형성된 관계가 없습니다.</p>';
           }
           for (const [name, rel] of visibleRelations) {
-            const stage = getRelationshipStage(p, name, session.knowledge, session.actors);
+            const stage = getRelationshipStage(p, name, session.knowledge, session.actors, session.dungeonSystem);
             const npcActor = session.actors.find(a => a.name === name);
             const isCompanionNow = session.knowledge.isCompanion(name);
             const showLoc = (stage === 'close' || stage === 'companion') && npcActor;

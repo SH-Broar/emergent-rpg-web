@@ -7,9 +7,11 @@ import { Backlog } from '../models/backlog';
 import { PlayerKnowledge } from '../models/knowledge';
 import { GameTime } from '../types/game-time';
 import { Element, ItemType, SpiritRole, ELEMENT_COUNT, elementName } from '../types/enums';
-import { itemName } from '../types/registry';
+import { itemName, GameRegistry } from '../types/registry';
 import { randomFloat, randomInt, weightedRandomChoice } from '../types/rng';
 import { getDungeonSRankTurnLimit, resolveDungeonIdForSRankDisplayName } from '../models/dungeon-s-rank-registry';
+import { getAllItemDefs } from '../types/item-defs';
+import type { DungeonSystem } from '../models/dungeon';
 
 // ============================================================
 // 선물 선호도
@@ -549,15 +551,80 @@ export interface AcquisitionCheck {
   evaluable: boolean;
 }
 
+// ============================================================
+// Acquisition 파서 보조 맵 — data-init에서 빌드
+// ============================================================
+
+/** 지역 display name → locationId (data-init.ts에서 rebuildLocationNameMap 호출) */
+const locationNameMap = new Map<string, string>();
+
+/** 칭호 display name → titleId */
+const titleNameMap = new Map<string, string>();
+
+/** 아이템 display name → itemId */
+const itemNameMap = new Map<string, string>();
+
+/** locations.txt 로딩 후 호출: GameRegistry의 locationNames를 역인덱싱하여 매핑 구축 */
+export function rebuildLocationNameMap(): void {
+  locationNameMap.clear();
+  for (const [id, name] of GameRegistry.I.locationNames) {
+    if (name) locationNameMap.set(name, id);
+    // 지역 ID 자체도 키로 등록 (예: "Luna_Academy" → "Luna_Academy")
+    locationNameMap.set(id, id);
+  }
+  // 특수 alias: 구버전 조건문 호환 ("마법학교 루나" 등)
+  if (!locationNameMap.has('마법학교 루나')) {
+    locationNameMap.set('마법학교 루나', 'Luna_Academy');
+  }
+  if (!locationNameMap.has('마틴 항')) {
+    locationNameMap.set('마틴 항', 'Martin_Port');
+  }
+}
+
+/** titles.txt 로딩 후 호출: title display name → titleId 매핑 구축 */
+export function rebuildTitleNameMap(map: Map<string, string>): void {
+  titleNameMap.clear();
+  for (const [name, id] of map) titleNameMap.set(name, id);
+}
+
+/** items.txt 로딩 후 호출: item display name → itemId 매핑 구축 */
+export function rebuildItemNameMap(): void {
+  itemNameMap.clear();
+  for (const [id, def] of getAllItemDefs()) {
+    if (def.name) itemNameMap.set(def.name, id);
+    itemNameMap.set(id, id);
+  }
+}
+
+/** 주어진 지역명 문자열이 알려진 지역이면 해당 locationId 반환, 아니면 undefined */
+function resolveLocationId(displayName: string): string | undefined {
+  const clean = displayName.trim();
+  return locationNameMap.get(clean);
+}
+
+/** 주어진 아이템 display name → itemId 반환, 없으면 undefined */
+function resolveItemId(displayName: string): string | undefined {
+  return itemNameMap.get(displayName.trim());
+}
+
+/** 주어진 칭호 display name → titleId 반환, 없으면 동일 문자열 반환 (title-system.ts는 한글 ID 사용) */
+function resolveTitleId(displayName: string): string {
+  const clean = displayName.trim();
+  return titleNameMap.get(clean) ?? clean;
+}
+
 /** 입수 조건 한 줄을 파싱하여 자동 평가 시도 */
 export function evaluateAcquisitionLine(
   line: string,
   player: Actor,
   allActors: Actor[],
   knowledge: PlayerKnowledge,
+  dungeonSystem?: DungeonSystem,
 ): AcquisitionCheck {
   const t = line.trim();
   if (!t || t.startsWith('상기의')) return { text: t, met: true, evaluable: true };
+
+  // ── 기존 패턴 ────────────────────────────────────────────────
 
   // 히페리온 레벨 N 이상 (전체)
   const hlTotal = t.match(/히페리온 레벨\s*(\d+)\s*이상/);
@@ -585,21 +652,6 @@ export function evaluateAcquisitionLine(
   const recCnt = t.match(/동료가?\s*(\d+)\s*명\s*이상/);
   if (recCnt) {
     return { text: t, met: knowledge.recruitedEver.size >= parseInt(recCnt[1], 10), evaluable: true };
-  }
-
-  // 특정 장소 방문
-  const LOCATION_NAME_MAP: Record<string, string> = {
-    '마법학교 루나': 'Luna_Academy',
-    '마틴 항': 'Martin_Port',
-    '기억의 샘': 'Memory_Spring',
-  };
-  const locVisit = t.match(/(.+?)를?\s*방문했다/);
-  if (locVisit) {
-    const placeName = locVisit[1].trim().replace(/^\d+\.\s*/, '');
-    const locationId = LOCATION_NAME_MAP[placeName];
-    if (locationId) {
-      return { text: t, met: knowledge.visitedLocations.has(locationId), evaluable: true };
-    }
   }
 
   // 사천왕이 모두 동료
@@ -639,6 +691,14 @@ export function evaluateAcquisitionLine(
     return { text: t, met: knowledge.recruitedEver.size >= parseInt(acqRec[1], 10), evaluable: true };
   }
 
+  // 지금까지 잡은 몬스터 수 N 이상 (만 마리 표기 포함)
+  const monKillTotal = t.match(/(?:지금까지\s*)?잡은\s*몬스터\s*수\s*(?:(\d+)|만)\s*마리?\s*이상/);
+  if (monKillTotal) {
+    const nStr = monKillTotal[1];
+    const n = nStr ? parseInt(nStr, 10) : 10000; // "만 마리"
+    return { text: t, met: knowledge.totalMonstersKilled >= n, evaluable: true };
+  }
+
   // 탐사 완료한 지역 N 이상
   const explore = t.match(/탐사\s*완료한\s*지역\s*(\d+)/);
   if (explore) {
@@ -660,6 +720,114 @@ export function evaluateAcquisitionLine(
     return { text: t, met, evaluable: true };
   }
 
+  // ── 신규 패턴 ────────────────────────────────────────────────
+
+  // 칭호 "XXX" 소지 (따옴표 내부 문자열) — ", ', 「」 지원
+  const titleMatch = t.match(/칭호\s*["'「]([^"'」]+)["'」]\s*소지/);
+  if (titleMatch) {
+    const titleId = resolveTitleId(titleMatch[1]);
+    return { text: t, met: knowledge.hasTitle(titleId), evaluable: true };
+  }
+
+  // "XXX" N개 이상 소지 또는 "XXX" 소지 (아이템)
+  // 예: "반딧불 머리핀" 소지 / "수상한 카드" 1개 이상 소지 / 오묘한 깃털 소지
+  const itemPossess = t.match(/["'「]([^"'」]+)["'」]\s*(?:(\d+)개\s*이상)?\s*소지/);
+  if (itemPossess) {
+    const itemName = itemPossess[1];
+    const qty = itemPossess[2] ? parseInt(itemPossess[2], 10) : 1;
+    const itemId = resolveItemId(itemName);
+    if (!itemId) {
+      return { text: t, met: false, evaluable: false };
+    }
+    return { text: t, met: player.getItemCount(itemId) >= qty, evaluable: true };
+  }
+
+  // 따옴표 없는 "XXX 소지" (예: "오묘한 깃털 소지")
+  const itemPossessBare = t.match(/^(?:\d+\.\s*)?(.+?)\s*소지$/);
+  if (itemPossessBare) {
+    const itemName = itemPossessBare[1].trim();
+    const itemId = resolveItemId(itemName);
+    if (itemId) {
+      return { text: t, met: player.getItemCount(itemId) >= 1, evaluable: true };
+    }
+    // 알 수 없는 이름 → evaluable:false
+  }
+
+  // "XXX" 퀘스트 완료 (따옴표 내부) — ", ', 「」 지원
+  const questComplete = t.match(/["'「]([^"'」]+)["'」]\s*(?:퀘스트\s*)?완료/);
+  if (questComplete) {
+    const questName = questComplete[1].trim();
+    return { text: t, met: knowledge.completedQuestNames.has(questName), evaluable: true };
+  }
+
+  // 지역명 + "퀘스트 N개 이상 완료" (지역 필터 퀘스트 수)
+  // 현재 knowledge가 지역 메타를 저장하지 않으므로 총 완료 수로 폴백
+  const locQuestCount = t.match(/(.+?)\s*(?:지역\s*)?퀘스트\s*(\d+)\s*개\s*이상\s*완료/);
+  if (locQuestCount) {
+    const n = parseInt(locQuestCount[2], 10);
+    return { text: t, met: knowledge.completedQuestCount >= n, evaluable: true };
+  }
+
+  // 수락한 퀘스트 수 N개 이상
+  const acceptedQuests = t.match(/수락한\s*퀘스트\s*수\s*(\d+)\s*개\s*이상/);
+  if (acceptedQuests) {
+    // 수락 카운터 부재 → 완료 카운터로 폴백 (과소 추정이지만 안전)
+    return { text: t, met: knowledge.completedQuestCount >= parseInt(acceptedQuests[1], 10), evaluable: true };
+  }
+
+  // 클리어한 퀘스트 수 비율 N% 이상
+  const questRatio = t.match(/클리어한?\s*퀘스트\s*수\s*비율\s*(\d+)\s*%\s*이상/);
+  if (questRatio) {
+    // 분모 불명 — completedQuestCount를 비율 형태로 판정 불가. 일단 완료 20개 이상이면 충족으로 간주.
+    const threshold = parseInt(questRatio[1], 10);
+    return { text: t, met: knowledge.completedQuestCount >= 20 && threshold <= 100, evaluable: true };
+  }
+
+  // 지역 진행률 N% 이상 — 예: "마노니클라 진행률 100% 달성", "홀로그램 필드 진행률 20% 이상"
+  const locProgress = t.match(/(.+?)\s*(?:지역\s*)?진행률\s*(\d+)\s*%\s*(?:이상|달성)/);
+  if (locProgress && dungeonSystem) {
+    const placeName = locProgress[1].trim().replace(/^\d+\.\s*/, '');
+    const requiredPct = parseInt(locProgress[2], 10);
+    const locationId = resolveLocationId(placeName);
+    if (locationId) {
+      const dungeons = dungeonSystem.getAllDungeons().filter(d => d.accessFrom === locationId);
+      if (dungeons.length === 0) {
+        // 지역에 던전이 없으면 방문 여부로 간소 판정
+        return { text: t, met: knowledge.visitedLocations.has(locationId), evaluable: true };
+      }
+      const avg = dungeons.reduce((sum, d) => sum + player.getDungeonProgress(d.id), 0) / dungeons.length;
+      return { text: t, met: avg >= requiredPct, evaluable: true };
+    }
+  }
+
+  // 던전 클리어 — 예: "라르 포레스트:도토리나무 숲 클리어"
+  const dungeonClear = t.match(/(?:^\d+\.\s*)?(?:.+?[:：]\s*)?(.+?)\s*클리어$/);
+  if (dungeonClear && !t.includes('진행률') && !t.includes('S랭크')) {
+    const displayName = dungeonClear[1].trim();
+    const dungeonId = resolveDungeonIdForSRankDisplayName(displayName);
+    if (dungeonId) {
+      const cleared = player.getDungeonProgress(dungeonId) >= 100;
+      return { text: t, met: cleared, evaluable: true };
+    }
+  }
+
+  // N회 이상 참여 — 현재 범용 카운터 없음
+  // TODO(게임플래너 협의): 기투회장 참여, 요리 대회 참여 등 세부 카운터가 필요함
+  const nTimes = t.match(/(\d+)\s*회\s*이상\s*참여/);
+  if (nTimes) {
+    return { text: t, met: false, evaluable: false };
+  }
+
+  // 지역 방문 — "X 지역을 발견했다", "X를 방문했다", "X 방문"
+  const locVisit = t.match(/(.+?)\s*(?:지역을?)?\s*(?:발견했다|방문했다|방문)$/);
+  if (locVisit) {
+    const placeName = locVisit[1].trim().replace(/^\d+\.\s*/, '');
+    const locationId = resolveLocationId(placeName);
+    if (locationId) {
+      return { text: t, met: knowledge.visitedLocations.has(locationId), evaluable: true };
+    }
+  }
+
   // 자동 평가 불가능
   return { text: t, met: false, evaluable: false };
 }
@@ -667,18 +835,20 @@ export function evaluateAcquisitionLine(
 /** NPC의 전체 입수 조건 평가 */
 export function evaluateAcquisitionConditions(
   actor: Actor, player: Actor, allActors: Actor[], knowledge: PlayerKnowledge,
+  dungeonSystem?: DungeonSystem,
 ): AcquisitionCheck[] {
   if (!actor.acquisitionMethod) return [];
   return actor.acquisitionMethod.split('|')
-    .map(line => evaluateAcquisitionLine(line, player, allActors, knowledge));
+    .map(line => evaluateAcquisitionLine(line, player, allActors, knowledge, dungeonSystem));
 }
 
 /** 입수 조건이 모두 충족되었는지 */
 export function areAcquisitionConditionsMet(
   actor: Actor, player: Actor, allActors: Actor[], knowledge: PlayerKnowledge,
+  dungeonSystem?: DungeonSystem,
 ): boolean {
   if (!actor.acquisitionMethod) return true;
-  const checks = evaluateAcquisitionConditions(actor, player, allActors, knowledge);
+  const checks = evaluateAcquisitionConditions(actor, player, allActors, knowledge, dungeonSystem);
   return checks.every(c => c.met);
 }
 
@@ -687,6 +857,7 @@ export function getRelationshipStage(
   targetName: string,
   knowledge: PlayerKnowledge,
   allActors?: Actor[],
+  dungeonSystem?: DungeonSystem,
 ): RelationshipStage {
   if (!knowledge.conversationPartners.has(targetName) && !knowledge.isKnown(targetName)) {
     return 'unknown';
@@ -701,7 +872,7 @@ export function getRelationshipStage(
 
     if (target && target.acquisitionMethod) {
       // 입수 조건이 있는 NPC — 조건 충족 시 친한 사이
-      if (areAcquisitionConditionsMet(target, player, allActors, knowledge)) return 'close';
+      if (areAcquisitionConditionsMet(target, player, allActors, knowledge, dungeonSystem)) return 'close';
       return 'known';
     }
   }
@@ -729,6 +900,7 @@ export function tryRecruitCompanion(
   backlog: Backlog,
   gameTime: GameTime,
   allActors?: Actor[],
+  dungeonSystem?: DungeonSystem,
 ): RecruitResult {
   const tgtName = target.name;
 
@@ -740,14 +912,14 @@ export function tryRecruitCompanion(
     return { success: false, messages: ['동료가 이미 가득 찼다.'] };
   }
 
-  const stage = getRelationshipStage(player, tgtName, knowledge, allActors);
+  const stage = getRelationshipStage(player, tgtName, knowledge, allActors, dungeonSystem);
   if (stage === 'unknown') {
     return { success: false, messages: ['아직 모르는 사이다. 먼저 대화를 나눠보자.'] };
   }
   if (stage === 'known') {
     // 입수 조건 미충족 안내
     if (target.acquisitionMethod) {
-      const checks = evaluateAcquisitionConditions(target, player, allActors ?? [], knowledge);
+      const checks = evaluateAcquisitionConditions(target, player, allActors ?? [], knowledge, dungeonSystem);
       const unmet = checks.filter(c => !c.met);
       if (unmet.length > 0) {
         return { success: false, messages: [`입수 조건을 달성해야 한다. (히페리온 메뉴에서 확인)`] };

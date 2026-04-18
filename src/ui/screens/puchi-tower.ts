@@ -76,8 +76,7 @@ export function createPuchiTowerScreen(
         p.items.set(entry.itemId, (p.items.get(entry.itemId) ?? 0) + entry.amount);
         summary.set(entry.itemId, (summary.get(entry.itemId) ?? 0) + entry.amount);
       } else {
-        const current = p.spirit.inventory.get(entry.item) ?? 0;
-        p.spirit.inventory.set(entry.item, current + entry.amount);
+        p.addItem(entry.item, entry.amount);
         const key = String(entry.item);
         summary.set(key, (summary.get(key) ?? 0) + entry.amount);
       }
@@ -298,6 +297,10 @@ export function createPuchiTowerScreen(
       btn.addEventListener('click', () => {
         if (!combatState) return;
         const slotIdx = parseInt(btn.dataset.slot ?? '0', 10);
+        const skillDef = combatState.playerSkills.slots[slotIdx];
+        if (skillDef && skillDef.tpCost > 0 && p.hasAp(skillDef.tpCost)) {
+          session.knowledge.trackVigorSpent(skillDef.tpCost);
+        }
         const msgs = usePlayerSkill(combatState, slotIdx, p);
         for (const m of msgs) combatState.combatLog.push(m);
         renderCombat(el);
@@ -505,6 +508,10 @@ export function createPuchiTowerScreen(
       } else if (key >= '1' && key <= '3') {
         if (phase === 'combat' && combatState && !combatState.finished) {
           const slotIdx = parseInt(key, 10) - 1;
+          const skillDef = combatState.playerSkills.slots[slotIdx];
+          if (skillDef && skillDef.tpCost > 0 && p.hasAp(skillDef.tpCost)) {
+            session.knowledge.trackVigorSpent(skillDef.tpCost);
+          }
           const msgs = usePlayerSkill(combatState, slotIdx, p);
           for (const m of msgs) combatState.combatLog.push(m);
           renderCombat(el);

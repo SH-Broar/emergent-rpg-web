@@ -80,7 +80,7 @@ export function createQuestBoardScreen(
       let progressMet = state.progressMet;
       if (!progressMet && def.objectiveType.type === 'gather') {
         const obj = def.objectiveType;
-        const have = p.spirit.inventory.get(obj.itemKey as any) ?? 0;
+        const have = p.getItemCountByType(obj.itemKey as any);
         if (have >= obj.amount) {
           k.markNpcQuestProgress(state.questId);
           progressMet = true;

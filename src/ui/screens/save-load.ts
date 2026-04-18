@@ -5,7 +5,7 @@ import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
 import { Actor } from '../../models/actor';
 import { PlayerKnowledge } from '../../models/knowledge';
-import { ItemType, raceToKey } from '../../types/enums';
+import { ItemType, raceToKey, itemTypeToId } from '../../types/enums';
 import { getBasicSkillsForRace } from '../../models/skill';
 
 const SAVE_PREFIX = 'emergent_save_';
@@ -151,9 +151,7 @@ function syncLoadedPlayerHyperion(session: GameSession): void {
 
 function serializeActor(actor: Actor): ActorSaveData {
   const inventory: [number, number][] = [];
-  for (const [item, qty] of actor.spirit.inventory) {
-    inventory.push([item as number, qty]);
-  }
+  // Legacy: spirit.inventory removed — category items now live in actor.items via cat_* IDs
 
   const colorDomainsHigh: number[] = actor.color.domains.map(d => d.highTrait as number);
   const colorDomainsLow: number[] = actor.color.domains.map(d => d.lowTrait as number);
@@ -247,10 +245,14 @@ function deserializeActor(data: ActorSaveData, target: Actor): void {
   target.combatJob = data.combatJob ?? '';
   target.lifeJob = data.lifeJob ?? '';
 
-  // Restore inventory
-  target.spirit.inventory.clear();
-  for (const [itemNum, qty] of data.inventory) {
-    target.spirit.inventory.set(itemNum as ItemType, qty);
+  // Legacy: spirit.inventory migration — convert to items map via cat_* IDs
+  if (data.inventory) {
+    for (const [itemNum, qty] of data.inventory) {
+      if (qty > 0) {
+        const id = itemTypeToId(itemNum as ItemType);
+        target.addItemById(id, qty);
+      }
+    }
   }
 
   // Restore color profile

@@ -20,6 +20,11 @@ export class ScreenManager {
     return this.stack.length > 0 ? this.stack[this.stack.length - 1] : null;
   }
 
+  /** 스택 최상단 화면 반환 (current alias) */
+  peek(): Screen | null {
+    return this.current;
+  }
+
   push(screen: Screen): void {
     this.current?.onExit?.();
     this.stack.push(screen);

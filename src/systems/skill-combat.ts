@@ -262,6 +262,7 @@ export function useSkill(
   const effectiveMpCost = Math.max(0, Math.ceil(skill.mpCost * costMult * (options?.mpCostMultiplier ?? 1)));
   actor.adjustMp(-effectiveMpCost);
   if (skill.hpCost > 0) actor.adjustHp(-skill.hpCost);
+  if (skill.tpCost > 0) actor.adjustAp(-skill.tpCost);
 
   // 사용 횟수 증가
   skillState.usesThisCombat.set(skill.id, (skillState.usesThisCombat.get(skill.id) ?? 0) + 1);

@@ -2,7 +2,7 @@ import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
 import { ItemType } from '../../types/enums';
 import { applyRecovery, computeEatEffect, applyDailyMealBuff, getRemainingMeals, mealBuffLabel } from '../../types/eat-system';
-import { getArmorDef, getItemDef, getWeaponDef, categoryName, type ItemDef } from '../../types/item-defs';
+import { getArmorDef, getItemDef, getWeaponDef, type ItemDef } from '../../types/item-defs';
 import { getRaceCapabilitySet, parseTags } from '../../types/tag-system';
 import { advanceTurn } from '../../systems/world-simulation';
 
@@ -179,18 +179,6 @@ export function createInventoryScreen(
       });
     }
 
-    for (const [itemType, qty] of p.spirit.inventory) {
-      if (qty <= 0) continue;
-      entries.push({
-        kind: 'category',
-        itemType,
-        qty,
-        label: categoryName(itemType),
-        detail: '분류형 소지품',
-        consumable: itemType !== ItemType.Equipment && itemType !== ItemType.GuildCard,
-        sortGroup: 200 + itemType,
-      });
-    }
 
     entries.sort((a, b) => {
       if (a.sortGroup !== b.sortGroup) return a.sortGroup - b.sortGroup;

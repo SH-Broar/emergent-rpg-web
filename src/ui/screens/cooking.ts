@@ -94,7 +94,7 @@ export function createCookingScreen(
   let message = '';
 
   function canCraft(recipe: Recipe): boolean {
-    return recipe.ingredients.every(ing => (p.spirit.inventory.get(ing.type) ?? 0) >= ing.amount);
+    return recipe.ingredients.every(ing => (p.getItemCountByType(ing.type)) >= ing.amount);
   }
 
   function renderCooking(el: HTMLElement) {
@@ -107,7 +107,7 @@ export function createCookingScreen(
           ${RECIPES.map((r, i) => {
             const ok = canCraft(r);
             const ingText = r.ingredients.map(ing => {
-              const have = p.spirit.inventory.get(ing.type) ?? 0;
+              const have = p.getItemCountByType(ing.type);
               const color = have >= ing.amount ? 'var(--success)' : 'var(--accent)';
               return `<span style="color:${color}">${categoryName(ing.type)} ${have}/${ing.amount}</span>`;
             }).join(' · ');

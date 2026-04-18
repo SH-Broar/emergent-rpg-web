@@ -1,7 +1,7 @@
 // actor.ts — 액터 시스템
 // 원본: Actor.h
 
-import { ItemType, Race, SpiritRole } from '../types/enums';
+import { ItemType, Race, SpiritRole, itemTypeToId, itemIdToType } from '../types/enums';
 import { LocationID, Loc } from '../types/location';
 import { GameTime } from '../types/game-time';
 import { ColorProfile } from './color';
@@ -75,7 +75,6 @@ export function createBaseProperty(race = Race.Human): BaseProperty {
 export interface SpiritProperty {
   role: SpiritRole;
   gold: number;
-  inventory: Map<ItemType, number>;
   questsPosted: number;
   dungeonsCleared: number;
   tradeCount: number;
@@ -84,7 +83,7 @@ export interface SpiritProperty {
 
 export function createSpiritProperty(role = SpiritRole.Villager): SpiritProperty {
   return {
-    role, gold: 50, inventory: new Map(),
+    role, gold: 50,
     questsPosted: 0, dungeonsCleared: 0, tradeCount: 0, activeQuestId: -1,
   };
 }
@@ -194,15 +193,30 @@ export class Actor {
     if (this.memories.length > Actor.MAX_MEMORIES) this.memories.shift();
   }
 
+  /** 카테고리형 아이템 소비 (통합: items 맵 경유) */
   consumeItem(type: ItemType, amount: number): boolean {
-    const cur = this.spirit.inventory.get(type) ?? 0;
-    if (cur < amount) return false;
-    this.spirit.inventory.set(type, cur - amount);
-    return true;
+    return this.removeItemById(itemTypeToId(type), amount);
   }
 
+  /** 카테고리형 아이템 추가 (통합: items 맵 경유) */
   addItem(type: ItemType, amount: number): void {
-    this.spirit.inventory.set(type, (this.spirit.inventory.get(type) ?? 0) + amount);
+    this.addItemById(itemTypeToId(type), amount);
+  }
+
+  /** 카테고리형 아이템 수량 조회 (통합: items 맵 경유) */
+  getItemCountByType(type: ItemType): number {
+    return this.getItemCount(itemTypeToId(type));
+  }
+
+  /** 카테고리형 인벤토리를 [ItemType, number][] 로 반환 (기존 spirit.inventory 순회 대체) */
+  getInventoryByType(): [ItemType, number][] {
+    const result: [ItemType, number][] = [];
+    for (const [id, qty] of this.items) {
+      if (qty <= 0) continue;
+      const type = itemIdToType(id);
+      if (type !== undefined) result.push([type, qty]);
+    }
+    return result;
   }
 
   addGold(amount: number): void { this.spirit.gold = Math.max(0, this.spirit.gold + amount); }

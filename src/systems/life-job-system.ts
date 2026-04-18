@@ -205,7 +205,10 @@ export function useLifeJobSkill(session: GameSession, skillIdx: number): string[
   }
 
   // TP 차감
-  if (skill.tpCost > 0) p.adjustAp(-skill.tpCost);
+  if (skill.tpCost > 0) {
+    p.adjustAp(-skill.tpCost);
+    session.knowledge.trackVigorSpent(skill.tpCost);
+  }
   setCooldown(session, jobId, skillIdx);
 
   // 직업별 스킬 효과 실행
@@ -265,6 +268,11 @@ function executeSkillEffect(session: GameSession, jobId: LifeJob, skillIdx: numb
           p.adjustAp(1); // TP 환불
           return msgs;
         }
+        if (p.isBagFull(session.knowledge.bagCapacity, 'potion_hp_small')) {
+          msgs.push('인벤토리가 가득 찼습니다!');
+          p.adjustAp(1);
+          return msgs;
+        }
         consumeItemsByTag(session, 'herb', 3);
         p.addItemById('potion_hp_small', 1);
         session.knowledge.discoverItem('potion_hp_small');
@@ -290,6 +298,11 @@ function executeSkillEffect(session: GameSession, jobId: LifeJob, skillIdx: numb
       } else if (skillIdx === 2) { // Lv3: 심층 굴착
         if (p.currentLocation !== 'Tiklit_Range') {
           msgs.push('티클릿 산맥에서만 사용할 수 있습니다.');
+          p.adjustAp(2);
+          return msgs;
+        }
+        if (p.isBagFull(session.knowledge.bagCapacity, 'ore_rare_tiklit')) {
+          msgs.push('인벤토리가 가득 찼습니다!');
           p.adjustAp(2);
           return msgs;
         }
@@ -401,6 +414,11 @@ function executeSkillEffect(session: GameSession, jobId: LifeJob, skillIdx: numb
         }
         const rareItems = ['fish_deep_sea', 'pearl', 'coral'];
         const pick = rareItems[randomInt(0, rareItems.length - 1)];
+        if (p.isBagFull(session.knowledge.bagCapacity, pick)) {
+          msgs.push('인벤토리가 가득 찼습니다!');
+          p.adjustAp(2);
+          return msgs;
+        }
         p.addItemById(pick, 1);
         session.knowledge.discoverItem(pick);
         session.knowledge.trackFishCaught();
@@ -463,9 +481,14 @@ function executeSkillEffect(session: GameSession, jobId: LifeJob, skillIdx: numb
           p.adjustAp(3);
           return msgs;
         }
-        consumeItemsByTag(session, 'ore', 5);
         const craftItems = ['craft_ring', 'craft_charm', 'craft_tool'];
         const pick = craftItems[randomInt(0, craftItems.length - 1)];
+        if (p.isBagFull(session.knowledge.bagCapacity, pick)) {
+          msgs.push('인벤토리가 가득 찼습니다!');
+          p.adjustAp(3);
+          return msgs;
+        }
+        consumeItemsByTag(session, 'ore', 5);
         p.addItemById(pick, 1);
         session.knowledge.discoverItem(pick);
         msgs.push('명품 제작 성공! 특별 아이템을 만들었다.');

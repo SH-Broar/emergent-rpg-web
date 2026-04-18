@@ -2,8 +2,8 @@
 
 import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
-import { raceName, spiritRoleName, ItemType, raceToKey, SpiritRole } from '../../types/enums';
-import { itemName } from '../../types/registry';
+import { raceName, spiritRoleName, ItemType, raceToKey, SpiritRole, itemIdToType } from '../../types/enums';
+import { getItemDef } from '../../types/item-defs';
 import { createNpcList, type NpcEntry } from '../components/npc-list';
 import { createItemGrid, type ItemEntry } from '../components/item-grid';
 import { isActorVisibleToPlayer } from '../../systems/actor-visibility';
@@ -29,7 +29,7 @@ export function createGiftScreen(
       const a = session.actors[i];
       // 동료는 위치 무관, 일반 NPC는 같은 위치
       const isCompanion = session.knowledge.isCompanion(a.name);
-      const stage = getRelationshipStage(p, a.name, session.knowledge, session.actors);
+      const stage = getRelationshipStage(p, a.name, session.knowledge, session.actors, session.dungeonSystem);
       if ((isCompanion || a.currentLocation === p.currentLocation) && a.isAlive() && stage !== 'unknown' && isActorVisibleToPlayer(session, a)) {
         result.push({ actor: a, idx: i });
       }
@@ -37,10 +37,14 @@ export function createGiftScreen(
     return result;
   }
 
-  function getInventoryItems(): { type: ItemType; count: number }[] {
-    const items: { type: ItemType; count: number }[] = [];
-    for (const [type, count] of p.spirit.inventory) {
-      if (count > 0) items.push({ type, count });
+  function getInventoryItems(): { id: string; name: string; count: number; itemType?: ItemType }[] {
+    const items: { id: string; name: string; count: number; itemType?: ItemType }[] = [];
+    for (const [id, count] of p.items) {
+      if (count <= 0) continue;
+      const catType = itemIdToType(id);
+      const def = getItemDef(id);
+      const displayName = def?.name ?? id;
+      items.push({ id, name: displayName, count, itemType: catType });
     }
     return items;
   }
@@ -110,7 +114,7 @@ export function createGiftScreen(
 
       const inv = getInventoryItems();
       const entries: ItemEntry[] = inv.map(it => ({
-        name: itemName(it.type),
+        name: it.name,
         count: it.count,
       }));
       const grid = createItemGrid(entries, (i) => {
@@ -139,23 +143,43 @@ export function createGiftScreen(
     const raceKey = raceToKey(npc.actor.base.race);
     const roleKey = SpiritRole[npc.actor.spirit.role] ?? 'Villager';
 
-    const result = giveGift(
-      p, npc.actor, selected.type,
-      raceKey, roleKey,
-      session.knowledge, session.backlog, session.gameTime,
-    );
-
-    if (!result.success) {
-      message = result.messages[0] ?? '선물에 실패했다.';
-      renderGift(el);
-      return;
+    if (selected.itemType !== undefined) {
+      // 카테고리형 아이템: 기존 giveGift 호출
+      const result = giveGift(
+        p, npc.actor, selected.itemType,
+        raceKey, roleKey,
+        session.knowledge, session.backlog, session.gameTime,
+      );
+      if (!result.success) {
+        message = result.messages[0] ?? '선물에 실패했다.';
+        renderGift(el);
+        return;
+      }
+      message = result.messages.join(' ');
+    } else {
+      // 개별 아이템: 직접 처리
+      if (!p.removeItemById(selected.id, 1)) {
+        message = '선물에 실패했다.';
+        renderGift(el);
+        return;
+      }
+      npc.actor.adjustMood(0.1);
+      npc.actor.adjustRelationship(p.name, 0.05, 0.08);
+      p.adjustRelationship(npc.actor.name, 0.03, 0.05);
+      session.backlog.add(
+        session.gameTime,
+        `${p.name}이(가) ${npc.actor.name}에게 ${selected.name}을(를) 선물했다.`,
+        '행동',
+      );
+      message = `${npc.actor.name}에게 ${selected.name}을(를) 선물했다!`;
     }
 
     // NPC 퀘스트: gift 목표 체크
+    const questItemKey = selected.itemType !== undefined ? ItemType[selected.itemType] : selected.id;
     triggerNpcQuestEvent(session.knowledge, {
       type: 'gift',
       npcName: npc.actor.name,
-      itemKey: ItemType[selected.type],
+      itemKey: questItemKey,
     });
 
     // 선물 증정: Water+, Earth-, Light+, Dark-
@@ -172,7 +196,7 @@ export function createGiftScreen(
 
     // 선물은 시간 소모 없음
     const titleMsg = giftTitles.length > 0 ? ` ✦ 칭호: "${giftTitles[giftTitles.length - 1]}"` : '';
-    message = result.messages.join(' ') + titleMsg;
+    message += titleMsg;
     step = 'result';
     renderGift(el);
   }

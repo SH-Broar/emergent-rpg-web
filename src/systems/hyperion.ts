@@ -20,6 +20,17 @@ export interface HyperionEntry {
 
 const hyperionDB = new Map<string, HyperionEntry>();
 
+/** 로딩된 모든 locationId 집합 — all_locations_visited 판정용. initLocations 완료 후 세팅됨 */
+let loadedLocationIds: Set<string> = new Set();
+
+export function setLoadedLocationIds(ids: Iterable<string>): void {
+  loadedLocationIds = new Set(ids);
+}
+
+export function getLoadedLocationIds(): ReadonlySet<string> {
+  return loadedLocationIds;
+}
+
 export function loadHyperion(sections: DataSection[]): void {
   hyperionDB.clear();
   for (const s of sections) {
@@ -85,9 +96,15 @@ export function checkHyperionCondition(
     case 'location_visited':
       return knowledge.visitedLocations.has(param.trim());
 
-    case 'all_locations_visited':
-      // Simplified: check if visited > 10 locations
-      return knowledge.visitedLocations.size >= 10;
+    case 'all_locations_visited': {
+      // 로딩된 모든 location을 방문했는지 확인.
+      // 아직 location 로딩 전이거나 데이터 없음 = 안전하게 false 반환.
+      if (loadedLocationIds.size === 0) return false;
+      for (const id of loadedLocationIds) {
+        if (!knowledge.visitedLocations.has(id)) return false;
+      }
+      return true;
+    }
 
     case 'visited_count':
       return knowledge.visitedLocations.size >= parseInt(param, 10);
@@ -130,6 +147,14 @@ export function checkHyperionCondition(
 
     case 'activities_done':
       return knowledge.totalActivitiesDone >= parseInt(param, 10);
+
+    // --- 기력(AP/TP) 총 소비량 ---
+    case 'vigor_spent':
+      return knowledge.totalVigorSpent >= parseInt(param, 10);
+
+    // --- 이벤트 완료 플래그 ---
+    case 'event_done':
+      return knowledge.completedEvents.has(param.trim());
 
     case 'hyperion_levels': {
       // "이름1:N1,이름2:N2"
@@ -261,7 +286,8 @@ export function updateHyperionLevels(
     if (actor !== player) {
       const isCompanion = knowledge.isCompanion(actor.name);
       const isRecruited = knowledge.recruitedEver.has(actor.name);
-      const acqMet = !actor.acquisitionMethod || areAcquisitionConditionsMet(actor, player, allActors, knowledge);
+      const acqMet = !actor.acquisitionMethod
+        || areAcquisitionConditionsMet(actor, player, allActors, knowledge, dungeonSystem);
       if (!isCompanion && !isRecruited && !acqMet) continue;
     }
 

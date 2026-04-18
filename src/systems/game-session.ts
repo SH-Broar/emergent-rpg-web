@@ -27,6 +27,9 @@ export class GameSession {
   gaugeState = new ColorGaugeState();
   playerBuffs: BuffState[] = [];
 
+  /** 휘발성 히페리온 레벨업 메시지 큐 — 오버레이 표시용. 세이브에 포함되지 않음. */
+  pendingHyperionMsgs: string[] = [];
+
   get player(): Actor { return this.actors[this.playerIdx]; }
   get playerName(): string { return this.player?.name ?? ''; }
   get isValid(): boolean { return this.playerIdx >= 0 && this.playerIdx < this.actors.length; }

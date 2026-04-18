@@ -132,6 +132,10 @@ export class PlayerKnowledge {
   completedQuestNames = new Set<string>();
   earnedTitles: string[] = [];
   activeTitle = '';
+  /** 플레이어가 소비한 기력(AP/TP)의 누적량. 히페리온 vigor_spent 조건에서 사용 */
+  totalVigorSpent = 0;
+  /** 완료된 이벤트 ID 집합. 히페리온 event_done 조건에서 사용 */
+  completedEvents = new Set<string>();
 
   addKnownName(name: string): void { this.knownActorNames.add(name.trim()); }
   isKnown(name: string): boolean { return this.knownActorNames.has(name.trim()); }
@@ -351,6 +355,21 @@ export class PlayerKnowledge {
   trackQuestCompleted(questTitle: string): void {
     this.completedQuestCount++;
     this.completedQuestNames.add(questTitle);
+  }
+
+  /** 플레이어 AP(기력) 소비 누적 트래킹. amount는 양수(소비량)로 전달 */
+  trackVigorSpent(amount: number): void {
+    if (amount > 0) this.totalVigorSpent += amount;
+  }
+
+  /** 이벤트 완료 기록 (히페리온 event_done 조건용) */
+  markEventDone(eventId: string): void {
+    if (eventId) this.completedEvents.add(eventId);
+  }
+
+  /** 이벤트 완료 여부 */
+  isEventDone(eventId: string): boolean {
+    return this.completedEvents.has(eventId);
   }
 
   /** 거점별 농장 상태 (Lv.3 활성화 시 생성) */

@@ -45,6 +45,7 @@ import { createVillageScreen } from './ui/screens/village';
 import { createPuchiTowerScreen } from './ui/screens/puchi-tower';
 import { createVillageBuildScreen } from './ui/screens/village-build';
 import { createStatusScreen } from './ui/screens/status';
+import { createHyperionLevelupScreen, HYPERION_OVERLAY_ID } from './ui/screens/hyperion-levelup-overlay';
 import { getAllItemDefs } from './types/item-defs';
 import { getAllSkillDefs } from './models/skill';
 import { ItemType } from './types/enums';
@@ -60,6 +61,7 @@ function computeTravelSpeed(_session: GameSession): TravelOptions {
 }
 import { createDataPackScreen } from './ui/screens/datapack-select';
 import { fastForwardWorld } from './systems/world-simulation';
+import { checkAndQueueHyperionLevelUps } from './systems/hyperion-trigger';
 import { seasonName } from './types/enums';
 import { CoreMatrix, PlayerKnowledge } from './models/knowledge';
 import { locationName } from './types/registry';
@@ -86,6 +88,17 @@ async function boot() {
 
   const sm = new ScreenManager(app);
   const input = new InputHandler(sm);
+
+  /**
+   * 화면 pop 후 pendingHyperionMsgs가 있으면 히페리온 오버레이 push.
+   * 전투/상점/제작/영입 등 외부 UI에서 복귀할 때 사용.
+   */
+  function popThenMaybeHyperion(): void {
+    sm.pop();
+    if (session.pendingHyperionMsgs.length > 0 && sm.peek()?.id !== HYPERION_OVERLAY_ID) {
+      sm.push(createHyperionLevelupScreen(session, sm));
+    }
+  }
 
   // 오토세이브 존재 여부 확인 (동적으로 매번 재평가)
   function checkHasAutosave(): boolean {
@@ -355,12 +368,13 @@ async function boot() {
             onTalk() { /* backlog에 이미 기록됨 */ },
             onRecruit(_npcName) {
               // 영입은 dialogue 내부에서 tryRecruitCompanion으로 처리됨
-              sm.pop();
+              // 영입 직후 히페리온 조건이 충족되었을 수 있으니 오버레이 체크
+              popThenMaybeHyperion();
             },
             onInfo(_npcName, npcActor) {
               sm.push(createNpcInfoScreen(session, npcActor, () => sm.pop()));
             },
-            onBack() { sm.pop(); },
+            onBack() { popThenMaybeHyperion(); },
           }));
           break;
         case 'eat':
@@ -375,18 +389,18 @@ async function boot() {
           }));
           break;
         case 'trade':
-          sm.push(createTradeScreen(session, () => { session.gameTime.advance(15); sm.pop(); }));
+          sm.push(createTradeScreen(session, () => { session.gameTime.advance(15); popThenMaybeHyperion(); }));
           break;
         case 'dungeon':
-          sm.push(createDungeonScreen(session, () => sm.pop()));
+          sm.push(createDungeonScreen(session, () => popThenMaybeHyperion()));
           break;
         case 'quest':
-          sm.push(createQuestBoardScreen(session, () => sm.pop()));
+          sm.push(createQuestBoardScreen(session, () => popThenMaybeHyperion()));
           break;
         case 'activity':
           sm.push(createActivityScreen(session, () => sm.pop(), (config) => {
             sm.pop(); // 활동 목록 닫기
-            sm.push(createActivitySimScreen(session, config, () => sm.pop()));
+            sm.push(createActivitySimScreen(session, config, () => popThenMaybeHyperion()));
           }));
           break;
         case 'gather': {
@@ -401,7 +415,7 @@ async function boot() {
         case 'home':
           sm.push(createHomeScreen(session, () => sm.pop(), (screen) => {
             if (screen === 'storage') sm.push(createStorageScreen(session, () => sm.pop()));
-            else if (screen === 'cooking') sm.push(createCookingScreen(session, () => sm.pop()));
+            else if (screen === 'cooking') sm.push(createCookingScreen(session, () => popThenMaybeHyperion()));
             else if (screen === 'farm') sm.push(createFarmScreen(session, session.player.currentLocation, () => sm.pop()));
           }));
           break;
@@ -409,19 +423,19 @@ async function boot() {
           sm.push(createStorageScreen(session, () => sm.pop()));
           break;
         case 'realestate':
-          sm.push(createRealEstateScreen(session, () => sm.pop()));
+          sm.push(createRealEstateScreen(session, () => popThenMaybeHyperion()));
           break;
         case 'cooking':
-          sm.push(createCookingScreen(session, () => sm.pop()));
+          sm.push(createCookingScreen(session, () => popThenMaybeHyperion()));
           break;
         case 'skill_shop':
-          sm.push(createSkillShopScreen(session, () => sm.pop()));
+          sm.push(createSkillShopScreen(session, () => popThenMaybeHyperion()));
           break;
         case 'guild_dungeon':
-          sm.push(createGuildDungeonScreen(session, () => sm.pop()));
+          sm.push(createGuildDungeonScreen(session, () => popThenMaybeHyperion()));
           break;
         case 'puchi_tower':
-          sm.push(createPuchiTowerScreen(session, () => sm.pop()));
+          sm.push(createPuchiTowerScreen(session, () => popThenMaybeHyperion()));
           break;
         case 'life_job':
           sm.push(createLifeJobScreen(session, () => sm.pop()));
@@ -504,7 +518,7 @@ async function boot() {
           break;
         case 'village':
           if (!session.knowledge.villageState) break;
-          sm.push(createVillageScreen(session, () => sm.pop(), sm));
+          sm.push(createVillageScreen(session, () => popThenMaybeHyperion(), sm));
           break;
         case 'save':
           sm.push(createSaveLoadScreen(session, true, () => sm.pop()));
@@ -513,29 +527,11 @@ async function boot() {
           sm.push(createLevelUpScreen(session, () => sm.pop()));
           break;
         case 'hyperion_levelup':
-          // 히페리온 레벨업 강조 오버레이
-          sm.push({
-            id: 'hyperion-levelup',
-            render(el) {
-              // 최근 히페리온 레벨업 메시지 수집
-              const recent = session.backlog.getPlayerVisible(session.player.name)
-                .filter(e => e.text.includes('히페리온') && e.text.includes('상승'))
-                .slice(-5);
-              const msgs = recent.map(e => e.text);
-              el.innerHTML = `
-                <div class="screen" style="justify-content:center;align-items:center;text-align:center;background:var(--bg)">
-                  <div style="font-size:40px;margin-bottom:12px">\u2728</div>
-                  <h2 style="color:var(--warning);margin-bottom:16px">\ud788\ud398\ub9ac\uc628 \ub808\ubca8 \uc0c1\uc2b9!</h2>
-                  <div style="margin-bottom:20px">
-                    ${msgs.map(m => '<p style="font-size:15px;margin:4px 0;color:var(--success)">' + m + '</p>').join('')}
-                  </div>
-                  <p style="color:var(--text-dim);font-size:13px;margin-bottom:16px">HP, MP, \uacf5\uaca9, \ubc29\uc5b4\uac00 \uc0c1\uc2b9\ud569\ub2c8\ub2e4!</p>
-                  <button class="btn btn-primary" data-ok style="min-width:160px">\ud655\uc778 [Enter]</button>
-                </div>`;
-              el.querySelector('[data-ok]')?.addEventListener('click', () => sm.pop());
-            },
-            onKey(key) { if (key === 'Enter' || key === ' ' || key === 'Escape') sm.pop(); },
-          });
+          // pendingHyperionMsgs 큐가 비어있으면 무시 (방어 로직)
+          if (session.pendingHyperionMsgs.length === 0) break;
+          // 이미 오버레이가 최상단이면 중복 push 방지
+          if (sm.peek()?.id === HYPERION_OVERLAY_ID) break;
+          sm.push(createHyperionLevelupScreen(session, sm));
           break;
         case 'info_status':
         case 'info_color':
@@ -553,6 +549,11 @@ async function boot() {
       autosave();
       sm.render();
     }, 30000);
+
+    // 로드/오프라인 시뮬레이션 등으로 쌓인 pending 히페리온 메시지가 있으면 오버레이
+    if (session.pendingHyperionMsgs.length > 0 && sm.peek()?.id !== HYPERION_OVERLAY_ID) {
+      sm.push(createHyperionLevelupScreen(session, sm));
+    }
   }
 
   // --- 새 게임: 이전 캐릭터 NPC화 선택 후 캐릭터 생성으로 이동 ---
@@ -875,6 +876,9 @@ async function boot() {
               session.events, session.actors, session.social,
               session.backlog, session.knowledge,
             );
+
+            // 오프라인 시뮬레이션 중 히페리온 조건이 충족됐을 수 있으므로 큐잉
+            checkAndQueueHyperionLevelUps(session);
 
             const daysPassed = session.gameTime.day - prevDay;
             const levelsGained = session.player.base.level - prevLevel;

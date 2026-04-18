@@ -90,7 +90,7 @@ export function createDialogueScreen(
     const overall = rel ? getRelationshipOverall(rel) : 0;
     const stage = session.knowledge.isCompanion(npc.name)
       ? 'companion' as const
-      : getRelationshipStage(p, npc.name, session.knowledge, session.actors);
+      : getRelationshipStage(p, npc.name, session.knowledge, session.actors, session.dungeonSystem);
     const stageLabel = getRelationshipStageLabel(stage);
 
     wrap.innerHTML = `
@@ -186,7 +186,7 @@ export function createDialogueScreen(
         session.backlog.add(session.gameTime, '칭호 "대지의 목격자"를 획득했다.', '시스템', p.name);
       }
       const isCompanion = session.knowledge.isCompanion(npc.name);
-      const effectiveStage = isCompanion ? 'companion' as const : getRelationshipStage(p, npc.name, session.knowledge, session.actors);
+      const effectiveStage = isCompanion ? 'companion' as const : getRelationshipStage(p, npc.name, session.knowledge, session.actors, session.dungeonSystem);
       const line = getDialogue(npc, effectiveStage);
       dialogueLines = [
         `\u300c${line}\u300d`,
@@ -204,7 +204,7 @@ export function createDialogueScreen(
     const overall = rel ? getRelationshipOverall(rel) : 0;
     const stage = session.knowledge.isCompanion(npc.name)
       ? 'companion' as const
-      : getRelationshipStage(p, npc.name, session.knowledge, session.actors);
+      : getRelationshipStage(p, npc.name, session.knowledge, session.actors, session.dungeonSystem);
     const stageLabel = getRelationshipStageLabel(stage);
 
     el.innerHTML = '';
@@ -263,7 +263,7 @@ export function createDialogueScreen(
         const npcAct = npcsHere[selectedIdx];
         if (npcAct) {
           const isComp = session.knowledge.isCompanion(npcName);
-          const curStage = isComp ? 'companion' as const : getRelationshipStage(p, npcName, session.knowledge, session.actors);
+          const curStage = isComp ? 'companion' as const : getRelationshipStage(p, npcName, session.knowledge, session.actors, session.dungeonSystem);
           const contLine = getContinueDialogue(npcAct, curStage);
           dialogueLines.push(`\u300c${contLine}\u300d`);
           session.backlog.add(session.gameTime, `${npcName}: \u300c${contLine}\u300d`, '\ub300\uc0ac', p.name);

@@ -31,6 +31,7 @@ function applyEventInfluences(
   gameTime: GameTime,
   log: Backlog,
   world: World,
+  knowledge?: PlayerKnowledge,
 ): void {
   for (const idx of triggered) {
     const ev = events.getEvent(idx);
@@ -40,6 +41,10 @@ function applyEventInfluences(
       if (actor.currentLocation === ev.location) {
         actor.receiveEventInfluence(ev.colorInfluence, ev.name, gameTime);
       }
+    }
+    // 이벤트 완료 기록 (히페리온 event_done 조건용)
+    if (knowledge && ev.name) {
+      knowledge.markEventDone(ev.name);
     }
   }
 }
@@ -161,7 +166,7 @@ function simulateAdvanceStep(
   }
 
   const triggered = events.checkAndTrigger(gameTime);
-  applyEventInfluences(triggered, events, actors, gameTime, log, world);
+  applyEventInfluences(triggered, events, actors, gameTime, log, world, knowledge);
 
   const randomEv = events.rollRandomEvent(gameTime);
   if (randomEv) {
@@ -174,6 +179,8 @@ function simulateAdvanceStep(
         actor.receiveEventInfluence(randomEv.colorInfluence, randomEv.name, gameTime);
       }
     }
+    // 랜덤 이벤트도 완료 플래그 기록
+    if (randomEv.name) knowledge.markEventDone(randomEv.name);
   }
 
   for (let i = 0; i < actors.length; i++) {
@@ -331,7 +338,7 @@ export function fastForwardWorld(
     social.updateQuests(gameTime);
 
     const triggered = events.checkAndTrigger(gameTime);
-    applyEventInfluences(triggered, events, actors, gameTime, backlog, world);
+    applyEventInfluences(triggered, events, actors, gameTime, backlog, world, knowledge);
 
     for (const actor of actors) {
       if (knowledge?.isCompanion(actor.name)) continue;
@@ -347,7 +354,7 @@ export function fastForwardWorld(
     social.updateQuests(gameTime);
 
     const triggered = events.checkAndTrigger(gameTime);
-    applyEventInfluences(triggered, events, actors, gameTime, backlog, world);
+    applyEventInfluences(triggered, events, actors, gameTime, backlog, world, knowledge);
 
     for (const actor of actors) {
       if (knowledge?.isCompanion(actor.name)) continue;

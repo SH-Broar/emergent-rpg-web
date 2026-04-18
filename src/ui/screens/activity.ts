@@ -13,6 +13,7 @@ function getSessionCrops(session: GameSession): CropState[] {
   return _sessionCrops.get(session)!;
 }
 import { itemName } from '../../types/registry';
+import { itemTypeToId } from '../../types/enums';
 import { randomFloat } from '../../types/rng';
 import type { ActivitySimConfig } from './activity-sim';
 import { getItemDef } from '../../types/item-defs';
@@ -54,7 +55,7 @@ export function createActivityScreen(
       .filter(act => {
         // unique 활동: gives 아이템을 이미 소지 중이면 숨김
         if (act.unique && act.gives.length > 0) {
-          const alreadyHas = act.gives.every(g => (p.spirit.inventory.get(g.item) ?? 0) >= g.amount);
+          const alreadyHas = act.gives.every(g => p.getItemCountByType(g.item) >= g.amount);
           if (alreadyHas) return false;
         }
         // 재고가 0이면 숨김 (재고 무제한 = -1은 표시)
@@ -123,7 +124,7 @@ export function createActivityScreen(
     if (!p.hasAp(tpCost)) return 'TP\uac00 \ubd80\uc871\ud569\ub2c8\ub2e4!';
     if (act.goldCost > 0 && p.spirit.gold < act.goldCost) return '\uace8\ub4dc\uac00 \ubd80\uc871\ud569\ub2c8\ub2e4!';
     for (const req of act.itemReqs) {
-      const have = p.spirit.inventory.get(req.item) ?? 0;
+      const have = p.getItemCountByType(req.item);
       if (have < req.amount) return `${itemName(req.item)}\uc774(\uac00) \ubd80\uc871\ud569\ub2c8\ub2e4!`;
     }
     for (const req of act.itemReqsById) {
@@ -138,6 +139,10 @@ export function createActivityScreen(
 
     // give items
     for (const give of act.gives) {
+      if (p.isBagFull(session.knowledge.bagCapacity, itemTypeToId(give.item))) {
+        message = '⚠ 인벤토리가 가득 찼습니다!';
+        continue;
+      }
       p.addItem(give.item, give.amount);
     }
     for (const give of act.givesById) {
@@ -225,6 +230,7 @@ export function createActivityScreen(
     // Consume TP
     const tpNeeded = Math.ceil(act.vigorCost / 10);
     p.adjustAp(-tpNeeded);
+    session.knowledge.trackVigorSpent(tpNeeded);
     if (act.goldCost > 0) p.addGold(-act.goldCost);
     for (const req of act.itemReqs) {
       p.consumeItem(req.item, req.amount);
@@ -241,7 +247,6 @@ export function createActivityScreen(
     // 효과 적용 전 스냅샷
     const hpBefore = p.base.hp;
     const mpBefore = p.base.mp;
-    const invBefore = new Map(p.spirit.inventory);
     const itemIdBefore = new Map(p.items);
 
     // Apply effect
@@ -295,10 +300,6 @@ export function createActivityScreen(
     // 랜덤 루트 결과
     if (act.effect === 'random_loot') {
       const gained: string[] = [];
-      for (const [type, count] of p.spirit.inventory) {
-        const before = invBefore.get(type) ?? 0;
-        if (count > before) gained.push(`${itemName(type)} ×${count - before}`);
-      }
       for (const [id, count] of p.items) {
         const before = itemIdBefore.get(id) ?? 0;
         if (count > before) gained.push(`${getItemDef(id)?.name ?? id} ×${count - before}`);

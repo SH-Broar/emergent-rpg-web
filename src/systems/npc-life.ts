@@ -258,8 +258,8 @@ const LIFE_EVENTS: NpcLifeEvent[] = [
     check(a1, a2, _social) {
       const rel = a1.relationships.get(a2.name);
       const hasGift =
-        (a1.spirit.inventory.get(ItemType.Food) ?? 0) > 0 ||
-        (a1.spirit.inventory.get(ItemType.Herb) ?? 0) > 0;
+        a1.getItemCountByType(ItemType.Food) > 0 ||
+        a1.getItemCountByType(ItemType.Herb) > 0;
       return (
         rel !== undefined &&
         rel.affinity > 0.3 &&
@@ -269,7 +269,7 @@ const LIFE_EVENTS: NpcLifeEvent[] = [
     },
     execute(a1, a2, _social, backlog, time) {
       // Transfer a small gift (herb preferred, else food)
-      const hasHerb = (a1.spirit.inventory.get(ItemType.Herb) ?? 0) > 0;
+      const hasHerb = a1.getItemCountByType(ItemType.Herb) > 0;
       const giftType = hasHerb ? ItemType.Herb : ItemType.Food;
       a1.consumeItem(giftType, 1);
       a2.addItem(giftType, 1);
@@ -352,7 +352,7 @@ const LIFE_EVENTS: NpcLifeEvent[] = [
     weight: 4,
     cooldownDays: 2,
     check(a1, a2, _social) {
-      const hasFood = (a1.spirit.inventory.get(ItemType.Food) ?? 0) >= 1;
+      const hasFood = a1.getItemCountByType(ItemType.Food) >= 1;
       return (
         hasFood &&
         a2.isHungry() &&
@@ -437,7 +437,7 @@ const LIFE_EVENTS: NpcLifeEvent[] = [
     cooldownDays: 7,
     check(a1, a2, _social) {
       const rel = a1.relationships.get(a2.name);
-      const hasHerb = (a1.spirit.inventory.get(ItemType.Herb) ?? 0) >= 1;
+      const hasHerb = a1.getItemCountByType(ItemType.Herb) >= 1;
       return (
         rel !== undefined &&
         rel.affinity > 0.45 &&

@@ -11,8 +11,8 @@ import { EventSystem, createGameEvent } from '../models/event';
 import { DungeonSystem, DungeonEventType, MidBossDef, DungeonFloorDef } from '../models/dungeon';
 import { clearDungeonSRankRegistry, registerDungeonSRankLimit } from '../models/dungeon-s-rank-registry';
 import { ActivitySystem } from '../models/activity';
-import { loadHyperion } from '../systems/hyperion';
-import { setDialogueLines, clearGiftPreferences, setGiftPreference } from '../systems/npc-interaction';
+import { loadHyperion, setLoadedLocationIds } from '../systems/hyperion';
+import { setDialogueLines, clearGiftPreferences, setGiftPreference, rebuildLocationNameMap, rebuildTitleNameMap, rebuildItemNameMap } from '../systems/npc-interaction';
 import { loadItemDefs, loadWeaponDefs, loadArmorDefs } from '../types/item-defs';
 import { loadSkillDefs, getBasicSkillsForRace } from '../models/skill';
 import { assignNpcSkills } from '../systems/skill-learning';
@@ -665,6 +665,8 @@ export function initAll(data: GameDataFiles): InitResult {
 
   // 개별 아이템 정의 로드
   try { loadItemDefs(data.items); } catch { /* items.txt가 새 포맷이 아니면 무시 */ }
+  // npc-interaction acquisition 파서용: 아이템 display name → itemId 매핑 빌드
+  rebuildItemNameMap();
 
   // 무기 / 방어구 정의 로드
   loadWeaponDefs(data.weapons);
@@ -675,6 +677,10 @@ export function initAll(data: GameDataFiles): InitResult {
 
   const world = new World();
   initLocations(data.locations, world);
+  // 로딩된 모든 location ID를 hyperion all_locations_visited 판정용으로 등록
+  setLoadedLocationIds(world.getAllLocations().keys());
+  // npc-interaction acquisition 파서용: 지역 display name → locationId 매핑 빌드
+  rebuildLocationNameMap();
 
   const actors = filterActorsByLoadedLocations(initActors(data.actors), world, warnings);
   if (actors.length === 0) warnings.push('No actors loaded');
@@ -762,6 +768,19 @@ export function initAll(data: GameDataFiles): InitResult {
       actor.acquisitionDifficulty = s.getInt('difficulty', 0);
     }
   }
+
+  // npc-interaction acquisition 파서용: 칭호 display name → titleId 매핑 빌드
+  // titles.txt의 [section] 이름을 titleId, name= 을 표시명으로 사용.
+  // title-system.ts가 쓰는 한글 칭호ID(표시명=ID)와 titles.txt의 영문ID 둘 다 매핑.
+  const titleMap = new Map<string, string>();
+  for (const s of data.titles) {
+    const displayName = s.get('name', s.name);
+    titleMap.set(displayName, s.name);
+    // title-system.ts의 TITLE_CONDITIONS는 한글 ID 사용 (예: '첫 수확')
+    // 같은 이름이 ID로도 쓰이는 경우를 대비해 표시명→표시명도 등록
+    titleMap.set(s.name, s.name);
+  }
+  rebuildTitleNameMap(titleMap);
 
   const diagnosticQuestions = parseDiagnosticQuestions(data.diagnostic);
 

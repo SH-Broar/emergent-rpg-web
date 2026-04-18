@@ -163,7 +163,7 @@ const improveVillage: PlayerAction = {
   goldCost: 100,
   requirements: (actor, _world, _social, _allActors) => {
     const isSettlement = SETTLEMENT_LOCATIONS.has(actor.currentLocation);
-    const hasOre = actor.spirit.inventory.get(ItemType.OreCommon) ?? 0;
+    const hasOre = actor.getItemCountByType(ItemType.OreCommon);
     return (
       isSettlement &&
       actor.spirit.gold >= 100 &&
@@ -209,7 +209,7 @@ const communityMeal: PlayerAction = {
   goldCost: 0,
   requirements: (actor, _world, _social, allActors) => {
     const npcs = getNPCsAtLocation(actor, allActors);
-    const foodCount = actor.spirit.inventory.get(ItemType.Food) ?? 0;
+    const foodCount = actor.getItemCountByType(ItemType.Food);
     return npcs.length >= 3 && foodCount >= 3;
   },
   execute: (actor, _world, _social, allActors, backlog, time) => {

@@ -56,7 +56,7 @@ export function createSkillShopScreen(
   function canAfford(skill: SkillDef): boolean {
     for (const cost of skill.learnCost ?? []) {
       const itemType = parseItemType(cost.item);
-      const count = p.spirit.inventory.get(itemType) ?? 0;
+      const count = p.getItemCountByType(itemType);
       if (count < cost.amount) return false;
     }
     return true;
@@ -70,8 +70,7 @@ export function createSkillShopScreen(
     if (!canAfford(skill) || !meetsHyperion(skill)) return false;
     for (const cost of skill.learnCost ?? []) {
       const itemType = parseItemType(cost.item);
-      const current = p.spirit.inventory.get(itemType) ?? 0;
-      p.spirit.inventory.set(itemType, current - cost.amount);
+      p.consumeItem(itemType, cost.amount);
     }
     p.replaceSkill(skill.replacesSkill ?? '', skill.id);
     session.backlog.add(session.gameTime, `${skill.name} 스킬을 습득했다!`, '행동');

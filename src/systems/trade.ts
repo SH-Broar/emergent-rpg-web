@@ -98,7 +98,7 @@ export function getSellableItems(
   mods: PriceModifiers,
 ): SellableItem[] {
   const items: SellableItem[] = [];
-  for (const [type, qty] of player.spirit.inventory) {
+  for (const [type, qty] of player.getInventoryByType()) {
     if (qty > 0) {
       const price = Math.max(1, Math.round(world.getPrice(type) * mods.sellMod));
       items.push({ type, name: itemName(type), price, quantity: qty });

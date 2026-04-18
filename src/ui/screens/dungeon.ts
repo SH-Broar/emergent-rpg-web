@@ -1056,6 +1056,10 @@ export function createDungeonScreen(
     const skillUseOptions = getSkillUseOptions(selectedDungeon);
     if (!def || !canUseSkill(def, p, ss, skillUseOptions).ok) return;
 
+    // 스킬 TP 소비 추적 (플레이어 전용)
+    if (def.tpCost > 0 && p.hasAp(def.tpCost)) {
+      session.knowledge.trackVigorSpent(def.tpCost);
+    }
     const msgs = usePlayerSkill(combatState, slot, p, skillUseOptions);
     for (const m of msgs) combatState.combatLog.push(m);
 
@@ -1369,6 +1373,7 @@ export function createDungeonScreen(
     if (evt.vigorDamage > 0) {
       const tpCost = Math.ceil(evt.vigorDamage / 10);
       p.adjustAp(-tpCost);
+      session.knowledge.trackVigorSpent(tpCost);
       resultText += `TP -${tpCost} `;
     }
     if (evt.hpHeal > 0) {
@@ -1475,6 +1480,7 @@ export function createDungeonScreen(
     wrap.querySelector('[data-action="tp-rest"]')?.addEventListener('click', () => {
       if (!selectedDungeon || p.base.ap < 1) return;
       p.adjustAp(-1);
+      session.knowledge.trackVigorSpent(1);
       const hpGain = Math.round(p.getEffectiveMaxHp() * 0.3);
       const mpGain = Math.round(p.getEffectiveMaxMp() * 0.3);
       p.adjustHp(hpGain);

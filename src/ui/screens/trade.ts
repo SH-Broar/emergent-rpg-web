@@ -2,7 +2,7 @@
 
 import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
-import { ItemType, SpiritRole, raceName, spiritRoleName } from '../../types/enums';
+import { ItemType, SpiritRole, raceName, spiritRoleName, itemTypeToId } from '../../types/enums';
 import { itemName, basePrice } from '../../types/registry';
 import { Actor } from '../../models/actor';
 import { checkAndAwardTitles } from '../../systems/title-system';
@@ -79,7 +79,7 @@ export function createTradeScreen(
       price: getBuyPrice(type),
     }));
     const sellItems: { type: ItemType; name: string; count: number; price: number }[] = [];
-    for (const [type, count] of p.spirit.inventory) {
+    for (const [type, count] of p.getInventoryByType()) {
       if (count > 0) sellItems.push({ type, name: itemName(type), count, price: getSellPrice(type) });
     }
 
@@ -137,6 +137,7 @@ export function createTradeScreen(
         const item = buyItems[idx];
         if (!item) return;
         if (p.spirit.gold < item.price) { message = '골드가 부족합니다!'; }
+        else if (p.isBagFull(session.knowledge.bagCapacity, itemTypeToId(item.type))) { message = '⚠ 인벤토리가 가득 찼습니다!'; }
         else {
           p.addGold(-item.price);
           p.addItem(item.type, 1);

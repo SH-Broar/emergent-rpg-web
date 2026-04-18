@@ -534,7 +534,7 @@ function resolveItemRef(itemKey: string): ItemRef {
 function getHeldAmount(actor: Actor, itemKey: string): number {
   const ref = resolveItemRef(itemKey);
   return ref.kind === 'category'
-    ? (actor.spirit.inventory.get(ref.type) ?? 0)
+    ? actor.getItemCountByType(ref.type)
     : actor.getItemCount(ref.id);
 }
 

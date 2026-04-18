@@ -137,7 +137,7 @@ function getMealPriority(actor: Actor): ItemType[] {
 
 function chooseMealItem(actor: Actor): ItemType | null {
   for (const item of getMealPriority(actor)) {
-    if ((actor.spirit.inventory.get(item) ?? 0) <= 0) continue;
+    if (actor.getItemCountByType(item) <= 0) continue;
     const result = computeEatEffect(item, actor.base.race, '', actor.isNight());
     if (result.success) return item;
   }
@@ -174,7 +174,7 @@ function chooseSellTarget(actor: Actor, world: World): ItemType | null {
   const candidates: { item: ItemType; score: number }[] = [];
   const isHungry = actor.lifeData.daysSinceLastMeal > 0;
 
-  for (const [item, count] of actor.spirit.inventory) {
+  for (const [item, count] of actor.getInventoryByType()) {
     if (count <= 0) continue;
     const reserve = item === ItemType.Food ? (isHungry ? 2 : 1) : (item === ItemType.Herb || item === ItemType.Potion ? 1 : 0);
     if (count <= reserve) continue;
@@ -684,7 +684,7 @@ export function evaluateActions(
   // 11. Trade_Sell
   {
     let totalItems = 0;
-    for (const [, count] of actor.spirit.inventory) totalItems += count;
+    for (const [, count] of actor.getInventoryByType()) totalItems += count;
     let sellScore = 5;
     if (totalItems > 5) sellScore += 20;
     if (actor.spirit.gold < actor.lifeData.dailyExpense * 2) sellScore += 20;
@@ -765,7 +765,7 @@ export function evaluateActions(
 
     // 16. ShareMeal
     {
-      const hasFood = (actor.spirit.inventory.get(ItemType.Food) ?? 0) > 0;
+      const hasFood = actor.getItemCountByType(ItemType.Food) > 0;
       if (hasFood) {
         const isHungry = bestNeighbor.lifeData.daysSinceLastMeal > 0;
         let score = 10
@@ -916,7 +916,7 @@ export function executeAction(
     }
 
     case ActionType.Eat: {
-      const mealItem = (actor.spirit.inventory.get(action.targetItem) ?? 0) > 0
+      const mealItem = actor.getItemCountByType(action.targetItem) > 0
         ? action.targetItem
         : chooseMealItem(actor);
       if (mealItem !== null && actor.consumeItem(mealItem, 1)) {
@@ -1130,7 +1130,7 @@ export function executeAction(
       const recipes = world.getProductionRecipes(loc);
       if (recipes.length === 0) break;
       const craftable = recipes
-        .filter(recipe => recipe.inputs.every(([item, amount]) => (actor.spirit.inventory.get(item) ?? 0) >= amount))
+        .filter(recipe => recipe.inputs.every(([item, amount]) => actor.getItemCountByType(item) >= amount))
         .sort((a, b) => {
           const aValue = a.outputs.reduce((sum, [item, amount]) => sum + world.getPrice(item) * amount, 0);
           const bValue = b.outputs.reduce((sum, [item, amount]) => sum + world.getPrice(item) * amount, 0);
@@ -1140,7 +1140,7 @@ export function executeAction(
       if (!recipe) break;
       // Check inputs
       for (const [item, amount] of recipe.inputs) {
-        if ((actor.spirit.inventory.get(item) ?? 0) < amount) return;
+        if (actor.getItemCountByType(item) < amount) return;
       }
       // Consume inputs
       for (const [item, amount] of recipe.inputs) {
