@@ -2,9 +2,12 @@ import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
 import { ItemType } from '../../types/enums';
 import { applyRecovery, computeEatEffect, applyDailyMealBuff, getRemainingMeals, mealBuffLabel } from '../../types/eat-system';
-import { getArmorDef, getItemDef, getWeaponDef, type ItemDef } from '../../types/item-defs';
+import { getArmorDef, getItemDef, getWeaponDef, classifyItemForTab, formatSpecialEffectsList, type ItemDef } from '../../types/item-defs';
 import { getRaceCapabilitySet, parseTags } from '../../types/tag-system';
 import { advanceTurn } from '../../systems/world-simulation';
+import { openItemConfirmModal } from '../components/item-confirm-modal';
+
+type TabKind = 'weapon' | 'armor' | 'accessory' | 'food' | 'misc';
 
 type EquipSlot = 'weapon' | 'armor' | 'accessory' | 'accessory2';
 type CarryEntry =
@@ -63,7 +66,8 @@ export function createInventoryScreen(
 ): Screen {
   const p = session.player;
   let selectedSlot: EquipSlot | null = null;
-  let consumeSection: 'food' | 'other' | null = null;
+  /** 현재 열려있는 탭. null이면 메인 요약 화면. */
+  let activeTab: TabKind | null = null;
   let showResult = false;
   let statusMessage = '';
   let resultMessage = '';
@@ -104,12 +108,23 @@ export function createInventoryScreen(
     }
     const a = getArmorDef(id);
     if (!a) return '';
-    return `방어+${a.defense}${a.magicDefense ? ` 마방+${a.magicDefense}` : ''}${a.evasion ? ` 회피+${a.evasion}` : ''}`;
+    const base = `방어+${a.defense}${a.magicDefense ? ` 마방+${a.magicDefense}` : ''}${a.evasion ? ` 회피+${a.evasion}` : ''}`;
+    const special = formatSpecialEffectsList(a.specialEffects);
+    const granted = a.grantedSkill ? `스킬 부여: ${a.grantedSkill}` : '';
+    return [base, special, granted].filter(Boolean).join(' · ');
+  }
+
+  function grantedSkillOf(itemId: string): string {
+    const armor = getArmorDef(itemId);
+    return armor?.grantedSkill ?? '';
   }
 
   function unequip(slot: EquipSlot): void {
     const id = getEquippedId(slot);
     if (!id) return;
+    // 장비 grantedSkill 제거
+    const grantedId = grantedSkillOf(id);
+    if (grantedId) p.revokeSkillFromEquip(grantedId);
     p.addItemById(id, 1);
     setEquip(slot, '');
     statusMessage = `${getSlotLabel(slot)} 장비를 해제했다.`;
@@ -117,9 +132,15 @@ export function createInventoryScreen(
 
   function equip(slot: EquipSlot, itemId: string): void {
     const currentId = getEquippedId(slot);
-    if (currentId) p.addItemById(currentId, 1);
+    if (currentId) {
+      const oldGranted = grantedSkillOf(currentId);
+      if (oldGranted) p.revokeSkillFromEquip(oldGranted);
+      p.addItemById(currentId, 1);
+    }
     if (!p.removeItemById(itemId, 1)) return;
     setEquip(slot, itemId);
+    const newGranted = grantedSkillOf(itemId);
+    if (newGranted) p.grantSkillFromEquip(newGranted);
     const itemName = slot === 'weapon'
       ? (getWeaponDef(itemId)?.name ?? itemId)
       : (getArmorDef(itemId)?.name ?? itemId);
@@ -144,11 +165,11 @@ export function createInventoryScreen(
       if (!a) continue;
       if (slot === 'armor' && a.type === 'Accessory') continue;
       if ((slot === 'accessory' || slot === 'accessory2') && a.type !== 'Accessory') continue;
-      candidates.push({
-        id: itemId,
-        name: a.name,
-        stats: `방+${a.defense}${a.magicDefense ? ` 마방+${a.magicDefense}` : ''}${a.evasion ? ` 회피+${a.evasion}` : ''}`,
-      });
+      const baseStats = `방+${a.defense}${a.magicDefense ? ` 마방+${a.magicDefense}` : ''}${a.evasion ? ` 회피+${a.evasion}` : ''}`;
+      const special = formatSpecialEffectsList(a.specialEffects);
+      const granted = a.grantedSkill ? `스킬 부여: ${a.grantedSkill}` : '';
+      const fullStats = [baseStats, special, granted].filter(Boolean).join(' · ');
+      candidates.push({ id: itemId, name: a.name, stats: fullStats });
     }
     return candidates;
   }
@@ -206,29 +227,35 @@ export function createInventoryScreen(
     return def?.description ?? '';
   }
 
-  function isEquipmentEntry(entry: CarryEntry): boolean {
-    return entry.kind === 'item' && getEquipSlotForItemId(entry.id) !== null;
-  }
-
-  function isFoodEntry(entry: CarryEntry): boolean {
-    if (isEquipmentEntry(entry)) return false;
-    if (entry.kind === 'category') return entry.itemType === ItemType.Food;
-    return entry.def?.category === ItemType.Food;
-  }
-
-  function getSectionEntries(section: 'food' | 'other'): CarryEntry[] {
+  /** classifyItemForTab 기반 탭 필터링 */
+  function getTabEntries(tab: TabKind): CarryEntry[] {
     return getCarryEntries().filter(entry => {
-      if (isEquipmentEntry(entry)) return false;
-      return section === 'food' ? isFoodEntry(entry) : !isFoodEntry(entry);
+      if (entry.kind !== 'item') {
+        // category 엔트리는 misc 탭(일반 소모성)으로 보낸다
+        return tab === 'misc';
+      }
+      return classifyItemForTab(entry.id, p) === tab;
     });
   }
 
-  function getSectionSummary(section: 'food' | 'other'): string {
-    const entries = getSectionEntries(section);
+  function getTabSummary(tab: TabKind): string {
+    const entries = getTabEntries(tab);
     if (entries.length === 0) return '비어 있음';
     const preview = entries.slice(0, 2).map(entry => entry.label).join(', ');
     const extra = entries.length > 2 ? ` 외 ${entries.length - 2}종` : '';
     return `${preview}${extra}`;
+  }
+
+  const TAB_DEFS: { key: TabKind; label: string; hotkey: string }[] = [
+    { key: 'weapon',    label: '⚔ 무기',     hotkey: '5' },
+    { key: 'armor',     label: '🛡 방어구',   hotkey: '6' },
+    { key: 'accessory', label: '💍 악세서리', hotkey: '7' },
+    { key: 'food',      label: '🍖 음식',     hotkey: '8' },
+    { key: 'misc',      label: '📦 기타',     hotkey: '9' },
+  ];
+
+  function tabLabel(tab: TabKind): string {
+    return TAB_DEFS.find(t => t.key === tab)?.label ?? tab;
   }
 
   function closeResult(el: HTMLElement): void {
@@ -237,8 +264,36 @@ export function createInventoryScreen(
     showResult = false;
     resultMessage = '';
     resultStats = [];
-    if (consumeSection === null) consumeSection = 'food';
+    if (activeTab === null) activeTab = 'food';
     render(el);
+  }
+
+  /** 기타 탭에서 음식 카테고리인데 종족이 먹을 수 없는 항목은 info 모달만 */
+  async function showInfoModalForEntry(entry: CarryEntry, el: HTMLElement): Promise<void> {
+    if (entry.kind !== 'item') return;
+    const def = getItemDef(entry.id);
+    if (!def) return;
+    await openItemConfirmModal({ def, actor: p, mode: 'info' });
+    render(el);
+  }
+
+  /** 사용 전 확인 모달을 띄우고 승인된 경우에만 실제 소비 수행 */
+  async function confirmAndConsume(entry: CarryEntry, el: HTMLElement): Promise<void> {
+    // category 엔트리는 ItemDef가 없으므로 즉시 소비 (기존 동작 유지)
+    if (entry.kind === 'item') {
+      const def = getItemDef(entry.id);
+      if (def) {
+        const warning = getConsumeWarning(entry);
+        const ok = await openItemConfirmModal({
+          def,
+          actor: p,
+          mode: 'eat',
+          extraWarning: warning && warning !== def.description ? warning : undefined,
+        });
+        if (!ok) { render(el); return; }
+      }
+    }
+    doConsume(entry, el);
   }
 
   function doConsume(entry: CarryEntry, el: HTMLElement): void {
@@ -391,7 +446,7 @@ export function createInventoryScreen(
       <div style="font-size:12px;color:var(--text-dim);text-align:center">
         가방 ${bagCount}/${bagCap}칸 · 공격 ${p.getEffectiveAttack().toFixed(1)} · 방어 ${p.getEffectiveDefense().toFixed(1)} · 💰${p.spirit.gold}G
       </div>
-      <div style="font-size:12px;color:var(--text-dim)">장비</div>
+      <div style="font-size:12px;color:var(--text-dim)">장비 슬롯</div>
       <div class="menu-buttons">
         ${slots.map((slot, index) => `
           <button class="btn inventory-main-btn" data-slot="${slot}">
@@ -401,27 +456,22 @@ export function createInventoryScreen(
           </button>
         `).join('')}
       </div>
-      <div style="font-size:12px;color:var(--text-dim)">음식</div>
+      <div style="font-size:12px;color:var(--text-dim)">인벤토리 탭</div>
       <div class="menu-buttons">
-        <button class="btn inventory-main-btn" data-open-section="food">
-          <span class="inventory-main-title">5. 음식 목록</span>
-          <span class="inventory-main-subtitle">${getSectionSummary('food')}</span>
-        </button>
+        ${TAB_DEFS.map(tab => `
+          <button class="btn inventory-main-btn" data-open-tab="${tab.key}">
+            <span class="inventory-main-title">${tab.hotkey}. ${tab.label}</span>
+            <span class="inventory-main-subtitle">${getTabSummary(tab.key)}</span>
+          </button>
+        `).join('')}
       </div>
-      <div style="font-size:12px;color:var(--text-dim)">기타</div>
-      <div class="menu-buttons">
-        <button class="btn inventory-main-btn" data-open-section="other">
-          <span class="inventory-main-title">6. 기타 목록</span>
-          <span class="inventory-main-subtitle">${getSectionSummary('other')}</span>
-        </button>
-      </div>
-      <p class="hint">1~4=장비, 5=음식, 6=기타, Esc=닫기</p>
+      <p class="hint">1~4=장비 슬롯, 5~9=탭, Esc=닫기</p>
     `;
 
     wrap.querySelector('[data-back]')?.addEventListener('click', onDone);
-    wrap.querySelectorAll<HTMLButtonElement>('[data-open-section]').forEach(btn => {
+    wrap.querySelectorAll<HTMLButtonElement>('[data-open-tab]').forEach(btn => {
       btn.addEventListener('click', () => {
-        consumeSection = (btn.dataset.openSection as 'food' | 'other') ?? null;
+        activeTab = (btn.dataset.openTab as TabKind);
         render(el);
       });
     });
@@ -435,10 +485,10 @@ export function createInventoryScreen(
     el.appendChild(wrap);
   }
 
-  function renderConsume(el: HTMLElement): void {
-    const section = consumeSection ?? 'food';
-    const entries = getSectionEntries(section);
-    const title = section === 'food' ? '음식' : '기타';
+  function renderTab(el: HTMLElement): void {
+    const tab = activeTab ?? 'food';
+    const entries = getTabEntries(tab);
+    const title = tabLabel(tab);
 
     el.innerHTML = '';
     const wrap = document.createElement('div');
@@ -447,7 +497,7 @@ export function createInventoryScreen(
     wrap.innerHTML = `
       <button class="btn back-btn" data-back>← 뒤로 [Esc]</button>
       <h2>${title}</h2>
-      ${entries.length === 0 ? '<p class="hint">가방이 비어 있다.</p>' : `
+      ${entries.length === 0 ? '<p class="hint">이 탭에는 아이템이 없다.</p>' : `
         <div class="inventory-entry-list">
           ${entries.map((entry, index) => `
             <button class="btn inventory-entry-btn" data-carry-entry="${index}">
@@ -464,7 +514,7 @@ export function createInventoryScreen(
     `;
 
     wrap.querySelector('[data-back]')?.addEventListener('click', () => {
-      consumeSection = null;
+      activeTab = null;
       render(el);
     });
     wrap.querySelectorAll<HTMLButtonElement>('[data-carry-entry]').forEach(btn => {
@@ -472,18 +522,39 @@ export function createInventoryScreen(
         const idx = parseInt(btn.dataset.carryEntry ?? '-1', 10);
         if (idx < 0 || idx >= entries.length) return;
         const entry = entries[idx];
-        if (entry.consumable) {
-          doConsume(entry, el);
+        // 무기/방어구/악세서리 탭: 장비 슬롯으로 이동해서 교체 UI 열기
+        if (tab === 'weapon' || tab === 'armor' || tab === 'accessory') {
+          if (entry.kind === 'item') {
+            const slot = getEquipSlotForItemId(entry.id);
+            if (slot) {
+              selectedSlot = slot;
+              activeTab = null;
+              render(el);
+              return;
+            }
+          }
+          statusMessage = '이 아이템은 장착할 수 없다.';
+          render(el);
           return;
         }
-        if (entry.kind === 'item') {
-          const slot = getEquipSlotForItemId(entry.id);
-          if (slot) {
-            selectedSlot = slot;
-            consumeSection = null;
-            render(el);
+        // 음식 탭: 확인 모달 경유 후 소비
+        if (tab === 'food') {
+          void confirmAndConsume(entry, el);
+          return;
+        }
+        // 기타 탭: 음식 카테고리인데 종족이 못 먹는 경우 → info 모달
+        if (tab === 'misc' && entry.kind === 'item') {
+          const def = getItemDef(entry.id);
+          const foodLike = def &&
+            (def.category === ItemType.Food || def.category === ItemType.Herb || def.category === ItemType.Potion);
+          if (foodLike && classifyItemForTab(entry.id, p) !== 'food') {
+            void showInfoModalForEntry(entry, el);
             return;
           }
+        }
+        if (entry.consumable) {
+          void confirmAndConsume(entry, el);
+          return;
         }
         statusMessage = '이 소지품은 바로 사용할 수 없다.';
         render(el);
@@ -581,8 +652,8 @@ export function createInventoryScreen(
       renderSlotDetail(el);
       return;
     }
-    if (consumeSection) {
-      renderConsume(el);
+    if (activeTab) {
+      renderTab(el);
       return;
     }
     renderMain(el);
@@ -622,29 +693,51 @@ export function createInventoryScreen(
         return;
       }
 
-      if (consumeSection) {
+      if (activeTab) {
         if (key === 'Escape') {
-          consumeSection = null;
+          activeTab = null;
           render(container);
           return;
         }
         if (/^[1-9]$/.test(key)) {
-          const entries = getSectionEntries(consumeSection);
+          const tab = activeTab;
+          const entries = getTabEntries(tab);
           const idx = parseInt(key, 10) - 1;
           if (idx < entries.length) {
             const entry = entries[idx];
-            if (entry.consumable) {
-              doConsume(entry, container);
+            // 장비 탭: 슬롯 열기
+            if (tab === 'weapon' || tab === 'armor' || tab === 'accessory') {
+              if (entry.kind === 'item') {
+                const slot = getEquipSlotForItemId(entry.id);
+                if (slot) {
+                  selectedSlot = slot;
+                  activeTab = null;
+                  render(container);
+                  return;
+                }
+              }
+              statusMessage = '이 아이템은 장착할 수 없다.';
+              render(container);
               return;
             }
-            if (entry.kind === 'item') {
-              const slot = getEquipSlotForItemId(entry.id);
-              if (slot) {
-                selectedSlot = slot;
-                consumeSection = null;
-                render(container);
+            // 음식 탭
+            if (tab === 'food') {
+              void confirmAndConsume(entry, container);
+              return;
+            }
+            // 기타 탭
+            if (tab === 'misc' && entry.kind === 'item') {
+              const def = getItemDef(entry.id);
+              const foodLike = def &&
+                (def.category === ItemType.Food || def.category === ItemType.Herb || def.category === ItemType.Potion);
+              if (foodLike && classifyItemForTab(entry.id, p) !== 'food') {
+                void showInfoModalForEntry(entry, container);
                 return;
               }
+            }
+            if (entry.consumable) {
+              void confirmAndConsume(entry, container);
+              return;
             }
             statusMessage = '이 소지품은 바로 사용할 수 없다.';
             render(container);
@@ -669,13 +762,16 @@ export function createInventoryScreen(
         render(container);
         return;
       }
-      if (key === '5') {
-        consumeSection = 'food';
-        render(container);
-        return;
-      }
-      if (key === '6') {
-        consumeSection = 'other';
+      const tabMap: Record<string, TabKind> = {
+        '5': 'weapon',
+        '6': 'armor',
+        '7': 'accessory',
+        '8': 'food',
+        '9': 'misc',
+      };
+      const tab = tabMap[key];
+      if (tab) {
+        activeTab = tab;
         render(container);
       }
     },

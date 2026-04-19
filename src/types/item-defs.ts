@@ -3,6 +3,8 @@
 
 import { ItemType } from './enums';
 import { DataSection } from '../data/parser';
+import { getRaceCapabilitySet, parseTags } from './tag-system';
+import type { Actor } from '../models/actor';
 
 // ============================================================
 // 아이템 정의
@@ -412,7 +414,20 @@ export interface ArmorDef {
   evasion: number;
   price: number;
   description: string;
-  specialEffects: Record<string, number>; // 악세서리 특수 효과 (travelSpeed, gatherBonus 등)
+  /**
+   * 악세서리/방어구 특수 효과.
+   * 지원 키 예시:
+   *  - travelSpeed, gatherBonus, combatSpeed
+   *  - hpRegen, mpRegen, tpRegen
+   *  - magicPower, goldBonus, storageBonus
+   *  - blockDialogue, blockRest
+   *  - critChance, doubleGather, autoReviveOnce
+   *  - fireResist, waterResist, electricResist, ironResist,
+   *    earthResist, windResist, lightResist, darkResist
+   */
+  specialEffects: Record<string, number>;
+  /** 장착 시 임시 학습되는 스킬 ID (해제 시 제거). 빈 문자열이면 없음. */
+  grantedSkill: string;
 }
 
 const armorRegistry = new Map<string, ArmorDef>();
@@ -435,6 +450,7 @@ export function loadArmorDefs(sections: DataSection[]): void {
       price: s.getInt('price', 0),
       description: s.get('description', ''),
       specialEffects: parseSpecialEffects(s.get('specialEffects', '')),
+      grantedSkill: s.get('grantedSkill', ''),
     };
     armorRegistry.set(def.id, def);
   }
@@ -483,6 +499,23 @@ export function getEquippedAccessoryEffects(actor: { equippedAccessory: string; 
   return totals;
 }
 
+/**
+ * 장착된 악세서리의 travelSpeed 효과를 이동 시간(분)에 적용한다.
+ * - travelSpeed < 0 : 가속 (예: -0.2 → 20% 단축)
+ * - travelSpeed > 0 : 감속 (예: 0.1 → 10% 지연)
+ * 최종 시간은 최소 1분으로 clamp.
+ */
+export function applyTravelSpeed(
+  actor: { equippedAccessory: string; equippedAccessory2: string },
+  baseMinutes: number,
+): number {
+  if (baseMinutes <= 0) return baseMinutes;
+  const fx = getEquippedAccessoryEffects(actor);
+  const ts = fx.travelSpeed ?? 0;
+  if (ts === 0) return baseMinutes;
+  return Math.max(1, Math.round(baseMinutes * (1 + ts)));
+}
+
 // ============================================================
 // 요소 파싱 헬퍼 (enums.ts의 Element와 동기화)
 // ============================================================
@@ -496,4 +529,101 @@ function parseElementString(s: string): number {
   const trimmed = s.trim();
   if (trimmed === 'None') return -1;
   return ELEMENT_STRING_MAP[trimmed] ?? -1;
+}
+
+// ============================================================
+// 인벤토리 탭 분류
+// ============================================================
+
+/**
+ * 종족 태그 규칙으로 해당 tags 문자열이 섭취 가능한지 판정.
+ * tag-system.ts의 `canConsumeByTags(race, ItemType)`은 카테고리 enum 기반이므로
+ * 여기서는 아이템의 free-form tags 문자열을 직접 파싱해 동일한 규칙을 적용한다.
+ *   - potion_only: /liquid/ 만 허용
+ *   - digest_all: 항상 허용
+ *   - inedible 태그 있으면 불가
+ */
+export function canEatByItemTags(actor: { base: { race: number } }, tagsStr: string): boolean {
+  const raceTags = getRaceCapabilitySet(actor.base.race);
+  const itemTags = parseTags(tagsStr ?? '');
+  if (raceTags.has('potion_only') && !itemTags.has('liquid')) return false;
+  if (raceTags.has('digest_all')) return true;
+  if (itemTags.has('inedible')) return false;
+  return true;
+}
+
+/**
+ * 인벤토리 UI의 탭 분류.
+ * 우선순위: 무기 → 악세서리(ArmorDef.type==='Accessory') → 방어구 → 음식 → 기타.
+ * 음식 판정: ItemDef.category ∈ {Food, Herb, Potion} AND canConsumeByTags.
+ */
+export function classifyItemForTab(
+  id: string,
+  actor: Actor,
+): 'weapon' | 'armor' | 'accessory' | 'food' | 'misc' {
+  if (getWeaponDef(id)) return 'weapon';
+  const armor = getArmorDef(id);
+  if (armor) return armor.type === 'Accessory' ? 'accessory' : 'armor';
+  const def = getItemDef(id);
+  if (def) {
+    const isFoodCategory =
+      def.category === ItemType.Food ||
+      def.category === ItemType.Herb ||
+      def.category === ItemType.Potion;
+    if (isFoodCategory && canEatByItemTags(actor, def.tags)) return 'food';
+  }
+  return 'misc';
+}
+
+// ============================================================
+// 특수 효과 한국어 표기 헬퍼
+// ============================================================
+
+/** specialEffects의 한 키-값 쌍을 사용자에게 보여줄 라벨로 변환 */
+export function formatSpecialEffect(key: string, value: number): string {
+  const pctPlus = (v: number) => `${v >= 0 ? '+' : ''}${Math.round(v * 100)}%`;
+  switch (key) {
+    case 'travelSpeed':
+      // 음수 = 이동 시간 감소 = 속도 증가
+      return value < 0
+        ? `여행 속도 +${Math.round(-value * 100)}%`
+        : `여행 속도 -${Math.round(value * 100)}%`;
+    case 'gatherBonus':     return `채집 성공률 ${pctPlus(value)}`;
+    case 'combatSpeed':     return `전투 속도 +${Math.round(value * 100)}%`;
+    case 'hpRegen':         return `방 이동 시 HP ${pctPlus(value)}`;
+    case 'mpRegen':         return `방 이동 시 MP ${pctPlus(value)}`;
+    case 'tpRegen':         return `다음날 TP 추가 회복 ${pctPlus(value)}`;
+    case 'magicPower':      return `마법 위력 ${pctPlus(value)}`;
+    case 'goldBonus':       return `판매 가격 ${pctPlus(value)}`;
+    case 'storageBonus':    return `창고 용량 ${pctPlus(value)}`;
+    case 'blockDialogue':   return '⚠ 대화 불가';
+    case 'blockRest':       return '⚠ 휴식/수면 불가';
+    case 'critChance':      return `치명타 확률 ${pctPlus(value)}`;
+    case 'doubleGather':    return `채집 2배 확률 ${pctPlus(value)}`;
+    case 'autoReviveOnce':  return '하루 1회 자동 부활';
+    case 'fireResist':      return `화염 저항 ${pctPlus(value)}`;
+    case 'waterResist':     return `물 저항 ${pctPlus(value)}`;
+    case 'electricResist':  return `전기 저항 ${pctPlus(value)}`;
+    case 'ironResist':      return `철 저항 ${pctPlus(value)}`;
+    case 'earthResist':     return `흙 저항 ${pctPlus(value)}`;
+    case 'windResist':      return `바람 저항 ${pctPlus(value)}`;
+    case 'lightResist':     return `빛 저항 ${pctPlus(value)}`;
+    case 'darkResist':      return `어둠 저항 ${pctPlus(value)}`;
+    default: {
+      // 미지정 키는 원문 + 퍼센트로 표시
+      const suffix = Math.abs(value) < 1 ? pctPlus(value) : String(value);
+      return `${key} ${suffix}`;
+    }
+  }
+}
+
+/** 여러 specialEffects를 한 줄 요약으로 렌더 (빈 객체면 빈 문자열) */
+export function formatSpecialEffectsList(effects: Record<string, number> | undefined): string {
+  if (!effects) return '';
+  const parts: string[] = [];
+  for (const [k, v] of Object.entries(effects)) {
+    if (!Number.isFinite(v) || v === 0) continue;
+    parts.push(formatSpecialEffect(k, v));
+  }
+  return parts.join(' · ');
 }

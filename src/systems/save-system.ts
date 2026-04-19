@@ -12,12 +12,13 @@ import { ActivitySystem } from '../models/activity';
 import { EventSystem } from '../models/event';
 import { DungeonSystem } from '../models/dungeon';
 import { VillageState } from '../models/village';
+import { getArmorDef } from '../types/item-defs';
 
 // ============================================================
 // Constants
 // ============================================================
 
-export const SAVE_VERSION = 5;
+export const SAVE_VERSION = 6;
 export const SLOT_COUNT = 4; // 0 = autosave, 1-3 = manual
 export const STORAGE_KEY_PREFIX = 'rdc-save-';
 
@@ -61,6 +62,12 @@ function deserializeColorProfile(d: any): ColorProfile {
 }
 
 function serializeActor(a: Actor): object {
+  // grantedSkill로 부여된 스킬은 세이브에서 제외 (장비 재장착으로 자동 복원)
+  const filteredVars: [string, number][] = [];
+  for (const [k, v] of a.variables) {
+    if (k.startsWith('granted_skill:')) continue;
+    filteredVars.push([k, v]);
+  }
   return {
     name: a.name,
     base: { ...a.base },
@@ -86,7 +93,7 @@ function serializeActor(a: Actor): object {
     lastTickHour: a.lastTickHour,
     lifeData: { ...a.lifeData },
     flags: [...a.flags.entries()],
-    variables: [...a.variables.entries()],
+    variables: filteredVars,
     items: [...a.items.entries()],
     equippedWeapon: a.equippedWeapon,
     equippedArmor: a.equippedArmor,
@@ -526,6 +533,17 @@ function deserializeSession(data: any): GameSession {
   session.dungeonSystem = new DungeonSystem();
   session.activitySystem = new ActivitySystem();
 
+  // 장비 grantedSkill 재동기화 (로드 시 장착 악세서리의 임시 스킬을 다시 부여)
+  for (const actor of session.actors) {
+    for (const slotId of [actor.equippedAccessory, actor.equippedAccessory2, actor.equippedArmor]) {
+      if (!slotId) continue;
+      const armor = getArmorDef(slotId);
+      if (armor && armor.grantedSkill) {
+        actor.grantSkillFromEquip(armor.grantedSkill);
+      }
+    }
+  }
+
   return session;
 }
 
@@ -580,7 +598,10 @@ export function loadFromSlot(slot: number): GameSession | null {
     if (!raw) return null;
     const data = JSON.parse(raw);
     if (data.version < SAVE_VERSION) {
-      console.warn(`[save-system] loadFromSlot(${slot}): old save version ${data.version} (current ${SAVE_VERSION}), loading with defaults for new fields`);
+      // v5 → v6은 구조 변경 없음 (아이템 탭/특수효과 확장만). 경고 없이 통과.
+      if (data.version !== 5) {
+        console.warn(`[save-system] loadFromSlot(${slot}): old save version ${data.version} (current ${SAVE_VERSION}), loading with defaults for new fields`);
+      }
     }
     return deserializeSession(data);
   } catch (err) {

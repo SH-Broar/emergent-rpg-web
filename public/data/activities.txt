@@ -1334,3 +1334,214 @@ activity_4_gold = 0
 activity_4_desc = 바 구석 자리에 앉아 분위기를 즐기며 쉰다. 오늘 밤 바텐더가 심상치 않은 날이라면 더욱 특별한 시간이 될지도.
 activity_4_effect = heal_hp:20, restore_mp:15
 activity_4_colorInfluence = Water:0.02, Earth:0.01
+
+# ============================================================
+# 신규 장비 상점 확장 — Uncommon/Rare 장비 및 제작 악세서리
+# 파서가 같은 섹션명을 별도 DataSection으로 취급하므로,
+# 동일 LocationId를 가진 확장 섹션을 추가하여 활동을 병합한다.
+# 기존 activity_N 충돌을 피하기 위해 고유한 key 를 사용한다.
+# ============================================================
+
+# ── Moss_Forge 확장 — Uncommon 신규 장비 + 방어구 ─────────────
+[Moss_Forge]
+activity_1_name = 청동 커틀라스 구매
+activity_1_key = buy_bronze_cutlass
+activity_1_time = 5
+activity_1_vigor = 0
+activity_1_gold = 220
+activity_1_desc = 대장간에서 갓 담금질을 마친 청동 커틀라스. 무게가 가볍고 손에 잘 감긴다.
+activity_1_effect = give
+activity_1_giveItems = Bronze_Cutlass:1
+activity_1_stock = 3
+activity_1_colorInfluence = Iron:0.02
+
+activity_2_name = 물푸레나무 창 구매
+activity_2_key = buy_ashwood_spear
+activity_2_time = 5
+activity_2_vigor = 0
+activity_2_gold = 200
+activity_2_desc = 탄력 좋은 물푸레나무로 깎은 장창. 초심자도 다루기 쉽다.
+activity_2_effect = give
+activity_2_giveItems = Ashwood_Spear:1
+activity_2_stock = 3
+activity_2_colorInfluence = Iron:0.02
+
+activity_3_name = 사냥꾼의 장궁 구매
+activity_3_key = buy_hunter_longbow
+activity_3_time = 5
+activity_3_vigor = 0
+activity_3_gold = 220
+activity_3_desc = 숙련된 사냥꾼들이 선호하는 긴 활. 사거리가 넉넉하다.
+activity_3_effect = give
+activity_3_giveItems = Hunter_Longbow:1
+activity_3_stock = 3
+activity_3_colorInfluence = Iron:0.02
+
+activity_4_name = 가죽 흉갑 구매
+activity_4_key = buy_leather_cuirass
+activity_4_time = 5
+activity_4_vigor = 0
+activity_4_gold = 260
+activity_4_desc = 두꺼운 가죽을 겹쳐 기본 방호를 확보한 흉갑.
+activity_4_effect = give
+activity_4_giveItems = Leather_Cuirass:1
+activity_4_stock = 3
+activity_4_colorInfluence = Iron:0.02
+
+activity_5_name = 병사의 철판 갑옷 구매
+activity_5_key = buy_soldier_iron_plate
+activity_5_time = 5
+activity_5_vigor = 0
+activity_5_gold = 340
+activity_5_desc = 정규 병사들이 착용하던 규격화된 철판 갑옷.
+activity_5_effect = give
+activity_5_giveItems = Soldier_Iron_Plate:1
+activity_5_stock = 2
+activity_5_colorInfluence = Iron:0.03
+
+# ── Market_Square 확장 — Uncommon 경장비 및 지팡이/단검 ───────
+[Market_Square]
+activity_1_name = 입문자의 지팡이 구매
+activity_1_key = buy_initiate_staff
+activity_1_time = 5
+activity_1_vigor = 0
+activity_1_gold = 180
+activity_1_desc = 학부 신입생용의 가벼운 지팡이. 마력 전도가 무난하다.
+activity_1_effect = give
+activity_1_giveItems = Initiate_Staff:1
+activity_1_stock = 3
+activity_1_colorInfluence = Earth:0.01
+
+activity_2_name = 밀정의 단검 구매
+activity_2_key = buy_footpad_dirk
+activity_2_time = 5
+activity_2_vigor = 0
+activity_2_gold = 160
+activity_2_desc = 손잡이가 짧고 날이 좁은 은밀한 단검.
+activity_2_effect = give
+activity_2_giveItems = Footpad_Dirk:1
+activity_2_stock = 3
+activity_2_colorInfluence = Iron:0.01
+
+activity_3_name = 초심 마법사 로브 구매
+activity_3_key = buy_novice_magician_robe
+activity_3_time = 5
+activity_3_vigor = 0
+activity_3_gold = 220
+activity_3_desc = 마나 회복량을 살짝 높여주는 입문용 로브.
+activity_3_effect = give
+activity_3_giveItems = Novice_Magician_Robe:1
+activity_3_stock = 3
+activity_3_colorInfluence = Light:0.02
+
+# ── Manonickla_Forge 확장 — Rare 장비 일부 ──────────────────
+[Manonickla_Forge]
+activity_1_name = 단련된 사브르 구매
+activity_1_key = buy_tempered_saber
+activity_1_time = 5
+activity_1_vigor = 0
+activity_1_gold = 950
+activity_1_desc = 마노니클라의 대장장이가 여러 번 단련한 사브르. 균형이 완벽하다.
+activity_1_effect = give
+activity_1_giveItems = Tempered_Saber:1
+activity_1_unique = true
+activity_1_stock = 1
+activity_1_colorInfluence = Iron:0.03
+
+activity_2_name = 성진의 로드 구매
+activity_2_key = buy_astral_rod
+activity_2_time = 5
+activity_2_vigor = 0
+activity_2_gold = 1100
+activity_2_desc = 별빛을 감아둔 마법 로드. 밤에 더 강하게 반응한다.
+activity_2_effect = give
+activity_2_giveItems = Astral_Rod:1
+activity_2_unique = true
+activity_2_stock = 1
+activity_2_colorInfluence = Light:0.03, Iron:0.02
+
+activity_3_name = 마법사 로브 구매
+activity_3_key = buy_mage_robe
+activity_3_time = 5
+activity_3_vigor = 0
+activity_3_gold = 900
+activity_3_desc = 마력 전도가 좋은 검정 계열 마법사 로브.
+activity_3_effect = give
+activity_3_giveItems = Mage_Robe:1
+activity_3_unique = true
+activity_3_stock = 1
+activity_3_colorInfluence = Light:0.02
+
+# ============================================================
+# 제작 악세서리 공방 — 원재료를 들고 대장간에 의뢰하여 제작
+# (장비 레시피 시스템이 아직 없으므로 activity 로 구현)
+# requireItems 로 재료를 소모, giveItems 로 악세서리 지급
+# ============================================================
+
+[Moss_Forge]
+activity_1_name = 수확자의 낫 펜던트 제작
+activity_1_key = craft_harvester_scythe_pendant
+activity_1_time = 20
+activity_1_vigor = 10
+activity_1_gold = 500
+activity_1_desc = 철 광석과 약초를 엮어 수확의 가호를 담은 펜던트를 만든다.
+activity_1_effect = give
+activity_1_requires = OreCommon:3, Herb:4
+activity_1_giveItems = Harvester_Scythe_Pendant:1
+activity_1_unique = true
+activity_1_stock = 1
+activity_1_colorInfluence = Earth:0.03, Iron:0.02
+
+activity_2_name = 화염 팔찌 세공
+activity_2_key = craft_flame_bangle
+activity_2_time = 25
+activity_2_vigor = 12
+activity_2_gold = 750
+activity_2_desc = 화염초 재와 희귀 광석을 달구어 불꽃의 기운을 담은 팔찌를 만든다.
+activity_2_effect = give
+activity_2_requires = OreRare:1, Herb:3, Potion:2
+activity_2_giveItems = Flame_Bangle:1
+activity_2_unique = true
+activity_2_stock = 1
+activity_2_colorInfluence = Fire:0.04, Iron:0.02
+
+activity_3_name = 광부의 등불 펜던트 제작
+activity_3_key = craft_miner_lamp_pendant
+activity_3_time = 20
+activity_3_vigor = 10
+activity_3_gold = 480
+activity_3_desc = 광석을 가공해 만든 유리구슬 안에 작은 빛을 봉한 펜던트.
+activity_3_effect = give
+activity_3_requires = OreCommon:4, OreRare:1
+activity_3_giveItems = Miner_Lamp_Pendant:1
+activity_3_unique = true
+activity_3_stock = 1
+activity_3_colorInfluence = Light:0.02, Iron:0.02
+
+# ── Hanabridge 확장 — 치유/빙결 계열 악세서리 제작 ─────────
+[Hanabridge]
+activity_1_name = 치유사의 인장 제작
+activity_1_key = craft_healer_sigil
+activity_1_time = 30
+activity_1_vigor = 15
+activity_1_gold = 1200
+activity_1_desc = 정결한 약초와 희귀 포션을 봉헌하여 치유의 인장을 새긴다.
+activity_1_effect = give
+activity_1_requires = Potion:5, Herb:6
+activity_1_giveItems = Healer_Sigil:1
+activity_1_unique = true
+activity_1_stock = 1
+activity_1_colorInfluence = Light:0.04, Water:0.02
+
+activity_2_name = 설풍 투구 장식 세공
+activity_2_key = craft_blizzard_helm_charm
+activity_2_time = 25
+activity_2_vigor = 12
+activity_2_gold = 820
+activity_2_desc = 알리메의 서리 결정과 강철을 맞물려 찬 바람의 부적을 만든다.
+activity_2_effect = give
+activity_2_requires = OreRare:1, OreCommon:3, Potion:1
+activity_2_giveItems = Blizzard_Helm_Charm:1
+activity_2_unique = true
+activity_2_stock = 1
+activity_2_colorInfluence = Water:0.03, Iron:0.02

@@ -11,6 +11,7 @@ import {
 import { randomFloat } from '../types/rng';
 import { getActionText } from './npc-interaction';
 import { iGa, eulReul } from '../data/josa';
+import { getEquippedAccessoryEffects } from '../types/item-defs';
 
 // ============================================================
 // 동료 슬롯
@@ -119,11 +120,20 @@ export function getCombatSpeedMultiplier(player: Actor): number {
   const mealSpeed  = player.getVariable('meal_combat_speed');
   const base = Number.isFinite(configured) && configured > 0 ? configured : 1;
   const meal = Number.isFinite(mealSpeed)  && mealSpeed  > 0 ? mealSpeed  : 1;
-  return base * meal;
+
+  // 악세서리 combatSpeed: 추가 가속 배수 (예: 0.3 = +30% 속도)
+  const fx = getEquippedAccessoryEffects(player);
+  const accSpeed = fx.combatSpeed && fx.combatSpeed > 0 ? 1 + fx.combatSpeed : 1;
+
+  return base * meal * accSpeed;
 }
 
+/** 하한선: 아무리 가속해도 400ms 미만으로는 내려가지 않는다 */
+const MIN_TICK_MS = 400;
+
 export function getCombatTickMs(player: Actor): number {
-  return Math.round((BASE_TICK_MS * DEFAULT_COMBAT_SLOWDOWN) / getCombatSpeedMultiplier(player));
+  const raw = Math.round((BASE_TICK_MS * DEFAULT_COMBAT_SLOWDOWN) / getCombatSpeedMultiplier(player));
+  return Math.max(MIN_TICK_MS, raw);
 }
 
 // ============================================================
@@ -174,6 +184,83 @@ export function stopCombatTimer(state: RealtimeCombatState): void {
 }
 
 // ============================================================
+// 악세서리 특수 효과 헬퍼
+// ============================================================
+
+/** Element 숫자 → 저항 키. 없으면 빈 문자열 반환. */
+const ELEMENT_RESIST_KEYS: Record<number, string> = {
+  0: 'fireResist',   1: 'waterResist', 2: 'electricResist', 3: 'ironResist',
+  4: 'earthResist',  5: 'windResist',  6: 'lightResist',    7: 'darkResist',
+};
+
+/** 적이 가하는 공격/스킬 대미지에 악세서리 원소 저항을 적용 (element ∈ 0..7 또는 -1) */
+function applyElementResist(player: Actor, rawDmg: number, element: number): number {
+  if (element < 0) return rawDmg;
+  const key = ELEMENT_RESIST_KEYS[element];
+  if (!key) return rawDmg;
+  const fx = getEquippedAccessoryEffects(player);
+  const resist = fx[key];
+  if (!resist || resist <= 0) return rawDmg;
+  const factor = Math.max(0.1, 1 - resist); // 최대 90% 경감
+  return Math.max(1, Math.round(rawDmg * factor));
+}
+
+/** 플레이어의 공격 대미지에 악세서리 critChance를 적용 (1.5배 치명) */
+function applyCritChance(player: Actor, rawDmg: number): { dmg: number; crit: boolean } {
+  const fx = getEquippedAccessoryEffects(player);
+  const chance = fx.critChance ?? 0;
+  if (chance > 0 && randomFloat(0, 1) < chance) {
+    return { dmg: Math.max(1, Math.round(rawDmg * 1.5)), crit: true };
+  }
+  return { dmg: rawDmg, crit: false };
+}
+
+/**
+ * autoReviveOnce: HP 0 도달 시 1회 부활. variables['revive_used_today'] 플래그로 하루 1회 제한.
+ * 부활 시 HP 50% 회복 후 true 반환. 이미 사용했거나 효과 없음이면 false.
+ */
+function tryAutoRevive(player: Actor): boolean {
+  const fx = getEquippedAccessoryEffects(player);
+  if (!fx.autoReviveOnce || fx.autoReviveOnce <= 0) return false;
+  if (player.getVariable('revive_used_today') > 0) return false;
+  player.setVariable('revive_used_today', 1);
+  const maxHp = player.getEffectiveMaxHp();
+  player.base.hp = Math.max(1, Math.round(maxHp * 0.5));
+  return true;
+}
+
+/**
+ * 방 이동(다음 전투 진입 등) 시 악세서리 hpRegen/mpRegen 적용.
+ * 음수 값은 페널티(예: Void_Eye의 hpRegen:-0.2)로 동작.
+ * 최종 HP/MP는 1/0 미만으로 내려가지 않도록 clamp.
+ */
+export function applyRoomTransitionRegen(player: Actor): string[] {
+  const msgs: string[] = [];
+  const fx = getEquippedAccessoryEffects(player);
+  if (fx.hpRegen && fx.hpRegen !== 0) {
+    const maxHp = player.getEffectiveMaxHp();
+    const delta = Math.round(maxHp * fx.hpRegen);
+    if (delta !== 0) {
+      player.base.hp = Math.max(1, Math.min(maxHp, player.base.hp + delta));
+      msgs.push(delta > 0
+        ? `악세서리 효과: HP +${delta}`
+        : `악세서리 페널티: HP ${delta}`);
+    }
+  }
+  if (fx.mpRegen && fx.mpRegen !== 0) {
+    const maxMp = player.getEffectiveMaxMp();
+    const delta = Math.round(maxMp * fx.mpRegen);
+    if (delta !== 0) {
+      player.base.mp = Math.max(0, Math.min(maxMp, player.base.mp + delta));
+      msgs.push(delta > 0
+        ? `악세서리 효과: MP +${delta}`
+        : `악세서리 페널티: MP ${delta}`);
+    }
+  }
+  return msgs;
+}
+
+// ============================================================
 // 전투 틱 처리
 // ============================================================
 
@@ -204,9 +291,14 @@ export function processTick(
   if (rollMonsterEvasionMiss(state.enemy)) {
     messages.push(`${player.name}의 ${atkTxt} 그러나 ${state.enemy.name}이(가) 잔상으로 회피했다!`);
   } else {
-    const playerDmg = Math.max(1, Math.round(buffedAtk - enemyDef * 0.5));
-    state.enemyHp -= playerDmg;
-    messages.push(`${player.name}의 ${atkTxt} ${playerDmg} 데미지`);
+    const basePlayerDmg = Math.max(1, Math.round(buffedAtk - enemyDef * 0.5));
+    const critRes = applyCritChance(player, basePlayerDmg);
+    state.enemyHp -= critRes.dmg;
+    if (critRes.crit) {
+      messages.push(`${player.name}의 ${atkTxt} 치명타! ${critRes.dmg} 데미지`);
+    } else {
+      messages.push(`${player.name}의 ${atkTxt} ${critRes.dmg} 데미지`);
+    }
   }
 
   // 승리 체크
@@ -274,13 +366,17 @@ export function processTick(
   const burstOnce = state.enemy.burstOnce === true;
   const shouldBurst = burstN > 0 && burstD > 0 && (!burstOnce || !state.enemyBurstVolleyDone);
 
+  // 몬스터 데이터에 element(0~7)가 존재하면 원소 저항 적용 (없으면 -1 = 무속성)
+  const enemyElement = (state.enemy as { element?: number }).element ?? -1;
+
   if (shouldBurst) {
     let sum = 0;
     for (let i = 0; i < burstN; i++) {
-      player.adjustHp(-burstD);
-      sum += burstD;
+      const each = applyElementResist(player, burstD, enemyElement);
+      player.adjustHp(-each);
+      sum += each;
     }
-    messages.push(`${state.enemy.name}의 연속타! ${burstN}회 × ${burstD} = ${sum} 데미지`);
+    messages.push(`${state.enemy.name}의 연속타! ${burstN}회 = ${sum} 데미지`);
     if (burstOnce) state.enemyBurstVolleyDone = true;
   } else {
     let effAtk = state.enemy.attack;
@@ -293,9 +389,10 @@ export function processTick(
     const enemyAtkMod = getEnemyAttackMod(state.playerSkills);
     const rawEnemyDmg = Math.max(0, Math.round(effAtk * enemyAtkMod - buffedDef * 0.5));
     if (rawEnemyDmg > 0) {
-      player.adjustHp(-rawEnemyDmg);
+      const mitigated = applyElementResist(player, rawEnemyDmg, enemyElement);
+      player.adjustHp(-mitigated);
       const hitTxt = getActionText(['combat.player_hit']) || '피격당했다.';
-      messages.push(`${state.enemy.name}의 공격! ${hitTxt} ${rawEnemyDmg} 데미지`);
+      messages.push(`${state.enemy.name}의 공격! ${hitTxt} ${mitigated} 데미지`);
     }
   }
 
@@ -304,9 +401,11 @@ export function processTick(
     if (randomFloat(0, 1) < state.enemy.skillChance) {
       const skill = state.enemy.skills[Math.floor(randomFloat(0, state.enemy.skills.length))];
       if (skill.type === 'attack') {
-        const skillDmg = Math.max(1, Math.round(state.enemy.attack * skill.value - buffedDef * 0.3));
-        player.adjustHp(-skillDmg);
-        messages.push(`${state.enemy.name}의 ${skill.name}! ${skillDmg} 데미지`);
+        const skillElem = (skill as { element?: number }).element ?? enemyElement;
+        const rawSkillDmg = Math.max(1, Math.round(state.enemy.attack * skill.value - buffedDef * 0.3));
+        const mitigated = applyElementResist(player, rawSkillDmg, skillElem);
+        player.adjustHp(-mitigated);
+        messages.push(`${state.enemy.name}의 ${skill.name}! ${mitigated} 데미지`);
       } else if (skill.type === 'heal') {
         const healAmt = Math.round(skill.value);
         state.enemyHp = Math.min(state.enemyMaxHp, state.enemyHp + healAmt);
@@ -317,8 +416,9 @@ export function processTick(
 
   const tickPress = state.enemy.tickPressureDamage ?? 0;
   if (tickPress > 0) {
-    player.adjustHp(-tickPress);
-    messages.push(`${state.enemy.name}의 이상 신호! ${tickPress} 데미지`);
+    const mitigated = applyElementResist(player, tickPress, enemyElement);
+    player.adjustHp(-mitigated);
+    messages.push(`${state.enemy.name}의 이상 신호! ${mitigated} 데미지`);
   }
 
   // --- 6. 효과 틱 (독 등) ---
@@ -337,9 +437,13 @@ export function processTick(
     const defeatTxt3 = getActionText(['combat.enemy_defeated']) || '처치했다.';
     messages.push(`${state.enemy.name}${eulReul(state.enemy.name)} ${defeatTxt3}`);
   } else if (player.base.hp <= 0) {
-    state.finished = true;
-    state.victory = false;
-    messages.push(`${player.name}${iGa(player.name)} 쓰러졌다...`);
+    if (tryAutoRevive(player)) {
+      messages.push(`✨ 부활의 부적이 발동했다! ${player.name}${iGa(player.name)} 다시 일어섰다. (HP ${player.base.hp})`);
+    } else {
+      state.finished = true;
+      state.victory = false;
+      messages.push(`${player.name}${iGa(player.name)} 쓰러졌다...`);
+    }
   }
 
   return messages;
@@ -430,6 +534,12 @@ export function usePlayerSkill(
         let dmg = 0;
         if (e.damageMultiplier !== undefined) dmg += Math.round(buffedAtk * e.damageMultiplier * levelMult * jobBonus);
         if (e.flatDamage !== undefined) dmg += Math.round(e.flatDamage * levelMult * jobBonus);
+        // 악세서리 magicPower: 원소가 있는 스킬(element ≥ 0)에만 적용
+        if (skill.element >= 0) {
+          const fx = getEquippedAccessoryEffects(player);
+          const mp = fx.magicPower ?? 0;
+          if (mp > 0) dmg = Math.round(dmg * (1 + mp));
+        }
         const finalDmg = Math.max(1, dmg - state.enemy.defense * 0.5);
         state.enemyHp -= finalDmg;
         messages.push(`${skill.name}: ${state.enemy.name}에게 ${Math.round(finalDmg)} 데미지!`);

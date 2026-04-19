@@ -10,6 +10,7 @@ import { GameTime } from '../types/game-time';
 import { ItemType, SpiritRole } from '../types/enums';
 import { Loc } from '../types/location';
 import { itemName } from '../types/registry';
+import { getEquippedAccessoryEffects } from '../types/item-defs';
 
 // ============================================================
 // 거래 가능 여부 확인
@@ -177,7 +178,10 @@ export function sellItem(
     return { success: false, messages: ['아이템이 없다.'], goldChange: 0 };
   }
 
-  const price = Math.max(1, Math.round(world.getPrice(itemType) * sellMod));
+  // 악세서리 goldBonus: 판매 가격 추가 보정
+  const fx = getEquippedAccessoryEffects(player);
+  const bonusMod = 1 + (fx.goldBonus ?? 0);
+  const price = Math.max(1, Math.round(world.getPrice(itemType) * sellMod * bonusMod));
   player.addGold(price);
   world.addResource(Loc.Market_Square, itemType, 1);
   world.adjustSupply(itemType, 0.05);

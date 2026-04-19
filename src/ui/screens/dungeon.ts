@@ -4,11 +4,12 @@ import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
 import type { DungeonDef, DungeonRunState, DungeonRoom, DungeonEventDef, LootEntry } from '../../models/dungeon';
 import { RoomType, rollLoot } from '../../models/dungeon';
-import { getItemDef, getWeaponDef, getArmorDef, categoryName } from '../../types/item-defs';
+import { getItemDef, getWeaponDef, getArmorDef, categoryName, applyTravelSpeed } from '../../types/item-defs';
 import { isTimeWindowOpen } from '../../types/game-time';
 import {
   RealtimeCombatState, getCombatTickMs,
   createCombatState, stopCombatTimer, processTick, usePlayerSkill,
+  applyRoomTransitionRegen,
 } from '../../systems/combat-engine';
 import { canUseSkill } from '../../systems/skill-combat';
 import { locationName } from '../../types/registry';
@@ -600,6 +601,12 @@ export function createDungeonScreen(
     selectedChoiceIdx = idx;
     isBossFight = false;
     isMidBossFight = false;
+
+    // 악세서리 hpRegen/mpRegen: 방 이동 시 비율 회복
+    const regenMsgs = applyRoomTransitionRegen(p);
+    for (const msg of regenMsgs) {
+      session.backlog.add(session.gameTime, msg, '시스템');
+    }
 
     const room: DungeonRoom = { type: choice.type, label: choice.label, enemyId: choice.enemyId, eventIdx: choice.eventIdx };
     // 선택 유형별 컬러 영향
@@ -1299,7 +1306,10 @@ export function createDungeonScreen(
       defeatSub = '2시간이 지났다.';
     } else {
       p.base.hp = Math.max(1, Math.round(p.getEffectiveMaxHp() * 0.5));
-      const travelMins = session.world.getShortestMinutes(p.currentLocation, p.homeLocation, session.gameTime.day);
+      const travelMins = applyTravelSpeed(
+        p,
+        session.world.getShortestMinutes(p.currentLocation, p.homeLocation, session.gameTime.day),
+      );
       const recoveryMins = 8 * 60;
       session.gameTime.advance(travelMins + recoveryMins);
       p.currentLocation = p.homeLocation;

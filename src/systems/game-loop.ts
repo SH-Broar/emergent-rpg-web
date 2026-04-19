@@ -6,7 +6,7 @@ import { seasonName } from '../types/enums';
 import { randomInt, randomFloat } from '../types/rng';
 import { advanceTurn } from './world-simulation';
 import { applyDailyBaseEffects, tickStoragePenalties } from './base-effects';
-import { findItemsBySource, getEquippedAccessoryEffects } from '../types/item-defs';
+import { findItemsBySource, getEquippedAccessoryEffects, applyTravelSpeed } from '../types/item-defs';
 import { tryNpcInitiatedConversation, getDialogue, getRelationshipStage, getActionText } from './npc-interaction';
 import { checkAndAwardTitles } from './title-system';
 import { getLifeJobModifiers } from './life-job-system';
@@ -139,6 +139,13 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
 
     case 'rest': {
       const accFx = getEquippedAccessoryEffects(p);
+      // 악세서리 blockRest: 휴식/수면 금지
+      if ((accFx.blockRest ?? 0) > 0) {
+        const warn = '저주의 기운이 휴식을 방해한다... 이 악세서리로는 쉴 수 없다.';
+        session.backlog.add(session.gameTime, warn, '시스템');
+        result.messages.push(warn);
+        return result;
+      }
       const ljModRest = getLifeJobModifiers(session);
       let hpRecover = Math.round(p.getEffectiveMaxHp() * 0.2);
       let mpRecover = Math.round(p.getEffectiveMaxMp() * 0.2);
@@ -252,10 +259,17 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
         if (rand <= 0) { picked = availableItems[i]; break; }
       }
 
-      const amount = picked.rarity === 'rare' ? 1 : randomInt(1, 2);
+      let amount = picked.rarity === 'rare' ? 1 : randomInt(1, 2);
       if (p.isBagFull(session.knowledge.bagCapacity, picked.id)) {
         result.messages.push('⚠ 인벤토리가 가득 찼습니다! 아이템을 획득할 수 없었다.');
         return result;
+      }
+      // 악세서리 doubleGather: 확률적으로 획득 수량 2배
+      const dgChance = accFxGather.doubleGather ?? 0;
+      let doubledByAccessory = false;
+      if (dgChance > 0 && randomFloat(0, 1) < dgChance) {
+        amount *= 2;
+        doubledByAccessory = true;
       }
       // 생활 직업 패시브 보너스: 약초가/광부 추가 획득
       const ljMod = getLifeJobModifiers(session);
@@ -263,6 +277,9 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
       if (picked.id.includes('herb') || picked.id.includes('flower')) bonusAmount += ljMod.gatherHerbBonus;
       if (picked.id.includes('ore') || picked.id.includes('crystal')) bonusAmount += ljMod.gatherOreBonus;
       const finalAmount = amount + bonusAmount;
+      if (doubledByAccessory) {
+        result.messages.push('✨ 수확량이 두 배가 되었다!');
+      }
 
       p.addItemById(picked.id, finalAmount);
       session.knowledge.discoverItem(picked.id);
@@ -314,7 +331,18 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
     }
 
     case 'move': result.messages.push('발걸음을 옮긴다.'); result.screenChange = 'move'; break;
-    case 'talk': result.messages.push('대화를 시작한다.'); result.screenChange = 'talk'; break;
+    case 'talk': {
+      const talkFx = getEquippedAccessoryEffects(p);
+      if ((talkFx.blockDialogue ?? 0) > 0) {
+        const warn = '이 악세서리를 낀 채로는 대화할 기분이 나지 않는다...';
+        session.backlog.add(session.gameTime, warn, '시스템');
+        result.messages.push(warn);
+        return result;
+      }
+      result.messages.push('대화를 시작한다.');
+      result.screenChange = 'talk';
+      break;
+    }
     case 'trade': result.messages.push('거래를 시작한다.'); result.screenChange = 'trade'; break;
     case 'dungeon': result.messages.push('던전으로 향한다.'); result.screenChange = 'dungeon'; break;
     case 'quest': result.messages.push('퀘스트 게시판을 확인한다.'); result.screenChange = 'quest'; break;
@@ -381,6 +409,27 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
         session.backlog.add(session.gameTime, msg, '시스템');
         result.messages.push(msg);
       }
+
+      // 악세서리 tpRegen: 다음날로 넘어가는 순간 TP 추가 회복/감소
+      // 음수 값은 페널티(예: Berserker_Belt)로 동작. 최종 TP는 0 미만으로 내려가지 않도록 clamp.
+      const dayFx = getEquippedAccessoryEffects(p);
+      if (dayFx.tpRegen && dayFx.tpRegen !== 0) {
+        const maxAp = p.getEffectiveMaxAp();
+        const delta = Math.round(maxAp * dayFx.tpRegen);
+        if (delta !== 0) {
+          p.base.ap = Math.max(0, Math.min(maxAp, p.base.ap + delta));
+          const tpMsg = delta > 0
+            ? `✨ 악세서리 효과: TP +${delta}`
+            : `⚠ 악세서리 페널티: TP ${delta}`;
+          session.backlog.add(session.gameTime, tpMsg, '시스템');
+          result.messages.push(tpMsg);
+        }
+      }
+
+      // autoReviveOnce: 하루 1회 부활 플래그 리셋
+      if (p.getVariable('revive_used_today') > 0) {
+        p.setVariable('revive_used_today', 0);
+      }
       // 농장 수확 후 칭호 체크
       const farmTitles = checkAndAwardTitles(session);
       for (const t of farmTitles) {
@@ -420,7 +469,10 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
         result.messages.push(defeatMsg);
       } else {
         p.base.hp = Math.max(1, Math.round(p.getEffectiveMaxHp() * 0.5));
-        const travelHome = session.world.getShortestMinutes(p.currentLocation, p.homeLocation, session.gameTime.day);
+        const travelHome = applyTravelSpeed(
+          p,
+          session.world.getShortestMinutes(p.currentLocation, p.homeLocation, session.gameTime.day),
+        );
         const recoveryMinutes = 8 * 60; // 8시간 회복
         session.gameTime.advance(travelHome + recoveryMinutes);
         p.currentLocation = p.homeLocation;

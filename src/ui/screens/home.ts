@@ -7,6 +7,7 @@ import { seasonName } from '../../types/enums';
 import { advanceTurnByChunks } from '../../systems/world-simulation';
 import { applyTimeTheme } from '../time-theme';
 import { applyFullSleepRecovery, applyRatioRecovery } from '../../types/eat-system';
+import { getEquippedAccessoryEffects } from '../../types/item-defs';
 
 export function createHomeScreen(
   session: GameSession,
@@ -220,7 +221,31 @@ export function createHomeScreen(
     });
   }
 
+  function isRestBlocked(): boolean {
+    const fx = getEquippedAccessoryEffects(p);
+    return (fx.blockRest ?? 0) > 0;
+  }
+
+  function showRestBlocked(el: HTMLElement): void {
+    el.innerHTML = '';
+    const wrap = document.createElement('div');
+    wrap.className = 'screen info-screen';
+    wrap.innerHTML = `
+      <button class="btn back-btn" data-back>← 뒤로 [Esc]</button>
+      <h2>휴식 불가</h2>
+      <p style="color:var(--warning);text-align:center;margin:20px 0">
+        저주받은 악세서리가 휴식을 방해한다...<br>
+        이 악세서리를 풀어야 잠을 잘 수 있다.
+      </p>
+      <button class="btn btn-primary" data-ok style="min-width:140px;align-self:center">확인 [Enter]</button>
+    `;
+    wrap.querySelector('[data-back]')?.addEventListener('click', () => renderMenu(el));
+    wrap.querySelector('[data-ok]')?.addEventListener('click', () => renderMenu(el));
+    el.appendChild(wrap);
+  }
+
   function doNap(el: HTMLElement): void {
+    if (isRestBlocked()) { showRestBlocked(el); return; }
     const napMinutes = 120; // 2시간
     // 회복 전 hyperionBonus 갱신 (스탯 제공자 동기화)
     const napHyperionTotal = session.actors.reduce((s, a) => s + a.hyperionLevel, 0);
@@ -252,6 +277,7 @@ export function createHomeScreen(
   }
 
   function startSleep(el: HTMLElement): void {
+    if (isRestBlocked()) { showRestBlocked(el); return; }
     phase = 'sleeping';
 
     // 화면 전체 가림 (수면 연출)

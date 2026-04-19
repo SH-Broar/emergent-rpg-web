@@ -4,7 +4,7 @@
 import { SkillDef, SkillType, getSkillDef, getSkillLevelMultiplier, getSkillCostReduction, checkSkillLevelUp, SKILL_MAX_LEVEL } from '../models/skill';
 import { Actor } from '../models/actor';
 import { CombatState, rollMonsterEvasionMiss } from '../models/dungeon';
-import { getItemDef } from '../types/item-defs';
+import { getEquippedAccessoryEffects, getItemDef } from '../types/item-defs';
 
 /** 장착된 악세서리에서 스킬 출현율 보너스 합산 */
 function getActorSkillAppearBonus(actor: Actor, jobAffinity: string): number {
@@ -200,6 +200,12 @@ function applySkillEffect(
       }
       if (e.flatDamage !== undefined) {
         dmg += Math.round(e.flatDamage * levelMult);
+      }
+      // 악세서리 magicPower: 원소가 있는 스킬(element ≥ 0)은 마법 대미지로 취급
+      if (skill.element >= 0) {
+        const fx = getEquippedAccessoryEffects(actor);
+        const mp = fx.magicPower ?? 0;
+        if (mp > 0) dmg = Math.round(dmg * (1 + mp));
       }
       const finalDmg = Math.max(1, dmg - Math.floor(combatState.currentEnemy.defense * 0.5));
       combatState.enemyHp -= finalDmg;

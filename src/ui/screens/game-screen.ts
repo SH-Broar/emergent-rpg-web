@@ -12,7 +12,7 @@ import { locationName } from '../../types/registry';
 import { getZoneColor } from './world-map';
 import { weatherName, seasonName, raceName, spiritRoleName, elementName, Element, ELEMENT_COUNT, COMBAT_JOB_NAMES, LIFE_JOB_NAMES, SpiritRole } from '../../types/enums';
 import type { CombatJob, LifeJob } from '../../types/enums';
-import { getItemDef, getWeaponDef, getArmorDef, findItemsBySource } from '../../types/item-defs';
+import { getItemDef, getWeaponDef, getArmorDef, findItemsBySource, applyTravelSpeed } from '../../types/item-defs';
 import { isTimeWindowOpen } from '../../types/game-time';
 import { applyTimeTheme } from '../time-theme';
 import { TRAVEL_OVERLAY_THRESHOLD_MINUTES } from './travel';
@@ -160,7 +160,11 @@ function getMoveRouteSections(session: GameSession): {
   const travelMult = 1 - ljMod.travelTimeReduction; // 지도제작자 패시브
   const sortedRoutes = session.world
     .getOutgoingRoutes(p.currentLocation, session.gameTime.day)
-    .map(([loc, mins]) => ({ loc, mins: Math.max(1, Math.round(mins * travelMult)), isHome: loc === p.homeLocation }))
+    .map(([loc, mins]) => ({
+      loc,
+      mins: applyTravelSpeed(p, Math.max(1, Math.round(mins * travelMult))),
+      isHome: loc === p.homeLocation,
+    }))
     .filter(route => isLocationOpenNow(session, route.loc))
     .sort(compareMoveRoutes);
 
@@ -178,7 +182,10 @@ function getMoveRouteSections(session: GameSession): {
     dockedHomeRoute: isLocationOpenNow(session, p.homeLocation)
       ? {
           loc: p.homeLocation,
-          mins: session.world.getShortestMinutes(p.currentLocation, p.homeLocation, session.gameTime.day),
+          mins: applyTravelSpeed(
+            p,
+            session.world.getShortestMinutes(p.currentLocation, p.homeLocation, session.gameTime.day),
+          ),
           isHome: true,
         }
       : null,
@@ -760,7 +767,9 @@ export function createMoveScreen(
               const villageLoc = vs.locationId;
               const rawVillageMins = session.world.getShortestMinutes(p.currentLocation, villageLoc, session.gameTime.day);
               const roadMult = getVillageRoadMultiplier(vs, p.currentLocation, getRoadDef);
-              const villageMins = rawVillageMins < 9999 ? Math.max(1, Math.round(rawVillageMins * roadMult)) : 9999;
+              const villageMins = rawVillageMins < 9999
+                ? applyTravelSpeed(p, Math.max(1, Math.round(rawVillageMins * roadMult)))
+                : 9999;
               if (villageMins < 9999 && !sortedRoutes.some(r => r.loc === villageLoc)) {
                 const travelBadge = villageMins > TRAVEL_OVERLAY_THRESHOLD_MINUTES
                   ? ` <span style="color:var(--text-dim);font-size:11px">🚶 ${villageMins}분</span>`

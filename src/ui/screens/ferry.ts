@@ -8,6 +8,7 @@ import {
 } from '../../systems/ferry';
 import { locationName } from '../../types/registry';
 import { checkAndAwardTitles } from '../../systems/title-system';
+import { applyTravelSpeed } from '../../types/item-defs';
 
 export function createFerryScreen(
   session: GameSession,
@@ -141,12 +142,14 @@ export function createFerryScreen(
   function handleBoard(_el: HTMLElement) {
     const result = boardFerry(p, session);
     if (!result) return;
+    // 악세서리 travelSpeed 적용 (여행 시간 가감)
+    const adjustedMinutes = applyTravelSpeed(p, result.travelMinutes);
     session.backlog.add(session.gameTime, `${p.name}이(가) 배에 탑승했다. 목적지: ${locationName(result.destination) || result.destination}`, '행동');
     if (onTravel) {
-      onTravel(p.currentLocation, result.destination, result.travelMinutes);
+      onTravel(p.currentLocation, result.destination, adjustedMinutes);
     } else {
       // 즉시 이동 폴백
-      session.gameTime.advance(result.travelMinutes);
+      session.gameTime.advance(adjustedMinutes);
       p.currentLocation = result.destination;
       session.knowledge.trackVisit(result.destination);
       for (const t of checkAndAwardTitles(session)) {

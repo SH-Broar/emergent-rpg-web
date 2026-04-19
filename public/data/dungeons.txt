@@ -396,6 +396,7 @@ lootOnClear = OreCommon:6, MonsterLoot:12, Potion:3
 lootPerAdvance = MonsterLoot:2:0.42, OreCommon:2:0.32, Potion:1:0.18
 lootRareChance = 0.11
 lootRare = OreRare:1
+lootItemsRare = Windshear_Bow:1:0.08, Blizzard_Helm_Charm:1:0.06
 colorInfluence = Water:0.16, Wind:0.14, Dark:0.06
 
 [Permafrost]
@@ -510,6 +511,7 @@ lootOnClear = Herb:14, Potion:4, MonsterLoot:14
 lootPerAdvance = Herb:2:0.45, Potion:1:0.22, MonsterLoot:2:0.38
 lootRareChance = 0.14
 lootRare = Equipment:1
+lootItemsRare = Hermit_Staff_Charm:1:0.08
 colorInfluence = Water:0.18, Dark:0.14, Wind:0.08
 midBoss_1_afterFloor = 1
 midBoss_1_enemy = Fog_Panther
@@ -555,6 +557,7 @@ lootOnClear = Potion:5, MonsterLoot:15, OreRare:3
 lootPerAdvance = Potion:1:0.30, MonsterLoot:2:0.42, OreRare:1:0.16
 lootRareChance = 0.15
 lootRare = Equipment:1
+lootItemsRare = Monk_Prayer_Beads:1:0.07
 colorInfluence = Water:0.22, Light:0.18, Dark:0.08
 midBoss_1_afterFloor = 1
 midBoss_1_enemy = Crystal_Serpent
@@ -771,6 +774,7 @@ ruleValueC = 0.07
 ruleHint = 안전 창이 열릴 때 공격을 집중하고, 닫히면 즉시 버텨야 한다.
 enemies = Canyon_Harpy_Enhanced, Ancient_Ram_Enhanced, Stonehorn, Storm_Lizard_Enhanced
 lootOnClear = OreCommon:10, OreRare:2, MonsterLoot:16
+lootItemsOnClear = Dragonbone_Harpoon:1:0.15
 lootPerAdvance = OreCommon:2:0.34, OreRare:1:0.12, MonsterLoot:2:0.42
 lootRareChance = 0.14
 lootRare = Equipment:1
@@ -866,6 +870,7 @@ lootOnClear = MonsterLoot:12, OreCommon:5, Equipment:1
 lootPerAdvance = MonsterLoot:2:0.44, OreCommon:1:0.24, Equipment:1:0.10
 lootRareChance = 0.11
 lootRare = OreRare:1
+lootItemsRare = Twin_Fang:1:0.08, Wolf_Fang_Necklace:1:0.06
 colorInfluence = Earth:0.14, Dark:0.12, Wind:0.10
 
 [Ode_Wolfpack_Domain]
@@ -887,6 +892,7 @@ lootOnClear = MonsterLoot:16, OreRare:2, Equipment:2
 lootPerAdvance = MonsterLoot:3:0.46, OreRare:1:0.14, Equipment:1:0.11
 lootRareChance = 0.14
 lootRare = Equipment:1
+lootItemsRare = Berserker_Belt:1:0.07
 colorInfluence = Dark:0.16, Earth:0.14, Wind:0.10
 
 [Ode_Alpha_Throne]
@@ -905,6 +911,7 @@ ruleValueC = 0.10
 ruleHint = 최고 긴장도 상태로 시작한다. 물러서는 선택지의 비용이 극단적으로 높다.
 enemies = Pack_Tyrant, Wolfpeak_Stalker_Enhanced, Cliff_Alpha_Enhanced, Throne_Guardian_Enhanced, Peak_Stalker
 lootOnClear = MonsterLoot:20, OreRare:3, Equipment:2
+lootItemsOnClear = Valkyrie_Glaive:1:0.15
 lootPerAdvance = MonsterLoot:3:0.48, OreRare:1:0.18, Equipment:1:0.13
 lootRareChance = 0.16
 lootRare = Equipment:2
@@ -968,6 +975,7 @@ lootOnClear = MonsterLoot:12, Potion:4, OreRare:1
 lootPerAdvance = MonsterLoot:2:0.38, Potion:1:0.24, Herb:1:0.16
 lootRareChance = 0.13
 lootRare = Equipment:1
+lootItemsRare = Tempered_Saber:1:0.07
 colorInfluence = Wind:0.20, Dark:0.08, Electric:0.10
 
 [Void_Great_Trunk]
@@ -983,6 +991,7 @@ ruleRank = 5
 ruleHint = 스킬 선택의 정확도가 부족하면 압도적으로 밀리기 쉬운 고난도 구간이다.
 enemies = Void_Hornet, Cloud_Leaper, Canopy_Colossus
 lootOnClear = MonsterLoot:14, Potion:5, OreRare:2
+lootItemsOnClear = Phoenix_Recurve:1:0.15
 lootPerAdvance = MonsterLoot:3:0.40, Potion:1:0.22, OreRare:1:0.16
 lootRareChance = 0.15
 lootRare = Equipment:1
@@ -1190,6 +1199,7 @@ lootOnClear = MonsterLoot:12, Equipment:1, Potion:3
 lootPerAdvance = MonsterLoot:2:0.36, Potion:1:0.18, Equipment:1:0.12
 lootRareChance = 0.12
 lootRare = OreRare:1
+lootItemsRare = Shadow_Mantle_Cloak:1:0.07, Studded_Leather:1:0.07
 colorInfluence = Electric:0.18, Light:0.14, Wind:0.08
 
 [Night_Oriens]
@@ -1275,6 +1285,7 @@ lootOnClear = Herb:10, MonsterLoot:12, Potion:3
 lootPerAdvance = Herb:2:0.28, MonsterLoot:2:0.36, Potion:1:0.20
 lootRareChance = 0.12
 lootRare = OreRare:1
+lootItemsRare = Harvester_Scythe_Pendant:1:0.07
 colorInfluence = Earth:0.10, Light:0.10, Dark:0.08
 
 [Holo_Virtual_Tacomi]
@@ -1390,6 +1401,7 @@ lootOnClear = OreCommon:8, OreRare:1, MonsterLoot:12
 lootPerAdvance = OreCommon:2:0.36, MonsterLoot:2:0.36, OreRare:1:0.12
 lootRareChance = 0.12
 lootRare = Equipment:1
+lootItemsRare = Wyrm_Lance:1:0.07
 colorInfluence = Iron:0.16, Electric:0.12, Earth:0.08
 choicesPerStep = 6
 
@@ -1565,6 +1577,7 @@ lootOnClear = MonsterLoot:10, Herb:4, Potion:2
 lootPerAdvance = MonsterLoot:2:0.34, Herb:1:0.18, Potion:1:0.14
 lootRareChance = 0.10
 lootRare = Equipment:1
+lootItemsRare = Wanderer_Cloak:1:0.08
 colorInfluence = Dark:0.14, Water:0.10, Light:0.06
 
 [Arukea_Midnight]
@@ -1586,6 +1599,7 @@ lootOnClear = MonsterLoot:12, Potion:3, Equipment:1
 lootPerAdvance = MonsterLoot:2:0.38, Potion:1:0.18, Herb:1:0.12
 lootRareChance = 0.12
 lootRare = OreRare:1
+lootItemsRare = Mage_Robe:1:0.07
 colorInfluence = Dark:0.18, Light:0.06, Water:0.08
 
 [Arukea_Vanishing]
@@ -1604,6 +1618,7 @@ ruleValueC = 0.05
 ruleHint = 깊숙이 갈수록 숨은 길과 함정이 동시에 늘어나, 판단 실수가 치명적이 된다.
 enemies = Shadow_Wraith_Enhanced, Midnight_Devil, Vanishing_Revenant, Fog_Wraith_Enhanced
 lootOnClear = MonsterLoot:14, Equipment:2, Potion:3
+lootItemsOnClear = Shadow_Kris:1:0.15
 lootPerAdvance = MonsterLoot:2:0.40, Potion:1:0.20, Equipment:1:0.12
 lootRareChance = 0.14
 lootRare = OreRare:1
@@ -1625,6 +1640,7 @@ ruleValueC = 0.06
 ruleHint = 피안에 가까워질수록 보상도 늘지만 길과 전투 모두 극단적으로 흔들린다.
 enemies = Midnight_Devil, Vanishing_Revenant, Void_Stalker, Fog_Wraith_Enhanced
 lootOnClear = MonsterLoot:18, Equipment:2, OreRare:2, Potion:4
+lootItemsOnClear = Assassin_Gloves_Charm:1:0.15
 lootPerAdvance = MonsterLoot:3:0.42, Potion:1:0.22, OreRare:1:0.16
 lootRareChance = 0.16
 lootRare = Equipment:1
@@ -1768,7 +1784,7 @@ lootItemsOnClear = Shadow_Mantle:1:0.08
 lootPerAdvance = MonsterLoot:2:0.36, Potion:1:0.20, Equipment:1:0.10
 lootRareChance = 0.13
 lootRare = OreRare:1
-lootItemsRare = Assassin_Blade:1:0.05
+lootItemsRare = Assassin_Blade:1:0.05, Astral_Rod:1:0.07
 colorInfluence = Light:0.14, Wind:0.14, Dark:0.10
 
 [Phantom_Stratum_Lower]
@@ -1812,6 +1828,7 @@ ruleValueC = 0.06
 ruleHint = 공중 받침대의 상위 심층 구간. 권장 히페리온 120~150.
 enemies = Phantom_Spire_Wing_Depth, Phantom_Veil_Sprite_Depth, Shadow_Wraith_Enhanced, Fog_Wraith_Enhanced
 lootOnClear = MonsterLoot:14, Potion:5, OreCommon:8, Equipment:1
+lootItemsOnClear = Archmage_Vestment:1:0.15
 lootPerAdvance = MonsterLoot:2:0.36, Potion:1:0.22, Herb:1:0.16
 lootRareChance = 0.14
 lootRare = Equipment:1
@@ -1903,6 +1920,7 @@ ruleValueC = 0.08
 ruleHint = 해법을 읽을수록 훨씬 유리해지는, 정면 화력보다 퍼즐 풀이 비중이 큰 구간이다.
 enemies = Bell_Keeper, Pendulum_Executor, Siege_Golem_Enhanced, Relic_Ram_Enhanced, Gear_Colossus
 lootOnClear = Equipment:3, OreRare:2, Potion:5, MonsterLoot:10
+lootItemsOnClear = Archmage_Scepter:1:0.15
 lootPerAdvance = Potion:1:0.28, OreCommon:1:0.22, Equipment:1:0.12
 lootRareChance = 0.15
 lootRare = OreRare:1
@@ -1970,6 +1988,7 @@ ruleValueC = 0.10
 ruleHint = 심층 제단과의 공명은 강력하지만 실패 반동도 커, 준비가 부족하면 위험하다.
 enemies = Ruin_Moss_Golem_Enhanced, Temple_Warden_Enhanced, Siege_Golem_Enhanced, Relic_Ram_Enhanced, Ruin_Gargoyle
 lootOnClear = OreRare:2, MonsterLoot:16, Equipment:2, Potion:4
+lootItemsOnClear = Drake_Scale_Armor:1:0.15
 lootPerAdvance = OreCommon:2:0.24, MonsterLoot:2:0.42, Potion:1:0.18
 lootRareChance = 0.15
 lootRare = Equipment:1
@@ -2015,6 +2034,7 @@ lootOnClear = Herb:12, Food:6, MonsterLoot:8
 lootPerAdvance = Herb:2:0.44, Food:1:0.20, MonsterLoot:2:0.30
 lootRareChance = 0.10
 lootRare = Potion:1
+lootItemsRare = Explorer_Compass:1:0.08
 colorInfluence = Earth:0.14, Water:0.08, Wind:0.06
 
 [Old_Eas_Sprawl]
@@ -2120,6 +2140,7 @@ lootOnClear = OreCommon:10, OreRare:2, MonsterLoot:12
 lootPerAdvance = OreCommon:2:0.38, MonsterLoot:2:0.38, OreRare:1:0.12
 lootRareChance = 0.12
 lootRare = Equipment:1
+lootItemsRare = Knight_Plate:1:0.07
 colorInfluence = Earth:0.22, Iron:0.12, Wind:0.06
 
 [Sand_Dunes_Outer]
@@ -2339,6 +2360,7 @@ ruleValueC = 0.09
 ruleHint = 안개 농도가 최고일 때는 선택지의 결과를 전혀 예측할 수 없다.
 enemies = Deep_Angler, Abyssal_Shade, Coral_Golem_Enhanced, Fog_Wraith_Enhanced, Sunken_Wraith
 lootOnClear = OreRare:4, MonsterLoot:20, Equipment:2
+lootItemsOnClear = Void_Eye:1:0.15
 lootPerAdvance = OreRare:1:0.15, MonsterLoot:3:0.45, Equipment:1:0.08
 lootRareChance = 0.15
 lootRare = Equipment:1
@@ -2360,6 +2382,7 @@ ruleValueC = 0.08
 ruleHint = 공명 수치가 오를수록 전투와 보상 모두 극단적으로 변한다.
 enemies = Abyssal_Shade, Ancient_Leviathan, Deep_Angler, Relic_Ram_Enhanced, Sunken_Wraith
 lootOnClear = OreRare:5, MonsterLoot:22, Equipment:2
+lootItemsOnClear = Berserker_Mask:1:0.15
 lootPerAdvance = OreRare:1:0.18, MonsterLoot:3:0.48, Equipment:1:0.10
 lootRareChance = 0.16
 lootRare = Equipment:1
@@ -2725,6 +2748,7 @@ lootOnClear = OreRare:20, MonsterLoot:40, Equipment:5
 lootPerAdvance = OreRare:3:0.30, MonsterLoot:5:0.52, Equipment:1:0.18
 lootRareChance = 0.30
 lootRare = Equipment:3
+lootItemsRare = Phoenix_Amulet:1:0.08
 colorInfluence = Dark:0.40, Light:0.20, Wind:0.15
 
 # ============================================================
@@ -2835,6 +2859,7 @@ ruleValueC = 0.10
 ruleHint = 마왕성 관료들의 텃세가 강하다. 영역 안에 머무를수록 압박이 기하급수적으로 증가한다.
 enemies = Castle_Footsoldier, Demon_Officer, Demon_Scribe, Throne_Guardian_Enhanced
 lootOnClear = OreRare:3, MonsterLoot:20, Equipment:2
+lootItemsOnClear = Paladin_Fullplate:1:0.15
 lootPerAdvance = MonsterLoot:3:0.45, OreRare:1:0.20, Equipment:1:0.12
 lootRareChance = 0.16
 lootRare = Equipment:2
@@ -2859,6 +2884,7 @@ lootOnClear = OreRare:5, MonsterLoot:24, Equipment:3
 lootPerAdvance = MonsterLoot:4:0.46, OreRare:2:0.22, Equipment:1:0.14
 lootRareChance = 0.20
 lootRare = Equipment:2
+lootItemsRare = Seal_of_Immortality:1:0.08
 colorInfluence = Dark:0.28, Fire:0.20, Iron:0.14
 midBoss_1_afterFloor = 2
 midBoss_1_enemy = Demon_Chamberlain
@@ -2925,6 +2951,7 @@ ruleValueC = 0.08
 ruleHint = 발판 붕락 속도가 극대화된다. 한 발 내딛는 속도가 승패를 가른다.
 enemies = Trial_Golem, Floor_Phantom, Clockwork_Knight, Howling_Wraith_Enhanced
 lootOnClear = OreRare:4, MonsterLoot:20, Equipment:2
+lootItemsOnClear = Healer_Sigil:1:0.15
 lootPerAdvance = MonsterLoot:3:0.44, OreRare:1:0.20, Equipment:1:0.12
 lootRareChance = 0.17
 lootRare = Equipment:2
@@ -3042,6 +3069,7 @@ ruleValueC = 0.08
 ruleHint = 강한 바람 사이 짧은 고요가 찾아온다. 그 순간을 놓치면 압박이 커진다.
 enemies = Skystone_Gargoyle, Solar_Drake, Ikar_Wind_Sprite, Storm_Lizard_Enhanced
 lootOnClear = OreRare:3, MonsterLoot:18, Equipment:1
+lootItemsOnClear = Sage_Mantle_Pin:1:0.15
 lootPerAdvance = MonsterLoot:3:0.44, OreRare:1:0.18, Equipment:1:0.12
 lootRareChance = 0.15
 lootRare = Equipment:1
@@ -3139,6 +3167,7 @@ lootOnClear = OreCommon:10, MonsterLoot:10, Potion:2
 lootPerAdvance = OreCommon:2:0.40, MonsterLoot:2:0.35, Herb:1:0.18
 lootRareChance = 0.10
 lootRare = Equipment:1
+lootItemsRare = Miner_Lamp_Pendant:1:0.08
 colorInfluence = Light:0.14, Wind:0.10, Iron:0.06
 
 [Navrit_Overload_Circuit]
@@ -3256,6 +3285,7 @@ lootOnClear = OreCommon:12, MonsterLoot:12, Potion:2
 lootPerAdvance = OreCommon:2:0.40, MonsterLoot:2:0.38, Herb:1:0.18
 lootRareChance = 0.10
 lootRare = OreRare:1
+lootItemsRare = Flame_Bangle:1:0.06
 colorInfluence = Fire:0.20, Earth:0.14, Wind:0.06
 
 [Triflower_Vent_Corridor]
@@ -3297,6 +3327,7 @@ ruleValueC = 0.14
 ruleHint = 열기 최고조에서 한 번의 틈이 열린다. 그 순간을 포착해야 분화구를 지날 수 있다.
 enemies = Ember_Tyrant_Enhanced, Lava_Golem, Flame_Wyrm, Fire_Salamander_Enhanced, Caldera_Drake
 lootOnClear = OreRare:5, MonsterLoot:18, Equipment:2
+lootItemsOnClear = Dragon_Scale_Charm:1:0.15
 lootPerAdvance = OreRare:1:0.22, MonsterLoot:3:0.44, Equipment:1:0.12
 lootRareChance = 0.16
 lootRare = Equipment:2
@@ -3465,6 +3496,7 @@ lootOnClear = OreRare:8, MonsterLoot:28, Equipment:4
 lootPerAdvance = OreRare:2:0.28, MonsterLoot:5:0.50, Equipment:1:0.16
 lootRareChance = 0.22
 lootRare = Equipment:3
+lootItemsRare = Hourglass_Pendant:1:0.08
 colorInfluence = Earth:0.28, Light:0.22, Wind:0.16
 midBoss_1_afterFloor = 2
 midBoss_1_enemy = Verdant_Colossus

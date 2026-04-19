@@ -300,6 +300,45 @@ export class Actor {
     this.variables.set(key, (this.variables.get(key) ?? 0) + delta);
   }
 
+  // --- 장비 grantedSkill 추적 ---
+  // 'granted_skill:<skillId>' 키로 variables에 마킹하여, 장착 해제 시 정확히 제거하고
+  // 세이브 시에는 직렬화에서 제외한다.
+  private grantedSkillVarKey(skillId: string): string { return `granted_skill:${skillId}`; }
+
+  /** 장비에 의한 임시 스킬 학습. 이미 학습 중이면 무시. */
+  grantSkillFromEquip(skillId: string): void {
+    if (!skillId) return;
+    if (this.learnedSkills.has(skillId)) {
+      // 이미 본래 학습한 스킬이면 grantedSkill로 마킹하지 않는다 (해제 시 제거 방지)
+      return;
+    }
+    this.learnedSkills.set(skillId, 1);
+    if (!this.skillOrder.includes(skillId)) this.skillOrder.push(skillId);
+    this.variables.set(this.grantedSkillVarKey(skillId), 1);
+  }
+
+  /** 장비 해제에 의한 임시 스킬 제거. granted 마크가 없으면 무시. */
+  revokeSkillFromEquip(skillId: string): void {
+    if (!skillId) return;
+    const key = this.grantedSkillVarKey(skillId);
+    if ((this.variables.get(key) ?? 0) <= 0) return;
+    this.variables.delete(key);
+    this.learnedSkills.delete(skillId);
+    const idx = this.skillOrder.indexOf(skillId);
+    if (idx >= 0) this.skillOrder.splice(idx, 1);
+  }
+
+  /** 장비로 부여된 스킬 ID 목록 (세이브 제외용) */
+  getGrantedEquipSkillIds(): string[] {
+    const ids: string[] = [];
+    for (const [k, v] of this.variables) {
+      if (v > 0 && k.startsWith('granted_skill:')) {
+        ids.push(k.substring('granted_skill:'.length));
+      }
+    }
+    return ids;
+  }
+
   getEffectiveMaxHp(): number {
     const base = this.base.maxHp + (this.hyperionLevel + this.hyperionBonus) * 10;
     const pct = this.getVariable('meal_hp_pct');

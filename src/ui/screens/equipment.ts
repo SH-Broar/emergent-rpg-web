@@ -3,7 +3,7 @@
 
 import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
-import { getWeaponDef, getArmorDef } from '../../types/item-defs';
+import { getWeaponDef, getArmorDef, formatSpecialEffectsList } from '../../types/item-defs';
 import { ELEMENT_COUNT } from '../../types/enums';
 
 function degradeKey(slot: string): string { return `degrade_${slot}`; }
@@ -52,7 +52,10 @@ export function createEquipmentScreen(
     }
     const a = getArmorDef(id);
     if (!a) return '';
-    return `\ubc29\uc5b4+${a.defense}${a.magicDefense ? ' \ub9c8\ubc29+' + a.magicDefense : ''}${a.evasion ? ' \ud68c\ud53c+' + a.evasion : ''}`;
+    const base = `\ubc29\uc5b4+${a.defense}${a.magicDefense ? ' \ub9c8\ubc29+' + a.magicDefense : ''}${a.evasion ? ' \ud68c\ud53c+' + a.evasion : ''}`;
+    const special = formatSpecialEffectsList(a.specialEffects);
+    const granted = a.grantedSkill ? `\uc2a4\ud0ac \ubd80\uc5ec: ${a.grantedSkill}` : '';
+    return [base, special, granted].filter(Boolean).join(' \u00b7 ');
   }
 
   function setEquip(slot: EquipSlot, id: string): void {
@@ -64,9 +67,16 @@ export function createEquipmentScreen(
     }
   }
 
+  function grantedSkillOf(itemId: string): string {
+    const armor = getArmorDef(itemId);
+    return armor?.grantedSkill ?? '';
+  }
+
   function unequip(slot: EquipSlot): void {
     const id = getEquippedId(slot);
     if (id) {
+      const g = grantedSkillOf(id);
+      if (g) p.revokeSkillFromEquip(g);
       p.addItemById(id, 1);
       setEquip(slot, '');
       p.setVariable(degradeKey(slot), 0);
@@ -77,12 +87,16 @@ export function createEquipmentScreen(
     // Unequip current first (return to inventory)
     const currentId = getEquippedId(slot);
     if (currentId) {
+      const oldG = grantedSkillOf(currentId);
+      if (oldG) p.revokeSkillFromEquip(oldG);
       p.addItemById(currentId, 1);
       p.setVariable(degradeKey(slot), 0);
     }
     // Remove from inventory and equip
     p.removeItemById(itemId, 1);
     setEquip(slot, itemId);
+    const newG = grantedSkillOf(itemId);
+    if (newG) p.grantSkillFromEquip(newG);
 
     // 보관 열화도 이전
     const deg = session.knowledge.withdrawnItemDegradation.get(itemId) ?? 0;

@@ -1066,3 +1066,335 @@ defense = 8
 price = 0
 description = 드래곤 카요가 직접 연마한 심장석. 용의 심장처럼 뜨겁게 맥동하며, 착용자에게 용의 반사신경과 회복력을 부여한다.
 specialEffects = combatSpeed:-0.15,hpRegen:0.20
+
+# ============================================================
+# 3계열 × 3등급 방어구 시리즈 (Autopilot 4-a)
+# Robe/Light/Heavy × Uncommon/Rare/Epic
+# 참고: Apprentice_Robe/Iron_Plate 는 기존 Common id와 충돌하여
+#       Novice_Magician_Robe / Soldier_Iron_Plate 로 신규 id 부여
+# ============================================================
+
+# --- 로브 (Robe) ---
+
+[Novice_Magician_Robe]
+name = 초급 마법사 로브
+type = Robe
+grade = Uncommon
+element = None
+defense = 3
+magicDefense = 6
+evasion = 2
+price = 260
+description = 루나 아카데미 초급반 학생에게 지급되는 로브. 기본 결계가 은은하게 자수로 새겨져 있다.
+
+[Mage_Robe]
+name = 마도사의 로브
+type = Robe
+grade = Rare
+element = Water
+defense = 6
+magicDefense = 14
+evasion = 3
+price = 820
+description = 알리메의 마도사들이 즐겨 입는 로브. 물결 무늬의 자수가 마력의 흐름을 부드럽게 정돈한다.
+
+[Archmage_Vestment]
+name = 대마법사 법의
+type = Robe
+grade = Epic
+element = Light
+defense = 10
+magicDefense = 28
+evasion = 5
+price = 2900
+description = 루나 아카데미 대마법사 서임식에서 수여되는 법의. 별빛 문양이 주위를 잔잔한 빛으로 감싼다.
+
+# --- 경갑 (Light) ---
+
+[Leather_Cuirass]
+name = 가죽 흉갑
+type = Light
+grade = Uncommon
+element = Earth
+defense = 8
+magicDefense = 2
+evasion = 8
+price = 260
+description = 라르 포레스트 사냥꾼 조합이 보급하는 가죽 흉갑. 기름 먹인 가죽이 비와 자잘한 상처를 튕겨낸다.
+
+[Studded_Leather]
+name = 징박이 가죽갑
+type = Light
+grade = Rare
+element = Earth
+defense = 14
+magicDefense = 4
+evasion = 12
+price = 800
+description = 모스 대장간이 가죽에 작은 철징을 박아 보강한 경갑. 움직임은 가볍지만 타격에 강해졌다.
+
+[Drake_Scale_Armor]
+name = 어린용 비늘 갑옷
+type = Light
+grade = Epic
+element = Fire
+defense = 24
+magicDefense = 8
+evasion = 15
+price = 2800
+description = 마노니클라 어린 화룡의 탈피 비늘을 얇게 엮어 만든 경갑. 가벼운데도 화염에 쉽게 꺾이지 않는다.
+
+# --- 중갑 (Heavy) ---
+
+[Soldier_Iron_Plate]
+name = 병사의 철판갑
+type = Heavy
+grade = Uncommon
+element = Iron
+defense = 12
+magicDefense = 2
+evasion = 2
+price = 300
+description = 엘리메스 경비대 후보생들이 지급받는 표준 철판갑. 투박하지만 한 번 두들겨 보면 이보다 믿음직한 건 없다.
+
+[Knight_Plate]
+name = 기사단 중갑
+type = Heavy
+grade = Rare
+element = Iron
+defense = 22
+magicDefense = 5
+evasion = 3
+price = 900
+description = 엘리메스 왕도 기사단의 제식 중갑. 가문 문장을 새겨 넣을 수 있는 흉갑판이 특징이다.
+
+[Paladin_Fullplate]
+name = 성기사의 전신갑
+type = Heavy
+grade = Epic
+element = Light
+defense = 38
+magicDefense = 12
+evasion = 4
+price = 3000
+description = 리아그랄타 성기사단이 서원을 마치고 수여받는 전신갑. 착용자의 의지를 따라 은은한 빛이 흘러나온다.
+
+# ============================================================
+# 특수효과 악세서리 20종 (Autopilot 4-b)
+# 확장 specialEffects 키:
+#   critChance, doubleGather, autoReviveOnce, blockDialogue, blockRest,
+#   fireResist, waterResist, electricResist, ironResist,
+#   earthResist, windResist, lightResist, darkResist
+# grantedSkill: 착용 시 부여되는 스킬 id
+# ============================================================
+
+[Wanderer_Cloak]
+name = 방랑자의 외투
+type = Accessory
+grade = Rare
+element = Earth
+defense = 4
+price = 1200
+description = 이름 없는 길 위를 오래 걸어 낡아 버린 외투. 발걸음은 가벼워지지만, 사람들과의 인연도 쉬이 흐릿해진다.
+specialEffects = travelSpeed:-0.5,blockDialogue:1,blockRest:1
+
+[Monk_Prayer_Beads]
+name = 수도사의 염주
+type = Accessory
+grade = Rare
+element = Light
+defense = 1
+magicDefense = 10
+price = 1000
+description = 리아그랄타 수도원의 수도사가 침묵의 계율과 함께 남긴 염주. 구슬을 굴리면 마력이 조용히 가라앉는다.
+specialEffects = magicPower:0.4,blockDialogue:1
+
+[Berserker_Mask]
+name = 베르세르크 가면
+type = Accessory
+grade = Epic
+element = Dark
+defense = 4
+price = 1800
+description = 아루케아 숲의 고대 전사들이 전장에 오르기 전 쓰던 가면. 쓰는 순간 말이 사라지고 포효만이 남는다.
+specialEffects = combatSpeed:-0.1,blockDialogue:1
+grantedSkill = Berserker_Roar
+
+[Hermit_Staff_Charm]
+name = 은둔자의 지팡이 부적
+type = Accessory
+grade = Rare
+element = Earth
+defense = 1
+magicDefense = 6
+price = 900
+description = 라르 포레스트 깊은 곳의 은둔자가 지팡이 끝에 매달아 두던 부적. 말 없이 앉아 있는 시간이 힘이 된다.
+specialEffects = blockDialogue:1
+grantedSkill = Hermit_Meditation
+
+[Phoenix_Amulet]
+name = 피닉스 부적
+type = Accessory
+grade = Legendary
+element = Fire
+defense = 3
+price = 0
+description = 피닉스가 재에서 몸을 일으킬 때 남긴 깃털을 봉해 둔 부적. 치명적인 상처조차 한 번은 되돌릴 수 있다고 전해진다.
+specialEffects = autoReviveOnce:1
+
+[Harvester_Scythe_Pendant]
+name = 수확자의 낫 펜던트
+type = Accessory
+grade = Rare
+element = Earth
+defense = 2
+price = 850
+description = 라르 포레스트 수확제 때 나누어 주는 작은 낫 모양의 펜던트. 들판에 서면 저절로 손끝에 곡식이 모여든다.
+specialEffects = doubleGather:0.25,gatherBonus:0.1
+
+[Blizzard_Helm_Charm]
+name = 눈보라 투구 파편
+type = Accessory
+grade = Rare
+element = Water
+defense = 3
+price = 950
+description = 알리메 설산에서 잠든 고대 전사의 투구에서 떨어져 나온 파편. 차가운 바람을 막아 주지만, 눈 속에서는 쉬이 잠들 수 없다.
+specialEffects = waterResist:0.3,blockRest:1
+
+[Flame_Bangle]
+name = 불꽃 팔찌
+type = Accessory
+grade = Rare
+element = Fire
+defense = 2
+price = 900
+description = 모스 화산지대의 용암 결정을 두른 팔찌. 손목에 쥐면 불길이 먼저 안부를 건넨다.
+specialEffects = fireResist:0.3
+grantedSkill = Flame_Burst
+
+[Void_Eye]
+name = 공허의 눈
+type = Accessory
+grade = Epic
+element = Dark
+defense = 2
+price = 1700
+description = 아루케아 폐허의 제단에서 꺼낸 검은 구슬. 들여다보는 만큼 치명적인 틈이 보이지만, 생명이 조금씩 깎여나간다.
+specialEffects = critChance:0.25,hpRegen:-0.2
+
+[Shadow_Mantle_Cloak]
+name = 그림자 망토의 장신구
+type = Accessory
+grade = Rare
+element = Dark
+defense = 2
+evasion = 20
+price = 950
+description = 아루케아 암살자 조합이 망토 안쪽에 덧대던 어둠의 천 조각. 그림자에 녹아드는 동안 누구와도 말을 섞지 않는다.
+specialEffects = blockDialogue:1
+
+[Dragon_Scale_Charm]
+name = 용비늘 부적
+type = Accessory
+grade = Epic
+element = Iron
+defense = 8
+price = 2200
+description = 마노니클라 고룡이 아낌없이 떨어뜨린 비늘 네 장을 엮은 부적. 속성을 가리지 않고 한 겹의 보호막을 드리운다.
+specialEffects = fireResist:0.15,waterResist:0.15,electricResist:0.15,ironResist:0.15,travelSpeed:0.1
+
+[Hourglass_Pendant]
+name = 시간의 모래시계
+type = Accessory
+grade = Legendary
+element = Water
+defense = 1
+price = 3500
+description = 에코가 직접 봉인했다고 전해지는 작은 모래시계. 한 번 거꾸로 돌리면, 조금 전의 순간이 다시 한 번 자신에게로 흘러든다.
+specialEffects = combatSpeed:-0.3
+grantedSkill = Time_Rewind
+
+[Wolf_Fang_Necklace]
+name = 늑대 송곳니 목걸이
+type = Accessory
+grade = Rare
+element = Dark
+defense = 2
+price = 850
+description = 달밤에 홀로 울던 늙은 늑대의 송곳니를 엮어 만든 목걸이. 울음소리가 목청 끝에 남아 사람들과 말을 섞기 힘들어진다.
+specialEffects = blockDialogue:1
+grantedSkill = Lunar_Howl
+
+[Sage_Mantle_Pin]
+name = 현자의 망토 핀
+type = Accessory
+grade = Epic
+element = Light
+defense = 1
+magicDefense = 12
+price = 2000
+description = 루나 아카데미 역대 현자들이 망토를 여미던 핀. 사색이 길어질수록 마력이 맑아지고, 잠자리에서도 좀처럼 눈이 감기지 않는다.
+specialEffects = magicPower:0.3,mpRegen:0.4,blockRest:1
+
+[Berserker_Belt]
+name = 광전사의 허리띠
+type = Accessory
+grade = Rare
+element = Fire
+defense = 4
+price = 900
+description = 오래된 전장에서 주워 올린 두툼한 가죽 허리띠. 꽉 졸라매면 몸이 먼저 움직이지만, 기력은 빠르게 소진된다.
+specialEffects = combatSpeed:-0.15,tpRegen:-0.2
+
+[Assassin_Gloves_Charm]
+name = 암살자의 장갑 부적
+type = Accessory
+grade = Epic
+element = Dark
+defense = 2
+evasion = 6
+price = 2100
+description = 아루케아 암살자 조합의 수습생이 졸업 과제로 만드는 장갑 부적. 어느 관절에 파고들어야 할지 손끝이 먼저 안다.
+specialEffects = critChance:0.3
+grantedSkill = Backstab
+
+[Explorer_Compass]
+name = 탐험가의 나침반
+type = Accessory
+grade = Rare
+element = Wind
+defense = 1
+price = 900
+description = 나이트 타코미 모험가 조합이 제작한 다기능 나침반. 지도에 적히지 않은 길까지 슬쩍 알려 준다.
+specialEffects = travelSpeed:-0.25,gatherBonus:0.05
+
+[Healer_Sigil]
+name = 치유사의 표식
+type = Accessory
+grade = Epic
+element = Light
+defense = 2
+price = 2000
+description = 리아그랄타 치유원에서 수료식 때 수여하는 작은 은제 표식. 착용자의 상처부터 서서히 아물게 한다.
+specialEffects = hpRegen:0.5
+
+[Miner_Lamp_Pendant]
+name = 지하광부의 램프 펜던트
+type = Accessory
+grade = Rare
+element = Fire
+defense = 1
+price = 800
+description = 모스 광산에서 오래 일한 광부들이 은퇴식 때 받는 기념품. 램프의 불빛이 어둠 속 광맥을 한눈에 보이게 한다.
+specialEffects = gatherBonus:0.4
+
+[Seal_of_Immortality]
+name = 불멸의 인장
+type = Accessory
+grade = Legendary
+element = Dark
+defense = 0
+price = 0
+description = 스텔라 빌 별빛 분지 깊은 곳에 잠들어 있던 검은 인장. 죽음을 한 번 되돌리지만, 그 대가로 세상과의 연결고리가 희미해진다.
+specialEffects = autoReviveOnce:1,blockDialogue:1,blockRest:1

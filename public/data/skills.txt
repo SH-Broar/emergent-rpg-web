@@ -2263,3 +2263,83 @@ learnCost = Potion:10, OreRare:5
 learnMinHyperion = 40
 replacesSkill = hana_purify_2
 shopTier = 3
+
+# ============================================================
+# 장비 부여 전용 스킬 (armor.txt의 grantedSkill 참조)
+# 학습 경로 없음. 특수효과 악세서리 장착 시에만 임시로 사용 가능.
+# ============================================================
+
+[Berserker_Roar]
+name = 광전사의 포효
+description = 베르세르크 가면의 분노가 터져 나온다. 강력한 일격을 날리되 자신도 작은 반동을 받는다.
+type = Attack
+damageMultiplier = 1.8
+selfDamage = 8
+mpCost = 12
+appearRate = 0.60
+maxUsesPerCombat = 6
+element = Dark
+isBasicSkill = 0
+
+[Hermit_Meditation]
+name = 은둔자의 명상
+description = 잠시 숨을 고르고 정신을 모은다. MP를 회복하고 약간의 HP도 치유된다.
+type = Buff
+healHp = 15
+restoreMp = 20
+mpCost = 0
+postDelay = 2
+appearRate = 0.55
+maxUsesPerCombat = 4
+element = None
+isBasicSkill = 0
+
+[Flame_Burst]
+name = 화염 폭발
+description = 불꽃 팔찌에 깃든 열기가 터져 나가며 적에게 불길을 쏟는다.
+type = Attack
+damageMultiplier = 1.6
+mpCost = 14
+appearRate = 0.60
+maxUsesPerCombat = 5
+element = Fire
+isBasicSkill = 0
+
+[Time_Rewind]
+name = 시간 역행
+description = 시간의 모래시계가 한 순간 과거로 되돌린다. HP와 MP가 크게 회복된다.
+type = Buff
+healHp = 35
+restoreMp = 30
+mpCost = 0
+postDelay = 3
+appearRate = 0.45
+maxUsesPerCombat = 2
+element = Water
+isBasicSkill = 0
+
+[Lunar_Howl]
+name = 달빛 포효
+description = 늑대 송곳니 목걸이에서 달빛 어린 포효가 흘러나와 적의 기세를 위축시킨다.
+type = Debuff
+debuffType = weaken
+debuffValue = 0.25
+debuffDuration = 3
+damageMultiplier = 1.0
+mpCost = 10
+appearRate = 0.55
+maxUsesPerCombat = 5
+element = Dark
+isBasicSkill = 0
+
+[Backstab]
+name = 급소 찌르기
+description = 암살자의 장갑이 인도하는 절묘한 한 수. 높은 확률로 치명타를 터뜨린다.
+type = Attack
+damageMultiplier = 2.2
+critChance = 0.5
+mpCost = 12
+appearRate = 0.55
+maxUsesPerCombat = 5
+element = Dark
+isBasicSkill = 0
