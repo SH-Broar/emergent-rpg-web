@@ -5,8 +5,6 @@ import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
 import { Actor } from '../../models/actor';
 import { PlayerKnowledge } from '../../models/knowledge';
-import { ItemType, raceToKey, itemTypeToId } from '../../types/enums';
-import { getBasicSkillsForRace } from '../../models/skill';
 import { getArmorDef } from '../../types/item-defs';
 
 const SAVE_PREFIX = 'emergent_save_';
@@ -40,7 +38,6 @@ interface ActorSaveData {
   hasLearnedMagic: boolean;
   hyperionLevel: number;
   hyperionFlags: boolean[];
-  inventory: [number, number][];
   colorValues: number[];
   colorDomainsHigh: number[];
   colorDomainsLow: number[];
@@ -123,21 +120,6 @@ interface SaveData {
   weather: number;
 }
 
-// Legacy format for backward compatibility
-interface LegacySaveData {
-  meta: SaveMeta;
-  playerIdx: number;
-  gameTimeDay: number;
-  gameTimeHour: number;
-  gameTimeMinute: number;
-  gold: number;
-  hp: number;
-  mp: number;
-  level: number;
-  exp: number;
-  currentLocation: string;
-}
-
 function syncLoadedPlayerHyperion(session: GameSession): void {
   if (!session.isValid) return;
   const player = session.player;
@@ -156,9 +138,6 @@ function syncLoadedPlayerHyperion(session: GameSession): void {
 }
 
 function serializeActor(actor: Actor): ActorSaveData {
-  const inventory: [number, number][] = [];
-  // Legacy: spirit.inventory removed — category items now live in actor.items via cat_* IDs
-
   const colorDomainsHigh: number[] = actor.color.domains.map(d => d.highTrait as number);
   const colorDomainsLow: number[] = actor.color.domains.map(d => d.lowTrait as number);
 
@@ -207,7 +186,6 @@ function serializeActor(actor: Actor): ActorSaveData {
     hasLearnedMagic: actor.hasLearnedMagic,
     hyperionLevel: actor.hyperionLevel,
     hyperionFlags: [...actor.hyperionFlags],
-    inventory,
     colorValues: [...actor.color.values],
     colorDomainsHigh,
     colorDomainsLow,
@@ -266,17 +244,7 @@ function deserializeActor(data: ActorSaveData, target: Actor): void {
     if (qty > 0) target.items.set(id, qty);
   }
 
-  // Legacy: spirit.inventory migration — convert to items map via cat_* IDs
-  if (data.inventory) {
-    for (const [itemNum, qty] of data.inventory) {
-      if (qty > 0) {
-        const id = itemTypeToId(itemNum as ItemType);
-        target.addItemById(id, qty);
-      }
-    }
-  }
-
-  // v8: 장비 슬롯 복원 (구식 세이브는 빈 문자열로 안전 기본값)
+  // 장비 슬롯 복원
   target.equippedWeapon = data.equippedWeapon ?? '';
   target.equippedArmor = data.equippedArmor ?? '';
   target.equippedAccessory = data.equippedAccessory ?? '';
@@ -491,24 +459,8 @@ export function loadFromSlot(slot: number, session: GameSession): boolean {
   const raw = localStorage.getItem(`${SAVE_PREFIX}${slot}`);
   if (!raw) return false;
   try {
-    const parsed = JSON.parse(raw) as Partial<SaveData & LegacySaveData>;
-
-    // Backward compatibility: legacy format without version or actors
-    if (!parsed.version || !parsed.actors) {
-      const legacy = parsed as LegacySaveData;
-      session.playerIdx = legacy.playerIdx;
-      session.gameTime.day = legacy.gameTimeDay;
-      session.gameTime.hour = legacy.gameTimeHour;
-      session.gameTime.minute = legacy.gameTimeMinute;
-      if (session.isValid) {
-        const p = session.player;
-        p.spirit.gold = legacy.gold;
-        p.base.hp = legacy.hp;
-        p.base.mp = legacy.mp;
-        if (legacy.currentLocation) p.currentLocation = legacy.currentLocation;
-      }
-      return true;
-    }
+    const parsed = JSON.parse(raw) as Partial<SaveData>;
+    if (!parsed.version || !parsed.actors) return false;
 
     const data = parsed as SaveData;
     session.playerIdx = data.playerIdx;
@@ -541,19 +493,7 @@ export function loadFromSlot(slot: number, session: GameSession): boolean {
     session.world.worldColor = [...data.worldColor];
     session.world.weather = data.weather;
 
-    // v5 → v6 마이그레이션: 스킬 데이터 없는 액터에 기본 스킬 부여
-    for (const actor of session.actors) {
-      if (actor.learnedSkills.size === 0) {
-        const raceKey = raceToKey(actor.base.race);
-        const basics = getBasicSkillsForRace(raceKey);
-        for (const skill of basics) {
-          actor.learnedSkills.set(skill.id, 1);
-          actor.skillOrder.push(skill.id);
-        }
-      }
-    }
-
-    // v8: 장비 grantedSkill 재동기화 (장착된 방어구/악세서리의 임시 스킬 재적용)
+    // 장비 grantedSkill 재동기화 (장착된 방어구/악세서리의 임시 스킬 재적용)
     for (const actor of session.actors) {
       for (const slotId of [actor.equippedAccessory, actor.equippedAccessory2, actor.equippedArmor]) {
         if (!slotId) continue;
