@@ -6,7 +6,6 @@ import { Actor } from '../models/actor';
 import { PlayerKnowledge } from '../models/knowledge';
 import { DungeonSystem } from '../models/dungeon';
 import { GameTime } from '../types/game-time';
-import { getRelationshipStage } from './npc-interaction';
 import { getNpcQuestByTitle } from '../data/npc-quest-defs';
 
 export interface HyperionCondition {
@@ -297,10 +296,9 @@ export function updateHyperionLevels(
     // 플레이어 자신이거나, 플레이어가 만난 NPC만 히페리온 판정
     if (actor !== player && !knowledge.knownActorNames.has(actor.name)) continue;
 
-    // UI 관계 단계와 일치: 친한 사이(close) 또는 동행(companion)일 때만 레벨업
+    // 동료(companion)이면서 친한 사이인 경우에만 레벨업 — 영입 없이 close 상태인 캐릭터 제외
     if (actor !== player) {
-      const stage = getRelationshipStage(player, actor.name, knowledge, allActors, dungeonSystem);
-      if (stage !== 'close' && stage !== 'companion') continue;
+      if (!knowledge.isCompanion(actor.name)) continue;
     }
 
     const entry = getHyperionEntry(actor.name);
