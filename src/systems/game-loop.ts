@@ -30,7 +30,7 @@ export type GameAction =
   | 'village' | 'puchi_tower';
 
 const ACTION_TIME: Partial<Record<GameAction, number>> = {
-  idle: 30, move: 0, talk: 0, trade: 15, eat: 0,
+  idle: 30, move: 0, talk: 0, trade: 0, eat: 0,
   rest: 60, dungeon: 60, gather: 30, quest: 10,
   activity: 0, gift: 0, home: 60,
 };
