@@ -25,7 +25,7 @@ export function createTradeScreen(
   );
 
   let phase: TradePhase = isMarket ? 'trade' : (merchantNpcs.length > 0 ? 'npc-select' : 'trade');
-  let selectedNpc: Actor | null = isMarket ? null : null;
+  let selectedNpc: Actor | null = null;
   let tab: TradeTab = 'buy';
   let message = '';
 
@@ -51,12 +51,14 @@ export function createTradeScreen(
         <h2>거래 상대 선택</h2>
         ${merchantNpcs.length === 0
           ? '<p>이곳에 거래할 수 있는 상대가 없습니다.</p>'
-          : `<div class="npc-list">${merchantNpcs.map((a, i) => `
-              <button class="btn npc-item" data-idx="${i}">
+          : `<div class="npc-list">${merchantNpcs.map((a, i) => {
+              const known = session.knowledge.isKnown(a.name);
+              return `<button class="btn npc-item" data-idx="${i}">
                 <span class="npc-num">${i + 1}</span>
-                <span class="npc-name">${a.name}</span>
-                <span class="npc-detail">${raceName(a.base.race)} · ${spiritRoleName(a.spirit.role)}</span>
-              </button>`).join('')}</div>`
+                <span class="npc-name">${known ? a.name : '???'}</span>
+                <span class="npc-detail">${known ? raceName(a.base.race) : '???'} · ${known ? spiritRoleName(a.spirit.role) : '???'}</span>
+              </button>`;
+            }).join('')}</div>`
         }
         ${isMarket ? '' : '<p class="hint">시장에서는 상인 없이도 거래 가능</p>'}
       </div>`;
@@ -71,6 +73,9 @@ export function createTradeScreen(
   }
 
   function renderTrade(el: HTMLElement) {
+    if (selectedNpc && !session.knowledge.isKnown(selectedNpc.name)) {
+      session.knowledge.addKnownName(selectedNpc.name);
+    }
     const isBuy = tab === 'buy';
     const shopItems = [ItemType.Food, ItemType.Herb, ItemType.Potion, ItemType.Equipment];
     const buyItems = shopItems.map(type => ({
