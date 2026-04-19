@@ -8915,3 +8915,248 @@ tags = /special/document/quest/invitation/phantom/
 description = 카르디가 직접 건네준 공연 초대장. 손 위에서 살짝 떨리는 기척이 느껴지며, 받은 자만이 그녀의 '진짜 무대'에 초대된다.
 rarity = uncommon
 source = quest:마법학교_루나
+
+# ============================================================
+# 직업별 스킬 발동 반지 — 15종
+# ============================================================
+
+# --- Warrior ---
+[warrior_skill_ring_1]
+name = 전사의 전투 반지 I
+category = Equipment
+price = 300
+tags = /inedible/metallic/crafted/armor/accessory/
+description = 전사의 투지를 담은 반지. 전사 계열 스킬이 더 자주 발동된다.
+rarity = uncommon
+source = shop:Warriors_Forge
+equipSlot = accessory
+equipAttack = 2
+equipDefense = 2
+equipSkillAppear = 0.1
+equipSkillAppearJob = Warrior
+
+[warrior_skill_ring_2]
+name = 전사의 전투 반지 II
+category = Equipment
+price = 700
+tags = /inedible/metallic/crafted/armor/accessory/
+description = 단련된 전사의 의지가 깃든 반지. 전사 계열 스킬 발동률이 크게 향상된다.
+rarity = rare
+source = shop:Warriors_Forge
+equipSlot = accessory
+equipAttack = 4
+equipDefense = 4
+equipSkillAppear = 0.25
+equipSkillAppearJob = Warrior
+
+[warrior_skill_ring_3]
+name = 전사의 전투 반지 III
+category = Equipment
+price = 1500
+tags = /inedible/metallic/crafted/armor/accessory/
+description = 전설의 전사가 남긴 반지. 착용자의 전투 직감이 극도로 예민해진다.
+rarity = epic
+source = shop:Warriors_Forge
+equipSlot = accessory
+equipAttack = 7
+equipDefense = 7
+equipSkillAppear = 0.4
+equipSkillAppearJob = Warrior
+
+# --- Ranger ---
+[ranger_skill_ring_1]
+name = 궁수의 사냥 반지 I
+category = Equipment
+price = 300
+tags = /inedible/metallic/crafted/armor/accessory/
+description = 숙련된 궁수가 애용하는 반지. 궁수 계열 스킬이 더 자주 발동된다.
+rarity = uncommon
+source = shop:Guild_Hall
+equipSlot = accessory
+equipAttack = 2
+equipDefense = 1
+equipSkillAppear = 0.1
+equipSkillAppearJob = Ranger
+
+[ranger_skill_ring_2]
+name = 궁수의 사냥 반지 II
+category = Equipment
+price = 700
+tags = /inedible/metallic/crafted/armor/accessory/
+description = 명사수의 집중력이 깃든 반지. 궁수 계열 스킬 발동률이 크게 향상된다.
+rarity = rare
+source = shop:Guild_Hall
+equipSlot = accessory
+equipAttack = 4
+equipDefense = 2
+equipSkillAppear = 0.25
+equipSkillAppearJob = Ranger
+
+[ranger_skill_ring_3]
+name = 궁수의 사냥 반지 III
+category = Equipment
+price = 1500
+tags = /inedible/metallic/crafted/armor/accessory/
+description = 전설의 사냥꾼이 남긴 반지. 착용자의 감각이 짐승처럼 예리해진다.
+rarity = epic
+source = shop:Guild_Hall
+equipSlot = accessory
+equipAttack = 6
+equipDefense = 3
+equipSkillAppear = 0.4
+equipSkillAppearJob = Ranger
+
+# --- DarkMage ---
+[darkmage_skill_ring_1]
+name = 흑마법사의 마력 반지 I
+category = Equipment
+price = 300
+tags = /inedible/metallic/crafted/armor/accessory/
+description = 어둠의 마력이 깃든 반지. 흑마법사 계열 스킬이 더 자주 발동된다.
+rarity = uncommon
+source = shop:Mage_Tower
+equipSlot = accessory
+equipAttack = 3
+equipDefense = 1
+equipSkillAppear = 0.1
+equipSkillAppearJob = DarkMage
+
+[darkmage_skill_ring_2]
+name = 흑마법사의 마력 반지 II
+category = Equipment
+price = 700
+tags = /inedible/metallic/crafted/armor/accessory/
+description = 금지된 마법서에서 추출한 에너지가 담긴 반지. 흑마법사 계열 스킬 발동률이 크게 향상된다.
+rarity = rare
+source = shop:Mage_Tower
+equipSlot = accessory
+equipAttack = 6
+equipDefense = 2
+equipSkillAppear = 0.25
+equipSkillAppearJob = DarkMage
+
+[darkmage_skill_ring_3]
+name = 흑마법사의 마력 반지 III
+category = Equipment
+price = 1500
+tags = /inedible/metallic/crafted/armor/accessory/
+description = 고대 흑마술사의 유품. 착용자의 주변에 희미한 어둠의 기운이 감돈다.
+rarity = epic
+source = shop:Mage_Tower
+equipSlot = accessory
+equipAttack = 9
+equipDefense = 3
+equipSkillAppear = 0.4
+equipSkillAppearJob = DarkMage
+
+# --- WhiteMage ---
+[whitemage_skill_ring_1]
+name = 백마법사의 성스러운 반지 I
+category = Equipment
+price = 300
+tags = /inedible/metallic/crafted/armor/accessory/
+description = 신성한 빛이 깃든 반지. 백마법사 계열 스킬이 더 자주 발동된다.
+rarity = uncommon
+source = shop:Hanabridge
+equipSlot = accessory
+equipAttack = 1
+equipDefense = 3
+equipSkillAppear = 0.1
+equipSkillAppearJob = WhiteMage
+
+[whitemage_skill_ring_2]
+name = 백마법사의 성스러운 반지 II
+category = Equipment
+price = 700
+tags = /inedible/metallic/crafted/armor/accessory/
+description = 성전에서 축복받은 반지. 백마법사 계열 스킬 발동률이 크게 향상된다.
+rarity = rare
+source = shop:Hanabridge
+equipSlot = accessory
+equipAttack = 2
+equipDefense = 5
+equipSkillAppear = 0.25
+equipSkillAppearJob = WhiteMage
+
+[whitemage_skill_ring_3]
+name = 백마법사의 성스러운 반지 III
+category = Equipment
+price = 1500
+tags = /inedible/metallic/crafted/armor/accessory/
+description = 고대 성자의 유품. 착용자의 손에서 따뜻한 빛이 흘러나온다.
+rarity = epic
+source = shop:Hanabridge
+equipSlot = accessory
+equipAttack = 3
+equipDefense = 8
+equipSkillAppear = 0.4
+equipSkillAppearJob = WhiteMage
+
+# --- Rogue ---
+[rogue_skill_ring_1]
+name = 도적의 그림자 반지 I
+category = Equipment
+price = 300
+tags = /inedible/metallic/crafted/armor/accessory/
+description = 그림자 속에 숨어든 도적의 반지. 도적 계열 스킬이 더 자주 발동된다.
+rarity = uncommon
+source = shop:Guild_Hall
+equipSlot = accessory
+equipAttack = 3
+equipDefense = 1
+equipSkillAppear = 0.1
+equipSkillAppearJob = Rogue
+
+[rogue_skill_ring_2]
+name = 도적의 그림자 반지 II
+category = Equipment
+price = 700
+tags = /inedible/metallic/crafted/armor/accessory/
+description = 밤의 장인이 다듬은 반지. 도적 계열 스킬 발동률이 크게 향상된다.
+rarity = rare
+source = shop:Guild_Hall
+equipSlot = accessory
+equipAttack = 5
+equipDefense = 2
+equipSkillAppear = 0.25
+equipSkillAppearJob = Rogue
+
+[rogue_skill_ring_3]
+name = 도적의 그림자 반지 III
+category = Equipment
+price = 1500
+tags = /inedible/metallic/crafted/armor/accessory/
+description = 전설의 의적이 남긴 반지. 착용자의 움직임이 어둠에 녹아든다.
+rarity = epic
+source = shop:Guild_Hall
+equipSlot = accessory
+equipAttack = 8
+equipDefense = 3
+equipSkillAppear = 0.4
+equipSkillAppearJob = Rogue
+
+# ============================================================
+# 특수 음식 — 스킬 출현율 강화
+# ============================================================
+
+[moonlight_stew]
+name = 월광 스튜
+category = Food
+price = 800
+tags = /edible/cooked/special/
+description = 달빛 아래에서만 피어나는 야초로 끓인 신비한 스튜. 먹으면 감각이 예민해져 전투 중 스킬이 더 자주 떠오른다. 기억의 샘 인근에서만 구할 수 있다.
+rarity = rare
+source = npc:푸니
+mealBuffSkillAppear = 0.3
+mealHpMaxPct = 0
+
+[starfire_broth]
+name = 별불 국
+category = Food
+price = 2000
+tags = /edible/cooked/special/
+description = 운석 파편을 달인 물로 만든 전설의 국. 한 모금만으로도 온 몸에 불꽃이 오르며 스킬이 폭발적으로 활성화된다. 에루멘 운무림의 특산물로, 일 년에 몇 그릇밖에 만들지 않는다.
+rarity = epic
+source = event:에루멘_안개의_선물
+mealBuffSkillAppear = 0.6
+mealHpMaxPct = 0

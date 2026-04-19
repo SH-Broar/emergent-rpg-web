@@ -4,6 +4,64 @@
 import { GameSession } from './game-session';
 import { updateHyperionLevels } from './hyperion';
 import { checkAndUnlockPacks, RDC_PACKS } from '../data/rdc-packs';
+import { raceToKey } from '../types/enums';
+
+/** 종족별 히페리온 레벨 3 언락 스킬 (공격) */
+const HYPERION_ATTACK_SKILL: Record<string, string> = {
+  Human:     'human_slash',
+  Elf:       'elf_spirit_slash',
+  Dwarf:     'dwarf_hammer_swing',
+  Beastkin:  'keen_claw_strike',
+  Nekomimi:  'keen_claw_strike_neko',
+  Foxkin:    'keen_fox_strike',
+  Lamia:     'keen_fang_strike',
+  Werewolf:  'keen_wolf_fang',
+};
+
+/** 종족별 히페리온 레벨 5 언락 스킬 (회복) */
+const HYPERION_HEAL_SKILL: Record<string, string> = {
+  Human:     'human_heal',
+  Elf:       'elf_nature_heal',
+  Dwarf:     'dwarf_forge_mend',
+  Beastkin:  'keen_lick_wound',
+  Nekomimi:  'keen_purr_heal',
+  Foxkin:    'keen_fox_heal',
+  Lamia:     'keen_shed_heal',
+  Werewolf:  'keen_howl_heal',
+};
+
+/**
+ * 히페리온 레벨업 후 플레이어의 종족 기반 기본 스킬을 자동 언락.
+ * - 레벨 3: 공격 기본 스킬
+ * - 레벨 5: 회복 기본 스킬
+ * 이미 보유한 스킬은 중복 추가하지 않는다.
+ */
+export function checkHyperionSkillUnlock(session: GameSession): string[] {
+  if (!session.isValid) return [];
+  const player = session.player;
+  const raceKey = raceToKey(player.base.race);
+  const unlocked: string[] = [];
+
+  if (player.hyperionLevel >= 3) {
+    const attackSkill = HYPERION_ATTACK_SKILL[raceKey];
+    if (attackSkill && !player.learnedSkills.has(attackSkill)) {
+      player.learnedSkills.set(attackSkill, 1);
+      player.skillOrder.push(attackSkill);
+      unlocked.push(attackSkill);
+    }
+  }
+
+  if (player.hyperionLevel >= 5) {
+    const healSkill = HYPERION_HEAL_SKILL[raceKey];
+    if (healSkill && !player.learnedSkills.has(healSkill)) {
+      player.learnedSkills.set(healSkill, 1);
+      player.skillOrder.push(healSkill);
+      unlocked.push(healSkill);
+    }
+  }
+
+  return unlocked;
+}
 
 /** 히페리온 레벨 합계를 기반으로 플레이어의 hyperionBonus, HP/MP 재계산 */
 export function syncPlayerHyperionBonus(session: GameSession): void {
@@ -48,6 +106,14 @@ export function checkAndQueueHyperionLevelUps(session: GameSession): boolean {
   for (const m of msgs) {
     session.backlog.add(session.gameTime, m, '시스템');
     session.pendingHyperionMsgs.push(m);
+  }
+
+  // 히페리온 레벨 3/5 기본 스킬 언락
+  const unlockedSkills = checkHyperionSkillUnlock(session);
+  for (const skillId of unlockedSkills) {
+    const msg = `✦ 스킬 습득: "${skillId}"`;
+    session.backlog.add(session.gameTime, msg, '시스템');
+    session.pendingHyperionMsgs.push(msg);
   }
 
   // RDC 캐릭터팩 해금 체크 (히페리온 변동 후)

@@ -52,7 +52,7 @@ defense = 5
 colorValues = 0.4,0.7,0.4,0.2,0.3,0.5,0.5,0.3
 domainHigh = Excited,Empathetic,Adaptable,Hopeful,Freesprited,Curious,Flexible,Cheerful
 domainLow = Rigid,Cynical,Withdrawn,Stagnant,Aggressive,Melancholy,Stubborn,Secretive
-inventory = Food:4, Potion:2
+inventory = Food:4, Potion:2, moonlight_stew:2
 background = 기억의 샘 가에 사는 반투명 슬라임으로, 오늘은 파란색이었다가 내일은 분홍색이 되는 몸 색깔 때문에 본인도 가끔 자신을 못 알아본다.|어제 팔이었던 부위가 오늘은 머리가 되기도 하는 터라, 대화 도중 갑자기 '어? 나 지금 어떤 모양이야?'라고 스스로에게 묻는 일이 잦다.|나이를 물으면 '한 오십 살쯤? 아니면 열 살? 세포가 분열했으니까 사실 나이가 몇인지 잘 모르겠어~'라고 답한다.|호기심이 넘쳐 기억의 샘 주변을 매일 탐험하지만, 항상 샘 근처로 돌아온다.
 
 # ============================================================

@@ -396,7 +396,8 @@ export function usePlayerSkill(
   // 자원 소모 (레벨별 코스트 감소)
   const skillLevel = player.learnedSkills.get(skill.id) ?? 1;
   const costMult = getSkillCostReduction(skillLevel);
-  const effectiveMpCost = Math.max(0, Math.ceil(skill.mpCost * costMult * (options?.mpCostMultiplier ?? 1)));
+  const jobMismatchMult = (skill.jobAffinity && player.combatJob !== skill.jobAffinity) ? 2 : 1;
+  const effectiveMpCost = Math.max(0, Math.ceil(skill.mpCost * costMult * (options?.mpCostMultiplier ?? 1) * jobMismatchMult));
   player.adjustMp(-effectiveMpCost);
   if (skill.hpCost > 0) player.adjustHp(-skill.hpCost);
 

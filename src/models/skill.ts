@@ -227,7 +227,7 @@ const ALL_SKILLS: SkillDef[] = [
     type: SkillType.Attack, effect: { damageMultiplier: 1.2 },
     mpCost: 5, tpCost: 0, hpCost: 0, preDelay: 0, postDelay: 0,
     appearRate: 0.8, maxUsesPerCombat: 99, element: -1,
-    raceTagExpr: '', minLevel: 0, colorReq: [], isBasicSkill: true, basicForRace: '', roleAffinity: [],
+    raceTagExpr: '', minLevel: 0, colorReq: [], isBasicSkill: false, basicForRace: '', roleAffinity: [],
   },
   {
     id: 'heavy_strike', name: '강타', description: '강력한 일격. 사용 후 잠시 행동 불가.',
@@ -287,7 +287,7 @@ const ALL_SKILLS: SkillDef[] = [
     type: SkillType.Buff, effect: { healHp: 30 },
     mpCost: 10, tpCost: 0, hpCost: 0, preDelay: 0, postDelay: 1,
     appearRate: 0.7, maxUsesPerCombat: 5, element: -1,
-    raceTagExpr: '', minLevel: 0, colorReq: [], isBasicSkill: true, basicForRace: '', roleAffinity: [],
+    raceTagExpr: '', minLevel: 0, colorReq: [], isBasicSkill: false, basicForRace: '', roleAffinity: [],
   },
   {
     id: 'focus', name: '집중', description: '3턴 동안 공격력을 1.5배로 높인다.',

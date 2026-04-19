@@ -3,7 +3,7 @@
 
 import { DataSection, parsePairList, parseFloatList, parseStringList, parseColorInfluence, parseLootList, parseTripleList } from './parser';
 import { GameRegistry } from '../types/registry';
-import { parseRace, parseSpiritRole, parseItemType, parseTrait, ELEMENT_COUNT, parseElement, ItemType } from '../types/enums';
+import { parseRace, parseSpiritRole, parseItemType, isItemTypeCategoryKey, parseTrait, ELEMENT_COUNT, parseElement, ItemType } from '../types/enums';
 import { parseLocationID } from '../types/location';
 import { Actor } from '../models/actor';
 import { World, createLocationData } from '../models/world';
@@ -186,7 +186,6 @@ export function initActors(sections: DataSection[]): Actor[] {
     actor.base.defense = s.getFloat('defense', 5);
     actor.base.strength = s.getFloat('strength', 0.5);
     actor.base.age = s.getInt('age', 25);
-    actor.base.level = s.getInt('level', 1);
     actor.spirit.gold = s.getInt('gold', 50);
 
     // Color values
@@ -217,11 +216,17 @@ export function initActors(sections: DataSection[]): Actor[] {
       actor.color.randomizeDomains();
     }
 
-    // Inventory — "ItemType:amount"
+    // Inventory — "ItemType:amount" 또는 "itemId:amount"
     const inv = s.get('inventory', '');
     if (inv) {
       for (const pair of parsePairList(inv)) {
-        actor.addItem(parseItemType(pair[0]), parseInt(pair[1], 10) || 0);
+        const amount = parseInt(pair[1], 10) || 0;
+        if (isItemTypeCategoryKey(pair[0])) {
+          actor.addItem(parseItemType(pair[0]), amount);
+        } else {
+          // 알 수 없는 카테고리 키 → itemId로 처리
+          actor.addItemById(pair[0], amount);
+        }
       }
     }
 

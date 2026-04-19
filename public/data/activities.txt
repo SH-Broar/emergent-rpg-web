@@ -35,7 +35,7 @@ activity_2_effect = give
 activity_2_gives = Food:3, Herb:1
 activity_2_colorInfluence = Earth:0.03, Light:0.02
 
-[Church]
+[Hanabridge]
 activity_1_name = 치유 기도
 activity_1_key = heal
 activity_1_time = 20

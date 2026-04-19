@@ -411,3 +411,11 @@ location = Lake
 triggerDay = -1
 weight = 0.3
 colorInfluence = Water:0.1, Wind:0.08, Light:0.06
+
+[에루멘_안개의_선물]
+description = 에루멘 운무림에 유독 짙은 안개가 내려앉은 아침, 안개 속에서 정체불명의 냄비 하나가 나타났다. 뚜껑을 열자 뜨거운 국 냄새가 진동한다. 별불 국이다.
+location = Erumen_Mistwood
+triggerDay = -1
+weight = 0.03
+colorInfluence = Fire:0.1, Dark:0.05, Wind:0.08
+addResource = Erumen_Mistwood:starfire_broth:1

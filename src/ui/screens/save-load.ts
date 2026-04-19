@@ -31,7 +31,6 @@ interface ActorSaveData {
   age: number;
   sleeping: boolean;
   mood: number;
-  level: number; exp: number;
   gold: number;
   location: string;
   homeLocation: string;
@@ -186,8 +185,6 @@ function serializeActor(actor: Actor): ActorSaveData {
     age: actor.base.age,
     sleeping: actor.base.sleeping,
     mood: actor.base.mood,
-    level: actor.base.level,
-    exp: actor.base.exp,
     gold: actor.spirit.gold,
     location: actor.currentLocation,
     homeLocation: actor.homeLocation,
@@ -231,8 +228,6 @@ function deserializeActor(data: ActorSaveData, target: Actor): void {
   target.base.age = data.age;
   target.base.sleeping = data.sleeping;
   target.base.mood = data.mood;
-  target.base.level = data.level;
-  target.base.exp = data.exp;
   target.spirit.gold = data.gold;
   target.currentLocation = data.location;
   target.homeLocation = data.homeLocation;
@@ -478,8 +473,6 @@ export function loadFromSlot(slot: number, session: GameSession): boolean {
         p.spirit.gold = legacy.gold;
         p.base.hp = legacy.hp;
         p.base.mp = legacy.mp;
-        p.base.level = legacy.level;
-        p.base.exp = legacy.exp;
         if (legacy.currentLocation) p.currentLocation = legacy.currentLocation;
       }
       return true;

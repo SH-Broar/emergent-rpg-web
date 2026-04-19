@@ -4,6 +4,21 @@
 import { SkillDef, SkillType, getSkillDef, getSkillLevelMultiplier, getSkillCostReduction, checkSkillLevelUp, SKILL_MAX_LEVEL } from '../models/skill';
 import { Actor } from '../models/actor';
 import { CombatState, rollMonsterEvasionMiss } from '../models/dungeon';
+import { getItemDef } from '../types/item-defs';
+
+/** 장착된 악세서리에서 스킬 출현율 보너스 합산 */
+function getActorSkillAppearBonus(actor: Actor, jobAffinity: string): number {
+  let bonus = 0;
+  for (const slotId of [actor.equippedAccessory, actor.equippedAccessory2]) {
+    if (!slotId) continue;
+    const def = getItemDef(slotId);
+    if (!def || def.equipSkillAppear <= 0) continue;
+    if (!def.equipSkillAppearJob || def.equipSkillAppearJob === jobAffinity) {
+      bonus += def.equipSkillAppear;
+    }
+  }
+  return bonus;
+}
 
 export interface ActiveBuff {
   type: string;
@@ -51,6 +66,8 @@ export function rollInitialSkills(actor: Actor): CombatSkillState {
   const learnedSkills = actor.learnedSkills;
   const skillOrder = actor.skillOrder;
 
+  const mealBonus = actor.getVariable('meal_skill_appear');
+
   // 1차 패스
   for (const skillId of skillOrder) {
     if (filled.length >= 3) break;
@@ -58,7 +75,9 @@ export function rollInitialSkills(actor: Actor): CombatSkillState {
     if (!skill) continue;
     const level = learnedSkills.get(skillId) ?? 1;
     const jobBoost = (actor.combatJob && skill.jobAffinity === actor.combatJob) ? 0.15 : 0;
-    const adjustedRate = skill.appearRate + (level - 1) * 0.05 + jobBoost;
+    const accBonus = getActorSkillAppearBonus(actor, skill.jobAffinity ?? '');
+    const appearBonus = mealBonus + accBonus;
+    const adjustedRate = Math.min(1, skill.appearRate + (level - 1) * 0.05 + jobBoost + appearBonus);
     if (Math.random() < adjustedRate) {
       filled.push(skill);
     }
@@ -74,7 +93,9 @@ export function rollInitialSkills(actor: Actor): CombatSkillState {
       if (!skill) continue;
       const level = learnedSkills.get(skillId) ?? 1;
       const jobBoost = (actor.combatJob && skill.jobAffinity === actor.combatJob) ? 0.15 : 0;
-    const adjustedRate = skill.appearRate + (level - 1) * 0.05 + jobBoost;
+      const accBonus = getActorSkillAppearBonus(actor, skill.jobAffinity ?? '');
+      const appearBonus = mealBonus + accBonus;
+      const adjustedRate = Math.min(1, skill.appearRate + (level - 1) * 0.05 + jobBoost + appearBonus);
       if (Math.random() < adjustedRate) {
         filled.push(skill);
         filledIds.add(skillId);
@@ -100,13 +121,16 @@ export function rerollSlot(slotIndex: number, actor: Actor, state: CombatSkillSt
   const learnedSkills = actor.learnedSkills;
   const skillOrder = actor.skillOrder;
 
+  const mealBonus = actor.getVariable('meal_skill_appear');
   for (const skillId of skillOrder) {
     if (currentSkillIds.has(skillId)) continue;
     const skill = getSkillDef(skillId);
     if (!skill) continue;
     const level = learnedSkills.get(skillId) ?? 1;
     const jobBoost = (actor.combatJob && skill.jobAffinity === actor.combatJob) ? 0.15 : 0;
-    const adjustedRate = skill.appearRate + (level - 1) * 0.05 + jobBoost;
+    const accBonus = getActorSkillAppearBonus(actor, skill.jobAffinity ?? '');
+    const appearBonus = mealBonus + accBonus;
+    const adjustedRate = Math.min(1, skill.appearRate + (level - 1) * 0.05 + jobBoost + appearBonus);
     if (Math.random() < adjustedRate) {
       state.slots[slotIndex] = skill;
       return;
@@ -130,7 +154,8 @@ export function canUseSkill(
   if (state.preDelayTurns > 0) {
     return { ok: false, reason: '다른 스킬 준비 중입니다.' };
   }
-  const effectiveMpCost = Math.max(0, Math.ceil(skill.mpCost * (options?.mpCostMultiplier ?? 1)));
+  const jobMismatchMult = (skill.jobAffinity && actor.combatJob !== skill.jobAffinity) ? 2 : 1;
+  const effectiveMpCost = Math.max(0, Math.ceil(skill.mpCost * (options?.mpCostMultiplier ?? 1) * jobMismatchMult));
   if (actor.base.mp < effectiveMpCost) {
     return { ok: false, reason: `MP 부족 (필요: ${effectiveMpCost}, 현재: ${actor.base.mp})` };
   }

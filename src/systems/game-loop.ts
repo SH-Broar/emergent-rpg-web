@@ -52,7 +52,6 @@ export interface GatherSimResult {
 
 export interface TurnResult {
   messages: string[];
-  levelUp: boolean;
   screenChange?: string;
   gatherSim?: GatherSimResult;
 }
@@ -87,7 +86,7 @@ function pickGatherHint(templates: string[], envs: string[]): string {
 }
 
 export function processTurn(session: GameSession, action: GameAction): TurnResult {
-  const result: TurnResult = { messages: [], levelUp: false };
+  const result: TurnResult = { messages: [] };
   const p = session.player;
   if (!p) return result;
 
@@ -202,11 +201,11 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
         return result; // 시간 경과 없이 리턴
       }
 
-      // 성공률 계산 (레벨 기반)
-      const levelDiff = p.base.level - (loc.monsterLevel || 1);
+      // 성공률 계산 (히페리온 레벨 기반)
+      const hyperionDiff = p.hyperionLevel - (loc.monsterLevel || 1);
       const accFxGather = getEquippedAccessoryEffects(p);
       const gatherMod = accFxGather.gatherBonus ?? 0;
-      const chance = Math.min(0.95, Math.max(0.2, 0.7 + levelDiff * 0.03) + gatherMod);
+      const chance = Math.min(0.95, Math.max(0.2, 0.7 + hyperionDiff * 0.03) + gatherMod);
       if (randomFloat(0, 1) > chance) {
         result.messages.push('채집에 실패했다...');
         if (lockedItems.length > 0) {

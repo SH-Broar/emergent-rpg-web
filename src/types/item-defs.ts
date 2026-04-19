@@ -35,6 +35,7 @@ export interface ItemDef {
   mealMpMaxPct: number;         // 하루 MP 상한 % 보너스 (0.25 = +25%)
   mealHpMaxPct: number;         // 하루 HP 상한 % 보너스
   mealCombatSpeed: number;      // 전투 속도 배수 (0 = 효과 없음, 3.0 = 3배 빠름)
+  mealBuffSkillAppear: number;  // 하루 스킬 출현율 보너스 (0.1 = +10%)
 
   // 장비 스탯 (장비 아이템)
   equipSlot: EquipSlot;         // 'none', 'weapon', 'armor', 'accessory'
@@ -42,6 +43,8 @@ export interface ItemDef {
   equipDefense: number;
   equipMagic: number;
   equipSpeed: number;
+  equipSkillAppear: number;     // 악세서리 착용 시 스킬 출현율 보너스 (0~1)
+  equipSkillAppearJob: string;  // 특정 직업에만 적용 (빈 문자열=전체, 또는 'Warrior' 등)
 
   // 획득처
   source: string;               // 'gather:Cyan_Dunes', 'dungeon:Larmen_Forest', 'shop:Market' 등
@@ -66,8 +69,9 @@ export function createDefaultItemDef(id: string): ItemDef {
     tags: '', description: '', rarity: 'common', stackable: true,
     eatVigor: 0, eatHp: 0, eatMp: 0, eatMood: 0, eatMessage: '', eatStatus: '',
     eatBuffType: '', eatBuffAmount: 0, eatBuffDuration: 0,
-    mealBuffAtk: 0, mealBuffDef: 0, mealMpMaxPct: 0, mealHpMaxPct: 0, mealCombatSpeed: 0,
+    mealBuffAtk: 0, mealBuffDef: 0, mealMpMaxPct: 0, mealHpMaxPct: 0, mealCombatSpeed: 0, mealBuffSkillAppear: 0,
     equipSlot: 'none', equipAttack: 0, equipDefense: 0, equipMagic: 0, equipSpeed: 0,
+    equipSkillAppear: 0, equipSkillAppearJob: '',
     source: '', minHyperion: 0,
     preferredStorage: [], avoidedStorage: [], badStorageEffect: 'none',
   };
@@ -113,11 +117,12 @@ export function loadItemDefs(sections: DataSection[]): void {
     def.eatBuffDuration = s.getInt('eatBuffDuration', 0);
 
     // 하루 지속 식사 버프
-    def.mealBuffAtk     = s.getFloat('mealBuffAtk', 0);
-    def.mealBuffDef     = s.getFloat('mealBuffDef', 0);
-    def.mealMpMaxPct    = s.getFloat('mealMpMaxPct', 0);
-    def.mealHpMaxPct    = s.getFloat('mealHpMaxPct', 0);
-    def.mealCombatSpeed = s.getFloat('mealCombatSpeed', 0);
+    def.mealBuffAtk          = s.getFloat('mealBuffAtk', 0);
+    def.mealBuffDef          = s.getFloat('mealBuffDef', 0);
+    def.mealMpMaxPct         = s.getFloat('mealMpMaxPct', 0);
+    def.mealHpMaxPct         = s.getFloat('mealHpMaxPct', 0);
+    def.mealCombatSpeed      = s.getFloat('mealCombatSpeed', 0);
+    def.mealBuffSkillAppear  = s.getFloat('mealBuffSkillAppear', 0);
 
     // 장비
     def.equipSlot = (s.get('equipSlot', 'none') as EquipSlot);
@@ -125,6 +130,8 @@ export function loadItemDefs(sections: DataSection[]): void {
     def.equipDefense = s.getFloat('equipDefense', 0);
     def.equipMagic = s.getFloat('equipMagic', 0);
     def.equipSpeed = s.getFloat('equipSpeed', 0);
+    def.equipSkillAppear = s.getFloat('equipSkillAppear', 0);
+    def.equipSkillAppearJob = s.get('equipSkillAppearJob', '');
 
     def.minHyperion = s.getInt('minHyperion', 0);
     const inferred = inferStorageProfile(def.category, def.tags);

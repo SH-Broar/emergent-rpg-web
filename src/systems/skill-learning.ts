@@ -25,9 +25,9 @@ export function canLearnSkill(actor: Actor, skillDef: SkillDef): { ok: boolean; 
     }
   }
 
-  // 레벨 체크
-  if (skillDef.minLevel > 0 && actor.base.level < skillDef.minLevel) {
-    return { ok: false, reason: `레벨 ${skillDef.minLevel} 이상 필요합니다. (현재 Lv.${actor.base.level})` };
+  // 히페리온 레벨 체크 (minLevel → hyperionLevel로 대체)
+  if (skillDef.minLevel > 0 && actor.hyperionLevel < skillDef.minLevel) {
+    return { ok: false, reason: `히페리온 레벨 ${skillDef.minLevel} 이상 필요합니다. (현재 ✦${actor.hyperionLevel})` };
   }
 
   // 컬러 체크 (학습 시점만, 이후 변해도 사용 가능)
@@ -78,7 +78,7 @@ export function assignNpcSkills(actor: Actor): void {
       const raceTags = getRaceCapabilityTags(actor.base.race);
       if (!evaluateTagExpr(s.raceTagExpr, raceTags)) return false;
     }
-    if (s.minLevel > 0 && actor.base.level < s.minLevel) return false;
+    if (s.minLevel > 0 && actor.hyperionLevel < s.minLevel) return false;
     // 컬러 체크는 NPC에게 관대하게 적용 (50% 충족이면 OK)
     if (s.colorReq && s.colorReq.length > 0) {
       let met = 0;
@@ -98,8 +98,8 @@ export function assignNpcSkills(actor: Actor): void {
   const preferred = learnable.filter(s => s.roleAffinity.includes(roleKey));
   const others = learnable.filter(s => !s.roleAffinity.includes(roleKey));
 
-  // NPC는 레벨 기반 1~3개 추가 스킬
-  const extraCount = Math.min(3, 1 + Math.floor(actor.base.level / 5));
+  // NPC는 히페리온 레벨 기반 1~3개 추가 스킬
+  const extraCount = Math.min(3, 1 + Math.floor(actor.hyperionLevel / 10));
   let assigned = 0;
 
   for (const skill of preferred) {

@@ -23,7 +23,7 @@ mpCost = 5
 appearRate = 0.8
 maxUsesPerCombat = 99
 element = None
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Human
 
 [human_guard]
@@ -49,7 +49,7 @@ postDelay = 1
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = None
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Human
 
 # ============================================================
@@ -66,7 +66,7 @@ mpCost = 6
 appearRate = 0.8
 maxUsesPerCombat = 99
 element = Wind
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Elf
 
 [elf_wind_barrier]
@@ -92,7 +92,7 @@ postDelay = 1
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Earth
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Elf
 
 # ============================================================
@@ -109,7 +109,7 @@ postDelay = 1
 appearRate = 0.75
 maxUsesPerCombat = 99
 element = Iron
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Dwarf
 
 [dwarf_stone_wall]
@@ -135,7 +135,7 @@ mpCost = 8
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Iron
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Dwarf
 
 # ============================================================
@@ -151,7 +151,7 @@ mpCost = 4
 appearRate = 0.85
 maxUsesPerCombat = 99
 element = None
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Beastkin
 
 [keen_claw_strike_neko]
@@ -164,7 +164,7 @@ mpCost = 4
 appearRate = 0.85
 maxUsesPerCombat = 99
 element = None
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Nekomimi
 
 [keen_fox_strike]
@@ -177,7 +177,7 @@ mpCost = 5
 appearRate = 0.85
 maxUsesPerCombat = 99
 element = None
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Foxkin
 
 [keen_fang_strike]
@@ -189,7 +189,7 @@ mpCost = 5
 appearRate = 0.8
 maxUsesPerCombat = 99
 element = None
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Lamia
 
 [keen_wolf_fang]
@@ -201,7 +201,7 @@ mpCost = 6
 appearRate = 0.8
 maxUsesPerCombat = 99
 element = None
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Werewolf
 
 [keen_sense_dodge]
@@ -278,7 +278,7 @@ mpCost = 6
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = None
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Beastkin
 
 [keen_purr_heal]
@@ -290,7 +290,7 @@ mpCost = 6
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = None
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Nekomimi
 
 [keen_fox_heal]
@@ -302,7 +302,7 @@ mpCost = 7
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Fire
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Foxkin
 
 [keen_shed_heal]
@@ -314,7 +314,7 @@ mpCost = 7
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = None
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Lamia
 
 [keen_howl_heal]
@@ -326,7 +326,7 @@ mpCost = 7
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Light
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Werewolf
 
 # ============================================================
@@ -343,7 +343,7 @@ postDelay = 1
 appearRate = 0.75
 maxUsesPerCombat = 99
 element = Wind
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Harpy
 
 [harpy_wing_shield]
@@ -368,7 +368,7 @@ mpCost = 8
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Wind
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Harpy
 
 [centaur_lance_charge]
@@ -381,7 +381,7 @@ postDelay = 1
 appearRate = 0.7
 maxUsesPerCombat = 99
 element = None
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Centaur
 
 [centaur_iron_hide]
@@ -406,7 +406,7 @@ mpCost = 8
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Earth
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Centaur
 
 # ============================================================
@@ -422,7 +422,7 @@ mpCost = 8
 appearRate = 0.75
 maxUsesPerCombat = 99
 element = Fire
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Dragon
 
 [dragon_scale_armor]
@@ -447,7 +447,7 @@ mpCost = 10
 appearRate = 0.7
 maxUsesPerCombat = 3
 element = Fire
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Dragon
 
 # ============================================================
@@ -464,7 +464,7 @@ mpCost = 7
 appearRate = 0.8
 maxUsesPerCombat = 99
 element = Light
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Angel
 
 [angel_divine_shield]
@@ -489,7 +489,7 @@ mpCost = 10
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Light
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Angel
 
 [fallen_shadow_strike]
@@ -502,7 +502,7 @@ mpCost = 7
 appearRate = 0.8
 maxUsesPerCombat = 99
 element = Dark
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = FallenAngel
 
 [fallen_dark_veil]
@@ -527,7 +527,7 @@ mpCost = 9
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Dark
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = FallenAngel
 
 # ============================================================
@@ -543,7 +543,7 @@ mpCost = 6
 appearRate = 0.8
 maxUsesPerCombat = 99
 element = Dark
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Demon
 
 [demon_curse_shield]
@@ -568,7 +568,7 @@ mpCost = 8
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Dark
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Demon
 
 # ============================================================
@@ -585,7 +585,7 @@ mpCost = 6
 appearRate = 0.8
 maxUsesPerCombat = 99
 element = None
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Spirit
 
 [spirit_mana_shield]
@@ -610,7 +610,7 @@ mpCost = 8
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = None
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Spirit
 
 [fairy_sparkle]
@@ -623,7 +623,7 @@ mpCost = 4
 appearRate = 0.85
 maxUsesPerCombat = 99
 element = Light
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Fairy
 
 [fairy_pixie_dust]
@@ -648,7 +648,7 @@ mpCost = 8
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Light
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Fairy
 
 [arcana_rune_strike]
@@ -661,7 +661,7 @@ mpCost = 7
 appearRate = 0.8
 maxUsesPerCombat = 99
 element = None
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Arcana
 
 [arcana_rune_ward]
@@ -687,7 +687,7 @@ mpCost = 9
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = None
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Arcana
 
 # ============================================================
@@ -704,7 +704,7 @@ mpCost = 7
 appearRate = 0.75
 maxUsesPerCombat = 99
 element = Iron
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Construct
 
 [construct_armor_plate]
@@ -730,7 +730,7 @@ mpCost = 8
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Iron
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Construct
 
 # Moth
@@ -744,7 +744,7 @@ mpCost = 5
 appearRate = 0.8
 maxUsesPerCombat = 99
 element = Wind
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Moth
 
 [moth_scale_cloud]
@@ -769,7 +769,7 @@ mpCost = 7
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Light
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Moth
 
 # Dryad / Alraune (plant)
@@ -783,7 +783,7 @@ mpCost = 5
 appearRate = 0.8
 maxUsesPerCombat = 99
 element = Earth
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Dryad
 
 [plant_bark_shield]
@@ -808,7 +808,7 @@ mpCost = 7
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Light
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Dryad
 
 [alraune_thorn_lash]
@@ -821,7 +821,7 @@ mpCost = 6
 appearRate = 0.8
 maxUsesPerCombat = 99
 element = Earth
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Alraune
 
 [alraune_petal_guard]
@@ -846,7 +846,7 @@ mpCost = 8
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Earth
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Alraune
 
 # Phantom
@@ -860,7 +860,7 @@ mpCost = 6
 appearRate = 0.8
 maxUsesPerCombat = 99
 element = Dark
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Phantom
 
 [phantom_phase_shift]
@@ -885,7 +885,7 @@ mpCost = 8
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Dark
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Phantom
 
 # Merfolk / Siren (aquatic)
@@ -898,7 +898,7 @@ mpCost = 6
 appearRate = 0.8
 maxUsesPerCombat = 99
 element = Water
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Merfolk
 
 [merfolk_water_wall]
@@ -923,7 +923,7 @@ mpCost = 8
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Water
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Merfolk
 
 [siren_sonic_wave]
@@ -936,7 +936,7 @@ mpCost = 6
 appearRate = 0.8
 maxUsesPerCombat = 99
 element = Wind
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Siren
 
 [siren_lullaby]
@@ -961,7 +961,7 @@ mpCost = 8
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Water
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Siren
 
 # Goblin
@@ -975,7 +975,7 @@ mpCost = 3
 appearRate = 0.9
 maxUsesPerCombat = 99
 element = None
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Goblin
 
 [goblin_duck]
@@ -1000,7 +1000,7 @@ mpCost = 5
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = None
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Goblin
 
 # Vampire
@@ -1014,7 +1014,7 @@ mpCost = 6
 appearRate = 0.8
 maxUsesPerCombat = 99
 element = Dark
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Vampire
 
 [vampire_mist_form]
@@ -1039,7 +1039,7 @@ mpCost = 7
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Dark
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Vampire
 
 # Arachne
@@ -1053,7 +1053,7 @@ mpCost = 5
 appearRate = 0.8
 maxUsesPerCombat = 99
 element = None
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Arachne
 
 [arachne_web_trap]
@@ -1078,7 +1078,7 @@ mpCost = 7
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = None
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Arachne
 
 # Slime
@@ -1092,7 +1092,7 @@ mpCost = 4
 appearRate = 0.85
 maxUsesPerCombat = 99
 element = Water
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Slime
 
 [slime_absorb]
@@ -1117,7 +1117,7 @@ mpCost = 6
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Water
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Slime
 
 # Lizardfolk
@@ -1130,7 +1130,7 @@ mpCost = 5
 appearRate = 0.8
 maxUsesPerCombat = 99
 element = None
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Lizardfolk
 
 [lizard_scale_defense]
@@ -1155,7 +1155,7 @@ mpCost = 6
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Light
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Lizardfolk
 
 # Minotaur
@@ -1169,7 +1169,7 @@ postDelay = 1
 appearRate = 0.7
 maxUsesPerCombat = 99
 element = None
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Minotaur
 
 [minotaur_muscle_guard]
@@ -1194,7 +1194,7 @@ mpCost = 8
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = None
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Minotaur
 
 # Halfling
@@ -1208,7 +1208,7 @@ mpCost = 4
 appearRate = 0.85
 maxUsesPerCombat = 99
 element = None
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Halfling
 
 [halfling_nimble_dodge]
@@ -1233,7 +1233,7 @@ mpCost = 5
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = None
-isBasicSkill = 1
+isBasicSkill = 0
 basicForRace = Halfling
 
 # ============================================================
@@ -1253,6 +1253,8 @@ element = Iron
 jobAffinity = Warrior
 minLevel = 3
 roleAffinity = Adventurer,Guard
+learnLocation = Luna_Academy
+shopTier = 1
 
 [flame_slash]
 name = 화염참
@@ -1287,6 +1289,8 @@ raceTagExpr = /magic_affinity/ | /elemental/
 minLevel = 7
 colorReq = 0,0,0.4,0,0,0,0,0
 roleAffinity = Adventurer
+learnLocation = Luna_Academy
+shopTier = 1
 
 [light_arrow]
 name = 빛의 화살
@@ -1300,6 +1304,8 @@ element = Light
 jobAffinity = Ranger
 minLevel = 3
 colorReq = 0,0,0,0,0,0,0.3,0
+learnLocation = Luna_Academy
+shopTier = 1
 
 [shadow_strike]
 name = 그림자 베기
@@ -1328,6 +1334,8 @@ jobAffinity = Rogue
 minLevel = 5
 colorReq = 0,0.35,0,0,0,0,0,0
 raceTagExpr = /aquatic/ | /magic_affinity/
+learnLocation = Luna_Academy
+shopTier = 1
 
 [earth_hammer]
 name = 대지의 망치
@@ -1343,6 +1351,8 @@ element = Earth
 jobAffinity = Warrior
 minLevel = 7
 colorReq = 0,0,0,0,0.4,0,0,0
+learnLocation = Luna_Academy
+shopTier = 1
 
 [wind_blade]
 name = 바람의 칼날
@@ -1356,6 +1366,8 @@ element = Wind
 jobAffinity = Ranger
 minLevel = 5
 colorReq = 0,0,0,0,0,0.3,0,0
+learnLocation = Luna_Academy
+shopTier = 1
 
 [iron_fist]
 name = 철권
@@ -1371,6 +1383,8 @@ jobAffinity = Warrior
 minLevel = 5
 colorReq = 0,0,0,0.35,0,0,0,0
 raceTagExpr = /strength/ | /forge_affinity/
+learnLocation = Luna_Academy
+shopTier = 1
 
 [holy_smite]
 name = 신성 강타
@@ -1420,6 +1434,8 @@ minLevel = 4
 # ============================================================
 # 학습 가능 스킬 — 방어 (8)
 # ============================================================
+learnLocation = Luna_Academy
+shopTier = 1
 
 [iron_wall]
 name = 철벽
@@ -1437,6 +1453,8 @@ jobAffinity = Warrior
 minLevel = 5
 colorReq = 0,0,0,0.3,0,0,0,0
 roleAffinity = Guard
+learnLocation = Luna_Academy
+shopTier = 1
 
 [dodge]
 name = 회피
@@ -1451,6 +1469,8 @@ element = None
 jobAffinity = Rogue
 minLevel = 3
 roleAffinity = Adventurer
+learnLocation = Luna_Academy
+shopTier = 1
 
 [water_mirror]
 name = 수경 방어
@@ -1479,6 +1499,8 @@ element = Fire
 jobAffinity = Warrior
 minLevel = 5
 colorReq = 0.35,0,0,0,0,0,0,0
+learnLocation = Luna_Academy
+shopTier = 1
 
 [earth_shell]
 name = 대지의 갑옷
@@ -1494,6 +1516,8 @@ element = Earth
 jobAffinity = Warrior
 minLevel = 7
 colorReq = 0,0,0,0,0.4,0,0,0
+learnLocation = Luna_Academy
+shopTier = 1
 
 [wind_step]
 name = 바람걸음
@@ -1508,6 +1532,8 @@ element = Wind
 jobAffinity = Ranger
 minLevel = 4
 colorReq = 0,0,0,0,0,0.3,0,0
+learnLocation = Luna_Academy
+shopTier = 1
 
 [holy_aegis]
 name = 신성 방패
@@ -1642,6 +1668,8 @@ element = Fire
 jobAffinity = Warrior
 minLevel = 5
 colorReq = 0.3,0,0,0,0,0,0,0
+learnLocation = Luna_Academy
+shopTier = 1
 
 [earth_fortify]
 name = 대지 강화
@@ -1656,6 +1684,8 @@ element = Earth
 jobAffinity = Warrior
 minLevel = 5
 colorReq = 0,0,0,0,0.3,0,0,0
+learnLocation = Luna_Academy
+shopTier = 1
 
 [lightning_charge]
 name = 전기 충전
@@ -1670,6 +1700,8 @@ element = Electric
 jobAffinity = Ranger
 minLevel = 5
 colorReq = 0,0,0.3,0,0,0,0,0
+learnLocation = Luna_Academy
+shopTier = 1
 
 [iron_body]
 name = 철신
@@ -1689,6 +1721,8 @@ raceTagExpr = /strength/ | /forge_affinity/ | /metallic_digest/
 # ============================================================
 # 학습 가능 스킬 — 디버프 (8)
 # ============================================================
+learnLocation = Luna_Academy
+shopTier = 1
 
 [poison_mist]
 name = 독안개
@@ -1734,6 +1768,8 @@ maxUsesPerCombat = 5
 element = None
 jobAffinity = Rogue
 minLevel = 3
+learnLocation = Luna_Academy
+shopTier = 1
 
 [venom_fang]
 name = 맹독 이빨
@@ -1751,6 +1787,8 @@ element = None
 jobAffinity = Rogue
 minLevel = 7
 raceTagExpr = /toxic_resist/ | /acid_body/ | /keen_senses/
+learnLocation = Luna_Academy
+shopTier = 1
 
 [curse_of_darkness]
 name = 어둠의 저주
@@ -1800,6 +1838,8 @@ element = Electric
 jobAffinity = Rogue
 minLevel = 6
 colorReq = 0,0,0.35,0,0,0,0,0
+learnLocation = Luna_Academy
+shopTier = 1
 
 [sandstorm]
 name = 모래폭풍

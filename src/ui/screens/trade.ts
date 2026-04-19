@@ -7,6 +7,7 @@ import { itemName, basePrice } from '../../types/registry';
 import { Actor } from '../../models/actor';
 import { checkAndAwardTitles } from '../../systems/title-system';
 import { getLifeJobModifiers } from '../../systems/life-job-system';
+import { getItemDef } from '../../types/item-defs';
 
 type TradePhase = 'npc-select' | 'trade';
 type TradeTab = 'buy' | 'sell';
@@ -72,6 +73,24 @@ export function createTradeScreen(
     });
   }
 
+  // NPC 인벤토리에서 특수 아이템(itemId 기반) 추출
+  // cat_* 접두사 ID는 ItemType 카테고리이므로 제외
+  function getNpcSpecialItems(npc: Actor): { itemId: string; name: string; qty: number; price: number }[] {
+    const result: { itemId: string; name: string; qty: number; price: number }[] = [];
+    for (const [itemId, qty] of npc.items) {
+      if (qty <= 0) continue;
+      if (itemId.startsWith('cat_')) continue; // 일반 카테고리 아이템 제외
+      const def = getItemDef(itemId);
+      result.push({
+        itemId,
+        name: def?.name ?? itemId,
+        qty,
+        price: def?.price ?? 500,
+      });
+    }
+    return result;
+  }
+
   function renderTrade(el: HTMLElement) {
     if (selectedNpc && !session.knowledge.isKnown(selectedNpc.name)) {
       session.knowledge.addKnownName(selectedNpc.name);
@@ -87,6 +106,9 @@ export function createTradeScreen(
     for (const [type, count] of p.getInventoryByType()) {
       if (count > 0) sellItems.push({ type, name: itemName(type), count, price: getSellPrice(type) });
     }
+
+    // NPC 특산품 (선택된 NPC가 있을 때만)
+    const specialItems = selectedNpc ? getNpcSpecialItems(selectedNpc) : [];
 
     const tradeWith = selectedNpc ? selectedNpc.name : '시장';
     el.innerHTML = `
@@ -114,6 +136,18 @@ export function createTradeScreen(
                 </button>`).join('')
           }
         </div>
+        ${isBuy && specialItems.length > 0 ? `
+          <div class="trade-specialty-header" style="margin-top:14px;padding:4px 8px;color:var(--accent,#ffc857);font-size:13px;font-weight:bold;border-top:1px solid var(--border,#444)">
+            ✦ 특산품
+          </div>
+          <div class="item-grid">
+            ${specialItems.map(item => `
+              <button class="btn item-cell" data-buy-special="${item.itemId}">
+                <span class="item-name">${item.name}</span>
+                <span class="item-count">x${item.qty}</span>
+                <span class="item-price">${item.price}G</span>
+              </button>`).join('')}
+          </div>` : ''}
         ${(() => {
           const bagCap = session.knowledge.bagCapacity;
           if (bagCap >= 40) return '<div style="margin-top:8px;color:var(--text-dim);font-size:12px;text-align:center">가방 최대 확장 완료 (40칸)</div>';
@@ -151,6 +185,28 @@ export function createTradeScreen(
           if (selectedNpc) { p.adjustRelationship(selectedNpc.name, 0.02, 0.01); selectedNpc.adjustRelationship(p.name, 0.02, 0.01); }
           session.backlog.add(session.gameTime, `${p.name}이(가) ${item.name}을(를) 구매했다. (-${item.price}G)`, '행동');
           message = `${item.name} 구매! -${item.price}G`;
+        }
+        renderTrade(el);
+      });
+    });
+    // 특산품 구매 핸들러
+    el.querySelectorAll<HTMLButtonElement>('[data-buy-special]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const itemId = btn.dataset.buySpecial!;
+        const specialItem = specialItems.find(s => s.itemId === itemId);
+        if (!specialItem || !selectedNpc) return;
+        if (p.spirit.gold < specialItem.price) { message = '골드가 부족합니다!'; }
+        else if (p.isBagFull(session.knowledge.bagCapacity, itemId)) { message = '⚠ 인벤토리가 가득 찼습니다!'; }
+        else if (!selectedNpc.removeItemById(itemId, 1)) { message = '재고가 없습니다!'; }
+        else {
+          p.addGold(-specialItem.price);
+          p.addItemById(itemId, 1);
+          p.spirit.tradeCount++;
+          session.knowledge.adjustReputation(loc, 0.01);
+          p.adjustRelationship(selectedNpc.name, 0.03, 0.02);
+          selectedNpc.adjustRelationship(p.name, 0.03, 0.02);
+          session.backlog.add(session.gameTime, `${p.name}이(가) ${selectedNpc.name}에게서 ${specialItem.name}을(를) 구매했다. (-${specialItem.price}G)`, '행동');
+          message = `${specialItem.name} 구매! -${specialItem.price}G`;
         }
         renderTrade(el);
       });

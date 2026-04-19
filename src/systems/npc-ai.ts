@@ -26,6 +26,21 @@ export interface ActionCandidate {
 }
 
 // ============================================================
+// 위치별 특산물 맵 (Merchant NPC 수집용)
+// ============================================================
+
+interface SpecialtyDef {
+  itemId: string;
+  maxStock: number;
+  collectChance: number;
+}
+
+const LOCATION_SPECIALTIES: Partial<Record<string, SpecialtyDef>> = {
+  Memory_Spring:    { itemId: 'moonlight_stew',  maxStock: 2, collectChance: 0.4  },
+  Erumen_Mistwood:  { itemId: 'starfire_broth',  maxStock: 1, collectChance: 0.15 },
+};
+
+// ============================================================
 // Helper functions
 // ============================================================
 
@@ -874,6 +889,28 @@ export function evaluateActions(
     else if (count >= 7) c.score *= 0.7;
   }
 
+  // Merchant 특산물 위치 이동 가산점: stationary가 아닌 상인에게 특산물 위치 방문 유도
+  if (role === SpiritRole.Merchant && !actor.stationary) {
+    for (const [specialtyLoc, specialty] of Object.entries(LOCATION_SPECIALTIES)) {
+      if (!specialty) continue;
+      if (loc === specialtyLoc) continue; // 이미 해당 위치
+      const currentStock = actor.getItemCount(specialty.itemId);
+      if (currentStock >= specialty.maxStock) continue; // 재고 충분
+      const lastVisitKey = `visited_${specialtyLoc}`;
+      const lastVisitDay = actor.getVariable(lastVisitKey) ?? 0;
+      const daysSinceVisit = time.day - lastVisitDay;
+      if (daysSinceVisit < 2) continue; // 최근 방문 시 스킵
+      // 기본 15점 + 재고 없으면 +20점
+      const bonus = 15 + (currentStock === 0 ? 20 : 0);
+      candidates.push(make(ActionType.GoToLocation, bonus, {
+        targetLocation: specialtyLoc,
+        reason: `특산물 수집: ${specialty.itemId}`,
+      }));
+      // 방문 기록 갱신
+      actor.setVariable(lastVisitKey, time.day);
+    }
+  }
+
   return candidates;
 }
 
@@ -1427,6 +1464,17 @@ export function npcOnTick(
         }
         actor.moveDestination = '';
         log.add(time, `${npcName}이${iGa(npcName)} ${locationName(arrivedAt)}에 도착했다.`, '행동', npcName, arrivedAt);
+
+        // Merchant 특산물 수집: stationary가 아닌 상인이 특산물 위치에 도착했을 때
+        if (actor.spirit.role === SpiritRole.Merchant && !actor.stationary) {
+          const specialty = LOCATION_SPECIALTIES[arrivedAt];
+          if (specialty && actor.getItemCount(specialty.itemId) < specialty.maxStock) {
+            if (Math.random() < specialty.collectChance) {
+              actor.addItemById(specialty.itemId, 1);
+              log.add(time, `${npcName}이${iGa(npcName)} ${locationName(arrivedAt)}에서 특산물을 수집했다.`, '행동', npcName, arrivedAt);
+            }
+          }
+        }
       }
       // 중간 경유지면 다음 틱에서 다음 구간 시작 (fall through to action evaluation)
     }

@@ -58,7 +58,6 @@ export interface BaseProperty {
   ap: number; maxAp: number;
   strength: number;
   age: number;
-  level: number; exp: number;
   sleeping: boolean;
   mood: number;
 }
@@ -68,7 +67,7 @@ export function createBaseProperty(race = Race.Human): BaseProperty {
     race, hp: 100, maxHp: 100, mp: 30, maxMp: 30,
     attack: 10, defense: 5,
     ap: 5, maxAp: 5,
-    strength: 0.5, age: 25, level: 1, exp: 0, sleeping: false, mood: 0,
+    strength: 0.5, age: 25, sleeping: false, mood: 0,
   };
 }
 
@@ -97,7 +96,6 @@ export enum ActionType {
   Count,
 }
 
-export function expForLevel(level: number): number { return 80 + level * 20; }
 
 export class Actor {
   name: string;
@@ -235,17 +233,6 @@ export class Actor {
   }
   adjustMood(delta: number): void {
     this.base.mood = Math.max(-1, Math.min(1, this.base.mood + delta));
-  }
-
-  gainExp(amount: number): boolean {
-    this.base.exp += amount;
-    const needed = expForLevel(this.base.level);
-    if (this.base.exp >= needed) {
-      this.base.exp -= needed;
-      this.base.level++;
-      return true;
-    }
-    return false;
   }
 
   getDungeonProgress(dungeonId: string): number {

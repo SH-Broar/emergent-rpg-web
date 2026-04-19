@@ -853,7 +853,6 @@ export function createNpcInfoScreen(
         <div class="info-grid">
           <div>종족: ${raceName(npc.base.race)}</div>
           <div>역할: ${spiritRoleName(npc.spirit.role)}</div>
-          <div>레벨: ${npc.base.level}</div>
           <div>HP: ${Math.round(npc.base.hp)}/${Math.round(npc.getEffectiveMaxHp())}</div>
           <div>공격: ${npc.getEffectiveAttack().toFixed(1)}</div>
           <div>방어: ${npc.getEffectiveDefense().toFixed(1)}</div>

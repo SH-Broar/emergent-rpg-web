@@ -57,6 +57,9 @@ export const Loc = {
   Moss_Tavern: 'Moss_Tavern',
   Triflower: 'Triflower',
 
+  // === 야간 거리 ===
+  Night_Backstreet: 'Night_Backstreet',
+
   // === 타코미 · 에니챰 ===
   Void_Forest: 'Void_Forest',
   Enicham: 'Enicham',

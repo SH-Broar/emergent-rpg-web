@@ -1124,10 +1124,8 @@ export function createDungeonScreen(
 
     const isBoss = isBossFight;
     const isMidBoss = isMidBossFight;
-    const baseExpGain = (isBoss || isMidBoss) ? 50 + selectedDungeon.difficulty * 30 : 20 + selectedDungeon.difficulty * 10;
     const baseGoldGain = (isBoss || isMidBoss) ? 15 + selectedDungeon.difficulty * 285 : 5 + selectedDungeon.difficulty * 145;
     const prevProgress = p.getDungeonProgress(selectedDungeon.id);
-    let expGain = baseExpGain;
     let goldGain = baseGoldGain;
     let bonusText = '';
 
@@ -1149,7 +1147,6 @@ export function createDungeonScreen(
     }
 
     p.addGold(Math.round(goldGain));
-    const leveledUp = p.gainExp(Math.round(expGain));
     session.gameTime.advance(30);
 
     // 전투 보상 아이템 (매 전투)
@@ -1179,7 +1176,7 @@ export function createDungeonScreen(
 
     session.backlog.add(
       session.gameTime,
-      `${p.name}${iGa(p.name)} ${combatState.enemy.name}${eulReul(combatState.enemy.name)} 토벌했다. EXP+${Math.round(expGain)}, ${Math.round(goldGain)}G${lootText}`,
+      `${p.name}${iGa(p.name)} ${combatState.enemy.name}${eulReul(combatState.enemy.name)} 토벌했다. ${Math.round(goldGain)}G${lootText}`,
       '행동',
     );
 
@@ -1213,10 +1210,9 @@ export function createDungeonScreen(
         <h2>★ 보스 격파!</h2>
         <div style="text-align:center;margin:12px 0">
           <p>${combatState.enemy.name}${eulReul(combatState.enemy.name)} 쓰러뜨렸다!</p>
-          <p>EXP +${Math.round(expGain)} | ${Math.round(goldGain)}G</p>
+          <p>${Math.round(goldGain)}G</p>
           ${lootLines.length > 0 ? `<p style="color:var(--accent)">획득: ${lootLines.join(', ')}</p>` : ''}
           ${bonusText ? `<p style="color:var(--accent2)">${bonusText}</p>` : ''}
-          ${leveledUp ? `<p style="color:var(--success)">레벨 업! Lv.${p.base.level}</p>` : ''}
           <p style="color:var(--text-dim)">진행도: ${curProgress}%</p>
           ${unlockedHidden && selectedDungeon.hiddenLocation ? `<p style="color:#6ba3d6">숨겨진 지역 ${locationName(selectedDungeon.hiddenLocation)}${iGa(locationName(selectedDungeon.hiddenLocation!))} 열렸다.</p>` : ''}
           ${sRankThisRun ? `<p style="color:var(--success);font-weight:700">★ S랭크! (클리어 ${runState.totalTurns}턴 / 제한 ${srLimit}턴 이내)</p>` : ''}
@@ -1242,10 +1238,9 @@ export function createDungeonScreen(
         <h2>⚔ 중간 보스 격파!</h2>
         <div style="text-align:center;margin:12px 0">
           <p>${combatState.enemy.name}${eulReul(combatState.enemy.name)} 쓰러뜨렸다!</p>
-          <p>EXP +${Math.round(expGain)} | ${Math.round(goldGain)}G</p>
+          <p>${Math.round(goldGain)}G</p>
           ${lootLines.length > 0 ? `<p style="color:var(--accent)">획득: ${lootLines.join(', ')}</p>` : ''}
           ${bonusText ? `<p style="color:var(--accent2)">${bonusText}</p>` : ''}
-          ${leveledUp ? `<p style="color:var(--success)">레벨 업! Lv.${p.base.level}</p>` : ''}
         </div>
         <button class="btn btn-primary" data-action="continue">${runState.floor + 1}층으로 전진 [Enter]</button>
       `;
@@ -1272,10 +1267,9 @@ export function createDungeonScreen(
         <h2>승리!</h2>
         <div style="text-align:center;margin:12px 0">
           <p>적을 쓰러뜨렸다!</p>
-          <p>EXP +${Math.round(expGain)} | ${Math.round(goldGain)}G</p>
+          <p>${Math.round(goldGain)}G</p>
           ${lootLines.length > 0 ? `<p style="color:var(--accent)">획득: ${lootLines.join(', ')}</p>` : ''}
           ${bonusText ? `<p style="color:var(--accent2)">${bonusText}</p>` : ''}
-          ${leveledUp ? `<p style="color:var(--success)">레벨 업! Lv.${p.base.level}</p>` : ''}
         </div>
         <button class="btn btn-primary" data-action="continue">계속 [Enter]</button>
       `;

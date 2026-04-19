@@ -89,7 +89,7 @@ function rollMonsterEvent(session: GameSession, avgMonster: number, avgDanger: n
     if (monsterLvl >= lvl) { title = t; desc = d; }
   }
 
-  const lvlDiff = monsterLvl - p.base.level;
+  const lvlDiff = monsterLvl - p.hyperionLevel;
   const baseDmg = Math.max(1, Math.round(avgMonster * 2 + lvlDiff * 3));
   const hpDmg   = lvlDiff > 3 ? randomInt(baseDmg, baseDmg * 2) : randomInt(0, baseDmg);
   p.adjustHp(-hpDmg);

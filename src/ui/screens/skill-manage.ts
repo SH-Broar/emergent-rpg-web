@@ -33,6 +33,10 @@ export function createSkillManageScreen(
         const elemLabel = skillElementName(def.element);
         const isSelected = i === selectedIdx;
         const tpLabel = def.tpCost > 0 ? ` TP${def.tpCost}` : '';
+        const appearBonus = p.getVariable('meal_skill_appear');
+        const jobBoost = (p.combatJob && def.jobAffinity === p.combatJob) ? 0.15 : 0;
+        const adjustedAppearRate = Math.min(1, def.appearRate + (level - 1) * 0.05 + jobBoost + appearBonus);
+        const appearLabel = `출현 ${Math.round(adjustedAppearRate * 100)}%`;
 
         listHtml += `
           <div class="skill-row${isSelected ? ' skill-selected' : ''}" data-idx="${i}" style="
@@ -46,7 +50,7 @@ export function createSkillManageScreen(
                 <span style="font-weight:bold">${def.name}</span>
                 <span style="font-size:11px;color:var(--accent2);margin-left:4px">Lv.${level}</span>
               </span>
-              <span style="font-size:11px;color:var(--text-dim)">[${typeLabel}] ${elemLabel} MP${def.mpCost}${tpLabel}</span>
+              <span style="font-size:11px;color:var(--text-dim)">[${typeLabel}] ${elemLabel} MP${def.mpCost}${tpLabel} | ${appearLabel}</span>
             </div>
             <div style="font-size:11px;color:var(--text-dim);margin-top:2px">
               ${def.description}

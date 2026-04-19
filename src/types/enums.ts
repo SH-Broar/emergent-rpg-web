@@ -29,6 +29,11 @@ export function parseItemType(s: string): ItemType {
   return ITEM_TYPE_KEYS[s.trim()] ?? ItemType.Food;
 }
 
+/** s가 알려진 ItemType 카테고리 키인지 확인 (Food, Herb, ... GuildCard) */
+export function isItemTypeCategoryKey(s: string): boolean {
+  return Object.prototype.hasOwnProperty.call(ITEM_TYPE_KEYS, s.trim());
+}
+
 const ITEM_TYPE_NAMES: Record<ItemType, string> = {
   [ItemType.Food]: '식량', [ItemType.Herb]: '약초', [ItemType.OreCommon]: '광석',
   [ItemType.OreRare]: '희귀 광석', [ItemType.MonsterLoot]: '몬스터 전리품',

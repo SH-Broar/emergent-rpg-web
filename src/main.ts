@@ -15,7 +15,6 @@ import { createDungeonScreen } from './ui/screens/dungeon';
 import { createTradeScreen } from './ui/screens/trade';
 import { createQuestBoardScreen } from './ui/screens/quest-board';
 import { createBacklogScreen } from './ui/screens/backlog';
-import { createLevelUpScreen } from './ui/screens/level-up';
 import { createBirthScreen, createCustomCharScreen } from './ui/screens/character-creation';
 import { createActivityScreen } from './ui/screens/activity';
 import { createActivitySimScreen } from './ui/screens/activity-sim';
@@ -576,9 +575,6 @@ async function boot() {
         case 'save':
           sm.push(createSaveLoadScreen(session, true, () => sm.pop()));
           break;
-        case 'level_up':
-          sm.push(createLevelUpScreen(session, () => sm.pop()));
-          break;
         case 'hyperion_levelup':
           // pendingHyperionMsgs 큐가 비어있으면 무시 (방어 로직)
           if (session.pendingHyperionMsgs.length === 0) break;
@@ -925,7 +921,6 @@ async function boot() {
           // 최소 5분 경과 시 오프라인 시뮬레이션 실행
           if (elapsedMinutes >= 5) {
             const prevDay = session.gameTime.day;
-            const prevLevel = session.player.base.level;
             const prevSeason = session.world.getCurrentSeason();
 
             fastForwardWorld(
@@ -938,7 +933,6 @@ async function boot() {
             checkAndQueueHyperionLevelUps(session);
 
             const daysPassed = session.gameTime.day - prevDay;
-            const levelsGained = session.player.base.level - prevLevel;
             const newSeason = session.world.getCurrentSeason();
             const seasonChanged = newSeason !== prevSeason;
 
@@ -949,7 +943,6 @@ async function boot() {
                 let summary = '';
                 summary += `<p>부재 시간: 약 ${elapsedMinutes >= 60 ? Math.floor(elapsedMinutes / 60) + '시간 ' + (elapsedMinutes % 60) + '분' : elapsedMinutes + '분'}</p>`;
                 if (daysPassed > 0) summary += `<p>${daysPassed}일이 흘렀다.</p>`;
-                if (levelsGained > 0) summary += `<p>레벨이 ${levelsGained} 올랐다! (Lv.${session.player.base.level})</p>`;
                 if (seasonChanged) summary += `<p>계절이 ${seasonName(newSeason)}(으)로 바뀌었다.</p>`;
                 summary += `<p>현재: ${session.gameTime.toString()}</p>`;
                 summary += `<p>HP: ${Math.round(session.player.base.hp)}/${Math.round(session.player.getEffectiveMaxHp())} · MP: ${Math.round(session.player.base.mp)}/${Math.round(session.player.getEffectiveMaxMp())} · TP: ${session.player.base.ap}/${session.player.getEffectiveMaxAp()}</p>`;

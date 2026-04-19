@@ -361,6 +361,7 @@ export function applyFullSleepRecovery(actor: Actor, mood = 0.05): AppliedRecove
   actor.setVariable('meal_mp_pct', 0);
   actor.setVariable('meal_hp_pct', 0);
   actor.setVariable('meal_combat_speed', 0);
+  actor.setVariable('meal_skill_appear', 0);
 
   return applyRecovery(actor, {
     hp: actor.getEffectiveMaxHp(),
@@ -379,10 +380,11 @@ export function applyDailyMealBuff(actor: Actor, def: ItemDef): { ok: boolean; m
 
   actor.adjustVariable('meal_count', 1);
 
-  if (def.mealBuffAtk)  actor.adjustVariable('meal_atk', def.mealBuffAtk);
-  if (def.mealBuffDef)  actor.adjustVariable('meal_def', def.mealBuffDef);
-  if (def.mealMpMaxPct) actor.adjustVariable('meal_mp_pct', def.mealMpMaxPct);
-  if (def.mealHpMaxPct) actor.adjustVariable('meal_hp_pct', def.mealHpMaxPct);
+  if (def.mealBuffAtk)          actor.adjustVariable('meal_atk', def.mealBuffAtk);
+  if (def.mealBuffDef)          actor.adjustVariable('meal_def', def.mealBuffDef);
+  if (def.mealMpMaxPct)         actor.adjustVariable('meal_mp_pct', def.mealMpMaxPct);
+  if (def.mealHpMaxPct)         actor.adjustVariable('meal_hp_pct', def.mealHpMaxPct);
+  if (def.mealBuffSkillAppear)  actor.adjustVariable('meal_skill_appear', def.mealBuffSkillAppear);
   if (def.mealCombatSpeed > 0) {
     const current = actor.getVariable('meal_combat_speed');
     if (def.mealCombatSpeed > current) {
@@ -408,6 +410,7 @@ export function mealBuffLabel(def: ItemDef): string {
   if (def.mealMpMaxPct)     parts.push(`MP상한+${Math.round(def.mealMpMaxPct * 100)}%`);
   if (def.mealHpMaxPct)     parts.push(`HP상한+${Math.round(def.mealHpMaxPct * 100)}%`);
   if (def.mealCombatSpeed > 0) parts.push(`전투속도x${def.mealCombatSpeed}`);
+  if (def.mealBuffSkillAppear) parts.push(`출현+${(def.mealBuffSkillAppear * 100).toFixed(0)}%`);
   return parts.length > 0 ? `하루 버프: ${parts.join(', ')}` : '';
 }
 
