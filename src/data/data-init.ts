@@ -9,7 +9,7 @@ import { Actor } from '../models/actor';
 import { World, createLocationData } from '../models/world';
 import { EventSystem, createGameEvent } from '../models/event';
 import { DungeonSystem, DungeonEventType, MidBossDef, DungeonFloorDef } from '../models/dungeon';
-import { clearDungeonSRankRegistry, registerDungeonSRankLimit } from '../models/dungeon-s-rank-registry';
+import { clearDungeonSRankRegistry, registerDungeonSRankLimit, registerDungeonDisplayName } from '../models/dungeon-s-rank-registry';
 import { ActivitySystem } from '../models/activity';
 import { loadHyperion, setLoadedLocationIds } from '../systems/hyperion';
 import { setDialogueLines, clearGiftPreferences, setGiftPreference, rebuildLocationNameMap, rebuildTitleNameMap, rebuildItemNameMap } from '../systems/npc-interaction';
@@ -493,6 +493,8 @@ export function initDungeonSystem(
       randomSkillCount: s.has('randomSkillCount') ? parseInt(s.get('randomSkillCount', '0'), 10) : 0,
     });
     if (sRankTurnLimit) registerDungeonSRankLimit(s.name, sRankTurnLimit);
+    // 던전 display name → id 자동 등록 (입수 조건 파서에서 S랭크/클리어 조건 해석용)
+    registerDungeonDisplayName(s.get('name', s.name), s.name);
   }
 
   // dungeon events

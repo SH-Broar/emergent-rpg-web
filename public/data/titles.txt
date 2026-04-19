@@ -356,3 +356,9 @@ name = 전설의 이름
 description = 평판이 높은 장소 10곳 이상.
 condition = high_reputation_count:10
 priority = 75
+
+[mechanic_license_b]
+name = 정밀기계취급 자격 B
+description = 아이템 30회 이상 제작. 정밀 기계를 다룰 수 있는 자격이 있음을 증명한다.
+condition = items_crafted:30
+priority = 55

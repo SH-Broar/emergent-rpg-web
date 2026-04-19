@@ -184,7 +184,7 @@ export function createHyperionScreen(
     }
 
     // Acquisition conditions (입수 조건)
-    if (actor.acquisitionMethod && actor !== p) {
+    if (actor !== p) {
       const acqTitle = document.createElement('div');
       acqTitle.style.cssText = 'margin-top:12px;font-weight:600;font-size:13px;color:var(--accent)';
       const diffLabel = actor.acquisitionDifficulty > 0
@@ -193,27 +193,51 @@ export function createHyperionScreen(
       acqTitle.textContent = '\uc785\uc218 \uc870\uac74' + diffLabel;
       wrap.appendChild(acqTitle);
 
-      const checks = evaluateAcquisitionConditions(actor, p, session.actors, session.knowledge, session.dungeonSystem);
-      const acqList = document.createElement('div');
-      acqList.style.cssText = 'display:flex;flex-direction:column;gap:3px;margin-top:4px';
+      const checks = actor.acquisitionMethod
+        ? evaluateAcquisitionConditions(actor, p, session.actors, session.knowledge, session.dungeonSystem)
+        : [];
+      // 실제 평가되는(원작 주석 제외) 라인이 있는지 확인 — 없으면 시작 캐릭터
+      const scored = checks.filter(c => c.text && !c.text.startsWith('\uc6d0\uc791:'));
+      const isStarter = scored.length === 0;
 
-      for (const check of checks) {
-        if (!check.text) continue;
-        const row = document.createElement('div');
-        const icon = check.met ? '\u2713' : (check.evaluable ? '\u2717' : '\u25cb');
-        const color = check.met ? 'var(--success)' : (check.evaluable ? 'var(--accent)' : 'var(--text-dim)');
-        row.style.cssText = `font-size:12px;padding:3px 8px;border-radius:4px;color:${color};background:${check.met ? 'rgba(78,204,163,0.1)' : 'var(--bg-card)'}`;
-        row.textContent = `${icon} ${check.text}`;
-        acqList.appendChild(row);
+      if (isStarter) {
+        const note = document.createElement('p');
+        note.style.cssText = 'font-size:12px;color:var(--text-dim);margin-top:4px;padding:4px 8px;background:var(--bg-card);border-radius:4px';
+        note.textContent = '\uc2dc\uc791 \uce90\ub9ad\ud130 \u2014 \uc870\uac74 \uc5c6\uc74c';  // "시작 캐릭터 — 조건 없음"
+        wrap.appendChild(note);
       }
-      wrap.appendChild(acqList);
 
-      const metCount = checks.filter(c => c.met).length;
-      const totalCount = checks.filter(c => c.text).length;
-      const summary = document.createElement('p');
-      summary.style.cssText = 'font-size:11px;color:var(--text-dim);margin-top:4px;text-align:center';
-      summary.textContent = `\uc9c4\ud589: ${metCount}/${totalCount}`;
-      wrap.appendChild(summary);
+      if (checks.length > 0) {
+        const acqList = document.createElement('div');
+        acqList.style.cssText = 'display:flex;flex-direction:column;gap:3px;margin-top:4px';
+
+        for (const check of checks) {
+          if (!check.text) continue;
+          const isMeta = check.text.startsWith('\uc6d0\uc791:');  // 원작:
+          const row = document.createElement('div');
+          if (isMeta) {
+            // 원작 주석 — 회색 이탤릭, 아이콘 없이
+            row.style.cssText = 'font-size:11px;padding:3px 8px;border-radius:4px;color:var(--text-dim);font-style:italic;background:var(--bg-card)';
+            row.textContent = check.text;
+          } else {
+            const icon = check.met ? '\u2713' : (check.evaluable ? '\u2717' : '\u25cb');
+            const color = check.met ? 'var(--success)' : (check.evaluable ? 'var(--accent)' : 'var(--text-dim)');
+            row.style.cssText = `font-size:12px;padding:3px 8px;border-radius:4px;color:${color};background:${check.met ? 'rgba(78,204,163,0.1)' : 'var(--bg-card)'}`;
+            row.textContent = `${icon} ${check.text}`;
+          }
+          acqList.appendChild(row);
+        }
+        wrap.appendChild(acqList);
+      }
+
+      const metCount = scored.filter(c => c.met).length;
+      const totalCount = scored.length;
+      if (totalCount > 0) {
+        const summary = document.createElement('p');
+        summary.style.cssText = 'font-size:11px;color:var(--text-dim);margin-top:4px;text-align:center';
+        summary.textContent = `\uc9c4\ud589: ${metCount}/${totalCount}`;
+        wrap.appendChild(summary);
+      }
     }
 
     const hint = document.createElement('p');

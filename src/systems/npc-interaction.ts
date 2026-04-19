@@ -6,7 +6,7 @@ import { SocialHub, getRelationshipOverall } from '../models/social';
 import { Backlog } from '../models/backlog';
 import { PlayerKnowledge } from '../models/knowledge';
 import { GameTime } from '../types/game-time';
-import { Element, ItemType, SpiritRole, ELEMENT_COUNT, elementName } from '../types/enums';
+import { Element, ItemType, Race, SpiritRole, ELEMENT_COUNT, elementName } from '../types/enums';
 import { itemName, GameRegistry } from '../types/registry';
 import { randomFloat, randomInt, weightedRandomChoice } from '../types/rng';
 import { getDungeonSRankTurnLimit, resolveDungeonIdForSRankDisplayName } from '../models/dungeon-s-rank-registry';
@@ -613,7 +613,74 @@ function resolveTitleId(displayName: string): string {
   return titleNameMap.get(clean) ?? clean;
 }
 
-/** 입수 조건 한 줄을 파싱하여 자동 평가 시도 */
+// ============================================================
+// 한글 종족/속성 매핑 (입수 조건 파서용)
+// ============================================================
+
+const RACE_KR_TO_EN: Record<string, Race> = {
+  '인간': Race.Human, '엘프': Race.Elf, '드워프': Race.Dwarf,
+  '수인': Race.Beastkin, '하피': Race.Harpy, '켄타우로스': Race.Centaur,
+  '네코미미': Race.Nekomimi, '정령': Race.Spirit, '여우': Race.Foxkin,
+  '여우 수인': Race.Foxkin,
+  '드래곤': Race.Dragon, '천사': Race.Angel, '악마': Race.Demon,
+  '아르카나': Race.Arcana, '인공물': Race.Construct, '나방': Race.Moth,
+  '나방족': Race.Moth,
+  '드라이어드': Race.Dryad, '타천사': Race.FallenAngel, '유령': Race.Phantom,
+  '팬텀': Race.Phantom, '조류': Race.Harpy,
+  '인어': Race.Merfolk, '고블린': Race.Goblin, '뱀파이어': Race.Vampire,
+  '라미아': Race.Lamia, '요정': Race.Fairy, '아라크네': Race.Arachne,
+  '슬라임': Race.Slime, '리자드맨': Race.Lizardfolk, '미노타우로스': Race.Minotaur,
+  '늑대인간': Race.Werewolf, '하프링': Race.Halfling, '사이렌': Race.Siren,
+  '알라우네': Race.Alraune,
+};
+
+const ELEM_KR_TO_IDX: Record<string, number> = {
+  '불': 0, '물': 1, '전기': 2, '철': 3,
+  '땅': 4, '바람': 5, '빛': 6, '어둠': 7,
+  '풍': 5, // "풍 속성" alias (시이드 조건 대응)
+};
+
+/** 특정 종족의 동료 수 집계 — recruitedEver 기준 */
+function countCompanionsByRace(
+  raceName: string,
+  allActors: Actor[],
+  knowledge: PlayerKnowledge,
+): number {
+  const clean = raceName.trim();
+  const race = RACE_KR_TO_EN[clean];
+  if (race === undefined) return 0;
+  let count = 0;
+  for (const name of knowledge.recruitedEver) {
+    const actor = allActors.find(a => a.name === name);
+    if (actor && actor.base.race === race) count++;
+  }
+  return count;
+}
+
+/** 특정 속성의 동료 수 집계 — actor의 dominant element 기준 */
+function countCompanionsByElement(
+  elemName: string,
+  allActors: Actor[],
+  knowledge: PlayerKnowledge,
+): number {
+  const clean = elemName.trim();
+  const elemIdx = ELEM_KR_TO_IDX[clean];
+  if (elemIdx === undefined) return 0;
+  let count = 0;
+  for (const name of knowledge.recruitedEver) {
+    const actor = allActors.find(a => a.name === name);
+    if (!actor) continue;
+    // dominant element = 가장 높은 values 인덱스
+    let maxIdx = 0;
+    for (let i = 1; i < ELEMENT_COUNT; i++) {
+      if (actor.color.values[i] > actor.color.values[maxIdx]) maxIdx = i;
+    }
+    if (maxIdx === elemIdx) count++;
+  }
+  return count;
+}
+
+/** 입수 조건 한 줄을 파싱하여 자동 평가 시도 (OR/원작 래퍼 포함) */
 export function evaluateAcquisitionLine(
   line: string,
   player: Actor,
@@ -622,7 +689,41 @@ export function evaluateAcquisitionLine(
   dungeonSystem?: DungeonSystem,
 ): AcquisitionCheck {
   const t = line.trim();
-  if (!t || t.startsWith('상기의')) return { text: t, met: true, evaluable: true };
+  if (!t) return { text: t, met: true, evaluable: true };
+
+  // "원작:" 주석 — 영입 조건에서 제외 (UI 표시 목적)
+  if (t.startsWith('원작:')) return { text: t, met: true, evaluable: true };
+
+  // "상기의..." 는 상위(evaluateAcquisitionConditions)에서 처리하지만,
+  // evaluateAcquisitionLine이 단독 호출되는 경우를 대비해 기본적으로 met:true로 둔다.
+  if (t.startsWith('상기의')) return { text: t, met: true, evaluable: true };
+
+  // ── OR 처리 ("A 또는 B") ────────────────────────────────────
+  if (t.includes(' 또는 ')) {
+    const parts = t.split(' 또는 ');
+    const subResults = parts.map((p, idx) => {
+      // 첫 파트에만 선행 번호 "1. " 제거 (두 번째 이후는 본래 번호가 없음)
+      const cleanP = p.trim().replace(idx === 0 ? /^\d+\.\s*/ : /^/, '');
+      return evaluateAcquisitionLineInner(cleanP, player, allActors, knowledge, dungeonSystem);
+    });
+    const anyMet = subResults.some(r => r.met);
+    const allEvaluable = subResults.every(r => r.evaluable);
+    return { text: t, met: anyMet, evaluable: allEvaluable };
+  }
+
+  return evaluateAcquisitionLineInner(t, player, allActors, knowledge, dungeonSystem);
+}
+
+/** 단일 조건 평가 (OR/원작/상기의 등 래퍼 처리 후 본체 패턴 매칭) */
+function evaluateAcquisitionLineInner(
+  line: string,
+  player: Actor,
+  allActors: Actor[],
+  knowledge: PlayerKnowledge,
+  dungeonSystem?: DungeonSystem,
+): AcquisitionCheck {
+  const t = line.trim();
+  if (!t) return { text: t, met: true, evaluable: true };
 
   // ── 기존 패턴 ────────────────────────────────────────────────
 
@@ -646,6 +747,30 @@ export function evaluateAcquisitionLine(
   if (comp) {
     const name = comp[1].trim().replace(/^\d+\.\s*/, '');
     return { text: t, met: knowledge.isCompanion(name), evaluable: true };
+  }
+
+  // X 종족의 동료가 N명 이상 — 종족별 동료 수 조건
+  const raceCompMatch = t.match(/(.+?)\s*종족의\s*동료가?\s*(\d+)\s*명\s*이상/);
+  if (raceCompMatch) {
+    const raceName = raceCompMatch[1].trim().replace(/^\d+\.\s*/, '');
+    const target = parseInt(raceCompMatch[2], 10);
+    if (RACE_KR_TO_EN[raceName] === undefined) {
+      return { text: t, met: false, evaluable: false };
+    }
+    const count = countCompanionsByRace(raceName, allActors, knowledge);
+    return { text: t, met: count >= target, evaluable: true };
+  }
+
+  // X 속성의 동료가 N명 이상 — 속성별 동료 수 조건
+  const elemCompMatch = t.match(/(.+?)\s*속성의\s*동료가?\s*(\d+)\s*명\s*이상/);
+  if (elemCompMatch) {
+    const elemName = elemCompMatch[1].trim().replace(/^\d+\.\s*/, '');
+    const target = parseInt(elemCompMatch[2], 10);
+    if (ELEM_KR_TO_IDX[elemName] === undefined) {
+      return { text: t, met: false, evaluable: false };
+    }
+    const count = countCompanionsByElement(elemName, allActors, knowledge);
+    return { text: t, met: count >= target, evaluable: true };
   }
 
   // 동료가 N명 이상
@@ -721,6 +846,21 @@ export function evaluateAcquisitionLine(
   }
 
   // ── 신규 패턴 ────────────────────────────────────────────────
+
+  // "X" 장비 중 / "X"을(를) 장비 중 — 무기/방어구/장신구 장착 조건
+  // 주의: "소지" 패턴보다 먼저 평가하여 오탐 방지.
+  const equippedMatch = t.match(/["'「]([^"'」]+)["'」]\s*(?:을|를)?\s*장비\s*중/);
+  if (equippedMatch) {
+    const itemId = resolveItemId(equippedMatch[1]);
+    if (!itemId) return { text: t, met: false, evaluable: false };
+    const equipped = [
+      player.equippedWeapon,
+      player.equippedArmor,
+      player.equippedAccessory,
+      player.equippedAccessory2,
+    ].filter(x => !!x);
+    return { text: t, met: equipped.includes(itemId), evaluable: true };
+  }
 
   // 칭호 "XXX" 소지 (따옴표 내부 문자열) — ", ', 「」 지원
   const titleMatch = t.match(/칭호\s*["'「]([^"'」]+)["'」]\s*소지/);
@@ -818,6 +958,16 @@ export function evaluateAcquisitionLine(
     return { text: t, met: false, evaluable: false };
   }
 
+  // "X와 대화했다" / "X과 대화했다" — 대화 이력 기반
+  const conversedMatch = t.match(/^(?:\d+\.\s*)?(.+?)[와과]\s*대화했?다?$/);
+  if (conversedMatch) {
+    const name = conversedMatch[1].trim();
+    // 이름이 실제 NPC 이름일 때만 유효 (오탐 방지)
+    if (allActors.some(a => a.name === name)) {
+      return { text: t, met: knowledge.conversationPartners.has(name), evaluable: true };
+    }
+  }
+
   // 지역 방문 — "X 지역을 발견했다", "X를 방문했다", "X 방문"
   const locVisit = t.match(/(.+?)\s*(?:지역을?)?\s*(?:발견했다|방문했다|방문)$/);
   if (locVisit) {
@@ -832,14 +982,40 @@ export function evaluateAcquisitionLine(
   return { text: t, met: false, evaluable: false };
 }
 
-/** NPC의 전체 입수 조건 평가 */
+/**
+ * NPC의 전체 입수 조건 평가.
+ * "상기의..." 라인은 선행 라인들이 모두 met일 때만 met:true로 평가.
+ * "원작:" 라인은 영입 조건에서 제외 (항상 met:true, 체인 선행 조건에도 영향 없음).
+ */
 export function evaluateAcquisitionConditions(
   actor: Actor, player: Actor, allActors: Actor[], knowledge: PlayerKnowledge,
   dungeonSystem?: DungeonSystem,
 ): AcquisitionCheck[] {
   if (!actor.acquisitionMethod) return [];
-  return actor.acquisitionMethod.split('|')
-    .map(line => evaluateAcquisitionLine(line, player, allActors, knowledge, dungeonSystem));
+  const lines = actor.acquisitionMethod.split('|');
+  const results: AcquisitionCheck[] = [];
+  let allPrevMet = true;
+  for (const line of lines) {
+    const t = line.trim();
+    if (!t) {
+      results.push({ text: t, met: true, evaluable: true });
+      continue;
+    }
+    if (t.startsWith('원작:')) {
+      // 원작 주석 — 표시만, 체인 상태엔 영향 없음
+      results.push({ text: t, met: true, evaluable: true });
+      continue;
+    }
+    if (t.startsWith('상기의')) {
+      // 선행 라인들이 모두 met일 때만 met:true
+      results.push({ text: t, met: allPrevMet, evaluable: true });
+      continue;
+    }
+    const r = evaluateAcquisitionLine(t, player, allActors, knowledge, dungeonSystem);
+    results.push(r);
+    if (!r.met) allPrevMet = false;
+  }
+  return results;
 }
 
 /** 입수 조건이 모두 충족되었는지 */
