@@ -442,7 +442,7 @@ async function boot() {
           }));
           break;
         case 'trade':
-          sm.push(createTradeScreen(session, () => { session.gameTime.advance(15); popThenMaybeHyperion(); }));
+          sm.push(createTradeScreen(session, () => { popThenMaybeHyperion(); }));
           break;
         case 'dungeon':
           sm.push(createDungeonScreen(session, () => popThenMaybeHyperion()));
