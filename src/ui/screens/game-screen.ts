@@ -41,16 +41,16 @@ function atHome(session: GameSession) {
 function atMemorySpring(session: GameSession) { return session.player.currentLocation === 'Memory_Spring'; }
 function canTrade(session: GameSession) {
   const loc = session.player.currentLocation;
-  // 시장에서는 항상 거래 가능, 그 외에는 주변 상인 NPC가 있을 때만
+  // 시장에서는 항상 거래 가능, 그 외에는 주변 살아있는 상인 NPC가 있을 때만
   if (loc === 'Market_Square') return true;
   return session.actors.some(a =>
-    a !== session.player && a.currentLocation === loc && a.spirit.role === 1 /* Merchant */);
+    a !== session.player && a.currentLocation === loc && a.isAlive() && a.spirit.role === 1 /* Merchant */);
 }
 function tradeLabel(session: GameSession): string {
   const loc = session.player.currentLocation;
   if (loc === 'Market_Square') return '거래 : 시장';
   const hasMerchant = session.actors.some(a =>
-    a !== session.player && a.currentLocation === loc && a.spirit.role === 1 /* Merchant */);
+    a !== session.player && a.currentLocation === loc && a.isAlive() && a.spirit.role === 1 /* Merchant */);
   return hasMerchant ? '거래 : 상인' : '거래';
 }
 function nearDungeon(session: GameSession) {
