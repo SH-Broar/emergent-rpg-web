@@ -201,6 +201,16 @@ export function createActivityScreen(
           }
         }
       }
+    } else if (effect.startsWith('setHyperionFlag:')) {
+      // 형식: setHyperionFlag:액터이름:레벨 (0-indexed)
+      // 해당 액터의 hyperionFlags[레벨]을 true로 세팅 → 다음 틱에 manual 조건이 통과되어 레벨업
+      const parts = effect.split(':');
+      const actorName = (parts[1] ?? '').trim();
+      const level = parseInt((parts[2] ?? '0').trim(), 10);
+      const target = session.actors.find(a => a.name === actorName);
+      if (target && !Number.isNaN(level) && level >= 0 && level < target.hyperionFlags.length) {
+        target.hyperionFlags[level] = true;
+      }
     }
 
     // Apply color influence

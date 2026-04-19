@@ -46,6 +46,9 @@ import { createPuchiTowerScreen } from './ui/screens/puchi-tower';
 import { createVillageBuildScreen } from './ui/screens/village-build';
 import { createStatusScreen } from './ui/screens/status';
 import { createHyperionLevelupScreen, HYPERION_OVERLAY_ID } from './ui/screens/hyperion-levelup-overlay';
+import { createEventBattleScreen } from './ui/screens/event-battle';
+import { getEventBattlesAtLocation } from './models/event-battle';
+import { evaluateAcquisitionConditions } from './systems/npc-interaction';
 import { getAllItemDefs } from './types/item-defs';
 import { getAllSkillDefs } from './models/skill';
 import { ItemType } from './types/enums';
@@ -181,6 +184,48 @@ async function boot() {
 
   function autosave() {
     if (session.isValid) saveToSlot(0, session);
+  }
+
+  /** 이벤트 전투 자동 발화: 현재 지역에 미완료 이벤트 전투가 있고
+   *  대응 NPC의 acquisition 조건이 모두 충족되면 push한다. */
+  function maybeTriggerEventBattle(): boolean {
+    if (!session.isValid) return false;
+    const locBattles = getEventBattlesAtLocation(session.player.currentLocation);
+    if (locBattles.length === 0) return false;
+
+    for (const def of locBattles) {
+      // 이미 승리했으면 건너뜀
+      if (def.onVictoryEvent && session.knowledge.isEventDone(def.onVictoryEvent)) continue;
+
+      // 대응 NPC 판정 (on_victory_hyperion_flag "이름:레벨"에서 이름 추출)
+      let npcName = '';
+      if (def.onVictoryHyperionFlag) {
+        npcName = def.onVictoryHyperionFlag.split(':')[0].trim();
+      }
+
+      // 대응 NPC가 있으면 그 NPC의 acquisition 조건이 충족됐는지 확인
+      if (npcName) {
+        const target = session.actors.find(a => a.name === npcName);
+        if (!target) continue;
+        // 이미 recruited면 건너뜀
+        if (session.knowledge.recruitedEver.has(npcName)) continue;
+        // acquisition 조건 체크: "상기의 조건 만족 시 이벤트 전투 후 합류" 같은
+        // 자동평가 불가능한 합류/이벤트 라인은 evaluable:false이므로 제외하고,
+        // evaluable:true인 선행 조건이 모두 met인지만 확인한다.
+        const checks = evaluateAcquisitionConditions(target, session.player, session.actors, session.knowledge, session.dungeonSystem);
+        // event_done 라인은 이벤트 전투 승리 여부이므로 발화 가드에서 제외.
+        // (다른 선행 조건이 모두 met일 때 전투 발화, 승리 시 event_done 세팅으로 영입 조건 완성)
+        const selfCheckable = checks.filter(c => c.evaluable && !/^(?:\d+\.\s*)?event_done\s*:/.test(c.text.trim()));
+        if (selfCheckable.length === 0) continue; // 조건이 전혀 없으면(이상 상태) 발화 스킵
+        const allMet = selfCheckable.every(c => c.met);
+        if (!allMet) continue;
+      }
+
+      // 발화
+      sm.push(createEventBattleScreen(session, def, () => popThenMaybeHyperion()));
+      return true;
+    }
+    return false;
   }
 
   /** 플레이어의 hyperionBonus를 전체 총합 기준으로 초기화/갱신 */
@@ -358,9 +403,17 @@ async function boot() {
     sm.replace(createGameScreen(session, (target) => {
       switch (target) {
         case 'move':
-          sm.push(createMoveScreen(session, () => sm.pop(), (fromId, toId, minutes) => {
+          sm.push(createMoveScreen(session, () => {
+            sm.pop();
+            // 즉시 이동(10분 이하) 후 이벤트 전투 자동 발화 체크
+            maybeTriggerEventBattle();
+          }, (fromId, toId, minutes) => {
             sm.pop(); // move 화면 닫기
-            sm.push(createTravelScreen(session, fromId, toId, minutes, () => sm.pop(), computeTravelSpeed(session)));
+            sm.push(createTravelScreen(session, fromId, toId, minutes, () => {
+              sm.pop();
+              // 장거리 이동(travel overlay) 후 이벤트 전투 자동 발화 체크
+              maybeTriggerEventBattle();
+            }, computeTravelSpeed(session)));
           }));
           break;
         case 'talk':
@@ -543,7 +596,11 @@ async function boot() {
           }
           break;
       }
-    }, autosave));
+    }, () => {
+      autosave();
+      // 이동 완료 등 턴 진행 후 이벤트 전투 자동 발화 체크
+      maybeTriggerEventBattle();
+    }));
     input.setIdleCallback(() => {
       processTurn(session, 'idle');
       autosave();

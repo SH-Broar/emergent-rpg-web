@@ -22,6 +22,8 @@ export interface NpcQuestDef {
   completionText: string;
   followupText: string;
   next: string; // next quest ID, '' if last
+  /** 퀘스트의 지역(LocationID). 데이터 미지정 시 objective_type의 visit/dungeon에서 추론. */
+  location?: string;
 }
 
 export interface NpcQuestState {

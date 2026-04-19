@@ -61,6 +61,15 @@ export function initNpcQuests(sections: DataSection[]): void {
 
     if (!id || !npc || !title) continue;
 
+    const objectiveTypeParsed = parseObjectiveType(objectiveTypeRaw);
+
+    // location: 명시된 값 우선, 없으면 objective_type의 visit/dungeon에서 자동 추론
+    let location = s.get('location', '').trim();
+    if (!location) {
+      if (objectiveTypeParsed.type === 'visit') location = objectiveTypeParsed.locationId;
+      else if (objectiveTypeParsed.type === 'dungeon') location = objectiveTypeParsed.dungeonId;
+    }
+
     const def: NpcQuestDef = {
       id,
       npc,
@@ -69,12 +78,13 @@ export function initNpcQuests(sections: DataSection[]): void {
       unlockRelationship,
       introText,
       objective,
-      objectiveType: parseObjectiveType(objectiveTypeRaw),
+      objectiveType: objectiveTypeParsed,
       rewardGold,
       rewardRelationship,
       completionText,
       followupText,
       next,
+      location: location || undefined,
     };
 
     registerNpcQuestDef(def);

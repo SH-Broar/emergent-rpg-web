@@ -26,6 +26,7 @@ import { initColorNarratives } from './color-narrative-init';
 import { clearNpcQuestDefs } from './npc-quest-defs';
 import { initNpcQuests } from './npc-quest-init';
 import { initDialogueChoices } from './dialogue-choice-init';
+import { loadEventBattles } from '../models/event-battle';
 
 function parseTimeWindow(raw: string): TimeWindow | undefined {
   const value = raw.trim();
@@ -797,6 +798,9 @@ export function initAll(data: GameDataFiles): InitResult {
   clearNpcQuestDefs();
   initNpcQuests(data.npcQuests);
   initDialogueChoices(data.dialogueChoices);
+
+  // 이벤트 전투 정의 로드 (acquisition용 단발 전투)
+  loadEventBattles(data.eventBattles);
 
   return { actors, world, events, dungeonSystem, activitySystem, diagnosticQuestions, warnings };
 }

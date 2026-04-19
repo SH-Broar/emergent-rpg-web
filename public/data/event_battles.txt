@@ -1,0 +1,106 @@
+# ============================================================
+# event_battles.txt — 스토리 이벤트 내 단발 전투 정의
+#
+# acquisition 조건 "이벤트 전투 승리"를 실제 게임 경험으로 연결한다.
+# 기존 던전 전투 엔진(combat-engine.ts)을 재활용해 단발 전투를 실행한다.
+#
+# 키 포맷:
+#   name                    = 전투 헤드라인
+#   description             = 도입부 설명
+#   location                = 발화 LocationID (플레이어가 이 장소에 도착하면 자동 체크)
+#   enemy_name              = 전투 중 적 이름
+#   enemy_hp                = 적 HP
+#   enemy_maxHp             = 적 최대 HP
+#   enemy_attack            = 적 공격력
+#   enemy_defense           = 적 방어력
+#   enemy_skills            = skills.txt id 콤마 리스트. 빈 값 허용
+#   enemy_element           = Fire/Water/Electric/Iron/Earth/Wind/Light/Dark
+#   enemy_level             = 표기용 레벨
+#   reward_gold             = 승리 시 골드 보상
+#   reward_item             = 승리 시 아이템 ID (빈 값 허용)
+#   on_victory_event        = 승리 시 knowledge.completedEvents에 추가할 이벤트 ID
+#   on_victory_hyperion_flag = "actorName:level" (0-indexed). 빈 값 허용
+#   pre_battle_dialogue     = 전투 시작 전 대사
+#   post_victory_dialogue   = 승리 후 대사
+#   post_defeat_dialogue    = 패배 후 대사
+#   retry_allowed           = 1이면 재시도 허용 (기본 1)
+#
+# 트리거: game-screen의 이동 완료 훅에서 getEventBattlesAtLocation(loc) 조회 후
+#        해당 지역 첫 미완료 이벤트 전투를 자동 발화한다. acquisition 조건 체크는
+#        NPC 측에서 completedEvents/hyperionFlags 기반으로 수행.
+# ============================================================
+
+# ============================================================
+# 리엔카이 (풍혈지대) — 하피, 시험 모드
+# 조건부 발화: "반딧불 머리핀" 소지 + 니아 이유르 동행 + 히페리온 30+
+# ============================================================
+[battle_lienkai_windfall]
+name = 바람의 시험: 리엔카이
+description = 풍혈지대의 바람이 잦아든 순간, 누군가의 기척이 가까워졌다. 정체를 들킨 리엔카이가 당신의 각오를 시험한다.
+location = Windfall_Valley
+enemy_name = 리엔카이 (시험 모드)
+enemy_hp = 180
+enemy_maxHp = 180
+enemy_attack = 22
+enemy_defense = 12
+enemy_skills = harpy_talon_dive, harpy_wing_shield
+enemy_element = Wind
+enemy_level = 5
+reward_gold = 0
+reward_item =
+on_victory_event = event_lienkai_recruit
+on_victory_hyperion_flag = 리엔카이:0
+pre_battle_dialogue = 「이유르 씨… 사실 이 모습이 원래의 저예요. 당신이 진짜로 날 원한다면, 증명해 보세요.」
+post_victory_dialogue = 「…저를 이긴 사람에게는 따라갈 수밖에 없겠네요. 잘 부탁해요, 주인.」
+post_defeat_dialogue = 「다음엔 더 잘 준비해 오세요. 바람은 기다려 주지 않아요.」
+retry_allowed = 1
+
+# ============================================================
+# 루핀 (마법학교 루나) — 드래곤, 수줍은 우등생
+# 조건부 발화: 카르디 동행 + 수락한 퀘스트 10+ + 히페리온 20+
+# ============================================================
+[battle_lupin_luna]
+name = 루나의 환상: 루핀
+description = 루나 실습동 옆 조용한 뒷마당에서 루핀이 당신을 가로막는다. 평소의 수줍은 모습은 어디에도 없다.
+location = Luna_Academy
+enemy_name = 루핀 (진짜 모습)
+enemy_hp = 160
+enemy_maxHp = 160
+enemy_attack = 20
+enemy_defense = 10
+enemy_skills = dragon_flame_strike, dragon_scale_armor, dragon_regenerate
+enemy_element = Fire
+enemy_level = 5
+reward_gold = 0
+reward_item =
+on_victory_event = event_lupin_recruit
+on_victory_hyperion_flag = 루핀:0
+pre_battle_dialogue = 「…내가 누군지 알고 싶은 거지? 그럼 일단, 날 이겨 봐.」
+post_victory_dialogue = 「…좋아. 너한테라면, 진짜 모습을 보여줘도 괜찮을 것 같아.」
+post_defeat_dialogue = 「아직은… 내 본모습을 받아줄 자격은 없는 것 같네.」
+retry_allowed = 1
+
+# ============================================================
+# 화이트 팡 (할퓌아의 정원) — 수인, 결투자
+# 조건부 발화: 리비트 히페리온 3+ + "고양이 방울" 소지 + "유령 고양이" 퀘스트 완료
+# ============================================================
+[battle_whitefang_halpia]
+name = 정원의 결투: 화이트 팡
+description = 할퓌아의 정원 한가운데, 바람 소리조차 멈춘다. 화이트 팡이 조용히 칼자루에 손을 얹었다.
+location = Halpia_Garden
+enemy_name = 화이트 팡
+enemy_hp = 200
+enemy_maxHp = 200
+enemy_attack = 24
+enemy_defense = 11
+enemy_skills = keen_fang_strike, keen_sense_dodge, keen_lick_wound
+enemy_element = Light
+enemy_level = 6
+reward_gold = 0
+reward_item =
+on_victory_event = event_whitefang_recruit
+on_victory_hyperion_flag = 화이트 팡:0
+pre_battle_dialogue = 「방울을 가져왔구나. 그럼 자격은 인정해. 다음은 실력이야.」
+post_victory_dialogue = 「좋아. 네가 주인이 되는 걸 허락하지. 이 날카로움, 네가 데려가.」
+post_defeat_dialogue = 「방울은 인연의 증표일 뿐. 힘을 갖추고 다시 와.」
+retry_allowed = 1

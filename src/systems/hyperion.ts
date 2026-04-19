@@ -7,6 +7,7 @@ import { PlayerKnowledge } from '../models/knowledge';
 import { DungeonSystem } from '../models/dungeon';
 import { GameTime } from '../types/game-time';
 import { areAcquisitionConditionsMet } from './npc-interaction';
+import { getNpcQuestByTitle } from '../data/npc-quest-defs';
 
 export interface HyperionCondition {
   description: string;
@@ -177,8 +178,22 @@ export function checkHyperionCondition(
     }
 
     // --- 퀘스트 완료 수 ---
-    case 'quest_count':
-      return knowledge.completedQuestCount >= parseInt(param, 10);
+    // "quest_count:N"        = 전체 완료 수 >= N
+    // "quest_count:locId:N"  = 해당 지역에서 완료한 퀘스트 수 >= N (npc-quest의 location 필드 기반)
+    case 'quest_count': {
+      const parts = param.split(':').map(s => s.trim());
+      if (parts.length === 1) {
+        return knowledge.completedQuestCount >= parseInt(parts[0], 10);
+      }
+      const locId = parts[0];
+      const target = parseInt(parts[1], 10);
+      let count = 0;
+      for (const questTitle of knowledge.completedQuestNames) {
+        const def = getNpcQuestByTitle(questTitle);
+        if (def && def.location === locId) count++;
+      }
+      return count >= target;
+    }
 
     // --- 칭호 소지 ---
     case 'has_title':

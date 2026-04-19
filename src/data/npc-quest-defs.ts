@@ -22,6 +22,15 @@ export function getNpcQuestDef(id: string): NpcQuestDef | undefined {
   return npcQuestRegistry.get(id);
 }
 
+/** 퀘스트 제목으로 조회. completedQuestNames는 제목을 저장하므로 지역 카운트 용도. */
+export function getNpcQuestByTitle(title: string): NpcQuestDef | undefined {
+  const clean = title.trim();
+  for (const def of npcQuestRegistry.values()) {
+    if (def.title === clean) return def;
+  }
+  return undefined;
+}
+
 export function getNpcQuestsForNpc(npcName: string): NpcQuestDef[] {
   return npcQuestsByNpc.get(npcName) ?? [];
 }

@@ -12,6 +12,7 @@ import { randomFloat, randomInt, weightedRandomChoice } from '../types/rng';
 import { getDungeonSRankTurnLimit, resolveDungeonIdForSRankDisplayName } from '../models/dungeon-s-rank-registry';
 import { getAllItemDefs } from '../types/item-defs';
 import type { DungeonSystem } from '../models/dungeon';
+import { getNpcQuestByTitle } from '../data/npc-quest-defs';
 
 // ============================================================
 // 선물 선호도
@@ -725,6 +726,14 @@ function evaluateAcquisitionLineInner(
   const t = line.trim();
   if (!t) return { text: t, met: true, evaluable: true };
 
+  // ── 이벤트 전투 승리 (event_done 리터럴) ──────────────────────
+  // 예: "2. event_done:event_lienkai_recruit" / "event_done:event_lupin_recruit"
+  const eventDoneMatch = t.match(/^(?:\d+\.\s*)?event_done\s*:\s*([a-zA-Z0-9_]+)/);
+  if (eventDoneMatch) {
+    const eventId = eventDoneMatch[1].trim();
+    return { text: t, met: knowledge.isEventDone(eventId), evaluable: true };
+  }
+
   // ── 기존 패턴 ────────────────────────────────────────────────
 
   // 히페리온 레벨 N 이상 (전체)
@@ -901,11 +910,23 @@ function evaluateAcquisitionLineInner(
   }
 
   // 지역명 + "퀘스트 N개 이상 완료" (지역 필터 퀘스트 수)
-  // 현재 knowledge가 지역 메타를 저장하지 않으므로 총 완료 수로 폴백
-  const locQuestCount = t.match(/(.+?)\s*(?:지역\s*)?퀘스트\s*(\d+)\s*개\s*이상\s*완료/);
+  // npc-quest-defs의 location 필드와 completedQuestNames(title set)를 이용해 해당 지역에서 완료한 퀘스트만 카운트.
+  // 지역명을 resolve 못하거나 data가 부족하면 총 완료 수로 폴백(안전).
+  const locQuestCount = t.match(/(.+?)\s*(?:지역\s*)?퀘스트\s*(\d+)\s*개?\s*이상\s*완료/);
   if (locQuestCount) {
-    const n = parseInt(locQuestCount[2], 10);
-    return { text: t, met: knowledge.completedQuestCount >= n, evaluable: true };
+    const locName = locQuestCount[1].trim().replace(/^\d+\.\s*/, '');
+    const target = parseInt(locQuestCount[2], 10);
+    const locId = resolveLocationId(locName);
+    if (locId) {
+      let count = 0;
+      for (const questTitle of knowledge.completedQuestNames) {
+        const def = getNpcQuestByTitle(questTitle);
+        if (def && def.location === locId) count++;
+      }
+      return { text: t, met: count >= target, evaluable: true };
+    }
+    // 지역명을 해석 못하면 총 완료 수로 폴백
+    return { text: t, met: knowledge.completedQuestCount >= target, evaluable: true };
   }
 
   // 수락한 퀘스트 수 N개 이상
