@@ -31,8 +31,8 @@ export type GameAction =
 
 const ACTION_TIME: Partial<Record<GameAction, number>> = {
   idle: 30, move: 0, talk: 0, trade: 0, eat: 0,
-  rest: 60, dungeon: 60, gather: 30, quest: 10,
-  activity: 0, gift: 0, home: 60,
+  rest: 60, dungeon: 0, gather: 30, quest: 0,
+  activity: 0, gift: 0, home: 0,
 };
 
 const AP_COST: Partial<Record<GameAction, number>> = {
