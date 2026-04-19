@@ -10,7 +10,7 @@ import { moveCompanions, getRelationshipStage, tryNpcInitiatedConversation } fro
 import { triggerNpcQuestEvent } from '../../data/npc-quest-defs';
 import { locationName } from '../../types/registry';
 import { getZoneColor } from './world-map';
-import { weatherName, seasonName, raceName, spiritRoleName, elementName, Element, ELEMENT_COUNT, COMBAT_JOB_NAMES, LIFE_JOB_NAMES } from '../../types/enums';
+import { weatherName, seasonName, raceName, spiritRoleName, elementName, Element, ELEMENT_COUNT, COMBAT_JOB_NAMES, LIFE_JOB_NAMES, SpiritRole } from '../../types/enums';
 import type { CombatJob, LifeJob } from '../../types/enums';
 import { getItemDef, getWeaponDef, getArmorDef, findItemsBySource } from '../../types/item-defs';
 import { isTimeWindowOpen } from '../../types/game-time';
@@ -44,13 +44,13 @@ function canTrade(session: GameSession) {
   // 시장에서는 항상 거래 가능, 그 외에는 주변 살아있는 상인 NPC가 있을 때만
   if (loc === 'Market_Square') return true;
   return session.actors.some(a =>
-    a !== session.player && a.currentLocation === loc && a.isAlive() && a.spirit.role === 1 /* Merchant */);
+    a !== session.player && a.currentLocation === loc && a.isAlive() && a.spirit.role === SpiritRole.Merchant);
 }
 function tradeLabel(session: GameSession): string {
   const loc = session.player.currentLocation;
   if (loc === 'Market_Square') return '거래 : 시장';
   const hasMerchant = session.actors.some(a =>
-    a !== session.player && a.currentLocation === loc && a.isAlive() && a.spirit.role === 1 /* Merchant */);
+    a !== session.player && a.currentLocation === loc && a.isAlive() && a.spirit.role === SpiritRole.Merchant);
   return hasMerchant ? '거래 : 상인' : '거래';
 }
 function nearDungeon(session: GameSession) {
