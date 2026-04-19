@@ -72,9 +72,10 @@ export function createStatusScreen(
       let closeCount = 0;
       let companionRelCount = 0;
       for (const name of k.knownActorNames) {
+        if (k.isCompanion(name)) { companionRelCount++; continue; }
         const stage = getRelationshipStage(p, name, k, session.actors, session.dungeonSystem);
         if (stage === 'close') closeCount++;
-        if (stage === 'companion') companionRelCount++;
+        else if (stage === 'companion') companionRelCount++;
       }
 
       // --- 6. 칭호 ---

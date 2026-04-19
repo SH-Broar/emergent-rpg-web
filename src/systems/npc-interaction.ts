@@ -1049,6 +1049,9 @@ export function areAcquisitionConditionsMet(
   return checks.every(c => c.met);
 }
 
+/** 친한 사이 판정용 호감도 하한 — 대화+선물 누적으로 도달 가능한 완화된 기준 */
+const CLOSE_AFFINITY_THRESHOLD = 0.3;
+
 export function getRelationshipStage(
   player: Actor,
   targetName: string,
@@ -1056,10 +1059,14 @@ export function getRelationshipStage(
   allActors?: Actor[],
   dungeonSystem?: DungeonSystem,
 ): RelationshipStage {
+  if (knowledge.isCompanion(targetName)) return 'companion';
   if (!knowledge.conversationPartners.has(targetName) && !knowledge.isKnown(targetName)) {
     return 'unknown';
   }
   if (knowledge.recruitedEver.has(targetName)) return 'close';
+
+  const rel = player.relationships.get(targetName);
+  const overall = rel ? (rel.trust + rel.affinity) / 2 : 0;
 
   if (allActors) {
     const target = allActors.find(a => a.name === targetName);
@@ -1067,11 +1074,16 @@ export function getRelationshipStage(
     // 히페리온 데이터가 없는 NPC → 영원히 아는 사이 (동료화 불가)
     if (target && !target.hasHyperion) return 'known';
 
+    // 호감도 기반 close 완화 — 입수 조건이 어려워도 충분히 친해지면 미션 공개
+    if (overall >= CLOSE_AFFINITY_THRESHOLD) return 'close';
+
     if (target && target.acquisitionMethod) {
       // 입수 조건이 있는 NPC — 조건 충족 시 친한 사이
       if (areAcquisitionConditionsMet(target, player, allActors, knowledge, dungeonSystem)) return 'close';
       return 'known';
     }
+  } else if (overall >= CLOSE_AFFINITY_THRESHOLD) {
+    return 'close';
   }
 
   return 'known';

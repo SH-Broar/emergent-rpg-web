@@ -94,7 +94,7 @@ export function createDialogueScreen(
     const stageLabel = getRelationshipStageLabel(stage);
 
     wrap.innerHTML = `
-      <button class="btn back-btn" data-back>← 건너뜀 [Esc]</button>
+      <button class="btn back-btn" data-back>← 뒤로 [Esc]</button>
       <div class="dialogue-header">
         <h2>${npc.name}</h2>
         <span class="dialogue-npc-info">${raceName(npc.base.race)} / ${spiritRoleName(npc.spirit.role)}</span>
@@ -111,12 +111,15 @@ export function createDialogueScreen(
           </button>
         `).join('')}
       </div>
-      <p class="hint">1~3 선택, Esc 건너뜀</p>
+      <p class="hint">1~3 선택, Esc 뒤로</p>
     `;
 
     wrap.querySelector('[data-back]')?.addEventListener('click', () => {
       pendingChoice = null;
-      renderDialogue(el);
+      selectedIdx = -1;
+      dialogueLines = [];
+      actionMessage = '';
+      renderNpcSelect(el);
     });
 
     wrap.querySelectorAll<HTMLButtonElement>('[data-choice-idx]').forEach(btn => {
@@ -157,8 +160,9 @@ export function createDialogueScreen(
     if (!npc) { renderNpcSelect(el); return; }
 
     if (dialogueLines.length === 0) {
-      // 하루 한 번 대화 제한
-      if (p.variables.get(`last_talk_day_${npc.name}`) === session.gameTime.day) {
+      // 하루 한 번 대화 제한 — 단, 동료는 무제한
+      const isCompanion = session.knowledge.isCompanion(npc.name);
+      if (!isCompanion && p.variables.get(`last_talk_day_${npc.name}`) === session.gameTime.day) {
         selectedIdx = -1;
         renderNpcSelect(el);
         return;
@@ -177,6 +181,10 @@ export function createDialogueScreen(
       const overall = rel ? getRelationshipOverall(rel) : 0;
       const choice = pickAvailableChoice(npc.name, overall, session.knowledge.seenDialogueChoices);
       if (choice) {
+        // 선택지 대화도 일일 1회 대화로 집계 (동료 외)
+        p.variables.set(`last_talk_day_${npc.name}`, session.gameTime.day);
+        session.gameTime.advance(10);
+        callbacks.onTalk(npc.name);
         pendingChoice = choice;
         renderChoiceDialogue(npc, choice, el);
         return;
@@ -185,7 +193,6 @@ export function createDialogueScreen(
         session.knowledge.addTitle('대지의 목격자');
         session.backlog.add(session.gameTime, '칭호 "대지의 목격자"를 획득했다.', '시스템', p.name);
       }
-      const isCompanion = session.knowledge.isCompanion(npc.name);
       const effectiveStage = isCompanion ? 'companion' as const : getRelationshipStage(p, npc.name, session.knowledge, session.actors, session.dungeonSystem);
       const line = getDialogue(npc, effectiveStage);
       dialogueLines = [
@@ -308,9 +315,12 @@ export function createDialogueScreen(
 
       if (key === 'Escape') {
         if (pendingChoice) {
-          // 선택지 건너뜀 → 일반 대사
+          // 선택지 뒤로 → NPC 선택으로 복귀 (일반 대화의 '뒤로'와 동일)
           pendingChoice = null;
-          renderDialogue(container);
+          selectedIdx = -1;
+          dialogueLines = [];
+          actionMessage = '';
+          renderNpcSelect(container);
           return;
         } else if (selectedIdx >= 0) {
           selectedIdx = -1;
