@@ -2343,3 +2343,14 @@ appearRate = 0.55
 maxUsesPerCombat = 5
 element = Dark
 isBasicSkill = 0
+
+[Hero_Light]
+name = 영웅의 빛
+description = 전설의 영웅 왕관에서 뻗어나오는 성스러운 빛. 모든 동료의 상처를 치유한다.
+type = Buff
+healHp = 40
+mpCost = 0
+appearRate = 0.5
+maxUsesPerCombat = 2
+element = Light
+isBasicSkill = 0

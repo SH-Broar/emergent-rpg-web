@@ -1398,3 +1398,15 @@ defense = 0
 price = 0
 description = 스텔라 빌 별빛 분지 깊은 곳에 잠들어 있던 검은 인장. 죽음을 한 번 되돌리지만, 그 대가로 세상과의 연결고리가 희미해진다.
 specialEffects = autoReviveOnce:1,blockDialogue:1,blockRest:1
+
+[Hero_Crown]
+name = 전설의 영웅 왕관
+type = Accessory
+grade = Legendary
+element = Light
+defense = 3
+magicDefense = 15
+price = 0
+description = 고대 영웅이 남긴 왕관. 써본 자는 모든 길이 밝아진다고 한다.
+specialEffects = magicPower:0.1,hpRegen:0.05,mpRegen:0.05,goldBonus:0.1
+grantedSkill = Hero_Light

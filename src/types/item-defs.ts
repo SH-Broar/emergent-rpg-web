@@ -477,7 +477,11 @@ function parseSpecialEffects(raw: string): Record<string, number> {
   if (!raw.trim()) return result;
   for (const pair of raw.split(',')) {
     const [key, val] = pair.split(':').map(s => s.trim());
-    if (key && val) result[key] = parseFloat(val) || 0;
+    if (key && val) {
+      const n = parseFloat(val) || 0;
+      // 타이핑 에러 방어: [-1, 5] 범위로 clamp
+      result[key] = Math.max(-1, Math.min(5, n));
+    }
   }
   return result;
 }
@@ -525,9 +529,9 @@ const ELEMENT_STRING_MAP: Record<string, number> = {
   Earth: 4, Wind: 5, Light: 6, Dark: 7,
 };
 
-function parseElementString(s: string): number {
+export function parseElementString(s: string): number {
   const trimmed = s.trim();
-  if (trimmed === 'None') return -1;
+  if (trimmed === 'None' || trimmed === '') return -1;
   return ELEMENT_STRING_MAP[trimmed] ?? -1;
 }
 

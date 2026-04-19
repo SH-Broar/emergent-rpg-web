@@ -8,12 +8,12 @@ import { parseLocationID } from '../types/location';
 import { Actor } from '../models/actor';
 import { World, createLocationData } from '../models/world';
 import { EventSystem, createGameEvent } from '../models/event';
-import { DungeonSystem, DungeonEventType, MidBossDef, DungeonFloorDef } from '../models/dungeon';
+import { DungeonSystem, DungeonEventType, MidBossDef, DungeonFloorDef, MonsterSkillDef } from '../models/dungeon';
 import { clearDungeonSRankRegistry, registerDungeonSRankLimit, registerDungeonDisplayName } from '../models/dungeon-s-rank-registry';
 import { ActivitySystem } from '../models/activity';
 import { loadHyperion, setLoadedLocationIds } from '../systems/hyperion';
 import { setDialogueLines, clearGiftPreferences, setGiftPreference, rebuildLocationNameMap, rebuildTitleNameMap, rebuildItemNameMap } from '../systems/npc-interaction';
-import { loadItemDefs, loadWeaponDefs, loadArmorDefs } from '../types/item-defs';
+import { loadItemDefs, loadWeaponDefs, loadArmorDefs, parseElementString } from '../types/item-defs';
 import { loadSkillDefs, getBasicSkillsForRace } from '../models/skill';
 import { assignNpcSkills } from '../systems/skill-learning';
 import { raceToKey } from '../types/enums';
@@ -330,8 +330,12 @@ export function initDungeonSystem(
   clearDungeonSRankRegistry();
   // monsters — loot는 "Item:amount:chance" 3항 형식, 스킬은 skill_N_* 키
   for (const s of monsterSections) {
+    // 몬스터 기본 element (Element 문자열: Fire/Water/... 또는 None)
+    const monsterElemRaw = s.get('element', '').trim();
+    const monsterElement = monsterElemRaw ? parseElementString(monsterElemRaw) : -1;
+
     // 몬스터 스킬 파싱
-    const skills: { name: string; type: 'attack' | 'heal' | 'buff'; value: number; description: string }[] = [];
+    const skills: MonsterSkillDef[] = [];
     const skillNums = new Set<number>();
     for (const key of s.values.keys()) {
       const m = key.match(/^skill_(\d+)_/);
@@ -340,11 +344,14 @@ export function initDungeonSystem(
     for (const n of [...skillNums].sort((a, b) => a - b)) {
       const name = s.get(`skill_${n}_name`, '');
       if (!name) continue;
+      const skillElemRaw = s.get(`skill_${n}_element`, '').trim();
+      const skillElement = skillElemRaw ? parseElementString(skillElemRaw) : undefined;
       skills.push({
         name,
         type: s.get(`skill_${n}_type`, 'attack') as 'attack' | 'heal' | 'buff',
         value: s.getFloat(`skill_${n}_value`, 1.5),
         description: s.get(`skill_${n}_desc`, ''),
+        element: skillElement,
       });
     }
 
@@ -371,6 +378,7 @@ export function initDungeonSystem(
       ],
       skills,
       skillChance: s.getFloat('skillChance', 0),
+      element: monsterElement >= 0 ? monsterElement : undefined,
       openingAttackMultiplier: openingMul > 0 ? openingMul : undefined,
       burstHitCount: burstHits > 0 ? burstHits : undefined,
       burstHitDamage: burstEach > 0 ? burstEach : undefined,

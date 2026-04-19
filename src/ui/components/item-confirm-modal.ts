@@ -3,7 +3,7 @@
 
 import type { Actor } from '../../models/actor';
 import type { ItemDef } from '../../types/item-defs';
-import { mealBuffLabel } from '../../types/eat-system';
+import { mealBuffLabel, getRemainingMeals } from '../../types/eat-system';
 
 export type ItemConfirmMode = 'eat' | 'info';
 
@@ -64,8 +64,20 @@ export function openItemConfirmModal(opts: ItemConfirmOptions): Promise<boolean>
       box.appendChild(desc);
     }
 
-    // eat 모드: 섭취 효과 요약
+    // eat 모드: 남은 식사 횟수 + 섭취 효과 요약
+    const remainingMeals = opts.mode === 'eat' ? getRemainingMeals(opts.actor) : 3;
+    const mealExhausted = opts.mode === 'eat' && remainingMeals <= 0;
     if (opts.mode === 'eat') {
+      const mealCountLine = document.createElement('div');
+      mealCountLine.style.cssText = mealExhausted
+        ? 'font-size:12px;color:var(--warning, #e94560);font-weight:600;'
+        : 'font-size:12px;color:var(--text-dim);';
+      const used = 3 - remainingMeals;
+      mealCountLine.textContent = mealExhausted
+        ? `오늘은 더 먹을 수 없습니다. (${used}/3 사용)`
+        : `남은 식사 ${remainingMeals}/3`;
+      box.appendChild(mealCountLine);
+
       const effects: string[] = [];
       if (def.eatVigor) effects.push(`TP ${def.eatVigor >= 0 ? '+' : ''}${Math.round(def.eatVigor / 10)}`);
       if (def.eatHp)    effects.push(`HP ${def.eatHp >= 0 ? '+' : ''}${def.eatHp}`);
@@ -134,7 +146,14 @@ export function openItemConfirmModal(opts: ItemConfirmOptions): Promise<boolean>
       okBtn.className = 'btn btn-primary';
       okBtn.textContent = '먹는다 [Enter]';
       okBtn.style.minWidth = '120px';
-      okBtn.addEventListener('click', () => close(true));
+      if (mealExhausted) {
+        okBtn.disabled = true;
+        okBtn.style.opacity = '0.45';
+        okBtn.style.cursor = 'not-allowed';
+        okBtn.title = '오늘은 더 먹을 수 없습니다.';
+      } else {
+        okBtn.addEventListener('click', () => close(true));
+      }
       btnRow.appendChild(okBtn);
     } else {
       const closeBtn = document.createElement('button');
@@ -147,7 +166,10 @@ export function openItemConfirmModal(opts: ItemConfirmOptions): Promise<boolean>
 
     function onKey(ev: KeyboardEvent): void {
       if (ev.key === 'Escape') { ev.preventDefault(); close(false); }
-      else if (ev.key === 'Enter' && opts.mode === 'eat') { ev.preventDefault(); close(true); }
+      else if (ev.key === 'Enter' && opts.mode === 'eat') {
+        ev.preventDefault();
+        if (!mealExhausted) close(true);
+      }
       else if (ev.key === 'Enter' && opts.mode === 'info') { ev.preventDefault(); close(false); }
     }
     document.addEventListener('keydown', onKey);

@@ -131,13 +131,30 @@ export function createInventoryScreen(
   }
 
   function equip(slot: EquipSlot, itemId: string): void {
+    // 동일 악세서리가 다른 슬롯에 이미 장착되어 있으면 먼저 해제 (중복 장착 방지)
+    if (slot === 'accessory' || slot === 'accessory2') {
+      const otherSlot: EquipSlot = slot === 'accessory' ? 'accessory2' : 'accessory';
+      if (getEquippedId(otherSlot) === itemId) {
+        unequip(otherSlot);
+      }
+    }
+
     const currentId = getEquippedId(slot);
     if (currentId) {
       const oldGranted = grantedSkillOf(currentId);
       if (oldGranted) p.revokeSkillFromEquip(oldGranted);
       p.addItemById(currentId, 1);
     }
-    if (!p.removeItemById(itemId, 1)) return;
+    if (!p.removeItemById(itemId, 1)) {
+      // 교체 실패: 이전 장비를 되돌려 원상 복구
+      if (currentId) {
+        p.removeItemById(currentId, 1);
+        setEquip(slot, currentId);
+        const restoredGranted = grantedSkillOf(currentId);
+        if (restoredGranted) p.grantSkillFromEquip(restoredGranted);
+      }
+      return;
+    }
     setEquip(slot, itemId);
     const newGranted = grantedSkillOf(itemId);
     if (newGranted) p.grantSkillFromEquip(newGranted);

@@ -84,6 +84,14 @@ export function createEquipmentScreen(
   }
 
   function equip(slot: EquipSlot, itemId: string): void {
+    // 동일 악세서리가 다른 슬롯에 이미 장착되어 있으면 먼저 해제 (중복 장착 방지)
+    if (slot === 'accessory' || slot === 'accessory2') {
+      const otherSlot: EquipSlot = slot === 'accessory' ? 'accessory2' : 'accessory';
+      if (getEquippedId(otherSlot) === itemId) {
+        unequip(otherSlot);
+      }
+    }
+
     // Unequip current first (return to inventory)
     const currentId = getEquippedId(slot);
     if (currentId) {
@@ -92,8 +100,17 @@ export function createEquipmentScreen(
       p.addItemById(currentId, 1);
       p.setVariable(degradeKey(slot), 0);
     }
-    // Remove from inventory and equip
-    p.removeItemById(itemId, 1);
+    // Remove from inventory and equip — 존재하지 않는 아이템이면 슬롯 변경 금지
+    if (!p.removeItemById(itemId, 1)) {
+      // 교체 실패: 이전 장비를 되돌려 원상 복구
+      if (currentId) {
+        p.removeItemById(currentId, 1);
+        setEquip(slot, currentId);
+        const restoredG = grantedSkillOf(currentId);
+        if (restoredG) p.grantSkillFromEquip(restoredG);
+      }
+      return;
+    }
     setEquip(slot, itemId);
     const newG = grantedSkillOf(itemId);
     if (newG) p.grantSkillFromEquip(newG);

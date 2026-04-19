@@ -7,9 +7,10 @@ import { Actor } from '../../models/actor';
 import { PlayerKnowledge } from '../../models/knowledge';
 import { ItemType, raceToKey, itemTypeToId } from '../../types/enums';
 import { getBasicSkillsForRace } from '../../models/skill';
+import { getArmorDef } from '../../types/item-defs';
 
 const SAVE_PREFIX = 'emergent_save_';
-const SAVE_VERSION = 7;
+const SAVE_VERSION = 8;
 
 interface SaveMeta {
   playerName: string;
@@ -56,6 +57,12 @@ interface ActorSaveData {
   variables?: [string, number][];
   lifeJobLevels?: [string, number][];
   lifeJobMissionProgress?: [string, number][];
+  // v8: 장비 + 개별 아이템 인벤토리
+  equippedWeapon?: string;
+  equippedArmor?: string;
+  equippedAccessory?: string;
+  equippedAccessory2?: string;
+  items?: [string, number][];
 }
 
 interface KnowledgeSaveData {
@@ -170,6 +177,13 @@ function serializeActor(actor: Actor): ActorSaveData {
     dungeonBestTurns.push([id, turns]);
   }
 
+  // variables에서 granted_skill:* 키는 제외 — 로드 시 장비 재장착으로 자동 복원
+  const filteredVariables: [string, number][] = [];
+  for (const [key, val] of actor.variables) {
+    if (key.startsWith('granted_skill:')) continue;
+    filteredVariables.push([key, val]);
+  }
+
   return {
     name: actor.name,
     race: actor.base.race as number,
@@ -207,9 +221,15 @@ function serializeActor(actor: Actor): ActorSaveData {
     lifeJob: actor.lifeJob || undefined,
     skillUsage: [...actor.skillUsage.entries()],
     flags: [...actor.flags.entries()],
-    variables: [...actor.variables.entries()],
+    variables: filteredVariables,
     lifeJobLevels: [...actor.lifeJobLevels.entries()],
     lifeJobMissionProgress: [...actor.lifeJobMissionProgress.entries()],
+    // v8: 장비 + 개별 아이템 인벤토리
+    equippedWeapon: actor.equippedWeapon,
+    equippedArmor: actor.equippedArmor,
+    equippedAccessory: actor.equippedAccessory,
+    equippedAccessory2: actor.equippedAccessory2,
+    items: [...actor.items.entries()],
   };
 }
 
@@ -240,6 +260,12 @@ function deserializeActor(data: ActorSaveData, target: Actor): void {
   target.combatJob = data.combatJob ?? '';
   target.lifeJob = data.lifeJob ?? '';
 
+  // v8: 개별 아이템 인벤토리 복원 (장비류 + 개별 ID 아이템)
+  target.items.clear();
+  for (const [id, qty] of (data.items ?? [])) {
+    if (qty > 0) target.items.set(id, qty);
+  }
+
   // Legacy: spirit.inventory migration — convert to items map via cat_* IDs
   if (data.inventory) {
     for (const [itemNum, qty] of data.inventory) {
@@ -249,6 +275,12 @@ function deserializeActor(data: ActorSaveData, target: Actor): void {
       }
     }
   }
+
+  // v8: 장비 슬롯 복원 (구식 세이브는 빈 문자열로 안전 기본값)
+  target.equippedWeapon = data.equippedWeapon ?? '';
+  target.equippedArmor = data.equippedArmor ?? '';
+  target.equippedAccessory = data.equippedAccessory ?? '';
+  target.equippedAccessory2 = data.equippedAccessory2 ?? '';
 
   // Restore color profile
   target.color.values = [...data.colorValues];
@@ -518,6 +550,15 @@ export function loadFromSlot(slot: number, session: GameSession): boolean {
           actor.learnedSkills.set(skill.id, 1);
           actor.skillOrder.push(skill.id);
         }
+      }
+    }
+
+    // v8: 장비 grantedSkill 재동기화 (장착된 방어구/악세서리의 임시 스킬 재적용)
+    for (const actor of session.actors) {
+      for (const slotId of [actor.equippedAccessory, actor.equippedAccessory2, actor.equippedArmor]) {
+        if (!slotId) continue;
+        const armor = getArmorDef(slotId);
+        if (armor?.grantedSkill) actor.grantSkillFromEquip(armor.grantedSkill);
       }
     }
 

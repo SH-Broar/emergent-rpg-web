@@ -223,6 +223,7 @@ lootItems = storm_scale:1:0.14, storm_tail:1:0.06
 
 [Lightning_Elemental]
 name = 번개 요정
+element = Electric
 attack = 12
 defense = 6
 hp = 105
@@ -232,11 +233,13 @@ skillChance = 0.3
 skill_1_name = 전격 방전
 skill_1_type = attack
 skill_1_value = 2.0
+skill_1_element = Electric
 skill_1_desc = 몸 전체에서 전기를 방출한다!
 
 
 [Lightning_Elemental_Enhanced]
 name = 번개 요정 (강화형)
+element = Electric
 attack = 44
 defense = 22
 hp = 185
@@ -246,10 +249,12 @@ skillChance = 0.3
 skill_1_name = 전격 방전
 skill_1_type = attack
 skill_1_value = 2.0
+skill_1_element = Electric
 skill_1_desc = 몸 전체에서 전기를 방출한다!
 
 [Thunder_Eagle]
 name = 천둥 독수리
+element = Electric
 attack = 31
 defense = 12
 hp = 94
@@ -262,6 +267,7 @@ lootItems = thunder_feather:1:0.13, eagle_talon:1:0.06
 
 [Fire_Salamander]
 name = 화염 도롱뇽
+element = Fire
 attack = 12
 defense = 6
 hp = 105
@@ -299,6 +305,7 @@ lootItems = ember_ash:1:0.15, ember_wisp:1:0.07
 
 [Flame_Wyrm]
 name = 화염 비룡
+element = Fire
 attack = 42
 defense = 20
 hp = 144
@@ -308,6 +315,7 @@ skillChance = 0.35
 skill_1_name = 화염 브레스
 skill_1_type = attack
 skill_1_value = 2.5
+skill_1_element = Fire
 skill_1_desc = 강렬한 화염을 내뿜는다!
 skill_2_name = 용의 포효
 skill_2_type = buff
@@ -397,6 +405,7 @@ lootItems = sentinel_bolt:1:0.14, sentinel_lens:1:0.06
 
 [Shadow_Wraith]
 name = 그림자 망령
+element = Dark
 attack = 16
 defense = 8
 hp = 115
@@ -406,6 +415,7 @@ lootItems = shadow_thread:1:0.13, shadow_pearl:1:0.05
 
 [Shadow_Wraith_Enhanced]
 name = 그림자 망령 (강화형)
+element = Dark
 attack = 38
 defense = 19
 hp = 170
@@ -865,6 +875,7 @@ skill_1_desc = 천년 풍화를 버틴 뿔로 산벽을 깨부순다.
 
 [Frost_Hare]
 name = 서리토끼
+element = Water
 attack = 18
 defense = 9
 hp = 120
@@ -873,6 +884,7 @@ lootItems = frost_fur:1:0.14, frost_whisker:1:0.06
 
 [Ice_Wolf]
 name = 빙랑
+element = Water
 attack = 18
 defense = 9
 hp = 120
@@ -882,10 +894,12 @@ skillChance = 0.20
 skill_1_name = 설빙 송곳니
 skill_1_type = attack
 skill_1_value = 1.9
+skill_1_element = Water
 skill_1_desc = 냉기를 머금은 이빨로 문다.
 
 [Cold_Ring_Serpent]
 name = 환한 독사
+element = Water
 attack = 18
 defense = 9
 hp = 120
@@ -895,10 +909,12 @@ skillChance = 0.22
 skill_1_name = 동결 호흡
 skill_1_type = attack
 skill_1_value = 2.0
+skill_1_element = Water
 skill_1_desc = 얼어붙은 숨결을 뿜어낸다.
 
 [Snowdrift_Golem]
 name = 설퇴 골렘
+element = Water
 attack = 20
 defense = 10
 hp = 125
@@ -908,11 +924,13 @@ skillChance = 0.24
 skill_1_name = 설사태 밀어내기
 skill_1_type = attack
 skill_1_value = 2.2
+skill_1_element = Water
 skill_1_desc = 눈더미와 함께 몸통박치기를 한다.
 
 
 [Snowdrift_Golem_Enhanced]
 name = 설퇴 골렘 (강화형)
+element = Water
 attack = 40
 defense = 20
 hp = 175
@@ -922,10 +940,12 @@ skillChance = 0.24
 skill_1_name = 설사태 밀어내기
 skill_1_type = attack
 skill_1_value = 2.2
+skill_1_element = Water
 skill_1_desc = 눈더미와 함께 몸통박치기를 한다.
 
 [Blizzard_Stag]
 name = 설풍 수사슴
+element = Water
 attack = 22
 defense = 11
 hp = 130
@@ -935,11 +955,13 @@ skillChance = 0.26
 skill_1_name = 설풍 난격
 skill_1_type = attack
 skill_1_value = 2.3
+skill_1_element = Water
 skill_1_desc = 눈보라를 두른 뿔로 휩쓴다.
 
 
 [Blizzard_Stag_Enhanced]
 name = 설풍 수사슴 (강화형)
+element = Water
 attack = 44
 defense = 22
 hp = 185
@@ -949,10 +971,12 @@ skillChance = 0.26
 skill_1_name = 설풍 난격
 skill_1_type = attack
 skill_1_value = 2.3
+skill_1_element = Water
 skill_1_desc = 눈보라를 두른 뿔로 휩쓴다.
 
 [Whiteout_Wraith]
 name = 화이트아웃 망령
+element = Water
 attack = 40
 defense = 20
 hp = 175
@@ -962,10 +986,12 @@ skillChance = 0.30
 skill_1_name = 실명한기
 skill_1_type = attack
 skill_1_value = 2.5
+skill_1_element = Water
 skill_1_desc = 시야를 앗아가는 냉기의 폭풍.
 
 [Icebound_Sentry]
 name = 결빙 수호병
+element = Water
 attack = 83
 defense = 36
 hp = 276
@@ -1147,6 +1173,7 @@ skill_1_desc = 달아오른 발톱으로 연속 추격한다.
 
 [Flame_Ram]
 name = 화염 숫양
+element = Fire
 attack = 12
 defense = 6
 hp = 105
@@ -1415,6 +1442,7 @@ lootItems = wyvern_scale:1:0.15, wyvern_wing_membrane:1:0.07
 
 [Storm_Sprite]
 name = 폭풍 요정
+element = Wind
 attack = 16
 defense = 5
 hp = 65
@@ -1588,6 +1616,7 @@ lootItems = sea_scale:1:0.09, sea_fang:1:0.03
 
 [Storm_Giant]
 name = 폭풍 거인
+element = Wind
 attack = 75
 defense = 45
 hp = 450
@@ -2529,6 +2558,7 @@ lootItems = colossus_gear:1:0.03
 
 [Shadow_Drake]
 name = 그림자 용
+element = Dark
 attack = 235
 defense = 108
 hp = 3200
@@ -2538,6 +2568,7 @@ skillChance = 0.25
 skill_1_name = 어둠 숨결
 skill_1_type = attack
 skill_1_value = 2.4
+skill_1_element = Dark
 skill_1_desc = 그림자 용이 어둠의 숨결을 뿜어낸다.
 loot = OreRare:7:0.08, MonsterLoot:12:0.08, Equipment:2:0.08
 lootItems = drake_shadow:1:0.03
@@ -2572,6 +2603,7 @@ lootItems = reaper_blade:1:0.02
 
 [Thunder_Golem]
 name = 뇌격 골렘
+element = Electric
 attack = 268
 defense = 122
 hp = 3850
@@ -2624,6 +2656,7 @@ lootItems = sovereign_crown:1:0.01
 
 [Storm_Titan]
 name = 폭풍 거인
+element = Wind
 attack = 322
 defense = 148
 hp = 5000

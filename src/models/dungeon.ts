@@ -29,6 +29,8 @@ export interface MonsterSkillDef {
   type: 'attack' | 'heal' | 'buff';
   value: number;        // 데미지 배율 또는 힐량
   description: string;
+  /** 스킬 원소. Element enum 값(0..7) 또는 -1(무속성). 없으면 몬스터 기본 element를 사용. */
+  element?: number;
 }
 
 export interface MonsterDef {
@@ -40,6 +42,12 @@ export interface MonsterDef {
   lootTable: LootEntry[];
   skills: MonsterSkillDef[];
   skillChance: number;  // 0.0~1.0, 틱당 스킬 발동 확률
+  /**
+   * 몬스터의 기본 원소 속성. Element enum 값(0..7) 또는 -1(무속성).
+   * 자동 공격/연속타/tick pressure 및 원소 없는 스킬에 적용된다.
+   * 플레이어 악세서리의 fireResist/waterResist/... 계열이 이 값에 대해 감쇄를 적용.
+   */
+  element?: number;
   /** 첫 본 공격(버스트가 아닐 때)에만 적용되는 공격력 배율. 이후 턴은 기본 attack만 사용한다. */
   openingAttackMultiplier?: number;
   /** 턴당 연속 명중(방어 무시). burstOnce면 전투 중 첫 발동만. */

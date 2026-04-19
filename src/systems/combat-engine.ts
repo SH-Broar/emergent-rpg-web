@@ -217,15 +217,24 @@ function applyCritChance(player: Actor, rawDmg: number): { dmg: number; crit: bo
 
 /**
  * autoReviveOnce: HP 0 도달 시 1회 부활. variables['revive_used_today'] 플래그로 하루 1회 제한.
- * 부활 시 HP 50% 회복 후 true 반환. 이미 사용했거나 효과 없음이면 false.
+ *
+ * 데이터 주도 HP 복구량:
+ *  - specialEffects = autoReviveOnce:1 (또는 값이 1 이상) → 기본 50% 복구 (하위 호환)
+ *  - specialEffects = autoReviveOnce:0.3 → maxHp × 30% 복구
+ *  - 0 < value < 1 이면 그 비율을 그대로 복구량으로 사용
+ * 이미 사용했거나 효과 없음이면 false.
  */
 function tryAutoRevive(player: Actor): boolean {
   const fx = getEquippedAccessoryEffects(player);
-  if (!fx.autoReviveOnce || fx.autoReviveOnce <= 0) return false;
+  const val = fx.autoReviveOnce ?? 0;
+  if (val <= 0) return false;
   if (player.getVariable('revive_used_today') > 0) return false;
   player.setVariable('revive_used_today', 1);
   const maxHp = player.getEffectiveMaxHp();
-  player.base.hp = Math.max(1, Math.round(maxHp * 0.5));
+  // 0 < val < 1 이면 비율, val >= 1 이면 기본 50% 고정 (플래그 동작)
+  const ratio = (val > 0 && val < 1) ? val : 0.5;
+  const clampedRatio = Math.max(0.05, Math.min(1, ratio));
+  player.base.hp = Math.max(1, Math.round(maxHp * clampedRatio));
   return true;
 }
 
@@ -367,7 +376,7 @@ export function processTick(
   const shouldBurst = burstN > 0 && burstD > 0 && (!burstOnce || !state.enemyBurstVolleyDone);
 
   // 몬스터 데이터에 element(0~7)가 존재하면 원소 저항 적용 (없으면 -1 = 무속성)
-  const enemyElement = (state.enemy as { element?: number }).element ?? -1;
+  const enemyElement = state.enemy.element ?? -1;
 
   if (shouldBurst) {
     let sum = 0;
@@ -401,7 +410,7 @@ export function processTick(
     if (randomFloat(0, 1) < state.enemy.skillChance) {
       const skill = state.enemy.skills[Math.floor(randomFloat(0, state.enemy.skills.length))];
       if (skill.type === 'attack') {
-        const skillElem = (skill as { element?: number }).element ?? enemyElement;
+        const skillElem = skill.element ?? enemyElement;
         const rawSkillDmg = Math.max(1, Math.round(state.enemy.attack * skill.value - buffedDef * 0.3));
         const mitigated = applyElementResist(player, rawSkillDmg, skillElem);
         player.adjustHp(-mitigated);
