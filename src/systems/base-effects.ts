@@ -3,7 +3,8 @@
 import type { GameSession } from './game-session';
 import { getBaseDef } from '../data/base-defs';
 import { randomInt, randomFloat } from '../types/rng';
-import { getStorageProfileForItem, getItemDef, categoryName, type StorageZone, getEquippedAccessoryEffects } from '../types/item-defs';
+import { getStorageProfileForItem, getItemDef, type StorageZone, getEquippedAccessoryEffects } from '../types/item-defs';
+import { categoryName } from '../ui/item-labels';
 import { ItemType } from '../types/enums';
 
 /**

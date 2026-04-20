@@ -1545,3 +1545,19 @@ activity_2_giveItems = Blizzard_Helm_Charm:1
 activity_2_unique = true
 activity_2_stock = 1
 activity_2_colorInfluence = Water:0.03, Iron:0.02
+
+# ── Hero_Crown 제작 — 카요 공방 전용 전설 아이템 ──────────────
+[Manonickla_Forge]
+activity_1_name = 전설의 영웅 왕관 제작
+activity_1_key = craft_hero_crown
+activity_1_time = 90
+activity_1_vigor = 30
+activity_1_gold = 8000
+activity_1_desc = 카요가 직접 단조한 전설의 왕관. 극한의 심연에서 건져낸 고대 영웅의 파편과 종령 사당의 성스러운 빛의 결정, 그리고 희귀 광석 5개가 필요하다. 히페리온 만렙에 이른 자의 증표로 불린다.
+activity_1_effect = give
+activity_1_requireItems = Ancient_Hero_Fragment:3, Sacred_Light_Crystal:2
+activity_1_requires = OreRare:5
+activity_1_giveItems = Hero_Crown:1
+activity_1_unique = true
+activity_1_stock = 1
+activity_1_colorInfluence = Light:0.08, Iron:0.05

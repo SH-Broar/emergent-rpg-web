@@ -43,6 +43,16 @@ export function randomInt(min: number, max: number): number {
   return Math.floor(min + mulberry32() * (max - min + 1));
 }
 
+/** 값을 [min, max] 범위로 클램프 */
+export function clamp(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, value));
+}
+
+/** 값을 [0, 1] 범위로 클램프 (비율/확률 공용) */
+export function clamp01(value: number): number {
+  return clamp(value, 0, 1);
+}
+
 export function weightedRandomChoice(weights: number[]): number {
   const total = weights.reduce((a, b) => a + b, 0);
   if (total <= 0) return 0;

@@ -2748,7 +2748,7 @@ lootOnClear = OreRare:20, MonsterLoot:40, Equipment:5
 lootPerAdvance = OreRare:3:0.30, MonsterLoot:5:0.52, Equipment:1:0.18
 lootRareChance = 0.30
 lootRare = Equipment:3
-lootItemsRare = Phoenix_Amulet:1:0.08
+lootItemsRare = Phoenix_Amulet:1:0.08, Ancient_Hero_Fragment:1:0.05
 colorInfluence = Dark:0.40, Light:0.20, Wind:0.15
 
 # ============================================================
@@ -2795,6 +2795,7 @@ lootOnClear = OreRare:5, MonsterLoot:24, Equipment:2, Potion:5
 lootPerAdvance = OreRare:2:0.24, MonsterLoot:4:0.46, Equipment:1:0.13
 lootRareChance = 0.20
 lootRare = Equipment:2
+lootItemsRare = Sacred_Light_Crystal:1:0.06
 colorInfluence = Water:0.20, Dark:0.14, Light:0.08
 
 [Yusejeria_Blizzard_Core]

@@ -3,7 +3,8 @@
 
 import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
-import { getAllItemDefs, categoryName, RARITY_NAMES, RARITY_COLORS, type ItemDef, type ItemRarity } from '../../types/item-defs';
+import { getAllItemDefs, type ItemDef, type ItemRarity } from '../../types/item-defs';
+import { categoryName, RARITY_NAMES, RARITY_COLORS } from '../item-labels';
 import { locationName } from '../../types/registry';
 
 type Tab = 'items' | 'monsters' | 'npcs' | 'locations';

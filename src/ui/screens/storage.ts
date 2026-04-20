@@ -4,7 +4,8 @@ import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
 import { locationName } from '../../types/registry';
 import { ItemType } from '../../types/enums';
-import { getItemDef, categoryName, getStorageProfileForItem, type StorageZone } from '../../types/item-defs';
+import { getItemDef, getStorageProfileForItem, type StorageZone } from '../../types/item-defs';
+import { categoryName } from '../item-labels';
 
 const ZONE_LABELS: Record<StorageZone, string> = {
   cold: '❄ 냉장',

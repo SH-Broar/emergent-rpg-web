@@ -4,7 +4,8 @@ import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
 import type { DungeonDef, DungeonRunState, DungeonRoom, DungeonEventDef, LootEntry } from '../../models/dungeon';
 import { RoomType, rollLoot } from '../../models/dungeon';
-import { getItemDef, getWeaponDef, getArmorDef, categoryName, applyTravelSpeed } from '../../types/item-defs';
+import { getItemDef, getWeaponDef, getArmorDef, applyTravelSpeed } from '../../types/item-defs';
+import { categoryName } from '../item-labels';
 import { isTimeWindowOpen } from '../../types/game-time';
 import {
   RealtimeCombatState, getCombatTickMs,

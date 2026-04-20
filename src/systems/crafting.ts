@@ -3,7 +3,8 @@
 
 import { Actor } from '../models/actor';
 import { ItemType, parseItemType } from '../types/enums';
-import { categoryName, getItemDef } from '../types/item-defs';
+import { getItemDef } from '../types/item-defs';
+import { categoryName } from '../ui/item-labels';
 
 // ============================================================
 // 제작 레시피 정의

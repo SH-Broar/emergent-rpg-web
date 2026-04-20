@@ -3,7 +3,8 @@
 import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
 import { ItemType } from '../../types/enums';
-import { categoryName, getEquippedAccessoryEffects } from '../../types/item-defs';
+import { getEquippedAccessoryEffects } from '../../types/item-defs';
+import { categoryName } from '../item-labels';
 import { checkAndAwardTitles } from '../../systems/title-system';
 
 interface Recipe {

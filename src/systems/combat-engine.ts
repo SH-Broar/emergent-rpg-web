@@ -8,7 +8,7 @@ import {
   tickPreDelay, tickEffects, getBuffedAttack, getBuffedDefense, getEnemyAttackMod,
   type SkillUseOptions,
 } from './skill-combat';
-import { randomFloat } from '../types/rng';
+import { randomFloat, clamp01 } from '../types/rng';
 import { getActionText } from './npc-interaction';
 import { iGa, eulReul } from '../data/josa';
 import { getEquippedAccessoryEffects } from '../types/item-defs';
@@ -194,11 +194,10 @@ const ELEMENT_RESIST_KEYS: Record<number, string> = {
 };
 
 /** 적이 가하는 공격/스킬 대미지에 악세서리 원소 저항을 적용 (element ∈ 0..7 또는 -1) */
-function applyElementResist(player: Actor, rawDmg: number, element: number): number {
+function applyElementResist(fx: Record<string, number>, rawDmg: number, element: number): number {
   if (element < 0) return rawDmg;
   const key = ELEMENT_RESIST_KEYS[element];
   if (!key) return rawDmg;
-  const fx = getEquippedAccessoryEffects(player);
   const resist = fx[key];
   if (!resist || resist <= 0) return rawDmg;
   const factor = Math.max(0.1, 1 - resist); // 최대 90% 경감
@@ -206,8 +205,7 @@ function applyElementResist(player: Actor, rawDmg: number, element: number): num
 }
 
 /** 플레이어의 공격 대미지에 악세서리 critChance를 적용 (1.5배 치명) */
-function applyCritChance(player: Actor, rawDmg: number): { dmg: number; crit: boolean } {
-  const fx = getEquippedAccessoryEffects(player);
+function applyCritChance(fx: Record<string, number>, rawDmg: number): { dmg: number; crit: boolean } {
   const chance = fx.critChance ?? 0;
   if (chance > 0 && randomFloat(0, 1) < chance) {
     return { dmg: Math.max(1, Math.round(rawDmg * 1.5)), crit: true };
@@ -224,8 +222,7 @@ function applyCritChance(player: Actor, rawDmg: number): { dmg: number; crit: bo
  *  - 0 < value < 1 이면 그 비율을 그대로 복구량으로 사용
  * 이미 사용했거나 효과 없음이면 false.
  */
-function tryAutoRevive(player: Actor): boolean {
-  const fx = getEquippedAccessoryEffects(player);
+function tryAutoRevive(player: Actor, fx: Record<string, number>): boolean {
   const val = fx.autoReviveOnce ?? 0;
   if (val <= 0) return false;
   if (player.getVariable('revive_used_today') > 0) return false;
@@ -282,6 +279,7 @@ export function processTick(
   state.skillUsedThisTurn = false;
   state.lastTickTime = Date.now();
   const messages: string[] = [];
+  const fx = getEquippedAccessoryEffects(player);
 
   // --- 1. Pre-delay 틱 (대기 스킬 발동) ---
   const preDelayMsgs = tickPreDelay(player, {
@@ -301,7 +299,7 @@ export function processTick(
     messages.push(`${player.name}의 ${atkTxt} 그러나 ${state.enemy.name}이(가) 잔상으로 회피했다!`);
   } else {
     const basePlayerDmg = Math.max(1, Math.round(buffedAtk - enemyDef * 0.5));
-    const critRes = applyCritChance(player, basePlayerDmg);
+    const critRes = applyCritChance(fx, basePlayerDmg);
     state.enemyHp -= critRes.dmg;
     if (critRes.crit) {
       messages.push(`${player.name}의 ${atkTxt} 치명타! ${critRes.dmg} 데미지`);
@@ -381,7 +379,7 @@ export function processTick(
   if (shouldBurst) {
     let sum = 0;
     for (let i = 0; i < burstN; i++) {
-      const each = applyElementResist(player, burstD, enemyElement);
+      const each = applyElementResist(fx, burstD, enemyElement);
       player.adjustHp(-each);
       sum += each;
     }
@@ -398,7 +396,7 @@ export function processTick(
     const enemyAtkMod = getEnemyAttackMod(state.playerSkills);
     const rawEnemyDmg = Math.max(0, Math.round(effAtk * enemyAtkMod - buffedDef * 0.5));
     if (rawEnemyDmg > 0) {
-      const mitigated = applyElementResist(player, rawEnemyDmg, enemyElement);
+      const mitigated = applyElementResist(fx, rawEnemyDmg, enemyElement);
       player.adjustHp(-mitigated);
       const hitTxt = getActionText(['combat.player_hit']) || '피격당했다.';
       messages.push(`${state.enemy.name}의 공격! ${hitTxt} ${mitigated} 데미지`);
@@ -412,7 +410,7 @@ export function processTick(
       if (skill.type === 'attack') {
         const skillElem = skill.element ?? enemyElement;
         const rawSkillDmg = Math.max(1, Math.round(state.enemy.attack * skill.value - buffedDef * 0.3));
-        const mitigated = applyElementResist(player, rawSkillDmg, skillElem);
+        const mitigated = applyElementResist(fx, rawSkillDmg, skillElem);
         player.adjustHp(-mitigated);
         messages.push(`${state.enemy.name}의 ${skill.name}! ${mitigated} 데미지`);
       } else if (skill.type === 'heal') {
@@ -425,7 +423,7 @@ export function processTick(
 
   const tickPress = state.enemy.tickPressureDamage ?? 0;
   if (tickPress > 0) {
-    const mitigated = applyElementResist(player, tickPress, enemyElement);
+    const mitigated = applyElementResist(fx, tickPress, enemyElement);
     player.adjustHp(-mitigated);
     messages.push(`${state.enemy.name}의 이상 신호! ${mitigated} 데미지`);
   }
@@ -446,7 +444,7 @@ export function processTick(
     const defeatTxt3 = getActionText(['combat.enemy_defeated']) || '처치했다.';
     messages.push(`${state.enemy.name}${eulReul(state.enemy.name)} ${defeatTxt3}`);
   } else if (player.base.hp <= 0) {
-    if (tryAutoRevive(player)) {
+    if (tryAutoRevive(player, fx)) {
       messages.push(`✨ 부활의 부적이 발동했다! ${player.name}${iGa(player.name)} 다시 일어섰다. (HP ${player.base.hp})`);
     } else {
       state.finished = true;
@@ -483,7 +481,6 @@ export function usePlayerSkill(
   // 스킬 타입/원소별 컬러 영향
   // Fire=0, Water=1, Electric=2, Iron=3, Earth=4, Wind=5, Light=6, Dark=7
   const cv = player.color.values;
-  const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
   switch (skill.type) {
     case SkillType.Attack:
       cv[0] = clamp01((cv[0] ?? 0.5) + 0.003); // Fire+

@@ -3,7 +3,8 @@
 
 import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
-import { getWeaponDef, getArmorDef, formatSpecialEffectsList } from '../../types/item-defs';
+import { getWeaponDef, getArmorDef } from '../../types/item-defs';
+import { formatSpecialEffectsList } from '../item-labels';
 import { ELEMENT_COUNT } from '../../types/enums';
 
 function degradeKey(slot: string): string { return `degrade_${slot}`; }

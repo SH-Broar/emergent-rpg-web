@@ -8451,3 +8451,25 @@ rarity = epic
 source = event:에루멘_안개의_선물
 mealBuffSkillAppear = 0.6
 mealHpMaxPct = 0
+
+# ============================================================
+# 전설 제작 재료 — Hero_Crown 합성 전용
+# ============================================================
+
+[Ancient_Hero_Fragment]
+name = 고대 영웅의 파편
+category = MonsterLoot
+price = 3000
+tags = /inedible/crafting_material/legendary_material/light/
+description = 먼 옛날 영웅이 지녔던 유물의 잔해. 아직도 희미한 빛이 감돈다. 극도로 위험한 심연에서만 드물게 나온다.
+rarity = legendary
+stackable = true
+
+[Sacred_Light_Crystal]
+name = 성스러운 빛의 결정
+category = OreRare
+price = 2500
+tags = /inedible/crafting_material/legendary_material/light/crystalline/
+description = 유스제리아 종령 사당 깊은 곳에서 형성된 결정. 내부에 순수한 빛의 파장이 봉인되어 있다.
+rarity = legendary
+stackable = true
