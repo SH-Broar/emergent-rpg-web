@@ -213,18 +213,12 @@ export function createHyperionScreen(
 
         for (const check of checks) {
           if (!check.text) continue;
-          const isMeta = check.text.startsWith('\uc6d0\uc791:');  // 원작:
+          if (check.text.startsWith('\uc6d0\uc791:')) continue;  // 원작: 주석 숨김
+          const icon = check.met ? '\u2713' : '\u25cb';
+          const color = check.met ? 'var(--success)' : 'var(--text-dim)';
           const row = document.createElement('div');
-          if (isMeta) {
-            // 원작 주석 — 회색 이탤릭, 아이콘 없이
-            row.style.cssText = 'font-size:11px;padding:3px 8px;border-radius:4px;color:var(--text-dim);font-style:italic;background:var(--bg-card)';
-            row.textContent = check.text;
-          } else {
-            const icon = check.met ? '\u2713' : (check.evaluable ? '\u2717' : '\u25cb');
-            const color = check.met ? 'var(--success)' : (check.evaluable ? 'var(--accent)' : 'var(--text-dim)');
-            row.style.cssText = `font-size:12px;padding:3px 8px;border-radius:4px;color:${color};background:${check.met ? 'rgba(78,204,163,0.1)' : 'var(--bg-card)'}`;
-            row.textContent = `${icon} ${check.text}`;
-          }
+          row.style.cssText = `font-size:12px;padding:3px 8px;border-radius:4px;color:${color};background:${check.met ? 'rgba(78,204,163,0.1)' : 'var(--bg-card)'}`;
+          row.textContent = `${icon} ${check.text}`;
           acqList.appendChild(row);
         }
         wrap.appendChild(acqList);
