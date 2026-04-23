@@ -362,3 +362,279 @@ name = 정밀기계취급 자격 B
 description = 아이템 30회 이상 제작. 정밀 기계를 다룰 수 있는 자격이 있음을 증명한다.
 condition = items_crafted:30
 priority = 55
+
+# ============================================================
+# 생활 계열 칭호 — 기존 TITLE_CONDITIONS 에서 데이터로 이관된 항목
+# hyperion DSL 확장 조건 사용:
+#   gathers_done / cooks_done / farm_harvests / gifts_given /
+#   owned_bases / conversation_partners /
+#   village_built / village_stage / village_roads / village_visitor_income /
+#   village_visitor_days / village_festivals / village_crisis_success
+# 합성(AND) 조건이 필요한 '여유로운 나날', '이 세계의 시민' 은 아직 DSL 비지원으로
+# title-system.ts 의 하드코딩 규칙에 남아 있다.
+# ============================================================
+
+# --- 채집 ---
+
+[first_harvest]
+name = 첫 수확
+description = 채집을 1번 성공한다.
+condition = gathers_done:1
+priority = 5
+
+[wild_gatherer]
+name = 야생 수집가
+description = 채집을 50번 성공한다.
+condition = gathers_done:50
+priority = 25
+
+[touch_of_earth]
+name = 대지의 손길
+description = 채집을 200번 성공한다.
+condition = gathers_done:200
+priority = 60
+
+# --- 요리 ---
+
+[first_dish]
+name = 첫 요리
+description = 요리를 1번 완성한다.
+condition = cooks_done:1
+priority = 5
+
+[homey_taste]
+name = 가정의 맛
+description = 요리를 30번 완성한다.
+condition = cooks_done:30
+priority = 20
+
+[village_cook]
+name = 마을 요리사
+description = 요리를 100번 완성한다.
+condition = cooks_done:100
+priority = 50
+
+# --- 농장 ---
+
+[sprouting_farmer]
+name = 새싹 농부
+description = 농장에서 수확을 1번 한다.
+condition = farm_harvests:1
+priority = 5
+
+[golden_field]
+name = 황금 밭
+description = 농장에서 수확을 50번 한다.
+condition = farm_harvests:50
+priority = 40
+
+# --- 거래/판매 ---
+
+[trade_knack]
+name = 장사 수완
+description = 아이템을 30개 판매한다.
+condition = items_sold:30
+priority = 15
+
+[market_master]
+name = 시장의 고수
+description = 아이템을 150개 판매한다.
+condition = items_sold:150
+priority = 45
+
+[merchant_lineage]
+name = 상인의 계보
+description = 아이템을 500개 판매한다.
+condition = items_sold:500
+priority = 75
+
+# --- 선물 ---
+
+[gentle_hand]
+name = 다정한 손길
+description = NPC에게 선물을 10번 준다.
+condition = gifts_given:10
+priority = 15
+
+[gift_virtuoso]
+name = 선물의 달인
+description = NPC에게 선물을 50번 준다.
+condition = gifts_given:50
+priority = 45
+
+[neighbors_light]
+name = 이웃의 빛
+description = NPC에게 선물을 100번 준다.
+condition = gifts_given:100
+priority = 70
+
+# --- 활동 ---
+
+[daily_liver]
+name = 생활인
+description = 활동을 20번 완료한다.
+condition = activities_done:20
+priority = 15
+
+[diligent_citizen]
+name = 부지런한 시민
+description = 활동을 80번 완료한다.
+condition = activities_done:80
+priority = 45
+
+[life_artist]
+name = 삶의 예술가
+description = 활동을 200번 완료한다.
+condition = activities_done:200
+priority = 75
+
+# --- 관계 ---
+
+[approachable_one]
+name = 친근한 사람
+description = 5명의 NPC와 대화한다.
+condition = conversation_partners:5
+priority = 15
+
+[chatterbox]
+name = 수다쟁이
+description = 대화를 총 100번 한다.
+condition = conversation_count:100
+priority = 35
+
+[face_of_village]
+name = 마을의 얼굴
+description = 대화를 총 500번 한다.
+condition = conversation_count:500
+priority = 60
+
+[everyones_friend]
+name = 모두의 친구
+description = 20명의 NPC와 대화한다.
+condition = conversation_partners:20
+priority = 55
+
+# --- 거점 ---
+
+[homeowner]
+name = 집주인
+description = 거점을 3곳 이상 소유한다.
+condition = owned_bases:3
+priority = 30
+
+[property_sense]
+name = 부동산 감각
+description = 거점을 5곳 이상 소유한다.
+condition = owned_bases:5
+priority = 55
+
+[cozy_empire]
+name = 안락한 제국
+description = 거점을 7곳 이상 소유한다.
+condition = owned_bases:7
+priority = 80
+
+# --- 여행 ---
+
+[curious_soul]
+name = 호기심 많은 자
+description = 5곳 이상의 지역을 방문한다.
+condition = visited_count:5
+priority = 10
+
+[wide_traveler]
+name = 발 넓은 여행자
+description = 15곳 이상의 지역을 방문한다.
+condition = visited_count:15
+priority = 35
+
+[world_knower]
+name = 세계를 아는 자
+description = 30곳 이상의 지역을 방문한다.
+condition = visited_count:30
+priority = 70
+
+# --- 음식 ---
+# (미식가 — food_eaten:8 은 gourmand 섹션에 이미 존재)
+
+[adventurous_palate]
+name = 모험적인 입맛
+description = 20종류 이상의 음식을 먹는다.
+condition = food_eaten:20
+priority = 55
+
+# --- 퀘스트 ---
+
+[helpful_one]
+name = 도움을 주는 사람
+description = 퀘스트를 5개 완료한다.
+condition = quest_count:5
+priority = 20
+
+[guild_worker]
+name = 길드의 일꾼
+description = 퀘스트를 20개 완료한다.
+condition = quest_count:20
+priority = 55
+
+# --- 마을 성장 ---
+
+[pioneer]
+name = 개척자
+description = 마을을 건설한다.
+condition = village_built
+priority = 25
+
+[village_chief]
+name = 마을 촌장
+description = 마을을 2단계로 성장시킨다.
+condition = village_stage:2
+priority = 45
+
+[township_head]
+name = 읍장
+description = 마을을 4단계로 성장시킨다.
+condition = village_stage:4
+priority = 60
+
+[city_architect]
+name = 도시의 설계자
+description = 마을을 6단계로 성장시킨다.
+condition = village_stage:6
+priority = 75
+
+[royal_ruler]
+name = 왕도의 지배자
+description = 마을을 7단계로 성장시킨다.
+condition = village_stage:7
+priority = 90
+
+[transit_king]
+name = 교통왕
+description = 마을 도로를 4개 이상 건설한다.
+condition = village_roads:4
+priority = 40
+
+[prosperity_designer]
+name = 번영의 설계사
+description = 마을 방문객 수입 합계 100,000G 달성.
+condition = village_visitor_income:100000
+priority = 70
+
+[residents_friend]
+name = 주민의 친구
+description = 마을 방문객 누적 10일 이상.
+condition = village_visitor_days:10
+priority = 30
+
+[festival_king]
+name = 축제의 왕
+description = 봄 축제를 5회 이상 개최한다.
+condition = village_festivals:5
+priority = 55
+
+[crisis_survivor]
+name = 위기를 넘은 자
+description = 마을 위기 이벤트를 5회 이상 성공한다.
+condition = village_crisis_success:5
+priority = 65

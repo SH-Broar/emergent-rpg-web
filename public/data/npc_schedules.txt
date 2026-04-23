@@ -1,0 +1,135 @@
+# ============================================================
+# npc_schedules.txt — NPC 일일 스케줄 정의
+#
+# 각 섹션은 SpiritRole 이름 또는 actor:<이름> 형식이다.
+# 시간대 키 (morning/afternoon/evening/night) 값은 "<LocationID> | <보너스>" 형식.
+# 보너스는 "<ActionType>:<배수>" 콤마로 여러 개 지정. 빈 문자열도 허용.
+#
+# 특수 섹션:
+#   [__Weekend]       — 주말(토/일) 시간대별 보너스 오버라이드. location 은 무시.
+#   [__MarketDay]     — 수요일 오전/오후 market_day 역할이 공유하는 위치/보너스.
+#
+# 역할별 옵션 필드:
+#   weekend_exempt = true   — 주말 오버라이드에서 제외 (Guard/Priest)
+#   market_day = true       — 수요일 오전/오후 __MarketDay 적용 (Merchant/Craftsman/Farmer)
+#
+# actor:<이름> 섹션에서는 요일·시간대 조합으로 미세 오버라이드 가능:
+#   Sat_afternoon = Hanabridge | Socialize:1.5
+#   Wed_evening   = Puchi_Tower_Bar | CooperateWork:1.4
+# 요일 키: Sun Mon Tue Wed Thu Fri Sat
+# ============================================================
+
+[GuildClerk]
+morning = Guild_Hall | PostQuest:1.5
+afternoon = Guild_Hall | Socialize:1.2
+evening = Alimes | Socialize:1.3
+night = Alimes |
+
+[Adventurer]
+morning = Guild_Hall | CheckQuests:1.5
+afternoon = Tiklit_Range | ExploreDungeon:1.5
+evening = Alimes | Socialize:1.4, ShareRumor:1.3
+night = Alimes |
+
+[Merchant]
+morning = Market_Square | Trade_Buy:1.4
+afternoon = Market_Square | Trade_Sell:1.5
+evening = Alimes | Socialize:1.2
+night = Alimes |
+market_day = true
+
+[Farmer]
+morning = Farm | Produce:1.5
+afternoon = Farm | Produce:1.3
+evening = Alimes | Socialize:1.3
+night = Farm |
+market_day = true
+
+[Guard]
+morning = Alimes | CooperateWork:1.3
+afternoon = Cyan_Dunes | ExploreDungeon:1.3
+evening = Alimes | Socialize:1.2
+night = Alimes |
+weekend_exempt = true
+
+[Villager]
+morning = Alimes |
+afternoon = Market_Square | Trade_Buy:1.2
+evening = Alimes | Socialize:1.3
+night = Alimes |
+
+[Meteorologist]
+morning = Cyan_Dunes | Produce:1.3
+afternoon = Guild_Hall | Socialize:1.3
+evening = Alimes | Socialize:1.2
+night = Phantom_Spire |
+
+[Miner]
+morning = Tiklit_Range | Produce:1.5
+afternoon = Tiklit_Range | Produce:1.3
+evening = Moss_Forge | Trade_Sell:1.3
+night = Alimes |
+
+[Fisher]
+morning = Erumen_Seoncheon | Produce:1.5
+afternoon = Erumen_Seoncheon | Produce:1.2
+evening = Erumen_Seoncheon | Socialize:1.3
+night = Alimes |
+
+[Priest]
+morning = Hanabridge | Produce:1.4
+afternoon = Hanabridge | ShareMeal:1.3, TeachSkill:1.2
+evening = Hanabridge | Socialize:1.3
+night = Hanabridge |
+weekend_exempt = true
+
+[Craftsman]
+morning = Moss_Forge | Produce:1.4
+afternoon = Moss_Forge | Produce:1.3
+evening = Market_Square | Trade_Sell:1.3
+night = Alimes |
+market_day = true
+
+# ============================================================
+# 특수 오버라이드
+# ============================================================
+
+[__Weekend]
+morning = | Socialize:1.3
+afternoon = | Trade_Buy:1.2, Socialize:1.3
+evening = | Socialize:1.5, Celebrate:1.3
+night = |
+
+[__MarketDay]
+morning = Market_Square | Trade_Sell:1.5, Trade_Buy:1.4
+afternoon = Market_Square | Trade_Sell:1.5, Trade_Buy:1.4
+
+# ============================================================
+# 이름 기반 개별 스케줄
+# ============================================================
+
+[actor:리제]
+morning = Puchi_Tower | CooperateWork:1.3
+afternoon = Puchi_Tower | Socialize:1.2
+evening = Puchi_Tower | Socialize:1.3
+night = Puchi_Tower |
+# 토요일 오후: 기투회장
+Sat_afternoon = Hanabridge | Socialize:1.5
+# 수요일·일요일 저녁: 칵테일 바 바텐더
+Wed_evening = Puchi_Tower_Bar | CooperateWork:1.4
+Sun_evening = Puchi_Tower_Bar | CooperateWork:1.4
+
+# ============================================================
+# 위치별 특산품 (Merchant NPC 수집 대상)
+# 섹션: [specialty:<LocationID>]
+# ============================================================
+
+[specialty:Memory_Spring]
+itemId = moonlight_stew
+maxStock = 2
+collectChance = 0.4
+
+[specialty:Erumen_Mistwood]
+itemId = starfire_broth
+maxStock = 1
+collectChance = 0.15

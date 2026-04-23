@@ -1,0 +1,101 @@
+# ============================================================
+# player_actions.txt — 플레이어 세계 영향 액션 튜닝 데이터
+#
+# 액션의 트리거 조건과 실행 로직 자체는 src/systems/player-actions.ts 에 남고,
+# 디자이너가 코드 변경 없이 조정할 수 있는 수치/문구만 이 파일에 둔다.
+#
+# 공용 키:
+#   vigorCost, goldCost      — 자원 소모
+#   minNpcs                  — 인원 조건 (행동에 따라 사용)
+#   message                  — 백로그 출력 메시지 템플릿
+#   *MoodDelta / *TrustDelta / *AffinityDelta — 관계/기분 변화량
+#   memoryWeight             — 메모리 감정 가중치
+#   rumorImportance          — addRumor 시 importance
+#   rumorTemplate            — addRumor 시 content 템플릿
+# 액션별 고유 키는 각 섹션 주석 참고.
+#
+# 플레이스홀더: {actor} {target} {location} {npc} 등
+# 데이터에 빠진 키는 코드의 기본값을 그대로 사용한다.
+# ============================================================
+
+[host_festival]
+vigorCost = 20
+goldCost = 50
+minNpcs = 5
+minHour = 18
+maxHour = 24
+npcMoodDelta = 0.1
+npcTrustDelta = 0.03
+npcAffinityDelta = 0.04
+playerTrustDelta = 0.03
+playerAffinityDelta = 0.04
+memoryWeight = 0.6
+rumorImportance = 0.7
+rumorTemplate = {location}에서 {actor}이(가) 연 축제가 정말 즐거웠대요!
+message = {location}에서 축제가 열렸다! 모두가 즐거운 시간을 보냈다.
+
+[share_news]
+vigorCost = 5
+goldCost = 0
+minNpcs = 1
+rumorImportance = 0.4
+memoryWeight = 0.2
+message = 소문이 퍼지기 시작했다...
+# 추가될 소식 템플릿. 코드는 news_1 부터 순서대로 수집한다.
+news_1 = 동쪽에 좋은 사냥터가 있대요
+news_2 = 올해 수확이 풍성할 거래요
+news_3 = 새로운 광맥이 발견됐대요
+news_4 = 강 건너 마을에 새 상인이 왔대요
+news_5 = 이번 주 날씨가 아주 좋을 거래요
+
+[improve_village]
+vigorCost = 30
+goldCost = 100
+minOre = 5
+capacityMultiplier = 1.1
+resourceMultiplier = 1.05
+dangerReduction = 0.5
+message = {location}의 시설이 개선되었다.
+
+[community_meal]
+vigorCost = 10
+goldCost = 0
+minNpcs = 3
+foodCost = 3
+npcMoodDelta = 0.08
+npcTrustDelta = 0.05
+npcAffinityDelta = 0.05
+playerTrustDelta = 0.05
+playerAffinityDelta = 0.05
+memoryWeight = 0.5
+message = 따뜻한 식사를 나누었다. 모두의 표정이 밝아졌다.
+
+[form_expedition]
+vigorCost = 15
+goldCost = 30
+maxCompanions = 2
+companionTrustDelta = 0.04
+companionAffinityDelta = 0.05
+playerTrustDelta = 0.04
+playerAffinityDelta = 0.05
+message = 원정대를 모집했다! {npc}이(가) 동행하겠다고 했다.
+
+[give_gift]
+vigorCost = 0
+goldCost = 0
+targetMoodDelta = 0.1
+targetTrustDelta = 0.1
+targetAffinityDelta = 0.1
+playerTrustDelta = 0.05
+playerAffinityDelta = 0.05
+targetMemoryWeight = 0.7
+reciprocateAffinityThreshold = 0.5
+reciprocateMemoryWeight = 0.4
+message = {actor}이(가) {target}에게 선물을 건넸다.
+
+# ============================================================
+# 정착지 위치 — 마을 개선/축제 등에 사용
+# ============================================================
+
+[__SettlementLocations]
+locations = Alimes, Guild_Hall, Market_Square, Hanabridge, Farm, Moss_Forge

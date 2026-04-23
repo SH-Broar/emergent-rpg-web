@@ -14,6 +14,11 @@ import { iGa, eulReul, euroRo, gwaWa } from '../data/josa';
 import { getWeatherEffect } from './weather';
 import { ColorChangeContext } from '../models/color';
 import { type AppliedRecovery, applyEatEffect, applyFullSleepRecovery, applyRatioRecovery, computeEatEffect } from '../types/eat-system';
+import {
+  getActorSchedule, getRoleSchedule, getWeekendBonuses, getMarketDaySlots,
+  getLocationSpecialty, getAllSpecialtyLocationIds, isScheduleDataLoaded,
+  dayOfWeekToKey, periodIndexToKey, type SpecialtyDef as DataSpecialtyDef,
+} from '../data/npc-schedule-defs';
 
 export interface ActionCandidate {
   type: ActionType;
@@ -27,18 +32,27 @@ export interface ActionCandidate {
 
 // ============================================================
 // 위치별 특산물 맵 (Merchant NPC 수집용)
+// 우선 npc_schedules.txt 의 [specialty:<loc>] 섹션을 참조하고, 데이터에 없는
+// 경우에 한해 아래 하드코딩 폴백을 사용한다.
 // ============================================================
 
-interface SpecialtyDef {
-  itemId: string;
-  maxStock: number;
-  collectChance: number;
-}
+type SpecialtyDef = DataSpecialtyDef;
 
-const LOCATION_SPECIALTIES: Partial<Record<string, SpecialtyDef>> = {
+const LOCATION_SPECIALTIES_FALLBACK: Partial<Record<string, SpecialtyDef>> = {
   Memory_Spring:    { itemId: 'moonlight_stew',  maxStock: 2, collectChance: 0.4  },
   Erumen_Mistwood:  { itemId: 'starfire_broth',  maxStock: 1, collectChance: 0.15 },
 };
+
+function resolveSpecialty(locationId: string): SpecialtyDef | undefined {
+  return getLocationSpecialty(locationId) ?? LOCATION_SPECIALTIES_FALLBACK[locationId];
+}
+
+function getAllSpecialtyLocations(): string[] {
+  // 데이터 + 폴백 두 소스의 위치 ID 합집합.
+  const set = new Set<string>(Object.keys(LOCATION_SPECIALTIES_FALLBACK));
+  for (const id of getAllSpecialtyLocationIds()) set.add(id);
+  return [...set];
+}
 
 // ============================================================
 // Helper functions
@@ -318,16 +332,69 @@ const RIZE_SCHEDULE: ScheduleEntry[] = [
   { location: Loc.Puchi_Tower,     bonuses: {} },                                   // Night
 ];
 
+/**
+ * 데이터(npc_schedules.txt)에 정의된 경우 그 스케줄을 우선 적용한다.
+ * 실패 시 null 을 반환해 호출자가 하드코딩 폴백을 사용하도록 한다.
+ */
+function getScheduleEntryFromData(actor: Actor, time: GameTime): ScheduleEntry | null {
+  if (!isScheduleDataLoaded()) return null;
+  const dow = time.getDayOfWeek();
+  const period = getTimePeriod(time.hour);
+  const dayKey = `${dayOfWeekToKey(dow)}_${periodIndexToKey(period)}`;
+
+  // 1) 액터 이름 기반 스케줄 (예: 리제) — 요일·시간대 오버라이드 우선
+  const actorDef = getActorSchedule(actor.name);
+  if (actorDef) {
+    const dayOverride = actorDef.dayOverrides.get(dayKey);
+    if (dayOverride) return { location: dayOverride.location, bonuses: { ...dayOverride.bonuses } };
+    const slot = actorDef.slots[period];
+    return { location: slot.location, bonuses: { ...slot.bonuses } };
+  }
+
+  // 2) 역할 기반 스케줄
+  const role = actor.spirit.role;
+  const def = getRoleSchedule(role);
+  if (!def) return null;
+
+  // 야간/취침 직전: 집으로 귀가
+  if (period === 3 || time.hour >= getPreferredSleepHour(role, actor) - 2) {
+    return { location: getRoutineHome(actor), bonuses: { [ActionType.Sleep]: 1.5, [ActionType.Rest]: 1.2 } };
+  }
+
+  // 역할 자체의 요일·시간대 미세 오버라이드
+  const dayOverride = def.dayOverrides.get(dayKey);
+  if (dayOverride) return { location: dayOverride.location, bonuses: { ...dayOverride.bonuses } };
+
+  // 수요일 시장 오버라이드 (market_day=true 역할 대상, 오전/오후만)
+  if (dow === DayOfWeek.Wed && def.marketDay && (period === 0 || period === 1)) {
+    const md = getMarketDaySlots()[period];
+    if (md) return { location: md.location, bonuses: { ...md.bonuses } };
+  }
+
+  // 주말 보너스 오버라이드 (exempt 가 아닌 경우)
+  if (time.isWeekend() && !def.weekendExempt) {
+    const baseSlot = def.slots[period];
+    const wkBonuses = getWeekendBonuses()[period] ?? {};
+    return { location: baseSlot.location, bonuses: { ...wkBonuses } };
+  }
+
+  const slot = def.slots[period];
+  return { location: slot.location, bonuses: { ...slot.bonuses } };
+}
+
 function getScheduleEntry(actor: Actor, time: GameTime): ScheduleEntry {
+  const fromData = getScheduleEntryFromData(actor, time);
+  if (fromData) return fromData;
+
+  // ----- 데이터 미로드 시 하드코딩 폴백 (구형 호환) -----
+
   // 리제 전용 스케줄
   if (actor.name === '리제') {
     const dow = time.getDayOfWeek();
     const period = getTimePeriod(time.hour);
-    // 토요일 오후: 기투회장
     if (dow === DayOfWeek.Sat && period === 1) {
       return { location: Loc.Hanabridge, bonuses: { [ActionType.Socialize]: 1.5 } };
     }
-    // 수요일·일요일 저녁: 칵테일 바에서 바텐더
     if ((dow === DayOfWeek.Wed || dow === DayOfWeek.Sun) && period === 2) {
       return { location: Loc.Puchi_Tower_Bar, bonuses: { [ActionType.CooperateWork]: 1.4 } };
     }
@@ -345,7 +412,6 @@ function getScheduleEntry(actor: Actor, time: GameTime): ScheduleEntry {
     return { location: home, bonuses: { [ActionType.Sleep]: 1.5, [ActionType.Rest]: 1.2 } };
   }
 
-  // Wednesday market day override for Merchant/Craftsman/Farmer (morning/afternoon only)
   if (isWed && MARKET_DAY_ROLES.has(role) && (period === 0 || period === 1)) {
     return {
       location: Loc.Market_Square,
@@ -353,7 +419,6 @@ function getScheduleEntry(actor: Actor, time: GameTime): ScheduleEntry {
     };
   }
 
-  // Weekend override (non-exempt roles)
   if (isWeekend && !WEEKEND_EXEMPT.has(role)) {
     const baseEntry = DAILY_SCHEDULE[role]?.[period] ?? { location: Loc.Alimes, bonuses: {} };
     return {
@@ -891,7 +956,8 @@ export function evaluateActions(
 
   // Merchant 특산물 위치 이동 가산점: stationary가 아닌 상인에게 특산물 위치 방문 유도
   if (role === SpiritRole.Merchant && !actor.stationary) {
-    for (const [specialtyLoc, specialty] of Object.entries(LOCATION_SPECIALTIES)) {
+    for (const specialtyLoc of getAllSpecialtyLocations()) {
+      const specialty = resolveSpecialty(specialtyLoc);
       if (!specialty) continue;
       if (loc === specialtyLoc) continue; // 이미 해당 위치
       const currentStock = actor.getItemCount(specialty.itemId);
@@ -1467,7 +1533,7 @@ export function npcOnTick(
 
         // Merchant 특산물 수집: stationary가 아닌 상인이 특산물 위치에 도착했을 때
         if (actor.spirit.role === SpiritRole.Merchant && !actor.stationary) {
-          const specialty = LOCATION_SPECIALTIES[arrivedAt];
+          const specialty = resolveSpecialty(arrivedAt);
           if (specialty && actor.getItemCount(specialty.itemId) < specialty.maxStock) {
             if (Math.random() < specialty.collectChance) {
               actor.addItemById(specialty.itemId, 1);

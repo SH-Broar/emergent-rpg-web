@@ -1,0 +1,124 @@
+# ============================================================
+# npc_life_events.txt — NPC 간 생활 이벤트 튜닝 데이터
+#
+# 이벤트의 트리거 조건과 부수 효과(아이템 이전, 메모리 기록 등) 자체는
+# src/systems/npc-life.ts 의 LIFE_EVENTS 코드에 남아 있다. 이 파일은
+# 디자이너가 코드 변경 없이 조정할 수 있는 수치/템플릿만 보관한다:
+#   weight            — 가중치 (eligible 이벤트 중 선택 확률)
+#   cooldownDays      — 같은 NPC 쌍에 대한 재발생 쿨다운 (게임 일자)
+#   a1MoodDelta       — 발신자(a1) 기분 변화
+#   a2MoodDelta       — 수신자(a2) 기분 변화
+#   a1TrustDelta      — a1 → a2 신뢰도 변화
+#   a1AffinityDelta   — a1 → a2 호감도 변화
+#   a2TrustDelta      — a2 → a1 신뢰도 변화
+#   a2AffinityDelta   — a2 → a1 호감도 변화
+#   a1MemoryWeight    — a1 메모리 가중치 (감정 강도)
+#   a2MemoryWeight    — a2 메모리 가중치
+#   message           — 백로그 메시지 템플릿
+#                       플레이스홀더: {a1} {a2} {location} {gift} {pctLabel}
+# 데이터에 빠진 키는 코드의 기본값을 그대로 사용한다.
+# ============================================================
+
+[friendship_formed]
+weight = 3
+cooldownDays = 10
+a1MoodDelta = 0.1
+a2MoodDelta = 0.1
+a1TrustDelta = 0.1
+a1AffinityDelta = 0
+a2TrustDelta = 0.1
+a2AffinityDelta = 0
+a1MemoryWeight = 0.8
+a2MemoryWeight = 0.8
+message = {a1}이(가) {a2}에게 조심스레 말했다. "이제 친구라고 불러도 될까?" {a2}이(가) 환하게 웃었다.
+
+[gift_exchange]
+weight = 4
+cooldownDays = 5
+a1MoodDelta = 0.05
+a2MoodDelta = 0.05
+a1TrustDelta = 0
+a1AffinityDelta = 0.05
+a2TrustDelta = 0
+a2AffinityDelta = 0.05
+a1MemoryWeight = 0.5
+a2MemoryWeight = 0.5
+message = {a1}이(가) {a2}에게 작은 {gift}을 선물했다. 두 사람의 얼굴에 미소가 번졌다.
+
+[walk_together]
+weight = 5
+cooldownDays = 3
+a1MoodDelta = 0.03
+a2MoodDelta = 0.03
+a1TrustDelta = 0
+a1AffinityDelta = 0.02
+a2TrustDelta = 0
+a2AffinityDelta = 0.02
+a1MemoryWeight = 0.3
+a2MemoryWeight = 0.3
+message = {a1}와(과) {a2}이(가) 나란히 {location}을 거닐며 담소를 나눴다.
+
+[cooking_for_friend]
+weight = 4
+cooldownDays = 2
+a1MoodDelta = 0.08
+a2MoodDelta = 0.1
+a1TrustDelta = 0.05
+a1AffinityDelta = 0.05
+a2TrustDelta = 0.05
+a2AffinityDelta = 0.08
+a1MemoryWeight = 0.6
+a2MemoryWeight = 0.7
+message = {a1}이(가) 배고픈 {a2}을 위해 정성껏 음식을 준비했다. "{a2}, 맛있게 먹어요!"
+
+[story_sharing]
+weight = 3
+cooldownDays = 4
+a1MoodDelta = 0.06
+a2MoodDelta = 0.06
+a1TrustDelta = 0
+a1AffinityDelta = 0.03
+a2TrustDelta = 0
+a2AffinityDelta = 0.03
+a1MemoryWeight = 0.5
+a2MemoryWeight = 0.5
+message = 선술집에서 {a1}와(과) {a2}이(가) 오래된 이야기를 나누며 웃음꽃이 피었다.
+
+[flower_gift]
+weight = 2
+cooldownDays = 7
+a1MoodDelta = 0.08
+a2MoodDelta = 0.08
+a1TrustDelta = 0
+a1AffinityDelta = 0.05
+a2TrustDelta = 0
+a2AffinityDelta = 0.05
+a1MemoryWeight = 0.7
+a2MemoryWeight = 0.7
+message = {a1}이(가) {a2}에게 작은 꽃 한 송이를 내밀었다. {a2}의 볼이 살짝 붉어졌다.
+
+[working_together]
+weight = 4
+cooldownDays = 3
+a1MoodDelta = 0.04
+a2MoodDelta = 0.04
+a1TrustDelta = 0.03
+a1AffinityDelta = 0.03
+a2TrustDelta = 0.03
+a2AffinityDelta = 0.03
+a1MemoryWeight = 0.4
+a2MemoryWeight = 0.4
+message = {a1}와(과) {a2}이(가) 함께 일했다. "함께 일하니 두 배로 즐겁다!"
+
+[congratulations]
+weight = 2
+cooldownDays = 7
+a1MoodDelta = 0.1
+a2MoodDelta = 0.05
+a1TrustDelta = 0.05
+a1AffinityDelta = 0.05
+a2TrustDelta = 0.03
+a2AffinityDelta = 0.03
+a1MemoryWeight = 0.8
+a2MemoryWeight = 0.5
+message = {a2}이(가) {a1}에게 말했다. "{a1}, {pctLabel}! 모두가 축하해 주었다!"

@@ -30,6 +30,9 @@ import { loadEventBattles } from '../models/event-battle';
 import { loadRecipeDefs } from './recipe-defs';
 import { loadCraftRecipeDefs } from './craft-defs';
 import { loadTitleDefs } from '../systems/title-system';
+import { loadNpcScheduleDefs } from './npc-schedule-defs';
+import { loadNpcLifeEventDefs } from './npc-life-event-defs';
+import { loadPlayerActionDefs } from './player-action-defs';
 
 function parseTimeWindow(raw: string): TimeWindow | undefined {
   const value = raw.trim();
@@ -827,6 +830,15 @@ export function initAll(data: GameDataFiles): InitResult {
 
   // 제작/대장간 레시피 정의 로드
   loadCraftRecipeDefs(data.craftRecipes);
+
+  // NPC 일일 스케줄 / 위치 특산품 정의 로드
+  loadNpcScheduleDefs(data.npcSchedules);
+
+  // NPC 생활 이벤트 튜닝 데이터 로드 (weight/cooldown/deltas/메시지)
+  loadNpcLifeEventDefs(data.npcLifeEvents);
+
+  // 플레이어 영향 액션 튜닝 데이터 로드 (costs / deltas / news 템플릿)
+  loadPlayerActionDefs(data.playerActions);
 
   return { actors, world, events, dungeonSystem, activitySystem, diagnosticQuestions, warnings };
 }
