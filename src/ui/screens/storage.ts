@@ -26,6 +26,7 @@ export function createStorageScreen(
   const loc = session.player.currentLocation;
   let activeZone: StorageZone = 'room';
   let mode: 'view' | 'deposit' | 'withdraw' = 'view';
+  let message = '';
 
   function getItemName(id: string): string {
     const def = getItemDef(id);
@@ -179,8 +180,9 @@ export function createStorageScreen(
       <button class="btn back-btn" data-back>← 뒤로 [Esc]</button>
       <h2>📦 ${locLabel} 창고</h2>
       <p style="text-align:center;color:var(--text-dim);font-size:11px">
-        Lv.${level} · 용량 ${totalCount}/${maxSlots} · 가방 ${invItems.reduce((s, it) => s + it.count, 0)}개
+        Lv.${level} · 용량 ${totalCount}/${maxSlots} · 가방 ${p.items.size}/${k.bagCapacity} 슬롯
       </p>
+      ${message ? `<div class="trade-message" style="color:var(--accent)">${message}</div>` : ''}
       <div style="display:flex;gap:2px;margin-top:8px">${tabHtml}</div>
       ${modeHtml}
       ${contentHtml}
@@ -227,9 +229,17 @@ export function createStorageScreen(
         const idx = parseInt(btn.dataset.withdraw!, 10);
         const [id] = items[idx];
         if (!id) return;
+        // 가방 용량 검사: 창고→가방 이동은 새 슬롯을 요구할 수 있으므로 isBagFull 체크 필수.
+        // 이미 동일 ID 가 가방에 있으면 isBagFull(cap, id) 는 false 를 반환하여 스택된다.
+        if (p.isBagFull(k.bagCapacity, id)) {
+          message = '⚠ 가방이 가득 찼습니다. 공간을 비우고 다시 시도하세요.';
+          render(el);
+          return;
+        }
         // 1개씩 빼기
         if (k.removeFromStorage(loc, activeZone, id, 1)) {
           p.addItemById(id, 1);
+          message = '';
         }
         render(el);
       });

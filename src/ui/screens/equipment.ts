@@ -17,6 +17,7 @@ export function createEquipmentScreen(
 ): Screen {
   const p = session.player;
   let selectedSlot: EquipSlot | null = null;
+  let statusMessage = '';
 
   function getSlotLabel(slot: EquipSlot): string {
     switch (slot) {
@@ -75,13 +76,19 @@ export function createEquipmentScreen(
 
   function unequip(slot: EquipSlot): void {
     const id = getEquippedId(slot);
-    if (id) {
-      const g = grantedSkillOf(id);
-      if (g) p.revokeSkillFromEquip(g);
-      p.addItemById(id, 1);
-      setEquip(slot, '');
-      p.setVariable(degradeKey(slot), 0);
+    if (!id) return;
+    // 가방 용량 검사: 장비 해제는 가방에 새 슬롯을 만드는 조작. 같은 ID 가 이미 가방에
+    // 있으면 isBagFull(cap, id) 이 false 를 돌려주므로 스택되어 안전하다.
+    if (p.isBagFull(session.knowledge.bagCapacity, id)) {
+      statusMessage = '⚠ 가방이 가득 차 장비를 해제할 수 없습니다.';
+      return;
     }
+    const g = grantedSkillOf(id);
+    if (g) p.revokeSkillFromEquip(g);
+    p.addItemById(id, 1);
+    setEquip(slot, '');
+    p.setVariable(degradeKey(slot), 0);
+    statusMessage = '';
   }
 
   function equip(slot: EquipSlot, itemId: string): void {
@@ -93,28 +100,28 @@ export function createEquipmentScreen(
       }
     }
 
-    // Unequip current first (return to inventory)
     const currentId = getEquippedId(slot);
+    // 가방→장비 이동은 "새 아이템 제거 → 기존 장비 반환" 순서로 처리해야 정확한 용량 계산이 된다.
+    // 먼저 새 아이템을 가방에서 제거하고(슬롯이 비워질 수 있음), 그 다음 기존 장비를
+    // 가방에 되돌릴 여유가 있는지 isBagFull 로 검사한다. 여유가 없으면 롤백.
+    if (!p.removeItemById(itemId, 1)) return;
+
+    if (currentId && p.isBagFull(session.knowledge.bagCapacity, currentId)) {
+      // 교체 불가: 방금 뺀 새 장비를 되돌려 놓고 종료.
+      p.addItemById(itemId, 1);
+      statusMessage = '⚠ 가방이 가득 차 장비를 교체할 수 없습니다.';
+      return;
+    }
     if (currentId) {
       const oldG = grantedSkillOf(currentId);
       if (oldG) p.revokeSkillFromEquip(oldG);
       p.addItemById(currentId, 1);
       p.setVariable(degradeKey(slot), 0);
     }
-    // Remove from inventory and equip — 존재하지 않는 아이템이면 슬롯 변경 금지
-    if (!p.removeItemById(itemId, 1)) {
-      // 교체 실패: 이전 장비를 되돌려 원상 복구
-      if (currentId) {
-        p.removeItemById(currentId, 1);
-        setEquip(slot, currentId);
-        const restoredG = grantedSkillOf(currentId);
-        if (restoredG) p.grantSkillFromEquip(restoredG);
-      }
-      return;
-    }
     setEquip(slot, itemId);
     const newG = grantedSkillOf(itemId);
     if (newG) p.grantSkillFromEquip(newG);
+    statusMessage = '';
 
     // 보관 열화도 이전
     const deg = session.knowledge.withdrawnItemDegradation.get(itemId) ?? 0;
@@ -179,6 +186,7 @@ export function createEquipmentScreen(
       <div style="font-size:12px;color:var(--text-dim);text-align:center;margin-bottom:8px">
         \uacf5\uaca9: ${p.getEffectiveAttack().toFixed(1)} | \ubc29\uc5b4: ${p.getEffectiveDefense().toFixed(1)}
       </div>
+      ${statusMessage ? `<div class="trade-message" style="color:var(--accent);text-align:center;margin:4px 0 8px">${statusMessage}</div>` : ''}
     `;
 
     const slots: EquipSlot[] = ['weapon', 'armor', 'accessory', 'accessory2'];
@@ -241,6 +249,7 @@ export function createEquipmentScreen(
         ${currentStats ? `<div style="font-size:12px;color:var(--text-dim)">${currentStats}</div>` : ''}
         ${degHtml}
       </div>
+      ${statusMessage ? `<div class="trade-message" style="color:var(--accent);text-align:center;margin:4px 0 8px">${statusMessage}</div>` : ''}
     `;
 
     // Unequip button

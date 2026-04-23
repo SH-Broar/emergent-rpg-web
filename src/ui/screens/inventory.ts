@@ -123,6 +123,12 @@ export function createInventoryScreen(
   function unequip(slot: EquipSlot): void {
     const id = getEquippedId(slot);
     if (!id) return;
+    // 가방 용량 검사: 장비 해제는 가방에 새로운 슬롯을 만드는 조작이므로 isBagFull 필수.
+    // 같은 ID 가 이미 가방에 있다면 스택되어 slot 수는 증가하지 않는다.
+    if (p.isBagFull(session.knowledge.bagCapacity, id)) {
+      statusMessage = '⚠ 가방이 가득 차 장비를 해제할 수 없습니다.';
+      return;
+    }
     // 장비 grantedSkill 제거
     const grantedId = grantedSkillOf(id);
     if (grantedId) p.revokeSkillFromEquip(grantedId);
@@ -141,20 +147,21 @@ export function createInventoryScreen(
     }
 
     const currentId = getEquippedId(slot);
+    // 새 장비를 먼저 가방에서 제거. 그 다음 기존 장비 반환 시 용량을 검사한다.
+    // 이 순서로 처리해야 "단 1개뿐인 아이템을 장착하며 빈 슬롯을 먼저 회수"하는 경로가
+    // 용량 계산에 정확히 반영된다.
+    if (!p.removeItemById(itemId, 1)) return;
+
+    if (currentId && p.isBagFull(session.knowledge.bagCapacity, currentId)) {
+      // 교체 불가: 방금 뺀 새 장비를 되돌려 놓는다.
+      p.addItemById(itemId, 1);
+      statusMessage = '⚠ 가방이 가득 차 장비를 교체할 수 없습니다.';
+      return;
+    }
     if (currentId) {
       const oldGranted = grantedSkillOf(currentId);
       if (oldGranted) p.revokeSkillFromEquip(oldGranted);
       p.addItemById(currentId, 1);
-    }
-    if (!p.removeItemById(itemId, 1)) {
-      // 교체 실패: 이전 장비를 되돌려 원상 복구
-      if (currentId) {
-        p.removeItemById(currentId, 1);
-        setEquip(slot, currentId);
-        const restoredGranted = grantedSkillOf(currentId);
-        if (restoredGranted) p.grantSkillFromEquip(restoredGranted);
-      }
-      return;
     }
     setEquip(slot, itemId);
     const newGranted = grantedSkillOf(itemId);

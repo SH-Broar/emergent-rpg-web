@@ -259,6 +259,20 @@ export class Actor {
   }
 
   // --- 개별 아이템 인벤토리 메서드 ---
+  //
+  // 가방 용량 정책 (중요):
+  //   `addItemById` / `addItem` 자체는 bagCapacity 를 검사하지 않는다.
+  //   따라서 "플레이어 가방에 새로운 아이템 슬롯을 만드는" 경로
+  //   (창고 인출, 장비 해제/교체, 상점 구매, 채집·활동·요리·전투 보상 등)는
+  //   호출 전에 반드시 `isBagFull(bagCapacity, id)` 를 확인하고, 꽉 찬 경우
+  //   조작을 거절해야 한다. 이 정책이 깨지면 UI 상 최대치를 넘는 슬롯이
+  //   생기는 결함이 발생한다.
+  //
+  //   이미 동일 ID 가 가방에 있는 경우 `isBagFull(cap, id)` 는 false 를 반환하므로
+  //   안전하게 수량만 누적된다. 시스템(AI·월드 시뮬·초기 세팅) 내부 호출이나
+  //   카테고리 스택(예: cat_food)은 기본적으로 이미 존재하는 ID 에 누적되므로
+  //   별도 검사 없이 호출해도 안전한 편이나, 새 ID 를 생성할 수 있는 경로라면
+  //   동일 정책을 따라야 한다.
   addItemById(id: string, amount = 1): void {
     this.items.set(id, (this.items.get(id) ?? 0) + amount);
   }
