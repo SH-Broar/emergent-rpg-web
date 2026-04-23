@@ -112,6 +112,7 @@ export interface GameDataFiles {
   npcQuests: DataSection[];
   dialogueChoices: DataSection[];
   eventBattles: DataSection[];
+  recipes: DataSection[];
 }
 
 export async function loadAllData(): Promise<GameDataFiles> {
@@ -124,7 +125,7 @@ export async function loadAllData(): Promise<GameDataFiles> {
     skills, acquisition, actionTexts, combatTexts,
     villageFacilities, villageRoads, villageEvents,
     benzenLines, npcSpecialLines, colorNarratives, npcQuests, dialogueChoices,
-    eventBattles,
+    eventBattles, recipes,
   ] = await Promise.all([
     loadDataFile('items'),
     loadDataFile('locations', addons.locations ?? []),
@@ -157,6 +158,7 @@ export async function loadAllData(): Promise<GameDataFiles> {
     loadDataFile('npc_quests'),
     loadDataFile('dialogue_choices'),
     loadDataFile('event_battles'),
+    loadDataFile('recipes'),
   ]);
 
   return {
@@ -167,6 +169,6 @@ export async function loadAllData(): Promise<GameDataFiles> {
     skills, acquisition, actionTexts, combatTexts,
     villageFacilities, villageRoads, villageEvents,
     benzenLines, npcSpecialLines, colorNarratives, npcQuests, dialogueChoices,
-    eventBattles,
+    eventBattles, recipes,
   };
 }

@@ -27,6 +27,7 @@ import { clearNpcQuestDefs } from './npc-quest-defs';
 import { initNpcQuests } from './npc-quest-init';
 import { initDialogueChoices } from './dialogue-choice-init';
 import { loadEventBattles } from '../models/event-battle';
+import { loadRecipeDefs } from './recipe-defs';
 
 function parseTimeWindow(raw: string): TimeWindow | undefined {
   const value = raw.trim();
@@ -814,6 +815,9 @@ export function initAll(data: GameDataFiles): InitResult {
 
   // 이벤트 전투 정의 로드 (acquisition용 단발 전투)
   loadEventBattles(data.eventBattles);
+
+  // 요리 레시피 정의 로드
+  loadRecipeDefs(data.recipes);
 
   return { actors, world, events, dungeonSystem, activitySystem, diagnosticQuestions, warnings };
 }

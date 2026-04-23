@@ -1,62 +1,75 @@
-# recipes.txt — 요리 레시피
-# result = 결과 아이템ID
-# ingredients = 재료1:수량, 재료2:수량
-# buff = 버프 효과 (hp, mp, vigor, attack, defense)
-# buffDuration = 버프 지속 시간(분)
-# description = 설명
+# ============================================================
+# recipes.txt — 요리 레시피 정의
+#
+# 각 섹션은 하나의 레시피를 정의한다. 섹션 ID는 recipe_ 접두사로 시작한다.
+#
+# 키:
+#   name          — 화면 표시 이름
+#   description   — 한 줄 설명
+#   ingredients   — 재료 요구 목록. "<tag 표현식>:<수량>" 형식을 콤마로 나열.
+#                   태그 표현식은 tag-system.ts 문법: /tag/, &, |, !, ( )
+#                   예) /herb/:2 — /herb/ 태그 아이템 2개
+#                       /herb/ & !/toxic/:2 — 독이 없는 허브 2개
+#                       /meat/ | /fish/:1, /herb/:1 — 고기나 생선 1개 + 허브 1개
+#   tiers         — 품질 티어 목록. "<itemId>:<minScore>" 을 콤마로 나열.
+#                   minScore 는 재료 가중평균 희귀도 점수(0~1) 임계값.
+#                   점수가 해당 minScore 이상이면 그 티어가 선택된다.
+#                   가장 낮은 티어는 반드시 0.0 에서 시작해야 안전 폴백이 된다.
+#   buffDuration  — (현재 미사용) 향후 레시피 자체 버프 지속시간용 예약 키.
+#
+# 희귀도 점수 환산 (recipe-defs.ts:RARITY_SCORES):
+#   common=0.0  uncommon=0.2  rare=0.4  epic=0.6  legendary=0.8  unique=1.0
+#   최종 점수 = Σ(재료 점수 × 소비 수량) / Σ(소비 수량)
+#
+# 재료 자동 선택 규칙:
+#   보유 아이템 중 태그가 매칭되는 것을 희귀도 내림차순으로 소비한다. → 귀한 재료를
+#   아끼지 않고 쓰면 더 좋은 결과가 나오는 보상 구조.
+# ============================================================
 
-[허브 샐러드]
-result = herb_salad
-ingredients = Herb:2
-buff = vigor:20
-buffDuration = 120
-description = 신선한 허브로 만든 가벼운 샐러드. 기력을 회복시킨다.
+[recipe_herb_salad]
+name = 허브 샐러드
+description = 신선한 허브로 만든 가벼운 샐러드. 귀한 허브를 쓸수록 약성이 살아난다.
+ingredients = /herb/:2
+tiers = wilted_herb_salad:0.0, herb_salad:0.15, fresh_herb_salad:0.35, master_herb_salad:0.55
 
-[약초 수프]
-result = herb_soup
-ingredients = Herb:3, Food:1
-buff = hp:30, vigor:15
-buffDuration = 180
-description = 따뜻한 약초 수프. 체력과 기력을 함께 회복시킨다.
+[recipe_herb_soup]
+name = 약초 수프
+description = 허브와 다른 재료를 함께 끓인 따뜻한 수프.
+ingredients = /herb/:3, /meat/ | /fruit/ | /bread/ | /fish/ | /mushroom/:1
+tiers = thin_herb_soup:0.0, herb_soup:0.2, hearty_herb_soup:0.4, dragon_herb_soup:0.6
 
-[강화 포션]
-result = enhanced_potion
-ingredients = Herb:2, Potion:1
-buff = attack:5
-buffDuration = 300
-description = 약초를 첨가한 강화 포션. 공격력이 일시적으로 오른다.
+[recipe_enhanced_potion]
+name = 강화 포션
+description = 약초를 첨가한 강화 포션. 약초 품질이 약효를 결정한다.
+ingredients = /herb/:2, /liquid/ & /medicine/:1
+tiers = weak_enhance_potion:0.0, enhanced_potion:0.25, mighty_enhance_potion:0.5
 
-[방어의 식사]
-result = defense_meal
-ingredients = Food:3, Herb:1
-buff = defense:3, hp:20
-buffDuration = 240
-description = 든든한 식사. 방어력과 체력을 동시에 올려준다.
+[recipe_defense_meal]
+name = 방어의 식사
+description = 든든한 한 끼. 기름진 재료로 몸을 단단히 다진다.
+ingredients = /meat/ | /bread/ | /dish/:3, /herb/:1
+tiers = simple_defense_meal:0.0, defense_meal:0.2, ironclad_defense_meal:0.5
 
-[활력의 빵]
-result = vigor_bread
-ingredients = Food:2
-buff = vigor:30
-buffDuration = 120
-description = 갓 구운 빵. 기력이 크게 회복된다.
+[recipe_vigor_bread]
+name = 활력의 빵
+description = 갓 구운 빵. 곡물과 허브 향이 몸에 활력을 불어넣는다.
+ingredients = /bread/ | /grain/:2
+tiers = plain_vigor_bread:0.0, vigor_bread:0.25, golden_vigor_bread:0.5
 
-[마나 티]
-result = mana_tea
-ingredients = Herb:2, Potion:1
-buff = mp:25
-buffDuration = 180
-description = 허브를 우린 마나 회복 차.
+[recipe_mana_tea]
+name = 마나 티
+description = 허브를 우린 차. 상품 허브를 쓰면 맑고 향이 오래 간다.
+ingredients = /herb/:2, /drink/ & /liquid/:1
+tiers = weak_mana_tea:0.0, mana_tea:0.25, arcane_mana_tea:0.5
 
-[모험가의 도시락]
-result = adventure_lunch
-ingredients = Food:2, Herb:1, Potion:1
-buff = hp:20, mp:10, vigor:20, attack:2
-buffDuration = 360
-description = 온갖 재료를 넣은 든든한 도시락. 종합 버프를 준다.
+[recipe_adventure_lunch]
+name = 모험가의 도시락
+description = 온갖 재료를 넣은 도시락. 재료가 좋을수록 하루가 든든하다.
+ingredients = /meat/ | /fish/:1, /herb/:1, /bread/ | /fruit/ | /grain/:1
+tiers = basic_adventure_lunch:0.0, adventure_lunch:0.2, veteran_adventure_lunch:0.4, heroic_adventure_lunch:0.6
 
-[드래곤 스튜]
-result = dragon_stew
-ingredients = Food:5, Herb:3
-buff = hp:50, attack:5, defense:3
-buffDuration = 480
-description = 드라카가 즐겨 먹는 묵직한 스튜. 강력한 효과를 낸다.
+[recipe_dragon_stew]
+name = 드래곤 스튜
+description = 용의 핏줄이 좋아하는 묵직한 스튜. 재료가 빈약하면 풍미가 죽는다.
+ingredients = /meat/ | /fish/:3, /herb/:2
+tiers = spoiled_dragon_stew:0.0, dragon_stew:0.3, primal_dragon_stew:0.55

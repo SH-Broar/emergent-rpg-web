@@ -1,91 +1,145 @@
-// cooking.ts — 쿠킹 화면
+// cooking.ts — 쿠킹 화면 (tag + 희귀도 기반 재설계)
+//
+// 레시피 정의는 public/data/recipes.txt → recipe-defs.ts 레지스트리에서 로드.
+// 재료 매칭은 tag 표현식으로 수행하며, 소비된 재료의 가중평균 희귀도 점수에 따라
+// 결과 아이템이 여러 품질 티어 중 하나로 결정된다.
+//
+// 재료 자동 선택 전략: 보유 아이템 중 희귀도가 높은 것부터 우선 소비 → 고품질 재료로
+// 고품질 결과를 얻는 감각적 보상.
 
 import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
-import { ItemType } from '../../types/enums';
-import { getEquippedAccessoryEffects } from '../../types/item-defs';
-import { categoryName } from '../item-labels';
+import { getItemDef, getEquippedAccessoryEffects, type ItemDef } from '../../types/item-defs';
+import { evaluateTagExpr } from '../../types/tag-system';
+import {
+  getAllRecipeDefs,
+  rarityScore,
+  selectTier,
+  type RecipeDef,
+  type RecipeIngredient,
+  type RecipeTier,
+} from '../../data/recipe-defs';
+import { RARITY_COLORS, RARITY_NAMES } from '../item-labels';
 import { checkAndAwardTitles } from '../../systems/title-system';
 
-interface Recipe {
-  name: string;
-  resultId: string;
-  ingredients: { type: ItemType; amount: number }[];
-  buff: { stat: string; value: number }[];
-  buffDuration: number;
-  description: string;
+/** 단일 재료에 대해 플레이어가 실제로 사용할 아이템 묶음 */
+interface IngredientPick {
+  /** 이 재료 엔트리의 인덱스 */
+  ingredientIdx: number;
+  /** 소비할 아이템 묶음: (itemId, 소비수량) */
+  picks: { itemId: string; def: ItemDef; take: number }[];
+  /** 부족한 수량 (0이면 충족) */
+  shortage: number;
 }
 
-const RECIPES: Recipe[] = [
-  {
-    name: '허브 샐러드',
-    resultId: 'herb_salad',
-    ingredients: [{ type: ItemType.Herb, amount: 2 }],
-    buff: [{ stat: 'tp', value: 2 }],
-    buffDuration: 120,
-    description: '신선한 허브로 만든 가벼운 샐러드. TP를 회복시킨다.',
-  },
-  {
-    name: '약초 수프',
-    resultId: 'herb_soup',
-    ingredients: [{ type: ItemType.Herb, amount: 3 }, { type: ItemType.Food, amount: 1 }],
-    buff: [{ stat: 'hp', value: 30 }, { stat: 'tp', value: 2 }],
-    buffDuration: 180,
-    description: '따뜻한 약초 수프. 체력과 TP를 함께 회복시킨다.',
-  },
-  {
-    name: '강화 포션',
-    resultId: 'enhanced_potion',
-    ingredients: [{ type: ItemType.Herb, amount: 2 }, { type: ItemType.Potion, amount: 1 }],
-    buff: [{ stat: 'attack', value: 5 }],
-    buffDuration: 300,
-    description: '약초를 첨가한 강화 포션. 공격력이 일시적으로 오른다.',
-  },
-  {
-    name: '방어의 식사',
-    resultId: 'defense_meal',
-    ingredients: [{ type: ItemType.Food, amount: 3 }, { type: ItemType.Herb, amount: 1 }],
-    buff: [{ stat: 'defense', value: 3 }, { stat: 'hp', value: 20 }],
-    buffDuration: 240,
-    description: '든든한 식사. 방어력과 체력을 동시에 올려준다.',
-  },
-  {
-    name: '활력의 빵',
-    resultId: 'vigor_bread',
-    ingredients: [{ type: ItemType.Food, amount: 2 }],
-    buff: [{ stat: 'tp', value: 3 }],
-    buffDuration: 120,
-    description: '갓 구운 빵. TP가 크게 회복된다.',
-  },
-  {
-    name: '마나 티',
-    resultId: 'mana_tea',
-    ingredients: [{ type: ItemType.Herb, amount: 2 }, { type: ItemType.Potion, amount: 1 }],
-    buff: [{ stat: 'mp', value: 25 }],
-    buffDuration: 180,
-    description: '허브를 우린 마나 회복 차.',
-  },
-  {
-    name: '모험가의 도시락',
-    resultId: 'adventure_lunch',
-    ingredients: [{ type: ItemType.Food, amount: 2 }, { type: ItemType.Herb, amount: 1 }, { type: ItemType.Potion, amount: 1 }],
-    buff: [{ stat: 'hp', value: 20 }, { stat: 'mp', value: 10 }, { stat: 'tp', value: 2 }, { stat: 'attack', value: 2 }],
-    buffDuration: 360,
-    description: '온갖 재료를 넣은 든든한 도시락. 종합 버프를 준다.',
-  },
-  {
-    name: '드래곤 스튜',
-    resultId: 'dragon_stew',
-    ingredients: [{ type: ItemType.Food, amount: 5 }, { type: ItemType.Herb, amount: 3 }],
-    buff: [{ stat: 'hp', value: 50 }, { stat: 'attack', value: 5 }, { stat: 'defense', value: 3 }],
-    buffDuration: 480,
-    description: '드라카가 즐겨 먹는 묵직한 스튜. 강력한 효과를 낸다.',
-  },
-];
+/**
+ * 플레이어 인벤토리에서 주어진 재료 하나를 충당하기 위한 아이템 목록.
+ * 희귀도 내림차순으로 정렬하여 앞에서부터 take, 총 take 합이 amount가 될 때까지 소비.
+ * reserved: 이미 다른 재료에서 소비하기로 잡아둔 (itemId → 수량) 맵.
+ */
+function collectIngredient(
+  player: { items: Map<string, number> },
+  ingredient: RecipeIngredient,
+  ingredientIdx: number,
+  reserved: Map<string, number>,
+): IngredientPick {
+  // 매칭 후보 수집
+  const candidates: { itemId: string; def: ItemDef; available: number }[] = [];
+  for (const [itemId, qty] of player.items) {
+    if (qty <= 0) continue;
+    const def = getItemDef(itemId);
+    if (!def) continue;
+    if (!evaluateTagExpr(ingredient.expr, def.tags)) continue;
+    const available = qty - (reserved.get(itemId) ?? 0);
+    if (available <= 0) continue;
+    candidates.push({ itemId, def, available });
+  }
+  // 희귀도 내림차순 + 동률은 가격 내림차순
+  candidates.sort((a, b) => {
+    const diff = rarityScore(b.def.rarity) - rarityScore(a.def.rarity);
+    if (diff !== 0) return diff;
+    return b.def.price - a.def.price;
+  });
 
-const STAT_LABELS: Record<string, string> = {
-  hp: 'HP', mp: 'MP', tp: 'TP', attack: '공격', defense: '방어',
-};
+  const picks: { itemId: string; def: ItemDef; take: number }[] = [];
+  let remaining = ingredient.amount;
+  for (const cand of candidates) {
+    if (remaining <= 0) break;
+    const take = Math.min(cand.available, remaining);
+    if (take > 0) {
+      picks.push({ itemId: cand.itemId, def: cand.def, take });
+      remaining -= take;
+      reserved.set(cand.itemId, (reserved.get(cand.itemId) ?? 0) + take);
+    }
+  }
+  return { ingredientIdx, picks, shortage: Math.max(0, remaining) };
+}
+
+/** 레시피 실행 가능 여부 + 예상 결과 */
+interface RecipePlan {
+  recipe: RecipeDef;
+  ingredientPicks: IngredientPick[];
+  canCraft: boolean;
+  /** 전체 가중평균 희귀도 점수 (0.0 ~ 1.0) */
+  score: number;
+  /** 이 점수 기준으로 선택된 티어 */
+  tier: RecipeTier | null;
+}
+
+function computeRecipePlan(
+  player: { items: Map<string, number> },
+  recipe: RecipeDef,
+): RecipePlan {
+  const reserved = new Map<string, number>();
+  const picks: IngredientPick[] = [];
+  let totalWeight = 0;
+  let totalScore = 0;
+
+  for (let i = 0; i < recipe.ingredients.length; i++) {
+    const pick = collectIngredient(player, recipe.ingredients[i], i, reserved);
+    picks.push(pick);
+    for (const p of pick.picks) {
+      const rs = rarityScore(p.def.rarity);
+      totalWeight += p.take;
+      totalScore += rs * p.take;
+    }
+  }
+
+  const canCraft = picks.every(p => p.shortage === 0);
+  const score = totalWeight > 0 ? totalScore / totalWeight : 0;
+  const tier = selectTier(recipe.tiers, score);
+
+  return { recipe, ingredientPicks: picks, canCraft, score, tier };
+}
+
+/** 재료 요구 표시용 라벨: 표현식 + 보유/필요 */
+function describeIngredient(
+  ing: RecipeIngredient,
+  pick: IngredientPick,
+): string {
+  const actualHave = ing.amount - pick.shortage;
+  const color = pick.shortage === 0 ? 'var(--success)' : 'var(--accent)';
+  const exprShort = ing.expr.replace(/\s+/g, '');
+  return `<span style="color:${color}">${exprShort} ${actualHave}/${ing.amount}</span>`;
+}
+
+/** 소비될 재료 미리보기 라벨 */
+function describePicks(pick: IngredientPick): string {
+  if (pick.picks.length === 0) return '—';
+  return pick.picks
+    .map(p => `${p.def.name}×${p.take}`)
+    .join(' + ');
+}
+
+/** 티어 라벨 (이름 + 희귀도 색) */
+function renderTierLabel(tier: RecipeTier | null): string {
+  if (!tier) return '—';
+  const def = getItemDef(tier.itemId);
+  const name = def?.name ?? tier.itemId;
+  const color = def ? RARITY_COLORS[def.rarity] : 'var(--text)';
+  const rarityLabel = def ? RARITY_NAMES[def.rarity] : '';
+  return `<span style="color:${color}">${name}${rarityLabel ? ` (${rarityLabel})` : ''}</span>`;
+}
 
 export function createCookingScreen(
   session: GameSession,
@@ -94,35 +148,39 @@ export function createCookingScreen(
   const p = session.player;
   let message = '';
 
-  function canCraft(recipe: Recipe): boolean {
-    return recipe.ingredients.every(ing => (p.getItemCountByType(ing.type)) >= ing.amount);
-  }
-
   function renderCooking(el: HTMLElement) {
+    const recipes = getAllRecipeDefs();
+    const plans = recipes.map(r => computeRecipePlan(p, r));
+
     el.innerHTML = `
       <div class="screen info-screen cooking-screen">
         <button class="btn back-btn" data-back>← 뒤로 [Esc]</button>
         <h2>🍳 요리</h2>
         ${message ? `<div class="trade-message">${message}</div>` : ''}
-        <div class="menu-buttons">
-          ${RECIPES.map((r, i) => {
-            const ok = canCraft(r);
-            const ingText = r.ingredients.map(ing => {
-              const have = p.getItemCountByType(ing.type);
-              const color = have >= ing.amount ? 'var(--success)' : 'var(--accent)';
-              return `<span style="color:${color}">${categoryName(ing.type)} ${have}/${ing.amount}</span>`;
-            }).join(' · ');
-            const buffText = r.buff.map(b => `${STAT_LABELS[b.stat] ?? b.stat}+${b.value}`).join(', ');
+        ${recipes.length === 0
+          ? '<p class="hint">등록된 레시피가 없습니다.</p>'
+          : `<div class="menu-buttons">
+          ${plans.map((plan, i) => {
+            const r = plan.recipe;
+            const ok = plan.canCraft;
+            const ingText = r.ingredients
+              .map((ing, idx) => describeIngredient(ing, plan.ingredientPicks[idx]))
+              .join(' · ');
+            const preview = r.ingredients
+              .map((_, idx) => describePicks(plan.ingredientPicks[idx]))
+              .join(' / ');
+            const scorePct = Math.round(plan.score * 100);
             return `
               <button class="btn" data-cook="${i}" ${ok ? '' : 'disabled'} style="text-align:left;opacity:${ok ? '1' : '0.5'}">
                 <div><strong>${i + 1}. ${r.name}</strong></div>
-                <div style="font-size:11px;color:var(--text-dim)">${r.description}</div>
+                ${r.description ? `<div style="font-size:11px;color:var(--text-dim)">${r.description}</div>` : ''}
                 <div style="font-size:11px">재료: ${ingText}</div>
-                <div style="font-size:11px;color:var(--warning)">효과: ${buffText} (${r.buffDuration}분)</div>
+                <div style="font-size:11px;color:var(--text-dim)">사용: ${preview}</div>
+                <div style="font-size:11px">예상 품질: ${renderTierLabel(plan.tier)} <span style="color:var(--text-dim)">(희귀도 점수 ${scorePct}%)</span></div>
               </button>`;
           }).join('')}
-        </div>
-        <p class="hint">1~${RECIPES.length} 선택, Esc 뒤로</p>
+        </div>`}
+        <p class="hint">1~${Math.min(9, recipes.length)} 선택, Esc 뒤로. 재료는 희귀도가 높은 것부터 자동 선택됩니다.</p>
       </div>`;
 
     el.querySelector('[data-back]')?.addEventListener('click', onDone);
@@ -135,38 +193,49 @@ export function createCookingScreen(
   }
 
   function doCook(idx: number, el: HTMLElement) {
-    const recipe = RECIPES[idx];
-    if (!recipe || !canCraft(recipe)) return;
+    const recipes = getAllRecipeDefs();
+    const recipe = recipes[idx];
+    if (!recipe) return;
 
-    // 인벤토리 공간 확인 (재료 소모 전)
-    if (p.isBagFull(session.knowledge.bagCapacity, recipe.resultId)) {
+    const plan = computeRecipePlan(p, recipe);
+    if (!plan.canCraft || !plan.tier) {
+      message = '재료가 부족합니다.';
+      renderCooking(el);
+      return;
+    }
+
+    // 가방 공간 확인 (결과 티어 아이템)
+    if (p.isBagFull(session.knowledge.bagCapacity, plan.tier.itemId)) {
       message = '⚠ 인벤토리가 가득 찼습니다! 요리를 완성할 수 없었다.';
       renderCooking(el);
       return;
     }
 
-    // Consume ingredients
-    for (const ing of recipe.ingredients) {
-      p.consumeItem(ing.type, ing.amount);
+    // 재료 소모
+    for (const pick of plan.ingredientPicks) {
+      for (const p_ of pick.picks) {
+        p.removeItemById(p_.itemId, p_.take);
+      }
     }
 
-    // Apply cookingBonus from accessories to buff values
+    // 악세서리 cookingBonus 는 결과 수량에 반영 (ceil)
     const accFx = getEquippedAccessoryEffects(p);
     const cookingMul = 1 + (accFx.cookingBonus ?? 0);
-    p.addItemById(recipe.resultId, 1);
-    session.knowledge.discoverItem(recipe.resultId);
+    const outputAmount = Math.max(1, Math.round(1 * cookingMul));
+
+    p.addItemById(plan.tier.itemId, outputAmount);
+    session.knowledge.discoverItem(plan.tier.itemId);
     session.knowledge.trackItemCrafted();
 
-    // Apply scaled buffs immediately (cookingBonus multiplies buff values)
-    for (const b of recipe.buff) {
-      session.playerBuffs.push({
-        type: b.stat,
-        amount: Math.round(b.value * cookingMul),
-        remainingTurns: recipe.buffDuration,
-      });
-    }
+    const resultDef = getItemDef(plan.tier.itemId);
+    const resultName = resultDef?.name ?? plan.tier.itemId;
+    const rarityLabel = resultDef ? RARITY_NAMES[resultDef.rarity] : '';
 
-    session.backlog.add(session.gameTime, `${p.name}이(가) ${recipe.name}을(를) 만들었다.`, '행동');
+    session.backlog.add(
+      session.gameTime,
+      `${p.name}이(가) ${recipe.name} 레시피로 ${resultName}${outputAmount > 1 ? ` ×${outputAmount}` : ''}을(를) 만들었다.`,
+      '행동',
+    );
 
     // 요리 완료: Fire+, Water+, Electric-
     const cookInfluence = new Array(8).fill(0);
@@ -180,7 +249,11 @@ export function createCookingScreen(
       session.backlog.add(session.gameTime, `✦ 칭호 획득: "${t}"`, '시스템');
     }
 
-    message = `${recipe.name} 제작 완료!${cookTitles.length > 0 ? ' ✦ 칭호 획득: "' + cookTitles[cookTitles.length - 1] + '"' : ''}`;
+    const scorePct = Math.round(plan.score * 100);
+    message =
+      `${recipe.name} 제작 완료! → ${resultName}${rarityLabel ? ` (${rarityLabel})` : ''} ×${outputAmount}`
+      + ` · 희귀도 점수 ${scorePct}%`
+      + (cookTitles.length > 0 ? ` ✦ 칭호 획득: "${cookTitles[cookTitles.length - 1]}"` : '');
     renderCooking(el);
   }
 
@@ -192,8 +265,9 @@ export function createCookingScreen(
       if (!(c instanceof HTMLElement)) return;
       if (key === 'Escape') { onDone(); return; }
       if (/^[1-9]$/.test(key)) {
+        const recipes = getAllRecipeDefs();
         const idx = parseInt(key, 10) - 1;
-        if (idx < RECIPES.length) doCook(idx, c);
+        if (idx < recipes.length) doCook(idx, c);
       }
     },
   };

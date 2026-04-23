@@ -8473,3 +8473,430 @@ tags = /inedible/crafting_material/legendary_material/light/crystalline/
 description = 유스제리아 종령 사당 깊은 곳에서 형성된 결정. 내부에 순수한 빛의 파장이 봉인되어 있다.
 rarity = legendary
 stackable = true
+
+# ============================================================
+# 요리 결과 아이템 — 품질 티어 (recipes.txt 의 tiers 대상)
+# 각 아이템은 source = cook:<recipe_id> 로 레시피와 연결된다.
+# herb_salad 는 별도 섹션(위쪽)에 common 티어로 이미 정의되어 있다.
+# ============================================================
+
+[wilted_herb_salad]
+name = 시든 허브 샐러드
+category = Food
+price = 6
+tags = /edible/organic/cooked/dish/
+rarity = common
+source = cook:recipe_herb_salad
+description = 활기가 빠진 허브로 급히 만든 샐러드. 향이 밋밋하지만 그래도 배는 채워준다.
+eatVigor = 4
+eatHp = 5
+eatMp = 3
+eatMood = 0.03
+eatMessage = 쓴맛이 살짝 남는 샐러드로 간신히 배를 채운다.
+
+[fresh_herb_salad]
+name = 신선한 허브 샐러드
+category = Food
+price = 28
+tags = /edible/organic/raw/dish/medicine/
+rarity = rare
+source = cook:recipe_herb_salad
+description = 막 딴 상급 허브로 만든 샐러드. 향이 혀끝에서 오래 남는다.
+eatVigor = 16
+eatHp = 20
+eatMp = 18
+eatMood = 0.15
+eatMessage = 숲의 기운이 몸속을 시원하게 채워준다.
+eatBuffType = tp_regen
+eatBuffAmount = 1
+eatBuffDuration = 120
+
+[master_herb_salad]
+name = 약사의 허브 샐러드
+category = Food
+price = 70
+tags = /edible/organic/raw/dish/medicine/rare/
+rarity = epic
+source = cook:recipe_herb_salad
+description = 약초 달인이 만든 듯 섬세하게 어우러진 샐러드. 한 입에 정신이 맑아진다.
+eatVigor = 26
+eatHp = 32
+eatMp = 30
+eatMood = 0.25
+eatMessage = 맑은 향이 피부 속까지 스며들며 오래된 피로가 풀린다.
+eatBuffType = tp_regen
+eatBuffAmount = 2
+eatBuffDuration = 240
+
+[thin_herb_soup]
+name = 멀건 약초 수프
+category = Food
+price = 7
+tags = /edible/organic/cooked/dish/
+rarity = common
+source = cook:recipe_herb_soup
+description = 국물이 너무 많고 건더기는 적은 간이 약초 수프.
+eatVigor = 6
+eatHp = 8
+eatMp = 4
+eatMood = 0.04
+eatMessage = 따뜻하긴 한데 배가 차지는 않는다.
+
+[herb_soup]
+name = 약초 수프
+category = Food
+price = 18
+tags = /edible/organic/cooked/dish/medicine/
+rarity = uncommon
+source = cook:recipe_herb_soup
+description = 허브 향이 골고루 밴 따뜻한 수프. 몸과 기분이 동시에 풀린다.
+eatVigor = 14
+eatHp = 18
+eatMp = 10
+eatMood = 0.10
+eatMessage = 허브 향이 입안에서 포근하게 퍼진다.
+
+[hearty_herb_soup]
+name = 푸짐한 약초 수프
+category = Food
+price = 42
+tags = /edible/organic/cooked/dish/medicine/
+rarity = rare
+source = cook:recipe_herb_soup
+description = 건더기가 풍성하고 국물이 진한 수프. 한 그릇이면 반나절은 든든하다.
+eatVigor = 24
+eatHp = 30
+eatMp = 16
+eatMood = 0.18
+eatMessage = 속이 뜨끈하게 데워지며 몸 구석구석 힘이 돈다.
+eatBuffType = tp_regen
+eatBuffAmount = 1
+eatBuffDuration = 180
+
+[dragon_herb_soup]
+name = 용의 약초 수프
+category = Food
+price = 95
+tags = /edible/organic/cooked/dish/medicine/rare/
+rarity = epic
+source = cook:recipe_herb_soup
+description = 용이 끓일 법한 진한 국물의 수프. 한 모금에 온몸이 덥혀진다.
+eatVigor = 40
+eatHp = 55
+eatMp = 28
+eatMood = 0.30
+eatMessage = 가슴속 깊이까지 뜨거운 향이 퍼진다.
+eatBuffType = tp_regen
+eatBuffAmount = 2
+eatBuffDuration = 240
+
+[weak_enhance_potion]
+name = 약한 강화 포션
+category = Potion
+price = 10
+tags = /edible/liquid/medicine/buff/
+rarity = common
+source = cook:recipe_enhanced_potion
+description = 효과가 미약한 강화 포션. 없는 것보단 낫다.
+eatVigor = 2
+eatHp = 2
+eatMp = 5
+eatMood = 0.02
+eatMessage = 쓴맛이 입에 남고 약간의 힘이 돈다.
+eatBuffType = attack
+eatBuffAmount = 2
+eatBuffDuration = 120
+
+[enhanced_potion]
+name = 강화 포션
+category = Potion
+price = 28
+tags = /edible/liquid/medicine/buff/
+rarity = uncommon
+source = cook:recipe_enhanced_potion
+description = 약초 성분이 균형 잡힌 강화 포션. 공격력이 잠시 오른다.
+eatVigor = 3
+eatHp = 4
+eatMp = 8
+eatMood = 0.04
+eatMessage = 약초 향이 번지며 팔에 힘이 들어간다.
+eatBuffType = attack
+eatBuffAmount = 5
+eatBuffDuration = 300
+
+[mighty_enhance_potion]
+name = 강력한 강화 포션
+category = Potion
+price = 72
+tags = /edible/liquid/medicine/buff/rare/
+rarity = rare
+source = cook:recipe_enhanced_potion
+description = 상품 약초로 조합한 묵직한 강화 포션. 한 번에 크게 달라지는 근력.
+eatVigor = 5
+eatHp = 6
+eatMp = 12
+eatMood = 0.08
+eatMessage = 팔에 낯선 힘이 차오르며 시야가 선명해진다.
+eatBuffType = attack
+eatBuffAmount = 9
+eatBuffDuration = 360
+
+[simple_defense_meal]
+name = 소박한 든든 식사
+category = Food
+price = 9
+tags = /edible/organic/cooked/dish/
+rarity = common
+source = cook:recipe_defense_meal
+description = 재료를 많이 넣긴 했는데 맛은 그저 그런 식사.
+eatVigor = 6
+eatHp = 10
+eatMp = 3
+eatMood = 0.05
+eatMessage = 배는 부른데 감흥은 없다.
+eatBuffType = defense
+eatBuffAmount = 1
+eatBuffDuration = 120
+
+[defense_meal]
+name = 방어의 식사
+category = Food
+price = 26
+tags = /edible/organic/cooked/dish/
+rarity = uncommon
+source = cook:recipe_defense_meal
+description = 균형 잡힌 재료로 만든 든든한 한 끼. 몸이 단단해지는 느낌이다.
+eatVigor = 14
+eatHp = 22
+eatMp = 6
+eatMood = 0.12
+eatMessage = 뱃속이 든든해지며 무엇이든 막아낼 듯한 기분이 든다.
+eatBuffType = defense
+eatBuffAmount = 3
+eatBuffDuration = 240
+
+[ironclad_defense_meal]
+name = 강철의 식사
+category = Food
+price = 68
+tags = /edible/organic/cooked/dish/rare/
+rarity = rare
+source = cook:recipe_defense_meal
+description = 고급 재료가 아낌없이 들어간 한 그릇. 뼈와 근육까지 단단히 다진다.
+eatVigor = 24
+eatHp = 36
+eatMp = 10
+eatMood = 0.22
+eatMessage = 몸이 묵직하게 내려앉으며 깊은 안정감이 든다.
+eatBuffType = defense
+eatBuffAmount = 6
+eatBuffDuration = 360
+
+[plain_vigor_bread]
+name = 담백한 빵
+category = Food
+price = 5
+tags = /edible/organic/cooked/bread/
+rarity = common
+source = cook:recipe_vigor_bread
+description = 간단한 밀빵. 허기를 달랜다.
+eatVigor = 6
+eatHp = 6
+eatMp = 2
+eatMood = 0.03
+eatMessage = 거친 밀향이 입안에 남는다.
+
+[vigor_bread]
+name = 활력의 빵
+category = Food
+price = 16
+tags = /edible/organic/cooked/bread/
+rarity = uncommon
+source = cook:recipe_vigor_bread
+description = 잘 구운 빵. 향긋한 곡물 향이 기운을 북돋는다.
+eatVigor = 14
+eatHp = 12
+eatMp = 5
+eatMood = 0.10
+eatMessage = 고소한 향기와 함께 기력이 차오른다.
+eatBuffType = tp_regen
+eatBuffAmount = 1
+eatBuffDuration = 180
+
+[golden_vigor_bread]
+name = 황금 활력의 빵
+category = Food
+price = 42
+tags = /edible/organic/cooked/bread/rare/
+rarity = rare
+source = cook:recipe_vigor_bread
+description = 황금빛이 도는 고급 빵. 한 조각이 하루의 피로를 녹인다.
+eatVigor = 24
+eatHp = 20
+eatMp = 10
+eatMood = 0.20
+eatMessage = 따뜻한 빵이 가슴속에서 황금빛처럼 퍼진다.
+eatBuffType = tp_regen
+eatBuffAmount = 2
+eatBuffDuration = 300
+
+[weak_mana_tea]
+name = 연한 마나 티
+category = Food
+price = 6
+tags = /edible/liquid/cooked/drink/medicine/
+rarity = common
+source = cook:recipe_mana_tea
+description = 향이 옅은 허브차. 그래도 마음은 조금 가라앉는다.
+eatVigor = 3
+eatHp = 3
+eatMp = 10
+eatMood = 0.05
+eatMessage = 옅은 허브 향이 천천히 퍼진다.
+
+[mana_tea]
+name = 마나 티
+category = Food
+price = 20
+tags = /edible/liquid/cooked/drink/medicine/
+rarity = uncommon
+source = cook:recipe_mana_tea
+description = 허브와 물이 잘 어우러진 차. 마시면 정신이 맑아진다.
+eatVigor = 5
+eatHp = 5
+eatMp = 22
+eatMood = 0.12
+eatMessage = 맑은 향이 머릿속을 시원하게 훑는다.
+eatBuffType = mp_regen
+eatBuffAmount = 1
+eatBuffDuration = 180
+
+[arcane_mana_tea]
+name = 아르카나 마나 티
+category = Food
+price = 55
+tags = /edible/liquid/cooked/drink/medicine/rare/
+rarity = rare
+source = cook:recipe_mana_tea
+description = 고급 허브로 우린 신비로운 차. 마시는 순간 마나의 흐름이 보인다.
+eatVigor = 7
+eatHp = 7
+eatMp = 38
+eatMood = 0.22
+eatMessage = 가벼운 떨림과 함께 마나가 혈관을 타고 흐른다.
+eatBuffType = mp_regen
+eatBuffAmount = 2
+eatBuffDuration = 300
+
+[basic_adventure_lunch]
+name = 초보 모험가 도시락
+category = Food
+price = 14
+tags = /edible/organic/cooked/dish/
+rarity = common
+source = cook:recipe_adventure_lunch
+description = 아무거나 담긴 기본 도시락. 최소한 배는 채운다.
+eatVigor = 10
+eatHp = 10
+eatMp = 5
+eatMood = 0.05
+eatMessage = 배를 채우는 것만큼은 확실하다.
+
+[adventure_lunch]
+name = 모험가의 도시락
+category = Food
+price = 36
+tags = /edible/organic/cooked/dish/
+rarity = uncommon
+source = cook:recipe_adventure_lunch
+description = 고기와 허브, 곡물이 균형 있게 담긴 도시락.
+eatVigor = 18
+eatHp = 18
+eatMp = 12
+eatMood = 0.15
+eatMessage = 다채로운 맛이 입안에서 조화를 이룬다.
+eatBuffType = tp_regen
+eatBuffAmount = 1
+eatBuffDuration = 240
+
+[veteran_adventure_lunch]
+name = 노련한 모험가 도시락
+category = Food
+price = 78
+tags = /edible/organic/cooked/dish/rare/
+rarity = rare
+source = cook:recipe_adventure_lunch
+description = 베테랑 모험가들이 원정에 챙기는 풍성한 도시락.
+eatVigor = 28
+eatHp = 28
+eatMp = 20
+eatMood = 0.25
+eatMessage = 든든한 한 끼가 장도의 피로를 씻어낸다.
+eatBuffType = tp_regen
+eatBuffAmount = 2
+eatBuffDuration = 360
+
+[heroic_adventure_lunch]
+name = 영웅의 도시락
+category = Food
+price = 180
+tags = /edible/organic/cooked/dish/rare/
+rarity = epic
+source = cook:recipe_adventure_lunch
+description = 영웅담에나 나올 법한 최상급 도시락. 한 끼로 하루가 찬란해진다.
+eatVigor = 45
+eatHp = 50
+eatMp = 35
+eatMood = 0.40
+eatMessage = 황홀한 맛이 몸과 마음을 동시에 깨운다.
+eatBuffType = tp_regen
+eatBuffAmount = 3
+eatBuffDuration = 480
+
+[spoiled_dragon_stew]
+name = 싸구려 스튜
+category = Food
+price = 12
+tags = /edible/organic/cooked/dish/
+rarity = common
+source = cook:recipe_dragon_stew
+description = 드래곤 스튜라고 부르기도 민망한, 재료가 부실한 스튜.
+eatVigor = 8
+eatHp = 12
+eatMp = 0
+eatMood = -0.02
+eatMessage = 기름지긴 한데 맛이 없다. 먹고 나서 속이 더부룩하다.
+
+[dragon_stew]
+name = 드래곤 스튜
+category = Food
+price = 60
+tags = /edible/organic/cooked/dish/rare/
+rarity = rare
+source = cook:recipe_dragon_stew
+description = 묵직한 고기와 허브가 녹아든 든든한 스튜.
+eatVigor = 30
+eatHp = 45
+eatMp = 10
+eatMood = 0.25
+eatMessage = 뜨끈한 국물이 뼛속까지 따뜻하게 만든다.
+eatBuffType = attack
+eatBuffAmount = 4
+eatBuffDuration = 360
+
+[primal_dragon_stew]
+name = 원시의 드래곤 스튜
+category = Food
+price = 160
+tags = /edible/organic/cooked/dish/rare/
+rarity = epic
+source = cook:recipe_dragon_stew
+description = 최상급 고기와 고대 허브로 끓인 전설의 스튜. 용의 심장을 깨운다.
+eatVigor = 55
+eatHp = 75
+eatMp = 25
+eatMood = 0.40
+eatMessage = 원시의 기운이 혈관을 달구며 사지에 힘이 넘쳐흐른다.
+eatBuffType = attack
+eatBuffAmount = 7
+eatBuffDuration = 480
