@@ -277,6 +277,47 @@ export function checkHyperionCondition(
       return cnt >= parseInt(param, 10);
     }
 
+    // --- 생활 스탯 (칭호 시스템 공유 조건) ---
+    case 'gathers_done':
+      return knowledge.totalGathersDone >= parseInt(param, 10);
+
+    case 'cooks_done':
+      return knowledge.totalCooksDone >= parseInt(param, 10);
+
+    case 'farm_harvests':
+      return knowledge.totalFarmHarvests >= parseInt(param, 10);
+
+    case 'gifts_given':
+      return knowledge.totalGiftsGiven >= parseInt(param, 10);
+
+    case 'owned_bases':
+      return knowledge.ownedBases.size >= parseInt(param, 10);
+
+    case 'conversation_partners':
+      return knowledge.conversationPartners.size >= parseInt(param, 10);
+
+    // --- 마을 성장 (titles 데이터 지원용) ---
+    case 'village_stage':
+      return (knowledge.villageState?.stage ?? 0) >= parseInt(param, 10);
+
+    case 'village_roads':
+      return (knowledge.villageState?.roads.length ?? 0) >= parseInt(param, 10);
+
+    case 'village_visitor_income':
+      return (knowledge.villageState?.totalVisitorIncome ?? 0) >= parseInt(param, 10);
+
+    case 'village_visitor_days':
+      return (knowledge.villageState?.totalVisitorDays ?? 0) >= parseInt(param, 10);
+
+    case 'village_festivals':
+      return (knowledge.villageState?.springFestivalCount ?? 0) >= parseInt(param, 10);
+
+    case 'village_crisis_success':
+      return (knowledge.villageState?.crisisEventSuccessCount ?? 0) >= parseInt(param, 10);
+
+    case 'village_built':
+      return knowledge.villageState !== null;
+
     default:
       return false;
   }

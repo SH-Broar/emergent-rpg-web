@@ -28,6 +28,8 @@ import { initNpcQuests } from './npc-quest-init';
 import { initDialogueChoices } from './dialogue-choice-init';
 import { loadEventBattles } from '../models/event-battle';
 import { loadRecipeDefs } from './recipe-defs';
+import { loadCraftRecipeDefs } from './craft-defs';
+import { loadTitleDefs } from '../systems/title-system';
 
 function parseTimeWindow(raw: string): TimeWindow | undefined {
   const value = raw.trim();
@@ -799,6 +801,10 @@ export function initAll(data: GameDataFiles): InitResult {
   }
   rebuildTitleNameMap(titleMap);
 
+  // 데이터 칭호 정의 로드 — title-system 이 이 규칙을 평가해 조건 충족 시 수여.
+  // titles.txt 의 59개 칭호를 hyperion DSL 로 평가한다. 레거시 한글 칭호(TITLE_CONDITIONS)는 그대로 병행.
+  loadTitleDefs(data.titles);
+
   const diagnosticQuestions = parseDiagnosticQuestions(data.diagnostic);
 
   // 마을 시설/도로/이벤트 정의 로드
@@ -818,6 +824,9 @@ export function initAll(data: GameDataFiles): InitResult {
 
   // 요리 레시피 정의 로드
   loadRecipeDefs(data.recipes);
+
+  // 제작/대장간 레시피 정의 로드
+  loadCraftRecipeDefs(data.craftRecipes);
 
   return { actors, world, events, dungeonSystem, activitySystem, diagnosticQuestions, warnings };
 }

@@ -6,6 +6,7 @@ import { generateDefaultCellConditions, generateDefaultRowConditions, generateDe
 import { FarmState, createFarmState, expandFarm } from './farming';
 import { VillageState } from './village';
 import { NpcQuestState } from './npc-quest';
+import { getBaseDef } from '../data/base-defs';
 
 // ============================================================
 // CoreMatrix
@@ -239,12 +240,13 @@ export class PlayerKnowledge {
     }
   }
 
-  /** 농장 초기화 (Lv.2 달성 시 호출) */
+  /** 농장 초기화 (Lv.2 달성 시 호출).
+   *  격자 크기는 BASE_DEFS.initialFarmGrid 를 권위 있는 정의로 사용한다.
+   *  base-defs 가 없는 location 은 안전한 기본값 [2,2] 사용. */
   initFarm(locationId: string): void {
     if (this.farmStates.has(locationId)) return;
-    // 비싼 집: Halpia, Alimes_High, Enicham → 3x3
-    const expensiveIds = new Set(['Halpia', 'Alimes_High', 'Enicham']);
-    const [w, h] = expensiveIds.has(locationId) ? [3, 3] : [2, 2];
+    const def = getBaseDef(locationId);
+    const [w, h] = def?.initialFarmGrid ?? [2, 2];
     this.farmStates.set(locationId, createFarmState(locationId, w, h));
   }
 

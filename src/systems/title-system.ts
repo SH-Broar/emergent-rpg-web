@@ -1,6 +1,15 @@
 // title-system.ts — 칭호 조건 체크 및 부여
+//
+// 칭호 정의는 두 경로에서 제공된다:
+//   1) 이 파일의 TITLE_CONDITIONS (구형, 한국어 ID) — 기존 세이브 호환성 유지
+//   2) public/data/titles.txt (데이터) — hyperion DSL 로 조건 평가
+// checkAndAwardTitles 는 두 소스를 모두 평가해 아직 획득하지 않은 칭호를 수여한다.
+// 데이터 칭호는 표시 이름(name= 필드, 한국어)으로 earnedTitles 에 저장되므로
+// UI 에서는 기존 한국어 칭호와 동일한 방식으로 표시된다.
 
 import type { GameSession } from './game-session';
+import type { DataSection } from '../data/parser';
+import { checkHyperionCondition, type HyperionCondition } from './hyperion';
 
 interface TitleCondition {
   id: string;
@@ -167,16 +176,93 @@ export const TITLE_DESCRIPTIONS: Record<string, string> = {
   '이 세계의 시민': '지역 10곳 방문 + 대화 200번 + 거점 2곳',
 };
 
+// ============================================================
+// 데이터 기반 칭호 (public/data/titles.txt)
+// ============================================================
+
+interface DataTitleRule {
+  /** 섹션 ID (e.g. 'beginner_explorer') */
+  sectionId: string;
+  /** 표시 이름 (한국어). earnedTitles 에도 이 값이 저장된다. */
+  displayName: string;
+  description: string;
+  condition: HyperionCondition;
+  priority: number;
+}
+
+const dataTitleRules: DataTitleRule[] = [];
+
+/** titles.txt 로드. data-init.ts 가 호출한다. */
+export function loadTitleDefs(sections: DataSection[]): void {
+  dataTitleRules.length = 0;
+  for (const s of sections) {
+    if (s.name.startsWith('#') || s.name === 'Meta') continue;
+    const displayName = s.get('name', s.name).trim();
+    const condStr = s.get('condition', '').trim();
+    if (!displayName || !condStr) continue;
+    dataTitleRules.push({
+      sectionId: s.name,
+      displayName,
+      description: s.get('description', ''),
+      condition: { description: s.get('description', ''), type: condStr },
+      priority: s.getInt('priority', 0),
+    });
+  }
+}
+
+/** 데이터 칭호 전체 rule 반환 */
+export function getDataTitleRules(): readonly DataTitleRule[] {
+  return dataTitleRules;
+}
+
+/** 특정 (레거시 또는 데이터) 칭호의 획득 방법 설명 반환 */
+export function getTitleDescription(titleId: string): string {
+  const legacy = TITLE_DESCRIPTIONS[titleId];
+  if (legacy) return legacy;
+  // 데이터 칭호의 경우 earnedTitles 에는 displayName 이 저장됨
+  const dataRule = dataTitleRules.find(r => r.displayName === titleId || r.sectionId === titleId);
+  return dataRule?.description ?? '';
+}
+
+/** 전체 칭호 표시 이름 목록 (UI 용) — 레거시 한국어 ID + 데이터 displayName 합집합 */
+export function getAllTitleDisplayNames(): string[] {
+  const set = new Set<string>(Object.keys(TITLE_DESCRIPTIONS));
+  for (const rule of dataTitleRules) set.add(rule.displayName);
+  return [...set];
+}
+
 /**
  * 조건을 충족한 미획득 칭호를 부여하고 새로 획득한 칭호 목록을 반환한다.
+ * 하드코딩 규칙과 titles.txt 데이터 규칙을 모두 평가한다.
  */
 export function checkAndAwardTitles(session: GameSession): string[] {
   const newTitles: string[] = [];
+
+  // 1) 레거시 하드코딩 규칙
   for (const cond of TITLE_CONDITIONS) {
     if (!session.knowledge.hasTitle(cond.id) && cond.check(session)) {
       session.knowledge.addTitle(cond.id);
       newTitles.push(cond.id);
     }
   }
+
+  // 2) 데이터 규칙 (titles.txt) — hyperion DSL 평가기 재사용
+  for (const rule of dataTitleRules) {
+    if (session.knowledge.hasTitle(rule.displayName)) continue;
+    const ok = checkHyperionCondition(
+      rule.condition,
+      session.player.name,
+      session.player,
+      session.actors,
+      session.knowledge,
+      session.gameTime,
+      session.dungeonSystem,
+    );
+    if (ok) {
+      session.knowledge.addTitle(rule.displayName);
+      newTitles.push(rule.displayName);
+    }
+  }
+
   return newTitles;
 }

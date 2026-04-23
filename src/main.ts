@@ -33,6 +33,7 @@ import { createLoreScreen } from './ui/screens/lore';
 import { createRealEstateScreen } from './ui/screens/real-estate';
 import { createStorageScreen } from './ui/screens/storage';
 import { createCookingScreen } from './ui/screens/cooking';
+import { createCraftScreen } from './ui/screens/craft';
 import { createSkillShopScreen } from './ui/screens/skill-shop';
 import { createGuildDungeonScreen } from './ui/screens/guild-dungeon';
 import { createLifeJobScreen } from './ui/screens/life-job';
@@ -479,6 +480,9 @@ async function boot() {
           break;
         case 'cooking':
           sm.push(createCookingScreen(session, () => popThenMaybeHyperion()));
+          break;
+        case 'craft':
+          sm.push(createCraftScreen(session, () => popThenMaybeHyperion()));
           break;
         case 'skill_shop':
           sm.push(createSkillShopScreen(session, () => popThenMaybeHyperion()));

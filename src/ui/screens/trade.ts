@@ -9,6 +9,7 @@ import { checkAndAwardTitles } from '../../systems/title-system';
 import { getLifeJobModifiers } from '../../systems/life-job-system';
 import { getItemDef, getWeaponDef, getArmorDef } from '../../types/item-defs';
 import { RARITY_COLORS } from '../item-labels';
+import { getMarketDiscount } from '../../systems/base-effects';
 
 type TradePhase = 'npc-select' | 'trade';
 type TradeTab = 'buy' | 'sell';
@@ -38,7 +39,9 @@ export function createTradeScreen(
 
   function getBuyPrice(type: ItemType): number {
     const ljMod = getLifeJobModifiers(session);
-    return Math.max(1, Math.round(basePrice(type) * getRepMultiplier() * (1 - ljMod.buyPriceDiscount)));
+    // 거점 Lv.5 market_discount: 시장 거래 가격 추가 할인 (base-effects.ts)
+    const baseDiscount = getMarketDiscount(session);
+    return Math.max(1, Math.round(basePrice(type) * getRepMultiplier() * (1 - ljMod.buyPriceDiscount - baseDiscount)));
   }
 
   function getSellPrice(type: ItemType): number {

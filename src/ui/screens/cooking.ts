@@ -21,6 +21,7 @@ import {
 } from '../../data/recipe-defs';
 import { RARITY_COLORS, RARITY_NAMES } from '../item-labels';
 import { checkAndAwardTitles } from '../../systems/title-system';
+import { getCookingMultiplier } from '../../systems/base-effects';
 
 /** 단일 재료에 대해 플레이어가 실제로 사용할 아이템 묶음 */
 interface IngredientPick {
@@ -218,9 +219,10 @@ export function createCookingScreen(
       }
     }
 
-    // 악세서리 cookingBonus 는 결과 수량에 반영 (ceil)
+    // 악세서리 cookingBonus 와 거점 cookingMultiplier(Lv.3 자기 거점 +20%, Lv.5 cooking_bonus +20%)
+    // 를 곱해 결과 수량에 반영 (base-effects.ts)
     const accFx = getEquippedAccessoryEffects(p);
-    const cookingMul = 1 + (accFx.cookingBonus ?? 0);
+    const cookingMul = (1 + (accFx.cookingBonus ?? 0)) * getCookingMultiplier(session);
     const outputAmount = Math.max(1, Math.round(1 * cookingMul));
 
     p.addItemById(plan.tier.itemId, outputAmount);

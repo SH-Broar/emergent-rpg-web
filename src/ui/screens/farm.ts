@@ -29,7 +29,7 @@ export function createFarmScreen(
       wrap.innerHTML = `
         <button class="btn back-btn" data-back>← 뒤로 [Esc]</button>
         <h2>🌾 농장</h2>
-        <p style="text-align:center;color:var(--text-dim);padding:20px">거점 Lv.3 달성 시 농장이 활성화됩니다.</p>
+        <p style="text-align:center;color:var(--text-dim);padding:20px">거점 Lv.2 달성 시 농장이 활성화됩니다.</p>
       `;
       wrap.querySelector('[data-back]')?.addEventListener('click', onDone);
       el.appendChild(wrap);

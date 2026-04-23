@@ -5,7 +5,7 @@ import { GameSession } from './game-session';
 import { seasonName } from '../types/enums';
 import { randomInt, randomFloat } from '../types/rng';
 import { advanceTurn } from './world-simulation';
-import { applyDailyBaseEffects, tickStoragePenalties } from './base-effects';
+import { applyDailyBaseEffects, tickStoragePenalties, getGatherBonus } from './base-effects';
 import { findItemsBySource, getEquippedAccessoryEffects, applyTravelSpeed } from '../types/item-defs';
 import { tryNpcInitiatedConversation, getDialogue, getRelationshipStage, getActionText } from './npc-interaction';
 import { checkAndAwardTitles } from './title-system';
@@ -21,7 +21,7 @@ export type GameAction =
   | 'idle' | 'move' | 'talk' | 'trade' | 'eat'
   | 'rest' | 'dungeon' | 'gather' | 'quest' | 'activity'
   | 'gift' | 'home' | 'memory_spring'
-  | 'storage' | 'realestate' | 'cooking'
+  | 'storage' | 'realestate' | 'cooking' | 'craft'
   | 'info_status' | 'info_color' | 'info_relations' | 'info_world'
   | 'info_backlog' | 'info_hyperion' | 'info_party' | 'info_titles' | 'info_map' | 'info_encyclopedia'
   | 'info_skills' | 'info_inventory'
@@ -212,7 +212,9 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
       const hyperionDiff = p.hyperionLevel - (loc.monsterLevel || 1);
       const accFxGather = getEquippedAccessoryEffects(p);
       const gatherMod = accFxGather.gatherBonus ?? 0;
-      const chance = Math.min(0.95, Math.max(0.2, 0.7 + hyperionDiff * 0.03) + gatherMod);
+      // 거점 패시브: Lv.3 자기 거점 +10%, Lv.5 rare_gather +15% (base-effects.ts)
+      const baseGatherBonus = getGatherBonus(session, p.currentLocation);
+      const chance = Math.min(0.95, Math.max(0.2, 0.7 + hyperionDiff * 0.03) + gatherMod + baseGatherBonus);
       if (randomFloat(0, 1) > chance) {
         result.messages.push('채집에 실패했다...');
         if (lockedItems.length > 0) {
@@ -358,6 +360,7 @@ export function processTurn(session: GameSession, action: GameAction): TurnResul
     case 'storage': result.screenChange = 'storage'; return result;
     case 'realestate': result.screenChange = 'realestate'; return result;
     case 'cooking': result.screenChange = 'cooking'; return result;
+    case 'craft': result.screenChange = 'craft'; return result;
     case 'memory_spring': result.messages.push('기억의 샘에 다가간다.'); result.screenChange = 'memory_spring'; break;
     case 'skill_shop': result.screenChange = 'skill_shop'; return result;
     case 'guild_dungeon': result.screenChange = 'guild_dungeon'; return result;

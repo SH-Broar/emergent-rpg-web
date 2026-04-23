@@ -3,7 +3,7 @@
 
 import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
-import { TITLE_DESCRIPTIONS } from '../../systems/title-system';
+import { getTitleDescription, getAllTitleDisplayNames } from '../../systems/title-system';
 
 export function createTitlesScreen(
   session: GameSession,
@@ -63,7 +63,7 @@ export function createTitlesScreen(
         btn.className = `btn npc-item${t === activeTitle ? ' active' : ''}`;
         btn.style.minHeight = '44px';
         btn.dataset.idx = String(i);
-        const desc = TITLE_DESCRIPTIONS[t] ?? '';
+        const desc = getTitleDescription(t) ?? '';
         btn.innerHTML = `
           <span class="npc-num">${i + 1}.</span>
           <span class="npc-name">${t}</span>
@@ -82,7 +82,7 @@ export function createTitlesScreen(
     wrap.appendChild(hint);
 
     // 미획득 칭호 목록
-    const allTitles = Object.keys(TITLE_DESCRIPTIONS);
+    const allTitles = getAllTitleDisplayNames();
     const unearnedTitles = allTitles.filter(t => !session.knowledge.hasTitle(t));
     if (unearnedTitles.length > 0) {
       const secTitle = document.createElement('p');
@@ -97,7 +97,7 @@ export function createTitlesScreen(
         row.style.cssText = 'padding:6px 8px;border-bottom:1px solid var(--border);opacity:0.55';
         row.innerHTML = `
           <span style="color:var(--text-dim)">[ ? ] ${t}</span>
-          <span style="display:block;font-size:11px;color:var(--text-dim);margin-top:2px">${TITLE_DESCRIPTIONS[t]}</span>
+          <span style="display:block;font-size:11px;color:var(--text-dim);margin-top:2px">${getTitleDescription(t)}</span>
         `;
         ulist.appendChild(row);
       });

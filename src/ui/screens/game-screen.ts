@@ -22,6 +22,7 @@ import { getVillageRoadMultiplier } from '../../models/village';
 import { getRoadDef } from '../../data/village-defs';
 import { checkAndAwardTitles } from '../../systems/title-system';
 import { getLifeJobModifiers, trackLocationVisit } from '../../systems/life-job-system';
+import { getAllRecipes } from '../../systems/crafting';
 
 interface ActionDef {
   key: string;
@@ -83,6 +84,11 @@ function atFerryPort(session: GameSession) {
 function atVillage(session: GameSession) {
   return session.knowledge.villageState?.locationId === session.player.currentLocation;
 }
+/** 현재 위치에서 제작 가능한 레시피가 하나라도 있는지 (대장간/공방/약초원 등). */
+function hasCraftHere(session: GameSession) {
+  const loc = session.player.currentLocation;
+  return getAllRecipes().some(r => r.requiredLocation === loc);
+}
 
 const MAIN_ACTIONS: ActionDef[] = [
   { key: '1', label: '대기', action: 'idle', icon: '⏳' },
@@ -104,6 +110,7 @@ const MAIN_ACTIONS: ActionDef[] = [
   { key: 'm', label: '기억의 샘', action: 'memory_spring', icon: '💧', visible: atMemorySpring },
   { key: 'f', label: '배편', action: 'ferry' as GameAction, icon: '⛵', visible: atFerryPort },
   { key: 'v', label: '마을', action: 'village' as GameAction, icon: '🏘', visible: atVillage },
+  { key: 'c', label: '제작', action: 'craft' as GameAction, icon: '🔨', visible: hasCraftHere },
 ];
 
 const INFO_ACTIONS: ActionDef[] = [
