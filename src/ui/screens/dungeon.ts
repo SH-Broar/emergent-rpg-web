@@ -20,6 +20,8 @@ import { triggerNpcQuestEvent } from '../../data/npc-quest-defs';
 import { iGa, eulReul, eunNeun } from '../../data/josa';
 import { randomFloat, randomInt } from '../../types/rng';
 import { createEquipmentScreen } from './equipment';
+import { applyDailyMealBuff } from '../../types/eat-system';
+import { ItemType } from '../../types/enums';
 import { createSkillManageScreen } from './skill-manage';
 import { SEA_ONLY_LOCATIONS } from '../../systems/ferry';
 
@@ -547,11 +549,22 @@ export function createDungeonScreen(
     const wrap = document.createElement('div');
     wrap.className = 'screen info-screen';
 
+    // 던전 탐사 중 섭취 가능한 아이템 필터.
+    // 기존엔 즉시 회복(eatHp/eatMp/eatVigor > 0) 아이템만 허용했으나,
+    // mealBuff*(하루 지속 스탯 버프) 또는 eatBuffType(일시 버프)만 가진 요리도 있으므로
+    // 섭취로 실질적인 효과가 발생하는 모든 /edible/ 식품을 허용한다.
     const consumables: Array<{ id: string; name: string; qty: number; eatHp: number; eatMp: number; eatVigor: number }> = [];
     p.items.forEach((qty, id) => {
       if (qty <= 0) return;
       const def = getItemDef(id);
-      if (def && (def.eatHp > 0 || def.eatMp > 0 || def.eatVigor > 0)) {
+      if (!def) return;
+      const hasInstantEffect = def.eatHp > 0 || def.eatMp > 0 || def.eatVigor > 0 || def.eatMood > 0;
+      const hasTimedBuff = !!def.eatBuffType && def.eatBuffDuration > 0;
+      const hasMealBuff =
+        def.mealBuffAtk > 0 || def.mealBuffDef > 0 ||
+        def.mealMpMaxPct > 0 || def.mealHpMaxPct > 0 ||
+        def.mealCombatSpeed > 0 || def.mealBuffSkillAppear > 0;
+      if (hasInstantEffect || hasTimedBuff || hasMealBuff) {
         consumables.push({ id, name: def.name, qty, eatHp: def.eatHp, eatMp: def.eatMp, eatVigor: def.eatVigor ?? 0 });
       }
     });
@@ -583,9 +596,25 @@ export function createDungeonScreen(
       btn.addEventListener('click', () => {
         const item = consumables[btnIdx];
         if (!item || (p.items.get(item.id) ?? 0) <= 0) return;
+        // 즉시 회복
         p.adjustHp(item.eatHp);
         p.adjustMp(item.eatMp);
         if (item.eatVigor > 0) p.adjustAp(item.eatVigor);
+        // 일시 버프(eatBuffType) / 하루 지속 식사 버프(mealBuff*) 도 던전 내 섭취 시 동일하게 적용
+        const def = getItemDef(item.id);
+        if (def) {
+          if (def.eatMood !== 0) p.adjustMood(def.eatMood);
+          if (def.eatBuffType && def.eatBuffDuration > 0) {
+            session.playerBuffs.push({
+              type: def.eatBuffType,
+              amount: def.eatBuffAmount,
+              remainingTurns: def.eatBuffDuration,
+            });
+          }
+          if (def.category === ItemType.Food) {
+            applyDailyMealBuff(p, def);
+          }
+        }
         p.removeItemById(item.id, 1);
         session.backlog.add(session.gameTime, `${item.name}${eulReul(item.name)} 사용했다.`, '행동');
         renderDungeonItemUse(el);
