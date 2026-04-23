@@ -2,12 +2,13 @@
 
 import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
-import { ItemType, SpiritRole, raceName, spiritRoleName, itemTypeToId } from '../../types/enums';
+import { ItemType, SpiritRole, raceName, spiritRoleName, itemTypeToId, itemIdToType } from '../../types/enums';
 import { itemName, basePrice } from '../../types/registry';
 import { Actor } from '../../models/actor';
 import { checkAndAwardTitles } from '../../systems/title-system';
 import { getLifeJobModifiers } from '../../systems/life-job-system';
-import { getItemDef } from '../../types/item-defs';
+import { getItemDef, getWeaponDef, getArmorDef } from '../../types/item-defs';
+import { RARITY_COLORS } from '../item-labels';
 
 type TradePhase = 'npc-select' | 'trade';
 type TradeTab = 'buy' | 'sell';
@@ -43,6 +44,52 @@ export function createTradeScreen(
   function getSellPrice(type: ItemType): number {
     const ljMod = getLifeJobModifiers(session);
     return Math.max(1, Math.round(basePrice(type) * 0.6 / getRepMultiplier() * (1 + ljMod.sellPriceBonus)));
+  }
+
+  function getSellPriceForPrice(priceBase: number): number {
+    const ljMod = getLifeJobModifiers(session);
+    return Math.max(1, Math.round(priceBase * 0.6 / getRepMultiplier() * (1 + ljMod.sellPriceBonus)));
+  }
+
+  // 판매 엔트리: 카테고리 묶음 또는 개별 itemId
+  interface SellEntry {
+    key: string;          // 'cat:N' 또는 itemId
+    display: string;      // UI 표시 이름
+    count: number;        // 보유 수량
+    price: number;        // 개당 판매가
+    rarityColor?: string; // 희귀도 표시 색 (개별 아이템 한정)
+    consume: () => boolean;
+  }
+
+  function buildSellEntries(): SellEntry[] {
+    const entries: SellEntry[] = [];
+    for (const [id, count] of p.items) {
+      if (count <= 0) continue;
+      const type = itemIdToType(id);
+      if (type !== undefined) {
+        entries.push({
+          key: `cat:${type}`,
+          display: itemName(type),
+          count,
+          price: getSellPrice(type),
+          consume: () => p.consumeItem(type, 1),
+        });
+        continue;
+      }
+      // 장비/무기는 판매 UI에서 제외 (별도 해체 등으로 처리)
+      if (getWeaponDef(id) || getArmorDef(id)) continue;
+      const def = getItemDef(id);
+      if (!def) continue;
+      entries.push({
+        key: id,
+        display: def.name,
+        count,
+        price: getSellPriceForPrice(def.price),
+        rarityColor: RARITY_COLORS[def.rarity],
+        consume: () => p.removeItemById(id, 1),
+      });
+    }
+    return entries;
   }
 
   function renderNpcSelect(el: HTMLElement) {
@@ -102,10 +149,7 @@ export function createTradeScreen(
       name: itemName(type),
       price: getBuyPrice(type),
     }));
-    const sellItems: { type: ItemType; name: string; count: number; price: number }[] = [];
-    for (const [type, count] of p.getInventoryByType()) {
-      if (count > 0) sellItems.push({ type, name: itemName(type), count, price: getSellPrice(type) });
-    }
+    const sellItems = buildSellEntries();
 
     // NPC 특산품 (선택된 NPC가 있을 때만)
     const specialItems = selectedNpc ? getNpcSpecialItems(selectedNpc) : [];
@@ -130,7 +174,7 @@ export function createTradeScreen(
                 </button>`).join('')
             : sellItems.map((item, i) => `
                 <button class="btn item-cell" data-sell="${i}">
-                  <span class="item-name">${item.name}</span>
+                  <span class="item-name"${item.rarityColor ? ` style="color:${item.rarityColor}"` : ''}>${item.display}</span>
                   <span class="item-count">x${item.count}</span>
                   <span class="item-price">${item.price}G</span>
                 </button>`).join('')
@@ -228,14 +272,14 @@ export function createTradeScreen(
     el.querySelectorAll<HTMLButtonElement>('[data-sell]').forEach(btn => {
       btn.addEventListener('click', () => {
         const idx = parseInt(btn.dataset.sell!, 10);
-        const item = sellItems[idx];
-        if (!item) return;
-        if (p.consumeItem(item.type, 1)) {
-          p.addGold(item.price);
+        const entry = sellItems[idx];
+        if (!entry) return;
+        if (entry.consume()) {
+          p.addGold(entry.price);
           p.spirit.tradeCount++;
           session.knowledge.trackItemSold();
           if (selectedNpc) { p.adjustRelationship(selectedNpc.name, 0.01, 0.01); }
-          session.backlog.add(session.gameTime, `${p.name}이(가) ${item.name}을(를) 판매했다. (+${item.price}G)`, '행동');
+          session.backlog.add(session.gameTime, `${p.name}이(가) ${entry.display}을(를) 판매했다. (+${entry.price}G)`, '행동');
           // 아이템 판매: Water-, Iron+, Dark+
           const sellInfluence = new Array(8).fill(0);
           sellInfluence[1] = -0.005;
@@ -246,7 +290,7 @@ export function createTradeScreen(
           for (const t of sellTitles) {
             session.backlog.add(session.gameTime, `✦ 칭호 획득: "${t}"`, '시스템');
           }
-          message = `${item.name} 판매! +${item.price}G${sellTitles.length > 0 ? ' ✦ 칭호: "' + sellTitles[sellTitles.length - 1] + '"' : ''}`;
+          message = `${entry.display} 판매! +${entry.price}G${sellTitles.length > 0 ? ' ✦ 칭호: "' + sellTitles[sellTitles.length - 1] + '"' : ''}`;
         }
         renderTrade(el);
       });
