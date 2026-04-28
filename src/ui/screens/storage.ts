@@ -4,7 +4,7 @@ import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
 import { locationName } from '../../types/registry';
 import { ItemType } from '../../types/enums';
-import { getItemDef, getStorageProfileForItem, type StorageZone } from '../../types/item-defs';
+import { getItemDef, getStorageProfileForItem, getWeaponDef, getArmorDef, type StorageZone } from '../../types/item-defs';
 import { categoryName } from '../item-labels';
 import { BASE_DEFS, getUpgradeCost } from '../../data/base-defs';
 
@@ -26,8 +26,17 @@ export function createStorageScreen(
 ): Screen {
   const loc = session.player.currentLocation;
   let activeZone: StorageZone = 'room';
-  let mode: 'view' | 'deposit' | 'withdraw' = 'view';
+  let mode: 'view' | 'deposit' | 'withdraw' | 'sell' = 'view';
   let message = '';
+
+  function getSellPrice(id: string): number {
+    const w = getWeaponDef(id);
+    const a = getArmorDef(id);
+    const def = getItemDef(id);
+    const basePrice = w?.price ?? a?.price ?? def?.price ?? 0;
+    if (basePrice <= 0) return 0;
+    return Math.max(1, Math.round(basePrice * 0.5));
+  }
 
   function getItemName(id: string): string {
     const def = getItemDef(id);
@@ -111,6 +120,7 @@ export function createStorageScreen(
         <button class="btn" data-mode="view" style="flex:1;font-size:11px;${mode === 'view' ? 'color:var(--success)' : ''}">보기</button>
         <button class="btn" data-mode="deposit" style="flex:1;font-size:11px;${mode === 'deposit' ? 'color:var(--warning)' : ''}">넣기</button>
         <button class="btn" data-mode="withdraw" style="flex:1;font-size:11px;${mode === 'withdraw' ? 'color:var(--accent)' : ''}">빼기</button>
+        <button class="btn" data-mode="sell" style="flex:1;font-size:11px;${mode === 'sell' ? 'color:var(--success)' : ''}">판매</button>
       </div>`;
 
     let contentHtml = '';
@@ -152,8 +162,7 @@ export function createStorageScreen(
         }
         contentHtml += '</div>';
       }
-    } else {
-      // withdraw
+    } else if (mode === 'withdraw') {
       const items = [...zoneItems.entries()];
       if (items.length === 0) {
         contentHtml = '<p style="color:var(--text-dim);font-size:12px;text-align:center;padding:16px">꺼낼 아이템이 없습니다.</p>';
@@ -169,6 +178,30 @@ export function createStorageScreen(
                   <span style="color:var(--text-dim)">x${count}</span>
                 </div>
                 <span style="font-size:11px;color:var(--text-dim);text-align:left">${getStorageHint(id, activeZone)}</span>
+              </div>
+            </button>`;
+        }
+        contentHtml += '</div>';
+      }
+    } else {
+      // sell — 창고에서 바로 판매. 50% 가격, 비매품은 비활성화.
+      const items = [...zoneItems.entries()];
+      if (items.length === 0) {
+        contentHtml = '<p style="color:var(--text-dim);font-size:12px;text-align:center;padding:16px">판매할 아이템이 없습니다.</p>';
+      } else {
+        contentHtml = `<p style="font-size:11px;color:var(--text-dim);text-align:center">보유 골드: ${p.spirit.gold}G · 50% 시세로 1개씩 즉시 판매</p>`;
+        contentHtml += '<div class="npc-list">';
+        for (let i = 0; i < items.length; i++) {
+          const [id, count] = items[i];
+          const price = getSellPrice(id);
+          const sellable = price > 0;
+          contentHtml += `
+            <button class="btn npc-item" data-sell="${i}" style="min-height:36px${sellable ? '' : ';opacity:0.5'}" ${sellable ? '' : 'disabled'}>
+              <div style="display:flex;flex-direction:column;gap:2px;width:100%">
+                <div style="display:flex;justify-content:space-between;width:100%">
+                  <span><span class="npc-num">${i + 1}</span> ${getItemName(id)}</span>
+                  <span style="color:var(--text-dim)">x${count} · ${sellable ? `${price}G/개` : '판매불가'}</span>
+                </div>
               </div>
             </button>`;
         }
@@ -296,6 +329,27 @@ export function createStorageScreen(
       });
     });
 
+    // 판매 버튼 — 창고에서 바로 1개씩 판매
+    wrap.querySelectorAll<HTMLButtonElement>('[data-sell]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const items = [...zoneItems.entries()];
+        const idx = parseInt(btn.dataset.sell!, 10);
+        const [id] = items[idx];
+        if (!id) return;
+        const price = getSellPrice(id);
+        if (price <= 0) {
+          message = '⚠ 이 아이템은 판매할 수 없습니다.';
+          render(el);
+          return;
+        }
+        if (k.removeFromStorage(loc, activeZone, id, 1)) {
+          p.addGold(price);
+          message = `${getItemName(id)} 판매: +${price}G (보유 ${p.spirit.gold}G)`;
+        }
+        render(el);
+      });
+    });
+
     el.appendChild(wrap);
   }
 
@@ -312,6 +366,7 @@ export function createStorageScreen(
       if (key === 'e' || key === 'E') { activeZone = 'warm'; render(c); }
       if (key === '1' && mode === 'view') { mode = 'deposit'; render(c); }
       else if (key === '2' && mode === 'view') { mode = 'withdraw'; render(c); }
+      else if (key === '3' && mode === 'view') { mode = 'sell'; render(c); }
     },
   };
 }

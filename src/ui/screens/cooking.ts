@@ -142,6 +142,23 @@ function renderTierLabel(tier: RecipeTier | null): string {
   return `<span style="color:${color}">${name}${rarityLabel ? ` (${rarityLabel})` : ''}</span>`;
 }
 
+/** 결과 아이템의 사용 효과 미리보기 (던전 진입 전에 알 수 있도록) */
+function renderTierEffects(tier: RecipeTier | null): string {
+  if (!tier) return '—';
+  const def = getItemDef(tier.itemId);
+  if (!def) return '—';
+  const parts: string[] = [];
+  if (def.eatHp) parts.push(`HP ${def.eatHp >= 0 ? '+' : ''}${def.eatHp}`);
+  if (def.eatMp) parts.push(`MP ${def.eatMp >= 0 ? '+' : ''}${def.eatMp}`);
+  if (def.eatVigor) parts.push(`TP ${def.eatVigor >= 0 ? '+' : ''}${Math.round(def.eatVigor / 10)}`);
+  if (def.eatMood) parts.push(`기분 ${def.eatMood >= 0 ? '+' : ''}${def.eatMood.toFixed(2)}`);
+  if (def.eatBuffType && def.eatBuffDuration > 0) {
+    parts.push(`${def.eatBuffType} +${def.eatBuffAmount} (${def.eatBuffDuration}턴)`);
+  }
+  if (def.eatStatus) parts.push(`⚠ ${def.eatStatus}`);
+  return parts.length > 0 ? parts.join(' · ') : '—';
+}
+
 export function createCookingScreen(
   session: GameSession,
   onDone: () => void,
@@ -178,6 +195,7 @@ export function createCookingScreen(
                 <div style="font-size:11px">재료: ${ingText}</div>
                 <div style="font-size:11px;color:var(--text-dim)">사용: ${preview}</div>
                 <div style="font-size:11px">예상 품질: ${renderTierLabel(plan.tier)} <span style="color:var(--text-dim)">(희귀도 점수 ${scorePct}%)</span></div>
+                <div style="font-size:11px;color:var(--accent)">효과: ${renderTierEffects(plan.tier)}</div>
               </button>`;
           }).join('')}
         </div>`}

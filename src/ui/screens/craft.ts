@@ -14,6 +14,23 @@ import {
   type CraftRecipe,
 } from '../../systems/crafting';
 import { checkAndAwardTitles } from '../../systems/title-system';
+import { getItemDef } from '../../types/item-defs';
+
+/** 결과 아이템의 사용 효과 미리보기 (제작 전에 알 수 있도록) */
+function renderCraftEffects(item: unknown): string {
+  if (typeof item !== 'string') return '';
+  const def = getItemDef(item);
+  if (!def) return '';
+  const parts: string[] = [];
+  if (def.eatHp) parts.push(`HP ${def.eatHp >= 0 ? '+' : ''}${def.eatHp}`);
+  if (def.eatMp) parts.push(`MP ${def.eatMp >= 0 ? '+' : ''}${def.eatMp}`);
+  if (def.eatVigor) parts.push(`TP ${def.eatVigor >= 0 ? '+' : ''}${Math.round(def.eatVigor / 10)}`);
+  if (def.eatBuffType && def.eatBuffDuration > 0) {
+    parts.push(`${def.eatBuffType} +${def.eatBuffAmount} (${def.eatBuffDuration}턴)`);
+  }
+  if (def.eatStatus) parts.push(`⚠ ${def.eatStatus}`);
+  return parts.length > 0 ? parts.join(' · ') : '';
+}
 
 const ELEMENT_LABELS = ['🔥불', '💧물', '⚡전기', '🩶철', '🌿흙', '🌬바람', '✨빛', '🌑어둠'];
 
@@ -65,6 +82,7 @@ export function createCraftScreen(
                 <div><strong>${i + 1}. ${r.name}</strong> <span style="color:var(--text-dim);font-size:11px">TP ${tpCost}</span></div>
                 ${r.description ? `<div style="font-size:11px;color:var(--text-dim)">${r.description}</div>` : ''}
                 <div style="font-size:11px">재료: ${inputText} → 결과: <span style="color:var(--success)">${outputLabel}</span></div>
+                ${(() => { const eff = renderCraftEffects(r.output.item); return eff ? `<div style="font-size:11px;color:var(--accent)">효과: ${eff}</div>` : ''; })()}
                 ${colorHint ? `<div style="font-size:11px;color:var(--text-dim)">친화 보너스: ${colorHint} (해당 원소 색상 > 0.6 시 30% 확률로 +1)</div>` : ''}
                 ${!ok && check.reason ? `<div style="font-size:11px;color:var(--accent)">${check.reason}</div>` : ''}
               </button>`;

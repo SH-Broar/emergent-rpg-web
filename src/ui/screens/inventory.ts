@@ -8,7 +8,7 @@ import { getRaceCapabilitySet, parseTags } from '../../types/tag-system';
 import { advanceTurn } from '../../systems/world-simulation';
 import { openItemConfirmModal } from '../components/item-confirm-modal';
 
-type TabKind = 'weapon' | 'armor' | 'accessory' | 'food' | 'misc';
+type TabKind = 'equipment' | 'food' | 'misc';
 
 type EquipSlot = 'weapon' | 'armor' | 'accessory' | 'accessory2';
 type CarryEntry =
@@ -260,15 +260,46 @@ export function createInventoryScreen(
     return def?.description ?? '';
   }
 
-  /** classifyItemForTab 기반 탭 필터링 */
+  /** classifyItemForTab 기반 탭 필터링. 무기·방어구·악세서리는 단일 'equipment' 탭으로 통합. */
+  function classifyForUI(id: string): TabKind {
+    const cls = classifyItemForTab(id, p);
+    if (cls === 'weapon' || cls === 'armor' || cls === 'accessory') return 'equipment';
+    return cls as TabKind;
+  }
   function getTabEntries(tab: TabKind): CarryEntry[] {
     return getCarryEntries().filter(entry => {
       if (entry.kind !== 'item') {
-        // category 엔트리는 misc 탭(일반 소모성)으로 보낸다
         return tab === 'misc';
       }
-      return classifyItemForTab(entry.id, p) === tab;
+      return classifyForUI(entry.id) === tab;
     });
+  }
+
+  /** 단순 판매 (인벤토리·장비 탭 전용). 50% 가격으로 즉시 판매한다. */
+  function sellItemEntry(entry: CarryEntry, el: HTMLElement): void {
+    if (entry.kind !== 'item') {
+      statusMessage = '이 항목은 판매할 수 없습니다.';
+      render(el);
+      return;
+    }
+    const w = getWeaponDef(entry.id);
+    const a = getArmorDef(entry.id);
+    const def = getItemDef(entry.id);
+    const basePrice = w?.price ?? a?.price ?? def?.price ?? 0;
+    if (basePrice <= 0) {
+      statusMessage = '이 아이템은 판매할 수 없습니다.';
+      render(el);
+      return;
+    }
+    const sellPrice = Math.max(1, Math.round(basePrice * 0.5));
+    if (!p.removeItemById(entry.id, 1)) {
+      statusMessage = '아이템이 없습니다.';
+      render(el);
+      return;
+    }
+    p.addGold(sellPrice);
+    statusMessage = `${entry.label} 판매: +${sellPrice}G`;
+    render(el);
   }
 
   function getTabSummary(tab: TabKind): string {
@@ -280,11 +311,9 @@ export function createInventoryScreen(
   }
 
   const TAB_DEFS: { key: TabKind; label: string; hotkey: string }[] = [
-    { key: 'weapon',    label: '⚔ 무기',     hotkey: '5' },
-    { key: 'armor',     label: '🛡 방어구',   hotkey: '6' },
-    { key: 'accessory', label: '💍 악세서리', hotkey: '7' },
-    { key: 'food',      label: '🍖 음식',     hotkey: '8' },
-    { key: 'misc',      label: '📦 기타',     hotkey: '9' },
+    { key: 'equipment', label: '⚔ 장비 (판매)', hotkey: '5' },
+    { key: 'food',      label: '🍖 음식',        hotkey: '6' },
+    { key: 'misc',      label: '📦 기타',        hotkey: '7' },
   ];
 
   function tabLabel(tab: TabKind): string {
@@ -498,7 +527,7 @@ export function createInventoryScreen(
           </button>
         `).join('')}
       </div>
-      <p class="hint">1~4=장비 슬롯, 5~9=탭, Esc=닫기</p>
+      <p class="hint">1~4=장비 슬롯, 5=장비(판매), 6=음식, 7=기타, Esc=닫기</p>
     `;
 
     wrap.querySelector('[data-back]')?.addEventListener('click', onDone);
@@ -555,19 +584,9 @@ export function createInventoryScreen(
         const idx = parseInt(btn.dataset.carryEntry ?? '-1', 10);
         if (idx < 0 || idx >= entries.length) return;
         const entry = entries[idx];
-        // 무기/방어구/악세서리 탭: 장비 슬롯으로 이동해서 교체 UI 열기
-        if (tab === 'weapon' || tab === 'armor' || tab === 'accessory') {
-          if (entry.kind === 'item') {
-            const slot = getEquipSlotForItemId(entry.id);
-            if (slot) {
-              selectedSlot = slot;
-              activeTab = null;
-              render(el);
-              return;
-            }
-          }
-          statusMessage = '이 아이템은 장착할 수 없다.';
-          render(el);
+        // 장비 탭: 판매 전용. 장착은 상단 슬롯에서.
+        if (tab === 'equipment') {
+          sellItemEntry(entry, el);
           return;
         }
         // 음식 탭: 확인 모달 경유 후 소비
@@ -738,19 +757,9 @@ export function createInventoryScreen(
           const idx = parseInt(key, 10) - 1;
           if (idx < entries.length) {
             const entry = entries[idx];
-            // 장비 탭: 슬롯 열기
-            if (tab === 'weapon' || tab === 'armor' || tab === 'accessory') {
-              if (entry.kind === 'item') {
-                const slot = getEquipSlotForItemId(entry.id);
-                if (slot) {
-                  selectedSlot = slot;
-                  activeTab = null;
-                  render(container);
-                  return;
-                }
-              }
-              statusMessage = '이 아이템은 장착할 수 없다.';
-              render(container);
+            // 장비 탭: 판매 전용
+            if (tab === 'equipment') {
+              sellItemEntry(entry, container);
               return;
             }
             // 음식 탭
@@ -796,11 +805,9 @@ export function createInventoryScreen(
         return;
       }
       const tabMap: Record<string, TabKind> = {
-        '5': 'weapon',
-        '6': 'armor',
-        '7': 'accessory',
-        '8': 'food',
-        '9': 'misc',
+        '5': 'equipment',
+        '6': 'food',
+        '7': 'misc',
       };
       const tab = tabMap[key];
       if (tab) {
