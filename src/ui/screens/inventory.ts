@@ -2,8 +2,8 @@ import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
 import { ItemType } from '../../types/enums';
 import { applyRecovery, computeEatEffect, applyDailyMealBuff, getRemainingMeals, mealBuffLabel } from '../../types/eat-system';
-import { getArmorDef, getItemDef, getWeaponDef, classifyItemForTab, type ItemDef } from '../../types/item-defs';
-import { formatSpecialEffectsList } from '../item-labels';
+import { getArmorDef, getItemDef, getWeaponDef, classifyItemForTab, stubIdToCategory, type ItemDef } from '../../types/item-defs';
+import { categoryName, formatSpecialEffectsList } from '../item-labels';
 import { getRaceCapabilitySet, parseTags } from '../../types/tag-system';
 import { advanceTurn } from '../../systems/world-simulation';
 import { openItemConfirmModal } from '../components/item-confirm-modal';
@@ -208,19 +208,27 @@ export function createInventoryScreen(
       const weapon = getWeaponDef(id);
       const armor = getArmorDef(id);
       const isEquipment = !!weapon || !!armor;
+      // 카테고리 stub(`cat_food` 등)은 ItemDef 가 없으므로 categoryName 으로 표시.
+      // 이렇게 해야 가방의 모든 항목이 한국어 이름으로 보이고 어떤 탭에서도 사라지지 않는다.
+      const stubCategory = !def && !isEquipment ? stubIdToCategory(id) : null;
+      const label = weapon?.name
+        ?? armor?.name
+        ?? def?.name
+        ?? (stubCategory !== null ? `${categoryName(stubCategory)} (보관용)` : id);
       const detail = weapon
         ? `장비 · 공+${weapon.attack}${weapon.magicBonus ? ` · 마+${weapon.magicBonus}` : ''}`
         : armor
           ? `장비 · 방+${armor.defense}${armor.magicDefense ? ` · 마방+${armor.magicDefense}` : ''}`
-          : def?.description ?? '';
+          : def?.description
+            ?? (stubCategory !== null ? '오래된 일반 ' + categoryName(stubCategory) : '');
       entries.push({
         kind: 'item',
         id,
         qty,
-        label: weapon?.name ?? armor?.name ?? def?.name ?? id,
+        label,
         detail,
         consumable: !isEquipment,
-        sortGroup: isEquipment ? 10 : 100 + (def?.category ?? 0),
+        sortGroup: isEquipment ? 10 : 100 + (def?.category ?? stubCategory ?? 0),
         def,
       });
     }

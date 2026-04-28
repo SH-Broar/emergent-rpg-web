@@ -29,10 +29,16 @@ export interface BaseDef {
 /** 업그레이드 배율: [Lv2, Lv3, Lv4, Lv5] = [2x, 3x, 5x, 10x, 20x] of contractPrice */
 export const UPGRADE_MULTIPLIERS = [2, 3, 5, 10, 20];
 
-/** 업그레이드 비용 계산 (currentLevel: 현재 레벨 1~4) */
+/**
+ * 업그레이드 비용 계산 (currentLevel: 현재 레벨 1~4).
+ * 종전 가격이 너무 비쌌다는 피드백에 따라 1/5 로 인하한다(최소 50G 보장).
+ * 창고 화면(storage.ts) 안의 인라인 업그레이드 버튼도 동일 함수를 사용하므로
+ * 부동산 화면과 가격이 자동으로 일치한다.
+ */
 export function getUpgradeCost(def: BaseDef, currentLevel: number): number {
   if (currentLevel < 1 || currentLevel >= 5) return Infinity;
-  return def.contractPrice * UPGRADE_MULTIPLIERS[currentLevel - 1];
+  const raw = def.contractPrice * UPGRADE_MULTIPLIERS[currentLevel - 1];
+  return Math.max(50, Math.round(raw / 5));
 }
 
 /** 마을별 거점 목록 */

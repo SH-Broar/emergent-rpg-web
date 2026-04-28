@@ -169,6 +169,25 @@ export function getItemsByCategory(category: ItemType): readonly ItemDef[] {
   return itemsByCategory.get(category) ?? [];
 }
 
+/**
+ * 던전/이벤트 카테고리 드랍에서 사용할 후보 풀.
+ * - common/uncommon rarity 만 포함 (rare/epic/legendary 는 전용 itemId 드랍에서 다룸)
+ * - dungeon/gather 등 자연 획득 가능한 source 만 (shop/craft 결과물 제외)
+ * - inedible 태그가 있어도 OK (광물 등) — 일반 아이템이면 됨
+ * 후보가 비면 빈 배열 반환 → 호출자는 stub fallback.
+ */
+export function findItemsByCategoryForLoot(category: ItemType): ItemDef[] {
+  const all = itemsByCategory.get(category) ?? [];
+  const filtered = all.filter(def => {
+    if (def.rarity !== 'common' && def.rarity !== 'uncommon') return false;
+    const src = def.source ?? '';
+    if (src.startsWith('cook:') || src.startsWith('craft:') || src.startsWith('shop:')) return false;
+    return true;
+  });
+  if (filtered.length > 0) return filtered;
+  return all.filter(def => def.rarity === 'common' || def.rarity === 'uncommon');
+}
+
 /** 전체 아이템 목록 */
 export function getAllItemDefs(): ReadonlyMap<string, ItemDef> {
   return itemRegistry;
@@ -529,6 +548,10 @@ export function canEatByItemTags(actor: { base: { race: number } }, tagsStr: str
  * 인벤토리 UI의 탭 분류.
  * 우선순위: 무기 → 악세서리(ArmorDef.type==='Accessory') → 방어구 → 음식 → 기타.
  * 음식 판정: ItemDef.category ∈ {Food, Herb, Potion} AND canConsumeByTags.
+ *
+ * 카테고리 stub(`cat_food` 등)도 동일 규칙으로 분류된다 — Food/Herb/Potion stub 은
+ * 'food' 탭, 그 외 카테고리 stub 은 'misc' 탭. 이렇게 해야 가방의 모든 항목이
+ * 어딘가의 탭에서 반드시 보이고, 거래·표시·소비 일관성이 유지된다.
  */
 export function classifyItemForTab(
   id: string,
@@ -544,8 +567,38 @@ export function classifyItemForTab(
       def.category === ItemType.Herb ||
       def.category === ItemType.Potion;
     if (isFoodCategory && canEatByItemTags(actor, def.tags)) return 'food';
+    return 'misc';
+  }
+  // ItemDef 가 없는 ID — 카테고리 stub(`cat_food`/`cat_herb`/...) 인지 확인
+  const stubType = getStubItemType(id);
+  if (stubType !== null) {
+    const isFoodLikeStub =
+      stubType === ItemType.Food ||
+      stubType === ItemType.Herb ||
+      stubType === ItemType.Potion;
+    return isFoodLikeStub ? 'food' : 'misc';
   }
   return 'misc';
+}
+
+/** `cat_food` 등 stub ID 를 ItemType 으로 역매핑. ItemDef 가 없는 ID 일 때만 사용. */
+function getStubItemType(id: string): ItemType | null {
+  switch (id) {
+    case 'cat_food': return ItemType.Food;
+    case 'cat_herb': return ItemType.Herb;
+    case 'cat_potion': return ItemType.Potion;
+    case 'cat_ore_common': return ItemType.OreCommon;
+    case 'cat_ore_rare': return ItemType.OreRare;
+    case 'cat_monster_loot': return ItemType.MonsterLoot;
+    case 'cat_equipment': return ItemType.Equipment;
+    case 'cat_guild_card': return ItemType.GuildCard;
+    default: return null;
+  }
+}
+
+/** stub ID 를 표시용으로 정규화. stub 이 아니면 빈 문자열 반환. */
+export function stubIdToCategory(id: string): ItemType | null {
+  return getStubItemType(id);
 }
 
 // categoryName / RARITY_NAMES / RARITY_COLORS / formatSpecialEffect /

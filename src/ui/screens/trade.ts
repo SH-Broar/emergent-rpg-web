@@ -46,12 +46,13 @@ export function createTradeScreen(
 
   function getSellPrice(type: ItemType): number {
     const ljMod = getLifeJobModifiers(session);
-    return Math.max(1, Math.round(basePrice(type) * 0.6 / getRepMultiplier() * (1 + ljMod.sellPriceBonus)));
+    // 0.6 → 0.85: 던전 전리품 드랍률 하향에 맞춰 회당 수익을 보강한다.
+    return Math.max(1, Math.round(basePrice(type) * 0.85 / getRepMultiplier() * (1 + ljMod.sellPriceBonus)));
   }
 
   function getSellPriceForPrice(priceBase: number): number {
     const ljMod = getLifeJobModifiers(session);
-    return Math.max(1, Math.round(priceBase * 0.6 / getRepMultiplier() * (1 + ljMod.sellPriceBonus)));
+    return Math.max(1, Math.round(priceBase * 0.85 / getRepMultiplier() * (1 + ljMod.sellPriceBonus)));
   }
 
   // 판매 엔트리: 카테고리 묶음 또는 개별 itemId
@@ -68,6 +69,39 @@ export function createTradeScreen(
     const entries: SellEntry[] = [];
     for (const [id, count] of p.items) {
       if (count <= 0) continue;
+
+      // 장착 중인 무기/방어구/악세서리는 매도 목록에서 제외 (실수 방지)
+      if (id === p.equippedWeapon || id === p.equippedArmor
+          || id === p.equippedAccessory || id === p.equippedAccessory2) {
+        continue;
+      }
+
+      // 무기 매도 — 가방의 모든 항목이 거래 화면에서 보이게 한다
+      const weapon = getWeaponDef(id);
+      if (weapon) {
+        entries.push({
+          key: id,
+          display: weapon.name,
+          count,
+          price: getSellPriceForPrice(weapon.price),
+          consume: () => p.removeItemById(id, 1),
+        });
+        continue;
+      }
+      // 방어구/악세서리 매도
+      const armor = getArmorDef(id);
+      if (armor) {
+        entries.push({
+          key: id,
+          display: armor.name,
+          count,
+          price: getSellPriceForPrice(armor.price),
+          consume: () => p.removeItemById(id, 1),
+        });
+        continue;
+      }
+
+      // 카테고리 stub (`cat_food` 등) — 종전 호환을 위해 카테고리 기반 가격 사용
       const type = itemIdToType(id);
       if (type !== undefined) {
         entries.push({
@@ -79,8 +113,8 @@ export function createTradeScreen(
         });
         continue;
       }
-      // 장비/무기는 판매 UI에서 제외 (별도 해체 등으로 처리)
-      if (getWeaponDef(id) || getArmorDef(id)) continue;
+
+      // 일반 ItemDef
       const def = getItemDef(id);
       if (!def) continue;
       entries.push({

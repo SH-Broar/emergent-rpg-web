@@ -6,6 +6,7 @@ import type { DungeonDef, DungeonRunState, DungeonRoom, DungeonEventDef, LootEnt
 import { RoomType, rollLoot } from '../../models/dungeon';
 import { getItemDef, getWeaponDef, getArmorDef, applyTravelSpeed } from '../../types/item-defs';
 import { categoryName } from '../item-labels';
+import { grantLootById, grantLootByCategory } from '../../systems/loot-helpers';
 import { isTimeWindowOpen } from '../../types/game-time';
 import {
   RealtimeCombatState, getCombatTickMs,
@@ -1136,19 +1137,28 @@ export function createDungeonScreen(
   /** 루트 결과를 플레이어에게 지급하고 텍스트 반환 */
   function applyLoot(drops: LootEntry[]): string[] {
     const lines: string[] = [];
+    const cap = session.knowledge.bagCapacity;
     for (const d of drops) {
       if (d.itemId) {
-        if (p.isBagFull(session.knowledge.bagCapacity, d.itemId)) {
-          lines.push(`⚠ 인벤토리 가득 참 — ${getItemDef(d.itemId)?.name ?? d.itemId} 획득 불가`);
+        const grant = grantLootById(p, d.itemId, d.amount, cap);
+        if (grant.bagFull) {
+          lines.push(`⚠ 인벤토리 가득 참 — ${grant.displayName} 획득 불가`);
           continue;
         }
-        p.addItemById(d.itemId, d.amount);
         session.knowledge.discoverItem(d.itemId);
-        const name = getItemDef(d.itemId)?.name ?? getWeaponDef(d.itemId)?.name ?? getArmorDef(d.itemId)?.name ?? d.itemId;
+        const name = grant.displayName !== d.itemId
+          ? grant.displayName
+          : (getWeaponDef(d.itemId)?.name ?? getArmorDef(d.itemId)?.name ?? d.itemId);
         lines.push(`${name} ×${d.amount}`);
       } else {
-        p.addItem(d.item, d.amount);
-        lines.push(`${categoryName(d.item)} ×${d.amount}`);
+        // 카테고리 드랍을 실제 ItemDef ID 로 변환 — 요리/탭/거래 일관 + 가방 가드 정상 동작
+        const grant = grantLootByCategory(p, d.item, d.amount, cap);
+        if (grant.bagFull) {
+          lines.push(`⚠ 인벤토리 가득 참 — ${categoryName(d.item)} 획득 불가`);
+          continue;
+        }
+        session.knowledge.discoverItem(grant.itemId);
+        lines.push(`${grant.displayName} ×${d.amount}`);
       }
     }
     return lines;

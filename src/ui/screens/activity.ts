@@ -13,10 +13,10 @@ function getSessionCrops(session: GameSession): CropState[] {
   return _sessionCrops.get(session)!;
 }
 import { itemName } from '../../types/registry';
-import { itemTypeToId } from '../../types/enums';
 import { randomFloat } from '../../types/rng';
 import type { ActivitySimConfig } from './activity-sim';
 import { getItemDef } from '../../types/item-defs';
+import { grantLootByCategory } from '../../systems/loot-helpers';
 import { checkAndAwardTitles } from '../../systems/title-system';
 
 /** 활동 실행 아이콘 (effectType 기반) */
@@ -137,13 +137,14 @@ export function createActivityScreen(
   function applyEffect(act: ActivityDef): void {
     const effect = act.effect;
 
-    // give items
+    // give items — 카테고리 보상은 실제 ItemDef ID 로 변환해 가방에 넣는다.
+    // 카테고리 stub(`cat_food` 등)을 그대로 넣으면 요리/탭/거래 일관성이 깨지므로 사용하지 않는다.
     for (const give of act.gives) {
-      if (p.isBagFull(session.knowledge.bagCapacity, itemTypeToId(give.item))) {
+      const grant = grantLootByCategory(p, give.item, give.amount, session.knowledge.bagCapacity);
+      if (grant.bagFull) {
         message = '⚠ 인벤토리가 가득 찼습니다!';
         continue;
       }
-      p.addItem(give.item, give.amount);
     }
     for (const give of act.givesById) {
       if (p.isBagFull(session.knowledge.bagCapacity, give.itemId)) {

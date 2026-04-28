@@ -2747,7 +2747,7 @@ source = gather:Alimes
 
 [silkweed_fiber]
 name = 비단풀 섬유
-category = Herb
+category = MonsterLoot
 price = 15
 tags = /organic/raw/fiber/rdc/workshop/
 description = 비단 공방 주변에서 재배하는 가는 섬유 식물.
@@ -2794,7 +2794,7 @@ source = gather:Cyan_Dunes
 
 [tiklit_seed_floss]
 name = 티클릿 씨솜
-category = Herb
+category = MonsterLoot
 price = 17
 tags = /organic/raw/fiber/mountain/rdc/
 description = 바람을 타고 퍼지는 가벼운 산맥 식물의 솜털.
@@ -2804,7 +2804,7 @@ minHyperion = 1
 
 [cherry_resin]
 name = 벚수지
-category = Herb
+category = MonsterLoot
 price = 18
 tags = /organic/raw/resin/mountain/rdc/
 description = 티클릿 벚나무 껍질에서 천천히 맺히는 수지.
@@ -2814,7 +2814,7 @@ minHyperion = 3
 
 [mine_iron_sand]
 name = 폐광 철모래
-category = Herb
+category = OreCommon
 price = 13
 tags = /organic/raw/powder/mine/rdc/
 description = 폐광 깊은 층에 쌓인 자철질 모래.
@@ -2826,7 +2826,7 @@ minHyperion = 1
 name = 석송이버섯
 category = Herb
 price = 26
-tags = /organic/raw/fungus/ridge/rdc/
+tags = /organic/raw/fungus/mushroom/ridge/rdc/
 description = 험한 바위틈에서만 자라는 진한 향의 버섯.
 rarity = uncommon
 source = gather:Bagreat
@@ -2856,7 +2856,7 @@ minHyperion = 11
 name = 안개포자 갓
 category = Herb
 price = 21
-tags = /organic/raw/fungus/mist/rdc/
+tags = /organic/raw/fungus/mushroom/mist/rdc/
 description = 미스트우드 습기 속에서 자라는 은회색 버섯 갓.
 rarity = common
 source = gather:Erumen_Mistwood

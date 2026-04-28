@@ -4,6 +4,7 @@
 import { Actor } from '../models/actor';
 import { parseItemType } from '../types/enums';
 import { randomFloat, weightedRandomChoice } from '../types/rng';
+import { grantLootByCategory } from './loot-helpers';
 
 export interface DungeonOutcome {
   message: string;
@@ -224,22 +225,37 @@ export function rollDungeonExplorationEvent(progress: number): DungeonExploratio
 /**
  * Applies a DungeonOutcome to an actor and returns the outcome message.
  * Item reward types are mapped through parseItemType; unrecognised types are silently skipped.
+ *
+ * 가방 가드: bagCapacity 가 주어지면 가득 찼을 때 보상 거절 메시지를 message 끝에 추가.
  */
-export function applyDungeonOutcome(actor: Actor, outcome: DungeonOutcome): string {
+export function applyDungeonOutcome(
+  actor: Actor,
+  outcome: DungeonOutcome,
+  bagCapacity?: number,
+): string {
   if (outcome.hpChange !== undefined && outcome.hpChange !== 0) {
     actor.adjustHp(outcome.hpChange);
   }
   if (outcome.moodChange !== undefined && outcome.moodChange !== 0) {
     actor.adjustMood(outcome.moodChange);
   }
+  let bagFullSuffix = '';
   if (outcome.itemReward) {
     const itemType = parseItemType(outcome.itemReward.type);
-    actor.addItem(itemType, outcome.itemReward.amount);
+    if (bagCapacity !== undefined) {
+      const grant = grantLootByCategory(actor, itemType, outcome.itemReward.amount, bagCapacity);
+      if (grant.bagFull) {
+        bagFullSuffix = ` (⚠ 인벤토리 가득 참 — ${grant.displayName} 획득 불가)`;
+      }
+    } else {
+      // bagCapacity 미지정 경로(레거시 호출) — 카테고리 stub 직접 추가
+      actor.addItem(itemType, outcome.itemReward.amount);
+    }
   }
   if (outcome.colorInfluence && outcome.colorInfluence.length === 8) {
     actor.color.applyInfluence(outcome.colorInfluence);
   }
-  return outcome.message;
+  return outcome.message + bagFullSuffix;
 }
 
 /**

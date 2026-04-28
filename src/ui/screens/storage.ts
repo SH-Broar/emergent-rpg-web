@@ -6,6 +6,7 @@ import { locationName } from '../../types/registry';
 import { ItemType } from '../../types/enums';
 import { getItemDef, getStorageProfileForItem, type StorageZone } from '../../types/item-defs';
 import { categoryName } from '../item-labels';
+import { BASE_DEFS, getUpgradeCost } from '../../data/base-defs';
 
 const ZONE_LABELS: Record<StorageZone, string> = {
   cold: '❄ 냉장',
@@ -69,7 +70,8 @@ export function createStorageScreen(
     const locLabel = locationName(loc) || loc;
     const level = k.getBaseLevel(loc);
 
-    // 창고 용량: 기본 20 + 레벨당 10
+    // 창고 용량: 기본 20 + 레벨당 10 종류 — 가방과 동일하게 종류(item type) 기준.
+    // 이전에는 수량 합으로 셌으나 가방(items.size)과 단위가 달라 사용자에게 혼동을 주었다.
     const maxSlots = 20 + (level - 1) * 10;
 
     if (!storage) {
@@ -83,9 +85,10 @@ export function createStorageScreen(
       return;
     }
 
-    // 현재 구역 아이템
+    // 현재 구역 아이템 — 칸 수는 '종류' 기준(가방과 동일)
     const zoneItems = storage[activeZone];
-    const totalCount = [...zoneItems.values()].reduce((s, n) => s + n, 0);
+    const totalKinds = zoneItems.size;
+    const totalQty = [...zoneItems.values()].reduce((s, n) => s + n, 0);
 
     // 인벤토리 아이템 (통합: items 맵)
     const p = session.player;
@@ -94,12 +97,12 @@ export function createStorageScreen(
       if (count > 0) invItems.push({ id, name: getItemName(id), count });
     }
 
-    // 구역 탭
+    // 구역 탭 — 종류 수 표시 (가방과 동일 단위)
     const tabHtml = (['cold', 'room', 'warm'] as StorageZone[]).map(z => {
       const items = storage[z];
-      const cnt = [...items.values()].reduce((s, n) => s + n, 0);
+      const kinds = items.size;
       const active = z === activeZone;
-      return `<button class="btn" data-zone="${z}" style="flex:1;font-size:11px;padding:4px;border-bottom:2px solid ${active ? ZONE_COLORS[z] : 'transparent'};color:${active ? ZONE_COLORS[z] : 'var(--text-dim)'}">${ZONE_LABELS[z]} (${cnt})</button>`;
+      return `<button class="btn" data-zone="${z}" style="flex:1;font-size:11px;padding:4px;border-bottom:2px solid ${active ? ZONE_COLORS[z] : 'transparent'};color:${active ? ZONE_COLORS[z] : 'var(--text-dim)'}">${ZONE_LABELS[z]} (${kinds})</button>`;
     }).join('');
 
     // 모드 탭
@@ -173,6 +176,29 @@ export function createStorageScreen(
       }
     }
 
+    // 거점 업그레이드 — 창고 화면 안에서 바로 가능 (접근성 개선)
+    const baseDef = BASE_DEFS.find(b => b.locationId === loc);
+    let upgradeHtml = '';
+    if (baseDef && level > 0) {
+      if (level < 5) {
+        // base-defs.getUpgradeCost 가 이미 1/5 적용된 가격을 돌려준다.
+        const cost = getUpgradeCost(baseDef, level);
+        const canAfford = p.spirit.gold >= cost;
+        upgradeHtml = `
+          <div style="margin-top:10px;padding:8px;border:1px solid var(--border);border-radius:6px;background:var(--bg-panel)">
+            <div style="font-size:12px;margin-bottom:4px">📈 거점 Lv.${level} → Lv.${level + 1}</div>
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px">
+              창고 용량 +10종 · 활동 효율 향상
+            </div>
+            <button class="btn" data-base-upgrade ${canAfford ? '' : 'disabled'} style="width:100%;font-size:12px;${canAfford ? '' : 'opacity:0.5'}">
+              업그레이드 (${cost}G — 보유 ${p.spirit.gold}G)${canAfford ? '' : ' — 골드 부족'}
+            </button>
+          </div>`;
+      } else {
+        upgradeHtml = '<div style="margin-top:10px;text-align:center;color:var(--success);font-size:11px">거점 최대 레벨 도달</div>';
+      }
+    }
+
     el.innerHTML = '';
     const wrap = document.createElement('div');
     wrap.className = 'screen info-screen';
@@ -180,12 +206,13 @@ export function createStorageScreen(
       <button class="btn back-btn" data-back>← 뒤로 [Esc]</button>
       <h2>📦 ${locLabel} 창고</h2>
       <p style="text-align:center;color:var(--text-dim);font-size:11px">
-        Lv.${level} · 용량 ${totalCount}/${maxSlots} · 가방 ${p.items.size}/${k.bagCapacity} 슬롯
+        Lv.${level} · 보관 ${totalKinds}/${maxSlots}종 (총 ${totalQty}개) · 가방 ${p.items.size}/${k.bagCapacity}종
       </p>
       ${message ? `<div class="trade-message" style="color:var(--accent)">${message}</div>` : ''}
       <div style="display:flex;gap:2px;margin-top:8px">${tabHtml}</div>
       ${modeHtml}
       ${contentHtml}
+      ${upgradeHtml}
       <p class="hint">Q/W/E 구역 · 1/2/3 모드 · 번호키 아이템 · Esc 뒤로</p>
     `;
 
@@ -213,13 +240,37 @@ export function createStorageScreen(
         const idx = parseInt(btn.dataset.deposit!, 10);
         const item = invItems[idx];
         if (!item) return;
-        // 1개씩 넣기
-        if (p.getItemCount(item.id) > 0) {
-          p.removeItemById(item.id, 1);
-          k.addToStorage(loc, activeZone, item.id, 1);
+        if (p.getItemCount(item.id) <= 0) return;
+        // 창고 용량 가드(종류 기준): 새로운 종류를 넣으려는데 maxSlots 도달이면 거절.
+        // 동일 ID 가 이미 보관 중이면 스택만 늘어나므로 통과.
+        const isNewKind = !zoneItems.has(item.id);
+        if (isNewKind && totalKinds >= maxSlots) {
+          message = `⚠ 창고가 가득 찼습니다 (${totalKinds}/${maxSlots}종). 거점을 업그레이드하면 더 보관할 수 있습니다.`;
+          render(el);
+          return;
         }
+        p.removeItemById(item.id, 1);
+        k.addToStorage(loc, activeZone, item.id, 1);
+        message = '';
         render(el);
       });
+    });
+
+    // 거점 업그레이드 버튼
+    wrap.querySelector<HTMLButtonElement>('[data-base-upgrade]')?.addEventListener('click', () => {
+      if (!baseDef || level < 1 || level >= 5) return;
+      const cost = getUpgradeCost(baseDef, level);
+      if (p.spirit.gold < cost) return;
+      p.addGold(-cost);
+      k.trackGoldSpent(cost);
+      k.upgradeBase(loc);
+      session.backlog.add(
+        session.gameTime,
+        `${locLabel} 거점을 Lv.${level + 1}로 업그레이드했다. (-${cost}G)`,
+        '시스템',
+      );
+      message = `거점 업그레이드 완료! Lv.${level + 1} (-${cost}G)`;
+      render(el);
     });
 
     // 빼기 버튼
