@@ -681,13 +681,16 @@ function countCompanionsByElement(
   return count;
 }
 
-/** 입수 조건 한 줄을 파싱하여 자동 평가 시도 (OR/원작 래퍼 포함) */
+/** 입수 조건 한 줄을 파싱하여 자동 평가 시도 (OR/원작 래퍼 포함).
+ * targetActor: 라인이 평가되는 대상 NPC. "관계도 N 이상" 같은 NPC별 조건에 사용된다.
+ */
 export function evaluateAcquisitionLine(
   line: string,
   player: Actor,
   allActors: Actor[],
   knowledge: PlayerKnowledge,
   dungeonSystem?: DungeonSystem,
+  targetActor?: Actor,
 ): AcquisitionCheck {
   const t = line.trim();
   if (!t) return { text: t, met: true, evaluable: true };
@@ -705,14 +708,14 @@ export function evaluateAcquisitionLine(
     const subResults = parts.map((p, idx) => {
       // 첫 파트에만 선행 번호 "1. " 제거 (두 번째 이후는 본래 번호가 없음)
       const cleanP = p.trim().replace(idx === 0 ? /^\d+\.\s*/ : /^/, '');
-      return evaluateAcquisitionLineInner(cleanP, player, allActors, knowledge, dungeonSystem);
+      return evaluateAcquisitionLineInner(cleanP, player, allActors, knowledge, dungeonSystem, targetActor);
     });
     const anyMet = subResults.some(r => r.met);
     const allEvaluable = subResults.every(r => r.evaluable);
     return { text: t, met: anyMet, evaluable: allEvaluable };
   }
 
-  return evaluateAcquisitionLineInner(t, player, allActors, knowledge, dungeonSystem);
+  return evaluateAcquisitionLineInner(t, player, allActors, knowledge, dungeonSystem, targetActor);
 }
 
 /** 단일 조건 평가 (OR/원작/상기의 등 래퍼 처리 후 본체 패턴 매칭) */
@@ -722,6 +725,7 @@ function evaluateAcquisitionLineInner(
   allActors: Actor[],
   knowledge: PlayerKnowledge,
   dungeonSystem?: DungeonSystem,
+  targetActor?: Actor,
 ): AcquisitionCheck {
   const t = line.trim();
   if (!t) return { text: t, met: true, evaluable: true };
@@ -732,6 +736,21 @@ function evaluateAcquisitionLineInner(
   if (eventDoneMatch) {
     const eventId = eventDoneMatch[1].trim();
     return { text: t, met: knowledge.isEventDone(eventId), evaluable: true };
+  }
+
+  // ── 대상 NPC와의 관계도 N 이상 ──────────────────────────────
+  // 예: "3. 관계도 0.4 이상" / "호감도 0.5 이상"
+  // 임계값은 (trust + affinity) / 2 ∈ [-1, 1] 기준. 일반적으로 0.2~0.6 범위.
+  const relScore = t.match(/(?:관계도|호감도)\s*(-?\d+(?:\.\d+)?)\s*이상/);
+  if (relScore) {
+    const threshold = parseFloat(relScore[1]);
+    if (!targetActor) {
+      // 대상 NPC가 명확하지 않은 호출 경로(레거시) — 평가 불가로 표시
+      return { text: t, met: false, evaluable: false };
+    }
+    const rel = player.relationships.get(targetActor.name);
+    const overall = rel ? (rel.trust + rel.affinity) / 2 : 0;
+    return { text: t, met: overall >= threshold, evaluable: true };
   }
 
   // ── 기존 패턴 ────────────────────────────────────────────────
@@ -1032,7 +1051,7 @@ export function evaluateAcquisitionConditions(
       results.push({ text: t, met: allPrevMet, evaluable: true });
       continue;
     }
-    const r = evaluateAcquisitionLine(t, player, allActors, knowledge, dungeonSystem);
+    const r = evaluateAcquisitionLine(t, player, allActors, knowledge, dungeonSystem, actor);
     results.push(r);
     if (!r.met) allPrevMet = false;
   }
@@ -1049,9 +1068,6 @@ export function areAcquisitionConditionsMet(
   return checks.every(c => c.met);
 }
 
-/** 친한 사이 판정용 호감도 하한 — 대화+선물 누적으로 도달 가능한 완화된 기준 */
-const CLOSE_AFFINITY_THRESHOLD = 0.3;
-
 export function getRelationshipStage(
   player: Actor,
   targetName: string,
@@ -1065,25 +1081,18 @@ export function getRelationshipStage(
   }
   if (knowledge.recruitedEver.has(targetName)) return 'close';
 
-  const rel = player.relationships.get(targetName);
-  const overall = rel ? (rel.trust + rel.affinity) / 2 : 0;
-
   if (allActors) {
     const target = allActors.find(a => a.name === targetName);
 
     // 히페리온 데이터가 없는 NPC → 영원히 아는 사이 (동료화 불가)
     if (target && !target.hasHyperion) return 'known';
 
-    // 호감도 기반 close 완화 — 입수 조건이 어려워도 충분히 친해지면 미션 공개
-    if (overall >= CLOSE_AFFINITY_THRESHOLD) return 'close';
-
+    // 입수 조건만으로 close 판정. 관계도가 필요한 NPC는 acquisition method에
+    // "관계도 N 이상" 라인을 명시한다(NPC별 임계값을 데이터로 노출).
     if (target && target.acquisitionMethod) {
-      // 입수 조건이 있는 NPC — 조건 충족 시 친한 사이
       if (areAcquisitionConditionsMet(target, player, allActors, knowledge, dungeonSystem)) return 'close';
       return 'known';
     }
-  } else if (overall >= CLOSE_AFFINITY_THRESHOLD) {
-    return 'close';
   }
 
   return 'known';
