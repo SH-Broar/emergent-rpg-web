@@ -46,7 +46,7 @@ const EVENTS: DungeonExplorationEvent[] = [
       {
         label: '약초를 채집한다',
         description: '허브 획득',
-        outcome: { message: '귀한 약초를 발견했다!', itemReward: { type: 'Herb', amount: 2 } },
+        outcome: { message: '귀한 약초를 발견했다!', itemReward: { type: 'Herb', amount: 1 } },
       },
     ],
     weight: 15,
@@ -136,7 +136,7 @@ const EVENTS: DungeonExplorationEvent[] = [
       {
         label: '채집한다',
         description: '식재료 획득',
-        outcome: { message: '맛있는 버섯을 채집했다!', itemReward: { type: 'Food', amount: 3 } },
+        outcome: { message: '맛있는 버섯을 채집했다!', itemReward: { type: 'Food', amount: 1 } },
       },
       {
         label: '관찰한다',
@@ -161,7 +161,7 @@ const EVENTS: DungeonExplorationEvent[] = [
       {
         label: '좁은 길',
         description: '모험적 선택',
-        outcome: { message: '숨겨진 보물을 발견했다!', itemReward: { type: 'OreCommon', amount: 3 }, progressBonus: 8 },
+        outcome: { message: '숨겨진 보물을 발견했다!', itemReward: { type: 'OreCommon', amount: 1 }, progressBonus: 8 },
       },
     ],
     weight: 15,

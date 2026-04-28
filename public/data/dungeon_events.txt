@@ -72,7 +72,7 @@ name = 달빛 약초밭
 description = 달빛이 내리쬐는 곳에 희귀한 약초가 무리 지어 자라고 있다.
 chance = 0.10
 type = Treasure
-gives = Herb:3:0.90
+gives = Herb:1:0.90
 hpHeal = 5
 ruleTemplates = MoonPhase
 
@@ -95,7 +95,7 @@ name = 썰물이 드러낸 유물
 description = 썰물이 빠지면서 바닥에 숨어 있던 금속 파편이 드러났다.
 chance = 0.10
 type = Treasure
-gives = OreCommon:2:0.90, MonsterLoot:1:0.60
+gives = OreCommon:1:0.90, MonsterLoot:1:0.60
 ruleTemplates = TidalRoute
 
 [Surge_Warning]
@@ -116,7 +116,7 @@ name = 잔해 속 유물
 description = 무너진 잔해 더미 속에 옛 탐색자가 남긴 물건이 들어 있다.
 chance = 0.10
 type = Treasure
-gives = OreCommon:2:0.80, Equipment:1:0.20
+gives = OreCommon:1:0.80, Equipment:1:0.20
 hpDamage = 5
 ruleTemplates = CollapsingPath
 
@@ -167,7 +167,7 @@ name = 고대 봉납물
 description = 제단 위에 오래된 봉납물이 놓여 있다. 손대도 될지 망설여진다.
 chance = 0.10
 type = Treasure
-gives = MonsterLoot:2:0.80, Herb:2:0.60
+gives = MonsterLoot:1:0.80, Herb:1:0.60
 ruleTemplates = AncientResonance
 
 # ============================================================
@@ -179,7 +179,7 @@ name = 짐승의 보금자리
 description = 추적하던 짐승의 보금자리를 발견했다. 식재료와 털이 쌓여 있다.
 chance = 0.10
 type = Treasure
-gives = Food:3:0.90, MonsterLoot:1:0.70
+gives = Food:1:0.90, MonsterLoot:1:0.70
 ruleTemplates = TraceHunt
 
 [Fresh_Trail]
@@ -199,7 +199,7 @@ name = 대박 광맥
 description = 엄청난 광맥이 발견됐다. 채굴하다가 마물을 건드렸지만 수확은 컸다.
 chance = 0.08
 type = Treasure
-gives = OreRare:2:0.80, OreCommon:3:0.90
+gives = OreRare:1:0.80, OreCommon:1:0.90
 hpDamage = 15
 ruleTemplates = GreedRisk
 
@@ -221,7 +221,7 @@ name = 안개 속 빈터
 description = 안개가 잠시 걷히며 작은 빈터가 드러났다. 기묘하게 평화로운 공간이다.
 chance = 0.10
 type = Heal
-gives = Herb:2:0.70
+gives = Herb:1:0.70
 hpHeal = 18
 ruleTemplates = DeepFog
 
@@ -230,7 +230,7 @@ name = 안개 속 유실된 짐
 description = 안개 속에 누군가 잃어버린 짐이 있다. 식량과 잡화가 들어 있다.
 chance = 0.10
 type = Treasure
-gives = Food:2:0.90, MonsterLoot:1:0.70
+gives = Food:1:0.90, MonsterLoot:1:0.70
 ruleTemplates = DeepFog
 
 # ============================================================
@@ -242,7 +242,7 @@ name = 포식자의 전리품
 description = 마왕 계열 마물이 모아둔 전리품 더미. 자리를 피하며 최대한 챙겼다.
 chance = 0.08
 type = Treasure
-gives = MonsterLoot:3:0.90, Equipment:1:0.25
+gives = MonsterLoot:1:0.90, Equipment:1:0.25
 hpDamage = 10
 ruleTemplates = PredatorTerritory
 
@@ -273,7 +273,7 @@ name = 기류의 선물
 description = 정화 기류가 유독 강하게 부는 지점. 그 흐름을 타자 작은 선물이 남겨졌다.
 chance = 0.10
 type = Treasure
-gives = Herb:2:0.80, OreRare:1:0.50
+gives = Herb:1:0.80, OreRare:1:0.50
 ruleTemplates = PurityCurrent
 
 # ============================================================
@@ -285,7 +285,7 @@ name = 보급품 캐시
 description = 이전 탐색자가 남겨둔 보급품이 발견됐다. 아직 쓸 만한 물건들이 남아 있다.
 chance = 0.08
 type = Treasure
-gives = Food:2:0.80, Potion:1:0.50
+gives = Food:1:0.80, Potion:1:0.50
 
 [Dungeon_Bloom]
 name = 던전 꽃
@@ -300,7 +300,7 @@ name = 전투 전리품
 description = 이전 탐색자가 처치한 마물의 전리품 더미. 알뜰하게 챙겼다.
 chance = 0.08
 type = Treasure
-gives = MonsterLoot:2:0.90
+gives = MonsterLoot:1:0.90
 
 [Wandering_Scholar]
 name = 방랑 학자
