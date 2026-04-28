@@ -52,14 +52,6 @@ function getSlotLabel(slot: EquipSlot): string {
   }
 }
 
-function getEquipSlotForItemId(itemId: string): EquipSlot | null {
-  const weapon = getWeaponDef(itemId);
-  if (weapon) return 'weapon';
-  const armor = getArmorDef(itemId);
-  if (!armor) return null;
-  return armor.type === 'Accessory' ? 'accessory' : 'armor';
-}
-
 export function createInventoryScreen(
   session: GameSession,
   onDone: () => void,
