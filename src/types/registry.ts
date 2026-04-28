@@ -65,7 +65,7 @@ export class GameRegistry {
     this.itemNames.set(ItemType.OreRare, '희귀 광석');
     this.itemNames.set(ItemType.MonsterLoot, '몬스터 전리품');
     this.itemNames.set(ItemType.Potion, '물약');
-    this.itemNames.set(ItemType.Equipment, '장비');
+    this.itemNames.set(ItemType.Equipment, '장비 소재');
     this.itemNames.set(ItemType.GuildCard, '길드 멤버 확인증');
 
     this.basePrices.set(ItemType.Food, 5);

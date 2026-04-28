@@ -64,7 +64,7 @@ birthday = 27
 colorValues = 0.7,0.3,0.3,0.9,0.7,0.2,0.5,0.4
 domainHigh = Aggressive,Adaptable,Inventive,Stubborn,Patient,Freesprited,Hopeful,Secretive
 domainLow = Cautious,Indifferent,Stagnant,Fragile,Restless,Withdrawn,Cynical,Naive
-inventory = Equipment:6, OreCommon:12, OreRare:2
+inventory = Equipment:6, OreCommon:12, OreRare:2, Iron_Sword:2
 background = 엘리메스 대장간의 주인장. 숯빛 수염에 불꽃이 어른거린다.|켄타우로스의 편자도, 하피의 가벼운 흉갑도 척척 만들어내는 장인이다.|’혈통이 뭐 중해, 쇠가 알아서 말하잖나.’ 그 한마디가 그의 영업 방침.|맥주 한 잔과 좋은 광석이면 하루가 완벽하다는 소박한 사람.
 
 [이리엘]

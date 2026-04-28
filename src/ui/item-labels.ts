@@ -13,7 +13,7 @@ export function categoryName(cat: ItemType): string {
     case ItemType.OreRare: return '희귀 광석';
     case ItemType.MonsterLoot: return '전리품';
     case ItemType.Potion: return '물약';
-    case ItemType.Equipment: return '장비';
+    case ItemType.Equipment: return '장비 소재';
     case ItemType.GuildCard: return '특수';
     default: return '기타';
   }

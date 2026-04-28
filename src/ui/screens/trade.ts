@@ -157,20 +157,32 @@ export function createTradeScreen(
     });
   }
 
+  const ITEM_HINTS: Partial<Record<ItemType, string>> = {
+    [ItemType.Food]:      '허기 · HP 회복',
+    [ItemType.Herb]:      '회복 · 제작 소재',
+    [ItemType.Potion]:    'HP 즉시 회복',
+    [ItemType.Equipment]: '장비 제작용 소재',
+  };
+
   // NPC 인벤토리에서 특수 아이템(itemId 기반) 추출
   // cat_* 접두사 ID는 ItemType 카테고리이므로 제외
-  function getNpcSpecialItems(npc: Actor): { itemId: string; name: string; qty: number; price: number }[] {
-    const result: { itemId: string; name: string; qty: number; price: number }[] = [];
+  function getNpcSpecialItems(npc: Actor): { itemId: string; name: string; qty: number; price: number; hint: string }[] {
+    const result: { itemId: string; name: string; qty: number; price: number; hint: string }[] = [];
     for (const [itemId, qty] of npc.items) {
       if (qty <= 0) continue;
       if (itemId.startsWith('cat_')) continue; // 일반 카테고리 아이템 제외
+      const weapon = getWeaponDef(itemId);
+      if (weapon) {
+        result.push({ itemId, name: weapon.name, qty, price: weapon.price, hint: `공격력 +${weapon.attack}` });
+        continue;
+      }
+      const armor = getArmorDef(itemId);
+      if (armor) {
+        result.push({ itemId, name: armor.name, qty, price: armor.price, hint: `방어력 +${armor.defense}` });
+        continue;
+      }
       const def = getItemDef(itemId);
-      result.push({
-        itemId,
-        name: def?.name ?? itemId,
-        qty,
-        price: def?.price ?? 500,
-      });
+      result.push({ itemId, name: def?.name ?? itemId, qty, price: def?.price ?? 500, hint: '' });
     }
     return result;
   }
@@ -204,11 +216,15 @@ export function createTradeScreen(
         ${message ? `<div class="trade-message">${message}</div>` : ''}
         <div class="item-grid">
           ${isBuy
-            ? buyItems.map((item, i) => `
+            ? buyItems.map((item, i) => {
+                const hint = ITEM_HINTS[item.type] ?? '';
+                return `
                 <button class="btn item-cell" data-buy="${i}">
                   <span class="item-name">${item.name}</span>
+                  ${hint ? `<span class="item-hint">${hint}</span>` : ''}
                   <span class="item-price">${item.price}G</span>
-                </button>`).join('')
+                </button>`;
+              }).join('')
             : sellItems.map((item, i) => `
                 <button class="btn item-cell" data-sell="${i}">
                   <span class="item-name"${item.rarityColor ? ` style="color:${item.rarityColor}"` : ''}>${item.display}</span>
@@ -225,6 +241,7 @@ export function createTradeScreen(
             ${specialItems.map(item => `
               <button class="btn item-cell" data-buy-special="${item.itemId}">
                 <span class="item-name">${item.name}</span>
+                ${item.hint ? `<span class="item-hint">${item.hint}</span>` : ''}
                 <span class="item-count">x${item.qty}</span>
                 <span class="item-price">${item.price}G</span>
               </button>`).join('')}
