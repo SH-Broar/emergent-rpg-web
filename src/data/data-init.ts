@@ -454,30 +454,41 @@ export function initDungeonSystem(
         })),
       ],
       colorInfluence: parseColorInfluence(s.get('colorInfluence', '')),
-      combatWeight: s.getFloat('combatWeight', 0.70),
-      eventWeight: s.getFloat('eventWeight', 0.20),
-      restWeight: s.getFloat('restWeight', 0.10),
+      // 가중치 디폴트는 단순. 던전별 특색은 dungeons.txt의 combatWeight/eventWeight/restWeight로 명시한다.
+      combatWeight: s.getFloat('combatWeight', 0.60),
+      eventWeight: s.getFloat('eventWeight', 0.25),
+      restWeight: s.getFloat('restWeight', 0.15),
+      // 던전 길이 디폴트:
+      //   캐릭터=2회/적=1회 원칙은 MP가 남는 동안만 성립한다.
+      //   Hyperion 1: MP35 → 평균 MP8 스킬 약 4회. 따라서 diff<=0.20 던전은
+      //   3~4 전투(보스 포함) 안에 끝나야 MP가 마르기 전에 클리어 가능.
       floors: s.getInt('floors', (() => {
         const diff = s.getFloat('difficulty', 0.5);
-        if (diff <= 0.15) return 2;
-        if (diff <= 0.25) return 3;
-        if (diff <= 0.40) return 3;
-        if (diff <= 0.60) return 4;
-        if (diff <= 0.80) return 5;
-        return 6;
+        if (diff <= 0.20) return 1;
+        if (diff <= 0.30) return 2;
+        if (diff <= 0.40) return 2;
+        if (diff <= 0.60) return 3;
+        if (diff <= 0.80) return 4;
+        return 5;
       })()),
       progressSteps: s.getInt('progressSteps', (() => {
         const diff = s.getFloat('difficulty', 0.5);
-        return diff <= 0.25 ? 2 : 3;
+        if (diff <= 0.30) return 2;
+        return 3;
       })()),
       choicesPerStep: s.getInt('choicesPerStep', (() => {
         const diff = s.getFloat('difficulty', 0.5);
+        if (diff <= 0.20) return 3;
+        if (diff <= 0.40) return 4;
         return diff > 0.60 ? 6 : 5;
       })()),
-      requiredClears: s.getInt('requiredClears', s.getInt('choicesPerStep', (() => {
+      requiredClears: s.getInt('requiredClears', (() => {
         const diff = s.getFloat('difficulty', 0.5);
-        return diff > 0.60 ? 6 : 5;
-      })()) - 1),
+        if (diff <= 0.20) return 2;
+        if (diff <= 0.30) return 2;
+        if (diff <= 0.40) return 3;
+        return diff > 0.60 ? 5 : 4;
+      })()),
       midBosses: (() => {
         const bosses: MidBossDef[] = [];
         const nums = new Set<number>();

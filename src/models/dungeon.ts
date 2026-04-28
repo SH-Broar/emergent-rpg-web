@@ -99,7 +99,8 @@ export type DungeonRuleTemplateId =
   | 'HeatGauge'
   | 'PurityCurrent'
   | 'GreedRisk'
-  | 'ShelterWindow';
+  | 'ShelterWindow'
+  | 'LowGravity';
 
 export interface DungeonRuleConfig {
   template: DungeonRuleTemplateId | string;
@@ -329,6 +330,8 @@ export class DungeonSystem {
         const shelterOpen = depth % cycle === 0;
         return this.clamp(shelterOpen ? rule.valueB : rule.valueC, 0, 0.35);
       }
+      case 'LowGravity':
+        return this.clamp(rule.valueA * 0.04 + depth * 0.01 + rule.rank * 0.01, 0, 0.35);
       default:
         return 0;
     }
@@ -418,6 +421,13 @@ export class DungeonSystem {
         }
         break;
       }
+      case 'LowGravity':
+        // 부유 환경 — 다양한 길과 발판이 열리고(이벤트↑·샛길↑) 휴식 자리는 줄지만(쉴 곳이 매달려 있다)
+        // 전투 압박은 약간 줄어든다(거리 조절 유리).
+        event += rule.valueB + intensity * 0.5;
+        rest -= Math.max(0.04, rule.valueC * 0.5);
+        combat -= Math.max(0.04, rule.valueC);
+        break;
     }
 
     combat = this.clamp(combat, 0.15, 0.80);
@@ -476,6 +486,9 @@ export class DungeonSystem {
         chance += shelterOpen ? 0.06 : -rule.valueC * 0.2;
         break;
       }
+      case 'LowGravity':
+        chance += rule.valueB * 0.5 + intensity * 0.4;
+        break;
     }
     return this.clamp(chance, 0.10, 0.75);
   }
@@ -524,6 +537,8 @@ export class DungeonSystem {
           ? '은신처 구간 · 이번 층은 휴식 방과 회복 효율이 좋아진다.'
           : `다음 은신처까지 ${next}단계 · 지금은 장기 탐사 압박이 더 크다.`;
       }
+      case 'LowGravity':
+        return `부유 ${Math.round(intensity * 100)}% · 도약과 부유로 샛길과 이벤트가 늘어나고 거리 조절이 유리해진다.`;
       default:
         return rule.hint;
     }

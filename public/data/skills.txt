@@ -49,7 +49,7 @@ postDelay = 1
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = None
-isBasicSkill = 0
+isBasicSkill = 1
 basicForRace = Human
 
 # ============================================================
@@ -92,7 +92,7 @@ postDelay = 1
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Earth
-isBasicSkill = 0
+isBasicSkill = 1
 basicForRace = Elf
 
 # ============================================================
@@ -135,7 +135,7 @@ mpCost = 8
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Iron
-isBasicSkill = 0
+isBasicSkill = 1
 basicForRace = Dwarf
 
 # ============================================================
@@ -278,7 +278,7 @@ mpCost = 6
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = None
-isBasicSkill = 0
+isBasicSkill = 1
 basicForRace = Beastkin
 
 [keen_purr_heal]
@@ -290,7 +290,7 @@ mpCost = 6
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = None
-isBasicSkill = 0
+isBasicSkill = 1
 basicForRace = Nekomimi
 
 [keen_fox_heal]
@@ -302,7 +302,7 @@ mpCost = 7
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Fire
-isBasicSkill = 0
+isBasicSkill = 1
 basicForRace = Foxkin
 
 [keen_shed_heal]
@@ -314,7 +314,7 @@ mpCost = 7
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = None
-isBasicSkill = 0
+isBasicSkill = 1
 basicForRace = Lamia
 
 [keen_howl_heal]
@@ -326,7 +326,7 @@ mpCost = 7
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Light
-isBasicSkill = 0
+isBasicSkill = 1
 basicForRace = Werewolf
 
 # ============================================================
@@ -368,7 +368,7 @@ mpCost = 8
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Wind
-isBasicSkill = 0
+isBasicSkill = 1
 basicForRace = Harpy
 
 [centaur_lance_charge]
@@ -406,7 +406,7 @@ mpCost = 8
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Earth
-isBasicSkill = 0
+isBasicSkill = 1
 basicForRace = Centaur
 
 # ============================================================
@@ -447,7 +447,7 @@ mpCost = 10
 appearRate = 0.7
 maxUsesPerCombat = 3
 element = Fire
-isBasicSkill = 0
+isBasicSkill = 1
 basicForRace = Dragon
 
 # ============================================================
@@ -489,7 +489,7 @@ mpCost = 10
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Light
-isBasicSkill = 0
+isBasicSkill = 1
 basicForRace = Angel
 
 [fallen_shadow_strike]
@@ -527,7 +527,7 @@ mpCost = 9
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Dark
-isBasicSkill = 0
+isBasicSkill = 1
 basicForRace = FallenAngel
 
 # ============================================================
@@ -568,7 +568,7 @@ mpCost = 8
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Dark
-isBasicSkill = 0
+isBasicSkill = 1
 basicForRace = Demon
 
 # ============================================================
@@ -610,7 +610,7 @@ mpCost = 8
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = None
-isBasicSkill = 0
+isBasicSkill = 1
 basicForRace = Spirit
 
 [fairy_sparkle]
@@ -648,7 +648,7 @@ mpCost = 8
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Light
-isBasicSkill = 0
+isBasicSkill = 1
 basicForRace = Fairy
 
 [arcana_rune_strike]
@@ -687,7 +687,7 @@ mpCost = 9
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = None
-isBasicSkill = 0
+isBasicSkill = 1
 basicForRace = Arcana
 
 # ============================================================
@@ -730,7 +730,7 @@ mpCost = 8
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Iron
-isBasicSkill = 0
+isBasicSkill = 1
 basicForRace = Construct
 
 # Moth
@@ -769,7 +769,7 @@ mpCost = 7
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Light
-isBasicSkill = 0
+isBasicSkill = 1
 basicForRace = Moth
 
 # Dryad / Alraune (plant)
@@ -808,7 +808,7 @@ mpCost = 7
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Light
-isBasicSkill = 0
+isBasicSkill = 1
 basicForRace = Dryad
 
 [alraune_thorn_lash]
@@ -846,7 +846,7 @@ mpCost = 8
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Earth
-isBasicSkill = 0
+isBasicSkill = 1
 basicForRace = Alraune
 
 # Phantom
@@ -885,7 +885,7 @@ mpCost = 8
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Dark
-isBasicSkill = 0
+isBasicSkill = 1
 basicForRace = Phantom
 
 # Merfolk / Siren (aquatic)
@@ -923,7 +923,7 @@ mpCost = 8
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Water
-isBasicSkill = 0
+isBasicSkill = 1
 basicForRace = Merfolk
 
 [siren_sonic_wave]
@@ -961,7 +961,7 @@ mpCost = 8
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Water
-isBasicSkill = 0
+isBasicSkill = 1
 basicForRace = Siren
 
 # Goblin
@@ -1000,7 +1000,7 @@ mpCost = 5
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = None
-isBasicSkill = 0
+isBasicSkill = 1
 basicForRace = Goblin
 
 # Vampire
@@ -1039,7 +1039,7 @@ mpCost = 7
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Dark
-isBasicSkill = 0
+isBasicSkill = 1
 basicForRace = Vampire
 
 # Arachne
@@ -1078,7 +1078,7 @@ mpCost = 7
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = None
-isBasicSkill = 0
+isBasicSkill = 1
 basicForRace = Arachne
 
 # Slime
@@ -1117,7 +1117,7 @@ mpCost = 6
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Water
-isBasicSkill = 0
+isBasicSkill = 1
 basicForRace = Slime
 
 # Lizardfolk
@@ -1155,7 +1155,7 @@ mpCost = 6
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = Light
-isBasicSkill = 0
+isBasicSkill = 1
 basicForRace = Lizardfolk
 
 # Minotaur
@@ -1194,7 +1194,7 @@ mpCost = 8
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = None
-isBasicSkill = 0
+isBasicSkill = 1
 basicForRace = Minotaur
 
 # Halfling
@@ -1233,7 +1233,7 @@ mpCost = 5
 appearRate = 0.7
 maxUsesPerCombat = 5
 element = None
-isBasicSkill = 0
+isBasicSkill = 1
 basicForRace = Halfling
 
 # ============================================================

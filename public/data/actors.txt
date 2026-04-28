@@ -38,7 +38,7 @@ colorValues = 0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5
 domainHigh = Passionate,Adaptable,Inventive,Flexible,Patient,Freesprited,Hopeful,Honest
 domainLow = Cautious,Indifferent,Methodical,Stubborn,Restless,Grounded,Cynical,Naive
 inventory = Food:5, Potion:2
-background = 어딘가에서 흘러들어온 모험가.|머리에 작은 뿔이 있지만 인간이냐는 질문에는 대수롭지 않게 넘긴다.|상황에 빠르게 익숙해지는 타입이라 넘어온 세계에서도 잘 지낸다.|목표는 모든 마을을 둘러보고 떠나는 것. 이 세계의 주인공 취급이지만, 히페리온 레벨 1도 찍기 힘들다.
+background = 어딘가에서 흘러들어온 모험가.|머리에 작은 뿔이 있지만 인간이냐는 질문에는 대수롭지 않게 넘긴다.|상황에 빠르게 익숙해지는 타입이라 넘어온 세계에서도 잘 지낸다.|목표는 모든 마을을 둘러보고 떠나는 것.
 
 # ============================================================
 # 풍혈지대 · 마왕성 — 챕터 제로 관련
