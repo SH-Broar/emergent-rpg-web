@@ -275,30 +275,19 @@ export function createInventoryScreen(
     });
   }
 
-  /** 단순 판매 (인벤토리·장비 탭 전용). 50% 가격으로 즉시 판매한다. */
-  function sellItemEntry(entry: CarryEntry, el: HTMLElement): void {
+  /** 가방에서 1개 버리기. 골드 이득 없음(상인 거래만 골드 발생). */
+  function discardItemEntry(entry: CarryEntry, el: HTMLElement): void {
     if (entry.kind !== 'item') {
-      statusMessage = '이 항목은 판매할 수 없습니다.';
+      statusMessage = '이 항목은 버릴 수 없습니다.';
       render(el);
       return;
     }
-    const w = getWeaponDef(entry.id);
-    const a = getArmorDef(entry.id);
-    const def = getItemDef(entry.id);
-    const basePrice = w?.price ?? a?.price ?? def?.price ?? 0;
-    if (basePrice <= 0) {
-      statusMessage = '이 아이템은 판매할 수 없습니다.';
-      render(el);
-      return;
-    }
-    const sellPrice = Math.max(1, Math.round(basePrice * 0.5));
     if (!p.removeItemById(entry.id, 1)) {
       statusMessage = '아이템이 없습니다.';
       render(el);
       return;
     }
-    p.addGold(sellPrice);
-    statusMessage = `${entry.label} 판매: +${sellPrice}G`;
+    statusMessage = `${entry.label} 1개를 버렸다.`;
     render(el);
   }
 
@@ -311,7 +300,7 @@ export function createInventoryScreen(
   }
 
   const TAB_DEFS: { key: TabKind; label: string; hotkey: string }[] = [
-    { key: 'equipment', label: '⚔ 장비 (판매)', hotkey: '5' },
+    { key: 'equipment', label: '⚔ 장비 (버리기)', hotkey: '5' },
     { key: 'food',      label: '🍖 음식',        hotkey: '6' },
     { key: 'misc',      label: '📦 기타',        hotkey: '7' },
   ];
@@ -584,9 +573,9 @@ export function createInventoryScreen(
         const idx = parseInt(btn.dataset.carryEntry ?? '-1', 10);
         if (idx < 0 || idx >= entries.length) return;
         const entry = entries[idx];
-        // 장비 탭: 판매 전용. 장착은 상단 슬롯에서.
+        // 장비 탭: 버리기 전용. 장착은 상단 슬롯에서. 판매는 상인에게.
         if (tab === 'equipment') {
-          sellItemEntry(entry, el);
+          discardItemEntry(entry, el);
           return;
         }
         // 음식 탭: 확인 모달 경유 후 소비
@@ -757,9 +746,9 @@ export function createInventoryScreen(
           const idx = parseInt(key, 10) - 1;
           if (idx < entries.length) {
             const entry = entries[idx];
-            // 장비 탭: 판매 전용
+            // 장비 탭: 버리기 전용
             if (tab === 'equipment') {
-              sellItemEntry(entry, container);
+              discardItemEntry(entry, container);
               return;
             }
             // 음식 탭
