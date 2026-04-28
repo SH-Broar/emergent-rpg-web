@@ -1089,7 +1089,10 @@ export function getRelationshipStage(
 
     // 입수 조건만으로 close 판정. 관계도가 필요한 NPC는 acquisition method에
     // "관계도 N 이상" 라인을 명시한다(NPC별 임계값을 데이터로 노출).
-    if (target && target.acquisitionMethod) {
+    if (target) {
+      // acquisitionMethod 가 비어 있는 NPC(시작 캐릭터·조건 없는 캐릭터) →
+      // 만나서 known 단계가 되면 곧바로 close 로 승격(영입 자체는 별도 절차).
+      if (!target.acquisitionMethod) return 'close';
       if (areAcquisitionConditionsMet(target, player, allActors, knowledge, dungeonSystem)) return 'close';
       return 'known';
     }
