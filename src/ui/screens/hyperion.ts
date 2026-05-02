@@ -3,7 +3,7 @@
 
 import type { Screen } from '../screen-manager';
 import type { GameSession } from '../../systems/game-session';
-import { getHyperionEntry, getHyperionDefaultEntry } from '../../systems/hyperion';
+import { getHyperionEntry, getHyperionEntryWithDefault } from '../../systems/hyperion';
 import { evaluateAcquisitionConditions, getRelationshipStage, getRelationshipStageLabel } from '../../systems/npc-interaction';
 
 const HYPERION_MAX_LEVEL = 5;
@@ -150,7 +150,7 @@ export function createHyperionScreen(
 
     // Hyperion missions — 친한 사이/동행 이상만 공개
     const isPlayer = actor === p;
-    const entry = isPlayer ? getHyperionDefaultEntry() : getHyperionEntry(actor.name);
+    const entry = isPlayer ? getHyperionEntryWithDefault(actor.name) : getHyperionEntry(actor.name);
     const isCloseOrCompanion = isPlayer || stage === '\uce5c\ud55c \uc0ac\uc774' || stage === '\ub3d9\ud589 \uc911';
     if (entry) {
       const mTitle = document.createElement('div');
