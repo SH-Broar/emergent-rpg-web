@@ -20,9 +20,9 @@ export const RDC_PACKS: RdcPackDef[] = [
   {
     id: 'chapter0',
     label: 'Chapter. 0',
-    description: '이유르, 리엔카이, 모노',
-    conditionMembers: ['이유르', '리엔카이', '모노'],
-    playableNames:    ['이유르', '리엔카이', '모노'],
+    description: '니아 이유르, 리엔카이, 모노',
+    conditionMembers: ['니아 이유르', '리엔카이', '모노'],
+    playableNames:    ['니아 이유르', '리엔카이', '모노'],
   },
   {
     id: 'spiritz',
@@ -34,9 +34,9 @@ export const RDC_PACKS: RdcPackDef[] = [
   {
     id: 'cheonri',
     label: '천리지각',
-    description: '카요, 하피 시이드, 네토 로크',
-    conditionMembers: ['카요', '하피 시이드', '네토 로크'],
-    playableNames:    ['카요', '하피 시이드', '네토 로크'],
+    description: '카요, 시이드, 네토 로크',
+    conditionMembers: ['카요', '시이드', '네토 로크'],
+    playableNames:    ['카요', '시이드', '네토 로크'],
   },
   {
     id: 'celestial',
@@ -97,9 +97,9 @@ export const RDC_PACKS: RdcPackDef[] = [
   {
     id: 'fourlords',
     label: '사천왕',
-    description: '에코, 카시스, 하피 시아, 리무',
-    conditionMembers: ['에코', '카시스', '하피 시아', '리무'],
-    playableNames:    ['에코', '카시스', '하피 시아', '리무'],
+    description: '에코, 카시스, 시아, 리무',
+    conditionMembers: ['에코', '카시스', '시아', '리무'],
+    playableNames:    ['에코', '카시스', '시아', '리무'],
   },
 ];
 

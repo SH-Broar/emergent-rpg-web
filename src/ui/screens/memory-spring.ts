@@ -8,8 +8,75 @@ import { locationName } from '../../types/registry';
 import { eunNeun } from '../../data/josa';
 import { raceName, spiritRoleName, elementName, Element } from '../../types/enums';
 import { getItemDef } from '../../types/item-defs';
+import { checkAndQueueHyperionLevelUps } from '../../systems/hyperion-trigger';
 
-type SpringTab = 'journey' | 'relations' | 'knowledge' | 'soul';
+type SpringTab = 'journey' | 'relations' | 'knowledge' | 'soul' | 'restore';
+
+interface RepairResult {
+  fixedItems: string[];
+  hyperionRaised: boolean;
+}
+
+/**
+ * 옛날 세이브에서 누락되었을 수 있는 기억 데이터를 보정한다.
+ * - 현재/홈 위치, 동료 위치를 visitedLocations에 추가
+ * - partyMembers를 recruitedEver / knownActorNames에 추가
+ * - 같은 위치 NPC를 knownActorNames에 추가
+ * - relationships(interactionCount>0)를 knownActorNames / conversationPartners에 추가
+ * 보정 후 히페리온 조건을 즉시 재평가한다.
+ */
+function repairSave(session: GameSession): RepairResult {
+  const k = session.knowledge;
+  const p = session.player;
+  const fixed: string[] = [];
+
+  const tryAddVisit = (loc: string | undefined): void => {
+    if (!loc) return;
+    if (k.visitedLocations.has(loc)) return;
+    k.visitedLocations.add(loc);
+    fixed.push(`방문 기록 추가: ${locationName(loc) || loc}`);
+  };
+
+  tryAddVisit(p.currentLocation);
+  tryAddVisit(p.homeLocation);
+
+  for (const name of k.partyMembers) {
+    if (!k.recruitedEver.has(name)) {
+      k.recruitedEver.add(name);
+      fixed.push(`영입 기록 추가: ${name}`);
+    }
+    if (!k.knownActorNames.has(name)) {
+      k.knownActorNames.add(name);
+      fixed.push(`만난 기록 추가: ${name}`);
+    }
+    const comp = session.actors.find(a => a.name === name);
+    if (comp) tryAddVisit(comp.currentLocation);
+  }
+
+  for (const a of session.actors) {
+    if (a === p) continue;
+    if (a.currentLocation === p.currentLocation && !k.knownActorNames.has(a.name)) {
+      k.knownActorNames.add(a.name);
+      fixed.push(`만난 기록 추가: ${a.name}`);
+    }
+  }
+
+  for (const [name, rel] of p.relationships) {
+    if (rel.interactionCount <= 0) continue;
+    if (!k.knownActorNames.has(name)) {
+      k.knownActorNames.add(name);
+      fixed.push(`만난 기록 추가: ${name}`);
+    }
+    if (!k.conversationPartners.has(name)) {
+      k.conversationPartners.add(name);
+      fixed.push(`대화 기록 추가: ${name}`);
+    }
+  }
+
+  const hyperionRaised = checkAndQueueHyperionLevelUps(session);
+
+  return { fixedItems: fixed, hyperionRaised };
+}
 
 export interface MemorySpringCallbacks {
   onBack: () => void;
@@ -47,6 +114,7 @@ export function createMemorySpringScreen(
         <button class="btn info-btn ${tab === 'relations' ? 'active' : ''}" data-tab="relations">2. \uc778\uc5f0</button>
         <button class="btn info-btn ${tab === 'knowledge' ? 'active' : ''}" data-tab="knowledge">3. \uc9c0\uc2dd</button>
         <button class="btn info-btn ${tab === 'soul' ? 'active' : ''}" data-tab="soul">4. \uc601\ud63c</button>
+        <button class="btn info-btn ${tab === 'restore' ? 'active' : ''}" data-tab="restore">5. \ubcf4\uc815</button>
       </div>
     `;
 
@@ -159,13 +227,18 @@ export function createMemorySpringScreen(
         }
         break;
       }
+
+      case 'restore': {
+        renderRestoreTab(content);
+        break;
+      }
     }
 
     wrap.appendChild(content);
 
     const hint = document.createElement('p');
     hint.className = 'hint';
-    hint.textContent = '1=\uc5ec\uc815 2=\uc778\uc5f0 3=\uc9c0\uc2dd 4=\uc601\ud63c Esc=\ub4a4\ub85c';
+    hint.textContent = '1=\uc5ec\uc815 2=\uc778\uc5f0 3=\uc9c0\uc2dd 4=\uc601\ud63c 5=\ubcf4\uc815 Esc=\ub4a4\ub85c';
     wrap.appendChild(hint);
 
     el.appendChild(wrap);
@@ -263,6 +336,95 @@ export function createMemorySpringScreen(
       rebirthBtn.addEventListener('click', () => { confirmMode = 'rebirth'; render(getContainer()); });
       content.appendChild(rebirthBtn);
     }
+  }
+
+  let lastRepairResult: RepairResult | null = null;
+
+  function renderRestoreTab(content: HTMLElement): void {
+    const k = session.knowledge;
+    const p = session.player;
+
+    // 진단: 의심되는 누락 항목 카운트
+    const partyMissingRecruit = k.partyMembers.filter(n => !k.recruitedEver.has(n)).length;
+    const partyMissingKnown = k.partyMembers.filter(n => !k.knownActorNames.has(n)).length;
+    const currentLocMissing = !k.visitedLocations.has(p.currentLocation);
+    const homeLocMissing = p.homeLocation && !k.visitedLocations.has(p.homeLocation);
+    const interactedMissingKnown = [...p.relationships.entries()]
+      .filter(([n, rel]) => rel.interactionCount > 0 && !k.knownActorNames.has(n)).length;
+    const interactedMissingConv = [...p.relationships.entries()]
+      .filter(([n, rel]) => rel.interactionCount > 0 && !k.conversationPartners.has(n)).length;
+
+    const totalSuspicious = partyMissingRecruit + partyMissingKnown
+      + (currentLocMissing ? 1 : 0) + (homeLocMissing ? 1 : 0)
+      + interactedMissingKnown + interactedMissingConv;
+
+    const lines: string[] = [];
+    lines.push(`<div style="margin-bottom:12px"><b>기억 보정</b></div>`);
+    lines.push(`<div style="color:var(--text-dim);font-size:13px;margin-bottom:16px;line-height:1.6">
+      옛 세이브에서 누락된 기억을 다시 새깁니다.<br>
+      방문 기록·동료 영입·만난 인연이 흐려져 있다면 이곳에서 보정할 수 있습니다.<br>
+      <span style="color:var(--warning)">※ 보정은 누락된 기록을 추가하는 방향으로만 작동하며, 기존 진행은 잃지 않습니다.</span>
+    </div>`);
+
+    lines.push(`<div style="padding:8px;background:var(--bg-card);border-radius:8px;margin-bottom:12px;font-size:12px;line-height:1.8">
+      <div><b>현재 상태</b></div>
+      <div>방문한 장소: ${k.visitedLocations.size}곳</div>
+      <div>알고 있는 이름: ${k.knownActorNames.size}명</div>
+      <div>대화한 적 있는 인연: ${k.conversationPartners.size}명</div>
+      <div>영입한 적 있는 동료: ${k.recruitedEver.size}명 (현재 파티: ${k.partyMembers.length}명)</div>
+    </div>`);
+
+    if (totalSuspicious > 0) {
+      lines.push(`<div style="padding:8px;background:var(--bg-card);border-radius:8px;margin-bottom:12px;font-size:12px;line-height:1.8;border-left:4px solid var(--warning)">
+        <div style="color:var(--warning)"><b>의심되는 누락 ${totalSuspicious}건</b></div>
+        ${currentLocMissing ? `<div>· 현재 위치(${locationName(p.currentLocation) || p.currentLocation})가 방문 기록에 없습니다.</div>` : ''}
+        ${homeLocMissing ? `<div>· 거점 위치가 방문 기록에 없습니다.</div>` : ''}
+        ${partyMissingRecruit > 0 ? `<div>· 현재 파티 동료 ${partyMissingRecruit}명이 영입 기록에 없습니다.</div>` : ''}
+        ${partyMissingKnown > 0 ? `<div>· 현재 파티 동료 ${partyMissingKnown}명이 만난 기록에 없습니다.</div>` : ''}
+        ${interactedMissingKnown > 0 ? `<div>· 호감도가 형성된 인연 ${interactedMissingKnown}명이 만난 기록에 없습니다.</div>` : ''}
+        ${interactedMissingConv > 0 ? `<div>· 호감도가 형성된 인연 ${interactedMissingConv}명이 대화 기록에 없습니다.</div>` : ''}
+      </div>`);
+    } else {
+      lines.push(`<div style="padding:8px;background:var(--bg-card);border-radius:8px;margin-bottom:12px;font-size:12px;color:var(--text-dim)">
+        보정이 필요한 명백한 누락은 보이지 않습니다. 그래도 보정을 실행하면 같은 위치의 NPC를 만난 기록에 새깁니다.
+      </div>`);
+    }
+
+    if (lastRepairResult) {
+      const r = lastRepairResult;
+      if (r.fixedItems.length === 0) {
+        lines.push(`<div style="padding:8px;border:1px solid var(--border);border-radius:8px;margin-bottom:12px;font-size:12px;color:var(--text-dim)">
+          이전 보정에서 추가된 항목이 없었습니다.
+        </div>`);
+      } else {
+        const head = r.fixedItems.slice(0, 12);
+        const more = r.fixedItems.length - head.length;
+        lines.push(`<div style="padding:8px;border:1px solid var(--border);border-radius:8px;margin-bottom:12px;font-size:12px;line-height:1.7">
+          <div style="color:var(--success)"><b>보정 결과: ${r.fixedItems.length}건 추가</b></div>
+          ${head.map(s => `<div style="color:var(--text-dim)">· ${s}</div>`).join('')}
+          ${more > 0 ? `<div style="color:var(--text-dim)">… 외 ${more}건</div>` : ''}
+          ${r.hyperionRaised ? `<div style="color:var(--warning);margin-top:4px">✦ 히페리온 조건이 새로 충족되었습니다.</div>` : ''}
+        </div>`);
+      }
+    }
+
+    content.innerHTML = lines.join('');
+
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-primary';
+    btn.style.cssText = 'width:100%;padding:12px';
+    btn.textContent = '기억 보정 실행 [Enter]';
+    btn.addEventListener('click', () => {
+      lastRepairResult = repairSave(session);
+      session.backlog.add(session.gameTime,
+        lastRepairResult.fixedItems.length > 0
+          ? `기억의 샘에서 ${lastRepairResult.fixedItems.length}건의 기억을 보정했다.`
+          : '기억의 샘을 들여다봤지만 보정할 것이 없었다.',
+        '시스템');
+      const container = content.closest('.memory-spring-screen')?.parentElement as HTMLElement | null;
+      if (container) render(container);
+    });
+    content.appendChild(btn);
   }
 
   function renderConfirm(content: HTMLElement): void {
@@ -394,6 +556,7 @@ export function createMemorySpringScreen(
       else if (key === '2') { tab = 'relations'; render(container); }
       else if (key === '3') { tab = 'knowledge'; render(container); }
       else if (key === '4') { tab = 'soul'; render(container); }
+      else if (key === '5') { tab = 'restore'; render(container); }
     },
   };
 }

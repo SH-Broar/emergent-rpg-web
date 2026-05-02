@@ -337,12 +337,15 @@ export function updateHyperionLevels(
     // 플레이어 자신이거나, 플레이어가 만난 NPC만 히페리온 판정
     if (actor !== player && !knowledge.knownActorNames.has(actor.name)) continue;
 
-    // 동료(companion)이면서 친한 사이인 경우에만 레벨업 — 영입 없이 close 상태인 캐릭터 제외
+    // 영입한 적 있는 NPC라면 현재 파티에 없어도 레벨업 진행 (companion_days 등 일부 조건은 동행 시에만 누적)
     if (actor !== player) {
-      if (!knowledge.isCompanion(actor.name)) continue;
+      if (!knowledge.recruitedEver.has(actor.name)) continue;
     }
 
-    const entry = getHyperionEntry(actor.name);
+    // 플레이어는 자기 actor 이름이 hyperion.txt에 없으면 __default__로 폴백
+    const entry = actor === player
+      ? getHyperionEntryWithDefault(actor.name)
+      : getHyperionEntry(actor.name);
     if (!entry) continue;
 
     const currentLevel = actor.hyperionLevel;

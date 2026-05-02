@@ -60,17 +60,19 @@
 # ============================================================
 
 # 탄생 캐릭터용 범용 히페리온
+# 플레이어 본인이 hyperion.txt에 자체 엔트리가 없을 때 폴백으로 사용된다.
+# 자기 자신의 hyperionLevel도 hyperion_total 합에 포함되지만, 한 턴에 +1만 오르므로 순환은 발생하지 않는다.
 [__default__]
-condition_1 = 5곳의 지역을 방문했다
-condition_1_type = visited_count:5
-condition_2 = NPC 10명과 대화했다
-condition_2_type = conversation_count:10
-condition_3 = 몬스터 30마리를 처치했다
-condition_3_type = monsters_killed:30
-condition_4 = 던전을 3회 클리어했다
-condition_4_type = dungeon_clear_count:3
-condition_5 = 호감도가 높은 NPC가 5명 이상이다
-condition_5_type = friend_count:5
+condition_1 = 히페리온 레벨 합 10 달성
+condition_1_type = hyperion_total:10
+condition_2 = 히페리온 레벨 합 30 달성
+condition_2_type = hyperion_total:30
+condition_3 = 히페리온 레벨 합 60 달성
+condition_3_type = hyperion_total:60
+condition_4 = 히페리온 레벨 합 100 달성
+condition_4_type = hyperion_total:100
+condition_5 = 히페리온 레벨 합 150 달성
+condition_5_type = hyperion_total:150
 
 [니아 이유르]
 condition_1 = 5곳의 지역을 탐험했다
