@@ -54,6 +54,15 @@ export function getHyperionEntryWithDefault(actorName: string): HyperionEntry | 
   return hyperionDB.get(actorName) ?? hyperionDB.get('__default__');
 }
 
+/**
+ * 플레이어가 보는 자기 자신의 히페리온 진행은 항상 __default__를 사용한다.
+ * hyperion.txt의 캐릭터별 entry는 NPC가 영입됐을 때 진행하는 미션 정의이므로,
+ * 플레이어 본인에게는 적용하지 않는다. (옛 visited_count 등이 노출되는 문제 방지)
+ */
+export function getHyperionDefaultEntry(): HyperionEntry | undefined {
+  return hyperionDB.get('__default__');
+}
+
 export function checkHyperionCondition(
   cond: HyperionCondition,
   _targetActorName: string,
@@ -342,9 +351,9 @@ export function updateHyperionLevels(
       if (!knowledge.recruitedEver.has(actor.name)) continue;
     }
 
-    // 플레이어는 자기 actor 이름이 hyperion.txt에 없으면 __default__로 폴백
+    // 플레이어 본인은 항상 __default__만 사용 (hyperion.txt의 자체 entry는 NPC용 미션)
     const entry = actor === player
-      ? getHyperionEntryWithDefault(actor.name)
+      ? getHyperionDefaultEntry()
       : getHyperionEntry(actor.name);
     if (!entry) continue;
 
