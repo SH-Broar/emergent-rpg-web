@@ -75,13 +75,19 @@ export interface RunState {
   visitedNodes: NodeId[];
   /** 노드별 상태 (재방문 정책). */
   nodeStates: Record<NodeId, NodeStateRecord>;
-  /** 보스 게이트까지 남은 노드 방문 수. */
+  /** 시간 만료까지 남은 카운트 (시간 만료 = 즉시 런 종료). */
   remainingTime: number;
-  /** 현재 덱 슬롯 수 (10 → 20 → 30). */
-  deckSize: 10 | 20 | 30;
+  /**
+   * 덱 슬롯 — 전투에 들고가는 카드 수 (사용자 사양: 10 고정).
+   * 카드 자체는 collection에 무제한 보유, 그 중 deck 슬롯에 등록된 것만 전투 사용.
+   */
+  deckSize: number;
 
   // === 빌드 ===
-  deck: Card[];          // 현재 덱 (영구, 휘발성이지만 런 내내 보존)
+  /** 전투용 덱 (deckSize 슬롯, collection 의 부분집합). */
+  deck: Card[];
+  /** 보유 카드 컬렉션 — 무제한. 덱 편집 화면에서 토글로 deck에 등록. */
+  collection: Card[];
   relics: Relic[];
   hp: number;
   maxHp: number;

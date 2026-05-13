@@ -40,14 +40,9 @@ const timeUp = computed(() => {
 
 const reachable = computed<Set<NodeId>>(() => {
   if (!nodeMap.value) return new Set();
+  // 사용자 사양: 시간 만료 = 즉시 종료. 보스 게이트로 갈 필요 없음.
+  // 따라서 인접 노드는 항상 동일하게 반환.
   const neighbors = getNeighbors(nodeMap.value, run.data.currentNodeId, run.data);
-  if (timeUp.value) {
-    return new Set(
-      neighbors
-        .filter((n) => n.id === nodeMap.value!.bossGateNodeId || n.isBossGate)
-        .map((n) => n.id),
-    );
-  }
   return new Set(neighbors.map((n) => n.id));
 });
 
@@ -139,14 +134,22 @@ function enterSelected() {
   if (!node || !timeline.value) return;
   const action = getEnterAction();
 
-  // 시간 소모는 *처음 방문*일 때만, 또는 *전투/이벤트가 발생하는 경우*. 일단 모든 이동에 1 시간.
+  // 노드 방문 처리
   run.visitNode(node.id, timeline.value.deckExpansionThresholds);
 
   // 유물 trigger 발동
   void import('@/systems/relic').then(({ onNodeEnter }) => onNodeEnter(node.id));
 
-  // 히페리온 자동 평가 (노드 방문 카운트가 조건일 수 있음)
+  // 히페리온 자동 평가
   void import('@/systems/hyperion').then(({ evaluateHyperion }) => evaluateHyperion());
+
+  // 시간 만료 즉시 종료 (사용자 사양)
+  if (run.data.remainingTime <= 0) {
+    run.endRun('time-up');
+    closeDrawer();
+    router.push('/game/end');
+    return;
+  }
 
   switch (node.kind) {
     case 'village':

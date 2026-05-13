@@ -68,7 +68,9 @@ async function selectCharacter(c: Character) {
     startNodeId: map.startNodeId,
     timeLimit: tl.timeLimit,
   });
-  run.data.deck = deck;
+  // 시작 카드 — collection에 모두, deck 슬롯에는 처음 10장.
+  run.data.collection = [...deck];
+  run.data.deck = deck.slice(0, run.data.deckSize);
 
   // 종족 시드 유물 부여
   if (race?.seedRelicIds) {

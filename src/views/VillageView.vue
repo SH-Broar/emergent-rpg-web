@@ -55,12 +55,8 @@ function rollCraft() {
 
 function selectCrafted(card: Card) {
   run.data.timeShards -= VILLAGE_CRAFT_COST;
-  if (run.data.deck.length < run.data.deckSize) {
-    run.data.deck.push(card);
-  }
-  if (!run.data.newCardEncounters.includes(card.id)) {
-    run.data.newCardEncounters.push(card.id);
-  }
+  // 카드 컬렉션에 추가 (덱 슬롯 등록은 사용자가 덱 편집에서)
+  run.addCardToCollection(card);
   craftedCard.value = card;
   phase.value = 'craft-result';
 }

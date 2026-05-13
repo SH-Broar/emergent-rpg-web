@@ -253,10 +253,8 @@ export function applyMonsterDrop(drop: MonsterDrop, allCards: Map<string, Card>)
       const card = allCards.get(cd.cardId);
       if (card) {
         droppedCards.push(card);
-        // 드롭 카드는 *새 발견* — 도감 등록은 progression에서. 여기선 newCardEncounters 추가.
-        if (!r.newCardEncounters.includes(card.id)) {
-          r.newCardEncounters.push(card.id);
-        }
+        // 컬렉션에 추가 — 덱 슬롯 등록은 사용자가 덱 편집에서.
+        run.addCardToCollection(card);
       }
     }
   }

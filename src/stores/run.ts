@@ -16,6 +16,8 @@ import type {
   TimelineId,
 } from '@/data/schemas';
 
+const DECK_SLOT_SIZE = 10;
+
 const EMPTY_RUN: RunState = {
   timelineId: '',
   characterId: '',
@@ -25,8 +27,9 @@ const EMPTY_RUN: RunState = {
   visitedNodes: [],
   nodeStates: {},
   remainingTime: 0,
-  deckSize: 10,
+  deckSize: DECK_SLOT_SIZE,
   deck: [],
+  collection: [],
   relics: [],
   hp: 0,
   maxHp: 0,
@@ -86,27 +89,41 @@ export const useRunStore = defineStore('run', {
       this.active = true;
     },
 
-    /** 노드 방문 — 시간 1 카운트 감소 + 덱 확장 임계 체크 + 방문 상태 마킹. */
-    visitNode(nodeId: string, expansionThresholds: [number, number]) {
+    /** 노드 방문 — 시간 1 카운트 감소 + 방문 상태 마킹. */
+    visitNode(nodeId: string, _unusedThresholds?: [number, number]) {
       const r = this.data;
       r.currentNodeId = nodeId;
       r.visitedNodes.push(nodeId);
       r.remainingTime = Math.max(0, r.remainingTime - 1);
 
-      // 노드 상태 마킹 (이미 방문했어도 visited 유지)
+      // 노드 상태 마킹
       if (!r.nodeStates[nodeId]) {
         r.nodeStates[nodeId] = { visited: true };
       } else {
         r.nodeStates[nodeId].visited = true;
       }
+      // 덱 슬롯 확장은 사용자 사양 변경으로 폐기 — deckSize 고정 (10)
+      void _unusedThresholds;
+    },
 
-      // 덱 확장 임계
-      const visited = r.visitedNodes.length;
-      if (r.deckSize === 10 && visited >= expansionThresholds[0]) {
-        r.deckSize = 20;
-      } else if (r.deckSize === 20 && visited >= expansionThresholds[1]) {
-        r.deckSize = 30;
+    /** 카드 컬렉션에 추가 (덱 편집 화면에서 토글로 슬롯 등록). */
+    addCardToCollection(card: import('@/data/schemas').Card) {
+      this.data.collection.push(card);
+      if (!this.data.newCardEncounters.includes(card.id)) {
+        this.data.newCardEncounters.push(card.id);
       }
+    },
+
+    /** 덱 편집: 컬렉션에서 카드를 슬롯에 추가/제거. 검증은 호출자가. */
+    setDeckFromCollection(cardIds: string[]) {
+      const r = this.data;
+      const map = new Map(r.collection.map((c) => [c.id, c]));
+      const next: import('@/data/schemas').Card[] = [];
+      for (const id of cardIds) {
+        const c = map.get(id);
+        if (c) next.push(c);
+      }
+      r.deck = next;
     },
 
     /** 전투 클리어 마킹 — 재방문 시 전투 없이 통과. */

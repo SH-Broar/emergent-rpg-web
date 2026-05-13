@@ -72,20 +72,13 @@ function clearStage(character: Character, stage: HyperionStage) {
   }
   // attack / defense / vigor는 *캐릭터 스탯에 직접 누적되는 코드는 없음*. 추후 운영.
 
-  // 카드 보상
+  // 카드 보상 — 컬렉션에 추가, 덱 슬롯 등록은 사용자가 덱 편집에서.
   let cardName: string | null = null;
   if (stage.rewardCardId) {
     const card = data.cards.get(stage.rewardCardId);
     if (card) {
-      if (r.deck.length < r.deckSize) {
-        r.deck.push(card);
-        cardName = card.name;
-      } else {
-        cardName = `${card.name} (덱 가득 — 도감만)`;
-      }
-      if (!r.newCardEncounters.includes(card.id)) {
-        r.newCardEncounters.push(card.id);
-      }
+      run.addCardToCollection(card);
+      cardName = `${card.name} (컬렉션)`;
     }
   }
 

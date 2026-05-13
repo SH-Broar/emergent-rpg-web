@@ -76,6 +76,12 @@ const routes: RouteRecordRaw[] = [
     meta: { scene: 'game' },
   },
   {
+    path: '/game/end',
+    name: 'game-end',
+    component: () => import('@/views/RunEndView.vue'),
+    meta: { scene: 'game' },
+  },
+  {
     path: '/game/village',
     name: 'game-village',
     component: () => import('@/views/VillageView.vue'),

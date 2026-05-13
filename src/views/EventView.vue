@@ -68,16 +68,8 @@ function applyEffectWithNames(effect: EventChoiceEffect, lines: string[]) {
   if (effect.grantCardId) {
     const card = data.cards.get(effect.grantCardId);
     if (card) {
-      // 덱 크기 안에 슬롯이 남아 있으면 추가 (Phase 2e에서 교체 UI)
-      if (r.deck.length < r.deckSize) {
-        r.deck.push(card);
-        lines.push(`카드 획득 — ${card.name}`);
-      } else {
-        lines.push(`카드 발견 (덱 가득 — 도감에만 기록) — ${card.name}`);
-      }
-      if (!r.newCardEncounters.includes(card.id)) {
-        r.newCardEncounters.push(card.id);
-      }
+      run.addCardToCollection(card);
+      lines.push(`카드 획득 — ${card.name} (컬렉션)`);
     } else {
       lines.push(`알 수 없는 카드 (${effect.grantCardId})`);
     }
