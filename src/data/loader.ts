@@ -450,25 +450,29 @@ export interface GameData {
 
 /** MVR 단계 데이터 파일들. 이후 확장 시 파일 추가만. */
 const DATA_FILES = [
-  '/data/timelines/peace-310.txt',
-  '/data/races/race-human.txt',
-  '/data/characters/transcendent-01.txt',
-  '/data/cards/cards-mvr.txt',
-  '/data/relics/relics-mvr.txt',
-  '/data/events/events-mvr.txt',
-  '/data/bosses/boss-shadow.txt',
-  '/data/node-maps/peace-310-map.txt',
+  'data/timelines/peace-310.txt',
+  'data/races/race-human.txt',
+  'data/characters/transcendent-01.txt',
+  'data/cards/cards-mvr.txt',
+  'data/relics/relics-mvr.txt',
+  'data/events/events-mvr.txt',
+  'data/bosses/boss-shadow.txt',
+  'data/node-maps/peace-310-map.txt',
 ] as const;
 
-/** 모든 데이터 fetch + 파싱 + 통합. */
-export async function loadAllData(baseUrl = ''): Promise<GameData> {
+/** 모든 데이터 fetch + 파싱 + 통합. baseUrl 생략 시 Vite의 BASE_URL 사용. */
+export async function loadAllData(baseUrl?: string): Promise<GameData> {
+  // BASE_URL은 vite의 base 설정 ('/emergent-rpg-web/' 등). 항상 '/'로 끝나거나 './'.
+  const base = baseUrl ?? import.meta.env.BASE_URL ?? '/';
+
   // 모든 파일 병렬 fetch
   const inis = await Promise.all(
     DATA_FILES.map(async (path) => {
+      const url = base.endsWith('/') ? base + path : base + '/' + path;
       try {
-        return await fetchIni(baseUrl + path);
+        return await fetchIni(url);
       } catch (err) {
-        console.warn(`[loader] failed to load ${path}:`, err);
+        console.warn(`[loader] failed to load ${url}:`, err);
         return {};
       }
     }),
