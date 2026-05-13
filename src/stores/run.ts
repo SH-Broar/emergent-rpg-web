@@ -11,12 +11,19 @@
 import { defineStore } from 'pinia';
 import type {
   CharacterId,
+  NodeKind,
   RunState,
   Season,
   TimelineId,
 } from '@/data/schemas';
+import { instantiateCard } from '@/systems/deck';
+import { useDataStore } from './data';
 
 const DECK_SLOT_SIZE = 10;
+/** 30턴마다 하루 경과 — 비-마을 노드 cleared 초기화 + 권역 풀에서 content 재추첨.
+ *  사용자 결정: 지도 모양은 유지(노드 kind 고정), content만 권역 풀에서 매일 새로 추첨.
+ */
+const TURNS_PER_DAY = 30;
 
 const EMPTY_RUN: RunState = {
   timelineId: '',
@@ -27,6 +34,10 @@ const EMPTY_RUN: RunState = {
   visitedNodes: [],
   nodeStates: {},
   remainingTime: 0,
+  currentDay: 1,
+  nodeKindOverrides: {},
+  nodeContentOverrides: {},
+  dayPassedSeq: 0,
   deckSize: DECK_SLOT_SIZE,
   deck: [],
   collection: [],
@@ -89,7 +100,7 @@ export const useRunStore = defineStore('run', {
       this.active = true;
     },
 
-    /** 노드 방문 — 시간 1 카운트 감소 + 방문 상태 마킹. */
+    /** 노드 방문 — 시간 1 카운트 감소 + 방문 상태 마킹 + 30턴마다 하루 경과. */
     visitNode(nodeId: string, _unusedThresholds?: [number, number]) {
       const r = this.data;
       r.currentNodeId = nodeId;
@@ -104,23 +115,115 @@ export const useRunStore = defineStore('run', {
       }
       // 덱 슬롯 확장은 사용자 사양 변경으로 폐기 — deckSize 고정 (10)
       void _unusedThresholds;
+
+      // 30턴마다 하루 경과 — visitedNodes.length 기준 (한 노드 = 1턴).
+      if (r.visitedNodes.length > 0 && r.visitedNodes.length % TURNS_PER_DAY === 0) {
+        this.advanceDay();
+      }
     },
 
-    /** 카드 컬렉션에 추가 (덱 편집 화면에서 토글로 슬롯 등록). */
+    /**
+     * 하루 경과 트리거 — 사용자 결정에 따라 *지도 모양(노드 kind)은 유지*.
+     *   - currentDay +1
+     *   - dayPassedSeq +1 (UI watch용)
+     *   - 비-마을·비-보스·비-shop·비-workshop·비-시작 노드의 cleared/eventTriggered/stealthed 초기화
+     *   - 같은 종류의 content(enemy/event)를 그 노드 *권역 풀에서* 재추첨
+     */
+    advanceDay() {
+      const r = this.data;
+      r.currentDay += 1;
+      r.dayPassedSeq += 1;
+
+      const data = useDataStore();
+      const tl = data.timelines.get(r.timelineId);
+      const map = tl ? data.nodeMaps.get(tl.nodeMapId) : undefined;
+      if (!map) return;
+
+      const protectedKinds = new Set<NodeKind>(['village', 'boss', 'shop', 'workshop']);
+      // 권역 ID → Region 매핑.
+      const regionMap = new Map(map.regions.map((rg) => [rg.id, rg]));
+
+      const pickRandom = <T,>(arr: T[]): T | undefined =>
+        arr.length === 0 ? undefined : arr[Math.floor(Math.random() * arr.length)];
+
+      /** 노드 종류에 맞는 content를 그 권역 풀에서 추첨. 풀이 비면 원본 contentRef 그대로. */
+      const pickContentForKind = (
+        node: import('@/data/schemas').Node,
+        kind: NodeKind,
+        region: import('@/data/schemas').Region | undefined,
+      ): { enemyGroupId?: string; eventIdPool?: string[] } => {
+        switch (kind) {
+          case 'combat': {
+            const pool = region?.enemyPool ?? [];
+            return { enemyGroupId: pickRandom(pool) ?? node.contentRef?.enemyGroupId };
+          }
+          case 'elite': {
+            const pool = region?.eliteEnemyPool ?? [];
+            return { enemyGroupId: pickRandom(pool) ?? node.contentRef?.enemyGroupId };
+          }
+          case 'event': {
+            const pool = region?.eventPool ?? [];
+            const pick = pickRandom(pool);
+            return { eventIdPool: pick ? [pick] : node.contentRef?.eventIdPool };
+          }
+          default:
+            return {};
+        }
+      };
+
+      for (const node of map.nodes) {
+        // 시작 노드(현재 위치)는 건드리지 않음.
+        if (node.id === r.currentNodeId) continue;
+        // 마을·보스·상점·공방은 항상 그대로.
+        if (protectedKinds.has(node.kind)) continue;
+
+        // 1) cleared / eventTriggered / combatStealthed 초기화 — visited는 유지.
+        const st = r.nodeStates[node.id];
+        if (st) {
+          st.combatCleared = false;
+          st.combatStealthed = false;
+          st.eventTriggered = undefined;
+          st.eventCount = 0;
+        }
+
+        // 2) 노드 *원본 kind는 그대로* — 지도 모양 유지.
+        //    content만 권역 풀에서 재추첨.
+        const region = regionMap.get(node.region ?? '');
+        const content = pickContentForKind(node, node.kind, region);
+        if (content.enemyGroupId || content.eventIdPool) {
+          r.nodeContentOverrides[node.id] = content;
+        }
+      }
+    },
+
+    /**
+     * 카드 컬렉션에 추가 — 매 호출마다 *새 인스턴스*를 만들어 push.
+     * 동명 카드를 여러 장 받아도 각각 별개 instanceId.
+     */
     addCardToCollection(card: import('@/data/schemas').Card) {
-      this.data.collection.push(card);
+      // 정의(원본 데이터)에는 instanceId가 없음 → 인스턴스화.
+      // 이미 인스턴스화된 카드(드롭/이벤트 보상)는 그대로 받음.
+      const instance = card.instanceId ? { ...card } : instantiateCard(card);
+      this.data.collection.push(instance);
       if (!this.data.newCardEncounters.includes(card.id)) {
         this.data.newCardEncounters.push(card.id);
       }
     },
 
-    /** 덱 편집: 컬렉션에서 카드를 슬롯에 추가/제거. 검증은 호출자가. */
-    setDeckFromCollection(cardIds: string[]) {
+    /**
+     * 덱 편집: 컬렉션의 *인스턴스 id 목록*을 받아 그 인스턴스들로 deck을 채움.
+     * 동명 카드도 별개 instanceId면 별개로 취급.
+     */
+    setDeckFromCollection(instanceIds: string[]) {
       const r = this.data;
-      const map = new Map(r.collection.map((c) => [c.id, c]));
+      const map = new Map(
+        r.collection
+          .filter((c): c is import('@/data/schemas').Card & { instanceId: string } => !!c.instanceId)
+          .map((c) => [c.instanceId, c]),
+      );
       const next: import('@/data/schemas').Card[] = [];
-      for (const id of cardIds) {
-        const c = map.get(id);
+      for (const iid of instanceIds) {
+        const c = map.get(iid);
         if (c) next.push(c);
       }
       r.deck = next;

@@ -8,6 +8,19 @@
 
 import type { Card } from '@/data/schemas';
 
+/**
+ * 카드 *정의*에서 *인스턴스*를 생성. 동명 카드 사본도 별개로 식별.
+ *
+ * `instanceId` 명명 규칙: `{cardId}#{6자 랜덤}` — UI 디버그/로그에서 정의를 한눈에.
+ * 충돌 가능성은 36^6 ≈ 22억 분의 1 — 한 런에서 사실상 무시.
+ */
+let instanceSeq = 0;
+export function instantiateCard(card: Card): Card {
+  instanceSeq += 1;
+  const rand = Math.random().toString(36).slice(2, 8);
+  return { ...card, instanceId: `${card.id}#${rand}-${instanceSeq.toString(36)}` };
+}
+
 /** 표준 Fisher-Yates 셔플. 새 배열 반환. */
 export function shuffle<T>(arr: readonly T[]): T[] {
   const result = [...arr];

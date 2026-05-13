@@ -1,0 +1,27 @@
+# Boss: 시간의 닻 — 1장 종말 위협.
+# 제 4시대 61년의 균열이 한 점에 응축된 *형태 없는 닻*. 모노가 가장 두려워하는 것.
+
+[boss.bs-act-1-anchor]
+name = 시간의 닻
+description = 시간 축의 한 점에 *고정된* 그것. 모노는 이것이 만들어진 순간을 기억하지 못한다고 했다 — 그건 곧 *그가 만들지 않았다는 뜻*이라고. 형태가 없으며, 다만 *떠나려는 모든 것을 붙잡는* 의지만이 있다.
+timeline = tl-act-1-era4-061
+hp = 220
+attack = 14
+defense = 4
+reward_unlocks = unlock-tl-act-2, unlock-character-act1-anchor-touched
+reward_soul = 30
+reward_codex = bs-act-1-anchor
+intro = 풍혈지대 위 *공기가 멈춘다*. 그 자리에 — *닻이 없는 닻*이 떠 있다. "그대는 이 시간을 끝낼 수 있다고 믿었는가." 그것의 목소리는 모노의 것과 비슷하지만, 다르다.
+defeat_text = 닻이 *느슨해진다*. 시간이 다시 흐른다. 모노가 옅게 웃는다. "한 시대는 — 한 사람으로 충분하군요."
+
+[boss.bs-act-1-anchor.phase.1]
+starts_at = 1.0
+intents = attack:10, attack:10, defend:8, buff:1, attack:12
+
+[boss.bs-act-1-anchor.phase.2]
+starts_at = 0.66
+intents = attack:14, defend:10, attack:14, debuff:1, attack:18
+
+[boss.bs-act-1-anchor.phase.3]
+starts_at = 0.33
+intents = attack:20, attack:20, debuff:1, attack:24

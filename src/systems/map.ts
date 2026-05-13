@@ -7,7 +7,39 @@
  *  - 시간 임계 도달 시 *덱 확장* 또는 *보스 게이트 활성*
  */
 
-import type { NodeId, NodeMap, Node, RunState } from '@/data/schemas';
+import type { NodeId, NodeKind, NodeMap, Node, Region, RunState } from '@/data/schemas';
+
+/**
+ * 노드의 *유효 kind* — RunState의 nodeKindOverrides 우선, 없으면 원본.
+ * 하루 경과 시 일부 노드 kind가 권역 풀 내에서 재추첨됨.
+ */
+export function effectiveKind(node: Node, runState: RunState): NodeKind {
+  return runState.nodeKindOverrides[node.id] ?? node.kind;
+}
+
+/**
+ * 노드의 *유효 콘텐츠* — RunState의 nodeContentOverrides 우선, 없으면 원본 contentRef.
+ * 권역 풀에서 재추첨된 enemy/event를 반영.
+ */
+export function effectiveContent(
+  node: Node,
+  runState: RunState,
+): { enemyGroupId?: string; eventIdPool?: string[]; bossId?: string; npcIdPool?: string[] } {
+  const override = runState.nodeContentOverrides[node.id];
+  const base = node.contentRef ?? {};
+  return {
+    enemyGroupId: override?.enemyGroupId ?? base.enemyGroupId,
+    eventIdPool: override?.eventIdPool ?? base.eventIdPool,
+    bossId: base.bossId,
+    npcIdPool: base.npcIdPool,
+  };
+}
+
+/** 노드 맵에서 해당 ID의 region 정의를 찾음. */
+export function findRegion(map: NodeMap, regionId: string | undefined): Region | undefined {
+  if (!regionId) return undefined;
+  return map.regions.find((r) => r.id === regionId);
+}
 
 /**
  * 현재 노드에서 이동 가능한 인접 노드 목록.

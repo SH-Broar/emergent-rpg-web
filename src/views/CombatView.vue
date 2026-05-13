@@ -20,6 +20,7 @@ import {
   clearCombat,
   type CombatVictoryDrop,
 } from '@/systems/combat';
+import { effectiveContent } from '@/systems/map';
 import type { Card, Monster } from '@/data/schemas';
 
 const router = useRouter();
@@ -37,7 +38,10 @@ const currentNode = computed(() => {
 });
 
 const monster = computed<Monster>(() => {
-  const enemyId = currentNode.value?.contentRef?.enemyGroupId ?? 'shadow-pup';
+  // 권역 풀에서 재추첨된 enemy도 반영.
+  const node = currentNode.value;
+  const content = node ? effectiveContent(node, run.data) : undefined;
+  const enemyId = content?.enemyGroupId ?? 'shadow-pup';
   const m = data.monsters.get(enemyId);
   if (m) return m;
   // 데이터에 없으면 fallback (기본 그림자 강아지 형태)

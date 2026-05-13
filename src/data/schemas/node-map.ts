@@ -7,10 +7,32 @@
 
 import type { BossId, EventId, NamedEntity, NodeId, NodeKind, NodeMapId } from './base';
 
+/** 한 권역 (region) — 지리·문화적으로 묶인 노드 집합의 *콘텐츠 풀* 정의.
+ *
+ * 30턴 하루 경과 시 비-마을 노드의 *kind와 content가 재추첨*되는데,
+ * 이때 그 노드가 속한 권역의 풀에서만 가져온다 — 사막 노드에서 우거진 숲
+ * 이벤트가 튀어나오는 어색함 방지.
+ */
+export interface Region {
+  id: string;
+  name: string;
+  /** 권역 톤/플레이버 (UI 안내·작성 가이드용). */
+  description?: string;
+  /** 일반 전투 노드용 적 ID 풀. */
+  enemyPool: string[];
+  /** 엘리트 전투 노드용 적 ID 풀. */
+  eliteEnemyPool: string[];
+  /** 이벤트 노드용 이벤트 ID 풀. */
+  eventPool: EventId[];
+}
+
 /** 한 노드. */
 export interface Node {
   id: NodeId;
   kind: NodeKind;
+
+  /** 소속 권역 (id). 없으면 노드 맵 전역 풀로 폴백. */
+  region?: string;
 
   /** UI 좌표 (거미줄 그래프 시각화용). 0~1 정규화 또는 픽셀. */
   position: { x: number; y: number };
@@ -57,6 +79,9 @@ export interface NodeMap extends NamedEntity {
 
   /** 모든 노드. */
   nodes: Node[];
+
+  /** 권역 정의들 — id → Region. */
+  regions: Region[];
 
   /** 시작 노드 ID. */
   startNodeId: NodeId;

@@ -18,6 +18,7 @@ import {
   type IniSection,
 } from './parser';
 import type {
+  AffinityReward,
   Boss,
   BossIntent,
   BossPhase,
@@ -27,18 +28,22 @@ import type {
   CardSource,
   CardTriggerKind,
   Character,
+  ColorValues,
   EffectTarget,
   Event,
   EventChoice,
   EventChoiceEffect,
+  GiftPreference,
   HyperionStage,
   Monster,
   MonsterIntent,
   NodeMap,
   Node,
   NodeKind,
+  Npc,
   Race,
   Rank,
+  Region,
   Relic,
   RelicEffect,
   RelicSource,
@@ -166,6 +171,7 @@ export function parseRaces(ini: IniData): Map<string, Race> {
       seedRelicIds: parseList(fields.seed_relics),
       startHpBonus: parseNumber(fields.hp_bonus, 0),
       startMpBonus: parseNumber(fields.mp_bonus, 0),
+      deckSize: fields.deck_size ? parseNumber(fields.deck_size, 10) : undefined,
     });
   }
   return result;
@@ -400,7 +406,24 @@ export function parseNodeMap(ini: IniData, id: string): NodeMap | null {
   if (!header) return null;
 
   const nodes: Node[] = [];
+  const regions: Region[] = [];
+
   for (const [section, fields] of Object.entries(ini)) {
+    // 권역 섹션: [nodemap.{id}.region.{regionId}]
+    if (section.startsWith(`nodemap.${id}.region.`)) {
+      const regionId = sectionIdSuffix(section.slice(headerSection.length + 1));
+      // sectionIdSuffix는 첫 dot 이후를 자르는데 region.X 같은 경우 X만 와야 함.
+      // section.slice(headerSection.length + 1) = "region.iluneon", sectionIdSuffix → "iluneon".
+      regions.push({
+        id: regionId,
+        name: fields.name ?? regionId,
+        description: fields.description,
+        enemyPool: parseList(fields.enemy_pool),
+        eliteEnemyPool: parseList(fields.elite_enemy_pool),
+        eventPool: parseList(fields.event_pool),
+      });
+      continue;
+    }
     if (!section.startsWith(`nodemap.${id}.node.`)) continue;
     const nodeId = sectionIdSuffix(section.slice(headerSection.length + 1)); // node.001 → 001
     const kind = (fields.kind as NodeKind) ?? 'village';
@@ -408,6 +431,7 @@ export function parseNodeMap(ini: IniData, id: string): NodeMap | null {
     nodes.push({
       id: nodeId,
       kind,
+      region: fields.region,
       label: fields.label ?? nodeId,
       description: fields.description,
       position: {
@@ -431,9 +455,116 @@ export function parseNodeMap(ini: IniData, id: string): NodeMap | null {
     name: header.name ?? id,
     description: header.description,
     nodes,
+    regions,
     startNodeId: header.start_node ?? nodes.find((n) => n.isStart)?.id ?? nodes[0]?.id ?? '',
     bossGateNodeId: header.boss_gate ?? nodes.find((n) => n.isBossGate)?.id ?? '',
   };
+}
+
+// ========== NPC ==========
+
+const COLOR_KEYS: Array<keyof ColorValues> = [
+  'fire',
+  'water',
+  'electric',
+  'iron',
+  'earth',
+  'wind',
+  'light',
+  'dark',
+];
+
+/** legacy colorValues "0.3,0.5,..." (8개) → ColorValues. 8개 미만이면 0으로 채움. */
+function parseColorValues(raw: string | undefined): ColorValues | undefined {
+  if (!raw) return undefined;
+  const nums = raw
+    .split(',')
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0)
+    .map((s) => Number(s));
+  if (nums.length === 0) return undefined;
+  const cv = {} as ColorValues;
+  for (let i = 0; i < COLOR_KEYS.length; i++) {
+    cv[COLOR_KEYS[i]] = Number.isFinite(nums[i]) ? nums[i] : 0;
+  }
+  return cv;
+}
+
+/** colorValues에서 최댓값 원소를 signatureElement로 추출. */
+function pickSignatureElement(cv: ColorValues | undefined): keyof ColorValues | undefined {
+  if (!cv) return undefined;
+  let bestKey: keyof ColorValues = 'fire';
+  let bestVal = -Infinity;
+  for (const k of COLOR_KEYS) {
+    if (cv[k] > bestVal) {
+      bestVal = cv[k];
+      bestKey = k;
+    }
+  }
+  return bestKey;
+}
+
+/** "1:c-strike:3" → AffinityReward(threshold=1, rewardCardId=c-strike, gaugeBoost=3) */
+function parseAffinityReward(token: string): AffinityReward | null {
+  const parts = token.split(':').map((s) => s.trim());
+  if (parts.length === 0 || !parts[0]) return null;
+  const threshold = Number(parts[0]);
+  if (!Number.isFinite(threshold)) return null;
+  const reward: AffinityReward = { threshold };
+  const tail = parts.slice(1);
+  for (const p of tail) {
+    if (p.startsWith('card=')) reward.rewardCardId = p.slice(5);
+    else if (p.startsWith('relic=')) reward.rewardRelicId = p.slice(6);
+    else if (p.startsWith('gauge=')) reward.gaugeBoost = Number(p.slice(6));
+    else if (p.startsWith('hint=')) reward.hint = p.slice(5);
+  }
+  return reward;
+}
+
+function parseGiftPrefs(f: IniSection): GiftPreference | undefined {
+  const loved = parseList(f.gift_loved);
+  const liked = parseList(f.gift_liked);
+  const disliked = parseList(f.gift_disliked);
+  if (loved.length + liked.length + disliked.length === 0) return undefined;
+  return {
+    loved: loved.length > 0 ? loved : undefined,
+    liked: liked.length > 0 ? liked : undefined,
+    disliked: disliked.length > 0 ? disliked : undefined,
+  };
+}
+
+export function parseNpcs(ini: IniData): Map<string, Npc> {
+  const result = new Map<string, Npc>();
+  for (const [section, fields] of Object.entries(ini)) {
+    if (!section.startsWith('npc.')) continue;
+    const id = sectionIdSuffix(section);
+    const cv = parseColorValues(fields.color_values);
+    const sigEl = pickSignatureElement(cv);
+    const affinityRewards = parseList(fields.affinity_rewards)
+      .map(parseAffinityReward)
+      .filter((r): r is AffinityReward => r !== null);
+    result.set(id, {
+      id,
+      name: fields.name ?? id,
+      description: fields.description,
+      raceId: fields.race ?? 'human',
+      role: fields.role ?? 'Villager',
+      homeNodeId: fields.home_node,
+      presenceNodeIds: parseList(fields.presence_nodes),
+      age: fields.age !== undefined ? parseNumber(fields.age, 0) : undefined,
+      colorValues: cv,
+      domainHigh: parseList(fields.domain_high),
+      domainLow: parseList(fields.domain_low),
+      background: fields.background,
+      affinityRewards: affinityRewards.length > 0 ? affinityRewards : undefined,
+      giftPrefs: parseGiftPrefs(fields),
+      tags: parseList(fields.tags),
+      signatureElement: sigEl,
+      tagline: fields.tagline,
+      portrait: fields.portrait,
+    });
+  }
+  return result;
 }
 
 // ========== Timeline ==========
@@ -483,19 +614,40 @@ export interface GameData {
   bosses: Map<string, Boss>;
   monsters: Map<string, Monster>;
   nodeMaps: Map<string, NodeMap>;
+  npcs: Map<string, Npc>;
 }
 
-/** MVR 단계 데이터 파일들. 이후 확장 시 파일 추가만. */
+/** 데이터 파일들. 이후 확장 시 파일 추가만. */
 const DATA_FILES = [
-  'data/timelines/peace-310.txt',
+  // === 1장 (제 4시대 61년) — main 연표 ===
+  'data/timelines/act-1-era4-061.txt',
+  'data/node-maps/act-1-map.txt',
+  'data/bosses/act-1-boss.txt',
+  'data/characters/act-1-niayur.txt',
+  'data/characters/act-1-hako.txt',
+  'data/characters/act-1-maro.txt',
+  'data/characters/act-1-iyeon.txt',
+  'data/characters/act-1-kardi.txt',
+  'data/npcs/act-1-iluneon.txt',
+  'data/npcs/act-1-windfall.txt',
+  'data/npcs/act-1-luna.txt',
+  'data/npcs/act-1-mosswood.txt',
+  'data/npcs/act-1-tacomi.txt',
+  'data/npcs/act-1-manonickla.txt',
+  'data/npcs/act-1-alimes.txt',
+  // === 공용 ===
   'data/races/race-human.txt',
-  'data/characters/transcendent-01.txt',
   'data/cards/cards-mvr.txt',
   'data/relics/relics-mvr.txt',
   'data/events/events-mvr.txt',
-  'data/bosses/boss-shadow.txt',
+  'data/events/act-1-region-events.txt',
   'data/monsters/mvr-monsters.txt',
-  'data/node-maps/peace-310-map.txt',
+  'data/monsters/act-1-region-monsters.txt',
+  // === peace-310 (MVR) — 파일은 학습용으로 보존, 로딩에서는 제외. ===
+  // 'data/timelines/peace-310.txt',
+  // 'data/node-maps/peace-310-map.txt',
+  // 'data/bosses/boss-shadow.txt',
+  // 'data/characters/transcendent-01.txt',
 ] as const;
 
 /** 모든 데이터 fetch + 파싱 + 통합. baseUrl 생략 시 Vite의 BASE_URL 사용. */
@@ -544,6 +696,7 @@ export async function loadAllData(baseUrl?: string): Promise<GameData> {
     bosses: parseBosses(merged),
     monsters: parseMonsters(merged),
     nodeMaps,
+    npcs: parseNpcs(merged),
   };
 }
 
@@ -568,5 +721,6 @@ export function loadFromText(text: string): GameData {
     bosses: parseBosses(ini),
     monsters: parseMonsters(ini),
     nodeMaps,
+    npcs: parseNpcs(ini),
   };
 }

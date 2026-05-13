@@ -11,6 +11,7 @@ import { useRouter } from 'vue-router';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { pickEvent } from '@/systems/event-runner';
+import { effectiveContent } from '@/systems/map';
 import type { Event, EventChoice, EventChoiceEffect } from '@/data/schemas';
 
 const router = useRouter();
@@ -28,7 +29,9 @@ const currentNode = computed(() => {
 const pool = computed<Event[]>(() => {
   const node = currentNode.value;
   if (!node) return [];
-  return (node.contentRef?.eventIdPool ?? [])
+  // 권역 풀에서 재추첨된 eventIdPool도 반영.
+  const content = effectiveContent(node, run.data);
+  return (content.eventIdPool ?? [])
     .map((id: string) => data.events.get(id))
     .filter((e: Event | undefined): e is Event => e !== undefined);
 });

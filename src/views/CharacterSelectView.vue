@@ -9,7 +9,8 @@ import { useUiStore } from '@/stores/ui';
 import { useDataStore } from '@/stores/data';
 import { useRunStore } from '@/stores/run';
 import { canSelectCharacter } from '@/frame/Mono';
-import type { Character, Season } from '@/data/schemas';
+import { instantiateCard } from '@/systems/deck';
+import type { Card, Character, Season } from '@/data/schemas';
 
 const router = useRouter();
 const ui = useUiStore();
@@ -55,9 +56,27 @@ async function selectCharacter(c: Character) {
   const maxHp = c.baseStats.hp + (race?.startHpBonus ?? 0);
   const maxMp = c.baseStats.mp + (race?.startMpBonus ?? 0);
 
-  const deck = c.startingDeck
+  // 각 카드 사본마다 *유니크 인스턴스* — 동명 카드도 별개.
+  const startingInstances: Card[] = c.startingDeck
     .map((cardId: string) => data.cards.get(cardId))
-    .filter((card): card is NonNullable<typeof card> => card !== undefined);
+    .filter((card): card is Card => card !== undefined)
+    .map(instantiateCard);
+
+  // 종족 고정 덱 크기 (인간=15). 정의 없으면 starting_deck 길이를 그대로.
+  const deckSize = race?.deckSize ?? startingInstances.length;
+
+  // starting_deck < deckSize면 race.seedCardIds에서 가중 랜덤으로 채움.
+  const fillCount = Math.max(0, deckSize - startingInstances.length);
+  const seedPool: Card[] = (race?.seedCardIds ?? [])
+    .map((cardId) => data.cards.get(cardId))
+    .filter((card): card is Card => card !== undefined);
+  const filledInstances: Card[] = [];
+  for (let i = 0; i < fillCount && seedPool.length > 0; i++) {
+    const pick = seedPool[Math.floor(Math.random() * seedPool.length)];
+    filledInstances.push(instantiateCard(pick));
+  }
+
+  const allInstances = [...startingInstances, ...filledInstances];
 
   run.startRun({
     timelineId: tl.id,
@@ -68,9 +87,11 @@ async function selectCharacter(c: Character) {
     startNodeId: map.startNodeId,
     timeLimit: tl.timeLimit,
   });
-  // 시작 카드 — collection에 모두, deck 슬롯에는 처음 10장.
-  run.data.collection = [...deck];
-  run.data.deck = deck.slice(0, run.data.deckSize);
+  // 종족 덱 크기 반영 — store 기본(10) 위에 덮어쓰기.
+  run.data.deckSize = deckSize;
+  // 시작 카드 — collection에 모두, deck 슬롯에는 deckSize만큼.
+  run.data.collection = allInstances;
+  run.data.deck = allInstances.slice(0, deckSize);
 
   // 종족 시드 유물 부여
   if (race?.seedRelicIds) {
@@ -123,7 +144,7 @@ onMounted(() => {
           <span>HP {{ c.baseStats.hp }}</span>
           <span>공격 {{ c.baseStats.attack }}</span>
           <span>방어 {{ c.baseStats.defense }}</span>
-          <span>덱 {{ c.startingDeck.length }}</span>
+          <span>덱 {{ data.races.get(c.raceId)?.deckSize ?? c.startingDeck.length }}</span>
         </div>
       </button>
     </section>

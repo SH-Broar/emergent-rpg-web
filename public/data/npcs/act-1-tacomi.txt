@@ -1,0 +1,29 @@
+# NPC: 1장 — 타코미 권역.
+
+[npc.npc-akasha]
+name = 아카샤
+race = arcana
+role = Priest
+home_node = n-tacomi
+age = 200
+color_values = 0.3,0.3,0.7,0.3,0.3,0.3,0.3,0.5
+domain_high = Calm, Empathetic, Inventive, Flexible, Patient, Grounded, Cynical, Secretive
+domain_low = Melancholy, Rigid, Stagnant, Stubborn, Generous, Freesprited, Apathetic, Honest
+background = 명계의 유령.|죽은 사람의 영혼과 소통할 수 있고 그들을 위한 일을 한다.|병약한 속성의 무녀 스타일이지만 이미 유령인 몸이라 건강 걱정은 하지 않는다.|학교의 지박령인 연기를 하고 있지만, 눈치 챈 사람들은 평범한 유령이 아니라는 걸 알고 있다.
+tagline = "다음 생에서 — 또 들러 주세요."
+tags = arcana, undead, electric-affinity
+affinity_rewards = 3:card=c-second-wind:gauge=3
+
+[npc.npc-monato]
+name = 모나토
+race = demon
+role = Villager
+home_node = n-tacomi
+age = 17
+color_values = 0.4,0.6,0.4,0.4,0.4,0.4,0.4,0.5
+domain_high = Passionate, Adaptable, Inventive, Flexible, Generous, Freesprited, Hopeful, Honest
+domain_low = Cautious, Rigid, Stagnant, Stubborn, Restless, Grounded, Cynical, Naive
+background = 평범한 인간이지만, 태어날 때의 점성술적 파장이 고대의 악마 '트립스'와 동일해 몸에 깃들었다.|치명상을 입으면 눈 색이 붉게 변하며 트립스가 깨어나고, 공격력이 극도로 강해지지만 시간제한이 있다.|트립스는 위해를 가할 생각이 없고 오히려 재밌을 것 같다며 주인이라 부른다.|달라진 세상을 구경시켜 달라고 한다.
+tagline = "주인 — 다음엔 어디로 가요?"
+tags = demon, dual-soul, water-affinity
+affinity_rewards = 3:card=c-double-strike:gauge=4

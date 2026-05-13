@@ -15,6 +15,7 @@ import { useRunStore } from '@/stores/run';
 import GameHUD from '@/components/GameHUD.vue';
 import DeckPanel from '@/components/DeckPanel.vue';
 import RelicPanel from '@/components/RelicPanel.vue';
+import DayBanner from '@/components/DayBanner.vue';
 
 const ui = useUiStore();
 const data = useDataStore();
@@ -60,6 +61,9 @@ onMounted(async () => {
     <!-- 덱 / 유물 모달 -->
     <DeckPanel :open="deckOpen" @close="deckOpen = false" />
     <RelicPanel :open="relicOpen" @close="relicOpen = false" />
+
+    <!-- 하루 경과 배너 (런 중에만 의미) -->
+    <DayBanner v-if="run.active" />
 
     <!-- 글로벌 로딩 -->
     <div v-if="data.loading" class="loading">데이터 로딩 중…</div>

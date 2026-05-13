@@ -84,6 +84,13 @@ function pct(key: GaugeMini['key']) {
         <span class="num">{{ run.data.timeShards }}</span>
       </div>
 
+      <!-- 일차 (30턴마다 +1) -->
+      <div class="slot" title="현재 일차 (30턴마다 하루 경과)">
+        <span class="emoji">☀</span>
+        <span class="lbl">일</span>
+        <span class="num">{{ run.data.currentDay }}</span>
+      </div>
+
       <!-- 시간 -->
       <div class="slot" :class="{ 'slot--urgent': timeUrgent }" title="남은 시간 (0 도달 시 즉시 런 종료)">
         <span class="emoji">🕒</span>

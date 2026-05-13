@@ -13,6 +13,7 @@ import type {
   Event,
   Monster,
   NodeMap,
+  Npc,
   Race,
   Relic,
   Timeline,
@@ -60,6 +61,9 @@ export const useDataStore = defineStore('data', {
     },
     nodeMaps(state): Map<string, NodeMap> {
       return state.data?.nodeMaps ?? new Map<string, NodeMap>();
+    },
+    npcs(state): Map<string, Npc> {
+      return state.data?.npcs ?? new Map<string, Npc>();
     },
   },
 

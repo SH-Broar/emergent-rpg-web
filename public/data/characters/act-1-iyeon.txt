@@ -1,0 +1,49 @@
+# Character: 이연 — 1장 플레이어블 (튜토리얼 친화 / 바람).
+
+[character.ch-iyeon]
+name = 이연
+description = 나비 날개가 달린 아인. 활을 다루며, 작은 몸으로 *빠르게 움직이는 그릇*.
+race = moth
+base_npc = npc-iyeon
+hp = 28
+mp = 14
+attack = 7
+defense = 2
+vigor = 13
+starting_deck = c-strike, c-strike, c-quickdraw, c-quickdraw, c-quickdraw, c-defend, c-defend, c-double-strike, c-deep-breath, c-recover
+unlock =
+portrait =
+tagline = "작아도 — 한 발은 정확하게."
+
+[character.ch-iyeon.hyperion.1]
+requirement = combat_clears:2
+hp = 5
+attack = 1
+reward_card = c-quickdraw
+
+[character.ch-iyeon.hyperion.2]
+requirement = node_visits:8
+hp = 5
+vigor = 3
+reward_card = c-double-strike
+
+[character.ch-iyeon.hyperion.3]
+requirement = combat_clears:5
+hp = 5
+attack = 1
+mp = 2
+reward_card = c-burn-mark
+
+[character.ch-iyeon.hyperion.4]
+requirement = befriend_npcs:4
+hp = 5
+defense = 1
+reward_card = c-second-wind
+
+[character.ch-iyeon.hyperion.5]
+requirement = boss_clear
+hp = 5
+attack = 2
+vigor = 3
+reward_card = c-transcend-strike
+boss_signature = sig-iyeon-arrow

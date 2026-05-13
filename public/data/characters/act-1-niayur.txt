@@ -1,0 +1,50 @@
+# Character: 니아 이유르 — 1장 주요 플레이어블.
+# 일루네온 광장에서 깃드는 *신적 존재*의 그릇.
+
+[character.ch-niayur]
+name = 니아 이유르
+description = 모노가 *처음 부른* 그릇이자, 동시에 *자기 자신*. 빛 속성을 본질로 한다.
+race = arcana
+base_npc = npc-niayur
+hp = 34
+mp = 16
+attack = 4
+defense = 3
+vigor = 12
+starting_deck = c-strike, c-strike, c-strike, c-defend, c-defend, c-defend, c-quickdraw, c-recover, c-recover, c-deep-breath
+unlock =
+portrait =
+tagline = "이 시간은 — 제가 깃듭니다."
+
+[character.ch-niayur.hyperion.1]
+requirement = node_visits:5
+hp = 5
+mp = 2
+reward_card = c-resolve-flash
+
+[character.ch-niayur.hyperion.2]
+requirement = befriend_npcs:3
+hp = 5
+defense = 1
+reward_card = c-gentle-guard
+
+[character.ch-niayur.hyperion.3]
+requirement = combat_clears:5
+hp = 5
+attack = 1
+vigor = 3
+reward_card = c-second-wind
+
+[character.ch-niayur.hyperion.4]
+requirement = visited_regions:5
+hp = 5
+mp = 3
+reward_card = c-deep-breath
+
+[character.ch-niayur.hyperion.5]
+requirement = boss_clear
+hp = 5
+attack = 2
+defense = 1
+reward_card = c-transcend-strike
+boss_signature = sig-niayur-light

@@ -1,0 +1,236 @@
+# Region-specific monsters — 1장 권역마다 일반 1 + 엘리트 1.
+# 권역 톤에 맞춰 이름·intent·드롭을 차별화.
+
+# ============================================================
+# 일루네온 권역 (도시·광장·시계탑)
+# ============================================================
+
+[monster.m-iluneon-mugger]
+name = 골목 소매치기
+tier = minion
+hp = 16
+attack = 5
+defense = 0
+intents = attack:5, attack:5, defend:3, attack:6
+gold = 8
+time_shards = 2
+card_drops =
+
+[monster.m-iluneon-clock-ghoul]
+name = 시계탑 망령
+tier = elite
+hp = 32
+attack = 8
+defense = 2
+intents = attack:8, defend:6, attack:10, buff:1
+gold = 14
+time_shards = 5
+card_drops = c-quickdraw:0.2
+
+# ============================================================
+# 라르 숲 권역 (숲·세계수·트리플라워)
+# ============================================================
+
+[monster.m-lar-mosswolf]
+name = 이끼 늑대
+tier = minion
+hp = 18
+attack = 6
+defense = 0
+intents = attack:6, attack:6, defend:4
+gold = 5
+time_shards = 2
+card_drops =
+
+[monster.m-lar-ember-salamander]
+name = 잿불 도롱뇽
+tier = elite
+hp = 34
+attack = 9
+defense = 1
+intents = attack:9, attack:9, defend:6, buff:1
+gold = 12
+time_shards = 5
+card_drops = c-burn-mark:0.25
+
+# ============================================================
+# 모스 권역 (불의 도시·증기)
+# ============================================================
+
+[monster.m-moss-firewing]
+name = 불씨 박쥐
+tier = minion
+hp = 14
+attack = 7
+defense = 0
+intents = attack:7, attack:7, attack:5
+gold = 6
+time_shards = 2
+card_drops =
+
+[monster.m-moss-anvil-knight]
+name = 모루 기사
+tier = elite
+hp = 38
+attack = 8
+defense = 3
+intents = defend:8, attack:10, defend:6, attack:12
+gold = 15
+time_shards = 6
+card_drops = c-gentle-guard:0.2
+
+# ============================================================
+# 마노니클라 권역 (석양·바다·리문 유적)
+# ============================================================
+
+[monster.m-mano-cliffcrab]
+name = 절벽 게
+tier = minion
+hp = 20
+attack = 5
+defense = 2
+intents = defend:5, attack:6, defend:5, attack:6
+gold = 7
+time_shards = 2
+card_drops =
+
+[monster.m-mano-limun-guardian]
+name = 리문 수호상
+tier = elite
+hp = 36
+attack = 8
+defense = 3
+intents = defend:7, attack:9, attack:9, buff:1
+gold = 14
+time_shards = 6
+card_drops = c-shadow-rebuke:0.15
+
+# ============================================================
+# 리아그랄타 권역 (초원·산비탈·전기)
+# ============================================================
+
+[monster.m-ria-stormram]
+name = 폭풍 양
+tier = minion
+hp = 16
+attack = 6
+defense = 1
+intents = attack:6, defend:4, attack:7
+gold = 6
+time_shards = 2
+card_drops =
+
+[monster.m-ria-thunder-wolf]
+name = 천둥 늑대
+tier = elite
+hp = 32
+attack = 10
+defense = 1
+intents = attack:10, attack:8, buff:1, attack:12
+gold = 13
+time_shards = 5
+card_drops = c-double-strike:0.2
+
+# ============================================================
+# 알리메스 권역 (산골·안개·약초)
+# ============================================================
+
+[monster.m-ali-mistdeer]
+name = 안개 사슴
+tier = minion
+hp = 14
+attack = 5
+defense = 0
+intents = attack:5, defend:3, attack:5, defend:3
+gold = 5
+time_shards = 3
+card_drops =
+
+[monster.m-ali-herb-thief]
+name = 약초 도적
+tier = elite
+hp = 28
+attack = 9
+defense = 1
+intents = attack:9, attack:9, attack:11, defend:5
+gold = 16
+time_shards = 5
+card_drops = c-recover:0.25
+
+# ============================================================
+# 마법학교 루나 권역 (학교·금서)
+# ============================================================
+
+[monster.m-luna-inkfiend]
+name = 잉크 정령
+tier = minion
+hp = 15
+attack = 5
+defense = 0
+intents = attack:5, attack:5, buff:1
+gold = 5
+time_shards = 3
+card_drops =
+
+[monster.m-luna-grimoire-shadow]
+name = 금서의 그림자
+tier = elite
+hp = 30
+attack = 9
+defense = 2
+intents = attack:9, defend:5, attack:11, buff:1
+gold = 12
+time_shards = 6
+card_drops = c-focused-mind:0.2
+
+# ============================================================
+# 타코미 권역 (네온·홀로그램·페스티벌)
+# ============================================================
+
+[monster.m-taco-pixel-beast]
+name = 픽셀 짐승
+tier = minion
+hp = 16
+attack = 6
+defense = 0
+intents = attack:6, attack:6, attack:4
+gold = 6
+time_shards = 2
+card_drops =
+
+[monster.m-taco-hologram-mime]
+name = 홀로그램 의태자
+tier = elite
+hp = 30
+attack = 8
+defense = 2
+intents = buff:1, attack:9, attack:11, defend:6
+gold = 13
+time_shards = 6
+card_drops = c-double-strike:0.15
+
+# ============================================================
+# 마왕성·풍혈지대 (강풍·문서·시간의 닻)
+# ============================================================
+
+[monster.m-demon-paperghost]
+name = 잊힌 사관
+tier = minion
+hp = 18
+attack = 7
+defense = 1
+intents = attack:7, defend:5, attack:7
+gold = 7
+time_shards = 3
+card_drops =
+
+[monster.m-demon-windblade]
+name = 바람칼 정령
+tier = elite
+hp = 36
+attack = 10
+defense = 1
+intents = attack:10, attack:10, defend:6, attack:14
+gold = 16
+time_shards = 7
+card_drops = c-resolve-flash:0.2

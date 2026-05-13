@@ -11,3 +11,5 @@ seed_cards = c-strike, c-defend, c-strike, c-defend, c-strike, c-quickdraw, c-re
 seed_relics = r-determined-heart
 hp_bonus = 0
 mp_bonus = 0
+# 종족 고정 덱 크기 — starting_deck(10장) + seed_cards에서 자동 5장 추첨.
+deck_size = 15

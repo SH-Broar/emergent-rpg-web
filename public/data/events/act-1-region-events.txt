@@ -1,0 +1,260 @@
+# Region-specific events — 1장 권역마다 1개.
+# 톤이 그 권역과 명확히 맞도록 작성. 3 선택지 표준.
+
+# ============================================================
+# 일루네온 — 시계탑이 정각에 울지 않는다.
+# ============================================================
+
+[event.ev-iluneon-clockchime]
+name = 울지 않는 정각
+node_kinds = event, village
+weight = 1
+once_per_run = true
+body = 정각인데 시계탑이 *울지 않는다*. 광장의 사람들이 잠시 멈춰 위를 본다. 누군가 어깨를 으쓱하고 자기 길을 간다. 다른 누군가는 — 그대처럼 — 멈춰 서 본다. 첨탑 그림자가 한 박자 늦게 떨어졌다.
+
+[event.ev-iluneon-clockchime.choice.1]
+label = 첨탑에 올라가 본다
+hp = -2
+grant_card = c-quickdraw
+result_text = 톱니바퀴 사이로 머리카락 한 가닥이 끼어 있었다. 그것을 빼자 — 종이 *한 박자 늦게* 울었다.
+
+[event.ev-iluneon-clockchime.choice.2]
+label = 그대로 광장을 떠난다
+draw = 1
+result_text = 종이 결국 울지 않았다. 사람들은 평소처럼 흩어졌다. 그대도 그랬다.
+
+[event.ev-iluneon-clockchime.choice.3]
+label = 종지기 노인에게 말을 건다
+gold = -3
+affinity = npc-olyu:1
+result_text = "정각이 자기를 미뤘다." 노인이 그렇게 말했다. 그 말의 뜻은 알 수 없었다.
+
+
+# ============================================================
+# 라르 숲 — 드라이어드의 부탁
+# ============================================================
+
+[event.ev-lar-dryad-whisper]
+name = 드라이어드의 부탁
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+body = 잎사귀 사이에서 작은 목소리가 *나뭇결의 결*을 따라 흘러온다. "이 *씨앗 하나*를, 모스 쪽 길에 떨어뜨려 주세요. 뿌리가 닿지 않는 곳에." 손바닥에 작은 씨앗이 떨어진다. 따뜻하다.
+
+[event.ev-lar-dryad-whisper.choice.1]
+label = 받아 든다
+grant_card = c-gentle-guard
+result_text = 씨앗이 손 위에서 *천천히* 빛났다. 따뜻함이 갈비뼈 안쪽으로 옮겨 갔다.
+
+[event.ev-lar-dryad-whisper.choice.2]
+label = 너무 무거워 보인다
+hp = 3
+result_text = "다음에 — 다음에 보면 받아 주세요." 목소리가 잎사귀로 돌아갔다.
+
+[event.ev-lar-dryad-whisper.choice.3]
+label = 씨앗의 정체를 묻는다
+draw = 1
+result_text = "...씨앗이에요. 그 외에는 — 저도 잘 몰라요." 그 솔직함이 잠시 머리를 맑게 했다.
+
+
+# ============================================================
+# 모스 — 꺼진 화로
+# ============================================================
+
+[event.ev-moss-forge-flame]
+name = 꺼진 화로
+node_kinds = event, village
+weight = 1
+once_per_run = true
+body = 거리 한가운데 모루 옆 화로가 *식어 있다*. 모스에서는 좀처럼 보기 힘든 광경이다. 대장장이가 무릎을 짚고 앉아 있다. "오늘 — 불씨가 자기를 잃었어요." 그가 그렇게 말한다.
+
+[event.ev-moss-forge-flame.choice.1]
+label = 시간의 조각으로 불을 다시 켠다
+hp = -2
+gold = -5
+grant_card = c-burn-mark
+result_text = 손끝에서 조각이 *작게 부서졌다*. 화로가 한 번 깜빡이더니 — 다시 붉어졌다.
+
+[event.ev-moss-forge-flame.choice.2]
+label = 옆에 앉아 같이 기다린다
+hp = 3
+affinity = npc-elnest:1
+result_text = 한참을 같이 앉아 있었다. 화로는 결국 그 사람의 손짓에 다시 켜졌다. "고마워요. 같이 있어 줘서."
+
+[event.ev-moss-forge-flame.choice.3]
+label = 그대로 지나친다
+gold = 3
+result_text = 가는 길에 누군가 떨어뜨린 동전 몇 개를 주웠다. 화로 쪽은 — 끝내 보지 않았다.
+
+
+# ============================================================
+# 마노니클라 — 석양의 빈 병
+# ============================================================
+
+[event.ev-mano-sunset-flask]
+name = 석양의 빈 병
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+body = 절벽 끝에 *유리병*이 하나 거꾸로 박혀 있다. 노을이 그 안으로 흘러 들어가는 듯하다. 병 옆에 짧은 쪽지 — "이 노을이 식기 전에 마셔요. 단 한 모금."
+
+[event.ev-mano-sunset-flask.choice.1]
+label = 한 모금 마신다
+hp = 6
+grant_card = c-recover
+result_text = 목구멍이 *따뜻해진다*. 노을이 안쪽에서 천천히 식어 가는 느낌. 다음 노을은 — 더 오래 볼 수 있을 것 같다.
+
+[event.ev-mano-sunset-flask.choice.2]
+label = 병을 챙긴다
+gold = 8
+result_text = 빈 병이지만 *유리가 맑다*. 시장에서 누군가가 값을 쳐 줄지도 모른다.
+
+[event.ev-mano-sunset-flask.choice.3]
+label = 누군가에게 양보한다
+affinity = npc-seed:1
+result_text = "오, 마셔도 돼요?" 시이드가 어디서 나타나 단숨에 마셔 버렸다. 그러고는 — *고마워요*, 하고 사라졌다.
+
+
+# ============================================================
+# 리아그랄타 — 폭풍 속 양치기
+# ============================================================
+
+[event.ev-ria-storm-shepherd]
+name = 폭풍 속 양치기
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 지평선에서 *번개*가 한 번 친다. 풀밭 한가운데 양치기가 양 떼를 *반대 방향*으로 몰고 있다. 폭풍이 다가오는 쪽으로. "한 마리가 — 저쪽에 남았어요." 그가 그렇게 말한다.
+
+[event.ev-ria-storm-shepherd.choice.1]
+label = 양을 찾아온다
+hp = -4
+grant_card = c-double-strike
+result_text = 양은 *번개에 놀라 멈춰 있었다*. 같이 뛰어 돌아왔다. 양치기가 양을 두 손으로 안았다.
+
+[event.ev-ria-storm-shepherd.choice.2]
+label = 양치기에게 그대로 가라고 한다
+hp = 2
+gold = -3
+result_text = "...그래야겠죠." 양치기가 한참을 망설이다가 — 그쪽으로 갔다. 폭풍이 그 등 뒤로 내려앉았다.
+
+[event.ev-ria-storm-shepherd.choice.3]
+label = 폭풍을 함께 바라본다
+draw = 1
+result_text = 둘이 잠시 폭풍을 바라보았다. 번개 두 번이 더 쳤다. 양치기가 *한 박자 늦게* 양 떼로 돌아갔다.
+
+
+# ============================================================
+# 알리메스 — 안개 속 상인
+# ============================================================
+
+[event.ev-ali-mist-trader]
+name = 안개 속 상인
+node_kinds = event, village
+weight = 1
+once_per_run = true
+body = 안개 속에서 *작은 좌판*이 보였다 다시 사라진다. 다가가니 상인이 한 명 — 얼굴은 안 보이지만 손이 유난히 깨끗하다. "한 가지만 — 안개 너머 물건 한 가지만 보여 드려요."
+
+[event.ev-ali-mist-trader.choice.1]
+label = 카드 한 장을 본다
+gold = -10
+grant_card = c-focused-mind
+result_text = 손바닥 위에 *생각보다 가벼운 카드*가 놓였다. 안개가 그 위로 잠시 머물렀다.
+
+[event.ev-ali-mist-trader.choice.2]
+label = 유물 한 점을 본다
+gold = -15
+grant_relic = r-mono-token
+result_text = 상인이 *부스러기 같은 것*을 건넸다. "이건 — 빌려드리는 거예요." 그 말의 뜻은 알기 어려웠다.
+
+[event.ev-ali-mist-trader.choice.3]
+label = 그냥 떠난다
+hp = 2
+result_text = 안개를 빠져나오자 *어깨가 가벼웠다*. 거래는 매일 다시 나타날지도 모른다.
+
+
+# ============================================================
+# 마법학교 루나 — 떨어진 금서 한 장
+# ============================================================
+
+[event.ev-luna-forbidden-page]
+name = 떨어진 금서 한 장
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 복도 한 모퉁이에 *책 한 페이지*가 떨어져 있다. 잉크가 *조금* 움직이는 것 같다. 멀리서 사서 파피루스의 *작은 목소리*가 들린다 — "혹시... 한 장 보셨나요..."
+
+[event.ev-luna-forbidden-page.choice.1]
+label = 페이지를 돌려준다
+affinity = npc-papyrus:1
+grant_card = c-focused-mind
+result_text = 파피루스가 *아주 조용히* 고개를 숙였다. "감사합니다. 이 장은 — 떨어지면 안 되는 거였어요."
+
+[event.ev-luna-forbidden-page.choice.2]
+label = 한 줄만 읽어 본다
+hp = -3
+grant_card = c-burn-mark
+result_text = 잉크가 *눈에서 한 번 움직였다*. 그날 밤 — 자다가 두 번 깼다.
+
+[event.ev-luna-forbidden-page.choice.3]
+label = 그냥 둔다
+draw = 1
+result_text = 페이지는 잠시 후 *스스로 사라졌다*. 사서가 — 어디선가 찾았으리라.
+
+
+# ============================================================
+# 타코미 — 홀로그램 거울 속의 자신
+# ============================================================
+
+[event.ev-taco-hologram-mirror]
+name = 홀로그램 속 자신
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+body = 네온이 깜빡이는 골목 끝에 *거울 모양 홀로그램*이 떠 있다. 거울 속 자신이 — *다른 자세*로 서 있다. 더 자신 있는 것 같기도 하고, 더 지친 것 같기도 하다.
+
+[event.ev-taco-hologram-mirror.choice.1]
+label = 거울 속 자세를 따라 한다
+hp = -2
+grant_card = c-resolve-flash
+result_text = *어깨가 한 단계 가벼워졌다*. 거울 속 자신이 잠시 — 같은 표정으로 끄덕였다.
+
+[event.ev-taco-hologram-mirror.choice.2]
+label = 거울에 손을 댄다
+hp = 3
+affinity = npc-imperisia:1
+result_text = 홀로그램 너머에서 *임페리시아의 발자국*이 들렸다. "...당신, 거기서 뭐 해요?" 그녀가 그렇게 물었다.
+
+[event.ev-taco-hologram-mirror.choice.3]
+label = 외면한다
+draw = 1
+result_text = 거울이 등 뒤로 한 번 *눈을 깜빡였다*. 다음 골목으로 빠르게 들어갔다.
+
+
+# ============================================================
+# 마왕성·풍혈지대 — 도장 더미
+# ============================================================
+
+[event.ev-demon-stamp-pile]
+name = 도장 더미
+node_kinds = event, village
+weight = 1
+once_per_run = true
+body = 마왕성 회랑 한쪽에 *서류 더미*가 무너져 있다. 시아가 한숨을 쉬며 도장을 찍는 중. "한 장만 — 한 장만 같이 찍어 주실래요?" 옆에서 모노가 *못 본 척하고* 있다.
+
+[event.ev-demon-stamp-pile.choice.1]
+label = 한 장 찍어 준다
+affinity = npc-mono:1
+grant_relic = r-imperisia-locket
+result_text = 도장이 한 번 *깔끔하게* 떨어졌다. 시아가 "이 시간을 — 잊지 않겠어요" 라고 작게 말했다.
+
+[event.ev-demon-stamp-pile.choice.2]
+label = 모노에게 떠넘긴다
+hp = -2
+gold = 5
+result_text = 모노가 *눈썹 한쪽*을 약간 올렸다. 어느 사이엔가 — 그 자리에 골드 몇 개가 떨어져 있었다.
+
+[event.ev-demon-stamp-pile.choice.3]
+label = 슬쩍 빠져나간다
+draw = 1
+result_text = 회랑을 빠져나오자 *서류 한 장*이 따라왔다. 비어 있는 도장 자리가 — 묘하게 단호해 보였다.

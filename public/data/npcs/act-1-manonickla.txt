@@ -1,0 +1,44 @@
+# NPC: 1장 — 마노니클라 권역 (극동).
+
+[npc.npc-cayo]
+name = 카요
+race = dragon
+role = Craftsman
+home_node = n-manonickla
+presence_nodes = n-manonickla-forge
+age = 300
+color_values = 0.5,0.3,0.4,0.9,0.5,0.3,0.4,0.4
+domain_high = Passionate, Adaptable, Inventive, Stubborn, Patient, Grounded, Hopeful, Secretive
+domain_low = Melancholy, Indifferent, Stagnant, Fragile, Restless, Freesprited, Cynical, Honest
+background = 항상 과거에 얽매여 사는 드래곤.|대변동에 불씨를 제공한 것에 대한 죄책감에 시달리지만, 마노니클라 조를 만나고는 훨씬 밝아졌다.|모노와 함께 과거로 돌아가 자신을 때려눕히고 나서는 좀 해소가 된 듯하다.|날뛰면 막아낼 사람이 없는 강력한 존재이지만, 지금은 조용히 지내고 있다.
+tagline = "조용히, 모루를 두드리는 게 — 좋소."
+tags = dragon, craftsman, iron-affinity
+affinity_rewards = 3:relic=r-determined-heart:gauge=5
+
+[npc.npc-valencia]
+name = 발렌시아
+race = spirit
+role = Guard
+home_node = n-manonickla
+age = 500
+color_values = 0.5,0.3,0.3,0.9,0.4,0.3,0.4,0.3
+domain_high = Passionate, Adaptable, Methodical, Stubborn, Patient, Grounded, Hopeful, Honest
+domain_low = Cautious, Indifferent, Stagnant, Fragile, Restless, Freesprited, Cynical, Naive
+background = 인간 형상을 하고 있지만 사실 오래된 창의 정령.|창을 들고 있는 여기사처럼 보이지만, 사실은 창이 본체이다.|무기로서의 본질은 사용되는 것이지만 발렌시아는 그 자체로 완전한 창이어서 다른 사람에게 사용될 필요가 없다.|향상심 있는 전사들을 도와주는 것을 좋아하는 지원가.
+tagline = "그대의 향상심을 — 보여 주십시오."
+tags = spirit, weapon-spirit, iron
+affinity_rewards = 3:card=c-strike:gauge=4
+
+[npc.npc-seed]
+name = 시이드
+race = harpy
+role = Meteorologist
+home_node = n-manonickla
+age = 19
+color_values = 0.3,0.4,0.5,0.3,0.3,0.9,0.5,0.2
+domain_high = Excited, Adaptable, Inventive, Flexible, Generous, Freesprited, Hopeful, Honest
+domain_low = Cautious, Rigid, Stagnant, Stubborn, Restless, Grounded, Cynical, Naive
+background = 사천왕 시아의 여동생이자 기상학 학자 하피.|엄청난 스펙이지만 정작 본인은 신경도 쓰지 않으며, 항상 하이 텐션으로 마노니클라를 돌아다닌다.|전공 분야 외에는 아무것도 걱정하지 않고 상식도 부족하다.|단순히 하고 싶은 걸 하는 일차원적인 사람이다.
+tagline = "오늘 — 날씨, 진짜 좋아요!"
+tags = harpy, meteorologist, wind-affinity
+affinity_rewards = 3:card=c-deep-breath:gauge=3

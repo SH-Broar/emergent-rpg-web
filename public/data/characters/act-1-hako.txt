@@ -1,0 +1,49 @@
+# Character: 하코 — 1장 플레이어블 (균형형 모험가).
+
+[character.ch-hako]
+name = 하코
+description = 어딘가에서 흘러들어온 모험가. 모든 시대에 잘 적응하는 *균형의 그릇*.
+race = human
+base_npc = npc-hako
+hp = 36
+mp = 12
+attack = 6
+defense = 3
+vigor = 11
+starting_deck = c-strike, c-strike, c-strike, c-strike, c-defend, c-defend, c-quickdraw, c-quickdraw, c-double-strike, c-recover
+unlock =
+portrait =
+tagline = "어느 시간이든 — 일단 한 바퀴 돌고 보죠."
+
+[character.ch-hako.hyperion.1]
+requirement = visited_regions:3
+hp = 5
+attack = 1
+reward_card = c-quickdraw
+
+[character.ch-hako.hyperion.2]
+requirement = visited_regions:6
+hp = 5
+mp = 2
+reward_card = c-double-strike
+
+[character.ch-hako.hyperion.3]
+requirement = visited_regions:9
+hp = 5
+defense = 1
+vigor = 3
+reward_card = c-burn-mark
+
+[character.ch-hako.hyperion.4]
+requirement = befriend_npcs:5
+hp = 5
+attack = 1
+reward_card = c-second-wind
+
+[character.ch-hako.hyperion.5]
+requirement = boss_clear
+hp = 5
+attack = 2
+defense = 1
+reward_card = c-transcend-strike
+boss_signature = sig-hako-wanderer

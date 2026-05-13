@@ -14,5 +14,6 @@ export * from './event';
 export * from './boss';
 export * from './monster';
 export * from './node-map';
+export * from './npc';
 export * from './run';
 export * from './meta';

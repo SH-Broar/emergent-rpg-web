@@ -28,15 +28,23 @@ const rankColors: Record<string, string> = {
 };
 const rankOrder: Record<string, number> = { basic: 0, common: 1, rare: 2, legendary: 3 };
 
-/** 편집 중인 활성 카드 ID 세트 (저장 시 deck에 반영). */
+/**
+ * 편집 중인 활성 카드 *인스턴스* ID 세트.
+ * 동명 카드도 각자 다른 instanceId — 별개로 카운트.
+ */
 const activeIds = ref<Set<string>>(new Set());
+
+/** 카드의 안정적 키 — instanceId 우선, 없으면 id로 폴백 (이론상 일어나지 않음). */
+function keyOf(card: Card): string {
+  return card.instanceId ?? card.id;
+}
 
 /** 패널이 열릴 때마다 현재 deck 상태를 편집 세트에 복사. */
 watch(
   () => props.open,
   (isOpen) => {
     if (isOpen) {
-      activeIds.value = new Set(run.data.deck.map((c) => c.id));
+      activeIds.value = new Set(run.data.deck.map(keyOf));
     }
   },
   { immediate: true },
@@ -54,14 +62,15 @@ const activeCount = computed(() => activeIds.value.size);
 const canSave = computed(() => activeCount.value === run.data.deckSize);
 
 function toggle(card: Card) {
-  if (activeIds.value.has(card.id)) {
-    activeIds.value.delete(card.id);
+  const k = keyOf(card);
+  if (activeIds.value.has(k)) {
+    activeIds.value.delete(k);
   } else {
     if (activeIds.value.size >= run.data.deckSize) {
       ui.toast('warning', `덱 슬롯은 ${run.data.deckSize}장으로 제한됩니다.`);
       return;
     }
-    activeIds.value.add(card.id);
+    activeIds.value.add(k);
   }
   // Vue reactivity — Set 변경은 직접 트리거 필요
   activeIds.value = new Set(activeIds.value);
@@ -78,7 +87,7 @@ function save() {
 }
 
 function reset() {
-  activeIds.value = new Set(run.data.deck.map((c) => c.id));
+  activeIds.value = new Set(run.data.deck.map(keyOf));
 }
 </script>
 
@@ -99,14 +108,14 @@ function reset() {
         <ul v-if="sortedCollection.length > 0" class="cards">
           <li
             v-for="c in sortedCollection"
-            :key="c.id"
+            :key="keyOf(c)"
             class="card"
-            :class="{ 'card--on': activeIds.has(c.id) }"
+            :class="{ 'card--on': activeIds.has(keyOf(c)) }"
             :style="{ borderLeftColor: rankColors[c.rank] }"
             @click="toggle(c)"
           >
             <div class="card__row">
-              <span class="card__check">{{ activeIds.has(c.id) ? '◉' : '○' }}</span>
+              <span class="card__check">{{ activeIds.has(keyOf(c)) ? '◉' : '○' }}</span>
               <span class="card__cost">{{ c.cost }}</span>
               <span class="card__name">{{ c.name }}</span>
               <span class="card__rank" :style="{ color: rankColors[c.rank] }">{{ c.rank }}</span>

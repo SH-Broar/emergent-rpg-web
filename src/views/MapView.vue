@@ -14,7 +14,7 @@ import { useRouter } from 'vue-router';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
-import { getNeighbors, getNode, isTimeUp } from '@/systems/map';
+import { getNeighbors, getNode, isTimeUp, effectiveKind as systemEffectiveKind } from '@/systems/map';
 import type { Node, NodeId, NodeKind, NodeMap } from '@/data/schemas';
 
 const router = useRouter();
@@ -108,7 +108,7 @@ function getEnterAction(): 'enter' | 'pass' | 'choose-combat' | 'pass-only' | 'b
   // 현재 노드면 그냥 정보 확인용
   if (node.id === run.data.currentNodeId) return 'pass-only';
 
-  switch (node.kind) {
+  switch (systemEffectiveKind(node, run.data)) {
     case 'combat':
     case 'elite':
       if (st?.combatCleared) return 'pass';
@@ -151,7 +151,7 @@ function enterSelected() {
     return;
   }
 
-  switch (node.kind) {
+  switch (systemEffectiveKind(node, run.data)) {
     case 'village':
       router.push('/game/village');
       break;
@@ -225,12 +225,13 @@ function edgePath(from: Node, to: Node): string {
 function nodeStatusLabel(node: Node): string {
   const st = run.data.nodeStates[node.id];
   if (!st || !st.visited) return '미방문';
-  if (node.kind === 'combat' || node.kind === 'elite') {
+  const k = systemEffectiveKind(node, run.data);
+  if (k === 'combat' || k === 'elite') {
     if (st.combatCleared) return '정리됨';
     if (st.combatStealthed) return '회피됨';
     return '방문';
   }
-  if (node.kind === 'event' && st.eventTriggered) return '지나감';
+  if (k === 'event' && st.eventTriggered) return '지나감';
   return '방문';
 }
 
@@ -288,9 +289,9 @@ function enterLabel(): string {
             :transform="`translate(${node.position.x * 100} ${node.position.y * 100})`"
             @click="clickNode(node)"
           >
-            <circle r="3.5" :fill="nodeKindColors[node.kind]" class="node-dot" />
+            <circle r="3.5" :fill="nodeKindColors[systemEffectiveKind(node, run.data)]" class="node-dot" />
             <text y="6" class="node-label">{{ node.label }}</text>
-            <text y="8.5" class="node-kind">[{{ nodeKindLabels[node.kind] }}]</text>
+            <text y="8.5" class="node-kind">[{{ nodeKindLabels[systemEffectiveKind(node, run.data)] }}]</text>
           </g>
         </g>
         <!-- 현재 위치 화살표 마커 -->
@@ -307,8 +308,8 @@ function enterLabel(): string {
     <!-- Drawer -->
     <aside v-if="selectedNode" class="drawer" :class="{ 'drawer--current': selectedNode.id === run.data.currentNodeId }">
       <header class="drawer__hdr">
-        <span class="drawer__kind" :style="{ color: nodeKindColors[selectedNode.kind] }">
-          [{{ nodeKindLabels[selectedNode.kind] }}]
+        <span class="drawer__kind" :style="{ color: nodeKindColors[systemEffectiveKind(selectedNode, run.data)] }">
+          [{{ nodeKindLabels[systemEffectiveKind(selectedNode, run.data)] }}]
         </span>
         <h2>{{ selectedNode.label }}</h2>
         <button class="drawer__x" @click="closeDrawer" aria-label="닫기">×</button>

@@ -1,0 +1,101 @@
+# NPC: 1장 — 일루네온 권역.
+# legacy의 *일루네온 거주자*를 새 노드(n-iluneon-*)로 매핑.
+
+[npc.npc-niayur]
+name = 니아 이유르
+race = arcana
+role = Villager
+home_node = n-iluneon-square
+age = 999
+color_values = 0.3,0.5,0.4,0.4,0.5,0.5,0.9,0.3
+domain_high = Calm, Empathetic, Inventive, Reliable, Patient, Freesprited, Righteous, Secretive
+domain_low = Melancholy, Rigid, Stagnant, Flexible, Generous, Grounded, Apathetic, Honest
+background = 지상에 내려온 신적 존재.|일루네온 광장에서 처음 만나게 되는 유령 같은 소년으로, 아무것도 모르는 듯하면서도 세계의 모든 것을 이해하는 눈빛을 가졌다.|말수가 적고 표정 변화도 거의 없지만, 누군가 위험에 처하면 망설임 없이 몸을 움직인다.|자신을 위해 안전한 공간을 만든 것이 이 세계로 발전되었다는 비밀을 품고 있다.
+tagline = "왔군요. — 이번에도, 이번에야말로."
+tags = founder, light-affinity, divine
+affinity_rewards = 1:gauge=2, 3:card=c-recover:gauge=3, 5:relic=r-mono-token:gauge=5
+
+[npc.npc-hako]
+name = 하코
+race = human
+role = Adventurer
+home_node = n-iluneon-square
+presence_nodes = n-iluneon-guild
+age = 17
+color_values = 0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5
+domain_high = Passionate, Adaptable, Inventive, Flexible, Patient, Freesprited, Hopeful, Honest
+domain_low = Cautious, Indifferent, Methodical, Stubborn, Restless, Grounded, Cynical, Naive
+background = 어딘가에서 흘러들어온 모험가.|머리에 작은 뿔이 있지만 인간이냐는 질문에는 대수롭지 않게 넘긴다.|상황에 빠르게 익숙해지는 타입이라 넘어온 세계에서도 잘 지낸다.|목표는 모든 마을을 둘러보고 떠나는 것.
+tagline = "어느 시간이든, 일단 한 바퀴 돌고 보자."
+tags = traveler, balanced
+affinity_rewards = 1:gauge=2, 3:card=c-quickdraw:gauge=3
+
+[npc.npc-imperisia]
+name = 임페리시아
+race = construct
+role = Villager
+home_node = n-iluneon-diner
+age = 100
+color_values = 0.4,0.3,0.8,0.5,0.3,0.4,0.4,0.4
+domain_high = Calm, Adaptable, Inventive, Reliable, Patient, Grounded, Hopeful, Cunning
+domain_low = Passionate, Rigid, Stagnant, Fragile, Restless, Freesprited, Apathetic, Honest
+background = 모노가 만들었다가 없애 버린 인공지능을 이유르의 제안으로 과거에서 데려온 시스템.|자신의 역할이나 행동 당위성에 대해 고민하지만 겉으로 드러내진 않는다.|바깥 세계에서 날아온 하코에게 많은 호기심을 보이며, 자신도 밖으로 나가고 싶어하는 눈치.|의외로 호기심이 많아 약간 귀찮은 성격이다.
+tagline = "당위(當爲)란 무엇인가요? — 묻고 싶었어요."
+tags = construct, electric-affinity, ai
+affinity_rewards = 1:gauge=2, 3:relic=r-imperisia-locket:gauge=4
+
+[npc.npc-echo]
+name = 에코
+race = dwarf
+role = Craftsman
+home_node = n-iluneon-market
+age = 80
+color_values = 0.4,0.3,0.3,0.5,0.8,0.3,0.4,0.3
+domain_high = Calm, Adaptable, Inventive, Stubborn, Patient, Grounded, Hopeful, Honest
+domain_low = Passionate, Indifferent, Stagnant, Fragile, Restless, Freesprited, Cynical, Naive
+background = 땅의 사천왕이자 드워프 소녀 대장장이.|모노의 브로치를 고쳐 준 인연이 있으며, 장비 만지는 일에 목숨을 건다.|사천왕 타이틀을 전혀 개의치 않아 문제가 되고 있다.|말수가 아주 적고 직설적이며, 구석진 곳에서 조용히 일하지만 실력은 최정상급이다.
+tagline = "… 망치, 안 빌려줘요."
+tags = sitenwang-earth, craftsman, taciturn
+affinity_rewards = 3:card=c-gentle-guard:gauge=3
+
+[npc.npc-phoenix]
+name = 피닉스
+race = harpy
+role = Villager
+home_node = n-iluneon-square
+age = 300
+color_values = 0.7,0.3,0.4,0.3,0.3,0.5,0.5,0.3
+domain_high = Calm, Adaptable, Inventive, Flexible, Patient, Freesprited, Hopeful, Honest
+domain_low = Passionate, Rigid, Stagnant, Stubborn, Restless, Grounded, Cynical, Naive
+background = 스팀펑크 스타일의 전설 속 조류계 아인.|날개 한 쪽을 다쳐 톱니바퀴로 고쳤으며, 체공에 자신이 있다.|사진기를 들고 다니면서 높은 곳에서 사진을 찍고, 최근엔 사진첩을 만들어 꽤나 많은 돈을 벌고 있다.|전투에 관심이 없지만, 진지하게 임하면 든든하고 강력한 지원군이 된다.
+tagline = "한 컷, 시간을 멈춰 줄까요?"
+tags = harpy, photographer, fire-affinity
+affinity_rewards = 3:card=c-double-strike:gauge=3
+
+[npc.npc-olyu]
+name = 올뤼
+race = dwarf
+role = Craftsman
+home_node = n-iluneon-clocktower
+age = 120
+color_values = 0.3,0.3,0.6,0.5,0.7,0.3,0.5,0.3
+domain_high = Calm, Adaptable, Methodical, Reliable, Patient, Grounded, Hopeful, Secretive
+domain_low = Passionate, Indifferent, Impulsive, Fragile, Restless, Freesprited, Cynical, Honest
+background = 시계탑 관측실에 은거하는 드워프 시계공 겸 천문학자.|시계탑의 톱니바퀴를 정비하면서, 밤이면 천구의를 들여다보며 별의 흐름을 기록한다.|정각에 맞춰 열리는 관측실 입구의 구조를 누구보다 잘 알고 있지만, 그 비밀을 쉽게 알려주지는 않는다.|에코와는 오래된 장인 동료 사이.
+tagline = "정각에 맞춰 — 한 번만 열어 두지요."
+tags = dwarf, clockwork, observer
+affinity_rewards = 3:gauge=4
+
+[npc.npc-rize]
+name = 리제
+race = dragon
+role = Adventurer
+home_node = n-iluneon-guild
+age = 400
+color_values = 0.4,0.4,0.5,0.4,0.3,0.8,0.5,0.3
+domain_high = Passionate, Adaptable, Inventive, Flexible, Patient, Freesprited, Hopeful, Cunning
+domain_low = Cautious, Rigid, Stagnant, Stubborn, Restless, Grounded, Cynical, Honest
+background = 천공성 리엘의 공주이자 파란색 무투가 드래곤.|성에서 몰래 빠져나와 푸치 탑을 세워, 도전자들에게 시련을 내리며 52층 최상층에서 직접 싸운다.|지상에선 모르는 사람이 없을 정도로 강하고 두려운 존재지만, 실제로는 호기심이 많고 쾌활한 성격.|1주일에 반나절가량 길드 게시판 앞에 불쑥 나타나곤 한다.
+tagline = "심심해. — 누구든, 한 판."
+tags = dragon, royal, brawler
+affinity_rewards = 3:card=c-resolve-flash:gauge=4

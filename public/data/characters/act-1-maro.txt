@@ -1,0 +1,49 @@
+# Character: 마로 엔야 — 1장 플레이어블 (마법 친화 / 물 속성).
+
+[character.ch-maro]
+name = 마로 엔야
+description = 결계 속 스텔라 빌의 마지막 아이. 물의 대정령 가젤리아에게 구해진 — *가장 차분한 그릇*.
+race = human
+base_npc = npc-maro
+hp = 30
+mp = 20
+attack = 4
+defense = 2
+vigor = 12
+starting_deck = c-strike, c-strike, c-defend, c-defend, c-defend, c-recover, c-recover, c-recover, c-deep-breath, c-gentle-guard
+unlock =
+portrait =
+tagline = "조용히, 천천히 — 그러나 끝까지."
+
+[character.ch-maro.hyperion.1]
+requirement = befriend_npcs:2
+hp = 5
+mp = 3
+reward_card = c-recover
+
+[character.ch-maro.hyperion.2]
+requirement = combat_clears:3
+hp = 5
+defense = 1
+reward_card = c-gentle-guard
+
+[character.ch-maro.hyperion.3]
+requirement = visit_node:n-stella-ville
+hp = 5
+mp = 4
+reward_card = c-deep-breath
+
+[character.ch-maro.hyperion.4]
+requirement = befriend_npcs:6
+hp = 5
+attack = 1
+vigor = 3
+reward_card = c-second-wind
+
+[character.ch-maro.hyperion.5]
+requirement = boss_clear
+hp = 5
+mp = 3
+defense = 2
+reward_card = c-transcend-strike
+boss_signature = sig-maro-veil

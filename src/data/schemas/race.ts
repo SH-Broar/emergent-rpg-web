@@ -26,4 +26,11 @@ export interface Race extends NamedEntity {
   /** 시작 HP/MP 기본값 보정. */
   startHpBonus?: number;
   startMpBonus?: number;
+
+  /**
+   * 종족 고정 덱 슬롯 크기 — 이 종족 캐릭터가 이 *덱 크기*로 시작.
+   * 없으면 RunStore 기본 (10).
+   * 인간 = 15.
+   */
+  deckSize?: number;
 }

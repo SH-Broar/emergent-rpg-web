@@ -55,9 +55,18 @@ export interface CardEffect {
   params?: Record<string, unknown>;
 }
 
-/** 카드 정의. */
+/** 카드 정의 + 런타임 인스턴스.
+ *
+ * - `id`: 카드 *정의* 식별자 (예: 'c-strike'). 데이터 파일 기준.
+ * - `instanceId`: 같은 정의의 *각 사본*에 부여되는 유니크 키.
+ *   - 데이터 로더가 만든 *원본 정의*에는 비어 있음.
+ *   - 게임 런타임이 카드를 컬렉션/덱에 추가할 때 `instantiateCard()`로 부여.
+ *   - 덱 편집 UI는 instanceId로 카드를 구분 (동명 카드 = 별개 인스턴스).
+ */
 export interface Card extends NamedEntity {
   id: CardId;
+  /** 런타임 인스턴스 ID — 데이터 정의에서는 비어 있고, 게임 런타임에서 부여. */
+  instanceId?: string;
   rank: Rank;
   source: CardSource;
 

@@ -18,8 +18,11 @@ const meta = useMetaStore();
 
 // === 플레이버 텍스트 (사용자 채움 영역) ===
 // 비워두면 화면에 표시되지 않음.
-const TITLE = '';        // 예: 'RDC: 시간의 신탁'
+const TITLE = 'RDC';     // 빌드 식별용 제목. (변경 시 확실히 새 빌드인지 시각 확인.)
 const TAGLINE = '';      // 예: 도입 문구
+
+/** 빌드 버전 — vite.config.ts에서 commit count 주입. */
+const VERSION = `v.${__APP_VERSION__}`;
 
 function goTimelineSelect() {
   router.push('/game/timeline-select');
@@ -65,6 +68,9 @@ function goCodex() {
     <footer class="legacy-note">
       <small>전생 {{ meta.totalRuns }} · 보스 클리어 {{ meta.totalBossClears }}</small>
     </footer>
+
+    <!-- 빌드 버전 — 우하단 고정. 새 빌드 배포 확인용. -->
+    <div class="version-badge" :title="`빌드 버전 ${VERSION}`">{{ VERSION }}</div>
   </main>
 </template>
 
@@ -148,5 +154,21 @@ function goCodex() {
 .legacy-note {
   text-align: center;
   color: #6c6c7c;
+}
+
+.version-badge {
+  position: fixed;
+  right: 0.8rem;
+  bottom: 0.6rem;
+  font-size: 0.72rem;
+  color: #6c6c7c;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 0.18rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  pointer-events: none;
+  user-select: none;
 }
 </style>

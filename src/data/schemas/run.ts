@@ -16,6 +16,7 @@ import type {
   CardId,
   CharacterId,
   NodeId,
+  NodeKind,
   NpcId,
   Season,
   TimelineId,
@@ -77,6 +78,34 @@ export interface RunState {
   nodeStates: Record<NodeId, NodeStateRecord>;
   /** 시간 만료까지 남은 카운트 (시간 만료 = 즉시 런 종료). */
   remainingTime: number;
+
+  /**
+   * 현재 일차 — 30턴마다 +1 (`dayPassed` 트리거).
+   * 시작은 1.
+   */
+  currentDay: number;
+
+  /**
+   * 노드별 *런타임 kind 오버라이드*.
+   * 30턴 경과(advanceDay) 시 일부 비-마을 노드의 kind가 재추첨되어 여기에 기록.
+   * 키 없는 노드는 NodeMap의 원본 kind 사용.
+   */
+  nodeKindOverrides: Record<NodeId, NodeKind>;
+
+  /**
+   * 노드별 *런타임 콘텐츠 오버라이드* — 권역 풀에서 재추첨된 enemy/event 등.
+   * 키 없는 노드는 NodeMap의 원본 contentRef 사용.
+   */
+  nodeContentOverrides: Record<NodeId, {
+    enemyGroupId?: string;
+    eventIdPool?: string[];
+  }>;
+
+  /**
+   * 마지막 *하루 경과 이벤트* 시퀀스 — UI가 watch해서 배너 트리거.
+   * advanceDay() 호출마다 +1. day 자체와 별개로 *발생 자체*를 신호로 쓰기 위해.
+   */
+  dayPassedSeq: number;
   /**
    * 덱 슬롯 — 전투에 들고가는 카드 수 (사용자 사양: 10 고정).
    * 카드 자체는 collection에 무제한 보유, 그 중 deck 슬롯에 등록된 것만 전투 사용.
