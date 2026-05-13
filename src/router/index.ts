@@ -26,9 +26,9 @@ const routes: RouteRecordRaw[] = [
     meta: { scene: 'main' },
   },
   {
-    path: '/bug',
-    name: 'bug',
-    component: () => import('@/views/BugView.vue'),
+    path: '/chaos',
+    name: 'chaos',
+    component: () => import('@/views/ChaosView.vue'),
     meta: { scene: 'main' },
   },
   {

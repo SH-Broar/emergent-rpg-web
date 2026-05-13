@@ -1,19 +1,17 @@
 <script setup lang="ts">
 /**
- * 버그 화면 — 매 런 단위 특수 기능 토글.
+ * 카오스 화면 — 매 런 단위 특수 기능 토글.
  *
  * 사용자 정의 (spec):
  *   - 연구는 *되돌아가지 않는* 영구 해금
- *   - 버그는 *매 판 열었다 닫았다* 하는 특수 기능
- *
- * 구체적인 버그 항목은 게임 진행하며 카탈로그에 추가됨 (현재는 비어 있음).
+ *   - 카오스는 *매 판 열었다 닫았다* 하는 특수 기능
  */
 
 import { useRouter } from 'vue-router';
-import { useBugStore } from '@/stores/bug';
+import { useChaosStore } from '@/stores/chaos';
 
 const router = useRouter();
-const bug = useBugStore();
+const chaos = useChaosStore();
 
 function back() {
   router.push('/main');
@@ -21,22 +19,22 @@ function back() {
 </script>
 
 <template>
-  <main class="bug-view">
+  <main class="chaos-view">
     <header class="hdr">
       <button class="back" @click="back">← 메인 메뉴</button>
-      <h1>버그</h1>
+      <h1>카오스</h1>
     </header>
 
-    <section v-if="bug.catalog.length === 0" class="empty">
-      <p>등록된 버그가 없습니다.</p>
+    <section v-if="chaos.catalog.length === 0" class="empty">
+      <p>등록된 카오스가 없습니다.</p>
     </section>
 
     <section v-else class="modifiers">
-      <label v-for="m in bug.catalog" :key="m.id" class="modifier">
+      <label v-for="m in chaos.catalog" :key="m.id" class="modifier">
         <input
           type="checkbox"
-          :checked="bug.isActive(m.id)"
-          @change="bug.setActive(m.id, ($event.target as HTMLInputElement).checked)"
+          :checked="chaos.isActive(m.id)"
+          @change="chaos.setActive(m.id, ($event.target as HTMLInputElement).checked)"
         />
         <span class="modifier__body">
           <span class="modifier__name">{{ m.name }}</span>
@@ -45,14 +43,14 @@ function back() {
       </label>
     </section>
 
-    <footer v-if="bug.activeList.length > 0" class="footer">
-      <small>활성: {{ bug.activeList.length }}개</small>
+    <footer v-if="chaos.activeList.length > 0" class="footer">
+      <small>활성: {{ chaos.activeList.length }}개</small>
     </footer>
   </main>
 </template>
 
 <style scoped>
-.bug-view { max-width: 700px; margin: 0 auto; padding: 2rem; }
+.chaos-view { max-width: 700px; margin: 0 auto; padding: 2rem; }
 .back { background: none; border: 1px solid rgba(255,255,255,0.2); color: #c0b693; padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; margin-bottom: 1rem; }
 h1 { color: #f6e8b8; margin: 0; }
 .empty { padding: 3rem 1rem; color: #6c6c7c; text-align: center; }

@@ -27,8 +27,8 @@ function goTimelineSelect() {
 function goResearch() {
   router.push('/research');
 }
-function goBug() {
-  router.push('/bug');
+function goChaos() {
+  router.push('/chaos');
 }
 function goCodex() {
   router.push('/codex');
@@ -57,8 +57,8 @@ function goCodex() {
         <span class="menu-card__sub">{{ meta.codex.length }}개 항목</span>
       </button>
 
-      <button class="menu-card menu-card--bug" type="button" @click="goBug">
-        <span class="menu-card__title">버그</span>
+      <button class="menu-card menu-card--chaos" type="button" @click="goChaos">
+        <span class="menu-card__title">카오스</span>
       </button>
     </section>
 
@@ -130,7 +130,7 @@ function goCodex() {
   border-color: rgba(180, 140, 255, 0.4);
 }
 
-.menu-card--bug {
+.menu-card--chaos {
   background: rgba(255, 80, 80, 0.06);
   border-color: rgba(255, 100, 100, 0.25);
 }
