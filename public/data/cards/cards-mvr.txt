@@ -1,0 +1,143 @@
+# Cards — MVR 단계 카드 풀.
+# 기본 등급 7장 + 일반 5장 + 희귀 2장 + 전설 시그니처 1장 = 15장.
+# 효과 표기: effects = kind:value:target, kind:value:target, ...
+
+# ========== 기본 등급 (종족 시드) ==========
+
+[card.c-strike]
+name = 일격
+rank = basic
+source = race
+element = iron
+cost = 1
+trigger = manual
+effects = damage:6:enemy
+flavor = 가장 단순한 검술. 가장 자주 쓰인다.
+
+[card.c-defend]
+name = 자세
+rank = basic
+source = race
+element = earth
+cost = 1
+trigger = manual
+effects = block:5:self
+flavor = 비를 그치게 할 순 없어도, 피할 수는 있다.
+
+[card.c-quickdraw]
+name = 빠른 뽑기
+rank = basic
+source = race
+element = wind
+cost = 0
+trigger = manual
+effects = draw:1:self
+flavor = 다음 한 수가 떠오른다.
+
+[card.c-recover]
+name = 회복 호흡
+rank = basic
+source = race
+element = water
+cost = 1
+trigger = manual
+effects = heal:4:self
+flavor = 잠시 숨을 고르면, 다시 갈 수 있다.
+
+# ========== 일반 등급 (NPC 친밀도 1단계 / 히페리온 1~2) ==========
+
+[card.c-resolve-flash]
+name = 결심의 섬광
+rank = common
+source = hyperion
+element = light
+cost = 1
+trigger = manual
+effects = damage:8:enemy, block:3:self
+flavor = "여기서 멈출 수는 없어."
+
+[card.c-gentle-guard]
+name = 부드러운 방패
+rank = common
+source = hyperion
+element = water
+cost = 1
+trigger = manual
+effects = block:8:self
+flavor = 누군가가 곁에 있다는 느낌만으로 단단해진다.
+
+[card.c-double-strike]
+name = 연속 공격
+rank = common
+source = event
+element = iron
+cost = 2
+trigger = manual
+effects = damage:5:enemy, damage:5:enemy
+flavor = 한 번이 모자라다면, 두 번.
+
+[card.c-focused-mind]
+name = 집중
+rank = common
+source = npc
+element = wind
+cost = 0
+trigger = manual
+effects = draw:2:self
+flavor = 잠시 생각의 깊이로 내려간다.
+
+[card.c-burn-mark]
+name = 화상 흔적
+rank = common
+source = event
+element = fire
+cost = 1
+trigger = manual
+effects = damage:3:enemy, apply-status:2:enemy
+flavor = 살에 새겨진 자국은 잘 지워지지 않는다.
+
+# ========== 희귀 등급 (NPC 친밀도 3단계 / 히페리온 3~4) ==========
+
+[card.c-second-wind]
+name = 두 번째 숨결
+rank = rare
+source = hyperion
+element = water
+cost = 1
+trigger = manual
+effects = heal:8:self, draw:2:self
+flavor = 한 번 쓰러져 본 자만 알 수 있는 호흡법.
+
+[card.c-deep-breath]
+name = 깊은 호흡
+rank = rare
+source = hyperion
+element = wind
+cost = 0
+trigger = manual
+effects = draw:3:self, block:4:self
+flavor = 비가 그치기 전, 한 박자.
+
+# ========== 전설 등급 (보스/시그니처) ==========
+
+[card.c-transcend-strike]
+name = 전생자의 검
+rank = legendary
+source = hyperion
+element = light
+cost = 2
+trigger = manual
+effects = damage:18:enemy, draw:1:self
+flavor = "당신은 이 시대 사람이 아니지요. 그래도 — 여기 있어 주십시오."
+
+# ========== 보스 보상 (사용 안 하면 도감에만 남음) ==========
+
+[card.c-shadow-rebuke]
+name = 그림자 꾸짖음
+rank = rare
+source = boss
+element = dark
+cost = 1
+trigger = manual
+effects = damage:7:enemy, apply-status:1:enemy
+flavor = 봤다. 더 이상 숨지 못한다.

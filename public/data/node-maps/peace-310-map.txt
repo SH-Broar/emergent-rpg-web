@@ -1,0 +1,72 @@
+# Node Map: 평화의 310년 거미줄 맵.
+# 7개 노드 — 시작(마을) + 전투 × 3 + 이벤트 × 2 + 보스 게이트(보스).
+
+[nodemap.nm-peace-310]
+name = 평화의 310년 — 호숫가 지방
+description = 일루네온 외곽의 호숫가. 평화로워 보이지만 호수 깊이는 알 수 없다.
+start_node = n-village
+boss_gate = n-boss
+
+[nodemap.nm-peace-310.node.n-village]
+kind = village
+label = 호숫가 마을
+description = 작은 어부 마을. 첫 발을 디딘 곳.
+x = 0.1
+y = 0.5
+neighbors = n-grove, n-bridge
+npcs = stranger-old-woman, friendly-fisher
+is_start = true
+
+[nodemap.nm-peace-310.node.n-grove]
+kind = event
+label = 안개 낀 숲
+description = 새벽 안개가 자욱한 작은 숲. 무언가가 움직이는 듯하다.
+x = 0.3
+y = 0.3
+neighbors = n-village, n-shore, n-bridge
+events = ev-traveler-fork, ev-stranger-favor
+
+[nodemap.nm-peace-310.node.n-bridge]
+kind = combat
+label = 다리목
+description = 낡은 돌다리. 다리 밑에서 무엇이 올라온다.
+x = 0.35
+y = 0.65
+neighbors = n-village, n-grove, n-ruin
+enemy = shadow-pup
+
+[nodemap.nm-peace-310.node.n-shore]
+kind = event
+label = 갈대밭
+description = 호수가 비추는 갈대밭. 누군가가 부르는 듯하다.
+x = 0.55
+y = 0.25
+neighbors = n-grove, n-ruin
+events = ev-mono-whisper
+
+[nodemap.nm-peace-310.node.n-ruin]
+kind = combat
+label = 잠긴 사당
+description = 호숫가 옛 사당. 봉인이 약해진 흔적.
+x = 0.65
+y = 0.55
+neighbors = n-bridge, n-shore, n-pier
+enemy = shadow-pup
+
+[nodemap.nm-peace-310.node.n-pier]
+kind = rest
+label = 부두
+description = 잠시 숨을 고를 수 있는 곳. 호수의 끝.
+x = 0.8
+y = 0.45
+neighbors = n-ruin, n-boss
+
+[nodemap.nm-peace-310.node.n-boss]
+kind = boss
+label = 호수 깊이
+description = 안개가 가장 짙은 곳. 무언가가 떠오른다.
+x = 0.95
+y = 0.5
+neighbors = n-pier
+boss = bs-shadow-lake
+is_boss_gate = true

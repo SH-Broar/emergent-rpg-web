@@ -1,0 +1,33 @@
+# Relics — MVR 유물 풀.
+
+[relic.r-determined-heart]
+name = 결심의 심장
+rank = basic
+source = race
+trigger = passive
+effects = bonus-hp:5
+flavor = 인간이 가장 자주 갖고 태어나는 것.
+
+[relic.r-imperisia-locket]
+name = 임페리시아의 회중시계
+rank = common
+source = meta
+trigger = on-combat-start
+effects = bonus-mana:1
+flavor = "한 번의 여유를 드립니다. 단 한 번이지만."
+
+[relic.r-mono-token]
+name = 모노의 토큰
+rank = rare
+source = event
+trigger = on-combat-end
+effects = bonus-gold:5
+flavor = 시간의 신이 잠시 떨어뜨린 부스러기.
+
+[relic.r-shadow-essence]
+name = 그림자의 본질
+rank = legendary
+source = boss
+trigger = on-card-play
+effects = bonus-damage:1
+flavor = 봉인한 종말의 한 조각. 이제는 내 손 안에.

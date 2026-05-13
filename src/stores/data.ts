@@ -1,0 +1,79 @@
+/**
+ * Pinia 스토어 — 게임 데이터 (런타임 캐시).
+ *
+ * 모든 getter에 명시적 return type — TS 6 strict + Pinia reactivity unwrap 대응.
+ */
+
+import { defineStore } from 'pinia';
+import { loadAllData, type GameData } from '@/data/loader';
+import type {
+  Boss,
+  Card,
+  Character,
+  Event,
+  NodeMap,
+  Race,
+  Relic,
+  Timeline,
+} from '@/data/schemas';
+
+interface State {
+  loaded: boolean;
+  loading: boolean;
+  error: string | null;
+  data: GameData | null;
+}
+
+export const useDataStore = defineStore('data', {
+  state: (): State => ({
+    loaded: false,
+    loading: false,
+    error: null,
+    data: null,
+  }),
+
+  getters: {
+    timelines(state): Map<string, Timeline> {
+      return state.data?.timelines ?? new Map<string, Timeline>();
+    },
+    characters(state): Map<string, Character> {
+      return state.data?.characters ?? new Map<string, Character>();
+    },
+    races(state): Map<string, Race> {
+      return state.data?.races ?? new Map<string, Race>();
+    },
+    cards(state): Map<string, Card> {
+      return state.data?.cards ?? new Map<string, Card>();
+    },
+    relics(state): Map<string, Relic> {
+      return state.data?.relics ?? new Map<string, Relic>();
+    },
+    events(state): Map<string, Event> {
+      return state.data?.events ?? new Map<string, Event>();
+    },
+    bosses(state): Map<string, Boss> {
+      return state.data?.bosses ?? new Map<string, Boss>();
+    },
+    nodeMaps(state): Map<string, NodeMap> {
+      return state.data?.nodeMaps ?? new Map<string, NodeMap>();
+    },
+  },
+
+  actions: {
+    async ensureLoaded() {
+      if (this.loaded || this.loading) return;
+      this.loading = true;
+      this.error = null;
+      try {
+        const data = await loadAllData();
+        this.data = data;
+        this.loaded = true;
+      } catch (err) {
+        this.error = err instanceof Error ? err.message : String(err);
+        console.error('[data] load failed:', err);
+      } finally {
+        this.loading = false;
+      }
+    },
+  },
+});

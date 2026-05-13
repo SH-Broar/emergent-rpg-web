@@ -1,0 +1,19 @@
+# Timeline: 평화의 310년 — MVR 첫 연표.
+
+[timeline.tl-peace-310]
+name = 평화의 310년
+description = 겉으로는 잔잔하나, 봉인된 그림자가 호수 깊이서 꿈틀거리는 해. 모노가 처음 부르는 시간대다.
+year = 310
+era = 평온
+tagline = "겉으로는 잔잔하나, 봉인된 그림자가 꿈틀거리는 해."
+node_map = nm-peace-310
+events = ev-traveler-fork, ev-stranger-favor, ev-mono-whisper
+characters = first-trans
+npcs = stranger-old-woman, friendly-fisher
+time_limit = 7
+deck_expansion = 3, 5
+boss = bs-shadow-lake
+mission_goal = 호수 깊이의 그림자를 마주하라.
+unlock =
+shareable = true
+thumbnail =

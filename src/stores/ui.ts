@@ -49,12 +49,19 @@ function loadDebugFlags(): DebugFlags {
 
 let toastSeq = 0;
 
+/** 런 시작 직전, 임시로 선택된 옵션. */
+export interface PendingRunSetup {
+  timelineId: string | null;
+  characterId: string | null;
+}
+
 export const useUiStore = defineStore('ui', {
   state: () => ({
     toasts: [] as Toast[],
     modalOpen: false as boolean,
     modalContent: null as string | null,
     debug: loadDebugFlags(),
+    pendingRunSetup: { timelineId: null, characterId: null } as PendingRunSetup,
   }),
 
   actions: {

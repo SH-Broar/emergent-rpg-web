@@ -2,19 +2,23 @@
 /**
  * 앱 최상위 셸.
  *
- * spec v2 Round 12: 메인 씬 ↔ 게임 씬을 라우터로 분리.
- * 이 컴포넌트는 *씬에 무관한 글로벌 레이어*만 담당:
- *   - 라우터 뷰
- *   - 전역 토스트
- *   - 전역 모달 (선택)
- *
- * 외부 프레임(Mono/Imperisia/Transcendent)의 구체적 표현은
- * MainView·ResearchView 등 *씬 단위 컴포넌트*에서.
+ * - 마운트 시 게임 데이터 한 번 로드.
+ * - 라우터 뷰 + 전역 토스트.
  */
 
+import { onMounted } from 'vue';
 import { useUiStore } from '@/stores/ui';
+import { useDataStore } from '@/stores/data';
 
 const ui = useUiStore();
+const data = useDataStore();
+
+onMounted(async () => {
+  await data.ensureLoaded();
+  if (data.error) {
+    ui.toast('error', `데이터 로드 실패: ${data.error}`, 6000);
+  }
+});
 </script>
 
 <template>
@@ -24,6 +28,11 @@ const ui = useUiStore();
         <component :is="Component" :key="route.path" />
       </transition>
     </router-view>
+
+    <!-- 글로벌 로딩 인디케이터 -->
+    <div v-if="data.loading" class="loading">
+      데이터 로딩 중…
+    </div>
 
     <!-- 전역 토스트 -->
     <div class="toast-stack" aria-live="polite">
@@ -46,8 +55,20 @@ const ui = useUiStore();
   position: relative;
   min-height: 100vh;
   width: 100%;
-  background: var(--bg-deep, #0d0e14);
-  color: var(--fg-base, #e9e9f4);
+}
+
+.loading {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.6rem 1.2rem;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(192, 142, 255, 0.4);
+  border-radius: 6px;
+  color: var(--violet);
+  font-size: 0.9rem;
+  z-index: 999;
 }
 
 .toast-stack {
@@ -68,40 +89,13 @@ const ui = useUiStore();
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   pointer-events: auto;
 }
+.toast--info { background: #1f2937; color: #cbd5e1; }
+.toast--success { background: #064e3b; color: #d1fae5; }
+.toast--warning { background: #78350f; color: #fef3c7; }
+.toast--error { background: #7f1d1d; color: #fecaca; }
 
-.toast--info {
-  background: #1f2937;
-  color: #cbd5e1;
-}
-.toast--success {
-  background: #064e3b;
-  color: #d1fae5;
-}
-.toast--warning {
-  background: #78350f;
-  color: #fef3c7;
-}
-.toast--error {
-  background: #7f1d1d;
-  color: #fecaca;
-}
-
-.scene-fade-enter-active,
-.scene-fade-leave-active {
-  transition: opacity 180ms ease;
-}
-.scene-fade-enter-from,
-.scene-fade-leave-to {
-  opacity: 0;
-}
-
-.toast-enter-active,
-.toast-leave-active {
-  transition: all 220ms ease;
-}
-.toast-enter-from,
-.toast-leave-to {
-  opacity: 0;
-  transform: translateY(8px);
-}
+.scene-fade-enter-active, .scene-fade-leave-active { transition: opacity 180ms ease; }
+.scene-fade-enter-from, .scene-fade-leave-to { opacity: 0; }
+.toast-enter-active, .toast-leave-active { transition: all 220ms ease; }
+.toast-enter-from, .toast-leave-to { opacity: 0; transform: translateY(8px); }
 </style>

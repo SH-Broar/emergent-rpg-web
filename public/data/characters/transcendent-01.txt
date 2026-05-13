@@ -1,0 +1,53 @@
+# Character: 첫 전생자 — MVR 캐릭터
+# RDC 세계관의 평화로운 시대에 깃든 무명의 전생자.
+
+[character.first-trans]
+name = 첫 전생자
+description = 모노가 처음 부른 그릇. 이름을 가지지 않은 채 깃든다.
+race = human
+hp = 32
+mp = 12
+attack = 5
+defense = 2
+vigor = 10
+starting_deck = c-strike, c-strike, c-strike, c-strike, c-defend, c-defend, c-defend, c-defend, c-quickdraw, c-recover
+unlock =
+portrait =
+tagline = "어디든 깃들 수 있는, 가장 평범한 흔적."
+
+[character.first-trans.hyperion.1]
+requirement = 노드 3개 방문
+hp = 5
+attack = 1
+reward_card = c-resolve-flash
+boss_signature =
+
+[character.first-trans.hyperion.2]
+requirement = NPC 1명과 친밀도 1단계 달성
+hp = 5
+defense = 1
+reward_card = c-gentle-guard
+boss_signature =
+
+[character.first-trans.hyperion.3]
+requirement = 전투 3회 승리
+hp = 5
+attack = 1
+vigor = 3
+reward_card = c-second-wind
+boss_signature =
+
+[character.first-trans.hyperion.4]
+requirement = 시대 미션 1건 클리어
+hp = 5
+mp = 3
+reward_card = c-deep-breath
+boss_signature =
+
+[character.first-trans.hyperion.5]
+requirement = 보스 게이트 도달
+hp = 5
+attack = 2
+defense = 1
+reward_card = c-transcend-strike
+boss_signature = sig-first-pure

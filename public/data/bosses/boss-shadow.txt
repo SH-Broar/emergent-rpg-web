@@ -1,0 +1,22 @@
+# Boss: 호수의 그림자 — 평화의 310년의 숨은 종말 위협.
+
+[boss.bs-shadow-lake]
+name = 호수의 그림자
+description = 평화의 시대에도 호수 깊은 곳에는 묻혀진 것들이 있다. 시간이 다 되면 그것이 떠오른다.
+timeline = tl-peace-310
+hp = 60
+attack = 8
+defense = 2
+reward_unlocks = unlock-tl-shadow-410, unlock-character-shadowtouched
+reward_soul = 10
+reward_codex = bs-shadow-lake
+intro = 검은 안개가 호수 위로 올라온다. "…늦었구나. 이 시간에 다다른 자가." 안개가 형태를 갖춘다.
+defeat_text = "다음 시간엔, 좀 더 일찍 와 주시오." 안개가 호수 아래로 다시 내려갔다.
+
+[boss.bs-shadow-lake.phase.1]
+starts_at = 1.0
+intents = attack:6, defend:5, attack:8, buff:1
+
+[boss.bs-shadow-lake.phase.2]
+starts_at = 0.5
+intents = attack:9, attack:9, defend:8, attack:12

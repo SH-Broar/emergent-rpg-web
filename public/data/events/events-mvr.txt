@@ -1,0 +1,72 @@
+# Events — MVR 단계 이벤트 풀.
+# 평균 500~1000자, 단위 완결.
+
+[event.ev-traveler-fork]
+name = 갈림길의 여행자
+node_kinds = event
+weight = 2
+once_per_run = true
+body = 길이 둘로 갈라진다. 그 가운데에 한 여행자가 쪼그려 앉아 있다. 그는 그대를 보고도 놀라지 않는다. "어느 쪽을 가실 거예요?" 그가 묻는다. "왼쪽은 늪이지만 약초가 있고, 오른쪽은 평평하지만 아무것도 없죠. 저는 어느 쪽도 안 갔어요. 그냥 여기 있는 게 좋아서." 그의 등 뒤에 작은 짐꾸러미가 놓여 있다.
+
+[event.ev-traveler-fork.choice.1]
+label = 왼쪽 (약초)
+hp = -3
+grant_card = c-burn-mark
+result_text = 늪을 헤치고 약초를 얻었다. 다리에 작은 상처가 남았다.
+
+[event.ev-traveler-fork.choice.2]
+label = 오른쪽 (평탄)
+draw = 1
+result_text = 평탄한 길로 가서 잠시 생각을 정리했다.
+
+[event.ev-traveler-fork.choice.3]
+label = 그와 함께 머문다
+hp = 3
+gold = -3
+result_text = 그의 옆에 앉아 잠시 쉬었다. 그가 빵을 나눠줬다.
+
+
+[event.ev-stranger-favor]
+name = 모르는 이의 부탁
+node_kinds = event, village
+weight = 1
+once_per_run = true
+body = 한 노파가 광주리를 떨어뜨리고 안 보이는 듯 그 위를 더듬는다. "이쪽인가… 아니, 그쪽인가…" 그녀의 눈은 흐려 있다. 광주리에서 무언가가 굴러 나오는데, 모양으로 봐선 마법이 깃든 작은 돌이다.
+
+[event.ev-stranger-favor.choice.1]
+label = 돌을 줍고 광주리를 챙겨준다
+affinity = stranger-old-woman:1
+grant_relic = r-imperisia-locket
+result_text = 노파가 한참 그대 손을 쥐고 있었다. 무언가가 그 손에서 그대 손으로 옮겨졌다.
+
+[event.ev-stranger-favor.choice.2]
+label = 돌만 챙긴다
+gold = 5
+result_text = 노파는 끝내 광주리를 못 찾았다. 그대의 주머니에 돌이 있다.
+
+[event.ev-stranger-favor.choice.3]
+label = 그냥 지나친다
+result_text = 발걸음이 한참 후에도 가볍지 않았다.
+
+
+[event.ev-mono-whisper]
+name = 모노의 속삭임
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+body = 잠시 앉아 쉬는데, 머릿속에 들리는 게 있다. "…그대의 다음 한 수를 보았다. 어느 길로 갈 셈인지." 모노의 목소리다. 가까이서. 그가 무언가를 *선물처럼* 내민다 — 보이지는 않지만 알 수 있다.
+
+[event.ev-mono-whisper.choice.1]
+label = 한 카드를 받는다
+grant_card = c-double-strike
+result_text = 모노가 한 수를 내려주었다.
+
+[event.ev-mono-whisper.choice.2]
+label = 한 유물을 받는다
+grant_relic = r-mono-token
+result_text = 모노가 작은 부스러기를 떨어뜨려 주었다.
+
+[event.ev-mono-whisper.choice.3]
+label = 거절한다
+hp = 5
+result_text = "그대의 선택이 마음에 듭니다." 작은 호흡이 가벼워졌다.

@@ -1,0 +1,13 @@
+# Race: 인간 — MVR 단계 기본 종족
+# 다른 종족은 Phase 3에서 점진 추가.
+
+[race.human]
+name = 인간
+description = 가장 흔한 종족. 시간의 신탁이 처음 자주 부르는 그릇이다.
+category = humanoid
+primary_element = light
+secondary_element = wind
+seed_cards = c-strike, c-defend, c-strike, c-defend, c-strike, c-quickdraw, c-recover
+seed_relics = r-determined-heart
+hp_bonus = 0
+mp_bonus = 0
