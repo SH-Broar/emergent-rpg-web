@@ -16,6 +16,7 @@ import GameHUD from '@/components/GameHUD.vue';
 import DeckPanel from '@/components/DeckPanel.vue';
 import RelicPanel from '@/components/RelicPanel.vue';
 import DayBanner from '@/components/DayBanner.vue';
+import LoadingOverlay from '@/components/LoadingOverlay.vue';
 
 const ui = useUiStore();
 const data = useDataStore();
@@ -65,8 +66,12 @@ onMounted(async () => {
     <!-- 하루 경과 배너 (런 중에만 의미) -->
     <DayBanner v-if="run.active" />
 
-    <!-- 글로벌 로딩 -->
-    <div v-if="data.loading" class="loading">데이터 로딩 중…</div>
+    <!-- 글로벌 로딩 — 데이터 fetch·파싱 끝나기 전엔 풀스크린.
+         게임 진입 전 buttons가 "눌리지 않는 듯" 보이는 문제 방지. -->
+    <LoadingOverlay
+      v-if="data.loading || !data.loaded"
+      :message="data.error ? `데이터 로드 실패: ${data.error}` : undefined"
+    />
 
     <!-- 전역 토스트 -->
     <div class="toast-stack" aria-live="polite">
@@ -93,20 +98,6 @@ onMounted(async () => {
 /* 런 중에는 상단에 HUD가 있으므로 컨텐츠를 아래로 밀어줌 */
 .app-shell--in-run :deep(main) {
   padding-top: 3.5rem;
-}
-
-.loading {
-  position: fixed;
-  top: 1rem;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 0.6rem 1.2rem;
-  background: rgba(0, 0, 0, 0.7);
-  border: 1px solid rgba(192, 142, 255, 0.4);
-  border-radius: 6px;
-  color: #c08eff;
-  font-size: 0.9rem;
-  z-index: 999;
 }
 
 .toast-stack {
