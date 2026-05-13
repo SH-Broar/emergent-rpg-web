@@ -88,6 +88,8 @@ export interface RunState {
   mp: number;
   maxMp: number;
   gold: number;
+  /** 시간의 조각 — 카드/유물 *런 내 제작* 전용 재화 (휘발). */
+  timeShards: number;
 
   // === 진행도 (런 종료 시 모노 게이지로 변환) ===
   /** 히페리온 5단계 중 클리어한 단계 (true). */

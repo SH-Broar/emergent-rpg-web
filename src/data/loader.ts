@@ -32,6 +32,8 @@ import type {
   EventChoice,
   EventChoiceEffect,
   HyperionStage,
+  Monster,
+  MonsterIntent,
   NodeMap,
   Node,
   NodeKind,
@@ -304,6 +306,40 @@ function parseChoice(f: IniSection): EventChoice {
   };
 }
 
+// ========== Monster ==========
+
+export function parseMonsters(ini: IniData): Map<string, Monster> {
+  const result = new Map<string, Monster>();
+  for (const [section, fields] of Object.entries(ini)) {
+    if (!section.startsWith('monster.')) continue;
+    const id = sectionIdSuffix(section);
+    const intents: MonsterIntent[] = parseList(fields.intents).map((encoded) => ({
+      encoded,
+    }));
+    const cardDrops = parseList(fields.card_drops).map((tok) => {
+      const [cardId, chanceStr] = tok.split(':');
+      return { cardId, chance: parseNumber(chanceStr, 0.1) };
+    });
+    result.set(id, {
+      id,
+      name: fields.name ?? id,
+      description: fields.description,
+      tier: (fields.tier as Monster['tier']) ?? 'normal',
+      hp: parseNumber(fields.hp, 15),
+      attack: parseNumber(fields.attack, 5),
+      defense: parseNumber(fields.defense, 0),
+      intents,
+      drop: {
+        gold: parseNumber(fields.gold, 0),
+        timeShards: parseNumber(fields.time_shards, 0),
+        cardDrops: cardDrops.length > 0 ? cardDrops : undefined,
+      },
+      appearsIn: parseList(fields.appears_in),
+    });
+  }
+  return result;
+}
+
 // ========== Boss ==========
 
 export function parseBosses(ini: IniData): Map<string, Boss> {
@@ -445,6 +481,7 @@ export interface GameData {
   relics: Map<string, Relic>;
   events: Map<string, Event>;
   bosses: Map<string, Boss>;
+  monsters: Map<string, Monster>;
   nodeMaps: Map<string, NodeMap>;
 }
 
@@ -457,6 +494,7 @@ const DATA_FILES = [
   'data/relics/relics-mvr.txt',
   'data/events/events-mvr.txt',
   'data/bosses/boss-shadow.txt',
+  'data/monsters/mvr-monsters.txt',
   'data/node-maps/peace-310-map.txt',
 ] as const;
 
@@ -504,6 +542,7 @@ export async function loadAllData(baseUrl?: string): Promise<GameData> {
     relics: parseRelics(merged),
     events: parseEvents(merged),
     bosses: parseBosses(merged),
+    monsters: parseMonsters(merged),
     nodeMaps,
   };
 }
@@ -527,6 +566,7 @@ export function loadFromText(text: string): GameData {
     relics: parseRelics(ini),
     events: parseEvents(ini),
     bosses: parseBosses(ini),
+    monsters: parseMonsters(ini),
     nodeMaps,
   };
 }

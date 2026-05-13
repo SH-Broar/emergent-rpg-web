@@ -1,0 +1,24 @@
+# Monsters — MVR 단계 적 풀.
+# 형식: intents = encoded(콤마 분리), 드롭은 gold/time_shards + card_drops(id:chance)
+
+[monster.shadow-pup]
+name = 그림자 강아지
+tier = minion
+hp = 14
+attack = 5
+defense = 0
+intents = attack:5, attack:5, defend:4
+gold = 5
+time_shards = 2
+card_drops =
+
+[monster.shadow-wolf]
+name = 큰 그림자 늑대
+tier = elite
+hp = 30
+attack = 8
+defense = 1
+intents = attack:7, attack:7, defend:6, buff:1
+gold = 12
+time_shards = 5
+card_drops = c-shadow-rebuke:0.25

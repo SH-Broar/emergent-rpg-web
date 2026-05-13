@@ -33,6 +33,7 @@ const EMPTY_RUN: RunState = {
   mp: 0,
   maxMp: 0,
   gold: 0,
+  timeShards: 0,
   hyperionProgress: {},
   npcAffinity: {},
   missionsCleared: [],

@@ -250,6 +250,7 @@ function enterLabel(): string {
         <span>HP <strong>{{ run.data.hp }} / {{ run.data.maxHp }}</strong></span>
         <span>덱 <strong>{{ run.data.deck.length }} / {{ run.data.deckSize }}</strong></span>
         <span>골드 <strong>{{ run.data.gold }}</strong></span>
+        <span>시간의 조각 <strong>{{ run.data.timeShards }}</strong></span>
       </div>
       <p v-if="timeUp" class="warn">⚠ 시간이 다 됐습니다. 보스 게이트로 가세요.</p>
     </header>
