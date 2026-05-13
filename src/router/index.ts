@@ -75,6 +75,18 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/BossView.vue'),
     meta: { scene: 'game' },
   },
+  {
+    path: '/game/village',
+    name: 'game-village',
+    component: () => import('@/views/VillageView.vue'),
+    meta: { scene: 'game' },
+  },
+  {
+    path: '/game/workshop',
+    name: 'game-workshop',
+    component: () => import('@/views/WorkshopView.vue'),
+    meta: { scene: 'game' },
+  },
 
   // 404
   {

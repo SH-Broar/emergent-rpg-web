@@ -70,6 +70,7 @@ const nodeKindColors: Record<NodeKind, string> = {
   boss: '#ffe88e',
   rest: '#c0c0c0',
   shop: '#c08eff',
+  workshop: '#d8b4ff',
 };
 const nodeKindLabels: Record<NodeKind, string> = {
   village: '마을',
@@ -79,6 +80,7 @@ const nodeKindLabels: Record<NodeKind, string> = {
   boss: '보스',
   rest: '휴식',
   shop: '상점',
+  workshop: '공방',
 };
 
 // === 노드 클릭: Drawer 열기 ===
@@ -142,15 +144,15 @@ function enterSelected() {
 
   switch (node.kind) {
     case 'village':
-      ui.toast('info', `${node.label}`);
+      router.push('/game/village');
+      break;
+    case 'workshop':
+      router.push('/game/workshop');
       break;
     case 'combat':
     case 'elite':
       if (action === 'pass') {
         ui.toast('info', '이미 정리된 곳입니다.');
-      } else if (action === 'choose-combat') {
-        // 회피했던 곳 — 사용자가 *재싸움* 선택 (입장 = 다시 싸움)
-        router.push('/game/combat');
       } else {
         router.push('/game/combat');
       }

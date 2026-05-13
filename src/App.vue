@@ -4,14 +4,20 @@
  *
  * - 마운트 시 게임 데이터 한 번 로드.
  * - 라우터 뷰 + 전역 토스트.
+ * - 런 진행 중이면 글로벌 *덱 보기* 버튼 (어디서나 호출 가능).
  */
 
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useUiStore } from '@/stores/ui';
 import { useDataStore } from '@/stores/data';
+import { useRunStore } from '@/stores/run';
+import DeckPanel from '@/components/DeckPanel.vue';
 
 const ui = useUiStore();
 const data = useDataStore();
+const run = useRunStore();
+
+const deckOpen = ref(false);
 
 onMounted(async () => {
   await data.ensureLoaded();
@@ -29,10 +35,19 @@ onMounted(async () => {
       </transition>
     </router-view>
 
-    <!-- 글로벌 로딩 인디케이터 -->
-    <div v-if="data.loading" class="loading">
-      데이터 로딩 중…
-    </div>
+    <!-- 글로벌 덱 보기 (런 진행 중에만) -->
+    <button
+      v-if="run.active"
+      class="deck-fab"
+      @click="deckOpen = true"
+      aria-label="덱 보기"
+    >
+      덱 ({{ run.data.deck.length }})
+    </button>
+    <DeckPanel :open="deckOpen" @close="deckOpen = false" />
+
+    <!-- 글로벌 로딩 -->
+    <div v-if="data.loading" class="loading">데이터 로딩 중…</div>
 
     <!-- 전역 토스트 -->
     <div class="toast-stack" aria-live="polite">
@@ -57,6 +72,24 @@ onMounted(async () => {
   width: 100%;
 }
 
+.deck-fab {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 800;
+  padding: 0.5rem 1rem;
+  background: rgba(192, 142, 255, 0.2);
+  border: 1px solid rgba(192, 142, 255, 0.5);
+  color: #f6e8b8;
+  border-radius: 20px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+.deck-fab:hover { background: rgba(192, 142, 255, 0.3); }
+
 .loading {
   position: fixed;
   top: 1rem;
@@ -66,7 +99,7 @@ onMounted(async () => {
   background: rgba(0, 0, 0, 0.7);
   border: 1px solid rgba(192, 142, 255, 0.4);
   border-radius: 6px;
-  color: var(--violet);
+  color: #c08eff;
   font-size: 0.9rem;
   z-index: 999;
 }

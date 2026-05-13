@@ -8,7 +8,15 @@
 export type Rank = 'basic' | 'common' | 'rare' | 'legendary';
 
 /** 한 노드의 종류. */
-export type NodeKind = 'village' | 'combat' | 'event' | 'elite' | 'boss' | 'rest' | 'shop';
+export type NodeKind =
+  | 'village'     // NPC 대화 + 간이 제작 (랜덤 카드)
+  | 'combat'      // 일반 전투
+  | 'event'       // 사건/선택지
+  | 'elite'       // 엘리트 전투
+  | 'boss'        // 연표 종말 위협
+  | 'rest'        // 휴식 (HP 회복)
+  | 'shop'        // 상점 (구매)
+  | 'workshop';   // 공방 (더 좋은 카드 제작 + 강화)
 
 /** 컬러 8원소. RDC 세계관의 기본 속성. */
 export type Element =
