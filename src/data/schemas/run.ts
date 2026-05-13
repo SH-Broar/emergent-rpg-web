@@ -43,6 +43,24 @@ export interface CombatState {
   maxMana: number;
 }
 
+/**
+ * 노드별 *런 내 상태*. 재방문 정책의 핵심.
+ *
+ *  - 미방문 노드: 키 없음.
+ *  - 첫 방문 후: visited=true. 노드 종류별 추가 필드.
+ *  - 전투 클리어: combatCleared=true → 재방문 시 전투 없이 통과.
+ *  - 전투 회피 (은밀): combatStealthed=true → 재방문 시 "싸울지/지나칠지" 선택.
+ *  - 이벤트 발생: eventTriggered=event-id + eventCount 증가.
+ *    데이터에 2회+ 분기가 있으면 다음 방문 시 그것이 발동.
+ */
+export interface NodeStateRecord {
+  visited: boolean;
+  combatCleared?: boolean;
+  combatStealthed?: boolean;
+  eventTriggered?: string;
+  eventCount?: number;
+}
+
 /** 한 런 전체의 휘발 상태. */
 export interface RunState {
   // === 컨텍스트 ===
@@ -55,6 +73,8 @@ export interface RunState {
   // === 위치 / 시간 ===
   currentNodeId: NodeId;
   visitedNodes: NodeId[];
+  /** 노드별 상태 (재방문 정책). */
+  nodeStates: Record<NodeId, NodeStateRecord>;
   /** 보스 게이트까지 남은 노드 방문 수. */
   remainingTime: number;
   /** 현재 덱 슬롯 수 (10 → 20 → 30). */

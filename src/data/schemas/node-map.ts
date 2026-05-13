@@ -22,6 +22,18 @@ export interface Node {
   /** 인접 노드 (양방향 또는 단방향). 기본 양방향. */
   neighbors: NodeId[];
 
+  /**
+   * 조건부 인접 노드 — 특정 조건 만족 시 *추가로 보이는* 인접.
+   * 예: 이벤트 완료 후 새 길이 열리는 경우.
+   * 데이터 구조만 준비 (현재 사용 X).
+   *
+   * requires 예시: "event:n-grove:cleared", "boss:cleared", "affinity:npc-x:3+"
+   */
+  conditionalNeighbors?: Array<{
+    nodeId: NodeId;
+    requires: string;
+  }>;
+
   /** 노드 도착 시 트리거되는 콘텐츠 — kind에 따라 의미가 다름. */
   contentRef?: {
     /** 전투 노드: 적 그룹 ID 또는 boss ID */

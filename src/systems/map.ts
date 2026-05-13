@@ -7,15 +7,51 @@
  *  - 시간 임계 도달 시 *덱 확장* 또는 *보스 게이트 활성*
  */
 
-import type { NodeId, NodeMap, Node } from '@/data/schemas';
+import type { NodeId, NodeMap, Node, RunState } from '@/data/schemas';
 
-/** 현재 노드에서 이동 가능한 인접 노드 목록. */
-export function getNeighbors(map: NodeMap, currentNodeId: NodeId): Node[] {
+/**
+ * 현재 노드에서 이동 가능한 인접 노드 목록.
+ * runState가 주어지면 *조건부 인접*도 평가하여 추가.
+ */
+export function getNeighbors(
+  map: NodeMap,
+  currentNodeId: NodeId,
+  runState?: RunState,
+): Node[] {
   const current = map.nodes.find((n) => n.id === currentNodeId);
   if (!current) return [];
-  return current.neighbors
+
+  const ids = new Set<NodeId>(current.neighbors);
+
+  // 조건부 인접 평가 (현재 미사용 — 데이터 구조만 준비)
+  if (current.conditionalNeighbors && runState) {
+    for (const cn of current.conditionalNeighbors) {
+      if (evaluateCondition(cn.requires, runState)) {
+        ids.add(cn.nodeId);
+      }
+    }
+  }
+
+  return [...ids]
     .map((id) => map.nodes.find((n) => n.id === id))
     .filter((n): n is Node => n !== undefined);
+}
+
+/**
+ * 조건 표현식 평가. 매우 단순 (확장 가능).
+ * 형식 예시:
+ *   "event:<nodeId>:triggered"  — 해당 노드 이벤트가 발생했는가
+ *   "combat:<nodeId>:cleared"   — 해당 노드 전투가 클리어됐는가
+ *   "node:<nodeId>:visited"     — 해당 노드를 방문했는가
+ */
+function evaluateCondition(condition: string, state: RunState): boolean {
+  const [kind, nodeId, what] = condition.split(':');
+  const ns = state.nodeStates[nodeId];
+  if (!ns) return false;
+  if (kind === 'node' && what === 'visited') return ns.visited;
+  if (kind === 'event' && what === 'triggered') return !!ns.eventTriggered;
+  if (kind === 'combat' && what === 'cleared') return !!ns.combatCleared;
+  return false;
 }
 
 /** 노드 ID로 노드를 가져옴. 없으면 undefined. */

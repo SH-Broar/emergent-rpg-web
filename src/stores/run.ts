@@ -23,6 +23,7 @@ const EMPTY_RUN: RunState = {
   startedAt: 0,
   currentNodeId: '',
   visitedNodes: [],
+  nodeStates: {},
   remainingTime: 0,
   deckSize: 10,
   deck: [],
@@ -73,6 +74,8 @@ export const useRunStore = defineStore('run', {
       fresh.season = params.season;
       fresh.startedAt = Date.now();
       fresh.currentNodeId = params.startNodeId;
+      // 시작 노드도 visited로 마킹 (재방문 시 시작 노드 본인 처리 X)
+      fresh.nodeStates[params.startNodeId] = { visited: true };
       fresh.remainingTime = params.timeLimit;
       fresh.hp = params.maxHp;
       fresh.maxHp = params.maxHp;
@@ -82,21 +85,55 @@ export const useRunStore = defineStore('run', {
       this.active = true;
     },
 
-    /** 노드 방문 — 시간 1 카운트 감소 + 덱 확장 임계 체크. */
+    /** 노드 방문 — 시간 1 카운트 감소 + 덱 확장 임계 체크 + 방문 상태 마킹. */
     visitNode(nodeId: string, expansionThresholds: [number, number]) {
       const r = this.data;
       r.currentNodeId = nodeId;
       r.visitedNodes.push(nodeId);
       r.remainingTime = Math.max(0, r.remainingTime - 1);
 
-      // 덱 확장 임계 — remainingTime 또는 visitedNodes.length 기준
-      // spec: 시간 = 노드 방문 카운트. 임계 = 방문 누적 수
+      // 노드 상태 마킹 (이미 방문했어도 visited 유지)
+      if (!r.nodeStates[nodeId]) {
+        r.nodeStates[nodeId] = { visited: true };
+      } else {
+        r.nodeStates[nodeId].visited = true;
+      }
+
+      // 덱 확장 임계
       const visited = r.visitedNodes.length;
       if (r.deckSize === 10 && visited >= expansionThresholds[0]) {
         r.deckSize = 20;
       } else if (r.deckSize === 20 && visited >= expansionThresholds[1]) {
         r.deckSize = 30;
       }
+    },
+
+    /** 전투 클리어 마킹 — 재방문 시 전투 없이 통과. */
+    markCombatCleared(nodeId: string) {
+      const r = this.data;
+      if (!r.nodeStates[nodeId]) r.nodeStates[nodeId] = { visited: true };
+      r.nodeStates[nodeId].combatCleared = true;
+      r.nodeStates[nodeId].combatStealthed = false;
+    },
+
+    /** 전투 회피(은밀) 마킹 — 재방문 시 "싸울지/지나칠지" 선택. */
+    markCombatStealthed(nodeId: string) {
+      const r = this.data;
+      if (!r.nodeStates[nodeId]) r.nodeStates[nodeId] = { visited: true };
+      r.nodeStates[nodeId].combatStealthed = true;
+    },
+
+    /** 이벤트 발생 마킹. 카운트 증가. */
+    markEventTriggered(nodeId: string, eventId: string) {
+      const r = this.data;
+      if (!r.nodeStates[nodeId]) r.nodeStates[nodeId] = { visited: true };
+      r.nodeStates[nodeId].eventTriggered = eventId;
+      r.nodeStates[nodeId].eventCount = (r.nodeStates[nodeId].eventCount ?? 0) + 1;
+    },
+
+    /** 노드 상태 조회 (없으면 미방문). */
+    getNodeState(nodeId: string) {
+      return this.data.nodeStates[nodeId];
     },
 
     /** 런 종료 — endRun()을 호출하면 외부에서 codex/meta 갱신을 트리거. */

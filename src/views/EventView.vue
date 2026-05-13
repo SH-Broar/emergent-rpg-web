@@ -40,6 +40,10 @@ function leave() {
 
 onMounted(() => {
   currentEvent.value = pickEvent(pool.value);
+  // 이벤트가 추첨됐다면 *발생 마킹* — 재방문 시 이 이벤트는 다시 안 나옴.
+  if (currentEvent.value) {
+    run.markEventTriggered(run.data.currentNodeId, currentEvent.value.id);
+  }
 });
 </script>
 

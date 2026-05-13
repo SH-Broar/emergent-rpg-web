@@ -2,10 +2,12 @@
 /**
  * 메인 메뉴.
  *
- * spec v2 Round 12: 3 메뉴 — 게임 시작 / 연구 / 버그
- * (+ 도감은 별도 메뉴로 추가)
+ * 4 메뉴 — 게임 시작 / 연구 / 도감 / 버그.
+ *  - 연구: 영구 해금 시스템 (메타 진행, 되돌아가지 않음)
+ *  - 버그: 매 판 열었다 닫았다 할 수 있는 특수 기능 토글
  *
- * 외부 프레임 서사: 시간의 신 모노와 임페리시아가 전생자를 맞이하는 공간.
+ * 플레이버 텍스트는 사용자가 직접 채울 영역으로 비워둠.
+ * (제목·도입문구·메뉴 설명 등)
  */
 
 import { useRouter } from 'vue-router';
@@ -13,6 +15,11 @@ import { useMetaStore } from '@/stores/meta';
 
 const router = useRouter();
 const meta = useMetaStore();
+
+// === 플레이버 텍스트 (사용자 채움 영역) ===
+// 비워두면 화면에 표시되지 않음.
+const TITLE = '';        // 예: 'RDC: 시간의 신탁'
+const TAGLINE = '';      // 예: 도입 문구
 
 function goTimelineSelect() {
   router.push('/game/timeline-select');
@@ -30,44 +37,33 @@ function goCodex() {
 
 <template>
   <main class="main-view">
-    <header class="hero">
-      <h1 class="title">RDC<span class="title-sub">: 시간의 신탁</span></h1>
-      <p class="tagline">
-        시간의 신 <strong>모노</strong>가 그대를 부른다. <strong>임페리시아</strong>가 안내하는
-        시간대의 갈림길로.
-      </p>
+    <header v-if="TITLE || TAGLINE" class="hero">
+      <h1 v-if="TITLE" class="title">{{ TITLE }}</h1>
+      <p v-if="TAGLINE" class="tagline">{{ TAGLINE }}</p>
     </header>
 
     <section class="menu-grid">
       <button class="menu-card menu-card--primary" type="button" @click="goTimelineSelect">
         <span class="menu-card__title">게임 시작</span>
-        <span class="menu-card__desc">시간대를 선택하고 캐릭터를 골라 전생합니다.</span>
       </button>
 
       <button class="menu-card" type="button" @click="goResearch">
         <span class="menu-card__title">연구</span>
-        <span class="menu-card__desc">
-          모노의 세계 간섭 강도 · 해금 노드 트리.
-          <span class="menu-card__sub">총 진행도 {{ Math.round(meta.compositeRatio * 100) }}%</span>
-        </span>
+        <span class="menu-card__sub">진행도 {{ Math.round(meta.compositeRatio * 100) }}%</span>
       </button>
 
       <button class="menu-card" type="button" @click="goCodex">
         <span class="menu-card__title">도감</span>
-        <span class="menu-card__desc">
-          만난 인물 · 사용한 카드 · 얻은 유물의 기록.
-          <span class="menu-card__sub">{{ meta.codex.length }}개 항목</span>
-        </span>
+        <span class="menu-card__sub">{{ meta.codex.length }}개 항목</span>
       </button>
 
-      <button class="menu-card menu-card--debug" type="button" @click="goBug">
+      <button class="menu-card menu-card--bug" type="button" @click="goBug">
         <span class="menu-card__title">버그</span>
-        <span class="menu-card__desc">특수 효과 토글 (개발자 모드).</span>
       </button>
     </section>
 
     <footer class="legacy-note">
-      <small>총 {{ meta.totalRuns }}회 전생 · 보스 클리어 {{ meta.totalBossClears }}회</small>
+      <small>전생 {{ meta.totalRuns }} · 보스 클리어 {{ meta.totalBossClears }}</small>
     </footer>
   </main>
 </template>
@@ -77,6 +73,7 @@ function goCodex() {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   padding: 3rem 2rem;
   gap: 3rem;
   max-width: 1100px;
@@ -86,19 +83,12 @@ function goCodex() {
 .hero {
   text-align: center;
 }
-
 .title {
   font-size: 3rem;
   margin: 0 0 0.4rem;
   letter-spacing: 0.1em;
   color: #f6e8b8;
 }
-.title-sub {
-  font-size: 1.4rem;
-  color: #c0b693;
-  margin-left: 0.4rem;
-}
-
 .tagline {
   color: #a4a4b0;
   font-size: 1.05rem;
@@ -140,9 +130,9 @@ function goCodex() {
   border-color: rgba(180, 140, 255, 0.4);
 }
 
-.menu-card--debug {
-  background: rgba(255, 80, 80, 0.08);
-  border-color: rgba(255, 100, 100, 0.3);
+.menu-card--bug {
+  background: rgba(255, 80, 80, 0.06);
+  border-color: rgba(255, 100, 100, 0.25);
 }
 
 .menu-card__title {
@@ -150,16 +140,9 @@ function goCodex() {
   font-weight: 600;
   color: #f6e8b8;
 }
-.menu-card__desc {
-  font-size: 0.9rem;
-  color: #b6b6c4;
-  line-height: 1.4;
-}
 .menu-card__sub {
-  display: block;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   color: #888;
-  margin-top: 0.2rem;
 }
 
 .legacy-note {

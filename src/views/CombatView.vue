@@ -35,8 +35,9 @@ const combat = computed(() => run.data.combat);
 
 function play(index: number) {
   playCardSys(index, enemy.value);
-  // 적 사망 시 combat이 undefined로 → 자동으로 맵으로 복귀
+  // 적 사망 시 combat이 undefined → 클리어 마킹 + 맵 복귀
   if (!run.data.combat) {
+    run.markCombatCleared(run.data.currentNodeId);
     setTimeout(() => router.push('/game/map'), 500);
   }
 }
