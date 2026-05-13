@@ -51,5 +51,6 @@ npm run preview  # 빌드 결과 미리보기
 
 ## 관련 문서
 
+- **[docs/HARNESS.md](./docs/HARNESS.md)** — 게임 데이터 작성 가이드 (12개 단위 모두 필드·예시·팁)
 - `.omc/specs/deep-interview-rdc-roguelike-pivot.md` — 게임 정체성 spec (Ambiguity 5%)
 - `.omc/plans/phase-0-etl-plan.md` — 브랜치 분리 + 데이터 ETL 계획서
