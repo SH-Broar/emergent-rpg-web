@@ -61,6 +61,9 @@ export function startCombat(monster: Monster) {
     maxMana: DEFAULT_MAX_MANA,
   };
   r.combat = combat;
+
+  // on-combat-start 유물 발동
+  void import('./relic').then(({ onCombatStart }) => onCombatStart());
 }
 
 /**
@@ -105,7 +108,17 @@ function applyEffect(effect: CardEffect, c: CombatState) {
 const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) => void> = {
   damage: (e, c) => {
     const targets = resolveTargets(e.target ?? 'enemy', c);
-    const value = e.value ?? 0;
+    // 유물의 bonus-damage 합산
+    let bonus = 0;
+    try {
+      const run = useRunStore();
+      for (const relic of run.data.relics) {
+        for (const eff of relic.effects) {
+          if (eff.kind === 'bonus-damage') bonus += eff.value ?? 0;
+        }
+      }
+    } catch { /* store 미접근 가능 */ }
+    const value = (e.value ?? 0) + bonus;
     for (const t of targets) {
       const absorbed = Math.min(t.block, value);
       t.block -= absorbed;
@@ -247,6 +260,9 @@ export function applyMonsterDrop(drop: MonsterDrop, allCards: Map<string, Card>)
       }
     }
   }
+
+  // on-combat-end 유물 발동 (bonus-gold 등)
+  void import('./relic').then(({ onCombatEnd }) => onCombatEnd());
 
   return {
     gold: drop.gold,

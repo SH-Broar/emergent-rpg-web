@@ -89,9 +89,11 @@ function endTurn() {
 function onVictory() {
   if (!boss.value) return;
   run.data.bossesCleared.push(boss.value.id);
-  // 보스 클리어 보상 (현재는 골드 + 영혼 자원 표시. 영혼은 progression에서 적용)
+  // 보스 클리어 보상
   run.data.gold += 30;
   clearCombat();
+  // 히페리온 자동 평가 (boss_clear 등)
+  void import('@/systems/hyperion').then(({ evaluateHyperion }) => evaluateHyperion());
   phase.value = 'victory';
 }
 

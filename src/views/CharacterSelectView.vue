@@ -34,7 +34,7 @@ function randomSeason(): Season {
   return SEASONS[Math.floor(Math.random() * SEASONS.length)];
 }
 
-function selectCharacter(c: Character) {
+async function selectCharacter(c: Character) {
   if (!canSelectCharacter(c.id)) {
     ui.toast('warning', '잠긴 캐릭터입니다.');
     return;
@@ -69,6 +69,23 @@ function selectCharacter(c: Character) {
     timeLimit: tl.timeLimit,
   });
   run.data.deck = deck;
+
+  // 종족 시드 유물 부여
+  if (race?.seedRelicIds) {
+    for (const relicId of race.seedRelicIds) {
+      const relic = data.relics.get(relicId);
+      if (relic) {
+        run.data.relics.push(relic);
+        if (!run.data.newRelicEncounters.includes(relic.id)) {
+          run.data.newRelicEncounters.push(relic.id);
+        }
+      }
+    }
+  }
+
+  // Passive 유물 효과 1회 적용 (예: bonus-hp 시작 시점)
+  const { applyPassiveRelicsAtRunStart } = await import('@/systems/relic');
+  applyPassiveRelicsAtRunStart();
 
   router.push('/game/map');
 }

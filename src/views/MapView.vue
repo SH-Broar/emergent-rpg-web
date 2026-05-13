@@ -142,6 +142,12 @@ function enterSelected() {
   // 시간 소모는 *처음 방문*일 때만, 또는 *전투/이벤트가 발생하는 경우*. 일단 모든 이동에 1 시간.
   run.visitNode(node.id, timeline.value.deckExpansionThresholds);
 
+  // 유물 trigger 발동
+  void import('@/systems/relic').then(({ onNodeEnter }) => onNodeEnter(node.id));
+
+  // 히페리온 자동 평가 (노드 방문 카운트가 조건일 수 있음)
+  void import('@/systems/hyperion').then(({ evaluateHyperion }) => evaluateHyperion());
+
   switch (node.kind) {
     case 'village':
       router.push('/game/village');
@@ -171,6 +177,7 @@ function enterSelected() {
       const heal = Math.floor(run.data.maxHp * 0.3);
       run.data.hp = Math.min(run.data.maxHp, run.data.hp + heal);
       ui.toast('success', `HP +${heal} 회복`);
+      void import('@/systems/relic').then(({ onRest }) => onRest());
       break;
     }
     case 'shop':

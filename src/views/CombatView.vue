@@ -73,6 +73,8 @@ function onVictory() {
   drop.value = applyMonsterDrop(monster.value.drop, data.cards);
   run.markCombatCleared(run.data.currentNodeId);
   clearCombat();
+  // 히페리온 자동 평가 (combat_clears 등)
+  void import('@/systems/hyperion').then(({ evaluateHyperion }) => evaluateHyperion());
   phase.value = 'victory';
 }
 
