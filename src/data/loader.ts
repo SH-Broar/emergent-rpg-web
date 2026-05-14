@@ -52,7 +52,7 @@ import type {
 } from './schemas';
 
 const VALID_RANKS = ['basic', 'common', 'rare', 'legendary'] as const;
-const VALID_NODE_KINDS = ['village', 'combat', 'event', 'elite', 'boss', 'rest', 'shop', 'workshop'] as const;
+const VALID_NODE_KINDS = ['village', 'combat', 'event', 'elite', 'boss', 'rest', 'shop', 'workshop', 'gather', 'activity'] as const;
 
 function isRank(v: string): v is Rank {
   return (VALID_RANKS as readonly string[]).includes(v);

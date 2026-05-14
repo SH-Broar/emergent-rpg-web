@@ -123,7 +123,7 @@ events = ev-mono-whisper
 npcs = npc-olyu
 
 [nodemap.nm-act-1-era4-061.node.n-iluneon-diner]
-kind = rest
+kind = gather
 region = iluneon
 label = 일루네온 식당
 description = 모험가들이 끼니를 때우는 곳. 한 자리에 *마치 인형 같은* 소녀가 멍하니 앉아 있다 — 임페리시아.
@@ -133,7 +133,7 @@ neighbors = n-iluneon-square, n-iluneon-clocktower
 npcs = npc-imperisia
 
 [nodemap.nm-act-1-era4-061.node.n-iluneon-guild]
-kind = village
+kind = activity
 region = iluneon
 label = 일루네온 길드 본부
 description = 의뢰 게시판 앞에서 사람들이 분주하다. 인간 모험가 하코가 게시판을 노려본다.
@@ -197,7 +197,7 @@ npcs = npc-caliburn
 events = ev-traveler-fork
 
 [nodemap.nm-act-1-era4-061.node.n-world-tree]
-kind = village
+kind = gather
 region = lar-forest
 label = 세계수
 description = 가지 위에 형성된 마을. 드라이어드들이 노래하고, 가지에서 *시간의 조각*이 떨어진다.
@@ -304,7 +304,7 @@ enemy = shadow-wolf
 npcs = npc-whitefang
 
 [nodemap.nm-act-1-era4-061.node.n-reshud-junction]
-kind = village
+kind = activity
 region = riagralta
 label = 르슈드 분기
 description = 알리메스·일루네온·풍혈지대를 잇는 교차로. 마차 정거장에서 작은 종이 울린다.
@@ -358,7 +358,7 @@ neighbors = n-luna-practice, n-luna-underground, n-phantom-spire, n-iluneon-squa
 npcs = npc-iyeon, npc-rupin, npc-miyu, npc-febiel, npc-kuruha
 
 [nodemap.nm-act-1-era4-061.node.n-luna-practice]
-kind = rest
+kind = activity
 region = luna
 label = 루나 실습홀
 description = 학생들의 마법 연습장. 빈 시간에는 *마력의 잔열*이 따뜻하다.
@@ -408,7 +408,7 @@ y = 0.68
 neighbors = n-tacomi
 
 [nodemap.nm-act-1-era4-061.node.n-bloom-terrace]
-kind = event
+kind = gather
 region = tacomi
 label = 블룸 테라스
 description = 꽃잎이 폭포처럼 떨어지는 테라스. 누군가 *시간의 결*을 길게 늘여 놓았다.

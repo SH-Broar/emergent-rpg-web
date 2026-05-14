@@ -15,6 +15,7 @@ import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
 import { getNeighbors, getNode, isTimeUp, effectiveKind as systemEffectiveKind } from '@/systems/map';
+import { rng } from '@/systems/rng';
 import type { Node, NodeId, NodeKind, NodeMap } from '@/data/schemas';
 
 const router = useRouter();
@@ -66,6 +67,8 @@ const nodeKindColors: Record<NodeKind, string> = {
   rest: '#c0c0c0',
   shop: '#c08eff',
   workshop: '#d8b4ff',
+  gather: '#a8e88e',
+  activity: '#f0d68e',
 };
 const nodeKindLabels: Record<NodeKind, string> = {
   village: '마을',
@@ -76,23 +79,14 @@ const nodeKindLabels: Record<NodeKind, string> = {
   rest: '휴식',
   shop: '상점',
   workshop: '공방',
+  gather: '채집',
+  activity: '활동',
 };
 
-// === 노드 클릭: Drawer 열기 ===
+// === 노드 클릭: Drawer 열기 (인접·비인접 모두) ===
+// 사용자 사양: 비-인접 노드도 클릭으로 *설명*은 볼 수 있어야 함.
+// 입장은 인접·도달 가능 노드에서만 — getEnterAction 단계에서 'unreachable' 가드.
 function clickNode(node: Node) {
-  if (node.id === run.data.currentNodeId) {
-    // 현재 노드 — drawer 표시 (정보 확인)
-    selectedNodeId.value = node.id;
-    return;
-  }
-  if (!reachable.value.has(node.id)) {
-    if (timeUp.value) {
-      ui.toast('warning', '시간이 다 되어 보스 게이트로만 갈 수 있습니다.');
-    } else {
-      ui.toast('warning', '인접한 노드만 갈 수 있습니다.');
-    }
-    return;
-  }
   selectedNodeId.value = node.id;
 }
 
@@ -101,12 +95,27 @@ function closeDrawer() {
 }
 
 // === Drawer 액션: 입장 / 회피 ===
-function getEnterAction(): 'enter' | 'pass' | 'choose-combat' | 'pass-only' | 'boss' | 'rest-repeat' | 'shop-todo' | 'event-pass' {
+type EnterAction =
+  | 'enter'
+  | 'pass'
+  | 'choose-combat'
+  | 'pass-only'
+  | 'boss'
+  | 'rest-repeat'
+  | 'shop-todo'
+  | 'event-pass'
+  | 'gather-enter'
+  | 'activity-enter'
+  | 'unreachable';
+
+function getEnterAction(): EnterAction {
   const node = selectedNode.value;
   const st = selectedState.value;
   if (!node) return 'enter';
   // 현재 노드면 그냥 정보 확인용
   if (node.id === run.data.currentNodeId) return 'pass-only';
+  // 비-인접 노드 — 설명만 보이고 입장 불가.
+  if (!reachable.value.has(node.id)) return 'unreachable';
 
   switch (systemEffectiveKind(node, run.data)) {
     case 'combat':
@@ -123,7 +132,12 @@ function getEnterAction(): 'enter' | 'pass' | 'choose-combat' | 'pass-only' | 'b
       return 'rest-repeat';
     case 'shop':
       return 'shop-todo';
+    case 'gather':
+      return 'gather-enter';
+    case 'activity':
+      return 'activity-enter';
     case 'village':
+    case 'workshop':
     default:
       return 'enter';
   }
@@ -133,6 +147,12 @@ function enterSelected() {
   const node = selectedNode.value;
   if (!node || !timeline.value) return;
   const action = getEnterAction();
+
+  // 비-인접 — 입장 불가. drawer는 *설명만* 보여주는 용도.
+  if (action === 'unreachable') {
+    ui.toast('warning', '인접한 노드가 아닙니다 — 한 칸씩만 이동할 수 있습니다.');
+    return;
+  }
 
   // 노드 방문 처리
   run.visitNode(node.id, timeline.value.deckExpansionThresholds);
@@ -186,6 +206,33 @@ function enterSelected() {
     case 'shop':
       ui.toast('info', '상점은 아직 구현 전입니다.');
       break;
+    case 'gather': {
+      // 채집 — 시간의 조각 + 골드. rng 기반 (시드 고정).
+      const shards = 2 + Math.floor(rng() * 3);  // 2~4
+      const gold = 3 + Math.floor(rng() * 5);    // 3~7
+      run.data.timeShards += shards;
+      run.data.gold += gold;
+      ui.toast('success', `채집 — 시간의 조각 +${shards}, 골드 +${gold}`);
+      break;
+    }
+    case 'activity': {
+      // 활동 — 권역 풀에서 종족 시드 카드 한 장. 없으면 골드만.
+      const race = data.races.get(data.characters.get(run.data.characterId)?.raceId ?? '');
+      const pool = race?.seedCardIds ?? [];
+      if (pool.length > 0) {
+        const cardId = pool[Math.floor(rng() * pool.length)];
+        const card = data.cards.get(cardId);
+        if (card) {
+          run.addCardToCollection(card);
+          ui.toast('success', `활동 — '${card.name}' 획득`);
+          break;
+        }
+      }
+      const gold = 5 + Math.floor(rng() * 5);
+      run.data.gold += gold;
+      ui.toast('success', `활동 — 골드 +${gold}`);
+      break;
+    }
   }
 
   closeDrawer();
@@ -222,8 +269,13 @@ onMounted(() => {
  * 원본 position(0..1)에 ×SPREAD를 곱하면 SVG 좌표가 더 넓게 펼쳐진다.
  * 카메라 transform이 한 노드를 화면 중앙(50,50)에 고정시키므로 전체 맵이
  * viewBox(100×100) 밖으로 나가도 무방.
+ *
+ * 사용자 사양: "가까이 붙은 노드들의 최소 거리가 지금의 두 배는 넘어야".
+ * 250 → 500 으로 두 배.
  */
-const SPREAD = 250;
+const SPREAD = 500;
+/** 노드 점의 반지름 — 사용자 사양: "1/9정도". 기존 3.5 → 0.4. */
+const NODE_RADIUS = 0.4;
 function svgX(node: Node): number { return node.position.x * SPREAD; }
 function svgY(node: Node): number { return node.position.y * SPREAD; }
 
@@ -271,8 +323,11 @@ function enterLabel(): string {
     case 'event-pass': return '지나간다';
     case 'rest-repeat': return '잠시 쉰다';
     case 'shop-todo': return '미구현';
+    case 'gather-enter': return '채집한다';
+    case 'activity-enter': return '활동한다';
     case 'boss': return '도전한다';
     case 'pass-only': return '닫기';
+    case 'unreachable': return '인접하지 않음';
   }
 }
 </script>
@@ -318,9 +373,11 @@ function enterLabel(): string {
               :transform="`translate(${svgX(node)} ${svgY(node)})`"
               @click="clickNode(node)"
             >
-              <circle r="3.5" :fill="nodeKindColors[systemEffectiveKind(node, run.data)]" class="node-dot" />
-              <text y="6" class="node-label">{{ node.label }}</text>
-              <text y="8.5" class="node-kind">[{{ nodeKindLabels[systemEffectiveKind(node, run.data)] }}]</text>
+              <!-- 클릭 영역은 점보다 훨씬 큼 — 작은 점이라도 손가락·마우스 모두 잡힘. -->
+              <circle r="2.4" class="node-hitbox" />
+              <circle :r="NODE_RADIUS" :fill="nodeKindColors[systemEffectiveKind(node, run.data)]" class="node-dot" />
+              <text y="1.4" class="node-label">{{ node.label }}</text>
+              <text y="2.5" class="node-kind">[{{ nodeKindLabels[systemEffectiveKind(node, run.data)] }}]</text>
             </g>
           </g>
           <!-- 현재 위치 화살표 마커 — 카메라 g 안이므로 노드와 함께 이동.
@@ -328,9 +385,9 @@ function enterLabel(): string {
           <g
             v-if="currentNode"
             class="current-arrow"
-            :transform="`translate(${svgX(currentNode)} ${svgY(currentNode) - 6})`"
+            :transform="`translate(${svgX(currentNode)} ${svgY(currentNode) - 1.5})`"
           >
-            <path d="M 0 0 L -2.2 -3.6 L 0 -2.4 L 2.2 -3.6 Z" fill="#f6e8b8" />
+            <path d="M 0 0 L -0.8 -1.4 L 0 -0.9 L 0.8 -1.4 Z" fill="#f6e8b8" />
           </g>
         </g>
       </svg>
@@ -352,6 +409,7 @@ function enterLabel(): string {
         <button
           v-if="selectedNode.id !== run.data.currentNodeId"
           class="drawer__enter"
+          :disabled="getEnterAction() === 'unreachable'"
           @click="enterSelected"
         >
           {{ enterLabel() }}
@@ -409,18 +467,23 @@ function enterLabel(): string {
 }
 
 .edges .edge {
-  stroke: rgba(255, 255, 255, 0.15);
-  stroke-width: 0.3;
+  stroke: rgba(255, 255, 255, 0.12);
+  stroke-width: 0.18;
   fill: none;
 }
 .node-group { cursor: pointer; }
+/* 큰 hitbox는 클릭만 잡고 *시각적으로 숨김*. */
+.node-hitbox {
+  fill: transparent;
+  pointer-events: all;
+}
 .node-group--reachable .node-dot {
-  filter: drop-shadow(0 0 4px currentColor);
+  filter: drop-shadow(0 0 1.2px currentColor);
   animation: pulse 1.4s ease-in-out infinite;
 }
 .node-group--current .node-dot {
   stroke: #f6e8b8;
-  stroke-width: 0.6;
+  stroke-width: 0.18;
 }
 .node-group--visited .node-dot {
   opacity: 0.7;
@@ -431,16 +494,16 @@ function enterLabel(): string {
 .node-group--stealthed .node-dot {
   opacity: 0.55;
   stroke: #8eedff;
-  stroke-dasharray: 0.8 0.6;
-  stroke-width: 0.5;
+  stroke-dasharray: 0.25 0.15;
+  stroke-width: 0.16;
 }
 .node-group--selected .node-dot {
   stroke: #c08eff;
-  stroke-width: 0.8;
+  stroke-width: 0.25;
 }
 
-.node-label { fill: #e9e9f4; font-size: 2.2px; text-anchor: middle; font-weight: 600; }
-.node-kind { fill: #888; font-size: 1.6px; text-anchor: middle; }
+.node-label { fill: #e9e9f4; font-size: 0.85px; text-anchor: middle; font-weight: 600; }
+.node-kind { fill: #888; font-size: 0.65px; text-anchor: middle; }
 
 .current-arrow {
   pointer-events: none;
@@ -518,7 +581,8 @@ function enterLabel(): string {
   font-weight: 600;
   font: inherit;
 }
-.drawer__enter:hover { background: rgba(192, 142, 255, 0.3); }
+.drawer__enter:hover:not(:disabled) { background: rgba(192, 142, 255, 0.3); }
+.drawer__enter:disabled { opacity: 0.4; cursor: not-allowed; }
 .drawer__pass {
   padding: 0.6rem 1rem;
   background: rgba(255, 255, 255, 0.05);

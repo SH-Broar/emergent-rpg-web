@@ -16,7 +16,9 @@ export type NodeKind =
   | 'boss'        // 연표 종말 위협
   | 'rest'        // 휴식 (HP 회복)
   | 'shop'        // 상점 (구매)
-  | 'workshop';   // 공방 (더 좋은 카드 제작 + 강화)
+  | 'workshop'    // 공방 (더 좋은 카드 제작 + 강화)
+  | 'gather'      // 채집 (자원 수집 — 시간의 조각·골드)
+  | 'activity';   // 활동 (소소한 보상 — 카드 한 장 또는 친밀도)
 
 /** 컬러 8원소. RDC 세계관의 기본 속성. */
 export type Element =
