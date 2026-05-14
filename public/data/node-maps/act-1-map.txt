@@ -97,7 +97,7 @@ label = 일루네온 광장
 description = 컬러즈 세계의 중심. 분수대 옆에서 어린 소년 — 니아 이유르 — 가 잠시 멈춰 있다. 그가 그대를 본다. "왔군요."
 x = 0.50
 y = 0.50
-neighbors = n-iluneon-market, n-iluneon-clocktower, n-iluneon-diner, n-iluneon-guild, n-arukea-bridge, n-riagralta, n-luna-academy
+neighbors = n-iluneon-market, n-iluneon-clocktower, n-iluneon-diner, n-iluneon-guild, n-arukea-bridge, n-north-pass, n-south-road
 npcs = npc-niayur, npc-hako, npc-phoenix
 is_start = true
 
@@ -289,7 +289,7 @@ label = 리아그랄타 평원
 description = 일루네온 북쪽으로 끝없이 펼쳐진 초원. 양 떼 너머에서 *그림자 늑대*가 보인다.
 x = 0.50
 y = 0.30
-neighbors = n-iluneon-square, n-ode-slope, n-reshud-junction
+neighbors = n-north-pass, n-ode-slope, n-reshud-junction
 enemy = shadow-pup
 
 [nodemap.nm-act-1-era4-061.node.n-ode-slope]
@@ -310,7 +310,7 @@ label = 르슈드 분기
 description = 알리메스·일루네온·풍혈지대를 잇는 교차로. 마차 정거장에서 작은 종이 울린다.
 x = 0.35
 y = 0.40
-neighbors = n-iluneon-guild, n-riagralta, n-windfall-valley, n-bagreat
+neighbors = n-iluneon-guild, n-riagralta, n-reshud-pass, n-bagreat-foot
 npcs = npc-airi
 
 [nodemap.nm-act-1-era4-061.node.n-bagreat]
@@ -320,7 +320,7 @@ label = 바그레트 산맥
 description = 알리메스로 가는 협곡. 드워프의 옛 채굴 흔적이 바위에 새겨져 있다.
 x = 0.22
 y = 0.50
-neighbors = n-reshud-junction, n-alimes, n-erumen-mistwood
+neighbors = n-bagreat-foot, n-mistwood-trail, n-erumen-mistwood
 enemy = shadow-pup
 
 [nodemap.nm-act-1-era4-061.node.n-alimes]
@@ -330,7 +330,7 @@ label = 알리메스
 description = 바그레트와 겔리더 산맥 사이에 끼인 오지 마을. 약초원과 비단 공방이 골목을 메운다.
 x = 0.12
 y = 0.58
-neighbors = n-bagreat
+neighbors = n-mistwood-trail
 npcs = npc-tarko, npc-betelgeuse, npc-wimel
 
 [nodemap.nm-act-1-era4-061.node.n-erumen-mistwood]
@@ -354,7 +354,7 @@ label = 마법학교 루나
 description = 첨탑이 안개 속에서도 빛난다. 학생들의 소란이 복도에 가득하다.
 x = 0.35
 y = 0.75
-neighbors = n-luna-practice, n-luna-underground, n-phantom-spire, n-iluneon-square
+neighbors = n-luna-practice, n-luna-underground, n-phantom-spire, n-south-road
 npcs = npc-iyeon, npc-rupin, npc-miyu, npc-febiel, npc-kuruha
 
 [nodemap.nm-act-1-era4-061.node.n-luna-practice]
@@ -395,7 +395,7 @@ label = 타코미
 description = 낮의 카페 거리. 해가 지면 거리 전체가 *나이트 타코미*로 변모한다.
 x = 0.20
 y = 0.65
-neighbors = n-night-tacomi, n-tacomi-cafe, n-bloom-terrace
+neighbors = n-tacomi-alley, n-tacomi-cafe, n-bloom-terrace
 npcs = npc-akasha, npc-monato
 
 [nodemap.nm-act-1-era4-061.node.n-tacomi-cafe]
@@ -424,7 +424,7 @@ label = 나이트 타코미
 description = 레이저 조명과 음악이 밤을 수놓는다. 거리 끝에서 *홀로그램*이 일렁인다.
 x = 0.16
 y = 0.50
-neighbors = n-tacomi, n-hologram-field, n-stella-ville
+neighbors = n-tacomi-alley, n-hologram-field, n-stella-ville
 events = ev-mono-whisper
 
 [nodemap.nm-act-1-era4-061.node.n-hologram-field]
@@ -480,7 +480,7 @@ label = 풍혈지대
 description = 강한 바람이 끊임없이 불어치는 계곡. 리엔카이가 *밤참새* 노래를 흥얼거린다.
 x = 0.28
 y = 0.18
-neighbors = n-reshud-junction, n-demon-castle, n-windfall-rise
+neighbors = n-reshud-pass, n-demon-castle, n-windfall-rise
 npcs = npc-rienkay, npc-tsuyosai
 
 [nodemap.nm-act-1-era4-061.node.n-windfall-rise]
@@ -503,3 +503,65 @@ y = 0.05
 neighbors = n-windfall-rise
 boss = bs-act-1-anchor
 is_boss_gate = true
+
+# ============================================================
+# 중간 노드 — 멀리 떨어진 권역 사이에 끼워 화면 *항상 인접 노드 보임* 보장
+# ============================================================
+
+[nodemap.nm-act-1-era4-061.node.n-south-road]
+kind = combat
+region = luna
+label = 남쪽 가도
+description = 일루네온 광장에서 마법학교 루나로 내려가는 길. 풀숲에서 그림자가 인다.
+x = 0.42
+y = 0.62
+neighbors = n-iluneon-square, n-luna-academy
+enemy = shadow-pup
+
+[nodemap.nm-act-1-era4-061.node.n-north-pass]
+kind = gather
+region = riagralta
+label = 북쪽 들머리
+description = 일루네온에서 리아그랄타 평원으로 나가는 들머리. 풀잎이 다리 옆을 스친다.
+x = 0.50
+y = 0.40
+neighbors = n-iluneon-square, n-riagralta
+
+[nodemap.nm-act-1-era4-061.node.n-reshud-pass]
+kind = combat
+region = demon-windfall
+label = 르슈드 협로
+description = 르슈드 분기에서 풍혈지대로 오르는 좁은 협로. 바람이 거세지기 시작한다.
+x = 0.31
+y = 0.29
+neighbors = n-reshud-junction, n-windfall-valley
+enemy = shadow-pup
+
+[nodemap.nm-act-1-era4-061.node.n-bagreat-foot]
+kind = gather
+region = alimes
+label = 산자락
+description = 바그레트 산자락의 야영터. 산길 입구의 약초가 풍성하다.
+x = 0.28
+y = 0.45
+neighbors = n-reshud-junction, n-bagreat
+
+[nodemap.nm-act-1-era4-061.node.n-mistwood-trail]
+kind = event
+region = alimes
+label = 안개 가도
+description = 알리메스로 들어가는 안개 깔린 길. 안개 사이로 *작은 그림자*가 흐른다.
+x = 0.17
+y = 0.54
+neighbors = n-bagreat, n-alimes
+events = ev-ali-mist-trader, ev-stranger-favor
+
+[nodemap.nm-act-1-era4-061.node.n-tacomi-alley]
+kind = combat
+region = tacomi
+label = 타코미 골목
+description = 낮과 밤이 교차하는 좁은 골목. 네온이 막 켜진다.
+x = 0.18
+y = 0.58
+neighbors = n-tacomi, n-night-tacomi
+enemy = shadow-pup

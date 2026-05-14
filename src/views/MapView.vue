@@ -274,8 +274,8 @@ onMounted(() => {
  * 250 → 500 으로 두 배.
  */
 const SPREAD = 500;
-/** 노드 점의 반지름 — 사용자 사양: "1/9정도". 기존 3.5 → 0.4. */
-const NODE_RADIUS = 0.4;
+/** 노드 점의 반지름 — 면적 1/9 = 반지름 1/3. 기존 3.5 → 약 1.2. */
+const NODE_RADIUS = 1.2;
 function svgX(node: Node): number { return node.position.x * SPREAD; }
 function svgY(node: Node): number { return node.position.y * SPREAD; }
 

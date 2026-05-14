@@ -96,6 +96,28 @@ async function selectCharacter(c: Character) {
   // 시작 카드 — collection에 모두, deck 슬롯에는 deckSize만큼.
   run.data.collection = allInstances;
   run.data.deck = allInstances.slice(0, deckSize);
+
+  // 컬러 스탯 초기화 — 캐릭터의 base_npc colorValues가 있으면 ×100, 없으면 모두 30.
+  // (NPC colorValues는 0~1, 게임 스탯은 0~100)
+  const baseNpc = c.baseNpcId ? data.npcs.get(c.baseNpcId) : undefined;
+  if (baseNpc?.colorValues) {
+    run.data.colors = {
+      fire: Math.round(baseNpc.colorValues.fire * 100),
+      water: Math.round(baseNpc.colorValues.water * 100),
+      electric: Math.round(baseNpc.colorValues.electric * 100),
+      iron: Math.round(baseNpc.colorValues.iron * 100),
+      earth: Math.round(baseNpc.colorValues.earth * 100),
+      wind: Math.round(baseNpc.colorValues.wind * 100),
+      light: Math.round(baseNpc.colorValues.light * 100),
+      dark: Math.round(baseNpc.colorValues.dark * 100),
+    };
+  } else {
+    // 기본 균형 — NPC 매칭 없을 때 안전 fallback.
+    run.data.colors = {
+      fire: 30, water: 30, electric: 30, iron: 30,
+      earth: 30, wind: 30, light: 30, dark: 30,
+    };
+  }
   // 이후 모든 mutation은 App.vue의 $subscribe가 자동 저장.
 
   // 종족 시드 유물 부여

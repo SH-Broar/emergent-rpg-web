@@ -21,11 +21,18 @@ import type {
 } from '@/data/schemas';
 import { drawCards, discardHand } from './deck';
 import { rng } from './rng';
+import { bonusesFromColors } from './stats';
 import { useRunStore } from '@/stores/run';
 import { useUiStore } from '@/stores/ui';
 
 const STARTING_HAND_SIZE = 5;
 const DEFAULT_MAX_MANA = 3;
+
+/** 현재 런의 컬러 스탯에서 도출된 전투 보너스. */
+function currentBonuses() {
+  const run = useRunStore();
+  return bonusesFromColors(run.data.colors);
+}
 
 /** 전투 시작 — Combat state 초기화 + 첫 핸드 드로우. */
 export function startCombat(monster: Monster) {
@@ -46,8 +53,13 @@ export function startCombat(monster: Monster) {
     statuses: {},
   };
 
+  // MAG 보너스로 드로우/마나 증가.
+  const bonus = currentBonuses();
+  const handSize = STARTING_HAND_SIZE + bonus.drawExtra;
+  const maxMana = DEFAULT_MAX_MANA + bonus.manaExtra;
+
   const drawPile = [...r.deck];
-  const { drawn, newDrawPile, newDiscardPile } = drawCards(drawPile, [], STARTING_HAND_SIZE);
+  const { drawn, newDrawPile, newDiscardPile } = drawCards(drawPile, [], handSize);
 
   const combat: CombatState = {
     enemy: enemyCombatant,
@@ -58,8 +70,8 @@ export function startCombat(monster: Monster) {
     discardPile: newDiscardPile,
     exhaustPile: [],
     turn: 1,
-    mana: DEFAULT_MAX_MANA,
-    maxMana: DEFAULT_MAX_MANA,
+    mana: maxMana,
+    maxMana: maxMana,
   };
   r.combat = combat;
 
@@ -110,16 +122,18 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
   damage: (e, c) => {
     const targets = resolveTargets(e.target ?? 'enemy', c);
     // 유물의 bonus-damage 합산
-    let bonus = 0;
+    let relicBonus = 0;
     try {
       const run = useRunStore();
       for (const relic of run.data.relics) {
         for (const eff of relic.effects) {
-          if (eff.kind === 'bonus-damage') bonus += eff.value ?? 0;
+          if (eff.kind === 'bonus-damage') relicBonus += eff.value ?? 0;
         }
       }
     } catch { /* store 미접근 가능 */ }
-    const value = (e.value ?? 0) + bonus;
+    // ATK 스탯 보너스 — 공격 카드 *최소 공격력* +N (10 ATK당 1).
+    const atkBonus = currentBonuses().damage;
+    const value = (e.value ?? 0) + relicBonus + atkBonus;
     for (const t of targets) {
       const absorbed = Math.min(t.block, value);
       t.block -= absorbed;
@@ -135,7 +149,9 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
   },
   block: (e, c) => {
     const targets = resolveTargets(e.target ?? 'self', c);
-    const value = e.value ?? 0;
+    // DEF 스탯 보너스 — 방어 카드 *방어력* +N (10 DEF당 1).
+    const defBonus = currentBonuses().block;
+    const value = (e.value ?? 0) + defBonus;
     for (const t of targets) {
       t.block += value;
     }
@@ -191,7 +207,9 @@ export function endPlayerTurn(monster: Monster): { playerDefeated: boolean } {
   c.mana = c.maxMana;
   c.player.block = 0;
 
-  const { drawn, newDrawPile, newDiscardPile } = drawCards(c.drawPile, c.discardPile, STARTING_HAND_SIZE);
+  // MAG 보너스로 매 턴 드로우 +.
+  const handSize = STARTING_HAND_SIZE + currentBonuses().drawExtra;
+  const { drawn, newDrawPile, newDiscardPile } = drawCards(c.drawPile, c.discardPile, handSize);
   c.hand = drawn;
   c.drawPile = newDrawPile;
   c.discardPile = newDiscardPile;

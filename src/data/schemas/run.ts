@@ -12,6 +12,7 @@
 
 import type { Card } from './card';
 import type { Relic } from './relic';
+import type { ColorValues } from './npc';
 import type {
   CardId,
   CharacterId,
@@ -137,6 +138,16 @@ export interface RunState {
   gold: number;
   /** 시간의 조각 — 카드/유물 *런 내 제작* 전용 재화 (휘발). */
   timeShards: number;
+
+  /**
+   * 6 컬러 스탯 (각 0~100 권장).
+   * 페어 → 3 스탯:
+   *   ATK = CalculateStat(fire, electric)
+   *   DEF = CalculateStat(earth, iron)
+   *   MAG = CalculateStat(water, wind)
+   * 전투 보너스로 환산되어 damage/block/draw/mana에 더해짐.
+   */
+  colors: ColorValues;
 
   // === 진행도 (런 종료 시 모노 게이지로 변환) ===
   /** 히페리온 5단계 중 클리어한 단계 (true). */
