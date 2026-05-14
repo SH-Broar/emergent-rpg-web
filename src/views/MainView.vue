@@ -10,11 +10,59 @@
  * (제목·도입문구·메뉴 설명 등)
  */
 
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useMetaStore } from '@/stores/meta';
+import { useRunStore } from '@/stores/run';
+import { useDataStore } from '@/stores/data';
 
 const router = useRouter();
 const meta = useMetaStore();
+const run = useRunStore();
+const data = useDataStore();
+
+/** 저장된 런이 있으면 modal 띄움 — 사용자가 Y/N 선택. */
+const showResume = ref(false);
+
+onMounted(async () => {
+  // 데이터가 아직이면 기다림 (resume이 의미 있으려면 timelines/cards 로드 필요).
+  await data.ensureLoaded();
+  if (run.hasSavedRun()) showResume.value = true;
+  window.addEventListener('keydown', onResumeKey);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', onResumeKey);
+});
+
+/** 사용자 사양: Y/N 키로 즉시 응답. modal 떠 있을 때만 작동. */
+function onResumeKey(e: KeyboardEvent) {
+  if (!showResume.value) return;
+  const k = e.key.toLowerCase();
+  if (k === 'y' || k === 'enter') {
+    e.preventDefault();
+    resumeRun();
+  } else if (k === 'n' || k === 'escape') {
+    e.preventDefault();
+    discardRun();
+  }
+}
+
+function resumeRun() {
+  if (!run.loadActiveRun()) {
+    // 손상된 스냅샷 — 정리하고 modal 닫음.
+    run.clearSavedRun();
+    showResume.value = false;
+    return;
+  }
+  showResume.value = false;
+  router.push('/game/map');
+}
+
+function discardRun() {
+  run.clearSavedRun();
+  showResume.value = false;
+}
 
 // === 플레이버 텍스트 (사용자 채움 영역) ===
 // 비워두면 화면에 표시되지 않음.
@@ -71,6 +119,20 @@ function goCodex() {
 
     <!-- 빌드 버전 — 우하단 고정. 새 빌드 배포 확인용. -->
     <div class="version-badge" :title="`빌드 버전 ${VERSION}`">{{ VERSION }}</div>
+
+    <!-- 이어하기 modal — 저장된 런 발견 시 Y/N 묻기. -->
+    <transition name="resume-fade">
+      <div v-if="showResume" class="resume-backdrop" role="dialog" aria-modal="true">
+        <div class="resume-modal">
+          <h2 class="resume-modal__title">진행 중인 런이 있습니다</h2>
+          <p class="resume-modal__body">이어서 시작하시겠습니까? (N을 누르면 저장된 진행이 삭제됩니다)</p>
+          <div class="resume-modal__actions">
+            <button class="resume-btn resume-btn--yes" autofocus @click="resumeRun">Y — 이어하기</button>
+            <button class="resume-btn resume-btn--no" @click="discardRun">N — 새로 시작</button>
+          </div>
+        </div>
+      </div>
+    </transition>
   </main>
 </template>
 
@@ -170,5 +232,76 @@ function goCodex() {
   border: 1px solid rgba(255, 255, 255, 0.06);
   pointer-events: none;
   user-select: none;
+}
+
+/* 이어하기 modal */
+.resume-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 980;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.resume-modal {
+  max-width: 460px;
+  width: 100%;
+  background: #16171f;
+  border: 1px solid rgba(192, 142, 255, 0.4);
+  border-radius: 12px;
+  padding: 1.5rem 1.6rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  display: grid;
+  gap: 0.9rem;
+  text-align: center;
+}
+.resume-modal__title {
+  color: #f6e8b8;
+  margin: 0;
+  font-size: 1.2rem;
+}
+.resume-modal__body {
+  color: #b6b6c4;
+  margin: 0;
+  font-size: 0.92rem;
+}
+.resume-modal__actions {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.4rem;
+}
+.resume-btn {
+  flex: 1;
+  padding: 0.7rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: 1px solid transparent;
+  transition: filter 120ms ease, transform 120ms ease;
+}
+.resume-btn--yes {
+  background: linear-gradient(180deg, #c0b693 0%, #a39872 100%);
+  color: #1a1a26;
+}
+.resume-btn--no {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.18);
+  color: #b6b6c4;
+}
+.resume-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.06);
+}
+
+.resume-fade-enter-active, .resume-fade-leave-active {
+  transition: opacity 200ms ease;
+}
+.resume-fade-enter-from, .resume-fade-leave-to {
+  opacity: 0;
 }
 </style>

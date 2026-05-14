@@ -71,6 +71,18 @@ export interface RunState {
   /** 런 시작 시각 (ms). 통계용. */
   startedAt: number;
 
+  /**
+   * 결정론 시드 — 런 시작 시 결정, 영원히 같음 (디버그·재현용 표식).
+   * 저장에서 복원하면 이 값이 그대로.
+   */
+  rngSeed: number;
+
+  /**
+   * 현재 PRNG 내부 상태 — 매 rng() 호출마다 진행됨. 저장·복원의 핵심.
+   * 같은 (seed, state) 위치에서는 항상 같은 시퀀스가 이어진다.
+   */
+  rngState: number;
+
   // === 위치 / 시간 ===
   currentNodeId: NodeId;
   visitedNodes: NodeId[];

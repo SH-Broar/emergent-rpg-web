@@ -6,6 +6,7 @@
  */
 
 import type { Event, EventChoice, EventChoiceEffect } from '@/data/schemas';
+import { rng } from './rng';
 import { useRunStore } from '@/stores/run';
 import { useUiStore } from '@/stores/ui';
 
@@ -16,7 +17,7 @@ import { useUiStore } from '@/stores/ui';
 export function pickEvent(pool: readonly Event[]): Event | undefined {
   if (pool.length === 0) return undefined;
   const totalWeight = pool.reduce((sum, e) => sum + (e.trigger.weight ?? 1), 0);
-  let r = Math.random() * totalWeight;
+  let r = rng() * totalWeight;
   for (const e of pool) {
     r -= e.trigger.weight ?? 1;
     if (r <= 0) return e;

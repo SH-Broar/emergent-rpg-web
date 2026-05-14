@@ -7,25 +7,26 @@
  */
 
 import type { Card } from '@/data/schemas';
+import { rng } from './rng';
 
 /**
  * 카드 *정의*에서 *인스턴스*를 생성. 동명 카드 사본도 별개로 식별.
  *
- * `instanceId` 명명 규칙: `{cardId}#{6자 랜덤}` — UI 디버그/로그에서 정의를 한눈에.
- * 충돌 가능성은 36^6 ≈ 22억 분의 1 — 한 런에서 사실상 무시.
+ * `instanceId` 명명 규칙: `{cardId}#{6자 랜덤}` — 시드 PRNG 기반이므로
+ * 같은 런·같은 시점에서 같은 instanceId. 저장·복원도 결정론.
  */
 let instanceSeq = 0;
 export function instantiateCard(card: Card): Card {
   instanceSeq += 1;
-  const rand = Math.random().toString(36).slice(2, 8);
+  const rand = rng().toString(36).slice(2, 8);
   return { ...card, instanceId: `${card.id}#${rand}-${instanceSeq.toString(36)}` };
 }
 
-/** 표준 Fisher-Yates 셔플. 새 배열 반환. */
+/** 표준 Fisher-Yates 셔플. 새 배열 반환. 시드 PRNG 기반 → 같은 시드면 같은 순서. */
 export function shuffle<T>(arr: readonly T[]): T[] {
   const result = [...arr];
   for (let i = result.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(rng() * (i + 1));
     [result[i], result[j]] = [result[j], result[i]];
   }
   return result;

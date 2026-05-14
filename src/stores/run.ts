@@ -17,7 +17,11 @@ import type {
   TimelineId,
 } from '@/data/schemas';
 import { instantiateCard } from '@/systems/deck';
+import { createSeededRng, generateInitialSeed, rng, setRng } from '@/systems/rng';
 import { useDataStore } from './data';
+
+/** localStorage 키 — 활성 런 스냅샷. 사용자 요구에 따라 노드 입장마다 자동 저장. */
+const SAVED_RUN_KEY = 'rdc-active-run-v1';
 
 const DECK_SLOT_SIZE = 10;
 /** 30턴마다 하루 경과 — 비-마을 노드 cleared 초기화 + 권역 풀에서 content 재추첨.
@@ -30,6 +34,8 @@ const EMPTY_RUN: RunState = {
   characterId: '',
   season: 'spring',
   startedAt: 0,
+  rngSeed: 0,
+  rngState: 0,
   currentNodeId: '',
   visitedNodes: [],
   nodeStates: {},
@@ -73,7 +79,7 @@ export const useRunStore = defineStore('run', {
   },
 
   actions: {
-    /** 새 런 시작 — 연표·캐릭터·계절 컨텍스트 주입. */
+    /** 새 런 시작 — 연표·캐릭터·계절 컨텍스트 + 결정론 시드 주입. */
     startRun(params: {
       timelineId: TimelineId;
       characterId: CharacterId;
@@ -88,6 +94,10 @@ export const useRunStore = defineStore('run', {
       fresh.characterId = params.characterId;
       fresh.season = params.season;
       fresh.startedAt = Date.now();
+      // 한 판 고정 시드 — 이 시점에 한 번 결정되어 *런 끝까지 같은 시퀀스*.
+      const seed = generateInitialSeed();
+      fresh.rngSeed = seed;
+      fresh.rngState = seed;
       fresh.currentNodeId = params.startNodeId;
       // 시작 노드도 visited로 마킹 (재방문 시 시작 노드 본인 처리 X)
       fresh.nodeStates[params.startNodeId] = { visited: true };
@@ -98,6 +108,73 @@ export const useRunStore = defineStore('run', {
       fresh.maxMp = params.maxMp;
       this.data = fresh;
       this.active = true;
+      this.bindRng();
+    },
+
+    /**
+     * 시드 기반 RNG를 *전역 rng()*에 바인딩 — 호출 시점부터 모든 시스템이
+     * 결정론적 난수를 사용. 저장된 런 복원 후에도 호출 필요.
+     */
+    bindRng() {
+      const r = this.data;
+      const prng = createSeededRng(r.rngState);
+      setRng(() => {
+        const v = prng.next();
+        // 매 호출마다 RunState의 rngState도 진행 — 다음 저장이 정확히 그 지점부터 이어지도록.
+        r.rngState = prng.getState();
+        return v;
+      });
+    },
+
+    /**
+     * localStorage 활성 런 스냅샷에 저장. JSON 직렬화 가능하도록
+     * RunState는 plain object 구성을 유지함.
+     */
+    saveActiveRun() {
+      if (!this.active) return;
+      try {
+        const snapshot = JSON.stringify(this.data);
+        localStorage.setItem(SAVED_RUN_KEY, snapshot);
+      } catch (err) {
+        console.warn('[run] save 실패:', err);
+      }
+    },
+
+    /** localStorage에서 저장된 스냅샷 *존재* 여부 확인 (메뉴 dialog용). */
+    hasSavedRun(): boolean {
+      try {
+        return localStorage.getItem(SAVED_RUN_KEY) !== null;
+      } catch {
+        return false;
+      }
+    },
+
+    /**
+     * 저장된 스냅샷을 읽어 활성 런으로 복원. 성공 시 true.
+     * rngState도 그대로 들어가 *다음 의사난수가 동일*한 시퀀스로 이어짐.
+     */
+    loadActiveRun(): boolean {
+      try {
+        const raw = localStorage.getItem(SAVED_RUN_KEY);
+        if (!raw) return false;
+        const parsed = JSON.parse(raw) as RunState;
+        this.data = parsed;
+        this.active = !parsed.ended;
+        if (this.active) this.bindRng();
+        return this.active;
+      } catch (err) {
+        console.warn('[run] load 실패:', err);
+        return false;
+      }
+    },
+
+    /** 저장된 스냅샷 삭제 — N(새 시작) 또는 런 종료 시. */
+    clearSavedRun() {
+      try {
+        localStorage.removeItem(SAVED_RUN_KEY);
+      } catch {
+        // ignore
+      }
     },
 
     /** 노드 방문 — 시간 1 카운트 감소 + 방문 상태 마킹 + 30턴마다 하루 경과. */
@@ -120,6 +197,9 @@ export const useRunStore = defineStore('run', {
       if (r.visitedNodes.length > 0 && r.visitedNodes.length % TURNS_PER_DAY === 0) {
         this.advanceDay();
       }
+
+      // 모든 노드 입장마다 자동 저장 (사용자 사양).
+      this.saveActiveRun();
     },
 
     /**
@@ -144,7 +224,7 @@ export const useRunStore = defineStore('run', {
       const regionMap = new Map(map.regions.map((rg) => [rg.id, rg]));
 
       const pickRandom = <T,>(arr: T[]): T | undefined =>
-        arr.length === 0 ? undefined : arr[Math.floor(Math.random() * arr.length)];
+        arr.length === 0 ? undefined : arr[Math.floor(rng() * arr.length)];
 
       /** 노드 종류에 맞는 content를 그 권역 풀에서 추첨. 풀이 비면 원본 contentRef 그대로. */
       const pickContentForKind = (
@@ -262,12 +342,15 @@ export const useRunStore = defineStore('run', {
       this.data.ended = true;
       this.data.endReason = reason;
       this.active = false;
+      // 종료된 런의 저장 스냅샷은 더 이상 필요 없음.
+      this.clearSavedRun();
     },
 
     /** 메인 메뉴로 돌아갈 때 호출 — 상태 비움. */
     reset() {
       this.data = structuredClone(EMPTY_RUN);
       this.active = false;
+      this.clearSavedRun();
     },
   },
 });

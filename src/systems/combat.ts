@@ -20,6 +20,7 @@ import type {
   MonsterDrop,
 } from '@/data/schemas';
 import { drawCards, discardHand } from './deck';
+import { rng } from './rng';
 import { useRunStore } from '@/stores/run';
 import { useUiStore } from '@/stores/ui';
 
@@ -249,7 +250,7 @@ export function applyMonsterDrop(drop: MonsterDrop, allCards: Map<string, Card>)
 
   const droppedCards: Card[] = [];
   for (const cd of drop.cardDrops ?? []) {
-    if (Math.random() < cd.chance) {
+    if (rng() < cd.chance) {
       const card = allCards.get(cd.cardId);
       if (card) {
         droppedCards.push(card);

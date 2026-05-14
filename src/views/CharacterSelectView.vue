@@ -10,6 +10,7 @@ import { useDataStore } from '@/stores/data';
 import { useRunStore } from '@/stores/run';
 import { canSelectCharacter } from '@/frame/Mono';
 import { instantiateCard } from '@/systems/deck';
+import { rng } from '@/systems/rng';
 import type { Card, Character, Season } from '@/data/schemas';
 
 const router = useRouter();
@@ -56,28 +57,8 @@ async function selectCharacter(c: Character) {
   const maxHp = c.baseStats.hp + (race?.startHpBonus ?? 0);
   const maxMp = c.baseStats.mp + (race?.startMpBonus ?? 0);
 
-  // 각 카드 사본마다 *유니크 인스턴스* — 동명 카드도 별개.
-  const startingInstances: Card[] = c.startingDeck
-    .map((cardId: string) => data.cards.get(cardId))
-    .filter((card): card is Card => card !== undefined)
-    .map(instantiateCard);
-
-  // 종족 고정 덱 크기 (인간=15). 정의 없으면 starting_deck 길이를 그대로.
-  const deckSize = race?.deckSize ?? startingInstances.length;
-
-  // starting_deck < deckSize면 race.seedCardIds에서 가중 랜덤으로 채움.
-  const fillCount = Math.max(0, deckSize - startingInstances.length);
-  const seedPool: Card[] = (race?.seedCardIds ?? [])
-    .map((cardId) => data.cards.get(cardId))
-    .filter((card): card is Card => card !== undefined);
-  const filledInstances: Card[] = [];
-  for (let i = 0; i < fillCount && seedPool.length > 0; i++) {
-    const pick = seedPool[Math.floor(Math.random() * seedPool.length)];
-    filledInstances.push(instantiateCard(pick));
-  }
-
-  const allInstances = [...startingInstances, ...filledInstances];
-
+  // startRun을 *먼저* 호출 — 그 안에서 시드를 결정하고 rng를 바인딩.
+  // 이후 instantiateCard / seed pick은 모두 결정론적 rng를 쓴다.
   run.startRun({
     timelineId: tl.id,
     characterId: c.id,
@@ -87,11 +68,36 @@ async function selectCharacter(c: Character) {
     startNodeId: map.startNodeId,
     timeLimit: tl.timeLimit,
   });
+
+  // 각 카드 사본마다 *유니크 인스턴스* — 동명 카드도 별개. rng() 기반 결정론.
+  const startingInstances: Card[] = c.startingDeck
+    .map((cardId: string) => data.cards.get(cardId))
+    .filter((card): card is Card => card !== undefined)
+    .map(instantiateCard);
+
+  // 종족 고정 덱 크기 (인간=15). 정의 없으면 starting_deck 길이를 그대로.
+  const deckSize = race?.deckSize ?? startingInstances.length;
+
+  // starting_deck < deckSize면 race.seedCardIds에서 가중 랜덤으로 채움. (rng)
+  const fillCount = Math.max(0, deckSize - startingInstances.length);
+  const seedPool: Card[] = (race?.seedCardIds ?? [])
+    .map((cardId) => data.cards.get(cardId))
+    .filter((card): card is Card => card !== undefined);
+  const filledInstances: Card[] = [];
+  for (let i = 0; i < fillCount && seedPool.length > 0; i++) {
+    const pick = seedPool[Math.floor(rng() * seedPool.length)];
+    filledInstances.push(instantiateCard(pick));
+  }
+
+  const allInstances = [...startingInstances, ...filledInstances];
+
   // 종족 덱 크기 반영 — store 기본(10) 위에 덮어쓰기.
   run.data.deckSize = deckSize;
   // 시작 카드 — collection에 모두, deck 슬롯에는 deckSize만큼.
   run.data.collection = allInstances;
   run.data.deck = allInstances.slice(0, deckSize);
+  // 초기 덱 구성 완료 — 첫 저장 스냅샷.
+  run.saveActiveRun();
 
   // 종족 시드 유물 부여
   if (race?.seedRelicIds) {

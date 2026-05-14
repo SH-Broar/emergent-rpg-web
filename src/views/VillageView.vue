@@ -12,6 +12,7 @@ import { useRouter } from 'vue-router';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
+import { rng } from '@/systems/rng';
 import type { Card } from '@/data/schemas';
 
 const router = useRouter();
@@ -42,11 +43,11 @@ function rollCraft() {
     ui.toast('warning', `시간의 조각이 부족합니다. (필요 ${VILLAGE_CRAFT_COST})`);
     return;
   }
-  // 랜덤 N장 추첨 (중복 없이)
+  // 랜덤 N장 추첨 (중복 없이) — rng() 기반, 시드 고정.
   const pool = [...craftPool.value];
   const picked: Card[] = [];
   while (picked.length < VILLAGE_CRAFT_CHOICES && pool.length > 0) {
-    const idx = Math.floor(Math.random() * pool.length);
+    const idx = Math.floor(rng() * pool.length);
     picked.push(pool.splice(idx, 1)[0]);
   }
   rolledOptions.value = picked;
