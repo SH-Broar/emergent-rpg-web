@@ -18,10 +18,12 @@ import {
   endPlayerTurn,
   applyMonsterDrop,
   clearCombat,
+  statusBonusForCardEffectKind,
   type CombatVictoryDrop,
 } from '@/systems/combat';
 import { effectiveContent } from '@/systems/map';
-import type { Card, Monster } from '@/data/schemas';
+import { bonusesFromColors, colorBonusForCardEffectKind } from '@/systems/stats';
+import type { Card, CardEffect, Combatant, Monster } from '@/data/schemas';
 
 const router = useRouter();
 const run = useRunStore();
@@ -122,6 +124,35 @@ function canPlay(c: Card): boolean {
   return combat.value.mana >= c.cost;
 }
 
+/**
+ * 카드 effect의 *최종 정적값* — base + 컬러 보너스. 사용자 사양: 카드 수치에 보너스 반영.
+ */
+const currentBonuses = computed(() => bonusesFromColors(run.data.colors));
+function effectiveValue(eff: CardEffect): number {
+  return (eff.value ?? 0) + colorBonusForCardEffectKind(eff.kind, currentBonuses.value);
+}
+/** 전투 중 buff/debuff 부가치 — "(+1) / (-2)" 식으로 별도 표기. */
+function statusDelta(eff: CardEffect): number {
+  if (!combat.value) return 0;
+  return statusBonusForCardEffectKind(eff.kind, combat.value.player.statuses);
+}
+
+// === 버프/디버프 표시 ===
+const statusLabels: Record<string, string> = {
+  strength: '힘',
+  weakness: '약화',
+  dexterity: '민첩',
+  frail: '취약',
+  vulnerable: '취약',
+  burn: '화상',
+};
+function statusEntries(c: Combatant | undefined) {
+  if (!c) return [] as { key: string; count: number; label: string }[];
+  return Object.entries(c.statuses ?? {})
+    .filter(([, v]) => v > 0)
+    .map(([key, count]) => ({ key, count, label: statusLabels[key] ?? key }));
+}
+
 // 디버그 토글 — 카오스 시스템 도입 후 제거 가능
 const __forceInfMana = false;
 void __forceInfMana;
@@ -139,6 +170,11 @@ void ui;
           <span v-if="combat.player.block > 0" class="block">🛡 {{ combat.player.block }}</span>
         </div>
         <div class="mana">마나 {{ combat.mana }} / {{ combat.maxMana }}</div>
+        <ul class="statuses">
+          <li v-for="s in statusEntries(combat.player)" :key="s.key" class="status" :data-key="s.key">
+            {{ s.label }} ×{{ s.count }}
+          </li>
+        </ul>
       </div>
 
       <div class="vs">⚔ 턴 {{ combat.turn }}</div>
@@ -150,6 +186,11 @@ void ui;
           <span v-if="combat.enemy.block > 0" class="block">🛡 {{ combat.enemy.block }}</span>
         </div>
         <div class="intent">다음: {{ combat.enemyIntent }}</div>
+        <ul class="statuses statuses--enemy">
+          <li v-for="s in statusEntries(combat.enemy)" :key="s.key" class="status" :data-key="s.key">
+            {{ s.label }} ×{{ s.count }}
+          </li>
+        </ul>
       </div>
     </header>
 
@@ -169,7 +210,16 @@ void ui;
         </div>
         <div class="card__effects">
           <span v-for="(e, ei) in card.effects" :key="ei" class="effect">
-            {{ e.kind }} {{ e.value ?? '' }} {{ e.target ?? '' }}
+            {{ e.kind }}
+            <strong class="eff-val">{{ effectiveValue(e) || (e.value ?? '') }}</strong>
+            <span
+              v-if="statusDelta(e) !== 0"
+              class="eff-delta"
+              :class="statusDelta(e) > 0 ? 'eff-delta--up' : 'eff-delta--down'"
+            >
+              ({{ statusDelta(e) > 0 ? '+' : '' }}{{ statusDelta(e) }})
+            </span>
+            <span v-if="e.target" class="eff-target">{{ e.target }}</span>
           </span>
         </div>
         <p v-if="card.flavor" class="card__flavor">{{ card.flavor }}</p>
@@ -273,7 +323,26 @@ void ui;
 .card__name { flex: 1; color: #f6e8b8; font-weight: 600; }
 .card__rank { font-size: 0.7rem; text-transform: uppercase; }
 .card__effects { display: flex; flex-wrap: wrap; gap: 0.3rem; font-size: 0.8rem; }
-.effect { background: rgba(0,0,0,0.4); padding: 0.2rem 0.5rem; border-radius: 4px; color: #b6b6c4; }
+.effect { background: rgba(0,0,0,0.4); padding: 0.2rem 0.5rem; border-radius: 4px; color: #b6b6c4; display: inline-flex; gap: 0.25rem; align-items: baseline; }
+.eff-val { color: #f6e8b8; font-weight: 700; }
+.eff-delta { font-size: 0.85em; font-weight: 700; }
+.eff-delta--up { color: #8effb8; }
+.eff-delta--down { color: #ff8e8e; }
+.eff-target { color: #888; }
+
+/* 버프/디버프 리스트 */
+.statuses { list-style: none; padding: 0; margin: 0.3rem 0 0; display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.statuses--enemy { justify-content: flex-end; }
+.status {
+  font-size: 0.75rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #d6d6e0;
+}
+.status[data-key="strength"], .status[data-key="dexterity"] { color: #8effb8; border-color: rgba(142,255,184,0.35); }
+.status[data-key="weakness"], .status[data-key="frail"], .status[data-key="vulnerable"], .status[data-key="burn"] { color: #ff8e8e; border-color: rgba(255,142,142,0.35); }
 .card__flavor { font-size: 0.75rem; color: #6c6c7c; font-style: italic; margin: 0; }
 
 .pile-info { display: flex; gap: 1.5rem; padding: 0.8rem 1rem; background: rgba(0,0,0,0.4); border-radius: 8px; color: #b6b6c4; align-items: center; }

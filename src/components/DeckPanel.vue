@@ -12,7 +12,8 @@
 import { computed, ref, watch } from 'vue';
 import { useRunStore } from '@/stores/run';
 import { useUiStore } from '@/stores/ui';
-import type { Card } from '@/data/schemas';
+import { bonusesFromColors, colorBonusForCardEffectKind } from '@/systems/stats';
+import type { Card, CardEffect } from '@/data/schemas';
 
 const props = defineProps<{ open: boolean }>();
 const emit = defineEmits<{ (e: 'close'): void }>();
@@ -89,6 +90,12 @@ function save() {
 function reset() {
   activeIds.value = new Set(run.data.deck.map(keyOf));
 }
+
+/** 카드 effect의 *현재 컬러 보너스 반영된* 표시값. */
+const currentBonuses = computed(() => bonusesFromColors(run.data.colors));
+function effectiveValue(eff: CardEffect): number {
+  return (eff.value ?? 0) + colorBonusForCardEffectKind(eff.kind, currentBonuses.value);
+}
 </script>
 
 <template>
@@ -122,7 +129,7 @@ function reset() {
             </div>
             <div class="card__effects">
               <span v-for="(e, ei) in c.effects" :key="ei" class="effect">
-                {{ e.kind }} {{ e.value ?? '' }} {{ e.target ?? '' }}
+                {{ e.kind }} {{ effectiveValue(e) || (e.value ?? '') }} {{ e.target ?? '' }}
               </span>
             </div>
           </li>

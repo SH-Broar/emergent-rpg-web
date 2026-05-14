@@ -101,27 +101,12 @@ async function selectCharacter(c: Character) {
   const starter = data.items.get('i-potion-small');
   if (starter) run.addItem(starter);
 
-  // 컬러 스탯 초기화 — 캐릭터의 base_npc colorValues가 있으면 ×100, 없으면 모두 30.
-  // (NPC colorValues는 0~1, 게임 스탯은 0~100)
-  const baseNpc = c.baseNpcId ? data.npcs.get(c.baseNpcId) : undefined;
-  if (baseNpc?.colorValues) {
-    run.data.colors = {
-      fire: Math.round(baseNpc.colorValues.fire * 100),
-      water: Math.round(baseNpc.colorValues.water * 100),
-      electric: Math.round(baseNpc.colorValues.electric * 100),
-      iron: Math.round(baseNpc.colorValues.iron * 100),
-      earth: Math.round(baseNpc.colorValues.earth * 100),
-      wind: Math.round(baseNpc.colorValues.wind * 100),
-      light: Math.round(baseNpc.colorValues.light * 100),
-      dark: Math.round(baseNpc.colorValues.dark * 100),
-    };
-  } else {
-    // 기본 균형 — NPC 매칭 없을 때 안전 fallback.
-    run.data.colors = {
-      fire: 30, water: 30, electric: 30, iron: 30,
-      earth: 30, wind: 30, light: 30, dark: 30,
-    };
-  }
+  // 컬러는 *모두 0에서 시작*. 사용자 사양: 감소 X — 한 번 늘면 그대로 누적.
+  // base_npc.colorValues는 *NPC 시뮬*용. 캐릭터 입장에서는 빈 자리에서 시작.
+  run.data.colors = {
+    fire: 0, water: 0, electric: 0, iron: 0,
+    earth: 0, wind: 0, light: 0, dark: 0,
+  };
   // 이후 모든 mutation은 App.vue의 $subscribe가 자동 저장.
 
   // 종족 시드 유물 부여

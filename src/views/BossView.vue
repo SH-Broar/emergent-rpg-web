@@ -16,8 +16,10 @@ import {
   playCard as playCardSys,
   endPlayerTurn,
   clearCombat,
+  statusBonusForCardEffectKind,
 } from '@/systems/combat';
-import type { Boss, Card, Monster } from '@/data/schemas';
+import { bonusesFromColors, colorBonusForCardEffectKind } from '@/systems/stats';
+import type { Boss, Card, CardEffect, Monster } from '@/data/schemas';
 
 const router = useRouter();
 const run = useRunStore();
@@ -129,6 +131,16 @@ function canPlay(c: Card): boolean {
   if (!combat.value) return false;
   return combat.value.mana >= c.cost;
 }
+
+// 카드 effect 표시 — 컬러 보너스 반영된 정적 최종값 + 전투 buff/debuff (+N) 부가.
+const currentBonuses = computed(() => bonusesFromColors(run.data.colors));
+function effectiveValue(eff: CardEffect): number {
+  return (eff.value ?? 0) + colorBonusForCardEffectKind(eff.kind, currentBonuses.value);
+}
+function statusDelta(eff: CardEffect): number {
+  if (!combat.value) return 0;
+  return statusBonusForCardEffectKind(eff.kind, combat.value.player.statuses);
+}
 </script>
 
 <template>
@@ -176,7 +188,15 @@ function canPlay(c: Card): boolean {
           </div>
           <div class="card__effects">
             <span v-for="(e, ei) in card.effects" :key="ei" class="effect">
-              {{ e.kind }} {{ e.value ?? '' }}
+              {{ e.kind }}
+              <strong class="eff-val">{{ effectiveValue(e) || (e.value ?? '') }}</strong>
+              <span
+                v-if="statusDelta(e) !== 0"
+                class="eff-delta"
+                :class="statusDelta(e) > 0 ? 'eff-delta--up' : 'eff-delta--down'"
+              >
+                ({{ statusDelta(e) > 0 ? '+' : '' }}{{ statusDelta(e) }})
+              </span>
             </span>
           </div>
         </div>

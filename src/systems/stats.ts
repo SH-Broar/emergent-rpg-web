@@ -93,3 +93,19 @@ export function deriveBonuses(stats: DerivedStats): CombatBonuses {
 export function bonusesFromColors(colors: ColorValues): CombatBonuses {
   return deriveBonuses(deriveStats(colors));
 }
+
+/**
+ * 카드 효과 종류에 적용되는 *컬러 보너스* — 카드 표시 시 base value에 더해 *최종 정적값*을 만든다.
+ * 사용자 사양: 컬러는 감소하지 않으므로 안전하게 정적 합산.
+ *   - damage   ← ATK 보너스
+ *   - block    ← DEF 보너스
+ *   - draw/apply-status/heal 등은 *컬러 보너스 없음* (MAG drawExtra/manaExtra는 전투 시작 시 한 번 적용)
+ */
+export function colorBonusForCardEffectKind(
+  kind: string,
+  bonuses: CombatBonuses,
+): number {
+  if (kind === 'damage') return bonuses.damage;
+  if (kind === 'block') return bonuses.block;
+  return 0;
+}

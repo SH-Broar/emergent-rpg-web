@@ -34,6 +34,22 @@ function currentBonuses() {
   return bonusesFromColors(run.data.colors);
 }
 
+/**
+ * 전투 중 *버프/디버프*가 카드 effect.value에 더하는 보정.
+ *   - damage: +strength, -weakness
+ *   - block: +dexterity, -frail
+ * 사용자 사양: 카드 표시에서 "(+1) / (-2)" 부가 표기.
+ */
+export function statusBonusForCardEffectKind(
+  kind: string,
+  statuses: Record<string, number> | undefined,
+): number {
+  if (!statuses) return 0;
+  if (kind === 'damage') return (statuses.strength ?? 0) - (statuses.weakness ?? 0);
+  if (kind === 'block') return (statuses.dexterity ?? 0) - (statuses.frail ?? 0);
+  return 0;
+}
+
 /** 전투 시작 — Combat state 초기화 + 첫 핸드 드로우. */
 export function startCombat(monster: Monster) {
   const run = useRunStore();
@@ -133,7 +149,9 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
     } catch { /* store 미접근 가능 */ }
     // ATK 스탯 보너스 — 공격 카드 *최소 공격력* +N (10 ATK당 1).
     const atkBonus = currentBonuses().damage;
-    const value = (e.value ?? 0) + relicBonus + atkBonus;
+    // 전투 중 player buff/debuff (strength/weakness).
+    const statusBonus = statusBonusForCardEffectKind('damage', c.player.statuses);
+    const value = Math.max(0, (e.value ?? 0) + relicBonus + atkBonus + statusBonus);
     for (const t of targets) {
       const absorbed = Math.min(t.block, value);
       t.block -= absorbed;
@@ -151,7 +169,9 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
     const targets = resolveTargets(e.target ?? 'self', c);
     // DEF 스탯 보너스 — 방어 카드 *방어력* +N (10 DEF당 1).
     const defBonus = currentBonuses().block;
-    const value = (e.value ?? 0) + defBonus;
+    // 전투 중 player buff/debuff (dexterity/frail).
+    const statusBonus = statusBonusForCardEffectKind('block', c.player.statuses);
+    const value = Math.max(0, (e.value ?? 0) + defBonus + statusBonus);
     for (const t of targets) {
       t.block += value;
     }

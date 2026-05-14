@@ -359,7 +359,10 @@ export const useRunStore = defineStore('run', {
       return true;
     },
 
-    /** 동료 이탈 — 영입 시 적용된 보너스를 정확히 역적용 + 기록 삭제. */
+    /**
+     * 동료 이탈 — 영입 시 적용된 *덱·카드·유물* 보너스는 역적용.
+     * 사용자 사양: **컬러는 감소하지 않는다** — 영입으로 얻은 컬러는 그대로 누적 유지.
+     */
     dismissCompanion(npcId: string) {
       const r = this.data;
       const idx = r.companions.indexOf(npcId);
@@ -381,11 +384,7 @@ export const useRunStore = defineStore('run', {
           if (i >= 0) r.relics.splice(i, 1);
         }
 
-        // 4) 컬러 보정 역적용
-        for (const [k, v] of Object.entries(applied.colorBoostsApplied ?? {})) {
-          if (typeof v !== 'number') continue;
-          (r.colors as Record<string, number>)[k] = Math.max(0, ((r.colors as Record<string, number>)[k] ?? 0) - v);
-        }
+        // 4) 컬러는 *역적용하지 않음*. 한 번 늘면 그대로.
       }
 
       r.companions.splice(idx, 1);
