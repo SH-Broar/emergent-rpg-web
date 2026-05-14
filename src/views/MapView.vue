@@ -217,9 +217,35 @@ onMounted(() => {
   }
 });
 
+/**
+ * 노드 간 *시각적 간격*을 늘리는 spread 계수.
+ * 원본 position(0..1)에 ×SPREAD를 곱하면 SVG 좌표가 더 넓게 펼쳐진다.
+ * 카메라 transform이 한 노드를 화면 중앙(50,50)에 고정시키므로 전체 맵이
+ * viewBox(100×100) 밖으로 나가도 무방.
+ */
+const SPREAD = 250;
+function svgX(node: Node): number { return node.position.x * SPREAD; }
+function svgY(node: Node): number { return node.position.y * SPREAD; }
+
 function edgePath(from: Node, to: Node): string {
-  return `M ${from.position.x * 100} ${from.position.y * 100} L ${to.position.x * 100} ${to.position.y * 100}`;
+  return `M ${svgX(from)} ${svgY(from)} L ${svgX(to)} ${svgY(to)}`;
 }
+
+/**
+ * 카메라가 *추적*할 노드 — drawer가 열려 있으면 그 노드, 아니면 현재 위치.
+ * 클릭으로 인접 노드를 보면 카메라가 그쪽으로 매끄럽게 이동.
+ */
+const focusNode = computed<Node | undefined>(() => selectedNode.value ?? currentNode.value);
+
+/**
+ * 카메라 transform — focusNode를 viewBox 중앙(50,50)으로 가져온다.
+ * CSS transition으로 부드러운 이동.
+ */
+const cameraTransform = computed<string>(() => {
+  const f = focusNode.value;
+  if (!f) return 'translate(0 0)';
+  return `translate(${50 - svgX(f)} ${50 - svgY(f)})`;
+});
 
 // === 노드 상태 뱃지 ===
 function nodeStatusLabel(node: Node): string {
@@ -261,46 +287,51 @@ function enterLabel(): string {
 
     <section class="graph">
       <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
-        <!-- 인접 선 -->
-        <g class="edges">
-          <template v-for="node in nodeMap.nodes" :key="`e-${node.id}`">
-            <path
-              v-for="nb in node.neighbors.filter((n: string) => n > node.id)"
-              :key="`${node.id}-${nb}`"
-              :d="edgePath(node, getNode(nodeMap, nb)!)"
-              class="edge"
-            />
-          </template>
-        </g>
-        <!-- 노드 -->
-        <g class="nodes">
-          <g
-            v-for="node in nodeMap.nodes"
-            :key="node.id"
-            class="node-group"
-            :class="{
-              'node-group--current': node.id === run.data.currentNodeId,
-              'node-group--reachable': reachable.has(node.id),
-              'node-group--visited': run.data.nodeStates[node.id]?.visited,
-              'node-group--cleared': run.data.nodeStates[node.id]?.combatCleared,
-              'node-group--stealthed': run.data.nodeStates[node.id]?.combatStealthed,
-              'node-group--selected': selectedNodeId === node.id,
-            }"
-            :transform="`translate(${node.position.x * 100} ${node.position.y * 100})`"
-            @click="clickNode(node)"
-          >
-            <circle r="3.5" :fill="nodeKindColors[systemEffectiveKind(node, run.data)]" class="node-dot" />
-            <text y="6" class="node-label">{{ node.label }}</text>
-            <text y="8.5" class="node-kind">[{{ nodeKindLabels[systemEffectiveKind(node, run.data)] }}]</text>
+        <!-- 카메라 — focus 노드가 항상 viewBox 중앙(50,50)에 오도록 패닝.
+             CSS transition으로 부드럽게 이동. -->
+        <g class="camera" :transform="cameraTransform">
+          <!-- 인접 선 -->
+          <g class="edges">
+            <template v-for="node in nodeMap.nodes" :key="`e-${node.id}`">
+              <path
+                v-for="nb in node.neighbors.filter((n: string) => n > node.id)"
+                :key="`${node.id}-${nb}`"
+                :d="edgePath(node, getNode(nodeMap, nb)!)"
+                class="edge"
+              />
+            </template>
           </g>
-        </g>
-        <!-- 현재 위치 화살표 마커 -->
-        <g
-          v-if="currentNode"
-          class="current-arrow"
-          :transform="`translate(${currentNode.position.x * 100} ${currentNode.position.y * 100 - 6})`"
-        >
-          <path d="M 0 0 L -2.2 -3.6 L 0 -2.4 L 2.2 -3.6 Z" fill="#f6e8b8" />
+          <!-- 노드 -->
+          <g class="nodes">
+            <g
+              v-for="node in nodeMap.nodes"
+              :key="node.id"
+              class="node-group"
+              :class="{
+                'node-group--current': node.id === run.data.currentNodeId,
+                'node-group--reachable': reachable.has(node.id),
+                'node-group--visited': run.data.nodeStates[node.id]?.visited,
+                'node-group--cleared': run.data.nodeStates[node.id]?.combatCleared,
+                'node-group--stealthed': run.data.nodeStates[node.id]?.combatStealthed,
+                'node-group--selected': selectedNodeId === node.id,
+              }"
+              :transform="`translate(${svgX(node)} ${svgY(node)})`"
+              @click="clickNode(node)"
+            >
+              <circle r="3.5" :fill="nodeKindColors[systemEffectiveKind(node, run.data)]" class="node-dot" />
+              <text y="6" class="node-label">{{ node.label }}</text>
+              <text y="8.5" class="node-kind">[{{ nodeKindLabels[systemEffectiveKind(node, run.data)] }}]</text>
+            </g>
+          </g>
+          <!-- 현재 위치 화살표 마커 — 카메라 g 안이므로 노드와 함께 이동.
+               화면상 위치는 카메라의 focusNode가 곧 currentNode면 자동으로 중앙. -->
+          <g
+            v-if="currentNode"
+            class="current-arrow"
+            :transform="`translate(${svgX(currentNode)} ${svgY(currentNode) - 6})`"
+          >
+            <path d="M 0 0 L -2.2 -3.6 L 0 -2.4 L 2.2 -3.6 Z" fill="#f6e8b8" />
+          </g>
         </g>
       </svg>
     </section>
@@ -371,6 +402,11 @@ function enterLabel(): string {
   position: relative;
 }
 .graph svg { width: 100%; height: 100%; display: block; }
+
+/* 카메라 — focus 노드 추적. transform 변경에 부드러운 transition. */
+.camera {
+  transition: transform 480ms cubic-bezier(0.32, 0.72, 0, 1);
+}
 
 .edges .edge {
   stroke: rgba(255, 255, 255, 0.15);
