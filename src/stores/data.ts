@@ -11,6 +11,7 @@ import type {
   Card,
   Character,
   Event,
+  Item,
   Monster,
   NodeMap,
   Npc,
@@ -64,6 +65,9 @@ export const useDataStore = defineStore('data', {
     },
     npcs(state): Map<string, Npc> {
       return state.data?.npcs ?? new Map<string, Npc>();
+    },
+    items(state): Map<string, Item> {
+      return state.data?.items ?? new Map<string, Item>();
     },
   },
 

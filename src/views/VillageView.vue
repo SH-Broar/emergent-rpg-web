@@ -13,7 +13,7 @@ import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
 import { rng } from '@/systems/rng';
-import type { Card } from '@/data/schemas';
+import type { Card, Npc } from '@/data/schemas';
 
 const router = useRouter();
 const run = useRunStore();
@@ -28,6 +28,79 @@ const currentNode = computed(() => {
   const map = data.nodeMaps.get(data.timelines.get(run.data.timelineId)?.nodeMapId ?? '');
   return map?.nodes.find((n: { id: string }) => n.id === run.data.currentNodeId);
 });
+
+// 현재 노드에 등장하는 NPC들 (contentRef.npcIdPool + homeNodeId 매칭).
+const nodeNpcs = computed<Npc[]>(() => {
+  const node = currentNode.value;
+  if (!node) return [];
+  const ids = new Set<string>(node.contentRef?.npcIdPool ?? []);
+  // homeNodeId가 이 노드인 NPC도 자동 포함.
+  for (const npc of data.npcs.values()) {
+    if (npc.homeNodeId === node.id) ids.add(npc.id);
+  }
+  return [...ids]
+    .map((id) => data.npcs.get(id))
+    .filter((n): n is Npc => n !== undefined);
+});
+
+const partyFull = computed(() => run.data.companions.length >= 3);
+
+function canRecruit(npc: Npc): boolean {
+  if (!npc.recruit) return false;
+  if (run.data.companions.includes(npc.id)) return false;
+  if (partyFull.value) return false;
+  // 최초 만남이거나, 이전에 만났던 장소에 다시 왔을 때만.
+  const first = run.data.recruitedAt[npc.id];
+  return first === undefined || first === run.data.currentNodeId;
+}
+
+function recruitWhyDisabled(npc: Npc): string {
+  if (!npc.recruit) return '';
+  if (run.data.companions.includes(npc.id)) return '이미 동료';
+  if (partyFull.value) return '동료 한도 (3/3)';
+  const first = run.data.recruitedAt[npc.id];
+  if (first && first !== run.data.currentNodeId) {
+    const map = data.nodeMaps.get(data.timelines.get(run.data.timelineId)?.nodeMapId ?? '');
+    const node = map?.nodes.find((n) => n.id === first);
+    return `재영입은 '${node?.label ?? first}'에서`;
+  }
+  return '';
+}
+
+function tryRecruit(npc: Npc) {
+  if (!canRecruit(npc)) {
+    ui.toast('warning', recruitWhyDisabled(npc) || '영입 불가');
+    return;
+  }
+  const ok = run.recruitCompanion(npc.id);
+  ui.toast(ok ? 'success' : 'warning', ok ? `${npc.name} — 동료로 함께합니다.` : '영입 실패');
+}
+
+function tryDismiss(npc: Npc) {
+  run.dismissCompanion(npc.id);
+  ui.toast('info', `${npc.name} — 이별을 고했습니다. 다시 만나려면 '${recruitedAtLabel(npc)}'(으)로.`);
+}
+
+function recruitedAtLabel(npc: Npc): string {
+  const first = run.data.recruitedAt[npc.id];
+  if (!first) return '?';
+  const map = data.nodeMaps.get(data.timelines.get(run.data.timelineId)?.nodeMapId ?? '');
+  return map?.nodes.find((n) => n.id === first)?.label ?? first;
+}
+
+function recruitSummary(npc: Npc): string {
+  const b = npc.recruit;
+  if (!b) return '';
+  const parts: string[] = [];
+  if (b.deckSizeBonus) parts.push(`덱 +${b.deckSizeBonus}`);
+  if (b.grantedCardIds && b.grantedCardIds.length > 0) parts.push(`전용 카드 ${b.grantedCardIds.length}장`);
+  if (b.grantedRelicIds && b.grantedRelicIds.length > 0) parts.push(`전용 유물 ${b.grantedRelicIds.length}점`);
+  const colorParts = Object.entries(b.colorBoosts ?? {})
+    .filter(([, v]) => typeof v === 'number')
+    .map(([k, v]) => `${k} +${v}`);
+  if (colorParts.length > 0) parts.push(colorParts.join(', '));
+  return parts.join(' · ');
+}
 
 const craftPool = computed<Card[]>(() => {
   // 일반 등급 카드들. 추후 출처·종족 등으로 필터링.
@@ -97,10 +170,42 @@ const rankColors: Record<string, string> = {
         <span>시간의 조각 {{ run.data.timeShards }}</span>
       </div>
 
-      <button class="opt" disabled>
-        <span class="opt__title">대화</span>
-        <span class="opt__hint">(NPC harness 작업 후)</span>
-      </button>
+      <!-- NPC 목록 — 영입/이탈 가능. -->
+      <div v-if="nodeNpcs.length > 0" class="npc-list">
+        <h3 class="npc-list__title">이 곳의 사람들</h3>
+        <div
+          v-for="npc in nodeNpcs"
+          :key="npc.id"
+          class="npc-card"
+        >
+          <div class="npc-card__hd">
+            <span class="npc-card__name">{{ npc.name }}</span>
+            <span class="npc-card__meta">{{ npc.raceId }} · {{ npc.role }}</span>
+          </div>
+          <p v-if="npc.tagline" class="npc-card__tagline">{{ npc.tagline }}</p>
+
+          <div v-if="npc.recruit" class="npc-card__recruit">
+            <span class="npc-card__summary">동료 보너스 — {{ recruitSummary(npc) }}</span>
+            <button
+              v-if="!run.data.companions.includes(npc.id)"
+              class="npc-card__btn"
+              :disabled="!canRecruit(npc)"
+              :title="recruitWhyDisabled(npc)"
+              @click="tryRecruit(npc)"
+            >
+              {{ canRecruit(npc) ? '동료로 권유한다' : recruitWhyDisabled(npc) }}
+            </button>
+            <button
+              v-else
+              class="npc-card__btn npc-card__btn--dismiss"
+              @click="tryDismiss(npc)"
+            >
+              이별을 고한다
+            </button>
+          </div>
+        </div>
+      </div>
+
       <button class="opt" @click="rollCraft">
         <span class="opt__title">간이 제작</span>
         <span class="opt__hint">시간의 조각 {{ VILLAGE_CRAFT_COST }} — 무작위 카드 {{ VILLAGE_CRAFT_CHOICES }}장 중 1장 선택</span>
@@ -165,6 +270,34 @@ h1 { color: #8effb8; margin: 0; }
 .opt__title { font-weight: 600; color: #f6e8b8; }
 .opt__hint { font-size: 0.85rem; color: #888; }
 .opt--leave { background: rgba(255,255,255,0.02); }
+
+/* NPC 목록 */
+.npc-list { display: grid; gap: 0.6rem; margin-bottom: 0.6rem; }
+.npc-list__title { color: #c0b693; font-size: 0.85rem; letter-spacing: 0.08em; margin: 0.4rem 0 0.2rem; }
+.npc-card { padding: 0.7rem 0.9rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; display: grid; gap: 0.3rem; }
+.npc-card__hd { display: flex; gap: 0.6rem; align-items: baseline; }
+.npc-card__name { color: #f6e8b8; font-weight: 600; }
+.npc-card__meta { font-size: 0.78rem; color: #888; }
+.npc-card__tagline { color: #a4a4b0; font-size: 0.85rem; margin: 0; font-style: italic; }
+.npc-card__recruit { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; margin-top: 0.3rem; }
+.npc-card__summary { font-size: 0.8rem; color: #c08eff; flex: 1; min-width: 60%; }
+.npc-card__btn {
+  padding: 0.4rem 0.8rem;
+  background: rgba(192, 142, 255, 0.18);
+  border: 1px solid rgba(192, 142, 255, 0.45);
+  color: #f6e8b8;
+  border-radius: 6px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.85rem;
+}
+.npc-card__btn:hover:not(:disabled) { background: rgba(192, 142, 255, 0.3); }
+.npc-card__btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.npc-card__btn--dismiss {
+  background: rgba(255, 142, 142, 0.15);
+  border-color: rgba(255, 142, 142, 0.4);
+}
+.npc-card__btn--dismiss:hover { background: rgba(255, 142, 142, 0.25); }
 
 .craft-roll h2 { color: #8effb8; }
 .craft-roll__hint { color: #888; font-size: 0.9rem; margin-bottom: 1rem; }

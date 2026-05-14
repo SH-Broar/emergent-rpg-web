@@ -64,6 +64,10 @@ const EMPTY_RUN: RunState = {
     light: 0,
     dark: 0,
   },
+  items: [],
+  companions: [],
+  recruitedAt: {},
+  companionAppliedBonuses: {},
   hyperionProgress: {},
   npcAffinity: {},
   missionsCleared: [],
@@ -283,6 +287,110 @@ export const useRunStore = defineStore('run', {
           r.nodeContentOverrides[node.id] = content;
         }
       }
+    },
+
+    /**
+     * 아이템 한 점 인벤토리에 추가. 카드와 같이 *매 호출 새 인스턴스*.
+     */
+    addItem(item: import('@/data/schemas').Item) {
+      const rand = Math.random().toString(36).slice(2, 8);
+      const instance: import('@/data/schemas').Item = item.instanceId
+        ? { ...item }
+        : { ...item, instanceId: `${item.id}#${rand}` };
+      this.data.items.push(instance);
+    },
+
+    /**
+     * 동료 영입. NPC의 recruit 보너스를 *현재 RunState*에 적용 +
+     * companionAppliedBonuses에 기록 (dismiss 시 정확히 역적용 위함).
+     */
+    recruitCompanion(npcId: string) {
+      const r = this.data;
+      if (r.companions.length >= 3) return false; // 최대 3명
+      if (r.companions.includes(npcId)) return false;
+      const data = useDataStore();
+      const npc = data.npcs.get(npcId);
+      if (!npc?.recruit) return false;
+      const b = npc.recruit;
+
+      // 1) 덱 슬롯 증가
+      const deckSizeAdd = b.deckSizeBonus ?? 0;
+      if (deckSizeAdd > 0) r.deckSize += deckSizeAdd;
+
+      // 2) 카드 추가 — 인스턴스화해서 collection + deck에 (deckSize 여유 한도까지).
+      const addedCardInstanceIds: string[] = [];
+      for (const cid of b.grantedCardIds ?? []) {
+        const card = data.cards.get(cid);
+        if (!card) continue;
+        const inst = instantiateCard(card);
+        r.collection.push(inst);
+        if (inst.instanceId) addedCardInstanceIds.push(inst.instanceId);
+        // 자리 있으면 덱에도 자동 등록.
+        if (r.deck.length < r.deckSize) r.deck.push(inst);
+        if (!r.newCardEncounters.includes(card.id)) r.newCardEncounters.push(card.id);
+      }
+
+      // 3) 유물 추가
+      const addedRelicIds: string[] = [];
+      for (const rid of b.grantedRelicIds ?? []) {
+        const relic = data.relics.get(rid);
+        if (!relic) continue;
+        r.relics.push(relic);
+        addedRelicIds.push(rid);
+        if (!r.newRelicEncounters.includes(rid)) r.newRelicEncounters.push(rid);
+      }
+
+      // 4) 컬러 보정
+      const colorBoostsApplied: Record<string, number> = {};
+      for (const [k, v] of Object.entries(b.colorBoosts ?? {})) {
+        if (typeof v !== 'number') continue;
+        (r.colors as Record<string, number>)[k] = ((r.colors as Record<string, number>)[k] ?? 0) + v;
+        colorBoostsApplied[k] = v;
+      }
+
+      r.companions.push(npcId);
+      if (!r.recruitedAt[npcId]) r.recruitedAt[npcId] = r.currentNodeId;
+      r.companionAppliedBonuses[npcId] = {
+        deckSizeAdd,
+        addedCardInstanceIds,
+        addedRelicIds,
+        colorBoostsApplied: colorBoostsApplied as import('@/data/schemas').RunState['companionAppliedBonuses'][string]['colorBoostsApplied'],
+      };
+      return true;
+    },
+
+    /** 동료 이탈 — 영입 시 적용된 보너스를 정확히 역적용 + 기록 삭제. */
+    dismissCompanion(npcId: string) {
+      const r = this.data;
+      const idx = r.companions.indexOf(npcId);
+      if (idx < 0) return;
+      const applied = r.companionAppliedBonuses[npcId];
+
+      if (applied) {
+        // 1) 덱 슬롯 복원
+        r.deckSize = Math.max(1, r.deckSize - applied.deckSizeAdd);
+
+        // 2) 추가됐던 카드 인스턴스 제거 (collection + deck)
+        const removeSet = new Set(applied.addedCardInstanceIds);
+        r.collection = r.collection.filter((c) => !c.instanceId || !removeSet.has(c.instanceId));
+        r.deck = r.deck.filter((c) => !c.instanceId || !removeSet.has(c.instanceId));
+
+        // 3) 추가됐던 유물 제거 (각 id 한 점씩)
+        for (const rid of applied.addedRelicIds) {
+          const i = r.relics.findIndex((rel) => rel.id === rid);
+          if (i >= 0) r.relics.splice(i, 1);
+        }
+
+        // 4) 컬러 보정 역적용
+        for (const [k, v] of Object.entries(applied.colorBoostsApplied ?? {})) {
+          if (typeof v !== 'number') continue;
+          (r.colors as Record<string, number>)[k] = Math.max(0, ((r.colors as Record<string, number>)[k] ?? 0) - v);
+        }
+      }
+
+      r.companions.splice(idx, 1);
+      delete r.companionAppliedBonuses[npcId];
+      // recruitedAt는 유지 — *재만남* 시 같은 노드로 가야 다시 영입 가능.
     },
 
     /**

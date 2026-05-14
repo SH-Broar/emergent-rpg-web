@@ -97,6 +97,10 @@ async function selectCharacter(c: Character) {
   run.data.collection = allInstances;
   run.data.deck = allInstances.slice(0, deckSize);
 
+  // 시작 아이템 — 소량의 회복약 한 점 (튜토리얼 격으로).
+  const starter = data.items.get('i-potion-small');
+  if (starter) run.addItem(starter);
+
   // 컬러 스탯 초기화 — 캐릭터의 base_npc colorValues가 있으면 ×100, 없으면 모두 30.
   // (NPC colorValues는 0~1, 게임 스탯은 0~100)
   const baseNpc = c.baseNpcId ? data.npcs.get(c.baseNpcId) : undefined;

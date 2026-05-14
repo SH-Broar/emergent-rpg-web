@@ -11,6 +11,7 @@
  */
 
 import type { Card } from './card';
+import type { Item } from './item';
 import type { Relic } from './relic';
 import type { ColorValues } from './npc';
 import type {
@@ -19,6 +20,7 @@ import type {
   NodeId,
   NodeKind,
   NpcId,
+  RelicId,
   Season,
   TimelineId,
 } from './base';
@@ -148,6 +150,35 @@ export interface RunState {
    * 전투 보너스로 환산되어 damage/block/draw/mana에 더해짐.
    */
   colors: ColorValues;
+
+  /** 인벤토리 — 즉시 사용 가능한 아이템 인스턴스. */
+  items: Item[];
+
+  /**
+   * 현재 동료 (최대 3명) — NPC id 리스트.
+   * 사용자 사양: 동료가 이탈하면 *최초 만난 노드*로 가야 다시 권유 가능.
+   */
+  companions: NpcId[];
+
+  /**
+   * 영입 이력 — npcId → 최초 영입된 노드. dismiss 후에도 보존되어
+   * 다시 그 노드에 가야 *재영입* 권유 가능.
+   */
+  recruitedAt: Record<NpcId, NodeId>;
+
+  /**
+   * 동료 적용 보너스 기록 — dismiss 시 정확히 역적용하기 위함.
+   * 같은 NPC가 두 번 다시 영입되면 다시 만들어 저장.
+   */
+  companionAppliedBonuses: Record<NpcId, {
+    deckSizeAdd: number;
+    addedCardInstanceIds: string[];
+    addedRelicIds: RelicId[];
+    colorBoostsApplied: Partial<{
+      fire: number; water: number; electric: number; iron: number;
+      earth: number; wind: number; light: number; dark: number;
+    }>;
+  }>;
 
   // === 진행도 (런 종료 시 모노 게이지로 변환) ===
   /** 히페리온 5단계 중 클리어한 단계 (true). */

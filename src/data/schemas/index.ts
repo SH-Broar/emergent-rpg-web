@@ -15,5 +15,6 @@ export * from './boss';
 export * from './monster';
 export * from './node-map';
 export * from './npc';
+export * from './item';
 export * from './run';
 export * from './meta';

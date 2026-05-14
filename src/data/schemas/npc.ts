@@ -47,6 +47,24 @@ export interface GiftPreference {
   disliked?: string[];
 }
 
+/**
+ * 동료 영입 정의 — NPC가 *동료로* 합류하면 적용되는 4종 보너스.
+ * 사용자 사양: 최대 4종을 *한 NPC가 여러 개 동시*에 가질 수 있음.
+ */
+export interface CompanionBonuses {
+  /** 덱 슬롯 +N. */
+  deckSizeBonus?: number;
+  /** 합류 시 컬렉션·덱에 추가되는 전용 카드 ID들. */
+  grantedCardIds?: CardId[];
+  /** 합류 시 보유 유물에 추가되는 전용 유물 ID들. */
+  grantedRelicIds?: RelicId[];
+  /** 합류 시 colors에 더해질 부분 컬러 보정. */
+  colorBoosts?: Partial<{
+    fire: number; water: number; electric: number; iron: number;
+    earth: number; wind: number; light: number; dark: number;
+  }>;
+}
+
 export interface Npc extends NamedEntity {
   id: NpcId;
   raceId: RaceId;
@@ -56,6 +74,12 @@ export interface Npc extends NamedEntity {
 
   /** 거주 노드 (act-1-map의 node id) — 마을 노드에 나타날 때 매칭. */
   homeNodeId?: NodeId;
+
+  /**
+   * 동료 영입 가능 여부 + 보너스.
+   * recruit가 정의된 NPC만 동료로 권유 가능. 이탈하면 *최초 만난 노드*에서 다시 권유해야 한다.
+   */
+  recruit?: CompanionBonuses;
 
   /** 추가로 출현 가능한 노드. */
   presenceNodeIds?: NodeId[];

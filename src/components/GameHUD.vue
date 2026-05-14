@@ -13,10 +13,11 @@ import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { deriveStats, deriveBonuses } from '@/systems/stats';
 
-defineProps<{ deckOpen: boolean; relicOpen: boolean }>();
+defineProps<{ deckOpen: boolean; relicOpen: boolean; itemOpen: boolean }>();
 const emit = defineEmits<{
   (e: 'toggle-deck'): void;
   (e: 'toggle-relic'): void;
+  (e: 'toggle-item'): void;
 }>();
 
 const run = useRunStore();
@@ -115,6 +116,20 @@ const bonus = computed(() => deriveBonuses(stats.value));
         <span class="lbl">유물</span>
         <span class="num">{{ run.data.relics.length }}</span>
       </button>
+
+      <!-- 아이템 -->
+      <button class="slot slot--btn" :class="{ 'slot--btn-on': itemOpen }" @click="emit('toggle-item')">
+        <span class="emoji">🧪</span>
+        <span class="lbl">아이템</span>
+        <span class="num">{{ run.data.items.length }}</span>
+      </button>
+
+      <!-- 동료 -->
+      <div class="slot" :title="`동료 ${run.data.companions.length}/3`">
+        <span class="emoji">👥</span>
+        <span class="lbl">동료</span>
+        <span class="num">{{ run.data.companions.length }}/3</span>
+      </div>
     </div>
 
     <!-- 6 컬러 + 3 도출 스탯 -->

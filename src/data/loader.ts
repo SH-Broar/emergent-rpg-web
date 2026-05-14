@@ -29,12 +29,16 @@ import type {
   CardTriggerKind,
   Character,
   ColorValues,
+  CompanionBonuses,
   EffectTarget,
   Event,
   EventChoice,
   EventChoiceEffect,
   GiftPreference,
   HyperionStage,
+  Item,
+  ItemEffect,
+  ItemEffectKind,
   Monster,
   MonsterIntent,
   NodeMap,
@@ -521,6 +525,35 @@ function parseAffinityReward(token: string): AffinityReward | null {
   return reward;
 }
 
+/** "fire:10, water:5" → { fire:10, water:5 }. 부분만 채움. */
+function parseColorBoosts(raw: string | undefined): CompanionBonuses['colorBoosts'] {
+  if (!raw) return undefined;
+  const tokens = parseList(raw);
+  if (tokens.length === 0) return undefined;
+  const out: Record<string, number> = {};
+  for (const tok of tokens) {
+    const [k, v] = tok.split(':').map((s) => s.trim());
+    if (!k) continue;
+    out[k] = Number(v);
+  }
+  return out as CompanionBonuses['colorBoosts'];
+}
+
+/** NPC 섹션에서 recruit_* 필드를 모아 CompanionBonuses (없으면 undefined). */
+function parseRecruitBonuses(f: IniSection): CompanionBonuses | undefined {
+  if (!parseBool(f.recruit_enabled, false)) return undefined;
+  const cards = parseList(f.recruit_cards);
+  const relics = parseList(f.recruit_relics);
+  const colors = parseColorBoosts(f.recruit_colors);
+  const deckSize = f.recruit_deck_bonus ? parseNumber(f.recruit_deck_bonus, 0) : undefined;
+  return {
+    deckSizeBonus: deckSize,
+    grantedCardIds: cards.length > 0 ? cards : undefined,
+    grantedRelicIds: relics.length > 0 ? relics : undefined,
+    colorBoosts: colors,
+  };
+}
+
 function parseGiftPrefs(f: IniSection): GiftPreference | undefined {
   const loved = parseList(f.gift_loved);
   const liked = parseList(f.gift_liked);
@@ -532,6 +565,53 @@ function parseGiftPrefs(f: IniSection): GiftPreference | undefined {
     disliked: disliked.length > 0 ? disliked : undefined,
   };
 }
+
+// ========== Item ==========
+
+/** "heal:10" | "color-boost:fire:10" | "grant-card:c-strike" → ItemEffect. */
+function parseItemEffect(token: string): ItemEffect | null {
+  const parts = token.split(':').map((s) => s.trim());
+  if (parts.length === 0 || !parts[0]) return null;
+  const kind = parts[0] as ItemEffectKind;
+  // color-boost와 grant-* 등은 param이 *문자열*(예: 'fire' / 'c-strike').
+  // 나머지는 value가 숫자 (예: heal:10).
+  if (kind === 'color-boost') {
+    return { kind, param: parts[1], value: parts[2] ? Number(parts[2]) : 0 };
+  }
+  if (kind === 'grant-card' || kind === 'grant-relic') {
+    return { kind, param: parts[1] };
+  }
+  if (kind === 'teleport-village') {
+    return { kind };
+  }
+  // heal / gold / time-shards / color-all
+  return { kind, value: parts[1] ? Number(parts[1]) : 0 };
+}
+
+export function parseItems(ini: IniData): Map<string, Item> {
+  const result = new Map<string, Item>();
+  for (const [section, fields] of Object.entries(ini)) {
+    if (!section.startsWith('item.')) continue;
+    const id = sectionIdSuffix(section);
+    const rank = fields.rank as Rank;
+    if (!isRank(rank)) continue;
+    const effects = parseList(fields.effects)
+      .map(parseItemEffect)
+      .filter((e): e is ItemEffect => e !== null);
+    result.set(id, {
+      id,
+      name: fields.name ?? id,
+      description: fields.description,
+      rank,
+      effects,
+      consumable: parseBool(fields.consumable, true),
+      flavor: fields.flavor,
+    });
+  }
+  return result;
+}
+
+// ========== NPC ==========
 
 export function parseNpcs(ini: IniData): Map<string, Npc> {
   const result = new Map<string, Npc>();
@@ -562,6 +642,7 @@ export function parseNpcs(ini: IniData): Map<string, Npc> {
       signatureElement: sigEl,
       tagline: fields.tagline,
       portrait: fields.portrait,
+      recruit: parseRecruitBonuses(fields),
     });
   }
   return result;
@@ -615,6 +696,7 @@ export interface GameData {
   monsters: Map<string, Monster>;
   nodeMaps: Map<string, NodeMap>;
   npcs: Map<string, Npc>;
+  items: Map<string, Item>;
 }
 
 /** 데이터 파일들. 이후 확장 시 파일 추가만. */
@@ -643,6 +725,7 @@ const DATA_FILES = [
   'data/events/act-1-region-events.txt',
   'data/monsters/mvr-monsters.txt',
   'data/monsters/act-1-region-monsters.txt',
+  'data/items/act-1-items.txt',
   // === peace-310 (MVR) — 파일은 학습용으로 보존, 로딩에서는 제외. ===
   // 'data/timelines/peace-310.txt',
   // 'data/node-maps/peace-310-map.txt',
@@ -697,6 +780,7 @@ export async function loadAllData(baseUrl?: string): Promise<GameData> {
     monsters: parseMonsters(merged),
     nodeMaps,
     npcs: parseNpcs(merged),
+    items: parseItems(merged),
   };
 }
 
@@ -722,5 +806,6 @@ export function loadFromText(text: string): GameData {
     monsters: parseMonsters(ini),
     nodeMaps,
     npcs: parseNpcs(ini),
+    items: parseItems(ini),
   };
 }

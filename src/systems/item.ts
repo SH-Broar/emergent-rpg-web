@@ -1,0 +1,141 @@
+/**
+ * 아이템 사용 시스템.
+ *
+ * useItem(itemInstance) — 효과를 RunState에 적용 + 소비 시 인벤토리에서 제거.
+ *
+ * teleport-village는 *옵션 콜백*으로 사용자 노드 선택을 받는다 (UI가 주입).
+ * 콜백 없으면 첫 번째 village 노드로 자동 이동.
+ */
+
+import type { Item, ItemEffect, NodeId, ColorValues } from '@/data/schemas';
+import { useRunStore } from '@/stores/run';
+import { useDataStore } from '@/stores/data';
+import { useUiStore } from '@/stores/ui';
+import { instantiateCard } from './deck';
+
+export interface UseItemContext {
+  /** teleport-village 등 *대상 노드*가 필요한 효과에서 사용자가 노드 ID를 선택. */
+  selectedNodeId?: NodeId;
+}
+
+/**
+ * 아이템 한 점 사용. 효과를 적용하고 consumable이면 인벤토리에서 제거.
+ * 결과 문구 반환 (toast에 노출).
+ */
+export function useItem(item: Item, ctx?: UseItemContext): string {
+  const run = useRunStore();
+  const data = useDataStore();
+  const ui = useUiStore();
+  const lines: string[] = [];
+
+  for (const eff of item.effects) {
+    applyItemEffect(eff, ctx, lines);
+  }
+
+  // 소모 — 인스턴스 ID로 정확히 한 점만 제거.
+  if (item.consumable && item.instanceId) {
+    const idx = run.data.items.findIndex((i) => i.instanceId === item.instanceId);
+    if (idx >= 0) run.data.items.splice(idx, 1);
+  }
+
+  const msg = `'${item.name}' 사용 — ${lines.join(' / ')}`;
+  ui.toast('success', msg);
+  void data; // (data store는 helper에서 사용 가능)
+  return msg;
+}
+
+function applyItemEffect(eff: ItemEffect, ctx: UseItemContext | undefined, lines: string[]): void {
+  const run = useRunStore();
+  const data = useDataStore();
+  const ui = useUiStore();
+  const r = run.data;
+
+  switch (eff.kind) {
+    case 'heal': {
+      const v = eff.value ?? 0;
+      const before = r.hp;
+      r.hp = Math.min(r.maxHp, r.hp + v);
+      lines.push(`HP +${r.hp - before}`);
+      break;
+    }
+    case 'gold': {
+      const v = eff.value ?? 0;
+      r.gold = Math.max(0, r.gold + v);
+      lines.push(`골드 +${v}`);
+      break;
+    }
+    case 'time-shards': {
+      const v = eff.value ?? 0;
+      r.timeShards = Math.max(0, r.timeShards + v);
+      lines.push(`시간의 조각 +${v}`);
+      break;
+    }
+    case 'color-boost': {
+      const key = eff.param as keyof ColorValues | undefined;
+      const v = eff.value ?? 0;
+      if (key && key in r.colors) {
+        r.colors[key] = Math.max(0, (r.colors[key] ?? 0) + v);
+        lines.push(`${key} +${v}`);
+      }
+      break;
+    }
+    case 'color-all': {
+      const v = eff.value ?? 0;
+      for (const k of Object.keys(r.colors) as (keyof ColorValues)[]) {
+        r.colors[k] = Math.max(0, (r.colors[k] ?? 0) + v);
+      }
+      lines.push(`8 컬러 모두 +${v}`);
+      break;
+    }
+    case 'grant-card': {
+      const cid = eff.param;
+      if (!cid) break;
+      const card = data.cards.get(cid);
+      if (card) {
+        run.addCardToCollection(card);
+        lines.push(`카드 '${card.name}' 획득`);
+      }
+      break;
+    }
+    case 'grant-relic': {
+      const rid = eff.param;
+      if (!rid) break;
+      const relic = data.relics.get(rid);
+      if (relic) {
+        r.relics.push(relic);
+        if (!r.newRelicEncounters.includes(relic.id)) {
+          r.newRelicEncounters.push(relic.id);
+        }
+        lines.push(`유물 '${relic.name}' 획득`);
+      }
+      break;
+    }
+    case 'teleport-village': {
+      // 사용자 선택이 있으면 그쪽, 없으면 임의의 village 노드.
+      const tl = data.timelines.get(r.timelineId);
+      const map = tl ? data.nodeMaps.get(tl.nodeMapId) : undefined;
+      if (!map) {
+        ui.toast('error', '맵을 찾을 수 없습니다.');
+        break;
+      }
+      const villages = map.nodes.filter((n) => n.kind === 'village' && n.id !== r.currentNodeId);
+      const target = ctx?.selectedNodeId
+        ? map.nodes.find((n) => n.id === ctx.selectedNodeId)
+        : villages[0];
+      if (!target) {
+        ui.toast('warning', '이동할 마을이 없습니다.');
+        break;
+      }
+      r.currentNodeId = target.id;
+      // 텔레포트는 *턴 소모 없이* — visitNode 호출하지 않음. 이미 visited면 그대로.
+      if (!r.nodeStates[target.id]) r.nodeStates[target.id] = { visited: true };
+      else r.nodeStates[target.id].visited = true;
+      lines.push(`'${target.label}'(으)로 이동`);
+      break;
+    }
+  }
+
+  // instantiateCard는 grant-card에서 직접 안 쓰고 addCardToCollection 내부에서 처리.
+  // (인스턴스 ID 일관성을 위해 이미 RunStore가 호출.)
+  void instantiateCard;
+}

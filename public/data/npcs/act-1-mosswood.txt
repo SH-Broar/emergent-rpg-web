@@ -83,6 +83,10 @@ background = 불의 사천왕이자 구미호.|정령과 마법에 정통하며 
 tagline = "선은 — 안 넘어요. 그쪽도 그러시길."
 tags = foxkin, sitenwang-fire, mage
 affinity_rewards = 3:card=c-double-strike:gauge=4
+# 영입 — 불·전기 보너스로 ATK 라인 강화 + 전용 카드.
+recruit_enabled = true
+recruit_cards = c-burn-mark
+recruit_colors = fire:15, electric:8
 
 [npc.npc-elnest]
 name = 엘네스트

@@ -15,6 +15,7 @@ import { useRunStore } from '@/stores/run';
 import GameHUD from '@/components/GameHUD.vue';
 import DeckPanel from '@/components/DeckPanel.vue';
 import RelicPanel from '@/components/RelicPanel.vue';
+import ItemPanel from '@/components/ItemPanel.vue';
 import DayBanner from '@/components/DayBanner.vue';
 import LoadingOverlay from '@/components/LoadingOverlay.vue';
 
@@ -24,14 +25,19 @@ const run = useRunStore();
 
 const deckOpen = ref(false);
 const relicOpen = ref(false);
+const itemOpen = ref(false);
 
 function toggleDeck() {
   deckOpen.value = !deckOpen.value;
-  if (deckOpen.value) relicOpen.value = false;
+  if (deckOpen.value) { relicOpen.value = false; itemOpen.value = false; }
 }
 function toggleRelic() {
   relicOpen.value = !relicOpen.value;
-  if (relicOpen.value) deckOpen.value = false;
+  if (relicOpen.value) { deckOpen.value = false; itemOpen.value = false; }
+}
+function toggleItem() {
+  itemOpen.value = !itemOpen.value;
+  if (itemOpen.value) { deckOpen.value = false; relicOpen.value = false; }
 }
 
 onMounted(async () => {
@@ -61,8 +67,10 @@ onMounted(async () => {
       v-if="run.active"
       :deck-open="deckOpen"
       :relic-open="relicOpen"
+      :item-open="itemOpen"
       @toggle-deck="toggleDeck"
       @toggle-relic="toggleRelic"
+      @toggle-item="toggleItem"
     />
 
     <router-view v-slot="{ Component, route }">
@@ -71,9 +79,10 @@ onMounted(async () => {
       </transition>
     </router-view>
 
-    <!-- 덱 / 유물 모달 -->
+    <!-- 덱 / 유물 / 아이템 모달 -->
     <DeckPanel :open="deckOpen" @close="deckOpen = false" />
     <RelicPanel :open="relicOpen" @close="relicOpen = false" />
+    <ItemPanel :open="itemOpen" @close="itemOpen = false" />
 
     <!-- 하루 경과 배너 (런 중에만 의미) -->
     <DayBanner v-if="run.active" />

@@ -1,0 +1,82 @@
+# Items — 1장 즉시 사용 소비품 풀.
+# 효과 표기: effects = kind:param:value, kind:value
+#   heal:N            — HP +N
+#   gold:N            — 골드 +N
+#   time-shards:N     — 시간의 조각 +N
+#   color-boost:KEY:N — colors[KEY] += N (KEY: fire/water/electric/iron/earth/wind/light/dark)
+#   color-all:N       — 8 컬러 모두 += N
+#   grant-card:ID     — 카드 한 장 컬렉션 추가
+#   grant-relic:ID    — 유물 한 점 추가
+#   teleport-village  — 임의의 village 노드로 즉시 이동
+
+[item.i-potion-small]
+name = 작은 회복약
+description = 흔한 물병. 한 모금에 작은 숨이 돌아온다.
+rank = basic
+effects = heal:10
+consumable = true
+flavor = 시장 어느 노점에서 누구나 한 병쯤 챙긴다.
+
+[item.i-potion-large]
+name = 큰 회복약
+description = 두 모금이면 다친 자리가 한층 잊혀진다.
+rank = common
+effects = heal:25
+consumable = true
+
+[item.i-time-flask]
+name = 시간의 플라스크
+description = 흩어진 *시간의 조각*이 응축된 작은 병.
+rank = common
+effects = time-shards:5
+consumable = true
+
+[item.i-gold-pouch]
+name = 작은 골드 주머니
+description = 누군가 흘리고 간 가벼운 동전 뭉치.
+rank = basic
+effects = gold:20
+consumable = true
+
+[item.i-fire-tincture]
+name = 불의 정수
+description = 화기가 잠시 몸에 남는다. 한 차례 *공격*이 더 매서워진다.
+rank = common
+effects = color-boost:fire:10
+consumable = true
+
+[item.i-water-tincture]
+name = 물의 정수
+description = 흐름이 *마법*의 결을 매끄럽게 풀어 준다.
+rank = common
+effects = color-boost:water:10
+consumable = true
+
+[item.i-iron-tincture]
+name = 철의 정수
+description = 단단함이 *방어*의 한 줄을 더한다.
+rank = common
+effects = color-boost:iron:10
+consumable = true
+
+[item.i-element-jar]
+name = 만(萬) 정수병
+description = 여덟 갈래의 정수가 한 병에 잠겨 있다.
+rank = rare
+effects = color-all:5
+consumable = true
+flavor = 알리메스 약초원 가장 깊은 줄에서 한두 병만 흘러나온다.
+
+[item.i-harpy-wing]
+name = 하피의 날개
+description = 한 번 펼치면 *임의의 마을*까지 단숨에. 풍혈지대 시장가의 비밀.
+rank = rare
+effects = teleport-village
+consumable = true
+
+[item.i-mono-card-token]
+name = 모노의 카드 인장
+description = 사용하면 *결심의 섬광* 한 장이 손에 떨어진다.
+rank = rare
+effects = grant-card:c-resolve-flash
+consumable = true
