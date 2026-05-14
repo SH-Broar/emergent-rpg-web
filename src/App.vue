@@ -116,9 +116,15 @@ onMounted(async () => {
   min-height: 100vh;
   width: 100%;
 }
-/* 런 중에는 상단에 HUD가 있으므로 컨텐츠를 아래로 밀어줌 */
+/* 런 중에는 상단에 HUD가 *두 줄*(메인 슬롯 + 컬러 막대) 차지하므로
+   컨텐츠를 충분히 아래로 밀어 글씨 가림 방지. 모바일은 더 여유. */
 .app-shell--in-run :deep(main) {
-  padding-top: 3.5rem;
+  padding-top: 5.6rem;
+}
+@media (max-width: 640px) {
+  .app-shell--in-run :deep(main) {
+    padding-top: 6.6rem;
+  }
 }
 
 .toast-stack {
