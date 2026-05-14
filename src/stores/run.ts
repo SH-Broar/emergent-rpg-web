@@ -198,8 +198,7 @@ export const useRunStore = defineStore('run', {
         this.advanceDay();
       }
 
-      // 모든 노드 입장마다 자동 저장 (사용자 사양).
-      this.saveActiveRun();
+      // 저장은 App.vue의 $subscribe가 *모든 mutation*마다 자동 처리.
     },
 
     /**

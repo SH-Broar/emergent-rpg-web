@@ -96,8 +96,7 @@ async function selectCharacter(c: Character) {
   // 시작 카드 — collection에 모두, deck 슬롯에는 deckSize만큼.
   run.data.collection = allInstances;
   run.data.deck = allInstances.slice(0, deckSize);
-  // 초기 덱 구성 완료 — 첫 저장 스냅샷.
-  run.saveActiveRun();
+  // 이후 모든 mutation은 App.vue의 $subscribe가 자동 저장.
 
   // 종족 시드 유물 부여
   if (race?.seedRelicIds) {

@@ -39,6 +39,18 @@ onMounted(async () => {
   if (data.error) {
     ui.toast('error', `데이터 로드 실패: ${data.error}`, 6000);
   }
+
+  // 모든 RunState 변경마다 localStorage에 저장 (사용자 사양: 카드/유물/덱/턴/재화 *전부* 저장).
+  // microtask로 합쳐 한 tick에 여러 mutation이 와도 1회 직렬화.
+  let pendingSave = false;
+  run.$subscribe(() => {
+    if (pendingSave) return;
+    pendingSave = true;
+    queueMicrotask(() => {
+      pendingSave = false;
+      run.saveActiveRun();
+    });
+  });
 });
 </script>
 
