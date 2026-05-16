@@ -10,6 +10,7 @@ import type {
   Boss,
   Card,
   Character,
+  Equipment,
   Event,
   Item,
   Monster,
@@ -68,6 +69,9 @@ export const useDataStore = defineStore('data', {
     },
     items(state): Map<string, Item> {
       return state.data?.items ?? new Map<string, Item>();
+    },
+    equipments(state): Map<string, Equipment> {
+      return state.data?.equipments ?? new Map<string, Equipment>();
     },
   },
 

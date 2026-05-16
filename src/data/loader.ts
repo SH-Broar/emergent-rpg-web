@@ -39,6 +39,10 @@ import type {
   Item,
   ItemEffect,
   ItemEffectKind,
+  Equipment,
+  EquipmentSlot,
+  ColorEffect,
+  Element,
   Monster,
   MonsterIntent,
   NodeMap,
@@ -697,6 +701,49 @@ export interface GameData {
   nodeMaps: Map<string, NodeMap>;
   npcs: Map<string, Npc>;
   items: Map<string, Item>;
+  equipments: Map<string, Equipment>;
+}
+
+// ========== Equipment ==========
+
+const VALID_EQUIPMENT_SLOTS = ['weapon', 'chest', 'accessory'] as const;
+function isEquipmentSlot(v: string): v is EquipmentSlot {
+  return (VALID_EQUIPMENT_SLOTS as readonly string[]).includes(v);
+}
+
+export function parseEquipments(ini: IniData, prefix = 'equipment'): Map<string, Equipment> {
+  const result = new Map<string, Equipment>();
+  for (const [section, fields] of Object.entries(ini)) {
+    if (!section.startsWith(prefix + '.')) continue;
+    const id = sectionIdSuffix(section);
+    const eq = parseOneEquipment(id, fields);
+    if (eq) result.set(eq.id, eq);
+  }
+  return result;
+}
+function parseOneEquipment(id: string, f: IniSection): Equipment | null {
+  const slot = f.slot;
+  if (!slot || !isEquipmentSlot(slot)) return null;
+  const rank = f.rank;
+  if (!rank || !isRank(rank)) return null;
+  const colorEffects: ColorEffect[] = parseList(f.color_effects ?? '')
+    .map((tok) => {
+      const [color, valStr] = tok.split(':').map((s) => s.trim());
+      if (!color || !valStr) return null;
+      const value = Number(valStr);
+      if (Number.isNaN(value)) return null;
+      return { color: color as Element, value };
+    })
+    .filter((e): e is ColorEffect => e !== null);
+  return {
+    id,
+    name: f.name ?? id,
+    description: f.description,
+    slot,
+    rank,
+    colorEffects,
+    flavor: f.flavor,
+  };
 }
 
 /** 데이터 파일들. 이후 확장 시 파일 추가만. */
@@ -726,6 +773,7 @@ const DATA_FILES = [
   'data/monsters/mvr-monsters.txt',
   'data/monsters/act-1-region-monsters.txt',
   'data/items/act-1-items.txt',
+  'data/equipment/equipment-mvr.txt',
   // === peace-310 (MVR) — 파일은 학습용으로 보존, 로딩에서는 제외. ===
   // 'data/timelines/peace-310.txt',
   // 'data/node-maps/peace-310-map.txt',
@@ -781,6 +829,7 @@ export async function loadAllData(baseUrl?: string): Promise<GameData> {
     nodeMaps,
     npcs: parseNpcs(merged),
     items: parseItems(merged),
+    equipments: parseEquipments(merged),
   };
 }
 
@@ -807,5 +856,6 @@ export function loadFromText(text: string): GameData {
     nodeMaps,
     npcs: parseNpcs(ini),
     items: parseItems(ini),
+    equipments: parseEquipments(ini),
   };
 }

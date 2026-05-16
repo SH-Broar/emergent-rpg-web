@@ -1,0 +1,379 @@
+<script setup lang="ts">
+/**
+ * 소지품 메뉴 — 글로벌 모달 (M4).
+ *
+ * 헤더: Day {currentDay}
+ * 탭 2개: 유물 / 아이템
+ * RelicPanel + ItemPanel 본문을 흡수해 인라인 표시.
+ *
+ * 기존 RelicPanel.vue / ItemPanel.vue는 dead code 가능 — App.vue에서 import 제거.
+ */
+
+import { computed, ref, watch } from 'vue';
+import { useRunStore } from '@/stores/run';
+import { useDataStore } from '@/stores/data';
+import { useItem } from '@/systems/item';
+import type { Item, Node, Relic, RelicEffect } from '@/data/schemas';
+
+const props = defineProps<{ open: boolean }>();
+const emit = defineEmits<{ (e: 'close'): void }>();
+
+const run = useRunStore();
+const data = useDataStore();
+
+const tab = ref<'relic' | 'item'>('relic');
+
+// 모달 닫힐 때 텔레포트 sub-modal도 같이 닫고, 탭은 기본값으로 복원
+watch(
+  () => props.open,
+  (o) => {
+    if (!o) {
+      teleportFor.value = null;
+      tab.value = 'relic';
+    }
+  },
+);
+
+const rankColors: Record<string, string> = {
+  basic: '#a4a4b0',
+  common: '#8effb8',
+  rare: '#8eedff',
+  legendary: '#ffe88e',
+};
+const rankOrder: Record<string, number> = { basic: 0, common: 1, rare: 2, legendary: 3 };
+
+// ===== 유물 =====
+const triggerLabels: Record<string, string> = {
+  passive: '패시브',
+  'on-combat-start': '전투 시작 시',
+  'on-combat-end': '전투 승리 시',
+  'on-node-enter': '노드 진입 시',
+  'on-card-play': '카드 사용 시',
+  'on-rest': '휴식 시',
+};
+
+function effectText(eff: RelicEffect): string {
+  const v = eff.value ?? 0;
+  switch (eff.kind) {
+    case 'bonus-hp': return `최대 HP +${v}`;
+    case 'bonus-mana': return `마나 +${v}`;
+    case 'bonus-gold': return `골드 +${v}`;
+    case 'bonus-damage': return `모든 데미지 +${v}`;
+    case 'discount': return `제작 비용 ${Math.round(v * 100)}% 할인`;
+    default: return `${eff.kind}${eff.value !== undefined ? ` ${eff.value}` : ''}`;
+  }
+}
+function describeRelic(r: Relic): string[] {
+  return r.effects.map(effectText);
+}
+
+// ===== 아이템 =====
+const sortedItems = computed(() => {
+  return [...run.data.items].sort((a: Item, b: Item) => {
+    const r = (rankOrder[a.rank] ?? 0) - (rankOrder[b.rank] ?? 0);
+    if (r !== 0) return r;
+    return a.name.localeCompare(b.name);
+  });
+});
+
+const teleportFor = ref<Item | null>(null);
+const teleportTargets = computed<Node[]>(() => {
+  const tl = data.timelines.get(run.data.timelineId);
+  const map = tl ? data.nodeMaps.get(tl.nodeMapId) : undefined;
+  if (!map) return [];
+  return map.nodes.filter((n) => n.kind === 'village' && n.id !== run.data.currentNodeId);
+});
+
+function tryUseItem(item: Item) {
+  const needsTarget = item.effects.some((e) => e.kind === 'teleport-village');
+  if (needsTarget) {
+    teleportFor.value = item;
+    return;
+  }
+  useItem(item);
+}
+function confirmTeleport(nodeId: string) {
+  const item = teleportFor.value;
+  if (!item) return;
+  useItem(item, { selectedNodeId: nodeId });
+  teleportFor.value = null;
+}
+function itemEffectLabel(eff: Item['effects'][number]): string {
+  switch (eff.kind) {
+    case 'heal': return `HP +${eff.value ?? 0}`;
+    case 'gold': return `골드 +${eff.value ?? 0}`;
+    case 'time-shards': return `시간의 조각 +${eff.value ?? 0}`;
+    case 'color-boost': return `${eff.param} +${eff.value ?? 0}`;
+    case 'color-all': return `8 컬러 모두 +${eff.value ?? 0}`;
+    case 'grant-card': return `카드 ${eff.param}`;
+    case 'grant-relic': return `유물 ${eff.param}`;
+    case 'teleport-village': return '마을로 즉시 이동';
+  }
+  return '';
+}
+</script>
+
+<template>
+  <transition name="inv-fade">
+    <div v-if="open" class="inv-backdrop" @click.self="emit('close')">
+      <div class="inv-modal" role="dialog" aria-label="소지품 메뉴">
+        <header class="inv-modal__hdr">
+          <h2>소지품</h2>
+          <span class="inv-day">Day {{ run.data.currentDay }}</span>
+          <button class="inv-modal__x" aria-label="닫기" @click="emit('close')">×</button>
+        </header>
+
+        <!-- 탭 -->
+        <div class="inv-tabs" role="tablist">
+          <button
+            class="inv-tab"
+            :class="{ 'inv-tab--on': tab === 'relic' }"
+            role="tab"
+            :aria-selected="tab === 'relic'"
+            @click="tab = 'relic'"
+          >
+            <span class="inv-tab__icon">💎</span>
+            <span>유물 ({{ run.data.relics.length }})</span>
+          </button>
+          <button
+            class="inv-tab"
+            :class="{ 'inv-tab--on': tab === 'item' }"
+            role="tab"
+            :aria-selected="tab === 'item'"
+            @click="tab = 'item'"
+          >
+            <span class="inv-tab__icon">📦</span>
+            <span>아이템 ({{ run.data.items.length }})</span>
+          </button>
+        </div>
+
+        <!-- 유물 탭 -->
+        <div v-if="tab === 'relic'" class="inv-body">
+          <p v-if="run.data.relics.length === 0" class="empty">아직 유물이 없습니다.</p>
+          <ul v-else class="rel-list">
+            <li
+              v-for="(r, i) in run.data.relics"
+              :key="`${r.id}-${i}`"
+              class="rel-card"
+              :style="{ borderLeftColor: rankColors[r.rank] }"
+            >
+              <div class="rel-card__head">
+                <span class="rel-card__name">{{ r.name }}</span>
+                <span class="rel-card__rank" :style="{ color: rankColors[r.rank] }">{{ r.rank }}</span>
+              </div>
+              <div class="rel-card__trigger">{{ triggerLabels[r.trigger] ?? r.trigger }}</div>
+              <ul class="rel-card__effects">
+                <li v-for="(t, ei) in describeRelic(r)" :key="ei">· {{ t }}</li>
+              </ul>
+              <p v-if="r.flavor" class="rel-card__flavor">{{ r.flavor }}</p>
+            </li>
+          </ul>
+        </div>
+
+        <!-- 아이템 탭 -->
+        <div v-else class="inv-body">
+          <p class="hint">클릭 한 번이면 즉시 효과가 적용됩니다. 소비형 아이템은 한 번 쓰면 사라져요.</p>
+          <ul v-if="sortedItems.length > 0" class="items">
+            <li
+              v-for="it in sortedItems"
+              :key="it.instanceId ?? it.id"
+              class="item"
+              :style="{ borderLeftColor: rankColors[it.rank] }"
+              @click="tryUseItem(it)"
+            >
+              <div class="item__row">
+                <span class="item__name">{{ it.name }}</span>
+                <span class="item__rank" :style="{ color: rankColors[it.rank] }">{{ it.rank }}</span>
+              </div>
+              <div v-if="it.description" class="item__desc">{{ it.description }}</div>
+              <div class="item__effects">
+                <span v-for="(e, ei) in it.effects" :key="ei" class="effect">{{ itemEffectLabel(e) }}</span>
+              </div>
+            </li>
+          </ul>
+          <p v-else class="empty">아직 아이템이 없습니다.</p>
+
+          <!-- teleport 대상 선택 (인라인) -->
+          <transition name="inv-fade">
+            <div v-if="teleportFor" class="teleport-modal">
+              <h3>이동할 마을 선택</h3>
+              <ul class="teleport-list">
+                <li v-for="n in teleportTargets" :key="n.id">
+                  <button class="teleport-btn" @click="confirmTeleport(n.id)">{{ n.label }}</button>
+                </li>
+                <li v-if="teleportTargets.length === 0" class="teleport-empty">
+                  이동할 다른 마을이 없습니다.
+                </li>
+              </ul>
+              <button class="teleport-cancel" @click="teleportFor = null">취소</button>
+            </div>
+          </transition>
+        </div>
+      </div>
+    </div>
+  </transition>
+</template>
+
+<style scoped>
+.inv-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-modal);
+  padding: 1rem;
+}
+.inv-modal {
+  max-width: 560px;
+  width: 100%;
+  max-height: 86vh;
+  display: flex;
+  flex-direction: column;
+  background: #16171f;
+  border: 1px solid rgba(192, 142, 255, 0.4);
+  border-radius: 12px;
+  padding: 1rem 1.2rem 0.9rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+}
+.inv-modal__hdr {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
+}
+.inv-modal__hdr h2 { flex: 1; color: #f6e8b8; margin: 0; font-size: 1.2rem; }
+.inv-day {
+  background: rgba(192, 142, 255, 0.18);
+  border: 1px solid rgba(192, 142, 255, 0.4);
+  color: #f6e8b8;
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+.inv-modal__x { background: none; border: none; color: #888; cursor: pointer; font-size: 1.4rem; line-height: 1; }
+.inv-modal__x:hover { color: #f6e8b8; }
+
+/* 탭 */
+.inv-tabs {
+  display: flex;
+  gap: 0.3rem;
+  margin-bottom: 0.7rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  overflow-x: auto;
+}
+.inv-tab {
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  padding: 0.4rem 0.7rem;
+  font: inherit;
+  font-size: 0.85rem;
+  border-bottom: 2px solid transparent;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  white-space: nowrap;
+  transition: color 120ms ease, border-color 120ms ease;
+}
+.inv-tab:hover { color: #f6e8b8; }
+.inv-tab--on {
+  color: #f6e8b8;
+  border-bottom-color: #c08eff;
+}
+.inv-tab__icon { font-size: 0.95rem; }
+
+.inv-body {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  flex: 1;
+  gap: 0.4rem;
+}
+
+.hint { font-size: 0.78rem; color: #888; margin: 0 0 0.3rem; }
+.empty { color: #6c6c7c; text-align: center; padding: 1.6rem; font-style: italic; margin: 0; }
+
+/* 유물 카드 */
+.rel-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+.rel-card {
+  padding: 0.65rem 0.85rem;
+  background: rgba(255, 255, 255, 0.04);
+  border-left: 3px solid;
+  border-radius: 4px;
+}
+.rel-card__head { display: flex; align-items: baseline; gap: 0.5rem; margin-bottom: 0.2rem; }
+.rel-card__name { flex: 1; color: #f6e8b8; font-weight: 600; }
+.rel-card__rank { font-size: 0.7rem; text-transform: uppercase; }
+.rel-card__trigger { font-size: 0.78rem; color: #c08eff; margin-bottom: 0.25rem; }
+.rel-card__effects { margin: 0; padding: 0; list-style: none; font-size: 0.82rem; color: #b6b6c4; }
+.rel-card__effects li { padding: 0.08rem 0; }
+.rel-card__flavor { font-size: 0.72rem; color: #6c6c7c; font-style: italic; margin: 0.35rem 0 0; }
+
+/* 아이템 카드 */
+.items { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.4rem; }
+.item {
+  padding: 0.55rem 0.8rem;
+  background: rgba(255, 255, 255, 0.04);
+  border-left: 3px solid;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 100ms ease;
+}
+.item:hover { background: rgba(255, 255, 255, 0.09); }
+.item__row { display: flex; align-items: center; gap: 0.5rem; }
+.item__name { flex: 1; color: #f6e8b8; font-weight: 600; }
+.item__rank { font-size: 0.65rem; text-transform: uppercase; }
+.item__desc { font-size: 0.78rem; color: #a4a4b0; margin: 0.2rem 0; }
+.item__effects { display: flex; flex-wrap: wrap; gap: 0.3rem; font-size: 0.7rem; }
+.effect { background: rgba(0, 0, 0, 0.4); padding: 0.08rem 0.4rem; border-radius: 3px; color: #b6b6c4; }
+
+/* 텔레포트 인라인 */
+.teleport-modal {
+  margin-top: 0.6rem;
+  padding: 0.7rem;
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: 8px;
+  border: 1px solid rgba(192, 142, 255, 0.3);
+  display: grid;
+  gap: 0.4rem;
+}
+.teleport-modal h3 { color: #f6e8b8; margin: 0; font-size: 0.9rem; }
+.teleport-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.3rem; }
+.teleport-btn {
+  width: 100%;
+  padding: 0.45rem 0.7rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #f6e8b8;
+  border-radius: 6px;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+.teleport-btn:hover { background: rgba(255, 255, 255, 0.12); }
+.teleport-empty { color: #888; font-size: 0.82rem; }
+.teleport-cancel {
+  padding: 0.35rem 0.7rem;
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #888;
+  border-radius: 6px;
+  cursor: pointer;
+  font: inherit;
+  justify-self: end;
+}
+
+.inv-fade-enter-active, .inv-fade-leave-active { transition: opacity 180ms ease; }
+.inv-fade-enter-from, .inv-fade-leave-to { opacity: 0; }
+
+@media (max-width: 640px) {
+  .inv-modal { padding: 0.8rem 0.9rem 0.7rem; }
+  .inv-modal__hdr h2 { font-size: 1.05rem; }
+  .inv-tab { padding: 0.35rem 0.55rem; font-size: 0.78rem; }
+}
+</style>

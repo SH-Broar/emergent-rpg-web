@@ -21,17 +21,19 @@ import type {
 } from '@/data/schemas';
 import { drawCards, discardHand } from './deck';
 import { rng } from './rng';
-import { bonusesFromColors } from './stats';
+import { bonusesFromEffective } from './equipment';
 import { useRunStore } from '@/stores/run';
+import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
 
 const STARTING_HAND_SIZE = 5;
 const DEFAULT_MAX_MANA = 3;
 
-/** 현재 런의 컬러 스탯에서 도출된 전투 보너스. */
+/** 현재 런의 *effective* 컬러(베이스+장비)에서 도출된 전투 보너스 (B1 fix). */
 function currentBonuses() {
   const run = useRunStore();
-  return bonusesFromColors(run.data.colors);
+  const data = useDataStore();
+  return bonusesFromEffective(run.data, data.equipments);
 }
 
 /**

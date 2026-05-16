@@ -29,6 +29,29 @@
   --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.4);
   --shadow-hard: 0 8px 24px rgba(0, 0, 0, 0.6);
 
+  /**
+   * z-index 사다리 (Round3 W4) — 단일 진실 공급원.
+   *
+   * 사용처:
+   *   --z-hud         GameHUD (상단 고정 슬롯/버튼)
+   *   --z-tooltip     Tooltip (호버/탭)
+   *   --z-modal       글로벌 모달 (CharacterMenu / InventoryMenu / SettingsMenu)
+   *   --z-modal-nested  중첩 모달 (DeckPanel — CharacterMenu 위에 띄움)
+   *   --z-day-banner  DayBanner (하루 경과 안내)
+   *   --z-overlay     MainView 큰 오버레이 / LoadingOverlay
+   *   --z-toast       Toast 스택 (모든 레이어 위)
+   *
+   * 새 레이어 추가 시 위 표에 한 줄 + 토큰 추가 + 사용처에서 var(--z-...)
+   * 패턴으로 참조. 하드코딩된 숫자는 위 토큰 외에 없도록 유지.
+   */
+  --z-hud: 800;
+  --z-tooltip: 850;
+  --z-modal: 950;
+  --z-modal-nested: 960;
+  --z-day-banner: 970;
+  --z-overlay: 990;
+  --z-toast: 1000;
+
   --sans: 'Pretendard', 'Noto Sans KR', system-ui, 'Segoe UI', Roboto, sans-serif;
   --heading: 'Pretendard', 'Noto Sans KR', system-ui, sans-serif;
   --mono: ui-monospace, 'D2Coding', Consolas, monospace;

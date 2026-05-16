@@ -52,7 +52,7 @@ watch(
   top: 0;
   left: 0;
   right: 0;
-  z-index: 970;
+  z-index: var(--z-day-banner);
   /* HUD(800)보다 위, 모달(950)보다 위 — 한순간 화면을 *덮는* 느낌. */
   pointer-events: none;
   background: linear-gradient(180deg, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.55) 80%, rgba(0, 0, 0, 0) 100%);

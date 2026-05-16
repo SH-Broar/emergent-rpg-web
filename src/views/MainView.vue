@@ -239,7 +239,7 @@ function goCodex() {
 .resume-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 980;
+  z-index: var(--z-overlay);
   background: rgba(0, 0, 0, 0.75);
   backdrop-filter: blur(4px);
   display: flex;

@@ -13,6 +13,7 @@
 import type { Card } from './card';
 import type { Item } from './item';
 import type { Relic } from './relic';
+import type { Equipment, EquipmentId } from './equipment';
 import type { ColorValues } from './npc';
 import type {
   CardId,
@@ -153,6 +154,14 @@ export interface RunState {
 
   /** 인벤토리 — 즉시 사용 가능한 아이템 인스턴스. */
   items: Item[];
+
+  // === 장비 (M9) ===
+  /** 장착 중 — 슬롯별 1개씩. null이면 비어있음. */
+  equippedWeapon: EquipmentId | null;
+  equippedChest: EquipmentId | null;
+  equippedAccessory: EquipmentId | null;
+  /** 소지중 장비 (인벤토리). 장착 토글로 슬롯과 오감. */
+  equipmentInventory: Equipment[];
 
   /**
    * 현재 동료 (최대 3명) — NPC id 리스트.

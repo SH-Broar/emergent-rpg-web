@@ -1,10 +1,11 @@
 <script setup lang="ts">
 /**
  * 연표 선택 — 가로 선 + 원 노드.
- * 클릭 시 우측(또는 하단)에 *애니메이션 설명 패널*이 나타난다.
  *
- * 구조는 *여러 연표 확장 가능* — 현재 1장 하나만 노출되지만, 노드는
- * timeline.year 오름차순으로 가로축에 놓인다.
+ * M7 (2026-05-15):
+ *   기존 SVG `preserveAspectRatio="none"`이 viewBox 비율을 무시해 원이 *타원*으로 깨졌다.
+ *   해법: SVG 폐기 → CSS 그리드 + fixed-size DOM 노드(`<button class="node">`).
+ *   원은 width/height 동일한 px → 어떤 컨테이너 비율에서도 정원 유지.
  */
 
 import { computed, ref, watch } from 'vue';
@@ -18,15 +19,12 @@ const router = useRouter();
 const ui = useUiStore();
 const data = useDataStore();
 
-/** 노출할 연표 — year 오름차순. */
 const timelines = computed<Timeline[]>(() =>
   Array.from(data.timelines.values()).sort((a, b) => a.year - b.year),
 );
 
-/** 현재 선택 (호버/클릭) — 패널에 설명을 표시. */
 const selectedId = ref<string | null>(null);
 
-/** 첫 진입 시 기본 선택: 첫 항목. */
 watch(
   timelines,
   (list) => {
@@ -40,10 +38,10 @@ const selected = computed<Timeline | null>(() => {
   return timelines.value.find((t) => t.id === selectedId.value) ?? null;
 });
 
-/** 가로축 노드 좌표 계산 (균등 분배, 양쪽 패딩). */
-function nodeX(index: number, total: number): number {
-  if (total <= 1) return 50; // 단일 노드는 중앙
-  const pad = 12; // % 패딩
+/** 노드 좌측 % 좌표 — 균등 분배, 양쪽 패딩. */
+function nodeLeftPct(index: number, total: number): number {
+  if (total <= 1) return 50;
+  const pad = 12;
   return pad + ((100 - pad * 2) * index) / (total - 1);
 }
 
@@ -53,7 +51,9 @@ function selectTimeline(id: string) {
     return;
   }
   ui.pendingRunSetup.timelineId = id;
-  router.push('/game/character-select');
+  // 새 흐름(M8): 시간대 → 종족 → 캐릭터.
+  ui.pendingRunSetup.raceId = null;
+  router.push('/game/race-select');
 }
 
 function focus(id: string) {
@@ -76,25 +76,26 @@ const isLocked = (id: string) => !canEnterTimeline(id);
     </header>
 
     <section v-if="timelines.length > 0" class="timeline-rail">
-      <!-- 가로 선 + 노드 -->
-      <svg class="rail-svg" viewBox="0 0 100 18" preserveAspectRatio="none">
-        <!-- 기본 선 -->
-        <line x1="6" y1="9" x2="94" y2="9" class="rail-line" />
-
-        <!-- 각 노드 -->
-        <g v-for="(t, i) in timelines" :key="t.id" :class="['node-group', { active: t.id === selectedId, locked: isLocked(t.id) }]"
-           @mouseenter="focus(t.id)"
-           @click="focus(t.id)">
-          <!-- 외곽 후광 -->
-          <circle :cx="nodeX(i, timelines.length)" cy="9" r="3.6" class="node-halo" />
-          <!-- 본체 -->
-          <circle :cx="nodeX(i, timelines.length)" cy="9" r="2.2" class="node-dot" />
-          <!-- 라벨 -->
-          <text :x="nodeX(i, timelines.length)" y="16" class="node-label" text-anchor="middle">
-            {{ t.year }}년
-          </text>
-        </g>
-      </svg>
+      <!-- DOM 기반 레일: 가로 선 + 원 노드. SVG preserveAspectRatio 비등방 늘림 회피. -->
+      <div class="rail" role="tablist" aria-label="연표">
+        <div class="rail-line" aria-hidden="true" />
+        <button
+          v-for="(t, i) in timelines"
+          :key="t.id"
+          class="rail-node"
+          :class="{ 'rail-node--active': t.id === selectedId, 'rail-node--locked': isLocked(t.id) }"
+          :style="{ left: nodeLeftPct(i, timelines.length) + '%' }"
+          role="tab"
+          :aria-selected="t.id === selectedId"
+          :aria-disabled="isLocked(t.id)"
+          @mouseenter="focus(t.id)"
+          @click="focus(t.id)"
+        >
+          <span class="rail-node__halo" aria-hidden="true" />
+          <span class="rail-node__dot" aria-hidden="true" />
+          <span class="rail-node__label">{{ t.year }}년</span>
+        </button>
+      </div>
 
       <!-- 설명 패널 (선택된 연표) -->
       <transition name="panel">
@@ -170,51 +171,93 @@ const isLocked = (id: string) => !canEnterTimeline(id);
   gap: 2.4rem;
 }
 
-.rail-svg {
+/* 레일: 가로 선 + 절대 위치 원 노드. */
+.rail {
+  position: relative;
   width: 100%;
-  height: 120px;
-  display: block;
+  height: 110px;
   user-select: none;
 }
-
 .rail-line {
-  stroke: rgba(255,255,255,0.12);
-  stroke-width: 0.4;
+  position: absolute;
+  top: 50%;
+  left: 6%;
+  right: 6%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-50%);
+  pointer-events: none;
 }
 
-.node-group { cursor: pointer; }
-.node-halo {
-  fill: rgba(246, 232, 184, 0.0);
-  stroke: rgba(246, 232, 184, 0.25);
-  stroke-width: 0.25;
-  transition: fill 220ms ease, stroke 220ms ease, r 220ms ease;
+/* 노드 — fixed-size DOM 버튼. 컨테이너 비율과 무관하게 정원. */
+.rail-node {
+  position: absolute;
+  top: 50%;
+  /* :style의 left가 노드 중심 좌표 → -50% 평행이동 */
+  transform: translate(-50%, -50%);
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font: inherit;
 }
-.node-dot {
-  fill: #c0b693;
-  transition: fill 220ms ease, transform 220ms ease;
+.rail-node__halo {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(246, 232, 184, 0.25);
+  background: rgba(246, 232, 184, 0);
+  transition: background 220ms ease, border-color 220ms ease, width 220ms ease, height 220ms ease;
 }
-.node-label {
-  font-size: 3.2px;
-  fill: #888;
-  transition: fill 220ms ease;
+.rail-node__dot {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #c0b693;
+  transition: background 220ms ease, transform 220ms ease;
+}
+.rail-node__label {
+  position: absolute;
+  bottom: -1.4rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.78rem;
+  color: #888;
+  white-space: nowrap;
+  transition: color 220ms ease;
 }
 
-.node-group:hover .node-halo,
-.node-group.active .node-halo {
-  fill: rgba(246, 232, 184, 0.10);
-  stroke: rgba(246, 232, 184, 0.7);
+.rail-node:hover .rail-node__halo,
+.rail-node--active .rail-node__halo {
+  background: rgba(246, 232, 184, 0.10);
+  border-color: rgba(246, 232, 184, 0.7);
+  width: 50px;
+  height: 50px;
 }
-.node-group:hover .node-dot,
-.node-group.active .node-dot {
-  fill: #f6e8b8;
+.rail-node:hover .rail-node__dot,
+.rail-node--active .rail-node__dot {
+  background: #f6e8b8;
 }
-.node-group:hover .node-label,
-.node-group.active .node-label {
-  fill: #f6e8b8;
+.rail-node:hover .rail-node__label,
+.rail-node--active .rail-node__label {
+  color: #f6e8b8;
 }
-.node-group.locked .node-dot { fill: #555; }
-.node-group.locked .node-halo { stroke: rgba(255,255,255,0.08); }
-.node-group.locked .node-label { fill: #555; }
+
+.rail-node--locked { cursor: not-allowed; }
+.rail-node--locked .rail-node__dot { background: #555; }
+.rail-node--locked .rail-node__halo { border-color: rgba(255, 255, 255, 0.08); }
+.rail-node--locked .rail-node__label { color: #555; }
+.rail-node--locked:hover .rail-node__halo {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.12);
+}
 
 /* 설명 패널 */
 .panel {
@@ -275,10 +318,21 @@ const isLocked = (id: string) => !canEnterTimeline(id);
 
 .empty { text-align: center; padding: 4rem 2rem; color: #6c6c7c; }
 
-/* 패널 전환 애니메이션 — 클릭 시 살짝 페이드+슬라이드 */
+/* 패널 전환 애니메이션 */
 .panel-enter-active, .panel-leave-active {
   transition: opacity 220ms ease, transform 220ms ease;
 }
 .panel-enter-from { opacity: 0; transform: translateY(6px); }
 .panel-leave-to { opacity: 0; transform: translateY(-6px); }
+
+@media (max-width: 640px) {
+  .tl-view { padding: 1.2rem; }
+  .rail { height: 90px; }
+  .rail-node { width: 48px; height: 48px; }
+  .rail-node__halo { width: 38px; height: 38px; }
+  .rail-node__dot { width: 18px; height: 18px; }
+  .rail-node:hover .rail-node__halo,
+  .rail-node--active .rail-node__halo { width: 44px; height: 44px; }
+  .rail-node__label { font-size: 0.72rem; bottom: -1.3rem; }
+}
 </style>

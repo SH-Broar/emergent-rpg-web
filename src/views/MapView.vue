@@ -7,9 +7,17 @@
  *  - 현재 위치는 화살표 마커로 강조
  *  - 한 번 방문한 노드는 재이벤트/재전투 없음 (단 회피한 전투는 선택지 표시)
  *  - 조건부 인접 노드는 데이터 구조만 준비 (실제 표시는 자동 — systems/map.ts)
+ *
+ * M6 (2026-05-15):
+ *  - 헤더(.hdr 런 포기·시대 이름·시간 만료 경고) 제거 — 설정 메뉴 / HUD slot--urgent로 이동
+ *  - 노드/라벨 시각 크기↑ (radius 1.2→2.5, hitbox 2.4→4.0, label 0.85→1.7px)
+ *  - 드래그 팬: pointer 이벤트 + 수동 panOffset
+ *  - wheel 줌 (데스크톱): scale 0.5..2.5
+ *  - 드래그 vs 클릭 4px threshold 구분
+ *  - 노드 클릭 시 manualPan reset → focusNode 자동 카메라 복귀
  */
 
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, useTemplateRef } from 'vue';
 import { useRouter } from 'vue-router';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
@@ -33,11 +41,13 @@ const currentNode = computed<Node | undefined>(() => {
   return getNode(nodeMap.value, run.data.currentNodeId);
 });
 
-const timeUp = computed(() => {
+// timeUp 계산은 유지(시간 만료 즉시 종료 로직에서 사용)
+const _timeUp = computed(() => {
   const tl = timeline.value;
   if (!tl) return false;
   return isTimeUp(run.data.visitedNodes.length, tl.timeLimit);
 });
+void _timeUp;
 
 const reachable = computed<Set<NodeId>>(() => {
   if (!nodeMap.value) return new Set();
@@ -88,6 +98,9 @@ const nodeKindLabels: Record<NodeKind, string> = {
 // 입장은 인접·도달 가능 노드에서만 — getEnterAction 단계에서 'unreachable' 가드.
 function clickNode(node: Node) {
   selectedNodeId.value = node.id;
+  // 노드 클릭 시 수동 팬 해제 → 자동 카메라가 그 노드로 부드럽게 이동.
+  manualPanActive.value = false;
+  panOffset.value = { x: 0, y: 0 };
 }
 
 function closeDrawer() {
@@ -112,9 +125,7 @@ function getEnterAction(): EnterAction {
   const node = selectedNode.value;
   const st = selectedState.value;
   if (!node) return 'enter';
-  // 현재 노드면 그냥 정보 확인용
   if (node.id === run.data.currentNodeId) return 'pass-only';
-  // 비-인접 노드 — 설명만 보이고 입장 불가.
   if (!reachable.value.has(node.id)) return 'unreachable';
 
   switch (systemEffectiveKind(node, run.data)) {
@@ -148,22 +159,17 @@ function enterSelected() {
   if (!node || !timeline.value) return;
   const action = getEnterAction();
 
-  // 비-인접 — 입장 불가. drawer는 *설명만* 보여주는 용도.
   if (action === 'unreachable') {
     ui.toast('warning', '인접한 노드가 아닙니다 — 한 칸씩만 이동할 수 있습니다.');
     return;
   }
 
-  // 노드 방문 처리
   run.visitNode(node.id, timeline.value.deckExpansionThresholds);
 
-  // 유물 trigger 발동
   void import('@/systems/relic').then(({ onNodeEnter }) => onNodeEnter(node.id));
-
-  // 히페리온 자동 평가
   void import('@/systems/hyperion').then(({ evaluateHyperion }) => evaluateHyperion());
 
-  // 시간 만료 즉시 종료 (사용자 사양)
+  // 시간 만료 즉시 종료 (사용자 사양 — 반드시 유지)
   if (run.data.remainingTime <= 0) {
     run.endRun('time-up');
     closeDrawer();
@@ -207,16 +213,14 @@ function enterSelected() {
       ui.toast('info', '상점은 아직 구현 전입니다.');
       break;
     case 'gather': {
-      // 채집 — 시간의 조각 + 골드. rng 기반 (시드 고정).
-      const shards = 2 + Math.floor(rng() * 3);  // 2~4
-      const gold = 3 + Math.floor(rng() * 5);    // 3~7
+      const shards = 2 + Math.floor(rng() * 3);
+      const gold = 3 + Math.floor(rng() * 5);
       run.data.timeShards += shards;
       run.data.gold += gold;
       ui.toast('success', `채집 — 시간의 조각 +${shards}, 골드 +${gold}`);
       break;
     }
     case 'activity': {
-      // 활동 — 권역 풀에서 종족 시드 카드 한 장. 없으면 골드만.
       const race = data.races.get(data.characters.get(run.data.characterId)?.raceId ?? '');
       const pool = race?.seedCardIds ?? [];
       if (pool.length > 0) {
@@ -239,7 +243,6 @@ function enterSelected() {
 }
 
 function passSelected() {
-  // 회피된 전투 노드에서 "지나친다"
   const node = selectedNode.value;
   if (!node || !timeline.value) return;
   run.visitNode(node.id, timeline.value.deckExpansionThresholds);
@@ -247,16 +250,7 @@ function passSelected() {
   closeDrawer();
 }
 
-// === 런 포기 ===
-function abandonRun() {
-  if (!confirm('이 런을 포기하시겠습니까? 진행도는 메타에 반영됩니다.')) return;
-  run.endRun('free-end');
-  import('@/systems/progression').then(({ absorbRunIntoMeta }) => {
-    absorbRunIntoMeta(run.data);
-    run.reset();
-    router.push('/main');
-  });
-}
+// 런 포기는 SettingsMenu(M5)로 이동됨. MapView에서 제거 (M6).
 
 onMounted(() => {
   if (!run.active || !nodeMap.value) {
@@ -267,15 +261,10 @@ onMounted(() => {
 /**
  * 노드 간 *시각적 간격*을 늘리는 spread 계수.
  * 원본 position(0..1)에 ×SPREAD를 곱하면 SVG 좌표가 더 넓게 펼쳐진다.
- * 카메라 transform이 한 노드를 화면 중앙(50,50)에 고정시키므로 전체 맵이
- * viewBox(100×100) 밖으로 나가도 무방.
- *
- * 사용자 사양: "가까이 붙은 노드들의 최소 거리가 지금의 두 배는 넘어야".
- * 250 → 500 으로 두 배.
  */
 const SPREAD = 500;
-/** 노드 점의 반지름 — 면적 1/9 = 반지름 1/3. 기존 3.5 → 약 1.2. */
-const NODE_RADIUS = 1.2;
+/** 노드 점의 반지름 — M6에서 1.2 → 2.5로 확대 (시인성). */
+const NODE_RADIUS = 2.5;
 function svgX(node: Node): number { return node.position.x * SPREAD; }
 function svgY(node: Node): number { return node.position.y * SPREAD; }
 
@@ -285,18 +274,95 @@ function edgePath(from: Node, to: Node): string {
 
 /**
  * 카메라가 *추적*할 노드 — drawer가 열려 있으면 그 노드, 아니면 현재 위치.
- * 클릭으로 인접 노드를 보면 카메라가 그쪽으로 매끄럽게 이동.
  */
 const focusNode = computed<Node | undefined>(() => selectedNode.value ?? currentNode.value);
 
+// === 수동 팬 (드래그) + 줌 (wheel) ===
+const panOffset = ref({ x: 0, y: 0 });
+const manualPanActive = ref(false);
+const scale = ref(1);
+const SCALE_MIN = 0.5;
+const SCALE_MAX = 2.5;
+
+const svgEl = useTemplateRef<SVGSVGElement>('svgEl');
+
+// pointer 추적
+interface DragState { startX: number; startY: number; originX: number; originY: number; pointerId: number; }
+const dragState = ref<DragState | null>(null);
+const DRAG_THRESHOLD = 4; // 픽셀 — 이 이상 움직이면 드래그로 인정
+
+function svgRect(): DOMRect | null {
+  return svgEl.value?.getBoundingClientRect() ?? null;
+}
+/** 픽셀 dx → SVG viewBox 좌표 dx (viewBox 100 wide). */
+function pxToSvgX(px: number): number {
+  const r = svgRect();
+  if (!r || r.width === 0) return 0;
+  return (px / r.width) * 100;
+}
+function pxToSvgY(px: number): number {
+  const r = svgRect();
+  if (!r || r.height === 0) return 0;
+  return (px / r.height) * 100;
+}
+
+function onPointerDown(e: PointerEvent) {
+  // 노드 hitbox에 직접 닿은 경우는 노드 클릭이 우선 — SVG는 부모. 캡처 안 함.
+  // (svg 빈 영역만 drag로 인식)
+  dragState.value = {
+    startX: e.clientX,
+    startY: e.clientY,
+    originX: panOffset.value.x,
+    originY: panOffset.value.y,
+    pointerId: e.pointerId,
+  };
+  svgEl.value?.setPointerCapture(e.pointerId);
+}
+
+function onPointerMove(e: PointerEvent) {
+  const ds = dragState.value;
+  if (!ds) return;
+  const dxPx = e.clientX - ds.startX;
+  const dyPx = e.clientY - ds.startY;
+  if (!manualPanActive.value && Math.hypot(dxPx, dyPx) < DRAG_THRESHOLD) {
+    return; // threshold 미만 — 아직 드래그 인정 X
+  }
+  manualPanActive.value = true;
+  panOffset.value = {
+    x: ds.originX + pxToSvgX(dxPx) / scale.value,
+    y: ds.originY + pxToSvgY(dyPx) / scale.value,
+  };
+}
+
+function onPointerUp(e: PointerEvent) {
+  const ds = dragState.value;
+  if (!ds) return;
+  try { svgEl.value?.releasePointerCapture(ds.pointerId); } catch { /* ignore */ }
+  dragState.value = null;
+  // threshold 미만이면 manualPanActive 변화 없음 — 노드 클릭이 정상 처리됨.
+  void e;
+}
+
+function onWheel(e: WheelEvent) {
+  // 데스크톱 wheel 줌 — 모바일 핀치는 추후.
+  e.preventDefault();
+  const factor = 1 + e.deltaY * -0.001;
+  scale.value = Math.max(SCALE_MIN, Math.min(SCALE_MAX, scale.value * factor));
+}
+
 /**
- * 카메라 transform — focusNode를 viewBox 중앙(50,50)으로 가져온다.
- * CSS transition으로 부드러운 이동.
+ * 카메라 transform — focusNode를 viewBox 중앙(50,50)으로 가져오고,
+ * 수동 panOffset과 scale을 합산. manualPanActive=true면 focusNode 추적 일시정지.
  */
 const cameraTransform = computed<string>(() => {
   const f = focusNode.value;
-  if (!f) return 'translate(0 0)';
-  return `translate(${50 - svgX(f)} ${50 - svgY(f)})`;
+  const autoX = f ? (50 - svgX(f)) : 0;
+  const autoY = f ? (50 - svgY(f)) : 0;
+  const baseX = manualPanActive.value ? 0 : autoX;
+  const baseY = manualPanActive.value ? 0 : autoY;
+  const tx = baseX + panOffset.value.x;
+  const ty = baseY + panOffset.value.y;
+  return `translate(${tx} ${ty}) scale(${scale.value})`;
 });
 
 // === 노드 상태 뱃지 ===
@@ -313,7 +379,6 @@ function nodeStatusLabel(node: Node): string {
   return '방문';
 }
 
-// 입장 버튼 라벨
 function enterLabel(): string {
   const action = getEnterAction();
   switch (action) {
@@ -334,17 +399,20 @@ function enterLabel(): string {
 
 <template>
   <main v-if="nodeMap" class="map-view">
-    <header class="hdr">
-      <button class="abandon" @click="abandonRun">← 런 포기</button>
-      <h1>{{ timeline?.name ?? '여정' }}</h1>
-      <p v-if="timeUp" class="warn">⚠ 시간이 다 됐습니다. 보스 게이트로 가세요.</p>
-    </header>
-
     <section class="graph">
-      <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+      <svg
+        ref="svgEl"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="xMidYMid meet"
+        @pointerdown="onPointerDown"
+        @pointermove="onPointerMove"
+        @pointerup="onPointerUp"
+        @pointercancel="onPointerUp"
+        @wheel="onWheel"
+      >
         <!-- 카메라 — focus 노드가 항상 viewBox 중앙(50,50)에 오도록 패닝.
-             CSS transition으로 부드럽게 이동. -->
-        <g class="camera" :transform="cameraTransform">
+             CSS transition으로 부드럽게 이동. 드래그 중에는 transition 비활성. -->
+        <g class="camera" :class="{ 'camera--dragging': dragState !== null }" :transform="cameraTransform">
           <!-- 인접 선 -->
           <g class="edges">
             <template v-for="node in nodeMap.nodes" :key="`e-${node.id}`">
@@ -373,21 +441,20 @@ function enterLabel(): string {
               :transform="`translate(${svgX(node)} ${svgY(node)})`"
               @click="clickNode(node)"
             >
-              <!-- 클릭 영역은 점보다 훨씬 큼 — 작은 점이라도 손가락·마우스 모두 잡힘. -->
-              <circle r="2.4" class="node-hitbox" />
+              <!-- 클릭 영역은 점보다 훨씬 큼 — 시각 노드 확대(2.5) + hitbox 4.0. -->
+              <circle r="4.0" class="node-hitbox" />
               <circle :r="NODE_RADIUS" :fill="nodeKindColors[systemEffectiveKind(node, run.data)]" class="node-dot" />
-              <text y="1.4" class="node-label">{{ node.label }}</text>
-              <text y="2.5" class="node-kind">[{{ nodeKindLabels[systemEffectiveKind(node, run.data)] }}]</text>
+              <text y="3.2" class="node-label">{{ node.label }}</text>
+              <text y="5.0" class="node-kind">[{{ nodeKindLabels[systemEffectiveKind(node, run.data)] }}]</text>
             </g>
           </g>
-          <!-- 현재 위치 화살표 마커 — 카메라 g 안이므로 노드와 함께 이동.
-               화면상 위치는 카메라의 focusNode가 곧 currentNode면 자동으로 중앙. -->
+          <!-- 현재 위치 화살표 마커 -->
           <g
             v-if="currentNode"
             class="current-arrow"
-            :transform="`translate(${svgX(currentNode)} ${svgY(currentNode) - 1.5})`"
+            :transform="`translate(${svgX(currentNode)} ${svgY(currentNode) - 3.0})`"
           >
-            <path d="M 0 0 L -0.8 -1.4 L 0 -0.9 L 0.8 -1.4 Z" fill="#f6e8b8" />
+            <path d="M 0 0 L -1.6 -2.8 L 0 -1.8 L 1.6 -2.8 Z" fill="#f6e8b8" />
           </g>
         </g>
       </svg>
@@ -431,39 +498,37 @@ function enterLabel(): string {
 .map-view {
   display: grid;
   grid-template-columns: 1fr 320px;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: 1fr;
   gap: 1rem;
   height: 100vh;
   padding: 1rem 1.5rem;
 }
-.hdr {
-  grid-column: 1 / 3;
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-}
-.abandon { background: none; border: 1px solid rgba(255,100,100,0.4); color: #ff8e8e; padding: 0.3rem 0.7rem; border-radius: 6px; cursor: pointer; }
-.hdr h1 { flex: 1; margin: 0; color: #f6e8b8; }
-.stats { display: flex; gap: 1rem; color: #b6b6c4; font-size: 0.9rem; }
-.stats strong { color: #f6e8b8; }
-.urgent strong { color: #ff8e8e; }
-.warn { width: 100%; color: #ff8e8e; font-weight: 600; margin: 0.4rem 0 0; }
 
 .graph {
   grid-column: 1;
-  grid-row: 2;
+  grid-row: 1;
   background: rgba(0,0,0,0.4);
   border: 1px solid var(--border);
   border-radius: 12px;
   overflow: hidden;
   position: relative;
 }
-.graph svg { width: 100%; height: 100%; display: block; }
+.graph svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none; /* 브라우저 기본 팬·줌 방지 — 우리가 처리 */
+  cursor: grab;
+}
+.graph svg:active { cursor: grabbing; }
 
-/* 카메라 — focus 노드 추적. transform 변경에 부드러운 transition. */
+/* 카메라 — focus 노드 추적. transform 변경에 부드러운 transition.
+   드래그 중에는 transition 끔(즉시 반영). */
 .camera {
   transition: transform 480ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+.camera--dragging {
+  transition: none;
 }
 
 .edges .edge {
@@ -472,7 +537,6 @@ function enterLabel(): string {
   fill: none;
 }
 .node-group { cursor: pointer; }
-/* 큰 hitbox는 클릭만 잡고 *시각적으로 숨김*. */
 .node-hitbox {
   fill: transparent;
   pointer-events: all;
@@ -483,27 +547,23 @@ function enterLabel(): string {
 }
 .node-group--current .node-dot {
   stroke: #f6e8b8;
-  stroke-width: 0.18;
+  stroke-width: 0.3;
 }
-.node-group--visited .node-dot {
-  opacity: 0.7;
-}
-.node-group--cleared .node-dot {
-  opacity: 0.35;
-}
+.node-group--visited .node-dot { opacity: 0.7; }
+.node-group--cleared .node-dot { opacity: 0.35; }
 .node-group--stealthed .node-dot {
   opacity: 0.55;
   stroke: #8eedff;
-  stroke-dasharray: 0.25 0.15;
-  stroke-width: 0.16;
+  stroke-dasharray: 0.4 0.25;
+  stroke-width: 0.22;
 }
 .node-group--selected .node-dot {
   stroke: #c08eff;
-  stroke-width: 0.25;
+  stroke-width: 0.4;
 }
 
-.node-label { fill: #e9e9f4; font-size: 0.85px; text-anchor: middle; font-weight: 600; }
-.node-kind { fill: #888; font-size: 0.65px; text-anchor: middle; }
+.node-label { fill: #e9e9f4; font-size: 1.7px; text-anchor: middle; font-weight: 600; }
+.node-kind { fill: #888; font-size: 1.2px; text-anchor: middle; }
 
 .current-arrow {
   pointer-events: none;
@@ -515,13 +575,13 @@ function enterLabel(): string {
   50% { transform: scale(1.18); }
 }
 @keyframes bob {
-  0%, 100% { transform: translate(var(--cx, 0), var(--cy, 0)) translateY(0); }
-  50% { transform: translateY(-0.8px); }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-1.6px); }
 }
 
 .drawer {
   grid-column: 2;
-  grid-row: 2;
+  grid-row: 1;
   background: rgba(255,255,255,0.05);
   border: 1px solid var(--border-strong);
   border-radius: 12px;
@@ -533,44 +593,16 @@ function enterLabel(): string {
 }
 .drawer--current { border-color: rgba(246, 232, 184, 0.4); }
 
-.drawer__hdr {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
+.drawer__hdr { display: flex; align-items: center; gap: 0.4rem; }
 .drawer__kind { font-size: 0.8rem; }
-.drawer__hdr h2 {
-  flex: 1;
-  margin: 0;
-  color: #f6e8b8;
-  font-size: 1.2rem;
-}
-.drawer__x {
-  background: none;
-  border: none;
-  color: #888;
-  cursor: pointer;
-  font-size: 1.4rem;
-  line-height: 1;
-}
+.drawer__hdr h2 { flex: 1; margin: 0; color: #f6e8b8; font-size: 1.2rem; }
+.drawer__x { background: none; border: none; color: #888; cursor: pointer; font-size: 1.4rem; line-height: 1; }
 .drawer__x:hover { color: #f6e8b8; }
 
-.drawer__status {
-  font-size: 0.85rem;
-  color: #c08eff;
-}
-.drawer__desc {
-  color: #b6b6c4;
-  line-height: 1.6;
-  margin: 0;
-}
+.drawer__status { font-size: 0.85rem; color: #c08eff; }
+.drawer__desc { color: #b6b6c4; line-height: 1.6; margin: 0; }
 
-.drawer__actions {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-top: auto;
-}
+.drawer__actions { display: flex; flex-direction: column; gap: 0.5rem; margin-top: auto; }
 .drawer__enter {
   padding: 0.7rem 1rem;
   background: rgba(192, 142, 255, 0.2);
@@ -607,7 +639,7 @@ function enterLabel(): string {
 @media (max-width: 720px) {
   .map-view {
     grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr;
+    grid-template-rows: 1fr;
   }
   .drawer {
     position: fixed;

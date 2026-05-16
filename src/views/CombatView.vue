@@ -22,7 +22,8 @@ import {
   type CombatVictoryDrop,
 } from '@/systems/combat';
 import { effectiveContent } from '@/systems/map';
-import { bonusesFromColors, colorBonusForCardEffectKind } from '@/systems/stats';
+import { colorBonusForCardEffectKind } from '@/systems/stats';
+import { bonusesFromEffective } from '@/systems/equipment';
 import type { Card, CardEffect, Combatant, Monster } from '@/data/schemas';
 
 const router = useRouter();
@@ -127,7 +128,8 @@ function canPlay(c: Card): boolean {
 /**
  * 카드 effect의 *최종 정적값* — base + 컬러 보너스. 사용자 사양: 카드 수치에 보너스 반영.
  */
-const currentBonuses = computed(() => bonusesFromColors(run.data.colors));
+// B1 fix: effective(베이스+장비) 사용 — 장비 colorEffects가 카드 표시값에 반영.
+const currentBonuses = computed(() => bonusesFromEffective(run.data, data.equipments));
 function effectiveValue(eff: CardEffect): number {
   return (eff.value ?? 0) + colorBonusForCardEffectKind(eff.kind, currentBonuses.value);
 }

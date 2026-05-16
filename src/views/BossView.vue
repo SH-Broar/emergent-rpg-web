@@ -18,7 +18,8 @@ import {
   clearCombat,
   statusBonusForCardEffectKind,
 } from '@/systems/combat';
-import { bonusesFromColors, colorBonusForCardEffectKind } from '@/systems/stats';
+import { colorBonusForCardEffectKind } from '@/systems/stats';
+import { bonusesFromEffective } from '@/systems/equipment';
 import type { Boss, Card, CardEffect, Monster } from '@/data/schemas';
 
 const router = useRouter();
@@ -133,7 +134,8 @@ function canPlay(c: Card): boolean {
 }
 
 // 카드 effect 표시 — 컬러 보너스 반영된 정적 최종값 + 전투 buff/debuff (+N) 부가.
-const currentBonuses = computed(() => bonusesFromColors(run.data.colors));
+// B1 fix: effective(베이스+장비) 사용.
+const currentBonuses = computed(() => bonusesFromEffective(run.data, data.equipments));
 function effectiveValue(eff: CardEffect): number {
   return (eff.value ?? 0) + colorBonusForCardEffectKind(eff.kind, currentBonuses.value);
 }

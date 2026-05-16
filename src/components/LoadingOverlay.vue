@@ -27,7 +27,7 @@ defineProps<{
 .overlay {
   position: fixed;
   inset: 0;
-  z-index: 990;
+  z-index: var(--z-overlay);
   background: rgba(13, 14, 20, 0.96);
   backdrop-filter: blur(4px);
   display: flex;

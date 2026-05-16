@@ -13,9 +13,9 @@ import { useUiStore } from '@/stores/ui';
 import { useDataStore } from '@/stores/data';
 import { useRunStore } from '@/stores/run';
 import GameHUD from '@/components/GameHUD.vue';
-import DeckPanel from '@/components/DeckPanel.vue';
-import RelicPanel from '@/components/RelicPanel.vue';
-import ItemPanel from '@/components/ItemPanel.vue';
+import CharacterMenu from '@/components/CharacterMenu.vue';
+import InventoryMenu from '@/components/InventoryMenu.vue';
+import SettingsMenu from '@/components/SettingsMenu.vue';
 import DayBanner from '@/components/DayBanner.vue';
 import LoadingOverlay from '@/components/LoadingOverlay.vue';
 
@@ -23,21 +23,22 @@ const ui = useUiStore();
 const data = useDataStore();
 const run = useRunStore();
 
-const deckOpen = ref(false);
-const relicOpen = ref(false);
-const itemOpen = ref(false);
+// 3 메뉴 토글 (캐릭터 / 소지품 / 설정) — 상호 배타.
+const characterOpen = ref(false);
+const inventoryOpen = ref(false);
+const settingsOpen = ref(false);
 
-function toggleDeck() {
-  deckOpen.value = !deckOpen.value;
-  if (deckOpen.value) { relicOpen.value = false; itemOpen.value = false; }
+function toggleCharacter() {
+  characterOpen.value = !characterOpen.value;
+  if (characterOpen.value) { inventoryOpen.value = false; settingsOpen.value = false; }
 }
-function toggleRelic() {
-  relicOpen.value = !relicOpen.value;
-  if (relicOpen.value) { deckOpen.value = false; itemOpen.value = false; }
+function toggleInventory() {
+  inventoryOpen.value = !inventoryOpen.value;
+  if (inventoryOpen.value) { characterOpen.value = false; settingsOpen.value = false; }
 }
-function toggleItem() {
-  itemOpen.value = !itemOpen.value;
-  if (itemOpen.value) { deckOpen.value = false; relicOpen.value = false; }
+function toggleSettings() {
+  settingsOpen.value = !settingsOpen.value;
+  if (settingsOpen.value) { characterOpen.value = false; inventoryOpen.value = false; }
 }
 
 onMounted(async () => {
@@ -65,12 +66,12 @@ onMounted(async () => {
     <!-- 고정 HUD (런 중에만) -->
     <GameHUD
       v-if="run.active"
-      :deck-open="deckOpen"
-      :relic-open="relicOpen"
-      :item-open="itemOpen"
-      @toggle-deck="toggleDeck"
-      @toggle-relic="toggleRelic"
-      @toggle-item="toggleItem"
+      :character-open="characterOpen"
+      :inventory-open="inventoryOpen"
+      :settings-open="settingsOpen"
+      @toggle-character="toggleCharacter"
+      @toggle-inventory="toggleInventory"
+      @toggle-settings="toggleSettings"
     />
 
     <router-view v-slot="{ Component, route }">
@@ -79,10 +80,12 @@ onMounted(async () => {
       </transition>
     </router-view>
 
-    <!-- 덱 / 유물 / 아이템 모달 -->
-    <DeckPanel :open="deckOpen" @close="deckOpen = false" />
-    <RelicPanel :open="relicOpen" @close="relicOpen = false" />
-    <ItemPanel :open="itemOpen" @close="itemOpen = false" />
+    <!-- M3: CharacterMenu (6 컬러 + 스탯 + 덱 + 동료) -->
+    <CharacterMenu :open="characterOpen" @close="characterOpen = false" />
+    <!-- M4: InventoryMenu (Day + 유물탭 + 아이템탭) -->
+    <InventoryMenu :open="inventoryOpen" @close="inventoryOpen = false" />
+    <!-- M5: SettingsMenu (현재 시대 + 런 포기) -->
+    <SettingsMenu :open="settingsOpen" @close="settingsOpen = false" />
 
     <!-- 하루 경과 배너 (런 중에만 의미) -->
     <DayBanner v-if="run.active" />
@@ -116,14 +119,13 @@ onMounted(async () => {
   min-height: 100vh;
   width: 100%;
 }
-/* 런 중에는 상단에 HUD가 *두 줄*(메인 슬롯 + 컬러 막대) 차지하므로
-   컨텐츠를 충분히 아래로 밀어 글씨 가림 방지. 모바일은 더 여유. */
+/* HUD 슬림화 (M2) — 1줄 4슬롯+3버튼이므로 padding 축소. */
 .app-shell--in-run :deep(main) {
-  padding-top: 5.6rem;
+  padding-top: 3.0rem;
 }
 @media (max-width: 640px) {
   .app-shell--in-run :deep(main) {
-    padding-top: 6.6rem;
+    padding-top: 3.6rem;
   }
 }
 
@@ -134,7 +136,7 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  z-index: 1000;
+  z-index: var(--z-toast);
   pointer-events: none;
 }
 
@@ -144,8 +146,17 @@ onMounted(async () => {
 .toast--warning { background: #78350f; color: #fef3c7; }
 .toast--error { background: #7f1d1d; color: #fecaca; }
 
-.scene-fade-enter-active, .scene-fade-leave-active { transition: opacity 180ms ease; }
-.scene-fade-enter-from, .scene-fade-leave-to { opacity: 0; }
+.scene-fade-enter-active, .scene-fade-leave-active {
+  transition: opacity 320ms ease-out, transform 320ms ease-out;
+}
+.scene-fade-enter-from {
+  opacity: 0;
+  transform: translateY(6px);
+}
+.scene-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-6px);
+}
 .toast-enter-active, .toast-leave-active { transition: all 220ms ease; }
 .toast-enter-from, .toast-leave-to { opacity: 0; transform: translateY(8px); }
 </style>

@@ -96,16 +96,12 @@ export function swapCard(
 }
 
 /**
- * 덱 크기 점진 확장: 10 → 20 → 30.
- * 확장 시 빈 슬롯이 늘어남 (실제 카드는 차근차근 채워짐).
+ * 덱이 deckSize에 도달했으면 true.
+ *
+ * Round3 ⚠2: 리터럴 유니언 `10 | 20 | 30`을 `number`로 완화.
+ * 종족별 deckSize(인간=15 등)가 임의값이라 리터럴 제약은 과도했음.
+ * 옛 `expandDeckSize(10|20|30)`은 호출자 0건이라 함께 삭제.
  */
-export function expandDeckSize(current: 10 | 20 | 30): 10 | 20 | 30 {
-  if (current === 10) return 20;
-  if (current === 20) return 30;
-  return 30;
-}
-
-/** 덱이 30장이고 더 채울 슬롯이 없으면 true. */
-export function isDeckFull(deck: readonly Card[], deckSize: 10 | 20 | 30): boolean {
+export function isDeckFull(deck: readonly Card[], deckSize: number): boolean {
   return deck.length >= deckSize;
 }

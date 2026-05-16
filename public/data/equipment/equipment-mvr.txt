@@ -1,0 +1,71 @@
+# Equipment — MVR placeholder (M9).
+# 3 슬롯 × 3 등급 = 9개. 6 컬러 균등 분포 (light/dark 제외).
+
+# === Weapons ===
+
+[equipment.w-iron-blade]
+name = 철검
+slot = weapon
+rank = basic
+color_effects = iron:+5
+description = 무난한 한손검.
+
+[equipment.w-fire-spear]
+name = 화염창
+slot = weapon
+rank = common
+color_effects = fire:+10, water:-5
+description = 불을 머금은 창. 물 기운을 깎는다.
+
+[equipment.w-storm-bow]
+name = 폭풍궁
+slot = weapon
+rank = rare
+color_effects = electric:+12, wind:+8, earth:-10
+description = 번개와 바람을 엮은 활. 흙에는 거스른다.
+
+# === Chests ===
+
+[equipment.c-leather]
+name = 가죽 갑옷
+slot = chest
+rank = basic
+color_effects = earth:+5
+description = 무난한 가죽 외피.
+
+[equipment.c-mail]
+name = 사슬갑옷
+slot = chest
+rank = common
+color_effects = iron:+10, fire:-5
+description = 사슬 고리가 불에 약하다.
+
+[equipment.c-windrobe]
+name = 바람의 의복
+slot = chest
+rank = rare
+color_effects = wind:+12, water:+5, iron:-8
+description = 가벼움 끝에 두꺼움이 잘려나간다.
+
+# === Accessories ===
+
+[equipment.a-ember-ring]
+name = 잉걸 반지
+slot = accessory
+rank = basic
+color_effects = fire:+3, water:-2
+description = 마지막 숯 한 점이 갇혀 있다.
+
+[equipment.a-tideglass]
+name = 조수 거울
+slot = accessory
+rank = common
+color_effects = water:+8, fire:-4
+description = 물을 끌고 불을 흩는다.
+
+[equipment.a-thunderclasp]
+name = 천둥걸이
+slot = accessory
+rank = rare
+color_effects = electric:+10, earth:-6
+description = 번개가 흙을 깎아내며 자라난다.

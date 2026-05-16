@@ -26,9 +26,11 @@ const timeline = computed(() => {
 const characters = computed<Character[]>(() => {
   const tl = timeline.value;
   if (!tl) return [];
+  const raceId = ui.pendingRunSetup.raceId;
   return tl.availableCharacterIds
     .map((cid: string) => data.characters.get(cid))
-    .filter((c: Character | undefined): c is Character => c !== undefined);
+    .filter((c: Character | undefined): c is Character => c !== undefined)
+    .filter((c) => !raceId || c.raceId === raceId);
 });
 
 const SEASONS: Season[] = ['spring', 'summer', 'autumn', 'winter', 'monsoon', 'twilight'];
@@ -130,12 +132,17 @@ async function selectCharacter(c: Character) {
 }
 
 function back() {
-  router.push('/game/timeline-select');
+  router.push('/game/race-select');
 }
 
 onMounted(() => {
   if (!ui.pendingRunSetup.timelineId) {
     router.push('/game/timeline-select');
+    return;
+  }
+  // 종족이 선택되지 않은 채 직접 진입한 경우 race-select로.
+  if (!ui.pendingRunSetup.raceId) {
+    router.push('/game/race-select');
   }
 });
 </script>
@@ -143,7 +150,7 @@ onMounted(() => {
 <template>
   <main class="char-view">
     <header class="hdr">
-      <button class="back" @click="back">← 시간대 선택</button>
+      <button class="back" @click="back">← 종족 선택</button>
       <h1>캐릭터 선택</h1>
     </header>
 

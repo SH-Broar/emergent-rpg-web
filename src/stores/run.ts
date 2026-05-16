@@ -20,8 +20,15 @@ import { instantiateCard } from '@/systems/deck';
 import { createSeededRng, generateInitialSeed, rng, setRng } from '@/systems/rng';
 import { useDataStore } from './data';
 
-/** localStorage 키 — 활성 런 스냅샷. 사용자 요구에 따라 노드 입장마다 자동 저장. */
-const SAVED_RUN_KEY = 'rdc-active-run-v1';
+/**
+ * localStorage 키 — 활성 런 스냅샷. 사용자 요구에 따라 노드 입장마다 자동 저장.
+ *
+ * M9에서 v1 → v2 마이그레이션 (RunState에 장비 4필드 추가).
+ *   - 새 저장은 v2 키.
+ *   - 옛 v1 키는 read-fallback + 마이그레이션 후 제거.
+ */
+const SAVED_RUN_KEY_V1 = 'rdc-active-run-v1';
+const SAVED_RUN_KEY = 'rdc-active-run-v2';
 
 const DECK_SLOT_SIZE = 10;
 /** 30턴마다 하루 경과 — 비-마을 노드 cleared 초기화 + 권역 풀에서 content 재추첨.
@@ -65,6 +72,10 @@ const EMPTY_RUN: RunState = {
     dark: 0,
   },
   items: [],
+  equippedWeapon: null,
+  equippedChest: null,
+  equippedAccessory: null,
+  equipmentInventory: [],
   companions: [],
   recruitedAt: {},
   companionAppliedBonuses: {},
@@ -145,7 +156,9 @@ export const useRunStore = defineStore('run', {
      * RunState는 plain object 구성을 유지함.
      */
     saveActiveRun() {
-      if (!this.active) return;
+      // 이중 가드 (Round2 ⚠5): 비활성 또는 종료된 런은 저장 금지 — 종료 직후 mutation이
+      // $subscribe로 들어와도 안전.
+      if (!this.active || this.data.ended) return;
       try {
         const snapshot = JSON.stringify(this.data);
         localStorage.setItem(SAVED_RUN_KEY, snapshot);
@@ -154,10 +167,13 @@ export const useRunStore = defineStore('run', {
       }
     },
 
-    /** localStorage에서 저장된 스냅샷 *존재* 여부 확인 (메뉴 dialog용). */
+    /** localStorage에서 저장된 스냅샷 *존재* 여부 확인 (메뉴 dialog용). v1 fallback 포함. */
     hasSavedRun(): boolean {
       try {
-        return localStorage.getItem(SAVED_RUN_KEY) !== null;
+        return (
+          localStorage.getItem(SAVED_RUN_KEY) !== null ||
+          localStorage.getItem(SAVED_RUN_KEY_V1) !== null
+        );
       } catch {
         return false;
       }
@@ -166,15 +182,34 @@ export const useRunStore = defineStore('run', {
     /**
      * 저장된 스냅샷을 읽어 활성 런으로 복원. 성공 시 true.
      * rngState도 그대로 들어가 *다음 의사난수가 동일*한 시퀀스로 이어짐.
+     *
+     * M9: v2 → v1 fallback 마이그레이션. v2 키 우선, 없으면 v1 키를 읽어
+     * 신규 장비 4필드를 기본값으로 채워 v2로 즉시 저장 + v1 제거.
      */
     loadActiveRun(): boolean {
       try {
-        const raw = localStorage.getItem(SAVED_RUN_KEY);
-        if (!raw) return false;
-        const parsed = JSON.parse(raw) as RunState;
-        this.data = parsed;
-        this.active = !parsed.ended;
+        let raw = localStorage.getItem(SAVED_RUN_KEY);
+        let migratedFromV1 = false;
+        if (!raw) {
+          raw = localStorage.getItem(SAVED_RUN_KEY_V1);
+          if (!raw) return false;
+          migratedFromV1 = true;
+        }
+        const parsed = JSON.parse(raw) as Partial<RunState>;
+        // EMPTY_RUN spread 후 parsed로 override — 향후 신규 필드도 EMPTY_RUN에만 추가하면 자동 보호.
+        // (Round2 W2: 명시적 ?? 라인 제거 — redundant + future v3 추가 시 "한 줄 깜빡" 회귀 위험 차단.)
+        const filled: RunState = {
+          ...structuredClone(EMPTY_RUN),
+          ...parsed,
+        };
+        this.data = filled;
+        this.active = !filled.ended;
         if (this.active) this.bindRng();
+        if (migratedFromV1) {
+          // v2 키로 즉시 저장 후 v1 키 제거.
+          this.saveActiveRun();
+          try { localStorage.removeItem(SAVED_RUN_KEY_V1); } catch { /* ignore */ }
+        }
         return this.active;
       } catch (err) {
         console.warn('[run] load 실패:', err);
@@ -182,10 +217,11 @@ export const useRunStore = defineStore('run', {
       }
     },
 
-    /** 저장된 스냅샷 삭제 — N(새 시작) 또는 런 종료 시. */
+    /** 저장된 스냅샷 삭제 — N(새 시작) 또는 런 종료 시. v1/v2 모두 제거. */
     clearSavedRun() {
       try {
         localStorage.removeItem(SAVED_RUN_KEY);
+        localStorage.removeItem(SAVED_RUN_KEY_V1);
       } catch {
         // ignore
       }
