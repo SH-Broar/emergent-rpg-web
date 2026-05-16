@@ -287,7 +287,15 @@ const SCALE_MAX = 2.5;
 const svgEl = useTemplateRef<SVGSVGElement>('svgEl');
 
 // pointer 추적
-interface DragState { startX: number; startY: number; originX: number; originY: number; pointerId: number; }
+interface DragState {
+  startX: number;
+  startY: number;
+  originX: number;
+  originY: number;
+  pointerId: number;
+  /** threshold 초과 시 setPointerCapture를 호출했는지. 노드 click 보존을 위해 lazy. */
+  captured: boolean;
+}
 const dragState = ref<DragState | null>(null);
 const DRAG_THRESHOLD = 4; // 픽셀 — 이 이상 움직이면 드래그로 인정
 
@@ -307,16 +315,17 @@ function pxToSvgY(px: number): number {
 }
 
 function onPointerDown(e: PointerEvent) {
-  // 노드 hitbox에 직접 닿은 경우는 노드 클릭이 우선 — SVG는 부모. 캡처 안 함.
-  // (svg 빈 영역만 drag로 인식)
+  // **중요**: 여기서 setPointerCapture를 호출하면 그 pointer의 후속 click 이벤트가
+  // SVG로만 라우팅되어 노드 <g>의 @click="clickNode"가 발화하지 않는다.
+  // → 드래그가 *실제로 시작*되는 시점(threshold 초과)에 lazy capture.
   dragState.value = {
     startX: e.clientX,
     startY: e.clientY,
     originX: panOffset.value.x,
     originY: panOffset.value.y,
     pointerId: e.pointerId,
+    captured: false,
   };
-  svgEl.value?.setPointerCapture(e.pointerId);
 }
 
 function onPointerMove(e: PointerEvent) {
@@ -324,8 +333,13 @@ function onPointerMove(e: PointerEvent) {
   if (!ds) return;
   const dxPx = e.clientX - ds.startX;
   const dyPx = e.clientY - ds.startY;
-  if (!manualPanActive.value && Math.hypot(dxPx, dyPx) < DRAG_THRESHOLD) {
-    return; // threshold 미만 — 아직 드래그 인정 X
+  if (!ds.captured && Math.hypot(dxPx, dyPx) < DRAG_THRESHOLD) {
+    return; // threshold 미만 — 아직 드래그 인정 X (노드 클릭 우선)
+  }
+  // 첫 threshold 초과 시점에 한 번만 pointer capture — 이후엔 노드 위를 지나도 drag 유지.
+  if (!ds.captured) {
+    try { svgEl.value?.setPointerCapture(ds.pointerId); } catch { /* ignore */ }
+    ds.captured = true;
   }
   manualPanActive.value = true;
   panOffset.value = {
@@ -337,10 +351,23 @@ function onPointerMove(e: PointerEvent) {
 function onPointerUp(e: PointerEvent) {
   const ds = dragState.value;
   if (!ds) return;
-  try { svgEl.value?.releasePointerCapture(ds.pointerId); } catch { /* ignore */ }
+  if (ds.captured) {
+    try { svgEl.value?.releasePointerCapture(ds.pointerId); } catch { /* ignore */ }
+  }
   dragState.value = null;
-  // threshold 미만이면 manualPanActive 변화 없음 — 노드 클릭이 정상 처리됨.
+  // capture가 안 된(=threshold 미만) 경우 노드 click이 브라우저에 의해 정상 발화.
   void e;
+}
+
+/**
+ * 우하단 "현재 위치로 이동" 버튼 — 수동 팬/줌 reset + drawer 닫기 + 카메라가 currentNode로 복귀.
+ * focusNode computed가 자동으로 currentNode를 가리키게 된다.
+ */
+function recenterOnCurrent() {
+  manualPanActive.value = false;
+  panOffset.value = { x: 0, y: 0 };
+  scale.value = 1;
+  selectedNodeId.value = null;
 }
 
 function onWheel(e: WheelEvent) {
@@ -458,6 +485,25 @@ function enterLabel(): string {
           </g>
         </g>
       </svg>
+
+      <!-- 우하단 "현재 위치로 이동" 버튼 — 드래그/줌으로 이탈 후 빠르게 복귀. -->
+      <button
+        type="button"
+        class="recenter-btn"
+        @click="recenterOnCurrent"
+        title="현재 위치로 이동"
+        aria-label="현재 위치로 이동"
+      >
+        <!-- 십자/타겟 SVG 아이콘 — 이모지보다 일관된 크기/색 -->
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="1.8"/>
+          <circle cx="12" cy="12" r="2.2" fill="currentColor"/>
+          <line x1="12" y1="1" x2="12" y2="5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <line x1="12" y1="19" x2="12" y2="23" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <line x1="1" y1="12" x2="5" y2="12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <line x1="19" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </button>
     </section>
 
     <!-- Drawer -->
@@ -521,6 +567,36 @@ function enterLabel(): string {
   cursor: grab;
 }
 .graph svg:active { cursor: grabbing; }
+
+/* 우하단 "현재 위치로 이동" 버튼 — graph 내부 absolute로 drawer/모바일 영향 회피. */
+.recenter-btn {
+  position: absolute;
+  right: 0.9rem;
+  bottom: 0.9rem;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: rgba(20, 22, 32, 0.85);
+  border: 1px solid rgba(246, 232, 184, 0.4);
+  color: #f6e8b8;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  transition: background 140ms ease, transform 140ms ease, border-color 140ms ease;
+}
+.recenter-btn:hover {
+  background: rgba(40, 42, 54, 0.95);
+  border-color: rgba(246, 232, 184, 0.8);
+  transform: scale(1.05);
+}
+.recenter-btn:active { transform: scale(0.94); }
+.recenter-btn:focus-visible {
+  outline: 2px solid #c08eff;
+  outline-offset: 2px;
+}
 
 /* 카메라 — focus 노드 추적. transform 변경에 부드러운 transition.
    드래그 중에는 transition 끔(즉시 반영). */
