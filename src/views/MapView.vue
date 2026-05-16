@@ -482,17 +482,20 @@ function enterLabel(): string {
               <!-- 클릭 영역은 점보다 훨씬 큼 — 시각 노드 확대(2.5) + hitbox 4.0. -->
               <circle r="4.0" class="node-hitbox" />
               <circle :r="NODE_RADIUS" :fill="nodeKindColors[systemEffectiveKind(node, run.data)]" class="node-dot" />
-              <text y="3.2" class="node-label">{{ node.label }}</text>
-              <text y="5.0" class="node-kind">[{{ nodeKindLabels[systemEffectiveKind(node, run.data)] }}]</text>
+              <text y="4.6" class="node-label">{{ node.label }}</text>
+              <text y="6.4" class="node-kind">[{{ nodeKindLabels[systemEffectiveKind(node, run.data)] }}]</text>
             </g>
           </g>
-          <!-- 현재 위치 화살표 마커 -->
+          <!-- 현재 위치 화살표 마커.
+               **중요**: SVG element의 CSS `transform`은 attribute `transform`을 오버라이드한다.
+               따라서 위치(translate) 그룹과 애니메이션(bob) 그룹을 분리해야 한다. -->
           <g
             v-if="currentNode"
-            class="current-arrow"
             :transform="`translate(${svgX(currentNode)} ${svgY(currentNode) - 3.0})`"
           >
-            <path d="M 0 0 L -1.6 -2.8 L 0 -1.8 L 1.6 -2.8 Z" fill="#f6e8b8" />
+            <g class="current-arrow">
+              <path d="M 0 0 L -1.6 -2.8 L 0 -1.8 L 1.6 -2.8 Z" fill="#f6e8b8" />
+            </g>
           </g>
         </g>
       </svg>
@@ -576,6 +579,9 @@ function enterLabel(): string {
   display: block;
   touch-action: none; /* 브라우저 기본 팬·줌 방지 — 우리가 처리 */
   cursor: grab;
+  /* 드래그 중 텍스트 선택이 활성화되어 드래그가 끊기는 문제 방지. */
+  user-select: none;
+  -webkit-user-select: none;
 }
 .graph svg:active { cursor: grabbing; }
 
@@ -649,8 +655,9 @@ function enterLabel(): string {
   stroke-width: 0.4;
 }
 
-.node-label { fill: #e9e9f4; font-size: 1.7px; text-anchor: middle; font-weight: 600; }
-.node-kind { fill: #888; font-size: 1.2px; text-anchor: middle; }
+/* 라벨은 클릭 받지 않음 — 클릭은 hitbox circle이 처리. 드래그 시 text selection 차단. */
+.node-label { fill: #e9e9f4; font-size: 1.7px; text-anchor: middle; font-weight: 600; pointer-events: none; }
+.node-kind { fill: #888; font-size: 1.2px; text-anchor: middle; pointer-events: none; }
 
 .current-arrow {
   pointer-events: none;
