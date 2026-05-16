@@ -336,8 +336,19 @@ function onPointerMove(e: PointerEvent) {
   if (!ds.captured && Math.hypot(dxPx, dyPx) < DRAG_THRESHOLD) {
     return; // threshold 미만 — 아직 드래그 인정 X (노드 클릭 우선)
   }
-  // 첫 threshold 초과 시점에 한 번만 pointer capture — 이후엔 노드 위를 지나도 drag 유지.
+  // 첫 threshold 초과 시점에 한 번만:
+  //   (a) pointer capture
+  //   (b) **auto camera offset을 panOffset 시작값에 흡수** — manualPanActive=true로 전환 시
+  //       cameraTransform의 baseX/Y가 (autoX/autoY)→(0/0)으로 점프하는 것을 방지.
+  //       즉 ds.origin에 현재 auto 보정을 더해 카메라 위치 연속성 유지.
   if (!ds.captured) {
+    if (!manualPanActive.value) {
+      const f = focusNode.value;
+      if (f) {
+        ds.originX += 50 - svgX(f);
+        ds.originY += 50 - svgY(f);
+      }
+    }
     try { svgEl.value?.setPointerCapture(ds.pointerId); } catch { /* ignore */ }
     ds.captured = true;
   }
