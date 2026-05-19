@@ -149,6 +149,13 @@ export interface RunState {
   currentDay: number;
 
   /**
+   * 우체부(로큐) 유물 `r-postman-mail` 효과 카운터.
+   * 매 visitNode마다 +1. skip-turn-every:N 도달 시 시간 카운트 생략 + 0 리셋.
+   * 유물 없거나 미보유 세이브에선 0/undefined.
+   */
+  postmanStepCount?: number;
+
+  /**
    * 노드별 *런타임 kind 오버라이드*.
    * 30턴 경과(advanceDay) 시 일부 비-마을 노드의 kind가 재추첨되어 여기에 기록.
    * 키 없는 노드는 NodeMap의 원본 kind 사용.

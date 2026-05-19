@@ -46,4 +46,12 @@ rank = common
 source = npc
 trigger = on-combat-end
 effects = chance-random-color-1:50
-flavor = 가즈리가 — *한 줄로 — 괴인* 진주 중 한 알. 전투가 — 한 번 — 끝날 때마다 — *한 자리*가 — 박자대로 — 떨어진다.
+flavor = 가즈리가 — *한 줄로 — 괴인* 진주 중 한 알. 전투가 — 한 번 — 끝날 때마다 — *한 자리*가 — 차례대로 — 떨어진다.
+
+[relic.r-postman-mail]
+name = 로큐의 가죽 가방
+rank = common
+source = npc
+trigger = passive
+effects = skip-turn-every:3
+flavor = 로큐의 — *어깨 줄 한 자락*이 — 그대 손에 — 옮겨졌다. 세 자리를 — 옮길 때마다 — *길의 결*이 — 한 번 — 그대를 — 지나친다.

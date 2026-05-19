@@ -888,3 +888,336 @@ result_text = 수평선이 — *조용히* — 가라앉았다. 가슴 안쪽이
 label = 짧게 — 잠을 — 청한다
 draw = 1
 result_text = *깊은 한 잠*에서 — 깨어났을 때 — 클러치 부두가 — 한 자리 — 앞에 — 와 있었다.
+
+
+# ============================================================
+# 모스 권역 — "일 하는 모스" 톤 단편 13종.
+# 톤: 각자 자기 일을 *진지하게·열심히·즐겁게* 하는 모습.
+# chain 없음. "박자" 단어 미사용.
+# ============================================================
+
+# --- 1. n-moss-plaza 고정 (로큐의 첫 인사) ---
+[event.ev-moss-plaza-busy]
+name = 한 자리의 여러 일
+node_kinds = event, activity
+weight = 1
+once_per_run = true
+body = 모스 광장 한 자리 — *여러 일이 동시에* 흐른다. 망치 소리 한 줄, 증기 한 자락, 좌판 한 줄. 그 사이로 — *로큐*가 — 가죽 가방 어깨에 — *우체 한 통*을 — 그대 쪽으로 — 내민다. "한 통 — 가져왔어. 받아 가."
+
+[event.ev-moss-plaza-busy.choice.1]
+label = 우체를 — 받아 — 열어 본다
+affinity = npc-roku:1
+draw = 1
+result_text = 봉투 안에 — *짧은 한 줄*. *길에서 — 또 보자*. 로큐가 — 어깨 줄을 — 한 번 — 바르게 — 잡고 — 다음 길로 — 흘러갔다.
+
+[event.ev-moss-plaza-busy.choice.2]
+label = 광장 한 모서리에 — 잠시 — 앉아 — 본다
+hp = 4
+result_text = 광장의 — *여러 결*이 — 한꺼번에 — 흘렀다. 몸이 — 조금 — 가벼워졌다.
+
+[event.ev-moss-plaza-busy.choice.3]
+label = 망치 거리 — 쪽으로 — 그대로 — 간다
+custom = atk-color-1
+result_text = 망치 소리가 — *한 줄로* — 따라왔다. 손끝이 — 단단해졌다.
+
+
+# --- 2. n-moss-hammer-row 고정 ---
+[event.ev-moss-hammer-row-line]
+name = 길 한 줄의 망치
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 망치 거리 — *대장간 한 줄*. 망치 소리가 — *길의 결대로* — 정확히 — 떨어진다. 거리 끝에서 — 또 — 한 자리 — 새로 — 망치를 — 든다.
+
+[event.ev-moss-hammer-row-line.choice.1]
+label = 한 자리에 — 잠시 — 머물러 — 본다
+hp = -1
+custom = def-color-1
+result_text = 길의 — *철의 결*이 — 손바닥 — 한 자리에 — 단단히 — 머물렀다.
+
+[event.ev-moss-hammer-row-line.choice.2]
+label = 끝까지 — 천천히 — 걸어 — 간다
+draw = 1
+result_text = 한 줄의 — 끝에 — 닿았다. 망치 소리가 — 등 뒤에서도 — *한 줄*로 — 떨어졌다.
+
+[event.ev-moss-hammer-row-line.choice.3]
+label = *떨어진 부속* 하나를 — 줍는다
+gold = 5
+result_text = 작은 *경첩 한 자리*. 손바닥에 — 작게 — 무거웠다.
+
+
+# --- 3. n-moss-furnace 고정 (아라크네 의복공) ---
+[event.ev-moss-furnace-arachne]
+name = 화로 옆의 실 한 가닥
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 화로 옆 — 한 자리에 — *아라크네*가 — 앉아 있다. *여덟 손*이 — *실 한 가닥*을 — 화로의 열로 — 가지런히 — 다듬는다. 옷감 한 자락이 — *한 줄*씩 — 길어진다.
+
+[event.ev-moss-furnace-arachne.choice.1]
+label = 한 줄 — 매듭 짓는 자리를 — 옆에서 — 본다
+custom = mag-color-1
+result_text = 매듭이 — *짧고 단정하게* — 결을 — 잡았다. *손끝*이 — 한 번 — 닿은 듯 — 가벼워졌다.
+
+[event.ev-moss-furnace-arachne.choice.2]
+label = 옷감 한 자락을 — 부탁한다
+gold = -8
+hp = 5
+result_text = *얇은 — 한 자락*이 — 어깨에 — 가볍게 — 둘러졌다. 화로의 열이 — *식어도* — 따뜻하게 — 남았다.
+
+[event.ev-moss-furnace-arachne.choice.3]
+label = 그대로 — 지나친다
+draw = 1
+result_text = 아라크네가 — *여덟 손* 중 하나로 — 짧게 — 인사를 — 했다. 실은 — 계속 — 길어졌다.
+
+
+# --- 4. n-moss-watchtower 고정 (천정지기) ---
+[event.ev-moss-watchtower-zenith]
+name = 천정의 한 줄
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 망루 위 — *천정지기*가 — 머리를 — 곧게 — 위로만 — 향한다. 새 한 마리, 구름 한 자락, 별 한 점 — *하늘 정점*의 자리를 — *작은 수첩*에 — 한 줄씩 — 기록한다.
+
+[event.ev-moss-watchtower-zenith.choice.1]
+label = 옆에서 — 같이 — 위를 — 본다
+custom = mag-color-1
+result_text = 시야가 — *위 한 줄*에만 — 머물렀다. 가슴 안쪽이 — *조용히* — 가벼워졌다.
+
+[event.ev-moss-watchtower-zenith.choice.2]
+label = 수첩 한 줄을 — 옆에서 — 읽어 — 본다
+draw = 1
+result_text = "오늘 — 새가 — 한 번 — 늦었다." *짧은 한 줄*. 다른 줄은 — 끝내 — 안 — 보았다.
+
+[event.ev-moss-watchtower-zenith.choice.3]
+label = 망루를 — 그대로 — 내려간다
+hp = 3
+result_text = 천정지기는 — *위*를 — 그대로 — 보았다. 등 뒤로 — 망루의 — 결이 — 가만히 — 남았다.
+
+
+# --- 5. n-clutch-lighthouse 고정 ---
+[event.ev-moss-lighthouse-keeper]
+name = 빛의 한 줄
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 클러치 등대 — *늙은 등대지기*가 — 사다리 위에서 — *빛의 한 줄*을 — 천으로 — 다듬는다. 빛이 — *한 자락씩* — 정확히 — 흐른다. "...빛은 — 정확해야 — 해."
+
+[event.ev-moss-lighthouse-keeper.choice.1]
+label = 사다리를 — 잡아 — 준다
+hp = -2
+affinity = npc-roku:1
+result_text = 등대지기가 — 짧게 — 끄덕였다. "...로큐 — 너랑 닮았네." 로큐의 — *어깨 줄*이 — 잠시 — 떠올랐다.
+
+[event.ev-moss-lighthouse-keeper.choice.2]
+label = 천 한 장을 — 옆에서 — 건넨다
+gold = -3
+custom = mag-color-1
+result_text = 천 위에 — *짠 결*이 — 한 줄 — 묻어 있었다. 등대 빛이 — 한 자락 — 더 — 정확해졌다.
+
+[event.ev-moss-lighthouse-keeper.choice.3]
+label = 잠시 — 옆에 — 앉아 — 본다
+hp = 4
+result_text = 사다리 위의 — *조용한 일*이 — 한 줄로 — 흘러갔다. 등대 빛이 — 그대 등 뒤에 — 길게 — 머물렀다.
+
+
+# --- 6. 모루실 단편 ---
+[event.ev-moss-anvil-rhythm]
+name = 모루의 한 줄
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 모루실 — *한 자루*의 망치만 — 한 줄을 — 다듬고 있다. 옆이 — *조용*하다. 모루 위에 — *반쯤 — 식은* 칼날 한 자리.
+
+[event.ev-moss-anvil-rhythm.choice.1]
+label = 한 줄을 — 옆에서 — 본다
+custom = def-color-1
+result_text = 칼날이 — *식는* 자리를 — 손끝으로 — 짧게 — 짚었다. 결 — 한 줄이 — 손에 — 남았다.
+
+[event.ev-moss-anvil-rhythm.choice.2]
+label = 한 자루 — 망치를 — 잠시 — 들어 — 본다
+hp = -2
+custom = atk-color-1
+result_text = *무게*가 — 손목에 — 한 줄로 — 닿았다. 한 번 — 내리쳐 — 보았다. 칼날이 — 한 결 — 단단해졌다.
+
+[event.ev-moss-anvil-rhythm.choice.3]
+label = 그대로 — 지나친다
+draw = 1
+result_text = 모루의 — *한 줄*이 — 등 뒤에서 — 계속 — 떨어졌다.
+
+
+# --- 7. 도구실 단편 ---
+[event.ev-moss-tool-organize]
+name = 한 줄의 도구
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 도구실 — *작은 도구* 한 줄 한 줄이 — *가지런히* — 정리되어 있다. 누군가가 — *그 줄을* — 매일 — 보살피고 있다. 자리에는 — 사람이 — 없다.
+
+[event.ev-moss-tool-organize.choice.1]
+label = 한 줄을 — 손끝으로 — 따라 — 짚어 — 본다
+custom = def-color-1
+result_text = 도구마다 — *결*이 — 다르게 — 닿았다. 마지막 한 자리에 — *작은 부속* 한 알이 — 그대 손에 — 남았다.
+
+[event.ev-moss-tool-organize.choice.2]
+label = *떨어진 한 자루*를 — 다시 — 줄에 — 끼운다
+hp = 3
+result_text = 자리가 — *정확히* — 맞물렸다. 한 줄이 — 다시 — *완전*해졌다.
+
+[event.ev-moss-tool-organize.choice.3]
+label = 그대로 — 둔다
+gold = 4
+result_text = 한 줄을 — 그대로 — 두고 — 갔다. 도구실 — 다음 자리에서 — 작은 *동전 한 닢*이 — 발끝에 — 닿았다.
+
+
+# --- 8. 작업장 단편 (견습) ---
+[event.ev-moss-workshop-apprentice]
+name = 첫 한 검
+node_kinds = event, workshop
+weight = 1
+once_per_run = true
+body = 작업장 한 자리 — *견습 한 명*이 — *첫 한 검*을 — 만들고 있다. 손이 — 떨리지만 — 어깨가 — *진지*하다. 한 결 한 결 — *처음으로* — 자신의 — 손에서 — 나온다.
+
+[event.ev-moss-workshop-apprentice.choice.1]
+label = 한 줄 — 도와준다 (손이 가볍게 — 잡아 — 준다)
+hp = -2
+custom = atk-color-1
+result_text = 견습이 — *짧게* — 숨을 — 골랐다. 다음 한 결이 — *바르게* — 떨어졌다.
+
+[event.ev-moss-workshop-apprentice.choice.2]
+label = 그저 — 옆에서 — 본다
+hp = 4
+result_text = 견습이 — *그대 시선*을 — 잠시 — 의식하고 — 손이 — 한 번 — 단단해졌다. 가슴 안쪽이 — *조용히* — 가벼워졌다.
+
+[event.ev-moss-workshop-apprentice.choice.3]
+label = 첫 한 검을 — 사 준다
+gold = -10
+custom = def-color-1
+result_text = 견습의 — *어깨가* — 한 번 — 떨렸다. "...정말요?" 그 떨림이 — 손바닥에 — 한 줄 — 남았다.
+
+
+# --- 9. 갑옷점 단편 ---
+[event.ev-moss-armor-polish]
+name = 비늘의 한 줄
+node_kinds = event, shop
+weight = 1
+once_per_run = true
+body = 갑옷점 — *광택사*가 — *비늘 한 줄*을 — 천으로 — 다듬는다. 광이 — *한 자락씩* — 깊어진다. 자기 일을 — *오래* — 해 온 손이다.
+
+[event.ev-moss-armor-polish.choice.1]
+label = 한 자락 — 천 끝을 — 잡아 — 준다
+hp = -1
+custom = def-color-1
+result_text = 광택사가 — 짧게 — 끄덕였다. 한 줄의 광이 — *한 단계* — 더 — 깊어졌다.
+
+[event.ev-moss-armor-polish.choice.2]
+label = 비늘 한 자락의 — 결을 — 묻는다
+draw = 1
+result_text = "...철 — 아니야. 더 — 오래된 — 결." 비늘의 — *한 줄*이 — 손끝에 — 묻혔다.
+
+[event.ev-moss-armor-polish.choice.3]
+label = 광택을 — 한 자루 — 부탁한다
+gold = -8
+custom = def-color-1
+result_text = 손목 가리개 — *한 자리*가 — *깊은 결*로 — 바뀌었다.
+
+
+# --- 10. 균열 단편 (드워프 광부) ---
+[event.ev-moss-fissure-miner]
+name = 균열 한 자리의 광맥
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 화산 균열 한 자리 — *드워프 광부*가 — 곡괭이 한 자루로 — *광맥 한 줄*을 — 캐고 있다. 그의 — *큰 어깨*가 — 균열 — 한 자리에 — 정확히 — 자리잡았다.
+
+[event.ev-moss-fissure-miner.choice.1]
+label = 한 자루 — 곡괭이를 — 더 — 들어 — 같이 — 캔다
+hp = -3
+gold = 8
+result_text = 광맥 한 줄이 — *두 손*으로 — 더 — 빨리 — 풀렸다. 드워프가 — 짧게 — "고맙다." 했다.
+
+[event.ev-moss-fissure-miner.choice.2]
+label = *떨어진 광맥 한 조각*을 — 줍는다
+custom = atk-color-1
+result_text = 손바닥에 — *작은 — 검은 광맥*이 — 한 자리 — 남았다.
+
+[event.ev-moss-fissure-miner.choice.3]
+label = 곁눈으로 — 본다
+draw = 1
+result_text = 드워프가 — *자기 일*에 — 그대로 — 머물렀다. 균열의 — 결이 — 등 뒤에서 — 길게 — 흘렀다.
+
+
+# --- 11. 부두 단편 (짐꾼) ---
+[event.ev-moss-clutch-stevedore]
+name = 한 자루의 짐
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 클러치 부두 — *짐꾼* 한 명이 — *한 자루*씩 — 짐을 — 옮긴다. 손이 — *안 흔들린다*. *오래 — 해 온 — 사람*의 — 호흡.
+
+[event.ev-moss-clutch-stevedore.choice.1]
+label = 한 자루 — 같이 — 옮긴다
+hp = -2
+gold = 4
+result_text = 짐꾼이 — *짧게* — 어깨를 — 풀었다. "...한 번에 — 두 자루는 — 안 — 돼." 라며 — 동전 — 몇 닢을 — 건넸다.
+
+[event.ev-moss-clutch-stevedore.choice.2]
+label = 호흡만 — 옆에서 — 맞춰 — 본다
+custom = def-color-1
+result_text = 한 호흡이 — *한 자루*만큼 — 길어졌다. 손목이 — 단단해졌다.
+
+[event.ev-moss-clutch-stevedore.choice.3]
+label = 그대로 — 지나친다
+draw = 1
+result_text = 짐꾼의 — *한 자루*가 — 등 뒤에서 — 계속 — 옮겨졌다.
+
+
+# --- 12. 화물터 단편 (검수자) ---
+[event.ev-moss-clutch-checker]
+name = 한 줄 한 줄의 목록
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 화물터 — *검수자* 한 명이 — *한 줄 한 줄* — 화물을 — *목록*과 — 맞춘다. 종이 한 장에 — *짧은 표시*만 — 한 줄씩 — 떨어진다.
+
+[event.ev-moss-clutch-checker.choice.1]
+label = 한 줄을 — 같이 — 짚어 — 준다
+hp = -1
+custom = mag-color-1
+result_text = 검수자가 — 짧게 — 끄덕였다. "한 줄 — 더." 한 자리가 — *정확히* — 맞물렸다.
+
+[event.ev-moss-clutch-checker.choice.2]
+label = 목록 — 끝의 *작은 줄*을 — 묻는다
+draw = 1
+result_text = "...빈 — 한 줄. 누군가가 — 안 — 가져갔어." 그 줄이 — 잠시 — 그대 — 머리에 — 남았다.
+
+[event.ev-moss-clutch-checker.choice.3]
+label = 그대로 — 지나친다
+gold = 3
+result_text = 검수자가 — *마지막 줄*을 — 막 — 표시했다. 자리 옆 — *작은 동전* 한 닢이 — 발끝에 — 닿았다.
+
+
+# --- 13. 불씨 자리 단편 (밤 교대) ---
+[event.ev-moss-ember-warden]
+name = 밤 교대의 한 자리
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+body = 화산 — *불씨 자리*. *불씨 관리자* 한 명이 — *한 자리*에 — 오래 — 앉아 있다. 화로가 — *밤* 사이에 — 꺼지지 않도록 — 한 줄 — 한 줄 — 살핀다.
+
+[event.ev-moss-ember-warden.choice.1]
+label = 옆에 — 한 자리 — 같이 — 앉는다
+hp = 5
+result_text = *밤*이 — 한 자락 — 길게 — 흘렀다. 가슴 안쪽이 — 조용히 — 가벼워졌다.
+
+[event.ev-moss-ember-warden.choice.2]
+label = 한 줄 — 불씨를 — 같이 — 살핀다
+hp = -1
+custom = atk-color-1
+result_text = 불씨가 — *한 결* — 더 — 단단해졌다. 손목에 — *따뜻함*이 — 한 줄 — 남았다.
+
+[event.ev-moss-ember-warden.choice.3]
+label = 작은 *마른 가지*를 — 건넨다
+gold = -2
+custom = def-color-1
+result_text = 관리자가 — 짧게 — 끄덕였다. "...덕분에 — 한 시간 — 더 — 갈 수 있겠어."

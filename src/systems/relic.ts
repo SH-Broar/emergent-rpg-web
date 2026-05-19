@@ -232,6 +232,23 @@ export function onRest() {
   fireRelicTrigger('on-rest', { run: run.data });
 }
 
+/**
+ * `skip-turn-every:N` 효과 합산 — 가장 작은 N 반환 (보유 유물 중 가장 빈번한 절약).
+ * 없으면 0. r-postman-mail이 대표. state 인자로 받음 (순환 의존 회피).
+ */
+export function getSkipTurnEveryN(state: RunState): number {
+  let smallestN = 0;
+  for (const relic of state.relics) {
+    for (const eff of relic.effects) {
+      if (eff.kind === 'skip-turn-every') {
+        const n = eff.value ?? 0;
+        if (n > 0 && (smallestN === 0 || n < smallestN)) smallestN = n;
+      }
+    }
+  }
+  return smallestN;
+}
+
 /** 제작 할인율 조회 — discount kind 효과 합산. 0.0 ~ 1.0 (0.3 = 30% 할인). */
 export function getCraftingDiscount(): number {
   const run = useRunStore();

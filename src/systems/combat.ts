@@ -175,6 +175,21 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
       t.hp = Math.max(0, t.hp - (value - absorbed));
     }
   },
+  // 8 컬러 중 *최솟값* × value 만큼 데미지. ATK/상태/modifier 보너스 모두 무시 — *순수 균형값*.
+  'damage-min-color': (e, c) => {
+    const targets = resolveTargets(e.target ?? 'enemy', c);
+    const colors = useRunStore().data.colors;
+    const minColor = Math.min(
+      colors.fire, colors.water, colors.electric, colors.iron,
+      colors.earth, colors.wind, colors.light, colors.dark,
+    );
+    const value = Math.max(0, Math.floor(minColor * (e.value ?? 1)));
+    for (const t of targets) {
+      const absorbed = Math.min(t.block, value);
+      t.block -= absorbed;
+      t.hp = Math.max(0, t.hp - (value - absorbed));
+    }
+  },
   heal: (e, c) => {
     const targets = resolveTargets(e.target ?? 'self', c);
     const value = e.value ?? 0;

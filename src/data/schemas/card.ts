@@ -78,11 +78,12 @@ export type CardTriggerKind =
 
 /** 효과 종류 — MVR 단계에서는 5종만. 확장 가능. */
 export type CardEffectKind =
-  | 'damage'        // 적에게 데미지
-  | 'heal'          // 자신 회복
-  | 'block'         // 방어막
-  | 'draw'          // 카드 드로우
-  | 'apply-status'; // 상태 부여
+  | 'damage'              // 적에게 데미지
+  | 'damage-min-color'    // 8 컬러 중 *최솟값* × value 데미지, ATK 보너스 무시
+  | 'heal'                // 자신 회복 (음수 = 자기 HP 페널티)
+  | 'block'               // 방어막 (음수 = block 페널티)
+  | 'draw'                // 카드 드로우
+  | 'apply-status';       // 상태 부여
 
 /** 효과 대상 — target. */
 export type EffectTarget = 'self' | 'enemy' | 'all-enemies' | 'random-enemy';

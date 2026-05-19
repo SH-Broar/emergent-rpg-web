@@ -48,7 +48,7 @@ name = 모스 권역
 description = 라르 숲 북쪽 불의 도시 + 클러치 상륙장. 대장간의 망치·증기·바닷내음.
 enemy_pool = m-moss-firewing, shadow-pup
 elite_enemy_pool = m-moss-anvil-knight
-event_pool = ev-moss-forge-flame, ev-stranger-favor
+event_pool = ev-moss-forge-flame, ev-stranger-favor, ev-moss-plaza-busy, ev-moss-hammer-row-line, ev-moss-furnace-arachne, ev-moss-watchtower-zenith, ev-moss-lighthouse-keeper, ev-moss-anvil-rhythm, ev-moss-tool-organize, ev-moss-workshop-apprentice, ev-moss-armor-polish, ev-moss-fissure-miner, ev-moss-clutch-stevedore, ev-moss-clutch-checker, ev-moss-ember-warden
 primary_color = fire
 specialty_item = i-forge-ember
 legendary_cards = c-moss-ember-strike
@@ -260,7 +260,7 @@ description = 거리 곳곳에서 증기가 피어오른다. 대장간에서 망
 x = 0.81
 y = 0.45
 neighbors = n-world-tree, n-triflower, n-moss-forge, n-clutch-landing, n-moss-plaza, n-moss-alley, n-moss-steam-room, n-moss-hammer-row, n-moss-workshop, n-moss-weapon-stall, n-moss-armor-stall, n-moss-inn
-npcs = npc-elnest, npc-cassis
+npcs = npc-elnest, npc-cassis, npc-roku
 
 [nodemap.nm-act-1-era4-061.node.n-moss-forge]
 kind = workshop
@@ -1115,6 +1115,8 @@ description = 모스 시가의 — *작은 광장*. 분수에서 — *증기*가
 x = 0.81
 y = 0.46
 neighbors = n-moss
+events = ev-moss-plaza-busy
+npcs = npc-roku
 
 [nodemap.nm-act-1-era4-061.node.n-moss-alley]
 kind = combat
@@ -1139,22 +1141,25 @@ neighbors = n-moss
 kind = combat
 region = moss
 label = 망치 거리
-description = 대장간들이 — 한 줄로 — 늘어선 거리. 망치 소리가 — *길의 결*을 — 한 박자로 — 맞춘다.
+description = 대장간들이 — 한 줄로 — 늘어선 거리. 망치 소리가 — *길의 결*에 — 한 호흡으로 — 맞춰진다.
 x = 0.82
 y = 0.43
 neighbors = n-moss, n-moss-forge
 enemy = shadow-pup
+events = ev-moss-hammer-row-line
+npcs = npc-roku
 
 # --- B. 모스 대장간 영역 ---
 [nodemap.nm-act-1-era4-061.node.n-moss-furnace]
 kind = combat
 region = moss
 label = 화로
-description = 대장간 안의 — *큰 화로*. 불씨가 — *한 자리에서* — 곧게 — 일어선다.
+description = 대장간 안의 — *큰 화로*. 불씨가 — *한 자리에서* — 곧게 — 일어선다. 옆 자리에 — *아라크네*가 — 실 한 가닥을 — 다듬는다.
 x = 0.85
 y = 0.40
 neighbors = n-moss-forge
 enemy = shadow-pup
+events = ev-moss-furnace-arachne
 
 [nodemap.nm-act-1-era4-061.node.n-moss-anvil-room]
 kind = activity
@@ -1244,10 +1249,11 @@ neighbors = n-moss-fissure
 kind = event
 region = moss
 label = 망루
-description = 화산 자락의 — *낡은 망루*. 망루 위에서 — *연기 한 줄*이 — 길게 — 오른다.
+description = 화산 자락의 — *낡은 망루*. 망루 위에서 — *천정지기*가 — 하늘 정점만 — 본다.
 x = 0.83
 y = 0.39
 neighbors = n-moss-ridge
+events = ev-moss-watchtower-zenith
 
 # --- E. 클러치 진입 ---
 [nodemap.nm-act-1-era4-061.node.n-clutch-pier]
@@ -1272,10 +1278,12 @@ neighbors = n-clutch-pier
 kind = event
 region = moss
 label = 등대
-description = 부두 끝의 — *낡은 등대*. 빛이 — *한 박자씩* — 사이를 — 둔다.
+description = 부두 끝의 — *낡은 등대*. 빛이 — *한 자락씩* — 사이를 — 둔다.
 x = 0.89
 y = 0.53
 neighbors = n-clutch-pier
+events = ev-moss-lighthouse-keeper
+npcs = npc-roku
 
 [nodemap.nm-act-1-era4-061.node.n-clutch-harbor-alley]
 kind = combat

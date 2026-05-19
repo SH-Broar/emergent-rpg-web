@@ -315,5 +315,25 @@ source = npc
 element = wind
 cost = 0
 trigger = manual
-effects = draw:1:self, defense:-1:self
-flavor = "한 번 더 — 갈게 — 한 걸음 — 빠르게." 루디가 — *제비의 박자*로 — 한 자리 — 옮겨 — 간다.
+effects = draw:1:self, block:-1:self
+flavor = "한 번 더 — 갈게 — 한 걸음 — 빠르게." 루디가 — *제비*의 자세로 — 한 자리 — 옮겨 — 간다.
+
+[card.c-fast-mail]
+name = 빠른 우체 한 통
+rank = basic
+source = npc
+element = wind
+cost = 0
+trigger = manual
+effects = draw:1:self, heal:-1:self
+flavor = "한 통 — 가져왔어." 로큐가 — *길의 결*대로 — 한 자리 — 더 — 흘러간다.
+
+[card.c-balanced-edge]
+name = 균형의 한 자루
+rank = common
+source = npc
+element = iron
+cost = 2
+trigger = manual
+effects = damage-min-color:1:enemy
+flavor = "한 번에 — 한 검." 엘네스트가 — *여덟 결 중 — 가장 낮은 자리*를 — 그대로 — 들어 — 친다. *균형 그대로* — 보강을 — 받지 않는다.

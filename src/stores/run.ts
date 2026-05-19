@@ -18,6 +18,7 @@ import type {
 } from '@/data/schemas';
 import { instantiateCard } from '@/systems/deck';
 import { createSeededRng, generateInitialSeed, rng, setRng } from '@/systems/rng';
+import { getSkipTurnEveryN } from '@/systems/relic';
 import { useDataStore } from './data';
 
 /**
@@ -236,10 +237,24 @@ export const useRunStore = defineStore('run', {
     visitNode(nodeId: string, _unusedThresholds?: [number, number]) {
       const r = this.data;
       r.currentNodeId = nodeId;
-      r.visitedNodes.push(nodeId);
-      r.remainingTime = Math.max(0, r.remainingTime - 1);
 
-      // 노드 상태 마킹
+      // skip-turn-every 유물 효과 (r-postman-mail) — N번 방문마다 *시간 카운트 생략*.
+      let timeCounted = true;
+      const skipN = getSkipTurnEveryN(r);
+      if (skipN > 0) {
+        r.postmanStepCount = (r.postmanStepCount ?? 0) + 1;
+        if (r.postmanStepCount >= skipN) {
+          r.postmanStepCount = 0;
+          timeCounted = false;
+        }
+      }
+
+      if (timeCounted) {
+        r.visitedNodes.push(nodeId);
+        r.remainingTime = Math.max(0, r.remainingTime - 1);
+      }
+
+      // 노드 상태 마킹 (시간 카운트와 무관)
       if (!r.nodeStates[nodeId]) {
         r.nodeStates[nodeId] = { visited: true };
       } else {
@@ -248,8 +263,8 @@ export const useRunStore = defineStore('run', {
       // 덱 슬롯 확장은 사용자 사양 변경으로 폐기 — deckSize 고정 (10)
       void _unusedThresholds;
 
-      // 30턴마다 하루 경과 — visitedNodes.length 기준 (한 노드 = 1턴).
-      if (r.visitedNodes.length > 0 && r.visitedNodes.length % TURNS_PER_DAY === 0) {
+      // 30턴마다 하루 경과 — 시간 카운트된 경우에만 트리거.
+      if (timeCounted && r.visitedNodes.length > 0 && r.visitedNodes.length % TURNS_PER_DAY === 0) {
         this.advanceDay();
       }
 
