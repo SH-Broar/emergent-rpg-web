@@ -27,9 +27,9 @@ age = 17
 color_values = 0.4,0.6,0.4,0.4,0.4,0.4,0.4,0.5
 domain_high = Passionate, Adaptable, Inventive, Flexible, Generous, Freesprited, Hopeful, Honest
 domain_low = Cautious, Rigid, Stagnant, Stubborn, Restless, Grounded, Cynical, Naive
-background = 평범한 인간이지만, 태어날 때의 점성술적 파장이 고대의 악마 '트립스'와 동일해 몸에 깃들었다.|치명상을 입으면 눈 색이 붉게 변하며 트립스가 깨어나고, 공격력이 극도로 강해지지만 시간제한이 있다.|트립스는 위해를 가할 생각이 없고 오히려 재밌을 것 같다며 주인이라 부른다.|달라진 세상을 구경시켜 달라고 한다.
+background = 평범한 인간이지만, 태어날 때의 점성술적 파장이 고대의 악마 '트립스'와 동일해 몸에 깃들었다.|치명상을 입으면 눈 색이 붉게 변하며 트립스가 깨어나고, *흑백으로 갈라진 늑대 귀와 꼬리*가 짧게 솟는다. 공격력이 극도로 강해지지만 시간제한이 있다.|트립스의 모습은 — *검정과 하양이 정확히 반씩 갈라진 강력한 한 자세*. 위해를 가할 생각은 없고, 오히려 재밌을 것 같다며 모나토를 주인이라 부른다.|달라진 세상을 구경시켜 달라고 한다.
 tagline = "주인 — 다음엔 어디로 가요?"
-tags = demon, dual-soul, water-affinity
+tags = demon, dual-soul, wolf, water-affinity
 affinity_rewards = 3:card=c-double-strike:gauge=4
 # 영입 — 트립스 갈래. *치명타* 카드. 누적 피해 만큼 cost 경감.
 recruit_enabled = true

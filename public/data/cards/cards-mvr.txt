@@ -406,4 +406,4 @@ element = fire
 cost = 20
 trigger = manual
 effects = damage:55:enemy, apply-status:1:enemy, apply-status:1:enemy
-flavor = "주인 — 다음엔 어디로 가요?" 모나토의 — *눈 한 자리*가 — 붉어진다. *받은 만큼* 가벼워지는 — 한 판. *치명* — *벌어짐*.
+flavor = "주인 — 다음엔 어디로 가요?" 모나토의 — *눈 한 자리*가 — 붉어진다. *흑백 늑대 귀와 꼬리*가 — 짧게 — 솟고, *받은 만큼* 가벼워지는 — 한 판. *치명* — *벌어짐*.
