@@ -23,7 +23,6 @@ import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
 import { getNeighbors, getNode, isTimeUp, effectiveKind as systemEffectiveKind } from '@/systems/map';
-import { rng } from '@/systems/rng';
 import type { Node, NodeId, NodeKind, NodeMap } from '@/data/schemas';
 
 const router = useRouter();
@@ -216,20 +215,7 @@ function enterSelected() {
       break;
     }
     case 'activity': {
-      const race = data.races.get(data.characters.get(run.data.characterId)?.raceId ?? '');
-      const pool = race?.seedCardIds ?? [];
-      if (pool.length > 0) {
-        const cardId = pool[Math.floor(rng() * pool.length)];
-        const card = data.cards.get(cardId);
-        if (card) {
-          run.addCardToCollection(card);
-          ui.toast('success', `활동 — '${card.name}' 획득`);
-          break;
-        }
-      }
-      const gold = 5 + Math.floor(rng() * 5);
-      run.data.gold += gold;
-      ui.toast('success', `활동 — 골드 +${gold}`);
+      void import('@/systems/activity').then(({ performActivity }) => performActivity(node.id));
       break;
     }
   }

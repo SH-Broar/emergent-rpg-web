@@ -42,20 +42,6 @@ tagline = "오늘 바람은 — 시계 방향으로 돈다."
 tags = human, researcher, wind
 affinity_rewards = 3:card=c-quickdraw:gauge=3
 
-[npc.npc-betelgeuse]
-name = 베텔게우스
-race = spirit
-role = Priest
-home_node = n-alimes
-age = 999
-color_values = 0.2,0.3,0.2,0.2,1.0,0.3,0.4,0.2
-domain_high = Calm, Empathetic, Methodical, Reliable, Patient, Grounded, Hopeful, Honest
-domain_low = Passionate, Impulsive, Stagnant, Fragile, Restless, Freesprited, Cynical, Naive
-background = 흙의 정령이자 아주 드물게만 모습을 드러내는 관측자.|마노니클라의 '빛이 쏟아지는 날'을 본 자에게만 다음날 클러치 협곡에서 말을 건다고 전해진다.|말수는 적지만 대지와 협곡의 결을 정확히 읽으며, 오래된 바위와 유적의 숨결을 이해하는 몇 안 되는 존재다.|이번에는 알리메스의 바위 길에서 — *대지의 결*이 어긋났음을 알리러 왔다.
-tagline = "대지가 — 어긋났습니다. 들립니까."
-tags = spirit, earth, hidden
-affinity_rewards = 3:relic=r-mono-token:gauge=5
-
 [npc.npc-wimel]
 name = 위멜
 race = spirit

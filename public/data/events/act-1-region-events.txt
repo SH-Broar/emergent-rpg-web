@@ -541,3 +541,209 @@ label = 우회한다
 gold = 8
 custom = push-iron-5
 result_text = 능선 반대편으로 돌아가는 길 — *작은 광맥*이 발끝에 잠시 빛났다.
+
+
+# ============================================================
+# 마노니클라 — 옛 사당 (n-mano-old-shrine 고정).
+# 향이 다 탔다. 결이 어긋났다.
+# ============================================================
+
+[event.ev-mano-old-shrine-incense]
+name = 다 탄 향
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 유적 깊은 자리의 *작은 사당*. 향로에는 — 향이 한 줄, 다 탔다. 가까이서 보면 — 향로 자리의 결 한 줄이 *비뚜로 어긋나* 있다. 누군가 — 오래 — 다녀가지 않았다.
+
+[event.ev-mano-old-shrine-incense.choice.1]
+label = 새 향을 하나 피운다
+gold = -3
+custom = mag-color-1
+result_text = 짧은 연기가 — *위로 한 번* — 곧게 — 올라갔다. 사당 안쪽이 — 잠시 — 차분해졌다.
+
+[event.ev-mano-old-shrine-incense.choice.2]
+label = 어긋난 결을 손끝으로 따라 본다
+hp = -2
+custom = def-color-1
+result_text = 결 한 줄이 — *손끝에 — 가볍게* — 맞물려 — 들어갔다. 등 뒤로 — 무엇이 — 한 박자 — 조용해졌다.
+
+[event.ev-mano-old-shrine-incense.choice.3]
+label = 향로 옆의 *오래된 동전*을 챙긴다
+gold = 6
+result_text = 동전 한 닢. 표면이 — *부드럽게* — 닳아 있다. 사당 안쪽 — 끝내 — 보지 않았다.
+
+
+# ============================================================
+# 마노니클라 — 절벽 산책로 (n-mano-cliff-walk 고정).
+# 바람이 한 박자 사이를 둔다.
+# ============================================================
+
+[event.ev-mano-cliff-walk-breath]
+name = 한 박자 사이의 바람
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+body = 절벽 위 좁은 길. 바람이 — *한 박자 사이를 둔다*. 그 박자에 맞춰 — 가슴 안쪽이 한 번 — *비워진다*.
+
+[event.ev-mano-cliff-walk-breath.choice.1]
+label = 박자에 맞춰 — 한 번 — 깊이 들이쉰다
+hp = 5
+result_text = 가슴 안쪽이 — 잠시 — *서늘하게* — 가벼워졌다.
+
+[event.ev-mano-cliff-walk-breath.choice.2]
+label = 바람의 결을 — 손끝으로 — 짧게 잡아 본다
+custom = mag-color-1
+result_text = 결 한 줄이 — 손가락 사이에서 — *짧게* — 머물렀다.
+
+[event.ev-mano-cliff-walk-breath.choice.3]
+label = 그 박자에 — 끼어들지 — 않고 — 지나간다
+draw = 1
+result_text = 바람은 — 자기 박자대로 — 계속 — 사이를 — 두었다.
+
+
+# ============================================================
+# 마노니클라 — 시이드 chain 3' (소문, 카요 chain과 병렬).
+# 위화감 → 우려 → 소문. 시이드의 *밝음* 너머의 한 줄.
+# ============================================================
+
+[event.ev-mano-seed-3-rumor]
+name = 한 줄의 소문
+node_kinds = event, village
+weight = 1
+once_per_run = true
+condition = has-clue:cl-seed-bag-note
+body = 야시장 좌판 한 자리에서 — *작은 목소리*가 — 한 줄 — 떨어진다. "사천왕 시아 — 그쪽이 — 마노니클라에 — 동생을 — 두고 갔대요." 시이드 — 그 이름이 — 옆에서 — 한 박자 — 떠올랐다.
+
+[event.ev-mano-seed-3-rumor.choice.1]
+label = 소문이 — 어디서 — 흘렀는지 — 따라가 본다
+gold = -3
+clue = cl-seed-rumor
+result_text = 좌판 몇 자리를 — 거슬렀다. 끝에 — 한 줄 — 더 — 짧은 — 이야기가 — 있었다.
+
+[event.ev-mano-seed-3-rumor.choice.2]
+label = 시이드에게 — 한 마디 — 전한다
+affinity = npc-seed:1
+clue = cl-seed-rumor
+result_text = 시이드가 — *날개를 — 작게 — 접었다*. "아 — 그거 — 자주 — 들어요. 괜찮아요!" 라고 — 했지만 — 박자가 — 한 번 — 늦었다.
+
+[event.ev-mano-seed-3-rumor.choice.3]
+label = 듣지 — 않은 — 것으로 — 한다
+hp = 3
+clue = cl-seed-rumor
+result_text = 소문은 — 자기 박자로 — 흘러갔다. 시이드 옆에서 — 평소처럼 — 햇살이 — 떨어졌다.
+
+
+# ============================================================
+# 마노니클라 — 로크의 걸음 (npc-rok 등장 단편).
+# 골렘 + 돌 손발 + 마노니클라에 익숙해지는 박자.
+# ============================================================
+
+[event.ev-mano-rok-step]
+name = 돌 손발의 걸음
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 야시장 길목에서 — *작은 부딪힘 소리*가 한 박자씩 들린다. 로크가 — 한 걸음 — 멈춰 서 있다. *돌 손발*의 마디 한 자리에 — 모래가 — 한 줄 — 끼었다.
+
+[event.ev-mano-rok-step.choice.1]
+label = 마디 사이의 모래를 — 손으로 — 털어 준다
+hp = -1
+affinity = npc-rok:1
+result_text = 로크가 — *돌 손가락 한 마디*를 — 작게 — 굽혔다. "...걸을게."
+
+[event.ev-mano-rok-step.choice.2]
+label = 카요의 공방까지 — 같이 — 걸어 준다
+gold = -3
+custom = def-color-1
+result_text = 공방 입구에서 — 카요가 — *모루 박자*를 — 한 번 — 멈췄다. 로크의 마디가 — 다시 — 다듬어졌다.
+
+[event.ev-mano-rok-step.choice.3]
+label = 박자가 익숙해질 — 때까지 — 옆을 — 지킨다
+draw = 1
+result_text = 돌 손발의 박자가 — 마노니클라의 길에 — 조금씩 — 맞춰졌다.
+
+
+# ============================================================
+# 마노니클라 — 발렌시아의 자세 (npc-valencia 등장 단편).
+# 향상심 지원 컨셉. 창의 정령.
+# ============================================================
+
+[event.ev-mano-valencia-spear]
+name = 향상심의 자세
+node_kinds = event, village
+weight = 1
+once_per_run = true
+body = 마을 한 자리에 — *기다란 창 한 자루*가 — 바로 — 세워져 있다. 자세가 — 사람보다 — 곧다. 발렌시아가 — 한 번 — 그대를 — 본다. "그대의 — 향상심을 — 보여 주십시오."
+
+[event.ev-mano-valencia-spear.choice.1]
+label = 받아 — 한 번 — 휘둘러 본다
+hp = -3
+custom = atk-color-1
+result_text = 창이 — 손에 — *바로 — 맞물렸다*. 발렌시아가 — 짧게 — 고개를 — 끄덕였다.
+
+[event.ev-mano-valencia-spear.choice.2]
+label = 자세만 — 흉내 — 내 본다
+affinity = npc-valencia:1
+result_text = 발렌시아가 — *자기 자세*를 — 한 번 — 바로 — 잡아 — 주었다. "...곧게 — 서십시오. 그게 — 시작입니다."
+
+[event.ev-mano-valencia-spear.choice.3]
+label = 자기 — 그릇이 — 아니라 — 말한다
+gold = 5
+result_text = "그것도 — 한 자세입니다." 발렌시아가 — 짧게 — 답하고 — 다시 — 곧게 — 섰다.
+
+
+# ============================================================
+# 마노니클라 — 리문의 옛 글자 (유적 lore).
+# 결만 살아 있는 옛 글.
+# ============================================================
+
+[event.ev-mano-limun-script]
+name = 리문의 옛 글자
+node_kinds = event, combat
+weight = 1
+once_per_run = true
+body = 회랑 벽에 — *옛 글자 한 줄*이 — 새겨져 있다. 모래에 — 반쯤 — 묻혔지만 — *결 한 줄*이 — 아직 — 살아 있다.
+
+[event.ev-mano-limun-script.choice.1]
+label = 모래를 — 손으로 — 천천히 — 걷어낸다
+hp = -2
+gold = 7
+result_text = 글자 끝 — 한 자리에서 — *작은 동전 한 닢*이 — 떨어졌다. 글의 뜻은 — 끝내 — 읽히지 — 않았다.
+
+[event.ev-mano-limun-script.choice.2]
+label = 결만 — 손끝으로 — 따라 — 읽는다
+custom = mag-color-1
+result_text = 결 한 줄이 — *손끝에서 — 짧게 — 떨렸다*. 무엇을 — 안 — 것은 — 아니다.
+
+[event.ev-mano-limun-script.choice.3]
+label = 그대로 — 지나친다
+draw = 1
+result_text = 글자는 — 자기 — 결대로 — 거기 — 있었다.
+
+
+# ============================================================
+# 마노니클라 — 밤의 한 줄 (해변 단편, 베텔게우스 호응 분기).
+# ============================================================
+
+[event.ev-mano-night-tide]
+name = 밤의 한 줄
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+body = 해변 한 자리에 — 파도가 — *한 줄 — 더 — 멀리* — 들어왔다. 모래 위에 — 작은 *유리 조각*들이 — 한 박자로 — 놓여 있다. 누군가 — 일부러 — 놓아 둔 — 듯하다.
+
+[event.ev-mano-night-tide.choice.1]
+label = 유리 조각 한 점을 — 줍는다
+gold = 4
+result_text = 손바닥 위에서 — *짧게 — 빛났다*. 파도가 — 다시 — 한 줄 — 들어왔다.
+
+[event.ev-mano-night-tide.choice.2]
+label = 조각의 — 박자대로 — 한 자리에 — 앉는다
+hp = 4
+custom = mag-color-1
+result_text = 파도 — 한 줄이 — 발끝까지 — 닿았다 — 빠졌다. 머리가 — 한 박자 — 맑아졌다.
+
+[event.ev-mano-night-tide.choice.3]
+label = 조각을 — 모두 — 바다 쪽으로 — 다시 — 보낸다
+affinity = npc-betelgeuse:1
+result_text = 조각이 — 파도 — 한 줄 — 사이로 — 사라졌다. *조그만 점 하나*가 — 협곡 쪽에서 — 한 번 — 끄덕였다.
