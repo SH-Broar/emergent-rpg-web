@@ -1,5 +1,24 @@
 # NPC: 1장 — 라르 숲 / 세계수 / 모스 권역.
 
+[npc.npc-maro]
+name = 마로
+race = human
+role = Villager
+home_node = n-lar-forest
+presence_nodes = n-luna-academy, n-luna-library, n-luna-classroom
+age = 16
+color_values = 0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5
+domain_high = Calm, Adaptable, Methodical, Reliable, Patient, Grounded, Hopeful, Honest
+domain_low = Passionate, Indifferent, Impulsive, Flexible, Restless, Freesprited, Cynical, Naive
+background = 라르 숲 출신 — 루나의 *마법 학생*.|마력이 큰 편이지만, *조용히 천천히* 익혀 가는 타입.|쌍둥이 동생 아르바로 엔야와 — 라르 숲의 — 작은 오두막에 — 함께 — 산다.|페비엘과 — 단 한 명, *같은 고향 사람*이다 — *스텔라빌*.
+tagline = "조용히, 천천히 — 그러나 끝까지."
+tags = human, student, mage, balanced
+affinity_rewards = 3:card=c-gentle-guard:gauge=3
+# 영입 — 균형 마법사. 데미지 + 취약 부여.
+recruit_enabled = true
+recruit_cards = c-quiet-arc
+recruit_colors = fire:4, water:4, electric:4, iron:4, earth:4, wind:4
+
 [npc.npc-arvaro-enya]
 name = 아르바로 엔야
 race = human

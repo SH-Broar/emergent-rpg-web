@@ -37,7 +37,7 @@ name = 페비엘
 race = elf
 role = Villager
 home_node = n-luna-academy
-presence_nodes = n-stella-ville
+presence_nodes = n-stella-ville, n-luna-library, n-luna-ward-room
 age = 200
 color_values = 0.3,0.3,0.4,0.3,0.3,0.3,0.3,0.8
 domain_high = Passionate, Adaptable, Inventive, Reliable, Patient, Grounded, Cynical, Secretive
@@ -46,6 +46,10 @@ background = 대변동 당시 결계로 고립된 스텔라 빌 출신.|미래�
 tagline = "그 시간이 — 다시 한 번 열린다면."
 tags = elf, dark-affinity, exile
 affinity_rewards = 3:relic=r-imperisia-locket:gauge=4
+# 영입 — 결계·흑마법. 약화 부여 + 방어 카드.
+recruit_enabled = true
+recruit_cards = c-binding-ward
+recruit_colors = dark:12, water:6
 
 [npc.npc-kuruha]
 name = 크루하

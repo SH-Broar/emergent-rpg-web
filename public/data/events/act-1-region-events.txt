@@ -1221,3 +1221,282 @@ label = 작은 *마른 가지*를 — 건넨다
 gold = -2
 custom = def-color-1
 result_text = 관리자가 — 짧게 — 끄덕였다. "...덕분에 — 한 시간 — 더 — 갈 수 있겠어."
+
+
+# ============================================================
+# 루나 권역 — "외부인 시점" 톤 11종.
+# *학생이 아닌 입장*에서 마법학교를 바라봤을 때 마주치는 풍경.
+# chain 1개 (페비엘 — 도서관 만남 → 결계 너머). "박자" 단어 미사용.
+# ============================================================
+
+# --- 고정 1. n-luna-academy ---
+[event.ev-luna-entrance]
+name = 정문의 한 자락
+node_kinds = event, village
+weight = 1
+once_per_run = true
+body = 루나 정문 한 자리 — 학생들이 *공책 한 줄*을 안고 — 한 줄로 — 흘러간다. 외부인 한 명, 그 흐름의 — *반대 방향*에서 — 잠시 — 멈춰 선다. 누군가 — 그대를 — 한 번 — 본다.
+
+[event.ev-luna-entrance.choice.1]
+label = 흐름에 — 잠시 — 끼어 — 본다
+hp = 3
+result_text = 학생들의 — 공책 한 줄이 — 등 뒤로 — 길게 — 지나갔다. 가슴 안쪽이 — 가볍게 — 정돈되었다.
+
+[event.ev-luna-entrance.choice.2]
+label = 정문 옆 — 작은 게시판을 — 읽어 — 본다
+draw = 1
+result_text = "수업 — 한 시간 — 변경." 짧은 — 한 줄. 외부인에겐 — 별 의미 없는 — 정보다.
+
+[event.ev-luna-entrance.choice.3]
+label = 그대로 — 안으로 — 들어간다
+custom = mag-color-1
+result_text = 정문을 — 넘는 한 자리에 — *작은 결계*가 — 한 결 — 닿았다. 손끝에 — 잠시 — 머물렀다.
+
+
+# --- 고정 2. n-luna-library (페비엘 chain 1) ---
+[event.ev-luna-library-floating-book]
+name = 떠 있는 책
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 루나 도서관 한 자리 — *책 한 권*이 — 공중에 — 떠 있다. 누군가가 — *오래 — 그 자리에* — 두고 갔다. 페비엘이 — 책장 끝에서 — *짧게* — 그대를 — 본다. "...그쪽도 — *결계*를 — 본 적 — 있나요?"
+
+[event.ev-luna-library-floating-book.choice.1]
+label = 책에 — 손을 — 댄다
+clue = cl-febiel-binding-note
+custom = mag-color-1
+result_text = 손가락 끝에 — *얇은 종이 한 장*이 — 떨어졌다. 페비엘이 — 짧게 — 끄덕였다. "...읽어 — 둬요."
+
+[event.ev-luna-library-floating-book.choice.2]
+label = 페비엘에게 — *결계*에 대해 — 묻는다
+clue = cl-febiel-binding-note
+affinity = npc-febiel:1
+result_text = "결계는 — *닫혀 있는 게* 아니에요. *비켜선* 것뿐." 그녀가 — 책장 한 줄에 — 손끝을 — 가만히 — 댔다. 책상 위에 — 종이 — 한 장이 — 떨어졌다.
+
+[event.ev-luna-library-floating-book.choice.3]
+label = 책은 — 그대로 — 두고 — 지나간다
+draw = 1
+result_text = 페비엘이 — 작게 — 한숨을 — 내쉬었다. 책은 — 같은 자리에 — 그대로 — 떠 있었다.
+
+
+# --- 고정 3. n-luna-magicircle ---
+[event.ev-luna-old-magicircle]
+name = 옛 마법진
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 실습홀 한 자리에 — *옛 마법진* 한 줄이 — 돌 위에 — 깊게 — 새겨져 있다. 학생들도 — *이 자리*는 — 잘 — 모르는 듯하다. 결 한 줄이 — *아직 — 살아 있다*.
+
+[event.ev-luna-old-magicircle.choice.1]
+label = 결 한 줄을 — 손끝으로 — 따라간다
+custom = mag-color-1
+result_text = 결이 — *손끝에 — 짧게 — 살아 났다*. 무엇이 — 그려졌었는지는 — 끝내 — 알 수 없었다.
+
+[event.ev-luna-old-magicircle.choice.2]
+label = 한가운데에 — 잠시 — 서 본다
+hp = -2
+draw = 1
+result_text = 발 아래 — 한 결이 — *천천히 — 돌았다*. 머리가 — 잠시 — 어지러웠다.
+
+[event.ev-luna-old-magicircle.choice.3]
+label = 그대로 — 둔다
+gold = 4
+result_text = 마법진 끝의 — 작은 돌 — 한 자리에 — *오래된 동전 한 닢*이 — 떨어져 있었다.
+
+
+# --- 고정 4. n-luna-grimoire-hall ---
+[event.ev-luna-grimoire-blind-title]
+name = 제목이 보이지 않는 책
+node_kinds = event, combat
+weight = 1
+once_per_run = true
+body = 금서 회랑 한 자리 — *책 한 권*의 — *제목*이 — 보이지 않는다. 다른 책들은 — 다 — 읽힌다. *그 한 권만* — 글자가 — 표지에서 — 빠져 — 있다.
+
+[event.ev-luna-grimoire-blind-title.choice.1]
+label = 표지를 — 손바닥으로 — 짚어 — 본다
+hp = -3
+custom = mag-color-1
+result_text = 손바닥에 — *글자 한 결*이 — 잠시 — 닿았다 — 사라졌다. 무엇을 — 안 — 것은 — 아니다.
+
+[event.ev-luna-grimoire-blind-title.choice.2]
+label = 책을 — 옆자리로 — 옮겨 — 본다
+draw = 1
+result_text = 자리를 — 옮기자 — 표지가 — *짧은 한 줄*만 — 보였다. "...같은 곳에." 그 외엔 — 끝내 — 안 — 보였다.
+
+[event.ev-luna-grimoire-blind-title.choice.3]
+label = 그대로 — 둔다
+hp = 4
+result_text = 책은 — 자리 옆으로 — 짧게 — 미끄러졌다 — *다시 — 자기 자리*로 — 돌아왔다.
+
+
+# --- 고정 5. n-luna-illusion-spot ---
+[event.ev-luna-illusion-late-face]
+name = 늦은 표정
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 첨탑 — 환영 자리. 그대 — *한 자리 옆*에 — *그대의 환영*이 — 서 있다. 표정이 — *한 박 늦게* — 그대를 — 따라온다. 환영이 — 그대 쪽을 — 한 번 — 본다.
+
+[event.ev-luna-illusion-late-face.choice.1]
+label = 환영의 — *늦은 한 호흡*을 — 같이 — 맞춰 — 본다
+hp = -2
+custom = mag-color-1
+result_text = 두 표정이 — *한 자리에서* — 잠시 — 겹쳤다. 가슴 안쪽이 — *조용히* — 가벼워졌다.
+
+[event.ev-luna-illusion-late-face.choice.2]
+label = 손을 — 한 번 — 들어 — 본다
+draw = 1
+result_text = 환영도 — *늦게* — 손을 — 들었다. 손바닥이 — *닿지 않는 거리*에서 — 마주 — 보았다.
+
+[event.ev-luna-illusion-late-face.choice.3]
+label = 등을 — 돌린다
+gold = 5
+result_text = 환영도 — *늦게* — 등을 — 돌렸다. 발끝에 — 작은 *동전 한 닢*이 — 떨어져 있었다.
+
+
+# --- 단편 6. 시험 옆 ---
+[event.ev-luna-classroom-test]
+name = 시험 한 줄의 옆
+node_kinds = event, activity
+weight = 1
+once_per_run = true
+body = 강의실 한 자리 — 학생들이 — *시험지 한 장*을 — 들고 — 한 줄로 — 앉아 있다. 외부인은 — 옆 자리에 — *우연히* — 서 있다. 한 학생의 — *손끝*이 — 작게 — 떨린다.
+
+[event.ev-luna-classroom-test.choice.1]
+label = 옆 학생을 — 짧게 — 본다 (어깨가 — 가만히 — 풀린다)
+hp = 3
+result_text = 학생이 — *고개를 — 한 번* — 더 — 들었다. 손끝이 — 조금 — 단단해졌다.
+
+[event.ev-luna-classroom-test.choice.2]
+label = 시험지 한 장의 — *문항 한 줄*을 — 살짝 — 본다
+draw = 1
+result_text = 한 줄에 — *옛 마법의 — 결*이 — 한 결 — 있었다. 외부인에게도 — *짧게* — 닿았다.
+
+[event.ev-luna-classroom-test.choice.3]
+label = 자리를 — 비킨다
+custom = mag-color-1
+result_text = 학생의 — *집중*이 — 한 결 — 더 — 정확해졌다. 강의실의 — 결이 — 등 뒤에서 — 짧게 — 닫혔다.
+
+
+# --- 단편 7. 결계 흔들림 ---
+[event.ev-luna-ward-shake]
+name = 결계의 작은 흔들림
+node_kinds = event, activity
+weight = 1
+once_per_run = true
+body = 결계실 한 자리 — *결계 한 줄*이 — *작게 — 흔들린다*. 학생들은 — 다른 결계에 — 집중하고 있어 — *이 한 줄*은 — 보지 못한다.
+
+[event.ev-luna-ward-shake.choice.1]
+label = 결계를 — 손끝으로 — 한 번 — 짚어 — 본다
+hp = -2
+custom = def-color-1
+result_text = 결 한 줄이 — *손끝에 — 단단히* — 맞물렸다. 결계가 — 다시 — 정렬되었다.
+
+[event.ev-luna-ward-shake.choice.2]
+label = 가까운 학생에게 — 짧게 — 알린다
+affinity = npc-kuruha:1
+result_text = 학생이 — *잠시* — 멈춰 — 그 자리를 — 본다. "아 — 이거 — 선생님께 — 알릴게요!" 결계가 — 단단해졌다.
+
+[event.ev-luna-ward-shake.choice.3]
+label = 그대로 — 둔다
+draw = 1
+result_text = 결계는 — *작게* — 흔들리다 — *자기 자리*로 — 돌아갔다. 등 뒤에서 — 잠시 — 결 한 줄이 — 떨렸다.
+
+
+# --- 단편 8. 옛 책상 노트 ---
+[event.ev-luna-old-desk-note]
+name = 미완성 한 페이지
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 옛 책상 한 자리 — *공책 한 장*이 — 펼쳐져 — 있다. *수업 노트*인데 — *마지막 한 줄*에서 — 끊겨 있다. 누군가 — 끝내 — 못 — 적었다.
+
+[event.ev-luna-old-desk-note.choice.1]
+label = 페이지를 — 끝까지 — 읽어 — 본다
+custom = mag-color-1
+result_text = 마지막 한 줄이 — *공백 그대로* — 손끝에 — 머물렀다. 무엇이 — *적힐 뻔* 했는지 — 짧게 — 짐작이 — 갔다.
+
+[event.ev-luna-old-desk-note.choice.2]
+label = 펜 한 자루를 — 옆에 — 놓아 — 둔다
+hp = 3
+result_text = 다음 날 — 누군가 — 다시 — 와 — *마지막 한 줄*을 — 적을 수 있도록.
+
+[event.ev-luna-old-desk-note.choice.3]
+label = 페이지를 — 한 장 — 챙긴다
+gold = 4
+result_text = 노트의 — *한 장 — 한 자락*이 — 손바닥에 — 단정하게 — 접혔다.
+
+
+# --- 단편 9. 정원·마법 식물 ---
+[event.ev-luna-garden-plant]
+name = 마법 식물 한 줄
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 학교 정원 한 자리 — *마법 식물*이 — 한 줄로 — 자라났다. *낮 빛*과 *밤 빛*이 — *각각* — 닿는 자리. 잎이 — 두 결을 — 동시에 — 받친다.
+
+[event.ev-luna-garden-plant.choice.1]
+label = 잎 한 자락을 — 짧게 — 만져 — 본다
+custom = mag-color-1
+result_text = 잎이 — *낮과 밤*의 — 결을 — 손끝에 — 한 번씩 — 닿게 — 했다.
+
+[event.ev-luna-garden-plant.choice.2]
+label = 작은 *물 한 자락*을 — 흘려 — 본다
+hp = 4
+result_text = 식물이 — *짧은 한 호흡*만큼 — 길어졌다. 가슴 안쪽이 — *서늘하게* — 가벼워졌다.
+
+[event.ev-luna-garden-plant.choice.3]
+label = 잎 한 장을 — 챙긴다
+gold = 5
+result_text = 잎이 — 손바닥에 — 단정하게 — 누웠다. 결 — 두 줄이 — 잠시 — 어지러웠다.
+
+
+# --- 단편 10. 기숙사·빈 방 ---
+[event.ev-luna-dorm-empty]
+name = 빈 방의 작은 짐
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+body = 기숙사 한 자리 — *빈 방* 안에 — *작은 짐* 한 자루가 — 단정하게 — 놓여 있다. 누군가가 — *오래 — 비워둔* 자리. 자리에 — *짧은 한 줄*의 — 햇살이 — 머문다.
+
+[event.ev-luna-dorm-empty.choice.1]
+label = 짐 옆에 — 잠시 — 앉는다
+hp = 5
+result_text = 햇살이 — *한 자락* — 어깨에 — 길게 — 머물렀다. 가슴 안쪽이 — 조용히 — 가벼워졌다.
+
+[event.ev-luna-dorm-empty.choice.2]
+label = 짐의 — 무게를 — 한 번 — 들어 — 본다
+custom = def-color-1
+result_text = *가볍지 않다*. 누군가의 — *공책 한 묶음*이 — 안에 — 있는 듯했다.
+
+[event.ev-luna-dorm-empty.choice.3]
+label = 그대로 — 나간다
+gold = 3
+result_text = 빈 방의 — 햇살이 — 등 뒤로 — 한 자락 — 길게 — 흘렀다.
+
+
+# --- 단편 11. 페비엘 chain 2 — 결계 너머 ---
+[event.ev-luna-febiel-stellaville]
+name = 결계 너머의 한 줄
+node_kinds = event
+weight = 1
+once_per_run = true
+condition = has-clue:cl-febiel-binding-note
+body = 결계실 깊은 자리 — *페비엘*이 — 결계 한 줄을 — *작게* — 비켜선다. 그 너머로 — *옛 마을 한 자리*가 — 잠시 — 보인다. 사람들이 — *낮은 등불* 아래 — 모여 있다. "...저기가 — *스텔라 빌*. 내 — *고향*."
+
+[event.ev-luna-febiel-stellaville.choice.1]
+label = 한 줄 — 같이 — 본다 (조용히)
+affinity = npc-febiel:2
+hp = 4
+result_text = 페비엘이 — *짧게* — 숨을 — 골랐다. "...같이 — 봐 줘서 — 고마워요." 결계가 — 다시 — 닫혔다.
+
+[event.ev-luna-febiel-stellaville.choice.2]
+label = 결계를 — *더 — 비켜* — 보라고 한다
+affinity = npc-febiel:1
+hp = -5
+result_text = 페비엘이 — *한 결* — 더 — 비켰다. 사람들 한 명이 — *고개를 — 들어* — 이쪽을 — 본다. 결계가 — *닫히는* — 순간 — 그가 — 한 번 — 손을 — 들었다.
+
+[event.ev-luna-febiel-stellaville.choice.3]
+label = 그대로 — 두고 — 자리를 — 비킨다
+custom = mag-color-1
+result_text = 페비엘이 — *오래* — 결계 — 너머를 — 보았다. 등 뒤로 — 결계의 — 결이 — 길게 — 흘렀다.
