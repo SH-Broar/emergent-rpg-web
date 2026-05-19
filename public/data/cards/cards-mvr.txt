@@ -377,3 +377,33 @@ cost = 1
 trigger = manual
 effects = damage:4:enemy
 flavor = "심심해. — 한 판." 리제가 — 한 발을 — 굴리고 — *같은 한 판* 한 장을 — 그대 손에 — 다시 — 건넨다. *이번 한 판은* — 비용이 — 없다.
+
+[card.c-spirit-call]
+name = 영혼의 한 자락
+rank = common
+source = npc
+element = dark
+cost = 0
+trigger = manual
+effects = draw:1:self
+flavor = "다음 생에서 — 또 들러 주세요." 아카샤가 — *지박령 연기*를 — 잠시 — 풀고 — *한 자락*을 — 손에 — 건넨다.
+
+[card.c-warm-cup]
+name = 따뜻한 한 잔
+rank = common
+source = npc
+element = water
+cost = 1
+trigger = manual
+effects = heal:5:self, draw:1:self
+flavor = "한 잔 — 따뜻하게, 가시지요." 신시안이 — *잔의 결*을 — 손바닥에 — 가지런히 — 올려 — 준다.
+
+[card.c-tripps-rage]
+name = 트립스의 한 판
+rank = rare
+source = npc
+element = fire
+cost = 20
+trigger = manual
+effects = damage:55:enemy, apply-status:1:enemy, apply-status:1:enemy
+flavor = "주인 — 다음엔 어디로 가요?" 모나토의 — *눈 한 자리*가 — 붉어진다. *받은 만큼* 가벼워지는 — 한 판. *치명* — *벌어짐*.

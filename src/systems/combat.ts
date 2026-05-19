@@ -119,8 +119,14 @@ export function playCard(handIndex: number, monster: Monster): { enemyDefeated: 
   const card = c.hand[handIndex];
   if (!card) return { enemyDefeated: false };
 
+  // 동적 cost: c-tripps-rage는 *이번 런 누적 피해*만큼 cost 경감.
+  let baseCost = card.cost;
+  if (card.id === 'c-tripps-rage') {
+    const damageReceived = r.runDamageReceived ?? 0;
+    baseCost = Math.max(0, baseCost - damageReceived);
+  }
   // cost-mod-add 유물 (예: 모든 카드 비용 -1) 적용. 음수 cost는 0으로 clamp.
-  const effCost = Math.max(0, card.cost + getModifierAdd('cost-mod-add'));
+  const effCost = Math.max(0, baseCost + getModifierAdd('cost-mod-add'));
   // r4: debugFlag infiniteMana — 마나 가드 우회 + 차감 스킵.
   const inf = ui.debug.infiniteMana;
   if (!inf && c.mana < effCost) {
@@ -305,7 +311,13 @@ function executeMonsterIntent(c: CombatState) {
     case 'attack': {
       const absorbed = Math.min(c.player.block, value);
       c.player.block -= absorbed;
-      c.player.hp = Math.max(0, c.player.hp - (value - absorbed));
+      const hpLoss = value - absorbed;
+      c.player.hp = Math.max(0, c.player.hp - hpLoss);
+      // 모나토 c-tripps-rage 동적 cost용 누적 피해 — block 흡수 제외 *실제 HP 손실*만.
+      if (hpLoss > 0) {
+        const r = useRunStore().data;
+        r.runDamageReceived = (r.runDamageReceived ?? 0) + hpLoss;
+      }
       break;
     }
     case 'defend': {

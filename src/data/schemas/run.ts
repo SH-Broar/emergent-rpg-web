@@ -156,6 +156,13 @@ export interface RunState {
   postmanStepCount?: number;
 
   /**
+   * 이번 런 동안 *플레이어가 받은 누적 피해*.
+   * 모나토 영입 카드 `c-tripps-rage`의 동적 cost 계산용 (cost = max(0, 20 - runDamageReceived)).
+   * 적의 공격이 player.hp를 깎는 *실제 손실*만 +=. block에 흡수된 분은 카운트 X.
+   */
+  runDamageReceived?: number;
+
+  /**
    * 노드별 *런타임 kind 오버라이드*.
    * 30턴 경과(advanceDay) 시 일부 비-마을 노드의 kind가 재추첨되어 여기에 기록.
    * 키 없는 노드는 NodeMap의 원본 kind 사용.
