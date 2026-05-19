@@ -80,3 +80,107 @@ description = 사용하면 *결심의 섬광* 한 장이 손에 떨어진다.
 rank = rare
 effects = grant-card:c-resolve-flash
 consumable = true
+
+
+# ============================================================
+# 권역 특산물 — 9개 권역 각 1종. *희귀 카드 제작 재료*.
+# category=specialty, region_id=권역id, effects=빈배열, consumable=true(제작 시 소모).
+# 일반 몬스터·채집 전반·이벤트·상점·NPC 친밀도 보상에서 드롭.
+# ============================================================
+
+[item.i-clockwork-cog]
+name = 시계 톱니
+description = 일루네온 시계탑에서 *한 박자 어긋난* 채로 떨어진 작은 톱니. 손에 쥐면 *시간의 결*이 미세하게 움직인다.
+rank = common
+category = specialty
+region_id = iluneon
+effects =
+consumable = true
+
+[item.i-world-tree-bud]
+name = 세계수의 새싹
+description = 라르 숲 — 세계수의 가지 끝에서 떨어진 *덜 자란* 새싹. 흙 한 줌 묻히면 다시 자라기 시작한다.
+rank = common
+category = specialty
+region_id = lar-forest
+effects =
+consumable = true
+
+[item.i-forge-ember]
+name = 화로의 잔불
+description = 모스 대장간의 화로가 *식지 않은 동안* 흘러나오는 한 점의 불씨. 손가락에 닿아도 따뜻하기만 하다.
+rank = common
+category = specialty
+region_id = moss
+effects =
+consumable = true
+
+[item.i-sunset-shard]
+name = 석양의 조각
+description = 마노니클라 절벽의 노을이 *식기 전*에 응결된 한 조각. 손바닥에서 *철의 빛*으로 차게 식는다.
+rank = common
+category = specialty
+region_id = manonickla
+effects =
+consumable = true
+
+[item.i-storm-fang]
+name = 폭풍의 송곳니
+description = 리아그랄타 평원에 떨어진 *번개 한 가닥의 끝*. 정전기로 손끝을 가볍게 튀긴다.
+rank = common
+category = specialty
+region_id = riagralta
+effects =
+consumable = true
+
+[item.i-mist-petal]
+name = 안개 꽃잎
+description = 알리메스 안개 숲에서만 *습기가 정확할 때*만 피는 꽃의 꽃잎. 손바닥에 두면 천천히 *물*로 녹는다.
+rank = common
+category = specialty
+region_id = alimes
+effects =
+consumable = true
+
+[item.i-grimoire-ink]
+name = 금서의 잉크
+description = 루나 지하서고 *움직이는 잉크* 한 방울. 종이 바깥에서는 *어둠*의 깊이를 흉내낸다.
+rank = common
+category = specialty
+region_id = luna
+effects =
+consumable = true
+
+[item.i-neon-residue]
+name = 네온의 잔재
+description = 타코미 골목 *홀로그램이 깜빡인 자리*에 남은 입자. 손가락 끝에서 *전기*처럼 가볍게 떨린다.
+rank = common
+category = specialty
+region_id = tacomi
+effects =
+consumable = true
+
+[item.i-anchor-link]
+name = 닻고리 한 마디
+description = 풍혈지대 *시간의 닻*에서 떨어진 한 마디. 그 자체로는 가벼우나 — 어딘가에 꿰어지면 *바람*을 멈춘다.
+rank = common
+category = specialty
+region_id = demon-windfall
+effects =
+consumable = true
+
+
+# ============================================================
+# 희소 재료 — Act 1에서 *범용 1종*만 사용.
+# 엘리트·보스 클리어, 채집 후반(컬러 임계), 공방 제조, 이벤트, 특정 NPC 친밀도 보상.
+# 한 런에 3~4개만. 전설 카드 제작에 필수.
+# ============================================================
+
+[item.i-time-answer]
+name = 시간의 답
+description = 모노가 *기억하지 못한* 그 시간에서, 단 한 번 *흘러나온* 답. 한 런 안에서 3~4개만 손에 닿는다.
+rank = legendary
+category = rare-material
+effects =
+consumable = true
+flavor = "이 시간은 — 빌려드린 게 아니라, 원래 그대 것이었어요."

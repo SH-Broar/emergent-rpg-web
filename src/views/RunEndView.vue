@@ -72,12 +72,6 @@ onMounted(async () => {
           {{ Object.values(run.data.nodeStates).filter((s) => s.combatCleared).length }}회
         </span>
       </div>
-      <div class="stat">
-        <span class="stat__label">히페리온 진행도</span>
-        <span class="stat__value">
-          {{ Object.values(run.data.hyperionProgress).filter(Boolean).length }} / 5
-        </span>
-      </div>
     </section>
 
     <section v-if="result" class="meta">

@@ -6,6 +6,7 @@
  */
 
 import type { BossId, EventId, NamedEntity, NodeId, NodeKind, NodeMapId } from './base';
+import type { ColorValues } from './npc';
 
 /** 한 권역 (region) — 지리·문화적으로 묶인 노드 집합의 *콘텐츠 풀* 정의.
  *
@@ -24,6 +25,35 @@ export interface Region {
   eliteEnemyPool: string[];
   /** 이벤트 노드용 이벤트 ID 풀. */
   eventPool: EventId[];
+
+  /**
+   * 권역의 *대표 컬러* — 채집 노드 후반 단계의 임계 컬러.
+   * 채집 진입 시 RunState.colors[primaryColor] >= gatherThreshold면 *후반 풀*로 분기.
+   */
+  primaryColor?: keyof ColorValues;
+
+  /**
+   * 권역 *특산물* 아이템 ID — 희귀 카드 제작 재료. 일반 몬스터/채집·이벤트에서 드롭.
+   */
+  specialtyItemId?: string;
+
+  /**
+   * 채집 후반 단계 임계 컬러값 — primaryColor가 이 값 이상이면 후반 풀.
+   * 미지정 시 기본 80.
+   */
+  gatherThreshold?: number;
+
+  /**
+   * 상위 lore 지역명 — 권역이 *어떤 큰 영역에 속하는지*. UI 안내·도감용.
+   * 예: 라르 숲 → "세계수", 풍혈지대 → "허공숲".
+   */
+  parentRegionName?: string;
+
+  /**
+   * *마을 권역의 고유 전설 카드 풀* — 공방에서 이 권역의 특산물 + 희소 재료로 제작 가능.
+   * 마을이 아닌 권역은 비어 있거나 미지정.
+   */
+  legendaryCardIds?: string[];
 }
 
 /** 한 노드. */

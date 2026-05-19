@@ -21,7 +21,11 @@ const emit = defineEmits<{ (e: 'close'): void }>();
 const run = useRunStore();
 const data = useDataStore();
 
-const tab = ref<'relic' | 'item'>('relic');
+const tab = ref<'relic' | 'item' | 'clue'>('relic');
+const expandedClueId = ref<string | null>(null);
+function toggleClue(id: string) {
+  expandedClueId.value = expandedClueId.value === id ? null : id;
+}
 
 // 모달 닫힐 때 텔레포트 sub-modal도 같이 닫고, 탭은 기본값으로 복원
 watch(
@@ -145,6 +149,16 @@ function itemEffectLabel(eff: Item['effects'][number]): string {
             <span class="inv-tab__icon">📦</span>
             <span>아이템 ({{ run.data.items.length }})</span>
           </button>
+          <button
+            class="inv-tab"
+            :class="{ 'inv-tab--on': tab === 'clue' }"
+            role="tab"
+            :aria-selected="tab === 'clue'"
+            @click="tab = 'clue'"
+          >
+            <span class="inv-tab__icon">📜</span>
+            <span>단서 ({{ run.data.clues?.length ?? 0 }})</span>
+          </button>
         </div>
 
         <!-- 유물 탭 -->
@@ -171,7 +185,7 @@ function itemEffectLabel(eff: Item['effects'][number]): string {
         </div>
 
         <!-- 아이템 탭 -->
-        <div v-else class="inv-body">
+        <div v-else-if="tab === 'item'" class="inv-body">
           <p class="hint">클릭 한 번이면 즉시 효과가 적용됩니다. 소비형 아이템은 한 번 쓰면 사라져요.</p>
           <ul v-if="sortedItems.length > 0" class="items">
             <li
@@ -208,6 +222,27 @@ function itemEffectLabel(eff: Item['effects'][number]): string {
               <button class="teleport-cancel" @click="teleportFor = null">취소</button>
             </div>
           </transition>
+        </div>
+
+        <!-- 단서 탭 -->
+        <div v-else class="inv-body">
+          <p class="hint">단서를 클릭하면 내용이 펼쳐집니다. 단서는 사라지지 않습니다.</p>
+          <ul v-if="(run.data.clues?.length ?? 0) > 0" class="clue-list">
+            <li
+              v-for="c in run.data.clues"
+              :key="c.id"
+              class="clue"
+              :class="{ 'clue--open': expandedClueId === c.id }"
+              @click="toggleClue(c.id)"
+            >
+              <div class="clue__head">
+                <span class="clue__name">{{ c.name }}</span>
+                <span v-if="c.source" class="clue__source">{{ c.source }}</span>
+              </div>
+              <p v-if="expandedClueId === c.id" class="clue__body">{{ c.body }}</p>
+            </li>
+          </ul>
+          <p v-else class="empty">아직 단서가 없습니다.</p>
         </div>
       </div>
     </div>
@@ -297,6 +332,32 @@ function itemEffectLabel(eff: Item['effects'][number]): string {
 
 .hint { font-size: 0.78rem; color: #888; margin: 0 0 0.3rem; }
 .empty { color: #6c6c7c; text-align: center; padding: 1.6rem; font-style: italic; margin: 0; }
+
+/* 단서 탭 */
+.clue-list { list-style: none; padding: 0; margin: 0.4rem 0 0; display: flex; flex-direction: column; gap: 0.4rem; }
+.clue {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-left: 3px solid #c08eff;
+  border-radius: 6px;
+  padding: 0.5rem 0.7rem;
+  cursor: pointer;
+  transition: background 140ms;
+}
+.clue:hover { background: rgba(255,255,255,0.08); }
+.clue--open { background: rgba(192, 142, 255, 0.10); }
+.clue__head { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; }
+.clue__name { color: #f6e8b8; font-weight: 600; font-size: 0.92rem; }
+.clue__source { color: #888; font-size: 0.76rem; font-style: italic; }
+.clue__body {
+  color: #d0d0dc;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  margin: 0.5rem 0 0;
+  padding-top: 0.4rem;
+  border-top: 1px dashed rgba(255,255,255,0.10);
+  white-space: pre-wrap;
+}
 
 /* 유물 카드 */
 .rel-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.5rem; }

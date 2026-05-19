@@ -76,12 +76,14 @@ function endTurn() {
 }
 
 function onVictory() {
-  // 드롭 적용 + 클리어 마킹
+  // 드롭 적용 + 권역 보상 (컬러+특산물+엘리트희소재료) + 클리어 마킹.
+  // applyCombatVictoryReward는 *cleared 마킹 전*에 호출 — 첫 클리어 여부를 판단.
   drop.value = applyMonsterDrop(monster.value.drop, data.cards);
+  void import('@/systems/combat-rewards').then(({ applyCombatVictoryReward }) =>
+    applyCombatVictoryReward(run.data.currentNodeId),
+  );
   run.markCombatCleared(run.data.currentNodeId);
   clearCombat();
-  // 히페리온 자동 평가 (combat_clears 등)
-  void import('@/systems/hyperion').then(({ evaluateHyperion }) => evaluateHyperion());
   phase.value = 'victory';
 }
 

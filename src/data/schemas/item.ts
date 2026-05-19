@@ -29,15 +29,30 @@ export interface ItemEffect {
   param?: keyof ColorValues | string;
 }
 
+/**
+ * 아이템 카테고리 — 사용 패턴 구분.
+ *
+ *  - `consumable`: 클릭 시 즉시 효과 (HP·골드·컬러 부스트 등). 기본값.
+ *  - `specialty`: *마을마다 다른 특산물* — 희귀 카드 제작 재료. 클릭 사용 X.
+ *  - `rare-material`: *희소 재료* — 전설 카드 제작 재료. 1런 3~4개 한정.
+ *
+ * 재료 카테고리는 `effects` 비워두고 사용 시점에서 *제작 슬롯만 비교*에 사용.
+ */
+export type ItemCategory = 'consumable' | 'specialty' | 'rare-material';
+
 /** 아이템 정의 + 런타임 인스턴스. */
 export interface Item extends NamedEntity {
   id: string;
   /** 런타임 인스턴스 ID — 카드와 동일 패턴. */
   instanceId?: string;
   rank: Rank;
-  /** 즉시 사용 효과 — 클릭 시 순서대로 적용. */
+  /** 카테고리 — 미지정 시 'consumable'. */
+  category?: ItemCategory;
+  /** 즉시 사용 효과 — 클릭 시 순서대로 적용. 재료는 빈 배열. */
   effects: ItemEffect[];
   /** 사용 후 소모? (기본 true) */
   consumable: boolean;
   flavor?: string;
+  /** 특산물의 *권역 id* — 그 권역의 채집·전투에서만 드롭 (specialty 전용). */
+  regionId?: string;
 }

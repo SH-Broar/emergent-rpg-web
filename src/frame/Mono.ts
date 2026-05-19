@@ -8,6 +8,7 @@
  */
 
 import { useMetaStore } from '@/stores/meta';
+import { useUiStore } from '@/stores/ui';
 
 export const MONO_TITLE = '시간의 신 모노';
 export const MONO_VOICE = '시간';
@@ -21,12 +22,15 @@ export function getInterferenceStrength(): number {
 /** 모노가 *그 콘텐츠*를 허용했는가? — 해금 토큰 검사. */
 export function isUnlocked(unlockKey: string | undefined): boolean {
   if (!unlockKey) return true; // 잠금 조건 없음 = 항상 허용
+  // r4: debugFlag unlockAll — 모든 콘텐츠 허용.
+  if (useUiStore().debug.unlockAll) return true;
   const meta = useMetaStore();
   return meta.unlockedKeys.some((k) => k.key === unlockKey);
 }
 
 /** 모노가 *그 캐릭터*를 허용했는가? */
 export function canSelectCharacter(characterId: string): boolean {
+  if (useUiStore().debug.unlockAll) return true;
   const meta = useMetaStore();
   return meta.unlockedCharacterIds.includes(characterId) || meta.unlockedCharacterIds.length === 0;
   // 첫 플레이 시 기본 캐릭터는 허용
@@ -34,6 +38,7 @@ export function canSelectCharacter(characterId: string): boolean {
 
 /** 모노가 *그 연표*를 허용했는가? */
 export function canEnterTimeline(timelineId: string): boolean {
+  if (useUiStore().debug.unlockAll) return true;
   const meta = useMetaStore();
   // 기본 연표는 항상 허용 (unlockedTimelineIds가 비어 있어도)
   if (meta.unlockedTimelineIds.length === 0) return true;

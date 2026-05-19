@@ -1,0 +1,62 @@
+/**
+ * 컬러 값 시스템 — *게임의 축*.
+ *
+ * 사용자 사양:
+ *  - 컬러 상한 100. 시작 ≈ 0, 종족 시드로 한 컬러당 최대 5.
+ *  - 80 이상이 *후반 임계*의 대표 예시 (채집 후반, 강한 이벤트 선택지 등).
+ *  - 컬러를 어떻게 올리느냐가 *모든 시스템의 등뼈*.
+ *
+ * 본 모듈은 *단일 진입점*. 직접 colors[k] += N 하지 말고 applyColorBoost / applySeedColors 사용.
+ */
+
+import type { ColorValues } from '@/data/schemas';
+import { useRunStore } from '@/stores/run';
+
+export const COLOR_MAX = 100;
+
+export type ColorKey = keyof ColorValues;
+
+const ALL_COLORS: ColorKey[] = [
+  'fire', 'water', 'electric', 'iron',
+  'earth', 'wind', 'light', 'dark',
+];
+
+/** 단일 컬러에 amount를 더하고 상한 100 적용. lines 주어지면 결과 텍스트 push. */
+export function applyColorBoost(color: ColorKey, amount: number, lines?: string[]): number {
+  if (amount === 0) return 0;
+  const run = useRunStore();
+  const c = run.data.colors;
+  const before = c[color];
+  const after = Math.max(0, Math.min(COLOR_MAX, before + amount));
+  c[color] = after;
+  const delta = after - before;
+  if (lines && delta !== 0) {
+    lines.push(`${color} ${delta >= 0 ? '+' : ''}${delta} (${after}/${COLOR_MAX})`);
+  }
+  return delta;
+}
+
+/** 8 컬러 모두에 amount 일괄 적용. */
+export function applyColorBoostAll(amount: number, lines?: string[]): void {
+  for (const k of ALL_COLORS) {
+    applyColorBoost(k, amount);
+  }
+  if (lines && amount !== 0) {
+    lines.push(`모든 컬러 ${amount >= 0 ? '+' : ''}${amount}`);
+  }
+}
+
+/** 종족·캐릭터 시드 컬러 적용 — 런 시작 시 1회 호출. cap은 100. */
+export function applySeedColors(seed: Partial<ColorValues> | undefined): void {
+  if (!seed) return;
+  for (const [k, v] of Object.entries(seed)) {
+    if (typeof v !== 'number') continue;
+    applyColorBoost(k as ColorKey, v);
+  }
+}
+
+/** 현재 컬러가 임계 이상인지 — 채집 후반 분기 등에서 사용. */
+export function hasColorAtLeast(color: ColorKey, threshold: number): boolean {
+  const run = useRunStore();
+  return run.data.colors[color] >= threshold;
+}

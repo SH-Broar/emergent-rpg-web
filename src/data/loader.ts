@@ -17,6 +17,7 @@ import {
   type IniData,
   type IniSection,
 } from './parser';
+import { validateCardBaseline } from './schemas/card';
 import type {
   AffinityReward,
   Boss,
@@ -27,6 +28,7 @@ import type {
   CardEffectKind,
   CardSource,
   CardTriggerKind,
+  ChaosModifier,
   Character,
   ColorValues,
   CompanionBonuses,
@@ -99,6 +101,13 @@ export function parseCards(ini: IniData, prefix = 'card'): Map<string, Card> {
     const card = parseOneCard(id, fields);
     if (card) result.set(card.id, card);
   }
+  // 등급별 최소 한도 검증 — race/character 출처만. 게임 로직에 영향 X, console.warn으로 안내.
+  for (const card of result.values()) {
+    const v = validateCardBaseline(card);
+    if (!v.ok) {
+      console.warn(`[card baseline] ${card.id} (${card.name}): ${v.reason}`);
+    }
+  }
   return result;
 }
 
@@ -123,6 +132,7 @@ function parseOneCard(id: string, f: IniSection): Card | null {
     customEffectId: f.custom_effect,
     flavor: f.flavor,
     unlockHint: f.unlock_hint,
+    upgradeToId: f.upgrade_to,
   };
 }
 
@@ -134,19 +144,41 @@ export function parseRelics(ini: IniData, prefix = 'relic'): Map<string, Relic> 
     if (!section.startsWith(prefix + '.')) continue;
     const id = sectionIdSuffix(section);
     const relic = parseOneRelic(id, fields);
-    if (relic) result.set(relic.id, relic);
+    if (relic) {
+      result.set(relic.id, relic);
+      // 임시 유물 경고 — id에 '-tbd' 포함하면 차후 교체 필요.
+      if (id.includes('-tbd')) {
+        console.warn(`[relic] 임시 유물 '${id}' (${relic.name}) — 정식 유물로 교체 필요.`);
+      }
+    }
   }
   return result;
 }
+
+/**
+ * 옛 데이터 호환: effect.kind / trigger 문자열을 새 modifier kind / trigger로 정규화.
+ * 데이터 파일은 옛 표기(`bonus-damage`, `on-card-play`) 그대로 두고 *로더에서* 변환.
+ * 단, `relic.ts`의 modifier 조회 함수도 alias를 인식하므로 옛 세이브의 직렬화된 kind도 안전.
+ */
+const RELIC_KIND_ALIASES: Record<string, string> = {
+  'bonus-damage': 'damage-out-add',
+};
+const RELIC_TRIGGER_ALIASES: Record<string, RelicTriggerKind> = {
+  'on-card-play': 'on-card-played-after',
+};
 
 function parseOneRelic(id: string, f: IniSection): Relic | null {
   const rank = f.rank as Rank;
   if (!isRank(rank)) return null;
 
   const effects: RelicEffect[] = parseList(f.effects).map((tok) => {
-    const [kind, valueStr] = tok.split(':');
+    const [rawKind, valueStr] = tok.split(':');
+    const kind = RELIC_KIND_ALIASES[rawKind] ?? rawKind;
     return { kind, value: valueStr ? Number(valueStr) : undefined };
   });
+
+  const rawTrigger = (f.trigger as string) ?? 'passive';
+  const trigger = (RELIC_TRIGGER_ALIASES[rawTrigger] ?? rawTrigger) as RelicTriggerKind;
 
   return {
     id,
@@ -154,7 +186,7 @@ function parseOneRelic(id: string, f: IniSection): Relic | null {
     description: f.description,
     rank,
     source: (f.source as RelicSource) ?? 'event',
-    trigger: (f.trigger as RelicTriggerKind) ?? 'passive',
+    trigger,
     effects,
     customEffectId: f.custom_effect,
     flavor: f.flavor,
@@ -180,6 +212,7 @@ export function parseRaces(ini: IniData): Map<string, Race> {
       startHpBonus: parseNumber(fields.hp_bonus, 0),
       startMpBonus: parseNumber(fields.mp_bonus, 0),
       deckSize: fields.deck_size ? parseNumber(fields.deck_size, 10) : undefined,
+      seedColors: parseColorBoosts(fields.seed_colors) as Race['seedColors'],
     });
   }
   return result;
@@ -287,6 +320,7 @@ function parseOneEvent(id: string, f: IniSection, ini: IniData): Event {
       unlockKey: f.unlock_key,
       oncePerRun: parseBool(f.once_per_run, true),
       weight: parseNumber(f.weight, 1),
+      condition: f.condition,
     },
     choices,
     featuredNpcIds: parseList(f.featured_npcs),
@@ -309,6 +343,7 @@ function parseChoice(f: IniSection): EventChoice {
   }
   if (f.followup) eff.followupEventId = f.followup;
   if (f.custom) eff.customEffectId = f.custom;
+  if (f.clue) eff.grantClueId = f.clue;
   if (f.result_text) eff.resultText = f.result_text;
 
   if (Object.keys(eff).length > 0) effects.push(eff);
@@ -387,6 +422,27 @@ function parseOneBoss(id: string, f: IniSection, ini: IniData): Boss {
     });
   }
 
+  // signature variant 섹션 수집 — [boss.{id}.signature.{signatureId}]
+  const prefix = `boss.${id}.signature.`;
+  const signatureVariants: import('@/data/schemas').BossSignatureVariant[] = [];
+  for (const [section, sf] of Object.entries(ini)) {
+    if (!section.startsWith(prefix)) continue;
+    const sigId = section.slice(prefix.length);
+    const overrideIntents = parseList(sf.intent_overrides).map((tok) => {
+      const [kind, valueStr] = tok.split(':');
+      return {
+        kind: (kind as BossIntent['kind']) ?? 'attack',
+        value: valueStr ? Number(valueStr) : undefined,
+        description: tok,
+      };
+    });
+    signatureVariants.push({
+      signatureId: sigId,
+      dialogue: parseList(sf.dialogue),
+      intentOverrides: overrideIntents.length > 0 ? overrideIntents : undefined,
+    });
+  }
+
   return {
     id,
     name: f.name ?? id,
@@ -396,6 +452,7 @@ function parseOneBoss(id: string, f: IniSection, ini: IniData): Boss {
     attack: parseNumber(f.attack, 8),
     defense: parseNumber(f.defense, 2),
     phases,
+    signatureVariants: signatureVariants.length > 0 ? signatureVariants : undefined,
     rewards: {
       unlockKeys: parseList(f.reward_unlocks),
       soulGain: parseNumber(f.reward_soul, 5),
@@ -429,6 +486,11 @@ export function parseNodeMap(ini: IniData, id: string): NodeMap | null {
         enemyPool: parseList(fields.enemy_pool),
         eliteEnemyPool: parseList(fields.elite_enemy_pool),
         eventPool: parseList(fields.event_pool),
+        primaryColor: fields.primary_color as Region['primaryColor'],
+        specialtyItemId: fields.specialty_item,
+        gatherThreshold: fields.gather_threshold ? parseNumber(fields.gather_threshold, 80) : undefined,
+        parentRegionName: fields.parent_region,
+        legendaryCardIds: parseList(fields.legendary_cards),
       });
       continue;
     }
@@ -525,6 +587,19 @@ function parseAffinityReward(token: string): AffinityReward | null {
     else if (p.startsWith('relic=')) reward.rewardRelicId = p.slice(6);
     else if (p.startsWith('gauge=')) reward.gaugeBoost = Number(p.slice(6));
     else if (p.startsWith('hint=')) reward.hint = p.slice(5);
+    else if (p.startsWith('color=')) {
+      // 형식: color=fire:5  → colorBoost { color: 'fire', value: 5 }
+      const body = p.slice(6);
+      const sep = body.indexOf(':');
+      if (sep > 0) {
+        reward.colorBoost = {
+          color: body.slice(0, sep),
+          value: Number(body.slice(sep + 1)),
+        };
+      }
+    }
+    else if (p.startsWith('specialty=')) reward.grantSpecialtyRegionId = p.slice(10);
+    else if (p === 'rare-material') reward.grantRareMaterial = true;
   }
   return reward;
 }
@@ -607,9 +682,11 @@ export function parseItems(ini: IniData): Map<string, Item> {
       name: fields.name ?? id,
       description: fields.description,
       rank,
+      category: (fields.category as Item['category']) ?? 'consumable',
       effects,
       consumable: parseBool(fields.consumable, true),
       flavor: fields.flavor,
+      regionId: fields.region_id,
     });
   }
   return result;
@@ -702,6 +779,26 @@ export interface GameData {
   npcs: Map<string, Npc>;
   items: Map<string, Item>;
   equipments: Map<string, Equipment>;
+  chaos: Map<string, ChaosModifier>;
+  clues: Map<string, import('@/data/schemas').Clue>;
+}
+
+// ========== Clue ==========
+
+export function parseClues(ini: IniData): Map<string, import('@/data/schemas').Clue> {
+  const result = new Map<string, import('@/data/schemas').Clue>();
+  for (const [section, fields] of Object.entries(ini)) {
+    if (!section.startsWith('clue.')) continue;
+    const id = sectionIdSuffix(section);
+    result.set(id, {
+      id,
+      name: fields.name ?? id,
+      description: fields.description,
+      body: fields.body ?? '',
+      source: fields.source,
+    });
+  }
+  return result;
 }
 
 // ========== Equipment ==========
@@ -746,6 +843,29 @@ function parseOneEquipment(id: string, f: IniSection): Equipment | null {
   };
 }
 
+// ========== Chaos (r4) ==========
+
+/**
+ * 카오스 modifier 데이터 — 매 런 단위 토글 가능한 특수 기능 정의.
+ * INI 섹션 [chaos.<id>]. r4에서는 이름/설명/메타영향 토글까지만 데이터화.
+ * 효과 표현은 다음 라운드 — modifier kind/value 도입 시 확장.
+ */
+export function parseChaos(ini: IniData): Map<string, ChaosModifier> {
+  const result = new Map<string, ChaosModifier>();
+  for (const [section, fields] of Object.entries(ini)) {
+    if (!section.startsWith('chaos.')) continue;
+    const id = sectionIdSuffix(section);
+    result.set(id, {
+      id,
+      name: fields.name ?? id,
+      description: fields.description ?? '',
+      unlockKey: fields.unlock_key && fields.unlock_key.length > 0 ? fields.unlock_key : undefined,
+      affectsMeta: parseBool(fields.affects_meta, false),
+    });
+  }
+  return result;
+}
+
 /** 데이터 파일들. 이후 확장 시 파일 추가만. */
 const DATA_FILES = [
   // === 1장 (제 4시대 61년) — main 연표 ===
@@ -774,6 +894,10 @@ const DATA_FILES = [
   'data/monsters/act-1-region-monsters.txt',
   'data/items/act-1-items.txt',
   'data/equipment/equipment-mvr.txt',
+  // === 카오스 (r4) — 매 런 단위 토글 가능한 특수 기능. ===
+  'data/chaos/chaos-mvr.txt',
+  // === 단서 (2026-05-19) — 간접 스토리 + 조건부 chain. ===
+  'data/clues/act-1-clues.txt',
   // === peace-310 (MVR) — 파일은 학습용으로 보존, 로딩에서는 제외. ===
   // 'data/timelines/peace-310.txt',
   // 'data/node-maps/peace-310-map.txt',
@@ -830,6 +954,8 @@ export async function loadAllData(baseUrl?: string): Promise<GameData> {
     npcs: parseNpcs(merged),
     items: parseItems(merged),
     equipments: parseEquipments(merged),
+    chaos: parseChaos(merged),
+    clues: parseClues(merged),
   };
 }
 
@@ -857,5 +983,7 @@ export function loadFromText(text: string): GameData {
     npcs: parseNpcs(ini),
     items: parseItems(ini),
     equipments: parseEquipments(ini),
+    chaos: parseChaos(ini),
+    clues: parseClues(ini),
   };
 }

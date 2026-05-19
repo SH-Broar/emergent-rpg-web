@@ -8,6 +8,14 @@ trigger = passive
 effects = bonus-hp:5
 flavor = 인간이 가장 자주 갖고 태어나는 것.
 
+[relic.r-sunset-fang]
+name = 노을 능선의 송곳니
+rank = common
+source = event
+trigger = passive
+effects = damage-out-add:1
+flavor = 능선 너머 큰 그림자가 — *등을 한 번 굽혀* 떨어뜨린 한 조각. 손에 쥐면 *오래된 무게*가 한 줄 흘러내린다.
+
 [relic.r-imperisia-locket]
 name = 임페리시아의 회중시계
 rank = common

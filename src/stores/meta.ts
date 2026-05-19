@@ -97,11 +97,50 @@ export const useMetaStore = defineStore('meta', {
             grantedAt: Date.now(),
           };
           this.unlockedKeys.push(newKey);
+          this._applyUnlockKey(newKey);
           granted.push(newKey);
         }
       }
       this.persist();
       return granted;
+    },
+
+    /**
+     * 해금 키 패턴 해석 후 적절한 콘텐츠 ID 배열에 push.
+     *
+     * 키 패턴 규약 (r4 신설):
+     *   "unlock-character-<id>"  → unlockedCharacterIds
+     *   "unlock-timeline-<id>"   → unlockedTimelineIds
+     *   "unlock-card-<id>"       → unlockedCardIds
+     *   그 외(예: "hyperion1-25") → key만 보관 (특정 콘텐츠 push 없음)
+     *
+     * 첫 플레이 fallback 보존:
+     *   Mono.canSelectCharacter 등의 `length === 0` 가드는 그대로 — 한 번도 push되지 않은
+     *   완전 초기 상태는 여전히 모두 허용. 첫 push 이후엔 화이트리스트 동작.
+     */
+    _applyUnlockKey(k: UnlockKey) {
+      const mChar = k.key.match(/^unlock-character-(.+)$/);
+      if (mChar) {
+        if (!this.unlockedCharacterIds.includes(mChar[1])) {
+          this.unlockedCharacterIds.push(mChar[1]);
+        }
+        return;
+      }
+      const mTl = k.key.match(/^unlock-timeline-(.+)$/);
+      if (mTl) {
+        if (!this.unlockedTimelineIds.includes(mTl[1])) {
+          this.unlockedTimelineIds.push(mTl[1]);
+        }
+        return;
+      }
+      const mCard = k.key.match(/^unlock-card-(.+)$/);
+      if (mCard) {
+        if (!this.unlockedCardIds.includes(mCard[1])) {
+          this.unlockedCardIds.push(mCard[1]);
+        }
+        return;
+      }
+      // 패턴 미매칭 — 진행도 임계 키 (예: hyperion1-25). push 없이 보관만.
     },
 
     /** 런 종료 시 호출: 휘발 진행도를 게이지로 변환. */

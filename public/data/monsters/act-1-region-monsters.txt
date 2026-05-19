@@ -105,6 +105,39 @@ gold = 14
 time_shards = 6
 card_drops = c-shadow-rebuke:0.15
 
+[monster.m-mano-sandwraith]
+name = 사구 망령
+tier = minion
+hp = 18
+attack = 6
+defense = 1
+intents = attack:6, defend:4, attack:7
+gold = 6
+time_shards = 2
+card_drops = c-quickdraw:0.15
+
+[monster.m-mano-sunset-raven]
+name = 노을 까마귀
+tier = minion
+hp = 14
+attack = 7
+defense = 0
+intents = attack:7, attack:7, attack:5
+gold = 5
+time_shards = 2
+card_drops =
+
+[monster.m-mano-limun-cursed]
+name = 저주받은 리문상
+tier = elite
+hp = 40
+attack = 9
+defense = 2
+intents = attack:9, defend:6, attack:11, buff:1
+gold = 16
+time_shards = 7
+card_drops = c-shadow-rebuke:0.20
+
 # ============================================================
 # 리아그랄타 권역 (초원·산비탈·전기)
 # ============================================================

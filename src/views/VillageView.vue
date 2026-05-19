@@ -102,12 +102,6 @@ function recruitSummary(npc: Npc): string {
   return parts.join(' · ');
 }
 
-// 대화 시스템 도입 후 활용 — 현재는 UI에서 호출하지 않지만 *인프라 유지* 목적으로 보존.
-// TS6133 회피용 명시 참조.
-void tryRecruit;
-void tryDismiss;
-void recruitSummary;
-
 const craftPool = computed<Card[]>(() => {
   // 일반 등급 카드들. 추후 출처·종족 등으로 필터링.
   return Array.from(data.cards.values()).filter((c: Card) => VILLAGE_CARD_RANKS.has(c.rank));
@@ -189,8 +183,22 @@ const rankColors: Record<string, string> = {
             <span class="npc-card__meta">{{ npc.raceId }} · {{ npc.role }}</span>
           </div>
           <p v-if="npc.tagline" class="npc-card__tagline">{{ npc.tagline }}</p>
-          <!-- 동료 권유 UI는 대화 시스템 도입 후 같은 화면에서 자연스럽게.
-               recruit 인프라(RunState·actions·INI)는 유지되어 다음 단계에서 즉시 사용 가능. -->
+          <!-- r4: 동료 권유 UI 활성화. recruit_enabled=true + recruit 보너스가 있는 NPC만 표시. -->
+          <div v-if="npc.recruit" class="npc-card__recruit">
+            <span class="npc-card__summary">{{ recruitSummary(npc) }}</span>
+            <button
+              v-if="!run.data.companions.includes(npc.id)"
+              class="npc-card__btn"
+              :disabled="!canRecruit(npc)"
+              :title="recruitWhyDisabled(npc)"
+              @click="tryRecruit(npc)"
+            >동행을 권한다</button>
+            <button
+              v-else
+              class="npc-card__btn npc-card__btn--dismiss"
+              @click="tryDismiss(npc)"
+            >이별을 고한다</button>
+          </div>
         </div>
       </div>
 

@@ -24,7 +24,8 @@ export function absorbRunIntoMeta(run: RunState) {
   const ui = useUiStore();
 
   // 히페리온 미션 클리어 단계 수 (true 카운트)
-  const hyperionStageClears = Object.values(run.hyperionProgress).filter(Boolean).length;
+  // r4: 5단계 미션 시스템 제거로 hyperionProgress는 optional. 옛 세이브 잔존만 카운트, 새 런은 항상 0.
+  const hyperionStageClears = Object.values(run.hyperionProgress ?? {}).filter(Boolean).length;
 
   // NPC 친밀도 누적 (모든 NPC의 affinity 합)
   const npcAffinityGain = Object.values(run.npcAffinity).reduce((a, b) => a + b, 0);

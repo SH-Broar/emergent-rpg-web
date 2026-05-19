@@ -1,0 +1,19 @@
+# 카오스 (Chaos) — 매 런 단위 토글 가능한 특수 기능.
+# r4 신설. 효과(effects) 메커니즘은 *다음 라운드*에서 modifier kind 기반으로 구체화 예정.
+# 현재는 카탈로그 표시·토글까지만 작동.
+#
+# 필드:
+#   name           표시 이름
+#   description    설명 (한 문장)
+#   unlock_key     영구 연구 해금 토큰. 비면 항상 사용 가능.
+#   affects_meta   true면 메타 진행에 영향 (보너스/페널티). false면 무영향.
+
+[chaos.c-fragile-glory]
+name = 부서지는 영광
+description = 시작 HP가 절반이 되지만 보스 클리어 보상이 두 배가 된다.
+affects_meta = true
+
+[chaos.c-no-respite]
+name = 휴식 없음
+description = 휴식 노드의 회복이 사라진다. 대신 시간의 조각이 매 노드마다 +1.
+affects_meta = false

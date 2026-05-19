@@ -17,6 +17,47 @@ import type {
   Rank,
 } from './base';
 
+/**
+ * 카드 *주 효과 수치*의 등급별 최소 한도 — 1.5배 등비.
+ *
+ * 적용 대상: source가 `race`/`character`인 *시작 덱 베이스*. 같은 등급이라면
+ * 적어도 이 수치만큼은 보장돼야 의미가 있다는 기획 정책.
+ *
+ * 면제 대상: source가 `npc`/`event`/`relic`/`boss`/`hyperion` — 친밀도 보상,
+ * 이벤트 grant, 유물 효과, 보스 보상으로 받는 *특수 카드*는 컨셉이 우선.
+ *
+ * 검사 수치: card.effects 중 `damage`/`heal`/`block` 효과 value의 *최댓값*.
+ * cost는 고려하지 않음 — 가치 산정의 정밀함보다 *최소 한도*가 목적.
+ */
+export const CARD_MIN_PEAK_VALUE: Record<Rank, number> = {
+  basic: 4,
+  common: 6,
+  rare: 9,
+  legendary: 14,
+};
+
+/**
+ * 카드가 등급별 최소 한도를 충족하는지 검사. ok=false면 데이터 작성 오류일 가능성.
+ * 특수 출처는 자동 통과. 게임 로직에 영향 X — 데이터 로드 시 *경고*만 띄움.
+ */
+export function validateCardBaseline(card: Card): { ok: boolean; reason?: string } {
+  if (card.source !== 'race' && card.source !== 'character') {
+    return { ok: true };
+  }
+  const baseline = CARD_MIN_PEAK_VALUE[card.rank];
+  if (baseline === undefined) return { ok: true };
+  const peak = Math.max(
+    0,
+    ...card.effects
+      .filter((e) => e.kind === 'damage' || e.kind === 'heal' || e.kind === 'block')
+      .map((e) => e.value ?? 0),
+  );
+  if (peak < baseline) {
+    return { ok: false, reason: `${card.rank} 최소 한도 ${baseline} 미달 (현재 peak ${peak})` };
+  }
+  return { ok: true };
+}
+
 /** 카드 획득 출처 (자동 매핑의 기반). */
 export type CardSource =
   | 'race'        // 종족 시드
@@ -90,6 +131,12 @@ export interface Card extends NamedEntity {
 
   /** 이 카드가 어떤 NPC/이벤트로 잠금해제되는지 (UI 안내용). */
   unlockHint?: string;
+
+  /**
+   * 강화 후 카드 ID — 공방 강화에서 *이 카드를 강화하면 어떤 카드로 바뀌는지* 표시.
+   * 없으면 강화 불가 (예: 이미 강화판인 카드).
+   */
+  upgradeToId?: CardId;
 }
 
 /** 효과 핸들러 시그니처 — Phase 2d에서 systems/combat.ts가 사용. */

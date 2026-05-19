@@ -29,6 +29,13 @@ export interface EventTrigger {
 
   /** 가중치 — 같은 노드에서 후보가 여럿일 때. */
   weight?: number;
+
+  /**
+   * 런 내 조건 (DSL) — 충족 안 되면 *풀에서 제외*.
+   * EventChoice.condition과 같은 6토큰 DSL ([[event-runner.ts]] 평가기 사용).
+   * chain 이벤트(만남 2/3 등)는 `affinity:npc-X>=N` 같은 조건으로 점층.
+   */
+  condition?: string;
 }
 
 /** 선택지 효과 — 이벤트 분기. */
@@ -51,6 +58,9 @@ export interface EventChoiceEffect {
 
   /** 사용자 정의 효과 핸들러. */
   customEffectId?: string;
+
+  /** 단서 부여 — id가 이미 인벤토리에 있으면 중복 X. */
+  grantClueId?: string;
 
   /** 효과 후 출력될 결과 텍스트. */
   resultText?: string;

@@ -12,12 +12,15 @@ import { onMounted, ref } from 'vue';
 import { useUiStore } from '@/stores/ui';
 import { useDataStore } from '@/stores/data';
 import { useRunStore } from '@/stores/run';
+import { useChaosStore } from '@/stores/chaos';
 import GameHUD from '@/components/GameHUD.vue';
 import CharacterMenu from '@/components/CharacterMenu.vue';
 import InventoryMenu from '@/components/InventoryMenu.vue';
 import SettingsMenu from '@/components/SettingsMenu.vue';
 import DayBanner from '@/components/DayBanner.vue';
 import LoadingOverlay from '@/components/LoadingOverlay.vue';
+// side-effect: 이벤트 customEffect 핸들러 자동 등록.
+import '@/systems/event-effects';
 
 const ui = useUiStore();
 const data = useDataStore();
@@ -45,6 +48,12 @@ onMounted(async () => {
   await data.ensureLoaded();
   if (data.error) {
     ui.toast('error', `데이터 로드 실패: ${data.error}`, 6000);
+  }
+
+  // r4: 카오스 데이터 → store 등록. 데이터 파일에 정의된 항목을 매 런 토글 카탈로그에 흘림.
+  const chaos = useChaosStore();
+  for (const mod of data.chaos.values()) {
+    chaos.registerChaos(mod);
   }
 
   // 모든 RunState 변경마다 localStorage에 저장 (사용자 사양: 카드/유물/덱/턴/재화 *전부* 저장).

@@ -10,8 +10,8 @@ age = 300
 color_values = 0.5,0.3,0.4,0.9,0.5,0.3,0.4,0.4
 domain_high = Passionate, Adaptable, Inventive, Stubborn, Patient, Grounded, Hopeful, Secretive
 domain_low = Melancholy, Indifferent, Stagnant, Fragile, Restless, Freesprited, Cynical, Honest
-background = 항상 과거에 얽매여 사는 드래곤.|대변동에 불씨를 제공한 것에 대한 죄책감에 시달리지만, 마노니클라 조를 만나고는 훨씬 밝아졌다.|모노와 함께 과거로 돌아가 자신을 때려눕히고 나서는 좀 해소가 된 듯하다.|날뛰면 막아낼 사람이 없는 강력한 존재이지만, 지금은 조용히 지내고 있다.
-tagline = "조용히, 모루를 두드리는 게 — 좋소."
+background = 마노니클라 공방의 드래곤 대장장이.|석양이 길게 머무는 절벽 위에서, 모루 소리를 끊지 않는다.|날뛰면 막아낼 사람이 없는 강력한 존재지만, 지금은 머무는 이들과 조용히 지낸다.
+tagline = "조용히, 모루를 두드리는 게 — 좋아."
 tags = dragon, craftsman, iron-affinity
 affinity_rewards = 3:relic=r-determined-heart:gauge=5
 
@@ -42,3 +42,18 @@ background = 사천왕 시아의 여동생이자 기상학 학자 하피.|엄청
 tagline = "오늘 — 날씨, 진짜 좋아요!"
 tags = harpy, meteorologist, wind-affinity
 affinity_rewards = 3:card=c-deep-breath:gauge=3
+
+[npc.npc-rok]
+name = 로크
+race = golem
+role = Adventurer
+home_node = n-mano-night-market
+presence_nodes = n-manonickla-forge, n-limun-gate
+age = 700
+color_values = 0.3,0.2,0.3,0.7,0.9,0.2,0.3,0.3
+domain_high = Calm, Adaptable, Methodical, Reliable, Patient, Grounded, Hopeful, Honest
+domain_low = Passionate, Empathetic, Impulsive, Flexible, Restless, Freesprited, Cynical, Naive
+background = 리문 유적의 옛 골렘. 최근에 — 깨어났다.|돌 손발이 걸음마다 *작게 부딪힌다*. 그 박자가 *마노니클라의 길*에 익숙해지는 중.|시이드가 제일 먼저 말을 걸어줬다. 그래서 — 친구.|카요의 공방에 가끔 들러 — 마모된 손발을 다듬어 받는다.
+tagline = "...걸을게."
+tags = golem, ruins, earth-affinity
+affinity_rewards = 3:card=c-gentle-guard:gauge=4

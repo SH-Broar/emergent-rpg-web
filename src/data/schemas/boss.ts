@@ -4,7 +4,7 @@
  * spec v2: 보스 = 연표별 종말 위협 + 단일 공식 구조 + 캐릭터별 시그니처 양상.
  *  - "공식 구조 1개"는 모든 보스 공유 — 매우 단순한 데이터 (HP, intent 패턴, 약점)
  *  - "연표별 변형"은 보스 ID 다르게
- *  - "캐릭터별 양상"은 Character.hyperion[4].bossSignatureId가 전투 시 적용
+ *  - "캐릭터별 양상"은 signatureVariants[i].signatureId로 직접 매칭 (구 hyperion[4].bossSignatureId 제거됨)
  */
 
 import type { BossId, NamedEntity } from './base';

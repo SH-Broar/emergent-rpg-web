@@ -18,6 +18,7 @@ import { useDataStore } from '@/stores/data';
 import { useRunStore } from '@/stores/run';
 import { canSelectCharacter } from '@/frame/Mono';
 import { instantiateCard } from '@/systems/deck';
+import { applySeedColors } from '@/systems/colors';
 import { rng } from '@/systems/rng';
 import type { Card, Character, Race, Season } from '@/data/schemas';
 
@@ -120,6 +121,9 @@ async function selectRace(opt: RaceOption) {
   // 시작 아이템 — 회복약 한 점.
   const starter = data.items.get('i-potion-small');
   if (starter) run.addItem(starter);
+
+  // 종족 시드 컬러 — 한 컬러당 최대 5 (사용자 사양). 인간 = light:5, wind:3.
+  applySeedColors(race.seedColors);
 
   // 컬러 베이스 = 0. (장비/이벤트/유물로만 변동.)
   run.data.colors = {

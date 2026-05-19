@@ -70,3 +70,100 @@ result_text = 모노가 작은 부스러기를 떨어뜨려 주었다.
 label = 거절한다
 hp = 5
 result_text = "그대의 선택이 마음에 듭니다." 작은 호흡이 가벼워졌다.
+
+
+# ============================================================
+# 샘물의 약속 — condition + custom + followup chain.
+# 깊은 컬러를 가진 자에게만 *완전한 회복*을 약속하는 샘.
+# ============================================================
+
+[event.ev-fountain-vow]
+name = 약속하는 샘
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+body = 길가 *돌틈*에 작은 샘이 있다. 물 표면에 *글자 같은 무늬*가 천천히 움직인다 — 자기를 마시기 전에 *약속*하라고. "당신의 색이 충분히 깊다면, 나는 그대의 몸을 완전히 새로 짠다."
+
+[event.ev-fountain-vow.choice.1]
+label = 한 모금 마신다 (약속 없이)
+hp = -3
+result_text = 물 맛이 *시다*. 글자가 흐려지더니 — 한 줄만 남았다. "다음엔, 약속을 가져오세요."
+
+[event.ev-fountain-vow.choice.2]
+label = 약속의 무게를 측정한다
+gold = -5
+followup = ev-fountain-vow-aftermath
+result_text = 동전을 던지자 *잔물결*이 일었다. 샘이 *그대의 색*을 다시 본다 — 잠시 후 무언가가 등 뒤에서 다가온다.
+
+[event.ev-fountain-vow.choice.3]
+label = 물 깊은 자의 자격으로 마신다
+condition = color:water>=15
+custom = heal-full
+result_text = 글자가 *환하게* 빛났다. 물이 갈비뼈 안쪽까지 흘러 들어왔다 — 몸이 새로 짜였다.
+
+[event.ev-fountain-vow.choice.4]
+label = 그대로 떠난다
+draw = 1
+result_text = 등 뒤에서 샘이 *천천히 잔잔해진다*. 다음에 다시 와도 — 같은 약속을 묻을 것이다.
+
+
+# ============================================================
+# 샘의 후속 — *측정*을 선택한 자에게만. followup으로 연결.
+# ============================================================
+
+[event.ev-fountain-vow-aftermath]
+name = 약속의 뒷자리
+node_kinds = event
+weight = 0
+once_per_run = true
+body = 샘에서 멀어진 뒤에도 *잔물결의 소리*가 등 뒤를 따라왔다. 길 끝에 — 작은 *돌무더기*가 새로 쌓여 있다. 누군가가 그 위에 *유리병* 하나를 두고 갔다.
+
+[event.ev-fountain-vow-aftermath.choice.1]
+label = 병을 들어 본다
+grant_card = c-recover
+result_text = 병 안에 *빛이 흔들렸다*. 손이 무거워졌고 — 들고 갈 게 하나 늘었다.
+
+[event.ev-fountain-vow-aftermath.choice.2]
+label = 돌무더기에 손을 얹는다
+custom = pulse-all-colors-3
+result_text = 손바닥이 *여덟 가지 결*로 떨렸다. 몸 안의 색들이 한꺼번에 한 단계 짙어졌다.
+
+[event.ev-fountain-vow-aftermath.choice.3]
+label = 그대로 지나친다
+hp = 4
+result_text = 등 뒤의 잔물결이 *마침내 잦아들었다*. 약속이 자기 자리로 돌아간 것 같았다.
+
+
+# ============================================================
+# 모래시계 상인 — gold 조건부 + time-extend custom.
+# ============================================================
+
+[event.ev-time-cracker]
+name = 모래시계 상인
+node_kinds = event, village
+weight = 1
+once_per_run = true
+body = 노점 한가운데에 *모래시계*가 가지런히 줄지어 있다. 시계마다 모래의 흐름이 *다르다* — 어떤 건 거꾸로 떨어지고, 어떤 건 한 알씩만 떨어진다. "한 박자 — 한 박자만 빌려 드려요. 단, *충분한 무게*가 있어야 해요."
+
+[event.ev-time-cracker.choice.1]
+label = 한 박자 빌린다 (충분한 무게로)
+condition = gold>=20
+gold = -20
+custom = time-extend-10
+result_text = 모래시계 하나가 *멈췄다*. 그 멈춤이 등 뒤로 옮겨와 — 길이 한 박자 늘어졌다.
+
+[event.ev-time-cracker.choice.2]
+label = 모래 한 알만 받는다
+gold = -3
+custom = gift-time-shards-3
+result_text = 모래 알갱이가 손바닥에서 *시간의 조각*으로 굳었다. 작지만 — 분명한 무게.
+
+[event.ev-time-cracker.choice.3]
+label = 상인의 이야기만 듣는다
+affinity = npc-mono:1
+result_text = 상인이 *모노의 표정*으로 잠시 웃었다. "이 시간은 — 빌려드린 게 아니라, 원래 그대 것이었어요."
+
+[event.ev-time-cracker.choice.4]
+label = 그대로 떠난다
+draw = 1
+result_text = 노점을 빠져나오자 *모래시계 줄*이 한 칸 줄어들어 있었다.

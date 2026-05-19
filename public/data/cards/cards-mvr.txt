@@ -1,6 +1,8 @@
 # Cards — MVR 단계 카드 풀.
-# 기본 등급 7장 + 일반 5장 + 희귀 2장 + 전설 시그니처 1장 = 15장.
+# 기본 등급 4장 + 일반 5장 + 희귀 2장 + 전설 1장 + 보스 1장 = 13장 원본.
+# + 강화판 9장 (기본/일반).
 # 효과 표기: effects = kind:value:target, kind:value:target, ...
+# upgrade_to = X — 공방 강화 시 X 카드로 교체 (없으면 강화 불가).
 
 # ========== 기본 등급 (종족 시드) ==========
 
@@ -12,6 +14,7 @@ element = iron
 cost = 1
 trigger = manual
 effects = damage:6:enemy
+upgrade_to = c-strike-plus
 flavor = 가장 단순한 검술. 가장 자주 쓰인다.
 
 [card.c-defend]
@@ -22,6 +25,7 @@ element = earth
 cost = 1
 trigger = manual
 effects = block:5:self
+upgrade_to = c-defend-plus
 flavor = 비를 그치게 할 순 없어도, 피할 수는 있다.
 
 [card.c-quickdraw]
@@ -32,6 +36,7 @@ element = wind
 cost = 0
 trigger = manual
 effects = draw:1:self
+upgrade_to = c-quickdraw-plus
 flavor = 다음 한 수가 떠오른다.
 
 [card.c-recover]
@@ -42,6 +47,7 @@ element = water
 cost = 1
 trigger = manual
 effects = heal:4:self
+upgrade_to = c-recover-plus
 flavor = 잠시 숨을 고르면, 다시 갈 수 있다.
 
 # ========== 일반 등급 (NPC 친밀도 1단계 / 히페리온 1~2) ==========
@@ -54,6 +60,7 @@ element = light
 cost = 1
 trigger = manual
 effects = damage:8:enemy, block:3:self
+upgrade_to = c-resolve-flash-plus
 flavor = "여기서 멈출 수는 없어."
 
 [card.c-gentle-guard]
@@ -64,6 +71,7 @@ element = water
 cost = 1
 trigger = manual
 effects = block:8:self
+upgrade_to = c-gentle-guard-plus
 flavor = 누군가가 곁에 있다는 느낌만으로 단단해진다.
 
 [card.c-double-strike]
@@ -74,6 +82,7 @@ element = iron
 cost = 2
 trigger = manual
 effects = damage:5:enemy, damage:5:enemy
+upgrade_to = c-double-strike-plus
 flavor = 한 번이 모자라다면, 두 번.
 
 [card.c-focused-mind]
@@ -84,6 +93,7 @@ element = wind
 cost = 0
 trigger = manual
 effects = draw:2:self
+upgrade_to = c-focused-mind-plus
 flavor = 잠시 생각의 깊이로 내려간다.
 
 [card.c-burn-mark]
@@ -94,9 +104,11 @@ element = fire
 cost = 1
 trigger = manual
 effects = damage:3:enemy, apply-status:2:enemy
+upgrade_to = c-burn-mark-plus
 flavor = 살에 새겨진 자국은 잘 지워지지 않는다.
 
 # ========== 희귀 등급 (NPC 친밀도 3단계 / 히페리온 3~4) ==========
+# 희귀+ 강화는 다음 데이터 라운드.
 
 [card.c-second-wind]
 name = 두 번째 숨결
@@ -141,3 +153,155 @@ cost = 1
 trigger = manual
 effects = damage:7:enemy, apply-status:1:enemy
 flavor = 봤다. 더 이상 숨지 못한다.
+
+
+# ============================================================
+# 강화판 — 공방 강화로만 도달. upgrade_to 없음 (재강화 불가).
+# 원본 source/element/rank 유지. cost는 거의 동일 (예외 명시).
+# ============================================================
+
+[card.c-strike-plus]
+name = 강타+
+rank = basic
+source = race
+element = iron
+cost = 1
+trigger = manual
+effects = damage:9:enemy
+flavor = 같은 검술이지만, 손목이 더 단단하다.
+
+[card.c-defend-plus]
+name = 굳은 자세+
+rank = basic
+source = race
+element = earth
+cost = 1
+trigger = manual
+effects = block:8:self
+flavor = 비를 등 뒤로 흘려보낸다.
+
+[card.c-quickdraw-plus]
+name = 빠른 뽑기+
+rank = basic
+source = race
+element = wind
+cost = 0
+trigger = manual
+effects = draw:2:self
+flavor = 두 수가 한꺼번에 보인다.
+
+[card.c-recover-plus]
+name = 회복 호흡+
+rank = basic
+source = race
+element = water
+cost = 1
+trigger = manual
+effects = heal:7:self
+flavor = 깊어진 호흡 — 갈비뼈 안쪽이 따뜻하다.
+
+[card.c-resolve-flash-plus]
+name = 결심의 섬광+
+rank = common
+source = hyperion
+element = light
+cost = 1
+trigger = manual
+effects = damage:11:enemy, block:5:self
+flavor = "여기서 — 더 갈 수 있어."
+
+[card.c-gentle-guard-plus]
+name = 부드러운 방패+
+rank = common
+source = hyperion
+element = water
+cost = 1
+trigger = manual
+effects = block:12:self
+flavor = 곁에 있는 것이 — 두 사람으로 늘었다.
+
+[card.c-double-strike-plus]
+name = 연속 공격+
+rank = common
+source = event
+element = iron
+cost = 2
+trigger = manual
+effects = damage:7:enemy, damage:7:enemy
+flavor = 한 번, 두 번, — 두 번 다 더 무겁게.
+
+[card.c-focused-mind-plus]
+name = 집중+
+rank = common
+source = npc
+element = wind
+cost = 0
+trigger = manual
+effects = draw:3:self
+flavor = 생각의 결이 *셋*으로 갈라진다.
+
+[card.c-burn-mark-plus]
+name = 화상 흔적+
+rank = common
+source = event
+element = fire
+cost = 1
+trigger = manual
+effects = damage:5:enemy, apply-status:3:enemy
+flavor = 잘 지워지지 않는 자국 — *더 깊어졌다*.
+
+
+# ============================================================
+# 마을 고유 전설 카드 — 공방 *전설 제작*에서만 도달 (특산물 + 희소 재료 + 시간조각 25).
+# 마을 5개 × 각 1장. source는 임시로 'shop' (자원 거래로 얻음).
+# ============================================================
+
+[card.c-iluneon-stopped-noon]
+name = 멈춘 정각
+rank = legendary
+source = shop
+element = light
+cost = 1
+trigger = manual
+effects = damage:14:enemy, draw:2:self
+flavor = "정각이 자기를 미뤘다." — 일루네온 시계탑이 *멈춘 한 박자*가 손에 들어왔다.
+
+[card.c-moss-ember-strike]
+name = 잔불의 일격
+rank = legendary
+source = shop
+element = fire
+cost = 2
+trigger = manual
+effects = damage:22:enemy, apply-status:3:enemy
+flavor = 모스 화로의 *식지 않은 한 점*을 — 단 한 번에 모았다.
+
+[card.c-tacomi-hologram-mirror]
+name = 홀로그램 반사
+rank = legendary
+source = shop
+element = electric
+cost = 1
+trigger = manual
+effects = block:12:self, draw:3:self
+flavor = 타코미의 골목 — *거울 속 자신*이 한 박자 먼저 손을 들었다.
+
+[card.c-alimes-mist-vow]
+name = 안개의 약속
+rank = legendary
+source = shop
+element = water
+cost = 1
+trigger = manual
+effects = heal:18:self, draw:1:self
+flavor = 알리메스 안개 — *흩어지기 전*의 약속이 갈비뼈 안쪽으로 들어왔다.
+
+[card.c-manonickla-sunset-wall]
+name = 석양의 벽
+rank = legendary
+source = shop
+element = iron
+cost = 2
+trigger = manual
+effects = block:20:self, damage:6:enemy
+flavor = 마노니클라 절벽의 노을이 — *식지 않은 채로* 등 뒤에 섰다.

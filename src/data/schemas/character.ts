@@ -62,8 +62,12 @@ export interface Character extends NamedEntity {
   /** 시작 덱 (10장 시드 — 종족 풀 + 캐릭터 정체성 카드). */
   startingDeck: CardId[];
 
-  /** 5단계 히페리온 미션. 캐릭터별 고정 보상. */
-  hyperion: [HyperionStage, HyperionStage, HyperionStage, HyperionStage, HyperionStage];
+  /**
+   * 5단계 히페리온 미션. 캐릭터별 고정 보상.
+   * @deprecated 5단계 미션 시스템은 r4에서 제거됨 — 데이터 파일 호환성을 위해 *로딩만* 유지.
+   * 코드 호출은 없음. 다음 라운드 v3에서 스키마 제거 예정.
+   */
+  hyperion?: [HyperionStage, HyperionStage, HyperionStage, HyperionStage, HyperionStage];
 
   /** 잠금 해제 조건 (메타 게이지 임계). */
   unlockRequirement?: string;

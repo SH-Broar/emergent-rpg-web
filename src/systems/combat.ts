@@ -22,6 +22,13 @@ import type {
 import { drawCards, discardHand } from './deck';
 import { rng } from './rng';
 import { bonusesFromEffective } from './equipment';
+import {
+  applyModifiers,
+  fireRelicTrigger,
+  getModifierAdd,
+  onCombatStart as fireOnCombatStart,
+  onCombatEnd as fireOnCombatEnd,
+} from './relic';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
@@ -93,8 +100,9 @@ export function startCombat(monster: Monster) {
   };
   r.combat = combat;
 
-  // on-combat-start 유물 발동
-  void import('./relic').then(({ onCombatStart }) => onCombatStart());
+  // on-combat-start 유물 발동, 이어서 1턴의 on-turn-start.
+  fireOnCombatStart();
+  fireRelicTrigger('on-turn-start', { run: r, combat });
 }
 
 /**
@@ -111,15 +119,26 @@ export function playCard(handIndex: number, monster: Monster): { enemyDefeated: 
   const card = c.hand[handIndex];
   if (!card) return { enemyDefeated: false };
 
-  if (c.mana < card.cost) {
+  // cost-mod-add 유물 (예: 모든 카드 비용 -1) 적용. 음수 cost는 0으로 clamp.
+  const effCost = Math.max(0, card.cost + getModifierAdd('cost-mod-add'));
+  // r4: debugFlag infiniteMana — 마나 가드 우회 + 차감 스킵.
+  const inf = ui.debug.infiniteMana;
+  if (!inf && c.mana < effCost) {
     ui.toast('warning', '마나가 부족합니다');
     return { enemyDefeated: false };
   }
-  c.mana -= card.cost;
+  if (!inf) c.mana -= effCost;
+
+  // 카드 효과 적용 *직전* trigger — 자기 자신의 데미지 계산에 영향을 줄 마지막 기회.
+  fireRelicTrigger('on-card-played-before', { run: r, combat: c, triggeredBy: card.id });
 
   for (const effect of card.effects) {
     applyEffect(effect, c);
   }
+
+  // 카드 효과 적용 *후*, 디스카드 *전* trigger.
+  // alias 정규화 덕분에 옛 데이터의 trigger=on-card-play도 같은 시점에 매칭.
+  fireRelicTrigger('on-card-played-after', { run: r, combat: c, triggeredBy: card.id });
 
   c.hand = c.hand.filter((_, i) => i !== handIndex);
   c.discardPile = [...c.discardPile, card];
@@ -139,21 +158,17 @@ function applyEffect(effect: CardEffect, c: CombatState) {
 const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) => void> = {
   damage: (e, c) => {
     const targets = resolveTargets(e.target ?? 'enemy', c);
-    // 유물의 bonus-damage 합산
-    let relicBonus = 0;
-    try {
-      const run = useRunStore();
-      for (const relic of run.data.relics) {
-        for (const eff of relic.effects) {
-          if (eff.kind === 'bonus-damage') relicBonus += eff.value ?? 0;
-        }
-      }
-    } catch { /* store 미접근 가능 */ }
     // ATK 스탯 보너스 — 공격 카드 *최소 공격력* +N (10 ATK당 1).
     const atkBonus = currentBonuses().damage;
     // 전투 중 player buff/debuff (strength/weakness).
     const statusBonus = statusBonusForCardEffectKind('damage', c.player.statuses);
-    const value = Math.max(0, (e.value ?? 0) + relicBonus + atkBonus + statusBonus);
+    // base + atk + status를 modifier pipeline에 흘려보냄.
+    // 유물의 damage-out-add (옛 bonus-damage alias)는 applyModifiers 내부에서 합산.
+    const value = applyModifiers(
+      (e.value ?? 0) + atkBonus + statusBonus,
+      'damage-out-add',
+      'damage-out-mul',
+    );
     for (const t of targets) {
       const absorbed = Math.min(t.block, value);
       t.block -= absorbed;
@@ -173,7 +188,11 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
     const defBonus = currentBonuses().block;
     // 전투 중 player buff/debuff (dexterity/frail).
     const statusBonus = statusBonusForCardEffectKind('block', c.player.statuses);
-    const value = Math.max(0, (e.value ?? 0) + defBonus + statusBonus);
+    // base + def + status에 유물의 block-out-add 합산 (mul은 본 라운드 미사용).
+    const value = applyModifiers(
+      (e.value ?? 0) + defBonus + statusBonus,
+      'block-out-add',
+    );
     for (const t of targets) {
       t.block += value;
     }
@@ -216,7 +235,13 @@ export function endPlayerTurn(monster: Monster): { playerDefeated: boolean } {
   const c = r.combat;
   if (!c) return { playerDefeated: false };
 
-  executeMonsterIntent(c);
+  // 플레이어 턴 종료 trigger — 몬스터 행동 *전*.
+  fireRelicTrigger('on-turn-end', { run: r, combat: c });
+
+  // r4: debugFlag freezeEnemies — 적 행동 시뮬 스킵 (전투 정지 디버그).
+  if (!useUiStore().debug.freezeEnemies) {
+    executeMonsterIntent(c);
+  }
 
   if (c.player.hp <= 0) {
     return { playerDefeated: true };
@@ -237,6 +262,9 @@ export function endPlayerTurn(monster: Monster): { playerDefeated: boolean } {
   c.discardPile = newDiscardPile;
 
   c.enemyIntent = pickIntent(monster, c.turn);
+
+  // 새 턴 진입 trigger — 드로우/마나 리셋 완료 후.
+  fireRelicTrigger('on-turn-start', { run: r, combat: c });
   return { playerDefeated: false };
 }
 
@@ -301,7 +329,7 @@ export function applyMonsterDrop(drop: MonsterDrop, allCards: Map<string, Card>)
   }
 
   // on-combat-end 유물 발동 (bonus-gold 등)
-  void import('./relic').then(({ onCombatEnd }) => onCombatEnd());
+  fireOnCombatEnd();
 
   return {
     gold: drop.gold,

@@ -26,6 +26,53 @@ import type {
   TimelineId,
 } from './base';
 
+/**
+ * 상점 슬롯 — 한 줄의 구매 가능 항목.
+ * cardInstanceId는 *재고용 인스턴스* — 카드를 구매하면 이 인스턴스가 collection으로 이동.
+ */
+export interface ShopCardSlot {
+  cardId: string;
+  /** 미리 인스턴스화된 카드 사본 (재고용). 구매 시 collection에 push. */
+  cardInstanceId: string;
+  price: number;
+  purchased: boolean;
+}
+
+export interface ShopRelicSlot {
+  relicId: string;
+  price: number;
+  purchased: boolean;
+}
+
+/** 공방 제작 슬롯 — 희귀+ 카드 1장 후보. 진입 시 3장 추첨 후 고정. */
+export interface ForgeCardSlot {
+  cardId: string;
+  cardInstanceId: string;
+  price: number;
+  purchased: boolean;
+  /**
+   * 요구되는 권역 특산물 ID (카드 element → 권역 primary_color → specialty_item 자동 매핑).
+   * 미지정이면 시간조각만으로 제작 가능 (폴백 — 매칭 실패 카드).
+   */
+  requiredSpecialtyId?: string;
+}
+
+/** 공방 제작 제안 — 노드별 시드 추첨된 3장. 1장 구매 후 다른 슬롯도 purchased=true 처리. */
+export interface ForgeOffer {
+  generatedAt: number;
+  cards: ForgeCardSlot[];
+}
+
+/** 한 상점 노드의 재고 스냅샷. */
+export interface ShopInventory {
+  /** 재고 생성 시점의 rngState 추적용 (디버그). */
+  generatedAt: number;
+  cards: ShopCardSlot[];
+  relics: ShopRelicSlot[];
+  removalUsed: boolean;
+  removalPrice: number;
+}
+
 /** 적/플레이어 공유 전투 상태 표식. */
 export interface Combatant {
   hp: number;
@@ -118,6 +165,20 @@ export interface RunState {
   }>;
 
   /**
+   * 상점 노드별 *재고 스냅샷* — 처음 진입 시 시드 추첨 후 *고정*.
+   * 재방문해도 같은 재고. 구매된 슬롯은 purchased=true로 마킹되어 dim 표시.
+   * 키 없는 노드는 진입 시 생성. (세이브 v2 호환 — optional)
+   */
+  shopInventories?: Record<NodeId, ShopInventory>;
+
+  /**
+   * 공방 노드별 *희귀+ 제작 제안* — 처음 진입 시 3장 추첨 후 *고정*.
+   * 1장 구매하면 나머지 슬롯도 purchased=true (1장 한정).
+   * 강화 슬롯은 *매번 사용 가능*이라 별도 스냅샷 X.
+   */
+  forgeOffers?: Record<NodeId, ForgeOffer>;
+
+  /**
    * 마지막 *하루 경과 이벤트* 시퀀스 — UI가 watch해서 배너 트리거.
    * advanceDay() 호출마다 +1. day 자체와 별개로 *발생 자체*를 신호로 쓰기 위해.
    */
@@ -155,6 +216,13 @@ export interface RunState {
   /** 인벤토리 — 즉시 사용 가능한 아이템 인스턴스. */
   items: Item[];
 
+  /**
+   * 단서 인벤토리 — 간접 스토리 아이템 (사라지지 않음, 사용 시 본문 노출).
+   * 런 휘발. 같은 id 중복 보유 X (`Set`처럼 동작).
+   * (세이브 v2 호환 — optional)
+   */
+  clues?: import('./clue').Clue[];
+
   // === 장비 (M9) ===
   /** 장착 중 — 슬롯별 1개씩. null이면 비어있음. */
   equippedWeapon: EquipmentId | null;
@@ -190,10 +258,20 @@ export interface RunState {
   }>;
 
   // === 진행도 (런 종료 시 모노 게이지로 변환) ===
-  /** 히페리온 5단계 중 클리어한 단계 (true). */
-  hyperionProgress: Record<number, boolean>;
+  /**
+   * 히페리온 5단계 중 클리어한 단계 (true).
+   * @deprecated 5단계 미션 시스템은 r4에서 제거됨. 세이브 v2 호환성을 위해 *optional*로 유지.
+   * 새 런에서는 항상 빈 객체. 옛 세이브의 잔존 진행도는 progression.ts가 0으로 처리.
+   * 다음 라운드 v3에서 제거 예정.
+   */
+  hyperionProgress?: Record<number, boolean>;
   /** 그 런에서 친밀도가 오른 NPC들 (모노 히페리온 게이지 ② 입력). */
   npcAffinity: Record<NpcId, number>;
+  /**
+   * NPC별 *이미 발사된 affinity 보상 임계* 목록 — 중복 발사 방지.
+   * 옵셔널 (세이브 v2 호환). 미존재 시 빈 객체로 폴백.
+   */
+  affinityRewardsClaimed?: Record<NpcId, number[]>;
   /** 그 런에서 클리어한 시대 미션 ID 목록. */
   missionsCleared: string[];
   /** 그 런에서 클리어한 보스 ID 목록. */

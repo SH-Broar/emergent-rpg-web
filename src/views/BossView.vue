@@ -6,7 +6,7 @@
  * 통일되어 있으므로 어댑터로 변환하여 startCombat에 넘긴다.
  */
 
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
@@ -18,9 +18,10 @@ import {
   clearCombat,
   statusBonusForCardEffectKind,
 } from '@/systems/combat';
+import { applyBossRewards } from '@/systems/boss-rewards';
 import { colorBonusForCardEffectKind } from '@/systems/stats';
 import { bonusesFromEffective } from '@/systems/equipment';
-import type { Boss, Card, CardEffect, Monster } from '@/data/schemas';
+import type { Boss, BossPhase, BossSignatureVariant, Card, CardEffect, Monster } from '@/data/schemas';
 
 const router = useRouter();
 const run = useRunStore();
@@ -36,7 +37,34 @@ const boss = computed<Boss | undefined>(() => {
   return id ? data.bosses.get(id) : undefined;
 });
 
-/** Boss → Monster 어댑터 (combat 시스템이 통일된 Monster를 받음). */
+const combat = computed(() => run.data.combat);
+
+/**
+ * 현재 활성 phase — 보스 HP 비율로 결정.
+ * phases는 startsAtHpRatio 내림차순 (1.0 → 0.66 → 0.33 등)으로 가정.
+ * 현재 비율 ≤ startsAtHpRatio인 *가장 늦은* phase 활성.
+ */
+const activePhase = computed<BossPhase | undefined>(() => {
+  const b = boss.value;
+  if (!b?.phases.length) return undefined;
+  const c = combat.value;
+  const currentHp = c?.enemy.hp ?? b.hp;
+  const ratio = currentHp / Math.max(1, b.hp);
+  let active: BossPhase | undefined = b.phases[0];
+  for (const p of b.phases) {
+    if (ratio <= p.startsAtHpRatio) active = p;
+  }
+  return active;
+});
+
+/** 현재 캐릭터 ID로 시그니처 변이가 매칭되면 그 variant. */
+const activeVariant = computed<BossSignatureVariant | undefined>(() => {
+  const b = boss.value;
+  if (!b?.signatureVariants) return undefined;
+  return b.signatureVariants.find((v) => v.signatureId === run.data.characterId);
+});
+
+/** Boss → Monster 어댑터 — phase + signature intent 적용 (동적). */
 const bossAsMonster = computed<Monster>(() => {
   const b = boss.value;
   if (!b) {
@@ -50,10 +78,14 @@ const bossAsMonster = computed<Monster>(() => {
       drop: { gold: 0, timeShards: 0 },
     };
   }
-  const firstPhase = b.phases[0];
-  const intents = firstPhase?.intents.map((i: { kind: string; value?: number }) => ({
-    encoded: `${i.kind}:${i.value ?? 0}`,
-  })) ?? [{ encoded: 'attack:8' }];
+  // signature.intentOverrides 우선, 없으면 활성 phase intents.
+  const sourceIntents =
+    activeVariant.value?.intentOverrides ??
+    activePhase.value?.intents ??
+    [];
+  const intents = sourceIntents.length > 0
+    ? sourceIntents.map((i) => ({ encoded: `${i.kind}:${i.value ?? 0}` }))
+    : [{ encoded: 'attack:8' }];
   return {
     id: b.id,
     name: b.name,
@@ -61,16 +93,34 @@ const bossAsMonster = computed<Monster>(() => {
     attack: b.attack,
     defense: b.defense,
     intents,
-    drop: {
-      gold: 0,
-      timeShards: 0,
-    },
+    drop: { gold: 0, timeShards: 0 },
   };
 });
 
-const combat = computed(() => run.data.combat);
+/** 활성 phase index — phase 전환 토스트 트리거용. */
+const activePhaseIndex = computed<number>(() => {
+  const b = boss.value;
+  const active = activePhase.value;
+  if (!b || !active) return 0;
+  return b.phases.indexOf(active);
+});
+
+watch(activePhaseIndex, (newIdx, oldIdx) => {
+  if (newIdx === oldIdx) return;
+  if (oldIdx === undefined) return;
+  // 전투 중에만 전환 토스트.
+  if (phase.value !== 'combat') return;
+  ui.toast('warning', `보스가 *${newIdx + 1}단계*로 자세를 바꾼다`);
+});
 
 function startBattle() {
+  // 시그니처 매칭 캐릭터면 *맞춤 대화* 노출 (몰입).
+  const variant = activeVariant.value;
+  if (variant?.dialogue?.length) {
+    for (const line of variant.dialogue) {
+      ui.toast('info', line, 4000);
+    }
+  }
   startCombat(bossAsMonster.value);
   phase.value = 'combat';
 }
@@ -91,12 +141,11 @@ function endTurn() {
 
 function onVictory() {
   if (!boss.value) return;
+  // r4 + 컬러/재료 phase: applyBossRewards가 *bossesCleared 미포함 시*에만 희소 재료 + 권역 컬러 부스트를 발사하므로,
+  // bossesCleared.push *이전*에 호출해야 한다.
+  applyBossRewards(boss.value);
   run.data.bossesCleared.push(boss.value.id);
-  // 보스 클리어 보상
-  run.data.gold += 30;
   clearCombat();
-  // 히페리온 자동 평가 (boss_clear 등)
-  void import('@/systems/hyperion').then(({ evaluateHyperion }) => evaluateHyperion());
   phase.value = 'victory';
 }
 

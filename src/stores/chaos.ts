@@ -12,17 +12,10 @@
  */
 
 import { defineStore } from 'pinia';
-
-/** 한 카오스 항목. 사용자가 자유롭게 정의·확장 가능. */
-export interface ChaosModifier {
-  id: string;
-  name: string;
-  description: string;
-  /** 해금 조건 (영구 연구로 풀린 토큰 등). 없으면 항상 사용 가능. */
-  unlockKey?: string;
-  /** 메타 진행에 영향을 주는가? (false = 무영향, true = 보너스·페널티 등) */
-  affectsMeta: boolean;
-}
+// r4: ChaosModifier 인터페이스는 schemas/chaos.ts로 이전 (데이터 파일 로딩 위해).
+// 기존 import 경로 유지를 위해 re-export.
+import type { ChaosModifier } from '@/data/schemas';
+export type { ChaosModifier };
 
 interface ChaosState {
   /** 사용 가능한 카오스 카탈로그 (정의 — 향후 외부 데이터 파일로 이동 가능). */

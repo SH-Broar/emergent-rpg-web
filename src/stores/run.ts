@@ -31,10 +31,11 @@ const SAVED_RUN_KEY_V1 = 'rdc-active-run-v1';
 const SAVED_RUN_KEY = 'rdc-active-run-v2';
 
 const DECK_SLOT_SIZE = 10;
-/** 30턴마다 하루 경과 — 비-마을 노드 cleared 초기화 + 권역 풀에서 content 재추첨.
- *  사용자 결정: 지도 모양은 유지(노드 kind 고정), content만 권역 풀에서 매일 새로 추첨.
+/** 100턴마다 하루 경과 — 비-마을 노드 cleared 초기화 + 권역 풀에서 content 재추첨.
+ *  사용자 결정 (2026-05-19): 한 런=300턴=3일, 권역 평균 ~22노드(전체 ~200노드)에 맞춘 사양.
+ *  지도 모양은 유지(노드 kind 고정), content만 권역 풀에서 매일 새로 추첨.
  */
-const TURNS_PER_DAY = 30;
+const TURNS_PER_DAY = 100;
 
 const EMPTY_RUN: RunState = {
   timelineId: '',
@@ -50,6 +51,8 @@ const EMPTY_RUN: RunState = {
   currentDay: 1,
   nodeKindOverrides: {},
   nodeContentOverrides: {},
+  shopInventories: {},
+  forgeOffers: {},
   dayPassedSeq: 0,
   deckSize: DECK_SLOT_SIZE,
   deck: [],
@@ -72,6 +75,7 @@ const EMPTY_RUN: RunState = {
     dark: 0,
   },
   items: [],
+  clues: [],
   equippedWeapon: null,
   equippedChest: null,
   equippedAccessory: null,
@@ -81,6 +85,7 @@ const EMPTY_RUN: RunState = {
   companionAppliedBonuses: {},
   hyperionProgress: {},
   npcAffinity: {},
+  affinityRewardsClaimed: {},
   missionsCleared: [],
   bossesCleared: [],
   newCardEncounters: [],
@@ -334,6 +339,16 @@ export const useRunStore = defineStore('run', {
         ? { ...item }
         : { ...item, instanceId: `${item.id}#${rand}` };
       this.data.items.push(instance);
+    },
+
+    /**
+     * 단서 1개 인벤토리에 추가. 같은 id 중복 X (이미 있으면 무시).
+     */
+    addClue(clue: import('@/data/schemas').Clue): boolean {
+      if (!this.data.clues) this.data.clues = [];
+      if (this.data.clues.some((c) => c.id === clue.id)) return false;
+      this.data.clues.push(clue);
+      return true;
     },
 
     /**

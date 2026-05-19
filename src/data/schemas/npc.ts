@@ -35,6 +35,12 @@ export interface AffinityReward {
   gaugeBoost?: number;
   /** 단계 안내 라인. */
   hint?: string;
+  /** 단계 도달 시 *런 내 컬러*에 + (사용자 사양: 컬러 획득 경로 다양화). */
+  colorBoost?: { color: string; value: number };
+  /** 단계 도달 시 *권역 특산물 1개* 부여 (region id). */
+  grantSpecialtyRegionId?: string;
+  /** 단계 도달 시 *희소 재료 1개* 부여. */
+  grantRareMaterial?: boolean;
 }
 
 /** 선물 카테고리별 선호도. */

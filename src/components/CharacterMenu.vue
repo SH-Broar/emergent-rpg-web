@@ -162,9 +162,11 @@ function onUnequipClick(slot: EquipmentSlot) {
             </div>
           </section>
 
-          <!-- 2) 스탯 -->
+          <!-- 2) 히페리온 (= 6 컬러로 산출된 한 런의 최종 결과 능력. ATK/DEF/MAG/드로우/마나 보너스의 총합) -->
           <section class="cm-sec">
-            <h3 class="cm-sec__title">스탯</h3>
+            <Tooltip text="히페리온 — 6 컬러가 누적되어 만들어진 *이 런의 최종 결과 능력*. ATK / DEF / MAG / 드로우 / 마나 보너스의 총합.">
+              <h3 class="cm-sec__title">히페리온</h3>
+            </Tooltip>
             <div class="cm-stats">
               <Tooltip text="ATK — 불·전기로 산출. 공격 카드 최소 데미지 +(ATK/10)">
                 <div class="cm-stat cm-stat--atk">

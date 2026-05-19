@@ -18,11 +18,17 @@ export type RelicSource =
 
 /** 유물 효과 트리거. */
 export type RelicTriggerKind =
-  | 'passive'           // 항상 활성
+  | 'passive'                  // 항상 활성
   | 'on-combat-start'
   | 'on-combat-end'
   | 'on-node-enter'
-  | 'on-card-play'
+  | 'on-card-play'             // legacy alias → on-card-played-after
+  | 'on-card-played-before'    // 카드 사용 직전 (효과 적용 전)
+  | 'on-card-played-after'     // 카드 사용 직후 (효과 적용 후, discard 전)
+  | 'on-turn-start'            // 플레이어 턴 시작
+  | 'on-turn-end'              // 플레이어 턴 종료 (몬스터 행동 전)
+  | 'on-damage-taken'          // 플레이어 피해 입을 때 (본 라운드 발동 미구현)
+  | 'on-block-gain'            // 플레이어 block 획득 시 (본 라운드 발동 미구현)
   | 'on-rest';
 
 /** 유물 효과 — 카드 효과보다 풍부 (전역 변경자). */

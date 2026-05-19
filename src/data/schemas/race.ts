@@ -6,6 +6,7 @@
  */
 
 import type { CardId, Element, NamedEntity, RaceId, RelicId } from './base';
+import type { ColorValues } from './npc';
 
 export interface Race extends NamedEntity {
   id: RaceId;
@@ -33,4 +34,11 @@ export interface Race extends NamedEntity {
    * 인간 = 15.
    */
   deckSize?: number;
+
+  /**
+   * 종족 시작 컬러 시드 — 한 컬러당 *최대 5* 권장 (사용자 사양).
+   * 시작 시 RunState.colors에 *더해진다* (덮어쓰기 아님).
+   * 컬러 상한 100. 종족의 *원소 친화*가 시작값으로 표현되는 위치.
+   */
+  seedColors?: Partial<ColorValues>;
 }

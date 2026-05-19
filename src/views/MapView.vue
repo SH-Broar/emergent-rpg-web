@@ -115,7 +115,7 @@ type EnterAction =
   | 'pass-only'
   | 'boss'
   | 'rest-repeat'
-  | 'shop-todo'
+  | 'shop-enter'
   | 'event-pass'
   | 'gather-enter'
   | 'activity-enter'
@@ -142,7 +142,7 @@ function getEnterAction(): EnterAction {
     case 'rest':
       return 'rest-repeat';
     case 'shop':
-      return 'shop-todo';
+      return 'shop-enter';
     case 'gather':
       return 'gather-enter';
     case 'activity':
@@ -167,7 +167,6 @@ function enterSelected() {
   run.visitNode(node.id, timeline.value.deckExpansionThresholds);
 
   void import('@/systems/relic').then(({ onNodeEnter }) => onNodeEnter(node.id));
-  void import('@/systems/hyperion').then(({ evaluateHyperion }) => evaluateHyperion());
 
   // 시간 만료 즉시 종료 (사용자 사양 — 반드시 유지)
   if (run.data.remainingTime <= 0) {
@@ -210,14 +209,10 @@ function enterSelected() {
       break;
     }
     case 'shop':
-      ui.toast('info', '상점은 아직 구현 전입니다.');
+      router.push('/game/shop');
       break;
     case 'gather': {
-      const shards = 2 + Math.floor(rng() * 3);
-      const gold = 3 + Math.floor(rng() * 5);
-      run.data.timeShards += shards;
-      run.data.gold += gold;
-      ui.toast('success', `채집 — 시간의 조각 +${shards}, 골드 +${gold}`);
+      void import('@/systems/gathering').then(({ performGather }) => performGather(node.id));
       break;
     }
     case 'activity': {
@@ -425,7 +420,7 @@ function enterLabel(): string {
     case 'choose-combat': return '다시 싸운다';
     case 'event-pass': return '지나간다';
     case 'rest-repeat': return '잠시 쉰다';
-    case 'shop-todo': return '미구현';
+    case 'shop-enter': return '상점에 들어간다';
     case 'gather-enter': return '채집한다';
     case 'activity-enter': return '활동한다';
     case 'boss': return '도전한다';
