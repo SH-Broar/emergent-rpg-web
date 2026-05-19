@@ -267,3 +267,29 @@ intents = attack:10, attack:10, defend:6, attack:14
 gold = 16
 time_shards = 7
 card_drops = c-resolve-flash:0.2
+
+# ============================================================
+# 마틴 권역 (항구·키시나 해변)
+# ============================================================
+
+[monster.m-martin-dockrat]
+name = 부두 쥐
+tier = minion
+hp = 14
+attack = 6
+defense = 0
+intents = attack:6, attack:6, defend:2, attack:7
+gold = 6
+time_shards = 1
+card_drops =
+
+[monster.m-kishina-deepwhisper]
+name = 깊은 속삭임
+tier = elite
+hp = 34
+attack = 8
+defense = 2
+intents = attack:8, defend:5, attack:11, debuff:1
+gold = 14
+time_shards = 5
+card_drops = c-swift-step:0.15

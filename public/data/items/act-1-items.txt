@@ -184,3 +184,12 @@ category = rare-material
 effects =
 consumable = true
 flavor = "이 시간은 — 빌려드린 게 아니라, 원래 그대 것이었어요."
+
+[item.i-salt-pearl]
+name = 소금 진주
+description = 키시나 해변의 — *조수 웅덩이*에 *소금과 함께 굳어진* 진주. 손바닥에 — *짠 결*이 — 한 줄 — 닿는다. 가즈리가 — *한 줄로 — 괴인* 진주 중 한 알.
+rank = common
+category = specialty
+region_id = martin
+effects =
+consumable = true

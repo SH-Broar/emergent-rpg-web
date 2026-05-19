@@ -747,3 +747,144 @@ result_text = 파도 — 한 줄이 — 발끝까지 — 닿았다 — 빠졌다
 label = 조각을 — 모두 — 바다 쪽으로 — 다시 — 보낸다
 affinity = npc-betelgeuse:1
 result_text = 조각이 — 파도 — 한 줄 — 사이로 — 사라졌다. *조그만 점 하나*가 — 협곡 쪽에서 — 한 번 — 끄덕였다.
+
+
+# ============================================================
+# 마틴 항 — 한 줄의 컨테이너 (n-martin-cargo 고정, 루디).
+# ============================================================
+
+[event.ev-martin-cargo-line]
+name = 한 줄의 컨테이너
+node_kinds = event, activity
+weight = 1
+once_per_run = true
+body = 화물장 한 자리에 — 컨테이너 한 줄이 *옆으로* 기울어졌다. 루디가 — 그 줄을 — *손가락 하나*로 — 받치고 있다. 작은 새 — 그러나 — 손이 — 안 흔들린다.
+
+[event.ev-martin-cargo-line.choice.1]
+label = 옆에서 — 같이 — 받친다
+hp = -1
+affinity = npc-rudi:1
+result_text = 루디가 — 그대 쪽을 — *짧게* — 보더니 — "좋아 — 한 번에!" — 한 줄이 — *바르게* — 자리잡았다.
+
+[event.ev-martin-cargo-line.choice.2]
+label = 떨어질 — 작은 화물부터 — 받는다
+gold = 4
+result_text = 작은 상자가 — 손에 — 들어왔다. 안에 — *동전 한 묶음*. 루디가 — 안 본 척 — 컨테이너를 — *바르게* — 세웠다.
+
+[event.ev-martin-cargo-line.choice.3]
+label = 그대로 — 지나친다
+draw = 1
+result_text = 루디가 — *한 손*으로 — 끝까지 — 받쳤다. "...괜찮아요!" — 라고 — 했다.
+
+
+# ============================================================
+# 마틴 항 — 한 자락 늦은 빛 (n-martin-lighthouse 고정).
+# ============================================================
+
+[event.ev-martin-lighthouse]
+name = 한 자락 늦은 빛
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 마틴 등대 — *한 자락 — 늦게* — 빛난다. 등대지기는 — 안 보인다. 종 줄 — 한 가닥이 — 천장으로 — 길게 — 올라간다.
+
+[event.ev-martin-lighthouse.choice.1]
+label = 종 줄을 — 한 번 — 당긴다
+hp = -2
+custom = mag-color-1
+result_text = 종이 — *한 줄* — 울었다. 빛이 — *제 시간*에 — 다시 — 흘렀다.
+
+[event.ev-martin-lighthouse.choice.2]
+label = 등대 — 안으로 — 들어가 본다
+hp = -3
+gold = 5
+result_text = 안쪽에서 — *낡은 동전*들이 — 한 줄 — 누워 있었다. *지기*는 — 끝내 — 보지 않았다.
+
+[event.ev-martin-lighthouse.choice.3]
+label = 늦은 — 그대로 — 두고 — 간다
+draw = 1
+result_text = 등대 빛이 — *늦은 채로* — 길게 — 흘렀다. 바다는 — 그 빛을 — 그대로 — 받았다.
+
+
+# ============================================================
+# 키시나 — 돌무더기의 한 알 (n-kishina-rocks 고정).
+# ============================================================
+
+[event.ev-kishina-shells]
+name = 돌무더기의 한 알
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 돌무더기 한 자리에 — *소금 진주 한 알*이 — 단정하게 — 놓여 있다. 누군가가 — *일부러 — 한 줄로* — 모아 둔 것 같다.
+
+[event.ev-kishina-shells.choice.1]
+label = 진주 한 알을 — 챙긴다
+gold = 8
+result_text = 손바닥에 — *짠 결*이 — 한 줄 — 닿았다. 돌무더기 끝에서 — 모래가 — 살짝 — 빠졌다.
+
+[event.ev-kishina-shells.choice.2]
+label = 모래밭의 — *흐릿한 누군가*에게 — 갖다 준다
+affinity = npc-gazri:1
+result_text = 가즈리가 — 진주를 — *한 줄로* — 다시 — 괴고 — "고마워! 이제 — 더 — 예뻐졌어!"
+
+[event.ev-kishina-shells.choice.3]
+label = 그대로 — 둔다
+custom = mag-color-1
+result_text = 진주가 — *한 자리에* — 그대로 — 누워 있었다. 그 옆을 — 짧게 — 지나가 — 본다.
+
+
+# ============================================================
+# 키시나 — 진주 — 봐 봐! (n-kishina-tide-pool 고정, 가즈리).
+# ============================================================
+
+[event.ev-kishina-spirit-bead]
+name = 진주 — 봐 봐!
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 조수 웅덩이 옆 — 가즈리가 — *진주 한 줄*을 — 손바닥에 — 모아 — 그대를 — 본다. "이거 — 봐 봐! — 예쁘지!" 형태가 — 한 번 — *흐려졌다가* — 다시 — 또렷해진다.
+
+[event.ev-kishina-spirit-bead.choice.1]
+label = "응 — 정말 — 예쁘다" 고 답한다
+affinity = npc-gazri:1
+hp = 5
+result_text = 가즈리가 — *물 한 자락*을 — 작게 — 튀겼다. "그치? — 이거 — 내가 — 모은 거야!" 손바닥이 — *서늘하게* — 가벼워졌다.
+
+[event.ev-kishina-spirit-bead.choice.2]
+label = 같이 — 줍자고 — 한다
+affinity = npc-gazri:2
+gold = -3
+result_text = 가즈리가 — *조수 웅덩이*로 — 한 번 — 들어갔다 — 나왔다. 손바닥에 — *진주 한 알*을 — 또 — 더해 줬다.
+
+[event.ev-kishina-spirit-bead.choice.3]
+label = 살짝 — 미소만 — 짓는다
+custom = mag-color-1
+result_text = 가즈리가 — *고개를 한 번* — 갸웃했다. "...그래도 — 봤지?" 라고 — 했다.
+
+
+# ============================================================
+# 마틴 항로 — 수평선 한 줄 (n-martin-sea-passage 고정, 배 위).
+# ============================================================
+
+[event.ev-martin-boat-passage]
+name = 수평선 한 줄
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 마틴과 클러치 사이 — 바다 한 자리. 배 위에서 — *수평선 한 줄*이 — 길게 — 머문다. 바람 — 한 자락이 — 살을 — 스친다.
+
+[event.ev-martin-boat-passage.choice.1]
+label = 멀미 — 견디고 — 갑판 끝에 — 선다
+hp = -2
+custom = atk-color-1
+result_text = 바람이 — 손끝 — *한 자리에* — 단단히 — 머물렀다.
+
+[event.ev-martin-boat-passage.choice.2]
+label = 노을이 — 식기 전 — 한 자리에 — 앉는다
+hp = 6
+result_text = 수평선이 — *조용히* — 가라앉았다. 가슴 안쪽이 — *서늘하게* — 가벼워졌다.
+
+[event.ev-martin-boat-passage.choice.3]
+label = 짧게 — 잠을 — 청한다
+draw = 1
+result_text = *깊은 한 잠*에서 — 깨어났을 때 — 클러치 부두가 — 한 자리 — 앞에 — 와 있었다.

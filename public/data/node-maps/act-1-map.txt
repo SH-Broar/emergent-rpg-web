@@ -113,6 +113,15 @@ primary_color = wind
 specialty_item = i-anchor-link
 parent_region = 허공숲
 
+[nodemap.nm-act-1-era4-061.region.martin]
+name = 마틴 항 · 키시나 해변
+description = 일루네온과 클러치 사이의 *항구*. *마틴 → 배 → 클러치*. 키시나 해변 분기.
+enemy_pool = m-martin-dockrat, shadow-pup
+elite_enemy_pool = m-kishina-deepwhisper
+event_pool = ev-mono-whisper, ev-fountain-vow, ev-martin-cargo-line, ev-martin-lighthouse, ev-kishina-shells, ev-kishina-spirit-bead, ev-martin-boat-passage
+primary_color = water
+specialty_item = i-salt-pearl
+
 # ============================================================
 # 일루네온 권역 — 시작
 # ============================================================
@@ -720,7 +729,7 @@ label = 남쪽 가도
 description = 일루네온 광장에서 마법학교 루나로 내려가는 길. 풀숲에서 그림자가 인다.
 x = 0.42
 y = 0.62
-neighbors = n-iluneon-square, n-luna-academy, n-luna-road-fork, n-luna-outer-path
+neighbors = n-iluneon-square, n-luna-academy, n-luna-road-fork, n-luna-outer-path, n-martin-outer-road
 enemy = shadow-pup
 
 [nodemap.nm-act-1-era4-061.node.n-north-pass]
@@ -1245,10 +1254,10 @@ neighbors = n-moss-ridge
 kind = activity
 region = moss
 label = 부두
-description = 클러치 상륙장 옆의 — *작은 부두*. 파도가 — *한 줄*씩 — 들어왔다 — 빠진다.
+description = 클러치 상륙장 옆의 — *작은 부두*. 파도가 — *한 줄*씩 — 들어왔다 — 빠진다. 마틴에서 — *배편 한 줄*이 — 닿는다.
 x = 0.88
 y = 0.52
-neighbors = n-clutch-landing
+neighbors = n-clutch-landing, n-martin-sea-passage
 
 [nodemap.nm-act-1-era4-061.node.n-clutch-warehouse]
 kind = gather
@@ -2104,3 +2113,159 @@ description = 외곽 자리의 — *옛 마차역*. 마부의 자리에 — *빈
 x = 0.28
 y = 0.23
 neighbors = n-windfall-foreyard
+
+
+# ============================================================
+# 마틴 항 · 키시나 해변 권역 신설 (2026-05-19, 15 노드).
+# 동선: 일루네온 — 남쪽 가도 — 마틴 외곽가도 — 마틴 항 — (배편) — 클러치 부두 — 마노니클라.
+# 키시나 = 마틴에서만 갈 수 있는 dead-end.
+# ============================================================
+
+# --- A. 마틴 항 마을 (6) ---
+[nodemap.nm-act-1-era4-061.node.n-martin-port]
+kind = village
+region = martin
+label = 마틴 항
+description = 일루네온 동남쪽 끝의 — *작은 항구 마을*. 부두 끝에서 — *배 한 줄*이 — 한 박자씩 — 출항한다.
+x = 0.55
+y = 0.72
+neighbors = n-martin-outer-road, n-martin-market, n-martin-lighthouse, n-martin-fish-market, n-martin-pier, n-martin-cargo, n-kishina-entry
+npcs = npc-rudi
+
+[nodemap.nm-act-1-era4-061.node.n-martin-market]
+kind = shop
+region = martin
+label = 마틴 시장
+description = 항구 뒤의 — *작은 시장*. *짠 결*이 — 가판 사이에 — 한 줄 — 머문다.
+x = 0.57
+y = 0.74
+neighbors = n-martin-port
+
+[nodemap.nm-act-1-era4-061.node.n-martin-lighthouse]
+kind = event
+region = martin
+label = 마틴 등대
+description = 항구 한 자리의 — *오래된 등대*. 빛이 — *한 자락씩* — 사이를 — 둔다.
+x = 0.62
+y = 0.74
+neighbors = n-martin-port, n-martin-quay-watch
+events = ev-martin-lighthouse
+
+[nodemap.nm-act-1-era4-061.node.n-martin-fish-market]
+kind = activity
+region = martin
+label = 어시장
+description = 항구의 — *어시장*. *그물 한 줄*이 — 좌판 위에 — 길게 — 놓여 있다.
+x = 0.56
+y = 0.76
+neighbors = n-martin-port
+
+[nodemap.nm-act-1-era4-061.node.n-martin-pier]
+kind = activity
+region = martin
+label = 마틴 부두
+description = 마틴의 — *출항 부두*. 배 한 줄이 — *떠날 — 박자*를 — 기다린다.
+x = 0.60
+y = 0.72
+neighbors = n-martin-port, n-martin-sea-passage
+
+[nodemap.nm-act-1-era4-061.node.n-martin-cargo]
+kind = activity
+region = martin
+label = 화물장
+description = 항구 옆의 — *화물장*. 컨테이너 — *한 줄 — 한 줄*이 — 차례로 — 내려진다.
+x = 0.58
+y = 0.71
+neighbors = n-martin-port
+events = ev-martin-cargo-line
+npcs = npc-rudi
+
+# --- B. 키시나 해변 (6) — dead-end ---
+[nodemap.nm-act-1-era4-061.node.n-kishina-entry]
+kind = combat
+region = martin
+label = 키시나 진입로
+description = 마틴 남쪽으로 — *모래가 깔린* 진입로. 파도 소리가 — 한 박자씩 — 떨어진다.
+x = 0.55
+y = 0.78
+neighbors = n-martin-port, n-kishina-sand, n-kishina-rocks
+enemy = shadow-pup
+
+[nodemap.nm-act-1-era4-061.node.n-kishina-sand]
+kind = rest
+region = martin
+label = 모래밭
+description = 키시나의 — *넓은 모래밭*. 한 자리에 — *형태가 — 흐릿한* — 누군가가 — 앉아 있다.
+x = 0.52
+y = 0.80
+neighbors = n-kishina-entry, n-kishina-tide-pool, n-kishina-cave
+npcs = npc-gazri
+
+[nodemap.nm-act-1-era4-061.node.n-kishina-cave]
+kind = combat
+region = martin
+label = 해식 동굴
+description = 모래밭 끝의 — *좁은 해식 동굴*. 안쪽에서 — *작은 — 울림 한 줄*이 — 떨어진다.
+x = 0.50
+y = 0.83
+neighbors = n-kishina-sand, n-kishina-end
+enemy = shadow-pup
+
+[nodemap.nm-act-1-era4-061.node.n-kishina-rocks]
+kind = gather
+region = martin
+label = 돌무더기
+description = 해변 한 자리의 — *돌무더기*. *소금 진주* 한 알이 — 돌 사이 — 한 자리에 — 자리잡고 있다.
+x = 0.49
+y = 0.79
+neighbors = n-kishina-entry, n-kishina-tide-pool
+events = ev-kishina-shells
+
+[nodemap.nm-act-1-era4-061.node.n-kishina-tide-pool]
+kind = event
+region = martin
+label = 조수 웅덩이
+description = 모래밭 한 자리의 — *작은 조수 웅덩이*. 물 한 자락이 — *돌 위*로 — 가볍게 — 흘러나온다.
+x = 0.51
+y = 0.82
+neighbors = n-kishina-sand, n-kishina-rocks
+events = ev-kishina-spirit-bead
+
+[nodemap.nm-act-1-era4-061.node.n-kishina-end]
+kind = event
+region = martin
+label = 키시나 끝 자리
+description = 해변의 — *가장 끝 자리*. 모래가 — *한 줄로* — 바다 쪽으로 — 흘러내린다. 더 갈 곳이 — 없다.
+x = 0.48
+y = 0.85
+neighbors = n-kishina-cave
+
+# --- C. 배편 · 외곽 (3) ---
+[nodemap.nm-act-1-era4-061.node.n-martin-outer-road]
+kind = combat
+region = martin
+label = 마틴 외곽가도
+description = 일루네온 남쪽 가도에서 — *바다 쪽*으로 빠지는 길. *짠 바람*이 — 한 줄로 — 흐른다.
+x = 0.48
+y = 0.68
+neighbors = n-south-road, n-martin-port
+enemy = shadow-pup
+
+[nodemap.nm-act-1-era4-061.node.n-martin-sea-passage]
+kind = event
+region = martin
+label = 마틴 항로
+description = 마틴과 클러치 — *사이의 바다 한 자리*. 배 위에서 — *수평선 — 한 줄*이 — 길게 — 머문다.
+x = 0.74
+y = 0.62
+neighbors = n-martin-pier, n-clutch-pier
+events = ev-martin-boat-passage
+
+[nodemap.nm-act-1-era4-061.node.n-martin-quay-watch]
+kind = event
+region = martin
+label = 등대 옆 망지대
+description = 등대 옆의 — *작은 망지대*. 바다 — *한 줄*을 — 길게 — 본다.
+x = 0.63
+y = 0.71
+neighbors = n-martin-lighthouse

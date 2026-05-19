@@ -305,3 +305,15 @@ cost = 2
 trigger = manual
 effects = block:20:self, damage:6:enemy
 flavor = 마노니클라 절벽의 노을이 — *식지 않은 채로* 등 뒤에 섰다.
+
+# ========== NPC 영입 카드 ==========
+
+[card.c-swift-step]
+name = 발 빠른 한 걸음
+rank = basic
+source = npc
+element = wind
+cost = 0
+trigger = manual
+effects = draw:1:self, defense:-1:self
+flavor = "한 번 더 — 갈게 — 한 걸음 — 빠르게." 루디가 — *제비의 박자*로 — 한 자리 — 옮겨 — 간다.

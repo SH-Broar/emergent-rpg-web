@@ -31,6 +31,10 @@ import type {
   RunState,
 } from '@/data/schemas';
 import { useRunStore } from '@/stores/run';
+import { rng } from '@/systems/rng';
+import { applyColorBoost, type ColorKey } from '@/systems/colors';
+
+const ALL_8_COLORS: ColorKey[] = ['fire', 'water', 'electric', 'iron', 'earth', 'wind', 'light', 'dark'];
 
 // ========== Modifier 인프라 ==========
 
@@ -156,6 +160,15 @@ const HANDLERS: Record<string, RelicEffectHandler> = {
     // 직접 데미지 보정은 combat 시스템에서 사용. 여기선 다음 데미지에 적용될 *임시 보너스*만 등록.
     // 현재는 *카드 사용 직후* 호출되므로 효과는 이미 적용된 후 — TODO: 카드 사용 *전* 훅으로.
     void eff;
+  },
+  // value = 백분율 확률 (0~100). 발동 시 8 컬러 중 1개 +1.
+  'chance-random-color-1': (eff, _ctx) => {
+    void _ctx;
+    const chance = (eff.value ?? 0) / 100;
+    if (rng() < chance) {
+      const color = ALL_8_COLORS[Math.floor(rng() * ALL_8_COLORS.length)];
+      applyColorBoost(color, 1);
+    }
   },
   discount: (_eff, _ctx) => {
     // 제작 비용 할인 — Village/Workshop이 useDiscount()로 *조회*. 핸들러 호출은 패시브로 등록만.

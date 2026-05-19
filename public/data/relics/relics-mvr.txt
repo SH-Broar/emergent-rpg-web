@@ -39,3 +39,11 @@ source = boss
 trigger = on-card-play
 effects = bonus-damage:1
 flavor = 봉인한 종말의 한 조각. 이제는 내 손 안에.
+
+[relic.r-kishina-pearl]
+name = 키시나의 소금 진주
+rank = common
+source = npc
+trigger = on-combat-end
+effects = chance-random-color-1:50
+flavor = 가즈리가 — *한 줄로 — 괴인* 진주 중 한 알. 전투가 — 한 번 — 끝날 때마다 — *한 자리*가 — 박자대로 — 떨어진다.

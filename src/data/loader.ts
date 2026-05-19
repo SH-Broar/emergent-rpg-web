@@ -884,6 +884,7 @@ const DATA_FILES = [
   'data/npcs/act-1-tacomi.txt',
   'data/npcs/act-1-manonickla.txt',
   'data/npcs/act-1-alimes.txt',
+  'data/npcs/act-1-martin.txt',
   // === 공용 ===
   'data/races/race-human.txt',
   'data/cards/cards-mvr.txt',

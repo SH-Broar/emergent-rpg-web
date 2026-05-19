@@ -1,0 +1,35 @@
+# NPC: 1장 — 마틴 항 / 키시나 해변 권역.
+
+[npc.npc-rudi]
+name = 루디
+race = swallow
+role = Sailor
+home_node = n-martin-cargo
+presence_nodes = n-martin-port, n-martin-pier
+age = 17
+color_values = 0.4,0.3,0.4,0.4,0.3,0.9,0.5,0.3
+domain_high = Excited, Adaptable, Impulsive, Flexible, Generous, Freesprited, Hopeful, Honest
+domain_low = Calm, Rigid, Stagnant, Stubborn, Restless, Grounded, Cynical, Naive
+background = 마틴 수원. 아버지가 선장.|아버지의 부재 동안 *항구 일*을 자연스럽게 익혔다.|컨테이너 — *한 줄 한 줄* — 한 박자로 — 내린다. 일 박자가 빠른 *제비*의 특기다.|밝게 인사하지만 — *일 잡는 순간*에는 박자가 *집중되어* 떨어진다.
+tagline = "한 번에 — 옮길게 — 빠르게!"
+tags = swallow, sailor, wind-affinity
+affinity_rewards = 3:card=c-quickdraw:gauge=4
+# 영입 — 제비 빠른 동작. 움직임·회피 계열.
+recruit_enabled = true
+recruit_cards = c-swift-step
+recruit_colors = wind:12, light:6
+
+[npc.npc-gazri]
+name = 가즈리
+race = spirit
+role = Priest
+home_node = n-kishina-sand
+presence_nodes = n-kishina-tide-pool, n-kishina-rocks
+age = 999
+color_values = 0.3,0.9,0.3,0.3,0.4,0.4,0.5,0.3
+domain_high = Excited, Empathetic, Impulsive, Flexible, Generous, Freesprited, Hopeful, Honest
+domain_low = Calm, Rigid, Stagnant, Stubborn, Restless, Grounded, Cynical, Naive
+background = 키시나 해변의 — *물의 정령*.|소금 진주를 — *한 줄로 — 괴이고* — *자랑하고 싶어* 한다.|모래밭 한 자리에서 — 형태가 — *한 번씩 — 흐려진다*. 누군가 — 가까이 — 가면 — *조금 — 또렷해진다*.|어린아이의 — 반말. "이거 — 봐 봐! 예쁘지!"
+tagline = "이거 — 봐 봐! — 진주야!"
+tags = spirit, water, kishina
+affinity_rewards = 3:relic=r-kishina-pearl:gauge=5
