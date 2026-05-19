@@ -357,3 +357,23 @@ cost = 2
 trigger = manual
 effects = damage:12:enemy, apply-status:1:enemy
 flavor = "조용히, 천천히 — 그러나 끝까지." 마로의 — *느린 한 호*가 — 끝에 — 닿았을 때 — 적이 — 한 자리 — *벌려져 있다*.
+
+[card.c-flash-capture]
+name = 한 컷
+rank = common
+source = npc
+element = fire
+cost = 1
+trigger = manual
+effects = damage:6:enemy, apply-status:1:enemy
+flavor = "한 컷, 시간을 멈춰 줄까요?" 피닉스가 — *셔터 한 번*에 — 적의 — 다음 한 자리를 — *짧게 — 비킨다*.
+
+[card.c-rize-relay]
+name = 한 판 갈래
+rank = common
+source = npc
+element = fire
+cost = 1
+trigger = manual
+effects = damage:4:enemy
+flavor = "심심해. — 한 판." 리제가 — 한 발을 — 굴리고 — *같은 한 판* 한 장을 — 그대 손에 — 다시 — 건넨다. *이번 한 판은* — 비용이 — 없다.

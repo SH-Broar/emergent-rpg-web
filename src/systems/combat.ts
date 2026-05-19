@@ -143,6 +143,17 @@ export function playCard(handIndex: number, monster: Monster): { enemyDefeated: 
   c.hand = c.hand.filter((_, i) => i !== handIndex);
   c.discardPile = [...c.discardPile, card];
 
+  // c-rize-relay 특수 후처리: 같은 카드 *cost 0* 복제를 핸드에 push (이번 턴 안 재사용 가능).
+  // 핸드 풀이면 discard로 fallback. 카드 자체 ID 비교 — 데이터 드리븐이 아닌 *카드 특이 분기*.
+  if (card.id === 'c-rize-relay') {
+    const replica = { ...card, cost: 0 };
+    if (c.hand.length < 10) {
+      c.hand = [...c.hand, replica];
+    } else {
+      c.discardPile = [...c.discardPile, replica];
+    }
+  }
+
   if (c.enemy.hp <= 0) {
     return { enemyDefeated: true };
   }
