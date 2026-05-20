@@ -64,14 +64,13 @@ specialty_item = i-sunset-shard
 legendary_cards = c-manonickla-sunset-wall
 
 [nodemap.nm-act-1-era4-061.region.riagralta]
-name = 리아그랄타 · 르슈드
-description = 일루네온 북쪽의 끝없는 초원 + 산비탈·교차로. 풀잎 쓸림·양 떼·번개 폭풍.
+name = 리아그랄타
+description = 일루네온 북쪽의 끝없는 초원 + 오드 산비탈. 풀잎 쓸림·양 떼·번개 폭풍.
 enemy_pool = m-ria-stormram, shadow-pup
 elite_enemy_pool = m-ria-thunder-wolf
 event_pool = ev-ria-storm-shepherd, ev-traveler-fork, ev-fountain-vow
 primary_color = electric
 specialty_item = i-storm-fang
-parent_region = 유스제리아
 
 [nodemap.nm-act-1-era4-061.region.alimes]
 name = 알리메스 권역
@@ -84,14 +83,13 @@ specialty_item = i-mist-petal
 legendary_cards = c-alimes-mist-vow
 
 [nodemap.nm-act-1-era4-061.region.luna]
-name = 마법학교 루나
-description = 남서쪽의 마법 학교 + 팬텀 스파이어. 잉크·금서·먼지 낀 첨탑.
+name = 마법학교 루나 · 마왕성
+description = 남서쪽의 마법 학교 + 팬텀 스파이어 + *마왕성·금단 회랑*. 잉크·금서·먼지 낀 첨탑·서류 냄새.
 enemy_pool = m-luna-inkfiend, shadow-pup
 elite_enemy_pool = m-luna-grimoire-shadow
 event_pool = ev-luna-forbidden-page, ev-mono-whisper, ev-luna-entrance, ev-luna-library-floating-book, ev-luna-old-magicircle, ev-luna-grimoire-blind-title, ev-luna-illusion-late-face, ev-luna-classroom-test, ev-luna-ward-shake, ev-luna-old-desk-note, ev-luna-garden-plant, ev-luna-dorm-empty, ev-luna-febiel-stellaville
 primary_color = dark
 specialty_item = i-grimoire-ink
-parent_region = 마왕성
 
 [nodemap.nm-act-1-era4-061.region.tacomi]
 name = 타코미 권역
@@ -104,14 +102,13 @@ specialty_item = i-neon-residue
 legendary_cards = c-tacomi-hologram-mirror
 
 [nodemap.nm-act-1-era4-061.region.demon-windfall]
-name = 마왕성 · 풍혈지대
-description = 북서 끝의 마왕성·금단 회랑·풍혈지대·*시간의 닻*. 강풍·문서더미·끊긴 공기.
+name = 풍혈지대
+description = 일루네온·리아그랄타에서 타코미로 넘어가는 바람의 길목. 끝에 *시간의 닻*이 떠 있다. 강풍·끊긴 공기.
 enemy_pool = m-demon-paperghost, shadow-wolf
 elite_enemy_pool = m-demon-windblade
 event_pool = ev-demon-stamp-pile, ev-mono-whisper
 primary_color = wind
 specialty_item = i-anchor-link
-parent_region = 허공숲
 
 [nodemap.nm-act-1-era4-061.region.martin]
 name = 마틴 항 · 키시나 해변
@@ -131,6 +128,24 @@ event_pool = ev-enicham-gen-hum, ev-enicham-wire-spire, ev-enicham-zero-bench, e
 primary_color = electric
 specialty_item = i-neon-residue
 
+[nodemap.nm-act-1-era4-061.region.reshud]
+name = 르슈드 교차로
+description = 알리메스·일루네온·리아그랄타·풍혈지대를 잇는 작은 마차 교차로. 종소리·말 발굽. 단순 경유지.
+enemy_pool = m-ria-stormram, shadow-pup
+elite_enemy_pool = m-ria-thunder-wolf
+event_pool = ev-traveler-fork, ev-fountain-vow
+primary_color = electric
+specialty_item = i-storm-fang
+
+[nodemap.nm-act-1-era4-061.region.yusezria]
+name = 유스제리아
+description = 리아그랄타 너머의 *막다른 고위험 사냥터*. 철과 물의 정수가 고인 dead end. 몬스터가 매우 강력하다. NPC 없음.
+enemy_pool = m-yuse-iron-sentinel, m-yuse-tide-wraith
+elite_enemy_pool = m-yuse-deep-core
+event_pool = ev-yuse-iron-vein, ev-yuse-tide-pool, ev-yuse-dead-end
+primary_color = iron
+specialty_item = i-yusezria-ore
+
 # ============================================================
 # 일루네온 권역 — 시작
 # ============================================================
@@ -142,7 +157,7 @@ label = 일루네온 광장
 description = 컬러즈 세계의 중심. 분수대 옆에서 어린 소년 — 니아 이유르 — 가 잠시 멈춰 있다. 그가 그대를 본다. "왔군요."
 x = 0.50
 y = 0.50
-neighbors = n-iluneon-market, n-iluneon-clocktower, n-iluneon-diner, n-iluneon-guild, n-arukea-bridge, n-north-pass, n-south-road, n-ilu-fountain-side, n-ilu-spire-shadow, n-ilu-street-corner, n-ilu-east-gate, n-ilu-west-gate
+neighbors = n-iluneon-market, n-iluneon-clocktower, n-iluneon-diner, n-iluneon-guild, n-arukea-bridge, n-riagralta, n-south-road, n-ilu-fountain-side, n-ilu-spire-shadow, n-ilu-street-corner, n-ilu-east-gate, n-ilu-west-gate
 events = ev-iluneon-plaza-flow
 npcs = npc-niayur, npc-hako, npc-phoenix
 is_start = true
@@ -521,7 +536,7 @@ label = 리아그랄타 평원
 description = 일루네온 북쪽으로 끝없이 펼쳐진 초원. 양 떼 너머에서 *그림자 늑대*가 보인다.
 x = 0.50
 y = 0.30
-neighbors = n-north-pass, n-ode-slope, n-reshud-junction, n-ria-flock, n-ria-grass-hill, n-ria-wind-path, n-ria-tent, n-ode-foot, n-ria-tall-grass
+neighbors = n-iluneon-square, n-ode-slope, n-reshud-junction, n-ria-flock, n-ria-grass-hill, n-ria-wind-path, n-ria-tent, n-ode-foot
 enemy = shadow-pup
 
 [nodemap.nm-act-1-era4-061.node.n-ode-slope]
@@ -537,12 +552,12 @@ npcs = npc-whitefang
 
 [nodemap.nm-act-1-era4-061.node.n-reshud-junction]
 kind = activity
-region = riagralta
+region = reshud
 label = 르슈드 분기
-description = 알리메스·일루네온·풍혈지대를 잇는 교차로. 마차 정거장에서 작은 종이 울린다.
+description = 알리메스·일루네온·리아그랄타·풍혈지대를 잇는 교차로. 마차 정거장에서 작은 종이 울린다.
 x = 0.35
 y = 0.40
-neighbors = n-iluneon-guild, n-riagralta, n-reshud-pass, n-bagreat-foot, n-reshud-station, n-reshud-bell, n-reshud-fork, n-reshud-well
+neighbors = n-iluneon-guild, n-riagralta, n-reshud-pass, n-bagreat-foot, n-reshud-station, n-reshud-bell
 npcs = npc-airi
 
 [nodemap.nm-act-1-era4-061.node.n-bagreat]
@@ -587,7 +602,7 @@ label = 마법학교 루나
 description = 첨탑이 안개 속에서도 빛난다. 학생들의 소란이 복도에 가득하다.
 x = 0.35
 y = 0.75
-neighbors = n-luna-practice, n-luna-underground, n-phantom-spire, n-south-road, n-luna-classroom, n-luna-library, n-luna-dining, n-luna-dorm, n-luna-rooftop, n-luna-garden, n-luna-road-fork
+neighbors = n-luna-practice, n-luna-underground, n-phantom-spire, n-south-road, n-luna-classroom, n-luna-library, n-luna-dining, n-luna-dorm, n-luna-rooftop, n-luna-garden, n-luna-road-fork, n-demon-castle
 events = ev-luna-entrance
 npcs = npc-iyeon, npc-rupin, npc-miyu, npc-febiel, npc-kuruha, npc-maro
 
@@ -672,7 +687,7 @@ label = 홀로그램 필드
 description = 현실과 가상의 경계가 흐려진 공간. *임페리시아의 흔적*이 가장 진하다.
 x = 0.13
 y = 0.40
-neighbors = n-night-tacomi, n-demon-castle, n-hologram-trace
+neighbors = n-night-tacomi, n-windfall-valley, n-hologram-trace
 enemy = shadow-pup
 
 [nodemap.nm-act-1-era4-061.node.n-stella-ville]
@@ -688,22 +703,22 @@ npcs = npc-febiel
 
 [nodemap.nm-act-1-era4-061.node.n-demon-castle]
 kind = event
-region = demon-windfall
+region = luna
 label = 마왕성
 description = 위엄 있는 외관과 달리 내부는 서류 냄새가 진하다. 모노가 책상에 앉아 *그대를 기다린다*.
-x = 0.18
-y = 0.30
-neighbors = n-hologram-field, n-forbidden-corridor, n-windfall-valley, n-castle-gate, n-castle-throne, n-castle-office
-npcs = npc-mono, npc-rienkay
+x = 0.30
+y = 0.88
+neighbors = n-luna-academy, n-forbidden-corridor, n-castle-gate, n-castle-throne, n-castle-office
+npcs = npc-mono
 events = ev-mono-whisper
 
 [nodemap.nm-act-1-era4-061.node.n-forbidden-corridor]
 kind = elite
-region = demon-windfall
+region = luna
 label = 금단의 회랑
-description = 마왕성 깊은 곳. *시간의 닻*과 직접 연결된 문이 잠겨 있다.
-x = 0.22
-y = 0.24
+description = 마왕성 깊은 곳. *옛 봉인*의 문이 잠겨 있다.
+x = 0.36
+y = 0.88
 neighbors = n-demon-castle, n-corridor-entry, n-corridor-sealed-door, n-corridor-inscription
 enemy = shadow-wolf
 
@@ -715,10 +730,10 @@ enemy = shadow-wolf
 kind = village
 region = demon-windfall
 label = 풍혈지대
-description = 강한 바람이 끊임없이 불어치는 계곡. 리엔카이가 *밤참새* 노래를 흥얼거린다.
-x = 0.28
-y = 0.18
-neighbors = n-reshud-pass, n-demon-castle, n-windfall-rise, n-windfall-outskirts, n-windfall-wind-spot, n-windfall-old-dyke, n-windfall-foreyard
+description = 강한 바람이 끊임없이 불어치는 계곡. 일루네온·리아그랄타에서 타코미로 넘어가는 길목. 리엔카이가 *밤참새* 노래를 흥얼거린다.
+x = 0.27
+y = 0.17
+neighbors = n-windfall-outskirts, n-windfall-rise, n-windfall-wind-spot, n-hologram-field
 npcs = npc-rienkay, npc-tsuyosai
 
 [nodemap.nm-act-1-era4-061.node.n-windfall-rise]
@@ -726,9 +741,9 @@ kind = combat
 region = demon-windfall
 label = 풍혈 상승로
 description = 풍혈지대 위로 오르는 좁은 길. 바람이 살을 도려낸다.
-x = 0.22
+x = 0.23
 y = 0.11
-neighbors = n-windfall-valley, n-anchor-point, n-rise-first, n-rise-narrow, n-rise-last
+neighbors = n-windfall-valley, n-anchor-point
 enemy = shadow-pup
 
 [nodemap.nm-act-1-era4-061.node.n-anchor-point]
@@ -756,23 +771,14 @@ y = 0.62
 neighbors = n-iluneon-square, n-luna-academy, n-luna-road-fork, n-luna-outer-path, n-martin-outer-road
 enemy = shadow-pup
 
-[nodemap.nm-act-1-era4-061.node.n-north-pass]
-kind = gather
-region = riagralta
-label = 북쪽 들머리
-description = 일루네온에서 리아그랄타 평원으로 나가는 들머리. 풀잎이 다리 옆을 스친다.
-x = 0.50
-y = 0.40
-neighbors = n-iluneon-square, n-riagralta, n-ria-old-mound, n-ria-tall-grass
-
 [nodemap.nm-act-1-era4-061.node.n-reshud-pass]
 kind = combat
-region = demon-windfall
+region = reshud
 label = 르슈드 협로
 description = 르슈드 분기에서 풍혈지대로 오르는 좁은 협로. 바람이 거세지기 시작한다.
-x = 0.31
-y = 0.29
-neighbors = n-reshud-junction, n-windfall-valley, n-reshud-pass-side, n-windfall-foreyard
+x = 0.40
+y = 0.45
+neighbors = n-reshud-junction, n-windfall-outskirts
 enemy = shadow-pup
 
 [nodemap.nm-act-1-era4-061.node.n-bagreat-foot]
@@ -1400,95 +1406,39 @@ enemy = shadow-pup
 kind = combat
 region = riagralta
 label = 오드 능선
-description = 산비탈 위 — *능선*. 바람이 — *한 줄로* — 살을 — 스친다.
+description = 산비탈 위 — *능선*. 바람이 — *한 줄로* — 살을 — 스친다. 능선 너머로 — *유스제리아*의 — 무거운 공기가 — 깔린다.
 x = 0.57
 y = 0.20
-neighbors = n-ode-slope
+neighbors = n-ode-slope, n-yusezria
 enemy = shadow-pup
-
-[nodemap.nm-act-1-era4-061.node.n-ode-gravel]
-kind = gather
-region = riagralta
-label = 자갈밭
-description = 능선 옆의 — *자갈밭*. 발끝에 — *작은 광맥*이 — 한 자락 — 닿는다.
-x = 0.56
-y = 0.18
-neighbors = n-ode-ridge
 
 [nodemap.nm-act-1-era4-061.node.n-ode-den-entry]
 kind = event
 region = riagralta
 label = 늑대 굴 입구
-description = 산비탈 한 자리의 — *늑대 굴 입구*. 안쪽에서 — *한 박자 — 늦은* — 으르렁 — 소리.
+description = 산비탈 한 자리의 — *늑대 굴 입구*. 안쪽에서 — *잠시 늦은* — 으르렁 — 소리.
 x = 0.56
 y = 0.23
 neighbors = n-ode-slope
 
-# --- C. 르슈드 분기 주변 ---
+# --- C. 르슈드 분기 주변 (reshud 권역, 4노드 정사각형) ---
 [nodemap.nm-act-1-era4-061.node.n-reshud-station]
 kind = activity
-region = riagralta
+region = reshud
 label = 르슈드 마차역
-description = 분기 한 자리의 — *마차역*. 마부가 — *말의 결*을 — 한 줄 — 다듬는다.
-x = 0.33
-y = 0.42
+description = 분기 한 자리의 — *마차역*. 마부가 — *말의 자리*를 — 한 줄 — 다듬는다.
+x = 0.40
+y = 0.40
 neighbors = n-reshud-junction
 
 [nodemap.nm-act-1-era4-061.node.n-reshud-bell]
 kind = event
-region = riagralta
+region = reshud
 label = 종 자리
-description = 분기 한 자리의 — *작은 종*. 종 줄이 — 바람에 — *한 박자씩* — 흔들린다.
-x = 0.36
-y = 0.38
+description = 분기 한 자리의 — *작은 종*. 종 줄이 — 바람에 — *한 줄씩* — 흔들린다.
+x = 0.35
+y = 0.45
 neighbors = n-reshud-junction
-
-[nodemap.nm-act-1-era4-061.node.n-reshud-fork]
-kind = combat
-region = riagralta
-label = 길갈림
-description = 분기 옆의 — *세 갈래 길*. 풀이 — *길의 결대로* — 누워 있다.
-x = 0.37
-y = 0.42
-neighbors = n-reshud-junction
-enemy = shadow-pup
-
-[nodemap.nm-act-1-era4-061.node.n-reshud-well]
-kind = rest
-region = riagralta
-label = 우물
-description = 분기 한 자리의 — *오래된 우물*. 물 위에 — *조각 구름*이 — 한 줄 — 비친다.
-x = 0.34
-y = 0.40
-neighbors = n-reshud-junction
-
-# --- D. 평원 동·서 ---
-[nodemap.nm-act-1-era4-061.node.n-ria-old-mound]
-kind = event
-region = riagralta
-label = 풀 무덤
-description = 평원 한 자리의 — *오래된 풀 무덤*. 풀잎이 — *한 줄로* — 자라났다.
-x = 0.43
-y = 0.34
-neighbors = n-north-pass
-
-[nodemap.nm-act-1-era4-061.node.n-ria-old-stele]
-kind = event
-region = riagralta
-label = 옛 비석
-description = 평원 한 자리의 — *옛 비석*. 글자가 — *반쯤 — 닳아* 있다.
-x = 0.44
-y = 0.32
-neighbors = n-ria-old-mound
-
-[nodemap.nm-act-1-era4-061.node.n-ria-tall-grass]
-kind = gather
-region = riagralta
-label = 들풀
-description = 평원 한 자리의 — *키 큰 들풀*. 발끝에 — *작은 씨앗*들이 — 한 줄 — 닿는다.
-x = 0.46
-y = 0.36
-neighbors = n-north-pass, n-riagralta
 
 # --- E. 외곽 ---
 [nodemap.nm-act-1-era4-061.node.n-ria-slope-end]
@@ -1499,25 +1449,6 @@ description = 산비탈이 — *끝나는 자리*. 풀이 — *완만하게* —
 x = 0.59
 y = 0.27
 neighbors = n-ode-foot
-
-[nodemap.nm-act-1-era4-061.node.n-ria-thunder-spot]
-kind = event
-region = riagralta
-label = 천둥 자리
-description = 평원 한 자리에 — *번개가 — 자주 — 떨어진* 자리. 풀이 — *검게* — 그을렸다.
-x = 0.50
-y = 0.26
-neighbors = n-ria-wind-path
-
-[nodemap.nm-act-1-era4-061.node.n-ria-sheep-pen]
-kind = activity
-region = riagralta
-label = 양 우리
-description = 평원 한 자리의 — *작은 양 우리*. 울 소리가 — *한 박자씩* — 떨어진다.
-x = 0.51
-y = 0.34
-neighbors = n-ria-flock, n-ria-grass-hill
-
 
 # ============================================================
 # 알리메스 권역 확장 (2026-05-19, 5 → 22 노드).
@@ -2039,159 +1970,83 @@ neighbors = n-tacomi-mist-road
 # 보스 게이트(n-anchor-point) 변경 금지.
 # ============================================================
 
-# --- A. 마왕성 ---
+# --- A. 마왕성 (루나 권역으로 흡수) ---
 [nodemap.nm-act-1-era4-061.node.n-castle-gate]
 kind = combat
-region = demon-windfall
+region = luna
 label = 마왕성 정문
 description = 마왕성의 — *정문*. 양쪽 기둥에 — *문장*이 — 한 줄로 — 새겨져 있다.
-x = 0.16
-y = 0.32
+x = 0.27
+y = 0.90
 neighbors = n-demon-castle
 enemy = shadow-pup
 
 [nodemap.nm-act-1-era4-061.node.n-castle-throne]
 kind = event
-region = demon-windfall
+region = luna
 label = 알현실
 description = 마왕성의 — *알현실*. 옥좌가 — *비어 있다*. 모노는 — *알현실*에 — 거의 — 앉지 않는다.
-x = 0.18
-y = 0.28
+x = 0.30
+y = 0.92
 neighbors = n-demon-castle
 
 [nodemap.nm-act-1-era4-061.node.n-castle-office]
 kind = activity
-region = demon-windfall
+region = luna
 label = 서류실
 description = 마왕성의 — *책상 한 줄*. *서류*가 — 천장까지 — 쌓여 있다.
-x = 0.20
-y = 0.32
+x = 0.33
+y = 0.90
 neighbors = n-demon-castle
 
-# --- B. 금단의 회랑 ---
+# --- B. 금단의 회랑 (루나 권역으로 흡수) ---
 [nodemap.nm-act-1-era4-061.node.n-corridor-entry]
 kind = combat
-region = demon-windfall
+region = luna
 label = 회랑 입구
 description = 금단의 회랑 — *첫 자리*. 문이 — *반쯤 — 열려* 있다.
-x = 0.24
-y = 0.26
+x = 0.39
+y = 0.90
 neighbors = n-forbidden-corridor
 enemy = shadow-pup
 
 [nodemap.nm-act-1-era4-061.node.n-corridor-sealed-door]
 kind = event
-region = demon-windfall
+region = luna
 label = 봉인된 방문
-description = 회랑 깊은 자리의 — *봉인된 방문*. 결 한 줄이 — *문 위*에 — 새겨져 있다.
-x = 0.22
-y = 0.22
+description = 회랑 깊은 자리의 — *봉인된 방문*. 글자 한 줄이 — *문 위*에 — 새겨져 있다.
+x = 0.40
+y = 0.92
 neighbors = n-forbidden-corridor
 
 [nodemap.nm-act-1-era4-061.node.n-corridor-inscription]
 kind = gather
-region = demon-windfall
+region = luna
 label = 옛 명문
 description = 회랑 한 자리의 — *옛 명문*. 글자가 — *반쯤 — 어긋나* 있다.
-x = 0.20
-y = 0.25
+x = 0.37
+y = 0.91
 neighbors = n-forbidden-corridor
 
-# --- C. 풍혈지대 ---
+# --- C. 풍혈지대 (경유지 5노드: 외곽(진입)·풍혈지대·바람 자리·상승로·보스) ---
 [nodemap.nm-act-1-era4-061.node.n-windfall-outskirts]
 kind = combat
 region = demon-windfall
 label = 풍혈 외곽
-description = 풍혈지대 — *외곽 자리*. 바람이 — *살을 — 도려낸다*.
+description = 풍혈지대 — *외곽 자리*. 르슈드에서 오르는 첫 길. 바람이 — *살을 — 도려낸다*.
 x = 0.30
-y = 0.20
-neighbors = n-windfall-valley
+y = 0.22
+neighbors = n-windfall-valley, n-reshud-pass
 enemy = shadow-pup
 
 [nodemap.nm-act-1-era4-061.node.n-windfall-wind-spot]
 kind = event
 region = demon-windfall
 label = 바람 자리
-description = 풍혈 한 자리의 — *바람이 — 한 박자 — 멈춘 자리*. 공기가 — *말랐다*.
-x = 0.26
-y = 0.18
+description = 풍혈 한 자리의 — *바람이 — 잠시 — 멈춘 자리*. 공기가 — *말랐다*.
+x = 0.31
+y = 0.14
 neighbors = n-windfall-valley
-
-[nodemap.nm-act-1-era4-061.node.n-windfall-old-dyke]
-kind = gather
-region = demon-windfall
-label = 옛 둑
-description = 풍혈 한 자리의 — *옛 돌 둑*. 바위 한 줄에 — *결*이 — 깊이 — 새겨져 있다.
-x = 0.30
-y = 0.16
-neighbors = n-windfall-valley
-
-# --- D. 풍혈 상승로 ---
-[nodemap.nm-act-1-era4-061.node.n-rise-first]
-kind = combat
-region = demon-windfall
-label = 상승로 첫 길
-description = 풍혈 상승로의 — *첫 길*. 바람이 — *한 박자*씩 — 강해진다.
-x = 0.25
-y = 0.13
-neighbors = n-windfall-rise
-enemy = shadow-pup
-
-[nodemap.nm-act-1-era4-061.node.n-rise-narrow]
-kind = combat
-region = demon-windfall
-label = 상승로 좁은 길
-description = 상승로 한 자리의 — *좁은 길*. 발끝에 — *한 줄 — 바람*이 — 닿는다.
-x = 0.19
-y = 0.08
-neighbors = n-windfall-rise
-enemy = shadow-wolf
-
-[nodemap.nm-act-1-era4-061.node.n-rise-last]
-kind = rest
-region = demon-windfall
-label = 상승로 마지막 길
-description = 상승로의 — *마지막 자리*. 바람이 — *한 박자 — 없이* — 분다.
-x = 0.21
-y = 0.07
-neighbors = n-windfall-rise
-
-# --- E. 외곽 ---
-[nodemap.nm-act-1-era4-061.node.n-reshud-pass-side]
-kind = gather
-region = demon-windfall
-label = 협로 옆
-description = 르슈드 협로 — *옆의 작은 자리*. 바람이 — *한 줄로* — 닿는다.
-x = 0.32
-y = 0.27
-neighbors = n-reshud-pass
-
-[nodemap.nm-act-1-era4-061.node.n-windfall-foreyard]
-kind = event
-region = demon-windfall
-label = 들머리
-description = 풍혈지대로 — *오르는 첫 자리*. 바람이 — *한 줄로* — 살을 — 스친다.
-x = 0.29
-y = 0.25
-neighbors = n-reshud-pass, n-windfall-valley
-
-[nodemap.nm-act-1-era4-061.node.n-windfall-old-tower]
-kind = event
-region = demon-windfall
-label = 옛 망루
-description = 외곽 자리의 — *낡은 망루*. 망루 위에서 — *연기 한 줄*이 — 길게 — 오른다.
-x = 0.25
-y = 0.21
-neighbors = n-windfall-outskirts
-
-[nodemap.nm-act-1-era4-061.node.n-windfall-old-station]
-kind = rest
-region = demon-windfall
-label = 옛 마차역
-description = 외곽 자리의 — *옛 마차역*. 마부의 자리에 — *빈 의자 하나*가 — 남아 있다.
-x = 0.28
-y = 0.23
-neighbors = n-windfall-foreyard
 
 
 # ============================================================
@@ -2407,3 +2262,61 @@ y = 0.36
 neighbors = n-enicham, n-enicham-zero-room
 npcs = npc-alti-alta
 events = ev-enicham-alti-bay
+
+
+# ============================================================
+# 유스제리아 권역 신설 (dead end 고위험 사냥터, 5노드, iron+water, NPC 0).
+# 리아그랄타 오드 능선 너머. 살아 돌아가면 유물+특산물.
+# ============================================================
+
+[nodemap.nm-act-1-era4-061.node.n-yusezria]
+kind = combat
+region = yusezria
+label = 유스제리아 어귀
+description = 리아그랄타 너머 — *막다른 고지*. 철과 물의 정수가 — 공기에 — 무겁게 — 고여 있다. *강한 것*들이 — 자리를 — 지킨다.
+x = 0.62
+y = 0.18
+neighbors = n-ode-ridge, n-yuse-iron-vein, n-yuse-tide-pool
+enemy = m-yuse-iron-sentinel
+events = ev-yuse-iron-vein
+
+[nodemap.nm-act-1-era4-061.node.n-yuse-iron-vein]
+kind = combat
+region = yusezria
+label = 철 광맥
+description = *철의 정수*가 — 바위 한 줄로 — 솟은 자리. 발 아래가 — 단단하고 — 차다.
+x = 0.66
+y = 0.20
+neighbors = n-yusezria, n-yuse-hunt
+enemy = m-yuse-iron-sentinel
+
+[nodemap.nm-act-1-era4-061.node.n-yuse-tide-pool]
+kind = combat
+region = yusezria
+label = 고인 물웅덩이
+description = *물의 정수*가 — 고인 — 검은 웅덩이. 수면 아래에서 — *무엇*이 — 한 번 — 움직인다.
+x = 0.66
+y = 0.14
+neighbors = n-yusezria, n-yuse-hunt
+enemy = m-yuse-tide-wraith
+events = ev-yuse-tide-pool
+
+[nodemap.nm-act-1-era4-061.node.n-yuse-hunt]
+kind = elite
+region = yusezria
+label = 사냥터 한복판
+description = 철과 물이 — *한 자리에서 — 부딪히는* 자리. 가장 — 강한 것이 — 여기 — 머문다.
+x = 0.70
+y = 0.17
+neighbors = n-yuse-iron-vein, n-yuse-tide-pool, n-yuse-core
+enemy = m-yuse-deep-core
+
+[nodemap.nm-act-1-era4-061.node.n-yuse-core]
+kind = gather
+region = yusezria
+label = 막다른 코어
+description = 유스제리아 — *가장 깊은 — 막다른 자리*. 철과 물의 정수가 — *한 덩이*로 — 굳어 있다. 살아 돌아간 자에게만 — *큰 것*이 — 남는다.
+x = 0.73
+y = 0.15
+neighbors = n-yuse-hunt
+events = ev-yuse-dead-end

@@ -55,3 +55,11 @@ source = npc
 trigger = passive
 effects = skip-turn-every:3
 flavor = 로큐의 — *어깨 줄 한 자락*이 — 그대 손에 — 옮겨졌다. 세 자리를 — 옮길 때마다 — *길의 결*이 — 한 번 — 그대를 — 지나친다.
+
+[relic.r-yusezria-core]
+name = 유스제리아의 정수핵
+rank = rare
+source = event
+trigger = passive
+effects = damage-out-add:2
+flavor = 유스제리아 — *막다른 자리*에서 — 철과 물이 — 한 덩이로 — 굳은 핵. 지닌 자의 — *모든 일격*에 — 무거운 — 한 자국이 — 더해진다.

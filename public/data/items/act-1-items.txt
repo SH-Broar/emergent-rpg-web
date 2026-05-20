@@ -193,3 +193,12 @@ category = specialty
 region_id = martin
 effects =
 consumable = true
+
+[item.i-yusezria-ore]
+name = 유스제리아 광석
+description = 유스제리아 — *철과 물의 정수가 한 덩이로 굳은* 광석. 손바닥에 — 차고 무거운 — 한 자국. *살아 돌아간 자*의 증표.
+rank = rare
+category = specialty
+region_id = yusezria
+effects =
+consumable = true

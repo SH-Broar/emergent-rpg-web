@@ -293,3 +293,40 @@ intents = attack:8, defend:5, attack:11, debuff:1
 gold = 14
 time_shards = 5
 card_drops = c-swift-step:0.15
+
+# ============================================================
+# 유스제리아 (dead end 고위험 사냥터 — 강력, 카드 드롭 없음)
+# ============================================================
+
+[monster.m-yuse-iron-sentinel]
+name = 철의 파수꾼
+tier = minion
+hp = 30
+attack = 12
+defense = 4
+intents = attack:12, defend:8, attack:14, attack:10
+gold = 18
+time_shards = 6
+card_drops =
+
+[monster.m-yuse-tide-wraith]
+name = 고인 물의 망령
+tier = minion
+hp = 28
+attack = 13
+defense = 1
+intents = attack:13, attack:11, debuff:1, attack:15
+gold = 18
+time_shards = 6
+card_drops =
+
+[monster.m-yuse-deep-core]
+name = 막다른 코어
+tier = elite
+hp = 60
+attack = 18
+defense = 3
+intents = attack:18, defend:10, buff:2, attack:22, attack:14
+gold = 35
+time_shards = 12
+card_drops =
