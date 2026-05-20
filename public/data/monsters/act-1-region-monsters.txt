@@ -430,3 +430,51 @@ intents = attack:9, debuff:1, attack:11, attack:8
 gold = 12
 time_shards = 4
 card_drops =
+
+# ============================================================
+# 화산광 지대 / 구 신전터 (도전 사냥터 — 강력)
+# ============================================================
+
+[monster.m-ember-hound]
+name = 용암 사냥개
+tier = minion
+hp = 26
+attack = 13
+defense = 1
+intents = attack:13, attack:11, attack:15, defend:3
+gold = 14
+time_shards = 5
+card_drops =
+
+[monster.m-ember-golem]
+name = 용광 골렘
+tier = elite
+hp = 56
+attack = 17
+defense = 4
+intents = attack:17, defend:10, attack:20, buff:2, attack:14
+gold = 32
+time_shards = 11
+card_drops =
+
+[monster.m-shrine-wisp]
+name = 신전 빛도깨비
+tier = minion
+hp = 24
+attack = 12
+defense = 1
+intents = attack:12, debuff:1, attack:14, attack:10
+gold = 14
+time_shards = 5
+card_drops =
+
+[monster.m-shrine-sentinel]
+name = 신전 파수꾼
+tier = elite
+hp = 54
+attack = 16
+defense = 3
+intents = attack:16, defend:9, attack:19, buff:2, attack:13
+gold = 32
+time_shards = 11
+card_drops =

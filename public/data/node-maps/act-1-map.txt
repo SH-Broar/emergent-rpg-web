@@ -191,6 +191,24 @@ event_pool = ev-coral-rest, ev-coral-song
 primary_color = water
 specialty_item = i-coral-pearl
 
+[nodemap.nm-act-1-era4-061.region.emberforge]
+name = 화산광 지대
+description = 모스 화산 너머 *용암과 광맥이 뒤엉킨 지대* — 도전 사냥터. 격 높은 신수 *쿠마미미*가 지킨다. 쇳물·재·검은 연기.
+enemy_pool = m-ember-hound, shadow-wolf
+elite_enemy_pool = m-ember-golem
+event_pool = ev-emberforge-lair, ev-emberforge-core
+primary_color = iron
+specialty_item = i-emberforge-ore
+
+[nodemap.nm-act-1-era4-061.region.oldshrine]
+name = 구 신전터
+description = 타코미 너머 *번개가 깃든 옛 신전 유적* — 도전 사냥터. 격 높은 신수 *토라미미*가 지킨다. 부서진 기둥·정전기·빛 무늬.
+enemy_pool = m-shrine-wisp, shadow-pup
+elite_enemy_pool = m-shrine-sentinel
+event_pool = ev-oldshrine-altar, ev-oldshrine-core
+primary_color = electric
+specialty_item = i-shrine-relic
+
 # ============================================================
 # 일루네온 권역 — 시작
 # ============================================================
@@ -1340,7 +1358,7 @@ neighbors = n-moss
 kind = combat
 region = moss
 label = 화산 능선
-description = 모스 뒤편의 — *능선 한 줄*. 발 아래 — *뜨거운 결*이 — 한 자락 — 흐른다.
+description = 모스 뒤편의 — *능선 한 줄*. 발 아래 — *뜨거운 한 자락*이 — 길게 — 흐른다.
 x = 0.84
 y = 0.38
 neighbors = n-moss-forge
@@ -1350,10 +1368,10 @@ enemy = shadow-pup
 kind = gather
 region = moss
 label = 균열
-description = 능선 한 자리의 — *균열*. 안쪽에서 — *작은 불씨*들이 — 한 박자로 — 오른다.
+description = 능선 한 자리의 — *균열*. 안쪽에서 — *작은 불씨*들이 — 한 자락씩 — 오른다. 더 깊은 곳에 — *화산광 지대*의 — 붉은 빛이 — 비친다.
 x = 0.86
 y = 0.37
-neighbors = n-moss-ridge
+neighbors = n-moss-ridge, n-emberforge-entry
 
 [nodemap.nm-act-1-era4-061.node.n-moss-ember-bed]
 kind = rest
@@ -2006,10 +2024,10 @@ events = ev-tacomi-imperisia-trace
 kind = event
 region = tacomi
 label = 옛 정류장
-description = 타코미 외곽의 — *옛 정류장*. 시간표 한 줄이 — *바람에 — 닳아* 있다.
+description = 타코미 외곽의 — *옛 정류장*. 시간표 한 줄이 — *바람에 — 닳아* 있다. 가도 너머 — *구 신전터*의 — 부서진 기둥이 — 한 줄 — 서 있다.
 x = 0.22
 y = 0.60
-neighbors = n-tacomi
+neighbors = n-tacomi, n-oldshrine-gate
 
 [nodemap.nm-act-1-era4-061.node.n-tacomi-mist-road]
 kind = combat
@@ -2611,3 +2629,117 @@ x = 0.55
 y = 0.96
 neighbors = n-coral-rest
 events = ev-coral-deep
+
+
+# ============================================================
+# 화산광 지대 (모스 옆, iron/dark, 5노드). 도전 사냥터.
+# 격 높은 신수 쿠마미미(곰, MythicBeast, 영입 O).
+# ============================================================
+
+[nodemap.nm-act-1-era4-061.node.n-emberforge-entry]
+kind = combat
+region = emberforge
+label = 화산광 어귀
+description = 모스 균열 너머 — *용암과 광맥이 뒤엉킨 어귀*. 쇳물이 — 한 줄로 — 흐르고, 검은 연기가 — 자욱하다.
+x = 0.88
+y = 0.33
+neighbors = n-moss-fissure, n-emberforge-vein, n-emberforge-lair
+enemy = m-ember-hound
+
+[nodemap.nm-act-1-era4-061.node.n-emberforge-vein]
+kind = combat
+region = emberforge
+label = 광맥 갱도
+description = *철광맥*이 — 벽을 따라 — 한 줄로 — 솟은 갱도. 발 아래 — 식지 않은 — 쇳물이 — 흐른다.
+x = 0.91
+y = 0.36
+neighbors = n-emberforge-entry, n-emberforge-deep
+enemy = m-ember-hound
+
+[nodemap.nm-act-1-era4-061.node.n-emberforge-lair]
+kind = village
+region = emberforge
+label = 쿠마미미의 자리
+description = 화산광 — *가장 너른 자리*. *쿠마미미*가 — 장식 두른 외투를 — 한 자락 — 늘어뜨린 채, 쇳물 앞에 — 묵직하게 — 앉아 있다.
+x = 0.90
+y = 0.30
+neighbors = n-emberforge-entry
+npcs = npc-kumamimi
+events = ev-emberforge-lair
+
+[nodemap.nm-act-1-era4-061.node.n-emberforge-deep]
+kind = elite
+region = emberforge
+label = 깊은 용광 갱
+description = 광맥 — *가장 깊은 갱*. 쇳물이 — *한 덩이*로 — 끓는다. 가장 — 강한 화산광 몬무스가 — 여기 — 머문다.
+x = 0.94
+y = 0.36
+neighbors = n-emberforge-vein, n-emberforge-core
+enemy = m-ember-golem
+
+[nodemap.nm-act-1-era4-061.node.n-emberforge-core]
+kind = gather
+region = emberforge
+label = 광석 핵
+description = 갱 — *가장 안쪽 막다른 자리*. *검은 광석*이 — 한 덩이로 — 굳어 있다. 살아 — 나간 자의 몫.
+x = 0.96
+y = 0.32
+neighbors = n-emberforge-deep
+events = ev-emberforge-core
+
+
+# ============================================================
+# 구 신전터 (타코미 옆, electric/light, 5노드). 도전 사냥터.
+# 격 높은 신수 토라미미(호랑이, MythicBeast, 영입 O).
+# ============================================================
+
+[nodemap.nm-act-1-era4-061.node.n-oldshrine-gate]
+kind = combat
+region = oldshrine
+label = 신전 문터
+description = 타코미 가도 너머 — *부서진 신전 문터*. 기둥 한 줄이 — 비스듬히 — 서 있고, 정전기가 — *한 자락씩* — 튄다.
+x = 0.26
+y = 0.64
+neighbors = n-tacomi-old-station, n-oldshrine-hall, n-oldshrine-altar
+enemy = m-shrine-wisp
+
+[nodemap.nm-act-1-era4-061.node.n-oldshrine-hall]
+kind = combat
+region = oldshrine
+label = 신전 회랑
+description = 옛 신전 — *긴 회랑*. 벽에 — *빛 무늬*가 — 한 줄로 — 흐릿하게 — 남아 있다. 발소리가 — 길게 — 울린다.
+x = 0.29
+y = 0.67
+neighbors = n-oldshrine-gate, n-oldshrine-inner
+enemy = m-shrine-wisp
+
+[nodemap.nm-act-1-era4-061.node.n-oldshrine-altar]
+kind = village
+region = oldshrine
+label = 토라미미의 자리
+description = 신전 — *제단 자리*. *토라미미*가 — 장식 두른 예복을 — 한 자락 — 걸친 채, 빛 무늬 위에 — 곧게 — 앉아 있다.
+x = 0.25
+y = 0.69
+neighbors = n-oldshrine-gate
+npcs = npc-toramimi
+events = ev-oldshrine-altar
+
+[nodemap.nm-act-1-era4-061.node.n-oldshrine-inner]
+kind = elite
+region = oldshrine
+label = 안쪽 성소
+description = 신전 — *가장 안쪽 성소*. 번개가 — *한 덩이*로 — 고여 있다. 가장 — 강한 신전 몬무스가 — 여기 — 머문다.
+x = 0.32
+y = 0.68
+neighbors = n-oldshrine-hall, n-oldshrine-core
+enemy = m-shrine-sentinel
+
+[nodemap.nm-act-1-era4-061.node.n-oldshrine-core]
+kind = gather
+region = oldshrine
+label = 신전 핵
+description = 성소 — *가장 안쪽 막다른 자리*. *빛나는 유물*이 — 한 덩이로 — 굳어 있다. 살아 — 나간 자의 몫.
+x = 0.34
+y = 0.71
+neighbors = n-oldshrine-inner
+events = ev-oldshrine-core

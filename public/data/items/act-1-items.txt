@@ -247,3 +247,21 @@ category = specialty
 region_id = coral-coast
 effects =
 consumable = true
+
+[item.i-emberforge-ore]
+name = 검은 광석
+description = 화산광 지대 — *광맥 핵에서 캔 검은 광석*. 손바닥에 — *무겁고 — 따뜻한* 한 자국. 쿠마미미가 — 지키던 — 쇠의 결정.
+rank = rare
+category = specialty
+region_id = emberforge
+effects =
+consumable = true
+
+[item.i-shrine-relic]
+name = 신전 유물 조각
+description = 구 신전터 — *성소 핵에서 캔 유물 조각*. 손끝에서 — *정전기 한 줄*이 — 가볍게 — 튄다. 토라미미가 — 지키던 — 빛의 잔재.
+rank = rare
+category = specialty
+region_id = oldshrine
+effects =
+consumable = true

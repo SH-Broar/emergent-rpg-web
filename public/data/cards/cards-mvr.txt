@@ -497,3 +497,23 @@ cost = 1
 trigger = manual
 effects = block:6:self, heal:3:self
 flavor = "물살은 — 내가 — 고를게요." 마린이 — *푸른 꼬리*로 — 물 한 겹을 — 둘러 준다. 갈비뼈 안쪽이 — *서늘하게* — 가벼워진다.
+
+[card.c-bear-bastion]
+name = 쇳덩이 한 손
+rank = rare
+source = npc
+element = iron
+cost = 2
+trigger = manual
+effects = block:12:self, damage:8:enemy
+flavor = "...자격을, 보여라." 쿠마미미가 — *묵직한 한 손*을 — 내린다. 등 뒤로 — 쇳벽 한 겹이 — 서고, 적에게 — 한 덩이가 — 떨어진다.
+
+[card.c-tiger-rush]
+name = 빠른 삼연
+rank = rare
+source = npc
+element = electric
+cost = 2
+trigger = manual
+effects = damage:5:enemy, damage:5:enemy, damage:5:enemy
+flavor = "...빠른 자만, 따라와라." 토라미미가 — *번개 한 줄*을 — 타고 — 세 번 — 가른다. 눈 깜빡할 — 한 호흡.

@@ -1,0 +1,38 @@
+# NPC: 1장 — 신수(MythicBeast). 화산광 쿠마미미(곰) / 구 신전터 토라미미(호랑이).
+# 도전 보스급. 둘 다 영입 O이나 지역이 정반대라 사실상 한 런에 하나.
+
+[npc.npc-kumamimi]
+name = 쿠마미미
+race = mythicbeast
+role = Guard
+home_node = n-emberforge-lair
+age = 999
+color_values = 0.5,0.3,0.3,0.9,0.6,0.3,0.3,0.6
+domain_high = Calm, Methodical, Reliable, Stubborn, Patient, Grounded, Righteous, Secretive
+domain_low = Passionate, Impulsive, Flexible, Fragile, Restless, Freesprited, Cynical, Naive
+background = 화산광 지대를 지키는 — *격 높은 신수*.|곰의 머리와 — 거대한 체구. *장식이 빼곡한 외투*를 — 한 자락 — 늘어뜨려, 쇳물 빛에 — 금실이 — 번뜩인다.|오랜 세월 — 광맥을 — 지켜 온 존재. 함부로 — 길을 — 내주지 않지만, *자격*을 보인 자에게는 — 묵직한 한 손을 — 내민다.|말은 — 적고, 한 마디가 — 쇳덩이처럼 — 무겁다.
+tagline = "...자격을, 보여라."
+tags = mythicbeast, bear, iron-affinity, dark-affinity
+affinity_rewards = 3:relic=r-determined-heart:gauge=5
+# 영입 — 도전 보스급. 묵직한 방어 + 한 일격.
+recruit_enabled = true
+recruit_cards = c-bear-bastion
+recruit_colors = iron:12, dark:8
+
+[npc.npc-toramimi]
+name = 토라미미
+race = mythicbeast
+role = Guard
+home_node = n-oldshrine-altar
+age = 999
+color_values = 0.4,0.3,0.9,0.4,0.3,0.6,0.7,0.4
+domain_high = Passionate, Adaptable, Impulsive, Flexible, Patient, Freesprited, Righteous, Cunning
+domain_low = Calm, Indifferent, Methodical, Stubborn, Restless, Grounded, Apathetic, Naive
+background = 구 신전터를 지키는 — *격 높은 신수*.|호랑이의 머리와 — 날렵한 체구. *장식이 빼곡한 예복*을 — 한 자락 — 걸쳐, 빛 무늬 위에서 — 금테가 — 번쩍인다.|옛 신전의 — *번개*를 — 다루며, 침입자를 — 한 호흡에 — 가른다. 단, *자격*을 보인 자에게는 — 빠른 한 수를 — 빌려준다.|말은 — 짧고 날카로우나, 그 안에 — *예의*가 — 한 줄 — 배어 있다.
+tagline = "...빠른 자만, 따라와라."
+tags = mythicbeast, tiger, electric-affinity, light-affinity
+affinity_rewards = 3:relic=r-determined-heart:gauge=5
+# 영입 — 도전 보스급. 빠른 삼연타.
+recruit_enabled = true
+recruit_cards = c-tiger-rush
+recruit_colors = electric:12, light:8
