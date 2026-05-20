@@ -447,3 +447,13 @@ cost = 0
 trigger = manual
 effects = draw:2:self, heal:2:self
 flavor = "...같은 자리에. *알티*." "*알타*." 두 자아가 — 한 자리에서 — *짧고 단정한 — 공명 한 자락*을 — 보탠다. 가슴 안쪽이 — 한 자국 — 가벼워졌다.
+
+[card.c-flame-web]
+name = 화염 거미줄
+rank = rare
+source = npc
+element = fire
+cost = 1
+trigger = manual
+effects = damage:6:enemy, apply-status:2:enemy
+flavor = "한 줄 — 더 — 엮어 줄까?" 이그니아가 — *식지 않는 실*을 — 한 줄 — 던진다. 적이 — *불그스름한 실*에 — 한 자리 — 묶인다. *취약*.

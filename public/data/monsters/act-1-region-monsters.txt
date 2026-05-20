@@ -330,3 +330,40 @@ intents = attack:18, defend:10, buff:2, attack:22, attack:14
 gold = 35
 time_shards = 12
 card_drops =
+
+# ============================================================
+# 트리플라워 화산 (화염 몬무스)
+# ============================================================
+
+[monster.m-tri-salamander]
+name = 화염 살라만더
+tier = minion
+hp = 20
+attack = 8
+defense = 2
+intents = attack:8, attack:6, defend:3, attack:9
+gold = 9
+time_shards = 3
+card_drops =
+
+[monster.m-tri-fire-sprite]
+name = 작은 화염 정령
+tier = minion
+hp = 16
+attack = 9
+defense = 0
+intents = attack:9, attack:7, buff:1, attack:10
+gold = 9
+time_shards = 3
+card_drops =
+
+[monster.m-tri-magma-brute]
+name = 마그마 거구
+tier = elite
+hp = 42
+attack = 13
+defense = 3
+intents = attack:13, defend:8, attack:16, buff:1
+gold = 18
+time_shards = 7
+card_drops = c-burn-mark:0.2

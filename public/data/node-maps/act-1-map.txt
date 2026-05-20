@@ -38,7 +38,7 @@ name = 라르 숲 · 세계수
 description = 일루네온에서 가깝고 어린 모험가들이 많이 가는 입문자 숲. 세계수 근처만 한 자락 강함. 잎사귀와 송진 향.
 enemy_pool = m-lar-mosswolf, shadow-pup
 elite_enemy_pool = m-lar-ember-salamander
-event_pool = ev-lar-dryad-whisper, ev-traveler-fork, ev-stranger-favor, ev-fountain-vow, ev-lar-arukea-stones, ev-lar-bridge-under-shard, ev-lar-river-bank-sketch, ev-lar-memory-spring-face, ev-lar-moss-bank-leaves, ev-lar-arvaro-stick-fight, ev-lar-herb-garden-trace, ev-lar-fields-shadow, ev-lar-caliburn-yard-sword, ev-lar-small-grave-flower, ev-lar-inner-pool-still, ev-lar-tree-bud-shard, ev-lar-low-branch-song, ev-lar-high-branch-leaf, ev-lar-leaf-hall-trail, ev-lar-root-burrow-old, ev-lar-triflower-spirit, ev-lar-crater-rim-heat, ev-lar-lava-vein-spark, ev-lar-cooled-slag-rest
+event_pool = ev-lar-dryad-whisper, ev-traveler-fork, ev-stranger-favor, ev-fountain-vow, ev-lar-arukea-stones, ev-lar-bridge-under-shard, ev-lar-river-bank-sketch, ev-lar-memory-spring-face, ev-lar-moss-bank-leaves, ev-lar-arvaro-stick-fight, ev-lar-herb-garden-trace, ev-lar-fields-shadow, ev-lar-caliburn-yard-sword, ev-lar-small-grave-flower, ev-lar-inner-pool-still, ev-lar-tree-bud-shard, ev-lar-low-branch-song, ev-lar-high-branch-leaf, ev-lar-leaf-hall-trail, ev-lar-root-burrow-old
 primary_color = earth
 specialty_item = i-world-tree-bud
 parent_region = 세계수
@@ -145,6 +145,15 @@ elite_enemy_pool = m-yuse-deep-core
 event_pool = ev-yuse-iron-vein, ev-yuse-tide-pool, ev-yuse-dead-end
 primary_color = iron
 specialty_item = i-yusezria-ore
+
+[nodemap.nm-act-1-era4-061.region.triflower]
+name = 트리플라워 화산
+description = 라르 숲과 모스 사이의 활화산. 화염 몬무스 — 살라만더·화염 정령·화염 아라크네. 용암·재·열기.
+enemy_pool = m-tri-salamander, m-tri-fire-sprite
+elite_enemy_pool = m-tri-magma-brute
+event_pool = ev-lar-triflower-spirit, ev-lar-crater-rim-heat, ev-lar-lava-vein-spark, ev-lar-cooled-slag-rest, ev-tri-web-nest, ev-tri-magma-core
+primary_color = fire
+specialty_item = i-lava-scale
 
 # ============================================================
 # 일루네온 권역 — 시작
@@ -276,13 +285,13 @@ events = ev-lar-caliburn-elnest-meet-2, ev-lar-tree-bud-shard
 
 [nodemap.nm-act-1-era4-061.node.n-triflower]
 kind = elite
-region = lar-forest
+region = triflower
 label = 트리플라워 화산
-description = 모스 뒤편의 활화산. 분화구에서 *불 정령*이 형태를 갖춰 일어선다.
+description = 라르 숲과 모스 사이의 활화산. 분화구에서 *화염 몬무스*들이 일어서고, 위쪽 둥지에 *화염 아라크네*가 실을 친다.
 x = 0.79
 y = 0.55
-neighbors = n-world-tree, n-moss, n-lar-crater-rim, n-lar-lava-vein, n-lar-cooled-slag
-enemy = shadow-wolf
+neighbors = n-world-tree, n-moss, n-lar-crater-rim, n-lar-lava-vein, n-lar-cooled-slag, n-tri-web-nest
+enemy = m-tri-magma-brute
 events = ev-lar-triflower-spirit
 
 [nodemap.nm-act-1-era4-061.node.n-moss]
@@ -1120,23 +1129,23 @@ neighbors = n-world-tree
 enemy = shadow-wolf
 events = ev-lar-root-burrow-old
 
-# --- E. 트리플라워 주변 ---
+# --- E. 트리플라워 화산 (독립 권역 triflower, 화염 몬무스 6노드) ---
 [nodemap.nm-act-1-era4-061.node.n-lar-crater-rim]
 kind = combat
-region = lar-forest
+region = triflower
 label = 분화구 능선
-description = 트리플라워의 — *능선*. 발 아래 — *뜨거운 한 자락*이 — 길게 — 흐른다.
+description = 트리플라워의 — *능선*. 발 아래 — *뜨거운 한 자락*이 — 길게 — 흐른다. *살라만더*들이 — 바위 틈에 — 누워 있다.
 x = 0.81
 y = 0.56
 neighbors = n-triflower
-enemy = shadow-pup
+enemy = m-tri-salamander
 events = ev-lar-crater-rim-heat
 
 [nodemap.nm-act-1-era4-061.node.n-lar-lava-vein]
 kind = gather
-region = lar-forest
+region = triflower
 label = 용암 줄기
-description = 식지 않은 — *용암 한 줄*. 작은 *불씨*들이 — 한 자국씩 — 떨어진다.
+description = 식지 않은 — *용암 한 줄*. 작은 *불씨*들이 — 한 자국씩 — 떨어진다. *식지 않은 비늘*이 — 가끔 — 굳어 — 남는다.
 x = 0.81
 y = 0.52
 neighbors = n-triflower
@@ -1144,13 +1153,35 @@ events = ev-lar-lava-vein-spark
 
 [nodemap.nm-act-1-era4-061.node.n-lar-cooled-slag]
 kind = rest
-region = lar-forest
+region = triflower
 label = 식은 자리
 description = 분화구 가장자리 — *식은 자리*. 검은 돌 위에 — 노을 — 한 줄이 — 길게 — 머문다.
 x = 0.79
 y = 0.60
 neighbors = n-triflower
 events = ev-lar-cooled-slag-rest
+
+[nodemap.nm-act-1-era4-061.node.n-tri-web-nest]
+kind = village
+region = triflower
+label = 화염 거미 둥지
+description = 트리플라워 위쪽 — *불그스름한 실*이 — 분화구 열기에 — 한 줄로 — 늘어진 둥지. *화염 아라크네*가 — 여덟 다리로 — 실의 자락을 — 다듬는다.
+x = 0.84
+y = 0.54
+neighbors = n-triflower, n-tri-magma-core
+npcs = npc-embra
+events = ev-tri-web-nest
+
+[nodemap.nm-act-1-era4-061.node.n-tri-magma-core]
+kind = elite
+region = triflower
+label = 마그마 핵
+description = 분화구 — *가장 깊은 자리*. 마그마가 — *한 덩이*로 — 끓는다. 가장 — 강한 화염 몬무스가 — 여기 — 머문다.
+x = 0.84
+y = 0.58
+neighbors = n-tri-web-nest
+enemy = m-tri-magma-brute
+events = ev-tri-magma-core
 
 
 # ============================================================

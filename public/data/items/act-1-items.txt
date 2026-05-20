@@ -202,3 +202,12 @@ category = specialty
 region_id = yusezria
 effects =
 consumable = true
+
+[item.i-lava-scale]
+name = 용암 비늘
+description = 트리플라워 — *식지 않은 비늘 한 장*. 살라만더가 — 용암 줄기에 — 흘리고 간 — 비늘. 손바닥에 — *따뜻한 한 자국*이 — 오래 — 남는다.
+rank = rare
+category = specialty
+region_id = triflower
+effects =
+consumable = true
