@@ -14,7 +14,7 @@ import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
 import { rng } from '@/systems/rng';
 import { applyAffinityDelta } from '@/systems/affinity';
-import { cardEffectKindLabel } from '@/systems/labels';
+import { cardEffectKindLabel, cardEffectDescription } from '@/systems/labels';
 import type { Card, Npc } from '@/data/schemas';
 
 const router = useRouter();
@@ -275,7 +275,7 @@ const rankColors: Record<string, string> = {
           </div>
           <div class="craft-card__rank" :style="{ color: rankColors[c.rank] }">{{ c.rank }}</div>
           <div class="craft-card__effects">
-            <span v-for="(e, ei) in c.effects" :key="ei" class="effect">
+            <span v-for="(e, ei) in c.effects" :key="ei" class="effect" v-tooltip="cardEffectDescription(e)">
               {{ cardEffectKindLabel(e) }} {{ e.value ?? '' }}
             </span>
           </div>

@@ -21,7 +21,7 @@ import {
 import { applyBossRewards } from '@/systems/boss-rewards';
 import { colorBonusForCardEffectKind } from '@/systems/stats';
 import { bonusesFromEffective } from '@/systems/equipment';
-import { cardEffectKindLabel, unlockKeyLabel } from '@/systems/labels';
+import { cardEffectKindLabel, cardEffectDescription, statusDescription, unlockKeyLabel } from '@/systems/labels';
 import type { Boss, BossPhase, BossSignatureVariant, Card, CardEffect, Combatant, Monster } from '@/data/schemas';
 
 const router = useRouter();
@@ -277,7 +277,7 @@ function statusEntries(c: Combatant | undefined) {
           </div>
           <div class="mana">마나 {{ combat.mana }} / {{ combat.maxMana }}</div>
           <ul class="statuses">
-            <li v-for="s in statusEntries(combat.player)" :key="s.key" class="status" :data-key="s.key">
+            <li v-for="s in statusEntries(combat.player)" :key="s.key" class="status" :data-key="s.key" v-tooltip="statusDescription(s.key)">
               {{ s.label }} ×{{ s.count }}
             </li>
           </ul>
@@ -298,7 +298,7 @@ function statusEntries(c: Combatant | undefined) {
             <span v-if="combat.frozenTurn" class="mechanic__frozen">시간이 멈췄다</span>
           </div>
           <ul class="statuses statuses--enemy">
-            <li v-for="s in statusEntries(combat.enemy)" :key="s.key" class="status" :data-key="s.key">
+            <li v-for="s in statusEntries(combat.enemy)" :key="s.key" class="status" :data-key="s.key" v-tooltip="statusDescription(s.key)">
               {{ s.label }} ×{{ s.count }}
             </li>
           </ul>
@@ -320,7 +320,7 @@ function statusEntries(c: Combatant | undefined) {
             <span class="card__name">{{ card.name }}</span>
           </div>
           <div class="card__effects">
-            <span v-for="(e, ei) in card.effects" :key="ei" class="effect">
+            <span v-for="(e, ei) in card.effects" :key="ei" class="effect" v-tooltip="cardEffectDescription(e)">
               {{ cardEffectKindLabel(e) }}
               <strong class="eff-val">{{ effectiveValue(e) || (e.value ?? '') }}</strong>
               <span

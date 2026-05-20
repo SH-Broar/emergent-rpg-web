@@ -145,10 +145,10 @@ onMounted(async () => {
       <h3>획득</h3>
       <div class="gain-row">
         <span class="gain gain--hyperion">히페리온 +{{ result.hyperionGain }}</span>
-        <span class="gain gain--research">연구 +{{ result.researchGain }}</span>
+        <span class="gain gain--research">해석 +{{ result.researchGain }}</span>
         <span class="gain gain--soul">영혼 +{{ result.soulGain }}</span>
       </div>
-      <p class="meta__note">※ 연구는 추후 직접 투자 방식으로 바뀝니다.</p>
+      <p class="meta__note">※ 해석은 추후 직접 투자 방식으로 바뀝니다.</p>
       <ul v-if="result.granted.length > 0" class="unlocks">
         <li v-for="(k, i) in result.granted" :key="i" class="unlock">해금: {{ unlockKeyLabel(k.key) }}</li>
       </ul>

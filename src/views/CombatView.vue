@@ -24,7 +24,7 @@ import {
 import { effectiveContent } from '@/systems/map';
 import { colorBonusForCardEffectKind } from '@/systems/stats';
 import { bonusesFromEffective } from '@/systems/equipment';
-import { cardEffectKindLabel, effectTargetLabel } from '@/systems/labels';
+import { cardEffectKindLabel, cardEffectDescription, effectTargetLabel, statusDescription } from '@/systems/labels';
 import type { Card, CardEffect, Combatant, Monster } from '@/data/schemas';
 
 const router = useRouter();
@@ -185,7 +185,7 @@ void ui;
         </div>
         <div class="mana">마나 {{ combat.mana }} / {{ combat.maxMana }}</div>
         <ul class="statuses">
-          <li v-for="s in statusEntries(combat.player)" :key="s.key" class="status" :data-key="s.key">
+          <li v-for="s in statusEntries(combat.player)" :key="s.key" class="status" :data-key="s.key" v-tooltip="statusDescription(s.key)">
             {{ s.label }} ×{{ s.count }}
           </li>
         </ul>
@@ -201,7 +201,7 @@ void ui;
         </div>
         <div class="intent">다음: {{ combat.enemyIntent }}</div>
         <ul class="statuses statuses--enemy">
-          <li v-for="s in statusEntries(combat.enemy)" :key="s.key" class="status" :data-key="s.key">
+          <li v-for="s in statusEntries(combat.enemy)" :key="s.key" class="status" :data-key="s.key" v-tooltip="statusDescription(s.key)">
             {{ s.label }} ×{{ s.count }}
           </li>
         </ul>
@@ -223,7 +223,7 @@ void ui;
           <span class="card__rank" :style="{ color: cardBorder(card) }">{{ card.rank }}</span>
         </div>
         <div class="card__effects">
-          <span v-for="(e, ei) in card.effects" :key="ei" class="effect">
+          <span v-for="(e, ei) in card.effects" :key="ei" class="effect" v-tooltip="cardEffectDescription(e)">
             {{ cardEffectKindLabel(e) }}
             <strong class="eff-val">{{ effectiveValue(e) || (e.value ?? '') }}</strong>
             <span

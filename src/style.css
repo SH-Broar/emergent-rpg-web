@@ -113,6 +113,16 @@ button {
   width: 100%;
 }
 
+/* v-tooltip — 효과/상태 설명 플로팅 (body 직속, 단일 재사용 요소) */
+.app-tooltip {
+  position: absolute; z-index: 9999; display: none;
+  max-width: 240px; padding: 0.45rem 0.6rem;
+  background: #0d0e14; color: #e0e0ea;
+  border: 1px solid rgba(142,200,255,0.45); border-radius: 6px;
+  font-size: 0.8rem; line-height: 1.45; pointer-events: none;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.6);
+}
+
 /* 스크롤바 — 게임 톤 */
 ::-webkit-scrollbar {
   width: 8px;
