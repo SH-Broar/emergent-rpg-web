@@ -127,8 +127,8 @@ source = hyperion
 element = wind
 cost = 0
 trigger = manual
-effects = draw:3:self, block:4:self
-flavor = 비가 그치기 전, 한 박자.
+effects = draw:1:self, heal:2:self
+flavor = 비가 그치기 전, 잠시.
 
 # ========== 전설 등급 (보스/시그니처) ==========
 
@@ -261,7 +261,7 @@ name = 멈춘 정각
 rank = legendary
 source = shop
 element = light
-cost = 1
+cost = 2
 trigger = manual
 effects = damage:14:enemy, draw:2:self
 flavor = "정각이 자기를 미뤘다." — 일루네온 시계탑이 *멈춘 한 박자*가 손에 들어왔다.
@@ -281,7 +281,7 @@ name = 홀로그램 반사
 rank = legendary
 source = shop
 element = electric
-cost = 1
+cost = 2
 trigger = manual
 effects = block:12:self, draw:3:self
 flavor = 타코미의 골목 — *거울 속 자신*이 한 박자 먼저 손을 들었다.
@@ -291,7 +291,7 @@ name = 안개의 약속
 rank = legendary
 source = shop
 element = water
-cost = 1
+cost = 2
 trigger = manual
 effects = heal:18:self, draw:1:self
 flavor = 알리메스 안개 — *흩어지기 전*의 약속이 갈비뼈 안쪽으로 들어왔다.
@@ -315,7 +315,7 @@ source = npc
 element = wind
 cost = 0
 trigger = manual
-effects = draw:1:self, block:-1:self
+effects = draw:1:self, next-turn-energy:1:self, heal:-4:self
 flavor = "한 번 더 — 갈게 — 한 걸음 — 빠르게." 루디가 — *제비*의 자세로 — 한 자리 — 옮겨 — 간다.
 
 [card.c-fast-mail]
@@ -325,7 +325,7 @@ source = npc
 element = wind
 cost = 0
 trigger = manual
-effects = draw:1:self, heal:-1:self
+effects = draw:1:self, next-turn-energy:1:self, heal:-4:self
 flavor = "한 통 — 가져왔어." 로큐가 — *길의 결*대로 — 한 자리 — 더 — 흘러간다.
 
 [card.c-balanced-edge]
@@ -435,7 +435,7 @@ source = npc
 element = electric
 cost = 1
 trigger = manual
-effects = damage:7:enemy, apply-status:1:enemy
+effects = damage:9:enemy, apply-status:2:enemy
 flavor = "전기는 — 짧고 — 단단하게." 제로의 — *손끝 한 자락*에서 — 짧은 — 스파크 — 한 점이 — 적의 *약한 자리* — 한 자국을 — 짚어 — 드러낸다.
 
 [card.c-alti-resonance]
@@ -443,9 +443,9 @@ name = 두 자아의 공명
 rank = rare
 source = npc
 element = electric
-cost = 0
+cost = 1
 trigger = manual
-effects = draw:2:self, heal:2:self
+effects = draw:2:self, heal:4:self
 flavor = "...같은 자리에. *알티*." "*알타*." 두 자아가 — 한 자리에서 — *짧고 단정한 — 공명 한 자락*을 — 보탠다. 가슴 안쪽이 — 한 자국 — 가벼워졌다.
 
 [card.c-flame-web]
@@ -455,7 +455,7 @@ source = npc
 element = fire
 cost = 1
 trigger = manual
-effects = damage:6:enemy, apply-status:2:enemy
+effects = damage:8:enemy, apply-status:3:enemy
 flavor = "한 줄 — 더 — 엮어 줄까?" 이그니아가 — *식지 않는 실*을 — 한 줄 — 던진다. 적이 — *불그스름한 실*에 — 한 자리 — 묶인다. *취약*.
 
 [card.c-orca-tide]
@@ -475,7 +475,7 @@ source = npc
 element = earth
 cost = 1
 trigger = manual
-effects = damage:6:enemy, block:4:self
+effects = damage:8:enemy, block:6:self
 flavor = "한 필 — 더 — 보고 가요." 사라사가 — *긴 꼬리*로 — 적을 — 한 번 — 감았다 — 푼다. 한 자락은 — 적에게, 한 자락은 — 그대를 — 두른다.
 
 [card.c-lop-sign]
