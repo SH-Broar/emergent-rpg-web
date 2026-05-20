@@ -122,6 +122,15 @@ event_pool = ev-mono-whisper, ev-fountain-vow, ev-martin-cargo-line, ev-martin-l
 primary_color = water
 specialty_item = i-salt-pearl
 
+[nodemap.nm-act-1-era4-061.region.enicham]
+name = 에니챀 · 발전소 지대
+description = 타코미 옆의 *발전소 지대*. 희미한 투광·기계 소음·메탈 향. 제로의 단정한 자리. 알티-알타의 *AGI 초기 흔적*.
+enemy_pool = m-taco-pixel-beast, shadow-pup
+elite_enemy_pool = m-taco-hologram-mime
+event_pool = ev-enicham-gen-hum, ev-enicham-wire-spire, ev-enicham-zero-bench, ev-enicham-alti-bay, ev-enicham-old-circuit
+primary_color = electric
+specialty_item = i-neon-residue
+
 # ============================================================
 # 일루네온 권역 — 시작
 # ============================================================
@@ -649,10 +658,10 @@ events = ev-tacomi-bloom-veil
 kind = event
 region = tacomi
 label = 나이트 타코미
-description = 레이저 조명과 음악이 밤을 수놓는다. 거리 끝에서 *홀로그램*이 일렁인다.
+description = 레이저 조명과 음악이 밤을 수놓는다. 거리 끝에서 *홀로그램*이 일렁인다. 옆자리 — *에니챀 발전소*의 — 단정한 — 투광 한 자락이 — 길게 — 머문다.
 x = 0.16
 y = 0.50
-neighbors = n-tacomi-alley, n-hologram-field, n-stella-ville, n-bloom-ridge, n-night-neon, n-night-stage, n-night-dj-spot
+neighbors = n-tacomi-alley, n-hologram-field, n-stella-ville, n-bloom-ridge, n-night-neon, n-night-stage, n-night-dj-spot, n-enicham
 events = ev-tacomi-night-stand
 npcs = npc-nova
 
@@ -2339,3 +2348,62 @@ description = 등대 옆의 — *작은 망지대*. 바다 — *한 줄*을 — 
 x = 0.63
 y = 0.71
 neighbors = n-martin-lighthouse
+
+
+# ============================================================
+# 에니챀 권역 — 발전소 지대 (타코미 옆, electric primary, 5 노드).
+# ============================================================
+
+[nodemap.nm-act-1-era4-061.node.n-enicham]
+kind = village
+region = enicham
+label = 에니챀 운영소
+description = *발전소 입구*. 단정한 작업복의 — *제로*가 — 작은 클립보드 한 자국으로 — 들고난다. 옆자리에 — *알티-알타*가 — *짧은 인사 한 마디*를 — 보탠다.
+x = 0.13
+y = 0.44
+neighbors = n-night-tacomi, n-enicham-gen-room, n-enicham-wire-spire, n-enicham-zero-room, n-enicham-alti-bay
+npcs = npc-zero, npc-alti-alta
+events = ev-enicham-old-circuit
+
+[nodemap.nm-act-1-era4-061.node.n-enicham-gen-room]
+kind = combat
+region = enicham
+label = 발전실
+description = *내부 발전실*. 코일의 — *짧고 단정한 윙소리 한 자락*이 — 길게 — 머문다. 가끔 — *스파크 — 한 점*이 — 자기 자리에서 — 일어선다.
+x = 0.10
+y = 0.40
+neighbors = n-enicham, n-enicham-wire-spire
+enemy = shadow-pup
+events = ev-enicham-gen-hum
+
+[nodemap.nm-act-1-era4-061.node.n-enicham-wire-spire]
+kind = gather
+region = enicham
+label = 송전탑
+description = 발전소 — *송전탑 한 자루*. 철탑의 — 단단한 자세 — 한 줄. 바람 한 자락이 — 송전선 — *한 줄*을 — 길게 — 타고 — 흐른다.
+x = 0.07
+y = 0.36
+neighbors = n-enicham, n-enicham-gen-room
+events = ev-enicham-wire-spire
+
+[nodemap.nm-act-1-era4-061.node.n-enicham-zero-room]
+kind = event
+region = enicham
+label = 제로의 작업실
+description = *제로의 단정한 작업대 한 자리*. 공구가 — *결대로* — 가지런하다. 책상 한 자락에 — *작은 칩 한 묶음*이 — 단정하게 — 놓여 있다.
+x = 0.13
+y = 0.38
+neighbors = n-enicham, n-enicham-alti-bay
+npcs = npc-zero
+events = ev-enicham-zero-bench
+
+[nodemap.nm-act-1-era4-061.node.n-enicham-alti-bay]
+kind = rest
+region = enicham
+label = 알티 자리
+description = *알티-알타의 충전 자리*. 단정한 책상 옆에 — *작은 출력 단자 한 줄*이 — *조용하게* — 깜빡인다. *두 자아*가 — 한 자리에 — 머문다.
+x = 0.10
+y = 0.36
+neighbors = n-enicham, n-enicham-zero-room
+npcs = npc-alti-alta
+events = ev-enicham-alti-bay

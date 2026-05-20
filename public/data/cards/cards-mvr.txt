@@ -427,3 +427,23 @@ cost = 2
 trigger = manual
 effects = growing-block:1:self
 flavor = "엄마한테 — 도움이 되고 싶어요!" 쿠르쿠마의 *잎새 한 자락*이 — 한 번 — 한 번 — *자라난다*. *쓸수록 — 더 — 두꺼워지는* — 한 자리.
+
+[card.c-zero-spark]
+name = 한 점의 한 자국
+rank = rare
+source = npc
+element = electric
+cost = 1
+trigger = manual
+effects = damage:7:enemy, apply-status:1:enemy
+flavor = "전기는 — 짧고 — 단단하게." 제로의 — *손끝 한 자락*에서 — 짧은 — 스파크 — 한 점이 — 적의 *약한 자리* — 한 자국을 — 짚어 — 드러낸다.
+
+[card.c-alti-resonance]
+name = 두 자아의 공명
+rank = rare
+source = npc
+element = electric
+cost = 0
+trigger = manual
+effects = draw:2:self, heal:2:self
+flavor = "...같은 자리에. *알티*." "*알타*." 두 자아가 — 한 자리에서 — *짧고 단정한 — 공명 한 자락*을 — 보탠다. 가슴 안쪽이 — 한 자국 — 가벼워졌다.
