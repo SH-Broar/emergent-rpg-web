@@ -822,6 +822,7 @@ const DATA_FILES = [
   'data/npcs/act-1-enicham.txt',
   'data/npcs/act-1-triflower.txt',
   'data/npcs/act-1-falcon.txt',
+  'data/npcs/act-1-tradepost.txt',
   // === 공용 ===
   'data/races/race-human.txt',
   'data/races/race-moth.txt',

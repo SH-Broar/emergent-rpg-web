@@ -164,6 +164,15 @@ event_pool = ev-falcon-shore, ev-falcon-core
 primary_color = wind
 specialty_item = i-sky-shard
 
+[nodemap.nm-act-1-era4-061.region.tradepost]
+name = 초원 교역소
+description = 리아그랄타 초원 서쪽의 *대상 교역지*. 여러 행상이 천막을 친다. 라미아 상인 사라사가 *직물과 향신료*를 펼친다. 평화로운 거래의 자리.
+enemy_pool = m-ria-stormram, shadow-pup
+elite_enemy_pool = m-ria-thunder-wolf
+event_pool = ev-trade-sarasa, ev-trade-caravan
+primary_color = earth
+specialty_item = i-trade-silk
+
 # ============================================================
 # 일루네온 권역 — 시작
 # ============================================================
@@ -551,10 +560,10 @@ npcs = npc-betelgeuse
 kind = combat
 region = riagralta
 label = 리아그랄타 평원
-description = 일루네온 북쪽으로 끝없이 펼쳐진 초원. 양 떼 너머에서 *그림자 늑대*가 보인다.
+description = 일루네온 북쪽으로 끝없이 펼쳐진 초원. 양 떼 너머에서 *그림자 늑대*가 보인다. 서쪽으로 *초원 교역소*의 천막이 늘어선다.
 x = 0.50
 y = 0.30
-neighbors = n-iluneon-square, n-ode-slope, n-reshud-junction, n-ria-flock, n-ria-grass-hill, n-ria-wind-path, n-ria-tent, n-ode-foot
+neighbors = n-iluneon-square, n-ode-slope, n-reshud-junction, n-ria-flock, n-ria-grass-hill, n-ria-wind-path, n-ria-tent, n-ode-foot, n-trade-post
 enemy = shadow-pup
 
 [nodemap.nm-act-1-era4-061.node.n-ode-slope]
@@ -2417,3 +2426,57 @@ x = 0.97
 y = 0.38
 neighbors = n-falcon-peak
 events = ev-falcon-core
+
+
+# ============================================================
+# 초원 교역소 (리아그랄타 서쪽, earth, 5노드). 평화로운 대상 교역지.
+# 라미아 상인 사라사(영입 O) + 상점 기능. 라미아 마을은 아님 — 여러 행상이 모이는 자리.
+# ============================================================
+
+[nodemap.nm-act-1-era4-061.node.n-trade-post]
+kind = village
+region = tradepost
+label = 초원 교역소
+description = 리아그랄타 초원 서쪽 — *천막이 늘어선 대상 교역지*. *라미아 상인 사라사*가 직물과 향신료를 펼친 채, 긴 꼬리를 한 자락 말고 손님을 맞는다.
+x = 0.45
+y = 0.28
+neighbors = n-riagralta, n-trade-stalls, n-trade-caravan, n-trade-road, n-trade-well
+npcs = npc-sarasa
+events = ev-trade-sarasa
+
+[nodemap.nm-act-1-era4-061.node.n-trade-stalls]
+kind = shop
+region = tradepost
+label = 좌판 거리
+description = 교역소 — *좌판이 줄지어 선 자리*. 여러 종족 행상이 — 물건을 — 한 줄로 — 늘어놓는다.
+x = 0.42
+y = 0.25
+neighbors = n-trade-post
+
+[nodemap.nm-act-1-era4-061.node.n-trade-caravan]
+kind = rest
+region = tradepost
+label = 대상대 쉼터
+description = 교역소 — *대상대가 쉬어 가는 자리*. 모닥불 한 줄 옆에 — 짐을 — 부린 — 낙타가 — 눕는다.
+x = 0.48
+y = 0.24
+neighbors = n-trade-post
+
+[nodemap.nm-act-1-era4-061.node.n-trade-road]
+kind = combat
+region = tradepost
+label = 교역로
+description = 교역소로 — 드는 *초원 길*. 풀숲에서 — *그림자*가 — 한 번 — 일어선다. 행상들이 — 호위를 — 청하는 자리.
+x = 0.43
+y = 0.31
+neighbors = n-trade-post
+enemy = shadow-pup
+
+[nodemap.nm-act-1-era4-061.node.n-trade-well]
+kind = gather
+region = tradepost
+label = 교역소 우물
+description = 교역소 한 자리의 — *오래된 우물*. 물 위에 — *조각 구름*이 — 한 줄 — 비친다. 행상들이 — 물병을 — 채운다.
+x = 0.46
+y = 0.32
+neighbors = n-trade-post

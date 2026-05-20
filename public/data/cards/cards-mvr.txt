@@ -467,3 +467,13 @@ cost = 1
 trigger = manual
 effects = damage:9:enemy, block:5:self
 flavor = "위는 — 거칠어. 숨 — 한 번 — 더." 클루루가 — *흑백 꼬리*로 — 물 한 자락을 — 쳐 올린다. 적에게 — 한 물결, 그대에게 — 한 겹.
+
+[card.c-trade-coil]
+name = 또꼬리 한 감기
+rank = rare
+source = npc
+element = earth
+cost = 1
+trigger = manual
+effects = damage:6:enemy, block:4:self
+flavor = "한 필 — 더 — 보고 가요." 사라사가 — *긴 꼬리*로 — 적을 — 한 번 — 감았다 — 푼다. 한 자락은 — 적에게, 한 자락은 — 그대를 — 두른다.

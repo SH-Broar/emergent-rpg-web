@@ -3612,3 +3612,60 @@ result_text = 바람이 굳은 — *하늘 조각 한 묶음*이 — 손에 — 
 label = 그대로 — 둔다
 custom = mag-color-1
 result_text = 둥지가 — *자기 자리에* — 그대로 — 굳어 — 있었다. *다음에 — 살아 오른 자*의 — 몫으로.
+
+
+# ============================================================
+# 초원 교역소 권역 (earth, 평화 교역지). 단편 2.
+# 라미아 상인 사라사 + 대상대 행상.
+# ============================================================
+
+# --- 교역소 1. n-trade-post (라미아 상인 사라사) ---
+[event.ev-trade-sarasa]
+name = 라미아 상인의 좌판
+node_kinds = event, village
+weight = 1
+once_per_run = true
+body = 초원 교역소 — *사라사의 좌판*. 긴 꼬리를 — 한 자락 — 똬리로 — 말고, 직물과 향신료를 — 결 고운 순서로 — 펼쳐 둔다. "한 필 — 더 — 보고 가요. 깎아 줄게."
+
+[event.ev-trade-sarasa.choice.1]
+label = 직물 한 필을 — 산다
+gold = -8
+custom = def-color-1
+affinity = npc-sarasa:1
+result_text = 매끄러운 직물 한 필이 — 손에 — 들어왔다. 사라사가 — *꼬리 끝*을 — 한 번 — 살랑였다. "또 — 와요."
+
+[event.ev-trade-sarasa.choice.2]
+label = 흥정을 — 한 자락 — 건다
+affinity = npc-sarasa:1
+gold = 10
+result_text = "...말이 — 통하네." 사라사가 — *눈을 — 가늘게* — 뜨고 — 웃었다. 덤으로 — 동전 한 줌이 — 그대 쪽으로 — 밀려왔다.
+
+[event.ev-trade-sarasa.choice.3]
+label = 구경만 — 하고 — 지나간다
+draw = 1
+result_text = 좌판의 — *색색 직물*이 — 한 줄로 — 눈에 — 들어왔다 — 지나갔다. 사라사가 — "천천히 — 봐요." 한 마디.
+
+
+# --- 교역소 2. n-trade-caravan (대상대 행상) ---
+[event.ev-trade-caravan]
+name = 대상대 한 자리
+node_kinds = event, rest, gather
+weight = 1
+once_per_run = true
+body = 교역소 — *대상대가 쉬어 가는 자리*. 모닥불 한 줄 옆에 — 여러 종족 행상이 — 짐을 — 부려 둔다. 누군가 — *낯선 물건 하나*를 — 꺼내 — 보인다.
+
+[event.ev-trade-caravan.choice.1]
+label = 낯선 물건을 — 산다
+gold = -6
+custom = mag-color-1
+result_text = 어느 먼 마을의 — *작은 물건 하나*가 — 손에 — 닿았다. 쓸모는 — 천천히 — 알게 — 될 — 자리.
+
+[event.ev-trade-caravan.choice.2]
+label = 모닥불에 — 잠시 — 앉는다
+hp = 6
+result_text = 모닥불 한 줄이 — 어깨를 — *따뜻하게* — 데웠다. 행상들의 — 낮은 이야기가 — 한 자락 — 지나갔다.
+
+[event.ev-trade-caravan.choice.3]
+label = 길 소식을 — 묻는다
+gold = 8
+result_text = "...북쪽 길은 — 요즘 — 거칠대요." 한 행상이 — *동전 몇 닢*어치 — 소식을 — 한 줄 — 건넸다.
