@@ -331,4 +331,11 @@ export interface RunState {
   // === 종료 ===
   ended: boolean;
   endReason?: 'hp-zero' | 'free-end' | 'time-up' | 'boss-cleared' | 'boss-defeated';
+
+  /**
+   * 메타 흡수(absorbRunIntoMeta) *완료* 플래그 — 런당 정확히 1회만 게이지/영혼 반영.
+   * RunEndView가 새로고침·재마운트되어도 중복 적용을 막는 가드.
+   * EMPTY_RUN 기본 미설정(=false). 옛 세이브 호환 위해 optional.
+   */
+  metaAbsorbed?: boolean;
 }

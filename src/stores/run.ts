@@ -105,6 +105,7 @@ const EMPTY_RUN: RunState = {
   newRelicEncounters: [],
   newNpcEncounters: [],
   ended: false,
+  metaAbsorbed: false,
 };
 
 export const useRunStore = defineStore('run', {

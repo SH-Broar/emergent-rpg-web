@@ -106,12 +106,9 @@ function backToMap() {
 }
 
 function returnToMain() {
+  // 흡수·리셋은 RunEndView(/game/end)가 일괄 처리 — 모든 종료 경로를 요약 화면으로 합류.
   run.endRun('hp-zero');
-  import('@/systems/progression').then(({ absorbRunIntoMeta }) => {
-    absorbRunIntoMeta(run.data);
-    run.reset();
-    router.push('/main');
-  });
+  router.push('/game/end');
 }
 
 onMounted(() => {

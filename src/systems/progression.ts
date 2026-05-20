@@ -16,7 +16,17 @@ import { useUiStore } from '@/stores/ui';
 
 /**
  * 런 종료를 메타에 반영. 게이지 갱신 + 도감 등록 + 영혼 자원 + 토스트.
- * 반환: 발급된 콘텐츠 해금 토큰 목록.
+ *
+ * 중복 가드: `run.metaAbsorbed`가 true면 meta/codex/soul *적용을 건너뛰고*
+ * 표시용 값(hyperionGain/researchGain/soulGain/granted)만 계산해 반환.
+ * RunEndView가 새로고침·재마운트되어도 게이지가 한 번 이상 부풀지 않는다.
+ * 최초 적용 시 `run.metaAbsorbed = true`로 마킹.
+ *
+ * 반환:
+ *  - granted: 이번 호출에서 발급된 콘텐츠 해금 토큰 (이미 흡수된 런은 [])
+ *  - soulGain: 이 런이 외부로 가져간 영혼 (표시값)
+ *  - hyperionGain: 외부 획득 히페리온 (보스단계*10 + NPC친밀도합)
+ *  - researchGain: 외부 획득 연구 (미션*10 + 보스*25)
  */
 export function absorbRunIntoMeta(run: RunState) {
   const meta = useMetaStore();
@@ -34,6 +44,20 @@ export function absorbRunIntoMeta(run: RunState) {
   const missionsCleared = run.missionsCleared.length;
   const bossesCleared = run.bossesCleared.length;
 
+  // === 표시용 외부 획득 값 (적용 여부와 무관하게 항상 계산) ===
+  // 히페리온(외부 획득) = 보스단계*10 + NPC친밀도합 (게이지 hyperion1 + hyperion2 입력 합)
+  const hyperionGain = hyperionStageClears * 10 + npcAffinityGain;
+  // 연구(외부 획득) = 미션*10 + 보스*25 (게이지 insight1 + insight2 입력 합)
+  const researchGain = missionsCleared * 10 + bossesCleared * 25;
+  // 영혼 — 보스 클리어 시 큰 보너스, 그 외 소량 (기존 공식 유지)
+  const soulGain = bossesCleared * 5 + hyperionStageClears + Math.floor(npcAffinityGain / 10);
+
+  // 이미 흡수된 런이면 *적용 없이* 표시값만 반환 — 재마운트/새로고침 중복 방지.
+  if (run.metaAbsorbed) {
+    return { granted: [], soulGain, hyperionGain, researchGain };
+  }
+  run.metaAbsorbed = true;
+
   // 게이지 변환 (이미 meta.ts의 absorbRunResult가 처리)
   const granted = meta.absorbRunResult({
     hyperionStageClears,
@@ -50,8 +74,6 @@ export function absorbRunIntoMeta(run: RunState) {
     bosses: run.bossesCleared,
   });
 
-  // 영혼 자원 — 보스 클리어 시 큰 보너스, 그 외 소량
-  const soulGain = bossesCleared * 5 + hyperionStageClears + Math.floor(npcAffinityGain / 10);
   meta.addSoul(soulGain);
 
   // UI 알림
@@ -62,5 +84,5 @@ export function absorbRunIntoMeta(run: RunState) {
     ui.toast('info', `영혼 ${soulGain} 획득`);
   }
 
-  return { granted, soulGain };
+  return { granted, soulGain, hyperionGain, researchGain };
 }
