@@ -75,15 +75,15 @@ upgrade_to = c-gentle-guard-plus
 flavor = 누군가가 곁에 있다는 느낌만으로 단단해진다.
 
 [card.c-double-strike]
-name = 연속 공격
+name = 쥔 손만큼
 rank = common
 source = event
 element = iron
-cost = 2
+cost = 1
 trigger = manual
-effects = damage:5:enemy, damage:5:enemy
+effects = damage-per-hand:3:enemy
 upgrade_to = c-double-strike-plus
-flavor = 한 번이 모자라다면, 두 번.
+flavor = 손에 쥔 패가 많을수록 — 한 번에 — 더 — 무겁다.
 
 [card.c-focused-mind]
 name = 집중
@@ -221,14 +221,14 @@ effects = block:12:self
 flavor = 곁에 있는 것이 — 두 사람으로 늘었다.
 
 [card.c-double-strike-plus]
-name = 연속 공격+
+name = 쥔 손만큼+
 rank = common
 source = event
 element = iron
-cost = 2
+cost = 1
 trigger = manual
-effects = damage:7:enemy, damage:7:enemy
-flavor = 한 번, 두 번, — 두 번 다 더 무겁게.
+effects = damage-per-hand:4:enemy
+flavor = 손에 쥔 패 — 한 장 한 장이 — 더 무겁게 — 실린다.
 
 [card.c-focused-mind-plus]
 name = 집중+
@@ -379,14 +379,14 @@ effects = damage:4:enemy
 flavor = "심심해. — 한 판." 리제가 — 한 발을 — 굴리고 — *같은 한 판* 한 장을 — 그대 손에 — 다시 — 건넨다. *이번 한 판은* — 비용이 — 없다.
 
 [card.c-spirit-call]
-name = 영혼의 한 자락
+name = 모인 영혼들
 rank = common
 source = npc
 element = dark
-cost = 0
+cost = 1
 trigger = manual
-effects = draw:1:self
-flavor = "다음 생에서 — 또 들러 주세요." 아카샤가 — *지박령 연기*를 — 잠시 — 풀고 — *한 자락*을 — 손에 — 건넨다.
+effects = damage-color-count:2:enemy, draw:1:self
+flavor = "다음 생에서 — 또 들러 주세요." 아카샤가 — 부른 *여러 색의 영혼*이 — 한 자리에 — 모여, 색이 — 많을수록 — 더 — 짙게 — 덮친다.
 
 [card.c-warm-cup]
 name = 따뜻한 한 잔
@@ -517,3 +517,48 @@ cost = 2
 trigger = manual
 effects = damage:5:enemy, damage:5:enemy, damage:5:enemy
 flavor = "...빠른 자만, 따라와라." 토라미미가 — *번개 한 줄*을 — 타고 — 세 번 — 가른다. 눈 깜빡할 — 한 호흡.
+
+
+# ============================================================
+# 측정 어려운 메커니즘 카드 — 1차 배치 (컬러/패/HP 계열).
+# ============================================================
+
+[card.c-prism-strike]
+name = 가장 짙은 한 색
+rank = rare
+source = hyperion
+element = light
+cost = 1
+trigger = manual
+effects = damage-top-color:1:enemy
+flavor = *가장 높이 쌓인 한 색*이 — 그대로 — 한 줄로 — 쏟아진다. 한 색에 — 깊이 — 기운 자일수록 — 매섭다.
+
+[card.c-prism-guard]
+name = 가장 짙은 한 겹
+rank = rare
+source = hyperion
+element = water
+cost = 1
+trigger = manual
+effects = block-top-color:1:self
+flavor = *가장 높이 쌓인 한 색*이 — 등 뒤에 — 한 겹으로 — 선다. 치우친 자의 — 단단함.
+
+[card.c-spectrum-edge]
+name = 여덟 결의 한 칼
+rank = rare
+source = event
+element = iron
+cost = 2
+trigger = manual
+effects = damage-color-count:3:enemy
+flavor = *지닌 색이 — 많을수록* — 칼끝이 — 여러 갈래로 — 갈라져 — 친다. 넓게 — 익힌 자의 — 한 칼.
+
+[card.c-blood-pact]
+name = 피로 산 한 방
+rank = rare
+source = event
+element = fire
+cost = 1
+trigger = manual
+effects = damage-from-hp:6:enemy
+flavor = *제 피 한 줄*을 — 대가로 — 내어, 곱절로 — 되돌려 — 친다. 갈비뼈가 — 비는 — 만큼 — 적이 — 무너진다.

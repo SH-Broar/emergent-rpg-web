@@ -291,7 +291,91 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
       t.block += value;
     }
   },
+  // === 측정 어려운 메커니즘 (1차 배치) — 컬러/상태/HP/패 ===
+  // 순수 피해 헬퍼: block 흡수 후 hp 차감.
+  // 8 컬러 중 *최댓값* × value (보강 무시).
+  'damage-top-color': (e, c) => {
+    const colors = useRunStore().data.colors;
+    const top = Math.max(
+      colors.fire, colors.water, colors.electric, colors.iron,
+      colors.earth, colors.wind, colors.light, colors.dark,
+    );
+    dealRawDamage(resolveTargets(e.target ?? 'enemy', c), Math.floor(top * (e.value ?? 1)));
+  },
+  // *0보다 큰 컬러 종류 수* × value.
+  'damage-color-count': (e, c) => {
+    const colors = useRunStore().data.colors;
+    const count = [
+      colors.fire, colors.water, colors.electric, colors.iron,
+      colors.earth, colors.wind, colors.light, colors.dark,
+    ].filter((v) => v > 0).length;
+    dealRawDamage(resolveTargets(e.target ?? 'enemy', c), count * (e.value ?? 1));
+  },
+  // 8 컬러 중 *최댓값* × value 방어.
+  'block-top-color': (e, c) => {
+    const colors = useRunStore().data.colors;
+    const top = Math.max(
+      colors.fire, colors.water, colors.electric, colors.iron,
+      colors.earth, colors.wind, colors.light, colors.dark,
+    );
+    c.player.block += Math.floor(top * (e.value ?? 1));
+  },
+  // params.color 컬러 ≥ params.threshold면 value장 드로우.
+  'draw-if-color': (e, c) => {
+    const color = (e.params?.color as keyof typeof zeroColors) ?? 'fire';
+    const threshold = Number(e.params?.threshold ?? 5);
+    const colors = useRunStore().data.colors;
+    if ((colors[color] ?? 0) >= threshold) {
+      const { drawn, newDrawPile, newDiscardPile } = drawCards(c.drawPile, c.discardPile, e.value ?? 1);
+      c.hand = [...c.hand, ...drawn];
+      c.drawPile = newDrawPile;
+      c.discardPile = newDiscardPile;
+    }
+  },
+  // (적 디버프 스택 총합) × value + base 데미지.
+  'damage-per-debuff': (e, c) => {
+    const s = c.enemy.statuses;
+    const debuffSum = (s.vulnerable ?? 0) + (s.weakness ?? 0) + (s.frail ?? 0) + (s.poison ?? 0);
+    const atkBonus = currentBonuses().damage + statusBonusForCardEffectKind('damage', c.player.statuses);
+    const value = applyModifiers((e.value ?? 0) * debuffSum + atkBonus, 'damage-out-add', 'damage-out-mul');
+    dealRawDamage(resolveTargets(e.target ?? 'enemy', c), value);
+  },
+  // 적 *취약 스택 제거* → 제거량 × value 추가 데미지.
+  'consume-vulnerable': (e, c) => {
+    const vuln = c.enemy.statuses.vulnerable ?? 0;
+    c.enemy.statuses.vulnerable = 0;
+    dealRawDamage([c.enemy], vuln * (e.value ?? 1));
+  },
+  // 자기 HP를 value 지불, 지불액 × params.mult 데미지.
+  'damage-from-hp': (e, c) => {
+    const pay = Math.min(e.value ?? 0, Math.max(0, c.player.hp - 1));
+    c.player.hp -= pay;
+    const mult = Number(e.params?.mult ?? 2);
+    dealRawDamage(resolveTargets(e.target ?? 'enemy', c), Math.floor(pay * mult));
+  },
+  // *현재 손패 수* × value 데미지 (이 카드 사용 후 핸드 — 자기 자신은 아직 hand에 있음).
+  'damage-per-hand': (e, c) => {
+    const handCount = c.hand.length;
+    const atkBonus = currentBonuses().damage + statusBonusForCardEffectKind('damage', c.player.statuses);
+    const value = applyModifiers((e.value ?? 1) * handCount + atkBonus, 'damage-out-add', 'damage-out-mul');
+    dealRawDamage(resolveTargets(e.target ?? 'enemy', c), value);
+  },
 };
+
+/** 컬러 키 참조용 (draw-if-color params 타입). */
+const zeroColors = {
+  fire: 0, water: 0, electric: 0, iron: 0, earth: 0, wind: 0, light: 0, dark: 0,
+};
+
+/** 순수 피해 — block 흡수 후 hp 차감. 컬러/특수 효과 공용. */
+function dealRawDamage(targets: Combatant[], value: number) {
+  const v = Math.max(0, value);
+  for (const t of targets) {
+    const absorbed = Math.min(t.block, v);
+    t.block -= absorbed;
+    t.hp = Math.max(0, t.hp - (v - absorbed));
+  }
+}
 
 function resolveTargets(target: EffectTarget, c: CombatState): Combatant[] {
   switch (target) {

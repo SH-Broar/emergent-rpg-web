@@ -86,7 +86,16 @@ export type CardEffectKind =
   | 'apply-status'        // 상태 부여
   | 'return-hand-to-deck' // 손에서 *가장 오른쪽* 1장을 drawPile 맨 위로 (칼리번)
   | 'next-turn-energy'    // 다음 턴 시작 에너지 +value (칼리번)
-  | 'growing-block';      // block:value + *이 카드 인스턴스의 bonusBlock +1* (쿠르쿠마)
+  | 'growing-block'       // block:value + *이 카드 인스턴스의 bonusBlock +1* (쿠르쿠마)
+  // === 측정 어려운 메커니즘 (1차 배치) ===
+  | 'damage-top-color'    // 8 컬러 중 *최댓값* × value 데미지 (보강 무시)
+  | 'damage-color-count'  // *0보다 큰 컬러 종류 수* × value 데미지
+  | 'block-top-color'     // 8 컬러 중 *최댓값* × value 방어
+  | 'draw-if-color'       // params.color 컬러 ≥ params.threshold면 value장 드로우
+  | 'damage-per-debuff'   // (적 디버프 스택 총합) × value + base 데미지
+  | 'consume-vulnerable'  // 적 *취약 스택 제거* → 제거량 × value 추가 데미지
+  | 'damage-from-hp'      // 자기 HP를 value 지불, 지불액 × params.mult 데미지
+  | 'damage-per-hand';    // *현재 손패 수* × value 데미지
 
 /** 효과 대상 — target. */
 export type EffectTarget = 'self' | 'enemy' | 'all-enemies' | 'random-enemy';
