@@ -939,3 +939,178 @@ cost = 1
 trigger = manual
 effects = damage-from-hp:7:enemy, draw:1:self
 flavor = *제 피*를 — 한 줌 — 깎아 — 곱절로 — 되갚고, 그 — 대가로 — 다음 — 한 수를 — 끌어 — 온다. 비운 — 자리에 — 새 — 길이 — 열린다.
+
+
+# ============================================================
+# 상점 평범 카드 (4차 배치) — source=shop. 얌전한 단순 효과, 채움용.
+# ============================================================
+
+[card.c-shop-cut]
+name = 무난한 베기
+rank = common
+source = shop
+element = iron
+cost = 1
+trigger = manual
+effects = damage:7:enemy
+flavor = 어느 상점에서나 — 파는 — 흔한 한 칼. 무난하게 — 잘 — 든다.
+
+[card.c-shop-brace]
+name = 무난한 막기
+rank = common
+source = shop
+element = earth
+cost = 1
+trigger = manual
+effects = block:7:self
+flavor = 흔한 — 방패 자세. 한 번은 — 막아 — 준다.
+
+[card.c-shop-flick]
+name = 가벼운 손짓
+rank = basic
+source = shop
+element = wind
+cost = 0
+trigger = manual
+effects = draw:1:self
+flavor = 손목 — 한 번. 다음 — 한 장이 — 따라온다.
+
+[card.c-shop-sip]
+name = 한 모금
+rank = common
+source = shop
+element = water
+cost = 1
+trigger = manual
+effects = heal:6:self
+flavor = 흔한 — 물병 한 모금. 숨이 — 돌아온다.
+
+[card.c-shop-poke]
+name = 잽
+rank = basic
+source = shop
+element = fire
+cost = 0
+trigger = manual
+effects = damage:4:enemy
+flavor = 가볍게 — 한 번. 작아도 — 한 대는 — 한 대.
+
+[card.c-shop-heavy]
+name = 묵직한 일격
+rank = common
+source = shop
+element = iron
+cost = 2
+trigger = manual
+effects = damage:11:enemy
+flavor = 흔하지만 — 묵직한 — 한 방. 값 — 한다.
+
+[card.c-shop-wall]
+name = 든든한 벽
+rank = common
+source = shop
+element = earth
+cost = 2
+trigger = manual
+effects = block:13:self
+flavor = 흔한 — 큰 방패. 한 턴은 — 든든하다.
+
+[card.c-shop-study]
+name = 잠깐 살핌
+rank = common
+source = shop
+element = wind
+cost = 1
+trigger = manual
+effects = draw:2:self
+flavor = 잠깐 — 손패를 — 본다. 두 장이 — 따라온다.
+
+[card.c-shop-salve]
+name = 응급 처치
+rank = common
+source = shop
+element = water
+cost = 1
+trigger = manual
+effects = heal:4:self, block:3:self
+flavor = 흔한 — 응급 약. 조금 — 낫고, 조금 — 단단해진다.
+
+
+# ============================================================
+# 미니 마을 전설 카드 (4차 배치) — 특징적인 곳만. source=shop, 지역 특이 효과.
+# ============================================================
+
+[card.c-triflower-emberstorm]
+name = 잿불 폭풍
+rank = legendary
+source = shop
+element = fire
+cost = 2
+trigger = manual
+effects = damage:14:enemy, apply-status:3:enemy:poison
+flavor = 트리플라워 분화구의 — *식지 않은 불씨*가 — 한꺼번에 — 쏟아진다. 살갗에 — 오래 — 남는 — 잿불.
+
+[card.c-falcon-skydive]
+name = 급강하
+rank = legendary
+source = shop
+element = wind
+cost = 2
+trigger = manual
+effects = damage-per-hand:5:enemy
+flavor = 공중 군도 — 가장 높은 자리에서, *손에 쥔 만큼* — 한 번에 — 내리꽂는 — 급강하.
+
+[card.c-yusezria-corebreak]
+name = 정수핵 깨기
+rank = legendary
+source = shop
+element = iron
+cost = 2
+trigger = manual
+effects = block:18:self, block-to-damage:1:enemy
+flavor = 유스제리아 — 철과 물이 — 굳은 *막다른 벽*. 먼저 — 단단해진 만큼, 그대로 — 되돌려 — 친다.
+
+[card.c-diropel-totem]
+name = 무늬의 빛
+rank = legendary
+source = shop
+element = earth
+cost = 2
+trigger = manual
+effects = damage-color-count:4:enemy, draw:1:self
+flavor = 딜롭의 — *얼굴 무늬*가 — 여러 색으로 — 빛난다. 지닌 색이 — 많을수록 — 더 — 짙게 — 친다.
+
+
+# ============================================================
+# 마무리 조합 카드 (4차 배치) — 측정 어려운 조합.
+# ============================================================
+
+[card.c-soul-harvest]
+name = 영혼 거두기
+rank = rare
+source = event
+element = dark
+cost = 2
+trigger = manual
+effects = damage-per-debuff:4:enemy, apply-status:2:enemy:poison
+flavor = 적이 — 짊어진 — *모든 약함*을 — 한꺼번에 — 거두고, 그 자리에 — 다시 — 독을 — 심는다.
+
+[card.c-wild-rush]
+name = 야성의 돌진
+rank = common
+source = npc
+element = fire
+cost = 1
+trigger = manual
+effects = apply-status:1:self:feral, damage-per-hand:3:enemy
+flavor = "...생각은 — 나중에." 짐승이 — 든 — 자가, *손에 쥔 만큼* — 앞뒤 없이 — 들이친다. 등 뒤는 — 잊은 채.
+
+[card.c-color-surge]
+name = 색의 분출
+rank = rare
+source = hyperion
+element = light
+cost = 1
+trigger = manual
+effects = damage-top-color:1:enemy, draw-if-color:1:self:light:5
+flavor = *가장 짙은 한 색*이 — 솟구쳐 — 친다. 빛이 — 충분히 — 쌓였다면, 다음 — 한 수까지 — 따라온다.
