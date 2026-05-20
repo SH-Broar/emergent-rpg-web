@@ -238,3 +238,12 @@ category = specialty
 region_id = diropel
 effects =
 consumable = true
+
+[item.i-coral-pearl]
+name = 산호 진주
+description = 산호 해안 — *깊은 골에서 캔 진주 한 알*. 키시나 소금 진주와 달리 — *푸른빛*이 — 한 자락 — 돈다. 인어가 — 가장 — 아끼는 — 색.
+rank = rare
+category = specialty
+region_id = coral-coast
+effects =
+consumable = true

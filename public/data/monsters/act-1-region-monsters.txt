@@ -404,3 +404,29 @@ intents = attack:17, defend:9, attack:20, buff:2, attack:14
 gold = 34
 time_shards = 12
 card_drops =
+
+# ============================================================
+# 산호 해안 (해양 사냥터, 중위험)
+# ============================================================
+
+[monster.m-coral-shark]
+name = 산호 상어
+tier = minion
+hp = 24
+attack = 12
+defense = 1
+intents = attack:12, attack:10, attack:14, defend:3
+gold = 12
+time_shards = 4
+card_drops =
+
+[monster.m-coral-jelly]
+name = 산호 해파리
+tier = minion
+hp = 20
+attack = 9
+defense = 0
+intents = attack:9, debuff:1, attack:11, attack:8
+gold = 12
+time_shards = 4
+card_drops =

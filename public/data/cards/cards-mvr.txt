@@ -487,3 +487,13 @@ cost = 1
 trigger = manual
 effects = draw:1:self, block:5:self
 flavor = 리포가 — *긴 귀*를 — 한 번 — 늘어뜨려, 먼 소리를 — 먼저 — 듣는다. 손바닥에 — *무늬 한 줄*을 — 그어 — 다음 한 수를 — 일러 준다.
+
+[card.c-tide-veil]
+name = 물의 한 겹
+rank = rare
+source = npc
+element = water
+cost = 1
+trigger = manual
+effects = block:6:self, heal:3:self
+flavor = "물살은 — 내가 — 고를게요." 마린이 — *푸른 꼬리*로 — 물 한 겹을 — 둘러 준다. 갈비뼈 안쪽이 — *서늘하게* — 가벼워진다.

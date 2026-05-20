@@ -3727,3 +3727,87 @@ result_text = 긴 귀·짧은 귀가 — 한 기둥에 — 나란한 자리. 가
 label = 안료 흔적을 — 한 자락 — 긁어 — 챙긴다
 gold = 10
 result_text = 토템 밑동에 — *마른 안료 한 조각*이 — 떨어져 있었다. 오래된 — 색 한 자락.
+
+
+# ============================================================
+# 산호 해안 권역 (water, 해양 사냥터). 단편 3.
+# 인어 마린(영입)·세이렌 세이라 + 범고래 클루루 앙숙.
+# ============================================================
+
+# --- 산호 1. n-coral-rest (인어·세이렌 바위) ---
+[event.ev-coral-rest]
+name = 인어 바위
+node_kinds = event, village
+weight = 1
+once_per_run = true
+body = 산호 해안 — *물 위로 솟은 너른 바위*. *마린*이 — 푸른 꼬리를 — 한 자락 — 늘어뜨린 채 — 물살을 — 고르고, *세이라*가 — 곁에서 — 한 소절 — 흥얼거린다. "...범고래는 — 이 물에 — 들이지 — 않아요."
+
+[event.ev-coral-rest.choice.1]
+label = 물살 고르는 걸 — 거든다
+hp = 6
+affinity = npc-marin:1
+result_text = 마린이 — *물의 한 겹*을 — 어깨에 — 둘러 주었다. 숨이 — *서늘하게* — 깊어졌다. "...손이 — 야무지네요."
+
+[event.ev-coral-rest.choice.2]
+label = 세이라의 노래를 — 한 소절 — 듣는다
+affinity = npc-seira:1
+custom = mag-color-1
+result_text = 한 소절이 — 물살을 — *한 줄* — 휘었다. "...범고래가 — 싫어하는 음이에요." 세이라가 — 깃을 — 한 자락 — 접었다.
+
+[event.ev-coral-rest.choice.3]
+label = 범고래(클루루) 이야기를 — 묻는다
+affinity = npc-marin:1
+result_text = "...그 검은 등이요? — 우리랑은 — 오래 — 안 맞아요." 마린이 — *짧게* — 웃었다. "그래도 — 같은 — 바다죠."
+
+
+# --- 산호 2. n-coral-song (노래 여울, elite) ---
+[event.ev-coral-song]
+name = 노래 여울
+node_kinds = event, elite, combat
+weight = 1
+once_per_run = true
+body = 산호 해안 — *세이렌의 노래가 — 가장 짙은 여울*. 물살이 — 노래에 — 맞춰 — 휜다. 노래에 — 홀린 *깊은 것*이 — 한 번 — 떠오른다.
+
+[event.ev-coral-song.choice.1]
+label = 정면 — 한 자세
+hp = -7
+gold = 20
+custom = mag-color-1
+result_text = 깊은 것이 — *짧게* — 가라앉았다. 여울 바닥에 — *푸른 진주 한 알*이 — 남았다.
+
+[event.ev-coral-song.choice.2]
+label = 세이라의 노래에 — 맞춰 — 비킨다
+custom = push-water-5
+result_text = 노래 한 소절이 — 물살을 — 갈라, 깊은 것이 — *자기 자리*로 — 돌아갔다. 어깨에 — *서늘한 한 자락*이 — 닿았다.
+
+[event.ev-coral-song.choice.3]
+label = 후퇴 — 한 자국
+hp = 3
+result_text = 물살 한 줄을 — *짧게* — 타고 — 빠져나왔다. 가슴 안쪽이 — 단단해졌다.
+
+
+# --- 산호 3. n-coral-deep (깊은 산호 골, 보상) ---
+[event.ev-coral-deep]
+name = 깊은 산호 골
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 해안 — *가장 깊은 산호 골*. 햇빛이 — 한 자락만 — 닿는다. 산호 한 덩이에 — *푸른 진주*가 — 박혀 있다. 살아 — 떠오른 자의 — 몫.
+
+[event.ev-coral-deep.choice.1]
+label = 진주를 — 캔다 (숨이 — 가쁘다)
+hp = -6
+gold = 28
+custom = push-water-5
+result_text = *푸른 진주 한 알*이 — 손에 — 들어왔다. 폐가 — *한 줄* — 비었지만, 빛이 — 손바닥에 — 남았다.
+
+[event.ev-coral-deep.choice.2]
+label = 산호 한 자락만 — 따 — 든다
+hp = -2
+gold = 12
+result_text = 산호 한 조각이 — 손에 — 닿았다. 진주는 — *자기 자리*에 — 그대로 — 박혀 — 있었다.
+
+[event.ev-coral-deep.choice.3]
+label = 그대로 — 떠오른다
+hp = 4
+result_text = 진주가 — *깊은 자리*에 — 그대로 — 빛났다. *다음에 — 잠수한 자*의 — 몫으로.

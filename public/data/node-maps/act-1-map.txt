@@ -182,6 +182,15 @@ event_pool = ev-diropel-paint, ev-diropel-totem
 primary_color = earth
 specialty_item = i-diropel-pigment
 
+[nodemap.nm-act-1-era4-061.region.coral-coast]
+name = 산호 해안
+description = 키시나 해변 너머 바다 속의 *산호 해안* — 해양 사냥터. 인어와 세이렌이 산호초에 깃들고, *범고래(클루루)와는 앙숙*이다. 산호·조류·노래.
+enemy_pool = m-coral-shark, m-coral-jelly
+elite_enemy_pool = m-kishina-deepwhisper
+event_pool = ev-coral-rest, ev-coral-song
+primary_color = water
+specialty_item = i-coral-pearl
+
 # ============================================================
 # 일루네온 권역 — 시작
 # ============================================================
@@ -2217,10 +2226,10 @@ events = ev-kishina-shells
 kind = event
 region = martin
 label = 조수 웅덩이
-description = 모래밭 한 자리의 — *작은 조수 웅덩이*. 물 한 자락이 — *돌 위*로 — 가볍게 — 흘러나온다.
+description = 모래밭 한 자리의 — *작은 조수 웅덩이*. 물 한 자락이 — *돌 위*로 — 가볍게 — 흘러나온다. 웅덩이 너머 — 깊은 바다에 — *산호 해안*이 — 한 줄로 — 잠겨 있다.
 x = 0.51
 y = 0.82
-neighbors = n-kishina-sand, n-kishina-rocks
+neighbors = n-kishina-sand, n-kishina-rocks, n-coral-shoal
 events = ev-kishina-spirit-bead
 
 [nodemap.nm-act-1-era4-061.node.n-kishina-end]
@@ -2544,3 +2553,61 @@ description = 부족 마을 — *안쪽 골짜기*. 폭신한 풀 위에 — 딜
 x = 0.09
 y = 0.30
 neighbors = n-diropel-village
+
+
+# ============================================================
+# 산호 해안 (키시나 너머 바다, water, 5노드). 해양 사냥터(중위험).
+# 인어·세이렌 깃듦. 범고래 클루루와 앙숙. 진입: 키시나 조수 웅덩이.
+# ============================================================
+
+[nodemap.nm-act-1-era4-061.node.n-coral-shoal]
+kind = combat
+region = coral-coast
+label = 얕은 산호밭
+description = 키시나 조수 웅덩이 너머 — *얕은 산호밭*. 물빛이 — 한 자락 — 푸르다. 산호 사이에서 — *작은 상어*가 — 한 번 — 미끄러진다.
+x = 0.54
+y = 0.86
+neighbors = n-kishina-tide-pool, n-coral-reef, n-coral-rest
+enemy = m-coral-shark
+
+[nodemap.nm-act-1-era4-061.node.n-coral-reef]
+kind = combat
+region = coral-coast
+label = 산호초
+description = 빽빽한 *산호초 미로*. 해파리가 — *한 줄로* — 떠다닌다. 길을 — 잘못 들면 — 빠져나오기 — 어렵다.
+x = 0.58
+y = 0.89
+neighbors = n-coral-shoal, n-coral-song
+enemy = m-coral-jelly
+
+[nodemap.nm-act-1-era4-061.node.n-coral-rest]
+kind = village
+region = coral-coast
+label = 인어 바위
+description = 산호 해안 — *물 위로 솟은 너른 바위*. *인어*와 *세이렌*이 — 꼬리를 — 한 자락 — 늘어뜨린 채 — 노래를 — 고른다. "...범고래는 — 이 물에 — 들이지 — 않아요."
+x = 0.51
+y = 0.91
+neighbors = n-coral-shoal, n-coral-deep
+npcs = npc-marin, npc-seira
+events = ev-coral-rest
+
+[nodemap.nm-act-1-era4-061.node.n-coral-song]
+kind = elite
+region = coral-coast
+label = 노래 여울
+description = 산호 해안 — *세이렌의 노래가 — 가장 짙은 여울*. 물살이 — 노래에 — 맞춰 — 휜다. 가장 — 강한 해양 몬무스가 — 여기 — 머문다.
+x = 0.59
+y = 0.93
+neighbors = n-coral-reef
+enemy = m-kishina-deepwhisper
+events = ev-coral-song
+
+[nodemap.nm-act-1-era4-061.node.n-coral-deep]
+kind = gather
+region = coral-coast
+label = 깊은 산호 골
+description = 해안 — *가장 깊은 산호 골*. 햇빛이 — 한 자락만 — 닿는다. 산호 한 덩이에 — *진주*가 — 박혀 있다. 살아 — 떠오른 자의 몫.
+x = 0.55
+y = 0.96
+neighbors = n-coral-rest
+events = ev-coral-deep
