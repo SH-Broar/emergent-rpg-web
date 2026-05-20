@@ -13,6 +13,7 @@ import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
 import { rng } from '@/systems/rng';
+import { applyAffinityDelta } from '@/systems/affinity';
 import type { Card, Npc } from '@/data/schemas';
 
 const router = useRouter();
@@ -102,6 +103,43 @@ function recruitSummary(npc: Npc): string {
   return parts.join(' · ');
 }
 
+// === NPC 대화 ===
+// 대화 = NPC.background 단락(친밀도 깊이만큼 공개) 또는 tagline 표시.
+// 방문(이 컴포넌트 마운트)당 NPC 1회 친밀도 +1 → affinity.ts가 단계 보상 자동 발사.
+const talkedThisVisit = ref<Set<string>>(new Set());
+const activeDialogue = ref<{ name: string; line: string; rewards: string[] } | null>(null);
+
+function affinityOf(npc: Npc): number {
+  return run.data.npcAffinity[npc.id] ?? 0;
+}
+
+/** background를 `|`로 나눠 친밀도가 깊을수록 더 뒤 단락을 보여준다(없으면 tagline). */
+function dialogueLine(npc: Npc): string {
+  const paras = (npc.background ?? '')
+    .split('|')
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (paras.length === 0) return npc.tagline ?? '…';
+  const idx = Math.min(paras.length - 1, affinityOf(npc));
+  return paras[idx];
+}
+
+function talk(npc: Npc) {
+  const rewards: string[] = [];
+  const firstThisVisit = !talkedThisVisit.value.has(npc.id);
+  if (firstThisVisit) {
+    applyAffinityDelta(npc.id, 1, rewards);
+    talkedThisVisit.value = new Set(talkedThisVisit.value).add(npc.id);
+    rewards.unshift(`(가까워졌다 — 친밀도 ${affinityOf(npc)})`);
+  }
+  // 친밀도 반영 후의 대사(가까워질수록 더 깊은 이야기).
+  activeDialogue.value = { name: npc.name, line: dialogueLine(npc), rewards };
+}
+
+function closeDialogue() {
+  activeDialogue.value = null;
+}
+
 const craftPool = computed<Card[]>(() => {
   // 일반 등급 카드들. 추후 출처·종족 등으로 필터링.
   return Array.from(data.cards.values()).filter((c: Card) => VILLAGE_CARD_RANKS.has(c.rank));
@@ -181,8 +219,12 @@ const rankColors: Record<string, string> = {
           <div class="npc-card__hd">
             <span class="npc-card__name">{{ npc.name }}</span>
             <span class="npc-card__meta">{{ npc.raceId }} · {{ npc.role }}</span>
+            <span class="npc-card__aff">친밀도 {{ affinityOf(npc) }}</span>
           </div>
           <p v-if="npc.tagline" class="npc-card__tagline">{{ npc.tagline }}</p>
+          <div class="npc-card__actions">
+            <button class="npc-card__btn npc-card__btn--talk" @click="talk(npc)">대화한다</button>
+          </div>
           <!-- r4: 동료 권유 UI 활성화. recruit_enabled=true + recruit 보너스가 있는 NPC만 표시. -->
           <div v-if="npc.recruit" class="npc-card__recruit">
             <span class="npc-card__summary">{{ recruitSummary(npc) }}</span>
@@ -249,6 +291,18 @@ const rankColors: Record<string, string> = {
       <p class="result__cost">- 시간의 조각 {{ VILLAGE_CRAFT_COST }}</p>
       <button class="continue" @click="leave">계속 →</button>
     </section>
+
+    <!-- NPC 대화 모달 -->
+    <div v-if="activeDialogue" class="dlg-backdrop" @click.self="closeDialogue">
+      <div class="dlg" role="dialog">
+        <h3 class="dlg__name">{{ activeDialogue.name }}</h3>
+        <p class="dlg__line">{{ activeDialogue.line }}</p>
+        <ul v-if="activeDialogue.rewards.length > 0" class="dlg__rewards">
+          <li v-for="(r, i) in activeDialogue.rewards" :key="i">{{ r }}</li>
+        </ul>
+        <button class="dlg__close" @click="closeDialogue">닫는다</button>
+      </div>
+    </div>
   </main>
 </template>
 
@@ -275,6 +329,38 @@ h1 { color: #8effb8; margin: 0; }
 .npc-card__name { color: #f6e8b8; font-weight: 600; }
 .npc-card__meta { font-size: 0.78rem; color: #888; }
 .npc-card__tagline { color: #a4a4b0; font-size: 0.85rem; margin: 0; font-style: italic; }
+.npc-card__aff { font-size: 0.75rem; color: #c08eff; margin-left: auto; }
+.npc-card__actions { display: flex; gap: 0.5rem; margin-top: 0.2rem; }
+.npc-card__btn--talk { background: rgba(142, 200, 255, 0.16); border-color: rgba(142, 200, 255, 0.45); }
+.npc-card__btn--talk:hover { background: rgba(142, 200, 255, 0.28); }
+
+/* NPC 대화 모달 */
+.dlg-backdrop {
+  position: fixed; inset: 0; z-index: var(--z-modal-nested, 60);
+  background: rgba(0, 0, 0, 0.72);
+  display: flex; align-items: center; justify-content: center; padding: 1rem;
+}
+.dlg {
+  max-width: 480px; width: 100%;
+  background: #16171f;
+  border: 1px solid rgba(142, 200, 255, 0.4);
+  border-radius: 12px;
+  padding: 1.4rem 1.5rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  display: grid; gap: 0.8rem;
+}
+.dlg__name { color: #8ec8ff; margin: 0; font-size: 1.15rem; }
+.dlg__line { color: #e0e0ea; margin: 0; line-height: 1.6; }
+.dlg__rewards { list-style: none; padding: 0.6rem 0.8rem; margin: 0; background: rgba(192, 142, 255, 0.1); border-radius: 6px; display: grid; gap: 0.25rem; }
+.dlg__rewards li { color: #ffe88e; font-size: 0.85rem; }
+.dlg__close {
+  justify-self: end;
+  padding: 0.5rem 1.1rem;
+  background: rgba(142, 200, 255, 0.2);
+  border: 1px solid rgba(142, 200, 255, 0.5);
+  color: #f6e8b8; border-radius: 6px; cursor: pointer; font: inherit; font-weight: 600;
+}
+.dlg__close:hover { background: rgba(142, 200, 255, 0.32); }
 .npc-card__recruit { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; margin-top: 0.3rem; }
 .npc-card__summary { font-size: 0.8rem; color: #c08eff; flex: 1; min-width: 60%; }
 .npc-card__btn {
