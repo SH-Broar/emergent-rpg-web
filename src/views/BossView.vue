@@ -21,7 +21,7 @@ import {
 import { applyBossRewards } from '@/systems/boss-rewards';
 import { colorBonusForCardEffectKind } from '@/systems/stats';
 import { bonusesFromEffective } from '@/systems/equipment';
-import type { Boss, BossPhase, BossSignatureVariant, Card, CardEffect, Monster } from '@/data/schemas';
+import type { Boss, BossPhase, BossSignatureVariant, Card, CardEffect, Combatant, Monster } from '@/data/schemas';
 
 const router = useRouter();
 const run = useRunStore();
@@ -195,6 +195,25 @@ function statusDelta(eff: CardEffect): number {
   if (!combat.value) return 0;
   return statusBonusForCardEffectKind(eff.kind, combat.value.player.statuses);
 }
+
+// === 버프/디버프 표시 (CombatView와 동일 규칙) ===
+const statusLabels: Record<string, string> = {
+  strength: '힘',
+  weakness: '약화',
+  dexterity: '민첩',
+  frail: '취약',
+  vulnerable: '취약',
+  poison: '중독',
+  burn: '화상',
+  feral: '수화',
+  regress: '퇴행',
+};
+function statusEntries(c: Combatant | undefined) {
+  if (!c) return [] as { key: string; count: number; label: string }[];
+  return Object.entries(c.statuses ?? {})
+    .filter(([, v]) => v > 0)
+    .map(([key, count]) => ({ key, count, label: statusLabels[key] ?? key }));
+}
 </script>
 
 <template>
@@ -216,6 +235,11 @@ function statusDelta(eff: CardEffect): number {
             <span v-if="combat.player.block > 0" class="block">🛡 {{ combat.player.block }}</span>
           </div>
           <div class="mana">마나 {{ combat.mana }} / {{ combat.maxMana }}</div>
+          <ul class="statuses">
+            <li v-for="s in statusEntries(combat.player)" :key="s.key" class="status" :data-key="s.key">
+              {{ s.label }} ×{{ s.count }}
+            </li>
+          </ul>
         </div>
         <div class="vs">⚔ 턴 {{ combat.turn }}</div>
         <div class="enemy">
@@ -224,6 +248,11 @@ function statusDelta(eff: CardEffect): number {
             <span v-if="combat.enemy.block > 0" class="block">🛡 {{ combat.enemy.block }}</span>
           </div>
           <div class="intent">다음: {{ combat.enemyIntent }}</div>
+          <ul class="statuses statuses--enemy">
+            <li v-for="s in statusEntries(combat.enemy)" :key="s.key" class="status" :data-key="s.key">
+              {{ s.label }} ×{{ s.count }}
+            </li>
+          </ul>
         </div>
       </header>
 
@@ -316,6 +345,21 @@ function statusDelta(eff: CardEffect): number {
 .mana { color: #c08eff; font-weight: 600; }
 .intent { color: #ffb88e; font-size: 0.9rem; }
 .vs { font-size: 1.4rem; color: #f6e8b8; }
+
+/* 버프/디버프 리스트 (CombatView와 동일) */
+.statuses { list-style: none; padding: 0; margin: 0.3rem 0 0; display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.statuses--enemy { justify-content: flex-end; }
+.status {
+  font-size: 0.75rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #d6d6e0;
+}
+.status[data-key="strength"], .status[data-key="dexterity"] { color: #8effb8; border-color: rgba(142,255,184,0.35); }
+.status[data-key="weakness"], .status[data-key="frail"], .status[data-key="vulnerable"], .status[data-key="poison"], .status[data-key="burn"], .status[data-key="regress"] { color: #ff8e8e; border-color: rgba(255,142,142,0.35); }
+.status[data-key="feral"] { color: #ffb86c; border-color: rgba(255,184,108,0.4); }
 .hand { display: flex; gap: 0.8rem; padding: 1rem; overflow-x: auto; }
 .card { flex-shrink: 0; width: 160px; padding: 0.8rem; background: rgba(255,255,255,0.04); border: 2px solid; border-radius: 8px; cursor: pointer; transition: transform 120ms ease; display: flex; flex-direction: column; gap: 0.3rem; }
 .card:hover:not(.card--disabled) { transform: translateY(-6px); }
