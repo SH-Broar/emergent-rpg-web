@@ -18,7 +18,25 @@ export interface Race extends NamedEntity {
   primaryElement?: Element;
   secondaryElement?: Element;
 
-  /** 시작 30장 풀의 *기본 등급* 카드 — 캐릭터가 시작 10장 부여 시 여기서 추첨/선택. */
+  /**
+   * 종족 기본 스탯 — 이전엔 character가 가졌으나 characters/ 폐기 후 race로 통합.
+   * 시작 HP/MP는 baseStats.hp/mp + startHpBonus/startMpBonus.
+   */
+  baseStats: {
+    hp: number;
+    mp: number;
+    attack: number;
+    defense: number;
+    vigor: number;
+  };
+
+  /**
+   * 시작 덱 (시드 정체성 카드) — 이전엔 character.startingDeck.
+   * deckSize 미달 시 seedCardIds에서 가중 랜덤으로 채움.
+   */
+  startingDeck: CardId[];
+
+  /** 시작 30장 풀의 *기본 등급* 카드 — 종족이 시작 덱 부족분을 여기서 추첨/선택. */
   seedCardIds: CardId[];
 
   /** 종족 시작 시 부여되는 *기본 등급* 유물 (있을 수도 없을 수도). */

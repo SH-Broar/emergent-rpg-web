@@ -72,7 +72,7 @@ function back() {
 
     <section class="meta-info">
       <p>영혼 자원: <strong>{{ meta.soulResource }}</strong></p>
-      <p>해금 캐릭터: <strong>{{ meta.unlockedCharacterIds.length }}</strong></p>
+      <p>해금 종족: <strong>{{ meta.unlockedRaceIds.length }}</strong></p>
       <p>해금 시간대: <strong>{{ meta.unlockedTimelineIds.length }}</strong></p>
       <p>해금 토큰: <strong>{{ meta.unlockedKeys.length }}</strong></p>
     </section>

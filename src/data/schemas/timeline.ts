@@ -13,11 +13,11 @@
 
 import type {
   BossId,
-  CharacterId,
   EventId,
   NamedEntity,
   NodeMapId,
   NpcId,
+  RaceId,
   TimelineId,
 } from './base';
 
@@ -35,7 +35,8 @@ export interface Timeline extends NamedEntity {
 
   /** 출현 가능 컨텐츠 풀. */
   availableEventIds: EventId[];
-  availableCharacterIds: CharacterId[];
+  /** 선택 가능한 종족 (구 availableCharacterIds — characters/ 폐기 후 race로 통합). */
+  availableRaceIds: RaceId[];
   availableNpcIds: NpcId[];
 
   /** 보스 게이트 까지의 시간 한계 (= 노드 방문 카운트 임계). */

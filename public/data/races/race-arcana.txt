@@ -1,0 +1,23 @@
+# Race: 아르카나 — 신적 존재의 그릇 (구 ch-niayur 통합).
+# 빛을 본질로 한다.
+
+[race.arcana]
+name = 아르카나
+description = 빛을 본질로 하는 신적 존재. 시간의 신탁이 *처음 부른* 그릇이자, 동시에 그 자신.
+category = divine
+primary_element = light
+# 기본 스탯 (구 ch-niayur).
+hp = 34
+mp = 16
+attack = 4
+defense = 3
+vigor = 12
+# 시작 덱 (구 ch-niayur.starting_deck).
+starting_deck = c-strike, c-strike, c-strike, c-defend, c-defend, c-defend, c-quickdraw, c-recover, c-recover, c-deep-breath
+seed_cards = c-strike, c-defend, c-defend, c-quickdraw, c-recover, c-recover, c-deep-breath
+seed_relics = r-determined-heart
+hp_bonus = 0
+mp_bonus = 0
+deck_size = 15
+# 아르카나 = light 단일 친화 (가장 순수한 빛).
+seed_colors = light:5

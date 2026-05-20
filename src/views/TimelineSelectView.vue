@@ -51,7 +51,7 @@ function selectTimeline(id: string) {
     return;
   }
   ui.pendingRunSetup.timelineId = id;
-  // 새 흐름(M8): 시간대 → 종족 → 캐릭터.
+  // 흐름: 시간대 → 종족 → 게임 시작 (캐릭터 단계 폐기).
   ui.pendingRunSetup.raceId = null;
   router.push('/game/race-select');
 }
@@ -118,8 +118,8 @@ const isLocked = (id: string) => !canEnterTimeline(id);
               <dd>{{ selected.deckExpansionThresholds[0] }} / {{ selected.deckExpansionThresholds[1] }}</dd>
             </div>
             <div>
-              <dt>등장 캐릭터</dt>
-              <dd>{{ selected.availableCharacterIds.length }}</dd>
+              <dt>선택 종족</dt>
+              <dd>{{ selected.availableRaceIds.length }}</dd>
             </div>
             <div>
               <dt>등장 NPC</dt>

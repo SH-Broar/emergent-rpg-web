@@ -28,12 +28,12 @@ export function isUnlocked(unlockKey: string | undefined): boolean {
   return meta.unlockedKeys.some((k) => k.key === unlockKey);
 }
 
-/** 모노가 *그 캐릭터*를 허용했는가? */
-export function canSelectCharacter(characterId: string): boolean {
+/** 모노가 *그 종족*을 허용했는가? */
+export function canSelectRace(raceId: string): boolean {
   if (useUiStore().debug.unlockAll) return true;
   const meta = useMetaStore();
-  return meta.unlockedCharacterIds.includes(characterId) || meta.unlockedCharacterIds.length === 0;
-  // 첫 플레이 시 기본 캐릭터는 허용
+  return meta.unlockedRaceIds.includes(raceId) || meta.unlockedRaceIds.length === 0;
+  // 첫 플레이 시 기본 종족은 허용
 }
 
 /** 모노가 *그 연표*를 허용했는가? */

@@ -1,0 +1,24 @@
+# Race: 나방 — 나비 날개 아인 (구 ch-iyeon 통합).
+# 작은 몸·빠른 활. 바람 친화.
+
+[race.moth]
+name = 나방
+description = 나비 날개가 달린 아인. 작은 몸으로 빠르게 움직이며, 활을 다루는 *민첩의 그릇*.
+category = flight
+primary_element = wind
+secondary_element = light
+# 기본 스탯 (구 ch-iyeon).
+hp = 28
+mp = 14
+attack = 7
+defense = 2
+vigor = 13
+# 시작 덱 (구 ch-iyeon.starting_deck).
+starting_deck = c-strike, c-strike, c-quickdraw, c-quickdraw, c-quickdraw, c-defend, c-defend, c-double-strike, c-deep-breath, c-recover
+seed_cards = c-strike, c-quickdraw, c-quickdraw, c-defend, c-double-strike, c-deep-breath, c-recover
+seed_relics = r-determined-heart
+hp_bonus = 0
+mp_bonus = 0
+deck_size = 15
+# 나방 = wind·light 친화.
+seed_colors = wind:5, light:3

@@ -2,13 +2,12 @@
 /**
  * 종족 선택 — 시간대 선택 후 *마지막* 선택 단계 (M8 + 2026-05-17 단순화).
  *
- * 종족 = STS의 캐릭터 클래스. 종족을 고르면 그 종족의 캐릭터로 *곧장 게임 시작*.
- * 별도의 "캐릭터 선택" 단계는 없음 — 종족이 곧 클래스다.
+ * 종족 = STS의 캐릭터 클래스. 종족을 고르면 *곧장 게임 시작*.
+ * 플레이어는 *종족만* 고른다 — characters/ 폴더 폐기 후 race가 stats·덱·시드를 직접 보유.
  *
  * 흐름: TimelineSelect → RaceSelect → /game/map
  *
- * 데이터 매핑: 종족당 첫 번째 캐릭터(`tl.availableCharacterIds` 중 raceId 일치) 사용.
- * 종족당 캐릭터가 여러 명이어도 첫 번째만 사용 — 캐릭터 entity는 향후 종족에 흡수될 예정.
+ * 데이터 매핑: `tl.availableRaceIds`를 순회하며 data.races 직접 조회.
  */
 
 import { computed, onMounted } from 'vue';
@@ -16,11 +15,11 @@ import { useRouter } from 'vue-router';
 import { useUiStore } from '@/stores/ui';
 import { useDataStore } from '@/stores/data';
 import { useRunStore } from '@/stores/run';
-import { canSelectCharacter } from '@/frame/Mono';
+import { canSelectRace } from '@/frame/Mono';
 import { instantiateCard } from '@/systems/deck';
 import { applySeedColors } from '@/systems/colors';
 import { rng } from '@/systems/rng';
-import type { Card, Character, Race, Season } from '@/data/schemas';
+import type { Card, Race, Season } from '@/data/schemas';
 
 const router = useRouter();
 const ui = useUiStore();
@@ -32,23 +31,17 @@ const timeline = computed(() => {
   return id ? data.timelines.get(id) : undefined;
 });
 
-/** 시간대에서 선택 가능한 종족 — 종족별로 *첫 캐릭터*를 매핑. */
-interface RaceOption {
-  race: Race;
-  character: Character;
-}
-const raceOptions = computed<RaceOption[]>(() => {
+/** 시간대에서 선택 가능한 종족 — availableRaceIds를 직접 매핑. */
+const raceOptions = computed<Race[]>(() => {
   const tl = timeline.value;
   if (!tl) return [];
   const seen = new Set<string>();
-  const out: RaceOption[] = [];
-  for (const cid of tl.availableCharacterIds) {
-    const ch = data.characters.get(cid);
-    if (!ch) continue;
-    if (seen.has(ch.raceId)) continue;
-    seen.add(ch.raceId);
-    const r = data.races.get(ch.raceId);
-    if (r) out.push({ race: r, character: ch });
+  const out: Race[] = [];
+  for (const rid of tl.availableRaceIds) {
+    if (seen.has(rid)) continue;
+    seen.add(rid);
+    const r = data.races.get(rid);
+    if (r) out.push(r);
   }
   return out;
 });
@@ -58,11 +51,8 @@ function randomSeason(): Season {
   return SEASONS[Math.floor(Math.random() * SEASONS.length)];
 }
 
-async function selectRace(opt: RaceOption) {
-  const c = opt.character;
-  const race = opt.race;
-
-  if (!canSelectCharacter(c.id)) {
+async function selectRace(race: Race) {
+  if (!canSelectRace(race.id)) {
     ui.toast('warning', '잠긴 종족입니다.');
     return;
   }
@@ -79,13 +69,13 @@ async function selectRace(opt: RaceOption) {
 
   ui.pendingRunSetup.raceId = race.id;
 
-  const maxHp = c.baseStats.hp + (race.startHpBonus ?? 0);
-  const maxMp = c.baseStats.mp + (race.startMpBonus ?? 0);
+  const maxHp = race.baseStats.hp + (race.startHpBonus ?? 0);
+  const maxMp = race.baseStats.mp + (race.startMpBonus ?? 0);
 
   // startRun을 *먼저* — 그 안에서 시드를 결정하고 rng를 바인딩. 이후 모든 pick은 결정론.
   run.startRun({
     timelineId: tl.id,
-    characterId: c.id,
+    raceId: race.id,
     season: randomSeason(),
     maxHp,
     maxMp,
@@ -94,7 +84,7 @@ async function selectRace(opt: RaceOption) {
   });
 
   // 시작 덱 — 동명 카드도 별개 인스턴스.
-  const startingInstances: Card[] = c.startingDeck
+  const startingInstances: Card[] = race.startingDeck
     .map((cardId: string) => data.cards.get(cardId))
     .filter((card): card is Card => card !== undefined)
     .map(instantiateCard);
@@ -172,21 +162,21 @@ onMounted(() => {
 
     <section v-if="raceOptions.length > 0" class="grid">
       <button
-        v-for="opt in raceOptions"
-        :key="opt.race.id"
+        v-for="race in raceOptions"
+        :key="race.id"
         class="card"
-        @click="selectRace(opt)"
+        @click="selectRace(race)"
       >
         <div class="card__head">
-          <span class="card__name">{{ opt.race.name }}</span>
-          <span class="card__cat">{{ opt.race.category }}</span>
+          <span class="card__name">{{ race.name }}</span>
+          <span class="card__cat">{{ race.category }}</span>
         </div>
-        <p v-if="opt.race.description" class="card__desc">{{ opt.race.description }}</p>
+        <p v-if="race.description" class="card__desc">{{ race.description }}</p>
         <div class="card__stats">
-          <span>HP {{ opt.character.baseStats.hp + (opt.race.startHpBonus ?? 0) }}</span>
-          <span>MP {{ opt.character.baseStats.mp + (opt.race.startMpBonus ?? 0) }}</span>
-          <span v-if="opt.race.deckSize">덱 {{ opt.race.deckSize }}</span>
-          <span>시드 카드 {{ opt.race.seedCardIds.length }}</span>
+          <span>HP {{ race.baseStats.hp + (race.startHpBonus ?? 0) }}</span>
+          <span>MP {{ race.baseStats.mp + (race.startMpBonus ?? 0) }}</span>
+          <span v-if="race.deckSize">덱 {{ race.deckSize }}</span>
+          <span>시드 카드 {{ race.seedCardIds.length }}</span>
         </div>
       </button>
     </section>

@@ -8,7 +8,6 @@ export * from './base';
 export * from './card';
 export * from './relic';
 export * from './race';
-export * from './character';
 export * from './timeline';
 export * from './event';
 export * from './boss';

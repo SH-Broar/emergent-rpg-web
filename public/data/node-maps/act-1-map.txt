@@ -222,7 +222,7 @@ x = 0.54
 y = 0.54
 neighbors = n-iluneon-square, n-iluneon-market, n-reshud-junction, n-ilu-board-room, n-ilu-quest-hall, n-ilu-sparring
 events = ev-iluneon-guild-board
-npcs = npc-hako, npc-rize
+npcs = npc-hako, npc-rize, npc-kardi
 
 # ============================================================
 # 라르 숲 / 모스 / 세계수 (동쪽)

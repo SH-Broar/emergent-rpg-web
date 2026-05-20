@@ -43,7 +43,7 @@ const HANDLERS: Record<string, ActivityHandler> = {
 
     // 25% 확률로 race 시드 카드 1장.
     if (rng() < 0.25) {
-      const race = data.races.get(data.characters.get(r.characterId)?.raceId ?? '');
+      const race = data.races.get(r.raceId);
       const pool = race?.seedCardIds ?? [];
       if (pool.length > 0) {
         const cardId = pool[Math.floor(rng() * pool.length)];
@@ -80,7 +80,7 @@ const HANDLERS: Record<string, ActivityHandler> = {
 
     // 20% 확률로 race 시드 카드 1장.
     if (rng() < 0.20) {
-      const race = data.races.get(data.characters.get(r.characterId)?.raceId ?? '');
+      const race = data.races.get(r.raceId);
       const pool = race?.seedCardIds ?? [];
       if (pool.length > 0) {
         const cardId = pool[Math.floor(rng() * pool.length)];
@@ -105,7 +105,7 @@ function defaultActivity(): ActivityResult {
   const r = run.data;
   const lines: string[] = [];
 
-  const race = data.races.get(data.characters.get(r.characterId)?.raceId ?? '');
+  const race = data.races.get(r.raceId);
   const pool = race?.seedCardIds ?? [];
   if (pool.length > 0) {
     const cardId = pool[Math.floor(rng() * pool.length)];

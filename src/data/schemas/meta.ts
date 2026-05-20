@@ -9,7 +9,7 @@
  * 각 게이지는 % 단계마다 콘텐츠 해금 노드를 풀어준다.
  */
 
-import type { CardId, CharacterId, TimelineId } from './base';
+import type { CardId, RaceId, TimelineId } from './base';
 
 /** 한 메타 게이지 — 0~1 정규화 또는 누적 정수. */
 export interface MetaGauge {
@@ -62,8 +62,8 @@ export interface MetaProgress {
   /** 해금된 콘텐츠 토큰들. */
   unlockedKeys: UnlockKey[];
 
-  /** 해금된 캐릭터/연표/카드 id 목록 (UI 빠른 조회용). */
-  unlockedCharacterIds: CharacterId[];
+  /** 해금된 종족/연표/카드 id 목록 (UI 빠른 조회용). 구 unlockedCharacterIds. */
+  unlockedRaceIds: RaceId[];
   unlockedTimelineIds: TimelineId[];
   unlockedCardIds: CardId[];
 

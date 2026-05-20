@@ -10,8 +10,8 @@
 
 import { defineStore } from 'pinia';
 import type {
-  CharacterId,
   NodeKind,
+  RaceId,
   RunState,
   Season,
   TimelineId,
@@ -31,6 +31,18 @@ import { useDataStore } from './data';
 const SAVED_RUN_KEY_V1 = 'rdc-active-run-v1';
 const SAVED_RUN_KEY = 'rdc-active-run-v2';
 
+/**
+ * 옛 세이브 마이그레이션 — 폐기된 characterId(ch-*) → raceId 매핑.
+ * characters/ 폴더 제거 후, 옛 v2 세이브가 들고 있던 characterId를 종족으로 변환.
+ */
+const LEGACY_CHARACTER_TO_RACE: Record<string, string> = {
+  'ch-hako': 'human',
+  'ch-maro': 'human',
+  'ch-iyeon': 'moth',
+  'ch-kardi': 'phantom',
+  'ch-niayur': 'arcana',
+};
+
 const DECK_SLOT_SIZE = 10;
 /** 100턴마다 하루 경과 — 비-마을 노드 cleared 초기화 + 권역 풀에서 content 재추첨.
  *  사용자 결정 (2026-05-19): 한 런=300턴=3일, 권역 평균 ~22노드(전체 ~200노드)에 맞춘 사양.
@@ -40,7 +52,7 @@ const TURNS_PER_DAY = 100;
 
 const EMPTY_RUN: RunState = {
   timelineId: '',
-  characterId: '',
+  raceId: '',
   season: 'spring',
   startedAt: 0,
   rngSeed: 0,
@@ -110,10 +122,10 @@ export const useRunStore = defineStore('run', {
   },
 
   actions: {
-    /** 새 런 시작 — 연표·캐릭터·계절 컨텍스트 + 결정론 시드 주입. */
+    /** 새 런 시작 — 연표·종족·계절 컨텍스트 + 결정론 시드 주입. */
     startRun(params: {
       timelineId: TimelineId;
-      characterId: CharacterId;
+      raceId: RaceId;
       season: Season;
       maxHp: number;
       maxMp: number;
@@ -122,7 +134,7 @@ export const useRunStore = defineStore('run', {
     }) {
       const fresh = structuredClone(EMPTY_RUN);
       fresh.timelineId = params.timelineId;
-      fresh.characterId = params.characterId;
+      fresh.raceId = params.raceId;
       fresh.season = params.season;
       fresh.startedAt = Date.now();
       // 한 판 고정 시드 — 이 시점에 한 번 결정되어 *런 끝까지 같은 시퀀스*.
@@ -201,13 +213,18 @@ export const useRunStore = defineStore('run', {
           if (!raw) return false;
           migratedFromV1 = true;
         }
-        const parsed = JSON.parse(raw) as Partial<RunState>;
+        const parsed = JSON.parse(raw) as Partial<RunState> & { characterId?: string };
         // EMPTY_RUN spread 후 parsed로 override — 향후 신규 필드도 EMPTY_RUN에만 추가하면 자동 보호.
         // (Round2 W2: 명시적 ?? 라인 제거 — redundant + future v3 추가 시 "한 줄 깜빡" 회귀 위험 차단.)
         const filled: RunState = {
           ...structuredClone(EMPTY_RUN),
           ...parsed,
         };
+        // characters/ 폐기 마이그레이션: 옛 세이브의 characterId(ch-*)를 raceId로 변환.
+        // 매핑 실패 시 raceId는 EMPTY_RUN 기본값('')으로 — race 시드 조회는 안전하게 폴백.
+        if (!parsed.raceId && parsed.characterId) {
+          filled.raceId = LEGACY_CHARACTER_TO_RACE[parsed.characterId] ?? '';
+        }
         this.data = filled;
         this.active = !filled.ended;
         if (this.active) this.bindRng();

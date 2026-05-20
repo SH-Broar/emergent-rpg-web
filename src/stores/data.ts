@@ -10,7 +10,6 @@ import type {
   Boss,
   Card,
   ChaosModifier,
-  Character,
   Equipment,
   Event,
   Item,
@@ -40,9 +39,6 @@ export const useDataStore = defineStore('data', {
   getters: {
     timelines(state): Map<string, Timeline> {
       return state.data?.timelines ?? new Map<string, Timeline>();
-    },
-    characters(state): Map<string, Character> {
-      return state.data?.characters ?? new Map<string, Character>();
     },
     races(state): Map<string, Race> {
       return state.data?.races ?? new Map<string, Race>();

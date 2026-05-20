@@ -29,7 +29,6 @@ import type {
   CardSource,
   CardTriggerKind,
   ChaosModifier,
-  Character,
   ColorValues,
   CompanionBonuses,
   EffectTarget,
@@ -37,7 +36,6 @@ import type {
   EventChoice,
   EventChoiceEffect,
   GiftPreference,
-  HyperionStage,
   Item,
   ItemEffect,
   ItemEffectKind,
@@ -207,6 +205,14 @@ export function parseRaces(ini: IniData): Map<string, Race> {
       category: fields.category ?? 'unknown',
       primaryElement: fields.primary_element as Race['primaryElement'],
       secondaryElement: fields.secondary_element as Race['secondaryElement'],
+      baseStats: {
+        hp: parseNumber(fields.hp, 30),
+        mp: parseNumber(fields.mp, 10),
+        attack: parseNumber(fields.attack, 5),
+        defense: parseNumber(fields.defense, 2),
+        vigor: parseNumber(fields.vigor, 10),
+      },
+      startingDeck: parseList(fields.starting_deck),
       seedCardIds: parseList(fields.seed_cards),
       seedRelicIds: parseList(fields.seed_relics),
       startHpBonus: parseNumber(fields.hp_bonus, 0),
@@ -216,73 +222,6 @@ export function parseRaces(ini: IniData): Map<string, Race> {
     });
   }
   return result;
-}
-
-// ========== Character ==========
-
-export function parseCharacters(ini: IniData): Map<string, Character> {
-  const result = new Map<string, Character>();
-  for (const [section, fields] of Object.entries(ini)) {
-    if (!section.startsWith('character.')) continue;
-    const id = sectionIdSuffix(section);
-    const ch = parseOneCharacter(id, fields, ini);
-    if (ch) result.set(ch.id, ch);
-  }
-  return result;
-}
-
-function parseOneCharacter(id: string, f: IniSection, ini: IniData): Character | null {
-  if (!f.race) return null;
-
-  // 히페리온 5단계는 별도 섹션 [character.{id}.hyperion.1] 형태로 정의
-  const stages: HyperionStage[] = [];
-  for (let s = 1; s <= 5; s++) {
-    const sectionName = `character.${id}.hyperion.${s}`;
-    const hf = ini[sectionName];
-    if (hf) {
-      stages.push({
-        stage: s as 1 | 2 | 3 | 4 | 5,
-        requirement: hf.requirement ?? '',
-        statBoost: {
-          hp: parseNumber(hf.hp, 0),
-          mp: parseNumber(hf.mp, 0),
-          attack: parseNumber(hf.attack, 0),
-          defense: parseNumber(hf.defense, 0),
-          vigor: parseNumber(hf.vigor, 0),
-        },
-        rewardCardId: hf.reward_card,
-        rewardRelicId: hf.reward_relic,
-        bossSignatureId: hf.boss_signature,
-      });
-    } else {
-      // 누락 단계는 placeholder
-      stages.push({
-        stage: s as 1 | 2 | 3 | 4 | 5,
-        requirement: 'placeholder',
-        statBoost: {},
-      });
-    }
-  }
-
-  return {
-    id,
-    name: f.name ?? id,
-    description: f.description,
-    raceId: f.race,
-    baseNpcId: f.base_npc,
-    baseStats: {
-      hp: parseNumber(f.hp, 30),
-      mp: parseNumber(f.mp, 10),
-      attack: parseNumber(f.attack, 5),
-      defense: parseNumber(f.defense, 2),
-      vigor: parseNumber(f.vigor, 10),
-    },
-    startingDeck: parseList(f.starting_deck),
-    hyperion: stages as Character['hyperion'],
-    unlockRequirement: f.unlock,
-    portrait: f.portrait,
-    tagline: f.tagline,
-  };
 }
 
 // ========== Event ==========
@@ -745,7 +684,7 @@ export function parseTimelines(ini: IniData): Map<string, Timeline> {
       era: fields.era,
       nodeMapId: fields.node_map ?? '',
       availableEventIds: parseList(fields.events),
-      availableCharacterIds: parseList(fields.characters),
+      availableRaceIds: parseList(fields.races),
       availableNpcIds: parseList(fields.npcs),
       timeLimit: parseNumber(fields.time_limit, 15),
       deckExpansionThresholds: [
@@ -768,7 +707,6 @@ export function parseTimelines(ini: IniData): Map<string, Timeline> {
 /** 게임 시작 시 한 번 호출되는 데이터 부트스트랩. */
 export interface GameData {
   timelines: Map<string, Timeline>;
-  characters: Map<string, Character>;
   races: Map<string, Race>;
   cards: Map<string, Card>;
   relics: Map<string, Relic>;
@@ -872,12 +810,8 @@ const DATA_FILES = [
   'data/timelines/act-1-era4-061.txt',
   'data/node-maps/act-1-map.txt',
   'data/bosses/act-1-boss.txt',
-  'data/characters/act-1-niayur.txt',
-  'data/characters/act-1-hako.txt',
-  'data/characters/act-1-maro.txt',
-  'data/characters/act-1-iyeon.txt',
-  'data/characters/act-1-kardi.txt',
   'data/npcs/act-1-iluneon.txt',
+  'data/npcs/act-1-stray.txt',
   'data/npcs/act-1-windfall.txt',
   'data/npcs/act-1-luna.txt',
   'data/npcs/act-1-mosswood.txt',
@@ -890,6 +824,9 @@ const DATA_FILES = [
   'data/npcs/act-1-falcon.txt',
   // === 공용 ===
   'data/races/race-human.txt',
+  'data/races/race-moth.txt',
+  'data/races/race-phantom.txt',
+  'data/races/race-arcana.txt',
   'data/cards/cards-mvr.txt',
   'data/relics/relics-mvr.txt',
   'data/events/events-mvr.txt',
@@ -947,7 +884,6 @@ export async function loadAllData(baseUrl?: string): Promise<GameData> {
 
   return {
     timelines: parseTimelines(merged),
-    characters: parseCharacters(merged),
     races: parseRaces(merged),
     cards: parseCards(merged),
     relics: parseRelics(merged),
@@ -976,7 +912,6 @@ export function loadFromText(text: string): GameData {
   }
   return {
     timelines: parseTimelines(ini),
-    characters: parseCharacters(ini),
     races: parseRaces(ini),
     cards: parseCards(ini),
     relics: parseRelics(ini),

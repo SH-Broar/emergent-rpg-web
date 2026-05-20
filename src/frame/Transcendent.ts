@@ -12,10 +12,10 @@ import { useRunStore } from '@/stores/run';
 
 export const TRANSCENDENT_TITLE = '전생자';
 
-/** 전생자가 지금 어떤 캐릭터에 깃들어 있는가? null = 메인 메뉴. */
+/** 전생자가 지금 어떤 종족에 깃들어 있는가? null = 메인 메뉴. */
 export function currentVessel(): string | null {
   const run = useRunStore();
-  return run.active ? run.data.characterId : null;
+  return run.active ? run.data.raceId : null;
 }
 
 /** 총 전생 횟수 (모노 입장에서 그가 본 횟수). */

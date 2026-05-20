@@ -25,7 +25,7 @@ function createEmptyMeta(): MetaProgress {
       composite: { ...EMPTY_META_GAUGE, max: 400 },
     },
     unlockedKeys: [],
-    unlockedCharacterIds: [],
+    unlockedRaceIds: [],
     unlockedTimelineIds: [],
     unlockedCardIds: [],
     codex: [],
@@ -36,15 +36,36 @@ function createEmptyMeta(): MetaProgress {
   };
 }
 
+/** characters/ 폐기 마이그레이션 — 옛 ch-* 캐릭터 해금 id → 종족 id. */
+const LEGACY_CHARACTER_TO_RACE: Record<string, string> = {
+  'ch-hako': 'human',
+  'ch-maro': 'human',
+  'ch-iyeon': 'moth',
+  'ch-kardi': 'phantom',
+  'ch-niayur': 'arcana',
+};
+
 function loadMeta(): MetaProgress {
   try {
     const raw = localStorage.getItem(META_STORAGE_KEY);
     if (!raw) return createEmptyMeta();
-    const parsed = JSON.parse(raw) as MetaProgress;
+    const parsed = JSON.parse(raw) as MetaProgress & { unlockedCharacterIds?: string[] };
     // 안전성: 누락된 게이지 보정
     if (!parsed.gauges?.composite) {
       return createEmptyMeta();
     }
+    // 옛 meta는 unlockedRaceIds가 없고 unlockedCharacterIds만 있을 수 있음 → 변환.
+    if (!parsed.unlockedRaceIds) {
+      const legacy = parsed.unlockedCharacterIds ?? [];
+      const races = new Set<string>();
+      for (const cid of legacy) {
+        const mapped = LEGACY_CHARACTER_TO_RACE[cid];
+        if (mapped) races.add(mapped);
+        else races.add(cid); // 알 수 없는 id는 그대로 (이미 race id일 수 있음)
+      }
+      parsed.unlockedRaceIds = Array.from(races);
+    }
+    delete parsed.unlockedCharacterIds;
     return parsed;
   } catch {
     return createEmptyMeta();
@@ -108,21 +129,31 @@ export const useMetaStore = defineStore('meta', {
     /**
      * 해금 키 패턴 해석 후 적절한 콘텐츠 ID 배열에 push.
      *
-     * 키 패턴 규약 (r4 신설):
-     *   "unlock-character-<id>"  → unlockedCharacterIds
+     * 키 패턴 규약 (r4 신설, characters/ 폐기 후 갱신):
+     *   "unlock-race-<id>"       → unlockedRaceIds
+     *   "unlock-character-<id>"  → unlockedRaceIds (옛 키 호환 — ch-* → race 변환)
      *   "unlock-timeline-<id>"   → unlockedTimelineIds
      *   "unlock-card-<id>"       → unlockedCardIds
      *   그 외(예: "hyperion1-25") → key만 보관 (특정 콘텐츠 push 없음)
      *
      * 첫 플레이 fallback 보존:
-     *   Mono.canSelectCharacter 등의 `length === 0` 가드는 그대로 — 한 번도 push되지 않은
+     *   Mono.canSelectRace 등의 `length === 0` 가드는 그대로 — 한 번도 push되지 않은
      *   완전 초기 상태는 여전히 모두 허용. 첫 push 이후엔 화이트리스트 동작.
      */
     _applyUnlockKey(k: UnlockKey) {
+      const mRace = k.key.match(/^unlock-race-(.+)$/);
+      if (mRace) {
+        if (!this.unlockedRaceIds.includes(mRace[1])) {
+          this.unlockedRaceIds.push(mRace[1]);
+        }
+        return;
+      }
+      // 옛 키 호환: unlock-character-ch-* → race로 변환 후 unlockedRaceIds.
       const mChar = k.key.match(/^unlock-character-(.+)$/);
       if (mChar) {
-        if (!this.unlockedCharacterIds.includes(mChar[1])) {
-          this.unlockedCharacterIds.push(mChar[1]);
+        const raceId = LEGACY_CHARACTER_TO_RACE[mChar[1]] ?? mChar[1];
+        if (!this.unlockedRaceIds.includes(raceId)) {
+          this.unlockedRaceIds.push(raceId);
         }
         return;
       }
@@ -186,7 +217,7 @@ export const useMetaStore = defineStore('meta', {
       // 개별 필드를 명시적으로 덮어씀.
       this.gauges = fresh.gauges;
       this.unlockedKeys = fresh.unlockedKeys;
-      this.unlockedCharacterIds = fresh.unlockedCharacterIds;
+      this.unlockedRaceIds = fresh.unlockedRaceIds;
       this.unlockedTimelineIds = fresh.unlockedTimelineIds;
       this.unlockedCardIds = fresh.unlockedCardIds;
       this.codex = fresh.codex;

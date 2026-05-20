@@ -1,0 +1,24 @@
+# Race: 팬텀 — 속이고 비트는 트릭스터 (구 ch-kardi 통합).
+# 전기 친화. 보이는 곳 바깥에서 한 수를 둔다.
+
+[race.phantom]
+name = 팬텀
+description = 인간 마술사로 알려졌으나 사실은 팬텀. 속이고, 비틀고, *시간의 빈틈에서 한 수를 두는 그릇*.
+category = spirit
+primary_element = electric
+secondary_element = dark
+# 기본 스탯 (구 ch-kardi).
+hp = 30
+mp = 18
+attack = 5
+defense = 2
+vigor = 11
+# 시작 덱 (구 ch-kardi.starting_deck).
+starting_deck = c-strike, c-strike, c-quickdraw, c-quickdraw, c-defend, c-defend, c-double-strike, c-double-strike, c-burn-mark, c-deep-breath
+seed_cards = c-strike, c-quickdraw, c-defend, c-double-strike, c-burn-mark, c-deep-breath, c-recover
+seed_relics = r-determined-heart
+hp_bonus = 0
+mp_bonus = 0
+deck_size = 15
+# 팬텀 = electric·dark 친화.
+seed_colors = electric:5, dark:3

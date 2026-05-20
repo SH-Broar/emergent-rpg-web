@@ -99,7 +99,7 @@ function applyEffectWithNames(choice: EventChoice, effect: EventChoiceEffect, li
   }
   if (effect.affinityDelta) {
     const a = effect.affinityDelta;
-    const npcName = data.npcs.get(a.npcId)?.name ?? data.characters.get(a.npcId)?.name ?? a.npcId;
+    const npcName = data.npcs.get(a.npcId)?.name ?? a.npcId;
     lines.push(`${npcName} 친밀도 ${a.delta >= 0 ? '+' : ''}${a.delta}`);
     applyAffinityDelta(a.npcId, a.delta, lines);
   }

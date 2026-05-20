@@ -11,8 +11,9 @@ year = 61
 era = 제 4시대
 tagline = "한 해 안에 — 이 시대의 모든 균열을 마주하라."
 node_map = nm-act-1-era4-061
-characters = ch-niayur, ch-hako, ch-maro, ch-iyeon, ch-kardi
-npcs = npc-niayur, npc-hako, npc-phoenix, npc-echo, npc-olyu, npc-imperisia, npc-rize, npc-maro, npc-arvaro-enya, npc-caliburn, npc-mirte, npc-seraphine, npc-kurkuma, npc-cassis, npc-elnest, npc-cayo, npc-valencia, npc-seed, npc-whitefang, npc-airi, npc-tarko, npc-betelgeuse, npc-wimel, npc-iyeon, npc-rupin, npc-miyu, npc-febiel, npc-kuruha, npc-papyrus, npc-banta, npc-akasha, npc-monato, npc-mono, npc-rienkay, npc-tsuyosai
+# 플레이어는 종족만 고른다 (characters/ 폐기 → race 통합).
+races = human, moth, phantom, arcana
+npcs = npc-niayur, npc-hako, npc-phoenix, npc-echo, npc-olyu, npc-imperisia, npc-rize, npc-maro, npc-arvaro-enya, npc-caliburn, npc-mirte, npc-seraphine, npc-kurkuma, npc-cassis, npc-elnest, npc-cayo, npc-valencia, npc-seed, npc-whitefang, npc-airi, npc-tarko, npc-betelgeuse, npc-wimel, npc-iyeon, npc-kardi, npc-rupin, npc-miyu, npc-febiel, npc-kuruha, npc-papyrus, npc-banta, npc-akasha, npc-monato, npc-mono, npc-rienkay, npc-tsuyosai
 events = ev-traveler-fork, ev-stranger-favor, ev-mono-whisper
 time_limit = 300
 deck_expansion = 100, 200

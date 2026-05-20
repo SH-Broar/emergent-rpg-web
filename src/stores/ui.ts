@@ -53,7 +53,6 @@ let toastSeq = 0;
 export interface PendingRunSetup {
   timelineId: string | null;
   raceId: string | null;
-  characterId: string | null;
 }
 
 export const useUiStore = defineStore('ui', {
@@ -62,7 +61,7 @@ export const useUiStore = defineStore('ui', {
     modalOpen: false as boolean,
     modalContent: null as string | null,
     debug: loadDebugFlags(),
-    pendingRunSetup: { timelineId: null, raceId: null, characterId: null } as PendingRunSetup,
+    pendingRunSetup: { timelineId: null, raceId: null } as PendingRunSetup,
   }),
 
   actions: {

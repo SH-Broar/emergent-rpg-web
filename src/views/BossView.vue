@@ -57,11 +57,11 @@ const activePhase = computed<BossPhase | undefined>(() => {
   return active;
 });
 
-/** 현재 캐릭터 ID로 시그니처 변이가 매칭되면 그 variant. */
+/** 현재 종족 ID로 시그니처 변이가 매칭되면 그 variant. (히페리온 5단계 시그니처는 deprecated — 매칭 안 되면 undefined.) */
 const activeVariant = computed<BossSignatureVariant | undefined>(() => {
   const b = boss.value;
   if (!b?.signatureVariants) return undefined;
-  return b.signatureVariants.find((v) => v.signatureId === run.data.characterId);
+  return b.signatureVariants.find((v) => v.signatureId === run.data.raceId);
 });
 
 /** Boss → Monster 어댑터 — phase + signature intent 적용 (동적). */

@@ -17,10 +17,10 @@ import type { Equipment, EquipmentId } from './equipment';
 import type { ColorValues } from './npc';
 import type {
   CardId,
-  CharacterId,
   NodeId,
   NodeKind,
   NpcId,
+  RaceId,
   RelicId,
   Season,
   TimelineId,
@@ -117,7 +117,8 @@ export interface NodeStateRecord {
 export interface RunState {
   // === 컨텍스트 ===
   timelineId: TimelineId;
-  characterId: CharacterId;
+  /** 이 런에서 깃든 종족 (구 characterId — characters/ 폐기 후 race로 통합). */
+  raceId: RaceId;
   season: Season;
   /** 런 시작 시각 (ms). 통계용. */
   startedAt: number;
