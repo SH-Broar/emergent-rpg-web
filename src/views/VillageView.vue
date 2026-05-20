@@ -113,9 +113,14 @@ function affinityOf(npc: Npc): number {
   return run.data.npcAffinity[npc.id] ?? 0;
 }
 
-/** background를 `|`로 나눠 친밀도가 깊을수록 더 뒤 단락을 보여준다(없으면 tagline). */
+/**
+ * 대화 대사 — *현재 연표*의 배경 변주를 우선 사용(없으면 기본 background, 그것도 없으면 tagline).
+ * background를 `|`로 나눠 친밀도가 깊을수록 더 뒤 단락을 보여준다.
+ */
 function dialogueLine(npc: Npc): string {
-  const paras = (npc.background ?? '')
+  const tlId = run.data.timelineId;
+  const raw = npc.backgroundByTimeline?.[tlId] ?? npc.background ?? '';
+  const paras = raw
     .split('|')
     .map((s) => s.trim())
     .filter(Boolean);

@@ -668,6 +668,12 @@ export function parseNpcs(ini: IniData): Map<string, Npc> {
     const affinityRewards = parseList(fields.affinity_rewards)
       .map(parseAffinityReward)
       .filter((r): r is AffinityReward => r !== null);
+    // 연표별 배경 변주 수집 — `background.<timelineId> = ...` 키.
+    const backgroundByTimeline: Record<string, string> = {};
+    for (const [k, v] of Object.entries(fields)) {
+      const m = /^background\.(.+)$/.exec(k);
+      if (m && v) backgroundByTimeline[m[1]] = v;
+    }
     result.set(id, {
       id,
       name: fields.name ?? id,
@@ -681,6 +687,7 @@ export function parseNpcs(ini: IniData): Map<string, Npc> {
       domainHigh: parseList(fields.domain_high),
       domainLow: parseList(fields.domain_low),
       background: fields.background,
+      backgroundByTimeline: Object.keys(backgroundByTimeline).length > 0 ? backgroundByTimeline : undefined,
       affinityRewards: affinityRewards.length > 0 ? affinityRewards : undefined,
       giftPrefs: parseGiftPrefs(fields),
       tags: parseList(fields.tags),

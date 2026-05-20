@@ -100,8 +100,14 @@ export interface Npc extends NamedEntity {
   /** 약한 영역 키워드. */
   domainLow?: string[];
 
-  /** 인물 배경 — `|` 로 단락 분리된 legacy 텍스트를 보존. */
+  /** 인물 배경 — `|` 로 단락 분리된 legacy 텍스트를 보존. (연표 무관 기본값/폴백) */
   background?: string;
+
+  /**
+   * 연표별 배경 변주 — 같은 NPC라도 *어느 연표(시대)*의 런이냐에 따라 내용이 조금 다름.
+   * 데이터 키: `background.<timelineId> = ...` (`|` 단락 분리). 현재 연표 우선, 없으면 `background`.
+   */
+  backgroundByTimeline?: Record<string, string>;
 
   /** 친밀도 단계별 보상. */
   affinityRewards?: AffinityReward[];
