@@ -85,6 +85,9 @@ function goChaos() {
 function goCodex() {
   router.push('/codex');
 }
+function goDebugBattle() {
+  router.push('/debug-battle');
+}
 </script>
 
 <template>
@@ -111,6 +114,11 @@ function goCodex() {
 
       <button class="menu-card menu-card--chaos" type="button" @click="goChaos">
         <span class="menu-card__title">카오스</span>
+      </button>
+
+      <button class="menu-card menu-card--debug" type="button" @click="goDebugBattle">
+        <span class="menu-card__title">디버그 전투</span>
+        <span class="menu-card__sub">몬스터·보스·카드 테스트</span>
       </button>
     </section>
 
@@ -202,6 +210,12 @@ function goCodex() {
 .menu-card--chaos {
   background: rgba(255, 80, 80, 0.06);
   border-color: rgba(255, 100, 100, 0.25);
+}
+
+.menu-card--debug {
+  background: rgba(120, 200, 255, 0.06);
+  border-color: rgba(120, 200, 255, 0.28);
+  border-style: dashed;
 }
 
 .menu-card__title {

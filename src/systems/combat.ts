@@ -697,4 +697,6 @@ export function applyMonsterDrop(drop: MonsterDrop, allCards: Map<string, Card>)
 export function clearCombat() {
   const run = useRunStore();
   run.data.combat = undefined;
+  // 디버그 전투 오버라이드는 1회용 — 전투 종료 시 해제해 일반 전투에 영향 없게.
+  useUiStore().clearDebugBattle();
 }

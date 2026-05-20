@@ -33,6 +33,12 @@ const phase = ref<Phase>('intro');
 
 const timeline = computed(() => data.timelines.get(run.data.timelineId));
 const boss = computed<Boss | undefined>(() => {
+  // 디버그 전투 오버라이드 — 설정 시 연표 보스 대신 지정 보스.
+  const dbgId = ui.debugBattle.bossId;
+  if (dbgId) {
+    const dbgBoss = data.bosses.get(dbgId);
+    if (dbgBoss) return dbgBoss;
+  }
   const id = timeline.value?.bossId;
   return id ? data.bosses.get(id) : undefined;
 });

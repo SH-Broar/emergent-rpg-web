@@ -37,6 +37,12 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/CodexView.vue'),
     meta: { scene: 'main' },
   },
+  {
+    path: '/debug-battle',
+    name: 'debug-battle',
+    component: () => import('@/views/DebugBattleView.vue'),
+    meta: { scene: 'main' },
+  },
 
   // === 게임 씬 ===
   {

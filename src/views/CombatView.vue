@@ -41,6 +41,12 @@ const currentNode = computed(() => {
 });
 
 const monster = computed<Monster>(() => {
+  // 디버그 전투 오버라이드 — 설정 시 노드 대신 지정 몬스터.
+  const dbgId = ui.debugBattle.monsterId;
+  if (dbgId) {
+    const dbgMonster = data.monsters.get(dbgId);
+    if (dbgMonster) return dbgMonster;
+  }
   // 권역 풀에서 재추첨된 enemy도 반영.
   const node = currentNode.value;
   const content = node ? effectiveContent(node, run.data) : undefined;

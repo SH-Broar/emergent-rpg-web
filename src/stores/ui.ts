@@ -62,6 +62,11 @@ export const useUiStore = defineStore('ui', {
     modalContent: null as string | null,
     debug: loadDebugFlags(),
     pendingRunSetup: { timelineId: null, raceId: null } as PendingRunSetup,
+    /**
+     * 디버그 전투 오버라이드 — 설정 시 CombatView/BossView가 노드/연표 대신
+     * 이 id의 적/보스로 전투. 비영속(새로고침 시 사라짐). clearCombat에서 해제.
+     */
+    debugBattle: { monsterId: null as string | null, bossId: null as string | null },
   }),
 
   actions: {
@@ -92,6 +97,16 @@ export const useUiStore = defineStore('ui', {
       } catch {
         // ignore
       }
+    },
+
+    setDebugBattle(payload: { monsterId?: string | null; bossId?: string | null }) {
+      this.debugBattle.monsterId = payload.monsterId ?? null;
+      this.debugBattle.bossId = payload.bossId ?? null;
+    },
+
+    clearDebugBattle() {
+      this.debugBattle.monsterId = null;
+      this.debugBattle.bossId = null;
     },
   },
 });
