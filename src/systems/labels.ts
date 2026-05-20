@@ -5,7 +5,7 @@
  * 모든 컴포넌트가 이 모듈을 거쳐 라벨을 표시.
  */
 
-import type { CardEffect } from '@/data/schemas';
+import type { CardEffect, RelicEffect } from '@/data/schemas';
 
 /**
  * 카드 효과 종류(CardEffectKind) → 한글 *간결 라벨*.
@@ -143,6 +143,118 @@ export function cardEffectDescription(effect: CardEffect): string {
     return statusDescription(st) || '상태를 부여합니다.';
   }
   return CARD_EFFECT_DESCRIPTIONS[effect.kind] ?? '';
+}
+
+// ===== 유물 =====
+
+/** 유물 trigger → 한글 (ShopView·InventoryMenu 공용). */
+const RELIC_TRIGGER_LABELS: Record<string, string> = {
+  passive: '상시',
+  'on-combat-start': '전투 시작 시',
+  'on-combat-end': '전투 승리 시',
+  'on-node-enter': '노드 진입 시',
+  'on-rest': '휴식 시',
+  'on-turn-start': '턴 시작 시',
+  'on-turn-end': '턴 종료 시',
+  'on-card-play': '카드 사용 시',
+  'on-card-played-before': '카드 사용 직전',
+  'on-card-played-after': '카드 사용 시',
+  'on-damage-taken': '피해 받을 시',
+  'on-block-gain': '방어 획득 시',
+  'on-acquire': '획득 즉시',
+  'on-item-use': '아이템 사용 시',
+  'on-color-gain': '컬러 상승 시',
+};
+
+/** 컬러 키 → 한글 (유물 효과 표기용). */
+const COLOR_KO: Record<string, string> = {
+  fire: '불', water: '물', electric: '전기', iron: '철',
+  earth: '흙', wind: '바람', light: '빛', dark: '어둠',
+  all: '모든 컬러', random: '무작위 컬러',
+};
+/** 지표(컬러/스탯) 키 → 한글. */
+const METRIC_KO: Record<string, string> = {
+  ...COLOR_KO, atk: 'ATK', def: 'DEF', mag: 'MAG',
+};
+function colorKo(arg: unknown): string {
+  const k = String(arg ?? 'random');
+  return COLOR_KO[k] ?? k;
+}
+function metricKo(arg: unknown): string {
+  const k = String(arg ?? '');
+  return METRIC_KO[k] ?? k;
+}
+/** ATK/DEF/MAG → 한글. */
+const STAT_KO: Record<string, string> = { atk: 'ATK', def: 'DEF', mag: 'MAG' };
+
+export function relicTriggerLabel(trigger: string | undefined): string {
+  if (!trigger) return '';
+  return RELIC_TRIGGER_LABELS[trigger] ?? trigger;
+}
+
+/**
+ * 유물 효과 → 한글 *완성 문장*. 화면에 raw kind가 보이지 않게 한다.
+ * 카드 라벨(간결)과 달리 유물은 한 줄 설명을 그대로 보여주므로 풀 문장.
+ */
+export function relicEffectText(eff: RelicEffect): string {
+  const v = eff.value ?? 0;
+  const signed = (x: number) => (x >= 0 ? `+${x}` : `${x}`);
+  switch (eff.kind) {
+    // --- 패시브 / 단순 ---
+    case 'bonus-hp': return `최대 HP ${signed(v)}`;
+    case 'bonus-mana': return `전투 시작 시 마나 ${signed(v)}`;
+    case 'bonus-gold': return `전투 승리 시 골드 ${signed(v)}`;
+    case 'bonus-damage':
+    case 'damage-out-add': return `주는 피해 ${signed(v)}`;
+    case 'damage-out-mul': return `주는 피해 ×${v}`;
+    case 'damage-in-mul': return `받는 피해 ×${v}`;
+    case 'block-out-add': return `방어 ${signed(v)}`;
+    case 'draw-extra-add': return `매 턴 드로우 ${signed(v)}`;
+    case 'mana-extra-add': return `매 턴 마나 ${signed(v)}`;
+    case 'cost-mod-add': return `모든 카드 비용 ${signed(v)}`;
+    case 'chance-random-color-1': return `${v}% 확률로 무작위 컬러 +1`;
+    case 'skip-turn-every': return `${v}턴마다 적 행동 1회 거름`;
+    case 'discount': return `제작 비용 ${Math.round(v * 100)}% 할인`;
+    // --- 전투/턴 시작 ---
+    case 'combat-start-block': return `전투 시작 시 방어 ${v}`;
+    case 'combat-start-draw': return `전투 시작 시 카드 ${v}장 더 뽑기`;
+    case 'combat-start-status': return `전투 시작 시 ${statusLabel((eff.params?.arg ?? eff.params?.status) as string | undefined)} ${v}`;
+    case 'turn-start-block': return `매 턴 방어 ${v}`;
+    case 'turn-start-hp-loss': return `매 턴 시작 시 HP -${v}`;
+    // --- 회복 ---
+    case 'combat-end-heal': return `전투 승리 시 HP ${v} 회복`;
+    case 'node-enter-heal': return `노드 진입 시 HP ${v} 회복`;
+    // --- 카운터형 (value = 주기 N) ---
+    case 'cards-to-draw': return `카드 ${v}장 사용마다 1장 더 뽑기`;
+    case 'cards-to-color': return `카드 ${v}장 사용마다 무작위 컬러 +1`;
+    case 'attacks-to-strength': return `공격 ${v}회마다 힘 +1`;
+    case 'attacks-to-color': return `공격 ${v}회마다 무작위 컬러 +1`;
+    // --- 반응형 ---
+    case 'hurt-to-color': return `피해를 받으면 무작위 컬러 +${v}`;
+    case 'retaliate': return `피해를 받으면 적에게 ${v} 피해`;
+    case 'hurt-to-block': return `피해를 받으면 방어 ${v}`;
+    // --- 컬러/스탯 영구 상승 (트리거가 '언제'를 결정) ---
+    case 'boost-color': return `${colorKo(eff.params?.arg)} ${signed(v)}`;
+    case 'boost-stat': return `${STAT_KO[String(eff.params?.arg ?? '')] ?? metricKo(eff.params?.arg)} 컬러쌍 ${signed(v)}`;
+    // --- 스케일링 (현재값 비례) ---
+    case 'block-from-metric': return `전투 시작 시 ${metricKo(eff.params?.arg)} ${v}당 방어 +1`;
+    case 'strength-from-metric': return `전투 시작 시 ${metricKo(eff.params?.arg)} ${v}당 힘 +1`;
+    // --- 턴 수 연동 ---
+    case 'turn-start-block-snowball': return `매 턴 (턴 번호 ×${v})만큼 방어`;
+    case 'turn-after-strength': return `${Number(eff.params?.arg ?? 4)}턴째부터 매 턴 힘 +${v || 1}`;
+    case 'turn-before-block': return `${Number(eff.params?.arg ?? 3)}턴까지 매 턴 방어 ${v}`;
+    case 'turn-units-color': return `턴 번호의 1의 자리가 ${Number(eff.params?.arg ?? 0)}일 때 무작위 컬러 +${v || 1}`;
+    // --- 즉시 자원 ---
+    case 'gain-time-shards': return `시간의 조각 ${signed(v)}`;
+    case 'heal-now': return `HP ${v} 회복`;
+    case 'gain-card': return `카드 획득`;
+    // --- C 메커니즘 (패시브 마커) ---
+    case 'block-carryover': return `방어가 다음 턴으로 이월됩니다`;
+    case 'mana-carryover': return `쓰지 않은 마나가 다음 턴으로 이월됩니다`;
+    case 'first-card-free': return `매 턴 첫 카드의 비용이 0`;
+    case 'double-debuff': return `적에게 거는 디버프가 2배`;
+    default: return `${eff.kind}${eff.value !== undefined ? ` ${eff.value}` : ''}`;
+  }
 }
 
 /** 게이지 키 → 한글 (사용자 정의: hyperion=히페리온, insight=해석, composite=종합). */

@@ -27,9 +27,12 @@ export type RelicTriggerKind =
   | 'on-card-played-after'     // 카드 사용 직후 (효과 적용 후, discard 전)
   | 'on-turn-start'            // 플레이어 턴 시작
   | 'on-turn-end'              // 플레이어 턴 종료 (몬스터 행동 전)
-  | 'on-damage-taken'          // 플레이어 피해 입을 때 (본 라운드 발동 미구현)
+  | 'on-damage-taken'          // 플레이어 피해 입을 때
   | 'on-block-gain'            // 플레이어 block 획득 시 (본 라운드 발동 미구현)
-  | 'on-rest';
+  | 'on-rest'
+  | 'on-acquire'               // 유물 획득 즉시 1회 (영구 강화/즉시 자원)
+  | 'on-item-use'              // 아이템 사용 시
+  | 'on-color-gain';           // 컬러가 오를 때마다
 
 /** 유물 효과 — 카드 효과보다 풍부 (전역 변경자). */
 export interface RelicEffect {

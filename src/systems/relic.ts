@@ -31,8 +31,11 @@ import type {
   RunState,
 } from '@/data/schemas';
 import { useRunStore } from '@/stores/run';
+import { useDataStore } from '@/stores/data';
+import { drawCards } from '@/systems/deck';
 import { rng } from '@/systems/rng';
-import { applyColorBoost, type ColorKey } from '@/systems/colors';
+import { applyColorBoost, applyColorBoostAll, type ColorKey } from '@/systems/colors';
+import { deriveStats } from '@/systems/stats';
 
 const ALL_8_COLORS: ColorKey[] = ['fire', 'water', 'electric', 'iron', 'earth', 'wind', 'light', 'dark'];
 
@@ -136,9 +139,107 @@ export interface RelicContext {
   run: RunState;
   combat?: CombatState;
   triggeredBy?: string;   // 'card-play' 시 카드 id 등
+  /** 이 효과를 발동시킨 유물 — fire()가 주입. 카운터 키 등에 사용. */
+  relic?: Relic;
+  /** on-damage-taken 등에서 전달되는 피해량. */
+  amount?: number;
 }
 
 export type RelicEffectHandler = (effect: RelicEffect, ctx: RelicContext) => void;
+
+// ===== 신규 효과 헬퍼 =====
+
+/** 공격 카드 판정 — 데미지 계열 효과를 하나라도 가진 카드. */
+const DAMAGE_EFFECT_KINDS = new Set<string>([
+  'damage', 'damage-min-color', 'damage-top-color', 'damage-color-count',
+  'damage-per-debuff', 'consume-vulnerable', 'damage-from-hp', 'damage-per-hand',
+  'block-to-damage', 'spend-all-energy', 'damage-per-companion', 'damage-per-relic',
+  'growing-damage',
+]);
+
+/** triggeredBy 카드 id가 *공격 카드*인지 — 데이터 정의로 판정. */
+function isAttackCardId(id: string | undefined): boolean {
+  if (!id) return false;
+  const card = useDataStore().cards.get(id);
+  if (!card) return false;
+  return card.effects.some((e) => DAMAGE_EFFECT_KINDS.has(e.kind));
+}
+
+/** 손패 상한 — 다른 드로우 경로(rize-relay 등)와 일관. */
+const MAX_HAND_SIZE = 10;
+
+/** 덱에서 n장 손패로 (10장 캡 적용, drawCards 정책: drawPile 소진 시 discard 셔플). */
+function drawIntoHand(c: CombatState, n: number): void {
+  const count = Math.min(n, MAX_HAND_SIZE - c.hand.length);
+  if (count <= 0) return;
+  const { drawn, newDrawPile, newDiscardPile } = drawCards(c.drawPile, c.discardPile, count);
+  c.hand.push(...drawn);
+  c.drawPile = newDrawPile;
+  c.discardPile = newDiscardPile;
+}
+
+/** 플레이어에게 상태 부여 (스택 누적). */
+function applyStatusToPlayer(c: CombatState, status: string, v: number): void {
+  if (!status || v === 0) return;
+  c.player.statuses[status] = (c.player.statuses[status] ?? 0) + v;
+}
+
+/** 적에게 직접 피해 (vulnerable 반영, block 흡수). retaliate 전용 간이 경로. */
+function damageEnemyDirect(c: CombatState, v: number): void {
+  let dmg = Math.max(0, v);
+  if ((c.enemy.statuses?.vulnerable ?? 0) > 0) dmg = Math.floor(dmg * 1.5);
+  const absorbed = Math.min(c.enemy.block, dmg);
+  c.enemy.block -= absorbed;
+  c.enemy.hp = Math.max(0, c.enemy.hp - (dmg - absorbed));
+}
+
+/** 무작위 컬러 +v. */
+function boostRandomColor(v: number): void {
+  if (v === 0) return;
+  const color = ALL_8_COLORS[Math.floor(rng() * ALL_8_COLORS.length)];
+  applyColorBoost(color, v);
+}
+
+/** 유물별 독립 카운터 +1 후 현재값 반환. */
+function bumpCounter(c: CombatState, relicId: string | undefined, name: string): number {
+  if (!c.relicCounters) c.relicCounters = {};
+  const key = `${relicId ?? '?'}:${name}`;
+  const next = (c.relicCounters[key] ?? 0) + 1;
+  c.relicCounters[key] = next;
+  return next;
+}
+
+/** 유물별 카운터 리셋. */
+function resetCounter(c: CombatState, relicId: string | undefined, name: string): void {
+  if (!c.relicCounters) return;
+  c.relicCounters[`${relicId ?? '?'}:${name}`] = 0;
+}
+
+/** ATK/DEF/MAG ↔ 기반 컬러쌍. boost-stat이 쌍을 동시에 올린다. */
+const STAT_PAIRS: Record<string, [ColorKey, ColorKey]> = {
+  atk: ['fire', 'electric'],
+  def: ['earth', 'iron'],
+  mag: ['water', 'wind'],
+};
+
+/** 지표(arg) 현재값 — 컬러명이면 컬러값, atk/def/mag면 파생 스탯. */
+function metricValue(arg: string): number {
+  const colors = useRunStore().data.colors;
+  if (arg in colors) return (colors as Record<string, number>)[arg] ?? 0;
+  const s = deriveStats(colors);
+  if (arg === 'atk') return s.atk;
+  if (arg === 'def') return s.def;
+  if (arg === 'mag') return s.mag;
+  return 0;
+}
+
+/** boost-color/item-use-color 공통 — arg = 컬러명 | 'all' | 'random'. */
+function boostColorArg(arg: string, v: number): void {
+  if (v === 0) return;
+  if (arg === 'all') applyColorBoostAll(v);
+  else if (arg === 'random' || !arg) boostRandomColor(v);
+  else applyColorBoost(arg as ColorKey, v);
+}
 
 const HANDLERS: Record<string, RelicEffectHandler> = {
   'bonus-hp': (eff, ctx) => {
@@ -153,7 +254,7 @@ const HANDLERS: Record<string, RelicEffectHandler> = {
     ctx.combat.maxMana += n;
   },
   'bonus-gold': (eff, ctx) => {
-    ctx.run.gold += eff.value ?? 0;
+    ctx.run.gold = Math.max(0, ctx.run.gold + (eff.value ?? 0));
   },
   'bonus-damage': (eff, ctx) => {
     if (!ctx.combat) return;
@@ -173,14 +274,169 @@ const HANDLERS: Record<string, RelicEffectHandler> = {
   discount: (_eff, _ctx) => {
     // 제작 비용 할인 — Village/Workshop이 useDiscount()로 *조회*. 핸들러 호출은 패시브로 등록만.
   },
+
+  // ===== 전투 시작 (on-combat-start) =====
+  'combat-start-block': (eff, ctx) => {
+    if (!ctx.combat) return;
+    ctx.combat.player.block += eff.value ?? 0;
+  },
+  'combat-start-draw': (eff, ctx) => {
+    if (!ctx.combat) return;
+    drawIntoHand(ctx.combat, eff.value ?? 0);
+  },
+  'combat-start-status': (eff, ctx) => {
+    if (!ctx.combat) return;
+    applyStatusToPlayer(ctx.combat, String(eff.params?.arg ?? eff.params?.status ?? ''), eff.value ?? 0);
+  },
+
+  // ===== 턴 시작 (on-turn-start) =====
+  'turn-start-block': (eff, ctx) => {
+    if (!ctx.combat) return;
+    ctx.combat.player.block += eff.value ?? 0;
+  },
+  'turn-start-hp-loss': (eff, ctx) => {
+    if (!ctx.combat) return;
+    ctx.combat.player.hp = Math.max(1, ctx.combat.player.hp - (eff.value ?? 0));
+  },
+
+  // ===== 회복 (on-combat-end / on-node-enter / on-rest) =====
+  'combat-end-heal': (eff, ctx) => {
+    ctx.run.hp = Math.min(ctx.run.maxHp, ctx.run.hp + (eff.value ?? 0));
+  },
+  'node-enter-heal': (eff, ctx) => {
+    ctx.run.hp = Math.min(ctx.run.maxHp, ctx.run.hp + (eff.value ?? 0));
+  },
+
+  // ===== 카운터형 (on-card-played-after) — value = 주기 N. 카운터 키는 eff.kind로 격리 =====
+  'cards-to-draw': (eff, ctx) => {
+    if (!ctx.combat) return;
+    const n = eff.value ?? 8;
+    if (bumpCounter(ctx.combat, ctx.relic?.id, eff.kind) >= n) {
+      resetCounter(ctx.combat, ctx.relic?.id, eff.kind);
+      drawIntoHand(ctx.combat, 1);
+    }
+  },
+  'cards-to-color': (eff, ctx) => {
+    if (!ctx.combat) return;
+    const n = eff.value ?? 5;
+    if (bumpCounter(ctx.combat, ctx.relic?.id, eff.kind) >= n) {
+      resetCounter(ctx.combat, ctx.relic?.id, eff.kind);
+      boostRandomColor(1);
+    }
+  },
+  'attacks-to-strength': (eff, ctx) => {
+    if (!ctx.combat || !isAttackCardId(ctx.triggeredBy)) return;
+    const n = eff.value ?? 4;
+    if (bumpCounter(ctx.combat, ctx.relic?.id, eff.kind) >= n) {
+      resetCounter(ctx.combat, ctx.relic?.id, eff.kind);
+      applyStatusToPlayer(ctx.combat, 'strength', 1);
+    }
+  },
+  'attacks-to-color': (eff, ctx) => {
+    if (!ctx.combat || !isAttackCardId(ctx.triggeredBy)) return;
+    const n = eff.value ?? 3;
+    if (bumpCounter(ctx.combat, ctx.relic?.id, eff.kind) >= n) {
+      resetCounter(ctx.combat, ctx.relic?.id, eff.kind);
+      boostRandomColor(1);
+    }
+  },
+
+  // ===== 반응형 (on-damage-taken) =====
+  'hurt-to-color': (eff, _ctx) => {
+    boostRandomColor(eff.value ?? 0);
+  },
+  retaliate: (eff, ctx) => {
+    if (!ctx.combat) return;
+    damageEnemyDirect(ctx.combat, eff.value ?? 0);
+  },
+  'hurt-to-block': (eff, ctx) => {
+    if (!ctx.combat) return;
+    ctx.combat.player.block += eff.value ?? 0;
+  },
+
+  // ===== 컬러/스탯 영구 상승 (트리거-무관: on-acquire / on-node-enter / on-combat-end / on-turn-start / on-rest / on-item-use / on-color-gain) =====
+  // arg = 컬러명 | 'all' | 'random'.
+  'boost-color': (eff, _ctx) => {
+    boostColorArg(String(eff.params?.arg ?? 'random'), eff.value ?? 0);
+  },
+  // arg = 'atk' | 'def' | 'mag' — 기반 컬러쌍을 동시에 value만큼.
+  'boost-stat': (eff, _ctx) => {
+    const pair = STAT_PAIRS[String(eff.params?.arg ?? '')];
+    if (!pair) return;
+    const v = eff.value ?? 0;
+    applyColorBoost(pair[0], v);
+    applyColorBoost(pair[1], v);
+  },
+
+  // ===== 스케일링 (현재 컬러/스탯에 비례, 전투 트리거에서) — value = 제수, arg = 지표 =====
+  'block-from-metric': (eff, ctx) => {
+    if (!ctx.combat) return;
+    const div = eff.value ?? 10;
+    if (div <= 0) return;
+    ctx.combat.player.block += Math.floor(metricValue(String(eff.params?.arg ?? '')) / div);
+  },
+  'strength-from-metric': (eff, ctx) => {
+    if (!ctx.combat) return;
+    const div = eff.value ?? 10;
+    if (div <= 0) return;
+    applyStatusToPlayer(ctx.combat, 'strength', Math.floor(metricValue(String(eff.params?.arg ?? '')) / div));
+  },
+
+  // ===== 턴 수 연동 (on-turn-start) =====
+  // 턴 번호 × value 방어 (스노볼).
+  'turn-start-block-snowball': (eff, ctx) => {
+    if (!ctx.combat) return;
+    ctx.combat.player.block += (ctx.combat.turn ?? 1) * (eff.value ?? 0);
+  },
+  // 턴 ≥ arg 부터 매 턴 힘 +value (후반 가속).
+  'turn-after-strength': (eff, ctx) => {
+    if (!ctx.combat) return;
+    const n = Number(eff.params?.arg ?? 4);
+    if ((ctx.combat.turn ?? 1) >= n) applyStatusToPlayer(ctx.combat, 'strength', eff.value ?? 1);
+  },
+  // 턴 ≤ arg 까지 매 턴 방어 +value (전반 보호).
+  'turn-before-block': (eff, ctx) => {
+    if (!ctx.combat) return;
+    const n = Number(eff.params?.arg ?? 3);
+    if ((ctx.combat.turn ?? 1) <= n) ctx.combat.player.block += eff.value ?? 0;
+  },
+  // 턴 번호의 1의 자리 == arg 일 때 무작위 컬러 +value (창의적 연계).
+  'turn-units-color': (eff, ctx) => {
+    if (!ctx.combat) return;
+    const d = Number(eff.params?.arg ?? 0);
+    if (((ctx.combat.turn ?? 1) % 10) === d) boostRandomColor(eff.value ?? 1);
+  },
+
+  // ===== 즉시 자원 (on-acquire / on-item-use / on-color-gain / on-node-enter 등) =====
+  'gain-time-shards': (eff, ctx) => {
+    ctx.run.timeShards = Math.max(0, (ctx.run.timeShards ?? 0) + (eff.value ?? 0));
+  },
+  'heal-now': (eff, ctx) => {
+    const v = eff.value ?? 0;
+    // 전투 중이면 전투 hp(c.player.hp)를, 그 외엔 런 hp를 회복.
+    if (ctx.combat) {
+      ctx.combat.player.hp = Math.min(ctx.combat.player.maxHp, ctx.combat.player.hp + v);
+    } else {
+      ctx.run.hp = Math.min(ctx.run.maxHp, ctx.run.hp + v);
+    }
+  },
+  // arg = cardId — 컬렉션에 카드 1장 추가 (on-acquire 전용 권장).
+  'gain-card': (eff, _ctx) => {
+    const id = String(eff.params?.arg ?? '');
+    if (!id) return;
+    const card = useDataStore().cards.get(id);
+    if (card) useRunStore().addCardToCollection(card);
+  },
 };
 
 /** 한 유물의 효과들을 trigger 시점에 호출. */
 function fire(relic: Relic, ctx: RelicContext) {
   if (relic.effects.length === 0 && !relic.customEffectId) return;
+  // 카운터형 핸들러가 발동 유물을 식별할 수 있도록 relic 주입.
+  const localCtx: RelicContext = { ...ctx, relic };
   for (const effect of relic.effects) {
     const handler = HANDLERS[effect.kind];
-    if (handler) handler(effect, ctx);
+    if (handler) handler(effect, localCtx);
   }
   // customEffectId 함수 슬롯은 추후
 }
@@ -206,6 +462,36 @@ export function applyPassiveRelicsAtRunStart() {
       fire(relic, { run: run.data });
     }
   }
+}
+
+/**
+ * 유물 *획득* 중앙 진입점 — 보유 목록 추가 + 미발견 기록 + 즉시 발동.
+ *  - trigger === 'on-acquire': 효과 1회 즉시 발동 (영구 강화/즉시 자원).
+ *  - trigger === 'passive': bonus-hp 등 패시브 핸들러 1회 즉시 적용
+ *    (modifier 계열은 핸들러 없어 no-op — 조회 시점 합산이라 무관).
+ * 런 시작 종족 유물은 RaceSelect가 직접 push + applyPassiveRelicsAtRunStart로 처리
+ * (이 함수를 거치지 않아 패시브 이중발동 없음).
+ */
+export function acquireRelic(relic: Relic): void {
+  const run = useRunStore();
+  const r = run.data;
+  r.relics.push(relic);
+  if (!r.newRelicEncounters.includes(relic.id)) r.newRelicEncounters.push(relic.id);
+  const t = normalizeTrigger(relic.trigger);
+  if (t === 'on-acquire' || t === 'passive') {
+    fire(relic, { run: r });
+  }
+}
+
+/**
+ * 컬러 상승 시 호출되는 훅 — colors.ts의 setColorGainHook으로 등록 (main.ts).
+ * on-color-gain 유물 효과를 발동. colors.ts↔relic.ts 순환을 피하려 콜백 주입 방식.
+ * (재진입 가드는 colors.ts applyColorBoost가 담당.)
+ */
+export function fireColorGain(color: string, delta: number): void {
+  const run = useRunStore();
+  if (!run.data.relics.length) return;
+  fireRelicTrigger('on-color-gain', { run: run.data, combat: run.data.combat, amount: delta, triggeredBy: color });
 }
 
 /** 전투 시작 시: on-combat-start 발동. */

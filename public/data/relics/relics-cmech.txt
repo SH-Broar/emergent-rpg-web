@@ -1,0 +1,165 @@
+# Relics — 신규 C 메커니즘 (방어이월·마나이월·첫카드무료·디버프2배) 2026-05-21
+
+# ============================================================
+# block-carryover — 방어가 다음 턴으로 이월된다 (0으로 리셋 안 됨).
+# ============================================================
+
+[relic.r-cm-block-keep-pebble]
+name = 식지 않는 자갈
+rank = rare
+source = event
+trigger = passive
+effects = block-carryover
+flavor = 한 번 데운 돌은 좀처럼 식지 않는다. 쌓아 둔 벽이 다음 마디까지 그대로 남는다.
+
+[relic.r-cm-block-keep-wall]
+name = 무너지지 않는 둑
+rank = rare
+source = shop
+trigger = passive
+effects = block-carryover
+flavor = 모노가 흘려보낸 시간으로 다진 둑. 막아 둔 한 겹이 사라지지 않고 다음으로 이어진다.
+
+[relic.r-cm-block-keep-fortress]
+name = 영원의 성채
+rank = legendary
+source = elite
+trigger = passive
+effects = block-carryover
+flavor = 시간의 신이 잠시 세워 둔 벽. 한 번 쌓은 방어는 어느 마디에도 무너지지 않는다.
+
+# ============================================================
+# mana-carryover — 쓰지 않은 마나가 다음 턴으로 이월된다.
+# ============================================================
+
+[relic.r-cm-mana-keep-flask]
+name = 새지 않는 호리병
+rank = rare
+source = event
+trigger = passive
+effects = mana-carryover
+flavor = 아낀 한 모금이 어디로도 흩어지지 않는다. 남긴 힘이 다음 마디까지 고스란히 고인다.
+
+[relic.r-cm-mana-keep-cell]
+name = 잠겨 두는 전지
+rank = rare
+source = shop
+trigger = passive
+effects = mana-carryover
+flavor = 전기 정령이 쓰다 만 작은 통. 한 번 채워 두면 다음 순간까지 빠져나가지 않는다.
+
+[relic.r-cm-mana-keep-reservoir]
+name = 마르지 않는 못
+rank = legendary
+source = elite
+trigger = passive
+effects = mana-carryover
+flavor = 물의 정령이 길어 둔 깊은 못. 손대지 않은 힘이 한 방울도 줄지 않고 다음으로 넘어간다.
+
+# ============================================================
+# first-card-free — 매 턴 첫 카드의 비용이 0이 된다.
+# ============================================================
+
+[relic.r-cm-first-free-feather]
+name = 가벼운 첫 깃털
+rank = rare
+source = event
+trigger = passive
+effects = first-card-free
+flavor = 처음 내미는 한 줄은 무게가 없다. 매 마디 첫 손이 깃털처럼 가뿐히 나간다.
+
+[relic.r-cm-first-free-token]
+name = 처음의 무료표
+rank = rare
+source = shop
+trigger = passive
+effects = first-card-free
+flavor = 상점 정령이 손에 쥐여 준 작은 표. 매번 첫 한 장은 값을 치르지 않아도 된다.
+
+[relic.r-cm-first-free-overture]
+name = 서막의 손길
+rank = legendary
+source = elite
+trigger = passive
+effects = first-card-free
+flavor = 이야기의 첫 줄은 늘 거저 시작된다. 어느 마디든 첫 손이 힘 한 줌 없이도 펼쳐진다.
+
+# ============================================================
+# double-debuff — 적에게 거는 디버프 스택이 2배가 된다.
+# ============================================================
+
+[relic.r-cm-double-curse-needle]
+name = 두 번 찌르는 바늘
+rank = rare
+source = event
+trigger = passive
+effects = double-debuff
+flavor = 한 번 찔러도 두 번 든다. 적에게 새기는 약함이 늘 곱절로 파고든다.
+
+[relic.r-cm-double-curse-mirror]
+name = 되비치는 거울
+rank = rare
+source = shop
+trigger = passive
+effects = double-debuff
+flavor = 마주 비춘 저주가 둘이 되어 돌아간다. 적에게 거는 모든 흠집이 두 겹으로 새겨진다.
+
+[relic.r-cm-double-curse-sigil]
+name = 겹쳐 새긴 인장
+rank = legendary
+source = elite
+trigger = passive
+effects = double-debuff
+flavor = 한 획을 그으면 두 획이 남는 검은 인장. 적이 받는 모든 약함이 두 배로 깊게 박힌다.
+
+# ============================================================
+# 다운사이드 동반 — 마커 + 진짜 단점 (STS 보스 유물식)
+# ============================================================
+
+[relic.r-cm-first-free-thin-glass]
+name = 얇은 첫 유리
+rank = rare
+source = event
+trigger = passive
+effects = first-card-free, bonus-hp:-8
+flavor = 첫 손은 거저 나가지만 그릇이 그만큼 무르다. 가뿐함의 대가는 미리 깎인 살 한 줌이다.
+
+[relic.r-cm-block-keep-frail-stone]
+name = 금 간 이월석
+rank = rare
+source = elite
+trigger = on-combat-start
+effects = block-carryover, combat-start-status:2:frail
+flavor = 벽은 다음 마디까지 남지만 돌에 잔금이 갔다. 시작부터 어깨가 짓눌려 새로 막아 내기가 버겁다.
+
+[relic.r-cm-double-curse-weak-grip]
+name = 떨리는 저주손
+rank = rare
+source = elite
+trigger = on-combat-start
+effects = double-debuff, combat-start-status:1:weakness
+flavor = 두 곱절로 새기려 손이 늘 떨린다. 적의 약함은 깊어지지만, 처음 일격이 그만큼 무디다.
+
+[relic.r-cm-mana-keep-leaky-vein]
+name = 새는 마나혈관
+rank = rare
+source = event
+trigger = passive
+effects = mana-carryover, bonus-hp:-6
+flavor = 힘은 다음 마디까지 고이지만 어딘가가 늘 새어 든다. 고임의 값은 야금야금 깎인 살이다.
+
+[relic.r-cm-first-free-empty-hand]
+name = 빈손의 첫 줄
+rank = rare
+source = shop
+trigger = passive
+effects = first-card-free, draw-extra-add:-1
+flavor = 첫 한 장이 거저인 대신 손이 늘 한 줄 모자라다. 가벼운 시작은 두둑한 패를 내준 값이다.
+
+[relic.r-cm-double-curse-heavy-mark]
+name = 무거운 저주표식
+rank = rare
+source = shop
+trigger = passive
+effects = double-debuff, damage-in-mul:1.2
+flavor = 적에게 두 배의 흠을 새기느라 제 등도 함께 드러난다. 깊게 거는 만큼 돌아오는 매도 한 뼘 더 아프다.

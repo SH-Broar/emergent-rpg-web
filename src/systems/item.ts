@@ -12,6 +12,7 @@ import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
 import { instantiateCard } from './deck';
+import { acquireRelic, fireRelicTrigger } from './relic';
 
 export interface UseItemContext {
   /** teleport-village 등 *대상 노드*가 필요한 효과에서 사용자가 노드 ID를 선택. */
@@ -37,6 +38,9 @@ export function useItem(item: Item, ctx?: UseItemContext): string {
     const idx = run.data.items.findIndex((i) => i.instanceId === item.instanceId);
     if (idx >= 0) run.data.items.splice(idx, 1);
   }
+
+  // 아이템 사용 시 유물 발동 (on-item-use).
+  fireRelicTrigger('on-item-use', { run: run.data });
 
   const msg = `'${item.name}' 사용 — ${lines.join(' / ')}`;
   ui.toast('success', msg);
@@ -102,10 +106,7 @@ function applyItemEffect(eff: ItemEffect, ctx: UseItemContext | undefined, lines
       if (!rid) break;
       const relic = data.relics.get(rid);
       if (relic) {
-        r.relics.push(relic);
-        if (!r.newRelicEncounters.includes(relic.id)) {
-          r.newRelicEncounters.push(relic.id);
-        }
+        acquireRelic(relic); // 중앙 진입점 — on-acquire/passive 즉시 발동 포함.
         lines.push(`유물 '${relic.name}' 획득`);
       }
       break;

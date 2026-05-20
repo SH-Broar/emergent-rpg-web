@@ -13,7 +13,7 @@ import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
 import { instantiateCard } from '@/systems/deck';
-import { getCraftingDiscount } from '@/systems/relic';
+import { getCraftingDiscount, acquireRelic } from '@/systems/relic';
 import { availableCards, availableRelics } from '@/systems/unlocks';
 import { rng } from '@/systems/rng';
 
@@ -83,6 +83,8 @@ function getShopRelicPool(): Relic[] {
   const pool: Relic[] = [];
   for (const r of available) {
     if (owned.has(r.id)) continue;
+    // 시작 유물(race/character) + 별도 경로 자원(boss/meta)은 상점에서 제외.
+    if (r.source === 'race' || r.source === 'character') continue;
     if (r.source === 'boss' || r.source === 'meta') continue;
     pool.push(r);
   }
@@ -172,19 +174,10 @@ export function purchaseShopRelic(nodeId: string, slotIndex: number): boolean {
   if (!def) return false;
 
   run.data.gold -= slot.price;
-  run.data.relics.push(def);
-  if (!run.data.newRelicEncounters.includes(def.id)) {
-    run.data.newRelicEncounters.push(def.id);
-  }
+  // 중앙 진입점 — 보유 추가 + 미발견 기록 + on-acquire/passive 즉시 발동.
+  acquireRelic(def);
   slot.purchased = true;
   ui.toast('success', `유물 '${def.name}' 획득 — 골드 -${slot.price}`);
-
-  // passive 유물은 즉시 적용 (시작 시 보너스 등 1회성).
-  if (def.trigger === 'passive') {
-    void import('@/systems/relic').then(({ fireRelicTrigger }) => {
-      fireRelicTrigger('passive' as any, { run: run.data });
-    });
-  }
   return true;
 }
 

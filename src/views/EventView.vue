@@ -18,6 +18,7 @@ import {
 } from '@/systems/event-runner';
 import { effectiveContent } from '@/systems/map';
 import { applyAffinityDelta } from '@/systems/affinity';
+import { acquireRelic } from '@/systems/relic';
 import { rng } from '@/systems/rng';
 import type { Card, Event, EventChoice, EventChoiceEffect } from '@/data/schemas';
 
@@ -133,11 +134,8 @@ function applyEffectWithNames(choice: EventChoice, effect: EventChoiceEffect, li
   if (effect.grantRelicId) {
     const relic = data.relics.get(effect.grantRelicId);
     if (relic) {
-      r.relics.push(relic);
+      acquireRelic(relic); // 중앙 진입점 — on-acquire/passive 즉시 발동 포함.
       lines.push(`유물 획득 — ${relic.name}`);
-      if (!r.newRelicEncounters.includes(relic.id)) {
-        r.newRelicEncounters.push(relic.id);
-      }
     } else {
       lines.push(`알 수 없는 유물 (${effect.grantRelicId})`);
     }

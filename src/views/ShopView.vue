@@ -16,6 +16,7 @@ import {
   purchaseShopRelic,
 } from '@/systems/shop';
 import { getCraftingDiscount } from '@/systems/relic';
+import { relicEffectText, relicTriggerLabel } from '@/systems/labels';
 import type { Card } from '@/data/schemas';
 
 const router = useRouter();
@@ -41,6 +42,15 @@ function cardDef(id: string): Card | undefined {
 }
 function relicDef(id: string) {
   return data.relics.get(id);
+}
+/** 유물 효과 한글 줄들 — raw kind 노출 방지. */
+function relicLines(id: string): string[] {
+  const r = data.relics.get(id);
+  if (!r) return [];
+  return r.effects.map(relicEffectText);
+}
+function relicTrigger(id: string): string {
+  return relicTriggerLabel(data.relics.get(id)?.trigger);
 }
 
 function buyCard(slotIndex: number) {
@@ -133,7 +143,10 @@ onMounted(() => {
             <span class="slot__name">{{ relicDef(slot.relicId)?.name ?? slot.relicId }}</span>
             <span class="slot__rank">{{ rankLabel(relicDef(slot.relicId)?.rank ?? '') }}</span>
           </div>
-          <p class="slot__meta">{{ relicDef(slot.relicId)?.trigger ?? '—' }}</p>
+          <p class="slot__meta">{{ relicTrigger(slot.relicId) || '—' }}</p>
+          <ul class="slot__effects">
+            <li v-for="(t, ei) in relicLines(slot.relicId)" :key="ei">· {{ t }}</li>
+          </ul>
           <p v-if="relicDef(slot.relicId)?.flavor" class="slot__flavor">
             {{ relicDef(slot.relicId)?.flavor }}
           </p>
@@ -216,6 +229,8 @@ h1 { color: #c08eff; margin: 0; }
 .slot__name { color: #e9e9f4; font-weight: 600; font-size: 0.95rem; }
 .slot__rank { color: #888; font-size: 0.75rem; }
 .slot__meta { color: #b6b6c4; font-size: 0.8rem; margin: 0; }
+.slot__effects { list-style: none; margin: 0.2rem 0 0; padding: 0; }
+.slot__effects li { color: #c8e6d0; font-size: 0.78rem; line-height: 1.35; }
 .slot__flavor { color: #888; font-size: 0.78rem; font-style: italic; margin: 0; }
 
 .slot__buy {

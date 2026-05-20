@@ -21,6 +21,17 @@ const ALL_COLORS: ColorKey[] = [
   'earth', 'wind', 'light', 'dark',
 ];
 
+/**
+ * 컬러 상승 훅 — on-color-gain 유물 발동용. main.ts가 relic.fireColorGain을 등록.
+ * colors.ts↔relic.ts 순환을 피하려 콜백 주입. inColorGain 가드로 무한 재귀 차단
+ * (훅 내부가 다시 applyColorBoost를 호출해도 재발동하지 않음).
+ */
+let colorGainHook: ((color: ColorKey, delta: number) => void) | null = null;
+let inColorGain = false;
+export function setColorGainHook(fn: (color: ColorKey, delta: number) => void): void {
+  colorGainHook = fn;
+}
+
 /** 단일 컬러에 amount를 더하고 상한 100 적용. lines 주어지면 결과 텍스트 push. */
 export function applyColorBoost(color: ColorKey, amount: number, lines?: string[]): number {
   if (amount === 0) return 0;
@@ -32,6 +43,15 @@ export function applyColorBoost(color: ColorKey, amount: number, lines?: string[
   const delta = after - before;
   if (lines && delta !== 0) {
     lines.push(`${color} ${delta >= 0 ? '+' : ''}${delta} (${after}/${COLOR_MAX})`);
+  }
+  // 컬러가 실제로 *오른* 경우에만 on-color-gain 발동 (재진입 가드).
+  if (delta > 0 && colorGainHook && !inColorGain) {
+    inColorGain = true;
+    try {
+      colorGainHook(color, delta);
+    } finally {
+      inColorGain = false;
+    }
   }
   return delta;
 }

@@ -1,0 +1,387 @@
+# Relics — 획득즉시·아이템·컬러상승 가족 (2026-05-21)
+
+# ============================================================
+# A. 획득 즉시 (trigger=on-acquire) — 줍는 순간 1회 발동 (22종)
+# ============================================================
+
+# --- 8색 영구 정수 (boost-color, common 5) ---
+
+[relic.r-acq-ember-shard]
+name = 불씨 정수
+rank = common
+source = event
+trigger = on-acquire
+effects = boost-color:5:fire
+flavor = 손에 닿자마자 한 점 따뜻함이 안으로 스민다. 불의 호기심이 영영 머문다.
+
+[relic.r-acq-tide-drop]
+name = 물방울 정수
+rank = common
+source = event
+trigger = on-acquire
+effects = boost-color:5:water
+flavor = 줍는 순간 손바닥이 촉촉해진다. 물의 흐름이 그대 안에 자리를 잡는다.
+
+[relic.r-acq-spark-bead]
+name = 번개 정수
+rank = common
+source = event
+trigger = on-acquire
+effects = boost-color:5:electric
+flavor = 집어 든 찰나 손끝이 짜릿하다. 번개의 들뜸이 영영 깃든다.
+
+[relic.r-acq-iron-nub]
+name = 무쇠 정수
+rank = common
+source = shop
+trigger = on-acquire
+effects = boost-color:5:iron
+flavor = 묵직한 첫 무게가 그대로 남는다. 무쇠의 단단함이 안으로 굳는다.
+
+[relic.r-acq-loam-clod]
+name = 대지 정수
+rank = common
+source = event
+trigger = on-acquire
+effects = boost-color:5:earth
+flavor = 쥐는 순간 발밑이 든든해진다. 대지의 차분함이 영영 자리잡는다.
+
+[relic.r-acq-gale-wisp]
+name = 바람 정수
+rank = common
+source = event
+trigger = on-acquire
+effects = boost-color:5:wind
+flavor = 손에 들자마자 옷자락이 들썩인다. 바람의 가벼움이 그대 안에 머문다.
+
+[relic.r-acq-dawn-mote]
+name = 빛 정수
+rank = common
+source = npc
+trigger = on-acquire
+effects = boost-color:5:light
+flavor = 줍자마자 손금이 환해진다. 빛의 다정함이 영영 깃든다.
+
+[relic.r-acq-dusk-mote]
+name = 어둠 정수
+rank = common
+source = event
+trigger = on-acquire
+effects = boost-color:5:dark
+flavor = 집어 든 찰나 그늘이 부드러워진다. 어둠의 고요함이 안으로 스민다.
+
+# --- 강화 정수 (rare 8) + 무지개 (legendary 12) ---
+
+[relic.r-acq-pyre-core]
+name = 화로의 핵
+rank = rare
+source = elite
+trigger = on-acquire
+effects = boost-color:8:fire
+flavor = 식지 않는 화로에서 떼어 낸 한 덩이. 불의 호기심이 더 깊이 박힌다.
+
+[relic.r-acq-deep-pearl]
+name = 심해의 진주
+rank = rare
+source = event
+trigger = on-acquire
+effects = boost-color:8:water
+flavor = 가장 깊은 곳에서 굳은 한 알. 물의 흐름이 더 멀리까지 닿는다.
+
+[relic.r-acq-prism-heart]
+name = 무지개의 심장
+rank = legendary
+source = elite
+trigger = on-acquire
+effects = boost-color:12:all
+flavor = 여덟 색이 한자리에 모여 굳은 보석. 줍는 순간, 모든 호기심이 한꺼번에 차오른다.
+
+[relic.r-acq-mono-prism]
+name = 모노의 프리즘 조각
+rank = legendary
+source = event
+trigger = on-acquire
+effects = boost-color:12:random
+flavor = 시간의 신이 흘린 부스러기. 어느 색이 깨어날지는 줍는 자도 알 수 없다.
+
+# --- 영구 스탯쌍 (boost-stat, common 4 / rare 6 / legendary 9) ---
+
+[relic.r-acq-fist-stone]
+name = 주먹 조약돌
+rank = common
+source = event
+trigger = on-acquire
+effects = boost-stat:4:atk
+flavor = 쥐면 손마디에 힘이 솟는다. 화염과 번개의 기운이 함께 오른다.
+
+[relic.r-acq-wall-stone]
+name = 방벽 조약돌
+rank = common
+source = shop
+trigger = on-acquire
+effects = boost-stat:4:def
+flavor = 품으면 등이 곧게 펴진다. 대지와 무쇠의 기운이 함께 오른다.
+
+[relic.r-acq-sage-idol]
+name = 현자의 우상
+rank = legendary
+source = event
+trigger = on-acquire
+effects = boost-stat:9:mag
+flavor = 오래 사색한 자만이 남기는 형상. 줍는 순간, 마법의 두 기운이 깊게 흐른다.
+
+# --- 최대 HP 영구 (bonus-hp, common 6 / rare 10) ---
+
+[relic.r-acq-warm-bread]
+name = 따끈한 빵 한 덩이
+rank = common
+source = shop
+trigger = on-acquire
+effects = bonus-hp:6
+flavor = 길 떠나는 이에게 누군가 쥐여 준 것. 든든함이 몸에 영영 남는다.
+
+[relic.r-acq-vigor-root]
+name = 활력의 뿌리
+rank = rare
+source = event
+trigger = on-acquire
+effects = bonus-hp:10
+flavor = 캐자마자 손에 온기가 번진다. 깊은 생기가 몸을 한층 넓힌다.
+
+# --- 즉시 자원 (bonus-gold / gain-time-shards / heal-now) ---
+
+[relic.r-acq-coin-pouch]
+name = 묵직한 돈주머니
+rank = common
+source = event
+trigger = on-acquire
+effects = bonus-gold:25
+flavor = 풀어 보니 동전이 가득. 줍는 순간 지갑이 두둑해진다.
+
+[relic.r-acq-shard-vial]
+name = 시간조각 작은 병
+rank = common
+source = event
+trigger = on-acquire
+effects = gain-time-shards:5
+flavor = 흔들면 안에서 반짝임이 인다. 줍는 순간, 흘러간 조각 몇이 손에 떨어진다.
+
+[relic.r-acq-sun-tonic]
+name = 햇살 강장제
+rank = rare
+source = npc
+trigger = on-acquire
+effects = heal-now:14
+flavor = 한 모금에 햇살을 들이켠 듯하다. 집어 든 순간, 피로가 한꺼번에 풀린다.
+
+# --- 2효과 조합 (큰 영구 + 즉시 보너스) ---
+
+[relic.r-acq-ember-cache]
+name = 불의 보따리
+rank = rare
+source = event
+trigger = on-acquire
+effects = boost-color:8:fire, bonus-gold:30
+flavor = 떠돌이 상인이 두고 간 보따리. 불의 호기심과 한 줌의 동전이 함께 따라온다.
+
+# --- 다운사이드 동반 (큰 영구 + 최대 HP 감소) ---
+
+[relic.r-acq-greedy-relic]
+name = 탐욕의 정수
+rank = rare
+source = elite
+trigger = on-acquire
+effects = boost-color:12:fire, bonus-hp:-6
+flavor = 불의 호기심을 한꺼번에 들이켜는 대신, 그릇이 조금 줄어든다. 모든 욕심엔 값이 있다.
+
+# ============================================================
+# B. 아이템 사용 시 (trigger=on-item-use) — 아이템 쓸 때마다 발동 (12종)
+# ============================================================
+
+[relic.r-acq-spark-ring]
+name = 점화 반지
+rank = rare
+source = shop
+trigger = on-acquire
+effects = boost-color:8:fire
+flavor = 끼는 순간 손가락 끝이 한 번 달아오른다. 불의 호기심이 깊게 박혀 영영 머문다.
+
+[relic.r-acq-flow-band]
+name = 물길 팔찌
+rank = rare
+source = event
+trigger = passive
+effects = damage-out-add:2
+flavor = 손목을 감은 물줄기가 일격마다 함께 내달린다. 흐름을 탄 공격이 한 뼘 더 깊게 닿는다.
+
+[relic.r-acq-prism-charm]
+name = 변색 부적
+rank = rare
+source = elite
+trigger = on-damage-taken
+effects = retaliate:5
+flavor = 맞을 때마다 색이 거꾸로 튕겨 나간다. 부적을 건드린 자에게 그만큼 되돌아간다.
+
+[relic.r-acq-tip-jar]
+name = 팁 항아리
+rank = common
+source = shop
+trigger = on-acquire
+effects = bonus-gold:35
+flavor = 뚜껑을 여니 모아 둔 잔돈이 한꺼번에 쏟아진다. 누군가 오래 채워 둔 항아리.
+
+[relic.r-acq-merchant-glove]
+name = 상인의 장갑
+rank = rare
+source = npc
+trigger = passive
+effects = bonus-hp:15
+flavor = 길 위의 모든 흥정을 견뎌 낸 두꺼운 가죽. 끼고 있는 동안 그릇이 한층 넓어진다.
+
+[relic.r-acq-shard-mill]
+name = 조각 물레
+rank = rare
+source = event
+trigger = on-card-played-after
+effects = cards-to-color:5
+flavor = 카드를 낼 때마다 물레가 한 바퀴 돈다. 다섯 바퀴를 채울 때마다 색실 한 가닥이 감긴다.
+
+[relic.r-acq-hourglass-charm]
+name = 모래시계 장식
+rank = rare
+source = event
+trigger = on-turn-start
+effects = chance-random-color-1:50
+flavor = 턴이 시작될 때마다 모래가 거꾸로 흐른다. 절반쯤은 어느 색 하나가 슬며시 차오른다.
+
+[relic.r-acq-soothe-vial]
+name = 진정의 작은 병
+rank = rare
+source = shop
+trigger = on-combat-end
+effects = chance-random-color-1:45
+flavor = 싸움이 끝날 때마다 마개가 살짝 들썩이며 향이 번진다. 그 향에 색 하나가 종종 깨어난다.
+
+[relic.r-acq-restore-amulet]
+name = 회복의 부적
+rank = rare
+source = event
+trigger = on-item-use
+effects = heal-now:6
+flavor = 아이템을 쓸 때마다 몸이 한 모금 데워진다. 모험가가 늘 품던 부적.
+
+[relic.r-acq-tinker-belt]
+name = 땜장이 허리띠
+rank = rare
+source = shop
+trigger = on-item-use
+effects = boost-color:3:iron, bonus-gold:6
+flavor = 도구를 쓸 때마다 손에 무쇠 감각과 잔돈이 함께 남는다. 길 위 수리공의 짐.
+
+[relic.r-acq-wind-satchel]
+name = 바람 주머니
+rank = common
+source = event
+trigger = on-item-use
+effects = boost-color:2:wind, gain-time-shards:2
+flavor = 주머니를 열 때마다 가벼운 바람이 샌다. 그 자락에 작은 조각이 함께 흩날린다.
+
+[relic.r-acq-glutton-pouch]
+name = 먹보 주머니
+rank = rare
+source = event
+trigger = on-item-use
+effects = boost-color:3:dark, heal-now:4
+flavor = 무언가를 삼킬 때마다 그늘이 짙어지고 몸이 데워진다. 쓰면 쓸수록 배가 부른 주머니.
+
+# ============================================================
+# C. 컬러 상승 시 (trigger=on-color-gain) — 어떤 컬러든 오를 때마다 (11종, 작은 값)
+# ============================================================
+
+[relic.r-acq-bloom-pin]
+name = 개화의 핀
+rank = common
+source = event
+trigger = on-color-gain
+effects = heal-now:1
+flavor = 색이 한 자리 오를 때마다 작게 꽃이 핀다. 그 향에 상처가 아주 조금 아문다.
+
+[relic.r-acq-leaf-brooch]
+name = 잎사귀 브로치
+rank = rare
+source = npc
+trigger = on-color-gain
+effects = heal-now:2
+flavor = 호기심이 자랄 때마다 잎이 한 장 돋는다. 그때마다 몸이 두 모금 데워진다.
+
+[relic.r-acq-tithe-ring]
+name = 십일조 반지
+rank = common
+source = shop
+trigger = on-color-gain
+effects = bonus-gold:1
+flavor = 어느 색이든 오르면 동전 한 닢이 굴러든다. 자라남에 작은 보답이 따른다.
+
+[relic.r-acq-fortune-loop]
+name = 행운의 고리
+rank = rare
+source = event
+trigger = on-color-gain
+effects = bonus-gold:2
+flavor = 색이 차오를 때마다 잔돈이 두 닢 떨어진다. 호기심이 곧 재산이 되는 고리.
+
+[relic.r-acq-time-pendulum]
+name = 시간의 추
+rank = common
+source = event
+trigger = on-color-gain
+effects = gain-time-shards:1
+flavor = 색이 한 자리 오를 때마다 추가 한 번 흔들린다. 그 흔들림에 작은 조각이 떨어진다.
+
+[relic.r-acq-spectrum-locket]
+name = 스펙트럼 회중시계
+rank = rare
+source = event
+trigger = on-color-gain
+effects = heal-now:1, bonus-gold:1
+flavor = 어느 색이 오르든 뚜껑이 한 번 열린다. 그때마다 작은 온기와 잔돈이 함께 새 나온다.
+
+[relic.r-acq-color-chime]
+name = 색의 풍경
+rank = rare
+source = event
+trigger = on-color-gain
+effects = heal-now:2, gain-time-shards:1
+flavor = 호기심이 오를 때마다 맑게 운다. 그 울림에 몸이 데워지고 조각 하나가 떨어진다.
+
+[relic.r-acq-prism-tithe]
+name = 무지개 헌금함
+rank = rare
+source = shop
+trigger = on-color-gain
+effects = bonus-gold:2, gain-time-shards:1
+flavor = 어느 색이든 자라면 함이 가볍게 짤랑인다. 동전과 조각이 함께 들어찬다.
+
+[relic.r-acq-growth-bell]
+name = 성장의 종
+rank = common
+source = npc
+trigger = on-color-gain
+effects = heal-now:1
+flavor = 색이 오를 때마다 작은 종이 운다. 그 소리에 상처가 한 점 아문다.
+
+[relic.r-acq-coin-vine]
+name = 동전 덩굴
+rank = common
+source = event
+trigger = on-color-gain
+effects = bonus-gold:1
+flavor = 호기심이 자랄 때마다 덩굴에 동전이 한 알 맺힌다. 자랄수록 주머니가 찬다.
+
+[relic.r-acq-shard-blossom]
+name = 조각 꽃봉오리
+rank = common
+source = event
+trigger = on-color-gain
+effects = gain-time-shards:1
+flavor = 색이 한 자리 차오를 때마다 봉오리가 살짝 벌어진다. 안에서 작은 조각이 떨어진다.

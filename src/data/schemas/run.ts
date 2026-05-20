@@ -112,6 +112,15 @@ export interface CombatState {
   bossTurnCount?: number;
   /** 이번 플레이어 턴이 정지로 얼어붙음 (마나 0 · 드로우 0). */
   frozenTurn?: boolean;
+
+  /**
+   * 유물 카운터 — `${relicId}:${name}` → 누적값. (예: 카드 N장마다, 공격 N회마다)
+   * 전투 단위로 리셋(startCombat에서 {} 초기화). 일반/보스 전투 공통.
+   */
+  relicCounters?: Record<string, number>;
+
+  /** 이번 턴에 사용한 카드 수 — first-card-free 유물 판정용. 매 턴 0으로 리셋. */
+  cardsPlayedThisTurn?: number;
 }
 
 /**

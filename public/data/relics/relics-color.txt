@@ -1,0 +1,415 @@
+# Relics — 컬러 가족 (2026-05-21)
+
+# ============================================================
+# 1. 정수류 — 획득 즉시 영구 컬러 상승 (trigger=on-acquire).
+#    basic 3 / common 5 / rare 8 / legendary 12.
+#    8색 각각 1~2개.
+# ============================================================
+
+[relic.r-col-fire-ember]
+name = 불씨 한 톨
+rank = basic
+source = shop
+trigger = on-acquire
+effects = boost-color:3:fire
+flavor = 식은 화로 바닥에서 마지막까지 살아 있던 한 톨. 손에 쥐면 불의 기억이 그대 안에 옮겨붙는다.
+
+[relic.r-col-fire-coreheart]
+name = 화심석
+rank = rare
+source = event
+trigger = on-acquire
+effects = boost-color:8:fire
+flavor = 오래 타고도 식지 않는 돌. 모노가 흘리고 간 온기라고, 정령들은 까치발로 속삭인다.
+
+[relic.r-col-water-droplet]
+name = 첫 물방울
+rank = basic
+source = shop
+trigger = on-acquire
+effects = boost-color:3:water
+flavor = 새벽 풀잎 끝에 맺힌, 아직 떨어지지 않은 한 알. 마시면 물의 차분함이 천천히 스민다.
+
+[relic.r-col-water-tideheart]
+name = 밀물의 심
+rank = common
+source = npc
+trigger = on-acquire
+effects = boost-color:5:water
+flavor = 인어가 손바닥에 담아 건넨 바다의 한 자락. 차오르고 빠지는 일을 잊지 않는다.
+
+[relic.r-col-electric-spark]
+name = 작은 불꽃
+rank = basic
+source = shop
+trigger = on-acquire
+effects = boost-color:3:electric
+flavor = 손끝에서 톡 튀고 사라지는 푸른 점. 만질수록 그 떨림이 몸에 익는다.
+
+[relic.r-col-electric-stormcore]
+name = 뇌심핵
+rank = legendary
+source = event
+trigger = on-acquire
+effects = boost-color:12:electric
+flavor = 구름 한 채를 통째로 가둔 듯 무겁고 빠르다. 알티가 멀리서 좋아라 손뼉 친 물건.
+
+[relic.r-col-iron-nail]
+name = 낡은 못 한 개
+rank = basic
+source = shop
+trigger = on-acquire
+effects = boost-color:3:iron
+flavor = 어느 다리에서 빠져나온 못. 굽지 않고 버틴 시간만큼 단단함이 배어 있다.
+
+[relic.r-col-iron-anvilcore]
+name = 모루의 핵
+rank = rare
+source = elite
+trigger = on-acquire
+effects = boost-color:8:iron
+flavor = 수천 번 두드림을 받아내고도 갈라지지 않은 한 덩이. 쥐고 있으면 등이 곧아진다.
+
+[relic.r-col-earth-pebble]
+name = 손때 묻은 조약돌
+rank = basic
+source = shop
+trigger = on-acquire
+effects = boost-color:3:earth
+flavor = 주머니에 오래 굴린 돌 하나. 흙의 무던함이 손바닥을 통해 천천히 옮겨온다.
+
+[relic.r-col-earth-rootstone]
+name = 뿌리의 돌
+rank = common
+source = npc
+trigger = on-acquire
+effects = boost-color:5:earth
+flavor = 라미아가 흙 속에서 골라준, 뿌리가 휘감았던 돌. 어디에 놓여도 자리를 지킨다.
+
+[relic.r-col-wind-feather]
+name = 가벼운 깃 하나
+rank = basic
+source = shop
+trigger = on-acquire
+effects = boost-color:3:wind
+flavor = 떨어지다 멈춰 공중에 떠 있던 깃. 손에 얹으면 발이 한 뼘 가벼워진다.
+
+[relic.r-col-wind-galecore]
+name = 질풍의 심
+rank = rare
+source = event
+trigger = on-acquire
+effects = boost-color:8:wind
+flavor = 잡으려 하면 빠져나가고, 놓으면 곁에 머무는 바람의 핵. 정령이 술래잡기하다 두고 간 것.
+
+[relic.r-col-light-glint]
+name = 한 줄기 빛
+rank = common
+source = event
+trigger = on-acquire
+effects = boost-color:5:light
+flavor = 깨진 창틈으로 들어와 먼지 위에 떨어진 빛. 병에 담으면 어둠 속에서도 길이 보인다.
+
+[relic.r-col-light-dawncore]
+name = 여명의 심
+rank = legendary
+source = event
+trigger = on-acquire
+effects = boost-color:12:light
+flavor = 가장 긴 밤의 끝에서 처음 떠오른 빛을 굳힌 핵. 모노가 새 하루에 찍어둔 표식이라 한다.
+
+[relic.r-col-dark-shade]
+name = 한 줌 그늘
+rank = common
+source = event
+trigger = on-acquire
+effects = boost-color:5:dark
+flavor = 정오에도 사라지지 않는 작은 그늘. 차갑지 않고, 다만 조용히 곁을 지킨다.
+
+[relic.r-col-dark-voidcore]
+name = 적막의 심
+rank = rare
+source = elite
+trigger = on-acquire
+effects = boost-color:8:dark
+flavor = 소리도 빛도 닿지 못해 텅 빈 한 덩이. 들여다보면 제 안의 가장 잠잠한 자리가 마주 본다.
+
+
+# ============================================================
+# 2. 반복 상승형 — 자주 발동하므로 작게 (1~3).
+#    노드 진입 / 전투 승리 / 턴 시작 / 휴식.
+# ============================================================
+
+[relic.r-col-fire-traveler-coal]
+name = 여행자의 화종
+rank = rare
+source = shop
+trigger = on-acquire
+effects = boost-color:8:fire
+flavor = 길을 떠나기 전, 화로 깊은 곳에서 가장 굵은 한 덩이만 골라 챙긴다. 손에 쥐는 순간 그 온기가 통째로 옮겨붙는다.
+
+[relic.r-col-water-canteen]
+name = 가득 채운 물통
+rank = common
+source = shop
+trigger = on-acquire
+effects = heal-now:12
+flavor = 떠나기 전 샘에서 끝까지 길어 담은 물. 손에 들자마자 메마른 속이 단숨에 가신다.
+
+[relic.r-col-electric-victory-coil]
+name = 방전된 코일
+rank = rare
+source = elite
+trigger = on-acquire
+effects = gain-time-shards:8
+flavor = 오래 감겨 있던 떨림이 손에 닿는 순간 한꺼번에 풀려난다. 모노가 그 흘러나온 시간을 모래알로 바꿔 쥐여준다.
+
+[relic.r-col-iron-trophy-shard]
+name = 가슴팍의 쇳조각
+rank = common
+source = elite
+trigger = passive
+effects = bonus-hp:15
+flavor = 쓰러뜨린 것에서 떼어 가슴께에 박아둔 한 조각. 자리를 잡은 뒤로는 어지간한 일격에도 쉬이 무너지지 않는다.
+
+[relic.r-col-earth-rest-soil]
+name = 다져진 흙벽
+rank = common
+source = event
+trigger = passive
+effects = block-out-add:3
+flavor = 손으로 꾹꾹 다져 굳힌 흙의 한 자락. 몸에 두르고 나면 막아서는 모든 자세가 한층 두툼해진다.
+
+[relic.r-col-wind-camp-banner]
+name = 앞장서는 깃발
+rank = common
+source = event
+trigger = passive
+effects = damage-out-add:2
+flavor = 앞세우고 나아가면 바람이 칼끝까지 내달린다. 그 떠밂에 실린 모든 일격이 조금 더 멀리 박힌다.
+
+[relic.r-col-light-vigil-lamp]
+name = 시각을 세는 등
+rank = common
+source = event
+trigger = on-turn-start
+effects = turn-units-color:1:7
+flavor = 등불 곁에 모노가 새겨둔 작은 눈금이 있다. 일곱 번째 줄에 불꽃이 닿는 순간, 어느 색 하나가 그 빛을 받아 짙어진다.
+
+[relic.r-col-dark-creeping-ink]
+name = 되묻는 먹
+rank = common
+source = event
+trigger = on-damage-taken
+effects = retaliate:5
+flavor = 한 방울이라도 튀기면 그늘이 그 손을 거꾸로 따라 번진다. 건드린 자에게 어둠이 똑같이 되돌아간다.
+
+[relic.r-col-fire-hearth-ash]
+name = 옮겨붙는 불씨
+rank = common
+source = event
+trigger = on-card-played-after
+effects = cards-to-color:5
+flavor = 카드를 다섯 장 쥐었다 놓는 사이, 손끝에 모인 불씨가 곁의 색 하나로 톡 옮겨붙는다.
+
+[relic.r-col-electric-pace-static]
+name = 변덕스러운 정전기
+rank = common
+source = shop
+trigger = on-turn-start
+effects = chance-random-color-1:50
+flavor = 옷자락에 인 푸른 떨림은 어디로 튈지 모른다. 매 순간 운이 닿으면, 여덟 색 가운데 하나가 그 불씨를 받는다.
+
+[relic.r-col-iron-turn-gear]
+name = 헐거운 톱니
+rank = rare
+source = elite
+trigger = on-turn-start
+effects = chance-random-color-1:45
+flavor = 이가 한 칸 헐거워 매번 같은 자리에 멈추지 않는다. 어쩌다 딱 맞물리는 순간, 어느 색 하나가 그 회전을 받아 짙어진다.
+
+
+# ============================================================
+# 3. 스케일링 — block/strength from metric. value=제수 D, arg=색.
+#    D = basic 8 / common 6 / rare 4 (작을수록 강함).
+#    trigger=on-combat-start.
+# ============================================================
+
+[relic.r-col-iron-bulwark-plate]
+name = 방벽의 판금
+rank = common
+source = elite
+trigger = on-combat-start
+effects = block-from-metric:6:iron
+flavor = 쌓아둔 쇠가 많을수록 두꺼워지는 판. 싸움이 열리는 순간, 그동안 모은 단단함이 벽이 된다.
+
+[relic.r-col-earth-mountain-girth]
+name = 산허리의 띠
+rank = rare
+source = event
+trigger = on-combat-start
+effects = block-from-metric:4:earth
+flavor = 흙을 깊이 품은 자에게만 산이 어깨를 빌려준다. 다질수록 첫 방어가 묵직해진다.
+
+[relic.r-col-water-tidewall]
+name = 밀물의 벽
+rank = basic
+source = shop
+trigger = on-combat-start
+effects = block-from-metric:8:water
+flavor = 물이 차오른 만큼 벽이 선다. 잔잔히 모아둔 물줄기가 싸움의 처음을 막아준다.
+
+[relic.r-col-light-aegis-glow]
+name = 수호의 빛무리
+rank = common
+source = event
+trigger = on-combat-start
+effects = block-from-metric:6:light
+flavor = 품은 빛이 밝을수록 둘러진 무리가 두껍다. 마주한 순간, 모은 빛이 한 겹의 보호로 굳는다.
+
+[relic.r-col-fire-forge-fury]
+name = 단조의 분노
+rank = common
+source = elite
+trigger = on-combat-start
+effects = strength-from-metric:6:fire
+flavor = 안에 쌓인 불이 클수록 팔에 실리는 힘이 무겁다. 마주 선 순간, 모아둔 열기가 주먹으로 옮겨온다.
+
+[relic.r-col-electric-charged-fist]
+name = 충전된 주먹
+rank = rare
+source = event
+trigger = on-combat-start
+effects = strength-from-metric:4:electric
+flavor = 모아둔 떨림이 많을수록 첫 일격이 빠르고 무겁다. 손끝의 푸른 점이 한꺼번에 터진다.
+
+[relic.r-col-wind-gale-edge]
+name = 질풍의 날
+rank = basic
+source = shop
+trigger = on-combat-start
+effects = strength-from-metric:8:wind
+flavor = 품은 바람이 셀수록 칼끝이 멀리 닿는다. 싸움의 처음, 모은 바람이 어깨를 떠민다.
+
+[relic.r-col-dark-grudge-grip]
+name = 원념의 손아귀
+rank = common
+source = elite
+trigger = on-combat-start
+effects = strength-from-metric:6:dark
+flavor = 쌓인 그늘이 깊을수록 쥔 손이 강하다. 마주한 순간, 모아둔 적막이 힘으로 일어선다.
+
+[relic.r-col-iron-ironclad-stance]
+name = 철갑의 자세
+rank = rare
+source = elite
+trigger = on-combat-start
+effects = block-from-metric:4:iron
+flavor = 쇠를 깊이 품은 자만이 첫 순간부터 흔들리지 않는다. 모은 단단함이 통째로 벽이 된다.
+
+[relic.r-col-fire-bonfire-roar]
+name = 모닥불의 포효
+rank = rare
+source = event
+trigger = on-combat-start
+effects = strength-from-metric:4:fire
+flavor = 품은 불이 클수록 첫 외침이 뜨겁다. 마주 선 순간, 모아둔 열기가 한꺼번에 솟구친다.
+
+
+# ============================================================
+# 4. 광역 상승 — all / random (rare / legendary).
+# ============================================================
+
+[relic.r-col-all-prism-shard]
+name = 일곱빛 프리즘 조각
+rank = rare
+source = event
+trigger = on-acquire
+effects = boost-color:3:all
+flavor = 빛을 머금으면 여덟 색으로 갈라진다. 손에 쥐는 순간, 모든 색이 한 자리씩 짙어진다.
+
+[relic.r-col-all-mono-fragment]
+name = 모노의 부스러기
+rank = legendary
+source = event
+trigger = on-acquire
+effects = boost-color:5:all
+flavor = 시간의 신이 흘린 한 조각. 어느 색에도 치우치지 않고, 모든 자리를 고르게 채운다.
+
+[relic.r-col-all-pilgrim-bell]
+name = 변덕스러운 종
+rank = rare
+source = npc
+trigger = on-combat-end
+effects = chance-random-color-1:55
+flavor = 한 싸움이 끝날 때마다 제멋대로 운다. 운이 닿는 날이면, 그 울림이 여덟 색 가운데 하나를 골라 띄운다.
+
+[relic.r-col-random-wandering-die]
+name = 떠도는 주사위
+rank = rare
+source = shop
+trigger = on-node-enter
+effects = boost-color:2:random
+flavor = 굴릴 때마다 다른 색이 나온다. 새 자리에 발을 들이면, 그날의 운이 한 색을 골라 채운다.
+
+[relic.r-col-random-spirit-marbles]
+name = 정령의 구슬 한 줌
+rank = legendary
+source = event
+trigger = on-turn-start
+effects = chance-random-color-1:60
+flavor = 정령이 까르르 웃으며 쥐여준 구슬들. 매 순간 그중 하나가 데구루루 굴러, 운 좋으면 어느 색이 한 자리 오른다.
+
+[relic.r-col-random-lucky-coin]
+name = 운 좋은 동전
+rank = rare
+source = shop
+trigger = on-combat-end
+effects = chance-random-color-1:50
+flavor = 던질 때마다 어느 면이 나올지 모른다. 이겨낸 자리마다 한 번 튕겨, 운이 닿으면 한 색이 짙어진다.
+
+
+# ============================================================
+# 5. on-color-gain 연계 — 색이 오를 때마다 추가로 (작게).
+#    엔진이 연쇄를 1회로 막음.
+# ============================================================
+
+[relic.r-col-gain-cascade-prism]
+name = 연쇄의 프리즘
+rank = legendary
+source = event
+trigger = on-color-gain
+effects = boost-color:1:random
+flavor = 한 색이 차오르면, 그 빛이 옆자리로 옮겨붙는다. 정령이 "하나가 둘을 부른다"며 신나서 건넨 물건.
+
+[relic.r-col-gain-echo-shell]
+name = 메아리 조개
+rank = rare
+source = npc
+trigger = on-color-gain
+effects = boost-color:1:random
+flavor = 어느 색이 울리면, 그 소리를 한 번 더 되돌려준다. 인어가 귀에 대보라며 슬쩍 쥐여준 조개.
+
+[relic.r-col-gain-overflow-jar]
+name = 흘러넘치는 항아리
+rank = rare
+source = event
+trigger = on-color-gain
+effects = boost-color:1:random
+flavor = 한 색이 차오르면 가장자리로 한 방울 흘러, 다른 색을 적신다. 좀처럼 마르지 않는 작은 단지.
+
+[relic.r-col-gain-spark-chain]
+name = 불티의 사슬
+rank = rare
+source = elite
+trigger = on-color-gain
+effects = boost-color:1:random
+flavor = 한 곳에 불티가 튀면, 사슬을 타고 옆으로 옮겨붙는다. 한 번 붙은 불은 혼자 머물지 않는다.
+
+[relic.r-col-gain-twin-mirror]
+name = 마주 보는 거울
+rank = legendary
+source = event
+trigger = on-color-gain
+effects = boost-color:1:random
+flavor = 한쪽 색이 짙어지면, 마주 선 거울이 다른 색을 비춰 함께 띄운다. 정령이 둘이 마주 보며 깔깔 웃다 두고 간 것.

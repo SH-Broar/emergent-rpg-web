@@ -1,0 +1,301 @@
+# Relics — 전투·반응·카운터·다운사이드 가족 (2026-05-21)
+
+# ============================================================
+# 전투 시작 — 방어 / 드로우 / 힘·민첩 부여 (등급 변형)
+# ============================================================
+
+[relic.r-cbt-iron-vow]
+name = 무쇠의 다짐
+rank = common
+source = event
+trigger = on-combat-start
+effects = combat-start-block:5
+flavor = 첫걸음을 떼기 전, 늘 한 번 숨을 고른다. 그 잠깐의 다짐이 얇은 벽으로 굳는다.
+
+[relic.r-cbt-bastion-plate]
+name = 보루의 흉갑
+rank = rare
+source = elite
+trigger = on-combat-start
+effects = combat-start-block:8
+flavor = 오래 버틴 성벽에서 떼어 낸 한 조각. 마주 선 순간, 그 두께가 그대를 감싼다.
+
+[relic.r-cbt-aegis-of-hours]
+name = 시각의 큰 방패
+rank = legendary
+source = elite
+trigger = on-combat-start
+effects = combat-start-block:12
+flavor = 모노가 잠시 세워 둔 문. 싸움이 열리는 순간, 흘러간 시간이 통째로 앞을 막아 선다.
+
+[relic.r-cbt-first-light-quill]
+name = 첫빛의 깃펜
+rank = rare
+source = shop
+trigger = on-combat-start
+effects = combat-start-draw:1
+flavor = 새 장이 열릴 때 저 혼자 움직인다. 시작의 한 순간, 손에 한 줄이 더 적힌다.
+
+[relic.r-cbt-tome-of-openings]
+name = 서막의 두루마리
+rank = legendary
+source = event
+trigger = on-combat-start
+effects = combat-start-draw:2
+flavor = 펼치면 이야기가 먼저 두 줄을 내민다. 어떤 싸움도 그대가 손을 두둑이 쥐고 시작한다.
+
+[relic.r-cbt-grip-of-resolve]
+name = 다잡은 손아귀
+rank = rare
+source = elite
+trigger = on-combat-start
+effects = combat-start-status:1:strength
+flavor = 쥘수록 어깨가 단단해지는 손잡이. 적을 본 순간, 한 줌의 힘이 미리 들어선다.
+
+[relic.r-cbt-poised-pendant]
+name = 균형의 펜던트
+rank = common
+source = event
+trigger = on-combat-start
+effects = combat-start-status:2:dexterity
+flavor = 흔들리지 않는 추가 달린 목걸이. 마주 선 순간, 모든 손놀림이 한층 또렷해진다.
+
+[relic.r-cbt-spare-breath]
+name = 여분의 숨
+rank = common
+source = shop
+trigger = on-combat-start
+effects = bonus-mana:1
+flavor = 늘 한 모금이 더 남아 있다. 싸움이 열리는 그 처음, 쓸 힘이 한 줌 더 풀린다.
+
+# ============================================================
+# 카운터형 — value = 주기 N (주기·등급 변형)
+# ============================================================
+
+[relic.r-cbt-counting-beads]
+name = 헤아림의 염주
+rank = common
+source = shop
+trigger = on-card-played-after
+effects = cards-to-draw:8
+flavor = 한 알씩 넘기다 보면 한 바퀴가 돈다. 여덟 번 손을 놀릴 때마다, 다음 한 줄이 저절로 따라온다.
+
+[relic.r-cbt-swift-abacus]
+name = 빠른 주판
+rank = rare
+source = elite
+trigger = on-card-played-after
+effects = cards-to-draw:6
+flavor = 손이 빠른 만큼 셈도 빨리 찬다. 여섯 번 손을 거칠 때마다, 한 장이 더 얹힌다.
+
+[relic.r-cbt-spectral-loom]
+name = 색의 베틀
+rank = common
+source = shop
+trigger = on-card-played-after
+effects = cards-to-color:5
+flavor = 실을 다섯 번 지날 때마다 무늬가 한 칸 짙어진다. 어느 색 하나가 천천히 차오른다.
+
+[relic.r-cbt-honing-band]
+name = 벼림의 띠
+rank = common
+source = event
+trigger = on-card-played-after
+effects = attacks-to-strength:4
+flavor = 두를수록 팔에 익는 거친 띠. 네 번 내리칠 때마다 어깨에 힘이 한 줌 더 쌓인다.
+
+[relic.r-cbt-keen-edge-strap]
+name = 예리한 가죽끈
+rank = rare
+source = elite
+trigger = on-card-played-after
+effects = attacks-to-strength:3
+flavor = 휘두를수록 손목에 단단히 감기는 끈. 세 번 내리칠 때마다 다음 일격이 더 묵직하다.
+
+[relic.r-cbt-prism-pin]
+name = 색실 핀
+rank = rare
+source = shop
+trigger = on-card-played-after
+effects = attacks-to-color:3
+flavor = 찌를 때마다 끝에서 색이 번진다. 세 번 내리칠 때마다, 그중 한 색이 한 자리 차오른다.
+
+[relic.r-cbt-tally-knot]
+name = 매듭 셈끈
+rank = common
+source = event
+trigger = on-card-played-after
+effects = cards-to-color:5
+flavor = 다섯 매듭마다 하나를 더 묶는 버릇. 손이 다섯 번 지날 때마다, 어느 색이 한 칸 진해진다.
+
+[relic.r-cbt-runner-tally]
+name = 발 빠른 셈표
+rank = rare
+source = npc
+trigger = on-card-played-after
+effects = cards-to-draw:6
+flavor = 로큐가 길 위에서 쓰던 작은 표. 여섯 번 손을 놀릴 때마다, 다음 한 줄이 먼저 도착한다.
+
+# ============================================================
+# 반응형 — 피해 받을 때 (등급 변형)
+# ============================================================
+
+[relic.r-cbt-spite-spike]
+name = 앙갚음 가시
+rank = common
+source = elite
+trigger = on-damage-taken
+effects = retaliate:3
+flavor = 건드리면 따끔한 작은 돌기. 그대를 때린 손도 한 번은 무사하지 못하다.
+
+[relic.r-cbt-barbed-mantle]
+name = 가시 돋친 망토
+rank = rare
+source = elite
+trigger = on-damage-taken
+effects = retaliate:5
+flavor = 천 안쪽까지 가시가 박힌 외투. 맞을 때마다, 그 아픔이 고스란히 되돌아간다.
+
+[relic.r-cbt-vengeful-husk]
+name = 원한의 껍데기
+rank = legendary
+source = elite
+trigger = on-damage-taken
+effects = retaliate:8
+flavor = 부서질수록 더 날카로워지는 껍질. 한 대를 허락하는 순간, 적은 그 몇 곱절을 돌려받는다.
+
+[relic.r-cbt-pain-prism]
+name = 아픔의 프리즘
+rank = rare
+source = elite
+trigger = on-damage-taken
+effects = hurt-to-color:1
+flavor = 충격이 닿을 때만 빛을 낸다. 아픔이 스칠 때마다 한 음이 새어, 어느 색이 한 자리 찬다.
+
+[relic.r-cbt-callused-hide]
+name = 굳은살 가죽
+rank = common
+source = event
+trigger = on-damage-taken
+effects = hurt-to-block:2
+flavor = 베일수록 두꺼워지는 거죽. 맞고 나면, 다음을 막을 한 겹이 새로 돋는다.
+
+[relic.r-cbt-tempered-scale]
+name = 단련된 비늘
+rank = rare
+source = event
+trigger = on-damage-taken
+effects = hurt-to-block:4
+flavor = 불에 거듭 달군 비늘 한 장. 충격을 받을수록 더 단단히 일어서, 다음을 막을 두 겹이 돋는다.
+
+# ============================================================
+# 회복 — 전투 끝 / 노드 진입 / 휴식
+# ============================================================
+
+[relic.r-cbt-soothing-balm]
+name = 가라앉히는 연고
+rank = common
+source = shop
+trigger = on-combat-end
+effects = combat-end-heal:4
+flavor = 바르면 화끈거림이 천천히 식는다. 싸움이 끝날 때마다, 잊고 있던 아픔이 조금 가신다.
+
+[relic.r-cbt-greater-poultice]
+name = 큰 약찜질
+rank = rare
+source = event
+trigger = on-combat-end
+effects = combat-end-heal:7
+flavor = 정령이 풀잎을 으깨어 건넨 한 줌. 싸움이 끝나면, 깊은 상처까지 한 뼘 아문다.
+
+[relic.r-cbt-wayfarer-crumbs]
+name = 나그네의 빵부스러기
+rank = basic
+source = shop
+trigger = on-node-enter
+effects = node-enter-heal:2
+flavor = 주머니 바닥에 늘 조금 남는 것. 새 자리에 발을 들일 때마다 한 입 떼면, 몸이 조금 데워진다.
+
+[relic.r-cbt-traveler-stew]
+name = 길손의 한 그릇
+rank = common
+source = shop
+trigger = on-node-enter
+effects = node-enter-heal:3
+flavor = 어느 마을이든 끓고 있는 따뜻한 냄비. 새 자리에 닿을 때마다, 한 그릇이 몸을 데운다.
+
+[relic.r-cbt-campfire-ember]
+name = 모닥불 잉걸
+rank = rare
+source = event
+trigger = on-rest
+effects = heal-now:8
+flavor = 다 탄 줄 알았는데 아직 붉다. 잠시 머물러 손을 쬐면, 하루치 피로가 함께 풀린다.
+
+# ============================================================
+# 다운사이드 동반 — 곡선 위 이득 + 진짜 단점 (STS 보스 유물식)
+# ============================================================
+
+[relic.r-cbt-glass-fang]
+name = 유리 송곳니
+rank = legendary
+source = event
+trigger = passive
+effects = damage-out-mul:1.5, damage-in-mul:1.3
+flavor = 무엇이든 꿰뚫지만 제 몸도 그만큼 얇다. 더 깊이 베는 대신, 더 깊이 베인다.
+
+[relic.r-cbt-reckless-gauntlet]
+name = 무모한 건틀릿
+rank = rare
+source = elite
+trigger = passive
+effects = damage-out-mul:1.3, damage-in-mul:1.2
+flavor = 주먹을 내지를 줄만 알고 거둘 줄은 모른다. 한층 무겁게 때리지만, 돌아오는 매도 한 뼘 더 아프다.
+
+[relic.r-cbt-overloaded-pack]
+name = 짐 넘치는 배낭
+rank = rare
+source = event
+trigger = on-combat-start
+effects = draw-extra-add:2, combat-start-status:2:frail
+flavor = 쓸 것을 다 챙겼다 — 너무 많이. 매 턴 손은 두둑하지만, 시작부터 어깨가 짓눌려 막아 내기가 버겁다.
+
+[relic.r-cbt-fevered-lamp]
+name = 들뜬 등불
+rank = rare
+source = shop
+trigger = on-combat-start
+effects = mana-extra-add:1, combat-start-status:1:weakness
+flavor = 더 밝게 타려 늘 떨고 있다. 매 턴 한 줌의 힘을 더 주지만, 그 열에 손이 데어 처음 일격이 무디다.
+
+[relic.r-cbt-thieving-knuckle]
+name = 훔치는 너클
+rank = rare
+source = shop
+trigger = passive
+effects = cost-mod-add:-1, bonus-hp:-8
+flavor = 모든 손놀림에서 한 호흡을 슬쩍 줄여 준다. 대가는 미리 깎인 살 한 줌이다.
+
+[relic.r-cbt-brute-cleaver]
+name = 막무가내 도끼
+rank = rare
+source = elite
+trigger = passive
+effects = damage-out-add:4, draw-extra-add:-1
+flavor = 크게 휘두르는 대신 손이 둔해진다. 한 번의 일격은 묵직하지만, 매 턴 쥐는 패가 한 장 줄어든다.
+
+[relic.r-cbt-bloody-banner]
+name = 피 묻은 깃발
+rank = rare
+source = elite
+trigger = on-combat-start
+effects = combat-start-status:2:strength, combat-start-status:2:vulnerable
+flavor = 높이 들면 사기가 오르지만 표적도 함께 커진다. 시작부터 힘이 솟는 만큼, 처음 받는 매도 더 깊게 박힌다.
+
+[relic.r-cbt-greedy-purse]
+name = 욕심 많은 지갑
+rank = rare
+source = shop
+trigger = on-combat-start
+effects = bonus-mana:1, combat-start-status:1:frail
+flavor = 더 많이 담으려 입을 너무 벌렸다. 시작의 힘 한 줌을 더 내주지만, 그 무게에 첫 방어가 무뎌진다.

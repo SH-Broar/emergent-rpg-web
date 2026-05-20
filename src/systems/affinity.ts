@@ -24,6 +24,7 @@ import type { AffinityReward } from '@/data/schemas';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useMetaStore } from '@/stores/meta';
+import { acquireRelic } from './relic';
 
 export function applyAffinityDelta(
   npcId: string,
@@ -72,10 +73,7 @@ function fireAffinityReward(npcName: string, reward: AffinityReward, lines?: str
   if (reward.rewardRelicId) {
     const relic = data.relics.get(reward.rewardRelicId);
     if (relic) {
-      r.relics.push(relic);
-      if (!r.newRelicEncounters.includes(relic.id)) {
-        r.newRelicEncounters.push(relic.id);
-      }
+      acquireRelic(relic); // 중앙 진입점 — on-acquire/passive 즉시 발동 포함.
       lines?.push(`${npcName} ${reward.threshold}단계 — 유물 '${relic.name}' 획득`);
     }
   }

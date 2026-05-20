@@ -195,9 +195,21 @@ function parseOneRelic(id: string, f: IniSection): Relic | null {
   if (!isRank(rank)) return null;
 
   const effects: RelicEffect[] = parseList(f.effects).map((tok) => {
-    const [rawKind, valueStr] = tok.split(':');
+    const parts = tok.split(':');
+    const rawKind = parts[0];
+    const valueStr = parts[1];
     const kind = RELIC_KIND_ALIASES[rawKind] ?? rawKind;
-    return { kind, value: valueStr ? Number(valueStr) : undefined };
+    const value = valueStr ? Number(valueStr) : undefined;
+    // 3·4번째 토큰: 일반 파라미터 arg/arg2.
+    //  예) combat-start-status:2:frail (arg=상태), boost-color:8:fire (arg=컬러),
+    //      block-from-metric:10:def (arg=지표), turn-after-strength:1:5 (arg=턴).
+    if (parts[2] || parts[3]) {
+      const params: Record<string, unknown> = {};
+      if (parts[2]) params.arg = parts[2];
+      if (parts[3]) params.arg2 = parts[3];
+      return { kind, value, params };
+    }
+    return { kind, value };
   });
 
   const rawTrigger = (f.trigger as string) ?? 'passive';
@@ -909,6 +921,13 @@ const DATA_FILES = [
   'data/races/race-arcana.txt',
   'data/cards/cards-mvr.txt',
   'data/relics/relics-mvr.txt',
+  // === 유물 2차 확장 (2026-05-21) — 컬러·스탯·턴·아이템·획득즉시 가족. ===
+  'data/relics/relics-color.txt',
+  'data/relics/relics-stat.txt',
+  'data/relics/relics-turn.txt',
+  'data/relics/relics-acquire.txt',
+  'data/relics/relics-combat.txt',
+  'data/relics/relics-cmech.txt',
   'data/events/events-mvr.txt',
   'data/events/act-1-region-events.txt',
   'data/monsters/mvr-monsters.txt',

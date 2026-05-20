@@ -26,6 +26,7 @@ import {
   applyModifiers,
   fireRelicTrigger,
   getModifierAdd,
+  getModifierMul,
   onCombatStart as fireOnCombatStart,
   onCombatEnd as fireOnCombatEnd,
 } from './relic';
@@ -57,6 +58,19 @@ function playerBonuses(c: CombatState): ReturnType<typeof currentBonuses> {
     return { damage: 0, block: 0, drawExtra: 0, manaExtra: 0 };
   }
   return currentBonuses();
+}
+
+/**
+ * 플레이어가 *해당 kind의 효과를 가진 패시브 마커 유물*을 보유했는지.
+ * C 메커니즘 유물(block-carryover / mana-carryover / first-card-free / double-debuff)은
+ * 핸들러 없이 이 조회로 전투 흐름에서 동작한다.
+ */
+function playerHasRelicEffect(kind: string): boolean {
+  try {
+    return useRunStore().data.relics.some((r) => r.effects.some((e) => e.kind === kind));
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -93,6 +107,7 @@ function applyDamage(
   target: Combatant,
   rawValue: number,
   attackerStatuses: Record<string, number> | undefined,
+  isPlayerTarget = false,
 ): void {
   let v = Math.max(0, rawValue);
   // weakness(약화): 공격자가 주는 피해 ×0.75.
@@ -101,6 +116,11 @@ function applyDamage(
   // vulnerable(취약): 대상이 받는 피해 ×1.5.
   const vulnerable = target.statuses?.vulnerable ?? 0;
   if (vulnerable > 0) v = Math.floor(v * 1.5);
+  // damage-in-mul 유물: 플레이어가 *받는* 피해에만 배수 적용 (예: 글래스 프리즘 ×1.3).
+  if (isPlayerTarget) {
+    const inMul = getModifierMul('damage-in-mul');
+    if (inMul !== 1) v = Math.floor(v * inMul);
+  }
   // block 흡수 후 hp 차감.
   const absorbed = Math.min(target.block, v);
   target.block -= absorbed;
@@ -157,10 +177,10 @@ export function startCombat(monster: Monster) {
     statuses: {},
   };
 
-  // MAG 보너스로 드로우/마나 증가.
+  // MAG 보너스 + 유물(draw-extra-add / mana-extra-add)로 드로우/마나 증가.
   const bonus = currentBonuses();
-  const handSize = STARTING_HAND_SIZE + bonus.drawExtra;
-  const maxMana = DEFAULT_MAX_MANA + bonus.manaExtra;
+  const handSize = STARTING_HAND_SIZE + bonus.drawExtra + getModifierAdd('draw-extra-add');
+  const maxMana = DEFAULT_MAX_MANA + bonus.manaExtra + getModifierAdd('mana-extra-add');
 
   const drawPile = [...r.deck];
   const { drawn, newDrawPile, newDiscardPile } = drawCards(drawPile, [], handSize);
@@ -181,6 +201,9 @@ export function startCombat(monster: Monster) {
     bossTurnCount: 0,
     lockedCardIds: [],
     frozenTurn: false,
+    // 유물 카운터 — 매 전투 리셋.
+    relicCounters: {},
+    cardsPlayedThisTurn: 0,
   };
   r.combat = combat;
 
@@ -306,7 +329,11 @@ export function playCard(handIndex: number, monster: Monster): { enemyDefeated: 
     baseCost = Math.max(0, baseCost - damageReceived);
   }
   // cost-mod-add 유물 (예: 모든 카드 비용 -1) 적용. 음수 cost는 0으로 clamp.
-  const effCost = Math.max(0, baseCost + getModifierAdd('cost-mod-add'));
+  let effCost = Math.max(0, baseCost + getModifierAdd('cost-mod-add'));
+  // first-card-free 유물: 매 턴 *첫 카드*의 비용 0.
+  if ((c.cardsPlayedThisTurn ?? 0) === 0 && playerHasRelicEffect('first-card-free')) {
+    effCost = 0;
+  }
   // r4: debugFlag infiniteMana — 마나 가드 우회 + 차감 스킵.
   const inf = ui.debug.infiniteMana;
   if (!inf && c.mana < effCost) {
@@ -314,6 +341,8 @@ export function playCard(handIndex: number, monster: Monster): { enemyDefeated: 
     return { enemyDefeated: false };
   }
   if (!inf) c.mana -= effCost;
+  // 이번 턴 사용 카드 수 누적 (first-card-free 판정용).
+  c.cardsPlayedThisTurn = (c.cardsPlayedThisTurn ?? 0) + 1;
 
   // 카드 효과 적용 *직전* trigger — 자기 자신의 데미지 계산에 영향을 줄 마지막 기회.
   fireRelicTrigger('on-card-played-before', { run: r, combat: c, triggeredBy: card.id });
@@ -449,8 +478,11 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
     const targets = resolveTargets(e.target ?? 'enemy', c);
     const statusName = (e.params?.status as string) ?? 'unknown';
     const stack = e.value ?? 1;
+    // double-debuff 유물: *적*에게 거는 디버프 스택 2배 (자기 버프는 불변).
+    const dbl = playerHasRelicEffect('double-debuff');
     for (const t of targets) {
-      t.statuses[statusName] = (t.statuses[statusName] ?? 0) + stack;
+      const s = (t === c.enemy && dbl) ? stack * 2 : stack;
+      t.statuses[statusName] = (t.statuses[statusName] ?? 0) + s;
     }
   },
   // 손에서 *가장 오른쪽* 1장을 drawPile 맨 위로 (칼리번 c-trace-step).
@@ -678,6 +710,11 @@ export function endPlayerTurn(monster: Monster): { playerDefeated: boolean; enem
     return { playerDefeated: true };
   }
 
+  // retaliate 등 on-damage-taken 유물로 적이 쓰러질 수 있음 — 승리 신호.
+  if (c.enemy.hp <= 0) {
+    return { playerDefeated: false, enemyDefeated: true };
+  }
+
   // 보스 기믹 — 적 턴 처리 (anchor 카운트/해제, stillness 누적, rewind 회복+디버프 제거).
   // bossMechanic 미설정(일반 몬스터 전투)이면 no-op.
   applyBossEnemyTurn(c);
@@ -695,19 +732,25 @@ export function endPlayerTurn(monster: Monster): { playerDefeated: boolean; enem
   c.hand = [];
 
   c.turn += 1;
+  c.cardsPlayedThisTurn = 0; // 새 턴 — first-card-free 판정 리셋.
+  // mana-carryover 유물: 쓰지 않은 마나를 다음 턴으로 이월.
+  const manaCarry = playerHasRelicEffect('mana-carryover') ? Math.max(0, c.mana) : 0;
   // regress(퇴행)면 MAG manaExtra 무효 → 기본 maxMana만. (playerBonuses가 0 반환.)
-  const effMaxMana = DEFAULT_MAX_MANA + playerBonuses(c).manaExtra;
-  c.mana = effMaxMana;
+  // 유물 mana-extra-add는 색 스탯과 무관하므로 regress와 별개로 항상 합산.
+  const effMaxMana = DEFAULT_MAX_MANA + playerBonuses(c).manaExtra + getModifierAdd('mana-extra-add');
+  c.mana = effMaxMana + manaCarry;
   // 칼리번 c-trace-step: 다음 턴 시작 에너지 +N 보너스 소비.
   const nextEnergyBonus = r.nextTurnEnergyBonus ?? 0;
   if (nextEnergyBonus > 0) {
     c.mana += nextEnergyBonus;
     r.nextTurnEnergyBonus = 0;
   }
-  c.player.block = 0;
+  // block-carryover 유물: 방어를 0으로 리셋하지 않고 이월. 그 외엔 매 턴 0.
+  if (!playerHasRelicEffect('block-carryover')) c.player.block = 0;
 
   // MAG 보너스로 매 턴 드로우 +. regress면 drawExtra 무효(playerBonuses 0).
-  const handSize = STARTING_HAND_SIZE + playerBonuses(c).drawExtra;
+  // 유물 draw-extra-add는 색 스탯과 무관하므로 regress와 별개로 항상 합산.
+  const handSize = STARTING_HAND_SIZE + playerBonuses(c).drawExtra + getModifierAdd('draw-extra-add');
   const { drawn, newDrawPile, newDiscardPile } = drawCards(c.drawPile, c.discardPile, handSize);
   c.hand = drawn;
   c.drawPile = newDrawPile;
@@ -739,14 +782,16 @@ function executeMonsterIntent(c: CombatState) {
 
   switch (kind) {
     case 'attack': {
-      // 통합 피해: weakness(공격자=enemy) ×0.75 → vulnerable(대상=player) ×1.5 → block → hp.
+      // 통합 피해: weakness(공격자=enemy) ×0.75 → vulnerable(대상=player) ×1.5 → damage-in-mul → block → hp.
       const hpBefore = c.player.hp;
-      applyDamage(c.player, value, c.enemy.statuses);
+      applyDamage(c.player, value, c.enemy.statuses, true);
       const hpLoss = hpBefore - c.player.hp;
       // 모나토 c-tripps-rage 동적 cost용 누적 피해 — block 흡수 제외 *실제 HP 손실*만.
       if (hpLoss > 0) {
         const r = useRunStore().data;
         r.runDamageReceived = (r.runDamageReceived ?? 0) + hpLoss;
+        // 피해 받을 시 유물 발동 (retaliate / hurt-to-color / hurt-to-block).
+        fireRelicTrigger('on-damage-taken', { run: r, combat: c, amount: hpLoss });
       }
       break;
     }

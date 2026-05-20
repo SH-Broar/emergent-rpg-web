@@ -13,7 +13,8 @@ import { computed, ref, watch } from 'vue';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useItem } from '@/systems/item';
-import type { Item, Node, Relic, RelicEffect } from '@/data/schemas';
+import { relicEffectText, relicTriggerLabel } from '@/systems/labels';
+import type { Item, Node, Relic } from '@/data/schemas';
 
 const props = defineProps<{ open: boolean }>();
 const emit = defineEmits<{ (e: 'close'): void }>();
@@ -46,33 +47,9 @@ const rankColors: Record<string, string> = {
 };
 const rankOrder: Record<string, number> = { basic: 0, common: 1, rare: 2, legendary: 3 };
 
-// ===== 유물 =====
-const triggerLabels: Record<string, string> = {
-  passive: '패시브',
-  'on-combat-start': '전투 시작 시',
-  'on-combat-end': '전투 승리 시',
-  'on-node-enter': '노드 진입 시',
-  'on-card-play': '카드 사용 시',
-  'on-rest': '휴식 시',
-};
-
-function effectText(eff: RelicEffect): string {
-  const v = eff.value ?? 0;
-  switch (eff.kind) {
-    case 'bonus-hp': return `최대 HP +${v}`;
-    case 'bonus-mana': return `마나 +${v}`;
-    case 'bonus-gold': return `골드 +${v}`;
-    case 'bonus-damage': return `모든 데미지 +${v}`;
-    case 'damage-out-add': return `주는 피해 +${v}`;
-    case 'block-out-add': return `방어 +${v}`;
-    case 'chance-random-color-1': return `매 턴 ${v}% 확률로 무작위 컬러 +1`;
-    case 'skip-turn-every': return `${v}턴마다 적 행동 1회 거름`;
-    case 'discount': return `제작 비용 ${Math.round(v * 100)}% 할인`;
-    default: return `${eff.kind}${eff.value !== undefined ? ` ${eff.value}` : ''}`;
-  }
-}
+// ===== 유물 ===== (라벨은 systems/labels.ts에 중앙화)
 function describeRelic(r: Relic): string[] {
-  return r.effects.map(effectText);
+  return r.effects.map(relicEffectText);
 }
 
 // ===== 아이템 =====
@@ -179,7 +156,7 @@ function itemEffectLabel(eff: Item['effects'][number]): string {
                 <span class="rel-card__name">{{ r.name }}</span>
                 <span class="rel-card__rank" :style="{ color: rankColors[r.rank] }">{{ r.rank }}</span>
               </div>
-              <div class="rel-card__trigger">{{ triggerLabels[r.trigger] ?? r.trigger }}</div>
+              <div class="rel-card__trigger">{{ relicTriggerLabel(r.trigger) }}</div>
               <ul class="rel-card__effects">
                 <li v-for="(t, ei) in describeRelic(r)" :key="ei">· {{ t }}</li>
               </ul>
