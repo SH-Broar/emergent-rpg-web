@@ -708,3 +708,234 @@ cost = 1
 trigger = manual
 effects = apply-status:1:enemy:weakness, apply-status:1:enemy:vulnerable
 flavor = 한 손으로 — *주는 힘*을 — 깎고, 다른 — 손으로 — *받는 자리*를 — 벌린다. 두 — 저주가 — 한꺼번에 — 적을 — 감싼다.
+
+
+# ============================================================
+# 측정 어려운 메커니즘 카드 — 3차 배치 (소멸/방어전환/마나/동료·유물/성장/패).
+#   - exhaust-self: 사용 후 *소멸*. 이번 전투 재사용 불가. 강력 1회용.
+#   - block-to-damage: 현재 방어막 × value 추가 피해(방어막 소모 X).
+#   - spend-all-energy: 남은 마나 전부 소비 → 소비액 × value 피해.
+#   - damage-per-companion / damage-per-relic: 동행·수집의 무게.
+#   - growing-damage: 쓸수록 강해지는 공격(이 카드 인스턴스에 누적).
+#   - heal-per-hand: 손패 수만큼 회복.
+#   - next-card-double: 다음 1장의 모든 수치 2배(이 카드 자신은 제외).
+# 효과 표기: exhaust-self:0:self 는 *마커* — 카드 이동만 바꿈, 수치 없음.
+# ============================================================
+
+# ---------- exhaust-self 강카드 3장 (1회용 큰 효과) ----------
+
+[card.c-final-blade]
+name = 마지막 칼
+rank = rare
+source = event
+element = iron
+cost = 2
+trigger = manual
+effects = damage:30:enemy, exhaust-self:0:self
+flavor = 단 — 한 번. 다시는 — 손에 — 돌아오지 — 않을 — 칼을, 가장 깊은 — 자리에 — 내리꽂는다. *쓰고 나면 — 사라진다.*
+
+[card.c-last-bulwark]
+name = 마지막 보루
+rank = rare
+source = npc
+element = earth
+cost = 2
+trigger = manual
+effects = block:28:self, exhaust-self:0:self
+flavor = "여기까지는 — 내가 — 막을게요." 로크의 *돌 손발*이 — 한 번에 — 거대한 벽을 — 세운다. 그 한 번 — 뒤에는, 손에 — 남는 것이 — 없다. *소멸.*
+
+[card.c-doom-mark]
+name = 파멸의 낙인
+rank = rare
+source = event
+element = dark
+cost = 1
+trigger = manual
+effects = apply-status:4:enemy:vulnerable, apply-status:4:enemy:weakness, exhaust-self:0:self
+flavor = 깊은 — 검은 — 자국 — 하나가 — 적에게 — 새겨진다. 받는 자리는 — 활짝, 주는 힘은 — 무겁게. *낙인은 — 한 번뿐, 새기고 — 사라진다.*
+
+# ---------- block-to-damage 2장 (방어→공격 전환) ----------
+
+[card.c-shell-slam]
+name = 등껍질 후려치기
+rank = common
+source = npc
+element = iron
+cost = 1
+trigger = manual
+effects = block-to-damage:1:enemy
+flavor = "단단히 — 두른 — 만큼, 무겁게 — 돌려준다." 로크가 — 둥글게 — 말았던 *돌 등껍질*을 — 펴며 — 적을 — 후려친다. 쌓아 둔 — 방어가 — 그대로 — 한 방이 — 된다.
+
+[card.c-bastion-counter]
+name = 성벽의 반격
+rank = rare
+source = npc
+element = earth
+cost = 2
+trigger = manual
+effects = block:8:self, block-to-damage:1:enemy
+flavor = "막고 — 나서, 친다." 쿠마미미가 — *묵직한 손*으로 — 먼저 — 한 겹을 — 두르고, 그 — 두께를 — 그대로 — 적에게 — 떨군다. 단단할수록 — 매섭다.
+
+# ---------- spend-all-energy 2장 (남은 마나 몰빵) ----------
+
+[card.c-all-in]
+name = 전부 쏟기
+rank = common
+source = event
+element = fire
+cost = 0
+trigger = manual
+effects = spend-all-energy:4:enemy
+flavor = 손에 — 남은 — 모든 — 힘을, 아끼지 — 않고 — 한꺼번에 — 적에게 — 부어 — 버린다. 남기지 — 않을수록 — 깊다.
+
+[card.c-overdraw-burst]
+name = 과부하 폭발
+rank = rare
+source = hyperion
+element = electric
+cost = 0
+trigger = manual
+effects = spend-all-energy:6:enemy
+flavor = 회로 — 끝까지 — 전류를 — 흘려, 한 점에 — 모아 — 터뜨린다. 남은 — 마나가 — 많을수록 — 섬광이 — 크다. *비운 만큼 — 강하다.*
+
+# ---------- damage-per-companion 2장 (동료 많을수록) ----------
+
+[card.c-comrades-charge]
+name = 동행의 돌격
+rank = common
+source = npc
+element = wind
+cost = 1
+trigger = manual
+effects = damage-per-companion:4:enemy
+flavor = "혼자가 — 아니야." 곁에 — 선 — 이들이 — 많을수록, 한 걸음이 — 더 — 멀리 — 닿는다. 함께 — 걸어온 — 자리의 — 무게.
+
+[card.c-bonded-strike]
+name = 인연의 일격
+rank = rare
+source = npc
+element = light
+cost = 2
+trigger = manual
+effects = damage-per-companion:7:enemy, block:4:self
+flavor = 함께한 — 이들의 — 이름을 — 하나씩 — 떠올리며 — 검을 — 든다. 동행이 — 길어질수록, 손목에 — 실리는 — 무게가 — 다르다.
+
+# ---------- damage-per-relic 2장 (유물 많을수록) ----------
+
+[card.c-collectors-strike]
+name = 수집가의 일격
+rank = common
+source = event
+element = iron
+cost = 1
+trigger = manual
+effects = damage-per-relic:4:enemy
+flavor = 모아 — 온 — 것들이 — 손끝에서 — 함께 — 울린다. 지닌 — 보물이 — 많을수록, 한 — 휘두름이 — 무겁다.
+
+[card.c-hoarders-wrath]
+name = 보물의 분노
+rank = rare
+source = event
+element = electric
+cost = 2
+trigger = manual
+effects = damage-per-relic:7:enemy
+flavor = 지녀 — 온 — 모든 — 유물이 — 한꺼번에 — 빛을 — 낸다. 쌓아 — 둔 — 것이 — 깊을수록, 분노가 — 멀리 — 번진다.
+
+# ---------- growing-damage 2장 (쓸수록 강해지는 공격) ----------
+
+[card.c-rising-fang]
+name = 자라나는 송곳니
+rank = common
+source = npc
+element = fire
+cost = 1
+trigger = manual
+effects = growing-damage:4:enemy
+flavor = "한 번 — 더, 또 — 한 번 — 더." 카시스의 — *송곳니*가 — 쓸 — 때마다 — 한 자국씩 — 더 — 길어진다. 거듭할수록 — 깊어지는 — 한 입.
+
+[card.c-mounting-storm]
+name = 부풀어 오르는 폭풍
+rank = rare
+source = hyperion
+element = wind
+cost = 1
+trigger = manual
+effects = growing-damage:7:enemy
+flavor = 처음엔 — 산들바람, 거듭 — 부를수록 — *손쓸 수 없는 — 폭풍*으로 — 자라난다. 한 번 — 한 번이 — 다음을 — 키운다.
+
+# ---------- heal-per-hand 2장 (손패 수만큼 회복) ----------
+
+[card.c-shared-breath]
+name = 나눈 숨
+rank = common
+source = npc
+element = water
+cost = 1
+trigger = manual
+effects = heal-per-hand:2:self
+flavor = "손에 — 쥔 — 만큼, 함께 — 숨을 — 고르자." 마린이 — *푸른 꼬리*로 — 물 한 모금을 — 건넨다. 패가 — 두툼할수록 — 깊게 — 가라앉는다.
+
+[card.c-bloom-recovery]
+name = 만개의 회복
+rank = rare
+source = npc
+element = earth
+cost = 2
+trigger = manual
+effects = heal-per-hand:4:self, draw:1:self
+flavor = 손에 — 쥔 — 잎새가 — 많을수록, 한꺼번에 — 활짝 — 피어 — 갈비뼈 — 안쪽을 — 데운다. 풍성한 — 손이 — 곧 — 풍성한 — 숨.
+
+# ---------- next-card-double 1장 (다음 카드 2배, 콤보 셋업) ----------
+
+[card.c-mirror-echo]
+name = 거울의 메아리
+rank = rare
+source = npc
+element = light
+cost = 1
+trigger = manual
+effects = next-card-double:0:self
+flavor = "다음 — 한 수가 — *두 번* — 울리게 — 해 줄게요." 신시안이 — 잔잔한 — 수면 위에 — 손을 — 얹는다. 곧이어 — 내미는 — 한 장이 — *두 겹*으로 — 펼쳐진다.
+
+# ---------- 기존 효과 창의 조합 4장 (측정 어려운) ----------
+
+[card.c-toxic-spire]
+name = 독의 첨탑
+rank = common
+source = npc
+element = earth
+cost = 1
+trigger = manual
+effects = apply-status:3:enemy:poison, damage-per-debuff:3:enemy
+flavor = 한 송이 — 독을 — 더 — 얹고, 그 — 위에서 — 쌓인 — 약함을 — 한꺼번에 — 두드린다. 무너뜨려 — 둘수록 — 더 — 깊이 — 든다.
+
+[card.c-prism-overload]
+name = 색의 과적
+rank = rare
+source = hyperion
+element = light
+cost = 2
+trigger = manual
+effects = damage-color-count:2:enemy, damage-top-color:1:enemy
+flavor = *가장 짙은 한 색*과 — *지닌 색의 — 수*가 — 동시에 — 쏟아진다. 넓게도, 깊게도 — 익힌 — 자만의 — 한 칼.
+
+[card.c-frail-rupture]
+name = 취약의 균열
+rank = common
+source = event
+element = dark
+cost = 1
+trigger = manual
+effects = apply-status:2:enemy:vulnerable, consume-vulnerable:3:enemy
+flavor = 먼저 — 빈틈을 — 벌리고, 그 — 자리를 — 곧장 — 터뜨린다. 벌린 — 만큼 — 폭발이 — 따라온다. 두 — 동작이 — 한 번에.
+
+[card.c-sacrifice-edge]
+name = 희생의 칼날
+rank = rare
+source = event
+element = fire
+cost = 1
+trigger = manual
+effects = damage-from-hp:7:enemy, draw:1:self
+flavor = *제 피*를 — 한 줌 — 깎아 — 곱절로 — 되갚고, 그 — 대가로 — 다음 — 한 수를 — 끌어 — 온다. 비운 — 자리에 — 새 — 길이 — 열린다.

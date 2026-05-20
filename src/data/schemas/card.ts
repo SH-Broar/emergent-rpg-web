@@ -95,7 +95,16 @@ export type CardEffectKind =
   | 'damage-per-debuff'   // (적 디버프 스택 총합) × value + base 데미지
   | 'consume-vulnerable'  // 적 *취약 스택 제거* → 제거량 × value 추가 데미지
   | 'damage-from-hp'      // 자기 HP를 value 지불, 지불액 × params.mult 데미지
-  | 'damage-per-hand';    // *현재 손패 수* × value 데미지
+  | 'damage-per-hand'     // *현재 손패 수* × value 데미지
+  // === 측정 어려운 메커니즘 (3차 배치) ===
+  | 'exhaust-self'        // 마커: 이 효과가 든 카드는 사용 후 *소멸*(exhaustPile). 핸들러는 no-op.
+  | 'block-to-damage'     // 현재 player.block × value 추가 피해 (block 소모하지 않음)
+  | 'spend-all-energy'    // 남은 mana 전부 소비 → 소비액 × value 피해
+  | 'damage-per-companion' // 동료 수 × value 피해
+  | 'damage-per-relic'    // 유물 수 × value 피해
+  | 'growing-damage'      // damage:value + *이 카드 인스턴스의 bonusDamage* (쓸수록 강해짐)
+  | 'heal-per-hand'       // *현재 손패 수* × value 회복 (self)
+  | 'next-card-double';   // combat flag: *다음 1장*의 모든 effect value 2배
 
 /** 효과 대상 — target. */
 export type EffectTarget = 'self' | 'enemy' | 'all-enemies' | 'random-enemy';
@@ -157,6 +166,13 @@ export interface Card extends NamedEntity {
    * 런 종료로 리셋(런 휘발 컬렉션 인스턴스).
    */
   bonusBlock?: number;
+
+  /**
+   * 카드 *인스턴스*에 누적되는 보너스 damage — `growing-damage` 효과 카드 전용.
+   * 사용 시 +1씩 누적되어 다음번 사용 시 damage 효과에 더해진다.
+   * bonusBlock과 동일한 수명(런 휘발 컬렉션 인스턴스).
+   */
+  bonusDamage?: number;
 }
 
 /** 효과 핸들러 시그니처 — Phase 2d에서 systems/combat.ts가 사용. */

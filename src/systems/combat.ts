@@ -217,11 +217,22 @@ export function playCard(handIndex: number, monster: Monster): { enemyDefeated: 
   // 카드 효과 적용 *직전* trigger — 자기 자신의 데미지 계산에 영향을 줄 마지막 기회.
   fireRelicTrigger('on-card-played-before', { run: r, combat: c, triggeredBy: card.id });
 
-  // growing-block 효과 핸들러가 카드 인스턴스의 bonusBlock을 더하기 위해 임시 참조를 세팅.
+  // growing-block/growing-damage 효과 핸들러가 카드 인스턴스의 bonus를 더하기 위해 임시 참조를 세팅.
   (c as { currentPlayingCard?: Card }).currentPlayingCard = card;
 
+  // next-card-double: *이전* 카드가 세워 둔 플래그가 켜져 있으면 이 카드의 모든 effect value 2배.
+  // 이번 카드가 스스로 세우는 플래그(자기 자신은 영향 X)와 구분하기 위해, 효과 루프 *전*에 캡처.
+  const flags = c as { nextCardDouble?: boolean };
+  const doubleThisCard = flags.nextCardDouble === true;
+  if (doubleThisCard) flags.nextCardDouble = false;
+
   for (const effect of card.effects) {
-    applyEffect(effect, c);
+    if (doubleThisCard && effect.value !== undefined) {
+      // value를 2배로 한 *사본*으로 적용 — 원본 effect는 건드리지 않음.
+      applyEffect({ ...effect, value: effect.value * 2 }, c);
+    } else {
+      applyEffect(effect, c);
+    }
   }
 
   (c as { currentPlayingCard?: Card }).currentPlayingCard = undefined;
@@ -231,12 +242,22 @@ export function playCard(handIndex: number, monster: Monster): { enemyDefeated: 
     card.bonusBlock = (card.bonusBlock ?? 0) + 1;
   }
 
+  // growing-damage 효과가 있으면 *카드 인스턴스의 bonusDamage 누적* (다음 사용 시 damage에 더해짐).
+  if (card.effects.some((e) => e.kind === 'growing-damage')) {
+    card.bonusDamage = (card.bonusDamage ?? 0) + 1;
+  }
+
   // 카드 효과 적용 *후*, 디스카드 *전* trigger.
   // alias 정규화 덕분에 옛 데이터의 trigger=on-card-play도 같은 시점에 매칭.
   fireRelicTrigger('on-card-played-after', { run: r, combat: c, triggeredBy: card.id });
 
   c.hand = c.hand.filter((_, i) => i !== handIndex);
-  c.discardPile = [...c.discardPile, card];
+  // exhaust-self 마커가 있으면 discardPile 대신 *exhaustPile*로 (이번 전투 재사용 불가).
+  if (card.effects.some((e) => e.kind === 'exhaust-self')) {
+    c.exhaustPile = [...c.exhaustPile, card];
+  } else {
+    c.discardPile = [...c.discardPile, card];
+  }
 
   // c-rize-relay 특수 후처리: 같은 카드 *cost 0* 복제를 핸드에 push (이번 턴 안 재사용 가능).
   // 핸드 풀이면 discard로 fallback. 카드 자체 ID 비교 — 데이터 드리븐이 아닌 *카드 특이 분기*.
@@ -444,6 +465,59 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
     const atkBonus = playerBonuses(c).damage + statusBonusForCardEffectKind('damage', c.player.statuses);
     const value = applyModifiers((e.value ?? 1) * handCount + atkBonus, 'damage-out-add', 'damage-out-mul');
     dealRawDamage(resolveTargets(e.target ?? 'enemy', c), value);
+  },
+  // === 측정 어려운 메커니즘 (3차 배치) ===
+  // 마커: 실제 처리는 playCard 본체(card.effects에 exhaust-self 있으면 exhaustPile로). 핸들러는 no-op.
+  'exhaust-self': () => {
+    // no-op — playCard에서 카드 이동 분기로 처리.
+  },
+  // 현재 player.block × value 추가 피해 (block 소모하지 않음). weakness/vulnerable 통합 적용.
+  'block-to-damage': (e, c) => {
+    const value = c.player.block * (e.value ?? 1);
+    for (const t of resolveTargets(e.target ?? 'enemy', c)) {
+      applyDamage(t, value, c.player.statuses);
+    }
+  },
+  // 남은 mana 전부 소비 → 소비액 × value 피해. (playCard에서 effCost 차감 후 남은 mana 기준.)
+  'spend-all-energy': (e, c) => {
+    const spent = c.mana;
+    c.mana = 0;
+    const value = spent * (e.value ?? 1);
+    for (const t of resolveTargets(e.target ?? 'enemy', c)) {
+      applyDamage(t, value, c.player.statuses);
+    }
+  },
+  // 동료 수 × value 피해.
+  'damage-per-companion': (e, c) => {
+    const count = useRunStore().data.companions.length;
+    dealRawDamage(resolveTargets(e.target ?? 'enemy', c), count * (e.value ?? 1));
+  },
+  // 유물 수 × value 피해.
+  'damage-per-relic': (e, c) => {
+    const count = useRunStore().data.relics.length;
+    dealRawDamage(resolveTargets(e.target ?? 'enemy', c), count * (e.value ?? 1));
+  },
+  // growing-block의 공격판: damage = (value + 이 카드 인스턴스의 bonusDamage) + atk/status 보정.
+  // 누적은 playCard 본체에서 (다음 사용 시 더해짐). feral ×2는 적용하지 않음(특수 효과 일관).
+  'growing-damage': (e, c) => {
+    const bonus = (c as { currentPlayingCard?: Card }).currentPlayingCard?.bonusDamage ?? 0;
+    // regress면 atkBonus 0 (playerBonuses).
+    const atkBonus = playerBonuses(c).damage + statusBonusForCardEffectKind('damage', c.player.statuses);
+    const value = applyModifiers((e.value ?? 0) + bonus + atkBonus, 'damage-out-add', 'damage-out-mul');
+    dealRawDamage(resolveTargets(e.target ?? 'enemy', c), value);
+  },
+  // *현재 손패 수* × value 회복 (self, maxHp clamp).
+  'heal-per-hand': (e, c) => {
+    const handCount = c.hand.length;
+    const value = handCount * (e.value ?? 1);
+    for (const t of resolveTargets(e.target ?? 'self', c)) {
+      t.hp = Math.min(t.maxHp, t.hp + value);
+    }
+  },
+  // combat flag: *다음 1장*의 모든 effect value 2배. 실제 2배 적용은 playCard 본체.
+  // 이 카드 자신은 영향 없음(playCard가 효과 루프 전에 플래그를 캡처하기 때문).
+  'next-card-double': (_e, c) => {
+    (c as { nextCardDouble?: boolean }).nextCardDouble = true;
   },
 };
 
