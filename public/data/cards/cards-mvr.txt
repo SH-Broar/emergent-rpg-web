@@ -544,7 +544,7 @@ effects = block-top-color:1:self
 flavor = *가장 높이 쌓인 한 색*이 — 등 뒤에 — 한 겹으로 — 선다. 치우친 자의 — 단단함.
 
 [card.c-spectrum-edge]
-name = 여덟 결의 한 칼
+name = 여덟 빛의 한 칼
 rank = rare
 source = event
 element = iron
@@ -562,3 +562,149 @@ cost = 1
 trigger = manual
 effects = damage-from-hp:6:enemy
 flavor = *제 피 한 줄*을 — 대가로 — 내어, 곱절로 — 되돌려 — 친다. 갈비뼈가 — 비는 — 만큼 — 적이 — 무너진다.
+
+
+# ============================================================
+# 측정 어려운 메커니즘 카드 — 2차 배치 (수화/퇴행 + 디버프/컬러/패).
+#   - feral(수화): 카드 *기본 피해 ×2*, 단 *방어 전혀 못 쌓음*. 양날.
+#   - regress(퇴행): ATK/DEF/MAG 컬러 보너스 전부 무효. 자신에게는 트레이드오프, 적에게는 봉쇄.
+#   - 두 상태 모두 매 턴 -1, 0이면 해제.
+# ============================================================
+
+# ---------- 수화(feral) 활용 2장 ----------
+
+[card.c-beast-skin]
+name = 짐승의 가죽
+rank = common
+source = npc
+element = fire
+cost = 1
+trigger = manual
+effects = apply-status:1:self:feral, damage:5:enemy
+flavor = "...오늘은 — 사람으로 — 못 있겠어." 카시스의 *아홉 꼬리*가 — 한 자락씩 — 곤두선다. 손톱이 — 짐승의 것으로 — 자라며, 등 뒤를 — 가릴 — 겨를이 — 사라진다. *공격은 — 두 배, 방어는 — 잊는다.*
+
+[card.c-fang-frenzy]
+name = 송곳니 난무
+rank = common
+source = npc
+element = iron
+cost = 1
+trigger = manual
+effects = damage:6:enemy
+flavor = "이빨이 — 먼저 — 닿아." 화이트팡이 — *글리치 든 검*을 — 짐승처럼 — 휘두른다. *수화*에 — 든 — 자의 손에서, 한 입이 — 두 입으로 — 깊어진다.
+
+# ---------- 퇴행(regress) 활용 2장 ----------
+
+[card.c-primal-collapse]
+name = 근원으로의 붕괴
+rank = rare
+source = event
+element = fire
+cost = 1
+trigger = manual
+effects = damage:20:enemy, apply-status:1:self:regress
+flavor = 가진 색을 — 한꺼번에 — 게워 내어 — 한 번에 — 쏟는다. 쏟고 나면, 이번 자리에 — *쌓아 둔 색이 — 잠시 — 사라진다*. 큰 한 방 뒤의 — 빈 손.
+
+[card.c-elder-curse]
+name = 태고의 저주
+rank = rare
+source = boss
+element = dark
+cost = 2
+trigger = manual
+effects = apply-status:2:enemy:regress, damage:6:enemy
+flavor = "네가 — 쌓아 온 — 색을, 잠시 — 잊게 — 해 줄게." 아주 오래된 — 검은 한 줄이 — 적의 — 단단함을 — 풀어 — 내린다. *적의 색 보강이 — 두 자리 — 멎는다.*
+
+# ---------- damage-per-debuff 2장 ----------
+
+[card.c-debuff-storm]
+name = 약점의 폭풍
+rank = common
+source = npc
+element = dark
+cost = 1
+trigger = manual
+effects = damage-per-debuff:5:enemy
+flavor = 적이 — 짊어진 — *모든 약함*이 — 한꺼번에 — 그에게 — 되돌아간다. 무너뜨려 둔 — 자리가 — 많을수록 — 매섭다.
+
+[card.c-cursed-blade]
+name = 저주받은 검
+rank = rare
+source = event
+element = iron
+cost = 2
+trigger = manual
+effects = damage-per-debuff:8:enemy
+flavor = *상처마다 — 검이 — 더 깊이 — 든다.* 취약과 — 약화와 — 중독이 — 겹친 — 자리일수록, 한 칼이 — 곱절로 — 내려앉는다.
+
+# ---------- consume-vulnerable 1장 ----------
+
+[card.c-vuln-detonate]
+name = 약점 폭발
+rank = common
+source = event
+element = electric
+cost = 1
+trigger = manual
+effects = consume-vulnerable:4:enemy
+flavor = 벌려 둔 — *취약의 자리*를 — 한꺼번에 — 터뜨린다. 쌓아 둔 — 빈틈이 — 깊을수록 — 폭발이 — 크다.
+
+# ---------- draw-if-color 1장 ----------
+# draw-if-color:N:self:<color>:<threshold> — 4번째=컬러, 5번째=임계(생략 시 5).
+# 해당 컬러가 임계 이상이면 추가 N장 드로우.
+
+[card.c-prism-overflow]
+name = 바람 넘침
+rank = common
+source = hyperion
+element = wind
+cost = 1
+trigger = manual
+effects = draw:1:self, draw-if-color:2:self:wind:5
+flavor = 손끝이 — 가벼워지면, *바람의 색*이 — 차오른 — 자에게는 — 길이 — 더 — 열린다. 넘치는 — 자에게만 — 보이는 — 다음 — 수.
+
+# ---------- damage-from-hp 1장 ----------
+
+[card.c-last-stand]
+name = 마지막 버팀
+rank = rare
+source = npc
+element = fire
+cost = 1
+trigger = manual
+effects = damage-from-hp:8:enemy
+flavor = "여기서 — 더는 — 못 물러나." 가진 — 숨을 — 한 줌 — 깎아, 곱절로 — 되갚는다. 비워 낸 — 만큼만 — 강해지는 — 한 수.
+
+# ---------- 기존 효과 창의 조합 1장 (방어 + 반격) ----------
+
+[card.c-tortoise-thorn]
+name = 등껍질의 가시
+rank = rare
+source = npc
+element = earth
+cost = 2
+trigger = manual
+effects = block:10:self, damage-per-hand:3:enemy
+flavor = 로크의 *돌 손발*이 — 등을 — 둥글게 — 만다. 단단히 — 웅크린 — 자리에서, 손에 쥔 — 패가 — 많을수록 — 가시가 — 더 — 많이 — 돋는다.
+
+# ---------- status 조합 2장 ----------
+
+[card.c-venom-bloom]
+name = 독꽃 피우기
+rank = common
+source = npc
+element = earth
+cost = 1
+trigger = manual
+effects = apply-status:4:enemy:poison, damage:2:enemy
+flavor = 한 송이씩 — *독꽃*이 — 적의 — 안쪽에서 — 피어난다. 처음엔 — 옅게, 그러나 — 시간이 — 지날수록 — 짙게 — 무너뜨린다.
+
+[card.c-double-hex]
+name = 두 겹의 저주
+rank = common
+source = npc
+element = dark
+cost = 1
+trigger = manual
+effects = apply-status:1:enemy:weakness, apply-status:1:enemy:vulnerable
+flavor = 한 손으로 — *주는 힘*을 — 깎고, 다른 — 손으로 — *받는 자리*를 — 벌린다. 두 — 저주가 — 한꺼번에 — 적을 — 감싼다.

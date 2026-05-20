@@ -153,6 +153,8 @@ const statusLabels: Record<string, string> = {
   vulnerable: '취약',
   poison: '중독',
   burn: '화상',
+  feral: '수화',
+  regress: '퇴행',
 };
 function statusEntries(c: Combatant | undefined) {
   if (!c) return [] as { key: string; count: number; label: string }[];
@@ -350,7 +352,9 @@ void ui;
   color: #d6d6e0;
 }
 .status[data-key="strength"], .status[data-key="dexterity"] { color: #8effb8; border-color: rgba(142,255,184,0.35); }
-.status[data-key="weakness"], .status[data-key="frail"], .status[data-key="vulnerable"], .status[data-key="poison"], .status[data-key="burn"] { color: #ff8e8e; border-color: rgba(255,142,142,0.35); }
+.status[data-key="weakness"], .status[data-key="frail"], .status[data-key="vulnerable"], .status[data-key="poison"], .status[data-key="burn"], .status[data-key="regress"] { color: #ff8e8e; border-color: rgba(255,142,142,0.35); }
+/* feral(수화): 공격 ↑ / 방어 불가 — 양날. 주황 강조. */
+.status[data-key="feral"] { color: #ffb86c; border-color: rgba(255,184,108,0.4); }
 .card__flavor { font-size: 0.75rem; color: #6c6c7c; font-style: italic; margin: 0; }
 
 .pile-info { display: flex; gap: 1.5rem; padding: 0.8rem 1rem; background: rgba(0,0,0,0.4); border-radius: 8px; color: #b6b6c4; align-items: center; }

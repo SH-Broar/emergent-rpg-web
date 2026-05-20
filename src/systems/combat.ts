@@ -44,6 +44,22 @@ function currentBonuses() {
 }
 
 /**
+ * 플레이어가 *이번 전투에서 실제로 받을* 컬러 스탯 보너스.
+ *
+ * regress(퇴행) 상태이면 ATK/DEF/MAG 컬러 보너스를 *전부 무효* — 모두 0.
+ * 그 외에는 currentBonuses()와 동일.
+ *
+ * 주의: 컬러 *직접* 피해(damage-top-color / damage-min-color / damage-color-count 등)는
+ * 스탯 보너스가 아니라 컬러값 자체를 쓰므로 regress 영향을 받지 않는다.
+ */
+function playerBonuses(c: CombatState): ReturnType<typeof currentBonuses> {
+  if ((c.player.statuses?.regress ?? 0) > 0) {
+    return { damage: 0, block: 0, drawExtra: 0, manaExtra: 0 };
+  }
+  return currentBonuses();
+}
+
+/**
  * 전투 중 *버프/디버프*가 카드 effect.value에 더하는 *플랫* 보정.
  *   - damage: +strength
  *   - block: +dexterity, -frail
@@ -105,6 +121,20 @@ function tickPoison(target: Combatant): void {
     delete target.statuses.poison;
   } else {
     target.statuses.poison = next;
+  }
+}
+
+/**
+ * feral(수화)/regress(퇴행) 턴 감소 — 매 플레이어 턴 종료 시 양쪽(플레이어·적) -1.
+ * 0이 되면 제거. vulnerable/weakness 등 기존 status는 여기서 건드리지 않는다.
+ */
+function decayTurnStatuses(target: Combatant): void {
+  for (const key of ['feral', 'regress'] as const) {
+    const stack = target.statuses?.[key] ?? 0;
+    if (stack <= 0) continue;
+    const next = stack - 1;
+    if (next <= 0) delete target.statuses[key];
+    else target.statuses[key] = next;
   }
 }
 
@@ -234,14 +264,16 @@ function applyEffect(effect: CardEffect, c: CombatState) {
 const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) => void> = {
   damage: (e, c) => {
     const targets = resolveTargets(e.target ?? 'enemy', c);
-    // ATK 스탯 보너스 — 공격 카드 *최소 공격력* +N (10 ATK당 1).
-    const atkBonus = currentBonuses().damage;
+    // feral(수화): 카드 *base damage ×2* — ATK 보너스 더하기 *전*에 2배.
+    const base = (c.player.statuses?.feral ?? 0) > 0 ? (e.value ?? 0) * 2 : (e.value ?? 0);
+    // ATK 스탯 보너스 — 공격 카드 *최소 공격력* +N (10 ATK당 1). regress면 0.
+    const atkBonus = playerBonuses(c).damage;
     // 전투 중 player buff (strength). weakness는 applyDamage 배수 단계에서 처리.
     const statusBonus = statusBonusForCardEffectKind('damage', c.player.statuses);
-    // base + atk + status를 modifier pipeline에 흘려보냄.
+    // base(×feral) + atk + status를 modifier pipeline에 흘려보냄.
     // 유물의 damage-out-add (옛 bonus-damage alias)는 applyModifiers 내부에서 합산.
     const value = applyModifiers(
-      (e.value ?? 0) + atkBonus + statusBonus,
+      base + atkBonus + statusBonus,
       'damage-out-add',
       'damage-out-mul',
     );
@@ -268,9 +300,11 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
     }
   },
   block: (e, c) => {
+    // feral(수화): 플레이어는 *block을 전혀 쌓지 못함* — 0 부여.
+    if ((c.player.statuses?.feral ?? 0) > 0) return;
     const targets = resolveTargets(e.target ?? 'self', c);
-    // DEF 스탯 보너스 — 방어 카드 *방어력* +N (10 DEF당 1).
-    const defBonus = currentBonuses().block;
+    // DEF 스탯 보너스 — 방어 카드 *방어력* +N (10 DEF당 1). regress면 0.
+    const defBonus = playerBonuses(c).block;
     // 전투 중 player buff/debuff (dexterity/frail).
     const statusBonus = statusBonusForCardEffectKind('block', c.player.statuses);
     // base + def + status에 유물의 block-out-add 합산 (mul은 본 라운드 미사용).
@@ -321,8 +355,10 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
     // playCard의 currentPlayingCard를 통해 우회 — 여기선 c.hand에 없는 *방금 사용된 카드*를 추적해야 함.
     // 단순화: combat 상태에 latestPlayingCard 임시 필드를 두지 않고, playCard에서 `growing-block` 효과 카드를 미리 식별해 처리.
     // → 이 핸들러는 block 효과만 수행하고, *누적*은 playCard 본체에서.
+    // feral(수화): block 부여 0. 단 bonusBlock *누적*은 playCard 본체에서 계속됨(다음 사용 대비).
+    if ((c.player.statuses?.feral ?? 0) > 0) return;
     const targets = resolveTargets(e.target ?? 'self', c);
-    const defBonus = currentBonuses().block;
+    const defBonus = playerBonuses(c).block;
     const statusBonus = statusBonusForCardEffectKind('block', c.player.statuses);
     const base = e.value ?? 0;
     const bonus = (c as { currentPlayingCard?: Card }).currentPlayingCard?.bonusBlock ?? 0;
@@ -356,6 +392,8 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
   },
   // 8 컬러 중 *최댓값* × value 방어.
   'block-top-color': (e, c) => {
+    // feral(수화): 플레이어는 block을 전혀 쌓지 못함 — 0 부여.
+    if ((c.player.statuses?.feral ?? 0) > 0) return;
     const colors = useRunStore().data.colors;
     const top = Math.max(
       colors.fire, colors.water, colors.electric, colors.iron,
@@ -378,8 +416,11 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
   // (적 디버프 스택 총합) × value + base 데미지.
   'damage-per-debuff': (e, c) => {
     const s = c.enemy.statuses;
-    const debuffSum = (s.vulnerable ?? 0) + (s.weakness ?? 0) + (s.frail ?? 0) + (s.poison ?? 0);
-    const atkBonus = currentBonuses().damage + statusBonusForCardEffectKind('damage', c.player.statuses);
+    // regress(퇴행)/feral도 포함한 *모든* 적 디버프 스택 총합 (status 작동).
+    const debuffSum = (s.vulnerable ?? 0) + (s.weakness ?? 0) + (s.frail ?? 0)
+      + (s.poison ?? 0) + (s.feral ?? 0) + (s.regress ?? 0);
+    // regress면 atkBonus 0 (playerBonuses).
+    const atkBonus = playerBonuses(c).damage + statusBonusForCardEffectKind('damage', c.player.statuses);
     const value = applyModifiers((e.value ?? 0) * debuffSum + atkBonus, 'damage-out-add', 'damage-out-mul');
     dealRawDamage(resolveTargets(e.target ?? 'enemy', c), value);
   },
@@ -399,7 +440,8 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
   // *현재 손패 수* × value 데미지 (이 카드 사용 후 핸드 — 자기 자신은 아직 hand에 있음).
   'damage-per-hand': (e, c) => {
     const handCount = c.hand.length;
-    const atkBonus = currentBonuses().damage + statusBonusForCardEffectKind('damage', c.player.statuses);
+    // regress면 atkBonus 0 (playerBonuses).
+    const atkBonus = playerBonuses(c).damage + statusBonusForCardEffectKind('damage', c.player.statuses);
     const value = applyModifiers((e.value ?? 1) * handCount + atkBonus, 'damage-out-add', 'damage-out-mul');
     dealRawDamage(resolveTargets(e.target ?? 'enemy', c), value);
   },
@@ -461,11 +503,18 @@ export function endPlayerTurn(monster: Monster): { playerDefeated: boolean; enem
     return { playerDefeated: true };
   }
 
+  // feral(수화)/regress(퇴행) 턴 감소 — 양쪽 -1, 0이면 제거. (vulnerable/weakness는 불변.)
+  // 새 턴의 mana/handSize 계산 *전*에 감소시켜야 regress가 다음 턴부터 풀린다.
+  decayTurnStatuses(c.player);
+  decayTurnStatuses(c.enemy);
+
   c.discardPile = discardHand(c.hand, c.discardPile);
   c.hand = [];
 
   c.turn += 1;
-  c.mana = c.maxMana;
+  // regress(퇴행)면 MAG manaExtra 무효 → 기본 maxMana만. (playerBonuses가 0 반환.)
+  const effMaxMana = DEFAULT_MAX_MANA + playerBonuses(c).manaExtra;
+  c.mana = effMaxMana;
   // 칼리번 c-trace-step: 다음 턴 시작 에너지 +N 보너스 소비.
   const nextEnergyBonus = r.nextTurnEnergyBonus ?? 0;
   if (nextEnergyBonus > 0) {
@@ -474,8 +523,8 @@ export function endPlayerTurn(monster: Monster): { playerDefeated: boolean; enem
   }
   c.player.block = 0;
 
-  // MAG 보너스로 매 턴 드로우 +.
-  const handSize = STARTING_HAND_SIZE + currentBonuses().drawExtra;
+  // MAG 보너스로 매 턴 드로우 +. regress면 drawExtra 무효(playerBonuses 0).
+  const handSize = STARTING_HAND_SIZE + playerBonuses(c).drawExtra;
   const { drawn, newDrawPile, newDiscardPile } = drawCards(c.drawPile, c.discardPile, handSize);
   c.hand = drawn;
   c.drawPile = newDrawPile;
