@@ -44,8 +44,12 @@ domain_high = Passionate, Adaptable, Inventive, Flexible, Patient, Freesprited, 
 domain_low = Cautious, Rigid, Stagnant, Stubborn, Restless, Grounded, Cynical, Naive
 background = 전설의 마법을 찾아 떠나는 여행자.|루나에서 엘네스트를 만나 목적이 비슷한 그와 여행을 시작했으며, 훗날 결혼까지 하는 공식 커플이다.|몸집이 작고 커다란 마법사 모자를 쓰고 다니며, 높은 마법 재능으로 점차 성장해 나간다.|그들의 목적은 마왕을 쓰러뜨리는 것이 아니라 전설의 발자취를 따라가는 것이다.
 tagline = "발자취를 — 끝까지 따라가 볼 거예요."
-tags = beastkin, scholar-adventurer, fire-affinity
+tags = beastkin, scholar-adventurer, fire-affinity, mage
 affinity_rewards = 3:card=c-resolve-flash:gauge=3
+# 영입 — 발자취 추적. 손에서 한 장 덱으로 + 다음 턴 시작 에너지 +1.
+recruit_enabled = true
+recruit_cards = c-trace-step
+recruit_colors = fire:10, light:6
 
 [npc.npc-mirte]
 name = 미르테
@@ -88,6 +92,10 @@ background = 루나의 교실에서 세계수의 씨앗이 부화한 모습.|미
 tagline = "엄마한테 — 도움이 되고 싶어요!"
 tags = dryad, sapling, earth-affinity, child
 affinity_rewards = 3:card=c-gentle-guard:gauge=3
+# 영입 — 자라나는 잎새. 사용할수록 block 누적 (런 내내 유지).
+recruit_enabled = true
+recruit_cards = c-growing-leaf
+recruit_colors = earth:10, water:6
 
 [npc.npc-cassis]
 name = 카시스

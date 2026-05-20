@@ -83,7 +83,10 @@ export type CardEffectKind =
   | 'heal'                // 자신 회복 (음수 = 자기 HP 페널티)
   | 'block'               // 방어막 (음수 = block 페널티)
   | 'draw'                // 카드 드로우
-  | 'apply-status';       // 상태 부여
+  | 'apply-status'        // 상태 부여
+  | 'return-hand-to-deck' // 손에서 *가장 오른쪽* 1장을 drawPile 맨 위로 (칼리번)
+  | 'next-turn-energy'    // 다음 턴 시작 에너지 +value (칼리번)
+  | 'growing-block';      // block:value + *이 카드 인스턴스의 bonusBlock +1* (쿠르쿠마)
 
 /** 효과 대상 — target. */
 export type EffectTarget = 'self' | 'enemy' | 'all-enemies' | 'random-enemy';
@@ -138,6 +141,13 @@ export interface Card extends NamedEntity {
    * 없으면 강화 불가 (예: 이미 강화판인 카드).
    */
   upgradeToId?: CardId;
+
+  /**
+   * 카드 *인스턴스*에 누적되는 보너스 block — `growing-block` 효과 카드 전용.
+   * 사용 시 +1씩 누적되어 다음번 사용 시 block 효과에 더해진다.
+   * 런 종료로 리셋(런 휘발 컬렉션 인스턴스).
+   */
+  bonusBlock?: number;
 }
 
 /** 효과 핸들러 시그니처 — Phase 2d에서 systems/combat.ts가 사용. */

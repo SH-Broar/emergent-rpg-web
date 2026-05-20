@@ -407,3 +407,23 @@ cost = 20
 trigger = manual
 effects = damage:55:enemy, apply-status:1:enemy, apply-status:1:enemy
 flavor = "주인 — 다음엔 어디로 가요?" 모나토의 — *눈 한 자리*가 — 붉어진다. *흑백 늑대 귀와 꼬리*가 — 짧게 — 솟고, *받은 만큼* 가벼워지는 — 한 판. *치명* — *벌어짐*.
+
+[card.c-trace-step]
+name = 발자취 한 자리
+rank = rare
+source = npc
+element = fire
+cost = 1
+trigger = manual
+effects = draw:1:self, return-hand-to-deck:1:self, next-turn-energy:1:self
+flavor = "발자취를 — 끝까지 따라가 볼 거예요." 칼리번이 — *손가락 한 자국*으로 — 한 장을 — 덱 위로 — 돌려놓고, *다음 한 발*을 — 미리 — 준비한다.
+
+[card.c-growing-leaf]
+name = 자라나는 잎새
+rank = rare
+source = npc
+element = earth
+cost = 2
+trigger = manual
+effects = growing-block:1:self
+flavor = "엄마한테 — 도움이 되고 싶어요!" 쿠르쿠마의 *잎새 한 자락*이 — 한 번 — 한 번 — *자라난다*. *쓸수록 — 더 — 두꺼워지는* — 한 자리.

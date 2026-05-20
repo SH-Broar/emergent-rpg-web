@@ -138,8 +138,18 @@ export function playCard(handIndex: number, monster: Monster): { enemyDefeated: 
   // 카드 효과 적용 *직전* trigger — 자기 자신의 데미지 계산에 영향을 줄 마지막 기회.
   fireRelicTrigger('on-card-played-before', { run: r, combat: c, triggeredBy: card.id });
 
+  // growing-block 효과 핸들러가 카드 인스턴스의 bonusBlock을 더하기 위해 임시 참조를 세팅.
+  (c as { currentPlayingCard?: Card }).currentPlayingCard = card;
+
   for (const effect of card.effects) {
     applyEffect(effect, c);
+  }
+
+  (c as { currentPlayingCard?: Card }).currentPlayingCard = undefined;
+
+  // growing-block 효과가 있으면 *카드 인스턴스의 bonusBlock 누적* (다음 사용 시 block에 더해짐).
+  if (card.effects.some((e) => e.kind === 'growing-block')) {
+    card.bonusBlock = (card.bonusBlock ?? 0) + 1;
   }
 
   // 카드 효과 적용 *후*, 디스카드 *전* trigger.
@@ -244,6 +254,43 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
       t.statuses[statusName] = (t.statuses[statusName] ?? 0) + stack;
     }
   },
+  // 손에서 *가장 오른쪽* 1장을 drawPile 맨 위로 (칼리번 c-trace-step).
+  // count = value (기본 1). 카드가 사용된 *직후* 시점이라 hand에는 *다른* 카드들만 남아 있음.
+  'return-hand-to-deck': (e, c) => {
+    let remaining = e.value ?? 1;
+    while (remaining > 0 && c.hand.length > 0) {
+      const last = c.hand[c.hand.length - 1];
+      c.hand = c.hand.slice(0, -1);
+      c.drawPile = [last, ...c.drawPile];
+      remaining -= 1;
+    }
+  },
+  // 다음 턴 시작 에너지 +value 누적 (칼리번 c-trace-step).
+  // endPlayerTurn 끝부분에서 mana += nextTurnEnergyBonus 후 0으로 리셋.
+  'next-turn-energy': (e) => {
+    const r = useRunStore().data;
+    r.nextTurnEnergyBonus = (r.nextTurnEnergyBonus ?? 0) + (e.value ?? 1);
+  },
+  // block:value + *이 카드 인스턴스의 bonusBlock +growthValue* 누적 (쿠르쿠마 c-growing-leaf).
+  // e.value = 기본 block, e.params.growth = 누적량(기본 1). bonusBlock은 매 사용마다 누적 → 다음 사용 때 더해짐.
+  'growing-block': (e, c) => {
+    // 이 효과가 적용되는 시점에서 *어떤 카드*가 트리거됐는지 알기 위해 컨텍스트 카드 참조가 필요.
+    // playCard의 currentPlayingCard를 통해 우회 — 여기선 c.hand에 없는 *방금 사용된 카드*를 추적해야 함.
+    // 단순화: combat 상태에 latestPlayingCard 임시 필드를 두지 않고, playCard에서 `growing-block` 효과 카드를 미리 식별해 처리.
+    // → 이 핸들러는 block 효과만 수행하고, *누적*은 playCard 본체에서.
+    const targets = resolveTargets(e.target ?? 'self', c);
+    const defBonus = currentBonuses().block;
+    const statusBonus = statusBonusForCardEffectKind('block', c.player.statuses);
+    const base = e.value ?? 0;
+    const bonus = (c as { currentPlayingCard?: Card }).currentPlayingCard?.bonusBlock ?? 0;
+    const value = applyModifiers(
+      base + bonus + defBonus + statusBonus,
+      'block-out-add',
+    );
+    for (const t of targets) {
+      t.block += value;
+    }
+  },
 };
 
 function resolveTargets(target: EffectTarget, c: CombatState): Combatant[] {
@@ -284,6 +331,12 @@ export function endPlayerTurn(monster: Monster): { playerDefeated: boolean } {
 
   c.turn += 1;
   c.mana = c.maxMana;
+  // 칼리번 c-trace-step: 다음 턴 시작 에너지 +N 보너스 소비.
+  const nextEnergyBonus = r.nextTurnEnergyBonus ?? 0;
+  if (nextEnergyBonus > 0) {
+    c.mana += nextEnergyBonus;
+    r.nextTurnEnergyBonus = 0;
+  }
   c.player.block = 0;
 
   // MAG 보너스로 매 턴 드로우 +.

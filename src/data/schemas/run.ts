@@ -163,6 +163,12 @@ export interface RunState {
   runDamageReceived?: number;
 
   /**
+   * 다음 턴 시작 *에너지 보너스* — `next-turn-energy` 효과 카드가 누적.
+   * 칼리번 영입 카드 `c-trace-step` 사용 시 +1. endPlayerTurn에서 다음 턴 mana에 더하고 0으로 리셋.
+   */
+  nextTurnEnergyBonus?: number;
+
+  /**
    * 노드별 *런타임 kind 오버라이드*.
    * 30턴 경과(advanceDay) 시 일부 비-마을 노드의 kind가 재추첨되어 여기에 기록.
    * 키 없는 노드는 NodeMap의 원본 kind 사용.

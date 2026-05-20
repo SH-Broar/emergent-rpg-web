@@ -2599,3 +2599,683 @@ result_text = 샤유아가 — *잎 한 자락*을 — 짧게 — 굴려 — 따
 label = 사양한다 (지금은 — 다른 — 자리로)
 gold = 3
 result_text = 샤유아가 — *작게* — 손을 — 흔들었다 (몸의 — 한 자락으로). "...또 — 와!"
+
+
+# ============================================================
+# 라르 숲 권역 (입문자 숲, 어린 모험가, 세계수 근처만 한 단계 강함).
+# 25 이벤트: 진입 5 / 마을 6 / 세계수 5 / 트리플라워 4 / chain 5 (칼리번 2 + 마로·아르바로 3).
+# 톤: "결"/"한 박"/"박자" 금지어 적용. *자락*/*자리*/*자국*/*마디* 우선.
+# ============================================================
+
+# ============================================================
+# A. 진입 5 — 다리·메모리 스프링 (풋풋한 첫 발자국).
+# ============================================================
+
+# --- 진입 1. n-arukea-trail (어린 모험가 돌탑) ---
+[event.ev-lar-arukea-stones]
+name = 돌탑 한 자리
+node_kinds = event, combat
+weight = 1
+once_per_run = true
+body = 아루케아 가도 — *어린 모험가 무리*가 — 길 옆에 — 작은 돌탑을 — 쌓고 있다. "한 돌만 — 더 — 올려 줘! — 무너지지 — 않게!" 풋풋한 — 부탁 한 자락.
+
+[event.ev-lar-arukea-stones.choice.1]
+label = 한 돌을 — 위에 — 올려 준다
+hp = 3
+custom = def-color-1
+result_text = 돌탑이 — *한 마디* 자랐다. 아이들이 — 박수를 — 한 줄로 — 보냈다. "...누구야?! 또 — 와!"
+
+[event.ev-lar-arukea-stones.choice.2]
+label = 풀잎 검술을 — 한 수 — 가르친다
+affinity = npc-arvaro-enya:1
+result_text = 아르바로가 — *어디선가* — 풀잎 한 자루를 — 들고 — 끼어들었다. "나도 — 한 수!" 어린 무리가 — *까르르* — 웃었다.
+
+[event.ev-lar-arukea-stones.choice.3]
+label = 비켜 — 지나간다
+gold = 5
+result_text = 한 아이가 — *조약돌 한 자루*를 — 그대 손에 — 쥐어 주었다. "...길에서 — 주워. 줄게."
+
+
+# --- 진입 2. n-lar-bridge-under (시간 조각) ---
+[event.ev-lar-bridge-under-shard]
+name = 떠내려온 한 자국
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 하나브릿지 아래 — *물 위*에 — *작은 시간 조각*이 — 떠내려와 — 잠시 — 멈춘다. 햇살 한 자락이 — 조각 위에 — 길게 — 머문다.
+
+[event.ev-lar-bridge-under-shard.choice.1]
+label = 조각을 — 줍는다
+gold = 10
+result_text = 손바닥에 — *짧고 가벼운 한 자국*이 — 닿았다. 어느 자리에서 — 흘러왔는지는 — 알 수 없다.
+
+[event.ev-lar-bridge-under-shard.choice.2]
+label = 한 줄을 — 빌어 본다
+custom = mag-color-1
+result_text = 입속에서 — *한 자락의 — 짧은 말*이 — 새어 나왔다. 조각이 — *천천히* — 흘러갔다.
+
+[event.ev-lar-bridge-under-shard.choice.3]
+label = 그대로 — 흘려보낸다
+hp = 3
+result_text = 조각이 — 다음 자리로 — *조용히* — 떠갔다. 가슴 안쪽이 — 한 자락 — 가벼워졌다.
+
+
+# --- 진입 3. n-lar-river-bank (어린 손 스케치북) ---
+[event.ev-lar-river-bank-sketch]
+name = 두고 간 스케치북
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+body = 강가 — *작은 스케치북*이 — 누가 두고 갔는지 — 풀잎 위에 — 펼쳐져 있다. *어린 손글씨*로 — 노을 한 줄이 — 그려져 있다.
+
+[event.ev-lar-river-bank-sketch.choice.1]
+label = 한 장을 — 펼쳐 — 본다
+draw = 1
+result_text = 다음 장에 — *세계수*가 — 한 자락 — 그려져 있다. *짧고 단정한 — 어린 자국*.
+
+[event.ev-lar-river-bank-sketch.choice.2]
+label = 빈 한 장을 — 채워 본다
+custom = mag-color-1
+result_text = 손끝에서 — *한 자국*이 — 단정하게 — 내려앉았다. 다음 사람이 — 와서 — *이어 그릴 — 자리*가 — 남았다.
+
+[event.ev-lar-river-bank-sketch.choice.3]
+label = 그대로 — 둔다
+hp = 2
+gold = 4
+result_text = 풀잎 위 스케치북 곁에 — *작은 동전 한 닢*이 — 함께 — 놓여 있었다. 누군가가 — *답례 자리*를 — 미리 — 둔 — 것 같다.
+
+
+# --- 진입 4. n-memory-spring (잔영) ---
+[event.ev-lar-memory-spring-face]
+name = 한 자리 늦은 잔영
+node_kinds = event, rest, gather
+weight = 1
+once_per_run = true
+body = 메모리 스프링 — *물 위*에 — 그대의 — *잔영*이 — 한 자리 — 늦게 — 비친다. 입을 — 다물고 있는 — 자신을 — *한 자국 — 늦게* — 본다.
+
+[event.ev-lar-memory-spring-face.choice.1]
+label = 들여다 — 본다
+custom = mag-color-1
+result_text = 잔영이 — 그대를 — *조금 — 늦게* — 따라왔다. 가슴 안쪽이 — *서늘하게* — 가벼워졌다.
+
+[event.ev-lar-memory-spring-face.choice.2]
+label = 손을 — 담근다
+hp = 4
+result_text = 물이 — *짧고 — 단정하게* — 손목을 — 휘감았다. 잔영이 — 흩어지고 — 다시 — 모였다.
+
+[event.ev-lar-memory-spring-face.choice.3]
+label = 외면 — 한다
+gold = 6
+result_text = 잔영이 — *그 자리*에 — 잠시 — 더 — 머물렀다. 그대는 — *발걸음 한 자국*을 — 옮겼다.
+
+
+# --- 진입 5. n-lar-moss-bank (이끼 둑 잎새) ---
+[event.ev-lar-moss-bank-leaves]
+name = 모인 잎새 한 자리
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 이끼 둑 — 작은 잎새들이 — *한 자리에* — 모여 — 머문다. 누가 — 모은 — 게 — 아니라 — *물줄기가 — 모아 놓은* — 자리 같다.
+
+[event.ev-lar-moss-bank-leaves.choice.1]
+label = 잎새 한 자루를 — 옮겨 — 본다
+custom = def-color-1
+result_text = 잎새가 — *옆자리*로 — 단정하게 — 옮겨졌다. 그 자리에 — *작은 빛 한 자락*이 — 머물렀다.
+
+[event.ev-lar-moss-bank-leaves.choice.2]
+label = 손을 — 얹어 — 본다
+hp = 3
+result_text = 잎새들이 — 손바닥 아래에서 — *짧게* — 살랑였다. *서늘한 한 자국*이 — 손에 — 남았다.
+
+[event.ev-lar-moss-bank-leaves.choice.3]
+label = 가만히 — 본다
+gold = 4
+draw = 1
+result_text = 잎새 사이로 — *작은 동전 하나*가 — 비쳐 — 있었다. 누군가가 — *오래전에* — 떨어뜨린 — 자국.
+
+
+# ============================================================
+# B. 마을 6 — 라르 오두막·칼리번 앞 뜰 (어린 모험가의 일상).
+# ============================================================
+
+# --- 마을 1. n-lar-forest (아르바로 풀잎 칼싸움) ---
+[event.ev-lar-arvaro-stick-fight]
+name = 풀잎 한 자루
+node_kinds = event, village
+weight = 1
+once_per_run = true
+body = 라르 오두막 — 마당 — *아르바로*가 — 풀잎 한 자루를 — 흔들며 — 상대 모집 중이다. "한 판! — 한 판 — 받아 줘!"
+
+[event.ev-lar-arvaro-stick-fight.choice.1]
+label = 한 판을 — 받는다
+hp = -2
+gold = 6
+affinity = npc-arvaro-enya:1
+result_text = 아르바로의 — 풀잎이 — *어깨 한 자국*을 — 짧게 — 짚었다. 그가 — 활짝 — 웃었다. "...누나한테 — 자랑할 거야!"
+
+[event.ev-lar-arvaro-stick-fight.choice.2]
+label = 풀잎 검술을 — 가르친다
+custom = atk-color-1
+affinity = npc-arvaro-enya:1
+result_text = 풀잎 자세 한 자락을 — 아르바로에게 — 보여 주었다. 그가 — *어깨 한 자국*을 — 따라 — 굳혔다. "...오! — 멋지다!"
+
+[event.ev-lar-arvaro-stick-fight.choice.3]
+label = 사양 — 한다
+hp = 2
+result_text = "치이." 아르바로가 — *입을 — 짧게* — 내밀었다. "...다음엔 — 받아 줄 거지?"
+
+
+# --- 마을 2. n-lar-herb-garden (드라이어드 발자국) ---
+[event.ev-lar-herb-garden-trace]
+name = 약초밭의 발자국
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 라르 오두막 옆 — *약초밭*. 잎새 사이에 — *드라이어드의 — 작은 발자국*이 — 한 줄로 — 이어져 있다. 자국 끝은 — *세계수 쪽*.
+
+[event.ev-lar-herb-garden-trace.choice.1]
+label = 약초를 — 한 자루 — 캔다
+hp = 5
+result_text = 손바닥에 — *서늘한 잎새 한 자락*이 — 닿았다. 가슴 안쪽이 — 가벼워졌다.
+
+[event.ev-lar-herb-garden-trace.choice.2]
+label = 발자국을 — 따라 — 본다
+custom = mag-color-1
+result_text = 자국 끝에 — *세계수의 — 한 자락*이 — 잠시 — 보였다 — 사라졌다. 누군가가 — *조심스럽게* — 지나갔다.
+
+[event.ev-lar-herb-garden-trace.choice.3]
+label = 그대로 — 지나간다
+gold = 5
+result_text = 자국이 — 자기 자리에 — 그대로 — 남았다. 잎새가 — *짧게* — 살랑였다.
+
+
+# --- 마을 3. n-lar-fields (풀밭 그림자) ---
+[event.ev-lar-fields-shadow]
+name = 키 큰 풀의 한 자국
+node_kinds = event, combat
+weight = 1
+once_per_run = true
+body = 키 큰 풀밭 — *한 자락*에서 — *그림자*가 — 한 번 — 일어선다. 작고 — 순한 — 자세. *입문자 모험가*도 — 한 자리 — 짚으면 — 지나갈 수 있다.
+
+[event.ev-lar-fields-shadow.choice.1]
+label = 정면 — 한 자국
+hp = -4
+gold = 10
+result_text = 풀잎이 — 짧게 — 휘청였다. 그림자가 — *조용히* — 흩어졌다. 손바닥에 — 작은 동전 한 묶음.
+
+[event.ev-lar-fields-shadow.choice.2]
+label = 우회 — 지나간다
+hp = 2
+result_text = 풀잎이 — *어깨 옆*을 — 짧게 — 스쳤다. 그림자가 — *자기 자리에* — 그대로 — 머물렀다.
+
+[event.ev-lar-fields-shadow.choice.3]
+label = 한 번 — 노려본다
+custom = atk-color-1
+result_text = 그림자가 — *한 자리* — 작아졌다. 풀잎 너머에서 — *어린 — 짧은 박수 한 자락*이 — 들렸다.
+
+
+# --- 마을 4. n-caliburn-house (칼리번 마당, chain 노드와 별개의 단편) ---
+[event.ev-lar-caliburn-yard-sword]
+name = 자세로 — 선 — 한 자루
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+body = 칼리번 — *앞 뜰*. *목검 한 자루*가 — 자세로 — 세워져 — 있다. 손잡이가 — *짧고 단정하게* — 닳아 — 있다.
+
+[event.ev-lar-caliburn-yard-sword.choice.1]
+label = 한 번 — 들어 — 본다
+custom = atk-color-1
+result_text = 자루가 — *손에 — 짧게* — 익었다. 어깨 한 자락이 — 가벼워졌다.
+
+[event.ev-lar-caliburn-yard-sword.choice.2]
+label = 함께 — 세워 — 둔다
+custom = def-color-1
+result_text = 두 자루가 — *한 자리에* — 단정하게 — 섰다. 노을 한 자락이 — 두 자루 위에 — 길게 — 머물렀다.
+
+[event.ev-lar-caliburn-yard-sword.choice.3]
+label = 그대로 — 둔다
+draw = 1
+result_text = 자루가 — *자기 자세*로 — 그대로 — 머물렀다. 그 자리는 — *주인을 — 기다리는* — 자리.
+
+
+# --- 마을 5. n-lar-small-grave (작은 무덤) ---
+[event.ev-lar-small-grave-flower]
+name = 풀잎 한 줄
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 못 가장자리 — *작은 돌무덤 하나*. 누가 — *작은 풀잎 한 줄*을 — 무덤 위에 — 올려 — 두었다. 누구의 — 자리인지는 — 알 수 없다.
+
+[event.ev-lar-small-grave-flower.choice.1]
+label = 꽃 한 송이를 — 더 — 놓는다
+hp = 3
+custom = mag-color-1
+result_text = 작은 꽃이 — *짧고 단정하게* — 무덤 위에 — 자리잡았다. 가슴 안쪽이 — *서늘하게* — 가벼워졌다.
+
+[event.ev-lar-small-grave-flower.choice.2]
+label = 모자를 — 벗는다
+hp = 5
+result_text = 잠시 — *고개를 — 한 자국* — 숙였다. 무덤 위 풀잎이 — 짧게 — 살랑였다.
+
+[event.ev-lar-small-grave-flower.choice.3]
+label = 그대로 — 지나간다
+gold = 6
+result_text = 풀잎이 — *자기 자리*에 — 그대로 — 남았다. 다음 사람이 — 또 — *한 줄을 — 올릴 — 자리*.
+
+
+# --- 마을 6. n-lar-inner-pool (안쪽 못) ---
+[event.ev-lar-inner-pool-still]
+name = 잔영 — 한 자락
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 스프링 안쪽의 — 작은 못. 물 한 자락에 — *오늘 — 자신의 — 한 자국*이 — 비친다. *잎새 한 줄*이 — 잔영 위에 — 길게 — 머문다.
+
+[event.ev-lar-inner-pool-still.choice.1]
+label = 한 자리 — 머문다
+hp = 4
+custom = def-color-1
+result_text = 잔영이 — *조용히 — 한 자리에* — 머물렀다. 가슴 안쪽이 — 단단해졌다.
+
+[event.ev-lar-inner-pool-still.choice.2]
+label = 손가락으로 — 한 줄을 — 그린다
+custom = mag-color-1
+result_text = 물 위에 — *짧은 한 줄*이 — 그려졌다 — 사라졌다. 잔영이 — *살짝* — 웃었다 (또는 — 그대만의 — 자국).
+
+[event.ev-lar-inner-pool-still.choice.3]
+label = 지나간다
+gold = 5
+result_text = 못 가장자리에 — *작은 동전 한 닢*이 — 가라앉아 있었다. *오래된 자국* — 한 자루.
+
+
+# ============================================================
+# C. 세계수 5 — 가지·뿌리 (순하지만 한 단계 강한 자리).
+# ============================================================
+
+# --- 세계수 1. n-world-tree (시간 조각) ---
+[event.ev-lar-tree-bud-shard]
+name = 가지에서 한 자국
+node_kinds = event, gather, village
+weight = 1
+once_per_run = true
+body = 세계수 — 가지 위에서 — *작은 시간 조각*이 — 한 자리 — 떨어진다. 잎새 한 자락이 — 조각을 — *짧게* — 감싸 — 떨어진다.
+
+[event.ev-lar-tree-bud-shard.choice.1]
+label = 손바닥으로 — 받는다
+gold = 12
+custom = mag-color-1
+result_text = 손바닥에 — *서늘한 한 자국*이 — 머물렀다 — 사라졌다. 한 줄의 — *짧은 약속*이 — 가슴에 — 남았다.
+
+[event.ev-lar-tree-bud-shard.choice.2]
+label = 한 줄을 — 적어 — 둔다
+hp = 4
+result_text = 가지 아래 — *작은 자국 한 줄*이 — 단정하게 — 남았다. 다음에 — 누가 — 와서 — 읽을 — 자리.
+
+[event.ev-lar-tree-bud-shard.choice.3]
+label = 가만히 — 본다
+draw = 1
+result_text = 조각이 — *천천히* — 가지 사이로 — 흩어졌다. 그대만이 — 한 자국 — 기억할 — 자리.
+
+
+# --- 세계수 2. n-lar-low-branch (쿠르쿠마 노래) ---
+[event.ev-lar-low-branch-song]
+name = 작은 한 노래
+node_kinds = event, activity, gather
+weight = 1
+once_per_run = true
+body = 세계수 — *낮은 가지*. *쿠르쿠마*가 — *짧고 단정한 한 노래*를 — 흥얼거리고 있다. 잎새 한 자락이 — 그 노래에 — 맞춰 — 살랑인다.
+
+[event.ev-lar-low-branch-song.choice.1]
+label = 따라 — 부른다
+affinity = npc-kurkuma:1
+hp = 4
+result_text = 쿠르쿠마가 — *작게* — 박수를 — 쳤다. "...같이 — 부르면 — *세계수가 — 한 자락* — 더 — 자란대요!"
+
+[event.ev-lar-low-branch-song.choice.2]
+label = 가만히 — 듣는다
+custom = mag-color-1
+result_text = 노래 한 자락이 — 잎새 사이로 — 단정하게 — 떨어졌다. 가슴 안쪽이 — *서늘하게* — 가벼워졌다.
+
+[event.ev-lar-low-branch-song.choice.3]
+label = 박수를 — 보낸다
+affinity = npc-kurkuma:1
+gold = 5
+result_text = 쿠르쿠마가 — *깜짝* — 놀랐다가 — 환하게 — 웃었다. "...작은 자루 — 줄게요!" *동전 한 닢이 — 손에* — 닿았다.
+
+
+# --- 세계수 3. n-lar-high-branch (잎새 자락) ---
+[event.ev-lar-high-branch-leaf]
+name = 펄럭이는 한 잎
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 세계수 — 높은 가지. *잎새 한 자락*이 — 바람에 — *길게* — 펄럭인다. 잎새 끝에 — *짧은 빛 한 자국*이 — 머문다.
+
+[event.ev-lar-high-branch-leaf.choice.1]
+label = 한 잎을 — 가져간다
+gold = 8
+custom = def-color-1
+result_text = 잎새가 — 손바닥에 — *단정하게* — 떨어졌다. *오래 — 시들지 — 않을* — 자국.
+
+[event.ev-lar-high-branch-leaf.choice.2]
+label = 잡았다가 — 보내 — 준다
+hp = 5
+result_text = 잎새가 — *바람 한 줄*을 — 타고 — 멀리 — 떠갔다. 가슴 안쪽이 — 한 자락 — 가벼워졌다.
+
+[event.ev-lar-high-branch-leaf.choice.3]
+label = 가만히 — 본다
+custom = mag-color-1
+result_text = 잎새가 — *자기 자리*에 — 그대로 — 펄럭였다. 빛 한 자국이 — 어깨에 — 길게 — 머물렀다.
+
+
+# --- 세계수 4. n-lar-leaf-hall (잎새 회랑 그림자) ---
+[event.ev-lar-leaf-hall-trail]
+name = 잎새 사이 한 줄
+node_kinds = event, combat
+weight = 1
+once_per_run = true
+body = 잎새 회랑 — 가지와 가지 사이. *그림자 한 줄*이 — 잎새 사이로 — 미끄러진다. 세계수 — *한 자리 — 강한* — 자국 — 하나.
+
+[event.ev-lar-leaf-hall-trail.choice.1]
+label = 추적 — 한 자국
+hp = -5
+gold = 14
+result_text = 그림자가 — *짧게* — 일어섰다 — 흩어졌다. 잎새 사이에 — *작은 동전 묶음*이 — 떨어져 있었다.
+
+[event.ev-lar-leaf-hall-trail.choice.2]
+label = 멈춤 — 한 자리
+hp = 4
+result_text = 그림자가 — *자기 자리에* — 그대로 — 머물렀다. 잎새 사이에서 — *짧고 단정한 — 빛 한 자락*이 — 어깨에 — 닿았다.
+
+[event.ev-lar-leaf-hall-trail.choice.3]
+label = 우회 — 한다
+custom = def-color-1
+result_text = 잎새 한 줄이 — 그대 — 어깨를 — *짧게* — 가렸다. 그림자는 — *그 자리*에 — 그대로 — 남았다.
+
+
+# --- 세계수 5. n-lar-root-burrow (옛 무엇) ---
+[event.ev-lar-root-burrow-old]
+name = 뿌리 안의 한 자세
+node_kinds = event, elite, combat
+weight = 1
+once_per_run = true
+body = 세계수 — *뿌리 안쪽*. 어둠 속에서 — *옛 무엇*이 — 한 번 — 일어선다. 세계수 곁의 — *한 자리 — 강한* — 자국. 입문자 모험가는 — 함부로 — 가지 — 않는 — 자리.
+
+[event.ev-lar-root-burrow-old.choice.1]
+label = 정면 — 한 자세
+hp = -8
+gold = 22
+custom = atk-color-1
+result_text = 옛 자세가 — *짧게* — 흩어졌다. 뿌리 안쪽이 — *조용히* — 가라앉았다. 손바닥에 — 단단한 자국 — 한 묶음.
+
+[event.ev-lar-root-burrow-old.choice.2]
+label = 한 마디를 — 던진다
+custom = mag-color-1
+result_text = "...같은 자리에." 옛 자세가 — *한 자리* — 가만해졌다. 누군가의 — 짧은 — 답 — 한 자락이 — 어깨에 — 닿았다.
+
+[event.ev-lar-root-burrow-old.choice.3]
+label = 후퇴 — 한 자국
+hp = 3
+result_text = 뿌리 한 줄을 — *짧게* — 짚고 — 빠져나왔다. 가슴 안쪽이 — 단단해졌다.
+
+
+# ============================================================
+# D. 트리플라워 4 — 화산 (lore: 분화구의 불 정령).
+# ============================================================
+
+# --- 화산 1. n-triflower (불 정령) ---
+[event.ev-lar-triflower-spirit]
+name = 일어선 한 자세
+node_kinds = event, elite, combat
+weight = 1
+once_per_run = true
+body = 트리플라워 — 분화구. *불 정령 한 자세*가 — *천천히* — 일어선다. 작은 어깨 한 자락에 — *짧고 단정한 — 불꽃 한 줄*이 — 올라 있다.
+
+[event.ev-lar-triflower-spirit.choice.1]
+label = 정면 — 한 자세
+hp = -7
+gold = 20
+custom = atk-color-1
+result_text = 불꽃 한 자락이 — *짧게* — 흩어졌다. 분화구 바닥에 — *식은 자국 한 묶음*이 — 단정하게 — 남았다.
+
+[event.ev-lar-triflower-spirit.choice.2]
+label = 인사를 — 건넨다
+affinity = npc-cassis:1
+custom = mag-color-1
+result_text = "...작은 — 손님." 정령이 — *짧게* — 끄덕였다. 어깨에 — *서늘한 — 짧은 자국*이 — 머물렀다.
+
+[event.ev-lar-triflower-spirit.choice.3]
+label = 우회 — 한다
+hp = 3
+result_text = 정령이 — *자기 자리에* — 그대로 — 섰다. 분화구 — 가장자리를 — *짧고 단정하게* — 돌아갔다.
+
+
+# --- 화산 2. n-lar-crater-rim (분화구 능선) ---
+[event.ev-lar-crater-rim-heat]
+name = 발 아래 한 줄
+node_kinds = event, combat
+weight = 1
+once_per_run = true
+body = 트리플라워 — 능선. *발 아래*에 — *뜨거운 한 줄*이 — 흐른다. 한 자국 — 잘못 — 짚으면 — 신발 끝이 — *짧게* — 그을린다.
+
+[event.ev-lar-crater-rim-heat.choice.1]
+label = 통과 — 한 자국
+hp = -4
+gold = 11
+result_text = 한 자국 — *짧게* — 그을렸다. 능선 너머에서 — *작은 광석 한 묶음*이 — 발 끝에 — 걸렸다.
+
+[event.ev-lar-crater-rim-heat.choice.2]
+label = 멈춤 — 한 자리
+custom = def-color-1
+result_text = 능선이 — *천천히* — 가라앉았다. 한 자국 — 단단한 자세로 — 자리잡았다.
+
+[event.ev-lar-crater-rim-heat.choice.3]
+label = 한 자국 — 더 — 짚는다
+hp = -2
+custom = atk-color-1
+result_text = 발끝이 — *짧게* — 단단해졌다. 능선 너머의 — *불꽃 한 자락*이 — 어깨에 — 짧게 — 닿았다.
+
+
+# --- 화산 3. n-lar-lava-vein (용암 줄기) ---
+[event.ev-lar-lava-vein-spark]
+name = 떨어진 한 자락
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 트리플라워 — *용암 줄기*. 작은 *불씨 한 자락*이 — 한 자리 — 떨어진다. 옷자락 끝에 — *짧고 — 단정한 — 자국 한 마디*가 — 닿는다.
+
+[event.ev-lar-lava-vein-spark.choice.1]
+label = 한 불씨를 — 줍는다
+gold = 9
+custom = atk-color-1
+result_text = 손바닥에 — *짧고 — 단단한 한 자국*이 — 닿았다. *식지 않은 — 작은 한 마디* — 하나.
+
+[event.ev-lar-lava-vein-spark.choice.2]
+label = 외면 — 한다
+hp = 4
+result_text = 불씨가 — *자기 자리에* — 그대로 — 떨어졌다. 옷자락이 — 한 자국 — 가벼워졌다.
+
+[event.ev-lar-lava-vein-spark.choice.3]
+label = 옷자락에 — 한 자국 — 받는다
+hp = -2
+custom = atk-color-1
+custom = mag-color-1
+result_text = 옷자락 끝에 — *짧은 자국 한 줄*이 — 남았다. 식지 않은 — *작고 단정한 한 마디*가 — 가슴에 — 머물렀다.
+
+
+# --- 화산 4. n-lar-cooled-slag (식은 자리) ---
+[event.ev-lar-cooled-slag-rest]
+name = 노을 한 줄
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+body = 트리플라워 — *식은 자리*. *검은 돌 위*에 — 노을 한 줄이 — 길게 — 머문다. *한 자리 — 단단한* — 자세.
+
+[event.ev-lar-cooled-slag-rest.choice.1]
+label = 잠시 — 앉는다
+hp = 8
+custom = def-color-1
+result_text = 검은 돌이 — *서늘하게* — 등을 — 받쳤다. 가슴 안쪽이 — 한 자락 — 단단해졌다.
+
+[event.ev-lar-cooled-slag-rest.choice.2]
+label = 한 자국을 — 새긴다
+custom = atk-color-1
+result_text = 손끝에서 — *짧고 단정한 자국 한 줄*이 — 검은 돌 위에 — 남았다. 다음 사람이 — 와서 — *이어 — 새길 — 자리*.
+
+[event.ev-lar-cooled-slag-rest.choice.3]
+label = 그냥 — 간다
+gold = 7
+result_text = 식은 자리에 — *작은 동전 한 닢*이 — 떨어져 있었다. 누군가가 — 두고 — 간 — *답례 자리*.
+
+
+# ============================================================
+# E. chain 5 — 칼리번 2단 + 마로·아르바로 3단.
+# ============================================================
+
+# --- chain 1-1. n-caliburn-house (칼리번 마당 흠집, 단서 부여) ---
+[event.ev-lar-caliburn-trace-1]
+name = 마당의 한 줄
+node_kinds = event
+weight = 2
+once_per_run = true
+body = 칼리번 — 마당. *돌바닥 한 자리*에 — *시간의 흠집*이 — 한 줄로 — 그어져 있다. 칼리번이 — *한쪽 무릎*을 — 꿇고 — 자국을 — 짚는다. "...같은 자리에. — 한 자락만 — 더 — 따라가 보면."
+
+[event.ev-lar-caliburn-trace-1.choice.1]
+label = 함께 — 짚어 — 본다
+affinity = npc-caliburn:1
+clue = cl-caliburn-trace
+result_text = 손바닥 아래 — *두 시각*이 — 한 자리에 — 머물렀다. 칼리번이 — *짧게* — 끄덕였다. "...같이 — 한 자리 — 봐 줘서 — 고마워요."
+
+[event.ev-lar-caliburn-trace-1.choice.2]
+label = 한 마디를 — 묻는다
+affinity = npc-caliburn:1
+custom = mag-color-1
+clue = cl-caliburn-trace
+result_text = "...전설은 — *발자취*예요. *마왕*이 — 아니라 — 한 줄 — 더 — 따라가는 — 자리." 칼리번이 — 한 자락 — 웃었다.
+
+[event.ev-lar-caliburn-trace-1.choice.3]
+label = 그대로 — 지나간다
+gold = 6
+result_text = 칼리번이 — *자기 자리에* — 그대로 — 무릎을 — 꿇고 있었다. 흠집이 — *한 줄*로 — 남아 있었다.
+
+
+# --- chain 1-2. n-world-tree, has-clue cl-caliburn-trace (엘네스트와 만남) ---
+[event.ev-lar-caliburn-elnest-meet-2]
+name = 우연한 — 한 자리
+node_kinds = event, village
+weight = 2
+once_per_run = true
+condition = has-clue:cl-caliburn-trace
+body = 세계수 — 가지 위. *칼리번*이 — *엘네스트와 — 우연히 — 마주친다*. 두 사람이 — *짧게 — 웃는다*. "어, 너 — 모스에 — 안 — 있었어?" "...그쪽이야말로 — 어디 — 갔다 왔어요." 두 자세가 — *한 자리에* — 단정하게 — 섰다.
+
+[event.ev-lar-caliburn-elnest-meet-2.choice.1]
+label = 멀리서 — 본다
+affinity = npc-caliburn:1
+affinity = npc-elnest:1
+draw = 1
+result_text = 두 사람의 — *짧은 한 자락*이 — 잎새 사이로 — 단정하게 — 흘렀다. 가슴 안쪽이 — *서늘하게* — 가벼워졌다.
+
+[event.ev-lar-caliburn-elnest-meet-2.choice.2]
+label = 인사를 — 건넨다
+affinity = npc-caliburn:1
+affinity = npc-elnest:1
+card = c-trace-step
+result_text = 칼리번이 — *손가락 한 자국*으로 — 자세 한 줄을 — 보여 주었다. "...이 한 자리 — 따라가 — 봐요. *발자취*는 — 짧고 — 단단해요." 손에 — *한 자루*가 — 닿았다.
+
+[event.ev-lar-caliburn-elnest-meet-2.choice.3]
+label = 한 발 — 비켜 — 자리를 — 만든다
+affinity = npc-caliburn:1
+affinity = npc-elnest:1
+gold = 12
+custom = mag-color-1
+result_text = 두 사람이 — *짧게* — 끄덕였다. 잎새 사이로 — *짧고 단정한 — 한 자락*이 — 어깨에 — 닿았다.
+
+
+# --- chain 2-1. n-lar-forest (마로의 짧은 귀가) ---
+[event.ev-lar-twins-home-1]
+name = 짧은 귀가
+node_kinds = event, village
+weight = 2
+once_per_run = true
+body = 라르 오두막 — 마당. *마로*가 — *루나에서 — 잠시 — 돌아왔다*. 아르바로가 — 풀잎 한 자루를 — 흔들며 — *누나* — 누나 — 부른다. 마로는 — *조용한 자세*로 — 한 자리에 — 머문다.
+
+[event.ev-lar-twins-home-1.choice.1]
+label = 마당에서 — 잠시 — 함께 — 있는다
+affinity = npc-maro:1
+affinity = npc-arvaro-enya:1
+clue = cl-twins-reunion
+result_text = 마로의 — 손끝이 — 아르바로의 — *어깨 한 자국*에 — 잠시 — 머물렀다. 두 사람의 — *짧은 한 자락*이 — 마당에 — 떨어졌다.
+
+[event.ev-lar-twins-home-1.choice.2]
+label = 안으로 — 한 걸음 — 들어간다
+hp = 5
+affinity = npc-maro:1
+clue = cl-twins-reunion
+result_text = 식탁 위에 — *작은 한 끼*가 — 단정하게 — 놓여 있었다. 마로가 — *짧게* — 끄덕였다. "...같이 — 한 자리 — 드시고 — 가요."
+
+[event.ev-lar-twins-home-1.choice.3]
+label = 그대로 — 지나간다
+gold = 5
+result_text = 마당의 — *짧은 — 두 자국*이 — 그대로 — 머물렀다. 길 끝에서 — 잠시 — 돌아 — 보았다.
+
+
+# --- chain 2-2. n-lar-fields, has-clue cl-twins-reunion (아르바로 정령 기색) ---
+[event.ev-lar-arvaro-spirit-2]
+name = 풀잎 너머의 한 자국
+node_kinds = event, combat, gather
+weight = 2
+once_per_run = true
+condition = has-clue:cl-twins-reunion
+body = 풀밭 — *키 큰 풀잎 너머*. *아르바로*가 — 풀잎 한 줄 위를 — *발 안 닿게* — 걸어가는 — 한 자국. 본인은 — 모른다. *한 줄로* — 풀잎이 — 휘어지지 — 않는다.
+
+[event.ev-lar-arvaro-spirit-2.choice.1]
+label = 모른 척 — 한다
+affinity = npc-arvaro-enya:1
+clue = cl-arvaro-spirit-aware
+result_text = 아르바로가 — *환하게* — 손을 — 흔들었다. "어, 또 — 만났네!" 그의 — *짧은 자국*은 — 그대로 — 마당 — 쪽으로 — 흘러갔다.
+
+[event.ev-lar-arvaro-spirit-2.choice.2]
+label = 한 마디 — 짚는다
+hp = -2
+affinity = npc-arvaro-enya:1
+clue = cl-arvaro-spirit-aware
+result_text = "...풀잎이 — 안 — 휘어졌어." 아르바로가 — *눈 한 자리*를 — 동그랗게 — 떴다. "...어? — 진짜네?" 손바닥에 — *서늘한 한 자국*이 — 닿았다.
+
+[event.ev-lar-arvaro-spirit-2.choice.3]
+label = 마로에게 — 알리러 — 간다
+affinity = npc-maro:1
+custom = mag-color-1
+clue = cl-arvaro-spirit-aware
+result_text = 마로가 — *조용한 자세*로 — 끄덕였다. "...알고 — 있어요." 그녀의 — *짧고 단정한 — 한 자락*이 — 어깨에 — 닿았다.
+
+
+# --- chain 2-3. n-lar-forest, has-clue cl-arvaro-spirit-aware (두 사람의 짧은 한 자리) ---
+[event.ev-lar-twins-talk-3]
+name = 짧은 한 자리
+node_kinds = event, village
+weight = 2
+once_per_run = true
+condition = has-clue:cl-arvaro-spirit-aware
+body = 라르 오두막 — 마당. *마로*가 — *아르바로*에게 — *짧은 한 마디*를 — 건넨다. "...알고 — 있었어, 아르바로. — 천천히 — 가도 — 돼." 아르바로가 — *작게* — 끄덕였다. "...누나도, — 천천히 — 와."
+
+[event.ev-lar-twins-talk-3.choice.1]
+label = 자리를 — 비켜 — 준다
+affinity = npc-maro:1
+affinity = npc-arvaro-enya:1
+hp = 6
+result_text = 두 사람의 — *짧은 한 자락*이 — 마당에 — 단정하게 — 머물렀다. 가슴 안쪽이 — 한 자락 — 가벼워졌다.
+
+[event.ev-lar-twins-talk-3.choice.2]
+label = 한 자리에 — 함께 — 앉는다
+affinity = npc-maro:1
+affinity = npc-arvaro-enya:1
+card = c-growing-leaf
+result_text = 마로가 — *손바닥 한 자국*을 — 그대 어깨에 — 잠시 — 얹었다. "...같이 — 와 줘서 — 고마워요." 아르바로가 — *작은 한 자루*를 — 그대 손에 — 쥐어 주었다 (잎새 한 자락).
+
+[event.ev-lar-twins-talk-3.choice.3]
+label = 두 사람의 — 결정을 — 듣는다
+affinity = npc-maro:1
+affinity = npc-arvaro-enya:1
+custom = mag-color-1
+gold = 14
+result_text = "...나는 — 루나로 — 다시 — 가요. 아르바로는 — *천천히* — 자기 자리를 — 찾아." 두 사람의 — *짧은 자국 두 줄*이 — 마당에 — 단정하게 — 남았다.
