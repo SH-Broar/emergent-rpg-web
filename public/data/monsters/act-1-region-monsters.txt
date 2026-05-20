@@ -367,3 +367,40 @@ intents = attack:13, defend:8, attack:16, buff:1
 gold = 18
 time_shards = 7
 card_drops = c-burn-mark:0.2
+
+# ============================================================
+# 팔콘 가든 공중 군도 (강력한 조류 몬무스 — 카드 드롭 없음)
+# ============================================================
+
+[monster.m-falcon-raptor]
+name = 맹금 아인
+tier = minion
+hp = 28
+attack = 13
+defense = 1
+intents = attack:13, attack:11, defend:4, attack:15
+gold = 18
+time_shards = 6
+card_drops =
+
+[monster.m-falcon-harpy-warrior]
+name = 하피 전사
+tier = minion
+hp = 30
+attack = 12
+defense = 2
+intents = attack:12, buff:1, attack:14, attack:10
+gold = 18
+time_shards = 6
+card_drops =
+
+[monster.m-falcon-skylord]
+name = 하늘의 주인
+tier = elite
+hp = 58
+attack = 17
+defense = 2
+intents = attack:17, defend:9, attack:20, buff:2, attack:14
+gold = 34
+time_shards = 12
+card_drops =

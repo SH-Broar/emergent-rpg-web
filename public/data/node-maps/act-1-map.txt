@@ -155,6 +155,15 @@ event_pool = ev-lar-triflower-spirit, ev-lar-crater-rim-heat, ev-lar-lava-vein-s
 primary_color = fire
 specialty_item = i-lava-scale
 
+[nodemap.nm-act-1-era4-061.region.falcon-garden]
+name = 팔콘 가든 공중 군도
+description = 클러치 등대 너머 바다 위에 떠 있는 *공중 군도*. 강력한 조류 몬무스 — 맹금·하피·하늘의 주인. 대화 가능한 이는 *바다쪽 범고래*뿐. 강풍·깃털·고도.
+enemy_pool = m-falcon-raptor, m-falcon-harpy-warrior
+elite_enemy_pool = m-falcon-skylord
+event_pool = ev-falcon-shore, ev-falcon-core
+primary_color = wind
+specialty_item = i-sky-shard
+
 # ============================================================
 # 일루네온 권역 — 시작
 # ============================================================
@@ -1361,10 +1370,10 @@ neighbors = n-clutch-pier
 kind = event
 region = moss
 label = 등대
-description = 부두 끝의 — *낡은 등대*. 빛이 — *한 자락씩* — 사이를 — 둔다.
+description = 부두 끝의 — *낡은 등대*. 빛이 — *한 자락씩* — 사이를 — 둔다. 수평선 위로 — *팔콘 가든 공중 군도*가 — 떠 있다.
 x = 0.89
 y = 0.53
-neighbors = n-clutch-pier
+neighbors = n-clutch-pier, n-falcon-shore
 events = ev-moss-lighthouse-keeper
 npcs = npc-roku
 
@@ -2351,3 +2360,60 @@ x = 0.73
 y = 0.15
 neighbors = n-yuse-hunt
 events = ev-yuse-dead-end
+
+
+# ============================================================
+# 팔콘 가든 공중 군도 (고위험, wind, 5노드). 클러치 등대 진입.
+# 공중 = 강한 조류 몹(NPC 없음). 범고래 NPC만 바다쪽 진입부에.
+# ============================================================
+
+[nodemap.nm-act-1-era4-061.node.n-falcon-shore]
+kind = village
+region = falcon-garden
+label = 군도 아래 바닷가
+description = 클러치 등대 너머 — *공중 군도 바로 아래 바닷가*. 위로는 — *떠 있는 섬들*이 — 그늘을 — 드리운다. *범고래*가 — 물 위에 — 반쯤 — 몸을 — 올린 채 — 하늘을 — 올려다본다.
+x = 0.92
+y = 0.50
+neighbors = n-clutch-lighthouse, n-falcon-isle-low
+npcs = npc-shachi
+events = ev-falcon-shore
+
+[nodemap.nm-act-1-era4-061.node.n-falcon-isle-low]
+kind = combat
+region = falcon-garden
+label = 낮은 군도
+description = 물 위에 — *낮게 떠 있는 섬*. *맹금 아인*들이 — 절벽 끝에서 — 한 줄로 — 내려다본다. 발 디딜 자리가 — 좁다.
+x = 0.94
+y = 0.45
+neighbors = n-falcon-shore, n-falcon-isle-high
+enemy = m-falcon-raptor
+
+[nodemap.nm-act-1-era4-061.node.n-falcon-isle-high]
+kind = combat
+region = falcon-garden
+label = 높은 군도
+description = 더 높이 — 떠 있는 섬. 바람이 — *살을 — 한 자락* — 도려낸다. *하피 전사*들이 — 무리를 — 이룬다.
+x = 0.93
+y = 0.40
+neighbors = n-falcon-isle-low, n-falcon-peak
+enemy = m-falcon-harpy-warrior
+
+[nodemap.nm-act-1-era4-061.node.n-falcon-peak]
+kind = elite
+region = falcon-garden
+label = 군도 정점
+description = 공중 군도 — *가장 높은 자리*. *하늘의 주인*이 — 날개를 — 한 번 — 접는다. 가장 — 강한 것이 — 여기 — 머문다.
+x = 0.96
+y = 0.42
+neighbors = n-falcon-isle-high, n-falcon-core
+enemy = m-falcon-skylord
+
+[nodemap.nm-act-1-era4-061.node.n-falcon-core]
+kind = gather
+region = falcon-garden
+label = 둥지 꼭대기
+description = 군도 — *가장 깊은 둥지*. 바람과 깃털이 — *한 덩이*로 — 굳어 있다. 살아 — 내려간 자에게만 — *큰 것*이 — 남는다.
+x = 0.97
+y = 0.38
+neighbors = n-falcon-peak
+events = ev-falcon-core
