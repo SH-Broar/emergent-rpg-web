@@ -176,12 +176,107 @@ export function startCombat(monster: Monster) {
     turn: 1,
     mana: maxMana,
     maxMana: maxMana,
+    // 보스 기믹 카운터 초기화 — 일반 전투에선 bossMechanic이 undefined라 무시됨.
+    stillness: 0,
+    bossTurnCount: 0,
+    lockedCardIds: [],
+    frozenTurn: false,
   };
   r.combat = combat;
+
+  // 보스 기믹: 첫 플레이어 턴 시작 훅 (마나/잠금/스냅샷). bossMechanic 미설정 시 no-op.
+  // (BossView는 startCombat 직후 bossMechanic을 set하므로, 1턴 기믹은 첫 endPlayerTurn 이후부터 본격 적용.)
+  applyBossPlayerTurnStart(combat);
 
   // on-combat-start 유물 발동, 이어서 1턴의 on-turn-start.
   fireOnCombatStart();
   fireRelicTrigger('on-turn-start', { run: r, combat });
+}
+
+/**
+ * 보스 기믹 — *플레이어 턴 시작* 훅. `combat.bossMechanic`이 set일 때만 동작.
+ * startCombat(1턴)과 endPlayerTurn(새 턴 드로우 후)에서 호출된다.
+ * 일반 몬스터 전투에선 bossMechanic === undefined → 전체 no-op.
+ *
+ * 호출 시점엔 *이번 플레이어 턴의 손패*가 이미 드로우되어 있어야 한다(닻 잠금 대상).
+ */
+function applyBossPlayerTurnStart(c: CombatState): void {
+  const mech = c.bossMechanic;
+  if (!mech) return;
+  const ui = useUiStore();
+
+  // rewind: 이번 플레이어 턴 시작 시 적 HP 스냅샷 (턴 종료 시 피해량 = 스냅샷 - 현재 HP).
+  c.playerTurnStartEnemyHp = c.enemy.hp;
+
+  // stillness: 누적 스택에 따라 마나 감소. 4 이상이면 이번 턴 정지.
+  if (mech === 'stillness') {
+    const stack = c.stillness ?? 0;
+    if (stack >= 4) {
+      c.frozenTurn = true;
+      c.mana = 0;
+      c.hand = []; // 정지 턴은 드로우 0 — 보충된 핸드를 비운다.
+      c.stillness = 0;
+      ui.toast('warning', '시간이 멈춰 — 아무것도 할 수 없다.');
+    } else {
+      c.frozenTurn = false;
+      c.mana = Math.max(0, c.maxMana - Math.floor(stack / 2));
+    }
+  } else {
+    c.frozenTurn = false;
+  }
+
+  // anchor: 적 턴 블록에서 "이번 턴 잠금 예정" 카운트가 짝수면, 새 손패에서 1장 잠금.
+  if (mech === 'anchor') {
+    const count = c.bossTurnCount ?? 0;
+    if (count > 0 && count % 2 === 0 && c.hand.length > 0) {
+      const idx = Math.floor(rng() * c.hand.length);
+      const target = c.hand[idx];
+      const iid = target?.instanceId;
+      if (iid) {
+        c.lockedCardIds = [iid];
+        ui.toast('warning', '시간의 닻이 한 장을 붙잡는다.');
+      }
+    }
+  }
+}
+
+/**
+ * 보스 기믹 — *적 턴* 훅. 적 행동·poison 등 모든 처리가 끝난 뒤 호출.
+ * `combat.bossMechanic`이 set일 때만 동작. 일반 전투에선 전체 no-op.
+ *
+ *  - anchor   : 이전 잠금 해제 + bossTurnCount += 1 (실제 잠금은 다음 플레이어 턴 시작에서).
+ *  - stillness: stillness += 1.
+ *  - rewind   : 직전 플레이어 턴 피해의 절반(최대 40) 회복 + 자기 디버프 제거.
+ */
+function applyBossEnemyTurn(c: CombatState): void {
+  const mech = c.bossMechanic;
+  if (!mech) return;
+  const ui = useUiStore();
+
+  if (mech === 'anchor') {
+    // 이전 플레이어 턴 잠금 해제 후 재판정용 카운트만 증가. 실제 잠금은 새 손패 기준.
+    c.lockedCardIds = [];
+    c.bossTurnCount = (c.bossTurnCount ?? 0) + 1;
+  }
+
+  if (mech === 'stillness') {
+    c.stillness = (c.stillness ?? 0) + 1;
+  }
+
+  if (mech === 'rewind') {
+    const before = c.playerTurnStartEnemyHp ?? c.enemy.hp;
+    const dealt = Math.max(0, before - c.enemy.hp);
+    c.lastPlayerTurnDamage = dealt;
+    const heal = Math.min(40, Math.floor(dealt * 0.5));
+    if (heal > 0) {
+      c.enemy.hp = Math.min(c.enemy.maxHp, c.enemy.hp + heal);
+      ui.toast('info', '정령이 이 순간을 되감는다.');
+    }
+    // 적 자신의 디버프 제거.
+    for (const key of ['vulnerable', 'weakness', 'poison', 'regress']) {
+      delete c.enemy.statuses[key];
+    }
+  }
 }
 
 /**
@@ -197,6 +292,12 @@ export function playCard(handIndex: number, monster: Monster): { enemyDefeated: 
 
   const card = c.hand[handIndex];
   if (!card) return { enemyDefeated: false };
+
+  // 보스 기믹(닻): 잠긴 카드는 사용 거부 (마나·효과 없음). 일반 전투에선 lockedCardIds가 비어 영향 0.
+  if (c.bossMechanic && card.instanceId && c.lockedCardIds?.includes(card.instanceId)) {
+    ui.toast('warning', '시간의 닻에 묶여 움직이지 않는다.');
+    return { enemyDefeated: false };
+  }
 
   // 동적 cost: c-tripps-rage는 *이번 런 누적 피해*만큼 cost 경감.
   let baseCost = card.cost;
@@ -577,6 +678,14 @@ export function endPlayerTurn(monster: Monster): { playerDefeated: boolean; enem
     return { playerDefeated: true };
   }
 
+  // 보스 기믹 — 적 턴 처리 (anchor 카운트/해제, stillness 누적, rewind 회복+디버프 제거).
+  // bossMechanic 미설정(일반 몬스터 전투)이면 no-op.
+  applyBossEnemyTurn(c);
+  if (c.enemy.hp <= 0) {
+    // 되감기 회복은 hp를 올리는 방향이라 0이 될 일은 없지만, 방어적으로 확인.
+    return { playerDefeated: false, enemyDefeated: true };
+  }
+
   // feral(수화)/regress(퇴행) 턴 감소 — 양쪽 -1, 0이면 제거. (vulnerable/weakness는 불변.)
   // 새 턴의 mana/handSize 계산 *전*에 감소시켜야 regress가 다음 턴부터 풀린다.
   decayTurnStatuses(c.player);
@@ -605,6 +714,10 @@ export function endPlayerTurn(monster: Monster): { playerDefeated: boolean; enem
   c.discardPile = newDiscardPile;
 
   c.enemyIntent = pickIntent(monster, c.turn);
+
+  // 보스 기믹 — 새 플레이어 턴 시작 훅 (stillness 마나 감소/정지, anchor 잠금, rewind 스냅샷).
+  // 새 손패 드로우 *후*에 호출해야 닻이 이번 턴 손패를 잠근다. bossMechanic 미설정이면 no-op.
+  applyBossPlayerTurnStart(c);
 
   // 플레이어 poison(중독) — 새 턴 시작 시 틱. block 무시 직접 hp 피해.
   tickPoison(c.player);

@@ -93,6 +93,25 @@ export interface CombatState {
   turn: number;
   mana: number;
   maxMana: number;
+
+  // === 보스 기믹 전용 (전부 optional — 일반 몬스터 전투에선 undefined라 영향 0) ===
+  /**
+   * 활성 보스 기믹. set일 때만 combat.ts의 기믹 분기가 동작.
+   * BossView가 페이즈 전환마다 갱신. 일반 전투에선 항상 undefined.
+   */
+  bossMechanic?: 'anchor' | 'stillness' | 'rewind';
+  /** 정지(stillness) 누적 스택. */
+  stillness?: number;
+  /** 이번 플레이어 턴 동안 사용 불가한 카드 instanceId 목록 (닻). */
+  lockedCardIds?: string[];
+  /** 직전 플레이어 턴에 적에게 입힌 피해 (되감기 회복량 계산용). */
+  lastPlayerTurnDamage?: number;
+  /** 플레이어 턴 시작 시 적 HP 스냅샷 (피해 계산용). */
+  playerTurnStartEnemyHp?: number;
+  /** 적 턴 수 — 닻 "2턴마다" 판정용. */
+  bossTurnCount?: number;
+  /** 이번 플레이어 턴이 정지로 얼어붙음 (마나 0 · 드로우 0). */
+  frozenTurn?: boolean;
 }
 
 /**

@@ -378,9 +378,11 @@ function parseOneBoss(id: string, f: IniSection, ini: IniData): Boss {
         description: tok,
       };
     });
+    const mechanic = pf.mechanic as ('anchor' | 'stillness' | 'rewind' | undefined);
     phases.push({
       startsAtHpRatio: parseNumber(pf.starts_at, i === 1 ? 1.0 : 0.5),
       intents,
+      mechanic: mechanic || undefined,
     });
   }
 

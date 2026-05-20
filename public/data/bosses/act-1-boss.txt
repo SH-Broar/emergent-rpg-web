@@ -1,40 +1,31 @@
-# Boss: 시간의 닻 — 1장 종말 위협.
-# 제 4시대 61년의 균열이 한 점에 응축된 *형태 없는 닻*. 모노가 가장 두려워하는 것.
+# Boss: 시간의 정령 (= 시간의 닻) — 1장 종말 위협.
+# 무고한 비극: 자신이 시간을 멈추는 줄도 모르는, 거의 말하지 않는 어린 정령.
+# 1800 HP / 3 페이즈(각 600). 페이즈마다 "붙잡는 의지" 기믹이 강해진다.
+# mechanic = anchor | stillness | rewind (페이즈 고유 기믹 — combat.ts가 해석).
 
 [boss.bs-act-1-anchor]
-name = 시간의 닻
-description = 시간 축의 한 점에 *고정된* 그것. 모노는 이것이 만들어진 순간을 기억하지 못한다고 했다 — 그건 곧 *그가 만들지 않았다는 뜻*이라고. 형태가 없으며, 다만 *떠나려는 모든 것을 붙잡는* 의지만이 있다.
+name = 시간의 정령
+description = 형태가 흐릿한 어린 정령. 떠나려는 모든 것을 — 저도 모르게 — 붙잡는다. 모노조차 이것이 만들어진 순간을 기억하지 못한다.
 timeline = tl-act-1-era4-061
-hp = 220
+hp = 1800
 attack = 14
 defense = 4
-reward_unlocks = unlock-character-ch-niayur, unlock-character-ch-hako, unlock-character-ch-maro, unlock-character-ch-iyeon, unlock-character-ch-kardi
 reward_soul = 30
 reward_codex = bs-act-1-anchor
-intro = 풍혈지대 위 *공기가 멈춘다*. 그 자리에 — *닻이 없는 닻*이 떠 있다. "그대는 이 시간을 끝낼 수 있다고 믿었는가." 그것의 목소리는 모노의 것과 비슷하지만, 다르다.
-defeat_text = 닻이 *느슨해진다*. 시간이 다시 흐른다. 모노가 옅게 웃는다. "한 시대는 — 한 사람으로 충분하군요."
+intro = 풍혈지대 위, 공기가 — 멈춘다. 작은 그림자가 떠 있다. 그것은 — 아무 말도 하지 않는다.
+defeat_text = 정령이 — 천천히, 손을 편다. 붙잡고 있던 것들이 떠나간다. "……" 시간이 다시 흐른다.
 
 [boss.bs-act-1-anchor.phase.1]
 starts_at = 1.0
-intents = attack:10, attack:10, defend:8, buff:1, attack:12
+mechanic = anchor
+intents = attack:10, defend:8, attack:12, attack:10
 
 [boss.bs-act-1-anchor.phase.2]
-starts_at = 0.66
-intents = attack:14, defend:10, attack:14, debuff:1, attack:18
+starts_at = 0.667
+mechanic = stillness
+intents = attack:14, defend:10, attack:16, debuff:1
 
 [boss.bs-act-1-anchor.phase.3]
-starts_at = 0.33
-intents = attack:20, attack:20, debuff:1, attack:24
-
-
-# ============================================================
-# Signature variants — 캐릭터별 *맞춤 양상*.
-# 매칭 시 dialogue 노출 + intent_overrides (있으면) 적용.
-# ============================================================
-
-[boss.bs-act-1-anchor.signature.ch-niayur]
-dialogue = "왔군요. — 이번에도, 이번에야말로.", "당신의 손에서 — 이 닻이 다시 풀리길."
-intent_overrides = attack:18, debuff:1, attack:16, defend:10, attack:22
-
-[boss.bs-act-1-anchor.signature.ch-hako]
-dialogue = "어느 시간이든 — 다 돌고 보자고 했지요?", "이 시간도, — 한 바퀴."
+starts_at = 0.333
+mechanic = rewind
+intents = attack:18, attack:20, attack:24

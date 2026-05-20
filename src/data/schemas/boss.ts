@@ -22,6 +22,14 @@ export interface BossPhase {
   /** 이 페이즈가 시작되는 HP 비율 (1.0 = 처음, 0.5 = 절반). */
   startsAtHpRatio: number;
   intents: BossIntent[];
+  /**
+   * 페이즈 고유 기믹 — combat.ts가 해석.
+   *   anchor   : 닻 — 2턴마다 손패 1장 잠금.
+   *   stillness: 정지 — 누적될수록 마나 감소, 4 도달 시 한 턴 정지.
+   *   rewind   : 되감기 — 적이 직전 플레이어 턴 피해의 절반을 회복하고 디버프 제거.
+   * 미지정이면 일반 페이즈(기믹 없음).
+   */
+  mechanic?: 'anchor' | 'stillness' | 'rewind';
 }
 
 /** 시그니처 양상 변형 — 특정 캐릭터로 도전 시 보스가 다르게 행동. */

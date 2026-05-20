@@ -119,6 +119,39 @@ watch(activePhaseIndex, (newIdx, oldIdx) => {
   ui.toast('warning', `보스가 *${newIdx + 1}단계*로 자세를 바꾼다`);
 });
 
+/**
+ * 현재 활성 페이즈의 기믹을 전투 상태에 반영.
+ * 페이즈 전환 시 mechanic만 갱신하고 stillness/bossTurnCount 등 카운터는 유지.
+ */
+function syncBossMechanic() {
+  const c = run.data.combat;
+  if (!c) return;
+  c.bossMechanic = activePhase.value?.mechanic;
+}
+
+// 페이즈가 바뀔 때마다(=HP 비율로 mechanic 변경) 전투 상태에 기믹 반영.
+watch(activePhaseIndex, () => {
+  if (phase.value !== 'combat') return;
+  syncBossMechanic();
+});
+
+/** 현재 기믹 라벨 (헤더 힌트용). */
+const mechanicLabel = computed<string>(() => {
+  switch (combat.value?.bossMechanic) {
+    case 'anchor': return '시간의 닻';
+    case 'stillness': return '정지';
+    case 'rewind': return '되감기';
+    default: return '';
+  }
+});
+
+/** 카드가 닻에 잠겼는지. */
+function isLocked(c: Card): boolean {
+  const cmb = combat.value;
+  if (!cmb?.bossMechanic) return false;
+  return !!c.instanceId && (cmb.lockedCardIds?.includes(c.instanceId) ?? false);
+}
+
 function startBattle() {
   // 시그니처 매칭 캐릭터면 *맞춤 대화* 노출 (몰입).
   const variant = activeVariant.value;
@@ -128,6 +161,8 @@ function startBattle() {
     }
   }
   startCombat(bossAsMonster.value);
+  // 전투 시작 직후 현재 페이즈의 기믹을 전투 상태에 set (combat은 startCombat에서 생성됨).
+  syncBossMechanic();
   phase.value = 'combat';
 }
 
@@ -188,6 +223,8 @@ const rankColors: Record<string, string> = {
 function cardBorder(c: Card): string { return rankColors[c.rank] ?? '#a4a4b0'; }
 function canPlay(c: Card): boolean {
   if (!combat.value) return false;
+  // 보스 기믹: 닻에 잠긴 카드는 사용 불가.
+  if (isLocked(c)) return false;
   return combat.value.mana >= c.cost;
 }
 
@@ -254,6 +291,14 @@ function statusEntries(c: Combatant | undefined) {
             <span v-if="combat.enemy.block > 0" class="block">🛡 {{ combat.enemy.block }}</span>
           </div>
           <div class="intent">다음: {{ combat.enemyIntent }}</div>
+          <div v-if="mechanicLabel" class="mechanic">
+            <span class="mechanic__name">{{ mechanicLabel }}</span>
+            <span
+              v-if="combat.bossMechanic === 'stillness' && (combat.stillness ?? 0) > 0"
+              class="mechanic__stack"
+            >×{{ combat.stillness }}</span>
+            <span v-if="combat.frozenTurn" class="mechanic__frozen">시간이 멈췄다</span>
+          </div>
           <ul class="statuses statuses--enemy">
             <li v-for="s in statusEntries(combat.enemy)" :key="s.key" class="status" :data-key="s.key">
               {{ s.label }} ×{{ s.count }}
@@ -267,10 +312,11 @@ function statusEntries(c: Combatant | undefined) {
           v-for="(card, i) in combat.hand"
           :key="`${card.id}-${i}`"
           class="card"
-          :class="{ 'card--disabled': !canPlay(card) }"
+          :class="{ 'card--disabled': !canPlay(card), 'card--locked': isLocked(card) }"
           :style="{ borderColor: cardBorder(card) }"
           @click="canPlay(card) && play(i)"
         >
+          <div v-if="isLocked(card)" class="card__lock">⛓ 닻</div>
           <div class="card__head">
             <span class="card__cost">{{ card.cost }}</span>
             <span class="card__name">{{ card.name }}</span>
@@ -352,6 +398,12 @@ function statusEntries(c: Combatant | undefined) {
 .intent { color: #ffb88e; font-size: 0.9rem; }
 .vs { font-size: 1.4rem; color: #f6e8b8; }
 
+/* 보스 기믹 힌트 */
+.mechanic { margin-top: 0.3rem; display: flex; gap: 0.4rem; justify-content: flex-end; align-items: center; flex-wrap: wrap; }
+.mechanic__name { font-size: 0.78rem; padding: 0.1rem 0.5rem; border-radius: 10px; background: rgba(192,142,255,0.18); border: 1px solid rgba(192,142,255,0.45); color: #d9c4ff; }
+.mechanic__stack { font-size: 0.78rem; color: #c08eff; font-weight: 700; }
+.mechanic__frozen { font-size: 0.75rem; padding: 0.1rem 0.5rem; border-radius: 10px; background: rgba(142,237,255,0.18); border: 1px solid rgba(142,237,255,0.5); color: #bdf0ff; }
+
 /* 버프/디버프 리스트 (CombatView와 동일) */
 .statuses { list-style: none; padding: 0; margin: 0.3rem 0 0; display: flex; flex-wrap: wrap; gap: 0.3rem; }
 .statuses--enemy { justify-content: flex-end; }
@@ -370,6 +422,8 @@ function statusEntries(c: Combatant | undefined) {
 .card { flex-shrink: 0; width: 160px; padding: 0.8rem; background: rgba(255,255,255,0.04); border: 2px solid; border-radius: 8px; cursor: pointer; transition: transform 120ms ease; display: flex; flex-direction: column; gap: 0.3rem; }
 .card:hover:not(.card--disabled) { transform: translateY(-6px); }
 .card--disabled { opacity: 0.4; cursor: not-allowed; }
+.card--locked { position: relative; filter: grayscale(0.8); border-style: dashed !important; }
+.card__lock { position: absolute; top: 0.3rem; right: 0.4rem; font-size: 0.72rem; color: #c08eff; font-weight: 700; }
 .card__head { display: flex; align-items: center; gap: 0.4rem; }
 .card__cost { background: #c08eff; color: #0d0e14; padding: 0.2rem 0.5rem; border-radius: 50%; font-weight: 700; }
 .card__name { flex: 1; color: #f6e8b8; font-weight: 600; font-size: 0.95rem; }
