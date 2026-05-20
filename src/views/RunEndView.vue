@@ -17,6 +17,7 @@ import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
+import { unlockKeyLabel } from '@/systems/labels';
 
 const router = useRouter();
 const run = useRunStore();
@@ -149,7 +150,7 @@ onMounted(async () => {
       </div>
       <p class="meta__note">※ 연구는 추후 직접 투자 방식으로 바뀝니다.</p>
       <ul v-if="result.granted.length > 0" class="unlocks">
-        <li v-for="(k, i) in result.granted" :key="i" class="unlock">해금: {{ k.key }}</li>
+        <li v-for="(k, i) in result.granted" :key="i" class="unlock">해금: {{ unlockKeyLabel(k.key) }}</li>
       </ul>
     </section>
 

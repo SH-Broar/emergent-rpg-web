@@ -63,6 +63,10 @@ function effectText(eff: RelicEffect): string {
     case 'bonus-mana': return `마나 +${v}`;
     case 'bonus-gold': return `골드 +${v}`;
     case 'bonus-damage': return `모든 데미지 +${v}`;
+    case 'damage-out-add': return `주는 피해 +${v}`;
+    case 'block-out-add': return `방어 +${v}`;
+    case 'chance-random-color-1': return `매 턴 ${v}% 확률로 무작위 컬러 +1`;
+    case 'skip-turn-every': return `${v}턴마다 적 행동 1회 거름`;
     case 'discount': return `제작 비용 ${Math.round(v * 100)}% 할인`;
     default: return `${eff.kind}${eff.value !== undefined ? ` ${eff.value}` : ''}`;
   }

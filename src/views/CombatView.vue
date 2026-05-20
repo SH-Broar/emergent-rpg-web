@@ -24,6 +24,7 @@ import {
 import { effectiveContent } from '@/systems/map';
 import { colorBonusForCardEffectKind } from '@/systems/stats';
 import { bonusesFromEffective } from '@/systems/equipment';
+import { cardEffectKindLabel, effectTargetLabel } from '@/systems/labels';
 import type { Card, CardEffect, Combatant, Monster } from '@/data/schemas';
 
 const router = useRouter();
@@ -223,7 +224,7 @@ void ui;
         </div>
         <div class="card__effects">
           <span v-for="(e, ei) in card.effects" :key="ei" class="effect">
-            {{ e.kind }}
+            {{ cardEffectKindLabel(e) }}
             <strong class="eff-val">{{ effectiveValue(e) || (e.value ?? '') }}</strong>
             <span
               v-if="statusDelta(e) !== 0"
@@ -232,7 +233,7 @@ void ui;
             >
               ({{ statusDelta(e) > 0 ? '+' : '' }}{{ statusDelta(e) }})
             </span>
-            <span v-if="e.target" class="eff-target">{{ e.target }}</span>
+            <span v-if="e.target" class="eff-target">{{ effectTargetLabel(e.target) }}</span>
           </span>
         </div>
         <p v-if="card.flavor" class="card__flavor">{{ card.flavor }}</p>

@@ -21,6 +21,7 @@ import {
 import { applyBossRewards } from '@/systems/boss-rewards';
 import { colorBonusForCardEffectKind } from '@/systems/stats';
 import { bonusesFromEffective } from '@/systems/equipment';
+import { cardEffectKindLabel, unlockKeyLabel } from '@/systems/labels';
 import type { Boss, BossPhase, BossSignatureVariant, Card, CardEffect, Combatant, Monster } from '@/data/schemas';
 
 const router = useRouter();
@@ -320,7 +321,7 @@ function statusEntries(c: Combatant | undefined) {
           </div>
           <div class="card__effects">
             <span v-for="(e, ei) in card.effects" :key="ei" class="effect">
-              {{ e.kind }}
+              {{ cardEffectKindLabel(e) }}
               <strong class="eff-val">{{ effectiveValue(e) || (e.value ?? '') }}</strong>
               <span
                 v-if="statusDelta(e) !== 0"
@@ -356,7 +357,7 @@ function statusEntries(c: Combatant | undefined) {
             <span>영혼 자원</span><span>+{{ boss.rewards.soulGain }}</span>
           </div>
           <div v-for="k in boss.rewards.unlockKeys ?? []" :key="k" class="reward reward--unlock">
-            <span>해금</span><span>{{ k }}</span>
+            <span>해금</span><span>{{ unlockKeyLabel(k) }}</span>
           </div>
         </div>
       </section>

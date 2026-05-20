@@ -15,6 +15,7 @@ import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
 import { colorBonusForCardEffectKind } from '@/systems/stats';
 import { bonusesFromEffective } from '@/systems/equipment';
+import { cardEffectKindLabel, effectTargetLabel } from '@/systems/labels';
 import type { Card, CardEffect } from '@/data/schemas';
 
 const props = defineProps<{ open: boolean }>();
@@ -170,7 +171,7 @@ function effectiveValue(eff: CardEffect): number {
             </div>
             <div class="card__effects">
               <span v-for="(e, ei) in c.effects" :key="ei" class="effect">
-                {{ e.kind }} {{ effectiveValue(e) || (e.value ?? '') }} {{ e.target ?? '' }}
+                {{ cardEffectKindLabel(e) }} {{ effectiveValue(e) || (e.value ?? '') }} {{ effectTargetLabel(e.target) }}
               </span>
             </div>
           </li>

@@ -10,6 +10,7 @@ import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
+import { cardEffectKindLabel } from '@/systems/labels';
 import {
   FORGE_PRICE_TIME_SHARDS,
   LEGENDARY_COST_TIME_SHARDS,
@@ -65,15 +66,9 @@ function hasItem(id?: string): boolean {
 
 function effectSummary(card: ReturnType<typeof cardDef>): string {
   if (!card) return '';
-  const parts: string[] = [];
-  for (const eff of card.effects) {
-    if (eff.kind === 'damage') parts.push(`피해 ${eff.value}`);
-    else if (eff.kind === 'block') parts.push(`방어 ${eff.value}`);
-    else if (eff.kind === 'heal') parts.push(`회복 ${eff.value}`);
-    else if (eff.kind === 'draw') parts.push(`드로우 ${eff.value}`);
-    else if (eff.kind === 'apply-status') parts.push(`상태 ${eff.value}`);
-  }
-  return parts.join(' · ');
+  return card.effects
+    .map((eff) => `${cardEffectKindLabel(eff)}${eff.value !== undefined ? ' ' + eff.value : ''}`)
+    .join(' · ');
 }
 
 function doUpgrade(instanceId: string) {

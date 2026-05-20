@@ -19,6 +19,7 @@ import { useRunStore } from '@/stores/run';
 import { useUiStore } from '@/stores/ui';
 import { instantiateCard } from '@/systems/deck';
 import { applySeedColors } from '@/systems/colors';
+import { cardEffectKindLabel } from '@/systems/labels';
 import type { Card } from '@/data/schemas';
 
 const router = useRouter();
@@ -93,7 +94,7 @@ function addThree(cardId: string) {
 
 function effectSummary(c: Card): string {
   return c.effects
-    .map((e) => `${e.kind}${e.value !== undefined ? ' ' + e.value : ''}`)
+    .map((e) => `${cardEffectKindLabel(e)}${e.value !== undefined ? ' ' + e.value : ''}`)
     .join(', ');
 }
 
