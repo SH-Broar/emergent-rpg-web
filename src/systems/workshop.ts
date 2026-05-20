@@ -13,6 +13,7 @@ import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
 import { instantiateCard } from '@/systems/deck';
+import { availableCards } from '@/systems/unlocks';
 import { rng } from '@/systems/rng';
 
 export const UPGRADE_COST_TIME_SHARDS = 8;
@@ -90,9 +91,8 @@ export function listUpgradableCards(): Card[] {
 // === 희귀+ 제작 ===
 
 function getForgePool(): Card[] {
-  const data = useDataStore();
   const pool: Card[] = [];
-  for (const c of data.cards.values()) {
+  for (const c of availableCards()) { // 잠긴(미해금) 카드 제외
     if (!FORGE_RANKS.includes(c.rank)) continue;
     // 시작 덱 시드는 제외 — 일반 카드와 동일 정책.
     if (c.source === 'race' || c.source === 'character') continue;

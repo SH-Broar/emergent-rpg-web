@@ -14,6 +14,7 @@ import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
 import { instantiateCard } from '@/systems/deck';
 import { getCraftingDiscount } from '@/systems/relic';
+import { availableCards, availableRelics } from '@/systems/unlocks';
 import { rng } from '@/systems/rng';
 
 /** 카드 기본 가격 (골드). */
@@ -59,15 +60,15 @@ function pickRandom<T>(arr: T[], n: number): T[] {
  * source가 'race'/'character'는 시작 덱 — 중복 회피.
  */
 function getShopCardPool(): Card[] {
-  const data = useDataStore();
+  const available = availableCards(); // 잠긴(미해금) 카드 제외
   const pool: Card[] = [];
-  for (const c of data.cards.values()) {
+  for (const c of available) {
     if (c.source === 'race' || c.source === 'character') continue;
     pool.push(c);
   }
-  // 풀이 너무 작으면 전체 폴백.
+  // 풀이 너무 작으면 (가용 카드 한정) 전체 폴백.
   if (pool.length < NUM_CARDS) {
-    return Array.from(data.cards.values());
+    return available;
   }
   return pool;
 }
@@ -76,18 +77,18 @@ function getShopCardPool(): Card[] {
  * 상점 유물 풀 — *현재 보유한 유물 제외*, boss/meta 출처 제외 (별도 경로 자원).
  */
 function getShopRelicPool(): Relic[] {
-  const data = useDataStore();
   const run = useRunStore();
   const owned = new Set(run.data.relics.map((r) => r.id));
+  const available = availableRelics(); // 잠긴(미해금) 유물 제외
   const pool: Relic[] = [];
-  for (const r of data.relics.values()) {
+  for (const r of available) {
     if (owned.has(r.id)) continue;
     if (r.source === 'boss' || r.source === 'meta') continue;
     pool.push(r);
   }
-  // 풀이 너무 작으면 보유 제외만 적용한 전체 폴백.
+  // 풀이 너무 작으면 보유 제외만 적용한 (가용) 전체 폴백.
   if (pool.length < NUM_RELICS) {
-    return Array.from(data.relics.values()).filter((r) => !owned.has(r.id));
+    return available.filter((r) => !owned.has(r.id));
   }
   return pool;
 }

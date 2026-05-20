@@ -15,6 +15,7 @@ import { useUiStore } from '@/stores/ui';
 import { rng } from '@/systems/rng';
 import { applyAffinityDelta } from '@/systems/affinity';
 import { cardEffectKindLabel, cardEffectDescription } from '@/systems/labels';
+import { availableCards } from '@/systems/unlocks';
 import type { Card, Npc } from '@/data/schemas';
 
 const router = useRouter();
@@ -147,8 +148,8 @@ function closeDialogue() {
 }
 
 const craftPool = computed<Card[]>(() => {
-  // 일반 등급 카드들. 추후 출처·종족 등으로 필터링.
-  return Array.from(data.cards.values()).filter((c: Card) => VILLAGE_CARD_RANKS.has(c.rank));
+  // 일반 등급 카드들. 잠긴(미해금) 카드는 제외.
+  return availableCards().filter((c: Card) => VILLAGE_CARD_RANKS.has(c.rank));
 });
 
 const rolledOptions = ref<Card[]>([]);
