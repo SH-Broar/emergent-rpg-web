@@ -229,3 +229,12 @@ category = specialty
 region_id = tradepost
 effects =
 consumable = true
+
+[item.i-diropel-pigment]
+name = 딜롭 안료
+description = 딜롭 부족이 — *얼굴 무늬*를 그리는 안료 한 통. 조개껍데기에 — 색색으로 — 담겼다. 무늬마다 — *뜻*이 다르지만, 외부인은 — 그 뜻을 — 다 — 읽지 못한다.
+rank = rare
+category = specialty
+region_id = diropel
+effects =
+consumable = true

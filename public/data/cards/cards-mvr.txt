@@ -477,3 +477,13 @@ cost = 1
 trigger = manual
 effects = damage:6:enemy, block:4:self
 flavor = "한 필 — 더 — 보고 가요." 사라사가 — *긴 꼬리*로 — 적을 — 한 번 — 감았다 — 푼다. 한 자락은 — 적에게, 한 자락은 — 그대를 — 두른다.
+
+[card.c-lop-sign]
+name = 귀 기울인 한 신호
+rank = rare
+source = npc
+element = earth
+cost = 1
+trigger = manual
+effects = draw:1:self, block:5:self
+flavor = 리포가 — *긴 귀*를 — 한 번 — 늘어뜨려, 먼 소리를 — 먼저 — 듣는다. 손바닥에 — *무늬 한 줄*을 — 그어 — 다음 한 수를 — 일러 준다.
