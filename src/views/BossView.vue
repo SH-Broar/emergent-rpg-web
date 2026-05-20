@@ -136,6 +136,9 @@ function endTurn() {
   const result = endPlayerTurn(bossAsMonster.value);
   if (result.playerDefeated) {
     onDefeat();
+  } else if (result.enemyDefeated) {
+    // 보스가 poison 등으로 턴 종료 중 사망 — 승리 처리.
+    onVictory();
   }
 }
 

@@ -44,19 +44,68 @@ function currentBonuses() {
 }
 
 /**
- * 전투 중 *버프/디버프*가 카드 effect.value에 더하는 보정.
- *   - damage: +strength, -weakness
+ * 전투 중 *버프/디버프*가 카드 effect.value에 더하는 *플랫* 보정.
+ *   - damage: +strength
  *   - block: +dexterity, -frail
  * 사용자 사양: 카드 표시에서 "(+1) / (-2)" 부가 표기.
+ *
+ * 주의 (status 통합 fix): weakness는 *배수 단계*(applyDamage의 ×0.75)로 일원화했다.
+ * 따라서 여기서는 weakness 플랫 차감을 *제거* — 중복 적용 방지.
+ * (frail은 block 전용이라 배수 단계가 없으므로 플랫으로 유지.)
  */
 export function statusBonusForCardEffectKind(
   kind: string,
   statuses: Record<string, number> | undefined,
 ): number {
   if (!statuses) return 0;
-  if (kind === 'damage') return (statuses.strength ?? 0) - (statuses.weakness ?? 0);
+  if (kind === 'damage') return statuses.strength ?? 0;
   if (kind === 'block') return (statuses.dexterity ?? 0) - (statuses.frail ?? 0);
   return 0;
+}
+
+/**
+ * 통합 피해 적용 — 모든 피해 경로(카드 damage / 컬러 피해 / 적 공격)가 이 함수를 거친다.
+ *
+ * rawValue: 이미 strength/ATK/modifier 등 *플랫 보정이 끝난* 피해량.
+ * attackerStatuses: 공격자의 statuses (플레이어 카드면 player, 적 공격이면 enemy).
+ *
+ * 적용 순서:
+ *   rawValue → weakness(공격자) ×0.75 → vulnerable(대상) ×1.5 → block 흡수 → hp.
+ * 각 배수마다 Math.floor.
+ */
+function applyDamage(
+  target: Combatant,
+  rawValue: number,
+  attackerStatuses: Record<string, number> | undefined,
+): void {
+  let v = Math.max(0, rawValue);
+  // weakness(약화): 공격자가 주는 피해 ×0.75.
+  const weakness = attackerStatuses?.weakness ?? 0;
+  if (weakness > 0) v = Math.floor(v * 0.75);
+  // vulnerable(취약): 대상이 받는 피해 ×1.5.
+  const vulnerable = target.statuses?.vulnerable ?? 0;
+  if (vulnerable > 0) v = Math.floor(v * 1.5);
+  // block 흡수 후 hp 차감.
+  const absorbed = Math.min(target.block, v);
+  target.block -= absorbed;
+  target.hp = Math.max(0, target.hp - (v - absorbed));
+}
+
+/**
+ * poison(중독) 턴 처리 — 대상 턴 종료 시 호출.
+ * 스택만큼 *block 무시 직접 hp* 피해, 그 후 스택 -1. 스택 0이면 제거.
+ * (vulnerable/weakness 배수는 적용하지 않음 — poison은 *순수 직접 피해*.)
+ */
+function tickPoison(target: Combatant): void {
+  const stack = target.statuses?.poison ?? 0;
+  if (stack <= 0) return;
+  target.hp = Math.max(0, target.hp - stack);
+  const next = stack - 1;
+  if (next <= 0) {
+    delete target.statuses.poison;
+  } else {
+    target.statuses.poison = next;
+  }
 }
 
 /** 전투 시작 — Combat state 초기화 + 첫 핸드 드로우. */
@@ -187,7 +236,7 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
     const targets = resolveTargets(e.target ?? 'enemy', c);
     // ATK 스탯 보너스 — 공격 카드 *최소 공격력* +N (10 ATK당 1).
     const atkBonus = currentBonuses().damage;
-    // 전투 중 player buff/debuff (strength/weakness).
+    // 전투 중 player buff (strength). weakness는 applyDamage 배수 단계에서 처리.
     const statusBonus = statusBonusForCardEffectKind('damage', c.player.statuses);
     // base + atk + status를 modifier pipeline에 흘려보냄.
     // 유물의 damage-out-add (옛 bonus-damage alias)는 applyModifiers 내부에서 합산.
@@ -196,13 +245,11 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
       'damage-out-add',
       'damage-out-mul',
     );
-    for (const t of targets) {
-      const absorbed = Math.min(t.block, value);
-      t.block -= absorbed;
-      t.hp = Math.max(0, t.hp - (value - absorbed));
-    }
+    // 통합 피해: weakness(공격자=player) ×0.75 → vulnerable(대상) ×1.5 → block → hp.
+    for (const t of targets) applyDamage(t, value, c.player.statuses);
   },
   // 8 컬러 중 *최솟값* × value 만큼 데미지. ATK/상태/modifier 보너스 모두 무시 — *순수 균형값*.
+  // 단 weakness/vulnerable 배수는 통합 적용 (다른 피해 경로와 일관성).
   'damage-min-color': (e, c) => {
     const targets = resolveTargets(e.target ?? 'enemy', c);
     const colors = useRunStore().data.colors;
@@ -211,11 +258,7 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
       colors.earth, colors.wind, colors.light, colors.dark,
     );
     const value = Math.max(0, Math.floor(minColor * (e.value ?? 1)));
-    for (const t of targets) {
-      const absorbed = Math.min(t.block, value);
-      t.block -= absorbed;
-      t.hp = Math.max(0, t.hp - (value - absorbed));
-    }
+    for (const t of targets) applyDamage(t, value, c.player.statuses);
   },
   heal: (e, c) => {
     const targets = resolveTargets(e.target ?? 'self', c);
@@ -367,14 +410,14 @@ const zeroColors = {
   fire: 0, water: 0, electric: 0, iron: 0, earth: 0, wind: 0, light: 0, dark: 0,
 };
 
-/** 순수 피해 — block 흡수 후 hp 차감. 컬러/특수 효과 공용. */
+/**
+ * 플레이어 컬러/특수 효과 피해 — 통합 applyDamage 경유.
+ * 공격자는 항상 *플레이어*(이 헬퍼는 카드 효과 전용)이므로 player.statuses의 weakness,
+ * 대상의 vulnerable 배수가 일관 적용된다.
+ */
 function dealRawDamage(targets: Combatant[], value: number) {
-  const v = Math.max(0, value);
-  for (const t of targets) {
-    const absorbed = Math.min(t.block, v);
-    t.block -= absorbed;
-    t.hp = Math.max(0, t.hp - (v - absorbed));
-  }
+  const playerStatuses = useRunStore().data.combat?.player.statuses;
+  for (const t of targets) applyDamage(t, value, playerStatuses);
 }
 
 function resolveTargets(target: EffectTarget, c: CombatState): Combatant[] {
@@ -390,9 +433,10 @@ function resolveTargets(target: EffectTarget, c: CombatState): Combatant[] {
 
 /**
  * 플레이어 턴 종료. 적 행동 → 다음 턴 시작.
- * 플레이어 사망 시 반환 { playerDefeated: true }.
+ * 플레이어 사망 시 { playerDefeated: true }.
+ * 적이 (poison 등으로) 턴 종료 중 사망하면 { enemyDefeated: true } — 호출자가 승리 처리.
  */
-export function endPlayerTurn(monster: Monster): { playerDefeated: boolean } {
+export function endPlayerTurn(monster: Monster): { playerDefeated: boolean; enemyDefeated?: boolean } {
   const run = useRunStore();
   const r = run.data;
   const c = r.combat;
@@ -400,6 +444,13 @@ export function endPlayerTurn(monster: Monster): { playerDefeated: boolean } {
 
   // 플레이어 턴 종료 trigger — 몬스터 행동 *전*.
   fireRelicTrigger('on-turn-end', { run: r, combat: c });
+
+  // 적 poison(중독) — 적 턴 종료 처리. 몬스터 행동 *전*에 틱.
+  // (poison으로 적 hp 0이 되면 행동을 생략하고 *승리* 신호 — CombatView가 onVictory.)
+  tickPoison(c.enemy);
+  if (c.enemy.hp <= 0) {
+    return { playerDefeated: false, enemyDefeated: true };
+  }
 
   // r4: debugFlag freezeEnemies — 적 행동 시뮬 스킵 (전투 정지 디버그).
   if (!useUiStore().debug.freezeEnemies) {
@@ -432,6 +483,12 @@ export function endPlayerTurn(monster: Monster): { playerDefeated: boolean } {
 
   c.enemyIntent = pickIntent(monster, c.turn);
 
+  // 플레이어 poison(중독) — 새 턴 시작 시 틱. block 무시 직접 hp 피해.
+  tickPoison(c.player);
+  if (c.player.hp <= 0) {
+    return { playerDefeated: true };
+  }
+
   // 새 턴 진입 trigger — 드로우/마나 리셋 완료 후.
   fireRelicTrigger('on-turn-start', { run: r, combat: c });
   return { playerDefeated: false };
@@ -446,10 +503,10 @@ function executeMonsterIntent(c: CombatState) {
 
   switch (kind) {
     case 'attack': {
-      const absorbed = Math.min(c.player.block, value);
-      c.player.block -= absorbed;
-      const hpLoss = value - absorbed;
-      c.player.hp = Math.max(0, c.player.hp - hpLoss);
+      // 통합 피해: weakness(공격자=enemy) ×0.75 → vulnerable(대상=player) ×1.5 → block → hp.
+      const hpBefore = c.player.hp;
+      applyDamage(c.player, value, c.enemy.statuses);
+      const hpLoss = hpBefore - c.player.hp;
       // 모나토 c-tripps-rage 동적 cost용 누적 피해 — block 흡수 제외 *실제 HP 손실*만.
       if (hpLoss > 0) {
         const r = useRunStore().data;

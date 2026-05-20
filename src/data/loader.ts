@@ -73,6 +73,8 @@ function isNodeKind(v: string): v is NodeKind {
 /**
  * "damage:5:enemy" → CardEffect.
  * "draw:1" → CardEffect (target 생략).
+ * "apply-status:2:enemy:vulnerable" → CardEffect (4번째 토큰 = params.status).
+ *   4번째 토큰이 없으면 params 미생성 — 기존 카드 호환 ('unknown' 유지).
  */
 function parseCardEffect(token: string): CardEffect | null {
   const parts = token.split(':').map((s) => s.trim());
@@ -80,6 +82,10 @@ function parseCardEffect(token: string): CardEffect | null {
   const kind = parts[0] as CardEffectKind;
   const value = parts[1] ? Number(parts[1]) : undefined;
   const target = parts[2] as EffectTarget | undefined;
+  // 4번째 토큰: apply-status의 status 이름 등 추가 파라미터.
+  if (parts[3]) {
+    return { kind, value, target, params: { status: parts[3] } };
+  }
   return { kind, value, target };
 }
 
