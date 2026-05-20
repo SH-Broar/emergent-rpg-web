@@ -165,6 +165,7 @@ onMounted(() => {
         v-for="race in raceOptions"
         :key="race.id"
         class="card"
+        :class="{ 'card--locked': !canSelectRace(race.id) }"
         @click="selectRace(race)"
       >
         <div class="card__head">
@@ -178,6 +179,7 @@ onMounted(() => {
           <span v-if="race.deckSize">덱 {{ race.deckSize }}</span>
           <span>시드 카드 {{ race.seedCardIds.length }}</span>
         </div>
+        <span v-if="!canSelectRace(race.id)" class="card__lock">🔒 연구에서 해금</span>
       </button>
     </section>
     <section v-else class="empty"><p>—</p></section>
@@ -217,6 +219,15 @@ onMounted(() => {
   text-align: left;
 }
 .card:hover { background: rgba(255,255,255,0.08); }
+.card--locked { opacity: 0.5; position: relative; }
+.card--locked:hover { background: rgba(255,255,255,0.04); }
+.card__lock {
+  margin-top: 0.6rem;
+  font-size: 0.8rem;
+  color: #c08eff;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
 .card__head { display: flex; align-items: baseline; gap: 0.5rem; }
 .card__name { flex: 1; font-size: 1.3rem; font-weight: 600; color: #f6e8b8; }
 .card__cat { font-size: 0.75rem; color: #c08eff; text-transform: uppercase; letter-spacing: 0.06em; }

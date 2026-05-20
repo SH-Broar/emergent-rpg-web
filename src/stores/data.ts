@@ -13,6 +13,7 @@ import type {
   Equipment,
   Event,
   Item,
+  MetaUnlock,
   Monster,
   NodeMap,
   Npc,
@@ -75,6 +76,9 @@ export const useDataStore = defineStore('data', {
     },
     clues(state): Map<string, import('@/data/schemas').Clue> {
       return state.data?.clues ?? new Map<string, import('@/data/schemas').Clue>();
+    },
+    unlocks(state): Map<string, MetaUnlock> {
+      return state.data?.unlocks ?? new Map<string, MetaUnlock>();
     },
   },
 

@@ -18,5 +18,6 @@ export * from './item';
 export * from './equipment';
 export * from './run';
 export * from './meta';
+export * from './unlock';
 export * from './chaos';
 export * from './clue';

@@ -10,6 +10,8 @@ import {
   EMPTY_META_GAUGE,
   type CodexEntry,
   type MetaProgress,
+  type MetaResource,
+  type MetaUnlock,
   type UnlockKey,
 } from '@/data/schemas';
 
@@ -25,9 +27,12 @@ function createEmptyMeta(): MetaProgress {
       composite: { ...EMPTY_META_GAUGE, max: 400 },
     },
     unlockedKeys: [],
-    unlockedRaceIds: [],
+    // 시작은 인간만. 나머지 종족은 히페리온 투자로 개방.
+    unlockedRaceIds: ['human'],
     unlockedTimelineIds: [],
     unlockedCardIds: [],
+    unlockedRelicIds: [],
+    purchasedUnlocks: [],
     codex: [],
     soulResource: 0,
     procInputs: {},
@@ -66,9 +71,23 @@ function loadMeta(): MetaProgress {
       parsed.unlockedRaceIds = Array.from(races);
     }
     delete parsed.unlockedCharacterIds;
+    // 신규 optional 필드 backfill — 기존 저장에 없으면 기본값. 기존 값은 보존.
+    parsed.unlockedRelicIds ??= [];
+    parsed.purchasedUnlocks ??= [];
+    parsed.unlockedCardIds ??= [];
+    parsed.unlockedTimelineIds ??= [];
+    parsed.unlockedRaceIds ??= [];
     return parsed;
   } catch {
     return createEmptyMeta();
+  }
+}
+
+/** src 배열의 id들을 dst에 중복 없이 push (in-place). */
+function pushUnique(dst: string[], src: string[] | undefined) {
+  if (!src) return;
+  for (const id of src) {
+    if (!dst.includes(id)) dst.push(id);
   }
 }
 
@@ -94,6 +113,19 @@ export const useMetaStore = defineStore('meta', {
         g.insight2.current / Math.max(1, g.insight2.max),
       ];
       return ratios.reduce((a, b) => a + b, 0) / ratios.length;
+    },
+
+    /** 히페리온 소비 풀 = hyperion1 + hyperion2 누적. */
+    hyperionPool(state): number {
+      return state.gauges.hyperion1.current + state.gauges.hyperion2.current;
+    },
+    /** 해석 소비 풀 = insight1 + insight2 누적. */
+    insightPool(state): number {
+      return state.gauges.insight1.current + state.gauges.insight2.current;
+    },
+    /** 영혼 소비 풀. */
+    soulPool(state): number {
+      return state.soulResource;
     },
   },
 
@@ -210,6 +242,64 @@ export const useMetaStore = defineStore('meta', {
       this.persist();
     },
 
+    /** 메타 자원 소비 풀 조회 (자원별). */
+    poolOf(resource: MetaResource): number {
+      switch (resource) {
+        case 'hyperion':
+          return this.gauges.hyperion1.current + this.gauges.hyperion2.current;
+        case 'insight':
+          return this.gauges.insight1.current + this.gauges.insight2.current;
+        case 'soul':
+          return this.soulResource;
+      }
+    },
+
+    /** 해당 자원으로 cost를 감당할 수 있는가? */
+    canAfford(resource: MetaResource, cost: number): boolean {
+      return this.poolOf(resource) >= cost;
+    },
+
+    /**
+     * 자원을 차감한다. (0 미만 클램프)
+     *   hyperion → hyperion1 먼저, 부족분 hyperion2.
+     *   insight  → insight1 먼저, 부족분 insight2.
+     *   soul     → soulResource.
+     */
+    spend(resource: MetaResource, cost: number) {
+      let remaining = Math.max(0, cost);
+      if (resource === 'soul') {
+        this.soulResource = Math.max(0, this.soulResource - remaining);
+        this.persist();
+        return;
+      }
+      const first = resource === 'hyperion' ? this.gauges.hyperion1 : this.gauges.insight1;
+      const second = resource === 'hyperion' ? this.gauges.hyperion2 : this.gauges.insight2;
+      const fromFirst = Math.min(first.current, remaining);
+      first.current = Math.max(0, first.current - fromFirst);
+      remaining -= fromFirst;
+      if (remaining > 0) {
+        second.current = Math.max(0, second.current - remaining);
+      }
+      this.persist();
+    },
+
+    /**
+     * 메타 해금 항목 구매. 성공 시 자원 차감 + grants 적용.
+     * 이미 구매했거나 자원이 부족하면 false.
+     */
+    purchaseUnlock(u: MetaUnlock): boolean {
+      if (this.purchasedUnlocks.includes(u.id)) return false;
+      if (!this.canAfford(u.resource, u.cost)) return false;
+      this.spend(u.resource, u.cost);
+      this.purchasedUnlocks.push(u.id);
+      pushUnique(this.unlockedRaceIds, u.grantsRaceIds);
+      pushUnique(this.unlockedRelicIds, u.grantsRelicIds);
+      pushUnique(this.unlockedCardIds, u.grantsCardIds);
+      pushUnique(this.unlockedTimelineIds, u.grantsTimelineIds);
+      this.persist();
+      return true;
+    },
+
     /** 디버그/버그 화면용: 메타 초기화. */
     resetAll() {
       const fresh = createEmptyMeta();
@@ -220,6 +310,8 @@ export const useMetaStore = defineStore('meta', {
       this.unlockedRaceIds = fresh.unlockedRaceIds;
       this.unlockedTimelineIds = fresh.unlockedTimelineIds;
       this.unlockedCardIds = fresh.unlockedCardIds;
+      this.unlockedRelicIds = fresh.unlockedRelicIds;
+      this.purchasedUnlocks = fresh.purchasedUnlocks;
       this.codex = fresh.codex;
       this.soulResource = fresh.soulResource;
       this.procInputs = fresh.procInputs;

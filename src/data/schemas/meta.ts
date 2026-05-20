@@ -9,7 +9,7 @@
  * 각 게이지는 % 단계마다 콘텐츠 해금 노드를 풀어준다.
  */
 
-import type { CardId, RaceId, TimelineId } from './base';
+import type { CardId, RaceId, RelicId, TimelineId } from './base';
 
 /** 한 메타 게이지 — 0~1 정규화 또는 누적 정수. */
 export interface MetaGauge {
@@ -66,6 +66,11 @@ export interface MetaProgress {
   unlockedRaceIds: RaceId[];
   unlockedTimelineIds: TimelineId[];
   unlockedCardIds: CardId[];
+  /** 해금된 유물 id 목록 (메타 투자 결과 — A단계는 데이터 구조만, B단계에서 풀 필터링). */
+  unlockedRelicIds: RelicId[];
+
+  /** 구매 완료한 메타 해금 항목 id (중복 구매 방지). */
+  purchasedUnlocks: string[];
 
   /** 도감 (휘발 재화의 영구 기록). */
   codex: CodexEntry[];

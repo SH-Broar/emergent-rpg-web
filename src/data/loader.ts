@@ -43,6 +43,8 @@ import type {
   EquipmentSlot,
   ColorEffect,
   Element,
+  MetaResource,
+  MetaUnlock,
   Monster,
   MonsterIntent,
   NodeMap,
@@ -751,6 +753,7 @@ export interface GameData {
   equipments: Map<string, Equipment>;
   chaos: Map<string, ChaosModifier>;
   clues: Map<string, import('@/data/schemas').Clue>;
+  unlocks: Map<string, MetaUnlock>;
 }
 
 // ========== Clue ==========
@@ -836,6 +839,47 @@ export function parseChaos(ini: IniData): Map<string, ChaosModifier> {
   return result;
 }
 
+// ========== Meta Unlock ==========
+
+const VALID_META_RESOURCES = ['hyperion', 'insight', 'soul'] as const;
+function isMetaResource(v: string): v is MetaResource {
+  return (VALID_META_RESOURCES as readonly string[]).includes(v);
+}
+
+/**
+ * 메타 해금 항목 — INI 섹션 [unlock.<id>].
+ * resource(hyperion|insight|soul) + cost + grants_* (콤마 구분 id).
+ * resource가 유효하지 않으면 해당 항목은 건너뜀.
+ */
+export function parseUnlocks(ini: IniData): Map<string, MetaUnlock> {
+  const result = new Map<string, MetaUnlock>();
+  for (const [section, fields] of Object.entries(ini)) {
+    if (!section.startsWith('unlock.')) continue;
+    const id = sectionIdSuffix(section);
+    const resource = fields.resource ?? '';
+    if (!isMetaResource(resource)) {
+      console.warn(`[unlock] '${id}' — 알 수 없는 resource '${resource}', 건너뜀.`);
+      continue;
+    }
+    const grantsRaceIds = parseList(fields.grants_race);
+    const grantsCardIds = parseList(fields.grants_card);
+    const grantsRelicIds = parseList(fields.grants_relic);
+    const grantsTimelineIds = parseList(fields.grants_timeline);
+    result.set(id, {
+      id,
+      name: fields.name ?? id,
+      description: fields.description,
+      resource,
+      cost: parseNumber(fields.cost, 0),
+      grantsRaceIds: grantsRaceIds.length > 0 ? grantsRaceIds : undefined,
+      grantsCardIds: grantsCardIds.length > 0 ? grantsCardIds : undefined,
+      grantsRelicIds: grantsRelicIds.length > 0 ? grantsRelicIds : undefined,
+      grantsTimelineIds: grantsTimelineIds.length > 0 ? grantsTimelineIds : undefined,
+    });
+  }
+  return result;
+}
+
 /** 데이터 파일들. 이후 확장 시 파일 추가만. */
 const DATA_FILES = [
   // === 1장 (제 4시대 61년) — main 연표 ===
@@ -875,6 +919,8 @@ const DATA_FILES = [
   'data/chaos/chaos-mvr.txt',
   // === 단서 (2026-05-19) — 간접 스토리 + 조건부 chain. ===
   'data/clues/act-1-clues.txt',
+  // === 메타 해금 (A단계) — 자원 소비 투자 카탈로그. ===
+  'data/meta/unlocks.txt',
   // === peace-310 (MVR) — 파일은 학습용으로 보존, 로딩에서는 제외. ===
   // 'data/timelines/peace-310.txt',
   // 'data/node-maps/peace-310-map.txt',
@@ -932,6 +978,7 @@ export async function loadAllData(baseUrl?: string): Promise<GameData> {
     equipments: parseEquipments(merged),
     chaos: parseChaos(merged),
     clues: parseClues(merged),
+    unlocks: parseUnlocks(merged),
   };
 }
 
@@ -960,5 +1007,6 @@ export function loadFromText(text: string): GameData {
     equipments: parseEquipments(ini),
     chaos: parseChaos(ini),
     clues: parseClues(ini),
+    unlocks: parseUnlocks(ini),
   };
 }

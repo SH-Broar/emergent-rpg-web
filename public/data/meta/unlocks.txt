@@ -1,0 +1,24 @@
+# 메타 해금 항목 — 히페리온/해석/영혼을 소비해 콘텐츠 개방.
+# resource = hyperion | insight | soul, grants_* = 콤마 구분 id.
+# A단계: 종족 해금만 실동작. 카드/유물/연표 해금은 B단계에서 추가.
+
+[unlock.u-race-moth]
+name = 나방
+description = 작은 몸, 빠른 손 — 민첩의 그릇.
+resource = hyperion
+cost = 30
+grants_race = moth
+
+[unlock.u-race-phantom]
+name = 팬텀
+description = 속이고 비트는, 시간의 빈틈을 두는 그릇.
+resource = hyperion
+cost = 45
+grants_race = phantom
+
+[unlock.u-race-arcana]
+name = 아르카나
+description = 빛을 본질로 하는 신적 그릇.
+resource = hyperion
+cost = 60
+grants_race = arcana
