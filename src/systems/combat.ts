@@ -200,7 +200,7 @@ export function playCard(handIndex: number, monster: Monster): { enemyDefeated: 
 
   // 동적 cost: c-tripps-rage는 *이번 런 누적 피해*만큼 cost 경감.
   let baseCost = card.cost;
-  if (card.id === 'c-tripps-rage') {
+  if (card.id === 'c-tripps-rage' || card.id === 'c-tripps-rage-plus') {
     const damageReceived = r.runDamageReceived ?? 0;
     baseCost = Math.max(0, baseCost - damageReceived);
   }
@@ -261,7 +261,7 @@ export function playCard(handIndex: number, monster: Monster): { enemyDefeated: 
 
   // c-rize-relay 특수 후처리: 같은 카드 *cost 0* 복제를 핸드에 push (이번 턴 안 재사용 가능).
   // 핸드 풀이면 discard로 fallback. 카드 자체 ID 비교 — 데이터 드리븐이 아닌 *카드 특이 분기*.
-  if (card.id === 'c-rize-relay') {
+  if (card.id === 'c-rize-relay' || card.id === 'c-rize-relay-plus') {
     const replica = { ...card, cost: 0 };
     if (c.hand.length < 10) {
       c.hand = [...c.hand, replica];

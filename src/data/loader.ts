@@ -114,6 +114,14 @@ export function parseCards(ini: IniData, prefix = 'card'): Map<string, Card> {
     const card = parseOneCard(id, fields);
     if (card) result.set(card.id, card);
   }
+  // 강화판 자동 연결: `c-X-plus` 카드가 존재하면 `c-X.upgradeToId`를 자동 설정.
+  // 명명 규칙(`-plus` 접미사)으로 모든 카드가 강화판을 갖도록 — 데이터의 명시 upgrade_to가 우선.
+  // 강화판 자신(`c-X-plus`)은 `c-X-plus-plus`가 없으므로 재강화되지 않음.
+  for (const [id, card] of result) {
+    if (card.upgradeToId) continue;
+    const plusId = `${id}-plus`;
+    if (result.has(plusId)) card.upgradeToId = plusId;
+  }
   // 등급별 최소 한도 검증 — race/character 출처만. 게임 로직에 영향 X, console.warn으로 안내.
   for (const card of result.values()) {
     const v = validateCardBaseline(card);

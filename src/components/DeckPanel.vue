@@ -43,6 +43,40 @@ function keyOf(card: Card): string {
   return card.instanceId ?? card.id;
 }
 
+/** 한 덱에 같은 종류 카드는 최대 3장. 강화판은 *원본과 같은 종류*로 카운트. */
+const MAX_COPIES_PER_FAMILY = 3;
+
+/** 강화판 id → 원본 id 역매핑 (upgrade_to 기준). 강화판도 원본과 한 패밀리. */
+const baseIdOf = computed(() => {
+  const m = new Map<string, string>();
+  for (const def of data.cards.values()) {
+    if (def.upgradeToId) m.set(def.upgradeToId, def.id);
+  }
+  return m;
+});
+function familyKey(card: Card): string {
+  return baseIdOf.value.get(card.id) ?? card.id;
+}
+
+/** instanceId → 컬렉션 카드 조회. */
+const cardByInstance = computed(() => {
+  const m = new Map<string, Card>();
+  for (const c of run.data.collection) {
+    if (c.instanceId) m.set(c.instanceId, c);
+  }
+  return m;
+});
+
+/** 현재 활성 세트에서 주어진 패밀리에 속한 카드 장수. */
+function activeFamilyCount(family: string): number {
+  let n = 0;
+  for (const id of activeIds.value) {
+    const card = cardByInstance.value.get(id);
+    if (card && familyKey(card) === family) n++;
+  }
+  return n;
+}
+
 /** 패널이 열릴 때마다 현재 deck 상태를 편집 세트에 복사. */
 watch(
   () => props.open,
@@ -72,6 +106,10 @@ function toggle(card: Card) {
   } else {
     if (activeIds.value.size >= run.data.deckSize) {
       ui.toast('warning', `덱 슬롯은 ${run.data.deckSize}장으로 제한됩니다.`);
+      return;
+    }
+    if (activeFamilyCount(familyKey(card)) >= MAX_COPIES_PER_FAMILY) {
+      ui.toast('warning', `같은 종류 카드는 최대 ${MAX_COPIES_PER_FAMILY}장까지 넣을 수 있습니다.`);
       return;
     }
     activeIds.value.add(k);

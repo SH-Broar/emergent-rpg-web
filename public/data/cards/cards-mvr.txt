@@ -3,6 +3,8 @@
 # + 강화판 9장 (기본/일반).
 # 효과 표기: effects = kind:value:target, kind:value:target, ...
 # upgrade_to = X — 공방 강화 시 X 카드로 교체 (없으면 강화 불가).
+# 자동 연결: `c-X-plus` 카드가 있으면 로더가 `c-X.upgrade_to`를 자동 설정 (명시값 우선).
+#   → 모든 카드는 같은 id에 `-plus` 강화판을 두면 강화 가능. 파일 끝 강화판 섹션 참고.
 
 # ========== 기본 등급 (종족 시드) ==========
 
@@ -1114,3 +1116,847 @@ cost = 1
 trigger = manual
 effects = damage-top-color:1:enemy, draw-if-color:1:self:light:5
 flavor = *가장 짙은 한 색*이 — 솟구쳐 — 친다. 빛이 — 충분히 — 쌓였다면, 다음 — 한 수까지 — 따라온다.
+
+
+# ============================================================
+# 전 카드 강화판 (-plus) — 공방 강화로만 도달. upgrade_to 없음 (재강화 불가).
+# 하이브리드 설계: 단순(damage/block/heal/draw) 카드는 +수치/-코스트,
+# 특이 메커니즘(status/특수 핸들러) 카드는 질적 강화(스택↑·배율↑·페널티 제거·코스트0 등).
+# 원본 rank/source/element 유지. cost 변경은 해당 카드에서 의도된 강화.
+# ============================================================
+
+# ---------- 희귀/전설 코어 ----------
+
+[card.c-second-wind-plus]
+name = 두 번째 숨결+
+rank = rare
+source = hyperion
+element = water
+cost = 1
+trigger = manual
+effects = heal:12:self, draw:2:self
+flavor = 한 번 더 — 깊이 — 가라앉았다 — 떠오른다.
+
+[card.c-deep-breath-plus]
+name = 깊은 호흡+
+rank = rare
+source = hyperion
+element = wind
+cost = 0
+trigger = manual
+effects = draw:2:self, heal:3:self
+flavor = 비가 — 그치기 전, 두 호흡.
+
+[card.c-transcend-strike-plus]
+name = 전생자의 검+
+rank = legendary
+source = hyperion
+element = light
+cost = 2
+trigger = manual
+effects = damage:26:enemy, draw:1:self
+flavor = "여기 — 끝까지 — 있겠습니다."
+
+[card.c-shadow-rebuke-plus]
+name = 그림자 꾸짖음+
+rank = rare
+source = boss
+element = dark
+cost = 1
+trigger = manual
+effects = damage:9:enemy, apply-status:2:enemy:vulnerable
+flavor = 더는 — 어디에도 — 숨지 못한다.
+
+[card.c-iluneon-stopped-noon-plus]
+name = 멈춘 정각+
+rank = legendary
+source = shop
+element = light
+cost = 2
+trigger = manual
+effects = damage:20:enemy, draw:2:self
+flavor = 정각이 — 더 오래 — 멈춰 — 섰다.
+
+[card.c-moss-ember-strike-plus]
+name = 잔불의 일격+
+rank = legendary
+source = shop
+element = fire
+cost = 2
+trigger = manual
+effects = damage:26:enemy, apply-status:5:enemy:poison
+flavor = 식지 않은 — 점이, 더 — 오래 — 탄다.
+
+[card.c-tacomi-hologram-mirror-plus]
+name = 홀로그램 반사+
+rank = legendary
+source = shop
+element = electric
+cost = 2
+trigger = manual
+effects = block:18:self, draw:3:self
+flavor = 거울 속 — 자신이 — 둘로 — 늘었다.
+
+[card.c-alimes-mist-vow-plus]
+name = 안개의 약속+
+rank = legendary
+source = shop
+element = water
+cost = 2
+trigger = manual
+effects = heal:26:self, draw:1:self
+flavor = 흩어지기 전 — 약속이, 더 — 깊다.
+
+[card.c-manonickla-sunset-wall-plus]
+name = 석양의 벽+
+rank = legendary
+source = shop
+element = iron
+cost = 2
+trigger = manual
+effects = block:28:self, damage:9:enemy
+flavor = 노을이 — 더 — 두껍게, 등 뒤에 — 섰다.
+
+# ---------- NPC 영입 ----------
+
+[card.c-swift-step-plus]
+name = 발 빠른 한 걸음+
+rank = basic
+source = npc
+element = wind
+cost = 0
+trigger = manual
+effects = draw:1:self, next-turn-energy:1:self
+flavor = 한 걸음 — 더 — 가볍게. 이제 — 숨을 — 깎지 — 않는다.
+
+[card.c-fast-mail-plus]
+name = 빠른 우체 한 통+
+rank = basic
+source = npc
+element = wind
+cost = 0
+trigger = manual
+effects = draw:1:self, next-turn-energy:1:self
+flavor = 길이 — 더 — 짧아졌다. 다치지 — 않고 — 닿는다.
+
+[card.c-balanced-edge-plus]
+name = 균형의 한 자루+
+rank = common
+source = npc
+element = iron
+cost = 2
+trigger = manual
+effects = damage-min-color:2:enemy
+flavor = 가장 낮은 자리를 — 두 배로 — 들어 — 친다.
+
+[card.c-binding-ward-plus]
+name = 결계의 한 줄+
+rank = common
+source = npc
+element = dark
+cost = 1
+trigger = manual
+effects = block:6:self, apply-status:2:enemy:weakness
+flavor = 풀어낸 — 줄이, 두 겹으로 — 얽힌다.
+
+[card.c-quiet-arc-plus]
+name = 조용한 한 호+
+rank = common
+source = npc
+element = light
+cost = 2
+trigger = manual
+effects = damage:16:enemy, apply-status:2:enemy:vulnerable
+flavor = 느린 호가 — 더 — 멀리, 더 — 깊이 — 닿는다.
+
+[card.c-flash-capture-plus]
+name = 한 컷+
+rank = common
+source = npc
+element = fire
+cost = 1
+trigger = manual
+effects = damage:8:enemy, apply-status:2:enemy:vulnerable
+flavor = 셔터가 — 두 번, 빈틈이 — 더 — 벌어진다.
+
+[card.c-rize-relay-plus]
+name = 한 판 갈래+
+rank = common
+source = npc
+element = fire
+cost = 1
+trigger = manual
+effects = damage:7:enemy
+flavor = 같은 한 판이 — 더 — 무겁게, 다시 — 손에 — 돌아온다. *이번 한 판은* — 비용이 — 없다.
+
+[card.c-spirit-call-plus]
+name = 모인 영혼들+
+rank = common
+source = npc
+element = dark
+cost = 1
+trigger = manual
+effects = damage-color-count:3:enemy, draw:1:self
+flavor = 더 — 많은 색의 영혼이, 한 자리에 — 모인다.
+
+[card.c-warm-cup-plus]
+name = 따뜻한 한 잔+
+rank = common
+source = npc
+element = water
+cost = 1
+trigger = manual
+effects = heal:8:self, draw:1:self
+flavor = 더 — 따뜻한 — 한 잔. 오래 — 데운다.
+
+[card.c-tripps-rage-plus]
+name = 트립스의 한 판+
+rank = rare
+source = npc
+element = fire
+cost = 20
+trigger = manual
+effects = damage:75:enemy, apply-status:1:enemy:vulnerable, apply-status:1:enemy:weakness
+flavor = 받은 — 만큼이, 더 — 무겁게 — 갚아진다.
+
+[card.c-trace-step-plus]
+name = 발자취 한 자리+
+rank = rare
+source = npc
+element = fire
+cost = 0
+trigger = manual
+effects = draw:1:self, return-hand-to-deck:1:self, next-turn-energy:1:self
+flavor = 발자취를 — 더 — 가볍게 — 따라간다.
+
+[card.c-growing-leaf-plus]
+name = 자라나는 잎새+
+rank = rare
+source = npc
+element = earth
+cost = 2
+trigger = manual
+effects = growing-block:3:self
+flavor = 처음부터 — 더 — 두껍게, 쓸수록 — 더 — 자란다.
+
+[card.c-zero-spark-plus]
+name = 한 점의 한 자국+
+rank = rare
+source = npc
+element = electric
+cost = 1
+trigger = manual
+effects = damage:12:enemy, apply-status:3:enemy:vulnerable
+flavor = 스파크가 — 더 — 깊이, 약한 자리를 — 짚는다.
+
+[card.c-alti-resonance-plus]
+name = 두 자아의 공명+
+rank = rare
+source = npc
+element = electric
+cost = 1
+trigger = manual
+effects = draw:2:self, heal:7:self
+flavor = 두 자아가 — 더 — 단정하게 — 겹친다.
+
+[card.c-flame-web-plus]
+name = 화염 거미줄+
+rank = rare
+source = npc
+element = fire
+cost = 1
+trigger = manual
+effects = damage:11:enemy, apply-status:4:enemy:vulnerable
+flavor = 더 — 많은 — 실이, 적을 — 촘촘히 — 묶는다.
+
+[card.c-orca-tide-plus]
+name = 범고래의 한 물결+
+rank = rare
+source = npc
+element = water
+cost = 1
+trigger = manual
+effects = damage:13:enemy, block:8:self
+flavor = 더 — 큰 물결, 더 — 두꺼운 — 한 겹.
+
+[card.c-trade-coil-plus]
+name = 또꼬리 한 감기+
+rank = rare
+source = npc
+element = earth
+cost = 1
+trigger = manual
+effects = damage:11:enemy, block:9:self
+flavor = 더 — 길게 — 감았다 — 푼다.
+
+[card.c-lop-sign-plus]
+name = 귀 기울인 한 신호+
+rank = rare
+source = npc
+element = earth
+cost = 1
+trigger = manual
+effects = draw:1:self, block:8:self
+flavor = 더 — 먼 — 소리까지, 미리 — 듣는다.
+
+[card.c-tide-veil-plus]
+name = 물의 한 겹+
+rank = rare
+source = npc
+element = water
+cost = 1
+trigger = manual
+effects = block:9:self, heal:5:self
+flavor = 더 — 두꺼운 — 물 한 겹.
+
+[card.c-bear-bastion-plus]
+name = 쇳덩이 한 손+
+rank = rare
+source = npc
+element = iron
+cost = 2
+trigger = manual
+effects = block:17:self, damage:11:enemy
+flavor = 더 — 묵직한 — 한 손이 — 내린다.
+
+[card.c-tiger-rush-plus]
+name = 빠른 삼연+
+rank = rare
+source = npc
+element = electric
+cost = 2
+trigger = manual
+effects = damage:7:enemy, damage:7:enemy, damage:7:enemy
+flavor = 번개가 — 더 — 깊게, 세 번 — 가른다.
+
+# ---------- 측정 어려운 1차 ----------
+
+[card.c-prism-strike-plus]
+name = 가장 짙은 한 색+
+rank = rare
+source = hyperion
+element = light
+cost = 1
+trigger = manual
+effects = damage-top-color:2:enemy
+flavor = 가장 — 높은 색이, 두 배로 — 쏟아진다.
+
+[card.c-prism-guard-plus]
+name = 가장 짙은 한 겹+
+rank = rare
+source = hyperion
+element = water
+cost = 1
+trigger = manual
+effects = block-top-color:2:self
+flavor = 가장 — 높은 색이, 두 겹으로 — 선다.
+
+[card.c-spectrum-edge-plus]
+name = 여덟 빛의 한 칼+
+rank = rare
+source = event
+element = iron
+cost = 2
+trigger = manual
+effects = damage-color-count:5:enemy
+flavor = 지닌 색 — 하나하나가, 더 — 무겁게 — 갈라진다.
+
+[card.c-blood-pact-plus]
+name = 피로 산 한 방+
+rank = rare
+source = event
+element = fire
+cost = 1
+trigger = manual
+effects = damage-from-hp:9:enemy
+flavor = 더 — 깊은 피로, 더 — 크게 — 갚는다.
+
+# ---------- 측정 어려운 2차 (수화/퇴행/디버프) ----------
+
+[card.c-beast-skin-plus]
+name = 짐승의 가죽+
+rank = common
+source = npc
+element = fire
+cost = 1
+trigger = manual
+effects = apply-status:1:self:feral, damage:8:enemy
+flavor = 더 — 사납게, 더 — 깊이 — 든다.
+
+[card.c-fang-frenzy-plus]
+name = 송곳니 난무+
+rank = common
+source = npc
+element = iron
+cost = 1
+trigger = manual
+effects = damage:9:enemy
+flavor = 한 입이, 더 — 깊은 — 두 입으로.
+
+[card.c-primal-collapse-plus]
+name = 근원으로의 붕괴+
+rank = rare
+source = event
+element = fire
+cost = 1
+trigger = manual
+effects = damage:28:enemy, apply-status:1:self:regress
+flavor = 더 — 많은 색을, 한 번에 — 게워 — 낸다.
+
+[card.c-elder-curse-plus]
+name = 태고의 저주+
+rank = rare
+source = boss
+element = dark
+cost = 2
+trigger = manual
+effects = apply-status:3:enemy:regress, damage:9:enemy
+flavor = 적의 — 단단함이, 더 — 오래 — 멎는다.
+
+[card.c-debuff-storm-plus]
+name = 약점의 폭풍+
+rank = common
+source = npc
+element = dark
+cost = 1
+trigger = manual
+effects = damage-per-debuff:7:enemy
+flavor = 쌓아 둔 — 약함이, 더 — 매섭게 — 되돌아온다.
+
+[card.c-cursed-blade-plus]
+name = 저주받은 검+
+rank = rare
+source = event
+element = iron
+cost = 2
+trigger = manual
+effects = damage-per-debuff:11:enemy
+flavor = 겹친 — 상처마다, 검이 — 더 — 깊다.
+
+[card.c-vuln-detonate-plus]
+name = 약점 폭발+
+rank = common
+source = event
+element = electric
+cost = 1
+trigger = manual
+effects = consume-vulnerable:6:enemy
+flavor = 벌려 둔 — 자리가, 더 — 크게 — 터진다.
+
+[card.c-prism-overflow-plus]
+name = 바람 넘침+
+rank = common
+source = hyperion
+element = wind
+cost = 1
+trigger = manual
+effects = draw:1:self, draw-if-color:3:self:wind:4
+flavor = 바람이 — 조금만 — 차도, 길이 — 더 — 열린다.
+
+[card.c-last-stand-plus]
+name = 마지막 버팀+
+rank = rare
+source = npc
+element = fire
+cost = 1
+trigger = manual
+effects = damage-from-hp:11:enemy
+flavor = 더 — 깎아, 더 — 크게 — 되갚는다.
+
+[card.c-tortoise-thorn-plus]
+name = 등껍질의 가시+
+rank = rare
+source = npc
+element = earth
+cost = 2
+trigger = manual
+effects = block:14:self, damage-per-hand:4:enemy
+flavor = 더 — 단단히 — 웅크릴수록, 가시가 — 더 — 돋는다.
+
+[card.c-venom-bloom-plus]
+name = 독꽃 피우기+
+rank = common
+source = npc
+element = earth
+cost = 1
+trigger = manual
+effects = apply-status:6:enemy:poison, damage:3:enemy
+flavor = 더 — 많은 — 독꽃이, 안쪽에서 — 핀다.
+
+[card.c-double-hex-plus]
+name = 두 겹의 저주+
+rank = common
+source = npc
+element = dark
+cost = 1
+trigger = manual
+effects = apply-status:2:enemy:weakness, apply-status:2:enemy:vulnerable
+flavor = 두 — 저주가, 더 — 짙게 — 감싼다.
+
+# ---------- 측정 어려운 3차 (소멸/전환/마나/연동/성장) ----------
+
+[card.c-final-blade-plus]
+name = 마지막 칼+
+rank = rare
+source = event
+element = iron
+cost = 2
+trigger = manual
+effects = damage:42:enemy, exhaust-self:0:self
+flavor = 단 — 한 번이, 더 — 깊이 — 박힌다.
+
+[card.c-last-bulwark-plus]
+name = 마지막 보루+
+rank = rare
+source = npc
+element = earth
+cost = 2
+trigger = manual
+effects = block:40:self, exhaust-self:0:self
+flavor = 더 — 거대한 벽이, 단 — 한 번 — 선다.
+
+[card.c-doom-mark-plus]
+name = 파멸의 낙인+
+rank = rare
+source = event
+element = dark
+cost = 0
+trigger = manual
+effects = apply-status:4:enemy:vulnerable, apply-status:4:enemy:weakness, exhaust-self:0:self
+flavor = 낙인이, 더 — 가볍게 — 새겨진다.
+
+[card.c-shell-slam-plus]
+name = 등껍질 후려치기+
+rank = common
+source = npc
+element = iron
+cost = 1
+trigger = manual
+effects = block-to-damage:2:enemy
+flavor = 두른 — 두께가, 두 배로 — 돌아간다.
+
+[card.c-bastion-counter-plus]
+name = 성벽의 반격+
+rank = rare
+source = npc
+element = earth
+cost = 2
+trigger = manual
+effects = block:12:self, block-to-damage:1:enemy
+flavor = 더 — 두껍게 — 두르고, 그대로 — 떨군다.
+
+[card.c-all-in-plus]
+name = 전부 쏟기+
+rank = common
+source = event
+element = fire
+cost = 0
+trigger = manual
+effects = spend-all-energy:6:enemy
+flavor = 남김없이, 더 — 깊게 — 붓는다.
+
+[card.c-overdraw-burst-plus]
+name = 과부하 폭발+
+rank = rare
+source = hyperion
+element = electric
+cost = 0
+trigger = manual
+effects = spend-all-energy:9:enemy
+flavor = 회로 — 끝까지, 더 — 큰 — 섬광.
+
+[card.c-comrades-charge-plus]
+name = 동행의 돌격+
+rank = common
+source = npc
+element = wind
+cost = 1
+trigger = manual
+effects = damage-per-companion:6:enemy
+flavor = 함께 — 걸어온 — 무게가, 더 — 멀리 — 닿는다.
+
+[card.c-bonded-strike-plus]
+name = 인연의 일격+
+rank = rare
+source = npc
+element = light
+cost = 2
+trigger = manual
+effects = damage-per-companion:10:enemy, block:6:self
+flavor = 떠올린 — 이름마다, 손목이 — 더 — 무겁다.
+
+[card.c-collectors-strike-plus]
+name = 수집가의 일격+
+rank = common
+source = event
+element = iron
+cost = 1
+trigger = manual
+effects = damage-per-relic:6:enemy
+flavor = 모아 — 온 것이, 더 — 무겁게 — 울린다.
+
+[card.c-hoarders-wrath-plus]
+name = 보물의 분노+
+rank = rare
+source = event
+element = electric
+cost = 2
+trigger = manual
+effects = damage-per-relic:10:enemy
+flavor = 지녀 — 온 빛이, 더 — 멀리 — 번진다.
+
+[card.c-rising-fang-plus]
+name = 자라나는 송곳니+
+rank = common
+source = npc
+element = fire
+cost = 1
+trigger = manual
+effects = growing-damage:6:enemy
+flavor = 처음부터 — 더 — 길게, 쓸수록 — 더.
+
+[card.c-mounting-storm-plus]
+name = 부풀어 오르는 폭풍+
+rank = rare
+source = hyperion
+element = wind
+cost = 1
+trigger = manual
+effects = growing-damage:10:enemy
+flavor = 첫 — 바람부터, 이미 — 거세다.
+
+[card.c-shared-breath-plus]
+name = 나눈 숨+
+rank = common
+source = npc
+element = water
+cost = 1
+trigger = manual
+effects = heal-per-hand:3:self
+flavor = 손에 — 쥔 — 만큼, 더 — 깊게 — 가라앉는다.
+
+[card.c-bloom-recovery-plus]
+name = 만개의 회복+
+rank = rare
+source = npc
+element = earth
+cost = 2
+trigger = manual
+effects = heal-per-hand:6:self, draw:1:self
+flavor = 더 — 풍성한 — 손이, 더 — 풍성한 — 숨.
+
+[card.c-mirror-echo-plus]
+name = 거울의 메아리+
+rank = rare
+source = npc
+element = light
+cost = 0
+trigger = manual
+effects = next-card-double:0:self
+flavor = 다음 — 한 수가, 더 — 가볍게 — 두 번 — 울린다.
+
+[card.c-toxic-spire-plus]
+name = 독의 첨탑+
+rank = common
+source = npc
+element = earth
+cost = 1
+trigger = manual
+effects = apply-status:4:enemy:poison, damage-per-debuff:4:enemy
+flavor = 더 — 높은 — 첨탑이, 쌓인 — 약함을 — 두드린다.
+
+[card.c-prism-overload-plus]
+name = 색의 과적+
+rank = rare
+source = hyperion
+element = light
+cost = 2
+trigger = manual
+effects = damage-color-count:3:enemy, damage-top-color:2:enemy
+flavor = 넓게도, 깊게도 — 더 — 무겁게.
+
+[card.c-frail-rupture-plus]
+name = 취약의 균열+
+rank = common
+source = event
+element = dark
+cost = 1
+trigger = manual
+effects = apply-status:3:enemy:vulnerable, consume-vulnerable:4:enemy
+flavor = 더 — 크게 — 벌리고, 더 — 크게 — 터뜨린다.
+
+[card.c-sacrifice-edge-plus]
+name = 희생의 칼날+
+rank = rare
+source = event
+element = fire
+cost = 1
+trigger = manual
+effects = damage-from-hp:10:enemy, draw:1:self
+flavor = 더 — 깎아 — 갚고, 새 — 길을 — 연다.
+
+# ---------- 상점 평범 ----------
+
+[card.c-shop-cut-plus]
+name = 무난한 베기+
+rank = common
+source = shop
+element = iron
+cost = 1
+trigger = manual
+effects = damage:10:enemy
+flavor = 같은 — 칼, 조금 — 더 — 든다.
+
+[card.c-shop-brace-plus]
+name = 무난한 막기+
+rank = common
+source = shop
+element = earth
+cost = 1
+trigger = manual
+effects = block:10:self
+flavor = 한 번 — 더, 단단하게.
+
+[card.c-shop-flick-plus]
+name = 가벼운 손짓+
+rank = basic
+source = shop
+element = wind
+cost = 0
+trigger = manual
+effects = draw:2:self
+flavor = 손목 — 한 번에, 두 장.
+
+[card.c-shop-sip-plus]
+name = 한 모금+
+rank = common
+source = shop
+element = water
+cost = 1
+trigger = manual
+effects = heal:9:self
+flavor = 조금 — 더 — 깊은 — 한 모금.
+
+[card.c-shop-poke-plus]
+name = 잽+
+rank = basic
+source = shop
+element = fire
+cost = 0
+trigger = manual
+effects = damage:6:enemy
+flavor = 가볍지만, 조금 — 더 — 따갑다.
+
+[card.c-shop-heavy-plus]
+name = 묵직한 일격+
+rank = common
+source = shop
+element = iron
+cost = 2
+trigger = manual
+effects = damage:15:enemy
+flavor = 더 — 묵직한 — 한 방.
+
+[card.c-shop-wall-plus]
+name = 든든한 벽+
+rank = common
+source = shop
+element = earth
+cost = 2
+trigger = manual
+effects = block:18:self
+flavor = 더 — 큰 방패.
+
+[card.c-shop-study-plus]
+name = 잠깐 살핌+
+rank = common
+source = shop
+element = wind
+cost = 1
+trigger = manual
+effects = draw:3:self
+flavor = 잠깐 — 더 — 깊이 — 본다.
+
+[card.c-shop-salve-plus]
+name = 응급 처치+
+rank = common
+source = shop
+element = water
+cost = 1
+trigger = manual
+effects = heal:6:self, block:5:self
+flavor = 조금 — 더 — 낫고, 조금 — 더 — 단단하게.
+
+# ---------- 미니 마을 전설 ----------
+
+[card.c-triflower-emberstorm-plus]
+name = 잿불 폭풍+
+rank = legendary
+source = shop
+element = fire
+cost = 2
+trigger = manual
+effects = damage:20:enemy, apply-status:4:enemy:poison
+flavor = 식지 않은 — 불씨가, 더 — 오래 — 쏟아진다.
+
+[card.c-falcon-skydive-plus]
+name = 급강하+
+rank = legendary
+source = shop
+element = wind
+cost = 2
+trigger = manual
+effects = damage-per-hand:7:enemy
+flavor = 더 — 높은 자리에서, 손에 쥔 — 만큼 — 더.
+
+[card.c-yusezria-corebreak-plus]
+name = 정수핵 깨기+
+rank = legendary
+source = shop
+element = iron
+cost = 2
+trigger = manual
+effects = block:26:self, block-to-damage:1:enemy
+flavor = 더 — 단단해진 만큼, 더 — 크게 — 되돌린다.
+
+[card.c-diropel-totem-plus]
+name = 무늬의 빛+
+rank = legendary
+source = shop
+element = earth
+cost = 2
+trigger = manual
+effects = damage-color-count:6:enemy, draw:1:self
+flavor = 무늬가, 더 — 많은 — 색으로 — 빛난다.
+
+# ---------- 마무리 조합 ----------
+
+[card.c-soul-harvest-plus]
+name = 영혼 거두기+
+rank = rare
+source = event
+element = dark
+cost = 2
+trigger = manual
+effects = damage-per-debuff:6:enemy, apply-status:3:enemy:poison
+flavor = 더 — 많은 약함을 — 거두고, 더 — 짙은 — 독을 — 심는다.
+
+[card.c-wild-rush-plus]
+name = 야성의 돌진+
+rank = common
+source = npc
+element = fire
+cost = 1
+trigger = manual
+effects = apply-status:1:self:feral, damage-per-hand:4:enemy
+flavor = 짐승이 — 든 채, 손에 쥔 — 만큼 — 더 — 들이친다.
+
+[card.c-color-surge-plus]
+name = 색의 분출+
+rank = rare
+source = hyperion
+element = light
+cost = 1
+trigger = manual
+effects = damage-top-color:2:enemy, draw-if-color:1:self:light:4
+flavor = 가장 짙은 색이, 두 배로 — 솟구친다.
