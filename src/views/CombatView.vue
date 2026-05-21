@@ -7,7 +7,7 @@
  * - 패배 시: 메시지 + '돌아간다' 버튼 → 메타 갱신 후 메인
  */
 
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
@@ -28,6 +28,7 @@ import { colorBonusForCardEffectKind } from '@/systems/stats';
 import { bonusesFromEffective } from '@/systems/equipment';
 import { cardEffectKindLabel, cardEffectDescription, effectTargetLabel, statusDescription, intentLabel, intentDescription } from '@/systems/labels';
 import { useItem } from '@/systems/item';
+import { useCombatFx, CARD_PLAY_DELAY } from '@/composables/useCombatFx';
 import type { Card, CardEffect, Combatant, Item, Monster } from '@/data/schemas';
 
 const router = useRouter();
@@ -71,11 +72,58 @@ const monster = computed<Monster>(() => {
 
 const combat = computed(() => run.data.combat);
 
+// === 전투 FX (플로팅 숫자 / 흔들림 / 플래시) — HP·방어 변화를 watch 해 트리거 ===
+const fx = useCombatFx();
+// 카드 사용 애니메이션 상태 — 번쩍→사라짐 동안 해당 손패 인덱스를 잠근다.
+const playingIndex = ref<number | null>(null);
+
+// 적/플레이어 HP·방어 변화를 감시해 플로팅 숫자를 스폰.
+watch(
+  () => combat.value?.enemy.hp,
+  (hp, prev) => {
+    if (hp === undefined || prev === undefined) return;
+    if (hp < prev) fx.showDamage('enemy', prev - hp);
+    else if (hp > prev) fx.showHeal('enemy', hp - prev);
+  },
+);
+watch(
+  () => combat.value?.player.hp,
+  (hp, prev) => {
+    if (hp === undefined || prev === undefined) return;
+    if (hp < prev) fx.showDamage('player', prev - hp);
+    else if (hp > prev) fx.showHeal('player', hp - prev);
+  },
+);
+watch(
+  () => combat.value?.player.block,
+  (b, prev) => {
+    if (b === undefined || prev === undefined) return;
+    if (b > prev) fx.showBlock('player', b - prev);
+  },
+);
+watch(
+  () => combat.value?.enemy.block,
+  (b, prev) => {
+    if (b === undefined || prev === undefined) return;
+    if (b > prev) fx.showBlock('enemy', b - prev);
+  },
+);
+
 function play(index: number) {
-  const result = playCardSys(index, monster.value);
-  if (result.enemyDefeated) {
-    onVictory();
+  // 애니메이션 중 중복 입력 차단.
+  if (playingIndex.value !== null) return;
+  const finish = () => {
+    playingIndex.value = null;
+    const result = playCardSys(index, monster.value);
+    if (result.enemyDefeated) onVictory();
+  };
+  if (CARD_PLAY_DELAY <= 0) {
+    finish();
+    return;
   }
+  // 선택 카드에 .card--playing 부여(번쩍→위로 날아가며 페이드) 후 실제 play.
+  playingIndex.value = index;
+  window.setTimeout(finish, CARD_PLAY_DELAY);
 }
 
 function endTurn() {
@@ -226,11 +274,21 @@ void ui;
   <!-- 전투 진행 -->
   <main v-if="phase === 'combat' && combat" class="combat-view">
     <header class="hdr">
-      <div class="player">
+      <div class="combatant player" :class="{ 'is-hit': fx.playerHit.value }">
+        <!-- 플로팅 숫자 오버레이 (피해/회복/방어) -->
+        <div class="fx-layer">
+          <span
+            v-for="f in fx.floats.value.filter((x) => x.target === 'player')"
+            :key="f.id"
+            class="float-num"
+            :class="`float-num--${f.kind}`"
+            :style="{ '--drift': f.drift }"
+          >{{ f.text }}</span>
+        </div>
         <h3>전생자</h3>
         <div class="bar bar--hp">
           HP {{ combat.player.hp }} / {{ combat.player.maxHp }}
-          <span v-if="combat.player.block > 0" class="block">🛡 {{ combat.player.block }}</span>
+          <span v-if="combat.player.block > 0" class="block" :class="{ 'block--pulse': fx.playerShield.value }">🛡 {{ combat.player.block }}</span>
         </div>
         <div class="mana">마나 {{ combat.mana }} / {{ combat.maxMana }}</div>
         <ul class="statuses">
@@ -242,11 +300,20 @@ void ui;
 
       <div class="vs">⚔ 턴 {{ combat.turn }}</div>
 
-      <div class="enemy">
+      <div class="combatant enemy" :class="{ 'is-hit': fx.enemyHit.value }">
+        <div class="fx-layer">
+          <span
+            v-for="f in fx.floats.value.filter((x) => x.target === 'enemy')"
+            :key="f.id"
+            class="float-num"
+            :class="`float-num--${f.kind}`"
+            :style="{ '--drift': f.drift }"
+          >{{ f.text }}</span>
+        </div>
         <h3>{{ monster.name }}</h3>
         <div class="bar bar--enemy-hp">
           HP {{ combat.enemy.hp }} / {{ combat.enemy.maxHp }}
-          <span v-if="combat.enemy.block > 0" class="block">🛡 {{ combat.enemy.block }}</span>
+          <span v-if="combat.enemy.block > 0" class="block" :class="{ 'block--pulse': fx.enemyShield.value }">🛡 {{ combat.enemy.block }}</span>
         </div>
         <div class="intent" v-tooltip="intentDescription(combat.enemyIntent)">다음: {{ intentLabel(combat.enemyIntent) }} <span class="intent__info">ⓘ</span></div>
         <ul class="statuses statuses--enemy">
@@ -302,8 +369,8 @@ void ui;
           v-for="(card, i) in combat.hand"
           :key="`fd-${card.instanceId ?? card.id}-${i}`"
           class="card card--facedown"
-          :class="{ 'card--disabled': !canPlay(card) }"
-          @click="canPlay(card) && play(i)"
+          :class="{ 'card--disabled': !canPlay(card), 'card--playing': playingIndex === i }"
+          @click="playingIndex === null && canPlay(card) && play(i)"
         >
           <div class="facedown__mark">?</div>
           <div class="facedown__note">가려진 카드</div>
@@ -315,9 +382,9 @@ void ui;
         v-for="(card, i) in combat.hand"
         :key="`${card.instanceId ?? card.id}-${i}`"
         class="card"
-        :class="{ 'card--disabled': !canPlay(card), 'card--locked': isLocked(card), 'card--junk': card.unplayable }"
+        :class="{ 'card--disabled': !canPlay(card), 'card--locked': isLocked(card), 'card--junk': card.unplayable, 'card--playing': playingIndex === i }"
         :style="{ borderColor: cardBorder(card) }"
-        @click="canPlay(card) && play(i)"
+        @click="playingIndex === null && canPlay(card) && play(i)"
       >
         <div class="card__head">
           <span class="card__cost" :class="{ 'card__cost--up': displayCost(card) > card.cost }">{{ displayCost(card) }}</span>
@@ -327,7 +394,7 @@ void ui;
         </div>
         <div class="card__effects">
           <span v-for="(e, ei) in card.effects" :key="ei" class="effect" v-tooltip="cardEffectDescription(e)">
-            {{ cardEffectKindLabel(e) }}
+            <span class="effect__label">{{ cardEffectKindLabel(e) }}</span>
             <strong class="eff-val">{{ effectiveValue(e) || (e.value ?? '') }}</strong>
             <span
               v-if="statusDelta(e) !== 0"
@@ -439,33 +506,145 @@ void ui;
 .potion__name { font-weight: 600; font-size: 0.85rem; color: #f6e8b8; }
 .potion__eff { font-size: 0.72rem; color: #b6d8e0; }
 
-.hand { display: flex; gap: 0.8rem; padding: 1rem; overflow-x: auto; align-items: stretch; }
+/* === 손패 — 트럼프 카드 비율(5:7), 화면 가로에 ~7장 === */
+/* 카드 폭은 뷰포트 기반: 좁을수록 줄고 최대 110px. 7장 + gap 이 1열에 들어오는 기준. */
+.hand {
+  --card-w: clamp(46px, 12vw, 110px); /* 모바일 ~390px에서 약 7장, 데스크톱 110px 상한 */
+  --card-h: calc(var(--card-w) * 1.4); /* 5:7 ≈ ×1.4 */
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.8rem 1rem 1.4rem;
+  align-items: flex-end;
+  justify-content: center;
+  /* 8장 이상일 때만 가로 스크롤(7장까지는 겹침 없이 한눈에). */
+  overflow-x: auto;
+  overflow-y: visible;
+  min-height: calc(var(--card-h) + 1.2rem);
+  scrollbar-width: thin;
+}
 .card {
   flex-shrink: 0;
-  width: 180px;
-  padding: 0.8rem;
+  width: var(--card-w);
+  height: var(--card-h);
+  padding: 0.35rem;
   background: rgba(255,255,255,0.04);
   border: 2px solid;
   border-radius: 8px;
   cursor: pointer;
-  transition: transform 120ms ease, background 120ms ease;
+  transition: transform 120ms ease, background 120ms ease, box-shadow 120ms ease;
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: 0.2rem;
+  overflow: hidden;
+  /* 손패가 많을 때 살짝 겹쳐 ~7장이 우선 들어오게 — 음수 마진 + hover 시 앞으로. */
+  margin-left: -0.2rem;
 }
-.card:hover:not(.card--disabled) { transform: translateY(-6px); background: rgba(255,255,255,0.08); }
+.card:first-child { margin-left: 0; }
+.card:hover:not(.card--disabled) {
+  transform: translateY(-10px) scale(1.06);
+  background: rgba(255,255,255,0.08);
+  box-shadow: 0 8px 22px rgba(0,0,0,0.5);
+  z-index: 5;
+}
 .card--disabled { opacity: 0.4; cursor: not-allowed; }
-.card__head { display: flex; align-items: center; gap: 0.4rem; }
-.card__cost { background: #c08eff; color: #0d0e14; padding: 0.2rem 0.5rem; border-radius: 50%; font-weight: 700; font-size: 0.85rem; }
-.card__name { flex: 1; color: #f6e8b8; font-weight: 600; }
-.card__rank { font-size: 0.7rem; text-transform: uppercase; }
-.card__effects { display: flex; flex-wrap: wrap; gap: 0.3rem; font-size: 0.8rem; }
-.effect { background: rgba(0,0,0,0.4); padding: 0.2rem 0.5rem; border-radius: 4px; color: #b6b6c4; display: inline-flex; gap: 0.25rem; align-items: baseline; }
+.card__head { display: flex; align-items: center; gap: 0.2rem; min-height: 1.2rem; }
+.card__cost {
+  flex-shrink: 0;
+  background: #c08eff; color: #0d0e14;
+  width: 1.25rem; height: 1.25rem;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 50%; font-weight: 700; font-size: 0.72rem;
+}
+.card__name {
+  flex: 1; color: #f6e8b8; font-weight: 600; font-size: 0.66rem; line-height: 1.1;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.card__rank { display: none; } /* 작은 카드에선 테두리 색으로 등급 표현(공간 절약). */
+.card__effects { display: flex; flex-wrap: wrap; gap: 0.15rem; font-size: 0.62rem; align-content: flex-start; flex: 1; overflow: hidden; }
+.effect { background: rgba(0,0,0,0.4); padding: 0.1rem 0.28rem; border-radius: 4px; color: #b6b6c4; display: inline-flex; gap: 0.12rem; align-items: baseline; max-width: 100%; }
+.effect__label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .eff-val { color: #f6e8b8; font-weight: 700; }
 .eff-delta { font-size: 0.85em; font-weight: 700; }
 .eff-delta--up { color: #8effb8; }
 .eff-delta--down { color: #ff8e8e; }
 .eff-target { color: #888; }
+
+/* === 카드 사용 애니메이션: 번쩍(글로우/스케일업) → 위로 날아가며 페이드 === */
+.card--playing {
+  pointer-events: none;
+  animation: card-play 260ms ease-in forwards;
+  z-index: 20;
+}
+@keyframes card-play {
+  0%   { transform: translateY(0) scale(1); filter: brightness(1); box-shadow: 0 0 0 rgba(246,232,184,0); }
+  35%  { transform: translateY(-18px) scale(1.18); filter: brightness(2.2); box-shadow: 0 0 26px rgba(246,232,184,0.9); }
+  100% { transform: translateY(-90px) scale(0.7); filter: brightness(1.4); opacity: 0; }
+}
+
+/* === 전투원 영역 + 피격/플래시 + 플로팅 숫자 === */
+.combatant { position: relative; }
+.is-hit { animation: hit-shake 360ms ease; }
+.enemy.is-hit::after, .player.is-hit::after {
+  content: '';
+  position: absolute; inset: -6px;
+  border-radius: 10px;
+  background: rgba(255, 80, 80, 0.22);
+  pointer-events: none;
+  animation: hit-flash 360ms ease forwards;
+}
+@keyframes hit-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+@keyframes hit-flash {
+  0% { opacity: 0.9; }
+  100% { opacity: 0; }
+}
+.block--pulse { animation: shield-pulse 420ms ease; display: inline-block; }
+@keyframes shield-pulse {
+  0% { transform: scale(1); filter: brightness(1); }
+  40% { transform: scale(1.4); filter: brightness(2.4) drop-shadow(0 0 6px #8eedff); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+
+/* 플로팅 숫자 오버레이 — 전투원 영역 위로 절대 위치, 떠오르며 페이드. */
+.fx-layer { position: absolute; inset: 0; pointer-events: none; overflow: visible; z-index: 30; }
+.float-num {
+  position: absolute;
+  left: 50%; top: 30%;
+  transform: translateX(-50%);
+  font-weight: 800;
+  font-size: 1.5rem;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+  white-space: nowrap;
+  animation: float-up 1000ms ease-out forwards;
+}
+.float-num--damage { color: #ff6b6b; }
+.float-num--heal { color: #8effb8; }
+.float-num--block { color: #8eedff; font-size: 1.1rem; }
+@keyframes float-up {
+  0% { opacity: 0; transform: translate(calc(-50% + (var(--drift) * 22px)), 8px) scale(0.7); }
+  20% { opacity: 1; transform: translate(calc(-50% + (var(--drift) * 22px)), -4px) scale(1.15); }
+  100% { opacity: 0; transform: translate(calc(-50% + (var(--drift) * 40px)), -52px) scale(1); }
+}
+
+/* 모션 감소 선호 — 흔들림/이동 최소화, 정보는 유지. */
+@media (prefers-reduced-motion: reduce) {
+  .card--playing { animation: none; opacity: 0; }
+  .is-hit { animation: none; }
+  .enemy.is-hit::after, .player.is-hit::after { animation: none; opacity: 0; }
+  .block--pulse { animation: none; }
+  .float-num { animation: float-up-reduced 700ms ease-out forwards; }
+  .card:hover:not(.card--disabled) { transform: translateY(-4px); }
+}
+@keyframes float-up-reduced {
+  0% { opacity: 0; }
+  15% { opacity: 1; transform: translateX(-50%) translateY(-6px); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-18px); }
+}
 
 /* 버프/디버프 리스트 */
 .statuses { list-style: none; padding: 0; margin: 0.3rem 0 0; display: flex; flex-wrap: wrap; gap: 0.3rem; }
@@ -482,7 +661,8 @@ void ui;
 .status[data-key="weakness"], .status[data-key="frail"], .status[data-key="vulnerable"], .status[data-key="poison"], .status[data-key="burn"], .status[data-key="regress"] { color: #ff8e8e; border-color: rgba(255,142,142,0.35); }
 /* feral(수화): 공격 ↑ / 방어 불가 — 양날. 주황 강조. */
 .status[data-key="feral"] { color: #ffb86c; border-color: rgba(255,184,108,0.4); }
-.card__flavor { font-size: 0.75rem; color: #6c6c7c; font-style: italic; margin: 0; }
+/* 작은 카드에선 flavor 숨김(상세는 툴팁/도감에서 유지). */
+.card__flavor { display: none; }
 
 /* === 구속/삼킴 (grapple) + 발버둥 === */
 .grapple {
@@ -504,15 +684,15 @@ void ui;
 
 /* 잠긴 카드 / 잡카드 / 비용 상승 / 뒷면 */
 .card--locked { border-style: dashed !important; }
-.card__lock { font-size: 0.9rem; }
+.card__lock { font-size: 0.7rem; }
 .card--junk { background: rgba(120,90,90,0.18); }
 .card__cost--up { background: #ff8e8e; color: #160d0d; }
 .card--facedown {
   align-items: center; justify-content: center; text-align: center;
   border-color: #555 !important; background: repeating-linear-gradient(45deg, rgba(255,255,255,0.03), rgba(255,255,255,0.03) 8px, rgba(255,255,255,0.06) 8px, rgba(255,255,255,0.06) 16px);
 }
-.facedown__mark { font-size: 2.4rem; color: #8a8a99; font-weight: 800; }
-.facedown__note { font-size: 0.75rem; color: #6c6c7c; }
+.facedown__mark { font-size: 1.6rem; color: #8a8a99; font-weight: 800; }
+.facedown__note { font-size: 0.6rem; color: #6c6c7c; }
 
 /* 변신(체인지) 배너 */
 .transform-banner {
