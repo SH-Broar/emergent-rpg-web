@@ -15,6 +15,12 @@ export interface BossIntent {
   /** 데미지/방어 값 등 */
   value?: number;
   description: string;
+  /**
+   * 원본 raw 토큰 (콜론 분리 전 전체) — 다중 토큰 인텐트(bind:4:1, debuff:2:weakness,
+   * add-card-draw:c-junk-wound:1 등)를 손실 없이 combat 엔진(Monster.intents)으로 흘려보내는 진실원.
+   * combat.ts는 encoded를 콜론으로 직접 파싱하므로 kind/value로 인코딩이 손상되면 안 된다.
+   */
+  encoded?: string;
 }
 
 /** 보스의 다단계 패턴. 일정 HP 이하로 떨어지면 phase 전환. */

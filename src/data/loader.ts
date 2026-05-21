@@ -391,6 +391,7 @@ function parseOneBoss(id: string, f: IniSection, ini: IniData): Boss {
         kind: (kind as BossIntent['kind']) ?? 'attack',
         value: valueStr ? Number(valueStr) : undefined,
         description: tok,
+        encoded: tok, // 다중 토큰 보존 — 어댑터가 그대로 combat 엔진에 전달.
       };
     });
     const mechanic = pf.mechanic as ('anchor' | 'stillness' | 'rewind' | undefined);
@@ -413,6 +414,7 @@ function parseOneBoss(id: string, f: IniSection, ini: IniData): Boss {
         kind: (kind as BossIntent['kind']) ?? 'attack',
         value: valueStr ? Number(valueStr) : undefined,
         description: tok,
+        encoded: tok, // 다중 토큰 보존.
       };
     });
     signatureVariants.push({

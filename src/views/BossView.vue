@@ -16,12 +16,13 @@ import {
   playCard as playCardSys,
   endPlayerTurn,
   clearCombat,
+  struggle,
   statusBonusForCardEffectKind,
 } from '@/systems/combat';
 import { applyBossRewards } from '@/systems/boss-rewards';
 import { colorBonusForCardEffectKind } from '@/systems/stats';
 import { bonusesFromEffective } from '@/systems/equipment';
-import { cardEffectKindLabel, cardEffectDescription, statusDescription, unlockKeyLabel } from '@/systems/labels';
+import { cardEffectKindLabel, cardEffectDescription, effectTargetLabel, statusDescription, intentLabel, unlockKeyLabel } from '@/systems/labels';
 import { useItem } from '@/systems/item';
 import type { Boss, BossPhase, BossSignatureVariant, Card, CardEffect, Combatant, Item, Monster } from '@/data/schemas';
 
@@ -91,8 +92,10 @@ const bossAsMonster = computed<Monster>(() => {
     activeVariant.value?.intentOverrides ??
     activePhase.value?.intents ??
     [];
+  // encoded(원본 raw 토큰)가 진실원 — 다중 토큰 인텐트(bind:4:1, debuff:2:weakness 등)를 손실 없이 전달.
+  // 구 보스 데이터(encoded 없음)는 kind:value로 fallback → "attack:8" 식으로 그대로 작동.
   const intents = sourceIntents.length > 0
-    ? sourceIntents.map((i) => ({ encoded: `${i.kind}:${i.value ?? 0}` }))
+    ? sourceIntents.map((i) => ({ encoded: i.encoded ?? `${i.kind}:${i.value ?? 0}` }))
     : [{ encoded: 'attack:8' }];
   return {
     id: b.id,
@@ -147,11 +150,10 @@ const mechanicLabel = computed<string>(() => {
   }
 });
 
-/** 카드가 닻에 잠겼는지. */
+/** 카드가 잠겼는지 — 보스 닻(anchor)과 grapple bind 둘 다 lockedCardIds를 쓰므로 mechanic 조건 없이 검사. */
 function isLocked(c: Card): boolean {
   const cmb = combat.value;
-  if (!cmb?.bossMechanic) return false;
-  return !!c.instanceId && (cmb.lockedCardIds?.includes(c.instanceId) ?? false);
+  return !!c.instanceId && (cmb?.lockedCardIds?.includes(c.instanceId) ?? false);
 }
 
 function startBattle() {
@@ -220,11 +222,17 @@ const rankColors: Record<string, string> = {
   legendary: '#ffe88e',
 };
 function cardBorder(c: Card): string { return rankColors[c.rank] ?? '#a4a4b0'; }
+/** 표시·판정용 실효 비용 — 몬스터/보스 비용 교란(cost-up) 반영. */
+function displayCost(c: Card): number {
+  const up = combat.value?.costUp?.amount ?? 0;
+  return Math.max(0, c.cost + up);
+}
 function canPlay(c: Card): boolean {
   if (!combat.value) return false;
-  // 보스 기믹: 닻에 잠긴 카드는 사용 불가.
-  if (isLocked(c)) return false;
-  return combat.value.mana >= c.cost;
+  if (c.unplayable) return false;            // 잡카드(상처/저주) — 사용 불가.
+  if (isLocked(c)) return false;             // 닻/구속으로 잠김.
+  if (combat.value.frozenTurn) return false; // 마비/정지 턴.
+  return combat.value.mana >= displayCost(c);
 }
 
 // 카드 effect 표시 — 컬러 보너스 반영된 정적 최종값 + 전투 buff/debuff (+N) 부가.
@@ -249,6 +257,8 @@ const statusLabels: Record<string, string> = {
   burn: '화상',
   feral: '수화',
   regress: '퇴행',
+  paralyze: '마비',
+  spasm: '경련',
 };
 function statusEntries(c: Combatant | undefined) {
   if (!c) return [] as { key: string; count: number; label: string }[];
@@ -256,6 +266,15 @@ function statusEntries(c: Combatant | undefined) {
     .filter(([, v]) => v > 0)
     .map(([key, count]) => ({ key, count, label: statusLabels[key] ?? key }));
 }
+
+// === 구속/삼킴(grapple) + 발버둥 / 변신 / 손패 은폐(obscure) — CombatView와 동일 ===
+const grapple = computed(() => combat.value?.grapple);
+const obscured = computed(() => (combat.value?.obscuredTurns ?? 0) > 0);
+function doStruggle() {
+  struggle();
+}
+const transform = computed(() => run.data.transform);
+const formName = computed(() => data.races.get(run.data.transform?.formRaceId ?? '')?.name ?? '변신');
 
 // === 전투 포션 (combat=true) — 턴당 1회, 마나 무관 ===
 const combatPotions = computed<Item[]>(() => run.data.items.filter((i) => i.combat));
@@ -312,7 +331,7 @@ function usePotion(itm: Item) {
           <div class="bar bar--boss">HP {{ combat.enemy.hp }} / {{ combat.enemy.maxHp }}
             <span v-if="combat.enemy.block > 0" class="block">🛡 {{ combat.enemy.block }}</span>
           </div>
-          <div class="intent">다음: {{ combat.enemyIntent }}</div>
+          <div class="intent">다음: {{ intentLabel(combat.enemyIntent) }}</div>
           <div v-if="mechanicLabel" class="mechanic">
             <span class="mechanic__name">{{ mechanicLabel }}</span>
             <span
@@ -328,6 +347,27 @@ function usePotion(itm: Item) {
           </ul>
         </div>
       </header>
+
+      <!-- 변신(체인지) — 본모습 카드로 해제. 해제 안 하고 이기면 런에 지속 -->
+      <div v-if="transform" class="transform-banner">
+        🦊 변신 중 — <strong>{{ formName }}</strong> · '본모습' 카드로 해제 (안 풀고 이기면 계속 이 모습)
+      </div>
+
+      <!-- 구속/삼킴 — 발버둥으로 탈출 -->
+      <div v-if="grapple" class="grapple" :class="`grapple--${grapple.kind}`">
+        <span class="grapple__label">
+          {{ grapple.label ?? (grapple.kind === 'bind' ? '구속' : '삼켜짐') }}
+          <span class="grapple__gauge">탈출까지 {{ grapple.gauge }}</span>
+          <span v-if="grapple.ramp > 0" class="grapple__ramp">방치 +{{ grapple.ramp }}</span>
+        </span>
+        <button
+          class="struggle"
+          :disabled="combat.frozenTurn || combat.struggledThisTurn || combat.mana < 1"
+          @click="doStruggle"
+        >
+          발버둥 (마나 1)
+        </button>
+      </div>
 
       <!-- 전투 포션 벨트 — 턴당 1회, 마나 무관 -->
       <div v-if="combatPotions.length > 0" class="potions">
@@ -347,18 +387,34 @@ function usePotion(itm: Item) {
       </div>
 
       <section class="hand">
+        <!-- 은폐(obscure) 시 카드 뒷면 — 무엇인지 모른 채 위치로만 사용 가능 -->
+        <template v-if="obscured">
+          <div
+            v-for="(card, i) in combat.hand"
+            :key="`fd-${card.instanceId ?? card.id}-${i}`"
+            class="card card--facedown"
+            :class="{ 'card--disabled': !canPlay(card) }"
+            @click="canPlay(card) && play(i)"
+          >
+            <div class="facedown__mark">?</div>
+            <div class="facedown__note">가려진 카드</div>
+          </div>
+        </template>
+
+        <template v-else>
         <div
           v-for="(card, i) in combat.hand"
-          :key="`${card.id}-${i}`"
+          :key="`${card.instanceId ?? card.id}-${i}`"
           class="card"
-          :class="{ 'card--disabled': !canPlay(card), 'card--locked': isLocked(card) }"
+          :class="{ 'card--disabled': !canPlay(card), 'card--locked': isLocked(card), 'card--junk': card.unplayable }"
           :style="{ borderColor: cardBorder(card) }"
           @click="canPlay(card) && play(i)"
         >
-          <div v-if="isLocked(card)" class="card__lock">⛓ 닻</div>
           <div class="card__head">
-            <span class="card__cost">{{ card.cost }}</span>
+            <span class="card__cost" :class="{ 'card__cost--up': displayCost(card) > card.cost }">{{ displayCost(card) }}</span>
             <span class="card__name">{{ card.name }}</span>
+            <span v-if="isLocked(card)" class="card__lock" title="묶여서 쓸 수 없다">🔒</span>
+            <span v-else class="card__rank" :style="{ color: cardBorder(card) }">{{ card.rank }}</span>
           </div>
           <div class="card__effects">
             <span v-for="(e, ei) in card.effects" :key="ei" class="effect" v-tooltip="cardEffectDescription(e)">
@@ -371,9 +427,11 @@ function usePotion(itm: Item) {
               >
                 ({{ statusDelta(e) > 0 ? '+' : '' }}{{ statusDelta(e) }})
               </span>
+              <span v-if="e.target" class="eff-target">{{ effectTargetLabel(e.target) }}</span>
             </span>
           </div>
         </div>
+        </template>
       </section>
 
       <footer class="pile-info">
@@ -470,13 +528,56 @@ function usePotion(itm: Item) {
 .card { flex-shrink: 0; width: 160px; padding: 0.8rem; background: rgba(255,255,255,0.04); border: 2px solid; border-radius: 8px; cursor: pointer; transition: transform 120ms ease; display: flex; flex-direction: column; gap: 0.3rem; }
 .card:hover:not(.card--disabled) { transform: translateY(-6px); }
 .card--disabled { opacity: 0.4; cursor: not-allowed; }
-.card--locked { position: relative; filter: grayscale(0.8); border-style: dashed !important; }
-.card__lock { position: absolute; top: 0.3rem; right: 0.4rem; font-size: 0.72rem; color: #c08eff; font-weight: 700; }
 .card__head { display: flex; align-items: center; gap: 0.4rem; }
 .card__cost { background: #c08eff; color: #0d0e14; padding: 0.2rem 0.5rem; border-radius: 50%; font-weight: 700; }
 .card__name { flex: 1; color: #f6e8b8; font-weight: 600; font-size: 0.95rem; }
+.card__rank { font-size: 0.7rem; text-transform: uppercase; }
 .card__effects { display: flex; flex-wrap: wrap; gap: 0.2rem; font-size: 0.75rem; }
-.effect { background: rgba(0,0,0,0.4); padding: 0.15rem 0.4rem; border-radius: 4px; color: #b6b6c4; }
+.effect { background: rgba(0,0,0,0.4); padding: 0.15rem 0.4rem; border-radius: 4px; color: #b6b6c4; display: inline-flex; gap: 0.25rem; align-items: baseline; }
+.eff-val { color: #f6e8b8; font-weight: 700; }
+.eff-delta { font-size: 0.85em; font-weight: 700; }
+.eff-delta--up { color: #8effb8; }
+.eff-delta--down { color: #ff8e8e; }
+.eff-target { color: #888; }
+
+/* === 구속/삼킴 (grapple) + 발버둥 (CombatView와 동일) === */
+.grapple {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  margin: 0.4rem 0; padding: 0.5rem 1rem; border-radius: 8px;
+  border: 1px solid rgba(255,142,142,0.5); background: rgba(255,142,142,0.08);
+}
+.grapple--devour { border-color: rgba(192,142,255,0.55); background: rgba(192,142,255,0.1); }
+.grapple__label { color: #ffb88e; font-weight: 700; display: inline-flex; gap: 0.6rem; align-items: baseline; }
+.grapple--devour .grapple__label { color: #d6b8ff; }
+.grapple__gauge { font-size: 0.85rem; color: #f6e8b8; font-weight: 600; }
+.grapple__ramp { font-size: 0.8rem; color: #ff8e8e; font-weight: 700; }
+.struggle {
+  padding: 0.5rem 1.1rem; border-radius: 6px; cursor: pointer; font-weight: 700; font: inherit;
+  background: rgba(255,184,108,0.22); border: 1px solid rgba(255,184,108,0.6); color: #ffe2c0;
+}
+.struggle:hover:not(:disabled) { background: rgba(255,184,108,0.34); }
+.struggle:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* 잠긴 카드 / 잡카드 / 비용 상승 / 뒷면 (CombatView와 동일) */
+.card--locked { border-style: dashed !important; }
+.card__lock { font-size: 0.9rem; }
+.card--junk { background: rgba(120,90,90,0.18); }
+.card__cost--up { background: #ff8e8e; color: #160d0d; }
+.card--facedown {
+  align-items: center; justify-content: center; text-align: center;
+  border-color: #555 !important; background: repeating-linear-gradient(45deg, rgba(255,255,255,0.03), rgba(255,255,255,0.03) 8px, rgba(255,255,255,0.06) 8px, rgba(255,255,255,0.06) 16px);
+}
+.facedown__mark { font-size: 2.4rem; color: #8a8a99; font-weight: 800; }
+.facedown__note { font-size: 0.75rem; color: #6c6c7c; }
+
+/* 변신(체인지) 배너 (CombatView와 동일) */
+.transform-banner {
+  margin: 0.4rem 0; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.9rem;
+  color: #ffd8a8; border: 1px solid rgba(255,184,108,0.55);
+  background: linear-gradient(90deg, rgba(255,140,90,0.14), rgba(192,142,255,0.14));
+}
+.transform-banner strong { color: #ffe8b8; }
+
 .pile-info { display: flex; gap: 1.5rem; padding: 0.8rem 1rem; background: rgba(0,0,0,0.4); border-radius: 8px; color: #b6b6c4; align-items: center; }
 .end-turn { margin-left: auto; padding: 0.6rem 1.2rem; background: rgba(192,142,255,0.2); border: 1px solid rgba(192,142,255,0.5); color: #f6e8b8; border-radius: 6px; cursor: pointer; font-weight: 600; font: inherit; }
 
