@@ -126,7 +126,7 @@ result_text = 병 안에 빛이 흔들렸다. 손이 무거워졌고 들고 갈 
 [event.ev-fountain-vow-aftermath.choice.2]
 label = 돌무더기에 손을 얹는다
 custom = pulse-all-colors-3
-result_text = 손바닥이 여덟 가지 결로 떨렸다. 몸 안의 색들이 한꺼번에 한 단계 짙어졌다.
+result_text = 손바닥이 여덟 가지 줄로 떨렸다. 몸 안의 색들이 한꺼번에 한 단계 짙어졌다.
 
 [event.ev-fountain-vow-aftermath.choice.3]
 label = 그대로 지나친다
