@@ -7,7 +7,16 @@
 #   color-all:N       — 8 컬러 모두 += N
 #   grant-card:ID     — 카드 한 장 컬렉션 추가
 #   grant-relic:ID    — 유물 한 점 추가
-#   teleport-village  — 임의의 village 노드로 즉시 이동
+#   teleport-village  — 임의의 village 노드로 즉시 이동 (맵 전용)
+#   cleanse-transform — 변신(체인지) 정화 — 원래 모습 복귀
+# 전투 포션 (combat = true, 턴당 1회): 전투 중에만 사용. 전투 상태에 직접 작용.
+#   combat-mana:N            — 전투 마나 +N
+#   combat-draw:N            — 전투 중 카드 N장 드로우
+#   combat-block:N           — 전투 중 방어 +N
+#   combat-enemy-status:S:N  — 적에게 status S(vulnerable/weakness/poison 등) N 스택
+#   combat-self-status:S:N   — 자신에게 status S(strength 등) N 스택
+#   combat-free-grapple      — 구속/삼킴 즉시 해제
+#   heal:N (combat=true)     — 전투 중이면 combat HP + 런 HP 동시 회복
 
 [item.i-potion-small]
 name = 작은 회복약
@@ -87,6 +96,105 @@ name = 모노의 카드 인장
 description = 사용하면 *결심의 섬광* 한 장이 손에 떨어진다.
 rank = rare
 effects = grant-card:c-resolve-flash
+consumable = true
+
+
+# ============================================================
+# 전투 포션 (combat = true) — *전투 중에만* 사용, 턴당 1회.
+# 일반 등급은 마을 제작·상점·일반 보상, 희귀 등급은 공방 제작·엘리트 보상.
+# ============================================================
+
+[item.i-combat-balm]
+name = 응급 연고
+description = 상처 위에 바르면 살이 *즉시* 아문다. 한창 싸우는 와중에도 한 줄 숨이 돈다.
+rank = common
+combat = true
+effects = heal:14
+consumable = true
+flavor = 급할 땐 깊이 묻지 말고 — 바르고 다시 막아서라.
+
+[item.i-combat-elixir]
+name = 재생의 영약
+description = 한 모금에 살이 크게 돌아온다. 절벽 끝에서 한 발 물러서는 맛.
+rank = rare
+combat = true
+effects = heal:30
+consumable = true
+
+[item.i-combat-spark]
+name = 정신 각성제
+description = 머리가 *번쩍* 맑아진다. 이번 턴, 한 수를 더 둘 여유가 생긴다.
+rank = common
+combat = true
+effects = combat-mana:2
+consumable = true
+flavor = 너무 자주 마시면 — 손이 떨린다.
+
+[item.i-combat-foresight]
+name = 통찰의 차
+description = 흐릿하던 다음 수가 또렷해진다. 손에 패가 두 장 더 쥐어진다.
+rank = common
+combat = true
+effects = combat-draw:2
+consumable = true
+
+[item.i-combat-bulwark]
+name = 강철 시럽
+description = 마시면 살갗이 잠시 *쇠처럼* 단단해진다. 한 차례의 매를 더 견딘다.
+rank = common
+combat = true
+effects = combat-block:12
+consumable = true
+
+[item.i-combat-mark]
+name = 균열의 가루
+description = 적에게 흩뿌리면 약점이 *벌어진다*. 이어지는 공격이 더 깊이 박힌다.
+rank = common
+combat = true
+effects = combat-enemy-status:vulnerable:2
+consumable = true
+flavor = 틈은 한 번 벌어지면 — 스스로 닫히지 않는다.
+
+[item.i-combat-fog]
+name = 무력화 안개
+description = 적의 팔에서 힘이 빠진다. 한동안 그 매가 무뎌진다.
+rank = rare
+combat = true
+effects = combat-enemy-status:weakness:2
+consumable = true
+
+[item.i-combat-venom]
+name = 잠식의 독병
+description = 적의 살갗에 스미면 *천천히* 갉아먹는다. 가만히 둬도 무너진다.
+rank = rare
+combat = true
+effects = combat-enemy-status:poison:5
+consumable = true
+
+[item.i-combat-rage]
+name = 격동의 불꽃
+description = 한 모금에 팔에 *힘*이 솟는다. 이번 싸움 내내 매가 더 매서워진다.
+rank = rare
+combat = true
+effects = combat-self-status:strength:2
+consumable = true
+flavor = 끓는 동안엔 아픈 줄도 모른다.
+
+[item.i-combat-freedom]
+name = 해방의 줄칼
+description = 묶인 줄도, 삼킨 아가리도 *단번에* 끊는다. 다시 두 발로 선다.
+rank = common
+combat = true
+effects = combat-free-grapple
+consumable = true
+flavor = 빠져나가는 건 — 늘 한 번의 결단이면 된다.
+
+[item.i-combat-tempo]
+name = 박동의 환약
+description = 심장이 빠르게 뛴다. 패가 한 장 더 들어오고, 한 수의 여유가 생긴다.
+rank = rare
+combat = true
+effects = combat-draw:1, combat-mana:1
 consumable = true
 
 
@@ -179,16 +287,36 @@ consumable = true
 
 
 # ============================================================
-# 희소 재료 — Act 1에서 *범용 1종*만 사용.
-# 엘리트·보스 클리어, 채집 후반(컬러 임계), 공방 제조, 이벤트, 특정 NPC 친밀도 보상.
-# 한 런에 3~4개만. 전설 카드 제작에 필수.
+# 희귀도 사다리 재료 (category=material) — 제작·강화 *연료*. effects 비움.
+#   일반재료(common)  i-material-common : 흔함. 일반 몹·채집 전반·상점. 일반 포션/카드 제작.
+#   희귀재료(rare)    i-material-rare   : 중간. 엘리트·채집 후반·T3+. 희귀 카드/포션·희귀 강화.
+#   전설재료(legendary) i-time-answer    : 극희소(런 2~3개). 보스·T4 엘리트. 전설 카드·전설 강화.
+# rank로 등급 구분. 희소성: 일반 흔함 / 희귀 중간 / 전설 극희소.
 # ============================================================
+
+[item.i-material-common]
+name = 흩어진 시간 부스러기
+description = 어느 시대에서나 한 줌씩 굴러다니는 *흔한* 시간의 가루. 그 자체로는 별것 아니나, 모으면 손끝의 재료가 된다.
+rank = common
+category = material
+effects =
+consumable = true
+flavor = 길가에도, 주머니 안쪽에도 — 누구나 한 줌쯤 가지고 있다.
+
+[item.i-material-rare]
+name = 굳은 시간 덩이
+description = 가루가 *오래 눌려* 단단히 굳은 덩이. 일반 부스러기보다 *드물고*, 손에 쥐면 묵직한 무게가 있다.
+rank = rare
+category = material
+effects =
+consumable = true
+flavor = 깊은 자리에서만 굳는다 — 흔한 가루로는 닿지 못하는 등급.
 
 [item.i-time-answer]
 name = 시간의 답
-description = 모노가 *기억하지 못한* 그 시간에서, 단 한 번 *흘러나온* 답. 한 런 안에서 3~4개만 손에 닿는다.
+description = 모노가 *기억하지 못한* 그 시간에서, 단 한 번 *흘러나온* 답. 한 런 안에서 2~3개만 손에 닿는다.
 rank = legendary
-category = rare-material
+category = material
 effects =
 consumable = true
 flavor = "이 시간은 — 빌려드린 게 아니라, 원래 그대 것이었어요."

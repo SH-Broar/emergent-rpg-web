@@ -640,10 +640,14 @@ function parseItemEffect(token: string): ItemEffect | null {
   if (kind === 'grant-card' || kind === 'grant-relic') {
     return { kind, param: parts[1] };
   }
-  if (kind === 'teleport-village') {
+  if (kind === 'teleport-village' || kind === 'cleanse-transform' || kind === 'combat-free-grapple') {
     return { kind };
   }
-  // heal / gold / time-shards / color-all
+  // 전투 status 부여 — param:value (예: combat-enemy-status:vulnerable:2).
+  if (kind === 'combat-enemy-status' || kind === 'combat-self-status') {
+    return { kind, param: parts[1], value: parts[2] ? Number(parts[2]) : 1 };
+  }
+  // heal / gold / time-shards / color-all / combat-mana / combat-draw / combat-block
   return { kind, value: parts[1] ? Number(parts[1]) : 0 };
 }
 
@@ -657,12 +661,16 @@ export function parseItems(ini: IniData): Map<string, Item> {
     const effects = parseList(fields.effects)
       .map(parseItemEffect)
       .filter((e): e is ItemEffect => e !== null);
+    // 옛 별칭 'rare-material' → 'material' 정규화(데이터 파일은 그대로 둬도 안전).
+    const rawCat = fields.category;
+    const category = (rawCat === 'rare-material' ? 'material' : rawCat ?? 'consumable') as Item['category'];
     result.set(id, {
       id,
       name: fields.name ?? id,
       description: fields.description,
       rank,
-      category: (fields.category as Item['category']) ?? 'consumable',
+      category,
+      combat: fields.combat === 'true' ? true : undefined,
       effects,
       consumable: parseBool(fields.consumable, true),
       flavor: fields.flavor,

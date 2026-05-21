@@ -18,16 +18,23 @@ import { availableRelics } from '@/systems/unlocks';
 import { rng } from '@/systems/rng';
 import { effectiveKind as systemEffectiveKind } from '@/systems/map';
 
-const RARE_MATERIAL_ID_ACT1 = 'i-time-answer';
+// 희귀도 사다리 재료 id (Item Economy).
+const MATERIAL_COMMON_ID = 'i-material-common';
+const MATERIAL_RARE_ID = 'i-material-rare';
+const MATERIAL_LEGENDARY_ID = 'i-time-answer';
 
 // 티어 1~4 인덱스(0번은 미사용). 권역 깊이 비례 보상 테이블.
 const NORMAL_COLOR_BY_TIER = [0, 2, 3, 4, 5];
 const ELITE_COLOR_BY_TIER = [0, 4, 6, 8, 10];
 const NORMAL_SPECIALTY_BY_TIER = [0, 0.25, 0.32, 0.40, 0.48];
 const ELITE_SPECIALTY_BY_TIER = [0, 0.50, 0.60, 0.70, 0.80];
-// 희소 재료: 엘리트는 전 티어, 일반은 심화(T3)부터.
-const ELITE_RARE_BY_TIER = [0, 0.25, 0.35, 0.45, 0.60];
-const NORMAL_RARE_BY_TIER = [0, 0, 0, 0.10, 0.18];
+// === 재료 드롭 매트릭스 (Q8) ===
+// 일반 몹 → *일반 재료* (저확률, 흔하므로 양은 적게).
+const NORMAL_COMMON_MAT_BY_TIER = [0, 0.30, 0.35, 0.40, 0.45];
+// 엘리트 → *희귀 재료* (권역 tier 비례).
+const ELITE_RARE_MAT_BY_TIER = [0, 0.30, 0.40, 0.50, 0.62];
+// 엘리트 + 일반몹 → *전설 재료* (극희소): 엘리트는 T3부터, T4 엘리트만 의미 있는 확률. 일반몹엔 없음.
+const ELITE_LEGENDARY_MAT_BY_TIER = [0, 0, 0, 0.06, 0.14];
 // 질 — 엘리트 유물 드롭(심화 이상): T3 0.12 / T4 0.22.
 const ELITE_RELIC_BY_TIER = [0, 0, 0, 0.12, 0.22];
 // 질 — 엘리트 전설 카드 드롭(권역에 legendaryCardIds 있을 때): 0.06 + 0.03·tier.
@@ -88,13 +95,31 @@ export function applyCombatVictoryReward(nodeId: string): void {
     }
   }
 
-  // 희소 재료 — 엘리트 전 티어 / 일반은 T3부터. 티어 비례.
-  const rareChance = isElite ? ELITE_RARE_BY_TIER[tier] : NORMAL_RARE_BY_TIER[tier];
-  if (rareChance > 0 && rng() < rareChance) {
-    const rare = data.items.get(RARE_MATERIAL_ID_ACT1);
-    if (rare) {
-      run.addItem(rare);
-      lines.push(`*희소 재료* '${rare.name}'`);
+  // === 희귀도 사다리 재료 (Q8 매트릭스) ===
+  // 일반 몹 → 일반 재료(저확률). 엘리트 → 희귀 재료(tier 비례). T3+ 엘리트 → 전설 재료 소량.
+  if (isElite) {
+    if (rng() < ELITE_RARE_MAT_BY_TIER[tier]) {
+      const mat = data.items.get(MATERIAL_RARE_ID);
+      if (mat) {
+        run.addItem(mat);
+        lines.push(`*희귀 재료* '${mat.name}'`);
+      }
+    }
+    const legChance = ELITE_LEGENDARY_MAT_BY_TIER[tier];
+    if (legChance > 0 && rng() < legChance) {
+      const leg = data.items.get(MATERIAL_LEGENDARY_ID);
+      if (leg) {
+        run.addItem(leg);
+        lines.push(`*전설 재료* '${leg.name}'`);
+      }
+    }
+  } else {
+    if (rng() < NORMAL_COMMON_MAT_BY_TIER[tier]) {
+      const mat = data.items.get(MATERIAL_COMMON_ID);
+      if (mat) {
+        run.addItem(mat);
+        lines.push(`재료 '${mat.name}'`);
+      }
     }
   }
 

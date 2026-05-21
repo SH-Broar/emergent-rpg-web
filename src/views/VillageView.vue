@@ -16,7 +16,13 @@ import { rng } from '@/systems/rng';
 import { applyAffinityDelta } from '@/systems/affinity';
 import { cardEffectKindLabel, cardEffectDescription } from '@/systems/labels';
 import { availableCards } from '@/systems/unlocks';
-import type { Card, Npc } from '@/data/schemas';
+import {
+  canCraftPotion,
+  craftPotion,
+  listCraftablePotions,
+  potionCostFor,
+} from '@/systems/workshop';
+import type { Card, Item, Npc, Rank } from '@/data/schemas';
 
 const router = useRouter();
 const run = useRunStore();
@@ -186,6 +192,39 @@ function cancelRoll() {
   phase.value = 'menu';
 }
 
+// === 일반 포션 제작 (마을) — 시간조각 + 일반재료. ===
+const potionPanelOpen = ref(false);
+const craftablePotions = computed<Item[]>(() => listCraftablePotions(['basic', 'common']));
+function itemName(id: string): string {
+  return data.items.get(id)?.name ?? id;
+}
+function potionCostLabel(rank: Rank): string {
+  const cost = potionCostFor(rank);
+  return `시간조각 ${cost.timeShards} + ${itemName(cost.materialId)}`;
+}
+function potionEffectShort(e: Item['effects'][number]): string {
+  switch (e.kind) {
+    case 'heal': return `HP +${e.value ?? 0}`;
+    case 'combat-mana': return `마나 +${e.value ?? 0}`;
+    case 'combat-draw': return `드로우 ${e.value ?? 0}`;
+    case 'combat-block': return `방어 +${e.value ?? 0}`;
+    case 'combat-enemy-status': return `적 ${e.param} +${e.value ?? 0}`;
+    case 'combat-self-status': return `${e.param} +${e.value ?? 0}`;
+    case 'combat-free-grapple': return '구속 해제';
+    case 'color-all': return `8컬러 +${e.value ?? 0}`;
+    case 'color-boost': return `${e.param} +${e.value ?? 0}`;
+    case 'gold': return `골드 +${e.value ?? 0}`;
+    case 'time-shards': return `시간조각 +${e.value ?? 0}`;
+    default: return e.kind;
+  }
+}
+function potionSummary(itm: Item): string {
+  return itm.effects.map(potionEffectShort).join(' · ');
+}
+function doCraftPotion(itm: Item) {
+  craftPotion(itm);
+}
+
 function leave() {
   router.push('/game/map');
 }
@@ -252,9 +291,37 @@ const rankColors: Record<string, string> = {
       </div>
 
       <button class="opt" @click="rollCraft">
-        <span class="opt__title">간이 제작</span>
-        <span class="opt__hint">시간의 조각 {{ VILLAGE_CRAFT_COST }} — 무작위 카드 {{ VILLAGE_CRAFT_CHOICES }}장 중 1장 선택</span>
+        <span class="opt__title">간이 카드 제작</span>
+        <span class="opt__hint">시간의 조각 {{ VILLAGE_CRAFT_COST }} — 무작위 일반 카드 {{ VILLAGE_CRAFT_CHOICES }}장 중 1장 선택</span>
       </button>
+
+      <button class="opt" @click="potionPanelOpen = !potionPanelOpen">
+        <span class="opt__title">포션 제작</span>
+        <span class="opt__hint">시간의 조각 + 일반 재료 — 일반 포션 제작</span>
+      </button>
+
+      <!-- 일반 포션 제작 패널 -->
+      <div v-if="potionPanelOpen" class="potion-panel">
+        <ul class="potion-list">
+          <li v-for="itm in craftablePotions" :key="itm.id" class="potion-item">
+            <div class="potion-main">
+              <div class="potion-name">
+                {{ itm.name }}
+                <span class="potion-tag">{{ itm.combat ? '전투' : '맵' }}</span>
+              </div>
+              <div class="potion-eff">{{ potionSummary(itm) }}</div>
+              <div class="potion-req">필요: {{ potionCostLabel(itm.rank) }}</div>
+            </div>
+            <button
+              class="potion-btn"
+              :disabled="!canCraftPotion(itm)"
+              @click="doCraftPotion(itm)"
+            >제작</button>
+          </li>
+          <li v-if="craftablePotions.length === 0" class="potion-empty">제작 가능한 포션이 없습니다.</li>
+        </ul>
+      </div>
+
       <button class="opt opt--leave" @click="leave">떠나기</button>
     </section>
 
@@ -411,4 +478,18 @@ h1 { color: #8effb8; margin: 0; }
 .result__line { color: #d6d6e0; margin: 0; }
 .result__cost { color: #ffe88e; margin: 0; }
 .continue { padding: 0.6rem 1.4rem; background: rgba(192,142,255,0.2); border: 1px solid rgba(192,142,255,0.5); color: inherit; border-radius: 6px; cursor: pointer; font: inherit; font-weight: 600; }
+
+/* 일반 포션 제작 패널 */
+.potion-panel { padding: 0.6rem 0.8rem; background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; }
+.potion-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.4rem; max-height: 320px; overflow-y: auto; }
+.potion-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.4rem 0.5rem; border-bottom: 1px dashed rgba(255,255,255,0.08); }
+.potion-main { flex: 1; min-width: 0; }
+.potion-name { color: #f6e8b8; font-weight: 600; font-size: 0.9rem; }
+.potion-tag { font-size: 0.7rem; color: #8eedff; margin-left: 0.4rem; }
+.potion-eff { color: #c8e6d0; font-size: 0.8rem; }
+.potion-req { color: #b6b6c4; font-size: 0.76rem; }
+.potion-btn { padding: 0.4rem 0.8rem; background: rgba(142, 237, 255, 0.18); border: 1px solid rgba(142, 237, 255, 0.45); color: #d0f0ff; border-radius: 5px; cursor: pointer; font: inherit; font-size: 0.85rem; font-weight: 600; }
+.potion-btn:hover:not(:disabled) { background: rgba(142, 237, 255, 0.32); }
+.potion-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.potion-empty { color: #888; font-style: italic; font-size: 0.85rem; padding: 0.4rem; }
 </style>

@@ -13,15 +13,22 @@ import type { ColorValues } from './npc';
 
 /** 효과 종류. param 의미는 kind 별로 다름. */
 export type ItemEffectKind =
-  | 'heal'            // HP +value
+  | 'heal'            // HP +value (전투 중이면 combat.player.hp + r.hp 양쪽)
   | 'gold'            // 골드 +value
   | 'time-shards'     // 시간의 조각 +value
   | 'color-boost'     // colors[param: keyof ColorValues] += value
   | 'color-all'       // 8 컬러 모두 += value
   | 'grant-card'      // param = cardId
   | 'grant-relic'     // param = relicId
-  | 'teleport-village' // 임의의 village kind 노드로 즉시 이동
-  | 'cleanse-transform'; // 변신(체인지) 정화 — 원래 종족·덱으로 복귀(변신 중이 아니면 무효)
+  | 'teleport-village' // 임의의 village kind 노드로 즉시 이동 (맵 전용)
+  | 'cleanse-transform' // 변신(체인지) 정화 — 원래 종족·덱으로 복귀(변신 중이 아니면 무효)
+  // ===== 전투 포션 전용 (Item Economy) — combat=true 아이템에서만 의미. 전투 밖 사용 시 무효. =====
+  | 'combat-mana'     // 전투 중 마나 +value
+  | 'combat-draw'     // 전투 중 카드 value장 드로우
+  | 'combat-block'    // 전투 중 player.block += value
+  | 'combat-enemy-status' // 전투 중 적에게 status(param) value 스택 부여 (vulnerable/weakness 등)
+  | 'combat-self-status'  // 전투 중 자신에게 status(param) value 스택 부여 (strength 등)
+  | 'combat-free-grapple'; // 전투 중 구속/삼킴 즉시 해제 (grapple=undefined + lockedCardIds 비움)
 
 export interface ItemEffect {
   kind: ItemEffectKind;
@@ -33,13 +40,14 @@ export interface ItemEffect {
 /**
  * 아이템 카테고리 — 사용 패턴 구분.
  *
- *  - `consumable`: 클릭 시 즉시 효과 (HP·골드·컬러 부스트 등). 기본값.
- *  - `specialty`: *마을마다 다른 특산물* — 희귀 카드 제작 재료. 클릭 사용 X.
- *  - `rare-material`: *희소 재료* — 전설 카드 제작 재료. 1런 3~4개 한정.
+ *  - `consumable`: 클릭 시 즉시 효과 (HP·골드·컬러 부스트·전투 포션 등). 기본값.
+ *  - `specialty`: *권역마다 다른 특산물* — 원소/플레이버 축 제작 재료. 클릭 사용 X.
+ *  - `material`: *희귀도 사다리 재료* — rank로 등급 구분(common=일반/rare=희귀/legendary=전설).
+ *      제작·강화 연료. i-time-answer = 전설(legendary). 'rare-material'은 옛 별칭(로더가 정규화).
  *
- * 재료 카테고리는 `effects` 비워두고 사용 시점에서 *제작 슬롯만 비교*에 사용.
+ * 재료 카테고리는 `effects` 비워두고 사용 시점에서 *제작 재료 비교*에 사용.
  */
-export type ItemCategory = 'consumable' | 'specialty' | 'rare-material';
+export type ItemCategory = 'consumable' | 'specialty' | 'material';
 
 /** 아이템 정의 + 런타임 인스턴스. */
 export interface Item extends NamedEntity {
@@ -49,6 +57,11 @@ export interface Item extends NamedEntity {
   rank: Rank;
   /** 카테고리 — 미지정 시 'consumable'. */
   category?: ItemCategory;
+  /**
+   * 전투 중 사용 가능한 포션인지. true면 CombatView에서 사용(턴당 1회).
+   * false/미지정이면 맵·메뉴에서만 사용. (Item Economy)
+   */
+  combat?: boolean;
   /** 즉시 사용 효과 — 클릭 시 순서대로 적용. 재료는 빈 배열. */
   effects: ItemEffect[];
   /** 사용 후 소모? (기본 true) */

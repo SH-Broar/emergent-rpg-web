@@ -8,7 +8,7 @@
  *  - 강화 시 덱 슬롯에 있던 인스턴스면 덱도 동기화 (instanceId 교체).
  */
 
-import type { Card, ForgeCardSlot, ForgeOffer, Rank } from '@/data/schemas';
+import type { Card, ForgeCardSlot, ForgeOffer, Item, Rank } from '@/data/schemas';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
@@ -19,18 +19,37 @@ import { rng } from '@/systems/rng';
 export const UPGRADE_COST_TIME_SHARDS = 8;
 export const FORGE_PRICE_TIME_SHARDS = 15;
 export const LEGENDARY_COST_TIME_SHARDS = 25;
-export const RARE_MATERIAL_ID_ACT1 = 'i-time-answer';
+// 희귀도 사다리 재료 id (Item Economy). 'i-time-answer'(전설)는 RARE_MATERIAL_ID_ACT1로 호환 유지.
+export const MATERIAL_COMMON_ID = 'i-material-common';
+export const MATERIAL_RARE_ID = 'i-material-rare';
+export const MATERIAL_LEGENDARY_ID = 'i-time-answer';
+export const RARE_MATERIAL_ID_ACT1 = MATERIAL_LEGENDARY_ID;
 const FORGE_NUM_OFFERS = 3;
 // 사용자 사양: legendary는 *추첨 폐지*, *마을 고유 풀 + 특산물 + 희소 재료*로만 제작.
 const FORGE_RANKS: Rank[] = ['rare'];
 
-/** 강화 가능한가 — upgrade_to 정의 + 대상 카드 존재 + 자원 충분. */
+// 강화 재료 곡선 (Q9): 기본/일반 강화 = 시간조각만. 희귀 강화 +희귀재료, 전설 강화 +전설재료.
+// *강화 대상 카드의 rank*로 판정 (희귀 카드를 강화 → 희귀재료 요구).
+export const UPGRADE_RARE_COST_TIME_SHARDS = 12;
+export const UPGRADE_LEGENDARY_COST_TIME_SHARDS = 18;
+
+/** 강화 비용 표 — 카드 rank → { 시간조각, 재료 id(있으면) }. */
+export function upgradeCostFor(rank: Rank): { timeShards: number; materialId?: string } {
+  if (rank === 'rare') return { timeShards: UPGRADE_RARE_COST_TIME_SHARDS, materialId: MATERIAL_RARE_ID };
+  if (rank === 'legendary') return { timeShards: UPGRADE_LEGENDARY_COST_TIME_SHARDS, materialId: MATERIAL_LEGENDARY_ID };
+  // basic / common — 시간조각만 (현행).
+  return { timeShards: UPGRADE_COST_TIME_SHARDS };
+}
+
+/** 강화 가능한가 — upgrade_to 정의 + 대상 카드 존재 + 자원(시간조각·재료) 충분. */
 export function canUpgrade(card: Card): boolean {
   const run = useRunStore();
   const data = useDataStore();
   if (!card.upgradeToId) return false;
   if (!data.cards.get(card.upgradeToId)) return false;
-  if (run.data.timeShards < UPGRADE_COST_TIME_SHARDS) return false;
+  const cost = upgradeCostFor(card.rank);
+  if (run.data.timeShards < cost.timeShards) return false;
+  if (cost.materialId && !run.data.items.some((i) => i.id === cost.materialId)) return false;
   return true;
 }
 
@@ -56,12 +75,24 @@ export function upgradeCard(instanceId: string): boolean {
     ui.toast('warning', `강화판 데이터 없음 (${original.upgradeToId})`);
     return false;
   }
-  if (r.timeShards < UPGRADE_COST_TIME_SHARDS) {
-    ui.toast('warning', `시간의 조각이 부족합니다. (필요 ${UPGRADE_COST_TIME_SHARDS})`);
+  // 강화 재료 곡선 — 대상 카드 rank로 시간조각·재료 요구 결정.
+  const cost = upgradeCostFor(original.rank);
+  if (r.timeShards < cost.timeShards) {
+    ui.toast('warning', `시간의 조각이 부족합니다. (필요 ${cost.timeShards})`);
     return false;
   }
+  let materialIdx = -1;
+  if (cost.materialId) {
+    materialIdx = r.items.findIndex((i) => i.id === cost.materialId);
+    if (materialIdx < 0) {
+      const mName = data.items.get(cost.materialId)?.name ?? cost.materialId;
+      ui.toast('warning', `'${mName}'이(가) 필요합니다.`);
+      return false;
+    }
+  }
 
-  r.timeShards -= UPGRADE_COST_TIME_SHARDS;
+  r.timeShards -= cost.timeShards;
+  if (materialIdx >= 0) r.items.splice(materialIdx, 1); // 재료 1개 소모.
   // 새 인스턴스 생성 — 원본 instanceId는 버린다 (덱 동기화도 동일 패턴).
   const newInstance = instantiateCard(upgradedDef);
   r.collection.splice(cIdx, 1, newInstance);
@@ -285,5 +316,72 @@ export function purchaseForgeCard(nodeId: string, slotIndex: number): boolean {
   for (const s of offer.cards) s.purchased = true;
 
   ui.toast('success', `'${def.name}' 제작 — 시간의 조각 -${slot.price}`);
+  return true;
+}
+
+// ============================================================
+// 포션 제작 — 마을(일반 포션) / 공방(희귀+ 포션).
+// 연료 = 시간조각 + 등급 재료(일반=일반재료 / 희귀=희귀재료). 매번 가능(자원 충분 시).
+//   마을: 일반(common) 포션만. 공방: 희귀(rare)+ 포션.
+// ============================================================
+
+/** 포션 1개 제작 비용 — rank → { 시간조각, 재료 id }. */
+export const POTION_COMMON_COST_TIME_SHARDS = 6;
+export const POTION_RARE_COST_TIME_SHARDS = 12;
+
+export function potionCostFor(rank: Rank): { timeShards: number; materialId: string } {
+  if (rank === 'rare') return { timeShards: POTION_RARE_COST_TIME_SHARDS, materialId: MATERIAL_RARE_ID };
+  // basic/common 포션은 일반재료.
+  return { timeShards: POTION_COMMON_COST_TIME_SHARDS, materialId: MATERIAL_COMMON_ID };
+}
+
+/**
+ * 제작 가능한 포션 목록 — *소비형 + 효과 있음 + 재료/특산물 아님*.
+ * ranks로 등급 필터 (마을=common, 공방=rare).
+ */
+export function listCraftablePotions(ranks: Rank[]): Item[] {
+  const data = useDataStore();
+  const out: Item[] = [];
+  for (const itm of data.items.values()) {
+    // 재료·특산물 제외 — 즉시 사용 포션만.
+    if (itm.category === 'material' || itm.category === 'specialty') continue;
+    if (!itm.consumable) continue;
+    if (itm.effects.length === 0) continue;
+    if (!ranks.includes(itm.rank)) continue;
+    out.push(itm);
+  }
+  return out.sort((a, b) => a.name.localeCompare(b.name));
+}
+
+/** 그 포션을 *지금* 제작할 수 있는지 — 시간조각·재료 확인. */
+export function canCraftPotion(itm: Item): boolean {
+  const run = useRunStore();
+  const cost = potionCostFor(itm.rank);
+  if (run.data.timeShards < cost.timeShards) return false;
+  if (!run.data.items.some((i) => i.id === cost.materialId)) return false;
+  return true;
+}
+
+/** 포션 1개 제작 — 시간조각 + 등급 재료 소모, 인벤토리에 인스턴스 추가. */
+export function craftPotion(itm: Item): boolean {
+  const run = useRunStore();
+  const data = useDataStore();
+  const ui = useUiStore();
+  const r = run.data;
+  const cost = potionCostFor(itm.rank);
+  if (r.timeShards < cost.timeShards) {
+    ui.toast('warning', `시간의 조각이 부족합니다. (필요 ${cost.timeShards})`);
+    return false;
+  }
+  const matIdx = r.items.findIndex((i) => i.id === cost.materialId);
+  if (matIdx < 0) {
+    const mName = data.items.get(cost.materialId)?.name ?? cost.materialId;
+    ui.toast('warning', `'${mName}'이(가) 필요합니다.`);
+    return false;
+  }
+  r.timeShards -= cost.timeShards;
+  r.items.splice(matIdx, 1); // 등급 재료 1개 소모.
+  run.addItem(itm); // 인스턴스 ID 부여하며 추가.
+  ui.toast('success', `'${itm.name}' 제작 완료`);
   return true;
 }

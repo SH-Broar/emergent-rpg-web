@@ -44,6 +44,17 @@ export interface ShopRelicSlot {
   purchased: boolean;
 }
 
+/**
+ * 상점 재료 슬롯 — *일반 재료 안정 공급* (Item Economy).
+ * 구매할 때마다 보유에 1개씩 추가, 한 슬롯에 *재고 수량 한도*까지. (세이브 v? 호환 — optional)
+ */
+export interface ShopMaterialSlot {
+  itemId: string;
+  price: number;
+  /** 남은 재고 수량. 0이면 매진. */
+  stock: number;
+}
+
 /** 공방 제작 슬롯 — 희귀+ 카드 1장 후보. 진입 시 3장 추첨 후 고정. */
 export interface ForgeCardSlot {
   cardId: string;
@@ -71,6 +82,8 @@ export interface ShopInventory {
   relics: ShopRelicSlot[];
   removalUsed: boolean;
   removalPrice: number;
+  /** 일반 재료 판매 슬롯 (Item Economy). 옛 세이브 호환 — optional(미존재 시 진입 시 생성). */
+  materials?: ShopMaterialSlot[];
 }
 
 /** 적/플레이어 공유 전투 상태 표식. */
@@ -121,6 +134,12 @@ export interface CombatState {
 
   /** 이번 턴에 사용한 카드 수 — first-card-free 유물 판정용. 매 턴 0으로 리셋. */
   cardsPlayedThisTurn?: number;
+
+  /**
+   * 이번 플레이어 턴에 전투 포션을 이미 썼는지 — 턴당 1회 가드 (Item Economy).
+   * 매 새 턴 셋업(endPlayerTurn)에서 false 리셋. 옛 세이브 호환 — optional(absent=미사용).
+   */
+  potionUsedThisTurn?: boolean;
 
   // === 전투 에로 / 카드 교란 기믹 (Stage 2 — 전부 optional, 미설정 시 영향 0) ===
   /**

@@ -204,6 +204,7 @@ export function startCombat(monster: Monster) {
     // 유물 카운터 — 매 전투 리셋.
     relicCounters: {},
     cardsPlayedThisTurn: 0,
+    potionUsedThisTurn: false,
   };
   r.combat = combat;
 
@@ -772,6 +773,7 @@ export function endPlayerTurn(monster: Monster): { playerDefeated: boolean; enem
 
   c.turn += 1;
   c.cardsPlayedThisTurn = 0; // 새 턴 — first-card-free 판정 리셋.
+  c.potionUsedThisTurn = false; // 새 턴 — 전투 포션 턴당 1회 가드 리셋.
   c.frozenTurn = false; // 새 턴은 기본 비정지 — 마비/보스 stillness가 이번 턴 한정으로 다시 set.
   // mana-carryover 유물: 쓰지 않은 마나를 다음 턴으로 이월.
   const manaCarry = playerHasRelicEffect('mana-carryover') ? Math.max(0, c.mana) : 0;

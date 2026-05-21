@@ -93,6 +93,13 @@ function itemEffectLabel(eff: Item['effects'][number]): string {
     case 'grant-card': return `카드 ${eff.param}`;
     case 'grant-relic': return `유물 ${eff.param}`;
     case 'teleport-village': return '마을로 즉시 이동';
+    case 'cleanse-transform': return '변신 정화';
+    case 'combat-mana': return `[전투] 마나 +${eff.value ?? 0}`;
+    case 'combat-draw': return `[전투] 드로우 ${eff.value ?? 0}`;
+    case 'combat-block': return `[전투] 방어 +${eff.value ?? 0}`;
+    case 'combat-enemy-status': return `[전투] 적 ${eff.param} +${eff.value ?? 0}`;
+    case 'combat-self-status': return `[전투] ${eff.param} +${eff.value ?? 0}`;
+    case 'combat-free-grapple': return '[전투] 구속 해제';
   }
   return '';
 }

@@ -13,6 +13,7 @@ import {
   getOrCreateShopInventory,
   purchaseShopCard,
   purchaseShopCardRemoval,
+  purchaseShopMaterial,
   purchaseShopRelic,
 } from '@/systems/shop';
 import { getCraftingDiscount } from '@/systems/relic';
@@ -58,6 +59,15 @@ function buyCard(slotIndex: number) {
 }
 function buyRelic(slotIndex: number) {
   purchaseShopRelic(nodeId.value, slotIndex);
+}
+function buyMaterial(slotIndex: number) {
+  purchaseShopMaterial(nodeId.value, slotIndex);
+}
+function itemName(id: string): string {
+  return data.items.get(id)?.name ?? id;
+}
+function itemDesc(id: string): string {
+  return data.items.get(id)?.description ?? '';
 }
 function pickRemovalTarget(cardInstanceId: string) {
   const ok = purchaseShopCardRemoval(nodeId.value, cardInstanceId);
@@ -156,6 +166,32 @@ onMounted(() => {
             @click="buyRelic(i)"
           >
             {{ slot.purchased ? '판매 완료' : `${slot.price} G` }}
+          </button>
+        </li>
+      </ul>
+    </section>
+
+    <!-- 재료 진열 -->
+    <section v-if="inventory.materials && inventory.materials.length > 0" class="rack">
+      <h2 class="rack__title">재료</h2>
+      <ul class="rack__grid">
+        <li
+          v-for="(slot, i) in inventory.materials"
+          :key="`m-${i}`"
+          class="slot slot--common"
+          :class="{ 'slot--sold': slot.stock <= 0 }"
+        >
+          <div class="slot__head">
+            <span class="slot__name">{{ itemName(slot.itemId) }}</span>
+            <span class="slot__rank">재고 {{ slot.stock }}</span>
+          </div>
+          <p v-if="itemDesc(slot.itemId)" class="slot__flavor">{{ itemDesc(slot.itemId) }}</p>
+          <button
+            class="slot__buy"
+            :disabled="slot.stock <= 0 || run.data.gold < slot.price"
+            @click="buyMaterial(i)"
+          >
+            {{ slot.stock <= 0 ? '매진' : `${slot.price} G` }}
           </button>
         </li>
       </ul>

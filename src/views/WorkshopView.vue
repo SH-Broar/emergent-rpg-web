@@ -15,17 +15,23 @@ import {
   FORGE_PRICE_TIME_SHARDS,
   LEGENDARY_COST_TIME_SHARDS,
   RARE_MATERIAL_ID_ACT1,
-  UPGRADE_COST_TIME_SHARDS,
   canCraftLegendary,
+  canCraftPotion,
   canPurchaseForgeCard,
+  canUpgrade,
   craftLegendary,
+  craftPotion,
   getLegendaryRecipes,
   getOrCreateForgeOffer,
+  listCraftablePotions,
   listUpgradableCards,
+  potionCostFor,
   purchaseForgeCard,
   upgradeCard,
+  upgradeCostFor,
   type LegendaryRecipe,
 } from '@/systems/workshop';
+import type { Item, Rank } from '@/data/schemas';
 
 const router = useRouter();
 const run = useRunStore();
@@ -75,8 +81,44 @@ function doUpgrade(instanceId: string) {
   upgradeCard(instanceId);
 }
 
+// 강화 비용 — 카드 rank별(시간조각 + 희귀/전설 재료).
+function upgradeCostLabel(rank: Rank): string {
+  const cost = upgradeCostFor(rank);
+  const mat = cost.materialId ? ` + ${itemName(cost.materialId)}` : '';
+  return `시간조각 ${cost.timeShards}${mat}`;
+}
+
 function doForgePurchase(slotIndex: number) {
   purchaseForgeCard(nodeId.value, slotIndex);
+}
+
+// === 희귀+ 포션 제작 ===
+const craftablePotions = computed<Item[]>(() => listCraftablePotions(['rare']));
+function potionCostLabel(rank: Rank): string {
+  const cost = potionCostFor(rank);
+  return `시간조각 ${cost.timeShards} + ${itemName(cost.materialId)}`;
+}
+function potionEffectSummary(itm: Item): string {
+  return itm.effects.map((e) => itemEffectShort(e)).join(' · ');
+}
+function itemEffectShort(e: Item['effects'][number]): string {
+  switch (e.kind) {
+    case 'heal': return `HP +${e.value ?? 0}`;
+    case 'combat-mana': return `마나 +${e.value ?? 0}`;
+    case 'combat-draw': return `드로우 ${e.value ?? 0}`;
+    case 'combat-block': return `방어 +${e.value ?? 0}`;
+    case 'combat-enemy-status': return `적 ${e.param} +${e.value ?? 0}`;
+    case 'combat-self-status': return `${e.param} +${e.value ?? 0}`;
+    case 'combat-free-grapple': return '구속 해제';
+    case 'color-all': return `8컬러 +${e.value ?? 0}`;
+    case 'color-boost': return `${e.param} +${e.value ?? 0}`;
+    case 'gold': return `골드 +${e.value ?? 0}`;
+    case 'time-shards': return `시간조각 +${e.value ?? 0}`;
+    default: return e.kind;
+  }
+}
+function doCraftPotion(itm: Item) {
+  craftPotion(itm);
 }
 
 // === 전설 제작 ===
@@ -124,7 +166,7 @@ onMounted(() => {
     <!-- 카드 강화 섹션 -->
     <section class="section">
       <header class="section__hdr">
-        <h2>카드 강화 <span class="cost">— 시간조각 {{ UPGRADE_COST_TIME_SHARDS }}</span></h2>
+        <h2>카드 강화 <span class="cost">— 등급별 시간조각 + 희귀/전설 재료</span></h2>
         <button v-if="!upgradeMode" class="toggle" @click="upgradeMode = true" :disabled="upgradables.length === 0">
           강화할 카드 고르기 ({{ upgradables.length }}장 가능)
         </button>
@@ -135,6 +177,7 @@ onMounted(() => {
           <div class="upgrade__main">
             <div class="upgrade__name">{{ c.name }} <span class="rank">{{ rankLabel(c.rank) }}</span></div>
             <div class="upgrade__meta">cost {{ c.cost }} · {{ effectSummary(c) }}</div>
+            <div class="upgrade__reqline">강화 비용: {{ upgradeCostLabel(c.rank) }}</div>
           </div>
           <div class="upgrade__arrow">→</div>
           <div class="upgrade__main upgrade__target">
@@ -143,7 +186,7 @@ onMounted(() => {
           </div>
           <button
             class="upgrade__btn"
-            :disabled="run.data.timeShards < UPGRADE_COST_TIME_SHARDS"
+            :disabled="!canUpgrade(c)"
             @click="doUpgrade(c.instanceId!)"
           >
             강화
@@ -191,6 +234,36 @@ onMounted(() => {
             {{ slot.purchased ? '제작 완료' : `시간조각 ${slot.price}` }}
           </button>
         </li>
+      </ul>
+    </section>
+
+    <!-- 희귀 포션 제작 섹션 -->
+    <section class="section">
+      <header class="section__hdr">
+        <h2>희귀 포션 제작 <span class="cost">— 시간조각 + 희귀 재료 / 매번 가능</span></h2>
+      </header>
+      <ul class="forge__grid">
+        <li
+          v-for="itm in craftablePotions"
+          :key="itm.id"
+          class="slot slot--rare"
+        >
+          <div class="slot__head">
+            <span class="slot__name">{{ itm.name }}</span>
+            <span class="slot__rank">{{ itm.combat ? '전투' : '맵' }}</span>
+          </div>
+          <p class="slot__effects">{{ potionEffectSummary(itm) }}</p>
+          <p v-if="itm.description" class="slot__flavor">{{ itm.description }}</p>
+          <p class="slot__req">필요: {{ potionCostLabel(itm.rank) }}</p>
+          <button
+            class="slot__buy"
+            :disabled="!canCraftPotion(itm)"
+            @click="doCraftPotion(itm)"
+          >
+            제작
+          </button>
+        </li>
+        <li v-if="craftablePotions.length === 0" class="empty">제작 가능한 희귀 포션이 없습니다.</li>
       </ul>
     </section>
 

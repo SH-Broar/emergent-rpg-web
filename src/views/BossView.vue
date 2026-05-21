@@ -22,7 +22,8 @@ import { applyBossRewards } from '@/systems/boss-rewards';
 import { colorBonusForCardEffectKind } from '@/systems/stats';
 import { bonusesFromEffective } from '@/systems/equipment';
 import { cardEffectKindLabel, cardEffectDescription, statusDescription, unlockKeyLabel } from '@/systems/labels';
-import type { Boss, BossPhase, BossSignatureVariant, Card, CardEffect, Combatant, Monster } from '@/data/schemas';
+import { useItem } from '@/systems/item';
+import type { Boss, BossPhase, BossSignatureVariant, Card, CardEffect, Combatant, Item, Monster } from '@/data/schemas';
 
 const router = useRouter();
 const run = useRunStore();
@@ -255,6 +256,29 @@ function statusEntries(c: Combatant | undefined) {
     .filter(([, v]) => v > 0)
     .map(([key, count]) => ({ key, count, label: statusLabels[key] ?? key }));
 }
+
+// === 전투 포션 (combat=true) — 턴당 1회, 마나 무관 ===
+const combatPotions = computed<Item[]>(() => run.data.items.filter((i) => i.combat));
+const potionUsed = computed(() => combat.value?.potionUsedThisTurn ?? false);
+function potionEffShort(e: Item['effects'][number]): string {
+  switch (e.kind) {
+    case 'heal': return `HP +${e.value ?? 0}`;
+    case 'combat-mana': return `마나 +${e.value ?? 0}`;
+    case 'combat-draw': return `드로우 ${e.value ?? 0}`;
+    case 'combat-block': return `방어 +${e.value ?? 0}`;
+    case 'combat-enemy-status': return `적 ${statusLabels[String(e.param ?? '')] ?? e.param} +${e.value ?? 0}`;
+    case 'combat-self-status': return `${statusLabels[String(e.param ?? '')] ?? e.param} +${e.value ?? 0}`;
+    case 'combat-free-grapple': return '구속 해제';
+    default: return e.kind;
+  }
+}
+function potionSummary(itm: Item): string {
+  return itm.effects.map(potionEffShort).join(' · ');
+}
+function usePotion(itm: Item) {
+  if (potionUsed.value) return;
+  useItem(itm);
+}
 </script>
 
 <template>
@@ -304,6 +328,23 @@ function statusEntries(c: Combatant | undefined) {
           </ul>
         </div>
       </header>
+
+      <!-- 전투 포션 벨트 — 턴당 1회, 마나 무관 -->
+      <div v-if="combatPotions.length > 0" class="potions">
+        <span class="potions__label">포션{{ potionUsed ? ' (이번 턴 사용함)' : '' }}</span>
+        <button
+          v-for="it in combatPotions"
+          :key="it.instanceId ?? it.id"
+          class="potion"
+          :class="{ 'potion--disabled': potionUsed }"
+          :disabled="potionUsed"
+          v-tooltip="potionSummary(it)"
+          @click="usePotion(it)"
+        >
+          <span class="potion__name">{{ it.name }}</span>
+          <span class="potion__eff">{{ potionSummary(it) }}</span>
+        </button>
+      </div>
 
       <section class="hand">
         <div
@@ -416,6 +457,15 @@ function statusEntries(c: Combatant | undefined) {
 .status[data-key="strength"], .status[data-key="dexterity"] { color: #8effb8; border-color: rgba(142,255,184,0.35); }
 .status[data-key="weakness"], .status[data-key="frail"], .status[data-key="vulnerable"], .status[data-key="poison"], .status[data-key="burn"], .status[data-key="regress"] { color: #ff8e8e; border-color: rgba(255,142,142,0.35); }
 .status[data-key="feral"] { color: #ffb86c; border-color: rgba(255,184,108,0.4); }
+/* 전투 포션 벨트 */
+.potions { display: flex; gap: 0.5rem; align-items: center; padding: 0.4rem 1rem; flex-wrap: wrap; }
+.potions__label { color: #c0b693; font-size: 0.8rem; }
+.potion { display: flex; flex-direction: column; gap: 0.1rem; padding: 0.4rem 0.7rem; background: rgba(142, 237, 255, 0.12); border: 1px solid rgba(142, 237, 255, 0.4); color: #d0f0ff; border-radius: 6px; cursor: pointer; font: inherit; text-align: left; }
+.potion:hover:not(.potion--disabled) { background: rgba(142, 237, 255, 0.24); }
+.potion--disabled { opacity: 0.35; cursor: not-allowed; }
+.potion__name { font-weight: 600; font-size: 0.85rem; color: #f6e8b8; }
+.potion__eff { font-size: 0.72rem; color: #b6d8e0; }
+
 .hand { display: flex; gap: 0.8rem; padding: 1rem; overflow-x: auto; }
 .card { flex-shrink: 0; width: 160px; padding: 0.8rem; background: rgba(255,255,255,0.04); border: 2px solid; border-radius: 8px; cursor: pointer; transition: transform 120ms ease; display: flex; flex-direction: column; gap: 0.3rem; }
 .card:hover:not(.card--disabled) { transform: translateY(-6px); }

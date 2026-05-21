@@ -8,7 +8,7 @@
  *  - 구매하면 슬롯 purchased=true. 카드는 collection에 인스턴스 추가, 유물은 relics에 push.
  */
 
-import type { Card, Rank, Relic, ShopCardSlot, ShopInventory, ShopRelicSlot } from '@/data/schemas';
+import type { Card, Rank, Relic, ShopCardSlot, ShopInventory, ShopMaterialSlot, ShopRelicSlot } from '@/data/schemas';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
@@ -38,6 +38,11 @@ const CARD_REMOVAL_PRICE = 50;
 
 const NUM_CARDS = 5;
 const NUM_RELICS = 2;
+
+// 일반 재료 판매 (Item Economy) — 안정 공급. 1개당 골드, 재고 한도.
+const MATERIAL_COMMON_ID = 'i-material-common';
+const MATERIAL_COMMON_PRICE = 18;
+const MATERIAL_COMMON_STOCK = 4;
 
 /** discount 비율을 적용한 최종 가격. */
 function applyDiscount(base: number): number {
@@ -95,12 +100,30 @@ function getShopRelicPool(): Relic[] {
   return pool;
 }
 
+/** 일반 재료 판매 슬롯 — 데이터에 정의된 경우에만(없으면 빈 배열). */
+function buildMaterialSlots(): ShopMaterialSlot[] {
+  const data = useDataStore();
+  const slots: ShopMaterialSlot[] = [];
+  if (data.items.get(MATERIAL_COMMON_ID)) {
+    slots.push({
+      itemId: MATERIAL_COMMON_ID,
+      price: applyDiscount(MATERIAL_COMMON_PRICE),
+      stock: MATERIAL_COMMON_STOCK,
+    });
+  }
+  return slots;
+}
+
 /** 노드 재고 생성 — 시드 추첨. 이미 있으면 기존 반환. */
 export function getOrCreateShopInventory(nodeId: string): ShopInventory {
   const run = useRunStore();
   if (!run.data.shopInventories) run.data.shopInventories = {};
   const existing = run.data.shopInventories[nodeId];
-  if (existing) return existing;
+  if (existing) {
+    // 옛 세이브 호환 — materials 슬롯이 없으면 지금 채운다.
+    if (!existing.materials) existing.materials = buildMaterialSlots();
+    return existing;
+  }
 
   const cardCandidates = pickRandom(getShopCardPool(), NUM_CARDS);
   const relicCandidates = pickRandom(getShopRelicPool(), NUM_RELICS);
@@ -127,9 +150,33 @@ export function getOrCreateShopInventory(nodeId: string): ShopInventory {
     relics,
     removalUsed: false,
     removalPrice: applyDiscount(CARD_REMOVAL_PRICE),
+    materials: buildMaterialSlots(),
   };
   run.data.shopInventories[nodeId] = inventory;
   return inventory;
+}
+
+/** 일반 재료 슬롯 1개 구매 — 재고 -1, 인벤토리에 인스턴스 추가. */
+export function purchaseShopMaterial(nodeId: string, slotIndex: number): boolean {
+  const run = useRunStore();
+  const data = useDataStore();
+  const ui = useUiStore();
+  const inv = run.data.shopInventories?.[nodeId];
+  if (!inv?.materials) return false;
+  const slot = inv.materials[slotIndex];
+  if (!slot || slot.stock <= 0) return false;
+  if (run.data.gold < slot.price) {
+    ui.toast('warning', '골드가 부족합니다.');
+    return false;
+  }
+  const def = data.items.get(slot.itemId);
+  if (!def) return false;
+
+  run.data.gold -= slot.price;
+  run.addItem(def);
+  slot.stock -= 1;
+  ui.toast('success', `'${def.name}' 구매 — 골드 -${slot.price}`);
+  return true;
 }
 
 /** 카드 슬롯 구매. */

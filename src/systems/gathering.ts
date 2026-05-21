@@ -15,10 +15,22 @@ import { applyColorBoost } from '@/systems/colors';
 import { rng } from '@/systems/rng';
 import type { Region } from '@/data/schemas';
 
-const RARE_MATERIAL_ID_ACT1 = 'i-time-answer';
-const RARE_MATERIAL_DROP_CHANCE = 0.15;
+// 희귀도 사다리 재료 id (Item Economy).
+const MATERIAL_COMMON_ID = 'i-material-common';
+const MATERIAL_RARE_ID = 'i-material-rare';
+const MATERIAL_LEGENDARY_ID = 'i-time-answer';
+
+// 채집 재료 드롭 (Q8): 전반 → 일반재료, 후반 → 희귀재료, T3+ 권역 후반 → 전설재료(극희소).
+const EARLY_COMMON_MAT_CHANCE = 0.35;
+const LATE_RARE_MAT_CHANCE = 0.45;
+const LATE_LEGENDARY_MAT_CHANCE = 0.12; // T3+ 권역 후반에서만.
 const SPECIALTY_DROP_EARLY_CHANCE = 0.30;
 const DEFAULT_GATHER_THRESHOLD = 80;
+
+function clampTier(t: number | undefined): number {
+  if (!t || t < 1) return 1;
+  return t > 4 ? 4 : t;
+}
 
 /**
  * 노드 진입 시 채집 보상을 적용. 권역 정보 + 플레이어 컬러로 분기.
@@ -59,12 +71,20 @@ export function performGather(nodeId: string): void {
       const d = applyColorBoost(primary, 3);
       if (d > 0) lines.push(`${primary} 컬러 +${d}`);
     }
-    // 3) 희소 재료 — 낮은 확률
-    if (rng() < RARE_MATERIAL_DROP_CHANCE) {
-      const rare = data.items.get(RARE_MATERIAL_ID_ACT1);
+    // 3) 희귀 재료 — 후반 채집(Q8). 티어 무관, 중간 확률.
+    if (rng() < LATE_RARE_MAT_CHANCE) {
+      const rare = data.items.get(MATERIAL_RARE_ID);
       if (rare) {
         run.addItem(rare);
-        lines.push(`*희소 재료* — '${rare.name}'`);
+        lines.push(`*희귀 재료* — '${rare.name}'`);
+      }
+    }
+    // 3b) 전설 재료 — *T3+ 권역 후반*에서만 극희소.
+    if (clampTier(region?.tier) >= 3 && rng() < LATE_LEGENDARY_MAT_CHANCE) {
+      const leg = data.items.get(MATERIAL_LEGENDARY_ID);
+      if (leg) {
+        run.addItem(leg);
+        lines.push(`*전설 재료* — '${leg.name}'`);
       }
     }
     // 4) 약간의 시간조각 보너스 (후반의 *부수 보상*)
@@ -85,6 +105,14 @@ export function performGather(nodeId: string): void {
       if (itm) {
         run.addItem(itm);
         lines.push(`특산물 — '${itm.name}'`);
+      }
+    }
+    // 일반 재료 — 전반 채집의 안정 공급(Q8).
+    if (rng() < EARLY_COMMON_MAT_CHANCE) {
+      const mat = data.items.get(MATERIAL_COMMON_ID);
+      if (mat) {
+        run.addItem(mat);
+        lines.push(`재료 — '${mat.name}'`);
       }
     }
     // 권역의 대표 컬러가 *임계 미만이면* — 후반 가는 길이라는 *힌트* 토스트.
