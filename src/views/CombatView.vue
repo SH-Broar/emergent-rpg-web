@@ -23,6 +23,7 @@ import {
   type CombatVictoryDrop,
 } from '@/systems/combat';
 import { effectiveContent } from '@/systems/map';
+import { applyCombatVictoryReward } from '@/systems/combat-rewards';
 import { colorBonusForCardEffectKind } from '@/systems/stats';
 import { bonusesFromEffective } from '@/systems/equipment';
 import { cardEffectKindLabel, cardEffectDescription, effectTargetLabel, statusDescription, intentLabel } from '@/systems/labels';
@@ -87,12 +88,11 @@ function endTurn() {
 }
 
 function onVictory() {
-  // 드롭 적용 + 권역 보상 (컬러+특산물+엘리트희소재료) + 클리어 마킹.
-  // applyCombatVictoryReward는 *cleared 마킹 전*에 호출 — 첫 클리어 여부를 판단.
+  // 드롭 적용 + 권역 보상 (컬러+특산물+엘리트 유물/전설/희소재료) + 클리어 마킹.
+  // applyCombatVictoryReward는 *cleared 마킹 전*에 *동기* 호출해야 첫 클리어로 인정된다.
+  // (옛 코드: dynamic import().then() → markCombatCleared가 먼저 동기 실행돼 보상이 스킵되던 버그.)
   drop.value = applyMonsterDrop(monster.value.drop, data.cards);
-  void import('@/systems/combat-rewards').then(({ applyCombatVictoryReward }) =>
-    applyCombatVictoryReward(run.data.currentNodeId),
-  );
+  applyCombatVictoryReward(run.data.currentNodeId);
   run.markCombatCleared(run.data.currentNodeId);
   clearCombat();
   phase.value = 'victory';
