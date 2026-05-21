@@ -85,7 +85,24 @@ export interface MetaProgress {
   totalRuns: number;
   /** 보스 클리어 횟수. */
   totalBossClears: number;
+
+  // === 카오스 도전-점수 시스템 (Phase A, 세이브 v3) ===
+  /** 영혼으로 영구 구매한 카오스 id 목록. 기본 []. */
+  unlockedChaosIds: string[];
+  /** 상점에 진열되는 최고 티어 (1~4). T(n) 카오스 켜고 클리어 시 +1. 기본 1. */
+  chaosTierRevealed: number;
+  /** 연표(timeline)별 최고 카오스 도전 점수. 기본 {}. */
+  bestChaosScore: Record<string, number>;
+
+  /**
+   * 메타 세이브 버전. v3에서 카오스 필드 도입. 마이그레이션 판단·기록용.
+   * 옛 세이브엔 없을 수 있음(undefined ⇒ v2 이하로 간주, 누락 카오스 필드 backfill).
+   */
+  saveVersion?: number;
 }
+
+/** 현재 메타 세이브 버전 — v3 = 카오스 도전-점수 필드 도입. */
+export const META_SAVE_VERSION = 3;
 
 /** 기본 초기 메타 진행. (createMetaProgress 같은 팩토리는 stores에서 제공) */
 export const EMPTY_META_GAUGE: MetaGauge = {

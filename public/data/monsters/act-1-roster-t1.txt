@@ -8,6 +8,7 @@
 [monster.mr-iluneon-cutpurse]
 name = 골목 손치기
 tier = normal
+species = imp
 hp = 85
 attack = 7
 defense = 0
@@ -19,6 +20,7 @@ card_drops =
 [monster.mr-iluneon-trickster]
 name = 광장 사기꾼
 tier = normal
+species = imp
 hp = 70
 attack = 5
 defense = 0
@@ -30,6 +32,7 @@ card_drops =
 [monster.mr-iluneon-guild-rat]
 name = 길드 쥐도둑
 tier = normal
+species = beastkin
 hp = 90
 attack = 7
 defense = 0
@@ -41,6 +44,7 @@ card_drops =
 [monster.mr-iluneon-alley-thug]
 name = 뒷골목 패거리
 tier = normal
+species = imp
 hp = 100
 attack = 8
 defense = 0
@@ -52,10 +56,11 @@ card_drops =
 [monster.mr-iluneon-lantern-imp]
 name = 가로등 꼬마 정령
 tier = normal
+species = spirit
 hp = 65
 attack = 4
 defense = 0
-intents = attack:4, defend:3, attack:5, attack:4
+intents = attack:4, ghost:2, attack:5, attack:4
 gold = 7
 time_shards = 2
 card_drops =
@@ -63,6 +68,7 @@ card_drops =
 [monster.mr-iluneon-market-sneak]
 name = 시장 잠입자
 tier = normal
+species = imp
 hp = 75
 attack = 5
 defense = 0
@@ -74,6 +80,7 @@ card_drops =
 [monster.mr-iluneon-clock-shade]
 name = 시계탑 음영
 tier = normal
+species = phantom
 hp = 80
 attack = 4
 defense = 0
@@ -85,6 +92,7 @@ card_drops =
 [monster.mr-iluneon-toll-warden]
 name = 통행세 수금원
 tier = normal
+species = imp
 hp = 110
 attack = 8
 defense = 0
@@ -96,6 +104,7 @@ card_drops =
 [monster.mr-iluneon-clockwraith]
 name = 시계탑 망령
 tier = elite
+species = phantom
 hp = 200
 attack = 11
 defense = 0
@@ -107,6 +116,7 @@ card_drops =
 [monster.mr-iluneon-spirit-herald]
 name = 도시 정령 전령
 tier = elite
+species = spirit
 hp = 180
 attack = 10
 defense = 0
@@ -123,6 +133,7 @@ card_drops =
 [monster.mr-lar-forest-mosswolf]
 name = 이끼 늑대
 tier = normal
+species = werewolf
 hp = 95
 attack = 7
 defense = 0
@@ -134,6 +145,7 @@ card_drops =
 [monster.mr-lar-forest-thornbird]
 name = 가시 새
 tier = normal
+species = harpy
 hp = 70
 attack = 6
 defense = 0
@@ -145,6 +157,7 @@ card_drops =
 [monster.mr-lar-forest-spiderling]
 name = 숲 새끼 거미
 tier = normal
+species = spider
 hp = 65
 attack = 4
 defense = 0
@@ -156,6 +169,7 @@ card_drops =
 [monster.mr-lar-forest-rootcrawler]
 name = 뿌리 지렁이
 tier = normal
+species = insect
 hp = 110
 attack = 6
 defense = 0
@@ -167,6 +181,7 @@ card_drops =
 [monster.mr-lar-forest-ember-sala]
 name = 잿불 도롱뇽
 tier = normal
+species = beastkin
 hp = 90
 attack = 7
 defense = 0
@@ -178,6 +193,7 @@ card_drops =
 [monster.mr-lar-forest-dryad-sapling]
 name = 드라이어드 묘목
 tier = normal
+species = plant
 hp = 80
 attack = 5
 defense = 0
@@ -189,6 +205,7 @@ card_drops =
 [monster.mr-lar-forest-boar]
 name = 숲 멧돼지
 tier = normal
+species = beastkin
 hp = 120
 attack = 8
 defense = 0
@@ -200,6 +217,7 @@ card_drops =
 [monster.mr-lar-forest-mudcrab]
 name = 진흙 게
 tier = normal
+species = beastkin
 hp = 100
 attack = 6
 defense = 0
@@ -211,6 +229,7 @@ card_drops =
 [monster.mr-lar-forest-spider-queen]
 name = 숲 거미 여왕
 tier = elite
+species = spider
 hp = 240
 attack = 12
 defense = 0
@@ -222,6 +241,7 @@ card_drops =
 [monster.mr-lar-forest-ancient-dryad]
 name = 고목 드라이어드
 tier = elite
+species = plant
 hp = 260
 attack = 11
 defense = 0
@@ -238,6 +258,7 @@ card_drops =
 [monster.mr-reshud-bandit]
 name = 노상 강도
 tier = normal
+species = imp
 hp = 100
 attack = 8
 defense = 0
@@ -249,6 +270,7 @@ card_drops =
 [monster.mr-reshud-stray-ram]
 name = 들양
 tier = normal
+species = beastkin
 hp = 115
 attack = 8
 defense = 0
@@ -260,6 +282,7 @@ card_drops =
 [monster.mr-reshud-spark-hound]
 name = 번개 들개
 tier = normal
+species = werewolf
 hp = 80
 attack = 6
 defense = 0
@@ -271,6 +294,7 @@ card_drops =
 [monster.mr-reshud-drifter]
 name = 길거리 부랑자
 tier = normal
+species = imp
 hp = 90
 attack = 7
 defense = 0
@@ -282,6 +306,7 @@ card_drops =
 [monster.mr-reshud-toll-raider]
 name = 교차로 약탈자
 tier = normal
+species = imp
 hp = 105
 attack = 8
 defense = 0
@@ -293,6 +318,7 @@ card_drops =
 [monster.mr-reshud-thunder-wolf]
 name = 천둥 들개 우두머리
 tier = elite
+species = werewolf
 hp = 220
 attack = 13
 defense = 0
@@ -309,6 +335,7 @@ card_drops =
 [monster.mr-tradepost-stray-hound]
 name = 떠돌이 들개
 tier = normal
+species = werewolf
 hp = 80
 attack = 6
 defense = 0
@@ -320,6 +347,7 @@ card_drops =
 [monster.mr-tradepost-caravan-thief]
 name = 대상 도둑
 tier = normal
+species = imp
 hp = 85
 attack = 5
 defense = 0
@@ -331,6 +359,7 @@ card_drops =
 [monster.mr-tradepost-wanderer]
 name = 뜨내기 용병
 tier = normal
+species = imp
 hp = 100
 attack = 8
 defense = 0
@@ -342,6 +371,7 @@ card_drops =
 [monster.mr-tradepost-lamia-guard]
 name = 라미아 경비원
 tier = normal
+species = lamia
 hp = 110
 attack = 6
 defense = 0
@@ -353,6 +383,7 @@ card_drops =
 [monster.mr-tradepost-dust-rat]
 name = 먼지 쥐 무리
 tier = normal
+species = beastkin
 hp = 70
 attack = 5
 defense = 0
@@ -364,6 +395,7 @@ card_drops =
 [monster.mr-tradepost-lamia-enforcer]
 name = 라미아 집행관
 tier = elite
+species = lamia
 hp = 210
 attack = 12
 defense = 0

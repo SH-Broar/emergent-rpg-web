@@ -28,7 +28,12 @@ import type {
   CardEffectKind,
   CardSource,
   CardTriggerKind,
+  Chaos,
+  ChaosEffectKind,
+  ChaosLevel,
   ChaosModifier,
+  ChaosTier,
+  ChaosType,
   ColorValues,
   CompanionBonuses,
   EffectTarget,
@@ -351,6 +356,7 @@ export function parseMonsters(ini: IniData): Map<string, Monster> {
       name: fields.name ?? id,
       description: fields.description,
       tier: (fields.tier as Monster['tier']) ?? 'normal',
+      species: fields.species && fields.species.length > 0 ? fields.species : undefined,
       hp: parseNumber(fields.hp, 15),
       attack: parseNumber(fields.attack, 5),
       defense: parseNumber(fields.defense, 0),
@@ -776,7 +782,10 @@ export interface GameData {
   npcs: Map<string, Npc>;
   items: Map<string, Item>;
   equipments: Map<string, Equipment>;
+  /** 레거시 r4 카오스 placeholder (name/description/affectsMeta 토글). */
   chaos: Map<string, ChaosModifier>;
+  /** 신규 도전-점수 카오스 정의 (Phase A). */
+  chaosDefs: Map<string, Chaos>;
   clues: Map<string, import('@/data/schemas').Clue>;
   unlocks: Map<string, MetaUnlock>;
 }
@@ -853,12 +862,75 @@ export function parseChaos(ini: IniData): Map<string, ChaosModifier> {
   for (const [section, fields] of Object.entries(ini)) {
     if (!section.startsWith('chaos.')) continue;
     const id = sectionIdSuffix(section);
+    // 신규 도전-점수 카오스(ch-*)는 별도 시스템(parseChaosDefs) 소유 — 레거시 파서는 건너뜀.
+    if (id.startsWith('ch-')) continue;
     result.set(id, {
       id,
       name: fields.name ?? id,
       description: fields.description ?? '',
       unlockKey: fields.unlock_key && fields.unlock_key.length > 0 ? fields.unlock_key : undefined,
       affectsMeta: parseBool(fields.affects_meta, false),
+    });
+  }
+  return result;
+}
+
+// ========== Chaos (도전-점수 시스템 — Phase A) ==========
+
+const VALID_CHAOS_TIERS = [1, 2, 3, 4] as const;
+function asChaosTier(v: number): ChaosTier {
+  return (VALID_CHAOS_TIERS as readonly number[]).includes(v) ? (v as ChaosTier) : 1;
+}
+
+const VALID_CHAOS_TYPES = ['numeric', 'binary', 'start-hp', 'legend'] as const;
+function asChaosType(v: string): ChaosType {
+  return (VALID_CHAOS_TYPES as readonly string[]).includes(v) ? (v as ChaosType) : 'binary';
+}
+
+/**
+ * `levels` 한 항목 → { param, score }.
+ * 형식: `<param>:<score>` — *마지막 콜론*에서 분리한다(param 안에 콜론이 있어도 안전).
+ *   예) '0.20:2'                          → param '0.20',  score 2
+ *   예) '-0.5:2' / 'hp1:3'                → param '-0.5',  score 2
+ *   예) 'c-junk-curse=1;c-junk-blank=5:4' → param 'c-junk-curse=1;c-junk-blank=5', score 4
+ *       (start-inject-card는 카드쌍을 ';'로, 개수를 '='로 인코딩 — levels 콤마/콜론과 무충돌.)
+ */
+function parseChaosLevel(token: string): ChaosLevel | null {
+  const t = token.trim();
+  if (!t) return null;
+  const lastColon = t.lastIndexOf(':');
+  if (lastColon < 0) return { param: t, score: 1 }; // 점수 누락 폴백 = 1점.
+  const param = t.slice(0, lastColon).trim();
+  const score = Number(t.slice(lastColon + 1).trim());
+  return { param, score: Number.isFinite(score) ? score : 1 };
+}
+
+/**
+ * 신규 도전-점수 카오스 정의 — INI 섹션 [chaos.ch-*] (id가 `ch-`로 시작).
+ * 레거시 r4 ChaosModifier(parseChaos)와 별개. snake_case → camelCase 파싱.
+ *
+ * 키: name, description, tier, category, chaos_type, effect_kind, levels.
+ *   levels = `param:score, param:score, ...` (콤마 구분, 강도 순서).
+ */
+export function parseChaosDefs(ini: IniData): Map<string, Chaos> {
+  const result = new Map<string, Chaos>();
+  for (const [section, fields] of Object.entries(ini)) {
+    if (!section.startsWith('chaos.')) continue;
+    const id = sectionIdSuffix(section);
+    // 신규 시스템은 `ch-` 접두만 소유 — 레거시 c-* placeholder는 건너뜀.
+    if (!id.startsWith('ch-')) continue;
+    const levels: ChaosLevel[] = parseList(fields.levels)
+      .map(parseChaosLevel)
+      .filter((l): l is ChaosLevel => l !== null);
+    result.set(id, {
+      id,
+      name: fields.name ?? id,
+      description: fields.description ?? '',
+      tier: asChaosTier(parseNumber(fields.tier, 1)),
+      category: fields.category ?? 'misc',
+      chaosType: asChaosType(fields.chaos_type ?? 'binary'),
+      effectKind: (fields.effect_kind ?? 'enemy-hp-mul') as ChaosEffectKind,
+      levels,
     });
   }
   return result;
@@ -959,8 +1031,10 @@ const DATA_FILES = [
   'data/monsters/act-1-roster-t4.txt',
   'data/items/act-1-items.txt',
   'data/equipment/equipment-mvr.txt',
-  // === 카오스 (r4) — 매 런 단위 토글 가능한 특수 기능. ===
+  // === 카오스 (r4) — 매 런 단위 토글 가능한 특수 기능 (레거시 placeholder). ===
   'data/chaos/chaos-mvr.txt',
+  // === 카오스 도전-점수 시스템 (Phase A) — [chaos.ch-*] 정의. ===
+  'data/chaos/act-chaos.txt',
   // === 단서 (2026-05-19) — 간접 스토리 + 조건부 chain. ===
   'data/clues/act-1-clues.txt',
   // === 메타 해금 (A단계) — 자원 소비 투자 카탈로그. ===
@@ -1021,6 +1095,7 @@ export async function loadAllData(baseUrl?: string): Promise<GameData> {
     items: parseItems(merged),
     equipments: parseEquipments(merged),
     chaos: parseChaos(merged),
+    chaosDefs: parseChaosDefs(merged),
     clues: parseClues(merged),
     unlocks: parseUnlocks(merged),
   };
@@ -1050,6 +1125,7 @@ export function loadFromText(text: string): GameData {
     items: parseItems(ini),
     equipments: parseEquipments(ini),
     chaos: parseChaos(ini),
+    chaosDefs: parseChaosDefs(ini),
     clues: parseClues(ini),
     unlocks: parseUnlocks(ini),
   };

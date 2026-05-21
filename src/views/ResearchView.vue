@@ -14,7 +14,8 @@ import { computed, onMounted } from 'vue';
 import { useMetaStore } from '@/stores/meta';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
-import type { MetaResource, MetaUnlock } from '@/data/schemas';
+import type { Chaos, MetaResource, MetaUnlock } from '@/data/schemas';
+import { shopChaos, purchaseChaos, chaosCostFor, chaosTierLabel } from '@/systems/chaos';
 
 const router = useRouter();
 const meta = useMetaStore();
@@ -67,6 +68,36 @@ function buy(u: MetaUnlock) {
     ui.toast('success', `'${u.name}' 해금`);
   } else {
     ui.toast('warning', '해금할 수 없습니다.');
+  }
+}
+
+// === 카오스 상점 (도전-점수 시스템) ===
+/** 진열되는 카오스 — tier ≤ chaosTierRevealed. 티어별 그룹. */
+const chaosGroups = computed(() => {
+  const list = shopChaos();
+  const byTier = new Map<number, Chaos[]>();
+  for (const c of list) {
+    if (!byTier.has(c.tier)) byTier.set(c.tier, []);
+    byTier.get(c.tier)!.push(c);
+  }
+  return [...byTier.entries()].sort((a, b) => a[0] - b[0]).map(([tier, items]) => ({ tier, items }));
+});
+/** 아직 잠긴 다음 티어(있으면). 안내문 표기용. */
+const nextLockedTier = computed(() => {
+  const revealed = meta.chaosTierRevealed;
+  return revealed < 4 ? revealed + 1 : null;
+});
+function ownsChaos(c: Chaos): boolean {
+  return meta.unlockedChaosIds.includes(c.id);
+}
+function canBuyChaos(c: Chaos): boolean {
+  return !ownsChaos(c) && meta.canAfford('soul', chaosCostFor(c.tier));
+}
+function buyChaos(c: Chaos) {
+  if (purchaseChaos(c.id)) {
+    ui.toast('success', `카오스 '${c.name}' 구매`);
+  } else {
+    ui.toast('warning', '구매할 수 없습니다.');
   }
 }
 
@@ -145,6 +176,43 @@ onMounted(() => {
       </div>
     </section>
     <section v-else class="empty"><p>아직 열 수 있는 해금이 없다.</p></section>
+
+    <!-- 카오스 상점 (도전-점수 시스템) -->
+    <section class="chaos-shop">
+      <h2 class="chaos-shop__title">카오스 — 위기 협약</h2>
+      <p class="chaos-shop__sub">영혼으로 사두면 매 런 시작에 자유로 켤 수 있다. 보상은 도전 점수 기록뿐.</p>
+      <div v-for="g in chaosGroups" :key="g.tier" class="cgroup">
+        <h3 class="cgroup__title">{{ chaosTierLabel(g.tier) }}</h3>
+        <div class="cgroup__items">
+          <div
+            v-for="c in g.items"
+            :key="c.id"
+            class="citem"
+            :class="{ 'citem--owned': ownsChaos(c) }"
+          >
+            <div class="citem__main">
+              <span class="citem__name">{{ c.name }}</span>
+              <p class="citem__desc">{{ c.description }}</p>
+            </div>
+            <div class="citem__side">
+              <span class="citem__cost">영혼 {{ chaosCostFor(c.tier) }}</span>
+              <span v-if="ownsChaos(c)" class="citem__owned">보유</span>
+              <button
+                v-else
+                class="citem__buy"
+                :disabled="!canBuyChaos(c)"
+                @click="buyChaos(c)"
+              >
+                {{ canBuyChaos(c) ? '구매' : '영혼 부족' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p v-if="nextLockedTier" class="chaos-shop__locked">
+        🔒 {{ chaosTierLabel(nextLockedTier) }} — 진열된 카오스를 하나라도 켜고 클리어하면 열린다.
+      </p>
+    </section>
 
     <!-- 누적 진행도 요약 -->
     <details class="summary">
@@ -235,6 +303,42 @@ h1 { color: #f6e8b8; margin: 0; }
 .unlock__buy:disabled { opacity: 0.4; cursor: not-allowed; }
 
 .empty { text-align: center; padding: 3rem 2rem; color: #6c6c7c; }
+
+/* === 카오스 상점 === */
+.chaos-shop {
+  margin-top: 2.4rem;
+  padding: 1.4rem;
+  background: rgba(192,142,255,0.06);
+  border: 1px solid rgba(192,142,255,0.28);
+  border-radius: 10px;
+}
+.chaos-shop__title { color: #c08eff; margin: 0; font-size: 1.05rem; letter-spacing: 0.03em; }
+.chaos-shop__sub { color: #888; font-size: 0.85rem; margin: 0.35rem 0 1rem; }
+.cgroup { margin-bottom: 1.1rem; }
+.cgroup__title { color: #bdb0e0; font-size: 0.85rem; margin: 0 0 0.5rem; letter-spacing: 0.04em; }
+.cgroup__items { display: flex; flex-direction: column; gap: 0.5rem; }
+.citem {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 0.8rem 1rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+}
+.citem--owned { opacity: 0.6; }
+.citem__main { flex: 1; min-width: 0; }
+.citem__name { font-weight: 600; color: #f6e8b8; }
+.citem__desc { color: #bdb6a0; font-size: 0.82rem; line-height: 1.4; margin: 0.2rem 0 0; }
+.citem__side { display: flex; flex-direction: column; align-items: flex-end; gap: 0.35rem; flex-shrink: 0; }
+.citem__cost { font-size: 0.82rem; color: #c08eff; font-weight: 600; font-variant-numeric: tabular-nums; }
+.citem__owned { font-size: 0.8rem; color: #7fd58f; font-weight: 600; }
+.citem__buy {
+  background: rgba(192,142,255,0.16);
+  border: 1px solid rgba(192,142,255,0.4);
+  color: #f6e8b8; padding: 0.32rem 0.85rem; border-radius: 6px; cursor: pointer; font-size: 0.83rem;
+}
+.citem__buy:hover:not(:disabled) { background: rgba(192,142,255,0.28); }
+.citem__buy:disabled { opacity: 0.4; cursor: not-allowed; }
+.chaos-shop__locked { color: #9a8fb8; font-size: 0.83rem; margin: 0.8rem 0 0; }
 
 .summary { margin-top: 2.4rem; }
 .summary summary { cursor: pointer; color: #c0b693; font-size: 0.9rem; padding: 0.4rem 0; }

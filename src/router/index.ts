@@ -58,6 +58,12 @@ const routes: RouteRecordRaw[] = [
     meta: { scene: 'game' },
   },
   {
+    path: '/game/chaos-select',
+    name: 'chaos-select',
+    component: () => import('@/views/ChaosSelectView.vue'),
+    meta: { scene: 'game' },
+  },
+  {
     path: '/game/map',
     name: 'game-map',
     component: () => import('@/views/MapView.vue'),

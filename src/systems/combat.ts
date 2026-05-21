@@ -33,6 +33,16 @@ import {
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
+import {
+  enemyHpMul,
+  enemyAtkMul,
+  enemyDefAdd,
+  handSizeReduction,
+  manaReduction,
+  isHiddenIntent,
+  allGimmickIntentFor,
+  isNarrowReward,
+} from '@/systems/chaos';
 
 const STARTING_HAND_SIZE = 5;
 const DEFAULT_MAX_MANA = 3;
@@ -102,7 +112,8 @@ export function statusBonusForCardEffectKind(
  * attackerStatuses: 공격자의 statuses (플레이어 카드면 player, 적 공격이면 enemy).
  *
  * 적용 순서:
- *   rawValue → weakness(공격자) ×0.75 → vulnerable(대상) ×1.5 → block 흡수 → hp.
+ *   rawValue → weakness(공격자) ×0.75 → ghost(공격자) ×0.5 → vulnerable(대상) ×1.5
+ *            → ghost(대상) ×0.5 → damage-in-mul → block 흡수 → hp.
  * 각 배수마다 Math.floor.
  */
 function applyDamage(
@@ -115,9 +126,15 @@ function applyDamage(
   // weakness(약화): 공격자가 주는 피해 ×0.75.
   const weakness = attackerStatuses?.weakness ?? 0;
   if (weakness > 0) v = Math.floor(v * 0.75);
+  // ghost(유령화·공격자): 비실체라 *주는 피해 ×0.5*. weakness 뒤(출력 단계).
+  const attackerGhost = attackerStatuses?.ghost ?? 0;
+  if (attackerGhost > 0) v = Math.floor(v * 0.5);
   // vulnerable(취약): 대상이 받는 피해 ×1.5.
   const vulnerable = target.statuses?.vulnerable ?? 0;
   if (vulnerable > 0) v = Math.floor(v * 1.5);
+  // ghost(유령화·대상): 비실체라 *받는 피해 ×0.5*. vulnerable 뒤(입력 단계).
+  const targetGhost = target.statuses?.ghost ?? 0;
+  if (targetGhost > 0) v = Math.floor(v * 0.5);
   // damage-in-mul 유물: 플레이어가 *받는* 피해에만 배수 적용 (예: 글래스 프리즘 ×1.3).
   if (isPlayerTarget) {
     const inMul = getModifierMul('damage-in-mul');
@@ -147,11 +164,11 @@ function tickPoison(target: Combatant): void {
 }
 
 /**
- * feral(수화)/regress(퇴행)/sap(잠식) 턴 감소 — 매 플레이어 턴 종료 시 양쪽(플레이어·적) -1.
+ * feral(수화)/regress(퇴행)/sap(잠식)/ghost(유령화) 턴 감소 — 매 플레이어 턴 종료 시 양쪽(플레이어·적) -1.
  * 0이 되면 제거. vulnerable/weakness 등 기존 status는 여기서 건드리지 않는다.
  */
 function decayTurnStatuses(target: Combatant): void {
-  for (const key of ['feral', 'regress', 'sap'] as const) {
+  for (const key of ['feral', 'regress', 'sap', 'ghost'] as const) {
     const stack = target.statuses?.[key] ?? 0;
     if (stack <= 0) continue;
     const next = stack - 1;
@@ -197,24 +214,38 @@ export function startCombat(monster: Monster) {
     statuses: {},
   };
 
+  // 카오스 상시형 — enemy-hp-mul(+elite-hp-mul, 엘리트/보스) 활성 시 적 HP 배수 상향(올림).
+  const scaledEnemyHp = Math.round(monster.hp * enemyHpMul(monster));
   const enemyCombatant: Combatant = {
-    hp: monster.hp,
-    maxHp: monster.hp,
-    block: 0,
+    hp: scaledEnemyHp,
+    maxHp: scaledEnemyHp,
+    // 카오스 enemy-def-add — 적 전투 시작 block +N.
+    block: enemyDefAdd(),
     statuses: {},
   };
 
   // MAG 보너스 + 유물(draw-extra-add / mana-extra-add)로 드로우/마나 증가.
+  // 카오스 small-hand/low-mana — 드로우/마나 감소(최소 클램프).
   const bonus = currentBonuses();
-  const handSize = STARTING_HAND_SIZE + bonus.drawExtra + getModifierAdd('draw-extra-add');
-  const maxMana = DEFAULT_MAX_MANA + bonus.manaExtra + getModifierAdd('mana-extra-add');
+  const handSize = Math.max(
+    0,
+    STARTING_HAND_SIZE + bonus.drawExtra + getModifierAdd('draw-extra-add') - handSizeReduction(),
+  );
+  const maxMana = Math.max(
+    0,
+    DEFAULT_MAX_MANA + bonus.manaExtra + getModifierAdd('mana-extra-add') - manaReduction(),
+  );
 
   const drawPile = [...r.deck];
   const { drawn, newDrawPile, newDiscardPile } = drawCards(drawPile, [], handSize);
 
+  // 카오스 all-gimmick(만물의 송곳니) — 그 몬스터 *종족 대표 기믹*을 인텐트 로테이션에 삽입.
+  // 보스는 자체 기믹이 강하므로 제외(일반·엘리트만). 보스 판정은 monster.id가 보스 정의에 있는가.
+  const enemyIntentRotation = buildEnemyIntentRotation(monster);
+
   const combat: CombatState = {
     enemy: enemyCombatant,
-    enemyIntent: pickIntent(monster, 0),
+    enemyIntent: pickIntent(monster, 0, enemyIntentRotation),
     player,
     hand: drawn,
     drawPile: newDrawPile,
@@ -235,6 +266,10 @@ export function startCombat(monster: Monster) {
     // 이상전투 심화 기믹 초기화 — splitCount 없으면 0(부활 없음), 거미줄 0.
     enemySplit: monster.splitCount ?? 0,
     webStacks: 0,
+    // 카오스 all-gimmick — 종족 대표 기믹이 끼워진 인텐트 로테이션(미주입 시 undefined → 원본 사용).
+    enemyIntentRotation,
+    // 카오스 hidden-intent — 적 의도 가려짐(Stage2 obscure 재사용). 큰 값으로 상시 은폐.
+    obscuredTurns: isHiddenIntent() ? 9999 : 0,
   };
   r.combat = combat;
 
@@ -350,6 +385,12 @@ export function playCard(handIndex: number, monster: Monster): { enemyDefeated: 
   // 잡카드(상처/저주): 사용 불가 — 칸만 차지, 전투 종료 시 소멸.
   if (card.unplayable) {
     ui.toast('warning', '이 카드는 쓸 수 없다.');
+    return { enemyDefeated: false };
+  }
+
+  // 카오스 color-seal(색의 침묵) — 봉인된 색의 카드는 사용 불가(anchor/web 잠금 패턴 동형).
+  if (r.chaosBannedColor && card.element === r.chaosBannedColor) {
+    ui.toast('warning', '봉인된 색 — 이 카드는 쓸 수 없다.');
     return { enemyDefeated: false };
   }
 
@@ -716,6 +757,11 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
   'next-card-double': (_e, c) => {
     (c as { nextCardDouble?: boolean }).nextCardDouble = true;
   },
+  // 유령화(비실체) — 플레이어 자신을 value턴 ghost: 받는·주는 피해 ×0.5(양날). 매 턴 -1 (decayTurnStatuses).
+  'ghost-self': (e, c) => {
+    const turns = e.value ?? 2;
+    c.player.statuses['ghost'] = (c.player.statuses['ghost'] ?? 0) + turns;
+  },
   // 마커: 저주 잡카드가 손에 있으면 매 턴 시작 피해. 실제 틱은 applyPlayerStatusTurnStart의 스캔.
   // (저주는 unplayable이라 이 핸들러는 사실상 호출되지 않음 — 타입 완전성용 no-op.)
   'curse-tick': () => {
@@ -789,7 +835,7 @@ export function endPlayerTurn(monster: Monster): { playerDefeated: boolean; enem
 
   // r4: debugFlag freezeEnemies — 적 행동 시뮬 스킵 (전투 정지 디버그).
   if (!useUiStore().debug.freezeEnemies) {
-    executeMonsterIntent(c);
+    executeMonsterIntent(c, monster);
   }
 
   if (c.player.hp <= 0) {
@@ -825,7 +871,11 @@ export function endPlayerTurn(monster: Monster): { playerDefeated: boolean; enem
   const manaCarry = playerHasRelicEffect('mana-carryover') ? Math.max(0, c.mana) : 0;
   // regress(퇴행)면 MAG manaExtra 무효 → 기본 maxMana만. (playerBonuses가 0 반환.)
   // 유물 mana-extra-add는 색 스탯과 무관하므로 regress와 별개로 항상 합산.
-  const effMaxMana = DEFAULT_MAX_MANA + playerBonuses(c).manaExtra + getModifierAdd('mana-extra-add');
+  // 카오스 low-mana — 매 턴 마나 -N(최소 0).
+  const effMaxMana = Math.max(
+    0,
+    DEFAULT_MAX_MANA + playerBonuses(c).manaExtra + getModifierAdd('mana-extra-add') - manaReduction(),
+  );
   c.mana = effMaxMana + manaCarry;
   // 칼리번 c-trace-step: 다음 턴 시작 에너지 +N 보너스 소비.
   const nextEnergyBonus = r.nextTurnEnergyBonus ?? 0;
@@ -841,16 +891,18 @@ export function endPlayerTurn(monster: Monster): { playerDefeated: boolean; enem
   // force-discard 교란(drawDown)은 이번 드로우를 줄이고 1회 소비.
   const drawDown = c.drawDown ?? 0;
   if (drawDown > 0) c.drawDown = 0;
+  // 카오스 small-hand — 매 턴 드로우 -N(최소 0).
   const handSize = Math.max(
     0,
-    STARTING_HAND_SIZE + playerBonuses(c).drawExtra + getModifierAdd('draw-extra-add') - drawDown,
+    STARTING_HAND_SIZE + playerBonuses(c).drawExtra + getModifierAdd('draw-extra-add')
+      - drawDown - handSizeReduction(),
   );
   const { drawn, newDrawPile, newDiscardPile } = drawCards(c.drawPile, c.discardPile, handSize);
   c.hand = drawn;
   c.drawPile = newDrawPile;
   c.discardPile = newDiscardPile;
 
-  c.enemyIntent = pickIntent(monster, c.turn);
+  c.enemyIntent = pickIntent(monster, c.turn, c.enemyIntentRotation);
 
   // 보스 기믹 — 새 플레이어 턴 시작 훅 (stillness 마나 감소/정지, anchor 잠금, rewind 스냅샷).
   // 새 손패 드로우 *후*에 호출해야 닻이 이번 턴 손패를 잠근다. bossMechanic 미설정이면 no-op.
@@ -1027,13 +1079,19 @@ export function struggle(): { freed: boolean } {
   return { freed: false };
 }
 
-function executeMonsterIntent(c: CombatState) {
+function executeMonsterIntent(c: CombatState, monster?: Monster) {
   const intent = c.enemyIntent;
   if (!intent) return;
 
   const parts = intent.split(':');
   const kind = parts[0];
-  const value = Number(parts[1]) || 0;
+  const rawValue = Number(parts[1]) || 0;
+  // 카오스 enemy-atk-mul(+boss-atk-mul) — 공격성 인텐트(attack/drain/charge)의 데미지 배수.
+  const atkMul = enemyAtkMul(monster);
+  const value =
+    (kind === 'attack' || kind === 'drain' || kind === 'charge') && atkMul !== 1
+      ? Math.round(rawValue * atkMul)
+      : rawValue;
 
   switch (kind) {
     case 'attack': {
@@ -1107,6 +1165,12 @@ function executeMonsterIntent(c: CombatState) {
     case 'charge': {
       // charge:value — 윈드업: 힘 +value 축적(다음 공격 강화 텔레그래프).
       c.enemy.statuses['strength'] = (c.enemy.statuses['strength'] ?? 0) + value;
+      break;
+    }
+    case 'ghost': {
+      // ghost:N — 적이 *자기 자신*을 N턴 유령화(비실체). 받는·주는 피해 ×0.5(양날). 매 턴 -1.
+      c.enemy.statuses['ghost'] = (c.enemy.statuses['ghost'] ?? 0) + (value || 2);
+      useUiStore().toast('warning', '형태가 흐려진다 — 비실체가 되었다.');
       break;
     }
     // === 카드 교란 기믹 (잡카드 주입은 위치별 3종) ===
@@ -1261,9 +1325,37 @@ function transformToJunk(c: CombatState, count: number): void {
   }
 }
 
-function pickIntent(monster: Monster, turn: number): string {
+/**
+ * 이번 턴 적 인텐트 토큰 선택.
+ * rotation(카오스 all-gimmick이 만든 종족 기믹 포함 배열)이 주어지면 그것을, 아니면 monster.intents를 순회.
+ */
+function pickIntent(monster: Monster, turn: number, rotation?: string[]): string {
+  const rot = rotation && rotation.length > 0 ? rotation : null;
+  if (rot) return rot[turn % rot.length];
   if (monster.intents.length === 0) return 'attack:5';
   return monster.intents[turn % monster.intents.length].encoded;
+}
+
+/**
+ * all-gimmick 활성 시 *종족 대표 기믹*을 끼운 인텐트 로테이션을 생성.
+ * 비활성이거나 보스면 undefined(원본 monster.intents 사용).
+ * 삽입 위치: 두 번째 슬롯(인텐트가 1개뿐이면 끝에 추가) — 전투 초반 1회 자연 발동.
+ */
+function buildEnemyIntentRotation(monster: Monster): string[] | undefined {
+  // 보스 제외 — 보스는 자체 기믹(anchor/stillness/rewind 등)이 강하므로 추가 주입 안 함.
+  try {
+    if (useDataStore().bosses.has(monster.id)) return undefined;
+  } catch {
+    /* store 미접근 — 보스 판정 실패 시 일반 취급(주입 진행). */
+  }
+  const gimmick = allGimmickIntentFor(monster);
+  if (!gimmick) return undefined;
+  const base = monster.intents.map((i) => i.encoded);
+  if (base.length === 0) return [gimmick, 'attack:5'];
+  const out = [...base];
+  // 두 번째 슬롯에 삽입(없으면 끝에 추가) — 첫 턴은 원래 의도, 다음 턴에 기믹.
+  out.splice(Math.min(1, out.length), 0, gimmick);
+  return out;
 }
 
 /**
@@ -1282,16 +1374,22 @@ export function applyMonsterDrop(drop: MonsterDrop, allCards: Map<string, Card>)
   r.gold += drop.gold;
   r.timeShards += drop.timeShards;
 
-  const droppedCards: Card[] = [];
+  // 카오스 narrow-reward(좁은 길) — 카드 보상 제시 수 -1. 확률 통과 카드 후보 중 마지막 1장 누락.
+  // (이 게임은 'N장 중 택1' UI가 아니라 확률 드롭이므로, 통과 카드 수에서 1장 감산으로 구현.)
+  const narrow = isNarrowReward();
+  const passed: { card: Card }[] = [];
   for (const cd of drop.cardDrops ?? []) {
     if (rng() < cd.chance) {
       const card = allCards.get(cd.cardId);
-      if (card) {
-        droppedCards.push(card);
-        // 컬렉션에 추가 — 덱 슬롯 등록은 사용자가 덱 편집에서.
-        run.addCardToCollection(card);
-      }
+      if (card) passed.push({ card });
     }
+  }
+  const granted = narrow && passed.length > 0 ? passed.slice(0, passed.length - 1) : passed;
+  const droppedCards: Card[] = [];
+  for (const { card } of granted) {
+    droppedCards.push(card);
+    // 컬렉션에 추가 — 덱 슬롯 등록은 사용자가 덱 편집에서.
+    run.addCardToCollection(card);
   }
 
   // on-combat-end 유물 발동 (bonus-gold 등)

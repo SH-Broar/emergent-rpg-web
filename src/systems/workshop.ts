@@ -15,6 +15,7 @@ import { useUiStore } from '@/stores/ui';
 import { instantiateCard } from '@/systems/deck';
 import { availableCards } from '@/systems/unlocks';
 import { rng } from '@/systems/rng';
+import { upgradeCostMul } from '@/systems/chaos';
 
 export const UPGRADE_COST_TIME_SHARDS = 8;
 export const FORGE_PRICE_TIME_SHARDS = 15;
@@ -33,12 +34,17 @@ const FORGE_RANKS: Rank[] = ['rare'];
 export const UPGRADE_RARE_COST_TIME_SHARDS = 12;
 export const UPGRADE_LEGENDARY_COST_TIME_SHARDS = 18;
 
-/** 강화 비용 표 — 카드 rank → { 시간조각, 재료 id(있으면) }. */
+/**
+ * 강화 비용 표 — 카드 rank → { 시간조각, 재료 id(있으면) }.
+ * 카오스 upgrade-cost-mul(무딘 숫돌) — 시간조각 비용에 배수(1+param) 적용(올림).
+ */
 export function upgradeCostFor(rank: Rank): { timeShards: number; materialId?: string } {
-  if (rank === 'rare') return { timeShards: UPGRADE_RARE_COST_TIME_SHARDS, materialId: MATERIAL_RARE_ID };
-  if (rank === 'legendary') return { timeShards: UPGRADE_LEGENDARY_COST_TIME_SHARDS, materialId: MATERIAL_LEGENDARY_ID };
+  const mul = upgradeCostMul();
+  const scale = (n: number) => Math.ceil(n * mul);
+  if (rank === 'rare') return { timeShards: scale(UPGRADE_RARE_COST_TIME_SHARDS), materialId: MATERIAL_RARE_ID };
+  if (rank === 'legendary') return { timeShards: scale(UPGRADE_LEGENDARY_COST_TIME_SHARDS), materialId: MATERIAL_LEGENDARY_ID };
   // basic / common — 시간조각만 (현행).
-  return { timeShards: UPGRADE_COST_TIME_SHARDS };
+  return { timeShards: scale(UPGRADE_COST_TIME_SHARDS) };
 }
 
 /** 강화 가능한가 — upgrade_to 정의 + 대상 카드 존재 + 자원(시간조각·재료) 충분. */

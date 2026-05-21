@@ -1960,3 +1960,25 @@ cost = 1
 trigger = manual
 effects = damage-top-color:2:enemy, draw-if-color:1:self:light:4
 flavor = 가장 짙은 색이, 두 배로 — 솟구친다.
+
+# === 유령화(비실체) — 카오스와 별개 양날 상태. 자기 ghost N턴. ===
+[card.c-phase-out]
+name = 흐려지기
+rank = common
+source = event
+element = dark
+cost = 1
+trigger = manual
+effects = ghost-self:2:self
+upgrade_to = c-phase-out-plus
+flavor = 형태를 풀면, 닿는 것도 닿이는 것도 절반이 된다.
+
+[card.c-phase-out-plus]
+name = 흐려지기+
+rank = common
+source = event
+element = dark
+cost = 1
+trigger = manual
+effects = ghost-self:3:self
+flavor = 더 오래 비실체로 머문다.

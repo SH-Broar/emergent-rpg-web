@@ -8,6 +8,7 @@
 import { defineStore } from 'pinia';
 import {
   EMPTY_META_GAUGE,
+  META_SAVE_VERSION,
   type CodexEntry,
   type MetaProgress,
   type MetaResource,
@@ -38,6 +39,11 @@ function createEmptyMeta(): MetaProgress {
     procInputs: {},
     totalRuns: 0,
     totalBossClears: 0,
+    // 카오스 도전-점수 시스템 (v3).
+    unlockedChaosIds: [],
+    chaosTierRevealed: 1,
+    bestChaosScore: {},
+    saveVersion: META_SAVE_VERSION,
   };
 }
 
@@ -77,6 +83,11 @@ function loadMeta(): MetaProgress {
     parsed.unlockedCardIds ??= [];
     parsed.unlockedTimelineIds ??= [];
     parsed.unlockedRaceIds ??= [];
+    // 세이브 v3 마이그레이션 — 카오스 필드 누락 시 안전 기본값으로 채움. 기존 값은 보존.
+    parsed.unlockedChaosIds ??= [];
+    parsed.chaosTierRevealed ??= 1;
+    parsed.bestChaosScore ??= {};
+    parsed.saveVersion = META_SAVE_VERSION;
     return parsed;
   } catch {
     return createEmptyMeta();
@@ -317,6 +328,10 @@ export const useMetaStore = defineStore('meta', {
       this.procInputs = fresh.procInputs;
       this.totalRuns = fresh.totalRuns;
       this.totalBossClears = fresh.totalBossClears;
+      this.unlockedChaosIds = fresh.unlockedChaosIds;
+      this.chaosTierRevealed = fresh.chaosTierRevealed;
+      this.bestChaosScore = fresh.bestChaosScore;
+      this.saveVersion = fresh.saveVersion;
       this.persist();
     },
 

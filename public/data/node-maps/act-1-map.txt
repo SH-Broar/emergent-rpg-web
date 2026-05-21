@@ -161,7 +161,7 @@ specialty_item = i-yusezria-ore
 
 [nodemap.nm-act-1-era4-061.region.triflower]
 name = 트리플라워 화산
-description = 라르 숲과 모스 사이의 활화산. 화염 몬무스 — 살라만더·화염 정령·화염 아라크네. 용암·재·열기.
+description = 라르 숲과 모스 사이의 활화산. 화염 아인 — 살라만더·화염 정령·화염 아라크네. 용암·재·열기.
 tier = 3
 enemy_pool = mr-triflower-ember-arachne, mr-triflower-lava-salamander, mr-triflower-flame-spirit, mr-triflower-magma-crab, mr-triflower-scorchling
 elite_enemy_pool = mr-triflower-ignia-queen
@@ -171,7 +171,7 @@ specialty_item = i-lava-scale
 
 [nodemap.nm-act-1-era4-061.region.falcon-garden]
 name = 팔콘 가든 공중 군도
-description = 클러치 등대 너머 바다 위에 떠 있는 *공중 군도*. 강력한 조류 몬무스 — 맹금·하피·하늘의 주인. 대화 가능한 이는 *바다쪽 범고래*뿐. 강풍·깃털·고도.
+description = 클러치 등대 너머 바다 위에 떠 있는 *공중 군도*. 강력한 조류 아인 — 맹금·하피·하늘의 주인. 대화 가능한 이는 *바다쪽 범고래*뿐. 강풍·깃털·고도.
 tier = 4
 enemy_pool = mr-falcon-garden-gust-harpy, mr-falcon-garden-talon-striker, mr-falcon-garden-wind-lancer, mr-falcon-garden-sky-raven, mr-falcon-garden-gale-sentry
 elite_enemy_pool = mr-falcon-garden-storm-sovereign, mr-falcon-garden-sky-empress
@@ -361,7 +361,7 @@ events = ev-lar-caliburn-elnest-meet-2, ev-lar-tree-bud-shard
 kind = elite
 region = triflower
 label = 트리플라워 화산
-description = 라르 숲과 모스 사이의 활화산. 분화구에서 *화염 몬무스*들이 일어서고, 위쪽 둥지에 *화염 아라크네*가 실을 친다.
+description = 라르 숲과 모스 사이의 활화산. 분화구에서 *화염 아인*들이 일어서고, 위쪽 둥지에 *화염 아라크네*가 실을 친다.
 x = 0.79
 y = 0.55
 neighbors = n-world-tree, n-moss, n-lar-crater-rim, n-lar-lava-vein, n-lar-cooled-slag, n-tri-web-nest
@@ -1203,7 +1203,7 @@ neighbors = n-world-tree
 enemy = mr-lar-forest-spider-queen
 events = ev-lar-root-burrow-old
 
-# --- E. 트리플라워 화산 (독립 권역 triflower, 화염 몬무스 6노드) ---
+# --- E. 트리플라워 화산 (독립 권역 triflower, 화염 아인 6노드) ---
 [nodemap.nm-act-1-era4-061.node.n-lar-crater-rim]
 kind = combat
 region = triflower
@@ -1250,7 +1250,7 @@ events = ev-tri-web-nest
 kind = elite
 region = triflower
 label = 마그마 핵
-description = 분화구 — *가장 깊은 자리*. 마그마가 — *한 덩이*로 — 끓는다. 가장 — 강한 화염 몬무스가 — 여기 — 머문다.
+description = 분화구 — *가장 깊은 자리*. 마그마가 — *한 덩이*로 — 끓는다. 가장 — 강한 화염 아인이 — 여기 — 머문다.
 x = 0.84
 y = 0.58
 neighbors = n-tri-web-nest
@@ -2633,7 +2633,7 @@ events = ev-coral-rest
 kind = elite
 region = coral-coast
 label = 노래 여울
-description = 산호 해안 — *세이렌의 노래가 — 가장 짙은 여울*. 물살이 — 노래에 — 맞춰 — 휜다. 가장 — 강한 해양 몬무스가 — 여기 — 머문다.
+description = 산호 해안 — *세이렌의 노래가 — 가장 짙은 여울*. 물살이 — 노래에 — 맞춰 — 휜다. 가장 — 강한 해양 아인이 — 여기 — 머문다.
 x = 0.59
 y = 0.93
 neighbors = n-coral-reef
@@ -2691,7 +2691,7 @@ events = ev-emberforge-lair
 kind = elite
 region = emberforge
 label = 깊은 용광 갱
-description = 광맥 — *가장 깊은 갱*. 쇳물이 — *한 덩이*로 — 끓는다. 가장 — 강한 화산광 몬무스가 — 여기 — 머문다.
+description = 광맥 — *가장 깊은 갱*. 쇳물이 — *한 덩이*로 — 끓는다. 가장 — 강한 화산광 아인이 — 여기 — 머문다.
 x = 0.94
 y = 0.36
 neighbors = n-emberforge-vein, n-emberforge-core
@@ -2748,7 +2748,7 @@ events = ev-oldshrine-altar
 kind = elite
 region = oldshrine
 label = 안쪽 성소
-description = 신전 — *가장 안쪽 성소*. 번개가 — *한 덩이*로 — 고여 있다. 가장 — 강한 신전 몬무스가 — 여기 — 머문다.
+description = 신전 — *가장 안쪽 성소*. 번개가 — *한 덩이*로 — 고여 있다. 가장 — 강한 신전 아인이 — 여기 — 머문다.
 x = 0.32
 y = 0.68
 neighbors = n-oldshrine-hall, n-oldshrine-core

@@ -9,6 +9,7 @@
 [monster.mr-luna-ink-fiend]
 name = 잉크 마귀
 tier = normal
+species = imp
 hp = 200
 attack = 13
 defense = 0
@@ -20,6 +21,7 @@ card_drops =
 [monster.mr-luna-grimoire-shadow]
 name = 그리모어 그림자
 tier = normal
+species = wraith
 hp = 180
 attack = 10
 defense = 0
@@ -31,6 +33,7 @@ card_drops =
 [monster.mr-luna-phantom-scribe]
 name = 팬텀 필사가
 tier = normal
+species = phantom
 hp = 220
 attack = 12
 defense = 0
@@ -42,6 +45,7 @@ card_drops =
 [monster.mr-luna-cursed-page]
 name = 저주받은 책장
 tier = normal
+species = imp
 hp = 160
 attack = 9
 defense = 0
@@ -53,6 +57,7 @@ card_drops =
 [monster.mr-luna-mirror-shade]
 name = 거울 유령
 tier = normal
+species = wraith
 hp = 240
 attack = 15
 defense = 0
@@ -64,6 +69,7 @@ card_drops =
 [monster.mr-luna-forbidden-wisp]
 name = 금서 도깨비불
 tier = normal
+species = spirit
 hp = 190
 attack = 10
 defense = 0
@@ -75,10 +81,11 @@ card_drops =
 [monster.mr-luna-corridor-phantom]
 name = 회랑 팬텀
 tier = normal
+species = phantom
 hp = 260
 attack = 16
 defense = 0
-intents = attack:16, defend:10, attack:17, attack:15
+intents = attack:16, ghost:2, defend:10, attack:17, attack:15
 gold = 22
 time_shards = 8
 card_drops =
@@ -86,6 +93,7 @@ card_drops =
 [monster.mr-luna-arcane-devourer]
 name = 비전 게걸꾼
 tier = elite
+species = arcane
 hp = 520
 attack = 20
 defense = 0
@@ -97,6 +105,7 @@ card_drops =
 [monster.mr-luna-headmaster-shade]
 name = 교수 유령
 tier = elite
+species = wraith
 hp = 600
 attack = 18
 defense = 0
@@ -112,6 +121,7 @@ card_drops =
 [monster.mr-tacomi-pixel-beast]
 name = 픽셀 야수
 tier = normal
+species = beastkin
 hp = 240
 attack = 15
 defense = 0
@@ -123,6 +133,7 @@ card_drops =
 [monster.mr-tacomi-hologram-jester]
 name = 홀로그램 광대
 tier = normal
+species = beastkin
 hp = 180
 attack = 10
 defense = 0
@@ -134,6 +145,7 @@ card_drops =
 [monster.mr-tacomi-barrier-sprite]
 name = 결계 정령체
 tier = normal
+species = spirit
 hp = 200
 attack = 9
 defense = 0
@@ -145,6 +157,7 @@ card_drops =
 [monster.mr-tacomi-neon-hornet]
 name = 네온 말벌
 tier = normal
+species = insect
 hp = 170
 attack = 12
 defense = 0
@@ -156,6 +169,7 @@ card_drops =
 [monster.mr-tacomi-festival-mimic]
 name = 축제 미믹
 tier = normal
+species = automaton
 hp = 260
 attack = 16
 defense = 0
@@ -167,6 +181,7 @@ card_drops =
 [monster.mr-tacomi-circuit-prowler]
 name = 회로 야행꾼
 tier = normal
+species = automaton
 hp = 210
 attack = 11
 defense = 0
@@ -178,6 +193,7 @@ card_drops =
 [monster.mr-tacomi-voltage-dancer]
 name = 전압 무희
 tier = normal
+species = imp
 hp = 230
 attack = 14
 defense = 0
@@ -189,6 +205,7 @@ card_drops =
 [monster.mr-tacomi-hologram-titan]
 name = 홀로그램 거인상
 tier = elite
+species = beastkin
 hp = 480
 attack = 21
 defense = 0
@@ -200,6 +217,7 @@ card_drops =
 [monster.mr-tacomi-grand-circuit]
 name = 대회로 수호체
 tier = elite
+species = automaton
 hp = 620
 attack = 22
 defense = 0
@@ -215,6 +233,7 @@ card_drops =
 [monster.mr-demon-windfall-paper-ghost]
 name = 종이 유령
 tier = normal
+species = wraith
 hp = 180
 attack = 10
 defense = 0
@@ -226,6 +245,7 @@ card_drops =
 [monster.mr-demon-windfall-gale-blade]
 name = 바람날 정령
 tier = normal
+species = spirit
 hp = 220
 attack = 16
 defense = 0
@@ -237,6 +257,7 @@ card_drops =
 [monster.mr-demon-windfall-time-freezer]
 name = 시간 정지체
 tier = normal
+species = spirit
 hp = 190
 attack = 9
 defense = 0
@@ -248,6 +269,7 @@ card_drops =
 [monster.mr-demon-windfall-anchor-wraith]
 name = 닻 망령
 tier = normal
+species = wraith
 hp = 260
 attack = 15
 defense = 0
@@ -259,6 +281,7 @@ card_drops =
 [monster.mr-demon-windfall-storm-tyrant]
 name = 폭풍 군주
 tier = elite
+species = spirit
 hp = 560
 attack = 23
 defense = 0
@@ -274,6 +297,7 @@ card_drops =
 [monster.mr-enicham-sparking-drone]
 name = 불꽃 드론
 tier = normal
+species = automaton
 hp = 200
 attack = 13
 defense = 0
@@ -285,6 +309,7 @@ card_drops =
 [monster.mr-enicham-relay-crawler]
 name = 릴레이 포복체
 tier = normal
+species = automaton
 hp = 180
 attack = 11
 defense = 0
@@ -296,6 +321,7 @@ card_drops =
 [monster.mr-enicham-capacitor-golem]
 name = 축전 골렘
 tier = normal
+species = golem
 hp = 280
 attack = 14
 defense = 0
@@ -307,6 +333,7 @@ card_drops =
 [monster.mr-enicham-circuit-hound]
 name = 회로 사냥개
 tier = normal
+species = automaton
 hp = 210
 attack = 15
 defense = 0
@@ -318,6 +345,7 @@ card_drops =
 [monster.mr-enicham-overload-wraith]
 name = 과부하 망령
 tier = normal
+species = wraith
 hp = 190
 attack = 10
 defense = 0
@@ -329,6 +357,7 @@ card_drops =
 [monster.mr-enicham-proto-agi]
 name = 시제 AGI
 tier = elite
+species = automaton
 hp = 500
 attack = 21
 defense = 0
@@ -338,12 +367,13 @@ time_shards = 14
 card_drops =
 
 # ============================================================
-# TRIFLOWER 권역 (fire) — 활화산·화염 몬무스
+# TRIFLOWER 권역 (fire) — 활화산·화염 아인
 # ============================================================
 
 [monster.mr-triflower-ember-arachne]
 name = 화염 아라크네
 tier = normal
+species = arachne
 hp = 210
 attack = 10
 defense = 0
@@ -355,6 +385,7 @@ card_drops =
 [monster.mr-triflower-lava-salamander]
 name = 용암 살라만더
 tier = normal
+species = beastkin
 hp = 260
 attack = 16
 defense = 0
@@ -366,6 +397,7 @@ card_drops =
 [monster.mr-triflower-flame-spirit]
 name = 화염 정령
 tier = normal
+species = spirit
 hp = 190
 attack = 9
 defense = 0
@@ -377,6 +409,7 @@ card_drops =
 [monster.mr-triflower-magma-crab]
 name = 마그마 게
 tier = normal
+species = beastkin
 hp = 280
 attack = 14
 defense = 0
@@ -388,6 +421,7 @@ card_drops =
 [monster.mr-triflower-scorchling]
 name = 불씨 새끼
 tier = normal
+species = spirit
 hp = 170
 attack = 12
 defense = 0
@@ -399,6 +433,7 @@ card_drops =
 [monster.mr-triflower-ignia-queen]
 name = 이그니아 여왕
 tier = elite
+species = arachne
 hp = 540
 attack = 20
 defense = 0
@@ -414,6 +449,7 @@ card_drops =
 [monster.mr-diropel-long-ear-sentinel]
 name = 긴귀 보초
 tier = normal
+species = imp
 hp = 230
 attack = 13
 defense = 0
@@ -425,6 +461,7 @@ card_drops =
 [monster.mr-diropel-short-ear-dancer]
 name = 짧은귀 춤꾼
 tier = normal
+species = imp
 hp = 180
 attack = 10
 defense = 0
@@ -436,6 +473,7 @@ card_drops =
 [monster.mr-diropel-totem-warden]
 name = 토템 수호자
 tier = normal
+species = imp
 hp = 300
 attack = 12
 defense = 0
@@ -447,6 +485,7 @@ card_drops =
 [monster.mr-diropel-pattern-shaman]
 name = 무늬 주술사
 tier = normal
+species = imp
 hp = 200
 attack = 9
 defense = 0
@@ -458,6 +497,7 @@ card_drops =
 [monster.mr-diropel-grove-elder]
 name = 골짜기 장로
 tier = elite
+species = plant
 hp = 460
 attack = 19
 defense = 0
@@ -473,6 +513,7 @@ card_drops =
 [monster.mr-coral-coast-jellyfish-drifter]
 name = 해파리 부유체
 tier = normal
+species = beastkin
 hp = 170
 attack = 9
 defense = 0
@@ -484,6 +525,7 @@ card_drops =
 [monster.mr-coral-coast-siren-charmer]
 name = 세이렌 매혹사
 tier = normal
+species = siren
 hp = 200
 attack = 11
 defense = 0
@@ -495,6 +537,7 @@ card_drops =
 [monster.mr-coral-coast-coral-grappler]
 name = 산호 포박꾼
 tier = normal
+species = imp
 hp = 240
 attack = 13
 defense = 0
@@ -506,6 +549,7 @@ card_drops =
 [monster.mr-coral-coast-mermaid-hunter]
 name = 사냥꾼 인어
 tier = normal
+species = mermaid
 hp = 260
 attack = 15
 defense = 0
@@ -517,6 +561,7 @@ card_drops =
 [monster.mr-coral-coast-tide-specter]
 name = 조류 유령
 tier = normal
+species = wraith
 hp = 190
 attack = 12
 defense = 0
@@ -528,6 +573,7 @@ card_drops =
 [monster.mr-coral-coast-abyss-queen]
 name = 심연 여왕
 tier = elite
+species = mermaid
 hp = 580
 attack = 22
 defense = 0

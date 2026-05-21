@@ -306,6 +306,8 @@ const statusLabels: Record<string, string> = {
   regress: '퇴행',
   paralyze: '마비',
   spasm: '경련',
+  sap: '잠식',
+  ghost: '유령화',
 };
 function statusEntries(c: Combatant | undefined) {
   if (!c) return [] as { key: string; count: number; label: string }[];
@@ -581,6 +583,8 @@ function usePotion(itm: Item) {
 .status[data-key="strength"], .status[data-key="dexterity"] { color: #8effb8; border-color: rgba(142,255,184,0.35); }
 .status[data-key="weakness"], .status[data-key="frail"], .status[data-key="vulnerable"], .status[data-key="poison"], .status[data-key="burn"], .status[data-key="regress"] { color: #ff8e8e; border-color: rgba(255,142,142,0.35); }
 .status[data-key="feral"] { color: #ffb86c; border-color: rgba(255,184,108,0.4); }
+/* ghost(유령화): 받는·주는 피해 절반 — 양날. 연보라(흐려짐). */
+.status[data-key="ghost"] { color: #c9b8ff; border-color: rgba(192,142,255,0.45); }
 /* 전투 포션 벨트 */
 .potions { display: flex; gap: 0.5rem; align-items: center; padding: 0.4rem 1rem; flex-wrap: wrap; }
 .potions__label { color: #c0b693; font-size: 0.8rem; }

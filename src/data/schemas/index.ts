@@ -20,4 +20,5 @@ export * from './run';
 export * from './meta';
 export * from './unlock';
 export * from './chaos';
+export * from './chaos-def';
 export * from './clue';

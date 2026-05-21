@@ -53,6 +53,8 @@ let toastSeq = 0;
 export interface PendingRunSetup {
   timelineId: string | null;
   raceId: string | null;
+  /** 카오스 선택 단계에서 확정한 활성 카오스(강도 포함). 미선택이면 빈 배열. */
+  activeChaos: { id: string; intensity: number }[];
 }
 
 export const useUiStore = defineStore('ui', {
@@ -61,7 +63,7 @@ export const useUiStore = defineStore('ui', {
     modalOpen: false as boolean,
     modalContent: null as string | null,
     debug: loadDebugFlags(),
-    pendingRunSetup: { timelineId: null, raceId: null } as PendingRunSetup,
+    pendingRunSetup: { timelineId: null, raceId: null, activeChaos: [] } as PendingRunSetup,
     /**
      * 디버그 전투 오버라이드 — 설정 시 CombatView/BossView가 노드/연표 대신
      * 이 id의 적/보스로 전투. 비영속(새로고침 시 사라짐). clearCombat에서 해제.

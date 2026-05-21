@@ -19,6 +19,7 @@ import type {
 import { instantiateCard } from '@/systems/deck';
 import { createSeededRng, generateInitialSeed, rng, setRng } from '@/systems/rng';
 import { getSkipTurnEveryN } from '@/systems/relic';
+import { applyStartChaos, nodeHpLoss } from '@/systems/chaos';
 import { useDataStore } from './data';
 
 /**
@@ -104,6 +105,8 @@ const EMPTY_RUN: RunState = {
   newCardEncounters: [],
   newRelicEncounters: [],
   newNpcEncounters: [],
+  // 카오스 도전-점수 시스템 (v3) — 복원 시 EMPTY_RUN 스프레드로 []가 보장됨.
+  activeChaos: [],
   ended: false,
   metaAbsorbed: false,
 };
@@ -123,7 +126,17 @@ export const useRunStore = defineStore('run', {
   },
 
   actions: {
-    /** 새 런 시작 — 연표·종족·계절 컨텍스트 + 결정론 시드 주입. */
+    /**
+     * 새 런 시작 — 연표·종족·계절 컨텍스트 + 결정론 시드 주입.
+     *
+     * 카오스(Phase A): `activeChaos`를 인자로 받아 RunState에 확정한 뒤, 시드/HP 셋업이
+     * 끝난 시점에 `applyStartChaos`를 1회 호출한다. start-hp는 여기서 즉시 반영된다.
+     *
+     * 주의(start-inject-card 타이밍): 현 RaceSelectView 플로우는 startRun *이후*
+     * 덱(collection/deck)을 재구성한다. 따라서 실제 플레이의 카드-주입 보존은 Phase C에서
+     * 카오스 토글 UI와 함께 *덱 셋업 이후* applyStartChaos를 재정렬해 마무리한다.
+     * Phase A 검증(playwright)은 startRun을 직접 호출하므로 빈 덱에 주입이 그대로 보인다.
+     */
     startRun(params: {
       timelineId: TimelineId;
       raceId: RaceId;
@@ -132,6 +145,8 @@ export const useRunStore = defineStore('run', {
       maxMp: number;
       startNodeId: string;
       timeLimit: number;
+      /** 이 런에서 활성화할 카오스 (강도 포함, 선택). 미지정이면 빈 배열(점수 0). */
+      activeChaos?: { id: string; intensity: number }[];
     }) {
       const fresh = structuredClone(EMPTY_RUN);
       fresh.timelineId = params.timelineId;
@@ -150,9 +165,13 @@ export const useRunStore = defineStore('run', {
       fresh.maxHp = params.maxHp;
       fresh.mp = params.maxMp;
       fresh.maxMp = params.maxMp;
+      // 카오스 확정 — 시작형 적용·상시형 조회·점수 산정의 원천.
+      fresh.activeChaos = params.activeChaos ? [...params.activeChaos] : [];
       this.data = fresh;
       this.active = true;
       this.bindRng();
+      // 시작형 카오스 1회 적용 (start-hp 등). bindRng 후 — instantiateCard가 결정론 rng를 쓰도록.
+      applyStartChaos(this.data);
     },
 
     /**
@@ -270,6 +289,10 @@ export const useRunStore = defineStore('run', {
       if (timeCounted) {
         r.visitedNodes.push(nodeId);
         r.remainingTime = Math.max(0, r.remainingTime - 1);
+        // 카오스 attrition(스며드는 피로) — 노드 진입마다 HP -N. 시간 카운트된 이동에만.
+        // 최소 1로 클램프(여기서 즉사 X — 시간만료/전투처럼 별도 종료 경로에 맡김).
+        const loss = nodeHpLoss();
+        if (loss > 0) r.hp = Math.max(1, r.hp - loss);
       }
 
       // 노드 상태 마킹 (시간 카운트와 무관)

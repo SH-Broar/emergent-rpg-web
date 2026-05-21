@@ -51,8 +51,9 @@ function selectTimeline(id: string) {
     return;
   }
   ui.pendingRunSetup.timelineId = id;
-  // 흐름: 시간대 → 종족 → 게임 시작 (캐릭터 단계 폐기).
+  // 흐름: 시간대 → 종족 → 카오스 → 게임 시작.
   ui.pendingRunSetup.raceId = null;
+  ui.pendingRunSetup.activeChaos = [];
   router.push('/game/race-select');
 }
 

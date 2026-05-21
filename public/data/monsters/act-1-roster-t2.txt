@@ -8,6 +8,7 @@
 [monster.mr-moss-fireworm]
 name = 화도 지렁이
 tier = normal
+species = insect
 hp = 120
 attack = 9
 defense = 0
@@ -19,6 +20,7 @@ card_drops =
 [monster.mr-moss-cindermoth]
 name = 불나방
 tier = normal
+species = beastkin
 hp = 130
 attack = 8
 defense = 0
@@ -30,6 +32,7 @@ card_drops =
 [monster.mr-moss-anvil-arachne]
 name = 화로 거미
 tier = normal
+species = arachne
 hp = 115
 attack = 7
 defense = 0
@@ -41,6 +44,7 @@ card_drops =
 [monster.mr-moss-slag-golem]
 name = 슬래그 골렘
 tier = normal
+species = golem
 hp = 210
 attack = 10
 defense = 0
@@ -52,6 +56,7 @@ card_drops =
 [monster.mr-moss-flame-lizard]
 name = 화염 도마뱀
 tier = normal
+species = beastkin
 hp = 140
 attack = 9
 defense = 0
@@ -63,6 +68,7 @@ card_drops =
 [monster.mr-moss-forge-imp]
 name = 대장간 임프
 tier = normal
+species = spirit
 hp = 110
 attack = 8
 defense = 0
@@ -74,6 +80,7 @@ card_drops =
 [monster.mr-moss-char-wraith]
 name = 숯 망령
 tier = normal
+species = wraith
 hp = 125
 attack = 7
 defense = 0
@@ -85,6 +92,7 @@ card_drops =
 [monster.mr-moss-iron-guardian]
 name = 철갑 파수꾼
 tier = normal
+species = imp
 hp = 220
 attack = 9
 defense = 0
@@ -96,6 +104,7 @@ card_drops =
 [monster.mr-moss-forge-titan]
 name = 화로 거인
 tier = elite
+species = imp
 hp = 380
 attack = 15
 defense = 0
@@ -107,6 +116,7 @@ card_drops =
 [monster.mr-moss-smelter-queen]
 name = 용광 여왕
 tier = elite
+species = imp
 hp = 340
 attack = 14
 defense = 0
@@ -122,6 +132,7 @@ card_drops =
 [monster.mr-ria-storm-sheep]
 name = 폭풍 양
 tier = normal
+species = beastkin
 hp = 150
 attack = 9
 defense = 0
@@ -133,6 +144,7 @@ card_drops =
 [monster.mr-ria-thunder-fox]
 name = 뇌전 여우
 tier = normal
+species = fox
 hp = 130
 attack = 8
 defense = 0
@@ -144,6 +156,7 @@ card_drops =
 [monster.mr-ria-spark-wasp]
 name = 번개 말벌
 tier = normal
+species = insect
 hp = 115
 attack = 7
 defense = 0
@@ -155,6 +168,7 @@ card_drops =
 [monster.mr-ria-voltage-goat]
 name = 고압 염소
 tier = normal
+species = beastkin
 hp = 180
 attack = 9
 defense = 0
@@ -166,6 +180,7 @@ card_drops =
 [monster.mr-ria-gale-serpent]
 name = 폭풍 뱀
 tier = normal
+species = serpent
 hp = 145
 attack = 8
 defense = 0
@@ -177,6 +192,7 @@ card_drops =
 [monster.mr-ria-arc-wolf]
 name = 낙뢰 늑대
 tier = elite
+species = werewolf
 hp = 320
 attack = 16
 defense = 0
@@ -192,6 +208,7 @@ card_drops =
 [monster.mr-ali-mist-deer]
 name = 안개 사슴
 tier = normal
+species = beastkin
 hp = 140
 attack = 8
 defense = 0
@@ -203,6 +220,7 @@ card_drops =
 [monster.mr-ali-herb-bandit]
 name = 약초 도둑
 tier = normal
+species = imp
 hp = 130
 attack = 7
 defense = 0
@@ -214,6 +232,7 @@ card_drops =
 [monster.mr-ali-fog-sprite]
 name = 안개 정령
 tier = normal
+species = spirit
 hp = 120
 attack = 6
 defense = 0
@@ -225,6 +244,7 @@ card_drops =
 [monster.mr-ali-stone-bear]
 name = 돌 곰
 tier = normal
+species = beastkin
 hp = 230
 attack = 11
 defense = 0
@@ -236,6 +256,7 @@ card_drops =
 [monster.mr-ali-dew-moth]
 name = 이슬 나방
 tier = normal
+species = beastkin
 hp = 125
 attack = 8
 defense = 0
@@ -247,6 +268,7 @@ card_drops =
 [monster.mr-ali-marsh-creeper]
 name = 습지 기어자
 tier = normal
+species = insect
 hp = 145
 attack = 7
 defense = 0
@@ -258,6 +280,7 @@ card_drops =
 [monster.mr-ali-fog-sovereign]
 name = 안개 군주
 tier = elite
+species = spirit
 hp = 360
 attack = 15
 defense = 0
@@ -269,6 +292,7 @@ card_drops =
 [monster.mr-ali-ancient-treant]
 name = 고목 트리언트
 tier = elite
+species = plant
 hp = 430
 attack = 14
 defense = 0
@@ -284,6 +308,7 @@ card_drops =
 [monster.mr-martin-dock-rat]
 name = 부두 쥐
 tier = normal
+species = beastkin
 hp = 120
 attack = 9
 defense = 0
@@ -295,6 +320,7 @@ card_drops =
 [monster.mr-martin-sea-thug]
 name = 거친 뱃사람
 tier = normal
+species = imp
 hp = 160
 attack = 10
 defense = 0
@@ -306,6 +332,7 @@ card_drops =
 [monster.mr-martin-kelp-creeper]
 name = 해초 덩굴
 tier = normal
+species = insect
 hp = 145
 attack = 7
 defense = 0
@@ -317,6 +344,7 @@ card_drops =
 [monster.mr-martin-tide-spirit]
 name = 파도 정령
 tier = normal
+species = spirit
 hp = 130
 attack = 8
 defense = 0
@@ -328,6 +356,7 @@ card_drops =
 [monster.mr-martin-gull-raider]
 name = 갈매기 약탈자
 tier = normal
+species = harpy
 hp = 115
 attack = 9
 defense = 0
@@ -339,6 +368,7 @@ card_drops =
 [monster.mr-kishina-siren]
 name = 키시나 세이렌
 tier = elite
+species = siren
 hp = 310
 attack = 13
 defense = 0
@@ -354,6 +384,7 @@ card_drops =
 [monster.mr-mano-cliff-crab]
 name = 절벽 게
 tier = normal
+species = beastkin
 hp = 190
 attack = 9
 defense = 0
@@ -365,10 +396,11 @@ card_drops =
 [monster.mr-mano-sand-wraith]
 name = 모래 망령
 tier = normal
+species = wraith
 hp = 130
 attack = 7
 defense = 0
-intents = attack:7, debuff:1:poison, attack:9, attack:7
+intents = attack:7, ghost:3, attack:9, debuff:1:poison, attack:7
 gold = 13
 time_shards = 4
 card_drops =
@@ -376,6 +408,7 @@ card_drops =
 [monster.mr-mano-sunset-raven]
 name = 석양 까마귀
 tier = normal
+species = harpy
 hp = 120
 attack = 8
 defense = 0
@@ -387,6 +420,7 @@ card_drops =
 [monster.mr-mano-limun-ward]
 name = 리문 경비상
 tier = normal
+species = automaton
 hp = 200
 attack = 9
 defense = 0
@@ -398,6 +432,7 @@ card_drops =
 [monster.mr-mano-iron-scorpion]
 name = 철 전갈
 tier = normal
+species = insect
 hp = 155
 attack = 9
 defense = 0
@@ -409,6 +444,7 @@ card_drops =
 [monster.mr-mano-dusk-shade]
 name = 황혼 그림자
 tier = normal
+species = wraith
 hp = 135
 attack = 8
 defense = 0
@@ -420,6 +456,7 @@ card_drops =
 [monster.mr-mano-ruin-lurker]
 name = 유적 잠복자
 tier = normal
+species = wraith
 hp = 145
 attack = 9
 defense = 0
@@ -431,6 +468,7 @@ card_drops =
 [monster.mr-mano-tide-golem]
 name = 해조 골렘
 tier = normal
+species = golem
 hp = 245
 attack = 10
 defense = 0
@@ -442,6 +480,7 @@ card_drops =
 [monster.mr-mano-limun-sovereign]
 name = 리문 군주상
 tier = elite
+species = automaton
 hp = 420
 attack = 15
 defense = 0
@@ -453,6 +492,7 @@ card_drops =
 [monster.mr-mano-sunset-drake]
 name = 석양 드레이크
 tier = elite
+species = drake
 hp = 460
 attack = 16
 defense = 0

@@ -4,6 +4,7 @@
 [monster.shadow-pup]
 name = 그림자 강아지
 tier = minion
+species = werewolf
 hp = 14
 attack = 5
 defense = 0
@@ -15,6 +16,7 @@ card_drops =
 [monster.shadow-wolf]
 name = 큰 그림자 늑대
 tier = elite
+species = werewolf
 hp = 30
 attack = 8
 defense = 1
@@ -32,6 +34,7 @@ card_drops = c-shadow-rebuke:0.25
 [monster.m-demo-weaver]
 name = 그늘 거미
 tier = normal
+species = spider
 hp = 60
 attack = 6
 defense = 0
@@ -44,6 +47,7 @@ card_drops =
 [monster.m-demo-gulper]
 name = 삼키는 슬라임
 tier = normal
+species = slime
 hp = 70
 attack = 5
 defense = 0
@@ -56,6 +60,7 @@ card_drops =
 [monster.m-demo-leech]
 name = 피의 나방
 tier = normal
+species = leech
 hp = 64
 attack = 7
 defense = 0
@@ -68,6 +73,7 @@ card_drops =
 [monster.m-demo-trickster]
 name = 장난꾼 임프
 tier = normal
+species = imp
 hp = 55
 attack = 5
 defense = 0
@@ -80,6 +86,7 @@ card_drops =
 [monster.m-demo-warden]
 name = 옭아매는 간수
 tier = elite
+species = imp
 hp = 150
 attack = 9
 defense = 2
@@ -96,6 +103,7 @@ card_drops =
 [monster.m-demo-splitter]
 name = 갈라지는 슬라임
 tier = normal
+species = slime
 hp = 80
 attack = 6
 defense = 0
@@ -109,6 +117,7 @@ card_drops =
 [monster.m-demo-weaver2]
 name = 실잣는 거미
 tier = normal
+species = spider
 hp = 90
 attack = 5
 defense = 0
@@ -121,6 +130,7 @@ card_drops =
 [monster.m-demo-sapper]
 name = 흘리는 서큐버스
 tier = normal
+species = succubus
 hp = 110
 attack = 6
 defense = 0
@@ -130,13 +140,14 @@ time_shards = 5
 card_drops =
 
 # ============================================================
-# 플래그십 체인지(변신/TSF) — 여우 몬무스 (Stage 5).
+# 플래그십 체인지(변신/TSF) — 여우 아인 (Stage 5).
 # change:race-form-fox 로 플레이어 종족+덱을 여우 폼으로 교체.
 # 마노니클라(극동 섬, 여우 lore) 엘리트 풀에 편입. HP는 T2 엘리트 상단.
 # ============================================================
 [monster.mr-mano-ninetails]
 name = 둔갑하는 구미호
 tier = elite
+species = dragon
 hp = 420
 attack = 14
 defense = 0

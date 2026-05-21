@@ -256,6 +256,8 @@ const statusLabels: Record<string, string> = {
   regress: '퇴행',
   paralyze: '마비',
   spasm: '경련',
+  sap: '잠식',
+  ghost: '유령화',
 };
 function statusEntries(c: Combatant | undefined) {
   if (!c) return [] as { key: string; count: number; label: string }[];
@@ -661,6 +663,8 @@ void ui;
 .status[data-key="weakness"], .status[data-key="frail"], .status[data-key="vulnerable"], .status[data-key="poison"], .status[data-key="burn"], .status[data-key="regress"] { color: #ff8e8e; border-color: rgba(255,142,142,0.35); }
 /* feral(수화): 공격 ↑ / 방어 불가 — 양날. 주황 강조. */
 .status[data-key="feral"] { color: #ffb86c; border-color: rgba(255,184,108,0.4); }
+/* ghost(유령화): 받는·주는 피해 절반 — 양날. 연보라(흐려짐). */
+.status[data-key="ghost"] { color: #c9b8ff; border-color: rgba(192,142,255,0.45); }
 /* 작은 카드에선 flavor 숨김(상세는 툴팁/도감에서 유지). */
 .card__flavor { display: none; }
 

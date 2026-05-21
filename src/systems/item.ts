@@ -20,6 +20,7 @@ import { useUiStore } from '@/stores/ui';
 import { instantiateCard, drawCards } from './deck';
 import { acquireRelic, fireRelicTrigger } from './relic';
 import { revertTransformationState } from './combat';
+import { isNoMapPotion } from './chaos';
 
 export interface UseItemContext {
   /** teleport-village 등 *대상 노드*가 필요한 효과에서 사용자가 노드 ID를 선택. */
@@ -59,6 +60,11 @@ export function useItem(item: Item, ctx?: UseItemContext): string {
       return '';
     }
   } else {
+    // 카오스 no-map-potion(봉인된 약병) — 맵(비전투)에서 포션 사용 전면 차단.
+    if (isNoMapPotion()) {
+      ui.toast('warning', '봉인된 약병 — 전투 밖에선 쓸 수 없다.');
+      return '';
+    }
     // 전투 밖에서 *전투 전용* 포션은 의미가 없다 — 막아서 낭비 방지.
     const onlyCombat =
       item.effects.length > 0 &&

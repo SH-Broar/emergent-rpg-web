@@ -11,6 +11,7 @@
 [monster.mr-yusezria-iron-sentinel]
 name = 무쇠 파수꾼
 tier = normal
+species = imp
 hp = 300
 attack = 20
 defense = 0
@@ -22,6 +23,7 @@ card_drops =
 [monster.mr-yusezria-tide-wraith]
 name = 조류 망령
 tier = normal
+species = wraith
 hp = 260
 attack = 14
 defense = 0
@@ -33,6 +35,7 @@ card_drops =
 [monster.mr-yusezria-rust-hound]
 name = 녹슨 강철견
 tier = normal
+species = werewolf
 hp = 280
 attack = 18
 defense = 0
@@ -44,6 +47,7 @@ card_drops =
 [monster.mr-yusezria-pressure-mite]
 name = 수압 벌레
 tier = normal
+species = insect
 hp = 240
 attack = 13
 defense = 0
@@ -55,6 +59,7 @@ card_drops =
 [monster.mr-yusezria-deep-leech]
 name = 심층 거머리
 tier = normal
+species = leech
 hp = 270
 attack = 15
 defense = 0
@@ -66,6 +71,7 @@ card_drops =
 [monster.mr-yusezria-ore-spike]
 name = 광맥 가시충
 tier = normal
+species = insect
 hp = 250
 attack = 16
 defense = 0
@@ -79,6 +85,7 @@ card_drops =
 [monster.mr-yusezria-core-colossus]
 name = 심층 핵 거상
 tier = elite
+species = imp
 hp = 780
 attack = 30
 defense = 0
@@ -90,6 +97,7 @@ card_drops =
 [monster.mr-yusezria-abyssal-warden]
 name = 심연의 감시자
 tier = elite
+species = imp
 hp = 680
 attack = 28
 defense = 0
@@ -99,7 +107,7 @@ time_shards = 20
 card_drops =
 
 # ============================================================
-# FALCON-GARDEN 권역 (wind · 공중 군도 · 맹금 전사 몬무스)
+# FALCON-GARDEN 권역 (wind · 공중 군도 · 맹금 전사 아인)
 # ============================================================
 
 # --- 일반 ---
@@ -107,6 +115,7 @@ card_drops =
 [monster.mr-falcon-garden-gust-harpy]
 name = 돌풍 하피
 tier = normal
+species = harpy
 hp = 260
 attack = 17
 defense = 0
@@ -118,6 +127,7 @@ card_drops =
 [monster.mr-falcon-garden-talon-striker]
 name = 발톱 강습자
 tier = normal
+species = imp
 hp = 280
 attack = 19
 defense = 0
@@ -129,6 +139,7 @@ card_drops =
 [monster.mr-falcon-garden-wind-lancer]
 name = 바람 창기병
 tier = normal
+species = imp
 hp = 290
 attack = 20
 defense = 0
@@ -140,6 +151,7 @@ card_drops =
 [monster.mr-falcon-garden-sky-raven]
 name = 하늘 까마귀
 tier = normal
+species = harpy
 hp = 255
 attack = 16
 defense = 0
@@ -151,6 +163,7 @@ card_drops =
 [monster.mr-falcon-garden-gale-sentry]
 name = 폭풍 초병
 tier = normal
+species = imp
 hp = 300
 attack = 18
 defense = 0
@@ -164,6 +177,7 @@ card_drops =
 [monster.mr-falcon-garden-storm-sovereign]
 name = 폭풍의 군주
 tier = elite
+species = harpy
 hp = 820
 attack = 34
 defense = 0
@@ -175,6 +189,7 @@ card_drops =
 [monster.mr-falcon-garden-sky-empress]
 name = 하늘의 여왕
 tier = elite
+species = harpy
 hp = 720
 attack = 30
 defense = 0
@@ -192,6 +207,7 @@ card_drops =
 [monster.mr-emberforge-ash-hound]
 name = 잿불 사냥개
 tier = normal
+species = werewolf
 hp = 270
 attack = 18
 defense = 0
@@ -203,6 +219,7 @@ card_drops =
 [monster.mr-emberforge-furnace-golem]
 name = 화로 골렘
 tier = normal
+species = golem
 hp = 350
 attack = 16
 defense = 0
@@ -214,6 +231,7 @@ card_drops =
 [monster.mr-emberforge-lava-crawler]
 name = 용암 유충
 tier = normal
+species = insect
 hp = 260
 attack = 14
 defense = 0
@@ -225,6 +243,7 @@ card_drops =
 [monster.mr-emberforge-cinder-bat]
 name = 숯불 박쥐
 tier = normal
+species = beastkin
 hp = 245
 attack = 16
 defense = 0
@@ -236,6 +255,7 @@ card_drops =
 [monster.mr-emberforge-slag-crusher]
 name = 슬래그 분쇄자
 tier = normal
+species = imp
 hp = 320
 attack = 19
 defense = 0
@@ -249,6 +269,7 @@ card_drops =
 [monster.mr-emberforge-magma-titan]
 name = 용암 거신
 tier = elite
+species = imp
 hp = 700
 attack = 32
 defense = 0
@@ -260,6 +281,7 @@ card_drops =
 [monster.mr-emberforge-kumamimi]
 name = 쿠마미미
 tier = elite
+species = mythicbeast
 hp = 960
 attack = 34
 defense = 0
@@ -277,6 +299,7 @@ card_drops =
 [monster.mr-oldshrine-spirit-flame]
 name = 도깨비불
 tier = normal
+species = spirit
 hp = 250
 attack = 15
 defense = 0
@@ -288,6 +311,7 @@ card_drops =
 [monster.mr-oldshrine-shrine-warden]
 name = 신전 파수병
 tier = normal
+species = imp
 hp = 300
 attack = 17
 defense = 0
@@ -299,6 +323,7 @@ card_drops =
 [monster.mr-oldshrine-thunder-wraith]
 name = 번개 망령
 tier = normal
+species = wraith
 hp = 265
 attack = 16
 defense = 0
@@ -310,6 +335,7 @@ card_drops =
 [monster.mr-oldshrine-barrier-golem]
 name = 결계 골렘
 tier = normal
+species = golem
 hp = 340
 attack = 14
 defense = 0
@@ -321,6 +347,7 @@ card_drops =
 [monster.mr-oldshrine-relic-hunter]
 name = 유물 사냥꾼
 tier = normal
+species = imp
 hp = 270
 attack = 18
 defense = 0
@@ -334,6 +361,7 @@ card_drops =
 [monster.mr-oldshrine-lightning-archon]
 name = 번개 대집행관
 tier = elite
+species = imp
 hp = 740
 attack = 32
 defense = 0
@@ -345,6 +373,7 @@ card_drops =
 [monster.mr-oldshrine-toramimi]
 name = 토라미미
 tier = elite
+species = mythicbeast
 hp = 1000
 attack = 36
 defense = 0

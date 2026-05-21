@@ -38,6 +38,7 @@ const CARD_EFFECT_KIND_LABELS: Record<string, string> = {
   'growing-damage': '성장 피해',
   'heal-per-hand': '패 회복',
   'next-card-double': '메아리',
+  'ghost-self': '흐려지기',
   'curse-tick': '저주 피해',
 };
 
@@ -70,6 +71,7 @@ const CARD_EFFECT_DESCRIPTIONS: Record<string, string> = {
   'growing-damage': '피해. 쓸 때마다 이 카드의 피해가 +1씩 누적됩니다.',
   'heal-per-hand': '현재 손패 수 × 수치만큼 회복.',
   'next-card-double': '다음에 쓰는 카드 1장의 모든 수치가 2배가 됩니다.',
+  'ghost-self': '수치만큼 턴 동안 비실체가 됩니다 — 받는·주는 피해가 절반.',
   'curse-tick': '손에 쥐고 있으면 매 턴 시작마다 수치만큼 직접 피해를 입습니다.',
 };
 
@@ -87,6 +89,7 @@ const STATUS_DESCRIPTIONS: Record<string, string> = {
   paralyze: '마비 — 다음 턴 행동할 수 없습니다(스킵). 매 발동 시 1 감소.',
   spasm: '경련 — 이번 턴 마나가 0이 됩니다. 매 발동 시 1 감소.',
   sap: '주는 피해와 방어가 스택만큼 줄어듭니다. 매 턴 1 감소.',
+  ghost: '비실체 — 받는 피해와 주는 피해가 절반이 됩니다. 매 턴 1 감소.',
 };
 
 /** 상태이상/버프 키 → 한글. */
@@ -103,6 +106,7 @@ const STATUS_LABELS: Record<string, string> = {
   paralyze: '마비',
   spasm: '경련',
   sap: '잠식',
+  ghost: '유령화',
 };
 
 /** 효과 대상 → 한글. */
@@ -138,6 +142,7 @@ const INTENT_KIND_LABELS: Record<string, string> = {
   'cost-up': '비용 교란',
   'force-discard': '드로우 감소',
   'transform-card': '카드 망가뜨리기',
+  ghost: '유령화',
 };
 
 /**
@@ -162,7 +167,7 @@ export function intentLabel(encoded: string | undefined): string {
     const cnt = Number(parts[2]) || 1;
     return `${label} ×${cnt}`;
   }
-  if ((kind === 'force-discard' || kind === 'transform-card' || kind === 'obscure') && n > 0) {
+  if ((kind === 'force-discard' || kind === 'transform-card' || kind === 'obscure' || kind === 'ghost') && n > 0) {
     return `${label} ${n}`;
   }
   // 거미줄/잠식은 누적/흡수량을 같이 보여줌.
@@ -210,6 +215,7 @@ export function intentDescription(encoded: string | undefined): string {
       const cnt = Number(parts[2]) || 1;
       return `잡카드 ${cnt}장을 덱/손패에 밀어 넣습니다(쓸모없는 카드).`;
     }
+    case 'ghost': return `유령화 — ${n || 2}턴 동안 비실체가 됩니다. 받는·주는 피해가 절반(매 턴 1 감소).`;
     case 'change': return '체인지! — 종족과 덱 전체가 변신 폼으로 바뀝니다. 폼 덱의 \'본모습\' 카드로 돌아올 수 있습니다.';
     default: return intentLabel(encoded);
   }

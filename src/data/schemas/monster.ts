@@ -34,6 +34,14 @@ export interface Monster extends NamedEntity {
   /** 적 등급. UI 표기·드롭 풀에 영향. */
   tier?: 'minion' | 'normal' | 'elite';
 
+  /**
+   * 몬무스 종족 — all-gimmick(만물의 송곳니) 카오스가 *종족 대표 기믹*을 주입할 때 참조.
+   * 예: spider, arachne, slime, succubus, fox, golem, dragon, lamia, mermaid, siren,
+   *     orca, centaur, moth, phantom, beast, plant, undead, construct, spirit, harpy, bird ...
+   * 미지정이면 SPECIES_GIMMICK 폴백 기믹이 쓰인다(누락 안전).
+   */
+  species?: string;
+
   hp: number;
   attack: number;
   defense?: number;

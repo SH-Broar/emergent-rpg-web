@@ -1,4 +1,4 @@
-# NPC: 1장 — 트리플라워 화산 권역 (화염 몬무스).
+# NPC: 1장 — 트리플라워 화산 권역 (화염 아인).
 
 [npc.npc-embra]
 name = 이그니아
@@ -10,7 +10,7 @@ age = 120
 color_values = 0.9,0.3,0.4,0.4,0.4,0.3,0.4,0.4
 domain_high = Passionate, Adaptable, Inventive, Reliable, Patient, Grounded, Hopeful, Cunning
 domain_low = Cautious, Rigid, Stagnant, Fragile, Restless, Freesprited, Cynical, Naive
-background = 트리플라워 분화구 위의 — *화염 아라크네*.|상반신은 사람, 하반신은 *여덟 다리의 불그스름한 거미*. 다리 끝이 — 분화구 열기에도 — 타지 않는다.|*식지 않는 실*을 — 뽑아 — 둥지를 — 한 줄씩 — 짓는다. 그 실은 — *용암 비늘*과 — 함께 — 굳는다.|화염 몬무스들의 — *둥지 어른* 격. 살라만더 새끼들이 — 여덟 다리 사이로 — 기어다닌다.
+background = 트리플라워 분화구 위의 — *화염 아라크네*.|상반신은 사람, 하반신은 *여덟 다리의 불그스름한 거미*. 다리 끝이 — 분화구 열기에도 — 타지 않는다.|*식지 않는 실*을 — 뽑아 — 둥지를 — 한 줄씩 — 짓는다. 그 실은 — *용암 비늘*과 — 함께 — 굳는다.|화염 아인들의 — *둥지 어른* 격. 살라만더 새끼들이 — 여덟 다리 사이로 — 기어다닌다.
 tagline = "한 줄 — 더 — 엮어 줄까?"
 tags = arachne, fire-affinity, weaver
 affinity_rewards = 3:card=c-burn-mark:gauge=4

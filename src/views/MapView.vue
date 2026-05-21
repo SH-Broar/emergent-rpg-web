@@ -23,6 +23,7 @@ import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
 import { getNeighbors, getNode, isTimeUp, effectiveKind as systemEffectiveKind } from '@/systems/map';
+import { restHealMul, lockedTownCount, isNoShop } from '@/systems/chaos';
 import type { Node, NodeId, NodeKind, NodeMap } from '@/data/schemas';
 
 const router = useRouter();
@@ -48,12 +49,42 @@ const _timeUp = computed(() => {
 });
 void _timeUp;
 
+/**
+ * 카오스로 잠긴 노드 집합 — 진입 불가 + 회색.
+ *   - locked-town(닫힌 성문): 마을 노드를 *결정적*으로 N개 잠금(노드 id 정렬 후 앞 N개).
+ *     단, 시작 노드(현재 위치 시작점)는 잠그지 않는다.
+ *   - no-shop(닫힌 시장): 모든 상점 노드 잠금.
+ */
+const chaosLockedNodes = computed<Set<NodeId>>(() => {
+  const locked = new Set<NodeId>();
+  const map = nodeMap.value;
+  if (!map) return locked;
+
+  // no-shop: 상점 노드 전부.
+  if (isNoShop()) {
+    for (const n of map.nodes) {
+      if (systemEffectiveKind(n, run.data) === 'shop') locked.add(n.id);
+    }
+  }
+
+  // locked-town: 마을 노드 id 정렬 후 앞 N개(시작 노드 제외).
+  const townN = lockedTownCount();
+  if (townN > 0) {
+    const towns = map.nodes
+      .filter((n) => systemEffectiveKind(n, run.data) === 'village' && n.id !== map.startNodeId)
+      .map((n) => n.id)
+      .sort();
+    for (const id of towns.slice(0, townN)) locked.add(id);
+  }
+  return locked;
+});
+
 const reachable = computed<Set<NodeId>>(() => {
   if (!nodeMap.value) return new Set();
   // 사용자 사양: 시간 만료 = 즉시 종료. 보스 게이트로 갈 필요 없음.
-  // 따라서 인접 노드는 항상 동일하게 반환.
+  // 따라서 인접 노드는 항상 동일하게 반환. (카오스로 잠긴 노드는 제외.)
   const neighbors = getNeighbors(nodeMap.value, run.data.currentNodeId, run.data);
-  return new Set(neighbors.map((n) => n.id));
+  return new Set(neighbors.map((n) => n.id).filter((id) => !chaosLockedNodes.value.has(id)));
 });
 
 // === Drawer 상태 ===
@@ -201,9 +232,10 @@ function enterSelected() {
       router.push('/game/boss');
       break;
     case 'rest': {
-      const heal = Math.floor(run.data.maxHp * 0.3);
+      // 카오스 light-rest(얕은 잠) — 휴식 회복 ×(1-합).
+      const heal = Math.floor(run.data.maxHp * 0.3 * restHealMul());
       run.data.hp = Math.min(run.data.maxHp, run.data.hp + heal);
-      ui.toast('success', `HP +${heal} 회복`);
+      ui.toast('success', heal > 0 ? `HP +${heal} 회복` : '잠이 얕아 회복하지 못했다.');
       void import('@/systems/relic').then(({ onRest }) => onRest());
       break;
     }
@@ -456,6 +488,7 @@ function enterLabel(): string {
                 'node-group--cleared': run.data.nodeStates[node.id]?.combatCleared,
                 'node-group--stealthed': run.data.nodeStates[node.id]?.combatStealthed,
                 'node-group--selected': selectedNodeId === node.id,
+                'node-group--chaos-locked': chaosLockedNodes.has(node.id),
               }"
               :transform="`translate(${svgX(node)} ${svgY(node)})`"
               @click="clickNode(node)"
@@ -511,6 +544,7 @@ function enterLabel(): string {
         <button class="drawer__x" @click="closeDrawer" aria-label="닫기">×</button>
       </header>
       <div class="drawer__status">상태: {{ nodeStatusLabel(selectedNode) }}</div>
+      <p v-if="chaosLockedNodes.has(selectedNode.id)" class="drawer__locked">🔒 카오스로 닫혀 들어갈 수 없다.</p>
       <p class="drawer__desc">{{ selectedNode.description }}</p>
 
       <div class="drawer__actions">
@@ -635,6 +669,15 @@ function enterLabel(): string {
   stroke: #c08eff;
   stroke-width: 0.4;
 }
+/* 카오스로 잠긴 노드 — 회색 + 펄스 제거. */
+.node-group--chaos-locked .node-dot {
+  fill: #555 !important;
+  opacity: 0.5;
+  animation: none;
+  filter: none;
+}
+.node-group--chaos-locked .node-label,
+.node-group--chaos-locked .node-kind { fill: #666; }
 
 /* 라벨은 클릭 받지 않음 — 클릭은 hitbox circle이 처리. 드래그 시 text selection 차단. */
 .node-label { fill: #e9e9f4; font-size: 1.7px; text-anchor: middle; font-weight: 600; pointer-events: none; }
@@ -675,6 +718,7 @@ function enterLabel(): string {
 .drawer__x:hover { color: #f6e8b8; }
 
 .drawer__status { font-size: 0.85rem; color: #c08eff; }
+.drawer__locked { font-size: 0.85rem; color: #9a8fb8; margin: 0; }
 .drawer__desc { color: #b6b6c4; line-height: 1.6; margin: 0; }
 
 .drawer__actions { display: flex; flex-direction: column; gap: 0.5rem; margin-top: auto; }

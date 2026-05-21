@@ -17,11 +17,14 @@ import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
+import { useMetaStore } from '@/stores/meta';
 import { unlockKeyLabel } from '@/systems/labels';
+import { computeChaosScore } from '@/systems/chaos';
 
 const router = useRouter();
 const run = useRunStore();
 const data = useDataStore();
+const meta = useMetaStore();
 
 interface AbsorbResult {
   granted: { key: string }[];
@@ -110,6 +113,20 @@ const collectedCards = computed(() => {
 
 const collectedRelics = computed(() => run.data.relics.map((r) => r.name));
 
+// === 카오스 도전 점수 ===
+/** 이번 런의 카오스 점수 — 캐시 우선, 없으면 활성 카오스로 재계산. */
+const chaosScore = computed(() =>
+  run.data.chaosScore ?? computeChaosScore(run.data.activeChaos ?? []),
+);
+/** 클리어(보스 처치) 여부. */
+const wasClear = computed(() => run.data.endReason === 'boss-cleared' || run.data.bossesCleared.length > 0);
+/** 신기록 — 클리어 + 점수>0 + 연표 최고 기록과 일치(클리어 시 recordBestChaos가 이미 갱신). */
+const isNewRecord = computed(() => {
+  if (!wasClear.value || chaosScore.value <= 0) return false;
+  const best = meta.bestChaosScore[run.data.timelineId] ?? 0;
+  return chaosScore.value >= best;
+});
+
 function returnMain() {
   // 요약 표시가 끝난 *후에만* 런 전체 초기화.
   run.reset();
@@ -139,6 +156,16 @@ onMounted(async () => {
       여기서 끝났다 — <strong>{{ endNode.label }}</strong>
       <span v-if="endNode.regionName" class="end-loc__region">({{ endNode.regionName }})</span>
     </p>
+
+    <!-- 카오스 도전 점수 -->
+    <section v-if="chaosScore > 0" class="chaos">
+      <h3>카오스 도전 점수</h3>
+      <div class="chaos-row">
+        <span class="chaos-score">{{ chaosScore }}점</span>
+        <span v-if="isNewRecord" class="chaos-badge">★ 최고 기록 갱신</span>
+        <span v-else-if="!wasClear" class="chaos-note">클리어하지 못해 기록되지 않았다.</span>
+      </div>
+    </section>
 
     <!-- 획득 -->
     <section v-if="result" class="meta">
@@ -244,6 +271,21 @@ h1 { color: #c08eff; margin: 0; font-size: 2.4rem; }
 .end-loc__region { color: #888; margin-left: 0.3rem; }
 
 h3 { color: #c08eff; margin: 0 0 0.6rem; font-size: 1.05rem; }
+
+/* === 카오스 점수 === */
+.chaos {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(192,142,255,0.08);
+  border: 1px solid rgba(192,142,255,0.35);
+  border-radius: 8px;
+  text-align: center;
+}
+.chaos-row { display: flex; align-items: center; justify-content: center; gap: 0.8rem; flex-wrap: wrap; }
+.chaos-score { font-size: 1.8rem; font-weight: 700; color: #f6e8b8; font-variant-numeric: tabular-nums; }
+.chaos-badge { color: #ffe88e; font-weight: 700; font-size: 0.95rem; }
+.chaos-note { color: #9a8fb8; font-size: 0.85rem; font-style: italic; }
 
 /* === 외부 획득 === */
 .meta {

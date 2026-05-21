@@ -9,6 +9,7 @@ import { loadAllData, type GameData } from '@/data/loader';
 import type {
   Boss,
   Card,
+  Chaos,
   ChaosModifier,
   Equipment,
   Event,
@@ -73,6 +74,10 @@ export const useDataStore = defineStore('data', {
     },
     chaos(state): Map<string, ChaosModifier> {
       return state.data?.chaos ?? new Map<string, ChaosModifier>();
+    },
+    /** 신규 도전-점수 카오스 정의 (Phase A). */
+    chaosDefs(state): Map<string, Chaos> {
+      return state.data?.chaosDefs ?? new Map<string, Chaos>();
     },
     clues(state): Map<string, import('@/data/schemas').Clue> {
       return state.data?.clues ?? new Map<string, import('@/data/schemas').Clue>();

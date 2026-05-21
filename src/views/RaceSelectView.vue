@@ -14,17 +14,12 @@ import { computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUiStore } from '@/stores/ui';
 import { useDataStore } from '@/stores/data';
-import { useRunStore } from '@/stores/run';
 import { canSelectRace } from '@/frame/Mono';
-import { instantiateCard } from '@/systems/deck';
-import { applySeedColors } from '@/systems/colors';
-import { rng } from '@/systems/rng';
-import type { Card, Race, Season } from '@/data/schemas';
+import type { Race } from '@/data/schemas';
 
 const router = useRouter();
 const ui = useUiStore();
 const data = useDataStore();
-const run = useRunStore();
 
 const timeline = computed(() => {
   const id = ui.pendingRunSetup.timelineId;
@@ -46,12 +41,11 @@ const raceOptions = computed<Race[]>(() => {
   return out;
 });
 
-const SEASONS: Season[] = ['spring', 'summer', 'autumn', 'winter', 'monsoon', 'twilight'];
-function randomSeason(): Season {
-  return SEASONS[Math.floor(Math.random() * SEASONS.length)];
-}
-
-async function selectRace(race: Race) {
+/**
+ * 종족 확정 → *카오스 선택* 단계로. (실제 startRun + 덱/컬러 셋업 + 시작형 카오스 적용은
+ * ChaosSelectView가 수행 — 시작형 타이밍을 한 곳에서 보장.)
+ */
+function selectRace(race: Race) {
   if (!canSelectRace(race.id)) {
     ui.toast('warning', '잠긴 종족입니다.');
     return;
@@ -68,77 +62,7 @@ async function selectRace(race: Race) {
   }
 
   ui.pendingRunSetup.raceId = race.id;
-
-  const maxHp = race.baseStats.hp + (race.startHpBonus ?? 0);
-  const maxMp = race.baseStats.mp + (race.startMpBonus ?? 0);
-
-  // startRun을 *먼저* — 그 안에서 시드를 결정하고 rng를 바인딩. 이후 모든 pick은 결정론.
-  run.startRun({
-    timelineId: tl.id,
-    raceId: race.id,
-    season: randomSeason(),
-    maxHp,
-    maxMp,
-    startNodeId: map.startNodeId,
-    timeLimit: tl.timeLimit,
-  });
-
-  // 시작 덱 — 동명 카드도 별개 인스턴스.
-  const startingInstances: Card[] = race.startingDeck
-    .map((cardId: string) => data.cards.get(cardId))
-    .filter((card): card is Card => card !== undefined)
-    .map(instantiateCard);
-
-  // 종족 고정 덱 크기 (예: 인간 15). 정의 없으면 starting_deck 길이.
-  const deckSize = race.deckSize ?? startingInstances.length;
-
-  // 부족분은 race.seedCardIds 가중 랜덤으로 채움.
-  const fillCount = Math.max(0, deckSize - startingInstances.length);
-  const seedPool: Card[] = (race.seedCardIds ?? [])
-    .map((cardId) => data.cards.get(cardId))
-    .filter((card): card is Card => card !== undefined);
-  const filledInstances: Card[] = [];
-  for (let i = 0; i < fillCount && seedPool.length > 0; i++) {
-    const pick = seedPool[Math.floor(rng() * seedPool.length)];
-    filledInstances.push(instantiateCard(pick));
-  }
-  const allInstances = [...startingInstances, ...filledInstances];
-
-  run.data.deckSize = deckSize;
-  run.data.collection = allInstances;
-  run.data.deck = allInstances.slice(0, deckSize);
-
-  // 시작 아이템 — 회복약 한 점.
-  const starter = data.items.get('i-potion-small');
-  if (starter) run.addItem(starter);
-
-  // 종족 시드 컬러 — 한 컬러당 최대 5 (사용자 사양). 인간 = light:5, wind:3.
-  applySeedColors(race.seedColors);
-
-  // 컬러 베이스 = 0. (장비/이벤트/유물로만 변동.)
-  run.data.colors = {
-    fire: 0, water: 0, electric: 0, iron: 0,
-    earth: 0, wind: 0, light: 0, dark: 0,
-  };
-
-  // 종족 시드 유물 부여
-  if (race.seedRelicIds) {
-    for (const relicId of race.seedRelicIds) {
-      const relic = data.relics.get(relicId);
-      if (relic) {
-        run.data.relics.push(relic);
-        if (!run.data.newRelicEncounters.includes(relic.id)) {
-          run.data.newRelicEncounters.push(relic.id);
-        }
-      }
-    }
-  }
-
-  // Passive 유물 효과 1회 적용 (bonus-hp 등)
-  const { applyPassiveRelicsAtRunStart } = await import('@/systems/relic');
-  applyPassiveRelicsAtRunStart();
-
-  router.push('/game/map');
+  router.push('/game/chaos-select');
 }
 
 function back() {
@@ -157,7 +81,7 @@ onMounted(() => {
     <header class="hdr">
       <button class="back" @click="back">← 시간대 선택</button>
       <h1>종족 선택</h1>
-      <p class="sub">이 시대에 깃들 종족을 고른다. 종족이 곧 시작 덱·시드·시작 위치를 결정한다.</p>
+      <p class="sub">이 시대에 깃들 종족을 고른다. 종족이 곧 시작 덱·시드·시작 위치를 결정한다. 다음은 카오스 선택.</p>
     </header>
 
     <section v-if="raceOptions.length > 0" class="grid">

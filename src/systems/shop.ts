@@ -16,6 +16,7 @@ import { instantiateCard } from '@/systems/deck';
 import { getCraftingDiscount, acquireRelic } from '@/systems/relic';
 import { availableCards, availableRelics } from '@/systems/unlocks';
 import { rng } from '@/systems/rng';
+import { shopPriceMul, isNoRemoval, isNoShop } from '@/systems/chaos';
 
 /** 카드 기본 가격 (골드). */
 const CARD_BASE_PRICE: Record<Rank, number> = {
@@ -44,10 +45,12 @@ const MATERIAL_COMMON_ID = 'i-material-common';
 const MATERIAL_COMMON_PRICE = 18;
 const MATERIAL_COMMON_STOCK = 4;
 
-/** discount 비율을 적용한 최종 가격. */
+/** discount 비율 + 카오스 shop-price-mul을 적용한 최종 가격. */
 function applyDiscount(base: number): number {
   const d = getCraftingDiscount();
-  return Math.max(1, Math.ceil(base * (1 - d)));
+  // 카오스 shop-tax(상점가 +param%) — 할인 적용 후 배수.
+  const priced = base * (1 - d) * shopPriceMul();
+  return Math.max(1, Math.ceil(priced));
 }
 
 function pickRandom<T>(arr: T[], n: number): T[] {
@@ -123,6 +126,20 @@ export function getOrCreateShopInventory(nodeId: string): ShopInventory {
     // 옛 세이브 호환 — materials 슬롯이 없으면 지금 채운다.
     if (!existing.materials) existing.materials = buildMaterialSlots();
     return existing;
+  }
+
+  // 카오스 no-shop(닫힌 시장) — 빈 상점(카드/유물/재료 0, 제거 봉인). 노드 자체 비활성은 Phase C.
+  if (isNoShop()) {
+    const empty: ShopInventory = {
+      generatedAt: run.data.rngState,
+      cards: [],
+      relics: [],
+      removalUsed: true,
+      removalPrice: 0,
+      materials: [],
+    };
+    run.data.shopInventories[nodeId] = empty;
+    return empty;
   }
 
   const cardCandidates = pickRandom(getShopCardPool(), NUM_CARDS);
@@ -234,6 +251,11 @@ export function purchaseShopCardRemoval(nodeId: string, cardInstanceId: string):
   const ui = useUiStore();
   const inv = run.data.shopInventories?.[nodeId];
   if (!inv) return false;
+  // 카오스 no-removal(지워지지 않는) — 카드 제거 비활성.
+  if (isNoRemoval()) {
+    ui.toast('warning', '지워지지 않는다 — 카드 제거가 봉인되었다.');
+    return false;
+  }
   if (inv.removalUsed) {
     ui.toast('warning', '이 상점의 제거 슬롯은 이미 사용되었습니다.');
     return false;

@@ -13,6 +13,7 @@ import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
 import { applyColorBoost } from '@/systems/colors';
 import { rng } from '@/systems/rng';
+import { gatherThresholdAdd } from '@/systems/chaos';
 import type { Region } from '@/data/schemas';
 
 // 희귀도 사다리 재료 id (Item Economy).
@@ -49,8 +50,9 @@ export function performGather(nodeId: string): void {
     : undefined;
 
   // 권역의 대표 컬러 + 임계 — 없으면 *기본 분기 X* (항상 전반 풀).
+  // 카오스 hard-gather(척박한 땅) — 후반 임계 +N으로 후반 도달을 어렵게.
   const primary = region?.primaryColor;
-  const threshold = region?.gatherThreshold ?? DEFAULT_GATHER_THRESHOLD;
+  const threshold = (region?.gatherThreshold ?? DEFAULT_GATHER_THRESHOLD) + gatherThresholdAdd();
   const isLate =
     primary !== undefined && r.colors[primary] >= threshold;
 

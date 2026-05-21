@@ -107,6 +107,8 @@ export type CardEffectKind =
   | 'growing-damage'      // damage:value + *이 카드 인스턴스의 bonusDamage* (쓸수록 강해짐)
   | 'heal-per-hand'       // *현재 손패 수* × value 회복 (self)
   | 'next-card-double'    // combat flag: *다음 1장*의 모든 effect value 2배
+  // === 유령화(비실체) — 카오스와 별개 양날 상태 ===
+  | 'ghost-self'          // 플레이어 자신을 value턴 유령화: 받는·주는 피해 ×0.5(매 턴 -1)
   // === 잡카드(저주) 전용 (Stage 2 몬스터 교란) ===
   | 'curse-tick'          // 마커: 이 카드가 손에 있으면 매 턴 시작 value만큼 직접 HP 피해. 핸들러 no-op.
   // === 변신(체인지/TSF) 전용 (Stage 5) ===

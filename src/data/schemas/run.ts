@@ -107,6 +107,13 @@ export interface CombatState {
   mana: number;
   maxMana: number;
 
+  /**
+   * 적 인텐트 로테이션 *오버라이드* — set이면 pickIntent가 monster.intents 대신 이 배열을 순회.
+   * 카오스 all-gimmick(만물의 송곳니)이 startCombat에서 종족 대표 기믹을 끼워 넣은 결과.
+   * 일반 전투(미설정)에선 monster.intents를 그대로 쓴다. 전투 단위(세이브 round-trip 안전 — optional).
+   */
+  enemyIntentRotation?: string[];
+
   // === 보스 기믹 전용 (전부 optional — 일반 몬스터 전투에선 undefined라 영향 0) ===
   /**
    * 활성 보스 기믹. set일 때만 combat.ts의 기믹 분기가 동작.
@@ -421,6 +428,24 @@ export interface RunState {
 
   // === 전투 ===
   combat?: CombatState;
+
+  // === 카오스 도전-점수 시스템 (Phase A, 세이브 v3 — Round 12 강도 모델) ===
+  /**
+   * 이 런에서 활성화된 카오스 — *강도(intensity) 포함*.
+   * 시작형(start-*)은 startRun에서 그 강도의 param으로 1회 적용. 런 도중 불변(시작형 고정).
+   * 상시형은 그 강도 param으로 조회 시점 적용. 점수는 강도별 점수의 합.
+   * 복원 시 반드시 [] 기본값 보장(코드가 iterate). EMPTY_RUN에 []로 등재 → 옛 세이브 자동 안전.
+   * (구 string[] 형태가 섞여 들어오면 systems/chaos.ts가 {id, intensity:1}로 정규화.)
+   */
+  activeChaos: { id: string; intensity: number }[];
+  /** 활성 카오스 도전 점수 캐시 (옵셔널 — computeChaosScore로 언제든 재계산 가능). */
+  chaosScore?: number;
+  /**
+   * `ch-color-seal`(색의 침묵, T4) 전용 — 런 시작 시 무작위로 봉인된 1색.
+   * 그 색 카드는 전투에서 사용 불가(canPlay 차단). 실제 차단 로직은 Phase B/C.
+   * Phase A는 *필드만* 추가(세이브 round-trip 보장). 미설정이면 봉인 없음.
+   */
+  chaosBannedColor?: string;
 
   // === 종료 ===
   ended: boolean;

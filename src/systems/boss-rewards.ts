@@ -15,6 +15,7 @@ import { useMetaStore } from '@/stores/meta';
 import { useCodexStore } from '@/stores/codex';
 import { useUiStore } from '@/stores/ui';
 import { applyColorBoost } from '@/systems/colors';
+import { revealNextTierOnClear, recordBestChaos } from '@/systems/chaos';
 
 const DEFAULT_BOSS_GOLD = 30;
 const BOSS_COLOR_BOOST = 5;
@@ -54,6 +55,13 @@ export function applyBossRewards(boss: Boss): void {
       }
     }
   }
+
+  // === 카오스 도전-점수 (Phase A, Round 9) — *런 클리어/승리* 처리. ===
+  //  ① 진열 게이트: 활성 카오스 ≥1개로 클리어하면 다음 티어 1칸 진열(min 4).
+  //  ② 연표별 최고 점수 갱신.
+  //  *매 클리어* 평가 — first-clear 블록 밖에 둔다(보스-보상은 승리 시에만 호출됨).
+  revealNextTierOnClear(r);
+  recordBestChaos(r);
 
   // rewards 자체가 누락된 보스 데이터 호환 (TypeError 방지).
   if (!rw) return;
