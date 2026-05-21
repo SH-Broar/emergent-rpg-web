@@ -15,17 +15,21 @@ reward_codex = bs-act-1-anchor
 intro = 풍혈지대 위, 공기가 — 멈춘다. 작은 그림자가 떠 있다. 그것은 — 아무 말도 하지 않는다.
 defeat_text = 정령이 — 천천히, 손을 편다. 붙잡고 있던 것들이 떠나간다. "……" 시간이 다시 흐른다.
 
+# 강상태이상은 *시간 테마* + 페이즈 기믹과 비중복 + 사이클당 1~2회만(사용자 사양).
+#  P1(anchor=카드 잠금): 가벼움 — 취약 1 + 충전. P2(stillness=정지): 비용교란+은폐(정지와 비중복).
+#  P3(rewind=회복): 잠식(스탯 흡수)+충전 큰 한 방. 패턴 6~8턴.
+
 [boss.bs-act-1-anchor.phase.1]
 starts_at = 1.0
 mechanic = anchor
-intents = attack:10, defend:8, attack:12, attack:10
+intents = attack:10, defend:8, debuff:2:vulnerable, attack:12, charge:4, attack:15
 
 [boss.bs-act-1-anchor.phase.2]
 starts_at = 0.667
 mechanic = stillness
-intents = attack:14, defend:10, attack:16, debuff:1
+intents = attack:14, cost-up:1:2, attack:16, defend:10, obscure:2, attack:14, attack:18
 
 [boss.bs-act-1-anchor.phase.3]
 starts_at = 0.333
 mechanic = rewind
-intents = attack:18, attack:20, attack:24
+intents = charge:6, attack:24, drain-stat:2, attack:20, attack:22, drain:18, attack:26
