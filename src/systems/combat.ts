@@ -733,6 +733,7 @@ export function endPlayerTurn(monster: Monster): { playerDefeated: boolean; enem
 
   c.turn += 1;
   c.cardsPlayedThisTurn = 0; // 새 턴 — first-card-free 판정 리셋.
+  c.frozenTurn = false; // 새 턴은 기본 비정지 — 마비/보스 stillness가 이번 턴 한정으로 다시 set.
   // mana-carryover 유물: 쓰지 않은 마나를 다음 턴으로 이월.
   const manaCarry = playerHasRelicEffect('mana-carryover') ? Math.max(0, c.mana) : 0;
   // regress(퇴행)면 MAG manaExtra 무효 → 기본 maxMana만. (playerBonuses가 0 반환.)
@@ -762,6 +763,9 @@ export function endPlayerTurn(monster: Monster): { playerDefeated: boolean; enem
   // 새 손패 드로우 *후*에 호출해야 닻이 이번 턴 손패를 잠근다. bossMechanic 미설정이면 no-op.
   applyBossPlayerTurnStart(c);
 
+  // 플레이어 상태 턴 시작 — 마비(이번 턴 스킵)/경련(이번 턴 마나 0). 보스 기믹 후 적용.
+  applyPlayerStatusTurnStart(c);
+
   // 플레이어 poison(중독) — 새 턴 시작 시 틱. block 무시 직접 hp 피해.
   tickPoison(c.player);
   if (c.player.hp <= 0) {
@@ -773,12 +777,37 @@ export function endPlayerTurn(monster: Monster): { playerDefeated: boolean; enem
   return { playerDefeated: false };
 }
 
+/**
+ * 플레이어 상태 턴 시작 — 마비(paralyze)/경련(spasm). 매 새 턴 시작에 호출.
+ *  - paralyze > 0: 이번 턴 *행동 불가*(frozenTurn=true, 마나 0). 스택 -1.
+ *  - spasm > 0: 이번 턴 마나 0(0코스트 카드는 가능). 스택 -1.
+ * 둘 다 적용(마비가 우선). 보스 stillness frozenTurn 패턴 재사용.
+ */
+function applyPlayerStatusTurnStart(c: CombatState): void {
+  const st = c.player.statuses;
+  const par = st.paralyze ?? 0;
+  if (par > 0) {
+    c.frozenTurn = true;
+    c.mana = 0;
+    if (par - 1 <= 0) delete st.paralyze;
+    else st.paralyze = par - 1;
+    useUiStore().toast('warning', '마비 — 이번 턴 움직일 수 없다.');
+  }
+  const sp = st.spasm ?? 0;
+  if (sp > 0) {
+    c.mana = 0;
+    if (sp - 1 <= 0) delete st.spasm;
+    else st.spasm = sp - 1;
+  }
+}
+
 function executeMonsterIntent(c: CombatState) {
   const intent = c.enemyIntent;
   if (!intent) return;
 
-  const [kind, valueStr] = intent.split(':');
-  const value = Number(valueStr) || 0;
+  const parts = intent.split(':');
+  const kind = parts[0];
+  const value = Number(parts[1]) || 0;
 
   switch (kind) {
     case 'attack': {
@@ -801,6 +830,13 @@ function executeMonsterIntent(c: CombatState) {
     }
     case 'buff': {
       c.enemy.statuses['strength'] = (c.enemy.statuses['strength'] ?? 0) + value;
+      break;
+    }
+    case 'debuff': {
+      // intent: debuff:N:status — 플레이어에게 status N 부여.
+      //   status = vulnerable|weakness|poison|frail|regress|feral|paralyze|spasm 등.
+      const status = parts[2] ?? 'vulnerable';
+      c.player.statuses[status] = (c.player.statuses[status] ?? 0) + (value || 1);
       break;
     }
     default:

@@ -8,13 +8,13 @@
  *     DEF  = CalculateStat(earth, iron)
  *     MAG  = CalculateStat(water, wind)
  *
- *   효과:
- *     ATK 10당 공격 카드의 *최소 공격력* +1
- *     DEF 10당 방어 카드의 *방어력* +1
- *     MAG 10 단위:
+ *   효과 (2026-05-21 평탄화):
+ *     ATK 33당 공격 카드의 *최소 공격력* +1  (컬러 풀투자 시 +10~15 상한)
+ *     DEF 33당 방어 카드의 *방어력* +1
+ *     MAG 100 단위:
  *       - 홀수 단계마다 카드 드로우 수 +1
  *       - 짝수 단계마다 턴당 마나 +1
- *       (level=1→draw+1, level=2→mana+1, level=3→draw+2, level=4→mana+2, ...)
+ *       (level=floor(mag/100): 100→draw+1, 200→mana+1, 300→draw+2, ... +2~3 상한)
  *
  *   CalculateStat 공식 (사용자 제공 그대로):
  *     balance = min(A,B) / max(A,B)
@@ -81,9 +81,13 @@ export interface CombatBonuses {
  *      manaExtra = floor(level / 2)  (짝수 단계마다 +1)
  */
 export function deriveBonuses(stats: DerivedStats): CombatBonuses {
-  const damage = Math.floor(stats.atk / 10);
-  const block = Math.floor(stats.def / 10);
-  const magLevel = Math.floor(stats.mag / 10);
+  // 평탄화(2026-05-21): ATK/DEF는 /33 — 컬러 풀투자(스탯 ~336~500)에서 보정 +10~15 상한.
+  const damage = Math.floor(stats.atk / 33);
+  const block = Math.floor(stats.def / 33);
+  // MAG는 임계 대폭 상향(/100) — 드로우/마나 +2~3 상한(과거 폭주 방지).
+  //   level=floor(mag/100): 100→1, 300→3, 500→5.
+  //   drawExtra=ceil(level/2)(홀수 단계), manaExtra=floor(level/2)(짝수 단계).
+  const magLevel = Math.floor(stats.mag / 100);
   const drawExtra = Math.ceil(magLevel / 2);
   const manaExtra = Math.floor(magLevel / 2);
   return { damage, block, drawExtra, manaExtra };

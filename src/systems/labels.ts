@@ -82,6 +82,8 @@ const STATUS_DESCRIPTIONS: Record<string, string> = {
   dexterity: '방어가 스택만큼 늘어납니다.',
   frail: '쌓는 방어가 스택만큼 줄어듭니다.',
   burn: '화상 — 지속 피해 계열.',
+  paralyze: '마비 — 다음 턴 행동할 수 없습니다(스킵). 매 발동 시 1 감소.',
+  spasm: '경련 — 이번 턴 마나가 0이 됩니다. 매 발동 시 1 감소.',
 };
 
 /** 상태이상/버프 키 → 한글. */
@@ -95,6 +97,8 @@ const STATUS_LABELS: Record<string, string> = {
   burn: '화상',
   feral: '수화',
   regress: '퇴행',
+  paralyze: '마비',
+  spasm: '경련',
 };
 
 /** 효과 대상 → 한글. */
