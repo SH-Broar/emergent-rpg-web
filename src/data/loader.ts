@@ -934,7 +934,13 @@ const DATA_FILES = [
   'data/events/events-mvr.txt',
   'data/events/act-1-region-events.txt',
   'data/monsters/mvr-monsters.txt',
-  'data/monsters/act-1-region-monsters.txt',
+  // act-1-region-monsters.txt(구 38종)는 Stage 3 로스터 v2로 전면 대체되어 *미로드*(파일은 이력 보존).
+  // 모든 노드 enemy + 권역 풀이 mr-* 로스터를 참조 — 구 m-{region}-* 참조 0 확인됨.
+  // === 몬스터 로스터 v2 (Stage 3, 2026-05-21) — 권역별 ~147종, 지리 4티어 HP + 종족 기믹. ===
+  'data/monsters/act-1-roster-t1.txt',
+  'data/monsters/act-1-roster-t2.txt',
+  'data/monsters/act-1-roster-t3.txt',
+  'data/monsters/act-1-roster-t4.txt',
   'data/items/act-1-items.txt',
   'data/equipment/equipment-mvr.txt',
   // === 카오스 (r4) — 매 런 단위 토글 가능한 특수 기능. ===

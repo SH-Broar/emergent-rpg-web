@@ -1,0 +1,537 @@
+# T3 심화 로스터 — Act 1 심화 권역 7개
+# HP 일반 160~360 / 엘리트 420~700
+# attack 일반 12~18(기믹 9~14) / 엘리트 18~26
+
+# ============================================================
+# LUNA 권역 (dark) — 마법학교·팬텀 스파이어·금단 회랑
+# ============================================================
+
+[monster.mr-luna-ink-fiend]
+name = 잉크 마귀
+tier = normal
+hp = 200
+attack = 13
+defense = 0
+intents = add-card-draw:c-junk-curse:1, attack:13, obscure:1, attack:14
+gold = 20
+time_shards = 6
+card_drops =
+
+[monster.mr-luna-grimoire-shadow]
+name = 그리모어 그림자
+tier = normal
+hp = 180
+attack = 10
+defense = 0
+intents = obscure:1, add-card-hand:c-junk-curse:1, attack:10, cost-up:1:2
+gold = 18
+time_shards = 6
+card_drops =
+
+[monster.mr-luna-phantom-scribe]
+name = 팬텀 필사가
+tier = normal
+hp = 220
+attack = 12
+defense = 0
+intents = attack:12, add-card-draw:c-junk-wound:1, attack:13, obscure:1
+gold = 19
+time_shards = 7
+card_drops =
+
+[monster.mr-luna-cursed-page]
+name = 저주받은 책장
+tier = normal
+hp = 160
+attack = 9
+defense = 0
+intents = add-card-hand:c-junk-curse:2, cost-up:1:2, attack:9, add-card-draw:c-junk-curse:1
+gold = 17
+time_shards = 5
+card_drops =
+
+[monster.mr-luna-mirror-shade]
+name = 거울 유령
+tier = normal
+hp = 240
+attack = 15
+defense = 0
+intents = attack:15, attack:14, defend:8, attack:16
+gold = 21
+time_shards = 7
+card_drops =
+
+[monster.mr-luna-forbidden-wisp]
+name = 금서 도깨비불
+tier = normal
+hp = 190
+attack = 10
+defense = 0
+intents = cost-up:2:2, attack:10, obscure:1, attack:11
+gold = 18
+time_shards = 6
+card_drops =
+
+[monster.mr-luna-corridor-phantom]
+name = 회랑 팬텀
+tier = normal
+hp = 260
+attack = 16
+defense = 0
+intents = attack:16, defend:10, attack:17, attack:15
+gold = 22
+time_shards = 8
+card_drops =
+
+[monster.mr-luna-arcane-devourer]
+name = 비전 게걸꾼
+tier = elite
+hp = 520
+attack = 20
+defense = 0
+intents = obscure:2, add-card-hand:c-junk-curse:2, attack:20, cost-up:2:3, transform-card:2, attack:22
+gold = 38
+time_shards = 13
+card_drops =
+
+[monster.mr-luna-headmaster-shade]
+name = 교수 유령
+tier = elite
+hp = 600
+attack = 18
+defense = 0
+intents = cost-up:2:3, add-card-draw:c-junk-curse:2, attack:18, obscure:2, attack:22, buff:3, attack:24
+gold = 42
+time_shards = 15
+card_drops =
+
+# ============================================================
+# TACOMI 권역 (electric) — 페스티벌 도시·홀로그램 필드·결계
+# ============================================================
+
+[monster.mr-tacomi-pixel-beast]
+name = 픽셀 야수
+tier = normal
+hp = 240
+attack = 15
+defense = 0
+intents = attack:15, attack:14, defend:8, attack:16
+gold = 21
+time_shards = 7
+card_drops =
+
+[monster.mr-tacomi-hologram-jester]
+name = 홀로그램 광대
+tier = normal
+hp = 180
+attack = 10
+defense = 0
+intents = obscure:1, attack:10, obscure:2, attack:11
+gold = 18
+time_shards = 6
+card_drops =
+
+[monster.mr-tacomi-barrier-sprite]
+name = 결계 정령체
+tier = normal
+hp = 200
+attack = 9
+defense = 0
+intents = cost-up:1:2, attack:9, defend:12, cost-up:2:2
+gold = 19
+time_shards = 6
+card_drops =
+
+[monster.mr-tacomi-neon-hornet]
+name = 네온 말벌
+tier = normal
+hp = 170
+attack = 12
+defense = 0
+intents = debuff:1:paralyze, attack:12, attack:13, debuff:1:paralyze
+gold = 17
+time_shards = 5
+card_drops =
+
+[monster.mr-tacomi-festival-mimic]
+name = 축제 미믹
+tier = normal
+hp = 260
+attack = 16
+defense = 0
+intents = attack:16, defend:10, attack:15, attack:17
+gold = 22
+time_shards = 8
+card_drops =
+
+[monster.mr-tacomi-circuit-prowler]
+name = 회로 야행꾼
+tier = normal
+hp = 210
+attack = 11
+defense = 0
+intents = debuff:1:spasm, attack:11, cost-up:1:2, attack:12
+gold = 20
+time_shards = 7
+card_drops =
+
+[monster.mr-tacomi-voltage-dancer]
+name = 전압 무희
+tier = normal
+hp = 230
+attack = 14
+defense = 0
+intents = attack:14, debuff:1:vulnerable, attack:14, attack:15
+gold = 20
+time_shards = 7
+card_drops =
+
+[monster.mr-tacomi-hologram-titan]
+name = 홀로그램 거인상
+tier = elite
+hp = 480
+attack = 21
+defense = 0
+intents = obscure:2, attack:21, cost-up:2:3, debuff:2:paralyze, attack:24, obscure:1, attack:22
+gold = 36
+time_shards = 13
+card_drops =
+
+[monster.mr-tacomi-grand-circuit]
+name = 대회로 수호체
+tier = elite
+hp = 620
+attack = 22
+defense = 0
+intents = cost-up:2:3, debuff:2:spasm, attack:22, buff:3, attack:25, debuff:1:paralyze, attack:26
+gold = 44
+time_shards = 16
+card_drops =
+
+# ============================================================
+# DEMON-WINDFALL 권역 (wind) — 바람 길목·떠 있는 시간의 닻
+# ============================================================
+
+[monster.mr-demon-windfall-paper-ghost]
+name = 종이 유령
+tier = normal
+hp = 180
+attack = 10
+defense = 0
+intents = add-card-draw:c-junk-blank:1, attack:10, debuff:1:paralyze, add-card-hand:c-junk-blank:1
+gold = 18
+time_shards = 6
+card_drops =
+
+[monster.mr-demon-windfall-gale-blade]
+name = 바람날 정령
+tier = normal
+hp = 220
+attack = 16
+defense = 0
+intents = charge:2, attack:16, attack:18, attack:17
+gold = 21
+time_shards = 7
+card_drops =
+
+[monster.mr-demon-windfall-time-freezer]
+name = 시간 정지체
+tier = normal
+hp = 190
+attack = 9
+defense = 0
+intents = debuff:1:paralyze, attack:9, debuff:2:paralyze, attack:10
+gold = 19
+time_shards = 6
+card_drops =
+
+[monster.mr-demon-windfall-anchor-wraith]
+name = 닻 망령
+tier = normal
+hp = 260
+attack = 15
+defense = 0
+intents = attack:15, defend:12, attack:14, attack:16
+gold = 22
+time_shards = 8
+card_drops =
+
+[monster.mr-demon-windfall-storm-tyrant]
+name = 폭풍 군주
+tier = elite
+hp = 560
+attack = 23
+defense = 0
+intents = charge:3, attack:23, add-card-draw:c-junk-blank:2, debuff:2:paralyze, attack:26, charge:2, attack:28
+gold = 40
+time_shards = 14
+card_drops =
+
+# ============================================================
+# ENICHAM 권역 (electric) — 발전소 지대·AGI 초기 흔적
+# ============================================================
+
+[monster.mr-enicham-sparking-drone]
+name = 불꽃 드론
+tier = normal
+hp = 200
+attack = 13
+defense = 0
+intents = attack:13, debuff:1:spasm, attack:14, attack:13
+gold = 20
+time_shards = 6
+card_drops =
+
+[monster.mr-enicham-relay-crawler]
+name = 릴레이 포복체
+tier = normal
+hp = 180
+attack = 11
+defense = 0
+intents = cost-up:1:2, attack:11, debuff:1:paralyze, attack:12
+gold = 18
+time_shards = 6
+card_drops =
+
+[monster.mr-enicham-capacitor-golem]
+name = 축전 골렘
+tier = normal
+hp = 280
+attack = 14
+defense = 0
+intents = defend:14, attack:14, buff:2, attack:16
+gold = 22
+time_shards = 7
+card_drops =
+
+[monster.mr-enicham-circuit-hound]
+name = 회로 사냥개
+tier = normal
+hp = 210
+attack = 15
+defense = 0
+intents = attack:15, debuff:1:vulnerable, attack:14, attack:16
+gold = 20
+time_shards = 7
+card_drops =
+
+[monster.mr-enicham-overload-wraith]
+name = 과부하 망령
+tier = normal
+hp = 190
+attack = 10
+defense = 0
+intents = debuff:2:spasm, cost-up:2:2, attack:10, attack:11
+gold = 19
+time_shards = 6
+card_drops =
+
+[monster.mr-enicham-proto-agi]
+name = 시제 AGI
+tier = elite
+hp = 500
+attack = 21
+defense = 0
+intents = cost-up:2:3, debuff:2:spasm, attack:21, buff:3, debuff:2:paralyze, attack:24, attack:26
+gold = 38
+time_shards = 14
+card_drops =
+
+# ============================================================
+# TRIFLOWER 권역 (fire) — 활화산·화염 몬무스
+# ============================================================
+
+[monster.mr-triflower-ember-arachne]
+name = 화염 아라크네
+tier = normal
+hp = 210
+attack = 10
+defense = 0
+intents = bind:3:1, debuff:1:poison, attack:10, bind:3:2
+gold = 20
+time_shards = 6
+card_drops =
+
+[monster.mr-triflower-lava-salamander]
+name = 용암 살라만더
+tier = normal
+hp = 260
+attack = 16
+defense = 0
+intents = charge:2, attack:16, attack:17, attack:15
+gold = 22
+time_shards = 7
+card_drops =
+
+[monster.mr-triflower-flame-spirit]
+name = 화염 정령
+tier = normal
+hp = 190
+attack = 9
+defense = 0
+intents = transform-card:1, cost-up:2:2, attack:9, attack:10
+gold = 18
+time_shards = 6
+card_drops =
+
+[monster.mr-triflower-magma-crab]
+name = 마그마 게
+tier = normal
+hp = 280
+attack = 14
+defense = 0
+intents = defend:14, attack:14, charge:2, attack:16
+gold = 22
+time_shards = 8
+card_drops =
+
+[monster.mr-triflower-scorchling]
+name = 불씨 새끼
+tier = normal
+hp = 170
+attack = 12
+defense = 0
+intents = attack:12, debuff:1:poison, attack:13, attack:12
+gold = 17
+time_shards = 5
+card_drops =
+
+[monster.mr-triflower-ignia-queen]
+name = 이그니아 여왕
+tier = elite
+hp = 540
+attack = 20
+defense = 0
+intents = bind:4:2, debuff:2:poison, attack:20, charge:3, attack:23, bind:5:3, attack:22
+gold = 40
+time_shards = 14
+card_drops =
+
+# ============================================================
+# DIROPEL 권역 (earth) — 안개숲 너머 숨은 골짜기
+# ============================================================
+
+[monster.mr-diropel-long-ear-sentinel]
+name = 긴귀 보초
+tier = normal
+hp = 230
+attack = 13
+defense = 0
+intents = bind:3:1, attack:13, defend:10, attack:14
+gold = 20
+time_shards = 7
+card_drops =
+
+[monster.mr-diropel-short-ear-dancer]
+name = 짧은귀 춤꾼
+tier = normal
+hp = 180
+attack = 10
+defense = 0
+intents = debuff:1:weakness, attack:10, debuff:1:frail, attack:11
+gold = 18
+time_shards = 6
+card_drops =
+
+[monster.mr-diropel-totem-warden]
+name = 토템 수호자
+tier = normal
+hp = 300
+attack = 12
+defense = 0
+intents = defend:16, attack:12, defend:14, attack:13
+gold = 22
+time_shards = 8
+card_drops =
+
+[monster.mr-diropel-pattern-shaman]
+name = 무늬 주술사
+tier = normal
+hp = 200
+attack = 9
+defense = 0
+intents = debuff:2:weakness, debuff:1:frail, attack:9, add-card-hand:c-junk-curse:1
+gold = 19
+time_shards = 6
+card_drops =
+
+[monster.mr-diropel-grove-elder]
+name = 골짜기 장로
+tier = elite
+hp = 460
+attack = 19
+defense = 0
+intents = bind:4:2, debuff:2:weakness, attack:19, defend:18, debuff:2:frail, attack:22, buff:2
+gold = 35
+time_shards = 13
+card_drops =
+
+# ============================================================
+# CORAL-COAST 권역 (water) — 산호 바다·인어·세이렌
+# ============================================================
+
+[monster.mr-coral-coast-jellyfish-drifter]
+name = 해파리 부유체
+tier = normal
+hp = 170
+attack = 9
+defense = 0
+intents = devour:4:3, attack:9, attack:9, devour:5:4
+gold = 17
+time_shards = 5
+card_drops =
+
+[monster.mr-coral-coast-siren-charmer]
+name = 세이렌 매혹사
+tier = normal
+hp = 200
+attack = 11
+defense = 0
+intents = debuff:1:weakness, debuff:1:vulnerable, attack:11, attack:12
+gold = 19
+time_shards = 6
+card_drops =
+
+[monster.mr-coral-coast-coral-grappler]
+name = 산호 포박꾼
+tier = normal
+hp = 240
+attack = 13
+defense = 0
+intents = bind:3:1, attack:13, bind:4:2, attack:14
+gold = 21
+time_shards = 7
+card_drops =
+
+[monster.mr-coral-coast-mermaid-hunter]
+name = 사냥꾼 인어
+tier = normal
+hp = 260
+attack = 15
+defense = 0
+intents = attack:15, attack:14, defend:10, attack:16
+gold = 22
+time_shards = 8
+card_drops =
+
+[monster.mr-coral-coast-tide-specter]
+name = 조류 유령
+tier = normal
+hp = 190
+attack = 12
+defense = 0
+intents = debuff:1:paralyze, attack:12, obscure:1, attack:13
+gold = 18
+time_shards = 6
+card_drops =
+
+[monster.mr-coral-coast-abyss-queen]
+name = 심연 여왕
+tier = elite
+hp = 580
+attack = 22
+defense = 0
+intents = devour:5:4, debuff:2:weakness, attack:22, bind:4:2, debuff:2:vulnerable, attack:25, drain:20
+gold = 42
+time_shards = 15
+card_drops =

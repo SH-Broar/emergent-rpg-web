@@ -1,0 +1,354 @@
+# T4 고위험 로스터 — 1장 최난이도 권역 4개
+# 대상 권역: yusezria / falcon-garden / emberforge / oldshrine
+# 수치 밴드 — 일반: HP 240~480 / 엘리트: HP 600~1000
+
+# ============================================================
+# YUSEZRIA 권역 (iron+water · 막다른 dead end · 철과 물의 정수)
+# ============================================================
+
+# --- 일반 ---
+
+[monster.mr-yusezria-iron-sentinel]
+name = 무쇠 파수꾼
+tier = normal
+hp = 300
+attack = 20
+defense = 0
+intents = defend:16, attack:20, defend:18, attack:24
+gold = 32
+time_shards = 10
+card_drops =
+
+[monster.mr-yusezria-tide-wraith]
+name = 조류 망령
+tier = normal
+hp = 260
+attack = 14
+defense = 0
+intents = devour:5:4, attack:14, attack:14, devour:6:5
+gold = 28
+time_shards = 9
+card_drops =
+
+[monster.mr-yusezria-rust-hound]
+name = 녹슨 강철견
+tier = normal
+hp = 280
+attack = 18
+defense = 0
+intents = attack:18, charge:4, attack:22, attack:18
+gold = 30
+time_shards = 10
+card_drops =
+
+[monster.mr-yusezria-pressure-mite]
+name = 수압 벌레
+tier = normal
+hp = 240
+attack = 13
+defense = 0
+intents = debuff:2:frail, attack:13, debuff:2:weakness, attack:15, debuff:2:frail
+gold = 26
+time_shards = 8
+card_drops =
+
+[monster.mr-yusezria-deep-leech]
+name = 심층 거머리
+tier = normal
+hp = 270
+attack = 15
+defense = 0
+intents = drain:15, attack:15, drain:17, attack:13
+gold = 28
+time_shards = 9
+card_drops =
+
+[monster.mr-yusezria-ore-spike]
+name = 광맥 가시충
+tier = normal
+hp = 250
+attack = 16
+defense = 0
+intents = add-card-discard:c-junk-wound:1, attack:16, attack:16, debuff:1:vulnerable, attack:18
+gold = 27
+time_shards = 9
+card_drops =
+
+# --- 엘리트 ---
+
+[monster.mr-yusezria-core-colossus]
+name = 심층 핵 거상
+tier = elite
+hp = 780
+attack = 30
+defense = 0
+intents = defend:22, charge:6, attack:30, devour:6:5, attack:36, defend:20
+gold = 65
+time_shards = 22
+card_drops =
+
+[monster.mr-yusezria-abyssal-warden]
+name = 심연의 감시자
+tier = elite
+hp = 680
+attack = 28
+defense = 0
+intents = bind:5:2, attack:28, charge:5, attack:33, drain:28, debuff:2:vulnerable
+gold = 58
+time_shards = 20
+card_drops =
+
+# ============================================================
+# FALCON-GARDEN 권역 (wind · 공중 군도 · 맹금 전사 몬무스)
+# ============================================================
+
+# --- 일반 ---
+
+[monster.mr-falcon-garden-gust-harpy]
+name = 돌풍 하피
+tier = normal
+hp = 260
+attack = 17
+defense = 0
+intents = debuff:2:frail, attack:17, charge:3, attack:20, debuff:2:weakness
+gold = 28
+time_shards = 9
+card_drops =
+
+[monster.mr-falcon-garden-talon-striker]
+name = 발톱 강습자
+tier = normal
+hp = 280
+attack = 19
+defense = 0
+intents = charge:4, attack:19, attack:23, defend:14
+gold = 30
+time_shards = 10
+card_drops =
+
+[monster.mr-falcon-garden-wind-lancer]
+name = 바람 창기병
+tier = normal
+hp = 290
+attack = 20
+defense = 0
+intents = attack:20, debuff:2:frail, attack:20, charge:3, attack:23
+gold = 31
+time_shards = 10
+card_drops =
+
+[monster.mr-falcon-garden-sky-raven]
+name = 하늘 까마귀
+tier = normal
+hp = 255
+attack = 16
+defense = 0
+intents = force-discard:2, attack:16, attack:16, debuff:2:weakness, force-discard:1
+gold = 27
+time_shards = 9
+card_drops =
+
+[monster.mr-falcon-garden-gale-sentry]
+name = 폭풍 초병
+tier = normal
+hp = 300
+attack = 18
+defense = 0
+intents = defend:16, attack:18, debuff:2:frail, defend:14, attack:22
+gold = 32
+time_shards = 10
+card_drops =
+
+# --- 엘리트 ---
+
+[monster.mr-falcon-garden-storm-sovereign]
+name = 폭풍의 군주
+tier = elite
+hp = 820
+attack = 34
+defense = 0
+intents = charge:6, attack:34, debuff:3:frail, attack:40, defend:20, debuff:3:weakness
+gold = 70
+time_shards = 24
+card_drops =
+
+[monster.mr-falcon-garden-sky-empress]
+name = 하늘의 여왕
+tier = elite
+hp = 720
+attack = 30
+defense = 0
+intents = force-discard:2, charge:5, attack:30, debuff:2:frail, debuff:2:weakness, attack:35, buff:3
+gold = 62
+time_shards = 21
+card_drops =
+
+# ============================================================
+# EMBERFORGE 권역 (iron · 용암 광맥 · 신수 쿠마미미)
+# ============================================================
+
+# --- 일반 ---
+
+[monster.mr-emberforge-ash-hound]
+name = 잿불 사냥개
+tier = normal
+hp = 270
+attack = 18
+defense = 0
+intents = attack:18, debuff:2:poison, attack:18, charge:3, attack:21
+gold = 29
+time_shards = 10
+card_drops =
+
+[monster.mr-emberforge-furnace-golem]
+name = 화로 골렘
+tier = normal
+hp = 350
+attack = 16
+defense = 0
+intents = defend:20, attack:16, defend:22, charge:4, attack:20
+gold = 33
+time_shards = 11
+card_drops =
+
+[monster.mr-emberforge-lava-crawler]
+name = 용암 유충
+tier = normal
+hp = 260
+attack = 14
+defense = 0
+intents = devour:5:4, debuff:2:poison, attack:14, attack:14
+gold = 27
+time_shards = 9
+card_drops =
+
+[monster.mr-emberforge-cinder-bat]
+name = 숯불 박쥐
+tier = normal
+hp = 245
+attack = 16
+defense = 0
+intents = attack:16, debuff:3:poison, drain:16, attack:16
+gold = 26
+time_shards = 8
+card_drops =
+
+[monster.mr-emberforge-slag-crusher]
+name = 슬래그 분쇄자
+tier = normal
+hp = 320
+attack = 19
+defense = 0
+intents = charge:5, attack:19, attack:24, add-card-discard:c-junk-wound:1, attack:19
+gold = 31
+time_shards = 10
+card_drops =
+
+# --- 엘리트 ---
+
+[monster.mr-emberforge-magma-titan]
+name = 용암 거신
+tier = elite
+hp = 700
+attack = 32
+defense = 0
+intents = charge:6, attack:32, debuff:3:poison, drain:28, attack:38, defend:18
+gold = 60
+time_shards = 22
+card_drops =
+
+[monster.mr-emberforge-kumamimi]
+name = 쿠마미미
+tier = elite
+hp = 960
+attack = 34
+defense = 0
+intents = buff:4, attack:34, charge:7, debuff:3:poison, drain:30, attack:41, defend:22, devour:6:5
+gold = 80
+time_shards = 28
+card_drops =
+
+# ============================================================
+# OLDSHRINE 권역 (electric · 번개 신전 · 신수 토라미미)
+# ============================================================
+
+# --- 일반 ---
+
+[monster.mr-oldshrine-spirit-flame]
+name = 도깨비불
+tier = normal
+hp = 250
+attack = 15
+defense = 0
+intents = obscure:2, attack:15, debuff:2:paralyze, attack:15
+gold = 27
+time_shards = 9
+card_drops =
+
+[monster.mr-oldshrine-shrine-warden]
+name = 신전 파수병
+tier = normal
+hp = 300
+attack = 17
+defense = 0
+intents = cost-up:2:2, attack:17, defend:16, attack:17, debuff:2:spasm
+gold = 31
+time_shards = 10
+card_drops =
+
+[monster.mr-oldshrine-thunder-wraith]
+name = 번개 망령
+tier = normal
+hp = 265
+attack = 16
+defense = 0
+intents = debuff:2:paralyze, attack:16, obscure:2, attack:16, debuff:1:spasm
+gold = 28
+time_shards = 9
+card_drops =
+
+[monster.mr-oldshrine-barrier-golem]
+name = 결계 골렘
+tier = normal
+hp = 340
+attack = 14
+defense = 0
+intents = cost-up:3:3, defend:18, attack:14, cost-up:2:2, attack:18
+gold = 30
+time_shards = 10
+card_drops =
+
+[monster.mr-oldshrine-relic-hunter]
+name = 유물 사냥꾼
+tier = normal
+hp = 270
+attack = 18
+defense = 0
+intents = force-discard:2, attack:18, debuff:2:weakness, charge:3, attack:21
+gold = 29
+time_shards = 9
+card_drops =
+
+# --- 엘리트 ---
+
+[monster.mr-oldshrine-lightning-archon]
+name = 번개 대집행관
+tier = elite
+hp = 740
+attack = 32
+defense = 0
+intents = cost-up:3:3, debuff:2:paralyze, charge:6, attack:32, obscure:3, attack:38, debuff:2:spasm
+gold = 64
+time_shards = 22
+card_drops =
+
+[monster.mr-oldshrine-toramimi]
+name = 토라미미
+tier = elite
+hp = 1000
+attack = 36
+defense = 0
+intents = buff:5, debuff:2:paralyze, charge:7, attack:36, cost-up:3:3, obscure:3, attack:43, debuff:2:spasm, drain:30
+gold = 80
+time_shards = 28
+card_drops =
