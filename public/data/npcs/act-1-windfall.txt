@@ -1,4 +1,4 @@
-# NPC: 1장 — 풍혈지대 / 마왕성 권역.
+# NPC: 1장 풍혈지대 / 마왕성 권역.
 
 [npc.npc-rienkay]
 name = 리엔카이
@@ -25,7 +25,7 @@ color_values = 0.5,0.3,0.6,0.5,0.3,0.3,0.2,0.9
 domain_high = Calm, Adaptable, Inventive, Reliable, Patient, Grounded, Cynical, Secretive
 domain_low = Passionate, Indifferent, Stagnant, Fragile, Generous, Freesprited, Apathetic, Honest
 background = 무엇이든 될 수 있다는 얘기는 그것 자체로 아무것도 될 수 없다는 뜻이다.|시간 축을 마음대로 움직일 수 있는 시스템 관리자로, 마왕직을 맡고 있다.|어차피 언젠가 사라질 이 세계의 시기를 즐기는 중이며, 겉으로는 무심하지만 세계의 균형에 누구보다 신경 쓴다.|마왕성에서 네 명의 사천왕과 함께 머무른다.
-tagline = "이 시간은 — 그대의 것입니다."
+tagline = "이 시간은 그대의 것입니다."
 tags = mono, system-admin, dark-affinity, frame
 affinity_rewards = 1:gauge=3, 3:relic=r-mono-token:gauge=5, 5:gauge=10
 
@@ -39,6 +39,6 @@ color_values = 0.2,0.3,0.3,0.2,0.2,1.0,0.3,0.2
 domain_high = Freesprited, Adaptable, Calm, Empathetic, Restless, Hopeful, Honest, Patient
 domain_low = Passionate, Impulsive, Rigid, Stagnant, Stubborn, Grounded, Cynical, Naive
 background = 바람의 정령, 카리아.|정상에서 바람이 완전히 멈추는 찰나에만 나타난다.|바람 속성이 정점에 달한 탐색자에게만 보이며, 바람처럼 금방 사라지기 때문에 대화는 짧다.|어디서 왔냐고 물으면 대답하지 않는다. 대신 다음 바람 방향을 알려준다.
-tagline = "— 풍향이 바뀐다. 지금."
+tagline = " 풍향이 바뀐다. 지금."
 tags = spirit, wind, hidden
 affinity_rewards = 3:relic=r-determined-heart:gauge=4

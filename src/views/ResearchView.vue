@@ -179,8 +179,8 @@ onMounted(() => {
 
     <!-- 카오스 상점 (도전-점수 시스템) -->
     <section class="chaos-shop">
-      <h2 class="chaos-shop__title">카오스 — 위기 협약</h2>
-      <p class="chaos-shop__sub">영혼으로 사두면 매 런 시작에 자유로 켤 수 있다. 보상은 도전 점수 기록뿐.</p>
+      <h2 class="chaos-shop__title">카오스</h2>
+      <p class="chaos-shop__sub">높을수록 원래 세계에서 멀어진다. 영혼으로 사두면 매 런 자유로 켤 수 있다.</p>
       <div v-for="g in chaosGroups" :key="g.tier" class="cgroup">
         <h3 class="cgroup__title">{{ chaosTierLabel(g.tier) }}</h3>
         <div class="cgroup__items">

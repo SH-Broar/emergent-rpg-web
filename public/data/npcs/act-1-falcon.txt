@@ -1,4 +1,4 @@
-# NPC: 1장 — 팔콘 가든 공중 군도 권역 (바다쪽 범고래).
+# NPC: 1장 팔콘 가든 공중 군도 권역 (바다쪽 범고래).
 
 [npc.npc-shachi]
 name = 클루루
@@ -9,11 +9,11 @@ age = 200
 color_values = 0.3,0.9,0.4,0.4,0.4,0.5,0.4,0.5
 domain_high = Calm, Adaptable, Methodical, Reliable, Patient, Grounded, Hopeful, Cunning
 domain_low = Passionate, Indifferent, Impulsive, Fragile, Restless, Freesprited, Cynical, Naive
-background = 군도 아래 바닷가의 — *범고래 아인*.|상반신은 사람, 하반신은 *흑백의 범고래 꼬리*. 물 위에 — 반쯤 — 몸을 — 올린 채 — 공중 군도를 — 올려다본다.|*공중 군도*에는 — 한때 — 올라가 봤지만, 위쪽 것들이 — *너무 강해* — 지금은 — 바다쪽에 — 머문다.|올라가려는 자에게 — *물의 한 자락*을 — 빌려준다 — "위는 — 거칠어. 숨 — 한 번 — 더 — 채워 — 가."
-tagline = "위는 — 거칠어. 숨 — 한 번 — 더."
+background = 군도 아래 바닷가의 범고래 아인.|상반신은 사람, 하반신은 흑백의 범고래 꼬리. 물 위에 반쯤 몸을 올린 채 공중 군도를 올려다본다.|공중 군도에는 한때 올라가 봤지만, 위쪽 것들이 너무 강해 지금은 바다쪽에 머문다.|올라가려는 자에게 물의 한 자락을 빌려준다 "위는 거칠어. 숨 한 번 더 채워 가."
+tagline = "위는 거칠어. 숨 한 번 더."
 tags = orca, sea, water-affinity
 affinity_rewards = 3:card=c-gentle-guard:gauge=4
-# 영입 — 범고래. 강한 일격 + 물 방어 한 겹.
+# 영입 범고래. 강한 일격 + 물 방어 한 겹.
 recruit_enabled = true
 recruit_cards = c-orca-tide
 recruit_colors = water:12, iron:6

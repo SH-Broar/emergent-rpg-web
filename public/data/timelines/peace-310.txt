@@ -1,4 +1,4 @@
-# Timeline: 평화의 310년 — MVR 첫 연표.
+# Timeline: 평화의 310년 MVR 첫 연표.
 
 [timeline.tl-peace-310]
 name = 평화의 310년

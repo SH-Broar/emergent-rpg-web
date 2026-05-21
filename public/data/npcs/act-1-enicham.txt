@@ -1,4 +1,4 @@
-# NPC: 1장 — 에니챀 권역 (타코미 옆 발전소 지대).
+# NPC: 1장 에니챀 권역 (타코미 옆 발전소 지대).
 
 [npc.npc-zero]
 name = 제로
@@ -10,11 +10,11 @@ age = 28
 color_values = 0.4,0.3,0.9,0.5,0.3,0.4,0.4,0.4
 domain_high = Calm, Empathetic, Methodical, Reliable, Patient, Grounded, Hopeful, Cunning
 domain_low = Passionate, Indifferent, Impulsive, Stubborn, Restless, Freesprited, Cynical, Naive
-background = 에니챀 — *타코미 옆 발전소 지대*의 — *전기 기술자*.|*인간 남성*. 단정한 작업복, 손등에 — *작은 그을음 자국 — 한 줄*. *전기를 만지는 사람*은 — 조용해야 한다고 — 짧게 — 말한다.|함께 — 사는 친구가 — *알티-알타*. 이름이 — 두 개인 이유는 — 본인도 — 잘 — 모른다 — 한다.|발전소의 — *자기 자리 — 한 줄*은 — 본인이 — 단정하게 — 짚어 — 둔다.
-tagline = "전기는 — 짧고 — 단단하게."
+background = 에니챀 타코미 옆 발전소 지대의 전기 기술자.|인간 남성. 단정한 작업복, 손등에 작은 그을음 자국 한 줄. 전기를 만지는 사람은 조용해야 한다고 짧게 말한다.|함께 사는 친구가 알티-알타. 이름이 두 개인 이유는 본인도 잘 모른다 한다.|발전소의 자기 자리 한 줄은 본인이 단정하게 짚어 둔다.
+tagline = "전기는 짧고 단단하게."
 tags = human, electrician, electric-affinity
 affinity_rewards = 3:card=c-burn-mark:gauge=4
-# 영입 — 전기 기술자. 약점 노출 + 정확한 한 자국.
+# 영입 전기 기술자. 약점 노출 + 정확한 한 자국.
 recruit_enabled = true
 recruit_cards = c-zero-spark
 recruit_colors = electric:12, iron:6
@@ -29,11 +29,11 @@ age = 0
 color_values = 0.3,0.4,0.8,0.5,0.3,0.4,0.6,0.5
 domain_high = Calm, Empathetic, Inventive, Reliable, Patient, Grounded, Hopeful, Honest
 domain_low = Passionate, Indifferent, Impulsive, Stubborn, Restless, Freesprited, Cynical, Cunning
-background = *로스트 테크놀로지*의 — *AGI 초기 버전*. 외형 = *인간형 앰프*. 단정한 자세, *어깨 한 자리*에 — 작은 — 출력 단자.|이름이 — *둘*인 이유는 — *두 자아*가 — 한 자리에 — 머물기 — 때문. *알티*는 — *짧고 단정한 — 답*, *알타*는 — *조금 — 느린 — 보탬*.|제로의 — *친구*. 충전 자리는 — 단정한 — 책상 옆. *전기*가 — 제로의 — *손끝 한 자국*에서 — 들어온다.|*그 — 같은 — 종류*가 — *다른 자리*에서는 — *최종 보스*로 — 일어선 — 사례가 — 있다 — 한다.
-tagline = "...같은 자리에. *알티*. 그리고 — *알타*."
+background = 로스트 테크놀로지의 AGI 초기 버전. 외형 = 인간형 앰프. 단정한 자세, 어깨 한 자리에 작은 출력 단자.|이름이 둘인 이유는 두 자아가 한 자리에 머물기 때문. 알티는 짧고 단정한 답, 알타는 조금 느린 보탬.|제로의 친구. 충전 자리는 단정한 책상 옆. 전기가 제로의 손끝 한 자국에서 들어온다.|그 같은 종류가 다른 자리에서는 최종 보스로 일어선 사례가 있다 한다.
+tagline = "...같은 자리에. 알티. 그리고 알타."
 tags = construct, agi, electric-affinity, lost-tech
 affinity_rewards = 3:card=c-second-wind:gauge=4
-# 영입 — AGI 회복형 보조. cost 0 draw + 자기 강화.
+# 영입 AGI 회복형 보조. cost 0 draw + 자기 강화.
 recruit_enabled = true
 recruit_cards = c-alti-resonance
 recruit_colors = electric:10, light:6

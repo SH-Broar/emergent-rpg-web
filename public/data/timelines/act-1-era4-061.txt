@@ -1,15 +1,15 @@
-# Timeline: 1장 — 제 4시대 61년
+# Timeline: 1장 제 4시대 61년
 # spec v2 / 1장 단일 집중. legacy의 모든 hyperion 캐릭터와 map을 통합.
 #
 # 한 런 사양: 약 3~4시간 / 300턴.
 # 시간 만료 시 즉시 종료 (보스 게이트 도달 못 했다면 패배).
 
 [timeline.tl-act-1-era4-061]
-name = 1장 — 제 4시대 61년
-description = 모노가 이 시대의 균열을 처음으로 *감지한* 해. 제 4시대 60년 동안 거의 잔잔했던 세계가, 61년에 들어서 *흔들린다*. 일루네온의 광장에서 처음 깃든 전생자는, 이 *한 해* 안에 모든 것을 마주해야 한다.
+name = 1장 제 4시대 61년
+description = 모노가 이 시대의 균열을 처음으로 감지한 해. 제 4시대 60년 동안 거의 잔잔했던 세계가, 61년에 들어서 흔들린다. 일루네온의 광장에서 처음 깃든 전생자는, 이 한 해 안에 모든 것을 마주해야 한다.
 year = 61
 era = 제 4시대
-tagline = "한 해 안에 — 이 시대의 모든 균열을 마주하라."
+tagline = "한 해 안에 이 시대의 모든 균열을 마주하라."
 node_map = nm-act-1-era4-061
 # 플레이어는 종족만 고른다 (characters/ 폐기 → race 통합).
 races = human, moth, phantom, arcana
@@ -18,7 +18,7 @@ events = ev-traveler-fork, ev-stranger-favor, ev-mono-whisper
 time_limit = 300
 deck_expansion = 100, 200
 boss = bs-act-1-anchor
-mission_goal = 제 4시대 61년의 *균열*을 봉합하라. 300턴 안에 일루네온에서 출발해 — 풍혈지대 너머 *시간의 닻*에 다다라야 한다.
+mission_goal = 제 4시대 61년의 균열을 봉합하라. 300턴 안에 일루네온에서 출발해 풍혈지대 너머 시간의 닻에 다다라야 한다.
 unlock =
 shareable = true
 thumbnail =

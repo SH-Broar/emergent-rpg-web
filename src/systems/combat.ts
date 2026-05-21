@@ -47,6 +47,21 @@ import {
 const STARTING_HAND_SIZE = 5;
 const DEFAULT_MAX_MANA = 3;
 
+/** 전투 로그 큐 최대 보관 수 (표시는 뷰에서 마지막 몇 줄만). */
+const LOG_MAX = 24;
+/** 전투 로그에 한 줄 추가 — 오래된 항목은 앞에서 잘라 LOG_MAX 유지. */
+function pushLog(c: CombatState, text: string): void {
+  if (!text) return;
+  c.log = [...(c.log ?? []), text].slice(-LOG_MAX);
+}
+/** 상태이상 스택 총합 — 로그에서 디버프 부여 여부 판정용. */
+function countStatuses(statuses: Record<string, number> | undefined): number {
+  if (!statuses) return 0;
+  let sum = 0;
+  for (const v of Object.values(statuses)) sum += v;
+  return sum;
+}
+
 /** 현재 런의 *effective* 컬러(베이스+장비)에서 도출된 전투 보너스 (B1 fix). */
 function currentBonuses() {
   const run = useRunStore();
@@ -254,6 +269,7 @@ export function startCombat(monster: Monster) {
     turn: 1,
     mana: maxMana,
     maxMana: maxMana,
+    log: [],
     // 보스 기믹 카운터 초기화 — 일반 전투에선 bossMechanic이 undefined라 무시됨.
     stillness: 0,
     bossTurnCount: 0,
@@ -434,6 +450,12 @@ export function playCard(handIndex: number, monster: Monster): { enemyDefeated: 
   const doubleThisCard = flags.nextCardDouble === true;
   if (doubleThisCard) flags.nextCardDouble = false;
 
+  // 로그용 스냅샷 — 효과 적용 전후 차이로 "방금 전 플레이 내용" 요약.
+  const snapEnemyHp = c.enemy.hp;
+  const snapPlayerHp = c.player.hp;
+  const snapPlayerBlock = c.player.block;
+  const snapEnemyStatus = countStatuses(c.enemy.statuses);
+
   for (const effect of card.effects) {
     if (doubleThisCard && effect.value !== undefined) {
       // value를 2배로 한 *사본*으로 적용 — 원본 effect는 건드리지 않음.
@@ -444,6 +466,20 @@ export function playCard(handIndex: number, monster: Monster): { enemyDefeated: 
   }
 
   (c as { currentPlayingCard?: Card }).currentPlayingCard = undefined;
+
+  // 카드 사용 결과를 전투 로그에 기록 — 피해/방어/회복/디버프 델타를 짧게 요약.
+  {
+    const segs: string[] = [];
+    const dmg = snapEnemyHp - c.enemy.hp;
+    if (dmg > 0) segs.push(`적 -${dmg}`);
+    const heal = c.player.hp - snapPlayerHp;
+    if (heal > 0) segs.push(`HP +${heal}`);
+    const blk = c.player.block - snapPlayerBlock;
+    if (blk > 0) segs.push(`방어 +${blk}`);
+    const dbuff = countStatuses(c.enemy.statuses) - snapEnemyStatus;
+    if (dbuff > 0) segs.push('디버프');
+    pushLog(c, segs.length > 0 ? `「${card.name}」 ${segs.join(' · ')}` : `「${card.name}」`);
+  }
 
   // growing-block 효과가 있으면 *카드 인스턴스의 bonusBlock 누적* (다음 사용 시 block에 더해짐).
   if (card.effects.some((e) => e.kind === 'growing-block')) {
@@ -1083,6 +1119,12 @@ function executeMonsterIntent(c: CombatState, monster?: Monster) {
   const intent = c.enemyIntent;
   if (!intent) return;
 
+  // 로그용 스냅샷 — 적 행동 전후 차이로 요약.
+  const snapPlayerHp = c.player.hp;
+  const snapPlayerStatus = countStatuses(c.player.statuses);
+  const snapEnemyBlock = c.enemy.block;
+  const snapEnemyHp = c.enemy.hp;
+
   const parts = intent.split(':');
   const kind = parts[0];
   const rawValue = Number(parts[1]) || 0;
@@ -1220,7 +1262,44 @@ function executeMonsterIntent(c: CombatState, monster?: Monster) {
     default:
       break;
   }
+
+  // 적 행동 결과를 전투 로그에 기록 — 델타 우선, 없으면 인텐트 종류로 표기.
+  {
+    const name = monster?.name ?? '적';
+    const segs: string[] = [];
+    const dmg = snapPlayerHp - c.player.hp;
+    if (dmg > 0) segs.push(`${dmg} 피해`);
+    const blk = c.enemy.block - snapEnemyBlock;
+    if (blk > 0) segs.push(`방어 +${blk}`);
+    const drained = c.enemy.hp - snapEnemyHp;
+    if (drained > 0) segs.push(`흡수 +${drained}`);
+    if (countStatuses(c.player.statuses) > snapPlayerStatus) segs.push('디버프 부여');
+    const fallback = ENEMY_INTENT_LOG[kind];
+    if (segs.length > 0) pushLog(c, [name, ...segs].join(' · '));
+    else if (fallback) pushLog(c, `${name} · ${fallback}`);
+  }
 }
+
+/** 적 인텐트 종류 → 로그용 짧은 라벨 (델타가 없을 때의 폴백). */
+const ENEMY_INTENT_LOG: Record<string, string> = {
+  defend: '방어 태세',
+  buff: '힘을 모은다',
+  charge: '공격을 준비한다',
+  bind: '구속',
+  devour: '삼킴',
+  web: '거미줄',
+  obscure: '손패를 가린다',
+  'cost-up': '비용 교란',
+  'force-discard': '손패를 떨군다',
+  'transform-card': '카드를 비튼다',
+  'add-card': '잡카드 주입',
+  'add-card-draw': '잡카드 주입',
+  'add-card-discard': '잡카드 주입',
+  'add-card-hand': '잡카드 주입',
+  ghost: '형태가 흐려진다',
+  'drain-stat': '스탯을 잠식한다',
+  change: '모습을 바꾼다',
+};
 
 /**
  * 변신(체인지) 적용 — 종족+덱 전체를 폼으로 교체, 원본은 RunState.transform에 stash.

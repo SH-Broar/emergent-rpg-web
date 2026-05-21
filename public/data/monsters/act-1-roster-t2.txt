@@ -1,8 +1,8 @@
-# T2 중간 로스터 — 5개 권역 (moss / riagralta / alimes / martin / manonickla)
+# T2 중간 로스터 5개 권역 (moss / riagralta / alimes / martin / manonickla)
 # HP 110~250 일반, 280~480 엘리트. 금지어: 결, 한 박, 박자
 
 # ============================================================
-# 모스 권역 (fire) — 불의 도시·대장간·클러치 상륙장
+# 모스 권역 (fire) 불의 도시·대장간·클러치 상륙장
 # ============================================================
 
 [monster.mr-moss-fireworm]
@@ -90,9 +90,9 @@ time_shards = 4
 card_drops =
 
 [monster.mr-moss-iron-guardian]
-name = 철갑 파수꾼
+name = 이끼낀 강철 골렘
 tier = normal
-species = imp
+species = golem
 hp = 220
 attack = 9
 defense = 0
@@ -126,7 +126,7 @@ time_shards = 7
 card_drops =
 
 # ============================================================
-# 리아그랄타 권역 (electric) — 끝없는 초원·산비탈·번개 폭풍
+# 리아그랄타 권역 (electric) 끝없는 초원·산비탈·번개 폭풍
 # ============================================================
 
 [monster.mr-ria-storm-sheep]
@@ -202,7 +202,7 @@ time_shards = 9
 card_drops =
 
 # ============================================================
-# 알리메스 권역 (water) — 산맥 오지 마을·에루멘 안개 숲
+# 알리메스 권역 (water) 산맥 오지 마을·에루멘 안개 숲
 # ============================================================
 
 [monster.mr-ali-mist-deer]
@@ -218,7 +218,7 @@ time_shards = 4
 card_drops =
 
 [monster.mr-ali-herb-bandit]
-name = 약초 도둑
+name = 안개밭 흡정 임프
 tier = normal
 species = imp
 hp = 130
@@ -302,7 +302,7 @@ time_shards = 7
 card_drops =
 
 # ============================================================
-# 마틴 권역 (water) — 항구·키시나 해변
+# 마틴 권역 (water) 항구·키시나 해변
 # ============================================================
 
 [monster.mr-martin-dock-rat]
@@ -354,7 +354,7 @@ time_shards = 3
 card_drops =
 
 [monster.mr-martin-gull-raider]
-name = 갈매기 약탈자
+name = 갈매기 하피 떼
 tier = normal
 species = harpy
 hp = 115
@@ -378,7 +378,7 @@ time_shards = 8
 card_drops =
 
 # ============================================================
-# 마노니클라 권역 (iron) — 극동 섬 석양·드래곤 공방·리문 유적
+# 마노니클라 권역 (iron) 극동 섬 석양·드래곤 공방·리문 유적
 # ============================================================
 
 [monster.mr-mano-cliff-crab]
@@ -418,7 +418,7 @@ time_shards = 3
 card_drops =
 
 [monster.mr-mano-limun-ward]
-name = 리문 경비상
+name = 깨어난 리문상
 tier = normal
 species = automaton
 hp = 200

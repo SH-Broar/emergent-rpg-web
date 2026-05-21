@@ -1,10 +1,10 @@
-# 메타 해금 항목 — 히페리온/해석/영혼을 소비해 콘텐츠 개방.
-# resource = hyperion | insight | soul, grants_* = 콤마 구분 id.
+# 메타 해금 항목 히페리온/해석/영혼을 소비해 콘텐츠 개방.
+# resource = hyperion | insight | soul, grants_ = 콤마 구분 id.
 # A단계: 종족 해금만 실동작. 카드/유물/연표 해금은 B단계에서 추가.
 
 [unlock.u-race-moth]
 name = 나방
-description = 작은 몸, 빠른 손 — 민첩의 그릇.
+description = 작은 몸, 빠른 손 민첩의 그릇.
 resource = hyperion
 cost = 30
 grants_race = moth

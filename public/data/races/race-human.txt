@@ -1,9 +1,9 @@
-# Race: 인간 — 기본 종족 (구 ch-hako 통합).
+# Race: 인간 기본 종족 (구 ch-hako 통합).
 # characters/ 폐기 후 race가 stats + starting_deck을 직접 보유.
 
 [race.human]
 name = 인간
-description = 가장 흔한 종족. 어느 시대에도 잘 적응하는 *균형의 그릇*. 시간의 신탁이 처음 자주 부르는 종족이다.
+description = 가장 흔한 종족. 어느 시대에도 잘 적응하는 균형의 그릇. 시간의 신탁이 처음 자주 부르는 종족이다.
 category = humanoid
 primary_element = light
 secondary_element = wind
@@ -19,8 +19,8 @@ seed_cards = c-strike, c-defend, c-strike, c-defend, c-strike, c-quickdraw, c-re
 seed_relics = r-determined-heart
 hp_bonus = 0
 mp_bonus = 0
-# 종족 고정 덱 크기 — starting_deck(10장) + seed_cards에서 자동 5장 추첨.
+# 종족 고정 덱 크기 starting_deck(10장) + seed_cards에서 자동 5장 추첨.
 deck_size = 15
-# 종족 시작 컬러 시드 — 한 컬러당 최대 5 (사용자 사양).
+# 종족 시작 컬러 시드 한 컬러당 최대 5 (사용자 사양).
 # 인간 = light·wind 친화. 두 컬러에 +5/+3, 나머지 0.
 seed_colors = light:5, wind:3

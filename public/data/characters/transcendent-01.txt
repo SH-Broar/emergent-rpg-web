@@ -1,4 +1,4 @@
-# Character: 첫 전생자 — MVR 캐릭터
+# Character: 첫 전생자 MVR 캐릭터
 # RDC 세계관의 평화로운 시대에 깃든 무명의 전생자.
 
 [character.first-trans]

@@ -1,4 +1,4 @@
-# NPC: 1장 — 마법학교 루나 권역.
+# NPC: 1장 마법학교 루나 권역.
 
 [npc.npc-rupin]
 name = 루핀
@@ -24,10 +24,10 @@ color_values = 0.5,0.3,0.4,0.8,0.4,0.3,0.4,0.3
 domain_high = Excited, Adaptable, Inventive, Flexible, Patient, Freesprited, Hopeful, Cunning
 domain_low = Cautious, Rigid, Stagnant, Stubborn, Restless, Grounded, Cynical, Naive
 background = 컬러즈 최단신의 뛰는 쥐.|온 몸에 무거운 장비를 둘둘 감고 다니며, 학교 친구들에겐 짐꾼 이미지가 강하게 박혀 있다.|어렸을 적 작은 몸집으로 박해당하던 기억이 있어 중장비를 다루게 되었지만, 루나에서는 오히려 재능으로 인정하고 갈고 닦는 중.|마로와 같이 다니며, 호기심이 많고 취미도 다양한 학생이다.
-tagline = "이 정도 — 충분히 들 수 있다구!"
+tagline = "이 정도 충분히 들 수 있다구!"
 tags = beastkin, iron-affinity, student
 affinity_rewards = 3:card=c-gentle-guard:gauge=3
-# 영입 — 덱 +3 큰 슬롯 + 철 보너스. 짐꾼답게 *덱 슬롯 가장 많이 늘림*.
+# 영입 덱 +3 큰 슬롯 + 철 보너스. 짐꾼답게 덱 슬롯 가장 많이 늘림.
 recruit_enabled = true
 recruit_deck_bonus = 3
 recruit_colors = iron:12
@@ -43,10 +43,10 @@ color_values = 0.3,0.3,0.4,0.3,0.3,0.3,0.3,0.8
 domain_high = Passionate, Adaptable, Inventive, Reliable, Patient, Grounded, Cynical, Secretive
 domain_low = Cautious, Rigid, Stagnant, Fragile, Restless, Freesprited, Apathetic, Honest
 background = 대변동 당시 결계로 고립된 스텔라 빌 출신.|미래로 튕겨나와 살아남았지만, 고향 사람들은 이미 오래 전 사람들이 되었다.|고향을 되찾기 위해 결계에 관련된 흑마법을 연구하고 있다.|딱 한 명, 마로만이 같은 고향 사람이다.
-tagline = "그 시간이 — 다시 한 번 열린다면."
+tagline = "그 시간이 다시 한 번 열린다면."
 tags = elf, dark-affinity, exile
 affinity_rewards = 3:relic=r-imperisia-locket:gauge=4
-# 영입 — 결계·흑마법. 약화 부여 + 방어 카드.
+# 영입 결계·흑마법. 약화 부여 + 방어 카드.
 recruit_enabled = true
 recruit_cards = c-binding-ward
 recruit_colors = dark:12, water:6
@@ -61,7 +61,7 @@ color_values = 0.3,0.4,0.5,0.3,0.4,0.9,0.6,0.3
 domain_high = Calm, Empathetic, Methodical, Reliable, Patient, Grounded, Righteous, Cunning
 domain_low = Passionate, Rigid, Stagnant, Flexible, Generous, Freesprited, Cynical, Honest
 background = 바람의 대정령이자 현 풍신.|마법학교 루나의 상급 바람마법 선생님이며, 기초이론 과목도 담당하지만 난이도가 너무 높아 악명이 자자하다.|사실 루나의 교장이기도 하다.|키가 칠판보다도 작아서 귀엽다는 평가를 받으며, 책장에 책을 못 올리는 일이 잦다.
-tagline = "수업 — 시작합니다. (책 좀 올려 주실래요)"
+tagline = "수업 시작합니다. (책 좀 올려 주실래요)"
 tags = spirit, principal, wind
 affinity_rewards = 3:card=c-deep-breath:gauge=4
 
@@ -89,6 +89,6 @@ color_values = 0.2,0.2,0.2,0.2,0.3,0.2,0.2,1.0
 domain_high = Calm, Empathetic, Patient, Secretive, Grounded, Hopeful, Methodical, Reliable
 domain_low = Passionate, Impulsive, Freesprited, Fragile, Restless, Adaptable, Cynical, Honest
 background = 어둠의 정령.|달이 없는 밤에만, 달빛 빈터의 가장자리에서 속삭인다.|찾으러 갈수록 보이지 않으며, 어둠 속성이 정점에 달한 채 그냥 서 있는 자에게 먼저 말을 건다.|따뜻한 어둠이 있다는 걸 아는 몇 안 되는 존재 중 하나다.
-tagline = "— 보이지 않는 곳에, 있어요."
+tagline = " 보이지 않는 곳에, 있어요."
 tags = spirit, dark, hidden
 affinity_rewards = 3:relic=r-mono-token:gauge=5

@@ -1,9 +1,9 @@
-# Race: 나방 — 나비 날개 아인 (구 ch-iyeon 통합).
+# Race: 나방 나비 날개 아인 (구 ch-iyeon 통합).
 # 작은 몸·빠른 활. 바람 친화.
 
 [race.moth]
 name = 나방
-description = 나비 날개가 달린 아인. 작은 몸으로 빠르게 움직이며, 활을 다루는 *민첩의 그릇*.
+description = 나비 날개가 달린 아인. 작은 몸으로 빠르게 움직이며, 활을 다루는 민첩의 그릇.
 category = flight
 primary_element = wind
 secondary_element = light

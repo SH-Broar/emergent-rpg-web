@@ -108,6 +108,13 @@ export interface CombatState {
   maxMana: number;
 
   /**
+   * 전투 행동 로그 — "방금 전 플레이 내용"을 턴 카운터 아래에 보여 주기 위한 짧은 문장 큐.
+   * playCard(카드 사용 결과)/executeMonsterIntent(적 행동)에서 push. 오래된 항목은 앞에서 잘린다.
+   * 세이브 round-trip 안전 — optional(absent=빈 로그).
+   */
+  log?: string[];
+
+  /**
    * 적 인텐트 로테이션 *오버라이드* — set이면 pickIntent가 monster.intents 대신 이 배열을 순회.
    * 카오스 all-gimmick(만물의 송곳니)이 startCombat에서 종족 대표 기믹을 끼워 넣은 결과.
    * 일반 전투(미설정)에선 monster.intents를 그대로 쓴다. 전투 단위(세이브 round-trip 안전 — optional).

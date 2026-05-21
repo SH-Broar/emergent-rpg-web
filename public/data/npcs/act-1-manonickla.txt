@@ -1,4 +1,4 @@
-# NPC: 1장 — 마노니클라 권역 (극동).
+# NPC: 1장 마노니클라 권역 (극동).
 
 [npc.npc-cayo]
 name = 카요
@@ -11,7 +11,7 @@ color_values = 0.5,0.3,0.4,0.9,0.5,0.3,0.4,0.4
 domain_high = Passionate, Adaptable, Inventive, Stubborn, Patient, Grounded, Hopeful, Secretive
 domain_low = Melancholy, Indifferent, Stagnant, Fragile, Restless, Freesprited, Cynical, Honest
 background = 마노니클라 공방의 드래곤 대장장이.|석양이 길게 머무는 절벽 위에서, 모루 소리를 끊지 않는다.|날뛰면 막아낼 사람이 없는 강력한 존재지만, 지금은 머무는 이들과 조용히 지낸다.
-tagline = "조용히, 모루를 두드리는 게 — 좋아."
+tagline = "조용히, 모루를 두드리는 게 좋아."
 tags = dragon, craftsman, iron-affinity
 affinity_rewards = 3:relic=r-determined-heart:gauge=5
 
@@ -26,10 +26,10 @@ color_values = 0.5,0.3,0.3,0.9,0.4,0.3,0.4,0.3
 domain_high = Passionate, Adaptable, Methodical, Stubborn, Patient, Grounded, Hopeful, Honest
 domain_low = Cautious, Indifferent, Stagnant, Fragile, Restless, Freesprited, Cynical, Naive
 background = 인간 형상을 하고 있지만 사실 오래된 창의 정령.|창을 들고 있는 여기사처럼 보이지만, 사실은 창이 본체이다.|무기로서의 본질은 사용되는 것이지만 발렌시아는 그 자체로 완전한 창이어서 다른 사람에게 사용될 필요가 없다.|향상심 있는 전사들을 도와주는 것을 좋아하는 지원가.
-tagline = "그대의 향상심을 — 보여 주십시오."
+tagline = "그대의 향상심을 보여 주십시오."
 tags = spirit, weapon-spirit, iron
 affinity_rewards = 3:card=c-strike:gauge=4
-# 영입 — 향상심 지원 컨셉. iron(공격 라인) + earth(방어 라인) 보강.
+# 영입 향상심 지원 컨셉. iron(공격 라인) + earth(방어 라인) 보강.
 recruit_enabled = true
 recruit_cards = c-quickdraw
 recruit_colors = iron:12, earth:6
@@ -44,7 +44,7 @@ color_values = 0.3,0.4,0.5,0.3,0.3,0.9,0.5,0.2
 domain_high = Excited, Adaptable, Inventive, Flexible, Generous, Freesprited, Hopeful, Honest
 domain_low = Cautious, Rigid, Stagnant, Stubborn, Restless, Grounded, Cynical, Naive
 background = 사천왕 시아의 여동생이자 기상학 학자 하피.|엄청난 스펙이지만 정작 본인은 신경도 쓰지 않으며, 항상 하이 텐션으로 마노니클라를 돌아다닌다.|전공 분야 외에는 아무것도 걱정하지 않고 상식도 부족하다.|단순히 하고 싶은 걸 하는 일차원적인 사람이다.
-tagline = "오늘 — 날씨, 진짜 좋아요!"
+tagline = "오늘 날씨, 진짜 좋아요!"
 tags = harpy, meteorologist, wind-affinity
 affinity_rewards = 3:card=c-deep-breath:gauge=3
 
@@ -58,8 +58,8 @@ age = 999
 color_values = 0.2,0.3,0.2,0.2,1.0,0.3,0.4,0.2
 domain_high = Calm, Empathetic, Methodical, Reliable, Patient, Grounded, Hopeful, Honest
 domain_low = Passionate, Impulsive, Stagnant, Fragile, Restless, Freesprited, Cynical, Naive
-background = 흙의 정령이자 아주 드물게만 모습을 드러내는 관측자.|마노니클라의 '빛이 쏟아지는 날'을 본 자에게만 다음날 클러치 협곡에서 말을 건다고 전해진다.|말수는 적지만 대지와 협곡의 결을 정확히 읽으며, 오래된 바위와 유적의 숨결을 이해하는 몇 안 되는 존재다.|이번 해에는 — *옛 사당*의 결이 어긋난 것을 알리러, 협곡 한 자리에 앉아 있다.
-tagline = "대지가 — 어긋났습니다. 들립니까."
+background = 흙의 정령이자 아주 드물게만 모습을 드러내는 관측자.|마노니클라의 '빛이 쏟아지는 날'을 본 자에게만 다음날 클러치 협곡에서 말을 건다고 전해진다.|말수는 적지만 대지와 협곡의 결을 정확히 읽으며, 오래된 바위와 유적의 숨결을 이해하는 몇 안 되는 존재다.|이번 해에는 옛 사당의 결이 어긋난 것을 알리러, 협곡 한 자리에 앉아 있다.
+tagline = "대지가 어긋났습니다. 들립니까."
 tags = spirit, earth, hidden
 affinity_rewards = 3:relic=r-mono-token:gauge=5
 
@@ -73,7 +73,7 @@ age = 700
 color_values = 0.3,0.2,0.3,0.7,0.9,0.2,0.3,0.3
 domain_high = Calm, Adaptable, Methodical, Reliable, Patient, Grounded, Hopeful, Honest
 domain_low = Passionate, Empathetic, Impulsive, Flexible, Restless, Freesprited, Cynical, Naive
-background = 리문 유적의 옛 골렘. 최근에 — 깨어났다.|돌 손발이 걸음마다 *작게 부딪힌다*. 그 박자가 *마노니클라의 길*에 익숙해지는 중.|시이드가 제일 먼저 말을 걸어줬다. 그래서 — 친구.|카요의 공방에 가끔 들러 — 마모된 손발을 다듬어 받는다.
+background = 리문 유적의 옛 골렘. 최근에 깨어났다.|돌 손발이 걸음마다 작게 부딪힌다. 그 박자가 마노니클라의 길에 익숙해지는 중.|시이드가 제일 먼저 말을 걸어줬다. 그래서 친구.|카요의 공방에 가끔 들러 마모된 손발을 다듬어 받는다.
 tagline = "...걸을게."
 tags = golem, ruins, earth-affinity
 affinity_rewards = 3:card=c-gentle-guard:gauge=4

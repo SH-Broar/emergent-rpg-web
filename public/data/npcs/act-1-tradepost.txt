@@ -1,4 +1,4 @@
-# NPC: 1장 — 초원 교역소 (라미아 상인).
+# NPC: 1장 초원 교역소 (라미아 상인).
 
 [npc.npc-sarasa]
 name = 사라사
@@ -10,11 +10,11 @@ age = 120
 color_values = 0.4,0.4,0.4,0.5,0.6,0.4,0.4,0.4
 domain_high = Calm, Adaptable, Methodical, Reliable, Patient, Grounded, Hopeful, Cunning
 domain_low = Passionate, Indifferent, Impulsive, Fragile, Restless, Freesprited, Cynical, Naive
-background = 초원 교역소의 — *라미아 상인*.|상반신은 사람, 하반신은 *긴 뱀 꼬리* — 좌판 뒤에서 꼬리를 한 자락 말아 똬리로 자리를 잡는다.|직물과 향신료를 — 결 고운 순서로 — 펼친다. 값은 — 정확하고, 흥정도 — 즐긴다.|어느 마을 물건이든 — 한 번 보면 — 값을 — 안다. "한 필 — 더 — 보고 가요. 깎아 줄게."
-tagline = "한 필 — 더 — 보고 가요."
+background = 초원 교역소의 라미아 상인.|상반신은 사람, 하반신은 긴 뱀 꼬리 좌판 뒤에서 꼬리를 한 자락 말아 똬리로 자리를 잡는다.|직물과 향신료를 결 고운 순서로 펼친다. 값은 정확하고, 흥정도 즐긴다.|어느 마을 물건이든 한 번 보면 값을 안다. "한 필 더 보고 가요. 깎아 줄게."
+tagline = "한 필 더 보고 가요."
 tags = lamia, merchant, earth-affinity
 affinity_rewards = 3:card=c-quickdraw:gauge=4
-# 영입 — 라미아 상인. 또꼬리 감기(공격) + 한 겹 방어.
+# 영입 라미아 상인. 또꼬리 감기(공격) + 한 겹 방어.
 recruit_enabled = true
 recruit_cards = c-trade-coil
 recruit_colors = earth:10, iron:6

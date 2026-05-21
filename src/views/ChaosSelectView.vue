@@ -2,7 +2,7 @@
 /**
  * 카오스 선택 — 런 시작 *마지막* 단계 (TimelineSelect → RaceSelect → 카오스 → 런 시작).
  *
- * 위기협약식 자기부여 핸디캡. 소유한 카오스(meta.unlockedChaosIds)를 티어별로 토글하고,
+ * 자기부여 핸디캡(높을수록 원래 세계에서 멀어진다). 소유한 카오스(meta.unlockedChaosIds)를 티어별로 토글하고,
  * 숫자형은 강도(1/2/3), 시작HP는 2단계를 스텝으로 고른다. 이진형·레전드는 on/off.
  * 활성 점수 합 + 연표 최고 기록을 실시간 표시.
  *
@@ -235,7 +235,7 @@ onMounted(() => {
     <header class="hdr">
       <button class="back" @click="back">← 종족 선택</button>
       <h1>카오스</h1>
-      <p class="sub">스스로 난이도를 끌어올리는 위기 협약. 켤수록 도전 점수가 오른다. 보상은 기록뿐.</p>
+      <p class="sub">카오스가 높을수록 원래 세계에서 멀어진다. 도전 점수만 기록된다.</p>
     </header>
 
     <!-- 점수 요약 -->

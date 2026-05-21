@@ -1,6 +1,6 @@
-# T4 고위험 로스터 — 1장 최난이도 권역 4개
+# T4 고위험 로스터 1장 최난이도 권역 4개
 # 대상 권역: yusezria / falcon-garden / emberforge / oldshrine
-# 수치 밴드 — 일반: HP 240~480 / 엘리트: HP 600~1000
+# 수치 밴드 일반: HP 240~480 / 엘리트: HP 600~1000
 
 # ============================================================
 # YUSEZRIA 권역 (iron+water · 막다른 dead end · 철과 물의 정수)
@@ -9,9 +9,9 @@
 # --- 일반 ---
 
 [monster.mr-yusezria-iron-sentinel]
-name = 무쇠 파수꾼
+name = 무쇠 파수 골렘
 tier = normal
-species = imp
+species = golem
 hp = 300
 attack = 20
 defense = 0
@@ -199,7 +199,7 @@ time_shards = 21
 card_drops =
 
 # ============================================================
-# EMBERFORGE 권역 (iron · 용암 광맥 · 신수 쿠마미미)
+# EMBERFORGE 권역 (iron · 용암 광맥 · 신수 던)
 # ============================================================
 
 # --- 일반 ---
@@ -279,7 +279,7 @@ time_shards = 22
 card_drops =
 
 [monster.mr-emberforge-kumamimi]
-name = 쿠마미미
+name = 던
 tier = elite
 species = mythicbeast
 hp = 960
@@ -291,7 +291,7 @@ time_shards = 28
 card_drops =
 
 # ============================================================
-# OLDSHRINE 권역 (electric · 번개 신전 · 신수 토라미미)
+# OLDSHRINE 권역 (electric · 번개 신전 · 신수 티프레)
 # ============================================================
 
 # --- 일반 ---
@@ -345,7 +345,7 @@ time_shards = 10
 card_drops =
 
 [monster.mr-oldshrine-relic-hunter]
-name = 유물 사냥꾼
+name = 신전 빛홀림 임프
 tier = normal
 species = imp
 hp = 270
@@ -371,7 +371,7 @@ time_shards = 22
 card_drops =
 
 [monster.mr-oldshrine-toramimi]
-name = 토라미미
+name = 티프레
 tier = elite
 species = mythicbeast
 hp = 1000

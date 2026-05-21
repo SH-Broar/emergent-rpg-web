@@ -1,4 +1,4 @@
-# Transform Forms — 변신(체인지/TSF) 폼 전용 카드. (Stage 5)
+# Transform Forms 변신(체인지/TSF) 폼 전용 카드. (Stage 5)
 # source = form → 상점/공방/보상 등 모든 풀에서 제외. 변신 중에만 덱에 등장.
 # 해제 카드(release-transform)를 쓰면 원래 종족·덱으로 복귀. 안 풀고 이기면 변신이 런에 지속.
 

@@ -1,4 +1,4 @@
-# Equipment — MVR placeholder (M9).
+# Equipment MVR placeholder (M9).
 # 3 슬롯 × 3 등급 = 9개. 6 컬러 균등 분포 (light/dark 제외).
 
 # === Weapons ===

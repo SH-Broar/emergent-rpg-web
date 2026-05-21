@@ -1,4 +1,4 @@
-# Monsters — MVR 단계 적 풀.
+# Monsters MVR 단계 적 풀.
 # 형식: intents = encoded(콤마 분리), 드롭은 gold/time_shards + card_drops(id:chance)
 
 [monster.shadow-pup]
@@ -26,11 +26,11 @@ time_shards = 5
 card_drops = c-shadow-rebuke:0.25
 
 # ============================================================
-# Stage 2 기믹 데모 — 종족 특성 기반 신규 인텐트 예시.
+# Stage 2 기믹 데모 종족 특성 기반 신규 인텐트 예시.
 # (Stage 3에서 권역 로스터로 확장. 여기 5종은 엔진 동작 표본.)
 # ============================================================
 
-# 거미줄 — 구속(bind): 손패 잠금, 방치 시 잠금 수 증가. 발버둥으로 탈출.
+# 거미줄 구속(bind): 손패 잠금, 방치 시 잠금 수 증가. 발버둥으로 탈출.
 [monster.m-demo-weaver]
 name = 그늘 거미
 tier = normal
@@ -43,7 +43,7 @@ gold = 8
 time_shards = 3
 card_drops =
 
-# 슬라임 — 삼킴(devour): 매 턴 DoT, 방치 시 피해 증가.
+# 슬라임 삼킴(devour): 매 턴 DoT, 방치 시 피해 증가.
 [monster.m-demo-gulper]
 name = 삼키는 슬라임
 tier = normal
@@ -56,7 +56,7 @@ gold = 8
 time_shards = 3
 card_drops =
 
-# 서큐버스류 — 흡혈(drain): 피해를 주고 그만큼 회복.
+# 서큐버스류 흡혈(drain): 피해를 주고 그만큼 회복.
 [monster.m-demo-leech]
 name = 피의 나방
 tier = normal
@@ -69,7 +69,7 @@ gold = 9
 time_shards = 3
 card_drops =
 
-# 트릭스터 — 카드 교란: 잡카드 주입(상처/저주) + 시야 가리기.
+# 트릭스터 카드 교란: 잡카드 주입(상처/저주) + 시야 가리기.
 [monster.m-demo-trickster]
 name = 장난꾼 임프
 tier = normal
@@ -82,7 +82,7 @@ gold = 9
 time_shards = 3
 card_drops =
 
-# 엘리트 복합 — 구속 + 비용교란 + 흡혈 (방치 시 누적 강화).
+# 엘리트 복합 구속 + 비용교란 + 흡혈 (방치 시 누적 강화).
 [monster.m-demo-warden]
 name = 옭아매는 간수
 tier = elite
@@ -96,10 +96,10 @@ time_shards = 6
 card_drops =
 
 # ============================================================
-# Stage 6 이상전투 심화 데모 — 분열/거미줄/잠식 (엔진 검증용).
+# Stage 6 이상전투 심화 데모 분열/거미줄/잠식 (엔진 검증용).
 # ============================================================
 
-# 분열(split) — 처치 시 절반 HP로 부활. split_count=2면 총 3번 잡아야 진짜 패배.
+# 분열(split) 처치 시 절반 HP로 부활. split_count=2면 총 3번 잡아야 진짜 패배.
 [monster.m-demo-splitter]
 name = 갈라지는 슬라임
 tier = normal
@@ -113,7 +113,7 @@ gold = 10
 time_shards = 4
 card_drops =
 
-# 거미줄(web) — 쌓이는 카드 잠금. 발버둥 없이, 카드를 쓰면 한 겹씩 풀린다.
+# 거미줄(web) 쌓이는 카드 잠금. 발버둥 없이, 카드를 쓰면 한 겹씩 풀린다.
 [monster.m-demo-weaver2]
 name = 실잣는 거미
 tier = normal
@@ -126,7 +126,7 @@ gold = 9
 time_shards = 4
 card_drops =
 
-# 잠식(drain-stat) — 플레이어 스탯을 깎고 적이 그만큼 강해진다(sap + 적 strength).
+# 잠식(drain-stat) 플레이어 스탯을 깎고 적이 그만큼 강해진다(sap + 적 strength).
 [monster.m-demo-sapper]
 name = 흘리는 서큐버스
 tier = normal
@@ -140,7 +140,7 @@ time_shards = 5
 card_drops =
 
 # ============================================================
-# 플래그십 체인지(변신/TSF) — 여우 아인 (Stage 5).
+# 플래그십 체인지(변신/TSF) 여우 아인 (Stage 5).
 # change:race-form-fox 로 플레이어 종족+덱을 여우 폼으로 교체.
 # 마노니클라(극동 섬, 여우 lore) 엘리트 풀에 편입. HP는 T2 엘리트 상단.
 # ============================================================

@@ -1,7 +1,7 @@
-# T1 입문 로스터 — 일루네온 / 라르 숲 / 르슈드 / 트레이드포스트
+# T1 입문 로스터 일루네온 / 라르 숲 / 르슈드 / 트레이드포스트
 
 # ============================================================
-# 일루네온 권역 (light) — 도시·광장·시계탑·길드
+# 일루네온 권역 (light) 도시·광장·시계탑·길드
 # 기믹: 잡카드 add-card, paralyze/obscure(시간 정지), cost-up(정령)
 # ============================================================
 
@@ -18,7 +18,7 @@ time_shards = 3
 card_drops =
 
 [monster.mr-iluneon-trickster]
-name = 광장 사기꾼
+name = 광장 홀림 임프
 tier = normal
 species = imp
 hp = 70
@@ -30,7 +30,7 @@ time_shards = 3
 card_drops =
 
 [monster.mr-iluneon-guild-rat]
-name = 길드 쥐도둑
+name = 곳간 쥐수인
 tier = normal
 species = beastkin
 hp = 90
@@ -126,7 +126,7 @@ time_shards = 5
 card_drops =
 
 # ============================================================
-# 라르 숲 권역 (earth) — 입문자 숲·세계수·드라이어드
+# 라르 숲 권역 (earth) 입문자 숲·세계수·드라이어드
 # 기믹: 거미 bind, charge, poison(독)
 # ============================================================
 
@@ -251,12 +251,12 @@ time_shards = 6
 card_drops =
 
 # ============================================================
-# 르슈드 권역 (electric) — 마차 교차로·경유지
+# 르슈드 권역 (electric) 마차 교차로·경유지
 # 기믹 소수: debuff paralyze 약하게
 # ============================================================
 
 [monster.mr-reshud-bandit]
-name = 노상 강도
+name = 길목 임프 무리
 tier = normal
 species = imp
 hp = 100
@@ -292,7 +292,7 @@ time_shards = 2
 card_drops =
 
 [monster.mr-reshud-drifter]
-name = 길거리 부랑자
+name = 떠도는 들임프
 tier = normal
 species = imp
 hp = 90
@@ -304,7 +304,7 @@ time_shards = 3
 card_drops =
 
 [monster.mr-reshud-toll-raider]
-name = 교차로 약탈자
+name = 교차로 덮침 임프
 tier = normal
 species = imp
 hp = 105
@@ -328,12 +328,12 @@ time_shards = 5
 card_drops =
 
 # ============================================================
-# 트레이드포스트 권역 (earth) — 라미아 상인 마을·교역소
+# 트레이드포스트 권역 (earth) 라미아 상인 마을·교역소
 # 기믹: 라미아 bind 소수, drain(도둑)
 # ============================================================
 
 [monster.mr-tradepost-stray-hound]
-name = 떠돌이 들개
+name = 굶주린 늑대수인
 tier = normal
 species = werewolf
 hp = 80
@@ -345,7 +345,7 @@ time_shards = 2
 card_drops =
 
 [monster.mr-tradepost-caravan-thief]
-name = 대상 도둑
+name = 상로의 흡정 임프
 tier = normal
 species = imp
 hp = 85
@@ -357,7 +357,7 @@ time_shards = 3
 card_drops =
 
 [monster.mr-tradepost-wanderer]
-name = 뜨내기 용병
+name = 상로의 사나운 임프
 tier = normal
 species = imp
 hp = 100
@@ -369,7 +369,7 @@ time_shards = 3
 card_drops =
 
 [monster.mr-tradepost-lamia-guard]
-name = 라미아 경비원
+name = 똬리 튼 라미아
 tier = normal
 species = lamia
 hp = 110

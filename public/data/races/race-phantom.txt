@@ -1,9 +1,9 @@
-# Race: 팬텀 — 속이고 비트는 트릭스터 (구 ch-kardi 통합).
+# Race: 팬텀 속이고 비트는 트릭스터 (구 ch-kardi 통합).
 # 전기 친화. 보이는 곳 바깥에서 한 수를 둔다.
 
 [race.phantom]
 name = 팬텀
-description = 인간 마술사로 알려졌으나 사실은 팬텀. 속이고, 비틀고, *시간의 빈틈에서 한 수를 두는 그릇*.
+description = 인간 마술사로 알려졌으나 사실은 팬텀. 속이고, 비틀고, 시간의 빈틈에서 한 수를 두는 그릇.
 category = spirit
 primary_element = electric
 secondary_element = dark

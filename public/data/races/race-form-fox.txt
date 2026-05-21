@@ -1,7 +1,7 @@
-# 변신 폼 — 여우(구미호). (Stage 5 체인지/TSF)
-# category = transform-form. 어떤 timeline의 available_race_ids에도 없으므로 *종족 선택 화면에 미노출*.
+# 변신 폼 여우(구미호). (Stage 5 체인지/TSF)
+# category = transform-form. 어떤 timeline의 available_race_ids에도 없으므로 종족 선택 화면에 미노출.
 # 변신 발동 시 applyTransformation이 이 race의 starting_deck을 폼 덱으로 인스턴스화한다.
-# baseStats는 변신에선 미사용(HP 유지) — 시작 선택용 자리값일 뿐.
+# baseStats는 변신에선 미사용(HP 유지) 시작 선택용 자리값일 뿐.
 
 [race.race-form-fox]
 name = 여우 (체인지)

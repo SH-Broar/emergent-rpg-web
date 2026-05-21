@@ -1,4 +1,4 @@
-# Relics — MVR 유물 풀.
+# Relics MVR 유물 풀.
 
 [relic.r-determined-heart]
 name = 결심의 심장
@@ -14,7 +14,7 @@ rank = common
 source = event
 trigger = passive
 effects = damage-out-add:1
-flavor = 능선 너머 큰 그림자가 — *등을 한 번 굽혀* 떨어뜨린 한 조각. 손에 쥐면 *오래된 무게*가 한 줄 흘러내린다.
+flavor = 능선 너머 큰 그림자가 등을 한 번 굽혀 떨어뜨린 한 조각. 손에 쥐면 오래된 무게가 한 줄 흘러내린다.
 
 [relic.r-imperisia-locket]
 name = 임페리시아의 회중시계
@@ -46,7 +46,7 @@ rank = common
 source = npc
 trigger = on-combat-end
 effects = chance-random-color-1:50
-flavor = 가즈리가 — *한 줄로 — 괴인* 진주 중 한 알. 전투가 — 한 번 — 끝날 때마다 — *한 자리*가 — 차례대로 — 떨어진다.
+flavor = 가즈리가 한 줄로 괴인 진주 중 한 알. 전투가 한 번 끝날 때마다 한 자리가 차례대로 떨어진다.
 
 [relic.r-postman-mail]
 name = 로큐의 가죽 가방
@@ -62,7 +62,7 @@ rank = rare
 source = event
 trigger = passive
 effects = damage-out-add:2
-flavor = 유스제리아 — *막다른 자리*에서 — 철과 물이 — 한 덩이로 — 굳은 핵. 지닌 자의 — *모든 일격*에 — 무거운 — 한 자국이 — 더해진다.
+flavor = 유스제리아 막다른 자리에서 철과 물이 한 덩이로 굳은 핵. 지닌 자의 모든 일격에 무거운 한 자국이 더해진다.
 
 [relic.r-falcon-eye]
 name = 매의 눈
@@ -70,10 +70,10 @@ rank = rare
 source = event
 trigger = passive
 effects = block-out-add:2
-flavor = 팔콘 가든 — *하늘의 주인*이 — 떨어뜨린 한 깃. 위험을 — *먼저 — 한 자락* — 본다. 모든 방어에 — 한 겹이 — 더해진다.
+flavor = 팔콘 가든 하늘의 주인이 떨어뜨린 한 깃. 위험을 먼저 한 자락 본다. 모든 방어에 한 겹이 더해진다.
 
 # ============================================================
-# 2차 확장 — 측정 어려운 효과 위주 (STS 유물 + 명일방주 통합전략 참고).
+# 2차 확장 측정 어려운 효과 위주 (STS 유물 + 명일방주 통합전략 참고).
 # 카운터형(공격/카드 N회), 반응형(피해 받을 때), 전투/턴 시작, 다운사이드 동반.
 # ============================================================
 
@@ -216,7 +216,7 @@ effects = mana-extra-add:1
 flavor = 풀릴 때를 기다리며 늘 한 바퀴 더 감겨 있다. 매 턴, 쓸 수 있는 힘이 한 줌 더 풀려난다.
 
 # ============================================================
-# 다운사이드 동반 — 강력하지만 대가가 따른다 (STS 보스 유물식).
+# 다운사이드 동반 강력하지만 대가가 따른다 (STS 보스 유물식).
 # ============================================================
 
 [relic.r-glass-prism]
@@ -249,7 +249,7 @@ rank = rare
 source = shop
 trigger = on-combat-end
 effects = bonus-gold:12, damage-in-mul:1.15
-flavor = 손에 쥐면 돈이 따라붙는다 — 불운도 함께. 승리마다 묵직해지지만, 적의 일격은 늘 한 뼘 더 아프다.
+flavor = 손에 쥐면 돈이 따라붙는다 불운도 함께. 승리마다 묵직해지지만, 적의 일격은 늘 한 뼘 더 아프다.
 
 [relic.r-heavy-satchel]
 name = 무거운 봇짐
@@ -257,4 +257,4 @@ rank = rare
 source = event
 trigger = on-combat-start
 effects = draw-extra-add:2, combat-start-status:2:frail
-flavor = 쓸 만한 것은 다 들었다 — 너무 많이. 매 턴 손은 두둑하지만, 시작부터 어깨가 짓눌려 막아 내기가 버겁다.
+flavor = 쓸 만한 것은 다 들었다 너무 많이. 매 턴 손은 두둑하지만, 시작부터 어깨가 짓눌려 막아 내기가 버겁다.

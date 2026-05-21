@@ -49,6 +49,9 @@ const boss = computed<Boss | undefined>(() => {
 
 const combat = computed(() => run.data.combat);
 
+// 방금 전 플레이 내용 — 턴 카운터 아래 중앙에 로그처럼 표시(최근 4줄).
+const recentLog = computed<string[]>(() => (combat.value?.log ?? []).slice(-4));
+
 // === 전투 FX (플로팅 숫자 / 흔들림 / 플래시) — CombatView와 동일 규칙 ===
 const fx = useCombatFx();
 // 카드 사용 애니메이션 상태 — 번쩍→사라짐 동안 해당 손패 인덱스를 잠근다.
@@ -416,6 +419,16 @@ function usePotion(itm: Item) {
         </div>
       </header>
 
+      <!-- 방금 전 플레이 로그 — 턴 카운터 아래 중앙 정렬 -->
+      <div v-if="recentLog.length" class="combat-log">
+        <p
+          v-for="(line, i) in recentLog"
+          :key="`${combat.turn}-${i}-${line}`"
+          class="combat-log__line"
+          :class="{ 'combat-log__line--latest': i === recentLog.length - 1 }"
+        >{{ line }}</p>
+      </div>
+
       <!-- 변신(체인지) — 본모습 카드로 해제. 해제 안 하고 이기면 런에 지속 -->
       <div v-if="transform" class="transform-banner">
         🦊 변신 중 — <strong>{{ formName }}</strong> · '본모습' 카드로 해제 (안 풀고 이기면 계속 이 모습)
@@ -563,6 +576,19 @@ function usePotion(itm: Item) {
 .intent { color: #ffb88e; font-size: 0.9rem; }
 .vs { font-size: 1.4rem; color: #f6e8b8; }
 
+/* 방금 전 플레이 로그 — 턴 카운터 아래 중앙 정렬 (CombatView와 동일). */
+.combat-log {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.05rem;
+  padding: 0.3rem 0.5rem 0;
+  text-align: center;
+  min-height: 1.1rem;
+}
+.combat-log__line { margin: 0; font-size: 0.82rem; line-height: 1.3; color: #6f6f80; }
+.combat-log__line--latest { color: #e2dcc4; font-weight: 600; }
+
 /* 보스 기믹 힌트 */
 .mechanic { margin-top: 0.3rem; display: flex; gap: 0.4rem; justify-content: flex-end; align-items: center; flex-wrap: wrap; }
 .mechanic__name { font-size: 0.78rem; padding: 0.1rem 0.5rem; border-radius: 10px; background: rgba(192,142,255,0.18); border: 1px solid rgba(192,142,255,0.45); color: #d9c4ff; }
@@ -594,17 +620,20 @@ function usePotion(itm: Item) {
 .potion__name { font-weight: 600; font-size: 0.85rem; color: #f6e8b8; }
 .potion__eff { font-size: 0.72rem; color: #b6d8e0; }
 
-/* === 손패 — 트럼프 카드 비율(5:7), 화면 가로에 ~7장 (CombatView와 동일) === */
+/* === 손패 — 트럼프 카드 비율(5:7). 가로·세로 2배, 여러 줄 (CombatView와 동일) === */
 .hand {
-  --card-w: clamp(46px, 12vw, 110px); /* 모바일 ~390px에서 약 7장, 데스크톱 110px 상한 */
+  --card-w: clamp(92px, 24vw, 200px); /* 이전 대비 약 2배 */
   --card-h: calc(var(--card-w) * 1.4); /* 5:7 ≈ ×1.4 */
   display: flex;
-  gap: 0.5rem;
+  flex-wrap: wrap;
+  gap: 0.6rem;
   padding: 0.8rem 1rem 1.4rem;
-  align-items: flex-end;
+  align-items: flex-start;
+  align-content: flex-start;
   justify-content: center;
-  overflow-x: auto;       /* 8장 이상일 때만 가로 스크롤 */
-  overflow-y: visible;
+  overflow-x: hidden;
+  overflow-y: auto;
+  flex: 1;
   min-height: calc(var(--card-h) + 1.2rem);
   scrollbar-width: thin;
 }
@@ -612,19 +641,17 @@ function usePotion(itm: Item) {
   flex-shrink: 0;
   width: var(--card-w);
   height: var(--card-h);
-  padding: 0.35rem;
+  padding: 0.5rem;
   background: rgba(255,255,255,0.04);
   border: 2px solid;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
   transition: transform 120ms ease, background 120ms ease, box-shadow 120ms ease;
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: 0.3rem;
   overflow: hidden;
-  margin-left: -0.2rem;
 }
-.card:first-child { margin-left: 0; }
 .card:hover:not(.card--disabled) {
   transform: translateY(-10px) scale(1.06);
   background: rgba(255,255,255,0.08);
@@ -632,22 +659,23 @@ function usePotion(itm: Item) {
   z-index: 5;
 }
 .card--disabled { opacity: 0.4; cursor: not-allowed; }
-.card__head { display: flex; align-items: center; gap: 0.2rem; min-height: 1.2rem; }
+.card__head { display: flex; align-items: center; gap: 0.3rem; min-height: 1.6rem; }
 .card__cost {
   flex-shrink: 0;
   background: #c08eff; color: #0d0e14;
-  width: 1.25rem; height: 1.25rem;
+  width: 1.6rem; height: 1.6rem;
   display: inline-flex; align-items: center; justify-content: center;
-  border-radius: 50%; font-weight: 700; font-size: 0.72rem;
+  border-radius: 50%; font-weight: 700; font-size: 0.95rem;
 }
 .card__name {
-  flex: 1; color: #f6e8b8; font-weight: 600; font-size: 0.66rem; line-height: 1.1;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  flex: 1; color: #f6e8b8; font-weight: 600; font-size: 0.9rem; line-height: 1.18;
+  overflow: hidden;
+  display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical;
 }
-.card__rank { display: none; } /* 작은 카드: 테두리 색으로 등급 표현 */
-.card__effects { display: flex; flex-wrap: wrap; gap: 0.15rem; font-size: 0.62rem; align-content: flex-start; flex: 1; overflow: hidden; }
-.effect { background: rgba(0,0,0,0.4); padding: 0.1rem 0.28rem; border-radius: 4px; color: #b6b6c4; display: inline-flex; gap: 0.12rem; align-items: baseline; max-width: 100%; }
-.effect__label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.card__rank { display: none; } /* 테두리 색으로 등급 표현 */
+.card__effects { display: flex; flex-wrap: wrap; gap: 0.25rem; font-size: 0.82rem; align-content: flex-start; flex: 1; overflow: hidden; }
+.effect { background: rgba(0,0,0,0.4); padding: 0.15rem 0.42rem; border-radius: 5px; color: #b6b6c4; display: inline-flex; gap: 0.18rem; align-items: baseline; max-width: 100%; }
+.effect__label { white-space: normal; }
 .eff-val { color: #f6e8b8; font-weight: 700; }
 .eff-delta { font-size: 0.85em; font-weight: 700; }
 .eff-delta--up { color: #8effb8; }
