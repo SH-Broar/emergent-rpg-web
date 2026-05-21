@@ -139,6 +139,27 @@ function getForgePool(): Card[] {
 }
 
 /**
+ * 권역 화이트리스트 적용 희귀 제작 풀(2026-05).
+ *
+ * 그 권역의 *대표 컬러(primaryColor)와 element가 맞는* 희귀 카드를 우선 노출 —
+ * 권역색에 맞는 제작만 가능하게(사막에서 물의 희귀 카드가 나오는 어색함 방지).
+ * 매칭 카드가 너무 적으면(< FORGE_NUM_OFFERS) 전체 풀로 폴백해 공방이 비지 않게 한다.
+ */
+function getRegionForgePool(regionId: string | undefined): Card[] {
+  const all = getForgePool();
+  if (!regionId) return all;
+  const data = useDataStore();
+  let primary: string | undefined;
+  for (const map of data.nodeMaps.values()) {
+    const region = map.regions.find((r) => r.id === regionId);
+    if (region) { primary = region.primaryColor; break; }
+  }
+  if (!primary) return all;
+  const matched = all.filter((c) => c.element === primary);
+  return matched.length >= FORGE_NUM_OFFERS ? matched : all;
+}
+
+/**
  * 카드 element와 매칭되는 권역 특산물 ID — 마을 권역 우선, 없으면 임의 매칭.
  * 사용자 사양: "희귀 카드는 마을마다 다른 특산물을 요구함".
  */
@@ -178,7 +199,8 @@ export function getOrCreateForgeOffer(nodeId: string): ForgeOffer {
   const existing = run.data.forgeOffers[nodeId];
   if (existing) return existing;
 
-  const candidates = pickRandom(getForgePool(), FORGE_NUM_OFFERS);
+  // 권역 화이트리스트 — 이 공방 노드의 권역에 맞는 희귀 카드만 추첨.
+  const candidates = pickRandom(getRegionForgePool(regionIdOfNode(nodeId)), FORGE_NUM_OFFERS);
   const cards: ForgeCardSlot[] = candidates.map((c) => {
     const instance = instantiateCard(c);
     return {
@@ -213,12 +235,19 @@ export interface LegendaryRecipe {
   specialtyName: string;
 }
 
-/** 데이터 전체에서 *마을 권역의 legendaryCardIds* 모두 수집. */
-export function getLegendaryRecipes(): LegendaryRecipe[] {
+/**
+ * 마을 권역의 legendaryCardIds 수집.
+ *
+ * 화이트리스트(2026-05): `onlyRegionId`가 주어지면 *그 권역의 전설*만 반환한다 —
+ * 각 공방은 자기 권역의 전설 카드만 제작할 수 있다(타 권역 전설은 그 권역 공방에서만).
+ * 미지정이면 전체(도감/디버그용 폴백).
+ */
+export function getLegendaryRecipes(onlyRegionId?: string): LegendaryRecipe[] {
   const data = useDataStore();
   const recipes: LegendaryRecipe[] = [];
   for (const map of data.nodeMaps.values()) {
     for (const region of map.regions) {
+      if (onlyRegionId && region.id !== onlyRegionId) continue;
       if (!region.legendaryCardIds?.length) continue;
       if (!region.specialtyItemId) continue;
       for (const cardId of region.legendaryCardIds) {
@@ -237,6 +266,16 @@ export function getLegendaryRecipes(): LegendaryRecipe[] {
     }
   }
   return recipes;
+}
+
+/** 노드 id → 그 노드가 속한 권역 id (없으면 undefined). 공방/상점 화이트리스트용. */
+export function regionIdOfNode(nodeId: string): string | undefined {
+  const data = useDataStore();
+  for (const map of data.nodeMaps.values()) {
+    const node = map.nodes.find((n) => n.id === nodeId);
+    if (node) return node.region;
+  }
+  return undefined;
 }
 
 export function canCraftLegendary(recipe: LegendaryRecipe): boolean {

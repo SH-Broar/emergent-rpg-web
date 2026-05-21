@@ -13,14 +13,14 @@ mp = 12
 attack = 6
 defense = 3
 vigor = 11
-# 시작 덱 (구 ch-hako.starting_deck).
-starting_deck = c-strike, c-strike, c-strike, c-strike, c-defend, c-defend, c-quickdraw, c-quickdraw, c-double-strike, c-recover
-seed_cards = c-strike, c-defend, c-strike, c-defend, c-strike, c-quickdraw, c-recover
+# 시작 덱 — 컨셉 "빠른 드로우 + 적은 덱". 드로우 카드(c-quickdraw) 비중↑, 총 카드 수는 적게.
+starting_deck = c-strike, c-strike, c-strike, c-defend, c-defend, c-quickdraw, c-quickdraw, c-quickdraw, c-double-strike, c-recover
+seed_cards = c-quickdraw, c-strike, c-quickdraw, c-defend, c-double-strike
 seed_relics = r-determined-heart
 hp_bonus = 0
 mp_bonus = 0
-# 종족 고정 덱 크기 starting_deck(10장) + seed_cards에서 자동 5장 추첨.
-deck_size = 15
+# 적은 덱 — starting_deck(10장) + seed_cards에서 자동 2장 = 총 12장 (드로우 회전 빠름).
+deck_size = 12
 # 종족 시작 컬러 시드 한 컬러당 최대 5 (사용자 사양).
 # 인간 = light·wind 친화. 두 컬러에 +5/+3, 나머지 0.
 seed_colors = light:5, wind:3

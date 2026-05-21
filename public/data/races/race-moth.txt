@@ -13,12 +13,13 @@ mp = 14
 attack = 7
 defense = 2
 vigor = 13
-# 시작 덱 (구 ch-iyeon.starting_deck).
-starting_deck = c-strike, c-strike, c-quickdraw, c-quickdraw, c-quickdraw, c-defend, c-defend, c-double-strike, c-deep-breath, c-recover
-seed_cards = c-strike, c-quickdraw, c-quickdraw, c-defend, c-double-strike, c-deep-breath, c-recover
+# 시작 덱 — 컨셉 "가볍고 빠른 변주". 드로우/회피 성향 — c-quickdraw·c-deep-breath 중심의 회전형.
+starting_deck = c-strike, c-strike, c-quickdraw, c-quickdraw, c-quickdraw, c-deep-breath, c-deep-breath, c-defend, c-double-strike, c-recover
+seed_cards = c-quickdraw, c-deep-breath, c-quickdraw, c-double-strike, c-defend
 seed_relics = r-determined-heart
 hp_bonus = 0
 mp_bonus = 0
-deck_size = 15
+# 가벼운 회전 덱 — 13장.
+deck_size = 13
 # 나방 = wind·light 친화.
 seed_colors = wind:5, light:3

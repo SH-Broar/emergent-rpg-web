@@ -514,6 +514,21 @@ export const useRunStore = defineStore('run', {
     },
 
     /**
+     * 카드 컬렉션에서 *인스턴스 1장* 영구 제거 — 덱 편집의 삭제 액션.
+     * 그 인스턴스가 현재 덱에 들어 있으면 덱에서도 함께 제거(덱-컬렉션 정합 유지).
+     * 반환: 실제로 제거됐으면 true.
+     */
+    removeCardFromCollection(instanceId: string): boolean {
+      if (!instanceId) return false;
+      const r = this.data;
+      const before = r.collection.length;
+      r.collection = r.collection.filter((c) => c.instanceId !== instanceId);
+      if (r.collection.length === before) return false;
+      r.deck = r.deck.filter((c) => c.instanceId !== instanceId);
+      return true;
+    },
+
+    /**
      * 덱 편집: 컬렉션의 *인스턴스 id 목록*을 받아 그 인스턴스들로 deck을 채움.
      * 동명 카드도 별개 instanceId면 별개로 취급.
      */

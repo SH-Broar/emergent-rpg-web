@@ -39,6 +39,20 @@ const COMBAT_EFFECT_KINDS = new Set<ItemEffect['kind']>([
 ]);
 
 /**
+ * *클릭해서 사용 가능한* 아이템인가 — 효과가 있는 소비형.
+ *
+ * 재료(category=material)·특산물(category=specialty)은 *제작 연료*일 뿐 직접 사용 X.
+ * effects가 비어 있으면(= 재료) 사용 불가. category 미지정이라도 effects 비면 사용 불가로 본다.
+ * 전투 포션(combat-* / heal)·텔레포트·정화 등 효과가 하나라도 있으면 사용 가능.
+ *
+ * UI(InventoryMenu)는 이 헬퍼로 클릭/사용 버튼을 막고, useItem 자체도 방어적으로 거른다.
+ */
+export function isUsableItem(item: Item): boolean {
+  if (item.category === 'material' || item.category === 'specialty') return false;
+  return item.effects.length > 0;
+}
+
+/**
  * 아이템 한 점 사용. 효과를 적용하고 consumable이면 인벤토리에서 제거.
  * 결과 문구 반환 (toast에 노출). 사용 거부 시 빈 문자열.
  */
@@ -48,6 +62,12 @@ export function useItem(item: Item, ctx?: UseItemContext): string {
   const ui = useUiStore();
   const r = run.data;
   const inCombat = !!r.combat;
+
+  // === 재료/특산물 가드 — 효과 없이 *제작 재료로만* 쓰이는 아이템은 사용 불가. ===
+  if (!isUsableItem(item)) {
+    ui.toast('info', '제작 재료입니다 — 공방에서 사용됩니다.');
+    return '';
+  }
 
   // === 전투 중 사용 가드 ===
   if (inCombat) {

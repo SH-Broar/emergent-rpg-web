@@ -179,11 +179,11 @@ function tickPoison(target: Combatant): void {
 }
 
 /**
- * feral(수화)/regress(퇴행)/sap(잠식)/ghost(유령화) 턴 감소 — 매 플레이어 턴 종료 시 양쪽(플레이어·적) -1.
- * 0이 되면 제거. vulnerable/weakness 등 기존 status는 여기서 건드리지 않는다.
+ * 지속 상태이상 턴 감소 — 매 플레이어 턴 종료 시 양쪽(플레이어·적) -1, 0이면 제거.
+ * feral/regress/sap/ghost + weakness/vulnerable/frail(매 턴 1씩 자연 감소).
  */
 function decayTurnStatuses(target: Combatant): void {
-  for (const key of ['feral', 'regress', 'sap', 'ghost'] as const) {
+  for (const key of ['feral', 'regress', 'sap', 'ghost', 'weakness', 'vulnerable', 'frail'] as const) {
     const stack = target.statuses?.[key] ?? 0;
     if (stack <= 0) continue;
     const next = stack - 1;
@@ -428,8 +428,8 @@ export function playCard(handIndex: number, monster: Monster): { enemyDefeated: 
   if ((c.cardsPlayedThisTurn ?? 0) === 0 && playerHasRelicEffect('first-card-free')) {
     effCost = 0;
   }
-  // r4: debugFlag infiniteMana — 마나 가드 우회 + 차감 스킵.
-  const inf = ui.debug.infiniteMana;
+  // r4: debugFlag infiniteMana — 마나 가드 우회 + 차감 스킵. *디버그 전투에서만* 적용(일반 런 누수 방지).
+  const inf = ui.debug.infiniteMana && !!(ui.debugBattle.monsterId || ui.debugBattle.bossId);
   if (!inf && c.mana < effCost) {
     ui.toast('warning', '마나가 부족합니다');
     return { enemyDefeated: false };
@@ -869,9 +869,14 @@ export function endPlayerTurn(monster: Monster): { playerDefeated: boolean; enem
     return { playerDefeated: false, enemyDefeated: true };
   }
 
-  // r4: debugFlag freezeEnemies — 적 행동 시뮬 스킵 (전투 정지 디버그).
-  if (!useUiStore().debug.freezeEnemies) {
-    executeMonsterIntent(c, monster);
+  // r4: debugFlag freezeEnemies — 적 행동 시뮬 스킵 (전투 정지 디버그). *디버그 전투에서만* 적용.
+  {
+    const ui = useUiStore();
+    const freeze =
+      ui.debug.freezeEnemies && !!(ui.debugBattle.monsterId || ui.debugBattle.bossId);
+    if (!freeze) {
+      executeMonsterIntent(c, monster);
+    }
   }
 
   if (c.player.hp <= 0) {
@@ -1096,7 +1101,8 @@ export function struggle(): { freed: boolean } {
     ui.toast('warning', '이번 턴엔 이미 발버둥쳤다.');
     return { freed: false };
   }
-  const inf = ui.debug.infiniteMana;
+  // infiniteMana는 *디버그 전투에서만* 적용(일반 런 누수 방지).
+  const inf = ui.debug.infiniteMana && !!(ui.debugBattle.monsterId || ui.debugBattle.bossId);
   if (!inf && c.mana < STRUGGLE_MANA_COST) {
     ui.toast('warning', '마나가 부족해 발버둥칠 수 없다.');
     return { freed: false };
@@ -1128,12 +1134,18 @@ function executeMonsterIntent(c: CombatState, monster?: Monster) {
   const parts = intent.split(':');
   const kind = parts[0];
   const rawValue = Number(parts[1]) || 0;
-  // 카오스 enemy-atk-mul(+boss-atk-mul) — 공격성 인텐트(attack/drain/charge)의 데미지 배수.
+  // 적 힘(strength) 버프 — *피해를 주는* 인텐트(attack/drain)의 데미지에 플랫 가산.
+  // charge는 힘을 *쌓는* 행동이라 가산 대상이 아니다(자기 자신 이중 적용 방지).
+  // (플레이어 힘은 statusBonusForCardEffectKind에서 이미 처리되므로 여기선 적만.)
+  const dealsDamage = kind === 'attack' || kind === 'drain';
+  const enemyStrength = dealsDamage ? (c.enemy.statuses.strength ?? 0) : 0;
+  // 카오스 enemy-atk-mul(+boss-atk-mul) — 공격성 인텐트(attack/drain/charge)의 데미지 배수. 힘 가산 후 배수.
   const atkMul = enemyAtkMul(monster);
+  const baseWithStrength = rawValue + enemyStrength;
   const value =
     (kind === 'attack' || kind === 'drain' || kind === 'charge') && atkMul !== 1
-      ? Math.round(rawValue * atkMul)
-      : rawValue;
+      ? Math.round(baseWithStrength * atkMul)
+      : baseWithStrength;
 
   switch (kind) {
     case 'attack': {

@@ -12,12 +12,13 @@ mp = 16
 attack = 4
 defense = 3
 vigor = 12
-# 시작 덱 (구 ch-niayur.starting_deck).
-starting_deck = c-strike, c-strike, c-strike, c-defend, c-defend, c-defend, c-quickdraw, c-recover, c-recover, c-deep-breath
-seed_cards = c-strike, c-defend, c-defend, c-quickdraw, c-recover, c-recover, c-deep-breath
+# 시작 덱 — 컨셉 "방어/주문형". 방어(c-defend)와 지속피해(c-burn-mark) 비중↑, 단단한 운영.
+starting_deck = c-strike, c-strike, c-defend, c-defend, c-defend, c-defend, c-recover, c-recover, c-quickdraw, c-burn-mark
+seed_cards = c-defend, c-defend, c-burn-mark, c-recover, c-quickdraw
 seed_relics = r-determined-heart
 hp_bonus = 0
 mp_bonus = 0
-deck_size = 15
+# 단단한 방어 덱 — 14장.
+deck_size = 14
 # 아르카나 = light 단일 친화 (가장 순수한 빛).
 seed_colors = light:5

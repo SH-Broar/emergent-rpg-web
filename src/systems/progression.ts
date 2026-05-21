@@ -37,12 +37,12 @@ export function absorbRunIntoMeta(run: RunState) {
   // r4: 5단계 미션 시스템 제거로 hyperionProgress는 optional. 옛 세이브 잔존만 카운트, 새 런은 항상 0.
   const hyperionStageClears = Object.values(run.hyperionProgress ?? {}).filter(Boolean).length;
 
-  // NPC 친밀도 누적 (모든 NPC의 affinity 합)
-  const npcAffinityGain = Object.values(run.npcAffinity).reduce((a, b) => a + b, 0);
+  // NPC 친밀도 누적 (모든 NPC의 affinity 합). 옛 세이브에 필드가 누락돼도 안전하게 0.
+  const npcAffinityGain = Object.values(run.npcAffinity ?? {}).reduce((a, b) => a + b, 0);
 
-  // 시대 미션 / 보스 클리어 카운트
-  const missionsCleared = run.missionsCleared.length;
-  const bossesCleared = run.bossesCleared.length;
+  // 시대 미션 / 보스 클리어 카운트 (필드 누락 방어).
+  const missionsCleared = (run.missionsCleared ?? []).length;
+  const bossesCleared = (run.bossesCleared ?? []).length;
 
   // === 표시용 외부 획득 값 (적용 여부와 무관하게 항상 계산) ===
   // 히페리온(외부 획득) = 보스단계*10 + NPC친밀도합 (게이지 hyperion1 + hyperion2 입력 합)
@@ -66,12 +66,12 @@ export function absorbRunIntoMeta(run: RunState) {
     bossesCleared,
   });
 
-  // 도감 등록 (휘발 재화 → 영구 기록)
+  // 도감 등록 (휘발 재화 → 영구 기록). 옛 세이브 필드 누락 방어.
   codex.absorbRunEncounters({
-    cards: run.newCardEncounters,
-    relics: run.newRelicEncounters,
-    npcs: run.newNpcEncounters,
-    bosses: run.bossesCleared,
+    cards: run.newCardEncounters ?? [],
+    relics: run.newRelicEncounters ?? [],
+    npcs: run.newNpcEncounters ?? [],
+    bosses: run.bossesCleared ?? [],
   });
 
   meta.addSoul(soulGain);

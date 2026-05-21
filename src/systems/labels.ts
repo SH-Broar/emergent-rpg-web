@@ -216,7 +216,7 @@ export function intentDescription(encoded: string | undefined): string {
       return `잡카드 ${cnt}장을 덱/손패에 밀어 넣습니다(쓸모없는 카드).`;
     }
     case 'ghost': return `유령화 — ${n || 2}턴 동안 비실체가 됩니다. 받는·주는 피해가 절반(매 턴 1 감소).`;
-    case 'change': return '체인지! — 종족과 덱 전체가 변신 폼으로 바뀝니다. 폼 덱의 \'본모습\' 카드로 돌아올 수 있습니다.';
+    case 'change': return '체인지 — 종족·덱이 변신 폼으로 바뀐다. \'본모습\' 카드로 복귀.';
     default: return intentLabel(encoded);
   }
 }
@@ -301,6 +301,12 @@ const STAT_KO: Record<string, string> = { atk: 'ATK', def: 'DEF', mag: 'MAG' };
 export function relicTriggerLabel(trigger: string | undefined): string {
   if (!trigger) return '';
   return RELIC_TRIGGER_LABELS[trigger] ?? trigger;
+}
+
+/** 컬러 키(영문) → 한글 컬러 이름. 미상 키는 그대로(폴백). 채집/활동 토스트 등에서 사용. */
+export function colorLabel(color: string | undefined): string {
+  if (!color) return '';
+  return COLOR_KO[color] ?? color;
 }
 
 /**

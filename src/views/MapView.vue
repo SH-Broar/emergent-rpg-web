@@ -97,6 +97,19 @@ const selectedState = computed(() => {
   return selectedNodeId.value ? run.data.nodeStates[selectedNodeId.value] : undefined;
 });
 
+/**
+ * 드로어용 권역 정보 — 선택 노드의 권역 이름(단어 "권역" 제거) + 설명.
+ * 예: "일루네온 권역" → "일루네온". "권역"이 없는 이름은 그대로.
+ */
+const selectedRegion = computed<{ name: string; description?: string } | undefined>(() => {
+  const rid = selectedNode.value?.region;
+  if (!rid) return undefined;
+  const def = regionById.value.get(rid);
+  if (!def) return undefined;
+  const name = def.name.replace(/\s*권역\s*$/, '').trim() || def.name;
+  return { name, description: def.description };
+});
+
 // === 노드 시각 색상 ===
 const nodeKindColors: Record<NodeKind, string> = {
   village: '#8effb8',
@@ -356,15 +369,31 @@ const adjacency = computed<Map<NodeId, Set<NodeId>>>(() => {
 
 const focusRegion = computed<string | undefined>(() => focusNode.value?.region);
 
-/** 권역 id → 표시 이름 (노드 아래 작게 표기용). */
-const regionName = computed<Map<string, string>>(() => {
-  const m = new Map<string, string>();
-  for (const r of nodeMap.value?.regions ?? []) m.set(r.id, r.name);
+/** 권역 id → 권역 정의 (드로어 권역 정보 표기용). */
+const regionById = computed<Map<string, { name: string; description?: string }>>(() => {
+  const m = new Map<string, { name: string; description?: string }>();
+  for (const r of nodeMap.value?.regions ?? []) m.set(r.id, { name: r.name, description: r.description });
   return m;
 });
-function regionLabel(node: Node): string {
-  return regionName.value.get(node.region ?? '') ?? node.region ?? '';
-}
+
+/**
+ * === 노드 파생값 캐시 (모바일 경량화) ===
+ * 236 노드 SVG가 매 렌더마다 systemEffectiveKind/색/라벨 함수를 다수 호출하던 것을,
+ * 노드 id → {kind, color, kindLabel}로 1회 계산해 두고 템플릿에서 조회로 대체한다.
+ * (effectiveKind는 run.data의 transform/카오스에 의존하므로, 그 의존성이 바뀌면 재계산된다.)
+ */
+const nodeVisuals = computed<Map<NodeId, { kind: NodeKind; color: string; kindLabel: string }>>(() => {
+  const m = new Map<NodeId, { kind: NodeKind; color: string; kindLabel: string }>();
+  const map = nodeMap.value;
+  if (!map) return m;
+  for (const n of map.nodes) {
+    const kind = systemEffectiveKind(n, run.data);
+    m.set(n.id, { kind, color: nodeKindColors[kind], kindLabel: nodeKindLabels[kind] });
+  }
+  return m;
+});
+function nodeColorOf(id: NodeId): string { return nodeVisuals.value.get(id)?.color ?? '#8eedff'; }
+function nodeKindLabelOf(id: NodeId): string { return nodeVisuals.value.get(id)?.kindLabel ?? ''; }
 
 /** focusRegion이 아닌 권역이면서 focusRegion 노드와 인접한 노드들(권역 출구). */
 const gateways = computed<Set<NodeId>>(() => {
@@ -791,10 +820,9 @@ function enterLabel(): string {
             >
               <!-- 클릭 영역은 점보다 훨씬 큼 — 시각 노드 확대(3.0) + hitbox 4.8. -->
               <circle r="4.8" class="node-hitbox" />
-              <circle :r="NODE_RADIUS" :fill="nodeKindColors[systemEffectiveKind(node, run.data)]" class="node-dot" />
+              <circle :r="NODE_RADIUS" :fill="nodeColorOf(node.id)" class="node-dot" />
               <text y="5.5" class="node-label">{{ node.label }}</text>
-              <text y="7.4" class="node-kind">[{{ nodeKindLabels[systemEffectiveKind(node, run.data)] }}]</text>
-              <text y="9.1" class="node-region">{{ regionLabel(node) }}</text>
+              <text y="7.4" class="node-kind">[{{ nodeKindLabelOf(node.id) }}]</text>
             </g>
           </g>
           <!-- 현재 위치 화살표 마커.
@@ -850,12 +878,17 @@ function enterLabel(): string {
     <!-- Drawer -->
     <aside v-if="selectedNode" class="drawer" :class="{ 'drawer--current': selectedNode.id === run.data.currentNodeId }">
       <header class="drawer__hdr">
-        <span class="drawer__kind" :style="{ color: nodeKindColors[systemEffectiveKind(selectedNode, run.data)] }">
-          [{{ nodeKindLabels[systemEffectiveKind(selectedNode, run.data)] }}]
+        <span class="drawer__kind" :style="{ color: nodeColorOf(selectedNode.id) }">
+          [{{ nodeKindLabelOf(selectedNode.id) }}]
         </span>
         <h2>{{ selectedNode.label }}</h2>
         <button class="drawer__x" @click="closeDrawer" aria-label="닫기">×</button>
       </header>
+      <!-- 권역 정보 — 상태 줄 위에. 권역 이름(단어 "권역" 제거) + 짧은 설명. -->
+      <div v-if="selectedRegion" class="drawer__region">
+        <span class="drawer__region-name">{{ selectedRegion.name }}</span>
+        <span v-if="selectedRegion.description" class="drawer__region-desc">{{ selectedRegion.description }}</span>
+      </div>
       <div class="drawer__status">상태: {{ nodeStatusLabel(selectedNode) }}</div>
       <p v-if="chaosLockedNodes.has(selectedNode.id)" class="drawer__locked">🔒 카오스로 닫혀 들어갈 수 없다.</p>
       <p class="drawer__desc">{{ selectedNode.description }}</p>
@@ -885,7 +918,7 @@ function enterLabel(): string {
 <style scoped>
 .map-view {
   display: grid;
-  grid-template-columns: 1fr 320px;
+  grid-template-columns: 1fr 400px;
   grid-template-rows: 1fr;
   gap: 1rem;
   height: 100vh;
@@ -1027,6 +1060,8 @@ function enterLabel(): string {
    드래그 중에는 transition 끔(즉시 반영). */
 .camera {
   transition: transform 480ms cubic-bezier(0.32, 0.72, 0, 1);
+  /* 카메라 transform만 변하므로 GPU 레이어로 승격 — 모바일 팬/줌 리렌더 경량화. */
+  will-change: transform;
 }
 .camera--dragging {
   transition: none;
@@ -1065,9 +1100,9 @@ function enterLabel(): string {
 .node-group--vis-b { opacity: 0.5; }
 .node-group--vis-d { opacity: 0; pointer-events: none; }
 /* b/c/d 는 이름·종류 라벨 숨김 (a 만 표시). */
-.node-group--vis-b .node-label, .node-group--vis-b .node-kind, .node-group--vis-b .node-region,
-.node-group--vis-c .node-label, .node-group--vis-c .node-kind, .node-group--vis-c .node-region,
-.node-group--vis-d .node-label, .node-group--vis-d .node-kind, .node-group--vis-d .node-region { display: none; }
+.node-group--vis-b .node-label, .node-group--vis-b .node-kind,
+.node-group--vis-c .node-label, .node-group--vis-c .node-kind,
+.node-group--vis-d .node-label, .node-group--vis-d .node-kind { display: none; }
 /* 숨김 간선. */
 .edge--hidden { opacity: 0; }
 /* 현재 노드의 점은 흐림(visited 등)과 무관하게 또렷하게. */
@@ -1100,14 +1135,11 @@ function enterLabel(): string {
   filter: none;
 }
 .node-group--chaos-locked .node-label,
-.node-group--chaos-locked .node-kind,
-.node-group--chaos-locked .node-region { fill: #666; }
+.node-group--chaos-locked .node-kind { fill: #666; }
 
 /* 라벨은 클릭 받지 않음 — 클릭은 hitbox circle이 처리. 드래그 시 text selection 차단. */
 .node-label { fill: #e9e9f4; font-size: 2.05px; text-anchor: middle; font-weight: 600; pointer-events: none; }
 .node-kind { fill: #888; font-size: 1.45px; text-anchor: middle; pointer-events: none; }
-/* 권역명 — 노드 이름 아래 작게/흐리게(권역 색조). */
-.node-region { fill: #9a8fb8; font-size: 1.25px; text-anchor: middle; pointer-events: none; }
 
 .current-arrow {
   pointer-events: none;
@@ -1142,6 +1174,17 @@ function enterLabel(): string {
 .drawer__hdr h2 { flex: 1; margin: 0; color: #f6e8b8; font-size: 1.2rem; }
 .drawer__x { background: none; border: none; color: #888; cursor: pointer; font-size: 1.4rem; line-height: 1; }
 .drawer__x:hover { color: #f6e8b8; }
+
+/* 권역 정보 — 상태 줄 위. 권역 이름(강조) + 짧은 설명(흐림). */
+.drawer__region {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.drawer__region-name { font-size: 0.92rem; font-weight: 700; color: #bdf0ff; }
+.drawer__region-desc { font-size: 0.8rem; color: #8a8aa0; line-height: 1.5; }
 
 .drawer__status { font-size: 0.85rem; color: #c08eff; }
 .drawer__locked { font-size: 0.85rem; color: #9a8fb8; margin: 0; }

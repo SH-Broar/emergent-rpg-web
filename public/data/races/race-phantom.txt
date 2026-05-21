@@ -13,12 +13,13 @@ mp = 18
 attack = 5
 defense = 2
 vigor = 11
-# 시작 덱 (구 ch-kardi.starting_deck).
-starting_deck = c-strike, c-strike, c-quickdraw, c-quickdraw, c-defend, c-defend, c-double-strike, c-double-strike, c-burn-mark, c-deep-breath
-seed_cards = c-strike, c-quickdraw, c-defend, c-double-strike, c-burn-mark, c-deep-breath, c-recover
+# 시작 덱 — 컨셉 "손패 관리 중심 + 힐 적음". 드로우·유지·콤보형 위주, 회복(c-recover)은 제외.
+starting_deck = c-strike, c-strike, c-quickdraw, c-quickdraw, c-focused-mind, c-defend, c-defend, c-double-strike, c-double-strike, c-burn-mark
+seed_cards = c-quickdraw, c-double-strike, c-focused-mind, c-burn-mark, c-deep-breath
 seed_relics = r-determined-heart
 hp_bonus = 0
 mp_bonus = 0
-deck_size = 15
+# 회복 없는 콤보 덱 — 14장.
+deck_size = 14
 # 팬텀 = electric·dark 친화.
 seed_colors = electric:5, dark:3

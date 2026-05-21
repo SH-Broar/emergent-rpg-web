@@ -88,6 +88,9 @@ function openDeckEdit() {
 }
 
 // === 장비 (M10) ===
+// 사용자 요청(2026-05): 가방에서 장비 섹션 *숨김*. 시스템 코드/데이터는 전투에 연결돼 있으므로
+// 삭제하지 않고 UI 섹션만 끈다(장착 아이템 없으면 보너스 0이라 무해). 토글로 되살릴 수 있게 상수화.
+const SHOW_EQUIPMENT = false;
 interface SlotMeta { key: EquipmentSlot; icon: string; }
 const slotMetas: SlotMeta[] = [
   { key: 'weapon', icon: '🗡' },
@@ -192,8 +195,8 @@ function onUnequipClick(slot: EquipmentSlot) {
             </div>
           </section>
 
-          <!-- 3) 장비 (M10) -->
-          <section class="cm-sec">
+          <!-- 3) 장비 (M10) — 사용자 요청으로 가방 UI에서 숨김. 시스템(전투 보너스)은 유지. -->
+          <section v-if="SHOW_EQUIPMENT" class="cm-sec">
             <h3 class="cm-sec__title">장비</h3>
             <div class="cm-equip-slots">
               <div

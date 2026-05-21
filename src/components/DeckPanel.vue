@@ -133,6 +133,19 @@ function reset() {
   activeIds.value = new Set(run.data.deck.map(keyOf));
 }
 
+/** 컬렉션에서 카드 1장 영구 삭제. 편집 세트·덱에서도 함께 빠지도록 동기화. */
+function removeCard(card: Card) {
+  const iid = card.instanceId;
+  if (!iid) return;
+  const ok = run.removeCardFromCollection(iid);
+  if (!ok) return;
+  if (activeIds.value.has(iid)) {
+    activeIds.value.delete(iid);
+    activeIds.value = new Set(activeIds.value);
+  }
+  ui.toast('info', `'${card.name}' 카드를 버렸다.`);
+}
+
 /** 카드 effect의 *현재 컬러 보너스 반영된* 표시값. B1 fix: effective(베이스+장비) 사용. */
 const currentBonuses = computed(() => bonusesFromEffective(run.data, data.equipments));
 function effectiveValue(eff: CardEffect): number {
@@ -168,6 +181,12 @@ function effectiveValue(eff: CardEffect): number {
               <span class="card__cost">{{ c.cost }}</span>
               <span class="card__name">{{ c.name }}</span>
               <span class="card__rank" :style="{ color: rankColors[c.rank] }">{{ c.rank }}</span>
+              <button
+                class="card__del"
+                title="이 카드를 컬렉션에서 버리기"
+                aria-label="카드 버리기"
+                @click.stop="removeCard(c)"
+              >버리기</button>
             </div>
             <div class="card__effects">
               <span v-for="(e, ei) in c.effects" :key="ei" class="effect" v-tooltip="cardEffectDescription(e)">
@@ -239,6 +258,18 @@ function effectiveValue(eff: CardEffect): number {
 .card__cost { background: #c08eff; color: #0d0e14; padding: 0.05rem 0.4rem; border-radius: 50%; font-weight: 700; font-size: 0.75rem; }
 .card__name { flex: 1; color: #f6e8b8; font-weight: 600; font-size: 0.9rem; }
 .card__rank { font-size: 0.65rem; text-transform: uppercase; }
+.card__del {
+  background: rgba(255, 142, 142, 0.12);
+  border: 1px solid rgba(255, 142, 142, 0.4);
+  color: #ff9a9a;
+  border-radius: 4px;
+  padding: 0.1rem 0.45rem;
+  font: inherit;
+  font-size: 0.68rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.card__del:hover { background: rgba(255, 142, 142, 0.25); color: #ffd0d0; }
 .card__effects { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.2rem; font-size: 0.7rem; padding-left: 1.5rem; }
 .effect { background: rgba(0,0,0,0.4); padding: 0.05rem 0.35rem; border-radius: 3px; color: #b6b6c4; }
 

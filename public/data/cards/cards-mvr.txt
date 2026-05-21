@@ -83,7 +83,7 @@ source = event
 element = iron
 cost = 1
 trigger = manual
-effects = damage-per-hand:3:enemy
+effects = damage-per-hand:2:enemy
 upgrade_to = c-double-strike-plus
 flavor = 손에 쥔 패가 많을수록 한 번에 더 무겁다.
 
@@ -229,7 +229,7 @@ source = event
 element = iron
 cost = 1
 trigger = manual
-effects = damage-per-hand:4:enemy
+effects = damage-per-hand:2:enemy
 flavor = 손에 쥔 패 한 장 한 장이 더 무겁게 실린다.
 
 [card.c-focused-mind-plus]
@@ -686,7 +686,7 @@ source = npc
 element = earth
 cost = 2
 trigger = manual
-effects = block:10:self, damage-per-hand:3:enemy
+effects = block:10:self, damage-per-hand:2:enemy
 flavor = 로크의 돌 손발이 등을 둥글게 만다. 단단히 웅크린 자리에서, 손에 쥔 패가 많을수록 가시가 더 많이 돋는다.
 
 # ---------- status 조합 2장 ----------
@@ -1059,7 +1059,7 @@ source = shop
 element = wind
 cost = 2
 trigger = manual
-effects = damage-per-hand:5:enemy
+effects = damage-per-hand:2:enemy
 flavor = 공중 군도 가장 높은 자리에서, 손에 쥔 만큼 한 번에 내리꽂는 급강하.
 
 [card.c-yusezria-corebreak]
@@ -1104,7 +1104,7 @@ source = npc
 element = fire
 cost = 1
 trigger = manual
-effects = apply-status:1:self:feral, damage-per-hand:3:enemy
+effects = apply-status:1:self:feral, damage-per-hand:2:enemy
 flavor = "...생각은 나중에." 짐승이 든 자가, 손에 쥔 만큼 앞뒤 없이 들이친다. 등 뒤는 잊은 채.
 
 [card.c-color-surge]
@@ -1570,7 +1570,7 @@ source = npc
 element = earth
 cost = 2
 trigger = manual
-effects = block:14:self, damage-per-hand:4:enemy
+effects = block:14:self, damage-per-hand:2:enemy
 flavor = 더 단단히 웅크릴수록, 가시가 더 돋는다.
 
 [card.c-venom-bloom-plus]
@@ -1906,7 +1906,7 @@ source = shop
 element = wind
 cost = 2
 trigger = manual
-effects = damage-per-hand:7:enemy
+effects = damage-per-hand:2:enemy
 flavor = 더 높은 자리에서, 손에 쥔 만큼 더.
 
 [card.c-yusezria-corebreak-plus]
@@ -1948,7 +1948,7 @@ source = npc
 element = fire
 cost = 1
 trigger = manual
-effects = apply-status:1:self:feral, damage-per-hand:4:enemy
+effects = apply-status:1:self:feral, damage-per-hand:2:enemy
 flavor = 짐승이 든 채, 손에 쥔 만큼 더 들이친다.
 
 [card.c-color-surge-plus]

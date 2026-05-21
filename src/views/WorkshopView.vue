@@ -121,8 +121,10 @@ function doCraftPotion(itm: Item) {
   craftPotion(itm);
 }
 
-// === 전설 제작 ===
-const legendaryRecipes = computed<LegendaryRecipe[]>(() => getLegendaryRecipes());
+// === 전설 제작 — 이 공방 *권역*의 전설만 (화이트리스트). ===
+const legendaryRecipes = computed<LegendaryRecipe[]>(() =>
+  getLegendaryRecipes(currentNode.value?.region),
+);
 
 function specialtyCount(itemId: string): number {
   return run.data.items.filter((i) => i.id === itemId).length;
@@ -305,6 +307,7 @@ onMounted(() => {
             제작
           </button>
         </li>
+        <li v-if="legendaryRecipes.length === 0" class="empty">이 권역에서 만들 수 있는 전설 카드가 없습니다.</li>
       </ul>
     </section>
 

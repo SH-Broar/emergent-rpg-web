@@ -64,19 +64,21 @@ function pickRandom<T>(arr: T[], n: number): T[] {
 }
 
 /**
- * 상점 카드 풀 — *시작 덱 출처는 제외*해 신선한 선택지 위주.
+ * 상점 카드 풀 — *시작 덱 출처 제외* + *전설 제외*.
  * source가 'race'/'character'는 시작 덱 — 중복 회피.
+ * 전설 카드(legendary)는 *권역 공방 전용 제작*이므로 상점에서 팔지 않는다(화이트리스트, 2026-05).
  */
 function getShopCardPool(): Card[] {
   const available = availableCards(); // 잠긴(미해금) 카드 제외
   const pool: Card[] = [];
   for (const c of available) {
     if (c.source === 'race' || c.source === 'character') continue;
+    if (c.rank === 'legendary') continue; // 전설은 권역 공방에서만.
     pool.push(c);
   }
-  // 풀이 너무 작으면 (가용 카드 한정) 전체 폴백.
+  // 풀이 너무 작으면 (가용 카드 한정) 전설 제외만 적용한 폴백.
   if (pool.length < NUM_CARDS) {
-    return available;
+    return available.filter((c) => c.rank !== 'legendary');
   }
   return pool;
 }
@@ -94,11 +96,13 @@ function getShopRelicPool(): Relic[] {
     // 시작 유물(race/character) + 별도 경로 자원(boss/meta)은 상점에서 제외.
     if (r.source === 'race' || r.source === 'character') continue;
     if (r.source === 'boss' || r.source === 'meta') continue;
+    // 전설 유물은 아무 상점에서나 팔지 않는다(보스·이벤트 보상 경로). (화이트리스트, 2026-05)
+    if (r.rank === 'legendary') continue;
     pool.push(r);
   }
-  // 풀이 너무 작으면 보유 제외만 적용한 (가용) 전체 폴백.
+  // 풀이 너무 작으면 보유 제외 + 전설 제외만 적용한 (가용) 폴백.
   if (pool.length < NUM_RELICS) {
-    return available.filter((r) => !owned.has(r.id));
+    return available.filter((r) => !owned.has(r.id) && r.rank !== 'legendary');
   }
   return pool;
 }

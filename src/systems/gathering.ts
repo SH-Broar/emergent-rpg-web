@@ -12,6 +12,7 @@ import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
 import { applyColorBoost } from '@/systems/colors';
+import { colorLabel } from '@/systems/labels';
 import { rng } from '@/systems/rng';
 import { gatherThresholdAdd } from '@/systems/chaos';
 import type { Region } from '@/data/schemas';
@@ -56,8 +57,7 @@ export function performGather(nodeId: string): void {
   const isLate =
     primary !== undefined && r.colors[primary] >= threshold;
 
-  const lines: string[] = [];
-
+  // 획득물마다 *짧은 토스트 하나*씩 — 한 줄 긴 알림 대신 여러 개로.
   if (isLate) {
     // === 후반 풀 ===
     // 1) 특산물 확정 1개
@@ -65,20 +65,20 @@ export function performGather(nodeId: string): void {
       const itm = data.items.get(region.specialtyItemId);
       if (itm) {
         run.addItem(itm);
-        lines.push(`특산물 — '${itm.name}'`);
+        ui.toast('success', `${itm.name} 획득`);
       }
     }
     // 2) 컬러 부스트 — 그 권역의 대표 컬러 + 3
     if (primary) {
       const d = applyColorBoost(primary, 3);
-      if (d > 0) lines.push(`${primary} 컬러 +${d}`);
+      if (d > 0) ui.toast('success', `${colorLabel(primary)} 컬러 +${d}`);
     }
     // 3) 희귀 재료 — 후반 채집(Q8). 티어 무관, 중간 확률.
     if (rng() < LATE_RARE_MAT_CHANCE) {
       const rare = data.items.get(MATERIAL_RARE_ID);
       if (rare) {
         run.addItem(rare);
-        lines.push(`*희귀 재료* — '${rare.name}'`);
+        ui.toast('success', `${rare.name} 획득`);
       }
     }
     // 3b) 전설 재료 — *T3+ 권역 후반*에서만 극희소.
@@ -86,27 +86,27 @@ export function performGather(nodeId: string): void {
       const leg = data.items.get(MATERIAL_LEGENDARY_ID);
       if (leg) {
         run.addItem(leg);
-        lines.push(`*전설 재료* — '${leg.name}'`);
+        ui.toast('success', `${leg.name} 획득`);
       }
     }
     // 4) 약간의 시간조각 보너스 (후반의 *부수 보상*)
     r.timeShards += 2;
-    lines.push('시간의 조각 +2');
-    ui.toast('success', `채집(후반) — ${lines.join(', ')}`);
+    ui.toast('success', '시간의 조각 +2');
   } else {
     // === 전반 풀 ===
     const shards = 2 + Math.floor(rng() * 3);
     const gold = 3 + Math.floor(rng() * 5);
     r.timeShards += shards;
     r.gold += gold;
-    lines.push(`시간의 조각 +${shards}`, `골드 +${gold}`);
+    ui.toast('success', `시간의 조각 +${shards}`);
+    ui.toast('success', `골드 +${gold}`);
 
     // 가끔 특산물 — *전반에서도 작은 확률로*.
     if (region?.specialtyItemId && rng() < SPECIALTY_DROP_EARLY_CHANCE) {
       const itm = data.items.get(region.specialtyItemId);
       if (itm) {
         run.addItem(itm);
-        lines.push(`특산물 — '${itm.name}'`);
+        ui.toast('success', `${itm.name} 획득`);
       }
     }
     // 일반 재료 — 전반 채집의 안정 공급(Q8).
@@ -114,14 +114,8 @@ export function performGather(nodeId: string): void {
       const mat = data.items.get(MATERIAL_COMMON_ID);
       if (mat) {
         run.addItem(mat);
-        lines.push(`재료 — '${mat.name}'`);
+        ui.toast('success', `${mat.name} 획득`);
       }
     }
-    // 권역의 대표 컬러가 *임계 미만이면* — 후반 가는 길이라는 *힌트* 토스트.
-    const hint =
-      primary !== undefined && r.colors[primary] < threshold
-        ? ` (이 권역 후반: ${primary} ${threshold}+ 필요)`
-        : '';
-    ui.toast('success', `채집 — ${lines.join(', ')}${hint}`);
   }
 }

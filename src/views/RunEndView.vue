@@ -140,8 +140,13 @@ onMounted(async () => {
   }
   // 메타 흡수 — metaAbsorbed 가드로 런당 1회만 게이지/영혼 적용.
   // 재마운트 시에도 호출되지만, 가드 덕에 표시값만 재계산되고 게이지는 건드리지 않음.
-  const { absorbRunIntoMeta } = await import('@/systems/progression');
-  result.value = absorbRunIntoMeta(run.data);
+  // 방어: 흡수가 실패해도 종료 화면(요약/돌아가기)은 반드시 렌더되도록 try/catch.
+  try {
+    const { absorbRunIntoMeta } = await import('@/systems/progression');
+    result.value = absorbRunIntoMeta(run.data);
+  } catch (err) {
+    console.error('[RunEndView] absorbRunIntoMeta 실패 — 화면은 계속 렌더:', err);
+  }
 });
 </script>
 

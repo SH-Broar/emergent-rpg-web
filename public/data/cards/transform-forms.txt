@@ -51,7 +51,7 @@ source = form
 element = wind
 cost = 2
 trigger = manual
-effects = damage-per-hand:3:enemy
+effects = damage-per-hand:2:enemy
 flavor = 펼쳐진 꼬리만큼 매서워진다.
 
 [card.c-fox-dash]

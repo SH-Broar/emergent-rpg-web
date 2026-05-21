@@ -12,7 +12,7 @@
 import { computed, ref, watch } from 'vue';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
-import { useItem } from '@/systems/item';
+import { useItem, isUsableItem } from '@/systems/item';
 import { relicEffectText, relicTriggerLabel } from '@/systems/labels';
 import type { Item, Node, Relic } from '@/data/schemas';
 
@@ -53,11 +53,22 @@ function describeRelic(r: Relic): string[] {
 }
 
 // ===== 아이템 =====
-const sortedItems = computed(() => {
-  return [...run.data.items].sort((a: Item, b: Item) => {
-    const r = (rankOrder[a.rank] ?? 0) - (rankOrder[b.rank] ?? 0);
+/**
+ * 같은 아이템(id)을 한 줄로 묶어 ×N 표시. 대표는 첫 인스턴스.
+ * 정렬: 랭크 → 이름. 사용 시에는 대표 인스턴스를 useItem에 넘긴다(소비형은 한 점만 제거됨).
+ */
+interface ItemGroup { rep: Item; count: number; usable: boolean }
+const groupedItems = computed<ItemGroup[]>(() => {
+  const map = new Map<string, ItemGroup>();
+  for (const it of run.data.items) {
+    const g = map.get(it.id);
+    if (g) g.count += 1;
+    else map.set(it.id, { rep: it, count: 1, usable: isUsableItem(it) });
+  }
+  return [...map.values()].sort((a, b) => {
+    const r = (rankOrder[a.rep.rank] ?? 0) - (rankOrder[b.rep.rank] ?? 0);
     if (r !== 0) return r;
-    return a.name.localeCompare(b.name);
+    return a.rep.name.localeCompare(b.rep.name);
   });
 });
 
@@ -70,6 +81,8 @@ const teleportTargets = computed<Node[]>(() => {
 });
 
 function tryUseItem(item: Item) {
+  // 재료/특산물 등 사용 불가 아이템은 클릭해도 무반응(useItem이 가드하지만 UI에서도 차단).
+  if (!isUsableItem(item)) return;
   const needsTarget = item.effects.some((e) => e.kind === 'teleport-village');
   if (needsTarget) {
     teleportFor.value = item;
@@ -174,22 +187,26 @@ function itemEffectLabel(eff: Item['effects'][number]): string {
 
         <!-- 아이템 탭 -->
         <div v-else-if="tab === 'item'" class="inv-body">
-          <p class="hint">클릭 한 번이면 즉시 효과가 적용됩니다. 소비형 아이템은 한 번 쓰면 사라져요.</p>
-          <ul v-if="sortedItems.length > 0" class="items">
+          <p class="hint">클릭 한 번이면 즉시 효과가 적용됩니다. 재료·특산물은 공방 제작에만 쓰입니다.</p>
+          <ul v-if="groupedItems.length > 0" class="items">
             <li
-              v-for="it in sortedItems"
-              :key="it.instanceId ?? it.id"
+              v-for="g in groupedItems"
+              :key="g.rep.id"
               class="item"
-              :style="{ borderLeftColor: rankColors[it.rank] }"
-              @click="tryUseItem(it)"
+              :class="{ 'item--material': !g.usable }"
+              :style="{ borderLeftColor: rankColors[g.rep.rank] }"
+              @click="tryUseItem(g.rep)"
             >
               <div class="item__row">
-                <span class="item__name">{{ it.name }}</span>
-                <span class="item__rank" :style="{ color: rankColors[it.rank] }">{{ it.rank }}</span>
+                <span class="item__name">
+                  {{ g.rep.name }}<span v-if="g.count > 1" class="item__x">×{{ g.count }}</span>
+                </span>
+                <span v-if="!g.usable" class="item__tag">재료</span>
+                <span class="item__rank" :style="{ color: rankColors[g.rep.rank] }">{{ g.rep.rank }}</span>
               </div>
-              <div v-if="it.description" class="item__desc">{{ it.description }}</div>
-              <div class="item__effects">
-                <span v-for="(e, ei) in it.effects" :key="ei" class="effect">{{ itemEffectLabel(e) }}</span>
+              <div v-if="g.rep.description" class="item__desc">{{ g.rep.description }}</div>
+              <div v-if="g.rep.effects.length > 0" class="item__effects">
+                <span v-for="(e, ei) in g.rep.effects" :key="ei" class="effect">{{ itemEffectLabel(e) }}</span>
               </div>
             </li>
           </ul>
@@ -374,8 +391,19 @@ function itemEffectLabel(eff: Item['effects'][number]): string {
   transition: background 100ms ease;
 }
 .item:hover { background: rgba(255, 255, 255, 0.09); }
+/* 재료/특산물 — 사용 불가. 클릭 비활성 + 흐림 + 기본 커서. */
+.item--material { cursor: default; opacity: 0.72; }
+.item--material:hover { background: rgba(255, 255, 255, 0.04); }
 .item__row { display: flex; align-items: center; gap: 0.5rem; }
 .item__name { flex: 1; color: #f6e8b8; font-weight: 600; }
+.item__x { margin-left: 0.3rem; color: #c08eff; font-weight: 700; font-size: 0.85em; }
+.item__tag {
+  font-size: 0.62rem;
+  color: #c0b693;
+  border: 1px solid rgba(192, 182, 147, 0.4);
+  border-radius: 3px;
+  padding: 0.04rem 0.32rem;
+}
 .item__rank { font-size: 0.65rem; text-transform: uppercase; }
 .item__desc { font-size: 0.78rem; color: #a4a4b0; margin: 0.2rem 0; }
 .item__effects { display: flex; flex-wrap: wrap; gap: 0.3rem; font-size: 0.7rem; }
