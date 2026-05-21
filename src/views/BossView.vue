@@ -22,7 +22,7 @@ import {
 import { applyBossRewards } from '@/systems/boss-rewards';
 import { colorBonusForCardEffectKind } from '@/systems/stats';
 import { bonusesFromEffective } from '@/systems/equipment';
-import { cardEffectKindLabel, cardEffectDescription, effectTargetLabel, statusDescription, intentLabel, unlockKeyLabel } from '@/systems/labels';
+import { cardEffectKindLabel, cardEffectDescription, effectTargetLabel, statusDescription, intentLabel, intentDescription, unlockKeyLabel } from '@/systems/labels';
 import { useItem } from '@/systems/item';
 import type { Boss, BossPhase, BossSignatureVariant, Card, CardEffect, Combatant, Item, Monster } from '@/data/schemas';
 
@@ -331,7 +331,7 @@ function usePotion(itm: Item) {
           <div class="bar bar--boss">HP {{ combat.enemy.hp }} / {{ combat.enemy.maxHp }}
             <span v-if="combat.enemy.block > 0" class="block">🛡 {{ combat.enemy.block }}</span>
           </div>
-          <div class="intent">다음: {{ intentLabel(combat.enemyIntent) }}</div>
+          <div class="intent" v-tooltip="intentDescription(combat.enemyIntent)">다음: {{ intentLabel(combat.enemyIntent) }} <span class="intent__info">ⓘ</span></div>
           <div v-if="mechanicLabel" class="mechanic">
             <span class="mechanic__name">{{ mechanicLabel }}</span>
             <span

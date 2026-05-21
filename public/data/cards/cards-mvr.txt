@@ -604,8 +604,8 @@ source = event
 element = fire
 cost = 1
 trigger = manual
-effects = damage:20:enemy, apply-status:1:self:regress
-flavor = 가진 색을 — 한꺼번에 — 게워 내어 — 한 번에 — 쏟는다. 쏟고 나면, 이번 자리에 — *쌓아 둔 색이 — 잠시 — 사라진다*. 큰 한 방 뒤의 — 빈 손.
+effects = damage:20:enemy, exhaust-self
+flavor = 가진 것을 — 한꺼번에 — 게워 내어 — 한 번에 — 쏟는다. 한 번 쏟고 나면 — *다시 쥘 수 없는* — 빈 손.
 
 [card.c-elder-curse]
 name = 태고의 저주
@@ -1500,8 +1500,8 @@ source = event
 element = fire
 cost = 1
 trigger = manual
-effects = damage:28:enemy, apply-status:1:self:regress
-flavor = 더 — 많은 색을, 한 번에 — 게워 — 낸다.
+effects = damage:28:enemy, exhaust-self
+flavor = 더 — 많은 것을, 한 번에 — 게워 — 낸다. 그리고 — 사라진다.
 
 [card.c-elder-curse-plus]
 name = 태고의 저주+

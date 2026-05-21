@@ -26,7 +26,7 @@ import { effectiveContent } from '@/systems/map';
 import { applyCombatVictoryReward } from '@/systems/combat-rewards';
 import { colorBonusForCardEffectKind } from '@/systems/stats';
 import { bonusesFromEffective } from '@/systems/equipment';
-import { cardEffectKindLabel, cardEffectDescription, effectTargetLabel, statusDescription, intentLabel } from '@/systems/labels';
+import { cardEffectKindLabel, cardEffectDescription, effectTargetLabel, statusDescription, intentLabel, intentDescription } from '@/systems/labels';
 import { useItem } from '@/systems/item';
 import type { Card, CardEffect, Combatant, Item, Monster } from '@/data/schemas';
 
@@ -248,7 +248,7 @@ void ui;
           HP {{ combat.enemy.hp }} / {{ combat.enemy.maxHp }}
           <span v-if="combat.enemy.block > 0" class="block">🛡 {{ combat.enemy.block }}</span>
         </div>
-        <div class="intent">다음: {{ intentLabel(combat.enemyIntent) }}</div>
+        <div class="intent" v-tooltip="intentDescription(combat.enemyIntent)">다음: {{ intentLabel(combat.enemyIntent) }} <span class="intent__info">ⓘ</span></div>
         <ul class="statuses statuses--enemy">
           <li v-for="s in statusEntries(combat.enemy)" :key="s.key" class="status" :data-key="s.key" v-tooltip="statusDescription(s.key)">
             {{ s.label }} ×{{ s.count }}

@@ -167,6 +167,44 @@ export function intentLabel(encoded: string | undefined): string {
   return label;
 }
 
+/**
+ * 몬스터 의도 *상세 설명* — 다음 턴에 무슨 일이 일어나는지(특히 상태이상). 의도 표시 툴팁용.
+ * 예: 'debuff:2:weakness' → "약화 2 — 주는 피해가 0.75배가 됩니다."
+ */
+export function intentDescription(encoded: string | undefined): string {
+  if (!encoded) return '';
+  const parts = encoded.split(':');
+  const kind = parts[0];
+  const n = Number(parts[1]) || 0;
+  switch (kind) {
+    case 'attack': return `공격 — ${n} 피해를 줍니다.`;
+    case 'defend': return `방어 — 방어막 ${n}을 얻습니다.`;
+    case 'buff': return `강화 — 힘이 ${n} 늘어 이후 공격이 강해집니다.`;
+    case 'charge': return `기력을 모읍니다 — 힘 +${n}. 다음 공격이 강해집니다.`;
+    case 'drain': return `흡혈 — ${n} 피해를 주고 그만큼 회복합니다.`;
+    case 'debuff': {
+      const st = parts[2];
+      const d = STATUS_DESCRIPTIONS[st ?? ''];
+      return `${statusLabel(st)} ${n}${d ? ` — ${d}` : ' 부여'}`;
+    }
+    case 'bind': return '구속 — 매 턴 손패 일부가 잠깁니다. 발버둥(마나 1)으로 탈출. 방치할수록 잠금이 늘어납니다.';
+    case 'devour': return '삼킴 — 매 턴 직접 피해를 입습니다. 발버둥(마나 1)으로 탈출. 방치할수록 피해가 커집니다.';
+    case 'obscure': return `시야 가리기 — ${n || 1}턴 동안 손패가 가려집니다(뒷면).`;
+    case 'cost-up': return `비용 교란 — ${parts[2] || 2}턴 동안 모든 카드 비용이 ${n || 1} 늘어납니다.`;
+    case 'transform-card': return `카드 망가뜨리기 — 손패 ${n || 1}장이 '상처'(쓸 수 없음)로 바뀝니다.`;
+    case 'force-discard': return `드로우 감소 — 다음 손패를 ${n || 1}장 적게 뽑습니다.`;
+    case 'add-card':
+    case 'add-card-draw':
+    case 'add-card-discard':
+    case 'add-card-hand': {
+      const cnt = Number(parts[2]) || 1;
+      return `잡카드 ${cnt}장을 덱/손패에 밀어 넣습니다(쓸모없는 카드).`;
+    }
+    case 'change': return '체인지! — 종족과 덱 전체가 변신 폼으로 바뀝니다. 폼 덱의 \'본모습\' 카드로 돌아올 수 있습니다.';
+    default: return intentLabel(encoded);
+  }
+}
+
 /** 상태이상/버프 *툴팁 설명*. 미상 키는 빈 문자열. */
 export function statusDescription(name: string | undefined): string {
   if (!name) return '';
