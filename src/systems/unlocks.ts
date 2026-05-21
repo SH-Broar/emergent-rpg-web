@@ -33,8 +33,10 @@ function lockedRelicIdSet(): Set<string> {
 
 /** 런 풀에 등장 가능한 카드만 — 잠긴(미해금) 카드 + 잡카드(source=junk) 제외. */
 export function availableCards(): Card[] {
-  // 잡카드(상처/저주/빈)는 몬스터 주입 전용 — 어떤 풀(상점/공방/보상)에도 등장 금지.
-  const all = [...useDataStore().cards.values()].filter((c) => c.source !== 'junk');
+  // 잡카드(junk)·변신 폼 카드(form)는 특수 전용 — 어떤 풀(상점/공방/보상)에도 등장 금지.
+  const all = [...useDataStore().cards.values()].filter(
+    (c) => c.source !== 'junk' && c.source !== 'form',
+  );
   if (useUiStore().debug.unlockAll) return all;
   const locked = lockedCardIdSet();
   const unlocked = new Set(useMetaStore().unlockedCardIds);

@@ -13,6 +13,7 @@ import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
 import { instantiateCard } from './deck';
 import { acquireRelic, fireRelicTrigger } from './relic';
+import { revertTransformationState } from './combat';
 
 export interface UseItemContext {
   /** teleport-village 등 *대상 노드*가 필요한 효과에서 사용자가 노드 ID를 선택. */
@@ -132,6 +133,12 @@ function applyItemEffect(eff: ItemEffect, ctx: UseItemContext | undefined, lines
       if (!r.nodeStates[target.id]) r.nodeStates[target.id] = { visited: true };
       else r.nodeStates[target.id].visited = true;
       lines.push(`'${target.label}'(으)로 이동`);
+      break;
+    }
+    case 'cleanse-transform': {
+      // 변신(체인지) 정화 — 원래 종족·덱으로 복귀. 변신 중이 아니면 무효.
+      if (revertTransformationState()) lines.push('변신이 풀려 원래 모습으로 돌아왔다');
+      else lines.push('변신 상태가 아니다');
       break;
     }
   }

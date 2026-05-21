@@ -87,3 +87,19 @@ intents = bind:4:1, cost-up:1:2, drain:10, attack:9, transform-card:1
 gold = 16
 time_shards = 6
 card_drops =
+
+# ============================================================
+# 플래그십 체인지(변신/TSF) — 여우 몬무스 (Stage 5).
+# change:race-form-fox 로 플레이어 종족+덱을 여우 폼으로 교체.
+# 마노니클라(극동 섬, 여우 lore) 엘리트 풀에 편입. HP는 T2 엘리트 상단.
+# ============================================================
+[monster.mr-mano-ninetails]
+name = 둔갑하는 구미호
+tier = elite
+hp = 420
+attack = 14
+defense = 0
+intents = change:race-form-fox, attack:12, charge:4, attack:16, debuff:2:weakness, attack:14
+gold = 28
+time_shards = 9
+card_drops =

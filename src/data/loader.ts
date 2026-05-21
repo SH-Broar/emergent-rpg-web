@@ -921,9 +921,13 @@ const DATA_FILES = [
   'data/races/race-moth.txt',
   'data/races/race-phantom.txt',
   'data/races/race-arcana.txt',
+  // 변신 폼 race (Stage 5) — timeline available_race_ids에 없어 선택 화면 미노출.
+  'data/races/race-form-fox.txt',
   'data/cards/cards-mvr.txt',
   // === 잡카드 (Stage 2 몬스터 교란) — 상처/저주/빈. 전투 종료 시 소멸. ===
   'data/cards/junk-cards.txt',
+  // === 변신 폼 카드 (Stage 5 체인지/TSF) — source=form, 풀 제외. 변신 시에만 덱 등장. ===
+  'data/cards/transform-forms.txt',
   'data/relics/relics-mvr.txt',
   // === 유물 2차 확장 (2026-05-21) — 컬러·스탯·턴·아이템·획득즉시 가족. ===
   'data/relics/relics-color.txt',

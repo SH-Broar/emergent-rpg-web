@@ -20,7 +20,8 @@ export type ItemEffectKind =
   | 'color-all'       // 8 컬러 모두 += value
   | 'grant-card'      // param = cardId
   | 'grant-relic'     // param = relicId
-  | 'teleport-village'; // 임의의 village kind 노드로 즉시 이동
+  | 'teleport-village' // 임의의 village kind 노드로 즉시 이동
+  | 'cleanse-transform'; // 변신(체인지) 정화 — 원래 종족·덱으로 복귀(변신 중이 아니면 무효)
 
 export interface ItemEffect {
   kind: ItemEffectKind;

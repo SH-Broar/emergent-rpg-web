@@ -67,7 +67,8 @@ export type CardSource =
   | 'event'       // 이벤트 보상
   | 'relic'       // 유물 효과
   | 'boss'        // 보스 클리어
-  | 'junk';       // 몬스터 주입 잡카드(상처/저주/빈) — 모든 풀에서 제외, 전투 종료 시 소멸
+  | 'junk'        // 몬스터 주입 잡카드(상처/저주/빈) — 모든 풀에서 제외, 전투 종료 시 소멸
+  | 'form';       // 변신(체인지) 폼 전용 카드 — 모든 풀에서 제외. 변신 시에만 덱에 등장
 
 /** 카드 사용 모드 — 턴제 vs 자동/지속. */
 export type CardTriggerKind =
@@ -107,7 +108,9 @@ export type CardEffectKind =
   | 'heal-per-hand'       // *현재 손패 수* × value 회복 (self)
   | 'next-card-double'    // combat flag: *다음 1장*의 모든 effect value 2배
   // === 잡카드(저주) 전용 (Stage 2 몬스터 교란) ===
-  | 'curse-tick';         // 마커: 이 카드가 손에 있으면 매 턴 시작 value만큼 직접 HP 피해. 핸들러 no-op.
+  | 'curse-tick'          // 마커: 이 카드가 손에 있으면 매 턴 시작 value만큼 직접 HP 피해. 핸들러 no-op.
+  // === 변신(체인지/TSF) 전용 (Stage 5) ===
+  | 'release-transform';  // 변신 해제 — 원래 종족·덱으로 복귀. 변신 폼 덱에만 들어 있는 '해제 카드'.
 
 /** 효과 대상 — target. */
 export type EffectTarget = 'self' | 'enemy' | 'all-enemies' | 'random-enemy';

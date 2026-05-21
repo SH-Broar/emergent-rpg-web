@@ -17,6 +17,14 @@ effects = heal:10
 consumable = true
 flavor = 시장 어느 노점에서 누구나 한 병쯤 챙긴다.
 
+[item.i-truename-mirror]
+name = 본명의 거울
+description = 비친 얼굴이 *진짜 나*를 일깨운다. 변신(체인지)에 걸렸을 때 깨면 원래 모습으로 돌아온다.
+rank = rare
+effects = cleanse-transform
+consumable = true
+flavor = 빌린 가죽 아래, 잊었던 윤곽.
+
 [item.i-potion-large]
 name = 큰 회복약
 description = 두 모금이면 다친 자리가 한층 잊혀진다.

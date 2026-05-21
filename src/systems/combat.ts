@@ -406,6 +406,19 @@ export function playCard(handIndex: number, monster: Monster): { enemyDefeated: 
     }
   }
 
+  // 변신 해제 카드 사용 후 — 카드 정리가 끝난 지금, 원본 덱으로 전투 더미를 새로 구성.
+  // (핸들러에서 즉시 재구성하면 위의 hand.filter handIndex가 어긋나므로 여기서 일괄.)
+  if (c.rebuildFromDeck) {
+    c.rebuildFromDeck = false;
+    const handSize = STARTING_HAND_SIZE + playerBonuses(c).drawExtra + getModifierAdd('draw-extra-add');
+    const rebuilt = drawCards([...r.deck], [], handSize);
+    c.drawPile = rebuilt.newDrawPile;
+    c.hand = rebuilt.drawn;
+    c.discardPile = rebuilt.newDiscardPile;
+    c.exhaustPile = [];
+    c.lockedCardIds = [];
+  }
+
   if (c.enemy.hp <= 0) {
     return { enemyDefeated: true };
   }
@@ -662,6 +675,13 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
   // (저주는 unplayable이라 이 핸들러는 사실상 호출되지 않음 — 타입 완전성용 no-op.)
   'curse-tick': () => {
     // no-op
+  },
+  // 변신 해제 카드 — 원본 종족·덱 복원. 더미 재구성은 playCard 정리 *후*(rebuildFromDeck)에서.
+  'release-transform': (_e, c) => {
+    if (revertTransformationState()) {
+      c.rebuildFromDeck = true;
+      useUiStore().toast('success', '원래 모습으로 돌아왔다.');
+    }
   },
 };
 
@@ -1019,9 +1039,68 @@ function executeMonsterIntent(c: CombatState) {
       transformToJunk(c, value || 1);
       break;
     }
+    // === 플래그십: 체인지(변신/TSF) ===
+    case 'change': {
+      // change:formRaceId — 종족+덱 전체를 변신 폼으로 교체(원본 stash). 다음 손패부터 폼 덱.
+      applyTransformation(c, parts[1]);
+      break;
+    }
     default:
       break;
   }
+}
+
+/**
+ * 변신(체인지) 적용 — 종족+덱 전체를 폼으로 교체, 원본은 RunState.transform에 stash.
+ * 적 턴(executeMonsterIntent)에서 호출 → 이후 endPlayerTurn 재드로우가 폼 손패를 뽑는다.
+ * 이미 변신 중이거나 폼 데이터가 없으면 no-op.
+ */
+function applyTransformation(c: CombatState, formRaceId: string): void {
+  const r = useRunStore().data;
+  if (!formRaceId || r.transform) return;
+  const data = useDataStore();
+  const form = data.races.get(formRaceId);
+  if (!form) return;
+  const formDeck = form.startingDeck
+    .map((id) => data.cards.get(id))
+    .filter((cd): cd is Card => !!cd)
+    .map(instantiateCard);
+  if (formDeck.length === 0) return;
+  // 원본 stash 후 폼으로 교체.
+  r.transform = {
+    formRaceId,
+    originalRaceId: r.raceId,
+    stashDeck: r.deck,
+    stashCollection: r.collection,
+    stashDeckSize: r.deckSize,
+  };
+  r.raceId = formRaceId;
+  r.deck = formDeck;
+  r.collection = formDeck.map((cd) => ({ ...cd }));
+  r.deckSize = form.deckSize ?? formDeck.length;
+  // 전투 더미를 폼 덱으로 — 손패는 비우고 endPlayerTurn 재드로우가 채운다.
+  c.drawPile = [...formDeck];
+  c.hand = [];
+  c.discardPile = [];
+  c.exhaustPile = [];
+  c.lockedCardIds = [];
+  useUiStore().toast('warning', `체인지! — ${form.name}(으)로 변했다.`);
+}
+
+/**
+ * 변신 해제 — 원본 종족·덱·컬렉션·덱슬롯 복원 후 transform 클리어. 변신 중이 아니면 false.
+ * 전투 중 해제(release 카드)는 호출자가 rebuildFromDeck로 더미 재구성, 전투 밖(아이템 정화)은 상태만.
+ */
+export function revertTransformationState(): boolean {
+  const r = useRunStore().data;
+  const t = r.transform;
+  if (!t) return false;
+  r.raceId = t.originalRaceId;
+  r.deck = t.stashDeck;
+  r.collection = t.stashCollection;
+  r.deckSize = t.stashDeckSize;
+  r.transform = undefined;
+  return true;
 }
 
 /** 구속/삼킴 시작·갱신. 같은 류면 게이지 보강(재구속), 아니면 새로 설정. */

@@ -153,6 +153,10 @@ function doStruggle() {
   struggle();
 }
 
+// === 변신(체인지/TSF) ===
+const transform = computed(() => run.data.transform);
+const formName = computed(() => data.races.get(run.data.transform?.formRaceId ?? '')?.name ?? '변신');
+
 /**
  * 카드 effect의 *최종 정적값* — base + 컬러 보너스. 사용자 사양: 카드 수치에 보너스 반영.
  */
@@ -228,6 +232,11 @@ void ui;
         </ul>
       </div>
     </header>
+
+    <!-- 변신(체인지) — 본모습 카드로 해제. 해제 안 하고 이기면 런에 지속 -->
+    <div v-if="transform" class="transform-banner">
+      🦊 변신 중 — <strong>{{ formName }}</strong> · '본모습' 카드로 해제 (안 풀고 이기면 계속 이 모습)
+    </div>
 
     <!-- 구속/삼킴 — 발버둥으로 탈출 -->
     <div v-if="grapple" class="grapple" :class="`grapple--${grapple.kind}`">
@@ -444,6 +453,14 @@ void ui;
 }
 .facedown__mark { font-size: 2.4rem; color: #8a8a99; font-weight: 800; }
 .facedown__note { font-size: 0.75rem; color: #6c6c7c; }
+
+/* 변신(체인지) 배너 */
+.transform-banner {
+  margin: 0.4rem 0; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.9rem;
+  color: #ffd8a8; border: 1px solid rgba(255,184,108,0.55);
+  background: linear-gradient(90deg, rgba(255,140,90,0.14), rgba(192,142,255,0.14));
+}
+.transform-banner strong { color: #ffe8b8; }
 
 .pile-info { display: flex; gap: 1.5rem; padding: 0.8rem 1rem; background: rgba(0,0,0,0.4); border-radius: 8px; color: #b6b6c4; align-items: center; }
 .end-turn { margin-left: auto; padding: 0.6rem 1.2rem; background: rgba(192,142,255,0.2); border: 1px solid rgba(192,142,255,0.5); color: #f6e8b8; border-radius: 6px; cursor: pointer; font-weight: 600; }

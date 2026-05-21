@@ -150,6 +150,12 @@ export interface CombatState {
    * 대신 여기 모아 두고, *다음 손패 드로우 직후* 강제로 끼워 넣어 draw RNG와 무관하게 보장.
    */
   pendingHandJunk?: Card[];
+
+  /**
+   * 변신 해제 카드(release-transform)가 켜는 플래그 — playCard가 카드 정리 *후* 전투 더미를
+   * 복원된 원본 덱으로 재구성하게 한다(핸들러에서 직접 재구성하면 handIndex가 어긋남).
+   */
+  rebuildFromDeck?: boolean;
 }
 
 /**
@@ -362,6 +368,22 @@ export interface RunState {
   newRelicEncounters: string[];
   /** 그 런에서 처음 만난 NPC ID들. */
   newNpcEncounters: NpcId[];
+
+  /**
+   * 변신(체인지/TSF) 상태 — 희귀 특수 몬스터가 종족+덱 전체를 폼으로 교체(Stage 5).
+   * set이면 *변신 중*: raceId/deck/collection/deckSize는 폼 값, 원본은 stash에 보관.
+   *  - 폼 덱의 *해제 카드*(release-transform)를 쓰면 원복.
+   *  - 해제하지 않고 전투를 이기면 변신이 *런에 지속*(이후 폼으로 플레이, 도박).
+   *  - 이벤트/아이템/NPC 정화(cleanse-transform)로도 원복(영구 아님).
+   * 미설정(undefined)이면 변신 아님. 옛 세이브 호환 — EMPTY_RUN에 없음(absent=none).
+   */
+  transform?: {
+    formRaceId: RaceId;
+    originalRaceId: RaceId;
+    stashDeck: Card[];
+    stashCollection: Card[];
+    stashDeckSize: number;
+  };
 
   // === 전투 ===
   combat?: CombatState;
