@@ -86,6 +86,7 @@ const STATUS_DESCRIPTIONS: Record<string, string> = {
   burn: '화상 — 지속 피해 계열.',
   paralyze: '마비 — 다음 턴 행동할 수 없습니다(스킵). 매 발동 시 1 감소.',
   spasm: '경련 — 이번 턴 마나가 0이 됩니다. 매 발동 시 1 감소.',
+  sap: '주는 피해와 방어가 스택만큼 줄어듭니다. 매 턴 1 감소.',
 };
 
 /** 상태이상/버프 키 → 한글. */
@@ -101,6 +102,7 @@ const STATUS_LABELS: Record<string, string> = {
   regress: '퇴행',
   paralyze: '마비',
   spasm: '경련',
+  sap: '잠식',
 };
 
 /** 효과 대상 → 한글. */
@@ -124,7 +126,9 @@ const INTENT_KIND_LABELS: Record<string, string> = {
   debuff: '약화 부여',
   bind: '구속',
   devour: '삼킴',
+  web: '거미줄',
   drain: '흡혈',
+  'drain-stat': '잠식',
   charge: '기력 모으기',
   'add-card': '잡카드 주입',
   'add-card-draw': '잡카드 주입',
@@ -161,6 +165,10 @@ export function intentLabel(encoded: string | undefined): string {
   if ((kind === 'force-discard' || kind === 'transform-card' || kind === 'obscure') && n > 0) {
     return `${label} ${n}`;
   }
+  // 거미줄/잠식은 누적/흡수량을 같이 보여줌.
+  if ((kind === 'web' || kind === 'drain-stat') && n > 0) {
+    return `${label} ${n}`;
+  }
   if (kind === 'bind' || kind === 'devour') {
     return label; // 게이지는 grapple 표시에서 별도로.
   }
@@ -189,6 +197,8 @@ export function intentDescription(encoded: string | undefined): string {
     }
     case 'bind': return '구속 — 매 턴 손패 일부가 잠깁니다. 발버둥(마나 1)으로 탈출. 방치할수록 잠금이 늘어납니다.';
     case 'devour': return '삼킴 — 매 턴 직접 피해를 입습니다. 발버둥(마나 1)으로 탈출. 방치할수록 피해가 커집니다.';
+    case 'web': return `거미줄 — 다음 턴 손패 ${n || 1}장이 묶입니다. 카드를 쓸 때마다 한 겹씩 풀립니다(누적).`;
+    case 'drain-stat': return `잠식 — 잠식 ${n || 1}을 걸어 주는 피해와 방어를 깎고, 적이 그만큼 강해집니다. 매 턴 1씩 감소.`;
     case 'obscure': return `시야 가리기 — ${n || 1}턴 동안 손패가 가려집니다(뒷면).`;
     case 'cost-up': return `비용 교란 — ${parts[2] || 2}턴 동안 모든 카드 비용이 ${n || 1} 늘어납니다.`;
     case 'transform-card': return `카드 망가뜨리기 — 손패 ${n || 1}장이 '상처'(쓸 수 없음)로 바뀝니다.`;

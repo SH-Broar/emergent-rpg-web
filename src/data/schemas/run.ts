@@ -176,6 +176,20 @@ export interface CombatState {
    * 사용자 사양: 해제는 ~2턴 걸린다. 전투 중 미완(승리) 시 변신 지속.
    */
   releasePending?: number;
+
+  // === 이상전투 심화 기믹 (Stage 6 — 전부 optional, 미설정 시 영향 0) ===
+  /**
+   * 분열(split) 잔여 부활 횟수 — startCombat에서 monster.splitCount로 초기화.
+   * 적 hp<=0이 될 때 >0이면 *진짜 죽지 않고* maxHp 절반으로 부활 + 1 감소(resolveEnemyDefeat).
+   * 0/미설정이면 일반 사망. 무한루프 방지: 부활할 때마다 감소하므로 splitCount+1번이면 진짜 패배.
+   */
+  enemySplit?: number;
+  /**
+   * 거미줄(web) 누적 스택 — bind와 별개의 *능동 해제형* 카드 잠금.
+   * 매 플레이어 턴 시작에 min(handSize, webStacks)장을 무작위 잠금(lockedCardIds에 합산).
+   * 카드를 *실제로 사용*할 때마다 1 감소(playCard) — 능동 플레이로 풀린다. 0이면 잠금 해제.
+   */
+  webStacks?: number;
 }
 
 /**

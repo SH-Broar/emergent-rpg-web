@@ -88,8 +88,10 @@ export function statusBonusForCardEffectKind(
   statuses: Record<string, number> | undefined,
 ): number {
   if (!statuses) return 0;
-  if (kind === 'damage') return statuses.strength ?? 0;
-  if (kind === 'block') return (statuses.dexterity ?? 0) - (statuses.frail ?? 0);
+  // sap(잠식): 주는 피해와 방어 둘 다 *플랫* 차감(weakness 배수와 별개). 음수 방지는 최종 적용처에서.
+  const sap = statuses.sap ?? 0;
+  if (kind === 'damage') return (statuses.strength ?? 0) - sap;
+  if (kind === 'block') return (statuses.dexterity ?? 0) - (statuses.frail ?? 0) - sap;
   return 0;
 }
 
@@ -145,17 +147,42 @@ function tickPoison(target: Combatant): void {
 }
 
 /**
- * feral(수화)/regress(퇴행) 턴 감소 — 매 플레이어 턴 종료 시 양쪽(플레이어·적) -1.
+ * feral(수화)/regress(퇴행)/sap(잠식) 턴 감소 — 매 플레이어 턴 종료 시 양쪽(플레이어·적) -1.
  * 0이 되면 제거. vulnerable/weakness 등 기존 status는 여기서 건드리지 않는다.
  */
 function decayTurnStatuses(target: Combatant): void {
-  for (const key of ['feral', 'regress'] as const) {
+  for (const key of ['feral', 'regress', 'sap'] as const) {
     const stack = target.statuses?.[key] ?? 0;
     if (stack <= 0) continue;
     const next = stack - 1;
     if (next <= 0) delete target.statuses[key];
     else target.statuses[key] = next;
   }
+}
+
+/**
+ * 적 사망 인터셉트 — 분열(split) 처리.
+ *
+ * 반환값:
+ *   - true  : 적이 *진짜로* 패배(hp<=0 && 부활 잔여 없음) → 호출자가 승리 처리.
+ *   - false : 적이 아직 살아 있음(hp>0) 또는 *분열로 부활*(hp<=0 && enemySplit>0).
+ *
+ * 부활 시: hp = floor(maxHp*0.5), enemySplit -= 1, 토스트. 무한루프 방지 — 부활마다 감소.
+ * 모든 적 사망 체크 지점(playCard 반환 + endPlayerTurn poison/intent/retaliate/boss rewind)이
+ * 이 헬퍼를 거쳐야 분열 몹이 한 곳에서라도 그냥 죽는 누락이 없다.
+ */
+function resolveEnemyDefeat(c: CombatState): boolean {
+  if (c.enemy.hp > 0) return false;
+  const remaining = c.enemySplit ?? 0;
+  if (remaining > 0) {
+    c.enemySplit = remaining - 1;
+    c.enemy.hp = Math.max(1, Math.floor(c.enemy.maxHp * 0.5));
+    // 부활 적은 block을 들고 일어나지 않게 0으로 (방어적).
+    c.enemy.block = 0;
+    useUiStore().toast('warning', '분열했다! — 다시 나뉘었다');
+    return false;
+  }
+  return true;
 }
 
 /** 전투 시작 — Combat state 초기화 + 첫 핸드 드로우. */
@@ -205,6 +232,9 @@ export function startCombat(monster: Monster) {
     relicCounters: {},
     cardsPlayedThisTurn: 0,
     potionUsedThisTurn: false,
+    // 이상전투 심화 기믹 초기화 — splitCount 없으면 0(부활 없음), 거미줄 0.
+    enemySplit: monster.splitCount ?? 0,
+    webStacks: 0,
   };
   r.combat = combat;
 
@@ -407,7 +437,20 @@ export function playCard(handIndex: number, monster: Monster): { enemyDefeated: 
     }
   }
 
-  if (c.enemy.hp <= 0) {
+  // 거미줄(web): 카드를 *실제로 사용*했으니 스택 1 감소 — 능동 플레이로 풀린다.
+  // (잠긴 카드/마나부족/잡카드는 위에서 early-return하므로 여기 도달 = 실제 사용.)
+  if ((c.webStacks ?? 0) > 0) {
+    c.webStacks = (c.webStacks ?? 0) - 1;
+    // 0이 되면 이번 턴 *즉시* 잠금 해제 — 단, bind/보스 anchor가 같은 lockedCardIds를
+    // 점유 중이면 그들 잠금을 깨지 않도록 그대로 둔다(다음 턴 시작에서 재계산).
+    if ((c.webStacks ?? 0) <= 0 && !c.grapple && !c.bossMechanic) {
+      c.lockedCardIds = [];
+      ui.toast('success', '거미줄을 떨쳐냈다.');
+    }
+  }
+
+  // 분열 인터셉트 — hp<=0이어도 enemySplit>0이면 부활 후 false.
+  if (resolveEnemyDefeat(c)) {
     return { enemyDefeated: true };
   }
   void monster;
@@ -478,10 +521,11 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
     // 전투 중 player buff/debuff (dexterity/frail).
     const statusBonus = statusBonusForCardEffectKind('block', c.player.statuses);
     // base + def + status에 유물의 block-out-add 합산 (mul은 본 라운드 미사용).
-    const value = applyModifiers(
+    // sap(잠식)으로 statusBonus가 음수가 될 수 있으므로 최종 max(0) 클램프.
+    const value = Math.max(0, applyModifiers(
       (e.value ?? 0) + defBonus + statusBonus,
       'block-out-add',
-    );
+    ));
     for (const t of targets) {
       t.block += value;
     }
@@ -535,10 +579,11 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
     const statusBonus = statusBonusForCardEffectKind('block', c.player.statuses);
     const base = e.value ?? 0;
     const bonus = (c as { currentPlayingCard?: Card }).currentPlayingCard?.bonusBlock ?? 0;
-    const value = applyModifiers(
+    // sap(잠식)으로 statusBonus가 음수가 될 수 있으므로 최종 max(0) 클램프.
+    const value = Math.max(0, applyModifiers(
       base + bonus + defBonus + statusBonus,
       'block-out-add',
-    );
+    ));
     for (const t of targets) {
       t.block += value;
     }
@@ -736,8 +781,9 @@ export function endPlayerTurn(monster: Monster): { playerDefeated: boolean; enem
 
   // 적 poison(중독) — 적 턴 종료 처리. 몬스터 행동 *전*에 틱.
   // (poison으로 적 hp 0이 되면 행동을 생략하고 *승리* 신호 — CombatView가 onVictory.)
+  // 분열 적은 부활(resolveEnemyDefeat false) → 행동을 계속 진행.
   tickPoison(c.enemy);
-  if (c.enemy.hp <= 0) {
+  if (resolveEnemyDefeat(c)) {
     return { playerDefeated: false, enemyDefeated: true };
   }
 
@@ -750,16 +796,16 @@ export function endPlayerTurn(monster: Monster): { playerDefeated: boolean; enem
     return { playerDefeated: true };
   }
 
-  // retaliate 등 on-damage-taken 유물로 적이 쓰러질 수 있음 — 승리 신호.
-  if (c.enemy.hp <= 0) {
+  // retaliate 등 on-damage-taken 유물로 적이 쓰러질 수 있음 — 승리 신호(분열이면 부활).
+  if (resolveEnemyDefeat(c)) {
     return { playerDefeated: false, enemyDefeated: true };
   }
 
   // 보스 기믹 — 적 턴 처리 (anchor 카운트/해제, stillness 누적, rewind 회복+디버프 제거).
   // bossMechanic 미설정(일반 몬스터 전투)이면 no-op.
   applyBossEnemyTurn(c);
-  if (c.enemy.hp <= 0) {
-    // 되감기 회복은 hp를 올리는 방향이라 0이 될 일은 없지만, 방어적으로 확인.
+  if (resolveEnemyDefeat(c)) {
+    // 되감기 회복은 hp를 올리는 방향이라 0이 될 일은 없지만, 방어적으로 확인(분열이면 부활).
     return { playerDefeated: false, enemyDefeated: true };
   }
 
@@ -865,7 +911,12 @@ function applyPlayerStatusTurnStart(c: CombatState): void {
     else st.spasm = sp - 1;
   }
 
-  // 구속(bind)/삼킴(devour) — 매 플레이어 턴 시작 페널티. ramp는 적용 후 +1(방치할수록 강화).
+  // 구속(bind)/삼킴(devour) + 거미줄(web) — 매 플레이어 턴 시작 카드 잠금 *재계산*.
+  // bind와 web 둘 다 lockedCardIds를 쓰므로, 각자의 잠금 집합을 구해 *합집합*으로 set한다.
+  // (보스 anchor 잠금은 별도 경로(applyBossPlayerTurnStart)라 여기서 덮어쓰지 않게 주의 —
+  //  일반 전투에선 bossMechanic 미설정이라 충돌 없음. anchor 보스는 grapple/web을 쓰지 않음.)
+  const lockedSet = new Set<string>(c.bossMechanic ? (c.lockedCardIds ?? []) : []);
+
   const g = c.grapple;
   if (g) {
     if (g.kind === 'devour') {
@@ -873,17 +924,42 @@ function applyPlayerStatusTurnStart(c: CombatState): void {
       c.player.hp = Math.max(0, c.player.hp - dot);
       ui.toast('warning', `삼켜짐 — ${dot} 피해 (탈출까지 ${g.gauge})`);
     } else {
-      // 구속: 잠금 카드 수가 ramp. 새 손패에서 무작위 선택.
+      // 구속: 잠금 카드 수가 ramp. 새 손패에서 무작위 선택해 잠금 집합에 추가.
       const lockN = Math.min(c.hand.length, g.base + g.ramp);
       const ids = c.hand.map((card) => card.instanceId).filter((id): id is string => !!id);
       for (let i = ids.length - 1; i > 0; i--) {
         const j = Math.floor(rng() * (i + 1));
         [ids[i], ids[j]] = [ids[j], ids[i]];
       }
-      c.lockedCardIds = ids.slice(0, lockN);
+      for (const id of ids.slice(0, lockN)) lockedSet.add(id);
       if (lockN > 0) ui.toast('warning', `구속 — 카드 ${lockN}장이 묶였다 (탈출까지 ${g.gauge})`);
     }
     g.ramp += 1;
+  }
+
+  // 거미줄(web): 스택 수만큼(손패 한도 내) 무작위로 추가 잠금. bind와 *공존*(합집합).
+  // bind와 달리 게이지/발버둥이 없고, 카드를 실제로 쓰면 스택이 1씩 줄어 풀린다(playCard).
+  const web = c.webStacks ?? 0;
+  if (web > 0 && c.hand.length > 0) {
+    const lockN = Math.min(c.hand.length, web);
+    // 아직 잠기지 않은 카드 중에서 우선 선택(bind와 최대한 겹치지 않게).
+    const candidates = c.hand
+      .map((card) => card.instanceId)
+      .filter((id): id is string => !!id && !lockedSet.has(id));
+    for (let i = candidates.length - 1; i > 0; i--) {
+      const j = Math.floor(rng() * (i + 1));
+      [candidates[i], candidates[j]] = [candidates[j], candidates[i]];
+    }
+    for (const id of candidates.slice(0, lockN)) lockedSet.add(id);
+    ui.toast('warning', `거미줄 — ${lockN}장이 묶였다`);
+  }
+
+  // bind/web 중 하나라도 활성이면(또는 보스 잠금이 있으면) 합집합으로 set,
+  // 둘 다 비활성이고 보스 잠금도 없으면 잠금 해제(빈 배열) — bind 게이지 0 탈출/web 0 해제 반영.
+  if (g || web > 0 || c.bossMechanic) {
+    c.lockedCardIds = Array.from(lockedSet);
+  } else {
+    c.lockedCardIds = [];
   }
 
   // 저주(curse-tick) — 손에 든 저주 잡카드마다 매 턴 시작 직접 피해.
@@ -998,6 +1074,21 @@ function executeMonsterIntent(c: CombatState) {
     case 'devour': {
       // devour:gauge:dot — 삼킴 시작/갱신. parts[2]=기본 턴당 피해.
       startGrapple(c, 'devour', value || 4, Number(parts[2]) || 3, parts[3] || '삼켜짐');
+      break;
+    }
+    case 'web': {
+      // web:N — 거미줄 N 스택 누적. bind와 달리 게이지/발버둥 없이, 카드를 쓰면 풀린다.
+      // 실제 잠금은 다음 플레이어 턴 시작(applyPlayerStatusTurnStart)에서 재계산.
+      c.webStacks = (c.webStacks ?? 0) + (value || 1);
+      useUiStore().toast('warning', `거미줄에 휘감겼다 — 누적 ${c.webStacks}`);
+      break;
+    }
+    case 'drain-stat': {
+      // drain-stat:N — 플레이어 스탯 잠식(sap N) *동시에* 적이 그만큼 흡수(strength +N).
+      const n = value || 1;
+      c.player.statuses['sap'] = (c.player.statuses['sap'] ?? 0) + n;
+      c.enemy.statuses['strength'] = (c.enemy.statuses['strength'] ?? 0) + n;
+      useUiStore().toast('warning', `잠식 — 힘이 빨려 들어간다 (잠식 ${c.player.statuses['sap']})`);
       break;
     }
     case 'drain': {

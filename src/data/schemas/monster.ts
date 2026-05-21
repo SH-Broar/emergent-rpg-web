@@ -41,6 +41,13 @@ export interface Monster extends NamedEntity {
   /** 턴마다 순회하는 의도 패턴. */
   intents: MonsterIntent[];
 
+  /**
+   * 분열 횟수 — 처치(hp<=0) 시 *진짜 죽지 않고* maxHp의 절반으로 부활하는 횟수.
+   * 0/미설정이면 일반 사망. 2면 총 3번 잡아야 진짜 패배(부활할 때마다 1 감소).
+   * 1v1 엔진이라 동시에 여러 적이 생기진 않고, 같은 적이 다시 일어선다.
+   */
+  splitCount?: number;
+
   drop: MonsterDrop;
 
   /** 등장 가능한 노드/시즌 조건 (선택). */

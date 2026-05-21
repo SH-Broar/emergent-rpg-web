@@ -89,6 +89,47 @@ time_shards = 6
 card_drops =
 
 # ============================================================
+# Stage 6 이상전투 심화 데모 — 분열/거미줄/잠식 (엔진 검증용).
+# ============================================================
+
+# 분열(split) — 처치 시 절반 HP로 부활. split_count=2면 총 3번 잡아야 진짜 패배.
+[monster.m-demo-splitter]
+name = 갈라지는 슬라임
+tier = normal
+hp = 80
+attack = 6
+defense = 0
+split_count = 2
+intents = attack:6, attack:6, defend:5
+gold = 10
+time_shards = 4
+card_drops =
+
+# 거미줄(web) — 쌓이는 카드 잠금. 발버둥 없이, 카드를 쓰면 한 겹씩 풀린다.
+[monster.m-demo-weaver2]
+name = 실잣는 거미
+tier = normal
+hp = 90
+attack = 5
+defense = 0
+intents = web:2, attack:5, attack:5, web:2
+gold = 9
+time_shards = 4
+card_drops =
+
+# 잠식(drain-stat) — 플레이어 스탯을 깎고 적이 그만큼 강해진다(sap + 적 strength).
+[monster.m-demo-sapper]
+name = 흘리는 서큐버스
+tier = normal
+hp = 110
+attack = 6
+defense = 0
+intents = drain-stat:3, attack:6, attack:6, drain-stat:3
+gold = 11
+time_shards = 5
+card_drops =
+
+# ============================================================
 # 플래그십 체인지(변신/TSF) — 여우 몬무스 (Stage 5).
 # change:race-form-fox 로 플레이어 종족+덱을 여우 폼으로 교체.
 # 마노니클라(극동 섬, 여우 lore) 엘리트 풀에 편입. HP는 T2 엘리트 상단.
