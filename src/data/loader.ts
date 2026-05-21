@@ -465,6 +465,7 @@ export function parseNodeMap(ini: IniData, id: string): NodeMap | null {
         enemyPool: parseList(fields.enemy_pool),
         eliteEnemyPool: parseList(fields.elite_enemy_pool),
         eventPool: parseList(fields.event_pool),
+        tier: fields.tier ? parseNumber(fields.tier, 1) : undefined,
         primaryColor: fields.primary_color as Region['primaryColor'],
         specialtyItemId: fields.specialty_item,
         gatherThreshold: fields.gather_threshold ? parseNumber(fields.gather_threshold, 80) : undefined,

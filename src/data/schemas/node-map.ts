@@ -27,6 +27,12 @@ export interface Region {
   eventPool: EventId[];
 
   /**
+   * 지리 난이도 티어 (1=입문 ~ 4=고위험). 몬스터 로스터 강도 + *전투 보상 깊이*를 결정.
+   * 깊은 권역일수록 컬러 부스트·드롭률·희소 보상이 커진다(combat-rewards). 미지정 시 1.
+   */
+  tier?: number;
+
+  /**
    * 권역의 *대표 컬러* — 채집 노드 후반 단계의 임계 컬러.
    * 채집 진입 시 RunState.colors[primaryColor] >= gatherThreshold면 *후반 풀*로 분기.
    */

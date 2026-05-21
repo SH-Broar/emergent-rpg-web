@@ -26,6 +26,7 @@ boss_gate = n-anchor-point
 [nodemap.nm-act-1-era4-061.region.iluneon]
 name = 일루네온 권역
 description = 컬러즈 세계의 중심 도시. 광장·시장·시계탑·길드. 도시의 잡담, 행인, 인쇄된 종이.
+tier = 1
 enemy_pool = mr-iluneon-cutpurse, mr-iluneon-trickster, mr-iluneon-guild-rat, mr-iluneon-alley-thug, mr-iluneon-lantern-imp, mr-iluneon-market-sneak, mr-iluneon-clock-shade, mr-iluneon-toll-warden
 elite_enemy_pool = mr-iluneon-clockwraith, mr-iluneon-spirit-herald
 event_pool = ev-iluneon-clockchime, ev-traveler-fork, ev-mono-whisper, ev-time-cracker, ev-iluneon-plaza-flow, ev-iluneon-market-row, ev-iluneon-guild-board, ev-iluneon-diner-seat, ev-iluneon-larder, ev-iluneon-olyu-observatory, ev-iluneon-imperisia-meeting, ev-iluneon-time-trace, ev-iluneon-bellroom, ev-iluneon-niayur-fountain, ev-iluneon-niayur-pause, ev-iluneon-east-gate, ev-iluneon-spire-shadow
@@ -36,6 +37,7 @@ legendary_cards = c-iluneon-stopped-noon
 [nodemap.nm-act-1-era4-061.region.lar-forest]
 name = 라르 숲 · 세계수
 description = 일루네온에서 가깝고 어린 모험가들이 많이 가는 입문자 숲. 세계수 근처만 한 자락 강함. 잎사귀와 송진 향.
+tier = 1
 enemy_pool = mr-lar-forest-mosswolf, mr-lar-forest-thornbird, mr-lar-forest-spiderling, mr-lar-forest-rootcrawler, mr-lar-forest-ember-sala, mr-lar-forest-dryad-sapling, mr-lar-forest-boar, mr-lar-forest-mudcrab
 elite_enemy_pool = mr-lar-forest-spider-queen, mr-lar-forest-ancient-dryad
 event_pool = ev-lar-dryad-whisper, ev-traveler-fork, ev-stranger-favor, ev-fountain-vow, ev-lar-arukea-stones, ev-lar-bridge-under-shard, ev-lar-river-bank-sketch, ev-lar-memory-spring-face, ev-lar-moss-bank-leaves, ev-lar-arvaro-stick-fight, ev-lar-herb-garden-trace, ev-lar-fields-shadow, ev-lar-caliburn-yard-sword, ev-lar-small-grave-flower, ev-lar-inner-pool-still, ev-lar-tree-bud-shard, ev-lar-low-branch-song, ev-lar-high-branch-leaf, ev-lar-leaf-hall-trail, ev-lar-root-burrow-old
@@ -46,6 +48,7 @@ parent_region = 세계수
 [nodemap.nm-act-1-era4-061.region.moss]
 name = 모스 권역
 description = 라르 숲 북쪽 불의 도시 + 클러치 상륙장. 대장간의 망치·증기·바닷내음.
+tier = 2
 enemy_pool = mr-moss-fireworm, mr-moss-cindermoth, mr-moss-anvil-arachne, mr-moss-slag-golem, mr-moss-flame-lizard, mr-moss-forge-imp, mr-moss-char-wraith, mr-moss-iron-guardian
 elite_enemy_pool = mr-moss-forge-titan, mr-moss-smelter-queen
 event_pool = ev-moss-forge-flame, ev-stranger-favor, ev-moss-plaza-busy, ev-moss-hammer-row-line, ev-moss-furnace-arachne, ev-moss-watchtower-zenith, ev-moss-lighthouse-keeper, ev-moss-anvil-rhythm, ev-moss-tool-organize, ev-moss-workshop-apprentice, ev-moss-armor-polish, ev-moss-fissure-miner, ev-moss-clutch-stevedore, ev-moss-clutch-checker, ev-moss-ember-warden
@@ -56,6 +59,7 @@ legendary_cards = c-moss-ember-strike
 [nodemap.nm-act-1-era4-061.region.manonickla]
 name = 마노니클라 권역
 description = 극동 섬의 석양·드래곤 공방·리문 유적. 절벽 바람·사구의 모래.
+tier = 2
 enemy_pool = mr-mano-cliff-crab, mr-mano-sand-wraith, mr-mano-sunset-raven, mr-mano-limun-ward, mr-mano-iron-scorpion, mr-mano-dusk-shade, mr-mano-ruin-lurker, mr-mano-tide-golem
 elite_enemy_pool = mr-mano-limun-sovereign, mr-mano-sunset-drake
 event_pool = ev-mano-sunset-flask, ev-mono-whisper, ev-fountain-vow, ev-mano-betelgeuse-passage, ev-mano-seed-1-anomaly, ev-mano-seed-2-embrace, ev-mano-cayou-notebook, ev-mano-dune-pillar, ev-mano-old-coin, ev-mano-fox-glance, ev-mano-guild-board, ev-mano-stone-cairn, ev-mano-sunset-beast, ev-mano-old-shrine-incense, ev-mano-cliff-walk-breath, ev-mano-seed-3-rumor, ev-mano-rok-step, ev-mano-valencia-spear, ev-mano-limun-script, ev-mano-night-tide
@@ -66,6 +70,7 @@ legendary_cards = c-manonickla-sunset-wall
 [nodemap.nm-act-1-era4-061.region.riagralta]
 name = 리아그랄타
 description = 일루네온 북쪽의 끝없는 초원 + 오드 산비탈. 풀잎 쓸림·양 떼·번개 폭풍.
+tier = 2
 enemy_pool = mr-ria-storm-sheep, mr-ria-thunder-fox, mr-ria-spark-wasp, mr-ria-voltage-goat, mr-ria-gale-serpent
 elite_enemy_pool = mr-ria-arc-wolf
 event_pool = ev-ria-storm-shepherd, ev-traveler-fork, ev-fountain-vow
@@ -75,6 +80,7 @@ specialty_item = i-storm-fang
 [nodemap.nm-act-1-era4-061.region.alimes]
 name = 알리메스 권역
 description = 바그레트·겔리더 산맥에 끼인 오지 마을 + 에루멘 안개 숲. 약초·비단·운무.
+tier = 2
 enemy_pool = mr-ali-mist-deer, mr-ali-herb-bandit, mr-ali-fog-sprite, mr-ali-stone-bear, mr-ali-dew-moth, mr-ali-marsh-creeper
 elite_enemy_pool = mr-ali-fog-sovereign, mr-ali-ancient-treant
 event_pool = ev-ali-mist-trader, ev-stranger-favor, ev-time-cracker, ev-alimes-mist-trail, ev-alimes-mist-grain, ev-alimes-mist-between, ev-alimes-mist-end-shayua, ev-alimes-erumen-entry, ev-alimes-tarko-pressure, ev-alimes-cloud-sketch, ev-alimes-peak-wind, ev-alimes-erumen-pool, ev-alimes-erumen-stele, ev-alimes-erumen-deep, ev-alimes-yoon-pri-contract, ev-alimes-spring-shayua
@@ -85,6 +91,7 @@ legendary_cards = c-alimes-mist-vow
 [nodemap.nm-act-1-era4-061.region.luna]
 name = 마법학교 루나 · 마왕성
 description = 남서쪽의 마법 학교 + 팬텀 스파이어 + *마왕성·금단 회랑*. 잉크·금서·먼지 낀 첨탑·서류 냄새.
+tier = 3
 enemy_pool = mr-luna-ink-fiend, mr-luna-grimoire-shadow, mr-luna-phantom-scribe, mr-luna-cursed-page, mr-luna-mirror-shade, mr-luna-forbidden-wisp, mr-luna-corridor-phantom
 elite_enemy_pool = mr-luna-arcane-devourer, mr-luna-headmaster-shade
 event_pool = ev-luna-forbidden-page, ev-mono-whisper, ev-luna-entrance, ev-luna-library-floating-book, ev-luna-old-magicircle, ev-luna-grimoire-blind-title, ev-luna-illusion-late-face, ev-luna-classroom-test, ev-luna-ward-shake, ev-luna-old-desk-note, ev-luna-garden-plant, ev-luna-dorm-empty, ev-luna-febiel-stellaville
@@ -94,6 +101,7 @@ specialty_item = i-grimoire-ink
 [nodemap.nm-act-1-era4-061.region.tacomi]
 name = 타코미 권역
 description = 대절곡 이북의 페스티벌 도시 + 홀로그램 필드 + 스텔라 빌. 네온·레이저·결계.
+tier = 3
 enemy_pool = mr-tacomi-pixel-beast, mr-tacomi-hologram-jester, mr-tacomi-barrier-sprite, mr-tacomi-neon-hornet, mr-tacomi-festival-mimic, mr-tacomi-circuit-prowler, mr-tacomi-voltage-dancer
 elite_enemy_pool = mr-tacomi-hologram-titan, mr-tacomi-grand-circuit
 event_pool = ev-taco-hologram-mirror, ev-stranger-favor, ev-time-cracker, ev-tacomi-day-flow, ev-tacomi-shinsian-cup, ev-tacomi-shinsian-cup-alt, ev-tacomi-alley-cat, ev-tacomi-latte-row, ev-tacomi-sun-book, ev-tacomi-bloom-veil, ev-tacomi-bloom-veil-alt, ev-tacomi-petal-path, ev-tacomi-petal-path-alt, ev-tacomi-petal-spot, ev-tacomi-petal-spot-alt, ev-tacomi-night-stand, ev-tacomi-night-neon, ev-tacomi-night-stage, ev-tacomi-night-dj, ev-tacomi-night-alley, ev-tacomi-night-edge, ev-tacomi-imperisia-trace
@@ -104,6 +112,7 @@ legendary_cards = c-tacomi-hologram-mirror
 [nodemap.nm-act-1-era4-061.region.demon-windfall]
 name = 풍혈지대
 description = 일루네온·리아그랄타에서 타코미로 넘어가는 바람의 길목. 끝에 *시간의 닻*이 떠 있다. 강풍·끊긴 공기.
+tier = 3
 enemy_pool = mr-demon-windfall-paper-ghost, mr-demon-windfall-gale-blade, mr-demon-windfall-time-freezer, mr-demon-windfall-anchor-wraith
 elite_enemy_pool = mr-demon-windfall-storm-tyrant
 event_pool = ev-demon-stamp-pile, ev-mono-whisper
@@ -113,6 +122,7 @@ specialty_item = i-anchor-link
 [nodemap.nm-act-1-era4-061.region.martin]
 name = 마틴 항 · 키시나 해변
 description = 일루네온과 클러치 사이의 *항구*. *마틴 → 배 → 클러치*. 키시나 해변 분기.
+tier = 2
 enemy_pool = mr-martin-dock-rat, mr-martin-sea-thug, mr-martin-kelp-creeper, mr-martin-tide-spirit, mr-martin-gull-raider
 elite_enemy_pool = mr-kishina-siren
 event_pool = ev-mono-whisper, ev-fountain-vow, ev-martin-cargo-line, ev-martin-lighthouse, ev-kishina-shells, ev-kishina-spirit-bead, ev-martin-boat-passage
@@ -122,6 +132,7 @@ specialty_item = i-salt-pearl
 [nodemap.nm-act-1-era4-061.region.enicham]
 name = 에니챀 · 발전소 지대
 description = 타코미 옆의 *발전소 지대*. 희미한 투광·기계 소음·메탈 향. 제로의 단정한 자리. 알티-알타의 *AGI 초기 흔적*.
+tier = 3
 enemy_pool = mr-enicham-sparking-drone, mr-enicham-relay-crawler, mr-enicham-capacitor-golem, mr-enicham-circuit-hound, mr-enicham-overload-wraith
 elite_enemy_pool = mr-enicham-proto-agi
 event_pool = ev-enicham-gen-hum, ev-enicham-wire-spire, ev-enicham-zero-bench, ev-enicham-alti-bay, ev-enicham-old-circuit
@@ -131,6 +142,7 @@ specialty_item = i-neon-residue
 [nodemap.nm-act-1-era4-061.region.reshud]
 name = 르슈드 교차로
 description = 알리메스·일루네온·리아그랄타·풍혈지대를 잇는 작은 마차 교차로. 종소리·말 발굽. 단순 경유지.
+tier = 1
 enemy_pool = mr-reshud-bandit, mr-reshud-stray-ram, mr-reshud-spark-hound, mr-reshud-drifter, mr-reshud-toll-raider
 elite_enemy_pool = mr-reshud-thunder-wolf
 event_pool = ev-traveler-fork, ev-fountain-vow
@@ -140,6 +152,7 @@ specialty_item = i-storm-fang
 [nodemap.nm-act-1-era4-061.region.yusezria]
 name = 유스제리아
 description = 리아그랄타 너머의 *막다른 고위험 사냥터*. 철과 물의 정수가 고인 dead end. 몬스터가 매우 강력하다. NPC 없음.
+tier = 4
 enemy_pool = mr-yusezria-iron-sentinel, mr-yusezria-tide-wraith, mr-yusezria-rust-hound, mr-yusezria-pressure-mite, mr-yusezria-deep-leech, mr-yusezria-ore-spike
 elite_enemy_pool = mr-yusezria-core-colossus, mr-yusezria-abyssal-warden
 event_pool = ev-yuse-iron-vein, ev-yuse-tide-pool, ev-yuse-dead-end
@@ -149,6 +162,7 @@ specialty_item = i-yusezria-ore
 [nodemap.nm-act-1-era4-061.region.triflower]
 name = 트리플라워 화산
 description = 라르 숲과 모스 사이의 활화산. 화염 몬무스 — 살라만더·화염 정령·화염 아라크네. 용암·재·열기.
+tier = 3
 enemy_pool = mr-triflower-ember-arachne, mr-triflower-lava-salamander, mr-triflower-flame-spirit, mr-triflower-magma-crab, mr-triflower-scorchling
 elite_enemy_pool = mr-triflower-ignia-queen
 event_pool = ev-lar-triflower-spirit, ev-lar-crater-rim-heat, ev-lar-lava-vein-spark, ev-lar-cooled-slag-rest, ev-tri-web-nest, ev-tri-magma-core
@@ -158,6 +172,7 @@ specialty_item = i-lava-scale
 [nodemap.nm-act-1-era4-061.region.falcon-garden]
 name = 팔콘 가든 공중 군도
 description = 클러치 등대 너머 바다 위에 떠 있는 *공중 군도*. 강력한 조류 몬무스 — 맹금·하피·하늘의 주인. 대화 가능한 이는 *바다쪽 범고래*뿐. 강풍·깃털·고도.
+tier = 4
 enemy_pool = mr-falcon-garden-gust-harpy, mr-falcon-garden-talon-striker, mr-falcon-garden-wind-lancer, mr-falcon-garden-sky-raven, mr-falcon-garden-gale-sentry
 elite_enemy_pool = mr-falcon-garden-storm-sovereign, mr-falcon-garden-sky-empress
 event_pool = ev-falcon-shore, ev-falcon-core
@@ -167,6 +182,7 @@ specialty_item = i-sky-shard
 [nodemap.nm-act-1-era4-061.region.tradepost]
 name = 초원 교역소
 description = 리아그랄타 초원 서쪽의 *대상 교역지*. 여러 행상이 천막을 친다. 라미아 상인 사라사가 *직물과 향신료*를 펼친다. 평화로운 거래의 자리.
+tier = 1
 enemy_pool = mr-tradepost-stray-hound, mr-tradepost-caravan-thief, mr-tradepost-wanderer, mr-tradepost-lamia-guard, mr-tradepost-dust-rat
 elite_enemy_pool = mr-tradepost-lamia-enforcer
 event_pool = ev-trade-sarasa, ev-trade-caravan
@@ -176,6 +192,7 @@ specialty_item = i-trade-silk
 [nodemap.nm-act-1-era4-061.region.diropel]
 name = 딜롭 부족
 description = 에루멘 안개숲 *너머*의 숨은 골짜기. *늘어진 귀가 긴 형태와 짧은 형태* 두 모습을 가진 한 종족 *딜롭*이 얼굴에 무늬를 그리며 독자 문화를 이룬다. 언어가 통하지 않아, 무늬와 몸짓으로 말한다.
+tier = 3
 enemy_pool = mr-diropel-long-ear-sentinel, mr-diropel-short-ear-dancer, mr-diropel-totem-warden, mr-diropel-pattern-shaman
 elite_enemy_pool = mr-diropel-grove-elder
 event_pool = ev-diropel-paint, ev-diropel-totem
@@ -185,6 +202,7 @@ specialty_item = i-diropel-pigment
 [nodemap.nm-act-1-era4-061.region.coral-coast]
 name = 산호 해안
 description = 키시나 해변 너머 바다 속의 *산호 해안* — 해양 사냥터. 인어와 세이렌이 산호초에 깃들고, *범고래(클루루)와는 앙숙*이다. 산호·조류·노래.
+tier = 3
 enemy_pool = mr-coral-coast-jellyfish-drifter, mr-coral-coast-siren-charmer, mr-coral-coast-coral-grappler, mr-coral-coast-mermaid-hunter, mr-coral-coast-tide-specter
 elite_enemy_pool = mr-coral-coast-abyss-queen
 event_pool = ev-coral-rest, ev-coral-song
@@ -194,6 +212,7 @@ specialty_item = i-coral-pearl
 [nodemap.nm-act-1-era4-061.region.emberforge]
 name = 화산광 지대
 description = 모스 화산 너머 *용암과 광맥이 뒤엉킨 지대* — 도전 사냥터. 격 높은 신수 *쿠마미미*가 지킨다. 쇳물·재·검은 연기.
+tier = 4
 enemy_pool = mr-emberforge-ash-hound, mr-emberforge-furnace-golem, mr-emberforge-lava-crawler, mr-emberforge-cinder-bat, mr-emberforge-slag-crusher
 elite_enemy_pool = mr-emberforge-magma-titan, mr-emberforge-kumamimi
 event_pool = ev-emberforge-lair, ev-emberforge-core
@@ -203,6 +222,7 @@ specialty_item = i-emberforge-ore
 [nodemap.nm-act-1-era4-061.region.oldshrine]
 name = 구 신전터
 description = 타코미 너머 *번개가 깃든 옛 신전 유적* — 도전 사냥터. 격 높은 신수 *토라미미*가 지킨다. 부서진 기둥·정전기·빛 무늬.
+tier = 4
 enemy_pool = mr-oldshrine-spirit-flame, mr-oldshrine-shrine-warden, mr-oldshrine-thunder-wraith, mr-oldshrine-barrier-golem, mr-oldshrine-relic-hunter
 elite_enemy_pool = mr-oldshrine-lightning-archon, mr-oldshrine-toramimi
 event_pool = ev-oldshrine-altar, ev-oldshrine-core
