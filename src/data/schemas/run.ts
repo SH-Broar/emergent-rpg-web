@@ -152,10 +152,11 @@ export interface CombatState {
   pendingHandJunk?: Card[];
 
   /**
-   * 변신 해제 카드(release-transform)가 켜는 플래그 — playCard가 카드 정리 *후* 전투 더미를
-   * 복원된 원본 덱으로 재구성하게 한다(핸들러에서 직접 재구성하면 handIndex가 어긋남).
+   * 변신 해제 진행 카운트다운 — '본모습'(release-transform) 카드를 쓰면 즉시가 아니라
+   * 이 값(턴 수)만큼 지나야 원복(applyPlayerStatusTurnStart에서 매 턴 -1, 0 도달 시 복원+더미 재구성).
+   * 사용자 사양: 해제는 ~2턴 걸린다. 전투 중 미완(승리) 시 변신 지속.
    */
-  rebuildFromDeck?: boolean;
+  releasePending?: number;
 }
 
 /**

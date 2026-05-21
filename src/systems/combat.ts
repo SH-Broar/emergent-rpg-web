@@ -406,24 +406,23 @@ export function playCard(handIndex: number, monster: Monster): { enemyDefeated: 
     }
   }
 
-  // 변신 해제 카드 사용 후 — 카드 정리가 끝난 지금, 원본 덱으로 전투 더미를 새로 구성.
-  // (핸들러에서 즉시 재구성하면 위의 hand.filter handIndex가 어긋나므로 여기서 일괄.)
-  if (c.rebuildFromDeck) {
-    c.rebuildFromDeck = false;
-    const handSize = STARTING_HAND_SIZE + playerBonuses(c).drawExtra + getModifierAdd('draw-extra-add');
-    const rebuilt = drawCards([...r.deck], [], handSize);
-    c.drawPile = rebuilt.newDrawPile;
-    c.hand = rebuilt.drawn;
-    c.discardPile = rebuilt.newDiscardPile;
-    c.exhaustPile = [];
-    c.lockedCardIds = [];
-  }
-
   if (c.enemy.hp <= 0) {
     return { enemyDefeated: true };
   }
   void monster;
   return { enemyDefeated: false };
+}
+
+/** 전투 더미를 *현재 r.deck*으로 새로 구성 — 변신 원복 시 폼 덱 → 원본 덱 교체용. */
+function rebuildCombatPiles(c: CombatState): void {
+  const r = useRunStore().data;
+  const handSize = STARTING_HAND_SIZE + playerBonuses(c).drawExtra + getModifierAdd('draw-extra-add');
+  const rebuilt = drawCards([...r.deck], [], handSize);
+  c.drawPile = rebuilt.newDrawPile;
+  c.hand = rebuilt.drawn;
+  c.discardPile = rebuilt.newDiscardPile;
+  c.exhaustPile = [];
+  c.lockedCardIds = [];
 }
 
 function applyEffect(effect: CardEffect, c: CombatState) {
@@ -676,11 +675,13 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
   'curse-tick': () => {
     // no-op
   },
-  // 변신 해제 카드 — 원본 종족·덱 복원. 더미 재구성은 playCard 정리 *후*(rebuildFromDeck)에서.
+  // 변신 해제 카드('본모습') — 즉시가 아니라 ~2턴에 걸쳐 풀린다(releasePending 카운트다운).
+  // 실제 원복·더미 재구성은 applyPlayerStatusTurnStart에서 카운트다운 0 도달 시.
   'release-transform': (_e, c) => {
-    if (revertTransformationState()) {
-      c.rebuildFromDeck = true;
-      useUiStore().toast('success', '원래 모습으로 돌아왔다.');
+    if (!useRunStore().data.transform) return; // 변신 중이 아니면 무효.
+    if ((c.releasePending ?? 0) <= 0) {
+      c.releasePending = 2;
+      useUiStore().toast('info', '본모습이 돌아오는 중… (2턴)');
     }
   },
 };
@@ -831,6 +832,20 @@ function applyPlayerStatusTurnStart(c: CombatState): void {
   const ui = useUiStore();
   // 새 턴 — 발버둥 1턴 1회 리셋.
   c.struggledThisTurn = false;
+
+  // 변신 해제 카운트다운 — '본모습' 카드 사용 후 ~2턴에 걸쳐 풀린다.
+  if ((c.releasePending ?? 0) > 0) {
+    c.releasePending = (c.releasePending ?? 0) - 1;
+    if (c.releasePending <= 0) {
+      c.releasePending = 0;
+      if (revertTransformationState()) {
+        rebuildCombatPiles(c); // 폼 덱 → 원본 덱으로 더미 재구성.
+        ui.toast('success', '원래 모습으로 돌아왔다.');
+      }
+    } else {
+      ui.toast('info', `본모습이 돌아오는 중… (${c.releasePending}턴)`);
+    }
+  }
 
   const st = c.player.statuses;
   const par = st.paralyze ?? 0;
