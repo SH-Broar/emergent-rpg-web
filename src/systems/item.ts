@@ -109,11 +109,10 @@ function applyItemEffect(
   switch (eff.kind) {
     case 'heal': {
       const v = eff.value ?? 0;
-      // 전투 중이면 combat.player.hp(라이브 표시) + r.hp(런 값) 양쪽을 올려 화면·런 정합.
+      // 전투 중이면 combat.player.hp만 올린다 — 전투 종료 시 clearCombat이 r.hp로 라이트백(영구화).
       if (inCombat && c) {
         const beforeC = c.player.hp;
         c.player.hp = Math.min(c.player.maxHp, c.player.hp + v);
-        r.hp = Math.min(r.maxHp, r.hp + v);
         lines.push(`HP +${c.player.hp - beforeC}`);
       } else {
         const before = r.hp;

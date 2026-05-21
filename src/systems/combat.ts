@@ -1216,6 +1216,12 @@ export function applyMonsterDrop(drop: MonsterDrop, allCards: Map<string, Card>)
 /** 전투 종료 정리 (CombatView가 결과 화면 이후 호출). */
 export function clearCombat() {
   const run = useRunStore();
+  // 전투 종료 — 전투 중 HP 변화(피해·DoT·회복)를 런 HP로 라이트백(영구 누적). 사용자 사양(2026-05-21).
+  // 모든 전투 종료 경로(CombatView/BossView의 onVictory·onDefeat)가 clearCombat을 거치므로 여기 단일 처리.
+  const c = run.data.combat;
+  if (c) {
+    run.data.hp = Math.max(0, Math.min(run.data.maxHp, c.player.hp));
+  }
   run.data.combat = undefined;
   // 디버그 전투 오버라이드는 1회용 — 전투 종료 시 해제해 일반 전투에 영향 없게.
   useUiStore().clearDebugBattle();
