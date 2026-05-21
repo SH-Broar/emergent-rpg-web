@@ -144,6 +144,15 @@ function defaultActivity(): void {
  * 노드 진입 시 활동 보상을 적용. MapView의 `case 'activity'` 분기에서 호출.
  */
 export function performActivity(nodeId: string): void {
+  const run = useRunStore();
+  const r = run.data;
+  // 이미 발동한 활동은 다음 갱신(하루 경과) 전까지 재발동하지 않음.
+  if (r.nodeStates[nodeId]?.activityDone) {
+    useUiStore().toast('info', '이미 다녀간 활동 — 갱신 후 다시.');
+    return;
+  }
   const handler = HANDLERS[nodeId] ?? defaultActivity;
   handler();
+  if (!r.nodeStates[nodeId]) r.nodeStates[nodeId] = { visited: true };
+  r.nodeStates[nodeId].activityDone = true;
 }

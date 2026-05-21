@@ -222,6 +222,10 @@ export interface NodeStateRecord {
   combatStealthed?: boolean;
   eventTriggered?: string;
   eventCount?: number;
+  /** 활동 노드 발동 여부 — true면 다음 하루 경과(갱신) 전까지 재발동 안 함. */
+  activityDone?: boolean;
+  /** 채집 횟수(이번 갱신 주기) — 반복할수록 효율 체감. 하루 경과 시 0으로 리셋. */
+  gatherCount?: number;
 }
 
 /** 한 런 전체의 휘발 상태. */

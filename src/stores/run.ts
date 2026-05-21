@@ -374,6 +374,8 @@ export const useRunStore = defineStore('run', {
           st.combatStealthed = false;
           st.eventTriggered = undefined;
           st.eventCount = 0;
+          st.activityDone = false;  // 활동 재발동 가능.
+          st.gatherCount = 0;       // 채집 효율 회복.
         }
 
         // 2) 노드 *원본 kind는 그대로* — 지도 모양 유지.
