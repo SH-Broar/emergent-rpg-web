@@ -121,6 +121,35 @@ export interface CombatState {
 
   /** 이번 턴에 사용한 카드 수 — first-card-free 유물 판정용. 매 턴 0으로 리셋. */
   cardsPlayedThisTurn?: number;
+
+  // === 전투 에로 / 카드 교란 기믹 (Stage 2 — 전부 optional, 미설정 시 영향 0) ===
+  /**
+   * 구속(bind)/삼킴(devour) 상태 — 한 번에 하나만 활성. 발버둥(struggle)으로 해제.
+   *  - bind   : 매 플레이어 턴 (base + ramp)장의 손패를 잠금(lockedCardIds 재사용).
+   *  - devour : 매 플레이어 턴 시작에 (base + ramp) 직접 HP 피해(block 무시 DoT).
+   * gauge=탈출까지 남은 양(발버둥으로 감소, 0이면 자동 해제). ramp=적 턴마다 +1.
+   */
+  grapple?: {
+    kind: 'bind' | 'devour';
+    gauge: number;
+    base: number;
+    ramp: number;
+    label?: string;
+  };
+  /** 이번 턴 발버둥 사용 여부 — 1턴 1회. 매 턴 false 리셋. */
+  struggledThisTurn?: boolean;
+  /** 손패 은폐 남은 턴 수 — >0이면 카드 뒷면 표시. 매 턴 -1. */
+  obscuredTurns?: number;
+  /** 카드 비용 상승 교란 — amount만큼 모든 카드 cost +, turns 동안 유지(매 턴 -1). */
+  costUp?: { amount: number; turns: number };
+  /** 다음 손패 드로우 감소량 — force-discard 인텐트가 누적, 다음 드로우에서 1회 소비. */
+  drawDown?: number;
+  /**
+   * '손패에 즉시 쥐어주는' 잡카드 대기열 — add-card-hand 전용.
+   * 몬스터는 플레이어 턴 *종료* 시 행동하므로 손패에 직접 넣으면 곧장 버려진다.
+   * 대신 여기 모아 두고, *다음 손패 드로우 직후* 강제로 끼워 넣어 draw RNG와 무관하게 보장.
+   */
+  pendingHandJunk?: Card[];
 }
 
 /**

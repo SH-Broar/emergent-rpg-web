@@ -18,13 +18,14 @@ import {
   endPlayerTurn,
   applyMonsterDrop,
   clearCombat,
+  struggle,
   statusBonusForCardEffectKind,
   type CombatVictoryDrop,
 } from '@/systems/combat';
 import { effectiveContent } from '@/systems/map';
 import { colorBonusForCardEffectKind } from '@/systems/stats';
 import { bonusesFromEffective } from '@/systems/equipment';
-import { cardEffectKindLabel, cardEffectDescription, effectTargetLabel, statusDescription } from '@/systems/labels';
+import { cardEffectKindLabel, cardEffectDescription, effectTargetLabel, statusDescription, intentLabel } from '@/systems/labels';
 import type { Card, CardEffect, Combatant, Monster } from '@/data/schemas';
 
 const router = useRouter();
@@ -129,9 +130,27 @@ const rankColors: Record<string, string> = {
   legendary: '#ffe88e',
 };
 function cardBorder(c: Card): string { return rankColors[c.rank] ?? '#a4a4b0'; }
+/** 표시·판정용 실효 비용 — 몬스터 비용 교란(cost-up) 반영. */
+function displayCost(c: Card): number {
+  const up = combat.value?.costUp?.amount ?? 0;
+  return Math.max(0, c.cost + up);
+}
+function isLocked(c: Card): boolean {
+  return !!(c.instanceId && combat.value?.lockedCardIds?.includes(c.instanceId));
+}
 function canPlay(c: Card): boolean {
   if (!combat.value) return false;
-  return combat.value.mana >= c.cost;
+  if (c.unplayable) return false;          // 잡카드(상처/저주) — 사용 불가.
+  if (isLocked(c)) return false;           // 구속/닻으로 잠김.
+  if (combat.value.frozenTurn) return false; // 마비/정지 턴.
+  return combat.value.mana >= displayCost(c);
+}
+
+// === 구속/삼킴(grapple) + 발버둥 ===
+const grapple = computed(() => combat.value?.grapple);
+const obscured = computed(() => (combat.value?.obscuredTurns ?? 0) > 0);
+function doStruggle() {
+  struggle();
 }
 
 /**
@@ -159,6 +178,8 @@ const statusLabels: Record<string, string> = {
   burn: '화상',
   feral: '수화',
   regress: '퇴행',
+  paralyze: '마비',
+  spasm: '경련',
 };
 function statusEntries(c: Combatant | undefined) {
   if (!c) return [] as { key: string; count: number; label: string }[];
@@ -199,7 +220,7 @@ void ui;
           HP {{ combat.enemy.hp }} / {{ combat.enemy.maxHp }}
           <span v-if="combat.enemy.block > 0" class="block">🛡 {{ combat.enemy.block }}</span>
         </div>
-        <div class="intent">다음: {{ combat.enemyIntent }}</div>
+        <div class="intent">다음: {{ intentLabel(combat.enemyIntent) }}</div>
         <ul class="statuses statuses--enemy">
           <li v-for="s in statusEntries(combat.enemy)" :key="s.key" class="status" :data-key="s.key" v-tooltip="statusDescription(s.key)">
             {{ s.label }} ×{{ s.count }}
@@ -208,19 +229,51 @@ void ui;
       </div>
     </header>
 
+    <!-- 구속/삼킴 — 발버둥으로 탈출 -->
+    <div v-if="grapple" class="grapple" :class="`grapple--${grapple.kind}`">
+      <span class="grapple__label">
+        {{ grapple.label ?? (grapple.kind === 'bind' ? '구속' : '삼켜짐') }}
+        <span class="grapple__gauge">탈출까지 {{ grapple.gauge }}</span>
+        <span v-if="grapple.ramp > 0" class="grapple__ramp">방치 +{{ grapple.ramp }}</span>
+      </span>
+      <button
+        class="struggle"
+        :disabled="combat.frozenTurn || combat.struggledThisTurn || combat.mana < 1"
+        @click="doStruggle"
+      >
+        발버둥 (마나 1)
+      </button>
+    </div>
+
     <section class="hand">
+      <!-- 은폐(obscure) 시 카드 뒷면 — 무엇인지 모른 채 위치로만 사용 가능 -->
+      <template v-if="obscured">
+        <div
+          v-for="(card, i) in combat.hand"
+          :key="`fd-${card.instanceId ?? card.id}-${i}`"
+          class="card card--facedown"
+          :class="{ 'card--disabled': !canPlay(card) }"
+          @click="canPlay(card) && play(i)"
+        >
+          <div class="facedown__mark">?</div>
+          <div class="facedown__note">가려진 카드</div>
+        </div>
+      </template>
+
+      <template v-else>
       <div
         v-for="(card, i) in combat.hand"
-        :key="`${card.id}-${i}`"
+        :key="`${card.instanceId ?? card.id}-${i}`"
         class="card"
-        :class="{ 'card--disabled': !canPlay(card) }"
+        :class="{ 'card--disabled': !canPlay(card), 'card--locked': isLocked(card), 'card--junk': card.unplayable }"
         :style="{ borderColor: cardBorder(card) }"
         @click="canPlay(card) && play(i)"
       >
         <div class="card__head">
-          <span class="card__cost">{{ card.cost }}</span>
+          <span class="card__cost" :class="{ 'card__cost--up': displayCost(card) > card.cost }">{{ displayCost(card) }}</span>
           <span class="card__name">{{ card.name }}</span>
-          <span class="card__rank" :style="{ color: cardBorder(card) }">{{ card.rank }}</span>
+          <span v-if="isLocked(card)" class="card__lock" title="묶여서 쓸 수 없다">🔒</span>
+          <span v-else class="card__rank" :style="{ color: cardBorder(card) }">{{ card.rank }}</span>
         </div>
         <div class="card__effects">
           <span v-for="(e, ei) in card.effects" :key="ei" class="effect" v-tooltip="cardEffectDescription(e)">
@@ -238,6 +291,7 @@ void ui;
         </div>
         <p v-if="card.flavor" class="card__flavor">{{ card.flavor }}</p>
       </div>
+      </template>
     </section>
 
     <footer class="pile-info">
@@ -360,6 +414,36 @@ void ui;
 /* feral(수화): 공격 ↑ / 방어 불가 — 양날. 주황 강조. */
 .status[data-key="feral"] { color: #ffb86c; border-color: rgba(255,184,108,0.4); }
 .card__flavor { font-size: 0.75rem; color: #6c6c7c; font-style: italic; margin: 0; }
+
+/* === 구속/삼킴 (grapple) + 발버둥 === */
+.grapple {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  margin: 0.4rem 0; padding: 0.5rem 1rem; border-radius: 8px;
+  border: 1px solid rgba(255,142,142,0.5); background: rgba(255,142,142,0.08);
+}
+.grapple--devour { border-color: rgba(192,142,255,0.55); background: rgba(192,142,255,0.1); }
+.grapple__label { color: #ffb88e; font-weight: 700; display: inline-flex; gap: 0.6rem; align-items: baseline; }
+.grapple--devour .grapple__label { color: #d6b8ff; }
+.grapple__gauge { font-size: 0.85rem; color: #f6e8b8; font-weight: 600; }
+.grapple__ramp { font-size: 0.8rem; color: #ff8e8e; font-weight: 700; }
+.struggle {
+  padding: 0.5rem 1.1rem; border-radius: 6px; cursor: pointer; font-weight: 700;
+  background: rgba(255,184,108,0.22); border: 1px solid rgba(255,184,108,0.6); color: #ffe2c0;
+}
+.struggle:hover:not(:disabled) { background: rgba(255,184,108,0.34); }
+.struggle:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* 잠긴 카드 / 잡카드 / 비용 상승 / 뒷면 */
+.card--locked { border-style: dashed !important; }
+.card__lock { font-size: 0.9rem; }
+.card--junk { background: rgba(120,90,90,0.18); }
+.card__cost--up { background: #ff8e8e; color: #160d0d; }
+.card--facedown {
+  align-items: center; justify-content: center; text-align: center;
+  border-color: #555 !important; background: repeating-linear-gradient(45deg, rgba(255,255,255,0.03), rgba(255,255,255,0.03) 8px, rgba(255,255,255,0.06) 8px, rgba(255,255,255,0.06) 16px);
+}
+.facedown__mark { font-size: 2.4rem; color: #8a8a99; font-weight: 800; }
+.facedown__note { font-size: 0.75rem; color: #6c6c7c; }
 
 .pile-info { display: flex; gap: 1.5rem; padding: 0.8rem 1rem; background: rgba(0,0,0,0.4); border-radius: 8px; color: #b6b6c4; align-items: center; }
 .end-turn { margin-left: auto; padding: 0.6rem 1.2rem; background: rgba(192,142,255,0.2); border: 1px solid rgba(192,142,255,0.5); color: #f6e8b8; border-radius: 6px; cursor: pointer; font-weight: 600; }

@@ -38,6 +38,7 @@ const CARD_EFFECT_KIND_LABELS: Record<string, string> = {
   'growing-damage': '성장 피해',
   'heal-per-hand': '패 회복',
   'next-card-double': '메아리',
+  'curse-tick': '저주 피해',
 };
 
 /**
@@ -69,6 +70,7 @@ const CARD_EFFECT_DESCRIPTIONS: Record<string, string> = {
   'growing-damage': '피해. 쓸 때마다 이 카드의 피해가 +1씩 누적됩니다.',
   'heal-per-hand': '현재 손패 수 × 수치만큼 회복.',
   'next-card-double': '다음에 쓰는 카드 1장의 모든 수치가 2배가 됩니다.',
+  'curse-tick': '손에 쥐고 있으면 매 턴 시작마다 수치만큼 직접 피해를 입습니다.',
 };
 
 /** 상태이상/버프 키 → *툴팁용 상세 설명*. */
@@ -112,6 +114,57 @@ const TARGET_LABELS: Record<string, string> = {
 export function statusLabel(name: string | undefined): string {
   if (!name) return '';
   return STATUS_LABELS[name] ?? name;
+}
+
+/** 몬스터 의도(intent) 종류 → 한글 동사. UI는 "{라벨} {수치}" 형태로 표시. */
+const INTENT_KIND_LABELS: Record<string, string> = {
+  attack: '공격',
+  defend: '방어',
+  buff: '강화',
+  debuff: '약화 부여',
+  bind: '구속',
+  devour: '삼킴',
+  drain: '흡혈',
+  charge: '기력 모으기',
+  'add-card': '잡카드 주입',
+  'add-card-draw': '잡카드 주입',
+  'add-card-discard': '잡카드 섞기',
+  'add-card-hand': '잡카드 쥐어주기',
+  obscure: '시야 가리기',
+  'cost-up': '비용 교란',
+  'force-discard': '드로우 감소',
+  'transform-card': '카드 망가뜨리기',
+};
+
+/**
+ * 몬스터 의도 인코딩(예: 'attack:8', 'devour:4:3', 'add-card-draw:c-junk-wound:2')을
+ * 사람이 읽는 라벨로. 수치가 의미 있는 종류만 숫자를 덧붙인다.
+ */
+export function intentLabel(encoded: string | undefined): string {
+  if (!encoded) return '';
+  const parts = encoded.split(':');
+  const kind = parts[0];
+  const label = INTENT_KIND_LABELS[kind] ?? kind;
+  const n = Number(parts[1]);
+  // 공격/흡혈/방어/강화/약화는 수치를 같이 보여줌. 잡카드류는 장수(parts[2])를 보여줌.
+  if ((kind === 'attack' || kind === 'defend' || kind === 'buff' || kind === 'drain' || kind === 'charge') && n > 0) {
+    return `${label} ${n}`;
+  }
+  if (kind === 'debuff') {
+    const st = statusLabel(parts[2]);
+    return st ? `${st} 부여` : label;
+  }
+  if (kind.startsWith('add-card')) {
+    const cnt = Number(parts[2]) || 1;
+    return `${label} ×${cnt}`;
+  }
+  if ((kind === 'force-discard' || kind === 'transform-card' || kind === 'obscure') && n > 0) {
+    return `${label} ${n}`;
+  }
+  if (kind === 'bind' || kind === 'devour') {
+    return label; // 게이지는 grapple 표시에서 별도로.
+  }
+  return label;
 }
 
 /** 상태이상/버프 *툴팁 설명*. 미상 키는 빈 문자열. */

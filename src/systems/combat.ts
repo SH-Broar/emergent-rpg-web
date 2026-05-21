@@ -19,7 +19,7 @@ import type {
   Monster,
   MonsterDrop,
 } from '@/data/schemas';
-import { drawCards, discardHand } from './deck';
+import { drawCards, discardHand, instantiateCard } from './deck';
 import { rng } from './rng';
 import { bonusesFromEffective } from './equipment';
 import {
@@ -316,9 +316,15 @@ export function playCard(handIndex: number, monster: Monster): { enemyDefeated: 
   const card = c.hand[handIndex];
   if (!card) return { enemyDefeated: false };
 
-  // 보스 기믹(닻): 잠긴 카드는 사용 거부 (마나·효과 없음). 일반 전투에선 lockedCardIds가 비어 영향 0.
-  if (c.bossMechanic && card.instanceId && c.lockedCardIds?.includes(card.instanceId)) {
-    ui.toast('warning', '시간의 닻에 묶여 움직이지 않는다.');
+  // 잡카드(상처/저주): 사용 불가 — 칸만 차지, 전투 종료 시 소멸.
+  if (card.unplayable) {
+    ui.toast('warning', '이 카드는 쓸 수 없다.');
+    return { enemyDefeated: false };
+  }
+
+  // 잠긴 카드 — 보스 기믹(닻) 또는 구속(bind)으로 묶임. lockedCardIds가 비어 있으면 영향 0.
+  if (card.instanceId && c.lockedCardIds?.includes(card.instanceId)) {
+    ui.toast('warning', c.bossMechanic ? '시간의 닻에 묶여 움직이지 않는다.' : '묶여서 움직이지 않는다.');
     return { enemyDefeated: false };
   }
 
@@ -328,8 +334,8 @@ export function playCard(handIndex: number, monster: Monster): { enemyDefeated: 
     const damageReceived = r.runDamageReceived ?? 0;
     baseCost = Math.max(0, baseCost - damageReceived);
   }
-  // cost-mod-add 유물 (예: 모든 카드 비용 -1) 적용. 음수 cost는 0으로 clamp.
-  let effCost = Math.max(0, baseCost + getModifierAdd('cost-mod-add'));
+  // cost-mod-add 유물 (예: 모든 카드 비용 -1) + 몬스터 비용 교란(cost-up) 적용. 음수 cost는 0으로 clamp.
+  let effCost = Math.max(0, baseCost + getModifierAdd('cost-mod-add') + (c.costUp?.amount ?? 0));
   // first-card-free 유물: 매 턴 *첫 카드*의 비용 0.
   if ((c.cardsPlayedThisTurn ?? 0) === 0 && playerHasRelicEffect('first-card-free')) {
     effCost = 0;
@@ -652,6 +658,11 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
   'next-card-double': (_e, c) => {
     (c as { nextCardDouble?: boolean }).nextCardDouble = true;
   },
+  // 마커: 저주 잡카드가 손에 있으면 매 턴 시작 피해. 실제 틱은 applyPlayerStatusTurnStart의 스캔.
+  // (저주는 unplayable이라 이 핸들러는 사실상 호출되지 않음 — 타입 완전성용 no-op.)
+  'curse-tick': () => {
+    // no-op
+  },
 };
 
 /** 컬러 키 참조용 (draw-if-color params 타입). */
@@ -690,6 +701,13 @@ export function endPlayerTurn(monster: Monster): { playerDefeated: boolean; enem
   const r = run.data;
   const c = r.combat;
   if (!c) return { playerDefeated: false };
+
+  // 카드 교란 지속 감소 — *끝나는* 이번 턴이 은폐/비용상승 대상이었으므로 1 소모.
+  if ((c.obscuredTurns ?? 0) > 0) c.obscuredTurns = (c.obscuredTurns ?? 0) - 1;
+  if (c.costUp) {
+    c.costUp.turns -= 1;
+    if (c.costUp.turns <= 0) c.costUp = undefined;
+  }
 
   // 플레이어 턴 종료 trigger — 몬스터 행동 *전*.
   fireRelicTrigger('on-turn-end', { run: r, combat: c });
@@ -751,7 +769,13 @@ export function endPlayerTurn(monster: Monster): { playerDefeated: boolean; enem
 
   // MAG 보너스로 매 턴 드로우 +. regress면 drawExtra 무효(playerBonuses 0).
   // 유물 draw-extra-add는 색 스탯과 무관하므로 regress와 별개로 항상 합산.
-  const handSize = STARTING_HAND_SIZE + playerBonuses(c).drawExtra + getModifierAdd('draw-extra-add');
+  // force-discard 교란(drawDown)은 이번 드로우를 줄이고 1회 소비.
+  const drawDown = c.drawDown ?? 0;
+  if (drawDown > 0) c.drawDown = 0;
+  const handSize = Math.max(
+    0,
+    STARTING_HAND_SIZE + playerBonuses(c).drawExtra + getModifierAdd('draw-extra-add') - drawDown,
+  );
   const { drawn, newDrawPile, newDiscardPile } = drawCards(c.drawPile, c.discardPile, handSize);
   c.hand = drawn;
   c.drawPile = newDrawPile;
@@ -784,6 +808,10 @@ export function endPlayerTurn(monster: Monster): { playerDefeated: boolean; enem
  * 둘 다 적용(마비가 우선). 보스 stillness frozenTurn 패턴 재사용.
  */
 function applyPlayerStatusTurnStart(c: CombatState): void {
+  const ui = useUiStore();
+  // 새 턴 — 발버둥 1턴 1회 리셋.
+  c.struggledThisTurn = false;
+
   const st = c.player.statuses;
   const par = st.paralyze ?? 0;
   if (par > 0) {
@@ -791,7 +819,7 @@ function applyPlayerStatusTurnStart(c: CombatState): void {
     c.mana = 0;
     if (par - 1 <= 0) delete st.paralyze;
     else st.paralyze = par - 1;
-    useUiStore().toast('warning', '마비 — 이번 턴 움직일 수 없다.');
+    ui.toast('warning', '마비 — 이번 턴 움직일 수 없다.');
   }
   const sp = st.spasm ?? 0;
   if (sp > 0) {
@@ -799,6 +827,91 @@ function applyPlayerStatusTurnStart(c: CombatState): void {
     if (sp - 1 <= 0) delete st.spasm;
     else st.spasm = sp - 1;
   }
+
+  // 구속(bind)/삼킴(devour) — 매 플레이어 턴 시작 페널티. ramp는 적용 후 +1(방치할수록 강화).
+  const g = c.grapple;
+  if (g) {
+    if (g.kind === 'devour') {
+      const dot = g.base + g.ramp; // 삼킴: DoT가 ramp.
+      c.player.hp = Math.max(0, c.player.hp - dot);
+      ui.toast('warning', `삼켜짐 — ${dot} 피해 (탈출까지 ${g.gauge})`);
+    } else {
+      // 구속: 잠금 카드 수가 ramp. 새 손패에서 무작위 선택.
+      const lockN = Math.min(c.hand.length, g.base + g.ramp);
+      const ids = c.hand.map((card) => card.instanceId).filter((id): id is string => !!id);
+      for (let i = ids.length - 1; i > 0; i--) {
+        const j = Math.floor(rng() * (i + 1));
+        [ids[i], ids[j]] = [ids[j], ids[i]];
+      }
+      c.lockedCardIds = ids.slice(0, lockN);
+      if (lockN > 0) ui.toast('warning', `구속 — 카드 ${lockN}장이 묶였다 (탈출까지 ${g.gauge})`);
+    }
+    g.ramp += 1;
+  }
+
+  // 저주(curse-tick) — 손에 든 저주 잡카드마다 매 턴 시작 직접 피해.
+  let curseDmg = 0;
+  for (const card of c.hand) {
+    for (const e of card.effects) {
+      if (e.kind === 'curse-tick') curseDmg += e.value ?? 0;
+    }
+  }
+  if (curseDmg > 0) {
+    c.player.hp = Math.max(0, c.player.hp - curseDmg);
+    ui.toast('warning', `저주 — ${curseDmg} 피해`);
+  }
+
+  // add-card-hand 대기열 — 새 손패에 강제 삽입(10장 초과분은 버린 더미로). 저주 틱 *이후*라
+  // 막 쥐어준 저주는 도착 턴엔 터지지 않고 다음 턴부터 작동.
+  const pending = c.pendingHandJunk;
+  if (pending && pending.length > 0) {
+    for (const card of pending) {
+      if (c.hand.length < 10) c.hand = [...c.hand, card];
+      else c.discardPile = [...c.discardPile, card];
+    }
+    c.pendingHandJunk = [];
+    ui.toast('warning', `잡카드 ${pending.length}장이 손에 쥐어졌다.`);
+  }
+}
+
+const STRUGGLE_POWER = 2;     // 발버둥 1회당 탈출 게이지 감소량.
+const STRUGGLE_MANA_COST = 1; // 발버둥 마나 비용 (저비용 — 탈출은 쉽게).
+
+/**
+ * 발버둥 — 구속/삼킴 탈출 전용 액션. 1턴 1회, 마나 1 소모.
+ * 게이지를 STRUGGLE_POWER만큼 깎고, 0 이하가 되면 즉시 해제(구속이면 손패 잠금도 해제).
+ * CombatView의 '발버둥' 버튼이 호출.
+ */
+export function struggle(): { freed: boolean } {
+  const run = useRunStore();
+  const ui = useUiStore();
+  const c = run.data.combat;
+  if (!c || !c.grapple) return { freed: false };
+  if (c.frozenTurn) {
+    ui.toast('warning', '몸이 굳어 발버둥칠 수 없다.');
+    return { freed: false };
+  }
+  if (c.struggledThisTurn) {
+    ui.toast('warning', '이번 턴엔 이미 발버둥쳤다.');
+    return { freed: false };
+  }
+  const inf = ui.debug.infiniteMana;
+  if (!inf && c.mana < STRUGGLE_MANA_COST) {
+    ui.toast('warning', '마나가 부족해 발버둥칠 수 없다.');
+    return { freed: false };
+  }
+  if (!inf) c.mana -= STRUGGLE_MANA_COST;
+  c.struggledThisTurn = true;
+  c.grapple.gauge -= STRUGGLE_POWER;
+  if (c.grapple.gauge <= 0) {
+    const wasBind = c.grapple.kind === 'bind';
+    c.grapple = undefined;
+    if (wasBind) c.lockedCardIds = []; // 묶인 카드 즉시 해제.
+    ui.toast('success', '벗어났다!');
+    return { freed: true };
+  }
+  ui.toast('info', `발버둥 — 탈출까지 ${c.grapple.gauge}`);
+  return { freed: false };
 }
 
 function executeMonsterIntent(c: CombatState) {
@@ -839,8 +952,125 @@ function executeMonsterIntent(c: CombatState) {
       c.player.statuses[status] = (c.player.statuses[status] ?? 0) + (value || 1);
       break;
     }
+    // === 전투 에로 기믹 ===
+    case 'bind': {
+      // bind:gauge:lock — 구속 시작/갱신. parts[2]=기본 잠금 카드 수.
+      startGrapple(c, 'bind', value || 3, Number(parts[2]) || 1, parts[3] || '구속');
+      break;
+    }
+    case 'devour': {
+      // devour:gauge:dot — 삼킴 시작/갱신. parts[2]=기본 턴당 피해.
+      startGrapple(c, 'devour', value || 4, Number(parts[2]) || 3, parts[3] || '삼켜짐');
+      break;
+    }
+    case 'drain': {
+      // drain:value — 흡혈 공격: 피해를 주고 *실제 HP 손실*만큼 적 회복.
+      const before = c.player.hp;
+      applyDamage(c.player, value, c.enemy.statuses, true);
+      const lost = before - c.player.hp;
+      if (lost > 0) {
+        c.enemy.hp = Math.min(c.enemy.maxHp, c.enemy.hp + lost);
+        const r = useRunStore().data;
+        r.runDamageReceived = (r.runDamageReceived ?? 0) + lost;
+        fireRelicTrigger('on-damage-taken', { run: r, combat: c, amount: lost });
+      }
+      break;
+    }
+    case 'charge': {
+      // charge:value — 윈드업: 힘 +value 축적(다음 공격 강화 텔레그래프).
+      c.enemy.statuses['strength'] = (c.enemy.statuses['strength'] ?? 0) + value;
+      break;
+    }
+    // === 카드 교란 기믹 (잡카드 주입은 위치별 3종) ===
+    case 'add-card':
+    case 'add-card-draw': {
+      // add-card[-draw]:cardId:N — 잡카드 N장을 *뽑을 더미 맨 위*에 주입.
+      injectJunk(c, parts[1], Number(parts[2]) || 1, 'draw');
+      break;
+    }
+    case 'add-card-discard': {
+      // add-card-discard:cardId:N — *버린 더미*에 주입(셔플 후 등장).
+      injectJunk(c, parts[1], Number(parts[2]) || 1, 'discard');
+      break;
+    }
+    case 'add-card-hand': {
+      // add-card-hand:cardId:N — *손패에 즉시* 주입.
+      injectJunk(c, parts[1], Number(parts[2]) || 1, 'hand');
+      break;
+    }
+    case 'obscure': {
+      // obscure:N — 손패 은폐 N턴 (카드 뒷면).
+      c.obscuredTurns = Math.max(c.obscuredTurns ?? 0, value || 1);
+      break;
+    }
+    case 'cost-up': {
+      // cost-up:amount:turns — 모든 카드 비용 +amount를 turns 동안.
+      c.costUp = { amount: value || 1, turns: Number(parts[2]) || 2 };
+      break;
+    }
+    case 'force-discard': {
+      // force-discard:N — 다음 손패 드로우를 N장 줄임 (몬스터가 손패를 떨군다).
+      // 몬스터는 턴 종료에 행동하므로 *현재* 손패를 버려도 곧 버려진다 → 다음 드로우 감소로 구현.
+      c.drawDown = (c.drawDown ?? 0) + (value || 1);
+      break;
+    }
+    case 'transform-card': {
+      // transform-card:N — 무작위 손패 N장을 상처(잡카드)로 변환.
+      transformToJunk(c, value || 1);
+      break;
+    }
     default:
       break;
+  }
+}
+
+/** 구속/삼킴 시작·갱신. 같은 류면 게이지 보강(재구속), 아니면 새로 설정. */
+function startGrapple(
+  c: CombatState,
+  kind: 'bind' | 'devour',
+  gauge: number,
+  base: number,
+  label: string,
+): void {
+  if (c.grapple && c.grapple.kind === kind) {
+    c.grapple.gauge += gauge;
+    c.grapple.base = Math.max(c.grapple.base, base);
+  } else {
+    c.grapple = { kind, gauge, base, ramp: 0, label };
+  }
+  useUiStore().toast('warning', kind === 'bind' ? `${label} — 손이 묶인다.` : `${label} — 빠져나가야 한다.`);
+}
+
+/** 잡카드 주입 — 위치별(draw/discard/hand). 손패 가득(10)이면 버린 더미로 폴백. */
+function injectJunk(
+  c: CombatState,
+  cardId: string,
+  count: number,
+  dest: 'draw' | 'discard' | 'hand',
+): void {
+  const def = useDataStore().cards.get(cardId);
+  if (!def) return;
+  for (let i = 0; i < count; i++) {
+    const inst = instantiateCard(def);
+    if (dest === 'draw') c.drawPile = [inst, ...c.drawPile];
+    else if (dest === 'discard') c.discardPile = [...c.discardPile, inst];
+    // 'hand': 몬스터는 턴 종료에 행동 → 지금 손패에 넣으면 곧 버려진다. 대기열에 모아
+    // 다음 손패 드로우 직후 강제 삽입(applyPlayerStatusTurnStart).
+    else c.pendingHandJunk = [...(c.pendingHandJunk ?? []), inst];
+  }
+}
+
+/** 무작위 손패 N장(잡카드 제외)을 상처로 변환. */
+function transformToJunk(c: CombatState, count: number): void {
+  const wound = useDataStore().cards.get('c-junk-wound');
+  if (!wound) return;
+  for (let i = 0; i < count; i++) {
+    const targets = c.hand
+      .map((card, idx) => ({ card, idx }))
+      .filter((t) => t.card.source !== 'junk');
+    if (targets.length === 0) break;
+    const pick = targets[Math.floor(rng() * targets.length)];
+    c.hand.splice(pick.idx, 1, instantiateCard(wound));
   }
 }
 

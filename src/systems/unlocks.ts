@@ -31,14 +31,14 @@ function lockedRelicIdSet(): Set<string> {
   return s;
 }
 
-/** 런 풀에 등장 가능한 카드만 — 잠긴(미해금) 카드 제외. */
+/** 런 풀에 등장 가능한 카드만 — 잠긴(미해금) 카드 + 잡카드(source=junk) 제외. */
 export function availableCards(): Card[] {
-  if (useUiStore().debug.unlockAll) return [...useDataStore().cards.values()];
+  // 잡카드(상처/저주/빈)는 몬스터 주입 전용 — 어떤 풀(상점/공방/보상)에도 등장 금지.
+  const all = [...useDataStore().cards.values()].filter((c) => c.source !== 'junk');
+  if (useUiStore().debug.unlockAll) return all;
   const locked = lockedCardIdSet();
   const unlocked = new Set(useMetaStore().unlockedCardIds);
-  return [...useDataStore().cards.values()].filter(
-    (c) => !locked.has(c.id) || unlocked.has(c.id),
-  );
+  return all.filter((c) => !locked.has(c.id) || unlocked.has(c.id));
 }
 
 /** 런 풀에 등장 가능한 유물만 — 잠긴(미해금) 유물 제외. */

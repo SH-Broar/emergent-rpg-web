@@ -150,6 +150,7 @@ function parseOneCard(id: string, f: IniSection): Card | null {
     source: (f.source as CardSource) ?? 'event',
     element: f.element as Card['element'],
     cost: parseNumber(f.cost, 1),
+    unplayable: f.unplayable === 'true' ? true : undefined,
     trigger: (f.trigger as CardTriggerKind) ?? 'manual',
     effects,
     customEffectId: f.custom_effect,
@@ -920,6 +921,8 @@ const DATA_FILES = [
   'data/races/race-phantom.txt',
   'data/races/race-arcana.txt',
   'data/cards/cards-mvr.txt',
+  // === 잡카드 (Stage 2 몬스터 교란) — 상처/저주/빈. 전투 종료 시 소멸. ===
+  'data/cards/junk-cards.txt',
   'data/relics/relics-mvr.txt',
   // === 유물 2차 확장 (2026-05-21) — 컬러·스탯·턴·아이템·획득즉시 가족. ===
   'data/relics/relics-color.txt',

@@ -66,7 +66,8 @@ export type CardSource =
   | 'hyperion'    // 히페리온 5단계
   | 'event'       // 이벤트 보상
   | 'relic'       // 유물 효과
-  | 'boss';       // 보스 클리어
+  | 'boss'        // 보스 클리어
+  | 'junk';       // 몬스터 주입 잡카드(상처/저주/빈) — 모든 풀에서 제외, 전투 종료 시 소멸
 
 /** 카드 사용 모드 — 턴제 vs 자동/지속. */
 export type CardTriggerKind =
@@ -104,7 +105,9 @@ export type CardEffectKind =
   | 'damage-per-relic'    // 유물 수 × value 피해
   | 'growing-damage'      // damage:value + *이 카드 인스턴스의 bonusDamage* (쓸수록 강해짐)
   | 'heal-per-hand'       // *현재 손패 수* × value 회복 (self)
-  | 'next-card-double';   // combat flag: *다음 1장*의 모든 effect value 2배
+  | 'next-card-double'    // combat flag: *다음 1장*의 모든 effect value 2배
+  // === 잡카드(저주) 전용 (Stage 2 몬스터 교란) ===
+  | 'curse-tick';         // 마커: 이 카드가 손에 있으면 매 턴 시작 value만큼 직접 HP 피해. 핸들러 no-op.
 
 /** 효과 대상 — target. */
 export type EffectTarget = 'self' | 'enemy' | 'all-enemies' | 'random-enemy';
@@ -138,6 +141,12 @@ export interface Card extends NamedEntity {
 
   /** 마나 비용 (없으면 0). */
   cost: number;
+
+  /**
+   * 사용 불가 카드 — 몬스터가 주입하는 잡카드(상처/저주) 표식.
+   * true면 손패에서 클릭해도 사용되지 않음(칸만 차지). 전투 종료 시 자동 소멸(런 덱에 안 들어감).
+   */
+  unplayable?: boolean;
 
   /** 발동 트리거. */
   trigger: CardTriggerKind;
