@@ -29,7 +29,7 @@ name = 모노의 토큰
 rank = rare
 source = event
 trigger = on-combat-end
-effects = bonus-gold:5
+effects = bonus-gold:1
 flavor = 시간의 신이 잠시 떨어뜨린 부스러기.
 
 [relic.r-shadow-essence]

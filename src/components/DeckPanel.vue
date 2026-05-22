@@ -10,7 +10,7 @@
  */
 
 import { computed, ref, watch } from 'vue';
-import { useRunStore } from '@/stores/run';
+import { useRunStore, CARD_SALVAGE_SHARDS } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
 import { colorBonusForCardEffectKind } from '@/systems/stats';
@@ -137,13 +137,14 @@ function reset() {
 function removeCard(card: Card) {
   const iid = card.instanceId;
   if (!iid) return;
+  const shards = CARD_SALVAGE_SHARDS[card.rank] ?? 0;
   const ok = run.removeCardFromCollection(iid);
   if (!ok) return;
   if (activeIds.value.has(iid)) {
     activeIds.value.delete(iid);
     activeIds.value = new Set(activeIds.value);
   }
-  ui.toast('info', `'${card.name}' 카드를 버렸다.`);
+  ui.toast('info', `'${card.name}' 카드를 버렸다. 시간의 조각 +${shards}`);
 }
 
 /** 카드 effect의 *현재 컬러 보너스 반영된* 표시값. B1 fix: effective(베이스+장비) 사용. */

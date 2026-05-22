@@ -1084,7 +1084,7 @@ const STRUGGLE_POWER = 2;     // 발버둥 1회당 탈출 게이지 감소량.
 const STRUGGLE_MANA_COST = 1; // 발버둥 마나 비용 (저비용 — 탈출은 쉽게).
 
 /**
- * 발버둥 — 구속/삼킴 탈출 전용 액션. 1턴 1회, 마나 1 소모.
+ * 발버둥 — 구속/삼킴 탈출 전용 액션. 마나 1 소모, *한 턴에 마나가 있는 한 여러 번* 가능.
  * 게이지를 STRUGGLE_POWER만큼 깎고, 0 이하가 되면 즉시 해제(구속이면 손패 잠금도 해제).
  * CombatView의 '발버둥' 버튼이 호출.
  */
@@ -1097,10 +1097,7 @@ export function struggle(): { freed: boolean } {
     ui.toast('warning', '몸이 굳어 발버둥칠 수 없다.');
     return { freed: false };
   }
-  if (c.struggledThisTurn) {
-    ui.toast('warning', '이번 턴엔 이미 발버둥쳤다.');
-    return { freed: false };
-  }
+  // 발버둥은 한 턴에 여러 번 가능하다(구속·삼킴 모두). 제한은 마나뿐 — 마나가 있는 한 반복 탈출 시도.
   // infiniteMana는 *디버그 전투에서만* 적용(일반 런 누수 방지).
   const inf = ui.debug.infiniteMana && !!(ui.debugBattle.monsterId || ui.debugBattle.bossId);
   if (!inf && c.mana < STRUGGLE_MANA_COST) {

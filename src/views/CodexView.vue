@@ -6,10 +6,12 @@
 
 import { useRouter } from 'vue-router';
 import { useCodexStore } from '@/stores/codex';
-import { computed } from 'vue';
+import { useDataStore } from '@/stores/data';
+import { computed, onMounted } from 'vue';
 
 const router = useRouter();
 const codex = useCodexStore();
+const data = useDataStore();
 
 const groupLabels: Record<string, string> = {
   card: '카드',
@@ -22,9 +24,32 @@ const groupLabels: Record<string, string> = {
 
 const grouped = computed(() => codex.byKind);
 
+/** 종류별 데이터 맵 — 도감 항목 id → 정의 조회용. */
+function mapFor(kind: string): Map<string, { name: string }> | null {
+  switch (kind) {
+    case 'card': return data.cards;
+    case 'relic': return data.relics;
+    case 'npc': return data.npcs;
+    case 'event': return data.events;
+    case 'boss': return data.bosses;
+    case 'timeline': return data.timelines;
+    default: return null;
+  }
+}
+
+/** 영어 id 태그가 아니라 실제 이름을 표시. 정의 누락 시 id로 폴백. */
+function displayName(kind: string, id: string): string {
+  return mapFor(kind)?.get(id)?.name ?? id;
+}
+
 function back() {
   router.push('/main');
 }
+
+onMounted(() => {
+  // 이름 조회에 데이터가 필요하므로 보장 로드.
+  data.ensureLoaded();
+});
 </script>
 
 <template>
@@ -39,7 +64,7 @@ function back() {
         <h2>{{ groupLabels[kind] }} ({{ entries.length }})</h2>
         <ul v-if="entries.length > 0" class="entry-list">
           <li v-for="e in entries" :key="`${e.kind}:${e.id}`" class="entry">
-            <span class="entry__id">{{ e.id }}</span>
+            <span class="entry__id">{{ displayName(e.kind, e.id) }}</span>
             <span class="entry__count">×{{ e.encounterCount }}</span>
           </li>
         </ul>

@@ -12,6 +12,7 @@
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
+import { useMetaStore } from '@/stores/meta';
 import { applyColorBoost } from '@/systems/colors';
 import { acquireRelic } from '@/systems/relic';
 import { availableRelics } from '@/systems/unlocks';
@@ -41,6 +42,8 @@ const ELITE_RELIC_BY_TIER = [0, 0, 0, 0.12, 0.22];
 function eliteLegendaryChance(tier: number): number {
   return 0.06 + 0.03 * tier;
 }
+// 영혼 — 엘리트 1마리 처치당 영구 메타 영혼 지급량(런 중 누적). 카오스 구매 통화.
+const ELITE_SOUL_REWARD = 1;
 
 function clampTier(t: number | undefined): number {
   if (!t || t < 1) return 1;
@@ -125,6 +128,10 @@ export function applyCombatVictoryReward(nodeId: string): void {
 
   // === 질 (엘리트 한정) ===
   if (isElite) {
+    // 영혼 — 엘리트 처치마다 영구 메타 영혼 지급(카오스 구매 통화).
+    useMetaStore().addSoul(ELITE_SOUL_REWARD);
+    lines.push(`영혼 +${ELITE_SOUL_REWARD}`);
+
     // 희귀 유물 — 심화(T3) 이상. 미보유·시작덱 출처 제외 풀에서 추첨.
     const relicChance = ELITE_RELIC_BY_TIER[tier];
     if (relicChance > 0 && rng() < relicChance) {

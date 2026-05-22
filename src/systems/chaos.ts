@@ -501,7 +501,8 @@ export function maxIntensityOf(chaos: Chaos): number {
 export function chaosLevelSummary(chaos: Chaos, intensity: number): string {
   const param = effectParamOf(chaos, intensity);
   const pctUp = (p: string) => `+${Math.round(Number(p) * 100)}%`;
-  const pctDown = (p: string) => `-${Math.round(Number(p) * 100)}%`;
+  // param이 음수(start-hp '-0.5')든 양수(rest-heal '0.30')든 항상 단일 '-' 접두로 표기.
+  const pctDown = (p: string) => `-${Math.abs(Math.round(Number(p) * 100))}%`;
   switch (chaos.effectKind) {
     case 'enemy-hp-mul': return `적 체력 ${pctUp(param)}`;
     case 'enemy-atk-mul': return `적 공격 ${pctUp(param)}`;

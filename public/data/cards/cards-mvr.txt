@@ -229,7 +229,7 @@ source = event
 element = iron
 cost = 1
 trigger = manual
-effects = damage-per-hand:2:enemy
+effects = damage-per-hand:3:enemy
 flavor = 손에 쥔 패 한 장 한 장이 더 무겁게 실린다.
 
 [card.c-focused-mind-plus]
@@ -1570,7 +1570,7 @@ source = npc
 element = earth
 cost = 2
 trigger = manual
-effects = block:14:self, damage-per-hand:2:enemy
+effects = block:14:self, damage-per-hand:3:enemy
 flavor = 더 단단히 웅크릴수록, 가시가 더 돋는다.
 
 [card.c-venom-bloom-plus]
@@ -1906,7 +1906,7 @@ source = shop
 element = wind
 cost = 2
 trigger = manual
-effects = damage-per-hand:2:enemy
+effects = damage-per-hand:3:enemy
 flavor = 더 높은 자리에서, 손에 쥔 만큼 더.
 
 [card.c-yusezria-corebreak-plus]
@@ -1948,7 +1948,7 @@ source = npc
 element = fire
 cost = 1
 trigger = manual
-effects = apply-status:1:self:feral, damage-per-hand:2:enemy
+effects = apply-status:1:self:feral, damage-per-hand:3:enemy
 flavor = 짐승이 든 채, 손에 쥔 만큼 더 들이친다.
 
 [card.c-color-surge-plus]

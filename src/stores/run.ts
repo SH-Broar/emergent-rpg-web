@@ -12,6 +12,7 @@ import { defineStore } from 'pinia';
 import type {
   NodeKind,
   RaceId,
+  Rank,
   RunState,
   Season,
   TimelineId,
@@ -109,6 +110,14 @@ const EMPTY_RUN: RunState = {
   activeChaos: [],
   ended: false,
   metaAbsorbed: false,
+};
+
+/** 카드를 버릴(제거할) 때 등급만큼 환급되는 시간의 조각 — 분해 보상. shop 제거 슬롯도 공유. */
+export const CARD_SALVAGE_SHARDS: Record<Rank, number> = {
+  basic: 1,
+  common: 2,
+  rare: 4,
+  legendary: 7,
 };
 
 export const useRunStore = defineStore('run', {
@@ -523,10 +532,12 @@ export const useRunStore = defineStore('run', {
     removeCardFromCollection(instanceId: string): boolean {
       if (!instanceId) return false;
       const r = this.data;
-      const before = r.collection.length;
+      const removed = r.collection.find((c) => c.instanceId === instanceId);
+      if (!removed) return false;
       r.collection = r.collection.filter((c) => c.instanceId !== instanceId);
-      if (r.collection.length === before) return false;
       r.deck = r.deck.filter((c) => c.instanceId !== instanceId);
+      // 분해 보상 — 카드를 버리면 등급만큼 시간의 조각 환급.
+      r.timeShards += CARD_SALVAGE_SHARDS[removed.rank] ?? 0;
       return true;
     },
 

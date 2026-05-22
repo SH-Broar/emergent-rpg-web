@@ -31,9 +31,10 @@ export function isUnlocked(unlockKey: string | undefined): boolean {
 /** 모노가 *그 종족*을 허용했는가? */
 export function canSelectRace(raceId: string): boolean {
   if (useUiStore().debug.unlockAll) return true;
-  const meta = useMetaStore();
-  return meta.unlockedRaceIds.includes(raceId) || meta.unlockedRaceIds.length === 0;
-  // 첫 플레이 시 기본 종족은 허용
+  // 인간(기본 종족)은 항상 허용 — 다른 종족 해금 여부와 무관.
+  if (raceId === 'human') return true;
+  // 그 외 종족은 화이트리스트(meta.unlockedRaceIds)에 들어와야 허용.
+  return useMetaStore().unlockedRaceIds.includes(raceId);
 }
 
 /** 모노가 *그 연표*를 허용했는가? */

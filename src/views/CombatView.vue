@@ -353,7 +353,7 @@ void ui;
       </span>
       <button
         class="struggle"
-        :disabled="combat.frozenTurn || combat.struggledThisTurn || combat.mana < 1"
+        :disabled="combat.frozenTurn || combat.mana < 1"
         @click="doStruggle"
       >
         발버둥 (마나 1)

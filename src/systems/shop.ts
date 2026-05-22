@@ -9,7 +9,7 @@
  */
 
 import type { Card, Rank, Relic, ShopCardSlot, ShopInventory, ShopMaterialSlot, ShopRelicSlot } from '@/data/schemas';
-import { useRunStore } from '@/stores/run';
+import { useRunStore, CARD_SALVAGE_SHARDS } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
 import { instantiateCard } from '@/systems/deck';
@@ -281,6 +281,12 @@ export function purchaseShopCardRemoval(nodeId: string, cardInstanceId: string):
 
   run.data.gold -= inv.removalPrice;
   inv.removalUsed = true;
-  ui.toast('success', `'${removed.name}' 제거 — 골드 -${inv.removalPrice}`);
+  // 분해 보상 — 등급만큼 시간의 조각 환급.
+  const shards = CARD_SALVAGE_SHARDS[removed.rank] ?? 0;
+  run.data.timeShards += shards;
+  ui.toast(
+    'success',
+    `'${removed.name}' 제거 — 골드 -${inv.removalPrice}, 시간의 조각 +${shards}`,
+  );
   return true;
 }
