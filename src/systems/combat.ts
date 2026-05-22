@@ -305,6 +305,8 @@ export function startCombat(monster: Monster) {
     enemy: enemyCombatant,
     enemyIntent: initIntents[0],
     enemyIntentQueue: initIntents,
+    intentCooldowns: {},
+    enemyBaseAttack: monster.attack,
     player,
     hand: drawn,
     drawPile: newDrawPile,
@@ -1230,8 +1232,17 @@ export function struggle(): { freed: boolean } {
 
 function executeMonsterIntent(c: CombatState, monster?: Monster, intentOverride?: string) {
   // 동적 의도 — *실행 시점의 현재 상태*로 재평가(예고 후 그 턴에 수화가 풀렸으면 공격으로 복귀).
+  // resolveIntent가 쿨다운 중인 특수는 이미 평타로 대체했으므로, 여기 들어온 특수는 *실제 발동*분.
   const intent = resolveIntent(intentOverride ?? c.enemyIntent, c);
   if (!intent) return;
+  // 특수 행동이 실제로 들어오면 쿨다운 기록 — 다음 N턴 재발동(예고 포함) 금지.
+  {
+    const key = specialIntentKey(intent);
+    if (key) {
+      if (!c.intentCooldowns) c.intentCooldowns = {};
+      c.intentCooldowns[key] = c.turn + (SPECIAL_INTENT_COOLDOWNS[key] ?? 8);
+    }
+  }
 
   // 로그용 스냅샷 — 적 행동 전후 차이로 요약.
   const snapPlayerHp = c.player.hp;
@@ -1602,22 +1613,55 @@ function intentConditionMet(flag: string, c: CombatState): boolean {
 }
 
 /**
- * 동적 의도 해석 — `base~flag=override` 인코딩이면 *플레이어 상태*에 따라 override/ base를 고른다.
- * 예: `attack:8~feral=heavy-feral` → 수화면 heavy-feral, 아니면 attack:8.
+ * 특수 행동 쿨다운(턴) — 발동 후 이만큼 재발동 금지. 짧은 로테이션에서도 강 행동이 드물게 나오게.
+ * 준보스 특수(수화 중·삼킴)는 ~20턴 주기에 가깝게, 강 디버프는 ~10턴대, 일반 그래플/조건부는 짧게.
+ */
+const SPECIAL_INTENT_COOLDOWNS: Record<string, number> = {
+  'heavy-feral': 18,
+  devour: 16,
+  'debuff:possession': 14,
+  'debuff:imprint': 12,
+  bind: 9,
+  web: 9,
+  'drain-stat': 9,
+  'absorb-emotion': 6,
+  'feast-debuff': 6,
+};
+/** 해석된 의도의 쿨다운 키(특수 행동이면 키, 아니면 null). debuff는 status까지 본다. */
+function specialIntentKey(resolved: string): string | null {
+  const parts = resolved.split(':');
+  const kind = parts[0];
+  if (kind === 'debuff') {
+    const k = `debuff:${parts[2] ?? ''}`;
+    return k in SPECIAL_INTENT_COOLDOWNS ? k : null;
+  }
+  return kind in SPECIAL_INTENT_COOLDOWNS ? kind : null;
+}
+
+/**
+ * 동적 의도 해석 — `base~flag=override`면 *플레이어 상태*로 override/base를 고른 뒤,
+ * 그 결과가 *쿨다운 중인 특수 행동*이면 평범한 공격으로 대체한다.
  * 텔레그래프(CombatView)와 실행(executeMonsterIntent) 모두 이 함수를 거쳐 *현재 상태*로 재평가 →
- * 그 턴에 상태가 바뀌면 의도도 즉시 바뀐다. 조건 인코딩이 없으면 그대로 반환.
+ * 그 턴에 상태가 바뀌면 의도도 즉시 바뀌고, 쿨다운 중인 강 행동은 예고도 평타로 보인다.
  */
 export function resolveIntent(encoded: string | undefined, c: CombatState | undefined): string {
   if (!encoded) return '';
+  let result = encoded;
   const tilde = encoded.indexOf('~');
-  if (tilde < 0 || !c) return encoded;
-  const base = encoded.slice(0, tilde);
-  const cond = encoded.slice(tilde + 1); // "flag=override"
-  const eq = cond.indexOf('=');
-  if (eq < 0) return base;
-  const flag = cond.slice(0, eq);
-  const override = cond.slice(eq + 1);
-  return intentConditionMet(flag, c) ? override : base;
+  if (tilde >= 0 && c) {
+    const base = encoded.slice(0, tilde);
+    const cond = encoded.slice(tilde + 1); // "flag=override"
+    const eq = cond.indexOf('=');
+    result = eq < 0 ? base : (intentConditionMet(cond.slice(0, eq), c) ? cond.slice(eq + 1) : base);
+  }
+  // 쿨다운 — 특수 행동이 아직 쿨다운 중이면 평타로 대체(예고·실행 모두).
+  if (c) {
+    const key = specialIntentKey(result);
+    if (key && (c.intentCooldowns?.[key] ?? 0) > c.turn) {
+      return `attack:${c.enemyBaseAttack ?? 6}`;
+    }
+  }
+  return result;
 }
 
 /**

@@ -104,6 +104,14 @@ export interface CombatState {
    * 전투 단위 — 세이브 round-trip 안전(optional).
    */
   enemyIntentQueue?: string[];
+  /**
+   * 특수 행동 쿨다운 — kind(또는 'debuff:status') → *이 턴까지 재발동 금지*. 강 디버프/준보스 특수가
+   * 짧은 로테이션에서도 드물게 나오도록(쿨다운 중이면 텔레그래프·실행 모두 평범한 공격으로 대체).
+   * 전투 단위(세이브 round-trip 안전 — optional).
+   */
+  intentCooldowns?: Record<string, number>;
+  /** 쿨다운 대체 시 쓸 적 기본 공격치(monster.attack). startCombat이 설정. */
+  enemyBaseAttack?: number;
   player: Combatant;
   hand: Card[];
   drawPile: Card[];
