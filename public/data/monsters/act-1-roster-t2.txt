@@ -12,7 +12,8 @@ species = insect
 hp = 84
 attack = 9
 defense = 0
-intents = attack:9, debuff:2:poison, attack:11, attack:8
+lock_in = 8
+intents = attack:9, attack:11, debuff:3:poison~unlocked=attack:6, attack:8
 gold = 11
 time_shards = 3
 card_drops =
@@ -38,7 +39,8 @@ hp = 81
 attack = 7
 defense = 0
 actions = 2
-intents = debuff:1:frail, attack:4, charge:2, attack:6
+lock_in = 8
+intents = debuff:1:frail, attack:4, charge:4~unlocked=attack:4, attack:6
 gold = 13
 time_shards = 4
 card_drops =
@@ -50,7 +52,8 @@ species = golem
 hp = 147
 attack = 10
 defense = 0
-intents = attack:10, defend:6, attack:10, defend:6
+lock_in = 8
+intents = attack:10, defend:6, attack:20~unlocked=attack:6, defend:6
 gold = 14
 time_shards = 5
 card_drops =
@@ -62,7 +65,8 @@ species = beastkin
 hp = 98
 attack = 9
 defense = 0
-intents = attack:9, charge:3, attack:13, defend:5
+lock_in = 8
+intents = attack:9, attack:13, charge:3~unlocked=attack:5, defend:5
 gold = 12
 time_shards = 4
 card_drops =
@@ -138,7 +142,8 @@ species = beastkin
 hp = 105
 attack = 9
 defense = 0
-intents = attack:9, attack:9, charge:2, attack:13
+lock_in = 8
+intents = attack:9, attack:9, charge:4~unlocked=attack:5, attack:13
 gold = 12
 time_shards = 4
 card_drops =
@@ -164,7 +169,8 @@ hp = 81
 attack = 7
 defense = 0
 actions = 2
-intents = attack:4, debuff:1:vulnerable, attack:4, attack:4
+lock_in = 8
+intents = attack:4, attack:4, debuff:3:vulnerable~unlocked=attack:4, attack:4
 gold = 11
 time_shards = 3
 card_drops =
@@ -188,7 +194,8 @@ species = serpent
 hp = 102
 attack = 8
 defense = 0
-intents = attack:8, debuff:1:weakness, attack:10, attack:8
+lock_in = 8
+intents = attack:8, attack:10, debuff:3:weakness~unlocked=attack:5, attack:8
 gold = 12
 time_shards = 3
 card_drops =
@@ -241,7 +248,8 @@ species = spirit
 hp = 84
 attack = 6
 defense = 0
-intents = debuff:1:weakness, attack:8, attack:8, defend:4
+lock_in = 8
+intents = attack:8, attack:8, debuff:3:weakness~unlocked=attack:4, defend:4
 gold = 12
 time_shards = 3
 card_drops =
@@ -279,7 +287,8 @@ hp = 102
 attack = 7
 defense = 0
 actions = 2
-intents = debuff:1:weakness, attack:4, attack:5, defend:4
+lock_in = 8
+intents = attack:4, attack:5, debuff:3:weakness~unlocked=attack:4, defend:4
 gold = 12
 time_shards = 4
 card_drops =
@@ -332,7 +341,8 @@ species = imp
 hp = 112
 attack = 10
 defense = 0
-intents = attack:10, attack:10, charge:2, attack:14
+lock_in = 8
+intents = attack:10, attack:10, charge:4~unlocked=attack:6, attack:14
 gold = 13
 time_shards = 4
 card_drops =
@@ -473,7 +483,8 @@ species = wraith
 hp = 102
 attack = 9
 defense = 0
-intents = attack:9, debuff:1:vulnerable, attack:11, attack:9
+lock_in = 8
+intents = attack:9, attack:11, debuff:3:vulnerable~unlocked=attack:5, attack:9
 gold = 14
 time_shards = 4
 card_drops =
@@ -485,7 +496,8 @@ species = golem
 hp = 172
 attack = 10
 defense = 0
-intents = attack:10, defend:8, attack:10, defend:8
+lock_in = 8
+intents = attack:10, defend:8, attack:20~unlocked=attack:6, defend:8
 gold = 14
 time_shards = 5
 card_drops =

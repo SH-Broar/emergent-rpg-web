@@ -369,6 +369,7 @@ export function parseMonsters(ini: IniData): Map<string, Monster> {
       defense: parseNumber(fields.defense, 0),
       splitCount: fields.split_count !== undefined ? parseNumber(fields.split_count, 0) : undefined,
       actions: fields.actions !== undefined ? parseNumber(fields.actions, 1) : undefined,
+      lockIn: fields.lock_in !== undefined ? parseNumber(fields.lock_in, 0) : undefined,
       intents,
       drop: {
         gold: parseNumber(fields.gold, 0),

@@ -112,6 +112,12 @@ export interface CombatState {
   intentCooldowns?: Record<string, number>;
   /** 쿨다운 대체 시 쓸 적 기본 공격치(monster.attack). startCombat이 설정. */
   enemyBaseAttack?: number;
+  /**
+   * 락인 수치 — 적 전용 기믹. 적 의도가 `<special>~unlocked=attack:<weak>`로 인코딩되어 있을 때,
+   * *플레이어가 그 턴 방어 ≥ lockIn*이면 special이 약공격으로 교체된다(resolveIntent).
+   * monster.lockIn에서 시드. 0이면 항상 unlocked로 판정되므로 *락인 몬스터엔 반드시 >0 지정*.
+   */
+  lockIn?: number;
   player: Combatant;
   hand: Card[];
   drawPile: Card[];

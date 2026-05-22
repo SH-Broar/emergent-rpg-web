@@ -13,7 +13,8 @@ species = imp
 hp = 140
 attack = 13
 defense = 0
-intents = attack:13, debuff:1:vulnerable, attack:14, attack:13
+lock_in = 10
+intents = attack:13, debuff:1:vulnerable, attack:26~unlocked=attack:8, attack:13
 gold = 20
 time_shards = 6
 card_drops =
@@ -25,7 +26,8 @@ species = wraith
 hp = 126
 attack = 10
 defense = 0
-intents = attack:10, debuff:1:weakness, attack:11, defend:6
+lock_in = 10
+intents = attack:10, attack:11, debuff:3:weakness~unlocked=attack:6, defend:6
 gold = 18
 time_shards = 6
 card_drops =
@@ -38,7 +40,8 @@ hp = 154
 attack = 12
 defense = 0
 actions = 2
-intents = attack:6, debuff:1:vulnerable, attack:7, attack:6
+lock_in = 10
+intents = attack:6, attack:7, debuff:3:vulnerable~unlocked=attack:7, attack:6
 gold = 19
 time_shards = 7
 card_drops =
@@ -74,7 +77,8 @@ species = spirit
 hp = 133
 attack = 10
 defense = 0
-intents = attack:10, debuff:1:vulnerable, attack:11, attack:10
+lock_in = 10
+intents = attack:10, attack:11, debuff:3:vulnerable~unlocked=attack:6, attack:10
 gold = 18
 time_shards = 6
 card_drops =
@@ -128,7 +132,8 @@ species = beastkin
 hp = 168
 attack = 15
 defense = 0
-intents = attack:15, charge:3, defend:8, attack:16
+lock_in = 10
+intents = attack:15, defend:8, charge:3~unlocked=attack:9, attack:16
 gold = 21
 time_shards = 7
 card_drops =
@@ -165,7 +170,8 @@ hp = 119
 attack = 12
 defense = 0
 actions = 2
-intents = attack:6, debuff:1:vulnerable, attack:6, attack:6
+lock_in = 10
+intents = attack:6, attack:6, debuff:3:vulnerable~unlocked=attack:7, attack:6
 gold = 17
 time_shards = 5
 card_drops =
@@ -189,7 +195,8 @@ species = automaton
 hp = 147
 attack = 11
 defense = 0
-intents = attack:11, debuff:1:weakness, attack:12, attack:11
+lock_in = 10
+intents = attack:11, debuff:1:weakness, attack:22~unlocked=attack:7, attack:11
 gold = 20
 time_shards = 7
 card_drops =
@@ -243,7 +250,8 @@ species = wraith
 hp = 126
 attack = 10
 defense = 0
-intents = attack:10, debuff:1:weakness, attack:11, attack:10
+lock_in = 10
+intents = attack:10, attack:11, debuff:3:weakness~unlocked=attack:6, attack:10
 gold = 18
 time_shards = 6
 card_drops =
@@ -256,7 +264,8 @@ hp = 154
 attack = 16
 defense = 0
 actions = 2
-intents = charge:2, attack:8, attack:9, attack:8
+lock_in = 10
+intents = attack:8, attack:9, charge:4~unlocked=attack:9, attack:8
 gold = 21
 time_shards = 7
 card_drops =
@@ -309,7 +318,8 @@ species = automaton
 hp = 140
 attack = 13
 defense = 0
-intents = attack:13, debuff:1:vulnerable, attack:14, attack:13
+lock_in = 10
+intents = attack:13, debuff:1:vulnerable, attack:26~unlocked=attack:8, attack:13
 gold = 20
 time_shards = 6
 card_drops =
@@ -322,7 +332,8 @@ hp = 126
 attack = 11
 defense = 0
 actions = 2
-intents = attack:6, debuff:1:weakness, attack:6, attack:6
+lock_in = 10
+intents = attack:6, attack:6, debuff:3:weakness~unlocked=attack:7, attack:6
 gold = 18
 time_shards = 6
 card_drops =
@@ -401,7 +412,8 @@ species = beastkin
 hp = 182
 attack = 16
 defense = 0
-intents = charge:2, attack:16, attack:17, attack:15
+lock_in = 10
+intents = attack:16, attack:17, charge:4~unlocked=attack:10, attack:15
 gold = 22
 time_shards = 7
 card_drops =
@@ -480,7 +492,8 @@ hp = 126
 attack = 10
 defense = 0
 actions = 2
-intents = debuff:1:weakness, attack:5, attack:5, attack:5
+lock_in = 10
+intents = attack:5, attack:5, debuff:3:weakness~unlocked=attack:6, attack:5
 gold = 18
 time_shards = 6
 card_drops =
@@ -557,7 +570,8 @@ species = imp
 hp = 168
 attack = 13
 defense = 0
-intents = attack:13, debuff:1:frail, attack:14, attack:13
+lock_in = 10
+intents = attack:13, debuff:1:frail, attack:26~unlocked=attack:8, attack:13
 gold = 21
 time_shards = 7
 card_drops =

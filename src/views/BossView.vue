@@ -18,6 +18,7 @@ import {
   clearCombat,
   struggle,
   statusBonusForCardEffectKind,
+  resolveIntent,
 } from '@/systems/combat';
 import { applyBossRewards } from '@/systems/boss-rewards';
 import { colorBonusForCardEffectKind } from '@/systems/stats';
@@ -328,6 +329,18 @@ function statusEntries(c: Combatant | undefined) {
 // === 구속/삼킴(grapple) + 발버둥 / 변신 / 손패 은폐(obscure) — CombatView와 동일 ===
 const grapple = computed(() => combat.value?.grapple);
 const obscured = computed(() => (combat.value?.obscuredTurns ?? 0) > 0);
+// 동적 의도 해석 — 보스 패리티(락인·동적 플래그 등이 텔레그래프에 즉시 반영되도록).
+const bossIntent = computed(() => {
+  const c = combat.value;
+  return c ? resolveIntent(c.enemyIntent, c) : '';
+});
+/** 락인 표시 — 보스 패리티. 락인 의도(`~unlocked=`)가 텔레그래프에 있을 때만 노출. */
+const lockInState = computed<{ value: number; unlocked: boolean } | null>(() => {
+  const c = combat.value;
+  if (!c || (c.lockIn ?? 0) <= 0) return null;
+  if (!(c.enemyIntent ?? '').includes('~unlocked=')) return null;
+  return { value: c.lockIn ?? 0, unlocked: (c.player.block ?? 0) >= (c.lockIn ?? 0) };
+});
 function doStruggle() {
   struggle();
 }
@@ -408,7 +421,15 @@ function usePotion(itm: Item) {
           <div class="bar bar--boss">HP {{ combat.enemy.hp }} / {{ combat.enemy.maxHp }}
             <span v-if="combat.enemy.block > 0" class="block" :class="{ 'block--pulse': fx.enemyShield.value }">🛡 {{ combat.enemy.block }}</span>
           </div>
-          <div class="intent" v-tooltip="intentDescription(combat.enemyIntent)">다음: {{ intentLabel(combat.enemyIntent) }} <span class="intent__info">ⓘ</span></div>
+          <div class="intent" v-tooltip="intentDescription(bossIntent)">다음: {{ intentLabel(bossIntent) }} <span class="intent__info">ⓘ</span></div>
+          <div
+            v-if="lockInState"
+            class="lockin"
+            :class="{ 'lockin--open': lockInState.unlocked }"
+            v-tooltip="lockInState.unlocked ? '방어를 충분히 쌓아 적의 특수 행동을 막았다. 이번 턴은 약하게 공격한다.' : `이번 턴 방어를 ${lockInState.value} 이상 쌓으면 적의 특수 행동을 약한 공격으로 바꾼다.`"
+          >
+            {{ lockInState.unlocked ? '🔓 락인 해제' : `🔒 락인 · 방어 ${lockInState.value}` }}
+          </div>
           <div v-if="mechanicLabel" class="mechanic">
             <span class="mechanic__name">{{ mechanicLabel }}</span>
             <span
@@ -579,6 +600,22 @@ function usePotion(itm: Item) {
 .block { margin-left: 0.5rem; color: #8eedff; }
 .mana { color: #c08eff; font-weight: 600; }
 .intent { color: #ffb88e; font-size: 0.9rem; }
+.lockin {
+  margin-top: 2px;
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 8px;
+  color: #ffd9a8;
+  background: rgba(150, 70, 40, 0.35);
+  border: 1px solid rgba(255, 170, 110, 0.5);
+}
+.lockin--open {
+  color: #bff0c8;
+  background: rgba(60, 130, 80, 0.32);
+  border-color: rgba(150, 230, 170, 0.55);
+}
 .vs { font-size: 1.4rem; color: #f6e8b8; }
 
 /* 방금 전 플레이 로그 — 턴 카운터 아래 중앙 정렬 (CombatView와 동일). */

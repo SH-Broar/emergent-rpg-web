@@ -307,6 +307,8 @@ export function startCombat(monster: Monster) {
     enemyIntentQueue: initIntents,
     intentCooldowns: {},
     enemyBaseAttack: monster.attack,
+    // 락인 수치 — 적이 락인 의도(`~unlocked=`)를 쓸 때 플레이어가 풀려면 그 턴 쌓아야 할 방어량.
+    lockIn: monster.lockIn ?? 0,
     player,
     hand: drawn,
     drawPile: newDrawPile,
@@ -1604,6 +1606,9 @@ function intentConditionMet(flag: string, c: CombatState): boolean {
     case 'block': return c.player.block > 0;
     case 'sleep': return (s.sleep ?? 0) > 0;
     case 'possession': return (s.possession ?? 0) > 0;
+    // 락인 해제 — 플레이어가 그 턴 방어 ≥ 락인 수치를 쌓았는가. 충족 시 special→약공격(override).
+    // lockIn 0/미설정이면 항상 true → 락인 의도를 *쓰지 않는* 평범한 적엔 영향 없음.
+    case 'unlocked': return (c.player.block ?? 0) >= (c.lockIn ?? 0);
     case 'debuff': {
       for (const k of DECAYING_DEBUFFS) if ((s[k] ?? 0) > 0) return true;
       return false;

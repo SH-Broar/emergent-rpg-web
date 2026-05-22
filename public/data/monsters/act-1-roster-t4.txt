@@ -27,7 +27,8 @@ species = wraith
 hp = 182
 attack = 14
 defense = 0
-intents = attack:14, debuff:2:poison, attack:15, attack:14
+lock_in = 13
+intents = attack:14, attack:15, debuff:3:poison~unlocked=attack:8, attack:14
 gold = 28
 time_shards = 9
 card_drops =
@@ -39,7 +40,8 @@ species = werewolf
 hp = 196
 attack = 18
 defense = 0
-intents = attack:18, charge:4, attack:22, attack:18
+lock_in = 13
+intents = attack:18, attack:22, charge:4~unlocked=attack:11, attack:18
 gold = 30
 time_shards = 10
 card_drops =
@@ -75,7 +77,8 @@ species = insect
 hp = 175
 attack = 16
 defense = 0
-intents = attack:16, debuff:1:vulnerable, attack:16, attack:18, defend:8
+lock_in = 13
+intents = attack:16, debuff:1:vulnerable, attack:16, attack:32~unlocked=attack:10, defend:8
 gold = 27
 time_shards = 9
 card_drops =
@@ -119,7 +122,8 @@ species = harpy
 hp = 182
 attack = 17
 defense = 0
-intents = debuff:2:frail, attack:17, charge:3, attack:20, attack:17
+lock_in = 13
+intents = debuff:2:frail, attack:17, charge:3~unlocked=attack:10, attack:20, attack:17
 gold = 28
 time_shards = 9
 card_drops =
@@ -156,7 +160,8 @@ hp = 179
 attack = 16
 defense = 0
 actions = 2
-intents = attack:8, debuff:2:weakness, attack:8, attack:9, defend:8
+lock_in = 13
+intents = attack:8, attack:8, debuff:3:weakness~unlocked=attack:10, attack:9, defend:8
 gold = 27
 time_shards = 9
 card_drops =
@@ -214,7 +219,8 @@ species = werewolf
 hp = 189
 attack = 18
 defense = 0
-intents = attack:18, debuff:2:poison, attack:18, charge:3, attack:21
+lock_in = 13
+intents = attack:18, attack:18, debuff:3:poison~unlocked=attack:11, charge:3, attack:21
 gold = 29
 time_shards = 10
 card_drops =
@@ -238,7 +244,8 @@ species = insect
 hp = 182
 attack = 14
 defense = 0
-intents = debuff:2:poison, attack:14, attack:14, attack:14
+lock_in = 13
+intents = attack:14, attack:14, debuff:3:poison~unlocked=attack:9, attack:14
 gold = 27
 time_shards = 9
 card_drops =
@@ -308,7 +315,8 @@ species = spirit
 hp = 175
 attack = 15
 defense = 0
-intents = attack:15, debuff:2:weakness, attack:15, attack:15
+lock_in = 13
+intents = attack:15, attack:15, debuff:3:weakness~unlocked=attack:9, attack:15
 gold = 27
 time_shards = 9
 card_drops =
@@ -320,7 +328,8 @@ species = imp
 hp = 210
 attack = 17
 defense = 0
-intents = defend:16, attack:17, debuff:2:vulnerable, attack:17, attack:18
+lock_in = 13
+intents = defend:16, attack:17, debuff:2:vulnerable, attack:34~unlocked=attack:10, attack:18
 gold = 31
 time_shards = 10
 card_drops =

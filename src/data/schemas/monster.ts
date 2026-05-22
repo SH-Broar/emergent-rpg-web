@@ -57,6 +57,13 @@ export interface Monster extends NamedEntity {
   actions?: number;
 
   /**
+   * 락인 수치 — 적 전용 기믹. 의도를 `<special>~unlocked=attack:<weak>`로 인코딩하면,
+   * 적이 락인 주기에 special을 예고하지만 *플레이어가 그 턴 방어 ≥ lockIn*을 쌓으면 약공격으로 교체된다.
+   * 멀티행동(actions)과 무관한 별도 장치. 락인 의도를 쓰는 몬스터는 *반드시 >0 지정*.
+   */
+  lockIn?: number;
+
+  /**
    * 분열 횟수 — 처치(hp<=0) 시 *진짜 죽지 않고* maxHp의 절반으로 부활하는 횟수.
    * 0/미설정이면 일반 사망. 2면 총 3번 잡아야 진짜 패배(부활할 때마다 1 감소).
    * 1v1 엔진이라 동시에 여러 적이 생기진 않고, 같은 적이 다시 일어선다.

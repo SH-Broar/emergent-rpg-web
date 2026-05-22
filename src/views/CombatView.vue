@@ -211,6 +211,19 @@ const enemyIntentList = computed<string[]>(() => {
     : (c.enemyIntent ? [c.enemyIntent] : []);
   return raw.map((it) => resolveIntent(it, c));
 });
+/**
+ * 락인 표시 — 이번 턴 텔레그래프에 락인 특수(`~unlocked=`)가 들어 있을 때만 노출.
+ * 플레이어가 방어 ≥ 락인 수치를 쌓으면 특수가 약공격으로 교체되므로, 그 임계값과 현재 해제 여부를 보여준다.
+ */
+const lockInState = computed<{ value: number; unlocked: boolean } | null>(() => {
+  const c = combat.value;
+  if (!c || (c.lockIn ?? 0) <= 0) return null;
+  const raw = (c.enemyIntentQueue && c.enemyIntentQueue.length > 0)
+    ? c.enemyIntentQueue
+    : (c.enemyIntent ? [c.enemyIntent] : []);
+  if (!raw.some((it) => it.includes('~unlocked='))) return null;
+  return { value: c.lockIn ?? 0, unlocked: (c.player.block ?? 0) >= (c.lockIn ?? 0) };
+});
 function doStruggle() {
   struggle();
 }
@@ -340,6 +353,14 @@ void ui;
           다음:
           <span v-for="(it, i) in enemyIntentList" :key="i" class="intent__act" v-tooltip="intentDescription(it)">{{ i > 0 ? ' + ' : ' ' }}{{ intentLabel(it) }}</span>
           <span class="intent__info">ⓘ</span>
+        </div>
+        <div
+          v-if="lockInState"
+          class="lockin"
+          :class="{ 'lockin--open': lockInState.unlocked }"
+          v-tooltip="lockInState.unlocked ? '방어를 충분히 쌓아 적의 특수 행동을 막았다. 이번 턴은 약하게 공격한다.' : `이번 턴 방어를 ${lockInState.value} 이상 쌓으면 적의 특수 행동을 약한 공격으로 바꾼다.`"
+        >
+          {{ lockInState.unlocked ? '🔓 락인 해제' : `🔒 락인 · 방어 ${lockInState.value}` }}
         </div>
         <ul class="statuses statuses--enemy">
           <li v-for="s in statusEntries(combat.enemy)" :key="s.key" class="status" :data-key="s.key" v-tooltip="statusDescription(s.key)">
@@ -520,6 +541,22 @@ void ui;
 .block { margin-left: 0.5rem; color: #8eedff; }
 .mana { color: #c08eff; font-weight: 600; }
 .intent { color: #ffb88e; font-size: 0.9rem; }
+.lockin {
+  margin-top: 2px;
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 8px;
+  color: #ffd9a8;
+  background: rgba(150, 70, 40, 0.35);
+  border: 1px solid rgba(255, 170, 110, 0.5);
+}
+.lockin--open {
+  color: #bff0c8;
+  background: rgba(60, 130, 80, 0.32);
+  border-color: rgba(150, 230, 170, 0.55);
+}
 .vs { font-size: 1.4rem; color: #f6e8b8; text-align: center; }
 
 /* 방금 전 플레이 로그 — 턴 카운터 아래 중앙 정렬. 최신 줄을 밝게. */
