@@ -1155,9 +1155,11 @@ function enterLabel(): string {
 /* 카메라 조작 중(드래그·핀치·휠 줌)에는 *비싼 페인트*(drop-shadow 필터 + 무한 애니메이션)를 끈다.
    카메라 transform이 매 프레임 SVG 서브트리를 다시 칠하는데, drop-shadow는 프레임마다
    블러를 재계산해 가장 큰 렉 원인이다. 조작이 끝나면 다시 켜진다(시각 피드백 복원).
-   단, *간선 글로우(.edge)는 유지* — 적은 수라 비용이 작고, 길이 빛나는 게 보여야 한다. */
+   간선(.edge--active)도 *색(stroke)은 유지*하되 글로우(drop-shadow)·펄스는 끈다 —
+   모바일 드래그 시 빛 번짐/렉 제거. 조작이 끝나면 글로우가 다시 켜진다. */
 .camera--busy .node-dot,
-.camera--busy .current-arrow {
+.camera--busy .current-arrow,
+.camera--busy .edge--active {
   filter: none !important;
   animation: none !important;
 }
