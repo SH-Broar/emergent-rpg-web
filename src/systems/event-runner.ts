@@ -103,7 +103,10 @@ function evalToken(tok: string, run: RunState): boolean {
 
 function evalTokenInner(tok: string, run: RunState): boolean {
   const colonIdx = tok.indexOf(':');
-  const kind = colonIdx < 0 ? tok : tok.slice(0, colonIdx);
+  // kind = 선행 토큰명만(영문/하이픈). 비교형 토큰(gold>=20, hp<10, day>=2)은 콜론이 없으므로
+  // 콜론 split만 쓰면 kind에 연산자가 섞여 매칭 실패한다 → 선행 [a-z-]+ 만 추출.
+  const kindMatch = /^[a-z-]+/.exec(tok);
+  const kind = kindMatch ? kindMatch[0] : (colonIdx < 0 ? tok : tok.slice(0, colonIdx));
   const rest = colonIdx < 0 ? '' : tok.slice(colonIdx + 1);
 
   switch (kind) {
