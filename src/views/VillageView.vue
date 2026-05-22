@@ -274,7 +274,7 @@ const rankColors: Record<string, string> = {
 
       <!-- 수화 중 진정 — 선택형(공격 2배·탐색 보상↑ 유지 vs 회복/방어 회복). -->
       <div v-if="(run.data.feralHeavy ?? 0) > 0" class="cleanse cleanse--feral">
-        <p class="cleanse__msg">아직 수화 중이다. 공격이 2배지만 회복도 방어도 못 하고, 탐색 보상이 늘어난다. 가라앉힐까?</p>
+        <p class="cleanse__msg">아직 심수화 상태다. 공격이 2배지만 회복도 방어도 못 하고, 탐색 보상이 늘어난다. 가라앉힐까?</p>
         <button class="cleanse__btn" @click="calmFeral">수화를 가라앉힌다</button>
       </div>
 

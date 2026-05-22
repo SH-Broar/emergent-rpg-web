@@ -26,6 +26,7 @@ import { bonusesFromEffective } from '@/systems/equipment';
 import { cardEffectKindLabel, cardEffectDescription, statusDescription, intentLabel, intentDescription, unlockKeyLabel } from '@/systems/labels';
 import { useItem } from '@/systems/item';
 import { useCombatFx, CARD_PLAY_DELAY } from '@/composables/useCombatFx';
+import StruggleMinigame from '@/components/StruggleMinigame.vue';
 import type { Boss, BossPhase, BossSignatureVariant, Card, CardEffect, Combatant, Item, Monster } from '@/data/schemas';
 
 const router = useRouter();
@@ -317,7 +318,7 @@ const statusLabels: Record<string, string> = {
   sleep: '수면',
   slime: '점액',
   imprint: '각인',
-  'feral-heavy': '수화 중',
+  'feral-heavy': '심수화',
 };
 function statusEntries(c: Combatant | undefined) {
   if (!c) return [] as { key: string; count: number; label: string }[];
@@ -341,8 +342,14 @@ const lockInState = computed<{ value: number; unlocked: boolean } | null>(() => 
   if (!(c.enemyIntent ?? '').includes('~unlocked=')) return null;
   return { value: c.lockIn ?? 0, unlocked: (c.player.block ?? 0) >= (c.lockIn ?? 0) };
 });
+// 강 구속/삼킴(grapple.hard)은 색상 미니게임으로만 발버둥(보스 패리티 — CombatView와 동일).
+const showStruggleMinigame = ref(false);
 function doStruggle() {
-  struggle();
+  if (grapple.value?.hard) {
+    showStruggleMinigame.value = true;
+  } else {
+    struggle();
+  }
 }
 const transform = computed(() => run.data.transform);
 const formName = computed(() => data.races.get(run.data.transform?.formRaceId ?? '')?.name ?? '변신');
@@ -473,9 +480,10 @@ function usePotion(itm: Item) {
           :disabled="combat.frozenTurn || combat.mana < 1"
           @click="doStruggle"
         >
-          발버둥 (마나 1)
+          {{ grapple.hard ? '발버둥 (색 순서)' : '발버둥 (마나 1)' }}
         </button>
       </div>
+      <StruggleMinigame v-if="showStruggleMinigame" @close="showStruggleMinigame = false" />
 
       <!-- 전투 포션 벨트 — 턴당 1회, 마나 무관 -->
       <div v-if="combatPotions.length > 0" class="potions">

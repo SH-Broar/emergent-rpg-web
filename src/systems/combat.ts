@@ -1236,6 +1236,54 @@ export function struggle(): { freed: boolean } {
   return { freed: false };
 }
 
+/**
+ * 강 구속/삼킴 발버둥 *시작* — 색상 미니게임을 띄울 수 있는지 판정 + 마나 차감.
+ * 마나 부족/정지면 false(미니게임 안 띄움). 게이지는 아직 깎지 않는다(성공 시 completeHardStruggle).
+ */
+export function beginHardStruggle(): boolean {
+  const run = useRunStore();
+  const ui = useUiStore();
+  const c = run.data.combat;
+  if (!c || !c.grapple) return false;
+  if (c.frozenTurn) {
+    ui.toast('warning', '몸이 굳어 발버둥칠 수 없다.');
+    return false;
+  }
+  const inf = ui.debug.infiniteMana && !!(ui.debugBattle.monsterId || ui.debugBattle.bossId);
+  if (!inf && c.mana < STRUGGLE_MANA_COST) {
+    ui.toast('warning', '마나가 부족해 발버둥칠 수 없다.');
+    return false;
+  }
+  if (!inf) c.mana -= STRUGGLE_MANA_COST;
+  c.struggledThisTurn = true;
+  return true;
+}
+
+/**
+ * 강 구속/삼킴 발버둥 *결과* — 미니게임 성공 시 게이지 감소(0이면 해제), 실패면 변화 없음(이번 발버둥만 실패).
+ * 마나는 beginHardStruggle에서 이미 차감됨.
+ */
+export function completeHardStruggle(success: boolean): { freed: boolean } {
+  const run = useRunStore();
+  const ui = useUiStore();
+  const c = run.data.combat;
+  if (!c || !c.grapple) return { freed: false };
+  if (!success) {
+    ui.toast('warning', '놓쳤다 — 다시 발버둥쳐야 한다.');
+    return { freed: false };
+  }
+  c.grapple.gauge -= STRUGGLE_POWER;
+  if (c.grapple.gauge <= 0) {
+    const wasBind = c.grapple.kind === 'bind';
+    c.grapple = undefined;
+    if (wasBind) c.lockedCardIds = [];
+    ui.toast('success', '벗어났다!');
+    return { freed: true };
+  }
+  ui.toast('info', `발버둥 — 탈출까지 ${c.grapple.gauge}`);
+  return { freed: false };
+}
+
 function executeMonsterIntent(c: CombatState, monster?: Monster, intentOverride?: string) {
   // 동적 의도 — *실행 시점의 현재 상태*로 재평가(예고 후 그 턴에 수화가 풀렸으면 공격으로 복귀).
   // resolveIntent가 쿨다운 중인 특수는 이미 평타로 대체했으므로, 여기 들어온 특수는 *실제 발동*분.
@@ -1313,7 +1361,7 @@ function executeMonsterIntent(c: CombatState, monster?: Monster, intentOverride?
       if ((c.player.statuses.feral ?? 0) > 0) {
         c.player.statuses['feral-heavy'] = (c.player.statuses['feral-heavy'] ?? 0) + 1;
         delete c.player.statuses.feral; // 수화 → 수화 중으로 *승격*.
-        useUiStore().toast('warning', '더 깊이 휩쓸렸다 — 수화 중!');
+        useUiStore().toast('warning', '더 깊이 휩쓸렸다 — 심수화!');
       }
       break;
     }
@@ -1343,13 +1391,18 @@ function executeMonsterIntent(c: CombatState, monster?: Monster, intentOverride?
     }
     // === 전투 에로 기믹 ===
     case 'bind': {
-      // bind:gauge:lock — 구속 시작/갱신. parts[2]=기본 잠금 카드 수.
+      // bind:gauge:lock — 일반 구속(버튼 발버둥). parts[2]=기본 잠금 카드 수.
       startGrapple(c, 'bind', value || 3, Number(parts[2]) || 1, parts[3] || '구속');
       break;
     }
+    case 'bind-hard': {
+      // bind-hard:gauge:lock — 강 구속(라미아 기본). 색상 순서 미니게임으로만 발버둥.
+      startGrapple(c, 'bind', value || 3, Number(parts[2]) || 1, parts[3] || '강한 구속', true);
+      break;
+    }
     case 'devour': {
-      // devour:gauge:dot — 삼킴 시작/갱신. parts[2]=기본 턴당 피해.
-      startGrapple(c, 'devour', value || 4, Number(parts[2]) || 3, parts[3] || '삼켜짐');
+      // devour:gauge:dot — 삼킴(강 발버둥). parts[2]=기본 턴당 피해. 항상 미니게임.
+      startGrapple(c, 'devour', value || 4, Number(parts[2]) || 3, parts[3] || '삼켜짐', true);
       break;
     }
     case 'web': {
@@ -1544,12 +1597,14 @@ function startGrapple(
   gauge: number,
   base: number,
   label: string,
+  hard = false,
 ): void {
   if (c.grapple && c.grapple.kind === kind) {
     c.grapple.gauge += gauge;
     c.grapple.base = Math.max(c.grapple.base, base);
+    if (hard) c.grapple.hard = true;
   } else {
-    c.grapple = { kind, gauge, base, ramp: 0, label };
+    c.grapple = { kind, gauge, base, ramp: 0, label, hard: hard || undefined };
   }
   useUiStore().toast('warning', kind === 'bind' ? `${label} — 손이 묶인다.` : `${label} — 빠져나가야 한다.`);
 }
@@ -1638,6 +1693,7 @@ const SPECIAL_INTENT_COOLDOWNS: Record<string, number> = {
   'debuff:possession': 14,
   'debuff:imprint': 12,
   bind: 9,
+  'bind-hard': 9,
   web: 9,
   'drain-stat': 9,
   'absorb-emotion': 6,

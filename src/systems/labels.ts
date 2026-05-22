@@ -97,7 +97,7 @@ const STATUS_DESCRIPTIONS: Record<string, string> = {
   sleep: '수면 — 매 턴 카드를 스택만큼 덜 뽑습니다. 피해를 받으면 즉시 깨어납니다. 매 턴 1 감소.',
   slime: '점액 — 매 턴 마나가 스택만큼 줄어듭니다. 매 턴 1 감소.',
   imprint: '각인 — 주는 피해가 0.85배가 됩니다. 감소하지 않고, 5 이상 쌓이면 혼란으로 번집니다.',
-  'feral-heavy': '수화 중 — 너무 신나서 멈출 수 없다. 공격이 2배지만 회복도 방어도 못 합니다. 전투 후에도 남으며 탐색 보상이 늘고, 마을이나 휴식에서만 가라앉습니다.',
+  'feral-heavy': '심수화 — 너무 신나서 멈출 수 없다. 공격이 2배지만 회복도 방어도 못 합니다. 전투 후에도 남으며 탐색 보상이 늘고, 마을이나 휴식에서만 가라앉습니다.',
 };
 
 /** 상태이상/버프 키 → 한글. */
@@ -120,7 +120,7 @@ const STATUS_LABELS: Record<string, string> = {
   sleep: '수면',
   slime: '점액',
   imprint: '각인',
-  'feral-heavy': '수화 중',
+  'feral-heavy': '심수화',
 };
 
 /** 효과 대상 → 한글. */
@@ -143,6 +143,7 @@ const INTENT_KIND_LABELS: Record<string, string> = {
   buff: '강화',
   debuff: '약화 부여',
   bind: '구속',
+  'bind-hard': '강한 구속',
   devour: '삼킴',
   web: '거미줄',
   drain: '흡혈',
@@ -157,7 +158,7 @@ const INTENT_KIND_LABELS: Record<string, string> = {
   'force-discard': '드로우 감소',
   'transform-card': '카드 망가뜨리기',
   ghost: '유령화',
-  'heavy-feral': '수화 중으로',
+  'heavy-feral': '심수화로',
   'absorb-emotion': '감정 흡수',
   'feast-debuff': '동기화',
   'grant-possession': '들러붙기',
@@ -192,7 +193,7 @@ export function intentLabel(encoded: string | undefined): string {
   if ((kind === 'web' || kind === 'drain-stat') && n > 0) {
     return `${label} ${n}`;
   }
-  if (kind === 'bind' || kind === 'devour') {
+  if (kind === 'bind' || kind === 'bind-hard' || kind === 'devour') {
     return label; // 게이지는 grapple 표시에서 별도로.
   }
   return label;
@@ -219,7 +220,8 @@ export function intentDescription(encoded: string | undefined): string {
       return `${statusLabel(st)} ${n}${d ? ` — ${d}` : ' 부여'}`;
     }
     case 'bind': return '구속 — 매 턴 손패 일부가 잠깁니다. 발버둥(마나 1)으로 탈출. 방치할수록 잠금이 늘어납니다.';
-    case 'devour': return '삼킴 — 매 턴 직접 피해를 입습니다. 발버둥(마나 1)으로 탈출. 방치할수록 피해가 커집니다.';
+    case 'bind-hard': return '강한 구속 — 매 턴 손패가 더 많이 잠깁니다. 색상 순서 미니게임으로만 발버둥칠 수 있습니다.';
+    case 'devour': return '삼킴 — 매 턴 직접 피해를 입습니다. 색상 순서 미니게임으로만 발버둥칠 수 있습니다.';
     case 'web': return `거미줄 — 다음 턴 손패 ${n || 1}장이 묶입니다. 카드를 쓸 때마다 한 겹씩 풀립니다(누적).`;
     case 'drain-stat': return `잠식 — 잠식 ${n || 1}을 걸어 주는 피해와 방어를 깎고, 적이 그만큼 강해집니다. 매 턴 1씩 감소.`;
     case 'obscure': return `시야 가리기 — ${n || 1}턴 동안 손패가 가려집니다(뒷면).`;
@@ -236,7 +238,7 @@ export function intentDescription(encoded: string | undefined): string {
     case 'ghost': return `유령화 — ${n || 2}턴 동안 비실체가 됩니다. 받는·주는 피해가 절반(매 턴 1 감소).`;
     case 'change': return '체인지 — 종족·덱이 변신 폼으로 바뀐다. \'본모습\' 카드로 복귀.';
     // 조건부 특수 행동 — 플레이어가 특정 상태일 때만 의도가 이것으로 바뀐다(아니면 원래 행동).
-    case 'heavy-feral': return '수화 중으로 — 이미 수화 상태라면 수화 중으로 끌어올립니다(전투 후에도 남고 탐색 보상↑).';
+    case 'heavy-feral': return '심수화로 — 이미 수화 상태라면 심수화로 끌어올립니다(전투 후에도 남고 탐색 보상↑).';
     case 'absorb-emotion': return '감정 흡수 — 방어막이 있으면 그 마음을 흡수해 적이 그만큼 강해지고 방어가 사라집니다.';
     case 'feast-debuff': return '동기화 — 디버프에 걸려 있으면 그에 동기화해 디버프 종류 수만큼 적이 회복하고 단단해집니다.';
     case 'grant-possession': return '들러붙기 — 떼어낼 수 없는 빙의 카드를 덱에 박습니다. 쓸수록 각성이 차오르고, 끝에 가서 좋은 것이든 나쁜 것이든 정체를 드러냅니다.';

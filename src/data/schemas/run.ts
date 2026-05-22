@@ -188,6 +188,8 @@ export interface CombatState {
     base: number;
     ramp: number;
     label?: string;
+    /** 강 구속(라미아 기본)·삼킴 — true면 버튼이 아니라 *색상 순서 미니게임*으로만 발버둥 가능. */
+    hard?: boolean;
   };
   /** 이번 턴 발버둥 사용 여부 — 1턴 1회. 매 턴 false 리셋. */
   struggledThisTurn?: boolean;
