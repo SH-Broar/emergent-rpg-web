@@ -159,7 +159,7 @@ const INTENT_KIND_LABELS: Record<string, string> = {
   ghost: '유령화',
   'heavy-feral': '수화 중으로',
   'absorb-emotion': '감정 흡수',
-  'feast-debuff': '기운 차리기',
+  'feast-debuff': '동기화',
 };
 
 /**
@@ -237,7 +237,7 @@ export function intentDescription(encoded: string | undefined): string {
     // 조건부 특수 행동 — 플레이어가 특정 상태일 때만 의도가 이것으로 바뀐다(아니면 원래 행동).
     case 'heavy-feral': return '수화 중으로 — 이미 수화 상태라면 수화 중으로 끌어올립니다(전투 후에도 남고 탐색 보상↑).';
     case 'absorb-emotion': return '감정 흡수 — 방어막이 있으면 그 마음을 흡수해 적이 그만큼 강해지고 방어가 사라집니다.';
-    case 'feast-debuff': return '기운 차리기 — 디버프에 걸려 있으면 신이 나 그 종류 수만큼 적이 회복하고 단단해집니다.';
+    case 'feast-debuff': return '동기화 — 디버프에 걸려 있으면 그에 동기화해 디버프 종류 수만큼 적이 회복하고 단단해집니다.';
     default: return intentLabel(encoded);
   }
 }

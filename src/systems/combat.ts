@@ -1311,7 +1311,7 @@ function executeMonsterIntent(c: CombatState, monster?: Monster, intentOverride?
       }
       break;
     }
-    // 기운 차리기: 플레이어가 디버프에 걸려 있으면 신이 나 기운을 차린다(회복+방어, 디버프 종류 수 비례).
+    // 동기화: 플레이어가 디버프에 걸려 있으면 거기 동기화해 회복+방어(디버프 종류 수 비례).
     case 'feast-debuff': {
       const ds = c.player.statuses;
       let cnt = 0;
@@ -1320,7 +1320,7 @@ function executeMonsterIntent(c: CombatState, monster?: Monster, intentOverride?
         const heal = cnt * (value || 3);
         c.enemy.hp = Math.min(c.enemy.maxHp, c.enemy.hp + heal);
         c.enemy.block += cnt * 2;
-        useUiStore().toast('warning', `신이 나 기운을 차렸다 — 적 HP +${heal}`);
+        useUiStore().toast('warning', `동기화 — 적 HP +${heal}`);
       }
       break;
     }

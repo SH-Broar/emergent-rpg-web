@@ -128,13 +128,13 @@ species = beastkin
 hp = 168
 attack = 15
 defense = 0
-intents = attack:15, debuff:2:feral, attack:14, attack:16~feral=heavy-feral
+intents = attack:15, charge:3, defend:8, attack:16
 gold = 21
 time_shards = 7
 card_drops =
 
 [monster.mr-tacomi-hologram-jester]
-name = 홀로그램 광대
+name = 홀로그래픽
 tier = normal
 species = beastkin
 hp = 126

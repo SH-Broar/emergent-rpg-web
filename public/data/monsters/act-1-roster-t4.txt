@@ -290,7 +290,7 @@ hp = 960
 attack = 34
 defense = 0
 actions = 2
-intents = buff:4, attack:17, charge:7, debuff:3:poison, drain:15, attack:20, defend:22, devour:6:5
+intents = buff:4, attack:17, charge:7, attack:18, debuff:3:poison, attack:18, devour:6:5, attack:19, defend:22, attack:17, drain:15, attack:18, charge:6, attack:19, defend:20, attack:17, attack:18, drain:12, attack:19, defend:22
 gold = 80
 time_shards = 28
 card_drops =
@@ -384,7 +384,7 @@ hp = 1000
 attack = 36
 defense = 0
 actions = 3
-intents = buff:5, debuff:2:paralyze, charge:7, attack:12, cost-up:3:3, attack:14, defend:18, drain:10, attack:12
+intents = buff:5, attack:12, debuff:2:feral, charge:7, attack:14, attack:13~feral=heavy-feral, defend:18, attack:13, cost-up:3:3, attack:14, drain:10, attack:13, charge:6, attack:15, defend:16, attack:13, attack:14, defend:18, attack:12, attack:15, attack:13
 gold = 80
 time_shards = 28
 card_drops =
