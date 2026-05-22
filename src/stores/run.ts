@@ -75,6 +75,7 @@ const EMPTY_RUN: RunState = {
   relics: [],
   hp: 0,
   maxHp: 0,
+  colorHpBonus: 0,
   mp: 0,
   maxMp: 0,
   gold: 0,

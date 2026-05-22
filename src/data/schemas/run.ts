@@ -333,6 +333,12 @@ export interface RunState {
   relics: Relic[];
   hp: number;
   maxHp: number;
+  /**
+   * 빛·어둠 컬러로부터 파생된 *최대 HP 보너스의 현재 누적분* (VIT 활력).
+   * maxHp에 *이미 포함*돼 있으며, 빛/어둠 변동 시 델타만 재조정한다(colors.applyColorBoost).
+   * 세이브에 maxHp와 함께 저장돼 정합 유지. 옛 세이브엔 없으면 0으로 backfill.
+   */
+  colorHpBonus?: number;
   mp: number;
   maxMp: number;
   gold: number;

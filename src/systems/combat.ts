@@ -503,10 +503,14 @@ export function playCard(handIndex: number, monster: Monster): { enemyDefeated: 
     c.discardPile = [...c.discardPile, card];
   }
 
-  // c-rize-relay 특수 후처리: 같은 카드 *cost 0* 복제를 핸드에 push (이번 턴 안 재사용 가능).
-  // 핸드 풀이면 discard로 fallback. 카드 자체 ID 비교 — 데이터 드리븐이 아닌 *카드 특이 분기*.
+  // c-rize-relay 특수 후처리: *돌아온 한 판*(에코) 1장을 핸드에 push (이번 턴 비용 0 재사용 가능).
+  // 에코는 같은 이름의 *별개 카드*(c-rize-relay-echo) — 자신은 다시 복제하지 않으므로 무한 공격이 안 된다.
+  // 핸드 풀이면 discard로 fallback. 카드 ID 비교 — 데이터 드리븐이 아닌 *카드 특이 분기*.
   if (card.id === 'c-rize-relay' || card.id === 'c-rize-relay-plus') {
-    const replica = { ...card, cost: 0 };
+    const echoId = card.id === 'c-rize-relay-plus' ? 'c-rize-relay-echo-plus' : 'c-rize-relay-echo';
+    const echoDef = useDataStore().cards.get(echoId);
+    // 데이터 누락 시에도 무한 복제만은 막도록 fallback(다른 id로 cost 0 사본).
+    const replica = echoDef ? instantiateCard(echoDef) : { ...card, id: echoId, cost: 0 };
     if (c.hand.length < 10) {
       c.hand = [...c.hand, replica];
     } else {
@@ -570,15 +574,18 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
     // 통합 피해: weakness(공격자=player) ×0.75 → vulnerable(대상) ×1.5 → block → hp.
     for (const t of targets) applyDamage(t, value, c.player.statuses);
   },
-  // 8 컬러 중 *최솟값* × value 만큼 데미지. ATK/상태/modifier 보너스 모두 무시 — *순수 균형값*.
+  // *0보다 큰(=다루는) 컬러 중 최솟값* × value 만큼 데미지. ATK/상태/modifier 보너스 모두 무시 — *순수 균형값*.
   // 단 weakness/vulnerable 배수는 통합 적용 (다른 피해 경로와 일관성).
+  // 주의: 8색 전체의 min을 쓰면 보통 다수 색이 0이라 항상 0데미지가 되어 카드가 죽는다 →
+  //       *아직 다루지 않는(0) 색은 제외*하고 다루는 색끼리의 최솟값을 쓴다. 시드 컬러가 있어 최소 1색은 >0.
   'damage-min-color': (e, c) => {
     const targets = resolveTargets(e.target ?? 'enemy', c);
     const colors = useRunStore().data.colors;
-    const minColor = Math.min(
+    const nonzero = [
       colors.fire, colors.water, colors.electric, colors.iron,
       colors.earth, colors.wind, colors.light, colors.dark,
-    );
+    ].filter((v) => v > 0);
+    const minColor = nonzero.length > 0 ? Math.min(...nonzero) : 0;
     const value = Math.max(0, Math.floor(minColor * (e.value ?? 1)));
     for (const t of targets) applyDamage(t, value, c.player.statuses);
   },

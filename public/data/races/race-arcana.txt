@@ -12,9 +12,9 @@ mp = 16
 attack = 4
 defense = 3
 vigor = 12
-# 시작 덱 — 컨셉 "디버프 + 마나". 전용 카드 중심: 약점/약화 누적(빛의 낙인·쇠함), 다음 턴 에너지 충전(빛 모으기), 누적 디버프 폭발(심판).
-starting_deck = c-arcana-brand, c-arcana-brand, c-arcana-brand, c-arcana-wither, c-arcana-wither, c-arcana-channel, c-arcana-channel, c-defend, c-defend, c-strike, c-strike, c-arcana-judgment, c-burn-mark, c-recover
-seed_cards = c-arcana-brand, c-arcana-wither, c-arcana-channel, c-arcana-judgment, c-defend
+# 시작 덱 — 컨셉 "색 공명". 전용 카드 중심: 최고색 비례 타격/방어(빛의 첨탑·색의 둑), 보유 색 종류 비례(분광탄), 최고색 ×2 폭발(공명 심판). 모아 온 색이 곧 위력.
+starting_deck = c-arcana-spire, c-arcana-spire, c-arcana-spire, c-arcana-levee, c-arcana-levee, c-arcana-prism, c-arcana-prism, c-defend, c-defend, c-strike, c-strike, c-arcana-judgment, c-recover, c-quickdraw
+seed_cards = c-arcana-spire, c-arcana-levee, c-arcana-prism, c-arcana-judgment, c-defend
 seed_relics = r-race-arcana
 hp_bonus = 0
 mp_bonus = 0

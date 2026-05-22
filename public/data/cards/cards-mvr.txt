@@ -338,7 +338,7 @@ element = iron
 cost = 2
 trigger = manual
 effects = damage-min-color:1:enemy
-flavor = "한 번에 한 검." 엘네스트가 여덟 결 중 가장 낮은 자리를 그대로 들어 친다. 균형 그대로 보강을 받지 않는다.
+flavor = "한 번에 한 검." 엘네스트가 지닌 색 중 가장 낮은 자리를 그대로 들어 친다. 균형 그대로 보강을 받지 않는다.
 
 [card.c-binding-ward]
 name = 결계의 한 줄
@@ -379,6 +379,18 @@ cost = 1
 trigger = manual
 effects = damage:4:enemy
 flavor = "심심해. 한 판." 리제가 한 발을 굴리고 같은 한 판 한 장을 그대 손에 다시 건넨다. 이번 한 판은 비용이 없다.
+
+# 한 판 갈래의 *돌아온 한 판* — 같은 이름·비용 0의 별개 카드. 이 카드는 다시 돌아오지 않는다(무한 복제 방지).
+# source=form → 어떤 풀(상점/이벤트/보상)에도 등장하지 않고, 전투 중 c-rize-relay 사용 시에만 생성된다.
+[card.c-rize-relay-echo]
+name = 한 판 갈래
+rank = common
+source = form
+element = fire
+cost = 0
+trigger = manual
+effects = damage:4:enemy
+flavor = 다시 손에 들어온 한 판. 이번이 마지막이다.
 
 [card.c-spirit-call]
 name = 모인 영혼들
@@ -1247,7 +1259,7 @@ element = iron
 cost = 2
 trigger = manual
 effects = damage-min-color:2:enemy
-flavor = 가장 낮은 자리를 두 배로 들어 친다.
+flavor = 지닌 색 중 가장 낮은 자리를 두 배로 들어 친다.
 
 [card.c-binding-ward-plus]
 name = 결계의 한 줄+
@@ -1288,6 +1300,17 @@ cost = 1
 trigger = manual
 effects = damage:7:enemy
 flavor = 같은 한 판이 더 무겁게, 다시 손에 돌아온다. 이번 한 판은 비용이 없다.
+
+# 한 판 갈래+의 *돌아온 한 판* — 복제하지 않는 비용 0 별개 카드. source=form(풀 제외).
+[card.c-rize-relay-echo-plus]
+name = 한 판 갈래+
+rank = common
+source = form
+element = fire
+cost = 0
+trigger = manual
+effects = damage:7:enemy
+flavor = 더 무겁게 다시 손에 들어온 한 판. 이번이 마지막이다.
 
 [card.c-spirit-call-plus]
 name = 모인 영혼들+

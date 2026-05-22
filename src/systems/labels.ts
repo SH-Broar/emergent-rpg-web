@@ -286,6 +286,7 @@ const COLOR_KO: Record<string, string> = {
 /** 지표(컬러/스탯) 키 → 한글. */
 const METRIC_KO: Record<string, string> = {
   ...COLOR_KO, atk: 'ATK', def: 'DEF', mag: 'MAG',
+  'top-color': '최고 컬러값', 'color-count': '컬러 종류 수',
 };
 function colorKo(arg: unknown): string {
   const k = String(arg ?? 'random');
@@ -295,8 +296,14 @@ function metricKo(arg: unknown): string {
   const k = String(arg ?? '');
   return METRIC_KO[k] ?? k;
 }
-/** ATK/DEF/MAG → 한글. */
-const STAT_KO: Record<string, string> = { atk: 'ATK', def: 'DEF', mag: 'MAG' };
+/**
+ * boost-stat arg → *부스트되는 컬러쌍* 한글 표기.
+ * boost-stat은 스탯이 아니라 *컬러쌍*을 올리므로(스탯 파생과 분리), 라벨도 색으로 표기해야 정확.
+ * (예: 'mag' 태그는 역사적으로 물·바람 쌍을 가리킨다.)
+ */
+const BOOST_STAT_PAIR_KO: Record<string, string> = {
+  atk: '불·전기', def: '흙·철', mag: '물·바람',
+};
 
 export function relicTriggerLabel(trigger: string | undefined): string {
   if (!trigger) return '';
@@ -352,10 +359,12 @@ export function relicEffectText(eff: RelicEffect): string {
     case 'hurt-to-block': return `피해를 받으면 방어 ${v}`;
     // --- 컬러/스탯 영구 상승 (트리거가 '언제'를 결정) ---
     case 'boost-color': return `${colorKo(eff.params?.arg)} ${signed(v)}`;
-    case 'boost-stat': return `${STAT_KO[String(eff.params?.arg ?? '')] ?? metricKo(eff.params?.arg)} 컬러쌍 ${signed(v)}`;
+    case 'boost-stat': return `${BOOST_STAT_PAIR_KO[String(eff.params?.arg ?? '')] ?? metricKo(eff.params?.arg)} 컬러쌍 ${signed(v)}`;
     // --- 스케일링 (현재값 비례) ---
     case 'block-from-metric': return `전투 시작 시 ${metricKo(eff.params?.arg)} ${v}당 방어 +1`;
     case 'strength-from-metric': return `전투 시작 시 ${metricKo(eff.params?.arg)} ${v}당 힘 +1`;
+    case 'combat-start-mana-from-metric': return `전투 시작 시 ${metricKo(eff.params?.arg)} ${v}당 마나 +1`;
+    case 'combat-start-draw-from-metric': return `전투 시작 시 ${metricKo(eff.params?.arg)} ${v}당 카드 1장 더 뽑기`;
     // --- 턴 수 연동 ---
     case 'turn-start-block-snowball': return `매 턴 (턴 번호 ×${v})만큼 방어`;
     case 'turn-after-strength': return `${Number(eff.params?.arg ?? 4)}턴째부터 매 턴 힘 +${v || 1}`;

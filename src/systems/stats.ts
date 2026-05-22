@@ -3,10 +3,11 @@
  *
  * 사용자 사양 (2026-05-15):
  *   6 컬러: 불 / 전기 / 흙 / 철 / 물 / 바람 (상한 100 권장)
- *   짝지어 CalculateStat → 3 스탯:
+ *   짝지어 CalculateStat → 4 스탯:
  *     ATK  = CalculateStat(fire, electric)
  *     DEF  = CalculateStat(earth, iron)
- *     MAG  = CalculateStat(water, wind)
+ *     MAG  = CalculateStat(light, dark)   (희귀 컬러 → 드로우/마나)
+ *     VIT  = CalculateStat(water, wind)   (→ 최대 HP, VIT 20당 +1)
  *
  *   효과 (2026-05-21 평탄화):
  *     ATK 33당 공격 카드의 *최소 공격력* +1  (컬러 풀투자 시 +10~15 상한)
@@ -48,16 +49,32 @@ export function calculateStat(a: number, b: number): number {
 export interface DerivedStats {
   atk: number;
   def: number;
+  /** MAG(마법) — *빛·어둠*으로 산출(희귀 컬러). 드로우/마나 보너스의 원천. */
   mag: number;
+  /** VIT(활력) — *물·바람*으로 산출. 최대 HP 보너스의 원천. */
+  vit: number;
 }
 
-/** colors → ATK/DEF/MAG. */
+/**
+ * colors → ATK/DEF/MAG/VIT.
+ *   ATK=불·전기, DEF=흙·철, MAG=빛·어둠(희귀→드로우/마나), VIT=물·바람(→최대 HP).
+ * (2026-05-22: 빛·어둠이 더 희귀하므로 MAG↔VIT 담당 컬러쌍을 교체.)
+ */
 export function deriveStats(colors: ColorValues): DerivedStats {
   return {
     atk: calculateStat(colors.fire, colors.electric),
     def: calculateStat(colors.earth, colors.iron),
-    mag: calculateStat(colors.water, colors.wind),
+    mag: calculateStat(colors.light, colors.dark),
+    vit: calculateStat(colors.water, colors.wind),
   };
+}
+
+/** VIT 1 HP당 필요한 활력 수치 — VIT(=calculateStat(water,wind)) 20당 최대 HP +1. */
+export const VIT_HP_PER = 20;
+
+/** 현재 컬러로부터의 *최대 HP 보너스* — floor(VIT / VIT_HP_PER). 물·바람을 고루 키울수록 큼. */
+export function vitHpBonus(colors: ColorValues): number {
+  return Math.floor(calculateStat(colors.water, colors.wind) / VIT_HP_PER);
 }
 
 export interface CombatBonuses {

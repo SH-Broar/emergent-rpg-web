@@ -17,7 +17,7 @@ import { computed, ref } from 'vue';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
-import { deriveStats, deriveBonuses } from '@/systems/stats';
+import { deriveStats, deriveBonuses, vitHpBonus } from '@/systems/stats';
 import {
   effectiveColors,
   labelOfColor,
@@ -39,7 +39,7 @@ const ui = useUiStore();
 
 // 6 컬러 막대 (GameHUD.vue:50 colorBars 원본 순서 그대로 — 절대 변경 금지)
 interface ColorBar {
-  key: 'fire' | 'electric' | 'earth' | 'iron' | 'water' | 'wind';
+  key: 'fire' | 'electric' | 'earth' | 'iron' | 'water' | 'wind' | 'light' | 'dark';
   label: string;
   color: string;
   meaning: string;
@@ -49,8 +49,10 @@ const colorBars: ColorBar[] = [
   { key: 'electric', label: '전기', color: '#f2e36a', meaning: '전기 — 불과 함께 ATK(공격력) 산출' },
   { key: 'earth',    label: '흙',   color: '#c2a36a', meaning: '흙 — 철과 함께 DEF(방어력) 산출' },
   { key: 'iron',     label: '철',   color: '#a4a4b0', meaning: '철 — 흙과 함께 DEF(방어력) 산출' },
-  { key: 'water',    label: '물',   color: '#8eedff', meaning: '물 — 바람과 함께 MAG(마법) 산출' },
-  { key: 'wind',     label: '바람', color: '#a8e8b8', meaning: '바람 — 물과 함께 MAG(마법) 산출' },
+  { key: 'water',    label: '물',   color: '#8eedff', meaning: '물 — 바람과 함께 VIT(활력 → 최대 HP) 산출' },
+  { key: 'wind',     label: '바람', color: '#a8e8b8', meaning: '바람 — 물과 함께 VIT(활력 → 최대 HP) 산출' },
+  { key: 'light',    label: '빛',   color: '#f6e8b8', meaning: '빛 — 어둠과 함께 MAG(마법) 산출 (희귀 컬러)' },
+  { key: 'dark',     label: '어둠', color: '#c08eff', meaning: '어둠 — 빛과 함께 MAG(마법) 산출 (희귀 컬러)' },
 ];
 
 const COLOR_CAP = 100;
@@ -76,6 +78,8 @@ function colorPct(key: ColorBar['key']) {
 
 const stats = computed(() => deriveStats(effective.value));
 const bonus = computed(() => deriveBonuses(stats.value));
+/** VIT(빛·어둠) → 최대 HP 보너스 표시값. */
+const vitHp = computed(() => vitHpBonus(effective.value));
 
 const companionNames = computed(() =>
   run.data.companions.map((id) => data.npcs.get(id)?.name ?? id),
@@ -185,11 +189,18 @@ function onUnequipClick(slot: EquipmentSlot) {
                   <span class="cm-stat__bonus">+{{ bonus.block }}</span>
                 </div>
               </Tooltip>
-              <Tooltip text="MAG — 물·바람으로 산출. MAG 10단위 — 홀수마다 드로우+1, 짝수마다 마나+1">
+              <Tooltip text="MAG — 빛·어둠(희귀 컬러)으로 산출. MAG 100단위 — 홀수마다 드로우+1, 짝수마다 마나+1">
                 <div class="cm-stat cm-stat--mag">
                   <span class="cm-stat__lbl">MAG</span>
                   <span class="cm-stat__val">{{ Math.round(stats.mag) }}</span>
                   <span class="cm-stat__bonus">D+{{ bonus.drawExtra }} / M+{{ bonus.manaExtra }}</span>
+                </div>
+              </Tooltip>
+              <Tooltip text="VIT(활력) — 물·바람으로 산출. VIT 20당 최대 HP +1. 물과 바람을 고루 키울수록 크다.">
+                <div class="cm-stat cm-stat--vit">
+                  <span class="cm-stat__lbl">VIT</span>
+                  <span class="cm-stat__val">{{ Math.round(stats.vit) }}</span>
+                  <span class="cm-stat__bonus">HP+{{ vitHp }}</span>
                 </div>
               </Tooltip>
             </div>
@@ -403,6 +414,7 @@ function onUnequipClick(slot: EquipmentSlot) {
 .cm-stat--atk { border-color: #ff8e8e; }
 .cm-stat--def { border-color: #a4a4b0; }
 .cm-stat--mag { border-color: #8eedff; }
+.cm-stat--vit { border-color: #f6e8b8; }
 .cm-stat__lbl { font-size: 0.7rem; color: #c0b693; }
 .cm-stat__val { font-size: 1.2rem; font-weight: 700; color: #f6e8b8; font-variant-numeric: tabular-nums; }
 .cm-stat__bonus { font-size: 0.7rem; color: #c08eff; margin-top: 0.1rem; }

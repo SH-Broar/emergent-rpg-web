@@ -222,9 +222,18 @@ const STAT_PAIRS: Record<string, [ColorKey, ColorKey]> = {
   mag: ['water', 'wind'],
 };
 
-/** 지표(arg) 현재값 — 컬러명이면 컬러값, atk/def/mag면 파생 스탯. */
+/**
+ * 지표(arg) 현재값 — 컬러명이면 컬러값, atk/def/mag면 파생 스탯.
+ * 컬러 메타지표: 'top-color'=8색 중 최댓값, 'color-count'=0보다 큰 색 종류 수. (아르카나 색 공명용)
+ */
 function metricValue(arg: string): number {
   const colors = useRunStore().data.colors;
+  if (arg === 'top-color') {
+    return Math.max(0, ...Object.values(colors as Record<string, number>));
+  }
+  if (arg === 'color-count') {
+    return Object.values(colors as Record<string, number>).filter((v) => v > 0).length;
+  }
   if (arg in colors) return (colors as Record<string, number>)[arg] ?? 0;
   const s = deriveStats(colors);
   if (arg === 'atk') return s.atk;
@@ -283,6 +292,25 @@ const HANDLERS: Record<string, RelicEffectHandler> = {
   'combat-start-draw': (eff, ctx) => {
     if (!ctx.combat) return;
     drawIntoHand(ctx.combat, eff.value ?? 0);
+  },
+  // 색 → 자원 전환 (아르카나 색 공명). value=제수, arg=지표(top-color/color-count 등).
+  // 전투 시작 시 마나 += floor(지표/제수). 모아 온 색이 짙을수록 매 전투 더 많은 에너지.
+  'combat-start-mana-from-metric': (eff, ctx) => {
+    if (!ctx.combat) return;
+    const div = eff.value ?? 0;
+    if (div <= 0) return;
+    const n = Math.floor(metricValue(String(eff.params?.arg ?? '')) / div);
+    if (n <= 0) return;
+    ctx.combat.mana += n;
+    ctx.combat.maxMana += n;
+  },
+  // 색 → 드로우 전환. 전투 시작 시 카드 floor(지표/제수)장 더 뽑기.
+  'combat-start-draw-from-metric': (eff, ctx) => {
+    if (!ctx.combat) return;
+    const div = eff.value ?? 0;
+    if (div <= 0) return;
+    const n = Math.floor(metricValue(String(eff.params?.arg ?? '')) / div);
+    if (n > 0) drawIntoHand(ctx.combat, n);
   },
   'combat-start-status': (eff, ctx) => {
     if (!ctx.combat) return;

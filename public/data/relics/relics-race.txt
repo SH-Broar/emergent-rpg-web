@@ -31,5 +31,5 @@ name = 빛의 성배
 rank = common
 source = race
 trigger = on-combat-start
-effects = bonus-mana:1
-flavor = 빛이 고이는 그릇. 매 싸움마다 한 줌의 힘이 더 차오른다.
+effects = combat-start-mana-from-metric:12:top-color, combat-start-draw-from-metric:3:color-count
+flavor = 빛이 고이는 그릇. 모아 온 색이 짙을수록(최고색 12당 마나 +1), 색이 다채로울수록(색 3종당 카드 +1) 매 싸움이 풍요로워진다.
