@@ -249,7 +249,7 @@ hp = 84
 attack = 6
 defense = 0
 lock_in = 8
-intents = attack:8, attack:8, debuff:3:weakness~unlocked=attack:4, defend:4
+intents = attack:8, grant-possession, debuff:3:weakness~unlocked=attack:4, defend:4
 gold = 12
 time_shards = 3
 card_drops =

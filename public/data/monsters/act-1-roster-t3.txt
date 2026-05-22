@@ -78,7 +78,7 @@ hp = 133
 attack = 10
 defense = 0
 lock_in = 10
-intents = attack:10, attack:11, debuff:3:vulnerable~unlocked=attack:6, attack:10
+intents = attack:10, grant-possession, debuff:3:vulnerable~unlocked=attack:6, attack:10
 gold = 18
 time_shards = 6
 card_drops =
@@ -251,7 +251,7 @@ hp = 126
 attack = 10
 defense = 0
 lock_in = 10
-intents = attack:10, attack:11, debuff:3:weakness~unlocked=attack:6, attack:10
+intents = attack:10, grant-possession, debuff:3:weakness~unlocked=attack:6, attack:10
 gold = 18
 time_shards = 6
 card_drops =

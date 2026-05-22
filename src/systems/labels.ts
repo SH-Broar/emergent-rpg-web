@@ -160,6 +160,7 @@ const INTENT_KIND_LABELS: Record<string, string> = {
   'heavy-feral': '수화 중으로',
   'absorb-emotion': '감정 흡수',
   'feast-debuff': '동기화',
+  'grant-possession': '들러붙기',
 };
 
 /**
@@ -238,6 +239,7 @@ export function intentDescription(encoded: string | undefined): string {
     case 'heavy-feral': return '수화 중으로 — 이미 수화 상태라면 수화 중으로 끌어올립니다(전투 후에도 남고 탐색 보상↑).';
     case 'absorb-emotion': return '감정 흡수 — 방어막이 있으면 그 마음을 흡수해 적이 그만큼 강해지고 방어가 사라집니다.';
     case 'feast-debuff': return '동기화 — 디버프에 걸려 있으면 그에 동기화해 디버프 종류 수만큼 적이 회복하고 단단해집니다.';
+    case 'grant-possession': return '들러붙기 — 떼어낼 수 없는 빙의 카드를 덱에 박습니다. 쓸수록 각성이 차오르고, 끝에 가서 좋은 것이든 나쁜 것이든 정체를 드러냅니다.';
     default: return intentLabel(encoded);
   }
 }

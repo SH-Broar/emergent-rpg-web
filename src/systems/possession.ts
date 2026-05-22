@@ -100,20 +100,30 @@ export function transformPossession(instanceId: string): void {
   if (def) swapCardEverywhere(instanceId, def);
   if (run.data.possessions) delete run.data.possessions[instanceId];
 
+  // HP 결말 — 전투 중이면 *라이브 전투 HP*(c.player.hp)에, 아니면 run.data.hp에 적용.
+  // (전투 중 run.data.hp만 바꾸면 clearCombat이 c.player.hp로 덮어써 사라진다.)
+  const cb = run.data.combat;
+  const applyHp = (delta: number): number => {
+    if (cb) {
+      const before = cb.player.hp;
+      cb.player.hp = Math.max(1, Math.min(cb.player.maxHp, before + delta));
+      return cb.player.hp - before;
+    }
+    const before = run.data.hp;
+    run.data.hp = Math.max(1, Math.min(run.data.maxHp, before + delta));
+    return run.data.hp - before;
+  };
   if (guardian) {
-    const heal = 12;
-    run.data.hp = Math.min(run.data.maxHp, run.data.hp + heal);
+    const gained = applyHp(12);
     ui.toast(
       'success',
-      `들러붙은 것은 수호령이었다 — 빛이 스며들어 ${def?.name ?? '축복'}으로 피어났다. (HP +${heal})`,
+      `들러붙은 것은 수호령이었다 — 빛이 스며들어 ${def?.name ?? '축복'}으로 피어났다. (HP +${gained})`,
     );
   } else {
-    const before = run.data.hp;
-    run.data.hp = Math.max(1, before - 8);
-    const loss = before - run.data.hp;
+    const lost = -applyHp(-8);
     ui.toast(
       'warning',
-      `들러붙은 것은 악령이었다 — ${def?.name ?? '저주'}로 일그러졌다. (HP -${loss})`,
+      `들러붙은 것은 악령이었다 — ${def?.name ?? '저주'}로 일그러졌다. (HP -${lost})`,
     );
   }
 }

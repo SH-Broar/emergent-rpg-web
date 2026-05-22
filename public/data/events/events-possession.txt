@@ -1,0 +1,77 @@
+# 빙의 획득 사건 (2026-05-23)
+# condition = day>=2 로 2일차 이후에만 풀에 든다.
+# custom = grant-possession (랜덤 정렬) 또는 grant-possession-guardian (수호령 보장).
+# 톤: 귀엽고 신비롭게, 호러 금지. 작은 요괴/길잃은 영/도깨비불 만남.
+# 프로즈 규칙: *별표*, em-dash(--) 금지. ASCII 하이픈은 ID/마이너스에만.
+
+# ============================================================
+# 도깨비불 — 길잃은 작은 영이 따라오려 한다.
+# ============================================================
+[event.ev-possession-wisp-follow]
+name = 따라오는 도깨비불
+node_kinds = event
+weight = 1
+once_per_run = false
+condition = day>=2
+body = 길 중간에 손바닥보다 작은 도깨비불 하나가 두둥실 떠 있다. 다가가니 뒤로 물러서지 않는다. 빛이 가늘게 깜빡인다. 어디서 왔는지, 어디로 가야 할지 모르는 눈치다.
+
+[event.ev-possession-wisp-follow.choice.1]
+label = 손을 내밀어 받아 준다
+custom = grant-possession
+result_text = 불빛이 손끝에 살그머니 내려앉더니, 손 안으로 쏙 들어갔다. 따뜻한 것 같기도 하고 간지러운 것 같기도 하다.
+
+[event.ev-possession-wisp-follow.choice.2]
+label = 가던 길을 계속 간다
+color = light:3
+result_text = 발길을 돌리자 도깨비불이 잠시 뒤를 따라오다가, 어느새 사라졌다. 길 위에 빛 부스러기만 남았다.
+
+# ============================================================
+# 그림자 인형 — 길가에 작은 그림자가 홀로 앉아 있다.
+# ============================================================
+[event.ev-possession-shadow-doll]
+name = 길가의 작은 그림자
+node_kinds = event
+weight = 1
+once_per_run = false
+condition = day>=2
+body = 길 옆 돌 위에 손 크기만 한 그림자 덩어리가 동그랗게 웅크려 앉아 있다. 눈이 있는지 없는지 모르겠지만, 이쪽을 보고 있는 것 같다. 꼼짝도 하지 않는다.
+
+[event.ev-possession-shadow-doll.choice.1]
+label = 손에 올려 본다
+custom = grant-possession
+result_text = 그림자가 손 위에 올라서더니 살며시 스며들었다. 무겁지도 않고, 뜨겁지도 않다. 다만 손이 조금 어두워졌다.
+
+[event.ev-possession-shadow-doll.choice.2]
+label = 말을 걸어 본다
+color = dark:4
+result_text = 아무 대답도 없었다. 잠시 뒤 그림자가 스르르 녹아들며 발아래 어둠 속으로 섞였다. 그래도 기운이 조금 남은 것 같다.
+
+[event.ev-possession-shadow-doll.choice.3]
+label = 그냥 지나간다
+result_text = 돌아보지 않고 걸었다. 등 뒤에서 아무 소리도 나지 않았다.
+
+# ============================================================
+# 하나브릿지 신전 — 빛의 영이 깃든 작은 신전. 수호령 보장.
+# ============================================================
+[event.ev-hanabridge-shrine]
+name = 하나브릿지 신전
+node_kinds = event
+weight = 1
+once_per_run = true
+condition = day>=2
+body = 길가에 아담한 신전이 하나 서 있다. 안에서 부드러운 빛이 새어 나온다. 제단 위에 둥근 빛 덩어리가 조용히 떠 있다. 가까이 다가가면 빛이 살짝 흔들린다. 반기는 것 같다.
+
+[event.ev-hanabridge-shrine.choice.1]
+label = 제단 앞에 선다
+custom = grant-possession-guardian
+result_text = 빛 덩어리가 천천히 가슴 쪽으로 날아와 안으로 스며들었다. 따뜻하고 포근하다. 좋은 것이 깃든 기분이다.
+
+[event.ev-hanabridge-shrine.choice.2]
+label = 잠시 앉아 쉰다
+hp = 8
+color = light:5
+result_text = 빛 안에서 조용히 숨을 돌렸다. 몸이 조금 가벼워졌다.
+
+[event.ev-hanabridge-shrine.choice.3]
+label = 그냥 지나간다
+result_text = 신전 문을 지나쳤다. 등 뒤로 빛이 잠시 더 환해졌다가 돌아왔다.

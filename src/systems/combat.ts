@@ -20,7 +20,7 @@ import type {
   MonsterDrop,
 } from '@/data/schemas';
 import { drawCards, discardHand, instantiateCard, shuffle } from './deck';
-import { notePossessionPlayed } from './possession';
+import { notePossessionPlayed, grantPossession } from './possession';
 import { rng } from './rng';
 import { bonusesFromEffective } from './equipment';
 import {
@@ -1367,6 +1367,13 @@ function executeMonsterIntent(c: CombatState, monster?: Monster, intentOverride?
       useUiStore().toast('warning', `잠식 — 힘이 빨려 들어간다 (잠식 ${c.player.statuses['sap']})`);
       break;
     }
+    case 'grant-possession': {
+      // 빙의 부여 — 제외 불가 빙의 카드(들린 마음)를 덱에 박는다. 전투당 1회(쿨다운 99).
+      // parts[1]로 정렬 지정(guardian/evil), 없으면 랜덤. 하나브릿지 신전 등 빛의 형태 몹은 :guardian.
+      const align = parts[1] === 'guardian' || parts[1] === 'evil' ? parts[1] : undefined;
+      grantPossession(align);
+      break;
+    }
     case 'drain': {
       // drain:value — 흡혈 공격: 피해를 주고 *실제 HP 손실*만큼 적 회복.
       const before = c.player.hp;
@@ -1635,6 +1642,8 @@ const SPECIAL_INTENT_COOLDOWNS: Record<string, number> = {
   'drain-stat': 9,
   'absorb-emotion': 6,
   'feast-debuff': 6,
+  // 빙의 부여 — 전투당 사실상 1회(긴 쿨다운). 한 전투에서 빙의 카드가 여러 장 박히지 않도록.
+  'grant-possession': 99,
 };
 /** 해석된 의도의 쿨다운 키(특수 행동이면 키, 아니면 null). debuff는 status까지 본다. */
 function specialIntentKey(resolved: string): string | null {
