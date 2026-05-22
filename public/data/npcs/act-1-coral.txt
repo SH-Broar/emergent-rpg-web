@@ -17,6 +17,7 @@ affinity_rewards = 3:card=c-gentle-guard:gauge=4
 recruit_enabled = true
 recruit_cards = c-tide-veil
 recruit_colors = water:12, light:6
+recruit_per_turn = heal:1
 
 [npc.npc-seira]
 name = 세이라
@@ -32,3 +33,8 @@ background = 산호 해안의 세이렌.|상반신은 사람, 깃털 돋친 두 
 tagline = "한 소절 들어 볼래요?"
 tags = siren, song, water-affinity
 affinity_rewards = 3:card=c-burn-mark:gauge=4
+# 영입 세이렌. 노래로 세뇌를 흘려내고 전투 시작에 한 자락 더 펼친다.
+recruit_enabled = true
+recruit_colors = water:10, wind:6
+recruit_status_resist = brainwash:1
+recruit_combat_start = draw:1

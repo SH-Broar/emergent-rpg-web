@@ -69,6 +69,19 @@ export interface CompanionBonuses {
     fire: number; water: number; electric: number; iron: number;
     earth: number; wind: number; light: number; dark: number;
   }>;
+
+  // === 지속 패시브 (2026-05-23, 5c) — 동료가 *파티에 있는 한 매 전투* 적용. 영입 1회가 아님. ===
+  /**
+   * 상태이상 저항 — 적이 *플레이어에게* 디버프를 걸 때 부여량을 status별로 감소(최소 0).
+   * key='all'이면 모든 감쇠 디버프에 적용. 예: { weakness: 1, all: 1 }.
+   */
+  statusResist?: Record<string, number>;
+  /** 전투 시작 효과 — 매 전투 시작 시 자신에게 적용(방어/힘/추가 드로우). */
+  combatStart?: { block?: number; strength?: number; draw?: number };
+  /** 매 플레이어 턴 시작 효과(회복/방어). */
+  perTurn?: { heal?: number; block?: number };
+  /** 보상 증폭 — 1.0 기준 *추가 비율*(0.2 = +20%). 종류: gold/shards/gather. */
+  rewardMul?: { gold?: number; shards?: number; gather?: number };
 }
 
 export interface Npc extends NamedEntity {

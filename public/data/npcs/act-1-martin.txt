@@ -18,6 +18,7 @@ affinity_rewards = 3:card=c-quickdraw:gauge=4
 recruit_enabled = true
 recruit_cards = c-swift-step
 recruit_colors = wind:12, light:6
+recruit_combat_start = draw:1
 
 [npc.npc-gazri]
 name = 가즈리

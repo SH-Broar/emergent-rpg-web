@@ -21,6 +21,7 @@ import type {
 } from '@/data/schemas';
 import { drawCards, discardHand, instantiateCard, shuffle } from './deck';
 import { notePossessionPlayed, grantPossession } from './possession';
+import { companionCombatStart, companionPerTurn, companionStatusResist, companionRewardMul } from './companion';
 import { rng } from './rng';
 import { bonusesFromEffective } from './equipment';
 import {
@@ -261,10 +262,13 @@ export function startCombat(monster: Monster) {
   const carriedStatuses: Record<string, number> = {};
   if ((r.possessed ?? 0) > 0) carriedStatuses.possession = r.possessed as number;
   if ((r.feralHeavy ?? 0) > 0) carriedStatuses['feral-heavy'] = r.feralHeavy as number;
+  // 동료 지속 패시브(5c) — 전투 시작 효과: 방어/힘/추가 드로우. 파티에 있는 한 매 전투 적용.
+  const cStart = companionCombatStart();
+  if (cStart.strength > 0) carriedStatuses.strength = (carriedStatuses.strength ?? 0) + cStart.strength;
   const player: Combatant = {
     hp: r.hp,
     maxHp: r.maxHp,
-    block: 0,
+    block: cStart.block,
     statuses: carriedStatuses,
   };
 
@@ -284,7 +288,7 @@ export function startCombat(monster: Monster) {
   const bonus = currentBonuses();
   const handSize = Math.max(
     0,
-    STARTING_HAND_SIZE + bonus.drawExtra + getModifierAdd('draw-extra-add') - handSizeReduction(),
+    STARTING_HAND_SIZE + bonus.drawExtra + getModifierAdd('draw-extra-add') - handSizeReduction() + cStart.draw,
   );
   const maxMana = Math.max(
     0,
@@ -1074,6 +1078,15 @@ function applyPlayerStatusTurnStart(c: CombatState): void {
   // 새 턴 — 발버둥 1턴 1회 리셋.
   c.struggledThisTurn = false;
 
+  // 동료 지속 패시브(5c) — 매 턴 회복/방어. 회복은 심수화면 차단, 방어는 수화/심수화면 0.
+  const cTurn = companionPerTurn();
+  if (cTurn.heal > 0 && !healBlocked(c)) {
+    c.player.hp = Math.min(c.player.maxHp, c.player.hp + cTurn.heal);
+  }
+  if (cTurn.block > 0 && !playerWild(c)) {
+    c.player.block += cTurn.block;
+  }
+
   // 변신 해제 카운트다운 — '본모습' 카드 사용 후 ~2턴에 걸쳐 풀린다.
   if ((c.releasePending ?? 0) > 0) {
     c.releasePending = (c.releasePending ?? 0) - 1;
@@ -1352,7 +1365,13 @@ function executeMonsterIntent(c: CombatState, monster?: Monster, intentOverride?
       // 매 턴 -1 감쇠하는 디버프는 *적이 걸 때 최소 2* — 1만 걸면 다음 플레이어 턴에 즉시 0이 되어
       // 효과가 한 번도 적용되지 않는 문제 방지. (DECAYING_DEBUFFS와 동일 목록.)
       const applied = DECAYING_DEBUFFS.has(status) ? Math.max(2, value || 1) : (value || 1);
-      c.player.statuses[status] = (c.player.statuses[status] ?? 0) + applied;
+      // 동료 지속 패시브(5c) — 상태이상 저항: 부여량 차감(0이면 완전 저항).
+      const resisted = Math.max(0, applied - companionStatusResist(status));
+      if (resisted > 0) {
+        c.player.statuses[status] = (c.player.statuses[status] ?? 0) + resisted;
+      } else if (applied > 0) {
+        useUiStore().toast('success', '동료의 가호 — 상태이상을 막아냈다.');
+      }
       break;
     }
     // 수화 중(feral-heavy) 부여 — *이미 수화(feral) 상태일 때만* 발동(조건부). 비감쇠·전투 후 잔존.
@@ -1773,8 +1792,11 @@ export function applyMonsterDrop(drop: MonsterDrop, allCards: Map<string, Card>)
   const run = useRunStore();
   const r = run.data;
 
-  r.gold += drop.gold;
-  r.timeShards += drop.timeShards;
+  // 동료 지속 패시브(5c) — 골드/시간조각 보상 증폭.
+  const gold = Math.round(drop.gold * companionRewardMul('gold'));
+  const shards = Math.round(drop.timeShards * companionRewardMul('shards'));
+  r.gold += gold;
+  r.timeShards += shards;
 
   // 카오스 narrow-reward(좁은 길) — 카드 보상 제시 수 -1. 확률 통과 카드 후보 중 마지막 1장 누락.
   // (이 게임은 'N장 중 택1' UI가 아니라 확률 드롭이므로, 통과 카드 수에서 1장 감산으로 구현.)
@@ -1798,8 +1820,8 @@ export function applyMonsterDrop(drop: MonsterDrop, allCards: Map<string, Card>)
   fireOnCombatEnd();
 
   return {
-    gold: drop.gold,
-    timeShards: drop.timeShards,
+    gold,
+    timeShards: shards,
     cards: droppedCards,
   };
 }

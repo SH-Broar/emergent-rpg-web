@@ -26,6 +26,7 @@ import {
   tryEquip,
   unequip,
 } from '@/systems/equipment';
+import { statusLabel } from '@/systems/labels';
 import type { Element, Equipment, EquipmentSlot } from '@/data/schemas';
 import DeckPanel from '@/components/DeckPanel.vue';
 import Tooltip from '@/components/Tooltip.vue';
@@ -100,6 +101,34 @@ const companionInfo = computed(() =>
           .filter(([, v]) => (v ?? 0) !== 0)
           .map(([k, v]) => `${labelOfColor(k as Element)} ${(v ?? 0) >= 0 ? '+' : ''}${v}`);
         if (parts.length) bonuses.push(`컬러: ${parts.join(', ')}`);
+      }
+      // 지속 패시브(5c) — 파티에 있는 한 매 전투 적용.
+      if (r.statusResist) {
+        const parts = Object.entries(r.statusResist)
+          .filter(([, v]) => (v ?? 0) !== 0)
+          .map(([k, v]) => (k === 'all' ? `모든 상태이상 -${v}` : `${statusLabel(k)} -${v}`));
+        if (parts.length) bonuses.push(`상태이상 저항: ${parts.join(', ')}`);
+      }
+      if (r.combatStart) {
+        const parts: string[] = [];
+        if (r.combatStart.block) parts.push(`방어 +${r.combatStart.block}`);
+        if (r.combatStart.strength) parts.push(`힘 +${r.combatStart.strength}`);
+        if (r.combatStart.draw) parts.push(`드로우 +${r.combatStart.draw}`);
+        if (parts.length) bonuses.push(`전투 시작: ${parts.join(', ')}`);
+      }
+      if (r.perTurn) {
+        const parts: string[] = [];
+        if (r.perTurn.heal) parts.push(`회복 +${r.perTurn.heal}`);
+        if (r.perTurn.block) parts.push(`방어 +${r.perTurn.block}`);
+        if (parts.length) bonuses.push(`매 턴: ${parts.join(', ')}`);
+      }
+      if (r.rewardMul) {
+        const pct = (v: number) => `${Math.round(v * 100)}%`;
+        const parts: string[] = [];
+        if (r.rewardMul.gold) parts.push(`골드 +${pct(r.rewardMul.gold)}`);
+        if (r.rewardMul.shards) parts.push(`시간조각 +${pct(r.rewardMul.shards)}`);
+        if (r.rewardMul.gather) parts.push(`채집 +${pct(r.rewardMul.gather)}`);
+        if (parts.length) bonuses.push(`보상: ${parts.join(', ')}`);
       }
     }
     return { name: npc?.name ?? id, bonuses };

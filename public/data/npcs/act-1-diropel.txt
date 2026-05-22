@@ -18,6 +18,7 @@ affinity_rewards = 3:card=c-quickdraw:gauge=3
 recruit_enabled = true
 recruit_cards = c-lop-sign
 recruit_colors = earth:10, wind:6
+recruit_combat_start = draw:1
 
 [npc.npc-diropel-short]
 name = 코하

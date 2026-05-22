@@ -17,6 +17,7 @@ affinity_rewards = 3:card=c-second-wind:gauge=3
 recruit_enabled = true
 recruit_cards = c-spirit-call
 recruit_colors = electric:10, dark:8
+recruit_status_resist = poison:1
 
 [npc.npc-monato]
 name = 모나토
@@ -35,6 +36,7 @@ affinity_rewards = 3:card=c-double-strike:gauge=4
 recruit_enabled = true
 recruit_cards = c-tripps-rage
 recruit_colors = water:10, fire:8
+recruit_combat_start = strength:1
 
 [npc.npc-shinsian]
 name = 신시안
@@ -54,6 +56,7 @@ affinity_rewards = 3:card=c-warm-cup:gauge=4
 recruit_enabled = true
 recruit_cards = c-warm-cup
 recruit_colors = light:10, water:8
+recruit_per_turn = heal:1
 
 [npc.npc-nova]
 name = 노바
@@ -69,3 +72,8 @@ background = 나이트 타코미의 서큐버스. 낮에는 안 보인다.|네�
 tagline = "한 곡 짧게, 들어 봐요."
 tags = succubus, night, neon, dark-affinity
 affinity_rewards = 3:card=c-burn-mark:gauge=4
+# 영입 밤의 서큐버스. 매혹에 익숙해 세뇌를 흘려낸다.
+recruit_enabled = true
+recruit_colors = dark:10, electric:6
+recruit_status_resist = brainwash:2
+recruit_combat_start = draw:1

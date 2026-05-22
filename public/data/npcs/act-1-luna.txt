@@ -13,6 +13,11 @@ background = 버려진 드래곤 알에서 태어난, 정신적으로 불안정�
 tagline = "… 그냥 도마뱀이에요."
 tags = dragon, withdrawn, fire-affinity
 affinity_rewards = 3:card=c-burn-mark:gauge=3
+# 영입 어린 드래곤. 몸을 작게 웅크려 버티는 법을 안다.
+recruit_enabled = true
+recruit_colors = fire:8, earth:6
+recruit_combat_start = block:3
+recruit_status_resist = brainwash:1
 
 [npc.npc-miyu]
 name = 미유
@@ -31,6 +36,7 @@ affinity_rewards = 3:card=c-gentle-guard:gauge=3
 recruit_enabled = true
 recruit_deck_bonus = 3
 recruit_colors = iron:12
+recruit_combat_start = block:3
 
 [npc.npc-febiel]
 name = 페비엘
@@ -50,6 +56,7 @@ affinity_rewards = 3:relic=r-imperisia-locket:gauge=4
 recruit_enabled = true
 recruit_cards = c-binding-ward
 recruit_colors = dark:12, water:6
+recruit_status_resist = frail:1
 
 [npc.npc-kuruha]
 name = 크루하
@@ -78,6 +85,11 @@ background = 루나 지하서고에 머무는 유령 사서.|생전에는 루나
 tagline = "… (가까이, 좀 더 가까이.)"
 tags = phantom, librarian, light-affinity
 affinity_rewards = 3:card=c-second-wind:gauge=4
+# 영입 유령 사서. 조용한 지식이 상태이상을 막아 준다.
+recruit_enabled = true
+recruit_colors = light:8, dark:6
+recruit_combat_start = draw:1
+recruit_status_resist = sleep:1
 
 [npc.npc-banta]
 name = 반타

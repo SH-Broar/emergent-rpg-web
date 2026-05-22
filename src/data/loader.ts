@@ -619,6 +619,18 @@ function parseColorBoosts(raw: string | undefined): CompanionBonuses['colorBoost
   return out as CompanionBonuses['colorBoosts'];
 }
 
+/** "weakness:1, all:1" → { weakness:1, all:1 }. 빈 입력이면 undefined. */
+function parseKeyNum(raw: string | undefined): Record<string, number> | undefined {
+  if (!raw) return undefined;
+  const out: Record<string, number> = {};
+  for (const tok of parseList(raw)) {
+    const [k, v] = tok.split(':').map((s) => s.trim());
+    if (!k) continue;
+    out[k] = Number(v);
+  }
+  return Object.keys(out).length > 0 ? out : undefined;
+}
+
 /** NPC 섹션에서 recruit_* 필드를 모아 CompanionBonuses (없으면 undefined). */
 function parseRecruitBonuses(f: IniSection): CompanionBonuses | undefined {
   if (!parseBool(f.recruit_enabled, false)) return undefined;
@@ -626,11 +638,27 @@ function parseRecruitBonuses(f: IniSection): CompanionBonuses | undefined {
   const relics = parseList(f.recruit_relics);
   const colors = parseColorBoosts(f.recruit_colors);
   const deckSize = f.recruit_deck_bonus ? parseNumber(f.recruit_deck_bonus, 0) : undefined;
+  // 지속 패시브 (5c)
+  const statusResist = parseKeyNum(f.recruit_status_resist);
+  const combatStartRaw = parseKeyNum(f.recruit_combat_start);
+  const perTurnRaw = parseKeyNum(f.recruit_per_turn);
+  const rewardRaw = parseKeyNum(f.recruit_reward_mul);
+  const combatStart = combatStartRaw
+    ? { block: combatStartRaw.block, strength: combatStartRaw.strength, draw: combatStartRaw.draw }
+    : undefined;
+  const perTurn = perTurnRaw ? { heal: perTurnRaw.heal, block: perTurnRaw.block } : undefined;
+  const rewardMul = rewardRaw
+    ? { gold: rewardRaw.gold, shards: rewardRaw.shards, gather: rewardRaw.gather }
+    : undefined;
   return {
     deckSizeBonus: deckSize,
     grantedCardIds: cards.length > 0 ? cards : undefined,
     grantedRelicIds: relics.length > 0 ? relics : undefined,
     colorBoosts: colors,
+    statusResist,
+    combatStart,
+    perTurn,
+    rewardMul,
   };
 }
 

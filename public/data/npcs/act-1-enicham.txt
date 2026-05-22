@@ -18,6 +18,7 @@ affinity_rewards = 3:card=c-burn-mark:gauge=4
 recruit_enabled = true
 recruit_cards = c-zero-spark
 recruit_colors = electric:12, iron:6
+recruit_status_resist = slime:1
 
 [npc.npc-alti-alta]
 name = 알티-알타
@@ -37,3 +38,4 @@ affinity_rewards = 3:card=c-second-wind:gauge=4
 recruit_enabled = true
 recruit_cards = c-alti-resonance
 recruit_colors = electric:10, light:6
+recruit_per_turn = heal:1
