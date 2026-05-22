@@ -81,8 +81,29 @@ const bonus = computed(() => deriveBonuses(stats.value));
 /** VIT(빛·어둠) → 최대 HP 보너스 표시값. */
 const vitHp = computed(() => vitHpBonus(effective.value));
 
-const companionNames = computed(() =>
-  run.data.companions.map((id) => data.npcs.get(id)?.name ?? id),
+/** 동료별 이름 + *영입 보너스 설명*(덱 슬롯·카드·유물·컬러). 사용자 요청: 동료가 무엇을 주는지 보이게. */
+const companionInfo = computed(() =>
+  run.data.companions.map((id) => {
+    const npc = data.npcs.get(id);
+    const r = npc?.recruit;
+    const bonuses: string[] = [];
+    if (r) {
+      if (r.deckSizeBonus) bonuses.push(`덱 슬롯 +${r.deckSizeBonus}`);
+      if (r.grantedCardIds?.length) {
+        bonuses.push(`카드: ${r.grantedCardIds.map((c) => data.cards.get(c)?.name ?? c).join(', ')}`);
+      }
+      if (r.grantedRelicIds?.length) {
+        bonuses.push(`유물: ${r.grantedRelicIds.map((rl) => data.relics.get(rl)?.name ?? rl).join(', ')}`);
+      }
+      if (r.colorBoosts) {
+        const parts = Object.entries(r.colorBoosts)
+          .filter(([, v]) => (v ?? 0) !== 0)
+          .map(([k, v]) => `${labelOfColor(k as Element)} ${(v ?? 0) >= 0 ? '+' : ''}${v}`);
+        if (parts.length) bonuses.push(`컬러: ${parts.join(', ')}`);
+      }
+    }
+    return { name: npc?.name ?? id, bonuses };
+  }),
 );
 
 // 덱 편집 nested 모달
@@ -149,7 +170,19 @@ function onUnequipClick(slot: EquipmentSlot) {
         </header>
 
         <div class="cm-body">
-          <!-- 1) 6 컬러 (effective — base + 장비 합산) -->
+          <!-- 덱 (사용자 요청: 맨 위로) -->
+          <section class="cm-sec">
+            <h3 class="cm-sec__title">덱</h3>
+            <div class="cm-deck">
+              <div class="cm-deck__summary">
+                <span class="cm-deck__count">{{ run.data.deck.length }} / {{ run.data.deckSize }}</span>
+                <span class="cm-deck__hint">전투에 들고 갈 카드</span>
+              </div>
+              <button class="cm-btn cm-btn--primary" @click="openDeckEdit">덱 편집</button>
+            </div>
+          </section>
+
+          <!-- 6 컬러 (effective — base + 장비 합산) -->
           <section class="cm-sec">
             <h3 class="cm-sec__title">6 컬러</h3>
             <div class="cm-colors">
@@ -189,18 +222,18 @@ function onUnequipClick(slot: EquipmentSlot) {
                   <span class="cm-stat__bonus">+{{ bonus.block }}</span>
                 </div>
               </Tooltip>
-              <Tooltip text="MAG — 빛·어둠(희귀 컬러)으로 산출. MAG 100단위 — 홀수마다 드로우+1, 짝수마다 마나+1">
-                <div class="cm-stat cm-stat--mag">
-                  <span class="cm-stat__lbl">MAG</span>
-                  <span class="cm-stat__val">{{ Math.round(stats.mag) }}</span>
-                  <span class="cm-stat__bonus">D+{{ bonus.drawExtra }} / M+{{ bonus.manaExtra }}</span>
-                </div>
-              </Tooltip>
               <Tooltip text="VIT(활력) — 물·바람으로 산출. VIT 20당 최대 HP +1. 물과 바람을 고루 키울수록 크다.">
                 <div class="cm-stat cm-stat--vit">
                   <span class="cm-stat__lbl">VIT</span>
                   <span class="cm-stat__val">{{ Math.round(stats.vit) }}</span>
                   <span class="cm-stat__bonus">HP+{{ vitHp }}</span>
+                </div>
+              </Tooltip>
+              <Tooltip text="MAG — 빛·어둠(희귀 컬러)으로 산출. MAG 100단위 — 홀수마다 드로우+1, 짝수마다 마나+1">
+                <div class="cm-stat cm-stat--mag">
+                  <span class="cm-stat__lbl">MAG</span>
+                  <span class="cm-stat__val">{{ Math.round(stats.mag) }}</span>
+                  <span class="cm-stat__bonus">D+{{ bonus.drawExtra }} / M+{{ bonus.manaExtra }}</span>
                 </div>
               </Tooltip>
             </div>
@@ -274,26 +307,20 @@ function onUnequipClick(slot: EquipmentSlot) {
             </div>
           </section>
 
-          <!-- 4) 덱 -->
-          <section class="cm-sec">
-            <h3 class="cm-sec__title">덱</h3>
-            <div class="cm-deck">
-              <div class="cm-deck__summary">
-                <span class="cm-deck__count">{{ run.data.deck.length }} / {{ run.data.deckSize }}</span>
-                <span class="cm-deck__hint">전투에 들고 갈 카드</span>
-              </div>
-              <button class="cm-btn cm-btn--primary" @click="openDeckEdit">덱 편집</button>
-            </div>
-          </section>
-
-          <!-- 5) 동료 -->
+          <!-- 동료 -->
           <section class="cm-sec">
             <h3 class="cm-sec__title">동료 ({{ run.data.companions.length }}/3)</h3>
             <p v-if="run.data.companions.length === 0" class="cm-empty">아직 동료가 없습니다.</p>
             <ul v-else class="cm-companions">
-              <li v-for="(name, i) in companionNames" :key="i" class="cm-companion">
-                <span class="cm-companion__icon">🤝</span>
-                <span class="cm-companion__name">{{ name }}</span>
+              <li v-for="(c, i) in companionInfo" :key="i" class="cm-companion">
+                <div class="cm-companion__row">
+                  <span class="cm-companion__icon">🤝</span>
+                  <span class="cm-companion__name">{{ c.name }}</span>
+                </div>
+                <ul v-if="c.bonuses.length" class="cm-companion__bonuses">
+                  <li v-for="(b, j) in c.bonuses" :key="j">{{ b }}</li>
+                </ul>
+                <p v-else class="cm-companion__none">특별한 보너스 없음</p>
               </li>
             </ul>
           </section>
@@ -468,14 +495,21 @@ function onUnequipClick(slot: EquipmentSlot) {
 }
 .cm-companion {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.4rem 0.6rem;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.45rem 0.6rem;
   background: rgba(255, 255, 255, 0.04);
   border-radius: 4px;
 }
+.cm-companion__row { display: flex; align-items: center; gap: 0.5rem; }
 .cm-companion__icon { font-size: 0.95rem; }
-.cm-companion__name { color: #f6e8b8; font-size: 0.9rem; }
+.cm-companion__name { color: #f6e8b8; font-size: 0.9rem; font-weight: 600; }
+.cm-companion__bonuses {
+  list-style: none; margin: 0; padding: 0 0 0 1.4rem;
+  display: flex; flex-direction: column; gap: 0.15rem;
+}
+.cm-companion__bonuses li { color: #bff0c8; font-size: 0.78rem; }
+.cm-companion__none { margin: 0 0 0 1.4rem; color: #6c6c7c; font-size: 0.76rem; font-style: italic; }
 
 /* 장비 (M10) */
 .cm-equip-slots {
