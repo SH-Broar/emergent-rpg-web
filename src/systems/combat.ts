@@ -1745,6 +1745,23 @@ export function clearCombat() {
     // 수화 중(feral-heavy) 잔존 — 전투 후에도 유지. 마을/휴식에서만 풀린다(하루 경과로는 X).
     const fh = c.player.statuses?.['feral-heavy'] ?? 0;
     run.data.feralHeavy = fh > 0 ? fh : 0;
+    // 지속 요소(축복·드래곤화) 카운트다운 — 전투 종료마다 -1. 드래곤화는 0 도달 시 컬러 원복.
+    if ((run.data.blessingCombats ?? 0) > 0) {
+      run.data.blessingCombats = (run.data.blessingCombats ?? 0) - 1;
+      if (run.data.blessingCombats <= 0) useUiStore().toast('info', '축복의 기운이 가셨다.');
+    }
+    if ((run.data.dragonCombats ?? 0) > 0) {
+      run.data.dragonCombats = (run.data.dragonCombats ?? 0) - 1;
+      if (run.data.dragonCombats <= 0) {
+        const b = run.data.dragonBoost ?? 0;
+        if (b > 0) {
+          const cols = run.data.colors as unknown as Record<string, number>;
+          for (const k of Object.keys(cols)) cols[k] = Math.max(0, cols[k] - b);
+        }
+        run.data.dragonBoost = 0;
+        useUiStore().toast('info', '드래곤의 비늘이 사그라들었다.');
+      }
+    }
   }
   run.data.combat = undefined;
   // 디버그 전투 오버라이드는 1회용 — 전투 종료 시 해제해 일반 전투에 영향 없게.

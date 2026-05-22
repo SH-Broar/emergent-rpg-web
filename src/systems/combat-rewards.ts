@@ -14,7 +14,7 @@ import { useDataStore } from '@/stores/data';
 import { useMetaStore } from '@/stores/meta';
 import { applyColorBoost } from '@/systems/colors';
 import { acquireRelic } from '@/systems/relic';
-import { rewardItem, rewardColor, rewardRelic, rewardCard, rewardSoul } from '@/systems/reward-feed';
+import { rewardItem, rewardColor, rewardRelic, rewardCard, rewardSoul, blessingMul } from '@/systems/reward-feed';
 import { availableRelics } from '@/systems/unlocks';
 import { rng } from '@/systems/rng';
 import { effectiveKind as systemEffectiveKind } from '@/systems/map';
@@ -78,7 +78,8 @@ export function applyCombatVictoryReward(nodeId: string): void {
   // === 양 ===
   // 컬러 부스트 — 권역 primaryColor에 티어·일반/엘리트 차등.
   if (region.primaryColor) {
-    const amount = isElite ? ELITE_COLOR_BY_TIER[tier] : NORMAL_COLOR_BY_TIER[tier];
+    const base = isElite ? ELITE_COLOR_BY_TIER[tier] : NORMAL_COLOR_BY_TIER[tier];
+    const amount = Math.round(base * blessingMul()); // 축복 시 +25%
     const delta = applyColorBoost(region.primaryColor, amount);
     rewardColor(region.primaryColor, delta);
   }

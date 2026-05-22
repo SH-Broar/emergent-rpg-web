@@ -14,7 +14,7 @@ import { useUiStore } from '@/stores/ui';
 import { applyColorBoost, type ColorKey } from '@/systems/colors';
 import { rng } from '@/systems/rng';
 import { getActivityModifier } from '@/systems/relic';
-import { rewardCard, rewardItem, rewardColor, rewardGold, rewardShards, rewardHp } from '@/systems/reward-feed';
+import { rewardCard, rewardItem, rewardColor, rewardGold, rewardShards, rewardHp, blessingMul } from '@/systems/reward-feed';
 
 type ActivityHandler = () => void;
 
@@ -188,9 +188,9 @@ export function applyActivityBaseline(nodeId: string): void {
  */
 export function applyActivitySuccess(color: ColorKey, colorBoost = 12): void {
   const run = useRunStore();
-  // 활동 유물(보상 증폭) + 수화 중(feral-heavy, 탐색 보상 +50%). 컬러/골드/조각 보너스 전부 증폭.
+  // 활동 유물(보상 증폭) + 수화 중(+50%) + 축복(blessingMul). 컬러/골드/조각 보너스 전부 증폭.
   const feralBonus = (run.data.feralHeavy ?? 0) > 0 ? 0.5 : 0;
-  const mul = 1 + Math.max(0, getActivityModifier('activity-reward-mul')) + feralBonus;
+  const mul = (1 + Math.max(0, getActivityModifier('activity-reward-mul')) + feralBonus) * blessingMul();
   const boost = Math.round(colorBoost * mul);
   grantColor(color, boost);
   const roll = rng();

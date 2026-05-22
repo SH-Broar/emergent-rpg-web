@@ -151,6 +151,12 @@ function evalTokenInner(tok: string, run: RunState): boolean {
       if (!op || rhs === undefined) return run.hp > 0;
       return cmp(run.hp, op, rhs);
     }
+    case 'day': {
+      // 일차 게이팅 — 예: `day>=2` (2일차 이후). currentDay 시작은 1.
+      const { op, rhs } = splitOp(tok);
+      if (!op || rhs === undefined) return (run.currentDay ?? 1) > 0;
+      return cmp(run.currentDay ?? 1, op, rhs);
+    }
     default:
       console.warn('[event] unknown condition token:', tok);
       return false;

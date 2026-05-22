@@ -14,10 +14,20 @@
 
 import { useUiStore } from '@/stores/ui';
 import { colorLabel } from '@/systems/labels';
+import { useRunStore } from '@/stores/run';
 import type { Item } from '@/data/schemas';
 
 function toast(line: string): void {
   useUiStore().toast('success', line);
+}
+
+/** 축복(blessing) 활성 시 보상 배율 1.25, 아니면 1. 채집/활동/전투 보상이 참조. */
+export function blessingMul(): number {
+  try {
+    return (useRunStore().data.blessingCombats ?? 0) > 0 ? 1.25 : 1;
+  } catch {
+    return 1;
+  }
 }
 
 /** 아이템(소비품/재료/특산물) — 카테고리에 맞는 분류 접두. */

@@ -128,3 +128,24 @@ registerEventEffect('grant-rare-material', (ctx) => {
   });
   ctx.lines.push(`재료: ${rare.name}`);
 });
+
+// === 지속 요소(2일차+ 사건 노드 전용) — 전투 후 다른 노드에 영향. ===
+// 축복: 앞으로 N번의 전투까지 보상 +25%.
+registerEventEffect('grant-blessing', (ctx) => {
+  ctx.run.blessingCombats = (ctx.run.blessingCombats ?? 0) + 4;
+  ctx.lines.push('축복 — 앞으로 네 번의 전투까지 보상이 늘어난다');
+});
+// 방울 표식: 다음 일반 전투가 엘리트로 격상.
+registerEventEffect('grant-bell-mark', (ctx) => {
+  ctx.run.bellMarked = 1;
+  ctx.lines.push('방울 표식 — 다음 일반 전투가 엘리트가 된다');
+});
+// 드래곤화: 모든 컬러가 일시 상승(3번의 전투 동안), 이후 원복.
+registerEventEffect('grant-dragonform', (ctx) => {
+  const boost = 8;
+  const cols = ctx.run.colors as unknown as Record<string, number>;
+  for (const k of Object.keys(cols)) cols[k] = (cols[k] ?? 0) + boost;
+  ctx.run.dragonBoost = (ctx.run.dragonBoost ?? 0) + boost;
+  ctx.run.dragonCombats = Math.max(ctx.run.dragonCombats ?? 0, 3);
+  ctx.lines.push('드래곤화 — 모든 컬러가 일시적으로 솟구친다');
+});

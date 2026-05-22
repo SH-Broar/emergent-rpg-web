@@ -12,7 +12,7 @@ import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
 import { applyColorBoost } from '@/systems/colors';
-import { rewardItem, rewardColor, rewardShards, rewardGold } from '@/systems/reward-feed';
+import { rewardItem, rewardColor, rewardShards, rewardGold, blessingMul } from '@/systems/reward-feed';
 import { rng } from '@/systems/rng';
 import { gatherThresholdAdd } from '@/systems/chaos';
 import type { Region } from '@/data/schemas';
@@ -57,8 +57,8 @@ export function performGather(nodeId: string): void {
   const isLate =
     primary !== undefined && r.colors[primary] >= threshold;
 
-  // 수화 중(feral-heavy): 야성에 휩쓸린 동안 *탐색 보상 증가*. 자원 수치 ×1.5.
-  const exploreMul = (r.feralHeavy ?? 0) > 0 ? 1.5 : 1;
+  // 수화 중(feral-heavy) ×1.5 + 축복(blessing) ×1.25 — 탐색 보상 증가.
+  const exploreMul = ((r.feralHeavy ?? 0) > 0 ? 1.5 : 1) * blessingMul();
 
   // 반복 채집 효율 체감 — 같은 곳을 갱신(하루 경과) 전에 여러 번 가면 효율이 계속 떨어진다.
   if (!r.nodeStates[nodeId]) r.nodeStates[nodeId] = { visited: true };

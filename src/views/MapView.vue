@@ -24,6 +24,7 @@ import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
 import { getNeighbors, getNode, isTimeUp, effectiveKind as systemEffectiveKind } from '@/systems/map';
 import { restHealMul, lockedTownCount, isNoShop } from '@/systems/chaos';
+import { rng } from '@/systems/rng';
 import type { Node, NodeId, NodeKind, NodeMap } from '@/data/schemas';
 
 const router = useRouter();
@@ -210,6 +211,20 @@ function getEnterAction(): EnterAction {
   }
 }
 
+/** 방울 표식 — 다음 *일반 전투*를 엘리트로 격상(1회). 전투 진입 직전 호출. */
+function maybeApplyBellMark(node: Node) {
+  if ((run.data.bellMarked ?? 0) <= 0) return;
+  if (systemEffectiveKind(node, run.data) !== 'combat') return; // 이미 엘리트/보스면 패스(다음 일반 전투까지 유지)
+  const region = node.region ? nodeMap.value?.regions.find((rg) => rg.id === node.region) : undefined;
+  const pool = region?.eliteEnemyPool ?? [];
+  if (pool.length === 0) return;
+  const elite = pool[Math.floor(rng() * pool.length)];
+  run.data.nodeKindOverrides[node.id] = 'elite';
+  run.data.nodeContentOverrides[node.id] = { enemyGroupId: elite };
+  run.data.bellMarked = 0;
+  ui.toast('warning', '방울이 울린다 — 강한 것이 다가온다 (엘리트 전투).');
+}
+
 function enterSelected() {
   const node = selectedNode.value;
   if (!node || !timeline.value) return;
@@ -248,6 +263,7 @@ function enterSelected() {
       if (action === 'pass') {
         ui.toast('info', '이미 정리된 곳입니다.');
       } else {
+        maybeApplyBellMark(node);
         router.push('/game/combat');
       }
       break;

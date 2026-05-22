@@ -285,6 +285,16 @@ export interface RunState {
    */
   feralHeavy?: number;
 
+  // === 지속 요소(2일차+ 사건 노드에서만 부여) — 전투 후 다른 노드에 영향. ===
+  /** 축복 — 남은 전투 수. >0이면 보상 +25%. 전투 종료마다 -1. */
+  blessingCombats?: number;
+  /** 방울 표식 — 다음 *일반 전투*가 엘리트 전투로 격상(1회). 0/미설정=없음. */
+  bellMarked?: number;
+  /** 드래곤화 — 남은 전투 수. >0이면 모든 컬러가 dragonBoost만큼 *일시* 상승. 0 도달 시 원복. */
+  dragonCombats?: number;
+  /** 드래곤화로 더해진 컬러량(원복용). */
+  dragonBoost?: number;
+
   /**
    * 현재 일차 — 30턴마다 +1 (`dayPassed` 트리거).
    * 시작은 1.
