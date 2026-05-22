@@ -262,6 +262,11 @@ function enterSelected() {
       router.push('/game/boss');
       break;
     case 'rest': {
+      // 수화 중(feral-heavy)은 *휴식에서 가라앉는다* — 회복 전에 먼저 풀어 회복이 들어가게.
+      if ((run.data.feralHeavy ?? 0) > 0) {
+        run.data.feralHeavy = 0;
+        ui.toast('success', '한숨 돌리니 수화가 가라앉았다.');
+      }
       // 카오스 light-rest(얕은 잠) — 휴식 회복 ×(1-합).
       const heal = Math.floor(run.data.maxHp * 0.3 * restHealMul());
       run.data.hp = Math.min(run.data.maxHp, run.data.hp + heal);

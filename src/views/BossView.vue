@@ -316,6 +316,7 @@ const statusLabels: Record<string, string> = {
   sleep: '수면',
   slime: '점액',
   imprint: '각인',
+  'feral-heavy': '수화 중',
 };
 function statusEntries(c: Combatant | undefined) {
   if (!c) return [] as { key: string; count: number; label: string }[];

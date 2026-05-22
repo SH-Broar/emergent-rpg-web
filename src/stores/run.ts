@@ -66,6 +66,7 @@ const EMPTY_RUN: RunState = {
   remainingTime: 0,
   currentDay: 1,
   possessed: 0,
+  feralHeavy: 0,
   nodeKindOverrides: {},
   nodeContentOverrides: {},
   shopInventories: {},

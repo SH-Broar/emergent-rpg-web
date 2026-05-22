@@ -256,12 +256,15 @@ export function startCombat(monster: Monster) {
   const run = useRunStore();
   const r = run.data;
 
+  // 런에 잔존하는 강 상태이상(빙의·수화 중)을 안고 전투를 시작한다(정화 전까지).
+  const carriedStatuses: Record<string, number> = {};
+  if ((r.possessed ?? 0) > 0) carriedStatuses.possession = r.possessed as number;
+  if ((r.feralHeavy ?? 0) > 0) carriedStatuses['feral-heavy'] = r.feralHeavy as number;
   const player: Combatant = {
     hp: r.hp,
     maxHp: r.maxHp,
     block: 0,
-    // 빙의(possession)는 런에 잔존한다 — 빙의 상태로 전투에 들어가면 그대로 안고 시작(정화 전까지).
-    statuses: (r.possessed ?? 0) > 0 ? { possession: r.possessed as number } : {},
+    statuses: carriedStatuses,
   };
 
   // 카오스 상시형 — enemy-hp-mul(+elite-hp-mul, 엘리트/보스) 활성 시 적 HP 배수 상향(올림).
@@ -600,11 +603,21 @@ function applyEffect(effect: CardEffect, c: CombatState) {
   if (handler) handler(effect, c);
 }
 
+/** 수화(feral) 또는 수화 중(feral-heavy)인가 — 둘 다 공격 ×2 + 방어 불가. */
+function playerWild(c: CombatState): boolean {
+  const s = c.player.statuses;
+  return (s?.feral ?? 0) > 0 || (s?.['feral-heavy'] ?? 0) > 0;
+}
+/** 수화 중(feral-heavy)이면 *회복 전면 차단*. (일반 수화는 회복 가능.) */
+function healBlocked(c: CombatState): boolean {
+  return (c.player.statuses?.['feral-heavy'] ?? 0) > 0;
+}
+
 const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) => void> = {
   damage: (e, c) => {
     const targets = resolveTargets(e.target ?? 'enemy', c);
-    // feral(수화): 카드 *base damage ×2* — ATK 보너스 더하기 *전*에 2배.
-    const base = (c.player.statuses?.feral ?? 0) > 0 ? (e.value ?? 0) * 2 : (e.value ?? 0);
+    // feral(수화)/feral-heavy(수화 중): 카드 *base damage ×2* — ATK 보너스 더하기 *전*에 2배.
+    const base = playerWild(c) ? (e.value ?? 0) * 2 : (e.value ?? 0);
     // ATK 스탯 보너스 — 공격 카드 *최소 공격력* +N (10 ATK당 1). regress면 0.
     const atkBonus = playerBonuses(c).damage;
     // 전투 중 player buff (strength). weakness는 applyDamage 배수 단계에서 처리.
@@ -635,15 +648,17 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
     for (const t of targets) applyDamage(t, value, c.player.statuses);
   },
   heal: (e, c) => {
+    // 수화 중(feral-heavy): 회복 전면 차단 — self 회복 불가.
     const targets = resolveTargets(e.target ?? 'self', c);
     const value = e.value ?? 0;
     for (const t of targets) {
+      if (t === c.player && healBlocked(c)) continue;
       t.hp = Math.min(t.maxHp, t.hp + value);
     }
   },
   block: (e, c) => {
-    // feral(수화): 플레이어는 *block을 전혀 쌓지 못함* — 0 부여.
-    if ((c.player.statuses?.feral ?? 0) > 0) return;
+    // feral(수화)/feral-heavy(수화 중): 플레이어는 *block을 전혀 쌓지 못함* — 0 부여.
+    if (playerWild(c)) return;
     const targets = resolveTargets(e.target ?? 'self', c);
     // DEF 스탯 보너스 — 방어 카드 *방어력* +N (10 DEF당 1). regress면 0.
     const defBonus = playerBonuses(c).block;
@@ -702,7 +717,7 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
     // 단순화: combat 상태에 latestPlayingCard 임시 필드를 두지 않고, playCard에서 `growing-block` 효과 카드를 미리 식별해 처리.
     // → 이 핸들러는 block 효과만 수행하고, *누적*은 playCard 본체에서.
     // feral(수화): block 부여 0. 단 bonusBlock *누적*은 playCard 본체에서 계속됨(다음 사용 대비).
-    if ((c.player.statuses?.feral ?? 0) > 0) return;
+    if (playerWild(c)) return;
     const targets = resolveTargets(e.target ?? 'self', c);
     const defBonus = playerBonuses(c).block;
     const statusBonus = statusBonusForCardEffectKind('block', c.player.statuses);
@@ -740,7 +755,7 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
   // 8 컬러 중 *최댓값* × value 방어.
   'block-top-color': (e, c) => {
     // feral(수화): 플레이어는 block을 전혀 쌓지 못함 — 0 부여.
-    if ((c.player.statuses?.feral ?? 0) > 0) return;
+    if (playerWild(c)) return;
     const colors = useRunStore().data.colors;
     const top = Math.max(
       colors.fire, colors.water, colors.electric, colors.iron,
@@ -1214,7 +1229,8 @@ export function struggle(): { freed: boolean } {
 }
 
 function executeMonsterIntent(c: CombatState, monster?: Monster, intentOverride?: string) {
-  const intent = intentOverride ?? c.enemyIntent;
+  // 동적 의도 — *실행 시점의 현재 상태*로 재평가(예고 후 그 턴에 수화가 풀렸으면 공격으로 복귀).
+  const intent = resolveIntent(intentOverride ?? c.enemyIntent, c);
   if (!intent) return;
 
   // 로그용 스냅샷 — 적 행동 전후 차이로 요약.
@@ -1272,6 +1288,40 @@ function executeMonsterIntent(c: CombatState, monster?: Monster, intentOverride?
       // 효과가 한 번도 적용되지 않는 문제 방지. (DECAYING_DEBUFFS와 동일 목록.)
       const applied = DECAYING_DEBUFFS.has(status) ? Math.max(2, value || 1) : (value || 1);
       c.player.statuses[status] = (c.player.statuses[status] ?? 0) + applied;
+      break;
+    }
+    // 수화 중(feral-heavy) 부여 — *이미 수화(feral) 상태일 때만* 발동(조건부). 비감쇠·전투 후 잔존.
+    // intent: heavy-feral (값 무시). 수화가 아니면 아무 일도 없다(귀여운 헛손질).
+    case 'heavy-feral': {
+      if ((c.player.statuses.feral ?? 0) > 0) {
+        c.player.statuses['feral-heavy'] = (c.player.statuses['feral-heavy'] ?? 0) + 1;
+        delete c.player.statuses.feral; // 수화 → 수화 중으로 *승격*.
+        useUiStore().toast('warning', '더 깊이 휩쓸렸다 — 수화 중!');
+      }
+      break;
+    }
+    // === 조건부 특수 행동 — 동적 의도(resolveIntent)로 *플레이어가 특정 상태일 때만* 치환되어 들어온다. ===
+    // 감정 흡수: 플레이어 방어가 있으면 그 마음을 흡수해 힘으로 삼킨다(방어 0, 적 힘 += block/3).
+    case 'absorb-emotion': {
+      if (c.player.block > 0) {
+        const gained = Math.max(1, Math.floor(c.player.block / 3));
+        c.player.block = 0;
+        c.enemy.statuses.strength = (c.enemy.statuses.strength ?? 0) + gained;
+        useUiStore().toast('warning', `마음을 흡수했다 — 적 힘 +${gained}`);
+      }
+      break;
+    }
+    // 기운 차리기: 플레이어가 디버프에 걸려 있으면 신이 나 기운을 차린다(회복+방어, 디버프 종류 수 비례).
+    case 'feast-debuff': {
+      const ds = c.player.statuses;
+      let cnt = 0;
+      for (const k of DECAYING_DEBUFFS) if ((ds[k] ?? 0) > 0) cnt++;
+      if (cnt > 0) {
+        const heal = cnt * (value || 3);
+        c.enemy.hp = Math.min(c.enemy.maxHp, c.enemy.hp + heal);
+        c.enemy.block += cnt * 2;
+        useUiStore().toast('warning', `신이 나 기운을 차렸다 — 적 HP +${heal}`);
+      }
       break;
     }
     // === 전투 에로 기믹 ===
@@ -1535,6 +1585,41 @@ function buildIntentQueue(monster: Monster, turn: number, rotation?: string[]): 
   return out;
 }
 
+/** 동적 의도 조건 — 플레이어 상태 플래그가 충족되는가. (resolveIntent용) */
+function intentConditionMet(flag: string, c: CombatState): boolean {
+  const s = c.player.statuses ?? {};
+  switch (flag) {
+    case 'feral': return (s.feral ?? 0) > 0;
+    case 'block': return c.player.block > 0;
+    case 'sleep': return (s.sleep ?? 0) > 0;
+    case 'possession': return (s.possession ?? 0) > 0;
+    case 'debuff': {
+      for (const k of DECAYING_DEBUFFS) if ((s[k] ?? 0) > 0) return true;
+      return false;
+    }
+    default: return false;
+  }
+}
+
+/**
+ * 동적 의도 해석 — `base~flag=override` 인코딩이면 *플레이어 상태*에 따라 override/ base를 고른다.
+ * 예: `attack:8~feral=heavy-feral` → 수화면 heavy-feral, 아니면 attack:8.
+ * 텔레그래프(CombatView)와 실행(executeMonsterIntent) 모두 이 함수를 거쳐 *현재 상태*로 재평가 →
+ * 그 턴에 상태가 바뀌면 의도도 즉시 바뀐다. 조건 인코딩이 없으면 그대로 반환.
+ */
+export function resolveIntent(encoded: string | undefined, c: CombatState | undefined): string {
+  if (!encoded) return '';
+  const tilde = encoded.indexOf('~');
+  if (tilde < 0 || !c) return encoded;
+  const base = encoded.slice(0, tilde);
+  const cond = encoded.slice(tilde + 1); // "flag=override"
+  const eq = cond.indexOf('=');
+  if (eq < 0) return base;
+  const flag = cond.slice(0, eq);
+  const override = cond.slice(eq + 1);
+  return intentConditionMet(flag, c) ? override : base;
+}
+
 /**
  * all-gimmick 활성 시 *종족 대표 기믹*을 끼운 인텐트 로테이션을 생성.
  * 비활성이거나 보스면 undefined(원본 monster.intents 사용).
@@ -1612,8 +1697,10 @@ export function clearCombat() {
     // 빙의(possession) 잔존 — 전투 종료 시 정화하지 못한 빙의는 런에 남는다(맵 이동 제약).
     // 정화/하루 경과로만 풀린다. 0이면 해제.
     const poss = c.player.statuses?.possession ?? 0;
-    if (poss > 0) run.data.possessed = poss;
-    else run.data.possessed = 0;
+    run.data.possessed = poss > 0 ? poss : 0;
+    // 수화 중(feral-heavy) 잔존 — 전투 후에도 유지. 마을/휴식에서만 풀린다(하루 경과로는 X).
+    const fh = c.player.statuses?.['feral-heavy'] ?? 0;
+    run.data.feralHeavy = fh > 0 ? fh : 0;
   }
   run.data.combat = undefined;
   // 디버그 전투 오버라이드는 1회용 — 전투 종료 시 해제해 일반 전투에 영향 없게.

@@ -128,7 +128,7 @@ species = beastkin
 hp = 168
 attack = 15
 defense = 0
-intents = attack:15, charge:3, defend:8, attack:16
+intents = attack:15, debuff:2:feral, attack:14, attack:16~feral=heavy-feral
 gold = 21
 time_shards = 7
 card_drops =
@@ -140,7 +140,7 @@ species = beastkin
 hp = 126
 attack = 10
 defense = 0
-intents = attack:10, debuff:1:weakness, attack:11, attack:10
+intents = attack:10, debuff:2:weakness, attack:11~debuff=feast-debuff, attack:10
 gold = 18
 time_shards = 6
 card_drops =
@@ -152,7 +152,7 @@ species = spirit
 hp = 140
 attack = 9
 defense = 0
-intents = defend:12, attack:9, defend:10, attack:10
+intents = defend:12, attack:9~block=absorb-emotion, defend:10, attack:10~block=absorb-emotion
 gold = 19
 time_shards = 6
 card_drops =

@@ -272,6 +272,12 @@ export interface RunState {
   possessed?: number;
 
   /**
+   * 수화 중(feral-heavy) 잔존 — 전투 후에도 유지(0=없음). 공격 ×2 + 회복/방어 불가 + *탐색 보상 증가*.
+   * 마을/휴식에서만 풀린다(하루 경과·아이템으로는 X). 다음 전투 시작 시 이 값으로 시드.
+   */
+  feralHeavy?: number;
+
+  /**
    * 현재 일차 — 30턴마다 +1 (`dayPassed` 트리거).
    * 시작은 1.
    */

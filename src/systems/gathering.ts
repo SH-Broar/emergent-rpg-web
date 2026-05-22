@@ -57,6 +57,9 @@ export function performGather(nodeId: string): void {
   const isLate =
     primary !== undefined && r.colors[primary] >= threshold;
 
+  // 수화 중(feral-heavy): 야성에 휩쓸린 동안 *탐색 보상 증가*. 자원 수치 ×1.5.
+  const exploreMul = (r.feralHeavy ?? 0) > 0 ? 1.5 : 1;
+
   // 반복 채집 효율 체감 — 같은 곳을 갱신(하루 경과) 전에 여러 번 가면 효율이 계속 떨어진다.
   if (!r.nodeStates[nodeId]) r.nodeStates[nodeId] = { visited: true };
   const prevGather = r.nodeStates[nodeId].gatherCount ?? 0;
@@ -96,14 +99,14 @@ export function performGather(nodeId: string): void {
         rewardItem(leg);
       }
     }
-    // 4) 약간의 시간조각 보너스 (효율 반영).
-    const lateShards = Math.max(1, Math.round(2 * eff));
+    // 4) 약간의 시간조각 보너스 (효율 + 수화 중 보너스 반영).
+    const lateShards = Math.max(1, Math.round(2 * eff * exploreMul));
     r.timeShards += lateShards;
     rewardShards(lateShards);
   } else {
-    // === 전반 풀 (효율 eff 반영) ===
-    const shards = Math.max(1, Math.round((2 + Math.floor(rng() * 3)) * eff));
-    const gold = Math.max(1, Math.round((3 + Math.floor(rng() * 5)) * eff));
+    // === 전반 풀 (효율 + 수화 중 보너스 반영) ===
+    const shards = Math.max(1, Math.round((2 + Math.floor(rng() * 3)) * eff * exploreMul));
+    const gold = Math.max(1, Math.round((3 + Math.floor(rng() * 5)) * eff * exploreMul));
     r.timeShards += shards;
     r.gold += gold;
     rewardShards(shards);

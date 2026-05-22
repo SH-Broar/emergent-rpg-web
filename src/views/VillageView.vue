@@ -235,6 +235,12 @@ function cleansePossession() {
   ui.toast('success', '빙의를 씻어냈다. 몸이 다시 내 것이 되었다.');
 }
 
+/** 수화 중 진정 — 선택형. 가라앉히면 공격 2배·탐색 보상↑이 사라지고 회복/방어가 돌아온다. */
+function calmFeral() {
+  run.data.feralHeavy = 0;
+  ui.toast('success', '숨을 고르니 수화가 가라앉았다.');
+}
+
 const rankColors: Record<string, string> = {
   basic: '#a4a4b0',
   common: '#8effb8',
@@ -264,6 +270,12 @@ const rankColors: Record<string, string> = {
       <div v-if="(run.data.possessed ?? 0) > 0" class="cleanse">
         <p class="cleanse__msg">몸에 빙의가 남아 있다. 활동에 들 수 없고 길도 일부 막혔다.</p>
         <button class="cleanse__btn" @click="cleansePossession">마을에서 빙의를 씻어낸다</button>
+      </div>
+
+      <!-- 수화 중 진정 — 선택형(공격 2배·탐색 보상↑ 유지 vs 회복/방어 회복). -->
+      <div v-if="(run.data.feralHeavy ?? 0) > 0" class="cleanse cleanse--feral">
+        <p class="cleanse__msg">아직 수화 중이다. 공격이 2배지만 회복도 방어도 못 하고, 탐색 보상이 늘어난다. 가라앉힐까?</p>
+        <button class="cleanse__btn" @click="calmFeral">수화를 가라앉힌다</button>
       </div>
 
       <!-- NPC 목록 — 대화·영입은 *대화 시스템 도입 후* 활성. 지금은 *마주침*만 표시. -->

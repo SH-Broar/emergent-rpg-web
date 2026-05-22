@@ -97,6 +97,7 @@ const STATUS_DESCRIPTIONS: Record<string, string> = {
   sleep: '수면 — 매 턴 카드를 스택만큼 덜 뽑습니다. 피해를 받으면 즉시 깨어납니다. 매 턴 1 감소.',
   slime: '점액 — 매 턴 마나가 스택만큼 줄어듭니다. 매 턴 1 감소.',
   imprint: '각인 — 주는 피해가 0.85배가 됩니다. 감소하지 않고, 5 이상 쌓이면 빙의로 번집니다.',
+  'feral-heavy': '수화 중 — 너무 신나서 멈출 수 없다. 공격이 2배지만 회복도 방어도 못 합니다. 전투 후에도 남으며 탐색 보상이 늘고, 마을이나 휴식에서만 가라앉습니다.',
 };
 
 /** 상태이상/버프 키 → 한글. */
@@ -119,6 +120,7 @@ const STATUS_LABELS: Record<string, string> = {
   sleep: '수면',
   slime: '점액',
   imprint: '각인',
+  'feral-heavy': '수화 중',
 };
 
 /** 효과 대상 → 한글. */
@@ -155,6 +157,9 @@ const INTENT_KIND_LABELS: Record<string, string> = {
   'force-discard': '드로우 감소',
   'transform-card': '카드 망가뜨리기',
   ghost: '유령화',
+  'heavy-feral': '수화 중으로',
+  'absorb-emotion': '감정 흡수',
+  'feast-debuff': '기운 차리기',
 };
 
 /**
@@ -229,6 +234,10 @@ export function intentDescription(encoded: string | undefined): string {
     }
     case 'ghost': return `유령화 — ${n || 2}턴 동안 비실체가 됩니다. 받는·주는 피해가 절반(매 턴 1 감소).`;
     case 'change': return '체인지 — 종족·덱이 변신 폼으로 바뀐다. \'본모습\' 카드로 복귀.';
+    // 조건부 특수 행동 — 플레이어가 특정 상태일 때만 의도가 이것으로 바뀐다(아니면 원래 행동).
+    case 'heavy-feral': return '수화 중으로 — 이미 수화 상태라면 수화 중으로 끌어올립니다(전투 후에도 남고 탐색 보상↑).';
+    case 'absorb-emotion': return '감정 흡수 — 방어막이 있으면 그 마음을 흡수해 적이 그만큼 강해지고 방어가 사라집니다.';
+    case 'feast-debuff': return '기운 차리기 — 디버프에 걸려 있으면 신이 나 그 종류 수만큼 적이 회복하고 단단해집니다.';
     default: return intentLabel(encoded);
   }
 }

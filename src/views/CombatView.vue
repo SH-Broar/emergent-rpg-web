@@ -20,6 +20,7 @@ import {
   clearCombat,
   struggle,
   statusBonusForCardEffectKind,
+  resolveIntent,
   type CombatVictoryDrop,
 } from '@/systems/combat';
 import { effectiveContent } from '@/systems/map';
@@ -201,12 +202,14 @@ function canPlay(c: Card): boolean {
 // === 구속/삼킴(grapple) + 발버둥 ===
 const grapple = computed(() => combat.value?.grapple);
 const obscured = computed(() => (combat.value?.obscuredTurns ?? 0) > 0);
-/** 이번 적 턴 의도 목록 — 멀티액션이면 여러 개. 단일이면 [enemyIntent]. */
+/** 이번 적 턴 의도 목록 — 멀티액션이면 여러 개. 동적 의도(resolveIntent)로 *현재 상태* 기준 실시간 해석. */
 const enemyIntentList = computed<string[]>(() => {
   const c = combat.value;
   if (!c) return [];
-  if (c.enemyIntentQueue && c.enemyIntentQueue.length > 0) return c.enemyIntentQueue;
-  return c.enemyIntent ? [c.enemyIntent] : [];
+  const raw = (c.enemyIntentQueue && c.enemyIntentQueue.length > 0)
+    ? c.enemyIntentQueue
+    : (c.enemyIntent ? [c.enemyIntent] : []);
+  return raw.map((it) => resolveIntent(it, c));
 });
 function doStruggle() {
   struggle();
@@ -273,6 +276,7 @@ const statusLabels: Record<string, string> = {
   sleep: '수면',
   slime: '점액',
   imprint: '각인',
+  'feral-heavy': '수화 중',
 };
 function statusEntries(c: Combatant | undefined) {
   if (!c) return [] as { key: string; count: number; label: string }[];
