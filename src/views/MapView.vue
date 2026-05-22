@@ -1158,10 +1158,19 @@ function enterLabel(): string {
    간선(.edge--active)도 *색(stroke)은 유지*하되 글로우(drop-shadow)·펄스는 끈다 —
    모바일 드래그 시 빛 번짐/렉 제거. 조작이 끝나면 글로우가 다시 켜진다. */
 .camera--busy .node-dot,
-.camera--busy .current-arrow,
+.camera--busy .current-arrow {
+  filter: none !important;
+  animation: none !important;
+}
+/* 간선: 글로우(drop-shadow)·펄스만 끄고 *노란 색은 명시적으로 유지*.
+   .edge--active의 노란색은 원래 edge-glow 애니메이션에서 나오고, 베이스 stroke는
+   특정성 높은 .edges .edge(faint white)에 가려져 있다 → animation을 끄면 색이 사라지므로
+   여기서 stroke를 직접 강제한다. */
 .camera--busy .edge--active {
   filter: none !important;
   animation: none !important;
+  stroke: #ffe8a0 !important;
+  stroke-width: 0.42 !important;
 }
 
 .edges .edge {
