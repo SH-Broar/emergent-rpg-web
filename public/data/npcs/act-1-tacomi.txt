@@ -65,7 +65,7 @@ age = 80
 color_values = 0.6,0.3,0.7,0.3,0.3,0.4,0.4,0.8
 domain_high = Passionate, Adaptable, Impulsive, Flexible, Generous, Freesprited, Cynical, Cunning
 domain_low = Cautious, Rigid, Stagnant, Stubborn, Restless, Grounded, Apathetic, Honest
-background = 나이트 타코미의 서큐버스. 낮에는 안 보인다.|네온이 줄지어 켜질 때 무대 한쪽에 천천히 자리잡는다.|꿈·매혹을 원료로 살아가지만 위해를 가하진 않는다. 밤의 분위기가 본질.|"한 곡 들어볼래요? 아주 짧게."
+background = 나이트 타코미의 서큐버스. 낮에는 안 보인다.|네온이 줄지어 켜질 때 무대 구석에 천천히 자리잡는다.|꿈·매혹을 원료로 살아가지만 위해를 가하진 않는다. 밤의 분위기가 본질.|"한 곡 들어볼래요? 아주 짧게."
 tagline = "한 곡 짧게, 들어 봐요."
 tags = succubus, night, neon, dark-affinity
 affinity_rewards = 3:card=c-burn-mark:gauge=4

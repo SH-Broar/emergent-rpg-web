@@ -261,10 +261,10 @@ function enterSelected() {
       void import('@/systems/gathering').then(({ performGather }) => performGather(node.id));
       break;
     }
-    case 'activity': {
-      void import('@/systems/activity').then(({ performActivity }) => performActivity(node.id));
+    case 'activity':
+      // 활동 = 컬러 주사위 도전. 전용 화면으로 이동(현재 노드는 visitNode로 이미 설정됨).
+      router.push('/game/activity');
       break;
-    }
   }
 
   closeDrawer();

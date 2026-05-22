@@ -149,18 +149,67 @@ function defaultActivity(): void {
 }
 
 /**
- * 노드 진입 시 활동 보상을 적용. MapView의 `case 'activity'` 분기에서 호출.
+ * 노드 진입 시 활동 보상을 적용. (구 경로 — 현재 MapView는 ActivityView로 라우팅.)
  */
 export function performActivity(nodeId: string): void {
   const run = useRunStore();
   const r = run.data;
-  // 이미 발동한 활동은 다음 갱신(하루 경과) 전까지 재발동하지 않음.
   if (r.nodeStates[nodeId]?.activityDone) {
     useUiStore().toast('info', '이미 다녀간 활동 — 갱신 후 다시.');
     return;
   }
+  applyActivityBaseline(nodeId);
+  markActivityDone(nodeId);
+}
+
+// === 활동 주사위(도전) 시스템 (2026-05-22) ===
+// 활동 노드 진입 → 컬러 하나를 골라 d100 굴림. (건 컬러값 + 기본 보정)이 성공 확률 n.
+// roll ≤ n 이면 성공. 실패해도 *기본 보상*은 받고, 성공하면 *특수 보상*(건 컬러 대폭 + 보너스).
+
+/** 컬러값과 무관한 기본 성공 보정 — 컬러 0이어도 이만큼 성공 확률. */
+export const ACTIVITY_BASE_BONUS = 20;
+
+/** 건 컬러값(0~100) → 성공 확률 n(0~100). roll ≤ n 이면 성공. */
+export function activitySuccessChance(colorValue: number): number {
+  return Math.max(0, Math.min(100, Math.round(colorValue) + ACTIVITY_BASE_BONUS));
+}
+
+/** 기본 보상(성공/실패 무관 항상) — 노드별 핸들러 또는 기본 풀. */
+export function applyActivityBaseline(nodeId: string): void {
   const handler = HANDLERS[nodeId] ?? defaultActivity;
   handler();
+}
+
+/** 성공 특수 보상 — 건 컬러 대폭 상승 + 추가 보너스(골드/조각/카드 중 하나). */
+export function applyActivitySuccess(color: ColorKey): void {
+  const run = useRunStore();
+  grantColor(color, 12);
+  const roll = rng();
+  if (roll < 0.4) {
+    const g = 12 + Math.floor(rng() * 9);
+    run.data.gold += g;
+    notify(`골드 +${g}`);
+  } else if (roll < 0.7) {
+    const s = 5 + Math.floor(rng() * 5);
+    run.data.timeShards += s;
+    notify(`시간의 조각 +${s}`);
+  } else {
+    if (!grantSeedCard()) {
+      const g = 12 + Math.floor(rng() * 9);
+      run.data.gold += g;
+      notify(`골드 +${g}`);
+    }
+  }
+}
+
+/** 활동 완료 표시. */
+export function markActivityDone(nodeId: string): void {
+  const r = useRunStore().data;
   if (!r.nodeStates[nodeId]) r.nodeStates[nodeId] = { visited: true };
   r.nodeStates[nodeId].activityDone = true;
+}
+
+/** 이미 다녀간 활동인가. */
+export function isActivityDone(nodeId: string): boolean {
+  return !!useRunStore().data.nodeStates[nodeId]?.activityDone;
 }
