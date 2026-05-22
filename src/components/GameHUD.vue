@@ -46,6 +46,36 @@ const hpColor = computed(() => {
   if (r > 0.3) return '#ffe88e';
   return '#ff8e8e';
 });
+
+/**
+ * 전투 후에도 *런에 지속*되는 상태/효과 — 체력과 골드 사이에 작은 배지로 표시.
+ * 부정(혼란·심수화)과 지속 요소(축복·방울 표식·드래곤화) 모두. 활성인 것만 노출(없으면 슬롯 자체 숨김).
+ */
+const persistentStatuses = computed(() => {
+  const r = run.data;
+  const out: { key: string; emoji: string; label: string; tip: string; bad: boolean }[] = [];
+  if ((r.possessed ?? 0) > 0) {
+    out.push({ key: 'possessed', emoji: '🌀', label: `혼란 ${r.possessed}`, bad: true,
+      tip: '혼란 — 전투에서 주는 피해가 절반이 되고 매 턴 HP를 잃습니다. 마을·전투·하루 경과로 정화됩니다.' });
+  }
+  if ((r.feralHeavy ?? 0) > 0) {
+    out.push({ key: 'feral-heavy', emoji: '🐺', label: '심수화', bad: true,
+      tip: '심수화 — 공격이 2배지만 회복도 방어도 못 합니다. 탐색 보상이 늘고, 마을이나 휴식에서만 가라앉습니다.' });
+  }
+  if ((r.blessingCombats ?? 0) > 0) {
+    out.push({ key: 'blessing', emoji: '✨', label: `축복 ${r.blessingCombats}`, bad: false,
+      tip: `축복 — 앞으로 ${r.blessingCombats}번의 전투까지 보상이 25% 늘어납니다.` });
+  }
+  if ((r.bellMarked ?? 0) > 0) {
+    out.push({ key: 'bell', emoji: '🔔', label: '방울 표식', bad: false,
+      tip: '방울 표식 — 다음 일반 전투가 엘리트 전투로 바뀝니다.' });
+  }
+  if ((r.dragonCombats ?? 0) > 0) {
+    out.push({ key: 'dragon', emoji: '🐉', label: `드래곤화 ${r.dragonCombats}`, bad: false,
+      tip: `드래곤화 — 남은 ${r.dragonCombats}번의 전투 동안 모든 컬러가 상승합니다.` });
+  }
+  return out;
+});
 </script>
 
 <template>
@@ -60,6 +90,16 @@ const hpColor = computed(() => {
           <span class="num">{{ run.data.hp }}/{{ run.data.maxHp }}</span>
         </div>
       </Tooltip>
+
+      <!-- 전투 후 지속 상태 — 활성인 것만. 체력과 골드 사이. -->
+      <div v-if="persistentStatuses.length" class="slot slot--status">
+        <Tooltip v-for="s in persistentStatuses" :key="s.key" :text="s.tip">
+          <span class="statusbadge" :class="{ 'statusbadge--bad': s.bad }">
+            <span class="emoji">{{ s.emoji }}</span>
+            <span class="lbl">{{ s.label }}</span>
+          </span>
+        </Tooltip>
+      </div>
 
       <!-- 골드 -->
       <Tooltip text="골드 — 마을·작업장에서 카드/유물/아이템 구매에 사용.">
@@ -166,6 +206,18 @@ const hpColor = computed(() => {
 .slot--hp { flex: 1; min-width: 140px; max-width: 260px; }
 .slot--hp .bar { flex: 1; height: 8px; background: rgba(0,0,0,0.4); border-radius: 4px; overflow: hidden; }
 .slot--hp .bar__fill { height: 100%; transition: width 220ms ease, background 220ms ease; }
+
+/* 전투 후 지속 상태 슬롯 — 작은 배지 묶음. */
+.slot--status { gap: 0.25rem; padding: 0.2rem 0.3rem; }
+.statusbadge {
+  display: inline-flex; align-items: center; gap: 0.22rem;
+  padding: 0.14rem 0.4rem; border-radius: 10px;
+  background: rgba(150, 230, 170, 0.16); border: 1px solid rgba(150, 230, 170, 0.4);
+  white-space: nowrap;
+}
+.statusbadge .lbl { color: #d6f0dd; }
+.statusbadge--bad { background: rgba(200, 90, 90, 0.18); border-color: rgba(255, 140, 140, 0.45); }
+.statusbadge--bad .lbl { color: #ffc9c9; }
 
 .emoji { font-size: 0.95rem; }
 .lbl { color: #c0b693; font-size: 0.78rem; }
