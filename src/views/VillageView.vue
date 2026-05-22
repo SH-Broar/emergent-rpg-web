@@ -229,6 +229,12 @@ function leave() {
   router.push('/game/map');
 }
 
+/** 빙의 정화 — 마을에서 잔존 빙의를 씻어낸다. */
+function cleansePossession() {
+  run.data.possessed = 0;
+  ui.toast('success', '빙의를 씻어냈다. 몸이 다시 내 것이 되었다.');
+}
+
 const rankColors: Record<string, string> = {
   basic: '#a4a4b0',
   common: '#8effb8',
@@ -252,6 +258,12 @@ const rankColors: Record<string, string> = {
         <span>HP {{ run.data.hp }}/{{ run.data.maxHp }}</span>
         <span>골드 {{ run.data.gold }}</span>
         <span>시간의 조각 {{ run.data.timeShards }}</span>
+      </div>
+
+      <!-- 빙의 정화 — 마을에서 풀 수 있는 경로(잔존 빙의가 있을 때만). -->
+      <div v-if="(run.data.possessed ?? 0) > 0" class="cleanse">
+        <p class="cleanse__msg">몸에 빙의가 남아 있다. 활동에 들 수 없고 길도 일부 막혔다.</p>
+        <button class="cleanse__btn" @click="cleansePossession">마을에서 빙의를 씻어낸다</button>
       </div>
 
       <!-- NPC 목록 — 대화·영입은 *대화 시스템 도입 후* 활성. 지금은 *마주침*만 표시. -->
@@ -388,6 +400,10 @@ h1 { color: #8effb8; margin: 0; }
 
 .menu { display: flex; flex-direction: column; gap: 0.8rem; }
 .resources { display: flex; gap: 1rem; padding: 0.6rem 1rem; background: rgba(0,0,0,0.4); border-radius: 6px; color: #b6b6c4; font-size: 0.9rem; }
+.cleanse { margin-top: 0.8rem; padding: 0.7rem 1rem; background: rgba(192,142,255,0.12); border: 1px solid rgba(192,142,255,0.45); border-radius: 8px; display: grid; gap: 0.5rem; }
+.cleanse__msg { margin: 0; color: #d6c8f0; font-size: 0.88rem; }
+.cleanse__btn { padding: 0.55rem 0.9rem; background: rgba(192,142,255,0.25); border: 1px solid rgba(192,142,255,0.6); color: #f0e8ff; border-radius: 6px; cursor: pointer; font: inherit; font-weight: 600; }
+.cleanse__btn:hover { background: rgba(192,142,255,0.4); }
 .opt { padding: 1rem 1.2rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.15); color: inherit; border-radius: 8px; cursor: pointer; text-align: left; font: inherit; display: flex; flex-direction: column; gap: 0.2rem; }
 .opt:hover:not(:disabled) { background: rgba(142, 255, 184, 0.1); border-color: rgba(142, 255, 184, 0.4); }
 .opt:disabled { opacity: 0.4; cursor: not-allowed; }

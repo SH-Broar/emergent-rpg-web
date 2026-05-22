@@ -22,6 +22,7 @@ import { createSeededRng, generateInitialSeed, rng, setRng } from '@/systems/rng
 import { getSkipTurnEveryN } from '@/systems/relic';
 import { applyStartChaos, nodeHpLoss } from '@/systems/chaos';
 import { useDataStore } from './data';
+import { useUiStore } from './ui';
 
 /**
  * localStorage 키 — 활성 런 스냅샷. 사용자 요구에 따라 노드 입장마다 자동 저장.
@@ -64,6 +65,7 @@ const EMPTY_RUN: RunState = {
   nodeStates: {},
   remainingTime: 0,
   currentDay: 1,
+  possessed: 0,
   nodeKindOverrides: {},
   nodeContentOverrides: {},
   shopInventories: {},
@@ -333,6 +335,11 @@ export const useRunStore = defineStore('run', {
       const r = this.data;
       r.currentDay += 1;
       r.dayPassedSeq += 1;
+      // 빙의(possession)는 하루가 지나면 풀린다 — 잔존 페널티의 안전 밸브.
+      if ((r.possessed ?? 0) > 0) {
+        r.possessed = 0;
+        useUiStore().toast('success', '하루가 지나며 빙의가 풀렸다.');
+      }
 
       const data = useDataStore();
       const tl = data.timelines.get(r.timelineId);

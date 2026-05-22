@@ -268,6 +268,11 @@ const statusLabels: Record<string, string> = {
   spasm: '경련',
   sap: '잠식',
   ghost: '유령화',
+  brainwash: '세뇌',
+  possession: '빙의',
+  sleep: '수면',
+  slime: '점액',
+  imprint: '각인',
 };
 function statusEntries(c: Combatant | undefined) {
   if (!c) return [] as { key: string; count: number; label: string }[];

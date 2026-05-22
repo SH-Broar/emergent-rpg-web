@@ -244,9 +244,16 @@ function applyItemEffect(
       break;
     }
     case 'cleanse-transform': {
-      // 변신(체인지) 정화 — 원래 종족·덱으로 복귀. 변신 중이 아니면 무효.
-      if (revertTransformationState()) lines.push('변신이 풀려 원래 모습으로 돌아왔다');
-      else lines.push('변신 상태가 아니다');
+      // 정화(본명의 거울) — 변신 복귀 + *빙의/세뇌* 정화. 둘 다 아니면 무효.
+      let did = false;
+      if (revertTransformationState()) { lines.push('변신이 풀려 원래 모습으로 돌아왔다'); did = true; }
+      if ((r.possessed ?? 0) > 0 || (c?.player.statuses?.possession ?? 0) > 0) {
+        r.possessed = 0;
+        if (c) { delete c.player.statuses.possession; delete c.player.statuses.brainwash; }
+        lines.push('빙의가 정화되었다');
+        did = true;
+      }
+      if (!did) lines.push('정화할 상태가 없다');
       break;
     }
     // ===== 전투 포션 전용 — 전투 중에만 의미. =====
@@ -292,14 +299,23 @@ function applyItemEffect(
     }
     case 'combat-free-grapple': {
       if (!inCombat || !c) break;
+      let freed = false;
       if (c.grapple) {
         const wasBind = c.grapple.kind === 'bind';
         c.grapple = undefined;
         if (wasBind) c.lockedCardIds = [];
         lines.push('구속에서 벗어났다');
-      } else {
-        lines.push('묶인 상태가 아니다');
+        freed = true;
       }
+      // 정신 속박(빙의/세뇌)도 끊어낸다 — 전투 중 빙의 정화 경로. (잔존도 함께 0.)
+      if ((c.player.statuses?.possession ?? 0) > 0 || (c.player.statuses?.brainwash ?? 0) > 0) {
+        delete c.player.statuses.possession;
+        delete c.player.statuses.brainwash;
+        r.possessed = 0;
+        lines.push('정신을 옭아매던 것이 끊겼다');
+        freed = true;
+      }
+      if (!freed) lines.push('묶인 상태가 아니다');
       break;
     }
   }

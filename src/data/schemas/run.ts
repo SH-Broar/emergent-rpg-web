@@ -265,6 +265,13 @@ export interface RunState {
   remainingTime: number;
 
   /**
+   * 빙의(possession) 잔존 스택 — 전투에서 정화하지 못한 빙의가 런에 남는다(0=없음).
+   * 효과: 활동 노드 진입 불가 + 일부 간선 차단. 정화(마을/아이템)·하루 경과·다음 전투 정화로 해제.
+   * 다음 전투 시작 시 이 값으로 player.statuses.possession을 시드한다.
+   */
+  possessed?: number;
+
+  /**
    * 현재 일차 — 30턴마다 +1 (`dayPassed` 트리거).
    * 시작은 1.
    */

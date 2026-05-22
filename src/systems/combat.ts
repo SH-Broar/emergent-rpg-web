@@ -141,6 +141,12 @@ function applyDamage(
   // weakness(약화): 공격자가 주는 피해 ×0.75.
   const weakness = attackerStatuses?.weakness ?? 0;
   if (weakness > 0) v = Math.floor(v * 0.75);
+  // 세뇌(brainwash): 홀려서 손이 무뎌진다 — 공격자가 주는 피해 ×0.66.
+  if ((attackerStatuses?.brainwash ?? 0) > 0) v = Math.floor(v * 0.66);
+  // 각인(imprint): 새겨진 표식이 힘을 빼앗는다 — 공격자가 주는 피해 ×0.85(가벼움, 빙의 전조).
+  if ((attackerStatuses?.imprint ?? 0) > 0) v = Math.floor(v * 0.85);
+  // 빙의(possession): 몸을 절반쯤 빼앗긴다 — 공격자가 주는 피해 ×0.5(강력, 비감쇠).
+  if ((attackerStatuses?.possession ?? 0) > 0) v = Math.floor(v * 0.5);
   // ghost(유령화·공격자): 비실체라 *주는 피해 ×0.5*. weakness 뒤(출력 단계).
   const attackerGhost = attackerStatuses?.ghost ?? 0;
   if (attackerGhost > 0) v = Math.floor(v * 0.5);
@@ -158,7 +164,12 @@ function applyDamage(
   // block 흡수 후 hp 차감.
   const absorbed = Math.min(target.block, v);
   target.block -= absorbed;
-  target.hp = Math.max(0, target.hp - (v - absorbed));
+  const hpLoss = v - absorbed;
+  target.hp = Math.max(0, target.hp - hpLoss);
+  // 수면(sleep): 실제로 HP를 깎는 피해를 받으면 즉시 깬다.
+  if (isPlayerTarget && hpLoss > 0 && (target.statuses?.sleep ?? 0) > 0) {
+    delete target.statuses.sleep;
+  }
 }
 
 /**
@@ -182,15 +193,16 @@ function tickPoison(target: Combatant): void {
  * 매 턴 1씩 자연 감소하는 디버프 목록 — 적이 걸 때 *최소 2* 보장(executeMonsterIntent)과
  * 턴 감소(decayTurnStatuses)가 같은 목록을 공유한다.
  */
-const DECAYING_DEBUFFS = new Set<string>(['feral', 'regress', 'sap', 'ghost', 'weakness', 'vulnerable', 'frail']);
+const DECAYING_DEBUFFS = new Set<string>(['feral', 'regress', 'sap', 'ghost', 'weakness', 'vulnerable', 'frail', 'brainwash', 'sleep', 'slime']);
 
 /**
  * 지속 상태이상 턴 감소 — 매 플레이어 턴 종료 시 양쪽(플레이어·적) -1, 0이면 제거.
  * feral/regress/sap/ghost + weakness/vulnerable/frail(매 턴 1씩 자연 감소).
  */
 function decayTurnStatuses(target: Combatant): void {
-  for (const key of ['feral', 'regress', 'sap', 'ghost', 'weakness', 'vulnerable', 'frail'] as const) {
-    const stack = target.statuses?.[key] ?? 0;
+  if (!target.statuses) return;
+  for (const key of DECAYING_DEBUFFS) {
+    const stack = target.statuses[key] ?? 0;
     if (stack <= 0) continue;
     const next = stack - 1;
     if (next <= 0) delete target.statuses[key];
@@ -223,6 +235,22 @@ function resolveEnemyDefeat(c: CombatState): boolean {
   return true;
 }
 
+// === 하루 경과 스케일링 — 날이 갈수록 적이 강해진다(초반 HP 감소를 후반에서 보강). ===
+// 일반 몬스터 HP를 권역 데이터에서 깎은 대신, 하루가 지날수록 HP/공격이 더 크게 오른다.
+// day 1 = ×1. HP는 +18%/일, 공격은 +12%/일. (런 ~3일 → day3 HP ×1.36, ATK ×1.24.)
+const DAY_HP_SCALE_PER_DAY = 0.18;
+const DAY_ATK_SCALE_PER_DAY = 0.12;
+/** 적 HP 하루 스케일 배수(currentDay 기반). */
+function dayHpScale(): number {
+  const day = Math.max(1, useRunStore().data.currentDay ?? 1);
+  return 1 + DAY_HP_SCALE_PER_DAY * (day - 1);
+}
+/** 적 공격 하루 스케일 배수(currentDay 기반). */
+function dayAtkScale(): number {
+  const day = Math.max(1, useRunStore().data.currentDay ?? 1);
+  return 1 + DAY_ATK_SCALE_PER_DAY * (day - 1);
+}
+
 /** 전투 시작 — Combat state 초기화 + 첫 핸드 드로우. */
 export function startCombat(monster: Monster) {
   const run = useRunStore();
@@ -232,11 +260,13 @@ export function startCombat(monster: Monster) {
     hp: r.hp,
     maxHp: r.maxHp,
     block: 0,
-    statuses: {},
+    // 빙의(possession)는 런에 잔존한다 — 빙의 상태로 전투에 들어가면 그대로 안고 시작(정화 전까지).
+    statuses: (r.possessed ?? 0) > 0 ? { possession: r.possessed as number } : {},
   };
 
   // 카오스 상시형 — enemy-hp-mul(+elite-hp-mul, 엘리트/보스) 활성 시 적 HP 배수 상향(올림).
-  const scaledEnemyHp = Math.round(monster.hp * enemyHpMul(monster));
+  // + 하루 경과 스케일(dayHpScale) — 날이 갈수록 적 HP 증가.
+  const scaledEnemyHp = Math.round(monster.hp * enemyHpMul(monster) * dayHpScale());
   const enemyCombatant: Combatant = {
     hp: scaledEnemyHp,
     maxHp: scaledEnemyHp,
@@ -950,9 +980,11 @@ export function endPlayerTurn(monster: Monster): { playerDefeated: boolean; enem
   // regress(퇴행)면 MAG manaExtra 무효 → 기본 maxMana만. (playerBonuses가 0 반환.)
   // 유물 mana-extra-add는 색 스탯과 무관하므로 regress와 별개로 항상 합산.
   // 카오스 low-mana — 매 턴 마나 -N(최소 0).
+  // 점액(slime): 끈적임이 손을 묶어 매 턴 마나 -스택(최소 0).
+  const slimeMana = c.player.statuses?.slime ?? 0;
   const effMaxMana = Math.max(
     0,
-    DEFAULT_MAX_MANA + playerBonuses(c).manaExtra + getModifierAdd('mana-extra-add') - manaReduction(),
+    DEFAULT_MAX_MANA + playerBonuses(c).manaExtra + getModifierAdd('mana-extra-add') - manaReduction() - slimeMana,
   );
   c.mana = effMaxMana + manaCarry;
   // 칼리번 c-trace-step: 다음 턴 시작 에너지 +N 보너스 소비.
@@ -969,11 +1001,13 @@ export function endPlayerTurn(monster: Monster): { playerDefeated: boolean; enem
   // force-discard 교란(drawDown)은 이번 드로우를 줄이고 1회 소비.
   const drawDown = c.drawDown ?? 0;
   if (drawDown > 0) c.drawDown = 0;
+  // 수면(sleep): 잠에 빠져 매 턴 드로우 -스택(피해를 받으면 깬다 — applyDamage에서 해제).
+  const sleepDraw = c.player.statuses?.sleep ?? 0;
   // 카오스 small-hand — 매 턴 드로우 -N(최소 0).
   const handSize = Math.max(
     0,
     STARTING_HAND_SIZE + playerBonuses(c).drawExtra + getModifierAdd('draw-extra-add')
-      - drawDown - handSizeReduction(),
+      - drawDown - handSizeReduction() - sleepDraw,
   );
   const { drawn, newDrawPile, newDiscardPile } = drawCards(c.drawPile, c.discardPile, handSize);
   c.drawPile = newDrawPile;
@@ -1045,6 +1079,24 @@ function applyPlayerStatusTurnStart(c: CombatState): void {
     c.mana = 0;
     if (sp - 1 <= 0) delete st.spasm;
     else st.spasm = sp - 1;
+  }
+
+  // 각인(imprint): 비감쇠 표식. 5 이상 쌓이면 빙의로 번진다(전조 → 본격). 5 소비 + 빙의 +1.
+  const imp = st.imprint ?? 0;
+  if (imp >= 5) {
+    const left = imp - 5;
+    if (left <= 0) delete st.imprint;
+    else st.imprint = left;
+    st.possession = (st.possession ?? 0) + 1;
+    ui.toast('warning', '각인이 깊어져 빙의로 번졌다.');
+  }
+  // 빙의(possession): 비감쇠 강력 디버프. 매 턴 시작 HP를 잠식한다(스택 비례, 캡 6, 최소 HP 1).
+  // 정화하지 않으면 전투 후에도 런에 남는다(clearCombat 라이트백).
+  const poss = st.possession ?? 0;
+  if (poss > 0) {
+    const drain = Math.min(6, 1 + poss);
+    c.player.hp = Math.max(1, c.player.hp - drain);
+    ui.toast('warning', `빙의 — 몸을 빼앗긴다 (HP -${drain})`);
   }
 
   // 구속(bind)/삼킴(devour) + 거미줄(web) — 매 플레이어 턴 시작 카드 잠금 *재계산*.
@@ -1179,11 +1231,13 @@ function executeMonsterIntent(c: CombatState, monster?: Monster, intentOverride?
   // (플레이어 힘은 statusBonusForCardEffectKind에서 이미 처리되므로 여기선 적만.)
   const dealsDamage = kind === 'attack' || kind === 'drain';
   const enemyStrength = dealsDamage ? (c.enemy.statuses.strength ?? 0) : 0;
-  // 카오스 enemy-atk-mul(+boss-atk-mul) — 공격성 인텐트(attack/drain/charge)의 데미지 배수. 힘 가산 후 배수.
-  const atkMul = enemyAtkMul(monster);
+  // 카오스 enemy-atk-mul(+boss-atk-mul) × 하루 경과 스케일(dayAtkScale) — 공격성 인텐트의 데미지 배수.
+  // 힘 가산 후 배수. 날이 갈수록 적 공격이 커진다(초반 약화 보강).
+  const isAggressive = kind === 'attack' || kind === 'drain' || kind === 'charge';
+  const atkMul = enemyAtkMul(monster) * (isAggressive ? dayAtkScale() : 1);
   const baseWithStrength = rawValue + enemyStrength;
   const value =
-    (kind === 'attack' || kind === 'drain' || kind === 'charge') && atkMul !== 1
+    isAggressive && atkMul !== 1
       ? Math.round(baseWithStrength * atkMul)
       : baseWithStrength;
 
@@ -1555,6 +1609,11 @@ export function clearCombat() {
   const c = run.data.combat;
   if (c) {
     run.data.hp = Math.max(0, Math.min(run.data.maxHp, c.player.hp));
+    // 빙의(possession) 잔존 — 전투 종료 시 정화하지 못한 빙의는 런에 남는다(맵 이동 제약).
+    // 정화/하루 경과로만 풀린다. 0이면 해제.
+    const poss = c.player.statuses?.possession ?? 0;
+    if (poss > 0) run.data.possessed = poss;
+    else run.data.possessed = 0;
   }
   run.data.combat = undefined;
   // 디버그 전투 오버라이드는 1회용 — 전투 종료 시 해제해 일반 전투에 영향 없게.

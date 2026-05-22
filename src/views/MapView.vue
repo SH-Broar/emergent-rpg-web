@@ -84,7 +84,15 @@ const reachable = computed<Set<NodeId>>(() => {
   // 사용자 사양: 시간 만료 = 즉시 종료. 보스 게이트로 갈 필요 없음.
   // 따라서 인접 노드는 항상 동일하게 반환. (카오스로 잠긴 노드는 제외.)
   const neighbors = getNeighbors(nodeMap.value, run.data.currentNodeId, run.data);
-  return new Set(neighbors.map((n) => n.id).filter((id) => !chaosLockedNodes.value.has(id)));
+  let ids = neighbors.map((n) => n.id).filter((id) => !chaosLockedNodes.value.has(id));
+  // 빙의(possession) 잔존 — *일부 간선 차단*. 노드 id 해시가 홀수인 인접 노드를 끊는다(결정적).
+  // 모두 끊기면 고립되므로 최소 1곳은 남긴다.
+  if ((run.data.possessed ?? 0) > 0 && ids.length > 1) {
+    const hashEven = (s: string) => ([...s].reduce((a, c) => a + c.charCodeAt(0), 0) % 2) === 0;
+    const kept = ids.filter(hashEven);
+    ids = kept.length > 0 ? kept : [ids[0]];
+  }
+  return new Set(ids);
 });
 
 // === Drawer 상태 ===
@@ -164,6 +172,7 @@ type EnterAction =
   | 'event-pass'
   | 'gather-enter'
   | 'activity-enter'
+  | 'activity-possessed'
   | 'unreachable';
 
 function getEnterAction(): EnterAction {
@@ -191,6 +200,8 @@ function getEnterAction(): EnterAction {
     case 'gather':
       return 'gather-enter';
     case 'activity':
+      // 빙의(possession) 중에는 활동에 들어갈 수 없다.
+      if ((run.data.possessed ?? 0) > 0) return 'activity-possessed';
       return 'activity-enter';
     case 'village':
     case 'workshop':
@@ -206,6 +217,10 @@ function enterSelected() {
 
   if (action === 'unreachable') {
     ui.toast('warning', '인접한 노드가 아닙니다 — 한 칸씩만 이동할 수 있습니다.');
+    return;
+  }
+  if (action === 'activity-possessed') {
+    ui.toast('warning', '빙의 상태에선 활동에 들어갈 수 없다 — 마을이나 전투에서 정화하거나 하루가 지나야 한다.');
     return;
   }
 
@@ -807,6 +822,7 @@ function enterLabel(): string {
     case 'shop-enter': return '상점에 들어간다';
     case 'gather-enter': return '채집한다';
     case 'activity-enter': return '활동한다';
+    case 'activity-possessed': return '빙의 상태 (활동 불가)';
     case 'boss': return '도전한다';
     case 'pass-only': return '닫기';
     case 'unreachable': return '인접하지 않음';
@@ -944,7 +960,7 @@ function enterLabel(): string {
         <button
           v-if="selectedNode.id !== run.data.currentNodeId"
           class="drawer__enter"
-          :disabled="getEnterAction() === 'unreachable'"
+          :disabled="getEnterAction() === 'unreachable' || getEnterAction() === 'activity-possessed'"
           @click="enterSelected"
         >
           {{ enterLabel() }}
