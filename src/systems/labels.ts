@@ -5,7 +5,7 @@
  * 모든 컴포넌트가 이 모듈을 거쳐 라벨을 표시.
  */
 
-import type { CardEffect, RelicEffect } from '@/data/schemas';
+import type { Card, CardEffect, Relic, RelicEffect } from '@/data/schemas';
 
 /**
  * 카드 효과 종류(CardEffectKind) → 한글 *간결 라벨*.
@@ -256,6 +256,37 @@ export function cardEffectDescription(effect: CardEffect): string {
     return statusDescription(st) || '상태를 부여합니다.';
   }
   return CARD_EFFECT_DESCRIPTIONS[effect.kind] ?? '';
+}
+
+/** 등급 한글 라벨. */
+const RANK_KO: Record<string, string> = { basic: '기본', common: '일반', rare: '희귀', legendary: '전설' };
+
+/**
+ * 카드 *상세* 한 줄 — 길게 누름/호버 툴팁용(보상 카드 성능 확인). 이름·등급·코스트 + 효과 요약.
+ */
+export function cardDetailText(card: Card | undefined): string {
+  if (!card) return '';
+  const head = `${card.name} · ${RANK_KO[card.rank] ?? card.rank} · ${card.cost}코`;
+  const effs = card.effects
+    .map((e) => {
+      const v = e.value !== undefined ? ` ${e.value}` : '';
+      const t = e.target ? ` ${effectTargetLabel(e.target)}` : '';
+      return `${cardEffectKindLabel(e)}${v}${t}`.trim();
+    })
+    .filter(Boolean)
+    .join(', ');
+  return effs ? `${head} — ${effs}` : head;
+}
+
+/**
+ * 유물 *상세* 한 줄 — 길게 누름/호버 툴팁용. 이름·등급·트리거 + 효과.
+ */
+export function relicDetailText(relic: Relic | undefined): string {
+  if (!relic) return '';
+  const head = `${relic.name} · ${RANK_KO[relic.rank] ?? relic.rank}`;
+  const trig = relicTriggerLabel(relic.trigger);
+  const effs = relic.effects.map(relicEffectText).join(', ');
+  return `${head}${trig ? ` (${trig})` : ''}${effs ? ` — ${effs}` : ''}`;
 }
 
 // ===== 유물 =====

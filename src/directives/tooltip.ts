@@ -47,7 +47,24 @@ export const vTooltip: Directive<TipEl, string> = {
       text: binding.value ?? '',
       onEnter: (e) => { if (e.pointerType === 'mouse') showTip(el, s.text); },
       onLeave: (e) => { if (e.pointerType === 'mouse') hideTip(); },
-      onDown: (e) => { if (e.pointerType !== 'mouse') { s.timer = window.setTimeout(() => { showTip(el, s.text); s.hideTimer = window.setTimeout(hideTip, 2500); }, 400); } },
+      onDown: (e) => {
+        if (e.pointerType !== 'mouse') {
+          s.timer = window.setTimeout(() => {
+            if (!s.text) return;
+            showTip(el, s.text);
+            s.hideTimer = window.setTimeout(hideTip, 2500);
+            // 롱프레스로 정보 툴팁이 떴으면, 손을 뗄 때 뒤따르는 click(카드 사용/구매 등)을 1회 억제.
+            // document 캡처 단계에서 다음 click을 먹어 요소의 @click까지 도달하지 못하게 한다.
+            const blockNextClick = (ev: Event) => {
+              ev.stopImmediatePropagation();
+              ev.preventDefault();
+              document.removeEventListener('click', blockNextClick, true);
+            };
+            document.addEventListener('click', blockNextClick, true);
+            window.setTimeout(() => document.removeEventListener('click', blockNextClick, true), 1300);
+          }, 400);
+        }
+      },
       onUp: () => { window.clearTimeout(s.timer); },
       onMove: () => { window.clearTimeout(s.timer); },
     };

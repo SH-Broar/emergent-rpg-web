@@ -20,7 +20,7 @@ import { effectiveContent } from '@/systems/map';
 import { applyAffinityDelta } from '@/systems/affinity';
 import { acquireRelic } from '@/systems/relic';
 import { applyColorBoost, applyColorBoostAll, type ColorKey } from '@/systems/colors';
-import { colorLabel } from '@/systems/labels';
+import { colorLabel, cardDetailText, relicDetailText } from '@/systems/labels';
 import { rng } from '@/systems/rng';
 import type { Card, Event, EventChoice, EventChoiceEffect } from '@/data/schemas';
 
@@ -228,6 +228,20 @@ function choicePreview(c: EventChoice): string {
   return tokens.join(' · ');
 }
 
+/**
+ * 선택지가 주는 *카드/유물의 상세*(길게 누름/호버 툴팁) — 보상 성능 확인용.
+ * hidden 선택지는 가리지 않도록 빈 문자열(미스터리 보존). 카드/유물 grant 없으면 빈 문자열(툴팁 없음).
+ */
+function choiceRewardTip(c: EventChoice): string {
+  if (c.hidden) return '';
+  const parts: string[] = [];
+  for (const e of c.effects) {
+    if (e.grantCardId) parts.push(cardDetailText(data.cards.get(e.grantCardId)));
+    if (e.grantRelicId) parts.push(relicDetailText(data.relics.get(e.grantRelicId)));
+  }
+  return parts.filter(Boolean).join('  /  ');
+}
+
 function leave() {
   router.push('/game/map');
 }
@@ -260,6 +274,7 @@ onMounted(() => {
           class="choice"
           :disabled="!isAvailable(c)"
           :title="c.condition && !isAvailable(c) ? `조건 미달: ${c.condition}` : ''"
+          v-tooltip="choiceRewardTip(c)"
           @click="isAvailable(c) && choose(c)"
         >
           <span class="choice__label">{{ c.label }}</span>

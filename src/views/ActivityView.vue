@@ -20,6 +20,7 @@ import {
   applyActivitySuccess,
   markActivityDone,
   isActivityDone,
+  activityDoneToday,
 } from '@/systems/activity';
 import type { ColorKey } from '@/systems/colors';
 
@@ -34,15 +35,30 @@ const COLORS: { key: ColorKey; hex: string }[] = [
   { key: 'light', hex: '#f6e8b8' }, { key: 'dark', hex: '#c08eff' },
 ];
 
-const currentNode = computed(() => {
-  const map = data.nodeMaps.get(data.timelines.get(run.data.timelineId)?.nodeMapId ?? '');
-  return map?.nodes.find((n: { id: string }) => n.id === run.data.currentNodeId);
-});
+const map = computed(() => data.nodeMaps.get(data.timelines.get(run.data.timelineId)?.nodeMapId ?? ''));
+const currentNode = computed(() => map.value?.nodes.find((n: { id: string }) => n.id === run.data.currentNodeId));
 const nodeName = computed(() => currentNode.value?.label ?? '활동');
 
+/** 활동 노드 권역의 tier(1~4). 미상이면 1. */
+const regionTier = computed<number>(() => {
+  const node = currentNode.value;
+  const region = node?.region ? map.value?.regions.find((r) => r.id === node.region) : undefined;
+  return region?.tier ?? 1;
+});
+/** 권역 깊이 → 난이도. 깊을수록 제시 컬러가 적어(어려움) 보상이 큼. */
+const difficulty = computed<{ n: number; label: string; boost: number }>(() => {
+  const t = regionTier.value;
+  if (t >= 4) return { n: 2, label: '상', boost: 18 };
+  if (t === 3) return { n: 3, label: '중', boost: 14 };
+  return { n: 4, label: '하', boost: 10 };
+});
+
 const alreadyDone = ref(false);
+const doneMsg = ref('');
 const phase = ref<'pick' | 'rolling' | 'result'>('pick');
 const selected = ref<ColorKey | null>(null);
+/** 이번 활동에 제시되는 컬러 — 8색 중 난이도 수만큼 무작위(run rng, 마운트 시 1회 고정). */
+const offered = ref<ColorKey[]>([]);
 const displayRoll = ref(0);
 const finalRoll = ref(0);
 const success = ref(false);
@@ -52,6 +68,8 @@ const usedChance = ref(0); // 굴림 당시 성공 확률 — 보상으로 컬�
 function colorValue(k: ColorKey): number { return run.data.colors[k] ?? 0; }
 function chanceOf(k: ColorKey): number { return activitySuccessChance(colorValue(k)); }
 const selectedChance = computed(() => (selected.value ? chanceOf(selected.value) : 0));
+/** 제시 컬러 {key, hex} 목록 — 템플릿 렌더용. */
+const offeredList = computed(() => offered.value.map((k) => COLORS.find((c) => c.key === k)!).filter(Boolean));
 
 function pick(k: ColorKey) { if (phase.value === 'pick') selected.value = k; }
 
@@ -85,7 +103,7 @@ function challenge() {
 function resolve(color: ColorKey) {
   const nodeId = run.data.currentNodeId;
   applyActivityBaseline(nodeId);            // 성공/실패 무관 항상 기본 보상
-  if (success.value) applyActivitySuccess(color); // 성공 시 특수 보상 추가
+  if (success.value) applyActivitySuccess(color, difficulty.value.boost); // 성공 시 특수 보상(난이도 비례)
   markActivityDone(nodeId);
   phase.value = 'result';
 }
@@ -94,7 +112,16 @@ function leave() { router.push('/game/map'); }
 
 onMounted(() => {
   if (!run.active) { router.push('/main'); return; }
-  if (isActivityDone(run.data.currentNodeId)) alreadyDone.value = true;
+  // 하루 1회 제한 — 오늘 이미 활동했으면 막는다(다른 노드여도). 그 노드를 이미 했어도 막는다.
+  if (activityDoneToday()) { alreadyDone.value = true; doneMsg.value = '오늘은 이미 활동했다. 활동은 하루에 한 번만 가능하다.'; return; }
+  if (isActivityDone(run.data.currentNodeId)) { alreadyDone.value = true; doneMsg.value = '이미 다녀간 활동이다.'; return; }
+  // 제시 컬러 = 8색 중 난이도 수만큼 무작위(Fisher-Yates, run rng). 마운트 1회 고정.
+  const all: ColorKey[] = COLORS.map((c) => c.key);
+  for (let i = all.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [all[i], all[j]] = [all[j], all[i]];
+  }
+  offered.value = all.slice(0, difficulty.value.n);
 });
 </script>
 
@@ -102,21 +129,21 @@ onMounted(() => {
   <main class="activity-view">
     <section v-if="alreadyDone" class="done">
       <h1>{{ nodeName }}</h1>
-      <p class="done__msg">이미 다녀간 활동이다. 다음 갱신 후 다시 도전할 수 있다.</p>
+      <p class="done__msg">{{ doneMsg || '이미 다녀간 활동이다.' }}</p>
       <button class="leave" @click="leave">계속 →</button>
     </section>
 
     <section v-else class="activity">
       <header class="hdr">
-        <h1>{{ nodeName }}</h1>
-        <p class="sub">컬러 하나를 걸고 도전한다. 건 컬러가 짙을수록 성공 확률이 높다. 실패해도 기본 보상은 받는다.</p>
+        <h1>{{ nodeName }} <span class="diff" :class="`diff--${difficulty.label}`">난이도 {{ difficulty.label }} · {{ difficulty.n }}색</span></h1>
+        <p class="sub">원하는 컬러를 선택해 주사위 눈을 시험한다.</p>
       </header>
 
-      <!-- 컬러 선택 -->
+      <!-- 컬러 선택 (난이도만큼 제시) -->
       <div v-if="phase === 'pick'" class="pick">
         <div class="colors">
           <button
-            v-for="c in COLORS"
+            v-for="c in offeredList"
             :key="c.key"
             class="color"
             :class="{ 'color--sel': selected === c.key }"
@@ -130,7 +157,7 @@ onMounted(() => {
         </div>
         <footer class="foot">
           <button class="challenge" :disabled="!selected" @click="challenge">
-            {{ selected ? `${colorLabel(selected)}로 도전 (성공 ${selectedChance}%)` : '컬러를 고르세요' }}
+            {{ selected ? `시작! (성공 ${selectedChance}%)` : '시작!' }}
           </button>
         </footer>
       </div>
@@ -157,6 +184,10 @@ onMounted(() => {
 <style scoped>
 .activity-view { max-width: 680px; margin: 0 auto; padding: 3rem 2rem; min-height: 100vh; }
 .hdr h1, .done h1 { color: #f0d68e; margin: 0 0 0.4rem; }
+.diff { font-size: 0.78rem; font-weight: 600; padding: 0.12rem 0.5rem; border-radius: 5px; margin-left: 0.5rem; white-space: nowrap; }
+.diff--하 { color: #8effb8; border: 1px solid rgba(142,255,184,0.45); }
+.diff--중 { color: #f2e36a; border: 1px solid rgba(242,227,106,0.45); }
+.diff--상 { color: #ff8e8e; border: 1px solid rgba(255,142,142,0.45); }
 .sub { color: #9a9aa8; font-size: 0.92rem; margin: 0 0 1.6rem; line-height: 1.5; }
 .done__msg { color: #b6b6c4; margin: 1rem 0 2rem; }
 

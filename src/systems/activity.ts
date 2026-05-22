@@ -180,36 +180,46 @@ export function applyActivityBaseline(nodeId: string): void {
   handler();
 }
 
-/** 성공 특수 보상 — 건 컬러 대폭 상승 + 추가 보너스(골드/조각/카드 중 하나). */
-export function applyActivitySuccess(color: ColorKey): void {
+/**
+ * 성공 특수 보상 — 건 컬러 대폭 상승 + 추가 보너스(골드/조각/카드 중 하나).
+ * colorBoost는 난이도에 비례(어려운 활동일수록 큼 — ActivityView가 tier로 결정).
+ */
+export function applyActivitySuccess(color: ColorKey, colorBoost = 12): void {
   const run = useRunStore();
-  grantColor(color, 12);
+  grantColor(color, colorBoost);
   const roll = rng();
   if (roll < 0.4) {
-    const g = 12 + Math.floor(rng() * 9);
+    const g = colorBoost + Math.floor(rng() * 9);
     run.data.gold += g;
     notify(`골드 +${g}`);
   } else if (roll < 0.7) {
-    const s = 5 + Math.floor(rng() * 5);
+    const s = Math.ceil(colorBoost / 2) + Math.floor(rng() * 5);
     run.data.timeShards += s;
     notify(`시간의 조각 +${s}`);
   } else {
     if (!grantSeedCard()) {
-      const g = 12 + Math.floor(rng() * 9);
+      const g = colorBoost + Math.floor(rng() * 9);
       run.data.gold += g;
       notify(`골드 +${g}`);
     }
   }
 }
 
-/** 활동 완료 표시. */
+/** 활동 완료 표시 — 노드 + *오늘 활동함*(하루 1회 제한)을 함께 기록. */
 export function markActivityDone(nodeId: string): void {
   const r = useRunStore().data;
   if (!r.nodeStates[nodeId]) r.nodeStates[nodeId] = { visited: true };
   r.nodeStates[nodeId].activityDone = true;
+  r.lastActivityDay = r.currentDay;
 }
 
-/** 이미 다녀간 활동인가. */
+/** 이미 다녀간 활동인가(그 노드). */
 export function isActivityDone(nodeId: string): boolean {
   return !!useRunStore().data.nodeStates[nodeId]?.activityDone;
+}
+
+/** 오늘 이미 활동했는가 — 하루 1회 제한. */
+export function activityDoneToday(): boolean {
+  const r = useRunStore().data;
+  return (r.lastActivityDay ?? 0) === r.currentDay;
 }

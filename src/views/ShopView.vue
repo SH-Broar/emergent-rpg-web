@@ -17,7 +17,7 @@ import {
   purchaseShopRelic,
 } from '@/systems/shop';
 import { getCraftingDiscount } from '@/systems/relic';
-import { relicEffectText, relicTriggerLabel } from '@/systems/labels';
+import { relicEffectText, relicTriggerLabel, cardDetailText, relicDetailText } from '@/systems/labels';
 import type { Card } from '@/data/schemas';
 
 const router = useRouter();
@@ -116,6 +116,7 @@ onMounted(() => {
           :key="`c-${i}`"
           class="slot"
           :class="{ 'slot--sold': slot.purchased, [`slot--${cardDef(slot.cardId)?.rank ?? 'common'}`]: true }"
+          v-tooltip="cardDetailText(cardDef(slot.cardId))"
         >
           <div class="slot__head">
             <span class="slot__name">{{ cardDef(slot.cardId)?.name ?? slot.cardId }}</span>
@@ -148,6 +149,7 @@ onMounted(() => {
           :key="`r-${i}`"
           class="slot"
           :class="{ 'slot--sold': slot.purchased, [`slot--${relicDef(slot.relicId)?.rank ?? 'common'}`]: true }"
+          v-tooltip="relicDetailText(relicDef(slot.relicId))"
         >
           <div class="slot__head">
             <span class="slot__name">{{ relicDef(slot.relicId)?.name ?? slot.relicId }}</span>

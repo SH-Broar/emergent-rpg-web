@@ -10,7 +10,7 @@ import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
-import { cardEffectKindLabel } from '@/systems/labels';
+import { cardEffectKindLabel, cardDetailText } from '@/systems/labels';
 import {
   FORGE_PRICE_TIME_SHARDS,
   LEGENDARY_COST_TIME_SHARDS,
@@ -209,6 +209,7 @@ onMounted(() => {
           :key="`f-${i}`"
           class="slot"
           :class="{ 'slot--sold': slot.purchased, [`slot--${cardDef(slot.cardId)?.rank ?? 'rare'}`]: true }"
+          v-tooltip="cardDetailText(cardDef(slot.cardId))"
         >
           <div class="slot__head">
             <span class="slot__name">{{ cardDef(slot.cardId)?.name ?? slot.cardId }}</span>

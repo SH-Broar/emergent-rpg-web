@@ -26,7 +26,7 @@ import { effectiveContent } from '@/systems/map';
 import { applyCombatVictoryReward } from '@/systems/combat-rewards';
 import { colorBonusForCardEffectKind } from '@/systems/stats';
 import { bonusesFromEffective } from '@/systems/equipment';
-import { cardEffectKindLabel, cardEffectDescription, effectTargetLabel, statusDescription, intentLabel, intentDescription } from '@/systems/labels';
+import { cardEffectKindLabel, cardEffectDescription, effectTargetLabel, statusDescription, intentLabel, intentDescription, cardDetailText } from '@/systems/labels';
 import { useItem } from '@/systems/item';
 import { useCombatFx, CARD_PLAY_DELAY } from '@/composables/useCombatFx';
 import type { Card, CardEffect, Combatant, Item, Monster } from '@/data/schemas';
@@ -399,6 +399,7 @@ void ui;
         class="card"
         :class="{ 'card--disabled': !canPlay(card), 'card--locked': isLocked(card), 'card--junk': card.unplayable, 'card--playing': playingIndex === i }"
         :style="{ borderColor: cardBorder(card) }"
+        v-tooltip="cardDetailText(card)"
         @click="playingIndex === null && canPlay(card) && play(i)"
       >
         <div class="card__head">
@@ -667,6 +668,16 @@ void ui;
 }
 
 /* 모션 감소 선호 — 흔들림/이동 최소화, 정보는 유지. */
+/* 모바일: 카드 텍스트가 카드 안에 들어오도록 폰트 축소 + 분위기(flavor) 숨김 + 카드 약간 확대.
+   효과를 다 못 보면 *카드를 길게 눌러* 전체 성능을 툴팁으로 볼 수 있다(v-tooltip). */
+@media (max-width: 640px) {
+  .hand { --card-w: clamp(108px, 30vw, 200px); }
+  .card__name { font-size: 0.8rem; }
+  .card__effects { font-size: 0.7rem; gap: 0.14rem; }
+  .effect { padding: 0.08rem 0.3rem; }
+  .card__flavor { display: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .card--playing { animation: none; opacity: 0; }
   .is-hit { animation: none; }
