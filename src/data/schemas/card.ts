@@ -68,7 +68,8 @@ export type CardSource =
   | 'relic'       // 유물 효과
   | 'boss'        // 보스 클리어
   | 'junk'        // 몬스터 주입 잡카드(상처/저주/빈) — 모든 풀에서 제외, 전투 종료 시 소멸
-  | 'form';       // 변신(체인지) 폼 전용 카드 — 모든 풀에서 제외. 변신 시에만 덱에 등장
+  | 'form'        // 변신(체인지) 폼 전용 카드 — 모든 풀에서 제외. 변신 시에만 덱에 등장
+  | 'possession'; // 빙의 카드(빙의/축복/저주) — 모든 풀에서 제외. 빙의로만 획득, 런 지속
 
 /** 카드 사용 모드 — 턴제 vs 자동/지속. */
 export type CardTriggerKind =
@@ -153,6 +154,19 @@ export interface Card extends NamedEntity {
    * true면 손패에서 클릭해도 사용되지 않음(칸만 차지). 전투 종료 시 자동 소멸(런 덱에 안 들어감).
    */
   unplayable?: boolean;
+
+  /**
+   * 빙의 카드 — 받으면 *제외 불가*로 덱에 박히고, 쓸 때마다 각성도가 오른다(run.possessions에 추적).
+   * 최대 각성 시 수호령(축복)/악령(저주) 카드로 변신. 정렬은 *받을 때* 결정되나 플레이어에겐 숨겨짐.
+   * 양날 강카드로 디자인(쓰고 싶게 만들어 각성을 유도). possessionMax 미설정 시 8.
+   */
+  possession?: boolean;
+  /** 빙의 각성 최대치(미설정 8). */
+  possessionMax?: number;
+  /**
+   * 저주 카드 — 악령 변신 결과. 일반 제외 경로(공방·이벤트) *불가*, *상점에서만* 떼어낼 수 있다.
+   */
+  curse?: boolean;
 
   /** 발동 트리거. */
   trigger: CardTriggerKind;

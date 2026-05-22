@@ -250,7 +250,7 @@ function applyItemEffect(
       if ((r.possessed ?? 0) > 0 || (c?.player.statuses?.possession ?? 0) > 0) {
         r.possessed = 0;
         if (c) { delete c.player.statuses.possession; delete c.player.statuses.brainwash; }
-        lines.push('빙의가 정화되었다');
+        lines.push('혼란이 정화되었다');
         did = true;
       }
       if (!did) lines.push('정화할 상태가 없다');

@@ -37,7 +37,7 @@ export function availableCards(): Card[] {
   // 강화판(`-plus`)도 *어떤 풀에도 등장 금지* — 강화판은 *공방 강화*로만 얻는다(마을 제작·상점 제외).
   //   (활동 보상은 별도로 base 카드를 가끔 강화형으로 올려 지급 — activity.ts.)
   const all = [...useDataStore().cards.values()].filter(
-    (c) => c.source !== 'junk' && c.source !== 'form' && !c.id.endsWith('-plus'),
+    (c) => c.source !== 'junk' && c.source !== 'form' && c.source !== 'possession' && !c.id.endsWith('-plus'),
   );
   if (useUiStore().debug.unlockAll) return all;
   const locked = lockedCardIdSet();

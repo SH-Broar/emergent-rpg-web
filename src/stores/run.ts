@@ -66,6 +66,7 @@ const EMPTY_RUN: RunState = {
   remainingTime: 0,
   currentDay: 1,
   possessed: 0,
+  possessions: {},
   feralHeavy: 0,
   blessingCombats: 0,
   bellMarked: 0,
@@ -340,10 +341,10 @@ export const useRunStore = defineStore('run', {
       const r = this.data;
       r.currentDay += 1;
       r.dayPassedSeq += 1;
-      // 빙의(possession)는 하루가 지나면 풀린다 — 잔존 페널티의 안전 밸브.
+      // 혼란(possession)은 하루가 지나면 풀린다 — 잔존 페널티의 안전 밸브.
       if ((r.possessed ?? 0) > 0) {
         r.possessed = 0;
-        useUiStore().toast('success', '하루가 지나며 빙의가 풀렸다.');
+        useUiStore().toast('success', '하루가 지나며 혼란이 풀렸다.');
       }
 
       const data = useDataStore();
@@ -547,6 +548,11 @@ export const useRunStore = defineStore('run', {
       const r = this.data;
       const removed = r.collection.find((c) => c.instanceId === instanceId);
       if (!removed) return false;
+      // 빙의 카드(변신 전)는 어디서도 제외 불가. 저주 카드는 *상점에서만* 제거(이 경로 차단).
+      if (r.possessions?.[instanceId] || removed.curse) {
+        useUiStore().toast('warning', removed.curse ? '저주받은 카드 — 상점에서만 떼어낼 수 있다.' : '이 카드는 떼어낼 수 없다 — 끝까지 가야 풀린다.');
+        return false;
+      }
       r.collection = r.collection.filter((c) => c.instanceId !== instanceId);
       r.deck = r.deck.filter((c) => c.instanceId !== instanceId);
       // 분해 보상 — 카드를 버리면 등급만큼 시간의 조각 환급.

@@ -235,7 +235,7 @@ function enterSelected() {
     return;
   }
   if (action === 'activity-possessed') {
-    ui.toast('warning', '빙의 상태에선 활동에 들어갈 수 없다 — 마을이나 전투에서 정화하거나 하루가 지나야 한다.');
+    ui.toast('warning', '혼란 상태에선 활동에 들어갈 수 없다 — 마을이나 전투에서 정화하거나 하루가 지나야 한다.');
     return;
   }
 
@@ -843,7 +843,7 @@ function enterLabel(): string {
     case 'shop-enter': return '상점에 들어간다';
     case 'gather-enter': return '채집한다';
     case 'activity-enter': return '활동한다';
-    case 'activity-possessed': return '빙의 상태 (활동 불가)';
+    case 'activity-possessed': return '혼란 상태 (활동 불가)';
     case 'boss': return '도전한다';
     case 'pass-only': return '닫기';
     case 'unreachable': return '인접하지 않음';

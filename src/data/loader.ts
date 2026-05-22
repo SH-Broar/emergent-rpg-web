@@ -156,6 +156,9 @@ function parseOneCard(id: string, f: IniSection): Card | null {
     element: f.element as Card['element'],
     cost: parseNumber(f.cost, 1),
     unplayable: f.unplayable === 'true' ? true : undefined,
+    possession: f.possession === 'true' ? true : undefined,
+    possessionMax: f.possession_max !== undefined ? parseNumber(f.possession_max, 8) : undefined,
+    curse: f.curse === 'true' ? true : undefined,
     trigger: (f.trigger as CardTriggerKind) ?? 'manual',
     effects,
     customEffectId: f.custom_effect,
@@ -1022,6 +1025,8 @@ const DATA_FILES = [
   'data/cards/junk-cards.txt',
   // === 변신 폼 카드 (Stage 5 체인지/TSF) — source=form, 풀 제외. 변신 시에만 덱 등장. ===
   'data/cards/transform-forms.txt',
+  // === 빙의 카드 (재설계) — source=possession, 풀 제외. 빙의로만 획득, 각성 시 축복/저주로 변신. ===
+  'data/cards/cards-possession.txt',
   'data/relics/relics-mvr.txt',
   // === 종족 시그니처 유물 (2026-05-22) — source=race, 시작 전용(상점/드롭 풀 제외). ===
   'data/relics/relics-race.txt',

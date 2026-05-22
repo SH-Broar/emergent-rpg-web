@@ -20,6 +20,7 @@ import type {
   MonsterDrop,
 } from '@/data/schemas';
 import { drawCards, discardHand, instantiateCard, shuffle } from './deck';
+import { notePossessionPlayed } from './possession';
 import { rng } from './rng';
 import { bonusesFromEffective } from './equipment';
 import {
@@ -554,6 +555,9 @@ export function playCard(handIndex: number, monster: Monster): { enemyDefeated: 
   } else {
     c.discardPile = [...c.discardPile, card];
   }
+
+  // 빙의 카드 사용 — 각성도 +1, 최대 도달 시 변신(이벤트 + 카드 교체). 카드를 옮긴 *후* 호출.
+  if (card.possession) notePossessionPlayed(card);
 
   // c-rize-relay 특수 후처리: *돌아온 한 판*(에코) 1장을 핸드에 push (이번 턴 비용 0 재사용 가능).
   // 에코는 같은 이름의 *별개 카드*(c-rize-relay-echo) — 자신은 다시 복제하지 않으므로 무한 공격이 안 된다.
@@ -1107,7 +1111,7 @@ function applyPlayerStatusTurnStart(c: CombatState): void {
     if (left <= 0) delete st.imprint;
     else st.imprint = left;
     st.possession = (st.possession ?? 0) + 1;
-    ui.toast('warning', '각인이 깊어져 빙의로 번졌다.');
+    ui.toast('warning', '각인이 깊어져 혼란으로 번졌다.');
   }
   // 빙의(possession): 비감쇠 강력 디버프. 매 턴 시작 HP를 잠식한다(스택 비례, 캡 6, 최소 HP 1).
   // 정화하지 않으면 전투 후에도 런에 남는다(clearCombat 라이트백).
@@ -1115,7 +1119,7 @@ function applyPlayerStatusTurnStart(c: CombatState): void {
   if (poss > 0) {
     const drain = Math.min(6, 1 + poss);
     c.player.hp = Math.max(1, c.player.hp - drain);
-    ui.toast('warning', `빙의 — 몸을 빼앗긴다 (HP -${drain})`);
+    ui.toast('warning', `혼란 — 몸을 빼앗긴다 (HP -${drain})`);
   }
 
   // 구속(bind)/삼킴(devour) + 거미줄(web) — 매 플레이어 턴 시작 카드 잠금 *재계산*.

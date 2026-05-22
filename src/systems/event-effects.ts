@@ -8,6 +8,7 @@
  */
 
 import { registerEventEffect } from '@/systems/event-runner';
+import { grantPossession } from '@/systems/possession';
 import type { ColorKey } from '@/systems/colors';
 
 // === 회복 / 자원 ===
@@ -148,4 +149,13 @@ registerEventEffect('grant-dragonform', (ctx) => {
   ctx.run.dragonBoost = (ctx.run.dragonBoost ?? 0) + boost;
   ctx.run.dragonCombats = Math.max(ctx.run.dragonCombats ?? 0, 3);
   ctx.lines.push('드래곤화 — 모든 컬러가 일시적으로 솟구친다');
+});
+
+// === 빙의(재설계) — 제외 불가 빙의 카드 부여. 정렬은 숨겨진 채 결정(랜덤). ===
+// 하나브릿지 신전 등 *수호령 보장* 경로는 grant-possession-guardian을 쓴다.
+registerEventEffect('grant-possession', (ctx) => {
+  if (grantPossession()) ctx.lines.push('카드: 들린 마음 (떼어낼 수 없다)');
+});
+registerEventEffect('grant-possession-guardian', (ctx) => {
+  if (grantPossession('guardian')) ctx.lines.push('카드: 들린 마음 (떼어낼 수 없다)');
 });

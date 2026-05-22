@@ -232,7 +232,7 @@ function leave() {
 /** 빙의 정화 — 마을에서 잔존 빙의를 씻어낸다. */
 function cleansePossession() {
   run.data.possessed = 0;
-  ui.toast('success', '빙의를 씻어냈다. 몸이 다시 내 것이 되었다.');
+  ui.toast('success', '혼란을 씻어냈다. 몸이 다시 내 것이 되었다.');
 }
 
 /** 수화 중 진정 — 선택형. 가라앉히면 공격 2배·탐색 보상↑이 사라지고 회복/방어가 돌아온다. */
@@ -268,8 +268,8 @@ const rankColors: Record<string, string> = {
 
       <!-- 빙의 정화 — 마을에서 풀 수 있는 경로(잔존 빙의가 있을 때만). -->
       <div v-if="(run.data.possessed ?? 0) > 0" class="cleanse">
-        <p class="cleanse__msg">몸에 빙의가 남아 있다. 활동에 들 수 없고 길도 일부 막혔다.</p>
-        <button class="cleanse__btn" @click="cleansePossession">마을에서 빙의를 씻어낸다</button>
+        <p class="cleanse__msg">몸에 혼란이 남아 있다. 활동에 들 수 없고 길도 일부 막혔다.</p>
+        <button class="cleanse__btn" @click="cleansePossession">마을에서 혼란을 씻어낸다</button>
       </div>
 
       <!-- 수화 중 진정 — 선택형(공격 2배·탐색 보상↑ 유지 vs 회복/방어 회복). -->

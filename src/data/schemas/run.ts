@@ -279,11 +279,20 @@ export interface RunState {
   remainingTime: number;
 
   /**
-   * 빙의(possession) 잔존 스택 — 전투에서 정화하지 못한 빙의가 런에 남는다(0=없음).
+   * 혼란(possession) 잔존 스택 — 전투에서 정화하지 못한 혼란이 런에 남는다(0=없음).
+   * (구 "빙의" 디버프. 새 빙의 카드 시스템은 possessions를 참조.)
    * 효과: 활동 노드 진입 불가 + 일부 간선 차단. 정화(마을/아이템)·하루 경과·다음 전투 정화로 해제.
    * 다음 전투 시작 시 이 값으로 player.statuses.possession을 시드한다.
    */
   possessed?: number;
+
+  /**
+   * 빙의(재설계) — 제외 불가 빙의 카드 추적. key = 카드 instanceId.
+   *  - alignment: 받을 때 결정(guardian=수호령 좋음 / evil=악령 나쁨), 플레이어에겐 숨김.
+   *  - awakening: 그 카드를 쓸 때마다 +1(여러 전투 누적). max 도달 시 이벤트+카드 변신.
+   * 변신 후 해당 키는 삭제(더 이상 빙의 카드 아님 → 축복/저주 카드로 확정).
+   */
+  possessions?: Record<string, { alignment: 'guardian' | 'evil'; awakening: number; max: number }>;
 
   /**
    * 수화 중(feral-heavy) 잔존 — 전투 후에도 유지(0=없음). 공격 ×2 + 회복/방어 불가 + *탐색 보상 증가*.

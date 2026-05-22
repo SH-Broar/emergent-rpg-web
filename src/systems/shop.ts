@@ -13,6 +13,7 @@ import { useRunStore, CARD_SALVAGE_SHARDS } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
 import { instantiateCard } from '@/systems/deck';
+import { isPossessionLocked } from '@/systems/possession';
 import { getCraftingDiscount, acquireRelic } from '@/systems/relic';
 import { availableCards, availableRelics } from '@/systems/unlocks';
 import { rng } from '@/systems/rng';
@@ -275,6 +276,11 @@ export function purchaseShopCardRemoval(nodeId: string, cardInstanceId: string):
     return false;
   }
   const removed = run.data.collection[cIdx];
+  // 빙의 카드(변신 전)는 *어디서도* 떼어낼 수 없다 — 각성을 끝까지 가야 풀린다.
+  if (isPossessionLocked(removed)) {
+    ui.toast('warning', '이 카드는 떼어낼 수 없다 — 끝까지 가야 풀린다.');
+    return false;
+  }
   run.data.collection.splice(cIdx, 1);
   // 덱 슬롯에도 있다면 동시에 제거 (instanceId 일치).
   const dIdx = run.data.deck.findIndex((c) => c.instanceId === cardInstanceId);

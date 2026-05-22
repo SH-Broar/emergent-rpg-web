@@ -313,7 +313,7 @@ const statusLabels: Record<string, string> = {
   sap: '잠식',
   ghost: '유령화',
   brainwash: '세뇌',
-  possession: '빙의',
+  possession: '혼란',
   sleep: '수면',
   slime: '점액',
   imprint: '각인',
