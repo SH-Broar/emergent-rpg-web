@@ -649,6 +649,12 @@ let pinchStartDist = 0;
 let pinchStartScale = 1;
 const pinching = ref(false);
 
+// 카메라 조작 중(드래그/핀치/휠 줌) 플래그 — 비싼 페인트(필터·애니메이션)와 transition을 끈다.
+// 휠 줌은 연속 이벤트라 마지막 휠 후 잠깐 뒤 해제(디바운스).
+const wheelBusy = ref(false);
+let wheelBusyTimer = 0;
+const cameraBusy = computed(() => dragState.value !== null || pinching.value || wheelBusy.value);
+
 function pointerDist(): number {
   const pts = Array.from(activePointers.values());
   if (pts.length < 2) return 0;
@@ -751,10 +757,14 @@ function recenterOnCurrent() {
 }
 
 function onWheel(e: WheelEvent) {
-  // 데스크톱 wheel 줌 — 모바일 핀치는 추후.
+  // 데스크톱 wheel 줌.
   e.preventDefault();
   const factor = 1 + e.deltaY * -0.001;
   scale.value = Math.max(SCALE_MIN, Math.min(SCALE_MAX, scale.value * factor));
+  // 줌 도중엔 비싼 페인트 끄기(camera--busy). 마지막 휠 후 180ms 뒤 해제.
+  wheelBusy.value = true;
+  if (wheelBusyTimer) clearTimeout(wheelBusyTimer);
+  wheelBusyTimer = window.setTimeout(() => { wheelBusy.value = false; wheelBusyTimer = 0; }, 180);
 }
 
 /**
@@ -821,7 +831,7 @@ function enterLabel(): string {
              CSS transition으로 부드럽게 이동. 드래그 중에는 transition 비활성. -->
         <g
           class="camera"
-          :class="{ 'camera--dragging': dragState !== null }"
+          :class="{ 'camera--dragging': dragState !== null, 'camera--busy': cameraBusy }"
           :transform="cameraTransform"
         >
           <!-- 인접 선 — focusNode에 닿는 간선은 글로우, 숨김 노드에 닿는 간선은 숨김. -->
@@ -1100,15 +1110,17 @@ function enterLabel(): string {
   /* 카메라 transform만 변하므로 GPU 레이어로 승격 — 모바일 팬/줌 리렌더 경량화. */
   will-change: transform;
 }
-.camera--dragging {
+/* 드래그/핀치/휠 줌 중에는 카메라 transition을 꺼 즉시 반영(끌림 방지). */
+.camera--dragging,
+.camera--busy {
   transition: none;
 }
-/* 드래그 중에는 *비싼 페인트*(drop-shadow 필터 + 무한 애니메이션)를 모두 끈다.
+/* 카메라 조작 중(드래그·핀치·휠 줌)에는 *비싼 페인트*(drop-shadow 필터 + 무한 애니메이션)를 끈다.
    카메라 transform이 매 프레임 SVG 서브트리를 다시 칠하는데, drop-shadow는 프레임마다
-   블러를 재계산해 가장 큰 렉 원인이다. 드래그가 끝나면 다시 켜진다(시각 피드백 복원). */
-.camera--dragging .node-dot,
-.camera--dragging .edge,
-.camera--dragging .current-arrow {
+   블러를 재계산해 가장 큰 렉 원인이다. 조작이 끝나면 다시 켜진다(시각 피드백 복원).
+   단, *간선 글로우(.edge)는 유지* — 적은 수라 비용이 작고, 길이 빛나는 게 보여야 한다. */
+.camera--busy .node-dot,
+.camera--busy .current-arrow {
   filter: none !important;
   animation: none !important;
 }
@@ -1274,7 +1286,9 @@ function enterLabel(): string {
 @media (max-width: 720px) {
   .map-view {
     grid-template-columns: 1fr;
-    grid-template-rows: 1fr auto;
+    /* 아래 행을 *항상 46vh로 예약* — 노드 선택으로 드로어가 떴다 사라져도 지도(graph) 높이가
+       변하지 않아 화면이 흔들리지 않는다. 미선택 시 아래는 빈 공간(추후 채움). */
+    grid-template-rows: 1fr 46vh;
   }
   .graph {
     grid-column: 1;
@@ -1284,7 +1298,9 @@ function enterLabel(): string {
     grid-column: 1;
     grid-row: 2;
     position: static;
+    height: 100%;
     max-height: 46vh;
+    overflow-y: auto;
     border-radius: 12px 12px 0 0;
     /* 완전 불투명 — 지도 위로 비치지 않게 가시성 확보. */
     background: #14151d;
