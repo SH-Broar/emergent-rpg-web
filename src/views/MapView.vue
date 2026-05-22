@@ -626,7 +626,7 @@ interface DragState {
   captured: boolean;
 }
 const dragState = ref<DragState | null>(null);
-const DRAG_THRESHOLD = 4; // 픽셀 — 이 이상 움직이면 드래그로 인정
+const DRAG_THRESHOLD = 9; // 픽셀 — 이 이상 움직이면 드래그로 인정. 터치는 탭에도 손가락이 흔들려 4px면 탭이 드래그로 오인돼 팝업이 안 떴다 → 여유 상향.
 
 function svgRect(): DOMRect | null {
   return svgEl.value?.getBoundingClientRect() ?? null;
@@ -925,7 +925,6 @@ function enterLabel(): string {
       <!-- 권역 정보 — 상태 줄 위에. 권역 이름(단어 "권역" 제거) + 짧은 설명. -->
       <div v-if="selectedRegion" class="drawer__region">
         <span class="drawer__region-name">{{ selectedRegion.name }}</span>
-        <span v-if="selectedRegion.description" class="drawer__region-desc">{{ selectedRegion.description }}</span>
       </div>
       <div class="drawer__status">상태: {{ nodeStatusLabel(selectedNode) }}</div>
       <p v-if="chaosLockedNodes.has(selectedNode.id)" class="drawer__locked">🔒 카오스로 닫혀 들어갈 수 없다.</p>
@@ -1103,6 +1102,15 @@ function enterLabel(): string {
 }
 .camera--dragging {
   transition: none;
+}
+/* 드래그 중에는 *비싼 페인트*(drop-shadow 필터 + 무한 애니메이션)를 모두 끈다.
+   카메라 transform이 매 프레임 SVG 서브트리를 다시 칠하는데, drop-shadow는 프레임마다
+   블러를 재계산해 가장 큰 렉 원인이다. 드래그가 끝나면 다시 켜진다(시각 피드백 복원). */
+.camera--dragging .node-dot,
+.camera--dragging .edge,
+.camera--dragging .current-arrow {
+  filter: none !important;
+  animation: none !important;
 }
 
 .edges .edge {
