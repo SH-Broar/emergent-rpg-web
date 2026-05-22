@@ -1,0 +1,35 @@
+# Relics 종족 시그니처 유물 (2026-05-22)
+# 종족마다 고유 시작 유물 1종. source=race → 상점/엘리트 드롭 풀에서 제외(시작 전용).
+# 파워: 중간 — 종족 빌드 방향을 암시(STS 시작 유물 수준).
+
+[relic.r-race-human]
+name = 전생자의 균형
+rank = common
+source = race
+trigger = passive
+effects = damage-out-add:1, bonus-hp:5
+flavor = 어느 한쪽으로도 기울지 않는 무게. 인간이 시대를 건너는 법.
+
+[relic.r-race-moth]
+name = 바람결 깃
+rank = common
+source = race
+trigger = on-card-played-after
+effects = attacks-to-color:3
+flavor = 활시위를 떠난 화살이 잦아질수록, 바람이 한 결씩 짙어진다.
+
+[relic.r-race-phantom]
+name = 패를 쥔 손
+rank = common
+source = race
+trigger = on-combat-start
+effects = combat-start-draw:2
+flavor = 보이지 않는 손이 패를 두툼하게 쥔다. 펼치지 않은 만큼, 한 수가 무겁다.
+
+[relic.r-race-arcana]
+name = 빛의 성배
+rank = common
+source = race
+trigger = on-combat-start
+effects = bonus-mana:1
+flavor = 빛이 고이는 그릇. 매 싸움마다 한 줌의 힘이 더 차오른다.

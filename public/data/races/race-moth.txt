@@ -13,10 +13,10 @@ mp = 14
 attack = 7
 defense = 2
 vigor = 13
-# 시작 덱 — 컨셉 "가볍고 빠른 변주". 드로우/회피 성향 — c-quickdraw·c-deep-breath 중심의 회전형.
-starting_deck = c-strike, c-strike, c-quickdraw, c-quickdraw, c-quickdraw, c-deep-breath, c-deep-breath, c-defend, c-double-strike, c-recover
-seed_cards = c-quickdraw, c-deep-breath, c-quickdraw, c-double-strike, c-defend
-seed_relics = r-determined-heart
+# 시작 덱 — 컨셉 "속도/연사/드로우". 전용 카드 중심: 0코스트 연타(잰 화살), 드로우 곁들인 경량 회전.
+starting_deck = c-moth-flutter, c-moth-flutter, c-moth-flutter, c-moth-volley, c-moth-volley, c-moth-glide, c-moth-glide, c-quickdraw, c-quickdraw, c-strike, c-strike, c-moth-gale, c-recover
+seed_cards = c-moth-flutter, c-moth-volley, c-quickdraw, c-moth-gale, c-moth-glide
+seed_relics = r-race-moth
 hp_bonus = 0
 mp_bonus = 0
 # 가벼운 회전 덱 — 13장.

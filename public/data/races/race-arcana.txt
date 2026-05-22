@@ -12,10 +12,10 @@ mp = 16
 attack = 4
 defense = 3
 vigor = 12
-# 시작 덱 — 컨셉 "방어/주문형". 방어(c-defend)와 지속피해(c-burn-mark) 비중↑, 단단한 운영.
-starting_deck = c-strike, c-strike, c-defend, c-defend, c-defend, c-defend, c-recover, c-recover, c-quickdraw, c-burn-mark
-seed_cards = c-defend, c-defend, c-burn-mark, c-recover, c-quickdraw
-seed_relics = r-determined-heart
+# 시작 덱 — 컨셉 "디버프 + 마나". 전용 카드 중심: 약점/약화 누적(빛의 낙인·쇠함), 다음 턴 에너지 충전(빛 모으기), 누적 디버프 폭발(심판).
+starting_deck = c-arcana-brand, c-arcana-brand, c-arcana-brand, c-arcana-wither, c-arcana-wither, c-arcana-channel, c-arcana-channel, c-defend, c-defend, c-strike, c-strike, c-arcana-judgment, c-burn-mark, c-recover
+seed_cards = c-arcana-brand, c-arcana-wither, c-arcana-channel, c-arcana-judgment, c-defend
+seed_relics = r-race-arcana
 hp_bonus = 0
 mp_bonus = 0
 # 단단한 방어 덱 — 14장.

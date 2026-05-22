@@ -13,10 +13,10 @@ mp = 12
 attack = 6
 defense = 3
 vigor = 11
-# 시작 덱 — 컨셉 "빠른 드로우 + 적은 덱". 드로우 카드(c-quickdraw) 비중↑, 총 카드 수는 적게.
-starting_deck = c-strike, c-strike, c-strike, c-defend, c-defend, c-quickdraw, c-quickdraw, c-quickdraw, c-double-strike, c-recover
-seed_cards = c-quickdraw, c-strike, c-quickdraw, c-defend, c-double-strike
-seed_relics = r-determined-heart
+# 시작 덱 — 컨셉 "균형/유연". 전용 카드 중심: 공격+방어 하이브리드(균형의 일격), 드로우 곁들인 공/방.
+starting_deck = c-human-balance, c-human-balance, c-human-tailwind, c-human-tailwind, c-human-adapt, c-human-adapt, c-strike, c-strike, c-defend, c-defend, c-human-resolve, c-recover
+seed_cards = c-human-balance, c-human-adapt, c-human-tailwind, c-human-resolve, c-strike
+seed_relics = r-race-human
 hp_bonus = 0
 mp_bonus = 0
 # 적은 덱 — starting_deck(10장) + seed_cards에서 자동 2장 = 총 12장 (드로우 회전 빠름).
