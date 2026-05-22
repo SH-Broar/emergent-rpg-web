@@ -100,6 +100,7 @@ export type CardEffectKind =
   | 'damage-per-hand'     // *현재 손패 수* × value 데미지
   // === 측정 어려운 메커니즘 (3차 배치) ===
   | 'exhaust-self'        // 마커: 이 효과가 든 카드는 사용 후 *소멸*(exhaustPile). 핸들러는 no-op.
+  | 'return-self-to-hand' // 마커: 사용 후 *자기 자신을 손으로* 되돌림(버리지 않음). 나방 0코 드로우 카드. 핸들러 no-op.
   | 'block-to-damage'     // 현재 player.block × value 추가 피해 (block 소모하지 않음)
   | 'spend-all-energy'    // 남은 mana 전부 소비 → 소비액 × value 피해
   | 'damage-per-companion' // 동료 수 × value 피해

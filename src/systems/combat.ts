@@ -19,7 +19,7 @@ import type {
   Monster,
   MonsterDrop,
 } from '@/data/schemas';
-import { drawCards, discardHand, instantiateCard } from './deck';
+import { drawCards, discardHand, instantiateCard, shuffle } from './deck';
 import { rng } from './rng';
 import { bonusesFromEffective } from './equipment';
 import {
@@ -251,7 +251,9 @@ export function startCombat(monster: Monster) {
     DEFAULT_MAX_MANA + bonus.manaExtra + getModifierAdd('mana-extra-add') - manaReduction(),
   );
 
-  const drawPile = [...r.deck];
+  // 전투 시작마다 덱을 *새로 셔플* — 안 하면 매 전투 드로우 순서가 r.deck 정의 순서로 고정된다.
+  // (seeded rng는 런 동안 전역으로 진행되므로 전투마다 다른 순서가 나온다.)
+  const drawPile = shuffle([...r.deck]);
   const { drawn, newDrawPile, newDiscardPile } = drawCards(drawPile, [], handSize);
 
   // 카오스 all-gimmick(만물의 송곳니) — 그 몬스터 *종족 대표 기믹*을 인텐트 로테이션에 삽입.
@@ -496,8 +498,12 @@ export function playCard(handIndex: number, monster: Monster): { enemyDefeated: 
   fireRelicTrigger('on-card-played-after', { run: r, combat: c, triggeredBy: card.id });
 
   c.hand = c.hand.filter((_, i) => i !== handIndex);
-  // exhaust-self 마커가 있으면 discardPile 대신 *exhaustPile*로 (이번 전투 재사용 불가).
-  if (card.effects.some((e) => e.kind === 'exhaust-self')) {
+  // 카드 이동: return-self-to-hand(손으로 복귀) > exhaust-self(소멸) > 기본(버린 더미).
+  if (card.effects.some((e) => e.kind === 'return-self-to-hand')) {
+    // 손으로 복귀(버리지 않음). 손패 가득(10)이면 예외적으로 버린 더미로.
+    if (c.hand.length < 10) c.hand = [...c.hand, card];
+    else c.discardPile = [...c.discardPile, card];
+  } else if (card.effects.some((e) => e.kind === 'exhaust-self')) {
     c.exhaustPile = [...c.exhaustPile, card];
   } else {
     c.discardPile = [...c.discardPile, card];
@@ -542,7 +548,7 @@ export function playCard(handIndex: number, monster: Monster): { enemyDefeated: 
 function rebuildCombatPiles(c: CombatState): void {
   const r = useRunStore().data;
   const handSize = STARTING_HAND_SIZE + playerBonuses(c).drawExtra + getModifierAdd('draw-extra-add');
-  const rebuilt = drawCards([...r.deck], [], handSize);
+  const rebuilt = drawCards(shuffle([...r.deck]), [], handSize);
   c.drawPile = rebuilt.newDrawPile;
   c.hand = rebuilt.drawn;
   c.discardPile = rebuilt.newDiscardPile;
@@ -752,6 +758,9 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
   'exhaust-self': () => {
     // no-op — playCard에서 카드 이동 분기로 처리.
   },
+  'return-self-to-hand': () => {
+    // no-op — playCard에서 카드 이동 분기로 처리(버리지 않고 손으로 복귀).
+  },
   // 현재 player.block × value 추가 피해 (block 소모하지 않음). weakness/vulnerable 통합 적용.
   'block-to-damage': (e, c) => {
     const value = c.player.block * (e.value ?? 1);
@@ -908,8 +917,12 @@ export function endPlayerTurn(monster: Monster): { playerDefeated: boolean; enem
   decayTurnStatuses(c.player);
   decayTurnStatuses(c.enemy);
 
-  c.discardPile = discardHand(c.hand, c.discardPile);
-  c.hand = [];
+  // retain-hand 유물(팬텀): 턴 종료 시 손패를 버리지 않고 유지 → 새 드로우가 *누적*된다(손패 수 빌드).
+  const retainHand = playerHasRelicEffect('retain-hand');
+  if (!retainHand) {
+    c.discardPile = discardHand(c.hand, c.discardPile);
+    c.hand = [];
+  }
 
   c.turn += 1;
   c.cardsPlayedThisTurn = 0; // 새 턴 — first-card-free 판정 리셋.
@@ -946,9 +959,13 @@ export function endPlayerTurn(monster: Monster): { playerDefeated: boolean; enem
       - drawDown - handSizeReduction(),
   );
   const { drawn, newDrawPile, newDiscardPile } = drawCards(c.drawPile, c.discardPile, handSize);
-  c.hand = drawn;
   c.drawPile = newDrawPile;
   c.discardPile = newDiscardPile;
+  // 손패에 드로우 추가(retain이면 유지된 손패 위에 누적). 10장 초과분은 버린 더미로.
+  const HAND_CAP = 10;
+  const room = Math.max(0, HAND_CAP - c.hand.length);
+  c.hand = [...c.hand, ...drawn.slice(0, room)];
+  if (drawn.length > room) c.discardPile = [...c.discardPile, ...drawn.slice(room)];
 
   c.enemyIntent = pickIntent(monster, c.turn, c.enemyIntentRotation);
 

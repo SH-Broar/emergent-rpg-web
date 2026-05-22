@@ -442,6 +442,31 @@ function isFocusEdge(a: NodeId, b: NodeId): boolean {
   return a === f || b === f;
 }
 
+// === 렌더 컬링 (성능) ===
+// 맵이 커서(200+ 노드) vis-d(완전 비표시) 노드까지 전부 렌더하면 pan/zoom/클릭마다
+// 보이지도 않는 SVG 1000여 개를 다시 그려 렉이 심하다. *보이는 노드/간선만* 렌더한다.
+// (vis-d는 opacity 0·pointer-events none·라벨 display none이라 화면상 변화 없음. 페이드 인 트랜지션만 생략.)
+// pan/zoom은 nodeTiers에 영향을 주지 않으므로(포커스/편집에만 의존) 드래그 중에는 목록이 안정적 → 재렌더 없음.
+const visibleNodes = computed(() => {
+  const map = nodeMap.value;
+  if (!map) return [];
+  return map.nodes.filter((n) => tierOf(n.id) !== 'd');
+});
+const visibleEdges = computed<{ a: Node; b: Node; key: string }[]>(() => {
+  const map = nodeMap.value;
+  if (!map) return [];
+  const out: { a: Node; b: Node; key: string }[] = [];
+  for (const node of map.nodes) {
+    for (const nb of node.neighbors) {
+      if (nb <= node.id) continue;        // 중복 간선 제거(한 쌍 1회)
+      if (edgeHidden(node.id, nb)) continue; // 숨김(끝점 vis-d) 간선 컬링
+      const bn = getNode(map, nb);
+      if (bn) out.push({ a: node, b: bn, key: `${node.id}-${nb}` });
+    }
+  }
+  return out;
+});
+
 // === 수동 팬 (드래그) + 줌 (wheel/버튼/핀치) ===
 const panOffset = ref({ x: 0, y: 0 }); // focusNode 기준 월드 단위 이동(0=focus 추적).
 const scale = ref(1);
@@ -653,13 +678,27 @@ function onPointerDown(e: PointerEvent) {
   };
 }
 
+// pan/zoom 좌표 쓰기 rAF 스로틀 — pointermove가 한 프레임에 여러 번 와도 반영은 1회.
+let _moveRaf = 0;
+let _pendingPan: { x: number; y: number } | null = null;
+let _pendingScale: number | null = null;
+function _flushMove() {
+  _moveRaf = 0;
+  if (_pendingScale !== null) { scale.value = _pendingScale; _pendingScale = null; }
+  if (_pendingPan) { panOffset.value = _pendingPan; _pendingPan = null; }
+}
+function _scheduleMove() {
+  if (!_moveRaf) _moveRaf = requestAnimationFrame(_flushMove);
+}
+
 function onPointerMove(e: PointerEvent) {
   // 핀치 진행 중이면 두 포인터 거리비로 줌.
   if (pinching.value && activePointers.has(e.pointerId)) {
     activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (activePointers.size >= 2 && pinchStartDist > 0) {
       const cur = pointerDist();
-      scale.value = Math.max(SCALE_MIN, Math.min(SCALE_MAX, pinchStartScale * (cur / pinchStartDist)));
+      _pendingScale = Math.max(SCALE_MIN, Math.min(SCALE_MAX, pinchStartScale * (cur / pinchStartDist)));
+      _scheduleMove();
     }
     return;
   }
@@ -675,11 +714,12 @@ function onPointerMove(e: PointerEvent) {
     try { svgEl.value?.setPointerCapture(ds.pointerId); } catch { /* ignore */ }
     ds.captured = true;
   }
-  // panOffset = focusNode 기준 월드 단위 이동량. /scale로 픽셀↔월드 1:1 추적.
-  panOffset.value = {
+  // panOffset = focusNode 기준 월드 단위 이동량. /scale로 픽셀↔월드 1:1 추적. (rAF 스로틀)
+  _pendingPan = {
     x: ds.originX + pxToSvgX(dxPx) / scale.value,
     y: ds.originY + pxToSvgY(dyPx) / scale.value,
   };
+  _scheduleMove();
 }
 
 function onPointerUp(e: PointerEvent) {
@@ -786,19 +826,17 @@ function enterLabel(): string {
         >
           <!-- 인접 선 — focusNode에 닿는 간선은 글로우, 숨김 노드에 닿는 간선은 숨김. -->
           <g class="edges">
-            <template v-for="node in nodeMap.nodes" :key="`e-${node.id}`">
-              <path
-                v-for="nb in node.neighbors.filter((n: string) => n > node.id)"
-                :key="`${node.id}-${nb}`"
-                :d="edgePath(node, getNode(nodeMap, nb)!)"
-                :class="['edge', { 'edge--active': isFocusEdge(node.id, nb), 'edge--hidden': edgeHidden(node.id, nb) }]"
-              />
-            </template>
+            <path
+              v-for="e in visibleEdges"
+              :key="e.key"
+              :d="edgePath(e.a, e.b)"
+              :class="['edge', { 'edge--active': isFocusEdge(e.a.id, e.b.id) }]"
+            />
           </g>
           <!-- 노드 -->
           <g class="nodes">
             <g
-              v-for="node in nodeMap.nodes"
+              v-for="node in visibleNodes"
               :key="node.id"
               class="node-group"
               :class="[

@@ -14,17 +14,17 @@ flavor = 어느 한쪽으로도 기울지 않는 무게. 인간이 시대를 건
 name = 바람결 깃
 rank = common
 source = race
-trigger = on-card-played-after
-effects = attacks-to-color:3
-flavor = 활시위를 떠난 화살이 잦아질수록, 바람이 한 결씩 짙어진다.
+trigger = on-combat-start
+effects = combat-start-hand-card:c-moth-windgather
+flavor = 전투마다 손에 *바람갈무리*(0코·2드로우·손에 남음) 한 장이 깃든다. 덱을 빠르게 훑어 속도를 낸다.
 
 [relic.r-race-phantom]
 name = 패를 쥔 손
 rank = common
 source = race
 trigger = on-combat-start
-effects = combat-start-draw:2
-flavor = 보이지 않는 손이 패를 두툼하게 쥔다. 펼치지 않은 만큼, 한 수가 무겁다.
+effects = combat-start-draw:2, retain-hand
+flavor = 보이지 않는 손이 패를 두툼하게 쥔다. 턴이 끝나도 쥔 패를 놓지 않아(손패 유지), 펼치지 않은 만큼 한 수가 무겁다.
 
 [relic.r-race-arcana]
 name = 빛의 성배

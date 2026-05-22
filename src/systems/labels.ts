@@ -31,6 +31,7 @@ const CARD_EFFECT_KIND_LABELS: Record<string, string> = {
   'damage-from-hp': '피의 대가',
   'damage-per-hand': '패 타격',
   'exhaust-self': '소멸',
+  'return-self-to-hand': '손에 남음',
   'block-to-damage': '돌파',
   'spend-all-energy': '전력',
   'damage-per-companion': '동행 타격',
@@ -64,6 +65,7 @@ const CARD_EFFECT_DESCRIPTIONS: Record<string, string> = {
   'damage-from-hp': '자기 HP를 지불하고 그 곱절로 피해를 줍니다.',
   'damage-per-hand': '현재 손패 수 × 수치만큼 피해.',
   'exhaust-self': '사용 후 이번 전투에서 사라집니다(소멸).',
+  'return-self-to-hand': '사용 후 버려지지 않고 손으로 돌아옵니다.',
   'block-to-damage': '현재 방어막 × 수치만큼 추가 피해. 방어막은 사라지지 않습니다.',
   'spend-all-energy': '남은 마나를 전부 소비해 소비량 × 수치만큼 피해.',
   'damage-per-companion': '동료 수 × 수치만큼 피해.',
@@ -342,6 +344,8 @@ export function relicEffectText(eff: RelicEffect): string {
     // --- 전투/턴 시작 ---
     case 'combat-start-block': return `전투 시작 시 방어 ${v}`;
     case 'combat-start-draw': return `전투 시작 시 카드 ${v}장 더 뽑기`;
+    case 'combat-start-hand-card': return `전투 시작 시 손에 특수 카드 1장 지급`;
+    case 'retain-hand': return `턴이 끝나도 손패를 버리지 않음`;
     case 'combat-start-status': return `전투 시작 시 ${statusLabel((eff.params?.arg ?? eff.params?.status) as string | undefined)} ${v}`;
     case 'turn-start-block': return `매 턴 방어 ${v}`;
     case 'turn-start-hp-loss': return `매 턴 시작 시 HP -${v}`;

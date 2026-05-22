@@ -183,6 +183,19 @@ trigger = manual
 effects = damage:12:enemy, draw:2:self
 flavor = 더 거센 바람, 더 많은 화살.
 
+# 나방 전용 *바람갈무리* — 시그니처 유물 바람결 깃이 전투 시작마다 손에 1장 지급.
+# 0코스트, 2드로우, 사용 후 *손으로 복귀*(버리지 않음) → 덱을 빠르게 훑는 속도 엔진.
+# source=form → 어떤 풀에도 등장 안 함, 런 덱 미오염(전투 중에만 존재).
+[card.c-moth-windgather]
+name = 바람갈무리
+rank = common
+source = form
+element = wind
+cost = 0
+trigger = manual
+effects = draw:2:self, return-self-to-hand
+flavor = 바람을 한 줌 쥐었다 펴면, 두 장이 손에 따라 들어온다. 갈무리는 손에 남는다.
+
 # ============================================================
 # 팬텀 electric/dark 손패 수 관리
 # ============================================================

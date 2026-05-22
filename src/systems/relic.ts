@@ -32,7 +32,7 @@ import type {
 } from '@/data/schemas';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
-import { drawCards } from '@/systems/deck';
+import { drawCards, instantiateCard } from '@/systems/deck';
 import { rng } from '@/systems/rng';
 import { applyColorBoost, applyColorBoostAll, type ColorKey } from '@/systems/colors';
 import { deriveStats } from '@/systems/stats';
@@ -292,6 +292,18 @@ const HANDLERS: Record<string, RelicEffectHandler> = {
   'combat-start-draw': (eff, ctx) => {
     if (!ctx.combat) return;
     drawIntoHand(ctx.combat, eff.value ?? 0);
+  },
+  // 전투 시작 시 *특정 카드 1장*을 손에 지급. arg=cardId. (나방: 0코 2드로우·손에 남는 카드)
+  // 손패 가득(10)이면 버린 더미로. 이 카드는 combat 전용 인스턴스 — 런 덱을 오염시키지 않는다.
+  'combat-start-hand-card': (eff, ctx) => {
+    if (!ctx.combat) return;
+    const id = String(eff.params?.arg ?? '');
+    if (!id) return;
+    const def = useDataStore().cards.get(id);
+    if (!def) return;
+    const inst = instantiateCard(def);
+    if (ctx.combat.hand.length < 10) ctx.combat.hand.push(inst);
+    else ctx.combat.discardPile.push(inst);
   },
   // 색 → 자원 전환 (아르카나 색 공명). value=제수, arg=지표(top-color/color-count 등).
   // 전투 시작 시 마나 += floor(지표/제수). 모아 온 색이 짙을수록 매 전투 더 많은 에너지.
