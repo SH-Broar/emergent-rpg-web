@@ -10,7 +10,7 @@ age = 999
 color_values = 0.5,0.3,0.3,0.9,0.6,0.3,0.3,0.6
 domain_high = Calm, Methodical, Reliable, Stubborn, Patient, Grounded, Righteous, Secretive
 domain_low = Passionate, Impulsive, Flexible, Fragile, Restless, Freesprited, Cynical, Naive
-background = 화산광 지대를 지키는 격 높은 신수.|곰의 머리와 거대한 체구. 장식이 빼곡한 외투를 한 자락 늘어뜨려, 쇳물 빛에 금실이 번뜩인다.|오랜 세월 광맥을 지켜 온 존재. 함부로 길을 내주지 않지만, 자격을 보인 자에게는 묵직한 한 손을 내민다.|말은 적고, 한 마디가 쇳덩이처럼 무겁다.
+background = 화산광 지대를 지키는 격 높은 신수.|곰의 머리와 거대한 체구. 장식이 빼곡한 외투를 길게 늘어뜨려, 쇳물 빛에 금실이 번뜩인다.|오랜 세월 광맥을 지켜 온 존재. 함부로 길을 내주지 않지만, 자격을 보인 자에게는 묵직한 손을 내민다.|말은 적고, 던지는 말마다 쇳덩이처럼 무겁다.
 tagline = "...자격을, 보여라."
 tags = mythicbeast, bear, iron-affinity, dark-affinity
 affinity_rewards = 3:relic=r-determined-heart:gauge=5
@@ -28,7 +28,7 @@ age = 999
 color_values = 0.4,0.3,0.9,0.4,0.3,0.6,0.7,0.4
 domain_high = Passionate, Adaptable, Impulsive, Flexible, Patient, Freesprited, Righteous, Cunning
 domain_low = Calm, Indifferent, Methodical, Stubborn, Restless, Grounded, Apathetic, Naive
-background = 구 신전터를 지키는 격 높은 신수.|호랑이의 머리와 날렵한 체구. 장식이 빼곡한 예복을 한 자락 걸쳐, 빛 무늬 위에서 금테가 번쩍인다.|옛 신전의 번개를 다루며, 침입자를 한 호흡에 가른다. 단, 자격을 보인 자에게는 빠른 한 수를 빌려준다.|말은 짧고 날카로우나, 그 안에 예의가 한 줄 배어 있다.
+background = 구 신전터를 지키는 격 높은 신수.|호랑이의 머리와 날렵한 체구. 장식이 빼곡한 예복을 걸쳐, 빛 무늬 위에서 금테가 번쩍인다.|옛 신전의 번개를 다루며, 침입자를 단숨에 가른다. 단, 자격을 보인 자에게는 빠른 한 수를 빌려준다.|말은 짧고 날카로우나, 그 안에 예의가 배어 있다.
 tagline = "...빠른 자만, 따라와라."
 tags = mythicbeast, tiger, electric-affinity, light-affinity
 affinity_rewards = 3:relic=r-determined-heart:gauge=5

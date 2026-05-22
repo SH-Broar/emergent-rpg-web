@@ -143,7 +143,7 @@ age = 24
 color_values = 0.4,0.4,0.4,0.4,0.7,0.7,0.5,0.3
 domain_high = Excited, Adaptable, Methodical, Reliable, Patient, Freesprited, Hopeful, Honest
 domain_low = Cautious, Rigid, Stagnant, Stubborn, Restless, Grounded, Cynical, Naive
-background = 모스의 개인 우체부. 켄타우로스 네 다리로 마을과 항구 사이를 직접 잇는다.|센스 좋은 의상 가죽 가방의 결이 살아 있고, 어깨 줄이 길의 결과 맞게 흐른다.|어느 자리에 있든 우체 한 통은 그대로 전한다. "한 통씩 깔끔하게."|아침은 항구, 낮은 대장간, 저녁은 광장 길의 결이 그녀의 하루.
+background = 모스의 개인 우체부. 켄타우로스 네 다리로 마을과 항구 사이를 직접 잇는다.|센스 좋은 의상 잘 길든 가죽 가방을 메고, 어깨끈이 걸음에 맞춰 흔들린다.|어느 자리에 있든 우편 한 통은 그대로 전한다. "한 통씩 깔끔하게."|아침은 항구, 낮은 대장간, 저녁은 광장 그렇게 길을 도는 게 그녀의 하루.
 tagline = "한 통 가져왔어. 받아 가."
 tags = centaur, postman, road
 affinity_rewards = 3:relic=r-postman-mail:gauge=5

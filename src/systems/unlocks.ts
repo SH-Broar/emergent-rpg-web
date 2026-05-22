@@ -34,8 +34,10 @@ function lockedRelicIdSet(): Set<string> {
 /** 런 풀에 등장 가능한 카드만 — 잠긴(미해금) 카드 + 잡카드(source=junk) 제외. */
 export function availableCards(): Card[] {
   // 잡카드(junk)·변신 폼 카드(form)는 특수 전용 — 어떤 풀(상점/공방/보상)에도 등장 금지.
+  // 강화판(`-plus`)도 *어떤 풀에도 등장 금지* — 강화판은 *공방 강화*로만 얻는다(마을 제작·상점 제외).
+  //   (활동 보상은 별도로 base 카드를 가끔 강화형으로 올려 지급 — activity.ts.)
   const all = [...useDataStore().cards.values()].filter(
-    (c) => c.source !== 'junk' && c.source !== 'form',
+    (c) => c.source !== 'junk' && c.source !== 'form' && !c.id.endsWith('-plus'),
   );
   if (useUiStore().debug.unlockAll) return all;
   const locked = lockedCardIdSet();

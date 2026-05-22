@@ -44,6 +44,11 @@ export interface EventChoiceEffect {
   hpDelta?: number;
   goldDelta?: number;
   drawCards?: number;
+  /** 시간의 조각 변화. */
+  timeShardsDelta?: number;
+
+  /** 컬러 보상 — 사건 보상의 주력. color = 8색명 | 'all' | 'random', amount 만큼. */
+  colorDelta?: { color: string; amount: number };
 
   /** 카드/유물 획득 (id 직접 지정 또는 풀에서 추첨) */
   grantCardId?: CardId;
@@ -76,6 +81,9 @@ export interface EventChoice {
 
   /** 선택 시 발생할 효과들. */
   effects: EventChoiceEffect[];
+
+  /** true면 선택 전 효과 미리보기를 숨김(???). *의도적 미스터리* 선택지에만. (기본 false = 투명) */
+  hidden?: boolean;
 }
 
 export interface Event extends NamedEntity {

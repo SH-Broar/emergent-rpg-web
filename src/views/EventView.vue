@@ -19,8 +19,12 @@ import {
 import { effectiveContent } from '@/systems/map';
 import { applyAffinityDelta } from '@/systems/affinity';
 import { acquireRelic } from '@/systems/relic';
+import { applyColorBoost, applyColorBoostAll, type ColorKey } from '@/systems/colors';
+import { colorLabel } from '@/systems/labels';
 import { rng } from '@/systems/rng';
 import type { Card, Event, EventChoice, EventChoiceEffect } from '@/data/schemas';
+
+const ALL_8_COLORS: ColorKey[] = ['fire', 'water', 'electric', 'iron', 'earth', 'wind', 'light', 'dark'];
 
 const router = useRouter();
 const run = useRunStore();
@@ -98,6 +102,24 @@ function applyEffectWithNames(choice: EventChoice, effect: EventChoiceEffect, li
     r.gold = Math.max(0, r.gold + effect.goldDelta);
     lines.push(effect.goldDelta >= 0 ? `골드 +${effect.goldDelta}` : `골드 ${effect.goldDelta}`);
   }
+  if (effect.timeShardsDelta !== undefined) {
+    r.timeShards = Math.max(0, r.timeShards + effect.timeShardsDelta);
+    lines.push(effect.timeShardsDelta >= 0 ? `시간의 조각 +${effect.timeShardsDelta}` : `시간의 조각 ${effect.timeShardsDelta}`);
+  }
+  if (effect.colorDelta) {
+    const { color, amount } = effect.colorDelta;
+    if (color === 'all') {
+      applyColorBoostAll(amount);
+      lines.push(`모든 컬러 +${amount}`);
+    } else if (color === 'random') {
+      const c = ALL_8_COLORS[Math.floor(rng() * ALL_8_COLORS.length)];
+      const d = applyColorBoost(c, amount);
+      lines.push(`${colorLabel(c)} +${d}`);
+    } else {
+      const d = applyColorBoost(color as ColorKey, amount);
+      lines.push(`${colorLabel(color)} +${d}`);
+    }
+  }
   if (effect.affinityDelta) {
     const a = effect.affinityDelta;
     const npcName = data.npcs.get(a.npcId)?.name ?? a.npcId;
@@ -171,12 +193,53 @@ function isAvailable(c: EventChoice): boolean {
   return isChoiceAvailable(c, run.data);
 }
 
+/** 한 효과를 *적용 없이* 사람이 읽는 미리보기 토큰으로. (선택 전 결과 표시용) */
+function effectPreviewTokens(eff: EventChoiceEffect): string[] {
+  const t: string[] = [];
+  const signed = (n: number) => (n >= 0 ? `+${n}` : `${n}`);
+  if (eff.hpDelta !== undefined) t.push(`HP ${signed(eff.hpDelta)}`);
+  if (eff.goldDelta !== undefined) t.push(`골드 ${signed(eff.goldDelta)}`);
+  if (eff.timeShardsDelta !== undefined) t.push(`시간의 조각 ${signed(eff.timeShardsDelta)}`);
+  if (eff.colorDelta) {
+    const { color, amount } = eff.colorDelta;
+    const name = color === 'all' ? '모든 컬러' : color === 'random' ? '무작위 컬러' : colorLabel(color);
+    t.push(`${name} +${amount}`);
+  }
+  if (eff.grantCardId) {
+    t.push(`카드 '${data.cards.get(eff.grantCardId)?.name ?? eff.grantCardId}'`);
+  }
+  if (eff.grantCardFromPool) t.push('카드 (무작위)');
+  if (eff.grantRelicId) {
+    t.push(`유물 '${data.relics.get(eff.grantRelicId)?.name ?? eff.grantRelicId}'`);
+  }
+  if (eff.affinityDelta) {
+    const npc = data.npcs.get(eff.affinityDelta.npcId)?.name ?? eff.affinityDelta.npcId;
+    t.push(`${npc} 친밀도 ${signed(eff.affinityDelta.delta)}`);
+  }
+  if (eff.grantClueId) t.push('단서');
+  if (eff.customEffectId) t.push('특수 효과');
+  return t;
+}
+
+/** 선택지의 효과 미리보기 문자열. hidden이면 ??? (의도적 미스터리). 효과 없으면 빈 문자열. */
+function choicePreview(c: EventChoice): string {
+  if (c.hidden) return '???';
+  const tokens = c.effects.flatMap(effectPreviewTokens);
+  return tokens.join(' · ');
+}
+
 function leave() {
   router.push('/game/map');
 }
 
+/** 빈노드 폴백 — 노드 풀에서 뽑을 사건이 없으면 *반복형 필러 사건*(ev-filler-*)으로 채운다.
+ *  사건 노드에서 "여기엔 사건이 없다"가 뜨지 않도록 보장. 필러는 condition 없이 항상 적격. */
+const fillerPool = computed<Event[]>(() =>
+  [...data.events.values()].filter((e: Event) => e.id.startsWith('ev-filler-')),
+);
+
 onMounted(() => {
-  currentEvent.value = pickEvent(pool.value);
+  currentEvent.value = pickEvent(pool.value) ?? pickEvent(fillerPool.value);
   if (currentEvent.value) {
     run.markEventTriggered(run.data.currentNodeId, currentEvent.value.id);
   }
@@ -199,7 +262,8 @@ onMounted(() => {
           :title="c.condition && !isAvailable(c) ? `조건 미달: ${c.condition}` : ''"
           @click="isAvailable(c) && choose(c)"
         >
-          {{ c.label }}
+          <span class="choice__label">{{ c.label }}</span>
+          <span v-if="choicePreview(c)" class="choice__preview" :class="{ 'choice__preview--hidden': c.hidden }">{{ choicePreview(c) }}</span>
         </button>
       </div>
 
@@ -225,9 +289,12 @@ onMounted(() => {
 .event h1 { color: #8eedff; margin-bottom: 1rem; }
 .body { white-space: pre-line; line-height: 1.8; color: #d6d6e0; margin-bottom: 2rem; }
 .choices { display: flex; flex-direction: column; gap: 0.7rem; }
-.choice { padding: 1rem 1.2rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.15); color: inherit; border-radius: 8px; cursor: pointer; text-align: left; font: inherit; }
+.choice { display: flex; flex-direction: column; gap: 0.3rem; padding: 1rem 1.2rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.15); color: inherit; border-radius: 8px; cursor: pointer; text-align: left; font: inherit; }
 .choice:hover:not(:disabled) { background: rgba(142,237,255,0.1); border-color: rgba(142,237,255,0.4); }
 .choice:disabled { opacity: 0.4; cursor: not-allowed; }
+.choice__label { font-weight: 600; }
+.choice__preview { font-size: 0.82rem; color: #8effb8; font-variant-numeric: tabular-nums; }
+.choice__preview--hidden { color: #c08eff; letter-spacing: 0.1em; }
 .result { margin-top: 2rem; padding: 1.2rem; background: rgba(0,0,0,0.4); border-left: 3px solid #8eedff; border-radius: 4px; }
 .result h3 { margin: 0 0 0.6rem; color: #8eedff; font-size: 1rem; }
 .result-list { margin: 0 0 1rem; padding-left: 1.2rem; color: #d6d6e0; }

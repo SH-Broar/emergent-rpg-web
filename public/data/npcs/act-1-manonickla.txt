@@ -58,7 +58,7 @@ age = 999
 color_values = 0.2,0.3,0.2,0.2,1.0,0.3,0.4,0.2
 domain_high = Calm, Empathetic, Methodical, Reliable, Patient, Grounded, Hopeful, Honest
 domain_low = Passionate, Impulsive, Stagnant, Fragile, Restless, Freesprited, Cynical, Naive
-background = 흙의 정령이자 아주 드물게만 모습을 드러내는 관측자.|마노니클라의 '빛이 쏟아지는 날'을 본 자에게만 다음날 클러치 협곡에서 말을 건다고 전해진다.|말수는 적지만 대지와 협곡의 결을 정확히 읽으며, 오래된 바위와 유적의 숨결을 이해하는 몇 안 되는 존재다.|이번 해에는 옛 사당의 결이 어긋난 것을 알리러, 협곡 한 자리에 앉아 있다.
+background = 흙의 정령이자 아주 드물게만 모습을 드러내는 관측자.|마노니클라의 '빛이 쏟아지는 날'을 본 자에게만 다음날 클러치 협곡에서 말을 건다고 전해진다.|말수는 적지만 대지와 협곡의 흐름을 정확히 읽으며, 오래된 바위와 유적의 숨결을 이해하는 몇 안 되는 존재다.|이번 해에는 옛 사당이 어긋난 것을 알리러, 협곡 한쪽에 앉아 있다.
 tagline = "대지가 어긋났습니다. 들립니까."
 tags = spirit, earth, hidden
 affinity_rewards = 3:relic=r-mono-token:gauge=5
@@ -73,7 +73,7 @@ age = 700
 color_values = 0.3,0.2,0.3,0.7,0.9,0.2,0.3,0.3
 domain_high = Calm, Adaptable, Methodical, Reliable, Patient, Grounded, Hopeful, Honest
 domain_low = Passionate, Empathetic, Impulsive, Flexible, Restless, Freesprited, Cynical, Naive
-background = 리문 유적의 옛 골렘. 최근에 깨어났다.|돌 손발이 걸음마다 작게 부딪힌다. 그 박자가 마노니클라의 길에 익숙해지는 중.|시이드가 제일 먼저 말을 걸어줬다. 그래서 친구.|카요의 공방에 가끔 들러 마모된 손발을 다듬어 받는다.
+background = 리문 유적의 옛 골렘. 최근에 깨어났다.|돌 손발이 걸음마다 작게 부딪힌다. 그 소리가 마노니클라의 길에 익숙해지는 중.|시이드가 제일 먼저 말을 걸어줬다. 그래서 친구.|카요의 공방에 가끔 들러 마모된 손발을 다듬어 받는다.
 tagline = "...걸을게."
 tags = golem, ruins, earth-affinity
 affinity_rewards = 3:card=c-gentle-guard:gauge=4

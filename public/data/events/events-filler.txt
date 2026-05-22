@@ -1,0 +1,240 @@
+# 필러 사건 (2026-05-22) — 반복형(once_per_run=false), 조건 없음.
+# 목적: 사건 노드가 풀 소진으로 "여기엔 사건이 없다"가 되지 않도록 *항상 적격인 폴백*.
+#       동시에 평상시 사건 노드의 보상 다양성을 채운다.
+# 보상: 컬러 위주(+HP/골드/카드 고루). 선택지 효과는 EventView가 *선택 전 미리* 보여준다(투명).
+#       의도적 미스터리만 hidden=true(???).
+# 프로즈 규칙: 시적 크러치(한 자락/한 호흡/박자/결/한 마디/한 겹) 쓰지 않는다. 담백하게.
+# id 접두 ev-filler-* 는 EventView 빈노드 폴백이 인식한다. 바꾸지 말 것.
+
+[event.ev-filler-roadside-spring]
+name = 길가 샘터
+node_kinds = event
+once_per_run = false
+weight = 2
+body = 길 옆에 맑은 샘이 솟는다. 물빛이 보는 각도에 따라 푸르게도 붉게도 비친다. 한 모금 마시면 몸이 가벼워질 것 같다.
+
+[event.ev-filler-roadside-spring.choice.1]
+label = 푸른 물을 마신다
+color = water:6
+result_text = 시원한 물이 목을 타고 내린다. 물의 기운이 짙어졌다.
+
+[event.ev-filler-roadside-spring.choice.2]
+label = 붉은 물을 마신다
+color = fire:6
+result_text = 뜨끈한 기운이 속에서 번진다. 불의 기운이 짙어졌다.
+
+[event.ev-filler-roadside-spring.choice.3]
+label = 손을 씻고 쉰다
+hp = 5
+result_text = 찬물에 얼굴을 씻으니 정신이 든다.
+
+[event.ev-filler-wandering-peddler]
+name = 떠돌이 행상
+node_kinds = event, village
+once_per_run = false
+weight = 2
+body = 등짐을 진 행상이 길을 막고 물건을 펼친다. "구경은 공짜요. 사는 건 골드고." 알록달록한 가루병이 줄지어 놓여 있다.
+
+[event.ev-filler-wandering-peddler.choice.1]
+label = 노란 가루를 산다
+gold = -8
+color = electric:7
+result_text = 가루를 삼키자 손끝이 찌릿하다.
+
+[event.ev-filler-wandering-peddler.choice.2]
+label = 회색 가루를 산다
+gold = -8
+color = iron:7
+result_text = 입안에 쇠 맛이 돈다. 단단해지는 느낌이다.
+
+[event.ev-filler-wandering-peddler.choice.3]
+label = 그냥 지나간다
+result_text = 행상이 어깨를 으쓱하고 짐을 다시 싼다.
+
+[event.ev-filler-old-shrine]
+name = 이끼 낀 사당
+node_kinds = event
+once_per_run = false
+weight = 2
+body = 길 끝에 작은 사당이 있다. 오래 비워진 듯하지만 향로에는 아직 온기가 남아 있다. 누군가 두고 간 동전 몇 닢이 보인다.
+
+[event.ev-filler-old-shrine.choice.1]
+label = 동전을 두고 기도한다
+gold = -5
+color = light:7
+result_text = 향이 한 줌 피어오른다. 빛의 기운이 차오른다.
+
+[event.ev-filler-old-shrine.choice.2]
+label = 동전을 가져간다
+gold = 12
+color = dark:4
+result_text = 동전을 챙겼다. 등 뒤가 서늘하다.
+
+[event.ev-filler-old-shrine.choice.3]
+label = 향로 곁에서 쉰다
+hp = 7
+result_text = 따뜻한 향로 옆에서 잠시 숨을 돌렸다.
+
+[event.ev-filler-prism-shard]
+name = 떨어진 프리즘 조각
+node_kinds = event
+once_per_run = false
+weight = 1
+body = 빛을 받으면 여덟 빛깔로 갈라지는 유리 조각이 풀숲에 박혀 있다. 깨뜨려 흩뿌릴 수도, 통째로 품을 수도 있다.
+
+[event.ev-filler-prism-shard.choice.1]
+label = 깨뜨려 흩뿌린다
+color = all:2
+result_text = 빛가루가 사방에 퍼지며 모든 색이 조금씩 짙어졌다.
+
+[event.ev-filler-prism-shard.choice.2]
+label = 한 빛깔만 품는다
+color = random:8
+result_text = 손에 쥐자 한 빛깔만 강하게 스며들었다.
+
+[event.ev-filler-fork-merchant]
+name = 갈림길의 약초상
+node_kinds = event
+once_per_run = false
+weight = 1
+body = 갈림길에 약초상이 좌판을 폈다. "왼쪽은 약초, 오른쪽은 부적이라우." 좌판 위로 마른 잎과 낡은 종이가 나란하다.
+
+[event.ev-filler-fork-merchant.choice.1]
+label = 약초를 받는다
+hp = 10
+color = earth:4
+result_text = 쓴 잎을 씹으니 상처가 아문다.
+
+[event.ev-filler-fork-merchant.choice.2]
+label = 부적을 받는다
+color = wind:7
+result_text = 종이가 바람에 파르르 떨더니 품으로 스민다.
+
+[event.ev-filler-buried-cache]
+name = 묻혀 있던 꾸러미
+node_kinds = event
+once_per_run = false
+weight = 1
+body = 발끝에 단단한 것이 걸린다. 파 보니 천에 싸인 꾸러미다. 매듭이 단단해 안이 보이지 않는다.
+
+[event.ev-filler-buried-cache.choice.1]
+label = 조심히 풀어 본다
+gold = 15
+result_text = 모아 둔 잔돈이 가득하다.
+
+[event.ev-filler-buried-cache.choice.2]
+label = 단숨에 뜯는다
+hidden = true
+color = random:10
+result_text = 안에서 빛 덩어리가 터져 나와 몸에 스몄다. 한 빛깔이 크게 짙어졌다.
+
+[event.ev-filler-quiet-pond]
+name = 고요한 못
+node_kinds = event, rest
+once_per_run = false
+weight = 1
+body = 바람 한 점 없는 못이 거울처럼 하늘을 담는다. 물가에 앉으면 잡생각이 가라앉는다.
+
+[event.ev-filler-quiet-pond.choice.1]
+label = 물을 들여다본다
+color = water:7
+result_text = 수면에 비친 빛이 천천히 몸으로 옮겨 온다.
+
+[event.ev-filler-quiet-pond.choice.2]
+label = 누워서 쉰다
+hp = 9
+result_text = 풀밭에 누우니 피로가 풀린다.
+
+[event.ev-filler-traveling-bard]
+name = 떠도는 악사
+node_kinds = event, village
+once_per_run = false
+weight = 1
+body = 악사가 낡은 현을 고른다. "동전 한 닢이면 한 곡 들려드리지." 곡조에 따라 듣는 이의 기운이 달라진다고들 한다.
+
+[event.ev-filler-traveling-bard.choice.1]
+label = 빠른 곡을 청한다
+gold = -4
+color = wind:6
+result_text = 경쾌한 가락에 발끝이 들썩인다.
+
+[event.ev-filler-traveling-bard.choice.2]
+label = 느린 곡을 청한다
+gold = -4
+color = water:6
+result_text = 잔잔한 가락이 마음을 가라앉힌다.
+
+[event.ev-filler-traveling-bard.choice.3]
+label = 그냥 듣는다
+hp = 4
+result_text = 멀찍이 앉아 공짜로 한 곡 들었다.
+
+[event.ev-filler-emberfly-swarm]
+name = 불나방 떼
+node_kinds = event
+once_per_run = false
+weight = 1
+body = 작은 불나방들이 길을 메우며 맴돈다. 손을 뻗으면 따끔하지만, 그 열기를 받아 낼 수도 있다.
+
+[event.ev-filler-emberfly-swarm.choice.1]
+label = 열기를 받아 낸다
+hp = -4
+color = fire:9
+result_text = 손등이 살짝 데었지만 불의 기운이 크게 올랐다.
+
+[event.ev-filler-emberfly-swarm.choice.2]
+label = 멀리 돌아간다
+result_text = 길을 빙 둘러 나방 떼를 피했다.
+
+[event.ev-filler-stone-circle]
+name = 돌무지 고리
+node_kinds = event
+once_per_run = false
+weight = 1
+body = 누군가 둥글게 쌓아 둔 돌무지가 있다. 가운데 평평한 돌에 손을 얹으면 땅속 깊은 울림이 전해진다.
+
+[event.ev-filler-stone-circle.choice.1]
+label = 손을 얹는다
+color = earth:7
+result_text = 묵직한 기운이 발밑에서 차오른다.
+
+[event.ev-filler-stone-circle.choice.2]
+label = 돌 하나를 더 올린다
+color = iron:7
+result_text = 돌을 보태자 무지가 단단해진다. 쇠의 기운이 올랐다.
+
+[event.ev-filler-night-lantern]
+name = 꺼져 가는 등불
+node_kinds = event
+once_per_run = false
+weight = 1
+body = 길가 등불이 마지막 심지를 태우고 있다. 기름을 부어 살릴 수도, 그 어둠을 그대로 받아들일 수도 있다.
+
+[event.ev-filler-night-lantern.choice.1]
+label = 기름을 붓는다
+gold = -6
+color = light:8
+result_text = 불꽃이 환하게 되살아난다.
+
+[event.ev-filler-night-lantern.choice.2]
+label = 어둠에 잠긴다
+color = dark:8
+result_text = 등불이 꺼지자 사방이 검다. 어둠의 기운이 짙어진다.
+
+[event.ev-filler-spark-pylon]
+name = 버려진 송전탑
+node_kinds = event
+once_per_run = false
+weight = 1
+body = 녹슨 송전탑이 아직 희미하게 윙윙거린다. 손을 대면 찌릿한 기운이 흐를 것 같다.
+
+[event.ev-filler-spark-pylon.choice.1]
+label = 전선을 만진다
+hp = -3
+color = electric:9
+result_text = 찌릿한 충격과 함께 전기의 기운이 크게 올랐다.
+
+[event.ev-filler-spark-pylon.choice.2]
+label = 부품을 떼어 판다
+gold = 14
+result_text = 쓸 만한 금속을 떼어 챙겼다.

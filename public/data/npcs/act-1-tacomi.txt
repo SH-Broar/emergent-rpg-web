@@ -27,7 +27,7 @@ age = 17
 color_values = 0.4,0.6,0.4,0.4,0.4,0.4,0.4,0.5
 domain_high = Passionate, Adaptable, Inventive, Flexible, Generous, Freesprited, Hopeful, Honest
 domain_low = Cautious, Rigid, Stagnant, Stubborn, Restless, Grounded, Cynical, Naive
-background = 평범한 인간이지만, 태어날 때의 점성술적 파장이 고대의 악마 '트립스'와 동일해 몸에 깃들었다.|치명상을 입으면 눈 색이 붉게 변하며 트립스가 깨어나고, 흑백으로 갈라진 늑대 귀와 꼬리가 짧게 솟는다. 공격력이 극도로 강해지지만 시간제한이 있다.|트립스의 모습은 검정과 하양이 정확히 반씩 갈라진 강력한 한 자세. 위해를 가할 생각은 없고, 오히려 재밌을 것 같다며 모나토를 주인이라 부른다.|달라진 세상을 구경시켜 달라고 한다.
+background = 평범한 인간이지만, 태어날 때의 점성술적 파장이 고대의 악마 '트립스'와 동일해 몸에 깃들었다.|치명상을 입으면 눈 색이 붉게 변하며 트립스가 깨어나고, 흑백으로 갈라진 늑대 귀와 꼬리가 짧게 솟는다. 공격력이 극도로 강해지지만 시간제한이 있다.|트립스의 모습은 검정과 하양이 정확히 반씩 갈라진 강력한 형상. 위해를 가할 생각은 없고, 오히려 재밌을 것 같다며 모나토를 주인이라 부른다.|달라진 세상을 구경시켜 달라고 한다.
 tagline = "주인 다음엔 어디로 가요?"
 tags = demon, dual-soul, wolf, water-affinity
 affinity_rewards = 3:card=c-double-strike:gauge=4
@@ -46,7 +46,7 @@ age = 30
 color_values = 0.4,0.7,0.3,0.4,0.4,0.4,0.7,0.3
 domain_high = Calm, Empathetic, Methodical, Reliable, Patient, Grounded, Hopeful, Honest
 domain_low = Passionate, Indifferent, Stagnant, Stubborn, Restless, Freesprited, Cynical, Naive
-background = 타코미 카페의 고양이 수인 바리스타.|손이 따뜻하고 단정. 잔 한 줄을 결대로 다듬는다.|낮 한 자락만 머무는 자리. 노을이 식기 전 마지막 한 잔을 내린다.|"...물의 결, 따뜻한 결, 잔의 결 다 다르거든요."
+background = 타코미 카페의 고양이 수인 바리스타.|손이 따뜻하고 단정. 잔을 가지런히 닦아 둔다.|낮 동안만 머무는 자리. 노을이 식기 전 마지막 한 잔을 내린다.|"...물 온도, 따뜻한 정도, 잔의 두께 다 다르거든요."
 tagline = "한 잔 따뜻하게, 가시지요."
 tags = beastkin, cat, barista, light-affinity
 affinity_rewards = 3:card=c-warm-cup:gauge=4
@@ -65,7 +65,7 @@ age = 80
 color_values = 0.6,0.3,0.7,0.3,0.3,0.4,0.4,0.8
 domain_high = Passionate, Adaptable, Impulsive, Flexible, Generous, Freesprited, Cynical, Cunning
 domain_low = Cautious, Rigid, Stagnant, Stubborn, Restless, Grounded, Apathetic, Honest
-background = 나이트 타코미의 서큐버스. 낮에는 안 보인다.|네온이 한 줄로 켜질 때 무대 한 자리에 천천히 자리잡는다.|꿈·매혹을 원료로 살아가지만 위해를 가하진 않는다. 밤의 분위기가 본질.|"한 곡 들어볼래요? 짧게 한 자락만."
-tagline = "한 곡 짧게, 한 자락."
+background = 나이트 타코미의 서큐버스. 낮에는 안 보인다.|네온이 줄지어 켜질 때 무대 한쪽에 천천히 자리잡는다.|꿈·매혹을 원료로 살아가지만 위해를 가하진 않는다. 밤의 분위기가 본질.|"한 곡 들어볼래요? 아주 짧게."
+tagline = "한 곡 짧게, 들어 봐요."
 tags = succubus, night, neon, dark-affinity
 affinity_rewards = 3:card=c-burn-mark:gauge=4

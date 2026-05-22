@@ -317,6 +317,12 @@ function parseChoice(f: IniSection): EventChoice {
   if (f.hp !== undefined) eff.hpDelta = parseNumber(f.hp, 0);
   if (f.gold !== undefined) eff.goldDelta = parseNumber(f.gold, 0);
   if (f.draw !== undefined) eff.drawCards = parseNumber(f.draw, 0);
+  if (f.time_shards !== undefined) eff.timeShardsDelta = parseNumber(f.time_shards, 0);
+  // 컬러 보상 — `color = fire:5` | `color = all:2` | `color = random:5`.
+  if (f.color) {
+    const [color, amtStr] = f.color.split(':');
+    eff.colorDelta = { color: (color ?? '').trim(), amount: parseNumber(amtStr, 0) };
+  }
   if (f.grant_card) eff.grantCardId = f.grant_card;
   if (f.grant_relic) eff.grantRelicId = f.grant_relic;
   if (f.affinity) {
@@ -334,6 +340,7 @@ function parseChoice(f: IniSection): EventChoice {
     label: f.label ?? '???',
     condition: f.condition,
     effects,
+    hidden: parseBool(f.hidden, false),
   };
 }
 
@@ -1025,6 +1032,8 @@ const DATA_FILES = [
   'data/relics/relics-cmech.txt',
   'data/events/events-mvr.txt',
   'data/events/act-1-region-events.txt',
+  // 필러 사건 (2026-05-22) — 반복형·조건無. 사건 노드 빈노드 폴백 + 컬러 보상 다양성.
+  'data/events/events-filler.txt',
   'data/monsters/mvr-monsters.txt',
   // act-1-region-monsters.txt(구 38종)는 Stage 3 로스터 v2로 전면 대체되어 *미로드*(파일은 이력 보존).
   // 모든 노드 enemy + 권역 풀이 mr-* 로스터를 참조 — 구 m-{region}-* 참조 0 확인됨.

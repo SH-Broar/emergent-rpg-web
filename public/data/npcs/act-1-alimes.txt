@@ -66,8 +66,8 @@ age = 24
 color_values = 0.5,0.3,0.5,0.4,0.3,0.3,0.3,0.7
 domain_high = Calm, Empathetic, Methodical, Reliable, Patient, Grounded, Hopeful, Honest
 domain_low = Passionate, Indifferent, Stagnant, Flexible, Restless, Freesprited, Cynical, Naive
-background = 알리메스에 머무는 조용한 악마.|계약 한 줄을 가장 중히 여긴다. 약속의 결을 손가락에 따로 새겨 둔다.|니아 이유르와 친구 계약을 맺었다. 친구로 끝까지 함께 한다는 한 줄짜리 계약.|마을의 작은 일들을 자주 맡아 처리한다 계약은 작아도 계약이라며.
-tagline = "...계약은, 한 줄 끝까지."
+background = 알리메스에 머무는 조용한 악마.|한번 맺은 약속을 가장 중히 여긴다. 약속의 글귀를 손가락에 따로 새겨 둔다.|니아 이유르와 친구 계약을 맺었다. 친구로 끝까지 함께 한다는 짧은 계약.|마을의 작은 일들을 자주 맡아 처리한다 계약은 작아도 계약이라며.
+tagline = "...계약은, 끝까지."
 tags = demon, contract, dark-affinity
 affinity_rewards = 3:card=c-defend:gauge=4
 
@@ -81,7 +81,7 @@ age = 24
 color_values = 0.3,0.5,0.3,0.4,0.4,0.4,0.9,0.3
 domain_high = Calm, Empathetic, Adaptable, Reliable, Patient, Grounded, Hopeful, Honest
 domain_low = Passionate, Indifferent, Stagnant, Flexible, Restless, Freesprited, Cynical, Cunning
-background = 알리메스에 머무는 천사.|윤희원과 오래된 친구. 둘이 한 자리에 자주 같이 보인다.|다친 자리를 짧게 짚어 준다. 큰 기적은 안 부린다. 작은 한 자락만.|"...괜찮으세요?" 라는 짧은 한 마디가 마을 사람들 사이에서 프리의 인사로 통한다.
+background = 알리메스에 머무는 천사.|윤희원과 오래된 친구. 둘이 한자리에 자주 같이 보인다.|다친 데를 짧게 짚어 준다. 큰 기적은 안 부린다. 아주 작은 것만.|"...괜찮으세요?" 라는 짧은 인사가 마을 사람들 사이에서 프리의 인사로 통한다.
 tagline = "...괜찮으세요?"
 tags = angel, healer, light-affinity
 affinity_rewards = 3:card=c-recover:gauge=4
@@ -96,8 +96,8 @@ age = 80
 color_values = 0.3,0.6,0.3,0.3,0.7,0.4,0.4,0.3
 domain_high = Calm, Adaptable, Methodical, Reliable, Patient, Grounded, Hopeful, Secretive
 domain_low = Passionate, Indifferent, Stagnant, Stubborn, Restless, Freesprited, Cynical, Naive
-background = 알리메스 약초원의 민트색 머리 엘프.|잎의 결을 손끝으로 오래 다듬어 본다. 약초 한 자락마다 결이 다르다.|비단 공방에도 가끔 들러 실의 결을 다듬는 일을 돕는다.|"잎 한 자락 다듬어 드릴게요."
-tagline = "잎 한 자락 다듬어 드릴게요."
+background = 알리메스 약초원의 민트색 머리 엘프.|잎맥을 손끝으로 오래 다듬어 본다. 약초마다 잎의 생김이 다르다.|비단 공방에도 가끔 들러 실을 고르는 일을 돕는다.|"잎 좀 다듬어 드릴게요."
+tagline = "잎 좀 다듬어 드릴게요."
 tags = elf, herbalist, earth-affinity
 affinity_rewards = 3:card=c-recover:gauge=3
 
@@ -111,7 +111,7 @@ age = 10
 color_values = 0.3,0.9,0.3,0.3,0.4,0.4,0.6,0.3
 domain_high = Excited, Adaptable, Flexible, Generous, Freesprited, Hopeful, Honest, Empathetic
 domain_low = Calm, Rigid, Stagnant, Stubborn, Restless, Grounded, Cynical, Naive
-background = 알리메스 산자락 샘의 어린 슬라임.|깨끗한 자리에서만 살 수 있다. 더러운 결이 닿으면 짧게 흐려진다.|안개의 결을 좋아한다. 안개 끝까지 짧게 굴러가 본다.|어린아이 반말. "어! 너 깨끗하다! 친구 하자!"
+background = 알리메스 산자락 샘의 어린 슬라임.|깨끗한 데서만 살 수 있다. 더러운 게 닿으면 짧게 흐려진다.|안개를 좋아한다. 안개 끝까지 짧게 굴러가 본다.|어린아이 반말. "어! 너 깨끗하다! 친구 하자!"
 tagline = "어! 너 깨끗하다! 친구 하자!"
 tags = slime, child, water-affinity
 affinity_rewards = 3:card=c-deep-breath:gauge=3

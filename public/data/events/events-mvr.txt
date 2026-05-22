@@ -69,7 +69,7 @@ result_text = 모노가 작은 부스러기를 떨어뜨려 주었다.
 [event.ev-mono-whisper.choice.3]
 label = 거절한다
 hp = 5
-result_text = "그대의 선택이 마음에 듭니다." 작은 호흡이 가벼워졌다.
+result_text = "그대의 선택이 마음에 듭니다." 가슴이 한결 가벼워졌다.
 
 
 # ============================================================
@@ -143,14 +143,14 @@ name = 모래시계 상인
 node_kinds = event, village
 weight = 1
 once_per_run = true
-body = 노점 한가운데에 모래시계가 가지런히 줄지어 있다. 시계마다 모래의 흐름이 다르다 어떤 건 거꾸로 떨어지고, 어떤 건 한 알씩만 떨어진다. "한 마디 한 마디만 빌려 드려요. 단, 충분한 무게가 있어야 해요."
+body = 노점 한가운데에 모래시계가 가지런히 줄지어 있다. 시계마다 모래의 흐름이 다르다 어떤 건 거꾸로 떨어지고, 어떤 건 한 알씩만 떨어진다. "잠깐씩만 빌려 드려요. 단, 충분한 무게가 있어야 해요."
 
 [event.ev-time-cracker.choice.1]
-label = 한 마디 빌린다 (충분한 무게로)
+label = 한 칸 빌린다 (충분한 무게로)
 condition = gold>=20
 gold = -20
 custom = time-extend-10
-result_text = 모래시계 하나가 멈췄다. 그 멈춤이 등 뒤로 옮겨와 길이 한 호흡 늘어졌다.
+result_text = 모래시계 하나가 멈췄다. 그 멈춤이 등 뒤로 옮겨와 길이 조금 늘어졌다.
 
 [event.ev-time-cracker.choice.2]
 label = 모래 한 알만 받는다

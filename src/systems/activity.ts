@@ -22,6 +22,9 @@ function notify(msg: string): void {
   useUiStore().toast('success', msg);
 }
 
+/** 활동 보상이 강화형으로 나올 확률 — 마을 제작과 달리 활동은 *가끔 강화판*도 준다. */
+const ACTIVITY_UPGRADE_CHANCE = 0.3;
+
 /** race 시드 카드 1장을 컬렉션에 추가하고 토스트. 성공하면 true. */
 function grantSeedCard(): boolean {
   const run = useRunStore();
@@ -30,8 +33,13 @@ function grantSeedCard(): boolean {
   const pool = race?.seedCardIds ?? [];
   if (pool.length === 0) return false;
   const cardId = pool[Math.floor(rng() * pool.length)];
-  const card = data.cards.get(cardId);
+  let card = data.cards.get(cardId);
   if (!card) return false;
+  // 활동은 마을 제작과 달리 *강화형*도 나올 수 있다 — 강화판이 있으면 일정 확률로 업그레이드해 지급.
+  if (card.upgradeToId && rng() < ACTIVITY_UPGRADE_CHANCE) {
+    const upgraded = data.cards.get(card.upgradeToId);
+    if (upgraded) card = upgraded;
+  }
   run.addCardToCollection(card);
   notify(`'${card.name}' 획득`);
   return true;
