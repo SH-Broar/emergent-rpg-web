@@ -264,8 +264,11 @@ export interface RunState {
    */
   currentDay: number;
 
-  /** 마지막으로 *활동(주사위)을 한 일차*. currentDay와 같으면 오늘은 이미 활동함(하루 1회 제한). 0=아직. */
+  /** 마지막으로 *활동(주사위)을 한 일차*. currentDay와 같으면 오늘 활동 카운트가 유효(아니면 리셋). 0=아직. */
   lastActivityDay?: number;
+
+  /** 오늘(lastActivityDay) 한 활동 횟수. 한도 = 1 + 활동 유물(추가 활동권). 날이 바뀌면 리셋. */
+  activitiesToday?: number;
 
   /**
    * 우체부(로큐) 유물 `r-postman-mail` 효과 카운터.

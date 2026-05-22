@@ -575,6 +575,31 @@ export function getSkipTurnEveryN(state: RunState): number {
   return smallestN;
 }
 
+/** 활동(주사위) 관련 유물 modifier 종류. trigger 무관, 조회 시점 합산(passive). */
+export type ActivityModifierKind =
+  | 'activity-success-add'   // 활동 성공 확률에 +N (절대 %p)
+  | 'activity-reward-mul'    // 활동 성공 보상 배율에 +N (0.5 = +50%)
+  | 'activity-extra-uses';   // 하루 활동 횟수 한도 +N
+
+/**
+ * 활동 modifier 합산 — 보유 유물의 해당 kind effect.value를 모두 더함.
+ * getCraftingDiscount/getSkipTurnEveryN과 같은 조회형(트리거 무관). 활동 시스템(activity.ts)이 조회.
+ */
+export function getActivityModifier(kind: ActivityModifierKind): number {
+  let total = 0;
+  try {
+    const run = useRunStore();
+    for (const relic of run.data.relics) {
+      for (const eff of relic.effects) {
+        if (eff.kind === kind) total += eff.value ?? 0;
+      }
+    }
+  } catch {
+    /* store 미접근 가능 */
+  }
+  return total;
+}
+
 /** 제작 할인율 조회 — discount kind 효과 합산. 0.0 ~ 1.0 (0.3 = 30% 할인). */
 export function getCraftingDiscount(): number {
   const run = useRunStore();

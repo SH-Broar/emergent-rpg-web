@@ -1,0 +1,30 @@
+# 활동(주사위) 유물 — 활동 노드 도전에 영향.
+# trigger = passive (조회형: activity.ts가 getActivityModifier로 합산).
+# kind:
+#   activity-success-add:N   활동 성공 확률 +N%p
+#   activity-reward-mul:N     활동 성공 보상 배율 +N (0.5 = +50%)
+#   activity-extra-uses:N     하루 활동 횟수 한도 +N
+
+[relic.r-act-steady-hand]
+name = 흔들리지 않는 손
+rank = common
+source = event
+trigger = passive
+effects = activity-success-add:15
+flavor = 주사위를 굴리기 전, 숨을 고르는 법을 아는 손가락.
+
+[relic.r-act-full-basket]
+name = 가득 찬 바구니
+rank = rare
+source = npc
+trigger = passive
+effects = activity-reward-mul:0.5
+flavor = 같은 수고라도 담아 오는 양이 다르다. 손이 큰 사람의 비결.
+
+[relic.r-act-second-wind]
+name = 거듭되는 새벽
+rank = legendary
+source = boss
+trigger = passive
+effects = activity-extra-uses:1
+flavor = 하루가 두 번 열리는 사람도 있다. 시간을 비틀어 본 자만이 안다.

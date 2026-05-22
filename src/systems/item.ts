@@ -219,6 +219,30 @@ function applyItemEffect(
       lines.push(`'${target.label}'(으)로 이동`);
       break;
     }
+    case 'revive-node': {
+      // 이미 소진한 노드 1곳을 되살려 다시 들어갈 수 있게 — 전투/사건/활동/채집 완료 표식 해제.
+      const tl = data.timelines.get(r.timelineId);
+      const map = tl ? data.nodeMaps.get(tl.nodeMapId) : undefined;
+      const targetId = ctx?.selectedNodeId;
+      if (!map || !targetId) {
+        ui.toast('warning', '되살릴 장소를 고르지 못했다.');
+        break;
+      }
+      const node = map.nodes.find((n) => n.id === targetId);
+      const st = r.nodeStates[targetId];
+      if (!node || !st) {
+        lines.push('되살릴 수 없는 장소다');
+        break;
+      }
+      st.combatCleared = false;
+      st.combatStealthed = false;
+      st.eventTriggered = undefined;
+      st.eventCount = 0;
+      st.activityDone = false;
+      st.gatherCount = 0;
+      lines.push(`'${node.label}'이(가) 다시 깨어났다`);
+      break;
+    }
     case 'cleanse-transform': {
       // 변신(체인지) 정화 — 원래 종족·덱으로 복귀. 변신 중이 아니면 무효.
       if (revertTransformationState()) lines.push('변신이 풀려 원래 모습으로 돌아왔다');

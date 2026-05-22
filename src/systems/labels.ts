@@ -372,6 +372,10 @@ export function relicEffectText(eff: RelicEffect): string {
     case 'chance-random-color-1': return `${v}% 확률로 무작위 컬러 +1`;
     case 'skip-turn-every': return `${v}턴마다 적 행동 1회 거름`;
     case 'discount': return `제작 비용 ${Math.round(v * 100)}% 할인`;
+    // --- 활동(주사위) ---
+    case 'activity-success-add': return `활동 성공 확률 ${signed(v)}%`;
+    case 'activity-reward-mul': return `활동 성공 보상 +${Math.round(v * 100)}%`;
+    case 'activity-extra-uses': return `하루 활동 횟수 ${signed(v)}`;
     // --- 전투/턴 시작 ---
     case 'combat-start-block': return `전투 시작 시 방어 ${v}`;
     case 'combat-start-draw': return `전투 시작 시 카드 ${v}장 더 뽑기`;

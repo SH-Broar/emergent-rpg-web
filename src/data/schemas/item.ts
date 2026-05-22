@@ -21,6 +21,7 @@ export type ItemEffectKind =
   | 'grant-card'      // param = cardId
   | 'grant-relic'     // param = relicId
   | 'teleport-village' // 임의의 village kind 노드로 즉시 이동 (맵 전용)
+  | 'revive-node'      // 이미 소진한 노드(전투 정리/사건 지남/활동 완료/채집) 1곳을 되살려 재진입 가능 (맵 전용, 대상 선택)
   | 'cleanse-transform' // 변신(체인지) 정화 — 원래 종족·덱으로 복귀(변신 중이 아니면 무효)
   // ===== 전투 포션 전용 (Item Economy) — combat=true 아이템에서만 의미. 전투 밖 사용 시 무효. =====
   | 'combat-mana'     // 전투 중 마나 +value

@@ -98,6 +98,14 @@ rank = rare
 effects = grant-card:c-resolve-flash
 consumable = true
 
+[item.i-rewind-glass]
+name = 회귀의 모래시계
+description = 모래를 거꾸로 흘리면 이미 지나온 장소 하나가 다시 깨어난다. 정리한 적도, 끝난 사건도, 다녀온 활동도 처음으로 돌아간다.
+rank = rare
+effects = revive-node
+consumable = true
+flavor = 모노가 흘린 모래는 늘 한 방향이 아니다.
+
 
 # ============================================================
 # 전투 포션 (combat = true) 전투 중에만 사용, 턴당 1회.

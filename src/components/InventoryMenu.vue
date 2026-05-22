@@ -34,6 +34,7 @@ watch(
   (o) => {
     if (!o) {
       teleportFor.value = null;
+      reviveFor.value = null;
       tab.value = 'relic';
     }
   },
@@ -80,12 +81,34 @@ const teleportTargets = computed<Node[]>(() => {
   return map.nodes.filter((n) => n.kind === 'village' && n.id !== run.data.currentNodeId);
 });
 
+// 부활 포션 — 이미 소진한 노드(전투 정리/사건 지남/활동 완료/채집)를 되살릴 대상 선택.
+const reviveFor = ref<Item | null>(null);
+const reviveTargets = computed<Node[]>(() => {
+  const tl = data.timelines.get(run.data.timelineId);
+  const map = tl ? data.nodeMaps.get(tl.nodeMapId) : undefined;
+  if (!map) return [];
+  return map.nodes.filter((n) => {
+    const st = run.data.nodeStates[n.id];
+    if (!st) return false;
+    return (
+      !!st.combatCleared ||
+      !!st.combatStealthed ||
+      !!st.eventTriggered ||
+      !!st.activityDone ||
+      (st.gatherCount ?? 0) > 0
+    );
+  });
+});
+
 function tryUseItem(item: Item) {
   // 재료/특산물 등 사용 불가 아이템은 클릭해도 무반응(useItem이 가드하지만 UI에서도 차단).
   if (!isUsableItem(item)) return;
-  const needsTarget = item.effects.some((e) => e.kind === 'teleport-village');
-  if (needsTarget) {
+  if (item.effects.some((e) => e.kind === 'teleport-village')) {
     teleportFor.value = item;
+    return;
+  }
+  if (item.effects.some((e) => e.kind === 'revive-node')) {
+    reviveFor.value = item;
     return;
   }
   useItem(item);
@@ -95,6 +118,12 @@ function confirmTeleport(nodeId: string) {
   if (!item) return;
   useItem(item, { selectedNodeId: nodeId });
   teleportFor.value = null;
+}
+function confirmRevive(nodeId: string) {
+  const item = reviveFor.value;
+  if (!item) return;
+  useItem(item, { selectedNodeId: nodeId });
+  reviveFor.value = null;
 }
 function itemEffectLabel(eff: Item['effects'][number]): string {
   switch (eff.kind) {
@@ -106,6 +135,7 @@ function itemEffectLabel(eff: Item['effects'][number]): string {
     case 'grant-card': return `카드 ${eff.param}`;
     case 'grant-relic': return `유물 ${eff.param}`;
     case 'teleport-village': return '마을로 즉시 이동';
+    case 'revive-node': return '다녀온 장소 1곳 되살리기';
     case 'cleanse-transform': return '변신 정화';
     case 'combat-mana': return `[전투] 마나 +${eff.value ?? 0}`;
     case 'combat-draw': return `[전투] 드로우 ${eff.value ?? 0}`;
@@ -225,6 +255,22 @@ function itemEffectLabel(eff: Item['effects'][number]): string {
                 </li>
               </ul>
               <button class="teleport-cancel" @click="teleportFor = null">취소</button>
+            </div>
+          </transition>
+
+          <!-- 부활 대상 선택 (인라인) -->
+          <transition name="inv-fade">
+            <div v-if="reviveFor" class="teleport-modal">
+              <h3>되살릴 장소 선택</h3>
+              <ul class="teleport-list">
+                <li v-for="n in reviveTargets" :key="n.id">
+                  <button class="teleport-btn" @click="confirmRevive(n.id)">{{ n.label }}</button>
+                </li>
+                <li v-if="reviveTargets.length === 0" class="teleport-empty">
+                  되살릴 장소가 없습니다 — 아직 지나온 곳이 없습니다.
+                </li>
+              </ul>
+              <button class="teleport-cancel" @click="reviveFor = null">취소</button>
             </div>
           </transition>
         </div>

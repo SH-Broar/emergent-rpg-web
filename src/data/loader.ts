@@ -1030,6 +1030,8 @@ const DATA_FILES = [
   'data/relics/relics-acquire.txt',
   'data/relics/relics-combat.txt',
   'data/relics/relics-cmech.txt',
+  // === 활동(주사위) 유물 (2026-05-22) — 성공률/보상/추가 활동권. trigger=passive(조회형). ===
+  'data/relics/relics-activity.txt',
   'data/events/events-mvr.txt',
   'data/events/act-1-region-events.txt',
   // 필러 사건 (2026-05-22) — 반복형·조건無. 사건 노드 빈노드 폴백 + 컬러 보상 다양성.
