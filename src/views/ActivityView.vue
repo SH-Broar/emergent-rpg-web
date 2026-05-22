@@ -20,7 +20,6 @@ import {
   applyActivitySuccess,
   markActivityDone,
   isActivityDone,
-  activityDoneToday,
 } from '@/systems/activity';
 import type { ColorKey } from '@/systems/colors';
 
@@ -112,8 +111,7 @@ function leave() { router.push('/game/map'); }
 
 onMounted(() => {
   if (!run.active) { router.push('/main'); return; }
-  // 하루 1회 제한 — 오늘 이미 활동했으면 막는다(다른 노드여도). 그 노드를 이미 했어도 막는다.
-  if (activityDoneToday()) { alreadyDone.value = true; doneMsg.value = '오늘은 이미 활동했다. 활동은 하루에 한 번만 가능하다.'; return; }
+  // 활동은 *노드당 1회*. 다른 노드에 가면 다시 할 수 있다. (하루 경과 시 노드 리프레시로 재개방.)
   if (isActivityDone(run.data.currentNodeId)) { alreadyDone.value = true; doneMsg.value = '이미 다녀간 활동이다.'; return; }
   // 제시 컬러 = 8색 중 난이도 수만큼 무작위(Fisher-Yates, run rng). 마운트 1회 고정.
   const all: ColorKey[] = COLORS.map((c) => c.key);

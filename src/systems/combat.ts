@@ -179,6 +179,12 @@ function tickPoison(target: Combatant): void {
 }
 
 /**
+ * 매 턴 1씩 자연 감소하는 디버프 목록 — 적이 걸 때 *최소 2* 보장(executeMonsterIntent)과
+ * 턴 감소(decayTurnStatuses)가 같은 목록을 공유한다.
+ */
+const DECAYING_DEBUFFS = new Set<string>(['feral', 'regress', 'sap', 'ghost', 'weakness', 'vulnerable', 'frail']);
+
+/**
  * 지속 상태이상 턴 감소 — 매 플레이어 턴 종료 시 양쪽(플레이어·적) -1, 0이면 제거.
  * feral/regress/sap/ghost + weakness/vulnerable/frail(매 턴 1씩 자연 감소).
  */
@@ -259,10 +265,13 @@ export function startCombat(monster: Monster) {
   // 카오스 all-gimmick(만물의 송곳니) — 그 몬스터 *종족 대표 기믹*을 인텐트 로테이션에 삽입.
   // 보스는 자체 기믹이 강하므로 제외(일반·엘리트만). 보스 판정은 monster.id가 보스 정의에 있는가.
   const enemyIntentRotation = buildEnemyIntentRotation(monster);
+  // 첫 턴 의도 큐 — 멀티액션이면 여러 개, 일반이면 1개.
+  const initIntents = buildIntentQueue(monster, 0, enemyIntentRotation);
 
   const combat: CombatState = {
     enemy: enemyCombatant,
-    enemyIntent: pickIntent(monster, 0, enemyIntentRotation),
+    enemyIntent: initIntents[0],
+    enemyIntentQueue: initIntents,
     player,
     hand: drawn,
     drawPile: newDrawPile,
@@ -891,7 +900,15 @@ export function endPlayerTurn(monster: Monster): { playerDefeated: boolean; enem
     const freeze =
       ui.debug.freezeEnemies && !!(ui.debugBattle.monsterId || ui.debugBattle.bossId);
     if (!freeze) {
-      executeMonsterIntent(c, monster);
+      // 멀티액션: 큐의 의도를 연달아 실행. 중간에 플레이어 사망/적 처치 시 즉시 종료.
+      const queue = (c.enemyIntentQueue && c.enemyIntentQueue.length > 0)
+        ? c.enemyIntentQueue
+        : (c.enemyIntent ? [c.enemyIntent] : []);
+      for (const intent of queue) {
+        executeMonsterIntent(c, monster, intent);
+        if (c.player.hp <= 0) return { playerDefeated: true };
+        if (resolveEnemyDefeat(c)) return { playerDefeated: false, enemyDefeated: true };
+      }
     }
   }
 
@@ -967,7 +984,9 @@ export function endPlayerTurn(monster: Monster): { playerDefeated: boolean; enem
   c.hand = [...c.hand, ...drawn.slice(0, room)];
   if (drawn.length > room) c.discardPile = [...c.discardPile, ...drawn.slice(room)];
 
-  c.enemyIntent = pickIntent(monster, c.turn, c.enemyIntentRotation);
+  const nextIntents = buildIntentQueue(monster, c.turn, c.enemyIntentRotation);
+  c.enemyIntent = nextIntents[0];
+  c.enemyIntentQueue = nextIntents;
 
   // 보스 기믹 — 새 플레이어 턴 시작 훅 (stillness 마나 감소/정지, anchor 잠금, rewind 스냅샷).
   // 새 손패 드로우 *후*에 호출해야 닻이 이번 턴 손패를 잠근다. bossMechanic 미설정이면 no-op.
@@ -1142,8 +1161,8 @@ export function struggle(): { freed: boolean } {
   return { freed: false };
 }
 
-function executeMonsterIntent(c: CombatState, monster?: Monster) {
-  const intent = c.enemyIntent;
+function executeMonsterIntent(c: CombatState, monster?: Monster, intentOverride?: string) {
+  const intent = intentOverride ?? c.enemyIntent;
   if (!intent) return;
 
   // 로그용 스냅샷 — 적 행동 전후 차이로 요약.
@@ -1195,7 +1214,10 @@ function executeMonsterIntent(c: CombatState, monster?: Monster) {
       // intent: debuff:N:status — 플레이어에게 status N 부여.
       //   status = vulnerable|weakness|poison|frail|regress|feral|paralyze|spasm 등.
       const status = parts[2] ?? 'vulnerable';
-      c.player.statuses[status] = (c.player.statuses[status] ?? 0) + (value || 1);
+      // 매 턴 -1 감쇠하는 디버프는 *적이 걸 때 최소 2* — 1만 걸면 다음 플레이어 턴에 즉시 0이 되어
+      // 효과가 한 번도 적용되지 않는 문제 방지. (DECAYING_DEBUFFS와 동일 목록.)
+      const applied = DECAYING_DEBUFFS.has(status) ? Math.max(2, value || 1) : (value || 1);
+      c.player.statuses[status] = (c.player.statuses[status] ?? 0) + applied;
       break;
     }
     // === 전투 에로 기믹 ===
@@ -1446,6 +1468,17 @@ function pickIntent(monster: Monster, turn: number, rotation?: string[]): string
   if (rot) return rot[turn % rot.length];
   if (monster.intents.length === 0) return 'attack:5';
   return monster.intents[turn % monster.intents.length].encoded;
+}
+
+/**
+ * 이번 턴 적이 실행할 의도 목록 — monster.actions만큼 회전에서 *연속 위치*를 뽑는다.
+ * actions=1(미설정 포함)이면 [pickIntent(turn)]로 기존 단일 행동과 동일.
+ */
+function buildIntentQueue(monster: Monster, turn: number, rotation?: string[]): string[] {
+  const actions = Math.max(1, Math.floor(monster.actions ?? 1));
+  const out: string[] = [];
+  for (let i = 0; i < actions; i++) out.push(pickIntent(monster, turn * actions + i, rotation));
+  return out;
 }
 
 /**

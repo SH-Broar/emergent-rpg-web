@@ -15,7 +15,7 @@ registerEventEffect('heal-full', (ctx) => {
   const r = ctx.run;
   const healed = r.maxHp - r.hp;
   r.hp = r.maxHp;
-  ctx.lines.push(`HP +${healed} (완전 회복)`);
+  ctx.lines.push(`체력 +${healed} (완전 회복)`);
 });
 
 registerEventEffect('gift-time-shards-3', (ctx) => {
@@ -34,7 +34,7 @@ registerEventEffect('pulse-all-colors-3', (ctx) => {
   for (const k of ['fire', 'water', 'electric', 'iron', 'earth', 'wind', 'light', 'dark']) {
     c[k] = (c[k] ?? 0) + 3;
   }
-  ctx.lines.push('모든 컬러 +3 (히페리온 상승)');
+  ctx.lines.push('컬러: 모든 컬러 +3');
 });
 
 // === 시드 단일 컬러 강화 — element는 customEffectId로 분기 ===
@@ -61,7 +61,7 @@ for (const [id, amount] of Object.entries(colorPushers)) {
 // === 시간 만료 직전에만 의미 있는 효과 — 남은 시간 +10 ===
 registerEventEffect('time-extend-10', (ctx) => {
   ctx.run.remainingTime += 10;
-  ctx.lines.push('남은 시간 +10 (시간이 한 박자 늘어진다)');
+  ctx.lines.push('남은 시간 +10');
 });
 
 // === 약한 단계 컬러 부스트 (+1) — 단서/잡 보상용. push-*-5보다 한 단계 약함.
@@ -115,7 +115,7 @@ registerEventEffect('grant-region-specialty', (ctx) => {
   void import('@/stores/run').then(({ useRunStore }) => {
     useRunStore().addItem(itm);
   });
-  ctx.lines.push(`특산물 — '${itm.name}'`);
+  ctx.lines.push(`특산물: ${itm.name}`);
 });
 
 // === 재료 — 희소 재료 1개 (Act 1 범용) ===
@@ -126,5 +126,5 @@ registerEventEffect('grant-rare-material', (ctx) => {
   void import('@/stores/run').then(({ useRunStore }) => {
     useRunStore().addItem(rare);
   });
-  ctx.lines.push(`*희소 재료* — '${rare.name}'`);
+  ctx.lines.push(`재료: ${rare.name}`);
 });

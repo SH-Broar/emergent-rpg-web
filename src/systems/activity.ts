@@ -12,9 +12,9 @@ import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
 import { applyColorBoost, type ColorKey } from '@/systems/colors';
-import { colorLabel } from '@/systems/labels';
 import { rng } from '@/systems/rng';
 import { getActivityModifier } from '@/systems/relic';
+import { rewardCard, rewardItem, rewardColor, rewardGold, rewardShards, rewardHp } from '@/systems/reward-feed';
 
 type ActivityHandler = () => void;
 
@@ -42,24 +42,24 @@ function grantSeedCard(): boolean {
     if (upgraded) card = upgraded;
   }
   run.addCardToCollection(card);
-  notify(`'${card.name}' 획득`);
+  rewardCard(card.name);
   return true;
 }
 
-/** 컬러 부스트 + 토스트(한글 컬러명). 실제로 오른 경우만 알림. */
+/** 컬러 부스트 + 보상 토스트(분류 접두). 실제로 오른 경우만 알림. */
 function grantColor(color: ColorKey, amount: number): void {
   const d = applyColorBoost(color, amount);
-  if (d > 0) notify(`${colorLabel(color)} 컬러 +${d}`);
+  rewardColor(color, d);
 }
 
-/** 아이템 1장 지급 + 토스트. */
+/** 아이템 1장 지급 + 보상 토스트(분류 접두). */
 function grantItem(itemId: string): boolean {
   const run = useRunStore();
   const data = useDataStore();
   const itm = data.items.get(itemId);
   if (!itm) return false;
   run.addItem(itm);
-  notify(`${itm.name} 획득`);
+  rewardItem(itm);
   return true;
 }
 
@@ -76,9 +76,9 @@ const HANDLERS: Record<string, ActivityHandler> = {
 
     const heal = 3 + Math.floor(rng() * 3);
     r.hp = Math.min(r.maxHp, r.hp + heal);
-    notify(`HP +${heal}`);
+    rewardHp(heal);
 
-    // 마노니클라 primary color = iron. 차 한 잔이 결을 한 호흡 정렬한다.
+    // 마노니클라 primary color = iron.
     grantColor('iron', 1);
 
     // 25% 확률로 race 시드 카드 1장.
@@ -89,11 +89,11 @@ const HANDLERS: Record<string, ActivityHandler> = {
   'n-mano-night-market': () => {
     const run = useRunStore();
     const r = run.data;
-    notify('좌판 — 한 자리에서');
+    notify('좌판을 둘러본다');
 
     const gold = 6 + Math.floor(rng() * 5);
     r.gold += gold;
-    notify(`골드 +${gold}`);
+    rewardGold(gold);
 
     // 30% 확률로 마노니클라 특산물.
     if (rng() < 0.30) grantItem('i-sunset-shard');
@@ -116,17 +116,17 @@ const DEFAULT_COLORS: ColorKey[] = [
 function defaultActivity(): void {
   const run = useRunStore();
   const r = run.data;
-  notify('활동 — 한 자리에서');
+  notify('자리를 둘러본다');
 
   // 기본: 골드 또는 시간의 조각 (둘 중 하나는 확정).
   if (rng() < 0.5) {
     const gold = 5 + Math.floor(rng() * 6);
     r.gold += gold;
-    notify(`골드 +${gold}`);
+    rewardGold(gold);
   } else {
     const shards = 2 + Math.floor(rng() * 3);
     r.timeShards += shards;
-    notify(`시간의 조각 +${shards}`);
+    rewardShards(shards);
   }
 
   // 35% — 무작위 컬러 +1~2.
@@ -145,7 +145,7 @@ function defaultActivity(): void {
   if (rng() < 0.10) {
     const heal = 2 + Math.floor(rng() * 4);
     r.hp = Math.min(r.maxHp, r.hp + heal);
-    notify(`HP +${heal}`);
+    rewardHp(heal);
   }
 }
 
@@ -196,47 +196,28 @@ export function applyActivitySuccess(color: ColorKey, colorBoost = 12): void {
   if (roll < 0.4) {
     const g = Math.round((colorBoost + Math.floor(rng() * 9)) * mul);
     run.data.gold += g;
-    notify(`골드 +${g}`);
+    rewardGold(g);
   } else if (roll < 0.7) {
     const s = Math.round((Math.ceil(colorBoost / 2) + Math.floor(rng() * 5)) * mul);
     run.data.timeShards += s;
-    notify(`시간의 조각 +${s}`);
+    rewardShards(s);
   } else {
     if (!grantSeedCard()) {
       const g = Math.round((colorBoost + Math.floor(rng() * 9)) * mul);
       run.data.gold += g;
-      notify(`골드 +${g}`);
+      rewardGold(g);
     }
   }
 }
 
-/** 활동 완료 표시 — 노드 + *오늘 활동 횟수*(하루 한도 제한)를 함께 기록. */
+/** 활동 완료 표시 — *노드당 1회*. 다른 노드는 별개. 하루 경과 시 노드 리프레시로 다시 열린다. */
 export function markActivityDone(nodeId: string): void {
   const r = useRunStore().data;
   if (!r.nodeStates[nodeId]) r.nodeStates[nodeId] = { visited: true };
   r.nodeStates[nodeId].activityDone = true;
-  // 날이 바뀌었으면 오늘 카운트 초기화 후 1, 같은 날이면 누적.
-  if ((r.lastActivityDay ?? -1) !== r.currentDay) {
-    r.lastActivityDay = r.currentDay;
-    r.activitiesToday = 1;
-  } else {
-    r.activitiesToday = (r.activitiesToday ?? 0) + 1;
-  }
 }
 
 /** 이미 다녀간 활동인가(그 노드). */
 export function isActivityDone(nodeId: string): boolean {
   return !!useRunStore().data.nodeStates[nodeId]?.activityDone;
-}
-
-/** 하루 활동 가능 횟수 — 기본 1 + 활동 유물(추가 활동권). */
-export function maxActivitiesPerDay(): number {
-  return 1 + Math.max(0, Math.round(getActivityModifier('activity-extra-uses')));
-}
-
-/** 오늘 활동 한도를 다 썼는가 — 하루 한도 제한(기본 1, 유물로 증가). */
-export function activityDoneToday(): boolean {
-  const r = useRunStore().data;
-  if ((r.lastActivityDay ?? -1) !== r.currentDay) return false; // 날이 바뀌면 리셋
-  return (r.activitiesToday ?? 0) >= maxActivitiesPerDay();
 }

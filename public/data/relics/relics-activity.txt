@@ -3,7 +3,6 @@
 # kind:
 #   activity-success-add:N   활동 성공 확률 +N%p
 #   activity-reward-mul:N     활동 성공 보상 배율 +N (0.5 = +50%)
-#   activity-extra-uses:N     하루 활동 횟수 한도 +N
 
 [relic.r-act-steady-hand]
 name = 흔들리지 않는 손
@@ -26,5 +25,5 @@ name = 거듭되는 새벽
 rank = legendary
 source = boss
 trigger = passive
-effects = activity-extra-uses:1
-flavor = 하루가 두 번 열리는 사람도 있다. 시간을 비틀어 본 자만이 안다.
+effects = activity-success-add:10, activity-reward-mul:0.4
+flavor = 같은 일을 또 겪는 사람은 두 번째에 더 능숙하다. 성공도 수확도 함께 커진다.

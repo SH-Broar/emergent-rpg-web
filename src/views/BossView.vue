@@ -22,7 +22,7 @@ import {
 import { applyBossRewards } from '@/systems/boss-rewards';
 import { colorBonusForCardEffectKind } from '@/systems/stats';
 import { bonusesFromEffective } from '@/systems/equipment';
-import { cardEffectKindLabel, cardEffectDescription, effectTargetLabel, statusDescription, intentLabel, intentDescription, unlockKeyLabel } from '@/systems/labels';
+import { cardEffectKindLabel, cardEffectDescription, statusDescription, intentLabel, intentDescription, unlockKeyLabel } from '@/systems/labels';
 import { useItem } from '@/systems/item';
 import { useCombatFx, CARD_PLAY_DELAY } from '@/composables/useCombatFx';
 import type { Boss, BossPhase, BossSignatureVariant, Card, CardEffect, Combatant, Item, Monster } from '@/data/schemas';
@@ -161,7 +161,7 @@ watch(activePhaseIndex, (newIdx, oldIdx) => {
   if (oldIdx === undefined) return;
   // 전투 중에만 전환 토스트.
   if (phase.value !== 'combat') return;
-  ui.toast('warning', `보스가 *${newIdx + 1}단계*로 자세를 바꾼다`);
+  ui.toast('warning', `보스가 ${newIdx + 1}단계로 자세를 바꾼다`);
 });
 
 /**
@@ -459,7 +459,7 @@ function usePotion(itm: Item) {
           class="potion"
           :class="{ 'potion--disabled': potionUsed }"
           :disabled="potionUsed"
-          v-tooltip="potionSummary(it)"
+          v-tooltip.hold="potionSummary(it)"
           @click="usePotion(it)"
         >
           <span class="potion__name">{{ it.name }}</span>
@@ -498,7 +498,7 @@ function usePotion(itm: Item) {
             <span v-else class="card__rank" :style="{ color: cardBorder(card) }">{{ card.rank }}</span>
           </div>
           <div class="card__effects">
-            <span v-for="(e, ei) in card.effects" :key="ei" class="effect" v-tooltip="cardEffectDescription(e)">
+            <span v-for="(e, ei) in card.effects" :key="ei" class="effect" v-tooltip.hold="cardEffectDescription(e)">
               <span class="effect__label">{{ cardEffectKindLabel(e) }}</span>
               <strong class="eff-val">{{ effectiveValue(e) || (e.value ?? '') }}</strong>
               <span
@@ -508,7 +508,6 @@ function usePotion(itm: Item) {
               >
                 ({{ statusDelta(e) > 0 ? '+' : '' }}{{ statusDelta(e) }})
               </span>
-              <span v-if="e.target" class="eff-target">{{ effectTargetLabel(e.target) }}</span>
             </span>
           </div>
         </div>
@@ -622,7 +621,7 @@ function usePotion(itm: Item) {
 
 /* === 손패 — 트럼프 카드 비율(5:7). 가로·세로 2배, 여러 줄 (CombatView와 동일) === */
 .hand {
-  --card-w: clamp(92px, 24vw, 200px); /* 이전 대비 약 2배 */
+  --card-w: clamp(80px, 19vw, 168px); /* 살짝 축소(CombatView와 동일) */
   --card-h: calc(var(--card-w) * 1.4); /* 5:7 ≈ ×1.4 */
   display: flex;
   flex-wrap: wrap;

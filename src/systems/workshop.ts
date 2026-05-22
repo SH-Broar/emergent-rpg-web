@@ -112,7 +112,7 @@ export function upgradeCard(instanceId: string): boolean {
     r.newCardEncounters.push(upgradedDef.id);
   }
 
-  ui.toast('success', `'${original.name}' → '${upgradedDef.name}' 강화`);
+  ui.toast('success', `카드 강화: ${original.name} → ${upgradedDef.name}`);
   return true;
 }
 
@@ -311,7 +311,7 @@ export function craftLegendary(recipe: LegendaryRecipe): boolean {
   const def = data.cards.get(recipe.cardId);
   if (!def) return false;
   run.addCardToCollection(def);
-  ui.toast('success', `전설 카드 '${def.name}' 제작 완료`);
+  ui.toast('success', `카드: ${def.name} (제작)`);
   return true;
 }
 
@@ -360,7 +360,7 @@ export function purchaseForgeCard(nodeId: string, slotIndex: number): boolean {
   // 1장 구매 = 나머지 자동 마감.
   for (const s of offer.cards) s.purchased = true;
 
-  ui.toast('success', `'${def.name}' 제작 — 시간의 조각 -${slot.price}`);
+  ui.toast('success', `카드: ${def.name} (-${slot.price} 시간의 조각)`);
   return true;
 }
 
@@ -427,6 +427,6 @@ export function craftPotion(itm: Item): boolean {
   r.timeShards -= cost.timeShards;
   r.items.splice(matIdx, 1); // 등급 재료 1개 소모.
   run.addItem(itm); // 인스턴스 ID 부여하며 추가.
-  ui.toast('success', `'${itm.name}' 제작 완료`);
+  ui.toast('success', `아이템: ${itm.name} (제작)`);
   return true;
 }

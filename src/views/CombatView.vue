@@ -26,7 +26,7 @@ import { effectiveContent } from '@/systems/map';
 import { applyCombatVictoryReward } from '@/systems/combat-rewards';
 import { colorBonusForCardEffectKind } from '@/systems/stats';
 import { bonusesFromEffective } from '@/systems/equipment';
-import { cardEffectKindLabel, cardEffectDescription, effectTargetLabel, statusDescription, intentLabel, intentDescription, cardDetailText } from '@/systems/labels';
+import { cardEffectKindLabel, cardEffectDescription, statusDescription, intentLabel, intentDescription, cardDetailText } from '@/systems/labels';
 import { useItem } from '@/systems/item';
 import { useCombatFx, CARD_PLAY_DELAY } from '@/composables/useCombatFx';
 import type { Card, CardEffect, Combatant, Item, Monster } from '@/data/schemas';
@@ -201,6 +201,13 @@ function canPlay(c: Card): boolean {
 // === 구속/삼킴(grapple) + 발버둥 ===
 const grapple = computed(() => combat.value?.grapple);
 const obscured = computed(() => (combat.value?.obscuredTurns ?? 0) > 0);
+/** 이번 적 턴 의도 목록 — 멀티액션이면 여러 개. 단일이면 [enemyIntent]. */
+const enemyIntentList = computed<string[]>(() => {
+  const c = combat.value;
+  if (!c) return [];
+  if (c.enemyIntentQueue && c.enemyIntentQueue.length > 0) return c.enemyIntentQueue;
+  return c.enemyIntent ? [c.enemyIntent] : [];
+});
 function doStruggle() {
   struggle();
 }
@@ -320,7 +327,11 @@ void ui;
           HP {{ combat.enemy.hp }} / {{ combat.enemy.maxHp }}
           <span v-if="combat.enemy.block > 0" class="block" :class="{ 'block--pulse': fx.enemyShield.value }">🛡 {{ combat.enemy.block }}</span>
         </div>
-        <div class="intent" v-tooltip="intentDescription(combat.enemyIntent)">다음: {{ intentLabel(combat.enemyIntent) }} <span class="intent__info">ⓘ</span></div>
+        <div class="intent">
+          다음:
+          <span v-for="(it, i) in enemyIntentList" :key="i" class="intent__act" v-tooltip="intentDescription(it)">{{ i > 0 ? ' + ' : ' ' }}{{ intentLabel(it) }}</span>
+          <span class="intent__info">ⓘ</span>
+        </div>
         <ul class="statuses statuses--enemy">
           <li v-for="s in statusEntries(combat.enemy)" :key="s.key" class="status" :data-key="s.key" v-tooltip="statusDescription(s.key)">
             {{ s.label }} ×{{ s.count }}
@@ -369,7 +380,7 @@ void ui;
         class="potion"
         :class="{ 'potion--disabled': potionUsed }"
         :disabled="potionUsed"
-        v-tooltip="potionSummary(it)"
+        v-tooltip.hold="potionSummary(it)"
         @click="usePotion(it)"
       >
         <span class="potion__name">{{ it.name }}</span>
@@ -399,7 +410,7 @@ void ui;
         class="card"
         :class="{ 'card--disabled': !canPlay(card), 'card--locked': isLocked(card), 'card--junk': card.unplayable, 'card--playing': playingIndex === i }"
         :style="{ borderColor: cardBorder(card) }"
-        v-tooltip="cardDetailText(card)"
+        v-tooltip.hold="cardDetailText(card)"
         @click="playingIndex === null && canPlay(card) && play(i)"
       >
         <div class="card__head">
@@ -409,7 +420,7 @@ void ui;
           <span v-else class="card__rank" :style="{ color: cardBorder(card) }">{{ card.rank }}</span>
         </div>
         <div class="card__effects">
-          <span v-for="(e, ei) in card.effects" :key="ei" class="effect" v-tooltip="cardEffectDescription(e)">
+          <span v-for="(e, ei) in card.effects" :key="ei" class="effect" v-tooltip.hold="cardEffectDescription(e)">
             <span class="effect__label">{{ cardEffectKindLabel(e) }}</span>
             <strong class="eff-val">{{ effectiveValue(e) || (e.value ?? '') }}</strong>
             <span
@@ -419,7 +430,6 @@ void ui;
             >
               ({{ statusDelta(e) > 0 ? '+' : '' }}{{ statusDelta(e) }})
             </span>
-            <span v-if="e.target" class="eff-target">{{ effectTargetLabel(e.target) }}</span>
           </span>
         </div>
         <p v-if="card.flavor" class="card__flavor">{{ card.flavor }}</p>
@@ -543,7 +553,7 @@ void ui;
 /* === 손패 — 트럼프 카드 비율(5:7). 기존보다 가로·세로 2배, 여러 줄로 줄바꿈 === */
 /* 카드 폭은 뷰포트 기반: 모바일에서도 충분히 크게(이전 대비 ×2), 데스크톱 상한 200px. */
 .hand {
-  --card-w: clamp(92px, 24vw, 200px); /* 이전 clamp(46px,12vw,110px)의 약 2배 */
+  --card-w: clamp(80px, 19vw, 168px); /* 살짝 축소(이전 92/24vw/200) */
   --card-h: calc(var(--card-w) * 1.4); /* 5:7 ≈ ×1.4 */
   display: flex;
   flex-wrap: wrap;            /* 카드가 많으면 여러 줄로 */
@@ -671,9 +681,9 @@ void ui;
 /* 모바일: 카드 텍스트가 카드 안에 들어오도록 폰트 축소 + 분위기(flavor) 숨김 + 카드 약간 확대.
    효과를 다 못 보면 *카드를 길게 눌러* 전체 성능을 툴팁으로 볼 수 있다(v-tooltip). */
 @media (max-width: 640px) {
-  .hand { --card-w: clamp(108px, 30vw, 200px); }
-  .card__name { font-size: 0.8rem; }
-  .card__effects { font-size: 0.7rem; gap: 0.14rem; }
+  .hand { --card-w: clamp(92px, 25vw, 168px); }
+  .card__name { font-size: 0.78rem; }
+  .card__effects { font-size: 0.68rem; gap: 0.14rem; }
   .effect { padding: 0.08rem 0.3rem; }
   .card__flavor { display: none; }
 }

@@ -241,7 +241,9 @@ export function effectTargetLabel(target: string | undefined): string {
 export function cardEffectKindLabel(effect: CardEffect): string {
   if (effect.kind === 'apply-status') {
     const st = effect.params?.status as string | undefined;
-    return st ? `${statusLabel(st)} 부여` : '상태 부여';
+    if (!st) return '상태 부여';
+    // 대상을 단어에 녹인다(적/자신 라벨 없이도 구분): 자신=상태명만(버프), 적='부여'(디버프).
+    return effect.target === 'self' ? statusLabel(st) : `${statusLabel(st)} 부여`;
   }
   return CARD_EFFECT_KIND_LABELS[effect.kind] ?? effect.kind;
 }
@@ -375,7 +377,6 @@ export function relicEffectText(eff: RelicEffect): string {
     // --- 활동(주사위) ---
     case 'activity-success-add': return `활동 성공 확률 ${signed(v)}%`;
     case 'activity-reward-mul': return `활동 성공 보상 +${Math.round(v * 100)}%`;
-    case 'activity-extra-uses': return `하루 활동 횟수 ${signed(v)}`;
     // --- 전투/턴 시작 ---
     case 'combat-start-block': return `전투 시작 시 방어 ${v}`;
     case 'combat-start-draw': return `전투 시작 시 카드 ${v}장 더 뽑기`;

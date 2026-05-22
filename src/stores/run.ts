@@ -64,8 +64,6 @@ const EMPTY_RUN: RunState = {
   nodeStates: {},
   remainingTime: 0,
   currentDay: 1,
-  lastActivityDay: 0,
-  activitiesToday: 0,
   nodeKindOverrides: {},
   nodeContentOverrides: {},
   shopInventories: {},

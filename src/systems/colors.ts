@@ -12,6 +12,7 @@
 import type { ColorValues } from '@/data/schemas';
 import { useRunStore } from '@/stores/run';
 import { vitHpBonus } from '@/systems/stats';
+import { colorLabel } from '@/systems/labels';
 
 export const COLOR_MAX = 100;
 
@@ -43,7 +44,7 @@ export function applyColorBoost(color: ColorKey, amount: number, lines?: string[
   c[color] = after;
   const delta = after - before;
   if (lines && delta !== 0) {
-    lines.push(`${color} ${delta >= 0 ? '+' : ''}${delta} (${after}/${COLOR_MAX})`);
+    lines.push(`컬러: ${colorLabel(color)} ${delta >= 0 ? '+' : ''}${delta} (${after}/${COLOR_MAX})`);
   }
   // 컬러가 실제로 *오른* 경우에만 on-color-gain 발동 (재진입 가드).
   if (delta > 0 && colorGainHook && !inColorGain) {
@@ -83,7 +84,7 @@ export function applyColorBoostAll(amount: number, lines?: string[]): void {
     applyColorBoost(k, amount);
   }
   if (lines && amount !== 0) {
-    lines.push(`모든 컬러 ${amount >= 0 ? '+' : ''}${amount}`);
+    lines.push(`컬러: 모든 컬러 ${amount >= 0 ? '+' : ''}${amount}`);
   }
 }
 

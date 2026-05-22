@@ -96,7 +96,7 @@ function applyEffectWithNames(choice: EventChoice, effect: EventChoiceEffect, li
 
   if (effect.hpDelta !== undefined) {
     r.hp = Math.max(0, Math.min(r.maxHp, r.hp + effect.hpDelta));
-    lines.push(effect.hpDelta >= 0 ? `HP +${effect.hpDelta}` : `HP ${effect.hpDelta}`);
+    lines.push(effect.hpDelta >= 0 ? `체력 +${effect.hpDelta}` : `체력 ${effect.hpDelta}`);
   }
   if (effect.goldDelta !== undefined) {
     r.gold = Math.max(0, r.gold + effect.goldDelta);
@@ -110,14 +110,14 @@ function applyEffectWithNames(choice: EventChoice, effect: EventChoiceEffect, li
     const { color, amount } = effect.colorDelta;
     if (color === 'all') {
       applyColorBoostAll(amount);
-      lines.push(`모든 컬러 +${amount}`);
+      lines.push(`컬러: 모든 컬러 +${amount}`);
     } else if (color === 'random') {
       const c = ALL_8_COLORS[Math.floor(rng() * ALL_8_COLORS.length)];
       const d = applyColorBoost(c, amount);
-      lines.push(`${colorLabel(c)} +${d}`);
+      lines.push(`컬러: ${colorLabel(c)} +${d}`);
     } else {
       const d = applyColorBoost(color as ColorKey, amount);
-      lines.push(`${colorLabel(color)} +${d}`);
+      lines.push(`컬러: ${colorLabel(color)} +${d}`);
     }
   }
   if (effect.affinityDelta) {
@@ -130,9 +130,9 @@ function applyEffectWithNames(choice: EventChoice, effect: EventChoiceEffect, li
     const card = data.cards.get(effect.grantCardId);
     if (card) {
       run.addCardToCollection(card);
-      lines.push(`카드 획득 — ${card.name} (컬렉션)`);
+      lines.push(`카드: ${card.name}`);
     } else {
-      lines.push(`알 수 없는 카드 (${effect.grantCardId})`);
+      lines.push('카드를 찾지 못했다');
     }
   }
   // r4: 카드 풀에서 필터 후 추첨. rank / tag 둘 다 옵션.
@@ -148,7 +148,7 @@ function applyEffectWithNames(choice: EventChoice, effect: EventChoiceEffect, li
     if (pool.length > 0) {
       const pick = pool[Math.floor(rng() * pool.length)];
       run.addCardToCollection(pick);
-      lines.push(`카드 획득 — ${pick.name} (컬렉션)`);
+      lines.push(`카드: ${pick.name}`);
     } else {
       lines.push(`(카드 풀이 비어 있다.)`);
     }
@@ -157,18 +157,18 @@ function applyEffectWithNames(choice: EventChoice, effect: EventChoiceEffect, li
     const relic = data.relics.get(effect.grantRelicId);
     if (relic) {
       acquireRelic(relic); // 중앙 진입점 — on-acquire/passive 즉시 발동 포함.
-      lines.push(`유물 획득 — ${relic.name}`);
+      lines.push(`유물: ${relic.name}`);
     } else {
-      lines.push(`알 수 없는 유물 (${effect.grantRelicId})`);
+      lines.push('유물을 찾지 못했다');
     }
   }
   if (effect.grantClueId) {
     const clue = data.clues.get(effect.grantClueId);
     if (clue) {
       const added = run.addClue(clue);
-      if (added) lines.push(`단서 — '${clue.name}'`);
+      if (added) lines.push(`단서: ${clue.name}`);
     } else {
-      lines.push(`알 수 없는 단서 (${effect.grantClueId})`);
+      lines.push('단서를 찾지 못했다');
     }
   }
   // r4: customEffectId — 등록된 핸들러 호출. 미등록 id는 console.warn + false.
@@ -188,9 +188,20 @@ function choose(c: EventChoice) {
   applyChoice(c);
 }
 
-/** 선택지 버튼 disabled 판단 — DSL 평가. */
+/** 선택지 버튼 disabled 판단 — DSL 조건 + *비용 지불 가능* 여부. */
 function isAvailable(c: EventChoice): boolean {
-  return isChoiceAvailable(c, run.data);
+  if (!isChoiceAvailable(c, run.data)) return false;
+  return canAfford(c);
+}
+
+/** 자원을 *깎는* 선택지는 보유량이 부족하면 고를 수 없다(골드/시간의 조각). 클램프로 몰래 0이 되는 것 방지. */
+function canAfford(c: EventChoice): boolean {
+  const r = run.data;
+  for (const eff of c.effects) {
+    if (eff.goldDelta !== undefined && eff.goldDelta < 0 && r.gold < -eff.goldDelta) return false;
+    if (eff.timeShardsDelta !== undefined && eff.timeShardsDelta < 0 && r.timeShards < -eff.timeShardsDelta) return false;
+  }
+  return true;
 }
 
 /** 한 효과를 *적용 없이* 사람이 읽는 미리보기 토큰으로. (선택 전 결과 표시용) */
@@ -274,7 +285,7 @@ onMounted(() => {
           class="choice"
           :disabled="!isAvailable(c)"
           :title="c.condition && !isAvailable(c) ? `조건 미달: ${c.condition}` : ''"
-          v-tooltip="choiceRewardTip(c)"
+          v-tooltip.hold="choiceRewardTip(c)"
           @click="isAvailable(c) && choose(c)"
         >
           <span class="choice__label">{{ c.label }}</span>

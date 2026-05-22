@@ -15,6 +15,7 @@ import { useMetaStore } from '@/stores/meta';
 import { useCodexStore } from '@/stores/codex';
 import { useUiStore } from '@/stores/ui';
 import { applyColorBoost } from '@/systems/colors';
+import { rewardItem, rewardColor } from '@/systems/reward-feed';
 import { revealNextTierOnClear, recordBestChaos } from '@/systems/chaos';
 
 const DEFAULT_BOSS_GOLD = 30;
@@ -40,7 +41,7 @@ export function applyBossRewards(boss: Boss): void {
     const rareMat = data.items.get(BOSS_RARE_MATERIAL_ID);
     if (rareMat) {
       run.addItem(rareMat);
-      ui.toast('success', `보스 보상 — *희소 재료* '${rareMat.name}'`);
+      rewardItem(rareMat);
     }
     // (b) 보스가 위치한 노드의 권역 컬러에 +5.
     const map = data.nodeMaps.get(data.timelines.get(r.timelineId)?.nodeMapId ?? '');
@@ -50,9 +51,7 @@ export function applyBossRewards(boss: Boss): void {
       : undefined;
     if (region?.primaryColor) {
       const delta = applyColorBoost(region.primaryColor, BOSS_COLOR_BOOST);
-      if (delta > 0) {
-        ui.toast('success', `보스 권역 컬러 — ${region.primaryColor} +${delta}`);
-      }
+      rewardColor(region.primaryColor, delta);
     }
   }
 

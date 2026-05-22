@@ -12,7 +12,7 @@ import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
 import { applyColorBoost } from '@/systems/colors';
-import { colorLabel } from '@/systems/labels';
+import { rewardItem, rewardColor, rewardShards, rewardGold } from '@/systems/reward-feed';
 import { rng } from '@/systems/rng';
 import { gatherThresholdAdd } from '@/systems/chaos';
 import type { Region } from '@/data/schemas';
@@ -72,20 +72,20 @@ export function performGather(nodeId: string): void {
       const itm = data.items.get(region.specialtyItemId);
       if (itm) {
         run.addItem(itm);
-        ui.toast('success', `${itm.name} 획득`);
+        rewardItem(itm);
       }
     }
     // 2) 컬러 부스트 — 그 권역의 대표 컬러 (효율 반영).
     if (primary) {
       const d = applyColorBoost(primary, Math.max(1, Math.round(3 * eff)));
-      if (d > 0) ui.toast('success', `${colorLabel(primary)} 컬러 +${d}`);
+      rewardColor(primary, d);
     }
     // 3) 희귀 재료 — 후반 채집(Q8). 효율 반영.
     if (rng() < LATE_RARE_MAT_CHANCE * eff) {
       const rare = data.items.get(MATERIAL_RARE_ID);
       if (rare) {
         run.addItem(rare);
-        ui.toast('success', `${rare.name} 획득`);
+        rewardItem(rare);
       }
     }
     // 3b) 전설 재료 — *T3+ 권역 후반*에서만 극희소(효율 반영).
@@ -93,28 +93,28 @@ export function performGather(nodeId: string): void {
       const leg = data.items.get(MATERIAL_LEGENDARY_ID);
       if (leg) {
         run.addItem(leg);
-        ui.toast('success', `${leg.name} 획득`);
+        rewardItem(leg);
       }
     }
     // 4) 약간의 시간조각 보너스 (효율 반영).
     const lateShards = Math.max(1, Math.round(2 * eff));
     r.timeShards += lateShards;
-    ui.toast('success', `시간의 조각 +${lateShards}`);
+    rewardShards(lateShards);
   } else {
     // === 전반 풀 (효율 eff 반영) ===
     const shards = Math.max(1, Math.round((2 + Math.floor(rng() * 3)) * eff));
     const gold = Math.max(1, Math.round((3 + Math.floor(rng() * 5)) * eff));
     r.timeShards += shards;
     r.gold += gold;
-    ui.toast('success', `시간의 조각 +${shards}`);
-    ui.toast('success', `골드 +${gold}`);
+    rewardShards(shards);
+    rewardGold(gold);
 
     // 가끔 특산물 — *전반에서도 작은 확률로* (효율 반영).
     if (region?.specialtyItemId && rng() < SPECIALTY_DROP_EARLY_CHANCE * eff) {
       const itm = data.items.get(region.specialtyItemId);
       if (itm) {
         run.addItem(itm);
-        ui.toast('success', `${itm.name} 획득`);
+        rewardItem(itm);
       }
     }
     // 일반 재료 — 전반 채집의 안정 공급(Q8, 효율 반영).
@@ -122,7 +122,7 @@ export function performGather(nodeId: string): void {
       const mat = data.items.get(MATERIAL_COMMON_ID);
       if (mat) {
         run.addItem(mat);
-        ui.toast('success', `${mat.name} 획득`);
+        rewardItem(mat);
       }
     }
   }

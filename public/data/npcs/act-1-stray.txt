@@ -26,7 +26,7 @@ age = 99
 color_values = 0.3,0.3,0.8,0.3,0.3,0.4,0.4,0.6
 domain_high = Calm, Adaptable, Inventive, Flexible, Patient, Freesprited, Cynical, Cunning
 domain_low = Passionate, Indifferent, Methodical, Stubborn, Restless, Grounded, Righteous, Honest
-background = 인간 마술사로 알려졌으나 사실은 팬텀.|손끝에서 카드가 사라졌다 나타나는 잔재주로 길드 앞 사람들을 모으지만, 정작 손은 윤곽이 흐릿해 어디까지가 진짜 손인지 알기 어렵다.|속이고 비트는 자리에서 가장 편안해하며, 진심은 늘 보이는 곳 바깥에 숨겨 둔다.|시간의 빈틈을 읽어, 남들이 보지 못한 자리에서 한 수를 둔다.
-tagline = "한 수는 항상 보이는 곳 바깥에서."
+background = 인간 마술사로 알려졌으나 사실은 팬텀.|손끝에서 카드가 사라졌다 나타나는 잔재주로 길드 앞 사람들을 모으지만, 정작 손은 윤곽이 흐릿해 어디까지가 진짜 손인지 알기 어렵다.|속이고 비트는 자리에서 가장 편안해하며, 진심은 늘 보이는 곳 바깥에 숨겨 둔다.|시간의 빈틈을 읽어, 남들이 보지 못하는 각도에서 패를 꺼낸다.
+tagline = "패는 항상 보이는 곳 바깥에서."
 tags = phantom, trickster, electric-affinity
 affinity_rewards = 3:card=c-burn-mark:gauge=3

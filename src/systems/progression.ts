@@ -81,7 +81,7 @@ export function absorbRunIntoMeta(run: RunState) {
     ui.toast('success', `${granted.length}개의 해금이 풀렸습니다.`);
   }
   if (soulGain > 0) {
-    ui.toast('info', `영혼 ${soulGain} 획득`);
+    ui.toast('info', `영혼 +${soulGain}`);
   }
 
   return { granted, soulGain, hyperionGain, researchGain };

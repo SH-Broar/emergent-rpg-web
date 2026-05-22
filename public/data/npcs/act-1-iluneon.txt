@@ -76,7 +76,7 @@ color_values = 0.7,0.3,0.4,0.3,0.3,0.5,0.5,0.3
 domain_high = Calm, Adaptable, Inventive, Flexible, Patient, Freesprited, Hopeful, Honest
 domain_low = Passionate, Rigid, Stagnant, Stubborn, Restless, Grounded, Cynical, Naive
 background = 스팀펑크 스타일의 전설 속 조류계 아인.|날개 한 쪽을 다쳐 톱니바퀴로 고쳤으며, 체공에 자신이 있다.|사진기를 들고 다니면서 높은 곳에서 사진을 찍고, 최근엔 사진첩을 만들어 꽤나 많은 돈을 벌고 있다.|전투에 관심이 없지만, 진지하게 임하면 든든하고 강력한 지원군이 된다.
-tagline = "한 컷, 시간을 멈춰 줄까요?"
+tagline = "잠깐, 시간 멈춰 줄까요?"
 tags = harpy, photographer, fire-affinity
 affinity_rewards = 3:card=c-double-strike:gauge=3
 # 영입 사진·해킹 컨셉. 짧은 stun 지원.
@@ -108,7 +108,7 @@ color_values = 0.4,0.4,0.5,0.4,0.3,0.8,0.5,0.3
 domain_high = Passionate, Adaptable, Inventive, Flexible, Patient, Freesprited, Hopeful, Cunning
 domain_low = Cautious, Rigid, Stagnant, Stubborn, Restless, Grounded, Cynical, Honest
 background = 천공성 리엘의 공주이자 파란색 무투가 드래곤.|성에서 몰래 빠져나와 푸치 탑을 세워, 도전자들에게 시련을 내리며 52층 최상층에서 직접 싸운다.|지상에선 모르는 사람이 없을 정도로 강하고 두려운 존재지만, 실제로는 호기심이 많고 쾌활한 성격.|1주일에 반나절가량 길드 게시판 앞에 불쑥 나타나곤 한다.
-tagline = "심심해. 누구든, 한 판."
+tagline = "심심해. 누구든 덤벼."
 tags = dragon, royal, brawler
 affinity_rewards = 3:card=c-resolve-flash:gauge=4
 # 영입 드래곤 무투가. 한 판 연쇄 카드.

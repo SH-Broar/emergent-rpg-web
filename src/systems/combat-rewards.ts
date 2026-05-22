@@ -11,10 +11,10 @@
 
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
-import { useUiStore } from '@/stores/ui';
 import { useMetaStore } from '@/stores/meta';
 import { applyColorBoost } from '@/systems/colors';
 import { acquireRelic } from '@/systems/relic';
+import { rewardItem, rewardColor, rewardRelic, rewardCard, rewardSoul } from '@/systems/reward-feed';
 import { availableRelics } from '@/systems/unlocks';
 import { rng } from '@/systems/rng';
 import { effectiveKind as systemEffectiveKind } from '@/systems/map';
@@ -57,7 +57,6 @@ function clampTier(t: number | undefined): number {
 export function applyCombatVictoryReward(nodeId: string): void {
   const run = useRunStore();
   const data = useDataStore();
-  const ui = useUiStore();
   const r = run.data;
 
   // 이미 클리어된 노드는 재드롭 X.
@@ -76,14 +75,12 @@ export function applyCombatVictoryReward(nodeId: string): void {
   const isElite = kind === 'elite';
   const tier = clampTier(region.tier);
 
-  const lines: string[] = [];
-
   // === 양 ===
   // 컬러 부스트 — 권역 primaryColor에 티어·일반/엘리트 차등.
   if (region.primaryColor) {
     const amount = isElite ? ELITE_COLOR_BY_TIER[tier] : NORMAL_COLOR_BY_TIER[tier];
     const delta = applyColorBoost(region.primaryColor, amount);
-    if (delta > 0) lines.push(`${region.primaryColor} +${delta}`);
+    rewardColor(region.primaryColor, delta);
   }
 
   // 특산물 드롭 — 티어 비례 확률.
@@ -93,7 +90,7 @@ export function applyCombatVictoryReward(nodeId: string): void {
       const itm = data.items.get(region.specialtyItemId);
       if (itm) {
         run.addItem(itm);
-        lines.push(`특산물 '${itm.name}'`);
+        rewardItem(itm);
       }
     }
   }
@@ -105,7 +102,7 @@ export function applyCombatVictoryReward(nodeId: string): void {
       const mat = data.items.get(MATERIAL_RARE_ID);
       if (mat) {
         run.addItem(mat);
-        lines.push(`*희귀 재료* '${mat.name}'`);
+        rewardItem(mat);
       }
     }
     const legChance = ELITE_LEGENDARY_MAT_BY_TIER[tier];
@@ -113,7 +110,7 @@ export function applyCombatVictoryReward(nodeId: string): void {
       const leg = data.items.get(MATERIAL_LEGENDARY_ID);
       if (leg) {
         run.addItem(leg);
-        lines.push(`*전설 재료* '${leg.name}'`);
+        rewardItem(leg);
       }
     }
   } else {
@@ -121,7 +118,7 @@ export function applyCombatVictoryReward(nodeId: string): void {
       const mat = data.items.get(MATERIAL_COMMON_ID);
       if (mat) {
         run.addItem(mat);
-        lines.push(`재료 '${mat.name}'`);
+        rewardItem(mat);
       }
     }
   }
@@ -130,7 +127,7 @@ export function applyCombatVictoryReward(nodeId: string): void {
   if (isElite) {
     // 영혼 — 엘리트 처치마다 영구 메타 영혼 지급(카오스 구매 통화).
     useMetaStore().addSoul(ELITE_SOUL_REWARD);
-    lines.push(`영혼 +${ELITE_SOUL_REWARD}`);
+    rewardSoul(ELITE_SOUL_REWARD);
 
     // 희귀 유물 — 심화(T3) 이상. 미보유·시작덱 출처 제외 풀에서 추첨.
     const relicChance = ELITE_RELIC_BY_TIER[tier];
@@ -142,7 +139,7 @@ export function applyCombatVictoryReward(nodeId: string): void {
       if (pool.length > 0) {
         const pick = pool[Math.floor(rng() * pool.length)];
         acquireRelic(pick);
-        lines.push(`*유물* '${pick.name}'`);
+        rewardRelic(pick.name);
       }
     }
 
@@ -157,12 +154,8 @@ export function applyCombatVictoryReward(nodeId: string): void {
       const card = data.cards.get(pickId);
       if (card) {
         run.addCardToCollection(card);
-        lines.push(`*전설 카드* '${card.name}'`);
+        rewardCard(card.name);
       }
     }
-  }
-
-  if (lines.length > 0) {
-    ui.toast('success', `${isElite ? '엘리트' : '전투'} 보상 — ${lines.join(', ')}`);
   }
 }

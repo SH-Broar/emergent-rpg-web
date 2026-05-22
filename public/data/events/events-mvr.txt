@@ -54,22 +54,22 @@ name = 모노의 속삭임
 node_kinds = event, rest
 weight = 1
 once_per_run = true
-body = 잠시 앉아 쉬는데, 머릿속에 들리는 게 있다. "…그대의 다음 한 수를 보았다. 어느 길로 갈 셈인지." 모노의 목소리다. 가까이서. 그가 무언가를 선물처럼 내민다 보이지는 않지만 알 수 있다.
+body = 잠시 앉아 쉬는데, 머릿속에 무언가 들린다. "…그대의 다음 움직임을 보았다. 어느 길로 갈 셈인지." 모노의 목소리다. 가까이서. 그가 무언가를 선물처럼 내민다. 보이지는 않지만 알 수 있다.
 
 [event.ev-mono-whisper.choice.1]
-label = 한 카드를 받는다
+label = 카드를 받는다
 grant_card = c-double-strike
-result_text = 모노가 한 수를 내려주었다.
+result_text = 모노가 다음 수를 내려주었다.
 
 [event.ev-mono-whisper.choice.2]
-label = 한 유물을 받는다
+label = 유물을 받는다
 grant_relic = r-mono-token
 result_text = 모노가 작은 부스러기를 떨어뜨려 주었다.
 
 [event.ev-mono-whisper.choice.3]
 label = 거절한다
 hp = 5
-result_text = "그대의 선택이 마음에 듭니다." 가슴이 한결 가벼워졌다.
+result_text = "그대의 선택이 마음에 듭니다." 가슴이 가벼워졌다.
 
 
 # ============================================================
@@ -82,12 +82,12 @@ name = 약속하는 샘
 node_kinds = event, rest
 weight = 1
 once_per_run = true
-body = 길가 돌틈에 작은 샘이 있다. 물 표면에 글자 같은 무늬가 천천히 움직인다 자기를 마시기 전에 약속하라고. "당신의 색이 충분히 깊다면, 나는 그대의 몸을 완전히 새로 짠다."
+body = 길가 돌틈에 작은 샘이 있다. 물 표면에 글자 같은 무늬가 천천히 움직인다. 마시기 전에 약속하라는 뜻인 것 같다. "당신의 색이 충분히 깊다면, 나는 그대의 몸을 완전히 새로 짠다."
 
 [event.ev-fountain-vow.choice.1]
 label = 한 모금 마신다 (약속 없이)
 hp = -3
-result_text = 물 맛이 시다. 글자가 흐려지더니 한 줄만 남았다. "다음엔, 약속을 가져오세요."
+result_text = 물 맛이 시다. 글자가 흐려지더니 마지막 줄만 남았다. "다음엔, 약속을 가져오세요."
 
 [event.ev-fountain-vow.choice.2]
 label = 약속의 무게를 측정한다
@@ -126,7 +126,7 @@ result_text = 병 안에 빛이 흔들렸다. 손이 무거워졌고 들고 갈 
 [event.ev-fountain-vow-aftermath.choice.2]
 label = 돌무더기에 손을 얹는다
 custom = pulse-all-colors-3
-result_text = 손바닥이 여덟 가지 줄로 떨렸다. 몸 안의 색들이 한꺼번에 한 단계 짙어졌다.
+result_text = 손바닥이 여덟 방향으로 떨렸다. 몸 안의 색들이 한꺼번에 짙어졌다.
 
 [event.ev-fountain-vow-aftermath.choice.3]
 label = 그대로 지나친다
@@ -143,20 +143,20 @@ name = 모래시계 상인
 node_kinds = event, village
 weight = 1
 once_per_run = true
-body = 노점 한가운데에 모래시계가 가지런히 줄지어 있다. 시계마다 모래의 흐름이 다르다 어떤 건 거꾸로 떨어지고, 어떤 건 한 알씩만 떨어진다. "잠깐씩만 빌려 드려요. 단, 충분한 무게가 있어야 해요."
+body = 노점 위에 모래시계가 가지런히 줄지어 있다. 시계마다 모래의 흐름이 다르다. 어떤 건 거꾸로 떨어지고, 어떤 건 낱알씩만 떨어진다. "잠깐씩만 빌려 드려요. 단, 충분한 무게가 있어야 해요."
 
 [event.ev-time-cracker.choice.1]
-label = 한 칸 빌린다 (충분한 무게로)
+label = 시계 하나를 빌린다 (충분한 무게로)
 condition = gold>=20
 gold = -20
 custom = time-extend-10
 result_text = 모래시계 하나가 멈췄다. 그 멈춤이 등 뒤로 옮겨와 길이 조금 늘어졌다.
 
 [event.ev-time-cracker.choice.2]
-label = 모래 한 알만 받는다
+label = 모래 낱알 하나만 받는다
 gold = -3
 custom = gift-time-shards-3
-result_text = 모래 알갱이가 손바닥에서 시간의 조각으로 굳었다. 작지만 분명한 무게.
+result_text = 모래 낱알이 손바닥에서 시간의 조각으로 굳었다. 작지만 분명한 무게가 느껴졌다.
 
 [event.ev-time-cracker.choice.3]
 label = 상인의 이야기만 듣는다
@@ -166,4 +166,4 @@ result_text = 상인이 모노의 표정으로 잠시 웃었다. "이 시간은 
 [event.ev-time-cracker.choice.4]
 label = 그대로 떠난다
 draw = 1
-result_text = 노점을 빠져나오자 모래시계 줄이 한 칸 줄어들어 있었다.
+result_text = 노점을 빠져나오자 모래시계 줄이 하나 줄어들어 있었다.

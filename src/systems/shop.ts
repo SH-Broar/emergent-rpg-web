@@ -196,7 +196,8 @@ export function purchaseShopMaterial(nodeId: string, slotIndex: number): boolean
   run.data.gold -= slot.price;
   run.addItem(def);
   slot.stock -= 1;
-  ui.toast('success', `'${def.name}' 구매 — 골드 -${slot.price}`);
+  const prefix = def.category === 'specialty' ? '특산물' : '재료';
+  ui.toast('success', `${prefix}: ${def.name} (-${slot.price} 골드)`);
   return true;
 }
 
@@ -221,7 +222,7 @@ export function purchaseShopCard(nodeId: string, slotIndex: number): boolean {
   const inst: Card = { ...def, instanceId: slot.cardInstanceId };
   run.addCardToCollection(inst);
   slot.purchased = true;
-  ui.toast('success', `'${def.name}' 구매 — 골드 -${slot.price}`);
+  ui.toast('success', `카드: ${def.name} (-${slot.price} 골드)`);
   return true;
 }
 
@@ -245,7 +246,7 @@ export function purchaseShopRelic(nodeId: string, slotIndex: number): boolean {
   // 중앙 진입점 — 보유 추가 + 미발견 기록 + on-acquire/passive 즉시 발동.
   acquireRelic(def);
   slot.purchased = true;
-  ui.toast('success', `유물 '${def.name}' 획득 — 골드 -${slot.price}`);
+  ui.toast('success', `유물: ${def.name} (-${slot.price} 골드)`);
   return true;
 }
 

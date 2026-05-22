@@ -578,8 +578,7 @@ export function getSkipTurnEveryN(state: RunState): number {
 /** 활동(주사위) 관련 유물 modifier 종류. trigger 무관, 조회 시점 합산(passive). */
 export type ActivityModifierKind =
   | 'activity-success-add'   // 활동 성공 확률에 +N (절대 %p)
-  | 'activity-reward-mul'    // 활동 성공 보상 배율에 +N (0.5 = +50%)
-  | 'activity-extra-uses';   // 하루 활동 횟수 한도 +N
+  | 'activity-reward-mul';   // 활동 성공 보상 배율에 +N (0.5 = +50%)
 
 /**
  * 활동 modifier 합산 — 보유 유물의 해당 kind effect.value를 모두 더함.

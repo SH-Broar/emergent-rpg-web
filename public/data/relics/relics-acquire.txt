@@ -12,7 +12,7 @@ rank = common
 source = event
 trigger = on-acquire
 effects = boost-color:5:fire
-flavor = 손에 닿자마자 한 점 따뜻함이 안으로 스민다. 불의 호기심이 영영 머문다.
+flavor = 손에 닿자마자 따뜻함이 안으로 스민다. 불의 호기심이 영영 머문다.
 
 [relic.r-acq-tide-drop]
 name = 물방울 정수
@@ -78,7 +78,7 @@ rank = rare
 source = elite
 trigger = on-acquire
 effects = boost-color:8:fire
-flavor = 식지 않는 화로에서 떼어 낸 한 덩이. 불의 호기심이 더 깊이 박힌다.
+flavor = 식지 않는 화로에서 떼어 낸 덩이. 불의 호기심이 더 깊이 박힌다.
 
 [relic.r-acq-deep-pearl]
 name = 심해의 진주
@@ -86,7 +86,7 @@ rank = rare
 source = event
 trigger = on-acquire
 effects = boost-color:8:water
-flavor = 가장 깊은 곳에서 굳은 한 알. 물의 흐름이 더 멀리까지 닿는다.
+flavor = 가장 깊은 곳에서 굳은 진주. 물의 흐름이 더 멀리까지 닿는다.
 
 [relic.r-acq-prism-heart]
 name = 무지개의 심장
@@ -94,7 +94,7 @@ rank = legendary
 source = elite
 trigger = on-acquire
 effects = boost-color:12:all
-flavor = 여덟 색이 한자리에 모여 굳은 보석. 줍는 순간, 모든 호기심이 한꺼번에 차오른다.
+flavor = 여덟 색이 모여 굳은 보석. 줍는 순간, 모든 호기심이 한꺼번에 차오른다.
 
 [relic.r-acq-mono-prism]
 name = 모노의 프리즘 조각
