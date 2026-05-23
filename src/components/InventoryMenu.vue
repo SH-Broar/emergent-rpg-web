@@ -13,7 +13,7 @@ import { computed, ref, watch } from 'vue';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useItem, isUsableItem } from '@/systems/item';
-import { relicEffectText, relicTriggerLabel } from '@/systems/labels';
+import { relicEffectText, relicTriggerLabel, colorLabel, statusLabel } from '@/systems/labels';
 import type { Item, Node, Relic } from '@/data/schemas';
 
 const props = defineProps<{ open: boolean }>();
@@ -130,18 +130,18 @@ function itemEffectLabel(eff: Item['effects'][number]): string {
     case 'heal': return `HP +${eff.value ?? 0}`;
     case 'gold': return `골드 +${eff.value ?? 0}`;
     case 'time-shards': return `시간의 조각 +${eff.value ?? 0}`;
-    case 'color-boost': return `${eff.param} +${eff.value ?? 0}`;
+    case 'color-boost': return `${colorLabel(String(eff.param ?? ''))} +${eff.value ?? 0}`;
     case 'color-all': return `8 컬러 모두 +${eff.value ?? 0}`;
-    case 'grant-card': return `카드 ${eff.param}`;
-    case 'grant-relic': return `유물 ${eff.param}`;
+    case 'grant-card': return `카드 ${data.cards.get(String(eff.param ?? ''))?.name ?? eff.param}`;
+    case 'grant-relic': return `유물 ${data.relics.get(String(eff.param ?? ''))?.name ?? eff.param}`;
     case 'teleport-village': return '마을로 즉시 이동';
     case 'revive-node': return '다녀온 장소 1곳 되살리기';
     case 'cleanse-transform': return '변신 정화';
     case 'combat-mana': return `[전투] 마나 +${eff.value ?? 0}`;
     case 'combat-draw': return `[전투] 드로우 ${eff.value ?? 0}`;
     case 'combat-block': return `[전투] 방어 +${eff.value ?? 0}`;
-    case 'combat-enemy-status': return `[전투] 적 ${eff.param} +${eff.value ?? 0}`;
-    case 'combat-self-status': return `[전투] ${eff.param} +${eff.value ?? 0}`;
+    case 'combat-enemy-status': return `[전투] 적 ${statusLabel(String(eff.param ?? ''))} +${eff.value ?? 0}`;
+    case 'combat-self-status': return `[전투] ${statusLabel(String(eff.param ?? ''))} +${eff.value ?? 0}`;
     case 'combat-free-grapple': return '[전투] 구속 해제';
   }
   return '';

@@ -1261,6 +1261,23 @@ function enterLabel(): string {
   50% { transform: translateY(-1.6px); }
 }
 
+/* 모바일(터치)에서는 무한 애니메이션·글로우(drop-shadow)를 전부 끈다 — 발열/배터리 절약.
+   매 프레임 SVG를 다시 칠하는 펄스(크기)·글로우·바운스가 모바일 GPU 발열의 주원인.
+   색·위치 등 *정적 표시*는 유지(간선 노란색은 명시 강제, 펄스/글로우/바운스만 제거). */
+@media (hover: none) and (pointer: coarse) {
+  .edge--active {
+    animation: none !important;
+    filter: none !important;
+    stroke: #ffe8a0 !important;
+    stroke-width: 0.42 !important;
+  }
+  .node-group--reachable .node-dot {
+    animation: none !important;
+    filter: none !important;
+  }
+  .current-arrow { animation: none !important; }
+}
+
 .drawer {
   grid-column: 2;
   grid-row: 1;

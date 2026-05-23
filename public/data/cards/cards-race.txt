@@ -81,7 +81,7 @@ source = race
 element = light
 cost = 2
 trigger = manual
-effects = damage:9:enemy, block:6:self
+effects = damage:6:enemy, apply-status:2:enemy:vulnerable
 upgrade_to = c-human-resolve-plus
 flavor = 흔들리되 무너지지 않는, 인간이 가장 자주 갖고 태어나는 것.
 
@@ -92,8 +92,8 @@ source = race
 element = light
 cost = 2
 trigger = manual
-effects = damage:12:enemy, block:8:self
-flavor = 한 번 정한 마음이 더 무겁게 선다.
+effects = damage:8:enemy, apply-status:3:enemy:vulnerable
+flavor = 정한 마음이 더 무겁게 선다.
 
 # ============================================================
 # 나방 wind/light 속도·연사·드로우

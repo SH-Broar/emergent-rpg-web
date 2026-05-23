@@ -413,14 +413,14 @@ effects = heal:5:self, draw:1:self
 flavor = "한 잔 따뜻하게, 가시지요." 신시안이 잔의 결을 손바닥에 가지런히 올려 준다.
 
 [card.c-tripps-rage]
-name = 트립스의 한 판
+name = 트립스
 rank = rare
 source = npc
 element = fire
 cost = 20
 trigger = manual
 effects = damage:55:enemy, apply-status:1:enemy:vulnerable, apply-status:1:enemy:weakness
-flavor = "주인 다음엔 어디로 가요?" 모나토의 눈 한 자리가 붉어진다. 흑백 늑대 귀와 꼬리가 짧게 솟고, 받은 만큼 가벼워지는 한 판. 치명 벌어짐.
+flavor = "주인 다음엔 어디로 가요?" 모나토의 눈가가 붉어진다. 흑백 늑대 귀와 꼬리가 짧게 솟고, 맞은 만큼 더 가볍고 더 날카로워진다.
 
 [card.c-trace-step]
 name = 발자취 한 자리
@@ -1333,7 +1333,7 @@ effects = heal:8:self, draw:1:self
 flavor = 더 따뜻한 한 잔. 오래 데운다.
 
 [card.c-tripps-rage-plus]
-name = 트립스의 한 판+
+name = 트립스+
 rank = rare
 source = npc
 element = fire

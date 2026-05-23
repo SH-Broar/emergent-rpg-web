@@ -27,7 +27,7 @@ import { effectiveContent } from '@/systems/map';
 import { applyCombatVictoryReward } from '@/systems/combat-rewards';
 import { colorBonusForCardEffectKind } from '@/systems/stats';
 import { bonusesFromEffective } from '@/systems/equipment';
-import { cardEffectKindLabel, cardEffectDescription, statusDescription, intentLabel, intentDescription, cardDetailText } from '@/systems/labels';
+import { cardEffectKindLabel, cardEffectDescription, statusDescription, statusLabel, intentLabel, intentDescription, cardDetailText } from '@/systems/labels';
 import { useItem } from '@/systems/item';
 import { useCombatFx, CARD_PLAY_DELAY } from '@/composables/useCombatFx';
 import StruggleMinigame from '@/components/StruggleMinigame.vue';
@@ -244,8 +244,8 @@ function potionEffShort(e: Item['effects'][number]): string {
     case 'combat-mana': return `마나 +${e.value ?? 0}`;
     case 'combat-draw': return `드로우 ${e.value ?? 0}`;
     case 'combat-block': return `방어 +${e.value ?? 0}`;
-    case 'combat-enemy-status': return `적 ${statusLabels[String(e.param ?? '')] ?? e.param} +${e.value ?? 0}`;
-    case 'combat-self-status': return `${statusLabels[String(e.param ?? '')] ?? e.param} +${e.value ?? 0}`;
+    case 'combat-enemy-status': return `적 ${statusLabel(String(e.param ?? ''))} +${e.value ?? 0}`;
+    case 'combat-self-status': return `${statusLabel(String(e.param ?? ''))} +${e.value ?? 0}`;
     case 'combat-free-grapple': return '구속 해제';
     default: return e.kind;
   }
@@ -357,9 +357,8 @@ void ui;
           <span v-if="combat.enemy.block > 0" class="block" :class="{ 'block--pulse': fx.enemyShield.value }">🛡 {{ combat.enemy.block }}</span>
         </div>
         <div class="intent">
-          다음:
-          <span v-for="(it, i) in enemyIntentList" :key="i" class="intent__act" v-tooltip="intentDescription(it)">{{ i > 0 ? ' + ' : ' ' }}{{ intentLabel(it) }}</span>
-          <span class="intent__info">ⓘ</span>
+          <span class="intent__lead">다음: <span class="intent__info">ⓘ</span></span>
+          <span v-for="(it, i) in enemyIntentList" :key="i" class="intent__act" v-tooltip="intentDescription(it)">{{ intentLabel(it) }}</span>
         </div>
         <div
           v-if="lockInState"
@@ -549,6 +548,9 @@ void ui;
 .block { margin-left: 0.5rem; color: #8eedff; }
 .mana { color: #c08eff; font-weight: 600; }
 .intent { color: #ffb88e; font-size: 0.9rem; }
+.intent__lead { display: block; }
+.intent__act { display: block; padding-left: 0.7rem; }
+.intent__act::before { content: '· '; opacity: 0.6; }
 .lockin {
   margin-top: 2px;
   display: inline-block;
