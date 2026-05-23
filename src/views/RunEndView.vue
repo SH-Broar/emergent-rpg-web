@@ -266,7 +266,7 @@ onMounted(async () => {
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-  min-height: 100vh;
+  min-height: 100vh; min-height: 100dvh;
 }
 h1 { color: #c08eff; margin: 0; font-size: 2.4rem; }
 .reason { color: #d6d6e0; font-style: italic; margin: 0; }

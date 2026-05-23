@@ -527,7 +527,8 @@ void ui;
   display: grid;
   grid-template-rows: auto 1fr auto;
   height: 100vh;
-  padding: 1rem;
+  height: 100dvh;
+  padding: 1rem 1rem calc(1rem + env(safe-area-inset-bottom));
 }
 .hdr {
   display: grid;
@@ -829,7 +830,7 @@ void ui;
   flex-direction: column;
   align-items: center;
   gap: 1.2rem;
-  min-height: 100vh;
+  min-height: 100vh; min-height: 100dvh;
 }
 .result-view h1 {
   font-size: 3rem;

@@ -147,7 +147,7 @@ function goDebugBattle() {
 
 <style scoped>
 .main-view {
-  min-height: 100vh;
+  min-height: 100vh; min-height: 100dvh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -236,7 +236,7 @@ function goDebugBattle() {
 .version-badge {
   position: fixed;
   right: 0.8rem;
-  bottom: 0.6rem;
+  bottom: calc(0.6rem + env(safe-area-inset-bottom));
   font-size: 0.72rem;
   color: #6c6c7c;
   font-variant-numeric: tabular-nums;

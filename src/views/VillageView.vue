@@ -405,7 +405,7 @@ const rankColors: Record<string, string> = {
 </template>
 
 <style scoped>
-.village-view { max-width: 720px; margin: 0 auto; padding: 2rem; min-height: 100vh; }
+.village-view { max-width: 720px; margin: 0 auto; padding: 2rem; min-height: 100vh; min-height: 100dvh; }
 .back { background: none; border: 1px solid rgba(255,255,255,0.2); color: #c0b693; padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; margin-bottom: 1rem; }
 h1 { color: #8effb8; margin: 0; }
 .desc { color: #b6b6c4; font-style: italic; margin: 0.6rem 0 1.5rem; }

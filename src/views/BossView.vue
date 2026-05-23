@@ -590,7 +590,7 @@ function usePotion(itm: Item) {
 </template>
 
 <style scoped>
-.boss-view { min-height: 100vh; padding: 2rem; display: flex; flex-direction: column; }
+.boss-view { min-height: 100vh; min-height: 100dvh; padding: 2rem; display: flex; flex-direction: column; }
 .intro { max-width: 700px; margin: 4rem auto; text-align: center; }
 .intro h1 { font-size: 3rem; color: #ffe88e; }
 .lore { color: #b6b6c4; margin: 1rem 0; }

@@ -127,7 +127,7 @@ onMounted(async () => {
 <style scoped>
 .app-shell {
   position: relative;
-  min-height: 100vh;
+  min-height: 100vh; min-height: 100dvh;
   width: 100%;
 }
 /* HUD 슬림화 (M2) — 1줄 4슬롯+3버튼이므로 padding 축소. */

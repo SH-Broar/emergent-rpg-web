@@ -352,7 +352,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.workshop-view { max-width: 880px; margin: 0 auto; padding: 2rem; min-height: 100vh; }
+.workshop-view { max-width: 880px; margin: 0 auto; padding: 2rem; min-height: 100vh; min-height: 100dvh; }
 .back { background: none; border: 1px solid rgba(255,255,255,0.2); color: #c0b693; padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; margin-bottom: 1rem; font: inherit; }
 h1 { color: #c08eff; margin: 0; }
 .desc { color: #b6b6c4; font-style: italic; margin: 0.6rem 0 1.5rem; }

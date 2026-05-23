@@ -180,7 +180,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.activity-view { max-width: 680px; margin: 0 auto; padding: 3rem 2rem; min-height: 100vh; }
+.activity-view { max-width: 680px; margin: 0 auto; padding: 3rem 2rem; min-height: 100vh; min-height: 100dvh; }
 .hdr h1, .done h1 { color: #f0d68e; margin: 0 0 0.4rem; }
 .diff { font-size: 0.78rem; font-weight: 600; padding: 0.12rem 0.5rem; border-radius: 5px; margin-left: 0.5rem; white-space: nowrap; }
 .diff--하 { color: #8effb8; border: 1px solid rgba(142,255,184,0.45); }

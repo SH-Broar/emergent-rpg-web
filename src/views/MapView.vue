@@ -1025,6 +1025,7 @@ function enterLabel(): string {
   grid-template-rows: 1fr;
   gap: 1rem;
   height: 100vh;
+  height: 100dvh;
   padding: 1rem 1.5rem;
 }
 
@@ -1053,7 +1054,7 @@ function enterLabel(): string {
 .recenter-btn {
   position: absolute;
   right: 0.9rem;
-  bottom: 0.9rem;
+  bottom: calc(0.9rem + env(safe-area-inset-bottom));
   width: 46px;
   height: 46px;
   border-radius: 50%;

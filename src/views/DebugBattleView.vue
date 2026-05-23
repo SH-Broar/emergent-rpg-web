@@ -257,7 +257,7 @@ function back() {
 </template>
 
 <style scoped>
-.debug-view { max-width: 1200px; margin: 0 auto; padding: 1.5rem 2rem; min-height: 100vh; }
+.debug-view { max-width: 1200px; margin: 0 auto; padding: 1.5rem 2rem; min-height: 100vh; min-height: 100dvh; }
 .hdr { margin-bottom: 1rem; }
 .back { background: none; border: 1px solid rgba(255,255,255,0.2); color: #c0b693; padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; margin-bottom: 0.8rem; }
 .hdr h1 { color: #8ec8ff; margin: 0; }

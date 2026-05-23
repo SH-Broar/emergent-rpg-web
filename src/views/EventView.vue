@@ -311,7 +311,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.event-view { max-width: 720px; margin: 0 auto; padding: 3rem 2rem; min-height: 100vh; }
+.event-view { max-width: 720px; margin: 0 auto; padding: 3rem 2rem; min-height: 100vh; min-height: 100dvh; }
 .event h1 { color: #8eedff; margin-bottom: 1rem; }
 .body { white-space: pre-line; line-height: 1.8; color: #d6d6e0; margin-bottom: 2rem; }
 .choices { display: flex; flex-direction: column; gap: 0.7rem; }
