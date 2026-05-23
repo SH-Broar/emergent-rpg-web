@@ -17,10 +17,10 @@ cost = 1
 trigger = manual
 effects = damage:6:enemy
 upgrade_to = c-strike-plus
-flavor = 가장 단순한 검술. 가장 자주 쓰인다.
+flavor = 가장 단순한 검술.
 
 [card.c-defend]
-name = 자세
+name = 방어
 rank = basic
 source = race
 element = earth
@@ -28,10 +28,10 @@ cost = 1
 trigger = manual
 effects = block:5:self
 upgrade_to = c-defend-plus
-flavor = 비를 그치게 할 순 없어도, 피할 수는 있다.
+flavor = 적의 공격을 막는다.
 
 [card.c-quickdraw]
-name = 빠른 뽑기
+name = 순발력
 rank = basic
 source = race
 element = wind
@@ -39,10 +39,10 @@ cost = 0
 trigger = manual
 effects = draw:1:self
 upgrade_to = c-quickdraw-plus
-flavor = 다음 한 수가 떠오른다.
+flavor = 다음 행동을 떠올린다.
 
 [card.c-recover]
-name = 회복 호흡
+name = 숨 고르기
 rank = basic
 source = race
 element = water
@@ -50,7 +50,7 @@ cost = 1
 trigger = manual
 effects = heal:4:self
 upgrade_to = c-recover-plus
-flavor = 잠시 숨을 고르면, 다시 갈 수 있다.
+flavor = 숨을 쉬어 진정한다.
 
 # ========== 일반 등급 (NPC 친밀도 1단계 / 히페리온 1~2) ==========
 
@@ -66,7 +66,7 @@ upgrade_to = c-resolve-flash-plus
 flavor = "여기서 멈출 수는 없어."
 
 [card.c-gentle-guard]
-name = 부드러운 방패
+name = 물의 방패
 rank = common
 source = hyperion
 element = water
@@ -74,10 +74,10 @@ cost = 1
 trigger = manual
 effects = block:8:self
 upgrade_to = c-gentle-guard-plus
-flavor = 누군가가 곁에 있다는 느낌만으로 단단해진다.
+flavor = 얇은 물의 막을 만들어 방어력을 키운다.
 
 [card.c-double-strike]
-name = 쥔 손만큼
+name = 패기
 rank = common
 source = event
 element = iron
@@ -85,18 +85,18 @@ cost = 1
 trigger = manual
 effects = damage-per-hand:2:enemy
 upgrade_to = c-double-strike-plus
-flavor = 손에 쥔 패가 많을수록 한 번에 더 무겁다.
+flavor = 기세로 놀라게 한다.
 
 [card.c-focused-mind]
 name = 집중
 rank = common
 source = npc
 element = wind
-cost = 0
+cost = 1
 trigger = manual
 effects = draw:2:self
 upgrade_to = c-focused-mind-plus
-flavor = 잠시 생각의 깊이로 내려간다.
+flavor = 지금 할 수 있는 일을 떠올린다.
 
 [card.c-burn-mark]
 name = 화상 흔적
@@ -163,44 +163,44 @@ flavor = 봤다. 더 이상 숨지 못한다.
 # ============================================================
 
 [card.c-strike-plus]
-name = 강타+
+name = 일격+
 rank = basic
 source = race
 element = iron
 cost = 1
 trigger = manual
 effects = damage:9:enemy
-flavor = 같은 검술이지만, 손목이 더 단단하다.
+flavor = 조금 개량된 검술.
 
 [card.c-defend-plus]
-name = 굳은 자세+
+name = 방어+
 rank = basic
 source = race
 element = earth
 cost = 1
 trigger = manual
 effects = block:8:self
-flavor = 비를 등 뒤로 흘려보낸다.
+flavor = 어떤 공격인지 안다면, 막는 것도 가능하다.
 
 [card.c-quickdraw-plus]
-name = 빠른 뽑기+
+name = 순발력+
 rank = basic
 source = race
 element = wind
 cost = 0
 trigger = manual
 effects = draw:2:self
-flavor = 두 수가 한꺼번에 보인다.
+flavor = 다음 행동을 더욱 떠올린다.
 
 [card.c-recover-plus]
-name = 회복 호흡+
+name = 숨 고르기+
 rank = basic
 source = race
 element = water
 cost = 1
 trigger = manual
 effects = heal:7:self
-flavor = 깊어진 호흡 갈비뼈 안쪽이 따뜻하다.
+flavor = 깊게 숨을 쉬어 진정한다.
 
 [card.c-resolve-flash-plus]
 name = 결심의 섬광+
@@ -210,37 +210,37 @@ element = light
 cost = 1
 trigger = manual
 effects = damage:11:enemy, block:5:self
-flavor = "여기서 더 갈 수 있어."
+flavor = "아직 포기하긴 일러!"
 
 [card.c-gentle-guard-plus]
-name = 부드러운 방패+
+name = 물의 방패+
 rank = common
 source = hyperion
 element = water
 cost = 1
 trigger = manual
 effects = block:12:self
-flavor = 곁에 있는 것이 두 사람으로 늘었다.
+flavor = 물 속에서는 누구라도 팔이 느려진다.
 
 [card.c-double-strike-plus]
-name = 쥔 손만큼+
+name = 패기+
 rank = common
 source = event
 element = iron
 cost = 1
 trigger = manual
 effects = damage-per-hand:3:enemy
-flavor = 손에 쥔 패 한 장 한 장이 더 무겁게 실린다.
+flavor = 더욱 강하게 위협한다.
 
 [card.c-focused-mind-plus]
 name = 집중+
 rank = common
 source = npc
 element = wind
-cost = 0
+cost = 1
 trigger = manual
 effects = draw:3:self
-flavor = 생각의 결이 셋으로 갈라진다.
+flavor = 어쩌면 미래에 할 수 있는 일도 떠올릴 수 있을지 모른다.
 
 [card.c-burn-mark-plus]
 name = 화상 흔적+
@@ -627,7 +627,7 @@ element = dark
 cost = 2
 trigger = manual
 effects = apply-status:2:enemy:regress, damage:6:enemy
-flavor = "네가 쌓아 온 색을, 잠시 잊게 해 줄게." 아주 오래된 어둠이 적의 단단함을 풀어 내린다. 적의 색 보강이 두 칸 멎는다.
+flavor = "네가 쌓아 온 색을, 잠시 잊게 해 줄게." 아주 오래된 어둠이 적의 단단함을 풀어 내린다. ��의 색 보강이 두 칸 멎는다.
 
 # ---------- damage-per-debuff 2장 ----------
 
