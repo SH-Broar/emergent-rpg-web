@@ -14,7 +14,7 @@ rank = common
 source = event
 trigger = passive
 effects = damage-out-add:1
-flavor = 능선 너머 큰 그림자가 등을 한 번 굽혀 떨어뜨린 한 조각. 손에 쥐면 오래된 무게가 한 줄 흘러내린다.
+flavor = 능선 너머 큰 그림자가 등을 한 번 굽혀 떨어뜨린 한 조각. 손에 쥐면 오래된 무게가 조용히 흘러내린다.
 
 [relic.r-imperisia-locket]
 name = 임페리시아의 회중시계
@@ -46,7 +46,7 @@ rank = common
 source = npc
 trigger = on-combat-end
 effects = chance-random-color-1:50
-flavor = 가즈리가 한 줄로 괴인 진주 중 한 알. 전투가 한 번 끝날 때마다 한 자리가 차례대로 떨어진다.
+flavor = 가즈리가 줄에 꿴 진주 중 한 알. 전투가 한 번 끝날 때마다 차례대로 색이 떨어진다.
 
 [relic.r-postman-mail]
 name = 로큐의 가죽 가방
@@ -54,7 +54,7 @@ rank = common
 source = npc
 trigger = passive
 effects = skip-turn-every:3
-flavor = 로큐의 어깨 줄 한 자락이 그대 손에 옮겨졌다. 세 자리를 옮길 때마다, 길의 흐름이 한 번 그대를 지나친다.
+flavor = 로큐의 어깨끈이 그대 손에 옮겨졌다. 세 자리를 옮길 때마다, 길의 흐름이 한 번 그대를 지나친다.
 
 [relic.r-yusezria-core]
 name = 유스제리아의 정수핵
@@ -70,7 +70,7 @@ rank = rare
 source = event
 trigger = passive
 effects = block-out-add:2
-flavor = 팔콘 가든 하늘의 주인이 떨어뜨린 한 깃. 위험을 먼저 한 자락 본다. 모든 방어에 한 겹이 더해진다.
+flavor = 팔콘 가든 하늘의 주인이 떨어뜨린 한 깃. 위험을 먼저 감지한다. 모든 방어에 두께가 더해진다.
 
 # ============================================================
 # 2차 확장 측정 어려운 효과 위주 (STS 유물 + 명일방주 통합전략 참고).
@@ -85,7 +85,7 @@ rank = common
 source = event
 trigger = on-turn-start
 effects = turn-start-block:3
-flavor = 누가 감아 두었는지 모를 톱니 하나. 멈추지 않고 한 자리씩 돌며, 매 턴 그대 앞에 얇은 벽을 세운다.
+flavor = 누가 감아 두었는지 모를 톱니 하나. 쉬지 않고 돌며, 매 턴 그대 앞에 얇은 벽을 세운다.
 
 [relic.r-warm-coal]
 name = 식지 않는 숯
@@ -93,7 +93,7 @@ rank = common
 source = event
 trigger = on-combat-start
 effects = combat-start-block:5
-flavor = 손바닥 위에서 오래 따뜻하다. 싸움이 시작될 때, 그 온기가 한 겹의 방어로 굳는다.
+flavor = 손바닥 위에서 오래 따뜻하다. 싸움이 시작될 때, 그 온기가 두터운 방어로 굳는다.
 
 [relic.r-dawn-feather]
 name = 새벽 깃털
@@ -145,7 +145,7 @@ rank = common
 source = shop
 trigger = on-card-played-after
 effects = cards-to-draw:8
-flavor = 쓰다 보면 어느새 바닥이 보인다. 여덟 번 손을 놀릴 때마다, 다음 한 줄이 저절로 손에 들어온다.
+flavor = 쓰다 보면 어느새 바닥이 보인다. 여덟 번 손을 놀릴 때마다, 다음 카드가 저절로 손에 들어온다.
 
 [relic.r-prism-bead]
 name = 프리즘 구슬
@@ -187,7 +187,7 @@ rank = rare
 source = elite
 trigger = on-damage-taken
 effects = hurt-to-color:1
-flavor = 부딪힐 때만 우는 작은 종. 아픔이 닿을 때마다 한 음이 울려, 어느 색이 한 자리 차오른다.
+flavor = 부딪힐 때만 우는 작은 종. 아픔이 닿을 때마다 한 음이 울려, 어느 색이 조금씩 차오른다.
 
 [relic.r-stubborn-bark]
 name = 고집 센 나무껍질
@@ -195,7 +195,7 @@ rank = common
 source = event
 trigger = on-damage-taken
 effects = hurt-to-block:2
-flavor = 베일수록 더 두꺼워지는 껍질. 맞고 나면, 다음을 막을 한 겹이 새로 돋는다.
+flavor = 베일수록 더 두꺼워지는 껍질. 맞고 나면, 다음을 막을 새 껍질이 돋는다.
 
 # --- 패시브 모디파이어 ---
 
@@ -249,7 +249,7 @@ rank = rare
 source = shop
 trigger = on-combat-end
 effects = bonus-gold:12, damage-in-mul:1.15
-flavor = 손에 쥐면 돈이 따라붙는다 불운도 함께. 승리마다 묵직해지지만, 적의 일격은 늘 한 뼘 더 아프다.
+flavor = 손에 쥐면 돈이 따라붙는다 불운도 함께. 승리마다 묵직해지지만, 적의 일격은 늘 조금 더 아프다.
 
 [relic.r-heavy-satchel]
 name = 무거운 봇짐

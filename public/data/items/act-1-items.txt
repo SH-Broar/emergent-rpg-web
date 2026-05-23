@@ -285,7 +285,7 @@ effects =
 consumable = true
 
 [item.i-anchor-link]
-name = 닻고리 한 마디
+name = 닻고리 조각
 description = 풍혈지대 시간의 닻에서 떨어진 고리. 그 자체로는 가벼우나 어딘가에 꿰어지면 바람을 멈춘다.
 rank = common
 category = specialty

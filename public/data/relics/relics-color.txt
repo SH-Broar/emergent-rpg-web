@@ -36,7 +36,7 @@ rank = common
 source = npc
 trigger = on-acquire
 effects = boost-color:5:water
-flavor = 인어가 손바닥에 담아 건넨 바다의 한 자락. 차오르고 빠지는 일을 잊지 않는다.
+flavor = 인어가 손바닥에 담아 건넨 바다의 기억. 차오르고 빠지는 일을 잊지 않는다.
 
 [relic.r-col-electric-spark]
 name = 작은 불꽃
@@ -92,7 +92,7 @@ rank = basic
 source = shop
 trigger = on-acquire
 effects = boost-color:3:wind
-flavor = 떨어지다 멈춰 공중에 떠 있던 깃. 손에 얹으면 발이 한 뼘 가벼워진다.
+flavor = 떨어지다 멈춰 공중에 떠 있던 깃. 손에 얹으면 발걸음이 한결 가벼워진다.
 
 [relic.r-col-wind-galecore]
 name = 질풍의 심
@@ -178,7 +178,7 @@ rank = common
 source = event
 trigger = passive
 effects = block-out-add:3
-flavor = 손으로 꾹꾹 다져 굳힌 흙의 한 자락. 몸에 두르고 나면 막아서는 모든 자세가 한층 두툼해진다.
+flavor = 손으로 꾹꾹 다져 굳힌 흙덩이. 몸에 두르고 나면 막아서는 모든 자세가 한층 두툼해진다.
 
 [relic.r-col-wind-camp-banner]
 name = 앞장서는 깃발
@@ -265,7 +265,7 @@ rank = common
 source = event
 trigger = on-combat-start
 effects = block-from-metric:6:light
-flavor = 품은 빛이 밝을수록 둘러진 무리가 두껍다. 마주한 순간, 모은 빛이 한 겹의 보호로 굳는다.
+flavor = 품은 빛이 밝을수록 둘러진 무리가 두껍다. 마주한 순간, 모은 빛이 두터운 보호로 굳는다.
 
 [relic.r-col-fire-forge-fury]
 name = 단조의 분노
@@ -326,7 +326,7 @@ rank = rare
 source = event
 trigger = on-acquire
 effects = boost-color:3:all
-flavor = 빛을 머금으면 여덟 색으로 갈라진다. 손에 쥐는 순간, 모든 색이 한 자리씩 짙어진다.
+flavor = 빛을 머금으면 여덟 색으로 갈라진다. 손에 쥐는 순간, 모든 색이 조금씩 짙어진다.
 
 [relic.r-col-all-mono-fragment]
 name = 모노의 부스러기
@@ -358,7 +358,7 @@ rank = legendary
 source = event
 trigger = on-turn-start
 effects = chance-random-color-1:60
-flavor = 정령이 까르르 웃으며 쥐여준 구슬들. 매 순간 그중 하나가 데구루루 굴러, 운 좋으면 어느 색이 한 자리 오른다.
+flavor = 정령이 까르르 웃으며 쥐여준 구슬들. 매 순간 그중 하나가 데구루루 굴러, 운 좋으면 어느 색이 슬쩍 오른다.
 
 [relic.r-col-random-lucky-coin]
 name = 운 좋은 동전

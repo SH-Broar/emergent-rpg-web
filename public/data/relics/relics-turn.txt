@@ -19,7 +19,7 @@ rank = common
 source = shop
 trigger = passive
 effects = bonus-hp:15
-flavor = 모노가 흘려보낸 시간이 단단한 둔덕으로 다져졌다. 그 두툼한 자리가 주인의 숨을 한 겹 더 받쳐 준다.
+flavor = 모노가 흘려보낸 시간이 단단한 둔덕으로 다져졌다. 그 두툼함이 주인의 숨을 든든히 받쳐 준다.
 
 [relic.r-turn-snow-crown]
 name = 눈의 왕관
@@ -107,7 +107,7 @@ rank = common
 source = shop
 trigger = on-turn-start
 effects = turn-before-block:4:2
-flavor = 출발은 늘 추운 법. 처음 두 마디만큼, 따뜻한 한 겹이 등을 받친다.
+flavor = 출발은 늘 추운 법. 처음 두 마디만큼, 따뜻한 방어가 등을 받친다.
 
 [relic.r-turn-dawn-bulwark]
 name = 동틀 녘의 보루
@@ -200,7 +200,7 @@ rank = common
 source = event
 trigger = on-turn-start
 effects = turn-units-color:1:4
-flavor = 끝자리가 넷일 때 매듭 하나가 조여진다. 네 번씩 묶을 때마다 색실이 한 가닥 더 팽팽해진다.
+flavor = 끝자리가 넷일 때 매듭 하나가 조여진다. 네 번씩 묶을 때마다 색실이 더 팽팽해진다.
 
 [relic.r-turn-eighth-orbit]
 name = 여덟의 공전
@@ -228,7 +228,7 @@ rank = common
 source = event
 trigger = on-turn-start
 effects = turn-start-block:3
-flavor = 시키지 않아도 매 순간 제 몫을 돈다. 한 마디마다 그대 앞에 얇은 판을 한 장씩 세워 둔다.
+flavor = 시키지 않아도 매 순간 제 몫을 돈다. 매 마디 그대 앞에 얇은 판을 한 장씩 세워 둔다.
 
 [relic.r-turn-eternal-flywheel]
 name = 멈추지 않는 플라이휠

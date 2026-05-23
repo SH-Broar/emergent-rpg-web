@@ -212,7 +212,7 @@ rank = rare
 source = event
 trigger = passive
 effects = damage-out-add:2
-flavor = 손목을 감은 물줄기가 일격마다 함께 내달린다. 흐름을 탄 공격이 한 뼘 더 깊게 닿는다.
+flavor = 손목을 감은 물줄기가 일격마다 함께 내달린다. 흐름을 탄 공격이 더 깊게 닿는다.
 
 [relic.r-acq-prism-charm]
 name = 변색 부적
@@ -244,7 +244,7 @@ rank = rare
 source = event
 trigger = on-card-played-after
 effects = cards-to-color:5
-flavor = 카드를 낼 때마다 물레가 한 바퀴 돈다. 다섯 바퀴를 채울 때마다 색실 한 가닥이 감긴다.
+flavor = 카드를 낼 때마다 물레가 한 바퀴 돈다. 다섯 바퀴를 채울 때마다 색실이 팽팽히 감긴다.
 
 [relic.r-acq-hourglass-charm]
 name = 모래시계 장식
@@ -304,7 +304,7 @@ rank = common
 source = event
 trigger = on-color-gain
 effects = heal-now:1
-flavor = 색이 한 자리 오를 때마다 작게 꽃이 핀다. 그 향에 상처가 아주 조금 아문다.
+flavor = 색이 오를 때마다 작게 꽃이 핀다. 그 향에 상처가 아주 조금 아문다.
 
 [relic.r-acq-leaf-brooch]
 name = 잎사귀 브로치
@@ -336,7 +336,7 @@ rank = common
 source = event
 trigger = on-color-gain
 effects = gain-time-shards:1
-flavor = 색이 한 자리 오를 때마다 추가 한 번 흔들린다. 그 흔들림에 작은 조각이 떨어진다.
+flavor = 색이 오를 때마다 추가 한 번 흔들린다. 그 흔들림에 작은 조각이 떨어진다.
 
 [relic.r-acq-spectrum-locket]
 name = 스펙트럼 회중시계
@@ -384,4 +384,4 @@ rank = common
 source = event
 trigger = on-color-gain
 effects = gain-time-shards:1
-flavor = 색이 한 자리 차오를 때마다 봉오리가 살짝 벌어진다. 안에서 작은 조각이 떨어진다.
+flavor = 색이 차오를 때마다 봉오리가 살짝 벌어진다. 안에서 작은 조각이 떨어진다.

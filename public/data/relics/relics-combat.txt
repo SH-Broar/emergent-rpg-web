@@ -34,7 +34,7 @@ rank = rare
 source = shop
 trigger = on-combat-start
 effects = combat-start-draw:1
-flavor = 새 장이 열릴 때 저 혼자 움직인다. 시작의 한 순간, 손에 한 줄이 더 적힌다.
+flavor = 새 장이 열릴 때 저 혼자 움직인다. 싸움이 시작되는 그 순간, 손에 카드 한 장이 더 적힌다.
 
 [relic.r-cbt-tome-of-openings]
 name = 서막의 두루마리
@@ -78,7 +78,7 @@ rank = common
 source = shop
 trigger = on-card-played-after
 effects = cards-to-draw:8
-flavor = 한 알씩 넘기다 보면 한 바퀴가 돈다. 여덟 번 손을 놀릴 때마다, 다음 한 줄이 저절로 따라온다.
+flavor = 한 알씩 넘기다 보면 한 바퀴가 돈다. 여덟 번 손을 놀릴 때마다, 다음 카드가 저절로 따라온다.
 
 [relic.r-cbt-swift-abacus]
 name = 빠른 주판
@@ -118,7 +118,7 @@ rank = rare
 source = shop
 trigger = on-card-played-after
 effects = attacks-to-color:3
-flavor = 찌를 때마다 끝에서 색이 번진다. 세 번 내리칠 때마다, 그중 한 색이 한 자리 차오른다.
+flavor = 찌를 때마다 끝에서 색이 번진다. 세 번 내리칠 때마다, 그중 한 색이 조금씩 차오른다.
 
 [relic.r-cbt-tally-knot]
 name = 매듭 셈끈
@@ -134,7 +134,7 @@ rank = rare
 source = npc
 trigger = on-card-played-after
 effects = cards-to-draw:6
-flavor = 로큐가 길 위에서 쓰던 작은 표. 여섯 번 손을 놀릴 때마다, 다음 한 줄이 먼저 도착한다.
+flavor = 로큐가 길 위에서 쓰던 작은 표. 여섯 번 손을 놀릴 때마다, 다음 카드가 먼저 도착한다.
 
 # ============================================================
 # 반응형 피해 받을 때 (등급 변형)
@@ -170,7 +170,7 @@ rank = rare
 source = elite
 trigger = on-damage-taken
 effects = hurt-to-color:1
-flavor = 충격이 닿을 때만 빛을 낸다. 아픔이 스칠 때마다 한 음이 새어, 어느 색이 한 자리 찬다.
+flavor = 충격이 닿을 때만 빛을 낸다. 아픔이 스칠 때마다 한 음이 새어, 어느 색이 슬쩍 찬다.
 
 [relic.r-cbt-callused-hide]
 name = 굳은살 가죽
@@ -178,7 +178,7 @@ rank = common
 source = event
 trigger = on-damage-taken
 effects = hurt-to-block:2
-flavor = 베일수록 두꺼워지는 거죽. 맞고 나면, 다음을 막을 한 겹이 새로 돋는다.
+flavor = 베일수록 두꺼워지는 거죽. 맞고 나면, 다음을 막을 껍질이 새로 돋는다.
 
 [relic.r-cbt-tempered-scale]
 name = 단련된 비늘
@@ -206,7 +206,7 @@ rank = rare
 source = event
 trigger = on-combat-end
 effects = combat-end-heal:7
-flavor = 정령이 풀잎을 으깨어 건넨 한 줌. 싸움이 끝나면, 깊은 상처까지 한 뼘 아문다.
+flavor = 정령이 풀잎을 으깨어 건넨 한 줌. 싸움이 끝나면, 깊은 상처까지 조금씩 아문다.
 
 [relic.r-cbt-wayfarer-crumbs]
 name = 나그네의 빵부스러기
@@ -250,7 +250,7 @@ rank = rare
 source = elite
 trigger = passive
 effects = damage-out-mul:1.3, damage-in-mul:1.2
-flavor = 주먹을 내지를 줄만 알고 거둘 줄은 모른다. 한층 무겁게 때리지만, 돌아오는 매도 한 뼘 더 아프다.
+flavor = 주먹을 내지를 줄만 알고 거둘 줄은 모른다. 한층 무겁게 때리지만, 돌아오는 매도 그만큼 더 아프다.
 
 [relic.r-cbt-overloaded-pack]
 name = 짐 넘치는 배낭
@@ -274,7 +274,7 @@ rank = rare
 source = shop
 trigger = passive
 effects = cost-mod-add:-1, bonus-hp:-8
-flavor = 모든 손놀림에서 한 호흡을 슬쩍 줄여 준다. 대가는 미리 깎인 살 한 줌이다.
+flavor = 모든 손놀림에서 마나를 슬쩍 줄여 준다. 대가는 미리 깎인 살 한 줌이다.
 
 [relic.r-cbt-brute-cleaver]
 name = 막무가내 도끼

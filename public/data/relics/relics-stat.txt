@@ -30,7 +30,7 @@ rank = rare
 source = elite
 trigger = on-acquire
 effects = boost-stat:6:atk
-flavor = 번개가 흙에 떨어진 자리에서 굳은 덩이. 안에서 아직 한 줄기가 돈다.
+flavor = 번개가 흙에 떨어진 자리에서 굳은 덩이. 안에서 아직 전류가 돈다.
 
 [relic.r-stat-mono-spear]
 name = 모노의 첫 창
@@ -66,7 +66,7 @@ rank = rare
 source = elite
 trigger = passive
 effects = damage-out-add:2
-flavor = 감긴 채 번개를 머금은 코일. 손이 닿는 모든 일격에 한 줄기 전류가 더해진다.
+flavor = 감긴 채 번개를 머금은 코일. 손이 닿는 모든 일격에 전류가 더해진다.
 
 [relic.r-stat-sun-edge]
 name = 태양의 날
@@ -156,7 +156,7 @@ rank = rare
 source = event
 trigger = on-rest
 effects = boost-stat:2:def
-flavor = 모닥불 곁에 두면 천천히 단단해진다. 쉴 때마다 흙과 철이 한 겹 짙어진다.
+flavor = 모닥불 곁에 두면 천천히 단단해진다. 쉴 때마다 흙과 철이 더 짙어진다.
 
 # --- DEF 비례 형 ---
 
@@ -198,7 +198,7 @@ rank = rare
 source = event
 trigger = passive
 effects = block-out-add:3
-flavor = 못으로 단단히 박은 띠. 어떤 방어든 한 겹 더 두껍게 잡아 준다.
+flavor = 못으로 단단히 박은 띠. 어떤 방어든 더 두껍게 잡아 준다.
 
 # --- DEF 패시브 모디파이어 ---
 
@@ -208,7 +208,7 @@ rank = common
 source = event
 trigger = passive
 effects = block-out-add:2
-flavor = 어디에 대도 한 겹 더 막아 주는 판. 모든 방어에 무게가 실린다.
+flavor = 어디에 대도 더 막아 주는 판. 모든 방어에 무게가 실린다.
 
 [relic.r-stat-deep-keel]
 name = 깊은 용골
@@ -216,7 +216,7 @@ rank = rare
 source = elite
 trigger = passive
 effects = block-out-add:3
-flavor = 배의 밑을 받치던 용골. 어떤 파도에도 한 겹을 더 지킨다.
+flavor = 배의 밑을 받치던 용골. 어떤 파도에도 방어가 더 두텁다.
 
 # ============================================================
 # MAG 가족 물·바람. 키우는 형 + 비례 형 + 마나/드로우 연계.
@@ -246,7 +246,7 @@ rank = rare
 source = elite
 trigger = on-acquire
 effects = boost-stat:6:mag
-flavor = 밀물과 썰물이 함께 굳은 덩이. 안에서 아직 한 줄기가 오간다.
+flavor = 밀물과 썰물이 함께 굳은 덩이. 안에서 아직 물결이 오간다.
 
 [relic.r-stat-mono-current]
 name = 모노의 물길
@@ -264,7 +264,7 @@ rank = common
 source = event
 trigger = on-turn-start
 effects = boost-stat:1:mag
-flavor = 매 순간 귓가를 스치며 한 줄기를 두고 간다. 호기심 많은 바람이다.
+flavor = 매 순간 귓가를 스치며 무언가를 두고 간다. 호기심 많은 바람이다.
 
 # --- MAG 비례 형 + 마나/드로우 연계 (2효과) ---
 
@@ -274,7 +274,7 @@ rank = rare
 source = elite
 trigger = passive
 effects = mana-extra-add:1, boost-stat:1:mag
-flavor = 흐름을 한 줄기 더 끌어 쓴다. 매 턴 힘이 한 줌 늘고, 물과 바람도 천천히 깊어진다.
+flavor = 흐름을 더 끌어 쓴다. 매 턴 힘이 한 줌 늘고, 물과 바람도 천천히 깊어진다.
 
 [relic.r-stat-foresight-glass]
 name = 예지의 유리
@@ -282,7 +282,7 @@ rank = rare
 source = shop
 trigger = passive
 effects = draw-extra-add:1, boost-stat:1:mag
-flavor = 다음을 한 줄 먼저 비춘다. 손이 한 번 더 바빠지고, 마법의 흐름도 함께 짙어진다.
+flavor = 다음을 미리 비춘다. 손이 한 번 더 바빠지고, 마법의 흐름도 함께 짙어진다.
 
 [relic.r-stat-tide-lens]
 name = 조류의 렌즈
@@ -306,7 +306,7 @@ rank = legendary
 source = event
 trigger = on-card-played-after
 effects = cards-to-draw:7
-flavor = 마법의 흐름을 차곡차곡 감는 추. 여러 장을 엮어 가다 보면 다음 한 줄이 절로 따라온다.
+flavor = 마법의 흐름을 차곡차곡 감는 추. 여러 장을 엮어 가다 보면 다음 카드가 절로 따라온다.
 
 # ============================================================
 # 다운사이드 동반 강력하지만 대가가 따른다.

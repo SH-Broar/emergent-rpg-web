@@ -30,7 +30,7 @@ element = light
 cost = 1
 trigger = manual
 effects = damage:8:enemy, block:5:self
-flavor = 치는 손도, 막는 손도 한 뼘씩 더 멀리.
+flavor = 치는 손도, 막는 손도 조금씩 더 멀리.
 
 [card.c-human-tailwind]
 name = 순풍
@@ -51,7 +51,7 @@ element = wind
 cost = 1
 trigger = manual
 effects = damage:8:enemy, draw:1:self
-flavor = 더 멀리서 불어온 바람이 한 줄 더 실린다.
+flavor = 더 멀리서 불어온 바람이 그대로 실린다.
 
 [card.c-human-adapt]
 name = 적응
@@ -251,7 +251,7 @@ cost = 1
 trigger = manual
 effects = block:6:self, draw:1:self
 upgrade_to = c-phantom-guard-plus
-flavor = 패를 펼치지 않고, 쥔 채로 한 박 버틴다.
+flavor = 패를 펼치지 않고, 쥔 채로 버텨 낸다.
 
 [card.c-phantom-guard-plus]
 name = 쥐고 버티기+
@@ -352,7 +352,7 @@ element = light
 cost = 1
 trigger = manual
 effects = damage-color-count:4:enemy
-flavor = 한 색이 늘 때마다 한 줄기가 더 늘어난다.
+flavor = 한 색이 늘 때마다 빛갈래가 하나씩 더 늘어난다.
 
 [card.c-arcana-judgment]
 name = 공명 심판

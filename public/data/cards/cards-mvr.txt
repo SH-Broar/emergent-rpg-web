@@ -266,7 +266,7 @@ element = light
 cost = 2
 trigger = manual
 effects = damage:14:enemy, draw:2:self
-flavor = "정각이 자기를 미뤘다." 일루네온 시계탑이 멈춘 한 박자가 손에 들어왔다.
+flavor = "정각이 자기를 미뤘다." 일루네온 시계탑이 멈춘 그 순간이 손에 들어왔다.
 
 [card.c-moss-ember-strike]
 name = 잔불의 일격
@@ -286,7 +286,7 @@ element = electric
 cost = 2
 trigger = manual
 effects = block:12:self, draw:3:self
-flavor = 타코미의 골목 거울 속 자신이 한 박자 먼저 손을 들었다.
+flavor = 타코미의 골목 거울 속 자신이 반 발짝 먼저 손을 들었다.
 
 [card.c-alimes-mist-vow]
 name = 안개의 약속
@@ -318,7 +318,7 @@ element = wind
 cost = 0
 trigger = manual
 effects = draw:1:self, next-turn-energy:1:self, heal:-4:self
-flavor = "한 번 더 갈게 한 걸음 빠르게." 루디가 제비의 자세로 한 자리 옮겨 간다.
+flavor = "한 번 더 갈게 한 걸음 빠르게." 루디가 제비의 자세로 가볍게 옮겨 간다.
 
 [card.c-fast-mail]
 name = 빠른 우체 한 통
@@ -328,7 +328,7 @@ element = wind
 cost = 0
 trigger = manual
 effects = draw:1:self, next-turn-energy:1:self, heal:-4:self
-flavor = "한 통 가져왔어." 로큐가 길의 결대로 한 자리 더 흘러간다.
+flavor = "한 통 가져왔어." 로큐가 길을 따라 한 발짝 더 흘러간다.
 
 [card.c-balanced-edge]
 name = 균형의 한 자루
@@ -348,7 +348,7 @@ element = dark
 cost = 1
 trigger = manual
 effects = block:4:self, apply-status:1:enemy:weakness
-flavor = "그 시간이 다시 한 번 열린다면." 페비엘이 결계의 한 줄을 손끝에서 풀어 적에게 한 결 얹는다.
+flavor = "그 시간이 다시 한 번 열린다면." 페비엘이 결계를 손끝에서 풀어 적에게 살며시 얹는다.
 
 [card.c-quiet-arc]
 name = 조용한 한 호
@@ -358,7 +358,7 @@ element = light
 cost = 2
 trigger = manual
 effects = damage:12:enemy, apply-status:1:enemy:vulnerable
-flavor = "조용히, 천천히 그러나 끝까지." 마로의 느린 한 호가 끝에 닿았을 때 적이 한 자리 벌려져 있다.
+flavor = "조용히, 천천히 그러나 끝까지." 마로의 느린 한 호가 끝에 닿았을 때 적이 조금 벌려져 있다.
 
 [card.c-flash-capture]
 name = 한 컷
@@ -368,7 +368,7 @@ element = fire
 cost = 1
 trigger = manual
 effects = damage:6:enemy, apply-status:1:enemy:vulnerable
-flavor = "한 컷, 시간을 멈춰 줄까요?" 피닉스가 셔터 한 번에 적의 다음 한 자리를 짧게 비킨다.
+flavor = "한 컷, 시간을 멈춰 줄까요?" 피닉스가 셔터 한 번에 적의 빈틈을 짧게 비킨다.
 
 [card.c-rize-relay]
 name = 한 판 갈래
@@ -400,7 +400,7 @@ element = dark
 cost = 1
 trigger = manual
 effects = damage-color-count:2:enemy, draw:1:self
-flavor = "다음 생에서 또 들러 주세요." 아카샤가 부른 여러 색의 영혼이 한 자리에 모여, 색이 많을수록 더 짙게 덮친다.
+flavor = "다음 생에서 또 들러 주세요." 아카샤가 부른 여러 색의 영혼이 한데 모여, 색이 많을수록 더 짙게 덮친다.
 
 [card.c-warm-cup]
 name = 따뜻한 한 잔
@@ -440,7 +440,7 @@ element = earth
 cost = 2
 trigger = manual
 effects = growing-block:1:self
-flavor = "엄마한테 도움이 되고 싶어요!" 쿠르쿠마의 잎새 한 자락이 한 번 한 번 자라난다. 쓸수록 더 두꺼워지는 한 자리.
+flavor = "엄마한테 도움이 되고 싶어요!" 쿠르쿠마의 잎새가 쓸 때마다 천천히 자라난다. 쓸수록 더 두꺼워진다.
 
 [card.c-zero-spark]
 name = 한 점의 한 자국
@@ -450,7 +450,7 @@ element = electric
 cost = 1
 trigger = manual
 effects = damage:9:enemy, apply-status:2:enemy:vulnerable
-flavor = "전기는 짧고 단단하게." 제로의 손끝 한 자락에서 짧은 스파크 한 점이 적의 약한 자리 한 자국을 짚어 드러낸다.
+flavor = "전기는 짧고 단단하게." 제로의 손끝에서 짧은 스파크 한 점이 튀어 적의 약한 자국을 짚어 드러낸다.
 
 [card.c-alti-resonance]
 name = 두 자아의 공명
@@ -460,7 +460,7 @@ element = electric
 cost = 1
 trigger = manual
 effects = draw:2:self, heal:4:self
-flavor = "...같은 자리에. 알티." "알타." 두 자아가 한 자리에서 짧고 단정한 공명 한 자락을 보탠다. 가슴 안쪽이 한 자국 가벼워졌다.
+flavor = "...같은 자리에. 알티." "알타." 두 자아가 나란히 짧고 단정한 공명을 보탠다. 가슴 안쪽이 한 자국 가벼워졌다.
 
 [card.c-flame-web]
 name = 화염 거미줄
@@ -470,7 +470,7 @@ element = fire
 cost = 1
 trigger = manual
 effects = damage:8:enemy, apply-status:3:enemy:vulnerable
-flavor = "한 줄 더 엮어 줄까?" 이그니아가 식지 않는 실을 한 줄 던진다. 적이 불그스름한 실에 한 자리 묶인다. 취약.
+flavor = "한 줄 더 엮어 줄까?" 이그니아가 식지 않는 실을 던진다. 적이 불그스름한 실에 칭칭 묶인다. 취약.
 
 [card.c-orca-tide]
 name = 범고래의 한 물결
@@ -480,7 +480,7 @@ element = water
 cost = 1
 trigger = manual
 effects = damage:9:enemy, block:5:self
-flavor = "위는 거칠어. 숨 한 번 더." 클루루가 흑백 꼬리로 물 한 자락을 쳐 올린다. 적에게 한 물결, 그대에게 한 겹.
+flavor = "위는 거칠어. 숨 한 번 더." 클루루가 흑백 꼬리로 물줄기를 쳐 올린다. 적에게 한 물결, 그대에게 두툼한 벽.
 
 [card.c-trade-coil]
 name = 또꼬리 한 감기
@@ -490,7 +490,7 @@ element = earth
 cost = 1
 trigger = manual
 effects = damage:8:enemy, block:6:self
-flavor = "한 필 더 보고 가요." 사라사가 긴 꼬리로 적을 한 번 감았다 푼다. 한 자락은 적에게, 한 자락은 그대를 두른다.
+flavor = "한 필 더 보고 가요." 사라사가 긴 꼬리로 적을 한 번 감았다 푼다. 그 기세가 적을 치고, 남은 힘이 그대를 두른다.
 
 [card.c-lop-sign]
 name = 귀 기울인 한 신호
@@ -500,17 +500,17 @@ element = earth
 cost = 1
 trigger = manual
 effects = draw:1:self, block:5:self
-flavor = 리포가 긴 귀를 한 번 늘어뜨려, 먼 소리를 먼저 듣는다. 손바닥에 무늬 한 줄을 그어 다음 한 수를 일러 준다.
+flavor = 리포가 긴 귀를 한 번 늘어뜨려, 먼 소리를 먼저 듣는다. 손바닥에 무늬를 그어 다음 한 수를 일러 준다.
 
 [card.c-tide-veil]
-name = 물의 한 겹
+name = 물의 방패
 rank = rare
 source = npc
 element = water
 cost = 1
 trigger = manual
 effects = block:6:self, heal:3:self
-flavor = "물살은 내가 고를게요." 마린이 푸른 꼬리로 물 한 겹을 둘러 준다. 갈비뼈 안쪽이 서늘하게 가벼워진다.
+flavor = "물살은 내가 고를게요." 마린이 푸른 꼬리로 물을 둘러 준다. 갈비뼈 안쪽이 서늘하게 가벼워진다.
 
 [card.c-bear-bastion]
 name = 쇳덩이 한 손
@@ -520,7 +520,7 @@ element = iron
 cost = 2
 trigger = manual
 effects = block:12:self, damage:8:enemy
-flavor = "...자격을, 보여라." 던가 묵직한 한 손을 내린다. 등 뒤로 쇳벽 한 겹이 서고, 적에게 한 덩이가 떨어진다.
+flavor = "...자격을, 보여라." 던가 묵직한 한 손을 내린다. 등 뒤로 쇳벽이 서고, 적에게 한 덩이가 떨어진다.
 
 [card.c-tiger-rush]
 name = 빠른 삼연
@@ -530,7 +530,7 @@ element = electric
 cost = 2
 trigger = manual
 effects = damage:5:enemy, damage:5:enemy, damage:5:enemy
-flavor = "...빠른 자만, 따라와라." 티프레가 번개 한 줄을 타고 세 번 가른다. 눈 깜빡할 한 호흡.
+flavor = "...빠른 자만, 따라와라." 티프레가 번개를 타고 세 번 가른다. 눈 깜빡할 사이.
 
 
 # ============================================================
@@ -545,17 +545,17 @@ element = light
 cost = 1
 trigger = manual
 effects = damage-top-color:1:enemy
-flavor = 가장 높이 쌓인 한 색이 그대로 한 줄로 쏟아진다. 한 색에 깊이 기운 자일수록 매섭다.
+flavor = 가장 높이 쌓인 한 색이 그대로 쏟아진다. 한 색에 깊이 기운 자일수록 매섭다.
 
 [card.c-prism-guard]
-name = 가장 짙은 한 겹
+name = 가장 짙은 방어
 rank = rare
 source = hyperion
 element = water
 cost = 1
 trigger = manual
 effects = block-top-color:1:self
-flavor = 가장 높이 쌓인 한 색이 등 뒤에 한 겹으로 선다. 치우친 자의 단단함.
+flavor = 가장 높이 쌓인 한 색이 등 뒤에 두툼하게 선다. 치우친 자의 단단함.
 
 [card.c-spectrum-edge]
 name = 여덟 빛의 한 칼
@@ -575,7 +575,7 @@ element = fire
 cost = 1
 trigger = manual
 effects = damage-from-hp:6:enemy
-flavor = 제 피 한 줄을 대가로 내어, 곱절로 되돌려 친다. 갈비뼈가 비는 만큼 적이 무너진다.
+flavor = 제 피를 대가로 내어, 곱절로 되돌려 친다. 갈비뼈가 비는 만큼 적이 무너진다.
 
 
 # ============================================================
@@ -595,7 +595,7 @@ element = fire
 cost = 1
 trigger = manual
 effects = apply-status:1:self:feral, damage:5:enemy
-flavor = "...오늘은 사람으로 못 있겠어." 카시스의 아홉 꼬리가 한 자락씩 곤두선다. 손톱이 짐승의 것으로 자라며, 등 뒤를 가릴 겨를이 사라진다. 공격은 두 배, 방어는 잊는다.
+flavor = "...오늘은 사람으로 못 있겠어." 카시스의 아홉 꼬리가 차례차례 곤두선다. 손톱이 짐승의 것으로 자라며, 등 뒤를 가릴 겨를이 사라진다. 공격은 두 배, 방어는 잊는다.
 
 [card.c-fang-frenzy]
 name = 송곳니 난무
@@ -627,7 +627,7 @@ element = dark
 cost = 2
 trigger = manual
 effects = apply-status:2:enemy:regress, damage:6:enemy
-flavor = "네가 쌓아 온 색을, 잠시 잊게 해 줄게." 아주 오래된 검은 한 줄이 적의 단단함을 풀어 내린다. 적의 색 보강이 두 자리 멎는다.
+flavor = "네가 쌓아 온 색을, 잠시 잊게 해 줄게." 아주 오래된 어둠이 적의 단단함을 풀어 내린다. 적의 색 보강이 두 칸 멎는다.
 
 # ---------- damage-per-debuff 2장 ----------
 
@@ -788,7 +788,7 @@ element = earth
 cost = 2
 trigger = manual
 effects = block:8:self, block-to-damage:1:enemy
-flavor = "막고 나서, 친다." 던가 묵직한 손으로 먼저 한 겹을 두르고, 그 두께를 그대로 적에게 떨군다. 단단할수록 매섭다.
+flavor = "막고 나서, 친다." 던가 묵직한 손으로 먼저 두껍게 두르고, 그 두께를 그대로 적에게 떨군다. 단단할수록 매섭다.
 
 # ---------- spend-all-energy 2장 (남은 마나 몰빵) ----------
 
@@ -1320,7 +1320,7 @@ element = dark
 cost = 1
 trigger = manual
 effects = damage-color-count:3:enemy, draw:1:self
-flavor = 더 많은 색의 영혼이, 한 자리에 모인다.
+flavor = 더 많은 색의 영혼이, 한데 모인다.
 
 [card.c-warm-cup-plus]
 name = 따뜻한 한 잔+
@@ -1400,7 +1400,7 @@ element = water
 cost = 1
 trigger = manual
 effects = damage:13:enemy, block:8:self
-flavor = 더 큰 물결, 더 두꺼운 한 겹.
+flavor = 더 큰 물결, 더 두꺼운 방어.
 
 [card.c-trade-coil-plus]
 name = 또꼬리 한 감기+
@@ -1423,14 +1423,14 @@ effects = draw:1:self, block:8:self
 flavor = 더 먼 소리까지, 미리 듣는다.
 
 [card.c-tide-veil-plus]
-name = 물의 한 겹+
+name = 물의 방패+
 rank = rare
 source = npc
 element = water
 cost = 1
 trigger = manual
 effects = block:9:self, heal:5:self
-flavor = 더 두꺼운 물 한 겹.
+flavor = 더 두꺼운 물 방어.
 
 [card.c-bear-bastion-plus]
 name = 쇳덩이 한 손+
@@ -1465,7 +1465,7 @@ effects = damage-top-color:2:enemy
 flavor = 가장 높은 색이, 두 배로 쏟아진다.
 
 [card.c-prism-guard-plus]
-name = 가장 짙은 한 겹+
+name = 가장 짙은 방어+
 rank = rare
 source = hyperion
 element = water

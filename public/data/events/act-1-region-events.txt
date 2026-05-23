@@ -858,7 +858,7 @@ name = 진주 봐 봐!
 node_kinds = event
 weight = 1
 once_per_run = true
-body = 조수 웅덩이 옆 가즈리가 진주 한 움큼을 손바닥에 모아 그대를 본다. "이거 봐 봐! 예쁘지!" 형태가 한 번 흐려졌다가 다시 또렷해진다.
+body = 조수 웅덩이 옆 가즈리가 진주 여러 알을 손바닥에 모아 그대를 본다. "이거 봐 봐! 예쁘지!" 형태가 한 번 흐려졌다가 다시 또렷해진다.
 
 [event.ev-kishina-spirit-bead.choice.1]
 label = "응 정말 예쁘다" 고 답한다
@@ -3586,7 +3586,7 @@ name = 화염 거미 둥지
 node_kinds = event, village
 weight = 1
 once_per_run = true
-body = 트리플라워 위쪽 불그스름한 실이 길게 늘어진 둥지. 이그니아가 여덟 다리로 실 끝을 다듬는다. 살라만더 새끼들이 다리 사이로 기어다닌다. "한 가닥 더 엮어 줄까?"
+body = 트리플라워 위쪽 불그스름한 실이 길게 늘어진 둥지. 이그니아가 여덟 다리로 실 끝을 다듬는다. 살라만더 새끼들이 다리 사이로 기어다닌다. "실 더 엮어 줄까?"
 
 [event.ev-tri-web-nest.choice.1]
 label = 실 엮는 일을 잠깐 돕는다
@@ -3603,7 +3603,7 @@ result_text = 새끼가 따뜻하게 손바닥에 머물렀다. 이그니아가 
 [event.ev-tri-web-nest.choice.3]
 label = 그대로 지나간다
 gold = 8
-result_text = 둥지의 불그스름한 실이 등 뒤에서 길게 늘어졌다. 이그니아가 "또 와." 한 마디.
+result_text = 둥지의 불그스름한 실이 등 뒤에서 길게 늘어졌다. 이그니아가 "또 와." 하고 말했다.
 
 
 # --- 트리플라워 2. n-tri-magma-core (마그마 핵) ---
@@ -3662,7 +3662,7 @@ result_text = "...맹금, 하피, 그리고 하늘의 주인. 나도 한 번 올
 [event.ev-falcon-shore.choice.3]
 label = 그대로 오른다
 gold = 6
-result_text = 샤치가 "...조심해." 한 마디. 발 아래 바다가 점점 멀어졌다.
+result_text = 샤치가 "...조심해." 하고 말했다. 발 아래 바다가 점점 멀어졌다.
 
 
 # --- 팔콘 2. n-falcon-core (둥지 꼭대기, 유물 보상) ---
@@ -3724,7 +3724,7 @@ result_text = "...말이 통하네." 사라사가 눈을 가늘게 뜨고 웃었
 label = 구경만 하고 지나간다
 hidden = true
 draw = 1
-result_text = 좌판의 색색 직물이 한눈에 들어왔다 지나갔다. 사라사가 "천천히 봐요." 한 마디.
+result_text = 좌판의 색색 직물이 한눈에 들어왔다 지나갔다. 사라사가 "천천히 봐요." 하고 말했다.
 
 
 # --- 교역소 2. n-trade-caravan (대상대 행상) ---
