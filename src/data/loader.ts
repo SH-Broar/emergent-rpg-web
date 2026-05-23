@@ -18,8 +18,10 @@ import {
   type IniSection,
 } from './parser';
 import { validateCardBaseline } from './schemas/card';
+import { DEFAULT_BALANCE } from './schemas';
 import type {
   AffinityReward,
+  Balance,
   Boss,
   BossIntent,
   BossPhase,
@@ -828,6 +830,38 @@ export interface GameData {
   chaosDefs: Map<string, Chaos>;
   clues: Map<string, import('@/data/schemas').Clue>;
   unlocks: Map<string, MetaUnlock>;
+  /** 상점·공방 밸런스 튜닝 (config/balance.txt). 누락 시 DEFAULT_BALANCE. */
+  balance: Balance;
+}
+
+// ========== Balance (상점/공방 튜닝) ==========
+
+export function parseBalance(ini: IniData): Balance {
+  const f = ini['config.balance'] ?? {};
+  const n = (v: string | undefined, d: number) => parseNumber(v, d);
+  return {
+    shopCardPriceBasic: n(f.shop_card_price_basic, DEFAULT_BALANCE.shopCardPriceBasic),
+    shopCardPriceCommon: n(f.shop_card_price_common, DEFAULT_BALANCE.shopCardPriceCommon),
+    shopCardPriceRare: n(f.shop_card_price_rare, DEFAULT_BALANCE.shopCardPriceRare),
+    shopCardPriceLegendary: n(f.shop_card_price_legendary, DEFAULT_BALANCE.shopCardPriceLegendary),
+    shopRelicPriceBasic: n(f.shop_relic_price_basic, DEFAULT_BALANCE.shopRelicPriceBasic),
+    shopRelicPriceCommon: n(f.shop_relic_price_common, DEFAULT_BALANCE.shopRelicPriceCommon),
+    shopRelicPriceRare: n(f.shop_relic_price_rare, DEFAULT_BALANCE.shopRelicPriceRare),
+    shopRelicPriceLegendary: n(f.shop_relic_price_legendary, DEFAULT_BALANCE.shopRelicPriceLegendary),
+    shopCardRemovalPrice: n(f.shop_card_removal_price, DEFAULT_BALANCE.shopCardRemovalPrice),
+    shopNumCards: n(f.shop_num_cards, DEFAULT_BALANCE.shopNumCards),
+    shopNumRelics: n(f.shop_num_relics, DEFAULT_BALANCE.shopNumRelics),
+    shopMaterialCommonPrice: n(f.shop_material_common_price, DEFAULT_BALANCE.shopMaterialCommonPrice),
+    shopMaterialCommonStock: n(f.shop_material_common_stock, DEFAULT_BALANCE.shopMaterialCommonStock),
+    upgradeCostShards: n(f.upgrade_cost_shards, DEFAULT_BALANCE.upgradeCostShards),
+    upgradeRareCostShards: n(f.upgrade_rare_cost_shards, DEFAULT_BALANCE.upgradeRareCostShards),
+    upgradeLegendaryCostShards: n(f.upgrade_legendary_cost_shards, DEFAULT_BALANCE.upgradeLegendaryCostShards),
+    forgePriceShards: n(f.forge_price_shards, DEFAULT_BALANCE.forgePriceShards),
+    legendaryCostShards: n(f.legendary_cost_shards, DEFAULT_BALANCE.legendaryCostShards),
+    forgeNumOffers: n(f.forge_num_offers, DEFAULT_BALANCE.forgeNumOffers),
+    potionCommonCostShards: n(f.potion_common_cost_shards, DEFAULT_BALANCE.potionCommonCostShards),
+    potionRareCostShards: n(f.potion_rare_cost_shards, DEFAULT_BALANCE.potionRareCostShards),
+  };
 }
 
 // ========== Clue ==========
@@ -1093,6 +1127,8 @@ const DATA_FILES = [
   'data/clues/act-1-clues.txt',
   // === 메타 해금 (A단계) — 자원 소비 투자 카탈로그. ===
   'data/meta/unlocks.txt',
+  // === 밸런스 설정 — 상점/공방 가격·슬롯·제작비 (RPGEditor 편집). ===
+  'data/config/balance.txt',
   // === peace-310 (MVR) — 파일은 학습용으로 보존, 로딩에서는 제외. ===
   // 'data/timelines/peace-310.txt',
   // 'data/node-maps/peace-310-map.txt',
@@ -1152,6 +1188,7 @@ export async function loadAllData(baseUrl?: string): Promise<GameData> {
     chaosDefs: parseChaosDefs(merged),
     clues: parseClues(merged),
     unlocks: parseUnlocks(merged),
+    balance: parseBalance(merged),
   };
 }
 
@@ -1182,5 +1219,6 @@ export function loadFromText(text: string): GameData {
     chaosDefs: parseChaosDefs(ini),
     clues: parseClues(ini),
     unlocks: parseUnlocks(ini),
+    balance: parseBalance(ini),
   };
 }

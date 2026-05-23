@@ -24,6 +24,7 @@ import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
 import { getNeighbors, getNode, isTimeUp, effectiveKind as systemEffectiveKind } from '@/systems/map';
 import { restHealMul, lockedTownCount, isNoShop } from '@/systems/chaos';
+import { isActivityDone } from '@/systems/activity';
 import { rng } from '@/systems/rng';
 import type { Node, NodeId, NodeKind, NodeMap } from '@/data/schemas';
 
@@ -169,10 +170,12 @@ type EnterAction =
   | 'pass-only'
   | 'boss'
   | 'rest-repeat'
+  | 'rest-done'
   | 'shop-enter'
   | 'event-pass'
   | 'gather-enter'
   | 'activity-enter'
+  | 'activity-done'
   | 'activity-possessed'
   | 'unreachable';
 
@@ -195,6 +198,7 @@ function getEnterAction(): EnterAction {
     case 'boss':
       return 'boss';
     case 'rest':
+      if (st?.restDone) return 'rest-done';
       return 'rest-repeat';
     case 'shop':
       return 'shop-enter';
@@ -203,6 +207,7 @@ function getEnterAction(): EnterAction {
     case 'activity':
       // 빙의(possession) 중에는 활동에 들어갈 수 없다.
       if ((run.data.possessed ?? 0) > 0) return 'activity-possessed';
+      if (isActivityDone(selectedNodeId.value!)) return 'activity-done';
       return 'activity-enter';
     case 'village':
     case 'workshop':
@@ -278,6 +283,13 @@ function enterSelected() {
       router.push('/game/boss');
       break;
     case 'rest': {
+      const restSt = run.data.nodeStates[node.id];
+      if (restSt?.restDone) {
+        ui.toast('info', '이미 쉬어간 자리입니다.');
+        break;
+      }
+      // restDone 마킹 — visitNode가 먼저 실행되어 nodeState는 이미 존재.
+      if (restSt) restSt.restDone = true;
       // 수화 중(feral-heavy)은 *휴식에서 가라앉는다* — 회복 전에 먼저 풀어 회복이 들어가게.
       if ((run.data.feralHeavy ?? 0) > 0) {
         run.data.feralHeavy = 0;
@@ -298,8 +310,12 @@ function enterSelected() {
       break;
     }
     case 'activity':
-      // 활동 = 컬러 주사위 도전. 전용 화면으로 이동(현재 노드는 visitNode로 이미 설정됨).
-      router.push('/game/activity');
+      // 이미 다녀간 활동은 사건처럼 자동 통과.
+      if (isActivityDone(node.id)) {
+        ui.toast('info', '이미 다녀간 활동입니다.');
+      } else {
+        router.push('/game/activity');
+      }
       break;
   }
 
@@ -840,9 +856,11 @@ function enterLabel(): string {
     case 'choose-combat': return '다시 싸운다';
     case 'event-pass': return '지나간다';
     case 'rest-repeat': return '잠시 쉰다';
+    case 'rest-done': return '이미 쉰 자리';
     case 'shop-enter': return '상점에 들어간다';
     case 'gather-enter': return '채집한다';
     case 'activity-enter': return '활동한다';
+    case 'activity-done': return '이미 다녀간 활동';
     case 'activity-possessed': return '혼란 상태 (활동 불가)';
     case 'boss': return '도전한다';
     case 'pass-only': return '닫기';
@@ -894,6 +912,7 @@ function enterLabel(): string {
                   'node-group--visited': run.data.nodeStates[node.id]?.visited,
                   'node-group--cleared': run.data.nodeStates[node.id]?.combatCleared,
                   'node-group--stealthed': run.data.nodeStates[node.id]?.combatStealthed,
+                  'node-group--done': run.data.nodeStates[node.id]?.activityDone || run.data.nodeStates[node.id]?.restDone,
                   'node-group--selected': selectedNodeId === node.id,
                   'node-group--chaos-locked': chaosLockedNodes.has(node.id),
                   'node-group--edge-start': edgeStartId === node.id,
@@ -1223,6 +1242,7 @@ function enterLabel(): string {
 }
 .node-group--visited .node-dot { opacity: 0.7; }
 .node-group--cleared .node-dot { opacity: 0.35; }
+.node-group--done .node-dot { opacity: 0.45; }
 .node-group--stealthed .node-dot {
   opacity: 0.55;
   stroke: #8eedff;

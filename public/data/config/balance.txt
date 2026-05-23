@@ -1,0 +1,37 @@
+# 상점·공방 밸런스 설정. RPGEditor "설정" 탭에서 편집.
+# 비우거나 빠진 값은 코드 기본값으로 폴백한다 (가격이 0이 되지 않음).
+# 가격 단위: 골드. *_shards 단위: 시간의 조각.
+
+[config.balance]
+name = 밸런스 설정
+
+# ── 상점 카드 가격 (등급별, 골드) ──
+shop_card_price_basic = 20
+shop_card_price_common = 50
+shop_card_price_rare = 100
+shop_card_price_legendary = 180
+
+# ── 상점 유물 가격 (등급별, 골드) ──
+shop_relic_price_basic = 60
+shop_relic_price_common = 100
+shop_relic_price_rare = 160
+shop_relic_price_legendary = 240
+
+# ── 상점 슬롯/제거/재료 ──
+shop_card_removal_price = 50
+shop_num_cards = 5
+shop_num_relics = 2
+shop_material_common_price = 18
+shop_material_common_stock = 4
+
+# ── 공방 강화/제작 (시간의 조각) ──
+upgrade_cost_shards = 8
+upgrade_rare_cost_shards = 12
+upgrade_legendary_cost_shards = 18
+forge_price_shards = 15
+legendary_cost_shards = 25
+forge_num_offers = 3
+
+# ── 포션 제작 (시간의 조각) ──
+potion_common_cost_shards = 6
+potion_rare_cost_shards = 12

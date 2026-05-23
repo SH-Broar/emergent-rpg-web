@@ -1,18 +1,17 @@
 <script setup lang="ts">
 /**
- * 상점 화면 — 카드 5장 + 유물 2개 + 카드 제거 1슬롯.
+ * 상점 화면 — 카드 5장 + 유물 2개. 카드 제거는 공방(workshop)으로 이동.
  *
  * 재고는 노드 진입 시 1회 시드 추첨 후 RunState에 스냅샷. 재방문 시 동일.
  */
 
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import {
   getOrCreateShopInventory,
   purchaseShopCard,
-  purchaseShopCardRemoval,
   purchaseShopMaterial,
   purchaseShopRelic,
 } from '@/systems/shop';
@@ -34,9 +33,6 @@ const currentNode = computed(() => {
 const inventory = computed(() => run.data.shopInventories?.[nodeId.value]);
 
 const discountPercent = computed(() => Math.round(getCraftingDiscount() * 100));
-
-// === 카드 제거 모드 ===
-const removalMode = ref(false);
 
 function cardDef(id: string): Card | undefined {
   return data.cards.get(id);
@@ -69,11 +65,6 @@ function itemName(id: string): string {
 function itemDesc(id: string): string {
   return data.items.get(id)?.description ?? '';
 }
-function pickRemovalTarget(cardInstanceId: string) {
-  const ok = purchaseShopCardRemoval(nodeId.value, cardInstanceId);
-  if (ok) removalMode.value = false;
-}
-
 function rankLabel(rank: string): string {
   return ({ basic: '기본', common: '일반', rare: '희귀', legendary: '전설' } as Record<string, string>)[rank] ?? rank;
 }
@@ -199,30 +190,6 @@ onMounted(() => {
       </ul>
     </section>
 
-    <!-- 카드 제거 슬롯 -->
-    <section class="removal">
-      <h2 class="rack__title">카드 제거</h2>
-      <p class="removal__desc">컬렉션의 카드 1장을 영구 제거합니다.</p>
-      <div class="removal__row">
-        <button
-          v-if="!removalMode"
-          class="slot__buy"
-          :disabled="inventory.removalUsed || run.data.gold < inventory.removalPrice || run.data.collection.length === 0"
-          @click="removalMode = true"
-        >
-          {{ inventory.removalUsed ? '사용 완료' : `${inventory.removalPrice} G — 제거할 카드 선택` }}
-        </button>
-        <button v-else class="cancel" @click="removalMode = false">취소</button>
-      </div>
-      <ul v-if="removalMode" class="removal__list">
-        <li v-for="c in run.data.collection" :key="c.instanceId" class="removal__item">
-          <span class="removal__name">{{ c.name }}</span>
-          <span class="removal__meta">cost {{ c.cost }} · {{ rankLabel(c.rank) }}</span>
-          <button class="removal__pick" @click="pickRemovalTarget(c.instanceId!)">이 카드 제거</button>
-        </li>
-      </ul>
-    </section>
-
     <button class="leave" @click="leave">떠나기</button>
   </main>
 </template>
@@ -285,33 +252,6 @@ h1 { color: #c08eff; margin: 0; }
 }
 .slot__buy:hover:not(:disabled) { background: rgba(192, 142, 255, 0.32); }
 .slot__buy:disabled { opacity: 0.4; cursor: not-allowed; }
-
-.removal { margin-top: 1.5rem; padding: 0.8rem 1rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; }
-.removal__desc { color: #b6b6c4; font-size: 0.85rem; margin: 0 0 0.5rem; }
-.removal__row { display: flex; gap: 0.5rem; }
-.cancel { background: none; border: 1px solid rgba(255,255,255,0.2); color: #b6b6c4; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font: inherit; }
-.removal__list { list-style: none; padding: 0; margin: 0.6rem 0 0; max-height: 280px; overflow-y: auto; }
-.removal__item {
-  display: grid;
-  grid-template-columns: 1.4fr 1fr auto;
-  gap: 0.5rem;
-  align-items: center;
-  padding: 0.35rem 0.5rem;
-  border-bottom: 1px dashed rgba(255,255,255,0.08);
-}
-.removal__name { color: #e9e9f4; font-size: 0.9rem; }
-.removal__meta { color: #888; font-size: 0.8rem; }
-.removal__pick {
-  background: rgba(255, 142, 142, 0.18);
-  border: 1px solid rgba(255, 142, 142, 0.45);
-  color: #ffd0d0;
-  padding: 0.3rem 0.7rem;
-  border-radius: 5px;
-  cursor: pointer;
-  font: inherit;
-  font-size: 0.8rem;
-}
-.removal__pick:hover { background: rgba(255, 142, 142, 0.32); }
 
 .leave { margin-top: 1.5rem; padding: 0.6rem 1.2rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: inherit; border-radius: 6px; cursor: pointer; font: inherit; }
 </style>

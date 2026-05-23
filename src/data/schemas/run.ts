@@ -175,7 +175,7 @@ export interface CombatState {
    */
   potionUsedThisTurn?: boolean;
 
-  // === 전투 에로 / 카드 교란 기믹 (Stage 2 — 전부 optional, 미설정 시 영향 0) ===
+  // === 카드 교란 기믹 (Stage 2 — 전부 optional, 미설정 시 영향 0) ===
   /**
    * 구속(bind)/삼킴(devour) 상태 — 한 번에 하나만 활성. 발버둥(struggle)으로 해제.
    *  - bind   : 매 플레이어 턴 (base + ramp)장의 손패를 잠금(lockedCardIds 재사용).
@@ -246,6 +246,8 @@ export interface NodeStateRecord {
   eventCount?: number;
   /** 활동 노드 발동 여부 — true면 다음 하루 경과(갱신) 전까지 재발동 안 함. */
   activityDone?: boolean;
+  /** 휴식 노드 사용 여부 — true면 다음 하루 경과(갱신) 전까지 회복 없이 통과만. */
+  restDone?: boolean;
   /** 채집 횟수(이번 갱신 주기) — 반복할수록 효율 체감. 하루 경과 시 0으로 리셋. */
   gatherCount?: number;
 }

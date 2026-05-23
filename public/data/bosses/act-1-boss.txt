@@ -5,14 +5,14 @@
 
 [boss.bs-act-1-anchor]
 name = 시간의 정령
-description = 형태가 흐릿한 어린 정령. 떠나려는 모든 것을 저도 모르게 붙잡는다. 모노조차 이것이 만들어진 순간을 기억하지 못한다.
+description = 형태가 흐릿한 어린 정령.
 timeline = tl-act-1-era4-061
 hp = 1800
 attack = 14
 defense = 4
 reward_soul = 30
 reward_codex = bs-act-1-anchor
-intro = 풍혈지대 위, 공기가 멈춘다. 작은 그림자가 떠 있다. 그것은 아무 말도 하지 않는다.
+intro = 공기가 멈춘다. 작은 그림자가 떠 있다. 그것은 아무 말도 하지 않는다.
 defeat_text = 정령이 천천히, 손을 편다. 붙잡고 있던 것들이 떠나간다. "……" 시간이 다시 흐른다.
 
 # 강상태이상은 시간 테마 + 페이즈 기믹과 비중복 + 사이클당 1~2회만(사용자 사양).

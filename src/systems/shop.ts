@@ -19,32 +19,32 @@ import { availableCards, availableRelics } from '@/systems/unlocks';
 import { rng } from '@/systems/rng';
 import { shopPriceMul, isNoRemoval, isNoShop } from '@/systems/chaos';
 
-/** 카드 기본 가격 (골드). */
-const CARD_BASE_PRICE: Record<Rank, number> = {
-  basic: 20,
-  common: 50,
-  rare: 100,
-  legendary: 180,
-};
+// 가격·슬롯은 config/balance.txt 에서 로드 (useDataStore().balance). 누락 시 DEFAULT_BALANCE.
+/** 카드 기본 가격 (골드) — 등급별. */
+function cardBasePrice(rank: Rank): number {
+  const b = useDataStore().balance;
+  switch (rank) {
+    case 'basic': return b.shopCardPriceBasic;
+    case 'common': return b.shopCardPriceCommon;
+    case 'rare': return b.shopCardPriceRare;
+    case 'legendary': return b.shopCardPriceLegendary;
+    default: return b.shopCardPriceCommon;
+  }
+}
+/** 유물 기본 가격 (골드) — 등급별. */
+function relicBasePrice(rank: Rank): number {
+  const b = useDataStore().balance;
+  switch (rank) {
+    case 'basic': return b.shopRelicPriceBasic;
+    case 'common': return b.shopRelicPriceCommon;
+    case 'rare': return b.shopRelicPriceRare;
+    case 'legendary': return b.shopRelicPriceLegendary;
+    default: return b.shopRelicPriceCommon;
+  }
+}
 
-/** 유물 기본 가격 (골드). */
-const RELIC_BASE_PRICE: Record<Rank, number> = {
-  basic: 60,
-  common: 100,
-  rare: 160,
-  legendary: 240,
-};
-
-/** 카드 제거 가격. */
-const CARD_REMOVAL_PRICE = 50;
-
-const NUM_CARDS = 5;
-const NUM_RELICS = 2;
-
-// 일반 재료 판매 (Item Economy) — 안정 공급. 1개당 골드, 재고 한도.
+// 일반 재료 판매 (Item Economy) — id는 고정, 가격/재고는 balance.
 const MATERIAL_COMMON_ID = 'i-material-common';
-const MATERIAL_COMMON_PRICE = 18;
-const MATERIAL_COMMON_STOCK = 4;
 
 /** discount 비율 + 카오스 shop-price-mul을 적용한 최종 가격. */
 function applyDiscount(base: number): number {
@@ -78,7 +78,7 @@ function getShopCardPool(): Card[] {
     pool.push(c);
   }
   // 풀이 너무 작으면 (가용 카드 한정) 전설 제외만 적용한 폴백.
-  if (pool.length < NUM_CARDS) {
+  if (pool.length < useDataStore().balance.shopNumCards) {
     return available.filter((c) => c.rank !== 'legendary');
   }
   return pool;
@@ -102,7 +102,7 @@ function getShopRelicPool(): Relic[] {
     pool.push(r);
   }
   // 풀이 너무 작으면 보유 제외 + 전설 제외만 적용한 (가용) 폴백.
-  if (pool.length < NUM_RELICS) {
+  if (pool.length < useDataStore().balance.shopNumRelics) {
     return available.filter((r) => !owned.has(r.id) && r.rank !== 'legendary');
   }
   return pool;
@@ -115,8 +115,8 @@ function buildMaterialSlots(): ShopMaterialSlot[] {
   if (data.items.get(MATERIAL_COMMON_ID)) {
     slots.push({
       itemId: MATERIAL_COMMON_ID,
-      price: applyDiscount(MATERIAL_COMMON_PRICE),
-      stock: MATERIAL_COMMON_STOCK,
+      price: applyDiscount(data.balance.shopMaterialCommonPrice),
+      stock: data.balance.shopMaterialCommonStock,
     });
   }
   return slots;
@@ -125,6 +125,7 @@ function buildMaterialSlots(): ShopMaterialSlot[] {
 /** 노드 재고 생성 — 시드 추첨. 이미 있으면 기존 반환. */
 export function getOrCreateShopInventory(nodeId: string): ShopInventory {
   const run = useRunStore();
+  const bal = useDataStore().balance;
   if (!run.data.shopInventories) run.data.shopInventories = {};
   const existing = run.data.shopInventories[nodeId];
   if (existing) {
@@ -147,22 +148,22 @@ export function getOrCreateShopInventory(nodeId: string): ShopInventory {
     return empty;
   }
 
-  const cardCandidates = pickRandom(getShopCardPool(), NUM_CARDS);
-  const relicCandidates = pickRandom(getShopRelicPool(), NUM_RELICS);
+  const cardCandidates = pickRandom(getShopCardPool(), bal.shopNumCards);
+  const relicCandidates = pickRandom(getShopRelicPool(), bal.shopNumRelics);
 
   const cards: ShopCardSlot[] = cardCandidates.map((c) => {
     const instance = instantiateCard(c);
     return {
       cardId: c.id,
       cardInstanceId: instance.instanceId!,
-      price: applyDiscount(CARD_BASE_PRICE[c.rank] ?? 50),
+      price: applyDiscount(cardBasePrice(c.rank)),
       purchased: false,
     };
   });
 
   const relics: ShopRelicSlot[] = relicCandidates.map((r) => ({
     relicId: r.id,
-    price: applyDiscount(RELIC_BASE_PRICE[r.rank] ?? 100),
+    price: applyDiscount(relicBasePrice(r.rank)),
     purchased: false,
   }));
 
@@ -171,7 +172,7 @@ export function getOrCreateShopInventory(nodeId: string): ShopInventory {
     cards,
     relics,
     removalUsed: false,
-    removalPrice: applyDiscount(CARD_REMOVAL_PRICE),
+    removalPrice: applyDiscount(bal.shopCardRemovalPrice),
     materials: buildMaterialSlots(),
   };
   run.data.shopInventories[nodeId] = inventory;

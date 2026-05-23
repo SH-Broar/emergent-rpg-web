@@ -1408,7 +1408,7 @@ function executeMonsterIntent(c: CombatState, monster?: Monster, intentOverride?
       }
       break;
     }
-    // === 전투 에로 기믹 ===
+    // === 이상 전투 기믹 ===
     case 'bind': {
       // bind:gauge:lock — 일반 구속(버튼 발버둥). parts[2]=기본 잠금 카드 수.
       startGrapple(c, 'bind', value || 3, Number(parts[2]) || 1, parts[3] || '구속');

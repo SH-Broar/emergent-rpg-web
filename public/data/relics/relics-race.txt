@@ -15,7 +15,7 @@ name = 바람결 깃
 rank = common
 source = race
 trigger = on-combat-start
-effects = combat-start-hand-card:c-moth-windgather
+effects = combat-start-hand-card:0:c-moth-windgather
 flavor = 전투마다 손에 *바람갈무리*(0코·2드로우·손에 남음) 한 장이 깃든다. 덱을 빠르게 훑어 속도를 낸다.
 
 [relic.r-race-phantom]

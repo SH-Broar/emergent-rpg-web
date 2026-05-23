@@ -9,42 +9,37 @@
  */
 
 import type { Card, ForgeCardSlot, ForgeOffer, Item, Rank } from '@/data/schemas';
-import { useRunStore } from '@/stores/run';
+import { useRunStore, CARD_SALVAGE_SHARDS } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
 import { instantiateCard } from '@/systems/deck';
 import { availableCards } from '@/systems/unlocks';
 import { rng } from '@/systems/rng';
-import { upgradeCostMul } from '@/systems/chaos';
+import { upgradeCostMul, isNoRemoval } from '@/systems/chaos';
+import { isPossessionLocked } from '@/systems/possession';
 
-export const UPGRADE_COST_TIME_SHARDS = 8;
-export const FORGE_PRICE_TIME_SHARDS = 15;
-export const LEGENDARY_COST_TIME_SHARDS = 25;
+// 가격·제작비·슬롯 수는 config/balance.txt 에서 로드 (useDataStore().balance). 누락 시 DEFAULT_BALANCE.
 // 희귀도 사다리 재료 id (Item Economy). 'i-time-answer'(전설)는 RARE_MATERIAL_ID_ACT1로 호환 유지.
 export const MATERIAL_COMMON_ID = 'i-material-common';
 export const MATERIAL_RARE_ID = 'i-material-rare';
 export const MATERIAL_LEGENDARY_ID = 'i-time-answer';
 export const RARE_MATERIAL_ID_ACT1 = MATERIAL_LEGENDARY_ID;
-const FORGE_NUM_OFFERS = 3;
 // 사용자 사양: legendary는 *추첨 폐지*, *마을 고유 풀 + 특산물 + 희소 재료*로만 제작.
 const FORGE_RANKS: Rank[] = ['rare'];
 
-// 강화 재료 곡선 (Q9): 기본/일반 강화 = 시간조각만. 희귀 강화 +희귀재료, 전설 강화 +전설재료.
-// *강화 대상 카드의 rank*로 판정 (희귀 카드를 강화 → 희귀재료 요구).
-export const UPGRADE_RARE_COST_TIME_SHARDS = 12;
-export const UPGRADE_LEGENDARY_COST_TIME_SHARDS = 18;
-
 /**
- * 강화 비용 표 — 카드 rank → { 시간조각, 재료 id(있으면) }.
+ * 강화 비용 표 — 카드 rank → { 시간조각, 재료 id(있으면) }. 비용은 balance에서.
  * 카오스 upgrade-cost-mul(무딘 숫돌) — 시간조각 비용에 배수(1+param) 적용(올림).
+ * 강화 재료 곡선: 기본/일반 = 시간조각만. 희귀 +희귀재료, 전설 +전설재료 (강화 대상 카드 rank로 판정).
  */
 export function upgradeCostFor(rank: Rank): { timeShards: number; materialId?: string } {
+  const b = useDataStore().balance;
   const mul = upgradeCostMul();
   const scale = (n: number) => Math.ceil(n * mul);
-  if (rank === 'rare') return { timeShards: scale(UPGRADE_RARE_COST_TIME_SHARDS), materialId: MATERIAL_RARE_ID };
-  if (rank === 'legendary') return { timeShards: scale(UPGRADE_LEGENDARY_COST_TIME_SHARDS), materialId: MATERIAL_LEGENDARY_ID };
+  if (rank === 'rare') return { timeShards: scale(b.upgradeRareCostShards), materialId: MATERIAL_RARE_ID };
+  if (rank === 'legendary') return { timeShards: scale(b.upgradeLegendaryCostShards), materialId: MATERIAL_LEGENDARY_ID };
   // basic / common — 시간조각만 (현행).
-  return { timeShards: scale(UPGRADE_COST_TIME_SHARDS) };
+  return { timeShards: scale(b.upgradeCostShards) };
 }
 
 /** 강화 가능한가 — upgrade_to 정의 + 대상 카드 존재 + 자원(시간조각·재료) 충분. */
@@ -156,7 +151,7 @@ function getRegionForgePool(regionId: string | undefined): Card[] {
   }
   if (!primary) return all;
   const matched = all.filter((c) => c.element === primary);
-  return matched.length >= FORGE_NUM_OFFERS ? matched : all;
+  return matched.length >= data.balance.forgeNumOffers ? matched : all;
 }
 
 /**
@@ -195,18 +190,19 @@ function pickRandom<T>(arr: T[], n: number): T[] {
 /** 노드 진입 시 1회만 호출 — 이미 있으면 그대로 반환. */
 export function getOrCreateForgeOffer(nodeId: string): ForgeOffer {
   const run = useRunStore();
+  const bal = useDataStore().balance;
   if (!run.data.forgeOffers) run.data.forgeOffers = {};
   const existing = run.data.forgeOffers[nodeId];
   if (existing) return existing;
 
   // 권역 화이트리스트 — 이 공방 노드의 권역에 맞는 희귀 카드만 추첨.
-  const candidates = pickRandom(getRegionForgePool(regionIdOfNode(nodeId)), FORGE_NUM_OFFERS);
+  const candidates = pickRandom(getRegionForgePool(regionIdOfNode(nodeId)), bal.forgeNumOffers);
   const cards: ForgeCardSlot[] = candidates.map((c) => {
     const instance = instantiateCard(c);
     return {
       cardId: c.id,
       cardInstanceId: instance.instanceId!,
-      price: FORGE_PRICE_TIME_SHARDS,
+      price: bal.forgePriceShards,
       purchased: false,
       // 카드 element → 마을 권역 특산물 매핑. 미매칭이면 시간조각만 요구.
       requiredSpecialtyId: specialtyForCardElement(c.element),
@@ -268,6 +264,54 @@ export function getLegendaryRecipes(onlyRegionId?: string): LegendaryRecipe[] {
   return recipes;
 }
 
+// ============================================================
+// 카드 제거 — 덱이 꽉 찬 경우만 허용, 제거 시 deckSize -1.
+// ============================================================
+
+/**
+ * 지금 카드를 제거할 수 있는지 — 덱(deck.length)이 덱 슬롯(deckSize)을 채웠을 때만 가능.
+ * 조건이 충족되지 않으면 플레이어는 덱을 먼저 채워야 한다.
+ */
+export function canRemoveCard(): boolean {
+  const run = useRunStore();
+  return run.data.deck.length >= run.data.deckSize;
+}
+
+/** 공방에서 카드 1장 제거. 제거 성공 시 deckSize -1 + 시간의 조각 환급. */
+export function removeCardAtWorkshop(cardInstanceId: string): boolean {
+  const run = useRunStore();
+  const ui = useUiStore();
+  const r = run.data;
+
+  if (isNoRemoval()) {
+    ui.toast('warning', '지워지지 않는다 — 카드 제거가 봉인되었다.');
+    return false;
+  }
+  if (r.deck.length < r.deckSize) {
+    ui.toast('warning', `덱을 채워야 제거할 수 있다 (현재 ${r.deck.length}/${r.deckSize}).`);
+    return false;
+  }
+
+  const cIdx = r.collection.findIndex((c) => c.instanceId === cardInstanceId);
+  if (cIdx < 0) return false;
+  const removed = r.collection[cIdx];
+
+  if (isPossessionLocked(removed)) {
+    ui.toast('warning', '이 카드는 떼어낼 수 없다 — 끝까지 가야 풀린다.');
+    return false;
+  }
+
+  r.collection.splice(cIdx, 1);
+  const dIdx = r.deck.findIndex((c) => c.instanceId === cardInstanceId);
+  if (dIdx >= 0) r.deck.splice(dIdx, 1);
+
+  r.deckSize = Math.max(1, r.deckSize - 1);
+  const shards = CARD_SALVAGE_SHARDS[removed.rank] ?? 0;
+  r.timeShards += shards;
+  ui.toast('success', `'${removed.name}' 제거 — 시간의 조각 +${shards}`);
+  return true;
+}
+
 /** 노드 id → 그 노드가 속한 권역 id (없으면 undefined). 공방/상점 화이트리스트용. */
 export function regionIdOfNode(nodeId: string): string | undefined {
   const data = useDataStore();
@@ -281,7 +325,7 @@ export function regionIdOfNode(nodeId: string): string | undefined {
 export function canCraftLegendary(recipe: LegendaryRecipe): boolean {
   const run = useRunStore();
   const r = run.data;
-  if (r.timeShards < LEGENDARY_COST_TIME_SHARDS) return false;
+  if (r.timeShards < useDataStore().balance.legendaryCostShards) return false;
   const hasSpecialty = r.items.some((i) => i.id === recipe.specialtyItemId);
   if (!hasSpecialty) return false;
   const hasRare = r.items.some((i) => i.id === RARE_MATERIAL_ID_ACT1);
@@ -306,7 +350,7 @@ export function craftLegendary(recipe: LegendaryRecipe): boolean {
   const rareIdx = r.items.findIndex((i) => i.id === RARE_MATERIAL_ID_ACT1);
   if (rareIdx < 0) return false;
   r.items.splice(rareIdx, 1);
-  r.timeShards -= LEGENDARY_COST_TIME_SHARDS;
+  r.timeShards -= useDataStore().balance.legendaryCostShards;
 
   const def = data.cards.get(recipe.cardId);
   if (!def) return false;
@@ -370,14 +414,12 @@ export function purchaseForgeCard(nodeId: string, slotIndex: number): boolean {
 //   마을: 일반(common) 포션만. 공방: 희귀(rare)+ 포션.
 // ============================================================
 
-/** 포션 1개 제작 비용 — rank → { 시간조각, 재료 id }. */
-export const POTION_COMMON_COST_TIME_SHARDS = 6;
-export const POTION_RARE_COST_TIME_SHARDS = 12;
-
+/** 포션 1개 제작 비용 — rank → { 시간조각, 재료 id }. 비용은 balance에서. */
 export function potionCostFor(rank: Rank): { timeShards: number; materialId: string } {
-  if (rank === 'rare') return { timeShards: POTION_RARE_COST_TIME_SHARDS, materialId: MATERIAL_RARE_ID };
+  const b = useDataStore().balance;
+  if (rank === 'rare') return { timeShards: b.potionRareCostShards, materialId: MATERIAL_RARE_ID };
   // basic/common 포션은 일반재료.
-  return { timeShards: POTION_COMMON_COST_TIME_SHARDS, materialId: MATERIAL_COMMON_ID };
+  return { timeShards: b.potionCommonCostShards, materialId: MATERIAL_COMMON_ID };
 }
 
 /**

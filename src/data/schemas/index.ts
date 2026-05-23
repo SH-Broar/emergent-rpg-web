@@ -22,3 +22,4 @@ export * from './unlock';
 export * from './chaos';
 export * from './chaos-def';
 export * from './clue';
+export * from './balance';

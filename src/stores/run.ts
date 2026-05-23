@@ -341,6 +341,8 @@ export const useRunStore = defineStore('run', {
       const r = this.data;
       r.currentDay += 1;
       r.dayPassedSeq += 1;
+      // 하루 경과마다 덱 슬롯 10 확장 — 카드를 새로 얻으면 자동 세팅될 여지가 생긴다.
+      r.deckSize += 10;
       // 혼란(possession)은 하루가 지나면 풀린다 — 잔존 페널티의 안전 밸브.
       if ((r.possessed ?? 0) > 0) {
         r.possessed = 0;
@@ -398,6 +400,7 @@ export const useRunStore = defineStore('run', {
           st.eventTriggered = undefined;
           st.eventCount = 0;
           st.activityDone = false;  // 활동 재발동 가능.
+          st.restDone = false;      // 휴식 재사용 가능.
           st.gatherCount = 0;       // 채집 효율 회복.
         }
 
@@ -533,6 +536,10 @@ export const useRunStore = defineStore('run', {
       // 이미 인스턴스화된 카드(드롭/이벤트 보상)는 그대로 받음.
       const instance = card.instanceId ? { ...card } : instantiateCard(card);
       this.data.collection.push(instance);
+      // 덱 슬롯에 여유가 있으면 자동으로 덱에 세팅.
+      if (this.data.deck.length < this.data.deckSize) {
+        this.data.deck.push(instance);
+      }
       if (!this.data.newCardEncounters.includes(card.id)) {
         this.data.newCardEncounters.push(card.id);
       }

@@ -6,7 +6,9 @@
 
 import { defineStore } from 'pinia';
 import { loadAllData, type GameData } from '@/data/loader';
+import { DEFAULT_BALANCE } from '@/data/schemas';
 import type {
+  Balance,
   Boss,
   Card,
   Chaos,
@@ -84,6 +86,9 @@ export const useDataStore = defineStore('data', {
     },
     unlocks(state): Map<string, MetaUnlock> {
       return state.data?.unlocks ?? new Map<string, MetaUnlock>();
+    },
+    balance(state): Balance {
+      return state.data?.balance ?? DEFAULT_BALANCE;
     },
   },
 

@@ -12,12 +12,11 @@ import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { cardEffectKindLabel, cardDetailText } from '@/systems/labels';
 import {
-  FORGE_PRICE_TIME_SHARDS,
-  LEGENDARY_COST_TIME_SHARDS,
   RARE_MATERIAL_ID_ACT1,
   canCraftLegendary,
   canCraftPotion,
   canPurchaseForgeCard,
+  canRemoveCard,
   canUpgrade,
   craftLegendary,
   craftPotion,
@@ -27,6 +26,7 @@ import {
   listUpgradableCards,
   potionCostFor,
   purchaseForgeCard,
+  removeCardAtWorkshop,
   upgradeCard,
   upgradeCostFor,
   type LegendaryRecipe,
@@ -45,6 +45,10 @@ const currentNode = computed(() => {
 });
 
 const offer = computed(() => run.data.forgeOffers?.[nodeId.value]);
+
+// 제작 비용 (config/balance.txt 에서 — 표시용).
+const forgePrice = computed(() => data.balance.forgePriceShards);
+const legendaryCost = computed(() => data.balance.legendaryCostShards);
 
 // 강화 모드 토글
 const upgradeMode = ref(false);
@@ -137,6 +141,13 @@ function craftLegendaryCard(recipe: LegendaryRecipe) {
   craftLegendary(recipe);
 }
 
+// === 카드 제거 ===
+const removalMode = ref(false);
+function pickRemovalTarget(cardInstanceId: string) {
+  const ok = removeCardAtWorkshop(cardInstanceId);
+  if (ok) removalMode.value = false;
+}
+
 function leave() {
   router.push('/game/map');
 }
@@ -201,7 +212,7 @@ onMounted(() => {
     <!-- 희귀+ 제작 섹션 -->
     <section class="section">
       <header class="section__hdr">
-        <h2>희귀+ 카드 제작 <span class="cost">— 시간조각 {{ FORGE_PRICE_TIME_SHARDS }} / 1장 한정</span></h2>
+        <h2>희귀+ 카드 제작 <span class="cost">— 시간조각 {{ forgePrice }} / 1장 한정</span></h2>
       </header>
       <ul class="forge__grid">
         <li
@@ -273,7 +284,7 @@ onMounted(() => {
     <!-- 전설 제작 — 마을 고유 풀 -->
     <section class="section">
       <header class="section__hdr">
-        <h2>전설 제작 <span class="cost">— 시간조각 {{ LEGENDARY_COST_TIME_SHARDS }} + 특산물 + 희소 재료 / 매번 가능</span></h2>
+        <h2>전설 제작 <span class="cost">— 시간조각 {{ legendaryCost }} + 특산물 + 희소 재료 / 매번 가능</span></h2>
       </header>
       <p class="rare-status">
         희소 재료 보유: <strong>{{ rareMaterialCount() }}</strong>
@@ -290,8 +301,8 @@ onMounted(() => {
             {{ cardDef(r.cardId)?.flavor }}
           </p>
           <div class="legendary__req">
-            <span :class="{ ok: run.data.timeShards >= LEGENDARY_COST_TIME_SHARDS, miss: run.data.timeShards < LEGENDARY_COST_TIME_SHARDS }">
-              시간조각 {{ LEGENDARY_COST_TIME_SHARDS }}
+            <span :class="{ ok: run.data.timeShards >= legendaryCost, miss: run.data.timeShards < legendaryCost }">
+              시간조각 {{ legendaryCost }}
             </span>
             <span :class="{ ok: specialtyCount(r.specialtyItemId) > 0, miss: specialtyCount(r.specialtyItemId) === 0 }">
               {{ r.specialtyName }} ({{ specialtyCount(r.specialtyItemId) }})
@@ -309,6 +320,30 @@ onMounted(() => {
           </button>
         </li>
         <li v-if="legendaryRecipes.length === 0" class="empty">이 권역에서 만들 수 있는 전설 카드가 없습니다.</li>
+      </ul>
+    </section>
+
+    <!-- 카드 제거 섹션 -->
+    <section class="section">
+      <header class="section__hdr">
+        <h2>카드 제거 <span class="cost">— 덱이 꽉 찰 때만 가능 / 제거 시 슬롯 -1</span></h2>
+        <button
+          v-if="!removalMode"
+          class="toggle"
+          :disabled="!canRemoveCard() || run.data.collection.length === 0"
+          @click="removalMode = true"
+        >
+          {{ canRemoveCard() ? '제거할 카드 고르기' : `덱 채워야 가능 (${run.data.deck.length}/${run.data.deckSize})` }}
+        </button>
+        <button v-else class="cancel" @click="removalMode = false">취소</button>
+      </header>
+      <p class="removal__desc">컬렉션의 카드 1장을 영구 제거합니다. 제거 시 덱 슬롯도 1 감소합니다.</p>
+      <ul v-if="removalMode" class="removal__list">
+        <li v-for="c in run.data.collection" :key="c.instanceId" class="removal__item">
+          <span class="removal__name">{{ c.name }}</span>
+          <span class="removal__meta">cost {{ c.cost }} · {{ rankLabel(c.rank) }}</span>
+          <button class="removal__pick" @click="pickRemovalTarget(c.instanceId!)">제거</button>
+        </li>
       </ul>
     </section>
 
@@ -426,4 +461,19 @@ h1 { color: #c08eff; margin: 0; }
 .slot__req .miss { color: #ff8e8e; }
 
 .leave { margin-top: 1.5rem; padding: 0.6rem 1.2rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: inherit; border-radius: 6px; cursor: pointer; font: inherit; }
+
+.removal__desc { color: #b6b6c4; font-size: 0.85rem; margin: 0 0 0.5rem; }
+.removal__list { list-style: none; padding: 0; margin: 0.6rem 0 0; max-height: 280px; overflow-y: auto; }
+.removal__item {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr auto;
+  gap: 0.4rem;
+  align-items: center;
+  padding: 0.35rem 0.4rem;
+  border-bottom: 1px dashed rgba(255,255,255,0.08);
+}
+.removal__name { color: #e9e9f4; font-size: 0.88rem; }
+.removal__meta { color: #888; font-size: 0.78rem; }
+.removal__pick { background: rgba(255,142,142,0.15); border: 1px solid rgba(255,142,142,0.4); color: #ff8e8e; padding: 0.25rem 0.6rem; border-radius: 4px; cursor: pointer; font: inherit; font-size: 0.8rem; }
+.removal__pick:hover { background: rgba(255,142,142,0.28); }
 </style>
