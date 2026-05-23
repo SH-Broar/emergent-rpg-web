@@ -76,9 +76,18 @@ onMounted(async () => {
       @toggle-settings="toggleSettings"
     />
 
+    <!--
+      transition의 직접 자식은 *항상 단일 루트 div*여야 한다.
+      CombatView/BossView처럼 v-if/v-else 멀티루트(fragment) 뷰를 component로 직접
+      넣으면 mode="out-in"의 leave→enter 핸드오프가 깨져, 한 번 전환 후 router-view가
+      영구히 빈 화면이 된다(패배/보스 종료 후 메인 복귀 불가). wrapper div로 감싸
+      transition이 보는 자식을 단일 요소로 고정한다.
+    -->
     <router-view v-slot="{ Component, route }">
       <transition name="scene-fade" mode="out-in">
-        <component :is="Component" :key="route.path" />
+        <div :key="route.path" class="scene-root">
+          <component :is="Component" />
+        </div>
       </transition>
     </router-view>
 
