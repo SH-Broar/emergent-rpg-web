@@ -122,7 +122,7 @@ time_shards = 5
 card_drops =
 
 [monster.mr-iluneon-spirit-herald]
-name = 도시 정령 전령
+name = 시미브
 tier = elite
 species = spirit
 hp = 180
@@ -338,10 +338,10 @@ time_shards = 3
 card_drops =
 
 [monster.mr-reshud-toll-raider]
-name = 교차로 덮침 임프
+name = 위습 페어리
 tier = normal
-species = imp
-hp = 68
+species = fairy
+hp = 48
 attack = 8
 defense = 0
 intents = attack:8, attack:9, defend:5, attack:8
@@ -381,9 +381,9 @@ time_shards = 2
 card_drops =
 
 [monster.mr-tradepost-caravan-thief]
-name = 상로의 흡정 임프
+name = 상단 박쥐
 tier = normal
-species = imp
+species = beastkin
 hp = 55
 attack = 5
 defense = 0
@@ -394,7 +394,7 @@ time_shards = 3
 card_drops =
 
 [monster.mr-tradepost-wanderer]
-name = 상로의 사나운 임프
+name = 상단 오크
 tier = normal
 species = imp
 hp = 65
@@ -406,13 +406,13 @@ time_shards = 3
 card_drops =
 
 [monster.mr-tradepost-lamia-guard]
-name = 똬리 튼 라미아
+name = 주술사 라미아
 tier = normal
 species = lamia
 hp = 72
 attack = 6
 defense = 0
-intents = attack:6, debuff:2:brainwash, attack:6, attack:7
+intents = attack:8, debuff:2:brainwash, attack:9, attack:10
 gold = 9
 time_shards = 3
 card_drops =
@@ -431,7 +431,7 @@ time_shards = 2
 card_drops =
 
 [monster.mr-tradepost-lamia-enforcer]
-name = 라미아 집행관
+name = 휘슬
 tier = elite
 species = lamia
 hp = 210

@@ -7,7 +7,7 @@
 # ============================================================
 
 [monster.mr-luna-ink-fiend]
-name = 잉크 마귀
+name = 잉크 북
 tier = normal
 species = imp
 hp = 140
@@ -20,20 +20,20 @@ time_shards = 6
 card_drops =
 
 [monster.mr-luna-grimoire-shadow]
-name = 그리모어 그림자
+name = 그리모어
 tier = normal
 species = wraith
 hp = 126
 attack = 10
 defense = 0
 lock_in = 10
-intents = attack:10, attack:11, debuff:3:weakness~unlocked=attack:6, defend:6
+intents = attack:10, attack:11, debuff:3:weakness~unlocked=attack:5, defend:6
 gold = 18
 time_shards = 6
 card_drops =
 
 [monster.mr-luna-phantom-scribe]
-name = 팬텀 필사가
+name = 팬텀
 tier = normal
 species = phantom
 hp = 154
@@ -110,7 +110,7 @@ time_shards = 13
 card_drops =
 
 [monster.mr-luna-headmaster-shade]
-name = 교수 유령
+name = 그람
 tier = elite
 species = wraith
 hp = 600
@@ -376,7 +376,7 @@ time_shards = 6
 card_drops =
 
 [monster.mr-enicham-proto-agi]
-name = 시제 AGI
+name = AI N.E.K.O
 tier = elite
 species = automaton
 hp = 500

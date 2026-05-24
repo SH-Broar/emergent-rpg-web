@@ -59,7 +59,7 @@ time_shards = 8
 card_drops =
 
 [monster.mr-yusezria-deep-leech]
-name = 심층 거머리
+name = 심층 뱀파이어
 tier = normal
 species = leech
 hp = 189
@@ -181,7 +181,7 @@ card_drops =
 # --- 엘리트 ---
 
 [monster.mr-falcon-garden-storm-sovereign]
-name = 폭풍의 군주
+name = 라크리
 tier = elite
 species = harpy
 hp = 820
@@ -194,7 +194,7 @@ time_shards = 24
 card_drops =
 
 [monster.mr-falcon-garden-sky-empress]
-name = 하늘의 여왕
+name = 피레치아
 tier = elite
 species = harpy
 hp = 720
@@ -238,7 +238,7 @@ time_shards = 11
 card_drops =
 
 [monster.mr-emberforge-lava-crawler]
-name = 용암 유충
+name = 용암 반딧불이
 tier = normal
 species = insect
 hp = 182
@@ -251,7 +251,7 @@ time_shards = 9
 card_drops =
 
 [monster.mr-emberforge-cinder-bat]
-name = 숯불 박쥐
+name = 용암 박쥐
 tier = normal
 species = beastkin
 hp = 172
@@ -278,7 +278,7 @@ card_drops =
 # --- 엘리트 ---
 
 [monster.mr-emberforge-magma-titan]
-name = 용암 거신
+name = 카울렘
 tier = elite
 species = imp
 hp = 700
@@ -359,7 +359,7 @@ time_shards = 10
 card_drops =
 
 [monster.mr-oldshrine-relic-hunter]
-name = 신전 빛홀림 임프
+name = 악마 성직자
 tier = normal
 species = imp
 hp = 189
@@ -373,7 +373,7 @@ card_drops =
 # --- 엘리트 ---
 
 [monster.mr-oldshrine-lightning-archon]
-name = 번개 대집행관
+name = 카넌
 tier = elite
 species = imp
 hp = 740

@@ -72,7 +72,7 @@ time_shards = 4
 card_drops =
 
 [monster.mr-moss-forge-imp]
-name = 대장간 임프
+name = 화톳불 정령
 tier = normal
 species = spirit
 hp = 77
@@ -84,7 +84,7 @@ time_shards = 3
 card_drops =
 
 [monster.mr-moss-char-wraith]
-name = 숯 망령
+name = "잔불"
 tier = normal
 species = wraith
 hp = 88
@@ -108,7 +108,7 @@ time_shards = 5
 card_drops =
 
 [monster.mr-moss-forge-titan]
-name = 화로 거인
+name = 시실렘
 tier = elite
 species = imp
 hp = 380
@@ -120,7 +120,7 @@ time_shards = 8
 card_drops =
 
 [monster.mr-moss-smelter-queen]
-name = 용광 여왕
+name = 플레이머
 tier = elite
 species = imp
 hp = 340
@@ -201,7 +201,7 @@ time_shards = 3
 card_drops =
 
 [monster.mr-ria-arc-wolf]
-name = 낙뢰 늑대
+name = 라이아 아크
 tier = elite
 species = werewolf
 hp = 320
@@ -230,7 +230,7 @@ time_shards = 4
 card_drops =
 
 [monster.mr-ali-herb-bandit]
-name = 안개밭 흡정 임프
+name = 몽롱한 임프
 tier = normal
 species = imp
 hp = 91
@@ -280,7 +280,7 @@ time_shards = 3
 card_drops =
 
 [monster.mr-ali-marsh-creeper]
-name = 습지 기어자
+name = 습지 잠자리
 tier = normal
 species = insect
 hp = 102
@@ -294,7 +294,7 @@ time_shards = 4
 card_drops =
 
 [monster.mr-ali-fog-sovereign]
-name = 안개 군주
+name = "안개"
 tier = elite
 species = spirit
 hp = 360
@@ -306,7 +306,7 @@ time_shards = 8
 card_drops =
 
 [monster.mr-ali-ancient-treant]
-name = 고목 트리언트
+name = 트라이언트
 tier = elite
 species = plant
 hp = 430
@@ -373,7 +373,7 @@ time_shards = 3
 card_drops =
 
 [monster.mr-martin-gull-raider]
-name = 갈매기 하피 떼
+name = 파이렛 하피
 tier = normal
 species = harpy
 hp = 81
@@ -386,7 +386,7 @@ time_shards = 3
 card_drops =
 
 [monster.mr-kishina-siren]
-name = 키시나 세이렌
+name = 오션
 tier = elite
 species = siren
 hp = 310
@@ -451,7 +451,7 @@ time_shards = 5
 card_drops =
 
 [monster.mr-mano-iron-scorpion]
-name = 철 전갈
+name = 철강 전갈
 tier = normal
 species = insect
 hp = 109
@@ -503,7 +503,7 @@ time_shards = 5
 card_drops =
 
 [monster.mr-mano-limun-sovereign]
-name = 리문 군주상
+name = "리문의 영광"
 tier = elite
 species = automaton
 hp = 420
@@ -515,7 +515,7 @@ time_shards = 9
 card_drops =
 
 [monster.mr-mano-sunset-drake]
-name = 석양 드레이크
+name = 크레그
 tier = elite
 species = drake
 hp = 460

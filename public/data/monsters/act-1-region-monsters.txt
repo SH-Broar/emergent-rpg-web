@@ -6,7 +6,7 @@
 # ============================================================
 
 [monster.m-iluneon-mugger]
-name = 골목 소매치기
+name = 그림자
 tier = minion
 hp = 16
 attack = 5
@@ -17,7 +17,7 @@ time_shards = 2
 card_drops =
 
 [monster.m-iluneon-clock-ghoul]
-name = 시계탑 망령
+name = 미드나잇
 tier = elite
 hp = 32
 attack = 8
@@ -43,7 +43,7 @@ time_shards = 2
 card_drops =
 
 [monster.m-lar-ember-salamander]
-name = 잿불 도롱뇽
+name = 버밀리온
 tier = elite
 hp = 34
 attack = 9
@@ -69,7 +69,7 @@ time_shards = 2
 card_drops =
 
 [monster.m-moss-anvil-knight]
-name = 모루 기사
+name = 엔빌
 tier = elite
 hp = 38
 attack = 8
@@ -128,7 +128,7 @@ time_shards = 2
 card_drops =
 
 [monster.m-mano-limun-cursed]
-name = 저주받은 리문상
+name = 모래바람
 tier = elite
 hp = 40
 attack = 9
@@ -232,7 +232,7 @@ time_shards = 2
 card_drops =
 
 [monster.m-taco-hologram-mime]
-name = 홀로그램 의태자
+name = 폴리 미미크리
 tier = elite
 hp = 30
 attack = 8
@@ -321,7 +321,7 @@ time_shards = 6
 card_drops =
 
 [monster.m-yuse-deep-core]
-name = 막다른 코어
+name = 코메트리
 tier = elite
 hp = 60
 attack = 18
@@ -358,7 +358,7 @@ time_shards = 3
 card_drops =
 
 [monster.m-tri-magma-brute]
-name = 마그마 거구
+name = 미그미그
 tier = elite
 hp = 42
 attack = 13
@@ -373,7 +373,7 @@ card_drops = c-burn-mark:0.2
 # ============================================================
 
 [monster.m-falcon-raptor]
-name = 맹금 아인
+name = 독수리
 tier = minion
 hp = 28
 attack = 13
