@@ -41,7 +41,7 @@ cost = 1
 trigger = manual
 effects = damage:6:enemy, draw:1:self
 upgrade_to = c-human-tailwind-plus
-flavor = 등을 미는 바람을 그대로 실어 보낸다.
+flavor = 등을 미는 바람을 ��대로 실어 보낸다.
 
 [card.c-human-tailwind-plus]
 name = 순풍+
@@ -100,7 +100,7 @@ flavor = 정한 마음이 더 무겁게 선다.
 # ============================================================
 
 [card.c-moth-flutter]
-name = 나래짓
+name = 날갯짓
 rank = common
 source = race
 element = wind
@@ -108,41 +108,41 @@ cost = 1
 trigger = manual
 effects = damage:6:enemy, draw:1:self
 upgrade_to = c-moth-flutter-plus
-flavor = 가벼운 날갯짓 한 번에 한 발, 그리고 다음 화살을 집는다.
+flavor = 고속으로 한 발의 화살을 발사한다.
 
 [card.c-moth-flutter-plus]
-name = 나래짓+
+name = 날갯짓+
 rank = common
 source = race
 element = wind
 cost = 1
 trigger = manual
-effects = damage:8:enemy, draw:1:self
-flavor = 더 빠른 날갯짓, 더 깊이 박히는 한 발.
+effects = damage:7:enemy, draw:1:self
+flavor = 더욱 빠른 속도로 화살을 발사한다.
 
 [card.c-moth-volley]
-name = 잰 화살
+name = 속사
 rank = basic
 source = race
-element = wind
+element = electric
 cost = 0
 trigger = manual
 effects = damage:4:enemy
 upgrade_to = c-moth-volley-plus
-flavor = 겨눌 틈도 없이 손이 먼저 쏜다.
+flavor = 겨눌 틈도 없이 화살을 쏜다.
 
 [card.c-moth-volley-plus]
-name = 잰 화살+
+name = 속사+
 rank = basic
 source = race
-element = wind
+element = electric
 cost = 0
 trigger = manual
 effects = damage:6:enemy
-flavor = 손이 더 빨라졌다. 시위가 식을 새가 없다.
+flavor = 활시위가 멈출 새도 없이 화살을 쏜다.
 
 [card.c-moth-glide]
-name = 활공
+name = 활강
 rank = common
 source = race
 element = wind
@@ -153,14 +153,14 @@ upgrade_to = c-moth-glide-plus
 flavor = 바람을 타고 미끄러지며 다음 자리를 살핀다.
 
 [card.c-moth-glide-plus]
-name = 활공+
+name = 활강+
 rank = common
 source = race
 element = wind
 cost = 1
 trigger = manual
 effects = block:8:self, draw:1:self
-flavor = 더 오래 떠 있을수록, 더 멀리 본다.
+flavor = 따라올 수 없는 속도로 바람을 타고 자리를 잡는다.
 
 [card.c-moth-gale]
 name = 돌풍
@@ -169,9 +169,9 @@ source = race
 element = wind
 cost = 2
 trigger = manual
-effects = damage:9:enemy, draw:1:self
+effects = damage:4:enemy, damage:4:enemy
 upgrade_to = c-moth-gale-plus
-flavor = 한순간 몰아치는 바람에 화살이 무더기로 실린다.
+flavor = 순식간에 두 발의 화살을 발사한다.
 
 [card.c-moth-gale-plus]
 name = 돌풍+
@@ -180,8 +180,8 @@ source = race
 element = wind
 cost = 2
 trigger = manual
-effects = damage:12:enemy, draw:2:self
-flavor = 더 거센 바람, 더 많은 화살.
+effects = damage:4:enemy, damage:4:enemy, damage:1:enemy
+flavor = 몰아치는 바람처럼, 한 번에 세 발의 화살을 발사한다.
 
 # 나방 전용 *바람갈무리* — 시그니처 유물 바람결 깃이 전투 시작마다 손에 1장 지급.
 # 0코스트, 2드로우, 사용 후 *손으로 복귀*(버리지 않음) → 덱을 빠르게 훑는 속도 엔진.

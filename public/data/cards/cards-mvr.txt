@@ -364,46 +364,48 @@ flavor = "그 날로 돌아갈 수 있다면."
 upgrade_to = c-binding-ward-plus
 
 [card.c-quiet-arc]
-name = 조용한 한 호
+name = 가라앉음
 rank = common
 source = npc
-element = light
-cost = 2
-trigger = manual
-effects = damage:12:enemy, apply-status:1:enemy:vulnerable
-flavor = "조용히, 천천히 그러나 끝까지." 마로의 느린 한 호가 끝에 닿았을 때 적이 조금 벌려져 있다.
-
-[card.c-flash-capture]
-name = 한 컷
-rank = common
-source = npc
-element = fire
+element = water
 cost = 1
 trigger = manual
-effects = damage:6:enemy, apply-status:1:enemy:vulnerable
-flavor = "한 컷, 시간을 멈춰 줄까요?" 피닉스가 셔터 한 번에 적의 빈틈을 짧게 비킨다.
+effects = apply-status:1:enemy:vulnerable, apply-status:1:enemy:weakness
+flavor = "잠시, 진정하세요..."
+upgrade_to = c-quiet-arc-plus
 
-[card.c-rize-relay]
-name = 한 판 갈래
+[card.c-flash-capture]
+name = 찰칵!
 rank = common
 source = npc
 element = fire
+cost = 4
+trigger = manual
+effects = apply-status:1:enemy:paralyze
+flavor = "이 사진기로 빈 틈을 만들 수 있을 거야. 잘 다루기는 어려울지도 모르지만."
+upgrade_to = c-flash-capture-plus
+
+[card.c-rize-relay]
+name = 연속 타격
+rank = common
+source = npc
+element = wind
 cost = 1
 trigger = manual
 effects = damage:4:enemy
-flavor = "심심해. 한 판." 리제가 한 발을 굴리고 같은 한 판 한 장을 그대 손에 다시 건넨다. 이번 한 판은 비용이 없다.
+flavor = "격투의 장점은, 뭐니뭐니해도 빠르다는거야!"
 
 # 한 판 갈래의 *돌아온 한 판* — 같은 이름·비용 0의 별개 카드. 이 카드는 다시 돌아오지 않는다(무한 복제 방지).
 # source=form → 어떤 풀(상점/이벤트/보상)에도 등장하지 않고, 전투 중 c-rize-relay 사용 시에만 생성된다.
 [card.c-rize-relay-echo]
-name = 한 판 갈래
+name = 연속 타격
 rank = common
 source = form
 element = fire
 cost = 0
 trigger = manual
 effects = damage:4:enemy
-flavor = 다시 손에 들어온 한 판. 이번이 마지막이다.
+flavor =
 
 [card.c-spirit-call]
 name = 모인 영혼들
@@ -1183,7 +1185,7 @@ effects = damage:28:enemy, consume-vulnerable:4
 flavor = "걱정하지 마."
 
 [card.c-shadow-rebuke-plus]
-name = 그림자 밟기+
+name = 그��자 밟기+
 rank = rare
 source = boss
 element = dark
@@ -1285,45 +1287,45 @@ effects = apply-status:3:enemy:weakness
 flavor = "그 때, 내가 도망치지 않았다면."
 
 [card.c-quiet-arc-plus]
-name = 조용한 한 호+
+name = 가라앉음+
 rank = common
 source = npc
 element = light
-cost = 2
-trigger = manual
-effects = damage:16:enemy, apply-status:2:enemy:vulnerable
-flavor = 느린 호가 더 멀리, 더 깊이 닿는다.
-
-[card.c-flash-capture-plus]
-name = 한 컷+
-rank = common
-source = npc
-element = fire
 cost = 1
 trigger = manual
-effects = damage:8:enemy, apply-status:2:enemy:vulnerable
-flavor = 셔터가 두 번, 빈틈이 더 벌어진다.
+effects = apply-status:2:enemy:vulnerable, apply-status:2:enemy:weakness
+flavor = "난폭한 일은 하고 싶지 않아요."
 
-[card.c-rize-relay-plus]
-name = 한 판 갈래+
+[card.c-flash-capture-plus]
+name = 찰칵!+
 rank = common
 source = npc
 element = fire
+cost = 3
+trigger = manual
+effects = apply-status:1:enemy:paralyze, apply-status:1:enemy:spasm
+flavor = "어때, 좋은 사진 건졌어?"
+
+[card.c-rize-relay-plus]
+name = 연속 타격+
+rank = common
+source = npc
+element = wind
 cost = 1
 trigger = manual
 effects = damage:7:enemy
-flavor = 같은 한 판이 더 무겁게, 다시 손에 돌아온다. 이번 한 판은 비용이 없다.
+flavor = "그 정도로는 내 주먹을 피할 수 없을 걸!"
 
 # 한 판 갈래+의 *돌아온 한 판* — 복제하지 않는 비용 0 별개 카드. source=form(풀 제외).
 [card.c-rize-relay-echo-plus]
-name = 한 판 갈래+
+name = 연속 타격+
 rank = common
 source = form
 element = fire
 cost = 0
 trigger = manual
 effects = damage:7:enemy
-flavor = 더 무겁게 다시 손에 들어온 한 판. 이번이 마지막이다.
+flavor =
 
 [card.c-spirit-call-plus]
 name = 모인 영혼들+
