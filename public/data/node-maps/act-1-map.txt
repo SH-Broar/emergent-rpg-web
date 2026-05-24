@@ -2328,7 +2328,7 @@ neighbors = n-martin-fish-market, n-martin-cargo, n-martin-lighthouse, n-kishina
 [nodemap.nm-act-1-era4-061.node.n-enicham]
 kind = village
 region = enicham
-label = 에니챀 운영소
+label = 에니챰 운영소
 description = 발전소 입구. 단정한 작업복의 제로가 클립보드를 들고 드나든다. 옆에서 알티-알타가 짧게 인사를 건넨다.
 x = 0.0878
 y = 0.3448
