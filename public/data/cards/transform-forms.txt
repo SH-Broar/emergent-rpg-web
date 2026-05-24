@@ -8,10 +8,10 @@
 name = 여우 송곳니
 rank = common
 source = form
-element = wind
+element = earth
 cost = 1
 trigger = manual
-effects = damage:8:enemy
+effects = damage:9:enemy
 flavor = 날카로운 송곳니가 허공을 가른다.
 
 [card.c-fox-foxfire]
