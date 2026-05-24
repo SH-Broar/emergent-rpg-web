@@ -6,27 +6,27 @@
 # ============================================================
 
 [monster.mr-iluneon-cutpurse]
-name = 골목 손치기
+name = 먼지 고양이
 tier = normal
 species = imp
 hp = 55
 attack = 7
 defense = 0
 lock_in = 6
-intents = attack:7, debuff:3:weakness~unlocked=attack:4, attack:8, defend:3
+intents = attack:9, debuff:3:vulnerable~unlocked=defend:4, attack:12, defend:4, buff:2
 gold = 9
 time_shards = 3
 card_drops =
 
 [monster.mr-iluneon-trickster]
-name = 광장 홀림 임프
+name = 분신 임프
 tier = normal
 species = imp
-hp = 45
+hp = 55
 attack = 5
 defense = 0
 actions = 2
-intents = attack:3, debuff:1:vulnerable, attack:3, attack:4
+intents = attack:4, attack:5, attack:6, attack:7, defend:5
 gold = 8
 time_shards = 3
 card_drops =
