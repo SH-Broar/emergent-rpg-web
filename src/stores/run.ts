@@ -112,6 +112,7 @@ const EMPTY_RUN: RunState = {
   affinityRewardsClaimed: {},
   missionsCleared: [],
   bossesCleared: [],
+  arcsCleared: [],
   newCardEncounters: [],
   newRelicEncounters: [],
   newNpcEncounters: [],

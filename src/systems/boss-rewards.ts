@@ -15,7 +15,8 @@ import { useMetaStore } from '@/stores/meta';
 import { useCodexStore } from '@/stores/codex';
 import { useUiStore } from '@/stores/ui';
 import { applyColorBoost } from '@/systems/colors';
-import { rewardItem, rewardColor } from '@/systems/reward-feed';
+import { rewardItem, rewardColor, rewardCard, rewardRelic, rewardGold } from '@/systems/reward-feed';
+import { acquireRelic } from '@/systems/relic';
 import { revealNextTierOnClear, recordBestChaos } from '@/systems/chaos';
 
 const DEFAULT_BOSS_GOLD = 30;
@@ -95,5 +96,59 @@ export function applyBossRewards(boss: Boss): void {
   if (rw.procContext) {
     meta.procInputs = { ...meta.procInputs, ...rw.procContext };
     meta.persist();
+  }
+}
+
+/**
+ * arc 보스(kind='arc') 클리어 보상 — *전용 특전 자동 드롭* (작업 29).
+ *
+ * 일반 보스(applyBossRewards)와 분리: arc 승리는 *런을 끝내지 않고* 맵으로 복귀하므로
+ * 메타 해금/영혼/도감 등 *런 종료 보상*은 주지 않고, arc 전용 시그니처(유물/카드/아이템/골드)만 준다.
+ * 첫 클리어 1회 가드 — r.arcsCleared로 추적(중복 호출/재진입 시 재드롭 X).
+ *
+ * 호출 규약: arcsCleared.push *이전*에 호출해야 첫 클리어로 인정된다(BossView.onVictory가 보장).
+ */
+export function applyArcRewards(boss: Boss): void {
+  const run = useRunStore();
+  const data = useDataStore();
+  const r = run.data;
+
+  // 첫 클리어만 드롭 — 이미 클리어한 arc면 보상 없이 반환.
+  if ((r.arcsCleared ?? []).includes(boss.id)) return;
+
+  const reward = boss.arcReward;
+  if (!reward) return;
+
+  // 1) 골드.
+  if (reward.gold && reward.gold > 0) {
+    r.gold += reward.gold;
+    rewardGold(reward.gold);
+  }
+
+  // 2) 유물 — acquireRelic(중앙화: on-acquire/passive 트리거·도감·encounter 처리).
+  for (const id of reward.relicIds ?? []) {
+    const relic = data.relics.get(id);
+    if (relic) {
+      acquireRelic(relic);
+      rewardRelic(relic.name);
+    }
+  }
+
+  // 3) 카드 — collection 추가(자리 있으면 덱 자동 등록).
+  for (const id of reward.cardIds ?? []) {
+    const card = data.cards.get(id);
+    if (card) {
+      run.addCardToCollection(card);
+      rewardCard(card.name);
+    }
+  }
+
+  // 4) 아이템 — 인벤토리 추가.
+  for (const id of reward.itemIds ?? []) {
+    const itm = data.items.get(id);
+    if (itm) {
+      run.addItem(itm);
+      rewardItem(itm);
+    }
   }
 }

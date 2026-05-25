@@ -1,0 +1,34 @@
+# Items arc 보스(신수) 시그니처 아이템 (작업 29).
+# arc 승리 자동 드롭 전용. 사용 가능한 전투 포션(combat=true, consumable=true)이되,
+# rank=legendary라 *공방/마을 제작 풀에서 자동 제외*(craft는 common/rare만) → 일반 풀 오염 0.
+# 3종(던·티프레·타마모) 테마 일치. 턴당 1회.
+
+# --- 던 (불·쇠) — 전투 중 방어 한 겹 + 힘. ---
+[item.i-arc-dun-ember-draught]
+name = 던의 화로주
+description = 곰이 쇳물 곁에서 데워 둔 진한 한 모금. 마시면 잿불이 살갗을 두른다.
+rank = legendary
+effects = combat-block:18, combat-self-status:strength:2
+combat = true
+consumable = true
+flavor = 화로의 온기가 그대로 병 속에 갇혀 있다.
+
+# --- 티프레 (번개) — 전투 중 마나 + 드로우. ---
+[item.i-arc-tifre-spark-vial]
+name = 티프레의 불티병
+description = 호랑이 수염 끝에 맺힌 정전기를 모은 작은 병. 톡 터뜨리면 머리가 맑아진다.
+rank = legendary
+effects = combat-mana:2, combat-draw:1
+combat = true
+consumable = true
+flavor = 흔들면 안에서 작은 우레가 친다.
+
+# --- 타마모 (변신) — 구속 해제 + 중급 디버프 정화. ---
+[item.i-arc-tamamo-tail-charm]
+name = 타마모의 꼬리 부적
+description = 구미호 꼬리털을 엮어 만든 부적. 옭아맨 것을 슬그머니 풀어 준다.
+rank = legendary
+effects = combat-free-grapple, cleanse-group:mid
+combat = true
+consumable = true
+flavor = 손에 쥐면 아홉 갈래 그림자가 잠깐 어른거린다.

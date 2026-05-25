@@ -135,7 +135,8 @@ export function applyCombatVictoryReward(nodeId: string): void {
     if (relicChance > 0 && rng() < relicChance) {
       const owned = new Set(r.relics.map((x) => x.id));
       const pool = availableRelics().filter(
-        (rl) => !owned.has(rl.id) && rl.source !== 'race' && rl.source !== 'character',
+        // race/character = 시작 전용, boss = 별도 경로(arc 특전·보스 보상) → 엘리트 드롭 풀에서 제외.
+        (rl) => !owned.has(rl.id) && rl.source !== 'race' && rl.source !== 'character' && rl.source !== 'boss',
       );
       if (pool.length > 0) {
         const pick = pool[Math.floor(rng() * pool.length)];

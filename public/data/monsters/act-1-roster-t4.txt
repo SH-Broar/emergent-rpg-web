@@ -289,18 +289,7 @@ gold = 60
 time_shards = 22
 card_drops =
 
-[monster.mr-emberforge-kumamimi]
-name = 던
-tier = elite
-species = mythicbeast
-hp = 960
-attack = 34
-defense = 0
-actions = 2
-intents = buff:4, attack:17, charge:7, attack:18, debuff:3:poison, attack:18, devour:6:5, attack:19, defend:22, attack:17, drain:15, attack:18, charge:6, attack:19, defend:20, attack:17, attack:18, drain:12, attack:19, defend:22
-gold = 80
-time_shards = 28
-card_drops =
+# 던(구 mr-emberforge-kumamimi)은 작업 29에서 arc 보스(bs-arc-dun)로 승격되어 이 정의는 제거됨.
 
 # ============================================================
 # OLDSHRINE 권역 (electric · 번개 신전 · 신수 티프레)
@@ -385,15 +374,4 @@ gold = 64
 time_shards = 22
 card_drops =
 
-[monster.mr-oldshrine-toramimi]
-name = 티프레
-tier = elite
-species = mythicbeast
-hp = 1000
-attack = 36
-defense = 0
-actions = 3
-intents = buff:5, attack:12, debuff:2:feral, charge:7, attack:14, attack:13~feral=heavy-feral, defend:18, attack:13, cost-up:3:3, attack:14, drain:10, attack:13, charge:6, attack:15, defend:16, attack:13, attack:14, defend:18, attack:12, attack:15, attack:13
-gold = 80
-time_shards = 28
-card_drops =
+# 티프레(구 mr-oldshrine-toramimi)는 작업 29에서 arc 보스(bs-arc-tifre)로 승격되어 이 정의는 제거됨.

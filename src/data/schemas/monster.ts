@@ -39,8 +39,8 @@ export interface MonsterDrop {
 export interface Monster extends NamedEntity {
   id: string;
 
-  /** 적 등급. UI 표기·드롭 풀에 영향. */
-  tier?: 'minion' | 'normal' | 'elite';
+  /** 적 등급. UI 표기·드롭 풀에 영향. ('minion' 티어는 작업 29에서 폐지 — normal/elite만.) */
+  tier?: 'normal' | 'elite';
 
   /**
    * 몬무스 종족 — all-gimmick(만물의 송곳니) 카오스가 *종족 대표 기믹*을 주입할 때 참조.

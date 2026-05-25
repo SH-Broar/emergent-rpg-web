@@ -194,6 +194,7 @@ const INTENT_KIND_LABELS: Record<string, string> = {
   'absorb-emotion': '감정 흡수',
   'feast-debuff': '동기화',
   'grant-possession': '들러붙기',
+  change: '둔갑',
   lockin: '락인',
 };
 

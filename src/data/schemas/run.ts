@@ -512,6 +512,13 @@ export interface RunState {
   /** 그 런에서 클리어한 보스 ID 목록. */
   bossesCleared: string[];
 
+  /**
+   * 그 런에서 클리어한 arc 보스 ID 목록 (작업 29) — 던·티프레·타마모 등.
+   * arc 승리는 *런을 끝내지 않으므로* bossesCleared(런 종료 보스)와 분리해 둔다.
+   * 특전 자동 드롭의 *첫 클리어 1회 가드*에 쓰인다. 옛 세이브 호환 — optional(absent=빈 목록).
+   */
+  arcsCleared?: string[];
+
   // === 휘발 컬렉션 (런 종료 시 도감 등록) ===
   /** 그 런에서 *처음* 본 카드 ID들. */
   newCardEncounters: CardId[];

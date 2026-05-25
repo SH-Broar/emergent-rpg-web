@@ -1,0 +1,36 @@
+# Cards arc 보스(신수) 시그니처 카드 (작업 29).
+# rank=legendary + source=boss → 상점·공방·일반 보상 풀에서 제외(arc 승리 자동 드롭 전용).
+# 3종(던·티프레·타마모) 테마 일치. 효과는 엘리트 보상보다 한 수 위.
+
+# --- 던 (불·쇠의 신수 곰) — 묵직한 한 방 + 방어. ---
+[card.c-arc-dun-quake-paw]
+name = 잿불 곰의 앞발
+rank = legendary
+source = boss
+element = fire
+cost = 2
+trigger = manual
+effects = damage:16:enemy, block:12:self
+flavor = 곰이 쇳물 앞에서 천천히 든 앞발. 한 번 내려치면 자리가 무너지고, 그 무게가 도리어 나를 지킨다.
+
+# --- 티프레 (번개의 신수 호랑이) — 연타 + 취약. ---
+[card.c-arc-tifre-thunderstep]
+name = 우레 발걸음
+rank = legendary
+source = boss
+element = electric
+cost = 1
+trigger = manual
+effects = damage:7:enemy, apply-status:2:enemy:vulnerable, draw:1:self
+flavor = 호랑이가 번개를 밟고 한 걸음. 빠른 발끝이 적의 빈틈을 헤집고, 그 사이 다음 수가 손에 들어온다.
+
+# --- 타마모 (변신의 구미호) — 색 변환 + 디버프. ---
+[card.c-arc-tamamo-foxfire]
+name = 아홉 꼬리 여우불
+rank = legendary
+source = boss
+element = dark
+cost = 2
+trigger = manual
+effects = damage:12:enemy, apply-status:2:enemy:weakness, apply-status:1:self:strength
+flavor = 꼬리 끝마다 다른 빛의 불씨. 적의 기운을 빼앗아 내 안에 옮겨 담는다.

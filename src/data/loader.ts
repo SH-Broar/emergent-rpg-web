@@ -445,10 +445,19 @@ function parseOneBoss(id: string, f: IniSection, ini: IniData): Boss {
     });
   }
 
+  // arc 전용 특전 보상 — 비어 있으면 undefined(일반 보스).
+  const arcRelics = parseList(f.arc_reward_relics);
+  const arcCards = parseList(f.arc_reward_cards);
+  const arcItems = parseList(f.arc_reward_items);
+  const arcGold = f.arc_reward_gold ? parseNumber(f.arc_reward_gold, 0) : 0;
+  const hasArcReward = arcRelics.length > 0 || arcCards.length > 0 || arcItems.length > 0 || arcGold > 0;
+
   return {
     id,
     name: f.name ?? id,
     description: f.description,
+    // kind — 'arc'면 arc 보스, 그 외(미지정 포함)는 'boss'.
+    kind: f.kind === 'arc' ? 'arc' : 'boss',
     timelineId: f.timeline ?? '',
     hp: parseNumber(f.hp, 50),
     attack: parseNumber(f.attack, 8),
@@ -462,6 +471,18 @@ function parseOneBoss(id: string, f: IniSection, ini: IniData): Boss {
     },
     introText: f.intro,
     defeatText: f.defeat_text,
+    // arc 대화 회피 + 특전.
+    dialogue: parseList(f.dialogue),
+    challengeLabel: f.challenge_label,
+    declineLabel: f.decline_label,
+    arcReward: hasArcReward
+      ? {
+          relicIds: arcRelics.length > 0 ? arcRelics : undefined,
+          cardIds: arcCards.length > 0 ? arcCards : undefined,
+          itemIds: arcItems.length > 0 ? arcItems : undefined,
+          gold: arcGold > 0 ? arcGold : undefined,
+        }
+      : undefined,
   };
 }
 
@@ -1061,6 +1082,8 @@ const DATA_FILES = [
   'data/timelines/act-1-era4-061.txt',
   'data/node-maps/act-1-map.txt',
   'data/bosses/act-1-boss.txt',
+  // === arc 보스 3종 (작업 29) — 던·티프레·타마모 (kind='arc'). 강 엘리트 승격, 런 도중 보스 프레임. ===
+  'data/bosses/act-1-arc.txt',
   'data/npcs/act-1-iluneon.txt',
   'data/npcs/act-1-stray.txt',
   'data/npcs/act-1-windfall.txt',
@@ -1093,6 +1116,8 @@ const DATA_FILES = [
   'data/cards/transform-forms.txt',
   // === 빙의 카드 (재설계) — source=possession, 풀 제외. 빙의로만 획득, 각성 시 축복/저주로 변신. ===
   'data/cards/cards-possession.txt',
+  // === arc 보스 시그니처 카드 (작업 29) — rank=legendary + source=boss, arc 승리 자동 드롭 전용(일반 풀 제외). ===
+  'data/cards/cards-arc.txt',
   'data/relics/relics-mvr.txt',
   // === 종족 시그니처 유물 (2026-05-22) — source=race, 시작 전용(상점/드롭 풀 제외). ===
   'data/relics/relics-race.txt',
@@ -1105,6 +1130,8 @@ const DATA_FILES = [
   'data/relics/relics-cmech.txt',
   // === 활동(주사위) 유물 (2026-05-22) — 성공률/보상/추가 활동권. trigger=passive(조회형). ===
   'data/relics/relics-activity.txt',
+  // === arc 보스 시그니처 유물 (작업 29) — source=boss, arc 승리 자동 드롭 전용(상점/엘리트 풀 제외). ===
+  'data/relics/relics-arc.txt',
   'data/events/events-mvr.txt',
   'data/events/act-1-region-events.txt',
   // 필러 사건 (2026-05-22) — 반복형·조건無. 사건 노드 빈노드 폴백 + 컬러 보상 다양성.
@@ -1121,6 +1148,8 @@ const DATA_FILES = [
   'data/monsters/act-1-roster-t3.txt',
   'data/monsters/act-1-roster-t4.txt',
   'data/items/act-1-items.txt',
+  // === arc 보스 시그니처 아이템 (작업 29) — rank=legendary 전투 포션, arc 승리 자동 드롭 전용(공방/마을 제작 풀 제외). ===
+  'data/items/act-1-arc-items.txt',
   'data/equipment/equipment-mvr.txt',
   // === 카오스 (r4) — 매 런 단위 토글 가능한 특수 기능 (레거시 placeholder). ===
   'data/chaos/chaos-mvr.txt',

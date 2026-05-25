@@ -3,7 +3,7 @@
 
 [monster.shadow-pup]
 name = 그림자 강아지
-tier = minion
+tier = normal
 species = werewolf
 hp = 35
 attack = 5
@@ -139,18 +139,6 @@ time_shards = 5
 card_drops =
 
 # ============================================================
-# 플래그십 체인지(변신/TSF) 여우 아인 (Stage 5).
-# change:race-form-fox 로 플레이어 종족+덱을 여우 폼으로 교체.
-# 마노니클라(극동 섬, 여우 lore) 엘리트 풀에 편입. HP는 T2 엘리트 상단.
+# 타마모(구 mr-mano-ninetails)는 작업 29에서 arc 보스(bs-arc-tamamo)로 승격되어
+# 이 몬스터 정의는 제거됨. 변신(change:race-form-fox)·잠식·동적 분기는 arc 보스로 이관.
 # ============================================================
-[monster.mr-mano-ninetails]
-name = 타마모
-tier = elite
-species = dragon
-hp = 420
-attack = 14
-defense = 0
-intents = debuff:9:feral~feral=attack:12, debuff:9:weakness, debuff:9:vulnerable, defend:20~feral=change, charge:1, defend:12, drain-stat:4, attack:8
-gold = 28
-time_shards = 10
-card_drops =

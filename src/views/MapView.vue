@@ -196,6 +196,9 @@ function getEnterAction(): EnterAction {
       if (st?.eventTriggered) return 'event-pass';
       return 'enter';
     case 'boss':
+      // arc 보스 노드는 승리 시 combatCleared로 마킹된다(런 지속) → 재방문 시 통과.
+      // 연표 종말 보스(boss_gate)는 승리=런 종료라 cleared가 남지 않으므로 항상 'boss'.
+      if (st?.combatCleared) return 'pass';
       return 'boss';
     case 'rest':
       if (st?.restDone) return 'rest-done';
@@ -280,7 +283,12 @@ function enterSelected() {
       }
       break;
     case 'boss':
-      router.push('/game/boss');
+      // 클리어된 arc 보스 노드는 전투 없이 통과.
+      if (action === 'pass') {
+        ui.toast('info', '이미 마주한 자리입니다.');
+      } else {
+        router.push('/game/boss');
+      }
       break;
     case 'rest': {
       const restSt = run.data.nodeStates[node.id];

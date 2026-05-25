@@ -84,6 +84,7 @@ export const DATA_FILES = [
   'timelines/act-1-era4-061.txt',
   'node-maps/act-1-map.txt',
   'bosses/act-1-boss.txt',
+  'bosses/act-1-arc.txt',
   'npcs/act-1-iluneon.txt',
   'npcs/act-1-stray.txt',
   'npcs/act-1-windfall.txt',
@@ -110,6 +111,7 @@ export const DATA_FILES = [
   'cards/junk-cards.txt',
   'cards/transform-forms.txt',
   'cards/cards-possession.txt',
+  'cards/cards-arc.txt',
   'relics/relics-mvr.txt',
   'relics/relics-race.txt',
   'relics/relics-color.txt',
@@ -119,6 +121,7 @@ export const DATA_FILES = [
   'relics/relics-combat.txt',
   'relics/relics-cmech.txt',
   'relics/relics-activity.txt',
+  'relics/relics-arc.txt',
   'events/events-mvr.txt',
   'events/act-1-region-events.txt',
   'events/events-filler.txt',
@@ -130,6 +133,7 @@ export const DATA_FILES = [
   'monsters/act-1-roster-t3.txt',
   'monsters/act-1-roster-t4.txt',
   'items/act-1-items.txt',
+  'items/act-1-arc-items.txt',
   'equipment/equipment-mvr.txt',
   'chaos/chaos-mvr.txt',
   'chaos/act-chaos.txt',
@@ -510,6 +514,17 @@ export function validateData(dataDir, readFile) {
     const f = merged[`boss.${id}`];
     const w = whereOf(`boss.${id}`);
     if (!f.name) push(diag('error', 'required-fields', `보스 '${id}' name 누락`, w));
+    if (f.kind && !['arc', 'boss'].includes(f.kind)) push(diag('error', 'whitelist-kind', `보스 '${id}' 알 수 없는 kind '${f.kind}'`, w));
+    // arc 전용 특전 보상 dangling 검증 (에디터 validator.ts와 동일 규칙).
+    for (const rid of parseList(f.arc_reward_relics)) {
+      if (!relicIds.has(rid)) push(diag('error', 'dangling', `보스 '${id}' arc_reward_relics 유물 '${rid}' 미정의`, w));
+    }
+    for (const cid of parseList(f.arc_reward_cards)) {
+      if (!cardIds.has(cid)) push(diag('error', 'dangling', `보스 '${id}' arc_reward_cards 카드 '${cid}' 미정의`, w));
+    }
+    for (const iid of parseList(f.arc_reward_items)) {
+      if (!itemIds.has(iid)) push(diag('error', 'dangling', `보스 '${id}' arc_reward_items 아이템 '${iid}' 미정의`, w));
+    }
     // phase 섹션 intents 검증.
     for (let i = 1; i <= 5; i++) {
       const pf = merged[`boss.${id}.phase.${i}`];

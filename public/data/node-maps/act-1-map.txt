@@ -72,7 +72,7 @@ name = 마노니클라 권역
 description = 극동 섬의 석양·드래곤 공방·리문 유적. 절벽 바람·사구의 모래.
 tier = 2
 enemy_pool = mr-mano-cliff-crab, mr-mano-sand-wraith, mr-mano-sunset-raven, mr-mano-limun-ward, mr-mano-iron-scorpion, mr-mano-dusk-shade, mr-mano-ruin-lurker, mr-mano-tide-golem
-elite_enemy_pool = mr-mano-limun-sovereign, mr-mano-sunset-drake, mr-mano-ninetails
+elite_enemy_pool = mr-mano-limun-sovereign, mr-mano-sunset-drake
 event_pool = ev-mano-sunset-flask, ev-mono-whisper, ev-fountain-vow, ev-mano-betelgeuse-passage, ev-mano-seed-1-anomaly, ev-mano-seed-2-embrace, ev-mano-cayou-notebook, ev-mano-dune-pillar, ev-mano-old-coin, ev-mano-fox-glance, ev-mano-guild-board, ev-mano-stone-cairn, ev-mano-sunset-beast, ev-mano-old-shrine-incense, ev-mano-cliff-walk-breath, ev-mano-seed-3-rumor, ev-mano-rok-step, ev-mano-valencia-spear, ev-mano-limun-script, ev-mano-night-tide, ev-guardian-blessing, ev-nekomata-bell, ev-baby-dragon-breath
 primary_color = iron
 specialty_item = i-sunset-shard
@@ -175,7 +175,7 @@ name = 트리플라워 화산
 description = 라르 숲과 모스 사이의 활화산. 화염 아인 살라만더·화염 정령·화염 아라크네. 용암·재·열기.
 tier = 3
 enemy_pool = mr-triflower-ember-arachne, mr-triflower-lava-salamander, mr-triflower-flame-spirit, mr-triflower-magma-crab, mr-triflower-scorchling, mr-emberforge-ash-hound, mr-emberforge-furnace-golem, mr-emberforge-lava-crawler, mr-emberforge-cinder-bat, mr-emberforge-slag-crusher
-elite_enemy_pool = mr-triflower-ignia-queen, mr-emberforge-magma-titan, mr-emberforge-kumamimi
+elite_enemy_pool = mr-triflower-ignia-queen, mr-emberforge-magma-titan
 event_pool = ev-lar-triflower-spirit, ev-lar-crater-rim-heat, ev-lar-lava-vein-spark, ev-lar-cooled-slag-rest, ev-tri-web-nest, ev-tri-magma-core, ev-emberforge-lair, ev-emberforge-core, ev-guardian-blessing, ev-nekomata-bell, ev-baby-dragon-breath
 primary_color = fire
 specialty_item = i-lava-scale
@@ -225,7 +225,7 @@ name = 구 신전터
 description = 타코미 너머 번개가 깃든 옛 신전 유적 도전 사냥터. 격 높은 신수 티프레가 지킨다. 부서진 기둥·정전기·빛 무늬.
 tier = 4
 enemy_pool = mr-oldshrine-spirit-flame, mr-oldshrine-shrine-warden, mr-oldshrine-thunder-wraith, mr-oldshrine-barrier-golem, mr-oldshrine-relic-hunter
-elite_enemy_pool = mr-oldshrine-lightning-archon, mr-oldshrine-toramimi
+elite_enemy_pool = mr-oldshrine-lightning-archon
 event_pool = ev-oldshrine-altar, ev-oldshrine-core, ev-guardian-blessing, ev-nekomata-bell, ev-baby-dragon-breath
 primary_color = electric
 specialty_item = i-shrine-relic
@@ -533,8 +533,19 @@ label = 노을 절벽
 description = 마노니클라 남쪽 노을이 가장 길게 머무는 자리. 절벽 끝에 유리병 하나가 거꾸로 박혀 있다.
 x = 0.8883
 y = 0.5724
-neighbors = n-mano-cliff-walk, n-mano-night-market, n-manonickla-forge
+neighbors = n-mano-cliff-walk, n-mano-night-market, n-manonickla-forge, n-mano-arc
 events = ev-mano-sunset-flask
+
+# arc 보스 고정 노드 (작업 29) — 타마모. 재진입 가능, 싸워 이겨야 클리어.
+[nodemap.nm-act-1-era4-061.node.n-mano-arc]
+kind = boss
+region = manonickla
+label = 타마모와의 장난
+description = 노을 아래 구미호 한 마리가 꼬리를 빙 두르고 앉아, 이쪽을 보며 빙긋 웃는다.
+x = 0.9003
+y = 0.5931
+neighbors = n-mano-sunset-cliff
+boss = bs-arc-tamamo
 
 [nodemap.nm-act-1-era4-061.node.n-mano-shore]
 kind = combat
@@ -2694,9 +2705,20 @@ label = 던의 자리
 description = 화산광 가장 너른 자리. 던이 장식 두른 외투를 길게 늘어뜨린 채, 쇳물 앞에 묵직하게 앉아 있다.
 x = 0.7569
 y = 0.262
-neighbors = n-tri-web-nest
+neighbors = n-tri-web-nest, n-emberforge-arc
 npcs = npc-kumamimi
 events = ev-emberforge-lair
+
+# arc 보스 고정 노드 (작업 29) — 던. 재진입 가능, 싸워 이겨야 클리어(combatCleared).
+[nodemap.nm-act-1-era4-061.node.n-emberforge-arc]
+kind = boss
+region = triflower
+label = 던과의 겨룸
+description = 던이 천천히 몸을 일으켜 마주 선다. 쇳물 빛이 어깨 너머로 길게 늘어진다.
+x = 0.745
+y = 0.2827
+neighbors = n-emberforge-lair
+boss = bs-arc-dun
 
 [nodemap.nm-act-1-era4-061.node.n-emberforge-deep]
 kind = elite
@@ -2751,9 +2773,20 @@ label = 티프레의 자리
 description = 신전 제단 자리. 티프레가 장식 두른 예복을 길게 걸친 채, 빛 무늬 위에 곧게 앉아 있다.
 x = 0.2551
 y = 0.6345
-neighbors = n-oldshrine-gate, n-luna-magicircle, n-oldshrine-hall
+neighbors = n-oldshrine-gate, n-luna-magicircle, n-oldshrine-hall, n-oldshrine-arc
 npcs = npc-toramimi
 events = ev-oldshrine-altar
+
+# arc 보스 고정 노드 (작업 29) — 티프레. 재진입 가능, 싸워 이겨야 클리어.
+[nodemap.nm-act-1-era4-061.node.n-oldshrine-arc]
+kind = boss
+region = oldshrine
+label = 티프레와의 겨룸
+description = 티프레가 예복 자락을 가다듬고 곧게 일어선다. 정전기가 빛 무늬를 따라 잘게 번진다.
+x = 0.267
+y = 0.6552
+neighbors = n-oldshrine-altar
+boss = bs-arc-tifre
 
 [nodemap.nm-act-1-era4-061.node.n-oldshrine-inner]
 kind = elite

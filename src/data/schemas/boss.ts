@@ -50,7 +50,16 @@ export interface BossSignatureVariant {
 export interface Boss extends NamedEntity {
   id: BossId;
 
-  /** 어느 연표의 종말 위협? */
+  /**
+   * 보스 분류 (작업 29).
+   *  - 'boss' (기본): 연표 종말 위협. 승리 = 런 종료 + 메타 보상. 3페이즈 권장.
+   *  - 'arc' : 런 도중 만나는 지성체(강 엘리트 승격). 승리 = 맵 복귀 + 전용 특전 자동 드롭(런 지속).
+   *            JRPG식 대화 회피 가능. 2페이즈 권장. 같은 BossView·페이즈·기믹 인프라 공유.
+   * 미지정이면 'boss' (옛 데이터 호환).
+   */
+  kind?: 'arc' | 'boss';
+
+  /** 어느 연표의 종말 위협? (arc 보스는 lore상 소속 연표 — 라우팅엔 미사용.) */
   timelineId: string;
 
   /** 기본 스탯. */
@@ -79,4 +88,29 @@ export interface Boss extends NamedEntity {
   /** 보스 대화/플레이버. */
   introText?: string;
   defeatText?: string;
+
+  // === arc 보스 전용 (kind='arc') — 일반 보스에선 미사용. ===
+  /**
+   * 대화 회피(JRPG식) intro 대사 — 캐릭터 성격별 분위기 몇 줄.
+   * 비어 있으면 introText 한 줄만 보인다.
+   */
+  dialogue?: string[];
+  /** "실력을 시험한다" 버튼 라벨 (전투 진입). 미지정 시 기본 라벨. */
+  challengeLabel?: string;
+  /** "다음에" 버튼 라벨 (회피 — 전투 없이 맵 복귀, 보상 0, 재진입 가능). 미지정 시 기본 라벨. */
+  declineLabel?: string;
+
+  /**
+   * arc 전용 특전 보상 — 승리 시 *자동 드롭*. 일반 풀에 등장하지 않는 전용 콘텐츠 권장.
+   *  - relicIds : 유물 ID들 (acquireRelic).
+   *  - cardIds  : 카드 ID들 (collection 추가).
+   *  - itemIds  : 아이템 ID들 (인벤토리 추가).
+   *  - gold     : 추가 골드 (미지정 시 0).
+   */
+  arcReward?: {
+    relicIds?: string[];
+    cardIds?: string[];
+    itemIds?: string[];
+    gold?: number;
+  };
 }

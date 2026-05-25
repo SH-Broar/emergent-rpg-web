@@ -19,7 +19,8 @@ import {
   statusBonusForCardEffectKind,
   resolveIntent,
 } from '@/systems/combat';
-import { applyBossRewards } from '@/systems/boss-rewards';
+import { applyBossRewards, applyArcRewards } from '@/systems/boss-rewards';
+import { effectiveContent } from '@/systems/map';
 import { colorBonusForCardEffectKind } from '@/systems/stats';
 import { bonusesFromEffective } from '@/systems/equipment';
 import { cardEffectKindLabel, cardEffectDescription, statusDescription, intentLabel, intentDescription, unlockKeyLabel, lockBadgeText, lockTooltip } from '@/systems/labels';
@@ -39,6 +40,13 @@ type Phase = 'intro' | 'combat' | 'victory' | 'defeat';
 const phase = ref<Phase>('intro');
 
 const timeline = computed(() => data.timelines.get(run.data.timelineId));
+
+/** 현재 노드 — arc 보스 노드 식별 + 클리어 마킹 대상. */
+const currentNode = computed(() => {
+  const map = data.nodeMaps.get(timeline.value?.nodeMapId ?? '');
+  return map?.nodes.find((n) => n.id === run.data.currentNodeId);
+});
+
 const boss = computed<Boss | undefined>(() => {
   // 디버그 전투 오버라이드 — 설정 시 연표 보스 대신 지정 보스.
   const dbgId = ui.debugBattle.bossId;
@@ -46,9 +54,21 @@ const boss = computed<Boss | undefined>(() => {
     const dbgBoss = data.bosses.get(dbgId);
     if (dbgBoss) return dbgBoss;
   }
+  // 작업 29: arc 노드는 노드 contentRef.boss로 *어느 보스인지* 전달한다.
+  // 권역 풀 재추첨(effectiveContent)도 반영하되, 보스 노드는 kind/content가 고정이라 원본 그대로.
+  const node = currentNode.value;
+  const nodeBossId = node ? effectiveContent(node, run.data)?.bossId ?? node.contentRef?.bossId : undefined;
+  if (nodeBossId) {
+    const nb = data.bosses.get(nodeBossId);
+    if (nb) return nb;
+  }
+  // 폴백 — 연표 종말 보스(boss_gate 경로).
   const id = timeline.value?.bossId;
   return id ? data.bosses.get(id) : undefined;
 });
+
+/** arc 보스인가 — 승패 분기·대화 회피 UI 토글. */
+const isArc = computed<boolean>(() => boss.value?.kind === 'arc');
 
 const combat = computed(() => run.data.combat);
 
@@ -214,6 +234,14 @@ function startBattle() {
   phase.value = 'combat';
 }
 
+/**
+ * 대화 회피(JRPG식 "다음에") — 전투 없이 맵 복귀, *보상 0*, arc 노드는 *클리어 안 됨*.
+ * 고정 재진입 노드라 하루에 몇 번이든 다시 들어올 수 있다(싸워 이겨야 클리어).
+ */
+function decline() {
+  router.push('/game/map');
+}
+
 // === 적 턴 순차 진행(작업 34) — 보스도 페이즈 기믹·멀티 인텐트를 한 액션씩 보여준다 ===
 const { enemyActing, runTurn } = useEnemyTurn();
 
@@ -250,11 +278,25 @@ function endTurn() {
 }
 
 function onVictory() {
-  if (!boss.value) return;
-  // r4 + 컬러/재료 phase: applyBossRewards가 *bossesCleared 미포함 시*에만 희소 재료 + 권역 컬러 부스트를 발사하므로,
+  const b = boss.value;
+  if (!b) return;
+  if (isArc.value) {
+    // === arc 승리 — 맵 복귀 + 전용 특전 자동 드롭 + 클리어 마킹. 런은 지속(종료 X). ===
+    // applyArcRewards는 *arcsCleared 미포함 시*에만 드롭하므로 push 이전에 호출.
+    applyArcRewards(b);
+    if (!run.data.arcsCleared) run.data.arcsCleared = [];
+    if (!run.data.arcsCleared.includes(b.id)) run.data.arcsCleared.push(b.id);
+    // 노드 클리어 마킹 — 재진입 시 전투 없이 통과(combatCleared 재사용).
+    run.markCombatCleared(run.data.currentNodeId);
+    clearCombat();
+    phase.value = 'victory';
+    return;
+  }
+  // === 일반 보스 승리 — 현행(메타 보상). ===
+  // applyBossRewards가 *bossesCleared 미포함 시*에만 희소 재료 + 권역 컬러 부스트를 발사하므로,
   // bossesCleared.push *이전*에 호출해야 한다.
-  applyBossRewards(boss.value);
-  run.data.bossesCleared.push(boss.value.id);
+  applyBossRewards(b);
+  run.data.bossesCleared.push(b.id);
   clearCombat();
   phase.value = 'victory';
 }
@@ -262,6 +304,24 @@ function onVictory() {
 function onDefeat() {
   clearCombat();
   phase.value = 'defeat';
+}
+
+/**
+ * arc 승리 후 맵 복귀 — 런 지속(종료 경로를 타지 않는다).
+ */
+function backToMap() {
+  router.push('/game/map');
+}
+
+/**
+ * === 패배 경로 중앙화 (작업 29) ===
+ * arc·boss 공통 패배 = 현행(런 종료). 한 곳으로 모아 *향후 목숨/도망 기능(작업 28)이 여기 후킹*한다.
+ * (지금은 무조건 런 종료. 목숨 도입 시 이 함수에서 부활/재시도 분기를 추가.)
+ */
+function handleDefeatExit() {
+  // 흡수·리셋은 RunEndView(/game/end)가 일괄 처리 — 모든 종료 경로를 요약 화면으로 합류.
+  run.endRun('boss-defeated');
+  router.push('/game/end');
 }
 
 function finishRun(reason: 'boss-cleared' | 'boss-defeated') {
@@ -340,19 +400,29 @@ function statusEntries(c: Combatant | undefined) {
 // === 구속/삼킴(grapple) + 발버둥 / 변신 / 손패 은폐(obscure) — CombatView와 동일 ===
 const grapple = computed(() => combat.value?.grapple);
 const obscured = computed(() => (combat.value?.obscuredTurns ?? 0) > 0);
-// 동적 의도 해석 — 보스 패리티(락인·동적 플래그 등이 텔레그래프에 즉시 반영되도록).
-const bossIntent = computed(() => {
+/**
+ * 이번 적 턴 의도 목록 — 멀티슬롯(+)이면 여러 개(CombatView 패리티, [[project_bossview_disruption_backlog]] 해소).
+ * 동적 의도(resolveIntent)로 *현재 상태* 기준 실시간 해석 — 락인/동적 플래그가 텔레그래프에 즉시 반영.
+ */
+const enemyIntentList = computed<string[]>(() => {
   const c = combat.value;
-  return c ? resolveIntent(c.enemyIntent, c) : '';
+  if (!c) return [];
+  const raw = (c.enemyIntentQueue && c.enemyIntentQueue.length > 0)
+    ? c.enemyIntentQueue
+    : (c.enemyIntent ? [c.enemyIntent] : []);
+  return raw.map((it) => resolveIntent(it, c));
 });
 /** 락(조준형) 배지 — 보스 패리티. 다중 락(과녁 + 이름·조건·진행도). */
 const locks = computed(() => combat.value?.locks ?? []);
-/** 레거시 락인(전역 단일 락) — lockin 행동을 안 쓰는 옛 몹/보스 전용. 보스 패리티. */
+/** 레거시 락인(전역 단일 락) — lockin 행동을 안 쓰는 옛 몹/보스 전용. 보스 패리티(큐 전체 검사). */
 const legacyLockIn = computed<{ value: number; unlocked: boolean } | null>(() => {
   const c = combat.value;
   if (!c || (c.lockIn ?? 0) <= 0) return null;
   if ((c.locks?.length ?? 0) > 0) return null;
-  if (!(c.enemyIntent ?? '').includes('~unlocked=')) return null;
+  const raw = (c.enemyIntentQueue && c.enemyIntentQueue.length > 0)
+    ? c.enemyIntentQueue
+    : (c.enemyIntent ? [c.enemyIntent] : []);
+  if (!raw.some((it) => it.includes('~unlocked='))) return null;
   return { value: c.lockIn ?? 0, unlocked: (c.player.block ?? 0) >= (c.lockIn ?? 0) };
 });
 // 강 구속/삼킴(grapple.hard)은 색상 미니게임으로만 발버둥(보스 패리티 — CombatView와 동일).
@@ -423,7 +493,17 @@ function usePotion(itm: Item) {
       <h1>{{ boss.name }}</h1>
       <p class="lore">{{ boss.description }}</p>
       <div v-if="boss.introText" class="intro__text">{{ boss.introText }}</div>
-      <button class="begin" @click="startBattle">싸움을 시작한다 →</button>
+      <!-- arc 보스: 성격별 분위기 대사 몇 줄 (대화 회피 JRPG식). -->
+      <div v-if="isArc && boss.dialogue && boss.dialogue.length" class="dialogue">
+        <p v-for="(line, i) in boss.dialogue" :key="i" class="dialogue__line">{{ line }}</p>
+      </div>
+
+      <!-- arc: "실력을 시험한다"(전투) / "다음에"(회피·재진입). 일반 보스: 단일 시작 버튼. -->
+      <div v-if="isArc" class="intro__choices">
+        <button class="begin" @click="startBattle">{{ boss.challengeLabel || '실력을 시험한다' }} →</button>
+        <button class="decline" @click="decline">{{ boss.declineLabel || '다음에' }}</button>
+      </div>
+      <button v-else class="begin" @click="startBattle">싸움을 시작한다 →</button>
     </section>
 
     <!-- Combat -->
@@ -469,7 +549,11 @@ function usePotion(itm: Item) {
           <div class="bar bar--boss">HP {{ combat.enemy.hp }} / {{ combat.enemy.maxHp }}
             <span v-if="combat.enemy.block > 0" class="block" :class="{ 'block--pulse': fx.enemyShield.value }">🛡 {{ combat.enemy.block }}</span>
           </div>
-          <div class="intent" v-tooltip="intentDescription(bossIntent)">다음: {{ intentLabel(bossIntent) }} <span class="intent__info">ⓘ</span></div>
+          <!-- 다중 의도 텔레그래프 — 멀티슬롯(+) 보스도 CombatView처럼 한 행동씩 표시(보스 패리티). -->
+          <div class="intent">
+            <span class="intent__lead">다음: <span class="intent__info">ⓘ</span></span>
+            <span v-for="(it, i) in enemyIntentList" :key="i" class="intent__act" v-tooltip="intentDescription(it)">{{ intentLabel(it) }}</span>
+          </div>
           <!-- 락(조준형) 배지 — 다중 락 각각 과녁 + 이름·조건·진행도 (보스 패리티) -->
           <div v-if="locks.length" class="locks">
             <div
@@ -609,7 +693,16 @@ function usePotion(itm: Item) {
       </footer>
     </section>
 
-    <!-- Victory -->
+    <!-- Victory (arc) — 맵 복귀, 런 지속. 특전은 토스트로 이미 흘렀다. -->
+    <section v-else-if="phase === 'victory' && isArc" class="result result--win">
+      <h1>승리</h1>
+      <p class="result__subject">{{ boss.name }}이(가) 자세를 풀고 한 걸음 물러난다.</p>
+      <div v-if="boss.defeatText" class="result__quote">{{ boss.defeatText }}</div>
+      <p class="result__note">특전을 받아 들고 길을 잇는다.</p>
+      <button class="finish" @click="backToMap">길을 잇는다 →</button>
+    </section>
+
+    <!-- Victory (일반 보스) — 런 종료 + 메타 보상. -->
     <section v-else-if="phase === 'victory'" class="result result--win">
       <h1>승리</h1>
       <p class="result__subject">{{ boss.name }}을(를) 마주하고 살아 돌아왔다.</p>
@@ -632,12 +725,12 @@ function usePotion(itm: Item) {
       <button class="finish" @click="finishRun('boss-cleared')">귀환 →</button>
     </section>
 
-    <!-- Defeat -->
+    <!-- Defeat (arc·boss 공통 — 패배 경로 중앙화). -->
     <section v-else class="result result--lose">
       <h1>패배</h1>
       <p class="result__subject">{{ boss.name }}에게 무너졌다.</p>
       <p class="result__note">이 런은 끝났지만, 메타 진행은 기록된다.</p>
-      <button class="finish" @click="finishRun('boss-defeated')">귀환 →</button>
+      <button class="finish" @click="handleDefeatExit">귀환 →</button>
     </section>
   </main>
 </template>
@@ -649,6 +742,13 @@ function usePotion(itm: Item) {
 .lore { color: #b6b6c4; margin: 1rem 0; }
 .intro__text { padding: 1.2rem; background: rgba(0,0,0,0.5); border-left: 3px solid #ffe88e; border-radius: 4px; color: #d6d6e0; margin: 2rem 0; font-style: italic; }
 .begin { padding: 0.8rem 1.5rem; background: rgba(255,232,142,0.2); border: 1px solid rgba(255,232,142,0.5); color: #ffe88e; border-radius: 6px; cursor: pointer; font-weight: 600; font: inherit; }
+.begin:hover { background: rgba(255,232,142,0.32); }
+/* arc 대화 회피 — 분위기 대사 + 두 선택지. */
+.dialogue { margin: 2rem auto; max-width: 560px; display: flex; flex-direction: column; gap: 0.6rem; }
+.dialogue__line { margin: 0; color: #e2dcc4; line-height: 1.5; font-style: italic; }
+.intro__choices { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 1rem; }
+.decline { padding: 0.8rem 1.5rem; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.25); color: #b6b6c4; border-radius: 6px; cursor: pointer; font-weight: 600; font: inherit; }
+.decline:hover { background: rgba(255,255,255,0.12); color: #d6d6e0; }
 
 /* flex 컬럼 — hand가 가변 영역을 차지해 스크롤. (grid 1fr이 로그에 잘못 배정되던 겹침 수정.) */
 .combat-shell { display: flex; flex-direction: column; gap: 1rem; flex: 1; min-height: 0; }
@@ -662,6 +762,10 @@ function usePotion(itm: Item) {
 .block { margin-left: 0.5rem; color: #8eedff; }
 .mana { color: #c08eff; font-weight: 600; }
 .intent { color: #ffb88e; font-size: 0.9rem; }
+/* 다중 의도 — 한 행동씩 줄바꿈 (CombatView와 동일). 적 측이라 우측 정렬. */
+.intent__lead { display: block; }
+.intent__act { display: block; }
+.intent__act::before { content: '· '; opacity: 0.6; }
 .lockin {
   margin-top: 2px;
   display: inline-block;

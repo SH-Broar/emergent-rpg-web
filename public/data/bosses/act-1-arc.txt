@@ -1,0 +1,107 @@
+# Arc 보스 3종 (작업 29) — 강 엘리트(던·티프레·타마모)를 Boss 엔티티 kind='arc'로 승격.
+#
+# 런 도중 *보스 프레임(BossView)*으로 만난다. 승리 = 맵 복귀 + 전용 특전 자동 드롭(런 지속).
+# JRPG식 대화로 회피 가능("다음에"=전투 없이 통과·보상 0·재진입). 싸워 이겨야 클리어.
+#
+# 기믹은 구 mr-* 인텐트를 encoded로 이관(멀티슬롯 + · 동적 분기 ~feral= · 변신 change ·
+# 교란 cost-up/obscure · 구속 devour · 잠식 drain-stat 그대로). 멀티액션은 한 슬롯 안 `+` 묶음으로
+# 표현(어댑터 bossAsMonster가 actions를 안 실으므로 + 묶음이 진실원). 2페이즈(P2=가속).
+#
+# arc_reward_* = 승리 시 자동 드롭하는 전용 특전(유물/카드/아이템). 일반 풀에 없는 신규 콘텐츠.
+
+# ============================================================
+# 던 (Dun) — 불·쇠의 신수 곰. 화산광 지대(emberforge). 묵직·과묵·다정한 큰 형.
+# 구 mr-emberforge-kumamimi(hp960·atk34·actions2·devour·drain·charge·defend·buff).
+# ============================================================
+
+[boss.bs-arc-dun]
+name = 던
+description = 쇳물 앞에 묵직하게 앉은 곰 신수. 외투를 길게 늘어뜨리고, 좀처럼 일어서지 않는다.
+kind = arc
+timeline = tl-act-1-era4-061
+hp = 1040
+attack = 34
+defense = 0
+intro = 던이 천천히 고개를 든다. 쇳물 빛이 눈에 어린다.
+dialogue = 너 여기까지 왔구나. 다친 데는 없고?, 급할 것 없다. 한 모금 데워 줄까., ……그래도 굳이 겨뤄 보고 싶다면 받아 주마. 살살은 못 한다.
+defeat_text = 던이 껄껄 웃으며 손을 편다. "좋은 발이야. 가져가라, 네 몫이다."
+challenge_label = 앞발을 받아 본다
+decline_label = 다음에 들르겠다
+arc_reward_relics = r-arc-dun-ember-heart
+arc_reward_cards = c-arc-dun-quake-paw
+arc_reward_items = i-arc-dun-ember-draught
+
+# P1 — 본 패턴(버프 윈드업·삼킴·잠식). 멀티슬롯은 + 로 한 턴 2행동.
+[boss.bs-arc-dun.phase.1]
+starts_at = 1.0
+intents = buff:4, attack:17+defend:10, charge:7, attack:18, devour:6:5, attack:19+defend:12, drain:15, attack:18
+
+# P2 — 가속(0.5 이하): 충전+연타·더 잦은 삼킴.
+[boss.bs-arc-dun.phase.2]
+starts_at = 0.5
+intents = charge:8, attack:22+attack:14, devour:7:6, attack:24, drain:18, attack:22+defend:14
+
+# ============================================================
+# 티프레 (Tifre) — 번개의 신수 호랑이. 옛 신전(oldshrine). 예법·꼿꼿·은근한 자부심.
+# 구 mr-oldshrine-toramimi(hp1000·atk36·actions3·debuff feral·~feral=heavy-feral·cost-up·drain·charge).
+# ============================================================
+
+[boss.bs-arc-tifre]
+name = 티프레
+description = 빛 무늬 위에 곧게 앉은 호랑이 신수. 장식 두른 예복 자락이 흐트러짐 없이 정렬돼 있다.
+kind = arc
+timeline = tl-act-1-era4-061
+hp = 1080
+attack = 36
+defense = 0
+intro = 티프레가 자세를 고쳐 앉는다. 정전기가 수염 끝에서 잘게 튄다.
+dialogue = 예를 갖추고 왔으니 나도 예로 답하겠다., 겨룸은 모욕이 아니다. 서로의 깊이를 재는 일이지., 발을 들어 보아라. 어디까지 따라오는지 보겠다.
+defeat_text = 티프레가 천천히 고개를 숙인다. "훌륭한 겨룸이었다. 이건 내 인정의 표시다."
+challenge_label = 예를 갖춰 겨룬다
+decline_label = 다음에 청하겠다
+arc_reward_relics = r-arc-tifre-storm-fang
+arc_reward_cards = c-arc-tifre-thunderstep
+arc_reward_items = i-arc-tifre-spark-vial
+
+# P1 — 수화 유도 + 동적 분기(수화 상태면 심수화) + 비용 교란.
+[boss.bs-arc-tifre.phase.1]
+starts_at = 1.0
+intents = buff:5, attack:12+debuff:2:feral, charge:7, attack:14~feral=heavy-feral, cost-up:3:3, attack:13+defend:16, drain:10, attack:15
+
+# P2 — 가속(0.5 이하): 더 잦은 교란·연타.
+[boss.bs-arc-tifre.phase.2]
+starts_at = 0.5
+intents = cost-up:4:3, attack:16+attack:12, charge:8, attack:18~feral=heavy-feral, drain:14, attack:16+defend:16
+
+# ============================================================
+# 타마모 (Tamamo) — 변신의 구미호. 마노니클라(극동 섬). 장난스러움·간살·정 많음.
+# 구 mr-mano-ninetails(hp420·atk14·debuff feral·~feral 분기·defend~feral=change(여우폼)·drain-stat·charge).
+# 변신(change) 폼 = race-form-fox 그대로. 교란/변신이 BossView에서 온전히 동작해야 함.
+# ============================================================
+
+[boss.bs-arc-tamamo]
+name = 타마모
+description = 아홉 꼬리를 살랑이는 구미호. 노을빛 아래서 표정이 자꾸 바뀐다.
+kind = arc
+timeline = tl-act-1-era4-061
+hp = 480
+attack = 16
+defense = 0
+intro = 타마모가 꼬리를 빙 두르며 빙긋 웃는다. 노을이 그 그림자를 길게 늘인다.
+dialogue = 오 손님이다 손님! 여기까지 오느라 고생했지?, 나랑 놀자~ 재미없으면 바로 보내 줄게. 약속!, 그래도 내 꼬리에 홀리지 않게 조심하고? 후훗.
+defeat_text = 타마모가 꼬리를 탁 내리며 입을 삐죽인다. "졌다 졌어! ……자, 선물. 다음에 또 놀러 와."
+challenge_label = 장난에 끼어 본다
+decline_label = 다음에 놀러 올게
+arc_reward_relics = r-arc-tamamo-nine-mirror
+arc_reward_cards = c-arc-tamamo-foxfire
+arc_reward_items = i-arc-tamamo-tail-charm
+
+# P1 — 수화 유도 + 동적 분기 + 잠식. 손패 은폐(obscure)로 교란.
+[boss.bs-arc-tamamo.phase.1]
+starts_at = 1.0
+intents = debuff:3:feral~feral=attack:12, debuff:3:weakness, charge:1, obscure:2, drain-stat:3, attack:10, defend:14, attack:12
+
+# P2 — 가속(0.5 이하): 변신(change:race-form-fox=여우폼)으로 판을 뒤집고 잠식·은폐 연타.
+[boss.bs-arc-tamamo.phase.2]
+starts_at = 0.5
+intents = defend:18~feral=change:race-form-fox, obscure:2, drain-stat:4, attack:14, charge:2, attack:16
