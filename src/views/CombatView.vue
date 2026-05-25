@@ -28,6 +28,7 @@ import { colorBonusForCardEffectKind } from '@/systems/stats';
 import { bonusesFromEffective } from '@/systems/equipment';
 import { cardEffectKindLabel, cardEffectDescription, statusDescription, statusLabel, intentLabel, intentDescription, cardDetailText, lockBadgeText, lockTooltip } from '@/systems/labels';
 import { useItem } from '@/systems/item';
+import { activeSkillSlots, useSkill } from '@/systems/skills';
 import { useCombatFx, CARD_PLAY_DELAY } from '@/composables/useCombatFx';
 import { useEnemyTurn } from '@/composables/useEnemyTurn';
 import { useCombatKeys } from '@/composables/useCombatKeys';
@@ -310,6 +311,15 @@ function usePotion(itm: Item) {
   useItem(itm);
 }
 
+// === 동료 액티브 스킬 (Item 37-② Stage A) — 발버둥·포션 옆 ≤3 버튼 ===
+const skillSlots = computed(() => activeSkillSlots());
+function useSkillSlot(slot: number) {
+  // 적 행동/카드 애니메이션 중 차단(카드 사용과 동일 가드).
+  if (enemyActing.value || playingIndex.value !== null) return;
+  const result = useSkill(slot);
+  if (result.enemyDefeated) onVictory();
+}
+
 // === 목숨 (Item 28) ===
 const lives = computed(() => run.data.lives ?? 2);
 const maxLives = computed(() => run.data.maxLives ?? 2);
@@ -494,6 +504,25 @@ void ui;
     </div>
     <StruggleMinigame v-if="showStruggleMinigame" @close="showStruggleMinigame = false" />
 
+    <!-- 동료 스킬 — 발버둥·포션 옆. 쿨다운 0일 때만 발동, 슬롯1은 쿨다운 -1 표식. -->
+    <div v-if="skillSlots.length > 0" class="skills">
+      <span class="skills__label">동료 스킬</span>
+      <button
+        v-for="sk in skillSlots"
+        :key="sk.slot"
+        class="skill"
+        :class="{ 'skill--disabled': !sk.ready, 'skill--lead': sk.slot === 0 }"
+        :disabled="!sk.ready || enemyActing"
+        v-tooltip.hold="`${sk.companionName} · ${sk.skill.description ?? sk.skill.name} (쿨다운 ${sk.skill.cooldown}${sk.slot === 0 ? ', 슬롯1 -1' : ''})`"
+        @click="useSkillSlot(sk.slot)"
+      >
+        <span class="skill__name">
+          <span v-if="sk.slot === 0" class="skill__lead">①</span>{{ sk.skill.name }}
+        </span>
+        <span class="skill__cd">{{ sk.cooldown > 0 ? `쿨 ${sk.cooldown}` : '준비됨' }}</span>
+      </button>
+    </div>
+
     <!-- 전투 포션 벨트 — 턴당 1회, 마나 무관 -->
     <div v-if="combatPotions.length > 0" class="potions">
       <span class="potions__label">포션{{ potionUsed ? ' (이번 턴 사용함)' : '' }}</span>
@@ -667,6 +696,21 @@ void ui;
   color: #6f6f80;
 }
 .combat-log__line--latest { color: #e2dcc4; font-weight: 600; }
+
+/* 동료 스킬 벨트 */
+.skills { display: flex; gap: 0.5rem; align-items: center; padding: 0.4rem 1rem; flex-wrap: wrap; }
+.skills__label { color: #c0b693; font-size: 0.8rem; }
+.skill {
+  display: flex; flex-direction: column; gap: 0.1rem; padding: 0.4rem 0.7rem;
+  background: rgba(192, 142, 255, 0.16); border: 1px solid rgba(192, 142, 255, 0.5);
+  color: #f0e0ff; border-radius: 6px; cursor: pointer; font: inherit; text-align: left;
+}
+.skill:hover:not(.skill--disabled) { background: rgba(192, 142, 255, 0.3); }
+.skill--disabled { opacity: 0.38; cursor: not-allowed; }
+.skill--lead { border-color: rgba(246, 232, 184, 0.7); }
+.skill__name { font-weight: 600; font-size: 0.85rem; color: #f6e8b8; }
+.skill__lead { color: #f6e8b8; margin-right: 0.15rem; }
+.skill__cd { font-size: 0.72rem; color: #d0b6ff; }
 
 /* 전투 포션 벨트 */
 .potions { display: flex; gap: 0.5rem; align-items: center; padding: 0.4rem 1rem; flex-wrap: wrap; }

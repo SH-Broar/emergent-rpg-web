@@ -134,7 +134,8 @@ function evalTokenInner(tok: string, run: RunState): boolean {
       return (run.clues ?? []).some((c) => c.id === rest);
     }
     case 'companion': {
-      return run.companions.includes(rest);
+      // Item 37-② Stage A — companions → roster. 영입했으면(편성 여부 무관) 참.
+      return (run.roster ?? []).some((e) => e.id === rest);
     }
     case 'affinity': {
       // 친밀도 시스템 *비활성* (2026-05-19 사용자 결정). chain은 has-clue로 대체.

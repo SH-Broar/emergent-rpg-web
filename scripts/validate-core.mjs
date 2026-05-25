@@ -577,6 +577,23 @@ export function validateData(dataDir, readFile) {
     for (const relicId of parseList(f.recruit_relics)) {
       if (!relicIds.has(relicId)) push(diag('error', 'dangling', `NPC '${id}' recruit_relics 유물 '${relicId}' 미정의`, w));
     }
+    // 통합 동료 정의 (Item 37-② Stage A) — companion_kind / 스킬 효과 kind / 카드 dangling.
+    const compKind = (f.companion_kind ?? '').trim();
+    if (compKind && !['passive', 'skill', 'card'].includes(compKind)) {
+      push(diag('error', 'whitelist-kind', `NPC '${id}' companion_kind '${compKind}' 알 수 없음 (passive|skill|card)`, w));
+    }
+    if (compKind === 'skill' && !f.companion_skill_name) {
+      push(diag('error', 'required-fields', `NPC '${id}' companion_kind=skill 인데 companion_skill_name 누락`, w));
+    }
+    for (const tok of parseList(f.companion_skill_effects)) {
+      const kind = tok.split(':')[0]?.trim();
+      if (kind && !VALID_CARD_EFFECT_KINDS.includes(kind)) {
+        push(diag('error', 'whitelist-kind', `NPC '${id}' companion_skill_effects 알 수 없는 효과 kind '${kind}'`, w));
+      }
+    }
+    for (const cardId of parseList(f.companion_card_ids)) {
+      if (!cardIds.has(cardId)) push(diag('error', 'dangling', `NPC '${id}' companion_card_ids 카드 '${cardId}' 미정의`, w));
+    }
   }
 
   // ---- 4.11 이벤트 검증 (choice grant_card/grant_relic/clue/affinity/followup/custom) ----

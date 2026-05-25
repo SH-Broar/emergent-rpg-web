@@ -15,6 +15,7 @@ import type {
   CardEffectKind,
   CombatState,
   Combatant,
+  CompanionSkill,
   EffectTarget,
   LockCondition,
   Monster,
@@ -443,6 +444,8 @@ export function startCombat(monster: Monster) {
     enemyIntentRotation,
     // 카오스 hidden-intent — 적 의도 가려짐(Stage2 obscure 재사용). 큰 값으로 상시 은폐.
     obscuredTurns: isHiddenIntent() ? 9999 : 0,
+    // 동료 스킬 쿨다운 — 매 전투 시작 시 0으로 초기화(3칸 모두 준비됨).
+    skillCooldowns: [0, 0, 0],
   };
   r.combat = combat;
 
@@ -745,6 +748,65 @@ function applyEffect(effect: CardEffect, c: CombatState) {
   if (handler) handler(effect, c);
 }
 
+/**
+ * 동료 액티브 스킬 효과 실행 (Item 37-② Stage A).
+ *
+ * 카드 효과 핸들러(EFFECT_HANDLERS)를 *그대로 재사용* — playCard의 효과 루프와 동일 경로.
+ * 마나/손패와 무관하게 발동(쿨다운만 비용). 적에게 입힌 피해는 락(damage)에 누적,
+ * 결과를 전투 로그에 요약하고, 적 사망(분열 포함)을 resolveEnemyDefeat로 인터셉트한다.
+ *
+ * 쿨다운/슬롯 비용 처리는 systems/skills.ts가 담당 — 여기서는 *효과 실행*만.
+ * 반환: enemyDefeated(true면 호출자가 onVictory).
+ */
+export function executeSkillEffects(skill: CompanionSkill): { enemyDefeated: boolean } {
+  const run = useRunStore();
+  const c = run.data.combat;
+  if (!c) return { enemyDefeated: false };
+
+  // 로그용 스냅샷 — playCard와 동일한 델타 요약 방식.
+  const snapEnemyHp = c.enemy.hp;
+  const snapEnemyBlock = c.enemy.block;
+  const snapPlayerHp = c.player.hp;
+  const snapPlayerBlock = c.player.block;
+  const snapEnemyStatus = countStatuses(c.enemy.statuses);
+
+  for (const effect of skill.effects) {
+    // 스킬 기본 target이 있으면 effect.target 미지정 시 채워 넣는다(개별 effect.target 우선).
+    const eff = effect.target === undefined && skill.target !== undefined
+      ? { ...effect, target: skill.target }
+      : effect;
+    applyEffect(eff, c);
+  }
+
+  // 락(damage) + 금욕(no-attack) — 적에게 입힌 피해 누적(카드와 동일).
+  {
+    const dealt = (snapEnemyHp + snapEnemyBlock) - (c.enemy.hp + c.enemy.block);
+    if (dealt > 0) {
+      c.lockAttackedThisTurn = true;
+      progressLocks(c, 'damage', dealt);
+    }
+  }
+
+  // 전투 로그 — 스킬 결과를 짧게 요약.
+  {
+    const segs: string[] = [];
+    const dmg = snapEnemyHp - c.enemy.hp;
+    if (dmg > 0) segs.push(`적 -${dmg}`);
+    const heal = c.player.hp - snapPlayerHp;
+    if (heal > 0) segs.push(`HP +${heal}`);
+    const blk = c.player.block - snapPlayerBlock;
+    if (blk > 0) segs.push(`방어 +${blk}`);
+    const dbuff = countStatuses(c.enemy.statuses) - snapEnemyStatus;
+    if (dbuff > 0) segs.push('디버프');
+    pushLog(c, segs.length > 0 ? `【${skill.name}】 ${segs.join(' · ')}` : `【${skill.name}】`);
+  }
+
+  if (resolveEnemyDefeat(c)) {
+    return { enemyDefeated: true };
+  }
+  return { enemyDefeated: false };
+}
+
 /** 수화(feral) 또는 수화 중(feral-heavy)인가 — 둘 다 공격 ×2 + 방어 불가. */
 function playerWild(c: CombatState): boolean {
   const s = c.player.statuses;
@@ -980,9 +1042,9 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
       applyDamage(t, value, c.player.statuses);
     }
   },
-  // 동료 수 × value 피해.
+  // 동료 수 × value 피해 — *활성 슬롯에 편성된* 동료 수 기준(Item 37-②).
   'damage-per-companion': (e, c) => {
-    const count = useRunStore().data.companions.length;
+    const count = (useRunStore().data.activeSlots ?? []).filter(Boolean).length;
     dealRawDamage(resolveTargets(e.target ?? 'enemy', c), count * (e.value ?? 1));
   },
   // 유물 수 × value 피해.
@@ -1190,6 +1252,10 @@ export function finishEnemyTurn(monster: Monster): TurnResult {
   c.turn += 1;
   c.cardsPlayedThisTurn = 0; // 새 턴 — first-card-free 판정 리셋.
   c.potionUsedThisTurn = false; // 새 턴 — 전투 포션 턴당 1회 가드 리셋.
+  // 동료 스킬 쿨다운 — 매 플레이어 턴 시작에 각 슬롯 -1(최소 0).
+  if (c.skillCooldowns) {
+    c.skillCooldowns = c.skillCooldowns.map((cd) => Math.max(0, cd - 1));
+  }
   c.frozenTurn = false; // 새 턴은 기본 비정지 — 마비/보스 stillness가 이번 턴 한정으로 다시 set.
   // mana-carryover 유물: 쓰지 않은 마나를 다음 턴으로 이월.
   const manaCarry = playerHasRelicEffect('mana-carryover') ? Math.max(0, c.mana) : 0;

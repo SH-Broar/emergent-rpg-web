@@ -54,10 +54,10 @@ const endNode = computed(() => {
   return { label: node.label, regionName: region?.name };
 });
 
-// === 행적: 동료 ===
+// === 행적: 동료 (Item 37-② — roster 기준, 그 런에 영입한 동료 전체) ===
 const companionNames = computed(() =>
-  run.data.companions
-    .map((id) => data.npcs.get(id)?.name)
+  (run.data.roster ?? [])
+    .map((e) => (e.src === 'npc' ? data.npcs.get(e.id)?.name : undefined) ?? e.id)
     .filter((n): n is string => !!n),
 );
 

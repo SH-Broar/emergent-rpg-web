@@ -27,7 +27,7 @@ import {
   unequip,
 } from '@/systems/equipment';
 import { statusLabel } from '@/systems/labels';
-import type { Element, Equipment, EquipmentSlot } from '@/data/schemas';
+import type { Companion, Element, Equipment, EquipmentSlot } from '@/data/schemas';
 import DeckPanel from '@/components/DeckPanel.vue';
 import Tooltip from '@/components/Tooltip.vue';
 
@@ -82,58 +82,107 @@ const bonus = computed(() => deriveBonuses(stats.value));
 /** VIT(빛·어둠) → 최대 HP 보너스 표시값. */
 const vitHp = computed(() => vitHpBonus(effective.value));
 
-/** 동료별 이름 + *영입 보너스 설명*(덱 슬롯·카드·유물·컬러). 사용자 요청: 동료가 무엇을 주는지 보이게. */
-const companionInfo = computed(() =>
-  run.data.companions.map((id) => {
-    const npc = data.npcs.get(id);
-    const r = npc?.recruit;
-    const bonuses: string[] = [];
-    if (r) {
-      if (r.deckSizeBonus) bonuses.push(`덱 슬롯 +${r.deckSizeBonus}`);
-      if (r.grantedCardIds?.length) {
-        bonuses.push(`카드: ${r.grantedCardIds.map((c) => data.cards.get(c)?.name ?? c).join(', ')}`);
-      }
-      if (r.grantedRelicIds?.length) {
-        bonuses.push(`유물: ${r.grantedRelicIds.map((rl) => data.relics.get(rl)?.name ?? rl).join(', ')}`);
-      }
-      if (r.colorBoosts) {
-        const parts = Object.entries(r.colorBoosts)
-          .filter(([, v]) => (v ?? 0) !== 0)
-          .map(([k, v]) => `${labelOfColor(k as Element)} ${(v ?? 0) >= 0 ? '+' : ''}${v}`);
-        if (parts.length) bonuses.push(`컬러: ${parts.join(', ')}`);
-      }
-      // 지속 패시브(5c) — 파티에 있는 한 매 전투 적용.
-      if (r.statusResist) {
-        const parts = Object.entries(r.statusResist)
-          .filter(([, v]) => (v ?? 0) !== 0)
-          .map(([k, v]) => (k === 'all' ? `모든 상태이상 -${v}` : `${statusLabel(k)} -${v}`));
-        if (parts.length) bonuses.push(`상태이상 저항: ${parts.join(', ')}`);
-      }
-      if (r.combatStart) {
-        const parts: string[] = [];
-        if (r.combatStart.block) parts.push(`방어 +${r.combatStart.block}`);
-        if (r.combatStart.strength) parts.push(`힘 +${r.combatStart.strength}`);
-        if (r.combatStart.draw) parts.push(`드로우 +${r.combatStart.draw}`);
-        if (parts.length) bonuses.push(`전투 시작: ${parts.join(', ')}`);
-      }
-      if (r.perTurn) {
-        const parts: string[] = [];
-        if (r.perTurn.heal) parts.push(`회복 +${r.perTurn.heal}`);
-        if (r.perTurn.block) parts.push(`방어 +${r.perTurn.block}`);
-        if (parts.length) bonuses.push(`매 턴: ${parts.join(', ')}`);
-      }
-      if (r.rewardMul) {
-        const pct = (v: number) => `${Math.round(v * 100)}%`;
-        const parts: string[] = [];
-        if (r.rewardMul.gold) parts.push(`골드 +${pct(r.rewardMul.gold)}`);
-        if (r.rewardMul.shards) parts.push(`시간조각 +${pct(r.rewardMul.shards)}`);
-        if (r.rewardMul.gather) parts.push(`채집 +${pct(r.rewardMul.gather)}`);
-        if (parts.length) bonuses.push(`보상: ${parts.join(', ')}`);
-      }
+/** 통합 동료 정의(passive/skill/card)를 사람이 읽는 효과 설명 줄들로. */
+function describeCompanion(comp: Companion | undefined): { typeLabel: string; bonuses: string[] } {
+  const bonuses: string[] = [];
+  if (!comp) return { typeLabel: '동료', bonuses };
+  if (comp.kind === 'skill' && comp.skill) {
+    const s = comp.skill;
+    bonuses.push(`스킬 「${s.name}」 (쿨다운 ${s.cooldown})`);
+    if (s.description) bonuses.push(s.description);
+    return { typeLabel: '스킬', bonuses };
+  }
+  if (comp.kind === 'card') {
+    if (comp.cardIds?.length) {
+      bonuses.push(`카드: ${comp.cardIds.map((c) => data.cards.get(c)?.name ?? c).join(', ')}`);
     }
-    return { name: npc?.name ?? id, bonuses };
+    return { typeLabel: '카드', bonuses };
+  }
+  // passive
+  const r = comp.passive;
+  if (r) {
+    if (r.statusResist) {
+      const parts = Object.entries(r.statusResist)
+        .filter(([, v]) => (v ?? 0) !== 0)
+        .map(([k, v]) => (k === 'all' ? `모든 상태이상 -${v}` : `${statusLabel(k)} -${v}`));
+      if (parts.length) bonuses.push(`상태이상 저항: ${parts.join(', ')}`);
+    }
+    if (r.combatStart) {
+      const parts: string[] = [];
+      if (r.combatStart.block) parts.push(`방어 +${r.combatStart.block}`);
+      if (r.combatStart.strength) parts.push(`힘 +${r.combatStart.strength}`);
+      if (r.combatStart.draw) parts.push(`드로우 +${r.combatStart.draw}`);
+      if (parts.length) bonuses.push(`전투 시작: ${parts.join(', ')}`);
+    }
+    if (r.perTurn) {
+      const parts: string[] = [];
+      if (r.perTurn.heal) parts.push(`회복 +${r.perTurn.heal}`);
+      if (r.perTurn.block) parts.push(`방어 +${r.perTurn.block}`);
+      if (parts.length) bonuses.push(`매 턴: ${parts.join(', ')}`);
+    }
+    if (r.rewardMul) {
+      const pct = (v: number) => `${Math.round(v * 100)}%`;
+      const parts: string[] = [];
+      if (r.rewardMul.gold) parts.push(`골드 +${pct(r.rewardMul.gold)}`);
+      if (r.rewardMul.shards) parts.push(`시간조각 +${pct(r.rewardMul.shards)}`);
+      if (r.rewardMul.gather) parts.push(`채집 +${pct(r.rewardMul.gather)}`);
+      if (parts.length) bonuses.push(`보상: ${parts.join(', ')}`);
+    }
+  }
+  return { typeLabel: '패시브', bonuses };
+}
+
+/** companion 정의(없으면 legacy recruit를 passive로 폴백). */
+function companionDef(npcId: string): Companion | undefined {
+  const npc = data.npcs.get(npcId);
+  if (npc?.companion) return npc.companion;
+  if (npc?.recruit) return { kind: 'passive', passive: npc.recruit };
+  return undefined;
+}
+
+/** 로스터 전체 — 이름 + 효과 설명 + 편성 여부 + 편성된 슬롯 인덱스. */
+const rosterInfo = computed(() =>
+  (run.data.roster ?? []).map((e) => {
+    const npc = data.npcs.get(e.id);
+    const comp = companionDef(e.id);
+    const slotIdx = (run.data.activeSlots ?? []).findIndex((s) => s?.id === e.id);
+    const { typeLabel, bonuses } = describeCompanion(comp);
+    return { id: e.id, src: e.src, name: npc?.name ?? e.id, typeLabel, bonuses, slotIdx };
   }),
 );
+
+/** 3 활성 슬롯 — 각 칸의 동료 이름(또는 빈 칸). 슬롯1(인덱스0)은 스킬 쿨다운 -1. */
+const slotView = computed(() =>
+  [0, 1, 2].map((i) => {
+    const e = (run.data.activeSlots ?? [])[i] ?? null;
+    const name = e ? (data.npcs.get(e.id)?.name ?? e.id) : null;
+    return { index: i, id: e?.id ?? null, name };
+  }),
+);
+
+const activeCount = computed(() => (run.data.activeSlots ?? []).filter(Boolean).length);
+
+/** 편성 토글 — 편성돼 있으면 내리고, 아니면 빈 칸에 올린다(가득이면 안내). */
+function toggleEquip(npcId: string) {
+  if (run.isActive(npcId)) {
+    run.unsetActiveByPet(npcId);
+    return;
+  }
+  if (!run.equipCompanion(npcId)) {
+    ui.toast('warning', '활성 슬롯 3칸이 모두 찼습니다 — 한 명을 내려주세요.');
+  }
+}
+
+/** 특정 슬롯에 특정 동료 편성(순서 지정). */
+function assignToSlot(slot: number, npcId: string) {
+  const entry = (run.data.roster ?? []).find((e) => e.id === npcId);
+  if (!entry) return;
+  run.setActiveSlot(slot, { id: entry.id, src: entry.src });
+}
+
+function clearSlot(slot: number) {
+  run.setActiveSlot(slot, null);
+}
 
 // 덱 편집 nested 모달
 const deckEditOpen = ref(false);
@@ -336,20 +385,58 @@ function onUnequipClick(slot: EquipmentSlot) {
             </div>
           </section>
 
-          <!-- 동료 -->
+          <!-- 동료 — 로스터 + 3칸 편성 (Item 37-② Stage A) -->
           <section class="cm-sec">
-            <h3 class="cm-sec__title">동료 ({{ run.data.companions.length }}/3)</h3>
-            <p v-if="run.data.companions.length === 0" class="cm-empty">아직 동료가 없습니다.</p>
+            <h3 class="cm-sec__title">동료 · 편성 ({{ activeCount }}/3)</h3>
+
+            <!-- 활성 3칸 -->
+            <div class="cm-slots">
+              <div
+                v-for="s in slotView"
+                :key="s.index"
+                class="cm-slot"
+                :class="{ 'cm-slot--filled': !!s.id, 'cm-slot--lead': s.index === 0 }"
+              >
+                <div class="cm-slot__hdr">
+                  <span class="cm-slot__num">슬롯 {{ s.index + 1 }}</span>
+                  <span v-if="s.index === 0" class="cm-slot__lead-tag" v-tooltip="'슬롯 1에 편성된 동료의 스킬은 쿨다운이 1 줄어듭니다.'">쿨다운 -1</span>
+                </div>
+                <div v-if="s.name" class="cm-slot__body">
+                  <span class="cm-slot__name">{{ s.name }}</span>
+                  <button class="cm-slot__off" @click="clearSlot(s.index)">비우기</button>
+                </div>
+                <div v-else class="cm-slot__empty">비어있음</div>
+              </div>
+            </div>
+            <p class="cm-slot__hint">슬롯 1에 편성한 동료의 스킬은 쿨다운이 1 줄어듭니다 (편성 순서가 전략).</p>
+
+            <!-- 로스터 목록 — 동행/이탈 토글 + 슬롯 지정 -->
+            <p v-if="rosterInfo.length === 0" class="cm-empty">아직 영입한 동료가 없습니다.</p>
             <ul v-else class="cm-companions">
-              <li v-for="(c, i) in companionInfo" :key="i" class="cm-companion">
+              <li v-for="c in rosterInfo" :key="c.id" class="cm-companion" :class="{ 'cm-companion--active': c.slotIdx >= 0 }">
                 <div class="cm-companion__row">
-                  <span class="cm-companion__icon">🤝</span>
+                  <span class="cm-companion__icon">{{ c.slotIdx >= 0 ? '🟢' : '⚪' }}</span>
                   <span class="cm-companion__name">{{ c.name }}</span>
+                  <span class="cm-companion__type">{{ c.typeLabel }}</span>
+                  <span v-if="c.slotIdx >= 0" class="cm-companion__slot">슬롯 {{ c.slotIdx + 1 }}</span>
+                  <button class="cm-companion__toggle" @click="toggleEquip(c.id)">
+                    {{ c.slotIdx >= 0 ? '이탈' : '동행' }}
+                  </button>
+                </div>
+                <!-- 순서(슬롯) 지정 — 동행 중일 때만 -->
+                <div v-if="c.slotIdx >= 0" class="cm-companion__assign">
+                  <span class="cm-companion__assign-lbl">자리:</span>
+                  <button
+                    v-for="n in [0, 1, 2]"
+                    :key="n"
+                    class="cm-companion__assign-btn"
+                    :class="{ 'cm-companion__assign-btn--cur': c.slotIdx === n }"
+                    @click="assignToSlot(n, c.id)"
+                  >{{ n + 1 }}</button>
                 </div>
                 <ul v-if="c.bonuses.length" class="cm-companion__bonuses">
                   <li v-for="(b, j) in c.bonuses" :key="j">{{ b }}</li>
                 </ul>
-                <p v-else class="cm-companion__none">특별한 보너스 없음</p>
               </li>
             </ul>
           </section>
@@ -539,6 +626,46 @@ function onUnequipClick(slot: EquipmentSlot) {
 }
 .cm-companion__bonuses li { color: #bff0c8; font-size: 0.78rem; }
 .cm-companion__none { margin: 0 0 0 1.4rem; color: #6c6c7c; font-size: 0.76rem; font-style: italic; }
+
+/* 동료 — 활성 3칸 */
+.cm-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.4rem; margin-bottom: 0.35rem; }
+.cm-slot {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 6px;
+  padding: 0.4rem 0.5rem;
+  display: flex; flex-direction: column; gap: 0.25rem; min-height: 64px;
+}
+.cm-slot--filled { border-color: rgba(192,142,255,0.45); }
+.cm-slot--lead { border-left: 3px solid #f6e8b8; }
+.cm-slot__hdr { display: flex; align-items: center; justify-content: space-between; gap: 0.3rem; }
+.cm-slot__num { font-size: 0.68rem; color: #c0b693; font-weight: 700; }
+.cm-slot__lead-tag { font-size: 0.6rem; color: #f6e8b8; background: rgba(246,232,184,0.15); border-radius: 3px; padding: 0.04rem 0.3rem; }
+.cm-slot__body { display: flex; flex-direction: column; gap: 0.25rem; align-items: flex-start; }
+.cm-slot__name { color: #f6e8b8; font-weight: 600; font-size: 0.84rem; }
+.cm-slot__off {
+  background: none; border: 1px solid rgba(255,255,255,0.18); color: #888;
+  border-radius: 4px; padding: 0.08rem 0.4rem; font: inherit; font-size: 0.66rem; cursor: pointer;
+}
+.cm-slot__off:hover { color: #ff8e8e; border-color: rgba(255,100,100,0.4); }
+.cm-slot__empty { color: #6c6c7c; font-size: 0.74rem; font-style: italic; }
+.cm-slot__hint { font-size: 0.7rem; color: #8a8a98; margin: 0 0 0.5rem; }
+
+.cm-companion--active { border-left: 2px solid #8effb8; }
+.cm-companion__type { font-size: 0.66rem; color: #c08eff; background: rgba(192,142,255,0.12); border-radius: 3px; padding: 0.04rem 0.34rem; }
+.cm-companion__slot { font-size: 0.66rem; color: #8effb8; }
+.cm-companion__toggle {
+  margin-left: auto; background: rgba(192,142,255,0.16); border: 1px solid rgba(192,142,255,0.45);
+  color: #f6e8b8; border-radius: 4px; padding: 0.18rem 0.55rem; font: inherit; font-size: 0.72rem; cursor: pointer;
+}
+.cm-companion__toggle:hover { background: rgba(192,142,255,0.3); }
+.cm-companion__assign { display: flex; align-items: center; gap: 0.3rem; padding-left: 1.4rem; }
+.cm-companion__assign-lbl { font-size: 0.7rem; color: #8a8a98; }
+.cm-companion__assign-btn {
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.18); color: #d6d6e0;
+  border-radius: 4px; padding: 0.05rem 0.45rem; font: inherit; font-size: 0.72rem; cursor: pointer;
+}
+.cm-companion__assign-btn--cur { background: rgba(142,255,184,0.2); border-color: rgba(142,255,184,0.5); color: #f6e8b8; }
 
 /* 장비 (M10) */
 .cm-equip-slots {

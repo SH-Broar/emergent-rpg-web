@@ -22,7 +22,7 @@ import {
   listCraftablePotions,
   potionCostFor,
 } from '@/systems/workshop';
-import type { Card, Item, Npc, Rank } from '@/data/schemas';
+import type { Card, Companion, Item, Npc, Rank } from '@/data/schemas';
 
 const router = useRouter();
 const run = useRunStore();
@@ -52,21 +52,25 @@ const nodeNpcs = computed<Npc[]>(() => {
     .filter((n): n is Npc => n !== undefined);
 });
 
-const partyFull = computed(() => run.data.companions.length >= 3);
+/** 동료 정의 — companion 우선, 없으면 legacy recruit를 passive로 폴백. */
+function companionOf(npc: Npc): Companion | undefined {
+  if (npc.companion) return npc.companion;
+  if (npc.recruit) return { kind: 'passive', passive: npc.recruit };
+  return undefined;
+}
 
 function canRecruit(npc: Npc): boolean {
-  if (!npc.recruit) return false;
-  if (run.data.companions.includes(npc.id)) return false;
-  if (partyFull.value) return false;
+  if (!companionOf(npc)) return false;
+  // Item 37-② Stage A: 로스터는 *런 한정 무제한*(3칸 제한은 활성 슬롯에만). 중복만 막는다.
+  if (run.inRoster(npc.id)) return false;
   // 최초 만남이거나, 이전에 만났던 장소에 다시 왔을 때만.
   const first = run.data.recruitedAt[npc.id];
   return first === undefined || first === run.data.currentNodeId;
 }
 
 function recruitWhyDisabled(npc: Npc): string {
-  if (!npc.recruit) return '';
-  if (run.data.companions.includes(npc.id)) return '이미 동료';
-  if (partyFull.value) return '동료 한도 (3/3)';
+  if (!companionOf(npc)) return '';
+  if (run.inRoster(npc.id)) return '이미 동료';
   const first = run.data.recruitedAt[npc.id];
   if (first && first !== run.data.currentNodeId) {
     const map = data.nodeMaps.get(data.timelines.get(run.data.timelineId)?.nodeMapId ?? '');
@@ -98,17 +102,34 @@ function recruitedAtLabel(npc: Npc): string {
 }
 
 function recruitSummary(npc: Npc): string {
-  const b = npc.recruit;
-  if (!b) return '';
+  const comp = companionOf(npc);
+  if (!comp) return '';
+  if (comp.kind === 'skill' && comp.skill) {
+    return `스킬 「${comp.skill.name}」 (쿨다운 ${comp.skill.cooldown})`;
+  }
+  if (comp.kind === 'card') {
+    return comp.cardIds?.length ? `전용 카드 ${comp.cardIds.length}장` : '동료';
+  }
+  // passive
+  const p = comp.passive;
+  if (!p) return '패시브 동료';
   const parts: string[] = [];
-  if (b.deckSizeBonus) parts.push(`덱 +${b.deckSizeBonus}`);
-  if (b.grantedCardIds && b.grantedCardIds.length > 0) parts.push(`전용 카드 ${b.grantedCardIds.length}장`);
-  if (b.grantedRelicIds && b.grantedRelicIds.length > 0) parts.push(`전용 유물 ${b.grantedRelicIds.length}점`);
-  const colorParts = Object.entries(b.colorBoosts ?? {})
-    .filter(([, v]) => typeof v === 'number')
-    .map(([k, v]) => `${k} +${v}`);
-  if (colorParts.length > 0) parts.push(colorParts.join(', '));
-  return parts.join(' · ');
+  if (p.combatStart) {
+    const s: string[] = [];
+    if (p.combatStart.block) s.push(`방어 +${p.combatStart.block}`);
+    if (p.combatStart.strength) s.push(`힘 +${p.combatStart.strength}`);
+    if (p.combatStart.draw) s.push(`드로우 +${p.combatStart.draw}`);
+    if (s.length) parts.push(`전투 시작 ${s.join(', ')}`);
+  }
+  if (p.perTurn) {
+    const s: string[] = [];
+    if (p.perTurn.heal) s.push(`회복 +${p.perTurn.heal}`);
+    if (p.perTurn.block) s.push(`방어 +${p.perTurn.block}`);
+    if (s.length) parts.push(`매 턴 ${s.join(', ')}`);
+  }
+  if (p.statusResist) parts.push('상태이상 저항');
+  if (p.rewardMul) parts.push('보상 증폭');
+  return parts.length ? parts.join(' · ') : '패시브 동료';
 }
 
 // === NPC 대화 ===
@@ -295,11 +316,11 @@ const rankColors: Record<string, string> = {
           <div class="npc-card__actions">
             <button class="npc-card__btn npc-card__btn--talk" @click="talk(npc)">대화한다</button>
           </div>
-          <!-- r4: 동료 권유 UI 활성화. recruit_enabled=true + recruit 보너스가 있는 NPC만 표시. -->
-          <div v-if="npc.recruit" class="npc-card__recruit">
+          <!-- 동료 권유 UI — companion(또는 legacy recruit) 정의가 있는 NPC만 표시. -->
+          <div v-if="companionOf(npc)" class="npc-card__recruit">
             <span class="npc-card__summary">{{ recruitSummary(npc) }}</span>
             <button
-              v-if="!run.data.companions.includes(npc.id)"
+              v-if="!run.inRoster(npc.id)"
               class="npc-card__btn"
               :disabled="!canRecruit(npc)"
               :title="recruitWhyDisabled(npc)"

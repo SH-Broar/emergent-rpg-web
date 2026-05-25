@@ -13,6 +13,7 @@ import type {
   NodeKind,
   RaceId,
   Rank,
+  RosterEntry,
   RunState,
   Season,
   TimelineId,
@@ -45,6 +46,32 @@ const LEGACY_CHARACTER_TO_RACE: Record<string, string> = {
   'ch-kardi': 'phantom',
   'ch-niayur': 'arcana',
 };
+
+/**
+ * Item 37-② Stage A — 동료 구조 마이그레이션 (구 companions → roster/activeSlots).
+ *
+ * 호출: loadActiveRun에서 EMPTY_RUN 스프레드 후. `filled`는 이미 roster/activeSlots 기본값을 가진다.
+ *  - 구세이브(roster 미존재, companions 보유): companions → roster(전부 npc), 앞 3개 → activeSlots.
+ *  - 신세이브(roster 존재): 형태만 정규화(activeSlots 길이 3 보장 + null 패딩).
+ * companions 필드는 호환 위해 빈 배열로 남긴다(코드는 더 이상 읽지 않음).
+ */
+function migrateRoster(filled: RunState, parsed: Partial<RunState>): void {
+  const hasNewRoster = Array.isArray(parsed.roster);
+  if (!hasNewRoster) {
+    // 구세이브 → 변환. companions가 비었으면 빈 로스터.
+    const companions = Array.isArray(parsed.companions) ? parsed.companions : [];
+    filled.roster = companions.map((id) => ({ id, src: 'npc' as const }));
+    filled.activeSlots = [0, 1, 2].map((i) =>
+      i < filled.roster.length ? { id: filled.roster[i].id, src: 'npc' as const } : null,
+    );
+  } else {
+    // 신세이브 — roster는 이미 spread로 들어옴. activeSlots 길이/패딩 정규화.
+    const slots = Array.isArray(parsed.activeSlots) ? parsed.activeSlots : [];
+    filled.activeSlots = [0, 1, 2].map((i) => slots[i] ?? null);
+  }
+  // companions는 더 이상 권위 소스가 아니다 — 빈 배열로 정리(직렬화 호환만 유지).
+  filled.companions = [];
+}
 
 const DECK_SLOT_SIZE = 10;
 /** 100턴마다 하루 경과 — 비-마을 노드 cleared 초기화 + 권역 풀에서 content 재추첨.
@@ -108,6 +135,8 @@ const EMPTY_RUN: RunState = {
   equippedAccessory: null,
   equipmentInventory: [],
   companions: [],
+  roster: [],
+  activeSlots: [null, null, null],
   recruitedAt: {},
   companionAppliedBonuses: {},
   hyperionProgress: {},
@@ -267,6 +296,13 @@ export const useRunStore = defineStore('run', {
         if (!parsed.raceId && parsed.characterId) {
           filled.raceId = LEGACY_CHARACTER_TO_RACE[parsed.characterId] ?? '';
         }
+        // Item 37-② Stage A 마이그레이션 — 구 `companions: NpcId[]` → `roster` + `activeSlots`.
+        //   - roster      = companions 전체(모두 npc src).
+        //   - activeSlots = 앞 3개(순서 보존), 모자라면 null로 채워 길이 3 보장.
+        //   - 신세이브(roster 존재)면 그대로 두고 길이/형태만 정규화.
+        // 1회 보너스(덱슬롯/유물/컬러) 제거 반영: companionAppliedBonuses는 이제 읽지 않으므로
+        //   역적용 없이 버린다(컬러·카드·유물은 그동안 받은 그대로 런에 남는다 — 손해 없음).
+        migrateRoster(filled, parsed);
         this.data = filled;
         this.active = !filled.ended;
         if (this.active) this.bindRng();
@@ -440,96 +476,107 @@ export const useRunStore = defineStore('run', {
       return true;
     },
 
+    // ============================================================================
+    // 동료 / 로스터 / 활성 슬롯 (Item 37-② Stage A)
+    // ----------------------------------------------------------------------------
+    // 영입 = roster 추가(런 한정, 중복 스킵). 1회 보너스(덱슬롯/카드/유물/컬러)는 *제거*됨.
+    // passive 효과는 activeSlots에 편성된 동료에 한해 while-equipped로만 작동(companion.ts).
+    // 빈 활성 슬롯이 있으면 영입 시 자동으로 한 칸에 편성(편의).
+    // ============================================================================
+
+    /** roster에 동료가 이미 있는가. */
+    inRoster(id: string): boolean {
+      return (this.data.roster ?? []).some((e) => e.id === id);
+    },
+
+    /** activeSlots에 편성돼 있는가(어느 칸이든). */
+    isActive(id: string): boolean {
+      return (this.data.activeSlots ?? []).some((e) => e?.id === id);
+    },
+
+    /** 비어 있는 활성 슬롯 인덱스(없으면 -1). */
+    firstEmptySlot(): number {
+      const slots = this.data.activeSlots ?? [];
+      for (let i = 0; i < 3; i++) if (!slots[i]) return i;
+      return -1;
+    },
+
     /**
-     * 동료 영입. NPC의 recruit 보너스를 *현재 RunState*에 적용 +
-     * companionAppliedBonuses에 기록 (dismiss 시 정확히 역적용 위함).
+     * 동료 영입 — roster에 추가(중복 스킵). 빈 활성 슬롯이 있으면 자동 편성.
+     * src 기본 'npc'(Stage B에서 monster 추가). companion 정의가 있는 NPC만 허용.
      */
-    recruitCompanion(npcId: string) {
+    recruitCompanion(npcId: string, src: 'npc' | 'monster' = 'npc') {
       const r = this.data;
-      if (r.companions.length >= 3) return false; // 최대 3명
-      if (r.companions.includes(npcId)) return false;
+      if (this.inRoster(npcId)) return false;
       const data = useDataStore();
-      const npc = data.npcs.get(npcId);
-      if (!npc?.recruit) return false;
-      const b = npc.recruit;
-
-      // 1) 덱 슬롯 증가
-      const deckSizeAdd = b.deckSizeBonus ?? 0;
-      if (deckSizeAdd > 0) r.deckSize += deckSizeAdd;
-
-      // 2) 카드 추가 — 인스턴스화해서 collection + deck에 (deckSize 여유 한도까지).
-      const addedCardInstanceIds: string[] = [];
-      for (const cid of b.grantedCardIds ?? []) {
-        const card = data.cards.get(cid);
-        if (!card) continue;
-        const inst = instantiateCard(card);
-        r.collection.push(inst);
-        if (inst.instanceId) addedCardInstanceIds.push(inst.instanceId);
-        // 자리 있으면 덱에도 자동 등록.
-        if (r.deck.length < r.deckSize) r.deck.push(inst);
-        if (!r.newCardEncounters.includes(card.id)) r.newCardEncounters.push(card.id);
+      // npc만 정의 검증(monster는 Stage B). companion 또는 legacy recruit 둘 중 하나면 허용.
+      if (src === 'npc') {
+        const npc = data.npcs.get(npcId);
+        if (!npc?.companion && !npc?.recruit) return false;
       }
-
-      // 3) 유물 추가
-      const addedRelicIds: string[] = [];
-      for (const rid of b.grantedRelicIds ?? []) {
-        const relic = data.relics.get(rid);
-        if (!relic) continue;
-        r.relics.push(relic);
-        addedRelicIds.push(rid);
-        if (!r.newRelicEncounters.includes(rid)) r.newRelicEncounters.push(rid);
-      }
-
-      // 4) 컬러 보정
-      const colorBoostsApplied: Record<string, number> = {};
-      for (const [k, v] of Object.entries(b.colorBoosts ?? {})) {
-        if (typeof v !== 'number') continue;
-        (r.colors as Record<string, number>)[k] = ((r.colors as Record<string, number>)[k] ?? 0) + v;
-        colorBoostsApplied[k] = v;
-      }
-
-      r.companions.push(npcId);
+      if (!r.roster) r.roster = [];
+      r.roster.push({ id: npcId, src });
       if (!r.recruitedAt[npcId]) r.recruitedAt[npcId] = r.currentNodeId;
-      r.companionAppliedBonuses[npcId] = {
-        deckSizeAdd,
-        addedCardInstanceIds,
-        addedRelicIds,
-        colorBoostsApplied: colorBoostsApplied as import('@/data/schemas').RunState['companionAppliedBonuses'][string]['colorBoostsApplied'],
-      };
+      // 빈 활성 슬롯에 자동 편성(편의 — 초반 3칸 확보).
+      const empty = this.firstEmptySlot();
+      if (empty >= 0) {
+        if (!r.activeSlots) r.activeSlots = [null, null, null];
+        r.activeSlots[empty] = { id: npcId, src };
+      }
       return true;
     },
 
     /**
-     * 동료 이탈 — 영입 시 적용된 *덱·카드·유물* 보너스는 역적용.
-     * 사용자 사양: **컬러는 감소하지 않는다** — 영입으로 얻은 컬러는 그대로 누적 유지.
+     * 동료 이탈 — roster에서 제거 + 활성 슬롯에서도 해제.
+     * 1회 보너스 역적용 없음(이미 제거된 시스템). recruitedAt는 유지(재만남 가능).
      */
     dismissCompanion(npcId: string) {
       const r = this.data;
-      const idx = r.companions.indexOf(npcId);
-      if (idx < 0) return;
-      const applied = r.companionAppliedBonuses[npcId];
-
-      if (applied) {
-        // 1) 덱 슬롯 복원
-        r.deckSize = Math.max(1, r.deckSize - applied.deckSizeAdd);
-
-        // 2) 추가됐던 카드 인스턴스 제거 (collection + deck)
-        const removeSet = new Set(applied.addedCardInstanceIds);
-        r.collection = r.collection.filter((c) => !c.instanceId || !removeSet.has(c.instanceId));
-        r.deck = r.deck.filter((c) => !c.instanceId || !removeSet.has(c.instanceId));
-
-        // 3) 추가됐던 유물 제거 (각 id 한 점씩)
-        for (const rid of applied.addedRelicIds) {
-          const i = r.relics.findIndex((rel) => rel.id === rid);
-          if (i >= 0) r.relics.splice(i, 1);
-        }
-
-        // 4) 컬러는 *역적용하지 않음*. 한 번 늘면 그대로.
-      }
-
-      r.companions.splice(idx, 1);
-      delete r.companionAppliedBonuses[npcId];
+      r.roster = (r.roster ?? []).filter((e) => e.id !== npcId);
+      r.activeSlots = (r.activeSlots ?? [null, null, null]).map((e) =>
+        e?.id === npcId ? null : e,
+      );
       // recruitedAt는 유지 — *재만남* 시 같은 노드로 가야 다시 영입 가능.
+    },
+
+    /**
+     * 활성 슬롯 편성 — slot(0..2)에 roster의 동료를 둔다(null이면 비움).
+     * 같은 동료가 다른 칸에 있으면 그 칸을 비워 *중복 편성*을 막는다(한 동료 = 한 칸).
+     */
+    setActiveSlot(slot: number, entry: RosterEntry | null) {
+      const r = this.data;
+      if (slot < 0 || slot > 2) return;
+      if (!r.activeSlots) r.activeSlots = [null, null, null];
+      // 중복 방지 — 같은 id가 다른 칸에 있으면 제거.
+      if (entry) {
+        for (let i = 0; i < r.activeSlots.length; i++) {
+          if (i !== slot && r.activeSlots[i]?.id === entry.id) r.activeSlots[i] = null;
+        }
+      }
+      r.activeSlots[slot] = entry;
+    },
+
+    /** 동료를 활성 슬롯에서 내린다(이탈 아님 — roster엔 남음). */
+    unsetActiveByPet(id: string) {
+      const r = this.data;
+      r.activeSlots = (r.activeSlots ?? [null, null, null]).map((e) =>
+        e?.id === id ? null : e,
+      );
+    },
+
+    /**
+     * 동료를 빈 활성 슬롯에 편성(없으면 false). roster에 있는 동료만.
+     * 이미 편성돼 있으면 그대로 true.
+     */
+    equipCompanion(id: string): boolean {
+      const r = this.data;
+      const entry = (r.roster ?? []).find((e) => e.id === id);
+      if (!entry) return false;
+      if (this.isActive(id)) return true;
+      const empty = this.firstEmptySlot();
+      if (empty < 0) return false;
+      this.setActiveSlot(empty, { id: entry.id, src: entry.src });
+      return true;
     },
 
     /**

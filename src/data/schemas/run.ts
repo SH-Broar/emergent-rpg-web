@@ -100,6 +100,16 @@ export interface Lock {
   label: string;
 }
 
+/**
+ * 로스터/활성 슬롯의 동료 1명 참조 (Item 37-② Stage A).
+ *  - id  : NPC id(현재) / Monster id(추후 Stage B 몬스터 동료화).
+ *  - src : 정의를 찾을 데이터 풀. Stage A는 'npc'만 생성하지만 형태는 둘 다 허용.
+ */
+export interface RosterEntry {
+  id: string;
+  src: 'npc' | 'monster';
+}
+
 /** 적/플레이어 공유 전투 상태 표식. */
 export interface Combatant {
   hp: number;
@@ -270,6 +280,17 @@ export interface CombatState {
    * 카드를 *실제로 사용*할 때마다 1 감소(playCard) — 능동 플레이로 풀린다. 0이면 잠금 해제.
    */
   webStacks?: number;
+
+  // === 동료 액티브 스킬 (Item 37-② Stage A — optional, 미설정 시 영향 0) ===
+  /**
+   * 활성 슬롯(activeSlots) 3칸의 스킬 쿨다운 — 길이 3, 인덱스 = 슬롯 위치.
+   *  - 전투 시작 시 [0,0,0]으로 초기화(모두 준비됨).
+   *  - 스킬 사용 시 해당 슬롯에 `cooldown - (slot===0 ? 1 : 0)` set(슬롯1 -1).
+   *  - 매 플레이어 턴 시작에 각 슬롯 -1(최소 0).
+   * 슬롯에 skill 동료가 없거나 비어 있으면 그 인덱스는 0(무의미).
+   * 전투 단위 — 세이브 round-trip 안전(optional, absent=전부 준비됨).
+   */
+  skillCooldowns?: number[];
 }
 
 /**
@@ -489,22 +510,38 @@ export interface RunState {
   equipmentInventory: Equipment[];
 
   /**
-   * 현재 동료 (최대 3명) — NPC id 리스트.
-   * 사용자 사양: 동료가 이탈하면 *최초 만난 노드*로 가야 다시 권유 가능.
+   * @deprecated Item 37-② Stage A — `roster`/`activeSlots`로 대체됨.
+   *   구세이브 마이그레이션(loadActiveRun)에서 roster/activeSlots로 변환된 뒤 빈 배열로 유지된다.
+   *   코드는 더 이상 이 필드를 읽지 않는다(직렬화 호환 위해 형태만 남김).
    */
   companions: NpcId[];
 
   /**
-   * 영입 이력 — npcId → 최초 영입된 노드. dismiss 후에도 보존되어
-   * 다시 그 노드에 가야 *재영입* 권유 가능.
+   * 영입 로스터 (Item 37-② Stage A) — *그 런에서 영입한 동료 전체*. 런 한정.
+   * 영입 1회면 여기 추가(중복 스킵). 3칸 편성과 무관하게 보존된다.
+   *  - id : NPC id(현재) / Monster id(추후 Stage B).
+   *  - src: 'npc' | 'monster' — 어느 데이터 풀에서 정의를 찾을지.
    */
-  recruitedAt: Record<NpcId, NodeId>;
+  roster: RosterEntry[];
 
   /**
-   * 동료 적용 보너스 기록 — dismiss 시 정확히 역적용하기 위함.
-   * 같은 NPC가 두 번 다시 영입되면 다시 만들어 저장.
+   * 활성 슬롯 (Item 37-② Stage A) — 길이 3, *순서가 전략*(슬롯1 스킬 쿨다운 -1).
+   * 각 칸은 roster의 동료 1명(또는 null=빈 칸). 패시브 집계·스킬 버튼은 이 배열만 본다.
+   * 편성 UI(캐릭터 메뉴)에서 동행/이탈/순서 지정.
    */
-  companionAppliedBonuses: Record<NpcId, {
+  activeSlots: (RosterEntry | null)[];
+
+  /**
+   * 영입 이력 — companion id → 최초 영입된 노드. dismiss 후에도 보존되어
+   * 다시 그 노드에 가야 *재영입* 권유 가능(legacy 영입 흐름, Stage B에서 개편).
+   */
+  recruitedAt: Record<string, NodeId>;
+
+  /**
+   * @deprecated Item 37-② Stage A — 영입 1회 보너스(덱슬롯/카드/유물/컬러) 제거로 더 이상 쓰지 않음.
+   *   구세이브 직렬화 호환을 위해 형태만 남긴다(loadActiveRun이 {}로 backfill).
+   */
+  companionAppliedBonuses: Record<string, {
     deckSizeAdd: number;
     addedCardInstanceIds: string[];
     addedRelicIds: RelicId[];

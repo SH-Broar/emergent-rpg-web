@@ -9,6 +9,7 @@
  * legacy actors.txt 호환 — colorValues / domainHigh / domainLow / background.
  */
 
+import type { CardEffect, EffectTarget } from './card';
 import type { CardId, Element, NamedEntity, NodeId, NpcId, RaceId, RelicId } from './base';
 
 /** 8 컬러 원소 값. legacy 순서: fire, water, electric, iron, earth, wind, light, dark. */
@@ -54,23 +55,17 @@ export interface GiftPreference {
 }
 
 /**
- * 동료 영입 정의 — NPC가 *동료로* 합류하면 적용되는 4종 보너스.
- * 사용자 사양: 최대 4종을 *한 NPC가 여러 개 동시*에 가질 수 있음.
+ * 동료 패시브 보너스 (Item 37-② Stage A — declutter 축소판).
+ *
+ * 인터뷰 확정(2026-05-25): 영입 1회 보너스(deckSizeBonus·grantedRelicIds·colorBoosts)는 제거되고,
+ * *while-equipped* 지속 패시브 4종만 남는다. 패시브 타입 동료(companion.kind==='passive')는
+ * activeSlots에 편성되어 있는 동안만 매 전투 이 보너스를 적용한다.
+ *
+ * @remarks
+ *   deckSizeBonus / grantedCardIds / grantedRelicIds / colorBoosts 는 *제거됨*.
+ *   (구세이브 호환은 RunState 마이그레이션이 처리 — companionAppliedBonuses는 더 이상 읽지 않는다.)
  */
 export interface CompanionBonuses {
-  /** 덱 슬롯 +N. */
-  deckSizeBonus?: number;
-  /** 합류 시 컬렉션·덱에 추가되는 전용 카드 ID들. */
-  grantedCardIds?: CardId[];
-  /** 합류 시 보유 유물에 추가되는 전용 유물 ID들. */
-  grantedRelicIds?: RelicId[];
-  /** 합류 시 colors에 더해질 부분 컬러 보정. */
-  colorBoosts?: Partial<{
-    fire: number; water: number; electric: number; iron: number;
-    earth: number; wind: number; light: number; dark: number;
-  }>;
-
-  // === 지속 패시브 (2026-05-23, 5c) — 동료가 *파티에 있는 한 매 전투* 적용. 영입 1회가 아님. ===
   /**
    * 상태이상 저항 — 적이 *플레이어에게* 디버프를 걸 때 부여량을 status별로 감소(최소 0).
    * key='all'이면 모든 감쇠 디버프에 적용. 예: { weakness: 1, all: 1 }.
@@ -84,6 +79,42 @@ export interface CompanionBonuses {
   rewardMul?: { gold?: number; shards?: number; gather?: number };
 }
 
+/**
+ * 동료 액티브 스킬 (Item 37-② Stage A).
+ *
+ * 쿨다운 기반 — 전투 중 버튼으로 *아무때나* 발동(쿨다운 0일 때). 매 전투 시작 시 0(준비됨).
+ * effects 는 카드 효과 시스템(CardEffect)을 *그대로 재사용* — combat.ts의 EFFECT_HANDLERS를 거친다.
+ * 슬롯 1(activeSlots[0])에 편성된 동료의 스킬은 쿨다운이 -1 적용된다(편성 순서가 전략).
+ */
+export interface CompanionSkill {
+  /** 스킬 이름 (버튼 라벨). */
+  name: string;
+  /** 쿨다운 — 사용 후 재사용까지 *플레이어 턴 수*. 매 플레이어 턴 -1, 0이면 사용 가능. */
+  cooldown: number;
+  /** 한 줄 설명(툴팁). */
+  description?: string;
+  /** 발동 효과 — 카드 효과 핸들러 재사용. */
+  effects: CardEffect[];
+  /** 효과 기본 대상(개별 effect.target이 우선). */
+  target?: EffectTarget;
+}
+
+/**
+ * 통합 동료 정의 (Item 37-② Stage A) — NPC(+추후 Monster)에 부착.
+ *
+ * 한 동료는 *제공 타입 하나*를 가진다(택1):
+ *   - passive : 지속 패시브(while-equipped). passive 필드 사용.
+ *   - skill   : 액티브 스킬(쿨다운). skill 필드 사용.
+ *   - card    : 정령 한정 fallback — 합류 시 cardIds 부여(Stage A에선 부여 로직 미배선, 정의만).
+ */
+export interface Companion {
+  kind: 'passive' | 'skill' | 'card';
+  passive?: CompanionBonuses;
+  skill?: CompanionSkill;
+  /** card-type 전용 — 합류 시 부여될 카드 ID들(정령 fallback). */
+  cardIds?: CardId[];
+}
+
 export interface Npc extends NamedEntity {
   id: NpcId;
   raceId: RaceId;
@@ -95,10 +126,21 @@ export interface Npc extends NamedEntity {
   homeNodeId?: NodeId;
 
   /**
-   * 동료 영입 가능 여부 + 보너스.
+   * 동료 영입 가능 여부 + 보너스 (legacy 패시브 4종).
    * recruit가 정의된 NPC만 동료로 권유 가능. 이탈하면 *최초 만난 노드*에서 다시 권유해야 한다.
+   *
+   * @remarks Item 37-② Stage A: 영입 자체의 게이트로는 여전히 쓰이지만(영입 가능 판정),
+   *   *효과*는 통합 `companion` 정의로 일원화된다. 로더가 recruit_* 필드로부터
+   *   `companion`(kind='passive')을 자동 합성하므로 기존 데이터도 그대로 동작한다.
    */
   recruit?: CompanionBonuses;
+
+  /**
+   * 통합 동료 정의 (Item 37-② Stage A) — passive/skill/card 택1.
+   * 로더가 `companion_*` 필드(신규) 우선, 없으면 `recruit_*`(legacy)에서 passive로 합성한다.
+   * 이 정의가 있으면 동료로 영입 가능(recruit 게이트와 동치 취급).
+   */
+  companion?: Companion;
 
   /** 추가로 출현 가능한 노드. */
   presenceNodeIds?: NodeId[];

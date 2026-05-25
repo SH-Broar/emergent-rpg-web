@@ -37,7 +37,9 @@ import type {
   ChaosTier,
   ChaosType,
   ColorValues,
+  Companion,
   CompanionBonuses,
+  CompanionSkill,
   EffectTarget,
   Event,
   EventChoice,
@@ -267,7 +269,7 @@ export function parseRaces(ini: IniData): Map<string, Race> {
       startMpBonus: parseNumber(fields.mp_bonus, 0),
       maxLivesBonus: fields.max_lives_bonus ? parseNumber(fields.max_lives_bonus, 0) : undefined,
       deckSize: fields.deck_size ? parseNumber(fields.deck_size, 10) : undefined,
-      seedColors: parseColorBoosts(fields.seed_colors) as Race['seedColors'],
+      seedColors: parseKeyNum(fields.seed_colors) as Race['seedColors'],
     });
   }
   return result;
@@ -638,20 +640,6 @@ function parseAffinityReward(token: string): AffinityReward | null {
   return reward;
 }
 
-/** "fire:10, water:5" → { fire:10, water:5 }. 부분만 채움. */
-function parseColorBoosts(raw: string | undefined): CompanionBonuses['colorBoosts'] {
-  if (!raw) return undefined;
-  const tokens = parseList(raw);
-  if (tokens.length === 0) return undefined;
-  const out: Record<string, number> = {};
-  for (const tok of tokens) {
-    const [k, v] = tok.split(':').map((s) => s.trim());
-    if (!k) continue;
-    out[k] = Number(v);
-  }
-  return out as CompanionBonuses['colorBoosts'];
-}
-
 /** "weakness:1, all:1" → { weakness:1, all:1 }. 빈 입력이면 undefined. */
 function parseKeyNum(raw: string | undefined): Record<string, number> | undefined {
   if (!raw) return undefined;
@@ -664,14 +652,13 @@ function parseKeyNum(raw: string | undefined): Record<string, number> | undefine
   return Object.keys(out).length > 0 ? out : undefined;
 }
 
-/** NPC 섹션에서 recruit_* 필드를 모아 CompanionBonuses (없으면 undefined). */
+/**
+ * NPC 섹션의 recruit_* 패시브 필드 → CompanionBonuses(축소판: 4종 패시브만).
+ * Item 37-② Stage A: 영입 1회 보너스(deck/cards/relics/colors)는 제거 — 더 이상 파싱하지 않는다.
+ * (데이터 파일에 옛 필드가 남아 있어도 무시되므로 안전.)
+ */
 function parseRecruitBonuses(f: IniSection): CompanionBonuses | undefined {
   if (!parseBool(f.recruit_enabled, false)) return undefined;
-  const cards = parseList(f.recruit_cards);
-  const relics = parseList(f.recruit_relics);
-  const colors = parseColorBoosts(f.recruit_colors);
-  const deckSize = f.recruit_deck_bonus ? parseNumber(f.recruit_deck_bonus, 0) : undefined;
-  // 지속 패시브 (5c)
   const statusResist = parseKeyNum(f.recruit_status_resist);
   const combatStartRaw = parseKeyNum(f.recruit_combat_start);
   const perTurnRaw = parseKeyNum(f.recruit_per_turn);
@@ -683,16 +670,54 @@ function parseRecruitBonuses(f: IniSection): CompanionBonuses | undefined {
   const rewardMul = rewardRaw
     ? { gold: rewardRaw.gold, shards: rewardRaw.shards, gather: rewardRaw.gather }
     : undefined;
+  return { statusResist, combatStart, perTurn, rewardMul };
+}
+
+/**
+ * NPC 섹션 → 통합 Companion 정의 (Item 37-② Stage A).
+ *
+ * 우선순위:
+ *   1) `companion_kind` 가 명시되면 그 타입으로 파싱(신규 스키마).
+ *      - skill : companion_skill_name / companion_skill_cooldown / companion_skill_effects(+desc/target).
+ *      - card  : companion_card_ids.
+ *      - passive: companion_passive_* 또는 recruit_* 폴백.
+ *   2) `companion_kind` 가 없고 recruit_enabled=true 면 *legacy passive*로 합성.
+ * 어느 쪽도 아니면 undefined(영입 불가).
+ */
+function parseCompanionSkill(f: IniSection): CompanionSkill | undefined {
+  const name = f.companion_skill_name;
+  if (!name) return undefined;
+  const effects: CardEffect[] = parseList(f.companion_skill_effects)
+    .map(parseCardEffect)
+    .filter((e): e is CardEffect => e !== null);
   return {
-    deckSizeBonus: deckSize,
-    grantedCardIds: cards.length > 0 ? cards : undefined,
-    grantedRelicIds: relics.length > 0 ? relics : undefined,
-    colorBoosts: colors,
-    statusResist,
-    combatStart,
-    perTurn,
-    rewardMul,
+    name,
+    cooldown: parseNumber(f.companion_skill_cooldown, 3),
+    description: f.companion_skill_desc,
+    effects,
+    target: f.companion_skill_target as EffectTarget | undefined,
   };
+}
+
+function parseCompanion(f: IniSection): Companion | undefined {
+  const kind = f.companion_kind as Companion['kind'] | undefined;
+  if (kind === 'skill') {
+    const skill = parseCompanionSkill(f);
+    if (!skill) return undefined;
+    return { kind: 'skill', skill };
+  }
+  if (kind === 'card') {
+    const cardIds = parseList(f.companion_card_ids);
+    return { kind: 'card', cardIds: cardIds.length > 0 ? cardIds : undefined };
+  }
+  // passive (명시 'passive' 또는 legacy recruit 폴백).
+  const passive = parseRecruitBonuses(f);
+  if (kind === 'passive') {
+    return { kind: 'passive', passive: passive ?? {} };
+  }
+  // kind 미지정 + recruit_enabled=true → legacy passive 동료.
+  if (passive) return { kind: 'passive', passive };
+  return undefined;
 }
 
 function parseGiftPrefs(f: IniSection): GiftPreference | undefined {
@@ -805,6 +830,7 @@ export function parseNpcs(ini: IniData): Map<string, Npc> {
       tagline: fields.tagline,
       portrait: fields.portrait,
       recruit: parseRecruitBonuses(fields),
+      companion: parseCompanion(fields),
     });
   }
   return result;
