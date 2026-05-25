@@ -117,7 +117,19 @@ export type CardEffectKind =
   // === 잡카드(저주) 전용 (Stage 2 몬스터 교란) ===
   | 'curse-tick'          // 마커: 이 카드가 손에 있으면 매 턴 시작 value만큼 직접 HP 피해. 핸들러 no-op.
   // === 변신(체인지/TSF) 전용 (Stage 5) ===
-  | 'release-transform';  // 변신 해제 — 원래 종족·덱으로 복귀. 변신 폼 덱에만 들어 있는 '해제 카드'.
+  | 'release-transform'   // 변신 해제 — 원래 종족·덱으로 복귀. 변신 폼 덱에만 들어 있는 '해제 카드'.
+  // === 동료 스킬 콘텐츠 배치 1 (Item 37-② Stage C) — 스킬·카드 공용 신규 핸들러 11종 ===
+  | 'skip-enemy-action'   // 적의 *다음 행동 N회 박제(스킵)*. value=스킵 횟수(기본 1).
+  | 'slow-enemy'          // 적 행동 수 -1을 value턴 (멀티액션 2→1). value=지속 턴.
+  | 'delayed-damage'      // value턴(params.delay, 기본 2) 뒤 적에게 *대폭발* 피해(value 토큰의 4번째). value=피해.
+  | 'random-effect'       // 고정 풀(대피해/전체취약/draw+마나/풀회복) 중 무작위 1셋 실행.
+  | 'damage-per-cards-played' // 피해 = value × cardsPlayedThisTurn(이번 턴 사용 카드 수).
+  | 'buff-card-instance'  // 손패의 가장 왼쪽 공격 카드 인스턴스에 *전투 영구* +value 피해(bonusDamage).
+  | 'negate-reflect'      // 이번 턴 받는 피해 0 흡수 → 다음 플레이어 턴 시작 시 누적량을 적에게 반사.
+  | 'bloom-strength'      // 이번 전투 내내 매 플레이어 턴 시작 힘 +value 자동 누적(비감쇠).
+  | 'amplify-debuff'      // 적 최고 스택 디버프 ×2 + 증가분 × value 피해(디버프 없으면 소피해).
+  | 'refill'              // 마나를 maxMana로, 손패를 손패 상한까지 드로우(가득).
+  | 'this-turn-amp';      // 이번 턴 동안 플레이어 카드 effect value +value%(params.pct 폴백).
 
 /** 효과 대상 — target. */
 export type EffectTarget = 'self' | 'enemy' | 'all-enemies' | 'random-enemy';

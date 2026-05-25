@@ -91,6 +91,15 @@ export interface CompanionSkill {
   name: string;
   /** 쿨다운 — 사용 후 재사용까지 *플레이어 턴 수*. 매 플레이어 턴 -1, 0이면 사용 가능. */
   cooldown: number;
+  /**
+   * FD(Fast Draw) — 전투 시작 선충전 (Item 37-② Stage C).
+   * 전투 시작 시 쿨다운이 `max(0, cooldown - fd)`로 시드된다(워밍업).
+   *   - 미지정이면 fd = cooldown → 전투 시작부터 준비됨(종전 동작과 동일).
+   *   - fd < cooldown → 첫 사용까지 (cooldown − fd)턴 워밍업.
+   *   - fd ≥ cooldown → 시작부터 준비됨(0).
+   * 슬롯1(activeSlots[0])의 쿨다운 -1과는 *별개*(전투 중 set 시점에만 적용).
+   */
+  fd?: number;
   /** 한 줄 설명(툴팁). */
   description?: string;
   /** 발동 효과 — 카드 효과 핸들러 재사용. */

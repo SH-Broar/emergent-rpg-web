@@ -33,8 +33,11 @@ background = 산호 해안의 세이렌.|상반신은 사람, 깃털 돋친 두 
 tagline = "한 소절 들어 볼래요?"
 tags = siren, song, water-affinity
 affinity_rewards = 3:card=c-burn-mark:gauge=4
-# 영입 세이렌. 노래로 세뇌를 흘려내고 전투 시작에 한 자락 더 펼친다.
+# 영입 (Item 37-② Stage C). 세이렌 — 자장가로 적의 동작을 느리게 늘이고 손끝을 무디게 한다.
 recruit_enabled = true
-recruit_colors = water:10, wind:6
-recruit_status_resist = brainwash:1
-recruit_combat_start = draw:1
+companion_kind = skill
+companion_skill_name = 자장가
+companion_skill_cooldown = 5
+companion_skill_fd = 3
+companion_skill_desc = 두 턴 동안 적의 행동을 한 박자 줄이고 약화 2를 건다. 한 소절이면 충분하다.
+companion_skill_effects = slow-enemy:2, apply-status:2:enemy:weakness

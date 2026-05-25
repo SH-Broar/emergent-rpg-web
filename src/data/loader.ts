@@ -102,6 +102,10 @@ function parseCardEffect(token: string): CardEffect | null {
     if (parts[4]) params.threshold = Number(parts[4]);
     return { kind, value, target, params };
   }
+  // delayed-damage 전용 (Item 37-② Stage C): value=피해, 4번째=delay(턴, 기본 2).
+  if (kind === 'delayed-damage' && parts[3]) {
+    return { kind, value, target, params: { delay: Number(parts[3]) } };
+  }
   // 4번째 토큰: apply-status의 status 이름 등 추가 파라미터.
   if (parts[3]) {
     return { kind, value, target, params: { status: parts[3] } };
@@ -698,6 +702,8 @@ function parseCompanionSkill(f: IniSection): CompanionSkill | undefined {
   return {
     name,
     cooldown: parseNumber(f.companion_skill_cooldown, 3),
+    // FD(전투 시작 선충전) — 미지정이면 undefined → 사용처에서 cooldown 폴백(시작부터 준비됨).
+    fd: f.companion_skill_fd !== undefined ? parseNumber(f.companion_skill_fd, 0) : undefined,
     description: f.companion_skill_desc,
     effects,
     target: f.companion_skill_target as EffectTarget | undefined,

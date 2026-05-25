@@ -192,6 +192,10 @@ export const VALID_CARD_EFFECT_KINDS = [
   'exhaust-self', 'return-self-to-hand', 'block-to-damage', 'spend-all-energy',
   'damage-per-companion', 'damage-per-relic', 'growing-damage', 'heal-per-hand',
   'next-card-double', 'ghost-self', 'curse-tick', 'release-transform',
+  // 동료 스킬 콘텐츠 배치 1 (Item 37-② Stage C) — 스킬·카드 공용 신규 핸들러 11종.
+  'skip-enemy-action', 'slow-enemy', 'delayed-damage', 'random-effect',
+  'damage-per-cards-played', 'buff-card-instance', 'negate-reflect', 'bloom-strength',
+  'amplify-debuff', 'refill', 'this-turn-amp',
 ];
 
 /**
@@ -759,6 +763,13 @@ function validateCompanionFields(f, w, label, cardIds, push) {
   }
   if (compKind === 'skill' && !f.companion_skill_name) {
     push(diag('error', 'required-fields', `${label} companion_kind=skill 인데 companion_skill_name 누락`, w));
+  }
+  // FD(Fast Draw, Item 37-② Stage C) — 지정 시 0 이상 정수여야 한다(전투 시작 선충전 턴 수).
+  if (f.companion_skill_fd !== undefined && String(f.companion_skill_fd).trim() !== '') {
+    const fd = Number(f.companion_skill_fd);
+    if (!Number.isFinite(fd) || fd < 0) {
+      push(diag('error', 'required-fields', `${label} companion_skill_fd '${f.companion_skill_fd}' 는 0 이상 숫자여야 함`, w));
+    }
   }
   for (const tok of parseList(f.companion_skill_effects)) {
     const parts = tok.split(':').map((s) => s.trim());

@@ -14,10 +14,14 @@ background = 마노니클라 공방의 드래곤 대장장이.|석양이 길게 
 tagline = "조용히, 모루를 두드리는 게 좋아."
 tags = dragon, craftsman, iron-affinity
 affinity_rewards = 3:relic=r-determined-heart:gauge=5
-# 영입 드래곤 대장장이. 전투 시작마다 단단한 방비를 둘러준다.
+# 영입 (Item 37-② Stage C). 드래곤 대장장이 — 손에 든 검 한 자루를 모루에 올려 더 매섭게 벼린다.
 recruit_enabled = true
-recruit_colors = iron:12, earth:6
-recruit_combat_start = block:5
+companion_kind = skill
+companion_skill_name = 벼림
+companion_skill_cooldown = 4
+companion_skill_fd = 4
+companion_skill_desc = 손패의 공격 카드 한 장에 이 전투 내내 +4 피해를 새긴다. 한 번 두드릴수록 날이 선다.
+companion_skill_effects = buff-card-instance:4
 
 [npc.npc-valencia]
 name = 발렌시아
@@ -52,11 +56,14 @@ background = 사천왕 시아의 여동생이자 기상학 학자 하피.|엄청
 tagline = "오늘 날씨, 진짜 좋아요!"
 tags = harpy, meteorologist, wind-affinity
 affinity_rewards = 3:card=c-deep-breath:gauge=3
-# 영입 하피 기상학자. 날씨 읽는 눈으로 채집 수확이 늘고 전투 초반 한 장 더 본다.
+# 영입 (Item 37-② Stage C). 하피 기상학자 — 날씨를 뒤집어 이번 턴 모든 카드의 위력을 한껏 끌어올린다.
 recruit_enabled = true
-recruit_colors = wind:10, light:6
-recruit_combat_start = draw:1
-recruit_reward_mul = gather:0.2
+companion_kind = skill
+companion_skill_name = 기상 급변
+companion_skill_cooldown = 4
+companion_skill_fd = 2
+companion_skill_desc = 이번 턴에 쓰는 카드의 피해·방어·회복이 +50%. 한순간 바람이 거세진다.
+companion_skill_effects = this-turn-amp:50
 
 [npc.npc-betelgeuse]
 name = 베텔게우스
@@ -87,8 +94,11 @@ background = 리문 유적의 옛 골렘. 최근에 깨어났다.|돌 손발이 
 tagline = "...걸을게."
 tags = golem, ruins, earth-affinity
 affinity_rewards = 3:card=c-gentle-guard:gauge=4
-# 영입 옛 골렘. 묵직한 돌 몸이 매 전투 방어를 쌓고, 매 턴 조금씩 더 버텨낸다.
+# 영입 (Item 37-② Stage C). 옛 골렘 — 이번 턴 받은 충격을 돌 몸에 가둬 두었다가 다음 턴 그대로 되돌린다.
 recruit_enabled = true
-recruit_colors = earth:10, iron:6
-recruit_combat_start = block:5
-recruit_per_turn = block:1
+companion_kind = skill
+companion_skill_name = 돌의 인내
+companion_skill_cooldown = 5
+companion_skill_fd = 3
+companion_skill_desc = 이번 턴 받는 피해를 전부 흡수했다가 다음 턴 시작에 적에게 되돌린다. 묵직하게 버틴 만큼 갚는다.
+companion_skill_effects = negate-reflect

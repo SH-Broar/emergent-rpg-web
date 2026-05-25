@@ -23,7 +23,7 @@ import type {
 } from '@/data/schemas';
 import { drawCards, discardHand, instantiateCard, shuffle } from './deck';
 import { notePossessionPlayed, grantPossession } from './possession';
-import { companionCombatStart, companionPerTurn, companionStatusResist, companionRewardMul } from './companion';
+import { companionCombatStart, companionPerTurn, companionStatusResist, companionRewardMul, companionForEntry } from './companion';
 import { rng } from './rng';
 import { bonusesFromEffective } from './equipment';
 import {
@@ -186,6 +186,16 @@ function applyDamage(
   if (isPlayerTarget) {
     const inMul = getModifierMul('damage-in-mul');
     if (inMul !== 1) v = Math.floor(v * inMul);
+  }
+  // negate-reflect(반사 흡수, Item 37-② Stage C): 플레이어가 받는 피해를 *전부 흡수*해 누적하고 hp 미차감.
+  // 누적량은 다음 플레이어 턴 시작에 적에게 반사된다(combat.ts applyPendingTurnStartEffects). block은 건드리지 않음.
+  if (isPlayerTarget) {
+    const r = useRunStore().data;
+    const nr = r.combat?.negateReflect;
+    if (nr?.active && v > 0) {
+      nr.accumulated += v;
+      return; // hp·block 모두 보존(완전 흡수).
+    }
   }
   // block 흡수 후 hp 차감.
   const absorbed = Math.min(target.block, v);
@@ -354,6 +364,30 @@ function dayAtkScale(): number {
   return 1 + DAY_ATK_SCALE_PER_DAY * (day - 1);
 }
 
+/**
+ * 전투 시작 시 동료 스킬 쿨다운 시드 (Item 37-② Stage C — FD).
+ *
+ * 각 활성 슬롯(activeSlots, 길이 3)의 *skill 타입* 동료 스킬에 대해:
+ *   skillCooldowns[slot] = max(0, cooldown - fd)   (fd 미지정이면 fd = cooldown → 0, 즉 준비됨)
+ * skill이 아닌 칸(빈/passive/card)은 0. 길이는 activeSlots에 맞춘다(최소 3).
+ *
+ * 주의: 슬롯1(activeSlots[0]) -1은 *사용 시점*(skills.useSkill)에만 적용되는 별개 규칙이라
+ *  여기서는 반영하지 않는다(전투 시작 워밍업은 FD만으로 결정). 둘은 공존한다.
+ */
+function buildInitialSkillCooldowns(): number[] {
+  const slots = useRunStore().data.activeSlots ?? [];
+  const len = Math.max(3, slots.length);
+  const out: number[] = new Array(len).fill(0);
+  for (let i = 0; i < slots.length; i++) {
+    const comp = companionForEntry(slots[i]);
+    if (comp?.kind !== 'skill' || !comp.skill) continue;
+    const cd = comp.skill.cooldown;
+    const fd = comp.skill.fd ?? cd; // 미지정 = cooldown(시작부터 준비됨).
+    out[i] = Math.max(0, cd - fd);
+  }
+  return out;
+}
+
 /** 전투 시작 — Combat state 초기화 + 첫 핸드 드로우. */
 export function startCombat(monster: Monster) {
   const run = useRunStore();
@@ -444,8 +478,8 @@ export function startCombat(monster: Monster) {
     enemyIntentRotation,
     // 카오스 hidden-intent — 적 의도 가려짐(Stage2 obscure 재사용). 큰 값으로 상시 은폐.
     obscuredTurns: isHiddenIntent() ? 9999 : 0,
-    // 동료 스킬 쿨다운 — 매 전투 시작 시 0으로 초기화(3칸 모두 준비됨).
-    skillCooldowns: [0, 0, 0],
+    // 동료 스킬 쿨다운 — FD(전투 시작 선충전)로 시드. FD≥CD/미지정이면 0(준비됨), FD<CD면 워밍업.
+    skillCooldowns: buildInitialSkillCooldowns(),
   };
   r.combat = combat;
 
@@ -743,9 +777,19 @@ function rebuildCombatPiles(c: CombatState): void {
   c.lockedCardIds = [];
 }
 
+/** this-turn-amp(이번 턴 증폭)이 켜져 있으면 곱 적용 대상인 효과 kind인가. */
+const THIS_TURN_AMP_KINDS = new Set<CardEffectKind>(['damage', 'heal', 'block']);
+
 function applyEffect(effect: CardEffect, c: CombatState) {
-  const handler = EFFECT_HANDLERS[effect.kind];
-  if (handler) handler(effect, c);
+  let eff = effect;
+  // 이번 턴 증폭(this-turn-amp) — 켜져 있으면 damage/heal/block의 value를 (1+pct/100)배한 *사본*으로 적용.
+  // 원본 effect는 건드리지 않는다. 증폭 자체(this-turn-amp 효과)는 대상이 아니므로 무한 증폭 없음.
+  const amp = c.thisTurnAmp ?? 0;
+  if (amp > 0 && THIS_TURN_AMP_KINDS.has(effect.kind) && effect.value !== undefined) {
+    eff = { ...effect, value: Math.round(effect.value * (1 + amp / 100)) };
+  }
+  const handler = EFFECT_HANDLERS[eff.kind];
+  if (handler) handler(eff, c);
 }
 
 /**
@@ -1099,6 +1143,120 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
       useUiStore().toast('info', `본모습으로 돌아가는 중… (스택 ${t.releaseStack})`);
     }
   },
+
+  // === 동료 스킬 콘텐츠 배치 1 (Item 37-② Stage C) — 스킬·카드 공용 신규 핸들러 11종 ===
+  // 적의 *다음 행동 N회 박제(스킵)*. 적 턴(beginEnemyTurn)에서 enemySkip>0이면 행동 1개를 건너뛰고 -1.
+  'skip-enemy-action': (e, c) => {
+    c.enemySkip = (c.enemySkip ?? 0) + (e.value ?? 1);
+    useUiStore().toast('info', '적의 움직임을 멈춰 세웠다.');
+  },
+  // 적 둔화 — 남은 *지속 턴 수* 누적. 적 턴 시작 시 그 턴 actions = max(1, actions-1).
+  'slow-enemy': (e, c) => {
+    c.enemySlow = Math.max(c.enemySlow ?? 0, e.value ?? 1);
+    useUiStore().toast('info', '적의 동작이 느려졌다.');
+  },
+  // 지연 피해 — value턴(params.delay, 기본 2) 뒤 적에게 *대폭발*. 플레이어 턴 시작에 turnsLeft-1, 0이면 발동.
+  'delayed-damage': (e, c) => {
+    const delay = Math.max(1, Number(e.params?.delay ?? 2));
+    const dmg = e.value ?? 0;
+    if (!c.pendingEffects) c.pendingEffects = [];
+    c.pendingEffects.push({
+      turnsLeft: delay,
+      effects: [{ kind: 'damage', value: dmg, target: e.target ?? 'enemy' }],
+    });
+    useUiStore().toast('info', `${delay}턴 뒤 터질 영창을 새긴다.`);
+  },
+  // 무작위 효과 — 고정 풀 4셋(대피해 / 전체취약 / draw2+마나 / 풀회복) 중 1셋 실행.
+  'random-effect': (_e, c) => {
+    const pool: CardEffect[][] = [
+      [{ kind: 'damage', value: 26, target: 'enemy' }],
+      [{ kind: 'apply-status', value: 3, target: 'enemy', params: { status: 'vulnerable' } }],
+      [{ kind: 'draw', value: 2 }],
+      [{ kind: 'heal', value: 24, target: 'self' }],
+    ];
+    const pick = pool[Math.floor(rng() * pool.length)];
+    // draw2 셋이면 마나도 +2(스펙: draw2+마나). 풀회복 셋은 maxHp까지(heal 핸들러가 clamp).
+    if (pick === pool[2]) c.mana = Math.min(c.maxMana, c.mana + 2);
+    if (pick === pool[3]) c.player.hp = c.player.maxHp; // 풀회복(심수화면 heal 핸들러가 차단하므로 직접 세팅 전에 가드).
+    for (const ef of pick) {
+      // 풀회복은 위에서 직접 세팅했으므로 heal 핸들러 중복 실행 방지(심수화 차단 일관).
+      if (pick === pool[3] && ef.kind === 'heal') continue;
+      applyEffect(ef, c);
+    }
+  },
+  // 콤보 — 피해 = value × 이번 턴 사용 카드 수(cardsPlayedThisTurn). 스킬은 카드로 세지 않으므로 카드 콤보 전용.
+  'damage-per-cards-played': (e, c) => {
+    const played = c.cardsPlayedThisTurn ?? 0;
+    // regress면 atkBonus 0 (playerBonuses). base(value×played)에 ATK/status 보정.
+    const atkBonus = playerBonuses(c).damage + statusBonusForCardEffectKind('damage', c.player.statuses);
+    const value = applyModifiers((e.value ?? 1) * played + atkBonus, 'damage-out-add', 'damage-out-mul');
+    dealRawDamage(resolveTargets(e.target ?? 'enemy', c), value);
+  },
+  // 벼림 — 손패의 *가장 왼쪽 공격(damage) 카드* 인스턴스에 전투 영구 +value 피해(bonusDamage). 없으면 가장 왼쪽 카드.
+  'buff-card-instance': (e, c) => {
+    if (c.hand.length === 0) return;
+    const add = e.value ?? 0;
+    const idx = c.hand.findIndex((card) => card.effects.some((ef) => ef.kind === 'damage'));
+    const target = c.hand[idx >= 0 ? idx : 0];
+    if (target) target.bonusDamage = (target.bonusDamage ?? 0) + add;
+    useUiStore().toast('success', `한 장을 벼렸다 — 피해 +${add}`);
+  },
+  // 반사 흡수 — 이번 턴 받는 피해 0으로 흡수 + 누적, 다음 플레이어 턴 시작 시 적에게 반사(applyDamage player 협조).
+  'negate-reflect': (_e, c) => {
+    c.negateReflect = { active: true, accumulated: 0 };
+    useUiStore().toast('info', '받은 충격을 되돌려 줄 준비를 한다.');
+  },
+  // 개화 — 이번 전투 내내 매 플레이어 턴 시작 힘 +value 자동 누적(비감쇠). 즉시 한 번도 부여(쓴 턴부터 효과).
+  'bloom-strength': (e, c) => {
+    const v = e.value ?? 1;
+    c.bloom = (c.bloom ?? 0) + v;
+    c.player.statuses['strength'] = (c.player.statuses['strength'] ?? 0) + v;
+    useUiStore().toast('success', `싹이 텄다 — 매 턴 힘 +${c.bloom}`);
+  },
+  // 추적 — 적 *최고 스택 디버프*를 ×2(증가분 = 현재값) + 그 증가분 × value 피해. 디버프 없으면 소피해.
+  'amplify-debuff': (e, c) => {
+    const s = c.enemy.statuses;
+    // 증폭 대상은 *적이 받는 디버프*만(strength/dexterity 등 적 버프 제외).
+    let bestKey = '';
+    let best = 0;
+    for (const k of DECAYING_DEBUFFS) {
+      const v = s[k] ?? 0;
+      if (v > best) { best = v; bestKey = k; }
+    }
+    // poison/burn(감쇠형이지만 DECAYING_DEBUFFS 밖)도 후보로.
+    for (const k of ['poison', 'burn']) {
+      const v = s[k] ?? 0;
+      if (v > best) { best = v; bestKey = k; }
+    }
+    const mult = e.value ?? 1;
+    if (bestKey && best > 0) {
+      s[bestKey] = best * 2;        // ×2(증가분 = best).
+      dealRawDamage([c.enemy], best * mult);
+    } else {
+      dealRawDamage(resolveTargets(e.target ?? 'enemy', c), 4); // 디버프 없으면 소피해.
+    }
+  },
+  // 되돌림 — 마나를 maxMana로, 손패를 손패 상한(10)까지 가득 드로우.
+  'refill': (_e, c) => {
+    c.mana = c.maxMana;
+    const HAND_CAP = 10;
+    const need = Math.max(0, HAND_CAP - c.hand.length);
+    if (need > 0) {
+      const { drawn, newDrawPile, newDiscardPile } = drawCards(c.drawPile, c.discardPile, need);
+      c.hand = [...c.hand, ...drawn];
+      c.drawPile = newDrawPile;
+      c.discardPile = newDiscardPile;
+      fireOnDraw(c, drawn.length);
+      progressLocks(c, 'draw', drawn.length);
+    }
+    useUiStore().toast('success', '시간을 되돌려 — 마나와 손패가 가득 찼다.');
+  },
+  // 이번 턴 증폭 — 이번 플레이어 턴 동안 카드 damage/heal/block effect value +value%(params.pct 폴백). 턴 종료 시 0.
+  'this-turn-amp': (e, c) => {
+    const pct = e.value ?? Number(e.params?.pct ?? 50);
+    c.thisTurnAmp = (c.thisTurnAmp ?? 0) + pct;
+    useUiStore().toast('success', `이번 턴 카드 위력 +${c.thisTurnAmp}%`);
+  },
 };
 
 /** 컬러 키 참조용 (draw-if-color params 타입). */
@@ -1189,11 +1347,30 @@ export function beginEnemyTurn(monster: Monster): { queue: string[]; done?: Turn
   if (freeze) return { queue: [] };
 
   // 멀티액션: 큐의 의도를 연달아 실행. (실행은 runEnemyAction 한 번에 1개씩.)
-  const queue = (c.enemyIntentQueue && c.enemyIntentQueue.length > 0)
+  const baseQueue = (c.enemyIntentQueue && c.enemyIntentQueue.length > 0)
     ? c.enemyIntentQueue
     : (c.enemyIntent ? [c.enemyIntent] : []);
+  let queue = [...baseQueue];
+
+  // 스킬 콘텐츠 배치 1 (Item 37-② Stage C) — 적 행동 둔화/박제. 적 턴 *시작*에 큐를 깎는다.
+  // slow-enemy: 이번 턴 행동 수 -1(min 1). 멀티액션 적이면 행동 하나 줄고, 단일 적은 1유지(체감 0이나 안전).
+  if ((c.enemySlow ?? 0) > 0) {
+    if (queue.length > 1) {
+      queue = queue.slice(0, Math.max(1, queue.length - 1));
+      ui.toast('info', '적의 동작이 둔해져 한 박자 줄었다.');
+    }
+    c.enemySlow = (c.enemySlow ?? 0) - 1; // 지속 턴 소비.
+  }
+  // skip-enemy-action: 남은 박제 횟수만큼 큐 *앞에서* 행동을 제거(멀티액션이면 하나씩). 0이면 행동 없음.
+  if ((c.enemySkip ?? 0) > 0 && queue.length > 0) {
+    const skipN = Math.min(c.enemySkip ?? 0, queue.length);
+    queue = queue.slice(skipN);
+    c.enemySkip = (c.enemySkip ?? 0) - skipN;
+    ui.toast('info', '적의 행동을 박제했다.');
+  }
+
   void monster;
-  return { queue: [...queue] };
+  return { queue };
 }
 
 /**
@@ -1252,6 +1429,7 @@ export function finishEnemyTurn(monster: Monster): TurnResult {
   c.turn += 1;
   c.cardsPlayedThisTurn = 0; // 새 턴 — first-card-free 판정 리셋.
   c.potionUsedThisTurn = false; // 새 턴 — 전투 포션 턴당 1회 가드 리셋.
+  c.thisTurnAmp = 0; // 새 턴 — 이번 턴 증폭(this-turn-amp) 소멸.
   // 동료 스킬 쿨다운 — 매 플레이어 턴 시작에 각 슬롯 -1(최소 0).
   if (c.skillCooldowns) {
     c.skillCooldowns = c.skillCooldowns.map((cd) => Math.max(0, cd - 1));
@@ -1324,7 +1502,14 @@ export function finishEnemyTurn(monster: Monster): TurnResult {
   applyBossPlayerTurnStart(c);
 
   // 플레이어 상태 턴 시작 — 마비(이번 턴 스킵)/경련(이번 턴 마나 0). 보스 기믹 후 적용.
+  // (applyTurnStartSkillEffects 포함 — delayed-damage 폭발/negate-reflect 반사가 여기서 적 HP를 깎을 수 있다.)
   applyPlayerStatusTurnStart(c);
+
+  // 턴 시작 효과(지연 피해·반사)로 적이 쓰러질 수 있음 — *그 턴 시작에* 승리 신호(분열이면 부활).
+  // poison/burn 사망 체크 패턴과 동일. 안 하면 적이 0 HP로 남아 다음 playCard에서야 승리가 감지된다(Low-2).
+  if (resolveEnemyDefeat(c)) {
+    return { playerDefeated: false, enemyDefeated: true };
+  }
 
   // 플레이어 poison(중독)·burn(화상) — 새 턴 시작 시 틱. block 무시 직접 hp 피해.
   tickPoison(c.player);
@@ -1357,6 +1542,50 @@ export function endPlayerTurn(monster: Monster): TurnResult {
 }
 
 /**
+ * 스킬 콘텐츠 배치 1 (Item 37-② Stage C) — *플레이어 턴 시작* 협조 처리.
+ * applyPlayerStatusTurnStart 초입에서 호출(=매 새 턴 시작). 미설정 필드는 모두 no-op.
+ *   1) negate-reflect : 직전 턴 흡수한 누적 피해를 적에게 반사 후 비활성화.
+ *   2) bloom-strength : 누적 bloom만큼 플레이어 힘 +(비감쇠 자동 누적).
+ *   3) delayed-damage : pendingEffects의 turnsLeft-1, 0이면 효과셋 실행 후 제거.
+ */
+function applyTurnStartSkillEffects(c: CombatState): void {
+  const ui = useUiStore();
+
+  // 1) negate-reflect — 누적 흡수량을 적에게 반사(순수 직접 피해 — 되돌리기).
+  const nr = c.negateReflect;
+  if (nr?.active) {
+    const dmg = nr.accumulated;
+    c.negateReflect = undefined; // 1회 소비.
+    if (dmg > 0) {
+      dealRawDamage([c.enemy], dmg);
+      ui.toast('success', `되받아쳤다 — 적에게 ${dmg} 피해`);
+    }
+  }
+
+  // 2) bloom-strength — 매 턴 자동 힘 누적(비감쇠). 부여한 턴의 즉시 +는 핸들러에서 이미 처리.
+  const bloom = c.bloom ?? 0;
+  if (bloom > 0) {
+    c.player.statuses['strength'] = (c.player.statuses['strength'] ?? 0) + bloom;
+  }
+
+  // 3) delayed-damage — 대기열 카운트다운, 0 도달분 발동.
+  const pending = c.pendingEffects;
+  if (pending && pending.length > 0) {
+    const remaining: typeof pending = [];
+    for (const item of pending) {
+      const left = item.turnsLeft - 1;
+      if (left <= 0) {
+        for (const ef of item.effects) applyEffect(ef, c);
+        ui.toast('warning', '새겨둔 영창이 터졌다!');
+      } else {
+        remaining.push({ turnsLeft: left, effects: item.effects });
+      }
+    }
+    c.pendingEffects = remaining;
+  }
+}
+
+/**
  * 플레이어 상태 턴 시작 — 마비(paralyze)/경련(spasm). 매 새 턴 시작에 호출.
  *  - paralyze > 0: 이번 턴 *행동 불가*(frozenTurn=true, 마나 0). 스택 -1.
  *  - spasm > 0: 이번 턴 마나 0(0코스트 카드는 가능). 스택 -1.
@@ -1366,6 +1595,11 @@ function applyPlayerStatusTurnStart(c: CombatState): void {
   const ui = useUiStore();
   // 새 턴 — 발버둥 1턴 1회 리셋.
   c.struggledThisTurn = false;
+
+  // 스킬 콘텐츠 배치 1 (Item 37-② Stage C) — 플레이어 턴 시작 협조: 반사·개화·지연 피해.
+  // (적 사망은 finishEnemyTurn 다음 흐름에서 자연 처리되지 않으므로, 여기서 0 도달 시 별도 처리하지 않고
+  //  resolveEnemyDefeat는 다음 플레이어 행동/적 턴에서 인터셉트된다 — 턴 시작 피해로 적이 죽어도 안전.)
+  applyTurnStartSkillEffects(c);
 
   // 동료 지속 패시브(5c) — 매 턴 회복/방어. 회복은 심수화면 차단, 방어는 수화/심수화면 0.
   const cTurn = companionPerTurn();

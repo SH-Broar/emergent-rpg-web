@@ -10,7 +10,7 @@
  * (인터페이스만 정의, 실제 store는 src/stores/run.ts)
  */
 
-import type { Card } from './card';
+import type { Card, CardEffect } from './card';
 import type { Item } from './item';
 import type { Relic } from './relic';
 import type { Equipment, EquipmentId } from './equipment';
@@ -291,6 +291,37 @@ export interface CombatState {
    * 전투 단위 — 세이브 round-trip 안전(optional, absent=전부 준비됨).
    */
   skillCooldowns?: number[];
+
+  // === 스킬 콘텐츠 배치 1 신규 핸들러 (Item 37-② Stage C) — 전부 optional, 미설정 시 영향 0 ===
+  /**
+   * 적 행동 박제(skip-enemy-action) — 남은 *스킵 횟수*. >0이면 적 턴에 행동 1개를 건너뛰고 -1.
+   * 멀티액션이면 행동 하나씩 소비. 0/미설정이면 영향 0. 전투 단위 휘발(세이브 안전).
+   */
+  enemySkip?: number;
+  /**
+   * 적 둔화(slow-enemy) — 남은 *지속 턴 수*. >0이면 그 적 턴의 actions = max(1, actions-1) + 매 적 턴 -1.
+   * 0/미설정이면 영향 0. 전투 단위 휘발.
+   */
+  enemySlow?: number;
+  /**
+   * 지연 피해(delayed-damage) 대기열 — 각 항목은 N턴 뒤 폭발할 효과셋.
+   * 플레이어 턴 시작마다 turnsLeft-1, 0이면 effects를 적에게 실행 후 제거. 전투 단위 휘발.
+   */
+  pendingEffects?: { turnsLeft: number; effects: CardEffect[] }[];
+  /**
+   * 반사 흡수(negate-reflect) — active면 이번 턴 받는 피해를 hp 미차감하고 accumulated에 모은다.
+   * *다음 플레이어 턴 시작* 시 accumulated를 적에게 반사 후 비활성화. 전투 단위 휘발.
+   */
+  negateReflect?: { active: boolean; accumulated: number };
+  /**
+   * 개화(bloom-strength) — 누적 힘 보너스. >0이면 매 플레이어 턴 시작 strength += bloom(비감쇠). 전투 단위 휘발.
+   */
+  bloom?: number;
+  /**
+   * 이번 턴 증폭(this-turn-amp) — 이번 플레이어 턴 동안 카드 *damage/heal/block* effect value를 (1+pct/100)배.
+   * 매 새 턴 0으로 리셋(턴 종료 시 소멸). 전투 단위 휘발.
+   */
+  thisTurnAmp?: number;
 }
 
 /**

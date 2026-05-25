@@ -52,11 +52,14 @@ background = 타코미 카페의 고양이 수인 바리스타.|손이 따뜻하
 tagline = "한 잔 따뜻하게, 가시지요."
 tags = beastkin, cat, barista, light-affinity
 affinity_rewards = 3:card=c-warm-cup:gauge=4
-# 영입 카페 바리스타. 치유 + 카드 회전.
+# 영입 (Item 37-② Stage C). 카페 바리스타 — 가방을 뒤져 그날그날 나오는 한 가지를 건넨다(무작위).
 recruit_enabled = true
-recruit_cards = c-warm-cup
-recruit_colors = light:10, water:8
-recruit_per_turn = heal:1
+companion_kind = skill
+companion_skill_name = 잡동사니 가방
+companion_skill_cooldown = 3
+companion_skill_fd = 3
+companion_skill_desc = 가방에서 무엇이 나올지는 그때그때. 큰 피해·전체 취약·카드와 마나·가득 회복 중 하나.
+companion_skill_effects = random-effect
 
 [npc.npc-nova]
 name = 노바
