@@ -193,7 +193,10 @@ function closeDialogue() {
 
 const craftPool = computed<Card[]>(() => {
   // 일반 등급 카드들. 잠긴(미해금) 카드는 제외.
-  return availableCards().filter((c: Card) => VILLAGE_CARD_RANKS.has(c.rank));
+  // 종족 카드(source=race/character)는 그 종족 전용이므로 마을 공방 제작 풀에서 제외(shop/workshop과 동일 격리).
+  return availableCards().filter(
+    (c: Card) => VILLAGE_CARD_RANKS.has(c.rank) && c.source !== 'race' && c.source !== 'character',
+  );
 });
 
 const rolledOptions = ref<Card[]>([]);

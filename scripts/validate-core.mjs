@@ -200,6 +200,8 @@ export const VALID_CARD_EFFECT_KINDS = [
   'adaptive-strike',
   // 종족 카드 확장 2 (Item 37-③ 나방) — 가속 신규 핸들러 1종.
   'hand-cost-down',
+  // 종족 카드 확장 3 (Item 37-③ 팬텀) — 빈손 보상 신규 핸들러 1종.
+  'damage-low-hand',
 ];
 
 /**

@@ -1905,6 +1905,765 @@ effects = damage-per-hand:5:enemy, draw:1:self
 flavor = 더 많은 패가 한순간에 터져 나온다.
 
 # ============================================================
+# 팬텀 확장 (Item 37-③) electric/dark 손패 수 관리·양극단·전기 정전·어둠 디버프
+#   - source=race (시작덱/시드풀 전용, 상점·드롭 제외). 각 카드 -plus 강화판.
+#   - 적에 거는 apply-status는 실효 상태만(weakness/vulnerable/frail/poison/burn).
+#     전기 테마는 skip-enemy-action(정전)·weakness/vulnerable로 표현(spasm/paralyze 적 무효라 미사용).
+#   - 회복은 heal-per-hand(손패를 회복으로 트레이드)만. 무조건 회복 카드는 두지 않는다.
+#   - 신규 핸들러 damage-low-hand: 기본 N, 손패(이 카드 제외) ≤ threshold(기본 2)면 N×2(빈손 보상).
+#     만판 보상은 기존 damage-per-hand 재사용 — 두 빌드 방향(빈손 vs 만판).
+# ============================================================
+
+# ---- 시그니처 12종 (스펙 명시) ----
+
+[card.c-phantom-voidstrike]
+name = 빈손의 일격
+rank = rare
+source = race
+element = electric
+cost = 1
+trigger = manual
+effects = damage-low-hand:16:enemy
+upgrade_to = c-phantom-voidstrike-plus
+flavor = 쥔 것이 없을수록 손이 가벼워, 빈 손이 가장 빠르게 닿는다.
+
+[card.c-phantom-voidstrike-plus]
+name = 빈손의 일격+
+rank = rare
+source = race
+element = electric
+cost = 1
+trigger = manual
+effects = damage-low-hand:20:enemy:3
+flavor = 비운 손이 더 멀리 닿고, 비웠다고 치는 기준도 한 칸 너그러워졌다.
+
+[card.c-phantom-fullhand]
+name = 만패의 칼
+rank = common
+source = race
+element = electric
+cost = 1
+trigger = manual
+effects = damage-per-hand:4:enemy
+upgrade_to = c-phantom-fullhand-plus
+flavor = 쥔 패가 많을수록 한 번에 더 깊이 벤다.
+
+[card.c-phantom-fullhand-plus]
+name = 만패의 칼+
+rank = common
+source = race
+element = electric
+cost = 1
+trigger = manual
+effects = damage-per-hand:5:enemy
+flavor = 쥔 패 한 장 한 장이 더 무겁게 실린다.
+
+[card.c-phantom-cycle]
+name = 패 순환
+rank = common
+source = race
+element = dark
+cost = 1
+trigger = manual
+effects = return-hand-to-deck:1:self, draw:2:self
+upgrade_to = c-phantom-cycle-plus
+flavor = 마음에 안 드는 한 장을 슬쩍 덱으로 돌려 두고, 두 장을 새로 집는다.
+
+[card.c-phantom-cycle-plus]
+name = 패 순환+
+rank = common
+source = race
+element = dark
+cost = 1
+trigger = manual
+effects = return-hand-to-deck:1:self, draw:3:self
+flavor = 돌려 두고 집는 손이 더 매끄럽다. 세 장이 따라 든다.
+
+[card.c-phantom-trade]
+name = 패 희생
+rank = common
+source = race
+element = dark
+cost = 1
+trigger = manual
+effects = heal-per-hand:2:self, draw:1:self
+upgrade_to = c-phantom-trade-plus
+flavor = 쥔 패의 무게만큼 숨을 돌린다. 많이 쥐고 있을수록 더 깊이.
+
+[card.c-phantom-trade-plus]
+name = 패 희생+
+rank = common
+source = race
+element = dark
+cost = 1
+trigger = manual
+effects = heal-per-hand:3:self, draw:1:self
+flavor = 같은 패로 더 깊이 숨을 돌린다.
+
+[card.c-phantom-blackout]
+name = 정전
+rank = rare
+source = race
+element = electric
+cost = 1
+trigger = manual
+effects = skip-enemy-action:1
+upgrade_to = c-phantom-blackout-plus
+flavor = 흐르던 전기를 한순간 끊어, 상대의 다음 한 수를 멈춰 세운다.
+
+[card.c-phantom-blackout-plus]
+name = 정전+
+rank = rare
+source = race
+element = electric
+cost = 1
+trigger = manual
+effects = skip-enemy-action:1, draw:1:self
+flavor = 끊어 둔 한 박 사이로 한 장을 더 챙긴다.
+
+[card.c-phantom-darkrend]
+name = 어둠 가르기
+rank = common
+source = race
+element = dark
+cost = 1
+trigger = manual
+effects = damage:6:enemy, apply-status:2:enemy:weakness
+upgrade_to = c-phantom-darkrend-plus
+flavor = 어둠을 한 줄기 그어 상대의 손아귀에서 힘을 빼낸다.
+
+[card.c-phantom-darkrend-plus]
+name = 어둠 가르기+
+rank = common
+source = race
+element = dark
+cost = 1
+trigger = manual
+effects = damage:9:enemy, apply-status:3:enemy:weakness
+flavor = 더 깊이 그어 더 오래 힘을 비워 둔다.
+
+[card.c-phantom-shroud]
+name = 장막
+rank = common
+source = race
+element = dark
+cost = 1
+trigger = manual
+effects = block:9:self, draw:1:self
+upgrade_to = c-phantom-shroud-plus
+flavor = 어둠을 한 겹 둘러 몸을 가리고, 그 그늘에서 한 장을 집는다.
+
+[card.c-phantom-shroud-plus]
+name = 장막+
+rank = common
+source = race
+element = dark
+cost = 1
+trigger = manual
+effects = block:12:self, draw:1:self
+flavor = 두른 어둠이 더 짙다. 가린 만큼 더 두껍게 막는다.
+
+[card.c-phantom-discharge]
+name = 방전
+rank = rare
+source = race
+element = electric
+cost = 2
+trigger = manual
+effects = damage-per-hand:5:enemy, draw:1:self
+upgrade_to = c-phantom-discharge-plus
+flavor = 쥔 패에 고인 전기를 한꺼번에 쏟아 내고, 빈 손에 한 장을 채운다.
+
+[card.c-phantom-discharge-plus]
+name = 방전+
+rank = rare
+source = race
+element = electric
+cost = 2
+trigger = manual
+effects = damage-per-hand:6:enemy, draw:1:self
+flavor = 쏟아 내는 전기가 더 거세다. 패가 많을수록 한층 사납다.
+
+[card.c-phantom-fold]
+name = 접기
+rank = common
+source = race
+element = dark
+cost = 0
+trigger = manual
+effects = return-hand-to-deck:1:self, draw:1:self
+upgrade_to = c-phantom-fold-plus
+flavor = 거저 한 장을 접어 덱으로 넘기고, 한 장을 새로 펴 든다.
+
+[card.c-phantom-fold-plus]
+name = 접기+
+rank = common
+source = race
+element = dark
+cost = 0
+trigger = manual
+effects = return-hand-to-deck:1:self, draw:2:self
+flavor = 한 장을 접고도 두 장이 따라 펴진다. 여전히 거저.
+
+[card.c-phantom-empty]
+name = 무의 검
+rank = legendary
+source = race
+element = electric
+cost = 2
+trigger = manual
+effects = damage-low-hand:24:enemy
+upgrade_to = c-phantom-empty-plus
+flavor = 손에 아무것도 남지 않은 순간, 그 빈자리를 통째로 내리꽂는다.
+
+[card.c-phantom-empty-plus]
+name = 무의 검+
+rank = legendary
+source = race
+element = electric
+cost = 2
+trigger = manual
+effects = damage-low-hand:32:enemy:3
+flavor = 비운 자리가 더 깊다. 비웠다고 치는 기준도 한 칸 너그럽다.
+
+[card.c-phantom-overdraw]
+name = 폭식
+rank = legendary
+source = race
+element = dark
+cost = 1
+trigger = manual
+effects = draw:3:self
+upgrade_to = c-phantom-overdraw-plus
+flavor = 손이 미어지도록 끌어모은다. 쥔 패가 곧 다음 한 수의 무게가 된다.
+
+[card.c-phantom-overdraw-plus]
+name = 폭식+
+rank = legendary
+source = race
+element = dark
+cost = 0
+trigger = manual
+effects = draw:3:self
+flavor = 끌어모으는 데 드는 힘조차 사라졌다. 거저 손이 미어진다.
+
+[card.c-phantom-static]
+name = 감전
+rank = common
+source = race
+element = electric
+cost = 1
+trigger = manual
+effects = damage:8:enemy, apply-status:2:enemy:vulnerable
+upgrade_to = c-phantom-static-plus
+flavor = 짧은 전기 한 줄이 상대를 저릿하게 굳혀, 다음 한 대가 더 깊이 든다.
+
+[card.c-phantom-static-plus]
+name = 감전+
+rank = common
+source = race
+element = electric
+cost = 1
+trigger = manual
+effects = damage:11:enemy, apply-status:3:enemy:vulnerable
+flavor = 더 센 전기가 더 오래 저리게 한다.
+
+# ---- 필러: 손패 비례 (만판 보상 변주) ----
+
+[card.c-phantom-handcut]
+name = 쥔 패 베기
+rank = basic
+source = race
+element = electric
+cost = 0
+trigger = manual
+effects = damage-per-hand:2:enemy
+upgrade_to = c-phantom-handcut-plus
+flavor = 거저 한 번, 쥔 패만큼 가볍게 흘려 벤다.
+
+[card.c-phantom-handcut-plus]
+name = 쥔 패 베기+
+rank = basic
+source = race
+element = electric
+cost = 0
+trigger = manual
+effects = damage-per-hand:3:enemy
+flavor = 같은 가벼움으로 쥔 패가 더 무겁게 실린다.
+
+[card.c-phantom-handguard]
+name = 패의 방벽
+rank = common
+source = race
+element = dark
+cost = 1
+trigger = manual
+effects = block:4:self, damage-per-hand:2:enemy
+upgrade_to = c-phantom-handguard-plus
+flavor = 쥔 패를 앞세워 막고, 그 무게만큼 되친다.
+
+[card.c-phantom-handguard-plus]
+name = 패의 방벽+
+rank = common
+source = race
+element = dark
+cost = 1
+trigger = manual
+effects = block:6:self, damage-per-hand:3:enemy
+flavor = 앞세운 패가 더 두껍고, 되치는 무게도 더 깊다.
+
+[card.c-phantom-trickhand]
+name = 손속임
+rank = common
+source = race
+element = electric
+cost = 1
+trigger = manual
+effects = damage-per-hand:3:enemy, draw:1:self
+upgrade_to = c-phantom-trickhand-plus
+flavor = 쥔 패로 한 번 베고, 그 틈에 한 장을 더 끌어 든다.
+
+[card.c-phantom-trickhand-plus]
+name = 손속임+
+rank = common
+source = race
+element = electric
+cost = 1
+trigger = manual
+effects = damage-per-hand:4:enemy, draw:1:self
+flavor = 베는 손도 끌어 드는 손도 더 빠르다.
+
+[card.c-phantom-fanout]
+name = 패 펼치기
+rank = rare
+source = race
+element = electric
+cost = 2
+trigger = manual
+effects = damage-per-hand:5:enemy
+upgrade_to = c-phantom-fanout-plus
+flavor = 쥔 패를 한 번에 펼쳐, 그 폭만큼 한꺼번에 내리꽂는다.
+
+[card.c-phantom-fanout-plus]
+name = 패 펼치기+
+rank = rare
+source = race
+element = electric
+cost = 2
+trigger = manual
+effects = damage-per-hand:7:enemy
+flavor = 펼치는 폭이 더 넓다. 쥔 패가 많을수록 사납게 터진다.
+
+[card.c-phantom-bleedhand]
+name = 패의 가시
+rank = common
+source = race
+element = dark
+cost = 1
+trigger = manual
+effects = damage-per-hand:2:enemy, apply-status:2:enemy:poison
+upgrade_to = c-phantom-bleedhand-plus
+flavor = 쥔 패만큼 찌르고, 그 자리에 어둠 한 줌을 남겨 둔다.
+
+[card.c-phantom-bleedhand-plus]
+name = 패의 가시+
+rank = common
+source = race
+element = dark
+cost = 1
+trigger = manual
+effects = damage-per-hand:3:enemy, apply-status:3:enemy:poison
+flavor = 찌르는 패가 더 깊고, 남긴 어둠도 더 오래 번진다.
+
+# ---- 필러: 패 관리/순환 ----
+
+[card.c-phantom-redeal]
+name = 다시 돌리기
+rank = common
+source = race
+element = dark
+cost = 1
+trigger = manual
+effects = return-hand-to-deck:2:self, draw:3:self
+upgrade_to = c-phantom-redeal-plus
+flavor = 두 장을 덱으로 돌려 두고, 세 장을 새로 돌려 받는다.
+
+[card.c-phantom-redeal-plus]
+name = 다시 돌리기+
+rank = common
+source = race
+element = dark
+cost = 1
+trigger = manual
+effects = return-hand-to-deck:2:self, draw:4:self
+flavor = 돌려 받는 손이 한 장 더 두툼하다.
+
+[card.c-phantom-tuck]
+name = 슬쩍 넣기
+rank = basic
+source = race
+element = dark
+cost = 0
+trigger = manual
+effects = draw:1:self
+upgrade_to = c-phantom-tuck-plus
+flavor = 손끝에서 한 장을 거저 끌어 든다. 흐름을 끊지 않게.
+
+[card.c-phantom-tuck-plus]
+name = 슬쩍 넣기+
+rank = basic
+source = race
+element = dark
+cost = 0
+trigger = manual
+effects = draw:2:self
+flavor = 슬쩍 끌어 드는 손이 두 장을 함께 데려온다.
+
+[card.c-phantom-stash]
+name = 패 갈무리
+rank = common
+source = race
+element = dark
+cost = 1
+trigger = manual
+effects = draw:2:self, next-turn-energy:1:self
+upgrade_to = c-phantom-stash-plus
+flavor = 손을 두툼히 챙기고, 다음 수에 쓸 한 호흡을 미리 갈무리해 둔다.
+
+[card.c-phantom-stash-plus]
+name = 패 갈무리+
+rank = common
+source = race
+element = dark
+cost = 1
+trigger = manual
+effects = draw:2:self, next-turn-energy:2:self
+flavor = 갈무리해 둔 호흡이 한 칸 더 깊다.
+
+[card.c-phantom-sleight]
+name = 손바꿈
+rank = common
+source = race
+element = electric
+cost = 0
+trigger = manual
+effects = return-hand-to-deck:1:self, next-turn-energy:1:self
+upgrade_to = c-phantom-sleight-plus
+flavor = 거저 한 장을 덱으로 넘기고, 다음 호흡 한 칸을 당겨 둔다.
+
+[card.c-phantom-sleight-plus]
+name = 손바꿈+
+rank = common
+source = race
+element = electric
+cost = 0
+trigger = manual
+effects = return-hand-to-deck:1:self, next-turn-energy:2:self
+flavor = 당겨 두는 호흡이 한 칸 더 깊다. 여전히 거저.
+
+# ---- 필러: 빈손 극단 (damage-low-hand 변주) ----
+
+[card.c-phantom-blankblade]
+name = 빈손 베기
+rank = basic
+source = race
+element = electric
+cost = 0
+trigger = manual
+effects = damage-low-hand:6:enemy
+upgrade_to = c-phantom-blankblade-plus
+flavor = 거저 한 번. 손이 비어 있을수록 더 깊이 닿는다.
+
+[card.c-phantom-blankblade-plus]
+name = 빈손 베기+
+rank = basic
+source = race
+element = electric
+cost = 0
+trigger = manual
+effects = damage-low-hand:8:enemy
+flavor = 비운 손이 더 매섭게 닿는다.
+
+[card.c-phantom-hollow]
+name = 텅 빈 손
+rank = common
+source = race
+element = electric
+cost = 1
+trigger = manual
+effects = damage-low-hand:10:enemy
+upgrade_to = c-phantom-hollow-plus
+flavor = 쥔 것을 다 비운 손이 가장 빠르게 내리꽂힌다.
+
+[card.c-phantom-hollow-plus]
+name = 텅 빈 손+
+rank = common
+source = race
+element = electric
+cost = 1
+trigger = manual
+effects = damage-low-hand:14:enemy:3
+flavor = 비운 손이 더 깊이 닿고, 비웠다고 치는 기준도 한 칸 너그럽다.
+
+[card.c-phantom-lastcard]
+name = 마지막 한 장
+rank = rare
+source = race
+element = electric
+cost = 1
+trigger = manual
+effects = damage-low-hand:14:enemy:1
+upgrade_to = c-phantom-lastcard-plus
+flavor = 손에 단 한 장만 남았을 때, 그 한 장이 가장 무겁게 떨어진다.
+
+[card.c-phantom-lastcard-plus]
+name = 마지막 한 장+
+rank = rare
+source = race
+element = electric
+cost = 1
+trigger = manual
+effects = damage-low-hand:18:enemy:2
+flavor = 남은 한 장이 더 깊이 박히고, 비웠다고 치는 기준도 한 칸 넓어졌다.
+
+# ---- 필러: 전기/어둠 디버프 ----
+
+[card.c-phantom-shock]
+name = 충격
+rank = basic
+source = race
+element = electric
+cost = 0
+trigger = manual
+effects = damage:3:enemy, apply-status:1:enemy:vulnerable
+upgrade_to = c-phantom-shock-plus
+flavor = 거저 한 줄 흘려 보낸 전기가 상대를 잠깐 저릿하게 한다.
+
+[card.c-phantom-shock-plus]
+name = 충격+
+rank = basic
+source = race
+element = electric
+cost = 0
+trigger = manual
+effects = damage:5:enemy, apply-status:2:enemy:vulnerable
+flavor = 흘려 보낸 전기가 더 오래 저리게 한다.
+
+[card.c-phantom-drain]
+name = 힘 빼앗기
+rank = common
+source = race
+element = dark
+cost = 1
+trigger = manual
+effects = damage:6:enemy, apply-status:2:enemy:weakness
+upgrade_to = c-phantom-drain-plus
+flavor = 어둠으로 손아귀를 더듬어, 쥔 힘을 한 줌 빼낸다.
+
+[card.c-phantom-drain-plus]
+name = 힘 빼앗기+
+rank = common
+source = race
+element = dark
+cost = 1
+trigger = manual
+effects = damage:9:enemy, apply-status:3:enemy:weakness
+flavor = 더 깊이 더듬어 더 오래 힘을 비워 둔다.
+
+[card.c-phantom-thinarmor]
+name = 갑옷 삭이기
+rank = common
+source = race
+element = dark
+cost = 1
+trigger = manual
+effects = damage:6:enemy, apply-status:3:enemy:frail
+upgrade_to = c-phantom-thinarmor-plus
+flavor = 어둠이 갑옷을 안에서부터 삭여, 방어가 한층 얇아진다.
+
+[card.c-phantom-thinarmor-plus]
+name = 갑옷 삭이기+
+rank = common
+source = race
+element = dark
+cost = 1
+trigger = manual
+effects = damage:9:enemy, apply-status:4:enemy:frail
+flavor = 더 깊이 삭여 방어가 더 오래 얇게 남는다.
+
+[card.c-phantom-overcharge]
+name = 과전류
+rank = rare
+source = race
+element = electric
+cost = 2
+trigger = manual
+effects = damage:14:enemy, apply-status:2:enemy:vulnerable, apply-status:2:enemy:weakness
+upgrade_to = c-phantom-overcharge-plus
+flavor = 한꺼번에 흘린 전류가 상대를 저리게 굳히고, 동시에 힘까지 흩어 놓는다.
+
+[card.c-phantom-overcharge-plus]
+name = 과전류+
+rank = rare
+source = race
+element = electric
+cost = 2
+trigger = manual
+effects = damage:18:enemy, apply-status:3:enemy:vulnerable, apply-status:3:enemy:weakness
+flavor = 흘린 전류가 더 거세다. 저림도 흩어짐도 더 오래 간다.
+
+[card.c-phantom-shortcircuit]
+name = 합선
+rank = rare
+source = race
+element = electric
+cost = 2
+trigger = manual
+effects = skip-enemy-action:1, damage:6:enemy
+upgrade_to = c-phantom-shortcircuit-plus
+flavor = 두 선을 맞붙여 한순간 끊고, 그 멈춘 틈으로 한 줄 내리꽂는다.
+
+[card.c-phantom-shortcircuit-plus]
+name = 합선+
+rank = rare
+source = race
+element = electric
+cost = 2
+trigger = manual
+effects = skip-enemy-action:1, damage:10:enemy
+flavor = 끊어 둔 틈으로 더 깊이 내리꽂는다.
+
+# ---- 필러: 방어/유지 (큰 손패 유지형) ----
+
+[card.c-phantom-veil]
+name = 어둠 한 겹
+rank = basic
+source = race
+element = dark
+cost = 0
+trigger = manual
+effects = block:5:self
+upgrade_to = c-phantom-veil-plus
+flavor = 거저 어둠 한 겹을 둘러 앞을 가린다.
+
+[card.c-phantom-veil-plus]
+name = 어둠 한 겹+
+rank = basic
+source = race
+element = dark
+cost = 0
+trigger = manual
+effects = block:8:self
+flavor = 두른 어둠이 한층 짙어졌다.
+
+[card.c-phantom-holdline]
+name = 패 쥐고 막기
+rank = common
+source = race
+element = dark
+cost = 1
+trigger = manual
+effects = block:8:self, draw:1:self
+upgrade_to = c-phantom-holdline-plus
+flavor = 패를 펼치지 않고 쥔 채로 버티며, 그 사이 한 장을 더 끌어 든다.
+
+[card.c-phantom-holdline-plus]
+name = 패 쥐고 막기+
+rank = common
+source = race
+element = dark
+cost = 1
+trigger = manual
+effects = block:11:self, draw:1:self
+flavor = 더 단단히 쥐고, 더 두껍게 버틴다.
+
+[card.c-phantom-wardfield]
+name = 정적의 장벽
+rank = rare
+source = race
+element = dark
+cost = 2
+trigger = manual
+effects = block:18:self, draw:1:self
+upgrade_to = c-phantom-wardfield-plus
+flavor = 소리도 빛도 삼키는 어둠을 두껍게 세우고, 그 안에서 한 장을 살핀다.
+
+[card.c-phantom-wardfield-plus]
+name = 정적의 장벽+
+rank = rare
+source = race
+element = dark
+cost = 2
+trigger = manual
+effects = block:24:self, draw:1:self
+flavor = 세운 어둠이 더 두껍다. 그 안의 손도 한결 여유롭다.
+
+# ---- 필러: 큰 한방/피니셔 (손패 연동 폭발) ----
+
+[card.c-phantom-burst]
+name = 패의 작렬
+rank = rare
+source = race
+element = electric
+cost = 2
+trigger = manual
+effects = damage-per-hand:6:enemy
+upgrade_to = c-phantom-burst-plus
+flavor = 쥔 패에 고인 전기를 한 점에 모아 한 번에 터뜨린다.
+
+[card.c-phantom-burst-plus]
+name = 패의 작렬+
+rank = rare
+source = race
+element = electric
+cost = 2
+trigger = manual
+effects = damage-per-hand:8:enemy
+flavor = 모아 터뜨리는 전기가 더 사납다.
+
+[card.c-phantom-voidlance]
+name = 공허의 창
+rank = legendary
+source = race
+element = electric
+cost = 2
+trigger = manual
+effects = damage-low-hand:20:enemy, draw:1:self
+upgrade_to = c-phantom-voidlance-plus
+flavor = 텅 빈 손에서 길게 뻗어 나간 창 한 자루. 비운 만큼 멀리 닿고, 한 장이 손에 든다.
+
+[card.c-phantom-voidlance-plus]
+name = 공허의 창+
+rank = legendary
+source = race
+element = electric
+cost = 2
+trigger = manual
+effects = damage-low-hand:28:enemy:3, draw:1:self
+flavor = 뻗는 창이 더 길다. 비웠다고 치는 기준도 한 칸 너그럽다.
+
+[card.c-phantom-thunderfist]
+name = 만패의 벼락
+rank = legendary
+source = race
+element = electric
+cost = 3
+trigger = manual
+effects = damage-per-hand:7:enemy, draw:1:self
+upgrade_to = c-phantom-thunderfist-plus
+flavor = 쥔 패를 통째로 벼락 한 줄기로 모아 내리치고, 빈 손에 한 장을 채운다.
+
+[card.c-phantom-thunderfist-plus]
+name = 만패의 벼락+
+rank = legendary
+source = race
+element = electric
+cost = 3
+trigger = manual
+effects = damage-per-hand:9:enemy, draw:1:self
+flavor = 모아 내리치는 벼락이 더 굵다. 패가 많을수록 하늘이 무너진다.
+
+# ============================================================
 # 아르카나 light 색 공명 (모아 온 컬러값이 곧 위력)
 # 메커니즘: 카드는 8색 중 *최고색*(damage-top-color/block-top-color) 또는 *보유 색 종류 수*
 #   (damage-color-count)에 비례. 전투 중 색은 고정 — 런 동안 키운 색이 그대로 위력이 된다.

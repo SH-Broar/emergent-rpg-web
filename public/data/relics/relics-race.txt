@@ -80,6 +80,33 @@ trigger = on-combat-start
 effects = combat-start-draw:2, retain-hand
 flavor = 보이지 않는 손이 패를 두툼하게 쥔다. 턴이 끝나도 쥔 패를 놓지 않아(손패 유지), 펼치지 않은 만큼 한 수가 무겁다.
 
+# 팬텀 정체성 앵커 (Item 37-③) — 손패 수 관리·전기·어둠을 시작 유물로 표현.
+# 기존 트리거/효과만 재사용(신규 트리거 없음). source=race → 시작 전용.
+
+[relic.r-race-phantom-fullhand]
+name = 쥔 손의 무게
+rank = common
+source = race
+trigger = on-combat-start
+effects = combat-start-draw:1, retain-hand
+flavor = 보이지 않는 손이 패를 한 장 더 쥔다. 턴이 끝나도 놓지 않으니, 쥔 패가 두툼할수록 한 수가 더 무겁다.
+
+[relic.r-race-phantom-ghostmemory]
+name = 유령의 기억
+rank = common
+source = race
+trigger = on-turn-start
+effects = turn-start-block:3
+flavor = 지나간 패의 잔상이 매 호흡마다 한 겹씩 어둠으로 돌아와, 발밑을 얇게 가려 준다.
+
+[relic.r-race-phantom-staticquill]
+name = 정전기 깃
+rank = common
+source = race
+trigger = on-draw
+effects = damage-enemy:1
+flavor = 패를 한 장 쥘 때마다 손끝에서 정전기 한 점이 튀어 적을 콕 찌른다. 많이 쥘수록 더 매섭게.
+
 [relic.r-race-arcana]
 name = 빛의 성배
 rank = common

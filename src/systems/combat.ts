@@ -1067,6 +1067,19 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
     const value = applyModifiers((e.value ?? 1) * handCount + atkBonus, 'damage-out-add', 'damage-out-mul');
     dealRawDamage(resolveTargets(e.target ?? 'enemy', c), value);
   },
+  // 빈손 보상(팬텀 시그니처, Item 37-③): 기본 value 피해. *현재 손패(이 카드 제외)*가
+  // params.threshold(기본 2) 이하이면 value×2 피해. damage-per-hand(만판 보상)의 대척 ─ 빌드 양극단.
+  //   - 이 카드 자신은 effect 단계에서 아직 hand에 남아 있으므로 c.hand.length-1 로 '제외' 보정.
+  //   - 피해 파이프라인은 damage 핸들러와 동일(ATK·strength·weakness/vulnerable·modifier).
+  'damage-low-hand': (e, c) => {
+    const otherHand = Math.max(0, c.hand.length - 1); // 이 카드 제외 손패 수.
+    const threshold = Number(e.params?.threshold ?? 2);
+    const base = (e.value ?? 1) * (otherHand <= threshold ? 2 : 1);
+    // regress면 atkBonus 0 (playerBonuses).
+    const atkBonus = playerBonuses(c).damage + statusBonusForCardEffectKind('damage', c.player.statuses);
+    const value = applyModifiers(base + atkBonus, 'damage-out-add', 'damage-out-mul');
+    dealRawDamage(resolveTargets(e.target ?? 'enemy', c), value);
+  },
   // === 측정 어려운 메커니즘 (3차 배치) ===
   // 마커: 실제 처리는 playCard 본체(card.effects에 exhaust-self 있으면 exhaustPile로). 핸들러는 no-op.
   'exhaust-self': () => {

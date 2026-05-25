@@ -116,6 +116,11 @@ function parseCardEffect(token: string): CardEffect | null {
   if (kind === 'adaptive-strike' && parts[3]) {
     return { kind, value, target, params: { bonus: Number(parts[3]) } };
   }
+  // damage-low-hand 전용 (Item 37-③ 팬텀): value=기본 피해, 4번째=threshold(손패 임계, 기본 2).
+  // 핸들러(combat.ts)는 손패(이 카드 제외) ≤ threshold면 value×2 피해를 낸다.
+  if (kind === 'damage-low-hand' && parts[3]) {
+    return { kind, value, target, params: { threshold: Number(parts[3]) } };
+  }
   // 4번째 토큰: apply-status의 status 이름 등 추가 파라미터.
   if (parts[3]) {
     return { kind, value, target, params: { status: parts[3] } };
