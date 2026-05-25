@@ -54,6 +54,7 @@ import {
   allGimmickIntentFor,
   isNarrowReward,
 } from '@/systems/chaos';
+import { isFormPoolActive, activeFormCardPool, RELEASE_CARD_ID } from '@/systems/form-pool';
 
 const STARTING_HAND_SIZE = 5;
 const DEFAULT_MAX_MANA = 3;
@@ -2421,8 +2422,17 @@ export function applyMonsterDrop(drop: MonsterDrop, allCards: Map<string, Card>)
   // (이 게임은 'N장 중 택1' UI가 아니라 확률 드롭이므로, 통과 카드 수에서 1장 감산으로 구현.)
   const narrow = isNarrowReward();
   const passed: { card: Card }[] = [];
+  // Item 37-③ 여우 폼 — 변신 중이면 *카드 보상을 폼 풀로 역전*. 드롭 슬롯 수·확률은 그대로 두고
+  //   각 슬롯의 카드 정체만 폼 풀에서 무작위 추첨(해제 카드는 보상에서 제외 — 시작 덱에 이미 있음).
+  //   원복(미변신) 시 이 분기를 타지 않아 평소 일반 풀(form 제외)로 복귀 → 누출 0.
+  const formActive = isFormPoolActive();
+  const formPool = formActive ? activeFormCardPool().filter((c) => c.id !== RELEASE_CARD_ID) : [];
   for (const cd of drop.cardDrops ?? []) {
     if (rng() < cd.chance) {
+      if (formActive) {
+        if (formPool.length > 0) passed.push({ card: formPool[Math.floor(rng() * formPool.length)] });
+        continue;
+      }
       const card = allCards.get(cd.cardId);
       if (card) passed.push({ card });
     }

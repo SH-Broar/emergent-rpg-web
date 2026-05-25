@@ -13,5 +13,7 @@ mp = 10
 attack = 6
 defense = 2
 vigor = 10
-starting_deck = c-fox-bite, c-fox-bite, c-fox-foxfire, c-fox-charm, c-fox-illusion, c-fox-illusion, c-fox-nine-tails, c-fox-dash, c-fox-trick, c-release-change, c-release-change
-deck_size = 11
+# Item 37-③ — 변신 진입 시 강한 완결 폼 덱(~13장). 컨셉 기둥 골고루:
+#   여우불/화상 · 환영(skip/slow) · 홀림(디버프) · 꼬리(성장) · 변덕 + 해제 카드(원복 보장).
+starting_deck = c-fox-bite, c-fox-foxfire, c-fox-pyre, c-fox-charm, c-fox-illusion, c-fox-veil, c-fox-mirage, c-fox-nine-tails, c-fox-tailswipe, c-fox-emberburst, c-fox-dash, c-fox-trickery, c-release-change
+deck_size = 13

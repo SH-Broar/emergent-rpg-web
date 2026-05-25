@@ -1,8 +1,17 @@
 # Transform Forms 변신(체인지/TSF) 폼 전용 카드. (Stage 5)
-# source = form → 상점/공방/보상 등 모든 풀에서 제외. 변신 중에만 덱에 등장.
+# source = form → 상점/공방/보상 등 모든 풀에서 *기본* 제외. 변신 중에만 덱에 등장.
 # 해제 카드(release-transform)를 쓰면 원래 종족·덱으로 복귀. 안 풀고 이기면 변신이 런에 지속.
+#
+# 여우 폼(구미호) = Item 37-③ 확장. source=form 이되 *강한 완결 종족급*.
+#   - 식별: id 접두 c-fox-* (+ 해제 카드 c-release-change). 변신 중에만 풀 전환(combat-rewards/shop/workshop).
+#   - 변신 진입 시 강한 폼 덱(race-form-fox), 변신 중 카드 보상이 여우 풀에서 제시 → 빌드 가능.
+#   - baseline 예외(강하게, 도박 페이오프). 적 apply-status는 실효만(vulnerable/weakness/frail/poison/burn).
+#   - 컨셉 기둥: 여우불(fire/burn) · 환영(skip/slow) · 홀림(디버프+스케일) · 꼬리(성장) · 변덕(random/amp).
+# 신규 핸들러 없음 — 기존 53효과 재사용.
 
-# ===== 여우 폼 (구미호) =====
+# ============================================================
+# 여우 폼 (구미호) — 기존 시작 시그니처 (강화)
+# ============================================================
 
 [card.c-fox-bite]
 name = 여우 송곳니
@@ -11,8 +20,19 @@ source = form
 element = earth
 cost = 1
 trigger = manual
-effects = damage:9:enemy
+effects = damage:11:enemy
+upgrade_to = c-fox-bite-plus
 flavor = 날카로운 송곳니가 허공을 가른다.
+
+[card.c-fox-bite-plus]
+name = 여우 송곳니+
+rank = common
+source = form
+element = earth
+cost = 1
+trigger = manual
+effects = damage:15:enemy
+flavor = 한 입에 더 깊이 문다.
 
 [card.c-fox-foxfire]
 name = 여우불
@@ -21,8 +41,19 @@ source = form
 element = fire
 cost = 1
 trigger = manual
-effects = damage:7:enemy, apply-status:5:enemy:burn
+effects = damage:8:enemy, apply-status:5:enemy:burn
+upgrade_to = c-fox-foxfire-plus
 flavor = 푸른 불꽃이 살갗을 핥는다.
+
+[card.c-fox-foxfire-plus]
+name = 여우불+
+rank = common
+source = form
+element = fire
+cost = 1
+trigger = manual
+effects = damage:10:enemy, apply-status:7:enemy:burn
+flavor = 핥은 자리가 더 오래 타들어 간다.
 
 [card.c-fox-charm]
 name = 홀림
@@ -31,8 +62,19 @@ source = form
 element = dark
 cost = 1
 trigger = manual
-effects = apply-status:2:enemy:weakness
+effects = apply-status:3:enemy:vulnerable, apply-status:3:enemy:weakness
+upgrade_to = c-fox-charm-plus
 flavor = 눈을 마주치면, 힘이 빠진다.
+
+[card.c-fox-charm-plus]
+name = 홀림+
+rank = common
+source = form
+element = dark
+cost = 1
+trigger = manual
+effects = apply-status:4:enemy:vulnerable, apply-status:4:enemy:weakness
+flavor = 더 깊이 들여다본다. 빈틈도, 힘 빠짐도 더 오래.
 
 [card.c-fox-illusion]
 name = 환영 너울
@@ -41,18 +83,40 @@ source = form
 element = water
 cost = 1
 trigger = manual
-effects = block:7:self
+effects = block:11:self
+upgrade_to = c-fox-illusion-plus
 flavor = 여럿으로 흩어진 그림자.
+
+[card.c-fox-illusion-plus]
+name = 환영 너울+
+rank = common
+source = form
+element = water
+cost = 1
+trigger = manual
+effects = block:15:self
+flavor = 그림자가 더 두껍게 겹쳐 선다.
 
 [card.c-fox-nine-tails]
 name = 아홉 꼬리
-rank = rare
+rank = legendary
 source = form
 element = wind
 cost = 2
 trigger = manual
-effects = damage-per-hand:2:enemy
-flavor = 펼쳐진 꼬리만큼 매서워진다.
+effects = growing-damage:10
+upgrade_to = c-fox-nine-tails-plus
+flavor = 펼쳐진 꼬리만큼 매서워진다. 쓸수록 한 자락씩 깊어진다.
+
+[card.c-fox-nine-tails-plus]
+name = 아홉 꼬리+
+rank = legendary
+source = form
+element = wind
+cost = 2
+trigger = manual
+effects = growing-damage:14
+flavor = 꼬리가 한 자락 더 자라, 휘두를 때마다 더 깊이 든다.
 
 [card.c-fox-dash]
 name = 여우걸음
@@ -61,8 +125,19 @@ source = form
 element = wind
 cost = 0
 trigger = manual
-effects = draw:1:self
+effects = damage:5:enemy, draw:1:self
+upgrade_to = c-fox-dash-plus
 flavor = 발끝이 땅을 거의 딛지 않는다.
+
+[card.c-fox-dash-plus]
+name = 여우걸음+
+rank = common
+source = form
+element = wind
+cost = 0
+trigger = manual
+effects = damage:8:enemy, draw:1:self
+flavor = 더 가볍게 스치고, 한 장을 채간다.
 
 [card.c-fox-trick]
 name = 속임수
@@ -71,10 +146,850 @@ source = form
 element = dark
 cost = 1
 trigger = manual
-effects = apply-status:2:enemy:vulnerable
+effects = damage:6:enemy, apply-status:3:enemy:vulnerable
+upgrade_to = c-fox-trick-plus
 flavor = 빈틈을 만들어 낸다.
 
-# ===== 해제 카드 (모든 폼 공용 컨셉, 폼 덱에 섞임) =====
+[card.c-fox-trick-plus]
+name = 속임수+
+rank = common
+source = form
+element = dark
+cost = 1
+trigger = manual
+effects = damage:9:enemy, apply-status:4:enemy:vulnerable
+flavor = 더 그럴듯한 거짓이 더 큰 빈틈을 연다.
+
+# ============================================================
+# 여우 폼 확장 (Item 37-③) — 시그니처 (스펙 명시)
+# ============================================================
+
+[card.c-fox-wisp]
+name = 도깨비불
+rank = common
+source = form
+element = fire
+cost = 1
+trigger = manual
+effects = apply-status:7:enemy:burn
+upgrade_to = c-fox-wisp-plus
+flavor = 떠도는 불씨 하나가 살갗에 옮겨붙는다.
+
+[card.c-fox-wisp-plus]
+name = 도깨비불+
+rank = common
+source = form
+element = fire
+cost = 1
+trigger = manual
+effects = apply-status:10:enemy:burn
+flavor = 옮겨붙은 불씨가 더 오래 타들어 간다.
+
+[card.c-fox-mirage]
+name = 환영
+rank = rare
+source = form
+element = water
+cost = 1
+trigger = manual
+effects = skip-enemy-action:1
+upgrade_to = c-fox-mirage-plus
+flavor = 허상을 세워 상대의 한 수를 헛치게 한다.
+
+[card.c-fox-mirage-plus]
+name = 환영+
+rank = rare
+source = form
+element = water
+cost = 1
+trigger = manual
+effects = skip-enemy-action:1, block:8:self
+flavor = 허상 뒤로 몸을 숨긴다. 한 수를 흘리고도 자리를 지킨다.
+
+[card.c-fox-ninetails]
+name = 구미호의 춤
+rank = legendary
+source = form
+element = wind
+cost = 2
+trigger = manual
+effects = growing-damage:12
+upgrade_to = c-fox-ninetails-plus
+flavor = 아홉 자락이 한꺼번에 일렁인다. 출 때마다 한 자락씩 더 매서워진다.
+
+[card.c-fox-ninetails-plus]
+name = 구미호의 춤+
+rank = legendary
+source = form
+element = wind
+cost = 2
+trigger = manual
+effects = growing-damage:16
+flavor = 일렁이는 폭이 넓어졌다. 한 자락이 더 깊이 휘감는다.
+
+[card.c-fox-trickery]
+name = 변덕
+rank = rare
+source = form
+element = dark
+cost = 1
+trigger = manual
+effects = random-effect
+upgrade_to = c-fox-trickery-plus
+flavor = 무엇이 튀어나올지는 여우도 모른다.
+
+[card.c-fox-trickery-plus]
+name = 변덕+
+rank = rare
+source = form
+element = dark
+cost = 0
+trigger = manual
+effects = random-effect
+flavor = 손짓 한 번에 무엇이든 일어난다. 거저.
+
+[card.c-fox-emberburst]
+name = 불꽃 작렬
+rank = rare
+source = form
+element = fire
+cost = 2
+trigger = manual
+effects = damage:8:enemy, damage-per-debuff:4:enemy
+upgrade_to = c-fox-emberburst-plus
+flavor = 새겨 둔 홀림과 화상마다 불길이 한 줄기씩 더 솟는다.
+
+[card.c-fox-emberburst-plus]
+name = 불꽃 작렬+
+rank = rare
+source = form
+element = fire
+cost = 2
+trigger = manual
+effects = damage:8:enemy, damage-per-debuff:6:enemy
+flavor = 솟는 불길이 한 자락마다 더 높이 치솟는다.
+
+[card.c-fox-veil]
+name = 여우 안개
+rank = common
+source = form
+element = water
+cost = 1
+trigger = manual
+effects = slow-enemy:2, block:10:self
+upgrade_to = c-fox-veil-plus
+flavor = 자욱이 깔린 안개가 상대의 발을 늦추고 내 자리를 가린다.
+
+[card.c-fox-veil-plus]
+name = 여우 안개+
+rank = common
+source = form
+element = water
+cost = 1
+trigger = manual
+effects = slow-enemy:3, block:14:self
+flavor = 안개가 더 짙다. 발은 더 늦고, 가린 자리는 더 두껍다.
+
+[card.c-fox-devour]
+name = 잠식의 불
+rank = rare
+source = form
+element = fire
+cost = 2
+trigger = manual
+effects = consume-vulnerable:6:enemy, damage:8:enemy
+upgrade_to = c-fox-devour-plus
+flavor = 벌어진 빈틈을 통째로 삼켜, 그만큼 불길로 되돌려 준다.
+
+[card.c-fox-devour-plus]
+name = 잠식의 불+
+rank = rare
+source = form
+element = fire
+cost = 2
+trigger = manual
+effects = consume-vulnerable:9:enemy, damage:8:enemy
+flavor = 삼킨 빈틈이 더 무겁게 되돌아온다.
+
+[card.c-fox-frenzy]
+name = 광란
+rank = legendary
+source = form
+element = dark
+cost = 2
+trigger = manual
+effects = this-turn-amp:50
+upgrade_to = c-fox-frenzy-plus
+flavor = 이번 한 호흡, 모든 것이 미쳐 날뛴다.
+
+[card.c-fox-frenzy-plus]
+name = 광란+
+rank = legendary
+source = form
+element = dark
+cost = 2
+trigger = manual
+effects = this-turn-amp:70
+flavor = 날뛰는 폭이 한계를 모른다.
+
+# ============================================================
+# 여우 폼 확장 — 필러: 여우불 / 화상
+# ============================================================
+
+[card.c-fox-spark]
+name = 불씨 흩기
+rank = basic
+source = form
+element = fire
+cost = 0
+trigger = manual
+effects = damage:3:enemy, apply-status:3:enemy:burn
+upgrade_to = c-fox-spark-plus
+flavor = 가벼운 손짓에 불씨 한 점이 옮겨 간다.
+
+[card.c-fox-spark-plus]
+name = 불씨 흩기+
+rank = basic
+source = form
+element = fire
+cost = 0
+trigger = manual
+effects = damage:5:enemy, apply-status:4:enemy:burn
+flavor = 흩는 불씨가 더 매섭게 옮겨붙는다.
+
+[card.c-fox-pyre]
+name = 화톳불
+rank = common
+source = form
+element = fire
+cost = 1
+trigger = manual
+effects = damage:10:enemy, apply-status:4:enemy:burn
+upgrade_to = c-fox-pyre-plus
+flavor = 한 아름 불을 안겨 준다. 치고도 오래 탄다.
+
+[card.c-fox-pyre-plus]
+name = 화톳불+
+rank = common
+source = form
+element = fire
+cost = 1
+trigger = manual
+effects = damage:13:enemy, apply-status:6:enemy:burn
+flavor = 안긴 불이 더 크다. 더 깊이, 더 오래.
+
+[card.c-fox-inferno]
+name = 화염 폭주
+rank = rare
+source = form
+element = fire
+cost = 2
+trigger = manual
+effects = damage:14:enemy, apply-status:6:enemy:burn
+upgrade_to = c-fox-inferno-plus
+flavor = 푸른 불길이 한꺼번에 터져 나온다.
+
+[card.c-fox-inferno-plus]
+name = 화염 폭주+
+rank = rare
+source = form
+element = fire
+cost = 2
+trigger = manual
+effects = damage:18:enemy, apply-status:9:enemy:burn
+flavor = 터지는 불길이 더 넓게, 더 오래 번진다.
+
+[card.c-fox-emberstoke]
+name = 불씨 키우기
+rank = common
+source = form
+element = fire
+cost = 1
+trigger = manual
+effects = amplify-debuff:5:enemy
+upgrade_to = c-fox-emberstoke-plus
+flavor = 이미 붙은 불을 부채질해 두 배로 키운다.
+
+[card.c-fox-emberstoke-plus]
+name = 불씨 키우기+
+rank = common
+source = form
+element = fire
+cost = 1
+trigger = manual
+effects = amplify-debuff:8:enemy
+flavor = 부채질이 더 거세, 키운 불이 더 깊이 든다.
+
+[card.c-fox-pyreburst]
+name = 들불
+rank = rare
+source = form
+element = fire
+cost = 2
+trigger = manual
+effects = damage-per-debuff:6:enemy
+upgrade_to = c-fox-pyreburst-plus
+flavor = 새겨 둔 한 자락마다 들불이 한 줄기씩 솟구친다.
+
+[card.c-fox-pyreburst-plus]
+name = 들불+
+rank = rare
+source = form
+element = fire
+cost = 2
+trigger = manual
+effects = damage-per-debuff:8:enemy
+flavor = 솟구치는 줄기가 더 굵다.
+
+# ============================================================
+# 여우 폼 확장 — 필러: 환영 (skip / slow / 방어)
+# ============================================================
+
+[card.c-fox-blur]
+name = 흐릿한 자취
+rank = common
+source = form
+element = water
+cost = 1
+trigger = manual
+effects = slow-enemy:2, draw:1:self
+upgrade_to = c-fox-blur-plus
+flavor = 자취를 흐려 상대의 발을 늦추고, 그 틈에 한 장을 줍는다.
+
+[card.c-fox-blur-plus]
+name = 흐릿한 자취+
+rank = common
+source = form
+element = water
+cost = 1
+trigger = manual
+effects = slow-enemy:3, draw:1:self
+flavor = 더 흐려진 자취. 발은 더 늦고, 손은 한결 가볍다.
+
+[card.c-fox-phantasm]
+name = 허깨비
+rank = rare
+source = form
+element = water
+cost = 2
+trigger = manual
+effects = skip-enemy-action:1, draw:1:self
+upgrade_to = c-fox-phantasm-plus
+flavor = 가짜 하나를 세워 두면, 상대는 그쪽으로 한 수를 헛친다.
+
+[card.c-fox-phantasm-plus]
+name = 허깨비+
+rank = rare
+source = form
+element = water
+cost = 1
+trigger = manual
+effects = skip-enemy-action:1, draw:1:self
+flavor = 더 적은 힘으로 더 그럴듯한 가짜를 세운다.
+
+[card.c-fox-fogwall]
+name = 안개 장막
+rank = common
+source = form
+element = water
+cost = 1
+trigger = manual
+effects = block:13:self
+upgrade_to = c-fox-fogwall-plus
+flavor = 안개를 끌어모아 두꺼운 장막을 친다.
+
+[card.c-fox-fogwall-plus]
+name = 안개 장막+
+rank = common
+source = form
+element = water
+cost = 1
+trigger = manual
+effects = block:18:self
+flavor = 끌어모은 안개가 더 짙다.
+
+[card.c-fox-dreamhaze]
+name = 몽환
+rank = rare
+source = form
+element = water
+cost = 1
+trigger = manual
+effects = slow-enemy:3, block:8:self
+upgrade_to = c-fox-dreamhaze-plus
+flavor = 꿈결 같은 안개에 상대의 손이 한 박 느려진다.
+
+[card.c-fox-dreamhaze-plus]
+name = 몽환+
+rank = rare
+source = form
+element = water
+cost = 1
+trigger = manual
+effects = slow-enemy:4, block:12:self
+flavor = 꿈이 더 깊다. 손은 더 느리고, 자리는 더 단단하다.
+
+# ============================================================
+# 여우 폼 확장 — 필러: 홀림 (디버프 + 스케일)
+# ============================================================
+
+[card.c-fox-gaze]
+name = 매혹의 눈빛
+rank = common
+source = form
+element = dark
+cost = 1
+trigger = manual
+effects = apply-status:4:enemy:weakness
+upgrade_to = c-fox-gaze-plus
+flavor = 한 번 마주친 눈빛에 힘이 풀린다.
+
+[card.c-fox-gaze-plus]
+name = 매혹의 눈빛+
+rank = common
+source = form
+element = dark
+cost = 1
+trigger = manual
+effects = apply-status:6:enemy:weakness
+flavor = 풀린 힘이 더 오래 돌아오지 않는다.
+
+[card.c-fox-beguile]
+name = 현혹
+rank = common
+source = form
+element = dark
+cost = 1
+trigger = manual
+effects = apply-status:4:enemy:vulnerable
+upgrade_to = c-fox-beguile-plus
+flavor = 정신을 흩어 빈틈을 크게 벌려 둔다.
+
+[card.c-fox-beguile-plus]
+name = 현혹+
+rank = common
+source = form
+element = dark
+cost = 1
+trigger = manual
+effects = apply-status:6:enemy:vulnerable
+flavor = 더 깊이 흩는다. 빈틈이 한층 넓다.
+
+[card.c-fox-unravel]
+name = 결박 풀기
+rank = common
+source = form
+element = dark
+cost = 1
+trigger = manual
+effects = apply-status:4:enemy:frail
+upgrade_to = c-fox-unravel-plus
+flavor = 단단히 여민 방어를 한 올씩 풀어헤친다.
+
+[card.c-fox-unravel-plus]
+name = 결박 풀기+
+rank = common
+source = form
+element = dark
+cost = 1
+trigger = manual
+effects = apply-status:6:enemy:frail
+flavor = 풀어헤친 방어가 더 오래 헐겁다.
+
+[card.c-fox-enthrall]
+name = 농락
+rank = rare
+source = form
+element = dark
+cost = 1
+trigger = manual
+effects = apply-status:2:enemy:vulnerable, apply-status:2:enemy:weakness, apply-status:2:enemy:frail
+upgrade_to = c-fox-enthrall-plus
+flavor = 빈틈을 벌리고 힘을 빼고 방어를 흩는다. 한 손에 세 가지 거짓을 건다.
+
+[card.c-fox-enthrall-plus]
+name = 농락+
+rank = rare
+source = form
+element = dark
+cost = 1
+trigger = manual
+effects = apply-status:3:enemy:vulnerable, apply-status:3:enemy:weakness, apply-status:3:enemy:frail
+flavor = 거는 거짓이 모두 더 짙다.
+
+[card.c-fox-reckoning]
+name = 홀림 거두기
+rank = rare
+source = form
+element = dark
+cost = 2
+trigger = manual
+effects = damage-per-debuff:5:enemy, draw:1:self
+upgrade_to = c-fox-reckoning-plus
+flavor = 걸어 둔 거짓을 한꺼번에 거두어, 그 무게만큼 내리친다.
+
+[card.c-fox-reckoning-plus]
+name = 홀림 거두기+
+rank = rare
+source = form
+element = dark
+cost = 2
+trigger = manual
+effects = damage-per-debuff:7:enemy, draw:1:self
+flavor = 거두는 무게가 더 무겁다.
+
+[card.c-fox-collect]
+name = 빈틈 거두기
+rank = rare
+source = form
+element = dark
+cost = 1
+trigger = manual
+effects = consume-vulnerable:7:enemy
+upgrade_to = c-fox-collect-plus
+flavor = 벌려 둔 빈틈을 통째로 거둬 한 번에 내리꽂는다.
+
+[card.c-fox-collect-plus]
+name = 빈틈 거두기+
+rank = rare
+source = form
+element = dark
+cost = 1
+trigger = manual
+effects = consume-vulnerable:10:enemy
+flavor = 거둔 빈틈이 더 무겁게 돌아온다.
+
+# ============================================================
+# 여우 폼 확장 — 필러: 꼬리 (성장 / 길게 싸울수록)
+# ============================================================
+
+[card.c-fox-tailswipe]
+name = 꼬리치기
+rank = common
+source = form
+element = wind
+cost = 1
+trigger = manual
+effects = growing-damage:7
+upgrade_to = c-fox-tailswipe-plus
+flavor = 한 자락을 휘두른다. 휘두를 때마다 한 뼘씩 더 멀리 닿는다.
+
+[card.c-fox-tailswipe-plus]
+name = 꼬리치기+
+rank = common
+source = form
+element = wind
+cost = 1
+trigger = manual
+effects = growing-damage:10
+flavor = 휘두르는 폭이 처음부터 더 넓다.
+
+[card.c-fox-bloomtail]
+name = 꼬리 피우기
+rank = rare
+source = form
+element = wind
+cost = 1
+trigger = manual
+effects = bloom-strength:3
+upgrade_to = c-fox-bloomtail-plus
+flavor = 꼬리를 한 자락 피워 둔다. 이번 싸움 내내 매 호흡마다 더 강해진다.
+
+[card.c-fox-bloomtail-plus]
+name = 꼬리 피우기+
+rank = rare
+source = form
+element = wind
+cost = 1
+trigger = manual
+effects = bloom-strength:4
+flavor = 피운 꼬리가 더 무성하다.
+
+[card.c-fox-cascade]
+name = 꼬리 연무
+rank = rare
+source = form
+element = wind
+cost = 1
+trigger = manual
+effects = damage-per-cards-played:5:enemy
+upgrade_to = c-fox-cascade-plus
+flavor = 앞서 놀린 손이 많을수록, 마지막 꼬리가 그만큼 깊이 휘감는다.
+
+[card.c-fox-cascade-plus]
+name = 꼬리 연무+
+rank = rare
+source = form
+element = wind
+cost = 1
+trigger = manual
+effects = damage-per-cards-played:7:enemy
+flavor = 휘감는 꼬리가 한층 무겁다.
+
+[card.c-fox-ninefold]
+name = 아홉 겹
+rank = legendary
+source = form
+element = wind
+cost = 2
+trigger = manual
+effects = damage-per-cards-played:8:enemy, draw:1:self
+upgrade_to = c-fox-ninefold-plus
+flavor = 아홉 자락을 겹쳐 한 번에 떨군다. 쌓아 온 손이 길수록 무겁다.
+
+[card.c-fox-ninefold-plus]
+name = 아홉 겹+
+rank = legendary
+source = form
+element = wind
+cost = 2
+trigger = manual
+effects = damage-per-cards-played:11:enemy, draw:1:self
+flavor = 겹친 아홉 자락이 더 깊이 떨어진다.
+
+[card.c-fox-eternaltail]
+name = 끝없는 꼬리
+rank = legendary
+source = form
+element = wind
+cost = 2
+trigger = manual
+effects = growing-damage:14, bloom-strength:2
+upgrade_to = c-fox-eternaltail-plus
+flavor = 자라기를 멈추지 않는 꼬리. 길어질수록, 오래 끌수록 손쓸 수 없어진다.
+
+[card.c-fox-eternaltail-plus]
+name = 끝없는 꼬리+
+rank = legendary
+source = form
+element = wind
+cost = 2
+trigger = manual
+effects = growing-damage:18, bloom-strength:3
+flavor = 멈추지 않는 자람이 더 거세다.
+
+# ============================================================
+# 여우 폼 확장 — 필러: 변덕 (도박 / 증폭)
+# ============================================================
+
+[card.c-fox-whim]
+name = 변덕 한 줌
+rank = common
+source = form
+element = dark
+cost = 0
+trigger = manual
+effects = random-effect
+upgrade_to = c-fox-whim-plus
+flavor = 거저 한 줌 흩뿌린다. 무엇이 될지는 그때그때.
+
+[card.c-fox-whim-plus]
+name = 변덕 한 줌+
+rank = common
+source = form
+element = dark
+cost = 0
+trigger = manual
+effects = random-effect, draw:1:self
+flavor = 흩뿌리고도 한 장이 손에 남는다.
+
+[card.c-fox-fervor]
+name = 광휘
+rank = rare
+source = form
+element = light
+cost = 1
+trigger = manual
+effects = this-turn-amp:30, damage:6:enemy
+upgrade_to = c-fox-fervor-plus
+flavor = 이번 한 호흡만큼은 모든 손이 더 무겁게 떨어진다.
+
+[card.c-fox-fervor-plus]
+name = 광휘+
+rank = rare
+source = form
+element = light
+cost = 1
+trigger = manual
+effects = this-turn-amp:45, damage:6:enemy
+flavor = 무거워지는 폭이 한층 거세다.
+
+[card.c-fox-gamble]
+name = 도박수
+rank = rare
+source = form
+element = dark
+cost = 1
+trigger = manual
+effects = random-effect, apply-status:2:enemy:vulnerable
+upgrade_to = c-fox-gamble-plus
+flavor = 무엇이 나오든, 벌려 둔 빈틈으로 떨어진다.
+
+[card.c-fox-gamble-plus]
+name = 도박수+
+rank = rare
+source = form
+element = dark
+cost = 1
+trigger = manual
+effects = random-effect, apply-status:3:enemy:vulnerable
+flavor = 벌려 둔 빈틈이 더 넓다.
+
+[card.c-fox-rampage]
+name = 난동
+rank = legendary
+source = form
+element = fire
+cost = 3
+trigger = manual
+effects = this-turn-amp:60, damage:10:enemy, apply-status:5:enemy:burn
+upgrade_to = c-fox-rampage-plus
+flavor = 한 호흡에 모든 것을 쏟아붓는다. 치고, 태우고, 미쳐 날뛰며.
+
+[card.c-fox-rampage-plus]
+name = 난동+
+rank = legendary
+source = form
+element = fire
+cost = 3
+trigger = manual
+effects = this-turn-amp:80, damage:14:enemy, apply-status:7:enemy:burn
+flavor = 쏟아붓는 폭이 한계를 넘는다.
+
+# ============================================================
+# 여우 폼 확장 — 필러: 회전 / 마무리
+# ============================================================
+
+[card.c-fox-pounce]
+name = 덮치기
+rank = common
+source = form
+element = earth
+cost = 1
+trigger = manual
+effects = damage:14:enemy
+upgrade_to = c-fox-pounce-plus
+flavor = 한 번에 거리를 좁혀 내리덮친다.
+
+[card.c-fox-pounce-plus]
+name = 덮치기+
+rank = common
+source = form
+element = earth
+cost = 1
+trigger = manual
+effects = damage:18:enemy
+flavor = 좁히는 거리가 더 빠르고, 내리덮침이 더 무겁다.
+
+[card.c-fox-maul]
+name = 물어뜯기
+rank = rare
+source = form
+element = earth
+cost = 2
+trigger = manual
+effects = damage:22:enemy
+upgrade_to = c-fox-maul-plus
+flavor = 한 번 문 자리를 놓지 않고 끝까지 물어뜯는다.
+
+[card.c-fox-maul-plus]
+name = 물어뜯기+
+rank = rare
+source = form
+element = earth
+cost = 2
+trigger = manual
+effects = damage:28:enemy
+flavor = 물어뜯는 힘이 더 깊다.
+
+[card.c-fox-prowl]
+name = 살금걸음
+rank = basic
+source = form
+element = wind
+cost = 0
+trigger = manual
+effects = draw:1:self
+upgrade_to = c-fox-prowl-plus
+flavor = 소리 없이 한 발, 다음 수를 살핀다.
+
+[card.c-fox-prowl-plus]
+name = 살금걸음+
+rank = basic
+source = form
+element = wind
+cost = 0
+trigger = manual
+effects = draw:2:self
+flavor = 소리 없는 걸음이 두 수를 미리 짚는다.
+
+[card.c-fox-lick]
+name = 상처 핥기
+rank = common
+source = form
+element = light
+cost = 1
+trigger = manual
+effects = heal:8:self, block:5:self
+upgrade_to = c-fox-lick-plus
+flavor = 제 상처를 핥아 가라앉히고 자리를 다잡는다.
+
+[card.c-fox-lick-plus]
+name = 상처 핥기+
+rank = common
+source = form
+element = light
+cost = 1
+trigger = manual
+effects = heal:12:self, block:7:self
+flavor = 가라앉는 상처가 더 빨리 아문다.
+
+[card.c-fox-foxguard]
+name = 여우 도사림
+rank = common
+source = form
+element = earth
+cost = 1
+trigger = manual
+effects = block:9:self, apply-status:2:enemy:weakness
+upgrade_to = c-fox-foxguard-plus
+flavor = 도사려 앉아 빈틈 없이 막으며, 상대의 힘을 한 줌 빼낸다.
+
+[card.c-fox-foxguard-plus]
+name = 여우 도사림+
+rank = common
+source = form
+element = earth
+cost = 1
+trigger = manual
+effects = block:13:self, apply-status:3:enemy:weakness
+flavor = 더 단단히 도사린다. 빼내는 힘도 더 깊다.
+
+[card.c-fox-finalflame]
+name = 마지막 불꽃
+rank = legendary
+source = form
+element = fire
+cost = 3
+trigger = manual
+effects = damage:20:enemy, apply-status:8:enemy:burn, consume-vulnerable:6:enemy
+upgrade_to = c-fox-finalflame-plus
+flavor = 남은 불을 한꺼번에 토해 낸다. 치고, 태우고, 벌려 둔 빈틈까지 삼켜.
+
+[card.c-fox-finalflame-plus]
+name = 마지막 불꽃+
+rank = legendary
+source = form
+element = fire
+cost = 3
+trigger = manual
+effects = damage:26:enemy, apply-status:11:enemy:burn, consume-vulnerable:9:enemy
+flavor = 토해 내는 불이 모든 것을 태운다.
+
+# ============================================================
+# 해제 카드 (모든 폼 공용 컨셉, 폼 덱에 섞임)
+#   여우 풀에도 항상 포함되어 원복 선택지를 보장한다.
+# ============================================================
 
 [card.c-release-change]
 name = 본모습

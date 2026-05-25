@@ -17,6 +17,7 @@ import { availableCards } from '@/systems/unlocks';
 import { rng } from '@/systems/rng';
 import { upgradeCostMul, isNoRemoval } from '@/systems/chaos';
 import { isPossessionLocked } from '@/systems/possession';
+import { isFormPoolActive, activeFormCardPool, RELEASE_CARD_ID } from '@/systems/form-pool';
 
 // 가격·제작비·슬롯 수는 config/balance.txt 에서 로드 (useDataStore().balance). 누락 시 DEFAULT_BALANCE.
 // 희귀도 사다리 재료 id (Item Economy). 'i-time-answer'(전설)는 RARE_MATERIAL_ID_ACT1로 호환 유지.
@@ -141,6 +142,14 @@ function getForgePool(): Card[] {
  * 매칭 카드가 너무 적으면(< FORGE_NUM_OFFERS) 전체 풀로 폴백해 공방이 비지 않게 한다.
  */
 function getRegionForgePool(regionId: string | undefined): Card[] {
+  // Item 37-③ 여우 폼 — 변신 중이면 공방 제작 풀을 폼 풀로 역전(해제 카드 제외, rare+ 제공).
+  //   원복(미변신) 시 이 분기를 타지 않아 일반 풀(form 제외)로 복귀 → 누출 0.
+  if (isFormPoolActive()) {
+    const formPool = activeFormCardPool().filter(
+      (c) => c.id !== RELEASE_CARD_ID && (c.rank === 'rare' || c.rank === 'legendary'),
+    );
+    if (formPool.length > 0) return formPool;
+  }
   const all = getForgePool();
   if (!regionId) return all;
   const data = useDataStore();

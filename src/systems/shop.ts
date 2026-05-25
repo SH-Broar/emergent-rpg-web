@@ -18,6 +18,7 @@ import { getCraftingDiscount, acquireRelic } from '@/systems/relic';
 import { availableCards, availableRelics } from '@/systems/unlocks';
 import { rng } from '@/systems/rng';
 import { shopPriceMul, isNoRemoval, isNoShop } from '@/systems/chaos';
+import { isFormPoolActive, activeFormCardPool } from '@/systems/form-pool';
 
 // 가격·슬롯은 config/balance.txt 에서 로드 (useDataStore().balance). 누락 시 DEFAULT_BALANCE.
 /** 카드 기본 가격 (골드) — 등급별. */
@@ -70,6 +71,12 @@ function pickRandom<T>(arr: T[], n: number): T[] {
  * 전설 카드(legendary)는 *권역 공방 전용 제작*이므로 상점에서 팔지 않는다(화이트리스트, 2026-05).
  */
 function getShopCardPool(): Card[] {
+  // Item 37-③ 여우 폼 — 변신 중이면 상점 카드 풀을 폼 풀로 역전(해제 카드 포함, 전설도 노출).
+  //   원복(미변신) 시 이 분기를 타지 않아 일반 풀(form 제외)로 복귀 → 누출 0.
+  if (isFormPoolActive()) {
+    const formPool = activeFormCardPool();
+    if (formPool.length > 0) return formPool;
+  }
   const available = availableCards(); // 잠긴(미해금) 카드 제외
   const pool: Card[] = [];
   for (const c of available) {
