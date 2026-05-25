@@ -32,6 +32,7 @@ import { useCombatFx, CARD_PLAY_DELAY } from '@/composables/useCombatFx';
 import { useEnemyTurn } from '@/composables/useEnemyTurn';
 import { useCombatKeys } from '@/composables/useCombatKeys';
 import StruggleMinigame from '@/components/StruggleMinigame.vue';
+import CombatHand from '@/components/CombatHand.vue';
 import type { Card, CardEffect, Combatant, Item, Monster } from '@/data/schemas';
 
 const router = useRouter();
@@ -488,54 +489,22 @@ void ui;
       </button>
     </div>
 
-    <section class="hand">
-      <!-- 은폐(obscure) 시 카드 뒷면 — 무엇인지 모른 채 위치로만 사용 가능 -->
-      <template v-if="obscured">
-        <div
-          v-for="(card, i) in combat.hand"
-          :key="`fd-${card.instanceId ?? card.id}-${i}`"
-          class="card card--facedown"
-          :class="{ 'card--disabled': !canPlay(card) || enemyActing, 'card--playing': playingIndex === i }"
-          @click="!enemyActing && playingIndex === null && canPlay(card) && play(i)"
-        >
-          <div class="facedown__mark">?</div>
-          <div class="facedown__note">가려진 카드</div>
-        </div>
-      </template>
-
-      <template v-else>
-      <div
-        v-for="(card, i) in combat.hand"
-        :key="`${card.instanceId ?? card.id}-${i}`"
-        class="card"
-        :class="{ 'card--disabled': !canPlay(card) || enemyActing, 'card--locked': isLocked(card), 'card--junk': card.unplayable, 'card--playing': playingIndex === i }"
-        :style="{ borderColor: cardBorder(card) }"
-        v-tooltip.hold="cardDetailText(card)"
-        @click="!enemyActing && playingIndex === null && canPlay(card) && play(i)"
-      >
-        <div class="card__head">
-          <span class="card__cost" :class="{ 'card__cost--up': displayCost(card) > card.cost }">{{ displayCost(card) }}</span>
-          <span class="card__name">{{ card.name }}</span>
-          <span v-if="isLocked(card)" class="card__lock" title="묶여서 쓸 수 없다">🔒</span>
-          <span v-else class="card__rank" :style="{ color: cardBorder(card) }">{{ card.rank }}</span>
-        </div>
-        <div class="card__effects">
-          <span v-for="(e, ei) in card.effects" :key="ei" class="effect" v-tooltip.hold="cardEffectDescription(e)">
-            <span class="effect__label">{{ cardEffectKindLabel(e) }}</span>
-            <strong class="eff-val">{{ effectiveValue(e) || (e.value ?? '') }}</strong>
-            <span
-              v-if="statusDelta(e) !== 0"
-              class="eff-delta"
-              :class="statusDelta(e) > 0 ? 'eff-delta--up' : 'eff-delta--down'"
-            >
-              ({{ statusDelta(e) > 0 ? '+' : '' }}{{ statusDelta(e) }})
-            </span>
-          </span>
-        </div>
-        <p v-if="card.flavor" class="card__flavor">{{ card.flavor }}</p>
-      </div>
-      </template>
-    </section>
+    <CombatHand
+      :hand="combat.hand"
+      :enemy-acting="enemyActing"
+      :playing-index="playingIndex"
+      :obscured="obscured"
+      :can-play="canPlay"
+      :display-cost="displayCost"
+      :card-border="cardBorder"
+      :is-locked="isLocked"
+      :effective-value="effectiveValue"
+      :status-delta="statusDelta"
+      :effect-kind-label="cardEffectKindLabel"
+      :effect-description="cardEffectDescription"
+      :card-detail-text="cardDetailText"
+      @play="play"
+    />
 
     <footer class="pile-info">
       <div>드로우 {{ combat.drawPile.length }}</div>
@@ -694,83 +663,6 @@ void ui;
 .potion__name { font-weight: 600; font-size: 0.85rem; color: #f6e8b8; }
 .potion__eff { font-size: 0.72rem; color: #b6d8e0; }
 
-/* === 손패 — 트럼프 카드 비율(5:7). 기존보다 가로·세로 2배, 여러 줄로 줄바꿈 === */
-/* 카드 폭은 뷰포트 기반: 모바일에서도 충분히 크게(이전 대비 ×2), 데스크톱 상한 200px. */
-.hand {
-  --card-w: clamp(80px, 19vw, 168px); /* 살짝 축소(이전 92/24vw/200) */
-  --card-h: calc(var(--card-w) * 1.4); /* 5:7 ≈ ×1.4 */
-  display: flex;
-  flex-wrap: wrap;            /* 카드가 많으면 여러 줄로 */
-  gap: 0.6rem;
-  padding: 0.8rem 1rem 1.4rem;
-  align-items: flex-start;
-  align-content: flex-end;     /* 카드를 하단에 고정 — 처음부터 아래에(로그 등장 시 위로 점프 방지). */
-  justify-content: center;
-  /* 줄이 많아 넘치면 세로 스크롤(가로 스크롤 없음). */
-  overflow-x: hidden;
-  overflow-y: auto;
-  flex: 1;
-  min-height: calc(var(--card-h) + 1.2rem);
-  scrollbar-width: thin;
-}
-.card {
-  flex-shrink: 0;
-  width: var(--card-w);
-  height: var(--card-h);
-  padding: 0.5rem;
-  background: rgba(255,255,255,0.04);
-  border: 2px solid;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: transform 120ms ease, background 120ms ease, box-shadow 120ms ease;
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-  overflow: hidden;
-}
-.card:hover:not(.card--disabled) {
-  transform: translateY(-10px) scale(1.06);
-  background: rgba(255,255,255,0.08);
-  box-shadow: 0 8px 22px rgba(0,0,0,0.5);
-  z-index: 5;
-}
-.card--disabled { opacity: 0.4; cursor: not-allowed; }
-.card__head { display: flex; align-items: center; gap: 0.3rem; min-height: 1.6rem; }
-.card__cost {
-  flex-shrink: 0;
-  background: #c08eff; color: #0d0e14;
-  width: 1.6rem; height: 1.6rem;
-  display: inline-flex; align-items: center; justify-content: center;
-  border-radius: 50%; font-weight: 700; font-size: 0.95rem;
-}
-.card__name {
-  flex: 1; color: #f6e8b8; font-weight: 600; font-size: 0.9rem; line-height: 1.18;
-  overflow: hidden;
-  /* 카드가 커졌으니 잘라내지 말고 최대 2줄까지 표시. */
-  display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical;
-}
-.card__rank { display: none; } /* 테두리 색으로 등급 표현(공간 절약). */
-.card__effects { display: flex; flex-wrap: wrap; gap: 0.25rem; font-size: 0.82rem; align-content: flex-start; flex: 1; overflow: hidden; }
-.effect { background: rgba(0,0,0,0.4); padding: 0.15rem 0.42rem; border-radius: 5px; color: #b6b6c4; display: inline-flex; gap: 0.18rem; align-items: baseline; max-width: 100%; }
-.effect__label { white-space: normal; } /* 잘림 없이 전체 표시(드로우/방어 등). */
-.eff-val { color: #f6e8b8; font-weight: 700; }
-.eff-delta { font-size: 0.85em; font-weight: 700; }
-.eff-delta--up { color: #8effb8; }
-.eff-delta--down { color: #ff8e8e; }
-.eff-target { color: #888; }
-
-/* === 카드 사용 애니메이션: 번쩍(글로우/스케일업) → 위로 날아가며 페이드 === */
-.card--playing {
-  pointer-events: none;
-  animation: card-play 260ms ease-in forwards;
-  z-index: 20;
-}
-@keyframes card-play {
-  0%   { transform: translateY(0) scale(1); filter: brightness(1); box-shadow: 0 0 0 rgba(246,232,184,0); }
-  35%  { transform: translateY(-18px) scale(1.18); filter: brightness(2.2); box-shadow: 0 0 26px rgba(246,232,184,0.9); }
-  100% { transform: translateY(-90px) scale(0.7); filter: brightness(1.4); opacity: 0; }
-}
-
 /* === 전투원 영역 + 피격/플래시 + 플로팅 숫자 === */
 .combatant { position: relative; }
 .is-hit { animation: hit-shake 360ms ease; }
@@ -821,24 +713,12 @@ void ui;
   100% { opacity: 0; transform: translate(calc(-50% + (var(--drift) * 40px)), -52px) scale(1); }
 }
 
-/* 모션 감소 선호 — 흔들림/이동 최소화, 정보는 유지. */
-/* 모바일: 카드 텍스트가 카드 안에 들어오도록 폰트 축소 + 분위기(flavor) 숨김 + 카드 약간 확대.
-   효과를 다 못 보면 *카드를 길게 눌러* 전체 성능을 툴팁으로 볼 수 있다(v-tooltip). */
-@media (max-width: 640px) {
-  .hand { --card-w: clamp(92px, 25vw, 168px); }
-  .card__name { font-size: 0.78rem; }
-  .card__effects { font-size: 0.68rem; gap: 0.14rem; }
-  .effect { padding: 0.08rem 0.3rem; }
-  .card__flavor { display: none; }
-}
-
+/* 모션 감소 선호 — 흔들림/이동 최소화, 정보는 유지. (손패 카드 모션은 CombatHand가 자체 처리.) */
 @media (prefers-reduced-motion: reduce) {
-  .card--playing { animation: none; opacity: 0; }
   .is-hit { animation: none; }
   .enemy.is-hit::after, .player.is-hit::after { animation: none; opacity: 0; }
   .block--pulse { animation: none; }
   .float-num { animation: float-up-reduced 700ms ease-out forwards; }
-  .card:hover:not(.card--disabled) { transform: translateY(-4px); }
 }
 @keyframes float-up-reduced {
   0% { opacity: 0; }
@@ -868,8 +748,6 @@ void ui;
 .status[data-key="thorns"], .status[data-key="focus"], .status[data-key="resolve"] {
   color: #8ee9ff; border-color: rgba(142,233,255,0.4);
 }
-/* 작은 카드에선 flavor 숨김(상세는 툴팁/도감에서 유지). */
-.card__flavor { display: none; }
 
 /* === 구속/삼킴 (grapple) + 발버둥 === */
 .grapple {
@@ -888,18 +766,6 @@ void ui;
 }
 .struggle:hover:not(:disabled) { background: rgba(255,184,108,0.34); }
 .struggle:disabled { opacity: 0.4; cursor: not-allowed; }
-
-/* 잠긴 카드 / 잡카드 / 비용 상승 / 뒷면 */
-.card--locked { border-style: dashed !important; }
-.card__lock { font-size: 0.7rem; }
-.card--junk { background: rgba(120,90,90,0.18); }
-.card__cost--up { background: #ff8e8e; color: #160d0d; }
-.card--facedown {
-  align-items: center; justify-content: center; text-align: center;
-  border-color: #555 !important; background: repeating-linear-gradient(45deg, rgba(255,255,255,0.03), rgba(255,255,255,0.03) 8px, rgba(255,255,255,0.06) 8px, rgba(255,255,255,0.06) 16px);
-}
-.facedown__mark { font-size: 1.6rem; color: #8a8a99; font-weight: 800; }
-.facedown__note { font-size: 0.6rem; color: #6c6c7c; }
 
 /* 변신(체인지) 배너 */
 .transform-banner {

@@ -1,13 +1,13 @@
 <script setup lang="ts">
 /**
- * 채집 화면 — 미니게임으로 보상의 *질*을 정한다.
+ * 채집 화면 — 미니게임으로 보상의 질을 정한다.
  *
- * 흐름: 채집 노드 진입 → 3종 미니게임 중 랜덤 1종(run rng, 마운트 1회 고정) 플레이 →
- *   점수(0..1)로 보상 배수 + 점수 >= tier 임계면 후반 보너스. (performGather가 처리.)
+ * 흐름: 채집 노드 진입 -> 3종 미니게임 중 랜덤 1종(run rng, 마운트 1회 고정) 플레이 ->
+ *   점수(0..1)로 보상 배수 + 점수 >= 임계면 후반 보너스. (performGather가 처리.)
  * 노드당 1회(gatherDone). 하루 경과 시 노드 리프레시로 재개방.
  *
- * 난이도 = 권역 tier: 깊을수록 연타 목표↑·매트릭스 칸수↑/시간↓·반응 창↓, 그리고 후반 임계↑.
- * 보상은 토스트로 표시(기존 채집과 동일한 결).
+ * 난이도 = 권역 tier: 깊을수록 미니게임이 어려워진다(연타 목표 증가, 격자 확대, 반응 타깃 증가).
+ * 후반 임계는 tier 무관 균일. 보상은 토스트로 표시.
  */
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -37,42 +37,39 @@ const regionTier = computed<number>(() => {
   return t < 1 ? 1 : t > 4 ? 4 : t;
 });
 
-const diffLabel = computed<string>(() => {
-  const t = regionTier.value;
-  return t >= 4 ? '상' : t === 3 ? '중' : '하';
-});
-
-/** 후반 보너스 임계(표시용 %). */
-const thresholdPct = computed(() => Math.round(gatherScoreThreshold(regionTier.value) * 100));
-
 const alreadyDone = ref(false);
 const phase = ref<'play' | 'result'>('play');
 const chosen = ref<GameKind>('tap');
 const finalScore = ref(0);
+const finalRecord = ref('');
 const reachedLate = ref(false);
 
 /** tier로 미니게임 파라미터를 스케일. 깊을수록 어렵다. */
 const tapParams = computed(() => {
   const t = regionTier.value;
-  // 목표 연타수: T1 18 → T4 30. 시간은 5초 고정.
+  // 목표 연타수: T1 18 -> T4 30. 시간은 5초 고정.
   return { targetPresses: 14 + t * 4, timeMs: 5000 };
 });
 const matrixParams = computed(() => {
   const t = regionTier.value;
-  // 칸수: T1 3 → T4 6(상한 9). 목표 시간: T1 4.5s → T4 3.0s.
-  const count = Math.min(9, 2 + t);
-  const targetTimeMs = Math.round(5000 - t * 500);
-  return { count, targetTimeMs };
+  // 격자 크기 gridN: T1 3x3, T2 4x4, T3/T4 5x5. 칸당 ~700ms로 목표 시간.
+  const gridN = Math.min(5, Math.max(3, 2 + t));
+  const count = gridN * gridN;
+  const targetTimeMs = count * 700;
+  return { gridN, count, targetTimeMs };
 });
 const reactParams = computed(() => {
   const t = regionTier.value;
-  // 반응 창(maxRt): T1 700ms → T4 460ms. min은 120ms 고정.
-  return { minRtMs: 120, maxRtMs: 780 - t * 80 };
+  // 반응 창(maxRt): T1 700ms -> T4 460ms. min은 120ms 고정.
+  // 타깃 수: T1 1, T2 1, T3 2, T4 3.
+  const targets = Math.min(3, Math.max(1, t - 1));
+  return { minRtMs: 120, maxRtMs: 780 - t * 80, targets };
 });
 
-function onGameDone(score: number) {
+function onGameDone(score: number, record: string) {
   if (phase.value !== 'play') return;
   finalScore.value = score;
+  finalRecord.value = record;
   reachedLate.value = score >= gatherScoreThreshold(regionTier.value);
   // 점수로 보상 배수 + 후반 분기 적용. (done 마킹 포함.)
   performGather(run.data.currentNodeId, score);
@@ -80,13 +77,6 @@ function onGameDone(score: number) {
 }
 
 const scorePct = computed(() => Math.round(Math.min(1.2, Math.max(0, finalScore.value)) * 100));
-const gradeLabel = computed(() => {
-  const p = scorePct.value;
-  if (p >= 100) return '훌륭해!';
-  if (p >= gatherScoreThreshold(regionTier.value) * 100) return '제법인걸!';
-  if (p >= 40) return '그럭저럭.';
-  return '아쉬워…';
-});
 
 function leave() { router.push('/game/map'); }
 
@@ -105,13 +95,12 @@ onMounted(() => {
     <section v-if="alreadyDone" class="done">
       <h1>{{ nodeName }}</h1>
       <p class="done__msg">이미 다녀간 채집이다. 하루가 지나면 다시 거둘 수 있다.</p>
-      <button class="leave" @click="leave">계속 →</button>
+      <button class="leave" @click="leave">계속</button>
     </section>
 
     <section v-else class="gather">
       <header class="hdr">
-        <h1>{{ nodeName }} <span class="diff" :class="`diff--${diffLabel}`">난이도 {{ diffLabel }}</span></h1>
-        <p class="sub">잘 해낼수록 더 좋은 것을 거둔다. 점수 {{ thresholdPct }}% 이상이면 귀한 것도 나온다!</p>
+        <h1>{{ nodeName }}</h1>
       </header>
 
       <!-- 미니게임 -->
@@ -124,7 +113,7 @@ onMounted(() => {
         />
         <GatherMatrix
           v-else-if="chosen === 'matrix'"
-          :count="matrixParams.count"
+          :grid-n="matrixParams.gridN"
           :target-time-ms="matrixParams.targetTimeMs"
           @done="onGameDone"
         />
@@ -132,6 +121,7 @@ onMounted(() => {
           v-else
           :min-rt-ms="reactParams.minRtMs"
           :max-rt-ms="reactParams.maxRtMs"
+          :targets="reactParams.targets"
           @done="onGameDone"
         />
       </div>
@@ -139,11 +129,11 @@ onMounted(() => {
       <!-- 결과 -->
       <div v-else class="result">
         <div class="result__score" :class="{ 'result__score--late': reachedLate }">{{ scorePct }}%</div>
-        <p class="result__grade">{{ gradeLabel }}</p>
-        <p class="result__reward">
-          {{ reachedLate ? '귀한 것까지 거뒀다! 획득물은 알림을 참고.' : '거둘 만큼 거뒀다. 획득물은 알림을 참고.' }}
+        <p class="result__line">
+          점수 {{ scorePct }}%<template v-if="finalRecord"> · {{ finalRecord }}</template>
         </p>
-        <button class="leave" @click="leave">계속 →</button>
+        <p class="result__reward">{{ reachedLate ? '후반 도달' : '채집 완료' }}</p>
+        <button class="leave" @click="leave">계속</button>
       </div>
     </section>
   </main>
@@ -151,12 +141,7 @@ onMounted(() => {
 
 <style scoped>
 .gather-view { max-width: 680px; margin: 0 auto; padding: 3rem 2rem; min-height: 100vh; min-height: 100dvh; }
-.hdr h1, .done h1 { color: #f0d68e; margin: 0 0 0.4rem; }
-.diff { font-size: 0.78rem; font-weight: 600; padding: 0.12rem 0.5rem; border-radius: 5px; margin-left: 0.5rem; white-space: nowrap; }
-.diff--하 { color: #8effb8; border: 1px solid rgba(142,255,184,0.45); }
-.diff--중 { color: #f2e36a; border: 1px solid rgba(242,227,106,0.45); }
-.diff--상 { color: #ff8e8e; border: 1px solid rgba(255,142,142,0.45); }
-.sub { color: #9a9aa8; font-size: 0.92rem; margin: 0 0 1.8rem; line-height: 1.5; }
+.hdr h1, .done h1 { color: #f0d68e; margin: 0 0 1.4rem; }
 .done__msg { color: #b6b6c4; margin: 1rem 0 2rem; line-height: 1.5; }
 
 .play { padding: 1rem 0; }
@@ -169,8 +154,8 @@ onMounted(() => {
   background: rgba(255,255,255,0.05); border: 2px solid rgba(168,232,142,0.4); color: #a8e88e;
 }
 .result__score--late { border-color: #f0d68e; color: #f6e8b8; }
-.result__grade { font-size: 1.2rem; color: #d6d6e0; margin: 1rem 0 0.4rem; font-weight: 700; }
-.result__reward { color: #9a9aa8; font-size: 0.9rem; margin: 0 0 1.6rem; }
+.result__line { color: #d6d6e0; font-size: 1.05rem; font-variant-numeric: tabular-nums; margin: 1rem 0 0.4rem; }
+.result__reward { color: #9a9aa8; font-size: 0.95rem; margin: 0.4rem 0 1.6rem; }
 
 .leave {
   padding: 0.8rem 1.8rem; border-radius: 8px; cursor: pointer; font: inherit; font-weight: 600;

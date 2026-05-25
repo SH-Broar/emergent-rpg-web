@@ -40,12 +40,15 @@ function clampTier(t: number | undefined): number {
 }
 
 /**
- * 권역 tier별 *후반 보너스 임계 점수*. 깊은 권역일수록 더 잘해야(높은 점수) 후반 풀이 열린다.
- * T1 0.50 → T2 0.60 → T3 0.70 → T4 0.80.
+ * 후반 보너스 임계 점수 — tier 무관 균일 상수.
+ * 난이도는 미니게임 요소(연타 목표·격자 크기·반응 타깃 수)로만 오른다.
+ * 깊은 권역은 게임 자체가 어려워 같은 점수를 내기 어렵다.
+ * 카오스 ch-hard-gather 가산은 performGather에서 별도로 더한다(상한 0.95).
  */
-export function gatherScoreThreshold(tier: number | undefined): number {
-  const t = clampTier(tier);
-  return 0.4 + t * 0.1;
+const GATHER_SCORE_THRESHOLD = 0.55;
+
+export function gatherScoreThreshold(_tier?: number | undefined): number {
+  return GATHER_SCORE_THRESHOLD;
 }
 
 /** 점수(0..1+) → 보상 배수. lerp(MIN, MAX, clamp(score,0,1)). 미니게임이 1.2까지 줄 수 있어 상한 살짝 여유. */

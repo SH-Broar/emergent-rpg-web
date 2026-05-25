@@ -11,7 +11,7 @@
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 
 const props = defineProps<{ targetPresses: number; timeMs: number }>();
-const emit = defineEmits<{ (e: 'done', score: number): void }>();
+const emit = defineEmits<{ (e: 'done', score: number, record: string): void }>();
 
 const reduceMotion = typeof window !== 'undefined'
   && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
@@ -58,7 +58,7 @@ function finish() {
   phase.value = 'over';
   if (timer !== undefined) { window.clearInterval(timer); timer = undefined; }
   const score = Math.max(0, Math.min(1.2, presses.value / Math.max(1, props.targetPresses)));
-  emit('done', score);
+  emit('done', score, `${presses.value}타`);
 }
 
 function onKey(e: KeyboardEvent) {
@@ -78,12 +78,10 @@ onUnmounted(() => {
 
 <template>
   <div class="gt">
-    <p class="gt__hint">
-      양쪽을 번갈아 빠르게 두드려 보자! (키보드는 왼쪽/오른쪽 화살표)
-    </p>
+    <p class="gt__hint">양쪽을 번갈아 눌러라.</p>
     <div class="gt__stat">
       <span class="gt__count">{{ presses }}</span>
-      <span class="gt__goal">/ 목표 {{ targetPresses }}</span>
+      <span class="gt__goal">/ {{ targetPresses }}</span>
     </div>
     <div class="gt__bar"><div class="gt__fill" :style="{ width: pct + '%' }"></div></div>
     <div class="gt__pads">
@@ -100,7 +98,6 @@ onUnmounted(() => {
         @pointerdown.prevent="tap('R')"
       >오른쪽</button>
     </div>
-    <p v-if="phase === 'ready'" class="gt__go">아무 쪽이나 누르면 시작!</p>
   </div>
 </template>
 
@@ -122,5 +119,4 @@ onUnmounted(() => {
 .gt__pad:hover:not(:disabled) { background: rgba(168,232,142,0.2); }
 .gt__pad:disabled { opacity: 0.4; cursor: default; }
 .gt__pad--pulse { transform: scale(0.95); background: rgba(168,232,142,0.32); }
-.gt__go { color: #f0d68e; font-size: 0.9rem; margin: 0; }
 </style>
