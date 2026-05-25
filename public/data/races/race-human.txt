@@ -15,7 +15,11 @@ defense = 3
 vigor = 11
 # 시작 덱 — 컨셉 "균형/유연". 전용 카드 중심: 공격+방어 하이브리드(균형의 일격), 드로우 곁들인 공/방.
 starting_deck = c-human-balance, c-human-balance, c-human-tailwind, c-human-tailwind, c-human-adapt, c-human-adapt, c-strike, c-strike, c-defend, c-defend, c-human-resolve, c-recover
-seed_cards = c-human-balance, c-human-adapt, c-human-tailwind, c-human-resolve, c-strike
+# 시드 풀 — 활동 보상(grantSeedCard)이 여기서 1장 추첨(강화판도 가능). 컨셉 골고루:
+#   균형(balance/evenblade/twohands) · 유연(adapt/tailwind/regroup) · 적응(adaptstrike) ·
+#   디버프(resolve/pin/combo) · 한방(decisive). (deckSize=starting_deck 길이라 *덱 채움*에는 미사용,
+#   활동 보상 풀로만 쓰임 — Item 37-③에서 다양화.)
+seed_cards = c-human-balance, c-human-adapt, c-human-tailwind, c-human-resolve, c-human-evenblade, c-human-adaptstrike, c-human-pin, c-human-combo, c-human-twohands, c-human-regroup, c-human-decisive, c-strike
 seed_relics = r-race-human
 hp_bonus = 0
 mp_bonus = 0

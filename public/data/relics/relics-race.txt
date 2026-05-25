@@ -10,6 +10,33 @@ trigger = passive
 effects = damage-out-add:1, bonus-hp:5
 flavor = 어느 한쪽으로도 기울지 않는 무게. 인간이 시대를 건너는 법.
 
+# 인간 정체성 앵커 (Item 37-③) — 균형·유연·적응을 시작 유물로 표현.
+# 기존 트리거/효과만 재사용(신규 트리거 없음). source=race → 시작 전용.
+
+[relic.r-race-human-breath]
+name = 고른 호흡
+rank = common
+source = race
+trigger = on-combat-start
+effects = combat-start-block:4, combat-start-draw:1
+flavor = 싸움이 열리기 전에 늘 한 번 숨을 고른다. 그 짧은 들숨이 얇은 벽이 되고, 손에 한 장을 더 쥐여 준다.
+
+[relic.r-race-human-counterweight]
+name = 균형추
+rank = common
+source = race
+trigger = on-combat-start
+effects = combat-start-status:1:strength, combat-start-status:1:dexterity
+flavor = 한쪽으로 기울면 다른 쪽이 따라 선다. 마주 선 순간, 치는 힘과 막는 결이 함께 한 칸씩 올라선다.
+
+[relic.r-race-human-token]
+name = 적응의 증표
+rank = common
+source = race
+trigger = on-turn-start
+effects = turn-start-block:2
+flavor = 어느 자리에 서든 곧 익숙해진다. 매 호흡마다 발밑이 한 겹씩 더 단단해진다.
+
 [relic.r-race-moth]
 name = 바람결 깃
 rank = common

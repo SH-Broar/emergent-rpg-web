@@ -196,6 +196,8 @@ export const VALID_CARD_EFFECT_KINDS = [
   'skip-enemy-action', 'slow-enemy', 'delayed-damage', 'random-effect',
   'damage-per-cards-played', 'buff-card-instance', 'negate-reflect', 'bloom-strength',
   'amplify-debuff', 'refill', 'this-turn-amp',
+  // 종족 카드 확장 1 (Item 37-③ 인간) — 적응형 신규 핸들러 1종.
+  'adaptive-strike',
 ];
 
 /**
@@ -712,23 +714,12 @@ export function validateData(dataDir, readFile) {
   }
 
   // ---- 4.16 (경고) 밸런스 sanity — 카드 등급 최소 한도 (validateCardBaseline 미러) ----
-  // Item 37-① 상향(2026-05-25): common 6→9 / rare 9→14 / legendary 14→22. src/data/schemas/card.ts 와 동기.
+  // Item 37-③(2026-05-26): race/character 카드도 *전부 면제*(종족 카드 컨셉 우선). 그 외 출처는
+  //   원래 면제 대상이라, 사실상 *모든 카드가 baseline 경고에서 면제*된다. src/data/schemas/card.ts
+  //   validateCardBaseline 정책과 동기. (임계값 CARD_MIN_PEAK는 정책 복원 대비 참고용으로 보존.)
+  // Item 37-① 상향(2026-05-25): common 6→9 / rare 9→14 / legendary 14→22.
   const CARD_MIN_PEAK = { basic: 4, common: 9, rare: 14, legendary: 22 };
-  for (const id of cardIds) {
-    const f = merged[`card.${id}`];
-    if (f.source !== 'race' && f.source !== 'character') continue;
-    const baseline = CARD_MIN_PEAK[f.rank];
-    if (baseline === undefined) continue;
-    let peak = 0;
-    for (const tok of parseList(f.effects)) {
-      const parts = tok.split(':');
-      if (['damage', 'heal', 'block'].includes(parts[0]?.trim())) {
-        const v = Number(parts[1]);
-        if (Number.isFinite(v)) peak = Math.max(peak, v);
-      }
-    }
-    if (peak < baseline) push(diag('warn', 'balance', `카드 '${id}' (${f.rank}) 최소 한도 ${baseline} 미달 (peak ${peak})`, whereOf(`card.${id}`)));
-  }
+  void CARD_MIN_PEAK; // baseline 경고 비활성(Item 37-③) — 임계값은 문서용으로 유지.
   // (경고) 몬스터 HP 밴드 — 0 이하 / 과도한 값 sanity.
   for (const id of monsterIds) {
     const f = merged[`monster.${id}`];

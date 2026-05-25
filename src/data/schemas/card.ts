@@ -22,11 +22,16 @@ import type {
  * Item 37-① 전투 밸런스 재조정(2026-05-25)에서 상향: common 6→9 / rare 9→14 / legendary 14→22.
  * (basic 4 유지. validate-core.mjs 의 CARD_MIN_PEAK 미러도 같은 값.)
  *
- * 적용 대상: source가 `race`/`character`인 *시작 덱 베이스*. 같은 등급이라면
- * 적어도 이 수치만큼은 보장돼야 의미가 있다는 기획 정책.
+ * 적용 대상: (Item 37-③ 이전) source가 `race`/`character`인 *시작 덱 베이스*.
  *
  * 면제 대상: source가 `npc`/`event`/`relic`/`boss`/`hyperion` — 친밀도 보상,
  * 이벤트 grant, 유물 효과, 보스 보상으로 받는 *특수 카드*는 컨셉이 우선.
+ *
+ * Item 37-③ 종족 카드 확장(2026-05-26): `race`/`character`도 *전부 면제*.
+ * 종족 카드는 컨셉(균형·연사·손패·색·적응)이 수치 우선이며, 일부러 약하게(특히 나방
+ * 0코 연사·인간 균형형) 설계되는 경우가 많아 등급 최소 한도가 거짓 경고를 양산한다.
+ * → validateCardBaseline은 *모든 출처를 통과*시키되, 함수/임계값 정의는 참고용으로 보존한다.
+ * (validate-core.mjs 미러도 동일하게 race/character 면제.)
  *
  * 검사 수치: card.effects 중 `damage`/`heal`/`block` 효과 value의 *최댓값*.
  * cost는 고려하지 않음 — 가치 산정의 정밀함보다 *최소 한도*가 목적.
@@ -40,23 +45,13 @@ export const CARD_MIN_PEAK_VALUE: Record<Rank, number> = {
 
 /**
  * 카드가 등급별 최소 한도를 충족하는지 검사. ok=false면 데이터 작성 오류일 가능성.
- * 특수 출처는 자동 통과. 게임 로직에 영향 X — 데이터 로드 시 *경고*만 띄움.
+ *
+ * Item 37-③(2026-05-26): *항상 통과*. 종족 카드 확장으로 race/character 카드도 컨셉(균형·
+ * 연사·손패·색·적응) 우선이라 등급 최소 한도가 거짓 경고를 양산했다. 정책 임계값
+ * CARD_MIN_PEAK_VALUE는 참고/문서용으로 보존하며, 복원이 필요하면 이 함수를 되살리면 된다.
+ * 게임 로직에 영향 X — 데이터 로드 시 *경고*만 띄우던 헬퍼였다.
  */
-export function validateCardBaseline(card: Card): { ok: boolean; reason?: string } {
-  if (card.source !== 'race' && card.source !== 'character') {
-    return { ok: true };
-  }
-  const baseline = CARD_MIN_PEAK_VALUE[card.rank];
-  if (baseline === undefined) return { ok: true };
-  const peak = Math.max(
-    0,
-    ...card.effects
-      .filter((e) => e.kind === 'damage' || e.kind === 'heal' || e.kind === 'block')
-      .map((e) => e.value ?? 0),
-  );
-  if (peak < baseline) {
-    return { ok: false, reason: `${card.rank} 최소 한도 ${baseline} 미달 (현재 peak ${peak})` };
-  }
+export function validateCardBaseline(_card: Card): { ok: boolean; reason?: string } {
   return { ok: true };
 }
 
@@ -106,6 +101,7 @@ export type CardEffectKind =
   | 'exhaust-self'        // 마커: 이 효과가 든 카드는 사용 후 *소멸*(exhaustPile). 핸들러는 no-op.
   | 'return-self-to-hand' // 마커: 사용 후 *자기 자신을 손으로* 되돌림(버리지 않음). 나방 0코 드로우 카드. 핸들러 no-op.
   | 'block-to-damage'     // 현재 player.block × value 추가 피해 (block 소모하지 않음)
+  | 'adaptive-strike'     // 적응형(인간 시그니처): player.block>0 이면 damage(value+params.bonus, 기본 +4), 아니면 block(value)
   | 'spend-all-energy'    // 남은 mana 전부 소비 → 소비액 × value 피해
   | 'damage-per-companion' // 동료 수 × value 피해
   | 'damage-per-relic'    // 유물 수 × value 피해

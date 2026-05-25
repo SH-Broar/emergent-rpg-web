@@ -111,6 +111,11 @@ function parseCardEffect(token: string): CardEffect | null {
   if (kind === 'damage-from-hp' && parts[3]) {
     return { kind, value, target, params: { mult: Number(parts[3]) } };
   }
+  // adaptive-strike 전용 (Item 37-③ 인간): value=기본값, 4번째=bonus(공격 모드 추가 피해, 기본 4).
+  // 핸들러(combat.ts)는 block>0이면 damage(value+params.bonus), 아니면 block(value).
+  if (kind === 'adaptive-strike' && parts[3]) {
+    return { kind, value, target, params: { bonus: Number(parts[3]) } };
+  }
   // 4번째 토큰: apply-status의 status 이름 등 추가 파라미터.
   if (parts[3]) {
     return { kind, value, target, params: { status: parts[3] } };

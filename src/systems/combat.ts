@@ -1077,6 +1077,36 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
       applyDamage(t, value, c.player.statuses);
     }
   },
+  // 적응형(인간 시그니처): player.block > 0 이면 *공격*(value + params.bonus, 기본 +4),
+  // block이 없으면 *방어*(value)로 전환된다. 방어를 쥐고 있으면 공세로, 비어 있으면 수세로.
+  //  - 공격 경로: damage 핸들러와 동일(feral ×2 · ATK · strength · modifier pipeline · weakness/vulnerable).
+  //  - 방어 경로: block 핸들러와 동일(feral 차단 · DEF · dexterity/frail · block-out-add · gainPlayerBlock).
+  'adaptive-strike': (e, c) => {
+    const base = e.value ?? 0;
+    if (c.player.block > 0) {
+      // 공격 모드 — block 보유 시 base + bonus 피해.
+      const bonus = Number(e.params?.bonus ?? 4);
+      const wildBase = playerWild(c) ? (base + bonus) * 2 : base + bonus;
+      const atkBonus = playerBonuses(c).damage;
+      const statusBonus = statusBonusForCardEffectKind('damage', c.player.statuses);
+      const value = applyModifiers(
+        wildBase + atkBonus + statusBonus,
+        'damage-out-add',
+        'damage-out-mul',
+      );
+      for (const t of resolveTargets(e.target ?? 'enemy', c)) applyDamage(t, value, c.player.statuses);
+    } else {
+      // 방어 모드 — block이 없으면 base 방어.
+      if (playerWild(c)) return; // 수화: 플레이어는 block을 쌓지 못함.
+      const defBonus = playerBonuses(c).block;
+      const statusBonus = statusBonusForCardEffectKind('block', c.player.statuses);
+      const value = Math.max(0, applyModifiers(
+        base + defBonus + statusBonus,
+        'block-out-add',
+      ));
+      gainPlayerBlock(c, value);
+    }
+  },
   // 남은 mana 전부 소비 → 소비액 × value 피해. (playCard에서 effCost 차감 후 남은 mana 기준.)
   'spend-all-energy': (e, c) => {
     const spent = c.mana;
