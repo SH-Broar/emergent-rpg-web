@@ -620,8 +620,12 @@ export function playCard(handIndex: number, monster: Monster): { enemyDefeated: 
     const damageReceived = r.runDamageReceived ?? 0;
     baseCost = Math.max(0, baseCost - damageReceived);
   }
-  // cost-mod-add 유물 (예: 모든 카드 비용 -1) + 몬스터 비용 교란(cost-up) 적용. 음수 cost는 0으로 clamp.
-  let effCost = Math.max(0, baseCost + getModifierAdd('cost-mod-add') + (c.costUp?.amount ?? 0));
+  // cost-mod-add 유물 (예: 모든 카드 비용 -1) + 몬스터 비용 교란(cost-up) + 나방 가속(hand-cost-down) 적용.
+  // 음수 cost는 0으로 clamp. cost-up(+)과 hand-cost-down(-)이 같은 식에서 상쇄·공존한다.
+  let effCost = Math.max(
+    0,
+    baseCost + getModifierAdd('cost-mod-add') + (c.costUp?.amount ?? 0) - (c.handCostDown ?? 0),
+  );
   // first-card-free 유물: 매 턴 *첫 카드*의 비용 0.
   if ((c.cardsPlayedThisTurn ?? 0) === 0 && playerHasRelicEffect('first-card-free')) {
     effCost = 0;
@@ -1287,6 +1291,13 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
     c.thisTurnAmp = (c.thisTurnAmp ?? 0) + pct;
     useUiStore().toast('success', `이번 턴 카드 위력 +${c.thisTurnAmp}%`);
   },
+  // 가속(나방) — 이번 턴 손패(및 이번 턴 뽑는 카드) 전체 cost -value(최소 0). 누적 가산. 턴 종료 시 0 리셋.
+  // 실효 cost는 playCard effCost / displayCost(View)에서 c.handCostDown을 차감해 반영한다.
+  'hand-cost-down': (e, c) => {
+    const v = e.value ?? 1;
+    c.handCostDown = (c.handCostDown ?? 0) + v;
+    useUiStore().toast('success', `이번 턴 카드 비용 -${c.handCostDown}`);
+  },
 };
 
 /** 컬러 키 참조용 (draw-if-color params 타입). */
@@ -1460,6 +1471,7 @@ export function finishEnemyTurn(monster: Monster): TurnResult {
   c.cardsPlayedThisTurn = 0; // 새 턴 — first-card-free 판정 리셋.
   c.potionUsedThisTurn = false; // 새 턴 — 전투 포션 턴당 1회 가드 리셋.
   c.thisTurnAmp = 0; // 새 턴 — 이번 턴 증폭(this-turn-amp) 소멸.
+  c.handCostDown = 0; // 새 턴 — 이번 턴 비용 절감(hand-cost-down) 소멸.
   // 동료 스킬 쿨다운 — 매 플레이어 턴 시작에 각 슬롯 -1(최소 0).
   if (c.skillCooldowns) {
     c.skillCooldowns = c.skillCooldowns.map((cd) => Math.max(0, cd - 1));

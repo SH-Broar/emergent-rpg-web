@@ -125,7 +125,9 @@ export type CardEffectKind =
   | 'bloom-strength'      // 이번 전투 내내 매 플레이어 턴 시작 힘 +value 자동 누적(비감쇠).
   | 'amplify-debuff'      // 적 최고 스택 디버프 ×2 + 증가분 × value 피해(디버프 없으면 소피해).
   | 'refill'              // 마나를 maxMana로, 손패를 손패 상한까지 드로우(가득).
-  | 'this-turn-amp';      // 이번 턴 동안 플레이어 카드 effect value +value%(params.pct 폴백).
+  | 'this-turn-amp'       // 이번 턴 동안 플레이어 카드 effect value +value%(params.pct 폴백).
+  // === 종족 카드 확장 2 (Item 37-③ 나방) — 가속 신규 핸들러 1종 ===
+  | 'hand-cost-down';     // 이번 턴 손패(및 이번 턴 뽑는 카드) 전체 cost -value(최소 0). 턴 종료 0 리셋.
 
 /** 효과 대상 — target. */
 export type EffectTarget = 'self' | 'enemy' | 'all-enemies' | 'random-enemy';

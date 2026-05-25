@@ -15,7 +15,8 @@ defense = 2
 vigor = 13
 # 시작 덱 — 컨셉 "속도/연사/드로우". 전용 카드 중심: 0코스트 연타(잰 화살), 드로우 곁들인 경량 회전.
 starting_deck = c-moth-flutter, c-moth-flutter, c-moth-flutter, c-moth-volley, c-moth-volley, c-moth-glide, c-moth-glide, c-quickdraw, c-quickdraw, c-strike, c-strike, c-moth-gale, c-recover
-seed_cards = c-moth-flutter, c-moth-volley, c-quickdraw, c-moth-gale, c-moth-glide
+# 시드 풀 — 속도/연사/콤보/드로우 정체성 카드(활동 보상·덱 부족분 추첨용). 신규 0코·다단·콤보 포함.
+seed_cards = c-moth-flutter, c-moth-volley, c-quickdraw, c-moth-gale, c-moth-glide, c-moth-quickjab, c-moth-barrage, c-moth-recall, c-moth-accel, c-moth-combostrike, c-moth-dive, c-moth-doubletap, c-moth-skim
 seed_relics = r-race-moth
 hp_bonus = 0
 mp_bonus = 0

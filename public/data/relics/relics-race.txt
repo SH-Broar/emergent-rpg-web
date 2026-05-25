@@ -45,6 +45,33 @@ trigger = on-draw
 effects = damage-enemy:1
 flavor = 카드를 한 장 뽑을 때마다 깃에서 작은 불티가 떨어져 적을 콕 찌른다. 많이 뽑을수록 더 매섭게.
 
+# 나방 정체성 앵커 (Item 37-③) — 속도·연사·드로우를 시작 유물로 표현.
+# 기존 트리거/효과만 재사용(신규 트리거 없음). source=race → 시작 전용.
+
+[relic.r-race-moth-lightbody]
+name = 가벼운 몸
+rank = common
+source = race
+trigger = on-combat-start
+effects = combat-start-draw:1, draw-extra-add:1
+flavor = 거의 무게가 없는 몸. 싸움이 열리면 손에 한 장이 더 들고, 매 호흡마다 또 한 장이 따라 든다.
+
+[relic.r-race-moth-rapidquill]
+name = 연사의 깃
+rank = common
+source = race
+trigger = on-card-played-after
+effects = attacks-to-strength:3
+flavor = 쉬지 않고 떨리는 깃. 공격 카드를 세 번 낼 때마다, 어깨에 힘이 한 줌씩 더 쌓인다. 연사가 빠를수록 빨리 쌓인다.
+
+[relic.r-race-moth-windtally]
+name = 바람의 셈
+rank = common
+source = race
+trigger = on-card-played-after
+effects = cards-to-color:5
+flavor = 손이 지날 때마다 깃이 한 번씩 떨린다. 다섯 번 지날 때마다, 모아 온 색 하나가 한 칸 진해진다.
+
 [relic.r-race-phantom]
 name = 패를 쥔 손
 rank = common

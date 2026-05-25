@@ -243,6 +243,12 @@ export interface CombatState {
   obscuredTurns?: number;
   /** 카드 비용 상승 교란 — amount만큼 모든 카드 cost +, turns 동안 유지(매 턴 -1). */
   costUp?: { amount: number; turns: number };
+  /**
+   * 이번 턴 손패 비용 절감(hand-cost-down) — 나방 가속 엔진.
+   * 이번 플레이어 턴 동안 손패(및 이번 턴 뽑는 카드) 전체 cost -handCostDown(최소 0).
+   * 매 새 턴 0으로 리셋(thisTurnAmp와 동일한 턴 단위 휘발). 누적 가산.
+   */
+  handCostDown?: number;
   /** 다음 손패 드로우 감소량 — force-discard 인텐트가 누적, 다음 드로우에서 1회 소비. */
   drawDown?: number;
   /**

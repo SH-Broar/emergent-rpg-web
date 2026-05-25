@@ -361,10 +361,11 @@ const rankColors: Record<string, string> = {
   legendary: '#ffe88e',
 };
 function cardBorder(c: Card): string { return rankColors[c.rank] ?? '#a4a4b0'; }
-/** 표시·판정용 실효 비용 — 몬스터/보스 비용 교란(cost-up) 반영. */
+/** 표시·판정용 실효 비용 — 몬스터/보스 비용 교란(cost-up) + 나방 가속(hand-cost-down) 반영. */
 function displayCost(c: Card): number {
   const up = combat.value?.costUp?.amount ?? 0;
-  return Math.max(0, c.cost + up);
+  const down = combat.value?.handCostDown ?? 0;
+  return Math.max(0, c.cost + up - down);
 }
 function canPlay(c: Card): boolean {
   if (!combat.value) return false;

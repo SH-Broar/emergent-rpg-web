@@ -198,6 +198,8 @@ export const VALID_CARD_EFFECT_KINDS = [
   'amplify-debuff', 'refill', 'this-turn-amp',
   // 종족 카드 확장 1 (Item 37-③ 인간) — 적응형 신규 핸들러 1종.
   'adaptive-strike',
+  // 종족 카드 확장 2 (Item 37-③ 나방) — 가속 신규 핸들러 1종.
+  'hand-cost-down',
 ];
 
 /**

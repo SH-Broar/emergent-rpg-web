@@ -147,7 +147,7 @@ function playPreview() {
           @click="clickPlay(i)"
         >
           <div class="card__head">
-            <span class="card__cost" :class="{ 'card__cost--up': displayCost(card) > card.cost }">{{ displayCost(card) }}</span>
+            <span class="card__cost" :class="{ 'card__cost--up': displayCost(card) > card.cost, 'card__cost--down': displayCost(card) < card.cost }">{{ displayCost(card) }}</span>
             <span class="card__name">{{ card.name }}</span>
             <span v-if="isLocked(card)" class="card__lock" title="묶여서 쓸 수 없다">🔒</span>
           </div>
@@ -186,7 +186,7 @@ function playPreview() {
           @click="selectForPreview(i)"
         >
           <span v-if="obscured" class="stack-item__cost">?</span>
-          <span v-else class="stack-item__cost" :class="{ 'card__cost--up': displayCost(card) > card.cost }">{{ displayCost(card) }}</span>
+          <span v-else class="stack-item__cost" :class="{ 'card__cost--up': displayCost(card) > card.cost, 'card__cost--down': displayCost(card) < card.cost }">{{ displayCost(card) }}</span>
           <span class="stack-item__name">{{ obscured ? '가려진 카드' : card.name }}</span>
           <span v-if="!obscured && isLocked(card)" class="stack-item__lock">🔒</span>
         </button>
@@ -218,7 +218,7 @@ function playPreview() {
           @click="playPreview"
         >
           <div class="card__head">
-            <span class="card__cost" :class="{ 'card__cost--up': displayCost(previewCard) > previewCard.cost }">{{ displayCost(previewCard) }}</span>
+            <span class="card__cost" :class="{ 'card__cost--up': displayCost(previewCard) > previewCard.cost, 'card__cost--down': displayCost(previewCard) < previewCard.cost }">{{ displayCost(previewCard) }}</span>
             <span class="card__name">{{ previewCard.name }}</span>
             <span v-if="isLocked(previewCard)" class="card__lock" title="묶여서 쓸 수 없다">🔒</span>
           </div>
@@ -369,6 +369,7 @@ function playPreview() {
 .card__lock { font-size: 0.66rem; }
 .card--junk { background: rgba(120, 90, 90, 0.18); }
 .card__cost--up { background: #ff8e8e; color: #160d0d; }
+.card__cost--down { background: #8effa6; color: #0d160f; }
 .card--facedown {
   align-items: center; justify-content: center; text-align: center;
   border-color: #555 !important;
