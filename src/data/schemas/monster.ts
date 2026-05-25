@@ -9,9 +9,17 @@
 
 import type { NamedEntity } from './base';
 
-/** 몬스터 의도 — 매 턴 행동 패턴 한 개. */
+/**
+ * 몬스터 의도 — 매 턴 *슬롯 한 개*. 한 슬롯은 1개 이상 행동을 담는다.
+ *
+ * encoded 형식(combat 시스템이 해석):
+ *  - 단일 행동: 'attack:5' | 'defend:3' | 'buff:1' | 'lockin:block:30:조준'
+ *  - 분기:      'attack:22~unlocked=attack:6' (활성 락 0개면 약공격, 아니면 강공격+전체 해제)
+ *  - 가변 묶음: 'attack:5+lockin:no-attack:1:정전' (한 턴 2행동 — `+`로 동시 묶음)
+ * `+`는 한 *슬롯 안의 여러 행동*을 잇고, 콤마(intents 리스트)는 *턴 슬롯*을 가른다.
+ */
 export interface MonsterIntent {
-  /** combat 시스템이 해석하는 형식: 'attack:5' | 'defend:3' | 'buff:1' */
+  /** combat 시스템이 해석하는 슬롯 인코딩(가변 묶음 `+`·분기 `~unlocked=` 포함, verbatim 보존). */
   encoded: string;
   /** UI 표시용 (선택). */
   description?: string;
@@ -50,16 +58,16 @@ export interface Monster extends NamedEntity {
   intents: MonsterIntent[];
 
   /**
-   * 한 턴에 행동하는 횟수(마나처럼). 미설정/1이면 일반(턴당 1회).
-   * 2면 한 턴에 의도 2개를 *연달아* 실행하고, 텔레그래프도 2개를 모두 보여준다.
-   * 의도는 회전(rotation)에서 연속 위치를 뽑는다.
+   * @deprecated *레거시* 고정 멀티액션 — 항상 N개. 신규 저작은 슬롯 안 `+` 묶음을 쓴다.
+   * 옛 데이터 호환: 설정돼 있으면 *그 슬롯을 N회 묶음*으로 fallback 해석(쌍바늘 태엽기 등 안 깨짐).
+   * 미설정/1이면 일반(슬롯당 행동 1개, `+` 묶음만큼만 늘어남).
    */
   actions?: number;
 
   /**
-   * 락인 수치 — 적 전용 기믹. 의도를 `<special>~unlocked=attack:<weak>`로 인코딩하면,
-   * 적이 락인 주기에 special을 예고하지만 *플레이어가 그 턴 방어 ≥ lockIn*을 쌓으면 약공격으로 교체된다.
-   * 멀티행동(actions)과 무관한 별도 장치. 락인 의도를 쓰는 몬스터는 *반드시 >0 지정*.
+   * @deprecated *레거시* 락인(전역 단일 락) 수치 — INI `lock_in`. `<special>~unlocked=attack:<weak>`와
+   * 짝지어, 플레이어가 그 턴 방어 ≥ lockIn을 쌓으면 special→약공격. lockin 행동을 쓰지 *않는* 옛 몹 전용.
+   * 신규 저작은 `lockin:<condition>:<value>:<label>` 행동 + `~unlocked=`(활성 락 0개) 분기를 쓴다(lock_in 불필요).
    */
   lockIn?: number;
 

@@ -15,7 +15,6 @@ import { useUiStore } from '@/stores/ui';
 import {
   startCombat,
   playCard as playCardSys,
-  endPlayerTurn,
   applyMonsterDrop,
   clearCombat,
   struggle,
@@ -27,9 +26,11 @@ import { effectiveContent } from '@/systems/map';
 import { applyCombatVictoryReward } from '@/systems/combat-rewards';
 import { colorBonusForCardEffectKind } from '@/systems/stats';
 import { bonusesFromEffective } from '@/systems/equipment';
-import { cardEffectKindLabel, cardEffectDescription, statusDescription, statusLabel, intentLabel, intentDescription, cardDetailText } from '@/systems/labels';
+import { cardEffectKindLabel, cardEffectDescription, statusDescription, statusLabel, intentLabel, intentDescription, cardDetailText, lockBadgeText, lockTooltip } from '@/systems/labels';
 import { useItem } from '@/systems/item';
 import { useCombatFx, CARD_PLAY_DELAY } from '@/composables/useCombatFx';
+import { useEnemyTurn } from '@/composables/useEnemyTurn';
+import { useCombatKeys } from '@/composables/useCombatKeys';
 import StruggleMinigame from '@/components/StruggleMinigame.vue';
 import type { Card, CardEffect, Combatant, Item, Monster } from '@/data/schemas';
 
@@ -74,8 +75,8 @@ const monster = computed<Monster>(() => {
 
 const combat = computed(() => run.data.combat);
 
-// 방금 전 플레이 내용 — 턴 카운터 아래 중앙에 로그처럼 표시(최근 4줄).
-const recentLog = computed<string[]>(() => (combat.value?.log ?? []).slice(-4));
+// 방금 전 플레이 내용 — 턴 카운터 아래 중앙에 한 줄만(최신). 드로우가 많아도 안 가리게.
+const recentLog = computed<string[]>(() => (combat.value?.log ?? []).slice(-1));
 
 // === 전투 FX (플로팅 숫자 / 흔들림 / 플래시) — HP·방어 변화를 watch 해 트리거 ===
 const fx = useCombatFx();
@@ -114,9 +115,14 @@ watch(
   },
 );
 
+// === 적 턴 순차 진행(작업 34) — 적 행동 중에는 enemyActing이 true → 입력 잠금 ===
+const { enemyActing, runTurn } = useEnemyTurn();
+
 function play(index: number) {
-  // 애니메이션 중 중복 입력 차단.
-  if (playingIndex.value !== null) return;
+  // 애니메이션 중·적 행동 중 중복 입력 차단.
+  if (playingIndex.value !== null || enemyActing.value) return;
+  const card = combat.value?.hand[index];
+  if (!card || !canPlay(card)) return; // 키보드 위치 입력 등에서 사용 불가 카드 가드.
   const finish = () => {
     playingIndex.value = null;
     const result = playCardSys(index, monster.value);
@@ -132,13 +138,16 @@ function play(index: number) {
 }
 
 function endTurn() {
-  const result = endPlayerTurn(monster.value);
-  if (result.playerDefeated) {
-    onDefeat();
-  } else if (result.enemyDefeated) {
-    // 적이 poison 등으로 턴 종료 중 사망 — 승리 처리.
-    onVictory();
-  }
+  // 적 행동 진행 중·카드 애니메이션 중엔 무시(소프트락/중복 방지).
+  if (enemyActing.value || playingIndex.value !== null) return;
+  void runTurn(monster.value, (result) => {
+    if (result.playerDefeated) {
+      onDefeat();
+    } else if (result.enemyDefeated) {
+      // 적이 poison/행동 중 사망 — 승리 처리.
+      onVictory();
+    }
+  });
 }
 
 function onVictory() {
@@ -213,12 +222,18 @@ const enemyIntentList = computed<string[]>(() => {
   return raw.map((it) => resolveIntent(it, c));
 });
 /**
- * 락인 표시 — 이번 턴 텔레그래프에 락인 특수(`~unlocked=`)가 들어 있을 때만 노출.
- * 플레이어가 방어 ≥ 락인 수치를 쌓으면 특수가 약공격으로 교체되므로, 그 임계값과 현재 해제 여부를 보여준다.
+ * 락(조준형) 배지 — 플레이어 측 다중 락. 과녁 비주얼 + 이름 + 조건 + 진행도.
+ * 적이 lockin 행동으로 걸면 c.locks[]에 쌓이고, 조건을 채우면 사라진다.
  */
-const lockInState = computed<{ value: number; unlocked: boolean } | null>(() => {
+const locks = computed(() => combat.value?.locks ?? []);
+/**
+ * 레거시 락인(전역 단일 락) — lockin 행동을 *안 쓰는* 옛 몹(c.lockIn>0 + 새 락 0개) 전용 표시.
+ * 그 턴 방어 ≥ lockIn이면 적 특수가 약공격으로 교체된다.
+ */
+const legacyLockIn = computed<{ value: number; unlocked: boolean } | null>(() => {
   const c = combat.value;
   if (!c || (c.lockIn ?? 0) <= 0) return null;
+  if ((c.locks?.length ?? 0) > 0) return null; // 신규 락이 있으면 레거시 배지 숨김.
   const raw = (c.enemyIntentQueue && c.enemyIntentQueue.length > 0)
     ? c.enemyIntentQueue
     : (c.enemyIntent ? [c.enemyIntent] : []);
@@ -228,12 +243,31 @@ const lockInState = computed<{ value: number; unlocked: boolean } | null>(() => 
 // 강 구속/삼킴(grapple.hard)은 색상 미니게임으로만 발버둥. 일반 구속은 기존 버튼 발버둥.
 const showStruggleMinigame = ref(false);
 function doStruggle() {
-  if (grapple.value?.hard) {
+  if (enemyActing.value || playingIndex.value !== null) return; // 적 행동/카드 애니메이션 중 차단.
+  if (!grapple.value) return; // 구속/삼킴 중이 아니면 무시(키보드 S 가드).
+  if (grapple.value.hard) {
     showStruggleMinigame.value = true;
   } else {
     struggle();
   }
 }
+
+// === PC 키보드 전용 입력(작업 31) ===
+// 막아야 하는 상황: 전투 페이즈가 아님 · 적 행동 중 · 카드 애니메이션 중 · 미니게임 모달 오픈.
+function keysBlocked(): boolean {
+  return (
+    phase.value !== 'combat' ||
+    enemyActing.value ||
+    playingIndex.value !== null ||
+    showStruggleMinigame.value
+  );
+}
+useCombatKeys({
+  playIndex: play,
+  endTurn,
+  struggle: doStruggle,
+  isBlocked: keysBlocked,
+});
 
 // === 전투 포션 (combat=true) — 턴당 1회, 마나 무관 ===
 const combatPotions = computed<Item[]>(() => run.data.items.filter((i) => i.combat));
@@ -247,8 +281,15 @@ function potionEffShort(e: Item['effects'][number]): string {
     case 'combat-enemy-status': return `적 ${statusLabel(String(e.param ?? ''))} +${e.value ?? 0}`;
     case 'combat-self-status': return `${statusLabel(String(e.param ?? ''))} +${e.value ?? 0}`;
     case 'combat-free-grapple': return '구속 해제';
+    case 'cleanse-group': return cleanseGroupLabel(String(e.param ?? 'all'));
     default: return e.kind;
   }
+}
+const CLEANSE_GROUP_LABELS: Record<string, string> = {
+  low: '하급 디버프 정화', mid: '중급 디버프 정화', high: '상급 디버프 정화', all: '디버프 전체 정화',
+};
+function cleanseGroupLabel(group: string): string {
+  return CLEANSE_GROUP_LABELS[group] ?? '디버프 정화';
 }
 function potionSummary(itm: Item): string {
   return itm.effects.map(potionEffShort).join(' · ');
@@ -339,7 +380,10 @@ void ui;
         </ul>
       </div>
 
-      <div class="vs">⚔ 턴 {{ combat.turn }}</div>
+      <div class="vs">
+        ⚔ 턴 {{ combat.turn }}
+        <span v-if="enemyActing" class="enemy-acting">적 행동 중…</span>
+      </div>
 
       <div class="combatant enemy" :class="{ 'is-hit': fx.enemyHit.value }">
         <div class="fx-layer">
@@ -360,13 +404,25 @@ void ui;
           <span class="intent__lead">다음: <span class="intent__info">ⓘ</span></span>
           <span v-for="(it, i) in enemyIntentList" :key="i" class="intent__act" v-tooltip="intentDescription(it)">{{ intentLabel(it) }}</span>
         </div>
+        <!-- 락(조준형) 배지 — 다중 락 각각 과녁 + 이름·조건·진행도 -->
+        <div v-if="locks.length" class="locks">
+          <div
+            v-for="(lk, i) in locks"
+            :key="`${lk.label}-${i}`"
+            class="lockin lockin--target"
+            v-tooltip="lockTooltip(lk)"
+          >
+            🎯 {{ lockBadgeText(lk) }}
+          </div>
+        </div>
+        <!-- 레거시 락인(전역 단일 락) — 옛 몹 전용 -->
         <div
-          v-if="lockInState"
+          v-else-if="legacyLockIn"
           class="lockin"
-          :class="{ 'lockin--open': lockInState.unlocked }"
-          v-tooltip="lockInState.unlocked ? '방어를 충분히 쌓아 적의 특수 행동을 막았다. 이번 턴은 약하게 공격한다.' : `이번 턴 방어를 ${lockInState.value} 이상 쌓으면 적의 특수 행동을 약한 공격으로 바꾼다.`"
+          :class="{ 'lockin--open': legacyLockIn.unlocked }"
+          v-tooltip="legacyLockIn.unlocked ? '방어를 충분히 쌓아 적의 특수 행동을 막았다. 이번 턴은 약하게 공격한다.' : `이번 턴 방어를 ${legacyLockIn.value} 이상 쌓으면 적의 특수 행동을 약한 공격으로 바꾼다.`"
         >
-          {{ lockInState.unlocked ? '🔓 락인 해제' : `🔒 락인 · 방어 ${lockInState.value}` }}
+          {{ legacyLockIn.unlocked ? '🔓 락인 해제' : `🔒 락인 · 방어 ${legacyLockIn.value}` }}
         </div>
         <ul class="statuses statuses--enemy">
           <li v-for="s in statusEntries(combat.enemy)" :key="s.key" class="status" :data-key="s.key" v-tooltip="statusDescription(s.key)">
@@ -400,7 +456,7 @@ void ui;
       </span>
       <button
         class="struggle"
-        :disabled="combat.frozenTurn || combat.mana < 1"
+        :disabled="combat.frozenTurn || combat.mana < 1 || enemyActing"
         @click="doStruggle"
       >
         {{ grapple.hard ? '발버둥 (색 순서)' : '발버둥 (마나 1)' }}
@@ -432,8 +488,8 @@ void ui;
           v-for="(card, i) in combat.hand"
           :key="`fd-${card.instanceId ?? card.id}-${i}`"
           class="card card--facedown"
-          :class="{ 'card--disabled': !canPlay(card), 'card--playing': playingIndex === i }"
-          @click="playingIndex === null && canPlay(card) && play(i)"
+          :class="{ 'card--disabled': !canPlay(card) || enemyActing, 'card--playing': playingIndex === i }"
+          @click="!enemyActing && playingIndex === null && canPlay(card) && play(i)"
         >
           <div class="facedown__mark">?</div>
           <div class="facedown__note">가려진 카드</div>
@@ -445,10 +501,10 @@ void ui;
         v-for="(card, i) in combat.hand"
         :key="`${card.instanceId ?? card.id}-${i}`"
         class="card"
-        :class="{ 'card--disabled': !canPlay(card), 'card--locked': isLocked(card), 'card--junk': card.unplayable, 'card--playing': playingIndex === i }"
+        :class="{ 'card--disabled': !canPlay(card) || enemyActing, 'card--locked': isLocked(card), 'card--junk': card.unplayable, 'card--playing': playingIndex === i }"
         :style="{ borderColor: cardBorder(card) }"
         v-tooltip.hold="cardDetailText(card)"
-        @click="playingIndex === null && canPlay(card) && play(i)"
+        @click="!enemyActing && playingIndex === null && canPlay(card) && play(i)"
       >
         <div class="card__head">
           <span class="card__cost" :class="{ 'card__cost--up': displayCost(card) > card.cost }">{{ displayCost(card) }}</span>
@@ -477,7 +533,8 @@ void ui;
     <footer class="pile-info">
       <div>드로우 {{ combat.drawPile.length }}</div>
       <div>버림 {{ combat.discardPile.length }}</div>
-      <button class="end-turn" @click="endTurn">턴 종료 →</button>
+      <span class="key-hint" v-tooltip="'1~9·0: 카드 사용 · Space/Enter/E: 턴 종료 · S: 발버둥'">⌨ 단축키</span>
+      <button class="end-turn" :disabled="enemyActing" @click="endTurn">턴 종료 →</button>
     </footer>
   </main>
 
@@ -524,8 +581,10 @@ void ui;
 
 <style scoped>
 .combat-view {
-  display: grid;
-  grid-template-rows: auto 1fr auto;
+  /* flex 컬럼 — hand(.flex:1; overflow-y:auto)가 가변 영역을 차지해 스크롤.
+     (과거 grid auto/1fr/auto는 자식이 8개라 1fr이 hand가 아닌 로그에 배정돼 카드 많을 때 겹침.) */
+  display: flex;
+  flex-direction: column;
   height: 100vh;
   height: 100dvh;
   padding: 1rem 1rem calc(1rem + env(safe-area-inset-bottom));
@@ -568,7 +627,28 @@ void ui;
   background: rgba(60, 130, 80, 0.32);
   border-color: rgba(150, 230, 170, 0.55);
 }
+/* 락(조준형) 배지 묶음 — 다중 락 세로 나열, 과녁 비주얼. */
+.locks { margin-top: 3px; display: flex; flex-direction: column; gap: 2px; align-items: flex-start; }
+.lockin--target {
+  color: #ffd0d0;
+  background: rgba(180, 60, 60, 0.3);
+  border-color: rgba(255, 130, 130, 0.55);
+}
 .vs { font-size: 1.4rem; color: #f6e8b8; text-align: center; }
+/* 적 행동 중 인디케이터 — 순차 행동 동안 입력이 잠겼음을 알린다. */
+.enemy-acting {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #ffb88e;
+  letter-spacing: 0.04em;
+  animation: enemy-acting-pulse 900ms ease-in-out infinite;
+}
+@keyframes enemy-acting-pulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
 
 /* 방금 전 플레이 로그 — 턴 카운터 아래 중앙 정렬. 최신 줄을 밝게. */
 .combat-log {
@@ -818,8 +898,14 @@ void ui;
 .transform-banner strong { color: #ffe8b8; }
 
 .pile-info { display: flex; gap: 1.5rem; padding: 0.8rem 1rem; background: rgba(0,0,0,0.4); border-radius: 8px; color: #b6b6c4; align-items: center; }
+.key-hint { margin-left: auto; font-size: 0.74rem; color: #8a8a99; cursor: help; user-select: none; }
 .end-turn { margin-left: auto; padding: 0.6rem 1.2rem; background: rgba(192,142,255,0.2); border: 1px solid rgba(192,142,255,0.5); color: #f6e8b8; border-radius: 6px; cursor: pointer; font-weight: 600; }
-.end-turn:hover { background: rgba(192,142,255,0.3); }
+/* 힌트가 보이면 그것이 auto 여백을 차지 → 버튼은 작은 간격만. */
+.key-hint + .end-turn { margin-left: 0.8rem; }
+.end-turn:hover:not(:disabled) { background: rgba(192,142,255,0.3); }
+.end-turn:disabled { opacity: 0.4; cursor: not-allowed; }
+/* 데스크톱에서만 단축키 힌트 노출 — 모바일/터치는 키보드가 없으니 숨긴다(버튼은 auto로 우측 정렬 유지). */
+@media (max-width: 640px) { .key-hint { display: none; } }
 
 /* === 결과 화면 === */
 .result-view {

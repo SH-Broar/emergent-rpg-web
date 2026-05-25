@@ -87,7 +87,7 @@ const STATUS_DESCRIPTIONS: Record<string, string> = {
   strength: '주는 피해가 스택만큼 늘어납니다.',
   dexterity: '방어가 스택만큼 늘어납니다.',
   frail: '쌓는 방어가 스택만큼 줄어듭니다.',
-  burn: '화상 — 지속 피해 계열.',
+  burn: '화상 — 매 턴 화상 수치만큼 직접 피해를 입고, 그 뒤 수치가 절반으로 줄어듭니다(1 미만이면 사라짐).',
   paralyze: '마비 — 다음 턴 행동할 수 없습니다(스킵). 매 발동 시 1 감소.',
   spasm: '경련 — 이번 턴 마나가 0이 됩니다. 매 발동 시 1 감소.',
   sap: '주는 피해와 방어가 스택만큼 줄어듭니다. 매 턴 1 감소.',
@@ -136,6 +136,38 @@ export function statusLabel(name: string | undefined): string {
   return STATUS_LABELS[name] ?? name;
 }
 
+/** 락 해제 조건(LockCondition) → 한글 배지 라벨. */
+const LOCK_CONDITION_LABELS: Record<string, string> = {
+  block: '방어',
+  damage: '피해',
+  draw: '드로우',
+  'no-attack': '공격 금지',
+  'no-defense': '방어 금지',
+};
+
+/**
+ * 락 배지 한 줄 — 이름 + 조건 + 진행도. 예: '조준 — 방어 20/40', '정전 — 공격 금지 0/1'.
+ * 금욕형(no-attack/no-defense)은 "턴" 단위 진행도로 표기.
+ */
+export function lockBadgeText(lock: { condition: string; threshold: number; progress: number; label: string }): string {
+  const cond = LOCK_CONDITION_LABELS[lock.condition] ?? lock.condition;
+  const unit = (lock.condition === 'no-attack' || lock.condition === 'no-defense') ? '턴' : '';
+  const p = Math.min(lock.progress, lock.threshold);
+  return `${lock.label} — ${cond} ${p}/${lock.threshold}${unit}`;
+}
+
+/** 락 배지 *툴팁* — 해제 방법 설명. */
+export function lockTooltip(lock: { condition: string; threshold: number; progress: number }): string {
+  switch (lock.condition) {
+    case 'block': return `방어를 누적 ${lock.threshold}만큼 쌓으면 풀립니다(턴에 걸쳐 누적, 줄지 않음).`;
+    case 'damage': return `적에게 누적 ${lock.threshold}만큼 피해를 주면 풀립니다(턴에 걸쳐 누적).`;
+    case 'draw': return `카드를 누적 ${lock.threshold}장 뽑으면 풀립니다(턴에 걸쳐 누적).`;
+    case 'no-attack': return `공격하지 않고 ${lock.threshold}턴을 넘기면 풀립니다. 그 턴에 공격하면 무효가 됩니다.`;
+    case 'no-defense': return `방어하지 않고 ${lock.threshold}턴을 넘기면 풀립니다. 그 턴에 방어하면 무효가 됩니다.`;
+    default: return '조건을 채우면 풀립니다.';
+  }
+}
+
 /** 몬스터 의도(intent) 종류 → 한글 동사. UI는 "{라벨} {수치}" 형태로 표시. */
 const INTENT_KIND_LABELS: Record<string, string> = {
   attack: '공격',
@@ -162,6 +194,7 @@ const INTENT_KIND_LABELS: Record<string, string> = {
   'absorb-emotion': '감정 흡수',
   'feast-debuff': '동기화',
   'grant-possession': '들러붙기',
+  lockin: '락인',
 };
 
 /**
@@ -196,6 +229,8 @@ export function intentLabel(encoded: string | undefined): string {
   if (kind === 'bind' || kind === 'bind-hard' || kind === 'devour') {
     return label; // 게이지는 grapple 표시에서 별도로.
   }
+  // 락인 — 텔레그래프엔 "락인"만(해제법·수치·이름 비공개). 걸린 뒤 배지에서 상세 공개.
+  if (kind === 'lockin') return '락인';
   return label;
 }
 
@@ -242,6 +277,7 @@ export function intentDescription(encoded: string | undefined): string {
     case 'absorb-emotion': return '감정 흡수 — 방어막이 있으면 그 마음을 흡수해 적이 그만큼 강해지고 방어가 사라집니다.';
     case 'feast-debuff': return '동기화 — 디버프에 걸려 있으면 그에 동기화해 디버프 종류 수만큼 적이 회복하고 단단해집니다.';
     case 'grant-possession': return '들러붙기 — 떼어낼 수 없는 빙의 카드를 덱에 박습니다. 쓸수록 각성이 차오르고, 끝에 가서 좋은 것이든 나쁜 것이든 정체를 드러냅니다.';
+    case 'lockin': return '락인 — 적이 조준합니다. 걸린 뒤 배지의 조건을 채우면 풀립니다. 다 풀지 못한 채 적이 노리면 강하게 몰아칩니다.';
     default: return intentLabel(encoded);
   }
 }
@@ -325,6 +361,7 @@ const RELIC_TRIGGER_LABELS: Record<string, string> = {
   'on-rest': '휴식 시',
   'on-turn-start': '턴 시작 시',
   'on-turn-end': '턴 종료 시',
+  'on-draw': '카드 드로우 시',
   'on-card-play': '카드 사용 시',
   'on-card-played-before': '카드 사용 직전',
   'on-card-played-after': '카드 사용 시',
@@ -404,7 +441,7 @@ export function relicEffectText(eff: RelicEffect): string {
     case 'combat-start-block': return `전투 시작 시 방어 ${v}`;
     case 'combat-start-draw': return `전투 시작 시 카드 ${v}장 더 뽑기`;
     case 'combat-start-hand-card': return `전투 시작 시 손에 특수 카드 1장 지급`;
-    case 'retain-hand': return `턴이 끝나도 손패를 버리지 않음`;
+    case 'retain-hand': return `보존 — 턴이 끝나도 손패를 버리지 않음`;
     case 'combat-start-status': return `전투 시작 시 ${statusLabel((eff.params?.arg ?? eff.params?.status) as string | undefined)} ${v}`;
     case 'turn-start-block': return `매 턴 방어 ${v}`;
     case 'turn-start-hp-loss': return `매 턴 시작 시 HP -${v}`;
@@ -420,6 +457,7 @@ export function relicEffectText(eff: RelicEffect): string {
     case 'hurt-to-color': return `피해를 받으면 무작위 컬러 +${v}`;
     case 'retaliate': return `피해를 받으면 적에게 ${v} 피해`;
     case 'hurt-to-block': return `피해를 받으면 방어 ${v}`;
+    case 'damage-enemy': return `카드를 뽑을 때마다 적에게 ${v} 피해`;
     // --- 컬러/스탯 영구 상승 (트리거가 '언제'를 결정) ---
     case 'boost-color': return `${colorKo(eff.params?.arg)} ${signed(v)}`;
     case 'boost-stat': return `${BOOST_STAT_PAIR_KO[String(eff.params?.arg ?? '')] ?? metricKo(eff.params?.arg)} 컬러쌍 ${signed(v)}`;

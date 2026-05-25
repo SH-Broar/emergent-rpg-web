@@ -16,6 +16,7 @@
 #   combat-enemy-status:S:N  적에게 status S(vulnerable/weakness/poison 등) N 스택
 #   combat-self-status:S:N   자신에게 status S(strength 등) N 스택
 #   combat-free-grapple      구속/삼킴 즉시 해제
+#   cleanse-group:GROUP      플레이어 디버프를 그룹별 정화 (GROUP: low/mid/high/all). 전투 전용.
 #   heal:N (combat=true)     전투 중이면 combat HP + 런 HP 동시 회복
 
 [item.i-potion-small]
@@ -204,6 +205,52 @@ rank = rare
 combat = true
 effects = combat-draw:1, combat-mana:1
 consumable = true
+
+
+# ============================================================
+# 정화 물약 4종 강도별 디버프 정화. 전투 중에만 사용, 턴당 1회.
+#   하급 : 약화·취약·중독·점액·화상
+#   중급 : 수면·세뇌·각인·유령화·경련
+#   상급 : 퇴행·마비·비용교란
+#   전체 : 위 일반 디버프 전부
+#   구속·삼킴은 해방의 줄칼, 빙의·혼란은 본명의 거울이 따로 담당.
+# ============================================================
+
+[item.i-cleanse-minor]
+name = 산뜻한 물비누
+description = 한 줌 거품으로 가벼운 군내를 씻어낸다. 약함·취약·중독·끈끈함·화상이 보글보글 사라진다.
+rank = common
+combat = true
+effects = cleanse-group:low
+consumable = true
+flavor = 거품이 톡 터질 때마다 한 가지씩 개운해진다.
+
+[item.i-cleanse-medium]
+name = 또랑또랑 물방울
+description = 머리 위로 똑 떨어지면 정신이 번쩍 든다. 졸음·홀림·새겨진 자국·흐릿함·떨림을 털어낸다.
+rank = rare
+combat = true
+effects = cleanse-group:mid
+consumable = true
+flavor = 한 방울이면 멍하던 머리가 맑게 갠다.
+
+[item.i-cleanse-major]
+name = 단단한 마음 사탕
+description = 입에 물면 마음이 단단해진다. 무뎌짐·굳음·비용이 뒤엉킨 교란까지 곧게 펴 준다.
+rank = rare
+combat = true
+effects = cleanse-group:high
+consumable = true
+flavor = 오독 깨물면, 어지럽던 것이 제자리로 돌아온다.
+
+[item.i-cleanse-full]
+name = 반짝 정화의 비
+description = 머리부터 발끝까지 가벼운 비가 한 번 지나간다. 몸에 들러붙은 일반 디버프가 한꺼번에 씻겨 내려간다.
+rank = legendary
+combat = true
+effects = cleanse-group:all
+consumable = true
+flavor = 비가 그치면, 처음 그 자리로 돌아온 듯 산뜻하다.
 
 
 # ============================================================

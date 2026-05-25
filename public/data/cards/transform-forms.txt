@@ -21,7 +21,7 @@ source = form
 element = fire
 cost = 1
 trigger = manual
-effects = damage:7:enemy, apply-status:2:enemy:poison
+effects = damage:7:enemy, apply-status:5:enemy:burn
 flavor = 푸른 불꽃이 살갗을 핥는다.
 
 [card.c-fox-charm]

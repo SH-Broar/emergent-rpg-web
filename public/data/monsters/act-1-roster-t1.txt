@@ -78,7 +78,7 @@ attack = 5
 defense = 0
 actions = 2
 lock_in = 6
-intents = drain:3, attack:3, add-card:2:junk~unlocked=attack:3, attack:3
+intents = drain:3, attack:3, add-card-draw:c-junk-wound:1~unlocked=attack:3, attack:3
 gold = 8
 time_shards = 3
 card_drops =
@@ -144,7 +144,7 @@ attack = 6
 defense = 0
 actions = 2
 lock_in = 8
-intents = attack:6, defend:5, attack:7, add-card:2:junk~unlocked=attack:4, buff:1, attack:8
+intents = attack:6, defend:5, attack:7, add-card-draw:c-junk-wound:1~unlocked=attack:4, buff:1, attack:8
 gold = 18
 time_shards = 5
 card_drops =

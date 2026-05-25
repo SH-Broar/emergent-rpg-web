@@ -168,7 +168,7 @@ export function performActivity(nodeId: string): void {
 // roll ≤ n 이면 성공. 실패해도 *기본 보상*은 받고, 성공하면 *특수 보상*(건 컬러 대폭 + 보너스).
 
 /** 컬러값과 무관한 기본 성공 보정 — 컬러 0이어도 이만큼 성공 확률. */
-export const ACTIVITY_BASE_BONUS = 20;
+export const ACTIVITY_BASE_BONUS = 15;
 
 /** 건 컬러값(0~100) → 성공 확률 n(0~100). roll ≤ n 이면 성공. 활동 유물(성공률 보정) 가산. */
 export function activitySuccessChance(colorValue: number): number {

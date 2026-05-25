@@ -375,6 +375,21 @@ gold = 19
 time_shards = 6
 card_drops =
 
+# 조준 반디 — 락(조준형) 데모 몬스터. 누적형(block/draw)·금욕형(no-attack)·가변 묶음(슬롯2)·
+# any-lock 분기(강행동+전체 해제). 텔레그래프엔 "락인"만, 걸린 뒤 배지에 이름·조건·진행도.
+# intents 슬롯: 콤마=턴, 같은 슬롯 안 +=동시 여러 행동, ~unlocked=활성 락 0개일 때 약행동.
+[monster.mr-enicham-lockon-firefly]
+name = 조준 반디
+tier = normal
+species = drone
+hp = 190
+attack = 8
+defense = 0
+intents = lockin:block:30:조준, attack:5+lockin:no-attack:1:정전, lockin:draw:5:표식, attack:8, attack:22~unlocked=attack:6
+gold = 21
+time_shards = 7
+card_drops =
+
 [monster.mr-enicham-proto-agi]
 name = AI N.E.K.O
 tier = elite

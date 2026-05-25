@@ -14,6 +14,7 @@ export type RelicSource =
   | 'elite'       // 엘리트 노드 보상
   | 'boss'        // 보스 클리어 보상
   | 'shop'        // 상점 구매
+  | 'npc'         // 영입 NPC 시그니처 유물 (상점 풀에도 포함되는 일반 출처)
   | 'meta';       // 메타 진행 해금
 
 /** 유물 효과 트리거. */
@@ -27,6 +28,7 @@ export type RelicTriggerKind =
   | 'on-card-played-after'     // 카드 사용 직후 (효과 적용 후, discard 전)
   | 'on-turn-start'            // 플레이어 턴 시작
   | 'on-turn-end'              // 플레이어 턴 종료 (몬스터 행동 전)
+  | 'on-draw'                  // 플레이어가 전투 중 카드를 드로우할 때 (드로우 1장당 1회)
   | 'on-damage-taken'          // 플레이어 피해 입을 때
   | 'on-block-gain'            // 플레이어 block 획득 시 (본 라운드 발동 미구현)
   | 'on-rest'

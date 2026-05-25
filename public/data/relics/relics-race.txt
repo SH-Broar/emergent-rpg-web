@@ -14,9 +14,9 @@ flavor = 어느 한쪽으로도 기울지 않는 무게. 인간이 시대를 건
 name = 바람결 깃
 rank = common
 source = race
-trigger = on-combat-start
-effects = combat-start-hand-card:0:c-moth-windgather
-flavor = 전투마다 손에 *바람갈무리*(0코·2드로우·손에 남음) 한 장이 깃든다. 덱을 빠르게 훑어 속도를 낸다.
+trigger = on-draw
+effects = damage-enemy:1
+flavor = 카드를 한 장 뽑을 때마다 깃에서 작은 불티가 떨어져 적을 콕 찌른다. 많이 뽑을수록 더 매섭게.
 
 [relic.r-race-phantom]
 name = 패를 쥔 손

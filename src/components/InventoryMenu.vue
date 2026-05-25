@@ -143,6 +143,12 @@ function itemEffectLabel(eff: Item['effects'][number]): string {
     case 'combat-enemy-status': return `[전투] 적 ${statusLabel(String(eff.param ?? ''))} +${eff.value ?? 0}`;
     case 'combat-self-status': return `[전투] ${statusLabel(String(eff.param ?? ''))} +${eff.value ?? 0}`;
     case 'combat-free-grapple': return '[전투] 구속 해제';
+    case 'cleanse-group': {
+      const g: Record<string, string> = {
+        low: '하급 디버프 정화', mid: '중급 디버프 정화', high: '상급 디버프 정화', all: '디버프 전체 정화',
+      };
+      return `[전투] ${g[String(eff.param ?? 'all')] ?? '디버프 정화'}`;
+    }
   }
   return '';
 }

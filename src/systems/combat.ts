@@ -16,6 +16,7 @@ import type {
   CombatState,
   Combatant,
   EffectTarget,
+  LockCondition,
   Monster,
   MonsterDrop,
 } from '@/data/schemas';
@@ -27,6 +28,7 @@ import { bonusesFromEffective } from './equipment';
 import {
   applyModifiers,
   fireRelicTrigger,
+  fireOnDraw,
   getModifierAdd,
   getModifierMul,
   onCombatStart as fireOnCombatStart,
@@ -35,6 +37,12 @@ import {
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
+import {
+  activeLocks,
+  gainPlayerBlock,
+  progressLocks,
+  settleAbstinenceLocks,
+} from './locks';
 import {
   enemyHpMul,
   enemyAtkMul,
@@ -122,6 +130,20 @@ export function statusBonusForCardEffectKind(
   return 0;
 }
 
+// ============================================================================
+// 락(조준형) — 행동별 락 + "락 있나?" 단일 분기. (deep-interview: 락인 + 조건블록 재설계)
+// ----------------------------------------------------------------------------
+// 적이 `lockin:<condition>:<value>:<label>` 행동으로 건다. 다중 락 동시 가능.
+// 해제 진행도는 *턴에 걸쳐 누적, 감쇠 없음*. progress ≥ threshold면 해당 락 제거.
+//   - 누적형(block/damage/draw): 플레이어 행동이 일어날 때 progress 누적.
+//   - 금욕형(no-attack/no-defense): 플레이어 턴 종료 시, 그 턴에 해당 행동을 *안 했으면* progress +1,
+//     했으면 그 턴 무효(progress 불변). progress ≥ threshold면 해제.
+// ============================================================================
+
+// 락 진행 로직(activeLocks / progressLocks / clearSatisfiedLocks / gainPlayerBlock /
+// settleAbstinenceLocks)은 systems/locks.ts 로 추출됨 — 유물·포션도 같은 경로로 방어를 얻어
+// block 락 progress 에 반영하기 위함(순환 import 회피). 상단 import 참조.
+
 /**
  * 통합 피해 적용 — 모든 피해 경로(카드 damage / 컬러 피해 / 적 공격)가 이 함수를 거친다.
  *
@@ -188,6 +210,23 @@ function tickPoison(target: Combatant): void {
     delete target.statuses.poison;
   } else {
     target.statuses.poison = next;
+  }
+}
+
+/**
+ * burn(화상) 턴 처리 — poison과 같은 타이밍에 호출(대상 턴 시작/종료).
+ * 중독과 달리 *절반 감쇠*: 현재 수치만큼 직접 hp 피해 → 그 뒤 floor(절반)로 줄이고, 1 미만이면 소멸.
+ * (예: 20→[20피해]→10→[10피해]→5→[5피해]→2→[2피해]→1→[1피해]→소멸.) block 무시 순수 직접 피해.
+ */
+function tickBurn(target: Combatant): void {
+  const stack = target.statuses?.burn ?? 0;
+  if (stack <= 0) return;
+  target.hp = Math.max(0, target.hp - stack);
+  const next = Math.floor(stack / 2);
+  if (next < 1) {
+    delete target.statuses.burn;
+  } else {
+    target.statuses.burn = next;
   }
 }
 
@@ -312,8 +351,12 @@ export function startCombat(monster: Monster) {
     enemyIntentQueue: initIntents,
     intentCooldowns: {},
     enemyBaseAttack: monster.attack,
-    // 락인 수치 — 적이 락인 의도(`~unlocked=`)를 쓸 때 플레이어가 풀려면 그 턴 쌓아야 할 방어량.
+    // 락인 수치(레거시) — lockin 행동을 안 쓰는 옛 몹의 전역 단일 락. 신규 몹은 0.
     lockIn: monster.lockIn ?? 0,
+    // 락(조준형) — 행동별 락 목록. 적이 lockin 행동으로 채운다. 금욕 추적 플래그 초기화.
+    locks: [],
+    lockAttackedThisTurn: false,
+    lockDefendedThisTurn: false,
     player,
     hand: drawn,
     drawPile: newDrawPile,
@@ -348,6 +391,9 @@ export function startCombat(monster: Monster) {
 
   // on-combat-start 유물 발동, 이어서 1턴의 on-turn-start.
   fireOnCombatStart();
+  // 시작 손패도 드로우 — on-draw 유물(나방 바람결 깃)이 첫 손패 장수만큼 발동.
+  // on-combat-start 이후에 발동해 combat-start-draw로 늘어난 손패가 아닌 *시작 드로우*만 카운트.
+  fireOnDraw(combat, drawn.length);
   fireRelicTrigger('on-turn-start', { run: r, combat });
 }
 
@@ -431,7 +477,7 @@ function applyBossEnemyTurn(c: CombatState): void {
       ui.toast('info', '정령이 이 순간을 되감는다.');
     }
     // 적 자신의 디버프 제거.
-    for (const key of ['vulnerable', 'weakness', 'poison', 'regress']) {
+    for (const key of ['vulnerable', 'weakness', 'poison', 'burn', 'regress']) {
       delete c.enemy.statuses[key];
     }
   }
@@ -505,6 +551,7 @@ export function playCard(handIndex: number, monster: Monster): { enemyDefeated: 
 
   // 로그용 스냅샷 — 효과 적용 전후 차이로 "방금 전 플레이 내용" 요약.
   const snapEnemyHp = c.enemy.hp;
+  const snapEnemyBlock = c.enemy.block;
   const snapPlayerHp = c.player.hp;
   const snapPlayerBlock = c.player.block;
   const snapEnemyStatus = countStatuses(c.enemy.statuses);
@@ -519,6 +566,16 @@ export function playCard(handIndex: number, monster: Monster): { enemyDefeated: 
   }
 
   (c as { currentPlayingCard?: Card }).currentPlayingCard = undefined;
+
+  // 락(damage) + 금욕(no-attack) — 이 카드가 적에게 입힌 피해(HP+block 감소분)를 누적.
+  // block 흡수분도 "입힌 피해"로 세어 카드의 공격 의도를 인정한다(0보다 크면 공격한 것).
+  {
+    const dealt = (snapEnemyHp + snapEnemyBlock) - (c.enemy.hp + c.enemy.block);
+    if (dealt > 0) {
+      c.lockAttackedThisTurn = true;
+      progressLocks(c, 'damage', dealt);
+    }
+  }
 
   // 카드 사용 결과를 전투 로그에 기록 — 피해/방어/회복/디버프 델타를 짧게 요약.
   {
@@ -683,7 +740,9 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
       'block-out-add',
     ));
     for (const t of targets) {
-      t.block += value;
+      // 플레이어 방어는 락(block/no-defense) 일원화 함수를 거친다. 그 외 대상은 직접 가산.
+      if (t === c.player) gainPlayerBlock(c, value);
+      else t.block += value;
     }
   },
   draw: (e, c) => {
@@ -692,6 +751,8 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
     c.hand = [...c.hand, ...drawn];
     c.drawPile = newDrawPile;
     c.discardPile = newDiscardPile;
+    fireOnDraw(c, drawn.length);
+    progressLocks(c, 'draw', drawn.length); // 락(draw) 누적.
   },
   'apply-status': (e, c) => {
     const targets = resolveTargets(e.target ?? 'enemy', c);
@@ -741,7 +802,8 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
       'block-out-add',
     ));
     for (const t of targets) {
-      t.block += value;
+      if (t === c.player) gainPlayerBlock(c, value);
+      else t.block += value;
     }
   },
   // === 측정 어려운 메커니즘 (1차 배치) — 컬러/상태/HP/패 ===
@@ -773,7 +835,7 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
       colors.fire, colors.water, colors.electric, colors.iron,
       colors.earth, colors.wind, colors.light, colors.dark,
     );
-    c.player.block += Math.floor(top * (e.value ?? 1));
+    gainPlayerBlock(c, Math.floor(top * (e.value ?? 1)));
   },
   // params.color 컬러 ≥ params.threshold면 value장 드로우.
   'draw-if-color': (e, c) => {
@@ -785,6 +847,8 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
       c.hand = [...c.hand, ...drawn];
       c.drawPile = newDrawPile;
       c.discardPile = newDiscardPile;
+      fireOnDraw(c, drawn.length);
+      progressLocks(c, 'draw', drawn.length); // 락(draw) 누적.
     }
   },
   // (적 디버프 스택 총합) × value + base 데미지.
@@ -792,7 +856,7 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
     const s = c.enemy.statuses;
     // regress(퇴행)/feral도 포함한 *모든* 적 디버프 스택 총합 (status 작동).
     const debuffSum = (s.vulnerable ?? 0) + (s.weakness ?? 0) + (s.frail ?? 0)
-      + (s.poison ?? 0) + (s.feral ?? 0) + (s.regress ?? 0);
+      + (s.poison ?? 0) + (s.burn ?? 0) + (s.feral ?? 0) + (s.regress ?? 0);
     // regress면 atkBonus 0 (playerBonuses).
     const atkBonus = playerBonuses(c).damage + statusBonusForCardEffectKind('damage', c.player.statuses);
     const value = applyModifiers((e.value ?? 0) * debuffSum + atkBonus, 'damage-out-add', 'damage-out-mul');
@@ -922,16 +986,37 @@ function resolveTargets(target: EffectTarget, c: CombatState): Combatant[] {
   }
 }
 
+/** 적 턴 진행 결과 — 종료 신호(승/패) 공통 형태. */
+export interface TurnResult {
+  playerDefeated: boolean;
+  enemyDefeated?: boolean;
+}
+
 /**
- * 플레이어 턴 종료. 적 행동 → 다음 턴 시작.
- * 플레이어 사망 시 { playerDefeated: true }.
- * 적이 (poison 등으로) 턴 종료 중 사망하면 { enemyDefeated: true } — 호출자가 승리 처리.
+ * === 적 턴을 *단계별*로 노출하는 API (작업 34: 적 행동 순차 애니메이션) ===
+ *
+ * 뷰가 각 적 행동 사이에 짧은 딜레이를 넣어 *시각적으로* 하나씩 보여줄 수 있게,
+ * 기존 endPlayerTurn의 atomically 하던 흐름을 다음 3단계로 쪼갠다:
+ *   1) beginEnemyTurn  — 교란 감소 · on-turn-end 유물 · 적 poison/burn 틱(행동 *전*).
+ *      → 적이 여기서 죽거나(독) freeze면 액션 큐 없이 종료 신호. 아니면 실행할 큐를 돌려준다.
+ *   2) runEnemyAction  — 큐의 *한* 의도만 실행. 사망 체크.
+ *   3) finishEnemyTurn — 큐 종료 후 나머지(플레이어 사망 체크 · retaliate · 보스 적턴 ·
+ *      상태 감쇠 · 재드로우 · 다음 의도 · 상태 턴시작). 다음 플레이어 턴이 여기서 시작된다.
+ *
+ * *전투 결과(데미지·상태 틱·승패 판정)는 기존 endPlayerTurn과 100% 동일* — 순서·계산 변경 없음.
+ * 딜레이 표현이 불가능/불필요한 경우(reduced-motion, freeze)는 endPlayerTurn 동기 래퍼가 그대로 처리.
  */
-export function endPlayerTurn(monster: Monster): { playerDefeated: boolean; enemyDefeated?: boolean } {
+
+/** 적 턴 1단계 — 행동 *전* 처리. done이 set이면 액션 없이 즉시 종료(승/패), 아니면 queue로 행동 실행. */
+export function beginEnemyTurn(monster: Monster): { queue: string[]; done?: TurnResult } {
   const run = useRunStore();
   const r = run.data;
   const c = r.combat;
-  if (!c) return { playerDefeated: false };
+  if (!c) return { queue: [], done: { playerDefeated: false } };
+
+  // 금욕형 락(no-attack/no-defense) 턴 정산 — *방금 끝난 플레이어 턴* 기준. 안 했으면 +1, 했으면 무효.
+  // 적 행동 *전*에 정산해 ~unlocked 분기(엔진/텔레그래프)가 새 락 상태를 본다. 추적 플래그도 여기서 리셋.
+  settleAbstinenceLocks(c);
 
   // 카드 교란 지속 감소 — *끝나는* 이번 턴이 은폐/비용상승 대상이었으므로 1 소모.
   if ((c.obscuredTurns ?? 0) > 0) c.obscuredTurns = (c.obscuredTurns ?? 0) - 1;
@@ -944,30 +1029,51 @@ export function endPlayerTurn(monster: Monster): { playerDefeated: boolean; enem
   fireRelicTrigger('on-turn-end', { run: r, combat: c });
 
   // 적 poison(중독) — 적 턴 종료 처리. 몬스터 행동 *전*에 틱.
-  // (poison으로 적 hp 0이 되면 행동을 생략하고 *승리* 신호 — CombatView가 onVictory.)
+  // (poison으로 적 hp 0이 되면 행동을 생략하고 *승리* 신호 — 호출자가 onVictory.)
   // 분열 적은 부활(resolveEnemyDefeat false) → 행동을 계속 진행.
   tickPoison(c.enemy);
+  tickBurn(c.enemy);
   if (resolveEnemyDefeat(c)) {
-    return { playerDefeated: false, enemyDefeated: true };
+    return { queue: [], done: { playerDefeated: false, enemyDefeated: true } };
   }
 
   // r4: debugFlag freezeEnemies — 적 행동 시뮬 스킵 (전투 정지 디버그). *디버그 전투에서만* 적용.
-  {
-    const ui = useUiStore();
-    const freeze =
-      ui.debug.freezeEnemies && !!(ui.debugBattle.monsterId || ui.debugBattle.bossId);
-    if (!freeze) {
-      // 멀티액션: 큐의 의도를 연달아 실행. 중간에 플레이어 사망/적 처치 시 즉시 종료.
-      const queue = (c.enemyIntentQueue && c.enemyIntentQueue.length > 0)
-        ? c.enemyIntentQueue
-        : (c.enemyIntent ? [c.enemyIntent] : []);
-      for (const intent of queue) {
-        executeMonsterIntent(c, monster, intent);
-        if (c.player.hp <= 0) return { playerDefeated: true };
-        if (resolveEnemyDefeat(c)) return { playerDefeated: false, enemyDefeated: true };
-      }
-    }
-  }
+  const ui = useUiStore();
+  const freeze =
+    ui.debug.freezeEnemies && !!(ui.debugBattle.monsterId || ui.debugBattle.bossId);
+  if (freeze) return { queue: [] };
+
+  // 멀티액션: 큐의 의도를 연달아 실행. (실행은 runEnemyAction 한 번에 1개씩.)
+  const queue = (c.enemyIntentQueue && c.enemyIntentQueue.length > 0)
+    ? c.enemyIntentQueue
+    : (c.enemyIntent ? [c.enemyIntent] : []);
+  void monster;
+  return { queue: [...queue] };
+}
+
+/**
+ * 적 턴 2단계 — 큐의 *한* 의도만 실행. 사망 체크 후 종료 신호(있으면 done)·없으면 계속.
+ * 큐 스냅샷의 intent 문자열을 받아 실행하므로, 실행 도중 큐가 바뀌어도 안전(예: 변신).
+ */
+export function runEnemyAction(monster: Monster, intent: string): { done?: TurnResult } {
+  const run = useRunStore();
+  const c = run.data.combat;
+  if (!c) return { done: { playerDefeated: false } };
+  executeMonsterIntent(c, monster, intent);
+  if (c.player.hp <= 0) return { done: { playerDefeated: true } };
+  if (resolveEnemyDefeat(c)) return { done: { playerDefeated: false, enemyDefeated: true } };
+  return {};
+}
+
+/**
+ * 적 턴 3단계 — 모든 적 행동 종료 후 나머지 처리 + 다음 플레이어 턴 시작.
+ * (원본 endPlayerTurn의 행동 루프 *이후* 전부.)
+ */
+export function finishEnemyTurn(monster: Monster): TurnResult {
+  const run = useRunStore();
+  const r = run.data;
+  const c = r.combat;
+  if (!c) return { playerDefeated: false };
 
   if (c.player.hp <= 0) {
     return { playerDefeated: true };
@@ -1042,10 +1148,18 @@ export function endPlayerTurn(monster: Monster): { playerDefeated: boolean; enem
   // 손패에 드로우 추가(retain이면 유지된 손패 위에 누적). 10장 초과분은 버린 더미로.
   const HAND_CAP = 10;
   const room = Math.max(0, HAND_CAP - c.hand.length);
-  c.hand = [...c.hand, ...drawn.slice(0, room)];
+  const added = drawn.slice(0, room);
+  c.hand = [...c.hand, ...added];
   if (drawn.length > room) c.discardPile = [...c.discardPile, ...drawn.slice(room)];
+  // 새 턴 손패 드로우 — on-draw 유물(나방)이 실제 손에 들어온 장수만큼 발동.
+  fireOnDraw(c, added.length);
+  // 주의: *자동* 새 턴 드로우는 draw 락에 카운트하지 않는다 — 적이 막 건 draw 락이 다음 자동 드로우로
+  //       즉시 풀려 무의미해지는 것을 막는다. draw 락은 *능동적으로 draw 카드를 쓸 때만* 진행한다.
 
-  const nextIntents = buildIntentQueue(monster, c.turn, c.enemyIntentRotation);
+  // 슬롯 인덱스는 *0-기반*이라야 한다(startCombat이 0으로 첫 슬롯을 뽑음). c.turn은 방금 +1되어
+  // 1-기반이므로 c.turn-1을 넘겨 슬롯이 0,1,2,3,4… 순으로 *건너뜀 없이* 회전하게 한다.
+  // (구 코드는 c.turn을 그대로 넘겨 슬롯 1을 통째로 건너뛰는 오프바이원 버그가 있었음 — 함께 교정.)
+  const nextIntents = buildIntentQueue(monster, c.turn - 1, c.enemyIntentRotation);
   c.enemyIntent = nextIntents[0];
   c.enemyIntentQueue = nextIntents;
 
@@ -1056,8 +1170,9 @@ export function endPlayerTurn(monster: Monster): { playerDefeated: boolean; enem
   // 플레이어 상태 턴 시작 — 마비(이번 턴 스킵)/경련(이번 턴 마나 0). 보스 기믹 후 적용.
   applyPlayerStatusTurnStart(c);
 
-  // 플레이어 poison(중독) — 새 턴 시작 시 틱. block 무시 직접 hp 피해.
+  // 플레이어 poison(중독)·burn(화상) — 새 턴 시작 시 틱. block 무시 직접 hp 피해.
   tickPoison(c.player);
+  tickBurn(c.player);
   if (c.player.hp <= 0) {
     return { playerDefeated: true };
   }
@@ -1065,6 +1180,24 @@ export function endPlayerTurn(monster: Monster): { playerDefeated: boolean; enem
   // 새 턴 진입 trigger — 드로우/마나 리셋 완료 후.
   fireRelicTrigger('on-turn-start', { run: r, combat: c });
   return { playerDefeated: false };
+}
+
+/**
+ * 플레이어 턴 종료 (동기 래퍼) — beginEnemyTurn → runEnemyAction* → finishEnemyTurn을
+ * 한 번에 실행. 원본과 동일한 결과를 보장하며, reduced-motion·freeze 등 *순차 표현이 필요 없는*
+ * 경우의 폴백 경로로 쓰인다. 뷰는 애니메이션이 필요할 때 단계 API를 직접 await로 호출한다.
+ *
+ * 플레이어 사망 시 { playerDefeated: true }.
+ * 적이 (poison 등으로) 턴 종료 중 사망하면 { enemyDefeated: true } — 호출자가 승리 처리.
+ */
+export function endPlayerTurn(monster: Monster): TurnResult {
+  const begin = beginEnemyTurn(monster);
+  if (begin.done) return begin.done;
+  for (const intent of begin.queue) {
+    const step = runEnemyAction(monster, intent);
+    if (step.done) return step.done;
+  }
+  return finishEnemyTurn(monster);
 }
 
 /**
@@ -1084,7 +1217,10 @@ function applyPlayerStatusTurnStart(c: CombatState): void {
     c.player.hp = Math.min(c.player.maxHp, c.player.hp + cTurn.heal);
   }
   if (cTurn.block > 0 && !playerWild(c)) {
+    // 동료 *자동* 방어 — block 락 진행엔 기여하되, no-defense 추적 플래그는 *건드리지 않는다*
+    // (플레이어가 능동적으로 방어한 게 아니므로 금욕형 락을 자동으로 깨지 않게).
     c.player.block += cTurn.block;
+    progressLocks(c, 'block', cTurn.block);
   }
 
   // 변신 해제 카운트다운 — '본모습' 카드 사용 후 ~2턴에 걸쳐 풀린다.
@@ -1300,8 +1436,18 @@ export function completeHardStruggle(success: boolean): { freed: boolean } {
 function executeMonsterIntent(c: CombatState, monster?: Monster, intentOverride?: string) {
   // 동적 의도 — *실행 시점의 현재 상태*로 재평가(예고 후 그 턴에 수화가 풀렸으면 공격으로 복귀).
   // resolveIntent가 쿨다운 중인 특수는 이미 평타로 대체했으므로, 여기 들어온 특수는 *실제 발동*분.
-  const intent = resolveIntent(intentOverride ?? c.enemyIntent, c);
+  const encoded = intentOverride ?? c.enemyIntent;
+  const intent = resolveIntent(encoded, c);
   if (!intent) return;
+
+  // `~unlocked=` 분기에서 *base(강행동) 경로*를 탔는가 — 즉 활성 락이 남아 override가 아닌 base가 선택됨.
+  // base를 실행한 *뒤* 활성 락을 전부 해제(소모)한다. override(약행동) 경로면 이미 락 0이라 변화 없음.
+  // 판정: 원본에 `~unlocked=`가 있고, resolveIntent가 base(틸드 앞)를 돌려줬을 때.
+  let clearLocksAfter = false;
+  if (encoded && encoded.includes('~unlocked=')) {
+    const base = encoded.slice(0, encoded.indexOf('~'));
+    if (intent === base && activeLocks(c).length > 0) clearLocksAfter = true;
+  }
   // 특수 행동이 실제로 들어오면 쿨다운 기록 — 다음 N턴 재발동(예고 포함) 금지.
   {
     const key = specialIntentKey(intent);
@@ -1514,8 +1660,28 @@ function executeMonsterIntent(c: CombatState, monster?: Monster, intentOverride?
       applyTransformation(c, parts[1]);
       break;
     }
+    // === 락(조준형) 걸기 ===
+    case 'lockin': {
+      // lockin:<condition>:<value>:<label> — 조준형 락을 건다(다중 가능). 텔레그래프엔 "락인"만 노출.
+      // 누적형(block/damage/draw)은 threshold=값, 금욕형(no-attack/no-defense)은 threshold=깨끗이 넘길 턴 수(기본 1).
+      const condition = parts[1] as LockCondition;
+      const valid: LockCondition[] = ['block', 'damage', 'draw', 'no-attack', 'no-defense'];
+      if (valid.includes(condition)) {
+        const threshold = Math.max(1, Number(parts[2]) || 1);
+        const label = parts[3] || '조준';
+        activeLocks(c).push({ condition, threshold, progress: 0, label });
+        useUiStore().toast('warning', `${label} — 조준당했다!`);
+      }
+      break;
+    }
     default:
       break;
+  }
+
+  // `~unlocked=` base(강행동) 경로를 탔으면 — 행동 실행 *후* 활성 락 전부 해제(소모).
+  if (clearLocksAfter) {
+    c.locks = [];
+    useUiStore().toast('warning', '조준이 풀리며 강하게 몰아쳤다 — 락이 모두 해제됐다.');
   }
 
   // 적 행동 결과를 전투 로그에 기록 — 델타 우선, 없으면 인텐트 종류로 표기.
@@ -1665,7 +1831,11 @@ function transformToJunk(c: CombatState, count: number): void {
  * 이번 턴 적 인텐트 토큰 선택.
  * rotation(카오스 all-gimmick이 만든 종족 기믹 포함 배열)이 주어지면 그것을, 아니면 monster.intents를 순회.
  */
-function pickIntent(monster: Monster, turn: number, rotation?: string[]): string {
+/**
+ * 이번 턴의 *슬롯 문자열* 하나를 회전에서 뽑는다(가변 묶음 `+`·분기 `~unlocked=` 포함, verbatim).
+ * 슬롯이 곧 회전 단위 — turn은 슬롯 인덱스로 직접 쓴다(멀티액션 곱셈 없음).
+ */
+function pickSlot(monster: Monster, turn: number, rotation?: string[]): string {
   const rot = rotation && rotation.length > 0 ? rotation : null;
   if (rot) return rot[turn % rot.length];
   if (monster.intents.length === 0) return 'attack:5';
@@ -1673,13 +1843,21 @@ function pickIntent(monster: Monster, turn: number, rotation?: string[]): string
 }
 
 /**
- * 이번 턴 적이 실행할 의도 목록 — monster.actions만큼 회전에서 *연속 위치*를 뽑는다.
- * actions=1(미설정 포함)이면 [pickIntent(turn)]로 기존 단일 행동과 동일.
+ * 이번 턴 적이 실행할 *액션 큐* — 한 턴 슬롯을 가변 묶음(`+`)으로 펼친다.
+ *
+ *  - 슬롯 안 `+`로 이어진 행동들은 각각 별개 큐 항목이 되어 작업34(useEnemyTurn)가 하나씩 순차 실행한다.
+ *  - 회전은 *슬롯 단위*로 진행한다(turn = 슬롯 인덱스). 신규 저작은 `+` 묶음을 쓴다.
+ *  - 레거시 `actions=N` 호환: 설정돼 있으면 *그 한 슬롯을 N회 반복*한 묶음으로 fallback(쌍바늘 태엽기 등).
  */
 function buildIntentQueue(monster: Monster, turn: number, rotation?: string[]): string[] {
-  const actions = Math.max(1, Math.floor(monster.actions ?? 1));
+  const slot = pickSlot(monster, turn, rotation);
+  // 슬롯 안 `+` 묶음 → 개별 액션. 공백/빈 토큰 제거.
+  const actions = slot.split('+').map((s) => s.trim()).filter((s) => s.length > 0);
+  // 레거시 actions=N: 그 슬롯(전체 묶음)을 N회 반복.
+  const repeat = Math.max(1, Math.floor(monster.actions ?? 1));
+  if (repeat <= 1) return actions.length > 0 ? actions : [slot];
   const out: string[] = [];
-  for (let i = 0; i < actions; i++) out.push(pickIntent(monster, turn * actions + i, rotation));
+  for (let i = 0; i < repeat; i++) out.push(...(actions.length > 0 ? actions : [slot]));
   return out;
 }
 
@@ -1691,9 +1869,17 @@ function intentConditionMet(flag: string, c: CombatState): boolean {
     case 'block': return c.player.block > 0;
     case 'sleep': return (s.sleep ?? 0) > 0;
     case 'possession': return (s.possession ?? 0) > 0;
-    // 락인 해제 — 플레이어가 그 턴 방어 ≥ 락인 수치를 쌓았는가. 충족 시 special→약공격(override).
-    // lockIn 0/미설정이면 항상 true → 락인 의도를 *쓰지 않는* 평범한 적엔 영향 없음.
-    case 'unlocked': return (c.player.block ?? 0) >= (c.lockIn ?? 0);
+    // 락 해제 — *활성 락 0개*면 해제(override=약행동). 락이 남았으면 base(강행동)+전체 해제.
+    //  - 신규(조준형): c.locks 기준.
+    //  - 레거시 호환: lockin 행동을 *안 쓰는* 옛 몹(c.locks 비었고 c.lockIn>0)은 옛 의미로 폴백
+    //    (그 턴 방어 ≥ lockIn). 신규 락인 몹은 lock_in 미지정(0)이라 이 폴백을 타지 않는다.
+    case 'unlocked': {
+      const locks = c.locks ?? [];
+      if (locks.length === 0 && (c.lockIn ?? 0) > 0) {
+        return (c.player.block ?? 0) >= (c.lockIn ?? 0);
+      }
+      return locks.length === 0;
+    }
     case 'debuff': {
       for (const k of DECAYING_DEBUFFS) if ((s[k] ?? 0) > 0) return true;
       return false;

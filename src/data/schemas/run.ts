@@ -86,6 +86,20 @@ export interface ShopInventory {
   materials?: ShopMaterialSlot[];
 }
 
+/** 락 해제 조건 종류. */
+export type LockCondition = 'block' | 'damage' | 'draw' | 'no-attack' | 'no-defense';
+
+/**
+ * 락(조준형) — 적이 행동으로 거는 누적 해제 장치. CombatState.locks[]의 원소.
+ * (상세는 CombatState.locks 주석 참조.)
+ */
+export interface Lock {
+  condition: LockCondition;
+  threshold: number;
+  progress: number;
+  label: string;
+}
+
 /** 적/플레이어 공유 전투 상태 표식. */
 export interface Combatant {
   hp: number;
@@ -113,11 +127,33 @@ export interface CombatState {
   /** 쿨다운 대체 시 쓸 적 기본 공격치(monster.attack). startCombat이 설정. */
   enemyBaseAttack?: number;
   /**
-   * 락인 수치 — 적 전용 기믹. 적 의도가 `<special>~unlocked=attack:<weak>`로 인코딩되어 있을 때,
-   * *플레이어가 그 턴 방어 ≥ lockIn*이면 special이 약공격으로 교체된다(resolveIntent).
-   * monster.lockIn에서 시드. 0이면 항상 unlocked로 판정되므로 *락인 몬스터엔 반드시 >0 지정*.
+   * 락인 수치 — *레거시* 적 전용 기믹(전역 단일 락). 적 의도가 `<special>~unlocked=attack:<weak>`로
+   * 인코딩되어 있고 *lockin 행동을 쓰지 않는* 옛 몬스터에서만 쓰인다. monster.lockIn에서 시드.
+   * 그 턴 방어 ≥ lockIn이면 special→약공격(호환 경로). 신규 저작은 `lockin:` 행동 + `locks`를 쓴다.
+   * 0/미설정이면 락인 몹이 아니다(평범한 적엔 영향 0).
    */
   lockIn?: number;
+
+  /**
+   * 락(조준형) 목록 — *행동별 락* 재설계. 적이 `lockin:<condition>:<value>:<label>` 행동으로 건다.
+   * 다중 락 동시 가능(서로 다른 조건). 해제 진행도는 *턴에 걸쳐 누적, 감쇠 없음*.
+   *  - condition: 해제 방식.
+   *      block      = 락 동안 누적 방어 합 ≥ threshold.
+   *      damage     = 적에게 누적 피해 ≥ threshold.
+   *      draw       = 뽑은 카드 수 ≥ threshold.
+   *      no-attack  = (금욕형) 공격 없이 threshold 턴을 넘김(그 턴에 공격하면 카운트 무효).
+   *      no-defense = (금욕형) 방어 없이 threshold 턴을 넘김.
+   *  - threshold: 충족 목표(누적형=수치, 금욕형=깨끗이 넘길 턴 수).
+   *  - progress : 현재 누적치. ≥ threshold면 해당 락 제거.
+   *  - label    : 작가 지정 표시이름(배지 — 텔레그래프는 "락인"만).
+   * 분기 `~unlocked=`는 *활성 락 0개*면 override, 아니면 base(강행동) + **활성 락 전부 해제**.
+   * 전투 단위 — startCombat에서 []로 초기화. 옛 세이브(combat 직렬화)엔 없을 수 있어 *읽을 때 ?? [] 가드*.
+   */
+  locks?: Lock[];
+  /** 금욕형 락 추적 — 이번 플레이어 턴에 *공격*(피해 주는 카드)을 했는가. 매 턴 false 리셋. */
+  lockAttackedThisTurn?: boolean;
+  /** 금욕형 락 추적 — 이번 플레이어 턴에 *방어*(블록 획득)를 했는가. 매 턴 false 리셋. */
+  lockDefendedThisTurn?: boolean;
   player: Combatant;
   hand: Card[];
   drawPile: Card[];
@@ -135,7 +171,7 @@ export interface CombatState {
   log?: string[];
 
   /**
-   * 적 인텐트 로테이션 *오버라이드* — set이면 pickIntent가 monster.intents 대신 이 배열을 순회.
+   * 적 인텐트 로테이션 *오버라이드* — set이면 pickSlot이 monster.intents 대신 이 배열을 순회.
    * 카오스 all-gimmick(만물의 송곳니)이 startCombat에서 종족 대표 기믹을 끼워 넣은 결과.
    * 일반 전투(미설정)에선 monster.intents를 그대로 쓴다. 전투 단위(세이브 round-trip 안전 — optional).
    */

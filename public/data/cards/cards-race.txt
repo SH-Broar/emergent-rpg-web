@@ -106,7 +106,7 @@ source = race
 element = wind
 cost = 1
 trigger = manual
-effects = damage:6:enemy, draw:1:self
+effects = damage:3:enemy, draw:1:self
 upgrade_to = c-moth-flutter-plus
 flavor = 고속으로 한 발의 화살을 발사한다.
 
@@ -117,7 +117,7 @@ source = race
 element = wind
 cost = 1
 trigger = manual
-effects = damage:7:enemy, draw:1:self
+effects = damage:4:enemy, draw:1:self
 flavor = 더욱 빠른 속도로 화살을 발사한다.
 
 [card.c-moth-volley]
@@ -127,7 +127,7 @@ source = race
 element = electric
 cost = 0
 trigger = manual
-effects = damage:4:enemy
+effects = damage:2:enemy
 upgrade_to = c-moth-volley-plus
 flavor = 겨눌 틈도 없이 화살을 쏜다.
 
@@ -138,7 +138,7 @@ source = race
 element = electric
 cost = 0
 trigger = manual
-effects = damage:6:enemy
+effects = damage:3:enemy
 flavor = 활시위가 멈출 새도 없이 화살을 쏜다.
 
 [card.c-moth-glide]
@@ -169,7 +169,7 @@ source = race
 element = wind
 cost = 2
 trigger = manual
-effects = damage:4:enemy, damage:4:enemy
+effects = damage:2:enemy, damage:2:enemy
 upgrade_to = c-moth-gale-plus
 flavor = 순식간에 두 발의 화살을 발사한다.
 
@@ -180,12 +180,12 @@ source = race
 element = wind
 cost = 2
 trigger = manual
-effects = damage:4:enemy, damage:4:enemy, damage:1:enemy
+effects = damage:2:enemy, damage:2:enemy, damage:1:enemy
 flavor = 몰아치는 바람처럼, 한 번에 세 발의 화살을 발사한다.
 
-# 나방 전용 *바람갈무리* — 시그니처 유물 바람결 깃이 전투 시작마다 손에 1장 지급.
-# 0코스트, 2드로우, 사용 후 *손으로 복귀*(버리지 않음) → 덱을 빠르게 훑는 속도 엔진.
-# source=form → 어떤 풀에도 등장 안 함, 런 덱 미오염(전투 중에만 존재).
+# 나방 전용 바람갈무리 — 0코스트, 2드로우, 사용 후 손으로 복귀(버리지 않음).
+# (2026-05-25) 유물 바람결 깃이 on-draw 데미지로 재설계되며 자동 지급은 제거됨.
+#   카드 정의는 dangling 방지·재사용 여지를 위해 보존. source=form → 어떤 풀에도 미등장.
 [card.c-moth-windgather]
 name = 바람갈무리
 rank = common

@@ -691,6 +691,10 @@ function parseItemEffect(token: string): ItemEffect | null {
   if (kind === 'grant-card' || kind === 'grant-relic') {
     return { kind, param: parts[1] };
   }
+  // cleanse-group:GROUP — param이 그룹명 문자열('low'|'mid'|'high'|'all').
+  if (kind === 'cleanse-group') {
+    return { kind, param: parts[1] ?? 'all' };
+  }
   if (kind === 'teleport-village' || kind === 'cleanse-transform' || kind === 'combat-free-grapple') {
     return { kind };
   }
@@ -1110,8 +1114,7 @@ const DATA_FILES = [
   // 빙의 획득 사건 (2026-05-23) — day>=2, grant-possession/grant-possession-guardian. tier2+ 권역 풀에 배선.
   'data/events/events-possession.txt',
   'data/monsters/mvr-monsters.txt',
-  // act-1-region-monsters.txt(구 38종)는 Stage 3 로스터 v2로 전면 대체되어 *미로드*(파일은 이력 보존).
-  // 모든 노드 enemy + 권역 풀이 mr-* 로스터를 참조 — 구 m-{region}-* 참조 0 확인됨.
+  // 구 38종(act-1-region-monsters.txt)은 특별 기믹 없는 attack/defend류라 로스터 v2로 전면 대체 후 삭제됨(2026-05-25).
   // === 몬스터 로스터 v2 (Stage 3, 2026-05-21) — 권역별 ~147종, 지리 4티어 HP + 종족 기믹. ===
   'data/monsters/act-1-roster-t1.txt',
   'data/monsters/act-1-roster-t2.txt',

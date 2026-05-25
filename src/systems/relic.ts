@@ -36,6 +36,9 @@ import { drawCards, instantiateCard } from '@/systems/deck';
 import { rng } from '@/systems/rng';
 import { applyColorBoost, applyColorBoostAll, type ColorKey } from '@/systems/colors';
 import { deriveStats } from '@/systems/stats';
+// 유물발 방어도 block 락 progress 에 반영(QA Medium-1) — 카드/포션과 동일 경로.
+// locks.ts 는 타입+ui store 만 의존하므로 relic.ts↔combat.ts 순환을 만들지 않는다.
+import { gainPlayerBlock } from '@/systems/locks';
 
 const ALL_8_COLORS: ColorKey[] = ['fire', 'water', 'electric', 'iron', 'earth', 'wind', 'light', 'dark'];
 
@@ -176,6 +179,8 @@ function drawIntoHand(c: CombatState, n: number): void {
   c.hand.push(...drawn);
   c.drawPile = newDrawPile;
   c.discardPile = newDiscardPile;
+  // 유물발 드로우도 on-draw 발동(장수만큼). damage-enemy 등은 카드를 뽑지 않으므로 재귀 없음.
+  fireOnDraw(c, drawn.length);
 }
 
 /** 플레이어에게 상태 부여 (스택 누적). */
@@ -287,7 +292,8 @@ const HANDLERS: Record<string, RelicEffectHandler> = {
   // ===== 전투 시작 (on-combat-start) =====
   'combat-start-block': (eff, ctx) => {
     if (!ctx.combat) return;
-    ctx.combat.player.block += eff.value ?? 0;
+    // 전투 시작 시점엔 락이 아직 없으므로 progress 누적은 no-op(영향 없음). 경로 일원화 목적의 호출.
+    gainPlayerBlock(ctx.combat, eff.value ?? 0);
   },
   'combat-start-draw': (eff, ctx) => {
     if (!ctx.combat) return;
@@ -332,7 +338,7 @@ const HANDLERS: Record<string, RelicEffectHandler> = {
   // ===== 턴 시작 (on-turn-start) =====
   'turn-start-block': (eff, ctx) => {
     if (!ctx.combat) return;
-    ctx.combat.player.block += eff.value ?? 0;
+    gainPlayerBlock(ctx.combat, eff.value ?? 0);
   },
   'turn-start-hp-loss': (eff, ctx) => {
     if (!ctx.combat) return;
@@ -389,9 +395,14 @@ const HANDLERS: Record<string, RelicEffectHandler> = {
     if (!ctx.combat) return;
     damageEnemyDirect(ctx.combat, eff.value ?? 0);
   },
+  // 현재 적에게 직접 N 피해 (vulnerable 반영·block 흡수). on-draw 등에서 사용 (나방 바람결 깃).
+  'damage-enemy': (eff, ctx) => {
+    if (!ctx.combat) return;
+    damageEnemyDirect(ctx.combat, eff.value ?? 0);
+  },
   'hurt-to-block': (eff, ctx) => {
     if (!ctx.combat) return;
-    ctx.combat.player.block += eff.value ?? 0;
+    gainPlayerBlock(ctx.combat, eff.value ?? 0);
   },
 
   // ===== 컬러/스탯 영구 상승 (트리거-무관: on-acquire / on-node-enter / on-combat-end / on-turn-start / on-rest / on-item-use / on-color-gain) =====
@@ -413,7 +424,7 @@ const HANDLERS: Record<string, RelicEffectHandler> = {
     if (!ctx.combat) return;
     const div = eff.value ?? 10;
     if (div <= 0) return;
-    ctx.combat.player.block += Math.floor(metricValue(String(eff.params?.arg ?? '')) / div);
+    gainPlayerBlock(ctx.combat, Math.floor(metricValue(String(eff.params?.arg ?? '')) / div));
   },
   'strength-from-metric': (eff, ctx) => {
     if (!ctx.combat) return;
@@ -426,7 +437,7 @@ const HANDLERS: Record<string, RelicEffectHandler> = {
   // 턴 번호 × value 방어 (스노볼).
   'turn-start-block-snowball': (eff, ctx) => {
     if (!ctx.combat) return;
-    ctx.combat.player.block += (ctx.combat.turn ?? 1) * (eff.value ?? 0);
+    gainPlayerBlock(ctx.combat, (ctx.combat.turn ?? 1) * (eff.value ?? 0));
   },
   // 턴 ≥ arg 부터 매 턴 힘 +value (후반 가속).
   'turn-after-strength': (eff, ctx) => {
@@ -438,7 +449,7 @@ const HANDLERS: Record<string, RelicEffectHandler> = {
   'turn-before-block': (eff, ctx) => {
     if (!ctx.combat) return;
     const n = Number(eff.params?.arg ?? 3);
-    if ((ctx.combat.turn ?? 1) <= n) ctx.combat.player.block += eff.value ?? 0;
+    if ((ctx.combat.turn ?? 1) <= n) gainPlayerBlock(ctx.combat, eff.value ?? 0);
   },
   // 턴 번호의 1의 자리 == arg 일 때 무작위 컬러 +value (창의적 연계).
   'turn-units-color': (eff, ctx) => {
@@ -544,6 +555,21 @@ export function onCombatStart() {
 export function onCombatEnd() {
   const run = useRunStore();
   fireRelicTrigger('on-combat-end', { run: run.data });
+}
+
+/**
+ * 전투 중 카드를 드로우할 때: on-draw 발동 *드로운 장수만큼*(1장당 1회).
+ * combat이 있어야(전투 중) 발동 — 전투 밖 드로우는 무의미하므로 호출자가 combat 유무로 가드.
+ * 핸들러(damage-enemy 등)는 카드를 *뽑지 않으므로* 재귀/무한루프 없음.
+ * combat 인자는 호출자(combat.ts/item.ts)가 직접 넘긴다(useRunStore().data.combat과 동일 참조).
+ */
+export function fireOnDraw(combat: CombatState | undefined, count: number): void {
+  if (!combat || count <= 0) return;
+  const run = useRunStore();
+  if (!run.data.relics.length) return;
+  for (let i = 0; i < count; i++) {
+    fireRelicTrigger('on-draw', { run: run.data, combat });
+  }
 }
 
 /** 노드 진입 시: on-node-enter 발동. */

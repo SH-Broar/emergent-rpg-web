@@ -105,7 +105,7 @@ source = event
 element = fire
 cost = 1
 trigger = manual
-effects = damage:3:enemy, apply-status:2:enemy:poison
+effects = damage:3:enemy, apply-status:5:enemy:burn
 upgrade_to = c-burn-mark-plus
 flavor = 순간적으로 열을 발사해 뜨겁게 만든다.
 
@@ -253,7 +253,7 @@ source = event
 element = fire
 cost = 1
 trigger = manual
-effects = damage:5:enemy, apply-status:3:enemy:poison
+effects = damage:5:enemy, apply-status:7:enemy:burn
 flavor = 커다란 불덩이를 발사한다.
 
 
@@ -280,7 +280,7 @@ source = shop
 element = fire
 cost = 2
 trigger = manual
-effects = damage:9:enemy, apply-status:6:enemy:poison
+effects = damage:9:enemy, apply-status:14:enemy:burn
 flavor = 모스 대장간의 불은 일 년 내내 식지 않는다.
 upgrade_to = c-moss-ember-strike-plus
 
@@ -1076,7 +1076,7 @@ source = shop
 element = fire
 cost = 2
 trigger = manual
-effects = damage:14:enemy, apply-status:3:enemy:poison
+effects = damage:14:enemy, apply-status:7:enemy:burn
 flavor = 트리플라워 분화구의 식지 않은 불씨가 한꺼번에 쏟아진다. 살갗에 오래 남는 잿불.
 
 [card.c-falcon-skydive]
@@ -1211,7 +1211,7 @@ source = shop
 element = fire
 cost = 2
 trigger = manual
-effects = damage:12:enemy, apply-status:9:enemy:poison
+effects = damage:12:enemy, apply-status:20:enemy:burn
 flavor = 모스 대장간의 불이 태우지 못 하는 건 없다.
 
 [card.c-tacomi-hologram-mirror-plus]
@@ -1934,7 +1934,7 @@ source = shop
 element = fire
 cost = 2
 trigger = manual
-effects = damage:20:enemy, apply-status:4:enemy:poison
+effects = damage:20:enemy, apply-status:9:enemy:burn
 flavor = 식지 않은 불씨가, 더 오래 쏟아진다.
 
 [card.c-falcon-skydive-plus]

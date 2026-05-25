@@ -18,9 +18,11 @@ import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
 import { instantiateCard, drawCards } from './deck';
-import { acquireRelic, fireRelicTrigger } from './relic';
+import { acquireRelic, fireRelicTrigger, fireOnDraw } from './relic';
 import { revertTransformationState } from './combat';
 import { isNoMapPotion } from './chaos';
+// 포션 방어도 block 락 progress 에 반영(QA Medium-1) — 카드/유물과 동일 경로(순환 없는 locks.ts).
+import { gainPlayerBlock } from './locks';
 
 export interface UseItemContext {
   /** teleport-village 등 *대상 노드*가 필요한 효과에서 사용자가 노드 ID를 선택. */
@@ -36,7 +38,23 @@ const COMBAT_EFFECT_KINDS = new Set<ItemEffect['kind']>([
   'combat-enemy-status',
   'combat-self-status',
   'combat-free-grapple',
+  'cleanse-group',
 ]);
+
+/**
+ * 정화 물약 그룹 → 제거할 상태키 목록.
+ *  - low : 약화·취약(vulnerable/frail)·중독·점액·화상
+ *  - mid : 수면·세뇌·각인·유령화·경련
+ *  - high: 퇴행·마비 (+ 비용교란 costUp은 핸들러에서 별도 처리)
+ *  - all : 위 일반 디버프 전부
+ * 구속/삼킴/거미줄(grapple/web)·빙의/혼란(possession/brainwash 잔존)은 *제외*.
+ */
+const CLEANSE_GROUPS: Record<string, string[]> = {
+  low: ['weakness', 'vulnerable', 'frail', 'poison', 'slime', 'burn'],
+  mid: ['sleep', 'brainwash', 'imprint', 'ghost', 'spasm'],
+  high: ['regress', 'paralyze'],
+};
+CLEANSE_GROUPS.all = [...CLEANSE_GROUPS.low, ...CLEANSE_GROUPS.mid, ...CLEANSE_GROUPS.high];
 
 /**
  * *클릭해서 사용 가능한* 아이템인가 — 효과가 있는 소비형.
@@ -271,13 +289,14 @@ function applyItemEffect(
       c.hand = [...c.hand, ...drawn];
       c.drawPile = newDrawPile;
       c.discardPile = newDiscardPile;
+      fireOnDraw(c, drawn.length);
       lines.push(`카드 ${drawn.length}장 드로우`);
       break;
     }
     case 'combat-block': {
       if (!inCombat || !c) break;
       const v = eff.value ?? 0;
-      c.player.block += v;
+      gainPlayerBlock(c, v);
       lines.push(`방어 +${v}`);
       break;
     }
@@ -316,6 +335,25 @@ function applyItemEffect(
         freed = true;
       }
       if (!freed) lines.push('묶인 상태가 아니다');
+      break;
+    }
+    case 'cleanse-group': {
+      if (!inCombat || !c) break;
+      const group = String(eff.param ?? 'all');
+      const keys = CLEANSE_GROUPS[group] ?? CLEANSE_GROUPS.all;
+      let removed = 0;
+      for (const key of keys) {
+        if ((c.player.statuses?.[key] ?? 0) > 0) {
+          delete c.player.statuses[key];
+          removed += 1;
+        }
+      }
+      // high/all 그룹은 비용교란(costUp 교란 객체)도 함께 푼다 — 상태키가 아니라 별도 필드.
+      if ((group === 'high' || group === 'all') && c.costUp) {
+        c.costUp = undefined;
+        removed += 1;
+      }
+      lines.push(removed > 0 ? `디버프 ${removed}종을 씻어냈다` : '씻어낼 디버프가 없다');
       break;
     }
   }
