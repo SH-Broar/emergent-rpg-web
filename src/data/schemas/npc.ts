@@ -67,6 +67,11 @@ export interface GiftPreference {
  */
 export interface CompanionBonuses {
   /**
+   * 패시브 사유 한 줄(툴팁) — *왜* 이 보너스가 붙는지 사람이 읽는 설명.
+   * (Item 37-② Stage C 배치3) 데이터 키: `companion_passive_desc`. 표시 전용, 게임 로직 무관.
+   */
+  description?: string;
+  /**
    * 상태이상 저항 — 적이 *플레이어에게* 디버프를 걸 때 부여량을 status별로 감소(최소 0).
    * key='all'이면 모든 감쇠 디버프에 적용. 예: { weakness: 1, all: 1 }.
    */

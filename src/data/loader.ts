@@ -684,7 +684,9 @@ function parseRecruitBonuses(f: IniSection): CompanionBonuses | undefined {
   const rewardMul = rewardRaw
     ? { gold: rewardRaw.gold, shards: rewardRaw.shards, gather: rewardRaw.gather }
     : undefined;
-  return { statusResist, combatStart, perTurn, rewardMul };
+  // 패시브 사유 한 줄(Item 37-② Stage C 배치3) — 표시 전용.
+  const description = f.companion_passive_desc;
+  return { description, statusResist, combatStart, perTurn, rewardMul };
 }
 
 /**

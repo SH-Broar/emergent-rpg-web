@@ -106,6 +106,14 @@ intents = attack:9, defend:8, attack:9, defend:8
 gold = 14
 time_shards = 5
 card_drops =
+# 동료 (Item 37-② Stage C 배치3) — golem 약체 스킬. 강철 몸으로 앞을 막아선다.
+recruitable = true
+companion_kind = skill
+companion_skill_name = 방벽
+companion_skill_cooldown = 3
+companion_skill_fd = 3
+companion_skill_desc = 방어 14를 세운다. 강철 몸이 앞을 단단히 막아선다.
+companion_skill_effects = block:14:self
 
 [monster.mr-moss-forge-titan]
 name = 시실렘
@@ -475,6 +483,14 @@ intents = drain:4, attack:4, attack:5, attack:4
 gold = 12
 time_shards = 4
 card_drops =
+# 동료 (Item 37-② Stage C 배치3) — wraith 약체 스킬. 스산한 기운으로 적을 무르게 만든다.
+recruitable = true
+companion_kind = skill
+companion_skill_name = 스산함
+companion_skill_cooldown = 3
+companion_skill_fd = 3
+companion_skill_desc = 적에게 취약 2를 건다. 스산한 기운이 몸을 무르게 만든다.
+companion_skill_effects = apply-status:2:enemy:vulnerable
 
 [monster.mr-mano-ruin-lurker]
 name = 유적 잠복자

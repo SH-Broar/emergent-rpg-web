@@ -102,6 +102,7 @@ function describeCompanion(comp: Companion | undefined): { typeLabel: string; bo
   // passive
   const r = comp.passive;
   if (r) {
+    if (r.description) bonuses.push(r.description);
     if (r.statusResist) {
       const parts = Object.entries(r.statusResist)
         .filter(([, v]) => (v ?? 0) !== 0)

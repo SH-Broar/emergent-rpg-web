@@ -30,6 +30,14 @@ intents = attack:4, attack:5, attack:6, attack:7, defend:5
 gold = 8
 time_shards = 3
 card_drops =
+# 동료 (Item 37-② Stage C 배치3) — imp 약체 스킬. 잡동사니를 던지며 다음 한 수를 챙긴다.
+recruitable = true
+companion_kind = skill
+companion_skill_name = 잡동사니 던지기
+companion_skill_cooldown = 2
+companion_skill_fd = 2
+companion_skill_desc = 적에게 8 피해를 주고 카드 1장을 뽑는다. 손에 잡히는 대로 던진다.
+companion_skill_effects = damage:8:enemy, draw:1:self
 
 [monster.mr-iluneon-guild-rat]
 name = 곳간 쥐수인
@@ -75,6 +83,14 @@ intents = attack:4, ghost:2, attack:5, attack:4
 gold = 7
 time_shards = 2
 card_drops =
+# 동료 (Item 37-② Stage C 배치3) — spirit 약체 스킬. 불빛을 깜빡여 적을 흐트러뜨린다.
+recruitable = true
+companion_kind = skill
+companion_skill_name = 깜빡임
+companion_skill_cooldown = 3
+companion_skill_fd = 3
+companion_skill_desc = 적에게 약화 2를 건다. 불빛이 한 번 깜빡여 손끝이 무뎌진다.
+companion_skill_effects = apply-status:2:enemy:weakness
 
 [monster.mr-iluneon-market-sneak]
 name = 시장 잠입자
@@ -199,6 +215,14 @@ intents = attack:3, attack:3, attack:4, defend:3
 gold = 7
 time_shards = 2
 card_drops =
+# 동료 (Item 37-② Stage C 배치3) — harpy 약체 스킬. 가시 깃을 곤두세워 막고 되받는다.
+recruitable = true
+companion_kind = skill
+companion_skill_name = 가시 깃
+companion_skill_cooldown = 3
+companion_skill_fd = 3
+companion_skill_desc = 방어 8을 세우고 가시 3을 둘러 받은 만큼 되돌려 준다. 깃을 곤두세운다.
+companion_skill_effects = block:8, apply-status:3:self:thorns
 
 [monster.mr-lar-forest-spiderling]
 name = 숲 새끼 거미
@@ -212,6 +236,14 @@ intents = attack:3, debuff:1:frail, attack:3, attack:3
 gold = 7
 time_shards = 2
 card_drops =
+# 동료 (Item 37-② Stage C 배치3) — spider 약체 스킬. 거미줄로 적의 다음 동작을 한 차례 묶는다.
+recruitable = true
+companion_kind = skill
+companion_skill_name = 거미줄
+companion_skill_cooldown = 4
+companion_skill_fd = 3
+companion_skill_desc = 적의 다음 행동 하나를 묶어 멈춘다. 가는 실이 발을 붙든다.
+companion_skill_effects = skip-enemy-action:1
 
 [monster.mr-lar-forest-rootcrawler]
 name = 뿌리 지렁이
@@ -400,6 +432,14 @@ intents = attack:3, attack:3, attack:4, defend:3
 gold = 7
 time_shards = 2
 card_drops =
+# 동료 (Item 37-② Stage C 배치3) — werewolf 약체 스킬. 단숨에 달려들어 할퀴어 낸다.
+recruitable = true
+companion_kind = skill
+companion_skill_name = 할퀴기
+companion_skill_cooldown = 2
+companion_skill_fd = 2
+companion_skill_desc = 적에게 12 피해를 준다. 굶주린 발톱이 단숨에 달려든다.
+companion_skill_effects = damage:12:enemy
 
 [monster.mr-tradepost-caravan-thief]
 name = 상단 박쥐
@@ -413,6 +453,14 @@ intents = drain:3, attack:3, drain:3, attack:3
 gold = 9
 time_shards = 3
 card_drops =
+# 동료 (Item 37-② Stage C 배치3) — 흡혈 박쥐 약체 스킬. 피해를 주고 그만큼 빨아 회복한다.
+recruitable = true
+companion_kind = skill
+companion_skill_name = 흡혈
+companion_skill_cooldown = 3
+companion_skill_fd = 3
+companion_skill_desc = 적에게 8 피해를 주고 5 회복한다. 빨아들인 만큼 기운을 채운다.
+companion_skill_effects = damage:8:enemy, heal:5:self
 
 [monster.mr-tradepost-wanderer]
 name = 상단 오크

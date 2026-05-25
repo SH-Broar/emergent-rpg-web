@@ -14,11 +14,14 @@ background = 딜롭 부족 늘어진 귀가 긴 형태.|두 귀가 발끝까지 
 tagline = "(긴 귀를 한 번 늘어뜨린다)"
 tags = diropel, long-ear, tribe
 affinity_rewards = 3:card=c-quickdraw:gauge=3
-# 영입 긴 귀로 먼저 듣는 민첩. 귀 기울임(드로우) + 한 겹 방어.
+# 영입 (Item 37-② Stage C 배치3). 딜롭 부족 긴 귀 리포 — 발을 굴러 땅을 울리며 적의 발을 묶는다.
 recruit_enabled = true
-recruit_cards = c-lop-sign
-recruit_colors = earth:10, wind:6
-recruit_combat_start = draw:1
+companion_kind = skill
+companion_skill_name = 땅울림
+companion_skill_cooldown = 4
+companion_skill_fd = 3
+companion_skill_desc = 14 피해를 주고 적의 동작을 한 차례 둔하게 만든다. 땅을 울려 발을 묶는다.
+companion_skill_effects = damage:14, slow-enemy:1
 
 [npc.npc-diropel-short]
 name = 코하
@@ -34,3 +37,11 @@ background = 딜롭 부족 늘어진 귀가 짧은 형태.|짧고 둥근 귀가 
 tagline = "(둥근 귀를 쫑긋 세운다)"
 tags = diropel, short-ear, tribe
 affinity_rewards = 3:card=c-recover:gauge=3
+# 영입 (Item 37-② Stage C 배치3). 딜롭 부족 짧은 귀 코하 — 단단한 가죽으로 막고 가시처럼 되받는다.
+recruit_enabled = true
+companion_kind = skill
+companion_skill_name = 단단한 가죽
+companion_skill_cooldown = 3
+companion_skill_fd = 3
+companion_skill_desc = 방어 16을 세우고 가시 3을 둘러 받은 만큼 되돌려 준다. 두꺼운 가죽이 받아낸다.
+companion_skill_effects = block:16, apply-status:3:self:thorns

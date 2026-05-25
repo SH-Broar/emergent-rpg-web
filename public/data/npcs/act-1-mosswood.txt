@@ -36,6 +36,14 @@ background = 마로의 쌍둥이 동생이지만, 마로의 강한 마력에 영
 tagline = "누나 또 어디 가? 나도 데려가!"
 tags = twin, earth-affinity, child
 affinity_rewards = 3:card=c-strike:gauge=3
+# 영입 (Item 37-② Stage C 배치3). 장난꾸러기 정령 같은 아이 — 무엇이 튀어나올지 그때그때 다르다(무작위).
+recruit_enabled = true
+companion_kind = skill
+companion_skill_name = 짓궂은 장난
+companion_skill_cooldown = 3
+companion_skill_fd = 3
+companion_skill_desc = 무엇이 나올지는 그때그때. 큰 피해·전체 취약·카드와 마나·가득 회복 중 하나.
+companion_skill_effects = random-effect
 
 [npc.npc-caliburn]
 name = 칼리번
@@ -72,6 +80,11 @@ background = 미스트폰드의 습기를 돌보는 수목 정령.|안개가 지
 tagline = " 조용히, 천천히 지나가세요."
 tags = dryad, water, earth-affinity
 affinity_rewards = 3:card=c-recover:gauge=3
+# 영입 (Item 37-② Stage C 배치3). 수목 정령 — 곁에 머무는 동안 매 턴 작은 가호로 감싼다.
+recruit_enabled = true
+companion_kind = passive
+companion_passive_desc = 수목 정령의 가호가 매 턴 감싼다.
+recruit_per_turn = block:2
 
 [npc.npc-seraphine]
 name = 세라핀
