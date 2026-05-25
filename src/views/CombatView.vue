@@ -158,9 +158,24 @@ function onVictory() {
   // (옛 코드: dynamic import().then() → markCombatCleared가 먼저 동기 실행돼 보상이 스킵되던 버그.)
   drop.value = applyMonsterDrop(monster.value.drop, data.cards);
   applyCombatVictoryReward(run.data.currentNodeId);
+  // Item 37-② Stage B — 자동 동료 영입. 처치한 몬스터가 recruitable + companion 정의면 roster 추가.
+  tryRecruitDefeated();
   run.markCombatCleared(run.data.currentNodeId);
   clearCombat();
   phase.value = 'victory';
+}
+
+/**
+ * 처치한 몬스터 자동 영입 (Item 37-② Stage B).
+ * recruitable + companion 정의가 있을 때만. 중복(이미 roster)이면 토스트 없이 스킵.
+ * 디버그 전투(ui.debugBattle)에서도 monster.value 가 권위 소스라 동일하게 동작.
+ */
+function tryRecruitDefeated() {
+  const m = monster.value;
+  if (!m.recruitable || !m.companion) return;
+  if (run.recruitMonster(m.id)) {
+    ui.toast('success', `${m.name}가 동료가 되었다`);
+  }
 }
 
 function onDefeat() {

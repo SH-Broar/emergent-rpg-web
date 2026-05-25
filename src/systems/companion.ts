@@ -17,18 +17,33 @@ import { useDataStore } from '@/stores/data';
 import type { Companion, CompanionBonuses, RosterEntry } from '@/data/schemas';
 
 /**
- * RosterEntry → 통합 Companion 정의. Stage A는 npc만 정의를 갖는다(monster는 Stage B).
+ * RosterEntry → 통합 Companion 정의.
+ *  - src='npc'    : data.npcs 의 companion.
+ *  - src='monster': data.monsters 의 companion, 없으면 data.bosses(arc 동료) 폴백.
+ *    (몬스터·아크 보스 둘 다 roster src='monster' 로 들어오므로 같은 분기에서 조회.)
  * 정의가 없으면 undefined.
  */
 export function companionForEntry(entry: RosterEntry | null | undefined): Companion | undefined {
   if (!entry) return undefined;
   const data = useDataStore();
   if (entry.src === 'npc') {
-    const npc = data.npcs.get(entry.id);
-    return npc?.companion;
+    return data.npcs.get(entry.id)?.companion;
   }
-  // Stage B: monster 동료. 현재는 미정의.
-  return undefined;
+  // Item 37-② Stage B — monster 동료(아크 보스 동료 포함).
+  return data.monsters.get(entry.id)?.companion ?? data.bosses.get(entry.id)?.companion;
+}
+
+/**
+ * RosterEntry → 사람이 읽는 동료 이름.
+ *  - npc     : data.npcs 의 name.
+ *  - monster : data.monsters → data.bosses(아크) 순 name.
+ * 어느 쪽도 못 찾으면 id 그대로(폴백). 표시 전용(전투 스킬 버튼 · 편성 UI · 토스트).
+ */
+export function rosterEntryName(entry: RosterEntry | null | undefined): string {
+  if (!entry) return '';
+  const data = useDataStore();
+  if (entry.src === 'npc') return data.npcs.get(entry.id)?.name ?? entry.id;
+  return data.monsters.get(entry.id)?.name ?? data.bosses.get(entry.id)?.name ?? entry.id;
 }
 
 /** 활성 슬롯에 편성된 *passive 타입* 동료의 보너스 목록. */

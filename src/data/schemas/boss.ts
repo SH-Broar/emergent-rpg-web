@@ -8,6 +8,7 @@
  */
 
 import type { BossId, NamedEntity } from './base';
+import type { Companion } from './npc';
 
 /** 보스의 한 행동 의도. 턴마다 하나씩 노출. */
 export interface BossIntent {
@@ -113,4 +114,12 @@ export interface Boss extends NamedEntity {
     itemIds?: string[];
     gold?: number;
   };
+
+  /**
+   * 통합 동료 정의 (Item 37-② Stage B) — passive/skill/card 택1. NPC와 동일 타입 재사용.
+   * arc 보스(kind='arc')는 승리 시 *맵 복귀*라 동료화가 가능하다. 이 정의가 있으면 onVictory가
+   * roster에 {id, src:'monster'} 로 추가(중복 스킵)한다. 일반 보스(kind='boss')는 승리=런 종료라 보통 미설정.
+   * 로더가 `companion_*` 필드(NPC/몬스터와 동일 키)로부터 합성한다.
+   */
+  companion?: Companion;
 }

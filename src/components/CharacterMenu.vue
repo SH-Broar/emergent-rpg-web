@@ -27,7 +27,8 @@ import {
   unequip,
 } from '@/systems/equipment';
 import { statusLabel } from '@/systems/labels';
-import type { Companion, Element, Equipment, EquipmentSlot } from '@/data/schemas';
+import { companionForEntry, rosterEntryName } from '@/systems/companion';
+import type { Companion, Element, Equipment, EquipmentSlot, RosterEntry } from '@/data/schemas';
 import DeckPanel from '@/components/DeckPanel.vue';
 import Tooltip from '@/components/Tooltip.vue';
 
@@ -132,22 +133,29 @@ function describeCompanion(comp: Companion | undefined): { typeLabel: string; bo
   return { typeLabel: '패시브', bonuses };
 }
 
-/** companion 정의(없으면 legacy recruit를 passive로 폴백). */
-function companionDef(npcId: string): Companion | undefined {
-  const npc = data.npcs.get(npcId);
-  if (npc?.companion) return npc.companion;
-  if (npc?.recruit) return { kind: 'passive', passive: npc.recruit };
+/**
+ * companion 정의(없으면 legacy recruit를 passive로 폴백).
+ * RosterEntry 기준 — npc/monster/boss(아크) 모두 companionForEntry가 처리.
+ * monster/boss 는 legacy recruit 폴백이 없으므로 companionForEntry 결과 그대로.
+ */
+function companionDef(entry: RosterEntry): Companion | undefined {
+  const comp = companionForEntry(entry);
+  if (comp) return comp;
+  // npc 한정 legacy recruit 폴백(구 데이터 호환).
+  if (entry.src === 'npc') {
+    const npc = data.npcs.get(entry.id);
+    if (npc?.recruit) return { kind: 'passive', passive: npc.recruit };
+  }
   return undefined;
 }
 
 /** 로스터 전체 — 이름 + 효과 설명 + 편성 여부 + 편성된 슬롯 인덱스. */
 const rosterInfo = computed(() =>
   (run.data.roster ?? []).map((e) => {
-    const npc = data.npcs.get(e.id);
-    const comp = companionDef(e.id);
+    const comp = companionDef(e);
     const slotIdx = (run.data.activeSlots ?? []).findIndex((s) => s?.id === e.id);
     const { typeLabel, bonuses } = describeCompanion(comp);
-    return { id: e.id, src: e.src, name: npc?.name ?? e.id, typeLabel, bonuses, slotIdx };
+    return { id: e.id, src: e.src, name: rosterEntryName(e), typeLabel, bonuses, slotIdx };
   }),
 );
 
@@ -155,7 +163,7 @@ const rosterInfo = computed(() =>
 const slotView = computed(() =>
   [0, 1, 2].map((i) => {
     const e = (run.data.activeSlots ?? [])[i] ?? null;
-    const name = e ? (data.npcs.get(e.id)?.name ?? e.id) : null;
+    const name = e ? rosterEntryName(e) : null;
     return { index: i, id: e?.id ?? null, name };
   }),
 );

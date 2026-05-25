@@ -513,6 +513,11 @@ export function validateData(dataDir, readFile) {
       const cardId = tok.split(':')[0]?.trim();
       if (cardId && !cardIds.has(cardId)) push(diag('error', 'dangling', `몬스터 '${id}' card_drops 카드 '${cardId}' 미정의`, w));
     }
+    // 동료 영입 (Item 37-② Stage B) — recruitable=true 면 companion 정의 동반 권장(없으면 자동영입 무효).
+    if ((f.recruitable ?? '').trim() === 'true' && !(f.companion_kind ?? '').trim()) {
+      push(diag('warn', 'balance', `몬스터 '${id}' recruitable=true 인데 companion_kind 없음 (영입돼도 효과 없음)`, w));
+    }
+    validateCompanionFields(f, w, `몬스터 '${id}'`, cardIds, push);
   }
 
   // ---- 4.8 보스 검증 (phase intents) ----
@@ -542,6 +547,8 @@ export function validateData(dataDir, readFile) {
       if (!section.startsWith(`boss.${id}.signature.`)) continue;
       validateIntentList(merged[section].intent_overrides, whereOf(section), `보스 '${id}' ${section}`, { cardIds, raceIds }, push);
     }
+    // 동료화 (Item 37-② Stage B) — arc 보스 companion 정의 검증(부모 보스 섹션에만 의미).
+    validateCompanionFields(f, w, `보스 '${id}'`, cardIds, push);
   }
 
   // ---- 4.9 race 검증 (seed cards/relics, starting_deck) ----
@@ -577,23 +584,8 @@ export function validateData(dataDir, readFile) {
     for (const relicId of parseList(f.recruit_relics)) {
       if (!relicIds.has(relicId)) push(diag('error', 'dangling', `NPC '${id}' recruit_relics 유물 '${relicId}' 미정의`, w));
     }
-    // 통합 동료 정의 (Item 37-② Stage A) — companion_kind / 스킬 효과 kind / 카드 dangling.
-    const compKind = (f.companion_kind ?? '').trim();
-    if (compKind && !['passive', 'skill', 'card'].includes(compKind)) {
-      push(diag('error', 'whitelist-kind', `NPC '${id}' companion_kind '${compKind}' 알 수 없음 (passive|skill|card)`, w));
-    }
-    if (compKind === 'skill' && !f.companion_skill_name) {
-      push(diag('error', 'required-fields', `NPC '${id}' companion_kind=skill 인데 companion_skill_name 누락`, w));
-    }
-    for (const tok of parseList(f.companion_skill_effects)) {
-      const kind = tok.split(':')[0]?.trim();
-      if (kind && !VALID_CARD_EFFECT_KINDS.includes(kind)) {
-        push(diag('error', 'whitelist-kind', `NPC '${id}' companion_skill_effects 알 수 없는 효과 kind '${kind}'`, w));
-      }
-    }
-    for (const cardId of parseList(f.companion_card_ids)) {
-      if (!cardIds.has(cardId)) push(diag('error', 'dangling', `NPC '${id}' companion_card_ids 카드 '${cardId}' 미정의`, w));
-    }
+    // 통합 동료 정의 (Item 37-② Stage A/B) — companion_kind / 스킬 효과 kind / 카드 dangling.
+    validateCompanionFields(f, w, `NPC '${id}'`, cardIds, push);
   }
 
   // ---- 4.11 이벤트 검증 (choice grant_card/grant_relic/clue/affinity/followup/custom) ----
@@ -751,6 +743,38 @@ export function validateData(dataDir, readFile) {
     },
     ruleCatalog: RULE_CATALOG,
   };
+}
+
+/**
+ * 통합 동료 정의(companion_*) 검증 — NPC/몬스터/아크 보스 공통(Item 37-② Stage B).
+ *   - companion_kind 화이트리스트(passive|skill|card).
+ *   - skill 이면 companion_skill_name 필수 + companion_skill_effects kind 화이트리스트.
+ *   - companion_card_ids dangling.
+ * label = "NPC '...'" / "몬스터 '...'" / "보스 '...'".
+ */
+function validateCompanionFields(f, w, label, cardIds, push) {
+  const compKind = (f.companion_kind ?? '').trim();
+  if (compKind && !['passive', 'skill', 'card'].includes(compKind)) {
+    push(diag('error', 'whitelist-kind', `${label} companion_kind '${compKind}' 알 수 없음 (passive|skill|card)`, w));
+  }
+  if (compKind === 'skill' && !f.companion_skill_name) {
+    push(diag('error', 'required-fields', `${label} companion_kind=skill 인데 companion_skill_name 누락`, w));
+  }
+  for (const tok of parseList(f.companion_skill_effects)) {
+    const parts = tok.split(':').map((s) => s.trim());
+    const kind = parts[0];
+    if (kind && !VALID_CARD_EFFECT_KINDS.includes(kind)) {
+      push(diag('error', 'whitelist-kind', `${label} companion_skill_effects 알 수 없는 효과 kind '${kind}'`, w));
+      continue;
+    }
+    if (kind === 'apply-status') {
+      const status = parts[3];
+      if (status && !VALID_STATUS_KEYS.includes(status)) push(diag('error', 'whitelist-kind', `${label} companion_skill_effects apply-status 알 수 없는 status '${status}'`, w));
+    }
+  }
+  for (const cardId of parseList(f.companion_card_ids)) {
+    if (!cardIds.has(cardId)) push(diag('error', 'dangling', `${label} companion_card_ids 카드 '${cardId}' 미정의`, w));
+  }
 }
 
 /**

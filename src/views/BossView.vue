@@ -288,6 +288,13 @@ function onVictory() {
     applyArcRewards(b);
     if (!run.data.arcsCleared) run.data.arcsCleared = [];
     if (!run.data.arcsCleared.includes(b.id)) run.data.arcsCleared.push(b.id);
+    // Item 37-② Stage B — 아크 동료화. companion 정의가 있으면 roster 추가(중복 스킵).
+    //   roster src='monster' 로 통일(아크 보스도 companionForEntry/rosterEntryName 의 monster 분기에서 조회).
+    if (b.companion) {
+      if (run.recruitMonster(b.id)) {
+        ui.toast('success', `${b.name}가 동료가 되었다`);
+      }
+    }
     // 노드 클리어 마킹 — 재진입 시 전투 없이 통과(combatCleared 재사용).
     run.markCombatCleared(run.data.currentNodeId);
     clearCombat();

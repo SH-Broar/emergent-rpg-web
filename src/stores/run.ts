@@ -527,6 +527,30 @@ export const useRunStore = defineStore('run', {
     },
 
     /**
+     * 몬스터/아크 동료 자동 영입 (Item 37-② Stage B) — roster에 {id, src:'monster'} 추가.
+     * recruitCompanion(npc)와 대칭. 중복이면 false(스킵). 빈 활성 슬롯 있으면 자동 편성.
+     *
+     * 호출: CombatView/BossView onVictory에서 처치한 적이 recruitable(또는 arc companion 정의)일 때.
+     * companion 정의 검증은 호출부(onVictory)가 책임진다(여기선 id만 받아 단순 추가 — 토스트 분기 위해
+     * 반환값으로 중복 여부를 알린다). roster 엔트리는 {id:string, src:'monster'} 직렬화 가능 단순 객체라
+     * 세이브 round-trip 안전.
+     */
+    recruitMonster(id: string): boolean {
+      const r = this.data;
+      if (this.inRoster(id)) return false;
+      if (!r.roster) r.roster = [];
+      r.roster.push({ id, src: 'monster' });
+      if (!r.recruitedAt[id]) r.recruitedAt[id] = r.currentNodeId;
+      // 빈 활성 슬롯에 자동 편성(편의 — 초반 3칸 확보).
+      const empty = this.firstEmptySlot();
+      if (empty >= 0) {
+        if (!r.activeSlots) r.activeSlots = [null, null, null];
+        r.activeSlots[empty] = { id, src: 'monster' };
+      }
+      return true;
+    },
+
+    /**
      * 동료 이탈 — roster에서 제거 + 활성 슬롯에서도 해제.
      * 1회 보너스 역적용 없음(이미 제거된 시스템). recruitedAt는 유지(재만남 가능).
      */

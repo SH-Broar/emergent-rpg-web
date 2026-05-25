@@ -43,6 +43,13 @@ intents = attack:3, attack:3, defend:4, attack:4
 gold = 10
 time_shards = 3
 card_drops =
+# 동료 (Item 37-② Stage B 테스트) — 초반 접근 가능한 약체 패시브 동료. 전투 시작 방어를 챙겨 준다.
+# recruit_enabled=true 가 있어야 패시브 보너스(recruit_*)가 파싱된다(parseRecruitBonuses 게이트).
+recruitable = true
+companion_kind = passive
+recruit_enabled = true
+recruit_combat_start = block:5
+recruit_per_turn = block:1
 
 [monster.mr-iluneon-alley-thug]
 name = 뒷골목 패거리
@@ -120,6 +127,13 @@ intents = attack:6, debuff:2:paralyze, attack:7, defend:6, obscure:2, attack:6
 gold = 16
 time_shards = 5
 card_drops =
+# 동료 (Item 37-② Stage B 테스트) — 엘리트 처치 영입. 시간을 늦춰 빈틈을 벌리고 한 수를 더 끌어온다.
+recruitable = true
+companion_kind = skill
+companion_skill_name = 멈춘 초침
+companion_skill_cooldown = 3
+companion_skill_desc = 적에게 취약 3을 걸고 10 피해를 준 뒤 카드 1장을 뽑는다.
+companion_skill_effects = apply-status:3:enemy:vulnerable, damage:10:enemy, draw:1:self
 
 [monster.mr-iluneon-spirit-herald]
 name = 시미브
@@ -165,6 +179,13 @@ intents = attack:7, charge:2, attack:8, defend:4
 gold = 8
 time_shards = 3
 card_drops =
+# 동료 (Item 37-② Stage B 테스트) — 숲 약체 스킬 동료. 도약 일격으로 한 번에 큰 피해.
+recruitable = true
+companion_kind = skill
+companion_skill_name = 이끼 도약
+companion_skill_cooldown = 3
+companion_skill_desc = 적에게 16 피해를 준다. 늑대가 이끼를 박차고 단숨에 달려든다.
+companion_skill_effects = damage:16:enemy
 
 [monster.mr-lar-forest-thornbird]
 name = 가시 새

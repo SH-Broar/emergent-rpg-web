@@ -13,10 +13,9 @@
 
 import { useRunStore } from '@/stores/run';
 import { useUiStore } from '@/stores/ui';
-import { useDataStore } from '@/stores/data';
-import { companionForEntry } from '@/systems/companion';
+import { companionForEntry, rosterEntryName } from '@/systems/companion';
 import { executeSkillEffects } from '@/systems/combat';
-import type { CompanionSkill, RosterEntry } from '@/data/schemas';
+import type { CompanionSkill } from '@/data/schemas';
 
 /** 활성 슬롯(0..2)에 편성된 *skill 타입* 동료 한 칸의 스킬 + 표시 정보. */
 export interface ActiveSkillSlot {
@@ -29,14 +28,6 @@ export interface ActiveSkillSlot {
   cooldown: number;
   /** 사용 가능 여부(전투 중 · 쿨다운 0 · 정지 아님). */
   ready: boolean;
-}
-
-/** RosterEntry → 동료 표시 이름. npc 정의에서 가져옴. */
-function entryName(slotEntry: RosterEntry | null): string {
-  if (!slotEntry) return '';
-  const data = useDataStore();
-  if (slotEntry.src === 'npc') return data.npcs.get(slotEntry.id)?.name ?? slotEntry.id;
-  return slotEntry.id;
 }
 
 /**
@@ -56,7 +47,7 @@ export function activeSkillSlots(): ActiveSkillSlot[] {
     const ready = !!c && cd <= 0 && !c.frozenTurn;
     out.push({
       slot: i,
-      companionName: entryName(slots[i]),
+      companionName: rosterEntryName(slots[i]),
       skill: comp.skill,
       cooldown: cd,
       ready,

@@ -30,6 +30,12 @@ decline_label = 다음에 들르겠다
 arc_reward_relics = r-arc-dun-ember-heart
 arc_reward_cards = c-arc-dun-quake-paw
 arc_reward_items = i-arc-dun-ember-draught
+# 동료화 (Item 37-② Stage B) — 승리 시 자동 영입. 시그니처 스킬은 카드보다 한참 강하고 쿨다운이 길다.
+companion_kind = skill
+companion_skill_name = 잿불 곰의 일격
+companion_skill_cooldown = 5
+companion_skill_desc = 적에게 34 피해를 주고 방어 24를 얻는다. 곰이 쇳물째로 내려친다.
+companion_skill_effects = damage:34:enemy, block:24:self
 
 # P1 — 본 패턴(버프 윈드업·삼킴·잠식). 멀티슬롯은 + 로 한 턴 2행동.
 [boss.bs-arc-dun.phase.1]
@@ -62,6 +68,12 @@ decline_label = 다음에 청하겠다
 arc_reward_relics = r-arc-tifre-storm-fang
 arc_reward_cards = c-arc-tifre-thunderstep
 arc_reward_items = i-arc-tifre-spark-vial
+# 동료화 (Item 37-② Stage B) — 연격형 시그니처 스킬. 두 번 친 뒤 빈틈을 벌리고 다음 수를 끌어온다.
+companion_kind = skill
+companion_skill_name = 우레 삼연격
+companion_skill_cooldown = 4
+companion_skill_desc = 14 피해를 주고 취약 3을 건 뒤 다시 14 피해를 주며 카드 1장을 뽑는다.
+companion_skill_effects = damage:14:enemy, apply-status:3:enemy:vulnerable, damage:14:enemy, draw:1:self
 
 # P1 — 수화 유도 + 동적 분기(수화 상태면 심수화) + 비용 교란.
 [boss.bs-arc-tifre.phase.1]
@@ -95,6 +107,12 @@ decline_label = 다음에 놀러 올게
 arc_reward_relics = r-arc-tamamo-nine-mirror
 arc_reward_cards = c-arc-tamamo-foxfire
 arc_reward_items = i-arc-tamamo-tail-charm
+# 동료화 (Item 37-② Stage B) — 교란형 시그니처 스킬. 큰 한 방에 약화·취약을 겹치고 내 힘을 끌어올린다.
+companion_kind = skill
+companion_skill_name = 아홉 꼬리 홀림불
+companion_skill_cooldown = 4
+companion_skill_desc = 18 피해를 주고 약화 3과 취약 3을 건 뒤 자신에게 힘 2를 얻는다.
+companion_skill_effects = damage:18:enemy, apply-status:3:enemy:weakness, apply-status:3:enemy:vulnerable, apply-status:2:self:strength
 
 # P1 — 수화 유도 + 동적 분기 + 잠식. 손패 은폐(obscure)로 교란.
 [boss.bs-arc-tamamo.phase.1]

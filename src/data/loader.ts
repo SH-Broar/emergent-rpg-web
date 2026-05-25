@@ -394,6 +394,9 @@ export function parseMonsters(ini: IniData): Map<string, Monster> {
         cardDrops: cardDrops.length > 0 ? cardDrops : undefined,
       },
       appearsIn: parseList(fields.appears_in),
+      // 동료 영입 (Item 37-② Stage B) — recruitable 플래그 + companion 합성(NPC와 동일 companion_* 키 재사용).
+      recruitable: parseBool(fields.recruitable, false) || undefined,
+      companion: parseCompanion(fields),
     });
   }
   return result;
@@ -495,6 +498,8 @@ function parseOneBoss(id: string, f: IniSection, ini: IniData): Boss {
           gold: arcGold > 0 ? arcGold : undefined,
         }
       : undefined,
+    // 동료화 (Item 37-② Stage B) — arc 보스 동료. companion_* 키(NPC/몬스터와 동일) 재사용.
+    companion: parseCompanion(f),
   };
 }
 

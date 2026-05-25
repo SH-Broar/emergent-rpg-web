@@ -8,6 +8,7 @@
  */
 
 import type { NamedEntity } from './base';
+import type { Companion } from './npc';
 
 /**
  * 몬스터 의도 — 매 턴 *슬롯 한 개*. 한 슬롯은 1개 이상 행동을 담는다.
@@ -82,6 +83,19 @@ export interface Monster extends NamedEntity {
 
   /** 등장 가능한 노드/시즌 조건 (선택). */
   appearsIn?: string[];
+
+  /**
+   * 동료 영입 가능 여부 (Item 37-② Stage B).
+   * true 이고 `companion` 정의가 있으면, 처치(onVictory) 시 *자동 영입*된다(roster 추가·중복 스킵).
+   * 미설정/false 면 일반 적(영입 X). 광범위 태깅은 Stage C.
+   */
+  recruitable?: boolean;
+
+  /**
+   * 통합 동료 정의 (Item 37-② Stage B) — passive/skill/card 택1. NPC와 동일 타입 재사용.
+   * 로더가 `companion_*` 필드(NPC와 동일 키)로부터 합성한다. recruitable=true 와 짝지어 자동 영입.
+   */
+  companion?: Companion;
 }
 
 /** 전투 시점에 적 객체를 만드는 결과. combat.ts가 사용. */
