@@ -2020,3 +2020,132 @@ cost = 1
 trigger = manual
 effects = ghost-self:3:self
 flavor = 더 오래 비실체로 머문다.
+
+# === 이로운(버프) 상태 부여 카드 (Colorz 18-c). 자신에게 apply-status. ===
+# 재생/가속/보호막/반격/집중/정신력 — 각 카드 1종씩. 매 턴 1 감소.
+
+[card.c-gentle-mend]
+name = 보드라운 새살
+rank = common
+source = event
+element = light
+cost = 1
+trigger = manual
+effects = apply-status:3:self:regen
+upgrade_to = c-gentle-mend-plus
+flavor = 작게 솟은 새살이 매 아침 한 겹씩 차오른다.
+
+[card.c-gentle-mend-plus]
+name = 보드라운 새살+
+rank = common
+source = event
+element = light
+cost = 1
+trigger = manual
+effects = apply-status:4:self:regen
+flavor = 새살이 더 오래, 더 도톰하게 자란다.
+
+[card.c-quickstep]
+name = 종종걸음
+rank = common
+source = event
+element = wind
+cost = 1
+trigger = manual
+effects = apply-status:2:self:haste
+upgrade_to = c-quickstep-plus
+flavor = 발끝이 가벼워지면 한 손이 더 빨라진다.
+
+[card.c-quickstep-plus]
+name = 종종걸음+
+rank = common
+source = event
+element = wind
+cost = 1
+trigger = manual
+effects = apply-status:3:self:haste
+flavor = 더 오래 가뿐하게 돌아다닌다.
+
+[card.c-soft-ward]
+name = 포근한 보호막
+rank = common
+source = event
+element = iron
+cost = 1
+trigger = manual
+effects = block:6:self, apply-status:2:self:ward
+upgrade_to = c-soft-ward-plus
+flavor = 둘러친 막이 다음 결까지 곱게 남는다.
+
+[card.c-soft-ward-plus]
+name = 포근한 보호막+
+rank = common
+source = event
+element = iron
+cost = 1
+trigger = manual
+effects = block:8:self, apply-status:3:self:ward
+flavor = 막이 더 두껍게, 더 오래 머문다.
+
+[card.c-prickle-coat]
+name = 까슬한 가시옷
+rank = common
+source = event
+element = earth
+cost = 1
+trigger = manual
+effects = apply-status:3:self:thorns
+upgrade_to = c-prickle-coat-plus
+flavor = 건드리면 따끔, 건드린 쪽이 더 아프다.
+
+[card.c-prickle-coat-plus]
+name = 까슬한 가시옷+
+rank = common
+source = event
+element = earth
+cost = 1
+trigger = manual
+effects = apply-status:4:self:thorns
+flavor = 가시가 한 겹 더 돋는다.
+
+[card.c-clear-focus]
+name = 또렷한 집중
+rank = common
+source = event
+element = electric
+cost = 1
+trigger = manual
+effects = apply-status:2:self:focus
+upgrade_to = c-clear-focus-plus
+flavor = 시야가 좁아지는 만큼, 한 점이 또렷해진다.
+
+[card.c-clear-focus-plus]
+name = 또렷한 집중+
+rank = common
+source = event
+element = electric
+cost = 1
+trigger = manual
+effects = apply-status:3:self:focus
+flavor = 더 깊이, 더 오래 한 점에 머문다.
+
+[card.c-steady-heart]
+name = 단단한 마음
+rank = common
+source = event
+element = water
+cost = 1
+trigger = manual
+effects = apply-status:3:self:resolve
+upgrade_to = c-steady-heart-plus
+flavor = 흔들려도 한 걸음, 다시 제자리.
+
+[card.c-steady-heart-plus]
+name = 단단한 마음+
+rank = common
+source = event
+element = water
+cost = 1
+trigger = manual
+effects = apply-status:4:self:resolve
+flavor = 마음이 더 오래 곧게 선다.

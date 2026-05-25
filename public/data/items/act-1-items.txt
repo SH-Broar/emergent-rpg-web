@@ -189,6 +189,35 @@ effects = combat-self-status:strength:2
 consumable = true
 flavor = 끓는 동안엔 아픈 줄도 모른다.
 
+# === 이로운(버프) 상태 부여 포션 (Colorz 18-c). 전투 중에만, 턴당 1회. ===
+
+[item.i-combat-regen]
+name = 새살 물약
+description = 한 모금 머금으면 몸이 스스로 아문다. 매 턴 조금씩 기운이 차오른다.
+rank = common
+combat = true
+effects = combat-self-status:regen:3
+consumable = true
+flavor = 천천히, 그러나 멈추지 않고 차오른다.
+
+[item.i-combat-haste]
+name = 종종 물약
+description = 발끝이 가벼워진다. 당분간 패가 한 장씩 더 들어온다.
+rank = rare
+combat = true
+effects = combat-self-status:haste:2
+consumable = true
+flavor = 마음이 앞서면 손도 따라 빨라진다.
+
+[item.i-combat-ward]
+name = 포근 물약
+description = 둘러친 막이 다음 자락까지 곱게 남는다. 한동안 방어가 흩어지지 않는다.
+rank = rare
+combat = true
+effects = combat-block:6, combat-self-status:ward:2
+consumable = true
+flavor = 한 번 두른 온기는 쉬이 식지 않는다.
+
 [item.i-combat-freedom]
 name = 해방의 줄칼
 description = 묶인 줄도, 삼킨 아가리도 단번에 끊는다. 다시 두 발로 선다.

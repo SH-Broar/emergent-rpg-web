@@ -389,6 +389,13 @@ const statusLabels: Record<string, string> = {
   slime: '점액',
   imprint: '각인',
   'feral-heavy': '심수화',
+  // 이로운(버프) 상태 (Colorz 18-c).
+  regen: '재생',
+  haste: '가속',
+  ward: '보호막',
+  thorns: '반격',
+  focus: '집중',
+  resolve: '정신력',
 };
 function statusEntries(c: Combatant | undefined) {
   if (!c) return [] as { key: string; count: number; label: string }[];
@@ -840,6 +847,11 @@ function usePotion(itm: Item) {
 .status[data-key="feral"] { color: #ffb86c; border-color: rgba(255,184,108,0.4); }
 /* ghost(유령화): 받는·주는 피해 절반 — 양날. 연보라(흐려짐). */
 .status[data-key="ghost"] { color: #c9b8ff; border-color: rgba(192,142,255,0.45); }
+/* 이로운(버프) 상태 (Colorz 18-c): 청록 계열로 "좋은 것"임을 구분. */
+.status[data-key="regen"], .status[data-key="haste"], .status[data-key="ward"],
+.status[data-key="thorns"], .status[data-key="focus"], .status[data-key="resolve"] {
+  color: #8ee9ff; border-color: rgba(142,233,255,0.4);
+}
 /* 전투 포션 벨트 */
 .potions { display: flex; gap: 0.5rem; align-items: center; padding: 0.4rem 1rem; flex-wrap: wrap; }
 .potions__label { color: #c0b693; font-size: 0.8rem; }
@@ -858,7 +870,7 @@ function usePotion(itm: Item) {
   gap: 0.6rem;
   padding: 0.8rem 1rem 1.4rem;
   align-items: flex-start;
-  align-content: flex-start;
+  align-content: flex-end;     /* 카드를 하단에 고정 — 처음부터 아래에(로그 등장 시 위로 점프 방지). */
   justify-content: center;
   overflow-x: hidden;
   overflow-y: auto;

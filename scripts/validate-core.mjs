@@ -242,7 +242,10 @@ export const VALID_ITEM_EFFECT_KINDS = [
 export const VALID_INTENT_KINDS = [
   'attack', 'defend', 'buff', 'debuff', 'heavy-feral',
   'absorb-emotion', 'feast-debuff', 'bind', 'bind-hard', 'devour', 'web',
-  'drain-stat', 'grant-possession', 'drain', 'charge', 'ghost',
+  'drain-stat', 'grant-possession', 'drain', 'ghost',
+  // charge = buff 의 *레거시 별칭*(Colorz 18-c). combat.ts 가 kind 정규화로 buff 와 동일 처리.
+  // 기존 데이터(act-1 로스터/보스)에 charge:N 이 다수 남아 있어 화이트리스트에 유지한다.
+  'charge',
   'add-card', 'add-card-draw', 'add-card-discard', 'add-card-hand',
   'obscure', 'cost-up', 'force-discard', 'transform-card', 'change', 'lockin',
 ];
@@ -260,11 +263,14 @@ export const VALID_LOCK_CONDITIONS = ['block', 'damage', 'draw', 'no-attack', 'n
  *   디버프: vulnerable/weakness/frail/poison/burn/regress/feral/feral-heavy/paralyze/spasm/
  *           ghost/sleep/slime/brainwash/imprint/possession/sap
  *   버프  : strength/dexterity
+ *   이로운(버프, Colorz 18-c): regen/haste/ward/thorns/focus/resolve (combat.ts DECAYING_BUFFS)
  */
 export const VALID_STATUS_KEYS = [
   'vulnerable', 'weakness', 'frail', 'poison', 'burn', 'regress', 'feral', 'feral-heavy',
   'paralyze', 'spasm', 'ghost', 'sleep', 'slime', 'brainwash', 'imprint', 'possession', 'sap',
   'strength', 'dexterity',
+  // 이로운(버프) 상태 — apply-status:N:self:<key> / combat-self-status:<key>:N 로 부여.
+  'regen', 'haste', 'ward', 'thorns', 'focus', 'resolve',
 ];
 
 /** 8 컬러 + 메타지표(top-color/color-count) + 스탯(atk/def/mag) — boost-color/metric arg. */

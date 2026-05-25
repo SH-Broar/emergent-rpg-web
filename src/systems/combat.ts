@@ -125,7 +125,8 @@ export function statusBonusForCardEffectKind(
   if (!statuses) return 0;
   // sap(잠식): 주는 피해와 방어 둘 다 *플랫* 차감(weakness 배수와 별개). 음수 방지는 최종 적용처에서.
   const sap = statuses.sap ?? 0;
-  if (kind === 'damage') return (statuses.strength ?? 0) - sap;
+  // focus(집중): 이로운 상태 — 활성 동안 주는 피해 +스택(strength 와 별개의 감쇠형 버프).
+  if (kind === 'damage') return (statuses.strength ?? 0) + (statuses.focus ?? 0) - sap;
   if (kind === 'block') return (statuses.dexterity ?? 0) - (statuses.frail ?? 0) - sap;
   return 0;
 }
@@ -214,6 +215,19 @@ function tickPoison(target: Combatant): void {
 }
 
 /**
+ * thorns(반격) — 플레이어가 적 공격에 *실제로 맞았을 때*(HP나 방어가 깎였을 때) 호출.
+ * 플레이어 thorns 스택만큼 적에게 *block 무시 직접 hp* 반격 피해. 스택은 감쇠형(decayTurnStatuses).
+ * struckAmount<=0(완전 회피/0피해)면 발동 안 함.
+ */
+function applyThorns(c: CombatState, struckAmount: number): void {
+  if (struckAmount <= 0) return;
+  const stack = c.player.statuses?.thorns ?? 0;
+  if (stack <= 0) return;
+  c.enemy.hp = Math.max(0, c.enemy.hp - stack);
+  useUiStore().toast('info', `반격 — 적에게 ${stack} 피해`);
+}
+
+/**
  * burn(화상) 턴 처리 — poison과 같은 타이밍에 호출(대상 턴 시작/종료).
  * 중독과 달리 *절반 감쇠*: 현재 수치만큼 직접 hp 피해 → 그 뒤 floor(절반)로 줄이고, 1 미만이면 소멸.
  * (예: 20→[20피해]→10→[10피해]→5→[5피해]→2→[2피해]→1→[1피해]→소멸.) block 무시 순수 직접 피해.
@@ -237,18 +251,65 @@ function tickBurn(target: Combatant): void {
 const DECAYING_DEBUFFS = new Set<string>(['feral', 'regress', 'sap', 'ghost', 'weakness', 'vulnerable', 'frail', 'brainwash', 'sleep', 'slime']);
 
 /**
- * 지속 상태이상 턴 감소 — 매 플레이어 턴 종료 시 양쪽(플레이어·적) -1, 0이면 제거.
- * feral/regress/sap/ghost + weakness/vulnerable/frail(매 턴 1씩 자연 감소).
+ * 매 턴 1씩 자연 감소하는 *이로운(버프) 상태* 목록 (Colorz 18-c).
+ * 이 목록은 finishEnemyTurn 의 일괄 감쇠(decayTurnStatuses)에서 함께 처리된다.
+ *  - thorns  : 피해를 받을 때 공격자에게 스택만큼 반격 피해. (적 턴에 작동 → 적 턴 종료 후 감쇠가 맞음.)
+ *  - resolve : 디버프를 받을 때 적용 스택 -1. (적 턴에 작동 → 적 턴 종료 후 감쇠가 맞음.)
+ *
+ * 주의: regen/haste/ward/focus 는 *읽는 시점이 감쇠 이후*라 일괄 감쇠에 넣으면 한 턴 손해(off-by-one)가
+ *  난다. 그래서 그 4종은 *각자 소비 직후* 따로 감쇠한다(아래 참조):
+ *    regen → tickRegen(회복 후 -1, applyPlayerStatusTurnStart)
+ *    focus → decayPlayerBuff(c,'focus') (beginEnemyTurn — 플레이어 턴 사용 끝난 직후)
+ *    haste/ward → decayPlayerBuff (finishEnemyTurn에서 드로우/방어 이월에 *쓴 뒤* 감쇠)
+ * 디버프와 달리 *적이 거는 게 아니므로* "최소 2" 보강은 적용하지 않는다(부여한 만큼 그대로).
+ */
+const DECAYING_BUFFS = new Set<string>(['thorns', 'resolve']);
+
+/** 매 턴 1씩 감소하는 *모든* 상태(디버프 + thorns/resolve 버프) — decayTurnStatuses 가 순회. */
+const DECAYING_STATUSES = new Set<string>([...DECAYING_DEBUFFS, ...DECAYING_BUFFS]);
+
+/**
+ * 지속 상태이상 턴 감소 — 매 플레이어 턴 종료(적 턴 끝) 시 양쪽(플레이어·적) -1, 0이면 제거.
+ * 디버프(feral/regress/sap/ghost/weakness/vulnerable/frail 등) + 적 턴에 작동하는 버프(thorns/resolve).
+ * regen/haste/ward/focus 는 별도 시점에 감쇠(off-by-one 회피) — DECAYING_BUFFS 주석 참조.
  */
 function decayTurnStatuses(target: Combatant): void {
   if (!target.statuses) return;
-  for (const key of DECAYING_DEBUFFS) {
+  for (const key of DECAYING_STATUSES) {
     const stack = target.statuses[key] ?? 0;
     if (stack <= 0) continue;
     const next = stack - 1;
     if (next <= 0) delete target.statuses[key];
     else target.statuses[key] = next;
   }
+}
+
+/** 특정 *플레이어 버프* 스택을 1 감쇠(0이면 제거) — 소비 직후 개별 호출용(regen/haste/ward/focus). */
+function decayPlayerBuff(c: CombatState, key: string): void {
+  const s = c.player.statuses;
+  if (!s) return;
+  const stack = s[key] ?? 0;
+  if (stack <= 0) return;
+  if (stack - 1 <= 0) delete s[key];
+  else s[key] = stack - 1;
+}
+
+/**
+ * regen(재생) 턴 처리 — poison/burn 의 거울상. 플레이어 턴 시작에 호출.
+ * 스택만큼 회복(maxHp clamp) → 그 뒤 스택 -1. 심수화(feral-heavy)면 회복 차단(단 스택은 그대로 감쇠).
+ */
+function tickRegen(c: CombatState): void {
+  const s = c.player.statuses;
+  const stack = s?.regen ?? 0;
+  if (stack <= 0) return;
+  if (!healBlocked(c)) {
+    const before = c.player.hp;
+    c.player.hp = Math.min(c.player.maxHp, c.player.hp + stack);
+    const healed = c.player.hp - before;
+    if (healed > 0) useUiStore().toast('success', `재생 — HP +${healed}`);
+  }
+  if (stack - 1 <= 0) delete s.regen;
+  else s.regen = stack - 1;
 }
 
 /**
@@ -1025,6 +1086,10 @@ export function beginEnemyTurn(monster: Monster): { queue: string[]; done?: Turn
     if (c.costUp.turns <= 0) c.costUp = undefined;
   }
 
+  // focus(집중) — 이로운 상태: 방금 끝난 *플레이어 턴* 내내 주는 피해에 +스택을 더했다.
+  // 그 턴을 다 쓴 *직후*(적 턴 진입 시점)에 1 감쇠 — off-by-one 없이 "걸린 턴부터 N턴" 보장.
+  decayPlayerBuff(c, 'focus');
+
   // 플레이어 턴 종료 trigger — 몬스터 행동 *전*.
   fireRelicTrigger('on-turn-end', { run: r, combat: c });
 
@@ -1126,8 +1191,11 @@ export function finishEnemyTurn(monster: Monster): TurnResult {
     c.mana += nextEnergyBonus;
     r.nextTurnEnergyBonus = 0;
   }
-  // block-carryover 유물: 방어를 0으로 리셋하지 않고 이월. 그 외엔 매 턴 0.
-  if (!playerHasRelicEffect('block-carryover')) c.player.block = 0;
+  // block-carryover 유물 / ward(보호막) 이로운 상태: 방어를 0으로 리셋하지 않고 이월. 그 외엔 매 턴 0.
+  const hasWard = (c.player.statuses?.ward ?? 0) > 0;
+  if (!playerHasRelicEffect('block-carryover') && !hasWard) c.player.block = 0;
+  // ward 를 *이번 이월에 쓴 뒤* 1 감쇠 (off-by-one 회피). 일괄 감쇠에 넣지 않는다.
+  if (hasWard) decayPlayerBuff(c, 'ward');
 
   // MAG 보너스로 매 턴 드로우 +. regress면 drawExtra 무효(playerBonuses 0).
   // 유물 draw-extra-add는 색 스탯과 무관하므로 regress와 별개로 항상 합산.
@@ -1136,11 +1204,13 @@ export function finishEnemyTurn(monster: Monster): TurnResult {
   if (drawDown > 0) c.drawDown = 0;
   // 수면(sleep): 잠에 빠져 매 턴 드로우 -스택(피해를 받으면 깬다 — applyDamage에서 해제).
   const sleepDraw = c.player.statuses?.sleep ?? 0;
+  // haste(가속) — 이로운 상태: 활성 동안 매 턴 드로우 +1(스택 수와 무관, 켜져 있으면 +1).
+  const hasteDraw = (c.player.statuses?.haste ?? 0) > 0 ? 1 : 0;
   // 카오스 small-hand — 매 턴 드로우 -N(최소 0).
   const handSize = Math.max(
     0,
     STARTING_HAND_SIZE + playerBonuses(c).drawExtra + getModifierAdd('draw-extra-add')
-      - drawDown - handSizeReduction() - sleepDraw,
+      - drawDown - handSizeReduction() - sleepDraw + hasteDraw,
   );
   const { drawn, newDrawPile, newDiscardPile } = drawCards(c.drawPile, c.discardPile, handSize);
   c.drawPile = newDrawPile;
@@ -1153,6 +1223,8 @@ export function finishEnemyTurn(monster: Monster): TurnResult {
   if (drawn.length > room) c.discardPile = [...c.discardPile, ...drawn.slice(room)];
   // 새 턴 손패 드로우 — on-draw 유물(나방)이 실제 손에 들어온 장수만큼 발동.
   fireOnDraw(c, added.length);
+  // haste(가속) 를 *이번 드로우에 쓴 뒤* 1 감쇠 (off-by-one 회피). 일괄 감쇠에 넣지 않는다.
+  if ((c.player.statuses?.haste ?? 0) > 0) decayPlayerBuff(c, 'haste');
   // 주의: *자동* 새 턴 드로우는 draw 락에 카운트하지 않는다 — 적이 막 건 draw 락이 다음 자동 드로우로
   //       즉시 풀려 무의미해지는 것을 막는다. draw 락은 *능동적으로 draw 카드를 쓸 때만* 진행한다.
 
@@ -1216,6 +1288,9 @@ function applyPlayerStatusTurnStart(c: CombatState): void {
   if (cTurn.heal > 0 && !healBlocked(c)) {
     c.player.hp = Math.min(c.player.maxHp, c.player.hp + cTurn.heal);
   }
+
+  // regen(재생) — 이로운 상태: 플레이어 턴 시작 시 스택만큼 회복 후 스택 -1(중독/화상의 거울상).
+  tickRegen(c);
   if (cTurn.block > 0 && !playerWild(c)) {
     // 동료 *자동* 방어 — block 락 진행엔 기여하되, no-defense 추적 플래그는 *건드리지 않는다*
     // (플레이어가 능동적으로 방어한 게 아니므로 금욕형 락을 자동으로 깨지 않게).
@@ -1464,16 +1539,18 @@ function executeMonsterIntent(c: CombatState, monster?: Monster, intentOverride?
   const snapEnemyHp = c.enemy.hp;
 
   const parts = intent.split(':');
-  const kind = parts[0];
+  // charge → buff 통합(Colorz 18-c): charge 는 buff 의 *레거시 별칭*. 엔진은 둘을 동일 처리한다.
+  // 라벨/설명/감쇠 규칙 일원화. 데이터에 남은 charge:N 도 buff:N 과 똑같이 힘을 쌓는다.
+  const kind = parts[0] === 'charge' ? 'buff' : parts[0];
   const rawValue = Number(parts[1]) || 0;
   // 적 힘(strength) 버프 — *피해를 주는* 인텐트(attack/drain)의 데미지에 플랫 가산.
-  // charge는 힘을 *쌓는* 행동이라 가산 대상이 아니다(자기 자신 이중 적용 방지).
+  // buff(구 charge 포함)는 힘을 *쌓는* 행동이라 가산 대상이 아니다(자기 자신 이중 적용 방지).
   // (플레이어 힘은 statusBonusForCardEffectKind에서 이미 처리되므로 여기선 적만.)
   const dealsDamage = kind === 'attack' || kind === 'drain';
   const enemyStrength = dealsDamage ? (c.enemy.statuses.strength ?? 0) : 0;
   // 카오스 enemy-atk-mul(+boss-atk-mul) × 하루 경과 스케일(dayAtkScale) — 공격성 인텐트의 데미지 배수.
-  // 힘 가산 후 배수. 날이 갈수록 적 공격이 커진다(초반 약화 보강).
-  const isAggressive = kind === 'attack' || kind === 'drain' || kind === 'charge';
+  // 힘 가산 후 배수. 날이 갈수록 적 공격이 커진다(초반 약화 보강). buff(힘 축적)는 비대상으로 일원화.
+  const isAggressive = kind === 'attack' || kind === 'drain';
   const atkMul = enemyAtkMul(monster) * (isAggressive ? dayAtkScale() : 1);
   const baseWithStrength = rawValue + enemyStrength;
   const value =
@@ -1485,6 +1562,7 @@ function executeMonsterIntent(c: CombatState, monster?: Monster, intentOverride?
     case 'attack': {
       // 통합 피해: weakness(공격자=enemy) ×0.75 → vulnerable(대상=player) ×1.5 → damage-in-mul → block → hp.
       const hpBefore = c.player.hp;
+      const blockBefore = c.player.block;
       applyDamage(c.player, value, c.enemy.statuses, true);
       const hpLoss = hpBefore - c.player.hp;
       // 모나토 c-tripps-rage 동적 cost용 누적 피해 — block 흡수 제외 *실제 HP 손실*만.
@@ -1494,6 +1572,8 @@ function executeMonsterIntent(c: CombatState, monster?: Monster, intentOverride?
         // 피해 받을 시 유물 발동 (retaliate / hurt-to-color / hurt-to-block).
         fireRelicTrigger('on-damage-taken', { run: r, combat: c, amount: hpLoss });
       }
+      // thorns(반격): 플레이어가 *실제로 맞으면*(HP나 방어가 깎이면) 공격자에게 스택만큼 반격 피해.
+      applyThorns(c, hpBefore - c.player.hp + (blockBefore - c.player.block));
       break;
     }
     case 'defend': {
@@ -1501,6 +1581,7 @@ function executeMonsterIntent(c: CombatState, monster?: Monster, intentOverride?
       break;
     }
     case 'buff': {
+      // 강화 — 적 힘(strength) +value. 구 charge 인텐트도 위에서 buff 로 정규화되어 여기로 모인다.
       c.enemy.statuses['strength'] = (c.enemy.statuses['strength'] ?? 0) + value;
       break;
     }
@@ -1511,12 +1592,15 @@ function executeMonsterIntent(c: CombatState, monster?: Monster, intentOverride?
       // 매 턴 -1 감쇠하는 디버프는 *적이 걸 때 최소 2* — 1만 걸면 다음 플레이어 턴에 즉시 0이 되어
       // 효과가 한 번도 적용되지 않는 문제 방지. (DECAYING_DEBUFFS와 동일 목록.)
       const applied = DECAYING_DEBUFFS.has(status) ? Math.max(2, value || 1) : (value || 1);
+      // resolve(정신력) — 이로운 상태: 디버프를 받을 때 적용 스택 -1(최소 0). 동료 저항과 합산 차감.
+      const resolveStack = c.player.statuses?.resolve ?? 0;
+      const resolveCut = resolveStack > 0 ? 1 : 0;
       // 동료 지속 패시브(5c) — 상태이상 저항: 부여량 차감(0이면 완전 저항).
-      const resisted = Math.max(0, applied - companionStatusResist(status));
+      const resisted = Math.max(0, applied - companionStatusResist(status) - resolveCut);
       if (resisted > 0) {
         c.player.statuses[status] = (c.player.statuses[status] ?? 0) + resisted;
       } else if (applied > 0) {
-        useUiStore().toast('success', '동료의 가호 — 상태이상을 막아냈다.');
+        useUiStore().toast('success', '버텨냈다 — 상태이상을 막아냈다.');
       }
       break;
     }
@@ -1595,6 +1679,7 @@ function executeMonsterIntent(c: CombatState, monster?: Monster, intentOverride?
     case 'drain': {
       // drain:value — 흡혈 공격: 피해를 주고 *실제 HP 손실*만큼 적 회복.
       const before = c.player.hp;
+      const blockBefore = c.player.block;
       applyDamage(c.player, value, c.enemy.statuses, true);
       const lost = before - c.player.hp;
       if (lost > 0) {
@@ -1603,13 +1688,11 @@ function executeMonsterIntent(c: CombatState, monster?: Monster, intentOverride?
         r.runDamageReceived = (r.runDamageReceived ?? 0) + lost;
         fireRelicTrigger('on-damage-taken', { run: r, combat: c, amount: lost });
       }
+      // thorns(반격): 흡혈에 맞아도 반격이 작동(HP/방어 손실 기준).
+      applyThorns(c, (before - c.player.hp) + (blockBefore - c.player.block));
       break;
     }
-    case 'charge': {
-      // charge:value — 윈드업: 힘 +value 축적(다음 공격 강화 텔레그래프).
-      c.enemy.statuses['strength'] = (c.enemy.statuses['strength'] ?? 0) + value;
-      break;
-    }
+    // charge 는 buff 로 통합됨(위 kind 정규화). 별도 case 없음 — 데이터의 charge:N 은 buff 와 동일 처리.
     case 'ghost': {
       // ghost:N — 적이 *자기 자신*을 N턴 유령화(비실체). 받는·주는 피해 ×0.5(양날). 매 턴 -1.
       c.enemy.statuses['ghost'] = (c.enemy.statuses['ghost'] ?? 0) + (value || 2);

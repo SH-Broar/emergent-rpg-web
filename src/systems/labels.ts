@@ -98,6 +98,13 @@ const STATUS_DESCRIPTIONS: Record<string, string> = {
   slime: '점액 — 매 턴 마나가 스택만큼 줄어듭니다. 매 턴 1 감소.',
   imprint: '각인 — 주는 피해가 0.85배가 됩니다. 감소하지 않고, 5 이상 쌓이면 혼란으로 번집니다.',
   'feral-heavy': '심수화 — 너무 신나서 멈출 수 없다. 공격이 2배지만 회복도 방어도 못 합니다. 전투 후에도 남으며 탐색 보상이 늘고, 마을이나 휴식에서만 가라앉습니다.',
+  // === 이로운(버프) 상태 (Colorz 18-c) — 매 턴 1씩 감소. ===
+  regen: '재생 — 매 턴 시작에 스택만큼 HP를 회복합니다. 매 턴 1 감소.',
+  haste: '가속 — 켜져 있는 동안 매 턴 카드를 한 장 더 뽑습니다. 매 턴 1 감소.',
+  ward: '보호막 — 켜져 있는 동안 방어막이 다음 턴으로 그대로 넘어갑니다. 매 턴 1 감소.',
+  thorns: '반격 — 적의 공격에 맞으면 스택만큼 적에게 되돌려 줍니다. 매 턴 1 감소.',
+  focus: '집중 — 켜져 있는 동안 주는 피해가 스택만큼 늘어납니다. 매 턴 1 감소.',
+  resolve: '정신력 — 디버프를 받을 때 스택을 1 줄여 받습니다(최소 0). 매 턴 1 감소.',
 };
 
 /** 상태이상/버프 키 → 한글. */
@@ -121,6 +128,13 @@ const STATUS_LABELS: Record<string, string> = {
   slime: '점액',
   imprint: '각인',
   'feral-heavy': '심수화',
+  // 이로운(버프) 상태 (Colorz 18-c).
+  regen: '재생',
+  haste: '가속',
+  ward: '보호막',
+  thorns: '반격',
+  focus: '집중',
+  resolve: '정신력',
 };
 
 /** 효과 대상 → 한글. */
@@ -180,7 +194,7 @@ const INTENT_KIND_LABELS: Record<string, string> = {
   web: '거미줄',
   drain: '흡혈',
   'drain-stat': '잠식',
-  charge: '기력 모으기',
+  charge: '강화', // charge → buff 통합(Colorz 18-c): 라벨 일원화. 엔진은 buff 와 동일 처리.
   'add-card': '잡카드 주입',
   'add-card-draw': '잡카드 주입',
   'add-card-discard': '잡카드 섞기',
@@ -247,8 +261,8 @@ export function intentDescription(encoded: string | undefined): string {
   switch (kind) {
     case 'attack': return `공격 — ${n} 피해를 줍니다.`;
     case 'defend': return `방어 — 방어막 ${n}을 얻습니다.`;
-    case 'buff': return `강화 — 힘이 ${n} 늘어 이후 공격이 강해집니다.`;
-    case 'charge': return `기력을 모읍니다 — 힘 +${n}. 다음 공격이 강해집니다.`;
+    case 'buff':
+    case 'charge': return `강화 — 힘이 ${n} 늘어 이후 공격이 강해집니다.`; // charge=buff 통합.
     case 'drain': return `흡혈 — ${n} 피해를 주고 그만큼 회복합니다.`;
     case 'debuff': {
       const st = parts[2];
