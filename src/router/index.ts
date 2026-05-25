@@ -88,6 +88,12 @@ const routes: RouteRecordRaw[] = [
     meta: { scene: 'game' },
   },
   {
+    path: '/game/gather',
+    name: 'game-gather',
+    component: () => import('@/views/GatherView.vue'),
+    meta: { scene: 'game' },
+  },
+  {
     path: '/game/boss',
     name: 'game-boss',
     component: () => import('@/views/BossView.vue'),

@@ -257,6 +257,7 @@ function applyItemEffect(
       st.eventTriggered = undefined;
       st.eventCount = 0;
       st.activityDone = false;
+      st.gatherDone = false;
       st.gatherCount = 0;
       lines.push(`'${node.label}'이(가) 다시 깨어났다`);
       break;

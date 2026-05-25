@@ -25,6 +25,7 @@ import { useUiStore } from '@/stores/ui';
 import { getNeighbors, getNode, isTimeUp, effectiveKind as systemEffectiveKind } from '@/systems/map';
 import { restHealMul, lockedTownCount, isNoShop } from '@/systems/chaos';
 import { isActivityDone } from '@/systems/activity';
+import { isGatherDone } from '@/systems/gathering';
 import { rng } from '@/systems/rng';
 import type { Node, NodeId, NodeKind, NodeMap } from '@/data/schemas';
 
@@ -174,6 +175,7 @@ type EnterAction =
   | 'shop-enter'
   | 'event-pass'
   | 'gather-enter'
+  | 'gather-done'
   | 'activity-enter'
   | 'activity-done'
   | 'activity-possessed'
@@ -206,6 +208,8 @@ function getEnterAction(): EnterAction {
     case 'shop':
       return 'shop-enter';
     case 'gather':
+      // 채집도 *노드당 1회*. 하루 경과 시 노드 리프레시로 재개방.
+      if (isGatherDone(selectedNodeId.value!)) return 'gather-done';
       return 'gather-enter';
     case 'activity':
       // 빙의(possession) 중에는 활동에 들어갈 수 없다.
@@ -313,10 +317,14 @@ function enterSelected() {
     case 'shop':
       router.push('/game/shop');
       break;
-    case 'gather': {
-      void import('@/systems/gathering').then(({ performGather }) => performGather(node.id));
+    case 'gather':
+      // 이미 다녀간 채집은 사건처럼 자동 통과. 아니면 미니게임 화면으로.
+      if (isGatherDone(node.id)) {
+        ui.toast('info', '이미 다녀간 채집입니다.');
+      } else {
+        router.push('/game/gather');
+      }
       break;
-    }
     case 'activity':
       // 이미 다녀간 활동은 사건처럼 자동 통과.
       if (isActivityDone(node.id)) {
@@ -867,6 +875,7 @@ function enterLabel(): string {
     case 'rest-done': return '이미 쉰 자리';
     case 'shop-enter': return '상점에 들어간다';
     case 'gather-enter': return '채집한다';
+    case 'gather-done': return '이미 다녀간 채집';
     case 'activity-enter': return '활동한다';
     case 'activity-done': return '이미 다녀간 활동';
     case 'activity-possessed': return '혼란 상태 (활동 불가)';
@@ -920,7 +929,7 @@ function enterLabel(): string {
                   'node-group--visited': run.data.nodeStates[node.id]?.visited,
                   'node-group--cleared': run.data.nodeStates[node.id]?.combatCleared,
                   'node-group--stealthed': run.data.nodeStates[node.id]?.combatStealthed,
-                  'node-group--done': run.data.nodeStates[node.id]?.activityDone || run.data.nodeStates[node.id]?.restDone,
+                  'node-group--done': run.data.nodeStates[node.id]?.activityDone || run.data.nodeStates[node.id]?.restDone || run.data.nodeStates[node.id]?.gatherDone,
                   'node-group--selected': selectedNodeId === node.id,
                   'node-group--chaos-locked': chaosLockedNodes.has(node.id),
                   'node-group--edge-start': edgeStartId === node.id,

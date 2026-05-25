@@ -284,7 +284,12 @@ export interface NodeStateRecord {
   activityDone?: boolean;
   /** 휴식 노드 사용 여부 — true면 다음 하루 경과(갱신) 전까지 회복 없이 통과만. */
   restDone?: boolean;
-  /** 채집 횟수(이번 갱신 주기) — 반복할수록 효율 체감. 하루 경과 시 0으로 리셋. */
+  /** 채집 노드 발동 여부 — true면 다음 하루 경과(갱신) 전까지 재채집 안 함. */
+  gatherDone?: boolean;
+  /**
+   * (구) 채집 횟수 — 반복 효율감쇠용. 미니게임 개편으로 *노드당 1회*(gatherDone)로 전환되며 폐기.
+   * 구 세이브 호환을 위해 optional로 남겨두되 더 이상 읽지 않는다.
+   */
   gatherCount?: number;
 }
 

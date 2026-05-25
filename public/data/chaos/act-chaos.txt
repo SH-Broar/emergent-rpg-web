@@ -176,7 +176,7 @@ levels = 1:1, 2:2, 3:3
 # 채집 임계 +15/+25/+35
 [chaos.ch-hard-gather]
 name = 척박한 땅
-description = 채집 후반에 이르는 컬러 임계가 강도만큼 높아진다.
+description = 채집 미니게임에서 후반 보상에 이르는 점수 기준이 강도만큼 높아진다.
 tier = 3
 category = gather
 chaos_type = numeric

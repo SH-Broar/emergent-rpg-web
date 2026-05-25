@@ -402,7 +402,8 @@ export const useRunStore = defineStore('run', {
           st.eventCount = 0;
           st.activityDone = false;  // 활동 재발동 가능.
           st.restDone = false;      // 휴식 재사용 가능.
-          st.gatherCount = 0;       // 채집 효율 회복.
+          st.gatherDone = false;    // 채집 재개방.
+          st.gatherCount = 0;       // (구) 채집 효율 — 폐기, 호환용 정리.
         }
 
         // 2) 노드 *원본 kind는 그대로* — 지도 모양 유지.

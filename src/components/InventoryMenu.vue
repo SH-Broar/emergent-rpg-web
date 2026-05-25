@@ -95,7 +95,7 @@ const reviveTargets = computed<Node[]>(() => {
       !!st.combatStealthed ||
       !!st.eventTriggered ||
       !!st.activityDone ||
-      (st.gatherCount ?? 0) > 0
+      !!st.gatherDone
     );
   });
 });
