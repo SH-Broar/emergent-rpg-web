@@ -695,7 +695,8 @@ export function validateData(dataDir, readFile) {
   }
 
   // ---- 4.16 (경고) 밸런스 sanity — 카드 등급 최소 한도 (validateCardBaseline 미러) ----
-  const CARD_MIN_PEAK = { basic: 4, common: 6, rare: 9, legendary: 14 };
+  // Item 37-① 상향(2026-05-25): common 6→9 / rare 9→14 / legendary 14→22. src/data/schemas/card.ts 와 동기.
+  const CARD_MIN_PEAK = { basic: 4, common: 9, rare: 14, legendary: 22 };
   for (const id of cardIds) {
     const f = merged[`card.${id}`];
     if (f.source !== 'race' && f.source !== 'character') continue;

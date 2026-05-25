@@ -26,7 +26,7 @@ source = possession
 element = light
 cost = 1
 trigger = manual
-effects = damage:14:enemy, heal:4:self
+effects = damage:14:enemy, heal:4:self, exhaust-self:0:self
 flavor = 들러붙은 것은 다정한 손이었다. 이제는 같이 싸워 준다.
 
 # ========== 악령 변신 결과 (나쁨, 상점에서만 제거) ==========

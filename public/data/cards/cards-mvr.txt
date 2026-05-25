@@ -48,7 +48,7 @@ source = race
 element = water
 cost = 1
 trigger = manual
-effects = heal:4:self
+effects = heal:4:self, exhaust-self:0:self
 upgrade_to = c-recover-plus
 flavor = 숨을 쉬어 진정한다.
 
@@ -61,7 +61,7 @@ source = hyperion
 element = light
 cost = 1
 trigger = manual
-effects = damage:8:enemy, block:3:self
+effects = damage:11:enemy, block:4:self
 upgrade_to = c-resolve-flash-plus
 flavor = "여기서 멈출 수는 없어."
 
@@ -72,7 +72,7 @@ source = hyperion
 element = water
 cost = 1
 trigger = manual
-effects = block:8:self
+effects = block:11:self
 upgrade_to = c-gentle-guard-plus
 flavor = 얇은 물의 막을 만들어 방어력을 키운다.
 
@@ -83,7 +83,7 @@ source = event
 element = iron
 cost = 1
 trigger = manual
-effects = damage-per-hand:2:enemy
+effects = damage-per-hand:3:enemy
 upgrade_to = c-double-strike-plus
 flavor = 기세로 놀라게 한다.
 
@@ -94,7 +94,7 @@ source = npc
 element = wind
 cost = 1
 trigger = manual
-effects = draw:2:self
+effects = draw:3:self
 upgrade_to = c-focused-mind-plus
 flavor = 지금 할 수 있는 일을 떠올린다.
 
@@ -105,7 +105,7 @@ source = event
 element = fire
 cost = 1
 trigger = manual
-effects = damage:3:enemy, apply-status:5:enemy:burn
+effects = damage:4:enemy, apply-status:5:enemy:burn
 upgrade_to = c-burn-mark-plus
 flavor = 순간적으로 열을 발사해 뜨겁게 만든다.
 
@@ -119,7 +119,7 @@ source = hyperion
 element = water
 cost = 1
 trigger = manual
-effects = heal:6:self, draw:1:self
+effects = heal:6:self, draw:1:self, exhaust-self:0:self
 flavor = 기분 좋은 바람이 불어온다.
 upgrade_to = c-second-wind-plus
 
@@ -130,7 +130,7 @@ source = hyperion
 element = wind
 cost = 0
 trigger = manual
-effects = draw:1:self, heal:2:self
+effects = draw:1:self, heal:1:self, damage:8:enemy, exhaust-self:0:self
 flavor = 임시 방편이라도 소중히.
 upgrade_to = c-deep-breath-plus
 
@@ -143,7 +143,7 @@ source = hyperion
 element = light
 cost = 2
 trigger = manual
-effects = damage:24:enemy, consume-vulnerable:3:enemy
+effects = damage:42:enemy, consume-vulnerable:3:enemy
 flavor = "당신은 여기 사람이 아니지만, 그래서 더욱 강해질 수 있어요."
 upgrade_to = c-transcend-strike-plus
 
@@ -156,7 +156,7 @@ source = boss
 element = dark
 cost = 1
 trigger = manual
-effects = damage:7:enemy, apply-status:1:enemy:vulnerable
+effects = damage:11:enemy, apply-status:1:enemy:vulnerable
 flavor = 더 이상 숨지 못한다.
 upgrade_to = c-shadow-rebuke-plus
 
@@ -203,7 +203,7 @@ source = race
 element = water
 cost = 1
 trigger = manual
-effects = heal:7:self
+effects = heal:7:self, exhaust-self:0:self
 flavor = 깊게 숨을 쉬어 진정한다.
 
 [card.c-resolve-flash-plus]
@@ -213,7 +213,7 @@ source = hyperion
 element = light
 cost = 1
 trigger = manual
-effects = damage:11:enemy, block:5:self
+effects = damage:15:enemy, block:7:self
 flavor = "아직 포기하긴 일러!"
 
 [card.c-gentle-guard-plus]
@@ -223,7 +223,7 @@ source = hyperion
 element = water
 cost = 1
 trigger = manual
-effects = block:12:self
+effects = block:17:self
 flavor = 물 속에서는 누구라도 팔이 느려진다.
 
 [card.c-double-strike-plus]
@@ -233,7 +233,7 @@ source = event
 element = iron
 cost = 1
 trigger = manual
-effects = damage-per-hand:3:enemy
+effects = damage-per-hand:4:enemy
 flavor = 더욱 강하게 위협한다.
 
 [card.c-focused-mind-plus]
@@ -243,7 +243,7 @@ source = npc
 element = wind
 cost = 1
 trigger = manual
-effects = draw:3:self
+effects = draw:4:self
 flavor = 어쩌면 미래에 할 수 있는 일도 떠올릴 수 있을지 모른다.
 
 [card.c-burn-mark-plus]
@@ -253,7 +253,7 @@ source = event
 element = fire
 cost = 1
 trigger = manual
-effects = damage:5:enemy, apply-status:7:enemy:burn
+effects = damage:7:enemy, apply-status:7:enemy:burn
 flavor = 커다란 불덩이를 발사한다.
 
 
@@ -269,7 +269,7 @@ source = shop
 element = light
 cost = 2
 trigger = manual
-effects = damage:9:enemy, apply-status:1:enemy:paralyze
+effects = damage:16:enemy, apply-status:1:enemy:paralyze
 flavor = 시간이 흐르지 않는다면.
 upgrade_to = c-iluneon-stopped-noon-plus
 
@@ -280,7 +280,7 @@ source = shop
 element = fire
 cost = 2
 trigger = manual
-effects = damage:9:enemy, apply-status:14:enemy:burn
+effects = damage:16:enemy, apply-status:14:enemy:burn
 flavor = 모스 대장간의 불은 일 년 내내 식지 않는다.
 upgrade_to = c-moss-ember-strike-plus
 
@@ -291,7 +291,7 @@ source = shop
 element = electric
 cost = 3
 trigger = manual
-effects = block:10:self, apply-status:1:self:ghost
+effects = block:18:self, apply-status:1:self:ghost
 flavor = 가상 세계로 공간을 대체한다.
 upgrade_to = c-tacomi-hologram-mirror-plus
 
@@ -302,7 +302,7 @@ source = shop
 element = water
 cost = 2
 trigger = manual
-effects = heal:15:self, draw:1:self
+effects = heal:7:self, draw:1:self, damage:25:enemy, exhaust-self:0:self
 flavor = 먼 옛날의 약속이 몸에 깃든다.
 upgrade_to = c-alimes-mist-vow-plus
 
@@ -313,7 +313,7 @@ source = shop
 element = iron
 cost = 2
 trigger = manual
-effects = block:20:self, damage-top-color:1:enemy
+effects = block:35:self, damage-top-color:1:enemy
 flavor = 식지 않은 노을의 끝에.
 upgrade_to = c-manonickla-sunset-wall-plus
 
@@ -359,7 +359,7 @@ source = npc
 element = dark
 cost = 1
 trigger = manual
-effects = apply-status:2:enemy:weakness
+effects = apply-status:3:enemy:weakness
 flavor = "그 날로 돌아갈 수 있다면."
 upgrade_to = c-binding-ward-plus
 
@@ -370,7 +370,7 @@ source = npc
 element = water
 cost = 1
 trigger = manual
-effects = apply-status:1:enemy:vulnerable, apply-status:1:enemy:weakness
+effects = apply-status:2:enemy:vulnerable, apply-status:1:enemy:weakness
 flavor = "잠시, 진정하세요..."
 upgrade_to = c-quiet-arc-plus
 
@@ -381,7 +381,7 @@ source = npc
 element = fire
 cost = 4
 trigger = manual
-effects = apply-status:1:enemy:paralyze
+effects = apply-status:2:enemy:paralyze
 flavor = "이 사진기로 빈 틈을 만들 수 있을 거야. 잘 다루기는 어려울지도 모르지만."
 upgrade_to = c-flash-capture-plus
 
@@ -392,7 +392,7 @@ source = npc
 element = wind
 cost = 1
 trigger = manual
-effects = damage:4:enemy
+effects = damage:6:enemy
 flavor = "격투의 장점은, 뭐니뭐니해도 빠르다는거야!"
 
 # 한 판 갈래의 *돌아온 한 판* — 같은 이름·비용 0의 별개 카드. 이 카드는 다시 돌아오지 않는다(무한 복제 방지).
@@ -414,7 +414,7 @@ source = npc
 element = dark
 cost = 1
 trigger = manual
-effects = damage-color-count:2:enemy, draw:1:self
+effects = damage-color-count:3:enemy, draw:1:self
 flavor = "다음 생에서 또 들러 주세요." 아카샤가 부른 여러 색의 영혼이 한데 모여, 색이 많을수록 더 짙게 덮친다.
 
 [card.c-warm-cup]
@@ -424,7 +424,7 @@ source = npc
 element = water
 cost = 1
 trigger = manual
-effects = heal:5:self, draw:1:self
+effects = heal:3:self, draw:1:self, damage:8:enemy, exhaust-self:0:self
 flavor = "한 잔 따뜻하게, 가시지요." 신시안이 잔의 결을 손바닥에 가지런히 올려 준다.
 
 [card.c-tripps-rage]
@@ -434,7 +434,7 @@ source = npc
 element = fire
 cost = 20
 trigger = manual
-effects = damage:55:enemy, apply-status:1:enemy:vulnerable, apply-status:1:enemy:weakness
+effects = damage:85:enemy, apply-status:1:enemy:vulnerable, apply-status:1:enemy:weakness
 flavor = "주인 다음엔 어디로 가요?" 모나토의 눈가가 붉어진다. 흑백 늑대 귀와 꼬리가 짧게 솟고, 맞은 만큼 더 가볍고 더 날카로워진다.
 
 [card.c-trace-step]
@@ -444,7 +444,7 @@ source = npc
 element = fire
 cost = 1
 trigger = manual
-effects = draw:1:self, return-hand-to-deck:1:self, next-turn-energy:1:self
+effects = draw:2:self, return-hand-to-deck:1:self, next-turn-energy:1:self
 flavor = "발자취를 끝까지 따라가 볼 거예요." 칼리번이 손가락 한 자국으로 한 장을 덱 위로 돌려놓고, 다음 한 발을 미리 준비한다.
 
 [card.c-growing-leaf]
@@ -454,7 +454,7 @@ source = npc
 element = earth
 cost = 2
 trigger = manual
-effects = growing-block:1:self
+effects = growing-block:2:self
 flavor = "엄마한테 도움이 되고 싶어요!" 쿠르쿠마의 잎새가 쓸 때마다 천천히 자라난다. 쓸수록 더 두꺼워진다.
 
 [card.c-zero-spark]
@@ -464,7 +464,7 @@ source = npc
 element = electric
 cost = 1
 trigger = manual
-effects = damage:9:enemy, apply-status:2:enemy:vulnerable
+effects = damage:14:enemy, apply-status:2:enemy:vulnerable
 flavor = "전기는 짧고 단단하게." 제로의 손끝에서 짧은 스파크 한 점이 튀어 적의 약한 자국을 짚어 드러낸다.
 
 [card.c-alti-resonance]
@@ -474,7 +474,7 @@ source = npc
 element = electric
 cost = 1
 trigger = manual
-effects = draw:2:self, heal:4:self
+effects = draw:2:self, heal:2:self, damage:12:enemy, exhaust-self:0:self
 flavor = "...같은 자리에. 알티." "알타." 두 자아가 나란히 짧고 단정한 공명을 보탠다. 가슴 안쪽이 한 자국 가벼워졌다.
 
 [card.c-flame-web]
@@ -484,7 +484,7 @@ source = npc
 element = fire
 cost = 1
 trigger = manual
-effects = damage:8:enemy, apply-status:3:enemy:vulnerable
+effects = damage:12:enemy, apply-status:3:enemy:vulnerable
 flavor = "한 줄 더 엮어 줄까?" 이그니아가 식지 않는 실을 던진다. 적이 불그스름한 실에 칭칭 묶인다. 취약.
 
 [card.c-orca-tide]
@@ -494,7 +494,7 @@ source = npc
 element = water
 cost = 1
 trigger = manual
-effects = damage:9:enemy, block:5:self
+effects = damage:14:enemy, block:8:self
 flavor = "위는 거칠어. 숨 한 번 더." 클루루가 흑백 꼬리로 물줄기를 쳐 올린다. 적에게 한 물결, 그대에게 두툼한 벽.
 
 [card.c-trade-coil]
@@ -504,7 +504,7 @@ source = npc
 element = earth
 cost = 1
 trigger = manual
-effects = damage:8:enemy, block:6:self
+effects = damage:12:enemy, block:9:self
 flavor = "한 필 더 보고 가요." 사라사가 긴 꼬리로 적을 한 번 감았다 푼다. 그 기세가 적을 치고, 남은 힘이 그대를 두른다.
 
 [card.c-lop-sign]
@@ -514,7 +514,7 @@ source = npc
 element = earth
 cost = 1
 trigger = manual
-effects = draw:1:self, block:5:self
+effects = draw:1:self, block:8:self
 flavor = 리포가 긴 귀를 한 번 늘어뜨려, 먼 소리를 먼저 듣는다. 손바닥에 무늬를 그어 다음 한 수를 일러 준다.
 
 [card.c-tide-veil]
@@ -524,7 +524,7 @@ source = npc
 element = water
 cost = 1
 trigger = manual
-effects = block:6:self, heal:3:self
+effects = block:9:self, heal:3:self, exhaust-self:0:self
 flavor = "물살은 내가 고를게요." 마린이 푸른 꼬리로 물을 둘러 준다. 갈비뼈 안쪽이 서늘하게 가벼워진다.
 
 [card.c-bear-bastion]
@@ -534,7 +534,7 @@ source = npc
 element = iron
 cost = 2
 trigger = manual
-effects = block:12:self, damage:8:enemy
+effects = block:19:self, damage:12:enemy
 flavor = "...자격을, 보여라." 던가 묵직한 한 손을 내린다. 등 뒤로 쇳벽이 서고, 적에게 한 덩이가 떨어진다.
 
 [card.c-tiger-rush]
@@ -544,7 +544,7 @@ source = npc
 element = electric
 cost = 2
 trigger = manual
-effects = damage:5:enemy, damage:5:enemy, damage:5:enemy
+effects = damage:8:enemy, damage:8:enemy, damage:8:enemy
 flavor = "...빠른 자만, 따라와라." 티프레가 번개를 타고 세 번 가른다. 눈 깜빡할 사이.
 
 
@@ -579,7 +579,7 @@ source = event
 element = iron
 cost = 2
 trigger = manual
-effects = damage-color-count:3:enemy
+effects = damage-color-count:4:enemy
 flavor = 지닌 색이 많을수록 칼끝이 여러 갈래로 갈라져 친다. 넓게 익힌 자의 한 칼.
 
 [card.c-blood-pact]
@@ -609,7 +609,7 @@ source = npc
 element = fire
 cost = 1
 trigger = manual
-effects = apply-status:1:self:feral, damage:5:enemy
+effects = apply-status:1:self:feral, damage:7:enemy
 flavor = "...오늘은 사람으로 못 있겠어." 카시스의 아홉 꼬리가 차례차례 곤두선다. 손톱이 짐승의 것으로 자라며, 등 뒤를 가릴 겨를이 사라진다. 공격은 두 배, 방어는 잊는다.
 
 [card.c-fang-frenzy]
@@ -619,7 +619,7 @@ source = npc
 element = iron
 cost = 1
 trigger = manual
-effects = damage:6:enemy
+effects = damage:8:enemy
 flavor = "이빨이 먼저 닿아." 화이트팡이 글리치 든 검을 짐승처럼 휘두른다. 수화에 든 자의 손에서, 한 입이 두 입으로 깊어진다.
 
 # ---------- 퇴행(regress) 활용 2장 ----------
@@ -631,7 +631,7 @@ source = event
 element = fire
 cost = 1
 trigger = manual
-effects = damage:20:enemy, exhaust-self
+effects = damage:31:enemy, exhaust-self
 flavor = 가진 것을 한꺼번에 게워 내어 한 번에 쏟는다. 한 번 쏟고 나면 다시 쥘 수 없는 빈 손.
 
 [card.c-elder-curse]
@@ -641,7 +641,7 @@ source = boss
 element = dark
 cost = 2
 trigger = manual
-effects = apply-status:2:enemy:regress, damage:6:enemy
+effects = apply-status:2:enemy:regress, damage:9:enemy
 flavor = "네가 쌓아 온 색을, 잠시 잊게 해 줄게." 아주 오래된 어둠이 적의 단단함을 풀어 내린다. 적의 색 보강이 �� 칸 멎는다.
 
 # ---------- damage-per-debuff 2장 ----------
@@ -653,7 +653,7 @@ source = npc
 element = dark
 cost = 1
 trigger = manual
-effects = damage-per-debuff:5:enemy
+effects = damage-per-debuff:6:enemy
 flavor = 적이 짊어진 모든 약함이 한꺼번에 그에게 되돌아간다. 무너뜨려 둔 자리가 많을수록 매섭다.
 
 [card.c-cursed-blade]
@@ -663,7 +663,7 @@ source = event
 element = iron
 cost = 2
 trigger = manual
-effects = damage-per-debuff:8:enemy
+effects = damage-per-debuff:9:enemy
 flavor = 상처마다 검이 더 깊이 든다. 취약과 약화와 중독이 겹친 자리일수록, 한 칼이 곱절로 내려앉는다.
 
 # ---------- consume-vulnerable 1장 ----------
@@ -689,7 +689,7 @@ source = hyperion
 element = wind
 cost = 1
 trigger = manual
-effects = draw:1:self, draw-if-color:2:self:wind:5
+effects = draw:2:self, draw-if-color:2:self:wind:5
 flavor = 손끝이 가벼워지면, 바람의 색이 차오른 자에게는 길이 더 열린다. 넘치는 자에게만 보이는 다음 수.
 
 # ---------- damage-from-hp 1장 ----------
@@ -713,7 +713,7 @@ source = npc
 element = earth
 cost = 2
 trigger = manual
-effects = block:10:self, damage-per-hand:2:enemy
+effects = block:16:self, damage-per-hand:3:enemy
 flavor = 로크의 돌 손발이 등을 둥글게 만다. 단단히 웅크린 자리에서, 손에 쥔 패가 많을수록 가시가 더 많이 돋는다.
 
 # ---------- status 조합 2장 ----------
@@ -725,7 +725,7 @@ source = npc
 element = earth
 cost = 1
 trigger = manual
-effects = apply-status:4:enemy:poison, damage:2:enemy
+effects = apply-status:4:enemy:poison, damage:3:enemy
 flavor = 한 송이씩 독꽃이 적의 안쪽에서 피어난다. 처음엔 옅게, 그러나 시간이 지날수록 짙게 무너뜨린다.
 
 [card.c-double-hex]
@@ -735,7 +735,7 @@ source = npc
 element = dark
 cost = 1
 trigger = manual
-effects = apply-status:1:enemy:weakness, apply-status:1:enemy:vulnerable
+effects = apply-status:2:enemy:weakness, apply-status:1:enemy:vulnerable
 flavor = 한 손으로 주는 힘을 깎고, 다른 손으로 받는 자리를 벌린다. 두 저주가 한꺼번에 적을 감싼다.
 
 
@@ -760,7 +760,7 @@ source = event
 element = iron
 cost = 2
 trigger = manual
-effects = damage:30:enemy, exhaust-self:0:self
+effects = damage:47:enemy, exhaust-self:0:self
 flavor = 단 한 번. 다시는 손에 돌아오지 않을 칼을, 가장 깊은 자리에 내리꽂는다. 쓰고 나면 사라진다.
 
 [card.c-last-bulwark]
@@ -770,7 +770,7 @@ source = npc
 element = earth
 cost = 2
 trigger = manual
-effects = block:28:self, exhaust-self:0:self
+effects = block:43:self, exhaust-self:0:self
 flavor = "여기까지는 내가 막을게요." 로크의 돌 손발이 한 번에 거대한 벽을 세운다. 그 한 번 뒤에는, 손에 남는 것이 없다. 소멸.
 
 [card.c-doom-mark]
@@ -780,7 +780,7 @@ source = event
 element = dark
 cost = 1
 trigger = manual
-effects = apply-status:4:enemy:vulnerable, apply-status:4:enemy:weakness, exhaust-self:0:self
+effects = apply-status:5:enemy:vulnerable, apply-status:4:enemy:weakness, exhaust-self:0:self
 flavor = 깊은 검은 자국 하나가 적에게 새겨진다. 받는 자리는 활짝, 주는 힘은 무겁게. 낙인은 한 번뿐, 새기고 사라진다.
 
 # ---------- block-to-damage 2장 (방어→공격 전환) ----------
@@ -802,7 +802,7 @@ source = npc
 element = earth
 cost = 2
 trigger = manual
-effects = block:8:self, block-to-damage:1:enemy
+effects = block:12:self, block-to-damage:1:enemy
 flavor = "막고 나서, 친다." 던가 묵직한 손으로 먼저 두껍게 두르고, 그 두께를 그대로 적에게 떨군다. 단단할수록 매섭다.
 
 # ---------- spend-all-energy 2장 (남은 마나 몰빵) ----------
@@ -814,7 +814,7 @@ source = event
 element = fire
 cost = 0
 trigger = manual
-effects = spend-all-energy:4:enemy
+effects = spend-all-energy:5:enemy
 flavor = 손에 남은 모든 힘을, 아끼지 않고 한꺼번에 적에게 부어 버린다. 남기지 않을수록 깊다.
 
 [card.c-overdraw-burst]
@@ -824,7 +824,7 @@ source = hyperion
 element = electric
 cost = 0
 trigger = manual
-effects = spend-all-energy:6:enemy
+effects = spend-all-energy:7:enemy
 flavor = 회로 끝까지 전류를 흘려, 한 점에 모아 터뜨린다. 남은 마나가 많을수록 섬광이 크다. 비운 만큼 강하다.
 
 # ---------- damage-per-companion 2장 (동료 많을수록) ----------
@@ -836,7 +836,7 @@ source = npc
 element = wind
 cost = 1
 trigger = manual
-effects = damage-per-companion:4:enemy
+effects = damage-per-companion:5:enemy
 flavor = "혼자가 아니야." 곁에 선 이들이 많을수록, 한 걸음이 더 멀리 닿는다. 함께 걸어온 자리의 무게.
 
 [card.c-bonded-strike]
@@ -846,7 +846,7 @@ source = npc
 element = light
 cost = 2
 trigger = manual
-effects = damage-per-companion:7:enemy, block:4:self
+effects = damage-per-companion:8:enemy, block:6:self
 flavor = 함께한 이들의 이름을 하나씩 떠올리며 검을 든다. 동행이 길어질수록, 손목에 실리는 무게가 다르다.
 
 # ---------- damage-per-relic 2장 (유물 많을수록) ----------
@@ -858,7 +858,7 @@ source = event
 element = iron
 cost = 1
 trigger = manual
-effects = damage-per-relic:4:enemy
+effects = damage-per-relic:5:enemy
 flavor = 모아 온 것들이 손끝에서 함께 울린다. 지닌 보물이 많을수록, 한 휘두름이 무겁다.
 
 [card.c-hoarders-wrath]
@@ -868,7 +868,7 @@ source = event
 element = electric
 cost = 2
 trigger = manual
-effects = damage-per-relic:7:enemy
+effects = damage-per-relic:8:enemy
 flavor = 지녀 온 모든 유물이 한꺼번에 빛을 낸다. 쌓아 둔 것이 깊을수록, 분노가 멀리 번진다.
 
 # ---------- growing-damage 2장 (쓸수록 강해지는 공격) ----------
@@ -880,7 +880,7 @@ source = npc
 element = fire
 cost = 1
 trigger = manual
-effects = growing-damage:4:enemy
+effects = growing-damage:5:enemy
 flavor = "한 번 더, 또 한 번 더." 카시스의 송곳니가 쓸 때마다 한 자국씩 더 길어진다. 거듭할수록 깊어지는 한 입.
 
 [card.c-mounting-storm]
@@ -890,7 +890,7 @@ source = hyperion
 element = wind
 cost = 1
 trigger = manual
-effects = growing-damage:7:enemy
+effects = growing-damage:8:enemy
 flavor = 처음엔 산들바람, 거듭 부를수록 손쓸 수 없는 폭풍으로 자라난다. 한 번 한 번이 다음을 키운다.
 
 # ---------- heal-per-hand 2장 (손패 수만큼 회복) ----------
@@ -912,7 +912,7 @@ source = npc
 element = earth
 cost = 2
 trigger = manual
-effects = heal-per-hand:4:self, draw:1:self
+effects = heal-per-hand:4:self, draw:2:self
 flavor = 손에 쥔 잎새가 많을수록, 한꺼번에 활짝 피어 갈비뼈 안쪽을 데운다. 풍성한 손이 곧 풍성한 숨.
 
 # ---------- next-card-double 1장 (다음 카드 2배, 콤보 셋업) ----------
@@ -936,7 +936,7 @@ source = npc
 element = earth
 cost = 1
 trigger = manual
-effects = apply-status:3:enemy:poison, damage-per-debuff:3:enemy
+effects = apply-status:3:enemy:poison, damage-per-debuff:4:enemy
 flavor = 한 송이 독을 더 얹고, 그 위에서 쌓인 약함을 한꺼번에 두드린다. 무너뜨려 둘수록 더 깊이 든다.
 
 [card.c-prism-overload]
@@ -946,7 +946,7 @@ source = hyperion
 element = light
 cost = 2
 trigger = manual
-effects = damage-color-count:2:enemy, damage-top-color:1:enemy
+effects = damage-color-count:3:enemy, damage-top-color:1:enemy
 flavor = 가장 짙은 한 색과 지닌 색의 수가 동시에 쏟아진다. 넓게도, 깊게도 익힌 자만의 한 칼.
 
 [card.c-frail-rupture]
@@ -981,7 +981,7 @@ source = shop
 element = iron
 cost = 1
 trigger = manual
-effects = damage:7:enemy
+effects = damage:10:enemy
 flavor = 어느 상점에서나 파는 흔한 한 칼. 무난하게 잘 든다.
 
 [card.c-shop-brace]
@@ -991,7 +991,7 @@ source = shop
 element = earth
 cost = 1
 trigger = manual
-effects = block:7:self
+effects = block:10:self
 flavor = 흔한 방패 자세. 한 번은 막아 준다.
 
 [card.c-shop-flick]
@@ -1011,7 +1011,7 @@ source = shop
 element = water
 cost = 1
 trigger = manual
-effects = heal:6:self
+effects = heal:6:self, exhaust-self:0:self
 flavor = 흔한 물병 한 모금. 숨이 돌아온다.
 
 [card.c-shop-poke]
@@ -1031,7 +1031,7 @@ source = shop
 element = iron
 cost = 2
 trigger = manual
-effects = damage:11:enemy
+effects = damage:15:enemy
 flavor = 흔하지만 묵직한 한 방. 값 한다.
 
 [card.c-shop-wall]
@@ -1041,7 +1041,7 @@ source = shop
 element = earth
 cost = 2
 trigger = manual
-effects = block:13:self
+effects = block:18:self
 flavor = 흔한 큰 방패. 한 턴은 든든하다.
 
 [card.c-shop-study]
@@ -1051,7 +1051,7 @@ source = shop
 element = wind
 cost = 1
 trigger = manual
-effects = draw:2:self
+effects = draw:3:self
 flavor = 잠깐 손패를 본다. 두 장이 따라온다.
 
 [card.c-shop-salve]
@@ -1061,7 +1061,7 @@ source = shop
 element = water
 cost = 1
 trigger = manual
-effects = heal:4:self, block:3:self
+effects = heal:4:self, block:4:self, exhaust-self:0:self
 flavor = 흔한 응급 약. 조금 낫고, 조금 단단해진다.
 
 
@@ -1076,7 +1076,7 @@ source = shop
 element = fire
 cost = 2
 trigger = manual
-effects = damage:14:enemy, apply-status:7:enemy:burn
+effects = damage:25:enemy, apply-status:7:enemy:burn
 flavor = 트리플라워 분화구의 식지 않은 불씨가 한꺼번에 쏟아진다. 살갗에 오래 남는 잿불.
 
 [card.c-falcon-skydive]
@@ -1086,7 +1086,7 @@ source = shop
 element = wind
 cost = 2
 trigger = manual
-effects = damage-per-hand:2:enemy
+effects = damage-per-hand:4:enemy
 flavor = 공중 군도 가장 높은 자리에서, 손에 쥔 만큼 한 번에 내리꽂는 급강하.
 
 [card.c-yusezria-corebreak]
@@ -1096,7 +1096,7 @@ source = shop
 element = iron
 cost = 2
 trigger = manual
-effects = block:18:self, block-to-damage:1:enemy
+effects = block:32:self, block-to-damage:1:enemy
 flavor = 유스제리아 철과 물이 굳은 막다른 벽. 먼저 단단해진 만큼, 그대로 되돌려 친다.
 
 [card.c-diropel-totem]
@@ -1106,7 +1106,7 @@ source = shop
 element = earth
 cost = 2
 trigger = manual
-effects = damage-color-count:4:enemy, draw:1:self
+effects = damage-color-count:6:enemy, draw:1:self
 flavor = 딜롭의 얼굴 무늬가 여러 색으로 빛난다. 지닌 색이 많을수록 더 짙게 친다.
 
 
@@ -1121,7 +1121,7 @@ source = event
 element = dark
 cost = 2
 trigger = manual
-effects = damage-per-debuff:4:enemy, apply-status:2:enemy:poison
+effects = damage-per-debuff:5:enemy, apply-status:2:enemy:poison
 flavor = 적이 짊어진 모든 약함을 한꺼번에 거두고, 그 자리에 다시 독을 심는다.
 
 [card.c-wild-rush]
@@ -1131,7 +1131,7 @@ source = npc
 element = fire
 cost = 1
 trigger = manual
-effects = apply-status:1:self:feral, damage-per-hand:2:enemy
+effects = apply-status:1:self:feral, damage-per-hand:3:enemy
 flavor = "...생각은 나중에." 짐승이 든 자가, 손에 쥔 만큼 앞뒤 없이 들이친다. 등 뒤는 잊은 채.
 
 [card.c-color-surge]
@@ -1161,7 +1161,7 @@ source = hyperion
 element = water
 cost = 1
 trigger = manual
-effects = heal:9:self, draw:1:self
+effects = heal:9:self, draw:1:self, exhaust-self:0:self
 flavor = 마음이 상쾌해지는 바람이 분다.
 
 [card.c-deep-breath-plus]
@@ -1171,7 +1171,7 @@ source = hyperion
 element = wind
 cost = 0
 trigger = manual
-effects = draw:2:self, heal:2:self
+effects = draw:2:self, heal:1:self, damage:11:enemy, exhaust-self:0:self
 flavor = 지금 가장 적절한 처치를 한다.
 
 [card.c-transcend-strike-plus]
@@ -1181,7 +1181,7 @@ source = hyperion
 element = light
 cost = 2
 trigger = manual
-effects = damage:28:enemy, consume-vulnerable:4
+effects = damage:49:enemy, consume-vulnerable:4
 flavor = "걱정하지 마."
 
 [card.c-shadow-rebuke-plus]
@@ -1191,7 +1191,7 @@ source = boss
 element = dark
 cost = 1
 trigger = manual
-effects = damage:8:enemy, apply-status:2:enemy:vulnerable
+effects = damage:12:enemy, apply-status:2:enemy:vulnerable
 flavor = 더는 어디에도 숨지 못한다.
 
 [card.c-iluneon-stopped-noon-plus]
@@ -1201,7 +1201,7 @@ source = shop
 element = light
 cost = 2
 trigger = manual
-effects = damage:12:enemy, apply-status:1:enemy:paralyze, apply-status:1:enemy:vulnerable
+effects = damage:21:enemy, apply-status:1:enemy:paralyze, apply-status:1:enemy:vulnerable
 flavor = 마치 이 순간이 영원한 것처럼.
 
 [card.c-moss-ember-strike-plus]
@@ -1211,7 +1211,7 @@ source = shop
 element = fire
 cost = 2
 trigger = manual
-effects = damage:12:enemy, apply-status:20:enemy:burn
+effects = damage:21:enemy, apply-status:20:enemy:burn
 flavor = 모스 대장간의 불이 태우지 못 하는 건 없다.
 
 [card.c-tacomi-hologram-mirror-plus]
@@ -1221,7 +1221,7 @@ source = shop
 element = electric
 cost = 2
 trigger = manual
-effects = block:12:self, apply-status:1:self:ghost
+effects = block:21:self, apply-status:1:self:ghost
 flavor = 나와 가까운 개념으로 나를 대체한다.
 
 [card.c-alimes-mist-vow-plus]
@@ -1231,7 +1231,7 @@ source = shop
 element = water
 cost = 2
 trigger = manual
-effects = heal:20:self, draw:1:self
+effects = heal:9:self, draw:1:self, damage:35:enemy, exhaust-self:0:self
 flavor = 아직 당신이 기억하고 있기를.
 
 [card.c-manonickla-sunset-wall-plus]
@@ -1241,7 +1241,7 @@ source = shop
 element = iron
 cost = 2
 trigger = manual
-effects = block:20:self, damage-top-color:1.2
+effects = block:35:self, damage-top-color:1.2
 flavor = 온 세상을 덮은 노을의 끝에.
 
 # ---------- NPC 영입 ----------
@@ -1283,7 +1283,7 @@ source = npc
 element = dark
 cost = 1
 trigger = manual
-effects = apply-status:3:enemy:weakness
+effects = apply-status:4:enemy:weakness
 flavor = "그 때, 내가 도망치지 않았다면."
 
 [card.c-quiet-arc-plus]
@@ -1293,7 +1293,7 @@ source = npc
 element = light
 cost = 1
 trigger = manual
-effects = apply-status:2:enemy:vulnerable, apply-status:2:enemy:weakness
+effects = apply-status:3:enemy:vulnerable, apply-status:2:enemy:weakness
 flavor = "난폭한 일은 하고 싶지 않아요."
 
 [card.c-flash-capture-plus]
@@ -1303,7 +1303,7 @@ source = npc
 element = fire
 cost = 3
 trigger = manual
-effects = apply-status:1:enemy:paralyze, apply-status:1:enemy:spasm
+effects = apply-status:2:enemy:paralyze, apply-status:1:enemy:spasm
 flavor = "어때, 좋은 사진 건졌어?"
 
 [card.c-rize-relay-plus]
@@ -1313,7 +1313,7 @@ source = npc
 element = wind
 cost = 1
 trigger = manual
-effects = damage:7:enemy
+effects = damage:10:enemy
 flavor = "그 정도로는 내 주먹을 피할 수 없을 걸!"
 
 # 한 판 갈래+의 *돌아온 한 판* — 복제하지 않는 비용 0 별개 카드. source=form(풀 제외).
@@ -1334,7 +1334,7 @@ source = npc
 element = dark
 cost = 1
 trigger = manual
-effects = damage-color-count:3:enemy, draw:1:self
+effects = damage-color-count:4:enemy, draw:1:self
 flavor = 더 많은 색의 영혼이, 한데 모인다.
 
 [card.c-warm-cup-plus]
@@ -1344,7 +1344,7 @@ source = npc
 element = water
 cost = 1
 trigger = manual
-effects = heal:8:self, draw:1:self
+effects = heal:4:self, draw:1:self, damage:13:enemy, exhaust-self:0:self
 flavor = 더 따뜻한 한 잔. 오래 데운다.
 
 [card.c-tripps-rage-plus]
@@ -1354,7 +1354,7 @@ source = npc
 element = fire
 cost = 20
 trigger = manual
-effects = damage:75:enemy, apply-status:1:enemy:vulnerable, apply-status:1:enemy:weakness
+effects = damage:116:enemy, apply-status:1:enemy:vulnerable, apply-status:1:enemy:weakness
 flavor = 받은 만큼이, 더 무겁게 갚아진다.
 
 [card.c-trace-step-plus]
@@ -1364,7 +1364,7 @@ source = npc
 element = fire
 cost = 0
 trigger = manual
-effects = draw:1:self, return-hand-to-deck:1:self, next-turn-energy:1:self
+effects = draw:2:self, return-hand-to-deck:1:self, next-turn-energy:1:self
 flavor = 발자취를 더 가볍게 따라간다.
 
 [card.c-growing-leaf-plus]
@@ -1374,7 +1374,7 @@ source = npc
 element = earth
 cost = 2
 trigger = manual
-effects = growing-block:3:self
+effects = growing-block:4:self
 flavor = 처음부터 더 두껍게, 쓸수록 더 자란다.
 
 [card.c-zero-spark-plus]
@@ -1384,7 +1384,7 @@ source = npc
 element = electric
 cost = 1
 trigger = manual
-effects = damage:12:enemy, apply-status:3:enemy:vulnerable
+effects = damage:19:enemy, apply-status:3:enemy:vulnerable
 flavor = 스파크가 더 깊이, 약한 자리를 짚는다.
 
 [card.c-alti-resonance-plus]
@@ -1394,7 +1394,7 @@ source = npc
 element = electric
 cost = 1
 trigger = manual
-effects = draw:2:self, heal:7:self
+effects = draw:2:self, heal:3:self, damage:17:enemy, exhaust-self:0:self
 flavor = 두 자아가 더 단정하게 겹친다.
 
 [card.c-flame-web-plus]
@@ -1404,7 +1404,7 @@ source = npc
 element = fire
 cost = 1
 trigger = manual
-effects = damage:11:enemy, apply-status:4:enemy:vulnerable
+effects = damage:17:enemy, apply-status:4:enemy:vulnerable
 flavor = 더 많은 실이, 적을 촘촘히 묶는다.
 
 [card.c-orca-tide-plus]
@@ -1414,7 +1414,7 @@ source = npc
 element = water
 cost = 1
 trigger = manual
-effects = damage:13:enemy, block:8:self
+effects = damage:20:enemy, block:12:self
 flavor = 더 큰 물결, 더 두꺼운 방어.
 
 [card.c-trade-coil-plus]
@@ -1424,7 +1424,7 @@ source = npc
 element = earth
 cost = 1
 trigger = manual
-effects = damage:11:enemy, block:9:self
+effects = damage:17:enemy, block:14:self
 flavor = 더 길게 감았다 푼다.
 
 [card.c-lop-sign-plus]
@@ -1434,7 +1434,7 @@ source = npc
 element = earth
 cost = 1
 trigger = manual
-effects = draw:1:self, block:8:self
+effects = draw:1:self, block:12:self
 flavor = 더 먼 소리까지, 미리 듣는다.
 
 [card.c-tide-veil-plus]
@@ -1444,7 +1444,7 @@ source = npc
 element = water
 cost = 1
 trigger = manual
-effects = block:9:self, heal:5:self
+effects = block:14:self, heal:5:self, exhaust-self:0:self
 flavor = 더 두꺼운 물 방어.
 
 [card.c-bear-bastion-plus]
@@ -1454,7 +1454,7 @@ source = npc
 element = iron
 cost = 2
 trigger = manual
-effects = block:17:self, damage:11:enemy
+effects = block:26:self, damage:17:enemy
 flavor = 더 묵직한 한 손이 내린다.
 
 [card.c-tiger-rush-plus]
@@ -1464,7 +1464,7 @@ source = npc
 element = electric
 cost = 2
 trigger = manual
-effects = damage:7:enemy, damage:7:enemy, damage:7:enemy
+effects = damage:11:enemy, damage:11:enemy, damage:11:enemy
 flavor = 번개가 더 깊게, 세 번 가른다.
 
 # ---------- 측정 어려운 1차 ----------
@@ -1496,7 +1496,7 @@ source = event
 element = iron
 cost = 2
 trigger = manual
-effects = damage-color-count:5:enemy
+effects = damage-color-count:6:enemy
 flavor = 지닌 색 하나하나가, 더 무겁게 갈라진다.
 
 [card.c-blood-pact-plus]
@@ -1518,7 +1518,7 @@ source = npc
 element = fire
 cost = 1
 trigger = manual
-effects = apply-status:1:self:feral, damage:8:enemy
+effects = apply-status:1:self:feral, damage:11:enemy
 flavor = 더 사납게, 더 깊이 든다.
 
 [card.c-fang-frenzy-plus]
@@ -1528,7 +1528,7 @@ source = npc
 element = iron
 cost = 1
 trigger = manual
-effects = damage:9:enemy
+effects = damage:13:enemy
 flavor = 한 입이, 더 깊은 두 입으로.
 
 [card.c-primal-collapse-plus]
@@ -1538,7 +1538,7 @@ source = event
 element = fire
 cost = 1
 trigger = manual
-effects = damage:28:enemy, exhaust-self
+effects = damage:43:enemy, exhaust-self
 flavor = 더 많은 것을, 한 번에 게워 낸다. 그리고 사라진다.
 
 [card.c-elder-curse-plus]
@@ -1548,7 +1548,7 @@ source = boss
 element = dark
 cost = 2
 trigger = manual
-effects = apply-status:3:enemy:regress, damage:9:enemy
+effects = apply-status:3:enemy:regress, damage:14:enemy
 flavor = 적의 단단함이, 더 오래 멎는다.
 
 [card.c-debuff-storm-plus]
@@ -1558,7 +1558,7 @@ source = npc
 element = dark
 cost = 1
 trigger = manual
-effects = damage-per-debuff:7:enemy
+effects = damage-per-debuff:8:enemy
 flavor = 쌓아 둔 약함이, 더 매섭게 되돌아온다.
 
 [card.c-cursed-blade-plus]
@@ -1568,7 +1568,7 @@ source = event
 element = iron
 cost = 2
 trigger = manual
-effects = damage-per-debuff:11:enemy
+effects = damage-per-debuff:12:enemy
 flavor = 겹친 상처마다, 검이 더 깊다.
 
 [card.c-vuln-detonate-plus]
@@ -1588,7 +1588,7 @@ source = hyperion
 element = wind
 cost = 1
 trigger = manual
-effects = draw:1:self, draw-if-color:3:self:wind:4
+effects = draw:2:self, draw-if-color:3:self:wind:4
 flavor = 바람이 조금만 차도, 길이 더 열린다.
 
 [card.c-last-stand-plus]
@@ -1608,7 +1608,7 @@ source = npc
 element = earth
 cost = 2
 trigger = manual
-effects = block:14:self, damage-per-hand:3:enemy
+effects = block:22:self, damage-per-hand:4:enemy
 flavor = 더 단단히 웅크릴수록, 가시가 더 돋는다.
 
 [card.c-venom-bloom-plus]
@@ -1618,7 +1618,7 @@ source = npc
 element = earth
 cost = 1
 trigger = manual
-effects = apply-status:6:enemy:poison, damage:3:enemy
+effects = apply-status:6:enemy:poison, damage:4:enemy
 flavor = 더 많은 독꽃이, 안쪽에서 핀다.
 
 [card.c-double-hex-plus]
@@ -1628,7 +1628,7 @@ source = npc
 element = dark
 cost = 1
 trigger = manual
-effects = apply-status:2:enemy:weakness, apply-status:2:enemy:vulnerable
+effects = apply-status:3:enemy:weakness, apply-status:2:enemy:vulnerable
 flavor = 두 저주가, 더 짙게 감싼다.
 
 # ---------- 측정 어려운 3차 (소멸/전환/마나/연동/성장) ----------
@@ -1640,7 +1640,7 @@ source = event
 element = iron
 cost = 2
 trigger = manual
-effects = damage:42:enemy, exhaust-self:0:self
+effects = damage:65:enemy, exhaust-self:0:self
 flavor = 단 한 번이, 더 깊이 박힌다.
 
 [card.c-last-bulwark-plus]
@@ -1650,7 +1650,7 @@ source = npc
 element = earth
 cost = 2
 trigger = manual
-effects = block:40:self, exhaust-self:0:self
+effects = block:62:self, exhaust-self:0:self
 flavor = 더 거대한 벽이, 단 한 번 선다.
 
 [card.c-doom-mark-plus]
@@ -1660,7 +1660,7 @@ source = event
 element = dark
 cost = 0
 trigger = manual
-effects = apply-status:4:enemy:vulnerable, apply-status:4:enemy:weakness, exhaust-self:0:self
+effects = apply-status:5:enemy:vulnerable, apply-status:4:enemy:weakness, exhaust-self:0:self
 flavor = 낙인이, 더 가볍게 새겨진다.
 
 [card.c-shell-slam-plus]
@@ -1680,7 +1680,7 @@ source = npc
 element = earth
 cost = 2
 trigger = manual
-effects = block:12:self, block-to-damage:1:enemy
+effects = block:19:self, block-to-damage:1:enemy
 flavor = 더 두껍게 두르고, 그대로 떨군다.
 
 [card.c-all-in-plus]
@@ -1690,7 +1690,7 @@ source = event
 element = fire
 cost = 0
 trigger = manual
-effects = spend-all-energy:6:enemy
+effects = spend-all-energy:7:enemy
 flavor = 남김없이, 더 깊게 붓는다.
 
 [card.c-overdraw-burst-plus]
@@ -1700,7 +1700,7 @@ source = hyperion
 element = electric
 cost = 0
 trigger = manual
-effects = spend-all-energy:9:enemy
+effects = spend-all-energy:10:enemy
 flavor = 회로 끝까지, 더 큰 섬광.
 
 [card.c-comrades-charge-plus]
@@ -1710,7 +1710,7 @@ source = npc
 element = wind
 cost = 1
 trigger = manual
-effects = damage-per-companion:6:enemy
+effects = damage-per-companion:7:enemy
 flavor = 함께 걸어온 무게가, 더 멀리 닿는다.
 
 [card.c-bonded-strike-plus]
@@ -1720,7 +1720,7 @@ source = npc
 element = light
 cost = 2
 trigger = manual
-effects = damage-per-companion:10:enemy, block:6:self
+effects = damage-per-companion:11:enemy, block:9:self
 flavor = 떠올린 이름마다, 손목이 더 무겁다.
 
 [card.c-collectors-strike-plus]
@@ -1730,7 +1730,7 @@ source = event
 element = iron
 cost = 1
 trigger = manual
-effects = damage-per-relic:6:enemy
+effects = damage-per-relic:7:enemy
 flavor = 모아 온 것이, 더 무겁게 울린다.
 
 [card.c-hoarders-wrath-plus]
@@ -1740,7 +1740,7 @@ source = event
 element = electric
 cost = 2
 trigger = manual
-effects = damage-per-relic:10:enemy
+effects = damage-per-relic:11:enemy
 flavor = 지녀 온 빛이, 더 멀리 번진다.
 
 [card.c-rising-fang-plus]
@@ -1750,7 +1750,7 @@ source = npc
 element = fire
 cost = 1
 trigger = manual
-effects = growing-damage:6:enemy
+effects = growing-damage:7:enemy
 flavor = 처음부터 더 길게, 쓸수록 더.
 
 [card.c-mounting-storm-plus]
@@ -1760,7 +1760,7 @@ source = hyperion
 element = wind
 cost = 1
 trigger = manual
-effects = growing-damage:10:enemy
+effects = growing-damage:11:enemy
 flavor = 첫 바람부터, 이미 거세다.
 
 [card.c-shared-breath-plus]
@@ -1780,7 +1780,7 @@ source = npc
 element = earth
 cost = 2
 trigger = manual
-effects = heal-per-hand:6:self, draw:1:self
+effects = heal-per-hand:6:self, draw:2:self
 flavor = 더 풍성한 손이, 더 풍성한 숨.
 
 [card.c-mirror-echo-plus]
@@ -1800,7 +1800,7 @@ source = npc
 element = earth
 cost = 1
 trigger = manual
-effects = apply-status:4:enemy:poison, damage-per-debuff:4:enemy
+effects = apply-status:4:enemy:poison, damage-per-debuff:5:enemy
 flavor = 더 높은 첨탑이, 쌓인 약함을 두드린다.
 
 [card.c-prism-overload-plus]
@@ -1810,7 +1810,7 @@ source = hyperion
 element = light
 cost = 2
 trigger = manual
-effects = damage-color-count:3:enemy, damage-top-color:2:enemy
+effects = damage-color-count:4:enemy, damage-top-color:2:enemy
 flavor = 넓게도, 깊게도 더 무겁게.
 
 [card.c-frail-rupture-plus]
@@ -1842,7 +1842,7 @@ source = shop
 element = iron
 cost = 1
 trigger = manual
-effects = damage:10:enemy
+effects = damage:14:enemy
 flavor = 같은 칼, 조금 더 든다.
 
 [card.c-shop-brace-plus]
@@ -1852,7 +1852,7 @@ source = shop
 element = earth
 cost = 1
 trigger = manual
-effects = block:10:self
+effects = block:14:self
 flavor = 한 번 더, 단단하게.
 
 [card.c-shop-flick-plus]
@@ -1872,7 +1872,7 @@ source = shop
 element = water
 cost = 1
 trigger = manual
-effects = heal:9:self
+effects = heal:9:self, exhaust-self:0:self
 flavor = 조금 더 깊은 한 모금.
 
 [card.c-shop-poke-plus]
@@ -1892,7 +1892,7 @@ source = shop
 element = iron
 cost = 2
 trigger = manual
-effects = damage:15:enemy
+effects = damage:21:enemy
 flavor = 더 묵직한 한 방.
 
 [card.c-shop-wall-plus]
@@ -1902,7 +1902,7 @@ source = shop
 element = earth
 cost = 2
 trigger = manual
-effects = block:18:self
+effects = block:25:self
 flavor = 더 큰 방패.
 
 [card.c-shop-study-plus]
@@ -1912,7 +1912,7 @@ source = shop
 element = wind
 cost = 1
 trigger = manual
-effects = draw:3:self
+effects = draw:4:self
 flavor = 잠깐 더 깊이 본다.
 
 [card.c-shop-salve-plus]
@@ -1922,7 +1922,7 @@ source = shop
 element = water
 cost = 1
 trigger = manual
-effects = heal:6:self, block:5:self
+effects = heal:6:self, block:7:self, exhaust-self:0:self
 flavor = 조금 더 낫고, 조금 더 단단하게.
 
 # ---------- 미니 마을 전설 ----------
@@ -1934,7 +1934,7 @@ source = shop
 element = fire
 cost = 2
 trigger = manual
-effects = damage:20:enemy, apply-status:9:enemy:burn
+effects = damage:35:enemy, apply-status:9:enemy:burn
 flavor = 식지 않은 불씨가, 더 오래 쏟아진다.
 
 [card.c-falcon-skydive-plus]
@@ -1944,7 +1944,7 @@ source = shop
 element = wind
 cost = 2
 trigger = manual
-effects = damage-per-hand:3:enemy
+effects = damage-per-hand:5:enemy
 flavor = 더 높은 자리에서, 손에 쥔 만큼 더.
 
 [card.c-yusezria-corebreak-plus]
@@ -1954,7 +1954,7 @@ source = shop
 element = iron
 cost = 2
 trigger = manual
-effects = block:26:self, block-to-damage:1:enemy
+effects = block:46:self, block-to-damage:1:enemy
 flavor = 더 단단해진 만큼, 더 크게 되돌린다.
 
 [card.c-diropel-totem-plus]
@@ -1964,7 +1964,7 @@ source = shop
 element = earth
 cost = 2
 trigger = manual
-effects = damage-color-count:6:enemy, draw:1:self
+effects = damage-color-count:8:enemy, draw:1:self
 flavor = 무늬가, 더 많은 색으로 빛난다.
 
 # ---------- 마무리 조합 ----------
@@ -1976,7 +1976,7 @@ source = event
 element = dark
 cost = 2
 trigger = manual
-effects = damage-per-debuff:6:enemy, apply-status:3:enemy:poison
+effects = damage-per-debuff:7:enemy, apply-status:3:enemy:poison
 flavor = 더 많은 약함을 거두고, 더 짙은 독을 심는다.
 
 [card.c-wild-rush-plus]
@@ -1986,7 +1986,7 @@ source = npc
 element = fire
 cost = 1
 trigger = manual
-effects = apply-status:1:self:feral, damage-per-hand:3:enemy
+effects = apply-status:1:self:feral, damage-per-hand:4:enemy
 flavor = 짐승이 든 채, 손에 쥔 만큼 더 들이친다.
 
 [card.c-color-surge-plus]
@@ -2052,7 +2052,7 @@ source = event
 element = wind
 cost = 1
 trigger = manual
-effects = apply-status:2:self:haste
+effects = apply-status:3:self:haste
 upgrade_to = c-quickstep-plus
 flavor = 발끝이 가벼워지면 한 손이 더 빨라진다.
 
@@ -2063,7 +2063,7 @@ source = event
 element = wind
 cost = 1
 trigger = manual
-effects = apply-status:3:self:haste
+effects = apply-status:4:self:haste
 flavor = 더 오래 가뿐하게 돌아다닌다.
 
 [card.c-soft-ward]
@@ -2073,7 +2073,7 @@ source = event
 element = iron
 cost = 1
 trigger = manual
-effects = block:6:self, apply-status:2:self:ward
+effects = block:8:self, apply-status:2:self:ward
 upgrade_to = c-soft-ward-plus
 flavor = 둘러친 막이 다음 결까지 곱게 남는다.
 
@@ -2084,7 +2084,7 @@ source = event
 element = iron
 cost = 1
 trigger = manual
-effects = block:8:self, apply-status:3:self:ward
+effects = block:11:self, apply-status:3:self:ward
 flavor = 막이 더 두껍게, 더 오래 머문다.
 
 [card.c-prickle-coat]
@@ -2094,7 +2094,7 @@ source = event
 element = earth
 cost = 1
 trigger = manual
-effects = apply-status:3:self:thorns
+effects = apply-status:4:self:thorns
 upgrade_to = c-prickle-coat-plus
 flavor = 건드리면 따끔, 건드린 쪽이 더 아프다.
 
@@ -2105,7 +2105,7 @@ source = event
 element = earth
 cost = 1
 trigger = manual
-effects = apply-status:4:self:thorns
+effects = apply-status:5:self:thorns
 flavor = 가시가 한 겹 더 돋는다.
 
 [card.c-clear-focus]
@@ -2115,7 +2115,7 @@ source = event
 element = electric
 cost = 1
 trigger = manual
-effects = apply-status:2:self:focus
+effects = apply-status:3:self:focus
 upgrade_to = c-clear-focus-plus
 flavor = 시야가 좁아지는 만큼, 한 점이 또렷해진다.
 
@@ -2126,7 +2126,7 @@ source = event
 element = electric
 cost = 1
 trigger = manual
-effects = apply-status:3:self:focus
+effects = apply-status:4:self:focus
 flavor = 더 깊이, 더 오래 한 점에 머문다.
 
 [card.c-steady-heart]
@@ -2136,7 +2136,7 @@ source = event
 element = water
 cost = 1
 trigger = manual
-effects = apply-status:3:self:resolve
+effects = apply-status:4:self:resolve
 upgrade_to = c-steady-heart-plus
 flavor = 흔들려도 한 걸음, 다시 제자리.
 
@@ -2147,5 +2147,5 @@ source = event
 element = water
 cost = 1
 trigger = manual
-effects = apply-status:4:self:resolve
+effects = apply-status:5:self:resolve
 flavor = 마음이 더 오래 곧게 선다.

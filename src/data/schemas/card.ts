@@ -18,7 +18,9 @@ import type {
 } from './base';
 
 /**
- * 카드 *주 효과 수치*의 등급별 최소 한도 — 1.5배 등비.
+ * 카드 *주 효과 수치*의 등급별 최소 한도.
+ * Item 37-① 전투 밸런스 재조정(2026-05-25)에서 상향: common 6→9 / rare 9→14 / legendary 14→22.
+ * (basic 4 유지. validate-core.mjs 의 CARD_MIN_PEAK 미러도 같은 값.)
  *
  * 적용 대상: source가 `race`/`character`인 *시작 덱 베이스*. 같은 등급이라면
  * 적어도 이 수치만큼은 보장돼야 의미가 있다는 기획 정책.
@@ -31,9 +33,9 @@ import type {
  */
 export const CARD_MIN_PEAK_VALUE: Record<Rank, number> = {
   basic: 4,
-  common: 6,
-  rare: 9,
-  legendary: 14,
+  common: 9,
+  rare: 14,
+  legendary: 22,
 };
 
 /**

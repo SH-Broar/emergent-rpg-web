@@ -511,7 +511,7 @@ function applyBossPlayerTurnStart(c: CombatState): void {
  *
  *  - anchor   : 이전 잠금 해제 + bossTurnCount += 1 (실제 잠금은 다음 플레이어 턴 시작에서).
  *  - stillness: stillness += 1.
- *  - rewind   : 직전 플레이어 턴 피해의 절반(최대 40) 회복 + 자기 디버프 제거.
+ *  - rewind   : 직전 플레이어 턴 피해의 30%(최대 25) 회복 + 자기 디버프 제거. (Item 37-①: 50%→30%.)
  */
 function applyBossEnemyTurn(c: CombatState): void {
   const mech = c.bossMechanic;
@@ -532,7 +532,8 @@ function applyBossEnemyTurn(c: CombatState): void {
     const before = c.playerTurnStartEnemyHp ?? c.enemy.hp;
     const dealt = Math.max(0, before - c.enemy.hp);
     c.lastPlayerTurnDamage = dealt;
-    const heal = Math.min(40, Math.floor(dealt * 0.5));
+    // Item 37-① 전투 밸런스: 되감기 50%→30% (min 40→25). 보스전 단축.
+    const heal = Math.min(25, Math.floor(dealt * 0.3));
     if (heal > 0) {
       c.enemy.hp = Math.min(c.enemy.maxHp, c.enemy.hp + heal);
       ui.toast('info', '정령이 이 순간을 되감는다.');
