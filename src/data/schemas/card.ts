@@ -129,7 +129,9 @@ export type CardEffectKind =
   // === 종족 카드 확장 2 (Item 37-③ 나방) — 가속 신규 핸들러 1종 ===
   | 'hand-cost-down'      // 이번 턴 손패(및 이번 턴 뽑는 카드) 전체 cost -value(최소 0). 턴 종료 0 리셋.
   // === 종족 카드 확장 3 (Item 37-③ 팬텀) — 빈손 보상 신규 핸들러 1종 ===
-  | 'damage-low-hand';    // 기본 value 피해. 현재 손패(이 카드 제외) ≤ params.threshold(기본 2)면 value×2.
+  | 'damage-low-hand'     // 기본 value 피해. 현재 손패(이 카드 제외) ≤ params.threshold(기본 2)면 value×2.
+  // === 종족 카드 확장 5 (Item 37-③ 아르카나) — 색 영구 획득 신규 핸들러 1종 ===
+  | 'grant-color';        // params.color(8색|random|all, 기본 random) 색을 value만큼 *영구* 획득(applyColorBoost).
 
 /** 효과 대상 — target. */
 export type EffectTarget = 'self' | 'enemy' | 'all-enemies' | 'random-enemy';

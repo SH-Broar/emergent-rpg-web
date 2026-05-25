@@ -36,6 +36,7 @@ const CARD_EFFECT_KIND_LABELS: Record<string, string> = {
   'block-to-damage': '돌파',
   'adaptive-strike': '임기응변',
   'hand-cost-down': '질풍',
+  'grant-color': '색 봉헌',
   'spend-all-energy': '전력',
   'damage-per-companion': '동행 타격',
   'damage-per-relic': '수집 타격',
@@ -74,6 +75,7 @@ const CARD_EFFECT_DESCRIPTIONS: Record<string, string> = {
   'block-to-damage': '현재 방어막 × 수치만큼 추가 피해. 방어막은 사라지지 않습니다.',
   'adaptive-strike': '방어막이 있으면 더 큰 피해로, 없으면 방어막으로 전환됩니다.',
   'hand-cost-down': '이번 턴 손에 든 카드의 비용이 수치만큼 줄어듭니다.',
+  'grant-color': '지정한 색(무작위/모든 색 포함)을 수치만큼 영구히 얻습니다. 색이 짙고 다채로울수록 공명 카드가 강해집니다.',
   'spend-all-energy': '남은 마나를 전부 소비해 소비량 × 수치만큼 피해.',
   'damage-per-companion': '동료 수 × 수치만큼 피해.',
   'damage-per-relic': '보유 유물 수 × 수치만큼 피해.',
@@ -346,6 +348,11 @@ export function cardEffectKindLabel(effect: CardEffect): string {
     if (!st) return '상태 부여';
     // 대상을 단어에 녹인다(적/자신 라벨 없이도 구분): 자신=상태명만(버프), 적='부여'(디버프).
     return effect.target === 'self' ? statusLabel(st) : `${statusLabel(st)} 부여`;
+  }
+  if (effect.kind === 'grant-color') {
+    // 획득하는 색을 라벨에 녹인다 (불/물/.../무작위/모든 색). 미지정 시 무작위.
+    const color = (effect.params?.color as string | undefined) ?? 'random';
+    return `${colorLabel(color)} 봉헌`;
   }
   return CARD_EFFECT_KIND_LABELS[effect.kind] ?? effect.kind;
 }

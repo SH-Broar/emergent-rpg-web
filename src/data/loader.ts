@@ -89,6 +89,7 @@ function isNodeKind(v: string): v is NodeKind {
  * "draw-if-color:2:self:wind:5" → 특수: 4번째=params.color, 5번째=params.threshold.
  *   (draw-if-color 핸들러는 params.status가 아니라 color/threshold를 읽기 때문.
  *    5번째 토큰 생략 시 핸들러 기본값 threshold=5 사용.)
+ * "grant-color:3:self:all" → 특수: 4번째=params.color(8색|random|all). 미지정 시 핸들러 기본 random.
  */
 function parseCardEffect(token: string): CardEffect | null {
   const parts = token.split(':').map((s) => s.trim());
@@ -120,6 +121,11 @@ function parseCardEffect(token: string): CardEffect | null {
   // 핸들러(combat.ts)는 손패(이 카드 제외) ≤ threshold면 value×2 피해를 낸다.
   if (kind === 'damage-low-hand' && parts[3]) {
     return { kind, value, target, params: { threshold: Number(parts[3]) } };
+  }
+  // grant-color 전용 (Item 37-③ 아르카나): value=획득량, 4번째=color(8색|random|all, 기본 random).
+  // 핸들러(combat.ts)는 params.color 색을 value만큼 영구 획득(applyColorBoost / applyColorBoostAll).
+  if (kind === 'grant-color' && parts[3]) {
+    return { kind, value, target, params: { color: parts[3] } };
   }
   // 4번째 토큰: apply-status의 status 이름 등 추가 파라미터.
   if (parts[3]) {

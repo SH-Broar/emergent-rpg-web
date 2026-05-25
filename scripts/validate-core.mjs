@@ -202,6 +202,8 @@ export const VALID_CARD_EFFECT_KINDS = [
   'hand-cost-down',
   // 종족 카드 확장 3 (Item 37-③ 팬텀) — 빈손 보상 신규 핸들러 1종.
   'damage-low-hand',
+  // 종족 카드 확장 5 (Item 37-③ 아르카나) — 색 영구 획득 신규 핸들러 1종.
+  'grant-color',
 ];
 
 /**
@@ -434,6 +436,11 @@ export function validateData(dataDir, readFile) {
       if (kind === 'draw-if-color') {
         const color = parts[3];
         if (color && !VALID_COLORS.includes(color)) push(diag('error', 'whitelist-kind', `카드 '${id}' draw-if-color 알 수 없는 color '${color}'`, w));
+      }
+      if (kind === 'grant-color') {
+        // parts[3] = 8색 | random | all (미지정 시 핸들러 기본 random).
+        const color = parts[3];
+        if (color && !['random', 'all', ...VALID_COLORS].includes(color)) push(diag('error', 'whitelist-kind', `카드 '${id}' grant-color 알 수 없는 color '${color}'`, w));
       }
     }
     // upgrade_to (-plus 연결) 존재.

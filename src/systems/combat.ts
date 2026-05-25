@@ -55,6 +55,7 @@ import {
   isNarrowReward,
 } from '@/systems/chaos';
 import { isFormPoolActive, activeFormCardPool, RELEASE_CARD_ID } from '@/systems/form-pool';
+import { applyColorBoost, applyColorBoostAll, type ColorKey } from '@/systems/colors';
 
 const STARTING_HAND_SIZE = 5;
 const DEFAULT_MAX_MANA = 3;
@@ -1020,6 +1021,25 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
       colors.earth, colors.wind, colors.light, colors.dark,
     );
     gainPlayerBlock(c, Math.floor(top * (e.value ?? 1)));
+  },
+  // 색 영구 획득(아르카나 시그니처, Item 37-③): params.color 색을 value만큼 *영구* 획득.
+  //   - params.color = 8색 중 하나 | 'random'(무작위 1색) | 'all'(8색 일괄). 미지정 시 'random'.
+  //   - colors.ts의 applyColorBoost(특정/random)/applyColorBoostAll(all)을 재사용 →
+  //     on-color-gain 유물이 정상 발동하고, 물/바람이면 VIT(활력) 최대 HP가 자동 반영된다.
+  //   - 영구 색(=스탯/공명 빌드 재료)이므로 데이터 값은 modest(2~4)로 둔다.
+  'grant-color': (e) => {
+    const amount = e.value ?? 1;
+    if (amount === 0) return;
+    const color = (e.params?.color as string) ?? 'random';
+    if (color === 'all') {
+      applyColorBoostAll(amount);
+    } else if (color === 'random') {
+      const all: ColorKey[] = ['fire', 'water', 'electric', 'iron', 'earth', 'wind', 'light', 'dark'];
+      const pick = all[Math.floor(rng() * all.length)];
+      applyColorBoost(pick, amount);
+    } else {
+      applyColorBoost(color as ColorKey, amount);
+    }
   },
   // params.color 컬러 ≥ params.threshold면 value장 드로우.
   'draw-if-color': (e, c) => {
