@@ -1,6 +1,6 @@
 # NPC: 1장 떠도는 인물들 (구 characters/ 에서 NPC로 이관).
 # ch-iyeon → npc-iyeon (나방), ch-kardi → npc-kardi (팬텀).
-# 둘 다 플레이어블 종족의 인물 정체성이라 영입은 두지 않음 (recruit_enabled 없음).
+# Item 37-② Stage C 배치2: 둘 다 스킬형 동료로 영입 가능(companion_kind=skill).
 
 [npc.npc-iyeon]
 name = 이연
@@ -15,6 +15,14 @@ background = 나비 날개가 달린 작은 아인.|손 대신 두 날개가 있
 tagline = "작아도 한 발은 정확하게."
 tags = moth, archer, flight
 affinity_rewards = 3:card=c-quickdraw:gauge=3
+# 영입 (Item 37-② Stage C 배치2). 나방 — 날개 비늘을 흩뿌려 적의 빈틈을 키우고 제 몸을 흐릿하게 감춘다.
+recruit_enabled = true
+companion_kind = skill
+companion_skill_name = 인분
+companion_skill_cooldown = 3
+companion_skill_fd = 3
+companion_skill_desc = 적에게 취약 3을 걸고 두 턴 동안 자신을 유령화한다. 작아도 한 발은 정확하게.
+companion_skill_effects = apply-status:3:enemy:vulnerable, ghost-self:2
 
 [npc.npc-kardi]
 name = 카르디
@@ -30,3 +38,11 @@ background = 인간 마술사로 알려졌으나 사실은 팬텀.|손끝에서 
 tagline = "패는 항상 보이는 곳 바깥에서."
 tags = phantom, trickster, electric-affinity
 affinity_rewards = 3:card=c-burn-mark:gauge=3
+# 영입 (Item 37-② Stage C 배치2). 팬텀 — 흐트러진 패를 덱으로 되돌려 정돈하고 새로 쥐며 한 겹 막아 둔다.
+recruit_enabled = true
+companion_kind = skill
+companion_skill_name = 정돈
+companion_skill_cooldown = 2
+companion_skill_fd = 2
+companion_skill_desc = 손의 맨 오른쪽 한 장을 덱 위로 되돌리고 두 장을 새로 쥐며 방어 8을 세운다.
+companion_skill_effects = return-hand-to-deck, draw:2, block:8

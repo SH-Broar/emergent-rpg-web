@@ -122,11 +122,14 @@ background = 불의 사천왕이자 구미호.|정령과 마법에 정통하며 
 tagline = "선은 안 넘어요. 그쪽도 그러시길."
 tags = foxkin, sitenwang-fire, mage
 affinity_rewards = 3:card=c-double-strike:gauge=4
-# 영입 불·전기 보너스로 ATK 라인 강화 + 전용 카드.
+# 영입 (Item 37-② Stage C 배치2). 구미호 — 여우불을 길게 붙여 태우고 손끝으로 한 번 더 친다.
 recruit_enabled = true
-recruit_cards = c-burn-mark
-recruit_colors = fire:15, electric:8
-recruit_combat_start = strength:1
+companion_kind = skill
+companion_skill_name = 여우불 농락
+companion_skill_cooldown = 4
+companion_skill_fd = 3
+companion_skill_desc = 적에게 화상 6을 길게 붙이고 10 피해를 더한다. 선은 안 넘되, 불은 오래 간다.
+companion_skill_effects = apply-status:6:enemy:burn, damage:10
 
 [npc.npc-elnest]
 name = 엘네스트
@@ -164,8 +167,11 @@ background = 모스의 개인 우체부. 켄타우로스 네 다리로 마을과
 tagline = "한 통 가져왔어. 받아 가."
 tags = centaur, postman, road
 affinity_rewards = 3:relic=r-postman-mail:gauge=5
-# 영입 이동/시간 계열 보너스.
+# 영입 (Item 37-② Stage C 배치2). 우체부 켄타우로스 — 다음 수까지 미리 실어와 손과 마나를 함께 채운다.
 recruit_enabled = true
-recruit_cards = c-fast-mail
-recruit_colors = earth:8, wind:8
-recruit_reward_mul = gold:0.2, shards:0.15
+companion_kind = skill
+companion_skill_name = 특급 배송
+companion_skill_cooldown = 2
+companion_skill_fd = 2
+companion_skill_desc = 카드 두 장을 끌어오고 다음 턴 시작 에너지를 2 더 채운다. 한 통씩 깔끔하게.
+companion_skill_effects = draw:2, next-turn-energy:2

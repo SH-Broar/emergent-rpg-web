@@ -106,6 +106,11 @@ function parseCardEffect(token: string): CardEffect | null {
   if (kind === 'delayed-damage' && parts[3]) {
     return { kind, value, target, params: { delay: Number(parts[3]) } };
   }
+  // damage-from-hp 전용 (Item 37-② Stage C 배치2): value=지불 HP, 4번째=mult(배율, 기본 2).
+  // 핸들러(combat.ts)는 params.mult를 읽어 지불액×mult 피해를 낸다(미지정 시 2).
+  if (kind === 'damage-from-hp' && parts[3]) {
+    return { kind, value, target, params: { mult: Number(parts[3]) } };
+  }
   // 4번째 토큰: apply-status의 status 이름 등 추가 파라미터.
   if (parts[3]) {
     return { kind, value, target, params: { status: parts[3] } };

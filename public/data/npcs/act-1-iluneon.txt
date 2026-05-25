@@ -37,11 +37,14 @@ background = 어딘가에서 흘러들어온 모험가.|머리에 작은 뿔이 
 tagline = "어느 시간이든, 일단 한 바퀴 돌고 보자."
 tags = traveler, balanced
 affinity_rewards = 1:gauge=2, 3:card=c-quickdraw:gauge=3
-# 영입 균형형 동료. 덱 +2, 전용 카드 두 장.
+# 영입 (Item 37-② Stage C 배치2). 균형형 여행자 — 상황에 빠르게 맞춰 패를 채우고 한 겹 막아 둔다.
 recruit_enabled = true
-recruit_deck_bonus = 2
-recruit_cards = c-quickdraw, c-double-strike
-recruit_combat_start = draw:1
+companion_kind = skill
+companion_skill_name = 임기응변
+companion_skill_cooldown = 2
+companion_skill_fd = 2
+companion_skill_desc = 카드 두 장을 끌어오고 방어 10을 세운다. 어느 시간이든 일단 한 바퀴.
+companion_skill_effects = draw:2, block:10
 
 [npc.npc-imperisia]
 name = 임페리시아
