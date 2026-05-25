@@ -95,14 +95,25 @@ export interface MetaProgress {
   bestChaosScore: Record<string, number>;
 
   /**
-   * 메타 세이브 버전. v3에서 카오스 필드 도입. 마이그레이션 판단·기록용.
-   * 옛 세이브엔 없을 수 있음(undefined ⇒ v2 이하로 간주, 누락 카오스 필드 backfill).
+   * NPC 친밀도 — *영속 메타* (Item 37-② Stage C, 1B). npcId → 누적 친밀도(0..10 클램프).
+   * 친밀도는 더 이상 런 종료 시 흡수되지 않고, 대화할 때마다 *직접 여기에 누적*된다(cross-run).
+   * lore/도감 전용 — 게임플레이 보상은 격하됨(친밀도 임계는 codex/lore 등록만).
+   * 옛 세이브엔 없을 수 있음 → 로드 시 {}로 backfill.
+   */
+  npcAffinity?: Record<string, number>;
+
+  /**
+   * 메타 세이브 버전. v3=카오스, v4=NPC 친밀도 영속(1B). 마이그레이션 판단·기록용.
+   * 옛 세이브엔 없을 수 있음(undefined ⇒ v3 이하로 간주, 누락 필드 backfill).
    */
   saveVersion?: number;
 }
 
-/** 현재 메타 세이브 버전 — v3 = 카오스 도전-점수 필드 도입. */
-export const META_SAVE_VERSION = 3;
+/** NPC 친밀도 영속 상한 (Item 37-② Stage C, 1B). */
+export const MAX_NPC_AFFINITY = 10;
+
+/** 현재 메타 세이브 버전 — v3=카오스, v4=NPC 친밀도 영속(1B). */
+export const META_SAVE_VERSION = 4;
 
 /** 기본 초기 메타 진행. (createMetaProgress 같은 팩토리는 stores에서 제공) */
 export const EMPTY_META_GAUGE: MetaGauge = {

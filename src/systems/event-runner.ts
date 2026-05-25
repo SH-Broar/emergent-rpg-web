@@ -287,6 +287,17 @@ function applyEffect(effect: EventChoiceEffect, resultParts: string[]) {
     resultParts.push(`${a.npcId} 친밀도 ${a.delta >= 0 ? '+' : ''}${a.delta}`);
     applyAffinityDelta(a.npcId, a.delta, resultParts);
   }
+  // 동료 사건 영입 (Item 37-② Stage C, 1A) — EventView.applyEffectWithNames와 parity(이름 lookup은 EventView).
+  if (effect.recruitNpcId) {
+    const npcId = effect.recruitNpcId;
+    if (run.inRoster(npcId)) {
+      resultParts.push(`${npcId} 이미 동료`);
+    } else if (run.recruitCompanion(npcId)) {
+      resultParts.push(`${npcId} 동료 영입`);
+    } else {
+      resultParts.push(`${npcId} 영입 실패`);
+    }
+  }
   // 카드/유물 grant — EventView.applyEffectWithNames에서 *이름 lookup 포함* 처리.
   if (effect.grantCardId) {
     resultParts.push(`카드 획득: ${effect.grantCardId}`);

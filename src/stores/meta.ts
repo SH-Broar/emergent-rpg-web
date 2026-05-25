@@ -8,6 +8,7 @@
 import { defineStore } from 'pinia';
 import {
   EMPTY_META_GAUGE,
+  MAX_NPC_AFFINITY,
   META_SAVE_VERSION,
   type CodexEntry,
   type MetaProgress,
@@ -43,6 +44,8 @@ function createEmptyMeta(): MetaProgress {
     unlockedChaosIds: [],
     chaosTierRevealed: 1,
     bestChaosScore: {},
+    // NPC 친밀도 영속 (v4, Item 37-② Stage C 1B).
+    npcAffinity: {},
     saveVersion: META_SAVE_VERSION,
   };
 }
@@ -87,6 +90,8 @@ function loadMeta(): MetaProgress {
     parsed.unlockedChaosIds ??= [];
     parsed.chaosTierRevealed ??= 1;
     parsed.bestChaosScore ??= {};
+    // 세이브 v4 마이그레이션 (1B) — NPC 친밀도 영속 필드 누락 시 빈 객체로 채움. 기존 값은 보존.
+    parsed.npcAffinity ??= {};
     parsed.saveVersion = META_SAVE_VERSION;
     return parsed;
   } catch {
@@ -331,8 +336,27 @@ export const useMetaStore = defineStore('meta', {
       this.unlockedChaosIds = fresh.unlockedChaosIds;
       this.chaosTierRevealed = fresh.chaosTierRevealed;
       this.bestChaosScore = fresh.bestChaosScore;
+      this.npcAffinity = fresh.npcAffinity;
       this.saveVersion = fresh.saveVersion;
       this.persist();
+    },
+
+    /**
+     * NPC 친밀도 영속 누적 (Item 37-② Stage C, 1B) — delta 만큼 더하고 [0, MAX_NPC_AFFINITY] 클램프.
+     * 대화로 친해질 때마다 *cross-run* 으로 직접 누적된다(런 종료 흡수 아님). 반환: 갱신 후 값.
+     */
+    addNpcAffinity(npcId: string, delta: number): number {
+      if (!this.npcAffinity) this.npcAffinity = {};
+      const cur = this.npcAffinity[npcId] ?? 0;
+      const next = Math.max(0, Math.min(MAX_NPC_AFFINITY, cur + delta));
+      this.npcAffinity[npcId] = next;
+      this.persist();
+      return next;
+    },
+
+    /** NPC 친밀도 영속 조회 (없으면 0). */
+    npcAffinityOf(npcId: string): number {
+      return this.npcAffinity?.[npcId] ?? 0;
     },
 
     /** 외부에서 codex 등록 카운트 갱신 시 호출 — codex 스토어와 분리하되 동기. */

@@ -37,8 +37,10 @@ export function absorbRunIntoMeta(run: RunState) {
   // r4: 5단계 미션 시스템 제거로 hyperionProgress는 optional. 옛 세이브 잔존만 카운트, 새 런은 항상 0.
   const hyperionStageClears = Object.values(run.hyperionProgress ?? {}).filter(Boolean).length;
 
-  // NPC 친밀도 누적 (모든 NPC의 affinity 합). 옛 세이브에 필드가 누락돼도 안전하게 0.
-  const npcAffinityGain = Object.values(run.npcAffinity ?? {}).reduce((a, b) => a + b, 0);
+  // NPC 친밀도 — Item 37-② Stage C(1B): 친밀도는 *영속 메타*(meta.npcAffinity)로 직접 누적되며
+  //   런 종료 흡수를 더 이상 하지 않는다(lore화). run.npcAffinity는 메타값의 working mirror라
+  //   여기서 합산하면 *cross-run 누적분이 매 런마다 게이지에 재투입*되어 부풀므로 0으로 둔다.
+  const npcAffinityGain = 0;
 
   // 시대 미션 / 보스 클리어 카운트 (필드 누락 방어).
   const missionsCleared = (run.missionsCleared ?? []).length;

@@ -616,6 +616,10 @@ export function validateData(dataDir, readFile) {
         const npcId = cf.affinity.split(':')[0]?.trim();
         if (npcId && !npcIds.has(npcId)) push(diag('error', 'dangling', `이벤트 '${id}' choice ${i} affinity NPC '${npcId}' 미정의`, cw));
       }
+      // 동료 사건 영입 (Item 37-② Stage C, 1A) — recruit = npc-X 가 정의된 NPC인지.
+      if (cf.recruit && !npcIds.has(cf.recruit.trim())) {
+        push(diag('error', 'dangling', `이벤트 '${id}' choice ${i} recruit NPC '${cf.recruit.trim()}' 미정의`, cw));
+      }
       if (cf.color) {
         const color = cf.color.split(':')[0]?.trim();
         if (color && !['all', 'random', ...VALID_COLORS].includes(color)) push(diag('error', 'whitelist-kind', `이벤트 '${id}' choice ${i} color '${color}' 알 수 없음`, cw));

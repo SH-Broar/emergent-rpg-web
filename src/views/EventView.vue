@@ -20,7 +20,7 @@ import { effectiveContent } from '@/systems/map';
 import { applyAffinityDelta } from '@/systems/affinity';
 import { acquireRelic } from '@/systems/relic';
 import { applyColorBoost, applyColorBoostAll, type ColorKey } from '@/systems/colors';
-import { colorLabel, cardDetailText, relicDetailText } from '@/systems/labels';
+import { colorLabel, cardDetailText, relicDetailText, josa } from '@/systems/labels';
 import { rng } from '@/systems/rng';
 import type { Card, Event, EventChoice, EventChoiceEffect } from '@/data/schemas';
 
@@ -151,6 +151,18 @@ function applyEffectWithNames(choice: EventChoice, effect: EventChoiceEffect, li
     lines.push(`${npcName} 친밀도 ${a.delta >= 0 ? '+' : ''}${a.delta}`);
     applyAffinityDelta(a.npcId, a.delta, lines);
   }
+  // 동료 사건 영입 (Item 37-② Stage C, 1A) — 비용 아님. 중복이면 스킵(이미 동료).
+  if (effect.recruitNpcId) {
+    const npcId = effect.recruitNpcId;
+    const npcName = data.npcs.get(npcId)?.name ?? npcId;
+    if (run.inRoster(npcId)) {
+      lines.push(`${josa(npcName, '은', '는')} 이미 함께하고 있다`);
+    } else if (run.recruitCompanion(npcId)) {
+      lines.push(`${josa(npcName, '이', '가')} 동행하기로 했다`);
+    } else {
+      lines.push(`${josa(npcName, '과', '와')} 함께할 수 없었다`);
+    }
+  }
   if (effect.grantCardId) {
     const card = data.cards.get(effect.grantCardId);
     if (card) {
@@ -263,6 +275,10 @@ function effectPreviewTokens(eff: EventChoiceEffect): string[] {
   if (eff.affinityDelta) {
     const npc = data.npcs.get(eff.affinityDelta.npcId)?.name ?? eff.affinityDelta.npcId;
     t.push(`${npc} 친밀도 ${signed(eff.affinityDelta.delta)}`);
+  }
+  if (eff.recruitNpcId) {
+    const npc = data.npcs.get(eff.recruitNpcId)?.name ?? eff.recruitNpcId;
+    t.push(`동료: ${npc}`);
   }
   if (eff.grantClueId) t.push('단서');
   if (eff.customEffectId) t.push('특수 효과');

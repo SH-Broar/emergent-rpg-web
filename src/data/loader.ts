@@ -355,6 +355,8 @@ function parseChoice(f: IniSection): EventChoice {
     const [npcId, deltaStr] = f.affinity.split(':');
     eff.affinityDelta = { npcId, delta: parseNumber(deltaStr, 0) };
   }
+  // 동료 사건 영입 (Item 37-② Stage C, 1A) — `recruit = npc-X`.
+  if (f.recruit) eff.recruitNpcId = f.recruit.trim();
   if (f.followup) eff.followupEventId = f.followup;
   if (f.custom) eff.customEffectId = f.custom;
   if (f.clue) eff.grantClueId = f.clue;

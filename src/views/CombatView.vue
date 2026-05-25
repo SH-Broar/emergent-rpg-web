@@ -26,7 +26,7 @@ import { effectiveContent } from '@/systems/map';
 import { applyCombatVictoryReward } from '@/systems/combat-rewards';
 import { colorBonusForCardEffectKind } from '@/systems/stats';
 import { bonusesFromEffective } from '@/systems/equipment';
-import { cardEffectKindLabel, cardEffectDescription, statusDescription, statusLabel, intentLabel, intentDescription, cardDetailText, lockBadgeText, lockTooltip } from '@/systems/labels';
+import { cardEffectKindLabel, cardEffectDescription, statusDescription, statusLabel, intentLabel, intentDescription, cardDetailText, lockBadgeText, lockTooltip, josa } from '@/systems/labels';
 import { useItem } from '@/systems/item';
 import { activeSkillSlots, useSkill } from '@/systems/skills';
 import { useCombatFx, CARD_PLAY_DELAY } from '@/composables/useCombatFx';
@@ -174,7 +174,7 @@ function tryRecruitDefeated() {
   const m = monster.value;
   if (!m.recruitable || !m.companion) return;
   if (run.recruitMonster(m.id)) {
-    ui.toast('success', `${m.name}가 동료가 되었다`);
+    ui.toast('success', `${josa(m.name, '이', '가')} 동료가 되었다`);
   }
 }
 

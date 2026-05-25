@@ -152,6 +152,26 @@ export function statusLabel(name: string | undefined): string {
   return STATUS_LABELS[name] ?? name;
 }
 
+/**
+ * 한글 조사 선택 (Item 37-② Stage C, 1D) — 단어의 마지막 글자 받침 유무로 조사를 고른다.
+ *   josa('시이드', '이', '가') → '시이드가'   (받침 없음 → withoutBatchim)
+ *   josa('로큐', '이', '가')   → '로큐가'
+ *   josa('하코', '이', '가')   → '하코가'
+ *   josa('칼리번', '이', '가') → '칼리번이'   (받침 있음 → withBatchim)
+ * 마지막 글자가 한글 음절이 아니면(영문·숫자·기호) 받침 없음으로 간주한다.
+ * @param name           단어(이름).
+ * @param withBatchim    받침 있을 때 붙일 조사(예: '이', '은', '을', '과').
+ * @param withoutBatchim 받침 없을 때 붙일 조사(예: '가', '는', '를', '와').
+ */
+export function josa(name: string, withBatchim: string, withoutBatchim: string): string {
+  if (!name) return name;
+  const code = name.charCodeAt(name.length - 1);
+  // 한글 음절 영역(가~힣): 받침 유무 = (code - 0xAC00) % 28 !== 0.
+  const isHangul = code >= 0xac00 && code <= 0xd7a3;
+  const hasBatchim = isHangul && (code - 0xac00) % 28 !== 0;
+  return name + (hasBatchim ? withBatchim : withoutBatchim);
+}
+
 /** 락 해제 조건(LockCondition) → 한글 배지 라벨. */
 const LOCK_CONDITION_LABELS: Record<string, string> = {
   block: '방어',

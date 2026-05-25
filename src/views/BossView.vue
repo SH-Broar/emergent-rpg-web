@@ -23,7 +23,7 @@ import { applyBossRewards, applyArcRewards } from '@/systems/boss-rewards';
 import { effectiveContent } from '@/systems/map';
 import { colorBonusForCardEffectKind } from '@/systems/stats';
 import { bonusesFromEffective } from '@/systems/equipment';
-import { cardEffectKindLabel, cardEffectDescription, cardDetailText, statusDescription, intentLabel, intentDescription, unlockKeyLabel, lockBadgeText, lockTooltip } from '@/systems/labels';
+import { cardEffectKindLabel, cardEffectDescription, cardDetailText, statusDescription, intentLabel, intentDescription, unlockKeyLabel, lockBadgeText, lockTooltip, josa } from '@/systems/labels';
 import { useItem } from '@/systems/item';
 import { activeSkillSlots, useSkill } from '@/systems/skills';
 import { useCombatFx, CARD_PLAY_DELAY } from '@/composables/useCombatFx';
@@ -292,7 +292,7 @@ function onVictory() {
     //   roster src='monster' 로 통일(아크 보스도 companionForEntry/rosterEntryName 의 monster 분기에서 조회).
     if (b.companion) {
       if (run.recruitMonster(b.id)) {
-        ui.toast('success', `${b.name}가 동료가 되었다`);
+        ui.toast('success', `${josa(b.name, '이', '가')} 동료가 되었다`);
       }
     }
     // 노드 클리어 마킹 — 재진입 시 전투 없이 통과(combatCleared 재사용).

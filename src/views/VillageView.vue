@@ -12,6 +12,7 @@ import { useRouter } from 'vue-router';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
+import { useMetaStore } from '@/stores/meta';
 import { rng } from '@/systems/rng';
 import { applyAffinityDelta } from '@/systems/affinity';
 import { cardEffectKindLabel, cardEffectDescription } from '@/systems/labels';
@@ -28,6 +29,7 @@ const router = useRouter();
 const run = useRunStore();
 const data = useDataStore();
 const ui = useUiStore();
+const meta = useMetaStore();
 
 const VILLAGE_CRAFT_COST = 5;       // 시간의 조각 비용
 const VILLAGE_CRAFT_CHOICES = 3;    // 한 번에 제시되는 후보 수
@@ -134,12 +136,17 @@ function recruitSummary(npc: Npc): string {
 
 // === NPC 대화 ===
 // 대화 = NPC.background 단락(친밀도 깊이만큼 공개) 또는 tagline 표시.
-// 방문(이 컴포넌트 마운트)당 NPC 1회 친밀도 +1 → affinity.ts가 단계 보상 자동 발사.
-const talkedThisVisit = ref<Set<string>>(new Set());
+// Item 37-② Stage C(1B): 친밀도 상승은 *하루 1회*(같은 날 재대화는 대사만). affinity는 *영속 메타*.
 const activeDialogue = ref<{ name: string; line: string; rewards: string[] } | null>(null);
 
+/** 친밀도 — 영속 메타값(cross-run). run working mirror도 동기지만 meta가 권위. */
 function affinityOf(npc: Npc): number {
-  return run.data.npcAffinity[npc.id] ?? 0;
+  return meta.npcAffinityOf(npc.id);
+}
+
+/** 오늘(현재 런 일차) 이 NPC와 대화로 친밀도를 이미 올렸는가. */
+function talkedToday(npc: Npc): boolean {
+  return (run.data.affinityTalkDay?.[npc.id] ?? -1) === (run.data.currentDay ?? 1);
 }
 
 /**
@@ -160,11 +167,14 @@ function dialogueLine(npc: Npc): string {
 
 function talk(npc: Npc) {
   const rewards: string[] = [];
-  const firstThisVisit = !talkedThisVisit.value.has(npc.id);
-  if (firstThisVisit) {
+  // 친밀도 상승은 *하루 1회*(같은 날 재대화는 대사만). 1B: 영속 메타에 누적.
+  if (!talkedToday(npc)) {
     applyAffinityDelta(npc.id, 1, rewards);
-    talkedThisVisit.value = new Set(talkedThisVisit.value).add(npc.id);
+    if (!run.data.affinityTalkDay) run.data.affinityTalkDay = {};
+    run.data.affinityTalkDay[npc.id] = run.data.currentDay ?? 1;
     rewards.unshift(`(가까워졌다 — 친밀도 ${affinityOf(npc)})`);
+  } else {
+    rewards.push('(오늘은 이미 충분히 이야기를 나눴다.)');
   }
   // 친밀도 반영 후의 대사(가까워질수록 더 깊은 이야기).
   activeDialogue.value = { name: npc.name, line: dialogueLine(npc), rewards };

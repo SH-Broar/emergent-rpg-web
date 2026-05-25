@@ -76,6 +76,13 @@ export interface EventChoiceEffect {
   /** 관계 변화. */
   affinityDelta?: { npcId: string; delta: number };
 
+  /**
+   * 동료 사건 영입 (Item 37-② Stage C, 1A) — 이 선택지를 고르면 지정 NPC를 동료로 영입.
+   * EventView가 `run.recruitCompanion(npcId)` 호출(중복이면 스킵). 비용 아님(canAfford 무관).
+   * 데이터 키: `recruit = npc-X`. companion 정의가 있는 NPC만 실제 영입(없으면 recruitCompanion이 false).
+   */
+  recruitNpcId?: string;
+
   /** 후속 이벤트 트리거 (분기). */
   followupEventId?: EventId;
 

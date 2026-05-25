@@ -24,6 +24,7 @@ import { getSkipTurnEveryN } from '@/systems/relic';
 import { applyStartChaos, nodeHpLoss } from '@/systems/chaos';
 import { useDataStore } from './data';
 import { useUiStore } from './ui';
+import { useMetaStore } from './meta';
 
 /**
  * localStorage 키 — 활성 런 스냅샷. 사용자 요구에 따라 노드 입장마다 자동 저장.
@@ -141,6 +142,7 @@ const EMPTY_RUN: RunState = {
   companionAppliedBonuses: {},
   hyperionProgress: {},
   npcAffinity: {},
+  affinityTalkDay: {},
   affinityRewardsClaimed: {},
   missionsCleared: [],
   bossesCleared: [],
@@ -218,6 +220,9 @@ export const useRunStore = defineStore('run', {
       fresh.maxMp = params.maxMp;
       // 카오스 확정 — 시작형 적용·상시형 조회·점수 산정의 원천.
       fresh.activeChaos = params.activeChaos ? [...params.activeChaos] : [];
+      // 친밀도 working mirror 시드 (Item 37-② Stage C, 1B) — 권위 소스인 영속 메타값을 비춘다.
+      //   조건 DSL(affinity:)·UI 표시가 cross-run 누적값을 반영하도록.
+      fresh.npcAffinity = { ...(useMetaStore().npcAffinity ?? {}) };
       this.data = fresh;
       this.active = true;
       this.bindRng();

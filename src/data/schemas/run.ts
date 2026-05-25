@@ -590,8 +590,19 @@ export interface RunState {
    * 다음 라운드 v3에서 제거 예정.
    */
   hyperionProgress?: Record<number, boolean>;
-  /** 그 런에서 친밀도가 오른 NPC들 (모노 히페리온 게이지 ② 입력). */
+  /**
+   * 그 런의 친밀도 *working mirror* (모노 히페리온 게이지 ② 입력 + 조건 DSL `affinity:` + UI 표시).
+   * Item 37-② Stage C(1B): 권위 소스는 *영속 메타*(meta.npcAffinity)로 이동. 이 필드는 그 런 동안
+   * 메타값을 비추는 사본이며, applyAffinityDelta가 메타 누적 후 동기화한다.
+   */
   npcAffinity: Record<NpcId, number>;
+
+  /**
+   * 친밀도 *하루 1회* 대화 가드 (Item 37-② Stage C, 1B) — npcId → 마지막으로 친밀도가 오른 런 일차.
+   * 같은 NPC와 같은 날(currentDay) 다시 대화해도 친밀도는 오르지 않는다(대사는 보여줌).
+   * 옛 세이브 호환 — optional(absent=빈 객체, 첫 대화는 항상 허용).
+   */
+  affinityTalkDay?: Record<NpcId, number>;
   /**
    * NPC별 *이미 발사된 affinity 보상 임계* 목록 — 중복 발사 방지.
    * 옵셔널 (세이브 v2 호환). 미존재 시 빈 객체로 폴백.
