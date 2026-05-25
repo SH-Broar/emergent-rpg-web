@@ -19,6 +19,8 @@ seed_cards = c-phantom-handblade, c-phantom-shuffle, c-phantom-guard, c-phantom-
 seed_relics = r-race-phantom
 hp_bonus = 0
 mp_bonus = 0
+# 팬텀은 시간의 빈틈에서 한 번 더 몸을 뺀다 — 최대 목숨 +1 (기본 2 -> 3). (Item 28)
+max_lives_bonus = 1
 # 회복 없는 콤보 덱 — 14장.
 deck_size = 14
 # 팬텀 = electric·dark 친화.

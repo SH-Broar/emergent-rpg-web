@@ -265,6 +265,7 @@ export function parseRaces(ini: IniData): Map<string, Race> {
       seedRelicIds: parseList(fields.seed_relics),
       startHpBonus: parseNumber(fields.hp_bonus, 0),
       startMpBonus: parseNumber(fields.mp_bonus, 0),
+      maxLivesBonus: fields.max_lives_bonus ? parseNumber(fields.max_lives_bonus, 0) : undefined,
       deckSize: fields.deck_size ? parseNumber(fields.deck_size, 10) : undefined,
       seedColors: parseColorBoosts(fields.seed_colors) as Race['seedColors'],
     });

@@ -163,7 +163,17 @@ function onVictory() {
 }
 
 function onDefeat() {
+  // Item 28 — 목숨 분기. 전투 코어는 playerDefeated 신호만 내고, 목숨 소모/도망은 UI에서.
+  const nodeId = run.data.currentNodeId;
   clearCombat();
+  if (run.loseLife()) {
+    // 목숨 남음 → 도망: 노드 미클리어 유지 + HP 30% 회복 + 맵 복귀. 변신·스택은 그대로.
+    run.flee(nodeId);
+    ui.toast('warning', '쓰러질 뻔했지만, 목숨 하나로 가까스로 몸을 뺐다.');
+    router.push('/game/map');
+    return;
+  }
+  // 목숨 0 → 패배 결과 화면(돌아간다 버튼이 endRun).
   phase.value = 'defeat';
 }
 
@@ -300,9 +310,18 @@ function usePotion(itm: Item) {
   useItem(itm);
 }
 
+// === 목숨 (Item 28) ===
+const lives = computed(() => run.data.lives ?? 2);
+const maxLives = computed(() => run.data.maxLives ?? 2);
+const lifeHearts = computed(() =>
+  '❤'.repeat(Math.max(0, lives.value)) + '🤍'.repeat(Math.max(0, maxLives.value - lives.value)),
+);
+
 // === 변신(체인지/TSF) ===
 const transform = computed(() => run.data.transform);
 const formName = computed(() => data.races.get(run.data.transform?.formRaceId ?? '')?.name ?? '변신');
+/** 변신 해제 스택 (Item 28) — '본모습' 카드 -2, 0 이하에서 원복. 구세이브 폴백 5. */
+const releaseStack = computed(() => run.data.transform?.releaseStack ?? 5);
 
 /**
  * 카드 effect의 *최종 정적값* — base + 컬러 보너스. 사용자 사양: 카드 수치에 보너스 반영.
@@ -381,6 +400,9 @@ void ui;
           <span v-if="combat.player.block > 0" class="block" :class="{ 'block--pulse': fx.playerShield.value }">🛡 {{ combat.player.block }}</span>
         </div>
         <div class="mana">마나 {{ combat.mana }} / {{ combat.maxMana }}</div>
+        <div class="lives" v-tooltip="`목숨 ${lives}/${maxLives}: 쓰러져도 목숨이 남으면 도망쳐 살아남는다.`">
+          {{ lifeHearts }} <span class="lives__num">{{ lives }}/{{ maxLives }}</span>
+        </div>
         <ul class="statuses">
           <li v-for="s in statusEntries(combat.player)" :key="s.key" class="status" :data-key="s.key" v-tooltip="statusDescription(s.key)">
             {{ s.label }} ×{{ s.count }}
@@ -450,9 +472,9 @@ void ui;
       >{{ line }}</p>
     </div>
 
-    <!-- 변신(체인지) — 본모습 카드로 해제. 해제 안 하고 이기면 런에 지속 -->
+    <!-- 변신(체인지) — 본모습 카드로 스택을 줄여 해제. 해제 안 하고 이기면 런에 지속 -->
     <div v-if="transform" class="transform-banner">
-      🦊 변신 중 — <strong>{{ formName }}</strong> · '본모습' 카드로 해제 (안 풀고 이기면 계속 이 모습)
+      🦊 변신 중 · <strong>{{ formName }}</strong> · 변신 스택 <strong>{{ releaseStack }}</strong> · '본모습' 카드로 스택 -2 (0이면 원래 모습으로)
     </div>
 
     <!-- 구속/삼킴 — 발버둥으로 탈출 -->
@@ -583,6 +605,8 @@ void ui;
 .bar--enemy-hp { color: #ff8e8e; }
 .block { margin-left: 0.5rem; color: #8eedff; }
 .mana { color: #c08eff; font-weight: 600; }
+.lives { color: #ffb8c4; font-size: 0.9rem; letter-spacing: -1px; }
+.lives__num { letter-spacing: 0; font-weight: 600; }
 .intent { color: #ffb88e; font-size: 0.9rem; }
 .intent__lead { display: block; }
 .intent__act { display: block; padding-left: 0.7rem; }

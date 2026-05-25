@@ -47,6 +47,12 @@ export interface Race extends NamedEntity {
   startMpBonus?: number;
 
   /**
+   * 최대 목숨 보정 (Item 28) — 기본 2에 이 값만큼 더해 시작. 미설정/0이면 기본 2.
+   * 종족이 *런별 강화*로 목숨을 더 들고 가는 경우(예: 끈질긴 종족).
+   */
+  maxLivesBonus?: number;
+
+  /**
    * 종족 고정 덱 슬롯 크기 — 이 종족 캐릭터가 이 *덱 크기*로 시작.
    * 없으면 RunStore 기본 (10).
    * 인간 = 15.

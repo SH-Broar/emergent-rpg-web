@@ -478,6 +478,12 @@ const HANDLERS: Record<string, RelicEffectHandler> = {
     const card = useDataStore().cards.get(id);
     if (card) useRunStore().addCardToCollection(card);
   },
+  // 최대 목숨 +value (Item 28). on-acquire/passive 권장 — 올릴 때 현재 목숨도 같이 증가.
+  'boost-max-lives': (eff, _ctx) => {
+    const n = eff.value ?? 0;
+    if (n <= 0) return;
+    useRunStore().raiseMaxLives(n);
+  },
 };
 
 /** 한 유물의 효과들을 trigger 시점에 호출. */

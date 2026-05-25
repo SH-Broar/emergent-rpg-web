@@ -88,6 +88,9 @@ const EMPTY_RUN: RunState = {
   maxMp: 0,
   gold: 0,
   timeShards: 0,
+  // 목숨 (Item 28) — 기본 2/2. 구세이브는 loadActiveRun의 {...EMPTY_RUN, ...parsed}로 자동 2/2.
+  lives: 2,
+  maxLives: 2,
   colors: {
     fire: 0,
     water: 0,
@@ -617,6 +620,64 @@ export const useRunStore = defineStore('run', {
     /** 노드 상태 조회 (없으면 미방문). */
     getNodeState(nodeId: string) {
       return this.data.nodeStates[nodeId];
+    },
+
+    // === 목숨 / 도망 (Item 28) ===
+
+    /**
+     * 목숨 1 소모 (마리오식). 전투 패배(HP 0) 시 UI 패배 핸들러가 호출.
+     * 반환 true = 아직 목숨 남음 → 도망 경로(flee). false = 0 소진 → 호출자가 endRun.
+     * 구세이브 호환: lives 미설정이면 maxLives(또는 2)로 폴백 후 차감.
+     */
+    loseLife(): boolean {
+      const r = this.data;
+      if (r.lives == null) r.lives = r.maxLives ?? 2;
+      r.lives -= 1;
+      return r.lives > 0;
+    },
+
+    /**
+     * 목숨 1 회복 — 희귀 포션 전용(맵). 상한(maxLives)까지 클램프.
+     * 반환: 실제로 늘었으면 true(이미 가득이면 false).
+     */
+    gainLife(): boolean {
+      const r = this.data;
+      const max = r.maxLives ?? 2;
+      const cur = r.lives ?? max;
+      const next = Math.min(cur + 1, max);
+      r.lives = next;
+      return next > cur;
+    },
+
+    /**
+     * 최대 목숨 증가 — 유물/종족 강화. 올릴 때 현재 목숨도 같이 증가(빈 자리 채우는 게 아니라 가득 유지).
+     * delta 음수는 무시(안전). 구세이브 호환 폴백 포함.
+     */
+    raiseMaxLives(delta: number) {
+      if (!Number.isFinite(delta) || delta <= 0) return;
+      const r = this.data;
+      const max = r.maxLives ?? 2;
+      const cur = r.lives ?? max;
+      r.maxLives = max + delta;
+      r.lives = cur + delta;
+    },
+
+    /**
+     * 전투 패배 후 도망 — 그 노드를 *미클리어로 유지*(재도전 가능) + HP를 maxHp의 30%로 회복
+     * (현재 HP가 더 높으면 유지). 변신·변신 스택은 그대로 둔다(아무것도 안 함).
+     * combat 상태는 호출 전 UI가 clearCombat으로 정리한다.
+     */
+    flee(nodeId: string) {
+      const r = this.data;
+      // 노드 미클리어 유지 — combatCleared/Stealthed를 명시적으로 false로(재도전 보장).
+      const st = r.nodeStates[nodeId];
+      if (st) {
+        st.combatCleared = false;
+        st.combatStealthed = false;
+      }
+      // HP를 maxHp의 30%로 회복(올림). 이미 더 높으면 유지.
+      const floor = Math.max(1, Math.ceil(r.maxHp * 0.3));
+      if (r.hp < floor) r.hp = floor;
     },
 
     /** 런 종료 — endRun()을 호출하면 외부에서 codex/meta 갱신을 트리거. */

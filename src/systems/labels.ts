@@ -41,6 +41,7 @@ const CARD_EFFECT_KIND_LABELS: Record<string, string> = {
   'next-card-double': '메아리',
   'ghost-self': '흐려지기',
   'curse-tick': '저주 피해',
+  'release-transform': '본모습 (스택 -2)',
 };
 
 /**
@@ -75,6 +76,7 @@ const CARD_EFFECT_DESCRIPTIONS: Record<string, string> = {
   'next-card-double': '다음에 쓰는 카드 1장의 모든 수치가 2배가 됩니다.',
   'ghost-self': '수치만큼 턴 동안 비실체가 됩니다 — 받는·주는 피해가 절반.',
   'curse-tick': '손에 쥐고 있으면 매 턴 시작마다 수치만큼 직접 피해를 입습니다.',
+  'release-transform': '변신 스택을 2 줄입니다. 스택이 0 이하가 되면 원래 모습으로 돌아옵니다. 이 카드는 사라지지 않아 여러 번 낼 수 있습니다.',
 };
 
 /** 상태이상/버프 키 → *툴팁용 상세 설명*. */

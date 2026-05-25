@@ -385,3 +385,24 @@ source = event
 trigger = on-color-gain
 effects = gain-time-shards:1
 flavor = 색이 차오를 때마다 봉오리가 살짝 벌어진다. 안에서 작은 조각이 떨어진다.
+
+# ============================================================
+# D. 목숨 늘림 (boost-max-lives, on-acquire) 최대 목숨 +1. (Item 28)
+#    줍는 순간 최대 목숨이 늘고, 현재 목숨도 같이 채워진다.
+# ============================================================
+
+[relic.r-acq-spare-thread]
+name = 여분의 실타래
+rank = rare
+source = shop
+trigger = on-acquire
+effects = boost-max-lives:1
+flavor = 끊어진 자리에 한 번 더 이어 붙일 실. 쥐는 순간, 한 번 더 일어설 여지가 생긴다.
+
+[relic.r-acq-second-breath]
+name = 두 번째 숨
+rank = legendary
+source = boss
+trigger = on-acquire
+effects = boost-max-lives:1, heal-now:10
+flavor = 한 번 멈춘 숨을 다시 들이쉬는 법을 아는 자만이 품는다. 쓰러져도 한 번 더 길을 잇는다.

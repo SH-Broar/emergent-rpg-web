@@ -136,6 +136,9 @@ async function startRun() {
     activeChaos: ui.pendingRunSetup.activeChaos,
   });
 
+  // 종족 강화 — 최대 목숨 보정(Item 28). 기본 2 + 보너스(올릴 때 현재 목숨도 같이 증가).
+  if (r.maxLivesBonus && r.maxLivesBonus > 0) run.raiseMaxLives(r.maxLivesBonus);
+
   // 시작 덱 — 동명 카드도 별개 인스턴스.
   const startingInstances: Card[] = r.startingDeck
     .map((cardId: string) => data.cards.get(cardId))

@@ -708,6 +708,17 @@ export function playCard(handIndex: number, monster: Monster): { enemyDefeated: 
     }
   }
 
+  // 변신 원복 보류 처리 (Item 28 QA Medium-1) — '본모습' 카드가 releaseStack≤0에 도달해 플래그를 세웠으면
+  // *카드 이동을 모두 끝낸 지금* 원복 + 전투 더미 재구성. rebuildCombatPiles가 원본 덱에서 전 더미를 새로
+  // 그리므로, 이번에 쓴 폼 카드(c-release-change)·증발/누출 없이 hand/draw/discard가 깨끗이 원본으로 교체된다.
+  if (c.pendingTransformRevert) {
+    c.pendingTransformRevert = false;
+    if (revertTransformationState()) {
+      rebuildCombatPiles(c);
+      ui.toast('success', '원래 모습으로 돌아왔다.');
+    }
+  }
+
   // 분열 인터셉트 — hp<=0이어도 enemySplit>0이면 부활 후 false.
   if (resolveEnemyDefeat(c)) {
     return { enemyDefeated: true };
@@ -1010,13 +1021,19 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
   'curse-tick': () => {
     // no-op
   },
-  // 변신 해제 카드('본모습') — 즉시가 아니라 ~2턴에 걸쳐 풀린다(releasePending 카운트다운).
-  // 실제 원복·더미 재구성은 applyPlayerStatusTurnStart에서 카운트다운 0 도달 시.
+  // 변신 해제 카드('본모습') — 변신 스택 -2. 스택 ≤0이면 원복(Item 28).
+  // QA Medium-1: 원복(revert+rebuildCombatPiles)을 *이 효과 단계에서 즉시* 하면 hand가 새로 그려져
+  // playCard 본체의 handIndex가 stale이 되어 카드 증발/폼 카드 누출이 생긴다. 대신 플래그만 세우고,
+  // playCard가 카드 이동을 끝낸 뒤 말미에서 원복+rebuild를 수행한다.
+  // 본모습 카드는 비소멸이라 여러 번 낼 수 있고, 스택은 전투 종료·패배·도망 무관하게 유지된다.
   'release-transform': (_e, c) => {
-    if (!useRunStore().data.transform) return; // 변신 중이 아니면 무효.
-    if ((c.releasePending ?? 0) <= 0) {
-      c.releasePending = 2;
-      useUiStore().toast('info', '본모습이 돌아오는 중… (2턴)');
+    const t = useRunStore().data.transform;
+    if (!t) return; // 변신 중이 아니면 무효.
+    t.releaseStack = (t.releaseStack ?? 5) - 2; // 구세이브 변신 가드.
+    if (t.releaseStack <= 0) {
+      c.pendingTransformRevert = true; // 원복은 playCard 말미에 (rebuildCombatPiles가 hand를 새로 그림).
+    } else {
+      useUiStore().toast('info', `본모습으로 돌아가는 중… (스택 ${t.releaseStack})`);
     }
   },
 };
@@ -1298,19 +1315,8 @@ function applyPlayerStatusTurnStart(c: CombatState): void {
     progressLocks(c, 'block', cTurn.block);
   }
 
-  // 변신 해제 카운트다운 — '본모습' 카드 사용 후 ~2턴에 걸쳐 풀린다.
-  if ((c.releasePending ?? 0) > 0) {
-    c.releasePending = (c.releasePending ?? 0) - 1;
-    if (c.releasePending <= 0) {
-      c.releasePending = 0;
-      if (revertTransformationState()) {
-        rebuildCombatPiles(c); // 폼 덱 → 원본 덱으로 더미 재구성.
-        ui.toast('success', '원래 모습으로 돌아왔다.');
-      }
-    } else {
-      ui.toast('info', `본모습이 돌아오는 중… (${c.releasePending}턴)`);
-    }
-  }
+  // (Item 28) 변신 해제 카운트다운 폐기 — '본모습' 카드가 transform.releaseStack을 직접 -2 하고
+  // 0 이하에서 즉시 원복한다. applyPlayerStatusTurnStart의 매-턴 감쇠 로직은 제거되었다.
 
   const st = c.player.statuses;
   const par = st.paralyze ?? 0;
@@ -1821,13 +1827,14 @@ function applyTransformation(c: CombatState, formRaceId: string): void {
     .filter((cd): cd is Card => !!cd)
     .map(instantiateCard);
   if (formDeck.length === 0) return;
-  // 원본 stash 후 폼으로 교체.
+  // 원본 stash 후 폼으로 교체. releaseStack=5 — '본모습' 카드 -2씩, 0 이하에서 원복(Item 28).
   r.transform = {
     formRaceId,
     originalRaceId: r.raceId,
     stashDeck: r.deck,
     stashCollection: r.collection,
     stashDeckSize: r.deckSize,
+    releaseStack: 5,
   };
   r.raceId = formRaceId;
   r.deck = formDeck;

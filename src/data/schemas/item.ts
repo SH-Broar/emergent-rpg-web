@@ -23,6 +23,7 @@ export type ItemEffectKind =
   | 'teleport-village' // 임의의 village kind 노드로 즉시 이동 (맵 전용)
   | 'revive-node'      // 이미 소진한 노드(전투 정리/사건 지남/활동 완료/채집) 1곳을 되살려 재진입 가능 (맵 전용, 대상 선택)
   | 'cleanse-transform' // 변신(체인지) 정화 — 원래 종족·덱으로 복귀(변신 중이 아니면 무효)
+  | 'gain-life'        // 목숨 +value(기본 1) — 상한(maxLives)까지. 맵 전용(전투 밖). (Item 28)
   | 'cleanse-group'   // 전투 중 플레이어의 디버프를 *그룹별*로 정화. param = 'low'|'mid'|'high'|'all'
                       //   low : 약화·취약·중독·점액·화상
                       //   mid : 수면·세뇌·각인·유령화·경련

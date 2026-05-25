@@ -35,6 +35,14 @@ effects = cleanse-transform
 consumable = true
 flavor = 빌린 가죽 아래, 잊었던 윤곽.
 
+[item.i-extra-life-ember]
+name = 다시 켜지는 불씨
+description = 꺼졌던 자리에 다시 불을 붙인다. 마시면 잃었던 목숨 하나가 되돌아온다. 이미 가득하면 변화가 없다.
+rank = rare
+effects = gain-life:1
+consumable = true
+flavor = 한 번 꺼져도, 불씨 하나만 남으면 다시 타오른다.
+
 [item.i-potion-large]
 name = 큰 회복약
 description = 두 모금이면 다친 자리가 한결 가라앉는다.

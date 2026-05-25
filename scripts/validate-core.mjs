@@ -213,7 +213,7 @@ export const VALID_RELIC_EFFECT_KINDS = [
   'hurt-to-color', 'retaliate', 'damage-enemy', 'hurt-to-block',
   'boost-color', 'boost-stat', 'block-from-metric', 'strength-from-metric',
   'turn-start-block-snowball', 'turn-after-strength', 'turn-before-block', 'turn-units-color',
-  'gain-time-shards', 'heal-now', 'gain-card',
+  'gain-time-shards', 'heal-now', 'gain-card', 'boost-max-lives',
   // 합산형 modifier (relic.ts RelicModifierKind)
   'damage-out-add', 'damage-out-mul', 'damage-in-mul', 'block-out-add',
   'draw-extra-add', 'mana-extra-add', 'cost-mod-add',
@@ -229,7 +229,7 @@ export const VALID_RELIC_EFFECT_KINDS = [
 export const VALID_ITEM_EFFECT_KINDS = [
   'heal', 'gold', 'time-shards', 'color-boost', 'color-all',
   'grant-card', 'grant-relic', 'teleport-village', 'revive-node',
-  'cleanse-transform', 'cleanse-group',
+  'cleanse-transform', 'cleanse-group', 'gain-life',
   'combat-mana', 'combat-draw', 'combat-block',
   'combat-enemy-status', 'combat-self-status', 'combat-free-grapple',
 ];

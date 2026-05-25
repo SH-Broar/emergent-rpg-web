@@ -40,6 +40,13 @@ const hpRatio = computed(() => {
   if (run.data.maxHp === 0) return 0;
   return run.data.hp / run.data.maxHp;
 });
+
+/** 목숨 (Item 28) — 구세이브 폴백 2/2. 하트로 표시(남은 채움 + 빈 칸). */
+const lives = computed(() => run.data.lives ?? 2);
+const maxLives = computed(() => run.data.maxLives ?? 2);
+const lifeHearts = computed(() =>
+  '❤'.repeat(Math.max(0, lives.value)) + '🤍'.repeat(Math.max(0, maxLives.value - lives.value)),
+);
 const hpColor = computed(() => {
   const r = hpRatio.value;
   if (r > 0.6) return '#8effb8';
@@ -88,6 +95,14 @@ const persistentStatuses = computed(() => {
           <span class="lbl">HP</span>
           <div class="bar"><div class="bar__fill" :style="{ width: hpRatio * 100 + '%', background: hpColor }" /></div>
           <span class="num">{{ run.data.hp }}/{{ run.data.maxHp }}</span>
+        </div>
+      </Tooltip>
+
+      <!-- 목숨 (Item 28) — 전투 패배 시 목숨 1 소모하고 도망. 0이면 런 종료. -->
+      <Tooltip :text="`목숨 ${lives}/${maxLives} — 전투에서 쓰러져도 목숨이 남으면 도망쳐 살아남는다. 0이 되면 런이 끝난다.`">
+        <div class="slot slot--lives">
+          <span class="hearts">{{ lifeHearts }}</span>
+          <span class="num">{{ lives }}/{{ maxLives }}</span>
         </div>
       </Tooltip>
 
@@ -206,6 +221,11 @@ const persistentStatuses = computed(() => {
 .slot--hp { flex: 1; min-width: 140px; max-width: 260px; }
 .slot--hp .bar { flex: 1; height: 8px; background: rgba(0,0,0,0.4); border-radius: 4px; overflow: hidden; }
 .slot--hp .bar__fill { height: 100%; transition: width 220ms ease, background 220ms ease; }
+
+/* 목숨 슬롯 — 하트 + 숫자. */
+.slot--lives { gap: 0.28rem; }
+.slot--lives .hearts { font-size: 0.85rem; letter-spacing: -1px; }
+.slot--lives .num { color: #ffb8c4; }
 
 /* 전투 후 지속 상태 슬롯 — 작은 배지 묶음. */
 .slot--status { gap: 0.25rem; padding: 0.2rem 0.3rem; }

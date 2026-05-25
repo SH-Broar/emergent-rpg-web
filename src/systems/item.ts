@@ -275,6 +275,17 @@ function applyItemEffect(
       if (!did) lines.push('정화할 상태가 없다');
       break;
     }
+    case 'gain-life': {
+      // 목숨 회복(맵 전용) — 상한(maxLives)까지. 이미 가득이면 효과 없음.
+      const n = eff.value ?? 1;
+      let gained = 0;
+      for (let i = 0; i < n; i++) {
+        if (run.gainLife()) gained += 1;
+        else break;
+      }
+      lines.push(gained > 0 ? `목숨 +${gained}` : '목숨이 이미 가득하다');
+      break;
+    }
     // ===== 전투 포션 전용 — 전투 중에만 의미. =====
     case 'combat-mana': {
       if (!inCombat || !c) break;

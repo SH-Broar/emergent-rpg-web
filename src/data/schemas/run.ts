@@ -243,11 +243,19 @@ export interface CombatState {
   pendingHandJunk?: Card[];
 
   /**
-   * 변신 해제 진행 카운트다운 — '본모습'(release-transform) 카드를 쓰면 즉시가 아니라
-   * 이 값(턴 수)만큼 지나야 원복(applyPlayerStatusTurnStart에서 매 턴 -1, 0 도달 시 복원+더미 재구성).
-   * 사용자 사양: 해제는 ~2턴 걸린다. 전투 중 미완(승리) 시 변신 지속.
+   * @deprecated Item 28에서 변신 해제는 *변신 스택*(transform.releaseStack) 방식으로 교체됨.
+   * '본모습' 카드는 이제 스택을 -2 하고 ≤0이면 즉시 원복한다(턴 카운트다운 폐기).
+   * 이 필드는 더 이상 읽거나 쓰지 않으며, 구세이브 직렬화 호환을 위해 optional로만 남겨둔다.
    */
   releasePending?: number;
+
+  /**
+   * 변신 원복 *보류* 플래그 (Item 28 QA Medium-1) — '본모습' 카드 효과가 releaseStack≤0에 도달하면
+   * 그 자리에서 rebuildCombatPiles를 하지 않고 이 플래그만 세운다. 효과 적용 도중 hand를 새로 그리면
+   * playCard 본체의 handIndex(옛 hand 기준)가 stale이 되어 카드 증발/폼 카드 누출이 생기기 때문.
+   * playCard가 *카드 이동을 끝낸 뒤* 이 플래그를 보고 원복+rebuild를 수행한다. 같은 전투 내 휘발(optional).
+   */
+  pendingTransformRevert?: boolean;
 
   // === 이상전투 심화 기믹 (Stage 6 — 전부 optional, 미설정 시 영향 0) ===
   /**
@@ -444,6 +452,15 @@ export interface RunState {
   timeShards: number;
 
   /**
+   * 목숨 (Item 28) — 전투 패배(HP 0) 시 게임오버 대신 1 소모하고 도망.
+   *  - lives    : 현재 목숨. 패배 시 -1, 0이 되면 런 종료(endRun 'hp-zero').
+   *  - maxLives : 상한. 유물·종족 강화로 증가(올릴 때 lives도 같이 증가). 포션은 min(lives+1, maxLives).
+   * EMPTY_RUN 기본 2/2. additive optional — 구세이브는 `{...EMPTY_RUN, ...parsed}`로 자동 2/2 채움.
+   */
+  lives: number;
+  maxLives: number;
+
+  /**
    * 6 컬러 스탯 (각 0~100 권장).
    * 페어 → 3 스탯:
    *   ATK = CalculateStat(fire, electric)
@@ -535,10 +552,12 @@ export interface RunState {
   /**
    * 변신(체인지/TSF) 상태 — 희귀 특수 몬스터가 종족+덱 전체를 폼으로 교체(Stage 5).
    * set이면 *변신 중*: raceId/deck/collection/deckSize는 폼 값, 원본은 stash에 보관.
-   *  - 폼 덱의 *해제 카드*(release-transform)를 쓰면 원복.
+   *  - 변신 시 releaseStack=5 부여. 폼 덱의 *해제 카드*(release-transform)를 쓰면 스택 -2.
+   *    스택 ≤ 0이면 원복(원본 종족·덱·컬렉션·덱슬롯 복원). 스택은 전투 종료·패배·도망 무관 유지(자동 감쇠 없음).
    *  - 해제하지 않고 전투를 이기면 변신이 *런에 지속*(이후 폼으로 플레이, 도박).
-   *  - 이벤트/아이템/NPC 정화(cleanse-transform)로도 원복(영구 아님).
+   *  - 이벤트/아이템/NPC 정화(cleanse-transform)로도 즉시 원복(영구 아님).
    * 미설정(undefined)이면 변신 아님. 옛 세이브 호환 — EMPTY_RUN에 없음(absent=none).
+   * releaseStack은 변신 중 구세이브에 없을 수 있어 사용처에서 `?? 5` 가드.
    */
   transform?: {
     formRaceId: RaceId;
@@ -546,6 +565,8 @@ export interface RunState {
     stashDeck: Card[];
     stashCollection: Card[];
     stashDeckSize: number;
+    /** 변신 해제 진행 스택 — 변신 시 5, '본모습' 카드마다 -2, ≤0이면 원복. */
+    releaseStack: number;
   };
 
   // === 전투 ===
