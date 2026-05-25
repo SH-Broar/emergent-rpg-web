@@ -47,6 +47,24 @@ export interface EventChoiceEffect {
   /** 시간의 조각 변화. */
   timeShardsDelta?: number;
 
+  /**
+   * %기반 회복 — 최대 HP의 N% 회복(round(maxHp×N/100)). hpDelta(정액)와 별개.
+   * 휴식 노드가 소액 회복을 담당하므로 이벤트 회복은 "큰 회복"(35/50/100)만.
+   */
+  healPct?: number;
+
+  /**
+   * 컬러 댓가 — 지정 색을 amount 만큼 *차감*(applyColorBoost 음수).
+   * canAfford가 보유량을 검사해 부족하면 선택지 비활성. (음수 delta는 on-color-gain 미발동 — 안전.)
+   */
+  colorCost?: { color: string; amount: number };
+
+  /**
+   * 카드 댓가 — 지정 카드(정의 id) 1장 소비. has-card 조건으로 게이트.
+   * collection에서 정의 id 일치 첫 인스턴스를 removeCardFromCollection으로 제거.
+   */
+  loseCardId?: string;
+
   /** 컬러 보상 — 사건 보상의 주력. color = 8색명 | 'all' | 'random', amount 만큼. */
   colorDelta?: { color: string; amount: number };
 

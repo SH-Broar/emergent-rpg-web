@@ -323,11 +323,20 @@ function parseChoice(f: IniSection): EventChoice {
   if (f.gold !== undefined) eff.goldDelta = parseNumber(f.gold, 0);
   if (f.draw !== undefined) eff.drawCards = parseNumber(f.draw, 0);
   if (f.time_shards !== undefined) eff.timeShardsDelta = parseNumber(f.time_shards, 0);
+  // %기반 회복 — `heal_pct = 35|50|100`. round(maxHp×%) 회복.
+  if (f.heal_pct !== undefined) eff.healPct = parseNumber(f.heal_pct, 0);
   // 컬러 보상 — `color = fire:5` | `color = all:2` | `color = random:5`.
   if (f.color) {
     const [color, amtStr] = f.color.split(':');
     eff.colorDelta = { color: (color ?? '').trim(), amount: parseNumber(amtStr, 0) };
   }
+  // 컬러 댓가 — `color_cost = water:3` (색 water를 3 차감).
+  if (f.color_cost) {
+    const [color, amtStr] = f.color_cost.split(':');
+    eff.colorCost = { color: (color ?? '').trim(), amount: parseNumber(amtStr, 0) };
+  }
+  // 카드 댓가 — `lose_card = c-X` (지정 카드 1장 소비, has-card 게이트 동반).
+  if (f.lose_card) eff.loseCardId = f.lose_card;
   if (f.grant_card) eff.grantCardId = f.grant_card;
   if (f.grant_relic) eff.grantRelicId = f.grant_relic;
   if (f.affinity) {

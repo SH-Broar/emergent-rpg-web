@@ -94,9 +94,34 @@ function applyChoice(choice: EventChoice) {
 function applyEffectWithNames(choice: EventChoice, effect: EventChoiceEffect, lines: string[]) {
   const r = run.data;
 
+  // 카드 댓가 — *먼저* 시도. 제거 실패(저주 사본 등)면 이 effect의 나머지 보상을 적용하지 않는다
+  //   (무료 컬러 획득 방지). salvage=false: 카드 자체가 댓가이므로 시간조각 환급 없음.
+  //   정상 경로는 canAfford가 보유를 게이트하므로 동작 변화 없음.
+  if (effect.loseCardId) {
+    const target = r.collection.find((c) => c.id === effect.loseCardId && c.instanceId);
+    if (target?.instanceId && run.removeCardFromCollection(target.instanceId, false)) {
+      lines.push(`카드 소비: ${target.name}`);
+    } else {
+      const name = data.cards.get(effect.loseCardId)?.name ?? effect.loseCardId;
+      lines.push(`카드를 떼어낼 수 없다 (${name})`);
+      return; // 댓가 미지불 → 보상 미적용.
+    }
+  }
+
   if (effect.hpDelta !== undefined) {
     r.hp = Math.max(0, Math.min(r.maxHp, r.hp + effect.hpDelta));
     lines.push(effect.hpDelta >= 0 ? `체력 +${effect.hpDelta}` : `체력 ${effect.hpDelta}`);
+  }
+  if (effect.healPct !== undefined) {
+    const heal = Math.round((r.maxHp * effect.healPct) / 100);
+    const before = r.hp;
+    r.hp = Math.min(r.maxHp, r.hp + heal);
+    lines.push(`체력 +${r.hp - before} (${effect.healPct}%)`);
+  }
+  if (effect.colorCost) {
+    const { color, amount } = effect.colorCost;
+    const d = applyColorBoost(color as ColorKey, -amount);
+    lines.push(`${colorLabel(color)} ${d}`);
   }
   if (effect.goldDelta !== undefined) {
     r.gold = Math.max(0, r.gold + effect.goldDelta);
@@ -194,12 +219,17 @@ function isAvailable(c: EventChoice): boolean {
   return canAfford(c);
 }
 
-/** 자원을 *깎는* 선택지는 보유량이 부족하면 고를 수 없다(골드/시간의 조각). 클램프로 몰래 0이 되는 것 방지. */
+/** 자원을 *깎는* 선택지는 보유량이 부족하면 고를 수 없다(골드/시간의 조각/컬러/카드). 클램프로 몰래 0이 되는 것 방지. */
 function canAfford(c: EventChoice): boolean {
   const r = run.data;
   for (const eff of c.effects) {
     if (eff.goldDelta !== undefined && eff.goldDelta < 0 && r.gold < -eff.goldDelta) return false;
     if (eff.timeShardsDelta !== undefined && eff.timeShardsDelta < 0 && r.timeShards < -eff.timeShardsDelta) return false;
+    if (eff.colorCost) {
+      const have = (r.colors as unknown as Record<string, number>)[eff.colorCost.color] ?? 0;
+      if (have < eff.colorCost.amount) return false;
+    }
+    if (eff.loseCardId && !r.collection.some((card) => card.id === eff.loseCardId && card.instanceId)) return false;
   }
   return true;
 }
@@ -209,12 +239,19 @@ function effectPreviewTokens(eff: EventChoiceEffect): string[] {
   const t: string[] = [];
   const signed = (n: number) => (n >= 0 ? `+${n}` : `${n}`);
   if (eff.hpDelta !== undefined) t.push(`HP ${signed(eff.hpDelta)}`);
+  if (eff.healPct !== undefined) t.push(`체력 +${eff.healPct}%`);
   if (eff.goldDelta !== undefined) t.push(`골드 ${signed(eff.goldDelta)}`);
   if (eff.timeShardsDelta !== undefined) t.push(`시간의 조각 ${signed(eff.timeShardsDelta)}`);
   if (eff.colorDelta) {
     const { color, amount } = eff.colorDelta;
     const name = color === 'all' ? '모든 컬러' : color === 'random' ? '무작위 컬러' : colorLabel(color);
     t.push(`${name} +${amount}`);
+  }
+  if (eff.colorCost) {
+    t.push(`${colorLabel(eff.colorCost.color)} -${eff.colorCost.amount}`);
+  }
+  if (eff.loseCardId) {
+    t.push(`카드 '${data.cards.get(eff.loseCardId)?.name ?? eff.loseCardId}' 소비`);
   }
   if (eff.grantCardId) {
     t.push(`카드 '${data.cards.get(eff.grantCardId)?.name ?? eff.grantCardId}'`);

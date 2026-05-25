@@ -551,8 +551,11 @@ export const useRunStore = defineStore('run', {
      * 카드 컬렉션에서 *인스턴스 1장* 영구 제거 — 덱 편집의 삭제 액션.
      * 그 인스턴스가 현재 덱에 들어 있으면 덱에서도 함께 제거(덱-컬렉션 정합 유지).
      * 반환: 실제로 제거됐으면 true.
+     *
+     * salvage: true(기본)면 등급만큼 시간의 조각 환급(분해 보상). 이벤트 lose_card처럼
+     *   카드 자체가 *댓가*인 경로는 salvage=false로 호출해 환급으로 비용이 상쇄되지 않게 한다.
      */
-    removeCardFromCollection(instanceId: string): boolean {
+    removeCardFromCollection(instanceId: string, salvage = true): boolean {
       if (!instanceId) return false;
       const r = this.data;
       const removed = r.collection.find((c) => c.instanceId === instanceId);
@@ -564,8 +567,8 @@ export const useRunStore = defineStore('run', {
       }
       r.collection = r.collection.filter((c) => c.instanceId !== instanceId);
       r.deck = r.deck.filter((c) => c.instanceId !== instanceId);
-      // 분해 보상 — 카드를 버리면 등급만큼 시간의 조각 환급.
-      r.timeShards += CARD_SALVAGE_SHARDS[removed.rank] ?? 0;
+      // 분해 보상 — 카드를 버리면 등급만큼 시간의 조각 환급(salvage=true일 때만).
+      if (salvage) r.timeShards += CARD_SALVAGE_SHARDS[removed.rank] ?? 0;
       return true;
     },
 

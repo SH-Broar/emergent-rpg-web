@@ -249,13 +249,37 @@ function applyEffect(effect: EventChoiceEffect, resultParts: string[]) {
   const run = useRunStore();
   const r = run.data;
 
+  // 카드 댓가 — *먼저* 시도. 실패하면 이 effect의 나머지 보상을 적용하지 않는다(무료 획득 방지).
+  //   salvage=false: 카드 자체가 댓가이므로 시간조각 환급 없음. (EventView.applyEffectWithNames와 parity.)
+  if (effect.loseCardId) {
+    const target = r.collection.find((c) => c.id === effect.loseCardId && c.instanceId);
+    if (target?.instanceId && run.removeCardFromCollection(target.instanceId, false)) {
+      resultParts.push(`카드 소비: ${target.name}`);
+    } else {
+      resultParts.push(`카드를 떼어낼 수 없다 (${effect.loseCardId})`);
+      return; // 댓가 미지불 → 보상 미적용.
+    }
+  }
+
   if (effect.hpDelta !== undefined) {
     r.hp = Math.max(0, Math.min(r.maxHp, r.hp + effect.hpDelta));
     resultParts.push(effect.hpDelta >= 0 ? `HP +${effect.hpDelta}` : `HP ${effect.hpDelta}`);
   }
+  if (effect.healPct !== undefined) {
+    const heal = Math.round((r.maxHp * effect.healPct) / 100);
+    const before = r.hp;
+    r.hp = Math.min(r.maxHp, r.hp + heal);
+    resultParts.push(`HP +${r.hp - before} (${effect.healPct}%)`);
+  }
   if (effect.goldDelta !== undefined) {
     r.gold = Math.max(0, r.gold + effect.goldDelta);
     resultParts.push(effect.goldDelta >= 0 ? `골드 +${effect.goldDelta}` : `골드 ${effect.goldDelta}`);
+  }
+  if (effect.colorCost) {
+    const { color, amount } = effect.colorCost;
+    const colors = r.colors as unknown as Record<string, number>;
+    colors[color] = Math.max(0, (colors[color] ?? 0) - amount);
+    resultParts.push(`${color} -${amount}`);
   }
   if (effect.affinityDelta) {
     const a = effect.affinityDelta;

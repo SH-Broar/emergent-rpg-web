@@ -607,6 +607,17 @@ export function validateData(dataDir, readFile) {
         const color = cf.color.split(':')[0]?.trim();
         if (color && !['all', 'random', ...VALID_COLORS].includes(color)) push(diag('error', 'whitelist-kind', `이벤트 '${id}' choice ${i} color '${color}' 알 수 없음`, cw));
       }
+      // color_cost = water:3 — 8색만 허용(all/random은 댓가로 부적합).
+      if (cf.color_cost) {
+        const color = cf.color_cost.split(':')[0]?.trim();
+        if (color && !VALID_COLORS.includes(color)) push(diag('error', 'whitelist-kind', `이벤트 '${id}' choice ${i} color_cost '${color}' 알 수 없음`, cw));
+      }
+      // lose_card = c-X — 카드 정의 존재 + has-card 게이트 동반 권장(없으면 경고).
+      if (cf.lose_card) {
+        if (!cardIds.has(cf.lose_card)) push(diag('error', 'dangling', `이벤트 '${id}' choice ${i} lose_card '${cf.lose_card}' 카드 미정의`, cw));
+        const cond = cf.condition ?? '';
+        if (!cond.includes(`has-card:${cf.lose_card}`)) push(diag('warn', 'balance', `이벤트 '${id}' choice ${i} lose_card '${cf.lose_card}' has-card 게이트 없음`, cw));
+      }
       if (cf.custom && customEffectIds.size > 0 && !customEffectIds.has(cf.custom)) {
         push(diag('error', 'whitelist-kind', `이벤트 '${id}' choice ${i} custom '${cf.custom}' 미등록 (event-effects.ts)`, cw));
       }
