@@ -15,6 +15,7 @@ tags = dragon, withdrawn, fire-affinity
 affinity_rewards = 3:card=c-burn-mark:gauge=3
 # 영입 (Item 37-② Stage C 배치2). 어린 드래곤 — 미워하던 힘을 잠깐 풀어, 제 숨을 깎아 크게 되갚는다.
 recruit_enabled = true
+village_recruit = false
 companion_kind = skill
 companion_skill_name = 억눌린 숨결
 companion_skill_cooldown = 4
@@ -37,6 +38,7 @@ tags = beastkin, iron-affinity, student
 affinity_rewards = 3:card=c-gentle-guard:gauge=3
 # 영입 (Item 37-② Stage C 배치3). 짐꾼 쥐수인 — 무거운 짐을 박차고 단숨에 달려 손끝이 더 야무져진다.
 recruit_enabled = true
+village_recruit = false
 companion_kind = skill
 companion_skill_name = 전력 질주
 companion_skill_cooldown = 3
@@ -60,6 +62,7 @@ tags = elf, dark-affinity, exile
 affinity_rewards = 3:relic=r-imperisia-locket:gauge=4
 # 영입 (Item 37-② Stage C). 결계·흑마법 — 적의 다음 행동 하나를 묶어 멈추고 약화까지 새긴다.
 recruit_enabled = true
+village_recruit = false
 companion_kind = skill
 companion_skill_name = 속박 결계
 companion_skill_cooldown = 4
@@ -96,6 +99,7 @@ tags = phantom, librarian, light-affinity
 affinity_rewards = 3:card=c-second-wind:gauge=4
 # 영입 (Item 37-② Stage C 배치3). 유령 사서 — 조용한 지식이 상태이상을 막아 준다.
 recruit_enabled = true
+village_recruit = false
 companion_kind = passive
 companion_passive_desc = 유령 사서가 매 전투 첫 페이지를 펴 준다. 고요가 잠을 막는다.
 recruit_combat_start = draw:1

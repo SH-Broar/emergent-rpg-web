@@ -16,6 +16,7 @@ tags = swallow, sailor, wind-affinity
 affinity_rewards = 3:card=c-quickdraw:gauge=4
 # 영입 (Item 37-② Stage C 배치3). 마틴 항 제비 — 잰 손으로 두 번 찌르고 다음 짐을 미리 잡는다.
 recruit_enabled = true
+village_recruit = false
 companion_kind = skill
 companion_skill_name = 제비 일격
 companion_skill_cooldown = 2

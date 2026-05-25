@@ -156,6 +156,14 @@ export interface Npc extends NamedEntity {
    */
   companion?: Companion;
 
+  /**
+   * 마을 직접 영입 가능 여부 (Item 37-② Stage C Step2).
+   * 기본 true(미지정이면 마을에서 권유 가능, 종전 동작 유지).
+   * `false`면 *마을에서는 영입 불가* — companion 정의는 그대로 유지하되, 영입 경로는 권역 사건뿐.
+   * 데이터 키: `village_recruit = false`. VillageView가 이 값으로 마을 권유 UI를 가린다.
+   */
+  villageRecruit?: boolean;
+
   /** 추가로 출현 가능한 노드. */
   presenceNodeIds?: NodeId[];
 

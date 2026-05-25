@@ -16,6 +16,7 @@ tags = mythicbeast, bear, iron-affinity, dark-affinity
 affinity_rewards = 3:relic=r-determined-heart:gauge=5
 # 영입 도전 보스급. 묵직한 방어 + 한 일격.
 recruit_enabled = true
+village_recruit = false
 recruit_cards = c-bear-bastion
 recruit_colors = iron:12, dark:8
 
@@ -34,5 +35,6 @@ tags = mythicbeast, tiger, electric-affinity, light-affinity
 affinity_rewards = 3:relic=r-determined-heart:gauge=5
 # 영입 도전 보스급. 빠른 삼연타.
 recruit_enabled = true
+village_recruit = false
 recruit_cards = c-tiger-rush
 recruit_colors = electric:12, light:8

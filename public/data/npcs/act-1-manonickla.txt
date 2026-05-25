@@ -16,6 +16,7 @@ tags = dragon, craftsman, iron-affinity
 affinity_rewards = 3:relic=r-determined-heart:gauge=5
 # 영입 (Item 37-② Stage C). 드래곤 대장장이 — 손에 든 검 한 자루를 모루에 올려 더 매섭게 벼린다.
 recruit_enabled = true
+village_recruit = false
 companion_kind = skill
 companion_skill_name = 벼림
 companion_skill_cooldown = 4
@@ -61,6 +62,7 @@ tags = harpy, meteorologist, wind-affinity
 affinity_rewards = 3:card=c-deep-breath:gauge=3
 # 영입 (Item 37-② Stage C). 하피 기상학자 — 날씨를 뒤집어 이번 턴 모든 카드의 위력을 한껏 끌어올린다.
 recruit_enabled = true
+village_recruit = false
 companion_kind = skill
 companion_skill_name = 기상 급변
 companion_skill_cooldown = 4
@@ -99,6 +101,7 @@ tags = golem, ruins, earth-affinity
 affinity_rewards = 3:card=c-gentle-guard:gauge=4
 # 영입 (Item 37-② Stage C). 옛 골렘 — 이번 턴 받은 충격을 돌 몸에 가둬 두었다가 다음 턴 그대로 되돌린다.
 recruit_enabled = true
+village_recruit = false
 companion_kind = skill
 companion_skill_name = 돌의 인내
 companion_skill_cooldown = 5

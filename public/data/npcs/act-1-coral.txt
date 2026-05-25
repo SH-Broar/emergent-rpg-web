@@ -15,6 +15,7 @@ tags = mermaid, sea, water-affinity
 affinity_rewards = 3:card=c-gentle-guard:gauge=4
 # 영입 (Item 37-② Stage C 배치2). 인어 — 물을 얇게 둘러 크게 치유하고 한 겹 가호를 덧입힌다.
 recruit_enabled = true
+village_recruit = false
 companion_kind = skill
 companion_skill_name = 물의 가호
 companion_skill_cooldown = 3
@@ -38,6 +39,7 @@ tags = siren, song, water-affinity
 affinity_rewards = 3:card=c-burn-mark:gauge=4
 # 영입 (Item 37-② Stage C). 세이렌 — 자장가로 적의 동작을 느리게 늘이고 손끝을 무디게 한다.
 recruit_enabled = true
+village_recruit = false
 companion_kind = skill
 companion_skill_name = 자장가
 companion_skill_cooldown = 5

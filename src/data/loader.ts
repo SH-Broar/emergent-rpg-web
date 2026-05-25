@@ -851,6 +851,9 @@ export function parseNpcs(ini: IniData): Map<string, Npc> {
       portrait: fields.portrait,
       recruit: parseRecruitBonuses(fields),
       companion: parseCompanion(fields),
+      // 마을 직접 영입 여부 (Item 37-② Stage C Step2) — 미지정이면 true(종전 동작).
+      // false면 마을 권유 UI에서 가려진다(영입은 권역 사건으로만).
+      villageRecruit: parseBool(fields.village_recruit, true),
     });
   }
   return result;

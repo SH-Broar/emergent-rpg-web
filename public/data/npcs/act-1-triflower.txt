@@ -16,6 +16,7 @@ tags = arachne, fire-affinity, weaver
 affinity_rewards = 3:card=c-burn-mark:gauge=4
 # 영입 (Item 37-② Stage C 배치2). 화염 아라크네 — 식지 않는 실로 적을 묶어 태우고 동작을 늘어뜨린다.
 recruit_enabled = true
+village_recruit = false
 companion_kind = skill
 companion_skill_name = 불거미줄
 companion_skill_cooldown = 4

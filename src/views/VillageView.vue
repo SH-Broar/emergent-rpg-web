@@ -54,8 +54,15 @@ const nodeNpcs = computed<Npc[]>(() => {
     .filter((n): n is Npc => n !== undefined);
 });
 
-/** 동료 정의 — companion 우선, 없으면 legacy recruit를 passive로 폴백. */
+/**
+ * 마을에서 권유 가능한 동료 정의 — companion 우선, 없으면 legacy recruit를 passive로 폴백.
+ *
+ * Item 37-② Stage C Step2: `village_recruit = false` NPC는 마을 권유 UI에서 가린다
+ * (companion 정의 자체는 유지 — 영입 경로만 권역 사건으로 이전). 마을 영입은 시작 권역의
+ * 약체 1명(하코)과 정령 예외(발렌시아)만 남고, 나머지는 권역 사건에서만 영입한다.
+ */
 function companionOf(npc: Npc): Companion | undefined {
+  if (npc.villageRecruit === false) return undefined;
   if (npc.companion) return npc.companion;
   if (npc.recruit) return { kind: 'passive', passive: npc.recruit };
   return undefined;

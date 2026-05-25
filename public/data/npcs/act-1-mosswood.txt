@@ -16,6 +16,7 @@ tags = human, student, mage, balanced
 affinity_rewards = 3:card=c-gentle-guard:gauge=3
 # 영입 (Item 37-② Stage C). 조용히 천천히 익히는 마법사 — 길게 끄는 영창이 두 턴 뒤 한 번에 터진다.
 recruit_enabled = true
+village_recruit = false
 companion_kind = skill
 companion_skill_name = 느린 영창
 companion_skill_cooldown = 5
@@ -38,6 +39,7 @@ tags = twin, earth-affinity, child
 affinity_rewards = 3:card=c-strike:gauge=3
 # 영입 (Item 37-② Stage C 배치3). 장난꾸러기 정령 같은 아이 — 무엇이 튀어나올지 그때그때 다르다(무작위).
 recruit_enabled = true
+village_recruit = false
 companion_kind = skill
 companion_skill_name = 짓궂은 장난
 companion_skill_cooldown = 3
@@ -60,6 +62,7 @@ tags = beastkin, scholar-adventurer, fire-affinity, mage
 affinity_rewards = 3:card=c-resolve-flash:gauge=3
 # 영입 (Item 37-② Stage C). 발자취 추적 — 적이 안고 있는 가장 깊은 흔적을 들춰 두 배로 벌린다.
 recruit_enabled = true
+village_recruit = false
 companion_kind = skill
 companion_skill_name = 추적의 일격
 companion_skill_cooldown = 3
@@ -82,6 +85,7 @@ tags = dryad, water, earth-affinity
 affinity_rewards = 3:card=c-recover:gauge=3
 # 영입 (Item 37-② Stage C 배치3). 수목 정령 — 곁에 머무는 동안 매 턴 작은 가호로 감싼다.
 recruit_enabled = true
+village_recruit = false
 companion_kind = passive
 companion_passive_desc = 수목 정령의 가호가 매 턴 감싼다.
 recruit_per_turn = block:2
@@ -115,6 +119,7 @@ tags = dryad, sapling, earth-affinity, child
 affinity_rewards = 3:card=c-gentle-guard:gauge=3
 # 영입 (Item 37-② Stage C). 자라나는 새싹 — 한 번 틔우면 이 전투 내내 매 턴 힘이 조금씩 자란다.
 recruit_enabled = true
+village_recruit = false
 companion_kind = skill
 companion_skill_name = 새싹
 companion_skill_cooldown = 4
@@ -137,6 +142,7 @@ tags = foxkin, sitenwang-fire, mage
 affinity_rewards = 3:card=c-double-strike:gauge=4
 # 영입 (Item 37-② Stage C 배치2). 구미호 — 여우불을 길게 붙여 태우고 손끝으로 한 번 더 친다.
 recruit_enabled = true
+village_recruit = false
 companion_kind = skill
 companion_skill_name = 여우불 농락
 companion_skill_cooldown = 4
@@ -159,6 +165,7 @@ tags = beastkin, swordsman, balanced
 affinity_rewards = 3:card=c-resolve-flash:gauge=3
 # 영입 (Item 37-② Stage C). 한 번에 한 검 — 다음 한 장에 모든 걸 실어 효과를 두 배로 낸다.
 recruit_enabled = true
+village_recruit = false
 companion_kind = skill
 companion_skill_name = 필중의 준비
 companion_skill_cooldown = 3
@@ -182,6 +189,7 @@ tags = centaur, postman, road
 affinity_rewards = 3:relic=r-postman-mail:gauge=5
 # 영입 (Item 37-② Stage C 배치2). 우체부 켄타우로스 — 다음 수까지 미리 실어와 손과 마나를 함께 채운다.
 recruit_enabled = true
+village_recruit = false
 companion_kind = skill
 companion_skill_name = 특급 배송
 companion_skill_cooldown = 2

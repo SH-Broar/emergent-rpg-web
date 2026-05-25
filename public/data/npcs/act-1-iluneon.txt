@@ -16,6 +16,7 @@ tags = founder, light-affinity, divine
 affinity_rewards = 1:gauge=2, 3:card=c-recover:gauge=3, 5:relic=r-mono-token:gauge=5
 # 영입 (Item 37-② Stage C). 신적 존재 — 이 순간을 통째로 되돌려 마나와 손패를 가득 채운다.
 recruit_enabled = true
+village_recruit = false
 companion_kind = skill
 companion_skill_name = 섭리
 companion_skill_cooldown = 6
@@ -61,6 +62,7 @@ tags = construct, electric-affinity, ai
 affinity_rewards = 1:gauge=2, 3:relic=r-imperisia-locket:gauge=4
 # 영입 (Item 37-② Stage C). AGI 정밀 분석 — 적 취약 + 강타.
 recruit_enabled = true
+village_recruit = false
 companion_kind = skill
 companion_skill_name = 정밀 분석
 companion_skill_cooldown = 3
@@ -83,6 +85,7 @@ tags = sitenwang-earth, craftsman, taciturn
 affinity_rewards = 3:card=c-gentle-guard:gauge=3
 # 영입 흙·철 컬러 보너스로 DEF 라인 강화. 유물 한 점.
 recruit_enabled = true
+village_recruit = false
 recruit_relics = r-determined-heart
 recruit_colors = earth:15, iron:10
 recruit_combat_start = block:5
@@ -102,6 +105,7 @@ tags = harpy, photographer, fire-affinity
 affinity_rewards = 3:card=c-double-strike:gauge=3
 # 영입 (Item 37-② Stage C). 사진·시간 정지 컨셉 — 적 다음 행동을 한 컷 박제하고 한 장 본다.
 recruit_enabled = true
+village_recruit = false
 companion_kind = skill
 companion_skill_name = 셔터, 정지
 companion_skill_cooldown = 4
@@ -124,6 +128,7 @@ tags = dwarf, clockwork, observer
 affinity_rewards = 3:gauge=4
 # 영입 시계공 관측자. 정각 방비(전투 시작 방어) + 유물 보너스 관측.
 recruit_enabled = true
+village_recruit = false
 recruit_colors = earth:8, iron:6
 recruit_combat_start = block:4
 recruit_reward_mul = gold:0.15
@@ -143,6 +148,7 @@ tags = dragon, royal, brawler
 affinity_rewards = 3:card=c-resolve-flash:gauge=4
 # 영입 (Item 37-② Stage C). 드래곤 무투가 — 이번 턴 쏟아낸 카드 수만큼 연타가 무거워진다.
 recruit_enabled = true
+village_recruit = false
 companion_kind = skill
 companion_skill_name = 연무
 companion_skill_cooldown = 3

@@ -17,6 +17,7 @@ tags = moth, archer, flight
 affinity_rewards = 3:card=c-quickdraw:gauge=3
 # 영입 (Item 37-② Stage C 배치2). 나방 — 날개 비늘을 흩뿌려 적의 빈틈을 키우고 제 몸을 흐릿하게 감춘다.
 recruit_enabled = true
+village_recruit = false
 companion_kind = skill
 companion_skill_name = 인분
 companion_skill_cooldown = 3
@@ -40,6 +41,7 @@ tags = phantom, trickster, electric-affinity
 affinity_rewards = 3:card=c-burn-mark:gauge=3
 # 영입 (Item 37-② Stage C 배치2). 팬텀 — 흐트러진 패를 덱으로 되돌려 정돈하고 새로 쥐며 한 겹 막아 둔다.
 recruit_enabled = true
+village_recruit = false
 companion_kind = skill
 companion_skill_name = 정돈
 companion_skill_cooldown = 2

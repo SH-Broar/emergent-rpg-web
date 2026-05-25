@@ -15,6 +15,7 @@ tags = orca, sea, water-affinity
 affinity_rewards = 3:card=c-gentle-guard:gauge=4
 # 영입 (Item 37-② Stage C 배치2). 범고래 — 물 위로 몸을 던져 한 번에 크게 들이친다.
 recruit_enabled = true
+village_recruit = false
 companion_kind = skill
 companion_skill_name = 급습
 companion_skill_cooldown = 3

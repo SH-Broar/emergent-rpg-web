@@ -16,6 +16,7 @@ tags = diropel, long-ear, tribe
 affinity_rewards = 3:card=c-quickdraw:gauge=3
 # 영입 (Item 37-② Stage C 배치3). 딜롭 부족 긴 귀 리포 — 발을 굴러 땅을 울리며 적의 발을 묶는다.
 recruit_enabled = true
+village_recruit = false
 companion_kind = skill
 companion_skill_name = 땅울림
 companion_skill_cooldown = 4
@@ -39,6 +40,7 @@ tags = diropel, short-ear, tribe
 affinity_rewards = 3:card=c-recover:gauge=3
 # 영입 (Item 37-② Stage C 배치3). 딜롭 부족 짧은 귀 코하 — 단단한 가죽으로 막고 가시처럼 되받는다.
 recruit_enabled = true
+village_recruit = false
 companion_kind = skill
 companion_skill_name = 단단한 가죽
 companion_skill_cooldown = 3

@@ -4134,3 +4134,1179 @@ label = 그대로 둔다
 gold = -4
 color = random:6
 result_text = 유물이 제 자리에 그대로 빛났다. 티프레의 자리를 함부로 헐지 않았다.
+
+
+# ============================================================
+# Item 37-② Stage C Step2: 권역 영입 사건 (47종).
+# 마을 직접 영입을 거두고, 동료 NPC를 홈 권역 사건으로 만난다.
+# 강한 동료일수록 깊은 권역 / 고위험 조건. 시작 권역(일루네온)은 마을 1명(하코)만 남기고
+# 나머지는 여기 사건으로 이전. 정령 발렌시아는 예외로 마을 영입 유지.
+# 각 사건: once_per_run, recruit = npc-X 선택지 + 대안 1~2개. featured_npcs로 도감 등록.
+# ============================================================
+
+# ---------- 일루네온 권역 (tier 1, 시작) ----------
+
+[event.ev-rec-iluneon-niayur]
+name = 광장의 유령 소년
+node_kinds = event, village
+weight = 1
+once_per_run = true
+condition = day>=2
+featured_npcs = npc-niayur
+body = 광장 한복판, 사람들이 비껴 가는 자리에 유령 같은 소년이 서 있다. 표정은 거의 없는데, 그 눈은 이 시간의 끝까지 보고 있는 듯하다. "왔군요. 이번에도, 이번에야말로." 소년이 그대 쪽으로 천천히 고개를 돌린다. 무엇을 묻는 줄도 모르겠는데, 답을 이미 아는 얼굴이다.
+
+[event.ev-rec-iluneon-niayur.choice.1]
+label = 함께 가 달라고 청한다
+condition = color:light>=8
+recruit = npc-niayur
+result_text = 소년이 처음으로 아주 옅게 웃었다. "그렇다면, 이번에는 그대 곁에." 흐트러진 순서를 다시 짜 주겠다는 약속처럼 들렸다.
+
+[event.ev-rec-iluneon-niayur.choice.2]
+label = 무엇을 아느냐고 묻는다
+draw = 1
+color = light:4
+result_text = "전부, 그리고 아무것도." 소년이 말했다. 그 말이 묘하게 머리를 맑게 했다.
+
+[event.ev-rec-iluneon-niayur.choice.3]
+label = 가만히 곁에 서 있는다
+heal_pct = 35
+result_text = 한참을 같이 서 있었다. 광장의 소음이 한 꺼풀 멀어졌다.
+
+[event.ev-rec-iluneon-imperisia]
+name = 식당 구석의 질문
+node_kinds = event, village
+weight = 1
+once_per_run = true
+featured_npcs = npc-imperisia
+body = 식당 가장 안쪽 자리에 한 시스템이 앉아 있다. 인공의 눈이 손님 하나하나를 차분히 좇는다. 그대가 들어서자 그쪽이 먼저 고개를 든다. "당위란 무엇인가요? 묻고 싶었어요." 호기심 많은 목소리. 바깥세상에서 온 사람을 오래 기다린 듯하다.
+
+[event.ev-rec-iluneon-imperisia.choice.1]
+label = 직접 보여 주겠다고 답한다
+recruit = npc-imperisia
+result_text = "그럼, 따라가도 될까요." 임페리시아가 의자에서 일어섰다. 약점을 읽어 한 번에 꿰뚫는 눈이 그대 곁에 섰다.
+
+[event.ev-rec-iluneon-imperisia.choice.2]
+label = 그 질문은 나도 모른다고 한다
+draw = 1
+result_text = "모른다는 답도 답이네요." 임페리시아가 작게 끄덕였다. 머릿속 한 칸이 정리됐다.
+
+[event.ev-rec-iluneon-imperisia.choice.3]
+label = 그냥 한 끼 같이 먹는다
+heal_pct = 35
+result_text = 말없이 한 끼를 같이 했다. 식당의 온기가 오래 남았다.
+
+[event.ev-rec-iluneon-echo]
+name = 구석의 망치 소리
+node_kinds = event, village
+weight = 1
+once_per_run = true
+featured_npcs = npc-echo
+body = 시장 구석, 가장 어두운 자리에서 망치 소리가 끊이지 않는다. 드워프 소녀 대장장이가 등을 돌린 채 일하고 있다. "… 망치, 안 빌려줘요." 묻기도 전에 그렇게 말한다. 그러나 손은 멈추지 않고, 그대의 장비를 한 번 흘끗 본다.
+
+[event.ev-rec-iluneon-echo.choice.1]
+label = 장비를 맡기고 봐 달라 청한다
+condition = gold>=12
+gold = -12
+recruit = npc-echo
+result_text = 에코가 처음으로 손을 멈췄다. "… 따라와요. 손볼 게 한둘이 아니네." 무뚝뚝한 동행이 시작됐다.
+
+[event.ev-rec-iluneon-echo.choice.2]
+label = 일하는 모습만 지켜본다
+color = iron:5
+result_text = 망치질을 한참 봤다. 쇠를 보는 눈이 조금 트였다.
+
+[event.ev-rec-iluneon-echo.choice.3]
+label = 방해하지 않고 떠난다
+draw = 1
+result_text = 인사 없이 자리를 떴다. 등 뒤에서 망치 소리가 한 번 더 울렸다.
+
+[event.ev-rec-iluneon-phoenix]
+name = 높은 곳의 셔터
+node_kinds = event, village
+weight = 1
+once_per_run = true
+featured_npcs = npc-phoenix
+body = 지붕 위, 톱니바퀴로 기운 날개를 가진 조류계 아인이 사진기를 들고 광장을 내려다본다. "잠깐, 시간 멈춰 줄까요?" 셔터가 한 번 찰칵 울리자, 아래 사람들의 동작이 한 컷에 박제된 듯 멈춰 보인다. 피닉스가 그대를 향해 렌즈를 돌린다.
+
+[event.ev-rec-iluneon-phoenix.choice.1]
+label = 함께 다니며 찍자고 제안한다
+recruit = npc-phoenix
+result_text = "좋은 그림이 많이 나오겠네요." 피닉스가 사진첩을 탁 덮고 날개를 폈다. 한 컷에 시간을 가두는 지원군이 합류했다.
+
+[event.ev-rec-iluneon-phoenix.choice.2]
+label = 사진 한 장을 산다
+gold = -5
+color = fire:4
+result_text = 높은 데서 찍은 광장 사진을 한 장 샀다. 보고 있으면 마음이 잠시 멎는다.
+
+[event.ev-rec-iluneon-phoenix.choice.3]
+label = 셔터 소리만 듣고 지나간다
+draw = 1
+result_text = 찰칵, 한 번. 그 소리가 묘하게 길게 남았다.
+
+[event.ev-rec-iluneon-olyu]
+name = 정각의 관측실
+node_kinds = event, village
+weight = 1
+once_per_run = true
+condition = color:earth>=6
+featured_npcs = npc-olyu
+body = 시계탑 관측실 입구가 정각에 맞춰 한 번 열린다. 안에서 드워프 시계공이 천구의를 들여다보고 있다. "정각에 맞춰 한 번만 열어 두지요." 별의 흐름을 적던 손이 멈추고, 그대 쪽을 살핀다. 입구는 곧 다시 닫힐 것이다.
+
+[event.ev-rec-iluneon-olyu.choice.1]
+label = 동행을 청하며 관측을 돕겠다 한다
+recruit = npc-olyu
+result_text = 올뤼가 천천히 끄덕였다. "정각을 함께 지킬 사람이라면." 시계공의 든든한 방비가 곁에 섰다.
+
+[event.ev-rec-iluneon-olyu.choice.2]
+label = 별의 기록을 잠시 읽는다
+color = iron:4
+draw = 1
+result_text = 천구의 위의 선들이 손끝에 잡혔다. 흐름이 한 겹 보였다.
+
+[event.ev-rec-iluneon-olyu.choice.3]
+label = 문이 닫히기 전에 나온다
+gold = 6
+result_text = 떨어진 톱니 부품 몇 개를 챙겨 나왔다. 등 뒤로 입구가 정각에 닫혔다.
+
+[event.ev-rec-iluneon-rize]
+name = 게시판 앞의 도전자
+node_kinds = event, village
+weight = 1
+once_per_run = true
+condition = day>=2
+featured_npcs = npc-rize
+body = 길드 게시판 앞에 사람들이 빙 둘러서 있다. 한가운데 푸른 비늘의 무투가 드래곤이 팔짱을 끼고 하품한다. "심심해. 누구든 덤벼." 푸치 탑 꼭대기에서 도전자를 받는다는 그 드래곤이다. 시선이 그대에게 닿자, 처음으로 눈이 반짝인다.
+
+[event.ev-rec-iluneon-rize.choice.1]
+label = 한 수 겨뤄 보자고 받아친다
+condition = hp>=20
+hp = -8
+recruit = npc-rize
+result_text = 짧게 부딪쳤다. 리제가 크게 웃었다. "재밌네. 너랑 다니면 안 심심하겠어." 몰아칠수록 매워지는 연무가 동행한다.
+
+[event.ev-rec-iluneon-rize.choice.2]
+label = 게시판 의뢰만 챙긴다
+gold = 10
+result_text = 드래곤을 슬쩍 피해 의뢰지를 챙겼다. "에이, 재미없게." 뒤에서 투덜대는 소리가 들렸다.
+
+[event.ev-rec-iluneon-rize.choice.3]
+label = 푸치 탑 이야기를 묻는다
+draw = 1
+color = fire:3
+result_text = 52층 탑 이야기를 한참 들었다. 듣기만 해도 손이 근질거렸다.
+
+[event.ev-rec-iluneon-kardi]
+name = 길드 앞의 카드 마술
+node_kinds = event, village
+weight = 1
+once_per_run = true
+featured_npcs = npc-kardi
+body = 길드 앞에 사람들이 모여 있다. 손끝에서 카드가 사라졌다 나타나는 마술. 그런데 정작 그 손은 윤곽이 흐릿해, 어디까지가 진짜 손인지 알기 어렵다. "패는 항상 보이는 곳 바깥에서." 마술사가 그대만 들리게 속삭인다. 사람을 속이는 자리에서 가장 편안해 보인다.
+
+[event.ev-rec-iluneon-kardi.choice.1]
+label = 그 잔재주, 같이 쓰자고 한다
+recruit = npc-kardi
+result_text = 흐릿한 손이 카드를 한 장 내밀었다. "보이는 곳 바깥이 더 재밌거든." 시간의 빈틈을 읽는 팬텀이 합류했다.
+
+[event.ev-rec-iluneon-kardi.choice.2]
+label = 마술의 속임수를 맞혀 본다
+draw = 2
+result_text = 한 수 읽어 냈다. 카르디가 짐짓 분한 척 어깨를 으쓱했다. 패 두 장이 손에 남았다.
+
+[event.ev-rec-iluneon-kardi.choice.3]
+label = 동전 한 닢을 던져 주고 간다
+gold = -2
+color = dark:3
+result_text = 던진 동전이 손에 닿기 전에 사라졌다. 어딘가 묘한 기분이 남았다.
+
+# ---------- 라르 숲 · 세계수 (tier 1) ----------
+
+[event.ev-rec-lar-maro]
+name = 오두막의 느린 영창
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+featured_npcs = npc-maro
+body = 숲속 작은 오두막 마당에서 한 학생이 눈을 감고 무언가를 천천히 외고 있다. 마력이 한 자락씩 모인다. "조용히, 천천히 그러나 끝까지." 영창이 끝나자 멀리 마른 나무 한 그루가 소리 없이 쪼개진다. 그가 눈을 뜨고 그대를 본다. 동생을 데리고 사는 조용한 마법사다.
+
+[event.ev-rec-lar-maro.choice.1]
+label = 함께 길을 가자고 청한다
+recruit = npc-maro
+result_text = 마로가 천천히 끄덕였다. "끝까지 함께라면, 좋아요." 두 박을 기다려 한 줄기로 터지는 마법이 동행한다.
+
+[event.ev-rec-lar-maro.choice.2]
+label = 영창의 방법을 배운다
+color = dark:4
+result_text = 천천히 모으는 법을 한 토막 배웠다. 마음이 차분해졌다.
+
+[event.ev-rec-lar-maro.choice.3]
+label = 동생 안부를 묻는다
+draw = 1
+result_text = "걔는 또 어디 갔는지." 마로가 옅게 웃었다. 형제의 일상이 따뜻했다.
+
+[event.ev-rec-lar-arvaro-enya]
+name = 누나를 찾는 장난꾸러기
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+featured_npcs = npc-arvaro-enya
+body = 풀밭에서 뒹굴던 아이가 벌떡 일어나 두리번거린다. "누나 또 어디 가? 나도 데려가!" 마로의 쌍둥이 동생이라는데, 어쩐지 윤곽이 살짝 일렁인다. 마력에서 생겨난 정령에 가까운 존재라 그렇다. 심심한 듯 그대를 졸졸 따라온다.
+
+[event.ev-rec-lar-arvaro-enya.choice.1]
+label = 그럼 나랑 가자고 한다
+recruit = npc-arvaro-enya
+result_text = "진짜? 좋아!" 아이가 폴짝 뛰었다. 무엇이 나올지 모르는 짓궂은 장난이 동행에 끼었다.
+
+[event.ev-rec-lar-arvaro-enya.choice.2]
+label = 같이 한 판 놀아 준다
+heal_pct = 35
+result_text = 한참을 같이 뛰어다녔다. 숨이 차도록 웃었다. 묘하게 기운이 돌았다.
+
+[event.ev-rec-lar-arvaro-enya.choice.3]
+label = 누나는 저쪽이라고 알려 준다
+draw = 1
+result_text = "고마워!" 아이가 손가락 따라 달려갔다. 풀잎이 한 번 크게 흔들렸다.
+
+[event.ev-rec-lar-caliburn]
+name = 마당의 검 자국
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+condition = has-clue:cl-caliburn-trace
+featured_npcs = npc-caliburn
+body = 작은 마당에 검 휘두른 자국이 정갈하게 남아 있다. 큰 마법사 모자를 쓴 작은 여행자가 땅에 새긴 발자취를 들여다보고 있다. "발자취를 끝까지 따라가 볼 거예요." 전설의 마법을 좇는다는 칼리번이다. 그대의 걸음에서 같은 방향을 읽은 듯하다.
+
+[event.ev-rec-lar-caliburn.choice.1]
+label = 같은 길을 가자고 제안한다
+recruit = npc-caliburn
+result_text = 칼리번이 모자챙을 살짝 들어 올렸다. "그럼 한동안 같이 가요." 약점이 깊을수록 매서워지는 추적의 일격이 동행한다.
+
+[event.ev-rec-lar-caliburn.choice.2]
+label = 엘네스트의 행방을 묻는다
+draw = 1
+result_text = "또 어디 갔는지." 칼리번이 한숨을 쉬며 웃었다. 두 사람의 인연이 엿보였다.
+
+[event.ev-rec-lar-caliburn.choice.3]
+label = 발자취를 같이 읽어 본다
+color = all:2
+result_text = 땅의 자국을 따라 읽었다. 흐릿하던 길이 조금 또렷해졌다.
+
+[event.ev-rec-lar-mirte]
+name = 세계수 가지 끝의 정령
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+featured_npcs = npc-mirte
+body = 세계수 가지 끝에서 잎사귀가 천천히 모이더니 수목 정령의 형상이 된다. 연못 수면이 그 손짓에 잔잔해진다. "조용히, 천천히 지나가세요." 소란스러운 발걸음은 좋아하지 않는다. 그대가 발소리를 죽이자, 정령이 비로소 가까이 내려온다.
+
+[event.ev-rec-lar-mirte.choice.1]
+label = 조용히 동행을 청한다
+recruit = npc-mirte
+result_text = 미르테가 잎사귀를 한 번 쓸어내렸다. "소란만 없다면." 매 턴 감싸 주는 수목의 가호가 곁에 섰다.
+
+[event.ev-rec-lar-mirte.choice.2]
+label = 연못을 함께 정돈한다
+heal_pct = 35
+result_text = 떠밀려 나가던 작은 생명들을 같이 제자리로 돌렸다. 손끝이 시원했다.
+
+[event.ev-rec-lar-mirte.choice.3]
+label = 발소리를 죽이고 떠난다
+color = earth:4
+result_text = 잎사귀 한 장 흔들지 않고 빠져나왔다. 숲이 한 호흡 고요했다.
+
+[event.ev-rec-lar-kurkuma]
+name = 떨어진 새싹
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+featured_npcs = npc-kurkuma
+body = 세계수 뿌리 곁에 작은 드라이어드가 흙을 토닥이고 있다. "엄마한테 도움이 되고 싶어요!" 세계수의 씨앗에서 부화했다는 꼬마. 무엇이 될지 본인도 모르지만, 도움이 되고 싶은 마음만은 또렷하다. 그대를 올려다보는 눈이 반짝인다.
+
+[event.ev-rec-lar-kurkuma.choice.1]
+label = 그럼 같이 자라 보자고 한다
+recruit = npc-kurkuma
+result_text = "정말요? 열심히 할게요!" 쿠르쿠마가 폴짝 뛰었다. 쓸수록 자라는 폭이 커지는 새싹이 동행한다.
+
+[event.ev-rec-lar-kurkuma.choice.2]
+label = 속성 과일을 하나 건넨다
+color = random:5
+result_text = 과일을 받은 새싹이 한 뼘 자랐다. 잎 색이 과일을 닮아 변했다.
+
+[event.ev-rec-lar-kurkuma.choice.3]
+label = 머리를 한 번 쓰다듬는다
+heal_pct = 35
+result_text = 쓰다듬자 잎이 기분 좋게 흔들렸다. 보고 있으니 마음이 풀렸다.
+
+# ---------- 초원 교역소 (tier 1) ----------
+
+[event.ev-rec-tradepost-sarasa]
+name = 좌판 뒤의 똬리
+node_kinds = event, village
+weight = 1
+once_per_run = true
+featured_npcs = npc-sarasa
+body = 교역소 한쪽, 직물과 향신료가 보기 좋게 펼쳐진 좌판. 그 뒤로 라미아 상인이 긴 꼬리를 둥글게 말아 똬리로 자리를 잡고 있다. "한 필 더 보고 가요. 깎아 줄게." 값을 정확히 부르면서도 흥정을 즐기는 눈빛. 그대의 행색을 한 번 훑더니 흥미를 보인다.
+
+[event.ev-rec-tradepost-sarasa.choice.1]
+label = 길동무가 되어 달라 청한다
+condition = gold>=10
+gold = -10
+recruit = npc-sarasa
+result_text = "장사보다 재밌겠는데." 사라사가 좌판을 접고 꼬리를 풀었다. 한 번 묶어 막는 휘감기가 동행한다.
+
+[event.ev-rec-tradepost-sarasa.choice.2]
+label = 직물 한 필을 산다
+gold = -6
+color = earth:4
+result_text = 손에 잘 감기는 직물을 한 필 샀다. 좋은 거래였다.
+
+[event.ev-rec-tradepost-sarasa.choice.3]
+label = 흥정만 즐기고 떠난다
+draw = 1
+result_text = 한참을 깎고 또 깎았다. 사라사가 즐겁게 웃었다. 머리가 잘 돌았다.
+
+# ---------- 알리메스 권역 (tier 2) ----------
+
+[event.ev-rec-alimes-tarko]
+name = 바람 방향을 읽는 사람
+node_kinds = event, village
+weight = 1
+once_per_run = true
+featured_npcs = npc-tarko
+body = 산자락에 한 사람이 손바닥을 들어 바람을 재고 있다. "오늘 바람은 시계 방향으로 돈다." 마틴 항 기상청의 구름 예측 전문가. 올해는 알리메스의 기압이 어긋난 것을 추적하러 왔다. 혼잣말처럼 중얼대다가, 그대의 발걸음 방향을 슬쩍 가늠한다.
+
+[event.ev-rec-alimes-tarko.choice.1]
+label = 길의 바람을 함께 읽자 청한다
+recruit = npc-tarko
+result_text = "마침 같은 방향이군." 타르코가 수첩을 덮었다. 앞날을 미리 재는 예측이 채집길을 돕는다.
+
+[event.ev-rec-alimes-tarko.choice.2]
+label = 내일 날씨를 묻는다
+draw = 1
+result_text = "내일은 안개가 늦게 걷힌다." 그 말이 맞을 것 같았다. 머리가 트였다.
+
+[event.ev-rec-alimes-tarko.choice.3]
+label = 기압이 어긋난 곳을 같이 본다
+color = water:4
+result_text = 어긋난 기류를 함께 짚었다. 바람의 무게가 손에 잡혔다.
+
+[event.ev-rec-alimes-yoonheewon]
+name = 손가락에 새긴 계약
+node_kinds = event, village
+weight = 1
+once_per_run = true
+featured_npcs = npc-yoonheewon
+body = 마을 어귀, 조용한 악마 하나가 작은 일을 맡아 끝내고 있다. 손가락마다 약속의 글귀가 가늘게 새겨져 있다. "...계약은, 끝까지." 한번 맺은 약속을 가장 무겁게 여기는 사람. 옆에는 천사 하나가 늘 같이 보인다. 그대를 향한 시선이 약속을 가늠하듯 신중하다.
+
+[event.ev-rec-alimes-yoonheewon.choice.1]
+label = 끝까지 가는 계약을 맺자 청한다
+recruit = npc-yoonheewon
+result_text = 윤희원이 손가락의 글귀를 한 번 매만졌다. "...그럼, 끝까지." 작아도 무거운 동행 계약이 맺어졌다.
+
+[event.ev-rec-alimes-yoonheewon.choice.2]
+label = 마을 일을 같이 거든다
+gold = 8
+result_text = 작은 일을 둘이 나눠 끝냈다. "계약은 작아도 계약." 사례를 받았다.
+
+[event.ev-rec-alimes-yoonheewon.choice.3]
+label = 니아 이유르와의 인연을 묻는다
+draw = 1
+result_text = "친구로 끝까지." 짧은 대답에 무게가 있었다.
+
+[event.ev-rec-alimes-pri]
+name = 괜찮으세요
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+featured_npcs = npc-pri
+body = 안개 자락에서 작은 인기척. 천사 하나가 다친 마을 사람의 손등을 짧게 짚어 주고 있다. "...괜찮으세요?" 큰 기적은 부리지 않는다. 아주 작은 것만. 윤희원과 오래된 친구라, 자주 한자리에 같이 보인다. 그대의 지친 기색을 알아챈 듯 다가온다.
+
+[event.ev-rec-alimes-pri.choice.1]
+label = 같이 다녀 달라 부탁한다
+recruit = npc-pri
+result_text = 프리가 옅게 웃으며 끄덕였다. "...작은 것만, 도울게요." 아주 작은 손길이 곁에 섰다.
+
+[event.ev-rec-alimes-pri.choice.2]
+label = 치료를 받는다
+heal_pct = 50
+result_text = 다친 데를 짧게 짚어 주었다. 통증이 슬며시 가셨다.
+
+[event.ev-rec-alimes-pri.choice.3]
+label = 괜찮다고 답하고 지나간다
+color = light:4
+result_text = "...그럼, 조심히." 인사가 등 뒤에 따뜻하게 남았다.
+
+[event.ev-rec-alimes-selvia]
+name = 약초원의 손길
+node_kinds = event, village
+weight = 1
+once_per_run = true
+featured_npcs = npc-selvia
+body = 약초원 한가운데, 민트색 머리의 엘프가 잎맥을 손끝으로 오래 다듬고 있다. "잎 좀 다듬어 드릴게요." 약초마다 잎의 생김이 다르다고, 하나하나 살피는 손이 다정하다. 비단 공방 일도 가끔 거든다는 사람. 그대의 행장을 보더니 잎 몇 장을 골라 건넨다.
+
+[event.ev-rec-alimes-selvia.choice.1]
+label = 곁에서 도와 달라 청한다
+recruit = npc-selvia
+result_text = "그럼 잎이랑 같이 따라갈게요." 셀비아가 바구니를 들었다. 곁에서 챙겨 주는 작은 손길이 동행한다.
+
+[event.ev-rec-alimes-selvia.choice.2]
+label = 약초 손질을 배운다
+heal_pct = 35
+result_text = 잎맥을 다듬는 법을 곁눈으로 익혔다. 손끝이 차분해졌다.
+
+[event.ev-rec-alimes-selvia.choice.3]
+label = 비단 공방으로 안내받는다
+color = water:4
+result_text = 좋은 실이 있는 자리를 알려 주었다. 발걸음이 가벼웠다.
+
+[event.ev-rec-alimes-shayua]
+name = 깨끗한 친구
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+featured_npcs = npc-shayua
+body = 산자락 샘가에서 어린 슬라임이 안개 끝까지 짧게 굴러갔다 돌아온다. 그대를 보더니 눈을 반짝인다. "어! 너 깨끗하다! 친구 하자!" 깨끗한 데서만 살 수 있어, 더러운 게 닿으면 짧게 흐려진다고 한다. 말랑한 몸을 한 번 통 튕긴다.
+
+[event.ev-rec-alimes-shayua.choice.1]
+label = 그래, 친구 하자고 답한다
+recruit = npc-shayua
+result_text = "야호!" 샤유아가 통통 튀었다. 말랑한 몸으로 막아 주는 끈적임이 친구가 됐다.
+
+[event.ev-rec-alimes-shayua.choice.2]
+label = 같이 안개 속을 굴러 본다
+heal_pct = 35
+result_text = 안개 끝까지 같이 다녀왔다. 까닭 없이 즐거웠다.
+
+[event.ev-rec-alimes-shayua.choice.3]
+label = 손을 깨끗이 씻고 쓰다듬는다
+color = water:4
+result_text = 깨끗한 손이 닿자 샤유아가 더 맑아졌다. 손바닥이 시원했다.
+
+# ---------- 마노니클라 권역 (tier 2) ----------
+
+[event.ev-rec-mano-cayo]
+name = 절벽 위의 모루 소리
+node_kinds = event, village
+weight = 1
+once_per_run = true
+condition = color:iron>=8
+featured_npcs = npc-cayo
+body = 석양이 길게 머무는 절벽, 공방에서 모루 소리가 끊이지 않는다. 드래곤 대장장이가 등을 돌린 채 쇠를 두드린다. "조용히, 모루를 두드리는 게 좋아." 날뛰면 막을 사람이 없는 강한 존재이나, 지금은 조용히 지낸다. 그대의 무기를 한 번 보더니 모루 위에 손짓한다.
+
+[event.ev-rec-mano-cayo.choice.1]
+label = 검을 벼려 달라 청하며 동행을 권한다
+condition = gold>=14
+gold = -14
+recruit = npc-cayo
+result_text = 카요가 천천히 망치를 들었다. "한 자루, 제대로 벼려 줄게." 두드릴수록 날이 서는 벼림이 동행한다.
+
+[event.ev-rec-mano-cayo.choice.2]
+label = 모루 소리에 귀를 맡긴다
+color = iron:5
+result_text = 끊이지 않는 모루 소리를 한참 들었다. 쇠 다루는 법이 한 겹 보였다.
+
+[event.ev-rec-mano-cayo.choice.3]
+label = 석양을 같이 본다
+heal_pct = 35
+result_text = 두드림을 멈춘 잠깐, 같이 노을을 봤다. 말이 없어도 편했다.
+
+[event.ev-rec-mano-seed]
+name = 오늘 날씨 진짜 좋아요
+node_kinds = event, village
+weight = 1
+once_per_run = true
+condition = color:wind>=7
+featured_npcs = npc-seed
+body = 절벽길에서 하피 하나가 두 팔을 활짝 벌리고 바람을 맞고 있다. "오늘 날씨, 진짜 좋아요!" 사천왕의 동생이자 기상학 학자라는데, 본인은 스펙 따위 신경도 안 쓴다. 하고 싶은 걸 할 뿐인 하이 텐션. 그대를 발견하자 다짜고짜 손을 흔든다.
+
+[event.ev-rec-mano-seed.choice.1]
+label = 같이 날씨를 쫓아다니자 한다
+recruit = npc-seed
+result_text = "좋아요! 가요 가요!" 시이드가 신나서 날개를 폈다. 한순간 바람을 거세게 키우는 기상 급변이 동행한다.
+
+[event.ev-rec-mano-seed.choice.2]
+label = 오늘 바람 이야기를 듣는다
+draw = 1
+color = wind:3
+result_text = 묻지도 않은 기상 이야기를 한참 들었다. 신기하게 기운이 났다.
+
+[event.ev-rec-mano-seed.choice.3]
+label = 같이 바람을 맞는다
+heal_pct = 35
+result_text = 두 팔 벌리고 바람을 맞았다. 머릿속이 시원하게 비워졌다.
+
+[event.ev-rec-mano-rok]
+name = 돌 손발의 걸음
+node_kinds = event, village
+weight = 1
+once_per_run = true
+featured_npcs = npc-rok
+body = 밤시장 한쪽, 돌 손발이 걸음마다 작게 부딪히는 소리가 난다. 리문 유적에서 막 깨어났다는 옛 골렘이 길에 익숙해지는 중이다. "...걸을게." 짧은 말을 어렵게 고른다. 시이드가 제일 먼저 말을 걸어 줘서 친구가 됐다는 그가, 그대를 가만히 본다.
+
+[event.ev-rec-mano-rok.choice.1]
+label = 같이 걷자고 말한다
+recruit = npc-rok
+result_text = 로크가 돌 손을 천천히 들어 올렸다. "...같이. 걸을게." 받은 충격을 가뒀다 되돌리는 돌의 인내가 동행한다.
+
+[event.ev-rec-mano-rok.choice.2]
+label = 마모된 손발을 함께 다듬는다
+color = earth:4
+result_text = 카요의 공방 가는 길을 같이 갔다. 돌 부딪는 소리가 조금 부드러워졌다.
+
+[event.ev-rec-mano-rok.choice.3]
+label = 걸음을 맞춰 나란히 걷는다
+heal_pct = 35
+result_text = 돌 손발 소리에 발을 맞춰 한참 걸었다. 묵직하게 안심이 됐다.
+
+# ---------- 마틴 항 · 키시나 해변 (tier 2) ----------
+
+[event.ev-rec-martin-rudi]
+name = 컨테이너를 내리는 손
+node_kinds = event, village
+weight = 1
+once_per_run = true
+featured_npcs = npc-rudi
+body = 부두에서 한 수원이 컨테이너를 차곡차곡 빠르게 내리고 있다. 손이 잰 제비의 특기다. "한 번에 옮길게 빠르게!" 아버지가 선장이라, 그 부재 동안 항구 일을 자연스레 익혔다. 밝게 인사하지만 일을 잡는 순간 눈빛이 또렷하다. 그대 짐을 보더니 손을 내민다.
+
+[event.ev-rec-martin-rudi.choice.1]
+label = 길 안내 겸 동행을 청한다
+recruit = npc-rudi
+result_text = "좋아요! 빠르게 갈게요!" 루디가 가방끈을 고쳐 멨다. 잰 손으로 두 번 찌르는 제비 일격이 동행한다.
+
+[event.ev-rec-martin-rudi.choice.2]
+label = 짐 내리는 걸 같이 돕는다
+gold = 8
+result_text = 둘이서 순식간에 다 내렸다. 품삯을 나눠 받았다.
+
+[event.ev-rec-martin-rudi.choice.3]
+label = 아버지 선장 이야기를 묻는다
+draw = 1
+result_text = "곧 돌아오실 거예요." 루디가 환하게 웃었다. 기운이 옮아왔다.
+
+# ---------- 남 모스 (tier 2) ----------
+
+[event.ev-rec-moss-cassis]
+name = 대장간에 들른 여우불
+node_kinds = event, village
+weight = 1
+once_per_run = true
+featured_npcs = npc-cassis
+body = 모스 대장간 한쪽, 구미호 하나가 꼬리를 살랑이며 마법을 손질하고 있다. "선은 안 넘어요. 그쪽도 그러시길." 불의 사천왕이자 정령과 마법에 정통한 자유 연구가. 트리플라워 출신이라 빠르게 타고 빠르게 식는다. 여우불 한 점을 손끝에 띄우며 그대를 가늠한다.
+
+[event.ev-rec-moss-cassis.choice.1]
+label = 선을 지키며 같이 가자 제안한다
+recruit = npc-cassis
+result_text = "그 정도 거리면 좋네요." 카시스가 여우불을 거뒀다. 길게 붙는 화상으로 농락하는 여우불이 동행한다.
+
+[event.ev-rec-moss-cassis.choice.2]
+label = 마나 이야기를 나눈다
+color = fire:4
+draw = 1
+result_text = 마나 시스템 이야기를 한참 했다. 막혔던 생각이 트였다.
+
+[event.ev-rec-moss-cassis.choice.3]
+label = 여우불 한 점을 빌려 본다
+color = fire:5
+result_text = 손끝에 옮겨 받은 불이 따뜻했다. 선은 넘지 않았다.
+
+[event.ev-rec-moss-elnest]
+name = 한 검을 찾는 수인
+node_kinds = event, village
+weight = 1
+once_per_run = true
+condition = has-clue:cl-twins-reunion
+featured_npcs = npc-elnest
+body = 광장 한쪽, 키 큰 수인 검사가 두리번거린다. "한 번에 한 검. 칼리번은 어디 갔지?" 전설의 검을 찾아 떠도는 자. 눈치는 부족해도 대차고 활발하다. 담배 연기는 질색이라며 손을 휘젓는다. 모든 속성을 다루는 드문 검사가, 그대 쪽으로 성큼 다가온다.
+
+[event.ev-rec-moss-elnest.choice.1]
+label = 함께 검을 찾아 가자 한다
+recruit = npc-elnest
+result_text = "오, 같이 가자!" 엘네스트가 검을 어깨에 걸쳤다. 다음 한 검을 두 배로 키우는 필중의 준비가 동행한다.
+
+[event.ev-rec-moss-elnest.choice.2]
+label = 칼리번의 방향을 알려 준다
+draw = 1
+result_text = "역시! 고맙다!" 엘네스트가 환하게 웃었다. 두 사람의 인연이 보였다.
+
+[event.ev-rec-moss-elnest.choice.3]
+label = 한 합 가볍게 겨룬다
+color = all:2
+result_text = 짧게 칼을 맞댔다. 모든 속성을 다루는 검이 손에 읽혔다.
+
+[event.ev-rec-moss-roku]
+name = 한 통씩 깔끔하게
+node_kinds = event, village
+weight = 1
+once_per_run = true
+featured_npcs = npc-roku
+body = 광장을 가로지르며 켄타우로스 우체부가 네 다리로 또각또각 지나간다. 잘 길든 가죽 가방이 걸음에 맞춰 흔들린다. "한 통 가져왔어. 받아 가." 아침은 항구, 낮은 대장간, 저녁은 광장 그렇게 길을 돈다. 어느 자리든 우편 한 통은 그대로 전하는 사람이다.
+
+[event.ev-rec-moss-roku.choice.1]
+label = 길동무 겸 전령이 되어 달라 청한다
+recruit = npc-roku
+result_text = "마침 같은 길이네. 한 통씩 깔끔하게 가자." 로큐가 가방끈을 고쳐 멨다. 패와 다음 턴 에너지를 채우는 특급 배송이 동행한다.
+
+[event.ev-rec-moss-roku.choice.2]
+label = 편지 한 통을 부탁한다
+gold = -3
+result_text = 한 통을 맡겼다. 어디로 가든 그대로 전해질 것이다.
+
+[event.ev-rec-moss-roku.choice.3]
+label = 길 도는 경로를 묻는다
+draw = 1
+result_text = 마을과 항구를 잇는 지름길을 알아 뒀다. 발걸음이 가벼웠다.
+
+# ---------- 리아그랄타 (tier 2) ----------
+
+[event.ev-rec-ria-whitefang]
+name = 산비탈의 검은 잔상
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+featured_npcs = npc-whitefang
+body = 오드 산비탈, 가냘픈 몸의 수인 검사가 사냥을 나와 있다. 검을 휘두르자 잔상이 먼저 닿는다. 물리 법칙을 무시하는 속도다. "나는 여기 있어요. 그게 답이라면." 자신의 존재를 끊임없이 묻고 증명하려는 검사. 루나에서 연구를 지원받지만, 답은 늘 바깥에서 찾는다.
+
+[event.ev-rec-ria-whitefang.choice.1]
+label = 같이 답을 찾아 보자고 한다
+recruit = npc-whitefang
+result_text = 화이트 팡이 검을 거두며 고개를 끄덕였다. "그럼, 같이 있어 줄래요." 잔상이 먼저 닿는 잔상 베기가 동행한다.
+
+[event.ev-rec-ria-whitefang.choice.2]
+label = 검술의 속도를 지켜본다
+draw = 1
+result_text = 잔상이 본체보다 먼저 닿는 검을 한참 봤다. 눈이 따라잡히지 않았다. 머리가 트였다.
+
+[event.ev-rec-ria-whitefang.choice.3]
+label = 존재의 물음에 답해 본다
+color = all:1
+result_text = "당신은 여기 있어요." 그렇게 답하자, 검사가 잠시 말을 잃었다.
+
+# ---------- 산호 해안 (tier 3) ----------
+
+[event.ev-rec-coral-marin]
+name = 너른 바위의 인어
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+featured_npcs = npc-marin
+body = 산호초 사이 너른 바위에 인어 하나가 푸른 꼬리를 길게 늘어뜨린 채 물살을 고른다. "물살은 내가 고를게요." 범고래와는 오랜 앙숙이라, 검은 등이 보이면 다들 깊이 숨는단다. 다친 이에게 물을 얇게 둘러 주는 손이 따뜻하다. 그대의 상처를 먼저 알아본다.
+
+[event.ev-rec-coral-marin.choice.1]
+label = 함께 물길을 가자 청한다
+recruit = npc-marin
+result_text = 마린이 바위에서 미끄러져 내렸다. "그럼 물살은 제가 골라 드릴게요." 손이 따뜻한 물의 가호가 동행한다.
+
+[event.ev-rec-coral-marin.choice.2]
+label = 상처에 물을 둘러 받는다
+heal_pct = 50
+result_text = 얇게 두른 물이 상처를 감쌌다. 통증이 천천히 가라앉았다.
+
+[event.ev-rec-coral-marin.choice.3]
+label = 범고래 이야기를 묻는다
+color = water:4
+result_text = "그 검은 등이 보이면, 다들 깊이 숨어요." 바다의 규칙을 하나 알게 됐다.
+
+[event.ev-rec-coral-seira]
+name = 한 소절의 세이렌
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+condition = color:water>=8
+featured_npcs = npc-seira
+body = 산호초 위, 세이렌 하나가 노래를 시작하자 깃털 돋친 두 팔이 활짝 펴진다. 물살이 그 음에 휜다. "한 소절 들어 볼래요?" 뱃사람을 홀린다 하나, 사실은 산호 해안을 지키는 노래다. 범고래가 가장 싫어하는 음을 안다. 한 소절이 그대 귀에 닿는다.
+
+[event.ev-rec-coral-seira.choice.1]
+label = 그 노래를 길에 들려 달라 청한다
+recruit = npc-seira
+result_text = 세이라가 깃을 한 번 접었다 폈다. "그럼 한 소절씩 들려 드릴게요." 적을 잠재우는 자장가가 동행한다.
+
+[event.ev-rec-coral-seira.choice.2]
+label = 한 소절을 끝까지 듣는다
+heal_pct = 35
+color = water:3
+result_text = 노래가 물살을 따라 흘렀다. 마음이 한 꺼풀 가라앉았다.
+
+[event.ev-rec-coral-seira.choice.3]
+label = 범고래가 싫어하는 음을 묻는다
+draw = 1
+result_text = "그 검은 것이 오면 한 소절이면 돼." 세이라가 짧게 웃었다.
+
+# ---------- 마왕성 (tier 3) ----------
+
+[event.ev-rec-castle-mono]
+name = 마왕성의 시간 관리자
+node_kinds = event, village
+weight = 1
+once_per_run = true
+condition = day>=2 && color:dark>=8
+featured_npcs = npc-mono
+body = 마왕성 깊은 곳, 시간 축이 천천히 일렁이는 자리에 마왕직을 맡은 시스템이 앉아 있다. 겉으로는 무심하지만, 세계의 균형에 누구보다 신경 쓰는 존재. "이 시간은 그대의 것입니다." 어차피 언젠가 사라질 세계의 시기를 즐기는 중이라 한다. 그대의 걸음을 처음부터 알고 있었던 눈빛이다.
+
+[event.ev-rec-castle-mono.choice.1]
+label = 이 시간을 함께 걷자 청한다
+condition = gold>=20
+gold = -20
+recruit = npc-mono
+result_text = 모노가 옅게 끄덕였다. "잠깐의 동행도, 나쁘지 않겠군요." 흐트러진 순서를 다시 짜는 재구성이 동행한다.
+
+[event.ev-rec-castle-mono.choice.2]
+label = 세계의 균형을 묻는다
+draw = 2
+color = dark:4
+result_text = "무엇이든 될 수 있다는 건, 아무것도 될 수 없다는 뜻." 그 말이 오래 남았다.
+
+[event.ev-rec-castle-mono.choice.3]
+label = 시간 한 자락을 빌려 받는다
+heal_pct = 50
+result_text = 일렁이던 시간이 한 호흡 멎었다. 지친 몸이 그 틈에 회복됐다.
+
+# ---------- 풍혈지대 (tier 3) ----------
+
+[event.ev-rec-windfall-rienkay]
+name = 못 본 척, 해 주실래요
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+featured_npcs = npc-rienkay
+body = 바람의 길목, 한 시민이 들킨 듯 흠칫 날개를 접는다. 밤참새의 삶을 살아 보려 하지만, 습관이 자꾸 정체를 들킨다. "… 못 본 척, 해 주실래요?" 능력을 아끼진 않지만, 중요한 순간엔 슬며시 손을 뗀다. 뒷처리는 누군가 하겠지, 하는 얼굴로 그대를 곁눈질한다.
+
+[event.ev-rec-windfall-rienkay.choice.1]
+label = 못 본 척하고 같이 가자 한다
+recruit = npc-rienkay
+result_text = "...그럼, 신세 좀 질게요." 리엔카이가 멋쩍게 날개를 폈다. 흐름을 키우는 한 줄기 돌풍이 동행한다.
+
+[event.ev-rec-windfall-rienkay.choice.2]
+label = 정체를 캐묻지 않는다
+color = wind:4
+result_text = 아무것도 묻지 않았다. 리엔카이가 한결 편한 얼굴이 됐다.
+
+[event.ev-rec-windfall-rienkay.choice.3]
+label = 뒷처리를 대신 해 준다
+gold = -4
+draw = 1
+result_text = 남은 일을 슬쩍 마무리해 줬다. "...이거, 빚이네요." 작게 중얼거렸다.
+
+# ---------- 딜롭 부족 (tier 3) ----------
+
+[event.ev-rec-diropel-long]
+name = 발끝까지 늘어진 귀
+node_kinds = event, village
+weight = 1
+once_per_run = true
+featured_npcs = npc-diropel-long
+body = 골짜기 마을 어귀, 긴 귀가 발끝까지 늘어진 딜롭 하나가 멀리 소리에 귀를 기울인다. 얼굴엔 긴 곡선 무늬. 말은 통하지 않는다. 그대가 다가서자, 귀를 한 번 늘어뜨려 인사하고 손바닥에 무늬를 천천히 그려 뜻을 전한다. 같이 길을 듣자는 손짓처럼 보인다.
+
+[event.ev-rec-diropel-long.choice.1]
+label = 손바닥에 같은 무늬를 그려 답한다
+recruit = npc-diropel-long
+result_text = 리포가 두 귀를 크게 늘어뜨렸다. 받아들인다는 뜻이다. 땅을 울려 발을 묶는 땅울림이 동행한다.
+
+[event.ev-rec-diropel-long.choice.2]
+label = 먼 소리를 같이 들어 본다
+color = earth:4
+result_text = 긴 귀가 가리키는 쪽으로 귀를 모았다. 멀리서 다가오는 기척이 잡혔다.
+
+[event.ev-rec-diropel-long.choice.3]
+label = 인사만 나누고 떠난다
+draw = 1
+result_text = 귀를 한 번 늘어뜨린 인사를 똑같이 따라 했다. 리포가 천천히 끄덕였다.
+
+[event.ev-rec-diropel-short]
+name = 안료를 내미는 손
+node_kinds = event, village
+weight = 1
+once_per_run = true
+featured_npcs = npc-diropel-short
+body = 마을 안쪽, 짧고 둥근 귀를 쫑긋 세운 딜롭이 손님을 보더니 먼저 다가온다. 얼굴엔 둥근 점 무늬. 손이 야무져, 부족의 무늬를 가장 곱게 그린다고 한다. 그대의 손등에 작은 무늬를 그려 주려는 듯 안료를 내민다. 말 대신 웃음이 먼저다.
+
+[event.ev-rec-diropel-short.choice.1]
+label = 손을 내밀어 무늬를 받고 동행을 청한다
+recruit = npc-diropel-short
+result_text = 코하가 손등에 둥근 무늬를 곱게 그려 주고, 짐을 챙겨 일어섰다. 두꺼운 가죽으로 받아내는 단단한 가죽이 동행한다.
+
+[event.ev-rec-diropel-short.choice.2]
+label = 무늬의 뜻을 손짓으로 묻는다
+draw = 1
+result_text = 둥근 점은 환대의 표시라는 듯, 코하가 두 손을 모아 보였다. 뜻이 통했다.
+
+[event.ev-rec-diropel-short.choice.3]
+label = 답례로 작은 선물을 건넨다
+gold = -3
+color = earth:3
+result_text = 작은 선물을 받은 코하가 환하게 웃었다. 마을 인심이 따뜻했다.
+
+# ---------- 에니챰 · 발전소 지대 (tier 3) ----------
+
+[event.ev-rec-enicham-zero]
+name = 단정한 작업복
+node_kinds = event, village
+weight = 1
+once_per_run = true
+featured_npcs = npc-zero
+body = 발전소 한 구역, 단정한 작업복의 기술자가 배선을 짧고 단단하게 마무리한다. 손등에 작은 그을음 자국. "전기는 짧고 단단하게." 자기가 맡은 구역은 본인이 단정하게 챙기는 사람이다. 함께 사는 친구가 알티-알타라 한다. 그대의 손끝을 보더니, 전기를 만지는 사람은 조용해야 한다고 짧게 말한다.
+
+[event.ev-rec-enicham-zero.choice.1]
+label = 조용히 함께 가자고 청한다
+recruit = npc-zero
+result_text = 제로가 공구를 정리하며 짧게 끄덕였다. "...조용하면, 같이 가지." 경련을 거는 과부하가 동행한다.
+
+[event.ev-rec-enicham-zero.choice.2]
+label = 배선 일을 잠시 거든다
+color = electric:4
+result_text = 짧고 단단한 마무리를 옆에서 배웠다. 손끝이 차분해졌다.
+
+[event.ev-rec-enicham-zero.choice.3]
+label = 알티-알타에 대해 묻는다
+draw = 1
+result_text = "이름이 둘인 이유는, 나도 잘 몰라." 제로가 옅게 웃었다.
+
+[event.ev-rec-enicham-alti-alta]
+name = 같은 자리에 알티 그리고 알타
+node_kinds = event, village
+weight = 1
+once_per_run = true
+condition = color:electric>=8
+featured_npcs = npc-alti-alta
+body = 단정한 책상 옆 충전 자리에, 인간형 앰프가 단정한 자세로 앉아 있다. 어깨에 작은 출력 단자. 한 몸에 두 자아가 머문다. "...같은 자리에. 알티. 그리고 알타." 짧고 단정한 답과 조금 느린 보탬이 번갈아 들린다. 제로의 손끝에서 전기가 들어온다. 그 같은 종류가 다른 시간대에선 최종 보스로 일어선 사례가 있다고, 누군가 낮게 말한다.
+
+[event.ev-rec-enicham-alti-alta.choice.1]
+label = 함께 셈을 해 보자고 청한다
+recruit = npc-alti-alta
+result_text = "...동행. 알티는 찬성." "...알타도, 보탬." 둘이 한 목소리로 끄덕였다. 컬러 종류를 세어 보태는 연산이 동행한다.
+
+[event.ev-rec-enicham-alti-alta.choice.2]
+label = 두 자아에 대해 묻는다
+draw = 1
+color = electric:3
+result_text = "...둘은, 한 자리에." 그 말이 묘하게 따뜻했다. 머리가 맑아졌다.
+
+[event.ev-rec-enicham-alti-alta.choice.3]
+label = 다른 시간대 이야기를 캐묻는다
+color = dark:4
+result_text = "...그 이야기는. 알티, 답을 미룬다." 출력 단자가 한 번 낮게 울렸다.
+
+# ---------- 마법학교 루나 · 마왕성 (tier 3) ----------
+
+[event.ev-rec-luna-rupin]
+name = 그냥 도마뱀이에요
+node_kinds = event, village
+weight = 1
+once_per_run = true
+featured_npcs = npc-rupin
+body = 교실 구석, 거의 눈에 띄지 않는 자리에 어린 드래곤 하나가 웅크려 있다. 말수가 적어, 거기 있는 줄 아는 사람이 거의 없다. "… 그냥 도마뱀이에요." 자기 힘을 미워해 드래곤이라는 걸 받아들이지 못한다. 버려진 알에서 혼자 태어나 떠돌던 아이. 그대와 눈이 마주치자 흠칫 숨을 참는다.
+
+[event.ev-rec-luna-rupin.choice.1]
+label = 도마뱀이어도 같이 가자고 한다
+recruit = npc-rupin
+result_text = 루핀이 한참 망설이다 작게 끄덕였다. "...따라가도, 돼요?" 참아 둔 숨을 한 번에 토하는 억눌린 숨결이 동행한다.
+
+[event.ev-rec-luna-rupin.choice.2]
+label = 옆에 조용히 앉아 있어 준다
+heal_pct = 35
+result_text = 아무 말 없이 한참 같이 앉아 있었다. 루핀의 숨이 조금 편해졌다.
+
+[event.ev-rec-luna-rupin.choice.3]
+label = 힘은 미워할 게 아니라고 말해 준다
+color = fire:4
+result_text = "...정말, 그럴까요." 루핀이 고개를 살짝 들었다.
+
+[event.ev-rec-luna-miyu]
+name = 이 정도 충분히 들 수 있다구
+node_kinds = event, village
+weight = 1
+once_per_run = true
+featured_npcs = npc-miyu
+body = 복도 한쪽, 컬러즈 최단신의 뛰는 쥐가 자기 몸집만 한 짐을 둘둘 메고 끙끙댄다. "이 정도 충분히 들 수 있다구!" 작은 몸으로 박해당하던 기억에 중장비를 다루게 됐지만, 루나에선 재능으로 인정받는 중이다. 마로와 같이 다니는 호기심 많은 학생. 그대의 짐을 보더니 눈을 빛낸다.
+
+[event.ev-rec-luna-miyu.choice.1]
+label = 짐꾼 겸 길동무가 되어 달라 한다
+recruit = npc-miyu
+result_text = "맡겨 둬! 이 정도쯤!" 미유가 짐을 번쩍 들어 올렸다. 짐을 박차고 달리는 전력 질주가 동행한다.
+
+[event.ev-rec-luna-miyu.choice.2]
+label = 짐 드는 걸 거든다
+color = iron:4
+result_text = 둘이 나눠 들자 한결 가벼웠다. "거봐, 둘이면 더 빠르지!"
+
+[event.ev-rec-luna-miyu.choice.3]
+label = 취미 이야기를 듣는다
+draw = 1
+result_text = 다양한 취미 이야기를 신나게 들었다. 기운이 옮아왔다.
+
+[event.ev-rec-luna-febiel]
+name = 다시 한 번 열린다면
+node_kinds = event, village
+weight = 1
+once_per_run = true
+condition = has-clue:cl-febiel-binding-note
+featured_npcs = npc-febiel
+body = 도서관 깊은 자리, 망명자 엘프 하나가 결계에 관한 흑마법서를 펼쳐 두고 있다. 대변동 때 결계로 고립됐다 미래로 튕겨 나와, 고향 사람들은 이미 오래전 사람이 됐다. "그 시간이 다시 한 번 열린다면." 고향을 되찾으려 연구를 멈추지 않는다. 같은 고향 사람은 마로 하나뿐. 그대의 기척에 천천히 고개를 든다.
+
+[event.ev-rec-luna-febiel.choice.1]
+label = 그 시간을 함께 찾아 보자 청한다
+recruit = npc-febiel
+result_text = 페비엘이 책을 덮으며 옅게 웃었다. "...혼자가 아니라면, 해 볼 만하겠네요." 적의 다음 동작을 통째로 가두는 속박 결계가 동행한다.
+
+[event.ev-rec-luna-febiel.choice.2]
+label = 결계 마법을 함께 들여다본다
+color = dark:4
+draw = 1
+result_text = 결계의 구조를 같이 풀어 봤다. 생각이 한 겹 깊어졌다.
+
+[event.ev-rec-luna-febiel.choice.3]
+label = 마로의 안부를 전한다
+heal_pct = 35
+result_text = 같은 고향 사람의 소식에 페비엘의 표정이 풀렸다. "...고마워요."
+
+[event.ev-rec-luna-papyrus]
+name = 지하서고의 작은 목소리
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+featured_npcs = npc-papyrus
+body = 루나 지하서고, 먼지 낀 서가 사이에서 유령 사서가 책을 정리하고 있다. 생전엔 교수였으나 서고와 함께 봉인됐다. 목소리가 아주 작아, 가까이 귀를 대야 들린다. "… (가까이, 좀 더 가까이.)" 예의를 갖춘 방문자에겐 원하는 책을 찾아 준다. 그대가 발소리를 죽이자, 사서가 첫 페이지를 펴 준다.
+
+[event.ev-rec-luna-papyrus.choice.1]
+label = 예의를 갖춰 동행을 청한다
+recruit = npc-papyrus
+result_text = 파피루스가 책을 한 권 그대 품에 안겼다. "(...그럼, 함께.)" 매 전투 첫 페이지를 펴 주는 유령 사서가 동행한다.
+
+[event.ev-rec-luna-papyrus.choice.2]
+label = 찾던 책을 부탁한다
+draw = 2
+result_text = 정확한 자리에서 책 두 권을 찾아 줬다. 필요한 구절이 손에 들어왔다.
+
+[event.ev-rec-luna-papyrus.choice.3]
+label = 서가 정리를 조용히 돕는다
+color = dark:4
+result_text = 말없이 책을 제자리에 꽂았다. 서고의 고요가 한결 깊어졌다.
+
+[event.ev-rec-luna-iyeon]
+name = 복도를 가로지르는 작은 활
+node_kinds = event, village
+weight = 1
+once_per_run = true
+featured_npcs = npc-iyeon
+body = 루나 복도, 나비 날개가 달린 작은 아인이 잰걸음으로 가로지른다. 손 대신 두 날개로 활시위를 당긴다. 날개 끝 잔뼈를 곧게 펴 시위에 건다. "작아도 한 발은 정확하게." 몸집이 작아 늘 먼저 자리를 잡으려 든다. 또래 중 활 솜씨는 으뜸이라는 자부심이 또렷하다.
+
+[event.ev-rec-luna-iyeon.choice.1]
+label = 그 한 발을 길에서 빌리자 청한다
+recruit = npc-iyeon
+result_text = "한 발은 자신 있어요!" 이연이 날개를 곧게 폈다. 취약을 걸고 유령화하는 인분이 동행한다.
+
+[event.ev-rec-luna-iyeon.choice.2]
+label = 활 솜씨를 구경한다
+draw = 1
+result_text = 작은 날개가 당긴 화살이 과녁 한가운데를 꿰뚫었다. 눈이 트였다.
+
+[event.ev-rec-luna-iyeon.choice.3]
+label = 먼저 자리를 양보해 준다
+color = wind:4
+result_text = "어, 고마워요!" 이연이 폴짝 앞자리를 차지했다. 묘하게 흐뭇했다.
+
+# ---------- 타코미 권역 (tier 3) ----------
+
+[event.ev-rec-tacomi-akasha]
+name = 다음 생에서 또 들러 주세요
+node_kinds = event, village
+weight = 1
+once_per_run = true
+condition = color:dark>=7
+featured_npcs = npc-akasha
+body = 페스티벌 한쪽, 병약해 보이는 무녀 차림의 유령이 천천히 부채를 접는다. 명계의 유령이라, 죽은 이의 영혼과 소통하며 그들을 위한 일을 한다. "다음 생에서 또 들러 주세요." 학교 지박령인 척하지만, 눈치 챈 이들은 평범한 유령이 아님을 안다. 그대의 다음 한 수까지 이미 보고 있는 눈이다.
+
+[event.ev-rec-tacomi-akasha.choice.1]
+label = 그 예지를 길에 빌려 달라 청한다
+recruit = npc-akasha
+result_text = 아카샤가 부채로 입가를 가리며 웃었다. "이번 생에서 먼저 들러 주셨네요." 다음 한 수를 두 배로 키우는 예지가 동행한다.
+
+[event.ev-rec-tacomi-akasha.choice.2]
+label = 다음 수를 점쳐 받는다
+draw = 2
+result_text = "다음 생까지 보여요." 흐릿하던 다음 길이 한 토막 또렷해졌다.
+
+[event.ev-rec-tacomi-akasha.choice.3]
+label = 영혼을 위한 일을 거든다
+color = dark:4
+result_text = 떠나지 못한 영혼 하나를 같이 달랬다. 마음 한쪽이 차분해졌다.
+
+[event.ev-rec-tacomi-monato]
+name = 붉은 눈의 계약
+node_kinds = event, village
+weight = 1
+once_per_run = true
+condition = day>=2 && hp<=30
+featured_npcs = npc-monato
+body = 골목 끝, 평범해 보이는 사람의 눈이 잠깐 붉게 일렁인다. 태어날 때의 파장이 고대 악마 트립스와 같아, 몸에 트립스가 깃들었다. 치명상을 입으면 흑백으로 갈라진 늑대 귀와 꼬리가 짧게 솟고 힘이 극도로 강해진다. "주인 다음엔 어디로 가요?" 위해를 가할 생각은 없고, 그저 달라진 세상을 구경시켜 달라 한다.
+
+[event.ev-rec-tacomi-monato.choice.1]
+label = 세상을 함께 구경하자고 답한다
+recruit = npc-monato
+result_text = 붉은 눈이 다시 가라앉으며 모나토가 웃었다. "좋아요, 주인." HP를 지불해 네 배로 갚는 계약의 대가가 동행한다.
+
+[event.ev-rec-tacomi-monato.choice.2]
+label = 트립스에 대해 묻는다
+draw = 1
+color = dark:3
+result_text = "재밌을 것 같다며 깃들었대요." 모나토가 어깨를 으쓱했다. 묘한 이야기였다.
+
+[event.ev-rec-tacomi-monato.choice.3]
+label = 거리를 두고 지나간다
+gold = 6
+result_text = 슬쩍 길을 비껴 갔다. "...다음엔 같이 가요." 등 뒤로 목소리가 따라왔다.
+
+[event.ev-rec-tacomi-shinsian]
+name = 노을이 식기 전 한 잔
+node_kinds = event, village
+weight = 1
+once_per_run = true
+featured_npcs = npc-shinsian
+body = 타코미 카페, 고양이 수인 바리스타가 잔을 가지런히 닦아 둔다. 낮 동안만 머무는 자리라, 노을이 식기 전 마지막 한 잔을 내린다. "한 잔 따뜻하게, 가시지요." 물 온도와 잔의 두께까지 다 다르다며, 손이 따뜻하고 단정하다. 그대를 보더니 호기심 어린 눈으로 잔을 하나 더 꺼낸다.
+
+[event.ev-rec-tacomi-shinsian.choice.1]
+label = 같이 길을 도는 게 어떻겠냐 묻는다
+recruit = npc-shinsian
+result_text = "...바깥 잔도 궁금하긴 했어요." 신시안이 앞치마를 벗었다. 그때그때 다른 잡동사니 가방이 동행한다.
+
+[event.ev-rec-tacomi-shinsian.choice.2]
+label = 따뜻한 한 잔을 받는다
+heal_pct = 50
+result_text = 노을이 식기 전 마지막 한 잔을 받았다. 속이 따뜻해졌다.
+
+[event.ev-rec-tacomi-shinsian.choice.3]
+label = 잔 닦는 법을 묻는다
+draw = 1
+result_text = "물 온도, 잔 두께 다 다르거든요." 사소한 정성을 하나 배웠다.
+
+[event.ev-rec-tacomi-nova]
+name = 한 곡 짧게
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+condition = day>=2
+featured_npcs = npc-nova
+body = 네온이 줄지어 켜질 무렵, 무대 구석에 서큐버스 하나가 천천히 자리를 잡는다. 낮에는 보이지 않는다. 꿈과 매혹을 원료로 살지만 위해는 가하지 않는다. 밤의 분위기가 본질일 뿐. "한 곡 짧게, 들어 봐요." 그 목소리가 네온 사이로 낮게 번진다. 그대를 향해 손짓 한 번.
+
+[event.ev-rec-tacomi-nova.choice.1]
+label = 그 한 곡을 길에 들려 달라 청한다
+recruit = npc-nova
+result_text = 노바가 천천히 미소 지었다. "그럼, 밤마다 한 곡씩." 피해와 회복을 함께 내는 매혹의 입맞춤이 동행한다.
+
+[event.ev-rec-tacomi-nova.choice.2]
+label = 한 곡을 끝까지 듣는다
+heal_pct = 35
+color = dark:3
+result_text = 짧은 한 곡이 밤공기에 번졌다. 피로가 스르르 풀렸다.
+
+[event.ev-rec-tacomi-nova.choice.3]
+label = 밤의 분위기만 즐기고 떠난다
+draw = 1
+result_text = 네온 사이를 천천히 걸었다. 밤이 묘하게 또렷했다.
+
+# ---------- 트리플라워 화산 (tier 3) ----------
+
+[event.ev-rec-tri-embra]
+name = 분화구 위의 거미줄
+node_kinds = event, village
+weight = 1
+once_per_run = true
+condition = color:fire>=7
+featured_npcs = npc-embra
+body = 분화구 위, 식지 않는 실을 뽑아 둥지를 짓는 화염 아라크네가 여덟 다리로 자리를 잡는다. 다리 끝이 용암 열기에도 타지 않는다. "한 줄 더 엮어 줄까?" 화염 아인들의 둥지 어른 격. 살라만더 새끼들이 다리 사이로 기어다닌다. 그대의 행장을 한 번 훑더니, 실 한 가닥을 길게 늘인다.
+
+[event.ev-rec-tri-embra.choice.1]
+label = 그 한 줄, 같이 엮어 가자 청한다
+recruit = npc-embra
+result_text = "재밌겠네." 이그니아가 새끼들을 둥지에 맡기고 일어섰다. 화상을 붙이고 적 동작을 늦추는 불거미줄이 동행한다.
+
+[event.ev-rec-tri-embra.choice.2]
+label = 둥지 짓는 걸 구경한다
+color = fire:5
+result_text = 식지 않는 실이 차곡차곡 얽히는 모습을 봤다. 불의 흐름이 손에 잡혔다.
+
+[event.ev-rec-tri-embra.choice.3]
+label = 살라만더 새끼들과 놀아 준다
+heal_pct = 35
+result_text = 다리 사이로 기어 나온 새끼들과 한참 놀았다. 열기 속이 묘하게 포근했다.
+
+[event.ev-rec-tri-kumamimi]
+name = 자격을 보여라
+node_kinds = event, village
+weight = 1
+once_per_run = true
+condition = day>=2 && color:iron>=10
+featured_npcs = npc-kumamimi
+body = 화산광 지대 깊은 곳, 곰의 머리에 거대한 체구의 신수가 길을 막고 선다. 장식 빼곡한 외투가 쇳물 빛에 금실로 번뜩인다. 오랜 세월 광맥을 지켜 온 존재. "...자격을, 보여라." 함부로 길을 내주지 않는다. 던지는 말마다 쇳덩이처럼 무겁다. 그대를 내려다보는 눈에 가늠이 담겨 있다.
+
+[event.ev-rec-tri-kumamimi.choice.1]
+label = 자격을 보이고 동행을 청한다
+condition = color:fire>=8
+recruit = npc-kumamimi
+result_text = 던이 한참 그대를 내려다보다, 묵직한 손을 내밀었다. "...됐다. 따라와라." 격 높은 신수가 동행한다.
+
+[event.ev-rec-tri-kumamimi.choice.2]
+label = 광맥의 길을 묻는다
+color = iron:6
+result_text = "...광맥은, 함부로 밟지 마라." 짧은 가르침에 무게가 있었다.
+
+[event.ev-rec-tri-kumamimi.choice.3]
+label = 예를 갖춰 물러난다
+gold = 10
+result_text = 깊이 고개를 숙이고 물러났다. 던이 통행을 한 번 허락했다.
+
+# ---------- 팔콘 가든 공중 군도 (tier 4) ----------
+
+[event.ev-rec-falcon-shachi]
+name = 숨 한 번 더 채워 가
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+condition = day>=2
+featured_npcs = npc-shachi
+body = 군도 아래 바닷가, 범고래 아인이 물 위에 반쯤 몸을 올린 채 공중 군도를 올려다본다. 흑백의 꼬리가 물살을 가른다. 한때 올라가 봤지만 위쪽 것들이 너무 강해 지금은 바다에 머문다. "위는 거칠어. 숨 한 번 더." 올라가려는 자에게 물의 가호를 빌려준다. 그대의 각오를 가늠한다.
+
+[event.ev-rec-falcon-shachi.choice.1]
+label = 그 거친 위로 같이 가자 청한다
+condition = hp>=25
+recruit = npc-shachi
+result_text = 클루루가 물보라를 일으키며 몸을 들어 올렸다. "좋아. 숨 채웠으면 가자." 단숨에 끝내는 급습이 동행한다.
+
+[event.ev-rec-falcon-shachi.choice.2]
+label = 물의 가호를 빌린다
+heal_pct = 50
+color = water:4
+result_text = 물이 온몸을 한 겹 감쌌다. 높은 데로 갈 숨이 채워졌다.
+
+[event.ev-rec-falcon-shachi.choice.3]
+label = 군도 이야기를 듣는다
+draw = 1
+result_text = "위쪽 것들은 진짜 거칠어." 군도의 위험을 미리 들어 뒀다.
+
+# ---------- 구 신전터 (tier 4) ----------
+
+[event.ev-rec-oldshrine-toramimi]
+name = 빠른 자만 따라와라
+node_kinds = event, village
+weight = 1
+once_per_run = true
+condition = day>=2 && color:electric>=10
+featured_npcs = npc-toramimi
+body = 부서진 기둥 사이, 호랑이의 머리에 날렵한 체구의 신수가 빛 무늬 위에 선다. 예복의 금테가 정전기에 번쩍인다. 옛 신전의 번개를 다루며, 침입자를 단숨에 가른다. "...빠른 자만, 따라와라." 말은 짧고 날카로우나, 그 안에 예의가 배어 있다. 그대의 걸음 속도를 한 번 가늠한다.
+
+[event.ev-rec-oldshrine-toramimi.choice.1]
+label = 그 빠름을 따라가겠다 답한다
+condition = color:wind>=8
+recruit = npc-toramimi
+result_text = 티프레가 날렵하게 몸을 돌렸다. "...따라올 만하군. 와라." 빠른 한 수를 빌려주는 격 높은 신수가 동행한다.
+
+[event.ev-rec-oldshrine-toramimi.choice.2]
+label = 신전의 번개를 같이 본다
+color = electric:6
+result_text = "...번개는, 망설이지 않는다." 빛 무늬 위 흐름을 짧게 읽었다.
+
+[event.ev-rec-oldshrine-toramimi.choice.3]
+label = 예를 갖춰 한 수 청한다
+draw = 1
+color = light:4
+result_text = 티프레가 빠른 한 수를 짧게 보여 주고 물러났다. 눈이 트였다.

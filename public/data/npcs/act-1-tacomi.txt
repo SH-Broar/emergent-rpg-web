@@ -15,6 +15,7 @@ tags = arcana, undead, electric-affinity
 affinity_rewards = 3:card=c-second-wind:gauge=3
 # 영입 (Item 37-② Stage C 배치2). 명계의 유령 — 다음 한 수의 결과를 미리 읽어 두 배로 만든다.
 recruit_enabled = true
+village_recruit = false
 companion_kind = skill
 companion_skill_name = 예지
 companion_skill_cooldown = 3
@@ -37,6 +38,7 @@ tags = demon, dual-soul, wolf, water-affinity
 affinity_rewards = 3:card=c-double-strike:gauge=4
 # 영입 (Item 37-② Stage C 배치2). 트립스 갈래 — 제 피를 대가로 크게 갚고 힘을 세운다.
 recruit_enabled = true
+village_recruit = false
 companion_kind = skill
 companion_skill_name = 계약의 대가
 companion_skill_cooldown = 4
@@ -60,6 +62,7 @@ tags = beastkin, cat, barista, light-affinity
 affinity_rewards = 3:card=c-warm-cup:gauge=4
 # 영입 (Item 37-② Stage C). 카페 바리스타 — 가방을 뒤져 그날그날 나오는 한 가지를 건넨다(무작위).
 recruit_enabled = true
+village_recruit = false
 companion_kind = skill
 companion_skill_name = 잡동사니 가방
 companion_skill_cooldown = 3
@@ -83,6 +86,7 @@ tags = succubus, night, neon, dark-affinity
 affinity_rewards = 3:card=c-burn-mark:gauge=4
 # 영입 (Item 37-② Stage C 배치2). 밤의 서큐버스 — 한 곡 짧게 홀려 피해를 넣고 그만큼 기운을 빨아들이며 적을 약하게 만든다.
 recruit_enabled = true
+village_recruit = false
 companion_kind = skill
 companion_skill_name = 매혹의 입맞춤
 companion_skill_cooldown = 4

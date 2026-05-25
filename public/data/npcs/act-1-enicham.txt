@@ -16,6 +16,7 @@ tags = human, electrician, electric-affinity
 affinity_rewards = 3:card=c-burn-mark:gauge=4
 # 영입 (Item 37-② Stage C 배치2). 전기 기술자 — 회로에 전류를 몰아 적을 짧게 마비시키고 정확히 친다.
 recruit_enabled = true
+village_recruit = false
 companion_kind = skill
 companion_skill_name = 과부하
 companion_skill_cooldown = 4
@@ -39,6 +40,7 @@ tags = construct, agi, electric-affinity, lost-tech
 affinity_rewards = 3:card=c-second-wind:gauge=4
 # 영입 (Item 37-② Stage C 배치2). AGI — 쌓인 컬러 종류를 세어 그만큼 출력을 낸다.
 recruit_enabled = true
+village_recruit = false
 companion_kind = skill
 companion_skill_name = 연산
 companion_skill_cooldown = 4

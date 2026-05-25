@@ -16,6 +16,7 @@ tags = lamia, merchant, earth-affinity
 affinity_rewards = 3:card=c-quickdraw:gauge=4
 # 영입 (Item 37-② Stage C 배치2). 라미아 상인 — 긴 꼬리로 적을 한 번 묶어 다음 동작을 박제하고 조인다.
 recruit_enabled = true
+village_recruit = false
 companion_kind = skill
 companion_skill_name = 휘감기
 companion_skill_cooldown = 5
