@@ -14,7 +14,10 @@ defense = 3
 vigor = 12
 # 시작 덱 — 컨셉 "색 공명". 전용 카드 중심: 최고색 비례 타격/방어(빛의 첨탑·색의 둑), 보유 색 종류 비례(분광탄), 최고색 ×2 폭발(공명 심판). 모아 온 색이 곧 위력.
 starting_deck = c-arcana-spire, c-arcana-spire, c-arcana-spire, c-arcana-levee, c-arcana-levee, c-arcana-prism, c-arcana-prism, c-defend, c-defend, c-strike, c-strike, c-arcana-judgment, c-recover, c-quickdraw
-seed_cards = c-arcana-spire, c-arcana-levee, c-arcana-prism, c-arcana-judgment, c-arcana-infuse, c-arcana-rainbow, c-arcana-spectrum, c-arcana-wellspring, c-arcana-hex, c-arcana-purelight, c-arcana-resonate, c-defend
+# 시드 풀 - 컨셉별 균형 확대(검토 P2-C): 공명 피해/방어(spire·levee·prism·judgment·spectrum·beam·facet·mantle·shimmerwall·refract) +
+#   색 빌드(infuse·rainbow·purelight·kindle·attune·welltap·glean·glowfade) + 마나/드로우(wellspring·reservoir·dawndraw·clarity·glimmer) +
+#   디버프(hex·glare·searbrand·unravel) + 피니셔(resonate·overflow·radiance·zenith·aurora).
+seed_cards = c-arcana-spire, c-arcana-levee, c-arcana-prism, c-arcana-judgment, c-arcana-infuse, c-arcana-rainbow, c-arcana-spectrum, c-arcana-wellspring, c-arcana-hex, c-arcana-purelight, c-arcana-resonate, c-arcana-overflow, c-arcana-beam, c-arcana-facet, c-arcana-mantle, c-arcana-shimmerwall, c-arcana-refract, c-arcana-kindle, c-arcana-attune, c-arcana-welltap, c-arcana-glean, c-arcana-glowfade, c-arcana-reservoir, c-arcana-dawndraw, c-arcana-clarity, c-arcana-glimmer, c-arcana-glare, c-arcana-searbrand, c-arcana-unravel, c-arcana-radiance, c-arcana-zenith, c-arcana-aurora, c-defend
 seed_relics = r-race-arcana
 hp_bonus = 0
 mp_bonus = 0

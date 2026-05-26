@@ -1072,6 +1072,19 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
     c.enemy.statuses.vulnerable = 0;
     dealRawDamage([c.enemy], vuln * (e.value ?? 1));
   },
+  // 적 *화상 스택 제거* → 제거량 × value 추가 데미지. 나방 toxinburst 시그니처.
+  // burn은 다른 카드와 달리 *정수형* 누적이므로 그대로 소비. consume-vulnerable 패턴 동일.
+  'consume-burn': (e, c) => {
+    const burn = c.enemy.statuses.burn ?? 0;
+    c.enemy.statuses.burn = 0;
+    dealRawDamage([c.enemy], burn * (e.value ?? 1));
+  },
+  // 적 *독 스택 제거* → 제거량 × value 추가 데미지. 나방 toxinburst alt 시그니처.
+  'consume-poison': (e, c) => {
+    const psn = c.enemy.statuses.poison ?? 0;
+    c.enemy.statuses.poison = 0;
+    dealRawDamage([c.enemy], psn * (e.value ?? 1));
+  },
   // 자기 HP를 value 지불, 지불액 × params.mult 데미지.
   'damage-from-hp': (e, c) => {
     const pay = Math.min(e.value ?? 0, Math.max(0, c.player.hp - 1));

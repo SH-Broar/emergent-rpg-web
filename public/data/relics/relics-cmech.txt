@@ -163,3 +163,25 @@ source = shop
 trigger = passive
 effects = double-debuff, damage-in-mul:1.2
 flavor = 적에게 두 배의 흠을 새기느라 제 등도 함께 드러난다. 깊게 거는 만큼 돌아오는 매도 그만큼 더 아프다.
+
+# ============================================================
+# combat-start-return-to-deck 전투 시작 시 손에서 N장 덱으로 반환.
+# 빈손 빌드(damage-low-hand 카드들) 진입 시드. 손이 5장 starting이면 N=2로 손 3장 시작.
+# 신규 핸들러 (검토 P1.5).
+# ============================================================
+
+[relic.r-cm-empty-palm]
+name = 빈손 부적
+rank = rare
+source = elite
+trigger = on-combat-start
+effects = combat-start-return-to-deck:2
+flavor = 손을 비울수록 마음이 가벼워진다. 싸움이 열리면 패가 슬며시 덱으로 되돌아간다.
+
+[relic.r-cm-void-mark]
+name = 공허의 표식
+rank = legendary
+source = elite
+trigger = on-combat-start
+effects = combat-start-return-to-deck:3
+flavor = 텅 빈 자리에 새긴 표식. 싸움이 열릴수록 패가 더 깊이 비워진다.

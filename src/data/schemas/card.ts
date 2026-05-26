@@ -131,7 +131,10 @@ export type CardEffectKind =
   // === 종족 카드 확장 3 (Item 37-③ 팬텀) — 빈손 보상 신규 핸들러 1종 ===
   | 'damage-low-hand'     // 기본 value 피해. 현재 손패(이 카드 제외) ≤ params.threshold(기본 2)면 value×2.
   // === 종족 카드 확장 5 (Item 37-③ 아르카나) — 색 영구 획득 신규 핸들러 1종 ===
-  | 'grant-color';        // params.color(8색|random|all, 기본 random) 색을 value만큼 *영구* 획득(applyColorBoost).
+  | 'grant-color'         // params.color(8색|random|all, 기본 random) 색을 value만큼 *영구* 획득(applyColorBoost).
+  // === 종족 카드 확장 6 (P1 나방 토양 시드) — 적 burn/poison 스택 소비 신규 핸들러 2종 ===
+  | 'consume-burn'        // 적 burn 스택 *전부 제거* → 제거량 × value 추가 피해. consume-vulnerable 패턴 동일.
+  | 'consume-poison';     // 적 poison 스택 *전부 제거* → 제거량 × value 추가 피해. consume-vulnerable 패턴 동일.
 
 /** 효과 대상 — target. */
 export type EffectTarget = 'self' | 'enemy' | 'all-enemies' | 'random-enemy';

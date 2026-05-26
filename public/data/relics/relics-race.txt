@@ -61,8 +61,8 @@ name = 연사의 깃
 rank = common
 source = race
 trigger = on-card-played-after
-effects = attacks-to-strength:3
-flavor = 쉬지 않고 떨리는 깃. 공격 카드를 세 번 낼 때마다, 어깨에 힘이 한 줌씩 더 쌓인다. 연사가 빠를수록 빨리 쌓인다.
+effects = attacks-to-strength:5
+flavor = 쉬지 않고 떨리는 깃. 공격이 거듭 박힐수록 어깨에 힘이 차곡차곡 쌓이고, 다단 공격은 박히는 그만큼 빨리 쌓는다.
 
 [relic.r-race-moth-windtally]
 name = 바람의 셈

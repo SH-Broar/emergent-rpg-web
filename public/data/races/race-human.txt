@@ -19,7 +19,8 @@ starting_deck = c-human-balance, c-human-balance, c-human-tailwind, c-human-tail
 #   균형(balance/evenblade/twohands) · 유연(adapt/tailwind/regroup) · 적응(adaptstrike) ·
 #   디버프(resolve/pin/combo) · 한방(decisive). (deckSize=starting_deck 길이라 *덱 채움*에는 미사용,
 #   활동 보상 풀로만 쓰임 — Item 37-③에서 다양화.)
-seed_cards = c-human-balance, c-human-adapt, c-human-tailwind, c-human-resolve, c-human-evenblade, c-human-adaptstrike, c-human-pin, c-human-combo, c-human-twohands, c-human-regroup, c-human-decisive, c-strike
+# 시드 풀 - 컨셉별 균형(검토 P2-C 확대): 시그니처 + 공방 하이브리드 + 디버프 다양 + 적응 + 큰 일격 + 아이언클래드 색채(bloodrage·warcry·finalblow).
+seed_cards = c-human-balance, c-human-adapt, c-human-tailwind, c-human-resolve, c-human-evenblade, c-human-adaptstrike, c-human-pin, c-human-combo, c-human-twohands, c-human-regroup, c-human-decisive, c-human-riposte, c-human-hamstring, c-human-shatterguard, c-human-pivot, c-human-tradeblow, c-human-secondwind, c-human-tempo, c-human-disarm, c-human-laceration, c-human-emberbrand, c-human-fullbreak, c-human-followthrough, c-human-bulwarkblow, c-human-lastline, c-human-allout, c-human-overcome, c-human-bloodrage, c-human-warcry, c-human-finalblow, c-strike
 seed_relics = r-race-human
 hp_bonus = 0
 mp_bonus = 0

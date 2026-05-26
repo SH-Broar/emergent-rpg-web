@@ -157,15 +157,22 @@ const DAMAGE_EFFECT_KINDS = new Set<string>([
   'damage', 'damage-min-color', 'damage-top-color', 'damage-color-count',
   'damage-per-debuff', 'consume-vulnerable', 'damage-from-hp', 'damage-per-hand',
   'block-to-damage', 'spend-all-energy', 'damage-per-companion', 'damage-per-relic',
-  'growing-damage',
+  'growing-damage', 'damage-low-hand',
 ]);
 
-/** triggeredBy 카드 id가 *공격 카드*인지 — 데이터 정의로 판정. */
-function isAttackCardId(id: string | undefined): boolean {
-  if (!id) return false;
+/**
+ * 카드의 *hit 수* — damage 계열 효과 개수. 다단 공격(c-moth-gale, c-moth-barrage 등)이
+ * 카운터형 유물(연사의 깃·예리한 가죽끈 등)에서 효과당 1회씩 카운트되도록 사용.
+ * 데미지 효과가 하나도 없으면 0(공격 카드가 아니거나 비-데미지 효과만 보유) —
+ * 옛 isAttackCardId 가드를 hits>0 검사로 흡수.
+ */
+function attackHitCount(id: string | undefined): number {
+  if (!id) return 0;
   const card = useDataStore().cards.get(id);
-  if (!card) return false;
-  return card.effects.some((e) => DAMAGE_EFFECT_KINDS.has(e.kind));
+  if (!card) return 0;
+  let hits = 0;
+  for (const e of card.effects) if (DAMAGE_EFFECT_KINDS.has(e.kind)) hits++;
+  return hits;
 }
 
 /** 손패 상한 — 다른 드로우 경로(rize-relay 등)와 일관. */
@@ -299,6 +306,19 @@ const HANDLERS: Record<string, RelicEffectHandler> = {
     if (!ctx.combat) return;
     drawIntoHand(ctx.combat, eff.value ?? 0);
   },
+  // 전투 시작 시 손패에서 N장(또는 가진 만큼)을 임의로 덱(drawPile)으로 반환.
+  // 빈손 빌드 진입 시드 — 5장 starting hand + N=2면 손 3장으로 전투 시작.
+  // 반환된 카드는 drawPile 끝에 쌓이며, 후속 draw 시 자동 셔플 시점에 섞임.
+  'combat-start-return-to-deck': (eff, ctx) => {
+    if (!ctx.combat) return;
+    const want = eff.value ?? 0;
+    const n = Math.min(want, ctx.combat.hand.length);
+    for (let i = 0; i < n; i++) {
+      const idx = Math.floor(Math.random() * ctx.combat.hand.length);
+      const [card] = ctx.combat.hand.splice(idx, 1);
+      ctx.combat.drawPile.push(card);
+    }
+  },
   // 전투 시작 시 *특정 카드 1장*을 손에 지급. arg=cardId. (나방: 0코 2드로우·손에 남는 카드)
   // 손패 가득(10)이면 버린 더미로. 이 카드는 combat 전용 인스턴스 — 런 덱을 오염시키지 않는다.
   'combat-start-hand-card': (eff, ctx) => {
@@ -370,21 +390,42 @@ const HANDLERS: Record<string, RelicEffectHandler> = {
       boostRandomColor(1);
     }
   },
+  // *공격 hit 수*만큼 카운터 누적 — 다단 공격 1장 = N회 카운트(P0-B 수정).
+  //   - c-moth-gale(2 hit) 1장 사용 → +2 카운트. c-moth-barrage-plus(4 hit) → +4.
+  //   - 임계(n) 도달 시 +strength:1 그리고 *초과분 carry*(다음 사이클로 이월).
+  //     예: n=4, 누적 7 → 1회 발동·잔여 3. 큰 다단 카드 한 장이 동시에 여러 번 발동될 수도 있음.
+  //   - cards-to-* 핸들러는 텍스트가 "카드 N장 사용마다"이므로 1회 카운트 유지(변경 안 함).
   'attacks-to-strength': (eff, ctx) => {
-    if (!ctx.combat || !isAttackCardId(ctx.triggeredBy)) return;
+    if (!ctx.combat) return;
+    const hits = attackHitCount(ctx.triggeredBy);
+    if (hits <= 0) return;
     const n = eff.value ?? 4;
-    if (bumpCounter(ctx.combat, ctx.relic?.id, eff.kind) >= n) {
-      resetCounter(ctx.combat, ctx.relic?.id, eff.kind);
+    if (n <= 0) return;
+    const key = eff.kind;
+    if (!ctx.combat.relicCounters) ctx.combat.relicCounters = {};
+    const ck = `${ctx.relic?.id ?? '?'}:${key}`;
+    let acc = (ctx.combat.relicCounters[ck] ?? 0) + hits;
+    while (acc >= n) {
+      acc -= n;
       applyStatusToPlayer(ctx.combat, 'strength', 1);
     }
+    ctx.combat.relicCounters[ck] = acc;
   },
   'attacks-to-color': (eff, ctx) => {
-    if (!ctx.combat || !isAttackCardId(ctx.triggeredBy)) return;
+    if (!ctx.combat) return;
+    const hits = attackHitCount(ctx.triggeredBy);
+    if (hits <= 0) return;
     const n = eff.value ?? 3;
-    if (bumpCounter(ctx.combat, ctx.relic?.id, eff.kind) >= n) {
-      resetCounter(ctx.combat, ctx.relic?.id, eff.kind);
+    if (n <= 0) return;
+    const key = eff.kind;
+    if (!ctx.combat.relicCounters) ctx.combat.relicCounters = {};
+    const ck = `${ctx.relic?.id ?? '?'}:${key}`;
+    let acc = (ctx.combat.relicCounters[ck] ?? 0) + hits;
+    while (acc >= n) {
+      acc -= n;
       boostRandomColor(1);
     }
+    ctx.combat.relicCounters[ck] = acc;
   },
 
   // ===== 반응형 (on-damage-taken) =====
