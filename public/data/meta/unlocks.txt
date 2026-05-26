@@ -22,3 +22,92 @@ description = 빛을 본질로 하는 신적 그릇.
 resource = hyperion
 cost = 60
 grants_race = arcana
+
+# === 종족 앵커 유물 (Item 37-③) ===
+# 4종족 × 3 = 12종. 해석 자원으로 구매. 한 번 해금하면 그 종족 런 시작 시 자동 지급(기존 seed_relics 위에 추가).
+# 비용 8(해석) — 종족 해금(히페리온 30~60)보다 가볍게. 3개 모두 사면 24로 종족 한 명을 본격 정체성화.
+# source=race 유물이라 풀 진입은 안 함. 오직 시작 지급 경로(run-start)에서만 합류.
+
+[unlock.u-relic-human-breath]
+name = 고른 호흡 (인간)
+description = 인간 런 시작에 고른 호흡을 함께 받는다. 매 전투 시작 시 얇은 벽 한 겹과 손에 한 장.
+resource = insight
+cost = 8
+grants_relic = r-race-human-breath
+
+[unlock.u-relic-human-counterweight]
+name = 균형추 (인간)
+description = 인간 런 시작에 균형추를 함께 받는다. 매 전투 시작 시 힘과 민첩이 한 칸씩 선다.
+resource = insight
+cost = 8
+grants_relic = r-race-human-counterweight
+
+[unlock.u-relic-human-token]
+name = 적응의 증표 (인간)
+description = 인간 런 시작에 적응의 증표를 함께 받는다. 매 호흡마다 발밑이 한 겹 더 단단해진다.
+resource = insight
+cost = 8
+grants_relic = r-race-human-token
+
+[unlock.u-relic-moth-lightbody]
+name = 가벼운 몸 (나방)
+description = 나방 런 시작에 가벼운 몸을 함께 받는다. 매 전투 시작 손에 한 장 더, 호흡마다 한 장 더.
+resource = insight
+cost = 8
+grants_relic = r-race-moth-lightbody
+
+[unlock.u-relic-moth-rapidquill]
+name = 연사의 깃 (나방)
+description = 나방 런 시작에 연사의 깃을 함께 받는다. 공격을 세 번 낼 때마다 어깨에 힘이 쌓인다.
+resource = insight
+cost = 8
+grants_relic = r-race-moth-rapidquill
+
+[unlock.u-relic-moth-windtally]
+name = 바람의 셈 (나방)
+description = 나방 런 시작에 바람의 셈을 함께 받는다. 손이 다섯 번 지날 때마다 색 하나가 한 칸 짙어진다.
+resource = insight
+cost = 8
+grants_relic = r-race-moth-windtally
+
+[unlock.u-relic-phantom-fullhand]
+name = 쥔 손의 무게 (팬텀)
+description = 팬텀 런 시작에 쥔 손의 무게를 함께 받는다. 매 전투 시작 손에 한 장 더, 손패 유지.
+resource = insight
+cost = 8
+grants_relic = r-race-phantom-fullhand
+
+[unlock.u-relic-phantom-ghostmemory]
+name = 유령의 기억 (팬텀)
+description = 팬텀 런 시작에 유령의 기억을 함께 받는다. 매 호흡마다 어둠이 발밑을 가린다.
+resource = insight
+cost = 8
+grants_relic = r-race-phantom-ghostmemory
+
+[unlock.u-relic-phantom-staticquill]
+name = 정전기 깃 (팬텀)
+description = 팬텀 런 시작에 정전기 깃을 함께 받는다. 패를 쥘 때마다 손끝에서 정전기가 튄다.
+resource = insight
+cost = 8
+grants_relic = r-race-phantom-staticquill
+
+[unlock.u-relic-arcana-prism]
+name = 프리즘 코어 (아르카나)
+description = 아르카나 런 시작에 프리즘 코어를 함께 받는다. 최고색이 방어, 색 다채로움이 힘이 된다.
+resource = insight
+cost = 8
+grants_relic = r-race-arcana-prism
+
+[unlock.u-relic-arcana-seed]
+name = 무지개 씨앗 (아르카나)
+description = 아르카나 런 시작에 무지개 씨앗을 함께 받는다. 카드 네 번에 색 하나가 한 칸 깨어난다.
+resource = insight
+cost = 8
+grants_relic = r-race-arcana-seed
+
+[unlock.u-relic-arcana-amp]
+name = 공명 증폭기 (아르카나)
+description = 아르카나 런 시작에 공명 증폭기를 함께 받는다. 호흡의 끝수가 맞아떨어지는 턴마다 무작위 색이 한 칸 짙어진다.
+resource = insight
+cost = 8
+grants_relic = r-race-arcana-amp

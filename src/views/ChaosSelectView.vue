@@ -183,6 +183,23 @@ async function startRun() {
     }
   }
 
+  // === 메타로 해금한 종족 앵커 유물 자동 지급 (Item 37-③ 메타 배선) ===
+  // 규약: id가 `r-race-<raceId>-...` 인 유물은 그 종족 앵커. 다른 종족 해금분은 누출 0.
+  // 기본 r-race-<raceId> 1종은 위 seed_relics 루프에서 이미 지급됨(중복 push 가드).
+  const racePrefix = `r-race-${r.id}-`;
+  const alreadyOwned = new Set(run.data.relics.map((rel) => rel.id));
+  for (const relicId of meta.unlockedRelicIds) {
+    if (!relicId.startsWith(racePrefix)) continue;
+    if (alreadyOwned.has(relicId)) continue;
+    const relic = data.relics.get(relicId);
+    if (!relic) continue;
+    run.data.relics.push(relic);
+    alreadyOwned.add(relicId);
+    if (!run.data.newRelicEncounters.includes(relic.id)) {
+      run.data.newRelicEncounters.push(relic.id);
+    }
+  }
+
   // === 시작형 카오스 *재적용* — 덱·컬러 셋업이 끝난 시점에 1회. ===
   // start-inject-card(저주덱)/seed-seal(시드봉인)은 위 덱·컬러 셋업을 덮어쓰지 않도록 *여기서* 적용.
   // (start-hp/time-limit/color-seal는 startRun 내부에서 이미 1회 적용됐고 idempotent하지 않으므로
