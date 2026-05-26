@@ -23,6 +23,7 @@ import {
   listCraftablePotions,
   potionCostFor,
 } from '@/systems/workshop';
+import SceneCharacter from '@/components/SceneCharacter.vue';
 import type { Card, Companion, Item, Npc, Rank } from '@/data/schemas';
 
 const router = useRouter();
@@ -291,6 +292,10 @@ const rankColors: Record<string, string> = {
 </script>
 
 <template>
+  <SceneCharacter
+    v-if="ui.debug.showPortraits"
+    mood="idle"
+  />
   <main class="village-view">
     <header class="hdr">
       <button class="back" @click="leave">← 맵으로</button>

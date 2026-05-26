@@ -13,15 +13,18 @@ import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
+import { useUiStore } from '@/stores/ui';
 import { rng } from '@/systems/rng';
 import { performGather, isGatherDone, gatherScoreThreshold } from '@/systems/gathering';
 import GatherTap from '@/components/gather/GatherTap.vue';
 import GatherMatrix from '@/components/gather/GatherMatrix.vue';
 import GatherReact from '@/components/gather/GatherReact.vue';
+import SceneCharacter from '@/components/SceneCharacter.vue';
 
 const router = useRouter();
 const run = useRunStore();
 const data = useDataStore();
+const ui = useUiStore();
 
 type GameKind = 'tap' | 'matrix' | 'react';
 
@@ -91,6 +94,10 @@ onMounted(() => {
 </script>
 
 <template>
+  <SceneCharacter
+    v-if="ui.debug.showPortraits"
+    :mood="phase === 'result' ? (reachedLate ? 'happy' : 'curious') : 'curious'"
+  />
   <main class="gather-view">
     <section v-if="alreadyDone" class="done">
       <h1>{{ nodeName }}</h1>

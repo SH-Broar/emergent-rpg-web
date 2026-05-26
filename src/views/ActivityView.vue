@@ -12,6 +12,7 @@ import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
+import { useUiStore } from '@/stores/ui';
 import { colorLabel } from '@/systems/labels';
 import { rng } from '@/systems/rng';
 import {
@@ -21,11 +22,13 @@ import {
   markActivityDone,
   isActivityDone,
 } from '@/systems/activity';
+import SceneCharacter from '@/components/SceneCharacter.vue';
 import type { ColorKey } from '@/systems/colors';
 
 const router = useRouter();
 const run = useRunStore();
 const data = useDataStore();
+const ui = useUiStore();
 
 const COLORS: { key: ColorKey; hex: string }[] = [
   { key: 'fire', hex: '#ff8e8e' }, { key: 'water', hex: '#8eedff' },
@@ -124,6 +127,10 @@ onMounted(() => {
 </script>
 
 <template>
+  <SceneCharacter
+    v-if="ui.debug.showPortraits"
+    :mood="phase === 'result' ? (success ? 'happy' : 'sad') : phase === 'rolling' ? 'tense' : 'curious'"
+  />
   <main class="activity-view">
     <section v-if="alreadyDone" class="done">
       <h1>{{ nodeName }}</h1>

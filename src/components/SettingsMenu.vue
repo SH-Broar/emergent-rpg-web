@@ -14,13 +14,21 @@ import { computed, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
+import { useUiStore } from '@/stores/ui';
 
 const props = defineProps<{ open: boolean }>();
 const emit = defineEmits<{ (e: 'close'): void }>();
 
 const run = useRunStore();
 const data = useDataStore();
+const ui = useUiStore();
 const router = useRouter();
+
+/** 프로토타입 토글 — 기존 setDebugFlag 패턴을 그대로 사용해 localStorage 영속. */
+function togglePortraits(e: Event) {
+  const checked = (e.target as HTMLInputElement).checked;
+  ui.setDebugFlag('showPortraits', checked);
+}
 
 const timeline = computed(() => data.timelines.get(run.data.timelineId));
 
@@ -69,7 +77,21 @@ function doAbandon() {
             </div>
           </section>
 
-          <!-- 2) 런 포기 -->
+          <!-- 2) 프로토타입 — 그림 placeholder 토글 (기본 OFF). -->
+          <section class="set-sec">
+            <h3 class="set-sec__title">프로토타입</h3>
+            <p class="set-hint">캐릭터가 들어갈 자리에 도형이 표시됩니다. 그림 작업용 미리보기로, 게임 진행에는 영향이 없습니다.</p>
+            <label class="set-toggle">
+              <input
+                type="checkbox"
+                :checked="ui.debug.showPortraits"
+                @change="togglePortraits"
+              />
+              <span>그림 프로토타입 (도형 placeholder 표시)</span>
+            </label>
+          </section>
+
+          <!-- 3) 런 포기 -->
           <section class="set-sec">
             <h3 class="set-sec__title">런</h3>
             <p class="set-hint">진행 중인 런을 포기합니다. 진행도(컬러·도감 등)는 메타에 반영되고, 활성 런은 종료됩니다.</p>
@@ -192,6 +214,24 @@ function doAbandon() {
 }
 .set-confirm__q { color: #ff8e8e; margin: 0; font-size: 0.9rem; line-height: 1.4; }
 .set-confirm__actions { display: flex; gap: 0.5rem; }
+
+/* 토글 한 줄 — 체크박스 + 라벨. */
+.set-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.85rem;
+  color: #d6d6e0;
+  cursor: pointer;
+  user-select: none;
+  padding: 0.35rem 0.1rem;
+}
+.set-toggle input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #c08eff;
+  cursor: pointer;
+}
 
 .set-fade-enter-active, .set-fade-leave-active { transition: opacity 180ms ease; }
 .set-fade-enter-from, .set-fade-leave-to { opacity: 0; }

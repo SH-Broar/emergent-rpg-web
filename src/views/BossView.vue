@@ -31,6 +31,7 @@ import { useEnemyTurn } from '@/composables/useEnemyTurn';
 import { useCombatKeys } from '@/composables/useCombatKeys';
 import StruggleMinigame from '@/components/StruggleMinigame.vue';
 import CombatHand from '@/components/CombatHand.vue';
+import SceneCharacter from '@/components/SceneCharacter.vue';
 import type { Boss, BossPhase, BossSignatureVariant, Card, CardEffect, Combatant, Item, Monster } from '@/data/schemas';
 
 const router = useRouter();
@@ -529,6 +530,11 @@ function useSkillSlot(slot: number) {
 </script>
 
 <template>
+  <!-- 그림 프로토타입 placeholder — 보스전 phase에 따라 표정 전환. -->
+  <SceneCharacter
+    v-if="ui.debug.showPortraits"
+    :mood="phase === 'victory' ? 'happy' : phase === 'defeat' ? 'sad' : phase === 'intro' ? 'curious' : 'tense'"
+  />
   <main v-if="boss" class="boss-view">
     <!-- Intro -->
     <section v-if="phase === 'intro'" class="intro">

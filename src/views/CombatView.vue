@@ -34,6 +34,7 @@ import { useEnemyTurn } from '@/composables/useEnemyTurn';
 import { useCombatKeys } from '@/composables/useCombatKeys';
 import StruggleMinigame from '@/components/StruggleMinigame.vue';
 import CombatHand from '@/components/CombatHand.vue';
+import SceneCharacter from '@/components/SceneCharacter.vue';
 import type { Card, CardEffect, Combatant, Item, Monster } from '@/data/schemas';
 
 const router = useRouter();
@@ -406,6 +407,11 @@ void ui;
 </script>
 
 <template>
+  <!-- 그림 프로토타입 placeholder — phase에 따라 표정 전환. fixed 위치라 레이아웃 무영향. -->
+  <SceneCharacter
+    v-if="ui.debug.showPortraits"
+    :mood="phase === 'victory' ? 'happy' : phase === 'defeat' ? 'sad' : 'tense'"
+  />
   <!-- 전투 진행 -->
   <main v-if="phase === 'combat' && combat" class="combat-view">
     <header class="hdr">

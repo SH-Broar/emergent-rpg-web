@@ -22,6 +22,7 @@ import { acquireRelic } from '@/systems/relic';
 import { applyColorBoost, applyColorBoostAll, type ColorKey } from '@/systems/colors';
 import { colorLabel, cardDetailText, relicDetailText, josa } from '@/systems/labels';
 import { rng } from '@/systems/rng';
+import SceneCharacter from '@/components/SceneCharacter.vue';
 import type { Card, Event, EventChoice, EventChoiceEffect } from '@/data/schemas';
 
 const ALL_8_COLORS: ColorKey[] = ['fire', 'water', 'electric', 'iron', 'earth', 'wind', 'light', 'dark'];
@@ -325,6 +326,10 @@ onMounted(() => {
 </script>
 
 <template>
+  <SceneCharacter
+    v-if="ui.debug.showPortraits"
+    :mood="result ? 'happy' : 'curious'"
+  />
   <main class="event-view">
     <article v-if="currentEvent" class="event">
       <h1>{{ currentEvent.name }}</h1>

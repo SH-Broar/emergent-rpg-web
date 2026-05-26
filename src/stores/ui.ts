@@ -25,6 +25,12 @@ export interface DebugFlags {
   unlockAll: boolean;
   /** 콘솔에 상세 로그. */
   verboseLog: boolean;
+  /**
+   * 그림 프로토타입 모드. ON이면 각 페이지에 SceneCharacter 도형 placeholder가
+   * 등장한다. 실제 일러스트 작업 전 자리·움직임 미리보기 용도. 기본 OFF — 원본
+   * 게임은 단 1픽셀도 바뀌지 않는다(각 뷰는 v-if로 DOM에서 완전히 빠진다).
+   */
+  showPortraits: boolean;
 }
 
 const DEFAULT_FLAGS: DebugFlags = {
@@ -33,6 +39,7 @@ const DEFAULT_FLAGS: DebugFlags = {
   fastMeta: false,
   unlockAll: false,
   verboseLog: false,
+  showPortraits: false,
 };
 
 const DEBUG_STORAGE_KEY = 'rdc-debug-v1';
