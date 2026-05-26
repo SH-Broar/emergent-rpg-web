@@ -478,12 +478,8 @@ const formName = computed(() => data.races.get(run.data.transform?.formRaceId ??
 /** 변신 해제 스택 (Item 28) — '본모습' 카드 -2, 0 이하에서 원복. 구세이브 폴백 5. */
 const releaseStack = computed(() => run.data.transform?.releaseStack ?? 5);
 
-// === 목숨 (Item 28) ===
-const lives = computed(() => run.data.lives ?? 2);
-const maxLives = computed(() => run.data.maxLives ?? 2);
-const lifeHearts = computed(() =>
-  '❤'.repeat(Math.max(0, lives.value)) + '🤍'.repeat(Math.max(0, maxLives.value - lives.value)),
-);
+// 목숨 표기(=하트)는 화면 상단 HUD에서만 노출 — 전투 내부 중복 표기 제거.
+// loseLife/flee 패배 분기는 store API로 직접 호출되므로 ref가 필요 없다.
 
 // === 전투 포션 (combat=true) — 턴당 1회, 마나 무관 ===
 const combatPotions = computed<Item[]>(() => run.data.items.filter((i) => i.combat));
@@ -572,9 +568,7 @@ function toggleTools() { toolsOpen.value = !toolsOpen.value; }
             <span v-if="combat.player.block > 0" class="block" :class="{ 'block--pulse': fx.playerShield.value }">🛡 {{ combat.player.block }}</span>
           </div>
           <div class="mana">마나 {{ combat.mana }} / {{ combat.maxMana }}</div>
-          <div class="lives" v-tooltip="`목숨 ${lives}/${maxLives}: 쓰러져도 목숨이 남으면 도망쳐 살아남는다.`">
-            {{ lifeHearts }} <span class="lives__num">{{ lives }}/{{ maxLives }}</span>
-          </div>
+          <!-- 목숨 표기는 상단 HUD에서만 유일하게 노출 — 전투 내부 중복 제거(사용자 요구). -->
           <ul class="statuses">
             <li v-for="s in statusEntries(combat.player)" :key="s.key" class="status" :data-key="s.key" v-tooltip="statusDescription(s.key)">
               {{ s.label }} ×{{ s.count }}

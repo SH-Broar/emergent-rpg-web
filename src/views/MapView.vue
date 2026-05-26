@@ -537,7 +537,11 @@ const visibleEdges = computed<{ a: Node; b: Node; key: string }[]>(() => {
 
 // === 수동 팬 (드래그) + 줌 (wheel/버튼/핀치) ===
 const panOffset = ref({ x: 0, y: 0 }); // focusNode 기준 월드 단위 이동(0=focus 추적).
-const scale = ref(1);
+// 기본 줌 — 모바일(coarse pointer)에서는 살짝 확대된 상태로 시작해 노드가 작게 보이지 않게.
+// 데스크톱은 1, 모바일은 1.35. 사용자가 줌버튼/핀치/휠로 자유 조정.
+const DEFAULT_SCALE = (typeof window !== 'undefined'
+  && window.matchMedia?.('(hover: none) and (pointer: coarse)').matches) ? 1.35 : 1;
+const scale = ref(DEFAULT_SCALE);
 const SCALE_MIN = 0.3;
 const SCALE_MAX = 3.0;
 
@@ -820,7 +824,7 @@ function onPointerUp(e: PointerEvent) {
  */
 function recenterOnCurrent() {
   panOffset.value = { x: 0, y: 0 };
-  scale.value = 1;
+  scale.value = DEFAULT_SCALE; // 모바일은 1.35, 데스크톱은 1.
   selectedNodeId.value = null;
 }
 
@@ -1389,9 +1393,12 @@ function enterLabel(): string {
 @media (max-width: 720px) {
   .map-view {
     grid-template-columns: 1fr;
-    /* 아래 행을 *항상 46vh로 예약* — 노드 선택으로 드로어가 떴다 사라져도 지도(graph) 높이가
-       변하지 않아 화면이 흔들리지 않는다. 미선택 시 아래는 빈 공간(추후 채움). */
-    grid-template-rows: 1fr 46vh;
+    /* 지도 영역을 1.3~1.4배 확보 — 기존 1fr/46vh → 1fr/32vh (지도 ≈ 68vh).
+       드로어는 미선택 시 빈 패널(노드 선택 안내)이 채워 화면이 흔들리지 않는다. */
+    grid-template-rows: 1fr 32vh;
+    /* 좌우 패딩도 살짝 축소 — 지도가 가로로 더 넉넉히. */
+    padding: 0.6rem 0.6rem 0.6rem;
+    gap: 0.6rem;
   }
   .graph {
     grid-column: 1;
@@ -1402,10 +1409,10 @@ function enterLabel(): string {
     grid-row: 2;
     position: static;
     height: 100%;
-    max-height: 46vh;
+    max-height: 32vh;
     overflow-y: auto;
+    padding: 0.8rem;
     border-radius: 12px 12px 0 0;
-    /* 완전 불투명 — 지도 위로 비치지 않게 가시성 확보. */
     background: #14151d;
     border-color: rgba(246, 232, 184, 0.25);
     box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.55);
