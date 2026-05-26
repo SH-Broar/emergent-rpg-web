@@ -10,12 +10,12 @@
  *  - 각 슬롯/버튼에 Tooltip 부착
  */
 
-import { computed } from 'vue';
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import Tooltip from '@/components/Tooltip.vue';
 
-defineProps<{
+const props = defineProps<{
   characterOpen: boolean;
   inventoryOpen: boolean;
   settingsOpen: boolean;
@@ -25,6 +25,41 @@ const emit = defineEmits<{
   (e: 'toggle-inventory'): void;
   (e: 'toggle-settings'): void;
 }>();
+
+/**
+ * 모바일 통합 메뉴 — 상단 버튼 3개를 하나의 햄버거로 묶어 펼친다.
+ * 화면 여백이 좁아 슬롯(HP/골드/시간)이 늘어나면 버튼이 가려지던 문제(#3) 회피.
+ * 데스크톱은 기존 3버튼 유지 — 미디어 쿼리로 분기.
+ */
+const menuOpen = ref(false);
+function toggleMenu() { menuOpen.value = !menuOpen.value; }
+function openMenuItem(target: 'character' | 'inventory' | 'settings') {
+  menuOpen.value = false;
+  if (target === 'character') emit('toggle-character');
+  else if (target === 'inventory') emit('toggle-inventory');
+  else emit('toggle-settings');
+}
+// 메뉴 외부 클릭 시 닫기. 키보드 ESC 도 지원.
+function onDocClick(e: MouseEvent) {
+  if (!menuOpen.value) return;
+  const tgt = e.target as HTMLElement | null;
+  if (tgt?.closest('.menu-pop, .menu-toggle')) return;
+  menuOpen.value = false;
+}
+function onKey(e: KeyboardEvent) { if (e.key === 'Escape') menuOpen.value = false; }
+if (typeof window !== 'undefined') {
+  window.addEventListener('click', onDocClick);
+  window.addEventListener('keydown', onKey);
+  onBeforeUnmount(() => {
+    window.removeEventListener('click', onDocClick);
+    window.removeEventListener('keydown', onKey);
+  });
+}
+// 메뉴 모달 중 하나가 열리면(외부에서 열렸을 수도 있음) 메뉴 자체도 접는다 — 두 패널이 동시에 떠 있을 이유 없음.
+watch(
+  () => [props.characterOpen, props.inventoryOpen, props.settingsOpen],
+  (open) => { if (open.some(Boolean)) menuOpen.value = false; },
+);
 
 const run = useRunStore();
 const data = useDataStore();
@@ -143,10 +178,10 @@ const persistentStatuses = computed(() => {
         </div>
       </Tooltip>
 
-      <!-- 메뉴 버튼 3개 -->
+      <!-- 데스크톱: 3 버튼 분리. (모바일에서는 .desk-only로 숨김) -->
       <Tooltip text="캐릭터 — 6 컬러, 스탯, 덱, 동료를 본다.">
         <button
-          class="slot slot--btn slot--menu"
+          class="slot slot--btn slot--menu desk-only"
           :class="{ 'slot--btn-on': characterOpen }"
           aria-label="캐릭터 메뉴"
           @click="emit('toggle-character')"
@@ -158,7 +193,7 @@ const persistentStatuses = computed(() => {
 
       <Tooltip text="소지품 — 현재 일차, 유물, 아이템을 본다.">
         <button
-          class="slot slot--btn slot--menu"
+          class="slot slot--btn slot--menu desk-only"
           :class="{ 'slot--btn-on': inventoryOpen }"
           aria-label="소지품 메뉴"
           @click="emit('toggle-inventory')"
@@ -170,7 +205,7 @@ const persistentStatuses = computed(() => {
 
       <Tooltip text="설정 — 현재 시대 확인, 런 포기.">
         <button
-          class="slot slot--btn slot--menu"
+          class="slot slot--btn slot--menu desk-only"
           :class="{ 'slot--btn-on': settingsOpen }"
           aria-label="설정 메뉴"
           @click="emit('toggle-settings')"
@@ -179,6 +214,32 @@ const persistentStatuses = computed(() => {
           <span class="lbl">설정</span>
         </button>
       </Tooltip>
+
+      <!-- 모바일: 햄버거 1개 + 드롭다운(.mob-only 로만 노출). 버튼이 늘어나도 가려지지 않게. -->
+      <div class="menu-wrap mob-only">
+        <button
+          class="slot slot--btn slot--menu menu-toggle"
+          :class="{ 'slot--btn-on': menuOpen || characterOpen || inventoryOpen || settingsOpen }"
+          aria-label="메뉴"
+          :aria-expanded="menuOpen"
+          @click.stop="toggleMenu"
+        >
+          <span class="emoji">≡</span>
+        </button>
+        <transition name="menu-fade">
+          <div v-if="menuOpen" class="menu-pop" role="menu">
+            <button class="menu-pop__item" :class="{ 'menu-pop__item--on': characterOpen }" role="menuitem" @click="openMenuItem('character')">
+              <span class="menu-pop__emoji">👤</span><span class="menu-pop__label">캐릭터</span>
+            </button>
+            <button class="menu-pop__item" :class="{ 'menu-pop__item--on': inventoryOpen }" role="menuitem" @click="openMenuItem('inventory')">
+              <span class="menu-pop__emoji">🎒</span><span class="menu-pop__label">소지품</span>
+            </button>
+            <button class="menu-pop__item" :class="{ 'menu-pop__item--on': settingsOpen }" role="menuitem" @click="openMenuItem('settings')">
+              <span class="menu-pop__emoji">⚙</span><span class="menu-pop__label">설정</span>
+            </button>
+          </div>
+        </transition>
+      </div>
     </div>
   </header>
 </template>
@@ -252,7 +313,49 @@ const persistentStatuses = computed(() => {
 
 .slot--menu { margin-left: 0.15rem; }
 
-/* 모바일 압축 — 375px에서 4슬롯 + 3버튼 한 줄 */
+/* 통합 메뉴 (모바일) — 햄버거 1개 + 드롭다운. */
+.menu-wrap { position: relative; }
+.menu-pop {
+  position: absolute;
+  top: calc(100% + 0.45rem);
+  right: 0;
+  z-index: calc(var(--z-hud) + 1);
+  display: flex;
+  flex-direction: column;
+  min-width: 132px;
+  padding: 0.3rem;
+  background: rgba(20, 22, 30, 0.98);
+  border: 1px solid rgba(192, 142, 255, 0.4);
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.55);
+}
+.menu-pop__item {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.55rem 0.7rem;
+  font: inherit;
+  font-size: 0.86rem;
+  color: #d6d6e0;
+  background: transparent;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: left;
+  white-space: nowrap;
+}
+.menu-pop__item:hover { background: rgba(192, 142, 255, 0.15); }
+.menu-pop__item--on { background: rgba(192, 142, 255, 0.22); color: #f6e8b8; }
+.menu-pop__emoji { font-size: 1rem; }
+.menu-pop__label { font-weight: 600; }
+
+.menu-fade-enter-active, .menu-fade-leave-active { transition: opacity 130ms ease, transform 130ms ease; }
+.menu-fade-enter-from, .menu-fade-leave-to { opacity: 0; transform: translateY(-4px); }
+
+/* 데스크톱 기본: 3 버튼 노출, 햄버거 숨김. */
+.mob-only { display: none; }
+
+/* 모바일 압축 — 4슬롯 + (3버튼 대신) 햄버거 1개 한 줄 */
 @media (max-width: 640px) {
   .hud { padding: 0.28rem 0.35rem 0.36rem; font-size: 0.72rem; gap: 0.2rem; }
   .row { gap: 0.2rem; }
@@ -262,5 +365,8 @@ const persistentStatuses = computed(() => {
   .slot--hp .bar { height: 6px; }
   .emoji { font-size: 0.85rem; }
   .slot--menu { margin-left: 0.08rem; }
+  /* 데스크톱 전용 3 버튼 숨기고, 햄버거 1개 노출 — 슬롯이 늘어나도 메뉴가 가려지지 않게. */
+  .desk-only { display: none !important; }
+  .mob-only { display: inline-flex; align-items: center; }
 }
 </style>

@@ -18,15 +18,14 @@ import {
   applyMonsterDrop,
   clearCombat,
   struggle,
-  statusBonusForCardEffectKind,
   resolveIntent,
+  previewCardEffectValue,
+  previewIntentLabel,
   type CombatVictoryDrop,
 } from '@/systems/combat';
 import { effectiveContent } from '@/systems/map';
 import { applyCombatVictoryReward } from '@/systems/combat-rewards';
-import { colorBonusForCardEffectKind } from '@/systems/stats';
-import { bonusesFromEffective } from '@/systems/equipment';
-import { cardEffectKindLabel, cardEffectDescription, statusDescription, statusLabel, intentLabel, intentDescription, cardDetailText, lockBadgeText, lockTooltip, josa } from '@/systems/labels';
+import { cardEffectKindLabel, cardEffectDescription, statusDescription, statusLabel, intentDescription, cardDetailText, lockBadgeText, lockTooltip, josa } from '@/systems/labels';
 import { useItem } from '@/systems/item';
 import { activeSkillSlots, useSkill } from '@/systems/skills';
 import { useCombatFx, CARD_PLAY_DELAY } from '@/composables/useCombatFx';
@@ -241,14 +240,17 @@ function canPlay(c: Card): boolean {
 // === 구속/삼킴(grapple) + 발버둥 ===
 const grapple = computed(() => combat.value?.grapple);
 const obscured = computed(() => (combat.value?.obscuredTurns ?? 0) > 0);
-/** 이번 적 턴 의도 목록 — 멀티액션이면 여러 개. 동적 의도(resolveIntent)로 *현재 상태* 기준 실시간 해석. */
-const enemyIntentList = computed<string[]>(() => {
+/**
+ * 이번 적 턴 의도 목록 — 멀티액션이면 여러 개. 동적 의도(resolveIntent)로 *현재 상태* 기준 해석 +
+ * preview 라벨러로 *최종 수치 (힘/약화/취약/유령화/받는피해 배수 전부 반영된 들어갈 데미지)* 표시.
+ */
+const enemyIntentList = computed<{ raw: string; label: string }[]>(() => {
   const c = combat.value;
   if (!c) return [];
-  const raw = (c.enemyIntentQueue && c.enemyIntentQueue.length > 0)
+  const arr = (c.enemyIntentQueue && c.enemyIntentQueue.length > 0)
     ? c.enemyIntentQueue
     : (c.enemyIntent ? [c.enemyIntent] : []);
-  return raw.map((it) => resolveIntent(it, c));
+  return arr.map((it) => ({ raw: resolveIntent(it, c), label: previewIntentLabel(it, c) }));
 });
 /**
  * 락(조준형) 배지 — 플레이어 측 다중 락. 과녁 비주얼 + 이름 + 조건 + 진행도.
@@ -351,17 +353,12 @@ const formName = computed(() => data.races.get(run.data.transform?.formRaceId ??
 const releaseStack = computed(() => run.data.transform?.releaseStack ?? 5);
 
 /**
- * 카드 effect의 *최종 정적값* — base + 컬러 보너스. 사용자 사양: 카드 수치에 보너스 반영.
+ * 카드 effect *최종 표시 수치* — 컬러 보너스·상태 보너스(strength/dex/frail/sap/focus)·유물 modifier +
+ * (damage면) weakness/brainwash/imprint/possession/ghost(자기) ×배수와 vulnerable/ghost(적) ×배수까지
+ * 다 적용된 *integer*. "카드에 적힌 수치 = 실제 들어가는 수치" 원칙(사용자 사양 #6).
  */
-// B1 fix: effective(베이스+장비) 사용 — 장비 colorEffects가 카드 표시값에 반영.
-const currentBonuses = computed(() => bonusesFromEffective(run.data, data.equipments));
-function effectiveValue(eff: CardEffect): number {
-  return (eff.value ?? 0) + colorBonusForCardEffectKind(eff.kind, currentBonuses.value);
-}
-/** 전투 중 buff/debuff 부가치 — "(+1) / (-2)" 식으로 별도 표기. */
-function statusDelta(eff: CardEffect): number {
-  if (!combat.value) return 0;
-  return statusBonusForCardEffectKind(eff.kind, combat.value.player.statuses);
+function finalValue(card: Card, eff: CardEffect): number {
+  return previewCardEffectValue(card, eff, combat.value);
 }
 
 // === 버프/디버프 표시 ===
@@ -404,6 +401,14 @@ function statusEntries(c: Combatant | undefined) {
 const __forceInfMana = false;
 void __forceInfMana;
 void ui;
+
+/**
+ * 모바일 도구함 접이 상태 (#4) — 동료 스킬·전투 포션이 *기본 보임*이지만, 모바일에선 카드 영역을 가려
+ * 카드 선택이 불가능해진다(transform-banner/grapple/3중 의도 등이 동시에 떠 있을 때 특히).
+ * 모바일에서만 (.tools-fold) 접고, 도구함 버튼으로 펼친다. 데스크톱은 항상 보임.
+ */
+const toolsOpen = ref(false);
+function toggleTools() { toolsOpen.value = !toolsOpen.value; }
 </script>
 
 <template>
@@ -464,7 +469,7 @@ void ui;
         </div>
         <div class="intent">
           <span class="intent__lead">다음: <span class="intent__info">ⓘ</span></span>
-          <span v-for="(it, i) in enemyIntentList" :key="i" class="intent__act" v-tooltip="intentDescription(it)">{{ intentLabel(it) }}</span>
+          <span v-for="(it, i) in enemyIntentList" :key="i" class="intent__act" v-tooltip="intentDescription(it.raw)">{{ it.label }}</span>
         </div>
         <!-- 락(조준형) 배지 — 다중 락 각각 과녁 + 이름·조건·진행도 -->
         <div v-if="locks.length" class="locks">
@@ -526,40 +531,54 @@ void ui;
     </div>
     <StruggleMinigame v-if="showStruggleMinigame" @close="showStruggleMinigame = false" />
 
-    <!-- 동료 스킬 — 발버둥·포션 옆. 쿨다운 0일 때만 발동, 슬롯1은 쿨다운 -1 표식. -->
-    <div v-if="skillSlots.length > 0" class="skills">
-      <span class="skills__label">동료 스킬</span>
-      <button
-        v-for="sk in skillSlots"
-        :key="sk.slot"
-        class="skill"
-        :class="{ 'skill--disabled': !sk.ready, 'skill--lead': sk.slot === 0 }"
-        :disabled="!sk.ready || enemyActing"
-        v-tooltip.hold="`${sk.companionName} · ${sk.skill.description ?? sk.skill.name} (쿨다운 ${sk.skill.cooldown}${sk.slot === 0 ? ', 슬롯1 -1' : ''})`"
-        @click="useSkillSlot(sk.slot)"
-      >
-        <span class="skill__name">
-          <span v-if="sk.slot === 0" class="skill__lead">①</span>{{ sk.skill.name }}
-        </span>
-        <span class="skill__cd">{{ sk.cooldown > 0 ? `쿨 ${sk.cooldown}` : '준비됨' }}</span>
-      </button>
-    </div>
+    <!--
+      모바일 도구함 토글 (#4) — 데스크톱은 .tools-fold 가 항상 펼침. 모바일은 toolsOpen 가 true 일 때만.
+      토글 버튼은 모바일에서만 보이며(.tools-toggle), 도구가 있을 때만 노출.
+    -->
+    <button
+      v-if="(skillSlots.length > 0 || combatPotions.length > 0)"
+      class="tools-toggle"
+      :class="{ 'tools-toggle--open': toolsOpen }"
+      :aria-expanded="toolsOpen"
+      @click="toggleTools"
+    >🛠 도구 ({{ skillSlots.length + combatPotions.length }})</button>
 
-    <!-- 전투 포션 벨트 — 턴당 1회, 마나 무관 -->
-    <div v-if="combatPotions.length > 0" class="potions">
-      <span class="potions__label">포션{{ potionUsed ? ' (이번 턴 사용함)' : '' }}</span>
-      <button
-        v-for="it in combatPotions"
-        :key="it.instanceId ?? it.id"
-        class="potion"
-        :class="{ 'potion--disabled': potionUsed }"
-        :disabled="potionUsed"
-        v-tooltip.hold="potionSummary(it)"
-        @click="usePotion(it)"
-      >
-        <span class="potion__name">{{ it.name }}</span>
-        <span class="potion__eff">{{ potionSummary(it) }}</span>
-      </button>
+    <div class="tools-fold" :class="{ 'tools-fold--open': toolsOpen }">
+      <!-- 동료 스킬 — 발버둥·포션 옆. 쿨다운 0일 때만 발동, 슬롯1은 쿨다운 -1 표식. -->
+      <div v-if="skillSlots.length > 0" class="skills">
+        <span class="skills__label">동료 스킬</span>
+        <button
+          v-for="sk in skillSlots"
+          :key="sk.slot"
+          class="skill"
+          :class="{ 'skill--disabled': !sk.ready, 'skill--lead': sk.slot === 0 }"
+          :disabled="!sk.ready || enemyActing"
+          v-tooltip.hold="`${sk.companionName} · ${sk.skill.description ?? sk.skill.name} (쿨다운 ${sk.skill.cooldown}${sk.slot === 0 ? ', 슬롯1 -1' : ''})`"
+          @click="useSkillSlot(sk.slot)"
+        >
+          <span class="skill__name">
+            <span v-if="sk.slot === 0" class="skill__lead">①</span>{{ sk.skill.name }}
+          </span>
+          <span class="skill__cd">{{ sk.cooldown > 0 ? `쿨 ${sk.cooldown}` : '준비됨' }}</span>
+        </button>
+      </div>
+
+      <!-- 전투 포션 벨트 — 턴당 1회, 마나 무관 -->
+      <div v-if="combatPotions.length > 0" class="potions">
+        <span class="potions__label">포션{{ potionUsed ? ' (이번 턴 사용함)' : '' }}</span>
+        <button
+          v-for="it in combatPotions"
+          :key="it.instanceId ?? it.id"
+          class="potion"
+          :class="{ 'potion--disabled': potionUsed }"
+          :disabled="potionUsed"
+          v-tooltip.hold="potionSummary(it)"
+          @click="usePotion(it)"
+        >
+          <span class="potion__name">{{ it.name }}</span>
+          <span class="potion__eff">{{ potionSummary(it) }}</span>
+        </button>
+      </div>
     </div>
 
     <CombatHand
@@ -571,8 +590,7 @@ void ui;
       :display-cost="displayCost"
       :card-border="cardBorder"
       :is-locked="isLocked"
-      :effective-value="effectiveValue"
-      :status-delta="statusDelta"
+      :final-value="finalValue"
       :effect-kind-label="cardEffectKindLabel"
       :effect-description="cardEffectDescription"
       :card-detail-text="cardDetailText"
@@ -865,7 +883,12 @@ void ui;
 }
 .transform-banner strong { color: #ffe8b8; }
 
-.pile-info { display: flex; gap: 1.5rem; padding: 0.8rem 1rem; background: rgba(0,0,0,0.4); border-radius: 8px; color: #b6b6c4; align-items: center; }
+.pile-info {
+  display: flex; gap: 1.5rem; padding: 0.8rem 1rem;
+  background: rgba(0,0,0,0.4); border-radius: 8px; color: #b6b6c4; align-items: center;
+  /* footer 압축 금지 — 모바일에서 viewport 부족해도 턴 종료 버튼 가시화(#2 패리티). */
+  flex-shrink: 0;
+}
 .key-hint { margin-left: auto; font-size: 0.74rem; color: #8a8a99; cursor: help; user-select: none; }
 .end-turn { margin-left: auto; padding: 0.6rem 1.2rem; background: rgba(192,142,255,0.2); border: 1px solid rgba(192,142,255,0.5); color: #f6e8b8; border-radius: 6px; cursor: pointer; font-weight: 600; }
 /* 힌트가 보이면 그것이 auto 여백을 차지 → 버튼은 작은 간격만. */
@@ -874,6 +897,74 @@ void ui;
 .end-turn:disabled { opacity: 0.4; cursor: not-allowed; }
 /* 데스크톱에서만 단축키 힌트 노출 — 모바일/터치는 키보드가 없으니 숨긴다(버튼은 auto로 우측 정렬 유지). */
 @media (max-width: 640px) { .key-hint { display: none; } }
+
+/*
+  === 모바일 도구함 토글 (#4) ===
+  데스크톱은 .tools-fold 가 그냥 평범한 컨테이너(항상 보임), .tools-toggle 은 숨김.
+  모바일은 .tools-fold 가 기본 max-height:0 + overflow:hidden 으로 접혀 있고,
+  .tools-fold--open 일 때만 펼친다. .tools-toggle 은 모바일에서만 노출.
+*/
+.tools-toggle { display: none; }
+.tools-fold { display: contents; }
+
+@media (max-width: 640px) {
+  .tools-toggle {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    align-self: flex-end;
+    margin: 0.2rem 1rem 0;
+    padding: 0.25rem 0.65rem;
+    font: inherit; font-size: 0.78rem; font-weight: 600;
+    color: #c9c3da;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 6px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .tools-toggle--open {
+    color: #f6e8b8;
+    background: rgba(192, 142, 255, 0.2);
+    border-color: rgba(192, 142, 255, 0.5);
+  }
+  .tools-fold {
+    display: flex; flex-direction: column;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 180ms ease;
+    flex-shrink: 0;
+  }
+  .tools-fold--open { max-height: 50vh; overflow-y: auto; }
+  /* 모바일 압축 — 도구함 내부 패딩/폰트 축소(스킬/포션 한 줄에 더 많이). */
+  .tools-fold .skills, .tools-fold .potions { padding: 0.3rem 0.7rem; gap: 0.35rem; }
+  .tools-fold .skill, .tools-fold .potion { padding: 0.3rem 0.55rem; }
+
+  /* 상태이상 배지 — 모바일에선 가로폭을 잡아 먹지 않게 더 작게(#4 사용자 보고). */
+  .statuses { gap: 0.18rem; margin-top: 0.18rem; }
+  .status { font-size: 0.66rem; padding: 0.04rem 0.32rem; border-radius: 8px; }
+
+  /* 의도 — 행동 1줄당 1라인이 아닌 *인라인 wrap* 으로(3중 의도가 3줄을 차지하지 않게). */
+  .intent { font-size: 0.78rem; line-height: 1.25; }
+  .intent__act { display: inline; padding-left: 0; }
+  .intent__act::before { content: ' · '; opacity: 0.5; }
+  .intent__act:first-of-type::before { content: ''; }
+
+  /* 변신 배너 / 구속 — 모바일에선 한 줄로 압축. */
+  .transform-banner { font-size: 0.78rem; padding: 0.35rem 0.7rem; margin: 0.25rem 0; }
+  .grapple { padding: 0.35rem 0.7rem; margin: 0.25rem 0; gap: 0.5rem; }
+  .grapple__label { font-size: 0.78rem; gap: 0.35rem; }
+  .grapple__gauge, .grapple__ramp { font-size: 0.72rem; }
+  .struggle { padding: 0.35rem 0.7rem; font-size: 0.78rem; }
+
+  /* 전투 로그 1줄도 더 작게. */
+  .combat-log__line { font-size: 0.72rem; }
+
+  /* HUD/헤더 패딩 압축 — 카드 영역 확보. */
+  .hdr { padding: 0.5rem 0.6rem; gap: 0.5rem; }
+  .combat-shell { gap: 0.4rem; }
+  .pile-info { padding: 0.5rem 0.7rem; gap: 0.8rem; }
+  /* combat-view 자체 padding 축소 — 가용 면적 확보. */
+  .combat-view { padding: 0.6rem 0.6rem calc(0.6rem + env(safe-area-inset-bottom, 0px)); }
+}
 
 /* === 결과 화면 === */
 .result-view {

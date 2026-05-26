@@ -29,30 +29,30 @@ const race = computed<string>(() => run.data?.raceId || 'human');
 
 /**
  * 이미지 로드 폴백 단계.
- *  - 'mood': /portraits/player/{race}/{mood}.png 시도
- *  - 'idle': mood가 없으면 /portraits/player/{race}/idle.png 시도
+ *  - 'idle': /portraits/player/{race}/idle.png 시도 (현재 사용 가능한 유일한 자산)
  *  - 'svg':  idle도 없으면 SVG placeholder로 (그림이 아예 없는 상태)
- * mood나 race가 바뀌면 'mood' 단계부터 다시 시도.
+ *
+ * 설계 변경(2026-05-27): mood-specific PNG(tense/happy/sad/...) 시도를 제거.
+ *  - 자산이 idle.png 하나뿐인 현 단계에서 mood-cascade(tense→idle)는 항상 한 번 fail→fallback이 일어났고,
+ *    `transition mode="out-in"` 의 leave/enter 핸드오프와 함께 일부 케이스에서 idle 표시까지 도달하지
+ *    못한 채 SVG로 떨어지는 경로가 있었다.
+ *  - 일러스트가 mood별로 갖춰질 때만 mood-specific 시도를 다시 켤 것 — 자산 채워질 때 1줄 토글.
+ *  - mood 변화는 idle.png 한 장에 대한 *크로스페이드 transition*(아래 .mood-fade)으로 표현된다.
  */
-const imgStage = ref<'mood' | 'idle' | 'svg'>('mood');
+const imgStage = ref<'idle' | 'svg'>('idle');
 watch(
-  () => [props.mood, race.value] as const,
-  () => { imgStage.value = 'mood'; },
+  () => race.value,
+  () => { imgStage.value = 'idle'; },
 );
 
 const imgSrc = computed<string>(() => {
   const base = import.meta.env.BASE_URL; // '/emergent-rpg-web/' in prod, '/' in dev
-  const slot = imgStage.value === 'idle' ? 'idle' : props.mood;
-  return `${base}portraits/player/${race.value}/${slot}.png`;
+  return `${base}portraits/player/${race.value}/idle.png`;
 });
 
 function onImgError() {
-  // mood 파일 실패 → idle 시도. idle도 실패 → SVG로 항복.
-  if (imgStage.value === 'mood' && props.mood !== 'idle') {
-    imgStage.value = 'idle';
-  } else {
-    imgStage.value = 'svg';
-  }
+  // 이번 종족의 idle.png가 없으면 SVG placeholder로 항복(예: human 외 다른 종족은 아직 그림 없음).
+  imgStage.value = 'svg';
 }
 
 interface MoodSpec {

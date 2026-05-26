@@ -33,10 +33,8 @@ const props = defineProps<{
   cardBorder: (c: Card) => string;
   /** 잠김(구속/닻) 여부. */
   isLocked: (c: Card) => boolean;
-  /** effect 최종 정적값(컬러 보너스 반영). */
-  effectiveValue: (e: CardEffect) => number;
-  /** 전투 buff/debuff 부가치((+1)/(-2)). */
-  statusDelta: (e: CardEffect) => number;
+  /** effect 최종 표시 수치(컬러+상태+modifier+(damage면) 피해 배수까지 반영). 카드 단위로 받아 bonusDamage/bonusBlock도 합산. */
+  finalValue: (card: Card, e: CardEffect) => number;
   /** 카드 effect 라벨(예: "피해"). */
   effectKindLabel: (e: CardEffect) => string;
   /** 카드 effect 상세(툴팁). */
@@ -154,12 +152,7 @@ function playPreview() {
           <div class="card__effects">
             <span v-for="(e, ei) in card.effects" :key="ei" class="effect" v-tooltip.hold="effectDescription(e)">
               <span class="effect__label">{{ effectKindLabel(e) }}</span>
-              <strong class="eff-val">{{ effectiveValue(e) || (e.value ?? '') }}</strong>
-              <span
-                v-if="statusDelta(e) !== 0"
-                class="eff-delta"
-                :class="statusDelta(e) > 0 ? 'eff-delta--up' : 'eff-delta--down'"
-              >({{ statusDelta(e) > 0 ? '+' : '' }}{{ statusDelta(e) }})</span>
+              <strong class="eff-val">{{ finalValue(card, e) || (e.value ?? '') }}</strong>
             </span>
           </div>
         </div>
@@ -225,12 +218,7 @@ function playPreview() {
           <div class="card__effects">
             <span v-for="(e, ei) in previewCard.effects" :key="ei" class="effect">
               <span class="effect__label">{{ effectKindLabel(e) }}</span>
-              <strong class="eff-val">{{ effectiveValue(e) || (e.value ?? '') }}</strong>
-              <span
-                v-if="statusDelta(e) !== 0"
-                class="eff-delta"
-                :class="statusDelta(e) > 0 ? 'eff-delta--up' : 'eff-delta--down'"
-              >({{ statusDelta(e) > 0 ? '+' : '' }}{{ statusDelta(e) }})</span>
+              <strong class="eff-val">{{ finalValue(previewCard, e) || (e.value ?? '') }}</strong>
             </span>
           </div>
           <p v-if="previewCard.flavor" class="card__flavor card__flavor--shown">{{ previewCard.flavor }}</p>

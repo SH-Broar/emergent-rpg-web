@@ -56,6 +56,7 @@ import {
 } from '@/systems/chaos';
 import { isFormPoolActive, activeFormCardPool, RELEASE_CARD_ID } from '@/systems/form-pool';
 import { applyColorBoost, applyColorBoostAll, type ColorKey } from '@/systems/colors';
+import { intentLabel as intentLabelStatic } from '@/systems/labels';
 
 const STARTING_HAND_SIZE = 5;
 const DEFAULT_MAX_MANA = 3;
@@ -208,6 +209,117 @@ function applyDamage(
   if (isPlayerTarget && hpLoss > 0 && (target.statuses?.sleep ?? 0) > 0) {
     delete target.statuses.sleep;
   }
+}
+
+/**
+ * 피해 *배수 단계*만 따로 계산 — 카드/의도 표시용 preview에서 재사용.
+ * applyDamage의 배수 순서와 1:1 동일하되 block/hp 차감 없이 *최종 피해량*만 돌려준다.
+ *   weakness×0.75 → brainwash×0.66 → imprint×0.85 → possession×0.5 → ghost(공격자)×0.5
+ *   → vulnerable(대상)×1.5 → ghost(대상)×0.5
+ */
+function applyDamageMultipliers(
+  v: number,
+  attacker: Record<string, number> | undefined,
+  target: Record<string, number> | undefined,
+): number {
+  let r = Math.max(0, v);
+  if ((attacker?.weakness ?? 0) > 0) r = Math.floor(r * 0.75);
+  if ((attacker?.brainwash ?? 0) > 0) r = Math.floor(r * 0.66);
+  if ((attacker?.imprint ?? 0) > 0) r = Math.floor(r * 0.85);
+  if ((attacker?.possession ?? 0) > 0) r = Math.floor(r * 0.5);
+  if ((attacker?.ghost ?? 0) > 0) r = Math.floor(r * 0.5);
+  if ((target?.vulnerable ?? 0) > 0) r = Math.floor(r * 1.5);
+  if ((target?.ghost ?? 0) > 0) r = Math.floor(r * 0.5);
+  return r;
+}
+
+/**
+ * 카드 effect의 *최종 표시 수치* — "카드에 적힌 데미지 = 실제 들어갈 데미지" 원칙.
+ *
+ * 컬러 보너스(ATK/DEF) + 상태 보너스(strength/dex/focus/sap/frail) + 유물 modifier +
+ * growing 보너스(bonusDamage/bonusBlock)까지 더한 뒤, damage 면 weakness/brainwash/imprint/
+ * possession/ghost(자기) ×배수와 vulnerable/ghost(적) ×배수까지 적용한 *integer*를 돌려준다.
+ *
+ * 비전투(런 밖/도감)에서는 c=undefined로 부르면 컬러 보너스까지만 적용.
+ * 핸들러 동작과 다를 수 있는 case 는 raw value 폴백(damage-min-color 등).
+ */
+export function previewCardEffectValue(
+  card: Card | undefined,
+  eff: CardEffect,
+  c: CombatState | undefined,
+): number {
+  const baseVal = eff.value ?? 0;
+  let bonuses: { damage: number; block: number; drawExtra: number; manaExtra: number };
+  try {
+    bonuses = bonusesFromEffective(useRunStore().data, useDataStore().equipments);
+  } catch {
+    bonuses = { damage: 0, block: 0, drawExtra: 0, manaExtra: 0 };
+  }
+  const regress = c ? (c.player.statuses?.regress ?? 0) > 0 : false;
+  const colorAdd = regress ? 0 : (
+    eff.kind === 'damage' ? bonuses.damage :
+    eff.kind === 'block'  ? bonuses.block  : 0
+  );
+
+  if (eff.kind === 'damage') {
+    const wild = c ? ((c.player.statuses?.feral ?? 0) > 0 || (c.player.statuses?.['feral-heavy'] ?? 0) > 0) : false;
+    const base = wild ? baseVal * 2 : baseVal;
+    const statusBonus = c ? statusBonusForCardEffectKind('damage', c.player.statuses) : 0;
+    const growing = card?.bonusDamage ?? 0;
+    let raw = applyModifiers(base + colorAdd + statusBonus + growing, 'damage-out-add', 'damage-out-mul');
+    if (c) raw = applyDamageMultipliers(raw, c.player.statuses, c.enemy.statuses);
+    return Math.max(0, Math.floor(raw));
+  }
+
+  if (eff.kind === 'block') {
+    const wild = c ? ((c.player.statuses?.feral ?? 0) > 0 || (c.player.statuses?.['feral-heavy'] ?? 0) > 0) : false;
+    if (wild) return 0;
+    const statusBonus = c ? statusBonusForCardEffectKind('block', c.player.statuses) : 0;
+    const growing = card?.bonusBlock ?? 0;
+    const raw = Math.max(0, applyModifiers(baseVal + colorAdd + statusBonus + growing, 'block-out-add'));
+    return Math.max(0, Math.floor(raw));
+  }
+
+  // 기타: heal/draw/apply-status/조건부 등 — 컬러 보너스만(대부분 0).
+  return baseVal + colorAdd;
+}
+
+/**
+ * 적 의도(intent) → *최종 수치 포함* 라벨. "공격 8" 대신 "공격 12" 식으로 모든 modifier 반영.
+ *
+ *   attack/drain: rawValue + enemy.strength → atkMul × dayAtk → applyDamageMultipliers(공격자=적, 대상=플레이어)
+ *                 → damage-in-mul(받는피해 배수)
+ *   defend:N    — 그대로(추가 modifier 없음)
+ *   buff/charge:N, debuff:N:status, web:N, drain-stat:N, obscure:N, cost-up:N, force-discard:N,
+ *   transform-card:N, ghost:N — 스택/턴수 그대로(부여 단에서 resolve/저항만 따로 처리).
+ * c가 없거나 monster 정보 없으면 atkMul/day 미반영(베이스 + strength + 배수만).
+ */
+export function previewIntentLabel(encoded: string | undefined, c: CombatState | undefined): string {
+  if (!encoded) return '';
+  // 동적 의도(`~unlocked=` 등) — c 기준 해석을 먼저 통과시켜 base/override 결정.
+  const resolved = c ? resolveIntent(encoded, c) : encoded;
+  const parts = resolved.split(':');
+  const kind = parts[0] === 'charge' ? 'buff' : parts[0];
+  const raw = Number(parts[1]) || 0;
+  if (kind === 'attack' || kind === 'drain') {
+    if (!c) return intentLabelFallback(resolved, raw);
+    const enemyStr = c.enemy.statuses?.strength ?? 0;
+    let v = raw + enemyStr;
+    // 적측 weakness/brainwash 등 자기 배수, 그리고 플레이어측 vulnerable/ghost 배수까지 한 번에.
+    v = applyDamageMultipliers(v, c.enemy.statuses, c.player.statuses);
+    // damage-in-mul (받는 피해 배수 — 플레이어 유물).
+    const inMul = getModifierMul('damage-in-mul');
+    if (inMul !== 1) v = Math.floor(v * inMul);
+    v = Math.max(0, v);
+    const label = kind === 'attack' ? '공격' : '흡혈';
+    return `${label} ${v}`;
+  }
+  return intentLabelFallback(resolved, raw);
+}
+
+function intentLabelFallback(resolved: string, _raw: number): string {
+  void _raw;
+  return intentLabelStatic(resolved);
 }
 
 /**
@@ -2327,17 +2439,20 @@ function pickSlot(monster: Monster, turn: number, rotation?: string[]): string {
  *
  *  - 슬롯 안 `+`로 이어진 행동들은 각각 별개 큐 항목이 되어 작업34(useEnemyTurn)가 하나씩 순차 실행한다.
  *  - 회전은 *슬롯 단위*로 진행한다(turn = 슬롯 인덱스). 신규 저작은 `+` 묶음을 쓴다.
- *  - 레거시 `actions=N` 호환: 설정돼 있으면 *그 한 슬롯을 N회 반복*한 묶음으로 fallback(쌍바늘 태엽기 등).
+ *  - 레거시 `actions=N`: 한 턴에 *N개의 *서로 다른* 연속 슬롯*을 뽑아 펼친다.
+ *    (구버그: 같은 슬롯을 N번 반복 → 비용 교란 3연발 등이 발생.
+ *     예: 인텐트 7개 + actions=3 일 때 turn 0 → 슬롯 0,1,2 / turn 1 → 슬롯 3,4,5 / turn 2 → 슬롯 6,0,1.)
  */
 function buildIntentQueue(monster: Monster, turn: number, rotation?: string[]): string[] {
-  const slot = pickSlot(monster, turn, rotation);
-  // 슬롯 안 `+` 묶음 → 개별 액션. 공백/빈 토큰 제거.
-  const actions = slot.split('+').map((s) => s.trim()).filter((s) => s.length > 0);
-  // 레거시 actions=N: 그 슬롯(전체 묶음)을 N회 반복.
   const repeat = Math.max(1, Math.floor(monster.actions ?? 1));
-  if (repeat <= 1) return actions.length > 0 ? actions : [slot];
   const out: string[] = [];
-  for (let i = 0; i < repeat; i++) out.push(...(actions.length > 0 ? actions : [slot]));
+  for (let i = 0; i < repeat; i++) {
+    // 매 회 *다음* 슬롯으로 전진 — 같은 슬롯이 N번 반복되지 않게.
+    const slot = pickSlot(monster, turn * repeat + i, rotation);
+    const actions = slot.split('+').map((s) => s.trim()).filter((s) => s.length > 0);
+    if (actions.length > 0) out.push(...actions);
+    else out.push(slot);
+  }
   return out;
 }
 
