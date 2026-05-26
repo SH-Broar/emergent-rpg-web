@@ -11,7 +11,8 @@
  *   훗날 실제 그림으로 교체할 땐 이 컴포넌트 내부 <svg>만 <img>나 Spine canvas로
  *   바꾸면 되고, 이 컴포넌트를 사용하는 뷰는 한 줄도 안 바뀐다.
  */
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
+import { useRunStore } from '@/stores/run';
 
 type Mood = 'idle' | 'happy' | 'sad' | 'tense' | 'curious';
 type Side = 'left' | 'right';
@@ -21,6 +22,38 @@ const props = withDefaults(
   defineProps<{ mood?: Mood; side?: Side; size?: Size }>(),
   { mood: 'idle', side: 'right', size: 'md' },
 );
+
+const run = useRunStore();
+/** 현재 런의 종족 — 이미지 경로 분기. 런 밖이거나 raceId 비었으면 'human' 폴백. */
+const race = computed<string>(() => run.data?.raceId || 'human');
+
+/**
+ * 이미지 로드 폴백 단계.
+ *  - 'mood': /portraits/player/{race}/{mood}.png 시도
+ *  - 'idle': mood가 없으면 /portraits/player/{race}/idle.png 시도
+ *  - 'svg':  idle도 없으면 SVG placeholder로 (그림이 아예 없는 상태)
+ * mood나 race가 바뀌면 'mood' 단계부터 다시 시도.
+ */
+const imgStage = ref<'mood' | 'idle' | 'svg'>('mood');
+watch(
+  () => [props.mood, race.value] as const,
+  () => { imgStage.value = 'mood'; },
+);
+
+const imgSrc = computed<string>(() => {
+  const base = import.meta.env.BASE_URL; // '/emergent-rpg-web/' in prod, '/' in dev
+  const slot = imgStage.value === 'idle' ? 'idle' : props.mood;
+  return `${base}portraits/player/${race.value}/${slot}.png`;
+});
+
+function onImgError() {
+  // mood 파일 실패 → idle 시도. idle도 실패 → SVG로 항복.
+  if (imgStage.value === 'mood' && props.mood !== 'idle') {
+    imgStage.value = 'idle';
+  } else {
+    imgStage.value = 'svg';
+  }
+}
 
 interface MoodSpec {
   head: string;
@@ -52,8 +85,22 @@ const spec = computed<MoodSpec>(() => MOOD_SPECS[props.mood]);
     <div class="scene-char__breathe">
       <div class="scene-char__bob">
         <transition name="mood-fade" mode="out-in">
+          <!--
+            실제 그림이 있으면 <img>로, 없으면 SVG placeholder로.
+            key에 imgStage를 포함해 폴백 단계 전환 시에도 transition이 트리거됨.
+          -->
+          <img
+            v-if="imgStage !== 'svg'"
+            :key="`img-${imgStage}-${race}-${mood}`"
+            :src="imgSrc"
+            class="scene-char__svg scene-char__img"
+            alt=""
+            draggable="false"
+            @error="onImgError"
+          />
           <svg
-            :key="mood"
+            v-else
+            :key="`svg-${mood}`"
             viewBox="0 0 100 140"
             class="scene-char__svg"
             xmlns="http://www.w3.org/2000/svg"
@@ -159,6 +206,12 @@ const spec = computed<MoodSpec>(() => MOOD_SPECS[props.mood]);
   width: 110px;
   height: auto;
   filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.45));
+}
+/* 실제 PNG일 때만 픽셀 보간 품질 우선(부드러운 축소). */
+.scene-char__img {
+  image-rendering: auto;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
 .scene-char--sm .scene-char__svg { width: 80px; }
