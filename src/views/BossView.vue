@@ -21,6 +21,7 @@ import {
   previewIntentLabel,
 } from '@/systems/combat';
 import { applyBossRewards, applyArcRewards } from '@/systems/boss-rewards';
+import { isHiddenIntent } from '@/systems/chaos';
 import { effectiveContent } from '@/systems/map';
 import { cardEffectKindLabel, cardEffectDescription, cardDetailText, statusDescription, intentDescription, unlockKeyLabel, lockBadgeText, lockTooltip, josa } from '@/systems/labels';
 import { useItem } from '@/systems/item';
@@ -111,6 +112,16 @@ watch(
   (b, prev) => {
     if (b === undefined || prev === undefined) return;
     if (b > prev) fx.showBlock('enemy', b - prev);
+  },
+);
+// 방어 흡수 큐 — CombatView와 동일 규칙. 막힌 피해도 파란 -N으로 띄워 피격을 시각화.
+watch(
+  () => combat.value?.fxAbsorbed?.length,
+  (len) => {
+    if (!len) return;
+    const q = combat.value!.fxAbsorbed!;
+    for (const it of q) fx.showBlockedDamage(it.target, it.amount);
+    q.length = 0;
   },
 );
 
@@ -369,7 +380,7 @@ function displayCost(c: Card): number {
 }
 function canPlay(c: Card): boolean {
   if (!combat.value) return false;
-  if (c.unplayable) return false;            // 잡카드(상처/저주) — 사용 불가.
+  if (c.unplayable) return false;            // 일반적 사용불가 플래그(현재 잡카드는 모두 exhaust-self로 *사용 가능*).
   if (isLocked(c)) return false;             // 닻/구속으로 잠김.
   if (combat.value.frozenTurn) return false; // 마비/정지 턴.
   return combat.value.mana >= displayCost(c);
@@ -420,19 +431,34 @@ function statusEntries(c: Combatant | undefined) {
 
 // === 구속/삼킴(grapple) + 발버둥 / 변신 / 손패 은폐(obscure) — CombatView와 동일 ===
 const grapple = computed(() => combat.value?.grapple);
-const obscured = computed(() => (combat.value?.obscuredTurns ?? 0) > 0);
+// 손패 절반(올림) 은폐 — obscuredTurns>0이면 *맨 앞* ceil(N/2)장을 뒷면 처리. 0이면 미은폐.
+const obscuredCount = computed(() => {
+  if ((combat.value?.obscuredTurns ?? 0) <= 0) return 0;
+  return Math.ceil((combat.value?.hand.length ?? 0) / 2);
+});
 /**
  * 이번 적 턴 의도 목록 — 멀티슬롯(+)이면 여러 개(CombatView 패리티). 동적 의도(resolveIntent)로 *현재 상태*
  * 기준 해석 + preview 라벨러로 *최종 수치 (모든 modifier 반영된 실제 들어갈 데미지)* 표시.
  */
+/** 카오스 hidden-intent — 보스 의도도 *전부 마스킹*(CombatView 패리티). */
+const intentHidden = computed(() => isHiddenIntent());
 const enemyIntentList = computed<{ raw: string; label: string }[]>(() => {
   const c = combat.value;
   if (!c) return [];
   const arr = (c.enemyIntentQueue && c.enemyIntentQueue.length > 0)
     ? c.enemyIntentQueue
     : (c.enemyIntent ? [c.enemyIntent] : []);
+  if (intentHidden.value) {
+    // 안개에 가려 행동 수·종류·수치 전부 비공개 — 슬롯 1개로 통일해 "?" 1개만 표시.
+    return [{ raw: '?', label: '?' }];
+  }
   return arr.map((it) => ({ raw: resolveIntent(it, c), label: previewIntentLabel(it, c) }));
 });
+/** 의도 툴팁 — hidden일 땐 안내 문구, 아니면 기존 intentDescription. */
+function intentTooltip(raw: string): string {
+  if (intentHidden.value) return '안개에 가려 적이 무엇을 할지 보이지 않는다.';
+  return intentDescription(raw);
+}
 /** 락(조준형) 배지 — 보스 패리티. 다중 락(과녁 + 이름·조건·진행도). */
 const locks = computed(() => combat.value?.locks ?? []);
 /** 레거시 락인(전역 단일 락) — lockin 행동을 안 쓰는 옛 몹/보스 전용. 보스 패리티(큐 전체 검사). */
@@ -596,7 +622,7 @@ function toggleTools() { toolsOpen.value = !toolsOpen.value; }
           <!-- 다중 의도 텔레그래프 — 멀티슬롯(+) 보스도 CombatView처럼 한 행동씩 표시(보스 패리티). -->
           <div class="intent">
             <span class="intent__lead">다음: <span class="intent__info">ⓘ</span></span>
-            <span v-for="(it, i) in enemyIntentList" :key="i" class="intent__act" v-tooltip="intentDescription(it.raw)">{{ it.label }}</span>
+            <span v-for="(it, i) in enemyIntentList" :key="i" class="intent__act" v-tooltip="intentTooltip(it.raw)">{{ it.label }}</span>
           </div>
           <!-- 락(조준형) 배지 — 다중 락 각각 과녁 + 이름·조건·진행도 (보스 패리티) -->
           <div v-if="locks.length" class="locks">
@@ -716,7 +742,7 @@ function toggleTools() { toolsOpen.value = !toolsOpen.value; }
         :hand="combat.hand"
         :enemy-acting="enemyActing"
         :playing-index="playingIndex"
-        :obscured="obscured"
+        :obscured-count="obscuredCount"
         :can-play="canPlay"
         :display-cost="displayCost"
         :card-border="cardBorder"
@@ -971,6 +997,7 @@ function toggleTools() { toolsOpen.value = !toolsOpen.value; }
 .float-num--damage { color: #ff6b6b; }
 .float-num--heal { color: #8effb8; }
 .float-num--block { color: #8eedff; font-size: 1.1rem; }
+.float-num--blocked { color: #8eedff; }
 @keyframes float-up {
   0% { opacity: 0; transform: translate(calc(-50% + (var(--drift) * 22px)), 8px) scale(0.7); }
   20% { opacity: 1; transform: translate(calc(-50% + (var(--drift) * 22px)), -4px) scale(1.15); }

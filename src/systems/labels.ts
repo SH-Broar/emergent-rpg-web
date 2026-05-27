@@ -233,7 +233,7 @@ const INTENT_KIND_LABELS: Record<string, string> = {
   'add-card-draw': '잡카드 주입',
   'add-card-discard': '잡카드 섞기',
   'add-card-hand': '잡카드 쥐어주기',
-  obscure: '시야 가리기',
+  obscure: '손패 절반 가리기',
   'cost-up': '비용 교란',
   'force-discard': '드로우 감소',
   'transform-card': '카드 망가뜨리기',
@@ -308,7 +308,7 @@ export function intentDescription(encoded: string | undefined): string {
     case 'devour': return '삼킴 — 매 턴 직접 피해를 입습니다. 색상 순서 미니게임으로만 발버둥칠 수 있습니다.';
     case 'web': return `거미줄 — 다음 턴 손패 ${n || 1}장이 묶입니다. 카드를 쓸 때마다 한 겹씩 풀립니다(누적).`;
     case 'drain-stat': return `잠식 — 잠식 ${n || 1}을 걸어 주는 피해와 방어를 깎고, 적이 그만큼 강해집니다. 매 턴 1씩 감소.`;
-    case 'obscure': return `시야 가리기 — ${n || 1}턴 동안 손패가 가려집니다(뒷면).`;
+    case 'obscure': return `손패 절반 가리기 — ${n || 1}턴 동안 손패의 절반(올림)이 가려집니다(뒷면). 위치로만 사용 가능.`;
     case 'cost-up': return `비용 교란 — ${parts[2] || 2}턴 동안 모든 카드 비용이 ${n || 1} 늘어납니다.`;
     case 'transform-card': return `카드 망가뜨리기 — 손패 ${n || 1}장이 '상처'(쓸 수 없음)로 바뀝니다.`;
     case 'force-discard': return `드로우 감소 — 다음 손패를 ${n || 1}장 적게 뽑습니다.`;

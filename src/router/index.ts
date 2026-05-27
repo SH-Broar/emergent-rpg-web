@@ -43,6 +43,12 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/DebugBattleView.vue'),
     meta: { scene: 'main' },
   },
+  {
+    path: '/save-code',
+    name: 'save-code',
+    component: () => import('@/views/SaveCodeView.vue'),
+    meta: { scene: 'main' },
+  },
 
   // === 게임 씬 ===
   {

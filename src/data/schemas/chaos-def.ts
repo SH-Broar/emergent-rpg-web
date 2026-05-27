@@ -45,7 +45,7 @@
  *   - 'boss-atk-mul'       적이 boss tier일 때만 공격 데미지 ×(1+합).
  *   - 'small-hand'         매 턴 드로우 -N.
  *   - 'low-mana'           전투 시작/매 턴 마나 -N.
- *   - 'hidden-intent'      적 의도 가려짐(상시 obscure — Stage2 obscure 인프라 재사용).
+ *   - 'hidden-intent'      적 의도 가려짐(상시 — 라벨/툴팁 모두 "?"로 마스킹; 손패 obscure와는 별개).
  *   - 'all-gimmick'        모든 적 인텐트에 종족 대표 기믹 1개 삽입(Stage3 매핑 재사용).
  *
  * 상시형 — 경제/맵(쿼리 헬퍼 제공; UI 결선은 Phase C):

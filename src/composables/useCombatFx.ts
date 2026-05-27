@@ -12,7 +12,7 @@
 import { ref } from 'vue';
 
 export type FxTarget = 'player' | 'enemy';
-export type FxKind = 'damage' | 'heal' | 'block';
+export type FxKind = 'damage' | 'heal' | 'block' | 'blocked';
 
 export interface FloatingNumber {
   id: number;
@@ -75,6 +75,16 @@ export function useCombatFx() {
     pulseShield(target);
   }
 
+  /**
+   * 방어로 막힌 피해 팝업(-N 파랑) + 방패 반짝.
+   * 방어가 흡수해 HP가 안 깎였더라도 피격 사실을 *반드시* 시각화 — 안 보이면 그냥 지나가 보여 버그로 오인된다.
+   */
+  function showBlockedDamage(target: FxTarget, amount: number) {
+    if (amount <= 0) return;
+    spawn(target, 'blocked', `-${amount}`);
+    pulseShield(target);
+  }
+
   function pulseHit(target: FxTarget) {
     if (HIT_TTL <= 0) return;
     const flag = target === 'player' ? playerHit : enemyHit;
@@ -106,6 +116,7 @@ export function useCombatFx() {
     showDamage,
     showHeal,
     showBlock,
+    showBlockedDamage,
   };
 }
 

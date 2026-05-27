@@ -328,6 +328,14 @@ export interface CombatState {
    * 매 새 턴 0으로 리셋(턴 종료 시 소멸). 전투 단위 휘발.
    */
   thisTurnAmp?: number;
+
+  /**
+   * 방어 흡수 시각화 큐 — applyDamage에서 block에 흡수된 양이 발생할 때마다 append.
+   * 뷰가 watch해 파란 데미지 플로팅 숫자를 띄운 뒤 비운다. (HP 손실은 hp watch가 따로 빨강으로 처리.)
+   * 흡수 표기가 없으면 방어로 막힌 공격이 *그냥 지나간* 듯 보여 버그로 오인되므로 도입.
+   * 전투 단위 휘발 — optional(absent=처리할 항목 없음).
+   */
+  fxAbsorbed?: { target: 'player' | 'enemy'; amount: number; seq: number }[];
 }
 
 /**

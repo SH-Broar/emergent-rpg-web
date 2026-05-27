@@ -88,6 +88,9 @@ function goCodex() {
 function goDebugBattle() {
   router.push('/debug-battle');
 }
+function goSaveCode() {
+  router.push('/save-code');
+}
 </script>
 
 <template>
@@ -114,6 +117,11 @@ function goDebugBattle() {
 
       <button class="menu-card menu-card--chaos" type="button" @click="goChaos">
         <span class="menu-card__title">카오스</span>
+      </button>
+
+      <button class="menu-card" type="button" @click="goSaveCode">
+        <span class="menu-card__title">세이브 코드</span>
+        <span class="menu-card__sub">텍스트로 저장 / 불러오기</span>
       </button>
 
       <button class="menu-card menu-card--debug" type="button" @click="goDebugBattle">

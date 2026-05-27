@@ -342,7 +342,7 @@ export function manaReduction(): number {
   return Math.round(sumParamOf('low-mana'));
 }
 
-/** 상시형 — 적 의도 가려짐(hidden-intent) 활성 여부. Stage2 obscure 인프라 재사용. */
+/** 상시형 — 적 의도 가려짐(hidden-intent) 활성 여부. CombatView/BossView의 의도 라벨러가 직접 분기 마스킹. */
 export function isHiddenIntent(): boolean {
   return isChaosActive('hidden-intent');
 }

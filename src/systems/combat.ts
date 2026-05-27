@@ -50,7 +50,6 @@ import {
   enemyDefAdd,
   handSizeReduction,
   manaReduction,
-  isHiddenIntent,
   allGimmickIntentFor,
   isNarrowReward,
 } from '@/systems/chaos';
@@ -205,6 +204,16 @@ function applyDamage(
   target.block -= absorbed;
   const hpLoss = v - absorbed;
   target.hp = Math.max(0, target.hp - hpLoss);
+  // 방어로 막힌 양은 *반드시* 시각화(없으면 적 공격이 그냥 지나가 보여 버그로 오인).
+  // hp watch는 hpLoss==0이면 트리거 안 되므로 별도 큐로 전달 — 뷰가 파란 데미지로 띄운다.
+  if (absorbed > 0) {
+    const c = useRunStore().data.combat;
+    if (c) {
+      const who = target === c.player ? 'player' : 'enemy';
+      const q = c.fxAbsorbed ?? (c.fxAbsorbed = []);
+      q.push({ target: who, amount: absorbed, seq: (q[q.length - 1]?.seq ?? 0) + 1 });
+    }
+  }
   // 수면(sleep): 실제로 HP를 깎는 피해를 받으면 즉시 깬다.
   if (isPlayerTarget && hpLoss > 0 && (target.statuses?.sleep ?? 0) > 0) {
     delete target.statuses.sleep;
@@ -590,8 +599,8 @@ export function startCombat(monster: Monster) {
     webStacks: 0,
     // 카오스 all-gimmick — 종족 대표 기믹이 끼워진 인텐트 로테이션(미주입 시 undefined → 원본 사용).
     enemyIntentRotation,
-    // 카오스 hidden-intent — 적 의도 가려짐(Stage2 obscure 재사용). 큰 값으로 상시 은폐.
-    obscuredTurns: isHiddenIntent() ? 9999 : 0,
+    // (Stage2 obscure는 손패 은폐 전용 — 적 의도 가리기는 별도 분기 isHiddenIntent로 처리한다.)
+    obscuredTurns: 0,
     // 동료 스킬 쿨다운 — FD(전투 시작 선충전)로 시드. FD≥CD/미지정이면 0(준비됨), FD<CD면 워밍업.
     skillCooldowns: buildInitialSkillCooldowns(),
   };
@@ -1317,7 +1326,7 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
     c.player.statuses['ghost'] = (c.player.statuses['ghost'] ?? 0) + turns;
   },
   // 마커: 저주 잡카드가 손에 있으면 매 턴 시작 피해. 실제 틱은 applyPlayerStatusTurnStart의 스캔.
-  // (저주는 unplayable이라 이 핸들러는 사실상 호출되지 않음 — 타입 완전성용 no-op.)
+  // 저주는 *사용 가능*(exhaust-self)이라 플레이 시 이 핸들러도 호출되지만 효과는 없음(턴-시작 스캔만).
   'curse-tick': () => {
     // no-op
   },
@@ -2300,7 +2309,7 @@ const ENEMY_INTENT_LOG: Record<string, string> = {
   bind: '구속',
   devour: '삼킴',
   web: '거미줄',
-  obscure: '손패를 가린다',
+  obscure: '손패 절반을 가린다',
   'cost-up': '비용 교란',
   'force-discard': '손패를 떨군다',
   'transform-card': '카드를 비튼다',

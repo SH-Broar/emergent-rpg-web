@@ -2,8 +2,8 @@
 # source = junk → 상점/공방/보상 등 모든 풀에서 제외. 전투 종료 시 자동 소멸(런 덱에 안 남음).
 # 세 종류는 "별개의 상태"로 동작:
 #   상처(wound) : 사용 불가. 손패 한 칸을 죽은 채로 차지. 풀 수 없음.
-#   빈 카드(blank): cost 0 + 소멸. 사용(클릭)하면 그냥 사라짐 칸을 비울 순 있는 무해한 잡동사니.
-#   저주(curse) : 사용 불가 + 손에 있으면 매 턴 시작 2 직접 피해(curse-tick). 가장 위협적.
+#   빈 카드(blank): cost 0 + 소멸. 사용(클릭)하면 그냥 사라짐 — 칸을 비울 순 있는 무해한 잡동사니.
+#   저주(curse) : 손에 두면 매 턴 시작 2 직접 피해(curse-tick). 1 마나로 사용=소멸시켜 끊을 수 있다.
 
 [card.c-junk-wound]
 name = 상처
@@ -29,7 +29,6 @@ name = 저주
 rank = basic
 source = junk
 cost = 1
-unplayable = true
 trigger = manual
-effects = curse-tick:2
-flavor = 손에 쥐고 있는 것만으로 살을 파고든다.
+effects = curse-tick:2, exhaust-self
+flavor = 손에 쥐고 있으면 살을 파고든다. 떼어 내려면 대가가 든다.

@@ -11,7 +11,7 @@
  *  2) 스택('정리' 토글 ON) — 왼쪽에 제목(코스트+이름)만 보이게 세로로 겹쳐 쌓고,
  *     선택한 카드를 오른쪽에 1장 전체 프리뷰. 프리뷰를 다시 누르면 발동.
  *
- * 은폐(obscure) 상태에서는 두 모드 모두 카드 뒷면(?)으로 — 위치로만 사용.
+ * 은폐(obscure) 상태에서는 첫 N장이 카드 뒷면(?)으로 — N = 부모가 계산한 obscuredCount(0이면 미은폐).
  */
 import { computed, ref, watch } from 'vue';
 import type { Card, CardEffect } from '@/data/schemas';
@@ -23,8 +23,11 @@ const props = defineProps<{
   enemyActing: boolean;
   /** 카드 사용 애니메이션 중인 손패 인덱스(없으면 null). */
   playingIndex: number | null;
-  /** 은폐(손패 가림) 상태 — 뒷면 표시 + 위치로만 사용. */
-  obscured: boolean;
+  /**
+   * 은폐할 손패 카드 수 — 0이면 미은폐, >0이면 *맨 앞 N장*을 뒷면으로 표시(위치로만 사용).
+   * 부모가 `obscuredTurns > 0 ? Math.ceil(hand.length/2) : 0`을 계산해 넘긴다.
+   */
+  obscuredCount: number;
   /** 카드 사용 가능 여부(마나/잠금/잡카드 등 부모 판정). */
   canPlay: (c: Card) => boolean;
   /** 표시·판정용 실효 비용(cost-up 반영). */
@@ -72,6 +75,14 @@ watch(
 /** 입력 잠금(공통) — 적 행동 중·카드 애니메이션 중. */
 const locked = computed(() => props.enemyActing || props.playingIndex !== null);
 
+/** 손패 인덱스 i가 은폐 대상인지 — 맨 앞 obscuredCount장을 뒷면 처리. */
+function isObscured(i: number): boolean {
+  return i < props.obscuredCount;
+}
+
+/** 프리뷰 카드가 은폐 대상인지 (스택뷰 오른쪽 큰 카드 분기용). */
+const previewObscured = computed(() => previewIndex.value !== null && isObscured(previewIndex.value));
+
 /** 스택에서 카드 선택 → 오른쪽 프리뷰로. */
 function selectForPreview(index: number) {
   previewIndex.value = index;
@@ -114,12 +125,11 @@ function playPreview() {
     </div>
 
     <!-- ===== 그리드 뷰(기본) ===== -->
+    <!-- 은폐된 카드(맨 앞 obscuredCount장)와 일반 카드를 *같은 v-for*에서 분기 — 위치 유지. -->
     <section v-if="!tidy" class="hand hand--grid">
-      <!-- 은폐(obscure): 카드 뒷면 — 위치로만 사용 -->
-      <template v-if="obscured">
+      <template v-for="(card, i) in hand" :key="card.instanceId ?? card.id">
         <div
-          v-for="(card, i) in hand"
-          :key="`fd-${card.instanceId ?? card.id}-${i}`"
+          v-if="isObscured(i)"
           class="card card--facedown"
           :class="{ 'card--disabled': !canPlay(card) || enemyActing, 'card--playing': playingIndex === i }"
           @click="clickPlay(i)"
@@ -127,17 +137,13 @@ function playPreview() {
           <div class="facedown__mark">?</div>
           <div class="facedown__note">가려진 카드</div>
         </div>
-      </template>
-
-      <template v-else>
         <div
-          v-for="(card, i) in hand"
-          :key="`${card.instanceId ?? card.id}-${i}`"
+          v-else
           class="card"
           :class="{
             'card--disabled': !canPlay(card) || enemyActing,
             'card--locked': isLocked(card),
-            'card--junk': card.unplayable,
+            'card--junk': card.source === 'junk',
             'card--playing': playingIndex === i,
           }"
           :style="{ borderColor: cardBorder(card) }"
@@ -170,18 +176,18 @@ function playPreview() {
           class="stack-item"
           :class="{
             'stack-item--active': previewIndex === i,
-            'stack-item--disabled': obscured ? false : (!canPlay(card) && !obscured),
-            'stack-item--locked': !obscured && isLocked(card),
-            'stack-item--junk': !obscured && card.unplayable,
+            'stack-item--disabled': isObscured(i) ? false : !canPlay(card),
+            'stack-item--locked': !isObscured(i) && isLocked(card),
+            'stack-item--junk': !isObscured(i) && card.source === 'junk',
             'stack-item--playing': playingIndex === i,
           }"
-          :style="obscured ? undefined : { borderLeftColor: cardBorder(card) }"
+          :style="isObscured(i) ? undefined : { borderLeftColor: cardBorder(card) }"
           @click="selectForPreview(i)"
         >
-          <span v-if="obscured" class="stack-item__cost">?</span>
+          <span v-if="isObscured(i)" class="stack-item__cost">?</span>
           <span v-else class="stack-item__cost" :class="{ 'card__cost--up': displayCost(card) > card.cost, 'card__cost--down': displayCost(card) < card.cost }">{{ displayCost(card) }}</span>
-          <span class="stack-item__name">{{ obscured ? '가려진 카드' : card.name }}</span>
-          <span v-if="!obscured && isLocked(card)" class="stack-item__lock">🔒</span>
+          <span class="stack-item__name">{{ isObscured(i) ? '가려진 카드' : card.name }}</span>
+          <span v-if="!isObscured(i) && isLocked(card)" class="stack-item__lock">🔒</span>
         </button>
       </div>
 
@@ -189,7 +195,7 @@ function playPreview() {
       <div class="stack-preview">
         <!-- 은폐: 뒷면 프리뷰 -->
         <div
-          v-if="obscured && previewCard"
+          v-if="previewObscured && previewCard"
           class="card card--big card--facedown"
           :class="{ 'card--disabled': previewIndex === null || !canPlay(previewCard) || enemyActing, 'card--playing': playingIndex === previewIndex }"
           @click="playPreview"
@@ -204,7 +210,7 @@ function playPreview() {
           :class="{
             'card--disabled': !canPlay(previewCard) || enemyActing,
             'card--locked': isLocked(previewCard),
-            'card--junk': previewCard.unplayable,
+            'card--junk': previewCard.source === 'junk',
             'card--playing': playingIndex === previewIndex,
           }"
           :style="{ borderColor: cardBorder(previewCard) }"
