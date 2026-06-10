@@ -8,7 +8,7 @@ rank = common
 source = race
 trigger = passive
 effects = damage-out-add:1, bonus-hp:5
-flavor = 어느 한쪽으로도 기울지 않는 무게. 인간이 시대를 건너는 법.
+flavor = 어느 한쪽으로도 기울지 않는다. 인간은 그렇게 시대를 건너왔다.
 
 # 인간 정체성 앵커 (Item 37-③) — 균형·유연·적응을 시작 유물로 표현.
 # 기존 트리거/효과만 재사용(신규 트리거 없음). source=race → 시작 전용.
@@ -19,7 +19,7 @@ rank = common
 source = race
 trigger = on-combat-start
 effects = combat-start-block:4, combat-start-draw:1
-flavor = 싸움이 열리기 전에 늘 한 번 숨을 고른다. 그 짧은 들숨이 얇은 벽이 되고, 손에 한 장을 더 쥐여 준다.
+flavor = 싸움이 시작되기 전에 늘 숨을 고른다. 그 짧은 들숨이 얇은 방어가 되고, 카드도 한 장 더 쥐여 준다.
 
 [relic.r-race-human-counterweight]
 name = 균형추
@@ -27,7 +27,7 @@ rank = common
 source = race
 trigger = on-combat-start
 effects = combat-start-status:1:strength, combat-start-status:1:dexterity
-flavor = 한쪽으로 기울면 다른 쪽이 따라 선다. 마주 선 순간, 치는 힘과 막는 결이 함께 한 칸씩 올라선다.
+flavor = 한쪽으로 기울면 다른 쪽이 따라 선다. 적과 마주하면 치는 힘과 막는 힘이 함께 올라선다.
 
 [relic.r-race-human-token]
 name = 적응의 증표
@@ -35,7 +35,7 @@ rank = common
 source = race
 trigger = on-turn-start
 effects = turn-start-block:2
-flavor = 어느 자리에 서든 곧 익숙해진다. 매 호흡마다 발밑이 한 겹씩 더 단단해진다.
+flavor = 어디에 서든 곧 익숙해진다. 매 턴 발밑이 조금씩 더 단단해진다.
 
 [relic.r-race-moth]
 name = 바람결 깃
@@ -43,7 +43,7 @@ rank = common
 source = race
 trigger = on-draw
 effects = damage-enemy:1
-flavor = 카드를 한 장 뽑을 때마다 깃에서 작은 불티가 떨어져 적을 콕 찌른다. 많이 뽑을수록 더 매섭게.
+flavor = 카드를 뽑을 때마다 깃에서 작은 불티가 떨어져 적을 콕 찌른다. 많이 뽑을수록 더 매서워진다.
 
 # 나방 정체성 앵커 (Item 37-③) — 속도·연사·드로우를 시작 유물로 표현.
 # 기존 트리거/효과만 재사용(신규 트리거 없음). source=race → 시작 전용.
@@ -54,7 +54,7 @@ rank = common
 source = race
 trigger = on-combat-start
 effects = combat-start-draw:1, draw-extra-add:1
-flavor = 거의 무게가 없는 몸. 싸움이 열리면 손에 한 장이 더 들고, 매 호흡마다 또 한 장이 따라 든다.
+flavor = 거의 무게가 없는 몸이다. 싸움이 시작되면 카드가 한 장 더 들어오고, 매 턴 또 한 장이 따라 들어온다.
 
 [relic.r-race-moth-rapidquill]
 name = 연사의 깃
@@ -62,7 +62,7 @@ rank = common
 source = race
 trigger = on-card-played-after
 effects = attacks-to-strength:5
-flavor = 쉬지 않고 떨리는 깃. 공격이 거듭 박힐수록 어깨에 힘이 차곡차곡 쌓이고, 다단 공격은 박히는 그만큼 빨리 쌓는다.
+flavor = 쉬지 않고 떨리는 깃이다. 공격이 거듭 박힐수록 어깨에 힘이 차곡차곡 쌓이고, 여러 번 때리는 공격일수록 더 빨리 쌓인다.
 
 [relic.r-race-moth-windtally]
 name = 바람의 셈
@@ -70,7 +70,7 @@ rank = common
 source = race
 trigger = on-card-played-after
 effects = cards-to-color:5
-flavor = 손이 지날 때마다 깃이 한 번씩 떨린다. 다섯 번 지날 때마다, 모아 온 색 하나가 한 칸 진해진다.
+flavor = 카드가 지날 때마다 깃이 가볍게 떨린다. 다섯 번을 채우면 모아 온 색 하나가 더 진해진다.
 
 [relic.r-race-phantom]
 name = 패를 쥔 손
@@ -78,7 +78,7 @@ rank = common
 source = race
 trigger = on-combat-start
 effects = combat-start-draw:2, retain-hand
-flavor = 보이지 않는 손이 패를 두툼하게 쥔다. 턴이 끝나도 쥔 패를 놓지 않아(손패 유지), 펼치지 않은 만큼 한 수가 무겁다.
+flavor = 보이지 않는 손이 패를 두툼하게 쥔다. 턴이 끝나도 패를 놓지 않으니(손패 유지), 아껴 둔 만큼 다음 수가 무거워진다.
 
 # 팬텀 정체성 앵커 (Item 37-③) — 손패 수 관리·전기·어둠을 시작 유물로 표현.
 # 기존 트리거/효과만 재사용(신규 트리거 없음). source=race → 시작 전용.
@@ -89,7 +89,7 @@ rank = common
 source = race
 trigger = on-combat-start
 effects = combat-start-draw:1, retain-hand
-flavor = 보이지 않는 손이 패를 한 장 더 쥔다. 턴이 끝나도 놓지 않으니, 쥔 패가 두툼할수록 한 수가 더 무겁다.
+flavor = 보이지 않는 손이 패를 한 장 더 쥔다. 턴이 끝나도 놓지 않으니, 패가 두툼할수록 다음 수가 더 무거워진다.
 
 [relic.r-race-phantom-ghostmemory]
 name = 유령의 기억
@@ -97,7 +97,7 @@ rank = common
 source = race
 trigger = on-turn-start
 effects = turn-start-block:3
-flavor = 지나간 패의 잔상이 매 호흡마다 한 겹씩 어둠으로 돌아와, 발밑을 얇게 가려 준다.
+flavor = 지나간 패의 잔상이 매 턴 어둠이 되어 돌아온다. 그 어둠이 발밑을 얇게 가려 준다.
 
 [relic.r-race-phantom-staticquill]
 name = 정전기 깃
@@ -105,7 +105,7 @@ rank = common
 source = race
 trigger = on-draw
 effects = damage-enemy:1
-flavor = 패를 한 장 쥘 때마다 손끝에서 정전기 한 점이 튀어 적을 콕 찌른다. 많이 쥘수록 더 매섭게.
+flavor = 카드를 쥘 때마다 손끝에서 정전기가 튀어 적을 콕 찌른다. 많이 쥘수록 더 매서워진다.
 
 [relic.r-race-arcana]
 name = 빛의 성배
@@ -113,7 +113,7 @@ rank = common
 source = race
 trigger = on-combat-start
 effects = combat-start-mana-from-metric:12:top-color, combat-start-draw-from-metric:3:color-count
-flavor = 빛이 고이는 그릇. 모아 온 색이 짙을수록(최고색 12당 마나 +1), 색이 다채로울수록(색 3종당 카드 +1) 매 싸움이 풍요로워진다.
+flavor = 빛이 고이는 성배다. 모아 온 색이 짙을수록(최고색 12당 마나 +1), 색이 다채로울수록(색 3종당 카드 +1) 매 싸움이 풍요로워진다.
 
 # 아르카나 정체성 앵커 (Item 37-③) — 색 공명·색 다양화·초반 보정을 시작 유물로 표현.
 # 기존 트리거/효과만 재사용(신규 트리거 없음). metric 기반 스케일링으로 색 빌드를 보상. source=race → 시작 전용.
@@ -124,7 +124,7 @@ rank = common
 source = race
 trigger = on-combat-start
 effects = block-from-metric:14:top-color, strength-from-metric:2:color-count
-flavor = 빛을 갈래갈래 나누는 핵. 가장 짙은 색이 매 싸움 시작에 얇은 벽이 되고(최고색 14당 방어 +1), 색이 다채로울수록 손에 힘이 실린다(색 2종당 힘 +1).
+flavor = 빛을 여러 갈래로 나누는 핵이다. 가장 짙은 색이 매 싸움 시작에 얇은 방어가 되고(최고색 14당 방어 +1), 색이 다채로울수록 손에 힘이 실린다(색 2종당 힘 +1).
 
 [relic.r-race-arcana-seed]
 name = 무지개 씨앗
@@ -132,7 +132,7 @@ rank = common
 source = race
 trigger = on-card-played-after
 effects = cards-to-color:4
-flavor = 작은 씨앗 하나에 여덟 색이 잠들어 있다. 카드를 네 번 낼 때마다, 모아 온 색 하나가 한 칸 깨어난다.
+flavor = 작은 씨앗 안에 여덟 색이 잠들어 있다. 카드를 네 번 낼 때마다 모아 온 색 하나가 깨어난다.
 
 [relic.r-race-arcana-amp]
 name = 공명 증폭기
@@ -140,4 +140,4 @@ rank = common
 source = race
 trigger = on-turn-start
 effects = turn-units-color:1:0
-flavor = 색의 울림을 한 박자 더 키운다. 호흡의 끝수가 맞아떨어지는 턴마다, 무작위 색 하나가 한 칸씩 더 짙어진다.
+flavor = 색의 울림을 한층 더 키운다. 턴 수의 끝자리가 맞아떨어질 때마다 무작위 색 하나가 더 짙어진다.

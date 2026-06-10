@@ -13,7 +13,7 @@ cost = 1
 unplayable = true
 trigger = manual
 effects =
-flavor = 욱신거린다. 지금은 아무것도 할 수 없다.
+flavor = 자꾸 욱신거려서 신경이 쓰인다.
 
 [card.c-junk-blank]
 name = 빈 카드
@@ -22,7 +22,7 @@ source = junk
 cost = 0
 trigger = manual
 effects = exhaust-self
-flavor = 아무것도 적혀 있지 않다. 버리는 데에만 손이 간다.
+flavor = 아무것도 적혀 있지 않은 종이. 버리는 것 말고는 쓸 데가 없다.
 
 [card.c-junk-curse]
 name = 저주
@@ -31,4 +31,4 @@ source = junk
 cost = 1
 trigger = manual
 effects = curse-tick:2, exhaust-self
-flavor = 손에 쥐고 있으면 살을 파고든다. 떼어 내려면 대가가 든다.
+flavor = 들고 있으면 살갗을 콕콕 찌르며 떨어지지 않으려 한다.

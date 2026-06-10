@@ -6,7 +6,7 @@ rank = basic
 source = race
 trigger = passive
 effects = bonus-hp:5
-flavor = 인간이 가장 자주 갖고 태어나는 것.
+flavor = 인간이 가장 흔하게 타고나는 마음.
 
 [relic.r-sunset-fang]
 name = 노을 능선의 송곳니
@@ -14,7 +14,7 @@ rank = common
 source = event
 trigger = passive
 effects = damage-out-add:1
-flavor = 능선 너머 큰 그림자가 등을 한 번 굽혀 떨어뜨린 한 조각. 손에 쥐면 오래된 무게가 조용히 흘러내린다.
+flavor = 능선 너머 큰 그림자가 등을 굽혀 떨어뜨린 조각. 손에 쥐면 오래된 무게가 조용히 흘러내린다.
 
 [relic.r-imperisia-locket]
 name = 임페리시아의 회중시계
@@ -22,7 +22,7 @@ rank = common
 source = meta
 trigger = on-combat-start
 effects = bonus-mana:1
-flavor = "한 번의 여유를 드립니다. 단 한 번이지만."
+flavor = "한 번의 여유를 드립니다. 단 한 번이지만요."
 
 [relic.r-mono-token]
 name = 모노의 토큰
@@ -30,7 +30,7 @@ rank = rare
 source = event
 trigger = on-combat-end
 effects = bonus-gold:1
-flavor = 시간의 신이 잠시 떨어뜨린 부스러기.
+flavor = 시간의 신이 잠시 떨어뜨리고 간 부스러기.
 
 [relic.r-shadow-essence]
 name = 그림자의 본질
@@ -38,7 +38,7 @@ rank = legendary
 source = boss
 trigger = on-card-play
 effects = bonus-damage:1
-flavor = 봉인한 종말의 한 조각. 이제는 내 손 안에.
+flavor = 봉인한 종말의 조각. 이제는 내 손 안에 있다.
 
 [relic.r-kishina-pearl]
 name = 키시나의 소금 진주
@@ -46,7 +46,7 @@ rank = common
 source = npc
 trigger = on-combat-end
 effects = chance-random-color-1:50
-flavor = 가즈리가 줄에 꿴 진주 중 한 알. 전투가 한 번 끝날 때마다 차례대로 색이 떨어진다.
+flavor = 가즈리가 줄에 꿴 진주 가운데 하나. 전투가 끝날 때마다 차례대로 색이 떨어진다.
 
 [relic.r-postman-mail]
 name = 로큐의 가죽 가방
@@ -54,7 +54,7 @@ rank = common
 source = npc
 trigger = passive
 effects = skip-turn-every:3
-flavor = 로큐의 어깨끈이 그대 손에 옮겨졌다. 세 자리를 옮길 때마다, 길의 흐름이 한 번 그대를 지나친다.
+flavor = 로큐의 어깨끈이 그대 손에 옮겨졌다. 세 곳을 옮길 때마다 길의 흐름이 그대를 지나친다.
 
 [relic.r-yusezria-core]
 name = 유스제리아의 정수핵
@@ -62,7 +62,7 @@ rank = rare
 source = event
 trigger = passive
 effects = damage-out-add:2
-flavor = 유스제리아 막다른 자리에서 철과 물이 한 덩이로 굳은 핵. 지닌 자의 모든 일격에 무거운 한 자국이 더해진다.
+flavor = 유스제리아 막다른 곳에서 철과 물이 한데 굳은 핵. 지닌 자의 모든 일격에 무거운 자국이 더해진다.
 
 [relic.r-falcon-eye]
 name = 매의 눈
@@ -70,7 +70,7 @@ rank = rare
 source = event
 trigger = passive
 effects = block-out-add:2
-flavor = 팔콘 가든 하늘의 주인이 떨어뜨린 한 깃. 위험을 먼저 감지한다. 모든 방어에 두께가 더해진다.
+flavor = 팔콘 가든 하늘의 주인이 떨어뜨린 깃털. 위험을 먼저 알아채, 모든 방어에 두께가 더해진다.
 
 # ============================================================
 # 2차 확장 측정 어려운 효과 위주 (STS 유물 + 명일방주 통합전략 참고).
@@ -85,7 +85,7 @@ rank = common
 source = event
 trigger = on-turn-start
 effects = turn-start-block:3
-flavor = 누가 감아 두었는지 모를 톱니 하나. 쉬지 않고 돌며, 매 턴 그대 앞에 얇은 벽을 세운다.
+flavor = 누가 감아 두었는지 모를 톱니. 쉬지 않고 돌며 매 턴 그대 앞에 얇은 벽을 세운다.
 
 [relic.r-warm-coal]
 name = 식지 않는 숯
@@ -93,7 +93,7 @@ rank = common
 source = event
 trigger = on-combat-start
 effects = combat-start-block:5
-flavor = 손바닥 위에서 오래 따뜻하다. 싸움이 시작될 때, 그 온기가 두터운 방어로 굳는다.
+flavor = 손바닥 위에서 오래 따뜻하다. 싸움이 시작되면 그 온기가 두터운 방어로 굳는다.
 
 [relic.r-dawn-feather]
 name = 새벽 깃털
@@ -101,7 +101,7 @@ rank = common
 source = event
 trigger = on-combat-start
 effects = combat-start-draw:1
-flavor = 첫 빛이 닿으면 저절로 떠오르는 깃. 전투의 첫 순간, 손에 카드 한 장이 더 얹힌다.
+flavor = 첫 빛이 닿으면 저절로 떠오르는 깃. 전투가 시작되면 패에 카드를 한 장 더 얹어 준다.
 
 [relic.r-war-charm]
 name = 전의의 부적
@@ -109,7 +109,7 @@ rank = rare
 source = elite
 trigger = on-combat-start
 effects = combat-start-status:1:strength
-flavor = 낡은 끈에 매인 작은 쇠붙이. 적을 마주한 순간, 어깨에 힘이 한 줌 들어선다.
+flavor = 낡은 끈에 매인 작은 쇠붙이. 적을 마주하면 어깨에 힘이 들어선다.
 
 [relic.r-steady-stone]
 name = 평정의 조약돌
@@ -117,7 +117,7 @@ rank = common
 source = event
 trigger = on-combat-start
 effects = combat-start-status:2:dexterity
-flavor = 강가에서 오래 깎인 돌. 쥐고 있으면 손이 떨리지 않아, 막아 내는 모든 동작이 한층 야무지다.
+flavor = 강가에서 오래 깎인 돌. 쥐고 있으면 손이 떨리지 않아 막아 내는 동작이 한층 야무지다.
 
 # --- 회복 ---
 
@@ -127,7 +127,7 @@ rank = common
 source = event
 trigger = on-combat-end
 effects = combat-end-heal:4
-flavor = 상처에 닿으면 조용히 부풀어 메운다. 싸움이 끝날 때마다, 잊고 있던 아픔이 조금 가신다.
+flavor = 상처에 닿으면 조용히 부풀어 메운다. 싸움이 끝날 때마다 잊고 있던 아픔이 조금 가신다.
 
 [relic.r-day-ration]
 name = 하루치 식량
@@ -135,7 +135,7 @@ rank = basic
 source = shop
 trigger = on-node-enter
 effects = node-enter-heal:2
-flavor = 길 떠나는 이의 가장 평범한 짐. 새 자리에 발을 들일 때마다 한술 떠 넣으면, 몸이 조금 데워진다.
+flavor = 길 떠나는 이의 가장 평범한 짐. 새 곳에 발을 들일 때마다 떠먹으면 몸이 데워진다.
 
 # --- 카운터형 (value = 주기 N) ---
 
@@ -145,7 +145,7 @@ rank = common
 source = shop
 trigger = on-card-played-after
 effects = cards-to-draw:8
-flavor = 쓰다 보면 어느새 바닥이 보인다. 여덟 번 손을 놀릴 때마다, 다음 카드가 저절로 손에 들어온다.
+flavor = 쓰다 보면 어느새 바닥이 보인다. 여덟 번 손을 놀릴 때마다 다음 카드가 저절로 손에 들어온다.
 
 [relic.r-prism-bead]
 name = 프리즘 구슬
@@ -153,7 +153,7 @@ rank = common
 source = shop
 trigger = on-card-played-after
 effects = cards-to-color:5
-flavor = 빛을 머금었다가 흩뜨리는 작은 구슬. 다섯 번 손을 거칠 때마다, 어느 색 하나가 짙어진다.
+flavor = 빛을 머금었다가 흩뜨리는 작은 구슬. 다섯 번 손을 거칠 때마다 어느 색이 짙어진다.
 
 [relic.r-whetstone]
 name = 숫돌 조각
@@ -161,7 +161,7 @@ rank = common
 source = event
 trigger = on-card-played-after
 effects = attacks-to-strength:4
-flavor = 갈수록 손에 익는 거친 돌. 네 번 내리칠 때마다 날이 한 번 더 서고, 다음 일격에 힘이 실린다.
+flavor = 갈수록 손에 익는 거친 돌. 네 번 내리칠 때마다 날이 더 서서 다음 일격에 힘이 실린다.
 
 [relic.r-twin-needle]
 name = 쌍바늘
@@ -169,7 +169,7 @@ rank = rare
 source = elite
 trigger = on-card-played-after
 effects = attacks-to-color:3
-flavor = 두 끝이 서로 다른 색으로 빛나는 바늘. 세 번 찌를 때마다, 그중 한 색이 더 또렷해진다.
+flavor = 두 끝이 서로 다른 색으로 빛나는 바늘. 세 번 찌를 때마다 그중 어느 색이 더 또렷해진다.
 
 # --- 반응형 (피해 받을 때) ---
 
@@ -179,7 +179,7 @@ rank = common
 source = elite
 trigger = on-damage-taken
 effects = retaliate:3
-flavor = 만지면 따끔한 작은 돌기. 누가 그대를 때리면, 그 손도 무사하지 못하다.
+flavor = 만지면 따끔한 작은 돌기. 누가 그대를 때리면 그 손도 무사하지 못하다.
 
 [relic.r-echo-chime]
 name = 메아리 종
@@ -187,7 +187,7 @@ rank = rare
 source = elite
 trigger = on-damage-taken
 effects = hurt-to-color:1
-flavor = 부딪힐 때만 우는 작은 종. 아픔이 닿을 때마다 한 음이 울려, 어느 색이 조금씩 차오른다.
+flavor = 부딪힐 때만 우는 작은 종. 아픔이 닿을 때마다 작게 울리며 어느 색이 조금씩 차오른다.
 
 [relic.r-stubborn-bark]
 name = 고집 센 나무껍질
@@ -195,7 +195,7 @@ rank = common
 source = event
 trigger = on-damage-taken
 effects = hurt-to-block:2
-flavor = 베일수록 더 두꺼워지는 껍질. 맞고 나면, 다음을 막을 새 껍질이 돋는다.
+flavor = 베일수록 더 두꺼워지는 껍질. 맞고 나면 다음을 막을 새 껍질이 돋는다.
 
 # --- 패시브 모디파이어 ---
 
@@ -205,7 +205,7 @@ rank = rare
 source = elite
 trigger = passive
 effects = draw-extra-add:1
-flavor = 늘 한 발이 더 들어 있는 통. 매 턴, 손이 한 번 더 바빠진다.
+flavor = 늘 화살이 한 발 더 들어 있는 통. 매 턴 손이 한 번 더 바빠진다.
 
 [relic.r-spring-coil]
 name = 감긴 용수철
@@ -213,7 +213,7 @@ rank = rare
 source = event
 trigger = passive
 effects = mana-extra-add:1
-flavor = 풀릴 때를 기다리며 늘 한 바퀴 더 감겨 있다. 매 턴, 쓸 수 있는 힘이 한 줌 더 풀려난다.
+flavor = 풀릴 때를 기다리며 늘 한 바퀴 더 감겨 있다. 매 턴 쓸 수 있는 힘이 조금 더 풀려난다.
 
 # ============================================================
 # 다운사이드 동반 강력하지만 대가가 따른다 (STS 보스 유물식).
@@ -225,7 +225,7 @@ rank = legendary
 source = event
 trigger = passive
 effects = damage-out-mul:1.4, damage-in-mul:1.3
-flavor = 모든 빛을 한 점으로 모으지만, 제 몸도 그만큼 얇다. 더 깊이 베는 대신, 더 깊이 베인다.
+flavor = 모든 빛을 한곳으로 모으지만 제 몸도 그만큼 얇다. 더 깊이 베는 대신 더 깊이 베인다.
 
 [relic.r-thorn-heart]
 name = 가시 심장
@@ -233,7 +233,7 @@ rank = rare
 source = elite
 trigger = on-turn-start
 effects = damage-out-add:3, turn-start-hp-loss:2
-flavor = 뛸 때마다 안쪽을 찌르는 심장. 그 통증이 주먹에 실리지만, 대가는 매 순간 제 살에서 치른다.
+flavor = 뛸 때마다 안쪽을 찌르는 심장. 그 통증이 주먹에 실리지만 대가는 매 순간 제 살에서 치른다.
 
 [relic.r-hungry-lamp]
 name = 굶주린 등불
@@ -241,7 +241,7 @@ rank = rare
 source = shop
 trigger = on-combat-start
 effects = mana-extra-add:1, combat-start-draw:1, combat-start-status:2:frail
-flavor = 더 밝게 타는 만큼 더 많은 것을 삼킨다. 매 턴 한 줌의 힘과 시작의 한 장을 더 주지만, 그 불빛에 데어 처음부터 막아 내기가 무디다.
+flavor = 더 밝게 타는 만큼 더 많은 것을 삼킨다. 매 턴 힘과 시작 패를 더 주지만 그 불빛에 데어 처음부터 막아 내기가 무디다.
 
 [relic.r-cursed-coin]
 name = 저주받은 동전
@@ -249,7 +249,7 @@ rank = rare
 source = shop
 trigger = on-combat-end
 effects = bonus-gold:12, damage-in-mul:1.15
-flavor = 손에 쥐면 돈이 따라붙는다 불운도 함께. 승리마다 묵직해지지만, 적의 일격은 늘 조금 더 아프다.
+flavor = 손에 쥐면 돈이 따라붙는다. 불운도 함께라, 승리마다 주머니는 무거워지지만 적의 일격이 늘 조금 더 아프다.
 
 [relic.r-heavy-satchel]
 name = 무거운 봇짐
@@ -257,4 +257,4 @@ rank = rare
 source = event
 trigger = on-combat-start
 effects = draw-extra-add:2, combat-start-status:2:frail
-flavor = 쓸 만한 것은 다 들었다 너무 많이. 매 턴 손은 두둑하지만, 시작부터 어깨가 짓눌려 막아 내기가 버겁다.
+flavor = 쓸 만한 것을 챙기다 보니 너무 많아졌다. 매 턴 패는 넉넉하지만 어깨가 짓눌려 막아 내기가 버겁다.

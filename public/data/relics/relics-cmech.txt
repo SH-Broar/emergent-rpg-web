@@ -10,7 +10,7 @@ rank = rare
 source = event
 trigger = passive
 effects = block-carryover
-flavor = 한 번 데운 돌은 좀처럼 식지 않는다. 쌓아 둔 벽이 다음 마디까지 그대로 남는다.
+flavor = 한번 데운 돌은 좀처럼 식지 않는다. 쌓아 둔 방어가 다음 턴까지 그대로 남는다.
 
 [relic.r-cm-block-keep-wall]
 name = 무너지지 않는 둑
@@ -18,7 +18,7 @@ rank = rare
 source = shop
 trigger = passive
 effects = block-carryover
-flavor = 모노가 흘려보낸 시간으로 다진 둑. 막아 둔 벽이 사라지지 않고 다음으로 이어진다.
+flavor = 모노가 흘려보낸 시간으로 다진 둑이다. 쌓아 둔 방어가 사라지지 않고 다음 턴으로 이어진다.
 
 [relic.r-cm-block-keep-fortress]
 name = 영원의 성채
@@ -26,7 +26,7 @@ rank = legendary
 source = elite
 trigger = passive
 effects = block-carryover
-flavor = 시간의 신이 잠시 세워 둔 벽. 한 번 쌓은 방어는 어느 마디에도 무너지지 않는다.
+flavor = 시간의 신이 잠시 세워 둔 벽이다. 한번 쌓은 방어는 어느 턴에도 무너지지 않는다.
 
 # ============================================================
 # mana-carryover 쓰지 않은 마나가 다음 턴으로 이월된다.
@@ -38,7 +38,7 @@ rank = rare
 source = event
 trigger = passive
 effects = mana-carryover
-flavor = 아낀 한 모금이 어디로도 흩어지지 않는다. 남긴 힘이 다음 마디까지 고스란히 고인다.
+flavor = 아껴 둔 물은 어디로도 흩어지지 않는다. 쓰지 않은 마나가 다음 턴까지 고스란히 고인다.
 
 [relic.r-cm-mana-keep-cell]
 name = 잠겨 두는 전지
@@ -46,7 +46,7 @@ rank = rare
 source = shop
 trigger = passive
 effects = mana-carryover
-flavor = 전기 정령이 쓰다 만 작은 통. 한 번 채워 두면 다음 순간까지 빠져나가지 않는다.
+flavor = 전기 정령이 쓰다 만 작은 통이다. 한번 채워 두면 다음 턴까지 빠져나가지 않는다.
 
 [relic.r-cm-mana-keep-reservoir]
 name = 마르지 않는 못
@@ -54,7 +54,7 @@ rank = legendary
 source = elite
 trigger = passive
 effects = mana-carryover
-flavor = 물의 정령이 길어 둔 깊은 못. 손대지 않은 힘이 한 방울도 줄지 않고 다음으로 넘어간다.
+flavor = 물의 정령이 길어 둔 깊은 못이다. 쓰지 않은 마나가 한 방울도 줄지 않고 다음 턴으로 넘어간다.
 
 # ============================================================
 # first-card-free 매 턴 첫 카드의 비용이 0이 된다.
@@ -66,7 +66,7 @@ rank = rare
 source = event
 trigger = passive
 effects = first-card-free
-flavor = 처음 내미는 카드는 무게가 없다. 매 마디 첫 손이 깃털처럼 가뿐히 나간다.
+flavor = 처음 내미는 카드는 무게가 없다. 매 턴 첫 카드가 깃털처럼 가뿐하게 나간다.
 
 [relic.r-cm-first-free-token]
 name = 처음의 무료표
@@ -82,7 +82,7 @@ rank = legendary
 source = elite
 trigger = passive
 effects = first-card-free
-flavor = 이야기의 첫 줄은 늘 거저 시작된다. 어느 마디든 첫 손이 힘 한 줌 없이도 펼쳐진다.
+flavor = 이야기의 첫 줄은 늘 거저 시작된다. 어느 턴이든 첫 카드는 마나 없이도 펼쳐진다.
 
 # ============================================================
 # double-debuff 적에게 거는 디버프 스택이 2배가 된다.
@@ -94,7 +94,7 @@ rank = rare
 source = event
 trigger = passive
 effects = double-debuff
-flavor = 한 번 찔러도 두 번 든다. 적에게 새기는 약함이 늘 곱절로 파고든다.
+flavor = 한번 찔러도 두 번 찌른 것처럼 든다. 적에게 새기는 약함이 늘 곱절로 파고든다.
 
 [relic.r-cm-double-curse-mirror]
 name = 되비치는 거울
@@ -102,7 +102,7 @@ rank = rare
 source = shop
 trigger = passive
 effects = double-debuff
-flavor = 마주 비춘 저주가 둘이 되어 돌아간다. 적에게 거는 모든 흠집이 두 겹으로 새겨진다.
+flavor = 마주 비춘 저주가 둘로 늘어 돌아간다. 적에게 거는 모든 흠집이 두 겹으로 새겨진다.
 
 [relic.r-cm-double-curse-sigil]
 name = 겹쳐 새긴 인장
@@ -110,7 +110,7 @@ rank = legendary
 source = elite
 trigger = passive
 effects = double-debuff
-flavor = 한 획을 그으면 두 획이 남는 검은 인장. 적이 받는 모든 약함이 두 배로 깊게 박힌다.
+flavor = 한 획을 그으면 두 획이 남는 검은 인장이다. 적이 받는 모든 약함이 두 배로 깊게 박힌다.
 
 # ============================================================
 # 다운사이드 동반 마커 + 진짜 단점 (STS 보스 유물식)
@@ -122,7 +122,7 @@ rank = rare
 source = event
 trigger = passive
 effects = first-card-free, bonus-hp:-8
-flavor = 첫 손은 거저 나가지만 그릇이 그만큼 무르다. 가뿐함의 대가는 미리 깎인 살 한 줌이다.
+flavor = 첫 카드는 거저 나가지만 그만큼 몸이 약해진다. 가뿐한 시작에는 미리 치르는 값이 있다.
 
 [relic.r-cm-block-keep-frail-stone]
 name = 금 간 이월석
@@ -130,7 +130,7 @@ rank = rare
 source = elite
 trigger = on-combat-start
 effects = block-carryover, combat-start-status:2:frail
-flavor = 벽은 다음 마디까지 남지만 돌에 잔금이 갔다. 시작부터 어깨가 짓눌려 새로 막아 내기가 버겁다.
+flavor = 방어는 다음 턴까지 남지만 돌에 잔금이 가 있다. 처음부터 어깨가 짓눌려 새로 막아 내기가 버겁다.
 
 [relic.r-cm-double-curse-weak-grip]
 name = 떨리는 저주손
@@ -138,7 +138,7 @@ rank = rare
 source = elite
 trigger = on-combat-start
 effects = double-debuff, combat-start-status:1:weakness
-flavor = 두 곱절로 새기려 손이 늘 떨린다. 적의 약함은 깊어지지만, 처음 일격이 그만큼 무디다.
+flavor = 두 곱절로 새기려다 보니 손이 늘 떨린다. 적의 약함은 깊어지지만 처음 일격이 그만큼 무뎌진다.
 
 [relic.r-cm-mana-keep-leaky-vein]
 name = 새는 마나혈관
@@ -146,7 +146,7 @@ rank = rare
 source = event
 trigger = passive
 effects = mana-carryover, bonus-hp:-6
-flavor = 힘은 다음 마디까지 고이지만 어딘가가 늘 새어 든다. 고임의 값은 야금야금 깎인 살이다.
+flavor = 마나는 다음 턴까지 고이지만 어딘가로 늘 조금씩 샌다. 고여 두는 값으로 몸이 야금야금 깎인다.
 
 [relic.r-cm-first-free-empty-hand]
 name = 빈손의 첫 줄
@@ -154,7 +154,7 @@ rank = rare
 source = shop
 trigger = passive
 effects = first-card-free, draw-extra-add:-1
-flavor = 첫 한 장이 거저인 대신 손이 늘 한 장 모자라다. 가벼운 시작은 두둑한 패를 내준 값이다.
+flavor = 첫 카드가 거저인 대신 패가 늘 한 장 모자라다. 가벼운 시작은 두둑한 패를 내준 값이다.
 
 [relic.r-cm-double-curse-heavy-mark]
 name = 무거운 저주표식
@@ -162,7 +162,7 @@ rank = rare
 source = shop
 trigger = passive
 effects = double-debuff, damage-in-mul:1.2
-flavor = 적에게 두 배의 흠을 새기느라 제 등도 함께 드러난다. 깊게 거는 만큼 돌아오는 매도 그만큼 더 아프다.
+flavor = 적에게 두 배의 흠을 새기느라 제 등도 함께 드러난다. 깊게 거는 만큼 돌아오는 매도 더 아프다.
 
 # ============================================================
 # combat-start-return-to-deck 전투 시작 시 손에서 N장 덱으로 반환.
@@ -176,7 +176,7 @@ rank = rare
 source = elite
 trigger = on-combat-start
 effects = combat-start-return-to-deck:2
-flavor = 손을 비울수록 마음이 가벼워진다. 싸움이 열리면 패가 슬며시 덱으로 되돌아간다.
+flavor = 손을 비울수록 마음이 가벼워진다. 싸움이 시작되면 패가 슬며시 덱으로 되돌아간다.
 
 [relic.r-cm-void-mark]
 name = 공허의 표식
@@ -184,4 +184,4 @@ rank = legendary
 source = elite
 trigger = on-combat-start
 effects = combat-start-return-to-deck:3
-flavor = 텅 빈 자리에 새긴 표식. 싸움이 열릴수록 패가 더 깊이 비워진다.
+flavor = 텅 빈 곳에 새겨 둔 표식이다. 싸움이 시작되면 패가 더 깊이 비워진다.

@@ -32,7 +32,7 @@ element = earth
 cost = 1
 trigger = manual
 effects = damage:15:enemy
-flavor = 한 입에 더 깊이 문다.
+flavor = 더 깊이 물어뜯는다.
 
 [card.c-fox-foxfire]
 name = 여우불
@@ -53,7 +53,7 @@ element = fire
 cost = 1
 trigger = manual
 effects = damage:10:enemy, apply-status:7:enemy:burn
-flavor = 핥은 자리가 더 오래 타들어 간다.
+flavor = 불꽃이 닿은 곳이 더 오래 타들어 간다.
 
 [card.c-fox-charm]
 name = 홀림
@@ -106,7 +106,7 @@ cost = 2
 trigger = manual
 effects = growing-damage:10
 upgrade_to = c-fox-nine-tails-plus
-flavor = 펼쳐진 꼬리만큼 매서워진다. 쓸수록 한 자락씩 깊어진다.
+flavor = 펼쳐진 꼬리만큼 매서워진다. 쓸수록 더 깊어진다.
 
 [card.c-fox-nine-tails-plus]
 name = 아홉 꼬리+
@@ -116,7 +116,7 @@ element = wind
 cost = 2
 trigger = manual
 effects = growing-damage:14
-flavor = 꼬리가 한 자락 더 자라, 휘두를 때마다 더 깊이 든다.
+flavor = 꼬리가 더 길게 자라, 휘두를 때마다 더 깊이 든다.
 
 [card.c-fox-dash]
 name = 여우걸음
@@ -137,7 +137,7 @@ element = wind
 cost = 0
 trigger = manual
 effects = damage:8:enemy, draw:1:self
-flavor = 더 가볍게 스치고, 한 장을 채간다.
+flavor = 더 가볍게 스치며 카드를 채간다.
 
 [card.c-fox-trick]
 name = 속임수
@@ -194,7 +194,7 @@ cost = 1
 trigger = manual
 effects = skip-enemy-action:1
 upgrade_to = c-fox-mirage-plus
-flavor = 허상을 세워 상대의 한 수를 헛치게 한다.
+flavor = 허상을 세워 상대가 헛손질하게 만든다.
 
 [card.c-fox-mirage-plus]
 name = 환영+
@@ -204,7 +204,7 @@ element = water
 cost = 1
 trigger = manual
 effects = skip-enemy-action:1, block:8:self
-flavor = 허상 뒤로 몸을 숨긴다. 한 수를 흘리고도 자리를 지킨다.
+flavor = 허상 뒤로 몸을 숨긴다. 공격을 흘려보내고도 자세를 지킨다.
 
 [card.c-fox-ninetails]
 name = 구미호의 춤
@@ -215,7 +215,7 @@ cost = 2
 trigger = manual
 effects = growing-damage:12
 upgrade_to = c-fox-ninetails-plus
-flavor = 아홉 자락이 한꺼번에 일렁인다. 출 때마다 한 자락씩 더 매서워진다.
+flavor = 아홉 꼬리가 한꺼번에 일렁인다. 출수록 더 매서워진다.
 
 [card.c-fox-ninetails-plus]
 name = 구미호의 춤+
@@ -225,7 +225,7 @@ element = wind
 cost = 2
 trigger = manual
 effects = growing-damage:16
-flavor = 일렁이는 폭이 넓어졌다. 한 자락이 더 깊이 휘감는다.
+flavor = 일렁이는 폭이 넓어졌다. 꼬리가 더 깊이 휘감는다.
 
 [card.c-fox-trickery]
 name = 변덕
@@ -246,7 +246,7 @@ element = dark
 cost = 0
 trigger = manual
 effects = random-effect
-flavor = 손짓 한 번에 무엇이든 일어난다. 거저.
+flavor = 가벼운 손짓에 무엇이든 일어난다. 값도 들지 않는다.
 
 [card.c-fox-emberburst]
 name = 불꽃 작렬
@@ -257,7 +257,7 @@ cost = 2
 trigger = manual
 effects = damage:8:enemy, damage-per-debuff:4:enemy
 upgrade_to = c-fox-emberburst-plus
-flavor = 새겨 둔 홀림과 화상마다 불길이 한 줄기씩 더 솟는다.
+flavor = 걸어 둔 홀림과 화상이 많을수록 불길이 더 거세게 솟는다.
 
 [card.c-fox-emberburst-plus]
 name = 불꽃 작렬+
@@ -267,7 +267,7 @@ element = fire
 cost = 2
 trigger = manual
 effects = damage:8:enemy, damage-per-debuff:6:enemy
-flavor = 솟는 불길이 한 자락마다 더 높이 치솟는다.
+flavor = 솟는 불길이 더 높이 치솟는다.
 
 [card.c-fox-veil]
 name = 여우 안개
@@ -278,7 +278,7 @@ cost = 1
 trigger = manual
 effects = slow-enemy:2, block:10:self
 upgrade_to = c-fox-veil-plus
-flavor = 자욱이 깔린 안개가 상대의 발을 늦추고 내 자리를 가린다.
+flavor = 자욱이 깔린 안개가 상대의 발을 늦추고 내 몸을 가려 준다.
 
 [card.c-fox-veil-plus]
 name = 여우 안개+
@@ -288,7 +288,7 @@ element = water
 cost = 1
 trigger = manual
 effects = slow-enemy:3, block:14:self
-flavor = 안개가 더 짙다. 발은 더 늦고, 가린 자리는 더 두껍다.
+flavor = 안개가 더 짙다. 상대의 발은 더 늦고, 가려 주는 막은 더 두껍다.
 
 [card.c-fox-devour]
 name = 잠식의 불
@@ -320,7 +320,7 @@ cost = 2
 trigger = manual
 effects = this-turn-amp:50
 upgrade_to = c-fox-frenzy-plus
-flavor = 이번 한 호흡, 모든 것이 미쳐 날뛴다.
+flavor = 이번 턴만큼은 모든 것이 미쳐 날뛴다.
 
 [card.c-fox-frenzy-plus]
 name = 광란+
@@ -345,7 +345,7 @@ cost = 0
 trigger = manual
 effects = damage:3:enemy, apply-status:3:enemy:burn
 upgrade_to = c-fox-spark-plus
-flavor = 가벼운 손짓에 불씨 한 점이 옮겨 간다.
+flavor = 가벼운 손짓에 불씨가 옮겨 간다.
 
 [card.c-fox-spark-plus]
 name = 불씨 흩기+
@@ -366,7 +366,7 @@ cost = 1
 trigger = manual
 effects = damage:10:enemy, apply-status:4:enemy:burn
 upgrade_to = c-fox-pyre-plus
-flavor = 한 아름 불을 안겨 준다. 치고도 오래 탄다.
+flavor = 한아름 불을 안겨 준다. 치고도 오래 탄다.
 
 [card.c-fox-pyre-plus]
 name = 화톳불+
@@ -454,7 +454,7 @@ cost = 1
 trigger = manual
 effects = slow-enemy:2, draw:1:self
 upgrade_to = c-fox-blur-plus
-flavor = 자취를 흐려 상대의 발을 늦추고, 그 틈에 한 장을 줍는다.
+flavor = 모습을 흐릿하게 지워 상대의 발을 늦추고, 그 틈에 카드를 줍는다.
 
 [card.c-fox-blur-plus]
 name = 흐릿한 자취+
@@ -464,7 +464,7 @@ element = water
 cost = 1
 trigger = manual
 effects = slow-enemy:3, draw:1:self
-flavor = 더 흐려진 자취. 발은 더 늦고, 손은 한결 가볍다.
+flavor = 모습이 더 흐릿하다. 상대의 발은 더 늦고, 손은 한결 가볍다.
 
 [card.c-fox-phantasm]
 name = 허깨비
@@ -475,7 +475,7 @@ cost = 2
 trigger = manual
 effects = skip-enemy-action:1, draw:1:self
 upgrade_to = c-fox-phantasm-plus
-flavor = 가짜 하나를 세워 두면, 상대는 그쪽으로 한 수를 헛친다.
+flavor = 가짜를 세워 두면 상대가 그쪽으로 헛손질한다.
 
 [card.c-fox-phantasm-plus]
 name = 허깨비+
@@ -517,7 +517,7 @@ cost = 1
 trigger = manual
 effects = slow-enemy:3, block:8:self
 upgrade_to = c-fox-dreamhaze-plus
-flavor = 꿈결 같은 안개에 상대의 손이 한 박 느려진다.
+flavor = 꿈결 같은 안개에 상대의 손이 느려진다.
 
 [card.c-fox-dreamhaze-plus]
 name = 몽환+
@@ -527,7 +527,7 @@ element = water
 cost = 1
 trigger = manual
 effects = slow-enemy:4, block:12:self
-flavor = 꿈이 더 깊다. 손은 더 느리고, 자리는 더 단단하다.
+flavor = 꿈이 더 깊다. 상대의 손은 더 느리고, 내 몸은 더 단단하다.
 
 # ============================================================
 # 여우 폼 확장 — 필러: 홀림 (디버프 + 스케일)
@@ -584,7 +584,7 @@ cost = 1
 trigger = manual
 effects = apply-status:4:enemy:frail
 upgrade_to = c-fox-unravel-plus
-flavor = 단단히 여민 방어를 한 올씩 풀어헤친다.
+flavor = 단단히 여민 방어를 올올이 풀어헤친다.
 
 [card.c-fox-unravel-plus]
 name = 결박 풀기+
@@ -672,7 +672,7 @@ cost = 1
 trigger = manual
 effects = growing-damage:7
 upgrade_to = c-fox-tailswipe-plus
-flavor = 한 자락을 휘두른다. 휘두를 때마다 한 뼘씩 더 멀리 닿는다.
+flavor = 꼬리를 휘두른다. 휘두를 때마다 조금씩 더 멀리 닿는다.
 
 [card.c-fox-tailswipe-plus]
 name = 꼬리치기+
@@ -693,7 +693,7 @@ cost = 1
 trigger = manual
 effects = bloom-strength:3
 upgrade_to = c-fox-bloomtail-plus
-flavor = 꼬리를 한 자락 피워 둔다. 이번 싸움 내내 매 호흡마다 더 강해진다.
+flavor = 꼬리를 활짝 펼쳐 둔다. 이번 싸움 내내 점점 더 강해진다.
 
 [card.c-fox-bloomtail-plus]
 name = 꼬리 피우기+
@@ -735,7 +735,7 @@ cost = 2
 trigger = manual
 effects = damage-per-cards-played:8:enemy, draw:1:self
 upgrade_to = c-fox-ninefold-plus
-flavor = 아홉 자락을 겹쳐 한 번에 떨군다. 쌓아 온 손이 길수록 무겁다.
+flavor = 아홉 꼬리를 겹쳐 한꺼번에 떨군다. 그동안 낸 카드가 많을수록 무겁다.
 
 [card.c-fox-ninefold-plus]
 name = 아홉 겹+
@@ -781,7 +781,7 @@ cost = 0
 trigger = manual
 effects = random-effect
 upgrade_to = c-fox-whim-plus
-flavor = 거저 한 줌 흩뿌린다. 무엇이 될지는 그때그때.
+flavor = 변덕을 살짝 흩뿌린다. 무엇이 될지는 그때그때 다르다.
 
 [card.c-fox-whim-plus]
 name = 변덕 한 줌+
@@ -791,7 +791,7 @@ element = dark
 cost = 0
 trigger = manual
 effects = random-effect, draw:1:self
-flavor = 흩뿌리고도 한 장이 손에 남는다.
+flavor = 흩뿌리고도 카드가 손에 남는다.
 
 [card.c-fox-fervor]
 name = 광휘
@@ -802,7 +802,7 @@ cost = 1
 trigger = manual
 effects = this-turn-amp:30, damage:6:enemy
 upgrade_to = c-fox-fervor-plus
-flavor = 이번 한 호흡만큼은 모든 손이 더 무겁게 떨어진다.
+flavor = 이번 턴만큼은 모든 손이 더 무겁게 떨어진다.
 
 [card.c-fox-fervor-plus]
 name = 광휘+
@@ -844,7 +844,7 @@ cost = 3
 trigger = manual
 effects = this-turn-amp:60, damage:10:enemy, apply-status:5:enemy:burn
 upgrade_to = c-fox-rampage-plus
-flavor = 한 호흡에 모든 것을 쏟아붓는다. 치고, 태우고, 미쳐 날뛰며.
+flavor = 이번 턴에 모든 것을 쏟아붓는다. 치고, 태우고, 미쳐 날뛰며.
 
 [card.c-fox-rampage-plus]
 name = 난동+
@@ -890,7 +890,7 @@ cost = 2
 trigger = manual
 effects = damage:22:enemy
 upgrade_to = c-fox-maul-plus
-flavor = 한 번 문 자리를 놓지 않고 끝까지 물어뜯는다.
+flavor = 한 번 문 곳을 놓지 않고 끝까지 물어뜯는다.
 
 [card.c-fox-maul-plus]
 name = 물어뜯기+
@@ -953,7 +953,7 @@ cost = 1
 trigger = manual
 effects = block:9:self, apply-status:2:enemy:weakness
 upgrade_to = c-fox-foxguard-plus
-flavor = 도사려 앉아 빈틈 없이 막으며, 상대의 힘을 한 줌 빼낸다.
+flavor = 도사려 앉아 빈틈 없이 막으며, 상대의 힘을 조금 빼낸다.
 
 [card.c-fox-foxguard-plus]
 name = 여우 도사림+

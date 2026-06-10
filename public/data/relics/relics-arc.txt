@@ -9,7 +9,7 @@ rank = legendary
 source = boss
 trigger = on-combat-start
 effects = combat-start-block:12, combat-start-status:2:strength
-flavor = 묵직한 곰의 가슴팍에서 꺼낸 식지 않는 잿불. 싸움이 시작될 때마다 든든한 무게로 버텨 준다.
+flavor = 던의 가슴팍에서 꺼낸 식지 않는 잿불이다. 싸움이 시작될 때마다 묵직한 무게로 버텨 준다.
 
 # --- 티프레 (번개의 신수 호랑이) ---
 [relic.r-arc-tifre-storm-fang]
@@ -18,7 +18,7 @@ rank = legendary
 source = boss
 trigger = on-turn-start
 effects = turn-start-block:5
-flavor = 번개를 길게 머금은 송곳니. 매 호흡마다 작은 우레가 몸을 감싸 방어로 내려앉는다.
+flavor = 번개를 길게 머금은 송곳니다. 매 턴 작은 우레가 몸을 감싸 방어로 내려앉는다.
 
 # --- 타마모 (변신의 구미호) ---
 [relic.r-arc-tamamo-nine-mirror]
@@ -27,4 +27,4 @@ rank = legendary
 source = boss
 trigger = on-draw
 effects = cards-to-color:3
-flavor = 꼬리마다 다른 빛을 비추는 작은 거울들. 패를 넘길수록 그 색이 손끝에 옮겨붙는다.
+flavor = 꼬리마다 다른 빛을 비추는 작은 거울들이다. 패를 넘길수록 그 색이 손끝으로 옮겨붙는다.

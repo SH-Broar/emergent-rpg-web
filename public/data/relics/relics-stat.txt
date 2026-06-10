@@ -14,7 +14,7 @@ rank = basic
 source = event
 trigger = on-acquire
 effects = boost-stat:2:atk
-flavor = 모노가 떨어뜨린 표식 불과 번개가 한 점에 맺혀 있다.
+flavor = 모노가 떨어뜨린 표식이다. 불과 번개가 한곳에 맺혀 있다.
 
 [relic.r-stat-ember-fang]
 name = 잔불의 송곳니
@@ -22,7 +22,7 @@ rank = common
 source = event
 trigger = on-acquire
 effects = boost-stat:4:atk
-flavor = 정령이 입에 물고 다니던 송곳니. 쥐면 손끝이 따끔하게 달아오른다.
+flavor = 정령이 입에 물고 다니던 송곳니다. 쥐면 손끝이 따끔하게 달아오른다.
 
 [relic.r-stat-stormcore]
 name = 폭풍의 핵
@@ -30,7 +30,7 @@ rank = rare
 source = elite
 trigger = on-acquire
 effects = boost-stat:6:atk
-flavor = 번개가 흙에 떨어진 자리에서 굳은 덩이. 안에서 아직 전류가 돈다.
+flavor = 번개가 흙에 떨어진 곳에서 굳은 덩어리다. 그 안에서 아직 전류가 돈다.
 
 [relic.r-stat-mono-spear]
 name = 모노의 첫 창
@@ -38,7 +38,7 @@ rank = legendary
 source = event
 trigger = on-acquire
 effects = boost-stat:9:atk
-flavor = "처음 무언가를 가르고 싶었을 때, 나는 이걸 만들었지." 시간의 신이 웃으며 건넨다.
+flavor = 처음 무언가를 베고 싶었을 때 이걸 만들었다고, 시간의 신이 웃으며 건넨다.
 
 # --- ATK boost-stat 반복 ---
 
@@ -48,7 +48,7 @@ rank = rare
 source = event
 trigger = on-acquire
 effects = boost-stat:6:atk
-flavor = 손에 쥐는 순간 안에 잠들어 있던 열이 한꺼번에 옮겨붙는다.
+flavor = 손에 쥐면 안에 잠들어 있던 열이 한꺼번에 옮겨붙는다.
 
 # --- ATK 비례 형 ---
 
@@ -58,7 +58,7 @@ rank = common
 source = elite
 trigger = on-combat-start
 effects = strength-from-metric:20:atk
-flavor = 안에 쌓인 열을 한 번에 토해 낸다. 공격이 셀수록 첫 주먹이 무겁다.
+flavor = 안에 쌓인 열을 한꺼번에 토해 낸다. 공격이 셀수록 첫 주먹이 무겁다.
 
 [relic.r-stat-thunder-coil]
 name = 천둥 코일
@@ -66,7 +66,7 @@ rank = rare
 source = elite
 trigger = passive
 effects = damage-out-add:2
-flavor = 감긴 채 번개를 머금은 코일. 손이 닿는 모든 일격에 전류가 더해진다.
+flavor = 단단히 감긴 채 번개를 머금은 코일이다. 휘두르는 모든 일격에 전류가 더해진다.
 
 [relic.r-stat-sun-edge]
 name = 태양의 날
@@ -74,7 +74,7 @@ rank = legendary
 source = event
 trigger = on-combat-start
 effects = strength-from-metric:8:atk
-flavor = 한낮의 빛을 벼린 날. 가진 화력 전부가 첫 일격에 실린다.
+flavor = 한낮의 빛을 벼려 만든 칼날이다. 가진 화력이 전부 첫 일격에 실린다.
 
 [relic.r-stat-fire-lens]
 name = 불의 렌즈
@@ -82,7 +82,7 @@ rank = common
 source = shop
 trigger = on-turn-start
 effects = chance-random-color-1:50
-flavor = 빛을 굴절시키며 색을 흩뿌리는 렌즈. 매 순간 어느 한 색이 변덕스럽게 짙어진다.
+flavor = 빛을 굴절시켜 색을 흩뿌리는 렌즈다. 어느 색이 짙어질지는 그때그때 다르다.
 
 [relic.r-stat-spark-tap]
 name = 전류 탭
@@ -90,7 +90,7 @@ rank = rare
 source = event
 trigger = on-combat-end
 effects = chance-random-color-1:45
-flavor = 흐르는 전기를 한 점에서 끌어 쓴다. 싸움이 끝날 때마다 남은 잔류가 어느 한 색으로 스며든다.
+flavor = 흐르는 전기를 한곳으로 끌어 모은다. 싸움이 끝나면 남은 전류가 색 하나로 스며든다.
 
 # --- ATK 패시브 모디파이어 ---
 
@@ -100,7 +100,7 @@ rank = common
 source = event
 trigger = passive
 effects = damage-out-add:1
-flavor = 부딪칠 때마다 불꽃을 튀기는 돌. 모든 일격에 작은 열이 더해진다.
+flavor = 부딪칠 때마다 불꽃을 튀기는 돌이다. 모든 일격에 작은 열이 더해진다.
 
 [relic.r-stat-arc-edge]
 name = 호선의 칼날
@@ -108,7 +108,7 @@ rank = rare
 source = elite
 trigger = passive
 effects = damage-out-add:2
-flavor = 휘두를 때 푸른 호선이 따라 그려진다. 닿는 모든 곳에 한 자국이 더 깊다.
+flavor = 휘두를 때마다 푸른 호선이 따라 그려진다. 닿는 곳마다 자국이 더 깊게 남는다.
 
 # ============================================================
 # DEF 가족 흙·철. 키우는 형 + 비례 형.
@@ -122,7 +122,7 @@ rank = basic
 source = event
 trigger = on-acquire
 effects = boost-stat:2:def
-flavor = 흙과 철이 함께 박힌 작은 돌. 손에 쥐면 마음이 가라앉는다.
+flavor = 흙과 철이 함께 박힌 작은 돌이다. 손에 쥐면 마음이 가라앉는다.
 
 [relic.r-stat-iron-shard]
 name = 무쇠 조각
@@ -130,7 +130,7 @@ rank = common
 source = shop
 trigger = on-acquire
 effects = boost-stat:4:def
-flavor = 어느 오래된 문에서 떨어진 조각. 단단함이 그대로 옮겨 온다.
+flavor = 오래된 문에서 떨어져 나온 쇳조각이다. 그 단단함이 그대로 몸에 옮겨 온다.
 
 [relic.r-stat-bedrock-heart]
 name = 기반암의 심장
@@ -138,7 +138,7 @@ rank = rare
 source = elite
 trigger = on-acquire
 effects = boost-stat:6:def
-flavor = 땅 깊은 곳에서 캐낸 덩이. 흔들리는 법을 잊은 무게.
+flavor = 땅속 깊은 곳에서 캐낸 덩어리다. 흔들리는 법을 잊은 듯 묵직하다.
 
 [relic.r-stat-mono-bulwark]
 name = 모노의 방벽
@@ -146,7 +146,7 @@ rank = legendary
 source = event
 trigger = on-acquire
 effects = boost-stat:9:def
-flavor = "무언가를 지키고 싶었던 적도 있었단다." 시간의 신이 조용히 내려놓는다.
+flavor = 무언가를 지키고 싶었던 적도 있었다고, 시간의 신이 조용히 내려놓는다.
 
 # --- DEF boost-stat 반복 ---
 
@@ -156,7 +156,7 @@ rank = rare
 source = event
 trigger = on-rest
 effects = boost-stat:2:def
-flavor = 모닥불 곁에 두면 천천히 단단해진다. 쉴 때마다 흙과 철이 더 짙어진다.
+flavor = 모닥불 옆에 두면 천천히 단단해지는 돌이다. 쉴 때마다 흙과 철의 기운이 더 짙어진다.
 
 # --- DEF 비례 형 ---
 
@@ -166,7 +166,7 @@ rank = common
 source = elite
 trigger = on-damage-taken
 effects = retaliate:5
-flavor = 두드릴수록 되받아치는 방패. 맞는 만큼 그 무게를 상대에게 돌려준다.
+flavor = 두드릴수록 되받아치는 방패다. 맞은 만큼 그 무게를 상대에게 돌려준다.
 
 [relic.r-stat-iron-bastion]
 name = 강철 보루
@@ -174,7 +174,7 @@ rank = rare
 source = elite
 trigger = on-combat-start
 effects = block-from-metric:12:def
-flavor = 무너지지 않으려 쌓아 올린 벽. 싸움이 열리면 가진 단단함만큼 둘러친다.
+flavor = 무너지지 않으려 쌓아 올린 벽이다. 싸움이 시작되면 가진 단단함만큼 몸을 둘러싼다.
 
 [relic.r-stat-worldroot-wall]
 name = 세계뿌리의 벽
@@ -182,7 +182,7 @@ rank = legendary
 source = event
 trigger = on-combat-start
 effects = block-from-metric:8:def
-flavor = 땅 끝까지 뻗은 뿌리가 한꺼번에 솟는다. 가진 모든 단단함이 벽이 된다.
+flavor = 땅끝까지 뻗은 뿌리가 한꺼번에 솟구친다. 가진 단단함이 전부 벽이 되어 준다.
 
 [relic.r-stat-clay-ward]
 name = 진흙 가호
@@ -190,7 +190,7 @@ rank = common
 source = shop
 trigger = on-combat-start
 effects = block-from-metric:8:earth
-flavor = 흙을 빚어 만든 부적. 갈색이 짙을수록 첫 벽이 두껍다.
+flavor = 흙을 빚어 만든 부적이다. 갈색이 짙을수록 첫 방어가 두꺼워진다.
 
 [relic.r-stat-rivet-band]
 name = 대갈못 띠
@@ -198,7 +198,7 @@ rank = rare
 source = event
 trigger = passive
 effects = block-out-add:3
-flavor = 못으로 단단히 박은 띠. 어떤 방어든 더 두껍게 잡아 준다.
+flavor = 못으로 단단히 박아 만든 띠다. 어떤 방어든 한층 두껍게 잡아 준다.
 
 # --- DEF 패시브 모디파이어 ---
 
@@ -208,7 +208,7 @@ rank = common
 source = event
 trigger = passive
 effects = block-out-add:2
-flavor = 어디에 대도 더 막아 주는 판. 모든 방어에 무게가 실린다.
+flavor = 어디에 대도 더 잘 막아 주는 판이다. 모든 방어에 무게가 실린다.
 
 [relic.r-stat-deep-keel]
 name = 깊은 용골
@@ -216,7 +216,7 @@ rank = rare
 source = elite
 trigger = passive
 effects = block-out-add:3
-flavor = 배의 밑을 받치던 용골. 어떤 파도에도 방어가 더 두텁다.
+flavor = 배의 밑을 받치던 용골이다. 어떤 파도에도 방어가 더 두꺼워진다.
 
 # ============================================================
 # MAG 가족 물·바람. 키우는 형 + 비례 형 + 마나/드로우 연계.
@@ -230,7 +230,7 @@ rank = basic
 source = event
 trigger = on-acquire
 effects = boost-stat:2:mag
-flavor = 물과 바람이 한 방울에 맺혔다. 정령이 가장 먼저 쥐여 주는 것.
+flavor = 물과 바람이 한데 맺힌 이슬방울이다. 정령이 가장 먼저 쥐여 주는 물건이다.
 
 [relic.r-stat-breeze-vial]
 name = 산들바람 병
@@ -238,7 +238,7 @@ rank = common
 source = shop
 trigger = on-acquire
 effects = boost-stat:4:mag
-flavor = 마개를 열면 잠깐 시원하다. 안에 담긴 흐름이 손끝으로 옮겨 온다.
+flavor = 마개를 열면 잠깐 시원해진다. 안에 담긴 바람이 손끝으로 옮겨 온다.
 
 [relic.r-stat-tidecore]
 name = 조류의 핵
@@ -246,7 +246,7 @@ rank = rare
 source = elite
 trigger = on-acquire
 effects = boost-stat:6:mag
-flavor = 밀물과 썰물이 함께 굳은 덩이. 안에서 아직 물결이 오간다.
+flavor = 밀물과 썰물이 함께 굳은 덩어리다. 그 안에서 아직 물결이 오간다.
 
 [relic.r-stat-mono-current]
 name = 모노의 물길
@@ -254,7 +254,7 @@ rank = legendary
 source = event
 trigger = on-acquire
 effects = boost-stat:9:mag
-flavor = "흐르는 것을 가장 오래 들여다봤지." 시간의 신이 손바닥의 물길을 흘려보낸다.
+flavor = 흐르는 것을 가장 오래 들여다봤다며, 시간의 신이 손바닥의 물길을 흘려보낸다.
 
 # --- MAG boost-stat 반복 ---
 
@@ -264,7 +264,7 @@ rank = common
 source = event
 trigger = on-turn-start
 effects = boost-stat:1:mag
-flavor = 매 순간 귓가를 스치며 무언가를 두고 간다. 호기심 많은 바람이다.
+flavor = 귓가를 스치며 자꾸 무언가를 두고 간다. 궁금한 게 많은 바람이다.
 
 # --- MAG 비례 형 + 마나/드로우 연계 (2효과) ---
 
@@ -274,7 +274,7 @@ rank = rare
 source = elite
 trigger = passive
 effects = mana-extra-add:1, boost-stat:1:mag
-flavor = 흐름을 더 끌어 쓴다. 매 턴 힘이 한 줌 늘고, 물과 바람도 천천히 깊어진다.
+flavor = 흐름을 더 깊이 끌어 쓰는 도관이다. 매 턴 마나가 조금씩 늘고, 물과 바람의 기운도 천천히 깊어진다.
 
 [relic.r-stat-foresight-glass]
 name = 예지의 유리
@@ -282,7 +282,7 @@ rank = rare
 source = shop
 trigger = passive
 effects = draw-extra-add:1, boost-stat:1:mag
-flavor = 다음을 미리 비춘다. 손이 한 번 더 바빠지고, 마법의 흐름도 함께 짙어진다.
+flavor = 다가올 것을 미리 비추는 유리다. 카드를 한 장 더 뽑게 되고, 마법의 흐름도 함께 짙어진다.
 
 [relic.r-stat-tide-lens]
 name = 조류의 렌즈
@@ -290,7 +290,7 @@ rank = common
 source = shop
 trigger = on-acquire
 effects = boost-color:8:water
-flavor = 물빛만 골라 모으는 렌즈. 들여다보면 푸른 물색이 한층 짙게 고인다.
+flavor = 물빛만 골라 모으는 렌즈다. 들여다보면 푸른 물색이 한층 짙게 고인다.
 
 [relic.r-stat-galewright]
 name = 바람장이의 부적
@@ -298,7 +298,7 @@ rank = rare
 source = event
 trigger = on-combat-start
 effects = strength-from-metric:6:wind
-flavor = 바람을 손에 쥐는 법을 새긴 부적. 바람색이 짙을수록 첫 손이 가볍고 날카롭다.
+flavor = 바람을 손에 쥐는 법을 새겨 둔 부적이다. 바람색이 짙을수록 첫 공격이 가볍고 날카로워진다.
 
 [relic.r-stat-spellweight]
 name = 마력의 추
@@ -306,7 +306,7 @@ rank = legendary
 source = event
 trigger = on-card-played-after
 effects = cards-to-draw:7
-flavor = 마법의 흐름을 차곡차곡 감는 추. 여러 장을 엮어 가다 보면 다음 카드가 절로 따라온다.
+flavor = 마법의 흐름을 차곡차곡 감아 두는 추다. 카드를 여러 장 엮어 가다 보면 다음 카드가 절로 따라온다.
 
 # ============================================================
 # 다운사이드 동반 강력하지만 대가가 따른다.
@@ -318,7 +318,7 @@ rank = rare
 source = elite
 trigger = on-combat-start
 effects = strength-from-metric:8:atk, draw-extra-add:-1
-flavor = 화력을 전부 첫 주먹에 몰아넣는다 손이 뜨거워 카드 한 장을 놓친다.
+flavor = 화력을 전부 첫 주먹에 몰아넣는다. 손이 너무 뜨거워 카드를 한 장 놓치고 만다.
 
 [relic.r-stat-overcharged-coil]
 name = 과충전 코일
@@ -326,7 +326,7 @@ rank = rare
 source = event
 trigger = on-acquire
 effects = boost-stat:9:atk, bonus-hp:-5
-flavor = 한계까지 감긴 코일. 화력은 폭발하지만 제 몸이 그 열을 다 견디지 못한다.
+flavor = 한계까지 감긴 코일이다. 화력은 폭발하듯 솟지만 제 몸이 그 열을 다 견디지 못한다.
 
 [relic.r-stat-leaden-aegis]
 name = 납빛 방패
@@ -334,7 +334,7 @@ rank = rare
 source = elite
 trigger = on-combat-start
 effects = block-from-metric:8:def, draw-extra-add:-1
-flavor = 가진 단단함을 전부 둘러치지만, 너무 무거워 손이 한 순간 늦다.
+flavor = 가진 단단함을 전부 둘러치지만, 너무 무거워 손이 그만큼 느려진다.
 
 [relic.r-stat-fortress-anchor]
 name = 요새의 닻
@@ -342,7 +342,7 @@ rank = rare
 source = event
 trigger = on-acquire
 effects = boost-stat:9:def, bonus-hp:-5
-flavor = 흔들리지 않는 대신, 닻줄이 제 살을 한 줌 파고든다.
+flavor = 좀처럼 흔들리지 않는 대신, 닻줄이 제 살을 파고든다.
 
 [relic.r-stat-deepdraw-prism]
 name = 심층 프리즘
@@ -350,7 +350,7 @@ rank = rare
 source = shop
 trigger = passive
 effects = draw-extra-add:2, mana-extra-add:-1
-flavor = 다음을 두 줄이나 비추지만, 그만큼 흐름 한 줌을 먹어 치운다.
+flavor = 다가올 것을 더 깊이 비추는 대신, 그만큼 마나를 먹어 치운다.
 
 [relic.r-stat-stormfont]
 name = 폭풍의 샘
@@ -358,4 +358,4 @@ rank = legendary
 source = event
 trigger = on-acquire
 effects = boost-stat:9:mag, bonus-hp:-5
-flavor = 물과 바람이 끝없이 솟는 샘 그 힘에 제 그릇이 한 줌 깎인다.
+flavor = 물과 바람이 끝없이 솟는 샘이다. 그 힘에 휩쓸려 제 몸이 조금씩 깎인다.

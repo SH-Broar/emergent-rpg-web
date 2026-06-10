@@ -10,7 +10,7 @@ rank = common
 source = event
 trigger = passive
 effects = activity-success-add:15
-flavor = 주사위를 굴리기 전, 숨을 고르는 법을 아는 손가락.
+flavor = 주사위를 굴리기 전에 숨을 고르는 법을 아는 손이다.
 
 [relic.r-act-full-basket]
 name = 가득 찬 바구니
@@ -18,7 +18,7 @@ rank = rare
 source = npc
 trigger = passive
 effects = activity-reward-mul:0.5
-flavor = 같은 수고라도 담아 오는 양이 다르다. 손이 큰 사람의 비결.
+flavor = 같은 수고를 들여도 담아 오는 양이 다르다. 손이 큰 사람에게는 그런 재주가 있다.
 
 [relic.r-act-second-wind]
 name = 거듭되는 새벽
@@ -26,4 +26,4 @@ rank = legendary
 source = boss
 trigger = passive
 effects = activity-success-add:10, activity-reward-mul:0.4
-flavor = 같은 일을 또 겪는 사람은 두 번째에 더 능숙하다. 성공도 수확도 함께 커진다.
+flavor = 같은 일을 다시 겪는 사람은 두 번째에 더 능숙해진다. 성공도 수확도 함께 커진다.
