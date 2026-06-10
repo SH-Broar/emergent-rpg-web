@@ -19,6 +19,8 @@ starting_deck = c-arcana-spire, c-arcana-spire, c-arcana-spire, c-arcana-levee, 
 #   디버프(hex·glare·searbrand·unravel) + 피니셔(resonate·overflow·radiance·zenith·aurora).
 seed_cards = c-arcana-spire, c-arcana-levee, c-arcana-prism, c-arcana-judgment, c-arcana-infuse, c-arcana-rainbow, c-arcana-spectrum, c-arcana-wellspring, c-arcana-hex, c-arcana-purelight, c-arcana-resonate, c-arcana-overflow, c-arcana-beam, c-arcana-facet, c-arcana-mantle, c-arcana-shimmerwall, c-arcana-refract, c-arcana-kindle, c-arcana-attune, c-arcana-welltap, c-arcana-glean, c-arcana-glowfade, c-arcana-reservoir, c-arcana-dawndraw, c-arcana-clarity, c-arcana-glimmer, c-arcana-glare, c-arcana-searbrand, c-arcana-unravel, c-arcana-radiance, c-arcana-zenith, c-arcana-aurora, c-defend
 seed_relics = r-race-arcana
+# 시작 회복 아이템 — 전투밸런스(회복 카드 소멸화) 이후 초반 회복 보완(37-①). 공통 작은 회복약에 더해 지급.
+seed_items = i-potion-small, i-potion-small
 hp_bonus = 0
 mp_bonus = 0
 # 단단한 방어 덱 — 14장.

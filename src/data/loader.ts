@@ -290,6 +290,7 @@ export function parseRaces(ini: IniData): Map<string, Race> {
       startingDeck: parseList(fields.starting_deck),
       seedCardIds: parseList(fields.seed_cards),
       seedRelicIds: parseList(fields.seed_relics),
+      seedItemIds: parseList(fields.seed_items),
       startHpBonus: parseNumber(fields.hp_bonus, 0),
       startMpBonus: parseNumber(fields.mp_bonus, 0),
       maxLivesBonus: fields.max_lives_bonus ? parseNumber(fields.max_lives_bonus, 0) : undefined,

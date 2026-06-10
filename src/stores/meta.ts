@@ -10,10 +10,12 @@ import {
   EMPTY_META_GAUGE,
   MAX_NPC_AFFINITY,
   META_SAVE_VERSION,
+  RUN_HISTORY_LIMIT,
   type CodexEntry,
   type MetaProgress,
   type MetaResource,
   type MetaUnlock,
+  type RunSummary,
   type UnlockKey,
 } from '@/data/schemas';
 
@@ -46,6 +48,8 @@ function createEmptyMeta(): MetaProgress {
     bestChaosScore: {},
     // NPC 친밀도 영속 (v4, Item 37-② Stage C 1B).
     npcAffinity: {},
+    // 런 기록 (v5).
+    runHistory: [],
     saveVersion: META_SAVE_VERSION,
   };
 }
@@ -92,6 +96,8 @@ function loadMeta(): MetaProgress {
     parsed.bestChaosScore ??= {};
     // 세이브 v4 마이그레이션 (1B) — NPC 친밀도 영속 필드 누락 시 빈 객체로 채움. 기존 값은 보존.
     parsed.npcAffinity ??= {};
+    // 세이브 v5 마이그레이션 — 런 기록 필드 누락 시 빈 배열로 채움. 기존 값은 보존.
+    parsed.runHistory ??= [];
     parsed.saveVersion = META_SAVE_VERSION;
     return parsed;
   } catch {
@@ -337,6 +343,7 @@ export const useMetaStore = defineStore('meta', {
       this.chaosTierRevealed = fresh.chaosTierRevealed;
       this.bestChaosScore = fresh.bestChaosScore;
       this.npcAffinity = fresh.npcAffinity;
+      this.runHistory = fresh.runHistory;
       this.saveVersion = fresh.saveVersion;
       this.persist();
     },
@@ -357,6 +364,19 @@ export const useMetaStore = defineStore('meta', {
     /** NPC 친밀도 영속 조회 (없으면 0). */
     npcAffinityOf(npcId: string): number {
       return this.npcAffinity?.[npcId] ?? 0;
+    },
+
+    /**
+     * 런 한 판의 기록을 영구 저장 (v5) — 최신을 맨 앞(unshift)에 넣고 상한 초과분을 잘라낸다.
+     * absorbRunIntoMeta의 *최초 적용 분기*에서만 호출(런당 1회, 중복 기록 방지).
+     */
+    recordRunSummary(summary: RunSummary) {
+      if (!this.runHistory) this.runHistory = [];
+      this.runHistory.unshift(summary);
+      if (this.runHistory.length > RUN_HISTORY_LIMIT) {
+        this.runHistory.length = RUN_HISTORY_LIMIT;
+      }
+      this.persist();
     },
 
     /** 외부에서 codex 등록 카운트 갱신 시 호출 — codex 스토어와 분리하되 동기. */

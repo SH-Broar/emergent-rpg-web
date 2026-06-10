@@ -85,6 +85,9 @@ function goChaos() {
 function goCodex() {
   router.push('/codex');
 }
+function goLog() {
+  router.push('/log');
+}
 function goDebugBattle() {
   router.push('/debug-battle');
 }
@@ -113,6 +116,11 @@ function goSaveCode() {
       <button class="menu-card" type="button" @click="goCodex">
         <span class="menu-card__title">도감</span>
         <span class="menu-card__sub">{{ meta.codex.length }}개 항목</span>
+      </button>
+
+      <button class="menu-card" type="button" @click="goLog">
+        <span class="menu-card__title">기록</span>
+        <span class="menu-card__sub">{{ (meta.runHistory ?? []).length }}개의 기록</span>
       </button>
 
       <button class="menu-card menu-card--chaos" type="button" @click="goChaos">

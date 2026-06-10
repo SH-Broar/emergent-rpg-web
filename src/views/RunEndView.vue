@@ -18,7 +18,7 @@ import { useRouter } from 'vue-router';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useMetaStore } from '@/stores/meta';
-import { unlockKeyLabel } from '@/systems/labels';
+import { unlockKeyLabel, endReasonText } from '@/systems/labels';
 import { computeChaosScore } from '@/systems/chaos';
 
 const router = useRouter();
@@ -35,14 +35,7 @@ interface AbsorbResult {
 
 const result = ref<AbsorbResult | null>(null);
 const timeline = computed(() => data.timelines.get(run.data.timelineId));
-
-const reasonLabel: Record<string, string> = {
-  'time-up': '시간이 다 됐다.',
-  'free-end': '런을 포기했다.',
-  'hp-zero': 'HP가 0이 되었다.',
-  'boss-cleared': '보스를 마주하고 살아 돌아왔다.',
-  'boss-defeated': '보스에게 무너졌다.',
-};
+const race = computed(() => data.races.get(run.data.raceId));
 
 // === 종료 위치 (노드 라벨 + 권역명) ===
 const endNode = computed(() => {
@@ -153,12 +146,15 @@ onMounted(async () => {
 <template>
   <main class="run-end-view">
     <h1>런 종료</h1>
-    <p class="reason">{{ reasonLabel[run.data.endReason ?? ''] ?? '여정이 끝났다.' }}</p>
-    <p v-if="timeline" class="tl">— {{ timeline.name }} —</p>
+    <p class="reason">{{ endReasonText(run.data.endReason) }}</p>
+    <p v-if="timeline" class="tl">
+      {{ timeline.name }}<span v-if="race" class="tl__race"> · {{ race.name }}</span>
+    </p>
+    <p class="progress">{{ run.data.currentDay }}일차 · 방문 {{ run.data.visitedNodes.length }}곳</p>
 
     <!-- 종료 위치 -->
     <p v-if="endNode" class="end-loc">
-      여기서 끝났다 — <strong>{{ endNode.label }}</strong>
+      여기서 끝났다. <strong>{{ endNode.label }}</strong>
       <span v-if="endNode.regionName" class="end-loc__region">({{ endNode.regionName }})</span>
     </p>
 
@@ -253,6 +249,8 @@ onMounted(async () => {
       </div>
     </section>
 
+    <p v-if="result" class="logged">이 여정은 기록에 담겼어. 메인에서 다시 들춰 볼 수 있어.</p>
+
     <button class="finish" @click="returnMain">메인 메뉴로 →</button>
   </main>
 </template>
@@ -271,6 +269,9 @@ onMounted(async () => {
 h1 { color: #c08eff; margin: 0; font-size: 2.4rem; }
 .reason { color: #d6d6e0; font-style: italic; margin: 0; }
 .tl { color: #888; margin: 0; }
+.tl__race { color: #c08eff; }
+.progress { color: #b6b6c4; margin: 0.1rem 0 0; font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+.logged { color: #8effb8; font-size: 0.9rem; margin: 1.2rem 0 0; text-align: center; }
 .end-loc { color: #b6b6c4; margin: 0.2rem 0 0; text-align: center; }
 .end-loc strong { color: #f6e8b8; }
 .end-loc__region { color: #888; margin-left: 0.3rem; }

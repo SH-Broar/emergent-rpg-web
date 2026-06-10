@@ -49,6 +49,12 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/SaveCodeView.vue'),
     meta: { scene: 'main' },
   },
+  {
+    path: '/log',
+    name: 'log',
+    component: () => import('@/views/LogView.vue'),
+    meta: { scene: 'main' },
+  },
 
   // === 게임 씬 ===
   {

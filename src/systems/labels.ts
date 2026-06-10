@@ -568,3 +568,43 @@ export function unlockKeyLabel(key: string): string {
   if (unlock) return `${UNLOCK_KIND_LABELS[unlock[1]] ?? unlock[1]} 해금`;
   return key;
 }
+
+/**
+ * 런 종료 사유 → *문장형* 안내 (RunEndView 요약 머리글). 미상 사유는 일반 문구.
+ */
+const END_REASON_TEXT: Record<string, string> = {
+  'time-up': '시간이 다 됐다.',
+  'free-end': '런을 포기했다.',
+  'hp-zero': 'HP가 0이 되었다.',
+  'boss-cleared': '보스를 마주하고 살아 돌아왔다.',
+  'boss-defeated': '보스에게 무너졌다.',
+};
+export function endReasonText(reason: string | undefined): string {
+  return END_REASON_TEXT[reason ?? ''] ?? '여정이 끝났다.';
+}
+
+/**
+ * 런 종료 사유 → *짧은 결과 배지* (기록 목록). 미상 사유는 '종료'.
+ */
+const END_REASON_LABEL: Record<string, string> = {
+  'time-up': '시간 만료',
+  'free-end': '포기',
+  'hp-zero': '쓰러짐',
+  'boss-cleared': '클리어',
+  'boss-defeated': '패배',
+};
+export function endReasonLabel(reason: string | undefined): string {
+  return END_REASON_LABEL[reason ?? ''] ?? '종료';
+}
+
+/** 런 종료 사유 → 배지 색 (기록 목록·요약 공용). */
+const END_REASON_COLOR: Record<string, string> = {
+  'time-up': '#f6e8b8',
+  'free-end': '#9a8fb8',
+  'hp-zero': '#ff8e8e',
+  'boss-cleared': '#8effb8',
+  'boss-defeated': '#ff8e8e',
+};
+export function endReasonColor(reason: string | undefined): string {
+  return END_REASON_COLOR[reason ?? ''] ?? '#b6b6c4';
+}

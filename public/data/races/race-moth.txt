@@ -20,6 +20,8 @@ starting_deck = c-moth-flutter, c-moth-flutter, c-moth-flutter, c-moth-volley, c
 #   toxinburst 페어링용 burn 부여(spark)·기존 burn(emberbrand 외) 동선 일치(검토 P2-B). 컨셉별 균형 확대(검토 P2-C).
 seed_cards = c-moth-flutter, c-moth-volley, c-quickdraw, c-moth-gale, c-moth-glide, c-moth-quickjab, c-moth-barrage, c-moth-recall, c-moth-accel, c-moth-combostrike, c-moth-dive, c-moth-doubletap, c-moth-skim, c-moth-flurry, c-moth-scatter, c-moth-momentum, c-moth-blitz, c-moth-flick, c-moth-triplet, c-moth-stinger, c-moth-tempocut, c-moth-crescendo, c-moth-overdrive, c-moth-slipstream, c-moth-tempest, c-moth-stormcall, c-moth-skyfall, c-moth-poise, c-moth-toxinburst, c-moth-shiv, c-moth-spark
 seed_relics = r-race-moth
+# 시작 회복 아이템 — 전투밸런스(회복 카드 소멸화) 이후 초반 회복 보완(37-①). 공통 작은 회복약에 더해 지급.
+seed_items = i-potion-small, i-potion-small
 hp_bonus = 0
 mp_bonus = 0
 # 가벼운 회전 덱 — 13장.

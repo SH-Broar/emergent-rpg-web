@@ -42,6 +42,12 @@ export interface Race extends NamedEntity {
   /** 종족 시작 시 부여되는 *기본 등급* 유물 (있을 수도 없을 수도). */
   seedRelicIds?: RelicId[];
 
+  /**
+   * 종족 시작 시 지급되는 회복/소비 아이템 id (있을 수도 없을 수도).
+   * 전 종족 공통 시작 아이템에 *더해* 지급된다(나방·아르카나 초반 회복 보완).
+   */
+  seedItemIds?: string[];
+
   /** 시작 HP/MP 기본값 보정. */
   startHpBonus?: number;
   startMpBonus?: number;

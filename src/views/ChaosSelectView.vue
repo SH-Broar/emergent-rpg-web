@@ -159,9 +159,15 @@ async function startRun() {
   run.data.collection = allInstances;
   run.data.deck = allInstances.slice(0, deckSize);
 
-  // 시작 아이템 — 회복약 한 점.
+  // 시작 아이템 — 전 종족 공통 회복약.
   const starter = data.items.get('i-potion-small');
   if (starter) run.addItem(starter);
+
+  // 종족 시작 회복 아이템 — 공통 회복약에 *더해* 지급(나방·아르카나 초반 회복 보완).
+  for (const itemId of r.seedItemIds ?? []) {
+    const item = data.items.get(itemId);
+    if (item) run.addItem(item);
+  }
 
   // 컬러 베이스 0 → 종족 시드 컬러 적용.
   run.data.colors = {

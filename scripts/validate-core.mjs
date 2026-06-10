@@ -188,7 +188,8 @@ export const VALID_CARD_EFFECT_KINDS = [
   'damage', 'damage-min-color', 'heal', 'block', 'draw', 'apply-status',
   'return-hand-to-deck', 'next-turn-energy', 'growing-block',
   'damage-top-color', 'damage-color-count', 'block-top-color', 'draw-if-color',
-  'damage-per-debuff', 'consume-vulnerable', 'damage-from-hp', 'damage-per-hand',
+  // 화상/독 스택 소비형 — combat.ts EFFECT_HANDLERS 'consume-burn'/'consume-poison'(검증기 화이트리스트 선재 누락 동기화).
+  'damage-per-debuff', 'consume-vulnerable', 'consume-burn', 'consume-poison', 'damage-from-hp', 'damage-per-hand',
   'exhaust-self', 'return-self-to-hand', 'block-to-damage', 'spend-all-energy',
   'damage-per-companion', 'damage-per-relic', 'growing-damage', 'heal-per-hand',
   'next-card-double', 'ghost-self', 'curse-tick', 'release-transform',
@@ -218,7 +219,7 @@ export const VALID_CARD_EFFECT_KINDS = [
 export const VALID_RELIC_EFFECT_KINDS = [
   // HANDLERS (relic.ts)
   'bonus-hp', 'bonus-mana', 'bonus-gold', 'bonus-damage', 'chance-random-color-1', 'discount',
-  'combat-start-block', 'combat-start-draw', 'combat-start-hand-card',
+  'combat-start-block', 'combat-start-draw', 'combat-start-hand-card', 'combat-start-return-to-deck',
   'combat-start-mana-from-metric', 'combat-start-draw-from-metric', 'combat-start-status',
   'turn-start-block', 'turn-start-hp-loss', 'combat-end-heal', 'node-enter-heal',
   'cards-to-draw', 'cards-to-color', 'attacks-to-strength', 'attacks-to-color',
@@ -581,6 +582,9 @@ export function validateData(dataDir, readFile) {
     }
     for (const relicId of parseList(f.seed_relics)) {
       if (!relicIds.has(relicId)) push(diag('error', 'dangling', `race '${id}' seed_relics 유물 '${relicId}' 미정의`, w));
+    }
+    for (const itemId of parseList(f.seed_items)) {
+      if (!itemIds.has(itemId)) push(diag('error', 'dangling', `race '${id}' seed_items 아이템 '${itemId}' 미정의`, w));
     }
   }
 

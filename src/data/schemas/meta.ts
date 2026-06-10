@@ -43,6 +43,53 @@ export interface CodexEntry {
   encounterCount: number;
 }
 
+/**
+ * 런 한 판의 영구 기록 (v5) — 기록(로그) 페이지 + 세이브 코드에 동반.
+ * id 위주 슬림 저장(이름은 표시 시 데이터에서 조회, 폴백 id). 위치 라벨만 문자열로 박제(맵 데이터 휘발 대비).
+ * append-only 확장 전제 — 새 필드는 모두 optional로 더한다.
+ */
+export interface RunSummary {
+  /** 종료 시각 (ms). 최신순 정렬·표시용. */
+  endedAt: number;
+  timelineId: string;
+  raceId: string;
+  endReason: 'time-up' | 'free-end' | 'hp-zero' | 'boss-cleared' | 'boss-defeated';
+  /** 종료 위치 노드 라벨 (맵 조회 실패 시 생략). */
+  endNodeLabel?: string;
+  /** 종료 위치 권역명 (맵 조회 실패 시 생략). */
+  endRegionName?: string;
+  /** currentDay. */
+  days: number;
+  /** visitedNodes.length. */
+  turns: number;
+  /** 도달 distinct 권역 수. */
+  regions: number;
+  /** combatCleared 노드 수. */
+  combats: number;
+  /** bossesCleared (보스 id 목록). */
+  bossIds: string[];
+  chaosScore: number;
+  /** activeChaos 사본. */
+  chaos: { id: string; intensity: number }[];
+  /** 클리어 + 점수>0 + 연표 최고 기록 갱신. */
+  newRecord: boolean;
+  /** roster 사본 (영입 동료). */
+  companions: { id: string; src: 'npc' | 'monster' }[];
+  relicIds: string[];
+  /** collection을 id별 그룹(같은 카드 ×N 묶음). */
+  cards: { id: string; count: number }[];
+  gold: number;
+  hp: number;
+  maxHp: number;
+  /** absorb 표시값 3종 (재계산 불가하므로 저장). */
+  hyperionGain: number;
+  researchGain: number;
+  soulGain: number;
+}
+
+/** 런 기록 보관 상한 — 세이브 코드 용량 통제 (최신 N건만 유지). */
+export const RUN_HISTORY_LIMIT = 30;
+
 /** 영구 저장되는 메타 진행 상태. */
 export interface MetaProgress {
   /** 5게이지. */
@@ -103,7 +150,13 @@ export interface MetaProgress {
   npcAffinity?: Record<string, number>;
 
   /**
-   * 메타 세이브 버전. v3=카오스, v4=NPC 친밀도 영속(1B). 마이그레이션 판단·기록용.
+   * 런 한 판의 영구 기록 목록 (v5) — 최신이 [0]. 최근 RUN_HISTORY_LIMIT건만 유지.
+   * 옛 세이브엔 없을 수 있음 → 로드 시 []로 backfill. 세이브 코드에 통째 동반.
+   */
+  runHistory?: RunSummary[];
+
+  /**
+   * 메타 세이브 버전. v3=카오스, v4=NPC 친밀도 영속(1B), v5=런 기록. 마이그레이션 판단·기록용.
    * 옛 세이브엔 없을 수 있음(undefined ⇒ v3 이하로 간주, 누락 필드 backfill).
    */
   saveVersion?: number;
@@ -112,8 +165,8 @@ export interface MetaProgress {
 /** NPC 친밀도 영속 상한 (Item 37-② Stage C, 1B). */
 export const MAX_NPC_AFFINITY = 10;
 
-/** 현재 메타 세이브 버전 — v3=카오스, v4=NPC 친밀도 영속(1B). */
-export const META_SAVE_VERSION = 4;
+/** 현재 메타 세이브 버전 — v3=카오스, v4=NPC 친밀도 영속(1B), v5=런 기록. */
+export const META_SAVE_VERSION = 5;
 
 /** 기본 초기 메타 진행. (createMetaProgress 같은 팩토리는 stores에서 제공) */
 export const EMPTY_META_GAUGE: MetaGauge = {
