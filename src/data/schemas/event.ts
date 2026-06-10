@@ -86,6 +86,14 @@ export interface EventChoiceEffect {
   /** 후속 이벤트 트리거 (분기). */
   followupEventId?: EventId;
 
+  /**
+   * NPC 스파링(안전 대련) 진입 — 이 선택지를 고르면 지정 몬스터(npc-spar-X)와 전투에 들어간다.
+   * 데이터 키: `spar = npc-spar-X`. 일반 전투와 다르게 *비영속 sparring 컨텍스트*로 진입해
+   *   승/패 무관 HP 원복, 패배 시 목숨 미소모, 노드 상태 무변경, XP 미지급(파밍 방지), 승리 시 친밀도 +1.
+   * 파일럿 몬스터는 권역 풀에 넣지 않고 *이 토큰 참조로만* 등장한다(자연 격리).
+   */
+  sparMonsterId?: string;
+
   /** 사용자 정의 효과 핸들러. */
   customEffectId?: string;
 

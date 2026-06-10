@@ -225,28 +225,43 @@ export const useMetaStore = defineStore('meta', {
         }
         return;
       }
-      // 패턴 미매칭 — 진행도 임계 키 (예: hyperion1-25). push 없이 보관만.
+      // 게이지 임계 돌파 키 (예: hyperion1-25) — 도전 통화 환류로 영혼 +5 지급 (R2, 2026-06-10).
+      //   신규 발급분에만 적용(addToGauge가 임계 통과 시에만 _applyUnlockKey를 부르므로 소급 X).
+      //   addSoul이 내부에서 persist하지만, 호출부(addToGauge)도 마지막에 persist하므로 무해.
+      if (/^(hyperion1|hyperion2|insight1|insight2|composite)-\d+$/.test(k.key)) {
+        this.addSoul(5);
+        return;
+      }
+      // 그 외 패턴 미매칭 키 — push 없이 보관만.
     },
 
-    /** 런 종료 시 호출: 휘발 진행도를 게이지로 변환. */
+    /**
+     * 런 종료 시 호출: 휘발 진행도를 게이지로 변환 (역할 재정의, 2026-06-10).
+     *
+     * 입력은 progression.ts가 *이미 산정한 게이지 증분*(표시값과 동일 공식)을 그대로 받는다.
+     * 게이지 역할: 히페리온=탐험(방문 권역·동료) / 해석=전투(아크·보스).
+     *   hyperion1 ← 방문 권역 수 × 3
+     *   hyperion2 ← roster 동료 수 × 2
+     *   insight1  ← 아크 클리어 수 × 10
+     *   insight2  ← 보스 클리어 × 25
+     * (옛 입력원 hyperionStageClears·npcAffinityGain·missionsCleared는 죽은 흐름이라 제거됨.)
+     */
     absorbRunResult(input: {
-      hyperionStageClears: number;   // 0~5
-      npcAffinityGain: number;
-      missionsCleared: number;
+      hyperion1: number;
+      hyperion2: number;
+      insight1: number;
+      insight2: number;
       bossesCleared: number;
     }): UnlockKey[] {
       const granted: UnlockKey[] = [];
-      granted.push(...this.addToGauge('hyperion1', input.hyperionStageClears * 10));
-      granted.push(...this.addToGauge('hyperion2', input.npcAffinityGain));
-      granted.push(...this.addToGauge('insight1', input.missionsCleared * 10));
-      granted.push(...this.addToGauge('insight2', input.bossesCleared * 25));
-      // 종합 게이지는 4개 게이지 평균의 변동분
+      granted.push(...this.addToGauge('hyperion1', input.hyperion1));
+      granted.push(...this.addToGauge('hyperion2', input.hyperion2));
+      granted.push(...this.addToGauge('insight1', input.insight1));
+      granted.push(...this.addToGauge('insight2', input.insight2));
+      // 종합 게이지 — 4개 게이지 증분의 절반(누적 진행도 표시 전용, 어디서도 게이팅에 쓰이지 않음).
       this.addToGauge(
         'composite',
-        input.hyperionStageClears * 5 +
-          input.npcAffinityGain / 2 +
-          input.missionsCleared * 5 +
-          input.bossesCleared * 12,
+        (input.hyperion1 + input.hyperion2 + input.insight1 + input.insight2) / 2,
       );
       this.totalRuns += 1;
       this.totalBossClears += input.bossesCleared;

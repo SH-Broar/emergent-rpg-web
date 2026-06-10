@@ -61,6 +61,18 @@ const pool = computed<Event[]>(() => {
 function applyChoice(choice: EventChoice) {
   const lines: string[] = [];
 
+  // 스파링 진입 — `spar=` 토큰이 있으면 *다른 효과보다 먼저* 안전 대련 전투로 보낸다.
+  //   사건 결과 화면을 거치지 않고 즉시 라우팅(전투 종료 후 맵으로 복귀하므로 사건은 1회성).
+  //   친밀도 대상은 이 사건의 featured NPC 첫 항목(없으면 null → 승리 보상 친밀도만 생략).
+  const sparEff = choice.effects.find((e) => e.sparMonsterId);
+  if (sparEff?.sparMonsterId) {
+    const npcId = currentEvent.value?.featuredNpcIds?.[0] ?? null;
+    ui.setSparring({ monsterId: sparEff.sparMonsterId, npcId });
+    run.markEventTriggered(run.data.currentNodeId, currentEvent.value?.id ?? '');
+    router.push('/game/combat');
+    return;
+  }
+
   // 효과들을 순서대로 적용. 마지막 effect에 followupEventId가 있으면 체인 진입.
   let followupId: string | undefined;
   for (const eff of choice.effects) {
@@ -281,6 +293,7 @@ function effectPreviewTokens(eff: EventChoiceEffect): string[] {
     const npc = data.npcs.get(eff.recruitNpcId)?.name ?? eff.recruitNpcId;
     t.push(`동료: ${npc}`);
   }
+  if (eff.sparMonsterId) t.push('대련 (HP는 원래대로 돌아온다)');
   if (eff.grantClueId) t.push('단서');
   if (eff.customEffectId) t.push('특수 효과');
   return t;

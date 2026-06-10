@@ -374,6 +374,8 @@ function parseChoice(f: IniSection): EventChoice {
   }
   // 동료 사건 영입 (Item 37-② Stage C, 1A) — `recruit = npc-X`.
   if (f.recruit) eff.recruitNpcId = f.recruit.trim();
+  // NPC 스파링(안전 대련) — `spar = npc-spar-X`. monsterId만 받는다(친밀도 대상은 이벤트 featured_npcs 첫 항목).
+  if (f.spar) eff.sparMonsterId = f.spar.trim();
   if (f.followup) eff.followupEventId = f.followup;
   if (f.custom) eff.customEffectId = f.custom;
   if (f.clue) eff.grantClueId = f.clue;
@@ -1218,6 +1220,8 @@ const DATA_FILES = [
   'data/events/events-persistent.txt',
   // 빙의 획득 사건 (2026-05-23) — day>=2, grant-possession/grant-possession-guardian. tier2+ 권역 풀에 배선.
   'data/events/events-possession.txt',
+  // NPC 스파링(안전 대련) 사건 (2026-06-10) — affinity:npc-X>=3, spar= 토큰. 해당 권역 풀에 배선.
+  'data/events/npc-spar-events.txt',
   'data/monsters/mvr-monsters.txt',
   // 구 38종(act-1-region-monsters.txt)은 특별 기믹 없는 attack/defend류라 로스터 v2로 전면 대체 후 삭제됨(2026-05-25).
   // === 몬스터 로스터 v2 (Stage 3, 2026-05-21) — 권역별 ~147종, 지리 4티어 HP + 종족 기믹. ===
@@ -1225,6 +1229,8 @@ const DATA_FILES = [
   'data/monsters/act-1-roster-t2.txt',
   'data/monsters/act-1-roster-t3.txt',
   'data/monsters/act-1-roster-t4.txt',
+  // NPC 스파링 전용 몬스터 — 권역 풀 미포함(이벤트 spar= 참조로만 등장).
+  'data/monsters/npc-spar.txt',
   'data/items/act-1-items.txt',
   // === arc 보스 시그니처 아이템 (작업 29) — rank=legendary 전투 포션, arc 승리 자동 드롭 전용(공방/마을 제작 풀 제외). ===
   'data/items/act-1-arc-items.txt',

@@ -1,12 +1,15 @@
 <script setup lang="ts">
 /**
- * 연구 — 영구 해금 *투자* 시스템 (A단계).
+ * 연구 — 영구 해금 *투자* 시스템.
  *
- * 메타 자원(히페리온/해석/영혼)을 *소비해 콘텐츠를 개방*한다.
- * 한 번 산 해금은 되돌아가지 않는다. (cf. 카오스는 매 런 토글)
+ * 메타 자원(히페리온/해석/영혼)을 *소비해 콘텐츠를 개방*한다. 한 번 산 해금은 되돌아가지 않는다.
  *
- * 자원→도메인 전담: 히페리온=종족, 해석=카드·유물, 영혼=시간대.
- * A단계는 unlocks.txt에 종족 항목만 들어 있어 *종족 해금만 실동작*.
+ * 역할 (2026-06-10 재정의):
+ *   - 히페리온 = 탐험으로 모인다 (방문 권역·동료). → 종족 해금.
+ *   - 해석     = 전투로 모인다 (아크·보스).      → 종족 앵커 유물.
+ *   - 영혼     = 도전으로 모인다 (보스·카오스).   → 카오스 구매(카오스 화면으로 분리).
+ *
+ * 카오스 상점은 *카오스 화면*으로 이관됨(혼재 해소 — 자원/성격이 다른 두 시스템을 한 화면에 두지 않는다).
  */
 
 import { useRouter } from 'vue-router';
@@ -14,8 +17,7 @@ import { computed, onMounted } from 'vue';
 import { useMetaStore } from '@/stores/meta';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
-import type { Chaos, MetaResource, MetaUnlock } from '@/data/schemas';
-import { shopChaos, purchaseChaos, chaosCostFor, chaosTierLabel } from '@/systems/chaos';
+import type { MetaResource, MetaUnlock } from '@/data/schemas';
 
 const router = useRouter();
 const meta = useMetaStore();
@@ -26,13 +28,15 @@ interface ResourceDisplay {
   key: MetaResource;
   label: string;
   color: string;
+  /** 이 자원이 *어떻게 모이는가* — 한 줄 안내(역할 재정의). */
+  source: string;
   pool: () => number;
 }
 
 const RESOURCES: ResourceDisplay[] = [
-  { key: 'hyperion', label: '히페리온', color: '#ffb86c', pool: () => meta.hyperionPool },
-  { key: 'insight', label: '해석', color: '#8eedff', pool: () => meta.insightPool },
-  { key: 'soul', label: '영혼', color: '#c08eff', pool: () => meta.soulPool },
+  { key: 'hyperion', label: '히페리온', color: '#ffb86c', source: '탐험으로 모인다 (방문한 권역·함께한 동료)', pool: () => meta.hyperionPool },
+  { key: 'insight', label: '해석', color: '#8eedff', source: '전투로 모인다 (아크 격파·보스 격파)', pool: () => meta.insightPool },
+  { key: 'soul', label: '영혼', color: '#c08eff', source: '도전으로 모인다 (보스 격파·카오스 도전)', pool: () => meta.soulPool },
 ];
 
 const resourceColor: Record<MetaResource, string> = {
@@ -45,12 +49,28 @@ const resourceLabel: Record<MetaResource, string> = {
   insight: '해석',
   soul: '영혼',
 };
+/** 각 항목 카드에 붙는 *획득 경로* 한 줄(어떤 자원으로 사는지). */
+const resourceSource: Record<MetaResource, string> = {
+  hyperion: '탐험으로 모은 히페리온',
+  insight: '전투로 모은 해석',
+  soul: '도전으로 모은 영혼',
+};
 
-/** 자원별로 묶인 해금 카탈로그. 항목 없는 자원 그룹은 숨김. */
+/**
+ * 해금 카탈로그 — 탭(자원 도메인)별로 묶는다. 항목 없는 자원 탭은 숨김.
+ *   히페리온 = 종족 / 해석 = 유물(종족 앵커) / 영혼 = (현재 연구엔 0건 — 카오스는 별도 화면).
+ * 시간대 해금은 데이터 0건이라 자연히 빈 그룹 → 숨김.
+ */
+const TAB_TITLE: Record<MetaResource, string> = {
+  hyperion: '종족',
+  insight: '유물 (종족 앵커)',
+  soul: '그 외',
+};
 const catalog = computed(() => {
   const all = Array.from(data.unlocks.values());
   return RESOURCES.map((r) => ({
     ...r,
+    title: TAB_TITLE[r.key],
     items: all.filter((u) => u.resource === r.key),
   })).filter((g) => g.items.length > 0);
 });
@@ -71,36 +91,6 @@ function buy(u: MetaUnlock) {
   }
 }
 
-// === 카오스 상점 (도전-점수 시스템) ===
-/** 진열되는 카오스 — tier ≤ chaosTierRevealed. 티어별 그룹. */
-const chaosGroups = computed(() => {
-  const list = shopChaos();
-  const byTier = new Map<number, Chaos[]>();
-  for (const c of list) {
-    if (!byTier.has(c.tier)) byTier.set(c.tier, []);
-    byTier.get(c.tier)!.push(c);
-  }
-  return [...byTier.entries()].sort((a, b) => a[0] - b[0]).map(([tier, items]) => ({ tier, items }));
-});
-/** 아직 잠긴 다음 티어(있으면). 안내문 표기용. */
-const nextLockedTier = computed(() => {
-  const revealed = meta.chaosTierRevealed;
-  return revealed < 4 ? revealed + 1 : null;
-});
-function ownsChaos(c: Chaos): boolean {
-  return meta.unlockedChaosIds.includes(c.id);
-}
-function canBuyChaos(c: Chaos): boolean {
-  return !ownsChaos(c) && meta.canAfford('soul', chaosCostFor(c.tier));
-}
-function buyChaos(c: Chaos) {
-  if (purchaseChaos(c.id)) {
-    ui.toast('success', `카오스 '${c.name}' 구매`);
-  } else {
-    ui.toast('warning', '구매할 수 없습니다.');
-  }
-}
-
 // === 하단 요약: 5게이지 누적 진행바 ===
 interface GaugeDisplay {
   key: keyof typeof meta.gauges;
@@ -108,10 +98,10 @@ interface GaugeDisplay {
   color: string;
 }
 const gauges: GaugeDisplay[] = [
-  { key: 'hyperion1', label: '히페리온 ①', color: '#ffb86c' },
-  { key: 'hyperion2', label: '히페리온 ②', color: '#ffd2a0' },
-  { key: 'insight1', label: '해석 ①', color: '#8eedff' },
-  { key: 'insight2', label: '해석 ②', color: '#bdf3ff' },
+  { key: 'hyperion1', label: '히페리온 · 권역', color: '#ffb86c' },
+  { key: 'hyperion2', label: '히페리온 · 동료', color: '#ffd2a0' },
+  { key: 'insight1', label: '해석 · 아크', color: '#8eedff' },
+  { key: 'insight2', label: '해석 · 보스', color: '#bdf3ff' },
   { key: 'composite', label: '종합 진행도', color: '#ffe88e' },
 ];
 const percent = (v: number, max: number) =>
@@ -119,6 +109,9 @@ const percent = (v: number, max: number) =>
 
 function back() {
   router.push('/main');
+}
+function toChaos() {
+  router.push('/chaos');
 }
 
 onMounted(() => {
@@ -134,18 +127,21 @@ onMounted(() => {
       <p class="sub">메타 자원을 들여 영영 풀리는 콘텐츠를 산다. 한 번 연 것은 닫히지 않는다.</p>
     </header>
 
-    <!-- 보유 자원 -->
+    <!-- 보유 자원 + 어떻게 모이는가 -->
     <section class="resources">
       <div v-for="r in RESOURCES" :key="r.key" class="res">
-        <span class="res__label" :style="{ color: r.color }">{{ r.label }}</span>
-        <span class="res__val" :style="{ color: r.color }">{{ r.pool() }}</span>
+        <div class="res__top">
+          <span class="res__label" :style="{ color: r.color }">{{ r.label }}</span>
+          <span class="res__val" :style="{ color: r.color }">{{ r.pool() }}</span>
+        </div>
+        <span class="res__source">{{ r.source }}</span>
       </div>
     </section>
 
-    <!-- 해금 카탈로그 -->
+    <!-- 해금 카탈로그 (탭 = 자원 도메인) -->
     <section v-if="catalog.length > 0" class="catalog">
       <div v-for="group in catalog" :key="group.key" class="group">
-        <h2 class="group__title" :style="{ color: group.color }">{{ group.label }}</h2>
+        <h2 class="group__title" :style="{ color: group.color }">{{ group.title }}</h2>
         <div class="group__items">
           <div
             v-for="u in group.items"
@@ -161,6 +157,7 @@ onMounted(() => {
               <span class="unlock__cost" :style="{ color: resourceColor[u.resource] }">
                 {{ resourceLabel[u.resource] }} {{ u.cost }}
               </span>
+              <span class="unlock__path">{{ resourceSource[u.resource] }}</span>
               <span v-if="isPurchased(u)" class="unlock__owned-tag">해금됨</span>
               <button
                 v-else
@@ -177,41 +174,10 @@ onMounted(() => {
     </section>
     <section v-else class="empty"><p>아직 열 수 있는 해금이 없다.</p></section>
 
-    <!-- 카오스 상점 (도전-점수 시스템) -->
-    <section class="chaos-shop">
-      <h2 class="chaos-shop__title">카오스</h2>
-      <p class="chaos-shop__sub">높을수록 원래 세계에서 멀어진다. 영혼으로 사두면 매 런 자유로 켤 수 있다.</p>
-      <div v-for="g in chaosGroups" :key="g.tier" class="cgroup">
-        <h3 class="cgroup__title">{{ chaosTierLabel(g.tier) }}</h3>
-        <div class="cgroup__items">
-          <div
-            v-for="c in g.items"
-            :key="c.id"
-            class="citem"
-            :class="{ 'citem--owned': ownsChaos(c) }"
-          >
-            <div class="citem__main">
-              <span class="citem__name">{{ c.name }}</span>
-              <p class="citem__desc">{{ c.description }}</p>
-            </div>
-            <div class="citem__side">
-              <span class="citem__cost">영혼 {{ chaosCostFor(c.tier) }}</span>
-              <span v-if="ownsChaos(c)" class="citem__owned">보유</span>
-              <button
-                v-else
-                class="citem__buy"
-                :disabled="!canBuyChaos(c)"
-                @click="buyChaos(c)"
-              >
-                {{ canBuyChaos(c) ? '구매' : '영혼 부족' }}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <p v-if="nextLockedTier" class="chaos-shop__locked">
-        🔒 {{ chaosTierLabel(nextLockedTier) }} — 진열된 카오스를 하나라도 켜고 클리어하면 열린다.
-      </p>
+    <!-- 카오스는 별도 화면으로 분리 — 안내만 둔다. -->
+    <section class="chaos-link">
+      <p>카오스(도전 점수)는 <strong>영혼</strong>으로 카오스 화면에서 산다.</p>
+      <button class="chaos-link__btn" @click="toChaos">카오스 보러 가기 →</button>
     </section>
 
     <!-- 누적 진행도 요약 -->
@@ -261,15 +227,18 @@ h1 { color: #f6e8b8; margin: 0; }
 .res {
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: 0.35rem;
   padding: 0.7rem 1.2rem;
   background: rgba(0,0,0,0.35);
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 10px;
-  min-width: 100px;
+  min-width: 180px;
+  flex: 1;
 }
+.res__top { display: flex; align-items: baseline; justify-content: space-between; gap: 0.6rem; }
 .res__label { font-size: 0.8rem; letter-spacing: 0.04em; }
 .res__val { font-size: 1.5rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.res__source { font-size: 0.74rem; color: #8a8a99; line-height: 1.35; }
 
 .catalog { display: flex; flex-direction: column; gap: 1.8rem; }
 .group__title { font-size: 1rem; margin: 0 0 0.6rem; letter-spacing: 0.04em; }
@@ -287,8 +256,9 @@ h1 { color: #f6e8b8; margin: 0; }
 .unlock__main { flex: 1; min-width: 0; }
 .unlock__name { font-weight: 600; color: #f6e8b8; }
 .unlock__desc { color: #bdb6a0; font-size: 0.85rem; line-height: 1.45; margin: 0.25rem 0 0; }
-.unlock__side { display: flex; flex-direction: column; align-items: flex-end; gap: 0.4rem; flex-shrink: 0; }
+.unlock__side { display: flex; flex-direction: column; align-items: flex-end; gap: 0.3rem; flex-shrink: 0; }
 .unlock__cost { font-size: 0.85rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.unlock__path { font-size: 0.72rem; color: #8a8a99; }
 .unlock__owned-tag { font-size: 0.8rem; color: #7fd58f; font-weight: 600; }
 .unlock__buy {
   background: rgba(255,255,255,0.1);
@@ -304,41 +274,28 @@ h1 { color: #f6e8b8; margin: 0; }
 
 .empty { text-align: center; padding: 3rem 2rem; color: #6c6c7c; }
 
-/* === 카오스 상점 === */
-.chaos-shop {
-  margin-top: 2.4rem;
-  padding: 1.4rem;
+/* === 카오스 분리 안내 === */
+.chaos-link {
+  margin-top: 2rem;
+  padding: 1rem 1.2rem;
   background: rgba(192,142,255,0.06);
   border: 1px solid rgba(192,142,255,0.28);
   border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
-.chaos-shop__title { color: #c08eff; margin: 0; font-size: 1.05rem; letter-spacing: 0.03em; }
-.chaos-shop__sub { color: #888; font-size: 0.85rem; margin: 0.35rem 0 1rem; }
-.cgroup { margin-bottom: 1.1rem; }
-.cgroup__title { color: #bdb0e0; font-size: 0.85rem; margin: 0 0 0.5rem; letter-spacing: 0.04em; }
-.cgroup__items { display: flex; flex-direction: column; gap: 0.5rem; }
-.citem {
-  display: flex; align-items: center; gap: 1rem;
-  padding: 0.8rem 1rem;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 8px;
-}
-.citem--owned { opacity: 0.6; }
-.citem__main { flex: 1; min-width: 0; }
-.citem__name { font-weight: 600; color: #f6e8b8; }
-.citem__desc { color: #bdb6a0; font-size: 0.82rem; line-height: 1.4; margin: 0.2rem 0 0; }
-.citem__side { display: flex; flex-direction: column; align-items: flex-end; gap: 0.35rem; flex-shrink: 0; }
-.citem__cost { font-size: 0.82rem; color: #c08eff; font-weight: 600; font-variant-numeric: tabular-nums; }
-.citem__owned { font-size: 0.8rem; color: #7fd58f; font-weight: 600; }
-.citem__buy {
+.chaos-link p { margin: 0; color: #bdb6a0; font-size: 0.88rem; }
+.chaos-link strong { color: #c08eff; }
+.chaos-link__btn {
   background: rgba(192,142,255,0.16);
   border: 1px solid rgba(192,142,255,0.4);
-  color: #f6e8b8; padding: 0.32rem 0.85rem; border-radius: 6px; cursor: pointer; font-size: 0.83rem;
+  color: #f6e8b8; padding: 0.4rem 0.9rem; border-radius: 6px; cursor: pointer; font: inherit; font-size: 0.85rem;
+  white-space: nowrap;
 }
-.citem__buy:hover:not(:disabled) { background: rgba(192,142,255,0.28); }
-.citem__buy:disabled { opacity: 0.4; cursor: not-allowed; }
-.chaos-shop__locked { color: #9a8fb8; font-size: 0.83rem; margin: 0.8rem 0 0; }
+.chaos-link__btn:hover { background: rgba(192,142,255,0.28); }
 
 .summary { margin-top: 2.4rem; }
 .summary summary { cursor: pointer; color: #c0b693; font-size: 0.9rem; padding: 0.4rem 0; }

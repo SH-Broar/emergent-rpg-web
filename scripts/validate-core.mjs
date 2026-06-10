@@ -127,11 +127,13 @@ export const DATA_FILES = [
   'events/events-filler.txt',
   'events/events-persistent.txt',
   'events/events-possession.txt',
+  'events/npc-spar-events.txt',
   'monsters/mvr-monsters.txt',
   'monsters/act-1-roster-t1.txt',
   'monsters/act-1-roster-t2.txt',
   'monsters/act-1-roster-t3.txt',
   'monsters/act-1-roster-t4.txt',
+  'monsters/npc-spar.txt',
   'items/act-1-items.txt',
   'items/act-1-arc-items.txt',
   'equipment/equipment-mvr.txt',
@@ -652,6 +654,10 @@ export function validateData(dataDir, readFile) {
       // 동료 사건 영입 (Item 37-② Stage C, 1A) — recruit = npc-X 가 정의된 NPC인지.
       if (cf.recruit && !npcIds.has(cf.recruit.trim())) {
         push(diag('error', 'dangling', `이벤트 '${id}' choice ${i} recruit NPC '${cf.recruit.trim()}' 미정의`, cw));
+      }
+      // NPC 스파링 (2026-06-10) — spar = npc-spar-X 가 정의된 몬스터인지.
+      if (cf.spar && !monsterIds.has(cf.spar.trim())) {
+        push(diag('error', 'dangling', `이벤트 '${id}' choice ${i} spar 몬스터 '${cf.spar.trim()}' 미정의`, cw));
       }
       if (cf.color) {
         const color = cf.color.split(':')[0]?.trim();

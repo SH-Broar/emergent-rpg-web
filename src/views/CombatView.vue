@@ -12,6 +12,7 @@ import { useRouter } from 'vue-router';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
+import { useMetaStore } from '@/stores/meta';
 import {
   startCombat,
   playCard as playCardSys,
@@ -42,10 +43,38 @@ const router = useRouter();
 const run = useRunStore();
 const data = useDataStore();
 const ui = useUiStore();
+const meta = useMetaStore();
 
 type Phase = 'combat' | 'victory' | 'defeat';
 const phase = ref<Phase>('combat');
 const drop = ref<CombatVictoryDrop | null>(null);
+
+// === 스파링(안전 대련) — NPC 사건 spar= 진입. 비영속 ui.sparring 컨텍스트로 판정. ===
+// 전투 중 새로고침/복원으로 sparring이 사라지면 isSparring=false가 되어 일반 전투로 취급된다
+//   (HP 라이트백·목숨 소모 정상 동작). 파일럿 단계에서 허용하는 엣지(세이브 무변경 트레이드오프).
+const isSparring = computed(() => !!ui.sparring);
+/**
+ * 대련 진입 시 런 상태 스냅샷 — 승/패 무관 종료 시 원복(전투 흔적을 런에 안 남긴다).
+ * clearCombat이 HP·잔존 강상태(possession/feral-heavy)·지속요소(축복/드래곤) 카운트를 런에 라이트백하므로,
+ *   그 라이트백을 *덮어쓰기* 위해 진입 직전 값을 통째로 잡아 둔다.
+ */
+const sparSnapshot = ref<{
+  hp: number;
+  possessed: number;
+  feralHeavy: number;
+  blessingCombats: number;
+  dragonCombats: number;
+  dragonBoost: number;
+  /** 컬러 스냅샷 — clearCombat의 드래곤화 만료 부작용(8색 차감)까지 원복 (QA: 이중 차감 버그). */
+  colors: typeof run.data.colors;
+} | null>(null);
+// 승리 결과 화면이 대련이었는지 판단(endSparring이 ui.sparring을 비우므로 isSparring으로는 늦다).
+const wasSpar = ref(false);
+// 대련 상대 이름 박제 — endSparring이 sparring을 비우면 monster computed가 노드 fallback으로 바뀌므로,
+//   승리 화면에 쓸 이름을 onVictory 시점에 고정한다.
+const sparMonsterName = ref('');
+// 대련 승리 결과 화면에 띄울 친밀도 안내 한 줄(없으면 빈 문자열).
+const sparResultNote = ref('');
 
 const currentNode = computed(() => {
   const map = data.nodeMaps.get(data.timelines.get(run.data.timelineId)?.nodeMapId ?? '');
@@ -53,6 +82,12 @@ const currentNode = computed(() => {
 });
 
 const monster = computed<Monster>(() => {
+  // 스파링(안전 대련) 오버라이드 — NPC 사건 spar= 진입 시 지정 몬스터.
+  const sparId = ui.sparring?.monsterId;
+  if (sparId) {
+    const sparMonster = data.monsters.get(sparId);
+    if (sparMonster) return sparMonster;
+  }
   // 디버그 전투 오버라이드 — 설정 시 노드 대신 지정 몬스터.
   const dbgId = ui.debugBattle.monsterId;
   if (dbgId) {
@@ -165,6 +200,25 @@ function endTurn() {
 }
 
 function onVictory() {
+  // 스파링 승리 — 일반 보상/XP/노드클리어/영입 *전부 스킵*(파밍 방지). 친밀도 +1만 보상.
+  //   applyCombatVictoryReward를 부르지 않는 별도 종료 경로(XP 시스템 회귀 방지).
+  if (isSparring.value) {
+    const npcId = ui.sparring?.npcId ?? null;
+    sparMonsterName.value = monster.value.name; // endSparring 전에 박제(이후 fallback으로 안 바뀌게).
+    if (npcId) {
+      meta.addNpcAffinity(npcId, 1);
+      const npcName = data.npcs.get(npcId)?.name;
+      sparResultNote.value = npcName
+        ? `${josa(npcName, '과', '와')} 한 번 어우러졌다. 사이가 조금 가까워졌다.`
+        : '';
+    } else {
+      sparResultNote.value = '';
+    }
+    wasSpar.value = true;
+    endSparring(); // clearCombat + 스냅샷 원복 + ui.sparring 해제(이후 isSparring=false).
+    phase.value = 'victory';
+    return;
+  }
   // 드롭 적용 + 권역 보상 (컬러+특산물+엘리트 유물/전설/희소재료) + 클리어 마킹.
   // applyCombatVictoryReward는 *cleared 마킹 전*에 *동기* 호출해야 첫 클리어로 인정된다.
   // (옛 코드: dynamic import().then() → markCombatCleared가 먼저 동기 실행돼 보상이 스킵되던 버그.)
@@ -195,6 +249,14 @@ function tryRecruitDefeated() {
 }
 
 function onDefeat() {
+  // 스파링 패배 — 목숨 미소모·노드 무변경. HP 원복 후 맵으로 조용히 복귀(런에 흔적 없음).
+  if (isSparring.value) {
+    const name = monster.value.name;
+    endSparring();
+    ui.toast('info', `대련에서 ${name}에게 졌다. 몸을 추스르고 일어났다.`);
+    router.push('/game/map');
+    return;
+  }
   // Item 28 — 목숨 분기. 전투 코어는 playerDefeated 신호만 내고, 목숨 소모/도망은 UI에서.
   const nodeId = run.data.currentNodeId;
   clearCombat();
@@ -207,6 +269,26 @@ function onDefeat() {
   }
   // 목숨 0 → 패배 결과 화면(돌아간다 버튼이 endRun).
   phase.value = 'defeat';
+}
+
+/**
+ * 대련 종료 공통 처리 — clearCombat(HP·잔존상태 라이트백)을 부른 뒤 스냅샷으로 *전부 원복*해
+ * 런에 전투 흔적을 남기지 않는다. 마지막에 sparring 컨텍스트 해제.
+ * 노드 상태(combatCleared/eventTriggered)는 애초에 건드리지 않으므로 별도 원복 불요.
+ */
+function endSparring() {
+  clearCombat();
+  const snap = sparSnapshot.value;
+  if (snap) {
+    run.data.hp = snap.hp;
+    run.data.possessed = snap.possessed;
+    run.data.feralHeavy = snap.feralHeavy;
+    run.data.blessingCombats = snap.blessingCombats;
+    run.data.dragonCombats = snap.dragonCombats;
+    run.data.dragonBoost = snap.dragonBoost;
+    run.data.colors = { ...snap.colors };
+  }
+  ui.clearSparring();
 }
 
 function backToMap() {
@@ -223,6 +305,18 @@ onMounted(() => {
   if (!run.active) {
     router.push('/main');
     return;
+  }
+  // 대련 진입 시 런 상태를 박제 — 종료 시 이 값으로 원복(전투 흔적은 런에 안 남긴다).
+  if (isSparring.value) {
+    sparSnapshot.value = {
+      hp: run.data.hp,
+      possessed: run.data.possessed ?? 0,
+      feralHeavy: run.data.feralHeavy ?? 0,
+      blessingCombats: run.data.blessingCombats ?? 0,
+      dragonCombats: run.data.dragonCombats ?? 0,
+      dragonBoost: run.data.dragonBoost ?? 0,
+      colors: { ...run.data.colors },
+    };
   }
   if (!run.data.combat) {
     startCombat(monster.value);
@@ -633,10 +727,19 @@ function toggleTools() { toolsOpen.value = !toolsOpen.value; }
 
   <!-- 승리 결과 화면 -->
   <main v-else-if="phase === 'victory'" class="result-view result-view--win">
-    <h1>승리</h1>
-    <p class="result__subject">{{ monster.name }}을(를) 쓰러뜨렸다.</p>
+    <!-- 대련 승리 — 보상 없이 친밀도 안내만. -->
+    <template v-if="wasSpar">
+      <h1>대련 종료</h1>
+      <p class="result__subject">{{ sparMonsterName }}과(와)의 겨룸에서 이겼다.</p>
+      <p v-if="sparResultNote" class="result__note">{{ sparResultNote }}</p>
+      <p class="result__note">대련이라 잃은 것도 얻은 것도 없다. 몸 상태는 그대로다.</p>
+    </template>
+    <template v-else>
+      <h1>승리</h1>
+      <p class="result__subject">{{ monster.name }}을(를) 쓰러뜨렸다.</p>
+    </template>
 
-    <section class="rewards">
+    <section v-if="!wasSpar" class="rewards">
       <div v-if="drop" class="reward-list">
         <div v-if="drop.gold > 0" class="reward">
           <span class="reward__name">골드</span>

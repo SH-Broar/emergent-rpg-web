@@ -176,7 +176,7 @@ onMounted(async () => {
         <span class="gain gain--research">해석 +{{ result.researchGain }}</span>
         <span class="gain gain--soul">영혼 +{{ result.soulGain }}</span>
       </div>
-      <p class="meta__note">※ 해석은 추후 직접 투자 방식으로 바뀝니다.</p>
+      <p class="meta__note">※ 히페리온은 탐험으로, 해석은 전투로, 영혼은 도전으로 모인다.</p>
       <ul v-if="result.granted.length > 0" class="unlocks">
         <li v-for="(k, i) in result.granted" :key="i" class="unlock">해금: {{ unlockKeyLabel(k.key) }}</li>
       </ul>

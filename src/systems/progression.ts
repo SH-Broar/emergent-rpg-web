@@ -1,12 +1,13 @@
 /**
  * 메타 진행 변환 시스템.
  *
- * spec v2 Round 11:
- *  - 런 종료 시 휘발 재화는 도감에 등록
- *  - 히페리온 미션 진행도 → 모노 히페리온 게이지 (게이지 ①)
- *  - NPC 친밀도 누적 → 모노 히페리온 게이지 (게이지 ②)
- *  - 시대 미션 클리어 → 모노 해석 게이지 (게이지 ①)
- *  - 보스 클리어 → 모노 해석 게이지 (게이지 ②)
+ * 역할 재정의 (2026-06-10): 게이지 입력원을 *살아있는 런 성과*로 재연결.
+ *  - 히페리온 = 탐험: 방문 권역 수(hyperion1) + roster 동료 수(hyperion2)
+ *  - 해석     = 전투: 아크 클리어 수(insight1) + 보스 클리어(insight2)
+ *  - 영혼     = 도전: 보스 클리어 보너스 + 카오스 도전 보너스
+ *
+ * (옛 의도: 히페리온 미션 5단계·NPC 친밀도·시대 미션 — 전부 죽은 흐름이라 제거.
+ *  진단 근거: _workspace/dev/04_unlock_analysis.md)
  */
 
 import type { RunState, RunSummary } from '@/data/schemas';
@@ -21,6 +22,31 @@ interface AbsorbGains {
   hyperionGain: number;
   researchGain: number;
   soulGain: number;
+}
+
+// === 게이지 증분 계수 (역할 재정의) — 표시값·적용값 공통 진실원. ===
+const HYPERION_PER_REGION = 3;   // 방문 권역 1곳당 히페리온
+const HYPERION_PER_COMPANION = 2; // roster 동료 1명당 히페리온
+const INSIGHT_PER_ARC = 10;       // 아크 클리어 1회당 해석
+const INSIGHT_PER_BOSS = 25;      // 보스 클리어 1회당 해석
+const SOUL_PER_BOSS = 5;          // 보스 클리어 1회당 영혼
+
+/**
+ * 런이 도달한 distinct 권역 수 — visitedNodes가 속한 권역의 개수.
+ * 맵/노드 조회 실패 시 0 (위치 데이터 휘발 방어). RunEndView.reachedRegions·buildRunSummary와 동일 로직.
+ */
+function countReachedRegions(run: RunState): number {
+  const data = useDataStore();
+  const timeline = data.timelines.get(run.timelineId);
+  const map = data.nodeMaps.get(timeline?.nodeMapId ?? '');
+  if (!map) return 0;
+  const nodeById = new Map(map.nodes.map((n) => [n.id, n]));
+  const seen = new Set<string>();
+  for (const nid of run.visitedNodes ?? []) {
+    const regionId = nodeById.get(nid)?.region;
+    if (regionId) seen.add(regionId);
+  }
+  return seen.size;
 }
 
 /**
@@ -48,16 +74,7 @@ export function buildRunSummary(run: RunState, gains: AbsorbGains): RunSummary {
   }
 
   // 도달 권역 — 방문 노드들이 속한 distinct 권역 수.
-  let regions = 0;
-  if (map) {
-    const nodeById = new Map(map.nodes.map((n) => [n.id, n]));
-    const seen = new Set<string>();
-    for (const nid of run.visitedNodes) {
-      const regionId = nodeById.get(nid)?.region;
-      if (regionId) seen.add(regionId);
-    }
-    regions = seen.size;
-  }
+  const regions = countReachedRegions(run);
 
   // 전투 클리어 수.
   const combats = Object.values(run.nodeStates).filter((s) => s.combatCleared).length;
@@ -112,34 +129,36 @@ export function buildRunSummary(run: RunState, gains: AbsorbGains): RunSummary {
  * 반환:
  *  - granted: 이번 호출에서 발급된 콘텐츠 해금 토큰 (이미 흡수된 런은 [])
  *  - soulGain: 이 런이 외부로 가져간 영혼 (표시값)
- *  - hyperionGain: 외부 획득 히페리온 (보스단계*10 + NPC친밀도합)
- *  - researchGain: 외부 획득 연구 (미션*10 + 보스*25)
+ *  - hyperionGain: 외부 획득 히페리온 (방문 권역×3 + 동료×2)
+ *  - researchGain: 외부 획득 해석 (아크×10 + 보스×25)
  */
 export function absorbRunIntoMeta(run: RunState) {
   const meta = useMetaStore();
   const codex = useCodexStore();
   const ui = useUiStore();
 
-  // 히페리온 미션 클리어 단계 수 (true 카운트)
-  // r4: 5단계 미션 시스템 제거로 hyperionProgress는 optional. 옛 세이브 잔존만 카운트, 새 런은 항상 0.
-  const hyperionStageClears = Object.values(run.hyperionProgress ?? {}).filter(Boolean).length;
-
-  // NPC 친밀도 — Item 37-② Stage C(1B): 친밀도는 *영속 메타*(meta.npcAffinity)로 직접 누적되며
-  //   런 종료 흡수를 더 이상 하지 않는다(lore화). run.npcAffinity는 메타값의 working mirror라
-  //   여기서 합산하면 *cross-run 누적분이 매 런마다 게이지에 재투입*되어 부풀므로 0으로 둔다.
-  const npcAffinityGain = 0;
-
-  // 시대 미션 / 보스 클리어 카운트 (필드 누락 방어).
-  const missionsCleared = (run.missionsCleared ?? []).length;
+  // === 살아있는 런 성과 집계 (역할 재정의, 2026-06-10) ===
+  const regions = countReachedRegions(run);
+  const companions = (run.roster ?? []).length;
+  const arcsCleared = (run.arcsCleared ?? []).length;
   const bossesCleared = (run.bossesCleared ?? []).length;
 
+  // 게이지 증분 — 표시값과 적용값이 *같은 공식*이도록 한 곳에서 산정.
+  const hyperion1 = regions * HYPERION_PER_REGION;
+  const hyperion2 = companions * HYPERION_PER_COMPANION;
+  const insight1 = arcsCleared * INSIGHT_PER_ARC;
+  const insight2 = bossesCleared * INSIGHT_PER_BOSS;
+
+  // 카오스 도전 보너스 — 클리어(보스 처치) && 점수>0이면 floor(점수/10).
+  const chaosScore = run.chaosScore ?? computeChaosScore(run.activeChaos ?? []);
+  const wasClear = run.endReason === 'boss-cleared' || bossesCleared > 0;
+  const chaosBonus = wasClear && chaosScore > 0 ? Math.floor(chaosScore / 10) : 0;
+
   // === 표시용 외부 획득 값 (적용 여부와 무관하게 항상 계산) ===
-  // 히페리온(외부 획득) = 보스단계*10 + NPC친밀도합 (게이지 hyperion1 + hyperion2 입력 합)
-  const hyperionGain = hyperionStageClears * 10 + npcAffinityGain;
-  // 연구(외부 획득) = 미션*10 + 보스*25 (게이지 insight1 + insight2 입력 합)
-  const researchGain = missionsCleared * 10 + bossesCleared * 25;
-  // 영혼 — 보스 클리어 시 큰 보너스, 그 외 소량 (기존 공식 유지)
-  const soulGain = bossesCleared * 5 + hyperionStageClears + Math.floor(npcAffinityGain / 10);
+  const hyperionGain = hyperion1 + hyperion2;
+  const researchGain = insight1 + insight2;
+  // 영혼 — 보스 클리어 보너스 + 카오스 도전 보너스.
+  const soulGain = bossesCleared * SOUL_PER_BOSS + chaosBonus;
 
   // 이미 흡수된 런이면 *적용 없이* 표시값만 반환 — 재마운트/새로고침 중복 방지.
   if (run.metaAbsorbed) {
@@ -147,11 +166,13 @@ export function absorbRunIntoMeta(run: RunState) {
   }
   run.metaAbsorbed = true;
 
-  // 게이지 변환 (이미 meta.ts의 absorbRunResult가 처리)
+  // 게이지 변환 (meta.ts의 absorbRunResult가 게이지 누적 + 임계 토큰 발급 처리).
+  //   임계 돌파 시 _applyUnlockKey가 영혼 +5를 추가로 지급(R2) — soulGain 표시값과 별개.
   const granted = meta.absorbRunResult({
-    hyperionStageClears,
-    npcAffinityGain,
-    missionsCleared,
+    hyperion1,
+    hyperion2,
+    insight1,
+    insight2,
     bossesCleared,
   });
 

@@ -194,6 +194,7 @@ async function startRun() {
   // 기본 r-race-<raceId> 1종은 위 seed_relics 루프에서 이미 지급됨(중복 push 가드).
   const racePrefix = `r-race-${r.id}-`;
   const alreadyOwned = new Set(run.data.relics.map((rel) => rel.id));
+  const grantedAnchors: string[] = [];
   for (const relicId of meta.unlockedRelicIds) {
     if (!relicId.startsWith(racePrefix)) continue;
     if (alreadyOwned.has(relicId)) continue;
@@ -201,9 +202,14 @@ async function startRun() {
     if (!relic) continue;
     run.data.relics.push(relic);
     alreadyOwned.add(relicId);
+    grantedAnchors.push(relic.name);
     if (!run.data.newRelicEncounters.includes(relic.id)) {
       run.data.newRelicEncounters.push(relic.id);
     }
+  }
+  // R4 — 연구로 해금한 종족 앵커 유물이 런 시작에 실제로 지급됐음을 가시화(현재 무표시였음).
+  for (const name of grantedAnchors) {
+    ui.toast('success', `연구 해금: ${name}`);
   }
 
   // === 시작형 카오스 *재적용* — 덱·컬러 셋업이 끝난 시점에 1회. ===

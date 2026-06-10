@@ -1,0 +1,42 @@
+# NPC 스파링(안전 대련) 전용 몬스터 — 권역 풀에 넣지 않는다(이벤트 spar= 참조로만 등장).
+# 친한 호전 NPC와의 겨룸. T2~T3급, 기믹 1개 이내. 잡혀도 잃는 것 없고 친밀도만 오른다.
+# 금지어: 결, 한 박, 박자
+
+# === 카요 (npc-cayo) — 드래곤 대장장이. 벼림의 한 수. ===
+[monster.npc-spar-cayo]
+name = 벼림의 카요
+tier = elite
+species = dragon
+hp = 240
+attack = 11
+defense = 0
+intents = defend:8, attack:12, charge:3, attack:14
+gold = 0
+time_shards = 0
+card_drops =
+
+# === 칼리번 (npc-caliburn) — 모스의 모험가. 정면으로 맞붙는다. ===
+[monster.npc-spar-caliburn]
+name = 맞붙는 칼리번
+tier = normal
+species = beastkin
+hp = 150
+attack = 10
+defense = 0
+intents = attack:10, attack:8, defend:6, attack:12
+gold = 0
+time_shards = 0
+card_drops =
+
+# === 로크 (npc-rok) — 깨어난 골렘. 단단히 버틴다. ===
+[monster.npc-spar-rok]
+name = 버티는 로크
+tier = normal
+species = golem
+hp = 180
+attack = 8
+defense = 0
+intents = defend:10, attack:9, defend:8, attack:7
+gold = 0
+time_shards = 0
+card_drops =

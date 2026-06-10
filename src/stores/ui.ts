@@ -77,6 +77,13 @@ export const useUiStore = defineStore('ui', {
      */
     debugBattle: { monsterId: null as string | null, bossId: null as string | null },
     /**
+     * 스파링(안전 대련) 컨텍스트 — NPC 사건에서 `spar=` 토큰으로 진입. 설정 시 CombatView가
+     * 이 monsterId로 전투하되 *결과를 런에 남기지 않는다*(승/패 HP 원복·목숨 미소모·노드 무변경·XP 없음).
+     * 승리 시 npcId 친밀도 +1. **비영속**(세이브 무영향): 전투 중 새로고침/복원 시 sparring이 사라지면
+     * 일반 전투로 취급된다 — 파일럿 단계에서 허용하는 엣지(아래 CombatView 주석 참조).
+     */
+    sparring: null as { monsterId: string; npcId: string | null } | null,
+    /**
      * 레벨업 강화 픽 모달 열림 여부 (XP·각성 시스템). 전투 승리로 레벨업하면 자동으로 열고,
      * 캐릭터 메뉴에서도 (이월 강화권이 있을 때) 직접 열 수 있다. 비영속.
      */
@@ -121,6 +128,16 @@ export const useUiStore = defineStore('ui', {
     clearDebugBattle() {
       this.debugBattle.monsterId = null;
       this.debugBattle.bossId = null;
+    },
+
+    /** 스파링 진입 — NPC 사건의 `spar=` 토큰이 호출. CombatView가 이 컨텍스트로 안전 대련을 연다. */
+    setSparring(payload: { monsterId: string; npcId: string | null }) {
+      this.sparring = { monsterId: payload.monsterId, npcId: payload.npcId };
+    },
+
+    /** 스파링 해제 — 대련 종료(CombatView 종료 경로)에서 호출. */
+    clearSparring() {
+      this.sparring = null;
     },
 
     /** 레벨업 강화 픽 모달 열기 (전투 승리 레벨업·캐릭터 메뉴 진입). */

@@ -1,0 +1,57 @@
+# NPC 스파링(안전 대련) 사건 — 친한 호전 NPC와의 겨룸.
+# 조건: affinity:npc-X>=3 (친밀도 3 이상이면 풀에 등장). spar= 토큰으로 안전 대련 전투 진입.
+# 본문 짧게, prose 규칙 엄수. 금지어: 결, 한 박, 박자.
+
+# === 카요 (npc-cayo) — 드래곤 대장장이. 마노니클라 권역. ===
+[event.ev-spar-cayo]
+name = 카요의 모루 앞
+body = 카요가 망치를 내려놓고 너를 본다. 한 수 받아 보겠냐고, 비늘 사이로 웃는다.
+weight = 2
+once_per_run = false
+node_kinds = event
+condition = affinity:npc-cayo>=3
+featured_npcs = npc-cayo
+
+[event.ev-spar-cayo.choice.1]
+label = 겨뤄 본다
+spar = npc-spar-cayo
+
+[event.ev-spar-cayo.choice.2]
+label = 다음에
+result_text = 카요가 고개를 끄덕이고 다시 모루로 돌아간다.
+
+# === 칼리번 (npc-caliburn) — 모스의 모험가. 모스 권역. ===
+[event.ev-spar-caliburn]
+name = 칼리번의 손짓
+body = 칼리번이 검을 가볍게 돌리며 다가온다. 몸 좀 풀자고, 눈을 반짝인다.
+weight = 2
+once_per_run = false
+node_kinds = event
+condition = affinity:npc-caliburn>=3
+featured_npcs = npc-caliburn
+
+[event.ev-spar-caliburn.choice.1]
+label = 겨뤄 본다
+spar = npc-spar-caliburn
+
+[event.ev-spar-caliburn.choice.2]
+label = 다음에
+result_text = 칼리번이 어깨를 으쓱하고 검을 거둔다.
+
+# === 로크 (npc-rok) — 깨어난 골렘. 마노니클라 권역. ===
+[event.ev-spar-rok]
+name = 로크의 자세
+body = 로크가 돌 손발을 천천히 모으고 선다. 같이 버텨 보자는 듯, 조용히 기다린다.
+weight = 2
+once_per_run = false
+node_kinds = event
+condition = affinity:npc-rok>=3
+featured_npcs = npc-rok
+
+[event.ev-spar-rok.choice.1]
+label = 겨뤄 본다
+spar = npc-spar-rok
+
+[event.ev-spar-rok.choice.2]
+label = 다음에
+result_text = 로크가 다시 손발을 풀고 길가에 앉는다.
