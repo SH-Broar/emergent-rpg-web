@@ -10,6 +10,7 @@
 
 import { defineStore } from 'pinia';
 import type {
+  Card,
   NodeKind,
   RaceId,
   Rank,
@@ -22,6 +23,7 @@ import { instantiateCard } from '@/systems/deck';
 import { createSeededRng, generateInitialSeed, rng, setRng } from '@/systems/rng';
 import { getSkipTurnEveryN } from '@/systems/relic';
 import { applyStartChaos, nodeHpLoss } from '@/systems/chaos';
+import { XP_PER_LEVEL, canEnhance, needsAwakening } from '@/systems/enhance';
 import { useDataStore } from './data';
 import { useUiStore } from './ui';
 import { useMetaStore } from './meta';
@@ -56,6 +58,27 @@ const LEGACY_CHARACTER_TO_RACE: Record<string, string> = {
  *  - 신세이브(roster 존재): 형태만 정규화(activeSlots 길이 3 보장 + null 패딩).
  * companions 필드는 호환 위해 빈 배열로 남긴다(코드는 더 이상 읽지 않음).
  */
+/**
+ * XP·각성 마이그레이션 (2026-06-10) — 구세이브 카드 인스턴스를 새 강화 모델로 승격.
+ *   - id가 '-plus'로 끝나는 인스턴스(옛 공방 강화판) → enhanceLevel 5 + awakened true (가치 보존·상향).
+ *     id는 그대로 둔다(awakened의 효과 정의 = plus 정의이므로 무손실). 도감/풀 제외는 id 기준이라 무해.
+ *   - 그 외 인스턴스 → enhanceLevel 0 / awakened false backfill (이미 값 있으면 보존).
+ * collection·deck 양쪽 순회(같은 instanceId는 같은 객체 참조라 한쪽만 바꿔도 되지만, 분리 저장 대비 양쪽).
+ */
+function migratePlusCards(filled: RunState): void {
+  const apply = (c: Card) => {
+    if (c.id.endsWith('-plus')) {
+      c.enhanceLevel ??= 5;
+      c.awakened ??= true;
+    } else {
+      c.enhanceLevel ??= 0;
+      c.awakened ??= false;
+    }
+  };
+  for (const c of filled.collection ?? []) apply(c);
+  for (const c of filled.deck ?? []) apply(c);
+}
+
 function migrateRoster(filled: RunState, parsed: Partial<RunState>): void {
   const hasNewRoster = Array.isArray(parsed.roster);
   if (!hasNewRoster) {
@@ -93,6 +116,10 @@ const EMPTY_RUN: RunState = {
   nodeStates: {},
   remainingTime: 0,
   currentDay: 1,
+  // 성장 (XP·레벨업·카드 강화).
+  xp: 0,
+  level: 1,
+  pendingEnhancePicks: 0,
   possessed: 0,
   possessions: {},
   feralHeavy: 0,
@@ -308,6 +335,8 @@ export const useRunStore = defineStore('run', {
         // 1회 보너스(덱슬롯/유물/컬러) 제거 반영: companionAppliedBonuses는 이제 읽지 않으므로
         //   역적용 없이 버린다(컬러·카드·유물은 그동안 받은 그대로 런에 남는다 — 손해 없음).
         migrateRoster(filled, parsed);
+        // XP·각성 마이그레이션 — 구세이브 -plus 인스턴스를 각성됨(+5강)으로 승격 + 신필드 backfill.
+        migratePlusCards(filled);
         this.data = filled;
         this.active = !filled.ended;
         if (this.active) this.bindRng();
@@ -469,6 +498,80 @@ export const useRunStore = defineStore('run', {
         ? { ...item }
         : { ...item, instanceId: `${item.id}#${rand}` };
       this.data.items.push(instance);
+    },
+
+    // ============================================================================
+    // 성장 (XP·레벨업·카드 강화, 2026-06-10)
+    // ----------------------------------------------------------------------------
+
+    /**
+     * 경험치 적립 + 레벨업 처리. 반환: 이번에 오른 레벨 수(=발급된 강화권 수).
+     * 누적 xp가 XP_PER_LEVEL(3) 이상이면 그만큼 레벨업하고 pendingEnhancePicks를 늘린다.
+     */
+    gainXp(amount: number): number {
+      if (amount <= 0) return 0;
+      const r = this.data;
+      r.xp = (r.xp ?? 0) + amount;
+      let levels = 0;
+      while ((r.xp ?? 0) >= XP_PER_LEVEL) {
+        r.xp = (r.xp ?? 0) - XP_PER_LEVEL;
+        r.level = (r.level ?? 1) + 1;
+        levels += 1;
+      }
+      if (levels > 0) {
+        r.pendingEnhancePicks = (r.pendingEnhancePicks ?? 0) + levels;
+      }
+      return levels;
+    },
+
+    /**
+     * 강화권 1장을 써서 컬렉션의 instanceId 카드를 +1강. 성공 시 true.
+     * 가드: 강화권 보유 + 카드 존재 + canEnhance(5강 미만 또는 각성&&10강 미만).
+     * 5강 도달 미각성 카드는 각성(공방) 필요 → 여기선 거부.
+     */
+    enhanceCard(instanceId: string): boolean {
+      const r = this.data;
+      if ((r.pendingEnhancePicks ?? 0) <= 0) return false;
+      const card = r.collection.find((c) => c.instanceId === instanceId);
+      if (!card || !canEnhance(card)) return false;
+      card.enhanceLevel = (card.enhanceLevel ?? 0) + 1;
+      r.pendingEnhancePicks = (r.pendingEnhancePicks ?? 0) - 1;
+      // 덱에 같은 인스턴스가 있으면 동기화(분리 저장 대비 — 보통 같은 객체 참조라 무해).
+      const inDeck = r.deck.find((c) => c.instanceId === instanceId);
+      if (inDeck && inDeck !== card) inDeck.enhanceLevel = card.enhanceLevel;
+      return true;
+    },
+
+    /**
+     * 각성 실행(공방) — 5강 도달 카드를 plus 정의로 진화 + awakened=true. 성공 시 true.
+     * 자원 소비/검증은 workshop.ts가 사전 처리하고, 여기선 *상태 전이*만 한다.
+     * plus 정의(plusDef)가 주어지면 그 정의로 교체(instanceId·enhanceLevel·awakened·bonus·possession 보존),
+     * 없으면 awakened=true만 부여(수치 점프 폴백 — combat 스케일이 처리).
+     */
+    awakenCard(instanceId: string, plusDef?: Card): boolean {
+      const r = this.data;
+      const idx = r.collection.findIndex((c) => c.instanceId === instanceId);
+      if (idx < 0) return false;
+      const cur = r.collection[idx];
+      if (!needsAwakening(cur)) return false;
+      const next: Card = plusDef
+        ? {
+            ...plusDef,
+            instanceId: cur.instanceId,
+            enhanceLevel: cur.enhanceLevel ?? 5,
+            awakened: true,
+            bonusDamage: cur.bonusDamage,
+            bonusBlock: cur.bonusBlock,
+            possession: cur.possession,
+          }
+        : { ...cur, awakened: true };
+      r.collection.splice(idx, 1, next);
+      const dIdx = r.deck.findIndex((c) => c.instanceId === instanceId);
+      if (dIdx >= 0) r.deck.splice(dIdx, 1, next);
+      if (plusDef && !r.newCardEncounters.includes(plusDef.id)) {
+        r.newCardEncounters.push(plusDef.id);
+      }
+      return true;
     },
 
     /**

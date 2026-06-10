@@ -14,7 +14,8 @@ import { useDataStore } from '@/stores/data';
 import { useMetaStore } from '@/stores/meta';
 import { applyColorBoost } from '@/systems/colors';
 import { acquireRelic } from '@/systems/relic';
-import { rewardItem, rewardColor, rewardRelic, rewardCard, rewardSoul, blessingMul } from '@/systems/reward-feed';
+import { rewardItem, rewardColor, rewardRelic, rewardCard, rewardSoul, rewardXp, rewardLevelUp, blessingMul } from '@/systems/reward-feed';
+import { XP_NORMAL, XP_ELITE } from '@/systems/enhance';
 import { availableRelics } from '@/systems/unlocks';
 import { rng } from '@/systems/rng';
 import { effectiveKind as systemEffectiveKind } from '@/systems/map';
@@ -74,6 +75,13 @@ export function applyCombatVictoryReward(nodeId: string): void {
   const kind = systemEffectiveKind(node, r);
   const isElite = kind === 'elite';
   const tier = clampTier(region.tier);
+
+  // === 경험치 (XP·레벨업) — 첫 클리어 가드 안(위에서 return됨)이라 재클리어 무적립. ===
+  // 일반 1 / 엘리트 3. 레벨업 시 강화권 발급(run.gainXp가 처리).
+  const xpGain = isElite ? XP_ELITE : XP_NORMAL;
+  const levels = run.gainXp(xpGain);
+  rewardXp(xpGain);
+  rewardLevelUp(levels);
 
   // === 양 ===
   // 컬러 부스트 — 권역 primaryColor에 티어·일반/엘리트 차등.

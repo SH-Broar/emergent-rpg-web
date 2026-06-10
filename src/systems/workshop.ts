@@ -15,9 +15,10 @@ import { useUiStore } from '@/stores/ui';
 import { instantiateCard } from '@/systems/deck';
 import { availableCards } from '@/systems/unlocks';
 import { rng } from '@/systems/rng';
-import { upgradeCostMul, isNoRemoval } from '@/systems/chaos';
+import { isNoRemoval } from '@/systems/chaos';
 import { isPossessionLocked } from '@/systems/possession';
 import { isFormPoolActive, activeFormCardPool, RELEASE_CARD_ID } from '@/systems/form-pool';
+import { awakenCostFor, needsAwakening, matchingSpecialties } from '@/systems/enhance';
 
 // 가격·제작비·슬롯 수는 config/balance.txt 에서 로드 (useDataStore().balance). 누락 시 DEFAULT_BALANCE.
 // 희귀도 사다리 재료 id (Item Economy). 'i-time-answer'(전설)는 RARE_MATERIAL_ID_ACT1로 호환 유지.
@@ -29,96 +30,112 @@ export const RARE_MATERIAL_ID_ACT1 = MATERIAL_LEGENDARY_ID;
 const FORGE_RANKS: Rank[] = ['rare'];
 
 /**
- * 강화 비용 표 — 카드 rank → { 시간조각, 재료 id(있으면) }. 비용은 balance에서.
- * 카오스 upgrade-cost-mul(무딘 숫돌) — 시간조각 비용에 배수(1+param) 적용(올림).
- * 강화 재료 곡선: 기본/일반 = 시간조각만. 희귀 +희귀재료, 전설 +전설재료 (강화 대상 카드 rank로 판정).
+ * 각성(공방) — 5강 도달 카드를 plus 정의로 진화 + awakened (XP·각성 시스템, 2026-06-10).
+ *
+ * 종전의 "재료 강화(upgrade_to 교체)"를 대체한다. 강화 1~5강은 레벨업 픽이 담당하고,
+ * 공방은 *5강 게이트를 뚫는 각성*만 한다. 비용 = 카드 속성 매칭 특산물 N개 + 등급별 사다리 재료.
+ *   - common/basic: 특산물2 + 굳은 시간 덩이1
+ *   - rare:         특산물3 + 굳은 시간 덩이2
+ *   - legendary:    특산물4 + 시간의 답1
+ * plus 정의(upgradeToId)가 있으면 그 정의로 교체(이름에 + 부착). 없으면 awakened만 부여(수치 점프 폴백).
  */
-export function upgradeCostFor(rank: Rank): { timeShards: number; materialId?: string } {
-  const b = useDataStore().balance;
-  const mul = upgradeCostMul();
-  const scale = (n: number) => Math.ceil(n * mul);
-  if (rank === 'rare') return { timeShards: scale(b.upgradeRareCostShards), materialId: MATERIAL_RARE_ID };
-  if (rank === 'legendary') return { timeShards: scale(b.upgradeLegendaryCostShards), materialId: MATERIAL_LEGENDARY_ID };
-  // basic / common — 시간조각만 (현행).
-  return { timeShards: scale(b.upgradeCostShards) };
+export function awakenSpecialtyId(card: Card): string | undefined {
+  const run = useRunStore();
+  const matched = matchingSpecialties(card, run.data.items);
+  return matched[0]?.id;
 }
 
-/** 강화 가능한가 — upgrade_to 정의 + 대상 카드 존재 + 자원(시간조각·재료) 충분. */
-export function canUpgrade(card: Card): boolean {
-  const run = useRunStore();
+/** 각성 비용 표시 라벨 — '소금 진주 x3 + 굳은 시간 덩이 x2' 형태. */
+export function awakenCostLabel(card: Card): string {
   const data = useDataStore();
-  if (!card.upgradeToId) return false;
-  if (!data.cards.get(card.upgradeToId)) return false;
-  const cost = upgradeCostFor(card.rank);
-  if (run.data.timeShards < cost.timeShards) return false;
-  if (cost.materialId && !run.data.items.some((i) => i.id === cost.materialId)) return false;
+  const cost = awakenCostFor(card.rank);
+  const specId = awakenSpecialtyId(card);
+  const specName = specId ? (data.items.get(specId)?.name ?? '특산물') : '속성 특산물';
+  const matName = data.items.get(cost.materialId)?.name ?? cost.materialId;
+  return specName + ' x' + cost.specialtyCount + ' + ' + matName + ' x' + cost.materialCount;
+}
+
+/** 각성 가능한가 — 5강 도달 미각성 + 특산물 N개 + 사다리 재료 충분. */
+export function canAwaken(card: Card): boolean {
+  if (!needsAwakening(card)) return false;
+  const run = useRunStore();
+  const r = run.data;
+  const cost = awakenCostFor(card.rank);
+  const specId = awakenSpecialtyId(card);
+  if (!specId) return false;
+  const haveSpec = r.items.filter((i) => i.id === specId).length;
+  if (haveSpec < cost.specialtyCount) return false;
+  const haveMat = r.items.filter((i) => i.id === cost.materialId).length;
+  if (haveMat < cost.materialCount) return false;
   return true;
 }
 
-/** 컬렉션의 instanceId 카드를 upgrade_to 카드로 교체. 덱 슬롯에도 있으면 동기화. */
-export function upgradeCard(instanceId: string): boolean {
+/** 인벤토리에서 id 아이템 n개 제거(앞에서부터). */
+function removeItems(id: string, n: number): void {
+  const r = useRunStore().data;
+  for (let k = 0; k < n; k++) {
+    const idx = r.items.findIndex((i) => i.id === id);
+    if (idx < 0) break;
+    r.items.splice(idx, 1);
+  }
+}
+
+/**
+ * 각성 실행 — 자원(특산물 N + 사다리 재료) 소비 후 run.awakenCard로 상태 전이(plus 정의 교체).
+ * 가드 실패 시 토스트 + false. 성공 시 true.
+ */
+export function awakenCard(instanceId: string): boolean {
   const run = useRunStore();
   const data = useDataStore();
   const ui = useUiStore();
   const r = run.data;
 
-  const cIdx = r.collection.findIndex((c) => c.instanceId === instanceId);
-  if (cIdx < 0) {
-    ui.toast('warning', '강화할 카드를 찾을 수 없습니다.');
+  const card = r.collection.find((c) => c.instanceId === instanceId);
+  if (!card) {
+    ui.toast('warning', '각성할 카드를 찾을 수 없습니다.');
     return false;
   }
-  const original = r.collection[cIdx];
-  if (!original.upgradeToId) {
-    ui.toast('warning', '이미 강화된 카드입니다.');
+  if (!needsAwakening(card)) {
+    ui.toast('warning', '아직 각성할 수 없는 카드입니다 (5강 도달 필요).');
     return false;
   }
-  const upgradedDef = data.cards.get(original.upgradeToId);
-  if (!upgradedDef) {
-    ui.toast('warning', `강화판 데이터 없음 (${original.upgradeToId})`);
+  const cost = awakenCostFor(card.rank);
+  const specId = awakenSpecialtyId(card);
+  if (!specId) {
+    ui.toast('warning', '속성에 맞는 특산물이 부족합니다.');
     return false;
   }
-  // 강화 재료 곡선 — 대상 카드 rank로 시간조각·재료 요구 결정.
-  const cost = upgradeCostFor(original.rank);
-  if (r.timeShards < cost.timeShards) {
-    ui.toast('warning', `시간의 조각이 부족합니다. (필요 ${cost.timeShards})`);
+  const specName = data.items.get(specId)?.name ?? '특산물';
+  const matName = data.items.get(cost.materialId)?.name ?? cost.materialId;
+  if (r.items.filter((i) => i.id === specId).length < cost.specialtyCount) {
+    ui.toast('warning', "'" + specName + "'이(가) " + cost.specialtyCount + '개 필요합니다.');
     return false;
   }
-  let materialIdx = -1;
-  if (cost.materialId) {
-    materialIdx = r.items.findIndex((i) => i.id === cost.materialId);
-    if (materialIdx < 0) {
-      const mName = data.items.get(cost.materialId)?.name ?? cost.materialId;
-      ui.toast('warning', `'${mName}'이(가) 필요합니다.`);
-      return false;
-    }
+  if (r.items.filter((i) => i.id === cost.materialId).length < cost.materialCount) {
+    ui.toast('warning', "'" + matName + "'이(가) " + cost.materialCount + '개 필요합니다.');
+    return false;
   }
 
-  r.timeShards -= cost.timeShards;
-  if (materialIdx >= 0) r.items.splice(materialIdx, 1); // 재료 1개 소모.
-  // 새 인스턴스 생성 — 원본 instanceId는 버린다 (덱 동기화도 동일 패턴).
-  const newInstance = instantiateCard(upgradedDef);
-  r.collection.splice(cIdx, 1, newInstance);
+  // 자원 소비 — 특산물 N개, 사다리 재료 M개.
+  removeItems(specId, cost.specialtyCount);
+  removeItems(cost.materialId, cost.materialCount);
 
-  const dIdx = r.deck.findIndex((c) => c.instanceId === instanceId);
-  if (dIdx >= 0) {
-    r.deck.splice(dIdx, 1, newInstance);
+  // plus 정의로 진화(있으면). 없으면 awakened만(수치 점프 폴백).
+  const plusDef = card.upgradeToId ? data.cards.get(card.upgradeToId) : undefined;
+  const ok = run.awakenCard(instanceId, plusDef);
+  if (!ok) {
+    ui.toast('warning', '각성에 실패했습니다.');
+    return false;
   }
-
-  if (!r.newCardEncounters.includes(upgradedDef.id)) {
-    r.newCardEncounters.push(upgradedDef.id);
-  }
-
-  ui.toast('success', `카드 강화: ${original.name} → ${upgradedDef.name}`);
+  const nowName = r.collection.find((c) => c.instanceId === instanceId)?.name ?? card.name;
+  ui.toast('success', '각성: ' + card.name + ' -> ' + nowName);
   return true;
 }
 
-/** 강화 가능한 컬렉션 카드 목록 — UI 표시용. */
-export function listUpgradableCards(): Card[] {
+/** 각성 가능한(5강 도달 미각성) 컬렉션 카드 목록 — UI 표시용. */
+export function listAwakenableCards(): Card[] {
   const run = useRunStore();
-  const data = useDataStore();
-  return run.data.collection.filter(
-    (c) => !!c.upgradeToId && !!data.cards.get(c.upgradeToId),
-  );
+  return run.data.collection.filter((c) => needsAwakening(c));
 }
 
 // === 희귀+ 제작 ===

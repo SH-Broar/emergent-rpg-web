@@ -8,7 +8,7 @@
  * 카드처럼 인스턴스 ID 사용 — 동명 아이템 사본도 별개로 카운트.
  */
 
-import type { NamedEntity, Rank } from './base';
+import type { Element, NamedEntity, Rank } from './base';
 import type { ColorValues } from './npc';
 
 /** 효과 종류. param 의미는 kind 별로 다름. */
@@ -77,4 +77,10 @@ export interface Item extends NamedEntity {
   flavor?: string;
   /** 특산물의 *권역 id* — 그 권역의 채집·전투에서만 드롭 (specialty 전용). */
   regionId?: string;
+  /**
+   * 특산물의 *속성* — 카드 각성(공방) 재료 매칭에 사용 (XP·각성 시스템, 8종 특산물 전용).
+   * 카드 element와 일치하는 특산물이 각성 재료. element 없는 카드는 아무 특산물 허용.
+   * 비특산물 아이템은 미설정.
+   */
+  element?: Element;
 }

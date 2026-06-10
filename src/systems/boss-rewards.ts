@@ -15,7 +15,8 @@ import { useMetaStore } from '@/stores/meta';
 import { useCodexStore } from '@/stores/codex';
 import { useUiStore } from '@/stores/ui';
 import { applyColorBoost } from '@/systems/colors';
-import { rewardItem, rewardColor, rewardCard, rewardRelic, rewardGold } from '@/systems/reward-feed';
+import { rewardItem, rewardColor, rewardCard, rewardRelic, rewardGold, rewardXp, rewardLevelUp } from '@/systems/reward-feed';
+import { XP_BOSS, XP_ARC_REPEAT } from '@/systems/enhance';
 import { acquireRelic } from '@/systems/relic';
 import { revealNextTierOnClear, recordBestChaos } from '@/systems/chaos';
 
@@ -38,6 +39,10 @@ export function applyBossRewards(boss: Boss): void {
   // === 사용자 사양: 보스 클리어 시 *희소 재료 1개* + *권역 컬러 부스트 +5*. ===
   // bossesCleared로 *첫 클리어 여부* 추적 — 중복 호출 시 재드롭 X.
   if (!r.bossesCleared.includes(boss.id)) {
+    // 경험치 — 최종 보스 첫 클리어 9XP(아크·보스 1번에 3레벨). 레벨업 시 강화권 발급.
+    const levels = run.gainXp(XP_BOSS);
+    rewardXp(XP_BOSS);
+    rewardLevelUp(levels);
     // (a) 희소 재료 1개 무조건 드롭.
     const rareMat = data.items.get(BOSS_RARE_MATERIAL_ID);
     if (rareMat) {
@@ -113,8 +118,16 @@ export function applyArcRewards(boss: Boss): void {
   const data = useDataStore();
   const r = run.data;
 
-  // 첫 클리어만 드롭 — 이미 클리어한 arc면 보상 없이 반환.
-  if ((r.arcsCleared ?? []).includes(boss.id)) return;
+  // === 경험치 — 가드 *전*에 첫/재격파 구분해 적립 (전용 특전과 별개로 매 승리 지급). ===
+  // 아크 첫 격파 9XP(1번에 3레벨), 재격파는 엘리트급 3XP. 레벨업 시 강화권 발급.
+  const firstClear = !(r.arcsCleared ?? []).includes(boss.id);
+  const xpGain = firstClear ? XP_BOSS : XP_ARC_REPEAT;
+  const levels = run.gainXp(xpGain);
+  rewardXp(xpGain);
+  rewardLevelUp(levels);
+
+  // 첫 클리어만 드롭 — 이미 클리어한 arc면 (XP는 위에서 줬으니) 특전 없이 반환.
+  if (!firstClear) return;
 
   const reward = boss.arcReward;
   if (!reward) return;

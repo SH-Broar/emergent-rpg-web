@@ -21,6 +21,7 @@ import {
   previewIntentLabel,
 } from '@/systems/combat';
 import { applyBossRewards, applyArcRewards } from '@/systems/boss-rewards';
+import { enhanceBadge } from '@/systems/enhance';
 import { isHiddenIntent } from '@/systems/chaos';
 import { effectiveContent } from '@/systems/map';
 import { cardEffectKindLabel, cardEffectDescription, cardDetailText, statusDescription, intentDescription, unlockKeyLabel, lockBadgeText, lockTooltip, josa } from '@/systems/labels';
@@ -293,6 +294,8 @@ function endTurn() {
 function onVictory() {
   const b = boss.value;
   if (!b) return;
+  // XP·레벨업 — 보상 함수 내부 gainXp로 강화권이 늘 수 있다. 전후 스냅샷으로 감지(arc 첫격파 9/재격파 3, 보스 9).
+  const picksBefore = run.data.pendingEnhancePicks ?? 0;
   if (isArc.value) {
     // === arc 승리 — 맵 복귀 + 전용 특전 자동 드롭 + 클리어 마킹. 런은 지속(종료 X). ===
     // applyArcRewards는 *arcsCleared 미포함 시*에만 드롭하므로 push 이전에 호출.
@@ -310,6 +313,7 @@ function onVictory() {
     run.markCombatCleared(run.data.currentNodeId);
     clearCombat();
     phase.value = 'victory';
+    if ((run.data.pendingEnhancePicks ?? 0) > picksBefore) ui.openEnhancePick();
     return;
   }
   // === 일반 보스 승리 — 현행(메타 보상). ===
@@ -319,6 +323,7 @@ function onVictory() {
   run.data.bossesCleared.push(b.id);
   clearCombat();
   phase.value = 'victory';
+  if ((run.data.pendingEnhancePicks ?? 0) > picksBefore) ui.openEnhancePick();
 }
 
 function onDefeat() {
@@ -751,6 +756,7 @@ function toggleTools() { toolsOpen.value = !toolsOpen.value; }
         :effect-kind-label="cardEffectKindLabel"
         :effect-description="cardEffectDescription"
         :card-detail-text="cardDetailText"
+        :enhance-badge="enhanceBadge"
         @play="play"
       />
 

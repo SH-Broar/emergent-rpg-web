@@ -54,6 +54,7 @@ import {
   isNarrowReward,
 } from '@/systems/chaos';
 import { isFormPoolActive, activeFormCardPool, RELEASE_CARD_ID } from '@/systems/form-pool';
+import { scaledValue } from '@/systems/enhance';
 import { applyColorBoost, applyColorBoostAll, type ColorKey } from '@/systems/colors';
 import { intentLabel as intentLabelStatic } from '@/systems/labels';
 
@@ -272,7 +273,9 @@ export function previewCardEffectValue(
 
   if (eff.kind === 'damage') {
     const wild = c ? ((c.player.statuses?.feral ?? 0) > 0 || (c.player.statuses?.['feral-heavy'] ?? 0) > 0) : false;
-    const base = wild ? baseVal * 2 : baseVal;
+    // 강화 스케일은 *base 수치에만* (growing/colorAdd/status는 가산 — 이중 증폭 방지). 그 뒤 wild ×2.
+    const enhanced = scaledValue(baseVal, card);
+    const base = wild ? enhanced * 2 : enhanced;
     const statusBonus = c ? statusBonusForCardEffectKind('damage', c.player.statuses) : 0;
     const growing = card?.bonusDamage ?? 0;
     let raw = applyModifiers(base + colorAdd + statusBonus + growing, 'damage-out-add', 'damage-out-mul');
@@ -283,13 +286,20 @@ export function previewCardEffectValue(
   if (eff.kind === 'block') {
     const wild = c ? ((c.player.statuses?.feral ?? 0) > 0 || (c.player.statuses?.['feral-heavy'] ?? 0) > 0) : false;
     if (wild) return 0;
+    // 강화 스케일은 *base 수치에만* (growing/colorAdd/status는 가산).
+    const enhanced = scaledValue(baseVal, card);
     const statusBonus = c ? statusBonusForCardEffectKind('block', c.player.statuses) : 0;
     const growing = card?.bonusBlock ?? 0;
-    const raw = Math.max(0, applyModifiers(baseVal + colorAdd + statusBonus + growing, 'block-out-add'));
+    const raw = Math.max(0, applyModifiers(enhanced + colorAdd + statusBonus + growing, 'block-out-add'));
     return Math.max(0, Math.floor(raw));
   }
 
-  // 기타: heal/draw/apply-status/조건부 등 — 컬러 보너스만(대부분 0).
+  // heal — 강화 스케일 적용(수치형 효과). 회복도 강당 +12%.
+  if (eff.kind === 'heal') {
+    return scaledValue(baseVal, card) + colorAdd;
+  }
+
+  // 기타: draw/apply-status/조건부 등 — 비수치 효과는 스케일 제외(컬러 보너스만, 대부분 0).
   return baseVal + colorAdd;
 }
 
@@ -907,6 +917,16 @@ function rebuildCombatPiles(c: CombatState): void {
 /** this-turn-amp(이번 턴 증폭)이 켜져 있으면 곱 적용 대상인 효과 kind인가. */
 const THIS_TURN_AMP_KINDS = new Set<CardEffectKind>(['damage', 'heal', 'block']);
 
+/**
+ * 효과 base value에 *현재 재생 중인 카드*의 강화 스케일을 적용 (XP·각성 시스템).
+ * c.currentPlayingCard(playCard가 효과 적용 전 설정)의 enhanceLevel로 scaledValue.
+ * 카드 컨텍스트가 없으면(동료 스킬·아이템 효과) 원래 value 그대로 — 강화는 카드 사용에만.
+ */
+function enhancedBase(value: number, c: CombatState): number {
+  const card = (c as { currentPlayingCard?: Card }).currentPlayingCard;
+  return card ? scaledValue(value, card) : value;
+}
+
 function applyEffect(effect: CardEffect, c: CombatState) {
   let eff = effect;
   // 이번 턴 증폭(this-turn-amp) — 켜져 있으면 damage/heal/block의 value를 (1+pct/100)배한 *사본*으로 적용.
@@ -991,8 +1011,10 @@ function healBlocked(c: CombatState): boolean {
 const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) => void> = {
   damage: (e, c) => {
     const targets = resolveTargets(e.target ?? 'enemy', c);
+    // 강화 스케일을 base 수치에 먼저 적용(카드 사용 시에만). 그 뒤 feral ×2.
+    const enh = enhancedBase(e.value ?? 0, c);
     // feral(수화)/feral-heavy(수화 중): 카드 *base damage ×2* — ATK 보너스 더하기 *전*에 2배.
-    const base = playerWild(c) ? (e.value ?? 0) * 2 : (e.value ?? 0);
+    const base = playerWild(c) ? enh * 2 : enh;
     // ATK 스탯 보너스 — 공격 카드 *최소 공격력* +N (10 ATK당 1). regress면 0.
     const atkBonus = playerBonuses(c).damage;
     // 전투 중 player buff (strength). weakness는 applyDamage 배수 단계에서 처리.
@@ -1025,7 +1047,8 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
   heal: (e, c) => {
     // 수화 중(feral-heavy): 회복 전면 차단 — self 회복 불가.
     const targets = resolveTargets(e.target ?? 'self', c);
-    const value = e.value ?? 0;
+    // 강화 스케일 적용(카드 사용 시에만) — 회복도 강당 +12%.
+    const value = enhancedBase(e.value ?? 0, c);
     for (const t of targets) {
       if (t === c.player && healBlocked(c)) continue;
       t.hp = Math.min(t.maxHp, t.hp + value);
@@ -1039,10 +1062,11 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
     const defBonus = playerBonuses(c).block;
     // 전투 중 player buff/debuff (dexterity/frail).
     const statusBonus = statusBonusForCardEffectKind('block', c.player.statuses);
+    // 강화 스케일을 base에 적용(카드 사용 시에만). def/status는 가산 — 이중 증폭 방지.
     // base + def + status에 유물의 block-out-add 합산 (mul은 본 라운드 미사용).
     // sap(잠식)으로 statusBonus가 음수가 될 수 있으므로 최종 max(0) 클램프.
     const value = Math.max(0, applyModifiers(
-      (e.value ?? 0) + defBonus + statusBonus,
+      enhancedBase(e.value ?? 0, c) + defBonus + statusBonus,
       'block-out-add',
     ));
     for (const t of targets) {

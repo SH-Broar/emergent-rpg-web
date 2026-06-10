@@ -25,6 +25,7 @@ import {
 } from '@/systems/combat';
 import { effectiveContent } from '@/systems/map';
 import { applyCombatVictoryReward } from '@/systems/combat-rewards';
+import { enhanceBadge } from '@/systems/enhance';
 import { isHiddenIntent } from '@/systems/chaos';
 import { cardEffectKindLabel, cardEffectDescription, statusDescription, statusLabel, intentDescription, cardDetailText, lockBadgeText, lockTooltip, josa } from '@/systems/labels';
 import { useItem } from '@/systems/item';
@@ -168,12 +169,16 @@ function onVictory() {
   // applyCombatVictoryReward는 *cleared 마킹 전*에 *동기* 호출해야 첫 클리어로 인정된다.
   // (옛 코드: dynamic import().then() → markCombatCleared가 먼저 동기 실행돼 보상이 스킵되던 버그.)
   drop.value = applyMonsterDrop(monster.value.drop, data.cards);
+  // XP·레벨업 — applyCombatVictoryReward 내부 gainXp로 강화권이 늘 수 있다. 전후 스냅샷으로 감지.
+  const picksBefore = run.data.pendingEnhancePicks ?? 0;
   applyCombatVictoryReward(run.data.currentNodeId);
   // Item 37-② Stage B — 자동 동료 영입. 처치한 몬스터가 recruitable + companion 정의면 roster 추가.
   tryRecruitDefeated();
   run.markCombatCleared(run.data.currentNodeId);
   clearCombat();
   phase.value = 'victory';
+  // 레벨업으로 강화권이 늘었으면 결과 화면 위에 강화 픽 모달을 띄운다(닫으면 결과 화면으로).
+  if ((run.data.pendingEnhancePicks ?? 0) > picksBefore) ui.openEnhancePick();
 }
 
 /**
@@ -614,6 +619,7 @@ function toggleTools() { toolsOpen.value = !toolsOpen.value; }
       :effect-kind-label="cardEffectKindLabel"
       :effect-description="cardEffectDescription"
       :card-detail-text="cardDetailText"
+      :enhance-badge="enhanceBadge"
       @play="play"
     />
 

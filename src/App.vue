@@ -16,6 +16,7 @@ import GameHUD from '@/components/GameHUD.vue';
 import CharacterMenu from '@/components/CharacterMenu.vue';
 import InventoryMenu from '@/components/InventoryMenu.vue';
 import SettingsMenu from '@/components/SettingsMenu.vue';
+import EnhancePickModal from '@/components/EnhancePickModal.vue';
 import DayBanner from '@/components/DayBanner.vue';
 import LoadingOverlay from '@/components/LoadingOverlay.vue';
 // side-effect: 이벤트 customEffect 핸들러 자동 등록.
@@ -97,6 +98,9 @@ onMounted(async () => {
     <InventoryMenu :open="inventoryOpen" @close="inventoryOpen = false" />
     <!-- M5: SettingsMenu (현재 시대 + 런 포기) -->
     <SettingsMenu :open="settingsOpen" @close="settingsOpen = false" />
+
+    <!-- 레벨업 강화 픽 (XP·각성 시스템) — 전투 승리 레벨업 시 자동, 캐릭터 메뉴에서도 진입. -->
+    <EnhancePickModal v-if="run.active" />
 
     <!-- 하루 경과 배너 (런 중에만 의미) -->
     <DayBanner v-if="run.active" />

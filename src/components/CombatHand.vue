@@ -44,6 +44,8 @@ const props = defineProps<{
   effectDescription: (e: CardEffect) => string;
   /** 카드 전체 상세(롱프레스 툴팁). */
   cardDetailText: (c: Card) => string;
+  /** 카드 인스턴스 강화 배지 ('+3' 등, 미강화면 빈 문자열). */
+  enhanceBadge: (c: Card) => string;
 }>();
 
 const emit = defineEmits<{ (e: 'play', index: number): void }>();
@@ -152,7 +154,7 @@ function playPreview() {
         >
           <div class="card__head">
             <span class="card__cost" :class="{ 'card__cost--up': displayCost(card) > card.cost, 'card__cost--down': displayCost(card) < card.cost }">{{ displayCost(card) }}</span>
-            <span class="card__name">{{ card.name }}</span>
+            <span class="card__name">{{ card.name }}<span v-if="enhanceBadge(card)" class="card__enh">{{ enhanceBadge(card) }}</span></span>
             <span v-if="isLocked(card)" class="card__lock" title="묶여서 쓸 수 없다">🔒</span>
           </div>
           <div class="card__effects">
@@ -186,7 +188,7 @@ function playPreview() {
         >
           <span v-if="isObscured(i)" class="stack-item__cost">?</span>
           <span v-else class="stack-item__cost" :class="{ 'card__cost--up': displayCost(card) > card.cost, 'card__cost--down': displayCost(card) < card.cost }">{{ displayCost(card) }}</span>
-          <span class="stack-item__name">{{ isObscured(i) ? '가려진 카드' : card.name }}</span>
+          <span class="stack-item__name">{{ isObscured(i) ? '가려진 카드' : card.name }}<span v-if="!isObscured(i) && enhanceBadge(card)" class="card__enh">{{ enhanceBadge(card) }}</span></span>
           <span v-if="!isObscured(i) && isLocked(card)" class="stack-item__lock">🔒</span>
         </button>
       </div>
@@ -218,7 +220,7 @@ function playPreview() {
         >
           <div class="card__head">
             <span class="card__cost" :class="{ 'card__cost--up': displayCost(previewCard) > previewCard.cost, 'card__cost--down': displayCost(previewCard) < previewCard.cost }">{{ displayCost(previewCard) }}</span>
-            <span class="card__name">{{ previewCard.name }}</span>
+            <span class="card__name">{{ previewCard.name }}<span v-if="enhanceBadge(previewCard)" class="card__enh">{{ enhanceBadge(previewCard) }}</span></span>
             <span v-if="isLocked(previewCard)" class="card__lock" title="묶여서 쓸 수 없다">🔒</span>
           </div>
           <div class="card__effects">
@@ -329,6 +331,12 @@ function playPreview() {
   flex: 1; color: #f6e8b8; font-weight: 600; font-size: 0.8rem; line-height: 1.1;
   overflow: hidden;
   display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical;
+}
+/* 강화 배지 (+N) — 카드 이름 옆 노란 작은 칩. 각성 카드는 이름 자체가 plus명이라 강수만 표기. */
+.card__enh {
+  margin-left: 0.25rem;
+  font-size: 0.78em; font-weight: 700; color: #ffe88e;
+  white-space: nowrap;
 }
 .card__effects {
   display: flex; flex-wrap: wrap; gap: 0.2rem; font-size: 0.72rem;

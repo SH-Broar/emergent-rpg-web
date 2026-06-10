@@ -1,9 +1,9 @@
 <script setup lang="ts">
 /**
- * 공방 화면 — 카드 강화 (매번 가능) + 희귀+ 카드 제작 (노드 1회).
+ * 공방 화면 — 카드 각성 (5강 게이트 돌파) + 희귀+ 카드 제작 (노드 1회).
  *
- * 강화: 컬렉션의 upgrade_to 있는 카드를 시간조각 8로 + 카드 교체.
- * 제작: 진입 시 희귀+ 3장 추첨, 시간조각 15로 1장 선택 (1회).
+ * 각성: 5강에 닿은 카드를 속성 특산물 + 사다리 재료로 plus 정의로 진화(6~10강 해금).
+ * 제작: 진입 시 희귀+ 3장 추첨, 시간조각으로 1장 선택 (1회).
  */
 
 import { computed, onMounted, ref } from 'vue';
@@ -13,22 +13,22 @@ import { useDataStore } from '@/stores/data';
 import { cardEffectKindLabel, cardDetailText } from '@/systems/labels';
 import {
   RARE_MATERIAL_ID_ACT1,
+  awakenCard,
+  awakenCostLabel,
+  canAwaken,
   canCraftLegendary,
   canCraftPotion,
   canPurchaseForgeCard,
   canRemoveCard,
-  canUpgrade,
   craftLegendary,
   craftPotion,
   getLegendaryRecipes,
   getOrCreateForgeOffer,
+  listAwakenableCards,
   listCraftablePotions,
-  listUpgradableCards,
   potionCostFor,
   purchaseForgeCard,
   removeCardAtWorkshop,
-  upgradeCard,
-  upgradeCostFor,
   type LegendaryRecipe,
 } from '@/systems/workshop';
 import type { Item, Rank } from '@/data/schemas';
@@ -50,11 +50,11 @@ const offer = computed(() => run.data.forgeOffers?.[nodeId.value]);
 const forgePrice = computed(() => data.balance.forgePriceShards);
 const legendaryCost = computed(() => data.balance.legendaryCostShards);
 
-// 강화 모드 토글
-const upgradeMode = ref(false);
+// 각성 모드 토글
+const awakenMode = ref(false);
 
-// listUpgradableCards는 reactive하지 않을 수 있어 computed로 감쌈
-const upgradables = computed(() => listUpgradableCards());
+// listAwakenableCards는 reactive하지 않을 수 있어 computed로 감쌈 (5강 도달 미각성 카드).
+const awakenables = computed(() => listAwakenableCards());
 
 function cardDef(id: string) {
   return data.cards.get(id);
@@ -81,15 +81,8 @@ function effectSummary(card: ReturnType<typeof cardDef>): string {
     .join(' · ');
 }
 
-function doUpgrade(instanceId: string) {
-  upgradeCard(instanceId);
-}
-
-// 강화 비용 — 카드 rank별(시간조각 + 희귀/전설 재료).
-function upgradeCostLabel(rank: Rank): string {
-  const cost = upgradeCostFor(rank);
-  const mat = cost.materialId ? ` + ${itemName(cost.materialId)}` : '';
-  return `시간조각 ${cost.timeShards}${mat}`;
+function doAwaken(instanceId: string) {
+  awakenCard(instanceId);
 }
 
 function doForgePurchase(slotIndex: number) {
@@ -176,36 +169,38 @@ onMounted(() => {
       <span class="shards">시간의 조각 {{ run.data.timeShards }}</span>
     </div>
 
-    <!-- 카드 강화 섹션 -->
+    <!-- 카드 각성 섹션 — 5강에 닿은 카드를 속성 특산물 + 사다리 재료로 진화. -->
     <section class="section">
       <header class="section__hdr">
-        <h2>카드 강화 <span class="cost">— 등급별 시간조각 + 희귀/전설 재료</span></h2>
-        <button v-if="!upgradeMode" class="toggle" @click="upgradeMode = true" :disabled="upgradables.length === 0">
-          강화할 카드 고르기 ({{ upgradables.length }}장 가능)
+        <h2>카드 각성 <span class="cost">— 5강 카드를 속성 특산물 + 사다리 재료로 진화</span></h2>
+        <button v-if="!awakenMode" class="toggle" @click="awakenMode = true" :disabled="awakenables.length === 0">
+          각성할 카드 고르기 ({{ awakenables.length }}장 가능)
         </button>
-        <button v-else class="cancel" @click="upgradeMode = false">접기</button>
+        <button v-else class="cancel" @click="awakenMode = false">접기</button>
       </header>
-      <ul v-if="upgradeMode" class="upgrade__list">
-        <li v-for="c in upgradables" :key="c.instanceId" class="upgrade__item">
+      <p class="awaken__desc">레벨업으로 5강에 닿은 카드를 각성하면 더 강한 모습으로 바뀌고 6~10강이 열린다.</p>
+      <ul v-if="awakenMode" class="upgrade__list">
+        <li v-for="c in awakenables" :key="c.instanceId" class="upgrade__item upgrade__item--awaken">
           <div class="upgrade__main">
-            <div class="upgrade__name">{{ c.name }} <span class="rank">{{ rankLabel(c.rank) }}</span></div>
+            <div class="upgrade__name">{{ c.name }} <span class="rank">{{ rankLabel(c.rank) }} · 5강</span></div>
             <div class="upgrade__meta">cost {{ c.cost }} · {{ effectSummary(c) }}</div>
-            <div class="upgrade__reqline">강화 비용: {{ upgradeCostLabel(c.rank) }}</div>
+            <div class="upgrade__reqline">각성 비용: {{ awakenCostLabel(c) }}</div>
           </div>
-          <div class="upgrade__arrow">→</div>
+          <div class="upgrade__arrow">+</div>
           <div class="upgrade__main upgrade__target">
-            <div class="upgrade__name">{{ cardDef(c.upgradeToId!)?.name ?? c.upgradeToId }}</div>
-            <div class="upgrade__meta">cost {{ cardDef(c.upgradeToId!)?.cost ?? '?' }} · {{ effectSummary(cardDef(c.upgradeToId!)) }}</div>
+            <div class="upgrade__name">{{ c.upgradeToId ? (cardDef(c.upgradeToId)?.name ?? c.upgradeToId) : (c.name + ' (강화)') }}</div>
+            <div class="upgrade__meta" v-if="c.upgradeToId">cost {{ cardDef(c.upgradeToId)?.cost ?? '?' }} · {{ effectSummary(cardDef(c.upgradeToId)) }}</div>
+            <div class="upgrade__meta" v-else>수치 도약 (전용 진화형 없음)</div>
           </div>
           <button
             class="upgrade__btn"
-            :disabled="!canUpgrade(c)"
-            @click="doUpgrade(c.instanceId!)"
+            :disabled="!canAwaken(c)"
+            @click="doAwaken(c.instanceId!)"
           >
-            강화
+            각성
           </button>
         </li>
-        <li v-if="upgradables.length === 0" class="empty">강화 가능한 카드가 없습니다.</li>
+        <li v-if="awakenables.length === 0" class="empty">각성할 수 있는 5강 카드가 없습니다.</li>
       </ul>
     </section>
 
@@ -385,6 +380,8 @@ h1 { color: #c08eff; margin: 0; }
 .upgrade__meta { color: #b6b6c4; font-size: 0.78rem; }
 .upgrade__arrow { color: #c08eff; font-size: 1.1rem; }
 .upgrade__target .upgrade__name { color: #c08eff; }
+.upgrade__item--awaken .upgrade__arrow { color: #ffe88e; }
+.awaken__desc { color: #b6b6c4; font-size: 0.85rem; margin: 0 0 0.6rem; }
 .upgrade__btn {
   background: rgba(142, 237, 255, 0.18);
   border: 1px solid rgba(142, 237, 255, 0.45);

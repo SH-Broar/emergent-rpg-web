@@ -28,6 +28,7 @@ import {
 } from '@/systems/equipment';
 import { statusLabel } from '@/systems/labels';
 import { companionForEntry, rosterEntryName } from '@/systems/companion';
+import { XP_PER_LEVEL } from '@/systems/enhance';
 import type { Companion, Element, Equipment, EquipmentSlot, RosterEntry } from '@/data/schemas';
 import DeckPanel from '@/components/DeckPanel.vue';
 import Tooltip from '@/components/Tooltip.vue';
@@ -199,6 +200,14 @@ function openDeckEdit() {
   deckEditOpen.value = true;
 }
 
+// === 성장 (XP·각성) — 레벨·경험치·이월 강화권. 강화 픽 모달은 ui store가 전역 관리. ===
+const level = computed(() => run.data.level ?? 1);
+const xp = computed(() => run.data.xp ?? 0);
+const pendingPicks = computed(() => run.data.pendingEnhancePicks ?? 0);
+function openEnhancePick() {
+  ui.openEnhancePick();
+}
+
 // === 장비 (M10) ===
 // 사용자 요청(2026-05): 가방에서 장비 섹션 *숨김*. 시스템 코드/데이터는 전투에 연결돼 있으므로
 // 삭제하지 않고 UI 섹션만 끈다(장착 아이템 없으면 보너스 0이라 무해). 토글로 되살릴 수 있게 상수화.
@@ -257,6 +266,24 @@ function onUnequipClick(slot: EquipmentSlot) {
         </header>
 
         <div class="cm-body">
+          <!-- 성장 (XP·각성) — 레벨·경험치·이월 강화권. -->
+          <section class="cm-sec">
+            <h3 class="cm-sec__title">성장</h3>
+            <div class="cm-growth">
+              <div class="cm-growth__info">
+                <span class="cm-growth__lv">레벨 {{ level }}</span>
+                <span class="cm-growth__xp">경험치 {{ xp }} / {{ XP_PER_LEVEL }}</span>
+                <span v-if="pendingPicks > 0" class="cm-growth__picks">강화권 {{ pendingPicks }}</span>
+              </div>
+              <button
+                class="cm-btn"
+                :class="{ 'cm-btn--primary': pendingPicks > 0 }"
+                :disabled="pendingPicks <= 0"
+                @click="openEnhancePick"
+              >{{ pendingPicks > 0 ? '카드 강화' : '강화권 없음' }}</button>
+            </div>
+          </section>
+
           <!-- 덱 (사용자 요청: 맨 위로) -->
           <section class="cm-sec">
             <h3 class="cm-sec__title">덱</h3>
@@ -570,6 +597,20 @@ function onUnequipClick(slot: EquipmentSlot) {
 .cm-stat__lbl { font-size: 0.7rem; color: #c0b693; }
 .cm-stat__val { font-size: 1.2rem; font-weight: 700; color: #f6e8b8; font-variant-numeric: tabular-nums; }
 .cm-stat__bonus { font-size: 0.7rem; color: #c08eff; margin-top: 0.1rem; }
+
+/* 성장 (XP·각성) */
+.cm-growth {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 0.6rem 0.8rem;
+  border-radius: 6px;
+}
+.cm-growth__info { display: flex; flex-direction: column; gap: 0.15rem; flex: 1; }
+.cm-growth__lv { font-size: 1rem; color: #f6e8b8; font-weight: 700; }
+.cm-growth__xp { font-size: 0.74rem; color: #c0b693; font-variant-numeric: tabular-nums; }
+.cm-growth__picks { font-size: 0.74rem; color: #ffe88e; font-weight: 600; }
 
 /* 덱 */
 .cm-deck {

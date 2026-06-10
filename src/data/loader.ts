@@ -823,6 +823,8 @@ export function parseItems(ini: IniData): Map<string, Item> {
       consumable: parseBool(fields.consumable, true),
       flavor: fields.flavor,
       regionId: fields.region_id,
+      // 특산물 속성 — 카드 각성 재료 매칭(8종 특산물 전용). 비특산물은 undefined.
+      element: fields.element as Item['element'],
     });
   }
   return result;

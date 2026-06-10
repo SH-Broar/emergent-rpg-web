@@ -76,6 +76,11 @@ export const useUiStore = defineStore('ui', {
      * 이 id의 적/보스로 전투. 비영속(새로고침 시 사라짐). clearCombat에서 해제.
      */
     debugBattle: { monsterId: null as string | null, bossId: null as string | null },
+    /**
+     * 레벨업 강화 픽 모달 열림 여부 (XP·각성 시스템). 전투 승리로 레벨업하면 자동으로 열고,
+     * 캐릭터 메뉴에서도 (이월 강화권이 있을 때) 직접 열 수 있다. 비영속.
+     */
+    enhancePickOpen: false as boolean,
   }),
 
   actions: {
@@ -116,6 +121,16 @@ export const useUiStore = defineStore('ui', {
     clearDebugBattle() {
       this.debugBattle.monsterId = null;
       this.debugBattle.bossId = null;
+    },
+
+    /** 레벨업 강화 픽 모달 열기 (전투 승리 레벨업·캐릭터 메뉴 진입). */
+    openEnhancePick() {
+      this.enhancePickOpen = true;
+    },
+
+    /** 레벨업 강화 픽 모달 닫기 (강화권은 이월되므로 잔여가 있어도 닫을 수 있음). */
+    closeEnhancePick() {
+      this.enhancePickOpen = false;
     },
   },
 });

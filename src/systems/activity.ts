@@ -12,9 +12,11 @@ import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
 import { applyColorBoost, type ColorKey } from '@/systems/colors';
+import { instantiateCard } from '@/systems/deck';
 import { rng } from '@/systems/rng';
 import { getActivityModifier } from '@/systems/relic';
 import { rewardCard, rewardItem, rewardColor, rewardGold, rewardShards, rewardHp, blessingMul } from '@/systems/reward-feed';
+import { canEnhance, needsAwakening, MAX_ENHANCE_LEVEL } from '@/systems/enhance';
 
 type ActivityHandler = () => void;
 
@@ -23,10 +25,14 @@ function notify(msg: string): void {
   useUiStore().toast('success', msg);
 }
 
-/** 활동 보상이 강화형으로 나올 확률 — 마을 제작과 달리 활동은 *가끔 강화판*도 준다. */
-const ACTIVITY_UPGRADE_CHANCE = 0.3;
+/** 활동 보상이 *강화된 채로* 나올 확률 — 마을 제작과 달리 활동은 가끔 +1강 카드도 준다. */
+const ACTIVITY_ENHANCE_CHANCE = 0.3;
 
-/** race 시드 카드 1장을 컬렉션에 추가하고 토스트. 성공하면 true. */
+/**
+ * race 시드 카드 1장을 컬렉션에 추가하고 토스트. 성공하면 true.
+ * 활동은 마을 제작과 달리 일정 확률로 *enhanceLevel +1* 인스턴스를 준다(XP·각성 시스템).
+ * 강화는 5강 잠김·10강 상한을 존중 — 갓 인스턴스화한 0강이라 보통 안전하나, 각성 필요/상한이면 스킵.
+ */
 function grantSeedCard(): boolean {
   const run = useRunStore();
   const data = useDataStore();
@@ -34,14 +40,14 @@ function grantSeedCard(): boolean {
   const pool = race?.seedCardIds ?? [];
   if (pool.length === 0) return false;
   const cardId = pool[Math.floor(rng() * pool.length)];
-  let card = data.cards.get(cardId);
+  const card = data.cards.get(cardId);
   if (!card) return false;
-  // 활동은 마을 제작과 달리 *강화형*도 나올 수 있다 — 강화판이 있으면 일정 확률로 업그레이드해 지급.
-  if (card.upgradeToId && rng() < ACTIVITY_UPGRADE_CHANCE) {
-    const upgraded = data.cards.get(card.upgradeToId);
-    if (upgraded) card = upgraded;
+  // base 카드를 인스턴스화 → 확률적으로 +1강(plus 정의 교체가 아니라 인스턴스 강화 단계).
+  const instance = instantiateCard(card);
+  if (rng() < ACTIVITY_ENHANCE_CHANCE && canEnhance(instance) && !needsAwakening(instance)) {
+    instance.enhanceLevel = Math.min(MAX_ENHANCE_LEVEL, (instance.enhanceLevel ?? 0) + 1);
   }
-  run.addCardToCollection(card);
+  run.addCardToCollection(instance);
   rewardCard(card.name);
   return true;
 }
@@ -95,8 +101,8 @@ const HANDLERS: Record<string, ActivityHandler> = {
     r.gold += gold;
     rewardGold(gold);
 
-    // 30% 확률로 마노니클라 특산물.
-    if (rng() < 0.30) grantItem('i-sunset-shard');
+    // 30% 확률로 마노니클라 권역 특산물(iron — 8종 특산물 축소 후 재매핑).
+    if (rng() < 0.30) grantItem('i-emberforge-ore');
 
     // 20% 확률로 race 시드 카드 1장.
     if (rng() < 0.20) grantSeedCard();

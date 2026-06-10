@@ -13,6 +13,8 @@
 import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
+import { useUiStore } from '@/stores/ui';
+import { XP_PER_LEVEL } from '@/systems/enhance';
 import Tooltip from '@/components/Tooltip.vue';
 
 const props = defineProps<{
@@ -63,6 +65,7 @@ watch(
 
 const run = useRunStore();
 const data = useDataStore();
+const ui = useUiStore();
 
 const timeline = computed(() => data.timelines.get(run.data.timelineId));
 const timeUrgent = computed(() => {
@@ -88,6 +91,14 @@ const hpColor = computed(() => {
   if (r > 0.3) return '#ffe88e';
   return '#ff8e8e';
 });
+
+/** 레벨·경험치 (XP·각성 시스템) — 구세이브 폴백 1/0. 강화권 잔여가 있으면 배지로 알림. */
+const level = computed(() => run.data.level ?? 1);
+const xp = computed(() => run.data.xp ?? 0);
+const pendingPicks = computed(() => run.data.pendingEnhancePicks ?? 0);
+function openPicks() {
+  if (pendingPicks.value > 0) ui.openEnhancePick();
+}
 
 /**
  * 전투 후에도 *런에 지속*되는 상태/효과 — 체력과 골드 사이에 작은 배지로 표시.
@@ -131,6 +142,22 @@ const persistentStatuses = computed(() => {
           <div class="bar"><div class="bar__fill" :style="{ width: hpRatio * 100 + '%', background: hpColor }" /></div>
           <span class="num">{{ run.data.hp }}/{{ run.data.maxHp }}</span>
         </div>
+      </Tooltip>
+
+      <!-- 레벨·경험치 (XP·각성) — 전투 승리로 적립. 강화권이 있으면 눌러서 강화 픽 모달을 연다. -->
+      <Tooltip :text="`레벨 ${level} · 경험치 ${xp}/${XP_PER_LEVEL}${pendingPicks > 0 ? ` · 강화권 ${pendingPicks} (눌러서 사용)` : ''} — 전투 승리로 쌓인다.`">
+        <button
+          class="slot slot--level"
+          :class="{ 'slot--level-pick': pendingPicks > 0 }"
+          :disabled="pendingPicks <= 0"
+          aria-label="레벨·강화"
+          @click="openPicks"
+        >
+          <span class="emoji">⭐</span>
+          <span class="lbl">Lv</span>
+          <span class="num">{{ level }}</span>
+          <span v-if="pendingPicks > 0" class="pickbadge">+{{ pendingPicks }}</span>
+        </button>
       </Tooltip>
 
       <!-- 목숨 (Item 28) — 전투 패배 시 목숨 1 소모하고 도망. 0이면 런 종료. -->
@@ -287,6 +314,25 @@ const persistentStatuses = computed(() => {
 .slot--lives { gap: 0.28rem; }
 .slot--lives .hearts { font-size: 0.85rem; letter-spacing: -1px; }
 .slot--lives .num { color: #ffb8c4; }
+
+/* 레벨 슬롯 — 버튼(강화권 있을 때만 활성). 강화권 잔여 시 노란 펄스 배지. */
+.slot--level { gap: 0.28rem; cursor: default; }
+.slot--level:disabled { cursor: default; }
+.slot--level-pick {
+  cursor: pointer;
+  background: rgba(246, 232, 184, 0.16);
+  border-color: rgba(246, 232, 184, 0.5);
+}
+.slot--level-pick:hover { background: rgba(246, 232, 184, 0.28); }
+.pickbadge {
+  font-size: 0.66rem; font-weight: 800; color: #0d0e14;
+  background: #ffe88e; border-radius: 8px; padding: 0.02rem 0.34rem;
+  animation: pick-pulse 1400ms ease-in-out infinite;
+}
+@keyframes pick-pulse {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 1; box-shadow: 0 0 6px rgba(255, 232, 142, 0.8); }
+}
 
 /* 전투 후 지속 상태 슬롯 — 작은 배지 묶음. */
 .slot--status { gap: 0.25rem; padding: 0.2rem 0.3rem; }

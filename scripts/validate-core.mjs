@@ -293,13 +293,25 @@ export const VALID_METRIC_ARGS = [...VALID_COLORS, 'top-color', 'color-count', '
 /** boost-stat arg. */
 export const VALID_STAT_ARGS = ['atk', 'def', 'mag'];
 
+/**
+ * 권역 특산물 8종 — 8색 각 1종(XP·각성 시스템, 2026-06-10). 카드 각성 재료축.
+ * region specialty_item 은 이 8종 중 하나여야 한다(구 18종 축소 후 잔여 종 참조 차단).
+ * 진실원: public/data/items/act-1-items.txt 의 category=specialty 8섹션.
+ *   fire=i-lava-scale / water=i-salt-pearl / electric=i-storm-fang / iron=i-emberforge-ore
+ *   earth=i-world-tree-bud / wind=i-sky-shard / light=i-shrine-relic / dark=i-grimoire-ink
+ */
+export const VALID_SPECIALTY_ITEMS = [
+  'i-lava-scale', 'i-salt-pearl', 'i-storm-fang', 'i-emberforge-ore',
+  'i-world-tree-bud', 'i-sky-shard', 'i-shrine-relic', 'i-grimoire-ink',
+];
+
 // 규칙 카탈로그 — 보고/에디터 미러용. (각 규칙 ID + 한 줄 설명)
 export const RULE_CATALOG = [
   ['parse', '모든 데이터 파일 파싱 성공 (INI 문법 오류 없음)'],
   ['required-fields', '섹션별 필수 필드 존재 (rank/name/slot/resource 등)'],
-  ['whitelist-kind', 'effect/intent/trigger/status/flag/condition kind 가 화이트리스트에 존재 (오타·허구 스키마 차단)'],
+  ['whitelist-kind', 'effect/intent/trigger/status/flag/condition/element kind 가 화이트리스트에 존재 (오타·허구 스키마 차단, region specialty 8종 포함)'],
   ['xref', '교차 참조 id 가 정의에 존재 (카드/유물/아이템/몬스터/보스/race/npc)'],
-  ['dangling', '없는 id 참조 0 (enemy_pool/elite_pool/node enemy·boss/grant_*/-plus/seed/form/timeline boss)'],
+  ['dangling', '없는 id 참조 0 + 풀 데이터(seed_cards/legendary_cards)에 -plus 금지 (enemy_pool/elite_pool/node enemy·boss/grant_*/-plus/seed/form/timeline boss)'],
   ['prose', '플레이어 노출 텍스트에 *강조*·em-dash(—)·"몬무스" 0'],
   ['balance', '(경고) 카드 등급 최소 한도·몬스터 HP 밴드 sanity'],
 ];
@@ -497,6 +509,8 @@ export function validateData(dataDir, readFile) {
     if (!f.rank) push(diag('error', 'required-fields', `아이템 '${id}' rank 누락`, w));
     else if (!VALID_RANKS.includes(f.rank)) push(diag('error', 'whitelist-kind', `아이템 '${id}' 알 수 없는 rank '${f.rank}'`, w));
     if (f.category && !VALID_ITEM_CATEGORIES.includes(f.category)) push(diag('error', 'whitelist-kind', `아이템 '${id}' 알 수 없는 category '${f.category}'`, w));
+    // Item.element — 카드 각성 매칭축(8종 특산물 전용). 지정 시 8색이어야 한다(오타 차단).
+    if (f.element && !VALID_COLORS.includes(f.element)) push(diag('error', 'whitelist-kind', `아이템 '${id}' 알 수 없는 element '${f.element}' (8색)`, w));
     for (const tok of parseList(f.effects)) {
       const parts = tok.split(':').map((s) => s.trim());
       const kind = parts[0];
@@ -579,6 +593,8 @@ export function validateData(dataDir, readFile) {
     }
     for (const cardId of parseList(f.seed_cards)) {
       if (!cardIds.has(cardId)) push(diag('error', 'dangling', `race '${id}' seed_cards 카드 '${cardId}' 미정의`, w));
+      // 강화판(-plus)은 풀 제외 — 시드 풀(활동/시작 보충)에도 base 카드만 둔다(강화는 enhanceLevel로).
+      else if (cardId.endsWith('-plus')) push(diag('error', 'dangling', `race '${id}' seed_cards 에 강화판 '${cardId}' 금지(-plus는 풀 제외)`, w));
     }
     for (const relicId of parseList(f.seed_relics)) {
       if (!relicIds.has(relicId)) push(diag('error', 'dangling', `race '${id}' seed_relics 유물 '${relicId}' 미정의`, w));
@@ -686,8 +702,16 @@ export function validateData(dataDir, readFile) {
         for (const mid of parseList(f.enemy_pool)) if (!monsterIds.has(mid)) push(diag('error', 'dangling', `맵 '${mapId}' ${sub} enemy_pool 몬스터 '${mid}' 미정의`, w));
         for (const mid of parseList(f.elite_enemy_pool)) if (!monsterIds.has(mid)) push(diag('error', 'dangling', `맵 '${mapId}' ${sub} elite_enemy_pool 몬스터 '${mid}' 미정의`, w));
         for (const eid of parseList(f.event_pool)) if (!eventIds.has(eid)) push(diag('error', 'dangling', `맵 '${mapId}' ${sub} event_pool 이벤트 '${eid}' 미정의`, w));
-        for (const cid of parseList(f.legendary_cards)) if (!cardIds.has(cid)) push(diag('error', 'dangling', `맵 '${mapId}' ${sub} legendary_cards 카드 '${cid}' 미정의`, w));
-        if (f.specialty_item && !itemIds.has(f.specialty_item)) push(diag('error', 'dangling', `맵 '${mapId}' ${sub} specialty_item '${f.specialty_item}' 미정의`, w));
+        for (const cid of parseList(f.legendary_cards)) {
+          if (!cardIds.has(cid)) push(diag('error', 'dangling', `맵 '${mapId}' ${sub} legendary_cards 카드 '${cid}' 미정의`, w));
+          // 강화판(-plus)은 어떤 풀에도 등장 금지(공방 강화로만) — 권역 전설 제작 풀에서도 차단.
+          else if (cid.endsWith('-plus')) push(diag('error', 'dangling', `맵 '${mapId}' ${sub} legendary_cards 에 강화판 '${cid}' 금지(-plus는 풀 제외)`, w));
+        }
+        if (f.specialty_item) {
+          if (!itemIds.has(f.specialty_item)) push(diag('error', 'dangling', `맵 '${mapId}' ${sub} specialty_item '${f.specialty_item}' 미정의`, w));
+          // 특산물 8종 축소(XP·각성) — region specialty_item 은 8종 집합 중 하나여야 한다(잔여 종 참조 차단).
+          else if (!VALID_SPECIALTY_ITEMS.includes(f.specialty_item)) push(diag('error', 'whitelist-kind', `맵 '${mapId}' ${sub} specialty_item '${f.specialty_item}' 은 8종 특산물이 아님`, w));
+        }
         if (f.primary_color && !VALID_COLORS.includes(f.primary_color)) push(diag('error', 'whitelist-kind', `맵 '${mapId}' ${sub} 알 수 없는 primary_color '${f.primary_color}'`, w));
       } else if (sub.includes('.node.')) {
         if (f.kind && !VALID_NODE_KINDS.includes(f.kind)) push(diag('error', 'whitelist-kind', `맵 '${mapId}' ${sub} 알 수 없는 kind '${f.kind}'`, w));

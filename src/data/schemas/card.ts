@@ -222,6 +222,22 @@ export interface Card extends NamedEntity {
    * bonusBlock과 동일한 수명(런 휘발 컬렉션 인스턴스).
    */
   bonusDamage?: number;
+
+  /**
+   * 카드 *인스턴스* 강화 단계 (XP·각성 시스템, 2026-06-10). 0~10, 기본 0(미설정=0).
+   * 1~5강은 수치형 효과(damage/block/heal)에 강당 +12%(렌더/실행 시점 스케일, enhance.ts enhanceMul).
+   * 5강에서 잠김 — 6강 진입은 awakened 필요. 6~10강은 plus 정의 수치 기준으로 같은 비율.
+   * 정의 baked가 아니라 *실행 시점 적용*이라 인스턴스 전용 필드(정의에는 없음). 런 휘발.
+   */
+  enhanceLevel?: number;
+
+  /**
+   * 각성 여부 (XP·각성 시스템) — 공방에서 속성 특산물+사다리 재료로 5강 게이트를 뚫으면 true.
+   * awakened=true ⇒ 카드 효과는 *plus 정의*(이름에 + 부착, 질적 변화). 6~10강 해금.
+   * plus 정의가 없는 카드는 awakened만 true가 되고 수치 점프 폴백(enhance.ts).
+   * 구세이브 -plus 인스턴스 마이그레이션도 이 필드(=true)로 수렴. 인스턴스 전용·런 휘발.
+   */
+  awakened?: boolean;
 }
 
 /** 효과 핸들러 시그니처 — Phase 2d에서 systems/combat.ts가 사용. */

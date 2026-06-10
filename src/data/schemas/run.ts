@@ -435,6 +435,20 @@ export interface RunState {
    */
   currentDay: number;
 
+  // === 성장 (XP·레벨업·카드 강화, 2026-06-10) — 전부 additive·optional, 구세이브 backfill. ===
+  /**
+   * 누적 경험치 — 레벨업 요구치 3 고정. 전투 승리가 적립(일반 1 / 엘리트 3 / 아크·보스 9).
+   * 레벨업 시 3씩 차감되고 level·pendingEnhancePicks가 오른다. 비전투 XP 없음. 런 휘발.
+   */
+  xp?: number;
+  /** 플레이어 레벨 — 시작 1. 레벨업이 강화권(pendingEnhancePicks)을 발급한다. 런 휘발. */
+  level?: number;
+  /**
+   * 이월 강화권 — 레벨업 1회=1픽. 레벨업 픽 팝업에서 카드 1장에 +1강. 스킵 시 적립(이월).
+   * 캐릭터 메뉴에서도 사용 가능. 런 휘발.
+   */
+  pendingEnhancePicks?: number;
+
 
   /**
    * 우체부(로큐) 유물 `r-postman-mail` 효과 카운터.

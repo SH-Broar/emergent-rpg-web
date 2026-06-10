@@ -31,7 +31,7 @@ enemy_pool = mr-iluneon-cutpurse, mr-iluneon-trickster, mr-iluneon-guild-rat, mr
 elite_enemy_pool = mr-iluneon-clockwraith, mr-iluneon-spirit-herald, mr-iluneon-twin-clockwork
 event_pool = ev-iluneon-clockchime, ev-traveler-fork, ev-mono-whisper, ev-time-cracker, ev-iluneon-plaza-flow, ev-iluneon-market-row, ev-iluneon-guild-board, ev-iluneon-diner-seat, ev-iluneon-larder, ev-iluneon-olyu-observatory, ev-iluneon-imperisia-meeting, ev-iluneon-time-trace, ev-iluneon-bellroom, ev-iluneon-niayur-fountain, ev-iluneon-niayur-pause, ev-iluneon-east-gate, ev-iluneon-spire-shadow, ev-guardian-blessing, ev-nekomata-bell, ev-baby-dragon-breath
 primary_color = light
-specialty_item = i-clockwork-cog
+specialty_item = i-shrine-relic
 legendary_cards = c-iluneon-stopped-noon
 
 [nodemap.nm-act-1-era4-061.region.lar-forest]
@@ -53,7 +53,7 @@ enemy_pool = mr-moss-fireworm, mr-moss-cindermoth, mr-moss-anvil-arachne, mr-mos
 elite_enemy_pool = mr-moss-forge-titan, mr-moss-smelter-queen
 event_pool = ev-moss-forge-flame, ev-stranger-favor, ev-moss-plaza-busy, ev-moss-hammer-row-line, ev-moss-furnace-arachne, ev-moss-watchtower-zenith, ev-moss-lighthouse-keeper, ev-moss-anvil-rhythm, ev-moss-tool-organize, ev-moss-workshop-apprentice, ev-moss-armor-polish, ev-moss-fissure-miner, ev-moss-clutch-stevedore, ev-moss-clutch-checker, ev-moss-ember-warden, ev-guardian-blessing, ev-nekomata-bell, ev-baby-dragon-breath
 primary_color = fire
-specialty_item = i-forge-ember
+specialty_item = i-lava-scale
 legendary_cards = c-moss-ember-strike
 
 [nodemap.nm-act-1-era4-061.region.moss-south]
@@ -64,7 +64,7 @@ enemy_pool = mr-moss-fireworm, mr-moss-cindermoth, mr-moss-anvil-arachne, mr-mos
 elite_enemy_pool = mr-moss-forge-titan, mr-moss-smelter-queen
 event_pool = ev-moss-forge-flame, ev-stranger-favor, ev-moss-plaza-busy, ev-moss-hammer-row-line, ev-moss-furnace-arachne, ev-moss-watchtower-zenith, ev-moss-lighthouse-keeper, ev-moss-anvil-rhythm, ev-moss-tool-organize, ev-moss-workshop-apprentice, ev-moss-armor-polish, ev-moss-fissure-miner, ev-moss-clutch-stevedore, ev-moss-clutch-checker, ev-moss-ember-warden, ev-guardian-blessing, ev-nekomata-bell, ev-baby-dragon-breath
 primary_color = fire
-specialty_item = i-forge-ember
+specialty_item = i-lava-scale
 legendary_cards = c-moss-ember-strike
 
 [nodemap.nm-act-1-era4-061.region.manonickla]
@@ -75,7 +75,7 @@ enemy_pool = mr-mano-cliff-crab, mr-mano-sand-wraith, mr-mano-sunset-raven, mr-m
 elite_enemy_pool = mr-mano-limun-sovereign, mr-mano-sunset-drake
 event_pool = ev-mano-sunset-flask, ev-mono-whisper, ev-fountain-vow, ev-mano-betelgeuse-passage, ev-mano-seed-1-anomaly, ev-mano-seed-2-embrace, ev-mano-cayou-notebook, ev-mano-dune-pillar, ev-mano-old-coin, ev-mano-fox-glance, ev-mano-guild-board, ev-mano-stone-cairn, ev-mano-sunset-beast, ev-mano-old-shrine-incense, ev-mano-cliff-walk-breath, ev-mano-seed-3-rumor, ev-mano-rok-step, ev-mano-valencia-spear, ev-mano-limun-script, ev-mano-night-tide, ev-guardian-blessing, ev-nekomata-bell, ev-baby-dragon-breath
 primary_color = iron
-specialty_item = i-sunset-shard
+specialty_item = i-emberforge-ore
 legendary_cards = c-manonickla-sunset-wall
 
 [nodemap.nm-act-1-era4-061.region.riagralta]
@@ -96,7 +96,7 @@ enemy_pool = mr-ali-mist-deer, mr-ali-herb-bandit, mr-ali-fog-sprite, mr-ali-sto
 elite_enemy_pool = mr-ali-fog-sovereign, mr-ali-ancient-treant
 event_pool = ev-ali-mist-trader, ev-stranger-favor, ev-time-cracker, ev-alimes-mist-trail, ev-alimes-mist-grain, ev-alimes-mist-between, ev-alimes-mist-end-shayua, ev-alimes-erumen-entry, ev-alimes-tarko-pressure, ev-alimes-cloud-sketch, ev-alimes-peak-wind, ev-alimes-erumen-pool, ev-alimes-erumen-stele, ev-alimes-erumen-deep, ev-alimes-yoon-pri-contract, ev-alimes-spring-shayua, ev-guardian-blessing, ev-nekomata-bell, ev-baby-dragon-breath, ev-possession-wisp-follow, ev-possession-shadow-doll, ev-hanabridge-shrine
 primary_color = water
-specialty_item = i-mist-petal
+specialty_item = i-salt-pearl
 legendary_cards = c-alimes-mist-vow
 
 [nodemap.nm-act-1-era4-061.region.luna]
@@ -117,7 +117,7 @@ enemy_pool = mr-tacomi-pixel-beast, mr-tacomi-hologram-jester, mr-tacomi-barrier
 elite_enemy_pool = mr-tacomi-hologram-titan, mr-tacomi-grand-circuit
 event_pool = ev-taco-hologram-mirror, ev-stranger-favor, ev-time-cracker, ev-tacomi-day-flow, ev-tacomi-shinsian-cup, ev-tacomi-shinsian-cup-alt, ev-tacomi-alley-cat, ev-tacomi-latte-row, ev-tacomi-sun-book, ev-tacomi-bloom-veil, ev-tacomi-bloom-veil-alt, ev-tacomi-petal-path, ev-tacomi-petal-path-alt, ev-tacomi-petal-spot, ev-tacomi-petal-spot-alt, ev-tacomi-night-stand, ev-tacomi-night-neon, ev-tacomi-night-stage, ev-tacomi-night-dj, ev-tacomi-night-alley, ev-tacomi-night-edge, ev-tacomi-imperisia-trace, ev-guardian-blessing, ev-nekomata-bell, ev-baby-dragon-breath, ev-possession-wisp-follow, ev-possession-shadow-doll, ev-hanabridge-shrine
 primary_color = electric
-specialty_item = i-neon-residue
+specialty_item = i-storm-fang
 legendary_cards = c-tacomi-hologram-mirror
 
 [nodemap.nm-act-1-era4-061.region.demon-windfall]
@@ -128,7 +128,7 @@ enemy_pool = mr-demon-windfall-paper-ghost, mr-demon-windfall-gale-blade, mr-dem
 elite_enemy_pool = mr-demon-windfall-storm-tyrant
 event_pool = ev-demon-stamp-pile, ev-mono-whisper, ev-guardian-blessing, ev-nekomata-bell, ev-baby-dragon-breath, ev-possession-wisp-follow, ev-possession-shadow-doll, ev-hanabridge-shrine
 primary_color = wind
-specialty_item = i-anchor-link
+specialty_item = i-sky-shard
 
 [nodemap.nm-act-1-era4-061.region.martin]
 name = 마틴 항 · 키시나 해변
@@ -148,7 +148,7 @@ enemy_pool = mr-enicham-sparking-drone, mr-enicham-relay-crawler, mr-enicham-cap
 elite_enemy_pool = mr-enicham-proto-agi
 event_pool = ev-enicham-gen-hum, ev-enicham-wire-spire, ev-enicham-zero-bench, ev-enicham-alti-bay, ev-enicham-old-circuit, ev-guardian-blessing, ev-nekomata-bell, ev-baby-dragon-breath, ev-possession-wisp-follow, ev-possession-shadow-doll, ev-hanabridge-shrine
 primary_color = electric
-specialty_item = i-neon-residue
+specialty_item = i-storm-fang
 
 [nodemap.nm-act-1-era4-061.region.reshud]
 name = 르슈드 교차로
@@ -168,7 +168,7 @@ enemy_pool = mr-yusezria-iron-sentinel, mr-yusezria-tide-wraith, mr-yusezria-rus
 elite_enemy_pool = mr-yusezria-core-colossus, mr-yusezria-abyssal-warden
 event_pool = ev-yuse-iron-vein, ev-yuse-tide-pool, ev-yuse-dead-end, ev-guardian-blessing, ev-nekomata-bell, ev-baby-dragon-breath
 primary_color = iron
-specialty_item = i-yusezria-ore
+specialty_item = i-emberforge-ore
 
 [nodemap.nm-act-1-era4-061.region.triflower]
 name = 트리플라워 화산
@@ -198,7 +198,7 @@ enemy_pool = mr-tradepost-stray-hound, mr-tradepost-caravan-thief, mr-tradepost-
 elite_enemy_pool = mr-tradepost-lamia-enforcer
 event_pool = ev-trade-sarasa, ev-trade-caravan, ev-guardian-blessing, ev-nekomata-bell, ev-baby-dragon-breath
 primary_color = earth
-specialty_item = i-trade-silk
+specialty_item = i-world-tree-bud
 
 [nodemap.nm-act-1-era4-061.region.diropel]
 name = 딜롭 부족
@@ -208,7 +208,7 @@ enemy_pool = mr-diropel-long-ear-sentinel, mr-diropel-short-ear-dancer, mr-dirop
 elite_enemy_pool = mr-diropel-grove-elder
 event_pool = ev-diropel-paint, ev-diropel-totem, ev-guardian-blessing, ev-nekomata-bell, ev-baby-dragon-breath
 primary_color = earth
-specialty_item = i-diropel-pigment
+specialty_item = i-world-tree-bud
 
 [nodemap.nm-act-1-era4-061.region.coral-coast]
 name = 산호 해안
@@ -218,7 +218,7 @@ enemy_pool = mr-coral-coast-jellyfish-drifter, mr-coral-coast-siren-charmer, mr-
 elite_enemy_pool = mr-coral-coast-abyss-queen
 event_pool = ev-coral-rest, ev-coral-song, ev-guardian-blessing, ev-nekomata-bell, ev-baby-dragon-breath
 primary_color = water
-specialty_item = i-coral-pearl
+specialty_item = i-salt-pearl
 
 [nodemap.nm-act-1-era4-061.region.oldshrine]
 name = 구 신전터
@@ -228,7 +228,7 @@ enemy_pool = mr-oldshrine-spirit-flame, mr-oldshrine-shrine-warden, mr-oldshrine
 elite_enemy_pool = mr-oldshrine-lightning-archon
 event_pool = ev-oldshrine-altar, ev-oldshrine-core, ev-guardian-blessing, ev-nekomata-bell, ev-baby-dragon-breath
 primary_color = electric
-specialty_item = i-shrine-relic
+specialty_item = i-storm-fang
 
 # ============================================================
 # 일루네온 권역 시작

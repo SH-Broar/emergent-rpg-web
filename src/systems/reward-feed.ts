@@ -51,3 +51,5 @@ export function rewardGold(amount: number): void { if (amount !== 0) toast(`골�
 export function rewardShards(amount: number): void { if (amount !== 0) toast(`시간의 조각 +${amount}`); }
 export function rewardSoul(amount: number): void { if (amount !== 0) toast(`영혼 +${amount}`); }
 export function rewardHp(amount: number): void { if (amount !== 0) toast(`체력 +${amount}`); }
+export function rewardXp(amount: number): void { if (amount > 0) toast(`경험치 +${amount}`); }
+export function rewardLevelUp(levels: number): void { if (levels > 0) toast(`레벨 업! 강화권 +${levels}`); }
