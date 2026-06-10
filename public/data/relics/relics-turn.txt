@@ -71,7 +71,7 @@ rank = common
 source = shop
 trigger = on-turn-start
 effects = chance-random-color-1:45
-flavor = 빨리 찌르는 법을 모른다. 어느 순간 운이 닿으면, 그제야 한 색이 슬쩍 날을 세운다.
+flavor = 서두르는 법이 없는 가시. 기다리다 보면 어느 날 문득 날을 세운다.
 
 [relic.r-turn-rising-sigil]
 name = 차오르는 인장

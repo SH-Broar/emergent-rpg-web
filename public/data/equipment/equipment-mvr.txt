@@ -64,7 +64,7 @@ color_effects = water:+8, fire:-4
 description = 물을 끌고 불을 흩는다.
 
 [equipment.a-thunderclasp]
-name = 천둥걸이
+name = 천둥 걸쇠
 slot = accessory
 rank = rare
 color_effects = electric:+10, earth:-6

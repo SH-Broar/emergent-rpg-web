@@ -429,7 +429,7 @@ cost = 2
 trigger = manual
 effects = damage-per-debuff:6:enemy
 upgrade_to = c-fox-pyreburst-plus
-flavor = 새겨 둔 한 자락마다 들불이 한 줄기씩 솟구친다.
+flavor = 새겨 둔 불씨가 전부 들불이 되어 솟는다.
 
 [card.c-fox-pyreburst-plus]
 name = 들불+

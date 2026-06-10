@@ -202,7 +202,7 @@ rank = common
 source = event
 trigger = on-damage-taken
 effects = retaliate:5
-flavor = 한 방울이라도 튀기면 그늘이 그 손을 거꾸로 따라 번진다. 건드린 자에게 어둠이 똑같이 되돌아간다.
+flavor = 잉크를 건드리면 그늘이 손을 타고 거꾸로 번진다.
 
 [relic.r-col-fire-hearth-ash]
 name = 옮겨붙는 불씨

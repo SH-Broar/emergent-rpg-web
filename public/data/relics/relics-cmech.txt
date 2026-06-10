@@ -74,7 +74,7 @@ rank = rare
 source = shop
 trigger = passive
 effects = first-card-free
-flavor = 상점 정령이 손에 쥐여 준 작은 표. 매번 첫 한 장은 값을 치르지 않아도 된다.
+flavor = 상점 정령이 살짝 건네준 작은 표. 처음 고르는 카드는 값을 받지 않겠다고 한다.
 
 [relic.r-cm-first-free-overture]
 name = 서막의 손길

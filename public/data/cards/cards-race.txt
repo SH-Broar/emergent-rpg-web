@@ -2362,7 +2362,7 @@ element = dark
 cost = 1
 trigger = manual
 effects = block:6:self, damage-per-hand:3:enemy
-flavor = 앞세운 패가 더 두껍고, 되치는 무게도 더 깊다.
+flavor = 들고 있는 패가 많을수록 마음이 놓인다.
 
 [card.c-phantom-trickhand]
 name = 손속임

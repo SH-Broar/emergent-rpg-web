@@ -283,7 +283,7 @@ time_shards = 6
 card_drops =
 
 [monster.mr-demon-windfall-anchor-wraith]
-name = 닻 망령
+name = 닻지기 망령
 tier = normal
 species = wraith
 hp = 182

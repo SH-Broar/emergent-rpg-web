@@ -397,7 +397,7 @@ rank = rare
 source = shop
 trigger = on-acquire
 effects = boost-max-lives:1
-flavor = 끊어진 자리에 한 번 더 이어 붙일 실. 쥐는 순간, 한 번 더 일어설 여지가 생긴다.
+flavor = 끊어진 곳을 다시 이어 주는 실. 주머니에 넣어 두면 어쩐지 든든하다.
 
 [relic.r-acq-second-breath]
 name = 두 번째 숨

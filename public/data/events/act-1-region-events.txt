@@ -563,7 +563,7 @@ name = 다 탄 향
 node_kinds = event
 weight = 1
 once_per_run = true
-body = 유적 깊은 자리의 작은 사당. 향로에는 향이 하나, 다 탔다. 가까이서 보면 향로 자리가 비뚜로 어긋나 있다. 누군가 오래 다녀가지 않았다.
+body = 유적 안쪽에 작은 사당이 있다. 향로의 향은 진작 다 타 버렸고, 받침도 비뚤게 어긋나 있다. 오랫동안 아무도 다녀가지 않은 모양이다.
 
 [event.ev-mano-old-shrine-incense.choice.1]
 label = 새 향을 하나 피운다
@@ -1617,7 +1617,7 @@ once_per_run = true
 body = 시장에 늘어선 가판. 마법 상점·식료·옷·돌멩이. 외부인 한 명이 낯선 자리에 잠시 멈춘다. 가판 사람이 짧게 본다.
 
 [event.ev-iluneon-market-row.choice.1]
-label = 한 가판의 작은 물건을 본다
+label = 가판의 작은 물건을 본다
 hidden = true
 gold = -3
 color = random:6
@@ -2011,7 +2011,7 @@ result_text = 고양이가 잠깐 눈을 떴다. 그리고 다시 감았다.
 
 # --- 낮 4. n-tacomi-latte-shop (한 잔 못 마신 자리) ---
 [event.ev-tacomi-latte-row]
-name = 못 마신 한 잔
+name = 식은 라테
 node_kinds = event, shop
 weight = 1
 once_per_run = true
@@ -3078,7 +3078,7 @@ name = 쿠르쿠마의 노래
 node_kinds = event, activity, gather
 weight = 1
 once_per_run = true
-body = 세계수 낮은 가지. 쿠르쿠마가 짧고 단정한 노래를 흥얼거리고 있다. 잎새 하나가 그 노래에 맞춰 살랑인다.
+body = 세계수의 낮은 가지에서 쿠르쿠마가 노래를 흥얼거리고 있다. 잎새 하나가 노래에 맞춰 살랑인다.
 
 [event.ev-lar-low-branch-song.choice.1]
 label = 따라 부른다
@@ -3275,7 +3275,7 @@ name = 식은 돌 위의 노을
 node_kinds = event, rest
 weight = 1
 once_per_run = true
-body = 트리플라워 식은 자리. 검은 돌 위에 노을이 길게 머문다. 단단하고 고요한 곳.
+body = 용암이 식어 검게 굳은 땅이다. 검은 돌 위에 노을이 길게 머문다.
 
 [event.ev-lar-cooled-slag-rest.choice.1]
 label = 잠시 앉는다
@@ -3397,7 +3397,7 @@ node_kinds = event, combat, gather
 weight = 2
 once_per_run = true
 condition = has-clue:cl-twins-reunion
-body = 풀밭 키 큰 풀잎 너머. 아르바로가 풀잎 위를 발 안 닿게 걸어간다. 본인은 모른다. 그가 지나도 풀잎이 휘어지지 않는다.
+body = 키 큰 풀숲 너머로 아르바로가 걸어간다. 발이 풀잎에 닿지 않는데, 본인은 모르는 눈치다. 그가 지나가도 풀잎이 흔들리지 않는다.
 
 [event.ev-lar-arvaro-spirit-2.choice.1]
 label = 모른 척 한다
@@ -3547,7 +3547,7 @@ name = 알티와 알타의 충전 자리
 node_kinds = event, rest
 weight = 1
 once_per_run = true
-body = 알티-알타의 충전 자리. 작은 출력 단자 하나가 조용하게 깜빡인다. 알티가 짧게 인사한다. "...같은 자리에." 알타가 조금 느리게 보탠다. "...어서 오세요."
+body = 알티-알타가 충전하는 곳이다. 출력 단자가 조용히 깜빡인다. 알티-알타가 인사한다. "...어서 오세요."
 
 [event.ev-enicham-alti-bay.choice.1]
 label = 잠시 함께 머문다
