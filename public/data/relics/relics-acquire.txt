@@ -36,7 +36,7 @@ rank = common
 source = shop
 trigger = on-acquire
 effects = boost-color:5:iron
-flavor = 쥐었을 때의 묵직한 무게가 그대로 남는다. 무쇠의 단단함이 몸 안에 깊이 밴다.
+flavor = 쥐었을 때의 묵직한 무게가 그대로 남는다. 무쇠의 단단함이 몸 안에 밴다.
 
 [relic.r-acq-loam-clod]
 name = 대지 정수
@@ -78,7 +78,7 @@ rank = rare
 source = elite
 trigger = on-acquire
 effects = boost-color:8:fire
-flavor = 식지 않는 화로에서 떼어 낸 쇳덩이다. 불의 기운이 더 깊이 박힌다.
+flavor = 식지 않는 화로에서 떼어 낸 쇳덩이다. 불의 기운이 더 진하게 밴다.
 
 [relic.r-acq-deep-pearl]
 name = 심해의 진주
@@ -128,7 +128,7 @@ rank = legendary
 source = event
 trigger = on-acquire
 effects = boost-stat:9:mag
-flavor = 오래 사색한 자만이 남길 수 있는 형상이다. 줍는 순간 빛과 어둠의 마법이 깊게 흐른다.
+flavor = 오래 사색한 자만이 남길 수 있는 형상이다. 줍는 순간 빛과 어둠의 마법이 함께 흐른다.
 
 # --- 최대 HP 영구 (bonus-hp, common 6 / rare 10) ---
 
@@ -146,7 +146,7 @@ rank = rare
 source = event
 trigger = on-acquire
 effects = bonus-hp:10
-flavor = 캐자마자 손에 온기가 번진다. 깊은 생기가 돌아 몸이 한결 튼튼해진다.
+flavor = 캐자마자 손에 온기가 번진다. 생기가 돌아 몸이 한결 튼튼해진다.
 
 # --- 즉시 자원 (bonus-gold / gain-time-shards / heal-now) ---
 
@@ -204,7 +204,7 @@ rank = rare
 source = shop
 trigger = on-acquire
 effects = boost-color:8:fire
-flavor = 끼는 순간 손가락 끝이 뜨겁게 달아오른다. 불의 기운이 깊게 박혀 오래 머문다.
+flavor = 끼는 순간 손가락 끝이 뜨겁게 달아오른다. 불의 기운이 단단히 박혀 오래 머문다.
 
 [relic.r-acq-flow-band]
 name = 물길 팔찌
@@ -212,7 +212,7 @@ rank = rare
 source = event
 trigger = passive
 effects = damage-out-add:2
-flavor = 손목을 감은 물줄기가 공격마다 함께 내달린다. 그 흐름을 탄 일격이 더 깊게 닿는다.
+flavor = 손목을 감은 물줄기가 공격마다 함께 내달린다. 그 흐름을 탄 일격이 더 멀리 닿는다.
 
 [relic.r-acq-prism-charm]
 name = 변색 부적

@@ -54,7 +54,7 @@ rank = common
 source = npc
 trigger = passive
 effects = skip-turn-every:3
-flavor = 로큐의 어깨끈이 그대 손에 옮겨졌다. 세 곳을 옮길 때마다 길의 흐름이 그대를 지나친다.
+flavor = 로큐가 메고 다니던 어깨끈이다. 세 곳을 옮길 때마다 길의 흐름이 한 걸음 비켜 간다.
 
 [relic.r-yusezria-core]
 name = 유스제리아의 정수핵
@@ -179,7 +179,7 @@ rank = common
 source = elite
 trigger = on-damage-taken
 effects = retaliate:3
-flavor = 만지면 따끔한 작은 돌기. 누가 그대를 때리면 그 손도 무사하지 못하다.
+flavor = 만지면 따끔한 작은 돌기다. 누가 이쪽을 때리면 그 손도 무사하지 못하다.
 
 [relic.r-echo-chime]
 name = 메아리 종
@@ -225,7 +225,7 @@ rank = legendary
 source = event
 trigger = passive
 effects = damage-out-mul:1.4, damage-in-mul:1.3
-flavor = 모든 빛을 한곳으로 모으지만 제 몸도 그만큼 얇다. 더 깊이 베는 대신 더 깊이 베인다.
+flavor = 모든 빛을 한곳으로 모으지만 제 몸도 그만큼 얇다. 더 세게 베는 대신 더 세게 베인다.
 
 [relic.r-thorn-heart]
 name = 가시 심장

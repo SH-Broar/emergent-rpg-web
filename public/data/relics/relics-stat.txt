@@ -14,7 +14,7 @@ rank = basic
 source = event
 trigger = on-acquire
 effects = boost-stat:2:atk
-flavor = 모노가 떨어뜨린 표식이다. 불과 번개가 한곳에 맺혀 있다.
+flavor = 길 위에 떨어져 있던 작은 표식이다. 불과 번개가 한곳에 맺혀 있다.
 
 [relic.r-stat-ember-fang]
 name = 잔불의 송곳니
@@ -108,7 +108,7 @@ rank = rare
 source = elite
 trigger = passive
 effects = damage-out-add:2
-flavor = 휘두를 때마다 푸른 호선이 따라 그려진다. 닿는 곳마다 자국이 더 깊게 남는다.
+flavor = 휘두를 때마다 푸른 호선이 따라 그려진다. 닿는 곳마다 또렷한 자국이 남는다.
 
 # ============================================================
 # DEF 가족 흙·철. 키우는 형 + 비례 형.
@@ -350,7 +350,7 @@ rank = rare
 source = shop
 trigger = passive
 effects = draw-extra-add:2, mana-extra-add:-1
-flavor = 다가올 것을 더 깊이 비추는 대신, 그만큼 마나를 먹어 치운다.
+flavor = 다가올 것을 더 멀리 비추는 대신, 그만큼 마나를 먹어 치운다.
 
 [relic.r-stat-stormfont]
 name = 폭풍의 샘

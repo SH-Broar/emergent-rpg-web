@@ -94,7 +94,7 @@ rank = rare
 source = event
 trigger = passive
 effects = double-debuff
-flavor = 한번 찔러도 두 번 찌른 것처럼 든다. 적에게 새기는 약함이 늘 곱절로 파고든다.
+flavor = 한 번 찔러도 두 번 찌른 자국이 남는 바늘이다. 적에게 거는 약함이 곱절로 새겨진다.
 
 [relic.r-cm-double-curse-mirror]
 name = 되비치는 거울
@@ -102,7 +102,7 @@ rank = rare
 source = shop
 trigger = passive
 effects = double-debuff
-flavor = 저주를 비추는 거울. 적에게 새기는 흠집이 갑절로 돌아간다.
+flavor = 무엇이든 둘로 비추는 거울이다. 적에게 거는 약함이 갑절로 새겨진다.
 
 [relic.r-cm-double-curse-sigil]
 name = 겹쳐 새긴 인장
@@ -110,7 +110,7 @@ rank = legendary
 source = elite
 trigger = passive
 effects = double-debuff
-flavor = 한 획을 그으면 두 획이 남는 검은 인장이다. 적이 받는 모든 약함이 두 배로 깊게 박힌다.
+flavor = 한 획을 그으면 두 획이 남는 검은 인장이다. 적이 받는 약함이 두 배로 새겨진다.
 
 # ============================================================
 # 다운사이드 동반 마커 + 진짜 단점 (STS 보스 유물식)
@@ -138,7 +138,7 @@ rank = rare
 source = elite
 trigger = on-combat-start
 effects = double-debuff, combat-start-status:1:weakness
-flavor = 두 곱절로 새기려다 보니 손이 늘 떨린다. 적의 약함은 깊어지지만 처음 일격이 그만큼 무뎌진다.
+flavor = 두 곱절로 새기려다 보니 손이 늘 떨린다. 적의 약함은 짙어지지만 처음 일격이 그만큼 무뎌진다.
 
 [relic.r-cm-mana-keep-leaky-vein]
 name = 새는 마나혈관
@@ -162,7 +162,7 @@ rank = rare
 source = shop
 trigger = passive
 effects = double-debuff, damage-in-mul:1.2
-flavor = 적에게 두 배의 흠을 새기느라 제 등도 함께 드러난다. 깊게 거는 만큼 돌아오는 매도 더 아프다.
+flavor = 적에게 두 배의 흠을 새기느라 제 등도 함께 드러난다. 세게 거는 만큼 돌아오는 매도 더 아프다.
 
 # ============================================================
 # combat-start-return-to-deck 전투 시작 시 손에서 N장 덱으로 반환.
@@ -184,4 +184,4 @@ rank = legendary
 source = elite
 trigger = on-combat-start
 effects = combat-start-return-to-deck:3
-flavor = 텅 빈 곳에 새겨 둔 표식이다. 싸움이 시작되면 패가 더 깊이 비워진다.
+flavor = 텅 빈 곳에 새겨 둔 표식이다. 싸움이 시작되면 패가 더 많이 덱으로 돌아간다.

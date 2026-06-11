@@ -18,7 +18,7 @@ rank = rare
 source = elite
 trigger = on-combat-start
 effects = combat-start-block:8
-flavor = 오래 버틴 성벽에서 떼어 낸 조각. 적과 마주서면 그 두께가 그대를 감싼다.
+flavor = 오래 버틴 성벽에서 떼어 낸 조각이다. 적과 마주서면 그 두께가 몸을 감싼다.
 
 [relic.r-cbt-aegis-of-hours]
 name = 시각의 큰 방패
@@ -26,7 +26,7 @@ rank = legendary
 source = elite
 trigger = on-combat-start
 effects = combat-start-block:12
-flavor = 모노가 잠시 세워 둔 문. 싸움이 시작되면 흘러간 시간이 통째로 앞을 막아선다.
+flavor = 오래된 시계탑 문에서 떼어 낸 큰 방패다. 싸움이 시작되면 그 무게가 통째로 앞을 막아선다.
 
 [relic.r-cbt-first-light-quill]
 name = 첫빛의 깃펜
@@ -146,7 +146,7 @@ rank = common
 source = elite
 trigger = on-damage-taken
 effects = retaliate:3
-flavor = 건드리면 따끔한 작은 돌기. 그대를 때린 손도 무사하지 못하다.
+flavor = 건드리면 따끔한 작은 돌기다. 이쪽을 때린 손도 무사하지 못하다.
 
 [relic.r-cbt-barbed-mantle]
 name = 가시 돋친 망토
@@ -290,7 +290,7 @@ rank = rare
 source = elite
 trigger = on-combat-start
 effects = combat-start-status:2:strength, combat-start-status:2:vulnerable
-flavor = 높이 들면 사기가 오르지만 표적도 함께 커진다. 시작부터 힘이 솟는 만큼 처음 받는 매도 더 깊게 박힌다.
+flavor = 높이 들면 사기가 오르지만 표적도 함께 커진다. 시작부터 힘이 솟는 만큼 처음 받는 매도 더 아프다.
 
 [relic.r-cbt-greedy-purse]
 name = 욕심 많은 지갑

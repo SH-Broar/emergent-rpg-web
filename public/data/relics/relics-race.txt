@@ -70,7 +70,7 @@ rank = common
 source = race
 trigger = on-card-played-after
 effects = cards-to-color:5
-flavor = 카드가 지날 때마다 깃이 가볍게 떨린다. 다섯 번을 채우면 모아 온 색 하나가 더 진해진다.
+flavor = 카드가 지날 때마다 깃이 가볍게 떨린다. 다섯 번을 채우면 색 하나가 더 짙어진다.
 
 [relic.r-race-phantom]
 name = 패를 쥔 손
@@ -132,7 +132,7 @@ rank = common
 source = race
 trigger = on-card-played-after
 effects = cards-to-color:4
-flavor = 작은 씨앗 안에 여덟 색이 잠들어 있다. 카드를 네 번 낼 때마다 모아 온 색 하나가 깨어난다.
+flavor = 작은 씨앗 안에 여덟 색이 잠들어 있다. 카드를 네 번 낼 때마다 색 하나가 깨어난다.
 
 [relic.r-race-arcana-amp]
 name = 공명 증폭기
