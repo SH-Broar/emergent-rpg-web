@@ -190,7 +190,7 @@ rank = common
 source = shop
 trigger = on-combat-start
 effects = block-from-metric:8:earth
-flavor = 흙을 빚어 만든 부적이다. 갈색이 짙을수록 첫 방어가 두꺼워진다.
+flavor = 흙을 빚어 만든 부적이다.
 
 [relic.r-stat-rivet-band]
 name = 대갈못 띠
@@ -249,12 +249,12 @@ effects = boost-stat:6:mag
 flavor = 밀물과 썰물이 함께 굳은 덩어리다. 그 안에서 아직 물결이 오간다.
 
 [relic.r-stat-mono-current]
-name = 모노의 물길
+name = 모노의 파도
 rank = legendary
 source = event
 trigger = on-acquire
 effects = boost-stat:9:mag
-flavor = 흐르는 것을 가장 오래 들여다봤다며, 시간의 신이 손바닥의 물길을 흘려보낸다.
+flavor = 시간의 신이 어루만진 파도가 손바닥 위에 머문다.
 
 # --- MAG boost-stat 반복 ---
 
@@ -274,7 +274,7 @@ rank = rare
 source = elite
 trigger = passive
 effects = mana-extra-add:1, boost-stat:1:mag
-flavor = 흐름을 더 깊이 끌어 쓰는 도관이다. 매 턴 마나가 조금씩 늘고, 물과 바람의 기운도 천천히 깊어진다.
+flavor = 마나가 흘러드는 관이다. 매 턴 조금씩 차오른다.
 
 [relic.r-stat-foresight-glass]
 name = 예지의 유리
@@ -282,7 +282,7 @@ rank = rare
 source = shop
 trigger = passive
 effects = draw-extra-add:1, boost-stat:1:mag
-flavor = 다가올 것을 미리 비추는 유리다. 카드를 한 장 더 뽑게 되고, 마법의 흐름도 함께 짙어진다.
+flavor = 다가올 것을 미리 비추는 유리다.
 
 [relic.r-stat-tide-lens]
 name = 조류의 렌즈

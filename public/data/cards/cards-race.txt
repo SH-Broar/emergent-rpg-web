@@ -239,7 +239,7 @@ cost = 2
 trigger = manual
 effects = apply-status:1:enemy:vulnerable, apply-status:1:enemy:weakness, damage:10:enemy
 upgrade_to = c-human-combo-plus
-flavor = 빈틈을 벌리고 상대의 손을 무디게 한 다음 몰아친다.
+flavor = 빈틈을 벌리고, 상대의 손이 무뎌진 틈에 몰아친다.
 
 [card.c-human-combo-plus]
 name = 연계기+
@@ -291,7 +291,7 @@ element = wind
 cost = 0
 trigger = manual
 effects = draw:3:self, exhaust-self
-flavor = 숨이 더 빨라져, 거뜬히 고른다.
+flavor = 숨을 더 빨리 고르고 다시 일어선다.
 
 [card.c-human-bulwark]
 name = 철벽
@@ -333,7 +333,7 @@ element = light
 cost = 3
 trigger = manual
 effects = damage:18:enemy, block:18:self, draw:1:self
-flavor = 같은 숨에 담는 힘이 더 커졌다.
+flavor = 온몸의 힘을 남김없이 싣는다.
 
 [card.c-human-focuspoint]
 name = 일점집중
@@ -913,7 +913,7 @@ cost = 1
 trigger = manual
 effects = damage-from-hp:3:enemy:5
 upgrade_to = c-human-bloodrage-plus
-flavor = 제 몸을 상해 가며 휘두른다. 피를 흘릴수록 칼끝이 무거워진다.
+flavor = 살을 깎아 가며 휘두른다. 피를 흘릴수록 칼끝이 무거워진다.
 
 [card.c-human-bloodrage-plus]
 name = 피의 격노+
@@ -935,7 +935,7 @@ cost = 1
 trigger = manual
 effects = apply-status:1:self:strength, damage:6:enemy
 upgrade_to = c-human-warcry-plus
-flavor = 크게 외치고 그 기세로 곧장 친다. 다음 공격까지 힘이 남는다.
+flavor = 크게 소리를 지르고 기세를 몰아 공격한다.
 
 [card.c-human-warcry-plus]
 name = 전의의 외침+
@@ -1093,7 +1093,7 @@ cost = 0
 trigger = manual
 effects = damage:3:enemy
 upgrade_to = c-moth-quickjab-plus
-flavor = 바람을 살짝 태워 가볍게 흘려 보낸다.
+flavor = 바람에 살짝 실어 가볍게 흘려 보낸다.
 
 [card.c-moth-quickjab-plus]
 name = 속타+
@@ -1103,7 +1103,7 @@ element = wind
 cost = 0
 trigger = manual
 effects = damage:5:enemy
-flavor = 바람을 더 깊이 태워 쏜다. 가볍게 흘려도 깊이 박힌다.
+flavor = 바람에 더 단단히 실어 쏜다.
 
 [card.c-moth-barrage]
 name = 난사
@@ -1114,7 +1114,7 @@ cost = 1
 trigger = manual
 effects = damage:3:enemy, damage:3:enemy, damage:3:enemy
 upgrade_to = c-moth-barrage-plus
-flavor = 화살 셋을 단숨에 풀어낸다. 하나하나는 얕아도 모이면 깊다.
+flavor = 화살 셋을 잇따라 쏜다.
 
 [card.c-moth-barrage-plus]
 name = 난사+
@@ -1198,7 +1198,7 @@ cost = 2
 trigger = manual
 effects = damage:2:enemy, damage:2:enemy, damage:2:enemy, damage:2:enemy, draw:1:self
 upgrade_to = c-moth-flurry-plus
-flavor = 날갯짓이 폭풍이 되어 네 번 휘몰아치고, 그 바람에 패가 따라 든다.
+flavor = 날갯짓이 폭풍이 되어 네 번 휘몰아친다. 그 바람에 패가 손에 들어온다.
 
 [card.c-moth-flurry-plus]
 name = 날개 폭풍+
@@ -1441,7 +1441,7 @@ element = wind
 cost = 0
 trigger = manual
 effects = block:7:self
-flavor = 흘려 내는 각이 더 부드러워졌다.
+flavor = 공격을 더 부드럽게 흘려 낸다.
 
 [card.c-moth-spark]
 name = 잔불
@@ -1590,7 +1590,7 @@ element = wind
 cost = 2
 trigger = manual
 effects = damage:5:enemy, damage:5:enemy, damage:5:enemy
-flavor = 휘두르는 범위가 넓어져 세 차례 모두 더 깊다.
+flavor = 휘두르는 바람이 한층 넓고 맵다.
 
 # ---- 필러: 콤보 보상 ----
 
@@ -1666,7 +1666,7 @@ cost = 1
 trigger = manual
 effects = damage-per-cards-played:2:enemy, draw:1:self
 upgrade_to = c-moth-cadence-plus
-flavor = 공격을 노래하듯 이어 가며 그 사이에 패를 줍는다.
+flavor = 공격을 노래하듯 이어 간다. 그 사이에 패가 손에 들어온다.
 
 [card.c-moth-cadence-plus]
 name = 가락+
@@ -2098,7 +2098,7 @@ cost = 1
 trigger = manual
 effects = damage-per-hand:4:enemy
 upgrade_to = c-phantom-fullhand-plus
-flavor = 손에 든 패를 모조리 칼날로 삼아 한꺼번에 벤다.
+flavor = 손에 든 패를 모조리 칼날로 삼아 한꺼번에 날린다.
 
 [card.c-phantom-fullhand-plus]
 name = 만패의 칼+
@@ -2266,7 +2266,7 @@ cost = 2
 trigger = manual
 effects = damage-low-hand:24:enemy
 upgrade_to = c-phantom-empty-plus
-flavor = 손에 아무것도 남지 않은 순간, 그 빈손에 모든 것을 실어 내리꽂는다.
+flavor = 손에 아무것도 남지 않은 순간, 손이 빌수록 일격이 무거워진다.
 
 [card.c-phantom-empty-plus]
 name = 무의 검+
@@ -2308,7 +2308,7 @@ cost = 1
 trigger = manual
 effects = damage:8:enemy, apply-status:2:enemy:vulnerable
 upgrade_to = c-phantom-static-plus
-flavor = 짧은 전기가 상대를 저릿하게 굳혀, 다음 공격이 더 깊이 든다.
+flavor = 짧은 전기가 상대를 저릿하게 굳힌다.
 
 [card.c-phantom-static-plus]
 name = 감전+
@@ -2373,7 +2373,7 @@ cost = 1
 trigger = manual
 effects = damage-per-hand:3:enemy, draw:1:self
 upgrade_to = c-phantom-trickhand-plus
-flavor = 손에 든 패로 베고, 그 틈에 패를 더 끌어 든다.
+flavor = 손에 든 패로 베고, 그 틈에 패를 더 가져온다.
 
 [card.c-phantom-trickhand-plus]
 name = 손속임+
@@ -2729,7 +2729,7 @@ element = electric
 cost = 2
 trigger = manual
 effects = skip-enemy-action:1, damage:10:enemy
-flavor = 끊어 둔 틈을 더 깊이 파고든다.
+flavor = 끊어 놓은 회로의 틈을 정확히 파고든다.
 
 # ---- 필러: 방어/유지 (큰 손패 유지형) ----
 
@@ -2817,7 +2817,7 @@ element = electric
 cost = 2
 trigger = manual
 effects = damage-per-hand:8:enemy
-flavor = 모아 터뜨리는 전기가 한층 사납다.
+flavor = 모아 둔 전기를 한층 거세게 터뜨린다.
 
 [card.c-phantom-voidlance]
 name = 공허의 창
@@ -2920,7 +2920,7 @@ cost = 1
 trigger = manual
 effects = damage-color-count:4:enemy
 upgrade_to = c-arcana-prism-plus
-flavor = 지닌 색이 많을수록 여러 갈래로 갈라져 쏟아진다.
+flavor = 빛이 지닌 속성의 수만큼 갈라져 쏟아진다.
 
 [card.c-arcana-prism-plus]
 name = 분광탄+
@@ -2930,7 +2930,7 @@ element = light
 cost = 1
 trigger = manual
 effects = damage-color-count:5:enemy
-flavor = 지닌 색이 늘수록 빛갈래도 함께 늘어난다.
+flavor = 지닌 속성이 늘수록 빛이 더 여러 갈래로 갈라진다.
 
 [card.c-arcana-judgment]
 name = 공명 심판
@@ -3297,7 +3297,7 @@ cost = 1
 trigger = manual
 effects = grant-color:2:self:all
 upgrade_to = c-arcana-attune-plus
-flavor = 여덟 색에 고루 귀를 기울여 함께 끌어 올린다.
+flavor = 여덟 속성을 고루 끌어 올린다.
 
 [card.c-arcana-attune-plus]
 name = 색 맞추기+
@@ -3427,7 +3427,7 @@ cost = 1
 trigger = manual
 effects = damage:7:enemy, apply-status:1:enemy:weakness
 upgrade_to = c-arcana-glare-plus
-flavor = 한순간 강한 빛을 쏘아 눈을 멀게 한다. 손이 무뎌진 만큼 다음 공격이 가볍다.
+flavor = 한순간 강한 빛을 쏘아 상대의 눈을 멀게 한다.
 
 [card.c-arcana-glare-plus]
 name = 눈부심+
@@ -3492,7 +3492,7 @@ cost = 0
 trigger = manual
 effects = damage-color-count:1:enemy, grant-color:1:self:random
 upgrade_to = c-arcana-spark-plus
-flavor = 가진 색이 적어도 가는 빛은 쏜다. 쏘는 김에 색을 더 줍는다.
+flavor = 작은 빛을 쏜다. 쏠 때마다 어느 색이 조금 짙어진다.
 
 [card.c-arcana-spark-plus]
 name = 첫 빛+
@@ -3557,7 +3557,7 @@ cost = 2
 trigger = manual
 effects = damage-color-count:7:enemy
 upgrade_to = c-arcana-radiance-plus
-flavor = 지닌 모든 색을 큰 빛으로 모아 내리쬔다. 다채로울수록 눈부시다.
+flavor = 빛을 내리쬔다. 지닌 속성이 다채로울수록 눈부시다.
 
 [card.c-arcana-radiance-plus]
 name = 광휘+
@@ -3578,7 +3578,7 @@ cost = 3
 trigger = manual
 effects = grant-color:2:self:all, damage-top-color:3:enemy
 upgrade_to = c-arcana-zenith-plus
-flavor = 여덟 색을 고루 끌어 올린 뒤 가장 짙은 색을 세 겹으로 내리꽂는다. 끝까지 차오른 데서 터진다.
+flavor = 여덟 속성을 고루 끌어 올린 뒤, 가장 짙은 빛을 내리꽂는다.
 
 [card.c-arcana-zenith-plus]
 name = 정점의 빛+

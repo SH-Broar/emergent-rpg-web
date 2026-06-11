@@ -11,7 +11,7 @@ rank = legendary
 effects = combat-block:18, combat-self-status:strength:2
 combat = true
 consumable = true
-flavor = 화로의 온기가 그대로 병 속에 갇혀 있다.
+flavor = 화로의 온기가 온전히 병 속에 담겨 있다.
 
 # --- 티프레 (번개) — 전투 중 마나 + 드로우. ---
 [item.i-arc-tifre-spark-vial]

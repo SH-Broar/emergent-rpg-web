@@ -85,7 +85,7 @@ rank = common
 source = event
 trigger = on-turn-start
 effects = turn-start-block:3
-flavor = 누가 감아 두었는지 모를 톱니. 쉬지 않고 돌며 매 턴 그대 앞에 얇은 벽을 세운다.
+flavor = 누가 감아 두었는지 모를 태엽. 쉬지 않고 돌며 매 턴 얇은 벽을 세워 준다.
 
 [relic.r-warm-coal]
 name = 식지 않는 숯
@@ -109,7 +109,7 @@ rank = rare
 source = elite
 trigger = on-combat-start
 effects = combat-start-status:1:strength
-flavor = 낡은 끈에 매인 작은 쇠붙이. 적을 마주하면 어깨에 힘이 들어선다.
+flavor = 낡은 끈에 매인 작은 쇠붙이.
 
 [relic.r-steady-stone]
 name = 평정의 조약돌
@@ -213,7 +213,7 @@ rank = rare
 source = event
 trigger = passive
 effects = mana-extra-add:1
-flavor = 풀릴 때를 기다리며 늘 한 바퀴 더 감겨 있다. 매 턴 쓸 수 있는 힘이 조금 더 풀려난다.
+flavor = 풀릴 때를 기다리며 늘 감겨 있는 용수철이다. 매 턴 쓸 수 있는 힘이 조금 더 늘어난다.
 
 # ============================================================
 # 다운사이드 동반 강력하지만 대가가 따른다 (STS 보스 유물식).
@@ -241,7 +241,7 @@ rank = rare
 source = shop
 trigger = on-combat-start
 effects = mana-extra-add:1, combat-start-draw:1, combat-start-status:2:frail
-flavor = 더 밝게 타는 만큼 더 많은 것을 삼킨다. 매 턴 힘과 시작 패를 더 주지만 그 불빛에 데어 처음부터 막아 내기가 무디다.
+flavor = 더 밝게 타는 만큼 더 많은 것을 삼킨다. 매 턴 힘과 패를 더 주지만, 시작 방어가 그만큼 약하다.
 
 [relic.r-cursed-coin]
 name = 저주받은 동전

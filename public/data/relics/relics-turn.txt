@@ -19,7 +19,7 @@ rank = common
 source = shop
 trigger = passive
 effects = bonus-hp:15
-flavor = 모노가 흘려보낸 시간이 단단한 둔덕으로 다져졌다. 그 두툼함이 주인의 숨을 받쳐 준다.
+flavor = 눈이 쌓여 단단한 둔덕이 되었다. 그 두툼함이 주인의 숨을 받쳐 준다.
 
 [relic.r-turn-snow-crown]
 name = 눈의 왕관
@@ -63,7 +63,7 @@ rank = legendary
 source = event
 trigger = on-turn-start
 effects = turn-after-strength:1:3
-flavor = 시간의 신이 깜빡 놓고 간 시계. 세 번째 마디부터 흐르는 모래가 그대로 그대의 힘이 된다.
+flavor = 시간의 신이 깜빡 놓고 간 모래시계. 세 번째 턴부터 흐르는 모래가 힘이 되어 준다.
 
 [relic.r-turn-patient-thorn]
 name = 참을성 있는 가시
@@ -284,4 +284,4 @@ rank = rare
 source = shop
 trigger = on-turn-start
 effects = draw-extra-add:1, turn-start-hp-loss:2
-flavor = 패를 한 장 더 내어 주는 대신 매 마디 주인을 한 입씩 베어 문다. 손은 넉넉하지만 그 대가는 늘 제 몸에서 치른다.
+flavor = 패를 한 장 더 내어 주는 대신, 매 턴 주인의 살을 조금 가져간다.

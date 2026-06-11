@@ -126,7 +126,7 @@ rank = common
 source = event
 trigger = on-card-played-after
 effects = cards-to-color:5
-flavor = 다섯 매듭마다 하나를 더 묶는 버릇. 손이 다섯 번 지날 때마다 어느 색이 진해진다.
+flavor = 카드를 다섯 장 낼 때마다 색이 짙어진다.
 
 [relic.r-cbt-runner-tally]
 name = 발 빠른 셈표
@@ -242,7 +242,7 @@ rank = legendary
 source = event
 trigger = passive
 effects = damage-out-mul:1.5, damage-in-mul:1.3
-flavor = 무엇이든 꿰뚫지만 제 몸도 그만큼 얇다. 더 깊이 베는 대신 더 깊이 베인다.
+flavor = 무엇이든 꿰뚫지만 제 몸도 그만큼 얇다. 세게 베는 만큼 저도 베인다.
 
 [relic.r-cbt-reckless-gauntlet]
 name = 무모한 건틀릿
@@ -274,7 +274,7 @@ rank = rare
 source = shop
 trigger = passive
 effects = cost-mod-add:-1, bonus-hp:-8
-flavor = 모든 손놀림에서 마나를 슬쩍 줄여 준다. 그 대가로 살이 미리 조금 깎인다.
+flavor = 모든 손놀림에서 마나를 슬쩍 줄여 준다. 대가는 적지 않다.
 
 [relic.r-cbt-brute-cleaver]
 name = 막무가내 도끼

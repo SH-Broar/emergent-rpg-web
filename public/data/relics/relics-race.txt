@@ -62,7 +62,7 @@ rank = common
 source = race
 trigger = on-card-played-after
 effects = attacks-to-strength:5
-flavor = 쉬지 않고 떨리는 깃이다. 공격이 거듭 박힐수록 어깨에 힘이 차곡차곡 쌓이고, 여러 번 때리는 공격일수록 더 빨리 쌓인다.
+flavor = 쉬지 않고 떨리는 깃. 공격이 맞을 때마다 힘이 쌓인다.
 
 [relic.r-race-moth-windtally]
 name = 바람의 셈
@@ -113,7 +113,7 @@ rank = common
 source = race
 trigger = on-combat-start
 effects = combat-start-mana-from-metric:12:top-color, combat-start-draw-from-metric:3:color-count
-flavor = 빛이 고이는 성배다. 모아 온 색이 짙을수록(최고색 12당 마나 +1), 색이 다채로울수록(색 3종당 카드 +1) 매 싸움이 풍요로워진다.
+flavor = 빛이 고이는 그릇이다. 색이 짙을수록(최고색 12당 마나 +1), 다채로울수록(색 3종당 카드 +1) 매 싸움이 풍요로워진다.
 
 # 아르카나 정체성 앵커 (Item 37-③) — 색 공명·색 다양화·초반 보정을 시작 유물로 표현.
 # 기존 트리거/효과만 재사용(신규 트리거 없음). metric 기반 스케일링으로 색 빌드를 보상. source=race → 시작 전용.

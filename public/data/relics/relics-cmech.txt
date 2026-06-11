@@ -18,7 +18,7 @@ rank = rare
 source = shop
 trigger = passive
 effects = block-carryover
-flavor = 모노가 흘려보낸 시간으로 다진 둑이다. 쌓아 둔 방어가 사라지지 않고 다음 턴으로 이어진다.
+flavor = 오래 다져 단단해진 둑이다. 쌓아 둔 방어가 다음 턴으로 이어진다.
 
 [relic.r-cm-block-keep-fortress]
 name = 영원의 성채
@@ -26,7 +26,7 @@ rank = legendary
 source = elite
 trigger = passive
 effects = block-carryover
-flavor = 시간의 신이 잠시 세워 둔 벽이다. 한번 쌓은 방어는 어느 턴에도 무너지지 않는다.
+flavor = 턴이 끝나도 쌓아 둔 방어가 줄어들지 않는다.
 
 # ============================================================
 # mana-carryover 쓰지 않은 마나가 다음 턴으로 이월된다.
@@ -102,7 +102,7 @@ rank = rare
 source = shop
 trigger = passive
 effects = double-debuff
-flavor = 마주 비춘 저주가 둘로 늘어 돌아간다. 적에게 거는 모든 흠집이 두 겹으로 새겨진다.
+flavor = 저주를 비추는 거울. 적에게 새기는 흠집이 갑절로 돌아간다.
 
 [relic.r-cm-double-curse-sigil]
 name = 겹쳐 새긴 인장

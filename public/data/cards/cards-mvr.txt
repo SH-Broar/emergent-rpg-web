@@ -314,7 +314,7 @@ element = iron
 cost = 2
 trigger = manual
 effects = block:35:self, damage-top-color:1:enemy
-flavor = 식지 않은 노을의 끝에.
+flavor = 식지 않은 노을이 벽이 되어 준다.
 upgrade_to = c-manonickla-sunset-wall-plus
 
 # ========== NPC 영입 카드 ==========
@@ -570,7 +570,7 @@ element = water
 cost = 1
 trigger = manual
 effects = block-top-color:1:self
-flavor = 가장 높이 쌓인 색이 등 뒤에 두툼하게 선다. 한쪽으로 치우칠수록 더 단단하다.
+flavor = 가장 짙은 속성만큼 단단히 막는다.
 
 [card.c-spectrum-edge]
 name = 여덟 빛의 한 칼
@@ -761,7 +761,7 @@ element = iron
 cost = 2
 trigger = manual
 effects = damage:47:enemy, exhaust-self:0:self
-flavor = 다시는 손에 돌아오지 않을 칼을 가장 깊은 곳에 내리꽂는다.
+flavor = 다시는 손에 돌아오지 않을 칼을 내리꽂는다.
 
 [card.c-last-bulwark]
 name = 마지막 보루
@@ -1142,7 +1142,7 @@ element = light
 cost = 1
 trigger = manual
 effects = damage-top-color:1:enemy, draw-if-color:1:self:light:5
-flavor = 가장 짙은 색이 솟구쳐 친다. 빛이 충분히 쌓였다면 다음 수까지 따라온다.
+flavor = 가장 짙은 빛이 솟구쳐 친다. 충분히 쌓였다면 다음 수까지 이어진다.
 
 
 # ============================================================
@@ -1385,7 +1385,7 @@ element = electric
 cost = 1
 trigger = manual
 effects = damage:19:enemy, apply-status:3:enemy:vulnerable
-flavor = 스파크가 더 깊이 약한 곳을 짚는다.
+flavor = 스파크가 약한 곳을 정확히 짚는다.
 
 [card.c-alti-resonance-plus]
 name = 두 자아의 공명+
@@ -1425,7 +1425,7 @@ element = earth
 cost = 1
 trigger = manual
 effects = damage:17:enemy, block:14:self
-flavor = 더 길게 감았다 푼다.
+flavor = 꼬리를 길게 감았다가 힘껏 푼다.
 
 [card.c-lop-sign-plus]
 name = 귀 기울인 한 신호+
@@ -1569,7 +1569,7 @@ element = iron
 cost = 2
 trigger = manual
 effects = damage-per-debuff:12:enemy
-flavor = 겹친 상처마다, 검이 더 깊다.
+flavor = 상처가 겹친 곳일수록 검이 매섭게 든다.
 
 [card.c-vuln-detonate-plus]
 name = 약점 폭발+
@@ -1619,7 +1619,7 @@ element = earth
 cost = 1
 trigger = manual
 effects = apply-status:6:enemy:poison, damage:4:enemy
-flavor = 더 많은 독꽃이, 안쪽에서 핀다.
+flavor = 독꽃이 안쪽에서 더 흐드러지게 핀다.
 
 [card.c-double-hex-plus]
 name = 두 겹의 저주+
@@ -1681,7 +1681,7 @@ element = earth
 cost = 2
 trigger = manual
 effects = block:19:self, block-to-damage:1:enemy
-flavor = 더 두껍게 두르고, 그대로 떨군다.
+flavor = 더 두껍게 두르고 그 무게로 되받아친다.
 
 [card.c-all-in-plus]
 name = 전부 쏟기+
@@ -1701,7 +1701,7 @@ element = electric
 cost = 0
 trigger = manual
 effects = spend-all-energy:10:enemy
-flavor = 회로 끝까지, 더 큰 섬광.
+flavor = 회로 끝까지 밀어붙여 더 큰 섬광을 터뜨린다.
 
 [card.c-comrades-charge-plus]
 name = 동행의 돌격+
@@ -1913,7 +1913,7 @@ element = wind
 cost = 1
 trigger = manual
 effects = draw:4:self
-flavor = 잠깐 더 깊이 본다.
+flavor = 잠깐 더 자세히 들여다본다.
 
 [card.c-shop-salve-plus]
 name = 응급 처치+
@@ -1923,7 +1923,7 @@ element = water
 cost = 1
 trigger = manual
 effects = heal:6:self, block:7:self, exhaust-self:0:self
-flavor = 조금 더 낫고, 조금 더 단단하게.
+flavor = 조금 더 잘 듣는 연고다.
 
 # ---------- 미니 마을 전설 ----------
 

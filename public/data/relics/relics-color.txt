@@ -380,7 +380,7 @@ rank = legendary
 source = event
 trigger = on-color-gain
 effects = boost-color:1:random
-flavor = 색 하나가 차오르면 그 빛이 옆의 색으로 옮겨붙는다. 정령이 하나가 둘을 부른다며 신나서 건네줬다.
+flavor = 색이 짙어질 때마다 다른 색도 함께 짙어진다. 정령이 신나서 건네준 프리즘이다.
 
 [relic.r-col-gain-echo-shell]
 name = 메아리 조개
