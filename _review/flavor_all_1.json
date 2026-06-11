@@ -1,0 +1,1958 @@
+{
+ "meta": {
+  "id": "flavor_all_1",
+  "title": "전수 검수 1 (cards-race)"
+ },
+ "items": [
+  {
+   "n": 1,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-balance]",
+   "text": "오른손으로 치고 왼손으로 막는다. 둘 중 어느 쪽도 늦지 않는다."
+  },
+  {
+   "n": 2,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-balance-plus]",
+   "text": "치는 손도 막는 손도 조금씩 더 멀리 뻗는다."
+  },
+  {
+   "n": 3,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-tailwind]",
+   "text": "등 뒤에서 부는 바람에 칼을 실어 보낸다."
+  },
+  {
+   "n": 4,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-tailwind-plus]",
+   "text": "더 멀리서 불어온 바람일수록 세게 휘몰아친다."
+  },
+  {
+   "n": 5,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-adapt]",
+   "text": "어느 시대에 떨어지든 인간은 살아갈 방법을 찾아낸다."
+  },
+  {
+   "n": 6,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-adapt-plus]",
+   "text": "낯선 곳에도 금세 익숙해진다."
+  },
+  {
+   "n": 7,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-resolve]",
+   "text": "흔들려도 무너지지는 않는다. 인간이 가장 흔하게 타고나는 마음이다."
+  },
+  {
+   "n": 8,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-resolve-plus]",
+   "text": "한번 정한 마음은 좀처럼 흔들리지 않는다."
+  },
+  {
+   "n": 9,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-riposte]",
+   "text": "막아 낸 충격을 그대로 상대에게 돌려준다."
+  },
+  {
+   "n": 10,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-riposte-plus]",
+   "text": "받아 낸 충격이 두 배가 되어 돌아간다."
+  },
+  {
+   "n": 11,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-evenblade]",
+   "text": "양쪽에 똑같이 짐을 나눠 진 사람이 가장 멀리 걷는다."
+  },
+  {
+   "n": 12,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-evenblade-plus]",
+   "text": "짐을 더 잘 나눠 졌으니 그만큼 더 멀리 간다."
+  },
+  {
+   "n": 13,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-adaptstrike]",
+   "text": "손에 방어가 있으면 베고, 없으면 막는다. 그때그때 상황에 맞춘다."
+  },
+  {
+   "n": 14,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-adaptstrike-plus]",
+   "text": "상황을 더 빨리 읽고 더 크게 베거나 더 단단히 막는다."
+  },
+  {
+   "n": 15,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-pin]",
+   "text": "급소를 정확히 찔러 빈틈을 벌려 놓는다."
+  },
+  {
+   "n": 16,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-pin-plus]",
+   "text": "더 정확히 찌를수록 빈틈이 더 오래 벌어진다."
+  },
+  {
+   "n": 17,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-hamstring]",
+   "text": "다리를 후려 중심을 무너뜨리면 다음 공격이 쉬워진다."
+  },
+  {
+   "n": 18,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-hamstring-plus]",
+   "text": "더 낮게 후려서 더 오래 비틀거리게 한다."
+  },
+  {
+   "n": 19,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-shatterguard]",
+   "text": "버티고 선 무릎을 꺾으면 방어가 무너진다."
+  },
+  {
+   "n": 20,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-shatterguard-plus]",
+   "text": "상대의 방어를 더 오래 무너뜨린다."
+  },
+  {
+   "n": 21,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-combo]",
+   "text": "빈틈을 벌리고, 상대의 손이 무뎌진 틈에 몰아친다."
+  },
+  {
+   "n": 22,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-combo-plus]",
+   "text": "동작이 끊기지 않고 자연스럽게 이어진다."
+  },
+  {
+   "n": 23,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-regroup]",
+   "text": "뒤로 물러나 자세를 가다듬고 다음 공격을 준비한다."
+  },
+  {
+   "n": 24,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-regroup-plus]",
+   "text": "더 단단히 가다듬고도 패는 넉넉히 남는다."
+  },
+  {
+   "n": 25,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-secondwind]",
+   "text": "숨을 깊이 고르면 패가 가득 들어온다. 단, 이 들숨은 한 번뿐이다."
+  },
+  {
+   "n": 26,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-secondwind-plus]",
+   "text": "숨을 더 빨리 고르고 다시 일어선다."
+  },
+  {
+   "n": 27,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-bulwark]",
+   "text": "한 사람이 끝까지 버티면 그 길목은 좀처럼 뚫리지 않는다."
+  },
+  {
+   "n": 28,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-bulwark-plus]",
+   "text": "발 디딘 곳이 더 단단하게 굳는다."
+  },
+  {
+   "n": 29,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-allout]",
+   "text": "치고 막고 살피는 일을 숨 한 번에 전부 해낸다."
+  },
+  {
+   "n": 30,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-allout-plus]",
+   "text": "온몸의 힘을 남김없이 싣는다."
+  },
+  {
+   "n": 31,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-focuspoint]",
+   "text": "정신을 한곳에 모아 다음 공격에 싣는다."
+  },
+  {
+   "n": 32,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-focuspoint-plus]",
+   "text": "더 빨리 집중한다. 다음 공격은 여전히 두 배다."
+  },
+  {
+   "n": 33,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-tradeblow]",
+   "text": "한 대 주고 한 대 막는다. 주고받는 셈을 늘 비슷하게 맞춘다."
+  },
+  {
+   "n": 34,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-tradeblow-plus]",
+   "text": "주는 만큼 막는 만큼이 함께 늘었다."
+  },
+  {
+   "n": 35,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-counterstance]",
+   "text": "막는 자세를 잡으면서 되받아칠 준비도 함께 한다."
+  },
+  {
+   "n": 36,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-counterstance-plus]",
+   "text": "자세를 더 낮추니 막기도 치기도 한결 수월하다."
+  },
+  {
+   "n": 37,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-pivot]",
+   "text": "공격을 흘려보내며 한 대 얹고, 다음을 살핀다."
+  },
+  {
+   "n": 38,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-pivot-plus]",
+   "text": "흘려보내는 동작이 더 부드러워지고, 몸도 한결 가볍다."
+  },
+  {
+   "n": 39,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-twohands]",
+   "text": "두 손이 따로 또 같이 움직여, 한쪽은 치고 한쪽은 막는다."
+  },
+  {
+   "n": 40,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-twohands-plus]",
+   "text": "양손이 더 길게 뻗어, 치는 쪽도 막는 쪽도 모자라지 않는다."
+  },
+  {
+   "n": 41,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-fairtrade]",
+   "text": "받은 만큼 돌려주고 챙길 만큼 챙긴다. 셈이 어긋나는 법이 없다."
+  },
+  {
+   "n": 42,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-fairtrade-plus]",
+   "text": "주고받는 양이 함께 커져도 손해 보는 쪽은 없다."
+  },
+  {
+   "n": 43,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-readahead]",
+   "text": "다음에 올 패를 미리 들여다본다."
+  },
+  {
+   "n": 44,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-readahead-plus]",
+   "text": "더 앞까지 미리 짚어 둔다."
+  },
+  {
+   "n": 45,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-tempo]",
+   "text": "패를 넉넉히 챙기고, 다음에 쓸 힘까지 미리 당겨 둔다."
+  },
+  {
+   "n": 46,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-tempo-plus]",
+   "text": "당겨 둔 힘이 더 늘었다."
+  },
+  {
+   "n": 47,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-foresight]",
+   "text": "빛이 짙게 든 날이면 앞일이 멀리까지 보인다."
+  },
+  {
+   "n": 48,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-foresight-plus]",
+   "text": "더 멀리 내다본 만큼 들어오는 패도 늘어난다."
+  },
+  {
+   "n": 49,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-stockpile]",
+   "text": "오늘 쓸 힘을 아껴 내일로 미뤄 둔다."
+  },
+  {
+   "n": 50,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-stockpile-plus]",
+   "text": "미뤄 둔 힘이 더 크게 돌아온다."
+  },
+  {
+   "n": 51,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-disarm]",
+   "text": "무기를 잡은 손에서 힘을 슬쩍 빼앗는다."
+  },
+  {
+   "n": 52,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-disarm-plus]",
+   "text": "더 세게 흔들어 손아귀를 더 오래 비워 놓는다."
+  },
+  {
+   "n": 53,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-expose]",
+   "text": "막아서면서 동시에 상대의 빈틈을 들춰낸다."
+  },
+  {
+   "n": 54,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-expose-plus]",
+   "text": "더 단단히 막아서며 빈틈을 더 넓게 벌려 놓는다."
+  },
+  {
+   "n": 55,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-laceration]",
+   "text": "한번 베인 상처는 시간이 지날수록 더 벌어진다."
+  },
+  {
+   "n": 56,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-laceration-plus]",
+   "text": "더 크게 베인 상처는 더 오래 번진다."
+  },
+  {
+   "n": 57,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-emberbrand]",
+   "text": "작은 불씨를 몸에 새겨 두면 알아서 타들어 간다."
+  },
+  {
+   "n": 58,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-emberbrand-plus]",
+   "text": "새겨 둔 불씨가 더 매섭게 번진다."
+  },
+  {
+   "n": 59,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-fullbreak]",
+   "text": "빈틈을 벌리고 방어를 흩어, 단숨에 무너뜨린다."
+  },
+  {
+   "n": 60,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-fullbreak-plus]",
+   "text": "더 넓게 무너뜨린다."
+  },
+  {
+   "n": 61,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-followthrough]",
+   "text": "벌어진 빈틈을 노려 그만큼 세게 내리친다."
+  },
+  {
+   "n": 62,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-followthrough-plus]",
+   "text": "노린 빈틈이 클수록 더 무겁게 내리친다."
+  },
+  {
+   "n": 63,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-leveler]",
+   "text": "한쪽으로 쏠리지 않게 다룬 검은 치고도 제자리를 지킨다."
+  },
+  {
+   "n": 64,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-leveler-plus]",
+   "text": "쏠림 없이 다룬 검이 더 멀리 닿고 더 단단히 막는다."
+  },
+  {
+   "n": 65,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-bulwarkblow]",
+   "text": "세워 든 방패를 그대로 앞으로 밀어붙인다."
+  },
+  {
+   "n": 66,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-bulwarkblow-plus]",
+   "text": "더 단단히 세운 방패가 더 세게 부딪친다."
+  },
+  {
+   "n": 67,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-steadfast]",
+   "text": "발을 깊이 디딘 채 쏠림 없는 검을 내민다."
+  },
+  {
+   "n": 68,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-steadfast-plus]",
+   "text": "단단히 디딘 만큼 검도 멀리 닿는다."
+  },
+  {
+   "n": 69,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-shiftguard]",
+   "text": "손에 든 것에 따라 치기도 하고 막기도 한다."
+  },
+  {
+   "n": 70,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-shiftguard-plus]",
+   "text": "판단이 빨라져 치든 막든 한층 강하다."
+  },
+  {
+   "n": 71,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-improvise]",
+   "text": "미리 정해 둔 수가 없어도 그때그때 떠오르는 대로 친다."
+  },
+  {
+   "n": 72,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-improvise-plus]",
+   "text": "즉석에서 꺼내는 공격이 더 크게 들어간다."
+  },
+  {
+   "n": 73,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-decisive]",
+   "text": "망설임을 끊고 단숨에 내리꽂는다."
+  },
+  {
+   "n": 74,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-decisive-plus]",
+   "text": "망설임이 없을수록 더 무겁게 내리꽂힌다."
+  },
+  {
+   "n": 75,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-lastline]",
+   "text": "더 물러설 곳이 없을 때 사람은 가장 단단한 벽이 된다."
+  },
+  {
+   "n": 76,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-lastline-plus]",
+   "text": "마지막 순간일수록 벽은 더 단단해진다."
+  },
+  {
+   "n": 77,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-overcome]",
+   "text": "벽을 넘는 일은 한꺼번에 닥친다. 치고, 버티고, 길을 연다."
+  },
+  {
+   "n": 78,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-overcome-plus]",
+   "text": "더 크게 넘어선 만큼 그 뒤로 길이 환하게 열린다."
+  },
+  {
+   "n": 79,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-jab]",
+   "text": "가볍게 한 대 찔러 공세를 이어 간다."
+  },
+  {
+   "n": 80,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-jab-plus]",
+   "text": "가볍지만 한층 매섭게 찌른다."
+  },
+  {
+   "n": 81,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-brace]",
+   "text": "발을 단단히 디뎌 자세를 잡는다."
+  },
+  {
+   "n": 82,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-brace-plus]",
+   "text": "디딘 발이 땅에 더 깊이 박힌다."
+  },
+  {
+   "n": 83,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-bloodrage]",
+   "text": "살을 깎아 가며 휘두른다. 피를 흘릴수록 칼끝이 무거워진다."
+  },
+  {
+   "n": 84,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-bloodrage-plus]",
+   "text": "흘린 피가 많을수록 더 멀리 더 세게 휘두른다."
+  },
+  {
+   "n": 85,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-warcry-plus]",
+   "text": "외침에 기세가 더 실려, 남는 힘도 그만큼 크다."
+  },
+  {
+   "n": 86,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-finalblow]",
+   "text": "가진 힘을 단숨에 전부 쏟는다. 휘두르고 나면 아무것도 남지 않는다."
+  },
+  {
+   "n": 87,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-finalblow-plus]",
+   "text": "같은 일격에 더 큰 힘을 싣는다. 그래도 한 번뿐이다."
+  },
+  {
+   "n": 88,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-flutter]",
+   "text": "화살을 빠르게 쏘아 보낸다."
+  },
+  {
+   "n": 89,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-flutter-plus]",
+   "text": "더 빠르게 화살을 쏘아 보낸다."
+  },
+  {
+   "n": 90,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-volley]",
+   "text": "시위에서 손을 떼지 않고 쉴 새 없이 쏜다. 가벼운 만큼 멈추지 않는다."
+  },
+  {
+   "n": 91,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-volley-plus]",
+   "text": "활시위가 멈출 틈도 없이 다음 화살로 이어진다."
+  },
+  {
+   "n": 92,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-glide]",
+   "text": "바람을 타고 미끄러지며 다음 수를 살핀다."
+  },
+  {
+   "n": 93,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-glide-plus]",
+   "text": "따라올 수 없는 속도로 바람을 타고 자세를 잡는다."
+  },
+  {
+   "n": 94,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-gale]",
+   "text": "화살 둘을 순식간에 쏘아 보낸다."
+  },
+  {
+   "n": 95,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-gale-plus]",
+   "text": "몰아치는 바람처럼 화살 셋을 한 번에 쏟아 낸다."
+  },
+  {
+   "n": 96,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-windgather]",
+   "text": "바람을 살짝 쥐었다 펴면 패가 따라 들어온다. 이 카드는 손에 그대로 남는다."
+  },
+  {
+   "n": 97,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-quickjab]",
+   "text": "바람에 살짝 실어 가볍게 흘려 보낸다."
+  },
+  {
+   "n": 98,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-quickjab-plus]",
+   "text": "바람에 더 단단히 실어 쏜다."
+  },
+  {
+   "n": 99,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-barrage]",
+   "text": "화살 셋을 잇따라 쏜다."
+  },
+  {
+   "n": 100,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-barrage-plus]",
+   "text": "시위가 한 번 더 튕겨, 화살 넷이 잇따라 박힌다."
+  },
+  {
+   "n": 101,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-combostrike]",
+   "text": "앞서 낸 카드가 많을수록 마지막 일격이 무겁게 떨어진다."
+  },
+  {
+   "n": 102,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-combostrike-plus]",
+   "text": "쌓아 온 공세가 더 크게 실려, 끝맺음이 한층 강해진다."
+  },
+  {
+   "n": 103,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-gust]",
+   "text": "등을 미는 바람이 손에 든 모든 것을 가볍게 만든다. 이번 턴에는 무엇이든 수월하다."
+  },
+  {
+   "n": 104,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-gust-plus]",
+   "text": "바람을 부르는 데 드는 힘마저 사라져, 거저 손이 가벼워진다."
+  },
+  {
+   "n": 105,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-recall]",
+   "text": "쏘았다 싶으면 다시 손으로 돌아온다. 패를 챙겨 주고도 제자리에 남는다."
+  },
+  {
+   "n": 106,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-recall-plus]",
+   "text": "돌아오는 바람이 패를 더 데려온다. 여전히 손에 남는다."
+  },
+  {
+   "n": 107,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-flurry]",
+   "text": "날갯짓이 폭풍이 되어 네 번 휘몰아친다. 그 바람에 패가 손에 들어온다."
+  },
+  {
+   "n": 108,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-flurry-plus]",
+   "text": "휘몰아치는 범위가 더 넓어져, 네 번 모두 더 매섭게 든다."
+  },
+  {
+   "n": 109,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-accel]",
+   "text": "등 뒤로 바람을 미리 모은다. 패도 챙기고 다음에 쓸 힘까지 당겨 둔다."
+  },
+  {
+   "n": 110,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-accel-plus]",
+   "text": "당겨 둔 힘이 더 늘었다."
+  },
+  {
+   "n": 111,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-scatter]",
+   "text": "앞서 낸 카드만큼 빛가루를 흩뿌리고, 흩어진 틈에 패를 챙긴다."
+  },
+  {
+   "n": 112,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-scatter-plus]",
+   "text": "흩뿌리는 빛이 늘어도 패를 챙기는 손은 여전히 가볍다."
+  },
+  {
+   "n": 113,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-dive]",
+   "text": "단숨에 내리꽂고, 솟구치는 바람에 패를 챙긴다."
+  },
+  {
+   "n": 114,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-dive-plus]",
+   "text": "더 가파르게 내리꽂고, 솟구치는 몸도 그만큼 가볍다."
+  },
+  {
+   "n": 115,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-momentum]",
+   "text": "한번 붙은 속도는 멈추지 않는다. 이번 턴에는 모든 공격이 더 무겁다."
+  },
+  {
+   "n": 116,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-momentum-plus]",
+   "text": "붙은 속도가 거세져 이번 턴 내내 힘이 실린다."
+  },
+  {
+   "n": 117,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-blitz]",
+   "text": "세 번을 단숨에 베고, 그 속도에 패가 따라 든다."
+  },
+  {
+   "n": 118,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-blitz-plus]",
+   "text": "한 번 더 이어 벤다. 네 번이 끊김 없이 들어간다."
+  },
+  {
+   "n": 119,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-glidewall]",
+   "text": "바람을 비스듬히 받아 흘리며 다음 수를 살핀다."
+  },
+  {
+   "n": 120,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-glidewall-plus]",
+   "text": "더 부드럽게 흘려 내고, 몸까지 한결 가볍다."
+  },
+  {
+   "n": 121,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-pinprick]",
+   "text": "더없이 가벼운 일격. 공세를 끊지 않으려 살짝 댄다."
+  },
+  {
+   "n": 122,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-pinprick-plus]",
+   "text": "똑같이 가볍게, 조금 더 따끔하게 댄다."
+  },
+  {
+   "n": 123,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-flick]",
+   "text": "손끝으로 빛을 가볍게 튕겨 보낸다. 힘들이지 않고 빠르게."
+  },
+  {
+   "n": 124,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-flick-plus]",
+   "text": "튕기는 손끝에 빛이 더 짙게 모인다."
+  },
+  {
+   "n": 125,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-skim]",
+   "text": "표면을 스치듯 다음 패를 미리 들춰 본다."
+  },
+  {
+   "n": 126,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-skim-plus]",
+   "text": "스치는 손이 더 많은 패를 들춰 낸다."
+  },
+  {
+   "n": 127,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-needle]",
+   "text": "두 침을 거의 동시에 박는다. 둘 다 얕지만 둘 다 박힌다."
+  },
+  {
+   "n": 128,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-needle-plus]",
+   "text": "두 침이 함께 더 세게 박힌다."
+  },
+  {
+   "n": 129,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-glance]",
+   "text": "정면으로 받지 않고 비스듬히 흘려 낸다. 가벼워서 자주 쓸 수 있다."
+  },
+  {
+   "n": 130,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-glance-plus]",
+   "text": "공격을 더 부드럽게 흘려 낸다."
+  },
+  {
+   "n": 131,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-spark]",
+   "text": "깃에서 떨어진 잔불이 상대에게 옮겨붙는다."
+  },
+  {
+   "n": 132,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-spark-plus]",
+   "text": "떨어뜨린 잔불이 더 오래 번진다."
+  },
+  {
+   "n": 133,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-doubletap]",
+   "text": "한 번 겨눠 두 발을 같은 곳으로 보낸다."
+  },
+  {
+   "n": 134,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-doubletap-plus]",
+   "text": "두 발이 같은 곳을 더 매섭게 친다."
+  },
+  {
+   "n": 135,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-triplet]",
+   "text": "화살 셋을 빠르게 이어 쏜다. 끊김이 없다."
+  },
+  {
+   "n": 136,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-triplet-plus]",
+   "text": "화살 셋이 모두 한층 매섭다."
+  },
+  {
+   "n": 137,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-rapidfire]",
+   "text": "시위가 멈출 틈도 없이 화살 넷을 쏟아 낸다."
+  },
+  {
+   "n": 138,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-rapidfire-plus]",
+   "text": "다섯 발째가 더해지고 시위도 빨라진다."
+  },
+  {
+   "n": 139,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-volleyup]",
+   "text": "숨을 머금어 두 발을 무겁게 내보낸다."
+  },
+  {
+   "n": 140,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-volleyup-plus]",
+   "text": "더 오래 머금은 만큼 두 발이 더 무겁다."
+  },
+  {
+   "n": 141,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-stinger]",
+   "text": "두 침을 박고, 그 사이로 상대의 힘을 슬쩍 빼낸다."
+  },
+  {
+   "n": 142,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-stinger-plus]",
+   "text": "두 침이 더 매서워지고, 빼앗은 힘도 더 오래 비어 있다."
+  },
+  {
+   "n": 143,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-windlash]",
+   "text": "바람을 채찍처럼 휘둘러 세 차례 후려친다."
+  },
+  {
+   "n": 144,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-windlash-plus]",
+   "text": "휘두르는 바람이 한층 넓고 맵다."
+  },
+  {
+   "n": 145,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-tempocut]",
+   "text": "공세가 끊기지 않고 길게 이어질수록 더 매섭게 벤다."
+  },
+  {
+   "n": 146,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-tempocut-plus]",
+   "text": "공세의 흐름을 더 잘 읽어, 같은 손이 더 무겁다."
+  },
+  {
+   "n": 147,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-crescendo]",
+   "text": "쌓아 올린 공세가 단숨에 정점으로 치솟는다."
+  },
+  {
+   "n": 148,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-crescendo-plus]",
+   "text": "치솟는 끝이 더 높다."
+  },
+  {
+   "n": 149,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-overdrive]",
+   "text": "이번 턴만큼은 한계 너머로 몰아붙인다."
+  },
+  {
+   "n": 150,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-overdrive-plus]",
+   "text": "몰아붙이는 기세가 한층 거세다."
+  },
+  {
+   "n": 151,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-cadence]",
+   "text": "공격을 노래하듯 이어 간다. 그 사이에 패가 손에 들어온다."
+  },
+  {
+   "n": 152,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-cadence-plus]",
+   "text": "가락이 한층 매끄럽고, 패를 챙기는 손도 가볍다."
+  },
+  {
+   "n": 153,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-updraft]",
+   "text": "위로 솟는 바람을 타고 패를 단숨에 끌어 올린다."
+  },
+  {
+   "n": 154,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-updraft-plus]",
+   "text": "솟는 기류가 더 세져 패가 더 따라 오른다."
+  },
+  {
+   "n": 155,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-circling]",
+   "text": "크게 한 바퀴 돌아 패를 챙기고는 그대로 흩어진다. 단 한 번뿐이다."
+  },
+  {
+   "n": 156,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-circling-plus]",
+   "text": "도는 범위가 넓어져 패를 더 챙긴다. 여전히 한 번뿐이다."
+  },
+  {
+   "n": 157,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-clearsky]",
+   "text": "빛이 짙게 갠 날이면 하늘이 멀리까지 트여 패가 더 보인다."
+  },
+  {
+   "n": 158,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-clearsky-plus]",
+   "text": "더 멀리 트인 만큼 들어오는 패도 늘어난다."
+  },
+  {
+   "n": 159,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-loop]",
+   "text": "이번에 쓸 힘을 다음으로 미뤄 두고, 바람은 다시 손으로 돌아온다."
+  },
+  {
+   "n": 160,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-loop-plus]",
+   "text": "미뤄 두는 힘이 늘었다. 바람은 여전히 손에 남는다."
+  },
+  {
+   "n": 161,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-haste]",
+   "text": "몸을 한껏 비운다. 이번 턴에는 손에 든 모든 것이 가볍고 패도 더 들어온다."
+  },
+  {
+   "n": 162,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-haste-plus]",
+   "text": "몸을 비우는 데 드는 힘마저 줄었다."
+  },
+  {
+   "n": 163,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-slipstream]",
+   "text": "앞서 분 바람이 길을 터 준다. 이번 턴에는 모든 것이 한결 가볍다."
+  },
+  {
+   "n": 164,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-slipstream-plus]",
+   "text": "트인 길을 더 적은 힘으로 연다."
+  },
+  {
+   "n": 165,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-tempest]",
+   "text": "바람과 비를 한꺼번에 몰아 세 차례 내리친다."
+  },
+  {
+   "n": 166,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-tempest-plus]",
+   "text": "더 넓게 몰아쳐 세 차례 모두 매섭다."
+  },
+  {
+   "n": 167,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-cyclone]",
+   "text": "휘말아 올린 바람이 네 번 휘돌고, 그 한가운데서 패가 든다."
+  },
+  {
+   "n": 168,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-cyclone-plus]",
+   "text": "휘도는 네 차례가 더 매서워진다."
+  },
+  {
+   "n": 169,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-stormcall]",
+   "text": "폭풍을 불러 다섯 차례 연달아 내리꽂는다."
+  },
+  {
+   "n": 170,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-stormcall-plus]",
+   "text": "불러낸 폭풍이 더 거세, 다섯 차례 모두 매섭게 든다."
+  },
+  {
+   "n": 171,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-skyfall]",
+   "text": "쌓아 온 빛을 그러모아 내리꽂고, 흩어진 빛 사이로 패를 챙긴다."
+  },
+  {
+   "n": 172,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-skyfall-plus]",
+   "text": "모은 빛이 더 짙어, 내리꽂는 빛줄기가 한층 무겁다."
+  },
+  {
+   "n": 173,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-poise]",
+   "text": "잠깐 가다듬는 사이에 다음 화살을 겨눌 곳이 보인다."
+  },
+  {
+   "n": 174,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-poise-plus]",
+   "text": "더 차분히 가다듬어, 겨눌 곳이 더 또렷이 보인다."
+  },
+  {
+   "n": 175,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-toxinburst]",
+   "text": "적의 몸에 번지던 불씨를 단숨에 끌어모아 터트린다."
+  },
+  {
+   "n": 176,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-toxinburst-plus]",
+   "text": "같은 불씨로 더 크게 터트린다. 넓게 번졌을수록 더 멀리 갈라진다."
+  },
+  {
+   "n": 177,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-shiv]",
+   "text": "단숨에 꽂고 빠지는 가벼운 칼. 한 번 쓰고 버린다."
+  },
+  {
+   "n": 178,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-shiv-plus]",
+   "text": "더 매서운 손놀림. 단숨에 꽂고 사라진다."
+  },
+  {
+   "n": 179,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-handblade]",
+   "text": "손에 든 패가 많을수록 더 매섭게 벤다."
+  },
+  {
+   "n": 180,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-handblade-plus]",
+   "text": "손에 든 패마다 더 무겁게 실린다."
+  },
+  {
+   "n": 181,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-shuffle]",
+   "text": "마음에 안 드는 패를 슬쩍 되돌리고 새 패를 집는다."
+  },
+  {
+   "n": 182,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-shuffle-plus]",
+   "text": "패를 고르는 손이 더 빨라지고, 다음 수까지 미리 챙긴다."
+  },
+  {
+   "n": 183,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-guard]",
+   "text": "패를 펼치지 않고 손에 든 채로 버텨 낸다."
+  },
+  {
+   "n": 184,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-guard-plus]",
+   "text": "패를 더 단단히 쥐고 더 오래 버틴다."
+  },
+  {
+   "n": 185,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-overload]",
+   "text": "손에 든 패를 한꺼번에 풀어내며 시간의 빈틈을 내리꽂는다."
+  },
+  {
+   "n": 186,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-overload-plus]",
+   "text": "더 많은 패가 한순간에 터져 나온다. 손이 빌수록 거세다."
+  },
+  {
+   "n": 187,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-voidstrike]",
+   "text": "손에 든 것이 없을수록 가벼워, 빈손이 가장 빠르게 닿는다."
+  },
+  {
+   "n": 188,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-voidstrike-plus]",
+   "text": "비운 손이 더 멀리 닿는다. 패가 조금 남아도 빈손으로 쳐 준다."
+  },
+  {
+   "n": 189,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-fullhand-plus]",
+   "text": "손에 든 패마다 더 무겁게 실린다."
+  },
+  {
+   "n": 190,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-cycle]",
+   "text": "마음에 안 드는 패를 슬쩍 덱으로 돌려 두고 새 패를 집는다."
+  },
+  {
+   "n": 191,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-cycle-plus]",
+   "text": "돌려 두고 집는 손이 더 빨라져, 패가 더 따라 든다."
+  },
+  {
+   "n": 192,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-trade]",
+   "text": "손에 든 패를 덜어 내며 숨을 돌린다. 패가 많을수록 더 크게 돌린다."
+  },
+  {
+   "n": 193,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-trade-plus]",
+   "text": "같은 패로 더 크게 숨을 돌린다. 비운 만큼 채워진다."
+  },
+  {
+   "n": 194,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-blackout]",
+   "text": "흐르던 전기를 한순간 끊어 상대의 다음 행동을 멈춰 세운다."
+  },
+  {
+   "n": 195,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-blackout-plus]",
+   "text": "끊어 둔 틈을 타 패까지 더 챙긴다."
+  },
+  {
+   "n": 196,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-darkrend]",
+   "text": "어둠을 길게 그어 상대의 손아귀에서 힘을 빼낸다."
+  },
+  {
+   "n": 197,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-darkrend-plus]",
+   "text": "더 길게 그어 힘을 더 오래 비워 둔다."
+  },
+  {
+   "n": 198,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-shroud]",
+   "text": "어둠을 둘러 몸을 가리고, 그 그늘에서 패를 집는다."
+  },
+  {
+   "n": 199,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-shroud-plus]",
+   "text": "두른 어둠이 더 짙어, 가린 만큼 더 단단히 막는다."
+  },
+  {
+   "n": 200,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-discharge]",
+   "text": "손에 든 패에 고인 전기를 한꺼번에 쏟아 내고, 빈손을 패로 채운다."
+  },
+  {
+   "n": 201,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-discharge-plus]",
+   "text": "쏟아 내는 전기가 더 거세, 패가 많을수록 한층 사납다."
+  },
+  {
+   "n": 202,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-fold]",
+   "text": "패 한 장을 접어 덱으로 넘기고 새로 펴 든다."
+  },
+  {
+   "n": 203,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-fold-plus]",
+   "text": "한 장을 접으면 더 많은 패가 따라 펴진다."
+  },
+  {
+   "n": 204,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-empty]",
+   "text": "손이 빌수록 일격이 무거워진다."
+  },
+  {
+   "n": 205,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-empty-plus]",
+   "text": "패가 조금 남아 있어도 빈손으로 쳐 준다."
+  },
+  {
+   "n": 206,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-overdraw]",
+   "text": "패를 손 가득 끌어모은다. 그 무게가 다음 일격에 실린다."
+  },
+  {
+   "n": 207,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-overdraw-plus]",
+   "text": "끌어모으는 데 드는 힘마저 사라져, 공짜로 손이 미어진다."
+  },
+  {
+   "n": 208,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-static]",
+   "text": "짧은 전기가 상대를 저릿하게 굳힌다."
+  },
+  {
+   "n": 209,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-static-plus]",
+   "text": "더 센 전기가 상대를 더 오래 저리게 한다."
+  },
+  {
+   "n": 210,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-handcut]",
+   "text": "손에 든 패만큼, 힘 안 들이고 가볍게 흘려 벤다."
+  },
+  {
+   "n": 211,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-handcut-plus]",
+   "text": "똑같이 가볍게, 든 패가 더 무겁게 실린다."
+  },
+  {
+   "n": 212,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-handguard]",
+   "text": "손에 든 패를 앞세워 막고, 그 무게만큼 되친다."
+  },
+  {
+   "n": 213,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-trickhand]",
+   "text": "손에 든 패로 베고, 그 틈에 패를 더 가져온다."
+  },
+  {
+   "n": 214,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-trickhand-plus]",
+   "text": "베는 손도 가져오는 손도 한층 빠르다."
+  },
+  {
+   "n": 215,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-fanout]",
+   "text": "손에 든 패를 한꺼번에 펼쳐, 그 넓이만큼 내리꽂는다."
+  },
+  {
+   "n": 216,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-fanout-plus]",
+   "text": "펼치는 넓이가 더 크다. 패가 많을수록 사납게 터진다."
+  },
+  {
+   "n": 217,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-bleedhand]",
+   "text": "손에 든 패만큼 찌르고, 찌른 곳에 어둠을 남겨 둔다."
+  },
+  {
+   "n": 218,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-bleedhand-plus]",
+   "text": "더 매섭게 찌르고, 남긴 어둠도 더 오래 번진다."
+  },
+  {
+   "n": 219,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-redeal]",
+   "text": "패 몇 장을 덱으로 돌려 두고, 그보다 많이 새로 받는다."
+  },
+  {
+   "n": 220,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-redeal-plus]",
+   "text": "돌려 받는 패가 더 늘었다."
+  },
+  {
+   "n": 221,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-tuck]",
+   "text": "손끝으로 패를 슬쩍 끌어 든다. 힘들이지 않고."
+  },
+  {
+   "n": 222,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-tuck-plus]",
+   "text": "슬쩍 끌어 드는 손이 패를 더 데려온다."
+  },
+  {
+   "n": 223,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-stash]",
+   "text": "패를 넉넉히 챙기고, 다음 수에 쓸 힘을 미리 갈무리해 둔다."
+  },
+  {
+   "n": 224,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-stash-plus]",
+   "text": "갈무리해 둔 힘이 더 늘었다."
+  },
+  {
+   "n": 225,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-sleight]",
+   "text": "패 한 장을 덱으로 넘기고, 다음에 쓸 힘을 당겨 둔다."
+  },
+  {
+   "n": 226,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-sleight-plus]",
+   "text": "당겨 두는 힘이 더 늘었다. 여전히 거저다."
+  },
+  {
+   "n": 227,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-shed]",
+   "text": "손에 든 패를 어둠 속으로 슬쩍 흘려보낸다. 떨쳐낸 패는 다시 돌아오지 않는다."
+  },
+  {
+   "n": 228,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-shed-plus]",
+   "text": "더 많이 흘려보내, 손이 한층 가뿐히 빈다."
+  },
+  {
+   "n": 229,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-purge]",
+   "text": "패를 단숨에 덱으로 되돌려 두고, 비운 손에 다음 힘을 미리 당겨 둔다."
+  },
+  {
+   "n": 230,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-purge-plus]",
+   "text": "되돌리는 패가 더 많고, 당겨 두는 힘도 더 늘었다."
+  },
+  {
+   "n": 231,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-blankblade]",
+   "text": "손이 비어 있을수록 더 멀리 닿는다. 가뿐하게 벤다."
+  },
+  {
+   "n": 232,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-blankblade-plus]",
+   "text": "비운 손이 한층 매섭게 닿는다."
+  },
+  {
+   "n": 233,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-hollow]",
+   "text": "손에 든 것을 다 비웠을 때 가장 빠르게 내리꽂힌다."
+  },
+  {
+   "n": 234,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-hollow-plus]",
+   "text": "빈 손끝이 더 멀리까지 닿는다."
+  },
+  {
+   "n": 235,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-lastcard]",
+   "text": "손에 패가 마지막 하나만 남았을 때 가장 무겁게 떨어진다."
+  },
+  {
+   "n": 236,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-lastcard-plus]",
+   "text": "마지막 패가 더 세게 박힌다."
+  },
+  {
+   "n": 237,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-shock]",
+   "text": "가볍게 흘려 보낸 전기가 상대를 잠깐 저릿하게 한다."
+  },
+  {
+   "n": 238,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-shock-plus]",
+   "text": "흘려 보낸 전기가 상대를 더 오래 저리게 한다."
+  },
+  {
+   "n": 239,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-drain]",
+   "text": "어둠으로 손아귀를 더듬어 그 힘을 슬쩍 빼낸다."
+  },
+  {
+   "n": 240,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-drain-plus]",
+   "text": "더 멀리 더듬어 힘을 더 오래 비워 둔다."
+  },
+  {
+   "n": 241,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-thinarmor]",
+   "text": "어둠이 갑옷을 안에서부터 삭여 방어가 한층 얇아진다."
+  },
+  {
+   "n": 242,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-thinarmor-plus]",
+   "text": "더 빠르게 삭여 얇아진 방어가 더 오래 간다."
+  },
+  {
+   "n": 243,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-overcharge]",
+   "text": "한꺼번에 흘린 전류가 상대를 저리게 굳히고 힘까지 흩어 놓는다."
+  },
+  {
+   "n": 244,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-overcharge-plus]",
+   "text": "흘린 전류가 더 거세, 저림도 흩어짐도 더 오래 간다."
+  },
+  {
+   "n": 245,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-shortcircuit]",
+   "text": "두 선을 맞붙여 한순간 끊고, 그 멈춘 틈으로 내리꽂는다."
+  },
+  {
+   "n": 246,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-shortcircuit-plus]",
+   "text": "끊긴 회로 사이를 파고든다."
+  },
+  {
+   "n": 247,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-veil]",
+   "text": "어둠을 가볍게 둘러 앞을 가린다."
+  },
+  {
+   "n": 248,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-veil-plus]",
+   "text": "두른 어둠이 한층 짙다."
+  },
+  {
+   "n": 249,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-holdline]",
+   "text": "패를 펼치지 않고 손에 든 채 버티며, 그 사이 패를 더 끌어 든다."
+  },
+  {
+   "n": 250,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-holdline-plus]",
+   "text": "손에 든 패를 펼치지 않고 더 단단히 막아 낸다."
+  },
+  {
+   "n": 251,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-wardfield]",
+   "text": "소리도 빛도 삼키는 어둠을 두껍게 세우고, 그 안에서 패를 살핀다."
+  },
+  {
+   "n": 252,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-wardfield-plus]",
+   "text": "세운 어둠이 더 두꺼워, 그 안의 손도 한결 여유롭다."
+  },
+  {
+   "n": 253,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-burst]",
+   "text": "손에 든 패에 고인 전기를 한곳에 모아 터뜨린다."
+  },
+  {
+   "n": 254,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-burst-plus]",
+   "text": "모아 둔 전기를 한층 거세게 터뜨린다."
+  },
+  {
+   "n": 255,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-voidlance]",
+   "text": "텅 빈 손에서 창이 길게 뻗어 나간다. 비운 만큼 멀리 닿고, 패가 따라 든다."
+  },
+  {
+   "n": 256,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-voidlance-plus]",
+   "text": "뻗는 창이 한층 길다."
+  },
+  {
+   "n": 257,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-thunderfist]",
+   "text": "손에 든 패를 통째로 벼락으로 모아 내리치고, 빈손을 패로 채운다."
+  },
+  {
+   "n": 258,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-thunderfist-plus]",
+   "text": "모아 내리치는 벼락이 더 굵어, 패가 많을수록 하늘이 무너진다."
+  },
+  {
+   "n": 259,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-spire]",
+   "text": "가장 짙게 모인 색을 빛줄기로 세워 그대로 내리꽂는다."
+  },
+  {
+   "n": 260,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-spire-plus]",
+   "text": "첨탑을 더 높이 세운다. 빛을 쏘는 김에 색을 더 끌어모은다."
+  },
+  {
+   "n": 261,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-levee]",
+   "text": "가장 짙은 색을 둑처럼 쌓아 앞을 가린다."
+  },
+  {
+   "n": 262,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-levee-plus]",
+   "text": "둑을 더 높이 쌓는다. 막아 두고도 다음 수를 챙긴다."
+  },
+  {
+   "n": 263,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-prism]",
+   "text": "빛이 지닌 속성의 수만큼 갈라져 쏟아진다."
+  },
+  {
+   "n": 264,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-prism-plus]",
+   "text": "지닌 속성이 늘수록 빛이 더 여러 갈래로 갈라진다."
+  },
+  {
+   "n": 265,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-judgment]",
+   "text": "가장 강한 빛을 겹쳐 단숨에 내리친다."
+  },
+  {
+   "n": 266,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-judgment-plus]",
+   "text": "빛을 더 무겁게 겹친다. 내리고도 패가 손에 남는다."
+  },
+  {
+   "n": 267,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-infuse]",
+   "text": "무엇이든 색을 끌어와 몸에 들인다. 비어 있던 그릇이 그만큼 차오른다."
+  },
+  {
+   "n": 268,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-infuse-plus]",
+   "text": "끌어오는 색이 더 짙어져 한층 가득 스민다."
+  },
+  {
+   "n": 269,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-rainbow]",
+   "text": "여덟 색이 한꺼번에 차오른다. 어디에도 치우치지 않은 풍요다."
+  },
+  {
+   "n": 270,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-rainbow-plus]",
+   "text": "여덟 색이 함께 더 짙어져 그릇이 한층 그득하다."
+  },
+  {
+   "n": 271,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-spectrum]",
+   "text": "지닌 모든 색을 길게 펼쳐 쏟아 낸다. 다채로울수록 빈틈이 없다."
+  },
+  {
+   "n": 272,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-spectrum-plus]",
+   "text": "펼치는 빛의 띠가 더 넓고 매섭다."
+  },
+  {
+   "n": 273,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-wellspring]",
+   "text": "빛이 고인 곳에서 샘이 솟는다. 다음에 쓸 힘을 당겨 두고, 빛이 짙으면 패가 더 든다."
+  },
+  {
+   "n": 274,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-wellspring-plus]",
+   "text": "샘이 더 깊이 솟아 당겨 두는 힘도 늘어난다."
+  },
+  {
+   "n": 275,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-hex]",
+   "text": "빛을 비추어 상대의 빈틈을 드러낸다. 드러난 곳은 더 매섭게 베인다."
+  },
+  {
+   "n": 276,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-hex-plus]",
+   "text": "비추는 빛이 더 밝아, 드러난 빈틈이 더 오래 벌어진다."
+  },
+  {
+   "n": 277,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-overflow]",
+   "text": "여덟 색을 한꺼번에 채우고 곧장 전부 쏟아 낸다. 차오른 만큼 넘쳐흐른다."
+  },
+  {
+   "n": 278,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-overflow-plus]",
+   "text": "채우는 만큼 쏟는 양도 늘어 그릇이 한층 넘친다."
+  },
+  {
+   "n": 279,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-purelight]",
+   "text": "다른 색을 거치지 않고 곧장 빛만 짙게 들인다. 가장 순수한 색이다."
+  },
+  {
+   "n": 280,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-purelight-plus]",
+   "text": "들이는 빛이 더 짙어져 그릇이 새하얗게 빛난다."
+  },
+  {
+   "n": 281,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-resonate]",
+   "text": "가장 짙은 색을 거듭 울린다. 모아 온 빛이 단숨에 터진다."
+  },
+  {
+   "n": 282,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-resonate-plus]",
+   "text": "더 무겁게 겹쳐 울린다. 터뜨리고도 패가 손에 남는다."
+  },
+  {
+   "n": 283,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-beam]",
+   "text": "가장 짙은 색에서 가는 빛을 뽑아 흘려 보낸다. 힘들이지 않고 가볍게."
+  },
+  {
+   "n": 284,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-beam-plus]",
+   "text": "빛줄기가 지닌 색만큼 갈래로 나뉜다. 여전히 가볍다."
+  },
+  {
+   "n": 285,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-facet]",
+   "text": "색의 단면마다 날을 세워 베고, 남은 빛으로 앞을 가린다."
+  },
+  {
+   "n": 286,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-facet-plus]",
+   "text": "단면이 더 날카롭고, 가리는 빛도 두껍다."
+  },
+  {
+   "n": 287,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-shimmerwall]",
+   "text": "가장 짙은 색을 벽으로 세우고, 그 위에 빛을 더 얹는다."
+  },
+  {
+   "n": 288,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-shimmerwall-plus]",
+   "text": "세운 벽이 더 높고 빛도 두껍다."
+  },
+  {
+   "n": 289,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-refract]",
+   "text": "짙은 색을 꺾어 쏘고, 꺾인 빛의 끝에서 다음 패를 본다."
+  },
+  {
+   "n": 290,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-refract-plus]",
+   "text": "꺾는 각이 더 날카로워져 끝에서 패가 더 보인다."
+  },
+  {
+   "n": 291,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-mantle]",
+   "text": "가장 짙은 색을 두툼하게 둘러 온몸을 감싼다. 짙을수록 두꺼워지는 외투다."
+  },
+  {
+   "n": 292,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-mantle-plus]",
+   "text": "두른 외투가 더 두껍다. 감싸 두고도 다음 수를 챙긴다."
+  },
+  {
+   "n": 293,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-kindle]",
+   "text": "작은 빛을 천천히 머금는다. 그릇이 조금씩 차오른다."
+  },
+  {
+   "n": 294,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-kindle-plus]",
+   "text": "머금는 빛이 한층 짙다."
+  },
+  {
+   "n": 295,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-glean]",
+   "text": "흩어진 기운이 몸에 스며드는 동안, 빛이 앞을 가려 준다."
+  },
+  {
+   "n": 296,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-glean-plus]",
+   "text": "스며드는 색이 더 짙고, 가리는 손도 두껍다."
+  },
+  {
+   "n": 297,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-attune]",
+   "text": "여덟 속성을 고루 끌어 올린다."
+  },
+  {
+   "n": 298,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-attune-plus]",
+   "text": "색을 맞춰 두고, 다음 패까지 미리 챙긴다."
+  },
+  {
+   "n": 299,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-welltap]",
+   "text": "색을 길어 올리는 김에 다음에 쓸 힘까지 미리 당겨 둔다."
+  },
+  {
+   "n": 300,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-welltap-plus]",
+   "text": "길어 올리는 색이 더 짙다."
+  },
+  {
+   "n": 301,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-glimmer]",
+   "text": "어슴푸레한 빛 속에서 다음 패를 더듬어 짚는다."
+  },
+  {
+   "n": 302,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-glimmer-plus]",
+   "text": "빛이 한결 또렷해져 패가 한꺼번에 잡힌다."
+  },
+  {
+   "n": 303,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-clarity]",
+   "text": "빛이 짙게 갠 날에는 시야가 멀리까지 트여 패가 더 보인다."
+  },
+  {
+   "n": 304,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-clarity-plus]",
+   "text": "더 멀리 트인 만큼 들어오는 패도 늘어난다."
+  },
+  {
+   "n": 305,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-reservoir]",
+   "text": "오늘 머금은 빛을 내일로 미뤄 둔다. 그 사이 앞을 가린다."
+  },
+  {
+   "n": 306,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-reservoir-plus]",
+   "text": "미뤄 두는 빛이 한층 더 늘었다."
+  },
+  {
+   "n": 307,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-dawndraw]",
+   "text": "날이 트기 전, 패를 미리 짚고 다음에 쓸 힘을 당겨 둔다."
+  },
+  {
+   "n": 308,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-dawndraw-plus]",
+   "text": "당겨 두는 힘이 한층 더 늘었다."
+  },
+  {
+   "n": 309,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-glare]",
+   "text": "한순간 강한 빛을 쏘아 상대의 눈을 멀게 한다."
+  },
+  {
+   "n": 310,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-glare-plus]",
+   "text": "쏘는 빛이 더 따가워, 멀어진 눈이 더 오래 흐리다."
+  },
+  {
+   "n": 311,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-searbrand]",
+   "text": "살갗에 빛을 새겨 둔다. 새긴 곳이 천천히 타들어 간다."
+  },
+  {
+   "n": 312,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-searbrand-plus]",
+   "text": "새겨 둔 빛이 더 매섭게 번진다."
+  },
+  {
+   "n": 313,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-unravel]",
+   "text": "빛으로 상대를 환히 비춰 빈틈을 벌리고 손마저 무디게 한다."
+  },
+  {
+   "n": 314,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-unravel-plus]",
+   "text": "비추는 빛이 더 밝아, 벌어진 빈틈도 무뎌진 손도 더 오래간다."
+  },
+  {
+   "n": 315,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-spark]",
+   "text": "작은 빛을 쏜다. 쏠 때마다 어느 색이 조금 짙어진다."
+  },
+  {
+   "n": 316,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-spark-plus]",
+   "text": "첫 줄기가 조금 더 밝고, 짙어지는 색도 늘었다."
+  },
+  {
+   "n": 317,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-trickle]",
+   "text": "여덟 색이 조금씩 스며든다. 적지만 어느 색도 빠뜨리지 않는다."
+  },
+  {
+   "n": 318,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-trickle-plus]",
+   "text": "스며드는 색이 한층 짙다."
+  },
+  {
+   "n": 319,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-glowfade]",
+   "text": "짙은 색을 빛줄기로 쏘고, 그 잔광을 다시 빛으로 거둬들인다."
+  },
+  {
+   "n": 320,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-glowfade-plus]",
+   "text": "거둬들이는 잔광이 한층 짙다."
+  },
+  {
+   "n": 321,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-radiance]",
+   "text": "빛을 내리쬔다. 지닌 속성이 다채로울수록 눈부시다."
+  },
+  {
+   "n": 322,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-zenith]",
+   "text": "여덟 속성을 고루 끌어 올린 뒤, 가장 짙은 빛을 내리꽂는다."
+  },
+  {
+   "n": 323,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-zenith-plus]",
+   "text": "끌어 올린 색이 더 짙어, 정점이 한층 높다."
+  },
+  {
+   "n": 324,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-aurora]",
+   "text": "지닌 색이 하늘 가득 띠를 이뤄 쏟아지고, 가장 짙은 색이 등 뒤를 감싼다. 펼치고도 단단하다."
+  },
+  {
+   "n": 325,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-aurora-plus]",
+   "text": "펼쳐지는 띠가 더 넓어, 쏟아지는 색도 감싸는 빛도 함께 짙어진다."
+  }
+ ]
+}
