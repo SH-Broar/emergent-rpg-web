@@ -1,0 +1,284 @@
+{
+ "meta": {
+  "id": "06_flavor_review2",
+  "title": "flavor 4차 검수"
+ },
+ "items": [
+  {
+   "n": 1,
+   "kind": "flavor",
+   "loc": "cards/cards-mvr.txt [card.c-fast-mail-plus]",
+   "text": "\"특급 우편이야!\""
+  },
+  {
+   "n": 2,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-stormcall]",
+   "text": "하늘을 통째로 불러 다섯 차례 연달아 내리꽂는다."
+  },
+  {
+   "n": 3,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-overdraw]",
+   "text": "손이 미어지도록 패를 끌어모은다. 그 패가 곧 다음 일격의 무게가 된다."
+  },
+  {
+   "n": 4,
+   "kind": "flavor",
+   "loc": "relics/relics-race.txt [relic.r-race-human-token]",
+   "text": "어디에 서든 곧 익숙해진다. 매 턴 발밑이 조금씩 더 단단해진다."
+  },
+  {
+   "n": 5,
+   "kind": "flavor",
+   "loc": "cards/cards-mvr.txt [card.c-rize-relay]",
+   "text": "\"격투의 장점은, 뭐니뭐니해도 빠르다는거야!\""
+  },
+  {
+   "n": 6,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-radiance-plus]",
+   "text": "내리쬐는 빛이 더 밝고 눈부시다."
+  },
+  {
+   "n": 7,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-spark]",
+   "text": "깃에서 떨어진 잔불이 상대에게 옮아 알아서 타들어 간다."
+  },
+  {
+   "n": 8,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-focuspoint]",
+   "text": "정신을 한곳에 모으면 다음 공격이 두 배로 무거워진다."
+  },
+  {
+   "n": 9,
+   "kind": "flavor",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-spark-bead]",
+   "text": "집어 드는 순간 손끝이 짜릿하다. 번개의 기운이 몸에 깃든다."
+  },
+  {
+   "n": 10,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-handguard-plus]",
+   "text": "손에 든 패가 많을수록 마음이 놓인다."
+  },
+  {
+   "n": 11,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-glean]",
+   "text": "흩어진 색이 몸에 스며들고, 그 사이 앞을 가린다."
+  },
+  {
+   "n": 12,
+   "kind": "flavor",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-prism-tithe]",
+   "text": "어느 색이든 짙어지면 함이 가볍게 짤랑인다. 동전과 시간 조각이 함께 들어찬다."
+  },
+  {
+   "n": 13,
+   "kind": "flavor",
+   "loc": "cards/cards-mvr.txt [card.c-prism-overload-plus]",
+   "text": "가짓수도 짙기도 함께 더 무겁게 쏟아진다."
+  },
+  {
+   "n": 14,
+   "kind": "flavor",
+   "loc": "cards/cards-mvr.txt [card.c-spirit-call-plus]",
+   "text": "더 많은 색의 영혼이 한데 모여든다."
+  },
+  {
+   "n": 15,
+   "kind": "flavor",
+   "loc": "relics/relics-color.txt [relic.r-col-fire-traveler-coal]",
+   "text": "길을 떠나기 전에 화로에서 가장 굵은 숯을 골라 챙겼다. 쥐고 있으면 그 온기가 통째로 몸에 밴다."
+  },
+  {
+   "n": 16,
+   "kind": "flavor",
+   "loc": "cards/transform-forms.txt [card.c-fox-lick-plus]",
+   "text": "상처가 더 빨리 아문다."
+  },
+  {
+   "n": 17,
+   "kind": "flavor",
+   "loc": "cards/junk-cards.txt [card.c-junk-wound]",
+   "text": "자꾸 욱신거려서 신경이 쓰인다."
+  },
+  {
+   "n": 18,
+   "kind": "flavor",
+   "loc": "relics/relics-color.txt [relic.r-col-gain-twin-mirror]",
+   "text": "한쪽 색이 짙어지면 마주 선 거울이 다른 색을 비춰 함께 띄운다. 정령 둘이 마주 보며 깔깔 웃다가 두고 갔다."
+  },
+  {
+   "n": 19,
+   "kind": "flavor",
+   "loc": "relics/relics-stat.txt [relic.r-stat-hearthstone]",
+   "text": "모닥불 옆에 두면 천천히 단단해지는 돌이다. 쉴 때마다 흙과 철의 기운이 더 짙어진다."
+  },
+  {
+   "n": 20,
+   "kind": "flavor",
+   "loc": "relics/relics-activity.txt [relic.r-act-full-basket]",
+   "text": "같은 수고를 들여도 담아 오는 양이 다르다. 손이 큰 사람에게는 그런 재주가 있다."
+  },
+  {
+   "n": 21,
+   "kind": "flavor",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-tide-drop]",
+   "text": "줍는 순간 손바닥이 촉촉해진다. 물의 기운이 몸 안에 스며든다."
+  },
+  {
+   "n": 22,
+   "kind": "flavor",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-tempered-scale]",
+   "text": "불에 거듭 달군 비늘. 충격을 받을수록 더 단단히 일어서며 다음을 막을 두꺼운 껍질이 돋는다."
+  },
+  {
+   "n": 23,
+   "kind": "flavor",
+   "loc": "relics/relics-stat.txt [relic.r-stat-whispering-gust]",
+   "text": "귓가를 스치며 자꾸 무언가를 두고 간다. 궁금한 게 많은 바람이다."
+  },
+  {
+   "n": 24,
+   "kind": "flavor",
+   "loc": "cards/cards-mvr.txt [card.c-yusezria-corebreak-plus]",
+   "text": "더 단단해진 만큼 더 크게 되돌린다."
+  },
+  {
+   "n": 25,
+   "kind": "flavor",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-dusk-mote]",
+   "text": "집어 드는 순간 그늘이 부드러워진다. 어둠의 잔잔한 기운이 몸 안으로 스민다."
+  },
+  {
+   "n": 26,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-tailwind-plus]",
+   "text": "더 멀리서 불어온 바람일수록 세게 떠민다."
+  },
+  {
+   "n": 27,
+   "kind": "flavor",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-greedy-relic]",
+   "text": "불의 기운을 한꺼번에 들이켜는 대신 몸이 조금 약해진다. 모든 욕심에는 값이 따른다."
+  },
+  {
+   "n": 28,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-empty]",
+   "text": "손에 아무것도 남지 않은 순간, 손이 빌수록 일격이 무거워진다."
+  },
+  {
+   "n": 29,
+   "kind": "flavor",
+   "loc": "items/act-1-items.txt [item.i-combat-rage]",
+   "text": "끓는 동안엔 아픈 줄도 모른다."
+  },
+  {
+   "n": 30,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-fullhand]",
+   "text": "손에 든 패를 모조리 칼날로 삼아 한꺼번에 날린다."
+  },
+  {
+   "n": 31,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-tempest-plus]",
+   "text": "몰아치는 범위가 넓어져 세 차례 모두 더 매섭다."
+  },
+  {
+   "n": 32,
+   "kind": "flavor",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-tome-of-openings]",
+   "text": "펼치면 이야기가 먼저 운을 뗀다. 어떤 싸움이든 패를 넉넉히 들고 시작하게 된다."
+  },
+  {
+   "n": 33,
+   "kind": "flavor",
+   "loc": "cards/cards-mvr.txt [card.c-transcend-strike-plus]",
+   "text": "\"걱정하지 마.\""
+  },
+  {
+   "n": 34,
+   "kind": "flavor",
+   "loc": "cards/cards-mvr.txt [card.c-deep-breath]",
+   "text": "임시 방편이라도 소중히."
+  },
+  {
+   "n": 35,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-holdline-plus]",
+   "text": "손에 든 패를 펼치지 않고 더 두껍게 막아 낸다."
+  },
+  {
+   "n": 36,
+   "kind": "flavor",
+   "loc": "cards/cards-mvr.txt [card.c-flame-web]",
+   "text": "\"한 줄 더 엮어 줄까?\" 이그니아가 던진 식지 않는 실에 적이 칭칭 묶인다."
+  },
+  {
+   "n": 37,
+   "kind": "flavor",
+   "loc": "cards/cards-mvr.txt [card.c-venom-bloom]",
+   "text": "독꽃이 적의 안쪽에서 피어난다. 처음엔 옅게, 시간이 지날수록 짙게 무너뜨린다."
+  },
+  {
+   "n": 38,
+   "kind": "flavor",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-first-free-empty-hand]",
+   "text": "첫 카드가 거저인 대신 패가 늘 한 장 모자라다. 가벼운 시작은 두둑한 패를 내준 값이다."
+  },
+  {
+   "n": 39,
+   "kind": "flavor",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-swift-abacus]",
+   "text": "손이 빠른 만큼 셈도 빨리 찬다. 여섯 번 손을 거칠 때마다 패가 한 장 더 얹힌다."
+  },
+  {
+   "n": 40,
+   "kind": "flavor",
+   "loc": "relics/relics-race.txt [relic.r-race-moth-windtally]",
+   "text": "카드가 지날 때마다 깃이 가볍게 떨린다. 다섯 번을 채우면 색 하나가 더 짙어진다."
+  },
+  {
+   "n": 41,
+   "kind": "flavor",
+   "loc": "relics/relics-color.txt [relic.r-col-all-pilgrim-bell]",
+   "text": "싸움이 끝날 때마다 제멋대로 운다. 운이 닿는 날이면 그 울림이 여덟 색 가운데 하나를 골라 띄운다."
+  },
+  {
+   "n": 42,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-shortcircuit-plus]",
+   "text": "끊어 놓은 회로의 틈을 정확히 파고든다."
+  },
+  {
+   "n": 43,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-human-stockpile-plus]",
+   "text": "미뤄 둔 힘이 더 늘었다."
+  },
+  {
+   "n": 44,
+   "kind": "flavor",
+   "loc": "cards/cards-race.txt [card.c-arcana-judgment]",
+   "text": "모아 온 가장 짙은 색을 둘로 겹쳐 단숨에 내린다."
+  },
+  {
+   "n": 45,
+   "kind": "flavor",
+   "loc": "cards/transform-forms.txt [card.c-fox-pounce]",
+   "text": "한 번에 거리를 좁혀 내리덮친다."
+  },
+  {
+   "n": 46,
+   "kind": "flavor",
+   "loc": "cards/cards-mvr.txt [card.c-last-bulwark-plus]",
+   "text": "더 거대한 벽이 가로막아 선다."
+  }
+ ]
+}
