@@ -93,7 +93,7 @@ rank = common
 source = event
 trigger = on-combat-start
 effects = combat-start-block:5
-flavor = 손바닥 위에서 오래 따뜻하다. 싸움이 시작되면 그 온기가 두터운 방어로 굳는다.
+flavor = 손바닥 위에서 오래 따뜻하다. 싸움이 시작되면 그 온기가 단단한 방어로 굳는다.
 
 [relic.r-dawn-feather]
 name = 새벽 깃털
@@ -153,7 +153,7 @@ rank = common
 source = shop
 trigger = on-card-played-after
 effects = cards-to-color:5
-flavor = 빛을 머금었다가 흩뜨리는 작은 구슬. 다섯 번 손을 거칠 때마다 어느 색이 짙어진다.
+flavor = 빛을 머금었다가 흩뜨리는 작은 구슬. 다섯 번 손을 거칠 때마다 어느 기운이 깃든다.
 
 [relic.r-whetstone]
 name = 숫돌 조각
@@ -257,4 +257,4 @@ rank = rare
 source = event
 trigger = on-combat-start
 effects = draw-extra-add:2, combat-start-status:2:frail
-flavor = 쓸 만한 것을 챙기다 보니 너무 많아졌다. 매 턴 패는 넉넉하지만 어깨가 짓눌려 막아 내기가 버겁다.
+flavor = 쓸 만한 것을 챙기다 보니 가방이 가득 찼다. 패는 넉넉하지만 어깨가 무거워 막아 내기 버겁다.

@@ -1,7 +1,7 @@
 {
  "meta": {
-  "id": "flavor_all_1",
-  "title": "전수 검수 1 (cards-race)"
+  "id": "flavor_all_1_v2",
+  "title": "전수 검수 1 (cards-race) · 정제판"
  },
  "items": [
   {
@@ -26,7 +26,7 @@
    "n": 4,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-human-tailwind-plus]",
-   "text": "더 멀리서 불어온 바람일수록 세게 휘몰아친다."
+   "text": "더 멀리서 불어온 바람에 칼을 싣는다."
   },
   {
    "n": 5,
@@ -62,7 +62,7 @@
    "n": 10,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-human-riposte-plus]",
-   "text": "받아 낸 충격이 두 배가 되어 돌아간다."
+   "text": "받아 낸 충격을 한층 세게 되돌려준다."
   },
   {
    "n": 11,
@@ -86,7 +86,7 @@
    "n": 14,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-human-adaptstrike-plus]",
-   "text": "상황을 더 빨리 읽고 더 크게 베거나 더 단단히 막는다."
+   "text": "상황을 한눈에 읽고 망설임 없이 손을 놀린다."
   },
   {
    "n": 15,
@@ -98,7 +98,7 @@
    "n": 16,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-human-pin-plus]",
-   "text": "더 정확히 찌를수록 빈틈이 더 오래 벌어진다."
+   "text": "급소를 더 깊이 찔러 빈틈을 크게 벌려 놓는다."
   },
   {
    "n": 17,
@@ -110,7 +110,7 @@
    "n": 18,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-human-hamstring-plus]",
-   "text": "더 낮게 후려서 더 오래 비틀거리게 한다."
+   "text": "다리를 세게 후려 중심을 크게 무너뜨린다."
   },
   {
    "n": 19,
@@ -122,7 +122,7 @@
    "n": 20,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-human-shatterguard-plus]",
-   "text": "상대의 방어를 더 오래 무너뜨린다."
+   "text": "버티고 선 무릎을 더 세게 꺾어 방어를 허문다."
   },
   {
    "n": 21,
@@ -194,7 +194,7 @@
    "n": 32,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-human-focuspoint-plus]",
-   "text": "더 빨리 집중한다. 다음 공격은 여전히 두 배다."
+   "text": "눈 깜짝할 새 한곳에 정신을 모은다."
   },
   {
    "n": 33,
@@ -206,7 +206,7 @@
    "n": 34,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-human-tradeblow-plus]",
-   "text": "주는 만큼 막는 만큼이 함께 늘었다."
+   "text": "한 대 주고 한 대 막는 손이 한결 야물다."
   },
   {
    "n": 35,
@@ -278,19 +278,19 @@
    "n": 46,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-human-tempo-plus]",
-   "text": "당겨 둔 힘이 더 늘었다."
+   "text": "패를 넉넉히 챙기고 다음에 쓸 힘을 한층 크게 당겨 둔다."
   },
   {
    "n": 47,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-human-foresight]",
-   "text": "빛이 짙게 든 날이면 앞일이 멀리까지 보인다."
+   "text": "빛이 든 날이면 앞일이 멀리까지 보인다."
   },
   {
    "n": 48,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-human-foresight-plus]",
-   "text": "더 멀리 내다본 만큼 들어오는 패도 늘어난다."
+   "text": "빛이 든 날이면 앞일이 더 환히 내다보인다."
   },
   {
    "n": 49,
@@ -512,7 +512,7 @@
    "n": 85,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-human-warcry-plus]",
-   "text": "외침에 기세가 더 실려, 남는 힘도 그만큼 크다."
+   "text": "더 크게 소리를 지르고 한층 거센 기세로 몰아친다."
   },
   {
    "n": 86,
@@ -662,7 +662,7 @@
    "n": 110,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-moth-accel-plus]",
-   "text": "당겨 둔 힘이 더 늘었다."
+   "text": "등 뒤로 바람을 모으고 다음에 쓸 힘을 미리 당겨 둔다."
   },
   {
    "n": 111,
@@ -746,7 +746,7 @@
    "n": 124,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-moth-flick-plus]",
-   "text": "튕기는 손끝에 빛이 더 짙게 모인다."
+   "text": "튕기는 손끝에서 빛이 더 매섭게 튀어 나간다."
   },
   {
    "n": 125,
@@ -944,13 +944,13 @@
    "n": 157,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-moth-clearsky]",
-   "text": "빛이 짙게 갠 날이면 하늘이 멀리까지 트여 패가 더 보인다."
+   "text": "빛이 환히 갠 날이면 하늘이 멀리까지 트여 패가 더 보인다."
   },
   {
    "n": 158,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-moth-clearsky-plus]",
-   "text": "더 멀리 트인 만큼 들어오는 패도 늘어난다."
+   "text": "하늘이 더 멀리 트여 패가 한결 잘 보인다."
   },
   {
    "n": 159,
@@ -962,7 +962,7 @@
    "n": 160,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-moth-loop-plus]",
-   "text": "미뤄 두는 힘이 늘었다. 바람은 여전히 손에 남는다."
+   "text": "다음으로 미뤄 두는 힘이 더 크다. 바람은 여전히 손에 남는다."
   },
   {
    "n": 161,
@@ -974,7 +974,7 @@
    "n": 162,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-moth-haste-plus]",
-   "text": "몸을 비우는 데 드는 힘마저 줄었다."
+   "text": "몸을 비우는 데 드는 힘마저 한결 가볍다."
   },
   {
    "n": 163,
@@ -1034,7 +1034,7 @@
    "n": 172,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-moth-skyfall-plus]",
-   "text": "모은 빛이 더 짙어, 내리꽂는 빛줄기가 한층 무겁다."
+   "text": "그러모은 빛을 더 무겁게 내리꽂는다."
   },
   {
    "n": 173,
@@ -1058,7 +1058,7 @@
    "n": 176,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-moth-toxinburst-plus]",
-   "text": "같은 불씨로 더 크게 터트린다. 넓게 번졌을수록 더 멀리 갈라진다."
+   "text": "거둬 모은 불씨를 한층 크게 터트린다."
   },
   {
    "n": 177,
@@ -1196,7 +1196,7 @@
    "n": 199,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-phantom-shroud-plus]",
-   "text": "두른 어둠이 더 짙어, 가린 만큼 더 단단히 막는다."
+   "text": "어둠을 겹쳐 둘러 한층 단단히 가린다."
   },
   {
    "n": 200,
@@ -1322,7 +1322,7 @@
    "n": 220,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-phantom-redeal-plus]",
-   "text": "돌려 받는 패가 더 늘었다."
+   "text": "돌려 두고 새로 받는 패가 더 많다."
   },
   {
    "n": 221,
@@ -1346,7 +1346,7 @@
    "n": 224,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-phantom-stash-plus]",
-   "text": "갈무리해 둔 힘이 더 늘었다."
+   "text": "패를 챙기고 다음에 쓸 힘을 한층 크게 갈무리해 둔다."
   },
   {
    "n": 225,
@@ -1358,7 +1358,7 @@
    "n": 226,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-phantom-sleight-plus]",
-   "text": "당겨 두는 힘이 더 늘었다. 여전히 거저다."
+   "text": "패를 넘기고 다음에 쓸 힘을 한층 크게 당겨 둔다. 여전히 거저다."
   },
   {
    "n": 227,
@@ -1382,7 +1382,7 @@
    "n": 230,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-phantom-purge-plus]",
-   "text": "되돌리는 패가 더 많고, 당겨 두는 힘도 더 늘었다."
+   "text": "되돌리는 패도 당겨 두는 힘도 한층 크다."
   },
   {
    "n": 231,
@@ -1490,7 +1490,7 @@
    "n": 248,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-phantom-veil-plus]",
-   "text": "두른 어둠이 한층 짙다."
+   "text": "어둠을 넓게 둘러 앞을 가린다."
   },
   {
    "n": 249,
@@ -1508,13 +1508,13 @@
    "n": 251,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-phantom-wardfield]",
-   "text": "소리도 빛도 삼키는 어둠을 두껍게 세우고, 그 안에서 패를 살핀다."
+   "text": "소리도 빛도 삼키는 어둠을 둘러 세우고, 그 안에서 패를 살핀다."
   },
   {
    "n": 252,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-phantom-wardfield-plus]",
-   "text": "세운 어둠이 더 두꺼워, 그 안의 손도 한결 여유롭다."
+   "text": "세운 어둠이 한결 단단해, 그 안의 손도 여유롭다."
   },
   {
    "n": 253,
@@ -1544,7 +1544,7 @@
    "n": 257,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-phantom-thunderfist]",
-   "text": "손에 든 패를 통째로 벼락으로 모아 내리치고, 빈손을 패로 채운다."
+   "text": "손에 든 패를 모조리 벼락으로 모아 내리치고, 빈손을 패로 채운다."
   },
   {
    "n": 258,
@@ -1556,19 +1556,19 @@
    "n": 259,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-spire]",
-   "text": "가장 짙게 모인 색을 빛줄기로 세워 그대로 내리꽂는다."
+   "text": "가장 깊이 밴 색을 빛줄기로 세워 그대로 내리꽂는다."
   },
   {
    "n": 260,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-spire-plus]",
-   "text": "첨탑을 더 높이 세운다. 빛을 쏘는 김에 색을 더 끌어모은다."
+   "text": "첨탑을 더 높이 세운다. 쏘는 사이 어느 색의 기운이 몸에 밴다."
   },
   {
    "n": 261,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-levee]",
-   "text": "가장 짙은 색을 둑처럼 쌓아 앞을 가린다."
+   "text": "몸에 가장 무르익은 색을 둑처럼 쌓아 앞을 가린다."
   },
   {
    "n": 262,
@@ -1586,7 +1586,7 @@
    "n": 264,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-prism-plus]",
-   "text": "지닌 속성이 늘수록 빛이 더 여러 갈래로 갈라진다."
+   "text": "빛이 한층 여러 갈래로 갈라져 쏟아진다."
   },
   {
    "n": 265,
@@ -1604,31 +1604,31 @@
    "n": 267,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-infuse]",
-   "text": "무엇이든 색을 끌어와 몸에 들인다. 비어 있던 그릇이 그만큼 차오른다."
+   "text": "어느 색이든 그 기운을 몸에 들인다. 비어 있던 안이 그득해진다."
   },
   {
    "n": 268,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-infuse-plus]",
-   "text": "끌어오는 색이 더 짙어져 한층 가득 스민다."
+   "text": "들이는 기운이 속까지 스며 안이 한층 그득하다."
   },
   {
    "n": 269,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-rainbow]",
-   "text": "여덟 색이 한꺼번에 차오른다. 어디에도 치우치지 않은 풍요다."
+   "text": "여덟 색의 기운이 한꺼번에 몸에 깃든다. 어디에도 치우치지 않은 풍요다."
   },
   {
    "n": 270,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-rainbow-plus]",
-   "text": "여덟 색이 함께 더 짙어져 그릇이 한층 그득하다."
+   "text": "여덟 색의 기운이 속속들이 깃들어 안이 그득하다."
   },
   {
    "n": 271,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-spectrum]",
-   "text": "지닌 모든 색을 길게 펼쳐 쏟아 낸다. 다채로울수록 빈틈이 없다."
+   "text": "지닌 모든 색을 길게 펼쳐 한꺼번에 쏟아 낸다."
   },
   {
    "n": 272,
@@ -1640,55 +1640,55 @@
    "n": 273,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-wellspring]",
-   "text": "빛이 고인 곳에서 샘이 솟는다. 다음에 쓸 힘을 당겨 두고, 빛이 짙으면 패가 더 든다."
+   "text": "빛이 고인 곳에서 샘이 솟는다. 다음에 쓸 힘을 미리 당겨 둔다."
   },
   {
    "n": 274,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-wellspring-plus]",
-   "text": "샘이 더 깊이 솟아 당겨 두는 힘도 늘어난다."
+   "text": "솟는 샘이 더 세차, 당겨 두는 힘도 한층 크다."
   },
   {
    "n": 275,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-hex]",
-   "text": "빛을 비추어 상대의 빈틈을 드러낸다. 드러난 곳은 더 매섭게 베인다."
+   "text": "빛을 비추어 상대의 빈틈을 환히 드러낸다."
   },
   {
    "n": 276,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-hex-plus]",
-   "text": "비추는 빛이 더 밝아, 드러난 빈틈이 더 오래 벌어진다."
+   "text": "비추는 빛이 더 밝아 빈틈이 한층 크게 벌어진다."
   },
   {
    "n": 277,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-overflow]",
-   "text": "여덟 색을 한꺼번에 채우고 곧장 전부 쏟아 낸다. 차오른 만큼 넘쳐흐른다."
+   "text": "여덟 색의 기운을 한꺼번에 들이고 곧장 전부 쏟아 낸다."
   },
   {
    "n": 278,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-overflow-plus]",
-   "text": "채우는 만큼 쏟는 양도 늘어 그릇이 한층 넘친다."
+   "text": "들이는 기운도 쏟아 내는 빛도 한층 거세다."
   },
   {
    "n": 279,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-purelight]",
-   "text": "다른 색을 거치지 않고 곧장 빛만 짙게 들인다. 가장 순수한 색이다."
+   "text": "다른 색을 거치지 않고 곧장 빛의 기운만 몸에 들인다. 가장 순수한 색이다."
   },
   {
    "n": 280,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-purelight-plus]",
-   "text": "들이는 빛이 더 짙어져 그릇이 새하얗게 빛난다."
+   "text": "빛의 기운이 온몸에 배어 새하얗다."
   },
   {
    "n": 281,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-resonate]",
-   "text": "가장 짙은 색을 거듭 울린다. 모아 온 빛이 단숨에 터진다."
+   "text": "몸에 가장 무르익은 색을 거듭 울린다. 키워 온 빛이 단숨에 터진다."
   },
   {
    "n": 282,
@@ -1700,7 +1700,7 @@
    "n": 283,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-beam]",
-   "text": "가장 짙은 색에서 가는 빛을 뽑아 흘려 보낸다. 힘들이지 않고 가볍게."
+   "text": "몸에 가장 무르익은 색에서 가는 빛을 뽑아 흘려 보낸다. 힘들이지 않고 가볍게."
   },
   {
    "n": 284,
@@ -1718,25 +1718,25 @@
    "n": 286,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-facet-plus]",
-   "text": "단면이 더 날카롭고, 가리는 빛도 두껍다."
+   "text": "단면이 더 날카롭고, 가리는 빛도 한결 단단하다."
   },
   {
    "n": 287,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-shimmerwall]",
-   "text": "가장 짙은 색을 벽으로 세우고, 그 위에 빛을 더 얹는다."
+   "text": "몸에 가장 무르익은 색을 벽으로 세우고, 그 위에 빛을 더 얹는다."
   },
   {
    "n": 288,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-shimmerwall-plus]",
-   "text": "세운 벽이 더 높고 빛도 두껍다."
+   "text": "세운 벽이 더 높고 빛도 한결 단단하다."
   },
   {
    "n": 289,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-refract]",
-   "text": "짙은 색을 꺾어 쏘고, 꺾인 빛의 끝에서 다음 패를 본다."
+   "text": "무르익은 색을 꺾어 쏘고, 꺾인 빛의 끝에서 다음 패를 본다."
   },
   {
    "n": 290,
@@ -1748,25 +1748,25 @@
    "n": 291,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-mantle]",
-   "text": "가장 짙은 색을 두툼하게 둘러 온몸을 감싼다. 짙을수록 두꺼워지는 외투다."
+   "text": "몸에 가장 무르익은 색을 외투처럼 둘러 온몸을 감싼다."
   },
   {
    "n": 292,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-mantle-plus]",
-   "text": "두른 외투가 더 두껍다. 감싸 두고도 다음 수를 챙긴다."
+   "text": "두른 외투가 더 단단하다. 감싸 두고도 다음 수를 챙긴다."
   },
   {
    "n": 293,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-kindle]",
-   "text": "작은 빛을 천천히 머금는다. 그릇이 조금씩 차오른다."
+   "text": "작은 빛을 천천히 머금는다. 빛의 기운이 조금씩 몸에 밴다."
   },
   {
    "n": 294,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-kindle-plus]",
-   "text": "머금는 빛이 한층 짙다."
+   "text": "머금는 빛의 기운이 한층 깊이 밴다."
   },
   {
    "n": 295,
@@ -1778,7 +1778,7 @@
    "n": 296,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-glean-plus]",
-   "text": "스며드는 색이 더 짙고, 가리는 손도 두껍다."
+   "text": "스며드는 기운이 더 넉넉하고, 가리는 손도 한결 단단하다."
   },
   {
    "n": 297,
@@ -1796,13 +1796,13 @@
    "n": 299,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-welltap]",
-   "text": "색을 길어 올리는 김에 다음에 쓸 힘까지 미리 당겨 둔다."
+   "text": "우물에서 빛을 긷는 김에 다음에 쓸 힘까지 미리 당겨 둔다."
   },
   {
    "n": 300,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-welltap-plus]",
-   "text": "길어 올리는 색이 더 짙다."
+   "text": "우물에서 긷는 빛이 한층 깊다."
   },
   {
    "n": 301,
@@ -1820,13 +1820,13 @@
    "n": 303,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-clarity]",
-   "text": "빛이 짙게 갠 날에는 시야가 멀리까지 트여 패가 더 보인다."
+   "text": "빛이 환히 갠 날에는 시야가 멀리까지 트여 패가 더 보인다."
   },
   {
    "n": 304,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-clarity-plus]",
-   "text": "더 멀리 트인 만큼 들어오는 패도 늘어난다."
+   "text": "시야가 더 멀리 트여 패가 한결 잘 보인다."
   },
   {
    "n": 305,
@@ -1838,7 +1838,7 @@
    "n": 306,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-reservoir-plus]",
-   "text": "미뤄 두는 빛이 한층 더 늘었다."
+   "text": "내일로 미뤄 두는 빛이 한층 크다."
   },
   {
    "n": 307,
@@ -1850,7 +1850,7 @@
    "n": 308,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-dawndraw-plus]",
-   "text": "당겨 두는 힘이 한층 더 늘었다."
+   "text": "날이 트기 전, 당겨 두는 힘이 한층 크다."
   },
   {
    "n": 309,
@@ -1886,19 +1886,19 @@
    "n": 314,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-unravel-plus]",
-   "text": "비추는 빛이 더 밝아, 벌어진 빈틈도 무뎌진 손도 더 오래간다."
+   "text": "비추는 빛이 더 밝아 빈틈을 크게 벌리고 손도 더 무디게 한다."
   },
   {
    "n": 315,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-spark]",
-   "text": "작은 빛을 쏜다. 쏠 때마다 어느 색이 조금 짙어진다."
+   "text": "작은 빛을 쏜다. 쏠 때마다 어느 색의 기운이 몸에 밴다."
   },
   {
    "n": 316,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-spark-plus]",
-   "text": "첫 줄기가 조금 더 밝고, 짙어지는 색도 늘었다."
+   "text": "첫 줄기가 조금 더 밝고, 깃드는 기운도 한층 깊다."
   },
   {
    "n": 317,
@@ -1910,49 +1910,49 @@
    "n": 318,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-trickle-plus]",
-   "text": "스며드는 색이 한층 짙다."
+   "text": "스며드는 기운이 한층 깊다."
   },
   {
    "n": 319,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-glowfade]",
-   "text": "짙은 색을 빛줄기로 쏘고, 그 잔광을 다시 빛으로 거둬들인다."
+   "text": "무르익은 색을 빛줄기로 쏘고, 흩어진 잔광의 기운이 다시 몸에 밴다."
   },
   {
    "n": 320,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-glowfade-plus]",
-   "text": "거둬들이는 잔광이 한층 짙다."
+   "text": "다시 몸에 배는 잔광의 기운이 한층 깊다."
   },
   {
    "n": 321,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-radiance]",
-   "text": "빛을 내리쬔다. 지닌 속성이 다채로울수록 눈부시다."
+   "text": "지닌 색을 한데 모아 눈부신 빛으로 내리쬔다."
   },
   {
    "n": 322,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-zenith]",
-   "text": "여덟 속성을 고루 끌어 올린 뒤, 가장 짙은 빛을 내리꽂는다."
+   "text": "여덟 속성을 고루 끌어 올린 뒤, 몸에 가장 무르익은 색을 내리꽂는다."
   },
   {
    "n": 323,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-zenith-plus]",
-   "text": "끌어 올린 색이 더 짙어, 정점이 한층 높다."
+   "text": "끌어 올린 기운이 그득해 정점이 한층 높다."
   },
   {
    "n": 324,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-aurora]",
-   "text": "지닌 색이 하늘 가득 띠를 이뤄 쏟아지고, 가장 짙은 색이 등 뒤를 감싼다. 펼치고도 단단하다."
+   "text": "지닌 색이 하늘 가득 띠를 이뤄 쏟아지고, 몸에 가장 무르익은 색이 등 뒤를 감싼다. 펼치고도 단단하다."
   },
   {
    "n": 325,
    "kind": "flavor",
    "loc": "cards/cards-race.txt [card.c-arcana-aurora-plus]",
-   "text": "펼쳐지는 띠가 더 넓어, 쏟아지는 색도 감싸는 빛도 함께 짙어진다."
+   "text": "펼쳐지는 띠가 더 넓어, 쏟아지는 색도 감싸는 빛도 한층 거세다."
   }
  ]
 }

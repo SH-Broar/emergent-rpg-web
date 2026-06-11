@@ -560,7 +560,7 @@ element = light
 cost = 1
 trigger = manual
 effects = damage-top-color:1:enemy
-flavor = 가장 높이 쌓인 색이 그대로 쏟아진다. 한쪽으로 깊이 기운 사람일수록 매섭다.
+flavor = 가장 높이 쌓인 색이 그대로 쏟아진다. 한쪽으로 크게 기운 사람일수록 매섭다.
 
 [card.c-prism-guard]
 name = 가장 짙은 방어
@@ -570,7 +570,7 @@ element = water
 cost = 1
 trigger = manual
 effects = block-top-color:1:self
-flavor = 가장 짙은 속성만큼 단단히 막는다.
+flavor = 가장 높이 쌓인 색만큼 단단히 막는다.
 
 [card.c-spectrum-edge]
 name = 여덟 빛의 칼
@@ -590,7 +590,7 @@ element = fire
 cost = 1
 trigger = manual
 effects = damage-from-hp:6:enemy
-flavor = 제 피를 대가로 내어, 곱절로 되돌려 친다. 갈비뼈가 비는 만큼 적이 무너진다.
+flavor = 제 피를 대가로 내어 곱절로 되돌려 친다. 비울수록 매섭다.
 
 
 # ============================================================
@@ -781,7 +781,7 @@ element = dark
 cost = 1
 trigger = manual
 effects = apply-status:5:enemy:vulnerable, apply-status:4:enemy:weakness, exhaust-self:0:self
-flavor = 깊고 검은 낙인이 적에게 새겨진다. 받는 피해는 커지고, 주는 힘은 무거워진다.
+flavor = 검은 낙인이 적에게 새겨진다. 받는 피해는 커지고, 주는 힘은 무뎌진다.
 
 # ---------- block-to-damage 2장 (방어→공격 전환) ----------
 
@@ -803,7 +803,7 @@ element = earth
 cost = 2
 trigger = manual
 effects = block:12:self, block-to-damage:1:enemy
-flavor = "막고 나서, 친다." 던이 묵직한 손으로 먼저 두껍게 두르고, 그 두께를 그대로 적에게 떨군다. 단단할수록 매섭다.
+flavor = "막고 나서, 친다." 던이 묵직한 손으로 먼저 단단히 두르고, 그 단단함을 그대로 적에게 떨군다. 단단할수록 매섭다.
 
 # ---------- spend-all-energy 2장 (남은 마나 몰빵) ----------
 
@@ -903,7 +903,7 @@ element = water
 cost = 1
 trigger = manual
 effects = heal-per-hand:2:self
-flavor = "손에 든 만큼, 함께 숨을 고르자." 마린이 푸른 꼬리로 물을 건넨다. 패가 두툼할수록 깊게 가라앉는다.
+flavor = "손에 든 만큼, 함께 숨을 고르자." 마린이 푸른 꼬리로 물을 건넨다. 패가 넉넉할수록 숨이 길게 가라앉는다.
 
 [card.c-bloom-recovery]
 name = 만개의 회복
@@ -947,7 +947,7 @@ element = light
 cost = 2
 trigger = manual
 effects = damage-color-count:3:enemy, damage-top-color:1:enemy
-flavor = 가장 짙은 색과 지닌 색의 가짓수가 동시에 쏟아진다. 두루 익히고 깊이 익혀야 휘두를 수 있다.
+flavor = 가장 높이 쌓인 색과 지닌 색의 가짓수가 한꺼번에 쏟아진다. 두루, 또 단단히 익혀야 휘두른다.
 
 [card.c-frail-rupture]
 name = 취약의 균열
@@ -1032,7 +1032,7 @@ element = iron
 cost = 2
 trigger = manual
 effects = damage:15:enemy
-flavor = 흔하지만 묵직하게 내려친다. 값은 한다.
+flavor = 흔하지만 묵직하다. 값은 한다.
 
 [card.c-shop-wall]
 name = 든든한 벽
@@ -1107,7 +1107,7 @@ element = earth
 cost = 2
 trigger = manual
 effects = damage-color-count:6:enemy, draw:1:self
-flavor = 딜롭의 얼굴 무늬가 여러 색으로 빛난다. 지닌 색이 많을수록 더 짙게 친다.
+flavor = 딜롭의 얼굴 무늬가 여러 색으로 빛난다. 지닌 색이 많을수록 매섭게 친다.
 
 
 # ============================================================
@@ -1142,7 +1142,7 @@ element = light
 cost = 1
 trigger = manual
 effects = damage-top-color:1:enemy, draw-if-color:1:self:light:5
-flavor = 가장 짙은 빛이 솟구쳐 친다. 충분히 쌓였다면 다음 수까지 이어진다.
+flavor = 가장 높이 쌓인 빛이 솟구쳐 친다. 충분히 쌓였다면 다음 수까지 이어진다.
 
 
 # ============================================================
@@ -1375,7 +1375,7 @@ element = earth
 cost = 2
 trigger = manual
 effects = growing-block:4:self
-flavor = 처음부터 더 두껍게, 쓸수록 더 자란다.
+flavor = 처음부터 더 단단하게, 쓸수록 더 자란다.
 
 [card.c-zero-spark-plus]
 name = 전류 자국+
@@ -1477,7 +1477,7 @@ element = light
 cost = 1
 trigger = manual
 effects = damage-top-color:2:enemy
-flavor = 가장 짙은 색이 두 배로 쏟아진다.
+flavor = 가장 높이 쌓인 색이 더 거세게 쏟아진다.
 
 [card.c-prism-guard-plus]
 name = 가장 짙은 방어+
@@ -1487,7 +1487,7 @@ element = water
 cost = 1
 trigger = manual
 effects = block-top-color:2:self
-flavor = 가장 짙은 색이 두 배로 단단히 막는다.
+flavor = 가장 높이 쌓인 색이 더 단단히 막는다.
 
 [card.c-spectrum-edge-plus]
 name = 여덟 빛의 칼+
@@ -1629,7 +1629,7 @@ element = dark
 cost = 1
 trigger = manual
 effects = apply-status:3:enemy:weakness, apply-status:2:enemy:vulnerable
-flavor = 두 저주가 더 짙게 적을 감싼다.
+flavor = 두 저주가 더 무겁게 적을 감싼다.
 
 # ---------- 측정 어려운 3차 (소멸/전환/마나/연동/성장) ----------
 
@@ -1671,7 +1671,7 @@ element = iron
 cost = 1
 trigger = manual
 effects = block-to-damage:2:enemy
-flavor = 두른 방어가 두 배의 무게로 되돌아간다.
+flavor = 두른 방어가 더 무겁게 되돌아간다.
 
 [card.c-bastion-counter-plus]
 name = 성벽의 반격+
@@ -1681,7 +1681,7 @@ element = earth
 cost = 2
 trigger = manual
 effects = block:19:self, block-to-damage:1:enemy
-flavor = 더 두껍게 두르고 그 무게로 되받아친다.
+flavor = 더 단단히 두르고 그 무게로 되받아친다.
 
 [card.c-all-in-plus]
 name = 전부 쏟기+
@@ -1771,7 +1771,7 @@ element = water
 cost = 1
 trigger = manual
 effects = heal-per-hand:3:self
-flavor = 손에 든 패가 많을수록 숨이 더 깊이 가라앉는다.
+flavor = 손에 든 패가 많을수록 숨이 더 길게 가라앉는다.
 
 [card.c-bloom-recovery-plus]
 name = 만개의 회복+
@@ -1811,7 +1811,7 @@ element = light
 cost = 2
 trigger = manual
 effects = damage-color-count:4:enemy, damage-top-color:2:enemy
-flavor = 더 많은 빛이 더 무겁게 쏟아진다.
+flavor = 가짓수도 무게도 함께 더 거세게 쏟아진다.
 
 [card.c-frail-rupture-plus]
 name = 취약의 균열+
@@ -1873,7 +1873,7 @@ element = water
 cost = 1
 trigger = manual
 effects = heal:9:self, exhaust-self:0:self
-flavor = 조금 더 깊게 들이켠다.
+flavor = 조금 더 길게 들이켠다.
 
 [card.c-shop-poke-plus]
 name = 잽+
@@ -1893,7 +1893,7 @@ element = iron
 cost = 2
 trigger = manual
 effects = damage:21:enemy
-flavor = 더 묵직하게 내려친다.
+flavor = 같은 칼이 한결 묵직하다.
 
 [card.c-shop-wall-plus]
 name = 든든한 벽+
@@ -1977,7 +1977,7 @@ element = dark
 cost = 2
 trigger = manual
 effects = damage-per-debuff:7:enemy, apply-status:3:enemy:poison
-flavor = 약함을 거둬 더 짙은 독을 심는다.
+flavor = 약함을 거둬 그 자리에 더 독한 씨앗을 심는다.
 
 [card.c-wild-rush-plus]
 name = 야성의 돌진+
@@ -1997,7 +1997,7 @@ element = light
 cost = 1
 trigger = manual
 effects = damage-top-color:2:enemy, draw-if-color:1:self:light:4
-flavor = 가장 짙은 색이 두 배로 솟구친다.
+flavor = 가장 높이 쌓인 색이 더 거세게 솟구친다.
 
 # === 유령화(비실체) 카오스와 별개 양날 상태. 자기 ghost N턴. ===
 [card.c-phase-out]
@@ -2085,7 +2085,7 @@ element = iron
 cost = 1
 trigger = manual
 effects = block:11:self, apply-status:3:self:ward
-flavor = 막이 더 두껍게 더 오래 머문다.
+flavor = 막이 더 단단하게 더 오래 머문다.
 
 [card.c-prickle-coat]
 name = 까슬한 가시옷

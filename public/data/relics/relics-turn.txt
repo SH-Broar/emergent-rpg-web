@@ -11,7 +11,7 @@ rank = common
 source = event
 trigger = on-acquire
 effects = boost-color:8:water
-flavor = 구르기를 멈추자 작은 알이 차가운 정수로 굳었다. 손에 쥔 자에게 물의 기운을 나눠 준다.
+flavor = 구르기를 멈추자 작은 알이 차가운 정수로 굳었다. 손에 품으면 물의 기운을 나눠 준다.
 
 [relic.r-turn-snow-drift]
 name = 다져진 눈더미
@@ -19,7 +19,7 @@ rank = common
 source = shop
 trigger = passive
 effects = bonus-hp:15
-flavor = 눈이 쌓여 단단한 둔덕이 되었다. 그 두툼함이 주인의 숨을 받쳐 준다.
+flavor = 오래 쌓인 눈이 단단한 둔덕으로 굳었다. 그 묵직한 무게가 주인의 숨을 받쳐 준다.
 
 [relic.r-turn-snow-crown]
 name = 눈의 왕관
@@ -176,7 +176,7 @@ rank = rare
 source = elite
 trigger = on-turn-start
 effects = turn-units-color:2:7
-flavor = 끝자리가 일곱일 때만 얇은 빛이 흐른다. 드물게 찾아오는 숫자라 깨어날 때의 빛이 더 짙다.
+flavor = 끝자리가 일곱일 때만 얇은 빛이 흐른다. 드물게 찾아오는 숫자라 깨어날 때의 빛이 더 또렷하다.
 
 [relic.r-turn-ninth-gate]
 name = 아홉의 문
@@ -248,7 +248,7 @@ rank = common
 source = event
 trigger = on-turn-start
 effects = chance-random-color-1:35
-flavor = 어느 턴에 빛날지 저도 모른다. 매번 주사위를 굴리듯 가끔 어느 색이 슬쩍 짙어진다.
+flavor = 어느 턴에 빛날지 저도 모른다. 매번 주사위를 굴리듯 가끔 어느 색에 기운이 슬쩍 깃든다.
 
 # ============================================================
 # 다운사이드 동반 큰 이득에 매 턴 HP 대가 (turn-start-hp-loss).

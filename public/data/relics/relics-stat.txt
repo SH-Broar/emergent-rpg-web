@@ -82,7 +82,7 @@ rank = common
 source = shop
 trigger = on-turn-start
 effects = chance-random-color-1:50
-flavor = 빛을 굴절시켜 색을 흩뿌리는 렌즈다. 어느 색이 짙어질지는 그때그때 다르다.
+flavor = 빛을 굴절시켜 색을 흩뿌리는 렌즈다. 어느 기운이 깃들지는 그때그때 다르다.
 
 [relic.r-stat-spark-tap]
 name = 전류 탭
@@ -198,7 +198,7 @@ rank = rare
 source = event
 trigger = passive
 effects = block-out-add:3
-flavor = 못으로 단단히 박아 만든 띠다. 어떤 방어든 한층 두껍게 잡아 준다.
+flavor = 못으로 단단히 박아 만든 띠다. 어떤 방어든 한층 단단하게 잡아 준다.
 
 # --- DEF 패시브 모디파이어 ---
 
@@ -290,7 +290,7 @@ rank = common
 source = shop
 trigger = on-acquire
 effects = boost-color:8:water
-flavor = 물빛만 골라 모으는 렌즈다. 들여다보면 푸른 물색이 한층 짙게 고인다.
+flavor = 물빛만 골라 모으는 렌즈다. 들여다보면 푸른 물색이 한가득 고인다.
 
 [relic.r-stat-galewright]
 name = 바람장이의 부적
@@ -298,7 +298,7 @@ rank = rare
 source = event
 trigger = on-combat-start
 effects = strength-from-metric:6:wind
-flavor = 바람을 손에 쥐는 법을 새겨 둔 부적이다. 바람색이 짙을수록 첫 공격이 가볍고 날카로워진다.
+flavor = 바람을 손에 쥐는 법을 새겨 둔 부적이다. 적과 마주 서면 첫 공격이 가볍고 날카로워진다.
 
 [relic.r-stat-spellweight]
 name = 마력의 추
@@ -306,7 +306,7 @@ rank = legendary
 source = event
 trigger = on-card-played-after
 effects = cards-to-draw:7
-flavor = 마법의 흐름을 차곡차곡 감아 두는 추다. 카드를 여러 장 엮어 가다 보면 다음 카드가 절로 따라온다.
+flavor = 마법의 흐름을 실패에 감아 두는 추다. 카드를 여러 장 엮어 가다 보면 다음 카드가 절로 따라온다.
 
 # ============================================================
 # 다운사이드 동반 강력하지만 대가가 따른다.

@@ -12,7 +12,7 @@ rank = common
 source = event
 trigger = on-acquire
 effects = boost-color:5:fire
-flavor = 손에 닿자마자 따뜻함이 몸 안으로 스민다. 불의 기운이 그대로 몸에 뿌리내린다.
+flavor = 손에 닿자마자 따뜻함이 몸 안으로 스민다. 불의 기운이 몸에 깃든다.
 
 [relic.r-acq-tide-drop]
 name = 물방울 정수
@@ -36,7 +36,7 @@ rank = common
 source = shop
 trigger = on-acquire
 effects = boost-color:5:iron
-flavor = 쥐었을 때의 묵직한 무게가 그대로 남는다. 무쇠의 단단함이 몸 안에 밴다.
+flavor = 쥐면 손바닥에 묵직한 무게가 얹힌다. 무쇠의 단단함이 몸 안에 밴다.
 
 [relic.r-acq-loam-clod]
 name = 대지 정수
@@ -156,7 +156,7 @@ rank = common
 source = event
 trigger = on-acquire
 effects = bonus-gold:25
-flavor = 풀어 보니 안에 동전이 가득하다. 줍는 순간 지갑이 두둑해진다.
+flavor = 풀어 보니 안에 동전이 가득하다. 줍는 순간 주머니가 불룩하게 찬다.
 
 [relic.r-acq-shard-vial]
 name = 시간조각 작은 병
@@ -172,7 +172,7 @@ rank = rare
 source = npc
 trigger = on-acquire
 effects = heal-now:14
-flavor = 마시면 햇살을 통째로 들이켠 것 같다. 쌓였던 피로가 한꺼번에 풀린다.
+flavor = 마시면 햇살을 들이켠 것 같다. 쌓였던 피로가 한꺼번에 풀린다.
 
 # --- 2효과 조합 (큰 영구 + 즉시 보너스) ---
 
@@ -292,7 +292,7 @@ rank = rare
 source = event
 trigger = on-item-use
 effects = boost-color:3:dark, heal-now:4
-flavor = 무언가를 삼킬 때마다 그늘이 짙어지고 몸이 데워진다. 쓰면 쓸수록 배가 부르는 주머니다.
+flavor = 무언가를 삼킬 때마다 어둠의 기운이 깃들고 몸이 데워진다. 쓸수록 배가 부르는 주머니다.
 
 # ============================================================
 # C. 컬러 상승 시 (trigger=on-color-gain) 어떤 컬러든 오를 때마다 (11종, 작은 값)
@@ -304,7 +304,7 @@ rank = common
 source = event
 trigger = on-color-gain
 effects = heal-now:1
-flavor = 색이 짙어질 때마다 작은 꽃이 핀다. 그 향기에 상처가 아주 조금 아문다.
+flavor = 어느 기운이 깃들 때마다 작은 꽃이 핀다. 그 향기에 상처가 아주 조금 아문다.
 
 [relic.r-acq-leaf-brooch]
 name = 잎사귀 브로치
@@ -312,7 +312,7 @@ rank = rare
 source = npc
 trigger = on-color-gain
 effects = heal-now:2
-flavor = 색이 짙어질 때마다 잎이 새로 돋는다. 그때마다 몸이 조금씩 데워진다.
+flavor = 어느 기운이 깃들 때마다 잎이 새로 돋는다. 그때마다 몸이 조금씩 데워진다.
 
 [relic.r-acq-tithe-ring]
 name = 십일조 반지
@@ -320,7 +320,7 @@ rank = common
 source = shop
 trigger = on-color-gain
 effects = bonus-gold:1
-flavor = 어느 색이든 짙어지면 동전이 한 닢 굴러든다. 색이 자라는 만큼 작은 보답이 따른다.
+flavor = 어느 기운이든 깃들면 동전이 굴러든다. 색이 자라는 만큼 작은 보답이 따른다.
 
 [relic.r-acq-fortune-loop]
 name = 행운의 고리
@@ -328,7 +328,7 @@ rank = rare
 source = event
 trigger = on-color-gain
 effects = bonus-gold:2
-flavor = 색이 차오를 때마다 잔돈이 두 닢 떨어진다. 색이 곧 재산이 되는 고리다.
+flavor = 색이 차오를 때마다 잔돈이 떨어진다. 색이 곧 재산이 되는 고리다.
 
 [relic.r-acq-time-pendulum]
 name = 시간의 추
@@ -336,7 +336,7 @@ rank = common
 source = event
 trigger = on-color-gain
 effects = gain-time-shards:1
-flavor = 색이 짙어질 때마다 추가 가볍게 흔들린다. 그 흔들림에 작은 시간 조각이 떨어진다.
+flavor = 어느 기운이 깃들 때마다 추가 가볍게 흔들린다. 그 흔들림에 작은 시간 조각이 떨어진다.
 
 [relic.r-acq-spectrum-locket]
 name = 스펙트럼 회중시계
@@ -344,7 +344,7 @@ rank = rare
 source = event
 trigger = on-color-gain
 effects = heal-now:1, bonus-gold:1
-flavor = 어느 색이든 짙어지면 뚜껑이 살짝 열린다. 그때마다 작은 온기와 잔돈이 함께 새어 나온다.
+flavor = 어느 기운이든 깃들면 뚜껑이 살짝 열린다. 그때마다 작은 온기와 잔돈이 함께 새어 나온다.
 
 [relic.r-acq-color-chime]
 name = 색의 풍경
@@ -352,7 +352,7 @@ rank = rare
 source = event
 trigger = on-color-gain
 effects = heal-now:2, gain-time-shards:1
-flavor = 색이 짙어질 때마다 맑게 운다. 그 울림에 몸이 데워지고 시간 조각이 떨어진다.
+flavor = 어느 기운이 깃들 때마다 맑게 운다. 그 울림에 몸이 데워지고 시간 조각이 떨어진다.
 
 [relic.r-acq-prism-tithe]
 name = 무지개 헌금함
@@ -368,7 +368,7 @@ rank = common
 source = npc
 trigger = on-color-gain
 effects = heal-now:1
-flavor = 색이 짙어질 때마다 작은 종이 운다. 그 소리에 상처가 아주 조금 아문다.
+flavor = 어느 기운이 깃들 때마다 작은 종이 운다. 그 소리에 상처가 아주 조금 아문다.
 
 [relic.r-acq-coin-vine]
 name = 동전 덩굴
@@ -376,7 +376,7 @@ rank = common
 source = event
 trigger = on-color-gain
 effects = bonus-gold:1
-flavor = 색이 짙어질 때마다 덩굴에 동전이 맺힌다. 색이 자랄수록 주머니가 두둑해진다.
+flavor = 어느 기운이 깃들 때마다 덩굴에 동전이 맺힌다. 색이 자랄수록 주머니가 불룩해진다.
 
 [relic.r-acq-shard-blossom]
 name = 조각 꽃봉오리
@@ -384,7 +384,7 @@ rank = common
 source = event
 trigger = on-color-gain
 effects = gain-time-shards:1
-flavor = 색이 차오를 때마다 봉오리가 살짝 벌어진다. 그 안에서 작은 시간 조각이 떨어진다.
+flavor = 어느 기운이 깃들 때마다 봉오리가 살짝 벌어진다. 그 안에서 작은 시간 조각이 떨어진다.
 
 # ============================================================
 # D. 목숨 늘림 (boost-max-lives, on-acquire) 최대 목숨 +1. (Item 28)

@@ -52,7 +52,7 @@ rank = legendary
 source = event
 trigger = on-acquire
 effects = boost-color:12:electric
-flavor = 구름을 통째로 가둔 것처럼 무겁고 빠르다. 알티-알타가 멀리서 보고 신나서 손뼉을 친 물건이다.
+flavor = 먹구름을 가둔 것처럼 무겁고 빠르다. 알티-알타가 멀리서 보고 신나서 손뼉을 친 물건이다.
 
 [relic.r-col-iron-nail]
 name = 낡은 못
@@ -194,7 +194,7 @@ rank = common
 source = event
 trigger = on-turn-start
 effects = turn-units-color:1:7
-flavor = 등불 옆면에 작은 눈금이 새겨진 등이다. 불꽃이 일곱 번째 눈금에 닿을 때마다 색 하나가 그 빛을 받아 짙어진다.
+flavor = 등불 옆면에 작은 눈금이 새겨진 등이다. 불꽃이 일곱 번째 눈금에 닿을 때마다 색 하나에 그 빛이 깃든다.
 
 [relic.r-col-dark-creeping-ink]
 name = 되묻는 먹
@@ -226,7 +226,7 @@ rank = rare
 source = elite
 trigger = on-turn-start
 effects = chance-random-color-1:45
-flavor = 이가 헐거워서 매번 다른 데서 멈춘다. 어쩌다 딱 맞물리면 색 하나가 그 회전을 받아 짙어진다.
+flavor = 이가 헐거워서 매번 다른 데서 멈춘다. 어쩌다 딱 맞물리면 색 하나에 그 회전이 깃든다.
 
 
 # ============================================================
@@ -241,7 +241,7 @@ rank = common
 source = elite
 trigger = on-combat-start
 effects = block-from-metric:6:iron
-flavor = 쌓아 둔 쇠가 많을수록 두꺼워지는 판이다. 싸움이 시작되면 그동안 모은 쇠가 벽이 되어 앞을 막는다.
+flavor = 오래된 성문에서 떼어 낸 판금이다. 싸움이 시작될 때 앞을 가로막는 벽이 되어 준다.
 
 [relic.r-col-earth-mountain-girth]
 name = 산허리의 띠
@@ -249,7 +249,7 @@ rank = rare
 source = event
 trigger = on-combat-start
 effects = block-from-metric:4:earth
-flavor = 흙을 많이 품은 자에게만 산이 어깨를 빌려준다. 흙이 짙을수록 첫 방어가 묵직해진다.
+flavor = 산허리를 한 바퀴 둘러 깎아 만든 돌띠다. 두르고 있으면 산이 어깨를 빌려준다.
 
 [relic.r-col-water-tidewall]
 name = 밀물의 벽
@@ -257,7 +257,7 @@ rank = basic
 source = shop
 trigger = on-combat-start
 effects = block-from-metric:8:water
-flavor = 물이 차오른 만큼 벽이 높이 선다. 그동안 모아 둔 물이 싸움의 첫머리를 막아 준다.
+flavor = 밀물이 한 번 다녀간 자리에 남은 물의 결이다. 싸움의 첫머리에 높은 벽이 되어 선다.
 
 [relic.r-col-light-aegis-glow]
 name = 수호의 빛무리
@@ -265,7 +265,7 @@ rank = common
 source = event
 trigger = on-combat-start
 effects = block-from-metric:6:light
-flavor = 품은 빛이 밝을수록 둘레를 감싸는 빛무리가 두껍다. 적과 마주하면 모은 빛이 두터운 방어로 굳는다.
+flavor = 둘레에 빛무리를 두른 작은 핵이다. 적과 마주하면 그 빛이 방어로 굳어 몸을 감싼다.
 
 [relic.r-col-fire-forge-fury]
 name = 단조의 분노
@@ -273,7 +273,7 @@ rank = common
 source = elite
 trigger = on-combat-start
 effects = strength-from-metric:6:fire
-flavor = 안에 쌓인 불이 클수록 팔에 실리는 힘이 무겁다. 적과 마주 서면 모아 둔 열기가 주먹으로 옮겨 온다.
+flavor = 대장간 화덕에서 가장 뜨거운 불을 떠 담았다. 적과 마주 서면 그 열기가 주먹으로 옮겨 온다.
 
 [relic.r-col-electric-charged-fist]
 name = 충전된 주먹
@@ -281,7 +281,7 @@ rank = rare
 source = event
 trigger = on-combat-start
 effects = strength-from-metric:4:electric
-flavor = 모아 둔 떨림이 많을수록 첫 일격이 빠르고 무겁다. 손끝에 맺힌 푸른 불꽃이 한꺼번에 터진다.
+flavor = 손끝에 푸른 불꽃이 맺혀 있는 주먹이다. 적과 마주 서면 그 불꽃이 한꺼번에 터진다.
 
 [relic.r-col-wind-gale-edge]
 name = 질풍의 날
@@ -289,7 +289,7 @@ rank = basic
 source = shop
 trigger = on-combat-start
 effects = strength-from-metric:8:wind
-flavor = 품은 바람이 셀수록 칼끝이 멀리 닿는다. 싸움이 시작되면 모은 바람이 어깨를 떠밀어 준다.
+flavor = 칼날 위로 늘 가는 바람이 스쳐 지나는 날붙이다. 싸움이 시작되면 그 바람이 어깨를 떠밀어 준다.
 
 [relic.r-col-dark-grudge-grip]
 name = 원념의 손아귀
@@ -297,7 +297,7 @@ rank = common
 source = elite
 trigger = on-combat-start
 effects = strength-from-metric:6:dark
-flavor = 쌓인 그늘이 짙을수록 손에 힘이 더 들어간다. 적과 마주하면 모아 둔 적막이 힘이 되어 일어선다.
+flavor = 오래 묵은 원망이 손 모양으로 굳은 그늘이다. 적과 마주하면 그 적막이 힘이 되어 일어선다.
 
 [relic.r-col-iron-ironclad-stance]
 name = 철갑의 자세
@@ -305,7 +305,7 @@ rank = rare
 source = elite
 trigger = on-combat-start
 effects = block-from-metric:4:iron
-flavor = 쇠를 많이 품은 자만이 처음부터 흔들리지 않는다. 모은 쇠가 통째로 단단한 벽이 되어 준다.
+flavor = 발끝부터 어깨까지 쇠로 두른 자세다. 처음부터 흔들리지 않는 단단한 벽이 되어 준다.
 
 [relic.r-col-fire-bonfire-roar]
 name = 모닥불의 포효
@@ -313,7 +313,7 @@ rank = rare
 source = event
 trigger = on-combat-start
 effects = strength-from-metric:4:fire
-flavor = 품은 불이 클수록 첫 외침이 뜨겁다. 적과 마주 서면 모아 둔 열기가 한꺼번에 솟구친다.
+flavor = 한밤에도 꺼지지 않고 타오르는 모닥불이다. 적과 마주 서면 그 열기가 한꺼번에 솟구친다.
 
 
 # ============================================================
@@ -326,7 +326,7 @@ rank = rare
 source = event
 trigger = on-acquire
 effects = boost-color:3:all
-flavor = 빛을 머금으면 여덟 색으로 갈라진다. 손에 쥐면 모든 색이 조금씩 짙어진다.
+flavor = 빛을 머금으면 여덟 색으로 갈라지는 조각이다. 손에 쥐면 모든 색의 기운이 조금씩 깃든다.
 
 [relic.r-col-all-mono-fragment]
 name = 모노의 부스러기
@@ -366,7 +366,7 @@ rank = rare
 source = shop
 trigger = on-combat-end
 effects = chance-random-color-1:50
-flavor = 던질 때마다 어느 면이 나올지 모른다. 싸움을 이길 때마다 한 번 튕겨서 운이 닿으면 색 하나가 짙어진다.
+flavor = 던질 때마다 어느 면이 나올지 모른다. 싸움을 이길 때마다 굴려서 운이 닿으면 색 하나에 기운이 깃든다.
 
 
 # ============================================================
@@ -380,7 +380,7 @@ rank = legendary
 source = event
 trigger = on-color-gain
 effects = boost-color:1:random
-flavor = 색이 짙어질 때마다 다른 색도 함께 짙어진다. 정령이 신나서 건네준 프리즘이다.
+flavor = 빛을 받으면 한 색이 옆의 색을 불러낸다. 정령이 신나서 건네준 프리즘이다.
 
 [relic.r-col-gain-echo-shell]
 name = 메아리 조개

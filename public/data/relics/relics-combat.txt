@@ -26,7 +26,7 @@ rank = legendary
 source = elite
 trigger = on-combat-start
 effects = combat-start-block:12
-flavor = 오래된 시계탑 문에서 떼어 낸 큰 방패다. 싸움이 시작되면 그 무게가 통째로 앞을 막아선다.
+flavor = 오래된 시계탑 문에서 떼어 낸 큰 방패다. 싸움이 시작되면 그 무게가 앞을 막아선다.
 
 [relic.r-cbt-first-light-quill]
 name = 첫빛의 깃펜
@@ -94,7 +94,7 @@ rank = common
 source = shop
 trigger = on-card-played-after
 effects = cards-to-color:5
-flavor = 실이 다섯 번 지날 때마다 무늬가 짙어진다. 그러면서 어느 색이 천천히 차오른다.
+flavor = 실이 다섯 번 지날 때마다 무늬가 새로 짜인다. 그러면서 어느 색이 천천히 차오른다.
 
 [relic.r-cbt-honing-band]
 name = 벼림의 띠
@@ -102,7 +102,7 @@ rank = common
 source = event
 trigger = on-card-played-after
 effects = attacks-to-strength:4
-flavor = 두를수록 팔에 익는 거친 띠. 네 번 내리칠 때마다 어깨에 힘이 조금 더 쌓인다.
+flavor = 두를수록 팔에 익는 거친 띠. 네 번 내리칠 때마다 다음 일격에 힘이 더 실린다.
 
 [relic.r-cbt-keen-edge-strap]
 name = 예리한 가죽끈
@@ -126,7 +126,7 @@ rank = common
 source = event
 trigger = on-card-played-after
 effects = cards-to-color:5
-flavor = 카드를 다섯 장 낼 때마다 색이 짙어진다.
+flavor = 카드를 다섯 장 낼 때마다 어느 기운이 깃든다.
 
 [relic.r-cbt-runner-tally]
 name = 발 빠른 셈표

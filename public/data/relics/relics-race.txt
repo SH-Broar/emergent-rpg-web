@@ -78,7 +78,7 @@ rank = common
 source = race
 trigger = on-combat-start
 effects = combat-start-draw:2, retain-hand
-flavor = 보이지 않는 손이 패를 두툼하게 쥔다. 턴이 끝나도 패를 놓지 않으니(손패 유지), 아껴 둔 만큼 다음 수가 무거워진다.
+flavor = 보이지 않는 손이 패를 넉넉히 쥔다. 턴이 끝나도 패를 놓지 않으니(손패 유지), 아껴 둔 패가 다음 수에 실린다.
 
 # 팬텀 정체성 앵커 (Item 37-③) — 손패 수 관리·전기·어둠을 시작 유물로 표현.
 # 기존 트리거/효과만 재사용(신규 트리거 없음). source=race → 시작 전용.
@@ -89,7 +89,7 @@ rank = common
 source = race
 trigger = on-combat-start
 effects = combat-start-draw:1, retain-hand
-flavor = 보이지 않는 손이 패를 한 장 더 쥔다. 턴이 끝나도 놓지 않으니, 패가 두툼할수록 다음 수가 더 무거워진다.
+flavor = 보이지 않는 손이 패를 한 장 더 쥔다. 턴이 끝나도 놓지 않으니, 모아 둔 패가 다음 수에 실린다.
 
 [relic.r-race-phantom-ghostmemory]
 name = 유령의 기억
@@ -113,7 +113,7 @@ rank = common
 source = race
 trigger = on-combat-start
 effects = combat-start-mana-from-metric:12:top-color, combat-start-draw-from-metric:3:color-count
-flavor = 빛이 고이는 그릇이다. 색이 짙을수록(최고색 12당 마나 +1), 다채로울수록(색 3종당 카드 +1) 매 싸움이 풍요로워진다.
+flavor = 빛이 고이는 그릇이다. 색이 무르익을수록(최고색 12당 마나 +1), 다채로울수록(색 3종당 카드 +1) 매 싸움이 풍요로워진다.
 
 # 아르카나 정체성 앵커 (Item 37-③) — 색 공명·색 다양화·초반 보정을 시작 유물로 표현.
 # 기존 트리거/효과만 재사용(신규 트리거 없음). metric 기반 스케일링으로 색 빌드를 보상. source=race → 시작 전용.
@@ -124,7 +124,7 @@ rank = common
 source = race
 trigger = on-combat-start
 effects = block-from-metric:14:top-color, strength-from-metric:2:color-count
-flavor = 빛을 여러 갈래로 나누는 핵이다. 가장 짙은 색이 매 싸움 시작에 얇은 방어가 되고(최고색 14당 방어 +1), 색이 다채로울수록 손에 힘이 실린다(색 2종당 힘 +1).
+flavor = 빛을 여러 갈래로 나누는 핵이다. 가장 무르익은 색이 매 싸움 시작에 얇은 방어가 되고(최고색 14당 방어 +1), 색이 다채로울수록 손에 힘이 실린다(색 2종당 힘 +1).
 
 [relic.r-race-arcana-seed]
 name = 무지개 씨앗
@@ -140,4 +140,4 @@ rank = common
 source = race
 trigger = on-turn-start
 effects = turn-units-color:1:0
-flavor = 색의 울림을 한층 더 키운다. 턴 수의 끝자리가 맞아떨어질 때마다 무작위 색 하나가 더 짙어진다.
+flavor = 색의 울림을 한층 더 키운다. 턴 수의 끝자리가 맞아떨어질 때마다 무작위 색 하나에 기운이 깃든다.

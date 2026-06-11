@@ -95,7 +95,7 @@ element = water
 cost = 1
 trigger = manual
 effects = block:15:self
-flavor = 그림자가 더 두껍게 겹쳐 선다.
+flavor = 흩어진 그림자가 더 빽빽하게 겹쳐 선다.
 
 [card.c-fox-nine-tails]
 name = 아홉 꼬리
@@ -288,7 +288,7 @@ element = water
 cost = 1
 trigger = manual
 effects = slow-enemy:3, block:14:self
-flavor = 안개가 더 짙다. 상대의 발은 더 늦고, 가려 주는 막은 더 두껍다.
+flavor = 안개가 더 자욱하다. 상대의 발은 더 늦고, 가려 주는 막은 더 단단하다.
 
 [card.c-fox-devour]
 name = 잠식의 불
@@ -299,7 +299,7 @@ cost = 2
 trigger = manual
 effects = consume-vulnerable:6:enemy, damage:8:enemy
 upgrade_to = c-fox-devour-plus
-flavor = 벌어진 빈틈을 통째로 삼켜, 그만큼 불길로 되돌려 준다.
+flavor = 벌어진 빈틈을 한꺼번에 삼켜, 그만큼 불길로 되돌려 준다.
 
 [card.c-fox-devour-plus]
 name = 잠식의 불+
@@ -408,7 +408,7 @@ cost = 1
 trigger = manual
 effects = amplify-debuff:5:enemy
 upgrade_to = c-fox-emberstoke-plus
-flavor = 이미 붙은 불을 부채질해 두 배로 키운다.
+flavor = 이미 붙은 불을 부채질해 더 크게 키운다.
 
 [card.c-fox-emberstoke-plus]
 name = 불씨 키우기+
@@ -496,7 +496,7 @@ cost = 1
 trigger = manual
 effects = block:13:self
 upgrade_to = c-fox-fogwall-plus
-flavor = 안개를 끌어모아 두꺼운 장막을 친다.
+flavor = 안개를 끌어모아 자욱한 장막을 친다.
 
 [card.c-fox-fogwall-plus]
 name = 안개 장막+
@@ -506,7 +506,7 @@ element = water
 cost = 1
 trigger = manual
 effects = block:18:self
-flavor = 끌어모은 안개가 더 짙다.
+flavor = 끌어모은 안개가 더 자욱하다.
 
 [card.c-fox-dreamhaze]
 name = 몽환
@@ -527,7 +527,7 @@ element = water
 cost = 1
 trigger = manual
 effects = slow-enemy:4, block:12:self
-flavor = 꿈이 짙어진다. 상대의 손은 느려지고 내 몸은 단단해진다.
+flavor = 꿈결이 더 아득하다. 상대의 손은 느려지고 내 몸은 단단해진다.
 
 # ============================================================
 # 여우 폼 확장 — 필러: 홀림 (디버프 + 스케일)
@@ -615,7 +615,7 @@ element = dark
 cost = 1
 trigger = manual
 effects = apply-status:3:enemy:vulnerable, apply-status:3:enemy:weakness, apply-status:3:enemy:frail
-flavor = 더 짙은 거짓을 건다.
+flavor = 세 가지 거짓이 더 단단히 들러붙는다.
 
 [card.c-fox-reckoning]
 name = 홀림 거두기
@@ -647,7 +647,7 @@ cost = 1
 trigger = manual
 effects = consume-vulnerable:7:enemy
 upgrade_to = c-fox-collect-plus
-flavor = 벌려 둔 빈틈을 통째로 거둬 한 번에 내리꽂는다.
+flavor = 벌려 둔 빈틈을 한꺼번에 거둬 내리꽂는다.
 
 [card.c-fox-collect-plus]
 name = 빈틈 거두기+

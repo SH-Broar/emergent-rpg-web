@@ -1,7 +1,7 @@
 {
  "meta": {
-  "id": "flavor_all_3",
-  "title": "전수 검수 3 (relics+items)"
+  "id": "flavor_all_3_v2",
+  "title": "전수 검수 3 (relics+items) · 정제판"
  },
  "items": [
   {
@@ -134,7 +134,7 @@
    "n": 628,
    "kind": "flavor",
    "loc": "relics/relics-acquire.txt [relic.r-acq-ember-shard]",
-   "text": "손에 닿자마자 따뜻함이 몸 안으로 스민다. 불의 기운이 그대로 몸에 뿌리내린다."
+   "text": "손에 닿자마자 따뜻함이 몸 안으로 스민다. 불의 기운이 몸에 깃든다."
   },
   {
    "n": 629,
@@ -146,7 +146,7 @@
    "n": 630,
    "kind": "flavor",
    "loc": "relics/relics-acquire.txt [relic.r-acq-iron-nub]",
-   "text": "쥐었을 때의 묵직한 무게가 그대로 남는다. 무쇠의 단단함이 몸 안에 밴다."
+   "text": "쥐면 손바닥에 묵직한 무게가 얹힌다. 무쇠의 단단함이 몸 안에 밴다."
   },
   {
    "n": 631,
@@ -224,7 +224,7 @@
    "n": 643,
    "kind": "flavor",
    "loc": "relics/relics-acquire.txt [relic.r-acq-coin-pouch]",
-   "text": "풀어 보니 안에 동전이 가득하다. 줍는 순간 지갑이 두둑해진다."
+   "text": "풀어 보니 안에 동전이 가득하다. 줍는 순간 주머니가 불룩하게 찬다."
   },
   {
    "n": 644,
@@ -236,7 +236,7 @@
    "n": 645,
    "kind": "flavor",
    "loc": "relics/relics-acquire.txt [relic.r-acq-sun-tonic]",
-   "text": "마시면 햇살을 통째로 들이켠 것 같다. 쌓였던 피로가 한꺼번에 풀린다."
+   "text": "마시면 햇살을 들이켠 것 같다. 쌓였던 피로가 한꺼번에 풀린다."
   },
   {
    "n": 646,
@@ -314,49 +314,49 @@
    "n": 658,
    "kind": "flavor",
    "loc": "relics/relics-acquire.txt [relic.r-acq-glutton-pouch]",
-   "text": "무언가를 삼킬 때마다 그늘이 짙어지고 몸이 데워진다. 쓰면 쓸수록 배가 부르는 주머니다."
+   "text": "무언가를 삼킬 때마다 어둠의 기운이 깃들고 몸이 데워진다. 쓸수록 배가 부르는 주머니다."
   },
   {
    "n": 659,
    "kind": "flavor",
    "loc": "relics/relics-acquire.txt [relic.r-acq-bloom-pin]",
-   "text": "색이 짙어질 때마다 작은 꽃이 핀다. 그 향기에 상처가 아주 조금 아문다."
+   "text": "어느 기운이 깃들 때마다 작은 꽃이 핀다. 그 향기에 상처가 아주 조금 아문다."
   },
   {
    "n": 660,
    "kind": "flavor",
    "loc": "relics/relics-acquire.txt [relic.r-acq-leaf-brooch]",
-   "text": "색이 짙어질 때마다 잎이 새로 돋는다. 그때마다 몸이 조금씩 데워진다."
+   "text": "어느 기운이 깃들 때마다 잎이 새로 돋는다. 그때마다 몸이 조금씩 데워진다."
   },
   {
    "n": 661,
    "kind": "flavor",
    "loc": "relics/relics-acquire.txt [relic.r-acq-tithe-ring]",
-   "text": "어느 색이든 짙어지면 동전이 한 닢 굴러든다. 색이 자라는 만큼 작은 보답이 따른다."
+   "text": "어느 기운이든 깃들면 동전이 굴러든다. 색이 자라는 만큼 작은 보답이 따른다."
   },
   {
    "n": 662,
    "kind": "flavor",
    "loc": "relics/relics-acquire.txt [relic.r-acq-fortune-loop]",
-   "text": "색이 차오를 때마다 잔돈이 두 닢 떨어진다. 색이 곧 재산이 되는 고리다."
+   "text": "색이 차오를 때마다 잔돈이 떨어진다. 색이 곧 재산이 되는 고리다."
   },
   {
    "n": 663,
    "kind": "flavor",
    "loc": "relics/relics-acquire.txt [relic.r-acq-time-pendulum]",
-   "text": "색이 짙어질 때마다 추가 가볍게 흔들린다. 그 흔들림에 작은 시간 조각이 떨어진다."
+   "text": "어느 기운이 깃들 때마다 추가 가볍게 흔들린다. 그 흔들림에 작은 시간 조각이 떨어진다."
   },
   {
    "n": 664,
    "kind": "flavor",
    "loc": "relics/relics-acquire.txt [relic.r-acq-spectrum-locket]",
-   "text": "어느 색이든 짙어지면 뚜껑이 살짝 열린다. 그때마다 작은 온기와 잔돈이 함께 새어 나온다."
+   "text": "어느 기운이든 깃들면 뚜껑이 살짝 열린다. 그때마다 작은 온기와 잔돈이 함께 새어 나온다."
   },
   {
    "n": 665,
    "kind": "flavor",
    "loc": "relics/relics-acquire.txt [relic.r-acq-color-chime]",
-   "text": "색이 짙어질 때마다 맑게 운다. 그 울림에 몸이 데워지고 시간 조각이 떨어진다."
+   "text": "어느 기운이 깃들 때마다 맑게 운다. 그 울림에 몸이 데워지고 시간 조각이 떨어진다."
   },
   {
    "n": 666,
@@ -368,19 +368,19 @@
    "n": 667,
    "kind": "flavor",
    "loc": "relics/relics-acquire.txt [relic.r-acq-growth-bell]",
-   "text": "색이 짙어질 때마다 작은 종이 운다. 그 소리에 상처가 아주 조금 아문다."
+   "text": "어느 기운이 깃들 때마다 작은 종이 운다. 그 소리에 상처가 아주 조금 아문다."
   },
   {
    "n": 668,
    "kind": "flavor",
    "loc": "relics/relics-acquire.txt [relic.r-acq-coin-vine]",
-   "text": "색이 짙어질 때마다 덩굴에 동전이 맺힌다. 색이 자랄수록 주머니가 두둑해진다."
+   "text": "어느 기운이 깃들 때마다 덩굴에 동전이 맺힌다. 색이 자랄수록 주머니가 불룩해진다."
   },
   {
    "n": 669,
    "kind": "flavor",
    "loc": "relics/relics-acquire.txt [relic.r-acq-shard-blossom]",
-   "text": "색이 차오를 때마다 봉오리가 살짝 벌어진다. 그 안에서 작은 시간 조각이 떨어진다."
+   "text": "어느 기운이 깃들 때마다 봉오리가 살짝 벌어진다. 그 안에서 작은 시간 조각이 떨어진다."
   },
   {
    "n": 670,
@@ -470,19 +470,19 @@
    "n": 684,
    "kind": "flavor",
    "loc": "relics/relics-cmech.txt [relic.r-cm-double-curse-needle]",
-   "text": "한 번 찔러도 두 번 찌른 자국이 남는 바늘이다. 적에게 거는 약함이 곱절로 새겨진다."
+   "text": "찌른 곳에 자국이 거듭 겹쳐 남는 바늘이다. 적에게 거는 약함이 곱절로 새겨진다."
   },
   {
    "n": 685,
    "kind": "flavor",
    "loc": "relics/relics-cmech.txt [relic.r-cm-double-curse-mirror]",
-   "text": "무엇이든 둘로 비추는 거울이다. 적에게 거는 약함이 갑절로 새겨진다."
+   "text": "마주한 것을 거듭 되비추는 거울이다. 적에게 거는 약함이 갑절로 새겨진다."
   },
   {
    "n": 686,
    "kind": "flavor",
    "loc": "relics/relics-cmech.txt [relic.r-cm-double-curse-sigil]",
-   "text": "한 획을 그으면 두 획이 남는 검은 인장이다. 적이 받는 약함이 두 배로 새겨진다."
+   "text": "한 획을 그으면 자국이 겹쳐 남는 검은 인장이다. 적이 받는 약함이 곱절로 새겨진다."
   },
   {
    "n": 687,
@@ -500,7 +500,7 @@
    "n": 689,
    "kind": "flavor",
    "loc": "relics/relics-cmech.txt [relic.r-cm-double-curse-weak-grip]",
-   "text": "두 곱절로 새기려다 보니 손이 늘 떨린다. 적의 약함은 짙어지지만 처음 일격이 그만큼 무뎌진다."
+   "text": "자국을 거듭 새기려다 보니 손이 늘 떨린다. 적의 약함은 깊어지지만 처음 일격이 그만큼 무뎌진다."
   },
   {
    "n": 690,
@@ -512,7 +512,7 @@
    "n": 691,
    "kind": "flavor",
    "loc": "relics/relics-cmech.txt [relic.r-cm-double-curse-heavy-mark]",
-   "text": "적에게 두 배의 흠을 새기느라 제 등도 함께 드러난다. 세게 거는 만큼 돌아오는 매도 더 아프다."
+   "text": "적에게 흠집을 거듭 새기느라 제 등도 함께 드러난다. 세게 거는 만큼 돌아오는 매도 더 아프다."
   },
   {
    "n": 692,
@@ -560,7 +560,7 @@
    "n": 699,
    "kind": "flavor",
    "loc": "relics/relics-color.txt [relic.r-col-electric-stormcore]",
-   "text": "구름을 통째로 가둔 것처럼 무겁고 빠르다. 알티-알타가 멀리서 보고 신나서 손뼉을 친 물건이다."
+   "text": "먹구름을 가둔 것처럼 무겁고 빠르다. 알티-알타가 멀리서 보고 신나서 손뼉을 친 물건이다."
   },
   {
    "n": 700,
@@ -662,7 +662,7 @@
    "n": 716,
    "kind": "flavor",
    "loc": "relics/relics-color.txt [relic.r-col-light-vigil-lamp]",
-   "text": "등불 옆면에 작은 눈금이 새겨진 등이다. 불꽃이 일곱 번째 눈금에 닿을 때마다 색 하나가 그 빛을 받아 짙어진다."
+   "text": "등불 옆면에 작은 눈금이 새겨진 등이다. 불꽃이 일곱 번째 눈금에 닿을 때마다 색 하나에 그 빛이 깃든다."
   },
   {
    "n": 717,
@@ -680,73 +680,73 @@
    "n": 719,
    "kind": "flavor",
    "loc": "relics/relics-color.txt [relic.r-col-iron-turn-gear]",
-   "text": "이가 헐거워서 매번 다른 데서 멈춘다. 어쩌다 딱 맞물리면 색 하나가 그 회전을 받아 짙어진다."
+   "text": "이가 헐거워서 매번 다른 데서 멈춘다. 어쩌다 딱 맞물리면 색 하나에 그 회전이 깃든다."
   },
   {
    "n": 720,
    "kind": "flavor",
    "loc": "relics/relics-color.txt [relic.r-col-iron-bulwark-plate]",
-   "text": "쌓아 둔 쇠가 많을수록 두꺼워지는 판이다. 싸움이 시작되면 그동안 모은 쇠가 벽이 되어 앞을 막는다."
+   "text": "오래된 성문에서 떼어 낸 판금이다. 싸움이 시작될 때 앞을 가로막는 벽이 되어 준다."
   },
   {
    "n": 721,
    "kind": "flavor",
    "loc": "relics/relics-color.txt [relic.r-col-earth-mountain-girth]",
-   "text": "흙을 많이 품은 자에게만 산이 어깨를 빌려준다. 흙이 짙을수록 첫 방어가 묵직해진다."
+   "text": "산허리를 한 바퀴 둘러 깎아 만든 돌띠다. 두르고 있으면 산이 어깨를 빌려준다."
   },
   {
    "n": 722,
    "kind": "flavor",
    "loc": "relics/relics-color.txt [relic.r-col-water-tidewall]",
-   "text": "물이 차오른 만큼 벽이 높이 선다. 그동안 모아 둔 물이 싸움의 첫머리를 막아 준다."
+   "text": "밀물이 한 번 다녀간 자리에 남은 물의 결이다. 싸움의 첫머리에 높은 벽이 되어 선다."
   },
   {
    "n": 723,
    "kind": "flavor",
    "loc": "relics/relics-color.txt [relic.r-col-light-aegis-glow]",
-   "text": "품은 빛이 밝을수록 둘레를 감싸는 빛무리가 두껍다. 적과 마주하면 모은 빛이 두터운 방어로 굳는다."
+   "text": "둘레에 빛무리를 두른 작은 핵이다. 적과 마주하면 그 빛이 방어로 굳어 몸을 감싼다."
   },
   {
    "n": 724,
    "kind": "flavor",
    "loc": "relics/relics-color.txt [relic.r-col-fire-forge-fury]",
-   "text": "안에 쌓인 불이 클수록 팔에 실리는 힘이 무겁다. 적과 마주 서면 모아 둔 열기가 주먹으로 옮겨 온다."
+   "text": "대장간 화덕에서 가장 뜨거운 불을 떠 담았다. 적과 마주 서면 그 열기가 주먹으로 옮겨 온다."
   },
   {
    "n": 725,
    "kind": "flavor",
    "loc": "relics/relics-color.txt [relic.r-col-electric-charged-fist]",
-   "text": "모아 둔 떨림이 많을수록 첫 일격이 빠르고 무겁다. 손끝에 맺힌 푸른 불꽃이 한꺼번에 터진다."
+   "text": "손끝에 푸른 불꽃이 맺혀 있는 주먹이다. 적과 마주 서면 그 불꽃이 한꺼번에 터진다."
   },
   {
    "n": 726,
    "kind": "flavor",
    "loc": "relics/relics-color.txt [relic.r-col-wind-gale-edge]",
-   "text": "품은 바람이 셀수록 칼끝이 멀리 닿는다. 싸움이 시작되면 모은 바람이 어깨를 떠밀어 준다."
+   "text": "칼날 위로 늘 가는 바람이 스쳐 지나는 날붙이다. 싸움이 시작되면 그 바람이 어깨를 떠밀어 준다."
   },
   {
    "n": 727,
    "kind": "flavor",
    "loc": "relics/relics-color.txt [relic.r-col-dark-grudge-grip]",
-   "text": "쌓인 그늘이 짙을수록 손에 힘이 더 들어간다. 적과 마주하면 모아 둔 적막이 힘이 되어 일어선다."
+   "text": "오래 묵은 원망이 손 모양으로 굳은 그늘이다. 적과 마주하면 그 적막이 힘이 되어 일어선다."
   },
   {
    "n": 728,
    "kind": "flavor",
    "loc": "relics/relics-color.txt [relic.r-col-iron-ironclad-stance]",
-   "text": "쇠를 많이 품은 자만이 처음부터 흔들리지 않는다. 모은 쇠가 통째로 단단한 벽이 되어 준다."
+   "text": "발끝부터 어깨까지 쇠로 두른 자세다. 처음부터 흔들리지 않는 단단한 벽이 되어 준다."
   },
   {
    "n": 729,
    "kind": "flavor",
    "loc": "relics/relics-color.txt [relic.r-col-fire-bonfire-roar]",
-   "text": "품은 불이 클수록 첫 외침이 뜨겁다. 적과 마주 서면 모아 둔 열기가 한꺼번에 솟구친다."
+   "text": "한밤에도 꺼지지 않고 타오르는 모닥불이다. 적과 마주 서면 그 열기가 한꺼번에 솟구친다."
   },
   {
    "n": 730,
    "kind": "flavor",
    "loc": "relics/relics-color.txt [relic.r-col-all-prism-shard]",
-   "text": "빛을 머금으면 여덟 색으로 갈라진다. 손에 쥐면 모든 색이 조금씩 짙어진다."
+   "text": "빛을 머금으면 여덟 색으로 갈라지는 조각이다. 손에 쥐면 모든 색의 기운이 조금씩 깃든다."
   },
   {
    "n": 731,
@@ -770,13 +770,13 @@
    "n": 734,
    "kind": "flavor",
    "loc": "relics/relics-color.txt [relic.r-col-random-lucky-coin]",
-   "text": "던질 때마다 어느 면이 나올지 모른다. 싸움을 이길 때마다 한 번 튕겨서 운이 닿으면 색 하나가 짙어진다."
+   "text": "던질 때마다 어느 면이 나올지 모른다. 싸움을 이길 때마다 굴려서 운이 닿으면 색 하나에 기운이 깃든다."
   },
   {
    "n": 735,
    "kind": "flavor",
    "loc": "relics/relics-color.txt [relic.r-col-gain-cascade-prism]",
-   "text": "색이 짙어질 때마다 다른 색도 함께 짙어진다. 정령이 신나서 건네준 프리즘이다."
+   "text": "빛을 받으면 한 색이 옆의 색을 불러낸다. 정령이 신나서 건네준 프리즘이다."
   },
   {
    "n": 736,
@@ -818,7 +818,7 @@
    "n": 742,
    "kind": "flavor",
    "loc": "relics/relics-combat.txt [relic.r-cbt-aegis-of-hours]",
-   "text": "오래된 시계탑 문에서 떼어 낸 큰 방패다. 싸움이 시작되면 그 무게가 통째로 앞을 막아선다."
+   "text": "오래된 시계탑 문에서 떼어 낸 큰 방패다. 싸움이 시작되면 그 무게가 앞을 막아선다."
   },
   {
    "n": 743,
@@ -860,13 +860,13 @@
    "n": 749,
    "kind": "flavor",
    "loc": "relics/relics-combat.txt [relic.r-cbt-spectral-loom]",
-   "text": "실이 다섯 번 지날 때마다 무늬가 짙어진다. 그러면서 어느 색이 천천히 차오른다."
+   "text": "실이 다섯 번 지날 때마다 무늬가 새로 짜인다. 그러면서 어느 색이 천천히 차오른다."
   },
   {
    "n": 750,
    "kind": "flavor",
    "loc": "relics/relics-combat.txt [relic.r-cbt-honing-band]",
-   "text": "두를수록 팔에 익는 거친 띠. 네 번 내리칠 때마다 어깨에 힘이 조금 더 쌓인다."
+   "text": "두를수록 팔에 익는 거친 띠. 네 번 내리칠 때마다 다음 일격에 힘이 더 실린다."
   },
   {
    "n": 751,
@@ -884,7 +884,7 @@
    "n": 753,
    "kind": "flavor",
    "loc": "relics/relics-combat.txt [relic.r-cbt-tally-knot]",
-   "text": "카드를 다섯 장 낼 때마다 색이 짙어진다."
+   "text": "카드를 다섯 장 낼 때마다 어느 기운이 깃든다."
   },
   {
    "n": 754,
@@ -1064,7 +1064,7 @@
    "n": 783,
    "kind": "flavor",
    "loc": "relics/relics-mvr.txt [relic.r-warm-coal]",
-   "text": "손바닥 위에서 오래 따뜻하다. 싸움이 시작되면 그 온기가 두터운 방어로 굳는다."
+   "text": "손바닥 위에서 오래 따뜻하다. 싸움이 시작되면 그 온기가 단단한 방어로 굳는다."
   },
   {
    "n": 784,
@@ -1100,7 +1100,7 @@
    "n": 789,
    "kind": "flavor",
    "loc": "relics/relics-mvr.txt [relic.r-prism-bead]",
-   "text": "빛을 머금었다가 흩뜨리는 작은 구슬. 다섯 번 손을 거칠 때마다 어느 색이 짙어진다."
+   "text": "빛을 머금었다가 흩뜨리는 작은 구슬. 다섯 번 손을 거칠 때마다 어느 기운이 깃든다."
   },
   {
    "n": 790,
@@ -1172,7 +1172,7 @@
    "n": 801,
    "kind": "flavor",
    "loc": "relics/relics-mvr.txt [relic.r-heavy-satchel]",
-   "text": "쓸 만한 것을 챙기다 보니 너무 많아졌다. 매 턴 패는 넉넉하지만 어깨가 짓눌려 막아 내기가 버겁다."
+   "text": "쓸 만한 것을 챙기다 보니 가방이 가득 찼다. 패는 넉넉하지만 어깨가 무거워 막아 내기 버겁다."
   },
   {
    "n": 802,
@@ -1226,13 +1226,13 @@
    "n": 810,
    "kind": "flavor",
    "loc": "relics/relics-race.txt [relic.r-race-phantom]",
-   "text": "보이지 않는 손이 패를 두툼하게 쥔다. 턴이 끝나도 패를 놓지 않으니(손패 유지), 아껴 둔 만큼 다음 수가 무거워진다."
+   "text": "보이지 않는 손이 패를 넉넉히 쥔다. 턴이 끝나도 패를 놓지 않으니(손패 유지), 아껴 둔 패가 다음 수에 실린다."
   },
   {
    "n": 811,
    "kind": "flavor",
    "loc": "relics/relics-race.txt [relic.r-race-phantom-fullhand]",
-   "text": "보이지 않는 손이 패를 한 장 더 쥔다. 턴이 끝나도 놓지 않으니, 패가 두툼할수록 다음 수가 더 무거워진다."
+   "text": "보이지 않는 손이 패를 한 장 더 쥔다. 턴이 끝나도 놓지 않으니, 모아 둔 패가 다음 수에 실린다."
   },
   {
    "n": 812,
@@ -1250,13 +1250,13 @@
    "n": 814,
    "kind": "flavor",
    "loc": "relics/relics-race.txt [relic.r-race-arcana]",
-   "text": "빛이 고이는 그릇이다. 색이 짙을수록(최고색 12당 마나 +1), 다채로울수록(색 3종당 카드 +1) 매 싸움이 풍요로워진다."
+   "text": "빛이 고이는 그릇이다. 색이 무르익을수록(최고색 12당 마나 +1), 다채로울수록(색 3종당 카드 +1) 매 싸움이 풍요로워진다."
   },
   {
    "n": 815,
    "kind": "flavor",
    "loc": "relics/relics-race.txt [relic.r-race-arcana-prism]",
-   "text": "빛을 여러 갈래로 나누는 핵이다. 가장 짙은 색이 매 싸움 시작에 얇은 방어가 되고(최고색 14당 방어 +1), 색이 다채로울수록 손에 힘이 실린다(색 2종당 힘 +1)."
+   "text": "빛을 여러 갈래로 나누는 핵이다. 가장 무르익은 색이 매 싸움 시작에 얇은 방어가 되고(최고색 14당 방어 +1), 색이 다채로울수록 손에 힘이 실린다(색 2종당 힘 +1)."
   },
   {
    "n": 816,
@@ -1268,7 +1268,7 @@
    "n": 817,
    "kind": "flavor",
    "loc": "relics/relics-race.txt [relic.r-race-arcana-amp]",
-   "text": "색의 울림을 한층 더 키운다. 턴 수의 끝자리가 맞아떨어질 때마다 무작위 색 하나가 더 짙어진다."
+   "text": "색의 울림을 한층 더 키운다. 턴 수의 끝자리가 맞아떨어질 때마다 무작위 색 하나에 기운이 깃든다."
   },
   {
    "n": 818,
@@ -1322,7 +1322,7 @@
    "n": 826,
    "kind": "flavor",
    "loc": "relics/relics-stat.txt [relic.r-stat-fire-lens]",
-   "text": "빛을 굴절시켜 색을 흩뿌리는 렌즈다. 어느 색이 짙어질지는 그때그때 다르다."
+   "text": "빛을 굴절시켜 색을 흩뿌리는 렌즈다. 어느 기운이 깃들지는 그때그때 다르다."
   },
   {
    "n": 827,
@@ -1394,7 +1394,7 @@
    "n": 838,
    "kind": "flavor",
    "loc": "relics/relics-stat.txt [relic.r-stat-rivet-band]",
-   "text": "못으로 단단히 박아 만든 띠다. 어떤 방어든 한층 두껍게 잡아 준다."
+   "text": "못으로 단단히 박아 만든 띠다. 어떤 방어든 한층 단단하게 잡아 준다."
   },
   {
    "n": 839,
@@ -1448,19 +1448,19 @@
    "n": 847,
    "kind": "flavor",
    "loc": "relics/relics-stat.txt [relic.r-stat-tide-lens]",
-   "text": "물빛만 골라 모으는 렌즈다. 들여다보면 푸른 물색이 한층 짙게 고인다."
+   "text": "물빛만 골라 모으는 렌즈다. 들여다보면 푸른 물색이 한가득 고인다."
   },
   {
    "n": 848,
    "kind": "flavor",
    "loc": "relics/relics-stat.txt [relic.r-stat-galewright]",
-   "text": "바람을 손에 쥐는 법을 새겨 둔 부적이다. 바람색이 짙을수록 첫 공격이 가볍고 날카로워진다."
+   "text": "바람을 손에 쥐는 법을 새겨 둔 부적이다. 적과 마주 서면 첫 공격이 가볍고 날카로워진다."
   },
   {
    "n": 849,
    "kind": "flavor",
    "loc": "relics/relics-stat.txt [relic.r-stat-spellweight]",
-   "text": "마법의 흐름을 차곡차곡 감아 두는 추다. 카드를 여러 장 엮어 가다 보면 다음 카드가 절로 따라온다."
+   "text": "마법의 흐름을 실패에 감아 두는 추다. 카드를 여러 장 엮어 가다 보면 다음 카드가 절로 따라온다."
   },
   {
    "n": 850,
@@ -1502,13 +1502,13 @@
    "n": 856,
    "kind": "flavor",
    "loc": "relics/relics-turn.txt [relic.r-turn-snow-pebble]",
-   "text": "구르기를 멈추자 작은 알이 차가운 정수로 굳었다. 손에 쥔 자에게 물의 기운을 나눠 준다."
+   "text": "구르기를 멈추자 작은 알이 차가운 정수로 굳었다. 손에 품으면 물의 기운을 나눠 준다."
   },
   {
    "n": 857,
    "kind": "flavor",
    "loc": "relics/relics-turn.txt [relic.r-turn-snow-drift]",
-   "text": "눈이 쌓여 단단한 둔덕이 되었다. 그 두툼함이 주인의 숨을 받쳐 준다."
+   "text": "오래 쌓인 눈이 단단한 둔덕으로 굳었다. 그 묵직한 무게가 주인의 숨을 받쳐 준다."
   },
   {
    "n": 858,
@@ -1610,7 +1610,7 @@
    "n": 874,
    "kind": "flavor",
    "loc": "relics/relics-turn.txt [relic.r-turn-seventh-veil]",
-   "text": "끝자리가 일곱일 때만 얇은 빛이 흐른다. 드물게 찾아오는 숫자라 깨어날 때의 빛이 더 짙다."
+   "text": "끝자리가 일곱일 때만 얇은 빛이 흐른다. 드물게 찾아오는 숫자라 깨어날 때의 빛이 더 또렷하다."
   },
   {
    "n": 875,
@@ -1658,7 +1658,7 @@
    "n": 882,
    "kind": "flavor",
    "loc": "relics/relics-turn.txt [relic.r-turn-fickle-prism]",
-   "text": "어느 턴에 빛날지 저도 모른다. 매번 주사위를 굴리듯 가끔 어느 색이 슬쩍 짙어진다."
+   "text": "어느 턴에 빛날지 저도 모른다. 매번 주사위를 굴리듯 가끔 어느 색에 기운이 슬쩍 깃든다."
   },
   {
    "n": 883,
