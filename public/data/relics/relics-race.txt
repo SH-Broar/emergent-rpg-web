@@ -35,7 +35,7 @@ rank = common
 source = race
 trigger = on-turn-start
 effects = turn-start-block:2
-flavor = 어디에 서든 곧 익숙해진다. 매 턴 발밑이 조금씩 더 단단해진다.
+flavor = 어디에 서든 금세 익숙해진다.
 
 [relic.r-race-moth]
 name = 바람결 깃
@@ -70,7 +70,7 @@ rank = common
 source = race
 trigger = on-card-played-after
 effects = cards-to-color:5
-flavor = 카드가 지날 때마다 깃이 가볍게 떨린다. 다섯 번을 채우면 색 하나가 더 짙어진다.
+flavor = 카드가 지날 때마다 깃이 가볍게 떨린다. 다섯 번째마다 바람의 기운이 깃든다.
 
 [relic.r-race-phantom]
 name = 패를 쥔 손

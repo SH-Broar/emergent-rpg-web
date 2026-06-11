@@ -140,7 +140,7 @@ flavor = 길 떠나는 이의 가장 평범한 짐. 새 곳에 발을 들일 때
 # --- 카운터형 (value = 주기 N) ---
 
 [relic.r-ink-vial]
-name = 잉크 한 병
+name = 잉크 병
 rank = common
 source = shop
 trigger = on-card-played-after

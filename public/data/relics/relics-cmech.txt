@@ -154,7 +154,7 @@ rank = rare
 source = shop
 trigger = passive
 effects = first-card-free, draw-extra-add:-1
-flavor = 첫 카드가 거저인 대신 패가 늘 한 장 모자라다. 가벼운 시작은 두둑한 패를 내준 값이다.
+flavor = 수많은 책의 마지막 문장만 모아 둔 책. 첫 카드를 거저 내주는 대신, 패가 늘 한 장 모자라다.
 
 [relic.r-cm-double-curse-heavy-mark]
 name = 무거운 저주표식

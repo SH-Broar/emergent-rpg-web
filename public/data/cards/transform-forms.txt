@@ -773,7 +773,7 @@ flavor = 멈추지 않는 자람이 더 거세다.
 # ============================================================
 
 [card.c-fox-whim]
-name = 변덕 한 줌
+name = 변덕
 rank = common
 source = form
 element = dark
@@ -784,7 +784,7 @@ upgrade_to = c-fox-whim-plus
 flavor = 변덕을 살짝 흩뿌린다. 무엇이 될지는 그때그때 다르다.
 
 [card.c-fox-whim-plus]
-name = 변덕 한 줌+
+name = 변덕+
 rank = common
 source = form
 element = dark

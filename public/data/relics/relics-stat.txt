@@ -33,7 +33,7 @@ effects = boost-stat:6:atk
 flavor = 번개가 흙에 떨어진 곳에서 굳은 덩어리다. 그 안에서 아직 전류가 돈다.
 
 [relic.r-stat-mono-spear]
-name = 모노의 첫 창
+name = 모노의 창
 rank = legendary
 source = event
 trigger = on-acquire
@@ -156,7 +156,7 @@ rank = rare
 source = event
 trigger = on-rest
 effects = boost-stat:2:def
-flavor = 모닥불 옆에 두면 천천히 단단해지는 돌이다. 쉴 때마다 흙과 철의 기운이 더 짙어진다.
+flavor = 모닥불 옆에 두면 천천히 단단해지는 돌이다.
 
 # --- DEF 비례 형 ---
 

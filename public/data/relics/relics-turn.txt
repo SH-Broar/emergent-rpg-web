@@ -147,7 +147,7 @@ effects = turn-units-color:2:0
 flavor = 자릿수가 한 바퀴 돌아 영으로 떨어질 때만 운다. 그 깨끗한 숫자에 어느 색이 또렷이 차오른다.
 
 [relic.r-turn-first-spark]
-name = 첫 숫자의 불꽃
+name = 첫 불꽃
 rank = common
 source = shop
 trigger = on-turn-start

@@ -7,7 +7,7 @@
 # ============================================================
 
 [relic.r-col-fire-ember]
-name = 불씨 한 톨
+name = 작은 불씨
 rank = basic
 source = shop
 trigger = on-acquire
@@ -23,7 +23,7 @@ effects = boost-color:8:fire
 flavor = 오래 타고도 식지 않는 돌이다. 정령들이 까치발로 다가가 손을 쬐어 본다.
 
 [relic.r-col-water-droplet]
-name = 첫 물방울
+name = 물방울
 rank = basic
 source = shop
 trigger = on-acquire
@@ -55,7 +55,7 @@ effects = boost-color:12:electric
 flavor = 구름을 통째로 가둔 것처럼 무겁고 빠르다. 알티-알타가 멀리서 보고 신나서 손뼉을 친 물건이다.
 
 [relic.r-col-iron-nail]
-name = 낡은 못 한 개
+name = 낡은 못
 rank = basic
 source = shop
 trigger = on-acquire
@@ -103,7 +103,7 @@ effects = boost-color:8:wind
 flavor = 잡으려 하면 빠져나가고 놓아 두면 곁에 머무는 바람 덩어리다. 정령이 술래잡기를 하다 두고 갔다.
 
 [relic.r-col-light-glint]
-name = 한 줄기 빛
+name = 가는 빛
 rank = common
 source = event
 trigger = on-acquire
@@ -119,7 +119,7 @@ effects = boost-color:12:light
 flavor = 가장 긴 밤이 끝나고 처음 떠오른 빛을 굳혀 만들었다. 손에 쥐면 새 아침의 온기가 천천히 번진다.
 
 [relic.r-col-dark-shade]
-name = 한 줌 그늘
+name = 옅은 그늘
 rank = common
 source = event
 trigger = on-acquire
@@ -146,7 +146,7 @@ rank = rare
 source = shop
 trigger = on-acquire
 effects = boost-color:8:fire
-flavor = 길을 떠나기 전에 화로에서 가장 굵은 숯을 골라 챙겼다. 쥐고 있으면 그 온기가 통째로 몸에 밴다.
+flavor = 길을 떠나기 전에 화로에서 가장 굵은 숯을 골라 챙겼다. 쥐고 있으면 그 온기가 몸에 밴다.
 
 [relic.r-col-water-canteen]
 name = 가득 채운 물통
@@ -342,7 +342,7 @@ rank = rare
 source = npc
 trigger = on-combat-end
 effects = chance-random-color-1:55
-flavor = 싸움이 끝날 때마다 제멋대로 운다. 운이 닿는 날이면 그 울림이 여덟 색 가운데 하나를 골라 띄운다.
+flavor = 싸움이 끝날 때마다 제멋대로 우는 종. 가끔 그 울음소리가 듣고 싶은 날이 있다.
 
 [relic.r-col-random-wandering-die]
 name = 떠도는 주사위
@@ -353,7 +353,7 @@ effects = boost-color:2:random
 flavor = 굴릴 때마다 다른 색이 나온다. 새 곳에 발을 들이면 그날의 운이 색 하나를 골라 채운다.
 
 [relic.r-col-random-spirit-marbles]
-name = 정령의 구슬 한 줌
+name = 정령의 구슬
 rank = legendary
 source = event
 trigger = on-turn-start
@@ -412,4 +412,4 @@ rank = legendary
 source = event
 trigger = on-color-gain
 effects = boost-color:1:random
-flavor = 한쪽 색이 짙어지면 마주 선 거울이 다른 색을 비춰 함께 띄운다. 정령 둘이 마주 보며 깔깔 웃다가 두고 갔다.
+flavor = 기운이 깃들면 마주 선 거울이 다른 빛을 함께 비춘다. 정령 둘이 마주 보며 깔깔 웃다가 두고 갔다.

@@ -42,7 +42,7 @@ rank = legendary
 source = event
 trigger = on-combat-start
 effects = combat-start-draw:2
-flavor = 펼치면 이야기가 먼저 운을 뗀다. 어떤 싸움이든 패를 넉넉히 들고 시작하게 된다.
+flavor = 수많은 책의 첫 문장이 쓰여 있는 수첩. 패를 넉넉히 들고 시작하게 된다.
 
 [relic.r-cbt-grip-of-resolve]
 name = 다잡은 손아귀
@@ -86,7 +86,7 @@ rank = rare
 source = elite
 trigger = on-card-played-after
 effects = cards-to-draw:6
-flavor = 손이 빠른 만큼 셈도 빨리 찬다. 여섯 번 손을 거칠 때마다 패가 한 장 더 얹힌다.
+flavor = 카드를 여섯 장 낼 때마다 패가 한 장 더 들어온다.
 
 [relic.r-cbt-spectral-loom]
 name = 색의 베틀
@@ -186,7 +186,7 @@ rank = rare
 source = event
 trigger = on-damage-taken
 effects = hurt-to-block:4
-flavor = 불에 거듭 달군 비늘. 충격을 받을수록 더 단단히 일어서며 다음을 막을 두꺼운 껍질이 돋는다.
+flavor = 불에 거듭 달군 비늘.
 
 # ============================================================
 # 회복 전투 끝 / 노드 진입 / 휴식
@@ -217,7 +217,7 @@ effects = node-enter-heal:2
 flavor = 주머니 바닥에 늘 조금 남아 있다. 새 곳에 발을 들일 때마다 조금 떼어 먹으면 몸이 데워진다.
 
 [relic.r-cbt-traveler-stew]
-name = 길손의 한 그릇
+name = 여행자의 스튜
 rank = common
 source = shop
 trigger = on-node-enter
