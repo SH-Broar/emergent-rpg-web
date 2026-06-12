@@ -14,12 +14,14 @@
     display: flex; flex-direction: column;
     padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   }
-  header { padding: 0.9rem 1rem 0.5rem; display: flex; align-items: center; gap: 0.6rem; }
+  header { padding: 0.9rem 1rem 0.5rem; display: flex; align-items: center; gap: 0.6rem;
+           max-width: 720px; width: 100%; margin: 0 auto; }
   header h1 { font-size: 1rem; color: #8eedff; flex: 1; font-weight: 600; }
   #progress { font-size: 0.85rem; color: #9a9aa8; font-variant-numeric: tabular-nums; }
   #bar { height: 3px; background: #2a2b36; }
   #bar > div { height: 100%; background: #8eedff; width: 0%; transition: width 160ms ease; }
-  main { flex: 1; display: flex; flex-direction: column; padding: 1rem; gap: 0.8rem; overflow-y: auto; }
+  main { flex: 1; display: flex; flex-direction: column; padding: 1rem; gap: 0.8rem; overflow-y: auto;
+         max-width: 720px; width: 100%; margin: 0 auto; }
   .sec { display: inline-block; font-size: 0.7rem; padding: 0.1rem 0.5rem; border-radius: 10px;
          background: rgba(142,237,255,0.12); color: #8eedff; margin-bottom: 0.3rem; }
   .q {
@@ -44,9 +46,12 @@
     padding: 0.7rem 0.8rem; border-radius: 10px; min-height: 3.2rem; resize: vertical;
     background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.14); color: inherit;
   }
-  footer { padding: 0.7rem 1rem calc(0.9rem + env(safe-area-inset-bottom)); display: grid; gap: 0.55rem; }
+  footer { padding: 0.7rem 1rem calc(0.9rem + env(safe-area-inset-bottom)); display: grid; gap: 0.55rem;
+           max-width: 720px; width: 100%; margin: 0 auto; }
   .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.55rem; }
   .row2 { display: grid; grid-template-columns: 1fr 2fr; gap: 0.55rem; }
+  #nextRow { grid-template-columns: 1fr; }
+  #nextRow span { display: none; }
   footer button {
     font: inherit; font-weight: 700; font-size: 1rem; padding: 0.9rem 0; border-radius: 12px;
     border: 1px solid transparent; color: #14151c; cursor: pointer;
