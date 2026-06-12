@@ -1,0 +1,1976 @@
+{
+ "meta": {
+  "id": "name_all_1",
+  "title": "name 전수 1 (유물+아이템+장비)"
+ },
+ "items": [
+  {
+   "n": 1,
+   "kind": "name",
+   "loc": "equipment/equipment-mvr.txt [equipment.w-iron-blade]",
+   "text": "철검"
+  },
+  {
+   "n": 2,
+   "kind": "name",
+   "loc": "equipment/equipment-mvr.txt [equipment.w-fire-spear]",
+   "text": "화염창"
+  },
+  {
+   "n": 3,
+   "kind": "name",
+   "loc": "equipment/equipment-mvr.txt [equipment.w-storm-bow]",
+   "text": "폭풍궁"
+  },
+  {
+   "n": 4,
+   "kind": "name",
+   "loc": "equipment/equipment-mvr.txt [equipment.c-leather]",
+   "text": "가죽 갑옷"
+  },
+  {
+   "n": 5,
+   "kind": "name",
+   "loc": "equipment/equipment-mvr.txt [equipment.c-mail]",
+   "text": "사슬갑옷"
+  },
+  {
+   "n": 6,
+   "kind": "name",
+   "loc": "equipment/equipment-mvr.txt [equipment.c-windrobe]",
+   "text": "바람의 의복"
+  },
+  {
+   "n": 7,
+   "kind": "name",
+   "loc": "equipment/equipment-mvr.txt [equipment.a-ember-ring]",
+   "text": "잉걸 반지"
+  },
+  {
+   "n": 8,
+   "kind": "name",
+   "loc": "equipment/equipment-mvr.txt [equipment.a-tideglass]",
+   "text": "조수 거울"
+  },
+  {
+   "n": 9,
+   "kind": "name",
+   "loc": "equipment/equipment-mvr.txt [equipment.a-thunderclasp]",
+   "text": "천둥 걸쇠"
+  },
+  {
+   "n": 10,
+   "kind": "name",
+   "loc": "items/act-1-arc-items.txt [item.i-arc-dun-ember-draught]",
+   "text": "던의 화로주"
+  },
+  {
+   "n": 11,
+   "kind": "name",
+   "loc": "items/act-1-arc-items.txt [item.i-arc-tifre-spark-vial]",
+   "text": "티프레의 불티병"
+  },
+  {
+   "n": 12,
+   "kind": "name",
+   "loc": "items/act-1-arc-items.txt [item.i-arc-tamamo-tail-charm]",
+   "text": "타마모의 꼬리 부적"
+  },
+  {
+   "n": 13,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-potion-small]",
+   "text": "작은 회복약"
+  },
+  {
+   "n": 14,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-truename-mirror]",
+   "text": "본명의 거울"
+  },
+  {
+   "n": 15,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-extra-life-ember]",
+   "text": "다시 켜지는 불씨"
+  },
+  {
+   "n": 16,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-potion-large]",
+   "text": "큰 회복약"
+  },
+  {
+   "n": 17,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-time-flask]",
+   "text": "시간의 플라스크"
+  },
+  {
+   "n": 18,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-gold-pouch]",
+   "text": "작은 골드 주머니"
+  },
+  {
+   "n": 19,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-fire-tincture]",
+   "text": "불의 정수"
+  },
+  {
+   "n": 20,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-water-tincture]",
+   "text": "물의 정수"
+  },
+  {
+   "n": 21,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-iron-tincture]",
+   "text": "철의 정수"
+  },
+  {
+   "n": 22,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-element-jar]",
+   "text": "만(萬) 정수병"
+  },
+  {
+   "n": 23,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-harpy-wing]",
+   "text": "하피의 날개"
+  },
+  {
+   "n": 24,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-mono-card-token]",
+   "text": "모노의 카드 인장"
+  },
+  {
+   "n": 25,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-rewind-glass]",
+   "text": "회귀의 모래시계"
+  },
+  {
+   "n": 26,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-combat-balm]",
+   "text": "응급 연고"
+  },
+  {
+   "n": 27,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-combat-elixir]",
+   "text": "재생의 영약"
+  },
+  {
+   "n": 28,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-combat-spark]",
+   "text": "정신 각성제"
+  },
+  {
+   "n": 29,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-combat-foresight]",
+   "text": "통찰의 차"
+  },
+  {
+   "n": 30,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-combat-bulwark]",
+   "text": "강철 시럽"
+  },
+  {
+   "n": 31,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-combat-mark]",
+   "text": "균열의 가루"
+  },
+  {
+   "n": 32,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-combat-fog]",
+   "text": "무력화 안개"
+  },
+  {
+   "n": 33,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-combat-venom]",
+   "text": "잠식의 독병"
+  },
+  {
+   "n": 34,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-combat-rage]",
+   "text": "격동의 불꽃"
+  },
+  {
+   "n": 35,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-combat-regen]",
+   "text": "새살 물약"
+  },
+  {
+   "n": 36,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-combat-haste]",
+   "text": "종종 물약"
+  },
+  {
+   "n": 37,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-combat-ward]",
+   "text": "포근 물약"
+  },
+  {
+   "n": 38,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-combat-freedom]",
+   "text": "해방의 줄칼"
+  },
+  {
+   "n": 39,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-combat-tempo]",
+   "text": "박동의 환약"
+  },
+  {
+   "n": 40,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-cleanse-minor]",
+   "text": "산뜻한 물비누"
+  },
+  {
+   "n": 41,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-cleanse-medium]",
+   "text": "또랑또랑 물방울"
+  },
+  {
+   "n": 42,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-cleanse-major]",
+   "text": "단단한 마음 사탕"
+  },
+  {
+   "n": 43,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-cleanse-full]",
+   "text": "반짝 정화의 비"
+  },
+  {
+   "n": 44,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-world-tree-bud]",
+   "text": "세계수의 새싹"
+  },
+  {
+   "n": 45,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-storm-fang]",
+   "text": "폭풍의 송곳니"
+  },
+  {
+   "n": 46,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-grimoire-ink]",
+   "text": "금서의 잉크"
+  },
+  {
+   "n": 47,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-material-common]",
+   "text": "흩어진 시간 부스러기"
+  },
+  {
+   "n": 48,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-material-rare]",
+   "text": "굳은 시간 덩이"
+  },
+  {
+   "n": 49,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-time-answer]",
+   "text": "시간의 답"
+  },
+  {
+   "n": 50,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-salt-pearl]",
+   "text": "소금 진주"
+  },
+  {
+   "n": 51,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-lava-scale]",
+   "text": "용암 비늘"
+  },
+  {
+   "n": 52,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-sky-shard]",
+   "text": "하늘 조각"
+  },
+  {
+   "n": 53,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-emberforge-ore]",
+   "text": "검은 광석"
+  },
+  {
+   "n": 54,
+   "kind": "name",
+   "loc": "items/act-1-items.txt [item.i-shrine-relic]",
+   "text": "신전 유물 조각"
+  },
+  {
+   "n": 55,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-ember-shard]",
+   "text": "불씨 정수"
+  },
+  {
+   "n": 56,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-tide-drop]",
+   "text": "물방울 정수"
+  },
+  {
+   "n": 57,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-spark-bead]",
+   "text": "번개 정수"
+  },
+  {
+   "n": 58,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-iron-nub]",
+   "text": "무쇠 정수"
+  },
+  {
+   "n": 59,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-loam-clod]",
+   "text": "대지 정수"
+  },
+  {
+   "n": 60,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-gale-wisp]",
+   "text": "바람 정수"
+  },
+  {
+   "n": 61,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-dawn-mote]",
+   "text": "빛 정수"
+  },
+  {
+   "n": 62,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-dusk-mote]",
+   "text": "어둠 정수"
+  },
+  {
+   "n": 63,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-pyre-core]",
+   "text": "화로의 핵"
+  },
+  {
+   "n": 64,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-deep-pearl]",
+   "text": "심해의 진주"
+  },
+  {
+   "n": 65,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-prism-heart]",
+   "text": "무지개의 심장"
+  },
+  {
+   "n": 66,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-mono-prism]",
+   "text": "모노의 프리즘 조각"
+  },
+  {
+   "n": 67,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-fist-stone]",
+   "text": "주먹 조약돌"
+  },
+  {
+   "n": 68,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-wall-stone]",
+   "text": "방벽 조약돌"
+  },
+  {
+   "n": 69,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-sage-idol]",
+   "text": "현자의 우상"
+  },
+  {
+   "n": 70,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-warm-bread]",
+   "text": "따끈한 빵"
+  },
+  {
+   "n": 71,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-vigor-root]",
+   "text": "활력의 뿌리"
+  },
+  {
+   "n": 72,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-coin-pouch]",
+   "text": "묵직한 돈주머니"
+  },
+  {
+   "n": 73,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-shard-vial]",
+   "text": "시간조각 작은 병"
+  },
+  {
+   "n": 74,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-sun-tonic]",
+   "text": "햇살 강장제"
+  },
+  {
+   "n": 75,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-ember-cache]",
+   "text": "불의 보따리"
+  },
+  {
+   "n": 76,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-greedy-relic]",
+   "text": "탐욕의 정수"
+  },
+  {
+   "n": 77,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-spark-ring]",
+   "text": "점화 반지"
+  },
+  {
+   "n": 78,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-flow-band]",
+   "text": "물길 팔찌"
+  },
+  {
+   "n": 79,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-prism-charm]",
+   "text": "변색 부적"
+  },
+  {
+   "n": 80,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-tip-jar]",
+   "text": "팁 항아리"
+  },
+  {
+   "n": 81,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-merchant-glove]",
+   "text": "상인의 장갑"
+  },
+  {
+   "n": 82,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-shard-mill]",
+   "text": "조각 물레"
+  },
+  {
+   "n": 83,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-hourglass-charm]",
+   "text": "모래시계 장식"
+  },
+  {
+   "n": 84,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-soothe-vial]",
+   "text": "진정의 작은 병"
+  },
+  {
+   "n": 85,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-restore-amulet]",
+   "text": "회복의 부적"
+  },
+  {
+   "n": 86,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-tinker-belt]",
+   "text": "땜장이 허리띠"
+  },
+  {
+   "n": 87,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-wind-satchel]",
+   "text": "바람 주머니"
+  },
+  {
+   "n": 88,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-glutton-pouch]",
+   "text": "먹보 주머니"
+  },
+  {
+   "n": 89,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-bloom-pin]",
+   "text": "개화의 핀"
+  },
+  {
+   "n": 90,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-leaf-brooch]",
+   "text": "잎사귀 브로치"
+  },
+  {
+   "n": 91,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-tithe-ring]",
+   "text": "십일조 반지"
+  },
+  {
+   "n": 92,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-fortune-loop]",
+   "text": "행운의 고리"
+  },
+  {
+   "n": 93,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-time-pendulum]",
+   "text": "시간의 추"
+  },
+  {
+   "n": 94,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-spectrum-locket]",
+   "text": "스펙트럼 회중시계"
+  },
+  {
+   "n": 95,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-color-chime]",
+   "text": "색의 풍경"
+  },
+  {
+   "n": 96,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-prism-tithe]",
+   "text": "무지개 헌금함"
+  },
+  {
+   "n": 97,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-growth-bell]",
+   "text": "성장의 종"
+  },
+  {
+   "n": 98,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-coin-vine]",
+   "text": "동전 덩굴"
+  },
+  {
+   "n": 99,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-shard-blossom]",
+   "text": "조각 꽃봉오리"
+  },
+  {
+   "n": 100,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-spare-thread]",
+   "text": "여분의 실타래"
+  },
+  {
+   "n": 101,
+   "kind": "name",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-second-breath]",
+   "text": "두 번째 숨"
+  },
+  {
+   "n": 102,
+   "kind": "name",
+   "loc": "relics/relics-activity.txt [relic.r-act-steady-hand]",
+   "text": "흔들리지 않는 손"
+  },
+  {
+   "n": 103,
+   "kind": "name",
+   "loc": "relics/relics-activity.txt [relic.r-act-full-basket]",
+   "text": "가득 찬 바구니"
+  },
+  {
+   "n": 104,
+   "kind": "name",
+   "loc": "relics/relics-activity.txt [relic.r-act-second-wind]",
+   "text": "거듭되는 새벽"
+  },
+  {
+   "n": 105,
+   "kind": "name",
+   "loc": "relics/relics-arc.txt [relic.r-arc-dun-ember-heart]",
+   "text": "던의 잿불 심장"
+  },
+  {
+   "n": 106,
+   "kind": "name",
+   "loc": "relics/relics-arc.txt [relic.r-arc-tifre-storm-fang]",
+   "text": "티프레의 우레 송곳니"
+  },
+  {
+   "n": 107,
+   "kind": "name",
+   "loc": "relics/relics-arc.txt [relic.r-arc-tamamo-nine-mirror]",
+   "text": "타마모의 아홉 거울"
+  },
+  {
+   "n": 108,
+   "kind": "name",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-block-keep-pebble]",
+   "text": "식지 않는 자갈"
+  },
+  {
+   "n": 109,
+   "kind": "name",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-block-keep-wall]",
+   "text": "무너지지 않는 둑"
+  },
+  {
+   "n": 110,
+   "kind": "name",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-block-keep-fortress]",
+   "text": "영원의 성채"
+  },
+  {
+   "n": 111,
+   "kind": "name",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-mana-keep-flask]",
+   "text": "새지 않는 호리병"
+  },
+  {
+   "n": 112,
+   "kind": "name",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-mana-keep-cell]",
+   "text": "잠겨 두는 전지"
+  },
+  {
+   "n": 113,
+   "kind": "name",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-mana-keep-reservoir]",
+   "text": "마르지 않는 못"
+  },
+  {
+   "n": 114,
+   "kind": "name",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-first-free-feather]",
+   "text": "가벼운 첫 깃털"
+  },
+  {
+   "n": 115,
+   "kind": "name",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-first-free-token]",
+   "text": "처음의 무료표"
+  },
+  {
+   "n": 116,
+   "kind": "name",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-first-free-overture]",
+   "text": "서막의 손길"
+  },
+  {
+   "n": 117,
+   "kind": "name",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-double-curse-needle]",
+   "text": "두 번 찌르는 바늘"
+  },
+  {
+   "n": 118,
+   "kind": "name",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-double-curse-mirror]",
+   "text": "되비치는 거울"
+  },
+  {
+   "n": 119,
+   "kind": "name",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-double-curse-sigil]",
+   "text": "겹쳐 새긴 인장"
+  },
+  {
+   "n": 120,
+   "kind": "name",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-first-free-thin-glass]",
+   "text": "얇은 첫 유리"
+  },
+  {
+   "n": 121,
+   "kind": "name",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-block-keep-frail-stone]",
+   "text": "금 간 이월석"
+  },
+  {
+   "n": 122,
+   "kind": "name",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-double-curse-weak-grip]",
+   "text": "떨리는 저주손"
+  },
+  {
+   "n": 123,
+   "kind": "name",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-mana-keep-leaky-vein]",
+   "text": "새는 마나혈관"
+  },
+  {
+   "n": 124,
+   "kind": "name",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-first-free-empty-hand]",
+   "text": "빈손의 첫 줄"
+  },
+  {
+   "n": 125,
+   "kind": "name",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-double-curse-heavy-mark]",
+   "text": "무거운 저주표식"
+  },
+  {
+   "n": 126,
+   "kind": "name",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-empty-palm]",
+   "text": "빈손 부적"
+  },
+  {
+   "n": 127,
+   "kind": "name",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-void-mark]",
+   "text": "공허의 표식"
+  },
+  {
+   "n": 128,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-fire-ember]",
+   "text": "작은 불씨"
+  },
+  {
+   "n": 129,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-fire-coreheart]",
+   "text": "화심석"
+  },
+  {
+   "n": 130,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-water-droplet]",
+   "text": "물방울"
+  },
+  {
+   "n": 131,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-water-tideheart]",
+   "text": "밀물의 심"
+  },
+  {
+   "n": 132,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-electric-spark]",
+   "text": "작은 불꽃"
+  },
+  {
+   "n": 133,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-electric-stormcore]",
+   "text": "뇌심핵"
+  },
+  {
+   "n": 134,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-iron-nail]",
+   "text": "낡은 못"
+  },
+  {
+   "n": 135,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-iron-anvilcore]",
+   "text": "모루의 핵"
+  },
+  {
+   "n": 136,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-earth-pebble]",
+   "text": "손때 묻은 조약돌"
+  },
+  {
+   "n": 137,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-earth-rootstone]",
+   "text": "뿌리의 돌"
+  },
+  {
+   "n": 138,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-wind-feather]",
+   "text": "가벼운 깃 하나"
+  },
+  {
+   "n": 139,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-wind-galecore]",
+   "text": "질풍의 심"
+  },
+  {
+   "n": 140,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-light-glint]",
+   "text": "가는 빛"
+  },
+  {
+   "n": 141,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-light-dawncore]",
+   "text": "여명의 심"
+  },
+  {
+   "n": 142,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-dark-shade]",
+   "text": "옅은 그늘"
+  },
+  {
+   "n": 143,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-dark-voidcore]",
+   "text": "적막의 심"
+  },
+  {
+   "n": 144,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-fire-traveler-coal]",
+   "text": "여행자의 화종"
+  },
+  {
+   "n": 145,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-water-canteen]",
+   "text": "가득 채운 물통"
+  },
+  {
+   "n": 146,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-electric-victory-coil]",
+   "text": "방전된 코일"
+  },
+  {
+   "n": 147,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-iron-trophy-shard]",
+   "text": "가슴팍의 쇳조각"
+  },
+  {
+   "n": 148,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-earth-rest-soil]",
+   "text": "다져진 흙벽"
+  },
+  {
+   "n": 149,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-wind-camp-banner]",
+   "text": "앞장서는 깃발"
+  },
+  {
+   "n": 150,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-light-vigil-lamp]",
+   "text": "시각을 세는 등"
+  },
+  {
+   "n": 151,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-dark-creeping-ink]",
+   "text": "되묻는 먹"
+  },
+  {
+   "n": 152,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-fire-hearth-ash]",
+   "text": "옮겨붙는 불씨"
+  },
+  {
+   "n": 153,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-electric-pace-static]",
+   "text": "변덕스러운 정전기"
+  },
+  {
+   "n": 154,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-iron-turn-gear]",
+   "text": "헐거운 톱니"
+  },
+  {
+   "n": 155,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-iron-bulwark-plate]",
+   "text": "방벽의 판금"
+  },
+  {
+   "n": 156,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-earth-mountain-girth]",
+   "text": "산허리의 띠"
+  },
+  {
+   "n": 157,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-water-tidewall]",
+   "text": "밀물의 벽"
+  },
+  {
+   "n": 158,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-light-aegis-glow]",
+   "text": "수호의 빛무리"
+  },
+  {
+   "n": 159,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-fire-forge-fury]",
+   "text": "단조의 분노"
+  },
+  {
+   "n": 160,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-electric-charged-fist]",
+   "text": "충전된 주먹"
+  },
+  {
+   "n": 161,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-wind-gale-edge]",
+   "text": "질풍의 날"
+  },
+  {
+   "n": 162,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-dark-grudge-grip]",
+   "text": "원념의 손아귀"
+  },
+  {
+   "n": 163,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-iron-ironclad-stance]",
+   "text": "철갑의 자세"
+  },
+  {
+   "n": 164,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-fire-bonfire-roar]",
+   "text": "모닥불의 포효"
+  },
+  {
+   "n": 165,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-all-prism-shard]",
+   "text": "일곱빛 프리즘 조각"
+  },
+  {
+   "n": 166,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-all-mono-fragment]",
+   "text": "모노의 부스러기"
+  },
+  {
+   "n": 167,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-all-pilgrim-bell]",
+   "text": "변덕스러운 종"
+  },
+  {
+   "n": 168,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-random-wandering-die]",
+   "text": "떠도는 주사위"
+  },
+  {
+   "n": 169,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-random-spirit-marbles]",
+   "text": "정령의 구슬"
+  },
+  {
+   "n": 170,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-random-lucky-coin]",
+   "text": "운 좋은 동전"
+  },
+  {
+   "n": 171,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-gain-cascade-prism]",
+   "text": "연쇄의 프리즘"
+  },
+  {
+   "n": 172,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-gain-echo-shell]",
+   "text": "메아리 조개"
+  },
+  {
+   "n": 173,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-gain-overflow-jar]",
+   "text": "흘러넘치는 항아리"
+  },
+  {
+   "n": 174,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-gain-spark-chain]",
+   "text": "불티의 사슬"
+  },
+  {
+   "n": 175,
+   "kind": "name",
+   "loc": "relics/relics-color.txt [relic.r-col-gain-twin-mirror]",
+   "text": "마주 보는 거울"
+  },
+  {
+   "n": 176,
+   "kind": "name",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-iron-vow]",
+   "text": "무쇠의 다짐"
+  },
+  {
+   "n": 177,
+   "kind": "name",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-bastion-plate]",
+   "text": "보루의 흉갑"
+  },
+  {
+   "n": 178,
+   "kind": "name",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-aegis-of-hours]",
+   "text": "시각의 큰 방패"
+  },
+  {
+   "n": 179,
+   "kind": "name",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-first-light-quill]",
+   "text": "첫빛의 깃펜"
+  },
+  {
+   "n": 180,
+   "kind": "name",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-tome-of-openings]",
+   "text": "서막의 두루마리"
+  },
+  {
+   "n": 181,
+   "kind": "name",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-grip-of-resolve]",
+   "text": "다잡은 손아귀"
+  },
+  {
+   "n": 182,
+   "kind": "name",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-poised-pendant]",
+   "text": "균형의 펜던트"
+  },
+  {
+   "n": 183,
+   "kind": "name",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-spare-breath]",
+   "text": "여분의 숨"
+  },
+  {
+   "n": 184,
+   "kind": "name",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-counting-beads]",
+   "text": "헤아림의 염주"
+  },
+  {
+   "n": 185,
+   "kind": "name",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-swift-abacus]",
+   "text": "빠른 주판"
+  },
+  {
+   "n": 186,
+   "kind": "name",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-spectral-loom]",
+   "text": "색의 베틀"
+  },
+  {
+   "n": 187,
+   "kind": "name",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-honing-band]",
+   "text": "벼림의 띠"
+  },
+  {
+   "n": 188,
+   "kind": "name",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-keen-edge-strap]",
+   "text": "예리한 가죽끈"
+  },
+  {
+   "n": 189,
+   "kind": "name",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-prism-pin]",
+   "text": "색실 핀"
+  },
+  {
+   "n": 190,
+   "kind": "name",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-tally-knot]",
+   "text": "매듭 셈끈"
+  },
+  {
+   "n": 191,
+   "kind": "name",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-runner-tally]",
+   "text": "발 빠른 셈표"
+  },
+  {
+   "n": 192,
+   "kind": "name",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-spite-spike]",
+   "text": "앙갚음 가시"
+  },
+  {
+   "n": 193,
+   "kind": "name",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-barbed-mantle]",
+   "text": "가시 돋친 망토"
+  },
+  {
+   "n": 194,
+   "kind": "name",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-vengeful-husk]",
+   "text": "원한의 껍데기"
+  },
+  {
+   "n": 195,
+   "kind": "name",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-pain-prism]",
+   "text": "아픔의 프리즘"
+  },
+  {
+   "n": 196,
+   "kind": "name",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-callused-hide]",
+   "text": "굳은살 가죽"
+  },
+  {
+   "n": 197,
+   "kind": "name",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-tempered-scale]",
+   "text": "단련된 비늘"
+  },
+  {
+   "n": 198,
+   "kind": "name",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-soothing-balm]",
+   "text": "가라앉히는 연고"
+  },
+  {
+   "n": 199,
+   "kind": "name",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-greater-poultice]",
+   "text": "큰 약찜질"
+  },
+  {
+   "n": 200,
+   "kind": "name",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-wayfarer-crumbs]",
+   "text": "나그네의 빵부스러기"
+  },
+  {
+   "n": 201,
+   "kind": "name",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-traveler-stew]",
+   "text": "여행자의 스튜"
+  },
+  {
+   "n": 202,
+   "kind": "name",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-campfire-ember]",
+   "text": "모닥불 잉걸"
+  },
+  {
+   "n": 203,
+   "kind": "name",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-glass-fang]",
+   "text": "유리 송곳니"
+  },
+  {
+   "n": 204,
+   "kind": "name",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-reckless-gauntlet]",
+   "text": "무모한 건틀릿"
+  },
+  {
+   "n": 205,
+   "kind": "name",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-overloaded-pack]",
+   "text": "짐 넘치는 배낭"
+  },
+  {
+   "n": 206,
+   "kind": "name",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-fevered-lamp]",
+   "text": "들뜬 등불"
+  },
+  {
+   "n": 207,
+   "kind": "name",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-thieving-knuckle]",
+   "text": "훔치는 너클"
+  },
+  {
+   "n": 208,
+   "kind": "name",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-brute-cleaver]",
+   "text": "막무가내 도끼"
+  },
+  {
+   "n": 209,
+   "kind": "name",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-bloody-banner]",
+   "text": "피 묻은 깃발"
+  },
+  {
+   "n": 210,
+   "kind": "name",
+   "loc": "relics/relics-combat.txt [relic.r-cbt-greedy-purse]",
+   "text": "욕심 많은 지갑"
+  },
+  {
+   "n": 211,
+   "kind": "name",
+   "loc": "relics/relics-mvr.txt [relic.r-determined-heart]",
+   "text": "결심의 심장"
+  },
+  {
+   "n": 212,
+   "kind": "name",
+   "loc": "relics/relics-mvr.txt [relic.r-sunset-fang]",
+   "text": "노을 능선의 송곳니"
+  },
+  {
+   "n": 213,
+   "kind": "name",
+   "loc": "relics/relics-mvr.txt [relic.r-imperisia-locket]",
+   "text": "임페리시아의 회중시계"
+  },
+  {
+   "n": 214,
+   "kind": "name",
+   "loc": "relics/relics-mvr.txt [relic.r-mono-token]",
+   "text": "모노의 토큰"
+  },
+  {
+   "n": 215,
+   "kind": "name",
+   "loc": "relics/relics-mvr.txt [relic.r-shadow-essence]",
+   "text": "그림자의 본질"
+  },
+  {
+   "n": 216,
+   "kind": "name",
+   "loc": "relics/relics-mvr.txt [relic.r-kishina-pearl]",
+   "text": "키시나의 소금 진주"
+  },
+  {
+   "n": 217,
+   "kind": "name",
+   "loc": "relics/relics-mvr.txt [relic.r-postman-mail]",
+   "text": "로큐의 가죽 가방"
+  },
+  {
+   "n": 218,
+   "kind": "name",
+   "loc": "relics/relics-mvr.txt [relic.r-yusezria-core]",
+   "text": "유스제리아의 정수핵"
+  },
+  {
+   "n": 219,
+   "kind": "name",
+   "loc": "relics/relics-mvr.txt [relic.r-falcon-eye]",
+   "text": "매의 눈"
+  },
+  {
+   "n": 220,
+   "kind": "name",
+   "loc": "relics/relics-mvr.txt [relic.r-clockwork-cog]",
+   "text": "태엽 톱니"
+  },
+  {
+   "n": 221,
+   "kind": "name",
+   "loc": "relics/relics-mvr.txt [relic.r-warm-coal]",
+   "text": "식지 않는 숯"
+  },
+  {
+   "n": 222,
+   "kind": "name",
+   "loc": "relics/relics-mvr.txt [relic.r-dawn-feather]",
+   "text": "새벽 깃털"
+  },
+  {
+   "n": 223,
+   "kind": "name",
+   "loc": "relics/relics-mvr.txt [relic.r-war-charm]",
+   "text": "전의의 부적"
+  },
+  {
+   "n": 224,
+   "kind": "name",
+   "loc": "relics/relics-mvr.txt [relic.r-steady-stone]",
+   "text": "평정의 조약돌"
+  },
+  {
+   "n": 225,
+   "kind": "name",
+   "loc": "relics/relics-mvr.txt [relic.r-mending-spore]",
+   "text": "아무는 포자"
+  },
+  {
+   "n": 226,
+   "kind": "name",
+   "loc": "relics/relics-mvr.txt [relic.r-day-ration]",
+   "text": "하루치 식량"
+  },
+  {
+   "n": 227,
+   "kind": "name",
+   "loc": "relics/relics-mvr.txt [relic.r-ink-vial]",
+   "text": "잉크 병"
+  },
+  {
+   "n": 228,
+   "kind": "name",
+   "loc": "relics/relics-mvr.txt [relic.r-prism-bead]",
+   "text": "프리즘 구슬"
+  },
+  {
+   "n": 229,
+   "kind": "name",
+   "loc": "relics/relics-mvr.txt [relic.r-whetstone]",
+   "text": "숫돌 조각"
+  },
+  {
+   "n": 230,
+   "kind": "name",
+   "loc": "relics/relics-mvr.txt [relic.r-twin-needle]",
+   "text": "쌍바늘"
+  },
+  {
+   "n": 231,
+   "kind": "name",
+   "loc": "relics/relics-mvr.txt [relic.r-bronze-burr]",
+   "text": "청동 가시"
+  },
+  {
+   "n": 232,
+   "kind": "name",
+   "loc": "relics/relics-mvr.txt [relic.r-echo-chime]",
+   "text": "메아리 종"
+  },
+  {
+   "n": 233,
+   "kind": "name",
+   "loc": "relics/relics-mvr.txt [relic.r-stubborn-bark]",
+   "text": "고집 센 나무껍질"
+  },
+  {
+   "n": 234,
+   "kind": "name",
+   "loc": "relics/relics-mvr.txt [relic.r-spare-quiver]",
+   "text": "여분 화살통"
+  },
+  {
+   "n": 235,
+   "kind": "name",
+   "loc": "relics/relics-mvr.txt [relic.r-spring-coil]",
+   "text": "감긴 용수철"
+  },
+  {
+   "n": 236,
+   "kind": "name",
+   "loc": "relics/relics-mvr.txt [relic.r-glass-prism]",
+   "text": "유리 프리즘"
+  },
+  {
+   "n": 237,
+   "kind": "name",
+   "loc": "relics/relics-mvr.txt [relic.r-thorn-heart]",
+   "text": "가시 심장"
+  },
+  {
+   "n": 238,
+   "kind": "name",
+   "loc": "relics/relics-mvr.txt [relic.r-hungry-lamp]",
+   "text": "굶주린 등불"
+  },
+  {
+   "n": 239,
+   "kind": "name",
+   "loc": "relics/relics-mvr.txt [relic.r-cursed-coin]",
+   "text": "저주받은 동전"
+  },
+  {
+   "n": 240,
+   "kind": "name",
+   "loc": "relics/relics-mvr.txt [relic.r-heavy-satchel]",
+   "text": "무거운 봇짐"
+  },
+  {
+   "n": 241,
+   "kind": "name",
+   "loc": "relics/relics-race.txt [relic.r-race-human]",
+   "text": "전생자의 균형"
+  },
+  {
+   "n": 242,
+   "kind": "name",
+   "loc": "relics/relics-race.txt [relic.r-race-human-breath]",
+   "text": "고른 호흡"
+  },
+  {
+   "n": 243,
+   "kind": "name",
+   "loc": "relics/relics-race.txt [relic.r-race-human-counterweight]",
+   "text": "균형추"
+  },
+  {
+   "n": 244,
+   "kind": "name",
+   "loc": "relics/relics-race.txt [relic.r-race-human-token]",
+   "text": "적응의 증표"
+  },
+  {
+   "n": 245,
+   "kind": "name",
+   "loc": "relics/relics-race.txt [relic.r-race-moth]",
+   "text": "바람결 깃"
+  },
+  {
+   "n": 246,
+   "kind": "name",
+   "loc": "relics/relics-race.txt [relic.r-race-moth-lightbody]",
+   "text": "가벼운 몸"
+  },
+  {
+   "n": 247,
+   "kind": "name",
+   "loc": "relics/relics-race.txt [relic.r-race-moth-rapidquill]",
+   "text": "연사의 깃"
+  },
+  {
+   "n": 248,
+   "kind": "name",
+   "loc": "relics/relics-race.txt [relic.r-race-moth-windtally]",
+   "text": "바람의 셈"
+  },
+  {
+   "n": 249,
+   "kind": "name",
+   "loc": "relics/relics-race.txt [relic.r-race-phantom]",
+   "text": "패를 쥔 손"
+  },
+  {
+   "n": 250,
+   "kind": "name",
+   "loc": "relics/relics-race.txt [relic.r-race-phantom-fullhand]",
+   "text": "쥔 손의 무게"
+  },
+  {
+   "n": 251,
+   "kind": "name",
+   "loc": "relics/relics-race.txt [relic.r-race-phantom-ghostmemory]",
+   "text": "유령의 기억"
+  },
+  {
+   "n": 252,
+   "kind": "name",
+   "loc": "relics/relics-race.txt [relic.r-race-phantom-staticquill]",
+   "text": "정전기 깃"
+  },
+  {
+   "n": 253,
+   "kind": "name",
+   "loc": "relics/relics-race.txt [relic.r-race-arcana]",
+   "text": "빛의 성배"
+  },
+  {
+   "n": 254,
+   "kind": "name",
+   "loc": "relics/relics-race.txt [relic.r-race-arcana-prism]",
+   "text": "프리즘 코어"
+  },
+  {
+   "n": 255,
+   "kind": "name",
+   "loc": "relics/relics-race.txt [relic.r-race-arcana-seed]",
+   "text": "무지개 씨앗"
+  },
+  {
+   "n": 256,
+   "kind": "name",
+   "loc": "relics/relics-race.txt [relic.r-race-arcana-amp]",
+   "text": "공명 증폭기"
+  },
+  {
+   "n": 257,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-spark-token]",
+   "text": "작은 불씨 표식"
+  },
+  {
+   "n": 258,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-ember-fang]",
+   "text": "잔불의 송곳니"
+  },
+  {
+   "n": 259,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-stormcore]",
+   "text": "폭풍의 핵"
+  },
+  {
+   "n": 260,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-mono-spear]",
+   "text": "모노의 창"
+  },
+  {
+   "n": 261,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-walking-flame]",
+   "text": "응축된 불씨"
+  },
+  {
+   "n": 262,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-rage-conduit]",
+   "text": "분노의 도관"
+  },
+  {
+   "n": 263,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-thunder-coil]",
+   "text": "천둥 코일"
+  },
+  {
+   "n": 264,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-sun-edge]",
+   "text": "태양의 날"
+  },
+  {
+   "n": 265,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-fire-lens]",
+   "text": "불의 렌즈"
+  },
+  {
+   "n": 266,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-spark-tap]",
+   "text": "전류 탭"
+  },
+  {
+   "n": 267,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-honed-flint]",
+   "text": "벼린 부싯돌"
+  },
+  {
+   "n": 268,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-arc-edge]",
+   "text": "호선의 칼날"
+  },
+  {
+   "n": 269,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-pebble-mark]",
+   "text": "조약돌 표식"
+  },
+  {
+   "n": 270,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-iron-shard]",
+   "text": "무쇠 조각"
+  },
+  {
+   "n": 271,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-bedrock-heart]",
+   "text": "기반암의 심장"
+  },
+  {
+   "n": 272,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-mono-bulwark]",
+   "text": "모노의 방벽"
+  },
+  {
+   "n": 273,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-hearthstone]",
+   "text": "화롯가의 돌"
+  },
+  {
+   "n": 274,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-tower-shield]",
+   "text": "탑의 방패"
+  },
+  {
+   "n": 275,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-iron-bastion]",
+   "text": "강철 보루"
+  },
+  {
+   "n": 276,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-worldroot-wall]",
+   "text": "세계뿌리의 벽"
+  },
+  {
+   "n": 277,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-clay-ward]",
+   "text": "진흙 가호"
+  },
+  {
+   "n": 278,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-rivet-band]",
+   "text": "대갈못 띠"
+  },
+  {
+   "n": 279,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-bracing-plate]",
+   "text": "버팀판"
+  },
+  {
+   "n": 280,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-deep-keel]",
+   "text": "깊은 용골"
+  },
+  {
+   "n": 281,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-dewdrop-mark]",
+   "text": "이슬방울 표식"
+  },
+  {
+   "n": 282,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-breeze-vial]",
+   "text": "산들바람 병"
+  },
+  {
+   "n": 283,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-tidecore]",
+   "text": "조류의 핵"
+  },
+  {
+   "n": 284,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-mono-current]",
+   "text": "모노의 파도"
+  },
+  {
+   "n": 285,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-whispering-gust]",
+   "text": "속삭이는 미풍"
+  },
+  {
+   "n": 286,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-flow-conduit]",
+   "text": "흐름의 도관"
+  },
+  {
+   "n": 287,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-foresight-glass]",
+   "text": "예지의 유리"
+  },
+  {
+   "n": 288,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-tide-lens]",
+   "text": "조류의 렌즈"
+  },
+  {
+   "n": 289,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-galewright]",
+   "text": "바람장이의 부적"
+  },
+  {
+   "n": 290,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-spellweight]",
+   "text": "마력의 추"
+  },
+  {
+   "n": 291,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-blazing-grasp]",
+   "text": "타오르는 손아귀"
+  },
+  {
+   "n": 292,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-overcharged-coil]",
+   "text": "과충전 코일"
+  },
+  {
+   "n": 293,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-leaden-aegis]",
+   "text": "납빛 방패"
+  },
+  {
+   "n": 294,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-fortress-anchor]",
+   "text": "요새의 닻"
+  },
+  {
+   "n": 295,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-deepdraw-prism]",
+   "text": "심층 프리즘"
+  },
+  {
+   "n": 296,
+   "kind": "name",
+   "loc": "relics/relics-stat.txt [relic.r-stat-stormfont]",
+   "text": "폭풍의 샘"
+  },
+  {
+   "n": 297,
+   "kind": "name",
+   "loc": "relics/relics-turn.txt [relic.r-turn-snow-pebble]",
+   "text": "굳어 버린 눈 조각"
+  },
+  {
+   "n": 298,
+   "kind": "name",
+   "loc": "relics/relics-turn.txt [relic.r-turn-snow-drift]",
+   "text": "다져진 눈더미"
+  },
+  {
+   "n": 299,
+   "kind": "name",
+   "loc": "relics/relics-turn.txt [relic.r-turn-snow-crown]",
+   "text": "눈의 왕관"
+  },
+  {
+   "n": 300,
+   "kind": "name",
+   "loc": "relics/relics-turn.txt [relic.r-turn-avalanche-bell]",
+   "text": "눈사태의 종"
+  },
+  {
+   "n": 301,
+   "kind": "name",
+   "loc": "relics/relics-turn.txt [relic.r-turn-slow-ember]",
+   "text": "다 타 버린 불씨"
+  },
+  {
+   "n": 302,
+   "kind": "name",
+   "loc": "relics/relics-turn.txt [relic.r-turn-late-fang]",
+   "text": "드러난 송곳니"
+  },
+  {
+   "n": 303,
+   "kind": "name",
+   "loc": "relics/relics-turn.txt [relic.r-turn-mono-hourglass]",
+   "text": "모노의 모래시계"
+  },
+  {
+   "n": 304,
+   "kind": "name",
+   "loc": "relics/relics-turn.txt [relic.r-turn-patient-thorn]",
+   "text": "참을성 있는 가시"
+  },
+  {
+   "n": 305,
+   "kind": "name",
+   "loc": "relics/relics-turn.txt [relic.r-turn-rising-sigil]",
+   "text": "차오르는 인장"
+  },
+  {
+   "n": 306,
+   "kind": "name",
+   "loc": "relics/relics-turn.txt [relic.r-turn-spirit-crescendo]",
+   "text": "정령의 점층"
+  },
+  {
+   "n": 307,
+   "kind": "name",
+   "loc": "relics/relics-turn.txt [relic.r-turn-morning-shell]",
+   "text": "아침의 껍데기"
+  },
+  {
+   "n": 308,
+   "kind": "name",
+   "loc": "relics/relics-turn.txt [relic.r-turn-cradle-quilt]",
+   "text": "요람의 누비이불"
+  },
+  {
+   "n": 309,
+   "kind": "name",
+   "loc": "relics/relics-turn.txt [relic.r-turn-dawn-bulwark]",
+   "text": "동틀 녘의 보루"
+  },
+  {
+   "n": 310,
+   "kind": "name",
+   "loc": "relics/relics-turn.txt [relic.r-turn-early-tide]",
+   "text": "이른 밀물"
+  },
+  {
+   "n": 311,
+   "kind": "name",
+   "loc": "relics/relics-turn.txt [relic.r-turn-seedling-vow]",
+   "text": "새싹의 맹세"
+  },
+  {
+   "n": 312,
+   "kind": "name",
+   "loc": "relics/relics-turn.txt [relic.r-turn-zero-chime]",
+   "text": "영(零)의 종소리"
+  },
+  {
+   "n": 313,
+   "kind": "name",
+   "loc": "relics/relics-turn.txt [relic.r-turn-first-spark]",
+   "text": "첫 불꽃"
+  },
+  {
+   "n": 314,
+   "kind": "name",
+   "loc": "relics/relics-turn.txt [relic.r-turn-third-bloom]",
+   "text": "셋의 개화"
+  },
+  {
+   "n": 315,
+   "kind": "name",
+   "loc": "relics/relics-turn.txt [relic.r-turn-fifth-pulse]",
+   "text": "다섯의 맥박"
+  },
+  {
+   "n": 316,
+   "kind": "name",
+   "loc": "relics/relics-turn.txt [relic.r-turn-seventh-veil]",
+   "text": "일곱의 너울"
+  },
+  {
+   "n": 317,
+   "kind": "name",
+   "loc": "relics/relics-turn.txt [relic.r-turn-ninth-gate]",
+   "text": "아홉의 문"
+  },
+  {
+   "n": 318,
+   "kind": "name",
+   "loc": "relics/relics-turn.txt [relic.r-turn-even-lantern]",
+   "text": "짝수의 등롱"
+  },
+  {
+   "n": 319,
+   "kind": "name",
+   "loc": "relics/relics-turn.txt [relic.r-turn-fourfold-knot]",
+   "text": "넷의 매듭"
+  },
+  {
+   "n": 320,
+   "kind": "name",
+   "loc": "relics/relics-turn.txt [relic.r-turn-eighth-orbit]",
+   "text": "여덟의 공전"
+  },
+  {
+   "n": 321,
+   "kind": "name",
+   "loc": "relics/relics-turn.txt [relic.r-turn-steady-tick]",
+   "text": "변함없는 초침"
+  },
+  {
+   "n": 322,
+   "kind": "name",
+   "loc": "relics/relics-turn.txt [relic.r-turn-loyal-gear]",
+   "text": "충직한 톱니"
+  },
+  {
+   "n": 323,
+   "kind": "name",
+   "loc": "relics/relics-turn.txt [relic.r-turn-eternal-flywheel]",
+   "text": "멈추지 않는 플라이휠"
+  },
+  {
+   "n": 324,
+   "kind": "name",
+   "loc": "relics/relics-turn.txt [relic.r-turn-fickle-prism]",
+   "text": "변덕쟁이 프리즘"
+  },
+  {
+   "n": 325,
+   "kind": "name",
+   "loc": "relics/relics-turn.txt [relic.r-turn-greedy-glass]",
+   "text": "욕심 많은 모래잔"
+  },
+  {
+   "n": 326,
+   "kind": "name",
+   "loc": "relics/relics-turn.txt [relic.r-turn-burning-clock]",
+   "text": "타들어 가는 시계"
+  },
+  {
+   "n": 327,
+   "kind": "name",
+   "loc": "relics/relics-turn.txt [relic.r-turn-overwound-spring]",
+   "text": "과하게 감긴 태엽"
+  },
+  {
+   "n": 328,
+   "kind": "name",
+   "loc": "relics/relics-turn.txt [relic.r-turn-hungry-deck]",
+   "text": "굶주린 패"
+  }
+ ]
+}
