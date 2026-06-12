@@ -11,18 +11,18 @@ element = fire
 cost = 2
 trigger = manual
 effects = damage:16:enemy, block:12:self
-flavor = 곰이 쇳물 앞에서 앞발을 천천히 들어 올린다. 내리치는 무게가 도리어 나를 지켜 준다.
+flavor = "......버틸 수 있겠나."
 
 # --- 티프레 (번개의 신수 호랑이) — 연타 + 취약. ---
 [card.c-arc-tifre-thunderstep]
-name = 우레 발걸음
+name = 번개 밟기
 rank = legendary
 source = boss
 element = electric
 cost = 1
 trigger = manual
 effects = damage:7:enemy, apply-status:2:enemy:vulnerable, draw:1:self
-flavor = 호랑이가 번개를 밟고 내딛는다. 빠른 발끝이 적의 빈틈을 헤집어 놓는다.
+flavor = "눈 깜빡이지 마라. 놓친다."
 
 # --- 타마모 (변신의 구미호) — 색 변환 + 디버프. ---
 [card.c-arc-tamamo-foxfire]
@@ -33,4 +33,4 @@ element = dark
 cost = 2
 trigger = manual
 effects = damage:12:enemy, apply-status:2:enemy:weakness, apply-status:1:self:strength
-flavor = 아홉 꼬리 끝에서 저마다 다른 빛의 불씨가 피어오른다. 적의 기운을 빼앗아 내 안에 옮겨 담는다.
+flavor = "하나쯤 나눠 줄까? 꼬리 말고, 불."

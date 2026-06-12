@@ -22,7 +22,7 @@ source = junk
 cost = 0
 trigger = manual
 effects = exhaust-self
-flavor = 아무것도 적혀 있지 않은 종이. 버리는 것 말고는 쓸 데가 없다.
+flavor = 아무것도 적혀 있지 않다.
 
 [card.c-junk-curse]
 name = 저주
@@ -31,4 +31,4 @@ source = junk
 cost = 1
 trigger = manual
 effects = curse-tick:2, exhaust-self
-flavor = 들고 있으면 살갗을 콕콕 찌르며 떨어지지 않으려 한다.
+flavor = 주머니 속에서 자꾸 꼼지락거린다.

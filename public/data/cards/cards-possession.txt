@@ -16,7 +16,7 @@ trigger = manual
 possession = true
 possession_max = 8
 effects = damage:14:enemy, heal:-3:self
-flavor = 쓸 때마다 마음이 조금씩 가벼워진다. 무엇이 깃들었는지는 아직 모른다.
+flavor = 어깨가 가벼운 날도, 무거운 날도 있다.
 
 # ========== 수호령 변신 결과 (좋음) ==========
 [card.c-blessed]
@@ -27,7 +27,7 @@ element = light
 cost = 1
 trigger = manual
 effects = damage:14:enemy, heal:4:self, exhaust-self:0:self
-flavor = 깃든 것은 다정한 친구였다. 이제는 같이 싸워 준다.
+flavor = "옆에 있을게."
 
 # ========== 악령 변신 결과 (나쁨, 상점에서만 제거) ==========
 [card.c-cursed]
@@ -39,4 +39,4 @@ cost = 1
 curse = true
 trigger = manual
 effects = curse-tick:2
-flavor = 아무리 떼어 내려 해도 떨어지지 않고, 들고만 있어도 자꾸 장난을 건다.
+flavor = "같이 가자. 응? 같이 가자."
