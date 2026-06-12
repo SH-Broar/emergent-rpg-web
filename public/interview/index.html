@@ -203,6 +203,27 @@
       });
     }
 
+    // 이전 버튼 등으로 답한 문항에 돌아온 경우: 기록을 입력칸에 복원 (덮어쓰기 전까지 유지)
+    var prev = results[it.n];
+    if (prev != null && prev !== '(건너뜀)') {
+      if (it.type === 'ox') {
+        var m = /^([OX?])(?: :: ([\s\S]*))?$/.exec(prev);
+        $('free').value = m ? (m[2] || '') : prev;
+      } else if (it.type === 'choice' && it.options) {
+        var leftover = [];
+        prev.split(' | ').forEach(function (p) {
+          if (it.options.indexOf(p) >= 0) chosen.push(p);
+          else leftover.push(p);
+        });
+        Array.prototype.forEach.call(box.children, function (c) {
+          if (chosen.indexOf(c.textContent) >= 0) c.classList.add('on');
+        });
+        $('free').value = leftover.join(' | ');
+      } else {
+        $('free').value = prev.replace(/ \/ /g, '\n');
+      }
+    }
+
     $('oxRow').style.display = it.type === 'ox' ? 'grid' : 'none';
     $('nextRow').style.display = it.type === 'ox' ? 'none' : 'grid';
     window.scrollTo(0, 0);
@@ -235,8 +256,6 @@
   $('btnBack').onclick = function () {
     if (idx === 0) return;
     idx--;
-    delete results[items[idx].n];
-    try { localStorage.setItem(storeKey, JSON.stringify(results)); } catch (e) {}
     render();
   };
 
