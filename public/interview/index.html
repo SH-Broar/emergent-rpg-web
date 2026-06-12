@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>세계관 문답</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; margin: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: -apple-system, "Pretendard", "Noto Sans KR", sans-serif;
+    background: #14151c; color: #e8e8ee;
+    min-height: 100vh; min-height: 100dvh;
+    display: flex; flex-direction: column;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+  header { padding: 0.9rem 1rem 0.5rem; display: flex; align-items: center; gap: 0.6rem; }
+  header h1 { font-size: 1rem; color: #8eedff; flex: 1; font-weight: 600; }
+  #progress { font-size: 0.85rem; color: #9a9aa8; font-variant-numeric: tabular-nums; }
+  #bar { height: 3px; background: #2a2b36; }
+  #bar > div { height: 100%; background: #8eedff; width: 0%; transition: width 160ms ease; }
+  main { flex: 1; display: flex; flex-direction: column; padding: 1rem; gap: 0.8rem; overflow-y: auto; }
+  .sec { display: inline-block; font-size: 0.7rem; padding: 0.1rem 0.5rem; border-radius: 10px;
+         background: rgba(142,237,255,0.12); color: #8eedff; margin-bottom: 0.3rem; }
+  .q {
+    font-size: 1.05rem; line-height: 1.6; padding: 1rem;
+    background: rgba(255,255,255,0.045); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;
+    word-break: keep-all; overflow-wrap: break-word;
+  }
+  .q .hint { display: block; margin-top: 0.55rem; font-size: 0.82rem; color: #9a9aa8; line-height: 1.55; }
+  .q .sample { display: block; margin-top: 0.7rem; padding: 0.7rem 0.8rem; border-radius: 10px;
+               background: rgba(142,255,184,0.07); border: 1px dashed rgba(142,255,184,0.35);
+               color: #c9ffdd; font-size: 1.05rem; line-height: 1.6; }
+  #opts { display: flex; flex-direction: column; gap: 0.45rem; }
+  .opt {
+    font: inherit; font-size: 0.95rem; line-height: 1.5; text-align: left;
+    padding: 0.7rem 0.9rem; border-radius: 12px; cursor: pointer;
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.14); color: #d6d6e0;
+    word-break: keep-all;
+  }
+  .opt.on { background: rgba(142,237,255,0.16); border-color: #8eedff; color: #d9f7ff; }
+  #free {
+    width: 100%; font: inherit; font-size: 0.95rem; line-height: 1.55;
+    padding: 0.7rem 0.8rem; border-radius: 10px; min-height: 3.2rem; resize: vertical;
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.14); color: inherit;
+  }
+  footer { padding: 0.7rem 1rem calc(0.9rem + env(safe-area-inset-bottom)); display: grid; gap: 0.55rem; }
+  .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.55rem; }
+  .row2 { display: grid; grid-template-columns: 1fr 2fr; gap: 0.55rem; }
+  footer button {
+    font: inherit; font-weight: 700; font-size: 1rem; padding: 0.9rem 0; border-radius: 12px;
+    border: 1px solid transparent; color: #14151c; cursor: pointer;
+  }
+  #btnO { background: #8effb8; }
+  #btnHold { background: #3a3b48; color: #d6d6e0; border-color: rgba(255,255,255,0.18); font-size: 0.9rem; }
+  #btnX { background: #ff8e8e; }
+  #btnNext { background: #8eedff; }
+  #btnSkip { background: transparent; color: #9a9aa8; border-color: rgba(255,255,255,0.16); font-size: 0.9rem; }
+  #btnBack { background: transparent; color: #9a9aa8; border-color: rgba(255,255,255,0.16); font-size: 0.9rem; }
+  #done { display: none; flex: 1; padding: 1.2rem 1rem; flex-direction: column; gap: 1rem; }
+  #done.show { display: flex; }
+  #summary { font-size: 0.95rem; line-height: 1.7; color: #d6d6e0; }
+  #out {
+    flex: 1; width: 100%; font-family: ui-monospace, monospace; font-size: 0.72rem;
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px; color: #b6b6c4; padding: 0.7rem; white-space: pre; overflow: auto;
+  }
+  #btnCopy { background: #8eedff; font-weight: 700; padding: 0.9rem 0; border-radius: 12px; border: 0; color: #14151c; font-size: 1rem; }
+  #btnReset { background: transparent; color: #ff8e8e; border: 1px solid rgba(255,142,142,0.4); font-size: 0.85rem; padding: 0.7rem 0; border-radius: 12px; }
+  #loading { padding: 2rem 1rem; color: #9a9aa8; text-align: center; line-height: 1.8; }
+  #loading textarea { width: 100%; height: 9rem; margin-top: 0.8rem; font-size: 0.75rem;
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.14); border-radius: 8px; color: inherit; }
+</style>
+</head>
+<body>
+<header>
+  <h1 id="title">세계관 문답</h1>
+  <span id="progress"></span>
+</header>
+<div id="bar"><div></div></div>
+
+<div id="loading">불러오는 중...</div>
+
+<main id="card" style="display:none">
+  <div><span class="sec" id="sec"></span></div>
+  <div class="q"><span id="qtext"></span><span class="sample" id="sample" style="display:none"></span><span class="hint" id="hint" style="display:none"></span></div>
+  <div id="opts"></div>
+  <textarea id="free" placeholder="직접 입력 / 보충 (선택)"></textarea>
+</main>
+
+<div id="done">
+  <div id="summary"></div>
+  <textarea id="out" readonly></textarea>
+  <button id="btnCopy">결과 복사</button>
+  <button id="btnReset">처음부터 다시</button>
+</div>
+
+<footer id="controls" style="display:none">
+  <div class="row3" id="oxRow" style="display:none">
+    <button id="btnO">O</button>
+    <button id="btnHold">보류</button>
+    <button id="btnX">X</button>
+  </div>
+  <div class="row3" id="nextRow" style="display:none">
+    <span></span><span></span>
+    <button id="btnNext">다음 →</button>
+  </div>
+  <div class="row2">
+    <button id="btnBack">← 이전</button>
+    <button id="btnSkip">건너뛰기 (모름/나중에)</button>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var params = new URLSearchParams(location.search);
+  var dataset = params.get('d') || '';
+  var RAW_BASE = 'https://raw.githubusercontent.com/SH-Broar/emergent-rpg-web/rdc-roguelike-main/_review/';
+
+  var items = [], meta = { title: '세계관 문답' };
+  var idx = 0, results = {}, storeKey = '';
+  var chosen = [];
+
+  var $ = function (id) { return document.getElementById(id); };
+
+  function load() {
+    if (!dataset) { return manualLoad('데이터셋 지정이 없습니다. JSON을 붙여넣어 시작할 수 있습니다.'); }
+    fetch(RAW_BASE + dataset + '.json', { cache: 'no-store' })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(start)
+      .catch(function () { manualLoad('불러오기 실패. JSON을 직접 붙여넣어 주세요.'); });
+  }
+
+  function manualLoad(msg) {
+    var box = $('loading');
+    box.innerHTML = msg + '<textarea id="paste" placeholder="문답 JSON 붙여넣기"></textarea><br><br>';
+    var b = document.createElement('button');
+    b.textContent = '시작';
+    b.style.cssText = 'background:#8eedff;padding:0.7rem 2rem;border-radius:10px;font-weight:700;border:0';
+    b.onclick = function () {
+      try { start(JSON.parse($('paste').value)); }
+      catch (e) { alert('JSON 형식이 아닙니다'); }
+    };
+    box.appendChild(b);
+  }
+
+  function start(data) {
+    items = data.items || [];
+    meta = data.meta || meta;
+    storeKey = 'interview-' + (data.meta && data.meta.id ? data.meta.id : dataset);
+    try { results = JSON.parse(localStorage.getItem(storeKey) || '{}'); } catch (e) { results = {}; }
+    idx = 0;
+    while (idx < items.length && results[items[idx].n] != null) idx++;
+    $('title').textContent = meta.title || '세계관 문답';
+    $('loading').style.display = 'none';
+    render();
+  }
+
+  function render() {
+    chosen = [];
+    $('free').value = '';
+
+    var total = items.length, answered = Object.keys(results).length;
+    $('progress').textContent = answered + ' / ' + total;
+    $('bar').firstElementChild.style.width = (answered / Math.max(1, total) * 100) + '%';
+
+    if (idx >= total) return finish();
+
+    $('card').style.display = 'flex';
+    $('controls').style.display = 'grid';
+    $('done').classList.remove('show');
+
+    var it = items[idx];
+    $('sec').textContent = (it.sec || '') + '  ·  #' + it.n;
+    $('qtext').textContent = it.q || '';
+
+    var sm = $('sample');
+    if (it.sample) { sm.textContent = it.sample; sm.style.display = 'block'; }
+    else { sm.style.display = 'none'; }
+
+    var ht = $('hint');
+    if (it.hint) { ht.textContent = it.hint; ht.style.display = 'block'; }
+    else { ht.style.display = 'none'; }
+
+    var box = $('opts');
+    box.innerHTML = '';
+    if (it.type === 'choice' && it.options) {
+      it.options.forEach(function (o) {
+        var b = document.createElement('button');
+        b.className = 'opt'; b.textContent = o;
+        b.onclick = function () {
+          if (it.multi) {
+            b.classList.toggle('on');
+            var i = chosen.indexOf(o);
+            if (i >= 0) chosen.splice(i, 1); else chosen.push(o);
+          } else {
+            Array.prototype.forEach.call(box.children, function (c) { c.classList.remove('on'); });
+            b.classList.add('on');
+            chosen = [o];
+          }
+        };
+        box.appendChild(b);
+      });
+    }
+
+    $('oxRow').style.display = it.type === 'ox' ? 'grid' : 'none';
+    $('nextRow').style.display = it.type === 'ox' ? 'none' : 'grid';
+    window.scrollTo(0, 0);
+  }
+
+  function record(answer) {
+    results[items[idx].n] = answer;
+    try { localStorage.setItem(storeKey, JSON.stringify(results)); } catch (e) {}
+    idx++;
+    render();
+  }
+
+  function flat(s) { return String(s || '').replace(/\s*\n\s*/g, ' / ').trim(); }
+
+  $('btnNext').onclick = function () {
+    var extra = flat($('free').value);
+    var parts = chosen.slice();
+    if (extra) parts.push(extra);
+    if (!parts.length) { alert('답을 고르거나 입력해 주세요. 모르면 건너뛰기를 눌러 주세요.'); return; }
+    record(parts.join(' | '));
+  };
+  function oxRecord(v) {
+    var extra = flat($('free').value);
+    record(v + (extra ? ' :: ' + extra : ''));
+  }
+  $('btnO').onclick = function () { oxRecord('O'); };
+  $('btnX').onclick = function () { oxRecord('X'); };
+  $('btnHold').onclick = function () { oxRecord('?'); };
+  $('btnSkip').onclick = function () { record('(건너뜀)'); };
+  $('btnBack').onclick = function () {
+    if (idx === 0) return;
+    idx--;
+    delete results[items[idx].n];
+    try { localStorage.setItem(storeKey, JSON.stringify(results)); } catch (e) {}
+    render();
+  };
+
+  function finish() {
+    $('card').style.display = 'none';
+    $('controls').style.display = 'none';
+    $('done').classList.add('show');
+    var skipped = 0, answered = 0;
+    var lines = ['## 문답 결과: ' + (meta.id || dataset)];
+    items.forEach(function (it) {
+      var r = results[it.n];
+      if (r == null) return;
+      if (r === '(건너뜀)') skipped++; else answered++;
+      lines.push('#' + it.n + ' ' + r);
+    });
+    $('summary').innerHTML = '완료! 답변 <b style="color:#8eedff">' + answered + '</b> · 건너뜀 <b>' + skipped +
+      '</b><br>아래 결과를 복사해서 채팅에 붙여넣어 주세요.';
+    $('out').value = lines.join('\n');
+  }
+
+  $('btnCopy').onclick = function () {
+    var t = $('out');
+    t.select(); t.setSelectionRange(0, 999999);
+    try { document.execCommand('copy'); } catch (e) {}
+    if (navigator.clipboard) navigator.clipboard.writeText(t.value).catch(function () {});
+    $('btnCopy').textContent = '복사됨!';
+    setTimeout(function () { $('btnCopy').textContent = '결과 복사'; }, 1500);
+  };
+  $('btnReset').onclick = function () {
+    if (!confirm('이 문답의 저장된 답변을 모두 지울까요?')) return;
+    results = {}; idx = 0;
+    try { localStorage.removeItem(storeKey); } catch (e) {}
+    render();
+  };
+
+  load();
+})();
+</script>
+</body>
+</html>
