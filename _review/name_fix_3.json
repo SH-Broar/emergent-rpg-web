@@ -1,0 +1,17 @@
+{
+ "meta": {
+  "id": "name_fix_3",
+  "title": "유물 이름 마무리 (X 2 재작명 + 정령의/모노의 감축 + 중복 해소 9건)"
+ },
+ "items": [
+  {"n": 1, "kind": "X 재작명·실타래(공격→색)", "loc": "r-twin-needle (원230·공격3마다 색)", "text": "두 빛 실타래", "proposal": "색동 노리개"},
+  {"n": 2, "kind": "X 재작명·꿀단지(큰 회복)", "loc": "r-cbt-greater-poultice (원199·전투종료 회복7)", "text": "정령의 꿀단지", "proposal": "꿀송이"},
+  {"n": 3, "kind": "'정령의' 감축(5→2)", "loc": "r-col-gain-cascade-prism (무작위 색)", "text": "정령의 만화경", "proposal": "만화경"},
+  {"n": 4, "kind": "'정령의' 감축 + 주사위 중복(2개)", "loc": "r-turn-fickle-prism (무작위 색)", "text": "정령의 주사위", "proposal": "윷짝"},
+  {"n": 5, "kind": "'정령의' 감축", "loc": "r-cm-first-free-token (첫 카드 무료)", "text": "정령의 외상 장부", "proposal": "외상 장부"},
+  {"n": 6, "kind": "'모노의' 감축 + 회중시계 중복(3개)", "loc": "r-stat-mono-current (마법+9)", "text": "모노의 회중시계", "proposal": "고인 달빛"},
+  {"n": 7, "kind": "'모노의' 감축", "loc": "r-col-all-mono-fragment (모든 색+5)", "text": "모노의 별가루", "proposal": "별무리"},
+  {"n": 8, "kind": "토큰 외래어(모노 유지)", "loc": "r-mono-token (모노 재화)", "text": "모노의 토큰", "proposal": "모노의 징표"},
+  {"n": 9, "kind": "모래시계 중복(3→2)", "loc": "r-turn-greedy-glass (방어 누적, HP-)", "text": "탐욕의 모래시계", "proposal": "밑 빠진 독"}
+ ]
+}
