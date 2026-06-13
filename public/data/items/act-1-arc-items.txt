@@ -15,7 +15,7 @@ flavor = 화로의 온기가 온전히 병 속에 담겨 있다.
 
 # --- 티프레 (번개) — 전투 중 마나 + 드로우. ---
 [item.i-arc-tifre-spark-vial]
-name = 티프레의 불티병
+name = 티프레의 번개 가루
 description = 호랑이 수염 끝에 맺힌 정전기를 모은 작은 병. 톡 터뜨리면 머리가 맑아진다.
 rank = legendary
 effects = combat-mana:2, combat-draw:1

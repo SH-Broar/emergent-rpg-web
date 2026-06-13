@@ -107,7 +107,7 @@ flavor = 시간의 신이 흘리고 간 부스러기다. 어느 색이 깨어날
 # --- 영구 스탯쌍 (boost-stat, common 4 / rare 6 / legendary 9) ---
 
 [relic.r-acq-fist-stone]
-name = 주먹 조약돌
+name = 맹수의 발톱
 rank = common
 source = event
 trigger = on-acquire
@@ -115,7 +115,7 @@ effects = boost-stat:4:atk
 flavor = 쥐면 손마디에 힘이 솟는다. 화염과 번개의 기운이 함께 깃든다.
 
 [relic.r-acq-wall-stone]
-name = 방벽 조약돌
+name = 성문 빗장
 rank = common
 source = shop
 trigger = on-acquire
@@ -159,7 +159,7 @@ effects = bonus-gold:25
 flavor = 풀어 보니 안에 동전이 가득하다. 줍는 순간 주머니가 불룩하게 찬다.
 
 [relic.r-acq-shard-vial]
-name = 시간조각 작은 병
+name = 시간의 유리병
 rank = common
 source = event
 trigger = on-acquire
@@ -167,7 +167,7 @@ effects = gain-time-shards:5
 flavor = 흔들면 안에서 반짝임이 인다. 줍는 순간 흘러간 시간 조각이 손바닥에 쏟아진다.
 
 [relic.r-acq-sun-tonic]
-name = 햇살 강장제
+name = 햇살 물약
 rank = rare
 source = npc
 trigger = on-acquire
@@ -255,7 +255,7 @@ effects = chance-random-color-1:50
 flavor = 턴이 시작될 때마다 모래가 거꾸로 흐른다. 운이 닿으면 색 하나가 슬며시 차오른다.
 
 [relic.r-acq-soothe-vial]
-name = 진정의 작은 병
+name = 차분해지는 병
 rank = rare
 source = shop
 trigger = on-combat-end
@@ -271,7 +271,7 @@ effects = heal-now:6
 flavor = 아이템을 쓸 때마다 몸이 살짝 데워진다. 모험가가 늘 품고 다니던 부적이다.
 
 [relic.r-acq-tinker-belt]
-name = 땜장이 허리띠
+name = 연장 허리띠
 rank = rare
 source = shop
 trigger = on-item-use
@@ -315,7 +315,7 @@ effects = heal-now:2
 flavor = 어느 기운이 깃들 때마다 잎이 새로 돋는다. 그때마다 몸이 조금씩 데워진다.
 
 [relic.r-acq-tithe-ring]
-name = 십일조 반지
+name = 엽전 꾸러미
 rank = common
 source = shop
 trigger = on-color-gain
@@ -400,7 +400,7 @@ effects = boost-max-lives:1
 flavor = 끊어진 곳을 다시 이어 주는 실. 주머니에 넣어 두면 어쩐지 든든하다.
 
 [relic.r-acq-second-breath]
-name = 두 번째 숨
+name = 되돌린 숨
 rank = legendary
 source = boss
 trigger = on-acquire

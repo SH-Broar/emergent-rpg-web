@@ -5,7 +5,7 @@
 # ============================================================
 
 [relic.r-cbt-iron-vow]
-name = 무쇠의 다짐
+name = 각오의 완장
 rank = common
 source = event
 trigger = on-combat-start
@@ -13,7 +13,7 @@ effects = combat-start-block:5
 flavor = 첫걸음을 떼기 전에 늘 숨을 고른다. 그 잠깐의 다짐이 얇은 벽으로 굳는다.
 
 [relic.r-cbt-bastion-plate]
-name = 보루의 흉갑
+name = 보루의 가슴판
 rank = rare
 source = elite
 trigger = on-combat-start
@@ -21,7 +21,7 @@ effects = combat-start-block:8
 flavor = 오래 버틴 성벽에서 떼어 낸 조각이다. 적과 마주서면 그 두께가 몸을 감싼다.
 
 [relic.r-cbt-aegis-of-hours]
-name = 시각의 큰 방패
+name = 시계탑 방패
 rank = legendary
 source = elite
 trigger = on-combat-start
@@ -29,7 +29,7 @@ effects = combat-start-block:12
 flavor = 오래된 시계탑 문에서 떼어 낸 큰 방패다. 싸움이 시작되면 그 무게가 앞을 막아선다.
 
 [relic.r-cbt-first-light-quill]
-name = 첫빛의 깃펜
+name = 이야기 책갈피
 rank = rare
 source = shop
 trigger = on-combat-start
@@ -61,7 +61,7 @@ effects = combat-start-status:2:dexterity
 flavor = 흔들리지 않는 추가 달린 목걸이. 적과 마주서면 모든 손놀림이 한층 또렷해진다.
 
 [relic.r-cbt-spare-breath]
-name = 여분의 숨
+name = 남은 숨결
 rank = common
 source = shop
 trigger = on-combat-start
@@ -113,7 +113,7 @@ effects = attacks-to-strength:3
 flavor = 휘두를수록 손목에 단단히 감기는 끈. 세 번 내리칠 때마다 다음 일격이 더 무거워진다.
 
 [relic.r-cbt-prism-pin]
-name = 색실 핀
+name = 물든 단검
 rank = rare
 source = shop
 trigger = on-card-played-after
@@ -121,7 +121,7 @@ effects = attacks-to-color:3
 flavor = 찌를 때마다 끝에서 색이 번진다. 세 번 내리칠 때마다 그중 어느 색이 조금씩 차오른다.
 
 [relic.r-cbt-tally-knot]
-name = 매듭 셈끈
+name = 매듭 끈
 rank = common
 source = event
 trigger = on-card-played-after
@@ -129,7 +129,7 @@ effects = cards-to-color:5
 flavor = 카드를 다섯 장 낼 때마다 어느 기운이 깃든다.
 
 [relic.r-cbt-runner-tally]
-name = 발 빠른 셈표
+name = 로큐의 쪽지
 rank = rare
 source = npc
 trigger = on-card-played-after
@@ -141,7 +141,7 @@ flavor = 로큐가 길 위에서 쓰던 작은 표. 여섯 번 손을 놀릴 때
 # ============================================================
 
 [relic.r-cbt-spite-spike]
-name = 앙갚음 가시
+name = 가시 돌기
 rank = common
 source = elite
 trigger = on-damage-taken
@@ -173,7 +173,7 @@ effects = hurt-to-color:1
 flavor = 충격이 닿을 때만 빛을 낸다. 아픔이 스칠 때마다 작게 울리며 어느 색이 슬쩍 찬다.
 
 [relic.r-cbt-callused-hide]
-name = 굳은살 가죽
+name = 무소 가죽
 rank = common
 source = event
 trigger = on-damage-taken
@@ -201,7 +201,7 @@ effects = combat-end-heal:4
 flavor = 바르면 화끈거림이 천천히 식는다. 싸움이 끝날 때마다 잊고 있던 아픔이 조금 가신다.
 
 [relic.r-cbt-greater-poultice]
-name = 큰 약찜질
+name = 꿀송이
 rank = rare
 source = event
 trigger = on-combat-end
@@ -225,7 +225,7 @@ effects = node-enter-heal:3
 flavor = 어느 마을이든 따뜻하게 끓고 있는 냄비. 새 곳에 닿을 때마다 떠먹으면 몸이 데워진다.
 
 [relic.r-cbt-campfire-ember]
-name = 모닥불 잉걸
+name = 남은 불씨
 rank = rare
 source = event
 trigger = on-rest
@@ -269,7 +269,7 @@ effects = mana-extra-add:1, combat-start-status:1:weakness
 flavor = 더 밝게 타려고 늘 떨고 있다. 매 턴 힘을 조금 더 주지만 그 열에 손이 데어 처음 일격이 무디다.
 
 [relic.r-cbt-thieving-knuckle]
-name = 훔치는 너클
+name = 소매치기 장갑
 rank = rare
 source = shop
 trigger = passive
@@ -277,7 +277,7 @@ effects = cost-mod-add:-1, bonus-hp:-8
 flavor = 모든 손놀림에서 마나를 슬쩍 줄여 준다. 대가는 적지 않다.
 
 [relic.r-cbt-brute-cleaver]
-name = 막무가내 도끼
+name = 쇠몽둥이
 rank = rare
 source = elite
 trigger = passive

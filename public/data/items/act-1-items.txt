@@ -36,7 +36,7 @@ consumable = true
 flavor = 빌린 가죽 아래에 잊고 있던 윤곽이 다시 떠오른다.
 
 [item.i-extra-life-ember]
-name = 다시 켜지는 불씨
+name = 되살아나는 불씨
 description = 꺼졌던 자리에 다시 불을 붙인다. 마시면 잃었던 목숨 하나가 되돌아온다. 이미 가득하면 변화가 없다.
 rank = rare
 effects = gain-life:1
@@ -86,7 +86,7 @@ effects = color-boost:iron:10
 consumable = true
 
 [item.i-element-jar]
-name = 만(萬) 정수병
+name = 여덟 빛 물약
 description = 여덟 종류의 정수가 한 병에 담겨 있다.
 rank = rare
 effects = color-all:5
@@ -101,7 +101,7 @@ effects = teleport-village
 consumable = true
 
 [item.i-mono-card-token]
-name = 모노의 카드 인장
+name = 모노의 선물
 description = 사용하면 결심의 섬광 카드가 손에 들어온다.
 rank = rare
 effects = grant-card:c-resolve-flash
@@ -122,7 +122,7 @@ flavor = 거꾸로 흐르는 모래는 늘 정해진 방향이 없다.
 # ============================================================
 
 [item.i-combat-balm]
-name = 응급 연고
+name = 상처 연고
 description = 상처 위에 바르면 살이 즉시 아문다. 한창 싸우는 와중에도 숨이 돌아온다.
 rank = common
 combat = true
@@ -156,7 +156,7 @@ effects = combat-draw:2
 consumable = true
 
 [item.i-combat-bulwark]
-name = 강철 시럽
+name = 철벽 환약
 description = 마시면 살갗이 잠시 쇠처럼 단단해진다. 공격을 더 견딜 수 있다.
 rank = common
 combat = true
@@ -173,7 +173,7 @@ consumable = true
 flavor = 벌어진 틈은 스스로 닫히지 않는다.
 
 [item.i-combat-fog]
-name = 무력화 안개
+name = 나른한 향
 description = 적의 팔에서 힘이 빠진다. 당분간 공격이 무뎌진다.
 rank = rare
 combat = true
@@ -209,7 +209,7 @@ consumable = true
 flavor = 천천히, 그러나 멈추지 않고 차오른다.
 
 [item.i-combat-haste]
-name = 종종 물약
+name = 다람쥐 물약
 description = 발끝이 가벼워진다. 당분간 패가 한 장씩 더 들어온다.
 rank = rare
 combat = true
@@ -227,7 +227,7 @@ consumable = true
 flavor = 한번 두른 온기는 쉬이 식지 않는다.
 
 [item.i-combat-freedom]
-name = 해방의 줄칼
+name = 줄톱
 description = 묶인 줄도, 삼킨 아가리도 단번에 끊는다. 다시 두 발로 선다.
 rank = common
 combat = true
@@ -281,7 +281,7 @@ consumable = true
 flavor = 오독 깨물면, 어지럽던 것이 제자리로 돌아온다.
 
 [item.i-cleanse-full]
-name = 반짝 정화의 비
+name = 씻어 내는 비
 description = 머리부터 발끝까지 가벼운 비가 한 번 지나간다. 몸에 들러붙은 일반 디버프가 한꺼번에 씻겨 내려간다.
 rank = legendary
 combat = true

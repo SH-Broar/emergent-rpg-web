@@ -18,7 +18,7 @@ color_effects = fire:+10, water:-5
 description = 불을 머금은 창. 물 기운을 깎는다.
 
 [equipment.w-storm-bow]
-name = 폭풍궁
+name = 폭풍 활
 slot = weapon
 rank = rare
 color_effects = electric:+12, wind:+8, earth:-10
@@ -34,7 +34,7 @@ color_effects = earth:+5
 description = 무난한 가죽 외피.
 
 [equipment.c-mail]
-name = 사슬갑옷
+name = 사슬 갑옷
 slot = chest
 rank = common
 color_effects = iron:+10, fire:-5
@@ -50,21 +50,21 @@ description = 가벼움 끝에 두꺼움이 잘려나간다.
 # === Accessories ===
 
 [equipment.a-ember-ring]
-name = 잉걸 반지
+name = 불씨 반지
 slot = accessory
 rank = basic
 color_effects = fire:+3, water:-2
 description = 마지막 숯 한 점이 갇혀 있다.
 
 [equipment.a-tideglass]
-name = 조수 거울
+name = 산호 목걸이
 slot = accessory
 rank = common
 color_effects = water:+8, fire:-4
 description = 물을 끌고 불을 흩는다.
 
 [equipment.a-thunderclasp]
-name = 천둥 걸쇠
+name = 번개 고리
 slot = accessory
 rank = rare
 color_effects = electric:+10, earth:-6
