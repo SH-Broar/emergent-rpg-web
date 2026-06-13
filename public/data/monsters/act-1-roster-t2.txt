@@ -46,7 +46,7 @@ time_shards = 4
 card_drops =
 
 [monster.mr-moss-slag-golem]
-name = 슬래그 골렘
+name = 쇳물 덩이
 tier = normal
 species = golem
 hp = 147
@@ -72,7 +72,7 @@ time_shards = 4
 card_drops =
 
 [monster.mr-moss-forge-imp]
-name = 화톳불 정령
+name = 라로그
 tier = normal
 species = spirit
 hp = 77
@@ -96,7 +96,7 @@ time_shards = 4
 card_drops =
 
 [monster.mr-moss-iron-guardian]
-name = 이끼낀 강철 골렘
+name = 이끼 바위
 tier = normal
 species = golem
 hp = 154
@@ -369,7 +369,7 @@ time_shards = 4
 card_drops =
 
 [monster.mr-martin-tide-spirit]
-name = 파도 정령
+name = 물보라 요정
 tier = normal
 species = spirit
 hp = 91
@@ -422,7 +422,7 @@ time_shards = 4
 card_drops =
 
 [monster.mr-mano-sand-wraith]
-name = 모래 망령
+name = 모래 잔영
 tier = normal
 species = wraith
 hp = 91
@@ -506,7 +506,7 @@ time_shards = 4
 card_drops =
 
 [monster.mr-mano-tide-golem]
-name = 해조 골렘
+name = 해초 골렘
 tier = normal
 species = golem
 hp = 172

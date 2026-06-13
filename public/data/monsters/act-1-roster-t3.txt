@@ -257,7 +257,7 @@ time_shards = 6
 card_drops =
 
 [monster.mr-demon-windfall-gale-blade]
-name = 바람날 정령
+name = 회오리 정령
 tier = normal
 species = spirit
 hp = 154
@@ -283,7 +283,7 @@ time_shards = 6
 card_drops =
 
 [monster.mr-demon-windfall-anchor-wraith]
-name = 닻지기 망령
+name = 가라앉은 혼령
 tier = normal
 species = wraith
 hp = 182
@@ -339,7 +339,7 @@ time_shards = 6
 card_drops =
 
 [monster.mr-enicham-capacitor-golem]
-name = 축전 골렘
+name = 양철 인형
 tier = normal
 species = golem
 hp = 196
@@ -364,7 +364,7 @@ time_shards = 7
 card_drops =
 
 [monster.mr-enicham-overload-wraith]
-name = 과부하 망령
+name = 즈메이
 tier = normal
 species = wraith
 hp = 133
@@ -434,7 +434,7 @@ time_shards = 7
 card_drops =
 
 [monster.mr-triflower-flame-spirit]
-name = 화염 정령
+name = 불꽃 요정
 tier = normal
 species = spirit
 hp = 133
@@ -605,7 +605,7 @@ time_shards = 8
 card_drops =
 
 [monster.mr-coral-coast-tide-specter]
-name = 조류 유령
+name = 루살카
 tier = normal
 species = wraith
 hp = 133

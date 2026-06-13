@@ -73,7 +73,7 @@ time_shards = 3
 card_drops =
 
 [monster.mr-iluneon-lantern-imp]
-name = 가로등 꼬마 정령
+name = 가로등 불씨
 tier = normal
 species = spirit
 hp = 42
@@ -132,7 +132,7 @@ time_shards = 4
 card_drops =
 
 [monster.mr-iluneon-clockwraith]
-name = 시계탑 망령
+name = 시계탑 잔영
 tier = elite
 species = phantom
 hp = 200

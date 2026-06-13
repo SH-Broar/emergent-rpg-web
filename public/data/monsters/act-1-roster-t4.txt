@@ -9,7 +9,7 @@
 # --- 일반 ---
 
 [monster.mr-yusezria-iron-sentinel]
-name = 무쇠 파수 골렘
+name = 무쇠 골렘
 tier = normal
 species = golem
 hp = 210
@@ -21,7 +21,7 @@ time_shards = 10
 card_drops =
 
 [monster.mr-yusezria-tide-wraith]
-name = 조류 망령
+name = 보댜노이
 tier = normal
 species = wraith
 hp = 182
@@ -226,7 +226,7 @@ time_shards = 10
 card_drops =
 
 [monster.mr-emberforge-furnace-golem]
-name = 화로 골렘
+name = 화덕 골렘
 tier = normal
 species = golem
 hp = 245
@@ -324,7 +324,7 @@ time_shards = 10
 card_drops =
 
 [monster.mr-oldshrine-thunder-wraith]
-name = 번개 망령
+name = 번개 잔영
 tier = normal
 species = wraith
 hp = 186
@@ -336,7 +336,7 @@ time_shards = 9
 card_drops =
 
 [monster.mr-oldshrine-barrier-golem]
-name = 결계 골렘
+name = 도모보이
 tier = normal
 species = golem
 hp = 238

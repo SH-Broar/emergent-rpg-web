@@ -32,7 +32,7 @@ card_drops = c-shadow-rebuke:0.25
 
 # 거미줄 구속(bind): 손패 잠금, 방치 시 잠금 수 증가. 발버둥으로 탈출.
 [monster.m-demo-weaver]
-name = 스타 아라크네
+name = 별무늬 아라크네
 tier = normal
 species = spider
 hp = 70
@@ -114,7 +114,7 @@ time_shards = 4
 
 # 거미줄(web) 쌓이는 카드 잠금. 발버둥 없이, 카드를 쓰면 한 겹씩 풀린다.
 [monster.m-demo-weaver2]
-name = 블루 아라크네
+name = 푸른 아라크네
 tier = normal
 species = spider
 hp = 85
