@@ -4,7 +4,7 @@
 # baseStats는 변신에선 미사용(HP 유지) 시작 선택용 자리값일 뿐.
 
 [race.race-form-fox]
-name = 여우 (체인지)
+name = 여우
 category = transform-form
 primary_element = wind
 secondary_element = dark
