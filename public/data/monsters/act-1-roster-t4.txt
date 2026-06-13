@@ -86,9 +86,9 @@ card_drops =
 # --- 엘리트 ---
 
 [monster.mr-yusezria-core-colossus]
-name = 심층 핵 거상
+name = 심층 원석
 tier = elite
-species = imp
+species = gemling
 hp = 780
 attack = 30
 defense = 0
@@ -100,7 +100,7 @@ card_drops =
 [monster.mr-yusezria-abyssal-warden]
 name = 심연의 감시자
 tier = elite
-species = imp
+species = gemling
 hp = 680
 attack = 28
 defense = 0
@@ -129,9 +129,9 @@ time_shards = 9
 card_drops =
 
 [monster.mr-falcon-garden-talon-striker]
-name = 발톱 강습자
+name = 발톱 매
 tier = normal
-species = imp
+species = windfae
 hp = 196
 attack = 19
 defense = 0
@@ -141,9 +141,9 @@ time_shards = 10
 card_drops =
 
 [monster.mr-falcon-garden-wind-lancer]
-name = 바람 창기병
+name = 바람 제비
 tier = normal
-species = imp
+species = windfae
 hp = 203
 attack = 20
 defense = 0
@@ -167,9 +167,9 @@ time_shards = 9
 card_drops =
 
 [monster.mr-falcon-garden-gale-sentry]
-name = 폭풍 초병
+name = 폭풍 종달새
 tier = normal
-species = imp
+species = windfae
 hp = 210
 attack = 18
 defense = 0
@@ -264,9 +264,9 @@ time_shards = 8
 card_drops =
 
 [monster.mr-emberforge-slag-crusher]
-name = 슬래그 분쇄자
+name = 용암 도롱뇽
 tier = normal
-species = imp
+species = emberling
 hp = 224
 attack = 19
 defense = 0
@@ -280,7 +280,7 @@ card_drops =
 [monster.mr-emberforge-magma-titan]
 name = 카울렘
 tier = elite
-species = imp
+species = emberling
 hp = 700
 attack = 32
 defense = 0
@@ -311,9 +311,9 @@ time_shards = 9
 card_drops =
 
 [monster.mr-oldshrine-shrine-warden]
-name = 신전 파수병
+name = 신전 가고일
 tier = normal
-species = imp
+species = gargoyle
 hp = 210
 attack = 17
 defense = 0
@@ -350,7 +350,7 @@ card_drops =
 [monster.mr-oldshrine-relic-hunter]
 name = 악마 성직자
 tier = normal
-species = imp
+species = gargoyle
 hp = 189
 attack = 18
 defense = 0
@@ -364,7 +364,7 @@ card_drops =
 [monster.mr-oldshrine-lightning-archon]
 name = 카넌
 tier = elite
-species = imp
+species = gargoyle
 hp = 740
 attack = 32
 defense = 0

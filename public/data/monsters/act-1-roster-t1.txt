@@ -8,7 +8,7 @@
 [monster.mr-iluneon-cutpurse]
 name = 먼지 고양이
 tier = normal
-species = imp
+species = cat
 hp = 55
 attack = 7
 defense = 0
@@ -19,9 +19,9 @@ time_shards = 3
 card_drops =
 
 [monster.mr-iluneon-trickster]
-name = 분신 임프
+name = 흩어지는 그림자
 tier = normal
-species = imp
+species = shade
 hp = 55
 attack = 5
 defense = 0
@@ -60,9 +60,9 @@ recruit_combat_start = block:5
 recruit_per_turn = block:1
 
 [monster.mr-iluneon-alley-thug]
-name = 뒷골목 패거리
+name = 뒷골목 너구리
 tier = normal
-species = imp
+species = raccoon
 hp = 65
 attack = 8
 defense = 0
@@ -93,9 +93,9 @@ companion_skill_desc = 적에게 약화 2를 건다. 불빛이 한 번 깜빡여
 companion_skill_effects = apply-status:2:enemy:weakness
 
 [monster.mr-iluneon-market-sneak]
-name = 시장 잠입자
+name = 시장 족제비
 tier = normal
-species = imp
+species = raccoon
 hp = 49
 attack = 5
 defense = 0
@@ -122,7 +122,7 @@ card_drops =
 [monster.mr-iluneon-toll-warden]
 name = 통행세 수금원
 tier = normal
-species = imp
+species = raccoon
 hp = 72
 attack = 8
 defense = 0
@@ -339,9 +339,9 @@ card_drops =
 # ============================================================
 
 [monster.mr-reshud-bandit]
-name = 길목 임프 무리
+name = 길목 바이알 떼
 tier = normal
-species = imp
+species = vial
 hp = 65
 attack = 8
 defense = 0
@@ -379,9 +379,9 @@ time_shards = 2
 card_drops =
 
 [monster.mr-reshud-drifter]
-name = 떠도는 들임프
+name = 들판 다람쥐
 tier = normal
-species = imp
+species = squirrel
 hp = 58
 attack = 7
 defense = 0
@@ -465,7 +465,7 @@ companion_skill_effects = damage:8:enemy, heal:5:self
 [monster.mr-tradepost-wanderer]
 name = 상단 오크
 tier = normal
-species = imp
+species = orc
 hp = 65
 attack = 8
 defense = 0

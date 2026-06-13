@@ -9,7 +9,7 @@
 [monster.mr-luna-ink-fiend]
 name = 잉크 북
 tier = normal
-species = imp
+species = grimoire
 hp = 140
 attack = 13
 defense = 0
@@ -49,7 +49,7 @@ card_drops =
 [monster.mr-luna-cursed-page]
 name = 저주받은 책장
 tier = normal
-species = imp
+species = grimoire
 hp = 112
 attack = 9
 defense = 0
@@ -202,9 +202,9 @@ time_shards = 7
 card_drops =
 
 [monster.mr-tacomi-voltage-dancer]
-name = 전압 무희
+name = 반짝 요정
 tier = normal
-species = imp
+species = sprite
 hp = 161
 attack = 14
 defense = 0
@@ -488,9 +488,9 @@ card_drops =
 # ============================================================
 
 [monster.mr-diropel-long-ear-sentinel]
-name = 긴귀 보초
+name = 긴귀 딜롭
 tier = normal
-species = imp
+species = diropel
 hp = 161
 attack = 13
 defense = 0
@@ -500,9 +500,9 @@ time_shards = 7
 card_drops =
 
 [monster.mr-diropel-short-ear-dancer]
-name = 짧은귀 춤꾼
+name = 짧은귀 딜롭
 tier = normal
-species = imp
+species = diropel
 hp = 126
 attack = 10
 defense = 0
@@ -514,9 +514,9 @@ time_shards = 6
 card_drops =
 
 [monster.mr-diropel-totem-warden]
-name = 토템 수호자
+name = 방울 딜롭
 tier = normal
-species = imp
+species = diropel
 hp = 210
 attack = 12
 defense = 0
@@ -526,9 +526,9 @@ time_shards = 8
 card_drops =
 
 [monster.mr-diropel-pattern-shaman]
-name = 무늬 주술사
+name = 하얀 버섯
 tier = normal
-species = imp
+species = mushroom
 hp = 140
 attack = 9
 defense = 0
@@ -579,9 +579,9 @@ time_shards = 6
 card_drops =
 
 [monster.mr-coral-coast-coral-grappler]
-name = 산호 포박꾼
+name = 산호 게
 tier = normal
-species = imp
+species = crab
 hp = 168
 attack = 13
 defense = 0

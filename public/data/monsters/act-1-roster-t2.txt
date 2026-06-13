@@ -118,7 +118,7 @@ companion_skill_effects = block:14:self
 [monster.mr-moss-forge-titan]
 name = 시실렘
 tier = elite
-species = imp
+species = sprite
 hp = 380
 attack = 15
 defense = 0
@@ -130,7 +130,7 @@ card_drops =
 [monster.mr-moss-smelter-queen]
 name = 플레이머
 tier = elite
-species = imp
+species = emberling
 hp = 340
 attack = 14
 defense = 0
@@ -238,9 +238,9 @@ time_shards = 4
 card_drops =
 
 [monster.mr-ali-herb-bandit]
-name = 몽롱한 임프
+name = 몽롱한 그림자
 tier = normal
-species = imp
+species = shade
 hp = 91
 attack = 7
 defense = 0
@@ -343,9 +343,9 @@ time_shards = 3
 card_drops =
 
 [monster.mr-martin-sea-thug]
-name = 거친 뱃사람
+name = 부둣가 수달
 tier = normal
-species = imp
+species = otter
 hp = 112
 attack = 10
 defense = 0

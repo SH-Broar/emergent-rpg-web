@@ -71,9 +71,9 @@ card_drops =
 
 # 트릭스터 카드 교란: 잡카드 주입(상처/저주) + 시야 가리기.
 [monster.m-demo-trickster]
-name = 마술사 임프
+name = 꼬마 마도서
 tier = normal
-species = imp
+species = grimoire
 hp = 50
 attack = 5
 defense = 0
@@ -86,7 +86,7 @@ card_drops =
 [monster.m-demo-warden]
 name = 리프시스
 tier = elite
-species = imp
+species = shade
 hp = 180
 attack = 9
 defense = 2
