@@ -4,21 +4,21 @@
 
 [unlock.u-race-moth]
 name = 나방
-description = 작은 몸, 빠른 손 민첩의 그릇.
+description = 작은 몸과 빠른 손을 지닌 종족. 속도와 연사에 능하다.
 resource = hyperion
 cost = 30
 grants_race = moth
 
 [unlock.u-race-phantom]
 name = 팬텀
-description = 속이고 비트는, 시간의 빈틈을 두는 그릇.
+description = 속이고 비트는 종족. 손패 수를 다루며 싸운다.
 resource = hyperion
 cost = 45
 grants_race = phantom
 
 [unlock.u-race-arcana]
 name = 아르카나
-description = 빛을 본질로 하는 신적 그릇.
+description = 빛을 본질로 하는 종족. 색을 모아 힘으로 바꾼다.
 resource = hyperion
 cost = 60
 grants_race = arcana
@@ -29,85 +29,85 @@ grants_race = arcana
 # source=race 유물이라 풀 진입은 안 함. 오직 시작 지급 경로(run-start)에서만 합류.
 
 [unlock.u-relic-human-breath]
-name = 숨 고르기
-description = 인간 런 시작에 고른 호흡을 함께 받는다. 매 전투 시작 시 얇은 벽 한 겹과 손에 한 장.
+name = 고른 호흡
+description = 인간 런 시작에 '고른 호흡'을 받는다. 전투 시작 시 방어 4, 카드 1장.
 resource = insight
 cost = 8
 grants_relic = r-race-human-breath
 
 [unlock.u-relic-human-counterweight]
-name = 균형
-description = 인간 런 시작에 균형추를 함께 받는다. 매 전투 시작 시 힘과 민첩이 한 칸씩 선다.
+name = 균형추
+description = 인간 런 시작에 '균형추'를 받는다. 전투 시작 시 힘 1, 민첩 1.
 resource = insight
 cost = 8
 grants_relic = r-race-human-counterweight
 
 [unlock.u-relic-human-token]
-name = 진화의 증표
-description = 인간 런 시작에 적응의 증표를 함께 받는다. 매 호흡마다 발밑이 한 겹 더 단단해진다.
+name = 적응의 증표
+description = 인간 런 시작에 '적응의 증표'를 받는다. 매 턴 시작 시 방어 2.
 resource = insight
 cost = 8
 grants_relic = r-race-human-token
 
 [unlock.u-relic-moth-lightbody]
-name = 가벼운 몸 (나방)
-description = 나방 런 시작에 가벼운 몸을 함께 받는다. 매 전투 시작 손에 한 장 더, 호흡마다 한 장 더.
+name = 가벼운 몸
+description = 나방 런 시작에 '가벼운 몸'을 받는다. 전투 시작 시 카드 1장, 매 턴 드로우 +1.
 resource = insight
 cost = 8
 grants_relic = r-race-moth-lightbody
 
 [unlock.u-relic-moth-rapidquill]
-name = 연사의 깃 (나방)
-description = 나방 런 시작에 연사의 깃을 함께 받는다. 공격을 세 번 낼 때마다 어깨에 힘이 쌓인다.
+name = 팔랑이는 날개
+description = 나방 런 시작에 '팔랑이는 날개'를 받는다. 공격 5회마다 힘 +1.
 resource = insight
 cost = 8
 grants_relic = r-race-moth-rapidquill
 
 [unlock.u-relic-moth-windtally]
-name = 바람 계산
-description = 나방 런 시작에 바람의 셈을 함께 받는다. 손이 다섯 번 지날 때마다 색 하나가 한 칸 짙어진다.
+name = 바람 세는 깃
+description = 나방 런 시작에 '바람 세는 깃'을 받는다. 카드 5장 사용마다 무작위 색 +1.
 resource = insight
 cost = 8
 grants_relic = r-race-moth-windtally
 
 [unlock.u-relic-phantom-fullhand]
-name = 하드 덱
-description = 팬텀 런 시작에 쥔 손의 무게를 함께 받는다. 매 전투 시작 손에 한 장 더, 손패 유지.
+name = 묵직한 손
+description = 팬텀 런 시작에 '묵직한 손'을 받는다. 전투 시작 시 카드 1장, 손패 유지.
 resource = insight
 cost = 8
 grants_relic = r-race-phantom-fullhand
 
 [unlock.u-relic-phantom-ghostmemory]
-name = 스플릿
-description = 팬텀 런 시작에 유령의 기억을 함께 받는다. 매 호흡마다 어둠이 발밑을 가린다.
+name = 유령의 기억
+description = 팬텀 런 시작에 '유령의 기억'을 받는다. 매 턴 시작 시 방어 3.
 resource = insight
 cost = 8
 grants_relic = r-race-phantom-ghostmemory
 
 [unlock.u-relic-phantom-staticquill]
-name = 익스플로전 드로우
-description = 팬텀 런 시작에 정전기 깃을 함께 받는다. 패를 쥘 때마다 손끝에서 정전기가 튄다.
+name = 찌릿한 깃
+description = 팬텀 런 시작에 '찌릿한 깃'을 받는다. 카드를 뽑을 때마다 적에게 피해 1.
 resource = insight
 cost = 8
 grants_relic = r-race-phantom-staticquill
 
 [unlock.u-relic-arcana-prism]
-name = 프리즘 코어 (아르카나)
-description = 아르카나 런 시작에 프리즘 코어를 함께 받는다. 최고색이 방어, 색 다채로움이 힘이 된다.
+name = 프리즘 코어
+description = 아르카나 런 시작에 '프리즘 코어'를 받는다. 전투 시작 시 최고색 14당 방어 1, 색 2종당 힘 1.
 resource = insight
 cost = 8
 grants_relic = r-race-arcana-prism
 
 [unlock.u-relic-arcana-seed]
-name = 무지개
-description = 아르카나 런 시작에 무지개 씨앗을 함께 받는다. 카드 네 번에 색 하나가 한 칸 깨어난다.
+name = 무지개 씨앗
+description = 아르카나 런 시작에 '무지개 씨앗'을 받는다. 카드 4장 사용마다 무작위 색 +1.
 resource = insight
 cost = 8
 grants_relic = r-race-arcana-seed
 
 [unlock.u-relic-arcana-amp]
-name = 공명
-description = 아르카나 런 시작에 공명 증폭기를 함께 받는다. 호흡의 끝수가 맞아떨어지는 턴마다 무작위 색이 한 칸 짙어진다.
+name = 공명 증폭기
+description = 아르카나 런 시작에 '공명 증폭기'를 받는다. 턴 번호 1의 자리가 0일 때 무작위 색 +1.
 resource = insight
 cost = 8
 grants_relic = r-race-arcana-amp
