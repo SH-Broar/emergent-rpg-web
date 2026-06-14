@@ -6,7 +6,7 @@
 # 축복 — 작은 수호 정령이 한동안 함께해 준다.
 # ============================================================
 [event.ev-guardian-blessing]
-name = 작은 수호 정령
+name = 꼬마 수호정령
 node_kinds = event
 weight = 1
 once_per_run = false
@@ -28,7 +28,7 @@ result_text = 정령이 기분 좋게 몸을 떨더니 빛 한 줌을 남기고 
 # 방울 표식 — 네코마타가 장난스레 방울을 달아 준다(다음 싸움이 커진다).
 # ============================================================
 [event.ev-nekomata-bell]
-name = 방울 단 네코마타
+name = 방울과 고양이 귀
 node_kinds = event
 weight = 1
 once_per_run = false

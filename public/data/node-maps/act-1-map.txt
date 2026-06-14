@@ -13,7 +13,7 @@
 #   풍혈지대 → 시간의 닻 (북·보스)
 
 [nodemap.nm-act-1-era4-061]
-name = 제 4시대 61년 컬러즈 세계 단면
+name = 제 4시대
 description = 일루네온에서 시작해 동쪽 라르 숲, 극동 마노니클라, 북쪽 리아그랄타, 남서 루나, 그리고 마지막으로 풍혈지대 위의 시간의 닻까지. 한 해 안에 모든 곳을 다녀야 한다.
 start_node = n-iluneon-square
 boss_gate = n-anchor-point
@@ -24,7 +24,7 @@ boss_gate = n-anchor-point
 # ============================================================
 
 [nodemap.nm-act-1-era4-061.region.iluneon]
-name = 일루네온 권역
+name = 일루네온
 description = 컬러즈 세계의 중심 도시. 광장·시장·시계탑·길드. 도시의 잡담, 행인, 인쇄된 종이.
 tier = 1
 enemy_pool = mr-iluneon-cutpurse, mr-iluneon-trickster, mr-iluneon-guild-rat, mr-iluneon-alley-thug, mr-iluneon-lantern-imp, mr-iluneon-market-sneak, mr-iluneon-clock-shade, mr-iluneon-toll-warden
@@ -35,7 +35,7 @@ specialty_item = i-shrine-relic
 legendary_cards = c-iluneon-stopped-noon
 
 [nodemap.nm-act-1-era4-061.region.lar-forest]
-name = 라르 숲 · 세계수
+name = 라르 숲ㆍ세계수의 숲
 description = 일루네온에서 가깝고 어린 모험가들이 많이 가는 입문자 숲. 세계수 근처만 조금 강하다. 잎사귀와 송진 향.
 tier = 1
 enemy_pool = mr-lar-forest-mosswolf, mr-lar-forest-thornbird, mr-lar-forest-spiderling, mr-lar-forest-rootcrawler, mr-lar-forest-ember-sala, mr-lar-forest-dryad-sapling, mr-lar-forest-boar, mr-lar-forest-mudcrab
@@ -68,7 +68,7 @@ specialty_item = i-lava-scale
 legendary_cards = c-moss-ember-strike
 
 [nodemap.nm-act-1-era4-061.region.manonickla]
-name = 마노니클라 권역
+name = 마노니클라 평원
 description = 극동 섬의 석양·드래곤 공방·리문 유적. 절벽 바람·사구의 모래.
 tier = 2
 enemy_pool = mr-mano-cliff-crab, mr-mano-sand-wraith, mr-mano-sunset-raven, mr-mano-limun-ward, mr-mano-iron-scorpion, mr-mano-dusk-shade, mr-mano-ruin-lurker, mr-mano-tide-golem
@@ -89,7 +89,7 @@ primary_color = electric
 specialty_item = i-storm-fang
 
 [nodemap.nm-act-1-era4-061.region.alimes]
-name = 알리메스 권역
+name = 알리메스
 description = 바그레트·겔리더 산맥에 끼인 오지 마을 + 에루멘 안개 숲. 약초·비단·운무.
 tier = 2
 enemy_pool = mr-ali-mist-deer, mr-ali-herb-bandit, mr-ali-fog-sprite, mr-ali-stone-bear, mr-ali-dew-moth, mr-ali-marsh-creeper
@@ -110,7 +110,7 @@ primary_color = dark
 specialty_item = i-grimoire-ink
 
 [nodemap.nm-act-1-era4-061.region.tacomi]
-name = 타코미 권역
+name = 타코미
 description = 대절곡 이북의 페스티벌 도시 + 홀로그램 필드 + 스텔라 빌. 네온·레이저·결계.
 tier = 3
 enemy_pool = mr-tacomi-pixel-beast, mr-tacomi-hologram-jester, mr-tacomi-barrier-sprite, mr-tacomi-neon-hornet, mr-tacomi-festival-mimic, mr-tacomi-circuit-prowler, mr-tacomi-voltage-dancer
@@ -141,7 +141,7 @@ primary_color = water
 specialty_item = i-salt-pearl
 
 [nodemap.nm-act-1-era4-061.region.enicham]
-name = 에니챰 · 발전소 지대
+name = 에니챰 발전소
 description = 타코미 옆의 발전소 지대. 희미한 투광·기계 소음·메탈 향. 제로의 단정한 자리. 알티-알타의 AGI 초기 흔적.
 tier = 3
 enemy_pool = mr-enicham-sparking-drone, mr-enicham-relay-crawler, mr-enicham-capacitor-golem, mr-enicham-circuit-hound, mr-enicham-overload-wraith, mr-enicham-lockon-firefly
@@ -181,7 +181,7 @@ primary_color = fire
 specialty_item = i-lava-scale
 
 [nodemap.nm-act-1-era4-061.region.falcon-garden]
-name = 팔콘 가든 공중 군도
+name = 팔콘 가든
 description = 클러치 등대 너머 바다 위에 떠 있는 공중 군도. 강력한 조류 아인 맹금·하피·하늘의 주인. 대화 가능한 이는 바다쪽 범고래뿐. 강풍·깃털·고도.
 tier = 4
 enemy_pool = mr-falcon-garden-gust-harpy, mr-falcon-garden-talon-striker, mr-falcon-garden-wind-lancer, mr-falcon-garden-sky-raven, mr-falcon-garden-gale-sentry
@@ -191,7 +191,7 @@ primary_color = wind
 specialty_item = i-sky-shard
 
 [nodemap.nm-act-1-era4-061.region.tradepost]
-name = 초원 교역소
+name = 간이 교역소
 description = 리아그랄타 초원 서쪽의 대상 교역지. 여러 행상이 천막을 친다. 라미아 상인 사라사가 직물과 향신료를 펼친다. 평화로운 거래의 자리.
 tier = 1
 enemy_pool = mr-tradepost-stray-hound, mr-tradepost-caravan-thief, mr-tradepost-wanderer, mr-tradepost-lamia-guard, mr-tradepost-dust-rat
@@ -221,7 +221,7 @@ primary_color = water
 specialty_item = i-salt-pearl
 
 [nodemap.nm-act-1-era4-061.region.oldshrine]
-name = 구 신전터
+name = 신전 터
 description = 타코미 너머 번개가 깃든 옛 신전 유적 도전 사냥터. 격 높은 신수 티프레가 지킨다. 부서진 기둥·정전기·빛 무늬.
 tier = 4
 enemy_pool = mr-oldshrine-spirit-flame, mr-oldshrine-shrine-warden, mr-oldshrine-thunder-wraith, mr-oldshrine-barrier-golem, mr-oldshrine-relic-hunter

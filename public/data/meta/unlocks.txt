@@ -29,7 +29,7 @@ grants_race = arcana
 # source=race 유물이라 풀 진입은 안 함. 오직 시작 지급 경로(run-start)에서만 합류.
 
 [unlock.u-relic-human-breath]
-name = 고른 호흡 (인간)
+name = 숨 고르기
 description = 인간 런 시작에 고른 호흡을 함께 받는다. 매 전투 시작 시 얇은 벽 한 겹과 손에 한 장.
 resource = insight
 cost = 8
@@ -43,7 +43,7 @@ cost = 8
 grants_relic = r-race-human-counterweight
 
 [unlock.u-relic-human-token]
-name = 적응의 증표 (인간)
+name = 진화의 증표
 description = 인간 런 시작에 적응의 증표를 함께 받는다. 매 호흡마다 발밑이 한 겹 더 단단해진다.
 resource = insight
 cost = 8
@@ -64,28 +64,28 @@ cost = 8
 grants_relic = r-race-moth-rapidquill
 
 [unlock.u-relic-moth-windtally]
-name = 바람의 셈 (나방)
+name = 바람 계산
 description = 나방 런 시작에 바람의 셈을 함께 받는다. 손이 다섯 번 지날 때마다 색 하나가 한 칸 짙어진다.
 resource = insight
 cost = 8
 grants_relic = r-race-moth-windtally
 
 [unlock.u-relic-phantom-fullhand]
-name = 쥔 손의 무게 (팬텀)
+name = 하드 덱
 description = 팬텀 런 시작에 쥔 손의 무게를 함께 받는다. 매 전투 시작 손에 한 장 더, 손패 유지.
 resource = insight
 cost = 8
 grants_relic = r-race-phantom-fullhand
 
 [unlock.u-relic-phantom-ghostmemory]
-name = 유령의 기억 (팬텀)
+name = 스플릿
 description = 팬텀 런 시작에 유령의 기억을 함께 받는다. 매 호흡마다 어둠이 발밑을 가린다.
 resource = insight
 cost = 8
 grants_relic = r-race-phantom-ghostmemory
 
 [unlock.u-relic-phantom-staticquill]
-name = 정전기 깃 (팬텀)
+name = 익스플로전 드로우
 description = 팬텀 런 시작에 정전기 깃을 함께 받는다. 패를 쥘 때마다 손끝에서 정전기가 튄다.
 resource = insight
 cost = 8
@@ -99,7 +99,7 @@ cost = 8
 grants_relic = r-race-arcana-prism
 
 [unlock.u-relic-arcana-seed]
-name = 무지개 씨앗 (아르카나)
+name = 무지개
 description = 아르카나 런 시작에 무지개 씨앗을 함께 받는다. 카드 네 번에 색 하나가 한 칸 깨어난다.
 resource = insight
 cost = 8

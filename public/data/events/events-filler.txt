@@ -7,7 +7,7 @@
 # id 접두 ev-filler-* 는 EventView 빈노드 폴백이 인식한다. 바꾸지 말 것.
 
 [event.ev-filler-roadside-spring]
-name = 길가 샘터
+name = 온천
 node_kinds = event
 once_per_run = false
 weight = 2
@@ -100,7 +100,7 @@ color = random:8
 result_text = 손에 쥐자 한 빛깔만 강하게 스며들었다.
 
 [event.ev-filler-fork-merchant]
-name = 갈림길의 약초상
+name = 원정 거래
 node_kinds = event
 once_per_run = false
 weight = 1
@@ -199,7 +199,7 @@ label = 멀리 돌아간다
 result_text = 길을 빙 둘러 나방 떼를 피했다.
 
 [event.ev-filler-stone-circle]
-name = 돌무지 고리
+name = 페어리 서클?
 node_kinds = event
 once_per_run = false
 weight = 1

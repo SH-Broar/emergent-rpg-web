@@ -47,7 +47,7 @@ levels = 0.10:1, 0.20:2, 0.30:3
 
 # 엘리트·보스 HP +15/+30/+45%
 [chaos.ch-elite-hp]
-name = 비대한 정예
+name = 위대한 엘리트
 description = 엘리트와 보스의 체력이 강도에 따라 부풀어 오른다.
 tier = 1
 category = enemy-buff
@@ -57,7 +57,7 @@ levels = 0.15:1, 0.30:2, 0.45:3
 
 # 적 방어 +2/+4/+6
 [chaos.ch-enemy-def]
-name = 두꺼운 갑피
+name = 딱딱한 피부
 description = 모든 적이 전투를 두꺼운 방어로 시작한다.
 tier = 1
 category = enemy-buff
@@ -121,7 +121,7 @@ levels = 1:1, 2:2, 3:3
 
 # 시간 한도 -15/-25/-35%
 [chaos.ch-time-pressure]
-name = 줄어드는 모래
+name = 성급함
 description = 주어진 시간이 강도에 따라 짧아진다.
 tier = 2
 category = time-pressure
@@ -151,7 +151,7 @@ levels = 1:1
 
 # 카드 보상 2장만 제시
 [chaos.ch-narrow-choice]
-name = 좁은 길
+name = 색약
 description = 전투 후 카드 보상이 한 장 적게 제시된다.
 tier = 2
 category = build-lock
@@ -205,7 +205,7 @@ levels = 1:1
 
 # 적 의도 가려짐
 [chaos.ch-hidden-intent]
-name = 안개 의도
+name = 산만
 description = 적이 무엇을 할지 보이지 않는다.
 tier = 3
 category = combat-handicap
@@ -239,7 +239,7 @@ levels = 1:1
 
 # 시작 덱에 저주 1 + 빈 카드 5 = 죽은 카드 6장
 [chaos.ch-cursed-deck]
-name = 저주받은 덱
+name = 선천성
 description = 시작 덱에 저주 카드 한 장과 빈 카드 다섯 장이 섞여 든다.
 tier = 4
 category = deck-corruption
@@ -249,7 +249,7 @@ levels = c-junk-curse=1|c-junk-blank=5:4
 
 # 런 시작 시 무작위 1색 봉인 → 그 색 카드 사용 불가
 [chaos.ch-color-seal]
-name = 색의 침묵
+name = 색맹
 description = 한 가지 색이 침묵해, 그 색의 카드를 전투에서 쓸 수 없다.
 tier = 4
 category = build-corruption
@@ -259,7 +259,7 @@ levels = random:4
 
 # 모든 적 인텐트에 종족 대표 기믹 1개 삽입
 [chaos.ch-all-gimmick]
-name = 만물의 송곳니
+name = 만연체
 description = 일반 몹까지 포함해 모든 적이 한 가지 기믹을 더 부린다.
 tier = 4
 category = combat-corruption
