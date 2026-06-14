@@ -130,6 +130,10 @@ const EMPTY_RUN: RunState = {
   nodeKindOverrides: {},
   nodeContentOverrides: {},
   shopInventories: {},
+  // 카오스 shop-limit(닫힌 시장) — 하루 단위 상점 입장 카운터. 비활성 카오스에선 무의미.
+  shopEntryDay: 1,
+  shopEntriesToday: 0,
+  shopVisitedNodes: [],
   forgeOffers: {},
   dayPassedSeq: 0,
   deckSize: DECK_SLOT_SIZE,

@@ -208,6 +208,13 @@ export function applyStartChaos(run: RunState): void {
         }
         break;
       }
+      case 'fragile-glory': {
+        // 시작 시 *최대 체력*을 절반으로(최대치 자체 반감) + 현재 HP도 새 최대치로 클램프.
+        // 상시형 절반(보스 보상 2배)은 bossRewardMul()이 조회 시점에 처리.
+        run.maxHp = Math.max(1, Math.round(run.maxHp / 2));
+        run.hp = Math.min(run.hp, run.maxHp);
+        break;
+      }
       case 'start-inject-card': {
         injectStartChaosCards({ ...run, activeChaos: [a] } as RunState);
         break;
@@ -470,9 +477,108 @@ export function isNoMapPotion(): boolean {
   return isChaosActive('no-map-potion');
 }
 
-/** 상시형 — 상점 폐쇄(no-shop) 활성 여부. */
-export function isNoShop(): boolean {
-  return isChaosActive('no-shop');
+/**
+ * 상시형 — 하루(100턴)당 상점 입장 횟수 제한(shop-limit/닫힌 시장).
+ * 활성 카오스 중 shop-limit의 param(=일일 입장 횟수)을 *최솟값*으로 채택(여러 개면 가장 빡빡한 쪽).
+ * 0 또는 미활성이면 제한 없음(Infinity 반환).
+ */
+export function shopEntryLimit(): number {
+  let limit = Infinity;
+  try {
+    const run = useRunStore().data;
+    const defs = useDataStore().chaosDefs;
+    for (const a of normalizeActive(run.activeChaos)) {
+      const c = defs.get(a.id);
+      if (c && c.effectKind === 'shop-limit') {
+        const n = Math.max(0, Math.floor(Number(effectParamOf(c, a.intensity)) || 0));
+        if (n < limit) limit = n;
+      }
+    }
+  } catch {
+    /* 무영향. */
+  }
+  return limit;
+}
+
+/** shop-limit 활성 여부 — MapView/Shop 게이트가 빠르게 분기. */
+export function isShopLimited(): boolean {
+  return Number.isFinite(shopEntryLimit());
+}
+
+/**
+ * 카오스 fragile-glory(부서지는 영광) — 보스 클리어 보상 배수.
+ * 활성이면 2, 아니면 1. (시작 시 최대 체력 절반은 applyStartChaos에서 처리.)
+ */
+export function bossRewardMul(): number {
+  return isChaosActive('fragile-glory') ? 2 : 1;
+}
+
+/** 카오스 no-respite(황폐) — 휴식 회복 소멸 + 상점 회복 구매 개방 활성 여부. */
+export function isNoRespite(): boolean {
+  return isChaosActive('no-respite');
+}
+
+/**
+ * shop-limit 일일 카운터를 *현재 날(currentDay)에 맞춰 동기화*.
+ * 새 날이면 카운터·방문목록을 리셋한다. (입장 판정/기록 전에 호출.)
+ */
+function syncShopDay(): void {
+  const run = useRunStore().data;
+  if (run.shopEntryDay !== run.currentDay) {
+    run.shopEntryDay = run.currentDay;
+    run.shopEntriesToday = 0;
+    run.shopVisitedNodes = [];
+  }
+}
+
+/**
+ * shop-limit — 이 상점 노드에 *입장 가능한가*.
+ *  - 카오스 비활성: 항상 true.
+ *  - 이미 그 날 입장한 노드(재방문): true(무료 재입장).
+ *  - 그 외: 그 날 입장 수 < 한도일 때만 true.
+ */
+export function canEnterShop(nodeId: string): boolean {
+  const limit = shopEntryLimit();
+  if (!Number.isFinite(limit)) return true; // 제한 없음.
+  try {
+    const run = useRunStore().data;
+    syncShopDay();
+    if ((run.shopVisitedNodes ?? []).includes(nodeId)) return true;
+    return (run.shopEntriesToday ?? 0) < limit;
+  } catch {
+    return true;
+  }
+}
+
+/**
+ * shop-limit — 상점 입장을 *기록*(카운터 +1). 같은 날 같은 노드 재방문은 차감하지 않는다.
+ * 입장이 실제로 성사된 시점(ShopView 진입)에서 호출. 카오스 비활성이면 아무것도 안 함.
+ */
+export function recordShopEntry(nodeId: string): void {
+  if (!Number.isFinite(shopEntryLimit())) return;
+  try {
+    const run = useRunStore().data;
+    syncShopDay();
+    if (!run.shopVisitedNodes) run.shopVisitedNodes = [];
+    if (run.shopVisitedNodes.includes(nodeId)) return; // 재방문 — 무료.
+    run.shopVisitedNodes.push(nodeId);
+    run.shopEntriesToday = (run.shopEntriesToday ?? 0) + 1;
+  } catch {
+    /* 무영향. */
+  }
+}
+
+/** shop-limit — 그 날 남은 상점 입장 횟수(표시용). 제한 없으면 Infinity. */
+export function shopEntriesRemaining(): number {
+  const limit = shopEntryLimit();
+  if (!Number.isFinite(limit)) return Infinity;
+  try {
+    const run = useRunStore().data;
+    syncShopDay();
+    return Math.max(0, limit - (run.shopEntriesToday ?? 0));
+  } catch {
+    return limit;
+  }
 }
 
 // ===================== UI 표시 헬퍼 (Phase C) =====================
@@ -517,7 +623,7 @@ export function chaosLevelSummary(chaos: Chaos, intensity: number): string {
     case 'rest-heal-mul': return `휴식 회복 ${pctDown(param)}`;
     case 'gather-threshold-add': return `채집 임계 +${param}`;
     case 'locked-town': return `마을 ${param}곳 잠금`;
-    case 'no-removal': return '카드 제거 불가';
+    case 'no-removal': return '덱 편집 잠금(최근 얻은 카드로 고정)';
     case 'narrow-reward': return '카드 보상 1장 적게';
     case 'small-hand': return '매 턴 드로우 -1';
     case 'low-mana': return '전투 마나 -1';
@@ -527,7 +633,9 @@ export function chaosLevelSummary(chaos: Chaos, intensity: number): string {
     case 'start-inject-card': return '시작 덱에 죽은 카드 주입';
     case 'color-seal': return '무작위 한 색 봉인(그 색 카드 사용 불가)';
     case 'all-gimmick': return '모든 적이 종족 기믹 1개 추가';
-    case 'no-shop': return '모든 상점 폐쇄';
+    case 'shop-limit': return `하루에 상점 ${param}회만 입장`;
+    case 'fragile-glory': return '시작 최대 체력 절반 · 보스 보상 2배';
+    case 'no-respite': return '휴식 회복 소멸 · 상점 회복 구매 개방';
     default: return chaos.description;
   }
 }

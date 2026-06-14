@@ -16,6 +16,7 @@ import { useUiStore } from '@/stores/ui';
 import { colorBonusForCardEffectKind } from '@/systems/stats';
 import { bonusesFromEffective } from '@/systems/equipment';
 import { cardEffectKindLabel, cardEffectDescription, effectTargetLabel } from '@/systems/labels';
+import { isNoRemoval } from '@/systems/chaos';
 import type { Card, CardEffect } from '@/data/schemas';
 
 const props = defineProps<{ open: boolean }>();
@@ -98,9 +99,15 @@ const sortedCollection = computed(() => {
 });
 
 const activeCount = computed(() => activeIds.value.size);
-const canSave = computed(() => activeCount.value === run.data.deckSize);
+/** 카오스 no-removal(지워지지 않는) — 덱 편집(토글/저장/버리기) 잠금. 최근 얻은 카드로 덱이 고정된다. */
+const editLocked = computed(() => isNoRemoval());
+const canSave = computed(() => !editLocked.value && activeCount.value === run.data.deckSize);
 
 function toggle(card: Card) {
+  if (editLocked.value) {
+    ui.toast('warning', '지워지지 않는다 — 덱을 바꿀 수 없다. 최근에 얻은 카드로 굳어졌다.');
+    return;
+  }
   const k = keyOf(card);
   if (activeIds.value.has(k)) {
     activeIds.value.delete(k);
@@ -120,6 +127,10 @@ function toggle(card: Card) {
 }
 
 function save() {
+  if (editLocked.value) {
+    ui.toast('warning', '지워지지 않는다 — 덱을 바꿀 수 없다.');
+    return;
+  }
   if (!canSave.value) {
     ui.toast('warning', `정확히 ${run.data.deckSize}장이어야 저장 가능합니다. (현재 ${activeCount.value})`);
     return;
@@ -135,6 +146,10 @@ function reset() {
 
 /** 컬렉션에서 카드 1장 영구 삭제. 편집 세트·덱에서도 함께 빠지도록 동기화. */
 function removeCard(card: Card) {
+  if (editLocked.value) {
+    ui.toast('warning', '지워지지 않는다 — 카드를 버릴 수 없다.');
+    return;
+  }
   const iid = card.instanceId;
   if (!iid) return;
   const shards = CARD_SALVAGE_SHARDS[card.rank] ?? 0;
@@ -166,7 +181,8 @@ function effectiveValue(eff: CardEffect): number {
           <button class="x" @click="emit('close')" aria-label="닫기">×</button>
         </header>
 
-        <p class="hint">컬렉션의 카드를 클릭해 덱에 넣거나 뺍니다. 정확히 {{ run.data.deckSize }}장이어야 저장됩니다.</p>
+        <p v-if="editLocked" class="hint hint--locked">지워지지 않는다 — 덱을 바꿀 수 없다. 최근에 얻은 카드로 덱이 굳어졌다.</p>
+        <p v-else class="hint">컬렉션의 카드를 클릭해 덱에 넣거나 뺍니다. 정확히 {{ run.data.deckSize }}장이어야 저장됩니다.</p>
 
         <ul v-if="sortedCollection.length > 0" class="cards">
           <li
@@ -183,6 +199,7 @@ function effectiveValue(eff: CardEffect): number {
               <span class="card__name">{{ c.name }}</span>
               <span class="card__rank" :style="{ color: rankColors[c.rank] }">{{ c.rank }}</span>
               <button
+                v-if="!editLocked"
                 class="card__del"
                 title="이 카드를 컬렉션에서 버리기"
                 aria-label="카드 버리기"
@@ -199,10 +216,15 @@ function effectiveValue(eff: CardEffect): number {
         <p v-else class="empty">컬렉션이 비어 있습니다.</p>
 
         <footer class="deck-modal__ftr">
-          <button class="btn-reset" @click="reset">현재 덱으로 되돌리기</button>
-          <button class="btn-save" :disabled="!canSave" @click="save">
-            저장 {{ canSave ? '' : `(${activeCount}/${run.data.deckSize})` }}
-          </button>
+          <template v-if="editLocked">
+            <button class="btn-save" @click="emit('close')">닫기</button>
+          </template>
+          <template v-else>
+            <button class="btn-reset" @click="reset">현재 덱으로 되돌리기</button>
+            <button class="btn-save" :disabled="!canSave" @click="save">
+              저장 {{ canSave ? '' : `(${activeCount}/${run.data.deckSize})` }}
+            </button>
+          </template>
         </footer>
       </div>
     </div>
@@ -238,6 +260,7 @@ function effectiveValue(eff: CardEffect): number {
 .x:hover { color: #f6e8b8; }
 
 .hint { font-size: 0.8rem; color: #888; margin: 0 0 0.6rem; }
+.hint--locked { color: #c08eff; }
 
 .cards {
   list-style: none; padding: 0; margin: 0;

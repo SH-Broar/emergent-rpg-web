@@ -14,6 +14,7 @@ import {
   purchaseShopCard,
   purchaseShopMaterial,
   purchaseShopRelic,
+  purchaseShopRest,
 } from '@/systems/shop';
 import { getCraftingDiscount } from '@/systems/relic';
 import { relicEffectText, relicTriggerLabel, cardDetailText, relicDetailText } from '@/systems/labels';
@@ -59,6 +60,15 @@ function buyRelic(slotIndex: number) {
 function buyMaterial(slotIndex: number) {
   purchaseShopMaterial(nodeId.value, slotIndex);
 }
+function buyRest() {
+  purchaseShopRest(nodeId.value);
+}
+/** no-respite 회복 슬롯의 회복량(표시용) — round(maxHp × healPct). */
+const restHealAmount = computed(() => {
+  const slot = inventory.value?.restPurchase;
+  if (!slot) return 0;
+  return Math.round(run.data.maxHp * slot.healPct);
+});
 function itemName(id: string): string {
   return data.items.get(id)?.name ?? id;
 }
@@ -185,6 +195,27 @@ onMounted(() => {
             @click="buyMaterial(i)"
           >
             {{ slot.stock <= 0 ? '매진' : `${slot.price} G` }}
+          </button>
+        </li>
+      </ul>
+    </section>
+
+    <!-- 회복 구매 (카오스 황폐 전용) -->
+    <section v-if="inventory.restPurchase" class="rack">
+      <h2 class="rack__title">회복</h2>
+      <ul class="rack__grid">
+        <li class="slot slot--common" :class="{ 'slot--sold': inventory.restPurchase.used }">
+          <div class="slot__head">
+            <span class="slot__name">휴식</span>
+            <span class="slot__rank">HP +{{ restHealAmount }}</span>
+          </div>
+          <p class="slot__flavor">지친 몸을 잠시 누인다.</p>
+          <button
+            class="slot__buy"
+            :disabled="inventory.restPurchase.used || run.data.gold < inventory.restPurchase.price"
+            @click="buyRest()"
+          >
+            {{ inventory.restPurchase.used ? '이용 완료' : `${inventory.restPurchase.price} G` }}
           </button>
         </li>
       </ul>

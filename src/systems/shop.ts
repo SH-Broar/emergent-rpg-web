@@ -17,7 +17,7 @@ import { isPossessionLocked } from '@/systems/possession';
 import { getCraftingDiscount, acquireRelic } from '@/systems/relic';
 import { availableCards, availableRelics } from '@/systems/unlocks';
 import { rng } from '@/systems/rng';
-import { shopPriceMul, isNoRemoval, isNoShop } from '@/systems/chaos';
+import { shopPriceMul, isNoRemoval, isNoRespite } from '@/systems/chaos';
 import { isFormPoolActive, activeFormCardPool } from '@/systems/form-pool';
 
 // 가격·슬롯은 config/balance.txt 에서 로드 (useDataStore().balance). 누락 시 DEFAULT_BALANCE.
@@ -138,21 +138,9 @@ export function getOrCreateShopInventory(nodeId: string): ShopInventory {
   if (existing) {
     // 옛 세이브 호환 — materials 슬롯이 없으면 지금 채운다.
     if (!existing.materials) existing.materials = buildMaterialSlots();
+    // 카오스 no-respite(황폐) — 회복 구매 슬롯이 없으면(카오스 도중 켜진 경우는 없지만) 지금 채운다.
+    if (!existing.restPurchase && isNoRespite()) existing.restPurchase = buildRestPurchase();
     return existing;
-  }
-
-  // 카오스 no-shop(닫힌 시장) — 빈 상점(카드/유물/재료 0, 제거 봉인). 노드 자체 비활성은 Phase C.
-  if (isNoShop()) {
-    const empty: ShopInventory = {
-      generatedAt: run.data.rngState,
-      cards: [],
-      relics: [],
-      removalUsed: true,
-      removalPrice: 0,
-      materials: [],
-    };
-    run.data.shopInventories[nodeId] = empty;
-    return empty;
   }
 
   const cardCandidates = pickRandom(getShopCardPool(), bal.shopNumCards);
@@ -181,9 +169,41 @@ export function getOrCreateShopInventory(nodeId: string): ShopInventory {
     removalUsed: false,
     removalPrice: applyDiscount(bal.shopCardRemovalPrice),
     materials: buildMaterialSlots(),
+    // 카오스 no-respite(황폐) — 휴식 회복 대신 상점 회복 구매 슬롯 개방.
+    restPurchase: isNoRespite() ? buildRestPurchase() : undefined,
   };
   run.data.shopInventories[nodeId] = inventory;
   return inventory;
+}
+
+/** no-respite 회복 슬롯 — 100골드(고정, 할인 미적용)에 최대 HP 30% 회복. */
+const REST_PURCHASE_PRICE = 100;
+const REST_PURCHASE_PCT = 0.3;
+function buildRestPurchase(): { price: number; healPct: number; used: boolean } {
+  return { price: REST_PURCHASE_PRICE, healPct: REST_PURCHASE_PCT, used: false };
+}
+
+/** no-respite 회복 슬롯 구매 — 노드당 1회. 100골드 차감 + round(maxHp×30%) 회복. */
+export function purchaseShopRest(nodeId: string): boolean {
+  const run = useRunStore();
+  const ui = useUiStore();
+  const inv = run.data.shopInventories?.[nodeId];
+  const slot = inv?.restPurchase;
+  if (!slot) return false;
+  if (slot.used) {
+    ui.toast('warning', '이 상점의 회복은 이미 받았습니다.');
+    return false;
+  }
+  if (run.data.gold < slot.price) {
+    ui.toast('warning', '골드가 부족합니다.');
+    return false;
+  }
+  const heal = Math.round(run.data.maxHp * slot.healPct);
+  run.data.gold -= slot.price;
+  run.data.hp = Math.min(run.data.maxHp, run.data.hp + heal);
+  slot.used = true;
+  ui.toast('success', `회복: HP +${heal} (-${slot.price} 골드)`);
+  return true;
 }
 
 /** 일반 재료 슬롯 1개 구매 — 재고 -1, 인벤토리에 인스턴스 추가. */

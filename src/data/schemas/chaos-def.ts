@@ -55,10 +55,16 @@
  *   - 'node-hp-loss'           노드 진입마다 HP -N. run.visitNode.
  *   - 'gather-threshold-add'   채집 후반 임계 +N. gathering.ts.
  *   - 'locked-town'            마을 노드 N개 잠금. (MapView 결선 = Phase C.)
- *   - 'no-removal'             상점/공방 카드 제거 비활성.
+ *   - 'no-removal'             덱 편집 잠금(카드 제거·강화 슬롯 비활성, 보상 카드 자동 편입).
  *   - 'narrow-reward'          전투 후 카드 보상 수 -1. (CombatView 결선 = Phase C.)
  *   - 'no-map-potion'          맵(비전투)에서 포션 사용 불가. item.ts.
- *   - 'no-shop'                상점 노드/구매 폐쇄. shop.ts + (MapView 노드 비활성 = Phase C.)
+ *   - 'shop-limit'             하루(100턴)에 상점 입장 N회 제한. param=일일 입장 횟수. shop.ts + MapView.
+ *
+ * 시작형 + 상시형 혼합:
+ *   - 'fragile-glory'          [시작] 최대 체력 절반(현재 HP도 그에 맞춤) + [상시] 보스 클리어 보상 ×2.
+ *
+ * 상시형 — 회복:
+ *   - 'no-respite'             휴식 노드 회복 소멸 + 상점에 회복 구매 항목 개방(100골드, 최대 HP 30%).
  */
 export type ChaosEffectKind =
   // === 시작형 (start-*) ===
@@ -87,7 +93,11 @@ export type ChaosEffectKind =
   | 'no-removal'
   | 'narrow-reward'
   | 'no-map-potion'
-  | 'no-shop';
+  | 'shop-limit'
+  // === 시작형 + 상시형 혼합 ===
+  | 'fragile-glory'
+  // === 상시형 — 회복 ===
+  | 'no-respite';
 
 /** 카오스 티어 — 1~3은 숫자/혼합, 4는 규칙 재작성(레전드 간판). */
 export type ChaosTier = 1 | 2 | 3 | 4;

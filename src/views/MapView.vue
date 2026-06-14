@@ -23,7 +23,7 @@ import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
 import { getNeighbors, getNode, isTimeUp, effectiveKind as systemEffectiveKind } from '@/systems/map';
-import { restHealMul, lockedTownCount, isNoShop } from '@/systems/chaos';
+import { restHealMul, lockedTownCount, isShopLimited, canEnterShop, recordShopEntry, isNoRespite } from '@/systems/chaos';
 import { isActivityDone } from '@/systems/activity';
 import { isGatherDone } from '@/systems/gathering';
 import { rng } from '@/systems/rng';
@@ -56,17 +56,20 @@ void _timeUp;
  * 카오스로 잠긴 노드 집합 — 진입 불가 + 회색.
  *   - locked-town(닫힌 성문): 마을 노드를 *결정적*으로 N개 잠금(노드 id 정렬 후 앞 N개).
  *     단, 시작 노드(현재 위치 시작점)는 잠그지 않는다.
- *   - no-shop(닫힌 시장): 모든 상점 노드 잠금.
+ *   - shop-limit(닫힌 시장): 하루 입장 한도를 넘기면 *아직 안 들른* 상점 노드를 잠금
+ *     (그 날 이미 들른 상점은 재입장 자유 — canEnterShop으로 판정).
  */
 const chaosLockedNodes = computed<Set<NodeId>>(() => {
   const locked = new Set<NodeId>();
   const map = nodeMap.value;
   if (!map) return locked;
+  // dayPassedSeq를 의존성으로 끌어들여(하루 경과 시 카운터 리셋) 재계산되게 한다.
+  void run.data.dayPassedSeq;
 
-  // no-shop: 상점 노드 전부.
-  if (isNoShop()) {
+  // shop-limit: 하루 입장 한도 초과 시, 새로 들어갈 수 없는 상점 노드만 잠금.
+  if (isShopLimited()) {
     for (const n of map.nodes) {
-      if (systemEffectiveKind(n, run.data) === 'shop') locked.add(n.id);
+      if (systemEffectiveKind(n, run.data) === 'shop' && !canEnterShop(n.id)) locked.add(n.id);
     }
   }
 
@@ -307,14 +310,22 @@ function enterSelected() {
         run.data.feralHeavy = 0;
         ui.toast('success', '한숨 돌리니 수화가 가라앉았다.');
       }
-      // 카오스 light-rest(얕은 잠) — 휴식 회복 ×(1-합).
-      const heal = Math.floor(run.data.maxHp * 0.3 * restHealMul());
+      // 카오스 no-respite(황폐) — 휴식 회복 완전 소멸(상점 회복으로 대체).
+      // 그 외엔 light-rest(얕은 잠) 배수 ×(1-합) 적용.
+      const heal = isNoRespite() ? 0 : Math.floor(run.data.maxHp * 0.3 * restHealMul());
       run.data.hp = Math.min(run.data.maxHp, run.data.hp + heal);
       ui.toast('success', heal > 0 ? `HP +${heal} 회복` : '잠이 얕아 회복하지 못했다.');
       void import('@/systems/relic').then(({ onRest }) => onRest());
       break;
     }
     case 'shop':
+      // 카오스 shop-limit(닫힌 시장) — 하루 입장 한도 게이트. 한도 초과면 진입 차단.
+      if (!canEnterShop(node.id)) {
+        ui.toast('warning', '오늘은 더 들를 수 있는 상점이 없다.');
+        break;
+      }
+      // 입장 기록(같은 날 같은 노드 재방문은 무료). 비활성 카오스에선 no-op.
+      recordShopEntry(node.id);
       router.push('/game/shop');
       break;
     case 'gather':

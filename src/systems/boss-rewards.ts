@@ -18,7 +18,7 @@ import { applyColorBoost } from '@/systems/colors';
 import { rewardItem, rewardColor, rewardCard, rewardRelic, rewardGold, rewardXp, rewardLevelUp } from '@/systems/reward-feed';
 import { XP_BOSS, XP_ARC_REPEAT } from '@/systems/enhance';
 import { acquireRelic } from '@/systems/relic';
-import { revealNextTierOnClear, recordBestChaos } from '@/systems/chaos';
+import { revealNextTierOnClear, recordBestChaos, bossRewardMul } from '@/systems/chaos';
 
 const DEFAULT_BOSS_GOLD = 30;
 const BOSS_COLOR_BOOST = 5;
@@ -33,8 +33,11 @@ export function applyBossRewards(boss: Boss): void {
   const r = run.data;
   const rw = boss.rewards;
 
-  // 1) 골드 — 스키마에 별도 필드가 없으므로 기본 +30 유지.
-  r.gold += DEFAULT_BOSS_GOLD;
+  // 카오스 fragile-glory(부서지는 영광) — 보스 클리어 보상 배수(기본 1, 활성 시 2).
+  const mul = bossRewardMul();
+
+  // 1) 골드 — 스키마에 별도 필드가 없으므로 기본 +30 유지(카오스 배수 적용).
+  r.gold += DEFAULT_BOSS_GOLD * mul;
 
   // === 사용자 사양: 보스 클리어 시 *희소 재료 1개* + *권역 컬러 부스트 +5*. ===
   // bossesCleared로 *첫 클리어 여부* 추적 — 중복 호출 시 재드롭 X.
@@ -43,20 +46,22 @@ export function applyBossRewards(boss: Boss): void {
     const levels = run.gainXp(XP_BOSS);
     rewardXp(XP_BOSS);
     rewardLevelUp(levels);
-    // (a) 희소 재료 1개 무조건 드롭.
+    // (a) 희소 재료 드롭 — 카오스 배수만큼 개수 증가.
     const rareMat = data.items.get(BOSS_RARE_MATERIAL_ID);
     if (rareMat) {
-      run.addItem(rareMat);
-      rewardItem(rareMat);
+      for (let i = 0; i < mul; i++) {
+        run.addItem(rareMat);
+        rewardItem(rareMat);
+      }
     }
-    // (b) 보스가 위치한 노드의 권역 컬러에 +5.
+    // (b) 보스가 위치한 노드의 권역 컬러에 +5(카오스 배수 적용).
     const map = data.nodeMaps.get(data.timelines.get(r.timelineId)?.nodeMapId ?? '');
     const node = map?.nodes.find((n) => n.id === r.currentNodeId);
     const region = node?.region
       ? map?.regions.find((rg) => rg.id === node.region)
       : undefined;
     if (region?.primaryColor) {
-      const delta = applyColorBoost(region.primaryColor, BOSS_COLOR_BOOST);
+      const delta = applyColorBoost(region.primaryColor, BOSS_COLOR_BOOST * mul);
       rewardColor(region.primaryColor, delta);
     }
   }
@@ -85,9 +90,9 @@ export function applyBossRewards(boss: Boss): void {
     meta.persist();
   }
 
-  // 3) soulGain → 메타 영혼 자원
+  // 3) soulGain → 메타 영혼 자원 (카오스 fragile-glory 배수 적용)
   if (rw.soulGain) {
-    meta.addSoul(rw.soulGain);
+    meta.addSoul(rw.soulGain * mul);
   }
 
   // 4) grantCodexEntries → codex 'boss' 슬롯에 강제 등록 (id별)

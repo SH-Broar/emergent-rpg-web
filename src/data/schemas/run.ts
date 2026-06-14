@@ -84,6 +84,12 @@ export interface ShopInventory {
   removalPrice: number;
   /** 일반 재료 판매 슬롯 (Item Economy). 옛 세이브 호환 — optional(미존재 시 진입 시 생성). */
   materials?: ShopMaterialSlot[];
+  /**
+   * 회복 구매 슬롯 — 카오스 no-respite(황폐) 활성 시에만 생성. 100골드에 최대 HP 30% 회복.
+   * `used`면 이 상점에서 더 못 산다(노드당 1회). 비활성 카오스에선 undefined(표시 X).
+   * 옛 세이브 호환 — optional.
+   */
+  restPurchase?: { price: number; healPct: number; used: boolean };
 }
 
 /** 락 해제 조건 종류. */
@@ -492,6 +498,18 @@ export interface RunState {
    * 키 없는 노드는 진입 시 생성. (세이브 v2 호환 — optional)
    */
   shopInventories?: Record<NodeId, ShopInventory>;
+
+  /**
+   * 카오스 shop-limit(닫힌 시장) 전용 — *하루(100턴) 단위 상점 입장 횟수* 추적.
+   *  - shopEntryDay        : 마지막으로 카운트한 currentDay. 새 날이면 카운터 리셋.
+   *  - shopEntriesToday    : 그 날 입장한 상점 수.
+   * 같은 상점 노드 재방문은 1회만 차감(shopVisitedNodes로 중복 가드).
+   * 카오스 비활성이면 전혀 쓰이지 않는다. 옛 세이브 호환 — optional(EMPTY_RUN 0/[]으로 backfill).
+   */
+  shopEntryDay?: number;
+  shopEntriesToday?: number;
+  /** shop-limit — 그 날 *이미 입장한* 상점 노드 id 목록(재입장은 무료). 새 날에 비워진다. */
+  shopVisitedNodes?: NodeId[];
 
   /**
    * 공방 노드별 *희귀+ 제작 제안* — 처음 진입 시 3장 추첨 후 *고정*.
