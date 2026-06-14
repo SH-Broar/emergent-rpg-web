@@ -1,0 +1,31 @@
+{
+ "meta": {
+  "id": "chaos_fix_1",
+  "title": "카오스 효과 설명 23건 건조 재작성 (강도 군더더기 제거)"
+ },
+ "items": [
+  {"n": 1, "kind": "all-gimmick", "loc": "ch-all-gimmick", "text": "일반 몹까지 포함해 모든 적이 한 가지 기믹을 더 부린다.", "proposal": "모든 적의 행동이 복잡해진다."},
+  {"n": 2, "kind": "node-hp-loss", "loc": "ch-attrition", "text": "길을 한 칸 옮길 때마다 체력이 강도만큼 깎인다.", "proposal": "노드를 옮길 때마다 체력이 줄어든다."},
+  {"n": 3, "kind": "color-seal", "loc": "ch-color-seal", "text": "한 가지 색이 침묵해, 그 색의 카드를 전투에서 쓸 수 없다.", "proposal": "한 가지 속성의 카드를 전투에서 사용할 수 없다."},
+  {"n": 4, "kind": "start-inject-card · effects도 빈카드5→2 동반 변경", "loc": "ch-cursed-deck", "text": "시작 덱에 저주 카드 한 장과 빈 카드 다섯 장이 섞여 든다.", "proposal": "시작 덱에 저주 한 장과 빈 카드 두 장이 섞인다."},
+  {"n": 5, "kind": "low-mana", "loc": "ch-low-mana", "text": "전투에서 쓸 수 있는 마나가 한 점 적다.", "proposal": "초기 마나의 최대치가 1 감소한다."},
+  {"n": 6, "kind": "narrow-reward", "loc": "ch-narrow-choice", "text": "전투 후 카드 보상이 한 장 적게 제시된다.", "proposal": "전투 후 카드 보상이 하나 적게 제시된다."},
+  {"n": 7, "kind": "small-hand", "loc": "ch-small-hand", "text": "전투에서 매 턴 손에 드는 카드가 한 장 적다.", "proposal": "매 턴 드로우가 1 감소한다."},
+  {"n": 8, "kind": "boss-atk-mul", "loc": "ch-boss-atk", "text": "보스의 공격이 강도에 따라 무거워진다.", "proposal": "보스의 공격이 강해진다."},
+  {"n": 9, "kind": "elite-hp-mul", "loc": "ch-elite-hp", "text": "엘리트와 보스의 체력이 강도에 따라 부풀어 오른다.", "proposal": "엘리트와 보스의 체력이 늘어난다."},
+  {"n": 10, "kind": "enemy-atk-mul", "loc": "ch-enemy-atk", "text": "모든 적의 공격이 강도에 따라 매서워진다.", "proposal": "모든 적의 공격이 강해진다."},
+  {"n": 11, "kind": "enemy-def-add", "loc": "ch-enemy-def", "text": "모든 적이 전투를 두꺼운 방어로 시작한다.", "proposal": "모든 적이 방어를 지니고 전투를 시작한다."},
+  {"n": 12, "kind": "enemy-hp-mul", "loc": "ch-enemy-hp", "text": "모든 적의 최대 체력이 강도에 따라 늘어난다.", "proposal": "모든 적의 최대 체력이 늘어난다."},
+  {"n": 13, "kind": "gather-threshold-add", "loc": "ch-hard-gather", "text": "채집 미니게임에서 후반 보상에 이르는 점수 기준이 강도만큼 높아진다.", "proposal": "채집 후반 보상의 점수 기준이 높아진다."},
+  {"n": 14, "kind": "rest-heal-mul", "loc": "ch-light-rest", "text": "휴식으로 회복하는 양이 강도에 따라 줄어든다.", "proposal": "휴식으로 회복하는 양이 줄어든다."},
+  {"n": 15, "kind": "locked-town", "loc": "ch-locked-town", "text": "마을 노드 일부가 강도만큼 닫혀 들어갈 수 없다.", "proposal": "마을 노드 일부가 잠긴다."},
+  {"n": 16, "kind": "no-removal", "loc": "ch-no-removal", "text": "덱에서 카드를 제거할 수 없다.", "proposal": "덱에서 카드를 제거할 수 없다."},
+  {"n": 17, "kind": "no-shop", "loc": "ch-no-shop", "text": "어떤 상점도 문을 열지 않는다.", "proposal": "어떤 상점도 열리지 않는다."},
+  {"n": 18, "kind": "seed-seal", "loc": "ch-seed-seal", "text": "종족이 타고난 시드 컬러가 사라진 채로 시작한다.", "proposal": "초기 컬러가 모두 0이 된다."},
+  {"n": 19, "kind": "shop-price-mul", "loc": "ch-shop-tax", "text": "상점 가격이 강도에 따라 치솟는다.", "proposal": "상점 가격이 오른다."},
+  {"n": 20, "kind": "time-limit-mul", "loc": "ch-time-pressure", "text": "주어진 시간이 강도에 따라 짧아진다.", "proposal": "주어진 시간이 짧아진다."},
+  {"n": 21, "kind": "upgrade-cost-mul", "loc": "ch-upgrade-cost", "text": "카드 강화에 드는 시간의 조각이 강도에 따라 늘어난다.", "proposal": "카드 강화 비용이 늘어난다."},
+  {"n": 22, "kind": "fragile-glory · 효과 확인 요망(시작HP=최대체력?)", "loc": "c-fragile-glory", "text": "시작 HP가 절반이 되지만 보스 클리어 보상이 두 배가 된다.", "proposal": "시작 체력이 절반이 되지만, 보스 보상이 두 배가 된다."},
+  {"n": 23, "kind": "no-respite · 효과 변경 보류(상점 100g 회복안)", "loc": "c-no-respite", "text": "휴식 노드의 회복이 사라진다. 대신 시간의 조각이 매 노드마다 +1.", "proposal": "휴식 노드의 회복이 사라진다."}
+ ]
+}
