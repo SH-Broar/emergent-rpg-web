@@ -1,0 +1,33 @@
+{
+ "meta": {
+  "id": "name3_fix_1",
+  "title": "name3 코멘트 없는 X 추론 재작성 25건 (간결 직설)"
+ },
+ "items": [
+  {"n": 1, "kind": "X추론·큰그림자=NPC등장", "loc": "원604 events [region]", "text": "큰 그림자의 마중", "proposal": "마중"},
+  {"n": 2, "kind": "X추론·로크(761 동일이름→수호신)", "loc": "원615 events [region]", "text": "돌 손발의 걸음", "proposal": "수호신"},
+  {"n": 3, "kind": "X추론", "loc": "원620 events [region]", "text": "조금 늦은 빛", "proposal": "뒤늦은 빛"},
+  {"n": 4, "kind": "X추론·견습공 첫 작품", "loc": "원631 events [region]", "text": "첫 칼", "proposal": "첫 작품"},
+  {"n": 5, "kind": "X추론", "loc": "원641 events [region]", "text": "늦은 표정", "proposal": "지각"},
+  {"n": 6, "kind": "X추론·꽃잎 자리", "loc": "원670 events [region]", "text": "두꺼운 꽃잎 자리", "proposal": "꽃자리"},
+  {"n": 7, "kind": "X추론·의미 불명(보정 요망)", "loc": "원671 events [region]", "text": "두께 옆의 자리", "proposal": "구석 자리"},
+  {"n": 8, "kind": "X추론·찻집", "loc": "원672 events [region]", "text": "천천히 씻는 잔", "proposal": "찻잔 정리"},
+  {"n": 9, "kind": "X추론", "loc": "원690 events [region]", "text": "매달린 안개", "proposal": "안개"},
+  {"n": 10, "kind": "X추론", "loc": "원695 events [region]", "text": "두고 간 스케치북", "proposal": "스케치북"},
+  {"n": 11, "kind": "X추론·잔영 중복 회피", "loc": "원696 events [region]", "text": "늦게 비치는 잔영", "proposal": "어스름"},
+  {"n": 12, "kind": "X추론·그림자 중복 회피", "loc": "원700 events [region]", "text": "키 큰 풀밭의 그림자", "proposal": "풀숲"},
+  {"n": 13, "kind": "X추론", "loc": "원703 events [region]", "text": "잔영 하나", "proposal": "옅은 그림자"},
+  {"n": 14, "kind": "X추론", "loc": "원707 events [region]", "text": "잎새 사이 그림자", "proposal": "나뭇그늘"},
+  {"n": 15, "kind": "X추론·세계수", "loc": "원708 events [region]", "text": "뿌리 안의 옛 것", "proposal": "세계수 뿌리"},
+  {"n": 16, "kind": "X추론", "loc": "원712 events [region]", "text": "식은 돌 위의 노을", "proposal": "노을"},
+  {"n": 17, "kind": "X추론·대상 쉼터", "loc": "원731 events [region]", "text": "쉬어 가는 대상대", "proposal": "쉼터"},
+  {"n": 18, "kind": "X추론·마법학교", "loc": "원748 events [region]", "text": "오두막의 느린 영창", "proposal": "주문 연습"},
+  {"n": 19, "kind": "X추론·우체부 로큐", "loc": "원765 events [region]", "text": "한 통씩 깔끔하게", "proposal": "우편 정리"},
+  {"n": 20, "kind": "X추론·프리즘 외래어", "loc": "원791 events [filler]", "text": "떨어진 프리즘 조각", "proposal": "빛 조각"},
+  {"n": 21, "kind": "X추론", "loc": "원803 events [mvr]", "text": "약속하는 샘", "proposal": "샘터"},
+  {"n": 22, "kind": "X추론", "loc": "원804 events [mvr]", "text": "약속의 뒷자리", "proposal": "뒷자리"},
+  {"n": 23, "kind": "X추론", "loc": "원810 events [possession]", "text": "길가의 작은 그림자", "proposal": "길그림자"},
+  {"n": 24, "kind": "X추론·인간 종족 해금", "loc": "원819 meta [unlock]", "text": "균형추", "proposal": "균형"},
+  {"n": 25, "kind": "X추론·아르카나 해금", "loc": "원829 meta [unlock]", "text": "공명 증폭기", "proposal": "공명"}
+ ]
+}
