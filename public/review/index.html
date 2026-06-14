@@ -214,14 +214,14 @@
 
   function askReason(verdict) {
     pendingVerdict = verdict;
-    $('reasons').classList.add('show');
+    if (!quick) $('reasons').classList.add('show');  // 빠른 모드는 칩 생략, 코멘트칸만
     $('freetext').classList.add('show');
     $('btnConfirm').classList.add('show');
   }
 
   $('btnO').onclick = function () { record('O'); };
-  $('btnX').onclick = function () { if (quick) record('X'); else askReason('X'); };
-  $('btnHold').onclick = function () { if (quick) record('?'); else askReason('?'); };
+  $('btnX').onclick = function () { askReason('X'); };
+  $('btnHold').onclick = function () { askReason('?'); };
   $('btnConfirm').onclick = function () {
     var extra = $('freetext').value.trim();
     var reason = chosenChips.slice();
