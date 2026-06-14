@@ -1,0 +1,266 @@
+{
+ "meta": {
+  "id": "screening_sample",
+  "title": "자동 스크리닝 샘플 검증 (블라인드 43건)"
+ },
+ "items": [
+  {
+   "n": 1,
+   "kind": "이벤트/지도 이름",
+   "loc": "events/act-1-region-events.txt [event.ev-rec-moss-roku] name",
+   "text": "한 통씩 깔끔하게"
+  },
+  {
+   "n": 2,
+   "kind": "지역/노드 설명",
+   "loc": "node-maps/act-1-map.txt [nodemap.nm-act-1-era4-061.node.n-emberforge-deep] description",
+   "text": "광맥 가장 깊은 갱. 쇳물이 뭉텅이로 끓어오른다. 가장 강한 화산광 아인이 여기 머문다."
+  },
+  {
+   "n": 3,
+   "kind": "카드 강화판 flavor",
+   "loc": "cards/cards-race.txt [card.c-human-steadfast-plus] flavor",
+   "text": "단단히 디딘 만큼 검도 멀리 닿는다."
+  },
+  {
+   "n": 4,
+   "kind": "이벤트 본문",
+   "loc": "events/act-1-region-events.txt [event.ev-tacomi-imperisia-trace] body",
+   "text": "홀로그램 필드. 임페리시아의 흔적이 가장 진하게 남은 곳이다. 공기가 짧게 글자처럼 떠올랐다 사라진다."
+  },
+  {
+   "n": 5,
+   "kind": "지역/노드 설명",
+   "loc": "node-maps/act-1-map.txt [nodemap.nm-act-1-era4-061.node.n-corridor-inscription] description",
+   "text": "회랑 끝의 옛 명문. 글자가 반쯤 어긋나 있다."
+  },
+  {
+   "n": 6,
+   "kind": "지역/노드 설명",
+   "loc": "node-maps/act-1-map.txt [nodemap.nm-act-1-era4-061.node.n-luna-classroom] description",
+   "text": "루나 안의 작은 강의실. 칠판이 주문에 닳아 있다."
+  },
+  {
+   "n": 7,
+   "kind": "이벤트 본문",
+   "loc": "events/act-1-region-events.txt [event.ev-rec-falcon-shachi] body",
+   "text": "군도 아래 바닷가, 범고래 아인이 물 위에 반쯤 몸을 올린 채 공중 군도를 올려다본다. 흑백의 꼬리가 물살을 가른다. 한때 올라가 봤지만 위쪽 것들이 너무 강해 지금은 바다에 머문다. \"위는 거칠어. 숨 한 번 더.\" 올라가려는 자에게 물의 가호를 빌려준다. 그대의 각오를 가늠한다."
+  },
+  {
+   "n": 8,
+   "kind": "이벤트 본문",
+   "loc": "events/act-1-region-events.txt [event.ev-luna-grimoire-blind-title] body",
+   "text": "금서 회랑. 책 한 권의 제목이 보이지 않는다. 다른 책들은 다 읽힌다. 그 책만 글자가 표지에서 빠져 있다."
+  },
+  {
+   "n": 9,
+   "kind": "지역/노드 설명",
+   "loc": "timelines/act-1-era4-061.txt [timeline.tl-act-1-era4-061] description",
+   "text": "모노가 이 시대의 균열을 처음으로 감지한 해. 제 4시대 60년 동안 거의 잔잔했던 세계가, 61년에 들어서 흔들린다. 일루네온의 광장에서 처음 깃든 전생자는, 이 한 해 안에 모든 것을 마주해야 한다."
+  },
+  {
+   "n": 10,
+   "kind": "카드 강화판 flavor",
+   "loc": "cards/cards-mvr.txt [card.c-soul-harvest-plus] flavor",
+   "text": "약함을 거둬 그 자리에 더 독한 씨앗을 심는다."
+  },
+  {
+   "n": 11,
+   "kind": "이벤트 본문",
+   "loc": "events/act-1-region-events.txt [event.ev-rec-tacomi-nova] body",
+   "text": "네온이 줄지어 켜질 무렵, 무대 구석에 서큐버스 하나가 천천히 자리를 잡는다. 낮에는 보이지 않는다. 꿈과 매혹을 원료로 살지만 위해는 가하지 않는다. 밤의 분위기가 본질일 뿐. \"한 곡 짧게, 들어 봐요.\" 그 목소리가 네온 사이로 낮게 번진다. 그대를 향해 손짓 한 번."
+  },
+  {
+   "n": 12,
+   "kind": "카드 강화판 flavor",
+   "loc": "cards/transform-forms.txt [card.c-fox-pyre-plus] flavor",
+   "text": "안긴 불이 더 크다. 더 뜨겁게, 더 오래 탄다."
+  },
+  {
+   "n": 13,
+   "kind": "지역/노드 설명",
+   "loc": "node-maps/act-1-map.txt [nodemap.nm-act-1-era4-061.node.n-lar-root-burrow] description",
+   "text": "세계수의 뿌리 안쪽. 어둠 속에서 옛 무엇이 한 번 일어선다."
+  },
+  {
+   "n": 14,
+   "kind": "이벤트 본문",
+   "loc": "events/act-1-region-events.txt [event.ev-rec-enicham-alti-alta] body",
+   "text": "단정한 책상 옆 충전 자리에, 인간형 앰프가 단정한 자세로 앉아 있다. 어깨에 작은 출력 단자. 한 몸에 두 자아가 머문다. \"...같은 자리에. 알티. 그리고 알타.\" 짧고 단정한 답과 조금 느린 보탬이 번갈아 들린다. 제로의 손끝에서 전기가 들어온다. 그 같은 종류가 다른 시간대에선 최종 보스로 일어선 사례가 있다고, 누군가 낮게 말한다."
+  },
+  {
+   "n": 15,
+   "kind": "지역/노드 설명",
+   "loc": "items/act-1-items.txt [item.i-potion-large] description",
+   "text": "두 모금이면 다친 자리가 한결 가라앉는다."
+  },
+  {
+   "n": 16,
+   "kind": "이벤트 본문",
+   "loc": "events/act-1-region-events.txt [event.ev-rec-iluneon-rize] body",
+   "text": "길드 게시판 앞에 사람들이 빙 둘러서 있다. 한가운데 푸른 비늘의 무투가 드래곤이 팔짱을 끼고 하품한다. \"심심해. 누구든 덤벼.\" 푸치 탑 꼭대기에서 도전자를 받는다는 그 드래곤이다. 시선이 그대에게 닿자, 처음으로 눈이 반짝인다."
+  },
+  {
+   "n": 17,
+   "kind": "지역/노드 설명",
+   "loc": "node-maps/act-1-map.txt [nodemap.nm-act-1-era4-061.node.n-tri-magma-core] description",
+   "text": "분화구 가장 깊은 자리. 마그마가 뭉텅이로 끓어오른다. 가장 강한 화염 아인이 여기 머문다."
+  },
+  {
+   "n": 18,
+   "kind": "이벤트/지도 이름",
+   "loc": "node-maps/act-1-map.txt [nodemap.nm-act-1-era4-061.region.reshud] name",
+   "text": "르슈드 교차로"
+  },
+  {
+   "n": 19,
+   "kind": "이벤트/지도 이름",
+   "loc": "events/act-1-region-events.txt [event.ev-luna-entrance] name",
+   "text": "루나 정문"
+  },
+  {
+   "n": 20,
+   "kind": "이벤트 본문",
+   "loc": "events/act-1-region-events.txt [event.ev-tri-magma-core] body",
+   "text": "분화구 가장 깊은 자리. 마그마가 한 덩이로 끓는다. 마그마 거구가 천천히 일어선다. 열기가 살을 무겁게 누른다."
+  },
+  {
+   "n": 21,
+   "kind": "지역/노드 설명",
+   "loc": "items/act-1-items.txt [item.i-lava-scale] description",
+   "text": "트리플라워 살라만더가 용암 줄기에 흘리고 간 비늘. 아직 식지 않아, 손바닥에 따뜻한 온기가 오래 남는다."
+  },
+  {
+   "n": 22,
+   "kind": "카드 강화판 flavor",
+   "loc": "cards/cards-race.txt [card.c-moth-loop-plus] flavor",
+   "text": "다음으로 미뤄 두는 힘이 더 크다. 바람은 여전히 손에 남는다."
+  },
+  {
+   "n": 23,
+   "kind": "이벤트/지도 이름",
+   "loc": "chaos/act-chaos.txt [chaos.ch-enemy-def] name",
+   "text": "두꺼운 갑피"
+  },
+  {
+   "n": 24,
+   "kind": "이벤트 본문",
+   "loc": "events/act-1-region-events.txt [event.ev-rec-iluneon-phoenix] body",
+   "text": "지붕 위, 톱니바퀴로 기운 날개를 가진 조류계 아인이 사진기를 들고 광장을 내려다본다. \"잠깐, 시간 멈춰 줄까요?\" 셔터가 한 번 찰칵 울리자, 아래 사람들의 동작이 한 컷에 박제된 듯 멈춰 보인다. 피닉스가 그대를 향해 렌즈를 돌린다."
+  },
+  {
+   "n": 25,
+   "kind": "지역/노드 설명",
+   "loc": "meta/unlocks.txt [unlock.u-relic-human-token] description",
+   "text": "인간 런 시작에 적응의 증표를 함께 받는다. 매 호흡마다 발밑이 한 겹 더 단단해진다."
+  },
+  {
+   "n": 26,
+   "kind": "지역/노드 설명",
+   "loc": "node-maps/act-1-map.txt [nodemap.nm-act-1-era4-061.node.n-demon-castle] description",
+   "text": "위엄 있는 외관과 달리 내부는 서류 냄새가 진하다. 모노가 책상에 앉아 그대를 기다린다."
+  },
+  {
+   "n": 27,
+   "kind": "지역/노드 설명",
+   "loc": "node-maps/act-1-map.txt [nodemap.nm-act-1-era4-061.node.n-iluneon-square] description",
+   "text": "컬러즈 세계의 중심. 분수대 옆에서 어린 소년 니아 이유르 가 잠시 멈춰 있다. 그가 그대를 본다. \"왔군요.\""
+  },
+  {
+   "n": 28,
+   "kind": "지역/노드 설명",
+   "loc": "node-maps/act-1-map.txt [nodemap.nm-act-1-era4-061.region.riagralta] description",
+   "text": "일루네온 북쪽의 끝없는 초원 + 오드 산비탈. 풀잎 쓸림·양 떼·번개 폭풍."
+  },
+  {
+   "n": 29,
+   "kind": "이벤트 본문",
+   "loc": "events/act-1-region-events.txt [event.ev-oldshrine-core] body",
+   "text": "성소 가장 안쪽 막다른 자리. 빛나는 유물이 한 덩이로 굳어 있다. 손을 대면 정전기가 짧게 튄다."
+  },
+  {
+   "n": 30,
+   "kind": "지역/노드 설명",
+   "loc": "races/race-human.txt [race.human] description",
+   "text": "가장 흔한 종족. 어느 시대에도 잘 적응하는 균형의 그릇. 시간의 신탁이 처음 자주 부르는 종족이다."
+  },
+  {
+   "n": 31,
+   "kind": "이벤트 본문",
+   "loc": "events/act-1-region-events.txt [event.ev-rec-alimes-tarko] body",
+   "text": "산자락에 한 사람이 손바닥을 들어 바람을 재고 있다. \"오늘 바람은 시계 방향으로 돈다.\" 마틴 항 기상청의 구름 예측 전문가. 올해는 알리메스의 기압이 어긋난 것을 추적하러 왔다. 혼잣말처럼 중얼대다가, 그대의 발걸음 방향을 슬쩍 가늠한다."
+  },
+  {
+   "n": 32,
+   "kind": "카드 강화판 flavor",
+   "loc": "cards/cards-race.txt [card.c-phantom-overload-plus] flavor",
+   "text": "더 많은 패가 한순간에 터져 나온다. 손이 빌수록 거세다."
+  },
+  {
+   "n": 33,
+   "kind": "지역/노드 설명",
+   "loc": "races/race-arcana.txt [race.arcana] description",
+   "text": "빛을 본질로 하는 신적 존재. 시간의 신탁이 처음 부른 그릇이자, 동시에 그 자신."
+  },
+  {
+   "n": 34,
+   "kind": "이벤트/지도 이름",
+   "loc": "events/act-1-region-events.txt [event.ev-rec-iluneon-echo] name",
+   "text": "구석의 망치 소리"
+  },
+  {
+   "n": 35,
+   "kind": "이벤트 본문",
+   "loc": "events/act-1-region-events.txt [event.ev-rec-luna-febiel] body",
+   "text": "도서관 깊은 자리, 망명자 엘프 하나가 결계에 관한 흑마법서를 펼쳐 두고 있다. 대변동 때 결계로 고립됐다 미래로 튕겨 나와, 고향 사람들은 이미 오래전 사람이 됐다. \"그 시간이 다시 한 번 열린다면.\" 고향을 되찾으려 연구를 멈추지 않는다. 같은 고향 사람은 마로 하나뿐. 그대의 기척에 천천히 고개를 든다."
+  },
+  {
+   "n": 36,
+   "kind": "지역/노드 설명",
+   "loc": "node-maps/act-1-map.txt [nodemap.nm-act-1-era4-061.region.moss-south] description",
+   "text": "모스 남부의 광장·대장간·클러치 상륙장·항구. 망치·바닷내음."
+  },
+  {
+   "n": 37,
+   "kind": "지역/노드 설명",
+   "loc": "chaos/act-chaos.txt [chaos.ch-narrow-choice] description",
+   "text": "전투 후 카드 보상이 한 장 적게 제시된다."
+  },
+  {
+   "n": 38,
+   "kind": "지역/노드 설명",
+   "loc": "node-maps/act-1-map.txt [nodemap.nm-act-1-era4-061.node.n-martin-market] description",
+   "text": "항구 뒤의 작은 시장. 짠 내음이 가판 사이에 머문다."
+  },
+  {
+   "n": 39,
+   "kind": "이벤트 본문",
+   "loc": "events/act-1-region-events.txt [event.ev-rec-lar-maro] body",
+   "text": "숲속 작은 오두막 마당에서 한 학생이 눈을 감고 무언가를 천천히 외고 있다. 마력이 한 자락씩 모인다. \"조용히, 천천히 그러나 끝까지.\" 영창이 끝나자 멀리 마른 나무 한 그루가 소리 없이 쪼개진다. 그가 눈을 뜨고 그대를 본다. 동생을 데리고 사는 조용한 마법사다."
+  },
+  {
+   "n": 40,
+   "kind": "카드 강화판 flavor",
+   "loc": "cards/transform-forms.txt [card.c-fox-phantasm-plus] flavor",
+   "text": "더 적은 힘으로 더 그럴듯한 가짜를 세운다."
+  },
+  {
+   "n": 41,
+   "kind": "이벤트 본문",
+   "loc": "events/act-1-region-events.txt [event.ev-rec-alimes-shayua] body",
+   "text": "산자락 샘가에서 어린 슬라임이 안개 끝까지 짧게 굴러갔다 돌아온다. 그대를 보더니 눈을 반짝인다. \"어! 너 깨끗하다! 친구 하자!\" 깨끗한 데서만 살 수 있어, 더러운 게 닿으면 짧게 흐려진다고 한다. 말랑한 몸을 한 번 통 튕긴다."
+  },
+  {
+   "n": 42,
+   "kind": "이벤트 본문",
+   "loc": "events/act-1-region-events.txt [event.ev-rec-tri-kumamimi] body",
+   "text": "화산광 지대 깊은 곳, 곰의 머리에 거대한 체구의 신수가 길을 막고 선다. 장식 빼곡한 외투가 쇳물 빛에 금실로 번뜩인다. 오랜 세월 광맥을 지켜 온 존재. \"...자격을, 보여라.\" 함부로 길을 내주지 않는다. 던지는 말마다 쇳덩이처럼 무겁다. 그대를 내려다보는 눈에 가늠이 담겨 있다."
+  },
+  {
+   "n": 43,
+   "kind": "지역/노드 설명",
+   "loc": "node-maps/act-1-map.txt [nodemap.nm-act-1-era4-061.node.n-diropel-hollow] description",
+   "text": "부족 마을 안쪽 골짜기. 폭신한 풀 위에 딜롭 아이들이 둥글게 누워 잔다. 바람도 둥글게 분다."
+  }
+ ]
+}
