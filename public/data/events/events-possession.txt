@@ -30,7 +30,7 @@ result_text = 발길을 돌리자 도깨비불이 잠시 뒤를 따라오다가,
 # 그림자 인형 — 길가에 작은 그림자가 홀로 앉아 있다.
 # ============================================================
 [event.ev-possession-shadow-doll]
-name = 길가의 작은 그림자
+name = 인형극
 node_kinds = event
 weight = 1
 once_per_run = false

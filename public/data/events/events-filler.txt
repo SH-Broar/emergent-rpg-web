@@ -80,7 +80,7 @@ heal_pct = 50
 result_text = 따뜻한 향로 옆에서 잠시 숨을 돌렸다.
 
 [event.ev-filler-prism-shard]
-name = 떨어진 프리즘 조각
+name = 반짝임
 node_kinds = event
 once_per_run = false
 weight = 1

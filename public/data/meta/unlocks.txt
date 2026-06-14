@@ -36,7 +36,7 @@ cost = 8
 grants_relic = r-race-human-breath
 
 [unlock.u-relic-human-counterweight]
-name = 균형추 (인간)
+name = 균형
 description = 인간 런 시작에 균형추를 함께 받는다. 매 전투 시작 시 힘과 민첩이 한 칸씩 선다.
 resource = insight
 cost = 8
@@ -106,7 +106,7 @@ cost = 8
 grants_relic = r-race-arcana-seed
 
 [unlock.u-relic-arcana-amp]
-name = 공명 증폭기 (아르카나)
+name = 공명
 description = 아르카나 런 시작에 공명 증폭기를 함께 받는다. 호흡의 끝수가 맞아떨어지는 턴마다 무작위 색이 한 칸 짙어진다.
 resource = insight
 cost = 8
