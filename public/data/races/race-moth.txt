@@ -3,7 +3,7 @@
 
 [race.moth]
 name = 나방
-description = 나비 날개가 달린 아인. 작은 몸으로 빠르게 움직이며, 활을 다루는 민첩의 그릇.
+description = 나비 날개가 달린 종족. 작은 몸으로 빠르게 움직이며 활을 다룬다.
 category = flight
 primary_element = wind
 secondary_element = light

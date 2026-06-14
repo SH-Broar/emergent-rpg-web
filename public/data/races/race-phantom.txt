@@ -3,7 +3,7 @@
 
 [race.phantom]
 name = 팬텀
-description = 인간 마술사로 알려졌으나 사실은 팬텀. 속이고, 비틀고, 시간의 빈틈에서 한 수를 두는 그릇.
+description = 인간 마술사로 알려졌으나, 속이고 비트는 데 능한 종족이다.
 category = spirit
 primary_element = electric
 secondary_element = dark

@@ -3,7 +3,7 @@
 
 [race.arcana]
 name = 아르카나
-description = 빛을 본질로 하는 신적 존재. 시간의 신탁이 처음 부른 그릇이자, 동시에 그 자신.
+description = 빛을 본질로 하는 종족. 여러 색을 다스린다.
 category = divine
 primary_element = light
 # 기본 스탯 (구 ch-niayur).

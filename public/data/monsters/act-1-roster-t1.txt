@@ -166,7 +166,7 @@ card_drops =
 # 멀티액션 엘리트 — 한 턴에 두 번 행동(마나 2). 각 행동은 작지만 합치면 위협적.
 [monster.mr-iluneon-twin-clockwork]
 name = 쌍바늘 태엽기
-description = 두 바늘이 따로 움직인다. 한 번 멈춰 선 사이에 두 번 친다.
+description = 두 바늘이 제각기 도는 태엽 장치. 멈춘 사이에 두 번 친다.
 tier = elite
 species = construct
 hp = 190
