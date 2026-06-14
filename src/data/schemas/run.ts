@@ -714,6 +714,12 @@ export interface RunState {
    * Phase A는 *필드만* 추가(세이브 round-trip 보장). 미설정이면 봉인 없음.
    */
   chaosBannedColor?: string;
+  /**
+   * `ch-post-apocalypse`(포스트 아포칼립스, T4) 1회 적용 가드 — 맵의 전투/채집 일부를 휴식으로
+   * 변환한 뒤 true. 재호출/세이브 복원 후에도 재변환을 막는다. 미설정(=false)이면 아직 미적용.
+   * 카오스 비활성 런에선 줄곧 false. 옛 세이브 호환 — optional.
+   */
+  postApocalypseApplied?: boolean;
 
   // === 종료 ===
   ended: boolean;

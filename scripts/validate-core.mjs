@@ -137,7 +137,6 @@ export const DATA_FILES = [
   'items/act-1-items.txt',
   'items/act-1-arc-items.txt',
   'equipment/equipment-mvr.txt',
-  'chaos/chaos-mvr.txt',
   'chaos/act-chaos.txt',
   'clues/act-1-clues.txt',
   'meta/unlocks.txt',

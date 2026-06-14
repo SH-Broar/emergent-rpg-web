@@ -1235,8 +1235,7 @@ const DATA_FILES = [
   // === arc 보스 시그니처 아이템 (작업 29) — rank=legendary 전투 포션, arc 승리 자동 드롭 전용(공방/마을 제작 풀 제외). ===
   'data/items/act-1-arc-items.txt',
   'data/equipment/equipment-mvr.txt',
-  // === 카오스 (r4) — 매 런 단위 토글 가능한 특수 기능 (레거시 placeholder). ===
-  'data/chaos/chaos-mvr.txt',
+  // === 카오스 (r4 레거시 placeholder) — 2026-06-14 전량 제거. chaos-mvr.txt는 더 이상 로드 안 함. ===
   // === 카오스 도전-점수 시스템 (Phase A) — [chaos.ch-*] 정의. ===
   'data/chaos/act-chaos.txt',
   // === 단서 (2026-05-19) — 간접 스토리 + 조건부 chain. ===

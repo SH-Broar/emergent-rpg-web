@@ -519,6 +519,79 @@ export function isNoRespite(): boolean {
 }
 
 /**
+ * 카오스 post-apocalypse(포스트 아포칼립스) 활성 여부.
+ * 효과: 휴식 회복 소멸 + *상점 회복도 제공 안 함*(no-respite보다 가혹) + 맵 일부 노드 휴식 변환.
+ */
+export function isPostApocalypse(): boolean {
+  return isChaosActive('post-apocalypse');
+}
+
+/**
+ * 휴식 노드 회복이 *완전히 차단*되는가 (no-respite 또는 post-apocalypse).
+ * MapView 휴식 처리에서 회복량 0 판정에 사용.
+ */
+export function isRestHealBlocked(): boolean {
+  return isChaosActive('no-respite') || isChaosActive('post-apocalypse');
+}
+
+/**
+ * 상점 회복 구매 슬롯을 *제공*하는가.
+ *  - no-respite: 제공(true).
+ *  - post-apocalypse: no-respite와 달리 제공하지 않음 — post-apocalypse가 켜져 있으면 우선 차단.
+ * 둘 다 꺼져 있으면 false(평시엔 상점 회복 슬롯 없음).
+ */
+export function offersShopRest(): boolean {
+  if (isChaosActive('post-apocalypse')) return false; // 가혹: 상점 회복도 끊는다.
+  return isChaosActive('no-respite');
+}
+
+/** post-apocalypse 노드 변환 비율 — 전투/채집 각각 이 비율만큼 휴식으로(약 1/4). */
+const POST_APOCALYPSE_CONVERT_RATIO = 0.25;
+
+/**
+ * post-apocalypse 맵 변환 — 전투 노드의 ~1/4, 채집 노드의 ~1/4을 *휴식 노드로 변환*.
+ * RunState.nodeKindOverrides에 'rest'를 써넣는다(effectiveKind가 우선 적용).
+ *   - 결정론: 현재 전역 rng()를 사용(런 시드에 묶임). 시작 노드/보스 게이트는 변환 대상에서 제외.
+ *   - 후보를 id 정렬 후 셔플 → 앞 ceil(n*ratio)개를 변환(전투·채집 ≥1개면 최소 1개 보장).
+ *   - 이미 다른 override가 있는 노드는 건드리지 않는다(중복 적용 가드 — 재호출 시 idempotent에 가깝게).
+ * 호출: 런 시작 시 1회(ChaosSelectView startRun, 맵 로드 후). 카오스 비활성이면 no-op.
+ */
+export function applyPostApocalypseMap(run: RunState, map: { nodes: { id: string; kind: string }[]; startNodeId?: string; bossGateNodeId?: string }): void {
+  // 1회 적용 가드 — 이미 변환했으면 재호출은 완전 no-op(중복 변환 방지). 세이브 복원 후 재호출도 안전.
+  if (run.postApocalypseApplied) return;
+  // 활성 카오스에 post-apocalypse가 없으면 아무 것도 안 함.
+  const active = normalizeActive(run.activeChaos);
+  const defs = useDataStore().chaosDefs;
+  const on = active.some((a) => defs.get(a.id)?.effectKind === 'post-apocalypse');
+  if (!on) return;
+  run.postApocalypseApplied = true;
+
+  if (!run.nodeKindOverrides) run.nodeKindOverrides = {};
+  const protectedIds = new Set<string>([map.startNodeId ?? '', map.bossGateNodeId ?? '', run.currentNodeId]);
+
+  const convert = (kind: 'combat' | 'gather') => {
+    // 후보 = 그 kind이며 보호 대상이 아니고 아직 override 없는 노드. id 정렬로 결정 기반 안정.
+    const candidates = map.nodes
+      .filter((n) => n.kind === kind && !protectedIds.has(n.id) && !run.nodeKindOverrides[n.id])
+      .map((n) => n.id)
+      .sort();
+    if (candidates.length === 0) return;
+    // Fisher-Yates 셔플(전역 rng).
+    for (let i = candidates.length - 1; i > 0; i--) {
+      const j = Math.floor(rng() * (i + 1));
+      [candidates[i], candidates[j]] = [candidates[j], candidates[i]];
+    }
+    const count = Math.max(1, Math.ceil(candidates.length * POST_APOCALYPSE_CONVERT_RATIO));
+    for (let i = 0; i < count && i < candidates.length; i++) {
+      run.nodeKindOverrides[candidates[i]] = 'rest';
+    }
+  };
+
+  convert('combat');
+  convert('gather');
+}
+
+/**
  * shop-limit 일일 카운터를 *현재 날(currentDay)에 맞춰 동기화*.
  * 새 날이면 카운터·방문목록을 리셋한다. (입장 판정/기록 전에 호출.)
  */
@@ -636,6 +709,7 @@ export function chaosLevelSummary(chaos: Chaos, intensity: number): string {
     case 'shop-limit': return `하루에 상점 ${param}회만 입장`;
     case 'fragile-glory': return '시작 최대 체력 절반 · 보스 보상 2배';
     case 'no-respite': return '휴식 회복 소멸 · 상점 회복 구매 개방';
+    case 'post-apocalypse': return '회복 전무 · 전투/채집 1/4이 폐허(휴식)로';
     default: return chaos.description;
   }
 }

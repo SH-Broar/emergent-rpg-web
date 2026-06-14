@@ -183,6 +183,8 @@ const EMPTY_RUN: RunState = {
   newNpcEncounters: [],
   // 카오스 도전-점수 시스템 (v3) — 복원 시 EMPTY_RUN 스프레드로 []가 보장됨.
   activeChaos: [],
+  // 카오스 post-apocalypse 맵 변환 1회 적용 가드 — 신규 필드(구세이브 자동 backfill false).
+  postApocalypseApplied: false,
   ended: false,
   metaAbsorbed: false,
 };

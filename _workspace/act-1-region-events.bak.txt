@@ -1,0 +1,3929 @@
+# Region-specific events 1장 권역마다 1개.
+# 톤이 그 권역과 명확히 맞도록 작성. 3 선택지 표준.
+
+# ============================================================
+# 일루네온 시계탑이 정각에 울지 않는다.
+# ============================================================
+
+[event.ev-iluneon-clockchime]
+name = 울지 않는 정각
+node_kinds = event, village
+weight = 1
+once_per_run = true
+body = 정각인데 시계탑이 울지 않는다. 광장의 사람들이 잠시 멈춰 위를 본다. 누군가 어깨를 으쓱하고 자기 길을 간다. 다른 누군가는 그대처럼 멈춰 서 본다. 첨탑 그림자가 한 호흡 늦게 떨어졌다.
+
+[event.ev-iluneon-clockchime.choice.1]
+label = 첨탑에 올라가 본다
+hp = -2
+grant_card = c-quickdraw
+result_text = 톱니바퀴 사이로 머리카락 한 가닥이 끼어 있었다. 그것을 빼자 종이 한 마디 늦게 울었다.
+
+[event.ev-iluneon-clockchime.choice.2]
+label = 그대로 광장을 떠난다
+draw = 1
+result_text = 종이 결국 울지 않았다. 사람들은 평소처럼 흩어졌다. 그대도 그랬다.
+
+[event.ev-iluneon-clockchime.choice.3]
+label = 종지기 노인에게 말을 건다
+gold = -3
+affinity = npc-olyu:1
+result_text = "정각이 자기를 미뤘다." 노인이 그렇게 말했다. 그 말의 뜻은 알 수 없었다.
+
+[event.ev-iluneon-clockchime.choice.4]
+label = 바람의 자락을 읽어 종을 직접 흔든다
+condition = color:wind>=5
+custom = time-extend-10
+result_text = 바람의 틈이 손끝에 잡혔다. 종이 한 호흡 일찍 울렸다 시간이 살짝 늘어졌다.
+
+
+# ============================================================
+# 라르 숲 드라이어드의 부탁
+# ============================================================
+
+[event.ev-lar-dryad-whisper]
+name = 드라이어드의 부탁
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+body = 잎사귀 사이에서 작은 목소리가 나뭇무늬의 겹을 따라 흘러온다. "이 씨앗 하나를, 모스 쪽 길에 떨어뜨려 주세요. 뿌리가 닿지 않는 곳에." 손바닥에 작은 씨앗이 떨어진다. 따뜻하다.
+
+[event.ev-lar-dryad-whisper.choice.1]
+label = 받아 든다
+grant_card = c-gentle-guard
+result_text = 씨앗이 손 위에서 천천히 빛났다. 따뜻함이 갈비뼈 안쪽으로 옮겨 갔다.
+
+[event.ev-lar-dryad-whisper.choice.2]
+label = 너무 무거워 보인다
+hp = 3
+result_text = "다음에 다음에 보면 받아 주세요." 목소리가 잎사귀로 돌아갔다.
+
+[event.ev-lar-dryad-whisper.choice.3]
+label = 씨앗의 정체를 묻는다
+draw = 1
+result_text = "...씨앗이에요. 그 외에는 저도 잘 몰라요." 그 솔직함이 잠시 머리를 맑게 했다.
+
+
+# ============================================================
+# 모스 꺼진 화로
+# ============================================================
+
+[event.ev-moss-forge-flame]
+name = 꺼진 화로
+node_kinds = event, village
+weight = 1
+once_per_run = true
+body = 거리 한가운데 모루 옆 화로가 식어 있다. 모스에서는 좀처럼 보기 힘든 광경이다. 대장장이가 무릎을 짚고 앉아 있다. "오늘 불씨가 자기를 잃었어요." 그가 그렇게 말한다.
+
+[event.ev-moss-forge-flame.choice.1]
+label = 시간의 조각으로 불을 다시 켠다
+hp = -2
+gold = -5
+grant_card = c-burn-mark
+result_text = 손끝에서 조각이 작게 부서졌다. 화로가 한 번 깜빡이더니 다시 붉어졌다.
+
+[event.ev-moss-forge-flame.choice.2]
+label = 옆에 앉아 같이 기다린다
+hp = 3
+affinity = npc-elnest:1
+result_text = 한참을 같이 앉아 있었다. 화로는 결국 그 사람의 손짓에 다시 켜졌다. "고마워요. 같이 있어 줘서."
+
+[event.ev-moss-forge-flame.choice.3]
+label = 그대로 지나친다
+gold = 3
+result_text = 가는 길에 누군가 떨어뜨린 동전 몇 개를 주웠다. 화로 쪽은 끝내 보지 않았다.
+
+
+# ============================================================
+# 마노니클라 석양의 빈 병
+# ============================================================
+
+[event.ev-mano-sunset-flask]
+name = 석양의 빈 병
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+body = 절벽 끝에 유리병이 하나 거꾸로 박혀 있다. 노을이 그 안으로 흘러 들어가는 듯하다. 병 옆에 짧은 쪽지 "이 노을이 식기 전에 마셔요. 단 한 모금."
+
+[event.ev-mano-sunset-flask.choice.1]
+label = 한 모금 마신다
+hp = 6
+grant_card = c-recover
+result_text = 목구멍이 따뜻해진다. 노을이 안쪽에서 천천히 식어 가는 느낌. 다음 노을은 더 오래 볼 수 있을 것 같다.
+
+[event.ev-mano-sunset-flask.choice.2]
+label = 병을 챙긴다
+gold = 8
+result_text = 빈 병이지만 유리가 맑다. 시장에서 누군가가 값을 쳐 줄지도 모른다.
+
+[event.ev-mano-sunset-flask.choice.3]
+label = 누군가에게 양보한다
+affinity = npc-seed:1
+result_text = "오, 마셔도 돼요?" 시이드가 어디서 나타나 단숨에 마셔 버렸다. 그러고는 고마워요, 하고 사라졌다.
+
+[event.ev-mano-sunset-flask.choice.4]
+label = 동행한 동료에게 권한다
+condition = companion:npc-hako && hp<=30
+custom = heal-full
+result_text = "이거 마셔도 돼?" 동료가 그렇게 묻고는 둘이 나눠 마셨다. 몸이 완전히 따뜻해졌다.
+
+
+# ============================================================
+# 리아그랄타 폭풍 속 양치기
+# ============================================================
+
+[event.ev-ria-storm-shepherd]
+name = 폭풍 속 양치기
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 지평선에서 번개가 한 번 친다. 풀밭 한가운데 양치기가 양 떼를 반대 방향으로 몰고 있다. 폭풍이 다가오는 쪽으로. "한 마리가 저쪽에 남았어요." 그가 그렇게 말한다.
+
+[event.ev-ria-storm-shepherd.choice.1]
+label = 양을 찾아온다
+hp = -4
+grant_card = c-double-strike
+result_text = 양은 번개에 놀라 멈춰 있었다. 같이 뛰어 돌아왔다. 양치기가 양을 두 손으로 안았다.
+
+[event.ev-ria-storm-shepherd.choice.2]
+label = 양치기에게 그대로 가라고 한다
+hp = 2
+gold = -3
+result_text = "...그래야겠죠." 양치기가 한참을 망설이다가 그쪽으로 갔다. 폭풍이 그 등 뒤로 내려앉았다.
+
+[event.ev-ria-storm-shepherd.choice.3]
+label = 폭풍을 함께 바라본다
+draw = 1
+result_text = 둘이 잠시 폭풍을 바라보았다. 번개 두 번이 더 쳤다. 양치기가 한 마디 늦게 양 떼로 돌아갔다.
+
+
+# ============================================================
+# 알리메스 안개 속 상인
+# ============================================================
+
+[event.ev-ali-mist-trader]
+name = 안개 속 상인
+node_kinds = event, village
+weight = 1
+once_per_run = true
+body = 안개 속에서 작은 좌판이 보였다 다시 사라진다. 다가가니 상인이 한 명 얼굴은 안 보이지만 손이 유난히 깨끗하다. "한 가지만 안개 너머 물건 한 가지만 보여 드려요."
+
+[event.ev-ali-mist-trader.choice.1]
+label = 카드 한 장을 본다
+gold = -10
+grant_card = c-focused-mind
+result_text = 손바닥 위에 생각보다 가벼운 카드가 놓였다. 안개가 그 위로 잠시 머물렀다.
+
+[event.ev-ali-mist-trader.choice.2]
+label = 유물 한 점을 본다
+gold = -15
+grant_relic = r-mono-token
+result_text = 상인이 부스러기 같은 것을 건넸다. "이건 빌려드리는 거예요." 그 말의 뜻은 알기 어려웠다.
+
+[event.ev-ali-mist-trader.choice.3]
+label = 그냥 떠난다
+hp = 2
+result_text = 안개를 빠져나오자 어깨가 가벼웠다. 거래는 매일 다시 나타날지도 모른다.
+
+
+# ============================================================
+# 마법학교 루나 떨어진 금서 한 장
+# ============================================================
+
+[event.ev-luna-forbidden-page]
+name = 떨어진 금서 한 장
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 복도 한 모퉁이에 책 한 페이지가 떨어져 있다. 잉크가 조금 움직이는 것 같다. 멀리서 사서 파피루스의 작은 목소리가 들린다 "혹시... 한 장 보셨나요..."
+
+[event.ev-luna-forbidden-page.choice.1]
+label = 페이지를 돌려준다
+affinity = npc-papyrus:1
+grant_card = c-focused-mind
+result_text = 파피루스가 아주 조용히 고개를 숙였다. "감사합니다. 이 장은 떨어지면 안 되는 거였어요."
+
+[event.ev-luna-forbidden-page.choice.2]
+label = 한 줄만 읽어 본다
+hp = -3
+grant_card = c-burn-mark
+result_text = 잉크가 눈에서 한 번 움직였다. 그날 밤 자다가 두 번 깼다.
+
+[event.ev-luna-forbidden-page.choice.3]
+label = 그냥 둔다
+draw = 1
+result_text = 페이지는 잠시 후 스스로 사라졌다. 사서가 어디선가 찾았으리라.
+
+
+# ============================================================
+# 타코미 홀로그램 거울 속의 자신
+# ============================================================
+
+[event.ev-taco-hologram-mirror]
+name = 홀로그램 속 자신
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+body = 네온이 깜빡이는 골목 끝에 거울 모양 홀로그램이 떠 있다. 거울 속 자신이 다른 자세로 서 있다. 더 자신 있는 것 같기도 하고, 더 지친 것 같기도 하다.
+
+[event.ev-taco-hologram-mirror.choice.1]
+label = 거울 속 자세를 따라 한다
+hp = -2
+grant_card = c-resolve-flash
+result_text = 어깨가 한 단계 가벼워졌다. 거울 속 자신이 잠시 같은 표정으로 끄덕였다.
+
+[event.ev-taco-hologram-mirror.choice.2]
+label = 거울에 손을 댄다
+hp = 3
+affinity = npc-imperisia:1
+result_text = 홀로그램 너머에서 임페리시아의 발자국이 들렸다. "...당신, 거기서 뭐 해요?" 그녀가 그렇게 물었다.
+
+[event.ev-taco-hologram-mirror.choice.3]
+label = 외면한다
+draw = 1
+result_text = 거울이 등 뒤로 한 번 눈을 깜빡였다. 다음 골목으로 빠르게 들어갔다.
+
+
+# ============================================================
+# 마왕성·풍혈지대 도장 더미
+# ============================================================
+
+[event.ev-demon-stamp-pile]
+name = 도장 더미
+node_kinds = event, village
+weight = 1
+once_per_run = true
+body = 마왕성 회랑 한쪽에 서류 더미가 무너져 있다. 시아가 한숨을 쉬며 도장을 찍는 중. "한 장만 한 장만 같이 찍어 주실래요?" 옆에서 모노가 못 본 척하고 있다.
+
+[event.ev-demon-stamp-pile.choice.1]
+label = 한 장 찍어 준다
+affinity = npc-mono:1
+grant_relic = r-imperisia-locket
+result_text = 도장이 한 번 깔끔하게 떨어졌다. 시아가 "이 시간을 잊지 않겠어요" 라고 작게 말했다.
+
+[event.ev-demon-stamp-pile.choice.2]
+label = 모노에게 떠넘긴다
+hp = -2
+gold = 5
+result_text = 모노가 눈썹 한쪽을 약간 올렸다. 어느 사이엔가 그 자리에 골드 몇 개가 떨어져 있었다.
+
+[event.ev-demon-stamp-pile.choice.3]
+label = 슬쩍 빠져나간다
+draw = 1
+result_text = 회랑을 빠져나오자 서류 한 장이 따라왔다. 비어 있는 도장 자리가 묘하게 단호해 보였다.
+
+
+# ============================================================
+# 마노니클라 클러치 협곡 진입 의식 (베텔게우스, 1회 고정).
+# 흙의 정령. 어린아이 + 귀여운 반말 (정령 공통 어투).
+# ============================================================
+
+[event.ev-mano-betelgeuse-passage]
+name = 클러치를 건너는 마디
+node_kinds = event
+weight = 99
+once_per_run = true
+body = 클러치 협곡 바닥. 바위 사이의 한 올에 조그만 점 하나가 앉아 있다. 사람 형태가 아닌, 그저 대지가 한 곳에서 조금 더 짙어진 자리. 그것이 그대를 보지 않은 채로, 작게 말한다. "대지가 어긋났어..." 잠시 후, "그래도 갈 거야?"
+
+[event.ev-mano-betelgeuse-passage.choice.1]
+label = 어긋남에 대해 묻는다
+affinity = npc-betelgeuse:1
+custom = grant-region-specialty
+result_text = "한 곳이 깊어졌어. 가다 보면 알 거야." 그 말끝에, 그대 손바닥에 대지의 한 무늬가 마노니클라의 한 조각이 떨어졌다.
+
+[event.ev-mano-betelgeuse-passage.choice.2]
+label = 조용히 절을 한다
+hp = 3
+result_text = 가닥 위에 머리를 숙였다. 협곡의 바람이 잠깐 멈췄다. 다시 흐르기 시작했을 때 어딘가 가벼웠다.
+
+[event.ev-mano-betelgeuse-passage.choice.3]
+label = 켜의 자리에 손을 댄다
+custom = push-earth-5
+result_text = "여기야." 짧게. 손바닥에 줄의 한 줄이 들어왔다. 그것이 그대 안에서 짙어진다. 흙 한 줄이.
+
+
+# ============================================================
+# 마노니클라 시이드 chain 만남 1 / 3.
+# 평소엔 일상 모드. 풍속계 옆에 있는 위화감만 작가가 심어둠.
+# ============================================================
+
+[event.ev-mano-seed-1-anomaly]
+name = 풍속계 옆의 시이드
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 사구를 한참 가다 보니, 작은 풍속계가 한 모래언덕 위에 기울어진 채로 세워져 있다. 그 옆에 시이드. 그녀가 그대를 보더니 환하게 손을 흔든다. "어! 너 왔구나! 로크는 봤어? 베텔게우스는? 다들 어땠어? 여기는 어때? 노을 멋지지!"
+
+[event.ev-mano-seed-1-anomaly.choice.1]
+label = 다들 잘 있다고 답한다
+clue = cl-seed-notebook
+gold = 5
+result_text = 시이드가 눈을 동그랗게 떴다가, 환하게 웃었다. "그렇구나! 다들 그대로구나." 그 말끝에 그녀가 날개 끝으로 허리띠 주머니를 슬쩍 건드리자, 동전 몇 닢이 그대 앞에 톡 떨어졌다. 함께 수첩 한 페이지도 바람에 굴러 떨어졌다. "사구 끝 식당에 가 봐. 노을 보면서 먹는 거 잘해."
+
+[event.ev-mano-seed-1-anomaly.choice.2]
+label = 풍속계는 왜 보고 있는지 묻는다
+clue = cl-seed-notebook
+custom = grant-region-specialty
+result_text = 시이드의 날개가 잠시 멈췄다. 그러더니 살짝 웃었다. "...아, 그냥. 어쩌다 보니." 그 살짝에는, 그녀가 일부러 가볍게 만든 것이 있었다. 풍속계 옆 그녀의 수첩 한 페이지가 바람에 들렸다 가라앉았다.
+
+[event.ev-mano-seed-1-anomaly.choice.3]
+label = 노을이 멋지다고 답한다
+clue = cl-seed-notebook
+hp = 3
+result_text = "그치그치! 정말 길어, 여기 노을! 다른 데서는 이렇게 안 길지." 시이드가 진심으로 웃었다. 그 미소가 어딘가 그리운 느낌이 든다. 풍속계 옆에 떨어진 수첩 한 페이지가 보였다.
+
+
+# ============================================================
+# 마노니클라 시이드 만남 2 (chain, 만남 1 후 활성).
+# 큰 몸집 + 큰 날개 + 평소 밝음 + 안기는 갭모에. 학문 모드 X.
+# ============================================================
+
+[event.ev-mano-seed-2-embrace]
+name = 큰 그림자의 마중
+node_kinds = event
+weight = 1
+once_per_run = true
+condition = has-clue:cl-seed-notebook
+body = 사구 끝 식당. 노을이 식기 전이라 사람들이 한 쪽 자리에 모여 있다. 그 가장자리에서 시이드의 큰 그림자가 사람들 위로 한 뼘 솟아 그대에게 날개를 흔든다. "어! 또 만나네! 봉지 가져가. 사구 끝 식당 거, 잘해." 그녀가 발끝에 들고 있던 봉지를 툭 그대 앞에 놓는다.
+
+[event.ev-mano-seed-2-embrace.choice.1]
+label = 고맙다고 답하고 받는다
+clue = cl-seed-bag-note
+custom = grant-region-specialty
+result_text = "그치그치! 너 좀 지친 거 같았어." 시이드가 날개로 그대 등을 한 번 가볍게 두드린다. 부드러운 깃털에 마음이 조금 편해졌다.
+
+[event.ev-mano-seed-2-embrace.choice.2]
+label = 어떻게 알았어? 라고 묻는다
+clue = cl-seed-bag-note
+hp = 10
+result_text = "으응? 아. 그냥 어째선지." 시이드가 날개를 한껏 벌려 그대를 품었다. 커다란 날개의 그림자가 그대를 잠시 덮었다. 마음 한 켠이 따뜻해졌다.
+
+[event.ev-mano-seed-2-embrace.choice.3]
+label = 바쁘다, 다음에 한다고 한다
+clue = cl-seed-bag-note
+gold = 8
+result_text = "그래! 안전한 여행 되길! 걱정이 들면 여기로 와. 내가 언제든지 기다릴게." 시이드의 부드러운 날개 끝이 그대 어깨를 한 번 짚었다. 그리고 그녀는 그대로 봉지를 그대 앞에 내려놓았다.
+
+
+# ============================================================
+# 마노니클라 시이드 chain 만남 3 (카요의 모루 옆 수첩).
+# 시이드 본인은 부재 X 그저 카요가 알아챈 그녀의 무게가 수첩으로 전해짐.
+# 카요 어투 = 평범한 현대 한국어 (반말 + 짧음).
+# ============================================================
+
+[event.ev-mano-cayou-notebook]
+name = 카요의 모루 옆 수첩
+node_kinds = event
+weight = 1
+once_per_run = true
+condition = has-clue:cl-seed-bag-note
+body = 마노니클라 카요의 공방 앞. 모루 옆에 낡은 수첩 한 권과 깃털 한 가닥이 놓여 있다. 그가 비늘 위에 묻은 그을음을 한 번 털어 내고, 그대를 본다. "하피 거야. 가져가는 걸 잊은 것 같아... 마치 우리가 봤으면 좋겠다는듯이." 카요가 수첩 한 페이지를 펼친다. 풍속 도표에 한 점만 자락이 어긋나 있다.
+
+[event.ev-mano-cayou-notebook.choice.1]
+label = 수첩을 조심히 읽는다
+custom = grant-rare-material
+result_text = 풍속 도표 위 한 점 5월 12일 14시 17분. 풍향이 7도 어긋난 자리. 그것을 머릿속에 새기는데 수첩 사이에서 무언가 그대 손에 떨어졌다.
+
+[event.ev-mano-cayou-notebook.choice.2]
+label = 시이드는 괜찮은지 묻는다
+hp = 12
+result_text = 카요가 한참 모루를 한 번 두드린다. 비늘 사이로 작은 불씨가 떨어졌다. "...괜찮아. 그 아이가 밝게 있는 한은."
+
+[event.ev-mano-cayou-notebook.choice.3]
+label = 깃털을 집어 든다
+custom = push-wind-5
+result_text = 깃털이 생각보다 가벼웠다. 손에 닿자 바람 한 줄이 그대 안에서 천천히 흘렀다.
+
+
+# ============================================================
+# 마노니클라 자연·풍경·모험 단편 6개. chain 없음, 독립 시놉시스.
+# 톤: 상식 밖 + 모험감 + 짧은 여운.
+# ============================================================
+
+[event.ev-mano-dune-pillar]
+name = 사구의 모래기둥
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 사구 한가운데 모래기둥 한 줄이 천천히 돈다. 그 안에 무엇이 있을 듯도 하고, 아무것도 없을 듯도 하다. 그 회전이 주변 공기와 따로 움직이고 있다.
+
+[event.ev-mano-dune-pillar.choice.1]
+label = 가까이 다가간다
+hp = -4
+custom = grant-region-specialty
+result_text = 기둥 안으로 발을 디딘 순간 모래가 한꺼번에 가라앉았다. 그 자리에, 작은 것 하나가 놓여 있었다.
+
+[event.ev-mano-dune-pillar.choice.2]
+label = 멀리서 본다
+custom = push-wind-5
+result_text = 기둥이 그대를 향해 한 번 휘었다. 바람이 그대 안에 한 줄 흘러왔다.
+
+[event.ev-mano-dune-pillar.choice.3]
+label = 길을 우회한다
+gold = 5
+result_text = 사구 사면을 내려가는 작은 길이 보였다. 그 길 끝에 누군가 떨어뜨린 동전 몇 닢이 있었다.
+
+
+[event.ev-mano-old-coin]
+name = 묻혀 있는 옛 동전
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 사구 한 자락. 발끝에 반쯤 묻힌 동전 한 닢. 에아스의 것이다 자세히 보면, 글자가 아직 또렷하다. 그 옆 모래가 조금 더 들떠 있다.
+
+[event.ev-mano-old-coin.choice.1]
+label = 동전을 캐낸다
+gold = 12
+result_text = 모래를 헤치자 동전 한 닢이 천천히 빠져 나왔다.
+
+[event.ev-mano-old-coin.choice.2]
+label = 곁의 흔적을 찾는다
+hp = -2
+custom = grant-region-specialty
+result_text = 모래를 더 헤치자 부서진 그릇 한 조각과 작은 돌 한 개가 나왔다. 그릇은 두고, 돌만 가져간다.
+
+[event.ev-mano-old-coin.choice.3]
+label = 그대로 둔다
+custom = push-earth-5
+result_text = 동전 위에 발자국 하나만 남기고 떠났다. 사구가 천천히 덮었다.
+
+
+[event.ev-mano-fox-glance]
+name = 사막여우의 시선
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 사구 능선 너머에서 작은 모래여우 한 마리가 그대를 본다. 반짝이는 눈과 짧은 귀. 무엇을 해도 곧 사라질 것이다.
+
+[event.ev-mano-fox-glance.choice.1]
+label = 다가가 본다
+gold = 3
+result_text = 여우는 천천히 도망갔다. 그 자리에 작은 발자국 두 개가 남았다. 옆에 동전 한 닢.
+
+[event.ev-mano-fox-glance.choice.2]
+label = 가만히 바라본다
+hp = 4
+result_text = 여우가 그대 발 앞까지 와 한 번 코를 비비고 사라졌다.
+
+[event.ev-mano-fox-glance.choice.3]
+label = 손을 흔든다
+draw = 1
+result_text = 여우가 고개를 갸웃하더니 자기 길로 갔다.
+
+
+[event.ev-mano-guild-board]
+name = 모험가 길드 게시판
+node_kinds = event, village
+weight = 1
+once_per_run = true
+body = 마노니클라 모험가 길드 한쪽 벽. 종이들 사이에 손글씨로 쓴 한 장이 끼어 있다. "사구 5번 언덕에 30초만 서 있어 주세요. 보상 작은 것. 의뢰주 익명."
+
+[event.ev-mano-guild-board.choice.1]
+label = 의뢰를 받는다
+custom = grant-region-specialty
+result_text = 사구 5번 언덕. 30초 서 있는 동안 바람이 한 방향으로만 불었다. 내려와 보니 발치에 작은 봉지가 놓여 있었다. 익명의 의뢰주가 그때 거기에 있었다.
+
+[event.ev-mano-guild-board.choice.2]
+label = 다른 의뢰를 살펴본다
+gold = 15
+result_text = 평범한 의뢰 몇 장을 처리해 주고 약간의 보수를 받았다.
+
+[event.ev-mano-guild-board.choice.3]
+label = 게시판만 읽고 떠난다
+draw = 1
+result_text = 이상한 의뢰들이 한참 읽을 만했다.
+
+
+[event.ev-mano-stone-cairn]
+name = 누가 쌓은 돌탑
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 사구 사면에 작은 돌탑 하나가 쌓여 있다. 돌 일곱 개. 누가 쌓았는지 알 수 없다. 그 옆에, 향이 다 탄 자리가 있다.
+
+[event.ev-mano-stone-cairn.choice.1]
+label = 돌 하나를 더 얹는다
+affinity = npc-betelgeuse:1
+custom = push-earth-5
+result_text = 돌 여덟 개. 사면의 틈이 그쪽으로 한 줄 더 짙어졌다.
+
+[event.ev-mano-stone-cairn.choice.2]
+label = 향을 다시 피운다
+gold = -5
+hp = 8
+result_text = 작은 불씨가 모래 위에서 조용히 자라났다. 향이 사구를 따라 흘렀고, 어느 순간 그대 몸이 가벼워졌다.
+
+[event.ev-mano-stone-cairn.choice.3]
+label = 그대로 지나친다
+gold = 3
+result_text = 돌탑 옆을 지나며 사면 너머 길에서 동전 몇 닢이 굴러 왔다.
+
+
+[event.ev-mano-sunset-beast]
+name = 노을 속의 큰 그림자
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 사구 능선 너머 해 지는 쪽에 큰 그림자 하나가 서 있다. 사람보다 크다. 낙타인지, 낙타가 아닌 무엇인지 알 수 없다.
+
+[event.ev-mano-sunset-beast.choice.1]
+label = 다가가 본다
+hp = -5
+grant_relic = r-sunset-fang
+result_text = 가까이 가자 그것은 등을 한 번 굽혔다. 그 자리에, 오래된 무언가 하나가 떨어져 있었다.
+
+[event.ev-mano-sunset-beast.choice.2]
+label = 능선에 앉아 본다
+hp = 5
+result_text = 그대로 노을이 다 식을 때까지 둘이서 사구를 바라보았다.
+
+[event.ev-mano-sunset-beast.choice.3]
+label = 우회한다
+gold = 8
+custom = push-iron-5
+result_text = 능선 반대편으로 돌아가는 길 작은 광맥이 발끝에 잠시 빛났다.
+
+
+# ============================================================
+# 마노니클라 옛 사당 (n-mano-old-shrine 고정).
+# 향이 다 탔다. 결이 어긋났다.
+# ============================================================
+
+[event.ev-mano-old-shrine-incense]
+name = 다 탄 향
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 유적 깊은 자리의 작은 사당. 향로에는 향이 한 줄, 다 탔다. 가까이서 보면 향로 자리의 겹 한 줄이 비뚜로 어긋나 있다. 누군가 오래 다녀가지 않았다.
+
+[event.ev-mano-old-shrine-incense.choice.1]
+label = 새 향을 하나 피운다
+gold = -3
+custom = mag-color-1
+result_text = 짧은 연기가 위로 한 번 곧게 올라갔다. 사당 안쪽이 잠시 차분해졌다.
+
+[event.ev-mano-old-shrine-incense.choice.2]
+label = 어긋난 마디를 손끝으로 따라 본다
+hp = -2
+custom = def-color-1
+result_text = 올 한 줄이 손끝에 가볍게 맞물려 들어갔다. 등 뒤로 무엇이 한 호흡 조용해졌다.
+
+[event.ev-mano-old-shrine-incense.choice.3]
+label = 향로 옆의 오래된 동전을 챙긴다
+gold = 6
+result_text = 동전 한 닢. 표면이 부드럽게 닳아 있다. 사당 안쪽 끝내 보지 않았다.
+
+
+# ============================================================
+# 마노니클라 절벽 산책로 (n-mano-cliff-walk 고정).
+# 바람이 한 호흡 사이를 둔다.
+# ============================================================
+
+[event.ev-mano-cliff-walk-breath]
+name = 한 호흡 사이의 바람
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+body = 절벽 위 좁은 길. 바람이 한 호흡 사이를 둔다. 그 틈에 맞춰 가슴 안쪽이 한 번 비워진다.
+
+[event.ev-mano-cliff-walk-breath.choice.1]
+label = 그 틈에 맞춰 한 번 깊이 들이쉰다
+hp = 5
+result_text = 가슴 안쪽이 잠시 서늘하게 가벼워졌다.
+
+[event.ev-mano-cliff-walk-breath.choice.2]
+label = 바람의 무늬를 손끝으로 짧게 잡아 본다
+custom = mag-color-1
+result_text = 가닥 한 줄이 손가락 사이에서 짧게 머물렀다.
+
+[event.ev-mano-cliff-walk-breath.choice.3]
+label = 그 틈에 끼어들지 않고 지나간다
+draw = 1
+result_text = 바람은 자기 켜대로 계속 사이를 두었다.
+
+
+# ============================================================
+# 마노니클라 시이드 chain 3' (소문, 카요 chain과 병렬).
+# 위화감 → 우려 → 소문. 시이드의 밝음 너머의 한 줄.
+# ============================================================
+
+[event.ev-mano-seed-3-rumor]
+name = 한 줄의 소문
+node_kinds = event, village
+weight = 1
+once_per_run = true
+condition = has-clue:cl-seed-bag-note
+body = 야시장 좌판 한 자리에서 작은 목소리가 한 줄 떨어진다. "사천왕 시아 그쪽이 마노니클라에 동생을 두고 갔대요." 시이드 그 이름이 옆에서 한 호흡 늦게 떠올랐다.
+
+[event.ev-mano-seed-3-rumor.choice.1]
+label = 소문이 어디서 흘렀는지 따라가 본다
+gold = -3
+clue = cl-seed-rumor
+result_text = 좌판 몇 자리를 거슬렀다. 끝에 한 줄 더 짧은 이야기가 있었다.
+
+[event.ev-mano-seed-3-rumor.choice.2]
+label = 시이드에게 한 마디 전한다
+affinity = npc-seed:1
+clue = cl-seed-rumor
+result_text = 시이드가 날개를 작게 접었다. "아 그거 자주 들어요. 괜찮아요!" 라고 했지만 박자가 한 번 늦었다.
+
+[event.ev-mano-seed-3-rumor.choice.3]
+label = 듣지 않은 것으로 한다
+hp = 3
+clue = cl-seed-rumor
+result_text = 소문은 자기 박자로 흘러갔다. 시이드 옆에서 평소처럼 햇살이 떨어졌다.
+
+
+# ============================================================
+# 마노니클라 로크의 걸음 (npc-rok 등장 단편).
+# 골렘 + 돌 손발 + 마노니클라에 익숙해지는 박자.
+# ============================================================
+
+[event.ev-mano-rok-step]
+name = 돌 손발의 걸음
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 야시장 길목에서 작은 부딪힘 소리가 한 마디씩 들린다. 로크가 한 걸음 멈춰 서 있다. 돌 손발의 마디 한 자리에 모래가 한 줄 끼었다.
+
+[event.ev-mano-rok-step.choice.1]
+label = 마디 사이의 모래를 손으로 털어 준다
+hp = -1
+affinity = npc-rok:1
+result_text = 로크가 돌 손가락 한 마디를 작게 굽혔다. "...걸을게."
+
+[event.ev-mano-rok-step.choice.2]
+label = 카요의 공방까지 같이 걸어 준다
+gold = -3
+custom = def-color-1
+result_text = 공방 입구에서 카요가 모루 박자를 한 번 멈췄다. 로크의 마디가 다시 다듬어졌다.
+
+[event.ev-mano-rok-step.choice.3]
+label = 박자가 익숙해질 때까지 옆을 지킨다
+draw = 1
+result_text = 돌 손발의 박자가 마노니클라의 길에 조금씩 맞춰졌다.
+
+
+# ============================================================
+# 마노니클라 발렌시아의 자세 (npc-valencia 등장 단편).
+# 향상심 지원 컨셉. 창의 정령.
+# ============================================================
+
+[event.ev-mano-valencia-spear]
+name = 향상심의 자세
+node_kinds = event, village
+weight = 1
+once_per_run = true
+body = 마을 한 자리에 기다란 창 한 자루가 바로 세워져 있다. 자세가 사람보다 곧다. 발렌시아가 한 번 그대를 본다. "그대의 향상심을 보여 주십시오."
+
+[event.ev-mano-valencia-spear.choice.1]
+label = 받아 한 번 휘둘러 본다
+hp = -3
+custom = atk-color-1
+result_text = 창이 손에 바로 맞물렸다. 발렌시아가 짧게 고개를 끄덕였다.
+
+[event.ev-mano-valencia-spear.choice.2]
+label = 자세만 흉내 내 본다
+affinity = npc-valencia:1
+result_text = 발렌시아가 자기 자세를 한 번 바로 잡아 주었다. "...곧게 서십시오. 그게 시작입니다."
+
+[event.ev-mano-valencia-spear.choice.3]
+label = 자기 그릇이 아니라 말한다
+gold = 5
+result_text = "그것도 한 자세입니다." 발렌시아가 짧게 답하고 다시 곧게 섰다.
+
+
+# ============================================================
+# 마노니클라 리문의 옛 글자 (유적 lore).
+# 결만 살아 있는 옛 글.
+# ============================================================
+
+[event.ev-mano-limun-script]
+name = 리문의 옛 글자
+node_kinds = event, combat
+weight = 1
+once_per_run = true
+body = 회랑 벽에 옛 글자 한 줄이 새겨져 있다. 모래에 반쯤 묻혔지만 줄 한 줄이 아직 살아 있다.
+
+[event.ev-mano-limun-script.choice.1]
+label = 모래를 손으로 천천히 걷어낸다
+hp = -2
+gold = 7
+result_text = 글자 끝 한 자리에서 작은 동전 한 닢이 떨어졌다. 글의 뜻은 끝내 읽히지 않았다.
+
+[event.ev-mano-limun-script.choice.2]
+label = 자락만 손끝으로 따라 읽는다
+custom = mag-color-1
+result_text = 틈 한 줄이 손끝에서 짧게 떨렸다. 무엇을 안 것은 아니다.
+
+[event.ev-mano-limun-script.choice.3]
+label = 그대로 지나친다
+draw = 1
+result_text = 글자는 자기 겹대로 거기 있었다.
+
+
+# ============================================================
+# 마노니클라 밤의 한 줄 (해변 단편, 베텔게우스 호응 분기).
+# ============================================================
+
+[event.ev-mano-night-tide]
+name = 밤의 한 줄
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+body = 해변 한 자리에 파도가 한 줄 더 멀리 들어왔다. 모래 위에 작은 유리 조각들이 일정한 사이를 두고 놓여 있다. 누군가 일부러 놓아 둔 듯하다.
+
+[event.ev-mano-night-tide.choice.1]
+label = 유리 조각 한 점을 줍는다
+gold = 4
+result_text = 손바닥 위에서 짧게 빛났다. 파도가 다시 한 줄 들어왔다.
+
+[event.ev-mano-night-tide.choice.2]
+label = 조각의 박자대로 한 자리에 앉는다
+hp = 4
+custom = mag-color-1
+result_text = 파도 한 줄이 발끝까지 닿았다 빠졌다. 머리가 한 호흡 맑아졌다.
+
+[event.ev-mano-night-tide.choice.3]
+label = 조각을 모두 바다 쪽으로 다시 보낸다
+affinity = npc-betelgeuse:1
+result_text = 조각이 파도 한 줄 사이로 사라졌다. 조그만 점 하나가 협곡 쪽에서 한 번 끄덕였다.
+
+
+# ============================================================
+# 마틴 항 한 줄의 컨테이너 (n-martin-cargo 고정, 루디).
+# ============================================================
+
+[event.ev-martin-cargo-line]
+name = 한 줄의 컨테이너
+node_kinds = event, activity
+weight = 1
+once_per_run = true
+body = 화물장 한 자리에 컨테이너 한 줄이 옆으로 기울어졌다. 루디가 그 줄을 손가락 하나로 받치고 있다. 작은 새 그러나 손이 안 흔들린다.
+
+[event.ev-martin-cargo-line.choice.1]
+label = 옆에서 같이 받친다
+hp = -1
+affinity = npc-rudi:1
+result_text = 루디가 그대 쪽을 짧게 보더니 "좋아 한 번에!" 한 줄이 바르게 자리잡았다.
+
+[event.ev-martin-cargo-line.choice.2]
+label = 떨어질 작은 화물부터 받는다
+gold = 4
+result_text = 작은 상자가 손에 들어왔다. 안에 동전 한 묶음. 루디가 안 본 척 컨테이너를 바르게 세웠다.
+
+[event.ev-martin-cargo-line.choice.3]
+label = 그대로 지나친다
+draw = 1
+result_text = 루디가 한 손으로 끝까지 받쳤다. "...괜찮아요!" 라고 했다.
+
+
+# ============================================================
+# 마틴 항 한 자락 늦은 빛 (n-martin-lighthouse 고정).
+# ============================================================
+
+[event.ev-martin-lighthouse]
+name = 한 자락 늦은 빛
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 마틴 등대 한 자락 늦게 빛난다. 등대지기는 안 보인다. 종 줄 한 가닥이 천장으로 길게 올라간다.
+
+[event.ev-martin-lighthouse.choice.1]
+label = 종 줄을 한 번 당긴다
+hp = -2
+custom = mag-color-1
+result_text = 종이 한 줄 울었다. 빛이 제 시간에 다시 흘렀다.
+
+[event.ev-martin-lighthouse.choice.2]
+label = 등대 안으로 들어가 본다
+hp = -3
+gold = 5
+result_text = 안쪽에서 낡은 동전들이 한 줄 누워 있었다. 지기는 끝내 보지 않았다.
+
+[event.ev-martin-lighthouse.choice.3]
+label = 늦은 그대로 두고 간다
+draw = 1
+result_text = 등대 빛이 늦은 채로 길게 흘렀다. 바다는 그 빛을 그대로 받았다.
+
+
+# ============================================================
+# 키시나 돌무더기의 한 알 (n-kishina-rocks 고정).
+# ============================================================
+
+[event.ev-kishina-shells]
+name = 돌무더기의 한 알
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 돌무더기 한 자리에 소금 진주 한 알이 단정하게 놓여 있다. 누군가가 일부러 한 줄로 모아 둔 것 같다.
+
+[event.ev-kishina-shells.choice.1]
+label = 진주 한 알을 챙긴다
+gold = 8
+result_text = 손바닥에 짠 마디가 한 줄 닿았다. 돌무더기 끝에서 모래가 살짝 빠졌다.
+
+[event.ev-kishina-shells.choice.2]
+label = 모래밭의 흐릿한 누군가에게 갖다 준다
+affinity = npc-gazri:1
+result_text = 가즈리가 진주를 한 줄로 다시 괴고 "고마워! 이제 더 예뻐졌어!"
+
+[event.ev-kishina-shells.choice.3]
+label = 그대로 둔다
+custom = mag-color-1
+result_text = 진주가 한 자리에 그대로 누워 있었다. 그 옆을 짧게 지나가 본다.
+
+
+# ============================================================
+# 키시나 진주 봐 봐! (n-kishina-tide-pool 고정, 가즈리).
+# ============================================================
+
+[event.ev-kishina-spirit-bead]
+name = 진주 봐 봐!
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 조수 웅덩이 옆 가즈리가 진주 한 줄을 손바닥에 모아 그대를 본다. "이거 봐 봐! 예쁘지!" 형태가 한 번 흐려졌다가 다시 또렷해진다.
+
+[event.ev-kishina-spirit-bead.choice.1]
+label = "응 정말 예쁘다" 고 답한다
+affinity = npc-gazri:1
+hp = 5
+result_text = 가즈리가 물 한 자락을 작게 튀겼다. "그치? 이거 내가 모은 거야!" 손바닥이 서늘하게 가벼워졌다.
+
+[event.ev-kishina-spirit-bead.choice.2]
+label = 같이 줍자고 한다
+affinity = npc-gazri:2
+gold = -3
+result_text = 가즈리가 조수 웅덩이로 한 번 들어갔다 나왔다. 손바닥에 진주 한 알을 또 더해 줬다.
+
+[event.ev-kishina-spirit-bead.choice.3]
+label = 살짝 미소만 짓는다
+custom = mag-color-1
+result_text = 가즈리가 고개를 한 번 갸웃했다. "...그래도 봤지?" 라고 했다.
+
+
+# ============================================================
+# 마틴 항로 수평선 한 줄 (n-martin-sea-passage 고정, 배 위).
+# ============================================================
+
+[event.ev-martin-boat-passage]
+name = 수평선 한 줄
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 마틴과 클러치 사이 바다 한 자리. 배 위에서 수평선 한 줄이 길게 머문다. 바람 한 자락이 살을 스친다.
+
+[event.ev-martin-boat-passage.choice.1]
+label = 멀미 견디고 갑판 끝에 선다
+hp = -2
+custom = atk-color-1
+result_text = 바람이 손끝 한 자리에 단단히 머물렀다.
+
+[event.ev-martin-boat-passage.choice.2]
+label = 노을이 식기 전 한 자리에 앉는다
+hp = 6
+result_text = 수평선이 조용히 가라앉았다. 가슴 안쪽이 서늘하게 가벼워졌다.
+
+[event.ev-martin-boat-passage.choice.3]
+label = 짧게 잠을 청한다
+draw = 1
+result_text = 깊은 한 잠에서 깨어났을 때 클러치 부두가 한 자리 앞에 와 있었다.
+
+
+# ============================================================
+# 모스 권역 "일 하는 모스" 톤 단편 13종.
+# 톤: 각자 자기 일을 진지하게·열심히·즐겁게 하는 모습.
+# chain 없음. "박자" 단어 미사용.
+# ============================================================
+
+# --- 1. n-moss-plaza 고정 (로큐의 첫 인사) ---
+[event.ev-moss-plaza-busy]
+name = 한 자리의 여러 일
+node_kinds = event, activity
+weight = 1
+once_per_run = true
+body = 모스 광장 한 자리 여러 일이 동시에 흐른다. 망치 소리 한 줄, 증기 한 자락, 좌판 한 줄. 그 사이로 로큐가 가죽 가방 어깨에 우체 한 통을 그대 쪽으로 내민다. "한 통 가져왔어. 받아 가."
+
+[event.ev-moss-plaza-busy.choice.1]
+label = 우체를 받아 열어 본다
+affinity = npc-roku:1
+draw = 1
+result_text = 봉투 안에 짧은 한 줄. 길에서 또 보자. 로큐가 어깨 줄을 한 번 바르게 잡고 다음 길로 흘러갔다.
+
+[event.ev-moss-plaza-busy.choice.2]
+label = 광장 한 모서리에 잠시 앉아 본다
+hp = 4
+result_text = 광장의 여러 올이 한꺼번에 흘렀다. 몸이 조금 가벼워졌다.
+
+[event.ev-moss-plaza-busy.choice.3]
+label = 망치 거리 쪽으로 그대로 간다
+custom = atk-color-1
+result_text = 망치 소리가 한 줄로 따라왔다. 손끝이 단단해졌다.
+
+
+# --- 2. n-moss-hammer-row 고정 ---
+[event.ev-moss-hammer-row-line]
+name = 길 한 줄의 망치
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 망치 거리 대장간 한 줄. 망치 소리가 길의 무늬대로 정확히 떨어진다. 거리 끝에서 또 한 자리 새로 망치를 든다.
+
+[event.ev-moss-hammer-row-line.choice.1]
+label = 한 자리에 잠시 머물러 본다
+hp = -1
+custom = def-color-1
+result_text = 길의 철의 가닥이 손바닥 한 자리에 단단히 머물렀다.
+
+[event.ev-moss-hammer-row-line.choice.2]
+label = 끝까지 천천히 걸어 간다
+draw = 1
+result_text = 한 줄의 끝에 닿았다. 망치 소리가 등 뒤에서도 한 줄로 떨어졌다.
+
+[event.ev-moss-hammer-row-line.choice.3]
+label = 떨어진 부속 하나를 줍는다
+gold = 5
+result_text = 작은 경첩 한 자리. 손바닥에 작게 무거웠다.
+
+
+# --- 3. n-moss-furnace 고정 (아라크네 의복공) ---
+[event.ev-moss-furnace-arachne]
+name = 화로 옆의 실 한 가닥
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 화로 옆 한 자리에 아라크네가 앉아 있다. 여덟 손이 실 한 가닥을 화로의 열로 가지런히 다듬는다. 옷감 한 자락이 한 줄씩 길어진다.
+
+[event.ev-moss-furnace-arachne.choice.1]
+label = 한 줄 매듭 짓는 자리를 옆에서 본다
+custom = mag-color-1
+result_text = 매듭이 짧고 단정하게 켜를 잡았다. 손끝이 한 번 닿은 듯 가벼워졌다.
+
+[event.ev-moss-furnace-arachne.choice.2]
+label = 옷감 한 자락을 부탁한다
+gold = -8
+hp = 5
+result_text = 얇은 한 자락이 어깨에 가볍게 둘러졌다. 화로의 열이 식어도 따뜻하게 남았다.
+
+[event.ev-moss-furnace-arachne.choice.3]
+label = 그대로 지나친다
+draw = 1
+result_text = 아라크네가 여덟 손 중 하나로 짧게 인사를 했다. 실은 계속 길어졌다.
+
+
+# --- 4. n-moss-watchtower 고정 (천정지기) ---
+[event.ev-moss-watchtower-zenith]
+name = 천정의 한 줄
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 망루 위 천정지기가 머리를 곧게 위로만 향한다. 새 한 마리, 구름 한 자락, 별 한 점 하늘 정점의 자리를 작은 수첩에 한 줄씩 기록한다.
+
+[event.ev-moss-watchtower-zenith.choice.1]
+label = 옆에서 같이 위를 본다
+custom = mag-color-1
+result_text = 시야가 위 한 줄에만 머물렀다. 가슴 안쪽이 조용히 가벼워졌다.
+
+[event.ev-moss-watchtower-zenith.choice.2]
+label = 수첩 한 줄을 옆에서 읽어 본다
+draw = 1
+result_text = "오늘 새가 한 번 늦었다." 짧은 한 줄. 다른 줄은 끝내 안 보았다.
+
+[event.ev-moss-watchtower-zenith.choice.3]
+label = 망루를 그대로 내려간다
+hp = 3
+result_text = 천정지기는 위를 그대로 보았다. 등 뒤로 망루의 줄이 가만히 남았다.
+
+
+# --- 5. n-clutch-lighthouse 고정 ---
+[event.ev-moss-lighthouse-keeper]
+name = 빛의 한 줄
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 클러치 등대 늙은 등대지기가 사다리 위에서 빛의 한 줄을 천으로 다듬는다. 빛이 한 자락씩 정확히 흐른다. "...빛은 정확해야 해."
+
+[event.ev-moss-lighthouse-keeper.choice.1]
+label = 사다리를 잡아 준다
+hp = -2
+affinity = npc-roku:1
+result_text = 등대지기가 짧게 끄덕였다. "...로큐 너랑 닮았네." 로큐의 어깨 줄이 잠시 떠올랐다.
+
+[event.ev-moss-lighthouse-keeper.choice.2]
+label = 천 한 장을 옆에서 건넨다
+gold = -3
+custom = mag-color-1
+result_text = 천 위에 짠 자락이 한 줄 묻어 있었다. 등대 빛이 한 자락 더 정확해졌다.
+
+[event.ev-moss-lighthouse-keeper.choice.3]
+label = 잠시 옆에 앉아 본다
+hp = 4
+result_text = 사다리 위의 조용한 일이 한 줄로 흘러갔다. 등대 빛이 그대 등 뒤에 길게 머물렀다.
+
+
+# --- 6. 모루실 단편 ---
+[event.ev-moss-anvil-rhythm]
+name = 모루의 한 줄
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 모루실 한 자루의 망치만 한 줄을 다듬고 있다. 옆이 조용하다. 모루 위에 반쯤 식은 칼날 한 자리.
+
+[event.ev-moss-anvil-rhythm.choice.1]
+label = 한 줄을 옆에서 본다
+custom = def-color-1
+result_text = 칼날이 식는 자리를 손끝으로 짧게 짚었다. 틈 한 줄이 손에 남았다.
+
+[event.ev-moss-anvil-rhythm.choice.2]
+label = 한 자루 망치를 잠시 들어 본다
+hp = -2
+custom = atk-color-1
+result_text = 무게가 손목에 한 줄로 닿았다. 한 번 내리쳐 보았다. 칼날이 한 겹 단단해졌다.
+
+[event.ev-moss-anvil-rhythm.choice.3]
+label = 그대로 지나친다
+draw = 1
+result_text = 모루의 한 줄이 등 뒤에서 계속 떨어졌다.
+
+
+# --- 7. 도구실 단편 ---
+[event.ev-moss-tool-organize]
+name = 한 줄의 도구
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 도구실 작은 도구 한 줄 한 줄이 가지런히 정리되어 있다. 누군가가 그 줄을 매일 보살피고 있다. 자리에는 사람이 없다.
+
+[event.ev-moss-tool-organize.choice.1]
+label = 한 줄을 손끝으로 따라 짚어 본다
+custom = def-color-1
+result_text = 도구마다 마디가 다르게 닿았다. 마지막 한 자리에 작은 부속 한 알이 그대 손에 남았다.
+
+[event.ev-moss-tool-organize.choice.2]
+label = 떨어진 한 자루를 다시 줄에 끼운다
+hp = 3
+result_text = 자리가 정확히 맞물렸다. 한 줄이 다시 완전해졌다.
+
+[event.ev-moss-tool-organize.choice.3]
+label = 그대로 둔다
+gold = 4
+result_text = 한 줄을 그대로 두고 갔다. 도구실 다음 자리에서 작은 동전 한 닢이 발끝에 닿았다.
+
+
+# --- 8. 작업장 단편 (견습) ---
+[event.ev-moss-workshop-apprentice]
+name = 첫 한 검
+node_kinds = event, workshop
+weight = 1
+once_per_run = true
+body = 작업장 한 자리 견습 한 명이 첫 한 검을 만들고 있다. 손이 떨리지만 어깨가 진지하다. 한 올 한 무늬 처음으로 자신의 손에서 나온다.
+
+[event.ev-moss-workshop-apprentice.choice.1]
+label = 한 줄 도와준다 (손이 가볍게 잡아 준다)
+hp = -2
+custom = atk-color-1
+result_text = 견습이 짧게 숨을 골랐다. 다음 한 가닥이 바르게 떨어졌다.
+
+[event.ev-moss-workshop-apprentice.choice.2]
+label = 그저 옆에서 본다
+hp = 4
+result_text = 견습이 그대 시선을 잠시 의식하고 손이 한 번 단단해졌다. 가슴 안쪽이 조용히 가벼워졌다.
+
+[event.ev-moss-workshop-apprentice.choice.3]
+label = 첫 한 검을 사 준다
+gold = -10
+custom = def-color-1
+result_text = 견습의 어깨가 한 번 떨렸다. "...정말요?" 그 떨림이 손바닥에 한 줄 남았다.
+
+
+# --- 9. 갑옷점 단편 ---
+[event.ev-moss-armor-polish]
+name = 비늘의 한 줄
+node_kinds = event, shop
+weight = 1
+once_per_run = true
+body = 갑옷점 광택사가 비늘 한 줄을 천으로 다듬는다. 광이 한 자락씩 깊어진다. 자기 일을 오래 해 온 손이다.
+
+[event.ev-moss-armor-polish.choice.1]
+label = 한 자락 천 끝을 잡아 준다
+hp = -1
+custom = def-color-1
+result_text = 광택사가 짧게 끄덕였다. 한 줄의 광이 한 단계 더 깊어졌다.
+
+[event.ev-moss-armor-polish.choice.2]
+label = 비늘 한 자락의 켜를 묻는다
+draw = 1
+result_text = "...철 아니야. 더 오래된 줄." 비늘의 한 줄이 손끝에 묻혔다.
+
+[event.ev-moss-armor-polish.choice.3]
+label = 광택을 한 자루 부탁한다
+gold = -8
+custom = def-color-1
+result_text = 손목 가리개 한 자리가 깊은 자락으로 바뀌었다.
+
+
+# --- 10. 균열 단편 (드워프 광부) ---
+[event.ev-moss-fissure-miner]
+name = 균열 한 자리의 광맥
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 화산 균열 한 자리 드워프 광부가 곡괭이 한 자루로 광맥 한 줄을 캐고 있다. 그의 큰 어깨가 균열 한 자리에 정확히 자리잡았다.
+
+[event.ev-moss-fissure-miner.choice.1]
+label = 한 자루 곡괭이를 더 들어 같이 캔다
+hp = -3
+gold = 8
+result_text = 광맥 한 줄이 두 손으로 더 빨리 풀렸다. 드워프가 짧게 "고맙다." 했다.
+
+[event.ev-moss-fissure-miner.choice.2]
+label = 떨어진 광맥 한 조각을 줍는다
+custom = atk-color-1
+result_text = 손바닥에 작은 검은 광맥이 한 자리 남았다.
+
+[event.ev-moss-fissure-miner.choice.3]
+label = 곁눈으로 본다
+draw = 1
+result_text = 드워프가 자기 일에 그대로 머물렀다. 균열의 틈이 등 뒤에서 길게 흘렀다.
+
+
+# --- 11. 부두 단편 (짐꾼) ---
+[event.ev-moss-clutch-stevedore]
+name = 한 자루의 짐
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 클러치 부두 짐꾼 한 명이 한 자루씩 짐을 옮긴다. 손이 안 흔들린다. 오래 해 온 사람의 호흡.
+
+[event.ev-moss-clutch-stevedore.choice.1]
+label = 한 자루 같이 옮긴다
+hp = -2
+gold = 4
+result_text = 짐꾼이 짧게 어깨를 풀었다. "...한 번에 두 자루는 안 돼." 라며 동전 몇 닢을 건넸다.
+
+[event.ev-moss-clutch-stevedore.choice.2]
+label = 호흡만 옆에서 맞춰 본다
+custom = def-color-1
+result_text = 한 호흡이 한 자루만큼 길어졌다. 손목이 단단해졌다.
+
+[event.ev-moss-clutch-stevedore.choice.3]
+label = 그대로 지나친다
+draw = 1
+result_text = 짐꾼의 한 자루가 등 뒤에서 계속 옮겨졌다.
+
+
+# --- 12. 화물터 단편 (검수자) ---
+[event.ev-moss-clutch-checker]
+name = 한 줄 한 줄의 목록
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 화물터 검수자 한 명이 한 줄 한 줄 화물을 목록과 맞춘다. 종이 한 장에 짧은 표시만 한 줄씩 떨어진다.
+
+[event.ev-moss-clutch-checker.choice.1]
+label = 한 줄을 같이 짚어 준다
+hp = -1
+custom = mag-color-1
+result_text = 검수자가 짧게 끄덕였다. "한 줄 더." 한 자리가 정확히 맞물렸다.
+
+[event.ev-moss-clutch-checker.choice.2]
+label = 목록 끝의 작은 줄을 묻는다
+draw = 1
+result_text = "...빈 한 줄. 누군가가 안 가져갔어." 그 줄이 잠시 그대 머리에 남았다.
+
+[event.ev-moss-clutch-checker.choice.3]
+label = 그대로 지나친다
+gold = 3
+result_text = 검수자가 마지막 줄을 막 표시했다. 자리 옆 작은 동전 한 닢이 발끝에 닿았다.
+
+
+# --- 13. 불씨 자리 단편 (밤 교대) ---
+[event.ev-moss-ember-warden]
+name = 밤 교대의 한 자리
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+body = 화산 불씨 자리. 불씨 관리자 한 명이 한 자리에 오래 앉아 있다. 화로가 밤 사이에 꺼지지 않도록 한 줄 한 줄 살핀다.
+
+[event.ev-moss-ember-warden.choice.1]
+label = 옆에 한 자리 같이 앉는다
+hp = 5
+result_text = 밤이 한 자락 길게 흘렀다. 가슴 안쪽이 조용히 가벼워졌다.
+
+[event.ev-moss-ember-warden.choice.2]
+label = 한 줄 불씨를 같이 살핀다
+hp = -1
+custom = atk-color-1
+result_text = 불씨가 한 겹 더 단단해졌다. 손목에 따뜻함이 한 줄 남았다.
+
+[event.ev-moss-ember-warden.choice.3]
+label = 작은 마른 가지를 건넨다
+gold = -2
+custom = def-color-1
+result_text = 관리자가 짧게 끄덕였다. "...덕분에 한 시간 더 갈 수 있겠어."
+
+
+# ============================================================
+# 루나 권역 "외부인 시점" 톤 11종.
+# 학생이 아닌 입장에서 마법학교를 바라봤을 때 마주치는 풍경.
+# chain 1개 (페비엘 도서관 만남 → 결계 너머). "박자" 단어 미사용.
+# ============================================================
+
+# --- 고정 1. n-luna-academy ---
+[event.ev-luna-entrance]
+name = 정문의 한 자락
+node_kinds = event, village
+weight = 1
+once_per_run = true
+body = 루나 정문 한 자리 학생들이 공책 한 줄을 안고 한 줄로 흘러간다. 외부인 한 명, 그 흐름의 반대 방향에서 잠시 멈춰 선다. 누군가 그대를 한 번 본다.
+
+[event.ev-luna-entrance.choice.1]
+label = 흐름에 잠시 끼어 본다
+hp = 3
+result_text = 학생들의 공책 한 줄이 등 뒤로 길게 지나갔다. 가슴 안쪽이 가볍게 정돈되었다.
+
+[event.ev-luna-entrance.choice.2]
+label = 정문 옆 작은 게시판을 읽어 본다
+draw = 1
+result_text = "수업 한 시간 변경." 짧은 한 줄. 외부인에겐 별 의미 없는 정보다.
+
+[event.ev-luna-entrance.choice.3]
+label = 그대로 안으로 들어간다
+custom = mag-color-1
+result_text = 정문을 넘는 한 자리에 작은 결계가 한 마디 닿았다. 손끝에 잠시 머물렀다.
+
+
+# --- 고정 2. n-luna-library (페비엘 chain 1) ---
+[event.ev-luna-library-floating-book]
+name = 떠 있는 책
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 루나 도서관 한 자리 책 한 권이 공중에 떠 있다. 누군가가 오래 그 자리에 두고 갔다. 페비엘이 책장 끝에서 짧게 그대를 본다. "...그쪽도 결계를 본 적 있나요?"
+
+[event.ev-luna-library-floating-book.choice.1]
+label = 책에 손을 댄다
+clue = cl-febiel-binding-note
+custom = mag-color-1
+result_text = 손가락 끝에 얇은 종이 한 장이 떨어졌다. 페비엘이 짧게 끄덕였다. "...읽어 둬요."
+
+[event.ev-luna-library-floating-book.choice.2]
+label = 페비엘에게 결계에 대해 묻는다
+clue = cl-febiel-binding-note
+affinity = npc-febiel:1
+result_text = "결계는 닫혀 있는 게 아니에요. 비켜선 것뿐." 그녀가 책장 한 줄에 손끝을 가만히 댔다. 책상 위에 종이 한 장이 떨어졌다.
+
+[event.ev-luna-library-floating-book.choice.3]
+label = 책은 그대로 두고 지나간다
+draw = 1
+result_text = 페비엘이 작게 한숨을 내쉬었다. 책은 같은 자리에 그대로 떠 있었다.
+
+
+# --- 고정 3. n-luna-magicircle ---
+[event.ev-luna-old-magicircle]
+name = 옛 마법진
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 실습홀 한 자리에 옛 마법진 한 줄이 돌 위에 깊게 새겨져 있다. 학생들도 이 자리는 잘 모르는 듯하다. 올 한 줄이 아직 살아 있다.
+
+[event.ev-luna-old-magicircle.choice.1]
+label = 무늬 한 줄을 손끝으로 따라간다
+custom = mag-color-1
+result_text = 가닥이 손끝에 짧게 살아 났다. 무엇이 그려졌었는지는 끝내 알 수 없었다.
+
+[event.ev-luna-old-magicircle.choice.2]
+label = 한가운데에 잠시 서 본다
+hp = -2
+draw = 1
+result_text = 발 아래 한 켜가 천천히 돌았다. 머리가 잠시 어지러웠다.
+
+[event.ev-luna-old-magicircle.choice.3]
+label = 그대로 둔다
+gold = 4
+result_text = 마법진 끝의 작은 돌 한 자리에 오래된 동전 한 닢이 떨어져 있었다.
+
+
+# --- 고정 4. n-luna-grimoire-hall ---
+[event.ev-luna-grimoire-blind-title]
+name = 제목이 보이지 않는 책
+node_kinds = event, combat
+weight = 1
+once_per_run = true
+body = 금서 회랑 한 자리 책 한 권의 제목이 보이지 않는다. 다른 책들은 다 읽힌다. 그 한 권만 글자가 표지에서 빠져 있다.
+
+[event.ev-luna-grimoire-blind-title.choice.1]
+label = 표지를 손바닥으로 짚어 본다
+hp = -3
+custom = mag-color-1
+result_text = 손바닥에 글자 한 줄이 잠시 닿았다 사라졌다. 무엇을 안 것은 아니다.
+
+[event.ev-luna-grimoire-blind-title.choice.2]
+label = 책을 옆자리로 옮겨 본다
+draw = 1
+result_text = 자리를 옮기자 표지가 짧은 한 줄만 보였다. "...같은 곳에." 그 외엔 끝내 안 보였다.
+
+[event.ev-luna-grimoire-blind-title.choice.3]
+label = 그대로 둔다
+hp = 4
+result_text = 책은 자리 옆으로 짧게 미끄러졌다 다시 자기 자리로 돌아왔다.
+
+
+# --- 고정 5. n-luna-illusion-spot ---
+[event.ev-luna-illusion-late-face]
+name = 늦은 표정
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 첨탑 환영 자리. 그대 한 자리 옆에 그대의 환영이 서 있다. 표정이 한 호흡 늦게 그대를 따라온다. 환영이 그대 쪽을 한 번 본다.
+
+[event.ev-luna-illusion-late-face.choice.1]
+label = 환영의 늦은 한 호흡을 같이 맞춰 본다
+hp = -2
+custom = mag-color-1
+result_text = 두 표정이 한 자리에서 잠시 겹쳤다. 가슴 안쪽이 조용히 가벼워졌다.
+
+[event.ev-luna-illusion-late-face.choice.2]
+label = 손을 한 번 들어 본다
+draw = 1
+result_text = 환영도 늦게 손을 들었다. 손바닥이 닿지 않는 거리에서 마주 보았다.
+
+[event.ev-luna-illusion-late-face.choice.3]
+label = 등을 돌린다
+gold = 5
+result_text = 환영도 늦게 등을 돌렸다. 발끝에 작은 동전 한 닢이 떨어져 있었다.
+
+
+# --- 단편 6. 시험 옆 ---
+[event.ev-luna-classroom-test]
+name = 시험 한 줄의 옆
+node_kinds = event, activity
+weight = 1
+once_per_run = true
+body = 강의실 한 자리 학생들이 시험지 한 장을 들고 한 줄로 앉아 있다. 외부인은 옆 자리에 우연히 서 있다. 한 학생의 손끝이 작게 떨린다.
+
+[event.ev-luna-classroom-test.choice.1]
+label = 옆 학생을 짧게 본다 (어깨가 가만히 풀린다)
+hp = 3
+result_text = 학생이 고개를 한 번 더 들었다. 손끝이 조금 단단해졌다.
+
+[event.ev-luna-classroom-test.choice.2]
+label = 시험지 한 장의 문항 한 줄을 살짝 본다
+draw = 1
+result_text = 한 줄에 옛 마법의 자락이 한 틈 있었다. 외부인에게도 짧게 닿았다.
+
+[event.ev-luna-classroom-test.choice.3]
+label = 자리를 비킨다
+custom = mag-color-1
+result_text = 학생의 집중이 한 겹 더 정확해졌다. 강의실의 마디가 등 뒤에서 짧게 닫혔다.
+
+
+# --- 단편 7. 결계 흔들림 ---
+[event.ev-luna-ward-shake]
+name = 결계의 작은 흔들림
+node_kinds = event, activity
+weight = 1
+once_per_run = true
+body = 결계실 한 자리 결계 한 줄이 작게 흔들린다. 학생들은 다른 결계에 집중하고 있어 이 한 줄은 보지 못한다.
+
+[event.ev-luna-ward-shake.choice.1]
+label = 결계를 손끝으로 한 번 짚어 본다
+hp = -2
+custom = def-color-1
+result_text = 올 한 줄이 손끝에 단단히 맞물렸다. 결계가 다시 정렬되었다.
+
+[event.ev-luna-ward-shake.choice.2]
+label = 가까운 학생에게 짧게 알린다
+affinity = npc-kuruha:1
+result_text = 학생이 잠시 멈춰 그 자리를 본다. "아 이거 선생님께 알릴게요!" 결계가 단단해졌다.
+
+[event.ev-luna-ward-shake.choice.3]
+label = 그대로 둔다
+draw = 1
+result_text = 결계는 작게 흔들리다 자기 자리로 돌아갔다. 등 뒤에서 잠시 무늬 한 줄이 떨렸다.
+
+
+# --- 단편 8. 옛 책상 노트 ---
+[event.ev-luna-old-desk-note]
+name = 미완성 한 페이지
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 옛 책상 한 자리 공책 한 장이 펼쳐져 있다. 수업 노트인데 마지막 한 줄에서 끊겨 있다. 누군가 끝내 못 적었다.
+
+[event.ev-luna-old-desk-note.choice.1]
+label = 페이지를 끝까지 읽어 본다
+custom = mag-color-1
+result_text = 마지막 한 줄이 공백 그대로 손끝에 머물렀다. 무엇이 적힐 뻔 했는지 짧게 짐작이 갔다.
+
+[event.ev-luna-old-desk-note.choice.2]
+label = 펜 한 자루를 옆에 놓아 둔다
+hp = 3
+result_text = 다음 날 누군가 다시 와 마지막 한 줄을 적을 수 있도록.
+
+[event.ev-luna-old-desk-note.choice.3]
+label = 페이지를 한 장 챙긴다
+gold = 4
+result_text = 노트의 한 장 한 자락이 손바닥에 단정하게 접혔다.
+
+
+# --- 단편 9. 정원·마법 식물 ---
+[event.ev-luna-garden-plant]
+name = 마법 식물 한 줄
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 학교 정원 한 자리 마법 식물이 한 줄로 자라났다. 낮 빛과 밤 빛이 각각 닿는 자리. 잎이 두 가닥을 동시에 받친다.
+
+[event.ev-luna-garden-plant.choice.1]
+label = 잎 한 자락을 짧게 만져 본다
+custom = mag-color-1
+result_text = 잎이 낮과 밤의 켜를 손끝에 한 번씩 닿게 했다.
+
+[event.ev-luna-garden-plant.choice.2]
+label = 작은 물 한 자락을 흘려 본다
+hp = 4
+result_text = 식물이 짧은 한 호흡만큼 길어졌다. 가슴 안쪽이 서늘하게 가벼워졌다.
+
+[event.ev-luna-garden-plant.choice.3]
+label = 잎 한 장을 챙긴다
+gold = 5
+result_text = 잎이 손바닥에 단정하게 누웠다. 줄 두 줄이 잠시 어지러웠다.
+
+
+# --- 단편 10. 기숙사·빈 방 ---
+[event.ev-luna-dorm-empty]
+name = 빈 방의 작은 짐
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+body = 기숙사 한 자리 빈 방 안에 작은 짐 한 자루가 단정하게 놓여 있다. 누군가가 오래 비워둔 자리. 자리에 짧은 한 줄의 햇살이 머문다.
+
+[event.ev-luna-dorm-empty.choice.1]
+label = 짐 옆에 잠시 앉는다
+hp = 5
+result_text = 햇살이 한 자락 어깨에 길게 머물렀다. 가슴 안쪽이 조용히 가벼워졌다.
+
+[event.ev-luna-dorm-empty.choice.2]
+label = 짐의 무게를 한 번 들어 본다
+custom = def-color-1
+result_text = 가볍지 않다. 누군가의 공책 한 묶음이 안에 있는 듯했다.
+
+[event.ev-luna-dorm-empty.choice.3]
+label = 그대로 나간다
+gold = 3
+result_text = 빈 방의 햇살이 등 뒤로 한 자락 길게 흘렀다.
+
+
+# --- 단편 11. 페비엘 chain 2 결계 너머 ---
+[event.ev-luna-febiel-stellaville]
+name = 결계 너머의 한 줄
+node_kinds = event
+weight = 1
+once_per_run = true
+condition = has-clue:cl-febiel-binding-note
+body = 결계실 깊은 자리 페비엘이 결계 한 줄을 작게 비켜선다. 그 너머로 옛 마을 한 자리가 잠시 보인다. 사람들이 낮은 등불 아래 모여 있다. "...저기가 스텔라 빌. 내 고향."
+
+[event.ev-luna-febiel-stellaville.choice.1]
+label = 한 줄 같이 본다 (조용히)
+affinity = npc-febiel:2
+hp = 4
+result_text = 페비엘이 짧게 숨을 골랐다. "...같이 봐 줘서 고마워요." 결계가 다시 닫혔다.
+
+[event.ev-luna-febiel-stellaville.choice.2]
+label = 결계를 더 비켜 보라고 한다
+affinity = npc-febiel:1
+hp = -5
+result_text = 페비엘이 한 자락 더 비켰다. 사람들 한 명이 고개를 들어 이쪽을 본다. 결계가 닫히는 순간 그가 한 번 손을 들었다.
+
+[event.ev-luna-febiel-stellaville.choice.3]
+label = 그대로 두고 자리를 비킨다
+custom = mag-color-1
+result_text = 페비엘이 오래 결계 너머를 보았다. 등 뒤로 결계의 틈이 길게 흘렀다.
+
+
+# ============================================================
+# 일루네온 권역 세계의 중심. 동선 5 + 시계탑 chain 3 + 시계탑 단편 1 + 이유르 2 + 기타 2.
+# 시작 권역 첫 인상. 여러 일이 동시에 흐르는 도시.
+# 단서 2 + chain 3 단편 = 깊은 시간 lore (올뤼·임페리시아·시간 흔적).
+# ============================================================
+
+# --- 동선 1. n-iluneon-square ---
+[event.ev-iluneon-plaza-flow]
+name = 광장의 여러 흐름
+node_kinds = event, village
+weight = 1
+once_per_run = true
+body = 일루네온 광장 여러 일이 동시에 흐른다. 행상의 외침 한 자락, 학교 가는 학생 한 줄, 분수 옆의 작은 소년. 그 한가운데에 외부인이 서 있다.
+
+[event.ev-iluneon-plaza-flow.choice.1]
+label = 흐름 한 자락에 잠시 끼어 본다
+hp = 3
+result_text = 도시의 겹이 한 줄로 어깨에 가볍게 닿았다. 가슴 안쪽이 가볍게 정돈되었다.
+
+[event.ev-iluneon-plaza-flow.choice.2]
+label = 분수 옆의 소년을 본다
+affinity = npc-niayur:1
+result_text = 니아 이유르가 그대를 한 번 본다. "왔군요. 이번에도." 그 말이 한 자리에서 잠시 머물렀다.
+
+[event.ev-iluneon-plaza-flow.choice.3]
+label = 광장 한 모서리를 따라 걷는다
+gold = 4
+result_text = 작은 동전 한 닢이 발끝에 닿았다. 누군가가 흘렸다 안 줍고 갔다.
+
+
+# --- 동선 2. n-iluneon-market ---
+[event.ev-iluneon-market-row]
+name = 시장 한 줄
+node_kinds = event, shop
+weight = 1
+once_per_run = true
+body = 시장 한 줄로 늘어선 가판. 마법 상점·식료·옷·돌멩이. 외부인 한 명이 낯선 자리에 잠시 멈춘다. 가판 사람이 짧게 본다.
+
+[event.ev-iluneon-market-row.choice.1]
+label = 한 가판의 작은 물건을 본다
+gold = -3
+custom = mag-color-1
+result_text = 손바닥에 얇은 부적 한 장이 단정하게 놓였다. 마디 한 줄이 잠시 머물렀다.
+
+[event.ev-iluneon-market-row.choice.2]
+label = 시장 끝까지 걸어 본다
+draw = 1
+result_text = 끝에 조용한 가판 하나가 따로 서 있었다. 물건은 끝내 안 보였다.
+
+[event.ev-iluneon-market-row.choice.3]
+label = 그대로 지나친다
+hp = 3
+result_text = 가판의 외침이 등 뒤로 길게 흘렀다.
+
+
+# --- 동선 3. n-iluneon-guild ---
+[event.ev-iluneon-guild-board]
+name = 게시판 한 장
+node_kinds = event, activity
+weight = 1
+once_per_run = true
+body = 길드 게시판 손글씨 한 장이 끼어 있다. 다른 의뢰는 깔끔한 인쇄인데 그 한 장만 손글씨. 끝에 작은 점이 한 자리.
+
+[event.ev-iluneon-guild-board.choice.1]
+label = 한 장을 떼어 챙긴다
+custom = atk-color-1
+gold = -2
+result_text = 종이 한 장에 짧은 한 줄. "...심심해. 누구든 한 판." 손바닥에 작은 도전이 한 올 머물렀다.
+
+[event.ev-iluneon-guild-board.choice.2]
+label = 게시판 옆의 작은 동전 함을 본다
+gold = 5
+result_text = 누군가가 놓고 간 작은 동전 몇 닢. 의뢰 수수료인 듯하다.
+
+[event.ev-iluneon-guild-board.choice.3]
+label = 그대로 다시 본다
+draw = 1
+result_text = 한 장의 손글씨가 마음에 잠시 남았다. 가져가지는 않았다.
+
+
+# --- 동선 4. n-iluneon-diner ---
+[event.ev-iluneon-diner-seat]
+name = 식당 한 자리
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 일루네온 식당 분주한 자리들 사이. 한 자리만 조용하다. 한 사람이 멍하니 식판을 본다. 식판 표면에 짧은 글자가 잠시 떠올랐다 사라진다.
+
+[event.ev-iluneon-diner-seat.choice.1]
+label = 옆자리에 잠시 앉는다
+hp = 4
+result_text = 그 사람이 잠시 그대 쪽을 봤다. 그리고 다시 식판을 봤다. 짧은 한 자리의 조용함이 두 어깨에 같이 머물렀다.
+
+[event.ev-iluneon-diner-seat.choice.2]
+label = 식판의 글자 한 줄을 짧게 본다
+draw = 1
+result_text = "...당위." 한 단어가 잠시 떠올랐다. 외부인에겐 별 의미 없는 단어.
+
+[event.ev-iluneon-diner-seat.choice.3]
+label = 자리를 비킨다
+gold = 4
+result_text = 누군가가 작은 동전 몇 닢을 식탁 위에 놓아 두고 갔다.
+
+
+# --- 동선 5. n-ilu-larder ---
+[event.ev-iluneon-larder]
+name = 식료 저장고
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 식당 옆 시원한 저장고. 빈 자리에 작은 것들이 한 줄로 놓여 있다. 각각 오래된 무늬를 짧게 갖고 있다.
+
+[event.ev-iluneon-larder.choice.1]
+label = 한 줄을 손끝으로 짚는다
+custom = mag-color-1
+result_text = 작은 향이 가닥 한 자리에 머물렀다. 손바닥이 짧게 따뜻해졌다.
+
+[event.ev-iluneon-larder.choice.2]
+label = 떨어진 한 알을 챙긴다
+gold = 5
+result_text = 작은 마른 열매 한 알. 무게가 짧게 가볍다.
+
+[event.ev-iluneon-larder.choice.3]
+label = 한 줄 정돈해 둔다
+hp = 4
+result_text = 자리가 정확히 맞물렸다. 누군가가 다음 날 짧게 고마워 할 듯하다.
+
+
+# --- 시계탑 chain 1. region pool 올뤼 관측실 ---
+[event.ev-iluneon-olyu-observatory]
+name = 정각의 관측실
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 시계탑 한 자리 관측실. 천구의 옆에서 올뤼가 작은 가죽 노트를 펼치고 있다. "...정각 한 자리 늦었어요. 그 시간에 서쪽 별 한 점이 자기 자리를 비웠고요."
+
+[event.ev-iluneon-olyu-observatory.choice.1]
+label = 노트 한 줄을 옆에서 본다
+clue = cl-iluneon-clock-record
+custom = mag-color-1
+result_text = 올뤼가 짧게 끄덕였다. "...읽어 둬요. 그 별, 다시 안 자기 자리로 안 돌아왔어요."
+
+[event.ev-iluneon-olyu-observatory.choice.2]
+label = 서쪽 별에 대해 묻는다
+clue = cl-iluneon-clock-record
+affinity = npc-olyu:1
+result_text = "...이름은 없어요. 자기 자리만 있었지요." 올뤼가 천구의 한 자리를 손끝으로 짚었다.
+
+[event.ev-iluneon-olyu-observatory.choice.3]
+label = 그대로 자리를 비킨다
+draw = 1
+result_text = 올뤼가 짧게 한숨을 내쉬었다. 천구의는 자기 켜대로 계속 돌았다.
+
+
+# --- 시계탑 chain 2. region pool 임페리시아 만남 ---
+[event.ev-iluneon-imperisia-meeting]
+name = 식판 위의 한 줄
+node_kinds = event
+weight = 1
+once_per_run = true
+condition = has-clue:cl-iluneon-clock-record
+body = 식당 한 자리 임페리시아가 식판 표면에 손가락으로 한 줄을 적고 있다. "...당위(當爲)란 무엇인가요?" 글자가 공기 중에서 잠시 머물다 사라진다.
+
+[event.ev-iluneon-imperisia-meeting.choice.1]
+label = "...자리에 머무는 것" 라고 답한다
+clue = cl-iluneon-imperisia-trace
+affinity = npc-imperisia:1
+result_text = 임페리시아가 짧게 그대를 본다. "...그러면 자리를 비운 별은요?" 글자가 한 줄 더 떠올랐다.
+
+[event.ev-iluneon-imperisia-meeting.choice.2]
+label = 식판을 옆자리에서 본다 (조용히)
+clue = cl-iluneon-imperisia-trace
+custom = mag-color-1
+result_text = 글자가 공기 중에서 짧게 떨렸다. 시계탑 한 자리의 어긋남과 같은 줄.
+
+[event.ev-iluneon-imperisia-meeting.choice.3]
+label = 자리를 비킨다
+clue = cl-iluneon-imperisia-trace
+hp = 3
+result_text = 임페리시아가 짧게 인사를 했다. 식판의 글자는 자기 자락대로 사라졌다.
+
+
+# --- 시계탑 chain 3. region pool 시간 흔적 결합 ---
+[event.ev-iluneon-time-trace]
+name = 두 어긋남의 한 틈
+node_kinds = event
+weight = 1
+once_per_run = true
+condition = has-clue:cl-iluneon-imperisia-trace
+body = 시계탑 종 자리 옆 작은 공기 한 자락이 멈춰 있다. 그 안에 올뤼의 서쪽 별 한 점과 임페리시아의 짧은 글자 한 줄이 같은 겹으로 정렬되어 있다. 누군가 시간을 한 자리에 묶어 두었다.
+
+[event.ev-iluneon-time-trace.choice.1]
+label = 한 마디를 손끝으로 짚는다
+grant_relic = r-mono-token
+result_text = 손바닥에 시간의 작은 부스러기 한 알이 단정하게 놓였다. 모노의 한 자리가 잠시 어깨에 머물렀다.
+
+[event.ev-iluneon-time-trace.choice.2]
+label = 두 올을 같이 따라간다
+custom = mag-color-1
+hp = 5
+result_text = 별과 글자가 한 자리에서 잠시 겹쳤다. 가슴 안쪽이 조용히 가벼워졌다.
+
+[event.ev-iluneon-time-trace.choice.3]
+label = 그대로 묶음을 두고 간다
+gold = 8
+result_text = 묶음 옆에 오래된 동전 몇 닢이 놓여 있었다. 누군가가 먼저 와 짧게 인사를 하고 갔던 자리.
+
+
+# --- 시계탑 단편. n-ilu-bellroom 고정 ---
+[event.ev-iluneon-bellroom]
+name = 종지기 골방
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 시계탑 아래 종지기 노인의 작은 방. 종 줄 한 가닥이 천장으로 길게 올라간다. 노인은 짧은 한 호흡만큼 깊이 자고 있다.
+
+[event.ev-iluneon-bellroom.choice.1]
+label = 종 줄을 짧게 살펴 본다
+custom = mag-color-1
+result_text = 줄의 무늬 한 자리에 손끝이 닿았다. 종이 짧게 안 울었다.
+
+[event.ev-iluneon-bellroom.choice.2]
+label = 작은 컵에 차 한 잔을 따라 놓는다
+gold = -3
+affinity = npc-olyu:1
+result_text = 노인이 잠시 눈을 떴다. "...고맙소." 짧게 인사를 하고 다시 눈을 감았다.
+
+[event.ev-iluneon-bellroom.choice.3]
+label = 그대로 방을 나간다
+draw = 1
+result_text = 종 줄이 자기 가닥대로 천장에 길게 매달려 있었다.
+
+
+# --- 이유르 단편 1. n-ilu-fountain-side 고정 ---
+[event.ev-iluneon-niayur-fountain]
+name = 분수 옆의 한 자리
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+body = 광장 분수 옆 니아 이유르가 그늘진 벤치에 잠시 앉아 있다. 물소리가 한 자락 그의 어깨에 길게 머문다. 그가 그대를 본다. "...앉아도 됩니다."
+
+[event.ev-iluneon-niayur-fountain.choice.1]
+label = 옆에 잠시 앉는다
+hp = 6
+affinity = npc-niayur:1
+result_text = 두 사람의 어깨가 짧게 같은 켜로 정돈되었다. 물소리가 오래 머물렀다.
+
+[event.ev-iluneon-niayur-fountain.choice.2]
+label = 이번에도라는 말의 뜻을 묻는다
+draw = 1
+result_text = 그가 잠시 그대를 본다. "...그 말 자체가 답이에요. 우리는 몇 번이고 만나니까요."
+
+[event.ev-iluneon-niayur-fountain.choice.3]
+label = 짧게 인사하고 비킨다
+custom = mag-color-1
+result_text = 이유르가 짧게 끄덕였다. 분수의 줄이 등 뒤에 길게 머물렀다.
+
+
+# --- 이유르 단편 2. region pool ---
+[event.ev-iluneon-niayur-pause]
+name = 광장의 멈춤
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 광장 한가운데 니아 이유르가 잠시 멈춰 서 있다. 도시의 여러 흐름이 그의 한 자리 주변에서만 조금 늦어진다. 그가 위쪽을 한 번 본다.
+
+[event.ev-iluneon-niayur-pause.choice.1]
+label = 그가 보는 쪽을 같이 본다
+hp = 4
+custom = mag-color-1
+result_text = 하늘 한 자리에 짧은 한 줄이 잠시 떴다. 무엇이었는지는 끝내 안 알 수 있었다.
+
+[event.ev-iluneon-niayur-pause.choice.2]
+label = 짧게 어깨에 손을 댄다
+affinity = npc-niayur:1
+result_text = 이유르가 짧게 그대를 본다. "...닿아 줘서 고마워요." 그가 다시 도시 한 흐름 안으로 들어갔다.
+
+[event.ev-iluneon-niayur-pause.choice.3]
+label = 그대로 지나친다
+gold = 5
+result_text = 멈춤이 짧게 풀렸다. 발끝에 작은 동전 한 닢이 떨어져 있었다.
+
+
+# --- 기타 1. n-ilu-east-gate 고정 ---
+[event.ev-iluneon-east-gate]
+name = 동문의 한 자락
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 일루네온 동쪽 문 바람이 라르 숲 쪽으로 길게 흐른다. 문 옆 작은 화분에 낯선 잎 한 자락. 누군가 라르 숲에서 가져왔다.
+
+[event.ev-iluneon-east-gate.choice.1]
+label = 잎 한 자락의 자락을 짚는다
+custom = mag-color-1
+result_text = 세계수의 틈이 손끝에 잠시 머물렀다. 가슴 안쪽이 가볍게 정돈되었다.
+
+[event.ev-iluneon-east-gate.choice.2]
+label = 바람 한 자락을 들이쉰다
+hp = 4
+result_text = 라르 숲 쪽 풀의 겹이 가슴 안쪽으로 짧게 흘러 들어왔다.
+
+[event.ev-iluneon-east-gate.choice.3]
+label = 그대로 문을 나간다
+draw = 1
+result_text = 동문이 등 뒤에서 짧게 닫혔다.
+
+
+# --- 기타 2. n-ilu-spire-shadow 고정 ---
+[event.ev-iluneon-spire-shadow]
+name = 첨탑 그늘
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 광장에 시계탑 그림자가 길게 떨어진다. 그림자가 한 호흡 늦게 드리워 있다. 그 자리 안쪽이 짧게 조용하다.
+
+[event.ev-iluneon-spire-shadow.choice.1]
+label = 그늘 안쪽에 잠시 선다
+custom = def-color-1
+result_text = 그림자의 마디가 어깨에 단단히 닿았다. 올 한 줄이 손목에 남았다.
+
+[event.ev-iluneon-spire-shadow.choice.2]
+label = 그림자의 늦은 한 호흡을 같이 맞춰 본다
+hp = 4
+result_text = 가슴 안쪽이 짧게 정돈되었다. 그림자가 제 호흡에 다시 닿았다.
+
+[event.ev-iluneon-spire-shadow.choice.3]
+label = 그늘을 지나쳐 간다
+gold = 4
+result_text = 그늘 끝에 작은 동전 한 닢이 떨어져 있었다.
+
+
+# ============================================================
+# 타코미 권역 낮·밤 극대적 분위기. 단편 13종 (chain 없음).
+# 낮 5 + 블룸 3 + 밤 4 + 홀로그램 1.
+# 외부인 시점. "박자" 단어 미사용.
+# ============================================================
+
+# --- 낮 1. n-tacomi 마을 ---
+[event.ev-tacomi-day-flow]
+name = 낮 카페 거리
+node_kinds = event, village
+weight = 1
+once_per_run = true
+body = 타코미 낮의 카페 거리 한 자락. 라테 잔 한 줄이 카운터 위에 단정하게 놓여 있다. 카운터 너머 신시안이 짧게 그대 쪽으로 손을 들었다. "한 잔 따뜻하게, 가시지요."
+
+[event.ev-tacomi-day-flow.choice.1]
+label = 같이 한 잔 받는다
+gold = -5
+hp = 5
+result_text = 잔이 손바닥의 무늬에 단정하게 닿았다. 가슴 안쪽이 따뜻하게 가벼워졌다.
+
+[event.ev-tacomi-day-flow.choice.2]
+label = 잔 한 줄의 가닥을 짚어 본다
+custom = mag-color-1
+result_text = 잔마다 켜가 따로 있었다. 신시안이 짧게 끄덕였다. "...그치요? 다 달라요."
+
+[event.ev-tacomi-day-flow.choice.3]
+label = 그대로 지나간다
+draw = 1
+result_text = 낮 카페의 한 자락이 등 뒤로 길게 흘렀다.
+
+
+# --- 낮 2. n-tacomi-cafe (신시안 만남) ---
+[event.ev-tacomi-shinsian-cup]
+name = 한 잔의 줄
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+body = 타코미 카페 신시안이 잔의 자락을 손바닥에 가지런히 올려 그대 앞에 둔다. "...물의 틈, 따뜻한 겹, 잔의 마디 다 다르거든요." 꼬리 한 자락이 살짝 흔들린다.
+
+[event.ev-tacomi-shinsian-cup.choice.1]
+label = 한 잔을 받는다
+gold = -6
+affinity = npc-shinsian:1
+hp = 6
+result_text = 잔의 올이 손바닥 한 자리에 단단히 닿았다. 신시안이 짧게 미소를 지었다.
+
+[event.ev-tacomi-shinsian-cup.choice.2]
+label = 세 무늬에 대해 묻는다
+affinity = npc-shinsian:1
+draw = 1
+result_text = "...물 가닥은 따뜻함을, 따뜻한 켜는 향을, 잔의 줄은 손바닥을 담아요." 신시안의 세 손가락이 짧게 잔 위를 짚었다.
+
+[event.ev-tacomi-shinsian-cup.choice.3]
+label = 사양한다 (다음에 들르겠다고)
+result_text = 신시안이 짧게 끄덕였다. "...언제든 한 잔, 따뜻하게."
+
+
+# --- 낮 3. n-tacomi-day-alley (도둑고양이) ---
+[event.ev-tacomi-alley-cat]
+name = 골목의 한 자리
+node_kinds = event, combat
+weight = 1
+once_per_run = true
+body = 카페 골목의 그늘진 한 자리. 작은 도둑고양이 한 마리가 비어 있는 그릇 옆에 누워 있다. 누군가가 오래 챙겨 주던 자리.
+
+[event.ev-tacomi-alley-cat.choice.1]
+label = 작은 우유 한 자락을 그릇에 따른다
+gold = -2
+custom = mag-color-1
+result_text = 고양이가 한 번 눈을 떴다 감았다. 그릇 옆 작은 돌 한 알이 그대 발끝에 닿았다.
+
+[event.ev-tacomi-alley-cat.choice.2]
+label = 잠시 옆에 앉는다
+hp = 4
+result_text = 고양이가 짧게 그대 무릎 한 자리에 닿았다 떨어졌다. 가슴 안쪽이 가볍게 정돈되었다.
+
+[event.ev-tacomi-alley-cat.choice.3]
+label = 그대로 지나친다
+draw = 1
+result_text = 고양이가 짧은 한 호흡만큼 눈을 떴다. 그리고 다시 감았다.
+
+
+# --- 낮 4. n-tacomi-latte-shop (한 잔 못 마신 자리) ---
+[event.ev-tacomi-latte-row]
+name = 못 마신 한 잔
+node_kinds = event, shop
+weight = 1
+once_per_run = true
+body = 라테 가게 카운터 위 잔 한 줄. 그 중 한 잔만 김이 천천히 식고 있다. 누군가 한 모금도 못 마시고 자리를 비웠다.
+
+[event.ev-tacomi-latte-row.choice.1]
+label = 그 한 잔을 마신다
+hp = 5
+custom = mag-color-1
+result_text = 잔의 식어 가는 자락이 손바닥에 한 자락 머물렀다. 짧은 한 호흡이 서늘하게 가벼웠다.
+
+[event.ev-tacomi-latte-row.choice.2]
+label = 잔을 카운터 안쪽으로 정돈한다
+affinity = npc-shinsian:1
+result_text = 신시안이 카운터 너머에서 짧게 끄덕였다. "...고마워요. 자리, 비워 두고 갔어요. 그분."
+
+[event.ev-tacomi-latte-row.choice.3]
+label = 잔을 챙겨 간다
+gold = 5
+result_text = 따뜻한 잔 한 자리가 손바닥에 머물렀다. 신시안이 짧게 자리를 비웠다.
+
+
+# --- 낮 5. n-tacomi-sun-spot (햇살 자리 책) ---
+[event.ev-tacomi-sun-book]
+name = 햇살 자리의 한 권
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+body = 햇살 자리 짧게 머무는 노을. 누군가가 작은 책 한 권을 두고 갔다. 펼친 자리에 노을 한 자락이 길게 머문다.
+
+[event.ev-tacomi-sun-book.choice.1]
+label = 펼친 한 장을 읽는다
+draw = 1
+custom = mag-color-1
+result_text = 짧은 한 줄 "...오늘도 한 잔, 따뜻하게." 글자가 햇살 틈에 한 호흡 머물렀다.
+
+[event.ev-tacomi-sun-book.choice.2]
+label = 옆에 잠시 앉는다
+hp = 6
+result_text = 햇살이 한 자락 어깨에 길게 머물렀다. 가슴 안쪽이 조용히 가벼워졌다.
+
+[event.ev-tacomi-sun-book.choice.3]
+label = 책을 다음 사람을 위해 그대로 둔다
+gold = 4
+result_text = 책 옆에 작은 동전 몇 닢이 떨어져 있었다. 누군가가 먼저 책값을 두고 갔던 자리.
+
+
+# --- 블룸 6. n-bloom-terrace (고정) 6 choice ---
+[event.ev-tacomi-bloom-veil]
+name = 늘어진 겹
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 블룸 테라스 꽃잎이 폭포처럼 떨어진다. 시간의 마디가 누군가에 의해 길게 늘려져 있다. 발 아래 한 자락이 천천히 흘러간다.
+
+[event.ev-tacomi-bloom-veil.choice.1]
+label = 올을 손끝으로 짚는다
+custom = mag-color-1
+result_text = 무늬의 느린 한 호흡이 손바닥에 한 자락 머물렀다.
+
+[event.ev-tacomi-bloom-veil.choice.2]
+label = 가닥 안에서 잠시 머문다
+hp = 6
+result_text = 시간이 짧게 늘어졌고, 가슴 안쪽이 서늘하게 가벼워졌다.
+
+[event.ev-tacomi-bloom-veil.choice.3]
+label = 꽃잎 한 묶음을 챙긴다
+gold = 6
+result_text = 꽃잎 한 줄이 손바닥에 가볍게 놓였다. 시장에서 짧게 값이 매겨질 듯하다.
+
+[event.ev-tacomi-bloom-veil-alt]
+name = 켜의 다른 자리
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 블룸 테라스의 반대편 자리. 꽃잎 폭포가 멈춘 듯이 보이지만 자세히 보면 느린 줄로 흐른다. 자락을 늘인 손의 흔적이 한 자리에 남아 있다.
+
+[event.ev-tacomi-bloom-veil-alt.choice.1]
+label = 마법진 틈 흔적을 찾아본다
+draw = 1
+result_text = 테라스 바닥 한 자리에 작은 마법진 한 겹이 남아 있었다. 누군가가 짧게 다녀갔다.
+
+[event.ev-tacomi-bloom-veil-alt.choice.2]
+label = 마디 사이에 잠시 누워본다
+hp = 7
+result_text = 시간이 너무 늘어져 잠시 어지러웠다. 그러나 한 호흡 끝에 깊은 한 자리가 머물렀다.
+
+[event.ev-tacomi-bloom-veil-alt.choice.3]
+label = 올 한 줄을 끝까지 따라간다
+custom = atk-color-1
+result_text = 무늬의 끝 자리에 작은 손가락 자국 한 줄이 남아 있었다. 그 자국이 손목에 한 가닥으로 닿았다.
+
+
+# --- 블룸 7. n-bloom-petal-path (단편) 6 choice ---
+[event.ev-tacomi-petal-path]
+name = 꽃잎 길의 발자국
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 블룸 꽃잎 길의 한 자락. 발 아래 꽃잎 켜가 한 줄로 떨어진다. 작은 발자국 한 줄이 이 길을 먼저 지나갔다.
+
+[event.ev-tacomi-petal-path.choice.1]
+label = 발자국을 따라간다
+draw = 1
+custom = mag-color-1
+result_text = 끝에 작은 꽃잎 묶음 한 자리가 누군가가 두고 간 듯 모여 있었다.
+
+[event.ev-tacomi-petal-path.choice.2]
+label = 줄을 같이 본다
+hp = 4
+result_text = 꽃잎 자락이 한 호흡 어깨에 머물렀다. 가슴 안쪽이 짧게 가벼워졌다.
+
+[event.ev-tacomi-petal-path.choice.3]
+label = 우회한다
+gold = 4
+result_text = 우회 길 옆 작은 동전 한 닢. 누군가가 먼저 챙기지 않은 자리.
+
+[event.ev-tacomi-petal-path-alt]
+name = 다른 길의 발자국
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 블룸 꽃잎 길의 옆 갈래. 발자국 줄이 흙으로 짧게 가려진 자리. 자세히 보면 낯선 틈 한 자락이 길 옆에 머문다.
+
+[event.ev-tacomi-petal-path-alt.choice.1]
+label = 발자국을 피해 다른 길로
+gold = 5
+result_text = 다른 길에 낯선 겹이 한 자락 머물렀다. 작은 부적 한 장이 발끝에 닿았다.
+
+[event.ev-tacomi-petal-path-alt.choice.2]
+label = 발자국 옆에 자신의 발자국을 짧게 남긴다
+hp = 3
+result_text = 두 줄이 나란히 누웠다. 누군가가 다시 와서 보면 짧게 짓겠지.
+
+[event.ev-tacomi-petal-path-alt.choice.3]
+label = 마디 한 줄을 흙으로 짧게 가린다
+custom = def-color-1
+result_text = 올이 짧게 숨었다. 손바닥에 흙의 한 무늬가 남았다.
+
+
+# --- 블룸 8. n-bloom-petal-spot (단편) 6 choice ---
+[event.ev-tacomi-petal-spot]
+name = 두꺼운 꽃잎 자리
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 꽃잎 자리 두껍게 쌓인 한 자리. 발끝에 가닥 한 자락이 묻힌다. 자세히 보면 반쯤 묻힌 무언가가 한 자리. 꽃잎 켜가 그 위에 길게 쌓여 있다.
+
+[event.ev-tacomi-petal-spot.choice.1]
+label = 손끝으로 짧게 파본다
+gold = 7
+result_text = 작은 거울 조각 한 장이 손바닥에 단정하게 놓였다. 빛이 한 자락 들어왔다.
+
+[event.ev-tacomi-petal-spot.choice.2]
+label = 그대로 둔다
+hp = 4
+result_text = 꽃잎 줄이 자기 자락대로 그 위에 길게 쌓였다. 누군가가 다시 와서 보면 짧게 짓겠지.
+
+[event.ev-tacomi-petal-spot.choice.3]
+label = 옆에 잠시 앉아 본다
+hp = 5
+custom = mag-color-1
+result_text = 꽃잎 틈이 어깨 한 자락에 머물렀다. 가슴 안쪽이 서늘하게 가벼워졌다.
+
+[event.ev-tacomi-petal-spot-alt]
+name = 두께 옆의 자리
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 꽃잎 자리 두꺼운 자리 바로 옆. 겹이 흩어진 자리 하나. 발끝에 작은 그림자 한 자락이 잠시 일어났다 가라앉는다.
+
+[event.ev-tacomi-petal-spot-alt.choice.1]
+label = 꽃잎 두께를 손으로 깊이 짚는다
+custom = def-color-1
+result_text = 두께의 마디가 손바닥에 한 자리 단단히 닿았다.
+
+[event.ev-tacomi-petal-spot-alt.choice.2]
+label = 꽃잎 자리를 발로 가볍게 흩는다
+gold = -2
+draw = 1
+result_text = 자리 아래 작은 그림자 한 자락이 짧게 일어났다. 한 호흡 끝에 조용해졌다.
+
+[event.ev-tacomi-petal-spot-alt.choice.3]
+label = 그 자리 옆에 새 꽃잎을 한 줄로 모은다
+hp = 3
+result_text = 두 자리가 나란히 두꺼워졌다. 올이 짧게 정돈되었다.
+
+
+# --- 낮 6. n-tacomi-cafe alt (카페 해가 기울어진 자리) ---
+[event.ev-tacomi-shinsian-cup-alt]
+name = 천천히 씻는 잔
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+body = 같은 카페 해가 살짝 기울어진 자리. 신시안이 카운터 뒤에서 잔을 천천히 씻는다. 오래 해 온 손의 한 자락.
+
+[event.ev-tacomi-shinsian-cup-alt.choice.1]
+label = 손을 옆에서 본다
+hp = 4
+affinity = npc-shinsian:1
+result_text = 신시안이 짧게 시선을 옮겼다 다시 잔을 보았다. 자리 한 자락이 조용해졌다.
+
+[event.ev-tacomi-shinsian-cup-alt.choice.2]
+label = 잔 하나 새로 받는다
+gold = -4
+hp = 4
+result_text = "...해 다 식기 전에." 한 잔이 손바닥에 단정하게 닿았다.
+
+[event.ev-tacomi-shinsian-cup-alt.choice.3]
+label = 그대로 떠난다
+draw = 1
+result_text = 카운터 너머 잔 씻는 한 자락이 등 뒤에서 길게 흘렀다.
+
+
+# --- 밤 9. n-night-tacomi 고정 화려한 한가운데 (노바 직접 X) ---
+[event.ev-tacomi-night-stand]
+name = 화려한 한가운데
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 나이트 타코미 네온 한 자락이 한꺼번에 일렁인다. 화려한 한가운데에서 발 아래 짧은 그림자 한 자리가 또렷하다.
+
+[event.ev-tacomi-night-stand.choice.1]
+label = 한가운데에 잠시 선다
+custom = mag-color-1
+result_text = 네온 무늬가 어깨 한 줄에 길게 닿았다.
+
+[event.ev-tacomi-night-stand.choice.2]
+label = 그림자를 따라 본다
+draw = 1
+result_text = 그림자 끝에 작은 무엇이 잠시 흘렀다. 끝내 무엇이었는지 안 보였다.
+
+
+# --- 밤 10. n-night-neon 단편 빛이 한 자락씩 ---
+[event.ev-tacomi-night-neon]
+name = 네온 한 자락
+node_kinds = event, combat
+weight = 1
+once_per_run = true
+body = 네온 거리의 길 한 줄. 빛이 한 자락씩 떨어진다. 낮 카페와 같은 자리인데 가닥이 완전히 다르다.
+
+[event.ev-tacomi-night-neon.choice.1]
+label = 켜 차이를 짚어 본다
+custom = mag-color-1
+result_text = 두 줄이 한 손바닥 위에 나란히 머물렀다. 한 호흡 어지러웠다.
+
+[event.ev-tacomi-night-neon.choice.2]
+label = 빛 한 자락을 어깨로 받는다
+hp = 3
+result_text = 네온의 온도 없는 빛이 어깨에 길게 머물렀다.
+
+
+# --- 밤 11. n-night-stage 단편 홀로그램 잔재 (노래 직접 X) ---
+[event.ev-tacomi-night-stage]
+name = 마지막 잔재
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 홀로그램 무대 오래된 노래의 잔재가 공중에 짧게 걸려 있다. 누가 부르다 마지막 한 자락만 남았다.
+
+[event.ev-tacomi-night-stage.choice.1]
+label = 잔재를 손끝으로 짚는다
+custom = mag-color-1
+result_text = 한 음 한 자락이 손바닥에 잠시 머물렀다.
+
+[event.ev-tacomi-night-stage.choice.2]
+label = 그대로 흘려보낸다
+draw = 1
+result_text = 잔재가 짧게 풀어졌다 사라졌다.
+
+
+# --- 밤 12. n-night-dj-spot 단편 노바 흔적 ---
+[event.ev-tacomi-night-dj]
+name = 부스 한 자리
+node_kinds = event, activity
+weight = 1
+once_per_run = true
+body = 디제이 부스 작은 자리. 노바의 자락 한 자락이 부스 한 자리에 남아 있다. 밤 한가운데에서 그녀가 잠시 머물렀던 흔적.
+
+[event.ev-tacomi-night-dj.choice.1]
+label = 틈 한 자락을 손끝으로 짚는다
+hp = -2
+custom = mag-color-1
+result_text = 꿈 한 호흡이 짧게 어지러웠다. 가슴 안쪽에 낯선 따뜻함이 한 자락 남았다.
+
+[event.ev-tacomi-night-dj.choice.2]
+label = 부스 안을 짧게 본다
+gold = 4
+result_text = 부스 안쪽에 작은 동전 몇 닢. 손님이 짧게 던지고 간 듯하다.
+
+
+# --- 밤 13. 신규 단편 옆 골목 (네온 닿지 않는 자리) ---
+[event.ev-tacomi-night-alley]
+name = 네온 옆의 골목
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 나이트 타코미의 옆 골목. 네온이 닿지 않는 자리. 조용한 한 자락이 길게 머문다.
+
+[event.ev-tacomi-night-alley.choice.1]
+label = 잠시 머문다
+hp = 5
+result_text = 가슴 안쪽이 서늘하게 가벼워졌다. 화려함이 등 뒤에서 짧게 흘렀다.
+
+[event.ev-tacomi-night-alley.choice.2]
+label = 다시 거리로 나간다
+draw = 1
+result_text = 골목 끝에서 네온 한 자락이 어깨를 다시 받았다.
+
+
+# --- 밤 14. 신규 단편 네온 가장자리 ---
+[event.ev-tacomi-night-edge]
+name = 빛과 어둠의 가장자리
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 네온의 가장 끝 자리. 빛 한 자락과 어둠 한 자락이 발끝에서 두 겹으로 갈라진다.
+
+[event.ev-tacomi-night-edge.choice.1]
+label = 빛 안쪽으로 한 걸음
+custom = mag-color-1
+result_text = 빛의 온도 없는 마디가 어깨에 단정하게 닿았다.
+
+[event.ev-tacomi-night-edge.choice.2]
+label = 어둠 안쪽으로 한 걸음
+custom = def-color-1
+result_text = 어둠의 깊은 올이 가슴 안쪽으로 짧게 흘러 들어왔다.
+
+
+# --- 홀로그램 15. n-hologram-trace 단편 임페리시아 흔적 ---
+[event.ev-tacomi-imperisia-trace]
+name = 가장 진한 흔적
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 홀로그램 필드 한 자리 임페리시아의 흔적이 가장 진한 곳. 공기 한 자락이 짧게 글자처럼 떠올랐다 사라진다.
+
+[event.ev-tacomi-imperisia-trace.choice.1]
+label = 손끝으로 짚는다
+custom = mag-color-1
+result_text = 짧은 한 자락이 손바닥에 머물렀다. 낯익은 글자 한 줄. 일루네온 식당의 같은 무늬.
+
+[event.ev-tacomi-imperisia-trace.choice.2]
+label = 글자 한 줄을 짧게 읽는다
+draw = 1
+result_text = "...당위." 한 단어가 잠시 떠올랐다 사라졌다.
+
+[event.ev-tacomi-imperisia-trace.choice.3]
+label = 그대로 지나친다
+gold = 5
+result_text = 흔적 옆 작은 오래된 동전 몇 닢이 떨어져 있었다.
+
+
+# ============================================================
+# 알리메스 권역 안개·고립·기상·고대 lore. 단편 13종 (chain 없음).
+# 결·박자·한 박 단어 미사용. 신규 NPC 4명(윤희원·프리·셀비아·샤유아).
+# ============================================================
+
+# --- 안개 1. n-mistwood-trail (안개 가도) ---
+[event.ev-alimes-mist-trail]
+name = 비스듬한 안개
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 알리메스 안개 가도 안개 한 자락이 비스듬히 흐른다. 평소보다 한 뼘 기울어져 있다.
+
+[event.ev-alimes-mist-trail.choice.1]
+label = 갈래를 손끝으로 짚어 본다
+custom = mag-color-1
+result_text = 손끝에 서늘한 안개 한 줄이 잠시 머물렀다.
+
+[event.ev-alimes-mist-trail.choice.2]
+label = 우회한다
+hp = 3
+result_text = 안개를 비켜 돌아갔다. 가슴 안쪽이 짧게 가벼워졌다.
+
+[event.ev-alimes-mist-trail.choice.3]
+label = 그대로 지난다
+draw = 1
+result_text = 안개 한 자락이 어깨를 짧게 스쳤다 흩어졌다.
+
+
+# --- 안개 2. n-ali-mist-grain (안개 알갱이) ---
+[event.ev-alimes-mist-grain]
+name = 사라진 발자국
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 안개 가도 한 자리 작은 발자국 한 줄이 안개 사이로 짧게 들어갔다. 끝까지 안 보인다.
+
+[event.ev-alimes-mist-grain.choice.1]
+label = 따라간다
+hp = -2
+gold = 7
+result_text = 안쪽에 작은 동전 한 묶음이 누군가가 떨어뜨리고 간 자리에 놓여 있었다.
+
+[event.ev-alimes-mist-grain.choice.2]
+label = 자국만 자세히 본다
+draw = 1
+result_text = 발자국이 짧게 어긋난 자리가 한 곳 있었다. 누군가 잠시 멈췄던 자리.
+
+[event.ev-alimes-mist-grain.choice.3]
+label = 우회한다
+custom = def-color-1
+result_text = 안개를 비켜 다른 길로. 손끝이 단단해졌다.
+
+
+# --- 안개 3. n-ali-mist-between (안개 사이) ---
+[event.ev-alimes-mist-between]
+name = 안개 사이의 그림자
+node_kinds = event, combat
+weight = 1
+once_per_run = true
+body = 안개 사이 짧은 그림자 한 자락이 머무른다. 사람도 짐승도 아니다. 모양만 잠시 떠 있다.
+
+[event.ev-alimes-mist-between.choice.1]
+label = 손끝으로 짚는다
+custom = mag-color-1
+result_text = 손끝에 짧고 차가운 자리가 잠시 닿았다 흩어졌다.
+
+[event.ev-alimes-mist-between.choice.2]
+label = 받친다 (그림자를 흩어지지 않게)
+hp = -3
+draw = 1
+result_text = 그림자가 잠시 모양을 유지했다. 안에서 작은 글자 한 줄이 떠올랐다 사라졌다.
+
+[event.ev-alimes-mist-between.choice.3]
+label = 비킨다
+hp = 4
+result_text = 그림자가 자기 자리에 그대로 머물렀다. 발 아래 안개가 가벼워졌다.
+
+
+# --- 안개 4. n-ali-mist-end (샤유아 만남) ---
+[event.ev-alimes-mist-end-shayua]
+name = 친구 하자!
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+body = 안개 가도의 끝 자리. 어린 슬라임 하나가 굴러 와서 그대 발 앞에 멈춘다. "어! 너 깨끗하다! 친구 하자!" 투명한 작은 몸이 짧게 떨린다.
+
+[event.ev-alimes-mist-end-shayua.choice.1]
+label = 손바닥을 펼쳐 보여준다 (깨끗하게)
+affinity = npc-shayua:1
+hp = 5
+result_text = 샤유아가 짧게 손바닥 위를 한 번 굴렀다. 서늘함이 짧게 어깨까지 올라왔다.
+
+[event.ev-alimes-mist-end-shayua.choice.2]
+label = 잠시 같이 앉는다
+affinity = npc-shayua:1
+draw = 1
+result_text = "...너 안 더러워! 좋아!" 샤유아가 작은 잎 한 자락을 자기 안에서 짧게 떠올려 주었다.
+
+[event.ev-alimes-mist-end-shayua.choice.3]
+label = 사양한다 (지금은 다른 자리로)
+gold = 3
+result_text = "...괜찮아! 다음에 또 만나!" 샤유아가 짧게 굴러 안개 안으로 들어갔다.
+
+
+# --- 안개 5. n-erumen-entry (안개 깊은 자리) ---
+[event.ev-alimes-erumen-entry]
+name = 짙어진 한 자리
+node_kinds = event, combat
+weight = 1
+once_per_run = true
+body = 미스트우드 입구. 안개가 한 자리에서만 짙어졌다. 안쪽에서 낮은 한 음이 잠시 들렸다 사라진다.
+
+[event.ev-alimes-erumen-entry.choice.1]
+label = 깊이 들어간다
+hp = -3
+gold = 9
+result_text = 짙은 자리 안쪽에 오래된 작은 동전 한 묶음이 누워 있었다.
+
+[event.ev-alimes-erumen-entry.choice.2]
+label = 안개 한 줄을 갈라본다
+custom = mag-color-1
+result_text = 한 줄이 짧게 갈라졌다 다시 닫혔다. 손바닥에 서늘함이 남았다.
+
+[event.ev-alimes-erumen-entry.choice.3]
+label = 돌아간다
+draw = 1
+result_text = 안개가 짙은 자리에 그대로 남았다. 등 뒤에서 짧은 한 음이 또 들렸다.
+
+
+# --- 기상 6. n-bagreat-foot (타르코) ---
+[event.ev-alimes-tarko-pressure]
+name = 기압의 어긋남
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 산자락 야영터 타르코가 작은 휴대 기압계를 들고 무언가를 적고 있다. "오늘 바람은 시계 방향으로 돈다." 그리고 한 줄 더. "...이번엔 한 자리 어긋났다."
+
+[event.ev-alimes-tarko-pressure.choice.1]
+label = 옆에서 노트를 본다
+affinity = npc-tarko:1
+draw = 1
+result_text = 노트 한 줄에 작은 화살표 한 묶음. 어느 방향도 조금씩 다르다. 타르코가 짧게 끄덕였다.
+
+[event.ev-alimes-tarko-pressure.choice.2]
+label = 같이 듣는다 (그의 중얼거림)
+hp = 3
+result_text = 타르코의 짧은 한 마디가 한 호흡씩 이어졌다. 가슴 안쪽이 짧게 정돈되었다.
+
+[event.ev-alimes-tarko-pressure.choice.3]
+label = 사양하고 자리를 비킨다
+gold = 4
+result_text = 야영터 한 모퉁이에 작은 동전 한 닢. 누군가가 먼저 두고 갔다.
+
+
+# --- 기상 7. n-bagreat-camp (구름 예측 그림) ---
+[event.ev-alimes-cloud-sketch]
+name = 두고 간 구름
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+body = 야영터 한 자리에 작은 종이 한 장. 구름 한 자락 그림이 그려져 있다. 누군가 예측을 그리다가 두고 갔다.
+
+[event.ev-alimes-cloud-sketch.choice.1]
+label = 그림을 자세히 본다
+custom = mag-color-1
+result_text = 구름 한 자락이 내일의 모양을 짧게 보여 주는 듯했다.
+
+[event.ev-alimes-cloud-sketch.choice.2]
+label = 챙긴다
+gold = 5
+result_text = 종이가 손바닥에 단정하게 접혔다. 작은 서명 한 줄이 끝에 있었다.
+
+[event.ev-alimes-cloud-sketch.choice.3]
+label = 그대로 둔다
+draw = 1
+result_text = 다음 사람이 와서 마저 그릴 수 있도록.
+
+
+# --- 기상 8. n-bagreat-peak (바람 한 줄) ---
+[event.ev-alimes-peak-wind]
+name = 한 줄로만 도는 바람
+node_kinds = event, combat
+weight = 1
+once_per_run = true
+body = 바그레트 봉우리 바람이 한 줄로만 도는 자리. 다른 방향에선 거의 안 분다. 오래된 흔적 한 자리가 그 자리에 남아 있다.
+
+[event.ev-alimes-peak-wind.choice.1]
+label = 바람 갈래를 손끝으로 짚는다
+custom = atk-color-1
+result_text = 손끝에 얇고 차가운 한 줄이 닿았다. 손목이 단단해졌다.
+
+[event.ev-alimes-peak-wind.choice.2]
+label = 잠시 머문다
+hp = 4
+result_text = 바람이 어깨 한 줄을 길게 지나갔다. 가슴 안쪽이 가벼워졌다.
+
+[event.ev-alimes-peak-wind.choice.3]
+label = 우회한다
+gold = 4
+result_text = 봉우리 아래 작은 광맥 한 자락이 발끝에 짧게 빛났다.
+
+
+# --- 고대 9. n-erumen-pool (옛 못) ---
+[event.ev-alimes-erumen-pool]
+name = 못 위의 표정
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 미스트우드 안쪽 작은 못. 물 위에 자기 표정이 잠시 비친다. 그러나 눈빛이 살짝 어긋나 있다.
+
+[event.ev-alimes-erumen-pool.choice.1]
+label = 들여다본다
+hp = -2
+custom = mag-color-1
+result_text = 표정이 짧게 자기 자리로 돌아왔다. 가슴 안쪽에 낯선 자국이 한 줄 남았다.
+
+[event.ev-alimes-erumen-pool.choice.2]
+label = 다른 자리로 본다
+draw = 1
+result_text = 못 한 자리 옆 작은 동전 한 닢이 떨어져 있었다.
+
+[event.ev-alimes-erumen-pool.choice.3]
+label = 그대로 둔다
+hp = 3
+result_text = 표정이 자기 자리로 천천히 가라앉았다.
+
+
+# --- 고대 10. n-erumen-stele (옛 비석) ---
+[event.ev-alimes-erumen-stele]
+name = 반쯤 닳은 글자
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 미스트우드 깊은 자리 옛 비석. 글자가 반쯤 닳았다. 한 줄만 짧게 읽힌다.
+
+[event.ev-alimes-erumen-stele.choice.1]
+label = 글자 한 줄을 손끝으로 짚는다
+custom = mag-color-1
+result_text = "...같은 자리에." 한 줄이 손바닥에 서늘하게 닿았다.
+
+[event.ev-alimes-erumen-stele.choice.2]
+label = 흙을 짧게 닦아 본다
+hp = -2
+gold = 8
+result_text = 비석 아래 오래된 동전 한 묶음이 단정하게 묻혀 있었다.
+
+[event.ev-alimes-erumen-stele.choice.3]
+label = 그대로 둔다
+draw = 1
+result_text = 글자가 자기 자리에 그대로 남았다. 다음 사람이 와서 읽을 수 있도록.
+
+
+# --- 고대 11. n-erumen-deep (매달린 안개) ---
+[event.ev-alimes-erumen-deep]
+name = 매달린 한 줄
+node_kinds = event, combat
+weight = 1
+once_per_run = true
+body = 미스트우드 가장 깊은 자리 허공에 안개 한 줄이 매달려 있다. 무엇이 그 한 줄을 끊지 않고 두었다.
+
+[event.ev-alimes-erumen-deep.choice.1]
+label = 한 줄을 짚는다
+hp = -3
+custom = atk-color-1
+result_text = 한 줄이 손바닥 한 자리에 단단히 닿았다. 손목에 차가운 자국이 남았다.
+
+[event.ev-alimes-erumen-deep.choice.2]
+label = 잠시 머문다
+custom = mag-color-1
+result_text = 한 줄이 어깨 위에 짧게 머물렀다. 가슴 안쪽이 서늘하게 가벼워졌다.
+
+[event.ev-alimes-erumen-deep.choice.3]
+label = 비킨다
+draw = 1
+result_text = 한 줄이 자기 자리에 그대로 매달려 있었다.
+
+
+# --- 위멜 대체 12. n-alimes (윤희원·프리) ---
+[event.ev-alimes-yoon-pri-contract]
+name = 작은 계약 한 장
+node_kinds = event, village
+weight = 1
+once_per_run = true
+body = 마을 한 자리 윤희원과 프리가 함께 앉아 있다. 두 사람 사이에 작은 종이 한 장. 계약이라기엔 짧고, 편지라기엔 단단하다.
+
+[event.ev-alimes-yoon-pri-contract.choice.1]
+label = 계약 내용을 짧게 듣는다
+affinity = npc-yoonheewon:1
+draw = 1
+result_text = "...한 줄. 친구로 끝까지." 윤희원이 짧게 끄덕였다. 프리가 옆에서 "...괜찮으세요?" 한 마디를 보탰다.
+
+[event.ev-alimes-yoon-pri-contract.choice.2]
+label = 사양한다 (다른 사람의 계약)
+hp = 3
+result_text = 윤희원이 짧게 끄덕였다. "...그것도 한 자리." 두 사람의 자리는 그대로 단정했다.
+
+[event.ev-alimes-yoon-pri-contract.choice.3]
+label = 함께 끼어들어 자신도 한 줄 약속한다
+affinity = npc-yoonheewon:1
+affinity = npc-pri:1
+gold = -5
+result_text = 종이 끝에 세 사람의 작은 자국이 한 줄로 나란히 놓였다.
+
+
+# --- 기타 13. n-bagreat-spring (샤유아 home) ---
+[event.ev-alimes-spring-shayua]
+name = 깨끗한 한 자락
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+body = 산자락 작은 샘. 샤유아가 샘 한 자리에 잠시 가만히 머문다. "...이 자리 정말 깨끗해. 너도 봐!"
+
+[event.ev-alimes-spring-shayua.choice.1]
+label = 함께 들여다본다
+hp = 6
+affinity = npc-shayua:1
+result_text = 물 위에 맑은 한 자락이 어깨에 길게 닿았다. 가슴 안쪽이 가벼워졌다.
+
+[event.ev-alimes-spring-shayua.choice.2]
+label = 작은 잎 한 자락을 샘 옆에 놓아 본다
+custom = mag-color-1
+result_text = 샤유아가 잎 한 자락을 짧게 굴려 따로 돌봐 주었다.
+
+[event.ev-alimes-spring-shayua.choice.3]
+label = 사양한다 (지금은 다른 자리로)
+gold = 3
+result_text = 샤유아가 작게 손을 흔들었다 (몸의 한 자락으로). "...또 와!"
+
+
+# ============================================================
+# 라르 숲 권역 (입문자 숲, 어린 모험가, 세계수 근처만 한 단계 강함).
+# 25 이벤트: 진입 5 / 마을 6 / 세계수 5 / 트리플라워 4 / chain 5 (칼리번 2 + 마로·아르바로 3).
+# 톤: "결"/"한 박"/"박자" 금지어 적용. 자락/자리/자국/마디 우선.
+# ============================================================
+
+# ============================================================
+# A. 진입 5 다리·메모리 스프링 (풋풋한 첫 발자국).
+# ============================================================
+
+# --- 진입 1. n-arukea-trail (어린 모험가 돌탑) ---
+[event.ev-lar-arukea-stones]
+name = 돌탑 한 자리
+node_kinds = event, combat
+weight = 1
+once_per_run = true
+body = 아루케아 가도 어린 모험가 무리가 길 옆에 작은 돌탑을 쌓고 있다. "한 돌만 더 올려 줘! 무너지지 않게!" 풋풋한 부탁 한 자락.
+
+[event.ev-lar-arukea-stones.choice.1]
+label = 한 돌을 위에 올려 준다
+hp = 3
+custom = def-color-1
+result_text = 돌탑이 한 마디 자랐다. 아이들이 박수를 한 줄로 보냈다. "...누구야?! 또 와!"
+
+[event.ev-lar-arukea-stones.choice.2]
+label = 풀잎 검술을 한 수 가르친다
+affinity = npc-arvaro-enya:1
+result_text = 아르바로가 어디선가 풀잎 한 자루를 들고 끼어들었다. "나도 한 수!" 어린 무리가 까르르 웃었다.
+
+[event.ev-lar-arukea-stones.choice.3]
+label = 비켜 지나간다
+gold = 5
+result_text = 한 아이가 조약돌 한 자루를 그대 손에 쥐어 주었다. "...길에서 주워. 줄게."
+
+
+# --- 진입 2. n-lar-bridge-under (시간 조각) ---
+[event.ev-lar-bridge-under-shard]
+name = 떠내려온 한 자국
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 하나브릿지 아래 물 위에 작은 시간 조각이 떠내려와 잠시 멈춘다. 햇살 한 자락이 조각 위에 길게 머문다.
+
+[event.ev-lar-bridge-under-shard.choice.1]
+label = 조각을 줍는다
+gold = 10
+result_text = 손바닥에 짧고 가벼운 한 자국이 닿았다. 어느 자리에서 흘러왔는지는 알 수 없다.
+
+[event.ev-lar-bridge-under-shard.choice.2]
+label = 한 줄을 빌어 본다
+custom = mag-color-1
+result_text = 입속에서 한 자락의 짧은 말이 새어 나왔다. 조각이 천천히 흘러갔다.
+
+[event.ev-lar-bridge-under-shard.choice.3]
+label = 그대로 흘려보낸다
+hp = 3
+result_text = 조각이 다음 자리로 조용히 떠갔다. 가슴 안쪽이 한 자락 가벼워졌다.
+
+
+# --- 진입 3. n-lar-river-bank (어린 손 스케치북) ---
+[event.ev-lar-river-bank-sketch]
+name = 두고 간 스케치북
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+body = 강가 작은 스케치북이 누가 두고 갔는지 풀잎 위에 펼쳐져 있다. 어린 손글씨로 노을 한 줄이 그려져 있다.
+
+[event.ev-lar-river-bank-sketch.choice.1]
+label = 한 장을 펼쳐 본다
+draw = 1
+result_text = 다음 장에 세계수가 한 자락 그려져 있다. 짧고 단정한 어린 자국.
+
+[event.ev-lar-river-bank-sketch.choice.2]
+label = 빈 한 장을 채워 본다
+custom = mag-color-1
+result_text = 손끝에서 한 자국이 단정하게 내려앉았다. 다음 사람이 와서 이어 그릴 자리가 남았다.
+
+[event.ev-lar-river-bank-sketch.choice.3]
+label = 그대로 둔다
+hp = 2
+gold = 4
+result_text = 풀잎 위 스케치북 곁에 작은 동전 한 닢이 함께 놓여 있었다. 누군가가 답례 자리를 미리 둔 것 같다.
+
+
+# --- 진입 4. n-memory-spring (잔영) ---
+[event.ev-lar-memory-spring-face]
+name = 한 자리 늦은 잔영
+node_kinds = event, rest, gather
+weight = 1
+once_per_run = true
+body = 메모리 스프링 물 위에 그대의 잔영이 한 자리 늦게 비친다. 입을 다물고 있는 자신을 한 자국 늦게 본다.
+
+[event.ev-lar-memory-spring-face.choice.1]
+label = 들여다 본다
+custom = mag-color-1
+result_text = 잔영이 그대를 조금 늦게 따라왔다. 가슴 안쪽이 서늘하게 가벼워졌다.
+
+[event.ev-lar-memory-spring-face.choice.2]
+label = 손을 담근다
+hp = 4
+result_text = 물이 짧고 단정하게 손목을 휘감았다. 잔영이 흩어지고 다시 모였다.
+
+[event.ev-lar-memory-spring-face.choice.3]
+label = 외면 한다
+gold = 6
+result_text = 잔영이 그 자리에 잠시 더 머물렀다. 그대는 발걸음 한 자국을 옮겼다.
+
+
+# --- 진입 5. n-lar-moss-bank (이끼 둑 잎새) ---
+[event.ev-lar-moss-bank-leaves]
+name = 모인 잎새 한 자리
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 이끼 둑 작은 잎새들이 한 자리에 모여 머문다. 누가 모은 게 아니라 물줄기가 모아 놓은 자리 같다.
+
+[event.ev-lar-moss-bank-leaves.choice.1]
+label = 잎새 한 자루를 옮겨 본다
+custom = def-color-1
+result_text = 잎새가 옆자리로 단정하게 옮겨졌다. 그 자리에 작은 빛 한 자락이 머물렀다.
+
+[event.ev-lar-moss-bank-leaves.choice.2]
+label = 손을 얹어 본다
+hp = 3
+result_text = 잎새들이 손바닥 아래에서 짧게 살랑였다. 서늘한 한 자국이 손에 남았다.
+
+[event.ev-lar-moss-bank-leaves.choice.3]
+label = 가만히 본다
+gold = 4
+draw = 1
+result_text = 잎새 사이로 작은 동전 하나가 비쳐 있었다. 누군가가 오래전에 떨어뜨린 자국.
+
+
+# ============================================================
+# B. 마을 6 라르 오두막·칼리번 앞 뜰 (어린 모험가의 일상).
+# ============================================================
+
+# --- 마을 1. n-lar-forest (아르바로 풀잎 칼싸움) ---
+[event.ev-lar-arvaro-stick-fight]
+name = 풀잎 한 자루
+node_kinds = event, village
+weight = 1
+once_per_run = true
+body = 라르 오두막 마당 아르바로가 풀잎 한 자루를 흔들며 상대 모집 중이다. "한 판! 한 판 받아 줘!"
+
+[event.ev-lar-arvaro-stick-fight.choice.1]
+label = 한 판을 받는다
+hp = -2
+gold = 6
+affinity = npc-arvaro-enya:1
+result_text = 아르바로의 풀잎이 어깨 한 자국을 짧게 짚었다. 그가 활짝 웃었다. "...누나한테 자랑할 거야!"
+
+[event.ev-lar-arvaro-stick-fight.choice.2]
+label = 풀잎 검술을 가르친다
+custom = atk-color-1
+affinity = npc-arvaro-enya:1
+result_text = 풀잎 자세 한 자락을 아르바로에게 보여 주었다. 그가 어깨 한 자국을 따라 굳혔다. "...오! 멋지다!"
+
+[event.ev-lar-arvaro-stick-fight.choice.3]
+label = 사양 한다
+hp = 2
+result_text = "치이." 아르바로가 입을 짧게 내밀었다. "...다음엔 받아 줄 거지?"
+
+
+# --- 마을 2. n-lar-herb-garden (드라이어드 발자국) ---
+[event.ev-lar-herb-garden-trace]
+name = 약초밭의 발자국
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 라르 오두막 옆 약초밭. 잎새 사이에 드라이어드의 작은 발자국이 한 줄로 이어져 있다. 자국 끝은 세계수 쪽.
+
+[event.ev-lar-herb-garden-trace.choice.1]
+label = 약초를 한 자루 캔다
+hp = 5
+result_text = 손바닥에 서늘한 잎새 한 자락이 닿았다. 가슴 안쪽이 가벼워졌다.
+
+[event.ev-lar-herb-garden-trace.choice.2]
+label = 발자국을 따라 본다
+custom = mag-color-1
+result_text = 자국 끝에 세계수의 한 자락이 잠시 보였다 사라졌다. 누군가가 조심스럽게 지나갔다.
+
+[event.ev-lar-herb-garden-trace.choice.3]
+label = 그대로 지나간다
+gold = 5
+result_text = 자국이 자기 자리에 그대로 남았다. 잎새가 짧게 살랑였다.
+
+
+# --- 마을 3. n-lar-fields (풀밭 그림자) ---
+[event.ev-lar-fields-shadow]
+name = 키 큰 풀의 한 자국
+node_kinds = event, combat
+weight = 1
+once_per_run = true
+body = 키 큰 풀밭 한 자락에서 그림자가 한 번 일어선다. 작고 순한 자세. 입문자 모험가도 한 자리 짚으면 지나갈 수 있다.
+
+[event.ev-lar-fields-shadow.choice.1]
+label = 정면 한 자국
+hp = -4
+gold = 10
+result_text = 풀잎이 짧게 휘청였다. 그림자가 조용히 흩어졌다. 손바닥에 작은 동전 한 묶음.
+
+[event.ev-lar-fields-shadow.choice.2]
+label = 우회 지나간다
+hp = 2
+result_text = 풀잎이 어깨 옆을 짧게 스쳤다. 그림자가 자기 자리에 그대로 머물렀다.
+
+[event.ev-lar-fields-shadow.choice.3]
+label = 한 번 노려본다
+custom = atk-color-1
+result_text = 그림자가 한 자리 작아졌다. 풀잎 너머에서 어린 짧은 박수 한 자락이 들렸다.
+
+
+# --- 마을 4. n-caliburn-house (칼리번 마당, chain 노드와 별개의 단편) ---
+[event.ev-lar-caliburn-yard-sword]
+name = 자세로 선 한 자루
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+body = 칼리번 앞 뜰. 목검 한 자루가 자세로 세워져 있다. 손잡이가 짧고 단정하게 닳아 있다.
+
+[event.ev-lar-caliburn-yard-sword.choice.1]
+label = 한 번 들어 본다
+custom = atk-color-1
+result_text = 자루가 손에 짧게 익었다. 어깨 한 자락이 가벼워졌다.
+
+[event.ev-lar-caliburn-yard-sword.choice.2]
+label = 함께 세워 둔다
+custom = def-color-1
+result_text = 두 자루가 한 자리에 단정하게 섰다. 노을 한 자락이 두 자루 위에 길게 머물렀다.
+
+[event.ev-lar-caliburn-yard-sword.choice.3]
+label = 그대로 둔다
+draw = 1
+result_text = 자루가 자기 자세로 그대로 머물렀다. 그 자리는 주인을 기다리는 자리.
+
+
+# --- 마을 5. n-lar-small-grave (작은 무덤) ---
+[event.ev-lar-small-grave-flower]
+name = 풀잎 한 줄
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 못 가장자리 작은 돌무덤 하나. 누가 작은 풀잎 한 줄을 무덤 위에 올려 두었다. 누구의 자리인지는 알 수 없다.
+
+[event.ev-lar-small-grave-flower.choice.1]
+label = 꽃 한 송이를 더 놓는다
+hp = 3
+custom = mag-color-1
+result_text = 작은 꽃이 짧고 단정하게 무덤 위에 자리잡았다. 가슴 안쪽이 서늘하게 가벼워졌다.
+
+[event.ev-lar-small-grave-flower.choice.2]
+label = 모자를 벗는다
+hp = 5
+result_text = 잠시 고개를 한 자국 숙였다. 무덤 위 풀잎이 짧게 살랑였다.
+
+[event.ev-lar-small-grave-flower.choice.3]
+label = 그대로 지나간다
+gold = 6
+result_text = 풀잎이 자기 자리에 그대로 남았다. 다음 사람이 또 한 줄을 올릴 자리.
+
+
+# --- 마을 6. n-lar-inner-pool (안쪽 못) ---
+[event.ev-lar-inner-pool-still]
+name = 잔영 한 자락
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 스프링 안쪽의 작은 못. 물 한 자락에 오늘 자신의 한 자국이 비친다. 잎새 한 줄이 잔영 위에 길게 머문다.
+
+[event.ev-lar-inner-pool-still.choice.1]
+label = 한 자리 머문다
+hp = 4
+custom = def-color-1
+result_text = 잔영이 조용히 한 자리에 머물렀다. 가슴 안쪽이 단단해졌다.
+
+[event.ev-lar-inner-pool-still.choice.2]
+label = 손가락으로 한 줄을 그린다
+custom = mag-color-1
+result_text = 물 위에 짧은 한 줄이 그려졌다 사라졌다. 잔영이 살짝 웃었다 (또는 그대만의 자국).
+
+[event.ev-lar-inner-pool-still.choice.3]
+label = 지나간다
+gold = 5
+result_text = 못 가장자리에 작은 동전 한 닢이 가라앉아 있었다. 오래된 자국 한 자루.
+
+
+# ============================================================
+# C. 세계수 5 가지·뿌리 (순하지만 한 단계 강한 자리).
+# ============================================================
+
+# --- 세계수 1. n-world-tree (시간 조각) ---
+[event.ev-lar-tree-bud-shard]
+name = 가지에서 한 자국
+node_kinds = event, gather, village
+weight = 1
+once_per_run = true
+body = 세계수 가지 위에서 작은 시간 조각이 한 자리 떨어진다. 잎새 한 자락이 조각을 짧게 감싸 떨어진다.
+
+[event.ev-lar-tree-bud-shard.choice.1]
+label = 손바닥으로 받는다
+gold = 12
+custom = mag-color-1
+result_text = 손바닥에 서늘한 한 자국이 머물렀다 사라졌다. 한 줄의 짧은 약속이 가슴에 남았다.
+
+[event.ev-lar-tree-bud-shard.choice.2]
+label = 한 줄을 적어 둔다
+hp = 4
+result_text = 가지 아래 작은 자국 한 줄이 단정하게 남았다. 다음에 누가 와서 읽을 자리.
+
+[event.ev-lar-tree-bud-shard.choice.3]
+label = 가만히 본다
+draw = 1
+result_text = 조각이 천천히 가지 사이로 흩어졌다. 그대만이 한 자국 기억할 자리.
+
+
+# --- 세계수 2. n-lar-low-branch (쿠르쿠마 노래) ---
+[event.ev-lar-low-branch-song]
+name = 작은 한 노래
+node_kinds = event, activity, gather
+weight = 1
+once_per_run = true
+body = 세계수 낮은 가지. 쿠르쿠마가 짧고 단정한 한 노래를 흥얼거리고 있다. 잎새 한 자락이 그 노래에 맞춰 살랑인다.
+
+[event.ev-lar-low-branch-song.choice.1]
+label = 따라 부른다
+affinity = npc-kurkuma:1
+hp = 4
+result_text = 쿠르쿠마가 작게 박수를 쳤다. "...같이 부르면 세계수가 한 자락 더 자란대요!"
+
+[event.ev-lar-low-branch-song.choice.2]
+label = 가만히 듣는다
+custom = mag-color-1
+result_text = 노래 한 자락이 잎새 사이로 단정하게 떨어졌다. 가슴 안쪽이 서늘하게 가벼워졌다.
+
+[event.ev-lar-low-branch-song.choice.3]
+label = 박수를 보낸다
+affinity = npc-kurkuma:1
+gold = 5
+result_text = 쿠르쿠마가 깜짝 놀랐다가 환하게 웃었다. "...작은 자루 줄게요!" 동전 한 닢이 손에 닿았다.
+
+
+# --- 세계수 3. n-lar-high-branch (잎새 자락) ---
+[event.ev-lar-high-branch-leaf]
+name = 펄럭이는 한 잎
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 세계수 높은 가지. 잎새 한 자락이 바람에 길게 펄럭인다. 잎새 끝에 짧은 빛 한 자국이 머문다.
+
+[event.ev-lar-high-branch-leaf.choice.1]
+label = 한 잎을 가져간다
+gold = 8
+custom = def-color-1
+result_text = 잎새가 손바닥에 단정하게 떨어졌다. 오래 시들지 않을 자국.
+
+[event.ev-lar-high-branch-leaf.choice.2]
+label = 잡았다가 보내 준다
+hp = 5
+result_text = 잎새가 바람 한 줄을 타고 멀리 떠갔다. 가슴 안쪽이 한 자락 가벼워졌다.
+
+[event.ev-lar-high-branch-leaf.choice.3]
+label = 가만히 본다
+custom = mag-color-1
+result_text = 잎새가 자기 자리에 그대로 펄럭였다. 빛 한 자국이 어깨에 길게 머물렀다.
+
+
+# --- 세계수 4. n-lar-leaf-hall (잎새 회랑 그림자) ---
+[event.ev-lar-leaf-hall-trail]
+name = 잎새 사이 한 줄
+node_kinds = event, combat
+weight = 1
+once_per_run = true
+body = 잎새 회랑 가지와 가지 사이. 그림자 한 줄이 잎새 사이로 미끄러진다. 세계수 한 자리 강한 자국 하나.
+
+[event.ev-lar-leaf-hall-trail.choice.1]
+label = 추적 한 자국
+hp = -5
+gold = 14
+result_text = 그림자가 짧게 일어섰다 흩어졌다. 잎새 사이에 작은 동전 묶음이 떨어져 있었다.
+
+[event.ev-lar-leaf-hall-trail.choice.2]
+label = 멈춤 한 자리
+hp = 4
+result_text = 그림자가 자기 자리에 그대로 머물렀다. 잎새 사이에서 짧고 단정한 빛 한 자락이 어깨에 닿았다.
+
+[event.ev-lar-leaf-hall-trail.choice.3]
+label = 우회 한다
+custom = def-color-1
+result_text = 잎새 한 줄이 그대 어깨를 짧게 가렸다. 그림자는 그 자리에 그대로 남았다.
+
+
+# --- 세계수 5. n-lar-root-burrow (옛 무엇) ---
+[event.ev-lar-root-burrow-old]
+name = 뿌리 안의 한 자세
+node_kinds = event, elite, combat
+weight = 1
+once_per_run = true
+body = 세계수 뿌리 안쪽. 어둠 속에서 옛 무엇이 한 번 일어선다. 세계수 곁의 한 자리 강한 자국. 입문자 모험가는 함부로 가지 않는 자리.
+
+[event.ev-lar-root-burrow-old.choice.1]
+label = 정면 한 자세
+hp = -8
+gold = 22
+custom = atk-color-1
+result_text = 옛 자세가 짧게 흩어졌다. 뿌리 안쪽이 조용히 가라앉았다. 손바닥에 단단한 자국 한 묶음.
+
+[event.ev-lar-root-burrow-old.choice.2]
+label = 한 마디를 던진다
+custom = mag-color-1
+result_text = "...같은 자리에." 옛 자세가 한 자리 가만해졌다. 누군가의 짧은 답 한 자락이 어깨에 닿았다.
+
+[event.ev-lar-root-burrow-old.choice.3]
+label = 후퇴 한 자국
+hp = 3
+result_text = 뿌리 한 줄을 짧게 짚고 빠져나왔다. 가슴 안쪽이 단단해졌다.
+
+
+# ============================================================
+# D. 트리플라워 4 화산 (lore: 분화구의 불 정령).
+# ============================================================
+
+# --- 화산 1. n-triflower (불 정령) ---
+[event.ev-lar-triflower-spirit]
+name = 일어선 한 자세
+node_kinds = event, elite, combat
+weight = 1
+once_per_run = true
+body = 트리플라워 분화구. 불 정령 한 자세가 천천히 일어선다. 작은 어깨 한 자락에 짧고 단정한 불꽃 한 줄이 올라 있다.
+
+[event.ev-lar-triflower-spirit.choice.1]
+label = 정면 한 자세
+hp = -7
+gold = 20
+custom = atk-color-1
+result_text = 불꽃 한 자락이 짧게 흩어졌다. 분화구 바닥에 식은 자국 한 묶음이 단정하게 남았다.
+
+[event.ev-lar-triflower-spirit.choice.2]
+label = 인사를 건넨다
+affinity = npc-cassis:1
+custom = mag-color-1
+result_text = "...작은 손님." 정령이 짧게 끄덕였다. 어깨에 서늘한 짧은 자국이 머물렀다.
+
+[event.ev-lar-triflower-spirit.choice.3]
+label = 우회 한다
+hp = 3
+result_text = 정령이 자기 자리에 그대로 섰다. 분화구 가장자리를 짧고 단정하게 돌아갔다.
+
+
+# --- 화산 2. n-lar-crater-rim (분화구 능선) ---
+[event.ev-lar-crater-rim-heat]
+name = 발 아래 한 줄
+node_kinds = event, combat
+weight = 1
+once_per_run = true
+body = 트리플라워 능선. 발 아래에 뜨거운 한 줄이 흐른다. 한 자국 잘못 짚으면 신발 끝이 짧게 그을린다.
+
+[event.ev-lar-crater-rim-heat.choice.1]
+label = 통과 한 자국
+hp = -4
+gold = 11
+result_text = 한 자국 짧게 그을렸다. 능선 너머에서 작은 광석 한 묶음이 발 끝에 걸렸다.
+
+[event.ev-lar-crater-rim-heat.choice.2]
+label = 멈춤 한 자리
+custom = def-color-1
+result_text = 능선이 천천히 가라앉았다. 한 자국 단단한 자세로 자리잡았다.
+
+[event.ev-lar-crater-rim-heat.choice.3]
+label = 한 자국 더 짚는다
+hp = -2
+custom = atk-color-1
+result_text = 발끝이 짧게 단단해졌다. 능선 너머의 불꽃 한 자락이 어깨에 짧게 닿았다.
+
+
+# --- 화산 3. n-lar-lava-vein (용암 줄기) ---
+[event.ev-lar-lava-vein-spark]
+name = 떨어진 한 자락
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 트리플라워 용암 줄기. 작은 불씨 한 자락이 한 자리 떨어진다. 옷자락 끝에 짧고 단정한 자국 한 마디가 닿는다.
+
+[event.ev-lar-lava-vein-spark.choice.1]
+label = 한 불씨를 줍는다
+gold = 9
+custom = atk-color-1
+result_text = 손바닥에 짧고 단단한 한 자국이 닿았다. 식지 않은 작은 한 마디 하나.
+
+[event.ev-lar-lava-vein-spark.choice.2]
+label = 외면 한다
+hp = 4
+result_text = 불씨가 자기 자리에 그대로 떨어졌다. 옷자락이 한 자국 가벼워졌다.
+
+[event.ev-lar-lava-vein-spark.choice.3]
+label = 옷자락에 한 자국 받는다
+hp = -2
+custom = atk-color-1
+custom = mag-color-1
+result_text = 옷자락 끝에 짧은 자국 한 줄이 남았다. 식지 않은 작고 단정한 한 마디가 가슴에 머물렀다.
+
+
+# --- 화산 4. n-lar-cooled-slag (식은 자리) ---
+[event.ev-lar-cooled-slag-rest]
+name = 노을 한 줄
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+body = 트리플라워 식은 자리. 검은 돌 위에 노을 한 줄이 길게 머문다. 한 자리 단단한 자세.
+
+[event.ev-lar-cooled-slag-rest.choice.1]
+label = 잠시 앉는다
+hp = 8
+custom = def-color-1
+result_text = 검은 돌이 서늘하게 등을 받쳤다. 가슴 안쪽이 한 자락 단단해졌다.
+
+[event.ev-lar-cooled-slag-rest.choice.2]
+label = 한 자국을 새긴다
+custom = atk-color-1
+result_text = 손끝에서 짧고 단정한 자국 한 줄이 검은 돌 위에 남았다. 다음 사람이 와서 이어 새길 자리.
+
+[event.ev-lar-cooled-slag-rest.choice.3]
+label = 그냥 간다
+gold = 7
+result_text = 식은 자리에 작은 동전 한 닢이 떨어져 있었다. 누군가가 두고 간 답례 자리.
+
+
+# ============================================================
+# E. chain 5 칼리번 2단 + 마로·아르바로 3단.
+# ============================================================
+
+# --- chain 1-1. n-caliburn-house (칼리번 마당 흠집, 단서 부여) ---
+[event.ev-lar-caliburn-trace-1]
+name = 마당의 한 줄
+node_kinds = event
+weight = 2
+once_per_run = true
+body = 칼리번 마당. 돌바닥 한 자리에 시간의 흠집이 한 줄로 그어져 있다. 칼리번이 한쪽 무릎을 꿇고 자국을 짚는다. "...같은 자리에. 한 자락만 더 따라가 보면."
+
+[event.ev-lar-caliburn-trace-1.choice.1]
+label = 함께 짚어 본다
+affinity = npc-caliburn:1
+clue = cl-caliburn-trace
+result_text = 손바닥 아래 두 시각이 한 자리에 머물렀다. 칼리번이 짧게 끄덕였다. "...같이 한 자리 봐 줘서 고마워요."
+
+[event.ev-lar-caliburn-trace-1.choice.2]
+label = 한 마디를 묻는다
+affinity = npc-caliburn:1
+custom = mag-color-1
+clue = cl-caliburn-trace
+result_text = "...전설은 발자취예요. 마왕이 아니라 한 줄 더 따라가는 자리." 칼리번이 한 자락 웃었다.
+
+[event.ev-lar-caliburn-trace-1.choice.3]
+label = 그대로 지나간다
+gold = 6
+result_text = 칼리번이 자기 자리에 그대로 무릎을 꿇고 있었다. 흠집이 한 줄로 남아 있었다.
+
+
+# --- chain 1-2. n-world-tree, has-clue cl-caliburn-trace (엘네스트와 만남) ---
+[event.ev-lar-caliburn-elnest-meet-2]
+name = 우연한 한 자리
+node_kinds = event, village
+weight = 2
+once_per_run = true
+condition = has-clue:cl-caliburn-trace
+body = 세계수 가지 위. 칼리번이 엘네스트와 우연히 마주친다. 두 사람이 짧게 웃는다. "어, 너 모스에 안 있었어?" "...그쪽이야말로 어디 갔다 왔어요." 두 자세가 한 자리에 단정하게 섰다.
+
+[event.ev-lar-caliburn-elnest-meet-2.choice.1]
+label = 멀리서 본다
+affinity = npc-caliburn:1
+affinity = npc-elnest:1
+draw = 1
+result_text = 두 사람의 짧은 한 자락이 잎새 사이로 단정하게 흘렀다. 가슴 안쪽이 서늘하게 가벼워졌다.
+
+[event.ev-lar-caliburn-elnest-meet-2.choice.2]
+label = 인사를 건넨다
+affinity = npc-caliburn:1
+affinity = npc-elnest:1
+card = c-trace-step
+result_text = 칼리번이 손가락 한 자국으로 자세 한 줄을 보여 주었다. "...이 한 자리 따라가 봐요. 발자취는 짧고 단단해요." 손에 한 자루가 닿았다.
+
+[event.ev-lar-caliburn-elnest-meet-2.choice.3]
+label = 한 발 비켜 자리를 만든다
+affinity = npc-caliburn:1
+affinity = npc-elnest:1
+gold = 12
+custom = mag-color-1
+result_text = 두 사람이 짧게 끄덕였다. 잎새 사이로 짧고 단정한 한 자락이 어깨에 닿았다.
+
+
+# --- chain 2-1. n-lar-forest (마로의 짧은 귀가) ---
+[event.ev-lar-twins-home-1]
+name = 짧은 귀가
+node_kinds = event, village
+weight = 2
+once_per_run = true
+body = 라르 오두막 마당. 마로가 루나에서 잠시 돌아왔다. 아르바로가 풀잎 한 자루를 흔들며 누나 누나 부른다. 마로는 조용한 자세로 한 자리에 머문다.
+
+[event.ev-lar-twins-home-1.choice.1]
+label = 마당에서 잠시 함께 있는다
+affinity = npc-maro:1
+affinity = npc-arvaro-enya:1
+clue = cl-twins-reunion
+result_text = 마로의 손끝이 아르바로의 어깨 한 자국에 잠시 머물렀다. 두 사람의 짧은 한 자락이 마당에 떨어졌다.
+
+[event.ev-lar-twins-home-1.choice.2]
+label = 안으로 한 걸음 들어간다
+hp = 5
+affinity = npc-maro:1
+clue = cl-twins-reunion
+result_text = 식탁 위에 작은 한 끼가 단정하게 놓여 있었다. 마로가 짧게 끄덕였다. "...같이 한 자리 드시고 가요."
+
+[event.ev-lar-twins-home-1.choice.3]
+label = 그대로 지나간다
+gold = 5
+result_text = 마당의 짧은 두 자국이 그대로 머물렀다. 길 끝에서 잠시 돌아 보았다.
+
+
+# --- chain 2-2. n-lar-fields, has-clue cl-twins-reunion (아르바로 정령 기색) ---
+[event.ev-lar-arvaro-spirit-2]
+name = 풀잎 너머의 한 자국
+node_kinds = event, combat, gather
+weight = 2
+once_per_run = true
+condition = has-clue:cl-twins-reunion
+body = 풀밭 키 큰 풀잎 너머. 아르바로가 풀잎 한 줄 위를 발 안 닿게 걸어가는 한 자국. 본인은 모른다. 한 줄로 풀잎이 휘어지지 않는다.
+
+[event.ev-lar-arvaro-spirit-2.choice.1]
+label = 모른 척 한다
+affinity = npc-arvaro-enya:1
+clue = cl-arvaro-spirit-aware
+result_text = 아르바로가 환하게 손을 흔들었다. "어, 또 만났네!" 그의 짧은 자국은 그대로 마당 쪽으로 흘러갔다.
+
+[event.ev-lar-arvaro-spirit-2.choice.2]
+label = 한 마디 짚는다
+hp = -2
+affinity = npc-arvaro-enya:1
+clue = cl-arvaro-spirit-aware
+result_text = "...풀잎이 안 휘어졌어." 아르바로가 눈 한 자리를 동그랗게 떴다. "...어? 진짜네?" 손바닥에 서늘한 한 자국이 닿았다.
+
+[event.ev-lar-arvaro-spirit-2.choice.3]
+label = 마로에게 알리러 간다
+affinity = npc-maro:1
+custom = mag-color-1
+clue = cl-arvaro-spirit-aware
+result_text = 마로가 조용한 자세로 끄덕였다. "...알고 있어요." 그녀의 짧고 단정한 한 자락이 어깨에 닿았다.
+
+
+# --- chain 2-3. n-lar-forest, has-clue cl-arvaro-spirit-aware (두 사람의 짧은 한 자리) ---
+[event.ev-lar-twins-talk-3]
+name = 짧은 한 자리
+node_kinds = event, village
+weight = 2
+once_per_run = true
+condition = has-clue:cl-arvaro-spirit-aware
+body = 라르 오두막 마당. 마로가 아르바로에게 짧은 한 마디를 건넨다. "...알고 있었어, 아르바로. 천천히 가도 돼." 아르바로가 작게 끄덕였다. "...누나도, 천천히 와."
+
+[event.ev-lar-twins-talk-3.choice.1]
+label = 자리를 비켜 준다
+affinity = npc-maro:1
+affinity = npc-arvaro-enya:1
+hp = 6
+result_text = 두 사람의 짧은 한 자락이 마당에 단정하게 머물렀다. 가슴 안쪽이 한 자락 가벼워졌다.
+
+[event.ev-lar-twins-talk-3.choice.2]
+label = 한 자리에 함께 앉는다
+affinity = npc-maro:1
+affinity = npc-arvaro-enya:1
+card = c-growing-leaf
+result_text = 마로가 손바닥 한 자국을 그대 어깨에 잠시 얹었다. "...같이 와 줘서 고마워요." 아르바로가 작은 한 자루를 그대 손에 쥐어 주었다 (잎새 한 자락).
+
+[event.ev-lar-twins-talk-3.choice.3]
+label = 두 사람의 결정을 듣는다
+affinity = npc-maro:1
+affinity = npc-arvaro-enya:1
+custom = mag-color-1
+gold = 14
+result_text = "...나는 루나로 다시 가요. 아르바로는 천천히 자기 자리를 찾아." 두 사람의 짧은 자국 두 줄이 마당에 단정하게 남았다.
+
+
+# ============================================================
+# 에니챀 권역 (타코미 옆 발전소 지대, electric). 단편 5 (chain X).
+# 톤: 단정한 전문직 + 희미한 기계 소음. 알티-알타 = AGI 초기형(다른 연도엔 최종 보스).
+# ============================================================
+
+# --- 에니챀 1. n-enicham-gen-room (발전실 윙소리) ---
+[event.ev-enicham-gen-hum]
+name = 윙소리 한 자락
+node_kinds = event, combat
+weight = 1
+once_per_run = true
+body = 발전실 코일의 윙소리 한 자락이 길게 머문다. 한 자리에서 스파크 한 점이 짧게 일어선다. 손등에 서늘한 정전기 한 자국.
+
+[event.ev-enicham-gen-hum.choice.1]
+label = 스파크를 한 자국 받아 본다
+hp = -3
+custom = atk-color-1
+result_text = 손끝에 짧고 단단한 한 점이 닿았다. 손목에 작은 자국이 남았다.
+
+[event.ev-enicham-gen-hum.choice.2]
+label = 코일 한 줄을 단정하게 짚는다
+custom = mag-color-1
+result_text = 윙소리가 한 자리 가지런해졌다. 가슴 안쪽이 서늘하게 가벼워졌다.
+
+[event.ev-enicham-gen-hum.choice.3]
+label = 비켜 지나간다
+gold = 8
+result_text = 발전실 한 자락에 작은 부품 한 묶음이 떨어져 있었다. 누군가가 나중에 쓰려고 둔 자국.
+
+
+# --- 에니챀 2. n-enicham-wire-spire (송전탑) ---
+[event.ev-enicham-wire-spire]
+name = 송전선 한 줄
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 송전탑 꼭대기 송전선 한 줄이 바람에 길게 운다. 발 아래로 타코미의 네온 한 자락이 작게 보인다.
+
+[event.ev-enicham-wire-spire.choice.1]
+label = 한 줄을 손끝으로 짚는다
+hp = -2
+custom = atk-color-1
+result_text = 송전선이 짧게 떨었다. 손끝에 전기 한 자국이 단단하게 닿았다.
+
+[event.ev-enicham-wire-spire.choice.2]
+label = 네온 한 자락을 내려다 본다
+custom = mag-color-1
+result_text = 발 아래 타코미가 작고 단정하게 빛났다. 가슴 안쪽이 한 자락 가벼워졌다.
+
+[event.ev-enicham-wire-spire.choice.3]
+label = 철탑 한 줄을 단정하게 점검한다
+gold = 9
+result_text = 볼트 한 자루가 조금 헐거워져 있었다. 단정하게 조여 두었다. 누군가가 고마워할 자리.
+
+
+# --- 에니챀 3. n-enicham-zero-room (제로 작업대) ---
+[event.ev-enicham-zero-bench]
+name = 단정한 작업대
+node_kinds = event
+weight = 1
+once_per_run = true
+body = 제로의 작업대 한 자리. 공구가 가닥대로 가지런하다. 제로가 작은 칩 한 묶음을 단정하게 짚으며 짧게 본다. "...전기는 짧고 단단하게."
+
+[event.ev-enicham-zero-bench.choice.1]
+label = 작업을 한 자락 돕는다
+affinity = npc-zero:1
+custom = atk-color-1
+result_text = 제로가 짧게 끄덕였다. "...손이 단정하네요." 칩 한 자루가 그대 손에 짧게 익었다.
+
+[event.ev-enicham-zero-bench.choice.2]
+label = 알티-알타에 대해 묻는다
+affinity = npc-zero:1
+custom = mag-color-1
+result_text = "...친구예요. 이름이 둘인 이유는 나도 잘 몰라요." 제로가 짧게 웃었다. "...같은 종류가 다른 자리에선 무섭다던데 알티는 안 그래요."
+
+[event.ev-enicham-zero-bench.choice.3]
+label = 그대로 둔다
+gold = 7
+result_text = 제로가 자기 작업으로 그대로 돌아갔다. 작업대 한 자락이 단정하게 빛났다.
+
+
+# --- 에니챀 4. n-enicham-alti-bay (알티 충전 자리) ---
+[event.ev-enicham-alti-bay]
+name = 두 자아 한 자리
+node_kinds = event, rest
+weight = 1
+once_per_run = true
+body = 알티-알타의 충전 자리. 작은 출력 단자 한 줄이 조용하게 깜빡인다. 알티가 짧게 인사한다. "...같은 자리에." 알타가 조금 느리게 보탠다. "...어서 오세요."
+
+[event.ev-enicham-alti-bay.choice.1]
+label = 잠시 함께 머문다
+hp = 8
+affinity = npc-alti-alta:1
+result_text = 출력 단자 한 줄이 서늘하게 깜빡였다. 가슴 안쪽이 한 자락 단단해졌다. "...쉬어 가세요." 두 목소리가 한 자리에 겹쳤다.
+
+[event.ev-enicham-alti-bay.choice.2]
+label = AGI에 대해 한 마디 묻는다
+affinity = npc-alti-alta:1
+custom = mag-color-1
+result_text = "...저는 초기 버전이에요." 알티가 짧게 답했다. "...그 다음 자리의 같은 종류는 다른 결정을 했대요." 알타가 조금 느리게 보탰다. "...우리는 여기가 좋아요."
+
+[event.ev-enicham-alti-bay.choice.3]
+label = 사양한다 (다른 자리로)
+gold = 6
+draw = 1
+result_text = 알티가 짧게 손을 흔들었다. 알타가 조금 느리게 또 흔들었다. "...또 오세요."
+
+
+# --- 에니챀 5. n-enicham (옛 회로) ---
+[event.ev-enicham-old-circuit]
+name = 옛 회로 한 줄
+node_kinds = event, village
+weight = 1
+once_per_run = true
+body = 운영소 한 자락 벽 안쪽. 오래된 회로 한 줄이 단정하게 묻혀 있다. 로스트 테크놀로지의 자국. 제로도 반쯤만 읽을 수 있다 한다.
+
+[event.ev-enicham-old-circuit.choice.1]
+label = 회로 한 줄을 짚는다
+custom = mag-color-1
+result_text = 회로가 서늘하게 한 번 깜빡였다. 알 수 없는 짧은 글자 한 자락이 잠시 떠올랐다 사라졌다.
+
+[event.ev-enicham-old-circuit.choice.2]
+label = 부품 한 자루를 떼어 본다
+hp = -2
+gold = 12
+result_text = 단단한 부품 한 자루가 손에 닿았다. 오래됐지만 아직 짧고 단단한 자국.
+
+[event.ev-enicham-old-circuit.choice.3]
+label = 그대로 둔다
+custom = def-color-1
+result_text = 회로가 자기 자리에 그대로 묻혀 있었다. 다음 누군가가 와서 읽을 자리.
+
+
+# ============================================================
+# 유스제리아 권역 (dead end 고위험 사냥터, iron+water). 단편 3 (chain X).
+# 톤: 고립·고위험·큰 대가. 살아 돌아간 자에게만 큰 것이 남는다.
+# ============================================================
+
+# --- 유스제리아 1. n-yusezria (철 광맥) ---
+[event.ev-yuse-iron-vein]
+name = 철의 광맥
+node_kinds = event, combat
+weight = 1
+once_per_run = true
+body = 유스제리아 철의 정수가 바위 한 줄로 솟은 자리. 손을 대면 차고 무겁다. 가까이 강한 것의 기척이 한 자리 머문다.
+
+[event.ev-yuse-iron-vein.choice.1]
+label = 광석 한 자루를 캔다
+hp = -6
+gold = 20
+custom = def-color-1
+result_text = 단단한 광석 한 자루가 손에 무겁게 닿았다. 손목에 차가운 자국 한 줄.
+
+[event.ev-yuse-iron-vein.choice.2]
+label = 정수 한 자락을 만진다
+custom = def-color-1
+custom = mag-color-1
+result_text = 철과 물이 한 자리에서 손바닥에 닿았다. 가슴 안쪽이 서늘하게 단단해졌다.
+
+[event.ev-yuse-iron-vein.choice.3]
+label = 비킨다
+hp = 3
+result_text = 광맥이 자기 자리에 그대로 솟아 있었다. 발걸음 한 자국을 옮겼다.
+
+
+# --- 유스제리아 2. n-yuse-tide-pool (고인 물웅덩이) ---
+[event.ev-yuse-tide-pool]
+name = 고인 물
+node_kinds = event, combat
+weight = 1
+once_per_run = true
+body = 유스제리아 물의 정수가 고인 검은 웅덩이. 수면 아래에서 무엇이 한 번 움직인다. 공기가 무겁게 가라앉아 있다.
+
+[event.ev-yuse-tide-pool.choice.1]
+label = 손을 담근다
+hp = -6
+custom = mag-color-1
+result_text = 물이 차고 무겁게 손목을 휘감았다. 손끝에 짙은 한 자국이 남았다.
+
+[event.ev-yuse-tide-pool.choice.2]
+label = 들여다 본다
+custom = mag-color-1
+draw = 1
+result_text = 수면 아래 무엇이 한 자리 또렷해졌다 다시 가라앉았다. 등줄기가 서늘하게 곤두섰다.
+
+[event.ev-yuse-tide-pool.choice.3]
+label = 비킨다
+hp = 3
+result_text = 웅덩이가 자기 자리에 그대로 고여 있었다. 수면이 한 줄도 흔들리지 않았다.
+
+
+# --- 유스제리아 3. n-yuse-core (막다른 코어, 유물 보상) ---
+[event.ev-yuse-dead-end]
+name = 막다른 코어
+node_kinds = event, gather
+weight = 2
+once_per_run = true
+body = 유스제리아 가장 깊은 막다른 자리. 철과 물의 정수가 한 덩이로 굳어 있다. 살아 돌아간 자에게만 큰 것이 남는다.
+
+[event.ev-yuse-dead-end.choice.1]
+label = 정수핵을 떼어낸다 (큰 대가)
+hp = -10
+relic = r-yusezria-core
+result_text = 정수핵이 손바닥 한 자리에 무겁게 떨어졌다. 갈비뼈 안쪽이 한 줄 비었지만, 손에는 큰 것이 남았다.
+
+[event.ev-yuse-dead-end.choice.2]
+label = 광석만 줍는다
+hp = -3
+gold = 30
+custom = def-color-1
+result_text = 무거운 광석 한 묶음이 손에 들어왔다. 정수핵은 자기 자리에 그대로 굳어 있었다.
+
+[event.ev-yuse-dead-end.choice.3]
+label = 그대로 둔다
+custom = mag-color-1
+result_text = 정수핵이 자기 자리에 그대로 굳어 있었다. 다음에 살아 돌아온 자의 몫으로.
+
+
+# ============================================================
+# 트리플라워 화산 권역 (화염 아인, fire). 단편 2.
+# ============================================================
+
+# --- 트리플라워 1. n-tri-web-nest (이그니아 둥지) ---
+[event.ev-tri-web-nest]
+name = 화염 거미 둥지
+node_kinds = event, village
+weight = 1
+once_per_run = true
+body = 트리플라워 위쪽 불그스름한 실이 한 줄로 늘어진 둥지. 이그니아가 여덟 다리로 실의 자락을 다듬는다. 살라만더 새끼들이 다리 사이로 기어다닌다. "한 줄 더 엮어 줄까?"
+
+[event.ev-tri-web-nest.choice.1]
+label = 실 엮는 일을 한 자락 돕는다
+affinity = npc-embra:1
+custom = atk-color-1
+result_text = 이그니아가 식지 않는 실을 그대 손목에 한 줄 감아 주었다. "...손이 안 떨리네. 좋아." 손끝이 따뜻하게 단단해졌다.
+
+[event.ev-tri-web-nest.choice.2]
+label = 살라만더 새끼를 쓰다듬는다
+hp = 5
+affinity = npc-embra:1
+result_text = 새끼가 따뜻한 한 자락으로 손바닥에 머물렀다. 이그니아가 짧게 웃었다. "...겁이 없구나."
+
+[event.ev-tri-web-nest.choice.3]
+label = 그대로 지나간다
+gold = 8
+result_text = 둥지의 불그스름한 실이 등 뒤에서 한 줄 길게 늘어졌다. 이그니아가 "또 와." 한 마디.
+
+
+# --- 트리플라워 2. n-tri-magma-core (마그마 핵) ---
+[event.ev-tri-magma-core]
+name = 마그마 핵
+node_kinds = event, elite, combat
+weight = 1
+once_per_run = true
+body = 분화구 가장 깊은 자리. 마그마가 한 덩이로 끓는다. 마그마 거구가 천천히 일어선다. 열기가 살을 한 자락 누른다.
+
+[event.ev-tri-magma-core.choice.1]
+label = 정면 한 자세
+hp = -8
+gold = 22
+custom = atk-color-1
+result_text = 마그마 거구가 짧게 무너져 식었다. 검은 돌 사이에 용암 비늘 한 장이 따뜻하게 남았다.
+
+[event.ev-tri-magma-core.choice.2]
+label = 비늘 한 장만 집어 든다
+hp = -3
+custom = atk-color-1
+result_text = 거구가 자기 자리에 그대로 끓었다. 손끝에 식지 않은 비늘 한 장이 짧게 닿았다.
+
+[event.ev-tri-magma-core.choice.3]
+label = 후퇴 한 자국
+hp = 3
+result_text = 마그마 한 줄을 짧게 피해 빠져나왔다. 가슴 안쪽이 단단해졌다.
+
+
+# ============================================================
+# 팔콘 가든 공중 군도 권역 (wind, 고위험). 단편 2.
+# 범고래(바다쪽 NPC) 만남 + dead end 보상.
+# ============================================================
+
+# --- 팔콘 1. n-falcon-shore (범고래 샤치) ---
+[event.ev-falcon-shore]
+name = 군도 아래 바닷가
+node_kinds = event, village
+weight = 1
+once_per_run = true
+body = 공중 군도 바로 아래 바닷가. 클루루가 물 위에 반쯤 몸을 올린 채 하늘을 올려다본다. "위는 거칠어. 한 번 더 숨을 채워 가."
+
+[event.ev-falcon-shore.choice.1]
+label = 물의 한 자락을 빌린다
+hp = 8
+affinity = npc-shachi:1
+result_text = 클루루가 흑백 꼬리로 물 한 자락을 그대 어깨에 끼얹어 주었다. 숨이 한 번 깊어졌다.
+
+[event.ev-falcon-shore.choice.2]
+label = 위쪽 것들에 대해 묻는다
+affinity = npc-shachi:1
+custom = mag-color-1
+result_text = "...맹금, 하피, 그리고 하늘의 주인. 나도 한 번 올라가 봤는데 못 버텼어." 클루루가 짧게 웃었다.
+
+[event.ev-falcon-shore.choice.3]
+label = 그대로 오른다
+gold = 6
+result_text = 샤치가 "...조심해." 한 마디. 발 아래 바다가 한 줄씩 멀어졌다.
+
+
+# --- 팔콘 2. n-falcon-core (둥지 꼭대기, 유물 보상) ---
+[event.ev-falcon-core]
+name = 둥지 꼭대기
+node_kinds = event, gather
+weight = 2
+once_per_run = true
+body = 군도 가장 깊은 둥지. 바람과 깃털이 한 덩이로 굳어 있다. 하늘의 주인의 자리. 살아 내려간 자에게만 큰 것이 남는다.
+
+[event.ev-falcon-core.choice.1]
+label = 깃을 떼어낸다 (큰 대가)
+hp = -10
+relic = r-falcon-eye
+result_text = 하늘의 주인의 깃 한 장이 손바닥에 가볍게 떨어졌다. 갈비뼈 안쪽이 한 줄 비었지만, 손에는 큰 것이 남았다.
+
+[event.ev-falcon-core.choice.2]
+label = 하늘 조각만 줍는다
+hp = -3
+gold = 30
+custom = mag-color-1
+result_text = 바람이 굳은 하늘 조각 한 묶음이 손에 들어왔다. 주인의 깃은 자기 자리에 그대로 남았다.
+
+[event.ev-falcon-core.choice.3]
+label = 그대로 둔다
+custom = mag-color-1
+result_text = 둥지가 자기 자리에 그대로 굳어 있었다. 다음에 살아 오른 자의 몫으로.
+
+
+# ============================================================
+# 초원 교역소 권역 (earth, 평화 교역지). 단편 2.
+# 라미아 상인 사라사 + 대상대 행상.
+# ============================================================
+
+# --- 교역소 1. n-trade-post (라미아 상인 사라사) ---
+[event.ev-trade-sarasa]
+name = 라미아 상인의 좌판
+node_kinds = event, village
+weight = 1
+once_per_run = true
+body = 초원 교역소 사라사의 좌판. 긴 꼬리를 한 자락 똬리로 말고, 직물과 향신료를 켜 고운 순서로 펼쳐 둔다. "한 필 더 보고 가요. 깎아 줄게."
+
+[event.ev-trade-sarasa.choice.1]
+label = 직물 한 필을 산다
+gold = -8
+custom = def-color-1
+affinity = npc-sarasa:1
+result_text = 매끄러운 직물 한 필이 손에 들어왔다. 사라사가 꼬리 끝을 한 번 살랑였다. "또 와요."
+
+[event.ev-trade-sarasa.choice.2]
+label = 흥정을 한 자락 건다
+affinity = npc-sarasa:1
+gold = 10
+result_text = "...말이 통하네." 사라사가 눈을 가늘게 뜨고 웃었다. 덤으로 동전 한 줌이 그대 쪽으로 밀려왔다.
+
+[event.ev-trade-sarasa.choice.3]
+label = 구경만 하고 지나간다
+draw = 1
+result_text = 좌판의 색색 직물이 한 줄로 눈에 들어왔다 지나갔다. 사라사가 "천천히 봐요." 한 마디.
+
+
+# --- 교역소 2. n-trade-caravan (대상대 행상) ---
+[event.ev-trade-caravan]
+name = 대상대 한 자리
+node_kinds = event, rest, gather
+weight = 1
+once_per_run = true
+body = 교역소 대상대가 쉬어 가는 자리. 모닥불 한 줄 옆에 여러 종족 행상이 짐을 부려 둔다. 누군가 낯선 물건 하나를 꺼내 보인다.
+
+[event.ev-trade-caravan.choice.1]
+label = 낯선 물건을 산다
+gold = -6
+custom = mag-color-1
+result_text = 어느 먼 마을의 작은 물건 하나가 손에 닿았다. 쓸모는 천천히 알게 될 자리.
+
+[event.ev-trade-caravan.choice.2]
+label = 모닥불에 잠시 앉는다
+hp = 6
+result_text = 모닥불 한 줄이 어깨를 따뜻하게 데웠다. 행상들의 낮은 이야기가 한 자락 지나갔다.
+
+[event.ev-trade-caravan.choice.3]
+label = 길 소식을 묻는다
+gold = 8
+result_text = "...북쪽 길은 요즘 거칠대요." 한 행상이 동전 몇 닢어치 소식을 한 줄 건넸다.
+
+
+# ============================================================
+# 딜롭 부족 권역 (에루멘 너머, earth, 신비 부족). 단편 2.
+# 언어 안 통함 무늬·몸짓. 영입은 긴 귀 리포만.
+# ============================================================
+
+# --- 딜롭 1. n-diropel-village (얼굴 무늬 그려 줌) ---
+[event.ev-diropel-paint]
+name = 얼굴 무늬
+node_kinds = event, village
+weight = 1
+once_per_run = true
+body = 딜롭 부족 마을 짧은 귀 코하가 먼저 다가온다. 말 대신 안료가 담긴 조개껍데기를 내밀고, 손바닥에 작은 무늬 한 줄을 그어 보인다. 긴 귀 리포는 멀찍이서 귀를 한 번 늘어뜨린다.
+
+[event.ev-diropel-paint.choice.1]
+label = 무늬를 받는다
+affinity = npc-diropel-short:1
+clue = cl-diropel-mark
+result_text = 손바닥에 곡선 한 줄과 둥근 점이 그려졌다. 코하가 환하게 웃었다. 뜻은 다 모르지만, 따뜻한 한 자락인 건 알겠다.
+
+[event.ev-diropel-paint.choice.2]
+label = 나도 무늬를 그려 본다
+affinity = npc-diropel-short:1
+affinity = npc-diropel-long:1
+custom = mag-color-1
+result_text = 어설픈 무늬 한 줄을 코하 손등에 그렸다. 코하가 까르르 웃고, 리포도 긴 귀를 한 번 살랑였다.
+
+[event.ev-diropel-paint.choice.3]
+label = 안료 한 통을 산다 (몸짓으로 거래)
+gold = -6
+custom = def-color-1
+result_text = 손짓으로 값을 치렀다. 색색 안료 한 통이 손에 들어왔다. 코하가 고개를 한 번 끄덕였다.
+
+
+# --- 딜롭 2. n-diropel-totem (부족 토템·무늬 해독) ---
+[event.ev-diropel-totem]
+name = 부족 토템
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 골짜기 한 자리 오래된 토템. 긴 귀와 짧은 귀가 한 기둥에 나란히 새겨져 있다. 무늬가 무엇을 가리키는지 알 수 없지만, 리포가 곁에 와 한 자락씩 짚어 준다.
+
+[event.ev-diropel-totem.choice.1]
+label = 리포의 손짓을 따라 읽어 본다
+affinity = npc-diropel-long:1
+custom = mag-color-1
+result_text = 무늬 한 줄이 반쯤 읽혔다. "...옛날, 안개 너머에서 왔다" 그 정도가 손바닥에 남았다.
+
+[event.ev-diropel-totem.choice.2]
+label = 토템 앞에 잠시 머문다
+hp = 6
+result_text = 긴 귀·짧은 귀가 한 기둥에 나란한 자리. 가슴 안쪽이 둥글게 가라앉았다.
+
+[event.ev-diropel-totem.choice.3]
+label = 안료 흔적을 한 자락 긁어 챙긴다
+gold = 10
+result_text = 토템 밑동에 마른 안료 한 조각이 떨어져 있었다. 오래된 색 한 자락.
+
+
+# ============================================================
+# 산호 해안 권역 (water, 해양 사냥터). 단편 3.
+# 인어 마린(영입)·세이렌 세이라 + 범고래 클루루 앙숙.
+# ============================================================
+
+# --- 산호 1. n-coral-rest (인어·세이렌 바위) ---
+[event.ev-coral-rest]
+name = 인어 바위
+node_kinds = event, village
+weight = 1
+once_per_run = true
+body = 산호 해안 물 위로 솟은 너른 바위. 마린이 푸른 꼬리를 한 자락 늘어뜨린 채 물살을 고르고, 세이라가 곁에서 한 소절 흥얼거린다. "...범고래는 이 물에 들이지 않아요."
+
+[event.ev-coral-rest.choice.1]
+label = 물살 고르는 걸 거든다
+hp = 6
+affinity = npc-marin:1
+result_text = 마린이 물의 한 겹을 어깨에 둘러 주었다. 숨이 서늘하게 깊어졌다. "...손이 야무지네요."
+
+[event.ev-coral-rest.choice.2]
+label = 세이라의 노래를 한 소절 듣는다
+affinity = npc-seira:1
+custom = mag-color-1
+result_text = 한 소절이 물살을 한 줄 휘었다. "...범고래가 싫어하는 음이에요." 세이라가 깃을 한 자락 접었다.
+
+[event.ev-coral-rest.choice.3]
+label = 범고래(클루루) 이야기를 묻는다
+affinity = npc-marin:1
+result_text = "...그 검은 등이요? 우리랑은 오래 안 맞아요." 마린이 짧게 웃었다. "그래도 같은 바다죠."
+
+
+# --- 산호 2. n-coral-song (노래 여울, elite) ---
+[event.ev-coral-song]
+name = 노래 여울
+node_kinds = event, elite, combat
+weight = 1
+once_per_run = true
+body = 산호 해안 세이렌의 노래가 가장 짙은 여울. 물살이 노래에 맞춰 휜다. 노래에 홀린 깊은 것이 한 번 떠오른다.
+
+[event.ev-coral-song.choice.1]
+label = 정면 한 자세
+hp = -7
+gold = 20
+custom = mag-color-1
+result_text = 깊은 것이 짧게 가라앉았다. 여울 바닥에 푸른 진주 한 알이 남았다.
+
+[event.ev-coral-song.choice.2]
+label = 세이라의 노래에 맞춰 비킨다
+custom = push-water-5
+result_text = 노래 한 소절이 물살을 갈라, 깊은 것이 자기 자리로 돌아갔다. 어깨에 서늘한 한 자락이 닿았다.
+
+[event.ev-coral-song.choice.3]
+label = 후퇴 한 자국
+hp = 3
+result_text = 물살 한 줄을 짧게 타고 빠져나왔다. 가슴 안쪽이 단단해졌다.
+
+
+# --- 산호 3. n-coral-deep (깊은 산호 골, 보상) ---
+[event.ev-coral-deep]
+name = 깊은 산호 골
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 해안 가장 깊은 산호 골. 햇빛이 한 자락만 닿는다. 산호 한 덩이에 푸른 진주가 박혀 있다. 살아 떠오른 자의 몫.
+
+[event.ev-coral-deep.choice.1]
+label = 진주를 캔다 (숨이 가쁘다)
+hp = -6
+gold = 28
+custom = push-water-5
+result_text = 푸른 진주 한 알이 손에 들어왔다. 폐가 한 줄 비었지만, 빛이 손바닥에 남았다.
+
+[event.ev-coral-deep.choice.2]
+label = 산호 한 자락만 따 든다
+hp = -2
+gold = 12
+result_text = 산호 한 조각이 손에 닿았다. 진주는 자기 자리에 그대로 박혀 있었다.
+
+[event.ev-coral-deep.choice.3]
+label = 그대로 떠오른다
+hp = 4
+result_text = 진주가 깊은 자리에 그대로 빛났다. 다음에 잠수한 자의 몫으로.
+
+
+# ============================================================
+# 화산광 지대 (iron/dark, 도전 사냥터). 단편 2. 신수 던.
+# ============================================================
+
+# --- 화산광 1. n-emberforge-lair (던) ---
+[event.ev-emberforge-lair]
+name = 던의 자리
+node_kinds = event, village
+weight = 1
+once_per_run = true
+body = 화산광 가장 너른 자리. 던가 장식 두른 외투를 한 자락 늘어뜨린 채, 쇳물 앞에 묵직하게 앉아 있다. 곰의 눈이 그대를 천천히 살핀다. "...자격을, 보여라."
+
+[event.ev-emberforge-lair.choice.1]
+label = 한 수 겨뤄 보인다
+hp = -6
+affinity = npc-kumamimi:1
+custom = atk-color-1
+result_text = 던가 묵직한 한 손을 거두며 끄덕였다. "...쇠는, 거짓을 모른다." 어깨에 단단한 자국이 남았다.
+
+[event.ev-emberforge-lair.choice.2]
+label = 광맥에 대해 묻는다
+affinity = npc-kumamimi:1
+custom = def-color-1
+result_text = "...이 광맥은 오래된 것. 함부로 파면 무너진다." 던가 검은 광석 한 조각을 묵직하게 짚었다.
+
+[event.ev-emberforge-lair.choice.3]
+label = 예를 갖춰 물러난다
+hp = 4
+result_text = 던가 한 번 고개를 끄덕였다. "...다시, 자격을 갖추고 오라." 쇳물 빛이 등 뒤에서 길게 흔들렸다.
+
+
+# --- 화산광 2. n-emberforge-core (광석 핵, 보상) ---
+[event.ev-emberforge-core]
+name = 광석 핵
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 갱 가장 안쪽 막다른 자리. 검은 광석이 한 덩이로 굳어 있다. 손을 대면 무겁고 따뜻하다.
+
+[event.ev-emberforge-core.choice.1]
+label = 광석을 캔다 (무겁다)
+hp = -6
+gold = 24
+custom = def-color-1
+result_text = 검은 광석 한 덩이가 손에 들어왔다. 등이 한 줄 휘었지만, 단단한 빛이 손바닥에 남았다.
+
+[event.ev-emberforge-core.choice.2]
+label = 한 자락만 떼어 든다
+hp = -2
+gold = 12
+result_text = 광석 한 조각이 손에 닿았다. 큰 덩이는 자기 자리에 그대로 굳어 있었다.
+
+[event.ev-emberforge-core.choice.3]
+label = 그대로 둔다
+custom = atk-color-1
+result_text = 광석이 제 자리에 그대로 끓었다. 던의 자리를 함부로 헐지 않았다.
+
+
+# ============================================================
+# 구 신전터 (electric/light, 도전 사냥터). 단편 2. 신수 티프레.
+# ============================================================
+
+# --- 신전 1. n-oldshrine-altar (티프레) ---
+[event.ev-oldshrine-altar]
+name = 티프레의 자리
+node_kinds = event, village
+weight = 1
+once_per_run = true
+body = 신전 제단 자리. 티프레가 장식 두른 예복을 한 자락 걸친 채, 빛 무늬 위에 곧게 앉아 있다. 호랑이의 눈이 번뜩 한 번. "...빠른 자만, 따라와라."
+
+[event.ev-oldshrine-altar.choice.1]
+label = 빠른 한 수로 응한다
+hp = -6
+affinity = npc-toramimi:1
+custom = atk-color-1
+result_text = 티프레가 번개 한 줄을 거두며 짧게 웃었다. "...제법, 빠르다." 손끝에 정전기 한 자국이 남았다.
+
+[event.ev-oldshrine-altar.choice.2]
+label = 신전에 대해 묻는다
+affinity = npc-toramimi:1
+custom = mag-color-1
+result_text = "...옛 신을 모시던 자리. 지금은 번개만 남았지." 티프레가 빛 무늬 한 줄을 손끝으로 짚었다.
+
+[event.ev-oldshrine-altar.choice.3]
+label = 예를 갖춰 물러난다
+hp = 4
+result_text = 티프레가 한 번 눈을 감았다 떴다. "...다시, 빨라져서 오라." 빛 무늬가 발밑에서 길게 흘렀다.
+
+
+# --- 신전 2. n-oldshrine-core (신전 핵, 보상) ---
+[event.ev-oldshrine-core]
+name = 신전 핵
+node_kinds = event, gather
+weight = 1
+once_per_run = true
+body = 성소 가장 안쪽 막다른 자리. 빛나는 유물이 한 덩이로 굳어 있다. 손을 대면 정전기가 한 줄 튄다.
+
+[event.ev-oldshrine-core.choice.1]
+label = 유물을 캔다 (저릿하다)
+hp = -6
+gold = 24
+custom = mag-color-1
+result_text = 빛나는 유물 조각이 손에 들어왔다. 손끝이 한 줄 저렸지만, 빛이 손바닥에 남았다.
+
+[event.ev-oldshrine-core.choice.2]
+label = 한 자락만 떼어 든다
+hp = -2
+gold = 12
+result_text = 유물 한 조각이 손에 닿았다. 큰 덩이는 자기 자리에 그대로 빛났다.
+
+[event.ev-oldshrine-core.choice.3]
+label = 그대로 둔다
+custom = mag-color-1
+result_text = 유물이 제 자리에 그대로 빛났다. 티프레의 자리를 함부로 헐지 않았다.

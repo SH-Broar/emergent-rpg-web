@@ -23,7 +23,7 @@ import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
 import { getNeighbors, getNode, isTimeUp, effectiveKind as systemEffectiveKind } from '@/systems/map';
-import { restHealMul, lockedTownCount, isShopLimited, canEnterShop, recordShopEntry, isNoRespite } from '@/systems/chaos';
+import { restHealMul, lockedTownCount, isShopLimited, canEnterShop, recordShopEntry, isRestHealBlocked } from '@/systems/chaos';
 import { isActivityDone } from '@/systems/activity';
 import { isGatherDone } from '@/systems/gathering';
 import { rng } from '@/systems/rng';
@@ -310,9 +310,9 @@ function enterSelected() {
         run.data.feralHeavy = 0;
         ui.toast('success', '한숨 돌리니 수화가 가라앉았다.');
       }
-      // 카오스 no-respite(황폐) — 휴식 회복 완전 소멸(상점 회복으로 대체).
+      // 카오스 no-respite(험한 세상)/post-apocalypse(포스트 아포칼립스) — 휴식 회복 완전 소멸.
       // 그 외엔 light-rest(얕은 잠) 배수 ×(1-합) 적용.
-      const heal = isNoRespite() ? 0 : Math.floor(run.data.maxHp * 0.3 * restHealMul());
+      const heal = isRestHealBlocked() ? 0 : Math.floor(run.data.maxHp * 0.3 * restHealMul());
       run.data.hp = Math.min(run.data.maxHp, run.data.hp + heal);
       ui.toast('success', heal > 0 ? `HP +${heal} 회복` : '잠이 얕아 회복하지 못했다.');
       void import('@/systems/relic').then(({ onRest }) => onRest());

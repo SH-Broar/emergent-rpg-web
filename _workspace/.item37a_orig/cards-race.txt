@@ -1,0 +1,376 @@
+# Cards 종족 전용 시작 카드 (2026-05-22)
+# source=race → 상점/이벤트 풀에서 제외(시작 덱 전용). 각 카드는 -plus 강화판을 가진다(로더 자동 연결).
+# 등급별 baseline(basic4/common6/rare9): damage/heal/block 효과는 충족. damage-per-hand 등 측정형은 컨셉 우선.
+# 종족 정체성:
+#   인간   = 균형(공격+방어 하이브리드, 유연한 드로우)
+#   나방   = 속도/연사/드로우(가벼운 회전, 저코스트 연타)
+#   팬텀   = 손패 수 관리(damage-per-hand, 패 재배치)
+#   아르카나 = 디버프 + 마나(상태이상 누적, 다음 턴 에너지)
+
+# ============================================================
+# 인간 light/wind 균형
+# ============================================================
+
+[card.c-human-balance]
+name = 균형의 일격
+rank = common
+source = race
+element = light
+cost = 1
+trigger = manual
+effects = damage:6:enemy, block:3:self
+upgrade_to = c-human-balance-plus
+flavor = 한 손은 치고, 한 손은 막는다. 어느 쪽도 늦지 않게.
+
+[card.c-human-balance-plus]
+name = 균형의 일격+
+rank = common
+source = race
+element = light
+cost = 1
+trigger = manual
+effects = damage:8:enemy, block:5:self
+flavor = 치는 손도, 막는 손도 조금씩 더 멀리.
+
+[card.c-human-tailwind]
+name = 순풍
+rank = common
+source = race
+element = wind
+cost = 1
+trigger = manual
+effects = damage:6:enemy, draw:1:self
+upgrade_to = c-human-tailwind-plus
+flavor = 등을 미는 바람을 ��대로 실어 보낸다.
+
+[card.c-human-tailwind-plus]
+name = 순풍+
+rank = common
+source = race
+element = wind
+cost = 1
+trigger = manual
+effects = damage:8:enemy, draw:1:self
+flavor = 더 멀리서 불어온 바람이 그대로 실린다.
+
+[card.c-human-adapt]
+name = 적응
+rank = common
+source = race
+element = wind
+cost = 1
+trigger = manual
+effects = block:6:self, draw:1:self
+upgrade_to = c-human-adapt-plus
+flavor = 시대가 어떻든, 그 안에서 설 자리를 찾는다.
+
+[card.c-human-adapt-plus]
+name = 적응+
+rank = common
+source = race
+element = wind
+cost = 1
+trigger = manual
+effects = block:8:self, draw:2:self
+flavor = 어느 자리든, 더 빨리 익숙해진다.
+
+[card.c-human-resolve]
+name = 각오
+rank = rare
+source = race
+element = light
+cost = 2
+trigger = manual
+effects = damage:6:enemy, apply-status:2:enemy:vulnerable
+upgrade_to = c-human-resolve-plus
+flavor = 흔들리되 무너지지 않는, 인간이 가장 자주 갖고 태어나는 것.
+
+[card.c-human-resolve-plus]
+name = 각오+
+rank = rare
+source = race
+element = light
+cost = 2
+trigger = manual
+effects = damage:8:enemy, apply-status:3:enemy:vulnerable
+flavor = 정한 마음이 더 무겁게 선다.
+
+# ============================================================
+# 나방 wind/light 속도·연사·드로우
+# ============================================================
+
+[card.c-moth-flutter]
+name = 날갯짓
+rank = common
+source = race
+element = wind
+cost = 1
+trigger = manual
+effects = damage:3:enemy, draw:1:self
+upgrade_to = c-moth-flutter-plus
+flavor = 고속으로 한 발의 화살을 발사한다.
+
+[card.c-moth-flutter-plus]
+name = 날갯짓+
+rank = common
+source = race
+element = wind
+cost = 1
+trigger = manual
+effects = damage:4:enemy, draw:1:self
+flavor = 더욱 빠른 속도로 화살을 발사한다.
+
+[card.c-moth-volley]
+name = 속사
+rank = basic
+source = race
+element = electric
+cost = 0
+trigger = manual
+effects = damage:2:enemy
+upgrade_to = c-moth-volley-plus
+flavor = 겨눌 틈도 없이 화살을 쏜다.
+
+[card.c-moth-volley-plus]
+name = 속사+
+rank = basic
+source = race
+element = electric
+cost = 0
+trigger = manual
+effects = damage:3:enemy
+flavor = 활시위가 멈출 새도 없이 화살을 쏜다.
+
+[card.c-moth-glide]
+name = 활강
+rank = common
+source = race
+element = wind
+cost = 1
+trigger = manual
+effects = block:6:self, draw:1:self
+upgrade_to = c-moth-glide-plus
+flavor = 바람을 타고 미끄러지며 다음 자리를 살핀다.
+
+[card.c-moth-glide-plus]
+name = 활강+
+rank = common
+source = race
+element = wind
+cost = 1
+trigger = manual
+effects = block:8:self, draw:1:self
+flavor = 따라올 수 없는 속도로 바람을 타고 자리를 잡는다.
+
+[card.c-moth-gale]
+name = 돌풍
+rank = rare
+source = race
+element = wind
+cost = 2
+trigger = manual
+effects = damage:2:enemy, damage:2:enemy
+upgrade_to = c-moth-gale-plus
+flavor = 순식간에 두 발의 화살을 발사한다.
+
+[card.c-moth-gale-plus]
+name = 돌풍+
+rank = rare
+source = race
+element = wind
+cost = 2
+trigger = manual
+effects = damage:2:enemy, damage:2:enemy, damage:1:enemy
+flavor = 몰아치는 바람처럼, 한 번에 세 발의 화살을 발사한다.
+
+# 나방 전용 바람갈무리 — 0코스트, 2드로우, 사용 후 손으로 복귀(버리지 않음).
+# (2026-05-25) 유물 바람결 깃이 on-draw 데미지로 재설계되며 자동 지급은 제거됨.
+#   카드 정의는 dangling 방지·재사용 여지를 위해 보존. source=form → 어떤 풀에도 미등장.
+[card.c-moth-windgather]
+name = 바람갈무리
+rank = common
+source = form
+element = wind
+cost = 0
+trigger = manual
+effects = draw:2:self, return-self-to-hand
+flavor = 바람을 한 줌 쥐었다 펴면, 두 장이 손에 따라 들어온다. 갈무리는 손에 남는다.
+
+# ============================================================
+# 팬텀 electric/dark 손패 수 관리
+# ============================================================
+
+[card.c-phantom-handblade]
+name = 쥔 패의 칼
+rank = common
+source = race
+element = electric
+cost = 1
+trigger = manual
+effects = damage-per-hand:2:enemy
+upgrade_to = c-phantom-handblade-plus
+flavor = 손에 쥔 패가 많을수록, 한 번에 더 깊이 벤다.
+
+[card.c-phantom-handblade-plus]
+name = 쥔 패의 칼+
+rank = common
+source = race
+element = electric
+cost = 1
+trigger = manual
+effects = damage-per-hand:3:enemy
+flavor = 쥔 패 한 장 한 장이 더 무겁게 실린다.
+
+[card.c-phantom-shuffle]
+name = 패 고르기
+rank = common
+source = race
+element = dark
+cost = 1
+trigger = manual
+effects = return-hand-to-deck:1:self, draw:2:self
+upgrade_to = c-phantom-shuffle-plus
+flavor = 마음에 안 드는 한 장을 슬쩍 되돌리고, 새 패를 집는다.
+
+[card.c-phantom-shuffle-plus]
+name = 패 고르기+
+rank = common
+source = race
+element = dark
+cost = 1
+trigger = manual
+effects = return-hand-to-deck:1:self, draw:2:self, next-turn-energy:1:self
+flavor = 패를 고르는 손이 더 매끄럽다. 다음 수까지 미리 챙긴다.
+
+[card.c-phantom-guard]
+name = 쥐고 버티기
+rank = common
+source = race
+element = dark
+cost = 1
+trigger = manual
+effects = block:6:self, draw:1:self
+upgrade_to = c-phantom-guard-plus
+flavor = 패를 펼치지 않고, 쥔 채로 버텨 낸다.
+
+[card.c-phantom-guard-plus]
+name = 쥐고 버티기+
+rank = common
+source = race
+element = dark
+cost = 1
+trigger = manual
+effects = block:8:self, draw:1:self
+flavor = 더 단단히 쥐고, 더 오래 버틴다.
+
+[card.c-phantom-overload]
+name = 패의 폭주
+rank = rare
+source = race
+element = electric
+cost = 2
+trigger = manual
+effects = damage-per-hand:3:enemy, draw:1:self
+upgrade_to = c-phantom-overload-plus
+flavor = 쥔 패를 한꺼번에 풀어내며 시간의 빈틈을 내리꽂는다.
+
+[card.c-phantom-overload-plus]
+name = 패의 폭주+
+rank = rare
+source = race
+element = electric
+cost = 2
+trigger = manual
+effects = damage-per-hand:4:enemy, draw:1:self
+flavor = 더 많은 패가 한순간에 터져 나온다.
+
+# ============================================================
+# 아르카나 light 색 공명 (모아 온 컬러값이 곧 위력)
+# 메커니즘: 카드는 8색 중 *최고색*(damage-top-color/block-top-color) 또는 *보유 색 종류 수*
+#   (damage-color-count)에 비례. 전투 중 색은 고정 — 런 동안 키운 색이 그대로 위력이 된다.
+#   시드 light:5가 초반 바닥값. 유물 빛의 성배가 색을 마나/드로우로도 전환한다.
+# ============================================================
+
+[card.c-arcana-spire]
+name = 빛의 첨탑
+rank = common
+source = race
+element = light
+cost = 1
+trigger = manual
+effects = damage-top-color:1:enemy
+upgrade_to = c-arcana-spire-plus
+flavor = 가장 짙게 모인 색을 한 줄기 빛으로 세워, 그대로 내리꽂는다.
+
+[card.c-arcana-spire-plus]
+name = 빛의 첨탑+
+rank = common
+source = race
+element = light
+cost = 1
+trigger = manual
+effects = damage-top-color:1:enemy, draw:1:self
+flavor = 더 높이 세운 첨탑. 빛을 쏘고도 다음 한 장이 손에 남는다.
+
+[card.c-arcana-levee]
+name = 색의 둑
+rank = common
+source = race
+element = light
+cost = 1
+trigger = manual
+effects = block-top-color:1:self
+upgrade_to = c-arcana-levee-plus
+flavor = 가장 짙은 색을 둑처럼 쌓아 앞을 막는다.
+
+[card.c-arcana-levee-plus]
+name = 색의 둑+
+rank = common
+source = race
+element = light
+cost = 1
+trigger = manual
+effects = block-top-color:1:self, draw:1:self
+flavor = 더 높이 쌓은 둑. 막아 두고도 다음 수를 챙긴다.
+
+[card.c-arcana-prism]
+name = 분광탄
+rank = common
+source = race
+element = light
+cost = 1
+trigger = manual
+effects = damage-color-count:3:enemy
+upgrade_to = c-arcana-prism-plus
+flavor = 지닌 색이 많을수록 더 여러 갈래로 갈라져 쏟아진다.
+
+[card.c-arcana-prism-plus]
+name = 분광탄+
+rank = common
+source = race
+element = light
+cost = 1
+trigger = manual
+effects = damage-color-count:4:enemy
+flavor = 한 색이 늘 때마다 빛갈래가 하나씩 더 늘어난다.
+
+[card.c-arcana-judgment]
+name = 공명 심판
+rank = rare
+source = race
+element = light
+cost = 2
+trigger = manual
+effects = damage-top-color:2:enemy
+upgrade_to = c-arcana-judgment-plus
+flavor = 모아 온 가장 짙은 색을 둘로 겹쳐, 한 번에 내린다.
+
+[card.c-arcana-judgment-plus]
+name = 공명 심판+
+rank = rare
+source = race
+element = light
+cost = 2
+trigger = manual
+effects = damage-top-color:2:enemy, draw:1:self
+flavor = 더 무겁게 겹친 빛. 내리고도 다음 한 장이 손에 남는다.

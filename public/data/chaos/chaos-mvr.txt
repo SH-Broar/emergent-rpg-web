@@ -8,12 +8,6 @@
 #   unlock_key     영구 연구 해금 토큰. 비면 항상 사용 가능.
 #   affects_meta   true면 메타 진행에 영향 (보너스/페널티). false면 무영향.
 
-[chaos.c-fragile-glory]
-name = 부서지는 영광
-description = 시작 HP가 절반이 되지만 보스 클리어 보상이 두 배가 된다.
-affects_meta = true
-
-[chaos.c-no-respite]
-name = 황폐
-description = 휴식 노드의 회복이 사라진다. 대신 시간의 조각이 매 노드마다 +1.
-affects_meta = false
+# (2026-06-14) 레거시 c- placeholder 전량 제거 — 실효과 없는 더미였고,
+#   대체 카오스가 act-chaos.txt의 ch-fragile-glory / ch-no-respite로 구현됨.
+#   이 파일은 더 이상 로드되지 않는다(loader.ts·validate-core.mjs FILES에서 제외).

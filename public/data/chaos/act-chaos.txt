@@ -267,9 +267,9 @@ chaos_type = legend
 effect_kind = all-gimmick
 levels = on:4
 
-# 상점 노드/구매 전면 폐쇄
+# 하루(100턴)에 상점 2회만 입장
 [chaos.ch-no-shop]
-name = 닫힌 시장
+name = 반일장
 description = 하루에 상점을 두 번만 들를 수 있다.
 tier = 4
 category = economy-corruption
@@ -289,10 +289,21 @@ levels = on:4
 
 # 휴식 회복 소멸 + 상점 회복 구매 개방
 [chaos.ch-no-respite]
-name = 황폐
+name = 험한 세상
 description = 휴식 노드의 회복이 사라지고, 대신 상점에서 회복을 살 수 있다.
 tier = 4
 category = recovery-corruption
 chaos_type = legend
 effect_kind = no-respite
 levels = on:4
+
+# 휴식 회복·상점 회복 모두 없음 + 맵의 전투/채집 1/4이 휴식 노드로 변환(가혹한 T4)
+# 점수 6 — 기존 T4 평면 4점보다 무겁게(legend 점수 상한 없음).
+[chaos.ch-post-apocalypse]
+name = 포스트 아포칼립스
+description = 모든 회복이 끊기고, 전투와 채집 일부가 휴식 노드로 바뀐다.
+tier = 4
+category = world-corruption
+chaos_type = legend
+effect_kind = post-apocalypse
+levels = on:6

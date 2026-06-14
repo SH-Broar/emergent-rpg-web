@@ -65,6 +65,10 @@
  *
  * 상시형 — 회복:
  *   - 'no-respite'             휴식 노드 회복 소멸 + 상점에 회복 구매 항목 개방(100골드, 최대 HP 30%).
+ *
+ * 시작형 + 상시형 혼합(세계 변형):
+ *   - 'post-apocalypse'        [시작] 맵의 전투/채집 노드 약 1/4을 휴식 노드로 변환 +
+ *                              [상시] 휴식 회복 소멸 + 상점 회복도 제공 안 함(no-respite보다 가혹).
  */
 export type ChaosEffectKind =
   // === 시작형 (start-*) ===
@@ -97,7 +101,9 @@ export type ChaosEffectKind =
   // === 시작형 + 상시형 혼합 ===
   | 'fragile-glory'
   // === 상시형 — 회복 ===
-  | 'no-respite';
+  | 'no-respite'
+  // === 시작형 + 상시형 혼합(세계 변형) ===
+  | 'post-apocalypse';
 
 /** 카오스 티어 — 1~3은 숫자/혼합, 4는 규칙 재작성(레전드 간판). */
 export type ChaosTier = 1 | 2 | 3 | 4;

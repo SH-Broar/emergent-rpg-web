@@ -17,7 +17,7 @@ import { isPossessionLocked } from '@/systems/possession';
 import { getCraftingDiscount, acquireRelic } from '@/systems/relic';
 import { availableCards, availableRelics } from '@/systems/unlocks';
 import { rng } from '@/systems/rng';
-import { shopPriceMul, isNoRemoval, isNoRespite } from '@/systems/chaos';
+import { shopPriceMul, isNoRemoval, offersShopRest } from '@/systems/chaos';
 import { isFormPoolActive, activeFormCardPool } from '@/systems/form-pool';
 
 // 가격·슬롯은 config/balance.txt 에서 로드 (useDataStore().balance). 누락 시 DEFAULT_BALANCE.
@@ -138,8 +138,9 @@ export function getOrCreateShopInventory(nodeId: string): ShopInventory {
   if (existing) {
     // 옛 세이브 호환 — materials 슬롯이 없으면 지금 채운다.
     if (!existing.materials) existing.materials = buildMaterialSlots();
-    // 카오스 no-respite(황폐) — 회복 구매 슬롯이 없으면(카오스 도중 켜진 경우는 없지만) 지금 채운다.
-    if (!existing.restPurchase && isNoRespite()) existing.restPurchase = buildRestPurchase();
+    // 카오스 no-respite(험한 세상) — 회복 구매 슬롯이 없으면 지금 채운다.
+    // (post-apocalypse는 offersShopRest()가 false라 슬롯을 주지 않는다.)
+    if (!existing.restPurchase && offersShopRest()) existing.restPurchase = buildRestPurchase();
     return existing;
   }
 
@@ -169,8 +170,9 @@ export function getOrCreateShopInventory(nodeId: string): ShopInventory {
     removalUsed: false,
     removalPrice: applyDiscount(bal.shopCardRemovalPrice),
     materials: buildMaterialSlots(),
-    // 카오스 no-respite(황폐) — 휴식 회복 대신 상점 회복 구매 슬롯 개방.
-    restPurchase: isNoRespite() ? buildRestPurchase() : undefined,
+    // 카오스 no-respite(험한 세상) — 휴식 회복 대신 상점 회복 구매 슬롯 개방.
+    // post-apocalypse는 offersShopRest()가 false → 회복 슬롯 없음(가혹).
+    restPurchase: offersShopRest() ? buildRestPurchase() : undefined,
   };
   run.data.shopInventories[nodeId] = inventory;
   return inventory;

@@ -18,7 +18,7 @@ import { useRunStore } from '@/stores/run';
 import { useMetaStore } from '@/stores/meta';
 import { instantiateCard } from '@/systems/deck';
 import { applySeedColors } from '@/systems/colors';
-import { injectStartChaosCards, computeChaosScore, chaosTierLabel, maxIntensityOf, chaosLevelSummary, chaosScoreOf } from '@/systems/chaos';
+import { injectStartChaosCards, computeChaosScore, chaosTierLabel, maxIntensityOf, chaosLevelSummary, chaosScoreOf, applyPostApocalypseMap } from '@/systems/chaos';
 import { rng } from '@/systems/rng';
 import type { Card, Chaos, Race, Season } from '@/data/schemas';
 
@@ -246,6 +246,11 @@ function applyStartChaosDeckColorPhase() {
       };
     }
   }
+  // post-apocalypse(포스트 아포칼립스) — 맵의 전투/채집 노드 일부를 휴식으로 변환(nodeKindOverrides).
+  //  맵은 timeline의 node_map. 카오스 비활성이면 헬퍼 내부에서 no-op.
+  const tl = data.timelines.get(r.timelineId);
+  const map = tl ? data.nodeMaps.get(tl.nodeMapId) : undefined;
+  if (map) applyPostApocalypseMap(r, map);
 }
 
 function back() {

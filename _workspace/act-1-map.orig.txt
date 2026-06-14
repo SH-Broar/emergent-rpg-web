@@ -1,0 +1,2776 @@
+# Node Map: 1장 제 4시대 61년 단일 거대 맵.
+#
+# legacy의 모든 권역을 한 해의 단면으로 통합. ~38 노드.
+# 좌표: x/y는 0..1 정규화 SVG 거미줄 시각화 기준.
+# 보스 게이트는 풍혈지대 끝의 시간의 닻 (좌측 상단).
+#
+# 권역:
+#   일루네온 권역 (중앙) 시작
+#   라르 숲 / 모스 / 세계수 (동)
+#   마노니클라 / 리문 (극동)
+#   리아그랄타 / 알리메스 (서·서남)
+#   루나 / 타코미 / 마왕성 (남서 → 북서)
+#   풍혈지대 → 시간의 닻 (북·보스)
+
+[nodemap.nm-act-1-era4-061]
+name = 제 4시대 61년 컬러즈 세계 단면
+description = 일루네온에서 시작해 동쪽 라르 숲, 극동 마노니클라, 북쪽 리아그랄타, 남서 루나, 그리고 마지막으로 풍혈지대 위의 시간의 닻까지. 한 해 안에 모든 곳을 다녀야 한다.
+start_node = n-iluneon-square
+boss_gate = n-anchor-point
+
+# ============================================================
+# 권역 (region) 30턴 하루 경과 리프레시 시 이 권역 풀에서만 추첨.
+# 사막 노드에서 우거진 숲 이벤트가 나오는 어색함 방지.
+# ============================================================
+
+[nodemap.nm-act-1-era4-061.region.iluneon]
+name = 일루네온 권역
+description = 컬러즈 세계의 중심 도시. 광장·시장·시계탑·길드. 도시의 잡담, 행인, 인쇄된 종이.
+tier = 1
+enemy_pool = mr-iluneon-cutpurse, mr-iluneon-trickster, mr-iluneon-guild-rat, mr-iluneon-alley-thug, mr-iluneon-lantern-imp, mr-iluneon-market-sneak, mr-iluneon-clock-shade, mr-iluneon-toll-warden
+elite_enemy_pool = mr-iluneon-clockwraith, mr-iluneon-spirit-herald
+event_pool = ev-iluneon-clockchime, ev-traveler-fork, ev-mono-whisper, ev-time-cracker, ev-iluneon-plaza-flow, ev-iluneon-market-row, ev-iluneon-guild-board, ev-iluneon-diner-seat, ev-iluneon-larder, ev-iluneon-olyu-observatory, ev-iluneon-imperisia-meeting, ev-iluneon-time-trace, ev-iluneon-bellroom, ev-iluneon-niayur-fountain, ev-iluneon-niayur-pause, ev-iluneon-east-gate, ev-iluneon-spire-shadow
+primary_color = light
+specialty_item = i-clockwork-cog
+legendary_cards = c-iluneon-stopped-noon
+
+[nodemap.nm-act-1-era4-061.region.lar-forest]
+name = 라르 숲 · 세계수
+description = 일루네온에서 가깝고 어린 모험가들이 많이 가는 입문자 숲. 세계수 근처만 한 자락 강함. 잎사귀와 송진 향.
+tier = 1
+enemy_pool = mr-lar-forest-mosswolf, mr-lar-forest-thornbird, mr-lar-forest-spiderling, mr-lar-forest-rootcrawler, mr-lar-forest-ember-sala, mr-lar-forest-dryad-sapling, mr-lar-forest-boar, mr-lar-forest-mudcrab
+elite_enemy_pool = mr-lar-forest-spider-queen, mr-lar-forest-ancient-dryad
+event_pool = ev-lar-dryad-whisper, ev-traveler-fork, ev-stranger-favor, ev-fountain-vow, ev-lar-arukea-stones, ev-lar-bridge-under-shard, ev-lar-river-bank-sketch, ev-lar-memory-spring-face, ev-lar-moss-bank-leaves, ev-lar-arvaro-stick-fight, ev-lar-herb-garden-trace, ev-lar-fields-shadow, ev-lar-caliburn-yard-sword, ev-lar-small-grave-flower, ev-lar-inner-pool-still, ev-lar-tree-bud-shard, ev-lar-low-branch-song, ev-lar-high-branch-leaf, ev-lar-leaf-hall-trail, ev-lar-root-burrow-old
+primary_color = earth
+specialty_item = i-world-tree-bud
+parent_region = 세계수
+
+[nodemap.nm-act-1-era4-061.region.moss-north]
+name = 북 모스
+description = 모스 북부 — 화산 능선·망루·증기실·여관. 대장간의 망치·증기.
+tier = 2
+enemy_pool = mr-moss-fireworm, mr-moss-cindermoth, mr-moss-anvil-arachne, mr-moss-slag-golem, mr-moss-flame-lizard, mr-moss-forge-imp, mr-moss-char-wraith, mr-moss-iron-guardian
+elite_enemy_pool = mr-moss-forge-titan, mr-moss-smelter-queen
+event_pool = ev-moss-forge-flame, ev-stranger-favor, ev-moss-plaza-busy, ev-moss-hammer-row-line, ev-moss-furnace-arachne, ev-moss-watchtower-zenith, ev-moss-lighthouse-keeper, ev-moss-anvil-rhythm, ev-moss-tool-organize, ev-moss-workshop-apprentice, ev-moss-armor-polish, ev-moss-fissure-miner, ev-moss-clutch-stevedore, ev-moss-clutch-checker, ev-moss-ember-warden
+primary_color = fire
+specialty_item = i-forge-ember
+legendary_cards = c-moss-ember-strike
+
+[nodemap.nm-act-1-era4-061.region.moss-south]
+name = 남 모스
+description = 모스 남부 — 광장·대장간·클러치 상륙장·항구. 망치·바닷내음.
+tier = 2
+enemy_pool = mr-moss-fireworm, mr-moss-cindermoth, mr-moss-anvil-arachne, mr-moss-slag-golem, mr-moss-flame-lizard, mr-moss-forge-imp, mr-moss-char-wraith, mr-moss-iron-guardian
+elite_enemy_pool = mr-moss-forge-titan, mr-moss-smelter-queen
+event_pool = ev-moss-forge-flame, ev-stranger-favor, ev-moss-plaza-busy, ev-moss-hammer-row-line, ev-moss-furnace-arachne, ev-moss-watchtower-zenith, ev-moss-lighthouse-keeper, ev-moss-anvil-rhythm, ev-moss-tool-organize, ev-moss-workshop-apprentice, ev-moss-armor-polish, ev-moss-fissure-miner, ev-moss-clutch-stevedore, ev-moss-clutch-checker, ev-moss-ember-warden
+primary_color = fire
+specialty_item = i-forge-ember
+legendary_cards = c-moss-ember-strike
+
+[nodemap.nm-act-1-era4-061.region.manonickla]
+name = 마노니클라 권역
+description = 극동 섬의 석양·드래곤 공방·리문 유적. 절벽 바람·사구의 모래.
+tier = 2
+enemy_pool = mr-mano-cliff-crab, mr-mano-sand-wraith, mr-mano-sunset-raven, mr-mano-limun-ward, mr-mano-iron-scorpion, mr-mano-dusk-shade, mr-mano-ruin-lurker, mr-mano-tide-golem
+elite_enemy_pool = mr-mano-limun-sovereign, mr-mano-sunset-drake, mr-mano-ninetails
+event_pool = ev-mano-sunset-flask, ev-mono-whisper, ev-fountain-vow, ev-mano-betelgeuse-passage, ev-mano-seed-1-anomaly, ev-mano-seed-2-embrace, ev-mano-cayou-notebook, ev-mano-dune-pillar, ev-mano-old-coin, ev-mano-fox-glance, ev-mano-guild-board, ev-mano-stone-cairn, ev-mano-sunset-beast, ev-mano-old-shrine-incense, ev-mano-cliff-walk-breath, ev-mano-seed-3-rumor, ev-mano-rok-step, ev-mano-valencia-spear, ev-mano-limun-script, ev-mano-night-tide
+primary_color = iron
+specialty_item = i-sunset-shard
+legendary_cards = c-manonickla-sunset-wall
+
+[nodemap.nm-act-1-era4-061.region.riagralta]
+name = 리아그랄타
+description = 일루네온 북쪽의 끝없는 초원 + 오드 산비탈. 풀잎 쓸림·양 떼·번개 폭풍.
+tier = 2
+enemy_pool = mr-ria-storm-sheep, mr-ria-thunder-fox, mr-ria-spark-wasp, mr-ria-voltage-goat, mr-ria-gale-serpent
+elite_enemy_pool = mr-ria-arc-wolf
+event_pool = ev-ria-storm-shepherd, ev-traveler-fork, ev-fountain-vow
+primary_color = electric
+specialty_item = i-storm-fang
+
+[nodemap.nm-act-1-era4-061.region.alimes]
+name = 알리메스 권역
+description = 바그레트·겔리더 산맥에 끼인 오지 마을 + 에루멘 안개 숲. 약초·비단·운무.
+tier = 2
+enemy_pool = mr-ali-mist-deer, mr-ali-herb-bandit, mr-ali-fog-sprite, mr-ali-stone-bear, mr-ali-dew-moth, mr-ali-marsh-creeper
+elite_enemy_pool = mr-ali-fog-sovereign, mr-ali-ancient-treant
+event_pool = ev-ali-mist-trader, ev-stranger-favor, ev-time-cracker, ev-alimes-mist-trail, ev-alimes-mist-grain, ev-alimes-mist-between, ev-alimes-mist-end-shayua, ev-alimes-erumen-entry, ev-alimes-tarko-pressure, ev-alimes-cloud-sketch, ev-alimes-peak-wind, ev-alimes-erumen-pool, ev-alimes-erumen-stele, ev-alimes-erumen-deep, ev-alimes-yoon-pri-contract, ev-alimes-spring-shayua
+primary_color = water
+specialty_item = i-mist-petal
+legendary_cards = c-alimes-mist-vow
+
+[nodemap.nm-act-1-era4-061.region.luna]
+name = 마법학교 루나 · 마왕성
+description = 남서쪽의 마법 학교 + 팬텀 스파이어 + 마왕성·금단 회랑. 잉크·금서·먼지 낀 첨탑·서류 냄새.
+tier = 3
+enemy_pool = mr-luna-ink-fiend, mr-luna-grimoire-shadow, mr-luna-phantom-scribe, mr-luna-cursed-page, mr-luna-mirror-shade, mr-luna-forbidden-wisp, mr-luna-corridor-phantom
+elite_enemy_pool = mr-luna-arcane-devourer, mr-luna-headmaster-shade
+event_pool = ev-luna-forbidden-page, ev-mono-whisper, ev-luna-entrance, ev-luna-library-floating-book, ev-luna-old-magicircle, ev-luna-grimoire-blind-title, ev-luna-illusion-late-face, ev-luna-classroom-test, ev-luna-ward-shake, ev-luna-old-desk-note, ev-luna-garden-plant, ev-luna-dorm-empty, ev-luna-febiel-stellaville
+primary_color = dark
+specialty_item = i-grimoire-ink
+
+[nodemap.nm-act-1-era4-061.region.tacomi]
+name = 타코미 권역
+description = 대절곡 이북의 페스티벌 도시 + 홀로그램 필드 + 스텔라 빌. 네온·레이저·결계.
+tier = 3
+enemy_pool = mr-tacomi-pixel-beast, mr-tacomi-hologram-jester, mr-tacomi-barrier-sprite, mr-tacomi-neon-hornet, mr-tacomi-festival-mimic, mr-tacomi-circuit-prowler, mr-tacomi-voltage-dancer
+elite_enemy_pool = mr-tacomi-hologram-titan, mr-tacomi-grand-circuit
+event_pool = ev-taco-hologram-mirror, ev-stranger-favor, ev-time-cracker, ev-tacomi-day-flow, ev-tacomi-shinsian-cup, ev-tacomi-shinsian-cup-alt, ev-tacomi-alley-cat, ev-tacomi-latte-row, ev-tacomi-sun-book, ev-tacomi-bloom-veil, ev-tacomi-bloom-veil-alt, ev-tacomi-petal-path, ev-tacomi-petal-path-alt, ev-tacomi-petal-spot, ev-tacomi-petal-spot-alt, ev-tacomi-night-stand, ev-tacomi-night-neon, ev-tacomi-night-stage, ev-tacomi-night-dj, ev-tacomi-night-alley, ev-tacomi-night-edge, ev-tacomi-imperisia-trace
+primary_color = electric
+specialty_item = i-neon-residue
+legendary_cards = c-tacomi-hologram-mirror
+
+[nodemap.nm-act-1-era4-061.region.demon-windfall]
+name = 풍혈지대
+description = 일루네온·리아그랄타에서 타코미로 넘어가는 바람의 길목. 끝에 시간의 닻이 떠 있다. 강풍·끊긴 공기.
+tier = 3
+enemy_pool = mr-demon-windfall-paper-ghost, mr-demon-windfall-gale-blade, mr-demon-windfall-time-freezer, mr-demon-windfall-anchor-wraith
+elite_enemy_pool = mr-demon-windfall-storm-tyrant
+event_pool = ev-demon-stamp-pile, ev-mono-whisper
+primary_color = wind
+specialty_item = i-anchor-link
+
+[nodemap.nm-act-1-era4-061.region.martin]
+name = 마틴 항 · 키시나 해변
+description = 일루네온과 클러치 사이의 항구. 마틴 → 배 → 클러치. 키시나 해변 분기.
+tier = 2
+enemy_pool = mr-martin-dock-rat, mr-martin-sea-thug, mr-martin-kelp-creeper, mr-martin-tide-spirit, mr-martin-gull-raider
+elite_enemy_pool = mr-kishina-siren
+event_pool = ev-mono-whisper, ev-fountain-vow, ev-martin-cargo-line, ev-martin-lighthouse, ev-kishina-shells, ev-kishina-spirit-bead, ev-martin-boat-passage
+primary_color = water
+specialty_item = i-salt-pearl
+
+[nodemap.nm-act-1-era4-061.region.enicham]
+name = 에니챰 · 발전소 지대
+description = 타코미 옆의 발전소 지대. 희미한 투광·기계 소음·메탈 향. 제로의 단정한 자리. 알티-알타의 AGI 초기 흔적.
+tier = 3
+enemy_pool = mr-enicham-sparking-drone, mr-enicham-relay-crawler, mr-enicham-capacitor-golem, mr-enicham-circuit-hound, mr-enicham-overload-wraith
+elite_enemy_pool = mr-enicham-proto-agi
+event_pool = ev-enicham-gen-hum, ev-enicham-wire-spire, ev-enicham-zero-bench, ev-enicham-alti-bay, ev-enicham-old-circuit
+primary_color = electric
+specialty_item = i-neon-residue
+
+[nodemap.nm-act-1-era4-061.region.reshud]
+name = 르슈드 교차로
+description = 알리메스·일루네온·리아그랄타·풍혈지대를 잇는 작은 마차 교차로. 종소리·말 발굽. 단순 경유지.
+tier = 1
+enemy_pool = mr-reshud-bandit, mr-reshud-stray-ram, mr-reshud-spark-hound, mr-reshud-drifter, mr-reshud-toll-raider
+elite_enemy_pool = mr-reshud-thunder-wolf
+event_pool = ev-traveler-fork, ev-fountain-vow
+primary_color = electric
+specialty_item = i-storm-fang
+
+[nodemap.nm-act-1-era4-061.region.yusezria]
+name = 유스제리아
+description = 리아그랄타 너머의 막다른 고위험 사냥터. 철과 물의 정수가 고인 dead end. 몬스터가 매우 강력하다. NPC 없음.
+tier = 4
+enemy_pool = mr-yusezria-iron-sentinel, mr-yusezria-tide-wraith, mr-yusezria-rust-hound, mr-yusezria-pressure-mite, mr-yusezria-deep-leech, mr-yusezria-ore-spike
+elite_enemy_pool = mr-yusezria-core-colossus, mr-yusezria-abyssal-warden
+event_pool = ev-yuse-iron-vein, ev-yuse-tide-pool, ev-yuse-dead-end
+primary_color = iron
+specialty_item = i-yusezria-ore
+
+[nodemap.nm-act-1-era4-061.region.triflower]
+name = 트리플라워 화산
+description = 라르 숲과 모스 사이의 활화산. 화염 아인 살라만더·화염 정령·화염 아라크네. 용암·재·열기.
+tier = 3
+enemy_pool = mr-triflower-ember-arachne, mr-triflower-lava-salamander, mr-triflower-flame-spirit, mr-triflower-magma-crab, mr-triflower-scorchling, mr-emberforge-ash-hound, mr-emberforge-furnace-golem, mr-emberforge-lava-crawler, mr-emberforge-cinder-bat, mr-emberforge-slag-crusher
+elite_enemy_pool = mr-triflower-ignia-queen, mr-emberforge-magma-titan, mr-emberforge-kumamimi
+event_pool = ev-lar-triflower-spirit, ev-lar-crater-rim-heat, ev-lar-lava-vein-spark, ev-lar-cooled-slag-rest, ev-tri-web-nest, ev-tri-magma-core, ev-emberforge-lair, ev-emberforge-core
+primary_color = fire
+specialty_item = i-lava-scale
+
+[nodemap.nm-act-1-era4-061.region.falcon-garden]
+name = 팔콘 가든 공중 군도
+description = 클러치 등대 너머 바다 위에 떠 있는 공중 군도. 강력한 조류 아인 맹금·하피·하늘의 주인. 대화 가능한 이는 바다쪽 범고래뿐. 강풍·깃털·고도.
+tier = 4
+enemy_pool = mr-falcon-garden-gust-harpy, mr-falcon-garden-talon-striker, mr-falcon-garden-wind-lancer, mr-falcon-garden-sky-raven, mr-falcon-garden-gale-sentry
+elite_enemy_pool = mr-falcon-garden-storm-sovereign, mr-falcon-garden-sky-empress
+event_pool = ev-falcon-shore, ev-falcon-core
+primary_color = wind
+specialty_item = i-sky-shard
+
+[nodemap.nm-act-1-era4-061.region.tradepost]
+name = 초원 교역소
+description = 리아그랄타 초원 서쪽의 대상 교역지. 여러 행상이 천막을 친다. 라미아 상인 사라사가 직물과 향신료를 펼친다. 평화로운 거래의 자리.
+tier = 1
+enemy_pool = mr-tradepost-stray-hound, mr-tradepost-caravan-thief, mr-tradepost-wanderer, mr-tradepost-lamia-guard, mr-tradepost-dust-rat
+elite_enemy_pool = mr-tradepost-lamia-enforcer
+event_pool = ev-trade-sarasa, ev-trade-caravan
+primary_color = earth
+specialty_item = i-trade-silk
+
+[nodemap.nm-act-1-era4-061.region.diropel]
+name = 딜롭 부족
+description = 에루멘 안개숲 너머의 숨은 골짜기. 늘어진 귀가 긴 형태와 짧은 형태 두 모습을 가진 한 종족 딜롭이 얼굴에 무늬를 그리며 독자 문화를 이룬다. 언어가 통하지 않아, 무늬와 몸짓으로 말한다.
+tier = 3
+enemy_pool = mr-diropel-long-ear-sentinel, mr-diropel-short-ear-dancer, mr-diropel-totem-warden, mr-diropel-pattern-shaman
+elite_enemy_pool = mr-diropel-grove-elder
+event_pool = ev-diropel-paint, ev-diropel-totem
+primary_color = earth
+specialty_item = i-diropel-pigment
+
+[nodemap.nm-act-1-era4-061.region.coral-coast]
+name = 산호 해안
+description = 키시나 해변 너머 바다 속의 산호 해안 해양 사냥터. 인어와 세이렌이 산호초에 깃들고, 범고래(클루루)와는 앙숙이다. 산호·조류·노래.
+tier = 3
+enemy_pool = mr-coral-coast-jellyfish-drifter, mr-coral-coast-siren-charmer, mr-coral-coast-coral-grappler, mr-coral-coast-mermaid-hunter, mr-coral-coast-tide-specter
+elite_enemy_pool = mr-coral-coast-abyss-queen
+event_pool = ev-coral-rest, ev-coral-song
+primary_color = water
+specialty_item = i-coral-pearl
+
+[nodemap.nm-act-1-era4-061.region.oldshrine]
+name = 구 신전터
+description = 타코미 너머 번개가 깃든 옛 신전 유적 도전 사냥터. 격 높은 신수 티프레가 지킨다. 부서진 기둥·정전기·빛 무늬.
+tier = 4
+enemy_pool = mr-oldshrine-spirit-flame, mr-oldshrine-shrine-warden, mr-oldshrine-thunder-wraith, mr-oldshrine-barrier-golem, mr-oldshrine-relic-hunter
+elite_enemy_pool = mr-oldshrine-lightning-archon, mr-oldshrine-toramimi
+event_pool = ev-oldshrine-altar, ev-oldshrine-core
+primary_color = electric
+specialty_item = i-shrine-relic
+
+# ============================================================
+# 일루네온 권역 시작
+# ============================================================
+
+[nodemap.nm-act-1-era4-061.region.demon-castle]
+name = 마왕성
+description = 루나 남쪽 끝의 마왕성·금단 회랑. 봉인된 방문·옛 명문·먼지. 마법학교에서 떨어져 나온 옛 권력의 자취.
+tier = 3
+enemy_pool = mr-luna-corridor-phantom, mr-luna-forbidden-wisp, mr-luna-mirror-shade, mr-luna-cursed-page, mr-luna-phantom-scribe
+elite_enemy_pool = mr-luna-headmaster-shade, mr-luna-arcane-devourer
+event_pool = ev-luna-forbidden-page, ev-luna-ward-shake, ev-mono-whisper
+primary_color = dark
+specialty_item = i-grimoire-ink
+
+[nodemap.nm-act-1-era4-061.node.n-iluneon-square]
+kind = village
+region = iluneon
+label = 일루네온 광장
+description = 컬러즈 세계의 중심. 분수대 옆에서 어린 소년 니아 이유르 가 잠시 멈춰 있다. 그가 그대를 본다. "왔군요."
+x = 0.50
+y = 0.50
+neighbors = n-iluneon-market, n-iluneon-clocktower, n-iluneon-diner, n-iluneon-guild, n-arukea-bridge, n-riagralta, n-south-road, n-ilu-fountain-side, n-ilu-spire-shadow, n-ilu-street-corner, n-ilu-east-gate, n-ilu-west-gate
+events = ev-iluneon-plaza-flow
+npcs = npc-niayur, npc-hako, npc-phoenix
+is_start = true
+
+[nodemap.nm-act-1-era4-061.node.n-iluneon-market]
+kind = shop
+region = iluneon
+label = 일루네온 시장
+description = 마법 상점·식료 가판이 줄지어 선 골목. 사천왕 중 하나가 평민 행세를 하며 어슬렁댄다.
+x = 0.54
+y = 0.46
+neighbors = n-iluneon-square, n-iluneon-guild, n-ilu-back-alley, n-ilu-changers, n-ilu-east-gate
+events = ev-iluneon-market-row
+npcs = npc-echo
+
+[nodemap.nm-act-1-era4-061.node.n-iluneon-clocktower]
+kind = event
+region = iluneon
+label = 일루네온 시계탑
+description = 도시의 가장 높은 첨탑. 시계 뒷면에서 시간 축의 미세한 어긋남이 보인다.
+x = 0.47
+y = 0.45
+neighbors = n-iluneon-square, n-iluneon-diner, n-ilu-spire-shadow, n-ilu-clock-hall, n-ilu-bellroom, n-ilu-west-gate
+events = ev-mono-whisper
+npcs = npc-olyu
+
+[nodemap.nm-act-1-era4-061.node.n-iluneon-diner]
+kind = gather
+region = iluneon
+label = 일루네온 식당
+description = 모험가들이 끼니를 때우는 곳. 한 자리에 마치 인형 같은 소녀가 멍하니 앉아 있다 임페리시아.
+x = 0.46
+y = 0.54
+neighbors = n-iluneon-square, n-iluneon-clocktower, n-ilu-diner-back, n-ilu-inn-court
+events = ev-iluneon-diner-seat
+npcs = npc-imperisia
+
+[nodemap.nm-act-1-era4-061.node.n-iluneon-guild]
+kind = activity
+region = iluneon
+label = 일루네온 길드 본부
+description = 의뢰 게시판 앞에서 사람들이 분주하다. 인간 모험가 하코가 게시판을 노려본다.
+x = 0.54
+y = 0.54
+neighbors = n-iluneon-square, n-iluneon-market, n-ilu-board-room, n-ilu-quest-hall, n-ilu-sparring
+events = ev-iluneon-guild-board
+npcs = npc-hako, npc-rize, npc-kardi
+
+# ============================================================
+# 라르 숲 / 모스 / 세계수 (동쪽)
+# ============================================================
+
+[nodemap.nm-act-1-era4-061.node.n-arukea-bridge]
+kind = combat
+region = lar-forest
+label = 하나브릿지
+description = 일루네온과 라르 숲을 잇는 돌다리. 다리 밑에서 그림자 강아지가 으르렁댄다.
+x = 0.60
+y = 0.52
+neighbors = n-iluneon-square, n-arukea-trail, n-memory-spring, n-lar-bridge-under
+enemy = mr-lar-forest-mosswolf
+
+[nodemap.nm-act-1-era4-061.node.n-memory-spring]
+kind = rest
+region = lar-forest
+label = 메모리 스프링
+description = 일루네온 동쪽 외곽의 작은 샘. 물이 기억의 일부를 비춘다.
+x = 0.62
+y = 0.57
+neighbors = n-arukea-bridge, n-lar-forest, n-lar-river-bank, n-lar-inner-pool, n-lar-moss-bank
+events = ev-lar-memory-spring-face
+
+[nodemap.nm-act-1-era4-061.node.n-arukea-trail]
+kind = combat
+region = lar-forest
+label = 아루케아 가도
+description = 라르 숲으로 가는 길. 풀숲에서 그림자가 일어선다.
+x = 0.65
+y = 0.48
+neighbors = n-arukea-bridge, n-lar-forest, n-caliburn-house
+enemy = mr-lar-forest-thornbird
+events = ev-lar-arukea-stones
+
+[nodemap.nm-act-1-era4-061.node.n-lar-forest]
+kind = village
+region = lar-forest
+label = 라르 숲 오두막
+description = 마로 엔야의 작은 오두막. 마당에서 아르바로가 풀잎으로 칼싸움을 한다.
+x = 0.70
+y = 0.52
+neighbors = n-arukea-trail, n-memory-spring, n-world-tree, n-caliburn-house, n-lar-herb-garden, n-lar-fields, n-lar-low-branch
+npcs = npc-maro, npc-arvaro-enya
+events = ev-lar-twins-home-1, ev-lar-arvaro-stick-fight, ev-lar-twins-talk-3
+
+[nodemap.nm-act-1-era4-061.node.n-caliburn-house]
+kind = event
+region = lar-forest
+label = 칼리번의 집
+description = 검술가 칼리번이 사는 외딴 집. 마당에 시간의 흠집 같은 균열이 한 줄 그어져 있다.
+x = 0.68
+y = 0.43
+neighbors = n-arukea-trail, n-lar-forest, n-lar-fields, n-lar-caliburn-yard
+npcs = npc-caliburn
+events = ev-lar-caliburn-trace-1, ev-traveler-fork
+
+[nodemap.nm-act-1-era4-061.node.n-world-tree]
+kind = gather
+region = lar-forest
+label = 세계수
+description = 가지 위에 형성된 마을. 드라이어드들이 노래하고, 가지에서 시간의 조각이 떨어진다.
+x = 0.76
+y = 0.50
+neighbors = n-lar-forest, n-triflower, n-moss, n-lar-low-branch, n-lar-high-branch, n-lar-leaf-hall, n-lar-root-burrow
+npcs = npc-mirte, npc-seraphine, npc-kurkuma
+events = ev-lar-caliburn-elnest-meet-2, ev-lar-tree-bud-shard
+
+[nodemap.nm-act-1-era4-061.node.n-triflower]
+kind = elite
+region = triflower
+label = 트리플라워 화산
+description = 라르 숲과 모스 사이의 활화산. 분화구에서 화염 아인들이 일어서고, 위쪽 둥지에 화염 아라크네가 실을 친다.
+x = 0.79
+y = 0.55
+neighbors = n-world-tree, n-moss, n-lar-crater-rim, n-lar-lava-vein, n-lar-cooled-slag, n-tri-web-nest
+enemy = mr-triflower-ignia-queen
+events = ev-lar-triflower-spirit
+
+[nodemap.nm-act-1-era4-061.node.n-moss]
+kind = village
+region = moss-south
+label = 모스 불의 도시
+description = 거리 곳곳에서 증기가 피어오른다. 대장간에서 망치 소리가 끊이지 않는다.
+x = 0.81
+y = 0.45
+neighbors = n-world-tree, n-triflower, n-moss-forge, n-clutch-landing, n-moss-plaza, n-moss-alley, n-moss-steam-room, n-moss-hammer-row, n-moss-workshop, n-moss-weapon-stall, n-moss-armor-stall, n-moss-inn
+npcs = npc-elnest, npc-cassis, npc-roku
+
+[nodemap.nm-act-1-era4-061.node.n-moss-forge]
+kind = workshop
+region = moss-south
+label = 모스 대장간
+description = 대륙 최고의 금속 가공이 이뤄지는 곳. 좋은 카드를 제련할 수 있다.
+x = 0.84
+y = 0.42
+neighbors = n-moss, n-moss-hammer-row, n-moss-furnace, n-moss-anvil-room, n-moss-tool-room, n-moss-workshop, n-moss-ridge
+
+# ============================================================
+# 마노니클라 / 리문 권역 (극동) 2026-05-19 확장 (3 → 20 노드).
+# 영역: A.사구 / B.절벽·해안 / C.마을·공방 / D.클러치 / E.리문.
+# ============================================================
+
+# --- 진입: 클러치 상륙장 (moss 권역, 인접만 갱신) ---
+[nodemap.nm-act-1-era4-061.node.n-clutch-landing]
+kind = combat
+region = moss-south
+label = 클러치 상륙장
+description = 극동 항로의 종점. 파도 사이에서 물에 잠긴 무엇이 떠오른다.
+x = 0.88
+y = 0.50
+neighbors = n-moss, n-manonickla, n-mano-clutch-gulch, n-clutch-pier, n-clutch-harbor-alley
+enemy = mr-moss-fireworm
+
+# --- D. 클러치 협곡 (베텔게우스) ---
+[nodemap.nm-act-1-era4-061.node.n-mano-clutch-gulch]
+kind = event
+region = manonickla
+label = 클러치 협곡
+description = 클러치 상륙장 너머의 협곡. 바위 사이의 한 결에 조그만 점 하나가 앉아 있다.
+x = 0.88
+y = 0.43
+neighbors = n-clutch-landing, n-mano-dunes-low
+events = ev-mano-betelgeuse-passage
+npcs = npc-betelgeuse
+
+# --- C. 마을·공방 (5노드) ---
+[nodemap.nm-act-1-era4-061.node.n-manonickla]
+kind = village
+region = manonickla
+label = 마노니클라
+description = 석양의 휴양지. 절벽 위에서 드래곤 카요의 공방이 보인다.
+x = 0.93
+y = 0.50
+neighbors = n-clutch-landing, n-manonickla-forge, n-limun-ruins, n-mano-dunes-low, n-mano-sunset-cliff, n-mano-guild, n-mano-tea-house, n-mano-night-market, n-falcon-shore
+npcs = npc-cayo, npc-valencia, npc-seed
+
+[nodemap.nm-act-1-era4-061.node.n-manonickla-forge]
+kind = workshop
+region = manonickla
+label = 마노니클라 특수공방
+description = 카요의 공방. 그가 모루를 두드리는 박자가 시간을 늘이는 듯하다.
+x = 0.96
+y = 0.46
+neighbors = n-manonickla, n-mano-night-market
+npcs = npc-rok
+
+[nodemap.nm-act-1-era4-061.node.n-mano-guild]
+kind = activity
+region = manonickla
+label = 마노니클라 모험가 길드
+description = 마을 길드 본부. 게시판에 손글씨로 쓴 한 장이 끼어 있다.
+x = 0.91
+y = 0.47
+neighbors = n-manonickla, n-mano-tea-house
+events = ev-mano-guild-board
+
+[nodemap.nm-act-1-era4-061.node.n-mano-tea-house]
+kind = activity
+region = manonickla
+label = 노을차집
+description = 차를 한 잔 시키면 노을이 식기 전에 한 모금. 마을 사람들이 둘러앉아 있다.
+x = 0.91
+y = 0.54
+neighbors = n-manonickla, n-mano-guild, n-mano-night-market
+
+[nodemap.nm-act-1-era4-061.node.n-mano-night-market]
+kind = activity
+region = manonickla
+label = 야시장
+description = 해가 진 뒤 마을 길에 작은 좌판들이 줄선다. 카요의 공방에서 흘러나온 불씨가 좌판을 비춘다.
+x = 0.94
+y = 0.54
+neighbors = n-manonickla, n-mano-tea-house, n-manonickla-forge
+npcs = npc-rok
+
+# --- A. 사구 (5노드, 북쪽) ---
+[nodemap.nm-act-1-era4-061.node.n-mano-dunes-low]
+kind = gather
+region = manonickla
+label = 사구 어귀
+description = 마노니클라 북쪽 사구가 시작되는 자리. 모래가 발끝에 따뜻하게 닿는다.
+x = 0.93
+y = 0.42
+neighbors = n-manonickla, n-mano-clutch-gulch, n-mano-windgauge, n-mano-dune-pillar
+
+[nodemap.nm-act-1-era4-061.node.n-mano-windgauge]
+kind = event
+region = manonickla
+label = 풍속계 사구
+description = 한 모래언덕 위에 기울어진 풍속계가 세워져 있다. 그 옆 모래에 깃털 한 가닥.
+x = 0.91
+y = 0.35
+neighbors = n-mano-dunes-low, n-mano-dune-pillar
+events = ev-mano-seed-1-anomaly
+
+[nodemap.nm-act-1-era4-061.node.n-mano-dune-pillar]
+kind = event
+region = manonickla
+label = 회전 사구
+description = 사구 한가운데 모래기둥 한 줄이 천천히 돈다. 주변 공기와 따로 움직인다.
+x = 0.94
+y = 0.30
+neighbors = n-mano-dunes-low, n-mano-windgauge, n-mano-deep-dune
+events = ev-mano-dune-pillar
+
+[nodemap.nm-act-1-era4-061.node.n-mano-deep-dune]
+kind = gather
+region = manonickla
+label = 깊은 사구
+description = 사구의 안쪽. 발자국이 천천히 사라진다. 가끔 옛 동전 한 닢이 발끝에 닿는다.
+x = 0.97
+y = 0.27
+neighbors = n-mano-dune-pillar, n-mano-eatery
+
+[nodemap.nm-act-1-era4-061.node.n-mano-eatery]
+kind = rest
+region = manonickla
+label = 사구 끝 식당
+description = 사구를 다 건넌 자리에 작은 식당이 있다. 노을이 식기 전 사람들이 한 쪽 자리에 모인다.
+x = 0.99
+y = 0.25
+neighbors = n-mano-deep-dune, n-mano-lookout
+events = ev-mano-seed-2-embrace
+
+# --- B. 절벽·해안 (5노드, 남쪽) ---
+[nodemap.nm-act-1-era4-061.node.n-mano-sunset-cliff]
+kind = rest
+region = manonickla
+label = 노을 절벽
+description = 마노니클라 남쪽 노을이 가장 길게 머무는 자리. 절벽 끝에 유리병 하나가 거꾸로 박혀 있다.
+x = 0.91
+y = 0.60
+neighbors = n-manonickla, n-mano-shore, n-mano-cliff-walk
+events = ev-mano-sunset-flask
+
+[nodemap.nm-act-1-era4-061.node.n-mano-shore]
+kind = combat
+region = manonickla
+label = 해변
+description = 절벽 아래의 좁은 해변. 파도가 바위 사이로 들어찼다 빠진다. 그림자가 한 번 일어선다.
+x = 0.89
+y = 0.65
+neighbors = n-mano-sunset-cliff, n-mano-cave, n-mano-cliff-walk
+enemy = mr-mano-cliff-crab
+
+[nodemap.nm-act-1-era4-061.node.n-mano-cliff-walk]
+kind = rest
+region = manonickla
+label = 절벽 산책로
+description = 절벽 위로 난 좁은 길. 바람이 한 박자 사이를 둔다.
+x = 0.94
+y = 0.62
+neighbors = n-mano-sunset-cliff, n-mano-shore, n-mano-lookout
+events = ev-mano-cliff-walk-breath
+
+[nodemap.nm-act-1-era4-061.node.n-mano-cave]
+kind = combat
+region = manonickla
+label = 해식 동굴
+description = 파도가 깎은 동굴. 안쪽에서 작은 그림자가 응시한다.
+x = 0.91
+y = 0.70
+neighbors = n-mano-shore, n-mano-lookout
+enemy = mr-mano-sand-wraith
+
+[nodemap.nm-act-1-era4-061.node.n-mano-lookout]
+kind = event
+region = manonickla
+label = 노을 전망대
+description = 사구와 절벽이 만나는 자리. 해 지는 쪽에 큰 그림자 하나가 서 있다.
+x = 0.96
+y = 0.65
+neighbors = n-mano-cliff-walk, n-mano-cave, n-mano-eatery
+events = ev-mano-sunset-beast
+
+# --- E. 리문 권역 (4노드, 동쪽) ---
+[nodemap.nm-act-1-era4-061.node.n-limun-ruins]
+kind = elite
+region = manonickla
+label = 리문 유적
+description = 모래에 반쯤 묻힌 옛 도시. 봉인된 방에서 목소리가 새어 나온다.
+x = 0.96
+y = 0.55
+neighbors = n-manonickla, n-limun-gate, n-limun-hall
+enemy = mr-mano-limun-sovereign
+
+[nodemap.nm-act-1-era4-061.node.n-limun-gate]
+kind = combat
+region = manonickla
+label = 리문 진입로
+description = 리문 유적으로 가는 좁은 길. 모래에 묻힌 옛 문턱이 발끝에 걸린다.
+x = 0.98
+y = 0.55
+neighbors = n-limun-ruins, n-limun-hall
+enemy = mr-mano-sunset-raven
+npcs = npc-rok
+
+[nodemap.nm-act-1-era4-061.node.n-limun-hall]
+kind = combat
+region = manonickla
+label = 리문 회랑
+description = 유적 안쪽의 긴 회랑. 봉인된 방문 너머에서 목소리가 새어 나온다.
+x = 0.99
+y = 0.60
+neighbors = n-limun-ruins, n-limun-gate, n-mano-old-shrine
+enemy = mr-mano-limun-ward
+
+[nodemap.nm-act-1-era4-061.node.n-mano-old-shrine]
+kind = event
+region = manonickla
+label = 옛 사당
+description = 유적 가장 깊은 자리에 작은 사당이 남아 있다. 향이 한 줄 다 탔다.
+x = 1.00
+y = 0.62
+neighbors = n-limun-hall
+events = ev-mano-old-shrine-incense
+npcs = npc-betelgeuse
+
+# ============================================================
+# 리아그랄타 / 알리메스 (북·서남)
+# ============================================================
+
+[nodemap.nm-act-1-era4-061.node.n-riagralta]
+kind = combat
+region = riagralta
+label = 리아그랄타 평원
+description = 일루네온 북쪽으로 끝없이 펼쳐진 초원. 양 떼 너머에서 그림자 늑대가 보인다. 서쪽으로 초원 교역소의 천막이 늘어선다.
+x = 0.50
+y = 0.30
+neighbors = n-iluneon-square, n-ode-slope, n-ria-flock, n-ria-grass-hill, n-ria-wind-path, n-ria-tent, n-ode-foot, n-trade-post
+enemy = mr-ria-storm-sheep
+
+[nodemap.nm-act-1-era4-061.node.n-ode-slope]
+kind = elite
+region = riagralta
+label = 오드 산비탈
+description = 늑대 떼의 흔적이 정상까지 이어진다. 화이트 팡이 무리를 이끈다.
+x = 0.55
+y = 0.22
+neighbors = n-riagralta, n-ode-foot, n-ode-ridge, n-ode-den-entry
+enemy = mr-ria-arc-wolf
+npcs = npc-whitefang
+
+[nodemap.nm-act-1-era4-061.node.n-reshud-junction]
+kind = activity
+region = reshud
+label = 르슈드 분기
+description = 알리메스·일루네온·리아그랄타·풍혈지대를 잇는 교차로. 마차 정거장에서 작은 종이 울린다.
+x = 0.35
+y = 0.40
+neighbors = n-iluneon-guild, n-reshud-pass, n-reshud-station, n-reshud-bell
+npcs = npc-airi
+
+[nodemap.nm-act-1-era4-061.node.n-bagreat]
+kind = combat
+region = alimes
+label = 바그레트 산맥
+description = 알리메스로 가는 협곡. 드워프의 옛 채굴 흔적이 바위에 새겨져 있다.
+x = 0.22
+y = 0.50
+neighbors = n-bagreat-foot, n-mistwood-trail, n-erumen-mistwood, n-bagreat-mine, n-bagreat-peak, n-bagreat-slope
+enemy = mr-ali-mist-deer
+
+[nodemap.nm-act-1-era4-061.node.n-alimes]
+kind = village
+region = alimes
+label = 알리메스
+description = 바그레트와 겔리더 산맥 사이에 끼인 오지 마을. 약초원과 비단 공방이 골목을 메운다.
+x = 0.12
+y = 0.58
+neighbors = n-mistwood-trail, n-ali-herb-court, n-ali-silk-workshop, n-ali-alley, n-ali-inn-court, n-ali-mist-end
+events = ev-alimes-yoon-pri-contract
+npcs = npc-tarko, npc-wimel, npc-yoonheewon, npc-pri, npc-selvia
+
+[nodemap.nm-act-1-era4-061.node.n-erumen-mistwood]
+kind = elite
+region = alimes
+label = 에루멘 미스트우드
+description = 안개가 영겁을 흐르는 숲. 안개 너머에서 고대의 무엇이 부른다.
+x = 0.17
+y = 0.45
+neighbors = n-bagreat, n-erumen-entry, n-erumen-pool, n-erumen-stele
+enemy = mr-ali-fog-sovereign
+
+# ============================================================
+# 루나 / 타코미 / 마왕성 (남서 → 북서)
+# ============================================================
+
+[nodemap.nm-act-1-era4-061.node.n-luna-academy]
+kind = village
+region = luna
+label = 마법학교 루나
+description = 첨탑이 안개 속에서도 빛난다. 학생들의 소란이 복도에 가득하다.
+x = 0.35
+y = 0.75
+neighbors = n-luna-practice, n-luna-underground, n-phantom-spire, n-south-road, n-luna-classroom, n-luna-library, n-luna-dining, n-luna-dorm, n-luna-rooftop, n-luna-garden, n-luna-road-fork, n-demon-castle
+events = ev-luna-entrance
+npcs = npc-iyeon, npc-rupin, npc-miyu, npc-febiel, npc-kuruha, npc-maro
+
+[nodemap.nm-act-1-era4-061.node.n-luna-practice]
+kind = activity
+region = luna
+label = 루나 실습홀
+description = 학생들의 마법 연습장. 빈 시간에는 마력의 잔열이 따뜻하다.
+x = 0.32
+y = 0.80
+neighbors = n-luna-academy, n-luna-magicircle, n-luna-spell-room, n-luna-ward-room
+
+[nodemap.nm-act-1-era4-061.node.n-luna-underground]
+kind = combat
+region = luna
+label = 루나 지하 서고
+description = 금서가 보관된 어두운 서고. 한 책에서 검은 손이 뻗어 나온다.
+x = 0.38
+y = 0.80
+neighbors = n-luna-academy, n-luna-archive-entry, n-luna-grimoire-hall, n-luna-shadow-spot
+enemy = mr-luna-ink-fiend
+npcs = npc-papyrus
+
+[nodemap.nm-act-1-era4-061.node.n-phantom-spire]
+kind = elite
+region = luna
+label = 팬텀 스파이어
+description = 루나 옥상의 비밀 첨탑. 정상에서 환영의 군주가 기다린다.
+x = 0.30
+y = 0.70
+neighbors = n-luna-academy, n-luna-rooftop, n-luna-illusion-spot, n-luna-spire-top
+enemy = mr-luna-arcane-devourer
+npcs = npc-banta
+
+[nodemap.nm-act-1-era4-061.node.n-tacomi]
+kind = village
+region = tacomi
+label = 타코미
+description = 낮의 카페 거리. 해가 지면 거리 전체가 나이트 타코미로 변모한다.
+x = 0.20
+y = 0.65
+neighbors = n-tacomi-alley, n-tacomi-cafe, n-bloom-terrace, n-tacomi-day-alley, n-tacomi-latte-shop, n-bloom-petal-path, n-tacomi-old-station, n-tacomi-mist-road
+events = ev-tacomi-day-flow
+npcs = npc-akasha, npc-monato
+
+[nodemap.nm-act-1-era4-061.node.n-tacomi-cafe]
+kind = rest
+region = tacomi
+label = 타코미 카페
+description = 라테 잔에서 김이 오른다. 노래가 잔잔하다.
+x = 0.17
+y = 0.68
+neighbors = n-tacomi, n-tacomi-latte-shop, n-tacomi-sun-spot
+events = ev-tacomi-shinsian-cup
+npcs = npc-shinsian
+
+[nodemap.nm-act-1-era4-061.node.n-bloom-terrace]
+kind = gather
+region = tacomi
+label = 블룸 테라스
+description = 꽃잎이 폭포처럼 떨어지는 테라스. 누군가 시간의 결을 길게 늘여 놓았다.
+x = 0.16
+y = 0.60
+neighbors = n-tacomi, n-bloom-petal-path, n-bloom-petal-spot, n-bloom-ridge
+events = ev-tacomi-bloom-veil
+
+[nodemap.nm-act-1-era4-061.node.n-night-tacomi]
+kind = event
+region = tacomi
+label = 나이트 타코미
+description = 레이저 조명과 음악이 밤을 수놓는다. 거리 끝에서 홀로그램이 일렁인다. 옆자리 에니챀 발전소의 단정한 투광 한 자락이 길게 머문다.
+x = 0.16
+y = 0.50
+neighbors = n-tacomi-alley, n-hologram-field, n-stella-ville, n-bloom-ridge, n-night-neon, n-night-stage, n-night-dj-spot, n-enicham
+events = ev-tacomi-night-stand
+npcs = npc-nova
+
+[nodemap.nm-act-1-era4-061.node.n-hologram-field]
+kind = combat
+region = tacomi
+label = 홀로그램 필드
+description = 현실과 가상의 경계가 흐려진 공간. 임페리시아의 흔적이 가장 진하다.
+x = 0.13
+y = 0.40
+neighbors = n-night-tacomi, n-windfall-valley, n-hologram-trace
+enemy = mr-tacomi-pixel-beast
+
+[nodemap.nm-act-1-era4-061.node.n-stella-ville]
+kind = event
+region = tacomi
+label = 스텔라 빌
+description = 대변동으로 결계 속에 봉인된 옛 마을. 결계 한 자락이 잠시 열린다.
+x = 0.11
+y = 0.55
+neighbors = n-night-tacomi, n-stella-ward, n-stella-village
+events = ev-traveler-fork
+npcs = npc-febiel
+
+[nodemap.nm-act-1-era4-061.node.n-demon-castle]
+kind = event
+region = demon-castle
+label = 마왕성
+description = 위엄 있는 외관과 달리 내부는 서류 냄새가 진하다. 모노가 책상에 앉아 그대를 기다린다.
+x = 0.30
+y = 0.88
+neighbors = n-luna-academy, n-forbidden-corridor, n-castle-gate, n-castle-throne, n-castle-office
+npcs = npc-mono
+events = ev-mono-whisper
+
+[nodemap.nm-act-1-era4-061.node.n-forbidden-corridor]
+kind = elite
+region = demon-castle
+label = 금단의 회랑
+description = 마왕성 깊은 곳. 옛 봉인의 문이 잠겨 있다.
+x = 0.36
+y = 0.88
+neighbors = n-demon-castle, n-corridor-entry, n-corridor-sealed-door, n-corridor-inscription
+enemy = mr-luna-headmaster-shade
+
+# ============================================================
+# 풍혈지대 → 보스 (북서 끝)
+# ============================================================
+
+[nodemap.nm-act-1-era4-061.node.n-windfall-valley]
+kind = village
+region = demon-windfall
+label = 풍혈지대
+description = 강한 바람이 끊임없이 불어치는 계곡. 일루네온·리아그랄타에서 타코미로 넘어가는 길목. 리엔카이가 밤참새 노래를 흥얼거린다.
+x = 0.27
+y = 0.17
+neighbors = n-windfall-outskirts, n-windfall-rise, n-windfall-wind-spot, n-hologram-field
+npcs = npc-rienkay, npc-tsuyosai
+
+[nodemap.nm-act-1-era4-061.node.n-windfall-rise]
+kind = combat
+region = demon-windfall
+label = 풍혈 상승로
+description = 풍혈지대 위로 오르는 좁은 길. 바람이 살을 도려낸다.
+x = 0.23
+y = 0.11
+neighbors = n-windfall-valley, n-anchor-point
+enemy = mr-demon-windfall-paper-ghost
+
+[nodemap.nm-act-1-era4-061.node.n-anchor-point]
+kind = boss
+region = demon-windfall
+label = 시간의 닻 상공
+description = 풍혈지대 위 공기가 멈춘 자리. 닻이 떠 있다.
+x = 0.20
+y = 0.05
+neighbors = n-windfall-rise
+boss = bs-act-1-anchor
+is_boss_gate = true
+
+# ============================================================
+# 중간 노드 멀리 떨어진 권역 사이에 끼워 화면 항상 인접 노드 보임 보장
+# ============================================================
+
+[nodemap.nm-act-1-era4-061.node.n-south-road]
+kind = combat
+region = luna
+label = 남쪽 가도
+description = 일루네온 광장에서 마법학교 루나로 내려가는 길. 풀숲에서 그림자가 인다.
+x = 0.42
+y = 0.62
+neighbors = n-iluneon-square, n-luna-academy, n-luna-road-fork, n-luna-outer-path, n-martin-outer-road
+enemy = mr-luna-grimoire-shadow
+
+[nodemap.nm-act-1-era4-061.node.n-reshud-pass]
+kind = combat
+region = reshud
+label = 르슈드 협로
+description = 르슈드 분기에서 풍혈지대로 오르는 좁은 협로. 바람이 거세지기 시작한다.
+x = 0.40
+y = 0.45
+neighbors = n-reshud-junction, n-windfall-outskirts
+enemy = mr-reshud-bandit
+
+[nodemap.nm-act-1-era4-061.node.n-bagreat-foot]
+kind = gather
+region = alimes
+label = 산자락
+description = 바그레트 산자락의 야영터. 산길 입구의 약초가 풍성하다.
+x = 0.28
+y = 0.45
+neighbors = n-bagreat, n-bagreat-herbs, n-bagreat-camp, n-bagreat-spring
+events = ev-alimes-tarko-pressure
+npcs = npc-tarko
+
+[nodemap.nm-act-1-era4-061.node.n-mistwood-trail]
+kind = event
+region = alimes
+label = 안개 가도
+description = 알리메스로 들어가는 안개 깔린 길. 안개 사이로 작은 그림자가 흐른다.
+x = 0.17
+y = 0.54
+neighbors = n-bagreat, n-alimes, n-ali-mist-grain, n-ali-mist-between, n-ali-mist-end
+events = ev-alimes-mist-trail
+
+[nodemap.nm-act-1-era4-061.node.n-tacomi-alley]
+kind = combat
+region = tacomi
+label = 타코미 골목
+description = 낮과 밤이 교차하는 좁은 골목. 네온이 막 켜진다.
+x = 0.18
+y = 0.58
+neighbors = n-tacomi, n-night-tacomi, n-tacomi-mist-road
+enemy = mr-tacomi-hologram-jester
+
+
+# ============================================================
+# 일루네온 권역 확장 (2026-05-19, 5 → 22 노드).
+# A.광장 / B.시계탑 / C.시장 / D.식당가 / E.길드 / F.외곽.
+# ============================================================
+
+# --- A. 광장 주변 ---
+[nodemap.nm-act-1-era4-061.node.n-ilu-fountain-side]
+kind = rest
+region = iluneon
+label = 분수 옆 자리
+description = 일루네온 분수대 옆의 그늘진 벤치. 물소리가 한 자락 사이를 둔다.
+x = 0.50
+y = 0.46
+neighbors = n-iluneon-square
+events = ev-iluneon-niayur-fountain
+npcs = npc-niayur
+
+[nodemap.nm-act-1-era4-061.node.n-ilu-spire-shadow]
+kind = event
+region = iluneon
+label = 첨탑 그늘
+description = 시계탑 그림자가 광장에 길게 떨어지는 자리. 그림자가 한 호흡 늦게 떨어진다.
+x = 0.48
+y = 0.48
+neighbors = n-iluneon-square, n-iluneon-clocktower
+events = ev-iluneon-spire-shadow
+
+[nodemap.nm-act-1-era4-061.node.n-ilu-street-corner]
+kind = combat
+region = iluneon
+label = 거리 모서리
+description = 광장에서 시장으로 빠지는 모서리. 그림자가 한 자리에서 멈춰 있다.
+x = 0.52
+y = 0.48
+neighbors = n-iluneon-square
+enemy = mr-iluneon-cutpurse
+
+# --- B. 시계탑 영역 ---
+[nodemap.nm-act-1-era4-061.node.n-ilu-clock-hall]
+kind = combat
+region = iluneon
+label = 시계 회랑
+description = 시계탑 안의 좁은 회랑. 톱니바퀴 소리가 한 박자씩 걸음을 맞춰 온다.
+x = 0.45
+y = 0.42
+neighbors = n-iluneon-clocktower
+enemy = mr-iluneon-trickster
+
+[nodemap.nm-act-1-era4-061.node.n-ilu-spire-top]
+kind = gather
+region = iluneon
+label = 첨탑 옥상
+description = 시계탑 정상. 바람이 늘어진 박자로 분다. 옥상 가장자리에 작은 시간의 조각이 떨어져 있다.
+x = 0.43
+y = 0.40
+neighbors = n-ilu-clock-hall
+
+[nodemap.nm-act-1-era4-061.node.n-ilu-bellroom]
+kind = event
+region = iluneon
+label = 종지기 골방
+description = 시계탑 아래 종지기 노인이 머무는 작은 방. 종 줄 한 가닥이 천장으로 길게 올라간다.
+x = 0.45
+y = 0.47
+neighbors = n-iluneon-clocktower
+events = ev-iluneon-bellroom
+
+# --- C. 시장 외곽 ---
+[nodemap.nm-act-1-era4-061.node.n-ilu-back-alley]
+kind = combat
+region = iluneon
+label = 시장 뒷골목
+description = 가판 뒤 좁은 그늘. 누군가 바닥에 무엇을 흘려 놓았다.
+x = 0.57
+y = 0.44
+neighbors = n-iluneon-market
+enemy = mr-iluneon-guild-rat
+
+[nodemap.nm-act-1-era4-061.node.n-ilu-changers]
+kind = activity
+region = iluneon
+label = 환전소
+description = 시장 한 모퉁이의 작은 환전소. 동전 부딪히는 소리가 한 박자씩 떨어진다.
+x = 0.58
+y = 0.46
+neighbors = n-iluneon-market
+
+[nodemap.nm-act-1-era4-061.node.n-ilu-curiocity]
+kind = shop
+region = iluneon
+label = 잡화점
+description = 시장 끝의 잡화 가게. 물건마다 박자가 다르게 떨어진다.
+x = 0.58
+y = 0.42
+neighbors = n-ilu-back-alley
+
+# --- D. 식당가 ---
+[nodemap.nm-act-1-era4-061.node.n-ilu-diner-back]
+kind = combat
+region = iluneon
+label = 식당 뒷골목
+description = 식당 뒤 기름 떨어진 좁은 길. 그림자가 한 박자 늦게 일어선다.
+x = 0.43
+y = 0.56
+neighbors = n-iluneon-diner
+enemy = mr-iluneon-alley-thug
+
+[nodemap.nm-act-1-era4-061.node.n-ilu-larder]
+kind = gather
+region = iluneon
+label = 식료 저장고
+description = 식당 옆 시원한 저장고. 빈 자리에 작은 것들이 한 줄로 놓여 있다.
+x = 0.42
+y = 0.54
+neighbors = n-ilu-diner-back
+
+[nodemap.nm-act-1-era4-061.node.n-ilu-inn-court]
+kind = rest
+region = iluneon
+label = 여관 안마당
+description = 식당 옆 작은 여관의 안마당. 노을이 마당 한 자리에 길게 머문다.
+x = 0.43
+y = 0.59
+neighbors = n-iluneon-diner
+
+# --- E. 길드 주변 ---
+[nodemap.nm-act-1-era4-061.node.n-ilu-board-room]
+kind = event
+region = iluneon
+label = 게시판 옆방
+description = 의뢰 게시판 옆 작은 방. 누군가 오래된 의뢰서 한 장을 펼쳐 두었다.
+x = 0.56
+y = 0.52
+neighbors = n-iluneon-guild
+
+[nodemap.nm-act-1-era4-061.node.n-ilu-quest-hall]
+kind = rest
+region = iluneon
+label = 의뢰 대기실
+description = 길드 한 자리의 대기실. 의자 한 줄 손님 한 줄. 차 한 잔이 식어 있다.
+x = 0.58
+y = 0.54
+neighbors = n-iluneon-guild
+
+[nodemap.nm-act-1-era4-061.node.n-ilu-sparring]
+kind = combat
+region = iluneon
+label = 길드 모의장
+description = 길드 뒤편의 작은 모의장. 누군가 목검 한 자루를 세워 두었다.
+x = 0.57
+y = 0.57
+neighbors = n-iluneon-guild
+enemy = mr-iluneon-lantern-imp
+
+# --- F. 외곽 ---
+[nodemap.nm-act-1-era4-061.node.n-ilu-east-gate]
+kind = event
+region = iluneon
+label = 동문
+description = 일루네온 동쪽 문. 라르 숲 방향으로 바람이 길게 흐른다.
+x = 0.55
+y = 0.50
+neighbors = n-iluneon-square, n-iluneon-market
+events = ev-iluneon-east-gate
+
+[nodemap.nm-act-1-era4-061.node.n-ilu-west-gate]
+kind = event
+region = iluneon
+label = 서문
+description = 일루네온 서쪽 문. 알리메스 방향으로 안개가 한 줄 흐른다.
+x = 0.45
+y = 0.50
+neighbors = n-iluneon-square, n-iluneon-clocktower
+
+
+# ============================================================
+# 라르 숲 권역 확장 (2026-05-19, 7 → 22 노드).
+# A.다리·진입 / B.스프링 / C.마을 외곽 / D.세계수 가지 / E.트리플라워.
+# ============================================================
+
+# --- A. 다리·진입 ---
+[nodemap.nm-act-1-era4-061.node.n-lar-bridge-under]
+kind = gather
+region = lar-forest
+label = 다리 아래
+description = 하나브릿지 아래 물 위에 그림자가 떠 있다. 작은 시간의 조각들이 떠내려 온다.
+events = ev-lar-bridge-under-shard
+x = 0.60
+y = 0.55
+neighbors = n-arukea-bridge
+
+[nodemap.nm-act-1-era4-061.node.n-lar-river-bank]
+kind = rest
+region = lar-forest
+label = 강가
+description = 메모리 스프링 아래로 물줄기가 한 자락 떨어진다. 노을 한 줄이 그 위에 길게 머문다.
+x = 0.61
+y = 0.60
+neighbors = n-memory-spring, n-lar-bridge-under
+events = ev-lar-river-bank-sketch
+
+# --- B. 메모리 스프링 주변 ---
+[nodemap.nm-act-1-era4-061.node.n-lar-inner-pool]
+kind = gather
+region = lar-forest
+label = 안쪽 못
+description = 스프링 안쪽의 작은 못. 물 한 자락에 그대의 잠시 늦은 표정이 비친다.
+x = 0.64
+y = 0.60
+neighbors = n-memory-spring
+events = ev-lar-inner-pool-still
+
+[nodemap.nm-act-1-era4-061.node.n-lar-moss-bank]
+kind = event
+region = lar-forest
+label = 이끼 둑
+description = 스프링 옆의 이끼 둑. 작은 잎사귀들이 한 자리에 모여 머문다.
+x = 0.63
+y = 0.54
+neighbors = n-memory-spring
+events = ev-lar-moss-bank-leaves
+
+[nodemap.nm-act-1-era4-061.node.n-lar-small-grave]
+kind = event
+region = lar-forest
+label = 작은 무덤
+description = 못 가장자리 작은 돌무덤 하나. 풀잎이 한 줄 자라났다.
+x = 0.62
+y = 0.62
+neighbors = n-lar-inner-pool
+events = ev-lar-small-grave-flower
+
+# --- C. 라르 마을 외곽 ---
+[nodemap.nm-act-1-era4-061.node.n-lar-herb-garden]
+kind = gather
+region = lar-forest
+label = 약초밭
+description = 라르 오두막 옆의 작은 약초밭. 잎새 사이에 드라이어드의 한 자국이 머문다.
+x = 0.71
+y = 0.55
+neighbors = n-lar-forest
+events = ev-lar-herb-garden-trace
+
+[nodemap.nm-act-1-era4-061.node.n-lar-fields]
+kind = combat
+region = lar-forest
+label = 풀밭
+description = 마을과 칼리번 집 사이 키 큰 풀밭. 풀잎 사이에서 그림자가 한 번 일어선다.
+x = 0.68
+y = 0.50
+neighbors = n-lar-forest, n-caliburn-house
+enemy = mr-lar-forest-spiderling
+events = ev-lar-arvaro-spirit-2, ev-lar-fields-shadow
+
+[nodemap.nm-act-1-era4-061.node.n-lar-caliburn-yard]
+kind = rest
+region = lar-forest
+label = 칼리번 앞 뜰
+description = 칼리번의 집 앞 뜰. 목검 한 자루가 자세로 세워져 있다.
+x = 0.69
+y = 0.45
+neighbors = n-caliburn-house
+events = ev-lar-caliburn-yard-sword
+
+# --- D. 세계수 가지 ---
+[nodemap.nm-act-1-era4-061.node.n-lar-low-branch]
+kind = activity
+region = lar-forest
+label = 낮은 가지
+description = 세계수의 낮은 가지 한 자리. 드라이어드의 작은 노래가 잎새 사이로 떨어진다.
+x = 0.74
+y = 0.50
+neighbors = n-world-tree, n-lar-forest
+events = ev-lar-low-branch-song
+
+[nodemap.nm-act-1-era4-061.node.n-lar-high-branch]
+kind = event
+region = lar-forest
+label = 높은 가지
+description = 세계수의 높은 가지. 바람이 잎새 한 자락을 길게 들어 올린다.
+x = 0.76
+y = 0.45
+neighbors = n-world-tree
+events = ev-lar-high-branch-leaf
+
+[nodemap.nm-act-1-era4-061.node.n-lar-leaf-hall]
+kind = combat
+region = lar-forest
+label = 잎새 회랑
+description = 가지와 가지 사이 잎새가 만든 회랑. 그림자 한 줄이 잎새 사이로 미끄러진다.
+x = 0.78
+y = 0.48
+neighbors = n-world-tree
+enemy = mr-lar-forest-rootcrawler
+events = ev-lar-leaf-hall-trail
+
+[nodemap.nm-act-1-era4-061.node.n-lar-root-burrow]
+kind = elite
+region = lar-forest
+label = 뿌리 굴
+description = 세계수의 뿌리 안쪽. 어둠 속에서 옛 무엇이 한 번 일어선다.
+x = 0.77
+y = 0.54
+neighbors = n-world-tree
+enemy = mr-lar-forest-spider-queen
+events = ev-lar-root-burrow-old
+
+# --- E. 트리플라워 화산 (독립 권역 triflower, 화염 아인 6노드) ---
+[nodemap.nm-act-1-era4-061.node.n-lar-crater-rim]
+kind = combat
+region = triflower
+label = 분화구 능선
+description = 트리플라워의 능선. 발 아래 뜨거운 한 자락이 길게 흐른다. 살라만더들이 바위 틈에 누워 있다.
+x = 0.81
+y = 0.56
+neighbors = n-triflower
+enemy = mr-triflower-ember-arachne
+events = ev-lar-crater-rim-heat
+
+[nodemap.nm-act-1-era4-061.node.n-lar-lava-vein]
+kind = gather
+region = triflower
+label = 용암 줄기
+description = 식지 않은 용암 한 줄. 작은 불씨들이 한 자국씩 떨어진다. 식지 않은 비늘이 가끔 굳어 남는다.
+x = 0.81
+y = 0.52
+neighbors = n-triflower
+events = ev-lar-lava-vein-spark
+
+[nodemap.nm-act-1-era4-061.node.n-lar-cooled-slag]
+kind = rest
+region = triflower
+label = 식은 자리
+description = 분화구 가장자리 식은 자리. 검은 돌 위에 노을 한 줄이 길게 머문다.
+x = 0.79
+y = 0.60
+neighbors = n-triflower
+events = ev-lar-cooled-slag-rest
+
+[nodemap.nm-act-1-era4-061.node.n-tri-web-nest]
+kind = village
+region = triflower
+label = 화염 거미 둥지
+description = 트리플라워 위쪽 불그스름한 실이 분화구 열기에 한 줄로 늘어진 둥지. 화염 아라크네가 여덟 다리로 실의 자락을 다듬는다.
+x = 0.84
+y = 0.54
+neighbors = n-triflower, n-tri-magma-core
+npcs = npc-embra
+events = ev-tri-web-nest
+
+[nodemap.nm-act-1-era4-061.node.n-tri-magma-core]
+kind = elite
+region = triflower
+label = 마그마 핵
+description = 분화구 가장 깊은 자리. 마그마가 한 덩이로 끓는다. 가장 강한 화염 아인이 여기 머문다.
+x = 0.84
+y = 0.58
+neighbors = n-tri-web-nest
+enemy = mr-triflower-ignia-queen
+events = ev-tri-magma-core
+
+
+# ============================================================
+# 모스 권역 확장 (2026-05-19, 3 → 22 노드).
+# A.시가 / B.대장간 / C.시가 외곽 / D.활화산 자락 / E.클러치 진입.
+# ============================================================
+
+# --- A. 모스 시가 ---
+[nodemap.nm-act-1-era4-061.node.n-moss-plaza]
+kind = activity
+region = moss-south
+label = 모스 광장
+description = 모스 시가의 작은 광장. 분수에서 증기가 한 줄 오른다.
+x = 0.81
+y = 0.46
+neighbors = n-moss
+events = ev-moss-plaza-busy
+npcs = npc-roku
+
+[nodemap.nm-act-1-era4-061.node.n-moss-alley]
+kind = combat
+region = moss-south
+label = 모스 골목
+description = 시가 뒤편의 좁은 골목. 망치 소리가 한 박자씩 떨어진다.
+x = 0.80
+y = 0.48
+neighbors = n-moss
+enemy = mr-moss-cindermoth
+
+[nodemap.nm-act-1-era4-061.node.n-moss-steam-room]
+kind = rest
+region = moss-north
+label = 증기실
+description = 시가 한 자리의 증기 가득한 방. 땀이 결을 한 줄 푼다.
+x = 0.79
+y = 0.44
+neighbors = n-moss
+
+[nodemap.nm-act-1-era4-061.node.n-moss-hammer-row]
+kind = combat
+region = moss-north
+label = 망치 거리
+description = 대장간들이 한 줄로 늘어선 거리. 망치 소리가 길의 결에 한 호흡으로 맞춰진다.
+x = 0.82
+y = 0.43
+neighbors = n-moss, n-moss-forge
+enemy = mr-moss-anvil-arachne
+events = ev-moss-hammer-row-line
+npcs = npc-roku
+
+# --- B. 모스 대장간 영역 ---
+[nodemap.nm-act-1-era4-061.node.n-moss-furnace]
+kind = combat
+region = moss-north
+label = 화로
+description = 대장간 안의 큰 화로. 불씨가 한 자리에서 곧게 일어선다. 옆 자리에 아라크네가 실 한 가닥을 다듬는다.
+x = 0.85
+y = 0.40
+neighbors = n-moss-forge
+enemy = mr-moss-slag-golem
+events = ev-moss-furnace-arachne
+
+[nodemap.nm-act-1-era4-061.node.n-moss-anvil-room]
+kind = activity
+region = moss-south
+label = 모루실
+description = 대장간 안쪽의 모루 한 자리. 망치 박자가 결을 한 줄로 모은다.
+x = 0.86
+y = 0.42
+neighbors = n-moss-forge
+
+[nodemap.nm-act-1-era4-061.node.n-moss-tool-room]
+kind = gather
+region = moss-north
+label = 도구실
+description = 대장간 옆 도구가 쌓인 방. 손에 작은 부속들이 한 줄 닿는다.
+x = 0.85
+y = 0.44
+neighbors = n-moss-forge
+
+# --- C. 시가 외곽 ---
+[nodemap.nm-act-1-era4-061.node.n-moss-workshop]
+kind = workshop
+region = moss-south
+label = 모스 작업장
+description = 시가 외곽의 작은 작업장. 누구나 한 자리에서 도구를 빌릴 수 있다.
+x = 0.80
+y = 0.41
+neighbors = n-moss-forge, n-moss
+
+[nodemap.nm-act-1-era4-061.node.n-moss-weapon-stall]
+kind = shop
+region = moss-south
+label = 무기점
+description = 시가 한 모퉁이의 무기 가판. 칼날들이 한 줄로 빛을 받고 있다.
+x = 0.83
+y = 0.47
+neighbors = n-moss
+
+[nodemap.nm-act-1-era4-061.node.n-moss-armor-stall]
+kind = shop
+region = moss-north
+label = 갑옷점
+description = 무기점 옆의 갑옷 가판. 비늘 한 줄이 바람에 가볍게 흔들린다.
+x = 0.84
+y = 0.48
+neighbors = n-moss
+
+[nodemap.nm-act-1-era4-061.node.n-moss-inn]
+kind = rest
+region = moss-north
+label = 모스 여관
+description = 시가 한 자리의 작은 여관. 화로 옆의 베개 한 줄이 따뜻하다.
+x = 0.82
+y = 0.49
+neighbors = n-moss
+
+# --- D. 활화산 자락 ---
+[nodemap.nm-act-1-era4-061.node.n-moss-ridge]
+kind = combat
+region = moss-north
+label = 화산 능선
+description = 모스 뒤편의 능선 한 줄. 발 아래 뜨거운 한 자락이 길게 흐른다.
+x = 0.84
+y = 0.38
+neighbors = n-moss-forge
+enemy = mr-moss-flame-lizard
+
+[nodemap.nm-act-1-era4-061.node.n-moss-fissure]
+kind = gather
+region = moss-south
+label = 균열
+description = 능선 한 자리의 균열. 안쪽에서 작은 불씨들이 한 자락씩 오른다. 더 깊은 곳에 화산광 지대의 붉은 빛이 비친다.
+x = 0.86
+y = 0.37
+neighbors = n-moss-ridge, n-emberforge-entry
+
+[nodemap.nm-act-1-era4-061.node.n-moss-ember-bed]
+kind = rest
+region = moss-north
+label = 불씨 자리
+description = 균열 옆의 식지 않은 자리. 노을 한 줄이 돌 위에 길게 머문다.
+x = 0.85
+y = 0.36
+neighbors = n-moss-fissure
+
+[nodemap.nm-act-1-era4-061.node.n-moss-watchtower]
+kind = event
+region = moss-north
+label = 망루
+description = 화산 자락의 낡은 망루. 망루 위에서 천정지기가 하늘 정점만 본다.
+x = 0.83
+y = 0.39
+neighbors = n-moss-ridge
+events = ev-moss-watchtower-zenith
+
+# --- E. 클러치 진입 ---
+[nodemap.nm-act-1-era4-061.node.n-clutch-pier]
+kind = activity
+region = moss-north
+label = 부두
+description = 클러치 상륙장 옆의 작은 부두. 파도가 한 줄씩 들어왔다 빠진다. 마틴에서 배편 한 줄이 닿는다.
+x = 0.88
+y = 0.52
+neighbors = n-clutch-landing, n-martin-sea-passage
+
+[nodemap.nm-act-1-era4-061.node.n-clutch-warehouse]
+kind = gather
+region = moss-south
+label = 화물터
+description = 부두 옆 화물이 쌓인 자리. 상자 사이에 작은 동전들이 한 줄 떨어져 있다.
+x = 0.87
+y = 0.54
+neighbors = n-clutch-pier
+
+[nodemap.nm-act-1-era4-061.node.n-clutch-lighthouse]
+kind = event
+region = moss-north
+label = 등대
+description = 부두 끝의 낡은 등대. 빛이 한 자락씩 사이를 둔다. 수평선 위로 팔콘 가든 공중 군도가 떠 있다.
+x = 0.89
+y = 0.53
+neighbors = n-clutch-pier
+events = ev-moss-lighthouse-keeper
+npcs = npc-roku
+
+[nodemap.nm-act-1-era4-061.node.n-clutch-harbor-alley]
+kind = combat
+region = moss-south
+label = 항구 골목
+description = 부두 뒤편의 좁은 골목. 그림자가 한 줄 벽에 붙어 있다.
+x = 0.86
+y = 0.51
+neighbors = n-clutch-landing, n-clutch-pier
+enemy = mr-moss-forge-imp
+
+
+# ============================================================
+# 리아그랄타 권역 확장 (2026-05-19, 4 → 22 노드).
+# A.평원 / B.오드 산비탈 / C.르슈드 분기 / D.평원 동·서 / E.외곽.
+# ============================================================
+
+# --- A. 평원 ---
+[nodemap.nm-act-1-era4-061.node.n-ria-flock]
+kind = rest
+region = riagralta
+label = 양 떼 자리
+description = 평원 한 자리의 양 떼. 풀이 고르게 누워 있다.
+x = 0.48
+y = 0.32
+neighbors = n-riagralta
+
+[nodemap.nm-act-1-era4-061.node.n-ria-grass-hill]
+kind = gather
+region = riagralta
+label = 풀언덕
+description = 평원 한 자리의 완만한 언덕. 풀잎이 결을 한 줄 맞춘다.
+x = 0.52
+y = 0.32
+neighbors = n-riagralta
+
+[nodemap.nm-act-1-era4-061.node.n-ria-wind-path]
+kind = combat
+region = riagralta
+label = 바람 길
+description = 평원 한 자리의 바람이 한 줄로 흐르는 길. 풀이 길의 결대로 누워 있다.
+x = 0.47
+y = 0.28
+neighbors = n-riagralta
+enemy = mr-ria-thunder-fox
+
+[nodemap.nm-act-1-era4-061.node.n-ria-tent]
+kind = activity
+region = riagralta
+label = 천막
+description = 평원 한 자리에 세워진 천막. 양치기들이 한 자리에 모여 있다.
+x = 0.53
+y = 0.28
+neighbors = n-riagralta
+
+# --- B. 오드 산비탈 ---
+[nodemap.nm-act-1-era4-061.node.n-ode-foot]
+kind = combat
+region = riagralta
+label = 산비탈 아래
+description = 오드 산비탈로 오르는 첫 자리. 자갈이 한 줄로 발 아래 흐른다.
+x = 0.54
+y = 0.26
+neighbors = n-ode-slope, n-riagralta
+enemy = mr-ria-spark-wasp
+
+[nodemap.nm-act-1-era4-061.node.n-ode-ridge]
+kind = combat
+region = riagralta
+label = 오드 능선
+description = 산비탈 위 능선. 바람이 한 줄로 살을 스친다. 능선 너머로 유스제리아의 무거운 공기가 깔린다.
+x = 0.57
+y = 0.20
+neighbors = n-ode-slope, n-yusezria
+enemy = mr-ria-voltage-goat
+
+[nodemap.nm-act-1-era4-061.node.n-ode-den-entry]
+kind = event
+region = riagralta
+label = 늑대 굴 입구
+description = 산비탈 한 자리의 늑대 굴 입구. 안쪽에서 잠시 늦은 으르렁 소리.
+x = 0.56
+y = 0.23
+neighbors = n-ode-slope
+
+# --- C. 르슈드 분기 주변 (reshud 권역, 4노드 정사각형) ---
+[nodemap.nm-act-1-era4-061.node.n-reshud-station]
+kind = activity
+region = reshud
+label = 르슈드 마차역
+description = 분기 한 자리의 마차역. 마부가 말의 자리를 한 줄 다듬는다.
+x = 0.40
+y = 0.40
+neighbors = n-reshud-junction, n-riagralta
+
+[nodemap.nm-act-1-era4-061.node.n-reshud-bell]
+kind = event
+region = reshud
+label = 종 자리
+description = 분기 한 자리의 작은 종. 종 줄이 바람에 한 줄씩 흔들린다.
+x = 0.35
+y = 0.45
+neighbors = n-reshud-junction, n-bagreat-foot
+
+# --- E. 외곽 ---
+[nodemap.nm-act-1-era4-061.node.n-ria-slope-end]
+kind = rest
+region = riagralta
+label = 비탈 끝
+description = 산비탈이 끝나는 자리. 풀이 완만하게 누워 있다.
+x = 0.59
+y = 0.27
+neighbors = n-ode-foot
+
+# ============================================================
+# 알리메스 권역 확장 (2026-05-19, 5 → 22 노드).
+# A.마을 / B.안개 가도 / C.에루멘 / D.바그레트 / E.산자락.
+# ============================================================
+
+# --- A. 마을 ---
+[nodemap.nm-act-1-era4-061.node.n-ali-herb-court]
+kind = gather
+region = alimes
+label = 약초원
+description = 알리메스 마을의 작은 약초원. 잎새 사이에 안개 한 줄이 머문다.
+x = 0.10
+y = 0.60
+neighbors = n-alimes
+npcs = npc-selvia
+
+[nodemap.nm-act-1-era4-061.node.n-ali-silk-workshop]
+kind = workshop
+region = alimes
+label = 비단 공방
+description = 마을 한 자리의 비단 공방. 실의 결이 한 줄로 흐른다.
+x = 0.14
+y = 0.59
+neighbors = n-alimes
+
+[nodemap.nm-act-1-era4-061.node.n-ali-alley]
+kind = combat
+region = alimes
+label = 알리메스 골목
+description = 마을 뒤편의 좁은 골목. 안개가 한 줄로 떨어진다.
+x = 0.10
+y = 0.56
+neighbors = n-alimes
+enemy = mr-ali-herb-bandit
+
+[nodemap.nm-act-1-era4-061.node.n-ali-inn-court]
+kind = rest
+region = alimes
+label = 안마당
+description = 마을 한 자리의 작은 안마당. 안개 한 줄이 돌 위에 길게 머문다.
+x = 0.13
+y = 0.61
+neighbors = n-alimes
+
+# --- B. 안개 가도 ---
+[nodemap.nm-act-1-era4-061.node.n-ali-mist-grain]
+kind = event
+region = alimes
+label = 안개 결
+description = 안개 가도의 한 자리. 안개가 결 한 줄로 흐른다.
+x = 0.19
+y = 0.53
+neighbors = n-mistwood-trail
+events = ev-alimes-mist-grain
+
+[nodemap.nm-act-1-era4-061.node.n-ali-mist-between]
+kind = combat
+region = alimes
+label = 안개 사이
+description = 안개 가도의 깊은 자리. 그림자가 안개 사이로 미끄러진다.
+x = 0.18
+y = 0.51
+neighbors = n-mistwood-trail
+enemy = mr-ali-fog-sprite
+events = ev-alimes-mist-between
+
+[nodemap.nm-act-1-era4-061.node.n-ali-mist-end]
+kind = rest
+region = alimes
+label = 안개 끝
+description = 안개 가도의 끝 자리. 안개가 한 줄로 비켜선다.
+x = 0.15
+y = 0.55
+neighbors = n-mistwood-trail, n-alimes
+events = ev-alimes-mist-end-shayua
+npcs = npc-shayua
+
+# --- C. 에루멘 미스트우드 ---
+[nodemap.nm-act-1-era4-061.node.n-erumen-entry]
+kind = combat
+region = alimes
+label = 에루멘 입구
+description = 미스트우드 첫 자리. 안개 사이로 한 그림자가 일어선다.
+x = 0.19
+y = 0.43
+neighbors = n-erumen-mistwood
+enemy = mr-ali-stone-bear
+events = ev-alimes-erumen-entry
+
+[nodemap.nm-act-1-era4-061.node.n-erumen-pool]
+kind = gather
+region = alimes
+label = 안쪽 못
+description = 미스트우드 안쪽의 작은 못. 안개가 물 위에 한 자락으로 머문다.
+x = 0.15
+y = 0.42
+neighbors = n-erumen-mistwood
+events = ev-alimes-erumen-pool
+
+[nodemap.nm-act-1-era4-061.node.n-erumen-stele]
+kind = event
+region = alimes
+label = 옛 비석
+description = 미스트우드 깊은 자리의 옛 비석. 글자가 안개에 닳아 있다.
+x = 0.17
+y = 0.40
+neighbors = n-erumen-mistwood
+events = ev-alimes-erumen-stele
+
+[nodemap.nm-act-1-era4-061.node.n-erumen-deep]
+kind = combat
+region = alimes
+label = 깊은 자리
+description = 미스트우드의 가장 깊은 자리. 안개 한 줄이 허공에 길게 머문다. 더 안쪽으로 낯선 무늬가 새겨진 부족의 길이 한 줄 이어진다.
+x = 0.14
+y = 0.38
+neighbors = n-erumen-stele, n-erumen-pool, n-diropel-mist-edge
+enemy = mr-ali-dew-moth
+events = ev-alimes-erumen-deep
+
+# --- D. 바그레트 산맥 ---
+[nodemap.nm-act-1-era4-061.node.n-bagreat-mine]
+kind = gather
+region = alimes
+label = 채굴 흔적
+description = 바그레트의 옛 채굴 자리. 바위 한 줄에 드워프의 결이 남아 있다.
+x = 0.24
+y = 0.48
+neighbors = n-bagreat
+
+[nodemap.nm-act-1-era4-061.node.n-bagreat-peak]
+kind = elite
+region = alimes
+label = 봉우리
+description = 바그레트의 봉우리. 바람이 살을 도려낸다.
+x = 0.20
+y = 0.46
+neighbors = n-bagreat
+enemy = mr-ali-ancient-treant
+events = ev-alimes-peak-wind
+
+[nodemap.nm-act-1-era4-061.node.n-bagreat-slope]
+kind = combat
+region = alimes
+label = 바그레트 비탈
+description = 봉우리 아래의 자갈 비탈. 발끝에 작은 광맥이 한 자락 빛난다.
+x = 0.22
+y = 0.52
+neighbors = n-bagreat
+enemy = mr-ali-marsh-creeper
+
+# --- E. 산자락 ---
+[nodemap.nm-act-1-era4-061.node.n-bagreat-herbs]
+kind = gather
+region = alimes
+label = 산자락 약초밭
+description = 산자락의 작은 약초밭. 잎새가 안개의 결을 한 줄 머금는다.
+x = 0.27
+y = 0.47
+neighbors = n-bagreat-foot
+
+[nodemap.nm-act-1-era4-061.node.n-bagreat-camp]
+kind = rest
+region = alimes
+label = 야영터
+description = 산자락 한 자리의 작은 야영터. 화로 한 자락이 밤을 따뜻하게 데운다.
+x = 0.29
+y = 0.43
+neighbors = n-bagreat-foot
+events = ev-alimes-cloud-sketch
+
+[nodemap.nm-act-1-era4-061.node.n-bagreat-spring]
+kind = rest
+region = alimes
+label = 산자락 샘
+description = 산자락의 작은 샘. 물 한 자락이 돌 사이로 한 줄 흐른다.
+x = 0.30
+y = 0.46
+neighbors = n-bagreat-foot, n-bagreat-camp
+events = ev-alimes-spring-shayua
+npcs = npc-shayua
+
+
+# ============================================================
+# 루나 권역 확장 (2026-05-19, 5 → 22 노드).
+# A.학교 본관 / B.실습홀 / C.지하 서고 / D.팬텀 스파이어 / E.외곽·가도.
+# ============================================================
+
+# --- A. 학교 본관 ---
+[nodemap.nm-act-1-era4-061.node.n-luna-classroom]
+kind = activity
+region = luna
+label = 강의실
+description = 루나 한 자리의 작은 강의실. 칠판 한 줄이 주문에 닳아 있다.
+x = 0.33
+y = 0.73
+neighbors = n-luna-academy
+npcs = npc-maro
+
+[nodemap.nm-act-1-era4-061.node.n-luna-library]
+kind = gather
+region = luna
+label = 도서관
+description = 루나의 높은 도서관. 책장 사이에 오래된 종이들이 한 줄로 누워 있다.
+x = 0.37
+y = 0.73
+neighbors = n-luna-academy
+events = ev-luna-library-floating-book
+npcs = npc-febiel, npc-maro
+
+[nodemap.nm-act-1-era4-061.node.n-luna-dining]
+kind = rest
+region = luna
+label = 루나 식당
+description = 학교 한 자리의 식당. 식판 한 줄이 기다란 식탁에 정렬되어 있다.
+x = 0.35
+y = 0.78
+neighbors = n-luna-academy
+
+[nodemap.nm-act-1-era4-061.node.n-luna-dorm]
+kind = rest
+region = luna
+label = 기숙사
+description = 학교 옆의 기숙사. 빈 방 한 줄이 학생들의 짧은 박자를 머금는다.
+x = 0.33
+y = 0.77
+neighbors = n-luna-academy
+
+# --- B. 실습홀 영역 ---
+[nodemap.nm-act-1-era4-061.node.n-luna-magicircle]
+kind = event
+region = luna
+label = 마법진 자리
+description = 실습홀 한 자리의 옛 마법진. 결 한 줄이 돌 위에 깊이 새겨져 있다.
+x = 0.30
+y = 0.82
+neighbors = n-luna-practice
+events = ev-luna-old-magicircle
+
+[nodemap.nm-act-1-era4-061.node.n-luna-spell-room]
+kind = combat
+region = luna
+label = 주술 연습실
+description = 실습홀 옆의 주술 연습실. 누군가 주문 한 줄을 그대로 두고 갔다.
+x = 0.32
+y = 0.84
+neighbors = n-luna-practice
+enemy = mr-luna-phantom-scribe
+
+[nodemap.nm-act-1-era4-061.node.n-luna-ward-room]
+kind = activity
+region = luna
+label = 결계실
+description = 실습홀 한 자리의 결계실. 결계 한 줄이 작게 흔들린다.
+x = 0.34
+y = 0.83
+neighbors = n-luna-practice
+npcs = npc-febiel
+
+# --- C. 지하 서고 ---
+[nodemap.nm-act-1-era4-061.node.n-luna-archive-entry]
+kind = event
+region = luna
+label = 지하 서고 입구
+description = 지하 서고의 첫 자리. 계단 한 줄이 어둠으로 떨어진다.
+x = 0.38
+y = 0.78
+neighbors = n-luna-underground
+
+[nodemap.nm-act-1-era4-061.node.n-luna-grimoire-hall]
+kind = combat
+region = luna
+label = 금서 회랑
+description = 지하 서고의 금서 회랑. 책 한 줄 한 줄이 결을 따로 갖고 있다.
+x = 0.40
+y = 0.82
+neighbors = n-luna-underground
+enemy = mr-luna-cursed-page
+events = ev-luna-grimoire-blind-title
+
+[nodemap.nm-act-1-era4-061.node.n-luna-shadow-spot]
+kind = elite
+region = luna
+label = 그림자 자리
+description = 서고 깊은 자리의 그림자가 짙은 곳. 검은 손 한 줄이 바닥에서 일어선다.
+x = 0.42
+y = 0.84
+neighbors = n-luna-underground
+enemy = mr-luna-arcane-devourer
+
+[nodemap.nm-act-1-era4-061.node.n-luna-old-desk]
+kind = gather
+region = luna
+label = 옛 책상
+description = 서고 한 자리의 옛 책상. 깃펜 한 자루가 마른 잉크 위에 누워 있다.
+x = 0.41
+y = 0.79
+neighbors = n-luna-grimoire-hall
+
+# --- D. 팬텀 스파이어 영역 ---
+[nodemap.nm-act-1-era4-061.node.n-luna-rooftop]
+kind = rest
+region = luna
+label = 루나 옥상
+description = 학교 옥상의 비밀 통로. 첨탑이 한 자리 너머에 서 있다.
+x = 0.31
+y = 0.71
+neighbors = n-phantom-spire, n-luna-academy
+
+[nodemap.nm-act-1-era4-061.node.n-luna-illusion-spot]
+kind = event
+region = luna
+label = 환영 자리
+description = 첨탑 한 자리의 환영. 그대의 한 호흡 늦은 표정이 거기 서 있다.
+x = 0.28
+y = 0.68
+neighbors = n-phantom-spire
+events = ev-luna-illusion-late-face
+
+[nodemap.nm-act-1-era4-061.node.n-luna-spire-top]
+kind = combat
+region = luna
+label = 팬텀 정상
+description = 첨탑의 정상. 바람이 한 박자 없이 분다.
+x = 0.27
+y = 0.65
+neighbors = n-phantom-spire
+enemy = mr-luna-mirror-shade
+
+# --- E. 외곽·가도 ---
+[nodemap.nm-act-1-era4-061.node.n-luna-garden]
+kind = gather
+region = luna
+label = 루나 정원
+description = 학교 외곽의 작은 정원. 마법 식물 한 줄이 결을 한 자락 받친다.
+x = 0.38
+y = 0.70
+neighbors = n-luna-academy
+
+[nodemap.nm-act-1-era4-061.node.n-luna-road-fork]
+kind = combat
+region = luna
+label = 가도 갈림
+description = 남쪽 가도의 갈림길. 풀숲에서 그림자가 일어선다.
+x = 0.40
+y = 0.66
+neighbors = n-south-road, n-luna-academy
+enemy = mr-luna-forbidden-wisp
+
+[nodemap.nm-act-1-era4-061.node.n-luna-outer-path]
+kind = rest
+region = luna
+label = 외곽 길
+description = 가도 옆의 조용한 길. 노을 한 줄이 돌 위에 길게 머문다.
+x = 0.41
+y = 0.64
+neighbors = n-south-road
+
+
+# ============================================================
+# 타코미 권역 확장 (2026-05-19, 7 → 22 노드).
+# A.낮 거리 / B.블룸 / C.나이트 / D.홀로그램·스텔라 / E.외곽.
+# ============================================================
+
+# --- A. 낮 거리 ---
+[nodemap.nm-act-1-era4-061.node.n-tacomi-day-alley]
+kind = combat
+region = tacomi
+label = 카페 골목
+description = 타코미의 낮 골목. 라테 잔이 한 줄로 놓여 있다.
+x = 0.22
+y = 0.65
+neighbors = n-tacomi
+enemy = mr-tacomi-barrier-sprite
+
+[nodemap.nm-act-1-era4-061.node.n-tacomi-latte-shop]
+kind = shop
+region = tacomi
+label = 라테 가게
+description = 타코미의 작은 라테 가게. 잔 한 줄 한 줄이 결을 따로 갖고 있다.
+x = 0.19
+y = 0.66
+neighbors = n-tacomi, n-tacomi-cafe
+events = ev-tacomi-latte-row
+npcs = npc-shinsian
+
+[nodemap.nm-act-1-era4-061.node.n-tacomi-sun-spot]
+kind = rest
+region = tacomi
+label = 햇살 자리
+description = 타코미의 햇살이 길게 머무는 자리. 노을이 식기 전 한 자락이 머문다.
+x = 0.21
+y = 0.68
+neighbors = n-tacomi-cafe
+events = ev-tacomi-sun-book
+npcs = npc-shinsian
+
+# --- B. 블룸 영역 ---
+[nodemap.nm-act-1-era4-061.node.n-bloom-petal-path]
+kind = gather
+region = tacomi
+label = 꽃잎 길
+description = 블룸 테라스로 오르는 길. 꽃잎이 발 아래에 한 줄로 떨어진다.
+x = 0.17
+y = 0.62
+neighbors = n-bloom-terrace, n-tacomi
+
+[nodemap.nm-act-1-era4-061.node.n-bloom-petal-spot]
+kind = event
+region = tacomi
+label = 꽃잎 자리
+description = 테라스 한 자리의 꽃잎이 두꺼이 쌓인 곳. 발끝에 결이 한 자락 묻힌다.
+x = 0.15
+y = 0.58
+neighbors = n-bloom-terrace
+
+[nodemap.nm-act-1-era4-061.node.n-bloom-ridge]
+kind = combat
+region = tacomi
+label = 꽃잎 능선
+description = 테라스 위의 능선. 꽃잎이 한 줄로 흘러내린다.
+x = 0.14
+y = 0.56
+neighbors = n-bloom-terrace, n-night-tacomi
+enemy = mr-tacomi-neon-hornet
+
+# --- C. 나이트 ---
+[nodemap.nm-act-1-era4-061.node.n-night-neon]
+kind = combat
+region = tacomi
+label = 네온 거리
+description = 나이트 타코미의 네온이 흐르는 거리. 빛이 한 박자씩 떨어진다.
+x = 0.15
+y = 0.48
+neighbors = n-night-tacomi
+enemy = mr-tacomi-festival-mimic
+
+[nodemap.nm-act-1-era4-061.node.n-night-stage]
+kind = event
+region = tacomi
+label = 홀로그램 무대
+description = 거리 한 자리의 홀로그램 무대. 무대 위에 오래된 노래 한 줄이 누워 있다.
+x = 0.17
+y = 0.46
+neighbors = n-night-tacomi
+
+[nodemap.nm-act-1-era4-061.node.n-night-dj-spot]
+kind = activity
+region = tacomi
+label = 디제이 자리
+description = 무대 옆의 작은 부스. 박자 한 줄이 공기 위에 길게 머문다.
+x = 0.18
+y = 0.48
+neighbors = n-night-tacomi
+
+# --- D. 홀로그램·스텔라 ---
+[nodemap.nm-act-1-era4-061.node.n-stella-ward]
+kind = event
+region = tacomi
+label = 결계 자리
+description = 스텔라 빌의 결계가 가장 얇은 자리. 안쪽에서 옛 마을의 결이 한 줄 비친다.
+x = 0.09
+y = 0.53
+neighbors = n-stella-ville
+
+[nodemap.nm-act-1-era4-061.node.n-stella-village]
+kind = rest
+region = tacomi
+label = 옛 마을
+description = 결계 안의 옛 마을 한 자리. 누군가 작은 노래를 한 줄 흥얼거린다.
+x = 0.09
+y = 0.57
+neighbors = n-stella-ville
+
+[nodemap.nm-act-1-era4-061.node.n-hologram-trace]
+kind = gather
+region = tacomi
+label = 임페리시아 흔적
+description = 홀로그램 필드 한 자리에 임페리시아의 흔적이 한 줄 떨어져 있다.
+x = 0.11
+y = 0.42
+neighbors = n-hologram-field
+events = ev-tacomi-imperisia-trace
+
+# --- E. 외곽 ---
+[nodemap.nm-act-1-era4-061.node.n-tacomi-old-station]
+kind = event
+region = tacomi
+label = 옛 정류장
+description = 타코미 외곽의 옛 정류장. 시간표 한 줄이 바람에 닳아 있다. 가도 너머 구 신전터의 부서진 기둥이 한 줄 서 있다.
+x = 0.22
+y = 0.60
+neighbors = n-tacomi, n-oldshrine-gate
+
+[nodemap.nm-act-1-era4-061.node.n-tacomi-mist-road]
+kind = combat
+region = tacomi
+label = 안개 가도
+description = 정류장에서 외곽으로 빠지는 가도. 안개가 한 줄로 떨어진다.
+x = 0.20
+y = 0.55
+neighbors = n-tacomi-alley, n-tacomi
+enemy = mr-tacomi-circuit-prowler
+
+[nodemap.nm-act-1-era4-061.node.n-tacomi-outer-road]
+kind = rest
+region = tacomi
+label = 외곽 가도
+description = 안개 가도의 끝 자리. 노을 한 줄이 돌 위에 길게 머문다.
+x = 0.21
+y = 0.52
+neighbors = n-tacomi-mist-road
+
+
+# ============================================================
+# 풍혈지대 권역 확장 (2026-05-19, 6 → 22 노드).
+# A.마왕성 / B.금단의 회랑 / C.풍혈지대 / D.풍혈 상승로 / E.외곽.
+# 보스 게이트(n-anchor-point) 변경 금지.
+# ============================================================
+
+# --- A. 마왕성 (루나 권역으로 흡수) ---
+[nodemap.nm-act-1-era4-061.node.n-castle-gate]
+kind = combat
+region = demon-castle
+label = 마왕성 정문
+description = 마왕성의 정문. 양쪽 기둥에 문장이 한 줄로 새겨져 있다.
+x = 0.27
+y = 0.90
+neighbors = n-demon-castle
+enemy = mr-luna-corridor-phantom
+
+[nodemap.nm-act-1-era4-061.node.n-castle-throne]
+kind = event
+region = demon-castle
+label = 알현실
+description = 마왕성의 알현실. 옥좌가 비어 있다. 모노는 알현실에 거의 앉지 않는다.
+x = 0.30
+y = 0.92
+neighbors = n-demon-castle
+
+[nodemap.nm-act-1-era4-061.node.n-castle-office]
+kind = activity
+region = demon-castle
+label = 서류실
+description = 마왕성의 책상 한 줄. 서류가 천장까지 쌓여 있다.
+x = 0.33
+y = 0.90
+neighbors = n-demon-castle
+
+# --- B. 금단의 회랑 (루나 권역으로 흡수) ---
+[nodemap.nm-act-1-era4-061.node.n-corridor-entry]
+kind = combat
+region = demon-castle
+label = 회랑 입구
+description = 금단의 회랑 첫 자리. 문이 반쯤 열려 있다.
+x = 0.39
+y = 0.90
+neighbors = n-forbidden-corridor
+enemy = mr-luna-ink-fiend
+
+[nodemap.nm-act-1-era4-061.node.n-corridor-sealed-door]
+kind = event
+region = demon-castle
+label = 봉인된 방문
+description = 회랑 깊은 자리의 봉인된 방문. 글자 한 줄이 문 위에 새겨져 있다.
+x = 0.40
+y = 0.92
+neighbors = n-forbidden-corridor
+
+[nodemap.nm-act-1-era4-061.node.n-corridor-inscription]
+kind = gather
+region = demon-castle
+label = 옛 명문
+description = 회랑 한 자리의 옛 명문. 글자가 반쯤 어긋나 있다.
+x = 0.37
+y = 0.91
+neighbors = n-forbidden-corridor
+
+# --- C. 풍혈지대 (경유지 5노드: 외곽(진입)·풍혈지대·바람 자리·상승로·보스) ---
+[nodemap.nm-act-1-era4-061.node.n-windfall-outskirts]
+kind = combat
+region = demon-windfall
+label = 풍혈 외곽
+description = 풍혈지대 외곽 자리. 르슈드에서 오르는 첫 길. 바람이 살을 도려낸다.
+x = 0.30
+y = 0.22
+neighbors = n-windfall-valley
+enemy = mr-demon-windfall-gale-blade
+
+[nodemap.nm-act-1-era4-061.node.n-windfall-wind-spot]
+kind = event
+region = demon-windfall
+label = 바람 자리
+description = 풍혈 한 자리의 바람이 잠시 멈춘 자리. 공기가 말랐다.
+x = 0.31
+y = 0.14
+neighbors = n-windfall-valley
+
+
+# ============================================================
+# 마틴 항 · 키시나 해변 권역 신설 (2026-05-19, 15 노드).
+# 동선: 일루네온 남쪽 가도 마틴 외곽가도 마틴 항 (배편) 클러치 부두 마노니클라.
+# 키시나 = 마틴에서만 갈 수 있는 dead-end.
+# ============================================================
+
+# --- A. 마틴 항 마을 (6) ---
+[nodemap.nm-act-1-era4-061.node.n-martin-port]
+kind = village
+region = martin
+label = 마틴 항
+description = 일루네온 동남쪽 끝의 작은 항구 마을. 부두 끝에서 배 한 줄이 한 박자씩 출항한다.
+x = 0.55
+y = 0.72
+neighbors = n-martin-outer-road, n-martin-market, n-martin-lighthouse, n-martin-fish-market, n-martin-pier, n-martin-cargo, n-kishina-entry
+npcs = npc-rudi
+
+[nodemap.nm-act-1-era4-061.node.n-martin-market]
+kind = shop
+region = martin
+label = 마틴 시장
+description = 항구 뒤의 작은 시장. 짠 결이 가판 사이에 한 줄 머문다.
+x = 0.57
+y = 0.74
+neighbors = n-martin-port
+
+[nodemap.nm-act-1-era4-061.node.n-martin-lighthouse]
+kind = event
+region = martin
+label = 마틴 등대
+description = 항구 한 자리의 오래된 등대. 빛이 한 자락씩 사이를 둔다.
+x = 0.62
+y = 0.74
+neighbors = n-martin-port, n-martin-quay-watch
+events = ev-martin-lighthouse
+
+[nodemap.nm-act-1-era4-061.node.n-martin-fish-market]
+kind = activity
+region = martin
+label = 어시장
+description = 항구의 어시장. 그물 한 줄이 좌판 위에 길게 놓여 있다.
+x = 0.56
+y = 0.76
+neighbors = n-martin-port
+
+[nodemap.nm-act-1-era4-061.node.n-martin-pier]
+kind = activity
+region = martin
+label = 마틴 부두
+description = 마틴의 출항 부두. 배 한 줄이 떠날 박자를 기다린다.
+x = 0.60
+y = 0.72
+neighbors = n-martin-port, n-martin-sea-passage
+
+[nodemap.nm-act-1-era4-061.node.n-martin-cargo]
+kind = activity
+region = martin
+label = 화물장
+description = 항구 옆의 화물장. 컨테이너 한 줄 한 줄이 차례로 내려진다.
+x = 0.58
+y = 0.71
+neighbors = n-martin-port
+events = ev-martin-cargo-line
+npcs = npc-rudi
+
+# --- B. 키시나 해변 (6) dead-end ---
+[nodemap.nm-act-1-era4-061.node.n-kishina-entry]
+kind = combat
+region = martin
+label = 키시나 진입로
+description = 마틴 남쪽으로 모래가 깔린 진입로. 파도 소리가 한 박자씩 떨어진다.
+x = 0.55
+y = 0.78
+neighbors = n-martin-port, n-kishina-sand, n-kishina-rocks
+enemy = mr-martin-dock-rat
+
+[nodemap.nm-act-1-era4-061.node.n-kishina-sand]
+kind = rest
+region = martin
+label = 모래밭
+description = 키시나의 넓은 모래밭. 한 자리에 형태가 흐릿한 누군가가 앉아 있다.
+x = 0.52
+y = 0.80
+neighbors = n-kishina-entry, n-kishina-tide-pool, n-kishina-cave
+npcs = npc-gazri
+
+[nodemap.nm-act-1-era4-061.node.n-kishina-cave]
+kind = combat
+region = martin
+label = 해식 동굴
+description = 모래밭 끝의 좁은 해식 동굴. 안쪽에서 작은 울림 한 줄이 떨어진다.
+x = 0.50
+y = 0.83
+neighbors = n-kishina-sand, n-kishina-end
+enemy = mr-martin-sea-thug
+
+[nodemap.nm-act-1-era4-061.node.n-kishina-rocks]
+kind = gather
+region = martin
+label = 돌무더기
+description = 해변 한 자리의 돌무더기. 소금 진주 한 알이 돌 사이 한 자리에 자리잡고 있다.
+x = 0.49
+y = 0.79
+neighbors = n-kishina-entry, n-kishina-tide-pool
+events = ev-kishina-shells
+
+[nodemap.nm-act-1-era4-061.node.n-kishina-tide-pool]
+kind = event
+region = martin
+label = 조수 웅덩이
+description = 모래밭 한 자리의 작은 조수 웅덩이. 물 한 자락이 돌 위로 가볍게 흘러나온다. 웅덩이 너머 깊은 바다에 산호 해안이 한 줄로 잠겨 있다.
+x = 0.51
+y = 0.82
+neighbors = n-kishina-sand, n-kishina-rocks, n-coral-shoal
+events = ev-kishina-spirit-bead
+
+[nodemap.nm-act-1-era4-061.node.n-kishina-end]
+kind = event
+region = martin
+label = 키시나 끝 자리
+description = 해변의 가장 끝 자리. 모래가 한 줄로 바다 쪽으로 흘러내린다. 더 갈 곳이 없다.
+x = 0.48
+y = 0.85
+neighbors = n-kishina-cave
+
+# --- C. 배편 · 외곽 (3) ---
+[nodemap.nm-act-1-era4-061.node.n-martin-outer-road]
+kind = combat
+region = martin
+label = 마틴 외곽가도
+description = 일루네온 남쪽 가도에서 바다 쪽으로 빠지는 길. 짠 바람이 한 줄로 흐른다.
+x = 0.48
+y = 0.68
+neighbors = n-south-road, n-martin-port
+enemy = mr-martin-kelp-creeper
+
+[nodemap.nm-act-1-era4-061.node.n-martin-sea-passage]
+kind = event
+region = martin
+label = 마틴 항로
+description = 마틴과 클러치 사이의 바다 한 자리. 배 위에서 수평선 한 줄이 길게 머문다.
+x = 0.74
+y = 0.62
+neighbors = n-martin-pier, n-clutch-pier
+events = ev-martin-boat-passage
+
+[nodemap.nm-act-1-era4-061.node.n-martin-quay-watch]
+kind = event
+region = martin
+label = 등대 옆 망지대
+description = 등대 옆의 작은 망지대. 바다 한 줄을 길게 본다.
+x = 0.63
+y = 0.71
+neighbors = n-martin-lighthouse
+
+
+# ============================================================
+# 에니챀 권역 발전소 지대 (타코미 옆, electric primary, 5 노드).
+# ============================================================
+
+[nodemap.nm-act-1-era4-061.node.n-enicham]
+kind = village
+region = enicham
+label = 에니챀 운영소
+description = 발전소 입구. 단정한 작업복의 제로가 작은 클립보드 한 자국으로 들고난다. 옆자리에 알티-알타가 짧은 인사 한 마디를 보탠다.
+x = 0.13
+y = 0.44
+neighbors = n-night-tacomi, n-enicham-gen-room, n-enicham-wire-spire, n-enicham-zero-room, n-enicham-alti-bay
+npcs = npc-zero, npc-alti-alta
+events = ev-enicham-old-circuit
+
+[nodemap.nm-act-1-era4-061.node.n-enicham-gen-room]
+kind = combat
+region = enicham
+label = 발전실
+description = 내부 발전실. 코일의 짧고 단정한 윙소리 한 자락이 길게 머문다. 가끔 스파크 한 점이 자기 자리에서 일어선다.
+x = 0.10
+y = 0.40
+neighbors = n-enicham, n-enicham-wire-spire
+enemy = mr-enicham-sparking-drone
+events = ev-enicham-gen-hum
+
+[nodemap.nm-act-1-era4-061.node.n-enicham-wire-spire]
+kind = gather
+region = enicham
+label = 송전탑
+description = 발전소 송전탑 한 자루. 철탑의 단단한 자세 한 줄. 바람 한 자락이 송전선 한 줄을 길게 타고 흐른다.
+x = 0.07
+y = 0.36
+neighbors = n-enicham, n-enicham-gen-room
+events = ev-enicham-wire-spire
+
+[nodemap.nm-act-1-era4-061.node.n-enicham-zero-room]
+kind = event
+region = enicham
+label = 제로의 작업실
+description = 제로의 단정한 작업대 한 자리. 공구가 결대로 가지런하다. 책상 한 자락에 작은 칩 한 묶음이 단정하게 놓여 있다.
+x = 0.13
+y = 0.38
+neighbors = n-enicham, n-enicham-alti-bay
+npcs = npc-zero
+events = ev-enicham-zero-bench
+
+[nodemap.nm-act-1-era4-061.node.n-enicham-alti-bay]
+kind = rest
+region = enicham
+label = 알티 자리
+description = 알티-알타의 충전 자리. 단정한 책상 옆에 작은 출력 단자 한 줄이 조용하게 깜빡인다. 두 자아가 한 자리에 머문다.
+x = 0.10
+y = 0.36
+neighbors = n-enicham, n-enicham-zero-room
+npcs = npc-alti-alta
+events = ev-enicham-alti-bay
+
+
+# ============================================================
+# 유스제리아 권역 신설 (dead end 고위험 사냥터, 5노드, iron+water, NPC 0).
+# 리아그랄타 오드 능선 너머. 살아 돌아가면 유물+특산물.
+# ============================================================
+
+[nodemap.nm-act-1-era4-061.node.n-yusezria]
+kind = combat
+region = yusezria
+label = 유스제리아 어귀
+description = 리아그랄타 너머 막다른 고지. 철과 물의 정수가 공기에 무겁게 고여 있다. 강한 것들이 자리를 지킨다.
+x = 0.62
+y = 0.18
+neighbors = n-ode-ridge, n-yuse-iron-vein, n-yuse-tide-pool
+enemy = mr-yusezria-iron-sentinel
+events = ev-yuse-iron-vein
+
+[nodemap.nm-act-1-era4-061.node.n-yuse-iron-vein]
+kind = combat
+region = yusezria
+label = 철 광맥
+description = 철의 정수가 바위 한 줄로 솟은 자리. 발 아래가 단단하고 차다.
+x = 0.66
+y = 0.20
+neighbors = n-yusezria, n-yuse-hunt
+enemy = mr-yusezria-tide-wraith
+
+[nodemap.nm-act-1-era4-061.node.n-yuse-tide-pool]
+kind = combat
+region = yusezria
+label = 고인 물웅덩이
+description = 물의 정수가 고인 검은 웅덩이. 수면 아래에서 무엇이 한 번 움직인다.
+x = 0.66
+y = 0.14
+neighbors = n-yusezria, n-yuse-hunt
+enemy = mr-yusezria-rust-hound
+events = ev-yuse-tide-pool
+
+[nodemap.nm-act-1-era4-061.node.n-yuse-hunt]
+kind = elite
+region = yusezria
+label = 사냥터 한복판
+description = 철과 물이 한 자리에서 부딪히는 자리. 가장 강한 것이 여기 머문다.
+x = 0.70
+y = 0.17
+neighbors = n-yuse-iron-vein, n-yuse-tide-pool, n-yuse-core
+enemy = mr-yusezria-core-colossus
+
+[nodemap.nm-act-1-era4-061.node.n-yuse-core]
+kind = gather
+region = yusezria
+label = 막다른 코어
+description = 유스제리아 가장 깊은 막다른 자리. 철과 물의 정수가 한 덩이로 굳어 있다. 살아 돌아간 자에게만 큰 것이 남는다.
+x = 0.73
+y = 0.15
+neighbors = n-yuse-hunt
+events = ev-yuse-dead-end
+
+
+# ============================================================
+# 팔콘 가든 공중 군도 (고위험, wind, 5노드). 클러치 등대 진입.
+# 공중 = 강한 조류 몹(NPC 없음). 범고래 NPC만 바다쪽 진입부에.
+# ============================================================
+
+[nodemap.nm-act-1-era4-061.node.n-falcon-shore]
+kind = village
+region = falcon-garden
+label = 군도 아래 바닷가
+description = 클러치 등대 너머 공중 군도 바로 아래 바닷가. 위로는 떠 있는 섬들이 그늘을 드리운다. 범고래가 물 위에 반쯤 몸을 올린 채 하늘을 올려다본다.
+x = 0.92
+y = 0.50
+neighbors = n-falcon-isle-low, n-manonickla
+npcs = npc-shachi
+events = ev-falcon-shore
+
+[nodemap.nm-act-1-era4-061.node.n-falcon-isle-low]
+kind = combat
+region = falcon-garden
+label = 낮은 군도
+description = 물 위에 낮게 떠 있는 섬. 맹금 아인들이 절벽 끝에서 한 줄로 내려다본다. 발 디딜 자리가 좁다.
+x = 0.94
+y = 0.45
+neighbors = n-falcon-shore, n-falcon-isle-high
+enemy = mr-falcon-garden-gust-harpy
+
+[nodemap.nm-act-1-era4-061.node.n-falcon-isle-high]
+kind = combat
+region = falcon-garden
+label = 높은 군도
+description = 더 높이 떠 있는 섬. 바람이 살을 한 자락 도려낸다. 하피 전사들이 무리를 이룬다.
+x = 0.93
+y = 0.40
+neighbors = n-falcon-isle-low, n-falcon-peak
+enemy = mr-falcon-garden-talon-striker
+
+[nodemap.nm-act-1-era4-061.node.n-falcon-peak]
+kind = elite
+region = falcon-garden
+label = 군도 정점
+description = 공중 군도 가장 높은 자리. 하늘의 주인이 날개를 한 번 접는다. 가장 강한 것이 여기 머문다.
+x = 0.96
+y = 0.42
+neighbors = n-falcon-isle-high, n-falcon-core
+enemy = mr-falcon-garden-storm-sovereign
+
+[nodemap.nm-act-1-era4-061.node.n-falcon-core]
+kind = gather
+region = falcon-garden
+label = 둥지 꼭대기
+description = 군도 가장 깊은 둥지. 바람과 깃털이 한 덩이로 굳어 있다. 살아 내려간 자에게만 큰 것이 남는다.
+x = 0.97
+y = 0.38
+neighbors = n-falcon-peak
+events = ev-falcon-core
+
+
+# ============================================================
+# 초원 교역소 (리아그랄타 서쪽, earth, 5노드). 평화로운 대상 교역지.
+# 라미아 상인 사라사(영입 O) + 상점 기능. 라미아 마을은 아님 여러 행상이 모이는 자리.
+# ============================================================
+
+[nodemap.nm-act-1-era4-061.node.n-trade-post]
+kind = village
+region = tradepost
+label = 초원 교역소
+description = 리아그랄타 초원 서쪽 천막이 늘어선 대상 교역지. 라미아 상인 사라사가 직물과 향신료를 펼친 채, 긴 꼬리를 한 자락 말고 손님을 맞는다.
+x = 0.45
+y = 0.28
+neighbors = n-riagralta, n-trade-stalls, n-trade-caravan, n-trade-road, n-trade-well
+npcs = npc-sarasa
+events = ev-trade-sarasa
+
+[nodemap.nm-act-1-era4-061.node.n-trade-stalls]
+kind = shop
+region = tradepost
+label = 좌판 거리
+description = 교역소 좌판이 줄지어 선 자리. 여러 종족 행상이 물건을 한 줄로 늘어놓는다.
+x = 0.42
+y = 0.25
+neighbors = n-trade-post
+
+[nodemap.nm-act-1-era4-061.node.n-trade-caravan]
+kind = rest
+region = tradepost
+label = 대상대 쉼터
+description = 교역소 대상대가 쉬어 가는 자리. 모닥불 한 줄 옆에 짐을 부린 낙타가 눕는다.
+x = 0.48
+y = 0.24
+neighbors = n-trade-post
+
+[nodemap.nm-act-1-era4-061.node.n-trade-road]
+kind = combat
+region = tradepost
+label = 교역로
+description = 교역소로 드는 초원 길. 풀숲에서 그림자가 한 번 일어선다. 행상들이 호위를 청하는 자리.
+x = 0.43
+y = 0.31
+neighbors = n-trade-post
+enemy = mr-tradepost-stray-hound
+
+[nodemap.nm-act-1-era4-061.node.n-trade-well]
+kind = gather
+region = tradepost
+label = 교역소 우물
+description = 교역소 한 자리의 오래된 우물. 물 위에 조각 구름이 한 줄 비친다. 행상들이 물병을 채운다.
+x = 0.46
+y = 0.32
+neighbors = n-trade-post
+
+
+# ============================================================
+# 딜롭 부족 (에루멘 안개숲 너머 숨은 골짜기, earth, 5노드). 신비 부족.
+# 늘어진 귀 긴/짧은 두 형태의 한 종족. 언어 안 통함 무늬·몸짓 소통.
+# ============================================================
+
+[nodemap.nm-act-1-era4-061.node.n-diropel-mist-edge]
+kind = combat
+region = diropel
+label = 안개숲 너머 경계
+description = 에루멘 안개숲 가장 안쪽 경계. 나무에 낯선 무늬가 한 줄 새겨져 있다. 이 너머는 딜롭의 땅.
+x = 0.10
+y = 0.36
+neighbors = n-erumen-deep, n-diropel-village
+enemy = mr-diropel-long-ear-sentinel
+
+[nodemap.nm-act-1-era4-061.node.n-diropel-village]
+kind = village
+region = diropel
+label = 딜롭 부족 마을
+description = 안개 너머 숨은 골짜기의 부족 마을. 늘어진 귀가 긴 딜롭과 짧은 딜롭이 얼굴 무늬를 서로 그려 준다. 말은 통하지 않지만, 몸짓은 따뜻하다.
+x = 0.07
+y = 0.33
+neighbors = n-diropel-mist-edge, n-diropel-paint, n-diropel-totem, n-diropel-hollow
+npcs = npc-diropel-long, npc-diropel-short
+events = ev-diropel-paint
+
+[nodemap.nm-act-1-era4-061.node.n-diropel-paint]
+kind = activity
+region = diropel
+label = 무늬 그리는 자리
+description = 부족이 얼굴 무늬를 그리는 자리. 색색 안료가 조개껍데기에 한 줄로 담겨 있다. 무늬마다 뜻이 다르다 한다.
+x = 0.05
+y = 0.36
+neighbors = n-diropel-village
+
+[nodemap.nm-act-1-era4-061.node.n-diropel-totem]
+kind = gather
+region = diropel
+label = 부족 토템
+description = 골짜기 한 자리의 오래된 토템. 긴 귀와 짧은 귀가 한 기둥에 나란히 새겨져 있다. 무늬가 무엇을 가리키는지 알 수 없다.
+x = 0.05
+y = 0.30
+neighbors = n-diropel-village
+events = ev-diropel-totem
+
+[nodemap.nm-act-1-era4-061.node.n-diropel-hollow]
+kind = rest
+region = diropel
+label = 골짜기 쉼터
+description = 부족 마을 안쪽 골짜기. 폭신한 풀 위에 딜롭 아이들이 둥글게 누워 잔다. 바람도 한 줄 둥글게 분다.
+x = 0.09
+y = 0.30
+neighbors = n-diropel-village
+
+
+# ============================================================
+# 산호 해안 (키시나 너머 바다, water, 5노드). 해양 사냥터(중위험).
+# 인어·세이렌 깃듦. 범고래 클루루와 앙숙. 진입: 키시나 조수 웅덩이.
+# ============================================================
+
+[nodemap.nm-act-1-era4-061.node.n-coral-shoal]
+kind = combat
+region = coral-coast
+label = 얕은 산호밭
+description = 키시나 조수 웅덩이 너머 얕은 산호밭. 물빛이 한 자락 푸르다. 산호 사이에서 작은 상어가 한 번 미끄러진다.
+x = 0.54
+y = 0.86
+neighbors = n-kishina-tide-pool, n-coral-reef, n-coral-rest
+enemy = mr-coral-coast-jellyfish-drifter
+
+[nodemap.nm-act-1-era4-061.node.n-coral-reef]
+kind = combat
+region = coral-coast
+label = 산호초
+description = 빽빽한 산호초 미로. 해파리가 한 줄로 떠다닌다. 길을 잘못 들면 빠져나오기 어렵다.
+x = 0.58
+y = 0.89
+neighbors = n-coral-shoal, n-coral-song
+enemy = mr-coral-coast-siren-charmer
+
+[nodemap.nm-act-1-era4-061.node.n-coral-rest]
+kind = village
+region = coral-coast
+label = 인어 바위
+description = 산호 해안 물 위로 솟은 너른 바위. 인어와 세이렌이 꼬리를 한 자락 늘어뜨린 채 노래를 고른다. "...범고래는 이 물에 들이지 않아요."
+x = 0.51
+y = 0.91
+neighbors = n-coral-shoal, n-coral-deep
+npcs = npc-marin, npc-seira
+events = ev-coral-rest
+
+[nodemap.nm-act-1-era4-061.node.n-coral-song]
+kind = elite
+region = coral-coast
+label = 노래 여울
+description = 산호 해안 세이렌의 노래가 가장 짙은 여울. 물살이 노래에 맞춰 휜다. 가장 강한 해양 아인이 여기 머문다.
+x = 0.59
+y = 0.93
+neighbors = n-coral-reef
+enemy = mr-coral-coast-abyss-queen
+events = ev-coral-song
+
+[nodemap.nm-act-1-era4-061.node.n-coral-deep]
+kind = gather
+region = coral-coast
+label = 깊은 산호 골
+description = 해안 가장 깊은 산호 골. 햇빛이 한 자락만 닿는다. 산호 한 덩이에 진주가 박혀 있다. 살아 떠오른 자의 몫.
+x = 0.55
+y = 0.96
+neighbors = n-coral-rest
+events = ev-coral-deep
+
+
+# ============================================================
+# 화산광 지대 (모스 옆, iron/dark, 5노드). 도전 사냥터.
+# 격 높은 신수 던(곰, MythicBeast, 영입 O).
+# ============================================================
+
+[nodemap.nm-act-1-era4-061.node.n-emberforge-entry]
+kind = combat
+region = triflower
+label = 화산광 어귀
+description = 모스 균열 너머 용암과 광맥이 뒤엉킨 어귀. 쇳물이 한 줄로 흐르고, 검은 연기가 자욱하다.
+x = 0.88
+y = 0.33
+neighbors = n-moss-fissure, n-emberforge-vein, n-emberforge-lair
+enemy = mr-emberforge-ash-hound
+
+[nodemap.nm-act-1-era4-061.node.n-emberforge-vein]
+kind = combat
+region = triflower
+label = 광맥 갱도
+description = 철광맥이 벽을 따라 한 줄로 솟은 갱도. 발 아래 식지 않은 쇳물이 흐른다.
+x = 0.91
+y = 0.36
+neighbors = n-emberforge-entry, n-emberforge-deep
+enemy = mr-emberforge-furnace-golem
+
+[nodemap.nm-act-1-era4-061.node.n-emberforge-lair]
+kind = village
+region = triflower
+label = 던의 자리
+description = 화산광 가장 너른 자리. 던가 장식 두른 외투를 한 자락 늘어뜨린 채, 쇳물 앞에 묵직하게 앉아 있다.
+x = 0.90
+y = 0.30
+neighbors = n-emberforge-entry
+npcs = npc-kumamimi
+events = ev-emberforge-lair
+
+[nodemap.nm-act-1-era4-061.node.n-emberforge-deep]
+kind = elite
+region = triflower
+label = 깊은 용광 갱
+description = 광맥 가장 깊은 갱. 쇳물이 한 덩이로 끓는다. 가장 강한 화산광 아인이 여기 머문다.
+x = 0.94
+y = 0.36
+neighbors = n-emberforge-vein, n-emberforge-core
+enemy = mr-emberforge-magma-titan
+
+[nodemap.nm-act-1-era4-061.node.n-emberforge-core]
+kind = gather
+region = triflower
+label = 광석 핵
+description = 갱 가장 안쪽 막다른 자리. 검은 광석이 한 덩이로 굳어 있다. 살아 나간 자의 몫.
+x = 0.96
+y = 0.32
+neighbors = n-emberforge-deep
+events = ev-emberforge-core
+
+
+# ============================================================
+# 구 신전터 (타코미 옆, electric/light, 5노드). 도전 사냥터.
+# 격 높은 신수 티프레(호랑이, MythicBeast, 영입 O).
+# ============================================================
+
+[nodemap.nm-act-1-era4-061.node.n-oldshrine-gate]
+kind = combat
+region = oldshrine
+label = 신전 문터
+description = 타코미 가도 너머 부서진 신전 문터. 기둥 한 줄이 비스듬히 서 있고, 정전기가 한 자락씩 튄다.
+x = 0.26
+y = 0.64
+neighbors = n-tacomi-old-station, n-oldshrine-hall, n-oldshrine-altar
+enemy = mr-oldshrine-spirit-flame
+
+[nodemap.nm-act-1-era4-061.node.n-oldshrine-hall]
+kind = combat
+region = oldshrine
+label = 신전 회랑
+description = 옛 신전 긴 회랑. 벽에 빛 무늬가 한 줄로 흐릿하게 남아 있다. 발소리가 길게 울린다.
+x = 0.29
+y = 0.67
+neighbors = n-oldshrine-gate, n-oldshrine-inner
+enemy = mr-oldshrine-shrine-warden
+
+[nodemap.nm-act-1-era4-061.node.n-oldshrine-altar]
+kind = village
+region = oldshrine
+label = 티프레의 자리
+description = 신전 제단 자리. 티프레가 장식 두른 예복을 한 자락 걸친 채, 빛 무늬 위에 곧게 앉아 있다.
+x = 0.25
+y = 0.69
+neighbors = n-oldshrine-gate
+npcs = npc-toramimi
+events = ev-oldshrine-altar
+
+[nodemap.nm-act-1-era4-061.node.n-oldshrine-inner]
+kind = elite
+region = oldshrine
+label = 안쪽 성소
+description = 신전 가장 안쪽 성소. 번개가 한 덩이로 고여 있다. 가장 강한 신전 아인이 여기 머문다.
+x = 0.32
+y = 0.68
+neighbors = n-oldshrine-hall, n-oldshrine-core
+enemy = mr-oldshrine-lightning-archon
+
+[nodemap.nm-act-1-era4-061.node.n-oldshrine-core]
+kind = gather
+region = oldshrine
+label = 신전 핵
+description = 성소 가장 안쪽 막다른 자리. 빛나는 유물이 한 덩이로 굳어 있다. 살아 나간 자의 몫.
+x = 0.34
+y = 0.71
+neighbors = n-oldshrine-inner
+events = ev-oldshrine-core
