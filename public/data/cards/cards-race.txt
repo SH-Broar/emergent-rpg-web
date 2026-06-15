@@ -2604,7 +2604,7 @@ effects = damage-low-hand:14:enemy:3
 flavor = 빈 손끝이 더 멀리까지 닿는다.
 
 [card.c-phantom-lastcard]
-name = 마지막 한 장
+name = 마지막 패
 rank = rare
 source = race
 element = electric
@@ -2615,7 +2615,7 @@ upgrade_to = c-phantom-lastcard-plus
 flavor = "쇼는 마지막이 제일 재밌지."
 
 [card.c-phantom-lastcard-plus]
-name = 마지막 한 장+
+name = 마지막 패+
 rank = rare
 source = race
 element = electric
@@ -2841,7 +2841,7 @@ effects = damage-low-hand:28:enemy:3, draw:1:self
 flavor = 뻗는 창이 한층 길다.
 
 [card.c-phantom-thunderfist]
-name = 만패의 벼락
+name = 피날레
 rank = legendary
 source = race
 element = electric
@@ -2852,7 +2852,7 @@ upgrade_to = c-phantom-thunderfist-plus
 flavor = 박수갈채 대신 벼락이 떨어진다.
 
 [card.c-phantom-thunderfist-plus]
-name = 만패의 벼락+
+name = 피날레+
 rank = legendary
 source = race
 element = electric
@@ -2891,7 +2891,7 @@ effects = damage-top-color:1:enemy, grant-color:2:self:random
 flavor = 첨탑을 더 높이 세운다. 쏘는 사이 어느 색의 기운이 몸에 밴다.
 
 [card.c-arcana-levee]
-name = 색의 둑
+name = 편광
 rank = common
 source = race
 element = light
@@ -2899,10 +2899,10 @@ cost = 1
 trigger = manual
 effects = block-top-color:1:self
 upgrade_to = c-arcana-levee-plus
-flavor = 둑 너머에서 빛이 찰랑거린다.
+flavor = 같은 방향으로 정렬된 빛이 나머지를 막아선다.
 
 [card.c-arcana-levee-plus]
-name = 색의 둑+
+name = 편광+
 rank = common
 source = race
 element = light
@@ -2933,7 +2933,7 @@ effects = damage-color-count:5:enemy
 flavor = 빛이 한층 여러 갈래로 갈라져 쏟아진다.
 
 [card.c-arcana-judgment]
-name = 공명 심판
+name = 빛의 심판
 rank = rare
 source = race
 element = light
@@ -2941,10 +2941,10 @@ cost = 2
 trigger = manual
 effects = damage-top-color:2:enemy
 upgrade_to = c-arcana-judgment-plus
-flavor = "빛은 거짓말을 못 하거든."
+flavor = 빛 앞에선 거짓말을 할 수 없거든.
 
 [card.c-arcana-judgment-plus]
-name = 공명 심판+
+name = 빛의 심판+
 rank = rare
 source = race
 element = light
@@ -3054,7 +3054,7 @@ effects = next-turn-energy:2:self, draw-if-color:1:self:light:5
 flavor = 솟는 샘이 더 세차, 당겨 두는 힘도 한층 크다.
 
 [card.c-arcana-hex]
-name = 색의 저주
+name = 암광
 rank = common
 source = race
 element = light
@@ -3062,10 +3062,10 @@ cost = 1
 trigger = manual
 effects = damage:6:enemy, apply-status:2:enemy:vulnerable
 upgrade_to = c-arcana-hex-plus
-flavor = 너무 밝은 빛은 숨을 곳을 지워 버린다.
+flavor = 빛을 비추자, 어둠이 태어났다.
 
 [card.c-arcana-hex-plus]
-name = 색의 저주+
+name = 암광+
 rank = common
 source = race
 element = light
@@ -3117,7 +3117,7 @@ effects = grant-color:5:self:light
 flavor = 빛의 기운이 온몸에 배어 새하얗다.
 
 [card.c-arcana-resonate]
-name = 대공명
+name = 월광포
 rank = legendary
 source = race
 element = light
@@ -3125,10 +3125,10 @@ cost = 2
 trigger = manual
 effects = damage-top-color:3:enemy
 upgrade_to = c-arcana-resonate-plus
-flavor = 같은 소리는 만나면 커진다.
+flavor = 쏟아지는 빛을 한 점에 모은다면.
 
 [card.c-arcana-resonate-plus]
-name = 대공명+
+name = 월광포+
 rank = legendary
 source = race
 element = light
