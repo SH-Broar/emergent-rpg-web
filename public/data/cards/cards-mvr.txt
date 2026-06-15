@@ -554,14 +554,14 @@ flavor = "셋을 셀 동안 끝내 주지."
 # ============================================================
 
 [card.c-prism-strike]
-name = 프리즘 일격
+name = 오로라
 rank = rare
 source = hyperion
 element = light
 cost = 1
 trigger = manual
 effects = damage-top-color:1:enemy
-flavor = "제일 자신 있는 걸로 갈게."
+flavor = 어두운 하늘에 깔리는, 아름다운 색의 장막.
 
 [card.c-prism-guard]
 name = 가장 짙은 방어
@@ -648,14 +648,14 @@ flavor = 아주 오래된 어둠이 천천히 눈을 뜬다.
 # ---------- damage-per-debuff 2장 ----------
 
 [card.c-debuff-storm]
-name = 약점의 폭풍
+name = 네메시스
 rank = common
 source = npc
 element = dark
 cost = 1
 trigger = manual
 effects = damage-per-debuff:6:enemy
-flavor = 무너지기 시작한 둑은 한꺼번에 터진다.
+flavor = 너무 미움을 많이 사서는 안 됐다.
 
 [card.c-cursed-blade]
 name = 저주받은 검
@@ -1471,7 +1471,7 @@ flavor = 번개를 타고 세 번 더 빠르게 가른다.
 # ---------- 측정 어려운 1차 ----------
 
 [card.c-prism-strike-plus]
-name = 프리즘 일격+
+name = 오로라+
 rank = rare
 source = hyperion
 element = light
@@ -1553,7 +1553,7 @@ effects = apply-status:3:enemy:regress, damage:14:enemy
 flavor = 적의 단단함이 더 오래 풀린 채로 멎는다.
 
 [card.c-debuff-storm-plus]
-name = 약점의 폭풍+
+name = 네메시스+
 rank = common
 source = npc
 element = dark
