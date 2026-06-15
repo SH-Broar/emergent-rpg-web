@@ -670,7 +670,7 @@ flavor = 검집을 처음부터 만들지 않은 검이다.
 # ---------- consume-vulnerable 1장 ----------
 
 [card.c-vuln-detonate]
-name = 약점 폭발
+name = 균열
 rank = common
 source = event
 element = electric
@@ -941,7 +941,7 @@ effects = apply-status:3:enemy:poison, damage-per-debuff:4:enemy
 flavor = 그 탑에는 새도 앉지 않는다.
 
 [card.c-prism-overload]
-name = 색의 과적
+name = 과욕
 rank = rare
 source = hyperion
 element = light
@@ -1136,7 +1136,7 @@ effects = apply-status:1:self:feral, damage-per-hand:3:enemy
 flavor = "앞만 봐. 앞만."
 
 [card.c-color-surge]
-name = 색의 분출
+name = 범람
 rank = rare
 source = hyperion
 element = light
@@ -1573,7 +1573,7 @@ effects = damage-per-debuff:12:enemy
 flavor = 상처가 겹친 곳일수록 검이 매섭게 든다.
 
 [card.c-vuln-detonate-plus]
-name = 약점 폭발+
+name = 균열+
 rank = common
 source = event
 element = electric
@@ -1805,7 +1805,7 @@ effects = apply-status:4:enemy:poison, damage-per-debuff:5:enemy
 flavor = 더 높은 첨탑이 쌓인 약함을 두드린다.
 
 [card.c-prism-overload-plus]
-name = 색의 과적+
+name = 과욕+
 rank = rare
 source = hyperion
 element = light
@@ -1991,7 +1991,7 @@ effects = apply-status:1:self:feral, damage-per-hand:4:enemy
 flavor = 짐승이 된 채로, 손에 든 패가 많을수록 더 들이친다.
 
 [card.c-color-surge-plus]
-name = 색의 분출+
+name = 범람+
 rank = rare
 source = hyperion
 element = light
