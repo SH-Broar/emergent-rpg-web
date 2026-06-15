@@ -1,0 +1,106 @@
+{
+ "meta": {
+  "id": "cardname_fix_1",
+  "title": "카드 이름 라운드2 — 파일럿 검수 반영 13 + 이름충돌 질의 1"
+ },
+ "items": [
+  {
+   "n": 189,
+   "kind": "이름·라운드2",
+   "loc": "효과 damage-per-hand:3:enemy  ·  현 이름 「부채 베기」",
+   "text": "「부채 베기」  (현 flavor: 착, 펼치는 소리가 신호다.)",
+   "proposal": "「부채 베기」  [유지 확인]\nflavor: 착, 펼치는 소리가 신호다.\n? 주신 항목 — 이름·flavor 모두 현행 유지안. 손패만큼 넓게 베는 기본기."
+  },
+  {
+   "n": 198,
+   "kind": "이름·라운드2",
+   "loc": "효과 damage:6:enemy, apply-status:2:enemy:weakness  ·  현 이름 「어둠 가르기」",
+   "text": "「어둠 가르기」  (현 flavor: 어둠은 베어도 소리가 나지 않는다.)",
+   "proposal": "「카드 날리기」  [확정(이름만 교체)]\nflavor: 얇은 종이 한 장이, 허공을 가르고 날아든다.\n'어둠 가르기' 폐기. 마술사가 카드를 칼처럼 던짐 — 효과(피해+약화)와 정합. flavor는 파일럿안 유지."
+  },
+  {
+   "n": 200,
+   "kind": "이름·라운드2",
+   "loc": "효과 damage-per-hand:5:enemy, draw:1:self  ·  현 이름 「방전」",
+   "text": "「방전」  (현 flavor: 파지직, 소리가 먼저 났다.)",
+   "proposal": "「리버」  [확인요망 — 턴/콜/리버 중 택1]\nflavor: 쥔 패가 많을수록 세지고, 한 장을 더 쥔다.\n세븐포커 용어 중 '리버'(마지막 장) 제안. flavor=효과만(damage-per-hand + draw). 턴/콜 선호 시 알려주세요."
+  },
+  {
+   "n": 204,
+   "kind": "이름·라운드2",
+   "loc": "효과 damage:8:enemy, apply-status:2:enemy:vulnerable  ·  현 이름 「감전」",
+   "text": "「감전」  (현 flavor: 감전 주의)",
+   "proposal": "「감전」  [확정(원복)]\nflavor: 감전 주의\n사용자 지시 '감전으로 그냥 하죠'. 이름·flavor 모두 원본 그대로."
+  },
+  {
+   "n": 222,
+   "kind": "이름·라운드2",
+   "loc": "효과 damage:14:enemy, apply-status:2:enemy:vulnerable, apply-status:2:enemy:weakness  ·  현 이름 「과전류」",
+   "text": "「과전류」  (현 flavor: 정전기로도 사람은 충분히 놀란다.)",
+   "proposal": "「에이스」  [확정]\nflavor: \"맞아, 에이스가 손에 잡혔어.\"\n큰 한 방(피해14 + 취약 + 약화) = 손에 들어온 최강 패. flavor 사용자 지정."
+  },
+  {
+   "n": 223,
+   "kind": "이름·라운드2",
+   "loc": "효과 skip-enemy-action:1, damage:6:enemy  ·  현 이름 「합선」",
+   "text": "「합선」  (현 flavor: \"펑. 잠깐 어두웠지?\")",
+   "proposal": "「폴드」  [확인요망 — flavor]\nflavor: \"이번 판은 접으셔야겠어.\"\nskip-enemy-action = 상대가 한 수를 접게 함(폴드)과 정합. flavor 대사 제안 — 확인 부탁."
+  },
+  {
+   "n": 219,
+   "kind": "이름·라운드2",
+   "loc": "효과 damage:3:enemy, apply-status:1:enemy:vulnerable  ·  현 이름 「충격」",
+   "text": "「충격」  (현 flavor: 찌릿, 하고 지나간다.)",
+   "proposal": "「손기술」  [확인요망 — flavor]\nflavor: 가벼운 손짓에도 빈틈은 생긴다.\n'잔손질'→'손기술'(사용자). 작은 한 수(피해3 + 취약). flavor 건조 재작성 — 확인 부탁."
+  },
+  {
+   "n": 192,
+   "kind": "이름·라운드2",
+   "loc": "효과 damage-per-hand:4:enemy, draw:1:self  ·  현 이름 「패의 폭주」",
+   "text": "「패의 폭주」  (현 flavor: \"전부 한꺼번에? 좋지.\")",
+   "proposal": "「올인」  [확정]\nflavor: \"올인이야. 들어와도 돼.\"\n손패 전부를 거는 정통 용어. flavor 사용자 지정."
+  },
+  {
+   "n": 226,
+   "kind": "이름·라운드2",
+   "loc": "효과 block:18:self, draw:1:self  ·  현 이름 「정적의 장벽」",
+   "text": "「정적의 장벽」  (현 flavor: 그 안에서는 숨소리도 밖으로 새지 않는다.)",
+   "proposal": "「포커 페이스」  [확인요망 — flavor]\nflavor: 그 안에서는 숨소리도 밖으로 새지 않는다.\n방어18 + 드로우1 = 읽히지 않는 침착. flavor는 현행 유지 제안 — 확인 부탁."
+  },
+  {
+   "n": 41,
+   "kind": "이름·라운드2",
+   "loc": "효과 damage-top-color:1:enemy  ·  현 이름 「프리즘 일격」",
+   "text": "「프리즘 일격」  (현 flavor: \"제일 자신 있는 걸로 갈게.\")",
+   "proposal": "「오로라」  [확정 (단 #263과 이름 충돌 ⚠️)]\nflavor: 어두운 하늘에 깔리는, 아름다운 색의 장막.\n사용자 지정. 단 아래 #263 'c-arcana-aurora'가 이미 '오로라' — 중복 해소 필요."
+  },
+  {
+   "n": 234,
+   "kind": "이름·라운드2",
+   "loc": "효과 grant-color:3:self:random  ·  현 이름 「색 주입」",
+   "text": "「색 주입」  (현 flavor: 낯선 기운도 들이고 보면 내 것이 된다.)",
+   "proposal": "「정령 부름」  [확정]\nflavor: 이번엔 누구와 만날지 기대된다.\n무작위 색 부여 = 어떤 정령이 응할지 모름. flavor 사용자 지정."
+  },
+  {
+   "n": 49,
+   "kind": "이름·라운드2",
+   "loc": "효과 damage-per-debuff:6:enemy  ·  현 이름 「약점의 폭풍」",
+   "text": "「약점의 폭풍」  (현 flavor: 무너지기 시작한 둑은 한꺼번에 터진다.)",
+   "proposal": "「네메시스」  [확인요망 — flavor]\nflavor: 적에게 쌓인 약점이 많을수록 더 세게 들어간다.\n그리스 응보의 여신(이름 확정). flavor 건조 재작성(damage-per-debuff 효과 명시) — 확인 부탁."
+  },
+  {
+   "n": 142,
+   "kind": "이름·라운드2",
+   "loc": "효과 apply-status:1:self:strength, damage:6:enemy  ·  현 이름 「전의의 외침」",
+   "text": "「전의의 외침」  (현 flavor: \"전장에선 큰 함성이 칼보다 효과적이다.\")",
+   "proposal": "「돌격」  [확인요망 — 이름]\nflavor: 동료가 있으니까, 믿고 달려나갈 수 있다.\n'광전사' 기각 + 동료 전제 반영. 자기강화 + 피해 = 믿고 앞으로 나섬. '돌격'(또는 '선봉') — 택일 부탁. flavor 사용자 지정."
+  },
+  {
+   "n": 263,
+   "kind": "⚠️ 이름 충돌 질의",
+   "loc": "효과 damage-color-count:6:enemy, block-top-color:1:self",
+   "text": "「오로라」 (현행, c-arcana-aurora)  ·  현 flavor: 오로라가 뜨는 밤엔 어른들도 잠을 미룬다.",
+   "proposal": "#41을 '오로라'로 바꾸면 이 카드와 이름이 겹칩니다.\n어느 쪽으로 정리할까요?\n  (가) #41만 '오로라', 이 카드(#263) 다른 이름으로 개명\n  (나) #263 '오로라' 유지, #41은 다른 이름으로\n  (다) 중복 허용\n참고: #263은 색 가짓수만큼 피해 + 막기 = 여러 색이 뜨는 '오로라'에 더 가까움. #41은 가장 높은 한 색만 = 단색 일격."
+  }
+ ]
+}
