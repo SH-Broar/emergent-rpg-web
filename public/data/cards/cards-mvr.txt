@@ -506,7 +506,7 @@ element = earth
 cost = 1
 trigger = manual
 effects = damage:12:enemy, block:9:self
-flavor = "덤으로 하나 얹어 드릴게요."
+flavor = 꼬리로 칭칭 감아 조인다.
 
 [card.c-lop-sign]
 name = 리포의 신호
@@ -526,7 +526,7 @@ element = water
 cost = 1
 trigger = manual
 effects = block:9:self, heal:3:self, exhaust-self:0:self
-flavor = "파도는 제가 막을게요."
+flavor = "괜찮아요. 절 믿어요."
 
 [card.c-bear-bastion]
 name = 곰의 방벽
@@ -1416,7 +1416,7 @@ element = water
 cost = 1
 trigger = manual
 effects = damage:20:enemy, block:12:self
-flavor = 더 큰 물결, 더 단단한 방어.
+flavor = 검푸른 포식자에게서 도망칠 수 없다.
 
 [card.c-trade-coil-plus]
 name = 꼬리 감기+
@@ -1426,7 +1426,7 @@ element = earth
 cost = 1
 trigger = manual
 effects = damage:17:enemy, block:14:self
-flavor = 꼬리를 길게 감았다가 힘껏 푼다.
+flavor = 빈틈없이 조여 와, 빠져나갈 수가 없다.
 
 [card.c-lop-sign-plus]
 name = 리포의 신호+
@@ -1446,7 +1446,7 @@ element = water
 cost = 1
 trigger = manual
 effects = block:14:self, heal:5:self, exhaust-self:0:self
-flavor = 더 단단한 물의 방패.
+flavor = "이번에도, 절 믿으면 돼요."
 
 [card.c-bear-bastion-plus]
 name = 곰의 방벽+
@@ -1550,7 +1550,7 @@ element = dark
 cost = 2
 trigger = manual
 effects = apply-status:3:enemy:regress, damage:14:enemy
-flavor = 적의 단단함이 더 오래 풀린 채로 멎는다.
+flavor = 상식 밖의 존재 앞에서는 누구나 어려지고 만다.
 
 [card.c-debuff-storm-plus]
 name = 네메시스+
