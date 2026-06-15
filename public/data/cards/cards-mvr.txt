@@ -184,7 +184,7 @@ element = earth
 cost = 1
 trigger = manual
 effects = block:8:self
-flavor = 어떤 공격인지 안다면, 막는 것도 가능하다.
+flavor = "생각을 먼저 해도, 대부분은 막아야 해."
 
 [card.c-quickdraw-plus]
 name = 순발력+
@@ -194,7 +194,7 @@ element = wind
 cost = 0
 trigger = manual
 effects = draw:2:self
-flavor = 다음 행동을 더욱 떠올린다.
+flavor = "일단 움직여!"
 
 [card.c-recover-plus]
 name = 숨 고르기+
@@ -234,7 +234,7 @@ element = iron
 cost = 1
 trigger = manual
 effects = damage-per-hand:4:enemy
-flavor = 더욱 강하게 위협한다.
+flavor = 눈도 깜짝 않던 상대가 슬며시 뒷걸음친다.
 
 [card.c-focused-mind-plus]
 name = 집중+
@@ -254,7 +254,7 @@ element = fire
 cost = 1
 trigger = manual
 effects = damage:7:enemy, apply-status:7:enemy:burn
-flavor = 커다란 불덩이를 발사한다.
+flavor = "그러게, 조심하랬지."
 
 
 # ============================================================
@@ -1213,7 +1213,7 @@ element = fire
 cost = 2
 trigger = manual
 effects = damage:21:enemy, apply-status:20:enemy:burn
-flavor = 모스 대장간의 불이 태우지 못 하는 건 없다.
+flavor = 모스 대장간의 불이 태우지 못하는 건 없다.
 
 [card.c-tacomi-hologram-mirror-plus]
 name = 홀로매트릭스+
@@ -1275,7 +1275,7 @@ element = iron
 cost = 1
 trigger = manual
 effects = damage-min-color:1.5:enemy
-flavor = "모든 것에 능통한 나를 상상해 봐."
+flavor = "......나도, 이런 거 만들어 보고 싶다."
 
 [card.c-binding-ward-plus]
 name = 후회+
@@ -1305,7 +1305,7 @@ element = fire
 cost = 3
 trigger = manual
 effects = apply-status:2:enemy:paralyze, apply-status:1:enemy:spasm
-flavor = "어때, 좋은 사진 건졌어?"
+flavor = "한 장 더! 이번엔 웃는 얼굴로!"
 
 [card.c-rize-relay-plus]
 name = 연속 타격+
@@ -1356,7 +1356,7 @@ element = fire
 cost = 20
 trigger = manual
 effects = damage:116:enemy, apply-status:1:enemy:vulnerable, apply-status:1:enemy:weakness
-flavor = 받은 만큼을 더 무겁게 되갚는다.
+flavor = "더는, 못 본 체 할 수 없어."
 
 [card.c-trace-step-plus]
 name = 발자취+
@@ -1456,7 +1456,7 @@ element = iron
 cost = 2
 trigger = manual
 effects = block:26:self, damage:17:enemy
-flavor = 더 묵직한 손이 내려앉는다.
+flavor = "......물러설 거면, 처음부터 서지 마라."
 
 [card.c-tiger-rush-plus]
 name = 빠른 삼연+
@@ -1498,7 +1498,7 @@ element = iron
 cost = 2
 trigger = manual
 effects = damage-color-count:6:enemy
-flavor = 지닌 색마다 칼끝이 더 무겁게 갈라진다.
+flavor = 휘두른 검에는 무지개 잔상이 남았다.
 
 [card.c-blood-pact-plus]
 name = 피의 계약+
@@ -1642,7 +1642,7 @@ element = iron
 cost = 2
 trigger = manual
 effects = damage:65:enemy, exhaust-self:0:self
-flavor = 단 한 번의 칼이 더 무겁게 박힌다.
+flavor = "......잘 지내."
 
 [card.c-last-bulwark-plus]
 name = 마지막 보루+
@@ -1752,7 +1752,7 @@ element = fire
 cost = 1
 trigger = manual
 effects = growing-damage:7:enemy
-flavor = 처음부터 더 길고, 쓸수록 더 자란다.
+flavor = "한번 노리면 놓치지 않아."
 
 [card.c-mounting-storm-plus]
 name = 부풀어 오르는 폭풍+
@@ -1844,7 +1844,7 @@ element = iron
 cost = 1
 trigger = manual
 effects = damage:14:enemy
-flavor = 같은 칼이지만 조금 더 잘 든다.
+flavor = "손에 익으면 평생을 같이 갑니다."
 
 [card.c-shop-brace-plus]
 name = 무난한 막기+
@@ -1914,7 +1914,7 @@ element = wind
 cost = 1
 trigger = manual
 effects = draw:4:self
-flavor = 잠깐 더 자세히 들여다본다.
+flavor = "급할 거 없습니다, 안목은 시간이 만드는 법이니."
 
 [card.c-shop-salve-plus]
 name = 응급 처치+

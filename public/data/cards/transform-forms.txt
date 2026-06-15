@@ -32,7 +32,7 @@ element = earth
 cost = 1
 trigger = manual
 effects = damage:15:enemy
-flavor = 더 매섭게 물어뜯는다.
+flavor = 어느새 몸이 알고 있었다.
 
 [card.c-fox-foxfire]
 name = 여우불
@@ -106,7 +106,7 @@ cost = 2
 trigger = manual
 effects = growing-damage:10
 upgrade_to = c-fox-nine-tails-plus
-flavor = "어때, 아홉 개나 있으면 편리하지?"
+flavor = 어때, 아홉 개나 있으면 아름답지?
 
 [card.c-fox-nine-tails-plus]
 name = 아홉 꼬리+
@@ -116,7 +116,7 @@ element = wind
 cost = 2
 trigger = manual
 effects = growing-damage:14
-flavor = 꼬리가 더 길게 자라 휘두를 때마다 매섭다.
+flavor = 조금씩 쓰다 보면, 너도 곧 익숙해질 거야.
 
 [card.c-fox-dash]
 name = 여우걸음
@@ -309,7 +309,7 @@ element = fire
 cost = 2
 trigger = manual
 effects = consume-vulnerable:9:enemy, damage:8:enemy
-flavor = 삼킨 것이 더 큰 힘으로 돌아온다.
+flavor = "한 번 맛보면 멈출 수가 없는걸."
 
 [card.c-fox-frenzy]
 name = 광란
@@ -615,7 +615,7 @@ element = dark
 cost = 1
 trigger = manual
 effects = apply-status:3:enemy:vulnerable, apply-status:3:enemy:weakness, apply-status:3:enemy:frail
-flavor = 세 가지 거짓이 더 단단히 들러붙는다.
+flavor = "우는 얼굴은 더 보고 싶고."
 
 [card.c-fox-reckoning]
 name = 홀림 거두기
@@ -921,7 +921,7 @@ element = wind
 cost = 0
 trigger = manual
 effects = draw:2:self
-flavor = 소리 없는 걸음이 두 수를 미리 짚는다.
+flavor = 이제는 일부러 발끝으로 걷는 버릇까지 들었다.
 
 [card.c-fox-lick]
 name = 상처 핥기

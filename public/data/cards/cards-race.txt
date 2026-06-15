@@ -312,7 +312,7 @@ element = iron
 cost = 2
 trigger = manual
 effects = block:28:self
-flavor = 발 디딘 곳이 더 단단하게 굳는다.
+flavor = 한번 닫힌 성문은 누구의 손에도 열리지 않는다.
 
 [card.c-human-allout]
 name = 전심전력
@@ -807,7 +807,7 @@ element = light
 cost = 2
 trigger = manual
 effects = damage:24:enemy
-flavor = 망설임이 없을수록 더 무겁게 내리꽂힌다.
+flavor = "이걸로 마지막이다."
 
 [card.c-human-lastline]
 name = 최후의 방어선
@@ -992,7 +992,7 @@ element = wind
 cost = 1
 trigger = manual
 effects = damage:6:enemy, draw:1:self
-flavor = 더 빠르게 화살을 쏘아 보낸다.
+flavor = 소리가 닿기도 전에 화살이 먼저 와 있다.
 
 # 시작덱 전용 0코 잰화살 — electric 색(나방의 전기 보조 색).
 # c-moth-quickjab(wind, 시드풀)과 역할 분리: 이쪽은 *시작부터 손에 잡히는 잰 한 발*.
@@ -1124,7 +1124,7 @@ element = wind
 cost = 1
 trigger = manual
 effects = damage:3:enemy, damage:3:enemy, damage:3:enemy, damage:3:enemy
-flavor = 시위가 한 번 더 튕겨, 화살 넷이 잇따라 박힌다.
+flavor = "몇 발 빗나가도 돼. 일부러 그렇게 쏘는 거야!"
 
 [card.c-moth-combostrike]
 name = 연격
@@ -1634,7 +1634,7 @@ element = light
 cost = 2
 trigger = manual
 effects = damage-per-cards-played:8:enemy
-flavor = 치솟는 끝이 더 높다.
+flavor = 마지막 음이 끝나자, 시간마저 멈춘 것 같았다.
 
 [card.c-moth-overdrive]
 name = 과속
@@ -1829,7 +1829,7 @@ element = wind
 cost = 2
 trigger = manual
 effects = damage:6:enemy, damage:6:enemy, damage:6:enemy
-flavor = 더 넓게 몰아쳐 세 차례 모두 매섭다.
+flavor = 쏟아지는 화살이 도망갈 곳을 주지 않는다.
 
 [card.c-moth-cyclone]
 name = 회오리
@@ -1991,7 +1991,7 @@ element = electric
 cost = 1
 trigger = manual
 effects = damage-per-hand:4:enemy
-flavor = 손에 든 패마다 더 무겁게 실린다.
+flavor = 활짝 펼쳤다가 접는 순간, 바람이 갈라진다.
 
 [card.c-phantom-shuffle]
 name = 패 고르기
@@ -2448,7 +2448,7 @@ element = dark
 cost = 1
 trigger = manual
 effects = return-hand-to-deck:2:self, draw:4:self
-flavor = 돌려 두고 새로 받는 패가 더 많다.
+flavor = "한 번 더? 좋아, 이번 판이 진짜야."
 
 [card.c-phantom-tuck]
 name = 슬쩍 넣기
@@ -3265,7 +3265,7 @@ element = light
 cost = 0
 trigger = manual
 effects = grant-color:3:self:light
-flavor = 머금는 빛의 기운이 한층 깊이 밴다.
+flavor = 하나둘 모여든 반딧불이 손끝을 환히 밝힌다.
 
 [card.c-arcana-glean]
 name = 물들기
@@ -3479,7 +3479,7 @@ element = light
 cost = 2
 trigger = manual
 effects = damage:16:enemy, apply-status:3:enemy:vulnerable, apply-status:3:enemy:weakness
-flavor = 비추는 빛이 더 밝아 빈틈을 크게 벌리고 손도 더 무디게 한다.
+flavor = 엉킨 실을 끝부터 천천히 당기면, 매듭은 저절로 풀린다.
 
 # ---- 필러: 초반용 저코 공명 (0~1코, 색 쌓기 겸용) ----
 
