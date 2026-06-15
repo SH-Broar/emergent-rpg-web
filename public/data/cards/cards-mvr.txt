@@ -496,7 +496,7 @@ element = water
 cost = 1
 trigger = manual
 effects = damage:14:enemy, block:8:self
-flavor = "숨 크게 쉬고, 간다!"
+flavor = 물결이 갈라지면, 이미 늦었다.
 
 [card.c-trade-coil]
 name = 꼬리 감기
@@ -897,7 +897,7 @@ flavor = 폭풍은 처음에 산들바람인 척을 한다.
 # ---------- heal-per-hand 2장 (손패 수만큼 회복) ----------
 
 [card.c-shared-breath]
-name = 나눈 숨
+name = 안정
 rank = common
 source = npc
 element = water
@@ -1580,7 +1580,7 @@ element = electric
 cost = 1
 trigger = manual
 effects = consume-vulnerable:6:enemy
-flavor = 벌려 둔 빈틈이 더 크게 터진다.
+flavor = 갈라진 곳은, 건드리기만 해도 무너진다.
 
 [card.c-prism-overflow-plus]
 name = 바람 넘침+
@@ -1590,7 +1590,7 @@ element = wind
 cost = 1
 trigger = manual
 effects = draw:2:self, draw-if-color:3:self:wind:4
-flavor = 바람이 조금만 차올라도 길이 더 열린다.
+flavor = "바람 좋은 날엔, 연이 알아서 올라가."
 
 [card.c-last-stand-plus]
 name = 마지막 버팀+
@@ -1600,7 +1600,7 @@ element = fire
 cost = 1
 trigger = manual
 effects = damage-from-hp:11:enemy
-flavor = 제 몸을 더 깎아 더 크게 되갚는다.
+flavor = "물러설 데가 없으니, 남은 걸 다 건다."
 
 [card.c-tortoise-thorn-plus]
 name = 등껍질의 가시+
@@ -1610,7 +1610,7 @@ element = earth
 cost = 2
 trigger = manual
 effects = block:22:self, damage-per-hand:4:enemy
-flavor = 더 단단히 웅크릴수록, 가시가 더 돋는다.
+flavor = "......그래도 만지면, 더욱 아플 거예요."
 
 [card.c-venom-bloom-plus]
 name = 독꽃 피우기+
@@ -1620,7 +1620,7 @@ element = earth
 cost = 1
 trigger = manual
 effects = apply-status:6:enemy:poison, damage:4:enemy
-flavor = 독꽃이 안쪽에서 더 흐드러지게 핀다.
+flavor = 천천히, 그렇지만 빠짐없이.
 
 [card.c-double-hex-plus]
 name = 가시 돋친 말+
@@ -1630,7 +1630,7 @@ element = dark
 cost = 1
 trigger = manual
 effects = apply-status:3:enemy:weakness, apply-status:2:enemy:vulnerable
-flavor = 두 저주가 더 무겁게 적을 감싼다.
+flavor = 어쩌면 정말 내 잘못일지도 몰라.
 
 # ---------- 측정 어려운 3차 (소멸/전환/마나/연동/성장) ----------
 
@@ -1652,7 +1652,7 @@ element = earth
 cost = 2
 trigger = manual
 effects = block:62:self, exhaust-self:0:self
-flavor = 더 거대한 벽이 가로막아 선다.
+flavor = "......이 선만은, 누구도 못 넘어."
 
 [card.c-doom-mark-plus]
 name = 파멸의 낙인+
@@ -1662,7 +1662,7 @@ element = dark
 cost = 0
 trigger = manual
 effects = apply-status:5:enemy:vulnerable, apply-status:4:enemy:weakness, exhaust-self:0:self
-flavor = 낙인을 더 적은 힘으로 새긴다.
+flavor = 한번 찍힌 낙인은, 좀처럼 흐려지지 않는다.
 
 [card.c-shell-slam-plus]
 name = 등껍질 후려치기+
@@ -1672,7 +1672,7 @@ element = iron
 cost = 1
 trigger = manual
 effects = block-to-damage:2:enemy
-flavor = 두른 방어가 더 무겁게 되돌아간다.
+flavor = "......진짜 "방어"를 할 수밖에 없네요."
 
 [card.c-bastion-counter-plus]
 name = 성벽의 반격+
@@ -1682,7 +1682,7 @@ element = earth
 cost = 2
 trigger = manual
 effects = block:19:self, block-to-damage:1:enemy
-flavor = 더 단단히 두르고 그 무게로 되받아친다.
+flavor = "......공격은 이제 끝인가?"
 
 [card.c-all-in-plus]
 name = 전부 쏟기+
@@ -1692,7 +1692,7 @@ element = fire
 cost = 0
 trigger = manual
 effects = spend-all-energy:7:enemy
-flavor = 남은 힘을 남김없이 더 세게 쏟아붓는다.
+flavor = "어차피 쓸 거면, 바닥까지 긁어 써야지."
 
 [card.c-overdraw-burst-plus]
 name = 과부하 폭발+
@@ -1702,7 +1702,7 @@ element = electric
 cost = 0
 trigger = manual
 effects = spend-all-energy:10:enemy
-flavor = 회로 끝까지 밀어붙여 더 큰 섬광을 터뜨린다.
+flavor = 타는 냄새가 심해지다 보면, 결국 펑 소리가 난다.
 
 [card.c-comrades-charge-plus]
 name = 동행의 돌격+
@@ -1712,7 +1712,7 @@ element = wind
 cost = 1
 trigger = manual
 effects = damage-per-companion:7:enemy
-flavor = 함께 걸어온 무게가 더 멀리 닿는다.
+flavor = "모두가 있으니까."
 
 [card.c-bonded-strike-plus]
 name = 인연의 일격+
@@ -1722,7 +1722,7 @@ element = light
 cost = 2
 trigger = manual
 effects = damage-per-companion:11:enemy, block:9:self
-flavor = 떠올린 이름마다 손목에 무게가 더 실린다.
+flavor = 떠올린 이름이 하나하나, 주먹에 얹힌다.
 
 [card.c-collectors-strike-plus]
 name = 수집가의 일격+
@@ -1732,7 +1732,7 @@ element = iron
 cost = 1
 trigger = manual
 effects = damage-per-relic:7:enemy
-flavor = 모아 온 것이 손끝에서 더 무겁게 울린다.
+flavor = "거봐, 하나도 버릴 게 없다니까."
 
 [card.c-hoarders-wrath-plus]
 name = 보물의 분노+
@@ -1742,7 +1742,7 @@ element = electric
 cost = 2
 trigger = manual
 effects = damage-per-relic:11:enemy
-flavor = 지녀 온 유물의 빛이 더 멀리 번진다.
+flavor = "하나라도 건드리면, 가만 안 둬!"
 
 [card.c-rising-fang-plus]
 name = 자라나는 송곳니+
@@ -1762,17 +1762,17 @@ element = wind
 cost = 1
 trigger = manual
 effects = growing-damage:11:enemy
-flavor = 첫 바람부터 이미 거세다.
+flavor = 더 이상 숨길 필요가 없을 때, 모든 것을 날려 버린다.
 
 [card.c-shared-breath-plus]
-name = 나눈 숨+
+name = 안정+
 rank = common
 source = npc
 element = water
 cost = 1
 trigger = manual
 effects = heal-per-hand:3:self
-flavor = 손에 든 패가 많을수록 숨이 더 길게 가라앉는다.
+flavor = "가라앉히는 거예요. 후우-"
 
 [card.c-bloom-recovery-plus]
 name = 만개의 회복+
@@ -1782,7 +1782,7 @@ element = earth
 cost = 2
 trigger = manual
 effects = heal-per-hand:6:self, draw:2:self
-flavor = 패가 넉넉할수록 숨도 더 길게 돌아온다.
+flavor = 꽃이 지는 날은 정해져 있다.
 
 [card.c-mirror-echo-plus]
 name = 거울의 메아리+
@@ -1792,7 +1792,7 @@ element = light
 cost = 0
 trigger = manual
 effects = next-card-double:0:self
-flavor = 다음에 내는 수가 더 가볍게 두 번 울린다.
+flavor = "다시 한번, 똑같이. 보셨죠?"
 
 [card.c-toxic-spire-plus]
 name = 독의 첨탑+
@@ -1802,7 +1802,7 @@ element = earth
 cost = 1
 trigger = manual
 effects = apply-status:4:enemy:poison, damage-per-debuff:5:enemy
-flavor = 더 높은 첨탑이 쌓인 약함을 두드린다.
+flavor = 탑이 높아질수록, 그 아래 그늘도 깊어진다.
 
 [card.c-prism-overload-plus]
 name = 과욕+
@@ -1812,7 +1812,7 @@ element = light
 cost = 2
 trigger = manual
 effects = damage-color-count:4:enemy, damage-top-color:2:enemy
-flavor = 가짓수도 무게도 함께 더 거세게 쏟아진다.
+flavor = "이왕 부린 욕심, 끝까지 가 보는 거야."
 
 [card.c-frail-rupture-plus]
 name = 취약의 균열+
@@ -1822,7 +1822,7 @@ element = dark
 cost = 1
 trigger = manual
 effects = apply-status:3:enemy:vulnerable, consume-vulnerable:4:enemy
-flavor = 빈틈을 더 크게 벌려 더 크게 터뜨린다.
+flavor = 갈라진 틈은, 이내 더 벌어진다.
 
 [card.c-sacrifice-edge-plus]
 name = 희생의 칼날+
@@ -1832,7 +1832,7 @@ element = fire
 cost = 1
 trigger = manual
 effects = damage-from-hp:10:enemy, draw:1:self
-flavor = 제 몸을 더 깎아 갚고 새 길을 연다.
+flavor = "다 계획이 있단 말씀."
 
 # ---------- 상점 평범 ----------
 
@@ -1854,7 +1854,7 @@ element = earth
 cost = 1
 trigger = manual
 effects = block:14:self
-flavor = 같은 자세로 조금 더 단단히 막는다.
+flavor = "받쳐 보시면, 생각보다 든든합니다."
 
 [card.c-shop-flick-plus]
 name = 가벼운 손짓+
@@ -1864,7 +1864,7 @@ element = wind
 cost = 0
 trigger = manual
 effects = draw:2:self
-flavor = 손목을 가볍게 튕기면 여러 장이 따라온다.
+flavor = "익숙해지면, 손이 먼저 움직여요."
 
 [card.c-shop-sip-plus]
 name = 한 모금+
@@ -1874,7 +1874,7 @@ element = water
 cost = 1
 trigger = manual
 effects = heal:9:self, exhaust-self:0:self
-flavor = 조금 더 길게 들이켠다.
+flavor = "아껴 드세요. 그게 전부니까."
 
 [card.c-shop-poke-plus]
 name = 잽+
@@ -1884,7 +1884,7 @@ element = fire
 cost = 0
 trigger = manual
 effects = damage:6:enemy
-flavor = 가볍지만, 조금 더 따갑다.
+flavor = "빠르기 때문에 무시 못 합니다."
 
 [card.c-shop-heavy-plus]
 name = 묵직한 일격+
@@ -1904,7 +1904,7 @@ element = earth
 cost = 2
 trigger = manual
 effects = block:25:self
-flavor = 더 큰 방패.
+flavor = "이만하면, 웬만한 건 다 막습니다."
 
 [card.c-shop-study-plus]
 name = 잠깐 살핌+
@@ -1924,7 +1924,7 @@ element = water
 cost = 1
 trigger = manual
 effects = heal:6:self, block:7:self, exhaust-self:0:self
-flavor = 조금 더 잘 듣는 연고다.
+flavor = "이건 자국도 잘 안 남아요."
 
 # ---------- 미니 마을 전설 ----------
 
@@ -1936,7 +1936,7 @@ element = fire
 cost = 2
 trigger = manual
 effects = damage:35:enemy, apply-status:9:enemy:burn
-flavor = 식지 않은 불씨가 더 오래 쏟아진다.
+flavor = 재가 멎은 자리에도, 불씨는 한참을 탄다.
 
 [card.c-falcon-skydive-plus]
 name = 급강하+
@@ -1946,7 +1946,7 @@ element = wind
 cost = 2
 trigger = manual
 effects = damage-per-hand:5:enemy
-flavor = 더 높은 곳에서, 손에 든 패가 많을수록 더 매섭게 내리꽂는다.
+flavor = 높이 오른 만큼, 내리꽂는 힘도 실린다.
 
 [card.c-yusezria-corebreak-plus]
 name = 정수핵 깨기+
@@ -1966,7 +1966,7 @@ element = earth
 cost = 2
 trigger = manual
 effects = damage-color-count:8:enemy, draw:1:self
-flavor = 무늬가 더 많은 색으로 빛난다.
+flavor = 색을 더할수록, 그린 무늬가 환히 살아난다.
 
 # ---------- 마무리 조합 ----------
 
@@ -1978,7 +1978,7 @@ element = dark
 cost = 2
 trigger = manual
 effects = damage-per-debuff:7:enemy, apply-status:3:enemy:poison
-flavor = 약함을 거둬 그 자리에 더 독한 씨앗을 심는다.
+flavor = 순환이란 자연의 섭리일지니.
 
 [card.c-wild-rush-plus]
 name = 야성의 돌진+
@@ -1988,7 +1988,7 @@ element = fire
 cost = 1
 trigger = manual
 effects = apply-status:1:self:feral, damage-per-hand:4:enemy
-flavor = 짐승이 된 채로, 손에 든 패가 많을수록 더 들이친다.
+flavor = "돌아볼 것도 없어, 그냥 달려!"
 
 [card.c-color-surge-plus]
 name = 범람+
@@ -1998,7 +1998,7 @@ element = light
 cost = 1
 trigger = manual
 effects = damage-top-color:2:enemy, draw-if-color:1:self:light:4
-flavor = 가장 높이 쌓인 색이 더 거세게 솟구친다.
+flavor = 한번 넘친 물은, 멈출 줄을 모른다.
 
 # === 유령화(비실체) 카오스와 별개 양날 상태. 자기 ghost N턴. ===
 [card.c-phase-out]
@@ -2020,7 +2020,7 @@ element = dark
 cost = 1
 trigger = manual
 effects = ghost-self:3:self
-flavor = 더 오래 비실체로 머문다.
+flavor = 원래부터 거기 없던 것처럼.
 
 # === 이로운(버프) 상태 부여 카드 (Colorz 18-c). 자신에게 apply-status. ===
 # 재생/가속/보호막/반격/집중/정신력 — 각 카드 1종씩. 매 턴 1 감소.
@@ -2044,7 +2044,7 @@ element = light
 cost = 1
 trigger = manual
 effects = apply-status:4:self:regen
-flavor = 체력이 더 오래 더 많이 돌아온다.
+flavor = "딱지 긁으면 안 돼!"
 
 [card.c-quickstep]
 name = 종종걸음
@@ -2065,7 +2065,7 @@ element = wind
 cost = 1
 trigger = manual
 effects = apply-status:4:self:haste
-flavor = 더 오래 가뿐하게 돌아다닌다.
+flavor = 이미 떠나고 없다.
 
 [card.c-soft-ward]
 name = 포근한 보호막
@@ -2086,7 +2086,7 @@ element = iron
 cost = 1
 trigger = manual
 effects = block:11:self, apply-status:3:self:ward
-flavor = 막이 더 단단하게 더 오래 머문다.
+flavor = 잠깐의 여유를 즐길 수 있을 것 같다.
 
 [card.c-prickle-coat]
 name = 까슬한 가시옷
@@ -2107,7 +2107,7 @@ element = earth
 cost = 1
 trigger = manual
 effects = apply-status:5:self:thorns
-flavor = 가시가 더 빽빽하게 돋는다.
+flavor = 스치기만 해도 따끔해서, 다들 멀찍이 선다.
 
 [card.c-clear-focus]
 name = 또렷한 집중
@@ -2128,7 +2128,7 @@ element = electric
 cost = 1
 trigger = manual
 effects = apply-status:4:self:focus
-flavor = 더 단단히 한곳에 오래 머문다.
+flavor = 이제 과녁 말고는, 아무것도 들어오지 않는다.
 
 [card.c-steady-heart]
 name = 단단한 마음
@@ -2149,4 +2149,4 @@ element = water
 cost = 1
 trigger = manual
 effects = apply-status:5:self:resolve
-flavor = 마음이 더 오래 곧게 선다.
+flavor = "흔들려도, 다시 곧게 서면 그만이야."
