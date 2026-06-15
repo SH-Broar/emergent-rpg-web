@@ -469,14 +469,14 @@ effects = damage:14:enemy, apply-status:2:enemy:vulnerable
 flavor = "접지 잘하고 만져."
 
 [card.c-alti-resonance]
-name = 알티-알타의 공명
+name = 알티-알타의 신호
 rank = rare
 source = npc
 element = electric
 cost = 1
 trigger = manual
 effects = draw:2:self, heal:2:self, damage:12:enemy, exhaust-self:0:self
-flavor = "같이 부르면, 더 멀리 들려요."
+flavor = "둘이 같은 신호를 보내면, 못 갈 데가 없어요."
 
 [card.c-flame-web]
 name = 화염 거미줄
@@ -1389,14 +1389,14 @@ effects = damage:19:enemy, apply-status:3:enemy:vulnerable
 flavor = 스파크가 약한 곳을 정확히 짚는다.
 
 [card.c-alti-resonance-plus]
-name = 알티-알타의 공명+
+name = 알티-알타의 신호+
 rank = rare
 source = npc
 element = electric
 cost = 1
 trigger = manual
 effects = draw:2:self, heal:3:self, damage:17:enemy, exhaust-self:0:self
-flavor = 알티-알타의 목소리가 한층 또렷하게 울린다.
+flavor = "신호 하나만 더 겹치면, 끝까지 닿아요."
 
 [card.c-flame-web-plus]
 name = 화염 거미줄+
@@ -1478,7 +1478,7 @@ element = light
 cost = 1
 trigger = manual
 effects = damage-top-color:2:enemy
-flavor = 가장 높이 쌓인 색이 더 거세게 쏟아진다.
+flavor = 고개를 들면, 색이 하늘 끝까지 번져 있다.
 
 [card.c-prism-guard-plus]
 name = 가장 짙은 방어+
@@ -1560,7 +1560,7 @@ element = dark
 cost = 1
 trigger = manual
 effects = damage-per-debuff:8:enemy
-flavor = 쌓아 둔 약함이 더 매섭게 되돌아온다.
+flavor = 임계점을 넘어 버렸다면ㅡ
 
 [card.c-cursed-blade-plus]
 name = 저주받은 검+

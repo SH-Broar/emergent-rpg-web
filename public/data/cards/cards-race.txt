@@ -945,7 +945,7 @@ element = light
 cost = 1
 trigger = manual
 effects = apply-status:2:self:strength, damage:8:enemy
-flavor = 더 크게 소리를 지르고 한층 거센 기세로 몰아친다.
+flavor = 뒤가 든든하기에, 망설일 이유가 없다.
 
 # 최후 일격 - 큰 데미지 + 사용 후 소멸(exhaust). 다시 못 던지는 결정타.
 [card.c-human-finalblow]
@@ -2266,7 +2266,7 @@ cost = 2
 trigger = manual
 effects = damage-low-hand:24:enemy
 upgrade_to = c-phantom-empty-plus
-flavor = 마술사의 손은 패를 전부 내려놓은 뒤가 진짜다.
+flavor = 되돌릴 수 없는 선택을 해야만 할 때가 있다.
 
 [card.c-phantom-empty-plus]
 name = 낙장불입+
@@ -2276,7 +2276,7 @@ element = electric
 cost = 2
 trigger = manual
 effects = damage-low-hand:32:enemy:3
-flavor = 패가 조금 남아 있어도 빈손으로 쳐 준다.
+flavor = 되돌릴 수 없는 선택이 최선일 때가 있다.
 
 [card.c-phantom-overdraw]
 name = 폭식
@@ -2983,7 +2983,7 @@ element = light
 cost = 1
 trigger = manual
 effects = grant-color:4:self:random
-flavor = 들이는 기운이 속까지 스며 안이 한층 그득하다.
+flavor = 부를 때마다, 낯선 빛이 하나씩 늘어 간다.
 
 [card.c-arcana-rainbow]
 name = 무지개
