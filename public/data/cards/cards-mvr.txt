@@ -244,7 +244,7 @@ element = wind
 cost = 1
 trigger = manual
 effects = draw:4:self
-flavor = 어쩌면 미래에 할 수 있는 일도 떠올릴 수 있을지 모른다.
+flavor = 쉿. 이제 막 좋은 수가 떠올랐어.
 
 [card.c-burn-mark-plus]
 name = 화염구+
@@ -426,7 +426,7 @@ element = water
 cost = 1
 trigger = manual
 effects = heal:3:self, draw:1:self, damage:8:enemy, exhaust-self:0:self
-flavor = "한 잔 따뜻하게, 가시지요." 신시안이 따뜻한 잔을 손바닥에 가지런히 올려 준다.
+flavor = 신시안이 준비해준 찻잎으로 끓인 차. 기분 좋은 향기가 난다.
 
 [card.c-tripps-rage]
 name = 트립스
@@ -564,7 +564,7 @@ effects = damage-top-color:1:enemy
 flavor = 어두운 하늘에 깔리는, 아름다운 색의 장막.
 
 [card.c-prism-guard]
-name = 가장 짙은 방어
+name = 간파
 rank = rare
 source = hyperion
 element = water
@@ -611,7 +611,7 @@ element = fire
 cost = 1
 trigger = manual
 effects = apply-status:1:self:feral, damage:7:enemy
-flavor = "......오늘은 사람으로 못 있겠어."
+flavor = "......오늘은 제정신이 아닐지도 몰라."
 
 [card.c-fang-frenzy]
 name = 사냥 본능
@@ -1163,7 +1163,7 @@ element = water
 cost = 1
 trigger = manual
 effects = heal:9:self, draw:1:self, exhaust-self:0:self
-flavor = 마음이 상쾌해지는 바람이 분다.
+flavor = 이마를 스친 바람이 등 뒤까지 밀어 준다.
 
 [card.c-deep-breath-plus]
 name = 응급 치료+
@@ -1223,7 +1223,7 @@ element = electric
 cost = 2
 trigger = manual
 effects = block:21:self, apply-status:1:self:ghost
-flavor = 나와 가까운 개념으로 나를 대체한다.
+flavor = 어느 쪽을 베어도, 진짜는 따로 있어.
 
 [card.c-alimes-mist-vow-plus]
 name = 안개의 약속+
@@ -1285,7 +1285,7 @@ element = dark
 cost = 1
 trigger = manual
 effects = apply-status:4:enemy:weakness
-flavor = "그 때, 내가 도망치지 않았다면."
+flavor = "그때, 내가 도망치지 않았다면."
 
 [card.c-quiet-arc-plus]
 name = 가라앉음+
@@ -1326,7 +1326,7 @@ element = fire
 cost = 0
 trigger = manual
 effects = damage:7:enemy
-flavor =
+flavor = "다시 간다!"
 
 [card.c-spirit-call-plus]
 name = 모인 영혼들+
@@ -1336,7 +1336,7 @@ element = dark
 cost = 1
 trigger = manual
 effects = damage-color-count:4:enemy, draw:1:self
-flavor = 더 많은 색의 영혼이 한데 모여든다.
+flavor = "어, 더 늘었네? 좋아, 다 같이 간다!"
 
 [card.c-warm-cup-plus]
 name = 따뜻한 한 잔+
@@ -1346,7 +1346,7 @@ element = water
 cost = 1
 trigger = manual
 effects = heal:4:self, draw:1:self, damage:13:enemy, exhaust-self:0:self
-flavor = 더 따뜻하게 오래 데워 준다.
+flavor = 우유를 타서 밀크티로 만들어 봤더니 좋더라고.
 
 [card.c-tripps-rage-plus]
 name = 트립스+
@@ -1366,7 +1366,7 @@ element = fire
 cost = 0
 trigger = manual
 effects = draw:2:self, return-hand-to-deck:1:self, next-turn-energy:1:self
-flavor = 발자취를 더 가볍게 따라간다.
+flavor = "......정말, 이 길이야. 확실해."
 
 [card.c-growing-leaf-plus]
 name = 자라나는 잎새+
@@ -1376,7 +1376,7 @@ element = earth
 cost = 2
 trigger = manual
 effects = growing-block:4:self
-flavor = 처음부터 더 단단하게, 쓸수록 더 자란다.
+flavor = "어느새 이만큼 컸어. 거봐, 진짜라니까."
 
 [card.c-zero-spark-plus]
 name = 전류 자국+
@@ -1386,7 +1386,7 @@ element = electric
 cost = 1
 trigger = manual
 effects = damage:19:enemy, apply-status:3:enemy:vulnerable
-flavor = 스파크가 약한 곳을 정확히 짚는다.
+flavor = "하하, 따끔했어?"
 
 [card.c-alti-resonance-plus]
 name = 알티-알타의 신호+
@@ -1406,7 +1406,7 @@ element = fire
 cost = 1
 trigger = manual
 effects = damage:17:enemy, apply-status:4:enemy:vulnerable
-flavor = 더 많은 실이 적을 촘촘히 묶는다.
+flavor = "이제 빠져나갈 틈은 없어!"
 
 [card.c-orca-tide-plus]
 name = 범고래의 물결+
@@ -1436,7 +1436,7 @@ element = earth
 cost = 1
 trigger = manual
 effects = draw:1:self, block:12:self
-flavor = 더 먼 소리까지 미리 듣는다.
+flavor = "......아직 보이지도 않지만."
 
 [card.c-tide-veil-plus]
 name = 물의 방패+
@@ -1466,7 +1466,7 @@ element = electric
 cost = 2
 trigger = manual
 effects = damage:11:enemy, damage:11:enemy, damage:11:enemy
-flavor = 번개를 타고 세 번 더 빠르게 가른다.
+flavor = "거봐, 셋도 충분하지?"
 
 # ---------- 측정 어려운 1차 ----------
 
@@ -1481,14 +1481,14 @@ effects = damage-top-color:2:enemy
 flavor = 고개를 들면, 색이 하늘 끝까지 번져 있다.
 
 [card.c-prism-guard-plus]
-name = 가장 짙은 방어+
+name = 간파+
 rank = rare
 source = hyperion
 element = water
 cost = 1
 trigger = manual
 effects = block-top-color:2:self
-flavor = 가장 높이 쌓인 색이 더 단단히 막는다.
+flavor = "버릇을 파악하면 다른 모든 동작도 한 눈에 보이지."
 
 [card.c-spectrum-edge-plus]
 name = 무지갯빛 칼날+
@@ -1508,7 +1508,7 @@ element = fire
 cost = 1
 trigger = manual
 effects = damage-from-hp:9:enemy
-flavor = 제 피를 더 많이 내어 더 크게 되갚는다.
+flavor = 조금 더 내주면, 그만큼 더 돌려받는다.
 
 # ---------- 측정 어려운 2차 (수화/퇴행/디버프) ----------
 
@@ -1520,7 +1520,7 @@ element = fire
 cost = 1
 trigger = manual
 effects = apply-status:1:self:feral, damage:11:enemy
-flavor = 한층 사납게 들이친다.
+flavor = "......이미 발톱이 나와 버렸어."
 
 [card.c-fang-frenzy-plus]
 name = 사냥 본능+
@@ -1530,7 +1530,7 @@ element = iron
 cost = 1
 trigger = manual
 effects = damage:13:enemy
-flavor = 물어뜯는 힘이 한층 매섭다.
+flavor = "......이미 냄새를 맡았어."
 
 [card.c-primal-collapse-plus]
 name = 마지막 힘+
@@ -1540,7 +1540,7 @@ element = fire
 cost = 1
 trigger = manual
 effects = damage:43:enemy, exhaust-self
-flavor = 더 많은 것을 한꺼번에 게워 낸다. 그리고 사라진다.
+flavor = 남김없이 쏟아붓고, 조용히 스러진다.
 
 [card.c-elder-curse-plus]
 name = 태고의 저주+
