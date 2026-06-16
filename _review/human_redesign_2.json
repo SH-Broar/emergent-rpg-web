@@ -9,98 +9,98 @@
    "kind": "★ 설계 개요 (먼저 읽어 주세요)",
    "loc": "human = 한 종족, 세 빌드(힘 / 방벽 / 피흘림·소멸). 아이언클래드처럼 파워가 기둥.",
    "text": "13 슬롯을 이름·효과·flavor 전면 교체(id 유지=세이브 안전). 직전 redesign_1은 폐기.",
-   "proposal": "신규 핸들러 7종 구현 후 적용(각 소형, bloom-strength 패턴):\n1 metallicize 매 턴 종료 방어+N / 2 barricade 방어 유지 / 3 feel-no-pain 소멸 시 방어+N /\n4 rupture HP 잃을 때 힘+N / 5 juggernaut 방어 얻을 때마다 N 피해 / 6 double-block 방어×2 /\n7 heavy-blade 피해+힘×N.\n각 카드 OX(또는 수정). 통과분만 구현+적용. plus는 적용 시 base+1단계.\n타입 라벨(파워/스킬/공격)·아키타입 분류도 함께 봐 주세요."
+   "proposal": "신규 핸들러 7종 구현 후 적용(각 소형, bloom-strength 패턴):\n1 metallicize 매 턴 종료 방어+N / 2 barricade 방어 유지 / 3 feel-no-pain 소멸 시 방어+N /\n4 rupture HP 잃을 때 힘+N / 5 juggernaut 방어 얻을 때마다 N 피해 / 6 double-block 방어×2 /\n7 heavy-blade 피해+힘×N.\n각 카드 OX(또는 수정). 통과분만 구현+적용. plus는 적용 시 base+1단계.\n※ flavor는 새 카드 전부 '비움'(사용자 지시): 손패선 안 보이고 상점/제작/프리뷰만 제한 노출.\n타입 라벨(파워/스킬/공격)·아키타입 분류·이름·효과만 봐 주세요."
   },
   {
    "n": 110,
    "kind": "신설 · 힘 · 파워",
-   "loc": "슬롯 「연계기」 (c-human-combo) — 전면 교체",
+   "loc": "슬롯 「연계기」 (c-human-combo) — 전면 교체 (flavor 비움)",
    "text": "현재: 연계기 / apply-status:1:enemy:vulnerable, apply-status:1:enemy:weakness, damage:10:enemy",
-   "proposal": "→ 「단련」  파워  c1 common light\n효과: apply-status:2:self:strength   [기존]\nflavor: 매일 같은 동작을, 매일 한 번 더."
+   "proposal": "→ 「단련」  파워  c1 common light\n효과: apply-status:2:self:strength   [기존]"
   },
   {
    "n": 134,
    "kind": "신설 · 힘 · 파워",
-   "loc": "슬롯 「변수 대응」 (c-human-shiftguard) — 전면 교체",
+   "loc": "슬롯 「변수 대응」 (c-human-shiftguard) — 전면 교체 (flavor 비움)",
    "text": "현재: 변수 대응 / adaptive-strike:9:enemy",
-   "proposal": "→ 「투신」  파워  c2 rare light\n효과: bloom-strength:2:self   [기존]\nflavor: 싸울수록, 멈추는 법을 잊는다."
+   "proposal": "→ 「투신」  파워  c2 rare light\n효과: bloom-strength:2:self   [기존]"
   },
   {
    "n": 125,
    "kind": "신설 · 힘 · 스킬",
-   "loc": "슬롯 「무장 해제」 (c-human-disarm) — 전면 교체",
+   "loc": "슬롯 「무장 해제」 (c-human-disarm) — 전면 교체 (flavor 비움)",
    "text": "현재: 무장 해제 / damage:9:enemy, apply-status:1:enemy:weakness",
-   "proposal": "→ 「유연」  스킬  c0 common wind\n효과: apply-status:3:self:focus   [기존]\nflavor: 한 번 크게 가려고, 손목을 푼다."
+   "proposal": "→ 「유연」  스킬  c0 common wind\n효과: apply-status:3:self:focus   [기존]"
   },
   {
    "n": 143,
    "kind": "신설 · 힘 · 공격",
-   "loc": "슬롯 「최후 일격」 (c-human-finalblow) — 전면 교체",
+   "loc": "슬롯 「최후 일격」 (c-human-finalblow) — 전면 교체 (flavor 비움)",
    "text": "현재: 최후 일격 / damage:16:enemy, exhaust-self",
-   "proposal": "→ 「대검 일섬」  공격  c2 rare iron\n효과: damage:8:enemy, heavy-blade:2:enemy   [신규 heavy-blade]\nflavor: 실린 힘만큼, 칼이 무거워진다."
+   "proposal": "→ 「대검 일섬」  공격  c2 rare iron\n효과: damage:8:enemy, heavy-blade:2:enemy   [신규 heavy-blade]"
   },
   {
    "n": 117,
    "kind": "신설 · 방벽 · 파워",
-   "loc": "슬롯 「반격 자세」 (c-human-counterstance) — 전면 교체",
+   "loc": "슬롯 「반격 자세」 (c-human-counterstance) — 전면 교체 (flavor 비움)",
    "text": "현재: 반격 자세 / block:7:self, damage:7:enemy",
-   "proposal": "→ 「강철 의지」  파워  c2 common iron\n효과: metallicize:4:self   [신규 metallicize]\nflavor: 버틴 자리마다 굳은살이 박인다."
+   "proposal": "→ 「강철 의지」  파워  c2 common iron\n효과: metallicize:4:self   [신규 metallicize]"
   },
   {
    "n": 140,
    "kind": "신설 · 방벽 · 스킬",
-   "loc": "슬롯 「발 디디기」 (c-human-brace) — 전면 교체",
+   "loc": "슬롯 「발 디디기」 (c-human-brace) — 전면 교체 (flavor 비움)",
    "text": "현재: 발 디디기 / block:5:self",
-   "proposal": "→ 「참호」  스킬  c1 common earth\n효과: double-block:0:self   [신규 double-block]\nflavor: 판 만큼, 더 깊이 들어앉는다."
+   "proposal": "→ 「참호」  스킬  c1 common earth\n효과: double-block:0:self   [신규 double-block]"
   },
   {
    "n": 118,
    "kind": "신설 · 방벽 · 파워",
-   "loc": "슬롯 「받아흘리기」 (c-human-pivot) — 전면 교체",
+   "loc": "슬롯 「받아흘리기」 (c-human-pivot) — 전면 교체 (flavor 비움)",
    "text": "현재: 받아흘리기 / block:6:self, damage:6:enemy, draw:1:self",
-   "proposal": "→ 「불굴의 진」  파워  c3 rare iron\n효과: barricade:0:self   [신규 barricade]\nflavor: 한번 세운 벽은, 무너질 줄을 모른다."
+   "proposal": "→ 「불굴의 진」  파워  c3 rare iron\n효과: barricade:0:self   [신규 barricade]"
   },
   {
    "n": 119,
    "kind": "신설 · 방벽 · 공격",
-   "loc": "슬롯 「공방일체」 (c-human-twohands) — 전면 교체",
+   "loc": "슬롯 「공방일체」 (c-human-twohands) — 전면 교체 (flavor 비움)",
    "text": "현재: 공방일체 / damage:14:enemy, block:10:self",
-   "proposal": "→ 「육탄」  공격  c1 common iron\n효과: block:5:self, block-to-damage:1:enemy   [기존]\nflavor: 두른 것을, 그대로 들이받는다."
+   "proposal": "→ 「육탄」  공격  c1 common iron\n효과: block:5:self, block-to-damage:1:enemy   [기존]"
   },
   {
    "n": 126,
    "kind": "신설 · 방벽 · 파워",
-   "loc": "슬롯 「허점 노출」 (c-human-expose) — 전면 교체",
+   "loc": "슬롯 「허점 노출」 (c-human-expose) — 전면 교체 (flavor 비움)",
    "text": "현재: 허점 노출 / block:5:self, apply-status:2:enemy:vulnerable",
-   "proposal": "→ 「거중 반격」  파워  c2 rare iron\n효과: juggernaut:3:enemy   [신규 juggernaut]\nflavor: 쌓는 것 자체가, 이미 공격이다."
+   "proposal": "→ 「거중 반격」  파워  c2 rare iron\n효과: juggernaut:3:enemy   [신규 juggernaut]"
   },
   {
    "n": 112,
    "kind": "신설 · 피흘림·소멸 · 파워",
-   "loc": "슬롯 「호흡 고르기」 (c-human-secondwind) — 전면 교체",
+   "loc": "슬롯 「호흡 고르기」 (c-human-secondwind) — 전면 교체 (flavor 비움)",
    "text": "현재: 호흡 고르기 / draw:3:self, exhaust-self",
-   "proposal": "→ 「무통」  파워  c1 common wind\n효과: feel-no-pain:3:self   [신규 feel-no-pain]\nflavor: 아픈 줄 모르면, 멈출 일도 없다."
+   "proposal": "→ 「무통」  파워  c1 common wind\n효과: feel-no-pain:3:self   [신규 feel-no-pain]"
   },
   {
    "n": 129,
    "kind": "신설 · 피흘림·소멸 · 파워",
-   "loc": "슬롯 「전열 붕괴」 (c-human-fullbreak) — 전면 교체",
+   "loc": "슬롯 「전열 붕괴」 (c-human-fullbreak) — 전면 교체 (flavor 비움)",
    "text": "현재: 전열 붕괴 / damage:14:enemy, apply-status:2:enemy:vulnerable, apply-status:2:enemy:frail",
-   "proposal": "→ 「각혈」  파워  c1 rare fire\n효과: rupture:1:self   [신규 rupture]\nflavor: 제 피를 보고 나서야, 제대로 선다."
+   "proposal": "→ 「각혈」  파워  c1 rare fire\n효과: rupture:1:self   [신규 rupture]"
   },
   {
    "n": 124,
    "kind": "신설 · 피흘림·소멸 · 스킬",
-   "loc": "슬롯 「비축」 (c-human-stockpile) — 전면 교체",
+   "loc": "슬롯 「비축」 (c-human-stockpile) — 전면 교체 (flavor 비움)",
    "text": "현재: 비축 / next-turn-energy:2:self, block:6:self",
-   "proposal": "→ 「헌신」  스킬  c0 rare earth\n효과: heal:-6:self, draw:2:self, exhaust-self   [기존]\nflavor: 지금 다 내주고, 다음을 도모한다."
+   "proposal": "→ 「헌신」  스킬  c0 rare earth\n효과: heal:-6:self, draw:2:self, exhaust-self   [기존]"
   },
   {
    "n": 130,
    "kind": "신설 · 피흘림·소멸 · 공격",
-   "loc": "슬롯 「마무리 추격」 (c-human-followthrough) — 전면 교체",
+   "loc": "슬롯 「마무리 추격」 (c-human-followthrough) — 전면 교체 (flavor 비움)",
    "text": "현재: 마무리 추격 / consume-vulnerable:4:enemy",
-   "proposal": "→ 「혈투」  공격  c1 rare iron\n효과: damage-from-hp:5:enemy:3   [기존]\nflavor: 제 피를 실어, 한층 깊이 박는다."
+   "proposal": "→ 「혈투」  공격  c1 rare iron\n효과: damage-from-hp:5:enemy:3   [기존]"
   }
  ]
 }
