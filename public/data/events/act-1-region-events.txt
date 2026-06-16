@@ -4328,7 +4328,7 @@ node_kinds = event, rest
 weight = 1
 once_per_run = true
 featured_npcs = npc-maro
-body = 숲속 작은 오두막 마당에서 한 학생이 눈을 감고 무언가를 천천히 외고 있다. 마력이 한 자락씩 모인다. "조용히, 천천히 그러나 끝까지." 영창이 끝나자 멀리 마른 나무 한 그루가 소리 없이 쪼개진다. 그가 눈을 뜨고 그대를 본다. 동생을 데리고 사는 조용한 마법사다.
+body = 숲속 작은 오두막 마당에서 한 학생이 눈을 감고 무언가를 천천히 외고 있다. 마력이 조금씩 차오른다. "조용히, 천천히 그러나 끝까지." 영창이 끝나자 멀리 마른 나무 한 그루가 소리 없이 쪼개진다. 그가 눈을 뜨고 그대를 본다. 동생을 데리고 사는 조용한 마법사다.
 
 [event.ev-rec-lar-maro.choice.1]
 label = 함께 길을 가자고 청한다
@@ -4413,7 +4413,7 @@ result_text = 떠밀려 나가던 작은 생명들을 같이 제자리로 돌렸
 [event.ev-rec-lar-mirte.choice.3]
 label = 발소리를 죽이고 떠난다
 color = earth:4
-result_text = 잎사귀 한 장 흔들지 않고 빠져나왔다. 숲이 한 호흡 고요했다.
+result_text = 잎사귀 한 장 흔들지 않고 빠져나왔다. 숲이 잠깐 숨을 죽였다.
 
 [event.ev-rec-lar-kurkuma]
 name = 떨어진 새싹
@@ -4857,9 +4857,9 @@ color = dark:4
 result_text = "무엇이든 될 수 있다는 건, 아무것도 될 수 없다는 뜻." 그 말이 오래 남았다.
 
 [event.ev-rec-castle-mono.choice.3]
-label = 시간 한 자락을 빌려 받는다
+label = 시간을 조금 빌린다
 heal_pct = 50
-result_text = 일렁이던 시간이 한 호흡 멎었다. 지친 몸이 그 틈에 회복됐다.
+result_text = 일렁이던 시간이 문득 멎었다. 지친 몸이 그 틈에 회복됐다.
 
 # ---------- 풍혈지대 (tier 3) ----------
 
