@@ -231,25 +231,25 @@ effects = damage:9:enemy, apply-status:4:enemy:frail
 flavor = 달인은 관절이 없는 상대에게도 걸 수 있다.
 
 [card.c-human-combo]
-name = 연계기
-rank = rare
+name = 단련
+rank = common
 source = race
 element = light
-cost = 2
+cost = 1
 trigger = manual
-effects = apply-status:1:enemy:vulnerable, apply-status:1:enemy:weakness, damage:10:enemy
+effects = apply-status:2:self:strength
 upgrade_to = c-human-combo-plus
-flavor = "순서만 지키면 돼."
+flavor =
 
 [card.c-human-combo-plus]
-name = 연계기+
-rank = rare
+name = 단련+
+rank = common
 source = race
 element = light
-cost = 2
+cost = 1
 trigger = manual
-effects = apply-status:2:enemy:vulnerable, apply-status:2:enemy:weakness, damage:14:enemy
-flavor = 동작이 끊기지 않고 자연스럽게 이어진다.
+effects = apply-status:3:self:strength
+flavor =
 
 [card.c-human-regroup]
 name = 재정비
@@ -273,25 +273,25 @@ effects = block:11:self, draw:2:self
 flavor = "준비 완료다."
 
 [card.c-human-secondwind]
-name = 호흡 고르기
+name = 무통
 rank = common
 source = race
 element = wind
 cost = 1
 trigger = manual
-effects = draw:3:self, exhaust-self
+effects = feel-no-pain:3:self
 upgrade_to = c-human-secondwind-plus
-flavor = "지친 거 아니야."
+flavor =
 
 [card.c-human-secondwind-plus]
-name = 호흡 고르기+
+name = 무통+
 rank = common
 source = race
 element = wind
-cost = 0
+cost = 1
 trigger = manual
-effects = draw:3:self, exhaust-self
-flavor = 숨을 더 빨리 고르고 다시 일어선다.
+effects = feel-no-pain:4:self
+flavor =
 
 [card.c-human-bulwark]
 name = 철벽
@@ -380,67 +380,67 @@ effects = damage:7:enemy, block:7:self
 flavor = 되로 받으면 말로 갚는다.
 
 [card.c-human-counterstance]
-name = 반격 자세
+name = 강철 의지
 rank = common
 source = race
 element = iron
-cost = 1
+cost = 2
 trigger = manual
-effects = block:7:self, damage:7:enemy
+effects = metallicize:4:self
 upgrade_to = c-human-counterstance-plus
-flavor = "막는 자세랑 치는 자세는 원래 같은 거야."
+flavor =
 
 [card.c-human-counterstance-plus]
-name = 반격 자세+
+name = 강철 의지+
+rank = common
+source = race
+element = iron
+cost = 2
+trigger = manual
+effects = metallicize:6:self
+flavor =
+
+[card.c-human-pivot]
+name = 불굴의 진
+rank = rare
+source = race
+element = iron
+cost = 3
+trigger = manual
+effects = barricade:0:self
+upgrade_to = c-human-pivot-plus
+flavor =
+
+[card.c-human-pivot-plus]
+name = 불굴의 진+
+rank = rare
+source = race
+element = iron
+cost = 2
+trigger = manual
+effects = barricade:0:self
+flavor =
+
+[card.c-human-twohands]
+name = 육탄
 rank = common
 source = race
 element = iron
 cost = 1
 trigger = manual
-effects = block:9:self, damage:9:enemy
-flavor = 자세를 더 낮추니 막기도 치기도 한결 수월하다.
-
-[card.c-human-pivot]
-name = 받아흘리기
-rank = common
-source = race
-element = wind
-cost = 1
-trigger = manual
-effects = block:6:self, damage:6:enemy, draw:1:self
-upgrade_to = c-human-pivot-plus
-flavor = "힘은 부딪치는 게 아니라 빌리는 거야."
-
-[card.c-human-pivot-plus]
-name = 받아흘리기+
-rank = common
-source = race
-element = wind
-cost = 1
-trigger = manual
-effects = block:8:self, damage:8:enemy, draw:1:self
-flavor = 흘려보내는 동작이 더 부드러워지고, 몸도 한결 가볍다.
-
-[card.c-human-twohands]
-name = 공방일체
-rank = rare
-source = race
-element = light
-cost = 2
-trigger = manual
-effects = damage:14:enemy, block:10:self
+effects = block:5:self, block-to-damage:1:enemy
 upgrade_to = c-human-twohands-plus
-flavor = "몸이 두 개면 좋겠다 싶을 때 있지?"
+flavor =
 
 [card.c-human-twohands-plus]
-name = 공방일체+
-rank = rare
+name = 육탄+
+rank = common
 source = race
-element = light
-cost = 2
+element = iron
+cost = 1
 trigger = manual
-effects = damage:16:enemy, block:14:self
-flavor = 양손이 더 길게 뻗어, 치는 쪽도 막는 쪽도 모자라지 않는다.
+effects = block:7:self, block-to-damage:1:enemy
+flavor =
 
 [card.c-human-fairtrade]
 name = 등가교환
@@ -529,69 +529,69 @@ effects = draw-if-color:3:self:light:5
 flavor = 비 오는 날에도 다를 건 없다.
 
 [card.c-human-stockpile]
-name = 비축
+name = 헌신
 rank = rare
 source = race
 element = earth
-cost = 1
+cost = 0
 trigger = manual
-effects = next-turn-energy:2:self, block:6:self
+effects = heal:-6:self, draw:2:self, exhaust-self
 upgrade_to = c-human-stockpile-plus
-flavor = "내일의 나야, 잘 부탁해."
+flavor =
 
 [card.c-human-stockpile-plus]
-name = 비축+
+name = 헌신+
 rank = rare
 source = race
 element = earth
-cost = 1
+cost = 0
 trigger = manual
-effects = next-turn-energy:3:self, block:8:self
-flavor = 미뤄 둔 힘이 더 크게 돌아온다.
+effects = heal:-4:self, draw:2:self, exhaust-self
+flavor =
 
 # ---- 필러: 상태이상 다양화 (적 실효 상태만) ----
 
 [card.c-human-disarm]
-name = 무장 해제
+name = 유연
 rank = common
 source = race
 element = wind
-cost = 1
+cost = 0
 trigger = manual
-effects = damage:9:enemy, apply-status:1:enemy:weakness
+effects = apply-status:3:self:focus
 upgrade_to = c-human-disarm-plus
-flavor = "그 손에서 힘 빼. 다친다."
+flavor =
 
 [card.c-human-disarm-plus]
-name = 무장 해제+
+name = 유연+
 rank = common
 source = race
 element = wind
-cost = 1
+cost = 0
 trigger = manual
-effects = damage:12:enemy, apply-status:2:enemy:weakness
-flavor = 더 세게 흔들어 손아귀를 더 오래 비워 놓는다.
+effects = apply-status:4:self:focus
+flavor =
 
 [card.c-human-expose]
-name = 허점 노출
-rank = common
+name = 거중 반격
+rank = rare
 source = race
-element = light
-cost = 1
+element = iron
+cost = 2
 trigger = manual
-effects = block:5:self, apply-status:2:enemy:vulnerable
+effects = juggernaut:3:enemy
 upgrade_to = c-human-expose-plus
-flavor = "막다 보면 보여."
+flavor =
 
 [card.c-human-expose-plus]
-name = 허점 노출+
-rank = common
+name = 거중 반격+
+rank = rare
 source = race
-element = light
-cost = 1
+element = iron
+cost = 2
 trigger = manual
-effects = block:7:self, apply-status:3:enemy:vulnerable
-flavor = 더 단단히 막아서며 빈틈을 더 넓게 벌려 놓는다.
+effects = juggernaut:5:enemy
+flavor =
 
 [card.c-human-laceration]
 name = 깊은 자상
@@ -636,46 +636,46 @@ effects = damage:8:enemy, apply-status:4:enemy:burn
 flavor = 한번 옮겨붙은 불은, 쉬이 꺼지지 않는다.
 
 [card.c-human-fullbreak]
-name = 전열 붕괴
+name = 각혈
 rank = rare
 source = race
-element = light
-cost = 2
+element = fire
+cost = 1
 trigger = manual
-effects = damage:14:enemy, apply-status:2:enemy:vulnerable, apply-status:2:enemy:frail
+effects = rupture:1:self
 upgrade_to = c-human-fullbreak-plus
-flavor = 버티던 것들이 차례로 주저앉는다.
+flavor =
 
 [card.c-human-fullbreak-plus]
-name = 전열 붕괴+
+name = 각혈+
 rank = rare
 source = race
-element = light
-cost = 2
+element = fire
+cost = 1
 trigger = manual
-effects = damage:18:enemy, apply-status:3:enemy:vulnerable, apply-status:3:enemy:frail
-flavor = 더 넓게 무너뜨린다.
+effects = rupture:2:self
+flavor =
 
 [card.c-human-followthrough]
-name = 마무리 추격
+name = 혈투
 rank = rare
 source = race
 element = iron
 cost = 1
 trigger = manual
-effects = consume-vulnerable:4:enemy
+effects = damage-from-hp:5:enemy:3
 upgrade_to = c-human-followthrough-plus
-flavor = "끝까지 쫓아간다."
+flavor =
 
 [card.c-human-followthrough-plus]
-name = 마무리 추격+
+name = 혈투+
 rank = rare
 source = race
 element = iron
 cost = 1
 trigger = manual
-effects = consume-vulnerable:6:enemy
-flavor = 노린 빈틈이 클수록 더 무겁게 내리친다.
+effects = damage-from-hp:5:enemy:4
+flavor =
 
 # ---- 필러: 균형 보상 (고른 색·방어 활용) ----
 
@@ -745,25 +745,25 @@ flavor = "발밑이 단단하면, 손끝까지 안 흔들려."
 # ---- 필러: 적응형 변주 ----
 
 [card.c-human-shiftguard]
-name = 변수 대응
-rank = common
+name = 투신
+rank = rare
 source = race
-element = wind
-cost = 1
+element = light
+cost = 2
 trigger = manual
-effects = adaptive-strike:9:enemy
+effects = bloom-strength:2:self
 upgrade_to = c-human-shiftguard-plus
-flavor = "놀라지 않는 연습부터 했어."
+flavor =
 
 [card.c-human-shiftguard-plus]
-name = 변수 대응+
-rank = common
+name = 투신+
+rank = rare
 source = race
-element = wind
-cost = 1
+element = light
+cost = 2
 trigger = manual
-effects = adaptive-strike:13:enemy:5
-flavor = 판단이 빨라져 치든 막든 한층 강하다.
+effects = bloom-strength:3:self
+flavor =
 
 [card.c-human-improvise]
 name = 즉흥
@@ -875,25 +875,25 @@ effects = damage:6:enemy
 flavor = "가볍게. 쾅!"
 
 [card.c-human-brace]
-name = 발 디디기
-rank = basic
+name = 참호
+rank = common
 source = race
 element = earth
-cost = 0
+cost = 1
 trigger = manual
-effects = block:5:self
+effects = double-block:0:self
 upgrade_to = c-human-brace-plus
-flavor = 우선 발부터.
+flavor =
 
 [card.c-human-brace-plus]
-name = 발 디디기+
-rank = basic
+name = 참호+
+rank = common
 source = race
 element = earth
 cost = 0
 trigger = manual
-effects = block:8:self
-flavor = 디딘 발이 땅에 더 깊이 박힌다.
+effects = double-block:0:self
+flavor =
 
 # ============================================================
 # 인간 색채 보강 (P1 종족 정체성) — 자해/strength 누적/exhaust 마무리
@@ -949,25 +949,25 @@ flavor = 뒤가 든든하기에, 망설일 이유가 없다.
 
 # 최후 일격 - 큰 데미지 + 사용 후 소멸(exhaust). 다시 못 던지는 결정타.
 [card.c-human-finalblow]
-name = 최후 일격
+name = 대검 일섬
 rank = rare
 source = race
 element = iron
-cost = 1
+cost = 2
 trigger = manual
-effects = damage:16:enemy, exhaust-self
+effects = heavy-blade:8:enemy:2
 upgrade_to = c-human-finalblow-plus
-flavor = "다음 같은 건 없어."
+flavor =
 
 [card.c-human-finalblow-plus]
-name = 최후 일격+
+name = 대검 일섬+
 rank = rare
 source = race
 element = iron
-cost = 1
+cost = 2
 trigger = manual
-effects = damage:22:enemy, exhaust-self
-flavor = 같은 일격에 더 큰 힘을 싣는다. 그래도 한 번뿐이다.
+effects = heavy-blade:11:enemy:3
+flavor =
 
 # ============================================================
 # 나방 wind/light 속도·연사·드로우

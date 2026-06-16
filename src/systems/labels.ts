@@ -48,6 +48,14 @@ const CARD_EFFECT_KIND_LABELS: Record<string, string> = {
   'ghost-self': '흐려지기',
   'curse-tick': '저주 피해',
   'release-transform': '본모습 (스택 -2)',
+  // 인간 재설계 (STS 아이언클래드式, 2026-06-16) — 전투 휘발 buff 7종.
+  metallicize: '강철',
+  barricade: '불굴',
+  'feel-no-pain': '무통',
+  rupture: '각혈',
+  juggernaut: '반격진',
+  'double-block': '참호',
+  'heavy-blade': '중검',
 };
 
 /**
@@ -89,6 +97,14 @@ const CARD_EFFECT_DESCRIPTIONS: Record<string, string> = {
   'ghost-self': '수치만큼 턴 동안 비실체가 됩니다 — 받는·주는 피해가 절반.',
   'curse-tick': '손에 쥐고 있으면 매 턴 시작마다 수치만큼 직접 피해를 입습니다.',
   'release-transform': '변신 스택을 2 줄입니다. 스택이 0 이하가 되면 원래 모습으로 돌아옵니다. 이 카드는 사라지지 않아 여러 번 낼 수 있습니다.',
+  // 인간 재설계 (STS 아이언클래드式, 2026-06-16) — 전투 휘발 buff 7종.
+  metallicize: '이번 전투 동안 매 턴 종료 시 방어막을 수치만큼 얻습니다.',
+  barricade: '이번 전투 동안 방어막이 턴이 지나도 사라지지 않습니다.',
+  'feel-no-pain': '이번 전투 동안 카드가 소멸될 때마다 방어막을 수치만큼 얻습니다.',
+  rupture: '이번 전투 동안 카드로 HP를 잃을 때마다 힘이 수치만큼 늘어납니다.',
+  juggernaut: '이번 전투 동안 방어막을 얻을 때마다 적에게 수치만큼 피해를 줍니다.',
+  'double-block': '현재 방어막을 두 배로 만듭니다.',
+  'heavy-blade': '피해를 줍니다. 힘이 배수만큼 더 크게 반영됩니다.',
 };
 
 /** 상태이상/버프 키 → *툴팁용 상세 설명*. */
@@ -119,6 +135,12 @@ const STATUS_DESCRIPTIONS: Record<string, string> = {
   thorns: '반격 — 적의 공격에 맞으면 스택만큼 적에게 되돌려 줍니다. 매 턴 1 감소.',
   focus: '집중 — 켜져 있는 동안 주는 피해가 스택만큼 늘어납니다. 매 턴 1 감소.',
   resolve: '정신력 — 디버프를 받을 때 스택을 1 줄여 받습니다(최소 0). 매 턴 1 감소.',
+  // 인간 재설계 (STS 아이언클래드式, 2026-06-16) — 전투 휘발 파워(감쇠 없음).
+  metallicize: '강철 — 매 턴 종료 시 스택만큼 방어막을 얻습니다. 이번 전투 동안 유지.',
+  barricade: '불굴 — 방어막이 턴이 지나도 사라지지 않습니다. 이번 전투 동안 유지.',
+  feelNoPain: '무통 — 카드가 소멸될 때마다 스택만큼 방어막을 얻습니다. 이번 전투 동안 유지.',
+  rupture: '각혈 — 카드로 HP를 잃을 때마다 힘이 스택만큼 늘어납니다. 이번 전투 동안 유지.',
+  juggernaut: '반격진 — 방어막을 얻을 때마다 적에게 스택만큼 피해를 줍니다. 이번 전투 동안 유지.',
 };
 
 /** 상태이상/버프 키 → 한글. */
@@ -149,6 +171,12 @@ const STATUS_LABELS: Record<string, string> = {
   thorns: '반격',
   focus: '집중',
   resolve: '정신력',
+  // 인간 재설계 (STS 아이언클래드式, 2026-06-16) — 전투 휘발 파워.
+  metallicize: '강철',
+  barricade: '불굴',
+  feelNoPain: '무통',
+  rupture: '각혈',
+  juggernaut: '반격진',
 };
 
 /** 효과 대상 → 한글. */

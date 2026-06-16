@@ -134,7 +134,15 @@ export type CardEffectKind =
   | 'grant-color'         // params.color(8색|random|all, 기본 random) 색을 value만큼 *영구* 획득(applyColorBoost).
   // === 종족 카드 확장 6 (P1 나방 토양 시드) — 적 burn/poison 스택 소비 신규 핸들러 2종 ===
   | 'consume-burn'        // 적 burn 스택 *전부 제거* → 제거량 × value 추가 피해. consume-vulnerable 패턴 동일.
-  | 'consume-poison';     // 적 poison 스택 *전부 제거* → 제거량 × value 추가 피해. consume-vulnerable 패턴 동일.
+  | 'consume-poison'      // 적 poison 스택 *전부 제거* → 제거량 × value 추가 피해. consume-vulnerable 패턴 동일.
+  // === 인간 종족 재설계 (STS 아이언클래드式 스킬/파워, 2026-06-16) — 전투 휘발 buff 7종 ===
+  | 'metallicize'         // statuses.metallicize += value. 매 *턴 종료* 시 player.block += metallicize(STS 메탈리사이즈).
+  | 'barricade'           // statuses.barricade = 1(플래그). 켜져 있으면 턴 전환 시 player.block을 0으로 리셋하지 않음(불굴).
+  | 'feel-no-pain'        // statuses.feelNoPain += value. 카드가 *소멸(exhaust)*될 때마다 player.block += feelNoPain(무통).
+  | 'rupture'             // statuses.rupture += value. *카드로* HP를 잃을 때마다 strength += rupture(각혈). 적 공격으론 미발동.
+  | 'juggernaut'          // statuses.juggernaut += value. 플레이어가 *방어막을 얻을 때마다* 적에게 value 피해(반격진).
+  | 'double-block'        // 즉발: player.block = player.block × 2(STS 엔트렌치, 참호).
+  | 'heavy-blade';        // 적에게 (value + strength×params.mult) 피해(중검). 일반 strength 자동가산은 미적용, 핸들러가 직접 계산.
 
 /** 효과 대상 — target. */
 export type EffectTarget = 'self' | 'enemy' | 'all-enemies' | 'random-enemy';

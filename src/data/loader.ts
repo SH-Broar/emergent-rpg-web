@@ -127,6 +127,11 @@ function parseCardEffect(token: string): CardEffect | null {
   if (kind === 'grant-color' && parts[3]) {
     return { kind, value, target, params: { color: parts[3] } };
   }
+  // heavy-blade 전용 (인간 재설계, 2026-06-16): value=기본 피해, 4번째=mult(힘 배수, 기본 1).
+  // 핸들러(combat.ts)는 (value + strength×mult) 피해를 낸다(일반 strength 자동가산은 미적용).
+  if (kind === 'heavy-blade' && parts[3]) {
+    return { kind, value, target, params: { mult: Number(parts[3]) } };
+  }
   // 4번째 토큰: apply-status의 status 이름 등 추가 파라미터.
   if (parts[3]) {
     return { kind, value, target, params: { status: parts[3] } };

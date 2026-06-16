@@ -849,6 +849,9 @@ export function playCard(handIndex: number, monster: Monster): { enemyDefeated: 
     else c.discardPile = [...c.discardPile, card];
   } else if (card.effects.some((e) => e.kind === 'exhaust-self')) {
     c.exhaustPile = [...c.exhaustPile, card];
+    // 무통(feel-no-pain) — 카드가 소멸될 때마다 player.block += feelNoPain. gainBlock 경유(락/juggernaut 연동).
+    const feelNoPain = c.player.statuses?.feelNoPain ?? 0;
+    if (feelNoPain > 0 && !playerWild(c)) gainBlock(c, feelNoPain);
   } else {
     c.discardPile = [...c.discardPile, card];
   }
@@ -1051,7 +1054,12 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
     const value = enhancedBase(e.value ?? 0, c);
     for (const t of targets) {
       if (t === c.player && healBlocked(c)) continue;
-      t.hp = Math.min(t.maxHp, t.hp + value);
+      // 음수 value = *자기 HP 비용*(헌신 등). 플레이어 자해는 loseHpFromCard 경유(rupture 각혈 발동).
+      if (value < 0 && t === c.player) {
+        loseHpFromCard(c, -value);
+      } else {
+        t.hp = Math.min(t.maxHp, t.hp + value);
+      }
     }
   },
   block: (e, c) => {
@@ -1070,8 +1078,8 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
       'block-out-add',
     ));
     for (const t of targets) {
-      // 플레이어 방어는 락(block/no-defense) 일원화 함수를 거친다. 그 외 대상은 직접 가산.
-      if (t === c.player) gainPlayerBlock(c, value);
+      // 플레이어 방어는 락/juggernaut 일원화 함수(gainBlock)를 거친다. 그 외 대상은 직접 가산.
+      if (t === c.player) gainBlock(c, value);
       else t.block += value;
     }
   },
@@ -1132,7 +1140,7 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
       'block-out-add',
     ));
     for (const t of targets) {
-      if (t === c.player) gainPlayerBlock(c, value);
+      if (t === c.player) gainBlock(c, value);
       else t.block += value;
     }
   },
@@ -1165,7 +1173,7 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
       colors.fire, colors.water, colors.electric, colors.iron,
       colors.earth, colors.wind, colors.light, colors.dark,
     );
-    gainPlayerBlock(c, Math.floor(top * (e.value ?? 1)));
+    gainBlock(c, Math.floor(top * (e.value ?? 1)));
   },
   // 색 영구 획득(아르카나 시그니처, Item 37-③): params.color 색을 value만큼 *영구* 획득.
   //   - params.color = 8색 중 하나 | 'random'(무작위 1색) | 'all'(8색 일괄). 미지정 시 'random'.
@@ -1230,10 +1238,74 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
     c.enemy.statuses.poison = 0;
     dealRawDamage([c.enemy], psn * (e.value ?? 1));
   },
+  // === 인간 재설계 (STS 아이언클래드式 스킬/파워, 2026-06-16) — 전투 휘발 buff 7종 ===
+  // 강철(metallicize): statuses.metallicize += value. 매 *턴 종료* 시 player.block += metallicize.
+  //   (적용 시점은 beginEnemyTurn — 플레이어 턴이 끝난 직후. bloom-strength가 턴 시작이면 이쪽은 턴 종료 훅.)
+  'metallicize': (e, c) => {
+    const v = e.value ?? 0;
+    if (v === 0) return;
+    c.player.statuses['metallicize'] = (c.player.statuses['metallicize'] ?? 0) + v;
+    useUiStore().toast('success', `강철 — 매 턴 종료 시 방어 +${c.player.statuses['metallicize']}`);
+  },
+  // 불굴(barricade): statuses.barricade = 1(플래그). 켜져 있으면 턴 전환 시 player.block을 0으로 리셋하지 않는다.
+  'barricade': (e, c) => {
+    void e;
+    c.player.statuses['barricade'] = 1;
+    useUiStore().toast('success', '불굴 — 방어막이 사라지지 않는다.');
+  },
+  // 무통(feel-no-pain): statuses.feelNoPain += value. 카드가 *소멸(exhaust)*될 때마다 player.block += feelNoPain.
+  //   (적용은 playCard 본체 exhaust-self 분기 + 외부 소멸 경로. 여기선 누적만.)
+  'feel-no-pain': (e, c) => {
+    const v = e.value ?? 0;
+    if (v === 0) return;
+    c.player.statuses['feelNoPain'] = (c.player.statuses['feelNoPain'] ?? 0) + v;
+    useUiStore().toast('success', `무통 — 카드 소멸 시 방어 +${c.player.statuses['feelNoPain']}`);
+  },
+  // 각혈(rupture): statuses.rupture += value. *카드로* HP를 잃을 때마다 strength += rupture.
+  //   (발동은 카드 자해 지점 — damage-from-hp/heal 음수 — 에서 loseHpFromCard 헬퍼가 처리. 여기선 누적만.)
+  'rupture': (e, c) => {
+    const v = e.value ?? 0;
+    if (v === 0) return;
+    c.player.statuses['rupture'] = (c.player.statuses['rupture'] ?? 0) + v;
+    useUiStore().toast('success', `각혈 — 피를 흘릴 때마다 힘 +${c.player.statuses['rupture']}`);
+  },
+  // 반격진(juggernaut): statuses.juggernaut += value. 플레이어가 *방어막을 얻을 때마다* 적에게 value 피해.
+  //   (발동은 gainBlock 헬퍼 — 모든 플레이어 block 획득 경로가 경유. 여기선 누적만.)
+  'juggernaut': (e, c) => {
+    const v = e.value ?? 0;
+    if (v === 0) return;
+    c.player.statuses['juggernaut'] = (c.player.statuses['juggernaut'] ?? 0) + v;
+    useUiStore().toast('success', `반격진 — 방어막을 얻을 때마다 적 ${c.player.statuses['juggernaut']} 피해`);
+  },
+  // 참호(double-block): 즉발 — player.block을 두 배로. 방어막 획득 경로가 아니므로 juggernaut를 발동시키지 않는다(증분이 아닌 곱).
+  'double-block': (e, c) => {
+    void e;
+    if (playerWild(c)) return; // 수화: 방어막을 쌓지 못함 — 두 배도 0 유지.
+    c.player.block = c.player.block * 2;
+  },
+  // 중검(heavy-blade): 적에게 (value + strength×mult) 피해. 일반 damage 파이프라인의 *자동 strength 가산*을
+  //   타지 않으므로(이 kind는 'damage'가 아님), 핸들러가 strength×mult를 직접 더한다.
+  //   ATK 보너스·focus·sap·modifier·weakness/vulnerable 배수는 일반 공격과 동일(dealRawDamage 재사용).
+  'heavy-blade': (e, c) => {
+    const enh = enhancedBase(e.value ?? 0, c); // base 수치에 강화 스케일 먼저(카드 사용 시).
+    const mult = Number(e.params?.mult ?? 1);
+    const strength = c.player.statuses?.strength ?? 0;
+    // base + strength×mult — feral(수화)는 base만 ×2(일반 damage와 동일 규칙).
+    const wildBase = playerWild(c) ? enh * 2 : enh;
+    // strength를 제외한 status 보너스(focus − sap)만 더한다 — strength는 mult로 직접 반영.
+    const focus = c.player.statuses?.focus ?? 0;
+    const sap = c.player.statuses?.sap ?? 0;
+    const atkBonus = playerBonuses(c).damage;
+    const base = wildBase + strength * mult + atkBonus + focus - sap;
+    const value = applyModifiers(base, 'damage-out-add', 'damage-out-mul');
+    // dealRawDamage는 weakness/vulnerable/ghost 배수를 적용하되 strength는 자동가산하지 않는다(중복 회피).
+    dealRawDamage(resolveTargets(e.target ?? 'enemy', c), value);
+  },
   // 자기 HP를 value 지불, 지불액 × params.mult 데미지.
   'damage-from-hp': (e, c) => {
     const pay = Math.min(e.value ?? 0, Math.max(0, c.player.hp - 1));
-    c.player.hp -= pay;
+    // 카드 자해 — rupture(각혈) 발동을 위해 loseHpFromCard 경유.
+    loseHpFromCard(c, pay);
     const mult = Number(e.params?.mult ?? 2);
     dealRawDamage(resolveTargets(e.target ?? 'enemy', c), Math.floor(pay * mult));
   },
@@ -1300,7 +1372,7 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
         base + defBonus + statusBonus,
         'block-out-add',
       ));
-      gainPlayerBlock(c, value);
+      gainBlock(c, value);
     }
   },
   // 남은 mana 전부 소비 → 소비액 × value 피해. (playCard에서 effCost 차감 후 남은 mana 기준.)
@@ -1507,6 +1579,39 @@ function dealRawDamage(targets: Combatant[], value: number) {
   for (const t of targets) applyDamage(t, value, playerStatuses);
 }
 
+/**
+ * 플레이어 *방어 획득* 중앙 경유점 (인간 재설계, 2026-06-16).
+ * locks.ts의 gainPlayerBlock(락/금욕 추적)을 감싸고, juggernaut(반격진)를 발동시킨다.
+ * combat.ts에서 플레이어가 *방어막을 얻는 모든 경로*(block·growing-block·block-top-color·
+ * adaptive-strike·동료 자동 방어·metallicize·double-block 등)는 이 함수를 거치게 해
+ * "방어막을 얻을 때마다 적에게 피해" 효과를 빠짐없이 트리거한다.
+ *
+ * 무한 루프 가드: juggernaut 피해는 dealRawDamage(적 hp 직접)이므로 *방어막을 발생시키지 않는다*
+ *  → 재진입 없음. 또한 jugg<=0이면 즉시 반환해 비활성 시 비용 0.
+ */
+function gainBlock(c: CombatState, amount: number): void {
+  if (amount <= 0) return;
+  gainPlayerBlock(c, amount);
+  // juggernaut(반격진): 방어막을 얻을 때마다 적에게 스택만큼 피해(1회 획득당 1회).
+  const jugg = c.player.statuses?.juggernaut ?? 0;
+  if (jugg > 0) dealRawDamage([c.enemy], jugg);
+}
+
+/**
+ * *카드로 인한* 플레이어 HP 손실 (인간 재설계, 2026-06-16).
+ * 자해 카드(damage-from-hp 지불·heal 음수 비용)가 HP를 깎을 때 이 헬퍼를 거친다.
+ * rupture(각혈): 카드로 피를 흘릴 때마다 strength += rupture. *적 공격*으로 HP를 잃을 때는 발동하지 않는다
+ *  (적 피해는 applyDamage 경로 — 이 헬퍼를 안 쓴다). lost<=0이면 no-op.
+ */
+function loseHpFromCard(c: CombatState, lost: number): void {
+  if (lost <= 0) return;
+  c.player.hp = Math.max(0, c.player.hp - lost);
+  const rupture = c.player.statuses?.rupture ?? 0;
+  if (rupture > 0) {
+    c.player.statuses['strength'] = (c.player.statuses['strength'] ?? 0) + rupture;
+  }
+}
+
 function resolveTargets(target: EffectTarget, c: CombatState): Combatant[] {
   switch (target) {
     case 'self':
@@ -1560,6 +1665,14 @@ export function beginEnemyTurn(monster: Monster): { queue: string[]; done?: Turn
   // focus(집중) — 이로운 상태: 방금 끝난 *플레이어 턴* 내내 주는 피해에 +스택을 더했다.
   // 그 턴을 다 쓴 *직후*(적 턴 진입 시점)에 1 감쇠 — off-by-one 없이 "걸린 턴부터 N턴" 보장.
   decayPlayerBuff(c, 'focus');
+
+  // 강철(metallicize) — 매 *턴 종료* 시 player.block += metallicize(STS 메탈리사이즈, 비감쇠 전투 휘발).
+  // 플레이어 턴이 막 끝난 이 시점(적 행동 전)에 방어막을 얹어 적 공격을 받아낸다. gainBlock 경유 →
+  // block 락 진행 + juggernaut(반격진)도 함께 발동. 수화(playerWild)면 방어막을 못 쌓으므로 0.
+  {
+    const metallicize = c.player.statuses?.metallicize ?? 0;
+    if (metallicize > 0 && !playerWild(c)) gainBlock(c, metallicize);
+  }
 
   // 플레이어 턴 종료 trigger — 몬스터 행동 *전*.
   fireRelicTrigger('on-turn-end', { run: r, combat: c });
@@ -1687,9 +1800,11 @@ export function finishEnemyTurn(monster: Monster): TurnResult {
     c.mana += nextEnergyBonus;
     r.nextTurnEnergyBonus = 0;
   }
-  // block-carryover 유물 / ward(보호막) 이로운 상태: 방어를 0으로 리셋하지 않고 이월. 그 외엔 매 턴 0.
+  // block-carryover 유물 / ward(보호막) 이로운 상태 / barricade(불굴) buff: 방어를 0으로 리셋하지 않고 이월.
+  // 그 외엔 매 턴 0. barricade(STS 바리케이드)는 인간 재설계 전투 휘발 buff — 켜져 있으면 방어막이 누적된다.
   const hasWard = (c.player.statuses?.ward ?? 0) > 0;
-  if (!playerHasRelicEffect('block-carryover') && !hasWard) c.player.block = 0;
+  const hasBarricade = (c.player.statuses?.barricade ?? 0) > 0;
+  if (!playerHasRelicEffect('block-carryover') && !hasWard && !hasBarricade) c.player.block = 0;
   // ward 를 *이번 이월에 쓴 뒤* 1 감쇠 (off-by-one 회피). 일괄 감쇠에 넣지 않는다.
   if (hasWard) decayPlayerBuff(c, 'ward');
 
@@ -1845,9 +1960,12 @@ function applyPlayerStatusTurnStart(c: CombatState): void {
   tickRegen(c);
   if (cTurn.block > 0 && !playerWild(c)) {
     // 동료 *자동* 방어 — block 락 진행엔 기여하되, no-defense 추적 플래그는 *건드리지 않는다*
-    // (플레이어가 능동적으로 방어한 게 아니므로 금욕형 락을 자동으로 깨지 않게).
+    // (플레이어가 능동적으로 방어한 게 아니므로 금욕형 락을 자동으로 깨지 않게). gainBlock을 안 쓰는 이유.
     c.player.block += cTurn.block;
     progressLocks(c, 'block', cTurn.block);
+    // juggernaut(반격진): 자동 방어로 방어막을 얻어도 적에게 피해(획득 경로 일관).
+    const jugg = c.player.statuses?.juggernaut ?? 0;
+    if (jugg > 0) dealRawDamage([c.enemy], jugg);
   }
 
   // (Item 28) 변신 해제 카운트다운 폐기 — '본모습' 카드가 transform.releaseStack을 직접 -2 하고

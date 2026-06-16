@@ -206,6 +206,8 @@ export const VALID_CARD_EFFECT_KINDS = [
   'damage-low-hand',
   // 종족 카드 확장 5 (Item 37-③ 아르카나) — 색 영구 획득 신규 핸들러 1종.
   'grant-color',
+  // 인간 재설계 (STS 아이언클래드式, 2026-06-16) — 전투 휘발 buff 7종.
+  'metallicize', 'barricade', 'feel-no-pain', 'rupture', 'juggernaut', 'double-block', 'heavy-blade',
 ];
 
 /**
