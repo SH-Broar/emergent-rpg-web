@@ -51,7 +51,7 @@ element = wind
 cost = 1
 trigger = manual
 effects = damage:11:enemy, draw:1:self
-flavor = 더 멀리서 불어온 바람에 칼을 싣는다.
+flavor = "바람이 실어 주면, 멀리 보내는 건 어렵지 않아."
 
 [card.c-human-adapt]
 name = 적응
@@ -72,7 +72,7 @@ element = wind
 cost = 1
 trigger = manual
 effects = block:11:self, draw:2:self
-flavor = 낯선 곳에도 금세 익숙해진다.
+flavor = "한 번도 안 걸어본 곳이라도 말야."
 
 [card.c-human-resolve]
 name = 각오
@@ -93,7 +93,7 @@ element = light
 cost = 2
 trigger = manual
 effects = damage:14:enemy, apply-status:3:enemy:vulnerable
-flavor = 한번 정한 마음은 좀처럼 흔들리지 않는다.
+flavor = 흔들리지 않는 마음을 나에게...!
 
 # ============================================================
 # 인간 확장 (Item 37-③) light/wind 균형·유연·디버프 다양화·적응
@@ -123,7 +123,7 @@ element = iron
 cost = 1
 trigger = manual
 effects = block-to-damage:2:enemy
-flavor = 받아 낸 충격을 한층 세게 되돌려준다.
+flavor = "받은 만큼, 이자까지 쳐서 돌려줄게."
 
 [card.c-human-evenblade]
 name = 평정의 검
@@ -144,7 +144,7 @@ element = light
 cost = 1
 trigger = manual
 effects = damage-min-color:3:enemy
-flavor = 짐을 더 잘 나눠 졌으니 그만큼 더 멀리 간다.
+flavor = "고르게 익혀 두면, 어디서도 발목 잡힐 일이 없어."
 
 [card.c-human-adaptstrike]
 name = 임기응변
@@ -165,7 +165,7 @@ element = wind
 cost = 1
 trigger = manual
 effects = adaptive-strike:16:enemy:6
-flavor = 상황을 한눈에 읽고 망설임 없이 손을 놀린다.
+flavor = "해보고 말해줄게."
 
 [card.c-human-pin]
 name = 급소 찌르기
@@ -186,7 +186,7 @@ element = light
 cost = 1
 trigger = manual
 effects = damage:9:enemy, apply-status:3:enemy:vulnerable
-flavor = 급소를 더 깊이 찔러 빈틈을 크게 벌려 놓는다.
+flavor = "단번에 끝내는 게, 서로한테 편해."
 
 [card.c-human-hamstring]
 name = 다리 후리기
@@ -197,7 +197,7 @@ cost = 1
 trigger = manual
 effects = damage:6:enemy, apply-status:2:enemy:weakness
 upgrade_to = c-human-hamstring-plus
-flavor = "위만 보다가 아래를 놓치면 안 되지."
+flavor = 순간적으로 다리를 걸어 중심을 무너트린다.
 
 [card.c-human-hamstring-plus]
 name = 다리 후리기+
@@ -207,7 +207,7 @@ element = wind
 cost = 1
 trigger = manual
 effects = damage:9:enemy, apply-status:3:enemy:weakness
-flavor = 다리를 세게 후려 중심을 크게 무너뜨린다.
+flavor = 상대의 중심을 크게 무너뜨린다.
 
 [card.c-human-shatterguard]
 name = 무릎 꺾기
@@ -218,7 +218,7 @@ cost = 1
 trigger = manual
 effects = damage:6:enemy, apply-status:3:enemy:frail
 upgrade_to = c-human-shatterguard-plus
-flavor = "아래가 비었네."
+flavor = 기본적인 관절기. 효과는 무시할 수 없다.
 
 [card.c-human-shatterguard-plus]
 name = 무릎 꺾기+
@@ -228,7 +228,7 @@ element = iron
 cost = 1
 trigger = manual
 effects = damage:9:enemy, apply-status:4:enemy:frail
-flavor = 버티고 선 무릎을 더 세게 꺾어 방어를 허문다.
+flavor = 달인은 관절이 없는 상대에게도 걸 수 있다.
 
 [card.c-human-combo]
 name = 연계기
@@ -270,7 +270,7 @@ element = wind
 cost = 1
 trigger = manual
 effects = block:11:self, draw:2:self
-flavor = 더 단단히 가다듬고도 패는 넉넉히 남는다.
+flavor = "준비 완료다."
 
 [card.c-human-secondwind]
 name = 호흡 고르기
@@ -333,7 +333,7 @@ element = light
 cost = 3
 trigger = manual
 effects = damage:18:enemy, block:18:self, draw:1:self
-flavor = 온몸의 힘을 남김없이 싣는다.
+flavor = "남겨 봐야 쓸 데도 없어."
 
 [card.c-human-focuspoint]
 name = 일점집중
@@ -354,7 +354,7 @@ element = light
 cost = 1
 trigger = manual
 effects = next-card-double, damage:6:enemy
-flavor = 눈 깜짝할 새 한곳에 정신을 모은다.
+flavor = 주위가 흐려지고, 과녁만 또렷해진다.
 
 # ---- 필러: 하이브리드 공방 (damage+block 변주) ----
 
@@ -377,7 +377,7 @@ element = iron
 cost = 1
 trigger = manual
 effects = damage:7:enemy, block:7:self
-flavor = 한 대 주고 한 대 막는 손이 한결 야물다.
+flavor = 되로 받으면 말로 갚는다.
 
 [card.c-human-counterstance]
 name = 반격 자세
@@ -461,7 +461,7 @@ element = earth
 cost = 2
 trigger = manual
 effects = damage:13:enemy, block:13:self, draw:1:self
-flavor = 주고받는 양이 함께 커져도 손해 보는 쪽은 없다.
+flavor = "더 받으면 더 주고. 셈은 늘 맞아떨어져."
 
 # ---- 필러: 드로우/마나 유연 ----
 
@@ -484,7 +484,7 @@ element = wind
 cost = 0
 trigger = manual
 effects = draw:2:self
-flavor = 더 앞까지 미리 짚어 둔다.
+flavor = 다음 수가 보이면, 그다음 수도 보인다.
 
 [card.c-human-tempo]
 name = 완급 조절
@@ -505,7 +505,7 @@ element = wind
 cost = 1
 trigger = manual
 effects = draw:2:self, next-turn-energy:2:self
-flavor = 패를 넉넉히 챙기고 다음에 쓸 힘을 한층 크게 당겨 둔다.
+flavor = "느리게 갈 때를 알아야, 빠를 때도 사는 거야."
 
 [card.c-human-foresight]
 name = 선견
@@ -526,7 +526,7 @@ element = light
 cost = 1
 trigger = manual
 effects = draw-if-color:3:self:light:5
-flavor = 빛이 든 날이면 앞일이 더 환히 내다보인다.
+flavor = 비 오는 날에도 다를 건 없다.
 
 [card.c-human-stockpile]
 name = 비축
@@ -612,7 +612,7 @@ element = iron
 cost = 1
 trigger = manual
 effects = damage:8:enemy, apply-status:4:enemy:poison
-flavor = 더 크게 베인 상처는 더 오래 번진다.
+flavor = 상처는 생각보다 쓰라릴지도 모른다.
 
 [card.c-human-emberbrand]
 name = 불씨 낙인
@@ -633,7 +633,7 @@ element = fire
 cost = 1
 trigger = manual
 effects = damage:8:enemy, apply-status:4:enemy:burn
-flavor = 새겨 둔 불씨가 더 매섭게 번진다.
+flavor = 한번 옮겨붙은 불은, 쉬이 꺼지지 않는다.
 
 [card.c-human-fullbreak]
 name = 전열 붕괴
@@ -698,7 +698,7 @@ element = light
 cost = 1
 trigger = manual
 effects = damage-min-color:3:enemy, block:6:self
-flavor = 쏠림 없이 다룬 검이 더 멀리 닿고 더 단단히 막는다.
+flavor = "한쪽으로 치우치지 않으면, 빈틈도 없어."
 
 [card.c-human-bulwarkblow]
 name = 방패 치기
@@ -719,7 +719,7 @@ element = iron
 cost = 1
 trigger = manual
 effects = block:11:self, block-to-damage:1:enemy
-flavor = 더 단단히 세운 방패가 더 세게 부딪친다.
+flavor = "단단할수록, 부딪치는 맛도 좋지."
 
 [card.c-human-steadfast]
 name = 굳건함
@@ -740,7 +740,7 @@ element = earth
 cost = 2
 trigger = manual
 effects = block:20:self, damage-min-color:3:enemy
-flavor = 단단히 디딘 만큼 검도 멀리 닿는다.
+flavor = "발밑이 단단하면, 손끝까지 안 흔들려."
 
 # ---- 필러: 적응형 변주 ----
 
@@ -784,7 +784,7 @@ element = wind
 cost = 2
 trigger = manual
 effects = adaptive-strike:24:enemy:8, draw:1:self
-flavor = 즉석에서 꺼내는 공격이 더 크게 들어간다.
+flavor = "뽑고 나면, 그때그때 정하는 거야."
 
 # ---- 필러: 큰 한방/마무리 ----
 
@@ -828,7 +828,7 @@ element = iron
 cost = 2
 trigger = manual
 effects = block:24:self, draw:1:self
-flavor = 마지막 순간일수록 벽은 더 단단해진다.
+flavor = "여기가 끝이야. 더는 못 물러나."
 
 [card.c-human-overcome]
 name = 극복
@@ -849,7 +849,7 @@ element = light
 cost = 3
 trigger = manual
 effects = damage:28:enemy, block:14:self, apply-status:3:enemy:vulnerable
-flavor = 더 크게 넘어선 만큼 그 뒤로 길이 환하게 열린다.
+flavor = "그다음엔, 더 높은 벽에 도전하는 거야."
 
 # ---- 필러: 0코스트 회전 보조 ----
 
@@ -872,7 +872,7 @@ element = wind
 cost = 0
 trigger = manual
 effects = damage:6:enemy
-flavor = 가볍지만 한층 매섭게 찌른다.
+flavor = "가볍게. 쾅!"
 
 [card.c-human-brace]
 name = 발 디디기
@@ -923,7 +923,7 @@ element = fire
 cost = 1
 trigger = manual
 effects = damage-from-hp:3:enemy:6
-flavor = 흘린 피가 많을수록 더 멀리 더 세게 휘두른다.
+flavor = "아플수록 또렷해져. 이상하지."
 
 # strength 누적 + 약타 - 영구 strength가 아닌 전투 내 스택(apply-status). 후속 카드에 얹힌다.
 [card.c-human-warcry]
