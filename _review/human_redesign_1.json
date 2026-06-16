@@ -1,0 +1,120 @@
+{
+ "meta": {
+  "id": "human_redesign_1",
+  "title": "human 효과 재설계 — X 13장 특수카드화(혼합축) + 나머지 방향 데모 3"
+ },
+ "items": [
+  {
+   "n": 110,
+   "kind": "효과 재설계 · 연계",
+   "loc": "현 「연계기」 c2 rare light · apply-status:1:enemy:vulnerable, apply-status:1:enemy:weakness, damage:10:enemy",
+   "text": "현 flavor: \"순서만 지키면 돼.\"  /  +동작이 끊기지 않고 자연스럽게 이어진다.",
+   "proposal": "→ 「몰아치기」\n효과: damage:4:enemy, damage-per-cards-played:4:enemy\n   (+: damage:6:enemy, damage-per-cards-played:5:enemy)\n역할: 이번 턴 쓴 카드 1장당 피해 +4. 콤보 피니셔. (이름 '연계기'=밋밋 지적 → 개명)\nflavor: \"이왕 시작했으면, 끝까지 몰아쳐.\"\n   (+: \"손이 멈추질 않네. 좋아.\")"
+  },
+  {
+   "n": 112,
+   "kind": "효과 재설계 · 연계",
+   "loc": "현 「호흡 고르기」 c1 common wind · draw:3:self, exhaust-self",
+   "text": "현 flavor: \"지친 거 아니야.\"  /  +숨을 더 빨리 고르고 다시 일어선다.",
+   "proposal": "→ (이름 유지)\n효과: hand-cost-down:1, draw:1:self, exhaust-self\n   (+: hand-cost-down:1, draw:1:self, exhaust-self)\n역할: 이번 턴 손패 전체 cost -1 + 1장 드로우(소멸). 긴 콤보 시동. plus는 cost 0. (재정비와 역할 분리)\nflavor: \"잠깐 고르는 거야. 곧 가벼워져.\"\n   (+: \"봐, 손이 다 풀렸지?\")"
+  },
+  {
+   "n": 134,
+   "kind": "효과 재설계 · 연계",
+   "loc": "현 「변수 대응」 c1 rare wind · adaptive-strike:9:enemy",
+   "text": "현 flavor: \"놀라지 않는 연습부터 했어.\"  /  +판단이 빨라져 치든 막든 한층 강하다.",
+   "proposal": "→ 「기세 타기」\n효과: this-turn-amp:30\n   (+: this-turn-amp:45)\n역할: 이번 턴 내 모든 카드 수치 +30%. 턴 증폭. (임기응변과 중복 해소 → 적응타 버리고 증폭으로)\nflavor: \"흐름이 왔어. 지금이야.\"\n   (+: \"이 기세, 끊기지 않게.\")"
+  },
+  {
+   "n": 124,
+   "kind": "효과 재설계 · 연계",
+   "loc": "현 「비축」 c1 rare earth · next-turn-energy:2:self, block:6:self",
+   "text": "현 flavor: \"내일의 나야, 잘 부탁해.\"  /  +미뤄 둔 힘이 더 크게 돌아온다.",
+   "proposal": "→ (이름 유지)\n효과: next-turn-energy:2:self, draw:1:self\n   (+: next-turn-energy:3:self, draw:1:self)\n역할: 다음 턴 시작 마나 +2 + 1장 드로우. 큰 콤보 턴 준비. (방어 빼고 시동 역할 명확화)\nflavor: 내일의 나야, 잘 부탁해.\n   (+: 오늘 아껴 둔 힘은, 내일 크게 쓴다.)"
+  },
+  {
+   "n": 117,
+   "kind": "효과 재설계 · 공방전환",
+   "loc": "현 「반격 자세」 c1 common iron · block:7:self, damage:7:enemy",
+   "text": "현 flavor: \"막는 자세랑 치는 자세는 원래 같은 거야.\"  /  +자세를 더 낮추니 막기도 치기도 한결 수월하다.",
+   "proposal": "→ (이름 유지)\n효과: negate-reflect\n   (+: negate-reflect, block:6:self)\n역할: 이번 턴 받는 피해 0 흡수 → 다음 턴 그만큼 적에게 반사. (단순 방어+공격 → 반사 특수카드)\nflavor: 막는 자세랑 치는 자세는 원래 같은 거야.\n   (+: \"받은 건, 고스란히 돌려줄게.\")"
+  },
+  {
+   "n": 118,
+   "kind": "효과 재설계 · 공방전환",
+   "loc": "현 「받아흘리기」 c1 common wind · block:6:self, damage:6:enemy, draw:1:self",
+   "text": "현 flavor: \"힘은 부딪치는 게 아니라 빌리는 거야.\"  /  +흘려보내는 동작이 더 부드러워지고, 몸도 한결 가볍다.",
+   "proposal": "→ (이름 유지)\n효과: growing-block:6:self, draw:1:self\n   (+: growing-block:8:self, draw:1:self)\n역할: 방어 6 + 쓸 때마다 이 카드 방어 +1(전투 누적) + 드로우. 방어 엔진. (단순 방어 → 성장형)\nflavor: 힘은 부딪치는 게 아니라 빌리는 거야.\n   (+: 흘릴수록, 몸이 더 단단해져.)"
+  },
+  {
+   "n": 119,
+   "kind": "효과 재설계 · 공방전환",
+   "loc": "현 「공방일체」 c2 rare light · damage:14:enemy, block:10:self",
+   "text": "현 flavor: \"몸이 두 개면 좋겠다 싶을 때 있지?\"  /  +양손이 더 길게 뻗어, 치는 쪽도 막는 쪽도 모자라지 않는다.",
+   "proposal": "→ (이름 유지)\n효과: block:10:self, damage-per-cards-played:3:enemy\n   (+: block:12:self, damage-per-cards-played:4:enemy)\n역할: 방어 10 + 이번 턴 쓴 카드 1장당 피해 +3. 공방+연계 다리. (단순 dmg+block → 막으며 콤보 마무리)\nflavor: 몸이 두 개면 좋겠다 싶을 때 있지?\n   (+: \"막으면서 치면, 손이 둘일 것도 없지.\")"
+  },
+  {
+   "n": 140,
+   "kind": "효과 재설계 · 공방전환(엔진)",
+   "loc": "현 「발 디디기」 c0 basic earth · block:5:self",
+   "text": "현 flavor: 우선 발부터.  /  +디딘 발이 땅에 더 깊이 박힌다.",
+   "proposal": "→ (이름 유지) cost→c1\n효과: block:4:self, bloom-strength:1:self\n   (+: block:6:self, bloom-strength:1:self)\n역할: 방어 + 이번 전투 매 턴 힘 +1(비감쇠) 엔진. cost 0→1로 상향 제안(엔진값). (단순 방어5 → 토대 성장)\nflavor: 우선 발부터.\n   (+: 단단히 디딘 발이, 매 걸음을 키운다.)"
+  },
+  {
+   "n": 129,
+   "kind": "효과 재설계 · 디버프 페이오프",
+   "loc": "현 「전열 붕괴」 c2 rare light · damage:14:enemy, apply-status:2:enemy:vulnerable, apply-status:2:enemy:frail",
+   "text": "현 flavor: 버티던 것들이 차례로 주저앉는다.  /  +더 넓게 무너뜨린다.",
+   "proposal": "→ (이름 유지)\n효과: damage:6:enemy, damage-per-debuff:3:enemy\n   (+: damage:8:enemy, damage-per-debuff:4:enemy)\n역할: 기본 피해 + 적 디버프 스택 총합 ×3. 디버프 카드(급소/다리/무릎/깊은자상/불씨)와 시너지. (디버프 부여 → 디버프 폭발)\nflavor: 버티던 것들이 차례로 주저앉는다.\n   (+: 쌓인 흠집이 많을수록, 한꺼번에 무너진다.)"
+  },
+  {
+   "n": 130,
+   "kind": "효과 재설계 · 디버프 페이오프",
+   "loc": "현 「마무리 추격」 c1 rare iron · consume-vulnerable:4:enemy",
+   "text": "현 flavor: \"끝까지 쫓아간다.\"  /  +노린 빈틈이 클수록 더 무겁게 내리친다.",
+   "proposal": "→ (이름 유지)\n효과: amplify-debuff:4:enemy\n   (+: amplify-debuff:6:enemy)\n역할: 적 최고 디버프 ×2 + 증가분 ×4 추가 피해. 디버프 증폭 페이오프. (취약 소비 → 증폭으로 차별화)\nflavor: 끝까지 쫓아간다.\n   (+: 벌어진 틈은, 손쓸수록 더 벌어진다.)"
+  },
+  {
+   "n": 125,
+   "kind": "효과 재설계 · 디버프+템포",
+   "loc": "현 「무장 해제」 c1 common wind · damage:9:enemy, apply-status:1:enemy:weakness",
+   "text": "현 flavor: \"그 손에서 힘 빼. 다친다.\"  /  +더 세게 흔들어 손아귀를 더 오래 비워 놓는다.",
+   "proposal": "→ 「맥 풀기」\n효과: damage:5:enemy, apply-status:2:enemy:weakness, slow-enemy:1\n   (+: damage:7:enemy, apply-status:3:enemy:weakness, slow-enemy:1)\n역할: 피해 + 약화 + 적 행동 1턴 -1(굼뜨게). 무력화 특수카드. (이름 '무장 해제'=딱딱 지적 → 개명)\nflavor: 쥔 힘이 빠지면, 손도 굼떠진다.\n   (+: 맥을 끊어 두면, 좀처럼 다시 못 덤빈다.)"
+  },
+  {
+   "n": 126,
+   "kind": "효과 재설계 · 공방+디버프",
+   "loc": "현 「허점 노출」 c1 common light · block:5:self, apply-status:2:enemy:vulnerable",
+   "text": "현 flavor: \"막다 보면 보여.\"  /  +더 단단히 막아서며 빈틈을 더 넓게 벌려 놓는다.",
+   "proposal": "→ (이름 유지)\n효과: block:5:self, block-to-damage:1:enemy, apply-status:2:enemy:vulnerable\n   (+: block:7:self, block-to-damage:1:enemy, apply-status:2:enemy:vulnerable)\n역할: 방어 + 방어막만큼 피해(돌파) + 취약. 막은 자세로 빈틈 후비기. (단순 방어+취약 → 돌파 연동)\nflavor: 막다 보면 보여.\n   (+: 막아 선 자세 그대로, 빈틈을 후벼판다.)"
+  },
+  {
+   "n": 143,
+   "kind": "효과 재설계 · 연계(피니셔)",
+   "loc": "현 「최후 일격」 c1 rare iron · damage:16:enemy, exhaust-self",
+   "text": "현 flavor: \"다음 같은 건 없어.\"  /  +같은 일격에 더 큰 힘을 싣는다. 그래도 한 번뿐이다.",
+   "proposal": "→ (이름 유지)\n효과: spend-all-energy:7:enemy, exhaust-self\n   (+: spend-all-energy:10:enemy, exhaust-self)\n역할: 남은 마나 전부 소비 → 소비액 ×7 피해(소멸). 마나 비축(124/완급조절)과 시너지. (단순 큰 피해 → 마나 올인)\nflavor: 다음 같은 건 없어.\n   (+: 남은 힘을 전부 실어, 단 한 번에.)"
+  },
+  {
+   "n": 801,
+   "kind": "나머지 재정비 데모 (방향 OX)",
+   "loc": "예시: 100 균형의 일격 (c1 dmg9+block4)",
+   "text": "이 방향으로 나머지 generic dmg+block/draw 카드도 정리할지?",
+   "proposal": "→ 효과: adaptive-strike:8:enemy:4\n균형 namesake → 싸게 쓰는 적응타(방어 있으면 큰 피해, 없으면 방어). 단순 dmg+block 탈피."
+  },
+  {
+   "n": 802,
+   "kind": "나머지 재정비 데모 (방향 OX)",
+   "loc": "예시: 116 맞받아치기 (basic dmg5+block5)",
+   "text": "이 방향으로 나머지 generic dmg+block/draw 카드도 정리할지?",
+   "proposal": "→ 효과: block:5:self, block-to-damage:1:enemy\n기본 카드 → 싼 돌파 시동(방어 후 방어막만큼 피해). 132 방패 치기의 basic판."
+  },
+  {
+   "n": 803,
+   "kind": "나머지 재정비 데모 (방향 OX)",
+   "loc": "예시: 120 등가교환 (rare dmg10+block10+draw1)",
+   "text": "이 방향으로 나머지 generic dmg+block/draw 카드도 정리할지?",
+   "proposal": "→ 효과: block:10:self, damage-per-cards-played:3:enemy, draw:1:self\n단순 dmg+block → 막으며 콤보 페이오프 + 드로우. (119와 유사축이면 하나는 다른 메커니즘으로 조정)"
+  }
+ ]
+}
