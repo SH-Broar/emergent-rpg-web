@@ -1323,7 +1323,7 @@ name = 떠 있는 책
 node_kinds = event
 weight = 1
 once_per_run = true
-body = 루나 도서관. 책 한 권이 공중에 떠 있다. 누군가가 오래 그 자리에 두고 간 것 같다. 페비엘이 책장 끝에서 짧게 당신을 본다. "...그쪽도 결계를 본 적 있나요?"
+body = 루나 1층의 도서관. 책 한 권이 공중에 떠 있다. 책 뒤에서 페비엘이 나타나, 당신에게 말을 건다. "...그쪽도 결계를 조사하려는 건가요?"
 
 [event.ev-luna-library-floating-book.choice.1]
 label = 책에 손을 댄다
@@ -1377,7 +1377,7 @@ name = 제목이 보이지 않는 책
 node_kinds = event, combat
 weight = 1
 once_per_run = true
-body = 금서 회랑. 책 한 권의 제목이 보이지 않는다. 다른 책들은 다 읽힌다. 그 책만 글자가 표지에서 빠져 있다.
+body = 금서 회랑의 몇몇 책들은 제목이 지워져 있다.
 
 [event.ev-luna-grimoire-blind-title.choice.1]
 label = 표지를 손바닥으로 짚어 본다
@@ -1428,7 +1428,7 @@ name = 시험장 옆
 node_kinds = event, activity
 weight = 1
 once_per_run = true
-body = 강의실. 학생들이 시험지를 들고 줄지어 앉아 있다. 외부인인 당신이 옆 통로에 우연히 서 있다. 한 학생의 손끝이 작게 떨린다.
+body = 강의실. 학생들이 시험지를 들고 줄지어 앉아 있다. 외부인인 당신은 통로 끝에 서서 그 광경을 본다. 한 학생의 손끝이 작게 떨린다.
 
 [event.ev-luna-classroom-test.choice.1]
 label = 옆 학생을 짧게 본다 (어깨가 가만히 풀린다)
@@ -1556,7 +1556,7 @@ node_kinds = event
 weight = 1
 once_per_run = true
 condition = has-clue:cl-febiel-binding-note
-body = 결계실 깊숙한 곳. 페비엘이 결계 하나를 작게 비켜선다. 그 너머로 옛 마을이 잠시 보인다. 사람들이 낮은 등불 아래 모여 있다. "...저기가 스텔라 빌. 내 고향."
+body = 결계실 깊숙한 곳. 페비엘이 결계 하나를 살짝 걷어 낸다. 그 너머로 오래된 책에서 본 풍경이 펼쳐져 있다. "...여기가 스텔라 빌. 내 고향."
 
 [event.ev-luna-febiel-stellaville.choice.1]
 label = 같이 본다 (조용히)
@@ -1590,7 +1590,7 @@ name = 활기찬 마을
 node_kinds = event, village
 weight = 1
 once_per_run = true
-body = 일루네온 광장 여러 일이 동시에 흐른다. 행상의 외침, 학교 가는 학생 무리, 분수 옆의 작은 소년. 그 한가운데에 외부인이 서 있다.
+body = 한낮의 광장. 아이들이 지나가고, 분수에 사람들이 모여 있다.
 
 [event.ev-iluneon-plaza-flow.choice.1]
 label = 흐름에 잠시 끼어 본다
@@ -1614,7 +1614,7 @@ name = 시장 거리
 node_kinds = event, shop
 weight = 1
 once_per_run = true
-body = 시장에 늘어선 가판. 마법 상점·식료·옷·돌멩이. 외부인 한 명이 낯선 자리에 잠시 멈춘다. 가판 사람이 짧게 본다.
+body = 시장에 가판이 늘어서 있다. 마법 약, 식료, 옷, 흔한 돌멩이까지 뒤섞여 있다. 누군가 그 앞에 멈추자, 점원이 살짝 올려다봤다.
 
 [event.ev-iluneon-market-row.choice.1]
 label = 가판의 작은 물건을 본다
@@ -1665,7 +1665,7 @@ name = 식당 구석자리
 node_kinds = event, gather
 weight = 1
 once_per_run = true
-body = 일루네온 식당. 분주한 자리들 사이에서 한 곳만 조용하다. 한 사람이 멍하니 식판을 본다. 식판 표면에 짧은 글자가 잠시 떠올랐다 사라진다.
+body = 일루네온 식당. 북적이는 자리 사이에서 한 곳만 조용하다. 한 사람이 멍하니 식판을 들여다본다. 뭔가 말하고 있는 것 같지만, 잘 들리진 않는다.
 
 [event.ev-iluneon-diner-seat.choice.1]
 label = 옆자리에 잠시 앉는다
@@ -1743,7 +1743,7 @@ node_kinds = event
 weight = 1
 once_per_run = true
 condition = has-clue:cl-iluneon-clock-record
-body = 식당. 임페리시아가 식판 표면에 손가락으로 글자를 적고 있다. "...당위(當爲)란 무엇인가요?" 글자가 공기 중에서 잠시 머물다 사라진다.
+body = 식당. 임페리시아가 허공에 손가락으로 글자를 적는다. "...당위란 무엇일까요?" 글자가 잠시 머물다 사라진다.
 
 [event.ev-iluneon-imperisia-meeting.choice.1]
 label = "...자리에 머무는 것" 라고 답한다
@@ -1799,7 +1799,7 @@ name = 다락방
 node_kinds = event
 weight = 1
 once_per_run = true
-body = 시계탑 아래 종지기 노인의 작은 방. 종 줄이 천장으로 길게 올라간다. 노인은 잠깐 사이에도 깊이 자고 있다.
+body = 시계탑 아래, 종지기 노인의 작은 방. 굵은 종 줄이 천장 구멍으로 사라진다. 노인은 의자에 앉은 채 깊이 잠들어 있다.
 
 [event.ev-iluneon-bellroom.choice.1]
 label = 종 줄을 짧게 살펴 본다
@@ -1826,7 +1826,7 @@ name = 분수 옆
 node_kinds = event, rest
 weight = 1
 once_per_run = true
-body = 광장 분수 옆 니아 이유르가 그늘진 벤치에 잠시 앉아 있다. 물소리가 그의 어깨를 지난다. 그가 당신을 본다. "...앉아도 됩니다."
+body = 광장 분수 옆, 니아 이유르가 그늘진 벤치에 앉아 있다. 물소리가 작게 들리고, 그가 말한다. "...여기 앉아."
 
 [event.ev-iluneon-niayur-fountain.choice.1]
 label = 옆에 잠시 앉는다
