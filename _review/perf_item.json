@@ -1,0 +1,278 @@
+{
+ "meta": {
+  "id": "perf_item",
+  "title": "아이템 성능 검수"
+ },
+ "items": [
+  {
+   "n": 1,
+   "kind": "아이템성능",
+   "loc": "items/act-1-arc-items.txt [item.i-arc-dun-ember-draught]",
+   "text": "「던의 화로주」 [legendary] 전투포션 · 소모 · 효과: combat-block:18, combat-self-status:strength:2"
+  },
+  {
+   "n": 2,
+   "kind": "아이템성능",
+   "loc": "items/act-1-arc-items.txt [item.i-arc-tifre-spark-vial]",
+   "text": "「티프레의 번개 가루」 [legendary] 전투포션 · 소모 · 효과: combat-mana:2, combat-draw:1"
+  },
+  {
+   "n": 3,
+   "kind": "아이템성능",
+   "loc": "items/act-1-arc-items.txt [item.i-arc-tamamo-tail-charm]",
+   "text": "「타마모의 꼬리 부적」 [legendary] 전투포션 · 소모 · 효과: combat-free-grapple, cleanse-group:mid"
+  },
+  {
+   "n": 4,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-potion-small]",
+   "text": "「작은 회복약」 [basic] 재료/기타 · 소모 · 효과: heal:10"
+  },
+  {
+   "n": 5,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-truename-mirror]",
+   "text": "「본명의 거울」 [rare] 재료/기타 · 소모 · 효과: cleanse-transform"
+  },
+  {
+   "n": 6,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-extra-life-ember]",
+   "text": "「되살아나는 불씨」 [rare] 재료/기타 · 소모 · 효과: gain-life:1"
+  },
+  {
+   "n": 7,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-potion-large]",
+   "text": "「큰 회복약」 [common] 재료/기타 · 소모 · 효과: heal:25"
+  },
+  {
+   "n": 8,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-time-flask]",
+   "text": "「시간의 플라스크」 [common] 재료/기타 · 소모 · 효과: time-shards:5"
+  },
+  {
+   "n": 9,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-gold-pouch]",
+   "text": "「작은 골드 주머니」 [basic] 재료/기타 · 소모 · 효과: gold:20"
+  },
+  {
+   "n": 10,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-fire-tincture]",
+   "text": "「불의 정수」 [common] 재료/기타 · 소모 · 효과: color-boost:fire:10"
+  },
+  {
+   "n": 11,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-water-tincture]",
+   "text": "「물의 정수」 [common] 재료/기타 · 소모 · 효과: color-boost:water:10"
+  },
+  {
+   "n": 12,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-iron-tincture]",
+   "text": "「철의 정수」 [common] 재료/기타 · 소모 · 효과: color-boost:iron:10"
+  },
+  {
+   "n": 13,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-element-jar]",
+   "text": "「여덟 빛 물약」 [rare] 재료/기타 · 소모 · 효과: color-all:5"
+  },
+  {
+   "n": 14,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-harpy-wing]",
+   "text": "「하피의 날개」 [rare] 재료/기타 · 소모 · 효과: teleport-village"
+  },
+  {
+   "n": 15,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-mono-card-token]",
+   "text": "「모노의 선물」 [rare] 재료/기타 · 소모 · 효과: grant-card:c-resolve-flash"
+  },
+  {
+   "n": 16,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-rewind-glass]",
+   "text": "「회귀의 모래시계」 [rare] 재료/기타 · 소모 · 효과: revive-node"
+  },
+  {
+   "n": 17,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-combat-balm]",
+   "text": "「상처 연고」 [common] 전투포션 · 소모 · 효과: heal:14"
+  },
+  {
+   "n": 18,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-combat-elixir]",
+   "text": "「재생의 영약」 [rare] 전투포션 · 소모 · 효과: heal:30"
+  },
+  {
+   "n": 19,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-combat-spark]",
+   "text": "「정신 각성제」 [common] 전투포션 · 소모 · 효과: combat-mana:2"
+  },
+  {
+   "n": 20,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-combat-foresight]",
+   "text": "「통찰의 차」 [common] 전투포션 · 소모 · 효과: combat-draw:2"
+  },
+  {
+   "n": 21,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-combat-bulwark]",
+   "text": "「철벽 환약」 [common] 전투포션 · 소모 · 효과: combat-block:12"
+  },
+  {
+   "n": 22,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-combat-mark]",
+   "text": "「균열의 가루」 [common] 전투포션 · 소모 · 효과: combat-enemy-status:vulnerable:2"
+  },
+  {
+   "n": 23,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-combat-fog]",
+   "text": "「나른한 향」 [rare] 전투포션 · 소모 · 효과: combat-enemy-status:weakness:2"
+  },
+  {
+   "n": 24,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-combat-venom]",
+   "text": "「잠식의 독병」 [rare] 전투포션 · 소모 · 효과: combat-enemy-status:poison:5"
+  },
+  {
+   "n": 25,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-combat-rage]",
+   "text": "「격동의 불꽃」 [rare] 전투포션 · 소모 · 효과: combat-self-status:strength:2"
+  },
+  {
+   "n": 26,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-combat-regen]",
+   "text": "「새살 물약」 [common] 전투포션 · 소모 · 효과: combat-self-status:regen:3"
+  },
+  {
+   "n": 27,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-combat-haste]",
+   "text": "「다람쥐 물약」 [rare] 전투포션 · 소모 · 효과: combat-self-status:haste:2"
+  },
+  {
+   "n": 28,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-combat-ward]",
+   "text": "「포근 물약」 [rare] 전투포션 · 소모 · 효과: combat-block:6, combat-self-status:ward:2"
+  },
+  {
+   "n": 29,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-combat-freedom]",
+   "text": "「줄톱」 [common] 전투포션 · 소모 · 효과: combat-free-grapple"
+  },
+  {
+   "n": 30,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-combat-tempo]",
+   "text": "「박동의 환약」 [rare] 전투포션 · 소모 · 효과: combat-draw:1, combat-mana:1"
+  },
+  {
+   "n": 31,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-cleanse-minor]",
+   "text": "「산뜻한 물비누」 [common] 전투포션 · 소모 · 효과: cleanse-group:low"
+  },
+  {
+   "n": 32,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-cleanse-medium]",
+   "text": "「또랑또랑 물방울」 [rare] 전투포션 · 소모 · 효과: cleanse-group:mid"
+  },
+  {
+   "n": 33,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-cleanse-major]",
+   "text": "「단단한 마음 사탕」 [rare] 전투포션 · 소모 · 효과: cleanse-group:high"
+  },
+  {
+   "n": 34,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-cleanse-full]",
+   "text": "「씻어 내는 비」 [legendary] 전투포션 · 소모 · 효과: cleanse-group:all"
+  },
+  {
+   "n": 35,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-world-tree-bud]",
+   "text": "「세계수의 새싹」 [rare] 재료/기타 · 소모 · 효과: "
+  },
+  {
+   "n": 36,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-storm-fang]",
+   "text": "「폭풍의 송곳니」 [rare] 재료/기타 · 소모 · 효과: "
+  },
+  {
+   "n": 37,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-grimoire-ink]",
+   "text": "「금서의 잉크」 [rare] 재료/기타 · 소모 · 효과: "
+  },
+  {
+   "n": 38,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-material-common]",
+   "text": "「흩어진 시간 부스러기」 [common] 재료/기타 · 소모 · 효과: "
+  },
+  {
+   "n": 39,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-material-rare]",
+   "text": "「굳은 시간 덩이」 [rare] 재료/기타 · 소모 · 효과: "
+  },
+  {
+   "n": 40,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-time-answer]",
+   "text": "「시간의 답」 [legendary] 재료/기타 · 소모 · 효과: "
+  },
+  {
+   "n": 41,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-salt-pearl]",
+   "text": "「소금 진주」 [rare] 재료/기타 · 소모 · 효과: "
+  },
+  {
+   "n": 42,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-lava-scale]",
+   "text": "「용암 비늘」 [rare] 재료/기타 · 소모 · 효과: "
+  },
+  {
+   "n": 43,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-sky-shard]",
+   "text": "「하늘 조각」 [rare] 재료/기타 · 소모 · 효과: "
+  },
+  {
+   "n": 44,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-emberforge-ore]",
+   "text": "「검은 광석」 [rare] 재료/기타 · 소모 · 효과: "
+  },
+  {
+   "n": 45,
+   "kind": "아이템성능",
+   "loc": "items/act-1-items.txt [item.i-shrine-relic]",
+   "text": "「신전 유물 조각」 [rare] 재료/기타 · 소모 · 효과: "
+  }
+ ]
+}

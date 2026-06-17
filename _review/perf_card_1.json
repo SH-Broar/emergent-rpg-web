@@ -1,0 +1,320 @@
+{
+ "meta": {
+  "id": "perf_card_1",
+  "title": "카드 성능 검수 (1/6)"
+ },
+ "items": [
+  {
+   "n": 1,
+   "kind": "카드성능",
+   "loc": "cards/cards-arc.txt [card.c-arc-dun-quake-paw]",
+   "text": "「잿불 곰의 앞발」 2코 · 3칸 · 효과: damage:16:enemy, block:12:self · 속도 slow · 배율 1.0,0.7,0.7"
+  },
+  {
+   "n": 2,
+   "kind": "카드성능",
+   "loc": "cards/cards-arc.txt [card.c-arc-tifre-thunderstep]",
+   "text": "「번개 밟기」 1코 · 2칸 · 효과: damage:7:enemy, apply-status:2:enemy:vulnerable, draw:1:self · 속도 fast · 배율 1.0,0.7"
+  },
+  {
+   "n": 3,
+   "kind": "카드성능",
+   "loc": "cards/cards-arc.txt [card.c-arc-tamamo-foxfire]",
+   "text": "「아홉 꼬리 여우불」 2코 · 4칸 · 효과: damage:12:enemy, apply-status:2:enemy:weakness, apply-status:1:self:strength · 속도 normal · 배율 0.7,0.7,0.7,0.7"
+  },
+  {
+   "n": 4,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-strike]",
+   "text": "「일격」 1코 · 1칸 · 효과: damage:6:enemy · 속도 fast"
+  },
+  {
+   "n": 5,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-defend]",
+   "text": "「방어」 1코 · self(제자리) · 효과: block:5:self · 속도 normal"
+  },
+  {
+   "n": 6,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-quickdraw]",
+   "text": "「순발력」 0코 · self(제자리) · 효과: draw:1:self · 속도 fast"
+  },
+  {
+   "n": 7,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-recover]",
+   "text": "「숨 고르기」 1코 · self(제자리) · 효과: heal:4:self, exhaust-self:0:self · 속도 slow"
+  },
+  {
+   "n": 8,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-resolve-flash]",
+   "text": "「결심의 섬광」 1코 · 1칸 · 효과: damage:11:enemy, block:4:self · 속도 normal"
+  },
+  {
+   "n": 9,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-gentle-guard]",
+   "text": "「물의 방패」 1코 · self(제자리) · 효과: block:11:self · 속도 slow"
+  },
+  {
+   "n": 10,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-double-strike]",
+   "text": "「패기」 1코 · 2칸 · 효과: damage-per-hand:3:enemy · 속도 fast"
+  },
+  {
+   "n": 11,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-focused-mind]",
+   "text": "「집중」 1코 · self(제자리) · 효과: draw:3:self · 속도 slow"
+  },
+  {
+   "n": 12,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-burn-mark]",
+   "text": "「화염구」 1코 · 3칸 · 효과: damage:4:enemy, apply-status:5:enemy:burn · 속도 slow · 배율 0.7,1.0,0.7"
+  },
+  {
+   "n": 13,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-second-wind]",
+   "text": "「산들바람」 1코 · self(제자리) · 효과: heal:6:self, draw:1:self, exhaust-self:0:self · 속도 slow"
+  },
+  {
+   "n": 14,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-deep-breath]",
+   "text": "「응급 치료」 0코 · 1칸 · 효과: draw:1:self, heal:1:self, damage:8:enemy, exhaust-self:0:self · 속도 fast"
+  },
+  {
+   "n": 15,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-transcend-strike]",
+   "text": "「이세계의 검」 2코 · 3칸 · 효과: damage:42:enemy, consume-vulnerable:3:enemy · 속도 slow · 배율 1.0,0.7,0.7"
+  },
+  {
+   "n": 16,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-shadow-rebuke]",
+   "text": "「그림자 밟기」 1코 · 3칸 · 효과: damage:11:enemy, apply-status:1:enemy:vulnerable · 속도 normal · 배율 1.0,0.7,0.7"
+  },
+  {
+   "n": 17,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-iluneon-stopped-noon]",
+   "text": "「멈춘 시계」 2코 · 1칸 · 효과: damage:16:enemy, apply-status:1:enemy:paralyze · 속도 slow"
+  },
+  {
+   "n": 18,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-moss-ember-strike]",
+   "text": "「꺼지지 않는 불」 2코 · 2칸 · 효과: damage:16:enemy, apply-status:14:enemy:burn · 속도 slow · 배율 1.0,0.7"
+  },
+  {
+   "n": 19,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-tacomi-hologram-mirror]",
+   "text": "「홀로매트릭스」 3코 · self(제자리) · 효과: block:18:self, apply-status:1:self:ghost · 속도 slow"
+  },
+  {
+   "n": 20,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-alimes-mist-vow]",
+   "text": "「안개의 약속」 2코 · 1칸 · 효과: heal:7:self, draw:1:self, damage:25:enemy, exhaust-self:0:self · 속도 slow"
+  },
+  {
+   "n": 21,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-manonickla-sunset-wall]",
+   "text": "「석양의 벽」 2코 · 3칸 · 효과: block:35:self, damage-top-color:1:enemy · 속도 slow · 배율 1.0,0.7,0.7"
+  },
+  {
+   "n": 22,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-swift-step]",
+   "text": "「상승기류」 1코 · self(제자리) · 효과: draw:1:self, next-turn-energy:1:self, heal:-4:self · 속도 fast"
+  },
+  {
+   "n": 23,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-fast-mail]",
+   "text": "「등기 우편」 0코 · self(제자리) · 효과: draw:1:self, next-turn-energy:1:self, heal:-4:self · 속도 fast"
+  },
+  {
+   "n": 24,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-balanced-edge]",
+   "text": "「균형검」 1코 · 1칸 · 효과: damage-min-color:1:enemy · 속도 normal"
+  },
+  {
+   "n": 25,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-binding-ward]",
+   "text": "「후회」 1코 · 1칸 · 효과: apply-status:3:enemy:weakness · 속도 normal"
+  },
+  {
+   "n": 26,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-quiet-arc]",
+   "text": "「가라앉음」 1코 · 1칸 · 효과: apply-status:2:enemy:vulnerable, apply-status:1:enemy:weakness · 속도 slow"
+  },
+  {
+   "n": 27,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-flash-capture]",
+   "text": "「찰칵!」 4코 · 3칸 · 효과: apply-status:2:enemy:paralyze · 속도 slow · 배율 0.7,1.0,0.7"
+  },
+  {
+   "n": 28,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-rize-relay]",
+   "text": "「연속 타격」 1코 · 1칸 · 효과: damage:6:enemy · 속도 fast"
+  },
+  {
+   "n": 29,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-spirit-call]",
+   "text": "「모인 영혼들」 1코 · 1칸 · 효과: damage-color-count:3:enemy, draw:1:self · 속도 normal"
+  },
+  {
+   "n": 30,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-warm-cup]",
+   "text": "「따뜻한 한 잔」 1코 · 1칸 · 효과: heal:3:self, draw:1:self, damage:8:enemy, exhaust-self:0:self · 속도 normal"
+  },
+  {
+   "n": 31,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-tripps-rage]",
+   "text": "「트립스」 20코 · 1칸 · 효과: damage:85:enemy, apply-status:1:enemy:vulnerable, apply-status:1:enemy:weakness · 속도 slow"
+  },
+  {
+   "n": 32,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-trace-step]",
+   "text": "「발자취」 1코 · self(제자리) · 효과: draw:2:self, return-hand-to-deck:1:self, next-turn-energy:1:self · 속도 fast"
+  },
+  {
+   "n": 33,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-growing-leaf]",
+   "text": "「자라나는 잎새」 2코 · self(제자리) · 효과: growing-block:2:self · 속도 slow"
+  },
+  {
+   "n": 34,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-zero-spark]",
+   "text": "「전류 자국」 1코 · 2칸 · 효과: damage:14:enemy, apply-status:2:enemy:vulnerable · 속도 fast · 배율 1.0,0.7"
+  },
+  {
+   "n": 35,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-alti-resonance]",
+   "text": "「알티-알타의 신호」 1코 · 4칸 · 효과: draw:2:self, heal:2:self, damage:12:enemy, exhaust-self:0:self · 속도 normal · 배율 1.0,0.7,0.7,0.7"
+  },
+  {
+   "n": 36,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-flame-web]",
+   "text": "「화염 거미줄」 1코 · 5칸 · 효과: damage:12:enemy, apply-status:3:enemy:vulnerable · 속도 slow · 배율 0.7,0.7,0.7,0.7,0.7"
+  },
+  {
+   "n": 37,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-orca-tide]",
+   "text": "「범고래의 물결」 1코 · 3칸 · 효과: damage:14:enemy, block:8:self · 속도 normal · 배율 1.0,0.7,0.7"
+  },
+  {
+   "n": 38,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-trade-coil]",
+   "text": "「꼬리 감기」 1코 · 4칸 · 효과: damage:12:enemy, block:9:self · 속도 slow · 배율 1.0,0.7,0.7,0.7"
+  },
+  {
+   "n": 39,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-lop-sign]",
+   "text": "「리포의 신호」 1코 · self(제자리) · 효과: draw:1:self, block:8:self · 속도 normal"
+  },
+  {
+   "n": 40,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-tide-veil]",
+   "text": "「물의 방패」 1코 · self(제자리) · 효과: block:9:self, heal:3:self, exhaust-self:0:self · 속도 normal"
+  },
+  {
+   "n": 41,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-bear-bastion]",
+   "text": "「곰의 방벽」 2코 · 1칸 · 효과: block:19:self, damage:12:enemy · 속도 slow"
+  },
+  {
+   "n": 42,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-tiger-rush]",
+   "text": "「빠른 삼연」 2코 · 2칸 · 효과: damage:8:enemy, damage:8:enemy, damage:8:enemy · 속도 fast · 배율 1.0,0.8"
+  },
+  {
+   "n": 43,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-prism-strike]",
+   "text": "「오로라」 1코 · 1칸 · 효과: damage-top-color:1:enemy · 속도 normal"
+  },
+  {
+   "n": 44,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-prism-guard]",
+   "text": "「간파」 1코 · self(제자리) · 효과: block-top-color:1:self · 속도 normal"
+  },
+  {
+   "n": 45,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-spectrum-edge]",
+   "text": "「무지갯빛 칼날」 2코 · 9칸 · 효과: damage-color-count:4:enemy · 속도 slow · 배율 0.7,0.8,0.7,0.8,1.0,0.8,0.7,0.7,0.7"
+  },
+  {
+   "n": 46,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-blood-pact]",
+   "text": "「피의 계약」 1코 · 1칸 · 효과: damage-from-hp:6:enemy · 속도 slow"
+  },
+  {
+   "n": 47,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-beast-skin]",
+   "text": "「짐승의 가죽」 1코 · 1칸 · 효과: apply-status:1:self:feral, damage:7:enemy · 속도 fast"
+  },
+  {
+   "n": 48,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-fang-frenzy]",
+   "text": "「사냥 본능」 1코 · 2칸 · 효과: damage:8:enemy · 속도 fast · 배율 1.0,0.7"
+  },
+  {
+   "n": 49,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-primal-collapse]",
+   "text": "「배수진」 1코 · 1칸 · 효과: damage:25:enemy, damage-per-confine:3:enemy, exhaust-self · 속도 slow"
+  },
+  {
+   "n": 50,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-elder-curse]",
+   "text": "「태고의 저주」 2코 · 2칸 · 효과: apply-status:2:enemy:regress, damage:9:enemy · 속도 slow"
+  },
+  {
+   "n": 51,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-debuff-storm]",
+   "text": "「네메시스」 1코 · 1칸 · 효과: damage-per-debuff:6:enemy · 속도 normal"
+  },
+  {
+   "n": 52,
+   "kind": "카드성능",
+   "loc": "cards/cards-mvr.txt [card.c-cursed-blade]",
+   "text": "「저주받은 검」 2코 · 2칸 · 효과: damage-per-debuff:9:enemy · 속도 slow · 배율 1.0,0.7"
+  }
+ ]
+}

@@ -1,0 +1,284 @@
+{
+ "meta": {
+  "id": "perf_relic_6",
+  "title": "유물 성능 검수 (6/6)"
+ },
+ "items": [
+  {
+   "n": 1,
+   "kind": "유물성능",
+   "loc": "relics/relics-stat.txt [relic.r-stat-tidecore]",
+   "text": "「물결 응어리」 [rare] on-acquire · 효과: boost-stat:6:mag"
+  },
+  {
+   "n": 2,
+   "kind": "유물성능",
+   "loc": "relics/relics-stat.txt [relic.r-stat-mono-current]",
+   "text": "「고인 달빛」 [legendary] on-acquire · 효과: boost-stat:9:mag"
+  },
+  {
+   "n": 3,
+   "kind": "유물성능",
+   "loc": "relics/relics-stat.txt [relic.r-stat-whispering-gust]",
+   "text": "「속삭이는 바람」 [common] on-turn-start · 효과: boost-stat:1:mag"
+  },
+  {
+   "n": 4,
+   "kind": "유물성능",
+   "loc": "relics/relics-stat.txt [relic.r-stat-flow-conduit]",
+   "text": "「마나 물길」 [rare] passive · 효과: mana-extra-add:1, boost-stat:1:mag"
+  },
+  {
+   "n": 5,
+   "kind": "유물성능",
+   "loc": "relics/relics-stat.txt [relic.r-stat-foresight-glass]",
+   "text": "「예지의 유리」 [rare] passive · 효과: draw-extra-add:1, boost-stat:1:mag"
+  },
+  {
+   "n": 6,
+   "kind": "유물성능",
+   "loc": "relics/relics-stat.txt [relic.r-stat-tide-lens]",
+   "text": "「물빛 돋보기」 [common] on-acquire · 효과: boost-color:8:water"
+  },
+  {
+   "n": 7,
+   "kind": "유물성능",
+   "loc": "relics/relics-stat.txt [relic.r-stat-galewright]",
+   "text": "「낡은 바람개비」 [rare] on-combat-start · 효과: strength-from-metric:6:wind"
+  },
+  {
+   "n": 8,
+   "kind": "유물성능",
+   "loc": "relics/relics-stat.txt [relic.r-stat-spellweight]",
+   "text": "「마력의 추」 [legendary] on-card-played-after · 효과: cards-to-draw:7"
+  },
+  {
+   "n": 9,
+   "kind": "유물성능",
+   "loc": "relics/relics-stat.txt [relic.r-stat-blazing-grasp]",
+   "text": "「타오르는 손아귀」 [rare] on-combat-start · 효과: strength-from-metric:8:atk, draw-extra-add:-1"
+  },
+  {
+   "n": 10,
+   "kind": "유물성능",
+   "loc": "relics/relics-stat.txt [relic.r-stat-overcharged-coil]",
+   "text": "「과충전 코일」 [rare] on-acquire · 효과: boost-stat:9:atk, bonus-hp:-5"
+  },
+  {
+   "n": 11,
+   "kind": "유물성능",
+   "loc": "relics/relics-stat.txt [relic.r-stat-leaden-aegis]",
+   "text": "「납 방패」 [rare] on-combat-start · 효과: block-from-metric:8:def, draw-extra-add:-1"
+  },
+  {
+   "n": 12,
+   "kind": "유물성능",
+   "loc": "relics/relics-stat.txt [relic.r-stat-fortress-anchor]",
+   "text": "「녹슨 닻」 [rare] on-acquire · 효과: boost-stat:9:def, bonus-hp:-5"
+  },
+  {
+   "n": 13,
+   "kind": "유물성능",
+   "loc": "relics/relics-stat.txt [relic.r-stat-deepdraw-prism]",
+   "text": "「심층 프리즘」 [rare] passive · 효과: draw-extra-add:2, mana-extra-add:-1"
+  },
+  {
+   "n": 14,
+   "kind": "유물성능",
+   "loc": "relics/relics-stat.txt [relic.r-stat-stormfont]",
+   "text": "「폭풍 솟는 샘」 [legendary] on-acquire · 효과: boost-stat:9:mag, bonus-hp:-5"
+  },
+  {
+   "n": 15,
+   "kind": "유물성능",
+   "loc": "relics/relics-turn.txt [relic.r-turn-snow-pebble]",
+   "text": "「굳어 버린 눈 조각」 [common] on-acquire · 효과: boost-color:8:water"
+  },
+  {
+   "n": 16,
+   "kind": "유물성능",
+   "loc": "relics/relics-turn.txt [relic.r-turn-snow-drift]",
+   "text": "「다져진 눈더미」 [common] passive · 효과: bonus-hp:15"
+  },
+  {
+   "n": 17,
+   "kind": "유물성능",
+   "loc": "relics/relics-turn.txt [relic.r-turn-snow-crown]",
+   "text": "「눈의 왕관」 [rare] on-turn-start · 효과: turn-start-block-snowball:2"
+  },
+  {
+   "n": 18,
+   "kind": "유물성능",
+   "loc": "relics/relics-turn.txt [relic.r-turn-avalanche-bell]",
+   "text": "「눈사태의 종」 [rare] on-turn-start · 효과: turn-start-block-snowball:2"
+  },
+  {
+   "n": 19,
+   "kind": "유물성능",
+   "loc": "relics/relics-turn.txt [relic.r-turn-slow-ember]",
+   "text": "「다 타 버린 불씨」 [common] on-acquire · 효과: bonus-gold:35"
+  },
+  {
+   "n": 20,
+   "kind": "유물성능",
+   "loc": "relics/relics-turn.txt [relic.r-turn-late-fang]",
+   "text": "「드러난 송곳니」 [rare] passive · 효과: damage-out-add:2"
+  },
+  {
+   "n": 21,
+   "kind": "유물성능",
+   "loc": "relics/relics-turn.txt [relic.r-turn-mono-hourglass]",
+   "text": "「모노의 모래시계」 [legendary] on-turn-start · 효과: turn-after-strength:1:3"
+  },
+  {
+   "n": 22,
+   "kind": "유물성능",
+   "loc": "relics/relics-turn.txt [relic.r-turn-patient-thorn]",
+   "text": "「달팽이 껍데기」 [common] on-turn-start · 효과: chance-random-color-1:45"
+  },
+  {
+   "n": 23,
+   "kind": "유물성능",
+   "loc": "relics/relics-turn.txt [relic.r-turn-rising-sigil]",
+   "text": "「차오르는 무늬」 [rare] on-turn-start · 효과: chance-random-color-1:55"
+  },
+  {
+   "n": 24,
+   "kind": "유물성능",
+   "loc": "relics/relics-turn.txt [relic.r-turn-spirit-crescendo]",
+   "text": "「정령의 응원」 [legendary] on-turn-start · 효과: turn-after-strength:1:3"
+  },
+  {
+   "n": 25,
+   "kind": "유물성능",
+   "loc": "relics/relics-turn.txt [relic.r-turn-morning-shell]",
+   "text": "「아침 조개」 [common] on-turn-start · 효과: turn-units-color:2:6"
+  },
+  {
+   "n": 26,
+   "kind": "유물성능",
+   "loc": "relics/relics-turn.txt [relic.r-turn-cradle-quilt]",
+   "text": "「포근한 포대기」 [common] on-turn-start · 효과: turn-before-block:4:2"
+  },
+  {
+   "n": 27,
+   "kind": "유물성능",
+   "loc": "relics/relics-turn.txt [relic.r-turn-dawn-bulwark]",
+   "text": "「동틀 녘의 보루」 [rare] on-damage-taken · 효과: retaliate:5"
+  },
+  {
+   "n": 28,
+   "kind": "유물성능",
+   "loc": "relics/relics-turn.txt [relic.r-turn-early-tide]",
+   "text": "「이른 밀물」 [rare] on-turn-start · 효과: turn-before-block:6:2"
+  },
+  {
+   "n": 29,
+   "kind": "유물성능",
+   "loc": "relics/relics-turn.txt [relic.r-turn-seedling-vow]",
+   "text": "「새싹의 맹세」 [common] on-turn-start · 효과: turn-before-block:4:3"
+  },
+  {
+   "n": 30,
+   "kind": "유물성능",
+   "loc": "relics/relics-turn.txt [relic.r-turn-zero-chime]",
+   "text": "「자정 종」 [rare] on-turn-start · 효과: turn-units-color:2:0"
+  },
+  {
+   "n": 31,
+   "kind": "유물성능",
+   "loc": "relics/relics-turn.txt [relic.r-turn-first-spark]",
+   "text": "「새벽 불씨」 [common] on-turn-start · 효과: turn-units-color:1:1"
+  },
+  {
+   "n": 32,
+   "kind": "유물성능",
+   "loc": "relics/relics-turn.txt [relic.r-turn-third-bloom]",
+   "text": "「토끼풀」 [common] on-turn-start · 효과: turn-units-color:1:3"
+  },
+  {
+   "n": 33,
+   "kind": "유물성능",
+   "loc": "relics/relics-turn.txt [relic.r-turn-fifth-pulse]",
+   "text": "「한낮의 종」 [common] on-turn-start · 효과: turn-units-color:1:5"
+  },
+  {
+   "n": 34,
+   "kind": "유물성능",
+   "loc": "relics/relics-turn.txt [relic.r-turn-seventh-veil]",
+   "text": "「땅거미 빛」 [rare] on-turn-start · 효과: turn-units-color:2:7"
+  },
+  {
+   "n": 35,
+   "kind": "유물성능",
+   "loc": "relics/relics-turn.txt [relic.r-turn-ninth-gate]",
+   "text": "「어스름 문」 [rare] on-turn-start · 효과: turn-units-color:2:9"
+  },
+  {
+   "n": 36,
+   "kind": "유물성능",
+   "loc": "relics/relics-turn.txt [relic.r-turn-even-lantern]",
+   "text": "「쌍둥이 등불」 [common] on-turn-start · 효과: turn-units-color:1:2"
+  },
+  {
+   "n": 37,
+   "kind": "유물성능",
+   "loc": "relics/relics-turn.txt [relic.r-turn-fourfold-knot]",
+   "text": "「네잎 매듭」 [common] on-turn-start · 효과: turn-units-color:1:4"
+  },
+  {
+   "n": 38,
+   "kind": "유물성능",
+   "loc": "relics/relics-turn.txt [relic.r-turn-eighth-orbit]",
+   "text": "「저녁 별」 [rare] on-turn-start · 효과: turn-units-color:2:8"
+  },
+  {
+   "n": 39,
+   "kind": "유물성능",
+   "loc": "relics/relics-turn.txt [relic.r-turn-steady-tick]",
+   "text": "「변함없는 초침」 [basic] on-turn-start · 효과: turn-start-block:2"
+  },
+  {
+   "n": 40,
+   "kind": "유물성능",
+   "loc": "relics/relics-turn.txt [relic.r-turn-loyal-gear]",
+   "text": "「충직한 톱니」 [common] on-turn-start · 효과: turn-start-block:3"
+  },
+  {
+   "n": 41,
+   "kind": "유물성능",
+   "loc": "relics/relics-turn.txt [relic.r-turn-eternal-flywheel]",
+   "text": "「멈추지 않는 팽이」 [rare] on-turn-start · 효과: turn-start-block:5"
+  },
+  {
+   "n": 42,
+   "kind": "유물성능",
+   "loc": "relics/relics-turn.txt [relic.r-turn-fickle-prism]",
+   "text": "「점성술 책」 [common] on-turn-start · 효과: chance-random-color-1:35"
+  },
+  {
+   "n": 43,
+   "kind": "유물성능",
+   "loc": "relics/relics-turn.txt [relic.r-turn-greedy-glass]",
+   "text": "「밑 빠진 독」 [legendary] on-turn-start · 효과: turn-start-block-snowball:2, turn-start-hp-loss:2"
+  },
+  {
+   "n": 44,
+   "kind": "유물성능",
+   "loc": "relics/relics-turn.txt [relic.r-turn-burning-clock]",
+   "text": "「타들어 가는 시계」 [rare] on-turn-start · 효과: turn-after-strength:1:3, turn-start-hp-loss:2"
+  },
+  {
+   "n": 45,
+   "kind": "유물성능",
+   "loc": "relics/relics-turn.txt [relic.r-turn-overwound-spring]",
+   "text": "「지나치게 감긴 태엽」 [rare] on-turn-start · 효과: mana-extra-add:1, turn-start-hp-loss:2"
+  },
+  {
+   "n": 46,
+   "kind": "유물성능",
+   "loc": "relics/relics-turn.txt [relic.r-turn-hungry-deck]",
+   "text": "「굶주린 패」 [rare] on-turn-start · 효과: draw-extra-add:1, turn-start-hp-loss:2"
+  }
+ ]
+}

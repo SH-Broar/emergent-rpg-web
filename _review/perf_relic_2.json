@@ -1,0 +1,284 @@
+{
+ "meta": {
+  "id": "perf_relic_2",
+  "title": "유물 성능 검수 (2/6)"
+ },
+ "items": [
+  {
+   "n": 1,
+   "kind": "유물성능",
+   "loc": "relics/relics-acquire.txt [relic.r-acq-second-breath]",
+   "text": "「되돌린 숨」 [legendary] on-acquire · 효과: boost-max-lives:1, heal-now:10"
+  },
+  {
+   "n": 2,
+   "kind": "유물성능",
+   "loc": "relics/relics-activity.txt [relic.r-act-steady-hand]",
+   "text": "「흔들리지 않는 손」 [common] passive · 효과: activity-success-add:15"
+  },
+  {
+   "n": 3,
+   "kind": "유물성능",
+   "loc": "relics/relics-activity.txt [relic.r-act-full-basket]",
+   "text": "「가득 찬 바구니」 [rare] passive · 효과: activity-reward-mul:0.5"
+  },
+  {
+   "n": 4,
+   "kind": "유물성능",
+   "loc": "relics/relics-activity.txt [relic.r-act-second-wind]",
+   "text": "「거듭되는 새벽」 [legendary] passive · 효과: activity-success-add:10, activity-reward-mul:0.4"
+  },
+  {
+   "n": 5,
+   "kind": "유물성능",
+   "loc": "relics/relics-arc.txt [relic.r-arc-dun-ember-heart]",
+   "text": "「던의 잿불 심장」 [legendary] on-combat-start · 효과: combat-start-block:12, combat-start-status:2:strength"
+  },
+  {
+   "n": 6,
+   "kind": "유물성능",
+   "loc": "relics/relics-arc.txt [relic.r-arc-tifre-storm-fang]",
+   "text": "「티프레의 우레 송곳니」 [legendary] on-turn-start · 효과: turn-start-block:5"
+  },
+  {
+   "n": 7,
+   "kind": "유물성능",
+   "loc": "relics/relics-arc.txt [relic.r-arc-tamamo-nine-mirror]",
+   "text": "「타마모의 방울」 [legendary] on-draw · 효과: cards-to-color:3"
+  },
+  {
+   "n": 8,
+   "kind": "유물성능",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-block-keep-pebble]",
+   "text": "「온기 머금은 돌」 [rare] passive · 효과: block-carryover"
+  },
+  {
+   "n": 9,
+   "kind": "유물성능",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-block-keep-wall]",
+   "text": "「무너지지 않는 둑」 [rare] passive · 효과: block-carryover"
+  },
+  {
+   "n": 10,
+   "kind": "유물성능",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-block-keep-fortress]",
+   "text": "「영원의 성채」 [legendary] passive · 효과: block-carryover"
+  },
+  {
+   "n": 11,
+   "kind": "유물성능",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-mana-keep-flask]",
+   "text": "「새지 않는 호리병」 [rare] passive · 효과: mana-carryover"
+  },
+  {
+   "n": 12,
+   "kind": "유물성능",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-mana-keep-cell]",
+   "text": "「번개 호리병」 [rare] passive · 효과: mana-carryover"
+  },
+  {
+   "n": 13,
+   "kind": "유물성능",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-mana-keep-reservoir]",
+   "text": "「마르지 않는 못」 [legendary] passive · 효과: mana-carryover"
+  },
+  {
+   "n": 14,
+   "kind": "유물성능",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-first-free-feather]",
+   "text": "「가벼운 깃털」 [rare] passive · 효과: first-card-free"
+  },
+  {
+   "n": 15,
+   "kind": "유물성능",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-first-free-token]",
+   "text": "「외상 장부」 [rare] passive · 효과: first-card-free"
+  },
+  {
+   "n": 16,
+   "kind": "유물성능",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-first-free-overture]",
+   "text": "「이야기의 첫 줄」 [legendary] passive · 효과: first-card-free"
+  },
+  {
+   "n": 17,
+   "kind": "유물성능",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-double-curse-needle]",
+   "text": "「저주 대못」 [rare] passive · 효과: double-debuff"
+  },
+  {
+   "n": 18,
+   "kind": "유물성능",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-double-curse-mirror]",
+   "text": "「저주 인형」 [rare] passive · 효과: double-debuff"
+  },
+  {
+   "n": 19,
+   "kind": "유물성능",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-double-curse-sigil]",
+   "text": "「겹쳐 새긴 인장」 [legendary] passive · 효과: double-debuff"
+  },
+  {
+   "n": 20,
+   "kind": "유물성능",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-first-free-thin-glass]",
+   "text": "「살얼음 유리」 [rare] passive · 효과: first-card-free, bonus-hp:-8"
+  },
+  {
+   "n": 21,
+   "kind": "유물성능",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-block-keep-frail-stone]",
+   "text": "「금 간 온돌」 [rare] on-combat-start · 효과: block-carryover, combat-start-status:2:frail"
+  },
+  {
+   "n": 22,
+   "kind": "유물성능",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-double-curse-weak-grip]",
+   "text": "「떨리는 손」 [rare] on-combat-start · 효과: double-debuff, combat-start-status:1:weakness"
+  },
+  {
+   "n": 23,
+   "kind": "유물성능",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-mana-keep-leaky-vein]",
+   "text": "「금 간 마나샘」 [rare] passive · 효과: mana-carryover, bonus-hp:-6"
+  },
+  {
+   "n": 24,
+   "kind": "유물성능",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-first-free-empty-hand]",
+   "text": "「마지막 페이지」 [rare] passive · 효과: first-card-free, draw-extra-add:-1"
+  },
+  {
+   "n": 25,
+   "kind": "유물성능",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-double-curse-heavy-mark]",
+   "text": "「원한의 낙인」 [rare] passive · 효과: double-debuff, damage-in-mul:1.2"
+  },
+  {
+   "n": 26,
+   "kind": "유물성능",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-empty-palm]",
+   "text": "「빈손 부적」 [rare] on-combat-start · 효과: combat-start-return-to-deck:2"
+  },
+  {
+   "n": 27,
+   "kind": "유물성능",
+   "loc": "relics/relics-cmech.txt [relic.r-cm-void-mark]",
+   "text": "「공허의 표식」 [legendary] on-combat-start · 효과: combat-start-return-to-deck:3"
+  },
+  {
+   "n": 28,
+   "kind": "유물성능",
+   "loc": "relics/relics-color.txt [relic.r-col-fire-ember]",
+   "text": "「작은 불씨」 [basic] on-acquire · 효과: boost-color:3:fire"
+  },
+  {
+   "n": 29,
+   "kind": "유물성능",
+   "loc": "relics/relics-color.txt [relic.r-col-fire-coreheart]",
+   "text": "「화심석」 [rare] on-acquire · 효과: boost-color:8:fire"
+  },
+  {
+   "n": 30,
+   "kind": "유물성능",
+   "loc": "relics/relics-color.txt [relic.r-col-water-droplet]",
+   "text": "「물방울」 [basic] on-acquire · 효과: boost-color:3:water"
+  },
+  {
+   "n": 31,
+   "kind": "유물성능",
+   "loc": "relics/relics-color.txt [relic.r-col-water-tideheart]",
+   "text": "「밀물의 심」 [common] on-acquire · 효과: boost-color:5:water"
+  },
+  {
+   "n": 32,
+   "kind": "유물성능",
+   "loc": "relics/relics-color.txt [relic.r-col-electric-spark]",
+   "text": "「작은 불꽃」 [basic] on-acquire · 효과: boost-color:3:electric"
+  },
+  {
+   "n": 33,
+   "kind": "유물성능",
+   "loc": "relics/relics-color.txt [relic.r-col-electric-stormcore]",
+   "text": "「뇌심핵」 [legendary] on-acquire · 효과: boost-color:12:electric"
+  },
+  {
+   "n": 34,
+   "kind": "유물성능",
+   "loc": "relics/relics-color.txt [relic.r-col-iron-nail]",
+   "text": "「낡은 못」 [basic] on-acquire · 효과: boost-color:3:iron"
+  },
+  {
+   "n": 35,
+   "kind": "유물성능",
+   "loc": "relics/relics-color.txt [relic.r-col-iron-anvilcore]",
+   "text": "「모루의 핵」 [rare] on-acquire · 효과: boost-color:8:iron"
+  },
+  {
+   "n": 36,
+   "kind": "유물성능",
+   "loc": "relics/relics-color.txt [relic.r-col-earth-pebble]",
+   "text": "「손때 묻은 조약돌」 [basic] on-acquire · 효과: boost-color:3:earth"
+  },
+  {
+   "n": 37,
+   "kind": "유물성능",
+   "loc": "relics/relics-color.txt [relic.r-col-earth-rootstone]",
+   "text": "「뿌리의 돌」 [common] on-acquire · 효과: boost-color:5:earth"
+  },
+  {
+   "n": 38,
+   "kind": "유물성능",
+   "loc": "relics/relics-color.txt [relic.r-col-wind-feather]",
+   "text": "「가벼운 깃털」 [basic] on-acquire · 효과: boost-color:3:wind"
+  },
+  {
+   "n": 39,
+   "kind": "유물성능",
+   "loc": "relics/relics-color.txt [relic.r-col-wind-galecore]",
+   "text": "「질풍의 심」 [rare] on-acquire · 효과: boost-color:8:wind"
+  },
+  {
+   "n": 40,
+   "kind": "유물성능",
+   "loc": "relics/relics-color.txt [relic.r-col-light-glint]",
+   "text": "「가는 빛」 [common] on-acquire · 효과: boost-color:5:light"
+  },
+  {
+   "n": 41,
+   "kind": "유물성능",
+   "loc": "relics/relics-color.txt [relic.r-col-light-dawncore]",
+   "text": "「여명의 심」 [legendary] on-acquire · 효과: boost-color:12:light"
+  },
+  {
+   "n": 42,
+   "kind": "유물성능",
+   "loc": "relics/relics-color.txt [relic.r-col-dark-shade]",
+   "text": "「옅은 그늘」 [common] on-acquire · 효과: boost-color:5:dark"
+  },
+  {
+   "n": 43,
+   "kind": "유물성능",
+   "loc": "relics/relics-color.txt [relic.r-col-dark-voidcore]",
+   "text": "「적막의 심」 [rare] on-acquire · 효과: boost-color:8:dark"
+  },
+  {
+   "n": 44,
+   "kind": "유물성능",
+   "loc": "relics/relics-color.txt [relic.r-col-fire-traveler-coal]",
+   "text": "「여행자의 숯」 [rare] on-acquire · 효과: boost-color:8:fire"
+  },
+  {
+   "n": 45,
+   "kind": "유물성능",
+   "loc": "relics/relics-color.txt [relic.r-col-water-canteen]",
+   "text": "「가득 채운 물통」 [common] on-acquire · 효과: heal-now:12"
+  },
+  {
+   "n": 46,
+   "kind": "유물성능",
+   "loc": "relics/relics-color.txt [relic.r-col-electric-victory-coil]",
+   "text": "「방전된 코일」 [rare] on-acquire · 효과: gain-time-shards:8"
+  }
+ ]
+}
