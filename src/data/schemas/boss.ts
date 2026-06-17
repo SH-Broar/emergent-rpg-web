@@ -7,8 +7,10 @@
  *  - "캐릭터별 양상"은 signatureVariants[i].signatureId로 직접 매칭 (구 hyperion[4].bossSignatureId 제거됨)
  */
 
-import type { BossId, NamedEntity } from './base';
+import type { BossId, CastSpeed, NamedEntity } from './base';
 import type { Companion } from './npc';
+import type { GridAttack } from './monster';
+import type { MoveProfile } from './move-profile';
 
 /** 보스의 한 행동 의도. 턴마다 하나씩 노출. */
 export interface BossIntent {
@@ -37,6 +39,19 @@ export interface BossPhase {
    * 미지정이면 일반 페이즈(기믹 없음).
    */
   mechanic?: 'anchor' | 'stillness' | 'rewind';
+
+  // === 격자 전투(grid-combat) 페이즈 전용 — 전부 optional. 미설정 시 보스 기본값/엔진 폴백. ===
+  /**
+   * 이 페이즈에서 쓰는 격자 공격(시그니처 무브) 목록. 보스 HP%가 이 페이즈에 들어서면
+   * 격자 엔진이 보스 전투원의 attacks를 *이 세트로 교체*한다(거동 전환). 미설정이면 직전 세트 유지.
+   * 로더가 phase 섹션의 `grid_attack_N` 키들로부터 합성한다.
+   */
+  gridBehavior?: GridAttack[];
+  /**
+   * 이 페이즈 진입 시 *1회* 소환할 미니언 — 몬스터 id 목록(같은 수만큼 빈 칸에 출현).
+   * 로더가 phase 섹션 `spawn_minions = mr-X, mr-Y`로부터 합성. 미설정/빈 배열이면 소환 없음.
+   */
+  spawnMinions?: string[];
 }
 
 /** 시그니처 양상 변형 — 특정 캐릭터로 도전 시 보스가 다르게 행동. */
@@ -70,6 +85,22 @@ export interface Boss extends NamedEntity {
 
   /** 다단계 패턴. 비어 있으면 단일 페이즈로 모든 intent 사용. */
   phases: BossPhase[];
+
+  // === 격자 전투(grid-combat) 보스 전용 — 전부 optional. 미설정 시 엔진 폴백. ===
+  /**
+   * 격자 이동 프로필(행마법). 미설정 시 근접 추격(orthogonal1) 폴백.
+   * 보스는 보통 느리고 묵직하게 움직이거나(king range1) 제자리(공격 사거리가 넓음).
+   * 로더가 `move_pattern`/`move_range`로부터 합성.
+   */
+  gridMoveProfile?: MoveProfile;
+  /** 격자 행동 발동 속도. 미설정 시 'normal'. 로더가 `speed`로부터. */
+  gridSpeed?: CastSpeed;
+  /**
+   * 고정(스크립트형) AI 플래그. 보스 시그니처 무브는 *읽히는 텔레그래프*가 중요하므로 기본 true 권장
+   * (게임트리 lookahead 대신 페이즈 grid_attack 순서대로 그리디 로테이션). 미설정 시 true(보스는 스크립트형).
+   * 로더가 `fixed_ai`로부터(보스는 명시 false가 아니면 true).
+   */
+  gridFixedAi?: boolean;
 
   /** 캐릭터별 시그니처 양상 변형. */
   signatureVariants?: BossSignatureVariant[];

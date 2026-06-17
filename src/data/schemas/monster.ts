@@ -7,8 +7,33 @@
  *   - 시간의 조각은 *런 내 카드/유물 제작*에 사용
  */
 
-import type { NamedEntity } from './base';
+import type { CastSpeed, GridOffset, NamedEntity } from './base';
+import type { MoveProfile } from './move-profile';
 import type { Companion } from './npc';
+
+/**
+ * 격자 공격 정의 — 신규 엔진 전용. 적의 한 행동(공격/디버프).
+ * 자기(적) 기준 *고정 패턴*. 플레이어가 그 칸에 있으면 피해.
+ */
+export interface GridAttack {
+  /** 의도 인스펙트 표시 이름(선택). */
+  name?: string;
+  /** 자기 기준 고정 패턴(적용 칸 상대 오프셋). */
+  shape: GridOffset[];
+  /** shape 정렬 칸별 데미지 배율(기본 1). */
+  perTileMul?: number[];
+  /** 기본 피해(배율 곱 전). 미설정 시 monster.attack. */
+  damage?: number;
+  /** 발동 속도. 미설정 시 monster.speed 또는 'normal'. */
+  castSpeed?: CastSpeed;
+  /**
+   * 사용하려면 플레이어가 패턴 칸 안에 들어와야 하는가.
+   * true(기본): 사거리 밖이면 접근 이동을 우선. false: 위치 무관(자기 버프 등).
+   */
+  requiresInRange?: boolean;
+  /** 부여 상태이상(선택) — "vulnerable:2" 형태. */
+  applyStatus?: string;
+}
 
 /**
  * 몬스터 의도 — 매 턴 *슬롯 한 개*. 한 슬롯은 1개 이상 행동을 담는다.
@@ -96,6 +121,26 @@ export interface Monster extends NamedEntity {
    * 로더가 `companion_*` 필드(NPC와 동일 키)로부터 합성한다. recruitable=true 와 짝지어 자동 영입.
    */
   companion?: Companion;
+
+  // === 격자 전투(grid-combat) 필드 — 전부 optional. 미설정 시 엔진 폴백. ===
+  /** 격자 이동 프로필(행마법). 미설정 시 근접 추격(orthogonal1) 폴백. */
+  moveProfile?: MoveProfile;
+  /** 행동 발동 속도. 미설정 시 'normal'. */
+  speed?: CastSpeed;
+  /**
+   * 격자 공격 목록 — 신규 엔진 전용. AI가 이 중 사용 가능한 것을 고른다.
+   * 미설정 시 레거시 attack/intents 기반 단순 근접 1칸 공격으로 폴백.
+   */
+  gridBehavior?: GridAttack[];
+
+  /**
+   * 고정(스크립트형) AI 플래그 — INI `fixed_ai = true`.
+   * true면 게임트리(lookahead) AI를 *끄고* 단순 그리디(사거리 안→공격, 밖→접근) 폴백을 쓴다.
+   * 스크립트형 적·보스 페이즈처럼 *예측 가능한 고정 움직임*이 필요한 경우용.
+   * 미설정/false 면 기본 게임트리 AI(분기/깊이 캡 lookahead). gridBehavior가 없으면 어차피 그리디.
+   * (RPGEditor metadata.ts 동기화는 후속 작업 — 현재는 데이터/엔진만 인지.)
+   */
+  fixedAi?: boolean;
 }
 
 /** 전투 시점에 적 객체를 만드는 결과. combat.ts가 사용. */

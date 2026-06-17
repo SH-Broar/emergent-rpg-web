@@ -2,7 +2,7 @@
 # rank=legendary + source=boss → 상점·공방·일반 보상 풀에서 제외(arc 승리 자동 드롭 전용).
 # 3종(던·티프레·타마모) 테마 일치. 효과는 엘리트 보상보다 한 수 위.
 
-# --- 던 (불·쇠의 신수 곰) — 묵직한 한 방 + 방어. ---
+# --- 던 (불·쇠의 신수 곰) — 묵직한 앞발 휩쓸기. 전방+좌+우 횡, 중심 강타. ---
 [card.c-arc-dun-quake-paw]
 name = 잿불 곰의 앞발
 rank = legendary
@@ -11,9 +11,14 @@ element = fire
 cost = 2
 trigger = manual
 effects = damage:16:enemy, block:12:self
+# 격자: 전방+좌+우 횡. 곰이 앞발을 크게 휩쓸며 방어 태세를 잡는다.
+shape = 0,-1|-1,0|1,0
+per_tile_mul = 1.0,0.25,0.25
+target_mode = pattern
+cast_speed = slow
 flavor = "......버틸 수 있겠나."
 
-# --- 티프레 (번개의 신수 호랑이) — 연타 + 취약. ---
+# --- 티프레 (번개의 신수 호랑이) — 번개 밟기 관통. 전방 직선 2칸, 빠른 연타. ---
 [card.c-arc-tifre-thunderstep]
 name = 번개 밟기
 rank = legendary
@@ -22,9 +27,14 @@ element = electric
 cost = 1
 trigger = manual
 effects = damage:7:enemy, apply-status:2:enemy:vulnerable, draw:1:self
+# 격자: 전방 직선 2칸. 번개처럼 앞을 꿰뚫는다. 멀수록 감쇠.
+shape = 0,-1|0,-2
+per_tile_mul = 1.0,0.6
+target_mode = pattern
+cast_speed = fast
 flavor = "눈 깜빡이지 마라. 놓친다."
 
-# --- 타마모 (변신의 구미호) — 색 변환 + 디버프. ---
+# --- 타마모 (변신의 구미호) — 여우불 부채꼴. 전방+대각, 어둠 속 불길이 퍼진다. ---
 [card.c-arc-tamamo-foxfire]
 name = 아홉 꼬리 여우불
 rank = legendary
@@ -33,4 +43,9 @@ element = dark
 cost = 2
 trigger = manual
 effects = damage:12:enemy, apply-status:2:enemy:weakness, apply-status:1:self:strength
+# 격자: 전방+좌대각+우대각+전방2칸 부채꼴. 꼬리 불길이 부채처럼 펼쳐진다.
+shape = -1,-1|0,-1|1,-1|0,-2
+per_tile_mul = 0.6,0.47,0.47,0.47
+target_mode = pattern
+cast_speed = normal
 flavor = "하나쯤 나눠 줄까? 꼬리 말고, 불."

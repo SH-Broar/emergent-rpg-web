@@ -1562,6 +1562,8 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
     c.handCostDown = (c.handCostDown ?? 0) + v;
     useUiStore().toast('success', `이번 턴 카드 비용 -${c.handCostDown}`);
   },
+  // 궁지(미구현) — 플레이어 직교 인접 4칸 중 차단 수 × value 추가 피해. 타입 정합성용 no-op.
+  'damage-per-confine': (_e, _c) => {},
 };
 
 /** 컬러 키 참조용 (draw-if-color params 타입). */

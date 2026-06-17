@@ -30,6 +30,11 @@ import type {
   CardEffectKind,
   CardSource,
   CardTriggerKind,
+  CastSpeed,
+  GridAttack,
+  GridOffset,
+  MovePattern,
+  MoveProfile,
   Chaos,
   ChaosEffectKind,
   ChaosLevel,
@@ -79,6 +84,115 @@ function isRank(v: string): v is Rank {
 
 function isNodeKind(v: string): v is NodeKind {
   return (VALID_NODE_KINDS as readonly string[]).includes(v);
+}
+
+// ========== 격자 전투(grid-combat) 파싱 헬퍼 ==========
+// 주의: INI 파서는 `;`를 주석 prefix로 잘라낸다(parser.ts COMMENT_PREFIXES).
+//  그래서 격자 좌표쌍 구분자로 `;`를 쓸 수 없고 *`|`*(파이프)를 쓴다(주석에 안 걸림).
+//  - shape       : "dx,dy|dx,dy|..."     (쌍 구분 `|`, 좌표 구분 `,`)
+//  - per_tile_mul: "1,0.5,0.5"            (콤마 분리 실수)
+//  - grid_attack : "<name>|<shape>|<perTileMul>|<damage>|<castSpeed>|<requiresInRange>|<applyStatus>"
+//      필드 구분 `|`, shape 내부 쌍 구분은 *공백*(`dx,dy dx,dy`), perTileMul 내부는 콤마.
+//      여러 공격 = 인덱스 키(grid_attack_1, grid_attack_2, ...) — 게임 파서는 중복 키를 마지막만 남기므로.
+
+const VALID_CAST_SPEEDS = ['fast', 'normal', 'slow'] as const;
+function isCastSpeed(v: string | undefined): v is CastSpeed {
+  return !!v && (VALID_CAST_SPEEDS as readonly string[]).includes(v);
+}
+
+const VALID_MOVE_PATTERNS = ['rook', 'knight', 'bishop', 'king', 'orthogonal1', 'custom'] as const;
+function isMovePattern(v: string | undefined): v is MovePattern {
+  return !!v && (VALID_MOVE_PATTERNS as readonly string[]).includes(v);
+}
+
+/** "dx,dy|dx,dy" → GridOffset[]. 빈/형식오류 쌍은 제외. */
+function parseShape(raw: string | undefined): GridOffset[] {
+  if (!raw) return [];
+  return parseShapePairs(raw, '|');
+}
+
+/** 임의 구분자로 좌표쌍 분해 — sep로 쌍, 콤마로 dx/dy. */
+function parseShapePairs(raw: string, sep: string): GridOffset[] {
+  const out: GridOffset[] = [];
+  for (const pair of raw.split(sep)) {
+    const tok = pair.trim();
+    if (!tok) continue;
+    const [dxs, dys] = tok.split(',').map((s) => s.trim());
+    const dx = Number(dxs);
+    const dy = Number(dys);
+    if (Number.isFinite(dx) && Number.isFinite(dy)) out.push({ dx, dy });
+  }
+  return out;
+}
+
+/** "1,0.5,0.5" → number[]. 형식오류는 1.0. */
+function parseFloatList(raw: string | undefined): number[] {
+  if (!raw) return [];
+  return raw
+    .split(',')
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0)
+    .map((s) => {
+      const n = Number(s);
+      return Number.isFinite(n) ? n : 1;
+    });
+}
+
+/**
+ * 몬스터 이동 프로필 — move_pattern/move_range 필드에서 합성.
+ * 미설정이면 undefined(엔진이 DEFAULT_ENEMY_MOVE_PROFILE 폴백).
+ */
+function parseMoveProfile(f: IniSection): MoveProfile | undefined {
+  const pat = f.move_pattern;
+  if (!isMovePattern(pat)) return undefined;
+  const range = f.move_range !== undefined ? parseNumber(f.move_range, 1) : 1;
+  const profile: MoveProfile = { pattern: pat, range: Math.max(1, range) };
+  if (pat === 'custom') {
+    const offs = parseShape(f.move_offsets);
+    if (offs.length > 0) profile.customOffsets = offs;
+  }
+  return profile;
+}
+
+/**
+ * 하나의 grid_attack 토큰 파싱.
+ * "<name>|<shape>|<perTileMul>|<damage>|<castSpeed>|<requiresInRange>|<applyStatus>"
+ * shape 내부 쌍 구분은 공백("dx,dy dx,dy"). 빈 필드는 폴백.
+ */
+function parseGridAttack(raw: string): GridAttack | null {
+  const parts = raw.split('|').map((s) => s.trim());
+  const shape = parseShapePairs(parts[1] ?? '', ' ');
+  if (shape.length === 0) return null; // shape 없는 공격은 무의미.
+  const attack: GridAttack = { shape };
+  if (parts[0]) attack.name = parts[0];
+  const mul = parseFloatList(parts[2]);
+  if (mul.length > 0) attack.perTileMul = mul;
+  if (parts[3] && Number.isFinite(Number(parts[3]))) attack.damage = Number(parts[3]);
+  if (isCastSpeed(parts[4])) attack.castSpeed = parts[4];
+  if (parts[5]) attack.requiresInRange = parseBool(parts[5], true);
+  if (parts[6]) attack.applyStatus = parts[6];
+  return attack;
+}
+
+/**
+ * grid_behavior(단일) + grid_attack_N(인덱스) 수집 → GridAttack[].
+ * - grid_behavior: 한 줄에 여러 공격을 콜론 아닌 `;`... 불가하므로 단일 공격만(편의 키).
+ * - grid_attack_1..grid_attack_9: 인덱스별 1개씩(순서 보존).
+ * 미설정이면 빈 배열(엔진이 근접 폴백).
+ */
+function parseGridBehavior(f: IniSection): GridAttack[] {
+  const out: GridAttack[] = [];
+  if (f.grid_behavior) {
+    const a = parseGridAttack(f.grid_behavior);
+    if (a) out.push(a);
+  }
+  for (let i = 1; i <= 9; i++) {
+    const v = f[`grid_attack_${i}`];
+    if (!v) continue;
+    const a = parseGridAttack(v);
+    if (a) out.push(a);
+  }
+  return out;
 }
 
 /**
@@ -199,6 +313,11 @@ function parseOneCard(id: string, f: IniSection): Card | null {
     flavor: f.flavor,
     unlockHint: f.unlock_hint,
     upgradeToId: f.upgrade_to,
+    // === 격자 전투 필드 (전부 optional — 미설정 시 엔진/UI가 폴백). ===
+    shape: f.shape ? parseShape(f.shape) : undefined,
+    perTileMul: f.per_tile_mul ? parseFloatList(f.per_tile_mul) : undefined,
+    castSpeed: isCastSpeed(f.cast_speed) ? f.cast_speed : undefined,
+    targetMode: f.target_mode === 'self' || f.target_mode === 'pattern' ? f.target_mode : undefined,
   };
 }
 
@@ -268,6 +387,8 @@ function parseOneRelic(id: string, f: IniSection): Relic | null {
     effects,
     customEffectId: f.custom_effect,
     flavor: f.flavor,
+    // 격자 전투 로드아웃 — 전투형 여부 명시(미설정 시 loadout.ts가 trigger로 추론).
+    combatType: f.combat_type !== undefined ? parseBool(f.combat_type, false) : undefined,
   };
 }
 
@@ -432,6 +553,15 @@ export function parseMonsters(ini: IniData): Map<string, Monster> {
       // 동료 영입 (Item 37-② Stage B) — recruitable 플래그 + companion 합성(NPC와 동일 companion_* 키 재사용).
       recruitable: parseBool(fields.recruitable, false) || undefined,
       companion: parseCompanion(fields),
+      // === 격자 전투 필드 (전부 optional — 미설정 시 엔진 폴백: 근접 추격 + 근접 1칸 공격). ===
+      moveProfile: parseMoveProfile(fields),
+      speed: isCastSpeed(fields.speed) ? fields.speed : undefined,
+      gridBehavior: (() => {
+        const b = parseGridBehavior(fields);
+        return b.length > 0 ? b : undefined;
+      })(),
+      // 고정(스크립트형) AI — true면 게임트리 AI를 끄고 단순 그리디 폴백을 쓴다. 미설정 시 게임트리.
+      fixedAi: parseBool(fields.fixed_ai, false) || undefined,
     });
   }
   return result;
@@ -466,10 +596,15 @@ function parseOneBoss(id: string, f: IniSection, ini: IniData): Boss {
       };
     });
     const mechanic = pf.mechanic as ('anchor' | 'stillness' | 'rewind' | undefined);
+    // 격자 전투(#4) — 페이즈 격자 공격 세트 + 진입 소환 미니언.
+    const phaseGrid = parseGridBehavior(pf);
+    const spawnMinions = parseList(pf.spawn_minions);
     phases.push({
       startsAtHpRatio: parseNumber(pf.starts_at, i === 1 ? 1.0 : 0.5),
       intents,
       mechanic: mechanic || undefined,
+      gridBehavior: phaseGrid.length > 0 ? phaseGrid : undefined,
+      spawnMinions: spawnMinions.length > 0 ? spawnMinions : undefined,
     });
   }
 
@@ -513,6 +648,11 @@ function parseOneBoss(id: string, f: IniSection, ini: IniData): Boss {
     attack: parseNumber(f.attack, 8),
     defense: parseNumber(f.defense, 2),
     phases,
+    // === 격자 전투(#4) 보스 거동 — 미설정 시 엔진 폴백. ===
+    gridMoveProfile: parseMoveProfile(f),
+    gridSpeed: isCastSpeed(f.speed) ? f.speed : undefined,
+    // 보스는 *기본 스크립트형*(읽히는 텔레그래프). `fixed_ai = false`를 명시해야만 게임트리 AI.
+    gridFixedAi: f.fixed_ai !== undefined ? parseBool(f.fixed_ai, true) : true,
     signatureVariants: signatureVariants.length > 0 ? signatureVariants : undefined,
     rewards: {
       unlockKeys: parseList(f.reward_unlocks),

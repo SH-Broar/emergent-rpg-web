@@ -52,3 +52,23 @@ export interface NamedEntity {
   name: string;
   description?: string;
 }
+
+// === 격자 전투(grid-combat) 공용 기하 타입 ===
+
+/** 격자 좌표 — 열(x), 행(y). 0-기준. */
+export interface GridPos {
+  x: number;
+  y: number;
+}
+
+/** 격자 상대 오프셋 — 시전자/기준 칸으로부터의 변위. */
+export interface GridOffset {
+  dx: number;
+  dy: number;
+}
+
+/**
+ * 행동 발동 속도 — 같은 스텝에서 해소 순서를 정한다.
+ * 빠른 쪽이 먼저, 동률이면 플레이어 우선. (카드·적 공격·이동 공통)
+ */
+export type CastSpeed = 'fast' | 'normal' | 'slow';

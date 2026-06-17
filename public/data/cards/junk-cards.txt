@@ -13,6 +13,8 @@ cost = 1
 unplayable = true
 trigger = manual
 effects =
+target_mode = self
+cast_speed = normal
 flavor = 자꾸 욱신거려서 신경이 쓰인다.
 
 [card.c-junk-blank]
@@ -22,6 +24,8 @@ source = junk
 cost = 0
 trigger = manual
 effects = exhaust-self
+target_mode = self
+cast_speed = fast
 flavor = 아무것도 적혀 있지 않다.
 
 [card.c-junk-curse]
@@ -31,4 +35,6 @@ source = junk
 cost = 1
 trigger = manual
 effects = curse-tick:2, exhaust-self
+target_mode = self
+cast_speed = normal
 flavor = 주머니 속에서 자꾸 꼼지락거린다.

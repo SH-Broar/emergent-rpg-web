@@ -55,4 +55,11 @@ export interface Relic extends NamedEntity {
   customEffectId?: string;
 
   flavor?: string;
+
+  /**
+   * 전투형 유물 — true면 *로드아웃 한도* 대상(전투 진입 시 3 + (일차-1), 최대 5개만 휴대).
+   * 미설정/false면 *즉발·패시브*로 간주되어 한도와 무관하게 *상시 적용*된다.
+   * 미설정 시 systems/loadout.ts가 trigger로 추론(전투 중 발동 트리거=전투형).
+   */
+  combatType?: boolean;
 }

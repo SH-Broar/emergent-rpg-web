@@ -36,16 +36,26 @@ companion_skill_name = 잿불 곰의 일격
 companion_skill_cooldown = 5
 companion_skill_desc = 적에게 34 피해를 주고 방어 24를 얻는다. 곰이 쇳물째로 내려친다.
 companion_skill_effects = damage:34:enemy, block:24:self
+# 격자 거동(#4) — 묵직한 신수. 룩 사거리2로 직선 돌진(거리를 단숨에 좁힘). 느린 발동.
+move_pattern = rook
+move_range = 2
+speed = slow
 
 # P1 — 본 패턴(버프 윈드업·삼킴·잠식). 멀티슬롯은 + 로 한 턴 2행동.
 [boss.bs-arc-dun.phase.1]
 starts_at = 1.0
 intents = buff:4, attack:17+defend:10, charge:7, attack:18, devour:6:5, attack:19+defend:12, drain:15, attack:18
+# 격자 P1 — 앞발 후려치기(인접 4칸) + 진각(인접 8칸 묵직).
+grid_attack_1 = 앞발 후려치기|1,0 -1,0 0,1 0,-1|1,1,1,1|18
+grid_attack_2 = 진각|1,0 -1,0 0,1 0,-1 1,1 1,-1 -1,1 -1,-1|1,1,1,1,1,1,1,1|16
 
 # P2 — 가속(0.5 이하): 충전+연타·더 잦은 삼킴.
 [boss.bs-arc-dun.phase.2]
 starts_at = 0.5
 intents = charge:8, attack:22+attack:14, devour:7:6, attack:24, drain:18, attack:22+defend:14
+# 격자 P2 — 쇳물 내려치기(인접 8칸 강타) + 직선 사거리2 들이받기.
+grid_attack_1 = 쇳물 내려치기|1,0 -1,0 0,1 0,-1 1,1 1,-1 -1,1 -1,-1|1,1,1,1,1,1,1,1|24
+grid_attack_2 = 들이받기|1,0 2,0 -1,0 -2,0 0,1 0,2 0,-1 0,-2|1,1,1,1,1,1,1,1|20
 
 # ============================================================
 # 티프레 (Tifre) — 번개의 신수 호랑이. 옛 신전(oldshrine). 예법·꼿꼿·은근한 자부심.
@@ -74,16 +84,26 @@ companion_skill_name = 우레 삼연격
 companion_skill_cooldown = 4
 companion_skill_desc = 14 피해를 주고 취약 3을 건 뒤 다시 14 피해를 주며 카드 1장을 뽑는다.
 companion_skill_effects = damage:14:enemy, apply-status:3:enemy:vulnerable, damage:14:enemy, draw:1:self
+# 격자 거동(#4) — 번개 호랑이. 비숍 사거리2로 대각 도약, 빠른 발동(선제 타격).
+move_pattern = bishop
+move_range = 2
+speed = fast
 
 # P1 — 수화 유도 + 동적 분기(수화 상태면 심수화) + 비용 교란.
 [boss.bs-arc-tifre.phase.1]
 starts_at = 1.0
 intents = buff:5, attack:12+debuff:2:feral, charge:7, attack:14~feral=heavy-feral, cost-up:3:3, attack:13+defend:16, drain:10, attack:15
+# 격자 P1 — 번개 발톱(인접 4칸 취약) + 방전(십자 사거리2 직선 번개).
+grid_attack_1 = 번개 발톱|1,0 -1,0 0,1 0,-1|1,1,1,1|14|fast||vulnerable:1
+grid_attack_2 = 방전|1,0 2,0 -1,0 -2,0 0,1 0,2 0,-1 0,-2|1,1,1,1,1,1,1,1|12|fast
 
 # P2 — 가속(0.5 이하): 더 잦은 교란·연타.
 [boss.bs-arc-tifre.phase.2]
 starts_at = 0.5
 intents = cost-up:4:3, attack:16+attack:12, charge:8, attack:18~feral=heavy-feral, drain:14, attack:16+defend:16
+# 격자 P2 — 우레 연격(인접 8칸 빠른 연타) + 대각 낙뢰(사거리2 대각선).
+grid_attack_1 = 우레 연격|1,0 -1,0 0,1 0,-1 1,1 1,-1 -1,1 -1,-1|1,1,1,1,1,1,1,1|18|fast
+grid_attack_2 = 대각 낙뢰|1,1 2,2 -1,-1 -2,-2 1,-1 2,-2 -1,1 -2,2|1,1,1,1,1,1,1,1|16|fast
 
 # ============================================================
 # 타마모 (Tamamo) — 변신의 구미호. 마노니클라(극동 섬). 장난스러움·간살·정 많음.
@@ -113,13 +133,23 @@ companion_skill_name = 아홉 꼬리 홀림불
 companion_skill_cooldown = 4
 companion_skill_desc = 18 피해를 주고 약화 3과 취약 3을 건 뒤 자신에게 힘 2를 얻는다.
 companion_skill_effects = damage:18:enemy, apply-status:3:enemy:weakness, apply-status:3:enemy:vulnerable, apply-status:2:self:strength
+# 격자 거동(#4) — 변덕스러운 구미호. 나이트 점프로 종횡무진(예측 어렵게). 보통 속도.
+move_pattern = knight
+speed = normal
 
 # P1 — 수화 유도 + 동적 분기 + 잠식. 손패 은폐(obscure)로 교란.
 [boss.bs-arc-tamamo.phase.1]
 starts_at = 1.0
 intents = debuff:3:feral~feral=attack:12, debuff:3:weakness, charge:1, obscure:2, drain-stat:3, attack:10, defend:14, attack:12
+# 격자 P1 — 꼬리 후리기(인접 4칸 약화) + 여우불(대각 인접 4칸).
+grid_attack_1 = 꼬리 후리기|1,0 -1,0 0,1 0,-1|1,1,1,1|10|||weakness:1
+grid_attack_2 = 여우불|1,1 1,-1 -1,1 -1,-1|1,1,1,1|12
 
 # P2 — 가속(0.5 이하): 변신(change:race-form-fox=여우폼)으로 판을 뒤집고 잠식·은폐 연타.
 [boss.bs-arc-tamamo.phase.2]
 starts_at = 0.5
 intents = defend:18~feral=change:race-form-fox, obscure:2, drain-stat:4, attack:14, charge:2, attack:16
+# 격자 P2 — 홀림불(주변 8칸 취약) + 멀리 튀는 여우불(대각 사거리2). 진입 시 황혼 그림자 둘 소환.
+grid_attack_1 = 홀림불|1,0 -1,0 0,1 0,-1 1,1 1,-1 -1,1 -1,-1|1,1,1,1,1,1,1,1|14|||vulnerable:1
+grid_attack_2 = 튀는 여우불|1,1 2,2 -1,-1 -2,-2 1,-1 2,-2 -1,1 -2,2|1,1,1,1,1,1,1,1|16
+spawn_minions = mr-mano-dusk-shade, mr-mano-dusk-shade

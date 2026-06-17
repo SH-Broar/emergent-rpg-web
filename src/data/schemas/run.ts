@@ -15,8 +15,13 @@ import type { Item } from './item';
 import type { Relic } from './relic';
 import type { Equipment, EquipmentId } from './equipment';
 import type { ColorValues } from './npc';
+import type { GridStage } from './stage';
+import type { MoveProfile } from './move-profile';
+import type { GridAttack } from './monster';
 import type {
   CardId,
+  CastSpeed,
+  GridPos,
   NodeId,
   NodeKind,
   NpcId,
@@ -342,6 +347,172 @@ export interface CombatState {
    * 전투 단위 휘발 — optional(absent=처리할 항목 없음).
    */
   fxAbsorbed?: { target: 'player' | 'enemy'; amount: number; seq: number }[];
+}
+
+// =========================================================================
+// 격자 전투 (신규 엔진 — systems/grid-combat.ts)
+// 구 CombatState(1v1)와 *병존*. 전환기 동안 RunState.gridCombat에 별도 저장하고,
+// 구 전투 경로가 완전히 제거되면 combat→gridCombat으로 일원화한다.
+// =========================================================================
+
+/** 격자 위 한 전투 참가자(플레이어 또는 적). */
+export interface GridCombatant {
+  id: string;
+  team: 'player' | 'enemy';
+  pos: GridPos;
+  hp: number;
+  maxHp: number;
+  /** 방어막 — 0으로 리셋되지 않고 라운드 종료마다 floor(/2)로 반감(D6). */
+  block: number;
+  statuses: Record<string, number>;
+  speed: CastSpeed;
+  moveProfile: MoveProfile;
+  // === 적 전용 ===
+  /** 적 정의 id(몬스터). 플레이어는 미설정. */
+  monsterId?: string;
+  /** 표시 이름(인스펙트). */
+  name?: string;
+  /** 적 기본 공격치. */
+  attack?: number;
+  /** 적 격자 공격 정의 사본. */
+  attacks?: GridAttack[];
+  /**
+   * 다음 foresight 스텝의 *예측 행동* — 인스펙트 패널 의도 표시 + 실제 실행에 공용.
+   * 매 라운드 enemyPlan이 재계산.
+   */
+  intentQueue?: PlannedAction[];
+  /** 처치 시 드롭(적 전용). */
+  drop?: { gold: number; timeShards: number };
+  /**
+   * 고정(스크립트형) AI — true면 게임트리(lookahead) AI를 끄고 단순 그리디 폴백을 쓴다.
+   * Monster.fixedAi 사본. 미설정/false면 게임트리 AI(기본).
+   */
+  fixedAi?: boolean;
+
+  // === 보스 격자 전투(#4) — 전부 optional. 일반 전투원엔 미설정. ===
+  /** 이 전투원이 보스인가(렌더 크기·라벨·페이즈 추적 대상). */
+  isBoss?: boolean;
+  /**
+   * 보스 페이즈별 격자 공격 세트(인덱스 = 페이즈). HP%가 다음 페이즈에 들어서면
+   * 엔진이 attacks = phaseBehaviors[idx] 로 교체한다(거동 전환). 페이즈 세트가 비어 있으면 직전 유지.
+   */
+  phaseBehaviors?: GridAttack[][];
+}
+
+/** 한 스텝에 한 참가자가 수행하는 계획된 행동. */
+export type PlannedAction =
+  | { kind: 'move'; to: GridPos }
+  | { kind: 'card'; cardInstanceId: string; targetTiles: GridPos[] }
+  | { kind: 'attack'; attackIdx: number; targetTiles: GridPos[] }
+  | { kind: 'item'; itemId: string }
+  | { kind: 'wait' };
+
+/**
+ * 애니메이션/시각 효과 이벤트 — 뷰가 watch해 ≤0.1초 트랜지션 후 비운다(D11).
+ * (기존 fxAbsorbed 패턴의 격자 일반화.)
+ */
+export interface FxEvent {
+  kind: 'move' | 'hit' | 'block-absorb' | 'spawn' | 'death' | 'heal' | 'status';
+  actorId?: string;
+  from?: GridPos;
+  to?: GridPos;
+  amount?: number;
+  seq: number;
+}
+
+/** 현재 진행 중인 격자 전투의 임시 상태. */
+export interface GridCombatState {
+  stage: GridStage;
+  player: GridCombatant;
+  enemies: GridCombatant[];
+  /** 이번 전투 계획 시야 N(1~3, stage.foresight). */
+  foresight: number;
+  /** 플레이어가 큐에 넣은 행동(길이 ≤ foresight). 커밋 시 라운드 해소. */
+  playerPlan: PlannedAction[];
+  turn: number;
+  mana: number;
+  maxMana: number;
+  hand: Card[];
+  drawPile: Card[];
+  discardPile: Card[];
+  exhaustPile: Card[];
+  /** 전투형 유물(로드아웃 한도 적용분). 즉발·패시브는 여기 없이 상시 적용. */
+  loadout: Relic[];
+  /** 전투 행동 로그(턴 카운터 아래 표시용). */
+  log?: string[];
+  /** 애니메이션 큐. */
+  fx?: FxEvent[];
+  /** 유물 카운터(전투 단위). */
+  relicCounters?: Record<string, number>;
+  /** 이번 턴 사용 카드 수. */
+  cardsPlayedThisTurn?: number;
+  /**
+   * 이번 라운드(턴)에 전투 포션을 이미 썼는지 — 턴당 1회 가드(구 CombatState.potionUsedThisTurn 패턴).
+   * commitRound 라운드 종료에서 false 리셋. 옛 세이브 호환 — optional(absent=미사용).
+   */
+  potionUsedThisTurn?: boolean;
+  /** 승리/패배 신호 — set이면 뷰가 보상/종료로 전이. */
+  outcome?: 'win' | 'lose';
+
+  // === 보스 격자 전투(#4) — 전부 optional. 미설정 시 일반 격자 전투(영향 0). 세이브 안전. ===
+  /**
+   * 보스 전투인가. true면 GridCombatView가 보스 UI(큰 HP바·이름·페이즈 배지)를 켜고,
+   * endGridCombat이 boss-rewards 경로로 분기한다. 일반 전투는 미설정.
+   */
+  isBoss?: boolean;
+  /** 보스 id(Boss 정의 조회 — 보상/이름/페이즈). isBoss일 때만 set. */
+  bossId?: string;
+  /** 보스 분류 — 'arc'(맵 복귀·특전) / 'boss'(런 종료·메타 보상). 보상 분기·재진입 정책. */
+  bossKind?: 'arc' | 'boss';
+  /** 보스 표시 이름(UI). */
+  bossName?: string;
+  /**
+   * 현재 활성 보스 페이즈 인덱스(0-기준). HP%가 임계를 넘으면 엔진이 증가시키고 거동을 전환한다.
+   * 보스 전투원 = enemies[0]. 미설정이면 0(첫 페이즈).
+   */
+  bossPhaseIndex?: number;
+  /**
+   * 페이즈별 시작 HP 비율(내림차순, 예: [1.0, 0.66, 0.33]). 엔진이 보스 HP%와 비교해 전환 판정.
+   * 페이즈 i 진입 = 보스 HP비율 ≤ bossPhaseThresholds[i]. 미설정/빈 배열이면 단일 페이즈.
+   */
+  bossPhaseThresholds?: number[];
+
+  // === 카드 효과 핸들러 이식(B3) — 격자 전투 단위 휘발 상태. 전부 optional(absent=비활성). ===
+  /**
+   * 다음 라운드 시작 마나 보너스(next-turn-energy). 라운드 종료 리필 시 mana += 이 값 후 0 리셋.
+   */
+  nextTurnEnergyBonus?: number;
+  /**
+   * 이번 라운드 손패(및 이번 라운드 뽑는 카드) 전체 실효 cost -handCostDown(최소 0). 누적 가산.
+   * 라운드 종료 시 0 리셋. cardCost / canPlayCard / 큐 마나 검증이 차감해 반영.
+   */
+  handCostDown?: number;
+  /**
+   * 이번 라운드 동안 플레이어 카드 damage/heal/block effect value를 (1+thisTurnAmp/100)배(this-turn-amp).
+   * 라운드 종료 0 리셋.
+   */
+  gridThisTurnAmp?: number;
+  /**
+   * 다음 카드 1장의 모든 effect value 2배(next-card-double). 한 번 소비하면 false.
+   */
+  gridNextCardDouble?: boolean;
+  /**
+   * 개화(bloom-strength) — 누적 힘 보너스. >0이면 매 라운드 종료(다음 라운드 대비) strength += bloom(비감쇠).
+   */
+  gridBloom?: number;
+  /**
+   * 적 행동 둔화(slow-enemy) — 남은 *라운드 수*. >0이면 적 멀티액션이 줄어들고 라운드마다 -1.
+   */
+  gridEnemySlow?: number;
+  /**
+   * 적 행동 박제(skip-enemy-action) — 남은 *스킵 횟수*. >0이면 적 행동 1개를 건너뛰고 -1.
+   */
+  gridEnemySkip?: number;
+  /**
+   * 지연 피해(delayed-damage) 대기열 — 각 항목은 N라운드 뒤 폭발할 피해 + 대상 적 id 추적.
+   * 라운드 종료마다 roundsLeft-1, 0이면 발동(대상 적이 죽었으면 가장 가까운 적에게).
+   */
+  gridPendingDamage?: { roundsLeft: number; damage: number; targetEnemyId?: string }[];
 }
 
 /**
@@ -696,6 +867,21 @@ export interface RunState {
 
   // === 전투 ===
   combat?: CombatState;
+
+  // === 격자 전투(신규 엔진) — 구 combat과 병존(전환기). ===
+  /** 격자 전투 진행 상태. 전투 중에만 set. */
+  gridCombat?: GridCombatState;
+  /**
+   * 전투형 유물 로드아웃 선택(relicId 목록). 전투 진입 시 적용.
+   * 한도 = min(5, 3 + (currentDay - 1)). 즉발·패시브 유물은 여기 없이 상시 적용.
+   * 옛 세이브 호환 — optional(absent=빈 선택, 진입 시 자동 채움).
+   */
+  combatLoadout?: RelicId[];
+  /**
+   * 이동 강화 레벨 — 인간 룩 사거리 등에 가산(이동도 강화 대상, D5/D10).
+   * 기본 0. 옛 세이브 호환 — optional(absent=0).
+   */
+  moveUpgrades?: number;
 
   // === 카오스 도전-점수 시스템 (Phase A, 세이브 v3 — Round 12 강도 모델) ===
   /**

@@ -11,6 +11,7 @@
 import { defineStore } from 'pinia';
 import type {
   Card,
+  Monster,
   NodeKind,
   RaceId,
   Rank,
@@ -22,8 +23,16 @@ import type {
 import { instantiateCard } from '@/systems/deck';
 import { createSeededRng, generateInitialSeed, rng, setRng } from '@/systems/rng';
 import { getSkipTurnEveryN } from '@/systems/relic';
+import { gridRelicCombatEnd } from '@/systems/grid-relic';
 import { applyStartChaos, nodeHpLoss } from '@/systems/chaos';
 import { XP_PER_LEVEL, canEnhance, needsAwakening } from '@/systems/enhance';
+import { generateStage } from '@/systems/stage-gen';
+import { startGridCombat, startGridBossCombat, commitRound as commitGridRoundEngine } from '@/systems/grid-combat';
+import { applyCombatVictoryReward } from '@/systems/combat-rewards';
+import { applyBossRewards, applyArcRewards } from '@/systems/boss-rewards';
+import { rewardGold, rewardShards } from '@/systems/reward-feed';
+import { companionRewardMul } from '@/systems/companion';
+import { effectiveContent, effectiveKind, findRegion } from '@/systems/map';
 import { useDataStore } from './data';
 import { useUiStore } from './ui';
 import { useMetaStore } from './meta';
@@ -185,6 +194,9 @@ const EMPTY_RUN: RunState = {
   activeChaos: [],
   // 카오스 post-apocalypse 맵 변환 1회 적용 가드 — 신규 필드(구세이브 자동 backfill false).
   postApocalypseApplied: false,
+  // 격자 전투 — 전투형 유물 로드아웃 + 이동 강화. 구세이브 자동 backfill([]/0).
+  combatLoadout: [],
+  moveUpgrades: 0,
   ended: false,
   metaAbsorbed: false,
 };
@@ -204,7 +216,8 @@ export const useRunStore = defineStore('run', {
   }),
 
   getters: {
-    isCombatActive: (state) => state.active && state.data.combat !== undefined,
+    isCombatActive: (state) =>
+      state.active && (state.data.combat !== undefined || state.data.gridCombat !== undefined),
     isEnded: (state) => state.data.ended,
     /** 다음 덱 확장 임계까지 남은 시간 (단순 추정 — 실제는 timeline에서 가져옴). */
     progressRatio: (state) =>
@@ -343,6 +356,11 @@ export const useRunStore = defineStore('run', {
         migrateRoster(filled, parsed);
         // XP·각성 마이그레이션 — 구세이브 -plus 인스턴스를 각성됨(+5강)으로 승격 + 신필드 backfill.
         migratePlusCards(filled);
+        // 격자 전투 전환(D1/E1) — 진행 중이던 *구형 1v1 전투*와 미완 격자 전투는 폐기한다.
+        //   전투는 휘발 상태이므로 복원하지 않고, 플레이어는 currentNodeId(맵)에서 재개한다.
+        //   (구 combat은 새 GridCombatView와 호환되지 않아 그대로 두면 빈 화면/크래시 위험.)
+        filled.combat = undefined;
+        filled.gridCombat = undefined;
         this.data = filled;
         this.active = !filled.ended;
         if (this.active) this.bindRng();
@@ -863,6 +881,192 @@ export const useRunStore = defineStore('run', {
       // HP를 maxHp의 30%로 회복(올림). 이미 더 높으면 유지.
       const floor = Math.max(1, Math.ceil(r.maxHp * 0.3));
       if (r.hp < floor) r.hp = floor;
+    },
+
+    // ============================================================================
+    // 격자 전투 lifecycle (신규 엔진 — 구 startCombat/clearCombat과 *병존*)
+    // ----------------------------------------------------------------------------
+    // enterGridCombat : 노드 → stage 생성 + 적 정의 해석 + startGridCombat → run.gridCombat.
+    // commitGridRound : 한 라운드 해소 + 승패 신호 반영(보상/종료는 endGridCombat이 담당).
+    // endGridCombat   : 승리=권역 보상+클리어 마킹 / 패배=목숨·도망·종료. run.gridCombat 정리.
+    // 구 combat 경로는 절대 건드리지 않는다.
+    // ============================================================================
+
+    /**
+     * 격자 전투 진입 — 현재(또는 지정) 노드의 적 그룹을 격자 무대로 변환해 시작.
+     * stage-gen이 결정론(rngSeed + nodeId)으로 무대를 만들고, enemyGroupId를 monster 정의로 해석한다.
+     * 증원 placeholder(enemyId='')는 같은 enemyGroupId로 채운다(슬라이스 — 권역 풀 치환은 후속).
+     * 반환: 성공 시 true(run.gridCombat set).
+     */
+    enterGridCombat(nodeId?: string): boolean {
+      const r = this.data;
+      const data = useDataStore();
+      const id = nodeId ?? r.currentNodeId;
+      const map = data.nodeMaps.get(data.timelines.get(r.timelineId)?.nodeMapId ?? '');
+      const node = map?.nodes.find((n) => n.id === id);
+
+      // 적 그룹 해석 — 노드 콘텐츠(권역 재추첨 반영). 폴백: shadow-pup.
+      const content = node ? effectiveContent(node, r) : undefined;
+      const enemyId = content?.enemyGroupId ?? 'shadow-pup';
+      const baseDef = data.monsters.get(enemyId);
+      if (!baseDef) console.warn('[grid] 알 수 없는 enemyGroupId — 폴백 그림자 사용:', enemyId);
+
+      // tier/region — 권역 깊이로 무대 파라미터.
+      const region = map && node ? findRegion(map, node.region) : undefined;
+      const tier = region?.tier ?? 1;
+      const kind = node ? effectiveKind(node, r) : 'combat';
+
+      // 결정론 시드 — 런 시드 + 노드 id(같은 노드 재진입 시 같은 무대).
+      const stage = generateStage(`${r.rngSeed}:${id}`, node?.region ?? 'unknown', tier);
+
+      // 적 정의 배열 — enemyStarts 길이만큼 baseDef 복제(슬라이스: 단일 종 그룹).
+      const enemyDefs: Monster[] = [];
+      const fallback: Monster = baseDef ?? {
+        id: 'fallback',
+        name: '알 수 없는 그림자',
+        hp: 14,
+        attack: 5,
+        defense: 0,
+        intents: [{ encoded: 'attack:5' }],
+        drop: { gold: 3, timeShards: 1 },
+      };
+      for (let i = 0; i < stage.enemyStarts.length; i++) enemyDefs.push(fallback);
+
+      // 증원 placeholder enemyId('')를 실제 적 id로 치환(슬라이스: 같은 그룹).
+      if (stage.spawns) {
+        for (const sp of stage.spawns) {
+          if (!sp.enemyId) sp.enemyId = fallback.id;
+        }
+      }
+
+      void kind; // 엘리트 차등(적 강화·엘리트 풀 분리)은 후속 — 슬라이스는 일반 전투와 동일 무대.
+
+      this.data.gridCombat = startGridCombat(r, stage, enemyDefs);
+      return true;
+    },
+
+    /**
+     * 보스 격자 전투 진입(#4) — 보스 노드의 boss 정의를 격자 무대로 변환해 시작.
+     *  - 보스 id 해석: 노드 contentRef.boss → effectiveContent.bossId → 폴백 연표 보스.
+     *  - 무대: 일반보다 *크게*(보스 전용). 보스는 enemyStarts[0]에 1마리 배치(엔진이 처리).
+     *  - 페이즈/거동/소환은 boss 정의(phases[].gridBehavior/spawnMinions)에서 엔진이 읽는다.
+     * 반환: 성공 시 true(run.gridCombat set, isBoss=true).
+     */
+    enterGridBossCombat(nodeId?: string): boolean {
+      const r = this.data;
+      const data = useDataStore();
+      const id = nodeId ?? r.currentNodeId;
+      const map = data.nodeMaps.get(data.timelines.get(r.timelineId)?.nodeMapId ?? '');
+      const node = map?.nodes.find((n) => n.id === id);
+
+      // 보스 id — 노드 contentRef.boss(권역 재추첨 반영) → 연표 종말 보스 폴백.
+      const content = node ? effectiveContent(node, r) : undefined;
+      const bossId = content?.bossId
+        ?? node?.contentRef?.bossId
+        ?? data.timelines.get(r.timelineId)?.bossId;
+      const boss = bossId ? data.bosses.get(bossId) : undefined;
+      if (!boss) {
+        console.warn('[grid-boss] 보스 정의를 찾을 수 없음:', bossId);
+        return false;
+      }
+
+      // 보스 무대 — 일반보다 큰 격자(tier 4 파라미터 고정 + 보스는 적 1마리라 여유). 결정론 시드.
+      const region = map && node ? findRegion(map, node.region) : undefined;
+      const tier = Math.max(3, region?.tier ?? 4); // 보스 무대는 최소 tier3 크기(7x7~8x8).
+      const stage = generateStage(`${r.rngSeed}:boss:${id}`, node?.region ?? 'boss', tier);
+
+      this.data.gridCombat = startGridBossCombat(r, stage, boss);
+      return true;
+    },
+
+    /**
+     * 격자 전투 한 라운드 해소 — 엔진 commitRound 호출.
+     * outcome(win/lose)이 set되면 그 신호를 *반환만* 한다(보상/종료 전이는 호출자가 endGridCombat으로).
+     * 반환: 'win' | 'lose' | undefined(전투 계속).
+     */
+    commitGridRound(): 'win' | 'lose' | undefined {
+      const gc = this.data.gridCombat;
+      if (!gc) return undefined;
+      commitGridRoundEngine(gc);
+      return gc.outcome;
+    },
+
+    /**
+     * 격자 전투 종료 처리.
+     *  - 'win'  : 전투 HP를 런 HP로 라이트백 + 권역 보상(applyCombatVictoryReward) + 클리어 마킹
+     *             + on-combat-end 유물. run.gridCombat 정리.
+     *  - 'lose' : 전투 HP 라이트백(0 가능) + 목숨 분기(loseLife). 남으면 도망(flee), 0이면 endRun.
+     *             run.gridCombat 정리.
+     * 반환(lose): true=목숨 남아 도망(맵 복귀) / false=런 종료(패배 화면).
+     */
+    endGridCombat(result: 'win' | 'lose'): boolean {
+      const r = this.data;
+      const gc = r.gridCombat;
+      const nodeId = r.currentNodeId;
+      const wasBoss = gc?.isBoss === true;
+      const bossKind = gc?.bossKind;
+      const bossId = gc?.bossId;
+
+      // 전투 HP를 런 HP로 라이트백(구 clearCombat 패턴).
+      if (gc) {
+        r.hp = Math.max(0, Math.min(r.maxHp, gc.player.hp));
+      }
+
+      // === 보스 승리(#4) — boss-rewards 경로로 분기(일반 권역 보상 아님). ===
+      if (result === 'win' && wasBoss && bossId) {
+        const boss = useDataStore().bosses.get(bossId);
+        r.gridCombat = undefined;
+        if (!boss) return true; // 정의 유실 — 안전 종료(맵 복귀).
+        if (bossKind === 'arc') {
+          // arc 승리 — 맵 복귀 + 전용 특전 자동 드롭 + 클리어 마킹. 런 지속.
+          applyArcRewards(boss);
+          if (!r.arcsCleared) r.arcsCleared = [];
+          if (!r.arcsCleared.includes(boss.id)) r.arcsCleared.push(boss.id);
+          // 아크 동료화 — companion 정의가 있으면 roster 추가(중복 스킵).
+          if (boss.companion) this.recruitMonster(boss.id);
+          this.markCombatCleared(nodeId);
+          return true; // 맵 복귀(호출자 GridCombatView가 처리).
+        }
+        // 일반(연표 종말) 보스 승리 — 메타 보상 + 런 종료.
+        applyBossRewards(boss);
+        if (!r.bossesCleared.includes(boss.id)) r.bossesCleared.push(boss.id);
+        this.endRun('boss-cleared');
+        return false; // 런 종료(요약 화면으로).
+      }
+
+      if (result === 'win') {
+        // 적 드롭(골드·시간조각) 크레딧 — 구 applyMonsterDrop(combat.ts) 패턴 이식.
+        //   격자는 다중 적이므로 *처치된 적 전체 drop을 합산*(승리=전멸). 카드 드롭은 슬라이스 미이식.
+        //   첫 클리어만 인정 — combatCleared 가드(applyCombatVictoryReward와 동일 의미).
+        if (gc && !r.nodeStates[nodeId]?.combatCleared) {
+          let gold = 0;
+          let shards = 0;
+          for (const e of gc.enemies) {
+            gold += e.drop?.gold ?? 0;
+            shards += e.drop?.timeShards ?? 0;
+          }
+          gold = Math.round(gold * companionRewardMul('gold'));
+          shards = Math.round(shards * companionRewardMul('shards'));
+          if (gold > 0) { r.gold += gold; rewardGold(gold); }
+          if (shards > 0) { r.timeShards += shards; rewardShards(shards); }
+        }
+        // 권역 보상 — *클리어 마킹 전* 동기 호출(첫 클리어 인정).
+        applyCombatVictoryReward(nodeId);
+        // on-combat-end 유물(combat-end-heal·bonus-gold 등) — 로드아웃 규칙 준수 격자 경로.
+        if (gc) { try { gridRelicCombatEnd(gc); } catch { /* 무해 */ } }
+        this.markCombatCleared(nodeId);
+        r.gridCombat = undefined;
+        return true;
+      }
+
+      // 패배 — 목숨 분기.
+      r.gridCombat = undefined;
+      if (this.loseLife()) {
+        this.flee(nodeId);
+        return true; // 도망(맵 복귀).
+      }
+      this.endRun('hp-zero');
+      return false; // 런 종료.
     },
 
     /** 런 종료 — endRun()을 호출하면 외부에서 codex/meta 갱신을 트리거. */

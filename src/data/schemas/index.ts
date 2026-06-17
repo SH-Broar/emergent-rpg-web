@@ -5,6 +5,8 @@
  */
 
 export * from './base';
+export * from './move-profile';
+export * from './stage';
 export * from './card';
 export * from './relic';
 export * from './race';

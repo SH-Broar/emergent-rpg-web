@@ -74,9 +74,22 @@ const timeUrgent = computed(() => {
   return run.data.remainingTime <= Math.max(3, Math.floor(tl.timeLimit * 0.1));
 });
 
+/**
+ * 표시용 HP — 전투 중이면 *전투 내 실시간 HP*를 우선한다(B1 수정).
+ * 격자 전투는 run.gridCombat.player, 구 1v1 전투는 run.combat.player가 진짜 HP를 들고 있는데,
+ * run.data.hp는 전투 종료 후에야 라이트백되어 전투 내내 옛값(예 41/41)을 보여 주던 비동기 버그를 막는다.
+ * 전투가 없으면 그대로 런 HP.
+ */
+const displayHp = computed(() =>
+  run.data.gridCombat?.player.hp ?? run.data.combat?.player.hp ?? run.data.hp,
+);
+const displayMaxHp = computed(() =>
+  run.data.gridCombat?.player.maxHp ?? run.data.combat?.player.maxHp ?? run.data.maxHp,
+);
+
 const hpRatio = computed(() => {
-  if (run.data.maxHp === 0) return 0;
-  return run.data.hp / run.data.maxHp;
+  if (displayMaxHp.value === 0) return 0;
+  return displayHp.value / displayMaxHp.value;
 });
 
 /** 목숨 (Item 28) — 구세이브 폴백 2/2. 하트로 표시(남은 채움 + 빈 칸). */
@@ -140,7 +153,7 @@ const persistentStatuses = computed(() => {
           <span class="emoji">❤</span>
           <span class="lbl">HP</span>
           <div class="bar"><div class="bar__fill" :style="{ width: hpRatio * 100 + '%', background: hpColor }" /></div>
-          <span class="num">{{ run.data.hp }}/{{ run.data.maxHp }}</span>
+          <span class="num">{{ displayHp }}/{{ displayMaxHp }}</span>
         </div>
       </Tooltip>
 

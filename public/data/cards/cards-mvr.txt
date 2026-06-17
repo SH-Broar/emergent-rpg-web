@@ -18,6 +18,10 @@ trigger = manual
 effects = damage:6:enemy
 upgrade_to = c-strike-plus
 flavor = 어디서든 통하는 가장 오래된 수.
+# 격자: 전방 1칸(정면). 빠른 기본 타격.
+shape = 0,-1
+cast_speed = fast
+target_mode = pattern
 
 [card.c-defend]
 name = 방어
@@ -29,6 +33,8 @@ trigger = manual
 effects = block:5:self
 upgrade_to = c-defend-plus
 flavor = "막고 나서 생각해도 늦지 않아."
+# 격자: 제자리 방어막.
+target_mode = self
 
 [card.c-quickdraw]
 name = 순발력
@@ -40,7 +46,9 @@ trigger = manual
 effects = draw:1:self
 upgrade_to = c-quickdraw-plus
 flavor = "생각은 나중에!"
-
+# 격자: 제자리 드로우.
+target_mode = self
+cast_speed = fast
 [card.c-recover]
 name = 숨 고르기
 rank = basic
@@ -51,6 +59,9 @@ trigger = manual
 effects = heal:4:self, exhaust-self:0:self
 upgrade_to = c-recover-plus
 flavor = 싸움의 절반은 숨이다.
+# 격자: 제자리 회복. 느리게 발동(행동 타이밍 늦춤).
+target_mode = self
+cast_speed = slow
 
 # ========== 일반 등급 (NPC 친밀도 1단계 / 히페리온 1~2) ==========
 
@@ -64,6 +75,10 @@ trigger = manual
 effects = damage:11:enemy, block:4:self
 upgrade_to = c-resolve-flash-plus
 flavor = "여기서 멈출 수는 없어."
+# 격자: 전방 1칸. 공격+방어 동시, 인간 균형 컨셉.
+shape = 0,-1
+target_mode = pattern
+cast_speed = normal
 
 [card.c-gentle-guard]
 name = 물의 방패
@@ -75,6 +90,9 @@ trigger = manual
 effects = block:11:self
 upgrade_to = c-gentle-guard-plus
 flavor = 물결은 칼자국이 남지 않는다.
+# 격자: 제자리 강방어. 위치 무관.
+target_mode = self
+cast_speed = slow
 
 [card.c-double-strike]
 name = 패기
@@ -86,6 +104,10 @@ trigger = manual
 effects = damage-per-hand:3:enemy
 upgrade_to = c-double-strike-plus
 flavor = 기세로 놀라게 한다.
+# 격자: 전방+후방 직선 2칸. 손패가 많을수록 폭발적. 빠른 속도.
+shape = 0,-1|0,1
+target_mode = pattern
+cast_speed = fast
 
 [card.c-focused-mind]
 name = 집중
@@ -97,6 +119,9 @@ trigger = manual
 effects = draw:3:self
 upgrade_to = c-focused-mind-plus
 flavor = "조용히. 지금 생각 중이야."
+# 격자: 제자리 대량 드로우.
+target_mode = self
+cast_speed = slow
 
 [card.c-burn-mark]
 name = 화염구
@@ -108,6 +133,11 @@ trigger = manual
 effects = damage:4:enemy, apply-status:5:enemy:burn
 upgrade_to = c-burn-mark-plus
 flavor = "불조심하라니까."
+# 격자: 자기 기준 전방+좌+우 3×1 가로띠. 화염 광역, 감쇠 있음. 느린 속도.
+shape = -1,-1|0,-1|1,-1
+per_tile_mul = 0.6,1.0,0.6
+target_mode = pattern
+cast_speed = slow
 
 # ========== 희귀 등급 (NPC 친밀도 3단계 / 히페리온 3~4) ==========
 # 희귀+ 강화는 다음 데이터 라운드.
@@ -122,6 +152,9 @@ trigger = manual
 effects = heal:6:self, draw:1:self, exhaust-self:0:self
 flavor = 바람이 이마의 땀을 식혀 준다.
 upgrade_to = c-second-wind-plus
+# 격자: 제자리 회복+드로우. 소멸.
+target_mode = self
+cast_speed = slow
 
 [card.c-deep-breath]
 name = 응급 치료
@@ -133,6 +166,10 @@ trigger = manual
 effects = draw:1:self, heal:1:self, damage:8:enemy, exhaust-self:0:self
 flavor = 임시 방편이라도 소중히.
 upgrade_to = c-deep-breath-plus
+# 격자: 전방 1칸 타격+자가 회복. 빠른 속도+소멸.
+shape = 0,-1
+target_mode = pattern
+cast_speed = fast
 
 # ========== 전설 등급 (보스/시그니처) ==========
 
@@ -146,6 +183,11 @@ trigger = manual
 effects = damage:42:enemy, consume-vulnerable:3:enemy
 flavor = "......잘 다뤄 줘."
 upgrade_to = c-transcend-strike-plus
+# 격자: 전방 3칸 직선 관통. 멀수록 감쇠. 느린 대신 파괴적.
+shape = 0,-1|0,-2|0,-3
+per_tile_mul = 1.0,0.2,0.2
+target_mode = pattern
+cast_speed = slow
 
 # ========== 보스 보상 (사용 안 하면 도감에만 남음) ==========
 
@@ -159,6 +201,11 @@ trigger = manual
 effects = damage:11:enemy, apply-status:1:enemy:vulnerable
 flavor = "잡았다, 그림자."
 upgrade_to = c-shadow-rebuke-plus
+# 격자: 전방+좌우 십자. 발밑 그림자를 밟는 컨셉.
+shape = 0,-1|-1,0|1,0
+per_tile_mul = 1.0,0.2,0.2
+target_mode = pattern
+cast_speed = normal
 
 
 # ============================================================
@@ -175,6 +222,9 @@ cost = 1
 trigger = manual
 effects = damage:9:enemy
 flavor = 조금 개량된 검술.
+shape = 0,-1
+target_mode = pattern
+cast_speed = fast
 
 [card.c-defend-plus]
 name = 방어+
@@ -185,6 +235,7 @@ cost = 1
 trigger = manual
 effects = block:8:self
 flavor = "생각을 먼저 해도, 대부분은 막아야 해."
+target_mode = self
 
 [card.c-quickdraw-plus]
 name = 순발력+
@@ -195,7 +246,8 @@ cost = 0
 trigger = manual
 effects = draw:2:self
 flavor = "일단 움직여!"
-
+target_mode = self
+cast_speed = fast
 [card.c-recover-plus]
 name = 숨 고르기+
 rank = basic
@@ -205,6 +257,8 @@ cost = 1
 trigger = manual
 effects = heal:7:self, exhaust-self:0:self
 flavor = 깊게 숨을 쉬어 진정한다.
+target_mode = self
+cast_speed = slow
 
 [card.c-resolve-flash-plus]
 name = 결심의 섬광+
@@ -215,6 +269,9 @@ cost = 1
 trigger = manual
 effects = damage:15:enemy, block:7:self
 flavor = "아직 포기하긴 일러!"
+shape = 0,-1
+target_mode = pattern
+cast_speed = normal
 
 [card.c-gentle-guard-plus]
 name = 물의 방패+
@@ -225,6 +282,8 @@ cost = 1
 trigger = manual
 effects = block:17:self
 flavor = 물 속에서는 누구라도 팔이 느려진다.
+target_mode = self
+cast_speed = slow
 
 [card.c-double-strike-plus]
 name = 패기+
@@ -235,6 +294,9 @@ cost = 1
 trigger = manual
 effects = damage-per-hand:4:enemy
 flavor = 눈도 깜짝 않던 상대가 슬며시 뒷걸음친다.
+shape = 0,-1|0,1
+target_mode = pattern
+cast_speed = fast
 
 [card.c-focused-mind-plus]
 name = 집중+
@@ -245,6 +307,8 @@ cost = 1
 trigger = manual
 effects = draw:4:self
 flavor = 쉿. 이제 막 좋은 수가 떠올랐어.
+target_mode = self
+cast_speed = slow
 
 [card.c-burn-mark-plus]
 name = 화염구+
@@ -255,6 +319,10 @@ cost = 1
 trigger = manual
 effects = damage:7:enemy, apply-status:7:enemy:burn
 flavor = "그러게, 조심하랬지."
+shape = -1,-1|0,-1|1,-1
+per_tile_mul = 0.6,1.0,0.6
+target_mode = pattern
+cast_speed = slow
 
 
 # ============================================================
@@ -270,6 +338,9 @@ element = light
 cost = 2
 trigger = manual
 effects = damage:16:enemy, apply-status:1:enemy:paralyze
+shape = 0,-1
+target_mode = pattern
+cast_speed = slow
 flavor = 일루네온의 큰 시계는 가끔 정오에 멈춘다.
 upgrade_to = c-iluneon-stopped-noon-plus
 
@@ -281,9 +352,12 @@ element = fire
 cost = 2
 trigger = manual
 effects = damage:16:enemy, apply-status:14:enemy:burn
+shape = 0,-1|0,-2
+target_mode = pattern
+cast_speed = slow
 flavor = 모스의 화로는 꺼진 적이 없다.
 upgrade_to = c-moss-ember-strike-plus
-
+per_tile_mul = 1.0,0.7
 [card.c-tacomi-hologram-mirror]
 name = 홀로매트릭스
 rank = legendary
@@ -292,6 +366,8 @@ element = electric
 cost = 3
 trigger = manual
 effects = block:18:self, apply-status:1:self:ghost
+target_mode = self
+cast_speed = slow
 flavor = "진짜 나는 어느 쪽이게?"
 upgrade_to = c-tacomi-hologram-mirror-plus
 
@@ -303,6 +379,9 @@ element = water
 cost = 2
 trigger = manual
 effects = heal:7:self, draw:1:self, damage:25:enemy, exhaust-self:0:self
+shape = 0,-1
+target_mode = pattern
+cast_speed = slow
 flavor = 알리메스의 안개는 들은 약속을 잊지 않는다고 한다.
 upgrade_to = c-alimes-mist-vow-plus
 
@@ -314,11 +393,14 @@ element = iron
 cost = 2
 trigger = manual
 effects = block:35:self, damage-top-color:1:enemy
+shape = 0,-1|-1,0|1,0
+target_mode = pattern
+cast_speed = slow
 flavor = 마노니클라의 노을은 좀처럼 지지 않는다.
 upgrade_to = c-manonickla-sunset-wall-plus
 
 # ========== NPC 영입 카드 ==========
-
+per_tile_mul = 1.0,0.7,0.7
 [card.c-swift-step]
 name = 상승기류
 rank = basic
@@ -327,6 +409,8 @@ element = wind
 cost = 1
 trigger = manual
 effects = draw:1:self, next-turn-energy:1:self, heal:-4:self
+target_mode = self
+cast_speed = fast
 flavor = "올라탔으면 멈추지 마!"
 upgrade_to = c-swift-step-plus
 
@@ -338,6 +422,8 @@ element = wind
 cost = 0
 trigger = manual
 effects = draw:1:self, next-turn-energy:1:self, heal:-4:self
+target_mode = self
+cast_speed = fast
 flavor = "등기입니다! 도장 주세요!"
 upgrade_to = c-fast-mail-plus
 
@@ -349,6 +435,9 @@ element = iron
 cost = 1
 trigger = manual
 effects = damage-min-color:1:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = normal
 flavor = "......좋은 검이네."
 upgrade_to = c-balanced-edge-plus
 
@@ -360,6 +449,9 @@ element = dark
 cost = 1
 trigger = manual
 effects = apply-status:3:enemy:weakness
+shape = 0,-1
+target_mode = pattern
+cast_speed = normal
 flavor = "그날로 돌아갈 수만 있다면."
 upgrade_to = c-binding-ward-plus
 
@@ -371,6 +463,9 @@ element = water
 cost = 1
 trigger = manual
 effects = apply-status:2:enemy:vulnerable, apply-status:1:enemy:weakness
+shape = 0,-1
+target_mode = pattern
+cast_speed = slow
 flavor = "우선, 심호흡부터요."
 upgrade_to = c-quiet-arc-plus
 
@@ -382,9 +477,12 @@ element = fire
 cost = 4
 trigger = manual
 effects = apply-status:2:enemy:paralyze
+shape = -1,-1|0,-1|1,-1
+target_mode = pattern
+cast_speed = slow
 flavor = "여기 보세요. 찰칵!"
 upgrade_to = c-flash-capture-plus
-
+per_tile_mul = 0.5,1.0,0.5
 [card.c-rize-relay]
 name = 연속 타격
 rank = common
@@ -393,6 +491,9 @@ element = wind
 cost = 1
 trigger = manual
 effects = damage:6:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = fast
 flavor = "격투의 장점은, 뭐니뭐니해도 빠르다는거야!"
 
 # 한 판 갈래의 *돌아온 한 판* — 같은 이름·비용 0의 별개 카드. 이 카드는 다시 돌아오지 않는다(무한 복제 방지).
@@ -406,6 +507,9 @@ element = fire
 cost = 0
 trigger = manual
 effects = damage:4:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = fast
 flavor =
 
 [card.c-spirit-call]
@@ -416,6 +520,9 @@ element = dark
 cost = 1
 trigger = manual
 effects = damage-color-count:3:enemy, draw:1:self
+shape = 0,-1
+target_mode = pattern
+cast_speed = normal
 flavor = "다들 모였어? 그럼 간다!"
 
 [card.c-warm-cup]
@@ -426,6 +533,9 @@ element = water
 cost = 1
 trigger = manual
 effects = heal:3:self, draw:1:self, damage:8:enemy, exhaust-self:0:self
+shape = 0,-1
+target_mode = pattern
+cast_speed = normal
 flavor = 신시안이 준비해준 찻잎으로 끓인 차. 기분 좋은 향기가 난다.
 
 [card.c-tripps-rage]
@@ -436,6 +546,9 @@ element = fire
 cost = 20
 trigger = manual
 effects = damage:85:enemy, apply-status:1:enemy:vulnerable, apply-status:1:enemy:weakness
+shape = 0,-1
+target_mode = pattern
+cast_speed = slow
 flavor = "......지금은, 못 참아요."
 
 [card.c-trace-step]
@@ -446,6 +559,8 @@ element = fire
 cost = 1
 trigger = manual
 effects = draw:2:self, return-hand-to-deck:1:self, next-turn-energy:1:self
+target_mode = self
+cast_speed = fast
 flavor = "......이 길이야."
 
 [card.c-growing-leaf]
@@ -456,6 +571,8 @@ element = earth
 cost = 2
 trigger = manual
 effects = growing-block:2:self
+target_mode = self
+cast_speed = slow
 flavor = "매일 조금씩 크고 있어. 진짜야."
 
 [card.c-zero-spark]
@@ -466,8 +583,11 @@ element = electric
 cost = 1
 trigger = manual
 effects = damage:14:enemy, apply-status:2:enemy:vulnerable
+shape = 0,-1|0,-2
+target_mode = pattern
+cast_speed = fast
 flavor = "접지 잘하고 만져."
-
+per_tile_mul = 1.0,0.2
 [card.c-alti-resonance]
 name = 알티-알타의 신호
 rank = rare
@@ -476,8 +596,11 @@ element = electric
 cost = 1
 trigger = manual
 effects = draw:2:self, heal:2:self, damage:12:enemy, exhaust-self:0:self
+shape = 0,-1|0,1|-1,0|1,0
+target_mode = pattern
+cast_speed = normal
 flavor = "둘이 같은 신호를 보내면, 못 갈 데가 없어요."
-
+per_tile_mul = 1.0,0.2,0.2,0.2
 [card.c-flame-web]
 name = 화염 거미줄
 rank = rare
@@ -486,8 +609,11 @@ element = fire
 cost = 1
 trigger = manual
 effects = damage:12:enemy, apply-status:3:enemy:vulnerable
+shape = -1,-1|0,-1|1,-1|-1,0|1,0
+target_mode = pattern
+cast_speed = slow
 flavor = "꽉 묶어 줄게. 따뜻하지?"
-
+per_tile_mul = 0.7,0.2,0.2,0.2,0.2
 [card.c-orca-tide]
 name = 범고래의 물결
 rank = rare
@@ -496,8 +622,11 @@ element = water
 cost = 1
 trigger = manual
 effects = damage:14:enemy, block:8:self
+shape = 0,-1|-1,-1|1,-1
+target_mode = pattern
+cast_speed = normal
 flavor = 물결이 갈라지면, 이미 늦었다.
-
+per_tile_mul = 1.0,0.2,0.2
 [card.c-trade-coil]
 name = 꼬리 감기
 rank = rare
@@ -506,8 +635,11 @@ element = earth
 cost = 1
 trigger = manual
 effects = damage:12:enemy, block:9:self
+shape = 0,-1|-1,0|1,0|0,1
+target_mode = pattern
+cast_speed = slow
 flavor = 꼬리로 칭칭 감아 조인다.
-
+per_tile_mul = 1.0,0.2,0.2,0.2
 [card.c-lop-sign]
 name = 리포의 신호
 rank = rare
@@ -516,6 +648,8 @@ element = earth
 cost = 1
 trigger = manual
 effects = draw:1:self, block:8:self
+target_mode = self
+cast_speed = normal
 flavor = "......들려요. 곧 와요."
 
 [card.c-tide-veil]
@@ -526,6 +660,8 @@ element = water
 cost = 1
 trigger = manual
 effects = block:9:self, heal:3:self, exhaust-self:0:self
+target_mode = self
+cast_speed = normal
 flavor = "괜찮아요. 절 믿어요."
 
 [card.c-bear-bastion]
@@ -536,6 +672,9 @@ element = iron
 cost = 2
 trigger = manual
 effects = block:19:self, damage:12:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = slow
 flavor = "......자격을, 보여라."
 
 [card.c-tiger-rush]
@@ -546,13 +685,16 @@ element = electric
 cost = 2
 trigger = manual
 effects = damage:8:enemy, damage:8:enemy, damage:8:enemy
+shape = 0,-1|0,-2
+target_mode = pattern
+cast_speed = fast
 flavor = "셋을 셀 동안 끝내 주지."
 
 
 # ============================================================
 # 측정 어려운 메커니즘 카드 1차 배치 (컬러/패/HP 계열).
 # ============================================================
-
+per_tile_mul = 1.0,0.8
 [card.c-prism-strike]
 name = 오로라
 rank = rare
@@ -561,6 +703,9 @@ element = light
 cost = 1
 trigger = manual
 effects = damage-top-color:1:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = normal
 flavor = 어두운 하늘에 깔리는, 아름다운 색의 장막.
 
 [card.c-prism-guard]
@@ -571,6 +716,8 @@ element = water
 cost = 1
 trigger = manual
 effects = block-top-color:1:self
+target_mode = self
+cast_speed = normal
 flavor = "버릇이란 게, 막을 때도 나오거든."
 
 [card.c-spectrum-edge]
@@ -581,8 +728,11 @@ element = iron
 cost = 2
 trigger = manual
 effects = damage-color-count:4:enemy
+shape = -1,-1|0,-1|1,-1|-1,0|0,0|1,0|-1,1|0,1|1,1
+target_mode = pattern
+cast_speed = slow
 flavor = 칼날이 보는 각도마다 다른 색으로 빛난다.
-
+per_tile_mul = 0.6,0.8,0.6,0.8,1.0,0.8,0.5,0.7,0.5
 [card.c-blood-pact]
 name = 피의 계약
 rank = rare
@@ -591,6 +741,9 @@ element = fire
 cost = 1
 trigger = manual
 effects = damage-from-hp:6:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = slow
 flavor = "이 정도 아픈 건 셈에 안 넣어."
 
 
@@ -611,6 +764,9 @@ element = fire
 cost = 1
 trigger = manual
 effects = apply-status:1:self:feral, damage:7:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = fast
 flavor = "......오늘은 제정신이 아닐지도 몰라."
 
 [card.c-fang-frenzy]
@@ -621,19 +777,26 @@ element = iron
 cost = 1
 trigger = manual
 effects = damage:8:enemy
+shape = 0,-1|0,-2
+target_mode = pattern
+cast_speed = fast
 flavor = "......사냥 시작."
 
 # ---------- 퇴행(regress) 활용 2장 ----------
-
+per_tile_mul = 1.0,0.7
 [card.c-primal-collapse]
-name = 마지막 힘
+name = 배수진
 rank = rare
 source = event
 element = fire
 cost = 1
 trigger = manual
-effects = damage:31:enemy, exhaust-self
-flavor = "아깝다는 생각은 버렸어."
+# 궁지(damage-per-confine): 플레이어 직교 인접 차단 수(0~4) × 3 추가 피해. 막다른 곳일수록 강해진다.
+effects = damage:25:enemy, damage-per-confine:3:enemy, exhaust-self
+shape = 0,-1
+target_mode = pattern
+cast_speed = slow
+flavor = "물러설 곳이 없으면, 앞만 보면 돼."
 
 [card.c-elder-curse]
 name = 태고의 저주
@@ -643,6 +806,9 @@ element = dark
 cost = 2
 trigger = manual
 effects = apply-status:2:enemy:regress, damage:9:enemy
+shape = 0,-1|0,1
+target_mode = pattern
+cast_speed = slow
 flavor = 아주 오래된 어둠이 천천히 눈을 뜬다.
 
 # ---------- damage-per-debuff 2장 ----------
@@ -655,6 +821,9 @@ element = dark
 cost = 1
 trigger = manual
 effects = damage-per-debuff:6:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = normal
 flavor = 너무 미움을 많이 사서는 안 됐다.
 
 [card.c-cursed-blade]
@@ -665,10 +834,13 @@ element = iron
 cost = 2
 trigger = manual
 effects = damage-per-debuff:9:enemy
+shape = 0,-1|0,-2
+target_mode = pattern
+cast_speed = slow
 flavor = 검집을 처음부터 만들지 않은 검이다.
 
 # ---------- consume-vulnerable 1장 ----------
-
+per_tile_mul = 1.0,0.7
 [card.c-vuln-detonate]
 name = 균열
 rank = common
@@ -677,6 +849,9 @@ element = electric
 cost = 1
 trigger = manual
 effects = consume-vulnerable:4:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = fast
 flavor = 금 간 곳은 두드리면 깨진다.
 
 # ---------- draw-if-color 1장 ----------
@@ -691,6 +866,8 @@ element = wind
 cost = 1
 trigger = manual
 effects = draw:2:self, draw-if-color:2:self:wind:5
+target_mode = self
+cast_speed = fast
 flavor = "바람 분다! 연 날리기 좋겠다!"
 
 # ---------- damage-from-hp 1장 ----------
@@ -703,6 +880,9 @@ element = fire
 cost = 1
 trigger = manual
 effects = damage-from-hp:8:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = slow
 flavor = "여기서 더는 못 물러나."
 
 # ---------- 기존 효과 창의 조합 1장 (방어 + 반격) ----------
@@ -715,6 +895,9 @@ element = earth
 cost = 2
 trigger = manual
 effects = block:16:self, damage-per-hand:3:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = slow
 flavor = "......만지면, 아파요."
 
 # ---------- status 조합 2장 ----------
@@ -727,6 +910,9 @@ element = earth
 cost = 1
 trigger = manual
 effects = apply-status:4:enemy:poison, damage:3:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = normal
 flavor = 꽃말은 '천천히'.
 
 [card.c-double-hex]
@@ -737,6 +923,9 @@ element = dark
 cost = 1
 trigger = manual
 effects = apply-status:2:enemy:weakness, apply-status:1:enemy:vulnerable
+shape = 0,-1
+target_mode = pattern
+cast_speed = normal
 flavor = 들은 쪽만 밤새 뒤척인다.
 
 
@@ -762,6 +951,9 @@ element = iron
 cost = 2
 trigger = manual
 effects = damage:47:enemy, exhaust-self:0:self
+shape = 0,-1
+target_mode = pattern
+cast_speed = slow
 flavor = "고마웠다."
 
 [card.c-last-bulwark]
@@ -772,6 +964,8 @@ element = earth
 cost = 2
 trigger = manual
 effects = block:43:self, exhaust-self:0:self
+target_mode = self
+cast_speed = slow
 flavor = "......여기서부터는, 안 돼."
 
 [card.c-doom-mark]
@@ -782,10 +976,13 @@ element = dark
 cost = 1
 trigger = manual
 effects = apply-status:5:enemy:vulnerable, apply-status:4:enemy:weakness, exhaust-self:0:self
+shape = -1,-1|0,-1|1,-1
+target_mode = pattern
+cast_speed = normal
 flavor = 한번 새겨지면 지울 수 없다.
 
 # ---------- block-to-damage 2장 (방어→공격 전환) ----------
-
+per_tile_mul = 0.7,1.0,0.7
 [card.c-shell-slam]
 name = 등껍질 후려치기
 rank = common
@@ -794,6 +991,10 @@ element = iron
 cost = 1
 trigger = manual
 effects = block-to-damage:1:enemy
+shape = 0,-1|-1,0|1,0
+per_tile_mul = 1.0,0.7,0.7
+target_mode = pattern
+cast_speed = normal
 flavor = "......갑니다."
 
 [card.c-bastion-counter]
@@ -804,6 +1005,9 @@ element = earth
 cost = 2
 trigger = manual
 effects = block:12:self, block-to-damage:1:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = slow
 flavor = "......물러서지, 않는다."
 
 # ---------- spend-all-energy 2장 (남은 마나 몰빵) ----------
@@ -816,8 +1020,11 @@ element = fire
 cost = 0
 trigger = manual
 effects = spend-all-energy:5:enemy
+shape = 0,-1|-1,0|1,0|0,1
+target_mode = pattern
+cast_speed = fast
 flavor = "남겨서 뭐 하게?"
-
+per_tile_mul = 1.0,0.6,0.6,0.4
 [card.c-overdraw-burst]
 name = 과부하 폭발
 rank = rare
@@ -826,10 +1033,13 @@ element = electric
 cost = 0
 trigger = manual
 effects = spend-all-energy:7:enemy
+shape = -1,-1|0,-1|1,-1|-1,0|0,0|1,0
+target_mode = pattern
+cast_speed = fast
 flavor = 퓨즈가 나가는 냄새가 난다.
 
 # ---------- damage-per-companion 2장 (동료 많을수록) ----------
-
+per_tile_mul = 0.5,0.8,0.5,0.6,1.0,0.6
 [card.c-comrades-charge]
 name = 동행의 돌격
 rank = common
@@ -838,8 +1048,11 @@ element = wind
 cost = 1
 trigger = manual
 effects = damage-per-companion:5:enemy
+shape = 0,-1|0,-2
+target_mode = pattern
+cast_speed = fast
 flavor = "혼자가 아니야."
-
+per_tile_mul = 1.0,0.7
 [card.c-bonded-strike]
 name = 인연의 일격
 rank = rare
@@ -848,10 +1061,13 @@ element = light
 cost = 2
 trigger = manual
 effects = damage-per-companion:8:enemy, block:6:self
+shape = 0,-1|-1,0|1,0
+target_mode = pattern
+cast_speed = normal
 flavor = 떠올릴 얼굴이 많다는 건 좋은 일이다.
 
 # ---------- damage-per-relic 2장 (유물 많을수록) ----------
-
+per_tile_mul = 1.0,0.6,0.6
 [card.c-collectors-strike]
 name = 수집가의 일격
 rank = common
@@ -860,8 +1076,11 @@ element = iron
 cost = 1
 trigger = manual
 effects = damage-per-relic:5:enemy
+shape = -1,-1|0,-1|1,-1
+target_mode = pattern
+cast_speed = normal
 flavor = "전부 다 쓸 데가 있다니까."
-
+per_tile_mul = 0.7,1.0,0.7
 [card.c-hoarders-wrath]
 name = 보물의 분노
 rank = rare
@@ -870,10 +1089,13 @@ element = electric
 cost = 2
 trigger = manual
 effects = damage-per-relic:8:enemy
+shape = 0,-1|-1,-1|1,-1|-1,0|1,0
+target_mode = pattern
+cast_speed = slow
 flavor = "내 보물에 손대지 마!"
 
 # ---------- growing-damage 2장 (쓸수록 강해지는 공격) ----------
-
+per_tile_mul = 1.0,0.6,0.6,0.5,0.5
 [card.c-rising-fang]
 name = 자라나는 송곳니
 rank = common
@@ -882,6 +1104,9 @@ element = fire
 cost = 1
 trigger = manual
 effects = growing-damage:5:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = normal
 flavor = "한번 물면 놓지 않아."
 
 [card.c-mounting-storm]
@@ -892,6 +1117,10 @@ element = wind
 cost = 1
 trigger = manual
 effects = growing-damage:8:enemy
+shape = 0,-1|0,1|-1,0|1,0
+per_tile_mul = 1.0,0.29,0.29,0.29
+target_mode = pattern
+cast_speed = slow
 flavor = 폭풍은 처음에 산들바람인 척을 한다.
 
 # ---------- heal-per-hand 2장 (손패 수만큼 회복) ----------
@@ -904,6 +1133,8 @@ element = water
 cost = 1
 trigger = manual
 effects = heal-per-hand:2:self
+target_mode = self
+cast_speed = normal
 flavor = "같이 숨 쉬어요. 천천히."
 
 [card.c-bloom-recovery]
@@ -914,6 +1145,8 @@ element = earth
 cost = 2
 trigger = manual
 effects = heal-per-hand:4:self, draw:2:self
+target_mode = self
+cast_speed = slow
 flavor = 꽃이 피는 데 이유는 없다.
 
 # ---------- next-card-double 1장 (다음 카드 2배, 콤보 셋업) ----------
@@ -926,6 +1159,8 @@ element = light
 cost = 1
 trigger = manual
 effects = next-card-double:0:self
+target_mode = self
+cast_speed = fast
 flavor = "방금 그거, 다시 보여 드릴게요."
 
 # ---------- 기존 효과 창의 조합 4장 (측정 어려운) ----------
@@ -938,8 +1173,11 @@ element = earth
 cost = 1
 trigger = manual
 effects = apply-status:3:enemy:poison, damage-per-debuff:4:enemy
+shape = 0,-1|0,-2
+target_mode = pattern
+cast_speed = normal
 flavor = 그 탑에는 새도 앉지 않는다.
-
+per_tile_mul = 1.0,0.6
 [card.c-prism-overload]
 name = 과욕
 rank = rare
@@ -948,6 +1186,9 @@ element = light
 cost = 2
 trigger = manual
 effects = damage-color-count:3:enemy, damage-top-color:1:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = slow
 flavor = "욕심 좀 부리면 어때."
 
 [card.c-frail-rupture]
@@ -958,6 +1199,9 @@ element = dark
 cost = 1
 trigger = manual
 effects = apply-status:2:enemy:vulnerable, consume-vulnerable:3:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = normal
 flavor = 쩍, 하고 갈라지는 소리가 났다.
 
 [card.c-sacrifice-edge]
@@ -968,6 +1212,9 @@ element = fire
 cost = 1
 trigger = manual
 effects = damage-from-hp:7:enemy, draw:1:self
+shape = 0,-1
+target_mode = pattern
+cast_speed = normal
 flavor = "피 값은 비싸. 그만큼 받아 내야지."
 
 
@@ -983,6 +1230,10 @@ element = iron
 cost = 1
 trigger = manual
 effects = damage:10:enemy
+shape = 0,-1|-1,0|1,0
+per_tile_mul = 1.0,0.25,0.25
+target_mode = pattern
+cast_speed = normal
 flavor = "기본에 충실한 물건입니다."
 
 [card.c-shop-brace]
@@ -993,6 +1244,8 @@ element = earth
 cost = 1
 trigger = manual
 effects = block:10:self
+target_mode = self
+cast_speed = normal
 flavor = "이만하면 충분하실 겁니다."
 
 [card.c-shop-flick]
@@ -1003,6 +1256,8 @@ element = wind
 cost = 0
 trigger = manual
 effects = draw:1:self
+target_mode = self
+cast_speed = fast
 flavor = "손에 익으면 편하실 거예요."
 
 [card.c-shop-sip]
@@ -1013,6 +1268,8 @@ element = water
 cost = 1
 trigger = manual
 effects = heal:6:self, exhaust-self:0:self
+target_mode = self
+cast_speed = normal
 flavor = "리필은 안 됩니다."
 
 [card.c-shop-poke]
@@ -1023,6 +1280,9 @@ element = fire
 cost = 0
 trigger = manual
 effects = damage:4:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = fast
 flavor = "작아도 쓸모는 합니다."
 
 [card.c-shop-heavy]
@@ -1033,6 +1293,9 @@ element = iron
 cost = 2
 trigger = manual
 effects = damage:15:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = slow
 flavor = "비싼 값을 하는 물건입니다."
 
 [card.c-shop-wall]
@@ -1043,6 +1306,8 @@ element = earth
 cost = 2
 trigger = manual
 effects = block:18:self
+target_mode = self
+cast_speed = slow
 flavor = "튼튼한 게 최고지요."
 
 [card.c-shop-study]
@@ -1053,6 +1318,8 @@ element = wind
 cost = 1
 trigger = manual
 effects = draw:3:self
+target_mode = self
+cast_speed = normal
 flavor = "천천히 둘러보세요."
 
 [card.c-shop-salve]
@@ -1063,6 +1330,8 @@ element = water
 cost = 1
 trigger = manual
 effects = heal:4:self, block:4:self, exhaust-self:0:self
+target_mode = self
+cast_speed = normal
 flavor = "많이는 안 아플 거예요."
 
 
@@ -1078,6 +1347,10 @@ element = fire
 cost = 2
 trigger = manual
 effects = damage:25:enemy, apply-status:7:enemy:burn
+shape = 0,-1|0,1|-1,0|1,0
+per_tile_mul = 1.0,0.2,0.2,0.2
+target_mode = pattern
+cast_speed = slow
 flavor = 트리플라워에서는 비 대신 재가 내린다.
 
 [card.c-falcon-skydive]
@@ -1088,8 +1361,11 @@ element = wind
 cost = 2
 trigger = manual
 effects = damage-per-hand:4:enemy
+shape = 0,-1|0,-2|0,-3
+target_mode = pattern
+cast_speed = fast
 flavor = 팔콘 가든의 바람은 아래에서 위로 분다.
-
+per_tile_mul = 1.0,0.7,0.5
 [card.c-yusezria-corebreak]
 name = 정수핵 깨기
 rank = legendary
@@ -1098,6 +1374,9 @@ element = iron
 cost = 2
 trigger = manual
 effects = block:32:self, block-to-damage:1:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = slow
 flavor = 유스제리아의 벽 앞에서는 다들 말이 없어진다.
 
 [card.c-diropel-totem]
@@ -1108,13 +1387,16 @@ element = earth
 cost = 2
 trigger = manual
 effects = damage-color-count:6:enemy, draw:1:self
+shape = -1,-1|0,-1|1,-1
+target_mode = pattern
+cast_speed = normal
 flavor = 딜롭 사람들은 얼굴에 빛을 그린다.
 
 
 # ============================================================
 # 마무리 조합 카드 (4차 배치) 측정 어려운 조합.
 # ============================================================
-
+per_tile_mul = 0.7,1.0,0.7
 [card.c-soul-harvest]
 name = 영혼 거두기
 rank = rare
@@ -1123,8 +1405,11 @@ element = dark
 cost = 2
 trigger = manual
 effects = damage-per-debuff:5:enemy, apply-status:2:enemy:poison
+shape = 0,-1|0,-2
+target_mode = pattern
+cast_speed = slow
 flavor = 낫질에는 때가 있다.
-
+per_tile_mul = 1.0,0.6
 [card.c-wild-rush]
 name = 야성의 돌진
 rank = common
@@ -1133,6 +1418,10 @@ element = fire
 cost = 1
 trigger = manual
 effects = apply-status:1:self:feral, damage-per-hand:3:enemy
+shape = 0,-1|0,-2
+per_tile_mul = 1.0,0.7
+target_mode = pattern
+cast_speed = fast
 flavor = "앞만 봐. 앞만."
 
 [card.c-color-surge]
@@ -1143,6 +1432,9 @@ element = light
 cost = 1
 trigger = manual
 effects = damage-top-color:1:enemy, draw-if-color:1:self:light:5
+shape = 0,-1
+target_mode = pattern
+cast_speed = normal
 flavor = 차오른 것은 언젠가 넘친다.
 
 
@@ -1163,6 +1455,8 @@ element = water
 cost = 1
 trigger = manual
 effects = heal:9:self, draw:1:self, exhaust-self:0:self
+target_mode = self
+cast_speed = normal
 flavor = 이마를 스친 바람이 등 뒤까지 밀어 준다.
 
 [card.c-deep-breath-plus]
@@ -1173,6 +1467,9 @@ element = wind
 cost = 0
 trigger = manual
 effects = draw:2:self, heal:1:self, damage:11:enemy, exhaust-self:0:self
+shape = 0,-1
+target_mode = pattern
+cast_speed = fast
 flavor = 지금 가장 적절한 처치를 한다.
 
 [card.c-transcend-strike-plus]
@@ -1183,8 +1480,11 @@ element = light
 cost = 2
 trigger = manual
 effects = damage:49:enemy, consume-vulnerable:4
+shape = 0,-1|0,-2|0,-3
+target_mode = pattern
+cast_speed = slow
 flavor = "걱정하지 마."
-
+per_tile_mul = 1.0,0.2,0.2
 [card.c-shadow-rebuke-plus]
 name = 그��자 밟기+
 rank = rare
@@ -1193,8 +1493,11 @@ element = dark
 cost = 1
 trigger = manual
 effects = damage:12:enemy, apply-status:2:enemy:vulnerable
+shape = 0,-1|-1,0|1,0
+target_mode = pattern
+cast_speed = normal
 flavor = 더는 어디에도 숨지 못한다.
-
+per_tile_mul = 1.0,0.2,0.2
 [card.c-iluneon-stopped-noon-plus]
 name = 멈춘 시계+
 rank = legendary
@@ -1203,6 +1506,9 @@ element = light
 cost = 2
 trigger = manual
 effects = damage:21:enemy, apply-status:1:enemy:paralyze, apply-status:1:enemy:vulnerable
+shape = 0,-1
+target_mode = pattern
+cast_speed = slow
 flavor = 마치 이 순간이 영원한 것처럼.
 
 [card.c-moss-ember-strike-plus]
@@ -1213,8 +1519,11 @@ element = fire
 cost = 2
 trigger = manual
 effects = damage:21:enemy, apply-status:20:enemy:burn
+shape = 0,-1|0,-2
+target_mode = pattern
+cast_speed = slow
 flavor = 모스 대장간의 불이 태우지 못하는 건 없다.
-
+per_tile_mul = 1.0,0.2
 [card.c-tacomi-hologram-mirror-plus]
 name = 홀로매트릭스+
 rank = legendary
@@ -1223,6 +1532,8 @@ element = electric
 cost = 2
 trigger = manual
 effects = block:21:self, apply-status:1:self:ghost
+target_mode = self
+cast_speed = slow
 flavor = 어느 쪽을 베어도, 진짜는 따로 있어.
 
 [card.c-alimes-mist-vow-plus]
@@ -1233,6 +1544,9 @@ element = water
 cost = 2
 trigger = manual
 effects = heal:9:self, draw:1:self, damage:35:enemy, exhaust-self:0:self
+shape = 0,-1
+target_mode = pattern
+cast_speed = slow
 flavor = 아직 당신이 기억하고 있기를.
 
 [card.c-manonickla-sunset-wall-plus]
@@ -1243,10 +1557,13 @@ element = iron
 cost = 2
 trigger = manual
 effects = block:35:self, damage-top-color:1.2
+shape = 0,-1|-1,0|1,0
+target_mode = pattern
+cast_speed = slow
 flavor = 온 세상을 덮은 노을의 끝에.
 
 # ---------- NPC 영입 ----------
-
+per_tile_mul = 1.0,0.7,0.7
 [card.c-swift-step-plus]
 name = 상승기류+
 rank = basic
@@ -1255,6 +1572,8 @@ element = wind
 cost = 0
 trigger = manual
 effects = draw:1:self, next-turn-energy:1:self
+target_mode = self
+cast_speed = fast
 flavor = "오늘은 바람이 좋은걸!"
 
 [card.c-fast-mail-plus]
@@ -1265,6 +1584,8 @@ element = wind
 cost = 0
 trigger = manual
 effects = draw:2:self, next-turn-energy:1:self, heal:-4
+target_mode = self
+cast_speed = fast
 flavor = "특급 우편이야!"
 
 [card.c-balanced-edge-plus]
@@ -1275,6 +1596,9 @@ element = iron
 cost = 1
 trigger = manual
 effects = damage-min-color:1.5:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = normal
 flavor = "......나도, 이런 거 만들어 보고 싶다."
 
 [card.c-binding-ward-plus]
@@ -1285,6 +1609,9 @@ element = dark
 cost = 1
 trigger = manual
 effects = apply-status:4:enemy:weakness
+shape = 0,-1
+target_mode = pattern
+cast_speed = normal
 flavor = "그때, 내가 도망치지 않았다면."
 
 [card.c-quiet-arc-plus]
@@ -1295,6 +1622,9 @@ element = light
 cost = 1
 trigger = manual
 effects = apply-status:3:enemy:vulnerable, apply-status:2:enemy:weakness
+shape = 0,-1
+target_mode = pattern
+cast_speed = slow
 flavor = "난폭한 일은 하고 싶지 않아요."
 
 [card.c-flash-capture-plus]
@@ -1305,8 +1635,11 @@ element = fire
 cost = 3
 trigger = manual
 effects = apply-status:2:enemy:paralyze, apply-status:1:enemy:spasm
+shape = -1,-1|0,-1|1,-1
+target_mode = pattern
+cast_speed = slow
 flavor = "한 장 더! 이번엔 웃는 얼굴로!"
-
+per_tile_mul = 0.5,1.0,0.5
 [card.c-rize-relay-plus]
 name = 연속 타격+
 rank = common
@@ -1315,6 +1648,9 @@ element = wind
 cost = 1
 trigger = manual
 effects = damage:10:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = fast
 flavor = "그 정도로는 내 주먹을 피할 수 없을 걸!"
 
 # 한 판 갈래+의 *돌아온 한 판* — 복제하지 않는 비용 0 별개 카드. source=form(풀 제외).
@@ -1326,6 +1662,9 @@ element = fire
 cost = 0
 trigger = manual
 effects = damage:7:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = fast
 flavor = "다시 간다!"
 
 [card.c-spirit-call-plus]
@@ -1336,6 +1675,9 @@ element = dark
 cost = 1
 trigger = manual
 effects = damage-color-count:4:enemy, draw:1:self
+shape = 0,-1
+target_mode = pattern
+cast_speed = normal
 flavor = "어, 더 늘었네? 좋아, 다 같이 간다!"
 
 [card.c-warm-cup-plus]
@@ -1346,6 +1688,9 @@ element = water
 cost = 1
 trigger = manual
 effects = heal:4:self, draw:1:self, damage:13:enemy, exhaust-self:0:self
+shape = 0,-1
+target_mode = pattern
+cast_speed = normal
 flavor = 우유를 타서 밀크티로 만들어 봤더니 좋더라고.
 
 [card.c-tripps-rage-plus]
@@ -1356,6 +1701,9 @@ element = fire
 cost = 20
 trigger = manual
 effects = damage:116:enemy, apply-status:1:enemy:vulnerable, apply-status:1:enemy:weakness
+shape = 0,-1
+target_mode = pattern
+cast_speed = slow
 flavor = "더는, 못 본 체 할 수 없어."
 
 [card.c-trace-step-plus]
@@ -1366,6 +1714,8 @@ element = fire
 cost = 0
 trigger = manual
 effects = draw:2:self, return-hand-to-deck:1:self, next-turn-energy:1:self
+target_mode = self
+cast_speed = fast
 flavor = "......정말, 이 길이야. 확실해."
 
 [card.c-growing-leaf-plus]
@@ -1376,6 +1726,8 @@ element = earth
 cost = 2
 trigger = manual
 effects = growing-block:4:self
+target_mode = self
+cast_speed = slow
 flavor = "어느새 이만큼 컸어. 거봐, 진짜라니까."
 
 [card.c-zero-spark-plus]
@@ -1386,8 +1738,11 @@ element = electric
 cost = 1
 trigger = manual
 effects = damage:19:enemy, apply-status:3:enemy:vulnerable
+shape = 0,-1|0,-2
+target_mode = pattern
+cast_speed = fast
 flavor = "하하, 따끔했어?"
-
+per_tile_mul = 1.0,0.2
 [card.c-alti-resonance-plus]
 name = 알티-알타의 신호+
 rank = rare
@@ -1396,8 +1751,11 @@ element = electric
 cost = 1
 trigger = manual
 effects = draw:2:self, heal:3:self, damage:17:enemy, exhaust-self:0:self
+shape = 0,-1|0,1|-1,0|1,0
+target_mode = pattern
+cast_speed = normal
 flavor = "신호 하나만 더 겹치면, 끝까지 닿아요."
-
+per_tile_mul = 1.0,0.2,0.2,0.2
 [card.c-flame-web-plus]
 name = 화염 거미줄+
 rank = rare
@@ -1406,8 +1764,11 @@ element = fire
 cost = 1
 trigger = manual
 effects = damage:17:enemy, apply-status:4:enemy:vulnerable
+shape = -1,-1|0,-1|1,-1|-1,0|1,0
+target_mode = pattern
+cast_speed = slow
 flavor = "이제 빠져나갈 틈은 없어!"
-
+per_tile_mul = 0.7,0.2,0.2,0.2,0.2
 [card.c-orca-tide-plus]
 name = 범고래의 물결+
 rank = rare
@@ -1416,8 +1777,11 @@ element = water
 cost = 1
 trigger = manual
 effects = damage:20:enemy, block:12:self
+shape = 0,-1|-1,-1|1,-1
+target_mode = pattern
+cast_speed = normal
 flavor = 검푸른 포식자에게서 도망칠 수 없다.
-
+per_tile_mul = 1.0,0.2,0.2
 [card.c-trade-coil-plus]
 name = 꼬리 감기+
 rank = rare
@@ -1426,8 +1790,11 @@ element = earth
 cost = 1
 trigger = manual
 effects = damage:17:enemy, block:14:self
+shape = 0,-1|-1,0|1,0|0,1
+target_mode = pattern
+cast_speed = slow
 flavor = 빈틈없이 조여 와, 빠져나갈 수가 없다.
-
+per_tile_mul = 1.0,0.2,0.2,0.2
 [card.c-lop-sign-plus]
 name = 리포의 신호+
 rank = rare
@@ -1436,6 +1803,8 @@ element = earth
 cost = 1
 trigger = manual
 effects = draw:1:self, block:12:self
+target_mode = self
+cast_speed = normal
 flavor = "......아직 보이지도 않지만."
 
 [card.c-tide-veil-plus]
@@ -1446,6 +1815,8 @@ element = water
 cost = 1
 trigger = manual
 effects = block:14:self, heal:5:self, exhaust-self:0:self
+target_mode = self
+cast_speed = normal
 flavor = "이번에도, 절 믿으면 돼요."
 
 [card.c-bear-bastion-plus]
@@ -1456,6 +1827,9 @@ element = iron
 cost = 2
 trigger = manual
 effects = block:26:self, damage:17:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = slow
 flavor = "......물러설 거면, 처음부터 서지 마라."
 
 [card.c-tiger-rush-plus]
@@ -1466,10 +1840,13 @@ element = electric
 cost = 2
 trigger = manual
 effects = damage:11:enemy, damage:11:enemy, damage:11:enemy
+shape = 0,-1|0,-2
+target_mode = pattern
+cast_speed = fast
 flavor = "거봐, 셋도 충분하지?"
 
 # ---------- 측정 어려운 1차 ----------
-
+per_tile_mul = 1.0,0.8
 [card.c-prism-strike-plus]
 name = 오로라+
 rank = rare
@@ -1478,6 +1855,9 @@ element = light
 cost = 1
 trigger = manual
 effects = damage-top-color:2:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = normal
 flavor = 고개를 들면, 색이 하늘 끝까지 번져 있다.
 
 [card.c-prism-guard-plus]
@@ -1488,6 +1868,8 @@ element = water
 cost = 1
 trigger = manual
 effects = block-top-color:2:self
+target_mode = self
+cast_speed = normal
 flavor = "버릇을 파악하면 다른 모든 동작도 한 눈에 보이지."
 
 [card.c-spectrum-edge-plus]
@@ -1498,8 +1880,11 @@ element = iron
 cost = 2
 trigger = manual
 effects = damage-color-count:6:enemy
+shape = -1,-1|0,-1|1,-1|-1,0|0,0|1,0|-1,1|0,1|1,1
+target_mode = pattern
+cast_speed = slow
 flavor = 휘두른 검에는 무지개 잔상이 남았다.
-
+per_tile_mul = 0.6,0.8,0.6,0.8,1.0,0.8,0.5,0.7,0.5
 [card.c-blood-pact-plus]
 name = 피의 계약+
 rank = rare
@@ -1508,6 +1893,9 @@ element = fire
 cost = 1
 trigger = manual
 effects = damage-from-hp:9:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = slow
 flavor = 조금 더 내주면, 그만큼 더 돌려받는다.
 
 # ---------- 측정 어려운 2차 (수화/퇴행/디버프) ----------
@@ -1520,6 +1908,9 @@ element = fire
 cost = 1
 trigger = manual
 effects = apply-status:1:self:feral, damage:11:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = fast
 flavor = "......이미 발톱이 나와 버렸어."
 
 [card.c-fang-frenzy-plus]
@@ -1530,17 +1921,24 @@ element = iron
 cost = 1
 trigger = manual
 effects = damage:13:enemy
+shape = 0,-1|0,-2
+target_mode = pattern
+cast_speed = fast
 flavor = "......이미 냄새를 맡았어."
-
+per_tile_mul = 1.0,0.2
 [card.c-primal-collapse-plus]
-name = 마지막 힘+
+name = 배수진+
 rank = rare
 source = event
 element = fire
 cost = 1
 trigger = manual
-effects = damage:43:enemy, exhaust-self
-flavor = 남김없이 쏟아붓고, 조용히 스러진다.
+# 궁지(damage-per-confine): 차단 수(0~4) × 5 추가 피해. 완전히 몰리면 +20.
+effects = damage:33:enemy, damage-per-confine:5:enemy, exhaust-self
+shape = 0,-1
+target_mode = pattern
+cast_speed = slow
+flavor = "여기가 끝이라면, 끝까지 간다."
 
 [card.c-elder-curse-plus]
 name = 태고의 저주+
@@ -1550,6 +1948,9 @@ element = dark
 cost = 2
 trigger = manual
 effects = apply-status:3:enemy:regress, damage:14:enemy
+shape = 0,-1|0,1
+target_mode = pattern
+cast_speed = slow
 flavor = 상식 밖의 존재 앞에서는 누구나 어려지고 만다.
 
 [card.c-debuff-storm-plus]
@@ -1560,6 +1961,9 @@ element = dark
 cost = 1
 trigger = manual
 effects = damage-per-debuff:8:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = normal
 flavor = 임계점을 넘어 버렸다면ㅡ
 
 [card.c-cursed-blade-plus]
@@ -1570,8 +1974,11 @@ element = iron
 cost = 2
 trigger = manual
 effects = damage-per-debuff:12:enemy
+shape = 0,-1|0,-2
+target_mode = pattern
+cast_speed = slow
 flavor = 상처가 겹친 곳일수록 검이 매섭게 든다.
-
+per_tile_mul = 1.0,0.7
 [card.c-vuln-detonate-plus]
 name = 균열+
 rank = common
@@ -1580,6 +1987,9 @@ element = electric
 cost = 1
 trigger = manual
 effects = consume-vulnerable:6:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = fast
 flavor = 갈라진 곳은, 건드리기만 해도 무너진다.
 
 [card.c-prism-overflow-plus]
@@ -1590,6 +2000,8 @@ element = wind
 cost = 1
 trigger = manual
 effects = draw:2:self, draw-if-color:3:self:wind:4
+target_mode = self
+cast_speed = fast
 flavor = "바람 좋은 날엔, 연이 알아서 올라가."
 
 [card.c-last-stand-plus]
@@ -1600,6 +2012,9 @@ element = fire
 cost = 1
 trigger = manual
 effects = damage-from-hp:11:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = slow
 flavor = "물러설 데가 없으니, 남은 걸 다 건다."
 
 [card.c-tortoise-thorn-plus]
@@ -1610,6 +2025,9 @@ element = earth
 cost = 2
 trigger = manual
 effects = block:22:self, damage-per-hand:4:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = slow
 flavor = "......그래도 만지면, 더욱 아플 거예요."
 
 [card.c-venom-bloom-plus]
@@ -1620,6 +2038,9 @@ element = earth
 cost = 1
 trigger = manual
 effects = apply-status:6:enemy:poison, damage:4:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = normal
 flavor = 천천히, 그렇지만 빠짐없이.
 
 [card.c-double-hex-plus]
@@ -1630,6 +2051,9 @@ element = dark
 cost = 1
 trigger = manual
 effects = apply-status:3:enemy:weakness, apply-status:2:enemy:vulnerable
+shape = 0,-1
+target_mode = pattern
+cast_speed = normal
 flavor = 어쩌면 정말 내 잘못일지도 몰라.
 
 # ---------- 측정 어려운 3차 (소멸/전환/마나/연동/성장) ----------
@@ -1642,6 +2066,9 @@ element = iron
 cost = 2
 trigger = manual
 effects = damage:65:enemy, exhaust-self:0:self
+shape = 0,-1
+target_mode = pattern
+cast_speed = slow
 flavor = "......잘 지내."
 
 [card.c-last-bulwark-plus]
@@ -1652,6 +2079,8 @@ element = earth
 cost = 2
 trigger = manual
 effects = block:62:self, exhaust-self:0:self
+target_mode = self
+cast_speed = slow
 flavor = "......이 선만은, 누구도 못 넘어."
 
 [card.c-doom-mark-plus]
@@ -1662,8 +2091,11 @@ element = dark
 cost = 0
 trigger = manual
 effects = apply-status:5:enemy:vulnerable, apply-status:4:enemy:weakness, exhaust-self:0:self
+shape = -1,-1|0,-1|1,-1
+target_mode = pattern
+cast_speed = fast
 flavor = 한번 찍힌 낙인은, 좀처럼 흐려지지 않는다.
-
+per_tile_mul = 0.7,1.0,0.7
 [card.c-shell-slam-plus]
 name = 등껍질 후려치기+
 rank = common
@@ -1672,6 +2104,10 @@ element = iron
 cost = 1
 trigger = manual
 effects = block-to-damage:2:enemy
+shape = 0,-1|-1,0|1,0
+per_tile_mul = 1.0,0.7,0.7
+target_mode = pattern
+cast_speed = normal
 flavor = "......진짜 "방어"를 할 수밖에 없네요."
 
 [card.c-bastion-counter-plus]
@@ -1682,6 +2118,9 @@ element = earth
 cost = 2
 trigger = manual
 effects = block:19:self, block-to-damage:1:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = slow
 flavor = "......공격은 이제 끝인가?"
 
 [card.c-all-in-plus]
@@ -1692,8 +2131,11 @@ element = fire
 cost = 0
 trigger = manual
 effects = spend-all-energy:7:enemy
+shape = 0,-1|-1,0|1,0|0,1
+target_mode = pattern
+cast_speed = fast
 flavor = "어차피 쓸 거면, 바닥까지 긁어 써야지."
-
+per_tile_mul = 1.0,0.6,0.6,0.4
 [card.c-overdraw-burst-plus]
 name = 과부하 폭발+
 rank = rare
@@ -1702,8 +2144,11 @@ element = electric
 cost = 0
 trigger = manual
 effects = spend-all-energy:10:enemy
+shape = -1,-1|0,-1|1,-1|-1,0|0,0|1,0
+target_mode = pattern
+cast_speed = fast
 flavor = 타는 냄새가 심해지다 보면, 결국 펑 소리가 난다.
-
+per_tile_mul = 0.5,0.8,0.5,0.6,1.0,0.6
 [card.c-comrades-charge-plus]
 name = 동행의 돌격+
 rank = common
@@ -1712,8 +2157,11 @@ element = wind
 cost = 1
 trigger = manual
 effects = damage-per-companion:7:enemy
+shape = 0,-1|0,-2
+target_mode = pattern
+cast_speed = fast
 flavor = "모두가 있으니까."
-
+per_tile_mul = 1.0,0.7
 [card.c-bonded-strike-plus]
 name = 인연의 일격+
 rank = rare
@@ -1722,8 +2170,11 @@ element = light
 cost = 2
 trigger = manual
 effects = damage-per-companion:11:enemy, block:9:self
+shape = 0,-1|-1,0|1,0
+target_mode = pattern
+cast_speed = normal
 flavor = 떠올린 이름이 하나하나, 주먹에 얹힌다.
-
+per_tile_mul = 1.0,0.6,0.6
 [card.c-collectors-strike-plus]
 name = 수집가의 일격+
 rank = common
@@ -1732,8 +2183,11 @@ element = iron
 cost = 1
 trigger = manual
 effects = damage-per-relic:7:enemy
+shape = -1,-1|0,-1|1,-1
+target_mode = pattern
+cast_speed = normal
 flavor = "거봐, 하나도 버릴 게 없다니까."
-
+per_tile_mul = 0.7,1.0,0.7
 [card.c-hoarders-wrath-plus]
 name = 보물의 분노+
 rank = rare
@@ -1742,8 +2196,11 @@ element = electric
 cost = 2
 trigger = manual
 effects = damage-per-relic:11:enemy
+shape = 0,-1|-1,-1|1,-1|-1,0|1,0
+target_mode = pattern
+cast_speed = slow
 flavor = "하나라도 건드리면, 가만 안 둬!"
-
+per_tile_mul = 1.0,0.6,0.6,0.5,0.5
 [card.c-rising-fang-plus]
 name = 자라나는 송곳니+
 rank = common
@@ -1752,6 +2209,9 @@ element = fire
 cost = 1
 trigger = manual
 effects = growing-damage:7:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = normal
 flavor = "한번 노리면 놓치지 않아."
 
 [card.c-mounting-storm-plus]
@@ -1762,6 +2222,10 @@ element = wind
 cost = 1
 trigger = manual
 effects = growing-damage:11:enemy
+shape = 0,-1|0,1|-1,0|1,0
+per_tile_mul = 1.0,0.2,0.2,0.2
+target_mode = pattern
+cast_speed = slow
 flavor = 더 이상 숨길 필요가 없을 때, 모든 것을 날려 버린다.
 
 [card.c-shared-breath-plus]
@@ -1772,6 +2236,8 @@ element = water
 cost = 1
 trigger = manual
 effects = heal-per-hand:3:self
+target_mode = self
+cast_speed = normal
 flavor = "가라앉히는 거예요. 후우-"
 
 [card.c-bloom-recovery-plus]
@@ -1782,6 +2248,8 @@ element = earth
 cost = 2
 trigger = manual
 effects = heal-per-hand:6:self, draw:2:self
+target_mode = self
+cast_speed = slow
 flavor = 꽃이 지는 날은 정해져 있다.
 
 [card.c-mirror-echo-plus]
@@ -1792,6 +2260,8 @@ element = light
 cost = 0
 trigger = manual
 effects = next-card-double:0:self
+target_mode = self
+cast_speed = fast
 flavor = "다시 한번, 똑같이. 보셨죠?"
 
 [card.c-toxic-spire-plus]
@@ -1802,8 +2272,11 @@ element = earth
 cost = 1
 trigger = manual
 effects = apply-status:4:enemy:poison, damage-per-debuff:5:enemy
+shape = 0,-1|0,-2
+target_mode = pattern
+cast_speed = normal
 flavor = 탑이 높아질수록, 그 아래 그늘도 깊어진다.
-
+per_tile_mul = 1.0,0.6
 [card.c-prism-overload-plus]
 name = 과욕+
 rank = rare
@@ -1812,6 +2285,9 @@ element = light
 cost = 2
 trigger = manual
 effects = damage-color-count:4:enemy, damage-top-color:2:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = slow
 flavor = "이왕 부린 욕심, 끝까지 가 보는 거야."
 
 [card.c-frail-rupture-plus]
@@ -1822,6 +2298,9 @@ element = dark
 cost = 1
 trigger = manual
 effects = apply-status:3:enemy:vulnerable, consume-vulnerable:4:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = normal
 flavor = 갈라진 틈은, 이내 더 벌어진다.
 
 [card.c-sacrifice-edge-plus]
@@ -1832,6 +2311,9 @@ element = fire
 cost = 1
 trigger = manual
 effects = damage-from-hp:10:enemy, draw:1:self
+shape = 0,-1
+target_mode = pattern
+cast_speed = normal
 flavor = "다 계획이 있단 말씀."
 
 # ---------- 상점 평범 ----------
@@ -1844,6 +2326,10 @@ element = iron
 cost = 1
 trigger = manual
 effects = damage:14:enemy
+shape = 0,-1|-1,0|1,0
+per_tile_mul = 1.0,0.2,0.2
+target_mode = pattern
+cast_speed = normal
 flavor = "손에 익으면 평생을 같이 갑니다."
 
 [card.c-shop-brace-plus]
@@ -1854,6 +2340,8 @@ element = earth
 cost = 1
 trigger = manual
 effects = block:14:self
+target_mode = self
+cast_speed = normal
 flavor = "받쳐 보시면, 생각보다 든든합니다."
 
 [card.c-shop-flick-plus]
@@ -1864,6 +2352,8 @@ element = wind
 cost = 0
 trigger = manual
 effects = draw:2:self
+target_mode = self
+cast_speed = fast
 flavor = "익숙해지면, 손이 먼저 움직여요."
 
 [card.c-shop-sip-plus]
@@ -1874,6 +2364,8 @@ element = water
 cost = 1
 trigger = manual
 effects = heal:9:self, exhaust-self:0:self
+target_mode = self
+cast_speed = normal
 flavor = "아껴 드세요. 그게 전부니까."
 
 [card.c-shop-poke-plus]
@@ -1884,6 +2376,9 @@ element = fire
 cost = 0
 trigger = manual
 effects = damage:6:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = fast
 flavor = "빠르기 때문에 무시 못 합니다."
 
 [card.c-shop-heavy-plus]
@@ -1894,6 +2389,9 @@ element = iron
 cost = 2
 trigger = manual
 effects = damage:21:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = slow
 flavor = 같은 칼이 한결 묵직하다.
 
 [card.c-shop-wall-plus]
@@ -1904,6 +2402,8 @@ element = earth
 cost = 2
 trigger = manual
 effects = block:25:self
+target_mode = self
+cast_speed = slow
 flavor = "이만하면, 웬만한 건 다 막습니다."
 
 [card.c-shop-study-plus]
@@ -1914,6 +2414,8 @@ element = wind
 cost = 1
 trigger = manual
 effects = draw:4:self
+target_mode = self
+cast_speed = normal
 flavor = "급할 거 없습니다, 안목은 시간이 만드는 법이니."
 
 [card.c-shop-salve-plus]
@@ -1924,6 +2426,8 @@ element = water
 cost = 1
 trigger = manual
 effects = heal:6:self, block:7:self, exhaust-self:0:self
+target_mode = self
+cast_speed = normal
 flavor = "이건 자국도 잘 안 남아요."
 
 # ---------- 미니 마을 전설 ----------
@@ -1936,6 +2440,10 @@ element = fire
 cost = 2
 trigger = manual
 effects = damage:35:enemy, apply-status:9:enemy:burn
+shape = 0,-1|0,1|-1,0|1,0
+per_tile_mul = 1.0,0.2,0.2,0.2
+target_mode = pattern
+cast_speed = slow
 flavor = 재가 멎은 자리에도, 불씨는 한참을 탄다.
 
 [card.c-falcon-skydive-plus]
@@ -1946,8 +2454,11 @@ element = wind
 cost = 2
 trigger = manual
 effects = damage-per-hand:5:enemy
+shape = 0,-1|0,-2|0,-3
+target_mode = pattern
+cast_speed = fast
 flavor = 높이 오른 만큼, 내리꽂는 힘도 실린다.
-
+per_tile_mul = 1.0,0.7,0.5
 [card.c-yusezria-corebreak-plus]
 name = 정수핵 깨기+
 rank = legendary
@@ -1956,6 +2467,9 @@ element = iron
 cost = 2
 trigger = manual
 effects = block:46:self, block-to-damage:1:enemy
+shape = 0,-1
+target_mode = pattern
+cast_speed = slow
 flavor = 단단히 막은 만큼 크게 되돌린다.
 
 [card.c-diropel-totem-plus]
@@ -1966,10 +2480,13 @@ element = earth
 cost = 2
 trigger = manual
 effects = damage-color-count:8:enemy, draw:1:self
+shape = -1,-1|0,-1|1,-1
+target_mode = pattern
+cast_speed = normal
 flavor = 색을 더할수록, 그린 무늬가 환히 살아난다.
 
 # ---------- 마무리 조합 ----------
-
+per_tile_mul = 0.7,1.0,0.7
 [card.c-soul-harvest-plus]
 name = 영혼 거두기+
 rank = rare
@@ -1978,8 +2495,11 @@ element = dark
 cost = 2
 trigger = manual
 effects = damage-per-debuff:7:enemy, apply-status:3:enemy:poison
+shape = 0,-1|0,-2
+target_mode = pattern
+cast_speed = slow
 flavor = 순환이란 자연의 섭리일지니.
-
+per_tile_mul = 1.0,0.6
 [card.c-wild-rush-plus]
 name = 야성의 돌진+
 rank = common
@@ -1988,6 +2508,10 @@ element = fire
 cost = 1
 trigger = manual
 effects = apply-status:1:self:feral, damage-per-hand:4:enemy
+shape = 0,-1|0,-2
+per_tile_mul = 1.0,0.7
+target_mode = pattern
+cast_speed = fast
 flavor = "돌아볼 것도 없어, 그냥 달려!"
 
 [card.c-color-surge-plus]
@@ -1998,6 +2522,9 @@ element = light
 cost = 1
 trigger = manual
 effects = damage-top-color:2:enemy, draw-if-color:1:self:light:4
+shape = 0,-1
+target_mode = pattern
+cast_speed = normal
 flavor = 한번 넘친 물은, 멈출 줄을 모른다.
 
 # === 유령화(비실체) 카오스와 별개 양날 상태. 자기 ghost N턴. ===
@@ -2009,6 +2536,8 @@ element = dark
 cost = 1
 trigger = manual
 effects = ghost-self:2:self
+target_mode = self
+cast_speed = normal
 upgrade_to = c-phase-out-plus
 flavor = 몸이 반쯤 스르르 풀린다.
 
@@ -2020,6 +2549,8 @@ element = dark
 cost = 1
 trigger = manual
 effects = ghost-self:3:self
+target_mode = self
+cast_speed = slow
 flavor = 원래부터 거기 없던 것처럼.
 
 # === 이로운(버프) 상태 부여 카드 (Colorz 18-c). 자신에게 apply-status. ===
@@ -2033,6 +2564,8 @@ element = light
 cost = 1
 trigger = manual
 effects = apply-status:3:self:regen
+target_mode = self
+cast_speed = normal
 upgrade_to = c-gentle-mend-plus
 flavor = 상처가 아물 때는 조금 간지럽다.
 
@@ -2044,6 +2577,8 @@ element = light
 cost = 1
 trigger = manual
 effects = apply-status:4:self:regen
+target_mode = self
+cast_speed = normal
 flavor = "딱지 긁으면 안 돼!"
 
 [card.c-quickstep]
@@ -2054,6 +2589,8 @@ element = wind
 cost = 1
 trigger = manual
 effects = apply-status:3:self:haste
+target_mode = self
+cast_speed = fast
 upgrade_to = c-quickstep-plus
 flavor = "먼저 갈게!"
 
@@ -2065,6 +2602,8 @@ element = wind
 cost = 1
 trigger = manual
 effects = apply-status:4:self:haste
+target_mode = self
+cast_speed = fast
 flavor = 이미 떠나고 없다.
 
 [card.c-soft-ward]
@@ -2075,6 +2614,8 @@ element = iron
 cost = 1
 trigger = manual
 effects = block:8:self, apply-status:2:self:ward
+target_mode = self
+cast_speed = normal
 upgrade_to = c-soft-ward-plus
 flavor = 감싸인 동안은 아무 일도 없을 것 같다.
 
@@ -2086,6 +2627,8 @@ element = iron
 cost = 1
 trigger = manual
 effects = block:11:self, apply-status:3:self:ward
+target_mode = self
+cast_speed = normal
 flavor = 잠깐의 여유를 즐길 수 있을 것 같다.
 
 [card.c-prickle-coat]
@@ -2095,7 +2638,9 @@ source = event
 element = earth
 cost = 1
 trigger = manual
-effects = apply-status:4:self:thorns
+effects = apply-status:4:self:thorns, exhaust-self:0:self
+target_mode = self
+cast_speed = normal
 upgrade_to = c-prickle-coat-plus
 flavor = 껴안기 전에 알아서 피하게 된다.
 
@@ -2106,7 +2651,9 @@ source = event
 element = earth
 cost = 1
 trigger = manual
-effects = apply-status:5:self:thorns
+effects = apply-status:5:self:thorns, exhaust-self:0:self
+target_mode = self
+cast_speed = normal
 flavor = 스치기만 해도 따끔해서, 다들 멀찍이 선다.
 
 [card.c-clear-focus]
@@ -2117,6 +2664,8 @@ element = electric
 cost = 1
 trigger = manual
 effects = apply-status:3:self:focus
+target_mode = self
+cast_speed = fast
 upgrade_to = c-clear-focus-plus
 flavor = 소음이 멀어지고 과녁만 남는다.
 
@@ -2128,6 +2677,8 @@ element = electric
 cost = 1
 trigger = manual
 effects = apply-status:4:self:focus
+target_mode = self
+cast_speed = fast
 flavor = 이제 과녁 말고는, 아무것도 들어오지 않는다.
 
 [card.c-steady-heart]
@@ -2137,7 +2688,9 @@ source = event
 element = water
 cost = 1
 trigger = manual
-effects = apply-status:4:self:resolve
+effects = apply-status:4:self:resolve, exhaust-self:0:self
+target_mode = self
+cast_speed = slow
 upgrade_to = c-steady-heart-plus
 flavor = "흔들리는 건 부끄러운 게 아니야."
 
@@ -2148,5 +2701,7 @@ source = event
 element = water
 cost = 1
 trigger = manual
-effects = apply-status:5:self:resolve
+effects = apply-status:5:self:resolve, exhaust-self:0:self
+target_mode = self
+cast_speed = slow
 flavor = "흔들려도, 다시 곧게 서면 그만이야."

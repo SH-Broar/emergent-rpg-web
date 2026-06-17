@@ -12,7 +12,9 @@
 
 import type {
   CardId,
+  CastSpeed,
   Element,
+  GridOffset,
   NamedEntity,
   Rank,
 } from './base';
@@ -97,6 +99,7 @@ export type CardEffectKind =
   | 'consume-vulnerable'  // 적 *취약 스택 제거* → 제거량 × value 추가 데미지
   | 'damage-from-hp'      // 자기 HP를 value 지불, 지불액 × params.mult 데미지
   | 'damage-per-hand'     // *현재 손패 수* × value 데미지
+  | 'damage-per-confine'  // 궁지 — 플레이어의 직교 인접 4칸 중 *차단 수*(벽/void/격자밖/적 점유, 0~4 캡) × value 추가 피해
   // === 측정 어려운 메커니즘 (3차 배치) ===
   | 'exhaust-self'        // 마커: 이 효과가 든 카드는 사용 후 *소멸*(exhaustPile). 핸들러는 no-op.
   | 'return-self-to-hand' // 마커: 사용 후 *자기 자신을 손으로* 되돌림(버리지 않음). 나방 0코 드로우 카드. 핸들러 no-op.
@@ -246,6 +249,26 @@ export interface Card extends NamedEntity {
    * 구세이브 -plus 인스턴스 마이그레이션도 이 필드(=true)로 수렴. 인스턴스 전용·런 휘발.
    */
   awakened?: boolean;
+
+  // === 격자 전투(grid-combat) 필드 — 전부 optional. 미설정 시 로더/엔진이 폴백 적용. ===
+  /**
+   * 격자 범위 — 자기(시전자) 기준 *고정 패턴*(회전 없음)의 적용 칸 상대 오프셋.
+   * 공격/디버프 카드에 사용. 버프/self 카드는 미설정/빈 배열(제자리 발동).
+   * 격자 밖·void·wall 칸은 엔진이 자동 제외. 위치 잡기로 조준(미리보기 후 확정).
+   */
+  shape?: GridOffset[];
+  /**
+   * shape와 정렬된 *칸별 데미지 배율*(기본 전부 1). shape보다 짧으면 나머지 칸은 1.0.
+   * 예) 중앙 1.0, 주변 0.5 식의 감쇠 광역.
+   */
+  perTileMul?: number[];
+  /** 발동 속도(빠름/보통/느림). 미설정 시 'normal'. 같은 스텝 해소 순서를 정한다. */
+  castSpeed?: CastSpeed;
+  /**
+   * 타겟 모드 — 'self'(버프, 제자리) | 'pattern'(공격/디버프, shape 칸).
+   * 미설정 시 effects(damage/apply-status enemy 유무)와 shape로 추론.
+   */
+  targetMode?: 'self' | 'pattern';
 }
 
 /** 효과 핸들러 시그니처 — Phase 2d에서 systems/combat.ts가 사용. */

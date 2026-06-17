@@ -278,8 +278,14 @@ function enterSelected() {
       if (action === 'pass') {
         ui.toast('info', '이미 정리된 곳입니다.');
       } else {
+        // 방울 표식(엘리트 격상)을 먼저 적용 — enterGridCombat이 노드 content를 읽기 전에.
         maybeApplyBellMark(node);
-        router.push('/game/combat');
+        // 격자 전투(Phase D) 무대 생성 + 적 해석. 성공해야 전투 화면으로 진입.
+        if (run.enterGridCombat(node.id)) {
+          router.push('/game/combat');
+        } else {
+          ui.toast('error', '전투를 시작할 수 없습니다.');
+        }
       }
       break;
     case 'event':
@@ -294,7 +300,10 @@ function enterSelected() {
       if (action === 'pass') {
         ui.toast('info', '이미 마주한 자리입니다.');
       } else {
-        router.push('/game/boss');
+        // #4 보스 격자화 — 보스 노드는 *인트로 화면(BossIntroView)*을 먼저 거친다.
+        //   인트로에서 [도전] 선택 시에만 enterGridBossCombat→/game/combat(arc는 [회피]로 통과).
+        //   여기서 enterGridBossCombat을 직접 부르지 않는다(인트로가 담당).
+        router.push('/game/boss-intro');
       }
       break;
     case 'rest': {

@@ -82,9 +82,22 @@ const routes: RouteRecordRaw[] = [
     meta: { scene: 'game' },
   },
   {
+    // Phase D: 일반/엘리트 전투는 격자 전술 전투(GridCombatView)로 전환.
+    //   구 CombatView.vue는 파일 유지(Phase F 제거 예정) — 라우트만 새 뷰로 repoint.
+    //   #4: 보스 노드(kind 'boss')도 이 격자 전투로 진입.
+    //       단 *인트로(BossIntroView)*를 거친 뒤(도전 선택 시) enterGridBossCombat→/game/combat.
+    //   /game/boss(BossView)는 *디버그 전투(DebugBattleView)* 전용으로만 남는다(파일 보존).
     path: '/game/combat',
     name: 'game-combat',
-    component: () => import('@/views/CombatView.vue'),
+    component: () => import('@/views/GridCombatView.vue'),
+    meta: { scene: 'game' },
+  },
+  {
+    // 보스 인트로 — 보스/arc 노드 진입 시 *격자 전투 전*에 끼우는 JRPG식 도입부.
+    //   arc=도전/회피 분기, 연표 종말 보스=도전만. 도전 선택 시에만 enterGridBossCombat→/game/combat.
+    path: '/game/boss-intro',
+    name: 'game-boss-intro',
+    component: () => import('@/views/BossIntroView.vue'),
     meta: { scene: 'game' },
   },
   {

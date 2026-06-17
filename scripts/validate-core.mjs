@@ -191,6 +191,8 @@ export const VALID_CARD_EFFECT_KINDS = [
   'damage-top-color', 'damage-color-count', 'block-top-color', 'draw-if-color',
   // 화상/독 스택 소비형 — combat.ts EFFECT_HANDLERS 'consume-burn'/'consume-poison'(검증기 화이트리스트 선재 누락 동기화).
   'damage-per-debuff', 'consume-vulnerable', 'consume-burn', 'consume-poison', 'damage-from-hp', 'damage-per-hand',
+  // 궁지(damage-per-confine) — 격자 전투 신규(grid-combat.ts 핸들러·schemas/card.ts 정의). 검증기 선재 누락 동기화.
+  'damage-per-confine',
   'exhaust-self', 'return-self-to-hand', 'block-to-damage', 'spend-all-energy',
   'damage-per-companion', 'damage-per-relic', 'growing-damage', 'heal-per-hand',
   'next-card-double', 'ghost-self', 'curse-tick', 'release-transform',

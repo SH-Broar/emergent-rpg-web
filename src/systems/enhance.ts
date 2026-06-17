@@ -27,8 +27,14 @@ export const XP_ARC_REPEAT = XP_ELITE;
 // === 강화 체계 ===
 /** 강당 수치 배율(+12%). 누적은 1.12^level. */
 export const ENHANCE_PER_LEVEL = 0.12;
-/** 최대 강화 단계. */
+/** 최대 강화 단계 (비공격 카드 — 방어/유틸). */
 export const MAX_ENHANCE_LEVEL = 10;
+/**
+ * 공격 카드 최대 강화 단계 — D10: 공격 카드는 강화 제한을 *크게* 푼다("성장하는 느낌").
+ * 각성 게이트(5강)는 동일하게 거치되, 각성 이후 30강까지 +12%/강 누적 성장.
+ * 투자(XP·각성 재료)가 자연 게이트. 비공격 카드는 MAX_ENHANCE_LEVEL(10) 유지.
+ */
+export const MAX_ENHANCE_LEVEL_ATTACK = 30;
 /** 각성 게이트 — 이 단계에서 잠기고, 넘어가려면 각성 필요. */
 export const AWAKEN_GATE_LEVEL = 5;
 /** plus 정의가 없는 카드의 각성 수치 점프(+38%) — plus 진화 폴백. */
@@ -100,12 +106,31 @@ export function scaledValue(base: number, card: Card | undefined): number {
 
 // === 상태 질의 ===
 
-/** 더 강화할 수 있는가 — 5강 미만이거나, 각성했고 10강 미만. */
+/**
+ * 공격 카드인가 — damage 계열/직접 피해 효과 보유. (D10 강화캡 분기용.)
+ */
+export function isAttackCard(card: Card | undefined): boolean {
+  if (!card?.effects) return false;
+  return card.effects.some((e) => {
+    const k = e.kind;
+    return k.includes('damage')
+      || k === 'heavy-blade' || k === 'adaptive-strike' || k === 'spend-all-energy'
+      || k === 'consume-vulnerable' || k === 'consume-burn' || k === 'consume-poison'
+      || k === 'amplify-debuff';
+  });
+}
+
+/** 카드별 최대 강화 단계 — 공격 카드는 크게 완화(D10), 그 외 10. */
+export function maxLevelFor(card: Card | undefined): number {
+  return isAttackCard(card) ? MAX_ENHANCE_LEVEL_ATTACK : MAX_ENHANCE_LEVEL;
+}
+
+/** 더 강화할 수 있는가 — 5강 미만이거나, 각성했고 카드별 최대 미만(공격 30 / 그 외 10). */
 export function canEnhance(card: Card | undefined): boolean {
   if (!card) return false;
   const lvl = card.enhanceLevel ?? 0;
   if (lvl < AWAKEN_GATE_LEVEL) return true;
-  return !!card.awakened && lvl < MAX_ENHANCE_LEVEL;
+  return !!card.awakened && lvl < maxLevelFor(card);
 }
 
 /** 각성이 필요한 상태인가 — 5강 도달 + 미각성(=공방에서 각성해야 6강 진입). */

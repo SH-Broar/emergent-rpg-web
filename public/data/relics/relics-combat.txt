@@ -51,6 +51,8 @@ source = elite
 trigger = on-combat-start
 effects = combat-start-status:1:strength
 flavor = 잡을수록 어깨가 단단해지는 손잡이. 적을 보면 힘이 미리 차오른다.
+# 격자: 전투 시작 힘 강화 — 전투형 유물.
+combat_type = true
 
 [relic.r-cbt-poised-pendant]
 name = 균형의 펜던트
@@ -79,6 +81,8 @@ source = shop
 trigger = on-card-played-after
 effects = cards-to-draw:8
 flavor = 알을 하나씩 넘기다 보면 어느새 처음으로 돌아온다. 여덟 번 손을 놀릴 때마다 다음 카드가 저절로 따라온다.
+# 격자: 전투 중 카드 사용 카운터 — 전투형 유물.
+combat_type = true
 
 [relic.r-cbt-swift-abacus]
 name = 빠른 주판
@@ -103,6 +107,8 @@ source = event
 trigger = on-card-played-after
 effects = attacks-to-strength:4
 flavor = 두를수록 팔에 익는 거친 띠. 네 번 내리칠 때마다 다음 일격에 힘이 더 실린다.
+# 격자: 전투 중 공격 카운터 — 전투형 유물.
+combat_type = true
 
 [relic.r-cbt-keen-edge-strap]
 name = 예리한 가죽끈
@@ -147,6 +153,8 @@ source = elite
 trigger = on-damage-taken
 effects = retaliate:3
 flavor = 건드리면 따끔한 작은 돌기다. 이쪽을 때린 손도 무사하지 못하다.
+# 격자: 피격 반응 — 전투형 유물.
+combat_type = true
 
 [relic.r-cbt-barbed-mantle]
 name = 가시 돋친 망토
@@ -155,6 +163,8 @@ source = elite
 trigger = on-damage-taken
 effects = retaliate:5
 flavor = 천 안쪽까지 가시가 박힌 외투. 맞을 때마다 그 아픔이 고스란히 되돌아간다.
+# 격자: 피격 반응 반격 — 전투형 유물.
+combat_type = true
 
 [relic.r-cbt-vengeful-husk]
 name = 원한의 껍데기
