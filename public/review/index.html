@@ -17,6 +17,9 @@
   header { padding: 0.9rem 1rem 0.5rem; display: flex; align-items: center; gap: 0.6rem; }
   header h1 { font-size: 1rem; color: #c08eff; flex: 1; font-weight: 600; }
   #progress { font-size: 0.85rem; color: #9a9aa8; font-variant-numeric: tabular-nums; }
+  #toList { font-size: 0.78rem; color: #9a9aa8; background: transparent; border: 1px solid rgba(255,255,255,0.16);
+            border-radius: 8px; padding: 0.3rem 0.55rem; cursor: pointer; display: none; }
+  #toList.show { display: inline-block; }
   #bar { height: 3px; background: #2a2b36; }
   #bar > div { height: 100%; background: #c08eff; width: 0%; transition: width 160ms ease; }
   main { flex: 1; display: flex; flex-direction: column; padding: 1rem; gap: 0.8rem; overflow-y: auto; }
@@ -31,6 +34,8 @@
   .text .sub { display: block; margin-top: 0.7rem; padding-top: 0.7rem; border-top: 1px dashed rgba(255,255,255,0.15);
                color: #8effb8; }
   .text .lbl { display: block; font-size: 0.7rem; color: #7c7c8c; margin-bottom: 0.2rem; }
+  #current { font-size: 0.82rem; color: #8eedff; min-height: 1.1rem; }
+  #current b { font-weight: 700; }
   #reasons { display: none; flex-wrap: wrap; gap: 0.45rem; }
   #reasons.show { display: flex; }
   .chip {
@@ -45,6 +50,7 @@
   #freetext.show { display: block; }
   footer { padding: 0.7rem 1rem calc(0.9rem + env(safe-area-inset-bottom)); display: grid; gap: 0.55rem; }
   .row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.55rem; }
+  .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.55rem; }
   button {
     font: inherit; font-weight: 700; font-size: 1.05rem; padding: 0.95rem 0; border-radius: 12px;
     border: 1px solid transparent; color: #14151c; cursor: pointer;
@@ -52,8 +58,9 @@
   #btnO { background: #8effb8; }
   #btnHold { background: #3a3b48; color: #d6d6e0; border-color: rgba(255,255,255,0.18); font-size: 0.9rem; }
   #btnX { background: #ff8e8e; }
-  .row2 { display: grid; grid-template-columns: 1fr 2fr; gap: 0.55rem; }
-  #btnBack { background: transparent; color: #9a9aa8; border-color: rgba(255,255,255,0.16); font-size: 0.9rem; }
+  .verdict-on { outline: 3px solid #fff; outline-offset: -3px; }
+  #btnBack, #btnNext { background: transparent; color: #9a9aa8; border-color: rgba(255,255,255,0.16); font-size: 0.9rem; }
+  #btnList { background: transparent; color: #9a9aa8; border-color: rgba(255,255,255,0.16); font-size: 0.9rem; }
   #btnConfirm { background: #c08eff; display: none; }
   #btnConfirm.show { display: block; }
   /* 완료 화면 */
@@ -67,19 +74,56 @@
   }
   #btnCopy { background: #8eedff; }
   #btnReset { background: transparent; color: #ff8e8e; border-color: rgba(255,142,142,0.4); font-size: 0.85rem; }
+  #btnDoneList { background: transparent; color: #9a9aa8; border-color: rgba(255,255,255,0.16); font-size: 0.85rem; }
   #loading { padding: 2rem 1rem; color: #9a9aa8; text-align: center; line-height: 1.8; }
   #loading textarea { width: 100%; height: 9rem; margin-top: 0.8rem; font-size: 0.75rem;
     background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.14); border-radius: 8px; color: inherit; }
+  /* 목록(인덱스) */
+  #index { display: none; flex: 1; flex-direction: column; padding: 0.5rem 1rem 1rem; gap: 0.7rem; overflow-y: auto; }
+  #index.show { display: flex; }
+  #filter { width: 100%; font: inherit; font-size: 0.95rem; padding: 0.6rem 0.8rem; border-radius: 10px;
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.14); color: inherit; }
+  .idx-tools { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+  .idx-tools button { font-size: 0.78rem; font-weight: 600; padding: 0.45rem 0.7rem; border-radius: 8px;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.16); color: #d6d6e0; }
+  .idx-tools .muted { color: #7c7c8c; font-size: 0.78rem; margin-left: auto; }
+  .sheet { display: flex; align-items: center; gap: 0.6rem; padding: 0.7rem 0.8rem; border-radius: 10px;
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.09); cursor: pointer; }
+  .sheet:active { background: rgba(255,255,255,0.08); }
+  .sheet .dot { width: 9px; height: 9px; border-radius: 50%; flex: 0 0 auto; background: #4a4b58; }
+  .sheet .dot.prog { background: #c08eff; }
+  .sheet .dot.done { background: #8effb8; }
+  .sheet .nm { flex: 1; min-width: 0; }
+  .sheet .nm b { font-size: 0.92rem; font-weight: 600; color: #e8e8ee; display: block;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sheet .nm small { font-size: 0.7rem; color: #7c7c8c; }
+  .sheet .cnt { font-size: 0.78rem; color: #9a9aa8; font-variant-numeric: tabular-nums; flex: 0 0 auto; }
+  .sheet .hide { font-size: 0.72rem; font-weight: 600; padding: 0.35rem 0.55rem; border-radius: 7px; flex: 0 0 auto;
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.16); color: #b6b6c4; }
+  #idxStatus { color: #7c7c8c; font-size: 0.85rem; text-align: center; padding: 1rem; }
 </style>
 </head>
 <body>
 <header>
   <h1 id="title">텍스트 검수</h1>
   <span id="progress"></span>
+  <button id="toList">☰ 목록</button>
 </header>
 <div id="bar"><div></div></div>
 
 <div id="loading">불러오는 중...</div>
+
+<!-- 목록(상위) 페이지 -->
+<section id="index">
+  <input id="filter" placeholder="검수 시트 검색 (예: body, name3...)" autocomplete="off">
+  <div class="idx-tools">
+    <button id="hideDone">완료 항목 숨기기</button>
+    <button id="toggleHidden">숨긴 항목 보기</button>
+    <span class="muted" id="idxCount"></span>
+  </div>
+  <div id="sheets"></div>
+  <div id="idxStatus"></div>
+</section>
 
 <main id="card" style="display:none">
   <div>
@@ -87,6 +131,7 @@
     <div class="loc" id="loc"></div>
   </div>
   <div class="text" id="text"></div>
+  <div id="current"></div>
   <div id="reasons"></div>
   <input id="freetext" placeholder="사유 직접 입력 (선택)" autocomplete="off">
 </main>
@@ -95,6 +140,7 @@
   <div id="summary"></div>
   <textarea id="out" readonly></textarea>
   <button id="btnCopy">결과 복사</button>
+  <button id="btnDoneList">☰ 목록으로</button>
   <button id="btnReset">처음부터 다시</button>
 </div>
 
@@ -104,9 +150,11 @@
     <button id="btnHold">보류</button>
     <button id="btnX">X</button>
   </div>
-  <div class="row2">
+  <button id="btnConfirm">사유 확정 →</button>
+  <div class="row3">
     <button id="btnBack">← 이전</button>
-    <button id="btnConfirm">사유 확정 →</button>
+    <button id="btnNext">다음 →</button>
+    <button id="btnList">☰ 목록</button>
   </div>
 </footer>
 
@@ -114,9 +162,12 @@
 (function () {
   var params = new URLSearchParams(location.search);
   var dataset = params.get('d') || '';
-  // 빠른 모드(q=1): X/보류도 사유 없이 1탭 기록 — 규칙 고정(보류=표현 수정, X=전면 재작성).
+  // 빠른 모드(q=1): X/보류도 칩 생략, 코멘트칸만.
   var quick = params.get('q') === '1';
-  var RAW_BASE = 'https://raw.githubusercontent.com/SH-Broar/emergent-rpg-web/rdc-roguelike-main/_review/';
+  var REPO = 'SH-Broar/emergent-rpg-web', BRANCH = 'rdc-roguelike-main';
+  var RAW_BASE = 'https://raw.githubusercontent.com/' + REPO + '/' + BRANCH + '/_review/';
+  var API_DIR = 'https://api.github.com/repos/' + REPO + '/contents/_review?ref=' + BRANCH;
+  var HIDDEN_KEY = 'review-hidden';
   var CHIPS = ['어색함', '번역투', '수사+명사', '톤 안 맞음', '설명조', '의미 불명', '유치함', '밋밋함'];
 
   var items = [], meta = { title: '텍스트 검수' };
@@ -125,8 +176,125 @@
 
   var $ = function (id) { return document.getElementById(id); };
 
-  function load() {
-    if (!dataset) { return manualLoad('데이터셋 지정이 없습니다. JSON을 붙여넣어 시작할 수 있습니다.'); }
+  /* ---------- 저장 유틸 ---------- */
+  function lsGet(k, def) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return def; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function hiddenSet() { return lsGet(HIDDEN_KEY, []) || []; }
+  function metaFor(id) { return lsGet('review-meta-' + id, null); }
+  function resultsFor(id) { return lsGet('review-' + id, {}) || {}; }
+
+  /* ================= 라우팅 ================= */
+  if (!dataset) { showIndex(); }
+  else { loadSheet(); }
+
+  /* ================= 목록(상위) 페이지 ================= */
+  function showIndex() {
+    $('loading').style.display = 'none';
+    $('index').classList.add('show');
+    $('title').textContent = '검수 시트 목록';
+    var status = $('idxStatus');
+    status.textContent = '시트 목록 불러오는 중...';
+    fetch(API_DIR, { cache: 'no-store' })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function (arr) {
+        var ids = arr.filter(function (f) { return /\.json$/.test(f.name); })
+                     .map(function (f) { return f.name.replace(/\.json$/, ''); });
+        renderIndex(ids);
+      })
+      .catch(function () {
+        status.innerHTML = '디렉터리 목록을 불러오지 못했습니다(깃허브 API 제한일 수 있음).<br>' +
+          '시트 이름을 직접 입력해 열 수 있습니다:';
+        var inp = document.createElement('input');
+        inp.className = 'filter'; inp.id = 'manualId';
+        inp.placeholder = '예: body_6';
+        inp.style.cssText = 'width:100%;margin-top:0.7rem;font:inherit;padding:0.6rem 0.8rem;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.14);color:inherit';
+        inp.onkeydown = function (e) { if (e.key === 'Enter' && inp.value.trim()) location.search = '?d=' + encodeURIComponent(inp.value.trim()) + '&q=1'; };
+        status.appendChild(inp);
+      });
+  }
+
+  var allIds = [], showHidden = false;
+  function renderIndex(ids) {
+    allIds = ids;
+    $('idxStatus').textContent = '';
+    drawSheets();
+    $('filter').oninput = drawSheets;
+    $('toggleHidden').onclick = function () {
+      showHidden = !showHidden;
+      $('toggleHidden').textContent = showHidden ? '숨긴 항목 가리기' : '숨긴 항목 보기';
+      drawSheets();
+    };
+    $('hideDone').onclick = function () {
+      var hid = hiddenSet();
+      allIds.forEach(function (id) {
+        var m = metaFor(id), res = resultsFor(id);
+        var ans = Object.keys(res).length;
+        if (m && m.total && ans >= m.total && hid.indexOf(id) < 0) hid.push(id);
+      });
+      lsSet(HIDDEN_KEY, hid);
+      drawSheets();
+    };
+  }
+
+  function statusOf(id) {
+    var m = metaFor(id), res = resultsFor(id);
+    var ans = Object.keys(res).length;
+    var total = m && m.total ? m.total : 0;
+    var done = total > 0 && ans >= total;
+    return { ans: ans, total: total, done: done, started: ans > 0, title: m && m.title ? m.title : '' };
+  }
+
+  function drawSheets() {
+    var hid = hiddenSet();
+    var q = ($('filter').value || '').toLowerCase().trim();
+    var box = $('sheets'); box.innerHTML = '';
+    var list = allIds.filter(function (id) {
+      if (!showHidden && hid.indexOf(id) >= 0) return false;
+      if (q && id.toLowerCase().indexOf(q) < 0) return false;
+      return true;
+    });
+    // 정렬: 진행중 → 미시작 → 완료, 그 안에서 이름순
+    list.sort(function (a, b) {
+      var sa = statusOf(a), sb = statusOf(b);
+      var ra = sa.done ? 2 : (sa.started ? 0 : 1);
+      var rb = sb.done ? 2 : (sb.started ? 0 : 1);
+      if (ra !== rb) return ra - rb;
+      return a < b ? -1 : 1;
+    });
+    var shown = 0;
+    list.forEach(function (id) {
+      var st = statusOf(id), isHidden = hid.indexOf(id) >= 0;
+      var row = document.createElement('div');
+      row.className = 'sheet';
+      var dotCls = st.done ? 'done' : (st.started ? 'prog' : '');
+      var cnt = st.total ? (st.ans + '/' + st.total) : (st.started ? st.ans + '건' : '');
+      row.innerHTML =
+        '<span class="dot ' + dotCls + '"></span>' +
+        '<span class="nm"><b>' + esc(st.title || id) + '</b>' +
+          (st.title ? '<small>' + esc(id) + '</small>' : '') + '</span>' +
+        '<span class="cnt">' + (st.done ? '완료 ' : '') + cnt + '</span>';
+      var hideBtn = document.createElement('button');
+      hideBtn.className = 'hide';
+      hideBtn.textContent = isHidden ? '복원' : '숨김';
+      hideBtn.onclick = function (e) {
+        e.stopPropagation();
+        var h = hiddenSet(), i = h.indexOf(id);
+        if (i >= 0) h.splice(i, 1); else h.push(id);
+        lsSet(HIDDEN_KEY, h);
+        drawSheets();
+      };
+      row.appendChild(hideBtn);
+      row.onclick = function () { location.search = '?d=' + encodeURIComponent(id) + '&q=1'; };
+      box.appendChild(row);
+      shown++;
+    });
+    $('idxCount').textContent = shown + ' / ' + allIds.length + (showHidden ? ' (숨김 포함)' : '');
+    if (!shown) $('idxStatus').textContent = q ? '검색 결과 없음' : '표시할 시트가 없습니다.';
+    else $('idxStatus').textContent = '';
+  }
+
+  /* ================= 검수 시트 ================= */
+  function loadSheet() {
     fetch(RAW_BASE + dataset + '.json', { cache: 'no-store' })
       .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
       .then(start)
@@ -149,12 +317,17 @@
   function start(data) {
     items = data.items || [];
     meta = data.meta || meta;
-    storeKey = 'review-' + (data.meta && data.meta.id ? data.meta.id : dataset);
-    try { results = JSON.parse(localStorage.getItem(storeKey) || '{}'); } catch (e) { results = {}; }
+    var id = (data.meta && data.meta.id) ? data.meta.id : dataset;
+    storeKey = 'review-' + id;
+    results = resultsFor(id);
+    // 진행도 인덱스용 메타 저장(목록 페이지에서 재fetch 없이 진행도 표시)
+    lsSet('review-meta-' + id, { title: meta.title || id, total: items.length });
     idx = 0;
     while (idx < items.length && results[items[idx].n] != null) idx++;
+    if (idx >= items.length) idx = Math.max(0, items.length - 1);
     $('title').textContent = meta.title || '텍스트 검수';
     $('loading').style.display = 'none';
+    $('toList').classList.add('show');
     var chipBox = $('reasons');
     CHIPS.forEach(function (c) {
       var s = document.createElement('button');
@@ -169,13 +342,20 @@
     render();
   }
 
-  function render() {
+  function resetReasonUI() {
     pendingVerdict = null; chosenChips = [];
     $('reasons').classList.remove('show');
     $('freetext').classList.remove('show');
     $('freetext').value = '';
     $('btnConfirm').classList.remove('show');
     Array.prototype.forEach.call(document.querySelectorAll('.chip'), function (c) { c.classList.remove('on'); });
+    $('btnO').classList.remove('verdict-on');
+    $('btnHold').classList.remove('verdict-on');
+    $('btnX').classList.remove('verdict-on');
+  }
+
+  function render() {
+    resetReasonUI();
 
     var total = items.length, answered = Object.keys(results).length;
     $('progress').textContent = answered + ' / ' + total;
@@ -186,6 +366,7 @@
     $('card').style.display = 'flex';
     $('controls').style.display = 'grid';
     $('done').classList.remove('show');
+    $('index').classList.remove('show');
 
     var it = items[idx];
     $('kind').textContent = (it.kind || '') + '  ·  #' + it.n;
@@ -196,6 +377,28 @@
              '<span class="sub"><span class="lbl">제안</span>' + esc(it.proposal) + '</span>';
     }
     $('text').innerHTML = html;
+
+    // 기존 판정 프리필 (뒤로 가도 코멘트 유지)
+    var prev = results[it.n];
+    if (prev) {
+      var label = { 'O': 'O', 'X': 'X', '?': '보류' }[prev.v] || prev.v;
+      $('current').innerHTML = '저장된 판정: <b>' + label + '</b>' + (prev.r ? ' :: ' + esc(prev.r) : '') +
+        '  <span style="color:#7c7c8c">(바꾸려면 다시 선택, 두려면 다음 →)</span>';
+      if (prev.v === 'O') {
+        $('btnO').classList.add('verdict-on');
+      } else {
+        // ?/X: 사유칸 열고 기존 코멘트 채움
+        pendingVerdict = prev.v;
+        (prev.v === 'X' ? $('btnX') : $('btnHold')).classList.add('verdict-on');
+        if (!quick) $('reasons').classList.add('show');
+        $('freetext').classList.add('show');
+        $('freetext').value = prev.r || '';
+        $('btnConfirm').classList.add('show');
+      }
+    } else {
+      $('current').textContent = '';
+    }
+    $('btnNext').style.visibility = prev ? 'visible' : 'hidden';
     window.scrollTo(0, 0);
   }
 
@@ -207,16 +410,20 @@
 
   function record(verdict, reason) {
     results[items[idx].n] = { v: verdict, r: reason || '' };
-    try { localStorage.setItem(storeKey, JSON.stringify(results)); } catch (e) {}
+    lsSet(storeKey, results);
     idx++;
     render();
   }
 
   function askReason(verdict) {
     pendingVerdict = verdict;
-    if (!quick) $('reasons').classList.add('show');  // 빠른 모드는 칩 생략, 코멘트칸만
+    $('btnO').classList.remove('verdict-on');
+    $('btnHold').classList.toggle('verdict-on', verdict === '?');
+    $('btnX').classList.toggle('verdict-on', verdict === 'X');
+    if (!quick) $('reasons').classList.add('show');
     $('freetext').classList.add('show');
     $('btnConfirm').classList.add('show');
+    $('freetext').focus();
   }
 
   $('btnO').onclick = function () { record('O'); };
@@ -231,15 +438,23 @@
   $('btnBack').onclick = function () {
     if (idx === 0) return;
     idx--;
-    delete results[items[idx].n];
-    try { localStorage.setItem(storeKey, JSON.stringify(results)); } catch (e) {}
+    render();               // 삭제하지 않음 → 기존 판정/코멘트 유지
+  };
+  $('btnNext').onclick = function () {
+    if (idx >= items.length - 1) { idx = items.length; return render(); }
+    idx++;
     render();
   };
+  $('btnList').onclick = goList;
+  $('toList').onclick = goList;
+  $('btnDoneList').onclick = goList;
+  function goList() { location.search = ''; }
 
   function finish() {
     $('card').style.display = 'none';
     $('controls').style.display = 'none';
     $('done').classList.add('show');
+    $('index').classList.remove('show');
     var o = 0, x = 0, h = 0;
     var lines = ['## 검수 결과: ' + (meta.id || dataset)];
     items.forEach(function (it) {
@@ -258,8 +473,7 @@
   $('btnCopy').onclick = function () {
     var t = $('out');
     t.select(); t.setSelectionRange(0, 999999);
-    var ok = false;
-    try { ok = document.execCommand('copy'); } catch (e) {}
+    try { document.execCommand('copy'); } catch (e) {}
     if (navigator.clipboard) navigator.clipboard.writeText(t.value).catch(function () {});
     $('btnCopy').textContent = '복사됨!';
     setTimeout(function () { $('btnCopy').textContent = '결과 복사'; }, 1500);
@@ -270,8 +484,6 @@
     try { localStorage.removeItem(storeKey); } catch (e) {}
     render();
   };
-
-  load();
 })();
 </script>
 </body>
