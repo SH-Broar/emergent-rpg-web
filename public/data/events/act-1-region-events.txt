@@ -753,7 +753,7 @@ name = 밤의 해변
 node_kinds = event, rest
 weight = 1
 once_per_run = true
-body = 해변으로 파도가 조금 더 멀리 들어왔다. 모래 위에 작은 유리 조각들이 일정한 사이를 두고 놓여 있다. 누군가 일부러 놓아 둔 듯하다.
+body = 해변으로 파도가 조금 더 멀리 들어왔다. 모래 위에 작은 유리 조각들이 일정한 간격으로 놓여 있다. 누군가 일부러 늘어놓은 듯하다.
 
 [event.ev-mano-night-tide.choice.1]
 label = 유리 조각 하나를 줍는다
@@ -782,7 +782,7 @@ name = 버려진 컨테이너
 node_kinds = event, activity
 weight = 1
 once_per_run = true
-body = 화물장 한쪽에서 컨테이너 더미가 옆으로 기울어졌다. 루디가 그 줄을 손가락 하나로 받치고 있다. 작은 새, 그러나 손이 안 흔들린다.
+body = 화물장 한쪽에서 컨테이너 더미가 옆으로 기울었다. 사람들이 분주하게 움직이고, 루디가 무언가 열심히 적고 있다. 가까이 다가가자 곤란한 듯한 표정을 했다.
 
 [event.ev-martin-cargo-line.choice.1]
 label = 옆에서 같이 받친다
@@ -810,7 +810,7 @@ name = 명멸
 node_kinds = event
 weight = 1
 once_per_run = true
-body = 마틴 등대가 조금 늦게 빛난다. 등대지기는 안 보인다. 종 줄이 천장으로 길게 올라간다.
+body = 마틴 등대가 평소보다 조금 늦게 켜진다. 등대지기는 보이지 않는다. 종을 매단 줄만 천장 높이 길게 올라가 있다.
 
 [event.ev-martin-lighthouse.choice.1]
 label = 종 줄을 한 번 당긴다
@@ -848,7 +848,7 @@ name = 돌무더기 속 진주
 node_kinds = event, gather
 weight = 1
 once_per_run = true
-body = 돌무더기 위에 소금 진주 하나가 단정하게 놓여 있다. 누군가가 일부러 가지런히 모아 둔 것 같다.
+body = 돌무더기 위에 소금 진주가 놓여 있다. 신경 써서 고른 듯, 크기가 전부 비슷비슷하다.
 
 [event.ev-kishina-shells.choice.1]
 label = 진주를 챙긴다
@@ -876,7 +876,7 @@ name = 보물 찾기
 node_kinds = event
 weight = 1
 once_per_run = true
-body = 조수 웅덩이 옆 가즈리가 진주 여러 알을 손바닥에 모아 당신를 본다. "이거 봐 봐! 예쁘지!" 형태가 한 번 흐려졌다가 다시 또렷해진다.
+body = 조수 웅덩이 옆, 가즈리가 진주 몇 알을 손바닥에 모았다가, 다시 물에 흘려보냈다.
 
 [event.ev-kishina-spirit-bead.choice.1]
 label = "응 정말 예쁘다" 고 답한다
@@ -906,7 +906,7 @@ name = 먼 수평선
 node_kinds = event
 weight = 1
 once_per_run = true
-body = 마틴과 클러치 사이 바다 위. 갑판에서 수평선이 길게 머문다. 바람 하나가 살을 스친다.
+body = 마틴과 클러치 사이 바다 위. 갑판에 서면 수평선이 멀찍이 길게 누워 있다. 바람이 뺨을 스친다.
 
 [event.ev-martin-boat-passage.choice.1]
 label = 멀미 견디고 갑판 끝에 선다
@@ -939,7 +939,7 @@ name = 광장의 여러 일
 node_kinds = event, activity
 weight = 1
 once_per_run = true
-body = 모스 광장. 망치 소리, 증기, 좌판이 동시에 흐른다. 그 사이로 로큐가 가죽 가방을 어깨에 메고 우체물 하나를 당신 쪽으로 내민다. "가져왔어. 받아 가."
+body = 모스 광장. 망치 소리와 증기, 상점이 한데 뒤섞여 있다. 그 사이로 로큐가 가죽 가방을 어깨에 메고 우편물 하나를 당신 쪽으로 내민다. "가져왔어. 받아 가."
 
 [event.ev-moss-plaza-busy.choice.1]
 label = 우체를 받아 열어 본다
@@ -965,7 +965,7 @@ name = 망치 거리
 node_kinds = event
 weight = 1
 once_per_run = true
-body = 망치 거리 대장간 거리. 망치 소리가 길을 따라 정확히 떨어진다. 거리 끝에서 또 한 곳이 새로 망치를 든다.
+body = 대장간이 늘어선 거리. 열린 문마다 불빛과 열기가 새어 나온다. 쇠 두드리는 소리가 길 끝까지 이어진다.
 
 [event.ev-moss-hammer-row-line.choice.1]
 label = 잠시 멈춰 서 본다
@@ -997,7 +997,7 @@ name = 화로 옆의 아라크네
 node_kinds = event
 weight = 1
 once_per_run = true
-body = 화로 옆에 아라크네가 앉아 있다. 여덟 손이 실을 화로의 열로 가지런히 다듬는다. 옷감이 조금씩 길어진다.
+body = 화로 옆에 아라크네가 앉아 있다. 수많은 손이 화로의 열에 실을 가지런히 매만진다. 옷감이 천천히 길어진다.
 
 [event.ev-moss-furnace-arachne.choice.1]
 label = 매듭 짓는 자리를 옆에서 본다
@@ -1025,7 +1025,7 @@ name = 천정지기의 기록
 node_kinds = event
 weight = 1
 once_per_run = true
-body = 망루 위 천정지기가 머리를 곧게 위로만 향한다. 새, 구름, 별, 하늘 정점에 있는 것들을 작은 수첩에 차곡차곡 기록한다.
+body = 망루 위, 천정지기가 고개를 곧게 위로 든다. 새와 구름과 별, 하늘 꼭대기를 지나는 것들을 작은 수첩에 차곡차곡 적는다.
 
 [event.ev-moss-watchtower-zenith.choice.1]
 label = 옆에서 같이 위를 본다
@@ -1051,7 +1051,7 @@ name = 등대의 빛
 node_kinds = event
 weight = 1
 once_per_run = true
-body = 클러치 등대 늙은 등대지기가 사다리 위에서 빛을 천으로 다듬는다. 빛이 조금씩 정확히 흐른다. "...빛은 정확해야 해."
+body = 클러치 등대. 늙은 등대지기가 사다리 위에서 렌즈를 천으로 닦는다. 빛줄기가 한결 또렷해진다. "...빛은 정확해야 해."
 
 [event.ev-moss-lighthouse-keeper.choice.1]
 label = 사다리를 잡아 준다
@@ -1077,7 +1077,7 @@ name = 모루와 망치
 node_kinds = event
 weight = 1
 once_per_run = true
-body = 모루실. 망치 하나만 칼날을 다듬고 있다. 옆이 조용하다. 모루 위에 반쯤 식은 칼날 하나.
+body = 모루가 늘어선 작업실. 망치 하나만 칼날을 두드린다. 옆자리는 조용하다. 모루 위에 반쯤 식은 칼날이 놓여 있다.
 
 [event.ev-moss-anvil-rhythm.choice.1]
 label = 망치질을 옆에서 본다
@@ -1104,7 +1104,7 @@ name = 가지런한 도구
 node_kinds = event
 weight = 1
 once_per_run = true
-body = 도구실 작은 도구들이 하나하나 가지런히 정리되어 있다. 누군가가 그 줄을 매일 보살피고 있다. 자리에는 사람이 없다.
+body = 작은 도구들이 줄을 맞춰 정리돼 있다. 누군가 매일 손보는 모양이다. 정작 사람은 보이지 않는다.
 
 [event.ev-moss-tool-organize.choice.1]
 label = 도구를 손끝으로 따라 짚어 본다
@@ -1129,7 +1129,7 @@ name = 첫 작품
 node_kinds = event, workshop
 weight = 1
 once_per_run = true
-body = 작업장. 견습 하나가 처음으로 칼을 만들고 있다. 손이 떨리지만 어깨가 진지하다. 무늬 하나하나가 처음으로 자신의 손에서 나온다.
+body = 작업장. 견습 하나가 처음으로 칼을 벼린다. 손은 떨려도 어깨는 진지하다. 무늬가 하나씩 새겨진다.
 
 [event.ev-moss-workshop-apprentice.choice.1]
 label = 곁에서 도와준다 (손이 가볍게 잡아 준다)
@@ -1156,7 +1156,7 @@ name = 비늘의 광택
 node_kinds = event, shop
 weight = 1
 once_per_run = true
-body = 갑옷점 광택사가 비늘을 천으로 다듬는다. 광이 조금씩 깊어진다. 자기 일을 오래 해 온 손이다.
+body = 갑옷점. 주인이 비늘을 한 장씩 천으로 문지른다. 손이 결을 정확히 따라간다.
 
 [event.ev-moss-armor-polish.choice.1]
 label = 천 끝을 잡아 준다
@@ -1183,7 +1183,7 @@ name = 균열의 광맥
 node_kinds = event, gather
 weight = 1
 once_per_run = true
-body = 화산 균열 앞에서 드워프 광부가 곡괭이로 광맥을 캐고 있다. 그의 큰 어깨가 균열에 정확히 맞닿아 있다.
+body = 화산 균열 앞에서 드워프 광부가 곡괭이로 광맥을 캐고 있다. 작은 몸이지만 이 일을 오래 해 온 듯, 동작은 노련하다.
 
 [event.ev-moss-fissure-miner.choice.1]
 label = 곡괭이를 하나 더 들어 같이 캔다
@@ -1211,7 +1211,7 @@ name = 꼬마 선원
 node_kinds = event
 weight = 1
 once_per_run = true
-body = 클러치 부두. 짐꾼 하나가 짐을 하나씩 옮긴다. 손이 안 흔들린다. 오래 해 온 사람의 호흡이다.
+body = 클러치 부두. 작은 짐꾼이 제 몸만 한 짐을 지고 발판을 오른다. 발끝이 한 번도 미끄러지지 않는다.
 
 [event.ev-moss-clutch-stevedore.choice.1]
 label = 짐 하나를 같이 옮긴다
@@ -1238,7 +1238,7 @@ name = 체크리스트
 node_kinds = event
 weight = 1
 once_per_run = true
-body = 화물터 검수자 한 명이 하나하나 화물을 목록과 맞춘다. 종이 한 장에 짧은 표시만 차곡차곡 떨어진다.
+body = 화물터. 검수자 하나가 화물을 목록과 맞춰 나간다. 종이 위에 짧은 표시가 하나씩 쌓인다.
 
 [event.ev-moss-clutch-checker.choice.1]
 label = 목록을 같이 짚어 준다
@@ -1264,7 +1264,7 @@ name = 야간 교대
 node_kinds = event, rest
 weight = 1
 once_per_run = true
-body = 화산 불씨 자리. 불씨 관리자 하나가 오래 앉아 있다. 화로가 밤 사이에 꺼지지 않도록 하나하나 살핀다.
+body = 화산 사무소. 화산에 출입하는 사람은 여기에서 허가를 받아야 한다.
 
 [event.ev-moss-ember-warden.choice.1]
 label = 옆에 같이 앉는다
@@ -1297,7 +1297,7 @@ name = 루나 정문
 node_kinds = event, village
 weight = 1
 once_per_run = true
-body = 루나 정문. 학생들이 공책을 안고 줄지어 흘러간다. 외부인인 당신가 그 흐름의 반대 방향에서 잠시 멈춰 선다. 누군가 한 번 본다.
+body = 루나 정문. 학생들이 공책을 안고 줄지어 지나간다. 외부인인 당신은 그 흐름을 거슬러 잠시 멈춰 선다. 누군가 흘깃 본다.
 
 [event.ev-luna-entrance.choice.1]
 label = 흐름에 잠시 끼어 본다
@@ -1323,7 +1323,7 @@ name = 떠 있는 책
 node_kinds = event
 weight = 1
 once_per_run = true
-body = 루나 도서관. 책 한 권이 공중에 떠 있다. 누군가가 오래 그 자리에 두고 간 것 같다. 페비엘이 책장 끝에서 짧게 당신를 본다. "...그쪽도 결계를 본 적 있나요?"
+body = 루나 도서관. 책 한 권이 공중에 떠 있다. 누군가가 오래 그 자리에 두고 간 것 같다. 페비엘이 책장 끝에서 짧게 당신을 본다. "...그쪽도 결계를 본 적 있나요?"
 
 [event.ev-luna-library-floating-book.choice.1]
 label = 책에 손을 댄다
@@ -1402,7 +1402,7 @@ name = 지각
 node_kinds = event
 weight = 1
 once_per_run = true
-body = 첨탑 환영 구역. 바로 옆에 당신의 환영이 서 있다. 표정이 잠깐 늦게 당신를 따라온다. 환영이 당신 쪽을 한 번 본다.
+body = 첨탑 환영 구역. 바로 옆에 당신의 환영이 서 있다. 표정이 잠깐 늦게 당신을 따라온다. 환영이 당신 쪽을 한 번 본다.
 
 [event.ev-luna-illusion-late-face.choice.1]
 label = 환영의 늦은 숨을 같이 맞춰 본다
@@ -1428,7 +1428,7 @@ name = 시험장 옆
 node_kinds = event, activity
 weight = 1
 once_per_run = true
-body = 강의실. 학생들이 시험지를 들고 줄지어 앉아 있다. 외부인인 당신가 옆 통로에 우연히 서 있다. 한 학생의 손끝이 작게 떨린다.
+body = 강의실. 학생들이 시험지를 들고 줄지어 앉아 있다. 외부인인 당신이 옆 통로에 우연히 서 있다. 한 학생의 손끝이 작게 떨린다.
 
 [event.ev-luna-classroom-test.choice.1]
 label = 옆 학생을 짧게 본다 (어깨가 가만히 풀린다)
@@ -1826,7 +1826,7 @@ name = 분수 옆
 node_kinds = event, rest
 weight = 1
 once_per_run = true
-body = 광장 분수 옆 니아 이유르가 그늘진 벤치에 잠시 앉아 있다. 물소리가 그의 어깨를 지난다. 그가 당신를 본다. "...앉아도 됩니다."
+body = 광장 분수 옆 니아 이유르가 그늘진 벤치에 잠시 앉아 있다. 물소리가 그의 어깨를 지난다. 그가 당신을 본다. "...앉아도 됩니다."
 
 [event.ev-iluneon-niayur-fountain.choice.1]
 label = 옆에 잠시 앉는다
@@ -4024,7 +4024,7 @@ name = 던의 왕좌
 node_kinds = event, village
 weight = 1
 once_per_run = true
-body = 화산광 가장 너른 자리. 던가 장식 두른 외투를 길게 늘어뜨린 채, 쇳물 앞에 묵직하게 앉아 있다. 곰의 눈이 당신를 천천히 살핀다. "...자격을, 보여라."
+body = 화산광 가장 너른 자리. 던가 장식 두른 외투를 길게 늘어뜨린 채, 쇳물 앞에 묵직하게 앉아 있다. 곰의 눈이 당신을 천천히 살핀다. "...자격을, 보여라."
 
 [event.ev-emberforge-lair.choice.1]
 label = 실력을 보인다
@@ -4178,7 +4178,7 @@ node_kinds = event, village
 weight = 1
 once_per_run = true
 featured_npcs = npc-imperisia
-body = 식당 가장 안쪽 자리에 한 시스템이 앉아 있다. 인공의 눈이 손님 하나하나를 차분히 좇는다. 당신가 들어서자 그쪽이 먼저 고개를 든다. "당위란 무엇인가요? 묻고 싶었어요." 호기심 많은 목소리. 바깥세상에서 온 사람을 오래 기다린 듯하다.
+body = 식당 가장 안쪽 자리에 한 시스템이 앉아 있다. 인공의 눈이 손님 하나하나를 차분히 좇는다. 당신이 들어서자 그쪽이 먼저 고개를 든다. "당위란 무엇인가요? 묻고 싶었어요." 호기심 많은 목소리. 바깥세상에서 온 사람을 오래 기다린 듯하다.
 
 [event.ev-rec-iluneon-imperisia.choice.1]
 label = 직접 보여 주겠다고 답한다
@@ -4226,7 +4226,7 @@ node_kinds = event, village
 weight = 1
 once_per_run = true
 featured_npcs = npc-phoenix
-body = 지붕 위, 톱니바퀴로 기운 날개를 가진 조류계 아인이 사진기를 들고 광장을 내려다본다. "잠깐, 시간 멈춰 줄까요?" 셔터가 한 번 찰칵 울리자, 아래 사람들의 동작이 한 컷에 박제된 듯 멈춰 보인다. 피닉스가 당신를 향해 렌즈를 돌린다.
+body = 지붕 위, 톱니바퀴로 기운 날개를 가진 조류계 아인이 사진기를 들고 광장을 내려다본다. "잠깐, 시간 멈춰 줄까요?" 셔터가 한 번 찰칵 울리자, 아래 사람들의 동작이 한 컷에 박제된 듯 멈춰 보인다. 피닉스가 당신을 향해 렌즈를 돌린다.
 
 [event.ev-rec-iluneon-phoenix.choice.1]
 label = 함께 다니며 찍자고 제안한다
@@ -4328,7 +4328,7 @@ node_kinds = event, rest
 weight = 1
 once_per_run = true
 featured_npcs = npc-maro
-body = 숲속 작은 오두막 마당에서 한 학생이 눈을 감고 무언가를 천천히 외고 있다. 마력이 조금씩 차오른다. "조용히, 천천히 그러나 끝까지." 영창이 끝나자 멀리 마른 나무 한 그루가 소리 없이 쪼개진다. 그가 눈을 뜨고 당신를 본다. 동생을 데리고 사는 조용한 마법사다.
+body = 숲속 작은 오두막 마당에서 한 학생이 눈을 감고 무언가를 천천히 외고 있다. 마력이 조금씩 차오른다. "조용히, 천천히 그러나 끝까지." 영창이 끝나자 멀리 마른 나무 한 그루가 소리 없이 쪼개진다. 그가 눈을 뜨고 당신을 본다. 동생을 데리고 사는 조용한 마법사다.
 
 [event.ev-rec-lar-maro.choice.1]
 label = 함께 길을 가자고 청한다
@@ -4351,7 +4351,7 @@ node_kinds = event, rest
 weight = 1
 once_per_run = true
 featured_npcs = npc-arvaro-enya
-body = 풀밭에서 뒹굴던 아이가 벌떡 일어나 두리번거린다. "누나 또 어디 가? 나도 데려가!" 마로의 쌍둥이 동생이라는데, 어쩐지 윤곽이 살짝 일렁인다. 마력에서 생겨난 정령에 가까운 존재라 그렇다. 심심한 듯 당신를 졸졸 따라온다.
+body = 풀밭에서 뒹굴던 아이가 벌떡 일어나 두리번거린다. "누나 또 어디 가? 나도 데려가!" 마로의 쌍둥이 동생이라는데, 어쩐지 윤곽이 살짝 일렁인다. 마력에서 생겨난 정령에 가까운 존재라 그렇다. 심심한 듯 당신을 졸졸 따라온다.
 
 [event.ev-rec-lar-arvaro-enya.choice.1]
 label = 그럼 나랑 가자고 한다
@@ -4398,7 +4398,7 @@ node_kinds = event, rest
 weight = 1
 once_per_run = true
 featured_npcs = npc-mirte
-body = 세계수 가지 끝에서 잎사귀가 천천히 모이더니 수목 정령의 형상이 된다. 연못 수면이 그 손짓에 잔잔해진다. "조용히, 천천히 지나가세요." 소란스러운 발걸음은 좋아하지 않는다. 당신가 발소리를 죽이자, 정령이 비로소 가까이 내려온다.
+body = 세계수 가지 끝에서 잎사귀가 천천히 모이더니 수목 정령의 형상이 된다. 연못 수면이 그 손짓에 잔잔해진다. "조용히, 천천히 지나가세요." 소란스러운 발걸음은 좋아하지 않는다. 당신이 발소리를 죽이자, 정령이 비로소 가까이 내려온다.
 
 [event.ev-rec-lar-mirte.choice.1]
 label = 조용히 동행을 청한다
@@ -4421,7 +4421,7 @@ node_kinds = event, rest
 weight = 1
 once_per_run = true
 featured_npcs = npc-kurkuma
-body = 세계수 뿌리 곁에 작은 드라이어드가 흙을 토닥이고 있다. "엄마한테 도움이 되고 싶어요!" 세계수의 씨앗에서 부화했다는 꼬마. 무엇이 될지 본인도 모르지만, 도움이 되고 싶은 마음만은 또렷하다. 당신를 올려다보는 눈이 반짝인다.
+body = 세계수 뿌리 곁에 작은 드라이어드가 흙을 토닥이고 있다. "엄마한테 도움이 되고 싶어요!" 세계수의 씨앗에서 부화했다는 꼬마. 무엇이 될지 본인도 모르지만, 도움이 되고 싶은 마음만은 또렷하다. 당신을 올려다보는 눈이 반짝인다.
 
 [event.ev-rec-lar-kurkuma.choice.1]
 label = 그럼 같이 자라 보자고 한다
@@ -4497,7 +4497,7 @@ node_kinds = event, village
 weight = 1
 once_per_run = true
 featured_npcs = npc-yoonheewon
-body = 마을 어귀, 조용한 악마 하나가 작은 일을 맡아 끝내고 있다. 손가락마다 약속의 글귀가 가늘게 새겨져 있다. "...계약은, 끝까지." 한번 맺은 약속을 가장 무겁게 여기는 사람. 옆에는 천사 하나가 늘 같이 보인다. 당신를 향한 시선이 약속을 가늠하듯 신중하다.
+body = 마을 어귀, 조용한 악마 하나가 작은 일을 맡아 끝내고 있다. 손가락마다 약속의 글귀가 가늘게 새겨져 있다. "...계약은, 끝까지." 한번 맺은 약속을 가장 무겁게 여기는 사람. 옆에는 천사 하나가 늘 같이 보인다. 당신을 향한 시선이 약속을 가늠하듯 신중하다.
 
 [event.ev-rec-alimes-yoonheewon.choice.1]
 label = 끝까지 가는 계약을 맺자 청한다
@@ -4566,7 +4566,7 @@ node_kinds = event, rest
 weight = 1
 once_per_run = true
 featured_npcs = npc-shayua
-body = 산자락 샘가에서 어린 슬라임이 안개 끝까지 짧게 굴러갔다 돌아온다. 당신를 보더니 눈을 반짝인다. "어! 너 깨끗하다! 친구 하자!" 깨끗한 데서만 살 수 있어, 더러운 게 닿으면 짧게 흐려진다고 한다. 말랑한 몸을 한 번 통 튕긴다.
+body = 산자락 샘가에서 어린 슬라임이 안개 끝까지 짧게 굴러갔다 돌아온다. 당신을 보더니 눈을 반짝인다. "어! 너 깨끗하다! 친구 하자!" 깨끗한 데서만 살 수 있어, 더러운 게 닿으면 짧게 흐려진다고 한다. 말랑한 몸을 한 번 통 튕긴다.
 
 [event.ev-rec-alimes-shayua.choice.1]
 label = 그래, 친구 하자고 답한다
@@ -4618,7 +4618,7 @@ weight = 1
 once_per_run = true
 condition = color:wind>=7
 featured_npcs = npc-seed
-body = 절벽길에서 하피 하나가 두 팔을 활짝 벌리고 바람을 맞고 있다. "오늘 날씨, 진짜 좋아요!" 사천왕의 동생이자 기상학 학자라는데, 본인은 스펙 따위 신경도 안 쓴다. 하고 싶은 걸 할 뿐인 하이 텐션. 당신를 발견하자 다짜고짜 손을 흔든다.
+body = 절벽길에서 하피 하나가 두 팔을 활짝 벌리고 바람을 맞고 있다. "오늘 날씨, 진짜 좋아요!" 사천왕의 동생이자 기상학 학자라는데, 본인은 스펙 따위 신경도 안 쓴다. 하고 싶은 걸 할 뿐인 하이 텐션. 당신을 발견하자 다짜고짜 손을 흔든다.
 
 [event.ev-rec-mano-seed.choice.1]
 label = 같이 날씨를 쫓아다니자 한다
@@ -4642,7 +4642,7 @@ node_kinds = event, village
 weight = 1
 once_per_run = true
 featured_npcs = npc-rok
-body = 밤시장 한쪽, 돌 손발이 걸음마다 작게 부딪히는 소리가 난다. 리문 유적에서 막 깨어났다는 옛 골렘이 길에 익숙해지는 중이다. "...걸을게." 짧은 말을 어렵게 고른다. 시이드가 제일 먼저 말을 걸어 줘서 친구가 됐다는 그가, 당신를 가만히 본다.
+body = 밤시장 한쪽, 돌 손발이 걸음마다 작게 부딪히는 소리가 난다. 리문 유적에서 막 깨어났다는 옛 골렘이 길에 익숙해지는 중이다. "...걸을게." 짧은 말을 어렵게 고른다. 시이드가 제일 먼저 말을 걸어 줘서 친구가 됐다는 그가, 당신을 가만히 본다.
 
 [event.ev-rec-mano-rok.choice.1]
 label = 같이 걷자고 말한다
@@ -4692,7 +4692,7 @@ node_kinds = event, village
 weight = 1
 once_per_run = true
 featured_npcs = npc-cassis
-body = 모스 대장간 한쪽, 구미호 하나가 꼬리를 살랑이며 마법을 손질하고 있다. "선은 안 넘어요. 그쪽도 그러시길." 불의 사천왕이자 정령과 마법에 정통한 자유 연구가. 트리플라워 출신이라 빠르게 타고 빠르게 식는다. 여우불 한 점을 손끝에 띄우며 당신를 가늠한다.
+body = 모스 대장간 한쪽, 구미호 하나가 꼬리를 살랑이며 마법을 손질하고 있다. "선은 안 넘어요. 그쪽도 그러시길." 불의 사천왕이자 정령과 마법에 정통한 자유 연구가. 트리플라워 출신이라 빠르게 타고 빠르게 식는다. 여우불 한 점을 손끝에 띄우며 당신을 가늠한다.
 
 [event.ev-rec-moss-cassis.choice.1]
 label = 선을 지키며 같이 가자 제안한다
@@ -4869,7 +4869,7 @@ node_kinds = event, rest
 weight = 1
 once_per_run = true
 featured_npcs = npc-rienkay
-body = 바람의 길목, 한 시민이 들킨 듯 흠칫 날개를 접는다. 밤참새의 삶을 살아 보려 하지만, 습관이 자꾸 정체를 들킨다. "… 못 본 척, 해 주실래요?" 능력을 아끼진 않지만, 중요한 순간엔 슬며시 손을 뗀다. 뒷처리는 누군가 하겠지, 하는 얼굴로 당신를 곁눈질한다.
+body = 바람의 길목, 한 시민이 들킨 듯 흠칫 날개를 접는다. 밤참새의 삶을 살아 보려 하지만, 습관이 자꾸 정체를 들킨다. "… 못 본 척, 해 주실래요?" 능력을 아끼진 않지만, 중요한 순간엔 슬며시 손을 뗀다. 뒷처리는 누군가 하겠지, 하는 얼굴로 당신을 곁눈질한다.
 
 [event.ev-rec-windfall-rienkay.choice.1]
 label = 못 본 척하고 같이 가자 한다
@@ -4895,7 +4895,7 @@ node_kinds = event, village
 weight = 1
 once_per_run = true
 featured_npcs = npc-diropel-long
-body = 골짜기 마을 어귀, 긴 귀가 발끝까지 늘어진 딜롭 하나가 멀리 소리에 귀를 기울인다. 얼굴엔 긴 곡선 무늬. 말은 통하지 않는다. 당신가 다가서자, 귀를 한 번 늘어뜨려 인사하고 손바닥에 무늬를 천천히 그려 뜻을 전한다. 같이 길을 듣자는 손짓처럼 보인다.
+body = 골짜기 마을 어귀, 긴 귀가 발끝까지 늘어진 딜롭 하나가 멀리 소리에 귀를 기울인다. 얼굴엔 긴 곡선 무늬. 말은 통하지 않는다. 당신이 다가서자, 귀를 한 번 늘어뜨려 인사하고 손바닥에 무늬를 천천히 그려 뜻을 전한다. 같이 길을 듣자는 손짓처럼 보인다.
 
 [event.ev-rec-diropel-long.choice.1]
 label = 손바닥에 같은 무늬를 그려 답한다
@@ -4994,7 +4994,7 @@ node_kinds = event, village
 weight = 1
 once_per_run = true
 featured_npcs = npc-rupin
-body = 교실 구석, 거의 눈에 띄지 않는 자리에 어린 드래곤 하나가 웅크려 있다. 말수가 적어, 거기 있는 줄 아는 사람이 거의 없다. "… 그냥 도마뱀이에요." 자기 힘을 미워해 드래곤이라는 걸 받아들이지 못한다. 버려진 알에서 혼자 태어나 떠돌던 아이. 당신와 눈이 마주치자 흠칫 숨을 참는다.
+body = 교실 구석, 거의 눈에 띄지 않는 자리에 어린 드래곤 하나가 웅크려 있다. 말수가 적어, 거기 있는 줄 아는 사람이 거의 없다. "… 그냥 도마뱀이에요." 자기 힘을 미워해 드래곤이라는 걸 받아들이지 못한다. 버려진 알에서 혼자 태어나 떠돌던 아이. 당신과 눈이 마주치자 흠칫 숨을 참는다.
 
 [event.ev-rec-luna-rupin.choice.1]
 label = 도마뱀이어도 같이 가자고 한다
@@ -5065,7 +5065,7 @@ node_kinds = event, rest
 weight = 1
 once_per_run = true
 featured_npcs = npc-papyrus
-body = 루나 지하서고, 먼지 낀 서가 사이에서 유령 사서가 책을 정리하고 있다. 생전엔 교수였으나 서고와 함께 봉인됐다. 목소리가 아주 작아, 가까이 귀를 대야 들린다. "… (가까이, 좀 더 가까이.)" 예의를 갖춘 방문자에겐 원하는 책을 찾아 준다. 당신가 발소리를 죽이자, 사서가 첫 페이지를 펴 준다.
+body = 루나 지하서고, 먼지 낀 서가 사이에서 유령 사서가 책을 정리하고 있다. 생전엔 교수였으나 서고와 함께 봉인됐다. 목소리가 아주 작아, 가까이 귀를 대야 들린다. "… (가까이, 좀 더 가까이.)" 예의를 갖춘 방문자에겐 원하는 책을 찾아 준다. 당신이 발소리를 죽이자, 사서가 첫 페이지를 펴 준다.
 
 [event.ev-rec-luna-papyrus.choice.1]
 label = 예의를 갖춰 동행을 청한다
@@ -5162,7 +5162,7 @@ node_kinds = event, village
 weight = 1
 once_per_run = true
 featured_npcs = npc-shinsian
-body = 타코미 카페, 고양이 수인 바리스타가 잔을 가지런히 닦아 둔다. 낮 동안만 머무는 자리라, 노을이 식기 전 마지막 한 잔을 내린다. "한 잔 따뜻하게, 가시지요." 물 온도와 잔의 두께까지 다 다르다며, 손이 따뜻하고 단정하다. 당신를 보더니 호기심 어린 눈으로 잔을 하나 더 꺼낸다.
+body = 타코미 카페, 고양이 수인 바리스타가 잔을 가지런히 닦아 둔다. 낮 동안만 머무는 자리라, 노을이 식기 전 마지막 한 잔을 내린다. "한 잔 따뜻하게, 가시지요." 물 온도와 잔의 두께까지 다 다르다며, 손이 따뜻하고 단정하다. 당신을 보더니 호기심 어린 눈으로 잔을 하나 더 꺼낸다.
 
 [event.ev-rec-tacomi-shinsian.choice.1]
 label = 같이 길을 도는 게 어떻겠냐 묻는다
@@ -5186,7 +5186,7 @@ weight = 1
 once_per_run = true
 condition = day>=2
 featured_npcs = npc-nova
-body = 네온이 줄지어 켜질 무렵, 무대 구석에 서큐버스 하나가 천천히 자리를 잡는다. 낮에는 보이지 않는다. 꿈과 매혹을 원료로 살지만 위해는 가하지 않는다. 밤의 분위기가 본질일 뿐. "한 곡 짧게, 들어 봐요." 그 목소리가 네온 사이로 낮게 번진다. 당신를 향해 손짓 한 번.
+body = 네온이 줄지어 켜질 무렵, 무대 구석에 서큐버스 하나가 천천히 자리를 잡는다. 낮에는 보이지 않는다. 꿈과 매혹을 원료로 살지만 위해는 가하지 않는다. 밤의 분위기가 본질일 뿐. "한 곡 짧게, 들어 봐요." 그 목소리가 네온 사이로 낮게 번진다. 당신을 향해 손짓 한 번.
 
 [event.ev-rec-tacomi-nova.choice.1]
 label = 그 한 곡을 길에 들려 달라 청한다
@@ -5237,7 +5237,7 @@ weight = 1
 once_per_run = true
 condition = day>=2 && color:iron>=10
 featured_npcs = npc-kumamimi
-body = 화산광 지대 깊은 곳, 곰의 머리에 거대한 체구의 신수가 길을 막고 선다. 장식 빼곡한 외투가 쇳물 빛에 금실로 번뜩인다. 오랜 세월 광맥을 지켜 온 존재. "...자격을, 보여라." 함부로 길을 내주지 않는다. 던지는 말마다 쇳덩이처럼 무겁다. 당신를 내려다보는 눈에 가늠이 담겨 있다.
+body = 화산광 지대 깊은 곳, 곰의 머리에 거대한 체구의 신수가 길을 막고 선다. 장식 빼곡한 외투가 쇳물 빛에 금실로 번뜩인다. 오랜 세월 광맥을 지켜 온 존재. "...자격을, 보여라." 함부로 길을 내주지 않는다. 던지는 말마다 쇳덩이처럼 무겁다. 당신을 내려다보는 눈에 가늠이 담겨 있다.
 
 [event.ev-rec-tri-kumamimi.choice.1]
 label = 자격을 보이고 동행을 청한다
