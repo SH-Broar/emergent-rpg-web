@@ -1,0 +1,242 @@
+# Cards 샤유아 전용 (어린 슬라임 — 격자 전투, 2026-06-18)
+# source=race → 상점/이벤트 풀 제외(시작 전용). 물 친화. 어린아이 톤.
+# 코어: 상태 도포(화상/중독/취약) → 전파(status-spread)·연쇄 폭발(chain-explosion) + 분열 소환(summon-ally). 전방 = -y.
+
+# === 상태 도포 ===
+[card.c-sl-glob]
+name = 점액 한 방울
+rank = common
+source = race
+element = water
+cost = 1
+trigger = manual
+effects = damage:5:enemy, apply-status:1:enemy:weakness
+shape = 0,-1
+per_tile_mul = 1.0
+cast_speed = normal
+target_mode = pattern
+flavor = "퐁."
+
+[card.c-sl-splash]
+name = 튀기기
+rank = common
+source = race
+element = water
+cost = 1
+trigger = manual
+effects = damage:4:enemy, apply-status:1:enemy:vulnerable
+shape = 0,-1|0,1|-1,0|1,0
+per_tile_mul = 1.0,1.0,1.0,1.0
+cast_speed = normal
+target_mode = pattern
+flavor = "찰싹!"
+
+[card.c-sl-sticky]
+name = 끈적
+rank = common
+source = race
+element = water
+cost = 1
+trigger = manual
+effects = apply-status:1:enemy:weakness, slow-enemy:1:self
+shape = 0,-1
+per_tile_mul = 1.0
+cast_speed = normal
+target_mode = pattern
+flavor = "들러붙는다."
+
+[card.c-sl-corrode]
+name = 녹이기
+rank = common
+source = race
+element = water
+cost = 1
+trigger = manual
+effects = apply-status:3:enemy:poison
+shape = 0,-1
+per_tile_mul = 1.0
+cast_speed = normal
+target_mode = pattern
+flavor = "치이익..."
+
+[card.c-sl-hot]
+name = 뜨거운 점액
+rank = common
+source = race
+element = fire
+cost = 1
+trigger = manual
+effects = apply-status:3:enemy:burn
+shape = 0,-1
+per_tile_mul = 1.0
+cast_speed = normal
+target_mode = pattern
+flavor = "앗, 뜨거!"
+
+# === 전파·연쇄 (신규 엔진) ===
+[card.c-sl-spread]
+name = 번지기
+rank = common
+source = race
+element = water
+cost = 1
+trigger = manual
+effects = amplify-debuff:1:enemy
+shape = 0,-1
+per_tile_mul = 1.0
+cast_speed = normal
+target_mode = pattern
+flavor = "더 번진다."
+
+[card.c-sl-transfer]
+name = 옮기기
+rank = common
+source = race
+element = water
+cost = 1
+trigger = manual
+effects = status-spread:1:enemy
+shape = 0,-1
+per_tile_mul = 1.0
+cast_speed = normal
+target_mode = pattern
+flavor = "닿으면 옮아!"
+
+[card.c-sl-chainpop]
+name = 연쇄 톡톡
+rank = common
+source = race
+element = water
+cost = 2
+trigger = manual
+effects = damage-per-debuff:3:enemy
+shape = -1,-1|0,-1|1,-1|-1,0|1,0|-1,1|0,1|1,1
+per_tile_mul = 0.8,0.8,0.8,0.8,0.8,0.8,0.8,0.8
+cast_speed = normal
+target_mode = pattern
+flavor = "톡, 톡, 톡!"
+
+[card.c-sl-chainburst]
+name = 연쇄 폭발
+rank = rare
+source = race
+element = water
+cost = 2
+trigger = manual
+effects = chain-explosion:8:enemy
+cast_speed = normal
+target_mode = self
+flavor = "펑! 펑! 펑!"
+
+# === 분열 소환 (신규 엔진) ===
+[card.c-sl-split]
+name = 분열!
+rank = common
+source = race
+element = water
+cost = 2
+trigger = manual
+effects = summon-ally:2:self:6:4
+cast_speed = normal
+target_mode = self
+flavor = "나눠서 친구!"
+
+[card.c-sl-twobody]
+name = 두 몸
+rank = rare
+source = race
+element = water
+cost = 2
+trigger = manual
+effects = summon-ally:2:self:6:4, block:4:self
+cast_speed = normal
+target_mode = self
+flavor = "둘로 나뉘면 두 배로 친구!"
+
+# === 큰 한 방·지연 ===
+[card.c-sl-bigglob]
+name = 큰 한 방울
+rank = common
+source = race
+element = water
+cost = 2
+trigger = manual
+effects = damage:9:enemy
+shape = 0,-1|0,1|-1,0|1,0|-1,-1|1,-1|-1,1|1,1
+per_tile_mul = 1.0,1.0,1.0,1.0,0.6,0.6,0.6,0.6
+cast_speed = normal
+target_mode = pattern
+flavor = "철퍽!"
+
+[card.c-sl-bubble]
+name = 불어나는 거품
+rank = common
+source = race
+element = water
+cost = 2
+trigger = manual
+effects = delayed-damage:12:enemy:2
+cast_speed = normal
+target_mode = self
+flavor = "보글... 펑!"
+
+# === 막기·기동·유지 ===
+[card.c-sl-body]
+name = 몸으로 막기
+rank = common
+source = race
+element = earth
+cost = 1
+trigger = manual
+effects = block:9:self
+cast_speed = normal
+target_mode = self
+flavor = "말랑하게 받아낸다."
+
+[card.c-sl-bounce]
+name = 통통
+rank = common
+source = race
+element = water
+cost = 1
+trigger = manual
+effects = move-self:2:self:away, block:4:self
+cast_speed = fast
+target_mode = self
+flavor = "통! 통!"
+
+[card.c-sl-puddle]
+name = 웅덩이
+rank = common
+source = race
+element = water
+cost = 1
+trigger = manual
+effects = draw:2:self, slow-enemy:1:self
+cast_speed = normal
+target_mode = self
+flavor = "흥건하게 고인다."
+
+[card.c-sl-grow]
+name = 점점 크게
+rank = common
+source = race
+element = earth
+cost = 1
+trigger = manual
+effects = growing-block:6:self
+cast_speed = normal
+target_mode = self
+flavor = "조금씩 더 커진다."
+
+[card.c-sl-clean]
+name = 맑아지기
+rank = common
+source = race
+element = water
+cost = 1
+trigger = manual
+effects = heal:8:self
+cast_speed = normal
+target_mode = self
+flavor = "깨끗해지면 기분 좋아!"

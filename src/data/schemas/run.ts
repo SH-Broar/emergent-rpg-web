@@ -21,6 +21,7 @@ import type { GridAttack } from './monster';
 import type {
   CardId,
   CastSpeed,
+  GridOffset,
   GridPos,
   NodeId,
   NodeKind,
@@ -355,10 +356,10 @@ export interface CombatState {
 // 구 전투 경로가 완전히 제거되면 combat→gridCombat으로 일원화한다.
 // =========================================================================
 
-/** 격자 위 한 전투 참가자(플레이어 또는 적). */
+/** 격자 위 한 전투 참가자(플레이어 / 적 / 아군 소환 토큰). */
 export interface GridCombatant {
   id: string;
-  team: 'player' | 'enemy';
+  team: 'player' | 'enemy' | 'ally';
   pos: GridPos;
   hp: number;
   maxHp: number;
@@ -402,9 +403,12 @@ export interface GridCombatant {
 /** 한 스텝에 한 참가자가 수행하는 계획된 행동. */
 export type PlannedAction =
   | { kind: 'move'; to: GridPos }
-  | { kind: 'card'; cardInstanceId: string; targetTiles: GridPos[] }
+  // aimOffset: targetMode='aimed' 카드의 *플레이어 기준 조준 오프셋*. 실행 시 anchor = player.pos + aimOffset.
+  | { kind: 'card'; cardInstanceId: string; targetTiles: GridPos[]; aimOffset?: GridOffset }
   | { kind: 'attack'; attackIdx: number; targetTiles: GridPos[] }
   | { kind: 'item'; itemId: string }
+  // 동료 교대(C6) — 아이템류 1행동. 교대 라운드는 대기(전환), 다음 라운드 동료 조종.
+  | { kind: 'swap'; companionId: string }
   | { kind: 'wait' };
 
 /**
@@ -430,6 +434,23 @@ export interface GridCombatState {
   stage: GridStage;
   player: GridCombatant;
   enemies: GridCombatant[];
+  /**
+   * 아군 소환 토큰(샤유아 분열 등 summon-ally). 매 라운드 적을 향해 이동·근접 공격(planAlly).
+   * 미설정/빈 배열이면 없음(세이브·일반 전투 안전). 적 AI 타깃은 v1에서 플레이어 전용(아군은 공격 헬퍼).
+   */
+  allies?: GridCombatant[];
+  /**
+   * 동료 교대(C6) 상태. 미설정이면 플레이어가 직접 조종 중(기본).
+   *  - controlling=false: 교대 행동을 넣은 *그 라운드*(대기/전환 중) — 라운드 종료 시 조종으로 전환.
+   *  - controlling=true: 이번 라운드 동료를 조종 중(state.player가 동료 전투원, hand=동료 능력). 라운드 종료 시 자동 복귀.
+   * 복귀 시 savedPlayer/savedHand를 되돌린다. HP0 즉시 복귀는 마나 0 패널티.
+   */
+  swap?: {
+    companionId: string;
+    controlling: boolean;
+    savedPlayer: GridCombatant;
+    savedHand: Card[];
+  };
   /** 이번 전투 계획 시야 N(1~3, stage.foresight). */
   foresight: number;
   /** 플레이어가 큐에 넣은 행동(길이 ≤ foresight). 커밋 시 라운드 해소. */
@@ -714,9 +735,8 @@ export interface RunState {
   hp: number;
   maxHp: number;
   /**
-   * 빛·어둠 컬러로부터 파생된 *최대 HP 보너스의 현재 누적분* (VIT 활력).
-   * maxHp에 *이미 포함*돼 있으며, 빛/어둠 변동 시 델타만 재조정한다(colors.applyColorBoost).
-   * 세이브에 maxHp와 함께 저장돼 정합 유지. 옛 세이브엔 없으면 0으로 backfill.
+   * (은퇴, F5 2026-06-18) 구 색→최대 HP(VIT) 누적분. 색→HP가 폐지돼 더는 갱신하지 않는다.
+   * 구세이브 호환을 위해 필드만 유지 — loadActiveRun(migrateColorHp)이 maxHp에서 환원 후 0으로 만든다.
    */
   colorHpBonus?: number;
   mp: number;
@@ -735,12 +755,13 @@ export interface RunState {
   maxLives: number;
 
   /**
-   * 6 컬러 스탯 (각 0~100 권장).
-   * 페어 → 3 스탯:
-   *   ATK = CalculateStat(fire, electric)
-   *   DEF = CalculateStat(earth, iron)
-   *   MAG = CalculateStat(water, wind)
-   * 전투 보너스로 환산되어 damage/block/draw/mana에 더해짐.
+   * 8 컬러 스탯 (각 0~100). 색 → 스탯 재배분(F5):
+   *   ATK = CalculateStat(fire, electric) → 공격(damage)
+   *   DEF = CalculateStat(earth, iron)    → 방어(block)
+   *   마나 = CalculateStat(light, dark)   → 라운드 마나 한도
+   *   드로우 = 물(단색)                   → 손패/대기 보충량
+   *   이동 = 바람(단색)                   → 이동 사거리
+   * (systems/stats.ts bonusesFromColors가 환산. 색→최대 HP는 은퇴.)
    */
   colors: ColorValues;
 

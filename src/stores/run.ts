@@ -88,6 +88,21 @@ function migratePlusCards(filled: RunState): void {
   for (const c of filled.deck ?? []) apply(c);
 }
 
+/**
+ * 색→최대 HP(VIT) 은퇴 마이그레이션 (F5, 2026-06-18).
+ * 구세이브 maxHp엔 colorHpBonus(물·바람 누적분)가 포함돼 있었다. 색→HP가 폐지됐으므로
+ * 그 누적분을 maxHp에서 *되돌리고* colorHpBonus를 0으로 만든다(현재 HP는 새 maxHp로 클램프).
+ * 멱등: 항상 *저장된 같은 스냅샷*의 maxHp/colorHpBonus 쌍으로 계산되며, 한 번 저장되면 0이 되어 무영향.
+ */
+function migrateColorHp(filled: RunState): void {
+  const baked = filled.colorHpBonus ?? 0;
+  if (baked > 0) {
+    filled.maxHp = Math.max(1, filled.maxHp - baked);
+    filled.hp = Math.min(filled.hp, filled.maxHp);
+  }
+  filled.colorHpBonus = 0;
+}
+
 function migrateRoster(filled: RunState, parsed: Partial<RunState>): void {
   const hasNewRoster = Array.isArray(parsed.roster);
   if (!hasNewRoster) {
@@ -356,6 +371,8 @@ export const useRunStore = defineStore('run', {
         migrateRoster(filled, parsed);
         // XP·각성 마이그레이션 — 구세이브 -plus 인스턴스를 각성됨(+5강)으로 승격 + 신필드 backfill.
         migratePlusCards(filled);
+        // 색→최대 HP(VIT) 은퇴(F5) — 구세이브 maxHp에 박힌 colorHpBonus 환원.
+        migrateColorHp(filled);
         // 격자 전투 전환(D1/E1) — 진행 중이던 *구형 1v1 전투*와 미완 격자 전투는 폐기한다.
         //   전투는 휘발 상태이므로 복원하지 않고, 플레이어는 currentNodeId(맵)에서 재개한다.
         //   (구 combat은 새 GridCombatView와 호환되지 않아 그대로 두면 빈 화면/크래시 위험.)

@@ -1,21 +1,23 @@
 /**
- * 컬러 6원소 → 3 스탯 → 전투 보너스.
+ * 컬러 8원소 → 전투 보너스 (격자 전투 F5 재배분, 2026-06-18).
  *
- * 사용자 사양 (2026-05-15):
- *   6 컬러: 불 / 전기 / 흙 / 철 / 물 / 바람 (상한 100 권장)
- *   짝지어 CalculateStat → 4 스탯:
- *     ATK  = CalculateStat(fire, electric)
- *     DEF  = CalculateStat(earth, iron)
- *     MAG  = CalculateStat(light, dark)   (희귀 컬러 → 드로우/마나)
- *     VIT  = CalculateStat(water, wind)   (→ 최대 HP, VIT 20당 +1)
+ * 8 컬러: 불 / 전기 / 흙 / 철 / 물 / 바람 / 빛 / 어둠 (상한 100).
  *
- *   효과 (2026-05-21 평탄화):
- *     ATK 33당 공격 카드의 *최소 공격력* +1  (컬러 풀투자 시 +10~15 상한)
- *     DEF 33당 방어 카드의 *방어력* +1
- *     MAG 100 단위:
- *       - 홀수 단계마다 카드 드로우 수 +1
- *       - 짝수 단계마다 턴당 마나 +1
- *       (level=floor(mag/100): 100→draw+1, 200→mana+1, 300→draw+2, ... +2~3 상한)
+ *   색 → 스탯 재배분 (기획서 F5):
+ *     ATK  = CalculateStat(fire, electric)   → 공격량(damage)
+ *     DEF  = CalculateStat(earth, iron)      → 방어량(block)
+ *     마나 = CalculateStat(light, dark)      → 라운드 마나 한도(manaExtra)  ← 빛·어둠 "재활용"
+ *     드로우 = water(단색)                    → 손패/대기 보충량(drawExtra)
+ *     이동 = wind(단색)                       → 이동 사거리 보너스(moveBonus)
+ *   은퇴: 구 MAG(빛·어둠→드로우+마나 분할), 구 VIT(물·바람→최대 HP).
+ *     (물·바람을 단색 드로우·이동으로 분리. 색→최대 HP는 폐지 — loadActiveRun이 colorHpBonus 환원.)
+ *
+ *   효과 임계 (평탄화 유지):
+ *     ATK 33당 damage +1  (atk 최대 ~500 → +15 상한)
+ *     DEF 33당 block +1
+ *     마나 150당 +1        (mag 최대 500 → +3 상한)
+ *     물 40당 드로우 +1    (단색 최대 100 → +2 상한)
+ *     바람 50당 이동 +1    (단색 최대 100 → +2 상한)
  *
  *   CalculateStat 공식 (사용자 제공 그대로):
  *     balance = min(A,B) / max(A,B)
@@ -47,18 +49,20 @@ export function calculateStat(a: number, b: number): number {
 }
 
 export interface DerivedStats {
+  /** ATK(공격) — 불·전기. damage 보너스의 원천. */
   atk: number;
+  /** DEF(방어) — 흙·철. block 보너스의 원천. */
   def: number;
-  /** MAG(마법) — *빛·어둠*으로 산출(희귀 컬러). 드로우/마나 보너스의 원천. */
+  /** MAG — *빛·어둠*으로 산출. (F5: 이제 마나 보너스의 원천. 옛 드로우 분할은 폐지.) */
   mag: number;
-  /** VIT(활력) — *물·바람*으로 산출. 최대 HP 보너스의 원천. */
+  /** VIT — *물·바람* 페어 수치. 표시·유물(boost-stat) 호환용으로 *수치만* 유지(최대 HP 효과는 은퇴). */
   vit: number;
 }
 
 /**
- * colors → ATK/DEF/MAG/VIT.
- *   ATK=불·전기, DEF=흙·철, MAG=빛·어둠(희귀→드로우/마나), VIT=물·바람(→최대 HP).
- * (2026-05-22: 빛·어둠이 더 희귀하므로 MAG↔VIT 담당 컬러쌍을 교체.)
+ * colors → ATK/DEF/MAG/VIT *수치*. (보너스 환산은 bonusesFromColors가 담당.)
+ * 페어 공식은 유물 boost-stat / 이벤트 / CharacterMenu 표시 호환을 위해 그대로 유지한다.
+ *   ATK=불·전기, DEF=흙·철, MAG=빛·어둠, VIT=물·바람(수치만 — 최대 HP 효과 은퇴).
  */
 export function deriveStats(colors: ColorValues): DerivedStats {
   return {
@@ -69,50 +73,45 @@ export function deriveStats(colors: ColorValues): DerivedStats {
   };
 }
 
-/** VIT 1 HP당 필요한 활력 수치 — VIT(=calculateStat(water,wind)) 20당 최대 HP +1. */
-export const VIT_HP_PER = 20;
-
-/** 현재 컬러로부터의 *최대 HP 보너스* — floor(VIT / VIT_HP_PER). 물·바람을 고루 키울수록 큼. */
-export function vitHpBonus(colors: ColorValues): number {
-  return Math.floor(calculateStat(colors.water, colors.wind) / VIT_HP_PER);
-}
-
 export interface CombatBonuses {
-  /** damage 효과 value에 +. 공격 카드 최소 공격력 보정. */
+  /** damage 효과 value에 +. 공격 카드 최소 공격력 보정 (불·전기). */
   damage: number;
-  /** block 효과 value에 +. 방어 카드 방어력 보정. */
+  /** block 효과 value에 +. 방어 카드 방어력 보정 (흙·철). */
   block: number;
-  /** 매 턴 시작 드로우 + 이 값. */
+  /** 손패 보충량(전투시작·[대기]) + 이 값 (물 단색). */
   drawExtra: number;
-  /** 매 턴 시작 maxMana + 이 값. */
+  /** 라운드 마나 한도(maxMana) + 이 값 (빛·어둠). */
   manaExtra: number;
+  /** 플레이어 이동 프로필 사거리(range) + 이 값 (바람 단색). 화이트 팡(무속성)은 시간 메커닉으로 별도. */
+  moveBonus: number;
 }
+
+/** 임계 — 평탄화 곡선. */
+const DAMAGE_PER = 33;   // ATK 33당 damage +1.
+const BLOCK_PER = 33;    // DEF 33당 block +1.
+const MANA_PER = 150;    // MAG(빛·어둠) 150당 마나 +1 (최대 ~+3).
+const WATER_DRAW_PER = 40; // 물 40당 드로우 +1 (단색 최대 +2).
+const WIND_MOVE_PER = 50;  // 바람 50당 이동 사거리 +1 (단색 최대 +2).
 
 /**
- * 3 스탯에서 전투 보너스 계산.
- *  - ATK 10당 damage +1
- *  - DEF 10당 block +1
- *  - MAG 10 단위:
- *      level = floor(MAG / 10)
- *      drawExtra = ceil(level / 2)   (홀수 단계마다 +1)
- *      manaExtra = floor(level / 2)  (짝수 단계마다 +1)
+ * colors → 5종 전투 보너스 (F5 재배분).
+ *  - damage  = floor(ATK / 33)            (불·전기)
+ *  - block   = floor(DEF / 33)            (흙·철)
+ *  - manaExtra = floor(MAG / 150)         (빛·어둠 → 마나)
+ *  - drawExtra = floor(물 / 40)           (물 단색 → 드로우)
+ *  - moveBonus = floor(바람 / 50)         (바람 단색 → 이동)
  */
-export function deriveBonuses(stats: DerivedStats): CombatBonuses {
-  // 평탄화(2026-05-21): ATK/DEF는 /33 — 컬러 풀투자(스탯 ~336~500)에서 보정 +10~15 상한.
-  const damage = Math.floor(stats.atk / 33);
-  const block = Math.floor(stats.def / 33);
-  // MAG는 임계 대폭 상향(/100) — 드로우/마나 +2~3 상한(과거 폭주 방지).
-  //   level=floor(mag/100): 100→1, 300→3, 500→5.
-  //   drawExtra=ceil(level/2)(홀수 단계), manaExtra=floor(level/2)(짝수 단계).
-  const magLevel = Math.floor(stats.mag / 100);
-  const drawExtra = Math.ceil(magLevel / 2);
-  const manaExtra = Math.floor(magLevel / 2);
-  return { damage, block, drawExtra, manaExtra };
-}
-
-/** colors → 보너스 한 번에. */
 export function bonusesFromColors(colors: ColorValues): CombatBonuses {
-  return deriveBonuses(deriveStats(colors));
+  const atk = calculateStat(colors.fire, colors.electric);
+  const def = calculateStat(colors.earth, colors.iron);
+  const mag = calculateStat(colors.light, colors.dark);
+  return {
+    damage: Math.floor(atk / DAMAGE_PER),
+    block: Math.floor(def / BLOCK_PER),
+    manaExtra: Math.floor(mag / MANA_PER),
+    drawExtra: Math.floor(Math.max(0, colors.water) / WATER_DRAW_PER),
+    moveBonus: Math.floor(Math.max(0, colors.wind) / WIND_MOVE_PER),
+  };
 }
 
 /**

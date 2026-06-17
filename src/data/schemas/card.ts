@@ -145,7 +145,11 @@ export type CardEffectKind =
   | 'rupture'             // statuses.rupture += value. *카드로* HP를 잃을 때마다 strength += rupture(각혈). 적 공격으론 미발동.
   | 'juggernaut'          // statuses.juggernaut += value. 플레이어가 *방어막을 얻을 때마다* 적에게 value 피해(반격진).
   | 'double-block'        // 즉발: player.block = player.block × 2(STS 엔트렌치, 참호).
-  | 'heavy-blade';        // 적에게 (value + strength×params.mult) 피해(중검). 일반 strength 자동가산은 미적용, 핸들러가 직접 계산.
+  | 'heavy-blade'         // 적에게 (value + strength×params.mult) 피해(중검). 일반 strength 자동가산은 미적용, 핸들러가 직접 계산.
+  | 'move-self'           // move-rider(D2): 카드가 플레이어를 value칸 이동. params.mode='toward'|'away'(가장 가까운 적 기준, 기본 away). 격자 전투 전용.
+  | 'summon-ally'         // 분열 소환(샤유아): 작은 아군 토큰 value마리 소환(params.hp/attack). 격자 전투 전용.
+  | 'status-spread'       // 전파(샤유아): shape가 닿은 적의 디버프를 인접 적에 복사. 격자 전투 전용.
+  | 'chain-explosion';    // 연쇄 폭발(샤유아): 디버프 걸린 모든 적이 자신+인접에 value 피해. 격자 전투 전용.
 
 /** 효과 대상 — target. */
 export type EffectTarget = 'self' | 'enemy' | 'all-enemies' | 'random-enemy';
@@ -265,10 +269,16 @@ export interface Card extends NamedEntity {
   /** 발동 속도(빠름/보통/느림). 미설정 시 'normal'. 같은 스텝 해소 순서를 정한다. */
   castSpeed?: CastSpeed;
   /**
-   * 타겟 모드 — 'self'(버프, 제자리) | 'pattern'(공격/디버프, shape 칸).
-   * 미설정 시 effects(damage/apply-status enemy 유무)와 shape로 추론.
+   * 타겟 모드 — 'self'(버프, 제자리) | 'pattern'(근접, 자기 기준 고정 shape) | 'aimed'(원거리 조준).
+   * - 'aimed': 사거리(aimRange) 내 *조준 칸*을 골라 그 칸을 중심으로 shape를 적용(리무·저격형).
+   * 미설정 시 effects(damage/apply-status enemy 유무)와 shape로 추론('self'/'pattern').
    */
-  targetMode?: 'self' | 'pattern';
+  targetMode?: 'self' | 'pattern' | 'aimed';
+  /**
+   * targetMode='aimed'일 때 조준 가능 사거리(플레이어 기준 맨해튼 거리, 1..aimRange).
+   * 조준 칸을 중심으로 shape가 적용된다. 미설정 시 기본 3.
+   */
+  aimRange?: number;
 }
 
 /** 효과 핸들러 시그니처 — Phase 2d에서 systems/combat.ts가 사용. */

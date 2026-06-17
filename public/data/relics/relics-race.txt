@@ -141,3 +141,21 @@ source = race
 trigger = on-turn-start
 effects = turn-units-color:1:0
 flavor = 색의 울림을 한층 더 키운다. 턴 수의 끝자리가 맞아떨어질 때마다 무작위 색 하나에 기운이 깃든다.
+
+# 화이트 팡 (무속성 수인 검사) — 잔상이 먼저 닿는 빠른 검. 색 대신 속도로 성장.
+[relic.r-race-whitefang]
+name = 잔상의 검
+rank = common
+source = race
+trigger = passive
+effects = damage-out-add:1
+flavor = 검이 지나간 자리에 한 박 늦은 잔상이 남는다. 그 잔상이 한 번 더 벤다.
+
+# 샤유아 (어린 슬라임) — 말랑한 몸으로 받아내고, 끈적하게 옮긴다.
+[relic.r-race-slime]
+name = 맑은 핵
+rank = common
+source = race
+trigger = on-combat-start
+effects = combat-start-block:5
+flavor = 깨끗한 데서만 맑게 빛나는 작은 핵. 싸움이 시작되면 말랑한 몸이 먼저 한 겹 받아낸다.

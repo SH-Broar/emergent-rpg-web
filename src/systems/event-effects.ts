@@ -67,11 +67,11 @@ registerEventEffect('time-extend-10', (ctx) => {
 
 // === 약한 단계 컬러 부스트 (+1) — 단서/잡 보상용. push-*-5보다 한 단계 약함.
 // random  : 8 컬러 중 무작위.
-// atk/def/mag : stats.ts 매핑 쌍 중 무작위 1개. (ATK=fire/electric, DEF=earth/iron, MAG=water/wind)
+// atk/def/mag : stats.ts 매핑 쌍 중 무작위 1개. (ATK=fire/electric, DEF=earth/iron, MAG=light/dark — F5 마나)
 const COLOR_PAIRS_FOR_TAG: Record<string, ColorKey[]> = {
   atk: ['fire', 'electric'],
   def: ['earth', 'iron'],
-  mag: ['water', 'wind'],
+  mag: ['light', 'dark'],
 };
 const ALL_8_COLORS: ColorKey[] = [
   'fire', 'water', 'electric', 'iron', 'earth', 'wind', 'light', 'dark',

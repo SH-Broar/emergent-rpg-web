@@ -39,6 +39,7 @@ import type {
 import { HUMAN_MOVE_PROFILE, DEFAULT_ENEMY_MOVE_PROFILE } from '@/data/schemas';
 import { drawCards, shuffle } from './deck';
 import { bonusesFromEffective } from './equipment';
+import type { CombatBonuses } from './stats';
 import { resolveLoadout } from './loadout';
 import { applyColorBoost, applyColorBoostAll, type ColorKey } from './colors';
 import { rng } from './rng';
@@ -140,6 +141,9 @@ export function combatantAt(state: GridCombatState, pos: GridPos): GridCombatant
   for (const e of state.enemies) {
     if (e.hp > 0 && samePos(e.pos, pos)) return e;
   }
+  for (const a of state.allies ?? []) {
+    if (a.hp > 0 && samePos(a.pos, pos)) return a;
+  }
   return undefined;
 }
 
@@ -152,6 +156,9 @@ export function combatantsAt(state: GridCombatState, pos: GridPos): GridCombatan
   if (state.player.hp > 0 && samePos(state.player.pos, pos)) out.push(state.player);
   for (const e of state.enemies) {
     if (e.hp > 0 && samePos(e.pos, pos)) out.push(e);
+  }
+  for (const a of state.allies ?? []) {
+    if (a.hp > 0 && samePos(a.pos, pos)) out.push(a);
   }
   return out;
 }
@@ -170,11 +177,12 @@ export function confinedCount(state: GridCombatState, pos: GridPos): number {
   return blocked; // 0~4.
 }
 
-/** 살아 있는 전투원 전체(플레이어 + 적). */
+/** 살아 있는 전투원 전체(플레이어 + 적 + 아군). */
 function aliveCombatants(state: GridCombatState): GridCombatant[] {
   const out: GridCombatant[] = [];
   if (state.player.hp > 0) out.push(state.player);
   for (const e of state.enemies) if (e.hp > 0) out.push(e);
+  for (const a of state.allies ?? []) if (a.hp > 0) out.push(a);
   return out;
 }
 
@@ -256,6 +264,32 @@ export function reachableTiles(state: GridCombatState, combatant: GridCombatant)
       }
       return out;
     }
+    case 'manhattan': {
+      // 맨해튼 거리 ≤ range 다이아몬드(점프형 — 경로 무시, 슬라임 오즈). 자기 칸 제외.
+      const out: GridPos[] = [];
+      for (let dy = -range; dy <= range; dy++) {
+        const rem = range - Math.abs(dy);
+        for (let dx = -rem; dx <= rem; dx++) {
+          if (dx === 0 && dy === 0) continue;
+          const p = { x: from.x + dx, y: from.y + dy };
+          if (isFreeTile(state, p)) out.push(p);
+        }
+      }
+      return out;
+    }
+    case 'composite': {
+      // 하위 패턴들의 합집합(중복 제거). 각 하위는 같은 range를 쓰되 reachableTiles 규칙 그대로.
+      const out: GridPos[] = [];
+      const seen = new Set<string>();
+      for (const sub of prof.compose ?? []) {
+        const subProf: MoveProfile = { pattern: sub, range };
+        for (const t of reachableTiles(state, { ...combatant, moveProfile: subProf })) {
+          const k = `${t.x},${t.y}`;
+          if (!seen.has(k)) { seen.add(k); out.push(t); }
+        }
+      }
+      return out;
+    }
     case 'custom': {
       const out: GridPos[] = [];
       for (const o of prof.customOffsets ?? []) {
@@ -281,19 +315,46 @@ function isLegalMove(state: GridCombatState, combatant: GridCombatant, to: GridP
 /**
  * 카드 shape를 caster(기본 player) 기준 *절대 칸*으로 변환. 회전 없음.
  * 격자 밖·void·wall 칸은 제외. shape 미설정/빈 배열이면 빈 배열(self/제자리 발동).
+ * aimOffset 지정 시(targetMode='aimed') shape 기준점 = caster + aimOffset(조준 칸 중심).
  */
 export function previewCardTiles(
   state: GridCombatState,
   card: Card,
   casterPos?: GridPos,
+  aimOffset?: GridOffset,
 ): GridPos[] {
-  const origin = casterPos ?? state.player.pos;
+  const base = casterPos ?? state.player.pos;
+  const origin = aimOffset ? { x: base.x + aimOffset.dx, y: base.y + aimOffset.dy } : base;
   const shape = card.shape ?? [];
   const out: GridPos[] = [];
   for (const o of shape) {
     const p = { x: origin.x + o.dx, y: origin.y + o.dy };
     // 격자 밖·void·wall 제외 (floor/item/spawn만 유효 타겟 칸).
     if (tileWalkable(state.stage, p)) out.push(p);
+  }
+  return out;
+}
+
+/** 원거리 조준 카드(targetMode='aimed')인가. */
+export function isAimedCard(card: Card): boolean {
+  return card.targetMode === 'aimed';
+}
+
+/**
+ * aimed 카드의 *조준 가능 칸* — 플레이어 기준 맨해튼 거리 1..aimRange 내 통행 가능 칸.
+ * UI가 이 칸들을 하이라이트하고, 플레이어가 고른 칸을 중심으로 shape가 적용된다.
+ */
+export function aimableTiles(state: GridCombatState, card: Card): GridPos[] {
+  const range = Math.max(1, card.aimRange ?? 3);
+  const from = state.player.pos;
+  const out: GridPos[] = [];
+  for (let dy = -range; dy <= range; dy++) {
+    const rem = range - Math.abs(dy);
+    for (let dx = -rem; dx <= rem; dx++) {
+      if (dx === 0 && dy === 0) continue;
+      const p = { x: from.x + dx, y: from.y + dy };
+      if (tileWalkable(state.stage, p)) out.push(p);
+    }
   }
   return out;
 }
@@ -346,6 +407,14 @@ export function queuePlayerAction(state: GridCombatState, action: PlannedAction)
   if (action.kind === 'card') {
     const card = state.hand.find((c) => c.instanceId === action.cardInstanceId);
     if (!card || card.unplayable) return false;
+    // aimed 카드는 조준 오프셋이 사거리 내여야 한다(원거리 조준 — UI가 지정).
+    if (isAimedCard(card)) {
+      const off = action.aimOffset;
+      const range = Math.max(1, card.aimRange ?? 3);
+      if (!off || (Math.abs(off.dx) + Math.abs(off.dy)) > range || (off.dx === 0 && off.dy === 0)) {
+        return false;
+      }
+    }
     // 이미 큐에 든 카드는 중복 사용 불가(같은 인스턴스).
     if (state.playerPlan.some((a) => a.kind === 'card' && a.cardInstanceId === action.cardInstanceId)) {
       return false;
@@ -374,6 +443,14 @@ export function queuePlayerAction(state: GridCombatState, action: PlannedAction)
     if (state.playerPlan.some((a) => a.kind === 'item')) return false;
     // 보유 + 전투용 + 효과 보유 포션만.
     if (!canUseGridItem(action.itemId)) return false;
+    state.playerPlan.push(action);
+    return true;
+  }
+
+  if (action.kind === 'swap') {
+    // 동료 교대 — 아이템류 1회. 이미 교대 중이거나 계획에 swap/item이 있으면 불가.
+    if (!canSwapTo(state, action.companionId)) return false;
+    if (state.playerPlan.some((a) => a.kind === 'swap' || a.kind === 'item')) return false;
     state.playerPlan.push(action);
     return true;
   }
@@ -417,12 +494,12 @@ export function clearPlayerPlan(state: GridCombatState): void {
 // 컬러 보너스 (구 combat.ts 패턴 이식 — 색→ATK/DEF 가법 보정)
 // ============================================================================
 
-/** 현재 런의 effective 컬러 전투 보너스(damage/block/draw/mana). 스토어 미접근 시 0 폴백. */
-function currentBonuses(): { damage: number; block: number; drawExtra: number; manaExtra: number } {
+/** 현재 런의 effective 컬러 전투 보너스(damage/block/draw/mana/move). 스토어 미접근 시 0 폴백. */
+function currentBonuses(): CombatBonuses {
   try {
     return bonusesFromEffective(useRunStore().data, useDataStore().equipments);
   } catch {
-    return { damage: 0, block: 0, drawExtra: 0, manaExtra: 0 };
+    return { damage: 0, block: 0, drawExtra: 0, manaExtra: 0, moveBonus: 0 };
   }
 }
 
@@ -445,6 +522,9 @@ function relicHandManaExtras(loadout: Relic[]): { draw: number; mana: number } {
 // 라운드마다 -1 감쇠되는 *일시* 상태. strength·파워(metallicize 등)는 STS 관례대로 *영구*(감쇠 제외).
 // ghost(유령화)는 양날 상태로 라운드 감쇠.
 const DECAYING_STATUSES = new Set<string>(['weakness', 'vulnerable', 'frail', 'ghost']);
+
+/** 샤유아 전파/연쇄 대상 디버프 키(status-spread·chain-explosion). */
+const SPREADABLE_DEBUFFS = ['vulnerable', 'weakness', 'frail', 'poison', 'burn', 'regress'] as const;
 
 function damageMultipliers(
   v: number,
@@ -568,8 +648,8 @@ export function startGridCombat(
   const drawPile0 = shuffle([...run.deck]);
   const { drawn, newDrawPile, newDiscardPile } = drawCards(drawPile0, [], handSize);
 
-  // 플레이어 전투원 — 인간 룩 이동(+moveUpgrades 사거리 가산).
-  const moveProfile = playerMoveProfile(run);
+  // 플레이어 전투원 — 인간 룩 이동(+moveUpgrades +바람색 사거리 가산).
+  const moveProfile = playerMoveProfile(run, bonus.moveBonus);
   const player: GridCombatant = {
     id: 'player',
     team: 'player',
@@ -618,11 +698,25 @@ export function startGridCombat(
   return state;
 }
 
-/** 플레이어 이동 프로필 — 인간 룩 + moveUpgrades 사거리 가산. */
-function playerMoveProfile(run: RunState): MoveProfile {
-  const base = HUMAN_MOVE_PROFILE;
-  const up = Math.max(0, run.moveUpgrades ?? 0);
-  return { pattern: base.pattern, range: base.range + up, customOffsets: base.customOffsets };
+/** 종족(raceId)의 격자 이동 프로필 — 미정의/조회 실패 시 undefined(인간 룩 폴백). */
+function raceMoveProfile(run: RunState): MoveProfile | undefined {
+  try {
+    return useDataStore().races.get(run.raceId)?.moveProfile;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * 플레이어 이동 프로필 — *종족 행마법*(C절) + moveUpgrades + *바람 색* moveBonus 사거리 가산(F5).
+ * 종족 미설정 시 인간 룩 폴백. range는 슬라이드/맨해튼/복합 비숍에 적용(나이트는 무시·직교1은 고정 1).
+ * (이동 강화 = 색(바람)의 주축. moveUpgrades는 유물·이벤트 부가 가산분. 무속성 화이트팡은 시간 메커닉 — 별도.)
+ */
+function playerMoveProfile(run: RunState, moveBonus = 0): MoveProfile {
+  const base = raceMoveProfile(run) ?? HUMAN_MOVE_PROFILE;
+  const up = Math.max(0, run.moveUpgrades ?? 0) + Math.max(0, moveBonus);
+  // 패턴/compose/customOffsets는 보존하고 range만 가산(점프형은 엔진이 range를 무시).
+  return { ...base, range: Math.max(1, base.range + up) };
 }
 
 /** 몬스터 정의 → 격자 전투원. */
@@ -752,7 +846,7 @@ export function startGridBossCombat(
   const drawPile0 = shuffle([...run.deck]);
   const { drawn, newDrawPile, newDiscardPile } = drawCards(drawPile0, [], handSize);
 
-  const moveProfile = playerMoveProfile(run);
+  const moveProfile = playerMoveProfile(run, bonus.moveBonus);
   const player: GridCombatant = {
     id: 'player',
     team: 'player',
@@ -1203,7 +1297,7 @@ interface ScheduledAction {
  * 스텝 0..foresight-1 각각에서 [플레이어 plan[step] + 각 적 intentQueue[step]]를
  * castSpeed순(동률 플레이어 우선)으로 인터리브 실행한다.
  * 매 동작마다 fx push. 스텝 종료 후 증원·처치 정리·승리 판정.
- * 라운드 종료: turn++, block 반감, 상태 감쇠, 핸드 재드로우+마나 리필, 적 의도 재계산, plan 비움.
+ * 라운드 종료: turn++, block 반감, 상태 감쇠, *마나만* 풀충전(손패는 유지), 적 의도 재계산, plan 비움.
  */
 export function commitRound(state: GridCombatState): void {
   if (state.outcome) return;
@@ -1249,6 +1343,19 @@ export function commitRound(state: GridCombatState): void {
       });
     }
 
+    // 각 아군(소환 토큰) 행동 — 적 추격·근접. 둔화/박제(적 전용)는 미적용.
+    for (const ally of state.allies ?? []) {
+      if (ally.hp <= 0) continue;
+      const aAction = ally.intentQueue?.[step];
+      if (!aAction) continue;
+      scheduled.push({
+        actor: ally,
+        action: aAction,
+        speed: actionSpeed(state, ally, aAction),
+        isPlayer: false,
+      });
+    }
+
     // 정렬 — 카테고리(방어 0 → 공격·기타 1 → 이동 2) 우선, 그다음 castSpeed, 동률이면 플레이어 우선.
     //   "방어 먼저, 이동 나중" 규칙(#5): 블록을 미리 쌓고, 위치 변동은 가장 마지막에 해소.
     scheduled.sort((a, b) => {
@@ -1272,6 +1379,8 @@ export function commitRound(state: GridCombatState): void {
 
     // 스텝 종료 — 처치 정리 + 증원(atTurn은 라운드 단위라 여기선 whenEmpty만).
     cleanupDead(state);
+    // 동료 조종 중 동료(=state.player) 사망 → 즉시 복귀 + 마나 0(패널티). checkOutcome 전에 처리해 패배 오판 방지.
+    if (state.swap?.controlling && state.player.hp <= 0) revertSwap(state, true);
     // 보스 페이즈 전환 — 이번 스텝 피해로 HP%가 임계를 넘으면 거동 교체 + 소환(즉시 반응).
     if (state.isBoss) checkBossPhase(state, currentBossDef(state));
     handleWhenEmptySpawns(state);
@@ -1280,6 +1389,10 @@ export function commitRound(state: GridCombatState): void {
 
   // 전투 종료(승/패) — 라운드 종료 정리는 불필요하나, stale plan 재실행 방지로 계획만 비운다.
   if (state.outcome) {
+    // 동료 *조종 중* 종료면 실제 플레이어로 복귀 — HP 라이트백(endGridCombat)이 동료 HP를 쓰지 않게.
+    //  (승리 시 복귀=무패널티. 대기 중이면 state.player가 아직 실제 플레이어라 swap만 해제.)
+    if (state.swap?.controlling) revertSwap(state, false);
+    else state.swap = undefined;
     state.playerPlan = [];
     return;
   }
@@ -1334,8 +1447,14 @@ export function commitRound(state: GridCombatState): void {
   cleanupDead(state);
   if (checkOutcome(state)) return;
 
-  // 핸드 버리고 재드로우 + 마나 리필(+ next-turn-energy 보너스).
-  refreshHandAndMana(state);
+  // 동료 교대(C6) 라운드 종료 전환/복귀 — 마나 리필 *전*에 처리(전환 시 동료가, 복귀 시 플레이어가 새 마나).
+  if (state.swap) {
+    if (state.swap.controlling) revertSwap(state, false); // 조종 1라운드 끝 → 자동 복귀.
+    else beginCompanionControl(state);                    // 교대(대기) 라운드 끝 → 동료 조종 시작.
+  }
+
+  // 마나만 풀충전(F4) — 손패는 자동 리필하지 않는다(보충은 [대기] 행동 전용).
+  refillManaPerRound(state);
 
   // 라운드(턴) 시작 유물(on-turn-start) — 매 턴 방어/힘/색 등. 핸드/마나 리필 후 적용.
   gridRelicTurnStart(state);
@@ -1343,8 +1462,9 @@ export function commitRound(state: GridCombatState): void {
   // 보스 페이즈 전환 — 라운드 종료 시점 HP%로도 한 번 더 점검(지연/DoT 피해 반영).
   if (state.isBoss) checkBossPhase(state, currentBossDef(state));
 
-  // 적 의도 재계산.
+  // 적·아군 의도 재계산.
   recomputeAllEnemyPlans(state);
+  recomputeAllyPlans(state);
 
   // 플레이어 계획 비움.
   state.playerPlan = [];
@@ -1397,17 +1517,38 @@ function executeAction(state: GridCombatState, s: ScheduledAction): void {
       execMove(state, actor, action.to);
       break;
     case 'card':
-      execCard(state, action.cardInstanceId, action.targetTiles);
+      execCard(state, action.cardInstanceId, action.targetTiles, action.aimOffset);
       break;
     case 'attack':
-      execAttack(state, actor, action.attackIdx, action.targetTiles);
+      if (actor.team === 'ally') execAllyAttack(state, actor);
+      else execAttack(state, actor, action.attackIdx, action.targetTiles);
       break;
     case 'item':
       if (actor.team === 'player') execItem(state, action.itemId);
       break;
+    case 'swap':
+      if (actor.team === 'player') execSwap(state, action.companionId);
+      break;
     case 'wait':
+      if (actor.team === 'player') execWait(state);
+      break;
     default:
       break;
+  }
+}
+
+/**
+ * 대기 실행(플레이어) — 손패를 목표 크기(5+드로우보너스)까지 *보충*(F4 [확정]).
+ * 손패는 자동 리필되지 않으므로, 카드를 비워가며 쓰다가 [대기]로만 다시 채운다.
+ * 이미 목표 이상이면 드로우 없음(대기는 한 스텝 소비로 의미). drawIntoHand가 더미 고갈/재셔플 처리.
+ */
+function execWait(state: GridCombatState): void {
+  const need = targetHandSize(state) - state.hand.length;
+  if (need > 0) {
+    const before = state.hand.length;
+    drawIntoHand(state, need);
+    const drawn = state.hand.length - before;
+    if (drawn > 0) pushLog(state, `손패 보충 (+${drawn})`);
   }
 }
 
@@ -1443,8 +1584,13 @@ function collectItemAt(state: GridCombatState, pos: GridPos): void {
   } catch { /* 무해 */ }
 }
 
-/** 카드 실행 — 마나 차감 + shape 칸 대상에 효과. */
-function execCard(state: GridCombatState, cardInstanceId: string, targetTiles: GridPos[]): void {
+/** 카드 실행 — 마나 차감 + shape 칸 대상에 효과. aimOffset(aimed 카드)면 조준 칸 중심으로 적용. */
+function execCard(
+  state: GridCombatState,
+  cardInstanceId: string,
+  targetTiles: GridPos[],
+  aimOffset?: GridOffset,
+): void {
   const idx = state.hand.findIndex((c) => c.instanceId === cardInstanceId);
   if (idx < 0) return;
   const card = state.hand[idx];
@@ -1461,7 +1607,7 @@ function execCard(state: GridCombatState, cardInstanceId: string, targetTiles: G
   // 손에서 제거(효과 적용 전에 빼서 자기참조 효과 안전).
   state.hand.splice(idx, 1);
 
-  applyCardEffects(state, card, targetTiles, doubled);
+  applyCardEffects(state, card, targetTiles, doubled, aimOffset);
 
   // 카드 이동 — exhaust-self면 소멸(+무통 트리거), return-self-to-hand면 손으로 복귀, 아니면 버린 더미.
   if (card.effects.some((e) => e.kind === 'exhaust-self')) {
@@ -1529,6 +1675,35 @@ function gainPlayerBlock(state: GridCombatState, amount: number): void {
     // 가장 가까운 살아 있는 적에게 반격.
     const tgt = nearestEnemy(state);
     if (tgt) applyDamage(state, tgt, jugg, state.player.statuses);
+  }
+}
+
+/**
+ * move-rider 대시(D2) — 플레이어를 가장 가까운 적 기준 toward/away로 최대 tiles칸 이동.
+ * 카드 효과 부가이동(이동 프로필 무시 — 카드가 부여한 기동). 매 칸 우세 축으로 1칸, 벽/void/밖이면 중단.
+ * 한 칸이라도 움직였으면 move fx 1회(카드 행동 그룹에 묶여 애니).
+ */
+function dashPlayer(state: GridCombatState, tiles: number, mode: 'toward' | 'away'): void {
+  if (tiles <= 0) return;
+  const enemy = nearestEnemy(state);
+  if (!enemy) return;
+  const from = { ...state.player.pos };
+  let cur = { ...state.player.pos };
+  for (let i = 0; i < tiles; i++) {
+    const dx = enemy.pos.x - cur.x;
+    const dy = enemy.pos.y - cur.y;
+    let sx = 0, sy = 0;
+    if (Math.abs(dx) >= Math.abs(dy)) sx = Math.sign(dx); else sy = Math.sign(dy);
+    if (mode === 'away') { sx = -sx; sy = -sy; }
+    if (sx === 0 && sy === 0) break;          // toward로 이미 같은 칸(겹침) — 더 갈 곳 없음.
+    const next = { x: cur.x + sx, y: cur.y + sy };
+    if (!tileWalkable(state.stage, next)) break; // 벽/void/밖 — 중단.
+    cur = next;
+  }
+  if (!samePos(cur, from)) {
+    state.player.pos = cur;
+    pushFx(state, { kind: 'move', actorId: state.player.id, from, to: { ...cur } });
+    collectItemAt(state, cur); // 대시로 바닥 아이템 칸에 닿으면 획득.
   }
 }
 
@@ -1601,6 +1776,7 @@ function applyCardEffects(
   card: Card,
   targetTiles: GridPos[],
   doubled = false,
+  aimOffset?: GridOffset,
 ): void {
   const bonus = currentBonuses();
   const playerStatuses = state.player.statuses;
@@ -1608,12 +1784,16 @@ function applyCardEffects(
   const relicBlockAdd = gridBlockAdd(state); // 유물 방어 보너스(block-out-add) — block 계열 카드에 가산.
 
   // 실행 시점 *현재 위치* 기준 shape로 대상 재계산(텔레그래프 stale 방지) — perTileMul을 shape 인덱스에 정렬.
+  // aimed 카드는 anchor = player.pos + aimOffset(조준 칸 중심)로 shape를 옮겨 적용.
   void targetTiles;
+  const anchor = aimOffset
+    ? { x: state.player.pos.x + aimOffset.dx, y: state.player.pos.y + aimOffset.dy }
+    : state.player.pos;
   const shape = card.shape ?? [];
   const perTileMul = card.perTileMul ?? [];
   const shapeHits: { target: GridCombatant; mul: number }[] = [];
   shape.forEach((off, i) => {
-    const pos = { x: state.player.pos.x + off.dx, y: state.player.pos.y + off.dy };
+    const pos = { x: anchor.x + off.dx, y: anchor.y + off.dy };
     if (!tileWalkable(state.stage, pos)) return;
     // 그 칸의 *모든* 적군을 대상에 포함(겹침 허용 — 한 칸에 적 여럿/플레이어와 겹쳐도). perTileMul은 칸 인덱스 기준.
     const mul = perTileMul[i] ?? 1;
@@ -1931,6 +2111,53 @@ function applyCardEffects(
       }
 
       // === 제어형 ===
+      case 'move-self': {
+        // move-rider(D2) — 카드가 플레이어를 value칸 이동(가장 가까운 적 기준 toward/away).
+        const mode = eff.params?.mode === 'toward' ? 'toward' : 'away';
+        dashPlayer(state, Math.max(1, Math.floor(rawV) || 1), mode);
+        break;
+      }
+      // === 샤유아 시그니처(C4) ===
+      case 'summon-ally': {
+        // 분열 소환 — 작은 아군 토큰 value마리(캡 MAX_ALLIES). params.hp/attack 옵션.
+        const n = Math.max(1, Math.floor(rawV) || 1);
+        const ahp = Math.max(1, Number(eff.params?.hp ?? 6));
+        const aatk = Math.max(0, Number(eff.params?.attack ?? 4));
+        summonAlly(state, n, ahp, aatk);
+        break;
+      }
+      case 'status-spread': {
+        // 전파 — shape가 닿은 적의 디버프를 *인접 적*에게 복사(연쇄 셋업).
+        for (const { target } of shapeHits) {
+          for (const other of state.enemies) {
+            if (other === target || other.hp <= 0) continue;
+            if (manhattan(other.pos, target.pos) > 1) continue;
+            for (const k of SPREADABLE_DEBUFFS) {
+              const stacks = target.statuses[k] ?? 0;
+              if (stacks > 0) other.statuses[k] = (other.statuses[k] ?? 0) + stacks;
+            }
+          }
+          pushFx(state, { kind: 'status', actorId: target.id });
+        }
+        break;
+      }
+      case 'chain-explosion': {
+        // 연쇄 폭발 — 디버프가 걸린 *모든 적*이 자신+인접 적에게 value 피해 폭발(보드 전역, 중복 제거).
+        const dmg = applyDamageRelicMods(state, Math.floor(v) + bonus.damage + strength);
+        if (dmg > 0) {
+          const hitSet = new Set<GridCombatant>();
+          for (const src of state.enemies) {
+            if (src.hp <= 0) continue;
+            const debuffSum = SPREADABLE_DEBUFFS.reduce((s, k) => s + (src.statuses[k] ?? 0), 0);
+            if (debuffSum <= 0) continue;
+            for (const other of state.enemies) {
+              if (other.hp > 0 && manhattan(other.pos, src.pos) <= 1) hitSet.add(other);
+            }
+          }
+          for (const e of hitSet) applyDamage(state, e, dmg, playerStatuses);
+        }
+        break;
+      }
       case 'ghost-self': {
         playerStatuses['ghost'] = (playerStatuses['ghost'] ?? 0) + (Math.floor(rawV) || 2);
         break;
@@ -2034,15 +2261,24 @@ function drawIntoHand(state: GridCombatState, n: number): void {
   gridRelicOnDraw(state, drawn.length);
 }
 
-/** 라운드 종료 핸드 리프레시 — 버리고 새로 드로우 + 마나 리필(유물 draw/mana 보너스 포함). */
-function refreshHandAndMana(state: GridCombatState): void {
-  state.discardPile = [...state.discardPile, ...state.hand];
-  state.hand = [];
+/**
+ * 목표 손패 크기 — 드로우 5 + 색(물) drawExtra + 유물 draw-extra. [대기]·전투시작 드로우의 상한.
+ * (F4: 손패는 자동 리필되지 않는다. [대기] 행동만이 이 크기까지 손패를 보충한다.)
+ */
+function targetHandSize(state: GridCombatState): number {
   const bonus = currentBonuses();
-  const relicDraw = gridDrawExtra(state);  // draw-extra-add(짐 넘치는 배낭 등).
+  const relicDraw = gridDrawExtra(state);
+  return Math.max(1, STARTING_HAND_SIZE + bonus.drawExtra + relicDraw);
+}
+
+/**
+ * 라운드 종료 *마나만* 풀충전(F4 [확정]) — 손패는 건드리지 않는다.
+ * 카드는 손에 유지되니 마나만 매 라운드 최대로 회복. 손패 보충은 [대기] 행동 전용(execWait).
+ * 유물 mana-extra + next-turn-energy(칼리번) 반영.
+ */
+function refillManaPerRound(state: GridCombatState): void {
+  const bonus = currentBonuses();
   const relicMana = gridManaExtra(state);  // mana-extra-add(들뜬 등불 등).
-  const handSize = Math.max(1, STARTING_HAND_SIZE + bonus.drawExtra + relicDraw);
-  drawIntoHand(state, handSize);
   state.maxMana = Math.max(1, DEFAULT_MAX_MANA + bonus.manaExtra + relicMana);
   // next-turn-energy(칼리번) — 다음 라운드 시작 마나 보너스 1회 반영 후 0 리셋.
   const energyBonus = state.nextTurnEnergyBonus ?? 0;
@@ -2054,12 +2290,16 @@ function refreshHandAndMana(state: GridCombatState): void {
 // 증원 / 처치 / 승패
 // ============================================================================
 
-/** 처치된 적 정리 — hp<=0 적의 intentQueue 비움(death fx는 applyDamage가 전이 순간에 처리). */
+/** 처치된 적 정리 — hp<=0 적의 intentQueue 비움(death fx는 applyDamage가 전이 순간에 처리). 죽은 아군은 제거. */
 function cleanupDead(state: GridCombatState): void {
   for (const e of state.enemies) {
     if (e.hp <= 0 && e.intentQueue && e.intentQueue.length > 0) {
       e.intentQueue = [];
     }
+  }
+  // 죽은 아군 토큰 제거(death fx는 applyDamage가 이미 처리 — 렌더에서 사라짐).
+  if (state.allies && state.allies.some((a) => a.hp <= 0)) {
+    state.allies = state.allies.filter((a) => a.hp > 0);
   }
 }
 
@@ -2105,6 +2345,230 @@ function spawnEnemy(state: GridCombatState, enemyId: string, at?: GridPos): void
   state.enemies.push(combatant);
   pushFx(state, { kind: 'spawn', actorId: combatant.id, to: { ...pos } });
   pushLog(state, `${def.name} 등장`);
+}
+
+// ============================================================================
+// 아군 토큰 (summon-ally — 샤유아 분열)
+// ----------------------------------------------------------------------------
+// 작은 슬라임 등 *아군*은 매 라운드 가장 가까운 적을 추격하고 인접 시 근접 타격한다.
+// v1: 공격 헬퍼(적 AI 타깃은 플레이어 전용 — 아군은 적 AoE에 안 맞음), 총량 캡으로 밸런스.
+// ============================================================================
+
+/** 아군 최대 동시 보유 수(머릿수 캡 — 무한 누적 방지). */
+const MAX_ALLIES = 5;
+
+/** 작은 아군의 기본 이동 — 맨해튼 1칸(슬라임처럼 굼뜨게 추격). */
+const ALLY_MOVE_PROFILE: MoveProfile = { pattern: 'manhattan', range: 1 };
+
+/** pos에서 가장 가까운 살아 있는 적(맨해튼). 없으면 undefined. */
+function nearestEnemyTo(state: GridCombatState, pos: GridPos): GridCombatant | undefined {
+  let best: GridCombatant | undefined;
+  let bestD = Infinity;
+  for (const e of state.enemies) {
+    if (e.hp <= 0) continue;
+    const d = manhattan(pos, e.pos);
+    if (d < bestD) { bestD = d; best = e; }
+  }
+  return best;
+}
+
+/**
+ * 아군 토큰 N마리 소환(분열) — 플레이어 인접 빈 칸 우선 배치(없으면 통행 칸).
+ * hp/attack은 작게(머릿수 컨셉). 캡(MAX_ALLIES) 초과분은 무시. 소환 즉시 의도 계산.
+ */
+function summonAlly(state: GridCombatState, count: number, hp = 6, attack = 4): void {
+  const allies = state.allies ?? (state.allies = []);
+  for (let n = 0; n < count; n++) {
+    const live = allies.filter((a) => a.hp > 0).length;
+    if (live >= MAX_ALLIES) break;
+    const pos = firstFreeSpawnTile(state.stage, [...state.enemies.filter((e) => e.hp > 0), ...allies.filter((a) => a.hp > 0)], state.player)
+      ?? { ...state.player.pos };
+    const ally: GridCombatant = {
+      id: `ally-${allies.length}-${state.turn}-${n}`,
+      team: 'ally',
+      pos: { ...pos },
+      hp: Math.max(1, hp),
+      maxHp: Math.max(1, hp),
+      block: 0,
+      statuses: {},
+      speed: 'normal',
+      moveProfile: ALLY_MOVE_PROFILE,
+      attack,
+      name: '작은 슬라임',
+    };
+    ally.intentQueue = planAlly(state, ally);
+    allies.push(ally);
+    pushFx(state, { kind: 'spawn', actorId: ally.id, to: { ...pos } });
+  }
+}
+
+/** 아군 1마리의 foresight 스텝 계획 — 적 인접이면 근접 공격, 아니면 가장 가까운 적으로 접근. */
+function planAlly(state: GridCombatState, ally: GridCombatant): PlannedAction[] {
+  const out: PlannedAction[] = [];
+  let simPos = { ...ally.pos };
+  for (let step = 0; step < state.foresight; step++) {
+    const target = nearestEnemyTo(state, simPos);
+    if (!target) { out.push({ kind: 'wait' }); continue; }
+    if (manhattan(simPos, target.pos) <= 1) {
+      out.push({ kind: 'attack', attackIdx: -1, targetTiles: [{ ...target.pos }] });
+      continue;
+    }
+    const move = approachMove(state, ally, simPos, target.pos);
+    if (move) { out.push({ kind: 'move', to: move }); simPos = { ...move }; }
+    else out.push({ kind: 'wait' });
+  }
+  return out;
+}
+
+/** 아군 전체 의도 재계산(라운드 종료). */
+function recomputeAllyPlans(state: GridCombatState): void {
+  for (const a of state.allies ?? []) {
+    if (a.hp > 0) a.intentQueue = planAlly(state, a);
+  }
+}
+
+/** 아군 근접 공격 — 인접(거리≤1)·겹침 적에게 attack+strength 피해. */
+function execAllyAttack(state: GridCombatState, ally: GridCombatant): void {
+  const target = nearestEnemyTo(state, ally.pos);
+  if (!target || manhattan(ally.pos, target.pos) > 1) return;
+  const dmg = (ally.attack ?? 0) + (ally.statuses.strength ?? 0);
+  applyDamage(state, target, dmg, ally.statuses);
+  pushLog(state, `${ally.name ?? '아군'}의 공격`);
+}
+
+// ============================================================================
+// 동료 교대 (C6 companion swap)
+// ----------------------------------------------------------------------------
+// 아이템류 1행동: 교대 라운드는 대기(전환), 다음 라운드 동료 조종(전용 스킬/카드 손패),
+// 1라운드 뒤 자동 복귀. HP0이면 즉시 복귀 + 마나 0(패널티). state.player를 동료로 교체(id 'player' 유지
+// — 적 AI/fx/스냅샷이 'player'를 기준으로 동작). 복귀 시 savedPlayer/savedHand 환원.
+// ============================================================================
+
+/** 교대 동료의 시작 HP(낮음). */
+const COMPANION_SWAP_HP = 16;
+
+/** 교대 가능한 *활성 슬롯* 동료(스킬/카드형) — UI 선택용. {id, name}. */
+export function swappableCompanions(): { id: string; name: string }[] {
+  try {
+    const run = useRunStore().data;
+    const data = useDataStore();
+    const out: { id: string; name: string }[] = [];
+    for (const slot of run.activeSlots ?? []) {
+      if (!slot || slot.src !== 'npc') continue;
+      const comp = data.npcs.get(slot.id)?.companion;
+      if (comp && (comp.kind === 'skill' || comp.kind === 'card')) {
+        out.push({ id: slot.id, name: data.npcs.get(slot.id)?.name ?? slot.id });
+      }
+    }
+    return out;
+  } catch {
+    return [];
+  }
+}
+
+/** companionId가 지금 교대 가능한가 — 스킬/카드형 활성 동료 + 현재 미교대. */
+function canSwapTo(state: GridCombatState, companionId: string): boolean {
+  if (state.swap) return false; // 이미 교대 중/전환 중.
+  return swappableCompanions().some((c) => c.id === companionId);
+}
+
+/** 동료 능력 → 격자 손패 카드. skill=합성 카드 1장(주변 8칸 근접 AoE 기본), card=cardIds 해석. */
+function buildCompanionHand(companionId: string): Card[] {
+  const data = useDataStore();
+  const comp = data.npcs.get(companionId)?.companion;
+  if (!comp) return [];
+  if (comp.kind === 'skill' && comp.skill) {
+    const card: Card = {
+      id: `companion-skill-${companionId}`,
+      instanceId: `companion-skill-${companionId}`,
+      name: comp.skill.name,
+      rank: 'common',
+      source: 'npc',
+      cost: 0,
+      trigger: 'manual',
+      effects: comp.skill.effects.map((e) => ({ ...e })),
+      shape: KING_DIRS.map((d) => ({ dx: d.dx, dy: d.dy })), // 주변 8칸 근접 — 동료 한 턴 버스트.
+      castSpeed: 'normal',
+      targetMode: 'pattern',
+      flavor: comp.skill.description,
+    };
+    return [card];
+  }
+  if (comp.kind === 'card' && comp.cardIds) {
+    const out: Card[] = [];
+    for (const cid of comp.cardIds) {
+      const def = data.cards.get(cid);
+      if (def) out.push({ ...def, instanceId: `companion-${cid}` });
+    }
+    return out;
+  }
+  return [];
+}
+
+/**
+ * 교대 전환 — state.player를 동료 전투원으로 교체(id 'player' 유지, 동료 race 이동·낮은 HP),
+ * 손패를 동료 능력 카드로 교체. swap.controlling=true. 능력 빌드 실패 시 복귀(no-op).
+ */
+function beginCompanionControl(state: GridCombatState): void {
+  const s = state.swap;
+  if (!s) return;
+  const data = useDataStore();
+  const npc = data.npcs.get(s.companionId);
+  const hand = buildCompanionHand(s.companionId);
+  if (!npc || hand.length === 0) {
+    // 동료 능력 없음 — 교대 취소(원상 복귀).
+    state.swap = undefined;
+    return;
+  }
+  // 복귀 지점 확정(전환 직전의 플레이어 전투원 + 손패) — 이후 state.player를 동료로 교체.
+  s.savedPlayer = state.player;
+  s.savedHand = [...state.hand];
+  const moveProfile = (npc.raceId ? data.races.get(npc.raceId)?.moveProfile : undefined)
+    ?? DEFAULT_ENEMY_MOVE_PROFILE; // 폴백(직교 1칸).
+  const companion: GridCombatant = {
+    id: 'player', // 'player' 유지 — 적 AI/fx/스냅샷이 이 id를 조종 주체로 본다.
+    team: 'player',
+    pos: { ...state.player.pos },
+    hp: COMPANION_SWAP_HP,
+    maxHp: COMPANION_SWAP_HP,
+    block: 0,
+    statuses: {},
+    speed: 'normal',
+    moveProfile,
+    name: npc.name ?? '동료',
+  };
+  state.player = companion;
+  state.hand = hand;
+  s.controlling = true;
+  pushLog(state, `${companion.name} 교대 — 조종`);
+  pushFx(state, { kind: 'status', actorId: 'player' });
+}
+
+/**
+ * 교대 복귀 — savedPlayer/savedHand 환원. penalty면 마나 0(HP0 즉시 복귀).
+ * 복귀 플레이어는 동료가 끝낸 위치로 이어받는다(연속성).
+ */
+function revertSwap(state: GridCombatState, penalty: boolean): void {
+  const s = state.swap;
+  if (!s) return;
+  const endPos = { ...state.player.pos };
+  state.player = s.savedPlayer;
+  state.player.pos = endPos;
+  state.hand = s.savedHand;
+  if (penalty) state.mana = 0;
+  state.swap = undefined;
+  pushLog(state, penalty ? '동료가 쓰러져 복귀 (마나 소진)' : '플레이어로 복귀');
+  pushFx(state, { kind: 'status', actorId: 'player' });
+}
+
+/**
+ * 교대 행동 실행(플레이어) — 교대 *준비*만 기록(이번 라운드는 대기 취급, 전환은 라운드 종료에).
+ * savedPlayer는 라이브 플레이어 참조(이번 라운드 받는 피해까지 보존). savedHand는 전환 시점에 확정.
+ */
+function execSwap(state: GridCombatState, companionId: string): void {
+  if (!canSwapTo(state, companionId)) return;
+  state.swap = { companionId, controlling: false, savedPlayer: state.player, savedHand: [] };
+  pushLog(state, '교대 준비 — 다음 턴 동료 조종');
 }
 
 /** 승패 판정 — set하면 true. 플레이어 hp<=0 → lose, 살아 있는 적 0 + 미소비 증원 0 → win. */

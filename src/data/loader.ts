@@ -100,7 +100,7 @@ function isCastSpeed(v: string | undefined): v is CastSpeed {
   return !!v && (VALID_CAST_SPEEDS as readonly string[]).includes(v);
 }
 
-const VALID_MOVE_PATTERNS = ['rook', 'knight', 'bishop', 'king', 'orthogonal1', 'custom'] as const;
+const VALID_MOVE_PATTERNS = ['rook', 'knight', 'bishop', 'king', 'orthogonal1', 'manhattan', 'composite', 'custom'] as const;
 function isMovePattern(v: string | undefined): v is MovePattern {
   return !!v && (VALID_MOVE_PATTERNS as readonly string[]).includes(v);
 }
@@ -150,6 +150,11 @@ function parseMoveProfile(f: IniSection): MoveProfile | undefined {
   if (pat === 'custom') {
     const offs = parseShape(f.move_offsets);
     if (offs.length > 0) profile.customOffsets = offs;
+  }
+  // composite: compose = "bishop orthogonal1" (공백/콤마 분리 하위 패턴들).
+  if (pat === 'composite' && typeof f.compose === 'string') {
+    const subs = f.compose.split(/[\s,]+/).filter((s): s is MovePattern => isMovePattern(s));
+    if (subs.length > 0) profile.compose = subs;
   }
   return profile;
 }
@@ -246,6 +251,17 @@ function parseCardEffect(token: string): CardEffect | null {
   if (kind === 'heavy-blade' && parts[3]) {
     return { kind, value, target, params: { mult: Number(parts[3]) } };
   }
+  // move-self 전용 (move-rider, D2): value=이동 칸 수, 4번째=mode(toward|away, 기본 away).
+  if (kind === 'move-self' && parts[3]) {
+    return { kind, value, target, params: { mode: parts[3] } };
+  }
+  // summon-ally 전용 (샤유아 C4): value=마릿수, 4번째=hp(기본 6), 5번째=attack(기본 4).
+  if (kind === 'summon-ally' && (parts[3] || parts[4])) {
+    const params: Record<string, unknown> = {};
+    if (parts[3]) params.hp = Number(parts[3]);
+    if (parts[4]) params.attack = Number(parts[4]);
+    return { kind, value, target, params };
+  }
   // 4번째 토큰: apply-status의 status 이름 등 추가 파라미터.
   if (parts[3]) {
     return { kind, value, target, params: { status: parts[3] } };
@@ -317,7 +333,9 @@ function parseOneCard(id: string, f: IniSection): Card | null {
     shape: f.shape ? parseShape(f.shape) : undefined,
     perTileMul: f.per_tile_mul ? parseFloatList(f.per_tile_mul) : undefined,
     castSpeed: isCastSpeed(f.cast_speed) ? f.cast_speed : undefined,
-    targetMode: f.target_mode === 'self' || f.target_mode === 'pattern' ? f.target_mode : undefined,
+    targetMode: f.target_mode === 'self' || f.target_mode === 'pattern' || f.target_mode === 'aimed'
+      ? f.target_mode : undefined,
+    aimRange: f.aim_range !== undefined ? Math.max(1, parseNumber(f.aim_range, 3)) : undefined,
   };
 }
 
@@ -422,6 +440,7 @@ export function parseRaces(ini: IniData): Map<string, Race> {
       maxLivesBonus: fields.max_lives_bonus ? parseNumber(fields.max_lives_bonus, 0) : undefined,
       deckSize: fields.deck_size ? parseNumber(fields.deck_size, 10) : undefined,
       seedColors: parseKeyNum(fields.seed_colors) as Race['seedColors'],
+      moveProfile: parseMoveProfile(fields), // 격자 행마법(클래스 정체성). 미설정 시 undefined → 엔진 룩 폴백.
     });
   }
   return result;
@@ -1332,6 +1351,9 @@ const DATA_FILES = [
   'data/races/race-arcana.txt',
   // 변신 폼 race (Stage 5) — timeline available_race_ids에 없어 선택 화면 미노출.
   'data/races/race-form-fox.txt',
+  // === 격자 전투 플레이어블 승격 (4b, 2026-06-18) — 화이트팡(무속성·시간)·샤유아(슬라임·물). ===
+  'data/races/race-whitefang.txt',
+  'data/races/race-slime.txt',
   'data/cards/cards-mvr.txt',
   // === 종족 전용 시작 카드 (2026-05-22) — source=race, 시작 덱 전용(상점/이벤트 풀 제외). ===
   'data/cards/cards-race.txt',
@@ -1343,6 +1365,9 @@ const DATA_FILES = [
   'data/cards/cards-possession.txt',
   // === arc 보스 시그니처 카드 (작업 29) — rank=legendary + source=boss, arc 승리 자동 드롭 전용(일반 풀 제외). ===
   'data/cards/cards-arc.txt',
+  // === 격자 전투 신규 클래스 전용 카드 (4b, 2026-06-18) — source=race, 시작 전용. ===
+  'data/cards/cards-whitefang.txt',
+  'data/cards/cards-slime.txt',
   'data/relics/relics-mvr.txt',
   // === 종족 시그니처 유물 (2026-05-22) — source=race, 시작 전용(상점/드롭 풀 제외). ===
   'data/relics/relics-race.txt',

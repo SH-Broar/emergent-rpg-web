@@ -106,12 +106,16 @@ export const DATA_FILES = [
   'races/race-phantom.txt',
   'races/race-arcana.txt',
   'races/race-form-fox.txt',
+  'races/race-whitefang.txt',
+  'races/race-slime.txt',
   'cards/cards-mvr.txt',
   'cards/cards-race.txt',
   'cards/junk-cards.txt',
   'cards/transform-forms.txt',
   'cards/cards-possession.txt',
   'cards/cards-arc.txt',
+  'cards/cards-whitefang.txt',
+  'cards/cards-slime.txt',
   'relics/relics-mvr.txt',
   'relics/relics-race.txt',
   'relics/relics-color.txt',
@@ -210,6 +214,10 @@ export const VALID_CARD_EFFECT_KINDS = [
   'grant-color',
   // 인간 재설계 (STS 아이언클래드式, 2026-06-16) — 전투 휘발 buff 7종.
   'metallicize', 'barricade', 'feel-no-pain', 'rupture', 'juggernaut', 'double-block', 'heavy-blade',
+  // 격자 전투 move-rider (D2, 2026-06-18) — 카드가 플레이어를 이동시키는 부가효과(치고 빠지기). params.mode=toward/away.
+  'move-self',
+  // 샤유아 시그니처 (C4, 2026-06-18) — 분열 소환·디버프 전파·연쇄 폭발. 격자 전투 전용.
+  'summon-ally', 'status-spread', 'chain-explosion',
 ];
 
 /**

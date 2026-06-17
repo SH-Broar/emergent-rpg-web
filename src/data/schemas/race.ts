@@ -7,6 +7,7 @@
 
 import type { CardId, Element, NamedEntity, RaceId, RelicId } from './base';
 import type { ColorValues } from './npc';
+import type { MoveProfile } from './move-profile';
 
 export interface Race extends NamedEntity {
   id: RaceId;
@@ -71,4 +72,12 @@ export interface Race extends NamedEntity {
    * 컬러 상한 100. 종족의 *원소 친화*가 시작값으로 표현되는 위치.
    */
   seedColors?: Partial<ColorValues>;
+
+  /**
+   * 격자 전투 이동 프로필 — 종족의 행마법(클래스 정체성, C절).
+   * 하코=룩 / 리무=나이트 / 화이트팡=composite(비숍∪직교1) / 샤유아=manhattan.
+   * 미설정 시 인간 룩(HUMAN_MOVE_PROFILE) 폴백. range는 moveUpgrades + 바람색 moveBonus로 가산.
+   * 데이터: move_pattern / move_range / compose("bishop orthogonal1") / move_offsets(custom).
+   */
+  moveProfile?: MoveProfile;
 }

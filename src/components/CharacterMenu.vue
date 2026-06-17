@@ -17,7 +17,7 @@ import { computed, ref } from 'vue';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
-import { deriveStats, deriveBonuses, vitHpBonus } from '@/systems/stats';
+import { deriveStats, bonusesFromColors } from '@/systems/stats';
 import {
   effectiveColors,
   labelOfColor,
@@ -52,10 +52,10 @@ const colorBars: ColorBar[] = [
   { key: 'electric', label: '전기', color: '#f2e36a', meaning: '전기 — 불과 함께 ATK(공격력) 산출' },
   { key: 'earth',    label: '흙',   color: '#c2a36a', meaning: '흙 — 철과 함께 DEF(방어력) 산출' },
   { key: 'iron',     label: '철',   color: '#a4a4b0', meaning: '철 — 흙과 함께 DEF(방어력) 산출' },
-  { key: 'water',    label: '물',   color: '#8eedff', meaning: '물 — 바람과 함께 VIT(활력 → 최대 HP) 산출' },
-  { key: 'wind',     label: '바람', color: '#a8e8b8', meaning: '바람 — 물과 함께 VIT(활력 → 최대 HP) 산출' },
-  { key: 'light',    label: '빛',   color: '#f6e8b8', meaning: '빛 — 어둠과 함께 MAG(마법) 산출 (희귀 컬러)' },
-  { key: 'dark',     label: '어둠', color: '#c08eff', meaning: '어둠 — 빛과 함께 MAG(마법) 산출 (희귀 컬러)' },
+  { key: 'water',    label: '물',   color: '#8eedff', meaning: '물 — 손패 드로우/대기 보충량 ↑ (40당 +1)' },
+  { key: 'wind',     label: '바람', color: '#a8e8b8', meaning: '바람 — 이동 사거리 ↑ (50당 +1)' },
+  { key: 'light',    label: '빛',   color: '#f6e8b8', meaning: '빛 — 어둠과 함께 마나 한도 산출 (희귀 컬러)' },
+  { key: 'dark',     label: '어둠', color: '#c08eff', meaning: '어둠 — 빛과 함께 마나 한도 산출 (희귀 컬러)' },
 ];
 
 const COLOR_CAP = 100;
@@ -80,9 +80,7 @@ function colorPct(key: ColorBar['key']) {
 }
 
 const stats = computed(() => deriveStats(effective.value));
-const bonus = computed(() => deriveBonuses(stats.value));
-/** VIT(빛·어둠) → 최대 HP 보너스 표시값. */
-const vitHp = computed(() => vitHpBonus(effective.value));
+const bonus = computed(() => bonusesFromColors(effective.value));
 
 /** 통합 동료 정의(passive/skill/card)를 사람이 읽는 효과 설명 줄들로. */
 function describeCompanion(comp: Companion | undefined): { typeLabel: string; bonuses: string[] } {
@@ -316,38 +314,38 @@ function onUnequipClick(slot: EquipmentSlot) {
             </div>
           </section>
 
-          <!-- 2) 히페리온 (= 6 컬러로 산출된 한 런의 최종 결과 능력. ATK/DEF/MAG/드로우/마나 보너스의 총합) -->
+          <!-- 2) 히페리온 (= 8 컬러로 산출된 한 런의 최종 결과 능력. 공격/방어/마나/드로우/이동 보너스) -->
           <section class="cm-sec">
-            <Tooltip text="히페리온 — 6 컬러가 누적되어 만들어진 *이 런의 최종 결과 능력*. ATK / DEF / MAG / 드로우 / 마나 보너스의 총합.">
+            <Tooltip text="히페리온 — 8 컬러가 누적되어 만들어진 *이 런의 최종 결과 능력*. 공격 / 방어 / 마나 / 드로우 / 이동 보너스.">
               <h3 class="cm-sec__title">히페리온</h3>
             </Tooltip>
             <div class="cm-stats">
-              <Tooltip text="ATK — 불·전기로 산출. 공격 카드 최소 데미지 +(ATK/10)">
+              <Tooltip text="ATK — 불·전기로 산출. 공격 카드 데미지 +(ATK/33)">
                 <div class="cm-stat cm-stat--atk">
                   <span class="cm-stat__lbl">ATK</span>
                   <span class="cm-stat__val">{{ Math.round(stats.atk) }}</span>
-                  <span class="cm-stat__bonus">+{{ bonus.damage }}</span>
+                  <span class="cm-stat__bonus">공격+{{ bonus.damage }}</span>
                 </div>
               </Tooltip>
-              <Tooltip text="DEF — 흙·철로 산출. 방어 카드 방어력 +(DEF/10)">
+              <Tooltip text="DEF — 흙·철로 산출. 방어 카드 방어력 +(DEF/33)">
                 <div class="cm-stat cm-stat--def">
                   <span class="cm-stat__lbl">DEF</span>
                   <span class="cm-stat__val">{{ Math.round(stats.def) }}</span>
-                  <span class="cm-stat__bonus">+{{ bonus.block }}</span>
+                  <span class="cm-stat__bonus">방어+{{ bonus.block }}</span>
                 </div>
               </Tooltip>
-              <Tooltip text="VIT(활력) — 물·바람으로 산출. VIT 20당 최대 HP +1. 물과 바람을 고루 키울수록 크다.">
-                <div class="cm-stat cm-stat--vit">
-                  <span class="cm-stat__lbl">VIT</span>
-                  <span class="cm-stat__val">{{ Math.round(stats.vit) }}</span>
-                  <span class="cm-stat__bonus">HP+{{ vitHp }}</span>
-                </div>
-              </Tooltip>
-              <Tooltip text="MAG — 빛·어둠(희귀 컬러)으로 산출. MAG 100단위 — 홀수마다 드로우+1, 짝수마다 마나+1">
+              <Tooltip text="마나 — 빛·어둠(희귀 컬러)으로 산출. 150당 라운드 마나 한도 +1.">
                 <div class="cm-stat cm-stat--mag">
-                  <span class="cm-stat__lbl">MAG</span>
+                  <span class="cm-stat__lbl">마나</span>
                   <span class="cm-stat__val">{{ Math.round(stats.mag) }}</span>
-                  <span class="cm-stat__bonus">D+{{ bonus.drawExtra }} / M+{{ bonus.manaExtra }}</span>
+                  <span class="cm-stat__bonus">M+{{ bonus.manaExtra }}</span>
+                </div>
+              </Tooltip>
+              <Tooltip text="물 → 드로우(손패/대기 보충 +). 바람 → 이동(사거리 +). 단색 누적치로 산출.">
+                <div class="cm-stat cm-stat--vit">
+                  <span class="cm-stat__lbl">물·바람</span>
+                  <span class="cm-stat__val">{{ colorEffectiveValue('water') }}/{{ colorEffectiveValue('wind') }}</span>
+                  <span class="cm-stat__bonus">드로우+{{ bonus.drawExtra }} / 이동+{{ bonus.moveBonus }}</span>
                 </div>
               </Tooltip>
             </div>

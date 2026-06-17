@@ -1,0 +1,27 @@
+# Race: 화이트 팡 (무속성 수인 검사 — 격자 전투 플레이어블 승격, 2026-06-18)
+# 원작 NPC npc-whitefang = 버그의 바다 출신 무속성 검사. 모노 외 유일한 무속성, 시간을 다룬다.
+# 코어: 잔상(지연 타격) + 시간 조작(가속/적 둔화/박제) + 차원보(비숍∪직교1 이동). 색이 아닌 시간으로 성장.
+
+[race.whitefang]
+name = 화이트 팡
+description = 무속성의 수인 검사. 잔상이 먼저 닿는다.
+category = beastkin
+# 무속성 — primary/secondary element 없음(색 성장 대신 시간 메커닉).
+hp = 30
+mp = 12
+attack = 7
+defense = 2
+vigor = 11
+# 시작 덱 — 빠른 검(베기/쌍각) + 잔상/시간 + 차원보 기동. 공용 최소화(전용 8할).
+starting_deck = c-wf-slash, c-wf-slash, c-wf-twin, c-wf-afterimage, c-wf-haste, c-wf-blink, c-wf-retreat, c-wf-slow-cut, c-wf-parry, c-wf-grow, c-strike, c-wf-reach, c-recover
+# 시드 풀 — 활동 보상·덱 부족분 추첨용. 전용 18종 전체.
+seed_cards = c-wf-slash, c-wf-twin, c-wf-afterimage, c-wf-haste, c-wf-cuttime, c-wf-slow-cut, c-wf-blink, c-wf-retreat, c-wf-chain, c-wf-grow, c-wf-parry, c-wf-afterguard, c-wf-timeedge, c-wf-stillness, c-wf-reach, c-wf-cross, c-wf-doublecast, c-wf-finisher
+seed_relics = r-race-whitefang
+hp_bonus = 0
+mp_bonus = 0
+deck_size = 13
+# 무속성 — 시드 색 없음(시간으로 성장).
+# 격자 행마법(C3) — 비숍(대각, 강화로 길어짐) ∪ 직교 1칸(차원 스텝).
+move_pattern = composite
+move_range = 2
+compose = bishop orthogonal1

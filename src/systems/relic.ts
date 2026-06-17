@@ -227,11 +227,11 @@ function resetCounter(c: CombatState, relicId: string | undefined, name: string)
   c.relicCounters[`${relicId ?? '?'}:${name}`] = 0;
 }
 
-/** ATK/DEF/MAG ↔ 기반 컬러쌍. boost-stat이 쌍을 동시에 올린다. */
+/** ATK/DEF/MAG ↔ 기반 컬러쌍. boost-stat이 쌍을 동시에 올린다. (F5: mag=빛·어둠 — metricValue와 일치.) */
 const STAT_PAIRS: Record<string, [ColorKey, ColorKey]> = {
   atk: ['fire', 'electric'],
   def: ['earth', 'iron'],
-  mag: ['water', 'wind'],
+  mag: ['light', 'dark'],
 };
 
 /**

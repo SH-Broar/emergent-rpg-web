@@ -29,3 +29,6 @@ deck_size = 12
 # 종족 시작 컬러 시드 한 컬러당 최대 5 (사용자 사양).
 # 인간 = light·wind 친화. 두 컬러에 +5/+3, 나머지 0.
 seed_colors = light:5, wind:3
+# 격자 행마법(하코, C1) — 룩(상하좌우 직선) 사거리 2. 바람색 moveBonus·moveUpgrades로 성장.
+move_pattern = rook
+move_range = 2

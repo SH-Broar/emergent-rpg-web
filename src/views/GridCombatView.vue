@@ -31,6 +31,9 @@ import {
   clearPlayerPlan,
   combatantAt,
   combatPotions,
+  isAimedCard,
+  aimableTiles,
+  swappableCompanions,
 } from '@/systems/grid-combat';
 import { statusLabel } from '@/systems/labels';
 import type { Item } from '@/data/schemas';
@@ -40,6 +43,7 @@ import type { ActorSnapshot } from '@/composables/useGridFx';
 import type {
   Card,
   GridCombatant,
+  GridOffset,
   GridPos,
   PlannedAction,
 } from '@/data/schemas';
@@ -72,15 +76,36 @@ type Mode = 'idle' | 'move' | 'card';
 const mode = ref<Mode>('idle');
 /** 카드 조준 중인 손패 인스턴스 id. */
 const aimingCardId = ref<string | null>(null);
+/** aimed(원거리 조준) 카드의 현재 선택 조준 칸. null이면 아직 조준 칸 미선택(후보 하이라이트 단계). */
+const aimCell = ref<GridPos | null>(null);
 /** 커밋(라운드 해소) 진행 중 — 입력 잠금. */
 const committing = ref(false);
 /** 인스펙트 중인 적 id(원 탭). */
 const inspectedId = ref<string | null>(null);
 /** 아이템(포션) 선택 패널 열림 여부. */
 const itemPanelOpen = ref(false);
+/** 동료 교대 선택 패널 열림 여부. */
+const swapPanelOpen = ref(false);
 
 // === FX ===
 const fx = useGridFx();
+
+// === 동료 교대(C6) ===
+/** 교대 가능한 활성 동료(스킬/카드형). 전투 상태 변화 시 재평가. */
+const swapTargets = computed<{ id: string; name: string }[]>(() => {
+  void gc.value?.turn;
+  void run.data.activeSlots;
+  return swappableCompanions();
+});
+/** 이번 전투에서 동료를 조종 중인가(state.swap.controlling). */
+const isControllingCompanion = computed<boolean>(() => gc.value?.swap?.controlling === true);
+/** 교대를 지금 걸 수 있나 — 대상 존재 + 미교대 + 계획에 swap/item 없음. */
+const canSwap = computed<boolean>(() => {
+  const state = gc.value;
+  if (!state || state.swap) return false;
+  if (swapTargets.value.length === 0) return false;
+  return !(state.playerPlan ?? []).some((a) => a.kind === 'swap' || a.kind === 'item');
+});
 
 // === 포션(아이템) — 보유 전투용 포션 + 턴당 1회 가드 ===
 /** 보유 전투용 포션 목록(반응형 — items/턴 변동 추적). */
@@ -123,6 +148,16 @@ const liveEnemies = computed<GridCombatant[]>(() =>
   ),
 );
 
+/** 살아 있는 아군 토큰(샤유아 분열 등). 순차 재생 중 display hp도 고려. */
+const liveAllies = computed<GridCombatant[]>(() =>
+  (gc.value?.allies ?? []).filter(
+    (a) =>
+      a.hp > 0 ||
+      fx.dyingActors.value.has(a.id) ||
+      (fx.playing.value && (fx.displayHp.value.get(a.id) ?? 0) > 0),
+  ),
+);
+
 /** 셀 정사각 그리드 — void는 빈칸(렌더 X). */
 const gridCols = computed(() => stage.value?.width ?? 0);
 const gridRows = computed(() => stage.value?.height ?? 0);
@@ -136,10 +171,22 @@ const highlightTiles = computed<Set<string>>(() => {
   }
   if (mode.value === 'card' && aimingCardId.value) {
     const card = state.hand.find((c) => c.instanceId === aimingCardId.value);
-    if (card) return new Set(previewCardTiles(state, card).map(posKey));
+    if (!card) return new Set();
+    if (isAimedCard(card)) {
+      // aimed: 조준 칸 미선택이면 *후보 칸*(사거리 내), 선택 후면 *shape 미리보기*(조준 칸 중심).
+      if (!aimCell.value) return new Set(aimableTiles(state, card).map(posKey));
+      const off = { dx: aimCell.value.x - state.player.pos.x, dy: aimCell.value.y - state.player.pos.y };
+      return new Set(previewCardTiles(state, card, undefined, off).map(posKey));
+    }
+    return new Set(previewCardTiles(state, card).map(posKey));
   }
   return new Set();
 });
+
+/** aimed 조준 칸 자체(중심 표시용 — shape 미리보기와 구분). */
+function isAimCenter(x: number, y: number): boolean {
+  return !!aimCell.value && aimCell.value.x === x && aimCell.value.y === y;
+}
 
 /** 인스펙트 중인 적의 다음 공격 미리보기 칸(키 집합). */
 const inspectAttackTiles = computed<Set<string>>(() => {
@@ -247,6 +294,7 @@ const cellOccupants = computed<Map<string, string[]>>(() => {
   const player = gc.value?.player;
   if (player && player.hp > 0) add(player);
   for (const e of liveEnemies.value) add(e);
+  for (const a of liveAllies.value) add(a);
   return m;
 });
 
@@ -294,6 +342,7 @@ function intentText(a: PlannedAction, enemy: GridCombatant): string {
     case 'move': return `이동 → (${a.to.x},${a.to.y})`;
     case 'wait': return '대기';
     case 'item': return '도구 사용';
+    case 'swap': return '동료 교대';
     case 'card': return '특수';
     default: return '?';
   }
@@ -378,6 +427,10 @@ function planLabel(a: PlannedAction): string {
       const it = run.data.items.find((i) => (i.instanceId ?? i.id) === a.itemId || i.id === a.itemId);
       return `아이템 ${it?.name ?? ''}`.trim();
     }
+    case 'swap': {
+      const c = swapTargets.value.find((t) => t.id === a.companionId);
+      return `교대 → ${c?.name ?? '동료'}`;
+    }
     case 'wait': return '대기';
     default: return '?';
   }
@@ -391,8 +444,10 @@ function selectMoveMode() {
   if (committing.value || planFull.value) return;
   inspectedId.value = null;
   itemPanelOpen.value = false;
+  swapPanelOpen.value = false;
   mode.value = mode.value === 'move' ? 'idle' : 'move';
   aimingCardId.value = null;
+  aimCell.value = null;
 }
 
 /** [아이템] 버튼 — 보유 전투용 포션 패널 토글. */
@@ -404,8 +459,34 @@ function toggleItemPanel() {
   }
   mode.value = 'idle';
   aimingCardId.value = null;
+  aimCell.value = null;
   inspectedId.value = null;
+  swapPanelOpen.value = false;
   itemPanelOpen.value = !itemPanelOpen.value;
+}
+
+/** [교대] 버튼 — 동료 선택 패널 토글. */
+function toggleSwapPanel() {
+  if (committing.value || planFull.value || !canSwap.value) return;
+  const next = !swapPanelOpen.value;
+  mode.value = 'idle';
+  aimingCardId.value = null;
+  aimCell.value = null;
+  inspectedId.value = null;
+  itemPanelOpen.value = false;
+  swapPanelOpen.value = next;
+}
+
+/** 동료 1명 선택 — 행동 큐에 swap 행동 추가(라운드당 1회, 다음 턴 조종). */
+function queueSwap(companionId: string) {
+  const state = gc.value;
+  if (!state || committing.value || planFull.value) return;
+  if (queuePlayerAction(state, { kind: 'swap', companionId })) {
+    swapPanelOpen.value = false;
+    ui.toast('info', '교대 준비 — 다음 턴 동료를 조종한다.');
+  } else {
+    ui.toast('warning', '지금 교대할 수 없다.');
+  }
 }
 
 /** 포션 1점 선택 — 행동 큐에 item 행동 추가(턴당 1회). */
@@ -416,6 +497,7 @@ function usecPotion(item: Item) {
   const ok = queuePlayerAction(state, { kind: 'item', itemId: id });
   if (ok) {
     itemPanelOpen.value = false;
+  swapPanelOpen.value = false;
     ui.toast('success', `${item.name} 사용 예약`);
   } else {
     ui.toast('warning', '아이템은 라운드당 1회.');
@@ -446,13 +528,17 @@ function selectCard(c: Card) {
   if (!c.instanceId || !cardPlayable(c)) return;
   inspectedId.value = null;
   itemPanelOpen.value = false;
+  swapPanelOpen.value = false;
   if (mode.value === 'card' && aimingCardId.value === c.instanceId) {
     mode.value = 'idle';
     aimingCardId.value = null;
+    aimCell.value = null;
     return;
   }
   mode.value = 'card';
   aimingCardId.value = c.instanceId;
+  aimCell.value = null;
+  if (isAimedCard(c)) ui.toast('info', '사거리 안의 조준 칸을 고르세요.');
 }
 
 /** self/제자리 카드(조준 칸 없음)인가 — shape 미설정 또는 빈 결과. */
@@ -461,7 +547,16 @@ const aimingCardSelfTarget = computed<boolean>(() => {
   if (mode.value !== 'card' || !aimingCardId.value || !state) return false;
   const card = state.hand.find((c) => c.instanceId === aimingCardId.value);
   if (!card) return false;
+  if (isAimedCard(card)) return false; // aimed는 항상 조준형(제자리 아님).
   return previewCardTiles(state, card).length === 0;
+});
+
+/** 조준 중인 카드가 aimed(원거리 조준)형인가 — aim-bar 힌트 분기용. */
+const aimingCardIsAimed = computed<boolean>(() => {
+  const state = gc.value;
+  if (mode.value !== 'card' || !aimingCardId.value || !state) return false;
+  const card = state.hand.find((c) => c.instanceId === aimingCardId.value);
+  return !!card && isAimedCard(card);
 });
 
 /**
@@ -499,8 +594,16 @@ function tapTile(x: number, y: number) {
     return;
   }
 
-  // 카드 조준 모드 — 패턴 칸 탭 시 그 카드 확정(고정 패턴이라 어느 칸을 눌러도 패턴 전체 적용).
+  // 카드 조준 모드.
   if (mode.value === 'card' && aimingCardId.value) {
+    const card = state.hand.find((c) => c.instanceId === aimingCardId.value);
+    // aimed(원거리 조준): 사거리 내 후보 칸 탭 시 (재)조준만(확정은 [확정] 버튼). shape 미리보기로 전환.
+    if (card && isAimedCard(card)) {
+      const within = aimableTiles(state, card).some((p) => p.x === x && p.y === y);
+      if (within) aimCell.value = { x, y };
+      return;
+    }
+    // 고정 패턴 — 하이라이트 칸 탭 시 그 카드 확정(어느 칸을 눌러도 패턴 전체 적용).
     if (!isHighlighted(x, y)) return;
     confirmCard();
     return;
@@ -531,15 +634,23 @@ function confirmCard() {
   if (!state || !aimingCardId.value) return;
   const card = state.hand.find((c) => c.instanceId === aimingCardId.value);
   if (!card) return;
-  const targetTiles = previewCardTiles(state, card);
+  // aimed: 조준 칸을 먼저 골라야 한다. 그 칸의 플레이어 기준 오프셋을 함께 넘긴다.
+  let aimOffset: GridOffset | undefined;
+  if (isAimedCard(card)) {
+    if (!aimCell.value) { ui.toast('info', '조준할 칸을 먼저 고르세요.'); return; }
+    aimOffset = { dx: aimCell.value.x - state.player.pos.x, dy: aimCell.value.y - state.player.pos.y };
+  }
+  const targetTiles = previewCardTiles(state, card, undefined, aimOffset);
   const ok = queuePlayerAction(state, {
     kind: 'card',
     cardInstanceId: aimingCardId.value,
     targetTiles,
+    aimOffset,
   });
   if (ok) {
     mode.value = 'idle';
     aimingCardId.value = null;
+    aimCell.value = null;
   } else {
     ui.toast('warning', '그 카드를 지금 사용할 수 없다.');
   }
@@ -548,6 +659,7 @@ function confirmCard() {
 function cancelAim() {
   mode.value = 'idle';
   aimingCardId.value = null;
+  aimCell.value = null;
 }
 
 function clearPlan() {
@@ -556,7 +668,9 @@ function clearPlan() {
   clearPlayerPlan(state);
   mode.value = 'idle';
   aimingCardId.value = null;
+  aimCell.value = null;
   itemPanelOpen.value = false;
+  swapPanelOpen.value = false;
 }
 
 /** [실행/커밋] — 한 라운드 해소 후 fx 애니 재생 + 승패 전이. */
@@ -577,10 +691,13 @@ function waitRound() {
   if (planFull.value) return;
   inspectedId.value = null;
   itemPanelOpen.value = false;
+  swapPanelOpen.value = false;
   mode.value = 'idle';
   aimingCardId.value = null;
   if (!queuePlayerAction(state, { kind: 'wait' })) {
     ui.toast('info', '대기를 추가할 수 없다.');
+  } else {
+    ui.toast('info', '대기 — 손패를 다시 채운다.');
   }
 }
 
@@ -592,6 +709,9 @@ function snapshotActors(state: NonNullable<typeof gc.value>): ActorSnapshot[] {
   for (const e of state.enemies) {
     if (e.hp > 0) out.push({ id: e.id, pos: { ...e.pos }, hp: e.hp, block: e.block });
   }
+  for (const a of state.allies ?? []) {
+    if (a.hp > 0) out.push({ id: a.id, pos: { ...a.pos }, hp: a.hp, block: a.block });
+  }
   return out;
 }
 
@@ -601,8 +721,10 @@ function doCommit() {
   committing.value = true;
   mode.value = 'idle';
   aimingCardId.value = null;
+  aimCell.value = null;
   inspectedId.value = null;
   itemPanelOpen.value = false;
+  swapPanelOpen.value = false;
 
   // 1) 라운드 *시작* 상태 스냅샷(엔진이 즉시 final로 바꾸기 전).
   const start = snapshotActors(before);
@@ -759,6 +881,7 @@ onUnmounted(() => {
                   {
                     'cell--highlight': isHighlighted(x - 1, y - 1),
                     'cell--attack-preview': isAttackPreview(x - 1, y - 1),
+                    'cell--aim-center': isAimCenter(x - 1, y - 1),
                   },
                 ]"
                 :style="{ 'grid-column': x, 'grid-row': y }"
@@ -844,6 +967,36 @@ onUnmounted(() => {
               >{{ f.text }}</span>
             </div>
           </div>
+
+          <!-- 아군 토큰(샤유아 분열 등) — 작은 초록 원, 적 추격. -->
+          <div
+            v-for="a in liveAllies"
+            :key="a.id"
+            class="token token--ally"
+            :style="{
+              transform: `translate(calc(${tokenPos(a).x} * var(--cell)), calc(${tokenPos(a).y} * var(--cell)))`,
+            }"
+          >
+            <div
+              class="token__inner"
+              :class="{
+                'is-hit': fx.hitActors.value.has(a.id),
+                'is-dying': a.hp <= 0 && fx.dyingActors.value.has(a.id),
+              }"
+              :style="{ transform: tokenOffset(a) }"
+            >
+              <div class="token__circle token__circle--ally"></div>
+              <div class="token__hpbar"><span :style="{ width: `${hpRatio(a) * 100}%` }"></span></div>
+              <span class="token__hpnum">{{ tokenHp(a) }}/{{ a.maxHp }}</span>
+              <span
+                v-for="f in fx.floats.value.filter((n) => n.actorId === a.id)"
+                :key="f.id"
+                class="float-num"
+                :class="`float-num--${f.kind}`"
+                :style="{ '--drift': f.drift }"
+              >{{ f.text }}</span>
+            </div>
+          </div>
         </div>
 
         <!-- 적 인스펙트 패널 -->
@@ -902,6 +1055,14 @@ onUnmounted(() => {
           @click="toggleItemPanel"
         >아이템<span v-if="potions.length > 0" class="act__count">{{ potions.length }}</span></button>
         <button
+          v-if="swapTargets.length > 0"
+          class="act act--swap"
+          :class="{ 'act--on': swapPanelOpen }"
+          :disabled="committing || planFull || !canSwap"
+          title="동료 교대 · 라운드당 1회 (다음 턴 동료 조종)"
+          @click="toggleSwapPanel"
+        >교대<span class="act__count">{{ swapTargets.length }}</span></button>
+        <button
           class="act act--commit"
           :disabled="committing || plan.length === 0"
           @click="commit"
@@ -922,10 +1083,32 @@ onUnmounted(() => {
         <button class="item-panel__close" @click="itemPanelOpen = false">닫기</button>
       </div>
 
+      <!-- 동료 교대 선택 패널 -->
+      <div v-if="swapPanelOpen" class="item-panel">
+        <span class="item-panel__hint">교대 · 라운드당 1회 (교대 턴은 대기, 다음 턴 동료 조종)</span>
+        <ul class="item-panel__list">
+          <li v-for="c in swapTargets" :key="c.id">
+            <button class="potion" @click="queueSwap(c.id)">
+              <span class="potion__name">{{ c.name }}</span>
+              <span class="potion__eff">전용 스킬로 1턴 · 낮은 HP</span>
+            </button>
+          </li>
+        </ul>
+        <button class="item-panel__close" @click="swapPanelOpen = false">닫기</button>
+      </div>
+
+      <!-- 교대 상태 배너 -->
+      <div v-if="gc.swap" class="swap-banner" :class="{ 'swap-banner--active': isControllingCompanion }">
+        <template v-if="isControllingCompanion">동료 조종 중: {{ gc.player.name }} — 1턴 뒤 복귀</template>
+        <template v-else>교대 준비 — 다음 턴 동료 조종</template>
+      </div>
+
       <!-- 카드 조준 확정/취소 (조준 중일 때) — 적 없어도 발동 가능. -->
       <div v-if="mode === 'card'" class="aim-bar">
         <span class="aim-bar__hint">
-          <template v-if="aimingCardSelfTarget">제자리 발동</template>
+          <template v-if="aimingCardIsAimed && !aimCell">조준 칸을 고르세요 (사거리 내)</template>
+          <template v-else-if="aimingCardIsAimed">조준 완료 — [확정]</template>
+          <template v-else-if="aimingCardSelfTarget">제자리 발동</template>
           <template v-else-if="!aimingHasEnemyTarget">빈 칸 발동</template>
           <template v-else>범위 안의 적에 적용</template>
         </span>
@@ -1091,6 +1274,11 @@ onUnmounted(() => {
 .cell--highlight.cell--attack-preview {
   background: rgba(200,160,255,0.3);
 }
+/* aimed 조준 중심 칸 — shape 미리보기 중 중심을 노랑 테두리로 강조. */
+.cell--aim-center {
+  background: rgba(255,224,130,0.34);
+  border: 2px solid rgba(255,224,130,0.95);
+}
 
 /* === 전투원 토큰 ===
    wrapper(.token) = *위치 전용*(grid translate + 이동 트랜지션). inner(.token__inner) = *fx 전용*
@@ -1126,6 +1314,10 @@ onUnmounted(() => {
   box-shadow: 0 1px 3px rgba(0,0,0,0.6);
 }
 .token__circle--player { background: #5aa6ff; box-shadow: 0 0 6px rgba(90,166,255,0.7); }
+/* 아군 토큰 — 작은 초록 원(분열 슬라임). 적보다 작게. */
+.token--ally { z-index: 5; pointer-events: none; }
+.token--ally .token__circle { width: 50%; height: 50%; }
+.token__circle--ally { background: #7fe6a0; box-shadow: 0 0 5px rgba(127,230,160,0.6); }
 .token--enemy.is-inspected .token__circle { outline: 2px solid #ffe88e; outline-offset: 1px; }
 /* 보스 토큰 — 일반 적보다 크고 금빛 테두리·맥동 글로우. */
 .token--boss { z-index: 7; }
@@ -1267,11 +1459,21 @@ onUnmounted(() => {
 .act--commit { background: rgba(192,142,255,0.22); border-color: rgba(192,142,255,0.6); color: #f6e8b8; }
 .act--commit:hover:not(:disabled) { background: rgba(192,142,255,0.34); }
 .act--item { position: relative; }
+.act--swap { position: relative; background: rgba(255,200,120,0.16); border-color: rgba(255,200,120,0.5); }
+.act--swap:hover:not(:disabled) { background: rgba(255,200,120,0.3); }
 .act__count {
   margin-left: 0.35rem; font-size: 0.7rem; font-weight: 700;
   background: rgba(142,255,184,0.22); color: #8effb8;
   border-radius: 8px; padding: 0.02rem 0.35rem;
 }
+
+/* === 교대 상태 배너 === */
+.swap-banner {
+  flex-shrink: 0; text-align: center; font-size: 0.82rem; padding: 0.35rem 0.6rem;
+  border-radius: 8px; background: rgba(255,200,120,0.14); color: #ffd9a0;
+  border: 1px solid rgba(255,200,120,0.4);
+}
+.swap-banner--active { background: rgba(255,200,120,0.26); color: #ffe9c8; font-weight: 600; }
 
 /* === 포션 선택 패널 === */
 .item-panel {

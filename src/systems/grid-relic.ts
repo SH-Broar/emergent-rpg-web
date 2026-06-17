@@ -165,7 +165,7 @@ function boostColorArg(arg: string, v: number): void {
 const STAT_PAIRS: Record<string, [ColorKey, ColorKey]> = {
   atk: ['fire', 'electric'],
   def: ['earth', 'iron'],
-  mag: ['water', 'wind'],
+  mag: ['light', 'dark'], // F5: mag=빛·어둠(마나) — metricValue('mag')와 일치.
 };
 
 /** 지표(arg) 현재값 — 컬러/atk/def/mag/top-color/color-count. relic.ts metricValue 미러. */
@@ -460,7 +460,7 @@ export function gridRelicCombatStart(state: GridCombatState): void {
   fireTrigger(state, 'on-combat-start');
 }
 
-/** 라운드(턴) 시작 — on-turn-start. (refreshHandAndMana 후, 새 라운드 진입 시.) */
+/** 라운드(턴) 시작 — on-turn-start. (마나 풀충전 후, 새 라운드 진입 시.) */
 export function gridRelicTurnStart(state: GridCombatState): void {
   fireTrigger(state, 'on-turn-start');
 }

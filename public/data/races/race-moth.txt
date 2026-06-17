@@ -28,3 +28,6 @@ mp_bonus = 0
 deck_size = 13
 # 나방 = wind·light 친화.
 seed_colors = wind:5, light:3
+# 격자 행마법(C2) — 나이트(L자 점프, 경로·점유 무시). 빠른 기동 회피가 방어. (range는 점프형이라 무시.)
+move_pattern = knight
+move_range = 1

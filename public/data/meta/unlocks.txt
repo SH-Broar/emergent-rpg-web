@@ -4,24 +4,24 @@
 
 [unlock.u-race-moth]
 name = 나방
-description = 작은 몸과 빠른 손을 지닌 종족. 속도와 연사에 능하다.
+description = 빠르게 움직이며 원거리 공격을 하는 사냥꾼.
 resource = hyperion
 cost = 30
 grants_race = moth
 
-[unlock.u-race-phantom]
-name = 팬텀
-description = 속이고 비트는 종족. 손패 수를 다루며 싸운다.
+[unlock.u-race-whitefang]
+name = 화이트 팡
+description = 무속성의 수인 검사. 몸집은 작지만 날렵하고, 시간 마법을 다룬다.
 resource = hyperion
 cost = 45
-grants_race = phantom
+grants_race = whitefang
 
-[unlock.u-race-arcana]
-name = 아르카나
-description = 빛을 본질로 하는 종족. 색을 모아 힘으로 바꾼다.
+[unlock.u-race-slime]
+name = 샤유아
+description = 어린 슬라임. 자신의 몸을 사용하는 데 거리낌이 없다.
 resource = hyperion
 cost = 60
-grants_race = arcana
+grants_race = slime
 
 # === 종족 앵커 유물 (Item 37-③) ===
 # 4종족 × 3 = 12종. 해석 자원으로 구매. 한 번 해금하면 그 종족 런 시작 시 자동 지급(기존 seed_relics 위에 추가).

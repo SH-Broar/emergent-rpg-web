@@ -94,7 +94,7 @@ function currentBonuses() {
  */
 function playerBonuses(c: CombatState): ReturnType<typeof currentBonuses> {
   if ((c.player.statuses?.regress ?? 0) > 0) {
-    return { damage: 0, block: 0, drawExtra: 0, manaExtra: 0 };
+    return { damage: 0, block: 0, drawExtra: 0, manaExtra: 0, moveBonus: 0 };
   }
   return currentBonuses();
 }
@@ -1564,6 +1564,12 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
   },
   // 궁지(미구현) — 플레이어 직교 인접 4칸 중 차단 수 × value 추가 피해. 타입 정합성용 no-op.
   'damage-per-confine': (_e, _c) => {},
+  // move-rider(격자 전용) — 1v1엔 격자 좌표가 없어 이동 불가. 타입 정합성용 no-op.
+  'move-self': (_e, _c) => {},
+  // 샤유아 시그니처(격자 전용) — 1v1엔 아군 토큰·격자 인접 개념이 없어 no-op.
+  'summon-ally': (_e, _c) => {},
+  'status-spread': (_e, _c) => {},
+  'chain-explosion': (_e, _c) => {},
 };
 
 /** 컬러 키 참조용 (draw-if-color params 타입). */

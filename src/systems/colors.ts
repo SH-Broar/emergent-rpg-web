@@ -11,7 +11,6 @@
 
 import type { ColorValues } from '@/data/schemas';
 import { useRunStore } from '@/stores/run';
-import { vitHpBonus } from '@/systems/stats';
 import { colorLabel } from '@/systems/labels';
 
 export const COLOR_MAX = 100;
@@ -55,27 +54,8 @@ export function applyColorBoost(color: ColorKey, amount: number, lines?: string[
       inColorGain = false;
     }
   }
-  // 물/바람 변동 → VIT(활력) 최대 HP 재조정. (VIT=물·바람 → 최대 HP. 빛·어둠은 MAG로 쓰임.)
-  if (delta !== 0 && (color === 'water' || color === 'wind')) {
-    reconcileColorHp();
-  }
+  // (F5: 색→최대 HP(VIT)는 은퇴. 물=드로우·바람=이동으로 분리됐으므로 HP 재조정 없음.)
   return delta;
-}
-
-/**
- * 물·바람 → 최대 HP 보너스(VIT 활력) 재조정. maxHp에 *델타만* 반영해 유물·종족 등 다른 HP원과 합산 유지.
- * 보너스가 *오를 때*는 그만큼 현재 HP도 회복(유물 bonus-hp와 동일 거동), 내릴 때는 maxHp로 클램프.
- */
-function reconcileColorHp(): void {
-  const r = useRunStore().data;
-  const target = vitHpBonus(r.colors);
-  const prev = r.colorHpBonus ?? 0;
-  const d = target - prev;
-  if (d === 0) return;
-  r.maxHp += d;
-  r.colorHpBonus = target;
-  if (d > 0) r.hp = Math.min(r.maxHp, r.hp + d);
-  else r.hp = Math.min(r.hp, r.maxHp);
 }
 
 /** 8 컬러 모두에 amount 일괄 적용. */
