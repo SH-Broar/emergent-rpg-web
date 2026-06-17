@@ -39,6 +39,30 @@ function mulberry32(a: number): () => number {
   };
 }
 
+/**
+ * 결정론 적 ID 선택 — 권역 풀에서 count마리를 섞어 뽑는다(다종 적 그룹, US-002).
+ *  - 슬롯 0 = lead(노드 테마 적, 있으면) → 노드 정체성 보존.
+ *  - 나머지 = 풀에서 시드 기반 무작위(중복 허용 — 같은 종 2마리도 가능하나 풀이 다양하면 섞임).
+ *  - 풀이 비면 lead만으로 채움(기존 단일 종 폴백). lead·풀 모두 없으면 빈 배열.
+ * 같은 seed면 같은 결과(전역 rng와 분리 — 노드 재진입 시 동일 구성).
+ */
+export function pickEnemyIds(
+  seed: number | string,
+  pool: string[],
+  lead: string | undefined,
+  count: number,
+): string[] {
+  const effective = pool.length > 0 ? pool : (lead ? [lead] : []);
+  if (effective.length === 0 || count <= 0) return [];
+  const rand = mulberry32(hashSeed(`${seed}|enemies`));
+  const out: string[] = [];
+  for (let i = 0; i < count; i++) {
+    if (i === 0 && lead) { out.push(lead); continue; } // 테마 적 1마리 보장.
+    out.push(effective[Math.floor(rand() * effective.length)]);
+  }
+  return out;
+}
+
 // ============================================================================
 // tier 파라미터
 // ============================================================================

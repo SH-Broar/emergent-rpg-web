@@ -167,6 +167,14 @@ export function useGridFx() {
           pulseHit(actorId);
         }
         break;
+      case 'block-gain':
+        // 방어 *획득*(US-007) — display block 증가 + 파란 +N(흡수의 -N과 구분).
+        if ((ev.amount ?? 0) > 0) {
+          const bl = displayBlock.value.get(actorId);
+          if (bl !== undefined) setDisplayBlock(actorId, bl + (ev.amount ?? 0));
+          spawn(actorId, 'blocked', `+${ev.amount}`);
+        }
+        break;
       case 'heal':
         if ((ev.amount ?? 0) > 0) {
           const hp = displayHp.value.get(actorId);
@@ -199,6 +207,9 @@ export function useGridFx() {
       case 'block-absorb':
         if ((ev.amount ?? 0) > 0) { spawn(actorId, 'blocked', `-${ev.amount}`); pulseHit(actorId); }
         break;
+      case 'block-gain':
+        if ((ev.amount ?? 0) > 0) spawn(actorId, 'blocked', `+${ev.amount}`);
+        break;
       case 'heal':
         if ((ev.amount ?? 0) > 0) spawn(actorId, 'heal', `+${ev.amount}`);
         break;
@@ -222,7 +233,7 @@ export function useGridFx() {
   function groupMotionMs(group: FxEvent[]): number {
     if (REDUCED) return 0;
     const hasMove = group.some((e) => e.kind === 'move' || e.kind === 'spawn');
-    const hasHit = group.some((e) => e.kind === 'hit' || e.kind === 'block-absorb' || e.kind === 'heal' || e.kind === 'death');
+    const hasHit = group.some((e) => e.kind === 'hit' || e.kind === 'block-absorb' || e.kind === 'block-gain' || e.kind === 'heal' || e.kind === 'death');
     let ms = 0;
     if (hasMove) ms = Math.max(ms, MOVE_MS);
     if (hasHit) ms = Math.max(ms, HIT_TTL);

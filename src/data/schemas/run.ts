@@ -416,7 +416,8 @@ export type PlannedAction =
  * (기존 fxAbsorbed 패턴의 격자 일반화.)
  */
 export interface FxEvent {
-  kind: 'move' | 'hit' | 'block-absorb' | 'spawn' | 'death' | 'heal' | 'status';
+  // block-gain = 방어 *획득*(파란 +N) / block-absorb = 방어가 피해를 *흡수*(파란 -N).
+  kind: 'move' | 'hit' | 'block-absorb' | 'block-gain' | 'spawn' | 'death' | 'heal' | 'status';
   actorId?: string;
   from?: GridPos;
   to?: GridPos;

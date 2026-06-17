@@ -1570,6 +1570,8 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
   'summon-ally': (_e, _c) => {},
   'status-spread': (_e, _c) => {},
   'chain-explosion': (_e, _c) => {},
+  // foresight 변동(격자 전용) — 1v1엔 계획 시야 개념이 없어 no-op.
+  'add-foresight': (_e, _c) => {},
 };
 
 /** 컬러 키 참조용 (draw-if-color params 타입). */

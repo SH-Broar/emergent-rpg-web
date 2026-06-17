@@ -28,8 +28,9 @@ speed = normal
 starts_at = 1.0
 mechanic = anchor
 intents = attack:10, defend:8, debuff:2:vulnerable, attack:12, charge:4, attack:15
-# 격자 P1 — 인접 4칸 닻 후려치기(가까이 붙은 칸만) + 십자 사거리 2 닻줄(멀어도 닿음).
-grid_attack_1 = 닻 후려치기|1,0 -1,0 0,1 0,-1|1,1,1,1|14
+# 격자 P1(anchor 기믹 격자 재해석) — 닻 후려치기로 *결박*(다음 라운드 이동 봉쇄) 부여 + 십자 사거리 2 닻줄(취약).
+# anchored:2 = 부여 라운드 종료 감쇠(→1) 후에도 다음 플래닝 라운드를 봉쇄(그 라운드 종료에 →0).
+grid_attack_1 = 닻 후려치기|1,0 -1,0 0,1 0,-1|1,1,1,1|14|||anchored:2
 grid_attack_2 = 닻줄|2,0 -2,0 0,2 0,-2|1,1,1,1|10|||vulnerable:2
 
 [boss.bs-act-1-anchor.phase.2]

@@ -69,6 +69,8 @@ const STARTING_HAND_SIZE = 5;
 const DEFAULT_MAX_MANA = 3;
 const MAX_HAND_SIZE = 10;
 const LOG_MAX = 24;
+/** 전투 중 foresight 상한(add-foresight 카드 등으로 변동 — US-004). 하한 1. */
+const MAX_FORESIGHT = 5;
 
 /** 발동 속도 → 정렬 순위(작을수록 먼저). */
 const SPEED_ORDER: Record<CastSpeed, number> = { fast: 0, normal: 1, slow: 2 };
@@ -431,6 +433,8 @@ export function queuePlayerAction(state: GridCombatState, action: PlannedAction)
   }
 
   if (action.kind === 'move') {
+    // 닻(anchored) 상태면 이동 불가(보스 anchor 기믹 — US-005).
+    if ((state.player.statuses['anchored'] ?? 0) > 0) return false;
     if (!isLegalMove(state, state.player, action.to)) return false;
     state.playerPlan.push(action);
     return true;
@@ -521,7 +525,7 @@ function relicHandManaExtras(loadout: Relic[]): { draw: number; mana: number } {
 
 // 라운드마다 -1 감쇠되는 *일시* 상태. strength·파워(metallicize 등)는 STS 관례대로 *영구*(감쇠 제외).
 // ghost(유령화)는 양날 상태로 라운드 감쇠.
-const DECAYING_STATUSES = new Set<string>(['weakness', 'vulnerable', 'frail', 'ghost']);
+const DECAYING_STATUSES = new Set<string>(['weakness', 'vulnerable', 'frail', 'ghost', 'anchored']);
 
 /** 샤유아 전파/연쇄 대상 디버프 키(status-spread·chain-explosion). */
 const SPREADABLE_DEBUFFS = ['vulnerable', 'weakness', 'frail', 'poison', 'burn', 'regress'] as const;
@@ -1038,9 +1042,20 @@ function attackTilesFrom(state: GridCombatState, origin: GridPos, atk: GridAttac
   return out;
 }
 
+/** 어떤 칸의 *과밀도* — self를 뺀 살아 있는 다른 적이 그 칸 직교 인접(≤1)에 몇이나 있는가. */
+function crowdingAt(state: GridCombatState, pos: GridPos, self: GridCombatant): number {
+  let n = 0;
+  for (const e of state.enemies) {
+    if (e === self || e.hp <= 0) continue;
+    if (manhattan(e.pos, pos) <= 1) n += 1;
+  }
+  return n;
+}
+
 /**
  * 접근 이동 — reachableTiles 중 플레이어에 가장 가까워지는 칸.
  * fromPos는 가상 위치(예측). 실행 시엔 enemy.pos와 동일하게 호출된다.
+ * 그리디 적이 같은 칸으로 과수렴하지 않도록(US-006): *가장 가까운* 칸이 여럿이면 *덜 붐비는* 칸을 고른다.
  */
 function approachMove(
   state: GridCombatState,
@@ -1055,14 +1070,22 @@ function approachMove(
   enemy.pos = realPos;
   if (tiles.length === 0) return undefined;
 
-  let best: GridPos | undefined;
-  let bestDist = manhattan(fromPos, targetPos);
+  // 1) 더 가까워지는 칸만 후보(접근 의도 유지) → 그중 최소 거리.
+  const curDist = manhattan(fromPos, targetPos);
+  let minD = Infinity;
   for (const t of tiles) {
     const d = manhattan(t, targetPos);
-    if (d < bestDist) {
-      bestDist = d;
-      best = t;
-    }
+    if (d < curDist && d < minD) minD = d;
+  }
+  if (minD === Infinity) return undefined;
+
+  // 2) 최소 거리 칸들 중 *과밀도가 가장 낮은* 칸(동률 분산). 동률은 등장 순서(결정론).
+  let best: GridPos | undefined;
+  let bestCrowd = Infinity;
+  for (const t of tiles) {
+    if (manhattan(t, targetPos) !== minD) continue;
+    const c = crowdingAt(state, t, enemy);
+    if (c < bestCrowd) { bestCrowd = c; best = t; }
   }
   return best;
 }
@@ -1554,6 +1577,11 @@ function execWait(state: GridCombatState): void {
 
 /** 이동 실행 — 합법성 재확인(상태 변동 가능) 후 이동 + 바닥 아이템 획득. */
 function execMove(state: GridCombatState, actor: GridCombatant, to: GridPos): void {
+  // 닻(anchored) 상태면 플레이어 이동 무력화(큐잉 후 부여됐을 수 있어 실행 시점에도 가드 — US-005).
+  if (actor.team === 'player' && (actor.statuses['anchored'] ?? 0) > 0) {
+    pushLog(state, '닻에 묶여 움직일 수 없다');
+    return;
+  }
   // 실행 시점 합법성 재평가 — 도착 칸이 비어 있고 통행 가능해야.
   if (!isFreeTile(state, to)) {
     // 막혔으면 같은 방향 best-effort 한 칸(접근). 그래도 안 되면 제자리.
@@ -1670,6 +1698,7 @@ function execItem(state: GridCombatState, itemId: string): void {
 function gainPlayerBlock(state: GridCombatState, amount: number): void {
   if (amount <= 0) return;
   state.player.block += amount;
+  pushFx(state, { kind: 'block-gain', actorId: state.player.id, amount }); // 방어 획득 fx(US-007).
   const jugg = state.player.statuses['juggernaut'] ?? 0;
   if (jugg > 0) {
     // 가장 가까운 살아 있는 적에게 반격.
@@ -2115,6 +2144,13 @@ function applyCardEffects(
         // move-rider(D2) — 카드가 플레이어를 value칸 이동(가장 가까운 적 기준 toward/away).
         const mode = eff.params?.mode === 'toward' ? 'toward' : 'away';
         dashPlayer(state, Math.max(1, Math.floor(rawV) || 1), mode);
+        break;
+      }
+      case 'add-foresight': {
+        // 전투 중 foresight 변동(US-004) — value만큼 가감(1..MAX 클램프). 적/아군 의도 큐는
+        // 라운드 종료 recompute가 새 길이에 맞춘다(현재 라운드는 빈 스텝만 추가돼 무해).
+        const delta = Math.floor(rawV) || 1;
+        state.foresight = Math.max(1, Math.min(MAX_FORESIGHT, state.foresight + delta));
         break;
       }
       // === 샤유아 시그니처(C4) ===

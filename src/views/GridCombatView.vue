@@ -800,6 +800,9 @@ onMounted(() => {
       return;
     }
   }
+  // 전투 시작 fx(전투시작 유물의 방어획득 등) 정리 — 첫 라운드 순차 재생에 stale fx로 끼지 않게.
+  //   초기 상태는 토큰 렌더가 엔진 state로 직접 그리므로 시작 fx를 재생할 필요가 없다.
+  if (run.data.gridCombat?.fx) run.data.gridCombat.fx.length = 0;
   // 이미 outcome이 박혀 있으면(복원 엣지) 그 결과 화면으로.
   const o = run.data.gridCombat?.outcome;
   if (o === 'win') phase.value = 'victory';

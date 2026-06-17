@@ -26,7 +26,7 @@ import { getSkipTurnEveryN } from '@/systems/relic';
 import { gridRelicCombatEnd } from '@/systems/grid-relic';
 import { applyStartChaos, nodeHpLoss } from '@/systems/chaos';
 import { XP_PER_LEVEL, canEnhance, needsAwakening } from '@/systems/enhance';
-import { generateStage } from '@/systems/stage-gen';
+import { generateStage, pickEnemyIds } from '@/systems/stage-gen';
 import { startGridCombat, startGridBossCombat, commitRound as commitGridRoundEngine } from '@/systems/grid-combat';
 import { applyCombatVictoryReward } from '@/systems/combat-rewards';
 import { applyBossRewards, applyArcRewards } from '@/systems/boss-rewards';
@@ -930,14 +930,16 @@ export const useRunStore = defineStore('run', {
 
       // tier/region — 권역 깊이로 무대 파라미터.
       const region = map && node ? findRegion(map, node.region) : undefined;
-      const tier = region?.tier ?? 1;
+      const baseTier = region?.tier ?? 1;
       const kind = node ? effectiveKind(node, r) : 'combat';
+      // 엘리트 무대 강화(US-003) — 한 단계 깊은 tier(더 크고 적 많고 foresight↑) + 엘리트 풀.
+      const isElite = kind === 'elite';
+      const stageTier = isElite ? Math.min(4, baseTier + 1) : baseTier;
 
       // 결정론 시드 — 런 시드 + 노드 id(같은 노드 재진입 시 같은 무대).
-      const stage = generateStage(`${r.rngSeed}:${id}`, node?.region ?? 'unknown', tier);
+      const stage = generateStage(`${r.rngSeed}:${id}`, node?.region ?? 'unknown', stageTier);
 
-      // 적 정의 배열 — enemyStarts 길이만큼 baseDef 복제(슬라이스: 단일 종 그룹).
-      const enemyDefs: Monster[] = [];
+      // 폴백 적 정의(테마 적 미해석 시).
       const fallback: Monster = baseDef ?? {
         id: 'fallback',
         name: '알 수 없는 그림자',
@@ -947,16 +949,26 @@ export const useRunStore = defineStore('run', {
         intents: [{ encoded: 'attack:5' }],
         drop: { gold: 3, timeShards: 1 },
       };
-      for (let i = 0; i < stage.enemyStarts.length; i++) enemyDefs.push(fallback);
 
-      // 증원 placeholder enemyId('')를 실제 적 id로 치환(슬라이스: 같은 그룹).
-      if (stage.spawns) {
-        for (const sp of stage.spawns) {
-          if (!sp.enemyId) sp.enemyId = fallback.id;
-        }
+      // 다종 적 그룹(US-002) — 권역 풀에서 섞어 배치(슬롯 0=노드 테마 적). 엘리트는 eliteEnemyPool 우선.
+      const pool = isElite
+        ? (region?.eliteEnemyPool?.length ? region.eliteEnemyPool : (region?.enemyPool ?? []))
+        : (region?.enemyPool ?? []);
+      const slots = stage.enemyStarts.length;
+      const ids = pickEnemyIds(`${r.rngSeed}:${id}`, pool, enemyId, slots);
+      const enemyDefs: Monster[] = [];
+      for (let i = 0; i < slots; i++) {
+        const pickId = ids[i] ?? enemyId;
+        enemyDefs.push(data.monsters.get(pickId) ?? fallback);
       }
 
-      void kind; // 엘리트 차등(적 강화·엘리트 풀 분리)은 후속 — 슬라이스는 일반 전투와 동일 무대.
+      // 증원 placeholder enemyId('')를 실제 적 id로 치환(풀이 있으면 그 첫 종, 없으면 테마 적).
+      if (stage.spawns) {
+        const reinforceId = pool.length > 0 ? pool[0] : fallback.id;
+        for (const sp of stage.spawns) {
+          if (!sp.enemyId) sp.enemyId = reinforceId;
+        }
+      }
 
       this.data.gridCombat = startGridCombat(r, stage, enemyDefs);
       return true;

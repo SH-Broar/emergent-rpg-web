@@ -127,6 +127,17 @@ cast_speed = fast
 target_mode = self
 flavor = "다음 한 수가 둘이 된다."
 
+[card.c-wf-foresight]
+name = 예지
+rank = rare
+source = race
+cost = 1
+trigger = manual
+effects = add-foresight:1:self
+cast_speed = normal
+target_mode = self
+flavor = "한 수 더 멀리 본다."
+
 [card.c-wf-timeedge]
 name = 시간의 칼날
 rank = rare
