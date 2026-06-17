@@ -13,7 +13,7 @@ trigger = manual
 effects = damage:16:enemy, block:12:self
 # 격자: 전방+좌+우 횡. 곰이 앞발을 크게 휩쓸며 방어 태세를 잡는다.
 shape = 0,-1|-1,0|1,0
-per_tile_mul = 1.0,0.25,0.25
+per_tile_mul = 1.0,0.7,0.7
 target_mode = pattern
 cast_speed = slow
 flavor = "......버틸 수 있겠나."
@@ -29,7 +29,7 @@ trigger = manual
 effects = damage:7:enemy, apply-status:2:enemy:vulnerable, draw:1:self
 # 격자: 전방 직선 2칸. 번개처럼 앞을 꿰뚫는다. 멀수록 감쇠.
 shape = 0,-1|0,-2
-per_tile_mul = 1.0,0.6
+per_tile_mul = 1.0,0.7
 target_mode = pattern
 cast_speed = fast
 flavor = "눈 깜빡이지 마라. 놓친다."
@@ -45,7 +45,7 @@ trigger = manual
 effects = damage:12:enemy, apply-status:2:enemy:weakness, apply-status:1:self:strength
 # 격자: 전방+좌대각+우대각+전방2칸 부채꼴. 꼬리 불길이 부채처럼 펼쳐진다.
 shape = -1,-1|0,-1|1,-1|0,-2
-per_tile_mul = 0.6,0.47,0.47,0.47
+per_tile_mul = 0.7,0.7,0.7,0.7
 target_mode = pattern
 cast_speed = normal
 flavor = "하나쯤 나눠 줄까? 꼬리 말고, 불."

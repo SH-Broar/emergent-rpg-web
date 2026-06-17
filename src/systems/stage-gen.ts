@@ -7,7 +7,7 @@
  *  - 'cross' : 비직사각 십자(모서리를 void로 제거 — D8 비정사각 검증용).
  *
  * tier(권역 깊이 1~4)로 크기·적 수·foresight·증원 스케줄을 파라미터화.
- * 저tier=foresight 1, 고tier=2~3.
+ * foresight 기본 2~3(tier1·2=2, tier3=3), tier4=4(속도 고난이도). 1은 특수전 한정(일반 tier 미사용).
  */
 
 import type { CellType, GridPos, GridStage, StageSpawn } from '@/data/schemas';
@@ -59,14 +59,14 @@ function tierParams(tier: number): TierParams {
   const t = Math.max(1, Math.min(4, tier || 1));
   switch (t) {
     case 1:
-      return { width: 5, height: 5, enemyCount: 2, foresight: 1, wallChance: 0.05, reinforceTurn: 0, emptySpawns: 0 };
+      return { width: 5, height: 5, enemyCount: 2, foresight: 2, wallChance: 0.05, reinforceTurn: 0, emptySpawns: 0 };
     case 2:
       return { width: 6, height: 6, enemyCount: 3, foresight: 2, wallChance: 0.08, reinforceTurn: 0, emptySpawns: 0 };
     case 3:
-      return { width: 7, height: 7, enemyCount: 3, foresight: 2, wallChance: 0.10, reinforceTurn: 3, emptySpawns: 0 };
+      return { width: 7, height: 7, enemyCount: 3, foresight: 3, wallChance: 0.10, reinforceTurn: 3, emptySpawns: 0 };
     case 4:
     default:
-      return { width: 8, height: 8, enemyCount: 4, foresight: 3, wallChance: 0.12, reinforceTurn: 3, emptySpawns: 1 };
+      return { width: 8, height: 8, enemyCount: 4, foresight: 4, wallChance: 0.12, reinforceTurn: 3, emptySpawns: 1 };
   }
 }
 

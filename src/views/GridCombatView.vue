@@ -17,7 +17,7 @@
  * 씬 전환 소프트락 회귀 방지(project_scene_transition_softlock_fix): 단일 루트 wrapper.
  */
 
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useRunStore } from '@/stores/run';
 import { useUiStore } from '@/stores/ui';
@@ -36,6 +36,7 @@ import { statusLabel } from '@/systems/labels';
 import type { Item } from '@/data/schemas';
 import { scaledValue, enhanceBadge } from '@/systems/enhance';
 import { useGridFx } from '@/composables/useGridFx';
+import type { ActorSnapshot } from '@/composables/useGridFx';
 import type {
   Card,
   GridCombatant,
@@ -113,7 +114,13 @@ const planFull = computed(() => plan.value.length >= foresight.value);
  * 안 보이던 버그가 있었다. dyingActors(짧은 페이드)에 든 적은 데미지·death fx가 끝날 때까지 남긴다.
  */
 const liveEnemies = computed<GridCombatant[]>(() =>
-  (gc.value?.enemies ?? []).filter((e) => e.hp > 0 || fx.dyingActors.value.has(e.id)),
+  (gc.value?.enemies ?? []).filter(
+    (e) =>
+      e.hp > 0 ||
+      fx.dyingActors.value.has(e.id) ||
+      // 순차 재생(A) 중: 엔진은 이미 처치했어도 display hp가 남아 있으면 그 토큰을 계속 보여 준다.
+      (fx.playing.value && (fx.displayHp.value.get(e.id) ?? 0) > 0),
+  ),
 );
 
 /** 셀 정사각 그리드 — void는 빈칸(렌더 X). */
@@ -207,8 +214,62 @@ function hasItemDrop(x: number, y: number): boolean {
   return (stage.value?.itemDrops ?? []).some((d) => d.pos.x === x && d.pos.y === y);
 }
 
+// === 표시(display) 상태 — 순차 재생(A) 중에는 엔진 final이 아니라 fx.display* 로 렌더. ===
+// 비어 있으면(idle) 엔진 state로 폴백. playRound가 라운드 시작에서 출발해 한 행동씩 채운다.
+/** 토큰 표시 위치 — 재생 중이면 display, 아니면 엔진 pos. */
+function tokenPos(c: GridCombatant): GridPos {
+  return fx.displayPos.value.get(c.id) ?? c.pos;
+}
+/** 토큰 표시 HP — 재생 중이면 display, 아니면 엔진 hp. */
+function tokenHp(c: GridCombatant): number {
+  const v = fx.displayHp.value.get(c.id);
+  return v !== undefined ? v : c.hp;
+}
+/** 토큰 표시 방어 — 재생 중이면 display, 아니면 엔진 block. */
+function tokenBlock(c: GridCombatant): number {
+  const v = fx.displayBlock.value.get(c.id);
+  return v !== undefined ? v : c.block;
+}
+
+/**
+ * 같은 (표시) 칸에 겹친 토큰들의 id 목록 맵 — 'x,y' → [actorId...]
+ * 칸 점유가 배타적이지 않아(겹침 허용) 한 칸에 토큰 2개+가 올 수 있다. 겹쳤을 때 둘 다 보이게
+ * tokenOffset이 이 인덱스로 소폭 어긋나게 그린다. display state(tokenPos)와 일관되게 계산.
+ */
+const cellOccupants = computed<Map<string, string[]>>(() => {
+  const m = new Map<string, string[]>();
+  const add = (c: GridCombatant) => {
+    const p = tokenPos(c);
+    const k = `${p.x},${p.y}`;
+    const arr = m.get(k);
+    if (arr) arr.push(c.id); else m.set(k, [c.id]);
+  };
+  const player = gc.value?.player;
+  if (player && player.hp > 0) add(player);
+  for (const e of liveEnemies.value) add(e);
+  return m;
+});
+
+/**
+ * 토큰 겹침 오프셋 — 같은 칸에 토큰이 2개+면 인덱스별로 소폭 픽셀 어긋남(원이 완전히 안 가려지게).
+ * 혼자면 오프셋 0. translate3d 한 칸당 최대 ±(cell의 일부)만큼. wrapper transform(위치)과 분리된
+ * inner 레이어에 적용해 위치/fx와 충돌하지 않게 한다.
+ */
+function tokenOffset(c: GridCombatant): string {
+  const p = tokenPos(c);
+  const group = cellOccupants.value.get(`${p.x},${p.y}`) ?? [c.id];
+  if (group.length <= 1) return 'translate(0,0)';
+  const idx = group.indexOf(c.id);
+  // 부채꼴/대각으로 분산 — 인덱스에 따라 (dx,dy) px. 셀 크기 대비 작게(겹쳐도 둘 다 식별).
+  const step = 9; // px
+  const dx = (idx - (group.length - 1) / 2) * step;
+  const dy = (idx % 2 === 0 ? -1 : 1) * Math.ceil(idx / 2) * (step * 0.6);
+  return `translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px)`;
+}
+
 function hpRatio(c: GridCombatant): number {
-  return c.maxHp > 0 ? Math.max(0, Math.min(1, c.hp / c.maxHp)) : 0;
+  const hp = tokenHp(c);
+  return c.maxHp > 0 ? Math.max(0, Math.min(1, hp / c.maxHp)) : 0;
 }
 
 function statusEntries(c: GridCombatant | undefined) {
@@ -509,37 +570,54 @@ function commit() {
   doCommit();
 }
 
-/** [대기] — 빈 행동으로 라운드 넘기기(plan이 비어 있어도 진행). */
+/** [대기] — *대기 행동*을 플랜에 한 슬롯 추가(커밋 X). 라운드 커밋은 [실행]만. */
 function waitRound() {
   const state = gc.value;
   if (!state || committing.value || phase.value !== 'combat') return;
-  // 남은 슬롯을 wait로 채워 라운드를 즉시 해소.
-  while (state.playerPlan.length < state.foresight) {
-    if (!queuePlayerAction(state, { kind: 'wait' })) break;
+  if (planFull.value) return;
+  inspectedId.value = null;
+  itemPanelOpen.value = false;
+  mode.value = 'idle';
+  aimingCardId.value = null;
+  if (!queuePlayerAction(state, { kind: 'wait' })) {
+    ui.toast('info', '대기를 추가할 수 없다.');
   }
-  doCommit();
+}
+
+/** 라운드 시작 시점 전투원 스냅샷(display 출발점) — 엔진 commit *전*에 떠 둔다. */
+function snapshotActors(state: NonNullable<typeof gc.value>): ActorSnapshot[] {
+  const out: ActorSnapshot[] = [
+    { id: state.player.id, pos: { ...state.player.pos }, hp: state.player.hp, block: state.player.block },
+  ];
+  for (const e of state.enemies) {
+    if (e.hp > 0) out.push({ id: e.id, pos: { ...e.pos }, hp: e.hp, block: e.block });
+  }
+  return out;
 }
 
 function doCommit() {
+  const before = gc.value;
+  if (!before) return;
   committing.value = true;
   mode.value = 'idle';
   aimingCardId.value = null;
   inspectedId.value = null;
   itemPanelOpen.value = false;
 
-  // 엔진 해소 — fx가 state.fx에 쌓인다. 해소 후 fx를 *행동별 순차*로 소비(애니)하고 비운다.
+  // 1) 라운드 *시작* 상태 스냅샷(엔진이 즉시 final로 바꾸기 전).
+  const start = snapshotActors(before);
+
+  // 2) 엔진 해소 — pos/hp/block을 즉시 final로 바꾸고 fx 큐를 쌓는다.
   const outcome = run.commitGridRound();
 
   const state = gc.value;
-  let playMs = 0;
-  if (state?.fx?.length) {
-    playMs = fx.consumeAll(state.fx); // 순차 재생 총 시간(#4).
-    state.fx.length = 0;
-  }
+  const events = state?.fx ? [...state.fx] : [];
+  if (state?.fx) state.fx.length = 0;
 
-  // 순차 fx가 다 흐른 뒤 다음 입력 허용 + 승패 전이(마지막 모션 꼬리까지 + 짧은 여유).
-  const settle = fx.reduced ? 0 : playMs + 180;
-  window.setTimeout(() => {
+  // 3) **진짜 순차 재생(A)** — display를 start에서 출발시켜 fx를 행동 순서대로 하나씩 재생.
+  //    재생이 끝나면(onDone) display를 비워 엔진 final로 수렴 + 입력 허용 + 승패 전이.
+  fx.playRound(start, events, () => {
+    fx.clearDisplay(); // display 제거 → 토큰이 엔진 final로 수렴.
     committing.value = false;
     if (outcome === 'win') {
       phase.value = 'victory';
@@ -553,7 +631,7 @@ function doCommit() {
         phase.value = 'defeat';
       }
     }
-  }, settle);
+  });
 }
 
 // 승리 확정 후 [계속] — 보상/클리어 마킹 처리 후 전이.
@@ -605,6 +683,11 @@ onMounted(() => {
   if (o === 'win') phase.value = 'victory';
   else if (o === 'lose') phase.value = 'defeat';
 });
+
+// 언마운트 — 진행 중 순차 재생 타이머 정리(전이 후 콜백 발사 방지).
+onUnmounted(() => {
+  fx.clearDisplay();
+});
 </script>
 
 <template>
@@ -616,8 +699,8 @@ onMounted(() => {
       <header class="topbar">
         <div class="topbar__turn">⚔ 턴 {{ gc.turn }}</div>
         <div class="topbar__mana">마나 {{ gc.mana }} / {{ gc.maxMana }}</div>
-        <div class="topbar__hp">HP {{ gc.player.hp }} / {{ gc.player.maxHp }}
-          <span v-if="gc.player.block > 0" class="topbar__block">🛡 {{ gc.player.block }}</span>
+        <div class="topbar__hp">HP {{ tokenHp(gc.player) }} / {{ gc.player.maxHp }}
+          <span v-if="tokenBlock(gc.player) > 0" class="topbar__block">🛡 {{ tokenBlock(gc.player) }}</span>
         </div>
         <div v-if="committing" class="topbar__resolving">해소 중…</div>
       </header>
@@ -652,7 +735,7 @@ onMounted(() => {
         </div>
         <div class="boss-banner__hpbar">
           <span class="boss-banner__hpfill" :style="{ width: `${hpRatio(bossUnit) * 100}%` }"></span>
-          <span class="boss-banner__hptext">{{ bossUnit.hp }} / {{ bossUnit.maxHp }}</span>
+          <span class="boss-banner__hptext">{{ tokenHp(bossUnit) }} / {{ bossUnit.maxHp }}</span>
         </div>
       </div>
 
@@ -701,10 +784,14 @@ onMounted(() => {
             v-if="gc.player.hp > 0"
             class="token token--player"
             :style="{
-              transform: `translate(calc(${gc.player.pos.x} * var(--cell)), calc(${gc.player.pos.y} * var(--cell)))`,
+              transform: `translate(calc(${tokenPos(gc.player).x} * var(--cell)), calc(${tokenPos(gc.player).y} * var(--cell)))`,
             }"
           >
-            <div class="token__inner" :class="{ 'is-hit': fx.hitActors.value.has('player') }">
+            <div
+              class="token__inner"
+              :class="{ 'is-hit': fx.hitActors.value.has('player') }"
+              :style="{ transform: tokenOffset(gc.player) }"
+            >
               <div class="token__circle token__circle--player"></div>
               <div class="token__hpbar"><span :style="{ width: `${hpRatio(gc.player) * 100}%` }"></span></div>
               <!-- 플로팅 숫자 -->
@@ -725,7 +812,7 @@ onMounted(() => {
             class="token token--enemy"
             :class="{ 'is-inspected': inspectedId === e.id, 'token--boss': e.isBoss }"
             :style="{
-              transform: `translate(calc(${e.pos.x} * var(--cell)), calc(${e.pos.y} * var(--cell)))`,
+              transform: `translate(calc(${tokenPos(e).x} * var(--cell)), calc(${tokenPos(e).y} * var(--cell)))`,
             }"
             @click.stop="tapEnemy(e)"
           >
@@ -735,6 +822,7 @@ onMounted(() => {
                 'is-hit': fx.hitActors.value.has(e.id),
                 'is-dying': e.hp <= 0 && fx.dyingActors.value.has(e.id),
               }"
+              :style="{ transform: tokenOffset(e) }"
             >
               <!-- 다음 의도 — 상시 표시(B3-disp). 공격이면 피해량까지. -->
               <span class="token__intent" :class="`token__intent--${enemyNextIntent(e).kind}`">
@@ -745,8 +833,8 @@ onMounted(() => {
               </span>
               <div class="token__circle" :style="{ background: enemyColor(e) }"></div>
               <div class="token__hpbar token__hpbar--enemy"><span :style="{ width: `${hpRatio(e) * 100}%` }"></span></div>
-              <!-- HP 숫자 — 상시 표시(B3-disp). -->
-              <span class="token__hpnum">{{ e.hp }}/{{ e.maxHp }}</span>
+              <!-- HP 숫자 — 상시 표시(B3-disp). 순차 재생 중엔 display hp. -->
+              <span class="token__hpnum">{{ tokenHp(e) }}/{{ e.maxHp }}</span>
               <span
                 v-for="f in fx.floats.value.filter((n) => n.actorId === e.id)"
                 :key="f.id"
@@ -805,7 +893,7 @@ onMounted(() => {
           :disabled="committing || planFull"
           @click="selectMoveMode"
         >이동</button>
-        <button class="act act--wait" :disabled="committing" @click="waitRound">대기</button>
+        <button class="act act--wait" :disabled="committing || planFull" @click="waitRound">대기</button>
         <button
           class="act act--item"
           :class="{ 'act--on': itemPanelOpen }"
@@ -1019,7 +1107,10 @@ onMounted(() => {
 .token__inner {
   width: 100%; height: 100%;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
+  /* 겹침 오프셋(tokenOffset) 변동 시 부드럽게 — 위치 transform(wrapper)과 독립 레이어. */
+  transition: transform 120ms ease;
 }
+@media (prefers-reduced-motion: reduce) { .token__inner { transition: none; } }
 .token--enemy { pointer-events: auto; cursor: pointer; }
 /* 소멸 중 — 치명타 데미지 숫자가 끝까지 보이도록 짧게 페이드아웃(보너스).
    inner의 opacity만 건드린다(wrapper 위치 transform 불변 → snap 방지). */
@@ -1084,14 +1175,14 @@ onMounted(() => {
 .token__intent--move .token__intent-icon { color: #8ec8ff; }
 .token__intent--wait .token__intent-icon { color: #888; }
 
-/* 피격 흔들림 — inner에만 적용. wrapper의 위치 transform과 독립이라 원점 튐 없음. */
-.token__inner.is-hit { animation: token-shake 100ms ease; }
+/* 피격 흔들림 — *원(circle)*에 적용. inner는 겹침 오프셋 transform을 쓰므로 충돌 회피.
+   wrapper(위치)·inner(겹침오프셋)·circle(흔들림)으로 transform 3층 분리 → 어느 것도 안 덮어씀. */
+.token__inner.is-hit .token__circle { animation: token-shake 100ms ease, hit-flash 100ms ease; }
 @keyframes token-shake {
   0%, 100% { transform: translateX(0); }
   25% { transform: translateX(-3px); }
   75% { transform: translateX(3px); }
 }
-.token__inner.is-hit .token__circle { animation: hit-flash 100ms ease; }
 @keyframes hit-flash {
   0% { filter: brightness(2.2); }
   100% { filter: brightness(1); }

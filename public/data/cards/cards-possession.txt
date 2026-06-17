@@ -18,7 +18,7 @@ possession_max = 8
 effects = damage:14:enemy, heal:-3:self
 # 격자: 전방+좌대각+우대각. 빙의된 힘이 앞으로 범람한다.
 shape = -1,-1|0,-1|1,-1
-per_tile_mul = 0.7,0.2,0.2
+per_tile_mul = 0.7,0.7,0.7
 target_mode = pattern
 cast_speed = normal
 flavor = 어깨가 가벼운 날도, 무거운 날도 있다.
@@ -34,7 +34,7 @@ trigger = manual
 effects = damage:14:enemy, heal:4:self, exhaust-self:0:self
 # 격자: 전방+좌대각+우대각. 깃든 빛이 주변을 감싸며 쏟아진다.
 shape = -1,-1|0,-1|1,-1
-per_tile_mul = 0.7,0.2,0.2
+per_tile_mul = 0.7,0.7,0.7
 target_mode = pattern
 cast_speed = normal
 flavor = "옆에 있을게."

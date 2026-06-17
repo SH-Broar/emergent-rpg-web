@@ -130,7 +130,11 @@ export function tileWalkable(stage: GridStage, p: GridPos): boolean {
   return t === 'floor' || t === 'item' || t === 'spawn';
 }
 
-/** 그 칸에 서 있는 전투원(살아 있는). 없으면 undefined. */
+/**
+ * 그 칸에 서 있는 전투원(살아 있는) 1명. 없으면 undefined.
+ * 칸 점유는 *배타적이 아니다*(플레이어·적 겹침 허용) — 여럿이 겹친 칸이면 첫 1명만 반환.
+ * 타깃팅/AoE는 combatantsAt(전부)를 쓸 것. 이 단일 헬퍼는 인스펙트·궁지 판정 등 1명이면 충분한 곳에만.
+ */
 export function combatantAt(state: GridCombatState, pos: GridPos): GridCombatant | undefined {
   if (state.player.hp > 0 && samePos(state.player.pos, pos)) return state.player;
   for (const e of state.enemies) {
@@ -140,16 +144,28 @@ export function combatantAt(state: GridCombatState, pos: GridPos): GridCombatant
 }
 
 /**
- * 궁지 정도 — 어떤 위치의 *직교 인접 4칸 중 차단된 칸 수*(0~4).
- * 차단 = 통행 불가 바닥(벽/void/격자 밖) 또는 다른 전투원이 점유.
+ * 그 칸에 겹쳐 있는 *살아 있는 전투원 전부*(플레이어 + 적, 겹침 허용).
+ * 한 칸에 적 여럿이거나 플레이어와 적이 겹쳐 있어도 모두 반환 — AoE/공격 타깃 판정용.
+ */
+export function combatantsAt(state: GridCombatState, pos: GridPos): GridCombatant[] {
+  const out: GridCombatant[] = [];
+  if (state.player.hp > 0 && samePos(state.player.pos, pos)) out.push(state.player);
+  for (const e of state.enemies) {
+    if (e.hp > 0 && samePos(e.pos, pos)) out.push(e);
+  }
+  return out;
+}
+
+/**
+ * 궁지 정도 — 어떤 위치의 *직교 인접 4칸 중 통행 불가 칸 수*(0~4).
+ * 차단 = 통행 불가 바닥(벽/void/격자 밖)뿐. 전투원은 칸을 막지 않으므로(겹침 허용) 더는 세지 않는다.
  * 구석/막다른 곳일수록 값이 커진다(damage-per-confine 등 위치 기반 레버용).
  */
 export function confinedCount(state: GridCombatState, pos: GridPos): number {
   let blocked = 0;
   for (const d of ROOK_DIRS) {
     const p = { x: pos.x + d.dx, y: pos.y + d.dy };
-    if (!tileWalkable(state.stage, p)) { blocked += 1; continue; }   // 벽/void/격자 밖.
-    if (combatantAt(state, p) !== undefined) blocked += 1;            // 다른 전투원 점유.
+    if (!tileWalkable(state.stage, p)) blocked += 1;   // 벽/void/격자 밖.
   }
   return blocked; // 0~4.
 }
@@ -178,14 +194,17 @@ const KNIGHT_OFFSETS: GridOffset[] = [
   { dx: 1, dy: -2 }, { dx: 2, dy: -1 }, { dx: -1, dy: -2 }, { dx: -2, dy: -1 },
 ];
 
-/** 이 칸이 *비어 있고* 통행 가능한가(이동 도착 후보). */
+/**
+ * 이 칸이 *이동 도착 가능*한가 — 통행 가능 바닥(floor/item/spawn)이면 OK.
+ * 칸 점유는 배타적이 아니므로(겹침 허용) 전투원이 서 있어도 그 칸으로 이동/착지 가능.
+ */
 function isFreeTile(state: GridCombatState, p: GridPos): boolean {
-  return tileWalkable(state.stage, p) && combatantAt(state, p) === undefined;
+  return tileWalkable(state.stage, p);
 }
 
 /**
  * 슬라이딩(rook/bishop/king) 도달 칸 — 각 방향으로 range칸까지, *경로가 막히면 중단*.
- * 막는 것: 격자 밖/void/wall, 또는 다른 전투원(통과 불가). 빈 칸만 도착 후보.
+ * 막는 것: 격자 밖/void/wall뿐. 전투원은 통과 가능(겹침 허용)이라 더는 경로를 막지 않는다.
  */
 function slideReach(
   state: GridCombatState,
@@ -198,8 +217,7 @@ function slideReach(
     for (let step = 1; step <= range; step++) {
       const p = { x: from.x + d.dx * step, y: from.y + d.dy * step };
       if (!tileWalkable(state.stage, p)) break;        // 벽/void/밖 — 경로 차단.
-      if (combatantAt(state, p)) break;                // 다른 전투원 — 통과 불가.
-      out.push(p);
+      out.push(p);                                     // 전투원 겹침 허용 — 통과·착지 가능.
     }
   }
   return out;
@@ -629,7 +647,10 @@ function makeEnemyCombatant(def: Monster, pos: GridPos, idx: number): GridCombat
   };
 }
 
-/** 빈 spawn/floor 칸 하나 — 증원/위치 폴백용. */
+/**
+ * 배치 칸 하나 — 증원/위치 폴백용. *빈 칸을 선호*하되, 점유는 배타적이 아니므로(겹침 허용)
+ * 빈 칸이 없으면 점유 칸도 허용(spawn > floor 순). 통행 가능 칸이 하나라도 있으면 항상 반환.
+ */
 function firstFreeSpawnTile(
   stage: GridStage,
   enemies: GridCombatant[],
@@ -637,19 +658,31 @@ function firstFreeSpawnTile(
 ): GridPos | undefined {
   const occupied = (p: GridPos) =>
     samePos(player.pos, p) || enemies.some((e) => samePos(e.pos, p));
-  // spawn 칸 우선.
+  let firstSpawn: GridPos | undefined;   // 점유돼도 spawn 칸 폴백.
+  let firstWalkable: GridPos | undefined; // 점유돼도 통행 칸 폴백.
+  // 1순위: 빈 spawn → 2순위: 빈 floor. 동시에 점유 칸 폴백을 기억해 둔다.
   for (let y = 0; y < stage.height; y++) {
     for (let x = 0; x < stage.width; x++) {
-      if (stage.cells[y]?.[x] === 'spawn' && !occupied({ x, y })) return { x, y };
+      const p = { x, y };
+      if (!tileWalkable(stage, p)) continue;
+      const isSpawn = stage.cells[y]?.[x] === 'spawn';
+      if (!firstWalkable) firstWalkable = p;
+      if (isSpawn && !firstSpawn) firstSpawn = p;
+      if (!occupied(p)) {
+        if (isSpawn) return p;            // 빈 spawn — 최우선.
+        if (!firstWalkable || firstWalkable === p) { /* 빈 floor 후보 — 아래에서 반환 */ }
+      }
     }
   }
+  // 빈 floor 우선 탐색(빈 spawn은 위에서 이미 반환).
   for (let y = 0; y < stage.height; y++) {
     for (let x = 0; x < stage.width; x++) {
       const p = { x, y };
       if (tileWalkable(stage, p) && !occupied(p)) return p;
     }
   }
-  return undefined;
+  // 빈 칸이 전혀 없음 — 점유 칸 폴백(겹침 허용): spawn > 아무 통행 칸.
+  return firstSpawn ?? firstWalkable;
 }
 
 // ============================================================================
@@ -883,19 +916,19 @@ function planOneEnemyStep(
     }
   }
 
-  // 2) gridBehavior 없음 → 근접 폴백: 인접하면 근접 공격(attackIdx -1), 아니면 접근.
+  // 2) gridBehavior 없음 → 근접 폴백: 인접(거리1) 또는 *같은 칸*(거리0, 겹침)이면 근접 공격.
   if (attacks.length === 0) {
-    if (chebyshev(simPos, target.pos) <= 1 && manhattan(simPos, target.pos) === 1) {
+    if (manhattan(simPos, target.pos) <= 1) {
       return { kind: 'attack', attackIdx: -1, targetTiles: [{ ...target.pos }] };
     }
   }
 
-  // 3) 접근 이동 — 사거리 안으로 들어가도록 플레이어에 가까운 빈 칸.
+  // 3) 접근 이동 — 사거리 안으로 들어가도록 플레이어에 가까운 칸(겹침 허용).
   const move = approachMove(state, enemy, simPos, target.pos);
   if (move) return { kind: 'move', to: move };
 
-  // 4) 마지막 폴백 — 인접해 있으면 근접 공격, 아니면 대기.
-  if (manhattan(simPos, target.pos) === 1) {
+  // 4) 마지막 폴백 — 인접/겹침이면 근접 공격, 아니면 대기.
+  if (manhattan(simPos, target.pos) <= 1) {
     return { kind: 'attack', attackIdx: -1, targetTiles: [{ ...target.pos }] };
   }
   return { kind: 'wait' };
@@ -1582,8 +1615,11 @@ function applyCardEffects(
   shape.forEach((off, i) => {
     const pos = { x: state.player.pos.x + off.dx, y: state.player.pos.y + off.dy };
     if (!tileWalkable(state.stage, pos)) return;
-    const c = combatantAt(state, pos);
-    if (c && c.team === 'enemy' && c.hp > 0) shapeHits.push({ target: c, mul: perTileMul[i] ?? 1 });
+    // 그 칸의 *모든* 적군을 대상에 포함(겹침 허용 — 한 칸에 적 여럿/플레이어와 겹쳐도). perTileMul은 칸 인덱스 기준.
+    const mul = perTileMul[i] ?? 1;
+    for (const c of combatantsAt(state, pos)) {
+      if (c.team === 'enemy' && c.hp > 0) shapeHits.push({ target: c, mul });
+    }
   });
 
   /**
@@ -1953,10 +1989,9 @@ function execAttack(
 ): void {
   const enemyStrength = attacker.statuses.strength ?? 0;
 
-  // 근접 폴백 — gridBehavior 없는 적.
+  // 근접 폴백 — gridBehavior 없는 적. 인접(거리1) *또는 같은 칸*(거리0, 겹침)이면 근접 타격.
   if (attackIdx < 0 || !attacker.attacks || !attacker.attacks[attackIdx]) {
-    // 실행 시점 위치로 인접 판정.
-    if (manhattan(attacker.pos, state.player.pos) === 1 && state.player.hp > 0) {
+    if (manhattan(attacker.pos, state.player.pos) <= 1 && state.player.hp > 0) {
       const dmg = (attacker.attack ?? 0) + enemyStrength;
       applyDamage(state, state.player, dmg, attacker.statuses);
       pushLog(state, `${attacker.name ?? '적'}의 공격`);
@@ -1970,16 +2005,18 @@ function execAttack(
   const perTileMul = atk.perTileMul ?? [];
 
   // perTileMul을 atk.shape 인덱스에 정렬(walkable 필터로 인덱스가 밀리지 않게 shape 직접 순회).
+  // 칸에 플레이어가 *겹쳐 있어도* 맞도록 combatantsAt(전부)로 판정.
   let hitAny = false;
   (atk.shape ?? []).forEach((off, i) => {
     const p = { x: attacker.pos.x + off.dx, y: attacker.pos.y + off.dy };
     if (!tileWalkable(state.stage, p)) return;
-    const target = combatantAt(state, p);
-    if (target && target.team === 'player' && target.hp > 0) {
-      const mul = perTileMul[i] ?? 1;
-      applyDamage(state, target, Math.floor(baseDamage * mul), attacker.statuses);
-      applyStatusToken(target, atk.applyStatus);
-      hitAny = true;
+    const mul = perTileMul[i] ?? 1;
+    for (const target of combatantsAt(state, p)) {
+      if (target.team === 'player' && target.hp > 0) {
+        applyDamage(state, target, Math.floor(baseDamage * mul), attacker.statuses);
+        applyStatusToken(target, atk.applyStatus);
+        hitAny = true;
+      }
     }
   });
   if (hitAny) pushLog(state, `${attacker.name ?? '적'}의 ${atk.name ?? '공격'}`);

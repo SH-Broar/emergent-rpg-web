@@ -135,7 +135,7 @@ upgrade_to = c-burn-mark-plus
 flavor = "불조심하라니까."
 # 격자: 자기 기준 전방+좌+우 3×1 가로띠. 화염 광역, 감쇠 있음. 느린 속도.
 shape = -1,-1|0,-1|1,-1
-per_tile_mul = 0.6,1.0,0.6
+per_tile_mul = 0.7,1.0,0.7
 target_mode = pattern
 cast_speed = slow
 
@@ -185,7 +185,7 @@ flavor = "......잘 다뤄 줘."
 upgrade_to = c-transcend-strike-plus
 # 격자: 전방 3칸 직선 관통. 멀수록 감쇠. 느린 대신 파괴적.
 shape = 0,-1|0,-2|0,-3
-per_tile_mul = 1.0,0.2,0.2
+per_tile_mul = 1.0,0.7,0.7
 target_mode = pattern
 cast_speed = slow
 
@@ -203,7 +203,7 @@ flavor = "잡았다, 그림자."
 upgrade_to = c-shadow-rebuke-plus
 # 격자: 전방+좌우 십자. 발밑 그림자를 밟는 컨셉.
 shape = 0,-1|-1,0|1,0
-per_tile_mul = 1.0,0.2,0.2
+per_tile_mul = 1.0,0.7,0.7
 target_mode = pattern
 cast_speed = normal
 
@@ -320,7 +320,7 @@ trigger = manual
 effects = damage:7:enemy, apply-status:7:enemy:burn
 flavor = "그러게, 조심하랬지."
 shape = -1,-1|0,-1|1,-1
-per_tile_mul = 0.6,1.0,0.6
+per_tile_mul = 0.7,1.0,0.7
 target_mode = pattern
 cast_speed = slow
 
@@ -482,7 +482,7 @@ target_mode = pattern
 cast_speed = slow
 flavor = "여기 보세요. 찰칵!"
 upgrade_to = c-flash-capture-plus
-per_tile_mul = 0.5,1.0,0.5
+per_tile_mul = 0.7,1.0,0.7
 [card.c-rize-relay]
 name = 연속 타격
 rank = common
@@ -587,7 +587,7 @@ shape = 0,-1|0,-2
 target_mode = pattern
 cast_speed = fast
 flavor = "접지 잘하고 만져."
-per_tile_mul = 1.0,0.2
+per_tile_mul = 1.0,0.7
 [card.c-alti-resonance]
 name = 알티-알타의 신호
 rank = rare
@@ -600,7 +600,7 @@ shape = 0,-1|0,1|-1,0|1,0
 target_mode = pattern
 cast_speed = normal
 flavor = "둘이 같은 신호를 보내면, 못 갈 데가 없어요."
-per_tile_mul = 1.0,0.2,0.2,0.2
+per_tile_mul = 1.0,0.7,0.7,0.7
 [card.c-flame-web]
 name = 화염 거미줄
 rank = rare
@@ -613,7 +613,7 @@ shape = -1,-1|0,-1|1,-1|-1,0|1,0
 target_mode = pattern
 cast_speed = slow
 flavor = "꽉 묶어 줄게. 따뜻하지?"
-per_tile_mul = 0.7,0.2,0.2,0.2,0.2
+per_tile_mul = 0.7,0.7,0.7,0.7,0.7
 [card.c-orca-tide]
 name = 범고래의 물결
 rank = rare
@@ -626,7 +626,7 @@ shape = 0,-1|-1,-1|1,-1
 target_mode = pattern
 cast_speed = normal
 flavor = 물결이 갈라지면, 이미 늦었다.
-per_tile_mul = 1.0,0.2,0.2
+per_tile_mul = 1.0,0.7,0.7
 [card.c-trade-coil]
 name = 꼬리 감기
 rank = rare
@@ -639,7 +639,7 @@ shape = 0,-1|-1,0|1,0|0,1
 target_mode = pattern
 cast_speed = slow
 flavor = 꼬리로 칭칭 감아 조인다.
-per_tile_mul = 1.0,0.2,0.2,0.2
+per_tile_mul = 1.0,0.7,0.7,0.7
 [card.c-lop-sign]
 name = 리포의 신호
 rank = rare
@@ -732,7 +732,7 @@ shape = -1,-1|0,-1|1,-1|-1,0|0,0|1,0|-1,1|0,1|1,1
 target_mode = pattern
 cast_speed = slow
 flavor = 칼날이 보는 각도마다 다른 색으로 빛난다.
-per_tile_mul = 0.6,0.8,0.6,0.8,1.0,0.8,0.5,0.7,0.5
+per_tile_mul = 0.7,0.8,0.7,0.8,1.0,0.8,0.7,0.7,0.7
 [card.c-blood-pact]
 name = 피의 계약
 rank = rare
@@ -1024,7 +1024,7 @@ shape = 0,-1|-1,0|1,0|0,1
 target_mode = pattern
 cast_speed = fast
 flavor = "남겨서 뭐 하게?"
-per_tile_mul = 1.0,0.6,0.6,0.4
+per_tile_mul = 1.0,0.7,0.7,0.7
 [card.c-overdraw-burst]
 name = 과부하 폭발
 rank = rare
@@ -1039,7 +1039,7 @@ cast_speed = fast
 flavor = 퓨즈가 나가는 냄새가 난다.
 
 # ---------- damage-per-companion 2장 (동료 많을수록) ----------
-per_tile_mul = 0.5,0.8,0.5,0.6,1.0,0.6
+per_tile_mul = 0.7,0.8,0.7,0.7,1.0,0.7
 [card.c-comrades-charge]
 name = 동행의 돌격
 rank = common
@@ -1067,7 +1067,7 @@ cast_speed = normal
 flavor = 떠올릴 얼굴이 많다는 건 좋은 일이다.
 
 # ---------- damage-per-relic 2장 (유물 많을수록) ----------
-per_tile_mul = 1.0,0.6,0.6
+per_tile_mul = 1.0,0.7,0.7
 [card.c-collectors-strike]
 name = 수집가의 일격
 rank = common
@@ -1095,7 +1095,7 @@ cast_speed = slow
 flavor = "내 보물에 손대지 마!"
 
 # ---------- growing-damage 2장 (쓸수록 강해지는 공격) ----------
-per_tile_mul = 1.0,0.6,0.6,0.5,0.5
+per_tile_mul = 1.0,0.7,0.7,0.7,0.7
 [card.c-rising-fang]
 name = 자라나는 송곳니
 rank = common
@@ -1118,7 +1118,7 @@ cost = 1
 trigger = manual
 effects = growing-damage:8:enemy
 shape = 0,-1|0,1|-1,0|1,0
-per_tile_mul = 1.0,0.29,0.29,0.29
+per_tile_mul = 1.0,0.7,0.7,0.7
 target_mode = pattern
 cast_speed = slow
 flavor = 폭풍은 처음에 산들바람인 척을 한다.
@@ -1177,7 +1177,7 @@ shape = 0,-1|0,-2
 target_mode = pattern
 cast_speed = normal
 flavor = 그 탑에는 새도 앉지 않는다.
-per_tile_mul = 1.0,0.6
+per_tile_mul = 1.0,0.7
 [card.c-prism-overload]
 name = 과욕
 rank = rare
@@ -1231,7 +1231,7 @@ cost = 1
 trigger = manual
 effects = damage:10:enemy
 shape = 0,-1|-1,0|1,0
-per_tile_mul = 1.0,0.25,0.25
+per_tile_mul = 1.0,0.7,0.7
 target_mode = pattern
 cast_speed = normal
 flavor = "기본에 충실한 물건입니다."
@@ -1348,7 +1348,7 @@ cost = 2
 trigger = manual
 effects = damage:25:enemy, apply-status:7:enemy:burn
 shape = 0,-1|0,1|-1,0|1,0
-per_tile_mul = 1.0,0.2,0.2,0.2
+per_tile_mul = 1.0,0.7,0.7,0.7
 target_mode = pattern
 cast_speed = slow
 flavor = 트리플라워에서는 비 대신 재가 내린다.
@@ -1365,7 +1365,7 @@ shape = 0,-1|0,-2|0,-3
 target_mode = pattern
 cast_speed = fast
 flavor = 팔콘 가든의 바람은 아래에서 위로 분다.
-per_tile_mul = 1.0,0.7,0.5
+per_tile_mul = 1.0,0.7,0.7
 [card.c-yusezria-corebreak]
 name = 정수핵 깨기
 rank = legendary
@@ -1409,7 +1409,7 @@ shape = 0,-1|0,-2
 target_mode = pattern
 cast_speed = slow
 flavor = 낫질에는 때가 있다.
-per_tile_mul = 1.0,0.6
+per_tile_mul = 1.0,0.7
 [card.c-wild-rush]
 name = 야성의 돌진
 rank = common
@@ -1484,7 +1484,7 @@ shape = 0,-1|0,-2|0,-3
 target_mode = pattern
 cast_speed = slow
 flavor = "걱정하지 마."
-per_tile_mul = 1.0,0.2,0.2
+per_tile_mul = 1.0,0.7,0.7
 [card.c-shadow-rebuke-plus]
 name = 그��자 밟기+
 rank = rare
@@ -1497,7 +1497,7 @@ shape = 0,-1|-1,0|1,0
 target_mode = pattern
 cast_speed = normal
 flavor = 더는 어디에도 숨지 못한다.
-per_tile_mul = 1.0,0.2,0.2
+per_tile_mul = 1.0,0.7,0.7
 [card.c-iluneon-stopped-noon-plus]
 name = 멈춘 시계+
 rank = legendary
@@ -1523,7 +1523,7 @@ shape = 0,-1|0,-2
 target_mode = pattern
 cast_speed = slow
 flavor = 모스 대장간의 불이 태우지 못하는 건 없다.
-per_tile_mul = 1.0,0.2
+per_tile_mul = 1.0,0.7
 [card.c-tacomi-hologram-mirror-plus]
 name = 홀로매트릭스+
 rank = legendary
@@ -1639,7 +1639,7 @@ shape = -1,-1|0,-1|1,-1
 target_mode = pattern
 cast_speed = slow
 flavor = "한 장 더! 이번엔 웃는 얼굴로!"
-per_tile_mul = 0.5,1.0,0.5
+per_tile_mul = 0.7,1.0,0.7
 [card.c-rize-relay-plus]
 name = 연속 타격+
 rank = common
@@ -1742,7 +1742,7 @@ shape = 0,-1|0,-2
 target_mode = pattern
 cast_speed = fast
 flavor = "하하, 따끔했어?"
-per_tile_mul = 1.0,0.2
+per_tile_mul = 1.0,0.7
 [card.c-alti-resonance-plus]
 name = 알티-알타의 신호+
 rank = rare
@@ -1755,7 +1755,7 @@ shape = 0,-1|0,1|-1,0|1,0
 target_mode = pattern
 cast_speed = normal
 flavor = "신호 하나만 더 겹치면, 끝까지 닿아요."
-per_tile_mul = 1.0,0.2,0.2,0.2
+per_tile_mul = 1.0,0.7,0.7,0.7
 [card.c-flame-web-plus]
 name = 화염 거미줄+
 rank = rare
@@ -1768,7 +1768,7 @@ shape = -1,-1|0,-1|1,-1|-1,0|1,0
 target_mode = pattern
 cast_speed = slow
 flavor = "이제 빠져나갈 틈은 없어!"
-per_tile_mul = 0.7,0.2,0.2,0.2,0.2
+per_tile_mul = 0.7,0.7,0.7,0.7,0.7
 [card.c-orca-tide-plus]
 name = 범고래의 물결+
 rank = rare
@@ -1781,7 +1781,7 @@ shape = 0,-1|-1,-1|1,-1
 target_mode = pattern
 cast_speed = normal
 flavor = 검푸른 포식자에게서 도망칠 수 없다.
-per_tile_mul = 1.0,0.2,0.2
+per_tile_mul = 1.0,0.7,0.7
 [card.c-trade-coil-plus]
 name = 꼬리 감기+
 rank = rare
@@ -1794,7 +1794,7 @@ shape = 0,-1|-1,0|1,0|0,1
 target_mode = pattern
 cast_speed = slow
 flavor = 빈틈없이 조여 와, 빠져나갈 수가 없다.
-per_tile_mul = 1.0,0.2,0.2,0.2
+per_tile_mul = 1.0,0.7,0.7,0.7
 [card.c-lop-sign-plus]
 name = 리포의 신호+
 rank = rare
@@ -1884,7 +1884,7 @@ shape = -1,-1|0,-1|1,-1|-1,0|0,0|1,0|-1,1|0,1|1,1
 target_mode = pattern
 cast_speed = slow
 flavor = 휘두른 검에는 무지개 잔상이 남았다.
-per_tile_mul = 0.6,0.8,0.6,0.8,1.0,0.8,0.5,0.7,0.5
+per_tile_mul = 0.7,0.8,0.7,0.8,1.0,0.8,0.7,0.7,0.7
 [card.c-blood-pact-plus]
 name = 피의 계약+
 rank = rare
@@ -1925,7 +1925,7 @@ shape = 0,-1|0,-2
 target_mode = pattern
 cast_speed = fast
 flavor = "......이미 냄새를 맡았어."
-per_tile_mul = 1.0,0.2
+per_tile_mul = 1.0,0.7
 [card.c-primal-collapse-plus]
 name = 배수진+
 rank = rare
@@ -2135,7 +2135,7 @@ shape = 0,-1|-1,0|1,0|0,1
 target_mode = pattern
 cast_speed = fast
 flavor = "어차피 쓸 거면, 바닥까지 긁어 써야지."
-per_tile_mul = 1.0,0.6,0.6,0.4
+per_tile_mul = 1.0,0.7,0.7,0.7
 [card.c-overdraw-burst-plus]
 name = 과부하 폭발+
 rank = rare
@@ -2148,7 +2148,7 @@ shape = -1,-1|0,-1|1,-1|-1,0|0,0|1,0
 target_mode = pattern
 cast_speed = fast
 flavor = 타는 냄새가 심해지다 보면, 결국 펑 소리가 난다.
-per_tile_mul = 0.5,0.8,0.5,0.6,1.0,0.6
+per_tile_mul = 0.7,0.8,0.7,0.7,1.0,0.7
 [card.c-comrades-charge-plus]
 name = 동행의 돌격+
 rank = common
@@ -2174,7 +2174,7 @@ shape = 0,-1|-1,0|1,0
 target_mode = pattern
 cast_speed = normal
 flavor = 떠올린 이름이 하나하나, 주먹에 얹힌다.
-per_tile_mul = 1.0,0.6,0.6
+per_tile_mul = 1.0,0.7,0.7
 [card.c-collectors-strike-plus]
 name = 수집가의 일격+
 rank = common
@@ -2200,7 +2200,7 @@ shape = 0,-1|-1,-1|1,-1|-1,0|1,0
 target_mode = pattern
 cast_speed = slow
 flavor = "하나라도 건드리면, 가만 안 둬!"
-per_tile_mul = 1.0,0.6,0.6,0.5,0.5
+per_tile_mul = 1.0,0.7,0.7,0.7,0.7
 [card.c-rising-fang-plus]
 name = 자라나는 송곳니+
 rank = common
@@ -2223,7 +2223,7 @@ cost = 1
 trigger = manual
 effects = growing-damage:11:enemy
 shape = 0,-1|0,1|-1,0|1,0
-per_tile_mul = 1.0,0.2,0.2,0.2
+per_tile_mul = 1.0,0.7,0.7,0.7
 target_mode = pattern
 cast_speed = slow
 flavor = 더 이상 숨길 필요가 없을 때, 모든 것을 날려 버린다.
@@ -2276,7 +2276,7 @@ shape = 0,-1|0,-2
 target_mode = pattern
 cast_speed = normal
 flavor = 탑이 높아질수록, 그 아래 그늘도 깊어진다.
-per_tile_mul = 1.0,0.6
+per_tile_mul = 1.0,0.7
 [card.c-prism-overload-plus]
 name = 과욕+
 rank = rare
@@ -2327,7 +2327,7 @@ cost = 1
 trigger = manual
 effects = damage:14:enemy
 shape = 0,-1|-1,0|1,0
-per_tile_mul = 1.0,0.2,0.2
+per_tile_mul = 1.0,0.7,0.7
 target_mode = pattern
 cast_speed = normal
 flavor = "손에 익으면 평생을 같이 갑니다."
@@ -2441,7 +2441,7 @@ cost = 2
 trigger = manual
 effects = damage:35:enemy, apply-status:9:enemy:burn
 shape = 0,-1|0,1|-1,0|1,0
-per_tile_mul = 1.0,0.2,0.2,0.2
+per_tile_mul = 1.0,0.7,0.7,0.7
 target_mode = pattern
 cast_speed = slow
 flavor = 재가 멎은 자리에도, 불씨는 한참을 탄다.
@@ -2458,7 +2458,7 @@ shape = 0,-1|0,-2|0,-3
 target_mode = pattern
 cast_speed = fast
 flavor = 높이 오른 만큼, 내리꽂는 힘도 실린다.
-per_tile_mul = 1.0,0.7,0.5
+per_tile_mul = 1.0,0.7,0.7
 [card.c-yusezria-corebreak-plus]
 name = 정수핵 깨기+
 rank = legendary
@@ -2499,7 +2499,7 @@ shape = 0,-1|0,-2
 target_mode = pattern
 cast_speed = slow
 flavor = 순환이란 자연의 섭리일지니.
-per_tile_mul = 1.0,0.6
+per_tile_mul = 1.0,0.7
 [card.c-wild-rush-plus]
 name = 야성의 돌진+
 rank = common

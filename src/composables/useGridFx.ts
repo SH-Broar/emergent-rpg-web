@@ -5,14 +5,16 @@
  *  - 엔진이 push한 `GridCombatState.fx`(FxEvent[])를 소비해 *전투원 단위*의 시각 효과로 변환.
  *  - hit(빨강 -N) / block-absorb(파랑 -N) / heal(초록 +N)을 *플로팅 숫자*로 스폰(actorId 기준).
  *  - hit/death은 해당 전투원 원에 짧은 흔들림/소멸 클래스를 토글.
- *  - move/spawn은 위치 트랜지션(원의 translate)으로 자연 처리되므로 별도 숫자는 안 띄운다.
- *  - 모든 표현은 ≤0.1초 트랜지션(D11) — CSS transform/opacity만.
+ *  - **진짜 순차 재생(A)**: 엔진은 라운드를 *즉시 final*로 해소하지만, 뷰는 토큰 위치·HP·방어를
+ *    엔진 final이 아니라 *display state*(actorId→pos/hp/block)로 렌더한다. 라운드 시작 상태에서
+ *    출발해 fx를 **행동(actionIndex) 순서대로 하나씩** 적용하며, 각 행동 모션이 끝난 뒤 0.35초
+ *    간격을 두고 다음 행동으로 넘어간다. 이동도 이 순차에 포함(즉시 final 금지).
+ *  - 개별 모션은 여전히 빠르게(≤0.1초). *행동 사이* 간격만 0.35초.
+ *  - reduced-motion이면 간격 0(즉시 final).
  *  - 전투 *로직*은 절대 건드리지 않는다(순수 표현 계층). 소비한 fx는 호출자가 비운다.
- *
- * useCombatFx(구 1v1)의 격자 일반화 — 그쪽은 player/enemy 2자 고정이지만 여기선 actorId가 임의 다수.
  */
 import { ref } from 'vue';
-import type { FxEvent } from '@/data/schemas';
+import type { FxEvent, GridPos } from '@/data/schemas';
 
 export type GridFxKind = 'damage' | 'blocked' | 'heal';
 
@@ -27,6 +29,14 @@ export interface GridFloatingNumber {
   drift: number;
 }
 
+/** 라운드 시작 시점 한 전투원의 표시 스냅샷(display state 출발점). */
+export interface ActorSnapshot {
+  id: string;
+  pos: GridPos;
+  hp: number;
+  block: number;
+}
+
 const REDUCED =
   typeof window !== 'undefined' &&
   typeof window.matchMedia === 'function' &&
@@ -37,11 +47,15 @@ const NUMBER_TTL = REDUCED ? 600 : 850;
 /** 피격 흔들림 지속(≤0.1초 D11 — 흔들림 자체는 짧게). */
 const HIT_TTL = REDUCED ? 0 : 100;
 /**
- * 순차 재생 stagger(#4) — 한 행동 그룹과 다음 그룹 사이 간격(ms).
- * 개별 모션은 여전히 ≤0.1초이되, *겹치지 않게* 한 캐릭터씩 차례로 보이도록 약간 띄운다.
- * reduced-motion이면 0(즉시 전부).
+ * 이동 트랜지션 시간(CSS .token transition과 맞춤) — 한 행동의 이동 모션 길이.
+ * 이 시간이 지나야 다음 행동으로 넘어간다(모션 완료 대기).
  */
-const ACTION_STAGGER = REDUCED ? 0 : 150;
+const MOVE_MS = REDUCED ? 0 : 100;
+/**
+ * 진짜 순차 재생(A) — *행동 사이* 간격(ms, 0.3~0.5 범위). 한 캐릭터 모션이 끝난 뒤 이만큼 쉬고 다음.
+ * reduced-motion이면 0.
+ */
+const ACTION_GAP = REDUCED ? 0 : 350;
 
 export function useGridFx() {
   const floats = ref<GridFloatingNumber[]>([]);
@@ -49,7 +63,27 @@ export function useGridFx() {
   const hitActors = ref<Set<string>>(new Set());
   /** 소멸 중인 전투원 id 집합(원에 .is-dying 클래스 — 페이드아웃). */
   const dyingActors = ref<Set<string>>(new Set());
+
+  // === display state(A) — 순차 재생 중 토큰이 바인딩하는 *표시* 위치/HP/방어. ===
+  // 비어 있으면(idle) 뷰가 엔진 state로 폴백. 순차 재생이 끝나면 비워 final로 수렴.
+  const displayPos = ref<Map<string, GridPos>>(new Map());
+  const displayHp = ref<Map<string, number>>(new Map());
+  const displayBlock = ref<Map<string, number>>(new Map());
+  /** 순차 재생 진행 중 여부 — 뷰가 display 우선 렌더할지 판단. */
+  const playing = ref(false);
+
   let seq = 0;
+  /** 진행 중 타임아웃 핸들(전투 종료/언마운트 시 정리용). */
+  const timers: number[] = [];
+  function later(fn: () => void, ms: number): void {
+    if (ms <= 0) { fn(); return; }
+    const h = window.setTimeout(fn, ms);
+    timers.push(h);
+  }
+  function clearTimers(): void {
+    for (const h of timers) window.clearTimeout(h);
+    timers.length = 0;
+  }
 
   function spawn(actorId: string, kind: GridFxKind, text: string) {
     const id = ++seq;
@@ -86,32 +120,66 @@ export function useGridFx() {
     }, NUMBER_TTL);
   }
 
+  // === display 갱신 헬퍼(새 Map으로 교체해 반응성 보장) ===
+  function setDisplayPos(actorId: string, pos: GridPos): void {
+    const m = new Map(displayPos.value);
+    m.set(actorId, { ...pos });
+    displayPos.value = m;
+  }
+  function setDisplayHp(actorId: string, hp: number): void {
+    const m = new Map(displayHp.value);
+    m.set(actorId, hp);
+    displayHp.value = m;
+  }
+  function setDisplayBlock(actorId: string, block: number): void {
+    const m = new Map(displayBlock.value);
+    m.set(actorId, block);
+    displayBlock.value = m;
+  }
+
   /**
-   * fx 큐 1건 처리 — 숫자/흔들림/소멸로 변환. move/spawn/status는 위치·배지가 처리하므로 no-op.
+   * fx 1건을 *display state + 시각 효과*로 적용(순차 재생 1스텝).
+   *  - move : display 위치 갱신 → CSS transition으로 이동 모션.
+   *  - hit  : display block 흡수 후 hp 차감 + 빨강 숫자 + 흔들림.
+   *  - block-absorb : display block 차감 + 파랑 숫자 + 흔들림.
+   *  - heal : display hp 증가 + 초록 숫자.
+   *  - death: 소멸 마킹.
    */
-  function consume(ev: FxEvent) {
+  function applyFx(ev: FxEvent): void {
     const actorId = ev.actorId ?? '';
     switch (ev.kind) {
+      case 'move':
+        if (ev.to) setDisplayPos(actorId, ev.to);
+        break;
       case 'hit':
         if ((ev.amount ?? 0) > 0) {
+          const hp = displayHp.value.get(actorId);
+          if (hp !== undefined) setDisplayHp(actorId, Math.max(0, hp - (ev.amount ?? 0)));
           spawn(actorId, 'damage', `-${ev.amount}`);
           pulseHit(actorId);
         }
         break;
       case 'block-absorb':
         if ((ev.amount ?? 0) > 0) {
+          const bl = displayBlock.value.get(actorId);
+          if (bl !== undefined) setDisplayBlock(actorId, Math.max(0, bl - (ev.amount ?? 0)));
           spawn(actorId, 'blocked', `-${ev.amount}`);
           pulseHit(actorId);
         }
         break;
       case 'heal':
-        if ((ev.amount ?? 0) > 0) spawn(actorId, 'heal', `+${ev.amount}`);
+        if ((ev.amount ?? 0) > 0) {
+          const hp = displayHp.value.get(actorId);
+          if (hp !== undefined) setDisplayHp(actorId, hp + (ev.amount ?? 0));
+          spawn(actorId, 'heal', `+${ev.amount}`);
+        }
         break;
       case 'death':
         markDying(actorId);
         break;
-      case 'move':
       case 'spawn':
+        if (ev.to) setDisplayPos(actorId, ev.to);
+        break;
       case 'status':
       default:
         break;
@@ -119,44 +187,120 @@ export function useGridFx() {
   }
 
   /**
-   * fx 배열 전체 소비 — *행동 그룹(actionIndex)별로 순차* 재생(#4).
-   * 같은 actionIndex의 fx는 한 번에(한 캐릭터 한 행동), 다음 그룹은 ACTION_STAGGER 뒤에.
-   * 호출자가 이후 배열을 비운다(즉시 — 타임아웃은 캡처한 복사본을 재생).
-   * 반환: 전체 재생에 걸리는 총 시간(ms) — 호출자가 settle 타이밍에 쓴다.
+   * fx 큐 1건 처리(비-순차 폴백 경로 — 방어적 watch에서만 사용).
+   * 숫자/흔들림/소멸만 표현하고 display state는 건드리지 않는다(idle 렌더는 엔진 state).
    */
-  function consumeAll(events: FxEvent[]): number {
+  function consume(ev: FxEvent) {
+    const actorId = ev.actorId ?? '';
+    switch (ev.kind) {
+      case 'hit':
+        if ((ev.amount ?? 0) > 0) { spawn(actorId, 'damage', `-${ev.amount}`); pulseHit(actorId); }
+        break;
+      case 'block-absorb':
+        if ((ev.amount ?? 0) > 0) { spawn(actorId, 'blocked', `-${ev.amount}`); pulseHit(actorId); }
+        break;
+      case 'heal':
+        if ((ev.amount ?? 0) > 0) spawn(actorId, 'heal', `+${ev.amount}`);
+        break;
+      case 'death':
+        markDying(actorId);
+        break;
+      default:
+        break;
+    }
+  }
+
+  /** fx 배열 전체 즉시 소비(폴백 — 순차 없이). */
+  function consumeAll(events: FxEvent[]): void {
     const sorted = [...events].sort((a, b) => a.seq - b.seq);
-    // actionIndex(없으면 0)로 그룹 — 등장 순서 보존(첫 seq 기준).
+    for (const ev of sorted) consume(ev);
+  }
+
+  /**
+   * 한 행동 그룹(actionIndex)의 모션 길이 추정 — 이동 있으면 MOVE_MS, 없으면 HIT 길이.
+   */
+  function groupMotionMs(group: FxEvent[]): number {
+    if (REDUCED) return 0;
+    const hasMove = group.some((e) => e.kind === 'move' || e.kind === 'spawn');
+    const hasHit = group.some((e) => e.kind === 'hit' || e.kind === 'block-absorb' || e.kind === 'heal' || e.kind === 'death');
+    let ms = 0;
+    if (hasMove) ms = Math.max(ms, MOVE_MS);
+    if (hasHit) ms = Math.max(ms, HIT_TTL);
+    return ms;
+  }
+
+  /**
+   * **진짜 순차 재생(A)** — 라운드 시작 스냅샷에서 출발해 fx를 행동 순서대로 하나씩 재생.
+   *  1) display state = start (모든 전투원 pos/hp/block).
+   *  2) fx를 actionIndex로 그룹지어 등장 순서대로 정렬.
+   *  3) 각 그룹을 차례로 재생: 그룹 fx 적용(이동/피격/회복/소멸) → 모션 완료 대기 → ACTION_GAP 쉬고 다음.
+   *  4) 마지막 그룹 후 onDone() 호출(호출자가 display 비워 엔진 final로 수렴).
+   * 반환: 전체 재생 총 시간(ms) — 호출자 settle 타이밍용.
+   */
+  function playRound(start: ActorSnapshot[], events: FxEvent[], onDone: () => void): number {
+    clearTimers();
+    // 1) display = start.
+    const pm = new Map<string, GridPos>();
+    const hm = new Map<string, number>();
+    const bm = new Map<string, number>();
+    for (const s of start) {
+      pm.set(s.id, { ...s.pos });
+      hm.set(s.id, s.hp);
+      bm.set(s.id, s.block);
+    }
+    displayPos.value = pm;
+    displayHp.value = hm;
+    displayBlock.value = bm;
+    playing.value = true;
+
+    // 2) actionIndex 그룹(등장 순서 보존).
+    const sorted = [...events].sort((a, b) => a.seq - b.seq);
     const groups: FxEvent[][] = [];
     const indexOfGroup = new Map<number, number>();
     for (const ev of sorted) {
       const key = ev.actionIndex ?? 0;
       let gi = indexOfGroup.get(key);
-      if (gi === undefined) {
-        gi = groups.length;
-        indexOfGroup.set(key, gi);
-        groups.push([]);
-      }
+      if (gi === undefined) { gi = groups.length; indexOfGroup.set(key, gi); groups.push([]); }
       groups[gi].push(ev);
     }
-    if (groups.length === 0) return 0;
 
-    // 첫 그룹은 즉시, 이후 그룹은 stagger 누적 지연 후 재생.
-    groups.forEach((group, gi) => {
-      const delay = gi * ACTION_STAGGER;
-      if (delay <= 0) {
-        for (const ev of group) consume(ev);
-      } else {
-        window.setTimeout(() => {
-          for (const ev of group) consume(ev);
-        }, delay);
-      }
-    });
+    const finish = () => { playing.value = false; onDone(); };
 
-    // 마지막 그룹 시작 + 숫자 표시 한 박자 = 총 재생 시간(대략).
-    const lastStart = (groups.length - 1) * ACTION_STAGGER;
-    return lastStart + (REDUCED ? 0 : ACTION_STAGGER);
+    if (groups.length === 0 || REDUCED) {
+      // 효과 없음 또는 reduced — 전부 즉시 적용 후 종료.
+      for (const g of groups) for (const ev of g) applyFx(ev);
+      finish();
+      return 0;
+    }
+
+    // 3) 그룹 순차 — 각 그룹 시작 시각 = 이전 그룹들의 (모션 + ACTION_GAP) 누적.
+    let cursor = 0;
+    for (let gi = 0; gi < groups.length; gi++) {
+      const group = groups[gi];
+      const at = cursor;
+      later(() => { for (const ev of group) applyFx(ev); }, at);
+      const motion = groupMotionMs(group);
+      cursor = at + motion + ACTION_GAP;
+    }
+
+    // 4) 마지막 그룹 모션까지 끝난 뒤 종료(꼬리 여유 포함).
+    later(finish, cursor);
+    return cursor;
   }
 
-  return { reduced: REDUCED, floats, hitActors, dyingActors, consume, consumeAll };
+  /** display state 비우기 — idle 렌더를 엔진 state로 되돌림(재생 종료/정리). */
+  function clearDisplay(): void {
+    clearTimers();
+    playing.value = false;
+    displayPos.value = new Map();
+    displayHp.value = new Map();
+    displayBlock.value = new Map();
+  }
+
+  return {
+    reduced: REDUCED,
+    floats, hitActors, dyingActors,
+    displayPos, displayHp, displayBlock, playing,
+    consume, consumeAll, playRound, clearDisplay,
+  };
 }
