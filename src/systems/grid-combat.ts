@@ -508,9 +508,14 @@ function decayStatuses(c: GridCombatant): void {
 // ============================================================================
 
 let fxSeq = 0;
+/**
+ * 현재 해소 중인 *행동 그룹* 인덱스(순차 재생용). commitRound가 각 executeAction 직전에 +1 한다.
+ * 라운드 외(전투 시작 유물 등)에서 난 fx는 0번 그룹.
+ */
+let fxActionIndex = 0;
 function pushFx(state: GridCombatState, ev: Omit<FxEvent, 'seq'>): void {
   fxSeq += 1;
-  (state.fx ?? (state.fx = [])).push({ ...ev, seq: fxSeq });
+  (state.fx ?? (state.fx = [])).push({ ...ev, seq: fxSeq, actionIndex: fxActionIndex });
 }
 
 function pushLog(state: GridCombatState, text: string): void {
@@ -1170,6 +1175,9 @@ interface ScheduledAction {
 export function commitRound(state: GridCombatState): void {
   if (state.outcome) return;
 
+  // 순차 재생용 행동 그룹 인덱스 리셋 — 이 라운드의 fx가 0번부터 그룹된다.
+  fxActionIndex = 0;
+
   for (let step = 0; step < state.foresight; step++) {
     if (state.outcome) break;
 
@@ -1208,8 +1216,11 @@ export function commitRound(state: GridCombatState): void {
       });
     }
 
-    // 발동 속도 정렬 — 빠른 쪽 먼저, 동률이면 플레이어 우선.
+    // 정렬 — 카테고리(방어 0 → 공격·기타 1 → 이동 2) 우선, 그다음 castSpeed, 동률이면 플레이어 우선.
+    //   "방어 먼저, 이동 나중" 규칙(#5): 블록을 미리 쌓고, 위치 변동은 가장 마지막에 해소.
     scheduled.sort((a, b) => {
+      const c = actionCategory(state, a) - actionCategory(state, b);
+      if (c !== 0) return c;
       const d = SPEED_ORDER[a.speed] - SPEED_ORDER[b.speed];
       if (d !== 0) return d;
       if (a.isPlayer && !b.isPlayer) return -1;
@@ -1218,9 +1229,11 @@ export function commitRound(state: GridCombatState): void {
     });
 
     // 순차 실행 — 죽은 행위자는 건너뜀(실행 시점 재확인).
+    //   각 행동마다 fxActionIndex를 +1 해 fx가 *행동별 그룹*으로 나뉜다(뷰가 한 행동씩 순차 재생).
     for (const s of scheduled) {
       if (state.outcome) break;
       if (s.actor.hp <= 0) continue;
+      fxActionIndex += 1;
       executeAction(state, s);
     }
 
@@ -1303,6 +1316,30 @@ export function commitRound(state: GridCombatState): void {
   // 플레이어 계획 비움.
   state.playerPlan = [];
   state.cardsPlayedThisTurn = 0;
+}
+
+/** 방어(블록 획득) 계열 카드 효과 kind 집합 — 방어 카테고리 분류용. */
+const DEFENSE_EFFECT_KINDS = new Set<string>([
+  'block', 'block-top-color', 'growing-block', 'double-block',
+]);
+
+/**
+ * 행동 카테고리(해소 순서 우선) — 작을수록 먼저 해소.
+ *   0 = 방어(블록 획득): 이동 액션은 아니되 블록 계열 카드.
+ *   2 = 이동(move 액션).
+ *   1 = 공격·기타(그 사이).
+ * "방어 먼저, 이동 나중"(#5). 카드는 효과로, move/wait/item/attack은 kind로 분류.
+ */
+function actionCategory(state: GridCombatState, s: ScheduledAction): number {
+  const action = s.action;
+  if (action.kind === 'move') return 2;
+  if (action.kind === 'card') {
+    const card = state.hand.find((c) => c.instanceId === action.cardInstanceId);
+    const isDefense = !!card && card.effects.some((e) => DEFENSE_EFFECT_KINDS.has(e.kind));
+    return isDefense ? 0 : 1;
+  }
+  // attack / item / wait — 그 사이(1). (적의 self 버프 공격도 1로 두어 기존 순서 보존.)
+  return 1;
 }
 
 /** 행동의 발동 속도. */

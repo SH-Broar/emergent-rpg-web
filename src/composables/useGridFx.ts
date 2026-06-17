@@ -36,6 +36,12 @@ const REDUCED =
 const NUMBER_TTL = REDUCED ? 600 : 850;
 /** 피격 흔들림 지속(≤0.1초 D11 — 흔들림 자체는 짧게). */
 const HIT_TTL = REDUCED ? 0 : 100;
+/**
+ * 순차 재생 stagger(#4) — 한 행동 그룹과 다음 그룹 사이 간격(ms).
+ * 개별 모션은 여전히 ≤0.1초이되, *겹치지 않게* 한 캐릭터씩 차례로 보이도록 약간 띄운다.
+ * reduced-motion이면 0(즉시 전부).
+ */
+const ACTION_STAGGER = REDUCED ? 0 : 150;
 
 export function useGridFx() {
   const floats = ref<GridFloatingNumber[]>([]);
@@ -112,10 +118,44 @@ export function useGridFx() {
     }
   }
 
-  /** fx 배열 전체 소비(seq 순). 호출자가 이후 배열을 비운다. */
-  function consumeAll(events: FxEvent[]) {
+  /**
+   * fx 배열 전체 소비 — *행동 그룹(actionIndex)별로 순차* 재생(#4).
+   * 같은 actionIndex의 fx는 한 번에(한 캐릭터 한 행동), 다음 그룹은 ACTION_STAGGER 뒤에.
+   * 호출자가 이후 배열을 비운다(즉시 — 타임아웃은 캡처한 복사본을 재생).
+   * 반환: 전체 재생에 걸리는 총 시간(ms) — 호출자가 settle 타이밍에 쓴다.
+   */
+  function consumeAll(events: FxEvent[]): number {
     const sorted = [...events].sort((a, b) => a.seq - b.seq);
-    for (const ev of sorted) consume(ev);
+    // actionIndex(없으면 0)로 그룹 — 등장 순서 보존(첫 seq 기준).
+    const groups: FxEvent[][] = [];
+    const indexOfGroup = new Map<number, number>();
+    for (const ev of sorted) {
+      const key = ev.actionIndex ?? 0;
+      let gi = indexOfGroup.get(key);
+      if (gi === undefined) {
+        gi = groups.length;
+        indexOfGroup.set(key, gi);
+        groups.push([]);
+      }
+      groups[gi].push(ev);
+    }
+    if (groups.length === 0) return 0;
+
+    // 첫 그룹은 즉시, 이후 그룹은 stagger 누적 지연 후 재생.
+    groups.forEach((group, gi) => {
+      const delay = gi * ACTION_STAGGER;
+      if (delay <= 0) {
+        for (const ev of group) consume(ev);
+      } else {
+        window.setTimeout(() => {
+          for (const ev of group) consume(ev);
+        }, delay);
+      }
+    });
+
+    // 마지막 그룹 시작 + 숫자 표시 한 박자 = 총 재생 시간(대략).
+    const lastStart = (groups.length - 1) * ACTION_STAGGER;
+    return lastStart + (REDUCED ? 0 : ACTION_STAGGER);
   }
 
   return { reduced: REDUCED, floats, hitActors, dyingActors, consume, consumeAll };

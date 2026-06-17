@@ -418,6 +418,11 @@ export interface FxEvent {
   to?: GridPos;
   amount?: number;
   seq: number;
+  /**
+   * 해소 순서 그룹 인덱스(0-기준) — 한 라운드에서 *몇 번째 행동*이 이 fx를 냈는지.
+   * 뷰가 이 값으로 fx를 그룹지어 *한 행동씩 순차* 재생한다(동시 재생 방지). 미지정이면 0.
+   */
+  actionIndex?: number;
 }
 
 /** 현재 진행 중인 격자 전투의 임시 상태. */

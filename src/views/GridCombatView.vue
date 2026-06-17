@@ -315,7 +315,7 @@ function planLabel(a: PlannedAction): string {
     }
     case 'item': {
       const it = run.data.items.find((i) => (i.instanceId ?? i.id) === a.itemId || i.id === a.itemId);
-      return `포션 ${it?.name ?? ''}`.trim();
+      return `아이템 ${it?.name ?? ''}`.trim();
     }
     case 'wait': return '대기';
     default: return '?';
@@ -338,7 +338,7 @@ function selectMoveMode() {
 function toggleItemPanel() {
   if (committing.value || planFull.value || potionLocked.value) return;
   if (potions.value.length === 0) {
-    ui.toast('info', '쓸 수 있는 전투용 포션이 없다.');
+    ui.toast('info', '쓸 아이템이 없다.');
     return;
   }
   mode.value = 'idle';
@@ -355,9 +355,9 @@ function usecPotion(item: Item) {
   const ok = queuePlayerAction(state, { kind: 'item', itemId: id });
   if (ok) {
     itemPanelOpen.value = false;
-    ui.toast('success', `'${item.name}'을(를) 이번 라운드에 쓴다.`);
+    ui.toast('success', `${item.name} 사용 예약`);
   } else {
-    ui.toast('warning', '지금은 포션을 쓸 수 없다 (이번 라운드 1회).');
+    ui.toast('warning', '아이템은 라운드당 1회.');
   }
 }
 
@@ -404,9 +404,9 @@ const aimingCardSelfTarget = computed<boolean>(() => {
 });
 
 /**
- * 조준 중인 *패턴* 카드가 적을 한 칸이라도 맞히는가(B2 가드).
- * self/버프 카드(aimingCardSelfTarget)는 영향 없음 — 항상 true 취급.
- * 패턴 카드인데 범위 안에 적이 0이면 false → [확정] 비활성 + 안내.
+ * 조준 중인 *패턴* 카드의 범위 안에 적이 한 칸이라도 있는가(정보성 표시 전용).
+ * 빈 칸 발동을 막지 않는다 — 적이 없어도 카드는 확정·발동된다(빈 발동 허용).
+ * self/제자리 카드면 true 취급. 칸 라벨/색 힌트에만 쓴다.
  */
 const aimingHasEnemyTarget = computed<boolean>(() => {
   const state = gc.value;
@@ -414,7 +414,7 @@ const aimingHasEnemyTarget = computed<boolean>(() => {
   const card = state.hand.find((c) => c.instanceId === aimingCardId.value);
   if (!card) return true;
   const tiles = previewCardTiles(state, card);
-  if (tiles.length === 0) return true; // self/제자리 — 가드 비대상.
+  if (tiles.length === 0) return true; // self/제자리.
   return tiles.some((p) => {
     const occ = combatantAt(state, p);
     return !!occ && occ.team === 'enemy' && occ.hp > 0;
@@ -464,17 +464,12 @@ function tapEnemy(e: GridCombatant) {
   inspectedId.value = inspectedId.value === e.id ? null : e.id;
 }
 
-/** 조준 중인 카드 확정 — playerPlan에 추가. */
+/** 조준 중인 카드 확정 — playerPlan에 추가. 적 유무와 무관(빈 칸 발동 허용). */
 function confirmCard() {
   const state = gc.value;
   if (!state || !aimingCardId.value) return;
   const card = state.hand.find((c) => c.instanceId === aimingCardId.value);
   if (!card) return;
-  // B2 — 패턴 카드인데 범위 안에 적이 0이면 확정 차단(마나 낭비 방지).
-  if (!aimingHasEnemyTarget.value) {
-    ui.toast('warning', '이 범위에 적이 없습니다.');
-    return;
-  }
   const targetTiles = previewCardTiles(state, card);
   const ok = queuePlayerAction(state, {
     kind: 'card',
@@ -508,7 +503,7 @@ function commit() {
   const state = gc.value;
   if (!state || committing.value || phase.value !== 'combat') return;
   if (plan.value.length === 0) {
-    ui.toast('info', '행동을 하나 이상 골라야 한다 (대기하려면 [대기]).');
+    ui.toast('info', '행동을 고르거나 [대기].');
     return;
   }
   doCommit();
@@ -532,17 +527,18 @@ function doCommit() {
   inspectedId.value = null;
   itemPanelOpen.value = false;
 
-  // 엔진 해소 — fx가 state.fx에 쌓인다. 해소 후 fx를 소비(애니)하고 비운다.
+  // 엔진 해소 — fx가 state.fx에 쌓인다. 해소 후 fx를 *행동별 순차*로 소비(애니)하고 비운다.
   const outcome = run.commitGridRound();
 
   const state = gc.value;
+  let playMs = 0;
   if (state?.fx?.length) {
-    fx.consumeAll(state.fx);
+    playMs = fx.consumeAll(state.fx); // 순차 재생 총 시간(#4).
     state.fx.length = 0;
   }
 
-  // fx 애니가 짧게(≤0.1초 각) 흐른 뒤 다음 입력 허용 + 승패 전이.
-  const settle = fx.reduced ? 0 : 180;
+  // 순차 fx가 다 흐른 뒤 다음 입력 허용 + 승패 전이(마지막 모션 꼬리까지 + 짧은 여유).
+  const settle = fx.reduced ? 0 : playMs + 180;
   window.setTimeout(() => {
     committing.value = false;
     if (outcome === 'win') {
@@ -698,26 +694,28 @@ onMounted(() => {
             </template>
           </template>
 
-          <!-- 전투원 — 격자 위 absolute 토큰(translate 트랜지션). -->
+          <!-- 전투원 토큰 — *위치*는 wrapper(.token)의 transform, *fx*(흔들림·페이드·플로팅)는
+               inner(.token__inner)에서 처리한다. 두 transform을 분리해 공격 중 원점(0,0) 튐을 막는다. -->
           <!-- 플레이어 -->
           <div
             v-if="gc.player.hp > 0"
             class="token token--player"
-            :class="{ 'is-hit': fx.hitActors.value.has('player') }"
             :style="{
               transform: `translate(calc(${gc.player.pos.x} * var(--cell)), calc(${gc.player.pos.y} * var(--cell)))`,
             }"
           >
-            <div class="token__circle token__circle--player"></div>
-            <div class="token__hpbar"><span :style="{ width: `${hpRatio(gc.player) * 100}%` }"></span></div>
-            <!-- 플로팅 숫자 -->
-            <span
-              v-for="f in fx.floats.value.filter((n) => n.actorId === 'player')"
-              :key="f.id"
-              class="float-num"
-              :class="`float-num--${f.kind}`"
-              :style="{ '--drift': f.drift }"
-            >{{ f.text }}</span>
+            <div class="token__inner" :class="{ 'is-hit': fx.hitActors.value.has('player') }">
+              <div class="token__circle token__circle--player"></div>
+              <div class="token__hpbar"><span :style="{ width: `${hpRatio(gc.player) * 100}%` }"></span></div>
+              <!-- 플로팅 숫자 -->
+              <span
+                v-for="f in fx.floats.value.filter((n) => n.actorId === 'player')"
+                :key="f.id"
+                class="float-num"
+                :class="`float-num--${f.kind}`"
+                :style="{ '--drift': f.drift }"
+              >{{ f.text }}</span>
+            </div>
           </div>
 
           <!-- 적 -->
@@ -725,35 +723,38 @@ onMounted(() => {
             v-for="e in liveEnemies"
             :key="e.id"
             class="token token--enemy"
-            :class="{
-              'is-hit': fx.hitActors.value.has(e.id),
-              'is-inspected': inspectedId === e.id,
-              'is-dying': e.hp <= 0 && fx.dyingActors.value.has(e.id),
-              'token--boss': e.isBoss,
-            }"
+            :class="{ 'is-inspected': inspectedId === e.id, 'token--boss': e.isBoss }"
             :style="{
               transform: `translate(calc(${e.pos.x} * var(--cell)), calc(${e.pos.y} * var(--cell)))`,
             }"
             @click.stop="tapEnemy(e)"
           >
-            <!-- 다음 의도 — 상시 표시(B3-disp). 공격이면 피해량까지. -->
-            <span class="token__intent" :class="`token__intent--${enemyNextIntent(e).kind}`">
-              <span class="token__intent-icon">{{ enemyNextIntent(e).icon }}</span><span
-                v-if="enemyNextIntent(e).text"
-                class="token__intent-dmg"
-              >{{ enemyNextIntent(e).text }}</span>
-            </span>
-            <div class="token__circle" :style="{ background: enemyColor(e) }"></div>
-            <div class="token__hpbar token__hpbar--enemy"><span :style="{ width: `${hpRatio(e) * 100}%` }"></span></div>
-            <!-- HP 숫자 — 상시 표시(B3-disp). -->
-            <span class="token__hpnum">{{ e.hp }}/{{ e.maxHp }}</span>
-            <span
-              v-for="f in fx.floats.value.filter((n) => n.actorId === e.id)"
-              :key="f.id"
-              class="float-num"
-              :class="`float-num--${f.kind}`"
-              :style="{ '--drift': f.drift }"
-            >{{ f.text }}</span>
+            <div
+              class="token__inner"
+              :class="{
+                'is-hit': fx.hitActors.value.has(e.id),
+                'is-dying': e.hp <= 0 && fx.dyingActors.value.has(e.id),
+              }"
+            >
+              <!-- 다음 의도 — 상시 표시(B3-disp). 공격이면 피해량까지. -->
+              <span class="token__intent" :class="`token__intent--${enemyNextIntent(e).kind}`">
+                <span class="token__intent-icon">{{ enemyNextIntent(e).icon }}</span><span
+                  v-if="enemyNextIntent(e).text"
+                  class="token__intent-dmg"
+                >{{ enemyNextIntent(e).text }}</span>
+              </span>
+              <div class="token__circle" :style="{ background: enemyColor(e) }"></div>
+              <div class="token__hpbar token__hpbar--enemy"><span :style="{ width: `${hpRatio(e) * 100}%` }"></span></div>
+              <!-- HP 숫자 — 상시 표시(B3-disp). -->
+              <span class="token__hpnum">{{ e.hp }}/{{ e.maxHp }}</span>
+              <span
+                v-for="f in fx.floats.value.filter((n) => n.actorId === e.id)"
+                :key="f.id"
+                class="float-num"
+                :class="`float-num--${f.kind}`"
+                :style="{ '--drift': f.drift }"
+              >{{ f.text }}</span>
+            </div>
           </div>
         </div>
 
@@ -809,9 +810,9 @@ onMounted(() => {
           class="act act--item"
           :class="{ 'act--on': itemPanelOpen }"
           :disabled="committing || planFull || potionLocked || potions.length === 0"
-          :title="potions.length === 0 ? '쓸 수 있는 전투용 포션이 없다' : '포션 — 라운드당 1회'"
+          :title="potions.length === 0 ? '쓸 아이템 없음' : '아이템 · 라운드당 1회'"
           @click="toggleItemPanel"
-        >포션<span v-if="potions.length > 0" class="act__count">{{ potions.length }}</span></button>
+        >아이템<span v-if="potions.length > 0" class="act__count">{{ potions.length }}</span></button>
         <button
           class="act act--commit"
           :disabled="committing || plan.length === 0"
@@ -821,7 +822,7 @@ onMounted(() => {
 
       <!-- 포션 선택 패널 (아이템 모드) -->
       <div v-if="itemPanelOpen" class="item-panel">
-        <span class="item-panel__hint">쓸 포션을 고르세요 (이번 라운드 1회).</span>
+        <span class="item-panel__hint">아이템 · 라운드당 1회</span>
         <ul class="item-panel__list">
           <li v-for="it in potions" :key="it.instanceId ?? it.id">
             <button class="potion" @click="usecPotion(it)">
@@ -833,14 +834,14 @@ onMounted(() => {
         <button class="item-panel__close" @click="itemPanelOpen = false">닫기</button>
       </div>
 
-      <!-- 카드 조준 확정/취소 (조준 중일 때) -->
-      <div v-if="mode === 'card'" class="aim-bar" :class="{ 'aim-bar--no-target': !aimingHasEnemyTarget }">
+      <!-- 카드 조준 확정/취소 (조준 중일 때) — 적 없어도 발동 가능. -->
+      <div v-if="mode === 'card'" class="aim-bar">
         <span class="aim-bar__hint">
-          <template v-if="!aimingHasEnemyTarget">이 범위에 적이 없습니다. 이동해 적을 범위에 넣거나 다른 카드를 고르세요.</template>
-          <template v-else-if="aimingCardSelfTarget">제자리 발동. 확정을 누르세요.</template>
-          <template v-else>강조된 칸이 적용 범위입니다 (칸을 탭하거나 확정).</template>
+          <template v-if="aimingCardSelfTarget">제자리 발동</template>
+          <template v-else-if="!aimingHasEnemyTarget">빈 칸 발동</template>
+          <template v-else>범위 안의 적에 적용</template>
         </span>
-        <button class="aim-bar__confirm" :disabled="!aimingHasEnemyTarget" @click="confirmCard">확정</button>
+        <button class="aim-bar__confirm" @click="confirmCard">확정</button>
         <button class="aim-bar__cancel" @click="cancelAim">취소</button>
       </div>
 
@@ -1003,24 +1004,32 @@ onMounted(() => {
   background: rgba(200,160,255,0.3);
 }
 
-/* === 전투원 토큰 === */
+/* === 전투원 토큰 ===
+   wrapper(.token) = *위치 전용*(grid translate + 이동 트랜지션). inner(.token__inner) = *fx 전용*
+   (흔들림·발광·페이드·플로팅). 두 레이어의 transform이 충돌하지 않아 공격 중 원점 튐이 없다. */
 .token {
   position: absolute;
   left: 4px; top: 4px; /* board padding 보정 */
   width: var(--cell); height: var(--cell);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
   pointer-events: none;
-  /* 이동 트랜지션 — ≤0.1초(D11). */
+  /* 이동 트랜지션 — ≤0.1초(D11). 위치 transform만 여기서 관리. */
   transition: transform 100ms ease;
   z-index: 5;
 }
+.token__inner {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
 .token--enemy { pointer-events: auto; cursor: pointer; }
 /* 소멸 중 — 치명타 데미지 숫자가 끝까지 보이도록 짧게 페이드아웃(보너스).
-   토큰 위치는 인라인 transform이 잡으므로 여기선 opacity만 건드린다(snap 방지). */
-.token.is-dying { pointer-events: none; opacity: 0; transition: opacity 600ms ease; }
-.token.is-dying .token__circle { filter: grayscale(1) brightness(0.6); }
-.token.is-dying .token__intent, .token.is-dying .token__hpnum, .token.is-dying .token__hpbar { opacity: 0; }
-@media (prefers-reduced-motion: reduce) { .token.is-dying { transition: none; } }
+   inner의 opacity만 건드린다(wrapper 위치 transform 불변 → snap 방지). */
+.token__inner.is-dying { opacity: 0; transition: opacity 600ms ease; }
+.token--enemy:has(.token__inner.is-dying) { pointer-events: none; }
+.token__inner.is-dying .token__circle { filter: grayscale(1) brightness(0.6); }
+.token__inner.is-dying .token__intent,
+.token__inner.is-dying .token__hpnum,
+.token__inner.is-dying .token__hpbar { opacity: 0; }
+@media (prefers-reduced-motion: reduce) { .token__inner.is-dying { transition: none; } }
 .token__circle {
   width: 64%; height: 64%; border-radius: 50%;
   box-shadow: 0 1px 3px rgba(0,0,0,0.6);
@@ -1075,12 +1084,14 @@ onMounted(() => {
 .token__intent--move .token__intent-icon { color: #8ec8ff; }
 .token__intent--wait .token__intent-icon { color: #888; }
 
-.token.is-hit { animation: token-shake 100ms ease; }
+/* 피격 흔들림 — inner에만 적용. wrapper의 위치 transform과 독립이라 원점 튐 없음. */
+.token__inner.is-hit { animation: token-shake 100ms ease; }
 @keyframes token-shake {
-  0%,100% { transform: translate(var(--tx, 0), var(--ty, 0)); }
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  75% { transform: translateX(3px); }
 }
-/* is-hit는 translate를 덮어쓰지 않도록 transform 인라인 유지 — 흔들림은 filter로 표현. */
-.token.is-hit .token__circle { animation: hit-flash 100ms ease; }
+.token__inner.is-hit .token__circle { animation: hit-flash 100ms ease; }
 @keyframes hit-flash {
   0% { filter: brightness(2.2); }
   100% { filter: brightness(1); }
@@ -1107,7 +1118,8 @@ onMounted(() => {
 @media (prefers-reduced-motion: reduce) {
   .token { transition: none; }
   .float-num { animation: float-up-reduced 600ms ease-out forwards; }
-  .token.is-hit .token__circle { animation: none; }
+  .token__inner.is-hit { animation: none; }
+  .token__inner.is-hit .token__circle { animation: none; }
 }
 @keyframes float-up-reduced {
   0% { opacity: 0; } 15% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -16px); }
@@ -1210,11 +1222,8 @@ onMounted(() => {
   padding: 0.4rem 0.8rem; border-radius: 8px;
   background: rgba(120,200,255,0.1); border: 1px solid rgba(120,200,255,0.4);
 }
-.aim-bar--no-target { background: rgba(255,120,120,0.1); border-color: rgba(255,140,140,0.5); }
 .aim-bar__hint { color: #cfe6ff; font-size: 0.82rem; flex: 1; }
-.aim-bar--no-target .aim-bar__hint { color: #ffc9c9; }
 .aim-bar__confirm { padding: 0.4rem 0.9rem; font: inherit; font-weight: 600; border-radius: 6px; cursor: pointer; background: rgba(142,255,184,0.2); border: 1px solid rgba(142,255,184,0.55); color: #d6ffe6; }
-.aim-bar__confirm:disabled { opacity: 0.38; cursor: not-allowed; }
 .aim-bar__cancel { padding: 0.4rem 0.9rem; font: inherit; border-radius: 6px; cursor: pointer; background: none; border: 1px solid rgba(255,255,255,0.2); color: #b6b6c4; }
 
 /* === 손패 === */
@@ -1244,7 +1253,8 @@ onMounted(() => {
 
 /* === 결과 화면 === */
 .result {
-  max-width: 600px; margin: 0 auto; padding: 4rem 2rem;
+  max-width: 600px; margin: 0 auto;
+  padding: 4rem 2rem calc(4rem + env(safe-area-inset-bottom, 0px));
   display: flex; flex-direction: column; align-items: center; gap: 1.2rem;
   min-height: 100vh; min-height: 100dvh;
 }
