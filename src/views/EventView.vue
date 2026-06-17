@@ -259,6 +259,14 @@ function canAfford(c: EventChoice): boolean {
   return true;
 }
 
+/**
+ * 고를 수 있는 선택지가 하나라도 있는가. 없으면(전부 조건/비용 미달, 또는 선택지 자체가 없음)
+ * "자리를 떠난다" 폴백을 노출해 *막힘(softlock) 방지*.
+ */
+const anyChoiceAvailable = computed(() =>
+  (currentEvent.value?.choices ?? []).some((c) => isAvailable(c)),
+);
+
 /** 한 효과를 *적용 없이* 사람이 읽는 미리보기 토큰으로. (선택 전 결과 표시용) */
 function effectPreviewTokens(eff: EventChoiceEffect): string[] {
   const t: string[] = [];
@@ -362,6 +370,15 @@ onMounted(() => {
           <span class="choice__label">{{ c.label }}</span>
           <span v-if="choicePreview(c)" class="choice__preview" :class="{ 'choice__preview--hidden': c.hidden }">{{ choicePreview(c) }}</span>
         </button>
+        <!-- 막힘 방지: 고를 수 있는 선택지가 하나도 없으면 떠나는 선택지를 노출 -->
+        <button
+          v-if="!anyChoiceAvailable"
+          class="choice choice--leave-fallback"
+          @click="leave"
+        >
+          <span class="choice__label">자리를 떠난다</span>
+          <span class="choice__preview">고를 수 있는 선택지가 없다</span>
+        </button>
       </div>
 
       <!-- 결과 화면 -->
@@ -392,6 +409,9 @@ onMounted(() => {
 .choice__label { font-weight: 600; }
 .choice__preview { font-size: 0.82rem; color: #8effb8; font-variant-numeric: tabular-nums; }
 .choice__preview--hidden { color: #c08eff; letter-spacing: 0.1em; }
+.choice--leave-fallback { border-color: rgba(192,142,255,0.5); background: rgba(192,142,255,0.12); }
+.choice--leave-fallback:hover { background: rgba(192,142,255,0.22); border-color: rgba(192,142,255,0.7); }
+.choice--leave-fallback .choice__preview { color: #b9a0e8; }
 .result { margin-top: 2rem; padding: 1.2rem; background: rgba(0,0,0,0.4); border-left: 3px solid #8eedff; border-radius: 4px; }
 .result h3 { margin: 0 0 0.6rem; color: #8eedff; font-size: 1rem; }
 .result-list { margin: 0 0 1rem; padding-left: 1.2rem; color: #d6d6e0; }
