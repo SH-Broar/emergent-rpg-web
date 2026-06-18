@@ -1,0 +1,316 @@
+{
+ "meta": {
+  "id": "monster_name_1",
+  "title": "몬스터 이름 검수 44종 — 외래어·직업형·어색 (폐기된 monster_fix_1 부활). proposal=시작 제안, 코멘트로 확정/수정."
+ },
+ "items": [
+  {
+   "n": 1,
+   "kind": "어색·한자",
+   "loc": "beastkin · 쥐수인(beastkin)",
+   "text": "곳간 쥐수인",
+   "proposal": "곳간 쥐떼"
+  },
+  {
+   "n": 2,
+   "kind": "어색·한자",
+   "loc": "construct · 기계어(construct 희귀)",
+   "text": "쌍바늘 태엽기",
+   "proposal": "태엽 인형"
+  },
+  {
+   "n": 3,
+   "kind": "어색·한자",
+   "loc": "insect · 평범(insect)",
+   "text": "뿌리 지렁이",
+   "proposal": "흙 지렁이"
+  },
+  {
+   "n": 4,
+   "kind": "어색·한자",
+   "loc": "beastkin · 평범(beastkin)",
+   "text": "들양",
+   "proposal": "성난 들양"
+  },
+  {
+   "n": 5,
+   "kind": "어색·한자",
+   "loc": "insect · 화도 모호(insect)",
+   "text": "화도 지렁이",
+   "proposal": "용암 지렁이"
+  },
+  {
+   "n": 6,
+   "kind": "외래어",
+   "loc": "beastkin · 고압 외래어(beastkin)",
+   "text": "고압 염소",
+   "proposal": "번개 염소"
+  },
+  {
+   "n": 7,
+   "kind": "어색·한자",
+   "loc": "beastkin · 평범(beastkin)",
+   "text": "돌 곰",
+   "proposal": "바위 곰"
+  },
+  {
+   "n": 8,
+   "kind": "직업형",
+   "loc": "wraith · 직업형(wraith)",
+   "text": "유적 잠복자",
+   "proposal": "유적 망령"
+  },
+  {
+   "n": 9,
+   "kind": "어색·한자",
+   "loc": "phantom · 회랑(phantom)",
+   "text": "회랑 팬텀",
+   "proposal": "그늘 팬텀"
+  },
+  {
+   "n": 10,
+   "kind": "외래어",
+   "loc": "arcane · 비전 외래어+직업형(arcane 희귀)",
+   "text": "비전 게걸꾼",
+   "proposal": "떠도는 마력 덩어리"
+  },
+  {
+   "n": 11,
+   "kind": "직업형",
+   "loc": "automaton · 회로+직업형(automaton 흔함)",
+   "text": "회로 야행꾼",
+   "proposal": "떠도는 자동인형"
+  },
+  {
+   "n": 12,
+   "kind": "어색·한자",
+   "loc": "spirit · 정지체 어색(spirit)",
+   "text": "시간 정지체",
+   "proposal": "멈춘 정령"
+  },
+  {
+   "n": 13,
+   "kind": "외래어",
+   "loc": "automaton · 릴레이 외래어(automaton)",
+   "text": "릴레이 포복체",
+   "proposal": "기는 자동인형"
+  },
+  {
+   "n": 14,
+   "kind": "어색·한자",
+   "loc": "automaton · 회로(automaton)",
+   "text": "회로 사냥개",
+   "proposal": "태엽 사냥개"
+  },
+  {
+   "n": 15,
+   "kind": "어색·한자",
+   "loc": "drone · 조준+드론(drone 희귀)",
+   "text": "조준 반디",
+   "proposal": "겨냥 반디"
+  },
+  {
+   "n": 16,
+   "kind": "어색·한자",
+   "loc": "spirit · 새끼 어색(spirit)",
+   "text": "불씨 새끼",
+   "proposal": "잿불 정령"
+  },
+  {
+   "n": 17,
+   "kind": "어색·한자",
+   "loc": "plant · 장로 어색(plant)",
+   "text": "골짜기 장로",
+   "proposal": "골짜기 고목"
+  },
+  {
+   "n": 18,
+   "kind": "어색·한자",
+   "loc": "beastkin · 부유체 어색(beastkin)",
+   "text": "해파리 부유체",
+   "proposal": "떠도는 해파리"
+  },
+  {
+   "n": 19,
+   "kind": "직업형",
+   "loc": "mermaid · 직업형(mermaid 희귀)",
+   "text": "여울 인어 사냥꾼",
+   "proposal": "여울 인어"
+  },
+  {
+   "n": 20,
+   "kind": "어색·한자",
+   "loc": "werewolf · 강철견 어색(werewolf 흔함)",
+   "text": "녹슨 강철견",
+   "proposal": "고철 늑대"
+  },
+  {
+   "n": 21,
+   "kind": "어색·한자",
+   "loc": "insect · 수압 현대어(insect)",
+   "text": "수압 벌레",
+   "proposal": "심해 벌레"
+  },
+  {
+   "n": 22,
+   "kind": "어색·한자",
+   "loc": "insect · 광맥/가시충(insect)",
+   "text": "광맥 가시충",
+   "proposal": "동굴 가시벌레"
+  },
+  {
+   "n": 23,
+   "kind": "외래어",
+   "loc": "slime · 듀얼 외래어(slime 희귀)",
+   "text": "듀얼 슬라임",
+   "proposal": "쌍둥이 슬라임"
+  },
+  {
+   "n": 24,
+   "kind": "어색·한자",
+   "loc": "phantom · 음영 한자(phantom)",
+   "text": "시계탑 음영",
+   "proposal": "시계탑 그림자"
+  },
+  {
+   "n": 25,
+   "kind": "띄어쓰기",
+   "loc": "spider · 띄어쓰기(spider)",
+   "text": "숲 새끼 거미",
+   "proposal": "숲 새끼거미"
+  },
+  {
+   "n": 26,
+   "kind": "어색·한자",
+   "loc": "beastkin · 도롱뇽(beastkin)",
+   "text": "잿불 도롱뇽",
+   "proposal": "불 도롱뇽"
+  },
+  {
+   "n": 27,
+   "kind": "어색·한자",
+   "loc": "werewolf · 우두머리(werewolf elite)",
+   "text": "천둥 들개 우두머리",
+   "proposal": "천둥 들개 두목"
+  },
+  {
+   "n": 28,
+   "kind": "어색·한자",
+   "loc": "arachne · 화로(arachne)",
+   "text": "화로 거미",
+   "proposal": "화덕 거미"
+  },
+  {
+   "n": 29,
+   "kind": "어색·한자",
+   "loc": "fox · 뇌전 한자(fox 희귀)",
+   "text": "뇌전 여우",
+   "proposal": "번개 여우"
+  },
+  {
+   "n": 30,
+   "kind": "어색·한자",
+   "loc": "automaton · 리문상 모호(automaton)",
+   "text": "깨어난 리문상",
+   "proposal": "깨어난 석상"
+  },
+  {
+   "n": 31,
+   "kind": "어색·한자",
+   "loc": "insect · 철강 현대어(insect)",
+   "text": "철강 전갈",
+   "proposal": "무쇠 전갈"
+  },
+  {
+   "n": 32,
+   "kind": "어색·한자",
+   "loc": "spirit · 금서(spirit)",
+   "text": "금서 도깨비불",
+   "proposal": "서고 도깨비불"
+  },
+  {
+   "n": 33,
+   "kind": "어색·한자",
+   "loc": "spirit · 정령체 어색(spirit)",
+   "text": "결계 정령체",
+   "proposal": "결계 정령"
+  },
+  {
+   "n": 34,
+   "kind": "외래어",
+   "loc": "insect · 네온 외래어(insect)",
+   "text": "네온 말벌",
+   "proposal": "야광 말벌"
+  },
+  {
+   "n": 35,
+   "kind": "외래어",
+   "loc": "automaton · 미믹 외래어(automaton)",
+   "text": "축제 미믹",
+   "proposal": "축제 함정 상자"
+  },
+  {
+   "n": 36,
+   "kind": "외래어",
+   "loc": "beastkin · 홀로그램 외래어(beastkin elite)",
+   "text": "홀로그램 거인상",
+   "proposal": "환영 거인상"
+  },
+  {
+   "n": 37,
+   "kind": "어색·한자",
+   "loc": "automaton · 대회로/수호체(automaton elite)",
+   "text": "대회로 수호체",
+   "proposal": "거대 태엽병"
+  },
+  {
+   "n": 38,
+   "kind": "어색·한자",
+   "loc": "spirit · 군주(spirit elite)",
+   "text": "폭풍 군주",
+   "proposal": "성난 폭풍 정령"
+  },
+  {
+   "n": 39,
+   "kind": "외래어",
+   "loc": "beastkin · 마그마 외래어(beastkin)",
+   "text": "마그마 게",
+   "proposal": "용암 게"
+  },
+  {
+   "n": 40,
+   "kind": "직업형",
+   "loc": "siren · 매혹사 직업형(siren 희귀)",
+   "text": "세이렌 매혹사",
+   "proposal": "세이렌"
+  },
+  {
+   "n": 41,
+   "kind": "어색·한자",
+   "loc": "mermaid · 여왕(mermaid elite 희귀)",
+   "text": "심연 여왕",
+   "proposal": "심연 인어"
+  },
+  {
+   "n": 42,
+   "kind": "외래어",
+   "loc": "leech · 뱀파이어 외래어(leech 희귀)",
+   "text": "심층 뱀파이어",
+   "proposal": "심해 흡혈귀"
+  },
+  {
+   "n": 43,
+   "kind": "어색·한자",
+   "loc": "werewolf · 사냥개(werewolf)",
+   "text": "잿불 사냥개",
+   "proposal": "잿불 들개"
+  },
+  {
+   "n": 44,
+   "kind": "외래어",
+   "loc": "succubus · 노멀 외래어(succubus 희귀)",
+   "text": "노멀 서큐버스",
+   "proposal": "서큐버스"
+  }
+ ]
+}
