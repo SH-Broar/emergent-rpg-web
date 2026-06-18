@@ -25,6 +25,7 @@ import type {
   GridAttack,
   GridCombatState,
   GridCombatant,
+  GridInstallation,
   GridOffset,
   GridPos,
   GridStage,
@@ -37,7 +38,7 @@ import type {
 } from '@/data/schemas';
 import { HUMAN_MOVE_PROFILE, DEFAULT_ENEMY_MOVE_PROFILE } from '@/data/schemas';
 import { drawCards, shuffle } from './deck';
-import { canStopAt, canAttackTile, canPierceTile, hasLineOfSight } from './tiles';
+import { canStopAt, canMoveThrough, canAirThrough, canAirStop, canAttackTile, canPierceTile, canPlaceTile, hasLineOfSight } from './tiles';
 import { bonusesFromEffective } from './equipment';
 import type { CombatBonuses } from './stats';
 import { resolveLoadout } from './loadout';
@@ -207,22 +208,28 @@ function isFreeTile(state: GridCombatState, p: GridPos): boolean {
   return tileWalkable(state.stage, p);
 }
 
+/** 전투원이 비행(airborne) 상태인가 — 이동 시 air 속성(통과/착지) 사용. */
+function isAirborne(c: GridCombatant): boolean {
+  return (c.statuses?.['airborne'] ?? 0) > 0;
+}
+
 /**
  * 슬라이딩(rook/bishop/king) 도달 칸 — 각 방향으로 range칸까지, *경로가 막히면 중단*.
- * 막는 것: 격자 밖/void/wall뿐. 전투원은 통과 가능(겹침 허용)이라 더는 경로를 막지 않는다.
+ * canPass=통과 가능(경로), canLand=착지 가능. 지상은 둘이 같지만 공중은 구덩이 위를 통과만(착지 X).
  */
 function slideReach(
-  state: GridCombatState,
   from: GridPos,
   dirs: GridOffset[],
   range: number,
+  canPass: (p: GridPos) => boolean,
+  canLand: (p: GridPos) => boolean,
 ): GridPos[] {
   const out: GridPos[] = [];
   for (const d of dirs) {
     for (let step = 1; step <= range; step++) {
       const p = { x: from.x + d.dx * step, y: from.y + d.dy * step };
-      if (!tileWalkable(state.stage, p)) break;        // 벽/void/밖 — 경로 차단.
-      out.push(p);                                     // 전투원 겹침 허용 — 통과·착지 가능.
+      if (!canPass(p)) break;          // 경로 차단 — 중단.
+      if (canLand(p)) out.push(p);     // 착지 가능 칸만 도착지로(공중은 구덩이 위 통과만).
     }
   }
   return out;
@@ -230,40 +237,43 @@ function slideReach(
 
 /**
  * combatant가 이번 스텝에 이동 가능한 칸 목록.
- * moveProfile + 장애물(wall/void) + 점유(다른 전투원) 반영.
- * rook/bishop은 *경로 막힘*까지 반영(slideReach). knight는 점프(경로 무시).
+ * 비행(airborne) 상태면 air 속성(airMove 통과/airStop 착지)으로, 아니면 지상(move/moveStop)으로.
+ * rook/bishop/king은 경로 막힘 반영(slideReach), knight는 점프(착지 가능 칸).
  */
 export function reachableTiles(state: GridCombatState, combatant: GridCombatant): GridPos[] {
   const prof = combatant.moveProfile;
   const from = combatant.pos;
   const range = Math.max(1, prof.range ?? 1);
+  const air = isAirborne(combatant);
+  const canPass = (p: GridPos): boolean => (air ? canAirThrough(state.stage, p) : canMoveThrough(state.stage, p));
+  const canLand = (p: GridPos): boolean => (air ? canAirStop(state.stage, p) : canStopAt(state.stage, p));
 
   switch (prof.pattern) {
     case 'rook':
-      return slideReach(state, from, ROOK_DIRS, range);
+      return slideReach(from, ROOK_DIRS, range, canPass, canLand);
     case 'bishop':
-      return slideReach(state, from, BISHOP_DIRS, range);
+      return slideReach(from, BISHOP_DIRS, range, canPass, canLand);
     case 'king':
-      return slideReach(state, from, KING_DIRS, range);
+      return slideReach(from, KING_DIRS, range, canPass, canLand);
     case 'orthogonal1': {
       const out: GridPos[] = [];
       for (const d of ROOK_DIRS) {
         const p = { x: from.x + d.dx, y: from.y + d.dy };
-        if (isFreeTile(state, p)) out.push(p);
+        if (canLand(p)) out.push(p);
       }
       return out;
     }
     case 'knight': {
+      // 점프 — 경로 무시, 착지 가능 칸에만. 비행 시 airStop 칸(구덩이 등 착지 X).
       const out: GridPos[] = [];
       for (const o of KNIGHT_OFFSETS) {
         const p = { x: from.x + o.dx, y: from.y + o.dy };
-        if (isFreeTile(state, p)) out.push(p);
+        if (canLand(p)) out.push(p);
       }
       return out;
     }
     case 'manhattan': {
-      // 맨해튼 거리 ≤ range 다이아몬드 — *경로 인식* BFS(장애물 통과/점프 불가, 사용자 규칙).
-      // 직교 1칸씩 range 스텝 안에서 통행 가능 칸으로만 확장. 자기 칸 제외.
+      // 맨해튼 거리 ≤ range 다이아몬드 — *경로 인식* BFS. 통과=canPass, 착지=canLand.
       const out: GridPos[] = [];
       const seen = new Set<string>([`${from.x},${from.y}`]);
       let frontier: GridPos[] = [from];
@@ -274,9 +284,9 @@ export function reachableTiles(state: GridCombatState, combatant: GridCombatant)
             const p = { x: cur.x + d.dx, y: cur.y + d.dy };
             const k = `${p.x},${p.y}`;
             if (seen.has(k)) continue;
-            if (!isFreeTile(state, p)) continue; // 벽/void/밖 — 경로 차단(여기서 멈춤).
+            if (!canPass(p)) continue; // 경로 차단.
             seen.add(k);
-            out.push(p);
+            if (canLand(p)) out.push(p); // 착지 가능 칸만 도착지.
             next.push(p);
           }
         }
@@ -301,7 +311,7 @@ export function reachableTiles(state: GridCombatState, combatant: GridCombatant)
       const out: GridPos[] = [];
       for (const o of prof.customOffsets ?? []) {
         const p = { x: from.x + o.dx, y: from.y + o.dy };
-        if (isFreeTile(state, p)) out.push(p);
+        if (canLand(p)) out.push(p);
       }
       return out;
     }
@@ -410,13 +420,17 @@ export function isAimedCard(card: Card): boolean {
 export function aimableTiles(state: GridCombatState, card: Card, casterPos?: GridPos): GridPos[] {
   const range = Math.max(1, card.aimRange ?? 3);
   const from = casterPos ?? state.player.pos;
+  // 설치 카드는 *설치 가능 칸*(canPlace)을, 그 외 원거리는 *공격 가능 칸*(canAttack)을 조준. 둘 다 시야 필요.
+  const isPlace = card.effects.some((e) => e.kind === 'place-installation');
+  const valid = (p: GridPos): boolean =>
+    (isPlace ? canPlaceTile(state.stage, p) : canAttackTile(state.stage, p)) && hasLineOfSight(state.stage, from, p);
   const out: GridPos[] = [];
   for (let dy = -range; dy <= range; dy++) {
     const rem = range - Math.abs(dy);
     for (let dx = -rem; dx <= rem; dx++) {
       if (dx === 0 && dy === 0) continue;
       const p = { x: from.x + dx, y: from.y + dy };
-      if (canAttackTile(state.stage, p) && hasLineOfSight(state.stage, from, p)) out.push(p);
+      if (valid(p)) out.push(p);
     }
   }
   return out;
@@ -621,7 +635,7 @@ function relicHandManaExtras(loadout: Relic[]): { draw: number; mana: number } {
 
 // 라운드마다 -1 감쇠되는 *일시* 상태. strength·파워(metallicize 등)는 STS 관례대로 *영구*(감쇠 제외).
 // ghost(유령화)는 양날 상태로 라운드 감쇠.
-const DECAYING_STATUSES = new Set<string>(['weakness', 'vulnerable', 'frail', 'ghost', 'anchored', 'slowed']);
+const DECAYING_STATUSES = new Set<string>(['weakness', 'vulnerable', 'frail', 'ghost', 'anchored', 'slowed', 'airborne']);
 
 /** 샤유아 전파/연쇄 대상 디버프 키(status-spread·chain-explosion). */
 const SPREADABLE_DEBUFFS = ['vulnerable', 'weakness', 'frail', 'poison', 'burn', 'regress'] as const;
@@ -1469,6 +1483,38 @@ function tickEnemyTempo(state: GridCombatState): void {
   }
 }
 
+/**
+ * 설치물 적용 + 감쇠(2026-06-18) — 라운드 해소 끝에 호출.
+ * 그 칸에 선 전투원에 효과(위해=적, 강화=플레이어). 폭발=즉발 피해 후 소멸. duration -1, 0이면 소멸.
+ */
+function tickInstallations(state: GridCombatState): void {
+  if (!state.installations?.length) return;
+  const consumed = new Set<GridInstallation>();
+  for (const inst of state.installations) {
+    const occupants = combatantsAt(state, inst.pos).filter((c) => c.hp > 0);
+    for (const c of occupants) {
+      const enemy = c.team === 'enemy';
+      switch (inst.kind) {
+        case 'burn': if (enemy) c.statuses['burn'] = (c.statuses['burn'] ?? 0) + inst.value; break;
+        case 'poison': if (enemy) c.statuses['poison'] = (c.statuses['poison'] ?? 0) + inst.value; break;
+        case 'vulnerable': if (enemy) c.statuses['vulnerable'] = (c.statuses['vulnerable'] ?? 0) + inst.value; break;
+        case 'explosion': if (enemy) { applyDamage(state, c, inst.value, {}); consumed.add(inst); } break;
+        case 'atk-up': if (c.team === 'player') c.statuses['strength'] = (c.statuses['strength'] ?? 0) + inst.value; break;
+        case 'def-up': if (c.team === 'player') c.block += inst.value; break;
+        case 'mana-up': if (c.team === 'player') state.mana += inst.value; break;
+        default: break;
+      }
+    }
+  }
+  // 폭발(즉발 소멸) 제거 + duration 감쇠 후 만료 제거.
+  state.installations = state.installations.filter((inst) => {
+    if (consumed.has(inst)) return false;
+    if (inst.duration === undefined) return true;
+    inst.duration -= 1;
+    return inst.duration > 0;
+  });
+}
+
 // ============================================================================
 // 라운드 해소 — commitRound
 // ============================================================================
@@ -1513,6 +1559,12 @@ export function commitRound(state: GridCombatState): void {
       if (ally.hp <= 0) continue;
       takeCombatantTurn(state, ally);
     }
+  }
+
+  // 설치물 효과(라운드 끝) — 그 칸에 선 전투원에 적용 + 폭발/만료 정리. 즉발 피해로 처치/승패 가능.
+  if (!state.outcome) {
+    tickInstallations(state);
+    postActionCleanup(state);
   }
 
   // 전투 종료(승/패) — 라운드 종료 정리는 불필요하나, stale plan 재실행 방지로 계획만 비운다.
@@ -1648,15 +1700,19 @@ function execMove(state: GridCombatState, actor: GridCombatant, to: GridPos): vo
     pushLog(state, '닻에 묶여 움직일 수 없다');
     return;
   }
-  // 실행 시점 합법성 재평가 — 도착 칸이 비어 있고 통행 가능해야.
-  if (!isFreeTile(state, to)) {
+  // 실행 시점 합법성 재평가 — 비행 중이면 airStop, 아니면 지상 착지 가능 칸이어야.
+  const air = isAirborne(actor);
+  const landOk = (p: GridPos): boolean => (air ? canAirStop(state.stage, p) : isFreeTile(state, p));
+  if (!landOk(to)) {
     // 막혔으면 같은 방향 best-effort 한 칸(접근). 그래도 안 되면 제자리.
     const fallback = approachMove(state, actor, actor.pos, to);
-    if (!fallback || !isFreeTile(state, fallback)) return;
+    if (!fallback || !landOk(fallback)) return;
     to = fallback;
   }
   const from = { ...actor.pos };
   actor.pos = { ...to };
+  // 비행 중 이동 = 착지 → 비행 해제(사용자 규칙: 이동하면 공중이 아니게 됨, 재진입은 카드로만).
+  if (air) actor.statuses['airborne'] = 0;
   pushFx(state, { kind: 'move', actorId: actor.id, from, to: { ...to } });
   // 바닥 아이템 — 플레이어가 그 칸에 서면 획득(슬라이스: 기록만, 실제 인벤 추가는 스토어).
   if (actor.team === 'player') collectItemAt(state, to);
@@ -2219,6 +2275,29 @@ function applyCardEffects(
         // move-rider(D2) — 카드가 플레이어를 value칸 이동(가장 가까운 적 기준 toward/away).
         const mode = eff.params?.mode === 'toward' ? 'toward' : 'away';
         dashPlayer(state, Math.max(1, Math.floor(rawV) || 1), mode);
+        break;
+      }
+      // === 공중 이동(2026-06-18) — 비행 상태 부여(value턴). 이동 시 착지하며 해제. ===
+      case 'grant-airborne': {
+        const turns = Math.max(1, Math.floor(rawV) || 1);
+        state.player.statuses['airborne'] = Math.max(state.player.statuses['airborne'] ?? 0, turns);
+        pushLog(state, '날아올랐다');
+        break;
+      }
+      // === 설치(2026-06-18) — shape 칸(anchor 기준) 중 설치 가능 칸에 효과 장판 생성. ===
+      case 'place-installation': {
+        const kind = String(eff.params?.kind ?? 'burn') as GridInstallation['kind'];
+        const dur = eff.params?.duration !== undefined ? Math.max(1, Number(eff.params.duration)) : 3;
+        const val = Math.max(1, Math.floor(rawV) || 1);
+        const cells = (shape.length ? shape : [{ dx: 0, dy: 0 }]).map((o) => ({ x: anchor.x + o.dx, y: anchor.y + o.dy }));
+        state.installations = state.installations ?? [];
+        let placed = 0;
+        for (const pos of cells) {
+          if (!canPlaceTile(state.stage, pos)) continue;
+          state.installations.push({ pos, kind, value: val, duration: dur });
+          placed += 1;
+        }
+        if (placed > 0) pushLog(state, '설치물을 깔았다');
         break;
       }
       // === 샤유아 시그니처(C4) ===

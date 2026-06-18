@@ -262,6 +262,12 @@ function parseCardEffect(token: string): CardEffect | null {
     if (parts[4]) params.attack = Number(parts[4]);
     return { kind, value, target, params };
   }
+  // place-installation 전용(설치): value=강도, 4번째=종류(burn/poison/vulnerable/atk-up/def-up/mana-up/explosion), 5번째=duration(라운드, 기본 3).
+  if (kind === 'place-installation' && parts[3]) {
+    const params: Record<string, unknown> = { kind: parts[3] };
+    if (parts[4]) params.duration = Number(parts[4]);
+    return { kind, value, target, params };
+  }
   // 4번째 토큰: apply-status의 status 이름 등 추가 파라미터.
   if (parts[3]) {
     return { kind, value, target, params: { status: parts[3] } };

@@ -77,22 +77,36 @@ export const canPlaceTile = (s: GridStage, p: GridPos): boolean => tilePropsAt(s
 export const tileTransparent = (s: GridStage, p: GridPos): boolean => tilePropsAt(s, p).sight;
 
 /**
- * 시야(LoS) 확보 — from→to 직선이 지나가는 *중간* 칸에 시야 차단(sight=false) 칸이 하나도 없으면 true.
- * 끝점(from/to)은 검사 제외(목표 칸 자체가 차단성이어도 그 칸은 조준 가능). Bresenham 정수 라인.
+ * 시야 라인 추적 — from→to 직선을 따라가며 *중간* 칸을 모으고, 시야 차단(불투명) 칸을 만나면 거기서 중단.
+ *  - path: from 다음 칸부터 (차단 전까지 + 차단 없으면 to 포함) 지나는 칸들.
+ *  - blockedAt: 시야를 가린 칸(있으면) / null(끝까지 확보).
+ * #3 편의 UI(라인 표시 + 차단 타일 강조) + hasLineOfSight 공용.
  */
-export function hasLineOfSight(stage: GridStage, from: GridPos, to: GridPos): boolean {
+export function traceLineOfSight(
+  stage: GridStage,
+  from: GridPos,
+  to: GridPos,
+): { path: GridPos[]; blockedAt: GridPos | null } {
   let x0 = from.x, y0 = from.y;
   const x1 = to.x, y1 = to.y;
   const dx = Math.abs(x1 - x0), dy = Math.abs(y1 - y0);
   const sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1;
   let err = dx - dy;
-  // 첫 칸(from)은 건너뛰고 진행, to 직전까지 중간 칸만 검사.
+  const path: GridPos[] = [];
   while (true) {
     const e2 = 2 * err;
     if (e2 > -dy) { err -= dy; x0 += sx; }
     if (e2 < dx) { err += dx; y0 += sy; }
-    if (x0 === x1 && y0 === y1) break; // to 도달 — 중간 검사 끝.
-    if (!tileTransparent(stage, { x: x0, y: y0 })) return false; // 중간에 불투명 칸 — 시야 차단.
+    if (x0 === x1 && y0 === y1) { path.push({ x: x0, y: y0 }); break; } // 목표 도달.
+    if (!tileTransparent(stage, { x: x0, y: y0 })) return { path, blockedAt: { x: x0, y: y0 } };
+    path.push({ x: x0, y: y0 });
   }
-  return true;
+  return { path, blockedAt: null };
+}
+
+/**
+ * 시야(LoS) 확보 — from→to 직선 중간에 시야 차단 칸이 없으면 true. (traceLineOfSight 위임.)
+ */
+export function hasLineOfSight(stage: GridStage, from: GridPos, to: GridPos): boolean {
+  return traceLineOfSight(stage, from, to).blockedAt === null;
 }

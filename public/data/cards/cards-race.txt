@@ -4557,3 +4557,15 @@ trigger = manual
 effects = move-self:2:self:away
 target_mode = self
 cast_speed = fast
+
+# --- 리무(나방) 공중 이동(2026-06-18) — 비행 상태가 되어 다음 이동이 장애물 위를 넘어 착지칸까지 ---
+[card.c-moth-flight]
+name = 날갯짓
+rank = common
+source = race
+element = wind
+cost = 1
+trigger = manual
+effects = grant-airborne:2:self
+target_mode = self
+cast_speed = fast

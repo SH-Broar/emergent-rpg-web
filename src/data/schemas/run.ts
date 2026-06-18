@@ -438,10 +438,25 @@ export interface FxEvent {
 }
 
 /** 현재 진행 중인 격자 전투의 임시 상태. */
+/**
+ * 설치물(2026-06-18) — 설치 카드(place-installation)가 칸에 깐 효과 장판/장애물.
+ * 라운드 해소 시 그 칸에 선 전투원에 효과 적용(위해=적, 강화=플레이어). duration 경과 시 소멸.
+ */
+export interface GridInstallation {
+  pos: GridPos;
+  /** 종류 — burn/poison/vulnerable(위해, 적 대상) · atk-up/def-up/mana-up(강화, 플레이어) · explosion(접촉 즉발). */
+  kind: 'burn' | 'poison' | 'vulnerable' | 'atk-up' | 'def-up' | 'mana-up' | 'explosion';
+  value: number;
+  /** 남은 라운드(매 라운드 -1, 0이면 소멸). 미설정=영구(전투 동안). */
+  duration?: number;
+}
+
 export interface GridCombatState {
   stage: GridStage;
   player: GridCombatant;
   enemies: GridCombatant[];
+  /** 설치물(효과 장판) — place-installation 카드가 생성. 미설정/빈 배열이면 없음(세이브 안전). */
+  installations?: GridInstallation[];
   /**
    * 아군 소환 토큰(샤유아 분열 등 summon-ally). 매 라운드 적을 향해 이동·근접 공격(planAlly).
    * 미설정/빈 배열이면 없음(세이브·일반 전투 안전). 적 AI 타깃은 v1에서 플레이어 전용(아군은 공격 헬퍼).

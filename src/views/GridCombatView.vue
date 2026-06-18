@@ -38,6 +38,7 @@ import {
   STRONG_MUL,
   swappableCompanions,
 } from '@/systems/grid-combat';
+import { traceLineOfSight } from '@/systems/tiles';
 import { statusLabel } from '@/systems/labels';
 import type { Item } from '@/data/schemas';
 import { scaledValue, enhanceBadge } from '@/systems/enhance';
@@ -81,6 +82,8 @@ const mode = ref<Mode>('idle');
 const aimingCardId = ref<string | null>(null);
 /** aimed(원거리 조준) 카드의 현재 선택 조준 칸. null이면 아직 조준 칸 미선택(후보 하이라이트 단계). */
 const aimCell = ref<GridPos | null>(null);
+/** 조준 중 호버 칸 — 시야 라인 미리보기용(#3). */
+const losPreviewCell = ref<GridPos | null>(null);
 /** 커밋(라운드 해소) 진행 중 — 입력 잠금. */
 const committing = ref(false);
 /** 인스펙트 중인 적 id(원 탭). */
@@ -262,6 +265,47 @@ const throwHints = computed<Map<string, string>>(() => {
 function throwArrowAt(x: number, y: number): string | null {
   return throwHints.value.get(`${x},${y}`) ?? null;
 }
+
+/**
+ * 원거리(aimed) 조준 중 시야 라인(#3) — 내 위치→조준(호버/선택) 칸 직선.
+ * 경로에 시야 차단 타일이 있으면 거기서 라인 중단 + 그 칸을 blocked로 강조.
+ */
+const losInfo = computed<{ line: Set<string>; blocked: string | null }>(() => {
+  const state = gc.value;
+  const empty = { line: new Set<string>(), blocked: null as string | null };
+  if (!state || committing.value || phase.value !== 'combat') return empty;
+  if (mode.value !== 'card' || !aimingCardId.value) return empty;
+  const card = state.hand.find((c) => c.instanceId === aimingCardId.value);
+  if (!card || !isAimedCard(card)) return empty; // 원거리만 시야 라인.
+  const target = losPreviewCell.value ?? aimCell.value;
+  if (!target) return empty;
+  const from = effectivePlayerPos.value;
+  if (target.x === from.x && target.y === from.y) return empty;
+  const tr = traceLineOfSight(state.stage, from, target);
+  return {
+    line: new Set(tr.path.map((p) => `${p.x},${p.y}`)),
+    blocked: tr.blockedAt ? `${tr.blockedAt.x},${tr.blockedAt.y}` : null,
+  };
+});
+function isLosLine(x: number, y: number): boolean { return losInfo.value.line.has(`${x},${y}`); }
+function isLosBlocked(x: number, y: number): boolean { return losInfo.value.blocked === `${x},${y}`; }
+/** 셀 호버 — 조준 중이면 시야 라인 미리보기 대상 갱신(데스크톱). */
+function onCellHover(x: number, y: number): void {
+  if (mode.value === 'card' && aimingCardId.value) losPreviewCell.value = { x, y };
+}
+
+/** 설치물 글리프/색(2026-06-18) — 그 칸의 설치물 표시. */
+const INSTALL_GLYPH: Record<string, string> = {
+  burn: '✸', poison: '☣', explosion: '✺', vulnerable: '▽',
+  'atk-up': '▲', 'def-up': '◆', 'mana-up': '✦',
+};
+function installAt(x: number, y: number): { glyph: string; kind: string } | null {
+  const inst = gc.value?.installations?.find((i) => i.pos.x === x && i.pos.y === y);
+  if (!inst) return null;
+  return { glyph: INSTALL_GLYPH[inst.kind] ?? '◎', kind: inst.kind };
+}
+/** 플레이어 비행 상태 여부(토큰 배지). */
+const playerAirborne = computed<boolean>(() => (gc.value?.player.statuses?.['airborne'] ?? 0) > 0);
 
 /** aimed 조준 칸 자체(중심 표시용 — shape 미리보기와 구분). */
 function isAimCenter(x: number, y: number): boolean {
@@ -1039,6 +1083,7 @@ onUnmounted(() => {
             'grid-template-columns': `repeat(${gridCols}, var(--cell))`,
             'grid-template-rows': `repeat(${gridRows}, var(--cell))`,
           }"
+          @pointerleave="losPreviewCell = null"
         >
           <template v-for="y in gridRows" :key="`row-${y}`">
             <template v-for="x in gridCols" :key="`cell-${x}-${y}`">
@@ -1053,10 +1098,13 @@ onUnmounted(() => {
                     'cell--strong': isStrongTile(x - 1, y - 1),
                     'cell--attack-preview': isAttackPreview(x - 1, y - 1),
                     'cell--aim-center': isAimCenter(x - 1, y - 1),
+                    'cell--los-line': isLosLine(x - 1, y - 1),
+                    'cell--los-blocked': isLosBlocked(x - 1, y - 1),
                   },
                 ]"
                 :style="{ 'grid-column': x, 'grid-row': y }"
                 @click="tapTile(x - 1, y - 1)"
+                @pointerenter="onCellHover(x - 1, y - 1)"
               >
                 <span v-if="cellType(x - 1, y - 1) === 'wall'" class="cell__wall">▦</span>
                 <span v-else-if="cellType(x - 1, y - 1) === 'pit'" class="cell__pit">◌</span>
@@ -1065,6 +1113,11 @@ onUnmounted(() => {
                 <span v-else-if="hasItemDrop(x - 1, y - 1)" class="cell__item">✦</span>
                 <span v-else-if="cellType(x - 1, y - 1) === 'spawn'" class="cell__spawn">·</span>
                 <span v-if="throwArrowAt(x - 1, y - 1)" class="cell__throw">{{ throwArrowAt(x - 1, y - 1) }}</span>
+                <span
+                  v-if="installAt(x - 1, y - 1)"
+                  class="cell__install"
+                  :class="`cell__install--${installAt(x - 1, y - 1)?.kind}`"
+                >{{ installAt(x - 1, y - 1)?.glyph }}</span>
               </div>
               <!-- void는 자리를 차지하되 투명(grid 정렬 유지). -->
               <div
@@ -1104,6 +1157,7 @@ onUnmounted(() => {
               :style="{ transform: tokenOffset(gc.player) }"
             >
               <div class="token__circle token__circle--player"></div>
+              <span v-if="playerAirborne" class="token__air" title="비행 — 다음 이동이 장애물 위를 넘어 착지칸까지">⤴</span>
               <div class="token__hpbar"><span :style="{ width: `${hpRatio(gc.player) * 100}%` }"></span></div>
               <!-- 플로팅 숫자 -->
               <span
@@ -1487,6 +1541,17 @@ onUnmounted(() => {
 .cell__fence { color: #b09a6a; }
 /* 투척 방향/타격칸 표시(US-003). */
 .cell__throw { position: absolute; color: #ffc089; font-weight: 700; font-size: 0.9rem; text-shadow: 0 0 3px #000; pointer-events: none; }
+/* 설치물(2026-06-18) — 효과 장판/함정 글리프. 종류별 색. */
+.cell__install { position: absolute; bottom: 1px; right: 1px; font-size: 0.72rem; text-shadow: 0 0 2px #000; pointer-events: none; color: #ddd; }
+.cell__install--burn { color: #ff8a4a; }
+.cell__install--poison { color: #9ad06a; }
+.cell__install--explosion { color: #ff6a5a; }
+.cell__install--vulnerable { color: #ffd06a; }
+.cell__install--atk-up { color: #ff9a9a; }
+.cell__install--def-up { color: #8ec6ff; }
+.cell__install--mana-up { color: #c08eff; }
+/* 비행 상태 배지(플레이어 토큰). */
+.token__air { position: absolute; top: -7px; right: -5px; font-size: 0.85rem; color: #bfe6ff; text-shadow: 0 0 4px #4aa3ff; z-index: 3; pointer-events: none; }
 
 /* 하이라이트 — 이동/조준 칸. ≤0.1초 트랜지션. */
 .cell--highlight {
@@ -1502,6 +1567,15 @@ onUnmounted(() => {
   border: 1px solid rgba(255,170,90,0.95);
 }
 .cell--strong:hover { background: rgba(255,122,42,0.48); }
+/* 시야 라인(#3) — 조준 직선이 지나는 칸. 차단 칸은 시야를 가린 타일을 빨강으로 강조. */
+.cell--los-line::before {
+  content: ''; position: absolute; left: 50%; top: 50%; width: 6px; height: 6px;
+  transform: translate(-50%, -50%); border-radius: 50%; background: rgba(255,236,150,0.85); pointer-events: none;
+}
+.cell--los-blocked {
+  background: rgba(255,70,70,0.45) !important;
+  box-shadow: inset 0 0 0 2px #ff5a5a;
+}
 /* 적 공격 미리보기(인스펙트). */
 .cell--attack-preview {
   background: rgba(255,120,120,0.22);

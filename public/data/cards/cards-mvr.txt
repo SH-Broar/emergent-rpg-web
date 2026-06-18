@@ -2705,3 +2705,37 @@ effects = apply-status:5:self:resolve, exhaust-self:0:self
 target_mode = self
 cast_speed = slow
 flavor = "흔들려도, 다시 곧게 서면 그만이야."
+
+# === 설치(placement, 2026-06-18) — 설치 가능 칸에 효과 장판/함정. targetMode=aimed로 칸 조준. flavor 추후 검수. ===
+[card.c-place-ember]
+name = 화염 장판
+rank = common
+cost = 1
+trigger = manual
+effects = place-installation:3:enemy:burn:3
+shape = 0,0
+target_mode = aimed
+aim_range = 3
+cast_speed = normal
+
+[card.c-place-bomb]
+name = 폭발 함정
+rank = rare
+cost = 2
+trigger = manual
+effects = place-installation:9:enemy:explosion:4
+shape = 0,0
+target_mode = aimed
+aim_range = 3
+cast_speed = normal
+
+[card.c-place-ward]
+name = 수호진
+rank = common
+cost = 1
+trigger = manual
+effects = place-installation:5:self:def-up:3
+shape = 0,0
+target_mode = aimed
+aim_range = 2
+cast_speed = normal
