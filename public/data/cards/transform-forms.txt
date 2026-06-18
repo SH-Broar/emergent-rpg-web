@@ -799,7 +799,7 @@ source = form
 element = dark
 cost = 1
 trigger = manual
-effects = apply-status:4:enemy:frail
+effects = break-armor:0:enemy
 # 격자: 전방 단일. 방어를 올올이 풀어헤친다.
 shape = 0,-1
 target_mode = pattern
@@ -814,7 +814,7 @@ source = form
 element = dark
 cost = 1
 trigger = manual
-effects = apply-status:6:enemy:frail
+effects = break-armor:0:enemy
 # 격자: 전방 단일. 더 오래 헐겁다.
 shape = 0,-1
 target_mode = pattern
@@ -828,7 +828,7 @@ source = form
 element = dark
 cost = 1
 trigger = manual
-effects = apply-status:2:enemy:vulnerable, apply-status:2:enemy:weakness, apply-status:2:enemy:frail
+effects = break-armor:0:enemy, apply-status:2:enemy:vulnerable, apply-status:2:enemy:weakness
 # 격자: 전방+좌대각+우대각. 농락이 번지듯 퍼진다.
 shape = -1,-1|0,-1|1,-1
 per_tile_mul = 1.0,1.0,1.0
@@ -844,7 +844,7 @@ source = form
 element = dark
 cost = 1
 trigger = manual
-effects = apply-status:3:enemy:vulnerable, apply-status:3:enemy:weakness, apply-status:3:enemy:frail
+effects = break-armor:0:enemy, apply-status:3:enemy:vulnerable, apply-status:3:enemy:weakness
 # 격자: 전방+좌대각+우대각. 더 넓게 농락한다.
 shape = -1,-1|0,-1|1,-1
 per_tile_mul = 1.0,1.0,1.0

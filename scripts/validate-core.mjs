@@ -193,7 +193,7 @@ export const VALID_ITEM_CATEGORIES = ['consumable', 'specialty', 'material', 'ra
  * 카드 효과 kind — src/systems/combat.ts EFFECT_HANDLERS 키 (= schemas/card.ts CardEffectKind).
  */
 export const VALID_CARD_EFFECT_KINDS = [
-  'damage', 'damage-min-color', 'heal', 'block', 'draw', 'apply-status',
+  'damage', 'damage-min-color', 'heal', 'block', 'break-armor', 'draw', 'apply-status',
   'return-hand-to-deck', 'next-turn-energy', 'growing-block',
   'damage-top-color', 'damage-color-count', 'block-top-color', 'draw-if-color',
   // 화상/독 스택 소비형 — combat.ts EFFECT_HANDLERS 'consume-burn'/'consume-poison'(검증기 화이트리스트 선재 누락 동기화).

@@ -85,6 +85,7 @@ export type CardEffectKind =
   | 'damage-min-color'    // 8 컬러 중 *최솟값* × value 데미지, ATK 보너스 무시
   | 'heal'                // 자신 회복 (음수 = 자기 HP 페널티)
   | 'block'               // 방어막 (음수 = block 페널티)
+  | 'break-armor'         // 방어 파괴 — 닿은 적의 방어막을 전부 즉시 제거(2026-06-19, frail 디버프 대체)
   | 'draw'                // 카드 드로우
   | 'apply-status'        // 상태 부여
   | 'return-hand-to-deck' // 손에서 *가장 오른쪽* 1장을 drawPile 맨 위로 (칼리번)

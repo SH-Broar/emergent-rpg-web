@@ -653,7 +653,6 @@ species = crab
 hp = 168
 attack = 13
 grid_attack_1 = 내지르기 | 0,-1 0,-2 0,1 0,2 -1,0 -2,0 1,0 2,0 | 1,0.7,1,0.7,1,0.7,1,0.7 | 13 | slow | true |
-grid_attack_2 = 으스러뜨리기 | 0,-1 0,1 -1,0 1,0 | 1,1,1,1 | 6 | normal | true | frail:1
 defense = 0
 lock_in = 10
 intents = attack:13, debuff:1:frail, attack:26~unlocked=attack:8, attack:13

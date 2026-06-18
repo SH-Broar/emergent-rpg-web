@@ -1047,6 +1047,11 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
     const value = Math.max(0, Math.floor(minColor * (e.value ?? 1)));
     for (const t of targets) applyDamage(t, value, c.player.statuses);
   },
+  'break-armor': (e, c) => {
+    // 방어 파괴(2026-06-19) — 대상의 방어막을 전부 제거. 구 1v1 경로(사장)지만 타입 일치를 위해 구현.
+    const targets = resolveTargets(e.target ?? 'enemy', c);
+    for (const t of targets) t.block = 0;
+  },
   heal: (e, c) => {
     // 수화 중(feral-heavy): 회복 전면 차단 — self 회복 불가.
     const targets = resolveTargets(e.target ?? 'self', c);

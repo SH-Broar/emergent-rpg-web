@@ -706,7 +706,7 @@ function relicHandManaExtras(loadout: Relic[]): { draw: number; mana: number } {
 //   - possession/imprint : 영구(비감쇠). possession은 매 라운드 HP 잠식, imprint는 5↑이면 possession으로 전이.
 //   - metallicize/barricade/feelNoPain/rupture/juggernaut/feral-heavy : 전투 휘발 파워/잔존(감쇠 안 함).
 const DECAYING_STATUSES = new Set<string>([
-  'weakness', 'vulnerable', 'frail', 'ghost', 'anchored', 'slowed', 'airborne',
+  'weakness', 'vulnerable', 'ghost', 'anchored', 'slowed', 'airborne',
   'brainwash', 'sap', 'regress', 'feral', 'sleep', 'focus', 'haste',
 ]);
 
@@ -729,11 +729,11 @@ function damageFlatBonus(statuses: Record<string, number> | undefined): number {
   return (statuses?.['focus'] ?? 0) - (statuses?.['sap'] ?? 0);
 }
 /**
- * 방어의 *플랫* 보정(dexterity 외) — combat.ts statusBonusForCardEffectKind('block')와 동일:
- *   − frail(취약) − sap(잠식). dexterity는 호출처에서 별도 가산이라 제외. 최종 음수 방지는 호출처 clamp.
+ * 방어의 *플랫* 보정(dexterity 외) — − sap(잠식)만. dexterity는 호출처 별도 가산. 최종 음수 방지는 호출처 clamp.
+ * (frail(취약)은 2026-06-19 폐지 — '방어 파괴'(break-armor) 즉시 효과로 대체.)
  */
 function blockFlatBonus(statuses: Record<string, number> | undefined): number {
-  return -(statuses?.['frail'] ?? 0) - (statuses?.['sap'] ?? 0);
+  return -(statuses?.['sap'] ?? 0);
 }
 
 // 격자에 *이식하지 않은* 상태(구조적 부적합 — 부여돼도 안전 무시, crash 없음):
@@ -742,10 +742,11 @@ function blockFlatBonus(statuses: Record<string, number> | undefined): number {
 //                       귀속시킬 수 없어 생략. (juggernaut/rupture는 플레이어 self라 이식됨.)
 //   - ward(방어 이월) : barricade(불굴, 이미 동작)와 기능 중복이라 별도 이식 생략.
 //   - resolve(경감)   : 격자 적 디버프 부여가 applyStatusToken 단순 경로라 "받는 디버프 -1" 삽입점이 없어 생략.
-// 나머지(poison/burn/frail/sap/brainwash/imprint/possession/sleep/slime/spasm/regen/haste/focus/feral/feral-heavy/regress)는 동작한다.
+// 나머지(poison/burn/sap/brainwash/imprint/possession/sleep/slime/spasm/regen/haste/focus/feral/feral-heavy/regress)는 동작한다.
+//   - frail(취약)        : 2026-06-19 폐지 — 카드 'break-armor'(방어 파괴: 상대 방어 전부 제거) 즉시 효과로 대체.
 
 /** 샤유아 전파/연쇄 대상 디버프 키(status-spread·chain-explosion). */
-const SPREADABLE_DEBUFFS = ['vulnerable', 'weakness', 'frail', 'poison', 'burn', 'regress'] as const;
+const SPREADABLE_DEBUFFS = ['vulnerable', 'weakness', 'poison', 'burn', 'regress'] as const;
 
 function damageMultipliers(
   v: number,
@@ -2154,9 +2155,9 @@ function relicCount(): number {
   }
 }
 
-/** 적 디버프 스택 총합(취약/약화/연약/중독/화상/퇴행). */
+/** 적 디버프 스택 총합(취약/약화/중독/화상/퇴행). */
 function enemyDebuffSum(s: Record<string, number>): number {
-  return (s.vulnerable ?? 0) + (s.weakness ?? 0) + (s.frail ?? 0)
+  return (s.vulnerable ?? 0) + (s.weakness ?? 0)
     + (s.poison ?? 0) + (s.burn ?? 0) + (s.regress ?? 0);
 }
 
@@ -2289,7 +2290,17 @@ function applyCardEffects(
         break;
       }
       case 'block': {
-        gainBlock(blockValue(Math.floor(v))); // 색/민첩/유물/−frail/−sap 합성, 수화면 gainBlock이 0 처리.
+        gainBlock(blockValue(Math.floor(v))); // 색/민첩/유물/−sap 합성, 수화면 gainBlock이 0 처리.
+        break;
+      }
+      case 'break-armor': {
+        // 방어 파괴(2026-06-19) — 닿은 적의 방어막을 *전부* 즉시 제거(폐지된 frail 디버프 대체).
+        for (const { target } of shapeHits) {
+          if (target.block > 0) {
+            pushFx(state, { kind: 'block-absorb', actorId: target.id, amount: target.block });
+            target.block = 0;
+          }
+        }
         break;
       }
       case 'draw': {
