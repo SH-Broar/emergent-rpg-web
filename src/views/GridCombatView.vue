@@ -33,6 +33,7 @@ import {
   combatPotions,
   isAimedCard,
   aimableTiles,
+  cardShapePreview,
   swappableCompanions,
 } from '@/systems/grid-combat';
 import { statusLabel } from '@/systems/labels';
@@ -163,6 +164,27 @@ const liveAllies = computed<GridCombatant[]>(() =>
 const gridCols = computed(() => stage.value?.width ?? 0);
 const gridRows = computed(() => stage.value?.height ?? 0);
 
+/**
+ * 계획에 이동이 큐돼 있으면 *이동 후* 플레이어 위치(US-002). 이후 카드의 범위/조준은 이 위치 기준.
+ * 이동은 한 라운드 1회(US-001)라 마지막 큐 이동의 도착점.
+ */
+const effectivePlayerPos = computed<GridPos>(() => {
+  const state = gc.value;
+  if (!state) return { x: 0, y: 0 };
+  let pos = { ...state.player.pos };
+  for (const a of plan.value) if (a.kind === 'move') pos = { ...a.to };
+  return pos;
+});
+/** 이동이 큐돼 현재 위치와 이동 후 위치가 다른가(잔상 토큰 표시 여부). */
+const hasPlannedMove = computed<boolean>(() => {
+  const state = gc.value;
+  if (!state) return false;
+  const e = effectivePlayerPos.value;
+  return e.x !== state.player.pos.x || e.y !== state.player.pos.y;
+});
+/** 이동은 한 라운드 1회(US-001) — 이미 큐에 있으면 [이동] 비활성. */
+const moveQueued = computed<boolean>(() => plan.value.some((a) => a.kind === 'move'));
+
 /** 현재 모드에 따른 하이라이트 칸 집합(키 'x,y'). */
 const highlightTiles = computed<Set<string>>(() => {
   const state = gc.value;
@@ -173,13 +195,14 @@ const highlightTiles = computed<Set<string>>(() => {
   if (mode.value === 'card' && aimingCardId.value) {
     const card = state.hand.find((c) => c.instanceId === aimingCardId.value);
     if (!card) return new Set();
+    const caster = effectivePlayerPos.value;
     if (isAimedCard(card)) {
-      // aimed: 조준 칸 미선택이면 *후보 칸*(사거리 내), 선택 후면 *shape 미리보기*(조준 칸 중심).
-      if (!aimCell.value) return new Set(aimableTiles(state, card).map(posKey));
-      const off = { dx: aimCell.value.x - state.player.pos.x, dy: aimCell.value.y - state.player.pos.y };
-      return new Set(previewCardTiles(state, card, undefined, off).map(posKey));
+      // aimed: 조준 칸 미선택이면 *후보 칸*(이동 후 위치 사거리 내), 선택 후면 shape 미리보기.
+      if (!aimCell.value) return new Set(aimableTiles(state, card, caster).map(posKey));
+      const off = { dx: aimCell.value.x - caster.x, dy: aimCell.value.y - caster.y };
+      return new Set(previewCardTiles(state, card, caster, off).map(posKey));
     }
-    return new Set(previewCardTiles(state, card).map(posKey));
+    return new Set(previewCardTiles(state, card, caster).map(posKey));
   }
   return new Set();
 });
@@ -406,6 +429,84 @@ const queuedCardIds = computed<Set<string>>(() => {
   return s;
 });
 
+/** 계획에 올린 카드들의 마나 비용 합(미리보기용). */
+const queuedManaCost = computed<number>(() => {
+  const state = gc.value;
+  if (!state) return 0;
+  let sum = 0;
+  for (const a of plan.value) {
+    if (a.kind !== 'card') continue;
+    const c = state.hand.find((h) => h.instanceId === a.cardInstanceId);
+    if (c) sum += cardCost(c);
+  }
+  return sum;
+});
+/** 계획 차감 후 *남은* 마나(슬롯에 카드 올리면 소비 마나만큼 깎여 보임). */
+const remainingMana = computed<number>(() => Math.max(0, (gc.value?.mana ?? 0) - queuedManaCost.value));
+
+/** 행동 1개의 템포 소모(대기=2, 그 외 1) — commitRound와 동일 규칙(US-001). */
+function actionTempoCost(a: { kind: string }): number { return a.kind === 'wait' ? 2 : 1; }
+/** 계획에 이미 쌓인 템포 진행량(적 카운터 예측용). */
+const queuedTempoTicks = computed<number>(() => plan.value.reduce((s, a) => s + actionTempoCost(a), 0));
+/** 적 e의 실효 템포(전역 slow + slowed 상태 반영) — commitRound tickEnemyTempo와 동일. */
+function effectiveTempo(e: GridCombatant): number {
+  const state = gc.value;
+  const slow = (state?.gridEnemySlow ?? 0) > 0 ? 1 : 0;
+  return Math.max(1, (e.tempo ?? 4) + slow + (e.statuses['slowed'] ?? 0));
+}
+/**
+ * 지금 행동을 1개(ticks 템포) 더 두면 적 *누군가*가 1턴을 수행하게 되는가(US-003 경고).
+ * 큐에 쌓인 진행량 위에서 이 행동이 적 카운터를 임계 너머로 넘기는지 판정.
+ */
+function actionTriggersEnemy(ticks: number): boolean {
+  const state = gc.value;
+  if (!state) return false;
+  const before = queuedTempoTicks.value;
+  for (const e of liveEnemies.value) {
+    const tempo = effectiveTempo(e);
+    const c0 = (e.tempoCounter ?? 0) + before;
+    if (Math.floor((c0 + ticks) / tempo) > Math.floor(c0 / tempo)) return true;
+  }
+  return false;
+}
+/** 손패 카드(템포 1)를 지금 큐에 넣으면 적 행동 타이밍인가 — 테두리 경고용. */
+function cardTriggersEnemy(_c: Card): boolean { return actionTriggersEnemy(1); }
+
+/** 적 e가 다음 1턴을 수행하기까지 남은 플레이어 행동 수 — *큐에 쌓인 행동 반영*(토큰 상시 표시). 1..tempo. */
+function tempoUntilTurnLive(e: GridCombatant): number {
+  const tempo = effectiveTempo(e);
+  const c = ((e.tempoCounter ?? 0) + queuedTempoTicks.value) % tempo;
+  return c === 0 ? tempo : tempo - c;
+}
+
+// === 카드 상세 롱프레스(US-005) — 누르고 있으면 범위·효과 상세, 드래그하면 다른 카드로 전환 ===
+const detailCardId = ref<string | null>(null);
+let pressTimer: number | null = null;
+let pressFired = false;
+function onCardPointerDown(c: Card) {
+  if (!c.instanceId) return;
+  pressFired = false;
+  if (pressTimer !== null) window.clearTimeout(pressTimer);
+  const iid = c.instanceId;
+  pressTimer = window.setTimeout(() => { pressFired = true; detailCardId.value = iid; }, 320);
+}
+function onHandPointerMove(ev: PointerEvent) {
+  if (detailCardId.value === null) return; // 상세 표시 중에만 드래그 전환
+  const el = (document.elementFromPoint(ev.clientX, ev.clientY) as HTMLElement | null)?.closest('[data-card-iid]') as HTMLElement | null;
+  const iid = el?.dataset.cardIid;
+  if (iid) detailCardId.value = iid;
+}
+function endCardPress() {
+  if (pressTimer !== null) { window.clearTimeout(pressTimer); pressTimer = null; }
+  detailCardId.value = null;
+}
+const detailCard = computed<Card | null>(() => {
+  const id = detailCardId.value;
+  if (!id) return null;
+  return gc.value?.hand.find((c) => c.instanceId === id) ?? null;
+});
+const detailShape = computed(() => (detailCard.value ? cardShapePreview(detailCard.value) : null));
+
 /** 손패 카드가 지금 사용(큐잉) 가능한가. */
 function cardPlayable(c: Card): boolean {
   const state = gc.value;
@@ -531,6 +632,7 @@ function potionSummary(item: Item): string {
 
 /** 핸드 카드 탭 — 조준 모드 진입(이미 조준 중인 같은 카드면 해제). */
 function selectCard(c: Card) {
+  if (pressFired) { pressFired = false; return; } // 롱프레스(상세) 직후의 click 억제
   if (committing.value || planFull.value) return;
   if (!c.instanceId || !cardPlayable(c)) return;
   inspectedId.value = null;
@@ -606,7 +708,7 @@ function tapTile(x: number, y: number) {
     const card = state.hand.find((c) => c.instanceId === aimingCardId.value);
     // aimed(원거리 조준): 사거리 내 후보 칸 탭 시 (재)조준만(확정은 [확정] 버튼). shape 미리보기로 전환.
     if (card && isAimedCard(card)) {
-      const within = aimableTiles(state, card).some((p) => p.x === x && p.y === y);
+      const within = aimableTiles(state, card, effectivePlayerPos.value).some((p) => p.x === x && p.y === y);
       if (within) aimCell.value = { x, y };
       return;
     }
@@ -642,12 +744,14 @@ function confirmCard() {
   const card = state.hand.find((c) => c.instanceId === aimingCardId.value);
   if (!card) return;
   // aimed: 조준 칸을 먼저 골라야 한다. 그 칸의 플레이어 기준 오프셋을 함께 넘긴다.
+  // 오프셋은 *이동 후 위치* 기준(US-002). 실행 시 이동이 먼저 해소돼 player.pos가 이동 후가 되므로 일치.
+  const caster = effectivePlayerPos.value;
   let aimOffset: GridOffset | undefined;
   if (isAimedCard(card)) {
     if (!aimCell.value) { ui.toast('info', '조준할 칸을 먼저 고르세요.'); return; }
-    aimOffset = { dx: aimCell.value.x - state.player.pos.x, dy: aimCell.value.y - state.player.pos.y };
+    aimOffset = { dx: aimCell.value.x - caster.x, dy: aimCell.value.y - caster.y };
   }
-  const targetTiles = previewCardTiles(state, card, undefined, aimOffset);
+  const targetTiles = previewCardTiles(state, card, caster, aimOffset);
   const ok = queuePlayerAction(state, {
     kind: 'card',
     cardInstanceId: aimingCardId.value,
@@ -830,7 +934,7 @@ onUnmounted(() => {
       <!-- 상단 바: 턴 / 마나 / 로그 -->
       <header class="topbar">
         <div class="topbar__turn">⚔ 턴 {{ gc.turn }}</div>
-        <div class="topbar__mana">마나 {{ gc.mana }} / {{ gc.maxMana }}</div>
+        <div class="topbar__mana">마나 {{ remainingMana }} / {{ gc.maxMana }}<span v-if="queuedManaCost > 0" class="topbar__mana-q"> (계획 -{{ queuedManaCost }})</span></div>
         <div class="topbar__hp">HP {{ tokenHp(gc.player) }} / {{ gc.player.maxHp }}
           <span v-if="tokenBlock(gc.player) > 0" class="topbar__block">🛡 {{ tokenBlock(gc.player) }}</span>
         </div>
@@ -912,6 +1016,19 @@ onUnmounted(() => {
 
           <!-- 전투원 토큰 — *위치*는 wrapper(.token)의 transform, *fx*(흔들림·페이드·플로팅)는
                inner(.token__inner)에서 처리한다. 두 transform을 분리해 공격 중 원점(0,0) 튐을 막는다. -->
+          <!-- 이동 후 위치 잔상(US-002) — 계획에 이동이 있으면 도착 지점을 흐리게 표시 -->
+          <div
+            v-if="hasPlannedMove && gc.player.hp > 0"
+            class="token token--ghost"
+            :style="{
+              transform: `translate(calc(${effectivePlayerPos.x} * var(--cell)), calc(${effectivePlayerPos.y} * var(--cell)))`,
+            }"
+          >
+            <div class="token__inner">
+              <div class="token__circle token__circle--player"></div>
+            </div>
+          </div>
+
           <!-- 플레이어 -->
           <div
             v-if="gc.player.hp > 0"
@@ -968,6 +1085,8 @@ onUnmounted(() => {
               <div class="token__hpbar token__hpbar--enemy"><span :style="{ width: `${hpRatio(e) * 100}%` }"></span></div>
               <!-- HP 숫자 — 상시 표시(B3-disp). 순차 재생 중엔 display hp. -->
               <span class="token__hpnum">{{ tokenHp(e) }}/{{ e.maxHp }}</span>
+              <!-- 행동까지 남은 플레이어 행동 수(US-003) — 큐 반영. 1이면 다음 행동에 적이 움직임(경고색). -->
+              <span class="token__tempo" :class="{ 'token__tempo--soon': tempoUntilTurnLive(e) <= 1 }" title="이 적이 행동하기까지 남은 내 행동 수">{{ tempoUntilTurnLive(e) }}</span>
               <span
                 v-for="f in fx.floats.value.filter((n) => n.actorId === e.id)"
                 :key="f.id"
@@ -1032,16 +1151,16 @@ onUnmounted(() => {
         </aside>
       </section>
 
-      <!-- 계획 큐 (스피드 모델: 마나 한도까지 자유 배치, 실행 시 순서대로 해소) -->
+      <!-- 계획 큐 (스피드 모델: 마나 한도까지 자유 배치, 실행 시 순서대로 해소). 세로 나열(US-004). -->
       <div class="plan">
-        <span class="plan__label">계획 ({{ plan.length }}) · 마나 {{ gc.mana }}/{{ gc.maxMana }}</span>
+        <span class="plan__label">계획 ({{ plan.length }}) · 마나 {{ remainingMana }}/{{ gc.maxMana }}<span v-if="queuedManaCost > 0" class="plan__manaq"> (-{{ queuedManaCost }})</span></span>
         <ul class="plan__slots">
           <li
             v-for="(a, i) in plan"
             :key="`slot-${i}`"
             class="plan__slot plan__slot--filled"
-          >{{ planLabel(a) }}</li>
-          <li v-if="plan.length === 0" class="plan__slot">행동을 배치하세요</li>
+          ><span class="plan__num">{{ i + 1 }}</span>{{ planLabel(a) }}</li>
+          <li v-if="plan.length === 0" class="plan__slot plan__slot--empty">행동을 배치하세요</li>
         </ul>
         <button class="plan__clear" :disabled="plan.length === 0 || committing" @click="clearPlan">비우기</button>
       </div>
@@ -1051,7 +1170,8 @@ onUnmounted(() => {
         <button
           class="act"
           :class="{ 'act--on': mode === 'move' }"
-          :disabled="committing || planFull"
+          :disabled="committing || planFull || moveQueued"
+          :title="moveQueued ? '이동은 한 턴에 한 번' : ''"
           @click="selectMoveMode"
         >이동</button>
         <button class="act act--wait" :disabled="committing || planFull" @click="waitRound">대기</button>
@@ -1126,7 +1246,34 @@ onUnmounted(() => {
 
       <!-- 손패 -->
       <div class="hand-wrap">
-        <div class="hand">
+        <!-- 카드 상세(US-005) — 손패 카드를 길게 누르면 범위·효과. 누른 채 드래그하면 다른 카드로 전환. -->
+        <div v-if="detailCard && detailShape" class="card-detail">
+          <div class="card-detail__hdr">
+            <span class="card-detail__cost">{{ cardCost(detailCard) }}</span>
+            <span class="card-detail__name">{{ detailCard.name }}</span>
+          </div>
+          <div class="card-detail__body">
+            <div class="rangemini" :style="{ gridTemplateColumns: `repeat(${detailShape.w}, 1fr)` }">
+              <span
+                v-for="(cell, ci) in detailShape.cells"
+                :key="ci"
+                class="rangemini__cell"
+                :class="{ 'is-self': cell.self, 'is-hit': cell.hit }"
+              ></span>
+            </div>
+            <div class="card-detail__text">
+              <span class="card-detail__eff">{{ cardEffectSummary(detailCard) }}</span>
+              <span v-if="detailShape.aimed" class="card-detail__aim">원거리 · 사거리 {{ detailShape.aimRange }}</span>
+            </div>
+          </div>
+        </div>
+        <div
+          class="hand"
+          @pointermove="onHandPointerMove"
+          @pointerup="endCardPress"
+          @pointercancel="endCardPress"
+          @pointerleave="endCardPress"
+        >
           <button
             v-for="c in gc.hand"
             :key="c.instanceId ?? c.id"
@@ -1135,10 +1282,14 @@ onUnmounted(() => {
               'card--aiming': aimingCardId === c.instanceId,
               'card--queued': c.instanceId && queuedCardIds.has(c.instanceId),
               'card--disabled': !cardPlayable(c) && !(c.instanceId && queuedCardIds.has(c.instanceId)),
+              'card--enemy-warn': cardPlayable(c) && cardTriggersEnemy(c),
+              'card--detail': detailCardId === c.instanceId,
             }"
             :style="{ borderColor: cardBorder(c) }"
             :disabled="!cardPlayable(c)"
+            :data-card-iid="c.instanceId"
             @click="selectCard(c)"
+            @pointerdown="onCardPointerDown(c)"
           >
             <div class="card__top">
               <span class="card__cost">{{ cardCost(c) }}</span>
@@ -1436,16 +1587,24 @@ onUnmounted(() => {
 .inspect__intent li { margin-bottom: 0.15rem; }
 .inspect__intent-none { color: #777; list-style: none; margin-left: -1.1rem; }
 
-/* === 계획 큐 === */
+/* === 계획 큐 (세로 나열 — US-004) === */
 .plan {
-  display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;
-  padding: 0.4rem 0.8rem; background: rgba(0,0,0,0.3); border-radius: 8px; flex-shrink: 0;
+  display: flex; flex-direction: column; align-items: stretch; gap: 0.4rem;
+  padding: 0.4rem 0.6rem; background: rgba(0,0,0,0.3); border-radius: 8px; flex-shrink: 0; min-width: 132px;
 }
 .plan__label { color: #c0b693; font-size: 0.82rem; }
-.plan__slots { list-style: none; display: flex; gap: 0.4rem; padding: 0; margin: 0; flex-wrap: wrap; }
+.plan__manaq { color: #c08eff; }
+.plan__slots { list-style: none; display: flex; flex-direction: column; gap: 0.3rem; padding: 0; margin: 0; }
 .plan__slot {
-  min-width: 90px; padding: 0.25rem 0.5rem; border-radius: 6px; font-size: 0.78rem;
-  background: rgba(255,255,255,0.04); border: 1px dashed rgba(255,255,255,0.16); color: #888; text-align: center;
+  padding: 0.28rem 0.5rem; border-radius: 6px; font-size: 0.78rem;
+  background: rgba(255,255,255,0.04); border: 1px dashed rgba(255,255,255,0.16); color: #888;
+  display: flex; align-items: center; gap: 0.4rem; text-align: left;
+}
+.plan__slot--empty { justify-content: center; text-align: center; }
+.plan__num {
+  display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+  width: 1.1rem; height: 1.1rem; border-radius: 50%; font-size: 0.68rem;
+  background: rgba(192,142,255,0.3); color: #f6e8b8;
 }
 .plan__slot--filled { color: #f6e8b8; background: rgba(192,142,255,0.16); border-style: solid; border-color: rgba(192,142,255,0.5); }
 .plan__clear {
@@ -1453,6 +1612,51 @@ onUnmounted(() => {
   background: none; border: 1px solid rgba(255,255,255,0.2); color: #b6b6c4; border-radius: 5px; cursor: pointer;
 }
 .plan__clear:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* === 스피드 모델 UI 보강 (US-002/003) === */
+.topbar__mana-q { color: #c08eff; font-size: 0.85em; }
+/* 이동 후 위치 잔상 토큰 */
+.token--ghost { pointer-events: none; opacity: 0.32; z-index: 1; }
+.token--ghost .token__circle--player { box-shadow: none; filter: grayscale(0.3); }
+.token--ghost::after {
+  content: ''; position: absolute; inset: 0; border: 1px dashed rgba(246,232,184,0.5); border-radius: 50%;
+}
+/* 적 행동까지 남은 행동 수 배지 */
+.token__tempo {
+  position: absolute; top: -6px; left: -6px; min-width: 1.05rem; height: 1.05rem; padding: 0 2px;
+  display: flex; align-items: center; justify-content: center; border-radius: 50%;
+  background: rgba(20,20,28,0.92); border: 1px solid rgba(255,255,255,0.35);
+  color: #d8d8e4; font-size: 0.66rem; font-weight: 700; line-height: 1; z-index: 3;
+}
+.token__tempo--soon { background: #b3402e; border-color: #ff8a6a; color: #fff; }
+/* 손패 카드 — 지금 두면 적이 행동하는 타이밍 경고 */
+.card--enemy-warn { box-shadow: 0 0 0 2px #ff8a6a, 0 0 8px rgba(255,138,106,0.5); }
+.card--detail { outline: 2px solid #8eedff; outline-offset: -2px; }
+
+/* 카드 상세 롱프레스 팝오버(US-005) */
+.card-detail {
+  position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+  z-index: 20; min-width: 180px; max-width: 280px;
+  background: #14151d; border: 1px solid rgba(142,237,255,0.5); border-radius: 8px;
+  padding: 0.5rem 0.65rem; box-shadow: 0 6px 18px rgba(0,0,0,0.6); pointer-events: none;
+}
+.card-detail__hdr { display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.4rem; }
+.card-detail__cost { background: #c08eff; color: #0d0e14; padding: 0.05rem 0.4rem; border-radius: 50%; font-weight: 700; font-size: 0.75rem; }
+.card-detail__name { color: #f6e8b8; font-weight: 700; font-size: 0.92rem; }
+.card-detail__body { display: flex; align-items: center; gap: 0.6rem; }
+.card-detail__text { display: flex; flex-direction: column; gap: 0.2rem; font-size: 0.74rem; }
+.card-detail__eff { color: #c8c8d4; }
+.card-detail__aim { color: #8eedff; }
+
+/* 범위 미니그리드(US-005) — 파랑=내 위치, 빨강=피격 칸 */
+.rangemini { display: grid; gap: 2px; flex-shrink: 0; }
+.rangemini__cell {
+  width: 11px; height: 11px; border-radius: 2px;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+}
+.rangemini__cell.is-self { background: #6aa6ff; border-color: #9ac4ff; }
+.rangemini__cell.is-hit { background: #e06a5a; border-color: #ff9a86; }
+.rangemini__cell.is-self.is-hit { background: #b06adf; border-color: #d6a6ff; }
 
 /* === 행동 바 === */
 .action-bar { display: flex; gap: 0.5rem; flex-shrink: 0; }
@@ -1528,7 +1732,7 @@ onUnmounted(() => {
 .aim-bar__cancel { padding: 0.4rem 0.9rem; font: inherit; border-radius: 6px; cursor: pointer; background: none; border: 1px solid rgba(255,255,255,0.2); color: #b6b6c4; }
 
 /* === 손패 === */
-.hand-wrap { flex-shrink: 0; }
+.hand-wrap { flex-shrink: 0; position: relative; }
 .hand {
   display: flex; gap: 0.5rem; overflow-x: auto; padding: 0.3rem 0.1rem;
 }

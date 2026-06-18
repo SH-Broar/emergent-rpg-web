@@ -17,6 +17,7 @@ import { colorBonusForCardEffectKind } from '@/systems/stats';
 import { bonusesFromEffective } from '@/systems/equipment';
 import { cardEffectKindLabel, cardEffectDescription, effectTargetLabel } from '@/systems/labels';
 import { isNoRemoval } from '@/systems/chaos';
+import { cardShapePreview } from '@/systems/grid-combat';
 import type { Card, CardEffect } from '@/data/schemas';
 
 const props = defineProps<{ open: boolean }>();
@@ -211,6 +212,18 @@ function effectiveValue(eff: CardEffect): number {
                 {{ cardEffectKindLabel(e) }} {{ effectiveValue(e) || (e.value ?? '') }} {{ effectTargetLabel(e.target) }}
               </span>
             </div>
+            <!-- 격자 범위 미리보기(US-005) — 파랑=내 위치, 빨강=피격 칸. aimed면 사거리 표기. -->
+            <div class="card__range">
+              <div class="rangemini" :style="{ gridTemplateColumns: `repeat(${cardShapePreview(c).w}, 1fr)` }">
+                <span
+                  v-for="(cell, ci) in cardShapePreview(c).cells"
+                  :key="ci"
+                  class="rangemini__cell"
+                  :class="{ 'is-self': cell.self, 'is-hit': cell.hit }"
+                ></span>
+              </div>
+              <span v-if="cardShapePreview(c).aimed" class="card__aimrange">원거리 · 사거리 {{ cardShapePreview(c).aimRange }}</span>
+            </div>
           </li>
         </ul>
         <p v-else class="empty">컬렉션이 비어 있습니다.</p>
@@ -296,6 +309,18 @@ function effectiveValue(eff: CardEffect): number {
 .card__del:hover { background: rgba(255, 142, 142, 0.25); color: #ffd0d0; }
 .card__effects { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.2rem; font-size: 0.7rem; padding-left: 1.5rem; }
 .effect { background: rgba(0,0,0,0.4); padding: 0.05rem 0.35rem; border-radius: 3px; color: #b6b6c4; }
+
+/* 범위 미니그리드(US-005) */
+.card__range { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.3rem; padding-left: 1.5rem; }
+.rangemini { display: grid; gap: 2px; }
+.rangemini__cell {
+  width: 9px; height: 9px; border-radius: 2px;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08);
+}
+.rangemini__cell.is-self { background: #6aa6ff; border-color: #9ac4ff; }
+.rangemini__cell.is-hit { background: #e06a5a; border-color: #ff9a86; }
+.rangemini__cell.is-self.is-hit { background: #b06adf; border-color: #d6a6ff; }
+.card__aimrange { font-size: 0.68rem; color: #8eedff; }
 
 .empty { color: #6c6c7c; text-align: center; padding: 2rem; font-style: italic; }
 

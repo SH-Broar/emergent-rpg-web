@@ -346,9 +346,9 @@ export function isAimedCard(card: Card): boolean {
  * aimed 카드의 *조준 가능 칸* — 플레이어 기준 맨해튼 거리 1..aimRange 내 통행 가능 칸.
  * UI가 이 칸들을 하이라이트하고, 플레이어가 고른 칸을 중심으로 shape가 적용된다.
  */
-export function aimableTiles(state: GridCombatState, card: Card): GridPos[] {
+export function aimableTiles(state: GridCombatState, card: Card, casterPos?: GridPos): GridPos[] {
   const range = Math.max(1, card.aimRange ?? 3);
-  const from = state.player.pos;
+  const from = casterPos ?? state.player.pos;
   const out: GridPos[] = [];
   for (let dy = -range; dy <= range; dy++) {
     const rem = range - Math.abs(dy);
@@ -359,6 +359,29 @@ export function aimableTiles(state: GridCombatState, card: Card): GridPos[] {
     }
   }
   return out;
+}
+
+export interface ShapePreviewCell { x: number; y: number; self: boolean; hit: boolean; }
+export interface ShapePreview { w: number; h: number; cells: ShapePreviewCell[]; aimed: boolean; aimRange: number; }
+/**
+ * 카드 범위(shape)를 표시용 미니 그리드로 — 덱 편집(가방)·전투 상세 공용(US-005).
+ * 패턴: (0,0)=플레이어(self), shape 칸=피격. aimed: (0,0)=조준 기준 칸(self 아님), 별도 사거리.
+ */
+export function cardShapePreview(card: Card): ShapePreview {
+  const aimed = card.targetMode === 'aimed';
+  const pts = (card.shape ?? []).map((s) => ({ dx: s.dx, dy: s.dy }));
+  let minX = 0, maxX = 0, minY = 0, maxY = 0;
+  for (const p of pts) {
+    minX = Math.min(minX, p.dx); maxX = Math.max(maxX, p.dx);
+    minY = Math.min(minY, p.dy); maxY = Math.max(maxY, p.dy);
+  }
+  const cells: ShapePreviewCell[] = [];
+  for (let y = minY; y <= maxY; y++) {
+    for (let x = minX; x <= maxX; x++) {
+      cells.push({ x, y, self: !aimed && x === 0 && y === 0, hit: pts.some((p) => p.dx === x && p.dy === y) });
+    }
+  }
+  return { w: maxX - minX + 1, h: maxY - minY + 1, cells, aimed, aimRange: Math.max(1, card.aimRange ?? 3) };
 }
 
 /** 적 격자 공격 shape를 적 기준 절대 칸으로 (인스펙트/실행 공용). */
@@ -433,8 +456,10 @@ export function queuePlayerAction(state: GridCombatState, action: PlannedAction)
   }
 
   if (action.kind === 'move') {
-    // 닻(anchored) 상태면 이동 불가(보스 anchor 기믹 — US-005).
+    // 닻(anchored) 상태면 이동 불가(보스 anchor 기믹).
     if ((state.player.statuses['anchored'] ?? 0) > 0) return false;
+    // 이동은 한 라운드 계획에 1회만(사용자 규칙). 합법성은 *이동 후 위치 기준 누적*이 아니라 현재 위치 기준 best-effort.
+    if (state.playerPlan.some((a) => a.kind === 'move')) return false;
     if (!isLegalMove(state, state.player, action.to)) return false;
     state.playerPlan.push(action);
     return true;
@@ -1400,9 +1425,14 @@ export function commitRound(state: GridCombatState): void {
       executeAction(state, state.player, pAction);
     }
     if (postActionCleanup(state)) break;
-    // 적 템포 진행 — 이 플레이어 1행동만큼 카운터 증가, 도달한 적이 1턴.
-    tickEnemyTempo(state);
-    if (postActionCleanup(state)) break;
+    // 적 템포 진행 — 행동당 카운터 증가. *대기는 2턴 소모*(사용자 규칙), 그 외 1.
+    const ticks = pAction.kind === 'wait' ? 2 : 1;
+    let broke = false;
+    for (let k = 0; k < ticks; k++) {
+      tickEnemyTempo(state);
+      if (postActionCleanup(state)) { broke = true; break; }
+    }
+    if (broke) break;
   }
 
   // 플레이어 계획 후 아군(소환 토큰)이 각자 1턴(적 추격·근접). 아군은 템포와 무관(플레이어 측).
