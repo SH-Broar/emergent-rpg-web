@@ -21,6 +21,21 @@ const router = useRouter();
 const ui = useUiStore();
 const data = useDataStore();
 
+/**
+ * 선택 화면 표기 = "종족 이름: 캐릭터 이름" (사용자 지시 2026-06-18).
+ * 데이터의 race.name 은 화면마다 종족명/캐릭터명이 섞여 있어(loader가 그리드 작업 중),
+ * 표시용 매핑은 이 뷰에 국소화한다. 미정의 종족은 race.name 으로 폴백.
+ */
+const RACE_LABELS: Record<string, string> = {
+  human: '인간: 하코',
+  moth: '나방: 리무',
+  whitefang: '고양이: 화이트 팡',
+  slime: '슬라임: 샤유아',
+};
+function raceLabel(race: Race): string {
+  return RACE_LABELS[race.id] ?? race.name;
+}
+
 const timeline = computed(() => {
   const id = ui.pendingRunSetup.timelineId;
   return id ? data.timelines.get(id) : undefined;
@@ -93,7 +108,7 @@ onMounted(() => {
         @click="selectRace(race)"
       >
         <div class="card__head">
-          <span class="card__name">{{ race.name }}</span>
+          <span class="card__name">{{ raceLabel(race) }}</span>
           <span class="card__cat">{{ race.category }}</span>
         </div>
         <p v-if="race.description" class="card__desc">{{ race.description }}</p>
