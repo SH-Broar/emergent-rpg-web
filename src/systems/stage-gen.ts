@@ -11,6 +11,12 @@
  */
 
 import type { CellType, GridPos, GridStage, StageSpawn } from '@/data/schemas';
+import { TILE_PROPS } from './tiles';
+
+/** 지상 이동으로 멈출 수 있는(통행 가능) 타일인가 — 연결성/배치 판정(수풀 포함, 구덩이/난간/벽 제외). */
+function isWalkableTile(t: CellType): boolean {
+  return TILE_PROPS[t]?.moveStop ?? false;
+}
 
 // ============================================================================
 // 결정론 PRNG (전역 rng와 분리 — 스테이지 생성은 seed로 독립 재현).
@@ -154,8 +160,7 @@ function walkableCells(cells: CellType[][]): GridPos[] {
   const out: GridPos[] = [];
   for (let y = 0; y < cells.length; y++) {
     for (let x = 0; x < cells[y].length; x++) {
-      const t = cells[y][x];
-      if (t === 'floor' || t === 'item' || t === 'spawn') out.push({ x, y });
+      if (isWalkableTile(cells[y][x])) out.push({ x, y });
     }
   }
   return out;
@@ -177,8 +182,7 @@ function reachableCount(cells: CellType[][], start: GridPos): number {
     for (const d of dirs) {
       const p = { x: cur.x + d.dx, y: cur.y + d.dy };
       if (p.x < 0 || p.y < 0 || p.x >= w || p.y >= h) continue;
-      const t = cells[p.y][p.x];
-      if (t !== 'floor' && t !== 'item' && t !== 'spawn') continue;
+      if (!isWalkableTile(cells[p.y][p.x])) continue;
       if (seen.has(key(p))) continue;
       seen.add(key(p));
       count += 1;
@@ -213,11 +217,18 @@ export function generateStage(seed: number | string, region: string, tier: numbe
     carveCross(cells, width, height);
   }
 
-  // wall 흩뿌리기 — 가장자리 포함(입구만 보호). 장애물을 넉넉히(사용자 사양). 연결성은 아래서 보정.
+  // 장애물 흩뿌리기 — 가장자리 포함(입구만 보호). 종류 다양화(벽/구덩이/난간 = 이동 차단, 수풀 = 통행 가능 엄폐).
+  // 연결성은 아래서 보정. 수풀은 통행 가능이라 연결성에 영향 없음.
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       if (cells[y][x] !== 'floor') continue;
-      if (rand() < p.wallChance) cells[y][x] = 'wall';
+      const r = rand();
+      if (r < p.wallChance) {
+        const k = rand();
+        cells[y][x] = k < 0.6 ? 'wall' : k < 0.82 ? 'pit' : 'fence';
+      } else if (r < p.wallChance + 0.06) {
+        cells[y][x] = 'bush';
+      }
     }
   }
 
@@ -369,14 +380,15 @@ function ensureConnectivity(cells: CellType[][], start: GridPos): void {
   const totalWalk = walkableCells(cells).length;
   if (totalWalk === 0) return;
   let reach = reachableCount(cells, start);
-  // 도달 칸이 전체의 60% 미만이면 wall을 하나씩 floor로 바꿔 가며 재검사(최대 몇 회).
+  // 도달 칸이 전체의 60% 미만이면 이동 차단 장애물(벽/구덩이/난간)을 하나씩 floor화하며 재검사. void(격자 모양)는 보존.
   let guard = 0;
   while (reach < totalWalk * 0.6 && guard < 30) {
     guard += 1;
     let changed = false;
     for (let y = 0; y < cells.length && !changed; y++) {
       for (let x = 0; x < cells[y].length && !changed; x++) {
-        if (cells[y][x] === 'wall') {
+        const t = cells[y][x];
+        if (t !== 'void' && !isWalkableTile(t)) {
           cells[y][x] = 'floor';
           changed = true;
         }

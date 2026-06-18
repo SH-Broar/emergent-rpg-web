@@ -1059,6 +1059,9 @@ onUnmounted(() => {
                 @click="tapTile(x - 1, y - 1)"
               >
                 <span v-if="cellType(x - 1, y - 1) === 'wall'" class="cell__wall">▦</span>
+                <span v-else-if="cellType(x - 1, y - 1) === 'pit'" class="cell__pit">◌</span>
+                <span v-else-if="cellType(x - 1, y - 1) === 'bush'" class="cell__bush">❀</span>
+                <span v-else-if="cellType(x - 1, y - 1) === 'fence'" class="cell__fence">⊞</span>
                 <span v-else-if="hasItemDrop(x - 1, y - 1)" class="cell__item">✦</span>
                 <span v-else-if="cellType(x - 1, y - 1) === 'spawn'" class="cell__spawn">·</span>
                 <span v-if="throwArrowAt(x - 1, y - 1)" class="cell__throw">{{ throwArrowAt(x - 1, y - 1) }}</span>
@@ -1475,6 +1478,13 @@ onUnmounted(() => {
 .cell__wall { color: #6a6a7a; }
 .cell__item { color: #8eedff; }
 .cell__spawn { color: rgba(192,142,255,0.5); }
+/* 신규 타일(맵 타일 속성) — 구덩이/수풀/난간. */
+.cell--pit { background: #0a0a10; }
+.cell__pit { color: #2a2a38; font-size: 1.1rem; }
+.cell--bush { background: rgba(70,120,70,0.28); }
+.cell__bush { color: #6fae6a; }
+.cell--fence { background: rgba(150,120,80,0.18); }
+.cell__fence { color: #b09a6a; }
 /* 투척 방향/타격칸 표시(US-003). */
 .cell__throw { position: absolute; color: #ffc089; font-weight: 700; font-size: 0.9rem; text-shadow: 0 0 3px #000; pointer-events: none; }
 

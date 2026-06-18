@@ -37,6 +37,7 @@ import type {
 } from '@/data/schemas';
 import { HUMAN_MOVE_PROFILE, DEFAULT_ENEMY_MOVE_PROFILE } from '@/data/schemas';
 import { drawCards, shuffle } from './deck';
+import { canStopAt, canAttackTile, canPierceTile, hasLineOfSight } from './tiles';
 import { bonusesFromEffective } from './equipment';
 import type { CombatBonuses } from './stats';
 import { resolveLoadout } from './loadout';
@@ -118,19 +119,13 @@ export function chebyshev(a: GridPos, b: GridPos): number {
   return Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
 }
 
-/** 칸이 바운딩 박스 안인가. */
-function inBounds(stage: GridStage, p: GridPos): boolean {
-  return p.x >= 0 && p.y >= 0 && p.x < stage.width && p.y < stage.height;
-}
 
 /**
- * 칸이 *통행/점유 가능*한 바닥인가(점유자 무시).
- * floor/item/spawn = 통행 가능, wall/void = 불가.
+ * 칸이 *지상 이동으로 멈출 수 있는*(통행/점유 가능) 바닥인가(점유자 무시).
+ * 타일 속성 moveStop 기준(systems/tiles.ts). 구덩이/난간=불가, 수풀=가능. 공격 가능 여부는 canAttackTile 사용.
  */
 export function tileWalkable(stage: GridStage, p: GridPos): boolean {
-  if (!inBounds(stage, p)) return false;
-  const t = stage.cells[p.y]?.[p.x];
-  return t === 'floor' || t === 'item' || t === 'spawn';
+  return canStopAt(stage, p);
 }
 
 /**
@@ -326,8 +321,9 @@ function isLegalMove(state: GridCombatState, combatant: GridCombatant, to: GridP
 
 /**
  * 투척 1칸 해소(US-003) — caster에서 shape offset 칸을 향해 직선 투척.
- * 경로(직선)에 장애물/격자밖이 있으면 그 *앞* 통행 칸이 타격점. 다 뚫리면 대상 칸.
- * 비직선 offset은 폴백(대상 칸이 통행 가능하면 그 칸). 막혀서 앞 칸이 없으면 null(불발).
+ * 경로(직선)는 *관통(pierce)* 가능 칸을 지나가고, 관통 불가 칸을 만나면 *그 앞*의 공격 가능 칸이 타격점.
+ * 다 뚫리면 대상 칸(공격 가능 시). 관통 미정의=공격과 동일(레지스트리에서 일치). 착지 불가면 null(불발).
+ * 비직선 offset은 폴백(대상 칸이 공격 가능하면 그 칸).
  */
 function resolveThrowCell(state: GridCombatState, caster: GridPos, off: GridOffset): GridPos | null {
   const adx = Math.abs(off.dx), ady = Math.abs(off.dy);
@@ -336,16 +332,16 @@ function resolveThrowCell(state: GridCombatState, caster: GridPos, off: GridOffs
   const straight = adx === 0 || ady === 0 || adx === ady;
   if (!straight) {
     const p = { x: caster.x + off.dx, y: caster.y + off.dy };
-    return tileWalkable(state.stage, p) ? p : null;
+    return canAttackTile(state.stage, p) ? p : null;
   }
   const sx = Math.sign(off.dx), sy = Math.sign(off.dy);
-  let last: GridPos | null = null;
+  let lastHit: GridPos | null = null;
   for (let i = 1; i <= steps; i++) {
     const p = { x: caster.x + sx * i, y: caster.y + sy * i };
-    if (!tileWalkable(state.stage, p)) break; // 장애물/밖 — 직전 통행 칸이 타격점.
-    last = p;
+    if (canAttackTile(state.stage, p)) lastHit = p;          // 여기 착지 가능 — 앞 칸 후보 갱신.
+    if (i < steps && !canPierceTile(state.stage, p)) break;  // 중간 칸이 관통 불가 — 더 못 감(lastHit가 타격점).
   }
-  return last;
+  return lastHit;
 }
 
 /**
@@ -396,8 +392,8 @@ export function previewCardTiles(
   const out: GridPos[] = [];
   for (const o of shape) {
     const p = { x: origin.x + o.dx, y: origin.y + o.dy };
-    // 격자 밖·void·wall 제외 (floor/item/spawn만 유효 타겟 칸).
-    if (tileWalkable(state.stage, p)) out.push(p);
+    // 공격 유효 칸만(canAttackTile) — 구덩이처럼 이동 불가여도 attack O면 타격 가능, 벽은 제외.
+    if (canAttackTile(state.stage, p)) out.push(p);
   }
   return out;
 }
@@ -408,8 +404,8 @@ export function isAimedCard(card: Card): boolean {
 }
 
 /**
- * aimed 카드의 *조준 가능 칸* — 플레이어 기준 맨해튼 거리 1..aimRange 내 통행 가능 칸.
- * UI가 이 칸들을 하이라이트하고, 플레이어가 고른 칸을 중심으로 shape가 적용된다.
+ * aimed 카드의 *조준 가능 칸* — 플레이어 기준 맨해튼 거리 1..aimRange 내 + *시야 확보* + 공격 가능 칸.
+ * 시야: from→칸 직선이 지나는 중간 칸에 시야 차단(불투명)이 없어야 함(벽 너머 조준 불가, 난간 너머는 가능).
  */
 export function aimableTiles(state: GridCombatState, card: Card, casterPos?: GridPos): GridPos[] {
   const range = Math.max(1, card.aimRange ?? 3);
@@ -420,7 +416,7 @@ export function aimableTiles(state: GridCombatState, card: Card, casterPos?: Gri
     for (let dx = -rem; dx <= rem; dx++) {
       if (dx === 0 && dy === 0) continue;
       const p = { x: from.x + dx, y: from.y + dy };
-      if (tileWalkable(state.stage, p)) out.push(p);
+      if (canAttackTile(state.stage, p) && hasLineOfSight(state.stage, from, p)) out.push(p);
     }
   }
   return out;
@@ -468,7 +464,7 @@ export function previewAttackTiles(
   const out: GridPos[] = [];
   for (const o of attack.shape ?? []) {
     const p = { x: attacker.pos.x + o.dx, y: attacker.pos.y + o.dy };
-    if (tileWalkable(state.stage, p)) out.push(p);
+    if (canAttackTile(state.stage, p)) out.push(p);
   }
   return out;
 }
@@ -1143,7 +1139,7 @@ function attackTilesFrom(state: GridCombatState, origin: GridPos, atk: GridAttac
   const out: GridPos[] = [];
   for (const o of atk.shape ?? []) {
     const p = { x: origin.x + o.dx, y: origin.y + o.dy };
-    if (tileWalkable(state.stage, p)) out.push(p);
+    if (canAttackTile(state.stage, p)) out.push(p);
   }
   return out;
 }
@@ -1362,7 +1358,7 @@ function estimateAttackDamage(ctx: AiContext, fromPos: GridPos, attackIdx: numbe
   let dmg = 0;
   (atk.shape ?? []).forEach((off, i) => {
     const p = { x: fromPos.x + off.dx, y: fromPos.y + off.dy };
-    if (!tileWalkable(ctx.state.stage, p)) return;
+    if (!canAttackTile(ctx.state.stage, p)) return;
     if (samePos(p, ctx.playerPos)) dmg += Math.floor(base * (atk.perTileMul?.[i] ?? 1));
   });
   return dmg;
@@ -1901,7 +1897,7 @@ function applyCardEffects(
   } else {
     shape.forEach((off, i) => {
       const pos = { x: anchor.x + off.dx, y: anchor.y + off.dy };
-      if (!tileWalkable(state.stage, pos)) return;
+      if (!canAttackTile(state.stage, pos)) return;
       // 그 칸의 *모든* 적군을 대상에 포함(겹침 허용 — 한 칸에 적 여럿/플레이어와 겹쳐도). perTileMul은 칸 인덱스 기준.
       const mul = perTileMul[i] ?? 1;
       for (const c of combatantsAt(state, pos)) {
@@ -2344,7 +2340,7 @@ function execAttack(
   let hitAny = false;
   (atk.shape ?? []).forEach((off, i) => {
     const p = { x: attacker.pos.x + off.dx, y: attacker.pos.y + off.dy };
-    if (!tileWalkable(state.stage, p)) return;
+    if (!canAttackTile(state.stage, p)) return;
     const mul = perTileMul[i] ?? 1;
     for (const target of combatantsAt(state, p)) {
       if (target.team === 'player' && target.hp > 0) {
