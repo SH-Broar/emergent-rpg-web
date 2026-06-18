@@ -68,8 +68,6 @@ export function pickEnemyIds(
 // ============================================================================
 
 interface TierParams {
-  width: number;
-  height: number;
   enemyCount: number;
   foresight: number;
   wallChance: number;
@@ -79,18 +77,42 @@ interface TierParams {
   emptySpawns: number;
 }
 
+// 맵 크기는 *런 턴* 기준(사용자 사양) — 몬스터 수·tier 무관. 초반 작게(3), 이동 강화 시기(~40턴)부터 조금씩, 상한 7.
+const MIN_DIM = 3;
+const MAX_DIM = 7;
+const GROW_START_TURN = 40; // 이동 강화 시기.
+const GROW_EVERY = 50;      // 이후 N턴마다 한 변 +1.
+
+/** 런 턴 → 격자 한 변 기준 크기(3~7, 점증). */
+function baseDimForTurn(turn: number): number {
+  const grow = turn < GROW_START_TURN ? 0 : Math.floor((turn - GROW_START_TURN) / GROW_EVERY) + 1;
+  return Math.max(MIN_DIM, Math.min(MAX_DIM, MIN_DIM + grow));
+}
+
+/** 비정사각 허용 — 기준 변에서 한 축만 0~1 늘림(결정론). */
+function turnDims(turn: number, rand: () => number): { width: number; height: number } {
+  const base = baseDimForTurn(turn);
+  const extra = rand() < 0.45 ? 1 : 0;
+  const widen = rand() < 0.5;
+  return {
+    width: Math.min(MAX_DIM, base + (widen ? extra : 0)),
+    height: Math.min(MAX_DIM, base + (widen ? 0 : extra)),
+  };
+}
+
 function tierParams(tier: number): TierParams {
   const t = Math.max(1, Math.min(4, tier || 1));
+  // 장애물(wall)은 넉넉히(사용자: "장애물 많이") — 연결성은 ensureConnectivity가 보정.
   switch (t) {
     case 1:
-      return { width: 5, height: 5, enemyCount: 2, foresight: 2, wallChance: 0.05, reinforceTurn: 0, emptySpawns: 0 };
+      return { enemyCount: 2, foresight: 2, wallChance: 0.14, reinforceTurn: 0, emptySpawns: 0 };
     case 2:
-      return { width: 6, height: 6, enemyCount: 3, foresight: 2, wallChance: 0.08, reinforceTurn: 0, emptySpawns: 0 };
+      return { enemyCount: 3, foresight: 2, wallChance: 0.16, reinforceTurn: 0, emptySpawns: 0 };
     case 3:
-      return { width: 7, height: 7, enemyCount: 3, foresight: 3, wallChance: 0.10, reinforceTurn: 3, emptySpawns: 0 };
+      return { enemyCount: 3, foresight: 3, wallChance: 0.20, reinforceTurn: 3, emptySpawns: 0 };
     case 4:
     default:
-      return { width: 8, height: 8, enemyCount: 4, foresight: 4, wallChance: 0.12, reinforceTurn: 3, emptySpawns: 1 };
+      return { enemyCount: 4, foresight: 4, wallChance: 0.22, reinforceTurn: 3, emptySpawns: 1 };
   }
 }
 
@@ -176,36 +198,39 @@ function reachableCount(cells: CellType[][], start: GridPos): number {
  * @param region 권역 id(아키타입 선택 다양화에 섞임).
  * @param tier   권역 깊이 1~4.
  */
-export function generateStage(seed: number | string, region: string, tier: number): GridStage {
-  const rand = mulberry32(hashSeed(`${seed}|${region}|${tier}`));
+export function generateStage(seed: number | string, region: string, tier: number, turn = 0): GridStage {
+  const rand = mulberry32(hashSeed(`${seed}|${region}|${tier}|${Math.floor(turn / GROW_EVERY)}`));
   const p = tierParams(tier);
-  const { width, height } = p;
+  // 크기는 *런 턴* 기준(몬스터 수·tier 무관). 비정사각 허용.
+  const { width, height } = turnDims(turn, rand);
 
-  // 아키타입 선택 — tier 1~2는 open 위주, tier 3+는 cross 가능.
-  const archetype: 'open' | 'cross' = tier >= 3 && rand() < 0.45 ? 'cross' : 'open';
+  // 아키타입 선택 — 작은 맵(<5)은 open 위주, 큰 맵은 cross 가능.
+  const big = Math.min(width, height) >= 5;
+  const archetype: 'open' | 'cross' = big && rand() < 0.4 ? 'cross' : 'open';
 
   let cells = emptyGrid(width, height);
   if (archetype === 'cross') {
     carveCross(cells, width, height);
   }
 
-  // open: 약간의 wall 흩뿌리기(가장자리 제외 — 입구 봉쇄 방지).
-  if (archetype === 'open') {
-    for (let y = 1; y < height - 1; y++) {
-      for (let x = 1; x < width - 1; x++) {
-        if (rand() < p.wallChance) cells[y][x] = 'wall';
-      }
+  // wall 흩뿌리기 — 가장자리 포함(입구만 보호). 장애물을 넉넉히(사용자 사양). 연결성은 아래서 보정.
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      if (cells[y][x] !== 'floor') continue;
+      if (rand() < p.wallChance) cells[y][x] = 'wall';
     }
   }
 
-  // 플레이어 시작 — 좌하단 근처 통행 칸.
+  // 플레이어 시작 — 좌하단 근처 통행 칸(주변 한 칸은 floor 보장 — 입구 봉쇄 방지).
   const playerStart = pickStartCorner(cells, width, height, 'player', rand);
 
   // 연결성 검증 — 시작에서 도달 못 하는 wall 군집이 너무 많으면 wall 제거(재시도 대신 보정).
   ensureConnectivity(cells, playerStart);
 
-  // 적 시작 — 우상단 영역의 통행 칸 enemyCount개(플레이어와 거리 우선).
-  const enemyStarts = pickEnemyStarts(cells, playerStart, p.enemyCount, rand);
+  // 적 시작 — 우상단 영역의 통행 칸. enemyCount는 맵 크기에 맞게 캡(작은 맵 과밀 방지).
+  const walkRoom = walkableCells(cells).length;
+  const enemyCount = Math.max(1, Math.min(p.enemyCount, Math.floor(walkRoom / 3)));
+  const enemyStarts = pickEnemyStarts(cells, playerStart, enemyCount, rand);
 
   // 아이템 드롭 — tier 3+ 1칸(통행 빈 칸에 item 셀 + itemDrops). 아이템 id는 권역 보상 시스템이
   // 채우는 게 정석이지만 슬라이스에선 비워 둔다(엔진은 itemDrops 좌표만 소비).

@@ -333,7 +333,7 @@ function parseOneCard(id: string, f: IniSection): Card | null {
     shape: f.shape ? parseShape(f.shape) : undefined,
     perTileMul: f.per_tile_mul ? parseFloatList(f.per_tile_mul) : undefined,
     castSpeed: isCastSpeed(f.cast_speed) ? f.cast_speed : undefined,
-    targetMode: f.target_mode === 'self' || f.target_mode === 'pattern' || f.target_mode === 'aimed'
+    targetMode: f.target_mode === 'self' || f.target_mode === 'pattern' || f.target_mode === 'aimed' || f.target_mode === 'throw'
       ? f.target_mode : undefined,
     aimRange: f.aim_range !== undefined ? Math.max(1, parseNumber(f.aim_range, 3)) : undefined,
   };

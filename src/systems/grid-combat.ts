@@ -267,15 +267,25 @@ export function reachableTiles(state: GridCombatState, combatant: GridCombatant)
       return out;
     }
     case 'manhattan': {
-      // 맨해튼 거리 ≤ range 다이아몬드(점프형 — 경로 무시, 슬라임 오즈). 자기 칸 제외.
+      // 맨해튼 거리 ≤ range 다이아몬드 — *경로 인식* BFS(장애물 통과/점프 불가, 사용자 규칙).
+      // 직교 1칸씩 range 스텝 안에서 통행 가능 칸으로만 확장. 자기 칸 제외.
       const out: GridPos[] = [];
-      for (let dy = -range; dy <= range; dy++) {
-        const rem = range - Math.abs(dy);
-        for (let dx = -rem; dx <= rem; dx++) {
-          if (dx === 0 && dy === 0) continue;
-          const p = { x: from.x + dx, y: from.y + dy };
-          if (isFreeTile(state, p)) out.push(p);
+      const seen = new Set<string>([`${from.x},${from.y}`]);
+      let frontier: GridPos[] = [from];
+      for (let step = 0; step < range; step++) {
+        const next: GridPos[] = [];
+        for (const cur of frontier) {
+          for (const d of ROOK_DIRS) {
+            const p = { x: cur.x + d.dx, y: cur.y + d.dy };
+            const k = `${p.x},${p.y}`;
+            if (seen.has(k)) continue;
+            if (!isFreeTile(state, p)) continue; // 벽/void/밖 — 경로 차단(여기서 멈춤).
+            seen.add(k);
+            out.push(p);
+            next.push(p);
+          }
         }
+        frontier = next;
       }
       return out;
     }
@@ -315,9 +325,61 @@ function isLegalMove(state: GridCombatState, combatant: GridCombatant, to: GridP
 // ============================================================================
 
 /**
+ * 투척 1칸 해소(US-003) — caster에서 shape offset 칸을 향해 직선 투척.
+ * 경로(직선)에 장애물/격자밖이 있으면 그 *앞* 통행 칸이 타격점. 다 뚫리면 대상 칸.
+ * 비직선 offset은 폴백(대상 칸이 통행 가능하면 그 칸). 막혀서 앞 칸이 없으면 null(불발).
+ */
+function resolveThrowCell(state: GridCombatState, caster: GridPos, off: GridOffset): GridPos | null {
+  const adx = Math.abs(off.dx), ady = Math.abs(off.dy);
+  const steps = Math.max(adx, ady);
+  if (steps === 0) return null;
+  const straight = adx === 0 || ady === 0 || adx === ady;
+  if (!straight) {
+    const p = { x: caster.x + off.dx, y: caster.y + off.dy };
+    return tileWalkable(state.stage, p) ? p : null;
+  }
+  const sx = Math.sign(off.dx), sy = Math.sign(off.dy);
+  let last: GridPos | null = null;
+  for (let i = 1; i <= steps; i++) {
+    const p = { x: caster.x + sx * i, y: caster.y + sy * i };
+    if (!tileWalkable(state.stage, p)) break; // 장애물/밖 — 직전 통행 칸이 타격점.
+    last = p;
+  }
+  return last;
+}
+
+/**
+ * 투척 카드 전체 해소 — 각 shape 칸을 투척해 타격점 집계. *둘 이상이 같은 칸*으로 귀결되면
+ * 그 칸은 강 칸(1.5×)으로 승격(수렴, US-003). 반환 mul = per_tile_mul × (수렴 시 ≥1.5).
+ */
+export function resolveThrowHits(
+  state: GridCombatState,
+  card: Card,
+  casterPos?: GridPos,
+): { pos: GridPos; mul: number }[] {
+  const caster = casterPos ?? state.player.pos;
+  const muls = card.perTileMul ?? [];
+  const acc = new Map<string, { pos: GridPos; baseMul: number; count: number }>();
+  (card.shape ?? []).forEach((off, i) => {
+    const hit = resolveThrowCell(state, caster, off);
+    if (!hit) return;
+    const k = `${hit.x},${hit.y}`;
+    const m = muls[i] ?? 1;
+    const ex = acc.get(k);
+    if (ex) { ex.count += 1; ex.baseMul = Math.max(ex.baseMul, m); }
+    else acc.set(k, { pos: hit, baseMul: m, count: 1 });
+  });
+  return [...acc.values()].map((v) => ({
+    pos: v.pos,
+    mul: v.count >= 2 ? Math.max(v.baseMul, STRONG_MUL) : v.baseMul,
+  }));
+}
+
+/**
  * 카드 shape를 caster(기본 player) 기준 *절대 칸*으로 변환. 회전 없음.
  * 격자 밖·void·wall 칸은 제외. shape 미설정/빈 배열이면 빈 배열(self/제자리 발동).
  * aimOffset 지정 시(targetMode='aimed') shape 기준점 = caster + aimOffset(조준 칸 중심).
+ * targetMode='throw'면 투척 해소(장애물 앞 정지).
  */
 export function previewCardTiles(
   state: GridCombatState,
@@ -325,6 +387,9 @@ export function previewCardTiles(
   casterPos?: GridPos,
   aimOffset?: GridOffset,
 ): GridPos[] {
+  if (card.targetMode === 'throw') {
+    return resolveThrowHits(state, card, casterPos).map((h) => h.pos);
+  }
   const base = casterPos ?? state.player.pos;
   const origin = aimOffset ? { x: base.x + aimOffset.dx, y: base.y + aimOffset.dy } : base;
   const shape = card.shape ?? [];
@@ -361,15 +426,19 @@ export function aimableTiles(state: GridCombatState, card: Card, casterPos?: Gri
   return out;
 }
 
-export interface ShapePreviewCell { x: number; y: number; self: boolean; hit: boolean; }
-export interface ShapePreview { w: number; h: number; cells: ShapePreviewCell[]; aimed: boolean; aimRange: number; }
+export interface ShapePreviewCell { x: number; y: number; self: boolean; hit: boolean; strong: boolean; }
+export interface ShapePreview { w: number; h: number; cells: ShapePreviewCell[]; aimed: boolean; throw_: boolean; aimRange: number; }
+/** 강 칸 판정 임계 — per_tile_mul ≥ 1.5면 강 공격 칸(1.5× 데미지)으로 표기(US-002). */
+export const STRONG_MUL = 1.5;
 /**
  * 카드 범위(shape)를 표시용 미니 그리드로 — 덱 편집(가방)·전투 상세 공용(US-005).
- * 패턴: (0,0)=플레이어(self), shape 칸=피격. aimed: (0,0)=조준 기준 칸(self 아님), 별도 사거리.
+ * 패턴: (0,0)=플레이어(self), shape 칸=피격(강 칸=1.5×). aimed/throw: (0,0)=조준/투척 기준 칸.
  */
 export function cardShapePreview(card: Card): ShapePreview {
   const aimed = card.targetMode === 'aimed';
-  const pts = (card.shape ?? []).map((s) => ({ dx: s.dx, dy: s.dy }));
+  const throw_ = card.targetMode === 'throw';
+  const muls = card.perTileMul ?? [];
+  const pts = (card.shape ?? []).map((s, i) => ({ dx: s.dx, dy: s.dy, mul: muls[i] ?? 1 }));
   let minX = 0, maxX = 0, minY = 0, maxY = 0;
   for (const p of pts) {
     minX = Math.min(minX, p.dx); maxX = Math.max(maxX, p.dx);
@@ -378,10 +447,16 @@ export function cardShapePreview(card: Card): ShapePreview {
   const cells: ShapePreviewCell[] = [];
   for (let y = minY; y <= maxY; y++) {
     for (let x = minX; x <= maxX; x++) {
-      cells.push({ x, y, self: !aimed && x === 0 && y === 0, hit: pts.some((p) => p.dx === x && p.dy === y) });
+      const hitPt = pts.find((p) => p.dx === x && p.dy === y);
+      cells.push({
+        x, y,
+        self: !aimed && !throw_ && x === 0 && y === 0,
+        hit: !!hitPt,
+        strong: !!hitPt && hitPt.mul >= STRONG_MUL,
+      });
     }
   }
-  return { w: maxX - minX + 1, h: maxY - minY + 1, cells, aimed, aimRange: Math.max(1, card.aimRange ?? 3) };
+  return { w: maxX - minX + 1, h: maxY - minY + 1, cells, aimed, throw_, aimRange: Math.max(1, card.aimRange ?? 3) };
 }
 
 /** 적 격자 공격 shape를 적 기준 절대 칸으로 (인스펙트/실행 공용). */
@@ -1816,15 +1891,24 @@ function applyCardEffects(
   const shape = card.shape ?? [];
   const perTileMul = card.perTileMul ?? [];
   const shapeHits: { target: GridCombatant; mul: number }[] = [];
-  shape.forEach((off, i) => {
-    const pos = { x: anchor.x + off.dx, y: anchor.y + off.dy };
-    if (!tileWalkable(state.stage, pos)) return;
-    // 그 칸의 *모든* 적군을 대상에 포함(겹침 허용 — 한 칸에 적 여럿/플레이어와 겹쳐도). perTileMul은 칸 인덱스 기준.
-    const mul = perTileMul[i] ?? 1;
-    for (const c of combatantsAt(state, pos)) {
-      if (c.team === 'enemy' && c.hp > 0) shapeHits.push({ target: c, mul });
+  if (card.targetMode === 'throw') {
+    // 투척(US-003) — 플레이어 기준 레이캐스트 해소(장애물 앞 정지 + 수렴 강칸). anchor 무시.
+    for (const hit of resolveThrowHits(state, card, state.player.pos)) {
+      for (const c of combatantsAt(state, hit.pos)) {
+        if (c.team === 'enemy' && c.hp > 0) shapeHits.push({ target: c, mul: hit.mul });
+      }
     }
-  });
+  } else {
+    shape.forEach((off, i) => {
+      const pos = { x: anchor.x + off.dx, y: anchor.y + off.dy };
+      if (!tileWalkable(state.stage, pos)) return;
+      // 그 칸의 *모든* 적군을 대상에 포함(겹침 허용 — 한 칸에 적 여럿/플레이어와 겹쳐도). perTileMul은 칸 인덱스 기준.
+      const mul = perTileMul[i] ?? 1;
+      for (const c of combatantsAt(state, pos)) {
+        if (c.team === 'enemy' && c.hp > 0) shapeHits.push({ target: c, mul });
+      }
+    });
+  }
 
   /**
    * shape 칸 위 각 적에게 base 피해를 perTileMul로 분배(strength/weakness/vulnerable 통합).

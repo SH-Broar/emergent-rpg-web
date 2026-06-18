@@ -3,6 +3,7 @@
 # 코어: 상태 도포(화상/중독/취약) → 전파(status-spread)·연쇄 폭발(chain-explosion) + 분열 소환(summon-ally). 전방 = -y.
 
 # === 상태 도포 ===
+# 강 공격(US-002) — 핵심칸 1.5×. 전방 1칸 강타 + 약화.
 [card.c-sl-glob]
 name = 점액 한 방울
 rank = common
@@ -12,7 +13,7 @@ cost = 1
 trigger = manual
 effects = damage:5:enemy, apply-status:1:enemy:weakness
 shape = 0,-1
-per_tile_mul = 1.0
+per_tile_mul = 1.5
 cast_speed = normal
 target_mode = pattern
 
@@ -104,7 +105,7 @@ cost = 2
 trigger = manual
 effects = damage-per-debuff:3:enemy
 shape = -1,-1|0,-1|1,-1|-1,0|1,0|-1,1|0,1|1,1
-per_tile_mul = 0.8,0.8,0.8,0.8,0.8,0.8,0.8,0.8
+per_tile_mul = 1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0
 cast_speed = normal
 target_mode = pattern
 
@@ -152,7 +153,7 @@ cost = 2
 trigger = manual
 effects = damage:9:enemy
 shape = 0,-1|0,1|-1,0|1,0|-1,-1|1,-1|-1,1|1,1
-per_tile_mul = 1.0,1.0,1.0,1.0,0.6,0.6,0.6,0.6
+per_tile_mul = 1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0
 cast_speed = normal
 target_mode = pattern
 

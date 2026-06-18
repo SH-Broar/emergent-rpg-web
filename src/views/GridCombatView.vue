@@ -34,6 +34,8 @@ import {
   isAimedCard,
   aimableTiles,
   cardShapePreview,
+  resolveThrowHits,
+  STRONG_MUL,
   swappableCompanions,
 } from '@/systems/grid-combat';
 import { statusLabel } from '@/systems/labels';
@@ -206,6 +208,60 @@ const highlightTiles = computed<Set<string>>(() => {
   }
   return new Set();
 });
+
+/** 조준 중 카드의 *강 칸*(per_tile_mul ≥ 1.5) 집합 — 1.5× 데미지 칸을 별색 표기(US-002). */
+const strongHighlightTiles = computed<Set<string>>(() => {
+  const state = gc.value;
+  if (!state || committing.value || phase.value !== 'combat') return new Set();
+  if (mode.value !== 'card' || !aimingCardId.value) return new Set();
+  const card = state.hand.find((c) => c.instanceId === aimingCardId.value);
+  if (!card || !card.shape || card.shape.length === 0) return new Set();
+  const out = new Set<string>();
+  // 투척 — 해소된 타격칸 중 수렴(강) 칸을 강조.
+  if (card.targetMode === 'throw') {
+    for (const h of resolveThrowHits(state, card, effectivePlayerPos.value)) {
+      if (h.mul >= STRONG_MUL) out.add(`${h.pos.x},${h.pos.y}`);
+    }
+    return out;
+  }
+  const muls = card.perTileMul ?? [];
+  let anchor = effectivePlayerPos.value;
+  if (isAimedCard(card)) {
+    if (!aimCell.value) return new Set();
+    anchor = aimCell.value;
+  }
+  card.shape.forEach((s, i) => {
+    if ((muls[i] ?? 1) < STRONG_MUL) return;
+    out.add(`${anchor.x + s.dx},${anchor.y + s.dy}`);
+  });
+  return out;
+});
+function isStrongTile(x: number, y: number): boolean {
+  return strongHighlightTiles.value.has(`${x},${y}`);
+}
+
+/** 투척 카드 조준 중 — 해소된 타격칸 + 투척 방향(화살표) 힌트(US-003). */
+const THROW_ARROWS: Record<string, string> = {
+  '0,-1': '↑', '0,1': '↓', '-1,0': '←', '1,0': '→',
+  '-1,-1': '↖', '1,-1': '↗', '-1,1': '↙', '1,1': '↘',
+};
+const throwHints = computed<Map<string, string>>(() => {
+  const state = gc.value;
+  const m = new Map<string, string>();
+  if (!state || committing.value || phase.value !== 'combat') return m;
+  if (mode.value !== 'card' || !aimingCardId.value) return m;
+  const card = state.hand.find((c) => c.instanceId === aimingCardId.value);
+  if (!card || card.targetMode !== 'throw') return m;
+  const caster = effectivePlayerPos.value;
+  for (const h of resolveThrowHits(state, card, caster)) {
+    const dx = Math.sign(h.pos.x - caster.x), dy = Math.sign(h.pos.y - caster.y);
+    m.set(`${h.pos.x},${h.pos.y}`, THROW_ARROWS[`${dx},${dy}`] ?? '◎');
+  }
+  return m;
+});
+function throwArrowAt(x: number, y: number): string | null {
+  return throwHints.value.get(`${x},${y}`) ?? null;
+}
 
 /** aimed 조준 칸 자체(중심 표시용 — shape 미리보기와 구분). */
 function isAimCenter(x: number, y: number): boolean {
@@ -994,6 +1050,7 @@ onUnmounted(() => {
                   `cell--${cellType(x - 1, y - 1)}`,
                   {
                     'cell--highlight': isHighlighted(x - 1, y - 1),
+                    'cell--strong': isStrongTile(x - 1, y - 1),
                     'cell--attack-preview': isAttackPreview(x - 1, y - 1),
                     'cell--aim-center': isAimCenter(x - 1, y - 1),
                   },
@@ -1004,6 +1061,7 @@ onUnmounted(() => {
                 <span v-if="cellType(x - 1, y - 1) === 'wall'" class="cell__wall">▦</span>
                 <span v-else-if="hasItemDrop(x - 1, y - 1)" class="cell__item">✦</span>
                 <span v-else-if="cellType(x - 1, y - 1) === 'spawn'" class="cell__spawn">·</span>
+                <span v-if="throwArrowAt(x - 1, y - 1)" class="cell__throw">{{ throwArrowAt(x - 1, y - 1) }}</span>
               </div>
               <!-- void는 자리를 차지하되 투명(grid 정렬 유지). -->
               <div
@@ -1258,12 +1316,13 @@ onUnmounted(() => {
                 v-for="(cell, ci) in detailShape.cells"
                 :key="ci"
                 class="rangemini__cell"
-                :class="{ 'is-self': cell.self, 'is-hit': cell.hit }"
+                :class="{ 'is-self': cell.self, 'is-hit': cell.hit, 'is-strong': cell.strong }"
               ></span>
             </div>
             <div class="card-detail__text">
               <span class="card-detail__eff">{{ cardEffectSummary(detailCard) }}</span>
               <span v-if="detailShape.aimed" class="card-detail__aim">원거리 · 사거리 {{ detailShape.aimRange }}</span>
+              <span v-else-if="detailShape.throw_" class="card-detail__aim card-detail__aim--throw">투척 · 장애물 앞 정지</span>
             </div>
           </div>
         </div>
@@ -1416,6 +1475,8 @@ onUnmounted(() => {
 .cell__wall { color: #6a6a7a; }
 .cell__item { color: #8eedff; }
 .cell__spawn { color: rgba(192,142,255,0.5); }
+/* 투척 방향/타격칸 표시(US-003). */
+.cell__throw { position: absolute; color: #ffc089; font-weight: 700; font-size: 0.9rem; text-shadow: 0 0 3px #000; pointer-events: none; }
 
 /* 하이라이트 — 이동/조준 칸. ≤0.1초 트랜지션. */
 .cell--highlight {
@@ -1425,6 +1486,12 @@ onUnmounted(() => {
   transition: background 90ms ease, border-color 90ms ease;
 }
 .cell--highlight:hover { background: rgba(120,200,255,0.42); }
+/* 강 칸(US-002) — 1.5× 데미지 칸. 주황으로 일반 칸과 구분. */
+.cell--strong {
+  background: rgba(255,122,42,0.34);
+  border: 1px solid rgba(255,170,90,0.95);
+}
+.cell--strong:hover { background: rgba(255,122,42,0.48); }
 /* 적 공격 미리보기(인스펙트). */
 .cell--attack-preview {
   background: rgba(255,120,120,0.22);
@@ -1656,7 +1723,9 @@ onUnmounted(() => {
 }
 .rangemini__cell.is-self { background: #6aa6ff; border-color: #9ac4ff; }
 .rangemini__cell.is-hit { background: #e06a5a; border-color: #ff9a86; }
+.rangemini__cell.is-strong { background: #ff7a2a; border-color: #ffc089; box-shadow: 0 0 3px rgba(255,122,42,0.8); }
 .rangemini__cell.is-self.is-hit { background: #b06adf; border-color: #d6a6ff; }
+.card-detail__aim--throw { color: #ffc089; }
 
 /* === 행동 바 === */
 .action-bar { display: flex; gap: 0.5rem; flex-shrink: 0; }

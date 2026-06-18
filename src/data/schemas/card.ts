@@ -269,11 +269,13 @@ export interface Card extends NamedEntity {
   /** 발동 속도(빠름/보통/느림). 미설정 시 'normal'. 같은 스텝 해소 순서를 정한다. */
   castSpeed?: CastSpeed;
   /**
-   * 타겟 모드 — 'self'(버프, 제자리) | 'pattern'(근접, 자기 기준 고정 shape) | 'aimed'(원거리 조준).
+   * 타겟 모드 — 'self'(버프, 제자리) | 'pattern'(근접, 자기 기준 고정 shape) | 'aimed'(원거리 조준) | 'throw'(투척).
    * - 'aimed': 사거리(aimRange) 내 *조준 칸*을 골라 그 칸을 중심으로 shape를 적용(리무·저격형).
+   * - 'throw': shape 칸(고정 방향)으로 투척 — 플레이어→칸 직선 경로에 장애물이 있으면 그 *앞* 칸 타격.
+   *           둘 이상 투척이 같은 칸으로 귀결되면 그 칸은 강 칸(1.5×)으로 승격. 자유 조준 아님.
    * 미설정 시 effects(damage/apply-status enemy 유무)와 shape로 추론('self'/'pattern').
    */
-  targetMode?: 'self' | 'pattern' | 'aimed';
+  targetMode?: 'self' | 'pattern' | 'aimed' | 'throw';
   /**
    * targetMode='aimed'일 때 조준 가능 사거리(플레이어 기준 맨해튼 거리, 1..aimRange).
    * 조준 칸을 중심으로 shape가 적용된다. 미설정 시 기본 3.

@@ -3,6 +3,7 @@
 # 코어: 빠른 검(fast) + 잔상(delayed-damage) + 시간(가속/둔화/박제) + 차원보(move-self). 전방 = -y.
 
 # === 기본 검격 ===
+# 강 공격(US-002) — 핵심칸 1.5×. 범위는 작지만(전방 1칸) 데미지가 강한 칸.
 [card.c-wf-slash]
 name = 베기
 rank = common
@@ -11,7 +12,7 @@ cost = 1
 trigger = manual
 effects = damage:8:enemy
 shape = 0,-1
-per_tile_mul = 1.0
+per_tile_mul = 1.5
 cast_speed = fast
 target_mode = pattern
 
@@ -35,7 +36,7 @@ cost = 1
 trigger = manual
 effects = damage:6:enemy
 shape = 0,-1|0,-2|0,-3
-per_tile_mul = 1.0,0.8,0.6
+per_tile_mul = 1.0,1.0,1.0
 cast_speed = normal
 target_mode = pattern
 
@@ -103,7 +104,7 @@ cost = 1
 trigger = manual
 effects = damage:6:enemy, slow-enemy:1:self
 shape = 0,-1|0,-2
-per_tile_mul = 1.0,0.7
+per_tile_mul = 1.0,1.0
 cast_speed = fast
 target_mode = pattern
 
@@ -183,7 +184,7 @@ cost = 2
 trigger = manual
 effects = damage-per-cards-played:4:enemy
 shape = 0,-1|0,-2
-per_tile_mul = 1.0,0.7
+per_tile_mul = 1.0,1.0
 cast_speed = fast
 target_mode = pattern
 
@@ -224,3 +225,17 @@ shape = 0,-1
 per_tile_mul = 1.0
 cast_speed = slow
 target_mode = pattern
+
+# === 투척(throw, US-003) — 전방 직선으로 검을 던진다. 경로가 뚫리면 3칸 관통,
+#     장애물이 막으면 그 앞 칸으로 수렴해 강타(1.5×). 자유 조준 아님(고정 방향). ===
+[card.c-wf-throw]
+name = 검 던지기
+rank = common
+source = race
+cost = 1
+trigger = manual
+effects = damage:5:enemy
+shape = 0,-1|0,-2|0,-3
+per_tile_mul = 1.0,1.0,1.0
+cast_speed = normal
+target_mode = throw

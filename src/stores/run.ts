@@ -937,7 +937,8 @@ export const useRunStore = defineStore('run', {
       const stageTier = isElite ? Math.min(4, baseTier + 1) : baseTier;
 
       // 결정론 시드 — 런 시드 + 노드 id(같은 노드 재진입 시 같은 무대).
-      const stage = generateStage(`${r.rngSeed}:${id}`, node?.region ?? 'unknown', stageTier);
+      // 맵 크기는 런 진행(방문 노드 수=런 턴) 기준 점증(사용자 사양) — 몬스터 수·tier 무관.
+      const stage = generateStage(`${r.rngSeed}:${id}`, node?.region ?? 'unknown', stageTier, r.visitedNodes.length);
 
       // 폴백 적 정의(테마 적 미해석 시).
       const fallback: Monster = baseDef ?? {
@@ -999,10 +1000,11 @@ export const useRunStore = defineStore('run', {
         return false;
       }
 
-      // 보스 무대 — 일반보다 큰 격자(tier 4 파라미터 고정 + 보스는 적 1마리라 여유). 결정론 시드.
+      // 보스 무대 — 항상 넉넉한 격자(보스는 적 1마리라 여유). 크기는 진행 턴 기준이나 보스는 하한을 크게.
       const region = map && node ? findRegion(map, node.region) : undefined;
-      const tier = Math.max(3, region?.tier ?? 4); // 보스 무대는 최소 tier3 크기(7x7~8x8).
-      const stage = generateStage(`${r.rngSeed}:boss:${id}`, node?.region ?? 'boss', tier);
+      const tier = Math.max(3, region?.tier ?? 4);
+      const bossTurn = Math.max(r.visitedNodes.length, 150); // 보스 아레나는 최소 ~6칸급.
+      const stage = generateStage(`${r.rngSeed}:boss:${id}`, node?.region ?? 'boss', tier, bossTurn);
 
       this.data.gridCombat = startGridBossCombat(r, stage, boss);
       return true;

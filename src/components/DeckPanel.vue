@@ -219,10 +219,11 @@ function effectiveValue(eff: CardEffect): number {
                   v-for="(cell, ci) in cardShapePreview(c).cells"
                   :key="ci"
                   class="rangemini__cell"
-                  :class="{ 'is-self': cell.self, 'is-hit': cell.hit }"
+                  :class="{ 'is-self': cell.self, 'is-hit': cell.hit, 'is-strong': cell.strong }"
                 ></span>
               </div>
               <span v-if="cardShapePreview(c).aimed" class="card__aimrange">원거리 · 사거리 {{ cardShapePreview(c).aimRange }}</span>
+              <span v-else-if="cardShapePreview(c).throw_" class="card__aimrange card__aimrange--throw">투척(화살표 · 장애물 앞 정지)</span>
             </div>
           </li>
         </ul>
@@ -319,8 +320,10 @@ function effectiveValue(eff: CardEffect): number {
 }
 .rangemini__cell.is-self { background: #6aa6ff; border-color: #9ac4ff; }
 .rangemini__cell.is-hit { background: #e06a5a; border-color: #ff9a86; }
+.rangemini__cell.is-strong { background: #ff7a2a; border-color: #ffc089; box-shadow: 0 0 3px rgba(255,122,42,0.8); }
 .rangemini__cell.is-self.is-hit { background: #b06adf; border-color: #d6a6ff; }
 .card__aimrange { font-size: 0.68rem; color: #8eedff; }
+.card__aimrange--throw { color: #ffc089; }
 
 .empty { color: #6c6c7c; text-align: center; padding: 2rem; font-style: italic; }
 
