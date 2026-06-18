@@ -13,6 +13,7 @@ import type {
   Card,
   Chaos,
   ChaosModifier,
+  EncounterDef,
   Equipment,
   Event,
   Item,
@@ -73,6 +74,10 @@ export const useDataStore = defineStore('data', {
     },
     equipments(state): Map<string, Equipment> {
       return state.data?.equipments ?? new Map<string, Equipment>();
+    },
+    /** 저작 인카운터 — 노드별 맵/몬스터/소환. */
+    encounters(state): Map<string, EncounterDef> {
+      return state.data?.encounters ?? new Map<string, EncounterDef>();
     },
     chaos(state): Map<string, ChaosModifier> {
       return state.data?.chaos ?? new Map<string, ChaosModifier>();

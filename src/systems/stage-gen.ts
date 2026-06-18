@@ -10,8 +10,63 @@
  * foresight 기본 2~3(tier1·2=2, tier3=3), tier4=4(속도 고난이도). 1은 특수전 한정(일반 tier 미사용).
  */
 
-import type { CellType, GridPos, GridStage, StageSpawn } from '@/data/schemas';
+import type { CellType, EncounterDef, GridPos, GridStage, StageSpawn } from '@/data/schemas';
 import { TILE_PROPS } from './tiles';
+
+/** 인카운터 grid 문자 → 타일 종류. P/숫자(적 슬롯)는 floor + 엔티티로 별도 처리. */
+const ENCOUNTER_TILE_CHARS: Record<string, CellType> = {
+  '.': 'floor', w: 'wall', _: 'void', o: 'pit', b: 'bush', f: 'fence', s: 'spawn',
+};
+
+/**
+ * 저작 인카운터(EncounterDef) → 격자 무대 + 슬롯별 몬스터 id. 유효하지 않으면 null(절차 생성 폴백).
+ * grid 행을 파싱해 cells·playerStart·enemyStarts·spawn칸을 만든다. monsterIds는 enemyStarts 순서(슬롯 정렬).
+ */
+export function buildEncounterStage(enc: EncounterDef): { stage: GridStage; monsterIds: string[] } | null {
+  const rows = enc.rows.map((r) => r ?? '');
+  while (rows.length > 0 && rows[rows.length - 1].trim() === '') rows.pop();
+  if (rows.length === 0) return null;
+  const height = rows.length;
+  const width = Math.max(...rows.map((r) => r.length));
+  if (width === 0) return null;
+
+  const cells: CellType[][] = [];
+  let playerStart: GridPos | null = null;
+  const slots: { slot: number; pos: GridPos }[] = [];
+  for (let y = 0; y < height; y++) {
+    const row: CellType[] = [];
+    for (let x = 0; x < width; x++) {
+      const ch = rows[y][x] ?? '_'; // 짧은 행은 void로 패딩(비직사각).
+      if (ch === 'P') { playerStart = { x, y }; row.push('floor'); }
+      else if (ch >= '1' && ch <= '9') { slots.push({ slot: Number(ch), pos: { x, y } }); row.push('floor'); }
+      else row.push(ENCOUNTER_TILE_CHARS[ch] ?? 'floor');
+    }
+    cells.push(row);
+  }
+  if (!playerStart || slots.length === 0) return null; // 플레이어/적 시작 누락 — 무효.
+
+  slots.sort((a, b) => a.slot - b.slot);
+  const enemyStarts = slots.map((s) => s.pos);
+  const monsterIds = slots.map((s) => enc.monsters[s.slot - 1] ?? enc.monsters[0] ?? '');
+
+  const spawnCells: GridPos[] = [];
+  for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) if (cells[y][x] === 'spawn') spawnCells.push({ x, y });
+  const spawns: StageSpawn[] = enc.spawns.map((s, i) => ({
+    atTurn: s.atTurn,
+    whenEmpty: s.whenEmpty,
+    enemyId: s.monster,
+    at: spawnCells[i] ?? spawnCells[spawnCells.length - 1],
+  }));
+
+  const stage: GridStage = {
+    id: `enc-${enc.id}`,
+    width, height, cells, playerStart, enemyStarts,
+    itemDrops: [],
+    spawns: spawns.length > 0 ? spawns : undefined,
+    foresight: 2,
+  };
+  return { stage, monsterIds };
+}
 
 /** 지상 이동으로 멈출 수 있는(통행 가능) 타일인가 — 연결성/배치 판정(수풀 포함, 구덩이/난간/벽 제외). */
 function isWalkableTile(t: CellType): boolean {

@@ -83,6 +83,7 @@ function sectionIdSuffix(section) {
 export const DATA_FILES = [
   'timelines/act-1-era4-061.txt',
   'node-maps/act-1-map.txt',
+  'encounters/act-1-encounters.txt',
   'bosses/act-1-boss.txt',
   'bosses/act-1-arc.txt',
   'npcs/act-1-iluneon.txt',
@@ -414,8 +415,10 @@ export function validateData(dataDir, readFile) {
   const eventIds = new Set();
   const equipmentIds = new Set();
   const clueIds = new Set();
+  const encounterIds = new Set();
 
   for (const section of Object.keys(merged)) {
+    if (section.startsWith('encounter.')) encounterIds.add(sectionIdSuffix(section));
     if (section.startsWith('card.')) cardIds.add(sectionIdSuffix(section));
     else if (section.startsWith('relic.')) relicIds.add(sectionIdSuffix(section));
     else if (section.startsWith('item.')) itemIds.add(sectionIdSuffix(section));
@@ -743,7 +746,20 @@ export function validateData(dataDir, readFile) {
         if (f.boss && !bossIds.has(f.boss)) push(diag('error', 'dangling', `맵 '${mapId}' ${sub} boss '${f.boss}' 보스 미정의`, w));
         for (const eid of parseList(f.events)) if (!eventIds.has(eid)) push(diag('error', 'dangling', `맵 '${mapId}' ${sub} events 이벤트 '${eid}' 미정의`, w));
         for (const nid of parseList(f.npcs)) if (!npcIds.has(nid)) push(diag('error', 'dangling', `맵 '${mapId}' ${sub} npcs NPC '${nid}' 미정의`, w));
+        if (f.encounter && !encounterIds.has(f.encounter)) push(diag('error', 'dangling', `맵 '${mapId}' ${sub} encounter '${f.encounter}' 인카운터 미정의`, w));
       }
+    }
+  }
+
+  // ---- 인카운터 검증 (monsters/spawns 몬스터 참조) ----
+  for (const [section, f] of Object.entries(merged)) {
+    if (!section.startsWith('encounter.')) continue;
+    const id = sectionIdSuffix(section);
+    const w = f.__line ?? 0;
+    for (const mid of parseList(f.monsters)) if (!monsterIds.has(mid)) push(diag('error', 'dangling', `인카운터 '${id}' monsters 몬스터 '${mid}' 미정의`, w));
+    for (const tok of parseList(f.spawns)) {
+      const mid = String(tok).split(':')[1]?.trim();
+      if (mid && !monsterIds.has(mid)) push(diag('error', 'dangling', `인카운터 '${id}' spawns 몬스터 '${mid}' 미정의`, w));
     }
   }
 

@@ -103,6 +103,12 @@ export interface Node {
     npcIdPool?: string[];
   };
 
+  /**
+   * 저작 인카운터 id(선택) — 설정 시 이 노드의 격자 전투는 *절차 생성 대신* 해당 인카운터
+   * (맵 타일 배치·몬스터·소환 스케줄)를 사용한다. 정의 없거나 빌드 실패 시 절차 생성 폴백.
+   */
+  encounter?: string;
+
   /** 시작 노드인가? (런 진입 시 위치) */
   isStart?: boolean;
 

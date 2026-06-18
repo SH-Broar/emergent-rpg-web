@@ -313,6 +313,8 @@ x = 0.5896
 y = 0.5103
 neighbors = n-arukea-trail, n-lar-fields, n-lar-leaf-hall, n-world-tree, n-lar-herb-garden, n-lar-bridge-under
 enemy = mr-lar-forest-mosswolf
+# 저작 인카운터 연결(예시) — 이 노드 전투는 절차 생성 대신 enc-test-trap 사용.
+encounter = enc-test-trap
 
 [nodemap.nm-act-1-era4-061.node.n-memory-spring]
 kind = rest

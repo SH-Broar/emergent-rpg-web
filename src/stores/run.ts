@@ -26,7 +26,7 @@ import { getSkipTurnEveryN } from '@/systems/relic';
 import { gridRelicCombatEnd } from '@/systems/grid-relic';
 import { applyStartChaos, nodeHpLoss } from '@/systems/chaos';
 import { XP_PER_LEVEL, canEnhance, needsAwakening } from '@/systems/enhance';
-import { generateStage, pickEnemyIds } from '@/systems/stage-gen';
+import { generateStage, pickEnemyIds, buildEncounterStage } from '@/systems/stage-gen';
 import { startGridCombat, startGridBossCombat, commitRound as commitGridRoundEngine } from '@/systems/grid-combat';
 import { applyCombatVictoryReward } from '@/systems/combat-rewards';
 import { applyBossRewards, applyArcRewards } from '@/systems/boss-rewards';
@@ -928,6 +928,29 @@ export const useRunStore = defineStore('run', {
       const baseDef = data.monsters.get(enemyId);
       if (!baseDef) console.warn('[grid] 알 수 없는 enemyGroupId — 폴백 그림자 사용:', enemyId);
 
+      // 폴백 적 정의(테마 적/인카운터 몬스터 미해석 시 공용).
+      const fallback: Monster = baseDef ?? {
+        id: 'fallback',
+        name: '알 수 없는 그림자',
+        hp: 14,
+        attack: 5,
+        defense: 0,
+        intents: [{ encoded: 'attack:5' }],
+        drop: { gold: 3, timeShards: 1 },
+      };
+
+      // 저작 인카운터(US-001) — 노드에 encounter 지정 + 빌드 성공 시 *절차 생성 대신* 사용.
+      if (node?.encounter) {
+        const enc = data.encounters.get(node.encounter);
+        const built = enc ? buildEncounterStage(enc) : null;
+        if (built) {
+          const encDefs: Monster[] = built.monsterIds.map((mid) => data.monsters.get(mid) ?? fallback);
+          this.data.gridCombat = startGridCombat(r, built.stage, encDefs);
+          return true;
+        }
+        if (enc) console.warn('[grid] 인카운터 빌드 실패 — 절차 생성 폴백:', node.encounter);
+      }
+
       // tier/region — 권역 깊이로 무대 파라미터.
       const region = map && node ? findRegion(map, node.region) : undefined;
       const baseTier = region?.tier ?? 1;
@@ -939,17 +962,6 @@ export const useRunStore = defineStore('run', {
       // 결정론 시드 — 런 시드 + 노드 id(같은 노드 재진입 시 같은 무대).
       // 맵 크기는 런 진행(방문 노드 수=런 턴) 기준 점증(사용자 사양) — 몬스터 수·tier 무관.
       const stage = generateStage(`${r.rngSeed}:${id}`, node?.region ?? 'unknown', stageTier, r.visitedNodes.length);
-
-      // 폴백 적 정의(테마 적 미해석 시).
-      const fallback: Monster = baseDef ?? {
-        id: 'fallback',
-        name: '알 수 없는 그림자',
-        hp: 14,
-        attack: 5,
-        defense: 0,
-        intents: [{ encoded: 'attack:5' }],
-        drop: { gold: 3, timeShards: 1 },
-      };
 
       // 다종 적 그룹(US-002) — 권역 풀에서 섞어 배치(슬롯 0=노드 테마 적). 엘리트는 eliteEnemyPool 우선.
       const pool = isElite

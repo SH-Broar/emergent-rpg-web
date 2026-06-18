@@ -1,0 +1,10 @@
+# 저작 인카운터 (노드별 맵/몬스터/소환) — 절차 생성 대체. RPGEditor 격자 편집기로 저작.
+# grid: 파이프(|) 구분 행. 문자: .=바닥 w=벽 _=격자밖 o=구덩이 b=수풀 f=난간 P=플레이어 1-9=적슬롯 s=소환점.
+# monsters: 슬롯 1..N 의 몬스터 id(슬롯 N = monsters[N-1]). spawns: t<N>=턴 / empty=맵비움 + 몬스터 id.
+
+# 예시 — 함정 방(미유 테스트용): 벽으로 갈린 통로 + 구덩이/수풀, 3턴에 증원.
+[encounter.enc-test-trap]
+name = 시험: 함정 방
+grid = P....|.www.|.o..1|..b.s|....2
+monsters = shadow-pup, shadow-pup
+spawns = t3:shadow-pup

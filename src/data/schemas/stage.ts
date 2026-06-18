@@ -32,6 +32,24 @@ export interface StageSpawn {
   at?: GridPos;
 }
 
+/**
+ * 인카운터(저작 전투) — 특정 노드의 *맵 타일 배치 + 몬스터 + 소환 스케줄*을 손으로 정의(절차 생성 대체).
+ * grid는 파이프(|) 구분 ASCII 행. 타일 문자(INI가 `#`을 주석 처리하므로 벽은 `w`):
+ *   '.'=바닥, 'w'=벽, '_'=격자밖(void), 'o'=구덩이(pit), 'b'=수풀(bush), 'f'=난간(fence),
+ *   'P'=플레이어 시작(바닥), '1'~'9'=적 시작 슬롯(바닥), 's'=소환점(바닥).
+ * monsters[i] = 슬롯 (i+1) 의 몬스터 id. spawns = 증원(턴/맵비움 + 몬스터 id).
+ */
+export interface EncounterDef {
+  id: string;
+  name?: string;
+  /** 파이프 분해된 ASCII 행(각 문자 = 타일/엔티티). */
+  rows: string[];
+  /** 적 슬롯('1'~'9') → 몬스터 id (slot N = monsters[N-1]). */
+  monsters: string[];
+  /** 증원 — atTurn(턴 시작) 또는 whenEmpty(맵 비면) + 몬스터 id. */
+  spawns: { atTurn?: number; whenEmpty?: boolean; monster: string }[];
+}
+
 export interface GridStage {
   id: string;
   /** 바운딩 박스. cells[y][x], 0 <= x < width, 0 <= y < height. */

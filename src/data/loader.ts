@@ -55,6 +55,7 @@ import type {
   ItemEffectKind,
   Equipment,
   EquipmentSlot,
+  EncounterDef,
   ColorEffect,
   Element,
   MetaResource,
@@ -756,6 +757,7 @@ export function parseNodeMap(ini: IniData, id: string): NodeMap | null {
         eventIdPool: parseList(fields.events),
         npcIdPool: parseList(fields.npcs),
       },
+      encounter: fields.encounter || undefined,
       isStart: parseBool(fields.is_start, false),
       isBossGate: parseBool(fields.is_boss_gate, false),
     });
@@ -1099,6 +1101,8 @@ export interface GameData {
   npcs: Map<string, Npc>;
   items: Map<string, Item>;
   equipments: Map<string, Equipment>;
+  /** 저작 인카운터 — 노드별 맵/몬스터/소환(절차 생성 대체). */
+  encounters: Map<string, EncounterDef>;
   /** 레거시 r4 카오스 placeholder (name/description/affectsMeta 토글). */
   chaos: Map<string, ChaosModifier>;
   /** 신규 도전-점수 카오스 정의 (Phase A). */
@@ -1152,6 +1156,39 @@ export function parseClues(ini: IniData): Map<string, import('@/data/schemas').C
       description: fields.description,
       body: fields.body ?? '',
       source: fields.source,
+    });
+  }
+  return result;
+}
+
+// ========== Encounter (저작 전투 — 노드별 맵/몬스터/소환) ==========
+
+/** spawns 토큰 파싱 — "t3:m-imp"(턴3) / "empty:m-pup"(맵 비면). */
+function parseEncounterSpawns(raw: string): EncounterDef['spawns'] {
+  const out: EncounterDef['spawns'] = [];
+  for (const tok of raw.split(',').map((s) => s.trim()).filter(Boolean)) {
+    const parts = tok.split(':').map((s) => s.trim());
+    if (parts.length < 2 || !parts[1]) continue;
+    const [trig, monster] = parts;
+    if (trig === 'empty') out.push({ whenEmpty: true, monster });
+    else if (/^t\d+$/.test(trig)) out.push({ atTurn: Number(trig.slice(1)), monster });
+  }
+  return out;
+}
+
+export function parseEncounters(ini: IniData): Map<string, EncounterDef> {
+  const result = new Map<string, EncounterDef>();
+  for (const [section, fields] of Object.entries(ini)) {
+    if (!section.startsWith('encounter.')) continue;
+    const id = sectionIdSuffix(section);
+    const rows = String(fields.grid ?? '').split('|'); // 행 문자 보존(타일 문자에 공백 없음).
+    const monsters = String(fields.monsters ?? '').split(',').map((s) => s.trim()).filter(Boolean);
+    result.set(id, {
+      id,
+      name: fields.name,
+      rows,
+      monsters,
+      spawns: parseEncounterSpawns(String(fields.spawns ?? '')),
     });
   }
   return result;
@@ -1331,6 +1368,8 @@ const DATA_FILES = [
   // === 1장 (제 4시대 61년) — main 연표 ===
   'data/timelines/act-1-era4-061.txt',
   'data/node-maps/act-1-map.txt',
+  // === 저작 인카운터 (노드별 맵/몬스터/소환) ===
+  'data/encounters/act-1-encounters.txt',
   'data/bosses/act-1-boss.txt',
   // === arc 보스 3종 (작업 29) — 던·티프레·타마모 (kind='arc'). 강 엘리트 승격, 런 도중 보스 프레임. ===
   'data/bosses/act-1-arc.txt',
@@ -1481,6 +1520,7 @@ export async function loadAllData(baseUrl?: string): Promise<GameData> {
     chaosDefs: parseChaosDefs(merged),
     clues: parseClues(merged),
     unlocks: parseUnlocks(merged),
+    encounters: parseEncounters(merged),
     balance: parseBalance(merged),
   };
 }
@@ -1512,6 +1552,7 @@ export function loadFromText(text: string): GameData {
     chaosDefs: parseChaosDefs(ini),
     clues: parseClues(ini),
     unlocks: parseUnlocks(ini),
+    encounters: parseEncounters(ini),
     balance: parseBalance(ini),
   };
 }
