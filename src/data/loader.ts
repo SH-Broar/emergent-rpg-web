@@ -1360,6 +1360,7 @@ const DATA_FILES = [
   // === 격자 전투 플레이어블 승격 (4b, 2026-06-18) — 화이트팡(무속성·시간)·샤유아(슬라임·물). ===
   'data/races/race-whitefang.txt',
   'data/races/race-slime.txt',
+  'data/races/race-sminthus.txt',
   'data/cards/cards-mvr.txt',
   // === 종족 전용 시작 카드 (2026-05-22) — source=race, 시작 덱 전용(상점/이벤트 풀 제외). ===
   'data/cards/cards-race.txt',
@@ -1374,6 +1375,7 @@ const DATA_FILES = [
   // === 격자 전투 신규 클래스 전용 카드 (4b, 2026-06-18) — source=race, 시작 전용. ===
   'data/cards/cards-whitefang.txt',
   'data/cards/cards-slime.txt',
+  'data/cards/cards-sminthus.txt',
   'data/relics/relics-mvr.txt',
   // === 종족 시그니처 유물 (2026-05-22) — source=race, 시작 전용(상점/드롭 풀 제외). ===
   'data/relics/relics-race.txt',

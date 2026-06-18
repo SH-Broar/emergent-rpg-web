@@ -31,6 +31,7 @@ const RACE_LABELS: Record<string, string> = {
   moth: '나방: 리무',
   whitefang: '고양이: 화이트 팡',
   slime: '슬라임: 샤유아',
+  sminthus: '스민투스: 미유',
 };
 function raceLabel(race: Race): string {
   return RACE_LABELS[race.id] ?? race.name;

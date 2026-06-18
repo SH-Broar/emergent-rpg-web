@@ -1570,9 +1570,11 @@ const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) =>
   'summon-ally': (_e, _c) => {},
   'status-spread': (_e, _c) => {},
   'chain-explosion': (_e, _c) => {},
-  // 공중 이동·설치(격자 전용) — 1v1엔 격자/이동/설치 개념이 없어 no-op.
+  // 공중 이동·설치·밀기/당기기(격자 전용) — 1v1엔 격자/위치 개념이 없어 no-op.
   'grant-airborne': (_e, _c) => {},
   'place-installation': (_e, _c) => {},
+  'pull-enemy': (_e, _c) => {},
+  'push-enemy': (_e, _c) => {},
 };
 
 /** 컬러 키 참조용 (draw-if-color params 타입). */

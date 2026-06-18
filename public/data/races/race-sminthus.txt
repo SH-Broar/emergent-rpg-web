@@ -1,0 +1,28 @@
+# Race: 스민투스 (미유 — 격자 전투 플레이어블 신설, 2026-06-18)
+# 원작 NPC npc-miyu = 컬러즈 최단신의 뛰는 쥐. 온몸에 중장비를 둘둘 감은 짐꾼·발명가(루나 학생).
+# 코어: 장비를 *설치*(효과 장판)하고 적을 *당기거나 밀어* 그 위를 밟게 한다. iron 친화.
+
+[race.sminthus]
+name = 미유
+description = 컬러즈 최단신의 쥐. 온몸에 장비를 두르고, 함정을 깔아 싸운다.
+category = beastkin
+primary_element = iron
+hp = 28
+mp = 12
+attack = 5
+defense = 4
+vigor = 12
+# 시작 덱 — 설치(화염/가시) + 밀기/당기기(설치 칸 유도) + 6종 표준. 공용 최소화(전용 위주).
+# 6종: 일반(wrench)·강(slam 1.5×)·원거리(throw)·방어(defend block6)·이동(scurry)·회복(recover).
+starting_deck = c-smi-wrench, c-smi-wrench, c-smi-slam, c-smi-throw, c-defend, c-smi-scurry, c-recover, c-smi-firetrap, c-smi-spiketrap, c-smi-hook, c-smi-hook, c-smi-shove, c-smi-bomb
+# 시드 풀 — 전용 12종 전체.
+seed_cards = c-smi-firetrap, c-smi-spiketrap, c-smi-poisontrap, c-smi-forge, c-smi-bomb, c-smi-hook, c-smi-shove, c-smi-reel, c-smi-wrench, c-smi-slam, c-smi-throw, c-smi-scurry
+seed_relics = r-race-sminthus
+hp_bonus = 0
+mp_bonus = 0
+deck_size = 13
+# 미유 = iron(장비) 친화.
+seed_colors = iron:4
+# 격자 행마법 — 킹(8방향 1칸, 재빠른 쥐). 설치/유도 위주라 기동은 절제.
+move_pattern = king
+move_range = 1

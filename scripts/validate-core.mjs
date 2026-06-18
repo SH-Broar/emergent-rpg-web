@@ -108,6 +108,7 @@ export const DATA_FILES = [
   'races/race-form-fox.txt',
   'races/race-whitefang.txt',
   'races/race-slime.txt',
+  'races/race-sminthus.txt',
   'cards/cards-mvr.txt',
   'cards/cards-race.txt',
   'cards/junk-cards.txt',
@@ -116,6 +117,7 @@ export const DATA_FILES = [
   'cards/cards-arc.txt',
   'cards/cards-whitefang.txt',
   'cards/cards-slime.txt',
+  'cards/cards-sminthus.txt',
   'relics/relics-mvr.txt',
   'relics/relics-race.txt',
   'relics/relics-color.txt',
@@ -220,6 +222,8 @@ export const VALID_CARD_EFFECT_KINDS = [
   'summon-ally', 'status-spread', 'chain-explosion',
   // 공중 이동·설치 (2026-06-18). 격자 전투 전용.
   'grant-airborne', 'place-installation',
+  // 밀기/당기기 (미유, 2026-06-18). 격자 전투 전용.
+  'pull-enemy', 'push-enemy',
 ];
 
 /**

@@ -151,7 +151,9 @@ export type CardEffectKind =
   | 'status-spread'       // 전파(샤유아): shape가 닿은 적의 디버프를 인접 적에 복사. 격자 전투 전용.
   | 'chain-explosion'     // 연쇄 폭발(샤유아): 디버프 걸린 모든 적이 자신+인접에 value 피해. 격자 전투 전용.
   | 'grant-airborne'      // 비행 상태 부여(value턴). 비행 중 이동은 장애물 위를 넘어가고 airStop 칸에 착지(이동 시 해제). 격자 전용.
-  | 'place-installation'; // 설치물 생성(설치 가능 칸). param4=종류(burn/poison/explosion/vulnerable/atk-up/def-up/mana-up). 격자 전용.
+  | 'place-installation'  // 설치물 생성(설치 가능 칸). param4=종류(burn/poison/explosion/vulnerable/atk-up/def-up/mana-up). 격자 전용.
+  | 'pull-enemy'          // 맞은 적을 플레이어 쪽으로 value칸 끌어당김(직선, 장애물/격자밖 정지). 격자 전용.
+  | 'push-enemy';         // 맞은 적을 플레이어 반대 방향으로 value칸 밀어냄(직선, 장애물/격자밖 정지). 격자 전용.
 
 /** 효과 대상 — target. */
 export type EffectTarget = 'self' | 'enemy' | 'all-enemies' | 'random-enemy';

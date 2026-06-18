@@ -13,7 +13,7 @@ tagline = "시간이 균열을 만들지 않게."
 node_map = nm-act-1-era4-061
 # 플레이어는 종족만 고른다 (characters/ 폐기 → race 통합).
 # 격자 전투 4종 확정(2026-06-18): 하코(human)·리무(moth)·화이트팡·샤유아. 팬텀·아르카나 컷(NPC 잔존).
-races = human, moth, whitefang, slime
+races = human, moth, whitefang, slime, sminthus
 npcs = npc-niayur, npc-hako, npc-phoenix, npc-echo, npc-olyu, npc-imperisia, npc-rize, npc-maro, npc-arvaro-enya, npc-caliburn, npc-mirte, npc-seraphine, npc-kurkuma, npc-cassis, npc-elnest, npc-cayo, npc-valencia, npc-seed, npc-whitefang, npc-airi, npc-tarko, npc-betelgeuse, npc-wimel, npc-iyeon, npc-kardi, npc-rupin, npc-miyu, npc-febiel, npc-kuruha, npc-papyrus, npc-banta, npc-akasha, npc-monato, npc-mono, npc-rienkay, npc-tsuyosai
 events = ev-traveler-fork, ev-stranger-favor, ev-mono-whisper
 time_limit = 300

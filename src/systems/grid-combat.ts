@@ -1858,6 +1858,31 @@ function dashPlayer(state: GridCombatState, tiles: number, mode: 'toward' | 'awa
   }
 }
 
+/**
+ * 적 밀기/당기기(미유, 2026-06-18) — 적을 플레이어 기준 toward(당기기)/away(밀기) tiles칸 직선 이동.
+ * 장애물/격자밖/멈출 수 없는 칸 직전에 정지. 설치 칸 위로 옮겨 밟게 하는 용도.
+ */
+function shoveEnemy(state: GridCombatState, enemy: GridCombatant, tiles: number, mode: 'toward' | 'away'): void {
+  if (tiles <= 0) return;
+  const from = { ...enemy.pos };
+  let cur = { ...enemy.pos };
+  for (let i = 0; i < tiles; i++) {
+    const dx = state.player.pos.x - cur.x;
+    const dy = state.player.pos.y - cur.y;
+    let sx = 0, sy = 0;
+    if (Math.abs(dx) >= Math.abs(dy)) sx = Math.sign(dx); else sy = Math.sign(dy);
+    if (mode === 'away') { sx = -sx; sy = -sy; }
+    if (sx === 0 && sy === 0) break;            // 플레이어와 같은 칸(겹침) — 더 당길 곳 없음.
+    const next = { x: cur.x + sx, y: cur.y + sy };
+    if (!canStopAt(state.stage, next)) break;   // 벽/구덩이/난간/밖 — 직전에 정지.
+    cur = next;
+  }
+  if (!samePos(cur, from)) {
+    enemy.pos = cur;
+    pushFx(state, { kind: 'move', actorId: enemy.id, from, to: { ...cur } });
+  }
+}
+
 /** 플레이어에 가장 가까운 살아 있는 적(맨해튼). 없으면 undefined. */
 function nearestEnemy(state: GridCombatState): GridCombatant | undefined {
   let best: GridCombatant | undefined;
@@ -2298,6 +2323,19 @@ function applyCardEffects(
           placed += 1;
         }
         if (placed > 0) pushLog(state, '설치물을 깔았다');
+        break;
+      }
+      // === 밀기/당기기(미유, 2026-06-18) — 맞은 적을 플레이어 기준 끌거나 민다(설치 칸 유도). ===
+      case 'pull-enemy':
+      case 'push-enemy': {
+        const dist = Math.max(1, Math.floor(rawV) || 1);
+        const mode = eff.kind === 'pull-enemy' ? 'toward' : 'away';
+        const moved = new Set<GridCombatant>();
+        for (const { target } of shapeHits) {
+          if (target.hp <= 0 || moved.has(target)) continue;
+          moved.add(target);
+          shoveEnemy(state, target, dist, mode);
+        }
         break;
       }
       // === 샤유아 시그니처(C4) ===

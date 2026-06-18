@@ -1,0 +1,175 @@
+# Cards 미유 전용 (스민투스 — 격자 전투, 2026-06-18)
+# source=race → 상점/이벤트 풀 제외(시작 전용). lore: 컬러즈 최단신 쥐, 온몸에 중장비를 두른 짐꾼·발명가.
+# 코어: 장비를 *설치*(효과 장판)하고, 적을 *당기거나 밀어* 그 위를 밟게 한다. 설치는 효과당 1종이되 흔할수록 다칸.
+# flavor는 추후 검수(빈 상태). 전방 = -y.
+
+# === 설치(흔한 효과 = 다칸) ===
+# 화염(흔함) — 3칸: 조준 칸 + 좌우.
+[card.c-smi-firetrap]
+name = 화염 깔개
+rank = common
+source = race
+element = fire
+cost = 1
+trigger = manual
+effects = place-installation:2:enemy:burn:3
+shape = 0,0|-1,0|1,0
+target_mode = aimed
+aim_range = 3
+cast_speed = normal
+
+# 취약(흔함) — 3칸: 조준 칸 + 앞뒤.
+[card.c-smi-spiketrap]
+name = 가시 깔개
+rank = common
+source = race
+element = iron
+cost = 1
+trigger = manual
+effects = place-installation:2:enemy:vulnerable:3
+shape = 0,0|0,-1|0,1
+target_mode = aimed
+aim_range = 3
+cast_speed = normal
+
+# 중독(중간) — 2칸.
+[card.c-smi-poisontrap]
+name = 독 살포기
+rank = common
+source = race
+element = earth
+cost = 1
+trigger = manual
+effects = place-installation:3:enemy:poison:3
+shape = 0,0|0,-1
+target_mode = aimed
+aim_range = 3
+cast_speed = normal
+
+# 힘의 발판(중간·강화) — 2칸, 플레이어가 밟으면 힘.
+[card.c-smi-forge]
+name = 힘의 발판
+rank = common
+source = race
+element = iron
+cost = 1
+trigger = manual
+effects = place-installation:2:self:atk-up:3
+shape = 0,0|0,1
+target_mode = aimed
+aim_range = 2
+cast_speed = normal
+
+# 폭약(희귀) — 1칸, 접촉 즉발 큰 피해.
+[card.c-smi-bomb]
+name = 폭약 설치
+rank = rare
+source = race
+element = fire
+cost = 2
+trigger = manual
+effects = place-installation:10:enemy:explosion:4
+shape = 0,0
+target_mode = aimed
+aim_range = 3
+cast_speed = normal
+
+# === 밀기/당기기(설치 칸 유도) ===
+# 갈고리 — 조준 적을 플레이어 쪽으로 2칸 당김 + 약간 피해(플레이어 근처 설치 칸으로 유도).
+[card.c-smi-hook]
+name = 갈고리
+rank = common
+source = race
+element = iron
+cost = 1
+trigger = manual
+effects = damage:3:enemy, pull-enemy:2:enemy
+shape = 0,0
+per_tile_mul = 1.0
+target_mode = aimed
+aim_range = 4
+cast_speed = normal
+
+# 밀치기 — 전방 적을 2칸 밀어냄 + 피해(앞쪽 설치 칸으로).
+[card.c-smi-shove]
+name = 밀치기
+rank = common
+source = race
+element = iron
+cost = 1
+trigger = manual
+effects = damage:4:enemy, push-enemy:2:enemy
+shape = 0,-1
+per_tile_mul = 1.0
+cast_speed = fast
+target_mode = pattern
+
+# 끌어모으기 — 전방 일렬의 적을 1칸씩 당김(다수 유도).
+[card.c-smi-reel]
+name = 끌어모으기
+rank = rare
+source = race
+element = iron
+cost = 2
+trigger = manual
+effects = pull-enemy:1:enemy
+shape = 0,-1|0,-2|0,-3
+per_tile_mul = 1.0,1.0,1.0
+target_mode = pattern
+cast_speed = normal
+
+# === 6종 표준 ===
+# 일반 공격 — 전방 1칸 렌치질(범위 보통).
+[card.c-smi-wrench]
+name = 렌치질
+rank = common
+source = race
+element = iron
+cost = 1
+trigger = manual
+effects = damage:6:enemy
+shape = 0,-1|0,-2
+per_tile_mul = 1.0,1.0
+target_mode = pattern
+cast_speed = normal
+
+# 강 공격 — 전방 1칸 강타(범위↓, 핵심칸 1.5×).
+[card.c-smi-slam]
+name = 내려찍기
+rank = common
+source = race
+element = iron
+cost = 1
+trigger = manual
+effects = damage:7:enemy
+shape = 0,-1
+per_tile_mul = 1.5
+target_mode = pattern
+cast_speed = normal
+
+# 원거리 — 공구 던지기(조준).
+[card.c-smi-throw]
+name = 공구 던지기
+rank = common
+source = race
+element = iron
+cost = 1
+trigger = manual
+effects = damage:6:enemy
+shape = 0,0
+per_tile_mul = 1.0
+target_mode = aimed
+aim_range = 3
+cast_speed = normal
+
+# 빠른 이동 — 잰걸음(쥐답게 재빠르게 물러남).
+[card.c-smi-scurry]
+name = 잰걸음
+rank = common
+source = race
+element = wind
+cost = 1
+trigger = manual
+effects = move-self:2:self:away
+target_mode = self
+cast_speed = fast

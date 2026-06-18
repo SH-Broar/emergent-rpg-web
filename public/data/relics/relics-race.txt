@@ -159,3 +159,12 @@ source = race
 trigger = on-combat-start
 effects = combat-start-block:5
 flavor = 깨끗한 데서만 맑게 빛나는 작은 핵. 싸움이 시작되면 말랑한 몸이 먼저 한 겹 받아낸다.
+
+# 미유 (스민투스) — 온몸에 두른 중장비가 첫 타를 받아낸다.
+[relic.r-race-sminthus]
+name = 둘러맨 장비
+rank = common
+source = race
+trigger = on-combat-start
+effects = combat-start-block:5
+flavor = 작은 몸을 덮은 한 무더기의 장비. 싸움이 시작되면 그 무게가 먼저 한 겹 막아 준다.

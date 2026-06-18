@@ -23,6 +23,13 @@ resource = hyperion
 cost = 60
 grants_race = slime
 
+[unlock.u-race-sminthus]
+name = 미유
+description = 컬러즈 최단신의 쥐. 함정을 깔고 적을 끌어들여 밟게 한다.
+resource = hyperion
+cost = 75
+grants_race = sminthus
+
 # === 종족 앵커 유물 (Item 37-③) ===
 # 4종족 × 3 = 12종. 해석 자원으로 구매. 한 번 해금하면 그 종족 런 시작 시 자동 지급(기존 seed_relics 위에 추가).
 # 비용 8(해석) — 종족 해금(히페리온 30~60)보다 가볍게. 3개 모두 사면 24로 종족 한 명을 본격 정체성화.
