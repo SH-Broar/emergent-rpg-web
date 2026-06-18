@@ -7,7 +7,7 @@
  *  - "캐릭터별 양상"은 signatureVariants[i].signatureId로 직접 매칭 (구 hyperion[4].bossSignatureId 제거됨)
  */
 
-import type { BossId, CastSpeed, NamedEntity } from './base';
+import type { BossId, NamedEntity } from './base';
 import type { Companion } from './npc';
 import type { GridAttack } from './monster';
 import type { MoveProfile } from './move-profile';
@@ -93,8 +93,6 @@ export interface Boss extends NamedEntity {
    * 로더가 `move_pattern`/`move_range`로부터 합성.
    */
   gridMoveProfile?: MoveProfile;
-  /** 격자 행동 발동 속도. 미설정 시 'normal'. 로더가 `speed`로부터. */
-  gridSpeed?: CastSpeed;
   /**
    * 고정(스크립트형) AI 플래그. 보스 시그니처 무브는 *읽히는 텔레그래프*가 중요하므로 기본 true 권장
    * (게임트리 lookahead 대신 페이즈 grid_attack 순서대로 그리디 로테이션). 미설정 시 true(보스는 스크립트형).

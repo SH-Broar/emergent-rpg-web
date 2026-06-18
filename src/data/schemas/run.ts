@@ -20,7 +20,6 @@ import type { MoveProfile } from './move-profile';
 import type { GridAttack } from './monster';
 import type {
   CardId,
-  CastSpeed,
   GridOffset,
   GridPos,
   NodeId,
@@ -366,7 +365,15 @@ export interface GridCombatant {
   /** 방어막 — 0으로 리셋되지 않고 라운드 종료마다 floor(/2)로 반감(D6). */
   block: number;
   statuses: Record<string, number>;
-  speed: CastSpeed;
+  /**
+   * 스피드(템포, 적 전용) — "플레이어 N행동마다 이 적이 1턴 수행"의 N. 기본 3~5, 매우 강한 적 2, 이벤트 1. min 1.
+   * buff/debuff(상태)로 변동. 플레이어는 미사용(항상 자유 제출). (구 CastSpeed `speed` 필드는 폐지.)
+   */
+  tempo?: number;
+  /** 스피드 카운터 — 플레이어 행동마다 +1, tempo 도달 시 이 적 1턴 + counter-=tempo. 라운드 넘어 누적. */
+  tempoCounter?: number;
+  /** 한 턴에 수행하는 행동 수(레거시 다중행동 Monster.actions). 미설정 1. */
+  actionsPerTurn?: number;
   moveProfile: MoveProfile;
   // === 적 전용 ===
   /** 적 정의 id(몬스터). 플레이어는 미설정. */

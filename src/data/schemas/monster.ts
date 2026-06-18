@@ -125,8 +125,11 @@ export interface Monster extends NamedEntity {
   // === 격자 전투(grid-combat) 필드 — 전부 optional. 미설정 시 엔진 폴백. ===
   /** 격자 이동 프로필(행마법). 미설정 시 근접 추격(orthogonal1) 폴백. */
   moveProfile?: MoveProfile;
-  /** 행동 발동 속도. 미설정 시 'normal'. */
-  speed?: CastSpeed;
+  /**
+   * 스피드(템포) — "플레이어 N행동마다 이 적 1턴". INI `tempo`. 미설정 시 엔진 기본(보통 4, 보스 낮게).
+   * 대부분 3~5, 매우 강한 적 2, 이벤트 1. min 1. (구 CastSpeed `speed` 필드는 폐지.)
+   */
+  tempo?: number;
   /**
    * 격자 공격 목록 — 신규 엔진 전용. AI가 이 중 사용 가능한 것을 고른다.
    * 미설정 시 레거시 attack/intents 기반 단순 근접 1칸 공격으로 폴백.

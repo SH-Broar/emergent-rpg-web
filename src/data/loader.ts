@@ -574,7 +574,8 @@ export function parseMonsters(ini: IniData): Map<string, Monster> {
       companion: parseCompanion(fields),
       // === 격자 전투 필드 (전부 optional — 미설정 시 엔진 폴백: 근접 추격 + 근접 1칸 공격). ===
       moveProfile: parseMoveProfile(fields),
-      speed: isCastSpeed(fields.speed) ? fields.speed : undefined,
+      // 스피드(템포) — "플레이어 N행동마다 적 1턴". 미설정 시 엔진 기본. min 1. (구 CastSpeed speed 폐지.)
+      tempo: fields.tempo !== undefined ? Math.max(1, parseNumber(fields.tempo, 4)) : undefined,
       gridBehavior: (() => {
         const b = parseGridBehavior(fields);
         return b.length > 0 ? b : undefined;
@@ -669,7 +670,6 @@ function parseOneBoss(id: string, f: IniSection, ini: IniData): Boss {
     phases,
     // === 격자 전투(#4) 보스 거동 — 미설정 시 엔진 폴백. ===
     gridMoveProfile: parseMoveProfile(f),
-    gridSpeed: isCastSpeed(f.speed) ? f.speed : undefined,
     // 보스는 *기본 스크립트형*(읽히는 텔레그래프). `fixed_ai = false`를 명시해야만 게임트리 AI.
     gridFixedAi: f.fixed_ai !== undefined ? parseBool(f.fixed_ai, true) : true,
     signatureVariants: signatureVariants.length > 0 ? signatureVariants : undefined,

@@ -129,9 +129,10 @@ const potionLocked = computed<boolean>(() => {
 // ============================================================================
 
 const stage = computed(() => gc.value?.stage);
-const foresight = computed(() => gc.value?.foresight ?? 1);
+/** 계획 큐 안전 상한(마나 외) — grid-combat MAX_PLAN과 일치. 카드는 마나로 별도 제한. */
+const PLAN_CAP = 12;
 const plan = computed<PlannedAction[]>(() => gc.value?.playerPlan ?? []);
-const planFull = computed(() => plan.value.length >= foresight.value);
+const planFull = computed(() => plan.value.length >= PLAN_CAP);
 
 /**
  * 렌더 대상 적 — 살아 있는 적 + *지금 소멸 애니 중인* 적(보너스: 치명타 데미지 숫자 신뢰성).
@@ -346,6 +347,12 @@ function intentText(a: PlannedAction, enemy: GridCombatant): string {
     case 'card': return '특수';
     default: return '?';
   }
+}
+
+/** 스피드 모델: 이 적이 다음 1턴을 수행하기까지 남은 *플레이어 행동* 수(tempo - counter). 최소 1. */
+function tempoUntilTurn(e: GridCombatant): number {
+  const tempo = Math.max(1, e.tempo ?? 4);
+  return Math.max(1, tempo - (e.tempoCounter ?? 0));
 }
 
 /**
@@ -1011,11 +1018,12 @@ onUnmounted(() => {
           <div class="inspect__hp">HP {{ inspectedEnemy.hp }} / {{ inspectedEnemy.maxHp }}
             <span v-if="inspectedEnemy.block > 0" class="inspect__block">🛡 {{ inspectedEnemy.block }}</span>
           </div>
+          <div class="inspect__hp">스피드 {{ inspectedEnemy.tempo ?? 4 }} · 다음 행동까지 {{ tempoUntilTurn(inspectedEnemy) }}수</div>
           <ul v-if="statusEntries(inspectedEnemy).length" class="inspect__statuses">
             <li v-for="s in statusEntries(inspectedEnemy)" :key="s.key">{{ s.label }} ×{{ s.count }}</li>
           </ul>
           <div class="inspect__intent">
-            <span class="inspect__intent-lead">다음 {{ foresight }}수:</span>
+            <span class="inspect__intent-lead">다음 턴:</span>
             <ol>
               <li v-for="(a, i) in (inspectedEnemy.intentQueue ?? [])" :key="i">{{ intentText(a, inspectedEnemy) }}</li>
               <li v-if="(inspectedEnemy.intentQueue ?? []).length === 0" class="inspect__intent-none">미정</li>
@@ -1024,19 +1032,16 @@ onUnmounted(() => {
         </aside>
       </section>
 
-      <!-- 계획 시야 큐 (foresight) -->
+      <!-- 계획 큐 (스피드 모델: 마나 한도까지 자유 배치, 실행 시 순서대로 해소) -->
       <div class="plan">
-        <span class="plan__label">계획 ({{ plan.length }}/{{ foresight }})</span>
+        <span class="plan__label">계획 ({{ plan.length }}) · 마나 {{ gc.mana }}/{{ gc.maxMana }}</span>
         <ul class="plan__slots">
           <li
-            v-for="i in foresight"
+            v-for="(a, i) in plan"
             :key="`slot-${i}`"
-            class="plan__slot"
-            :class="{ 'plan__slot--filled': !!plan[i - 1] }"
-          >
-            <template v-if="plan[i - 1]">{{ planLabel(plan[i - 1]) }}</template>
-            <template v-else>—</template>
-          </li>
+            class="plan__slot plan__slot--filled"
+          >{{ planLabel(a) }}</li>
+          <li v-if="plan.length === 0" class="plan__slot">행동을 배치하세요</li>
         </ul>
         <button class="plan__clear" :disabled="plan.length === 0 || committing" @click="clearPlan">비우기</button>
       </div>

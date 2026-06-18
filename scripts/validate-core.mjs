@@ -218,8 +218,6 @@ export const VALID_CARD_EFFECT_KINDS = [
   'move-self',
   // 샤유아 시그니처 (C4, 2026-06-18) — 분열 소환·디버프 전파·연쇄 폭발. 격자 전투 전용.
   'summon-ally', 'status-spread', 'chain-explosion',
-  // foresight 전투 중 변동 (item 6, 2026-06-18). 격자 전투 전용.
-  'add-foresight',
 ];
 
 /**

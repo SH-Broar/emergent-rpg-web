@@ -21,7 +21,6 @@ import type {
   Boss,
   BossPhase,
   Card,
-  CastSpeed,
   FxEvent,
   GridAttack,
   GridCombatState,
@@ -69,11 +68,12 @@ const STARTING_HAND_SIZE = 5;
 const DEFAULT_MAX_MANA = 3;
 const MAX_HAND_SIZE = 10;
 const LOG_MAX = 24;
-/** 전투 중 foresight 상한(add-foresight 카드 등으로 변동 — US-004). 하한 1. */
-const MAX_FORESIGHT = 5;
-
-/** 발동 속도 → 정렬 순위(작을수록 먼저). */
-const SPEED_ORDER: Record<CastSpeed, number> = { fast: 0, normal: 1, slow: 2 };
+/** 스피드(템포) 기본값 — 데이터·tier 미설정 시. "플레이어 N행동마다 적 1턴"의 N. */
+const DEFAULT_TEMPO = 4;
+/** 보스 기본 템포(강한 적 — 더 자주 행동). */
+const BOSS_TEMPO = 2;
+/** 한 라운드(실행)에 플레이어가 큐에 넣을 수 있는 행동 총 상한(마나 외 안전 캡). */
+const MAX_PLAN = 12;
 
 /**
  * 유물·포션 격자 적용 계층(grid-relic.ts/grid-item.ts)에 격자 헬퍼를 주입한다.
@@ -398,13 +398,13 @@ export function canPlayCard(state: GridCombatState, card: Card): boolean {
 // ============================================================================
 
 /**
- * playerPlan에 행동 추가 — 길이 < foresight면 push.
+ * playerPlan에 행동 추가 — 스피드 모델(US-001): 길이 제한은 foresight가 아니라 *마나*(카드) + MAX_PLAN(안전 캡).
  * card: 손패 존재 + 마나(누적 plan 비용 합산까지 고려) 검증.
  * move: 합법 이동 칸 검증(현재 상태 기준 — best effort; 실제 해소는 commit 시 재평가).
  * 성공 시 true.
  */
 export function queuePlayerAction(state: GridCombatState, action: PlannedAction): boolean {
-  if (state.playerPlan.length >= state.foresight) return false;
+  if (state.playerPlan.length >= MAX_PLAN) return false; // 안전 캡(마나 외). 카드는 아래 누적 마나로 제한.
 
   if (action.kind === 'card') {
     const card = state.hand.find((c) => c.instanceId === action.cardInstanceId);
@@ -661,9 +661,7 @@ export function startGridCombat(
     hp: run.hp,
     maxHp: run.maxHp,
     block: 0,
-    statuses: {},
-    speed: 'normal',
-    moveProfile,
+    statuses: {},    moveProfile,
   };
 
   // 적 전투원 — enemyStarts와 인덱스 정렬. 위치 미지정분은 빈 칸 폴백.
@@ -723,8 +721,8 @@ function playerMoveProfile(run: RunState, moveBonus = 0): MoveProfile {
   return { ...base, range: Math.max(1, base.range + up) };
 }
 
-/** 몬스터 정의 → 격자 전투원. */
-function makeEnemyCombatant(def: Monster, pos: GridPos, idx: number): GridCombatant {
+/** 몬스터 정의 → 격자 전투원. defaultTempo = 데이터 미설정 시 적용할 권역 기본 템포. */
+function makeEnemyCombatant(def: Monster, pos: GridPos, idx: number, defaultTempo = DEFAULT_TEMPO): GridCombatant {
   const hp = Math.max(1, Math.round(def.hp));
   return {
     id: `enemy-${idx}-${def.id}`,
@@ -734,7 +732,9 @@ function makeEnemyCombatant(def: Monster, pos: GridPos, idx: number): GridCombat
     maxHp: hp,
     block: def.defense ?? 0,
     statuses: {},
-    speed: def.speed ?? 'normal',
+    tempo: Math.max(1, def.tempo ?? defaultTempo),
+    tempoCounter: 0,
+    actionsPerTurn: Math.max(1, def.actions ?? 1),
     moveProfile: def.moveProfile ?? DEFAULT_ENEMY_MOVE_PROFILE,
     monsterId: def.id,
     name: def.name,
@@ -817,7 +817,9 @@ function makeBossCombatant(boss: Boss, pos: GridPos): GridCombatant {
     maxHp: hp,
     block: boss.defense ?? 0,
     statuses: {},
-    speed: boss.gridSpeed ?? 'normal',
+    tempo: BOSS_TEMPO, // 보스 = 강한 적(자주 행동). 페이즈/상태로 변동 가능.
+    tempoCounter: 0,
+    actionsPerTurn: 1, // 보스는 트리거당 1행동(페이즈별 grid_attack 중 AI가 택1).
     moveProfile: boss.gridMoveProfile ?? DEFAULT_ENEMY_MOVE_PROFILE,
     monsterId: boss.id,
     name: boss.name,
@@ -858,9 +860,7 @@ export function startGridBossCombat(
     hp: run.hp,
     maxHp: run.maxHp,
     block: 0,
-    statuses: {},
-    speed: 'normal',
-    moveProfile,
+    statuses: {},    moveProfile,
   };
 
   // 보스 배치 — enemyStarts[0](우상단). 없으면 빈 칸 폴백.
@@ -978,11 +978,17 @@ export function enemyPlan(state: GridCombatState, enemy: GridCombatant): Planned
   return useTree ? planEnemyGameTree(state, enemy) : greedyEnemyPlan(state, enemy);
 }
 
-/** 단순 그리디 폴백 — 가상 위치를 갱신하며 N스텝을 planOneEnemyStep으로 채운다. */
+/** 적의 *1턴 행동 수*(스피드 모델: 적은 트리거 시 이만큼 행동). 레거시 다중행동 actionsPerTurn, 기본 1. */
+function enemyHorizon(enemy: GridCombatant): number {
+  return Math.max(1, enemy.actionsPerTurn ?? 1);
+}
+
+/** 단순 그리디 폴백 — 가상 위치를 갱신하며 *1턴(actionsPerTurn)* 분량을 planOneEnemyStep으로 채운다. */
 function greedyEnemyPlan(state: GridCombatState, enemy: GridCombatant): PlannedAction[] {
   const out: PlannedAction[] = [];
   let simPos = { ...enemy.pos };
-  for (let step = 0; step < state.foresight; step++) {
+  const horizon = enemyHorizon(enemy);
+  for (let step = 0; step < horizon; step++) {
     const action = planOneEnemyStep(state, enemy, simPos);
     out.push(action);
     if (action.kind === 'move') simPos = { ...action.to };
@@ -1119,6 +1125,8 @@ interface AiContext {
   allyPositions: GridPos[];
   /** 적 기본 공격치 + 힘(근접 폴백 피해 추정용). */
   baseAtk: number;
+  /** 이 적의 1턴 행동 수(계획 깊이 = actionsPerTurn). */
+  horizon: number;
   /** 남은 노드 예산(가변). */
   budget: number;
 }
@@ -1145,11 +1153,12 @@ function planEnemyGameTree(state: GridCombatState, enemy: GridCombatant): Planne
       .filter((e) => e !== enemy && e.hp > 0)
       .map((e) => ({ ...e.pos })),
     baseAtk: (enemy.attack ?? 0) + (enemy.statuses.strength ?? 0),
+    horizon: enemyHorizon(enemy),
     budget: NODE_BUDGET,
   };
 
   if (state.player.hp <= 0) {
-    return new Array(state.foresight).fill(null).map(() => ({ kind: 'wait' } as PlannedAction));
+    return new Array(ctx.horizon).fill(null).map(() => ({ kind: 'wait' } as PlannedAction));
   }
 
   const root: AiSimNode = { pos: { ...enemy.pos }, cumDamage: 0, actions: [] };
@@ -1158,9 +1167,9 @@ function planEnemyGameTree(state: GridCombatState, enemy: GridCombatant): Planne
   // 예산 초과/실패 시 그리디 폴백(안전).
   if (!best || best.actions.length === 0) return greedyEnemyPlan(state, enemy);
 
-  // 시퀀스 길이를 foresight에 맞춤(부족분은 wait, 초과분은 자름).
-  const seq = best.actions.slice(0, state.foresight);
-  while (seq.length < state.foresight) seq.push({ kind: 'wait' });
+  // 시퀀스 길이를 horizon(1턴 행동 수)에 맞춤(부족분은 wait, 초과분은 자름).
+  const seq = best.actions.slice(0, ctx.horizon);
+  while (seq.length < ctx.horizon) seq.push({ kind: 'wait' });
   return seq;
 }
 
@@ -1170,7 +1179,7 @@ function planEnemyGameTree(state: GridCombatState, enemy: GridCombatant): Planne
  */
 function searchBestSequence(ctx: AiContext, node: AiSimNode, depth: number): AiSimNode | undefined {
   // 종료(깊이 도달) 또는 예산 소진 — 현재 노드를 잎으로.
-  if (depth >= ctx.state.foresight || ctx.budget <= 0) return node;
+  if (depth >= ctx.horizon || ctx.budget <= 0) return node;
 
   const candidates = enumerateStepActions(ctx, node.pos);
   if (candidates.length === 0) {
@@ -1305,21 +1314,72 @@ function recomputeAllEnemyPlans(state: GridCombatState): void {
 }
 
 // ============================================================================
-// 라운드 해소 — commitRound
+// 스피드 모델(US-001) — 플레이어 행동마다 적 템포 카운터, 도달 시 적 1턴
 // ============================================================================
 
-interface ScheduledAction {
-  actor: GridCombatant;
-  action: PlannedAction;
-  speed: CastSpeed;
-  isPlayer: boolean;
+/**
+ * 한 행동 직후 공통 정리 — 처치/동료사망복귀/보스페이즈/증원. 전투 종료면 true.
+ * (commitRound 루프가 플레이어 행동·적 턴 직후마다 호출.)
+ */
+function postActionCleanup(state: GridCombatState): boolean {
+  cleanupDead(state);
+  if (state.swap?.controlling && state.player.hp <= 0) revertSwap(state, true);
+  if (state.isBoss) checkBossPhase(state, currentBossDef(state));
+  handleWhenEmptySpawns(state);
+  return checkOutcome(state);
 }
 
 /**
- * 라운드 해소.
- * 스텝 0..foresight-1 각각에서 [플레이어 plan[step] + 각 적 intentQueue[step]]를
- * castSpeed순(동률 플레이어 우선)으로 인터리브 실행한다.
- * 매 동작마다 fx push. 스텝 종료 후 증원·처치 정리·승리 판정.
+ * 한 전투원(적/아군)의 *1턴* 수행 — intentQueue(actionsPerTurn 분량)를 순서대로 실행.
+ * 각 행동은 fxActionIndex 그룹으로 분리(순차 재생). 실행 후 의도 재계산.
+ */
+function takeCombatantTurn(state: GridCombatState, c: GridCombatant): void {
+  const turn = c.intentQueue ?? [];
+  for (const action of turn) {
+    if (state.outcome) break;
+    if (c.hp <= 0) break;
+    fxActionIndex += 1;
+    executeAction(state, c, action);
+    if (postActionCleanup(state)) return;
+  }
+  // 다음 턴 의도 재계산(위치/상태 변동 반영).
+  if (c.hp > 0) c.intentQueue = enemyPlan(state, c);
+}
+
+/**
+ * 플레이어 1행동 후 적 템포 진행 — 모든 살아 있는 적의 카운터 +1.
+ * counter >= effectiveTempo면 그 적 1턴(takeCombatantTurn) + counter -= effectiveTempo.
+ *  - slow-enemy(gridEnemySlow) 활성: 실효 템포 +1(덜 자주 행동).
+ *  - skip-enemy-action(gridEnemySkip): 발동될 턴을 1개 건너뜀(카운터는 소비).
+ * 전투 종료면 즉시 중단.
+ */
+function tickEnemyTempo(state: GridCombatState): void {
+  const slow = (state.gridEnemySlow ?? 0) > 0 ? 1 : 0;
+  for (const enemy of state.enemies) {
+    if (state.outcome) return;
+    if (enemy.hp <= 0) continue;
+    const tempo = Math.max(1, (enemy.tempo ?? DEFAULT_TEMPO) + slow);
+    enemy.tempoCounter = (enemy.tempoCounter ?? 0) + 1;
+    if (enemy.tempoCounter < tempo) continue;
+    enemy.tempoCounter -= tempo;
+    // 적 행동 박제 — 발동될 턴을 건너뛴다(카운터는 이미 소비).
+    if ((state.gridEnemySkip ?? 0) > 0) {
+      state.gridEnemySkip = (state.gridEnemySkip ?? 0) - 1;
+      continue;
+    }
+    takeCombatantTurn(state, enemy);
+  }
+}
+
+// ============================================================================
+// 라운드 해소 — commitRound
+// ============================================================================
+
+/**
+ * 라운드 해소 (스피드 모델 US-001).
+ * playerPlan을 *큐 순서대로* 실행. 각 플레이어 행동마다 모든 적 템포 카운터 +1 →
+ * counter>=tempo인 적이 1턴 수행(누적, 라운드 넘어감). 계획 후 아군 1턴씩.
+ * 매 동작마다 fx push(순차 재생). 동작마다 증원·처치 정리·승패 판정.
  * 라운드 종료: turn++, block 반감, 상태 감쇠, *마나만* 풀충전(손패는 유지), 적 의도 재계산, plan 비움.
  */
 export function commitRound(state: GridCombatState): void {
@@ -1328,86 +1388,28 @@ export function commitRound(state: GridCombatState): void {
   // 순차 재생용 행동 그룹 인덱스 리셋 — 이 라운드의 fx가 0번부터 그룹된다.
   fxActionIndex = 0;
 
-  for (let step = 0; step < state.foresight; step++) {
+  // 스피드 모델(US-001) — 플레이어 계획을 *큐 순서대로* 실행. 각 플레이어 행동마다 적 템포 카운터 +1,
+  //   도달한 적이 1턴 수행(누적). 구 foresight 스텝 인터리브/castSpeed 정렬은 폐지(플레이어가 순서 통제).
+  for (let i = 0; i < state.playerPlan.length; i++) {
     if (state.outcome) break;
-
-    const scheduled: ScheduledAction[] = [];
-
-    // 플레이어 행동(있으면).
-    const pAction = state.playerPlan[step];
-    if (pAction && state.player.hp > 0) {
-      scheduled.push({
-        actor: state.player,
-        action: pAction,
-        speed: actionSpeed(state, state.player, pAction),
-        isPlayer: true,
-      });
-    }
-
-    // 적 둔화(slow-enemy): 활성 중이면 *마지막 스텝*의 적 행동을 생략(효과상 적 행동 -1).
-    const slowSuppress = (state.gridEnemySlow ?? 0) > 0 && step === state.foresight - 1 && state.foresight > 1;
-
-    // 각 적 행동.
-    for (const enemy of state.enemies) {
-      if (enemy.hp <= 0) continue;
-      const eAction = enemy.intentQueue?.[step];
-      if (!eAction) continue;
-      if (slowSuppress) continue; // 둔화로 이 스텝 적 행동 생략.
-      // 적 행동 박제(skip-enemy-action): 공격/이동 행동을 1개 소비하며 건너뛴다(대기는 소비 안 함).
-      if ((state.gridEnemySkip ?? 0) > 0 && eAction.kind !== 'wait') {
-        state.gridEnemySkip = (state.gridEnemySkip ?? 0) - 1;
-        continue;
-      }
-      scheduled.push({
-        actor: enemy,
-        action: eAction,
-        speed: actionSpeed(state, enemy, eAction),
-        isPlayer: false,
-      });
-    }
-
-    // 각 아군(소환 토큰) 행동 — 적 추격·근접. 둔화/박제(적 전용)는 미적용.
-    for (const ally of state.allies ?? []) {
-      if (ally.hp <= 0) continue;
-      const aAction = ally.intentQueue?.[step];
-      if (!aAction) continue;
-      scheduled.push({
-        actor: ally,
-        action: aAction,
-        speed: actionSpeed(state, ally, aAction),
-        isPlayer: false,
-      });
-    }
-
-    // 정렬 — 카테고리(방어 0 → 공격·기타 1 → 이동 2) 우선, 그다음 castSpeed, 동률이면 플레이어 우선.
-    //   "방어 먼저, 이동 나중" 규칙(#5): 블록을 미리 쌓고, 위치 변동은 가장 마지막에 해소.
-    scheduled.sort((a, b) => {
-      const c = actionCategory(state, a) - actionCategory(state, b);
-      if (c !== 0) return c;
-      const d = SPEED_ORDER[a.speed] - SPEED_ORDER[b.speed];
-      if (d !== 0) return d;
-      if (a.isPlayer && !b.isPlayer) return -1;
-      if (!a.isPlayer && b.isPlayer) return 1;
-      return 0;
-    });
-
-    // 순차 실행 — 죽은 행위자는 건너뜀(실행 시점 재확인).
-    //   각 행동마다 fxActionIndex를 +1 해 fx가 *행동별 그룹*으로 나뉜다(뷰가 한 행동씩 순차 재생).
-    for (const s of scheduled) {
-      if (state.outcome) break;
-      if (s.actor.hp <= 0) continue;
+    const pAction = state.playerPlan[i];
+    if (state.player.hp > 0) {
       fxActionIndex += 1;
-      executeAction(state, s);
+      executeAction(state, state.player, pAction);
     }
+    if (postActionCleanup(state)) break;
+    // 적 템포 진행 — 이 플레이어 1행동만큼 카운터 증가, 도달한 적이 1턴.
+    tickEnemyTempo(state);
+    if (postActionCleanup(state)) break;
+  }
 
-    // 스텝 종료 — 처치 정리 + 증원(atTurn은 라운드 단위라 여기선 whenEmpty만).
-    cleanupDead(state);
-    // 동료 조종 중 동료(=state.player) 사망 → 즉시 복귀 + 마나 0(패널티). checkOutcome 전에 처리해 패배 오판 방지.
-    if (state.swap?.controlling && state.player.hp <= 0) revertSwap(state, true);
-    // 보스 페이즈 전환 — 이번 스텝 피해로 HP%가 임계를 넘으면 거동 교체 + 소환(즉시 반응).
-    if (state.isBoss) checkBossPhase(state, currentBossDef(state));
-    handleWhenEmptySpawns(state);
-    if (checkOutcome(state)) break;
+  // 플레이어 계획 후 아군(소환 토큰)이 각자 1턴(적 추격·근접). 아군은 템포와 무관(플레이어 측).
+  if (!state.outcome) {
+    for (const ally of state.allies ?? []) {
+      if (state.outcome) break;
+      if (ally.hp <= 0) continue;
+      takeCombatantTurn(state, ally);
+    }
   }
 
   // 전투 종료(승/패) — 라운드 종료 정리는 불필요하나, stale plan 재실행 방지로 계획만 비운다.
@@ -1494,47 +1496,8 @@ export function commitRound(state: GridCombatState): void {
   state.cardsPlayedThisTurn = 0;
 }
 
-/** 방어(블록 획득) 계열 카드 효과 kind 집합 — 방어 카테고리 분류용. */
-const DEFENSE_EFFECT_KINDS = new Set<string>([
-  'block', 'block-top-color', 'growing-block', 'double-block',
-]);
-
-/**
- * 행동 카테고리(해소 순서 우선) — 작을수록 먼저 해소.
- *   0 = 방어(블록 획득): 이동 액션은 아니되 블록 계열 카드.
- *   2 = 이동(move 액션).
- *   1 = 공격·기타(그 사이).
- * "방어 먼저, 이동 나중"(#5). 카드는 효과로, move/wait/item/attack은 kind로 분류.
- */
-function actionCategory(state: GridCombatState, s: ScheduledAction): number {
-  const action = s.action;
-  if (action.kind === 'move') return 2;
-  if (action.kind === 'card') {
-    const card = state.hand.find((c) => c.instanceId === action.cardInstanceId);
-    const isDefense = !!card && card.effects.some((e) => DEFENSE_EFFECT_KINDS.has(e.kind));
-    return isDefense ? 0 : 1;
-  }
-  // attack / item / wait — 그 사이(1). (적의 self 버프 공격도 1로 두어 기존 순서 보존.)
-  return 1;
-}
-
-/** 행동의 발동 속도. */
-function actionSpeed(state: GridCombatState, actor: GridCombatant, action: PlannedAction): CastSpeed {
-  if (action.kind === 'card') {
-    const card = state.hand.find((c) => c.instanceId === action.cardInstanceId);
-    return card?.castSpeed ?? 'normal';
-  }
-  if (action.kind === 'attack') {
-    const atk = actor.attacks?.[action.attackIdx];
-    return atk?.castSpeed ?? actor.speed ?? 'normal';
-  }
-  // 이동/아이템/대기 — 행위자 기본 속도.
-  return actor.speed ?? 'normal';
-}
-
-/** 한 예약 행동 실행. */
-function executeAction(state: GridCombatState, s: ScheduledAction): void {
-  const { actor, action } = s;
+/** 한 행동 실행(스피드 모델: 큐-순서 직접 실행, ScheduledAction 래퍼 제거). */
+function executeAction(state: GridCombatState, actor: GridCombatant, action: PlannedAction): void {
   switch (action.kind) {
     case 'move':
       execMove(state, actor, action.to);
@@ -2146,13 +2109,6 @@ function applyCardEffects(
         dashPlayer(state, Math.max(1, Math.floor(rawV) || 1), mode);
         break;
       }
-      case 'add-foresight': {
-        // 전투 중 foresight 변동(US-004) — value만큼 가감(1..MAX 클램프). 적/아군 의도 큐는
-        // 라운드 종료 recompute가 새 길이에 맞춘다(현재 라운드는 빈 스텝만 추가돼 무해).
-        const delta = Math.floor(rawV) || 1;
-        state.foresight = Math.max(1, Math.min(MAX_FORESIGHT, state.foresight + delta));
-        break;
-      }
       // === 샤유아 시그니처(C4) ===
       case 'summon-ally': {
         // 분열 소환 — 작은 아군 토큰 value마리(캡 MAX_ALLIES). params.hp/attack 옵션.
@@ -2427,7 +2383,6 @@ function summonAlly(state: GridCombatState, count: number, hp = 6, attack = 4): 
       maxHp: Math.max(1, hp),
       block: 0,
       statuses: {},
-      speed: 'normal',
       moveProfile: ALLY_MOVE_PROFILE,
       attack,
       name: '작은 슬라임',
@@ -2438,11 +2393,12 @@ function summonAlly(state: GridCombatState, count: number, hp = 6, attack = 4): 
   }
 }
 
-/** 아군 1마리의 foresight 스텝 계획 — 적 인접이면 근접 공격, 아니면 가장 가까운 적으로 접근. */
+/** 아군 1마리의 *1턴* 계획(actionsPerTurn, 기본 1) — 적 인접이면 근접 공격, 아니면 접근. */
 function planAlly(state: GridCombatState, ally: GridCombatant): PlannedAction[] {
   const out: PlannedAction[] = [];
   let simPos = { ...ally.pos };
-  for (let step = 0; step < state.foresight; step++) {
+  const horizon = enemyHorizon(ally);
+  for (let step = 0; step < horizon; step++) {
     const target = nearestEnemyTo(state, simPos);
     if (!target) { out.push({ kind: 'wait' }); continue; }
     if (manhattan(simPos, target.pos) <= 1) {
@@ -2568,9 +2524,7 @@ function beginCompanionControl(state: GridCombatState): void {
     hp: COMPANION_SWAP_HP,
     maxHp: COMPANION_SWAP_HP,
     block: 0,
-    statuses: {},
-    speed: 'normal',
-    moveProfile,
+    statuses: {},    moveProfile,
     name: npc.name ?? '동료',
   };
   state.player = companion;

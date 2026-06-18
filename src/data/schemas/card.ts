@@ -149,8 +149,7 @@ export type CardEffectKind =
   | 'move-self'           // move-rider(D2): 카드가 플레이어를 value칸 이동. params.mode='toward'|'away'(가장 가까운 적 기준, 기본 away). 격자 전투 전용.
   | 'summon-ally'         // 분열 소환(샤유아): 작은 아군 토큰 value마리 소환(params.hp/attack). 격자 전투 전용.
   | 'status-spread'       // 전파(샤유아): shape가 닿은 적의 디버프를 인접 적에 복사. 격자 전투 전용.
-  | 'chain-explosion'     // 연쇄 폭발(샤유아): 디버프 걸린 모든 적이 자신+인접에 value 피해. 격자 전투 전용.
-  | 'add-foresight';      // 전투 중 계획 시야(foresight) value만큼 변동(1~MAX 클램프). 격자 전투 전용.
+  | 'chain-explosion';    // 연쇄 폭발(샤유아): 디버프 걸린 모든 적이 자신+인접에 value 피해. 격자 전투 전용.
 
 /** 효과 대상 — target. */
 export type EffectTarget = 'self' | 'enemy' | 'all-enemies' | 'random-enemy';

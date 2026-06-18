@@ -90,7 +90,7 @@ trigger = manual
 effects = next-turn-energy:2:self
 cast_speed = fast
 target_mode = self
-flavor = "시간을 당겨 쓴다."
+flavor = "한 박, 세상이 뒤처진다."
 
 [card.c-wf-cuttime]
 name = 시간 끊기
@@ -101,7 +101,7 @@ trigger = manual
 effects = skip-enemy-action:1:self
 cast_speed = normal
 target_mode = self
-flavor = "한 수를 지운다."
+flavor = "닿을 자리가, 비어 있다."
 
 [card.c-wf-slow-cut]
 name = 느림 베기
@@ -125,18 +125,7 @@ trigger = manual
 effects = next-card-double:1:self
 cast_speed = fast
 target_mode = self
-flavor = "다음 한 수가 둘이 된다."
-
-[card.c-wf-foresight]
-name = 예지
-rank = rare
-source = race
-cost = 1
-trigger = manual
-effects = add-foresight:1:self
-cast_speed = normal
-target_mode = self
-flavor = "한 수 더 멀리 본다."
+flavor = "벤 자리에 잔상이 겹친다."
 
 [card.c-wf-timeedge]
 name = 시간의 칼날

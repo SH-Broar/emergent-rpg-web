@@ -20,7 +20,6 @@ card_drops =
 # 격자: 빠른 근접 추격형. 인접 4방향을 빠르게 이동하며 할퀴기.
 move_pattern = orthogonal1
 move_range = 1
-speed = fast
 grid_attack_1 = 할퀴기 | 0,-1 0,1 -1,0 1,0 | 1,1,1,1 | 7 | fast | true |
 
 [monster.mr-iluneon-trickster]
@@ -46,7 +45,6 @@ companion_skill_effects = damage:8:enemy, draw:1:self
 # 격자: 원거리 투척형. 1~2칸 거리 유지하며 다방향 공격. 보통 속도.
 move_pattern = orthogonal1
 move_range = 1
-speed = normal
 grid_attack_1 = 투척 | 0,-2 0,-1 -1,-1 1,-1 | 1,1,0.7,0.7 | 5 | normal | true |
 
 [monster.mr-iluneon-guild-rat]
@@ -143,7 +141,6 @@ card_drops =
 # 격자: 저속 탱커형. 제자리 방어 후 전방 강타. 느린 속도.
 move_pattern = orthogonal1
 move_range = 1
-speed = slow
 grid_attack_1 = 강타 | 0,-1 | 1 | 9 | slow | true |
 grid_attack_2 = 방어 자세 | 0,0 | 1 | 0 | slow | false | vulnerable:0
 
@@ -169,7 +166,6 @@ companion_skill_effects = apply-status:3:enemy:vulnerable, damage:10:enemy, draw
 # 격자: 원거리 광역 엘리트. 비숍 대각선 이동, 넓은 범위 공격. 보통 속도.
 move_pattern = bishop
 move_range = 2
-speed = normal
 grid_attack_1 = 시간 균열 | -1,-1 0,-1 1,-1 -1,0 1,0 | 0.7,1.0,0.7,0.5,0.5 | 11 | slow | true | vulnerable:2
 
 [monster.mr-iluneon-spirit-herald]
@@ -226,7 +222,6 @@ companion_skill_effects = damage:16:enemy
 # 격자: 빠른 근접 추격. 이동 1칸, 전방 할퀴기. 빠른 속도.
 move_pattern = orthogonal1
 move_range = 1
-speed = fast
 grid_attack_1 = 할퀴기 | 0,-1 -1,0 1,0 | 1,0.7,0.7 | 8 | fast | true |
 
 [monster.mr-lar-forest-thornbird]
@@ -252,7 +247,6 @@ companion_skill_effects = block:8, apply-status:3:self:thorns
 # 격자: 원거리 다방향. 나이트 이동(점프), 상하좌우 2칸 광역 사격. 보통 속도.
 move_pattern = knight
 move_range = 2
-speed = normal
 grid_attack_1 = 가시 사격 | 0,-2 -1,-1 1,-1 -2,0 2,0 | 1,0.7,0.7,0.6,0.6 | 5 | normal | true |
 
 [monster.mr-lar-forest-spiderling]
@@ -290,7 +284,6 @@ card_drops =
 # 격자: 저속 탱커. 느리게 이동하며 전방 강타+방어 교대.
 move_pattern = orthogonal1
 move_range = 1
-speed = slow
 grid_attack_1 = 강타 | 0,-1 | 1 | 7 | slow | true |
 
 [monster.mr-lar-forest-ember-sala]
@@ -320,7 +313,6 @@ card_drops =
 # 격자: 독 원거리형. 이동 느림, 2칸 거리에서 독 포자 살포. 느린 속도.
 move_pattern = orthogonal1
 move_range = 1
-speed = slow
 grid_attack_1 = 독 포자 | 0,-2 -1,-1 0,-1 1,-1 | 0.8,0.6,1.0,0.6 | 5 | slow | true | poison:2
 
 [monster.mr-lar-forest-boar]
@@ -364,7 +356,6 @@ card_drops =
 # 격자: 엘리트 거미 여왕. 비숍 대각 이동, 거미줄(전방 넓은 부채) + 독 물기(근접).
 move_pattern = bishop
 move_range = 2
-speed = normal
 grid_attack_1 = 거미줄 | -2,-2 -1,-2 0,-2 1,-2 2,-2 -1,-1 0,-1 1,-1 | 0.5,0.7,1.0,0.7,0.5,0.6,0.8,0.6 | 6 | slow | false | frail:2
 grid_attack_2 = 독 물기 | 0,-1 -1,0 1,0 | 1,0.7,0.7 | 12 | normal | true | poison:3
 
