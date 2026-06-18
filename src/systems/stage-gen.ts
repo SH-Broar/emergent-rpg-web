@@ -165,15 +165,16 @@ function tierParams(tier: number): TierParams {
   const t = Math.max(1, Math.min(4, tier || 1));
   // 장애물(wall)은 넉넉히(사용자: "장애물 많이") — 연결성은 ensureConnectivity가 보정.
   switch (t) {
+    // 적 수 하향(#10, 2026-06-19) — HP40 인간이 2~3마리 동시에 너무 버거움. 초반 위주로 마릿수↓.
     case 1:
       return { enemyCount: 2, foresight: 2, wallChance: 0.14, reinforceTurn: 0, emptySpawns: 0 };
     case 2:
-      return { enemyCount: 3, foresight: 2, wallChance: 0.16, reinforceTurn: 0, emptySpawns: 0 };
+      return { enemyCount: 2, foresight: 2, wallChance: 0.16, reinforceTurn: 0, emptySpawns: 0 };
     case 3:
       return { enemyCount: 3, foresight: 3, wallChance: 0.20, reinforceTurn: 3, emptySpawns: 0 };
     case 4:
     default:
-      return { enemyCount: 4, foresight: 4, wallChance: 0.22, reinforceTurn: 3, emptySpawns: 1 };
+      return { enemyCount: 3, foresight: 4, wallChance: 0.22, reinforceTurn: 3, emptySpawns: 1 };
   }
 }
 

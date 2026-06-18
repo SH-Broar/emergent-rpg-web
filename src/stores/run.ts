@@ -27,7 +27,7 @@ import { gridRelicCombatEnd } from '@/systems/grid-relic';
 import { applyStartChaos, nodeHpLoss } from '@/systems/chaos';
 import { XP_PER_LEVEL, canEnhance, needsAwakening } from '@/systems/enhance';
 import { generateStage, pickEnemyIds, buildEncounterStage } from '@/systems/stage-gen';
-import { startGridCombat, startGridBossCombat, commitRound as commitGridRoundEngine } from '@/systems/grid-combat';
+import { startGridCombat, startGridBossCombat, commitRound as commitGridRoundEngine, playInstantCard as playInstantCardEngine } from '@/systems/grid-combat';
 import { applyCombatVictoryReward } from '@/systems/combat-rewards';
 import { applyBossRewards, applyArcRewards } from '@/systems/boss-rewards';
 import { rewardGold, rewardShards } from '@/systems/reward-feed';
@@ -1035,6 +1035,16 @@ export const useRunStore = defineStore('run', {
     },
 
     /**
+     * 즉시 카드 발동(2026-06-19, #7) — 계획·적 템포를 거치지 않고 손패에서 바로 효과 적용.
+     * 드로우/유틸 카드용(뽑은 카드를 이번 턴에 바로 쓰게). 반환: 끝났으면 outcome, 아니면 undefined.
+     */
+    playInstantGridCard(cardInstanceId: string): 'win' | 'lose' | undefined {
+      const gc = this.data.gridCombat;
+      if (!gc) return undefined;
+      return playInstantCardEngine(gc, cardInstanceId);
+    },
+
+    /**
      * 격자 전투 종료 처리.
      *  - 'win'  : 전투 HP를 런 HP로 라이트백 + 권역 보상(applyCombatVictoryReward) + 클리어 마킹
      *             + on-combat-end 유물. run.gridCombat 정리.
@@ -1053,6 +1063,12 @@ export const useRunStore = defineStore('run', {
       // 전투 HP를 런 HP로 라이트백(구 clearCombat 패턴).
       if (gc) {
         r.hp = Math.max(0, Math.min(r.maxHp, gc.player.hp));
+        // 강 상태이상 잔존 라이트백 — 정화하지 못한 혼란(possession)·심수화(feral-heavy)는 런에 남는다.
+        //   (combat.ts clearCombat 동일. 다음 전투 시작 시 carriedRunStatuses로 다시 시드된다.)
+        const poss = gc.player.statuses?.possession ?? 0;
+        r.possessed = poss > 0 ? poss : 0;
+        const fh = gc.player.statuses?.['feral-heavy'] ?? 0;
+        r.feralHeavy = fh > 0 ? fh : 0;
       }
 
       // === 보스 승리(#4) — boss-rewards 경로로 분기(일반 권역 보상 아님). ===

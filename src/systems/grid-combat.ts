@@ -604,6 +604,67 @@ export function clearPlayerPlan(state: GridCombatState): void {
   state.playerPlan = [];
 }
 
+/** 계획에서 i번째 행동 1개 제거(줄별 취소, 2026-06-19). 성공 시 true. */
+export function dequeuePlayerAction(state: GridCombatState, index: number): boolean {
+  if (index < 0 || index >= state.playerPlan.length) return false;
+  state.playerPlan.splice(index, 1);
+  return true;
+}
+
+/**
+ * 즉시 발동 카드인가(2026-06-19) — instant 플래그 + 조준/투척이 아닌 카드.
+ * 즉시 카드는 손에서 누르는 즉시 *현재 위치* 고정 shape로 발동되고 적 템포를 진행시키지 않는다.
+ */
+export function isInstantCard(card: Card | undefined): boolean {
+  return !!card && card.instant === true && card.targetMode !== 'aimed' && card.targetMode !== 'throw';
+}
+
+/**
+ * 즉시 카드 발동(2026-06-19) — 계획·적 템포를 거치지 않고 바로 효과를 적용한다.
+ * 마나 차감·효과·카드 이동(버림/소멸)·유물 트리거는 execCard와 동일하되 적은 행동하지 않는다.
+ * 드로우 카드를 즉시로 두면 뽑은 카드를 *이번 턴*에 바로 쓸 수 있다.
+ * 반환: 이 발동으로 전투가 끝났으면 outcome('win'/'lose'), 아니면 undefined.
+ */
+export function playInstantCard(state: GridCombatState, cardInstanceId: string): 'win' | 'lose' | undefined {
+  if (state.outcome) return state.outcome;
+  const card = state.hand.find((c) => c.instanceId === cardInstanceId);
+  if (!card || !isInstantCard(card) || card.unplayable) return undefined;
+  if (!canPlayCard(state, card)) return undefined;
+  // 이 즉시 발동의 fx를 한 그룹(1번)으로 — 뷰가 짧게 순차 재생.
+  fxActionIndex = 1;
+  const targetTiles = previewCardTiles(state, card); // 현재 위치 고정 shape(조준 없음).
+  execCard(state, cardInstanceId, targetTiles, undefined);
+  postActionCleanup(state);
+  return state.outcome;
+}
+
+/**
+ * move-self(대시) 카드의 이동 목적지 미리보기(2026-06-19) — dashPlayer와 동일 경로를 *불변*으로 계산.
+ * 가장 가까운 적 기준 toward/away로 tiles칸. 못 움직이면 null. UI 잔상(목적지) 표시용.
+ */
+export function previewDashTarget(state: GridCombatState, card: Card): GridPos | null {
+  const eff = card.effects.find((e) => e.kind === 'move-self');
+  if (!eff) return null;
+  const tiles = Math.max(1, Math.floor(eff.value ?? 0) || 1);
+  const mode = eff.params?.mode === 'toward' ? 'toward' : 'away';
+  const enemy = nearestEnemy(state);
+  if (!enemy) return null;
+  const from = { ...state.player.pos };
+  let cur = { ...from };
+  for (let i = 0; i < tiles; i++) {
+    const dx = enemy.pos.x - cur.x;
+    const dy = enemy.pos.y - cur.y;
+    let sx = 0, sy = 0;
+    if (Math.abs(dx) >= Math.abs(dy)) sx = Math.sign(dx); else sy = Math.sign(dy);
+    if (mode === 'away') { sx = -sx; sy = -sy; }
+    if (sx === 0 && sy === 0) break;
+    const next = { x: cur.x + sx, y: cur.y + sy };
+    if (!tileWalkable(state.stage, next)) break;
+    cur = next;
+  }
+  return samePos(cur, from) ? null : cur;
+}
+
 // ============================================================================
 // 컬러 보너스 (구 combat.ts 패턴 이식 — 색→ATK/DEF 가법 보정)
 // ============================================================================
@@ -635,7 +696,53 @@ function relicHandManaExtras(loadout: Relic[]): { draw: number; mana: number } {
 
 // 라운드마다 -1 감쇠되는 *일시* 상태. strength·파워(metallicize 등)는 STS 관례대로 *영구*(감쇠 제외).
 // ghost(유령화)는 양날 상태로 라운드 감쇠.
-const DECAYING_STATUSES = new Set<string>(['weakness', 'vulnerable', 'frail', 'ghost', 'anchored', 'slowed', 'airborne']);
+//
+// 구 combat.ts와 일치(DECAYING_DEBUFFS + 일부 버프):
+//   - 디버프: weakness/vulnerable/frail/anchored/slowed/airborne/brainwash/sap/regress/feral/sleep.
+//   - 버프  : focus/haste (라운드 중 사용된 뒤 라운드 끝에 -1 — execWait/카드 적용이 모두 라운드 끝 *전*이라 off-by-one 없음).
+// 감쇠 제외(자기관리/영구):
+//   - poison/burn/regen  : 라운드 끝 DoT 틱에서 스스로 감쇠(poison -1, burn /2, regen -1).
+//   - slime/spasm        : refillManaPerRound에서 마나를 깎은 *뒤* 스스로 -1(마나 리필이 감쇠 루프 뒤라 inline 처리).
+//   - possession/imprint : 영구(비감쇠). possession은 매 라운드 HP 잠식, imprint는 5↑이면 possession으로 전이.
+//   - metallicize/barricade/feelNoPain/rupture/juggernaut/feral-heavy : 전투 휘발 파워/잔존(감쇠 안 함).
+const DECAYING_STATUSES = new Set<string>([
+  'weakness', 'vulnerable', 'frail', 'ghost', 'anchored', 'slowed', 'airborne',
+  'brainwash', 'sap', 'regress', 'feral', 'sleep', 'focus', 'haste',
+]);
+
+/**
+ * 전투원이 수화(feral)/심수화(feral-heavy)인가 — 둘 다 공격 ×2 + 방어 0(combat.ts playerWild 동일).
+ * 격자는 플레이어 외 전투원도 가질 수 있어 statuses 직접 인자.
+ */
+function isWild(statuses: Record<string, number> | undefined): boolean {
+  return (statuses?.['feral'] ?? 0) > 0 || (statuses?.['feral-heavy'] ?? 0) > 0;
+}
+/** 심수화(feral-heavy)면 회복 전면 차단(combat.ts healBlocked 동일). 일반 수화는 회복 가능. */
+function isHealBlocked(statuses: Record<string, number> | undefined): boolean {
+  return (statuses?.['feral-heavy'] ?? 0) > 0;
+}
+/**
+ * 주는 피해의 *플랫* 보정(strength 외) — combat.ts statusBonusForCardEffectKind('damage')와 동일:
+ *   +focus(집중) − sap(잠식). strength는 호출처에서 별도 가산(dealToShape/execAttack)이라 제외.
+ */
+function damageFlatBonus(statuses: Record<string, number> | undefined): number {
+  return (statuses?.['focus'] ?? 0) - (statuses?.['sap'] ?? 0);
+}
+/**
+ * 방어의 *플랫* 보정(dexterity 외) — combat.ts statusBonusForCardEffectKind('block')와 동일:
+ *   − frail(취약) − sap(잠식). dexterity는 호출처에서 별도 가산이라 제외. 최종 음수 방지는 호출처 clamp.
+ */
+function blockFlatBonus(statuses: Record<string, number> | undefined): number {
+  return -(statuses?.['frail'] ?? 0) - (statuses?.['sap'] ?? 0);
+}
+
+// 격자에 *이식하지 않은* 상태(구조적 부적합 — 부여돼도 안전 무시, crash 없음):
+//   - paralyze(마비)  : 플레이어 "한 라운드 통째 스킵"이 격자 행동 큐 모델과 맞지 않아 생략(드물게 적 부여).
+//   - thorns(반격)    : applyDamage가 공격자 *엔티티*를 모르고 statuses만 받아, 반격 피해를 정확한 공격자에게
+//                       귀속시킬 수 없어 생략. (juggernaut/rupture는 플레이어 self라 이식됨.)
+//   - ward(방어 이월) : barricade(불굴, 이미 동작)와 기능 중복이라 별도 이식 생략.
+//   - resolve(경감)   : 격자 적 디버프 부여가 applyStatusToken 단순 경로라 "받는 디버프 -1" 삽입점이 없어 생략.
+// 나머지(poison/burn/frail/sap/brainwash/imprint/possession/sleep/slime/spasm/regen/haste/focus/feral/feral-heavy/regress)는 동작한다.
 
 /** 샤유아 전파/연쇄 대상 디버프 키(status-spread·chain-explosion). */
 const SPREADABLE_DEBUFFS = ['vulnerable', 'weakness', 'frail', 'poison', 'burn', 'regress'] as const;
@@ -646,10 +753,19 @@ function damageMultipliers(
   target: Record<string, number> | undefined,
 ): number {
   let r = Math.max(0, v);
+  // 배수 순서는 구 combat.ts applyDamageMultipliers와 1:1 동일하게 유지:
+  //   weakness×0.75 → brainwash×0.66 → imprint×0.85 → possession×0.5 → ghost(공격자)×0.5
+  //   → vulnerable(대상)×1.5 → ghost(대상)×0.5. 각 단계 Math.floor.
   if ((attacker?.weakness ?? 0) > 0) r = Math.floor(r * 0.75);
-  if ((target?.vulnerable ?? 0) > 0) r = Math.floor(r * 1.5);
+  // 세뇌(brainwash): 홀려서 손이 무뎌진다 — 공격자가 주는 피해 ×0.66.
+  if ((attacker?.brainwash ?? 0) > 0) r = Math.floor(r * 0.66);
+  // 각인(imprint): 새겨진 표식이 힘을 빼앗는다 — 공격자가 주는 피해 ×0.85(빙의 전조).
+  if ((attacker?.imprint ?? 0) > 0) r = Math.floor(r * 0.85);
+  // 혼란(possession): 몸을 절반쯤 빼앗긴다 — 공격자가 주는 피해 ×0.5(강력, 비감쇠).
+  if ((attacker?.possession ?? 0) > 0) r = Math.floor(r * 0.5);
   // 유령화(ghost): 공격자가 유령화면 주는 피해 ×0.5, 대상이 유령화면 받는 피해 ×0.5(양날).
   if ((attacker?.ghost ?? 0) > 0) r = Math.floor(r * 0.5);
+  if ((target?.vulnerable ?? 0) > 0) r = Math.floor(r * 1.5);
   if ((target?.ghost ?? 0) > 0) r = Math.floor(r * 0.5);
   return r;
 }
@@ -679,6 +795,8 @@ function applyDamage(
   if (absorbed > 0) pushFx(state, { kind: 'block-absorb', actorId: target.id, amount: absorbed });
   if (hpLoss > 0) {
     pushFx(state, { kind: 'hit', actorId: target.id, amount: hpLoss });
+    // 수면(sleep): 실제로 HP를 깎는 피해를 받으면 즉시 깬다(combat.ts 동일 규칙). 적/플레이어 공통.
+    if ((target.statuses['sleep'] ?? 0) > 0) delete target.statuses['sleep'];
     // 플레이어가 *실제로* hp를 잃으면 런 누적 피해 기록(c-tripps-rage 등 동적 cost 연동) + 피격 반응 유물.
     if (target.team === 'player') {
       try {
@@ -712,6 +830,79 @@ function decayStatuses(c: GridCombatant): void {
     if (stack <= 0) continue;
     if (stack - 1 <= 0) delete c.statuses[key];
     else c.statuses[key] = stack - 1;
+  }
+}
+
+/**
+ * 라운드 종료 *지속 상태 틱* — 모든 살아 있는 전투원(플레이어/적/아군)에 일관 적용.
+ * 구 combat.ts tickPoison/tickBurn/tickRegen + possession 잠식 + imprint→possession 전이를 이식.
+ *
+ *  - poison : 스택만큼 *직접 HP*(block·배수 무시) → 스택 -1. (combat.ts tickPoison)
+ *  - burn   : 스택만큼 직접 HP → 스택 = floor(스택/2), 1 미만이면 제거. (combat.ts tickBurn)
+ *  - regen  : 스택만큼 회복(maxHp clamp) → 스택 -1. 심수화(feral-heavy)면 회복 차단(스택은 감쇠). (combat.ts tickRegen)
+ *  - imprint: 5 이상이면 5 소비 + possession +1(전이). (combat.ts applyPlayerStatusTurnStart)
+ *  - possession: 매 라운드 시작 HP 잠식 min(6, 1+스택), 최소 HP 1. 감쇠 안 함(영구). (combat.ts)
+ *
+ * 각 변화는 pushFx(hit/heal)로 남겨 애니가 보이게 한다(actorId 기준). 이 DoT로 죽으면 death fx는 직접 hp 차감이라
+ * 여기서 직접 남긴다(applyDamage를 안 거치므로). 처치/승패 정리는 호출처(commitRound)가 postActionCleanup으로.
+ * fxActionIndex는 호출 직전에 그룹을 따로 떼어 두면 순차 재생이 더 깔끔.
+ */
+function tickRoundStatuses(state: GridCombatState): void {
+  for (const c of aliveCombatants(state)) {
+    const s = c.statuses;
+
+    // imprint(각인) → possession(혼란) 전이 — HP 잠식 *전에* 처리(전이분도 이번 라운드부터 잠식).
+    const imp = s['imprint'] ?? 0;
+    if (imp >= 5) {
+      const left = imp - 5;
+      if (left <= 0) delete s['imprint'];
+      else s['imprint'] = left;
+      s['possession'] = (s['possession'] ?? 0) + 1;
+      if (c.team === 'player') pushLog(state, '각인이 깊어져 혼란으로 번졌다');
+    }
+
+    // possession(혼란) — 매 라운드 HP 잠식(스택 비례, 캡 6, 최소 HP 1). 비감쇠.
+    const poss = s['possession'] ?? 0;
+    if (poss > 0 && c.hp > 0) {
+      const drain = Math.min(6, 1 + poss);
+      const before = c.hp;
+      c.hp = Math.max(1, c.hp - drain);
+      const lost = before - c.hp;
+      if (lost > 0) pushFx(state, { kind: 'hit', actorId: c.id, amount: lost });
+    }
+
+    // poison(중독) — 직접 HP 피해(block·배수 무시) 후 스택 -1.
+    const poison = s['poison'] ?? 0;
+    if (poison > 0 && c.hp > 0) {
+      const before = c.hp;
+      c.hp = Math.max(0, c.hp - poison);
+      if (before - c.hp > 0) pushFx(state, { kind: 'hit', actorId: c.id, amount: before - c.hp });
+      if (poison - 1 <= 0) delete s['poison']; else s['poison'] = poison - 1;
+    }
+
+    // burn(화상) — 직접 HP 피해 후 스택 절반(1 미만 소멸).
+    const burn = s['burn'] ?? 0;
+    if (burn > 0 && c.hp > 0) {
+      const before = c.hp;
+      c.hp = Math.max(0, c.hp - burn);
+      if (before - c.hp > 0) pushFx(state, { kind: 'hit', actorId: c.id, amount: before - c.hp });
+      const next = Math.floor(burn / 2);
+      if (next < 1) delete s['burn']; else s['burn'] = next;
+    }
+
+    // regen(재생) — 스택만큼 회복 후 -1. 심수화면 회복 차단(스택은 감쇠).
+    const regen = s['regen'] ?? 0;
+    if (regen > 0) {
+      if (c.hp > 0 && !isHealBlocked(s)) {
+        const before = c.hp;
+        c.hp = Math.min(c.maxHp, c.hp + regen);
+        if (c.hp - before > 0) pushFx(state, { kind: 'heal', actorId: c.id, amount: c.hp - before });
+      }
+      if (regen - 1 <= 0) delete s['regen']; else s['regen'] = regen - 1;
+    }
+
+    // DoT/잠식으로 죽는 전이 순간 death fx(직접 hp 차감이라 applyDamage 경로를 안 탐).
+    if (c.hp <= 0) pushFx(state, { kind: 'death', actorId: c.id });
   }
 }
 
@@ -771,7 +962,8 @@ export function startGridCombat(
     hp: run.hp,
     maxHp: run.maxHp,
     block: 0,
-    statuses: {},    moveProfile,
+    statuses: carriedRunStatuses(run), // 런 잔존 혼란(possession)·심수화(feral-heavy)를 안고 시작.
+    moveProfile,
   };
 
   // 적 전투원 — enemyStarts와 인덱스 정렬. 위치 미지정분은 빈 칸 폴백.
@@ -808,6 +1000,19 @@ export function startGridCombat(
   // 적 초기 의도 큐 계산(foresight 만큼 예측 — 전투 시작 유물 적용 후 위치/상태 반영).
   recomputeAllEnemyPlans(state);
   return state;
+}
+
+/**
+ * 런에 잔존하는 강 상태이상을 전투 시작 시 플레이어가 안고 들어가는 statuses로 — combat.ts startCombat(line ~529) 동일.
+ *   - possession(혼란): run.possessed > 0 이면 시드(정화/하루 경과 전까지 전투마다 안고 시작).
+ *   - feral-heavy(심수화): run.feralHeavy > 0 이면 시드(마을/휴식 전까지 유지).
+ * 전투 종료 시 run.ts endGridCombat이 이 두 값을 player.statuses에서 런으로 라이트백한다(잔존).
+ */
+function carriedRunStatuses(run: RunState): Record<string, number> {
+  const carried: Record<string, number> = {};
+  if ((run.possessed ?? 0) > 0) carried['possession'] = run.possessed as number;
+  if ((run.feralHeavy ?? 0) > 0) carried['feral-heavy'] = run.feralHeavy as number;
+  return carried;
 }
 
 /** 종족(raceId)의 격자 이동 프로필 — 미정의/조회 실패 시 undefined(인간 룩 폴백). */
@@ -970,7 +1175,8 @@ export function startGridBossCombat(
     hp: run.hp,
     maxHp: run.maxHp,
     block: 0,
-    statuses: {},    moveProfile,
+    statuses: carriedRunStatuses(run), // 런 잔존 혼란(possession)·심수화(feral-heavy)를 안고 시작.
+    moveProfile,
   };
 
   // 보스 배치 — enemyStarts[0](우상단). 없으면 빈 칸 폴백.
@@ -1542,14 +1748,20 @@ export function commitRound(state: GridCombatState): void {
       executeAction(state, state.player, pAction);
     }
     if (postActionCleanup(state)) break;
-    // 적 템포 진행 — 행동당 카운터 증가. *대기는 2턴 소모*(사용자 규칙), 그 외 1.
-    const ticks = pAction.kind === 'wait' ? 2 : 1;
-    let broke = false;
-    for (let k = 0; k < ticks; k++) {
+    // 적 템포 진행 — 행동당 카운터 +1(2026-06-19: 대기 직접 선택 폐지 → 행동당 일괄 1).
+    tickEnemyTempo(state);
+    if (postActionCleanup(state)) break;
+  }
+
+  // 턴 종료 자동 대기(2026-06-19, #4) — 플레이어가 직접 고르지 않고 *항상 턴 끝에 1회* 붙는다.
+  //   손패를 보충(드로우)하고 적 템포를 1만 진행시킨다(대기는 1턴). 빈 계획으로 커밋해도(턴 넘김) 발동.
+  if (!state.outcome && state.player.hp > 0) {
+    fxActionIndex += 1;
+    execWait(state);
+    if (!postActionCleanup(state)) {
       tickEnemyTempo(state);
-      if (postActionCleanup(state)) { broke = true; break; }
+      postActionCleanup(state);
     }
-    if (broke) break;
   }
 
   // 플레이어 계획 후 아군(소환 토큰)이 각자 1턴(적 추격·근접). 아군은 템포와 무관(플레이어 측).
@@ -1587,6 +1799,18 @@ export function commitRound(state: GridCombatState): void {
   {
     const metal = state.player.statuses['metallicize'] ?? 0;
     if (metal > 0) gainPlayerBlock(state, metal);
+  }
+
+  // 지속 상태 틱(poison/burn/regen + possession 잠식 + imprint→possession) — 모든 살아 있는 전투원.
+  //   *감쇠 전*에 적용해 poison:3 → 3 피해 후 2가 되도록(틱 안에서 자기 감쇠). 별도 fx 그룹으로 순차 재생.
+  fxActionIndex += 1;
+  tickRoundStatuses(state);
+  if (postActionCleanup(state)) {
+    // DoT로 승패가 갈리면 위 outcome 블록과 동일하게 정리(동료 조종 복귀 + plan 비움).
+    if (state.swap?.controlling) revertSwap(state, false);
+    else state.swap = undefined;
+    state.playerPlan = [];
+    return;
   }
 
   // 모든 전투원 block 반감(D6) + 상태 감쇠. barricade(불굴)면 플레이어 block 반감 면제.
@@ -1684,7 +1908,14 @@ function executeAction(state: GridCombatState, actor: GridCombatant, action: Pla
  * 이미 목표 이상이면 드로우 없음(대기는 한 스텝 소비로 의미). drawIntoHand가 더미 고갈/재셔플 처리.
  */
 function execWait(state: GridCombatState): void {
-  const need = targetHandSize(state) - state.hand.length;
+  // 수면(sleep)/가속(haste)이 *이번 보충 드로우 수*를 조절(combat.ts drawNewHand 동일):
+  //   - sleep: 보충 목표 −스택(최소 0). 매 라운드 1 감쇠(decayStatuses).
+  //   - haste: 보충 목표 +1(켜져 있으면, 스택 수 무관). 매 라운드 1 감쇠.
+  const s = state.player.statuses;
+  const sleepDraw = s['sleep'] ?? 0;
+  const hasteDraw = (s['haste'] ?? 0) > 0 ? 1 : 0;
+  const target = Math.max(0, targetHandSize(state) - sleepDraw + hasteDraw);
+  const need = target - state.hand.length;
   if (need > 0) {
     const before = state.hand.length;
     drawIntoHand(state, need);
@@ -1954,9 +2185,17 @@ function applyCardEffects(
   doubled = false,
   aimOffset?: GridOffset,
 ): void {
-  const bonus = currentBonuses();
   const playerStatuses = state.player.statuses;
+  // 퇴행(regress): 컬러 보너스(ATK/DEF) 전부 무효 — combat.ts playerBonuses 동일. 컬러 *직접* 피해
+  //   (damage-top-color 등)는 컬러값 자체라 영향 없음(아래 색피해 case는 bonus를 안 씀).
+  const regress = (playerStatuses['regress'] ?? 0) > 0;
+  const rawBonus = currentBonuses();
+  const bonus = regress
+    ? { ...rawBonus, damage: 0, block: 0 }
+    : rawBonus;
   const strength = playerStatuses.strength ?? 0;
+  const wild = isWild(playerStatuses);               // 수화/심수화: 카드 base 피해 ×2 + 방어 0.
+  const dmgFlat = damageFlatBonus(playerStatuses);   // +focus − sap (strength 별도).
   const relicBlockAdd = gridBlockAdd(state); // 유물 방어 보너스(block-out-add) — block 계열 카드에 가산.
 
   // 실행 시점 *현재 위치* 기준 shape로 대상 재계산(텔레그래프 stale 방지) — perTileMul을 shape 인덱스에 정렬.
@@ -1988,20 +2227,38 @@ function applyCardEffects(
   }
 
   /**
-   * shape 칸 위 각 적에게 base 피해를 perTileMul로 분배(strength/weakness/vulnerable 통합).
-   * 유물 damage-out-add/mul(applyDamageRelicMods)을 strength·색보너스 포함한 base에 적용 —
-   * 구 combat.ts applyModifiers와 동일 위치(perTileMul 분배 *전*).
+   * shape 칸 위 각 적에게 base 피해를 perTileMul로 분배(strength/focus/sap/feral/weakness/vulnerable 통합).
+   *
+   * addStrength=true(일반 공격): 구 combat.ts `damage` 핸들러와 동일 합성 —
+   *   base(카드값) → feral ×2 → + 색보너스(bonus.damage, regress면 0) + strength + focus − sap
+   *   → 유물 damage-out-add/mul(applyDamageRelicMods) → perTileMul 분배 → applyDamage(배수).
+   *   ※ 호출처는 *색보너스를 더하지 않은* 카드값만 넘긴다(색은 여기서 wild ×2 *뒤* 가산 — combat.ts와 동일).
+   * addStrength=false(순수 스케일: damage-min-color/block-to-damage 등): 보정 없이 그 값 그대로(combat.ts pure-value 경로).
    */
   const dealToShape = (base: number, addStrength = true): void => {
-    if (base <= 0) return;
-    const withStr = addStrength ? base + strength : base;
-    const v = applyDamageRelicMods(state, withStr); // 유물 주는 피해 보정.
+    let v: number;
+    if (addStrength) {
+      const wb = wild ? base * 2 : base;                 // 수화: 카드 base만 ×2(색/힘 가산 전).
+      const composed = wb + bonus.damage + strength + dmgFlat; // 색(regress 0) + 힘 + focus − sap.
+      v = applyDamageRelicMods(state, Math.max(0, composed));  // 유물 주는 피해 보정.
+    } else {
+      if (base <= 0) return;
+      v = base;                                          // 순수 스케일 — 추가 보정 없음.
+    }
+    if (v <= 0) return;
     for (const { target, mul } of shapeHits) {
       applyDamage(state, target, Math.floor(v * mul), playerStatuses);
     }
   };
-  /** 플레이어 방어 획득(juggernaut 경유). */
-  const gainBlock = (v: number): void => { if (v > 0) gainPlayerBlock(state, v); };
+  /** 플레이어 방어 획득(juggernaut 경유). 수화(feral/feral-heavy)면 방어 0(combat.ts block 핸들러 동일). */
+  const gainBlock = (v: number): void => { if (!wild && v > 0) gainPlayerBlock(state, v); };
+  /**
+   * 방어 카드값 합성 — combat.ts block 핸들러와 동일:
+   *   카드값 + 색보너스(bonus.block, regress 0) + 유물 block-out-add + dexterity − frail − sap, 최소 0.
+   *   (수화 차단은 gainBlock에서 처리하므로 여기선 수치만.)
+   */
+  const blockValue = (cardVal: number): number =>
+    Math.max(0, cardVal + bonus.block + relicBlockAdd + (playerStatuses['dexterity'] ?? 0) + blockFlatBonus(playerStatuses));
   /** 카드 자해 — rupture(각혈) 발동: 카드로 HP를 잃으면 strength += rupture. */
   const loseHpFromCard = (lost: number): void => {
     if (lost <= 0) return;
@@ -2016,12 +2273,14 @@ function applyCardEffects(
     switch (eff.kind) {
       // === 기본 5종 ===
       case 'damage': {
-        dealToShape(Math.floor(v) + bonus.damage);
+        dealToShape(Math.floor(v)); // 색/힘/focus/sap/feral은 dealToShape 내부에서 합성.
         break;
       }
       case 'heal': {
         const hv = Math.floor(v);
         if (hv > 0) {
+          // 심수화(feral-heavy): 회복 전면 차단(combat.ts healBlocked). 일반 수화는 회복 가능.
+          if (isHealBlocked(playerStatuses)) break;
           state.player.hp = Math.min(state.player.maxHp, state.player.hp + hv);
           pushFx(state, { kind: 'heal', actorId: state.player.id, amount: hv });
         } else if (hv < 0) {
@@ -2030,7 +2289,7 @@ function applyCardEffects(
         break;
       }
       case 'block': {
-        gainBlock(Math.max(0, Math.floor(v) + bonus.block + relicBlockAdd + (playerStatuses.dexterity ?? 0)));
+        gainBlock(blockValue(Math.floor(v))); // 색/민첩/유물/−frail/−sap 합성, 수화면 gainBlock이 0 처리.
         break;
       }
       case 'draw': {
@@ -2076,7 +2335,7 @@ function applyCardEffects(
 
       // === 스케일링 피해 ===
       case 'damage-per-hand': {
-        dealToShape(Math.floor(rawV) * state.hand.length + bonus.damage);
+        dealToShape(Math.floor(rawV) * state.hand.length); // 색/힘/focus/sap/feral은 dealToShape 내부.
         break;
       }
       case 'damage-per-confine': {
@@ -2091,15 +2350,17 @@ function applyCardEffects(
       case 'damage-low-hand': {
         const threshold = Number(eff.params?.threshold ?? 2);
         const mult = state.hand.length <= threshold ? 2 : 1; // 이 카드는 이미 hand에서 제거됨.
-        dealToShape(Math.floor(v) * mult + bonus.damage);
+        dealToShape(Math.floor(v) * mult); // 색/힘/focus/sap/feral은 dealToShape 내부.
         break;
       }
       case 'damage-per-debuff': {
-        // 각 대상별 자기 디버프 스택 기준(다중 적). base = value×sum + ATK.
+        // 각 대상별 자기 디버프 스택 기준(다중 적). base(=value×sum) → feral ×2 → +색+힘+focus−sap.
         if (shapeHits.length === 0) break;
         for (const { target, mul } of shapeHits) {
           const sum = enemyDebuffSum(target.statuses);
-          const base = Math.floor(v) * sum + bonus.damage + strength;
+          const card = Math.floor(v) * sum;
+          const wb = wild ? card * 2 : card;
+          const base = applyDamageRelicMods(state, Math.max(0, wb + bonus.damage + strength + dmgFlat));
           applyDamage(state, target, Math.floor(base * mul), playerStatuses);
         }
         break;
@@ -2122,29 +2383,35 @@ function applyCardEffects(
         break;
       }
       case 'damage-per-companion': {
-        dealToShape(companionCount() * Math.floor(rawV) + bonus.damage);
+        // 격자 기존 거동 보존(strength·색 가산) + 신규 focus/sap/feral 합류. dealToShape 내부 합성.
+        //   (combat.ts dealRawDamage는 순수 count×value지만, 격자는 이전부터 strength/색을 더해 왔으므로
+        //    그 거동을 깨지 않고 일관성을 위해 유지한다 — 효과 종류상 미세한 상향.)
+        dealToShape(companionCount() * Math.floor(rawV));
         break;
       }
       case 'damage-per-relic': {
-        dealToShape(relicCount() * Math.floor(rawV) + bonus.damage);
+        dealToShape(relicCount() * Math.floor(rawV)); // 격자 기존 거동 보존(strength·색) + focus/sap/feral.
         break;
       }
       case 'damage-per-cards-played': {
         const played = state.cardsPlayedThisTurn ?? 0;
-        dealToShape(Math.floor(rawV) * played + bonus.damage);
+        dealToShape(Math.floor(rawV) * played);
         break;
       }
       case 'heavy-blade': {
+        // 중검 — strength를 mult배로 직접 반영(combat.ts heavy-blade): base ×feral + strength×mult + 색 + focus − sap.
         const mult = Number(eff.params?.mult ?? 1);
-        dealToShape(Math.floor(v) + strength * mult + bonus.damage, false); // strength는 mult로 직접.
+        const wb = wild ? Math.floor(v) * 2 : Math.floor(v);
+        const composed = applyDamageRelicMods(state, Math.max(0, wb + strength * mult + bonus.damage + dmgFlat));
+        dealToShape(composed, false); // false: 합성은 여기서 끝(dealToShape가 다시 힘/색 더하지 않게).
         break;
       }
       case 'adaptive-strike': {
         if (state.player.block > 0) {
           const bn = Number(eff.params?.bonus ?? 4);
-          dealToShape(Math.floor(v) + bn + bonus.damage);
+          dealToShape(Math.floor(v) + bn); // 색/힘/focus/sap/feral은 dealToShape 내부.
         } else {
-          gainBlock(Math.max(0, Math.floor(v) + bonus.block + relicBlockAdd + (playerStatuses.dexterity ?? 0)));
+          gainBlock(blockValue(Math.floor(v)));
         }
         break;
       }
@@ -2184,7 +2451,7 @@ function applyCardEffects(
       // === self 회복 변형 ===
       case 'heal-per-hand': {
         const hv = state.hand.length * Math.floor(rawV);
-        if (hv > 0) {
+        if (hv > 0 && !isHealBlocked(playerStatuses)) { // 심수화면 회복 차단.
           state.player.hp = Math.min(state.player.maxHp, state.player.hp + hv);
           pushFx(state, { kind: 'heal', actorId: state.player.id, amount: hv });
         }
@@ -2228,13 +2495,13 @@ function applyCardEffects(
       }
       case 'growing-block': {
         const grown = (card.bonusBlock ?? 0);
-        gainBlock(Math.max(0, Math.floor(v) + grown + bonus.block + relicBlockAdd + (playerStatuses.dexterity ?? 0)));
+        gainBlock(blockValue(Math.floor(v) + grown)); // 색/민첩/유물/−frail/−sap + 누적, 수화면 0.
         card.bonusBlock = grown + Number(eff.params?.growth ?? 1); // 다음 사용 대비 누적.
         break;
       }
       case 'growing-damage': {
         const grown = (card.bonusDamage ?? 0);
-        dealToShape(Math.floor(v) + grown + bonus.damage);
+        dealToShape(Math.floor(v) + grown); // 색/힘/focus/sap/feral은 dealToShape 내부.
         card.bonusDamage = grown + 1;
         break;
       }
@@ -2364,7 +2631,8 @@ function applyCardEffects(
       }
       case 'chain-explosion': {
         // 연쇄 폭발 — 디버프가 걸린 *모든 적*이 자신+인접 적에게 value 피해 폭발(보드 전역, 중복 제거).
-        const dmg = applyDamageRelicMods(state, Math.floor(v) + bonus.damage + strength);
+        const cwb = wild ? Math.floor(v) * 2 : Math.floor(v); // 수화 ×2(카드 base).
+        const dmg = applyDamageRelicMods(state, Math.max(0, cwb + bonus.damage + strength + dmgFlat));
         if (dmg > 0) {
           const hitSet = new Set<GridCombatant>();
           for (const src of state.enemies) {
@@ -2409,7 +2677,7 @@ function applyCardEffects(
       case 'random-effect': {
         const pool: number[] = [0, 1, 2, 3];
         const pick = pool[Math.floor(rng() * pool.length)];
-        if (pick === 0) dealToShape(26 + bonus.damage);
+        if (pick === 0) dealToShape(26); // 색/힘/focus/sap/feral은 dealToShape 내부.
         else if (pick === 1) { for (const { target } of shapeHits) target.statuses['vulnerable'] = (target.statuses['vulnerable'] ?? 0) + 3; }
         else if (pick === 2) { drawIntoHand(state, 2); state.mana = Math.min(state.maxMana, state.mana + 2); }
         else { state.player.hp = state.player.maxHp; pushFx(state, { kind: 'heal', actorId: state.player.id, amount: state.player.maxHp }); }
@@ -2436,11 +2704,19 @@ function execAttack(
   plannedTiles: GridPos[],
 ): void {
   const enemyStrength = attacker.statuses.strength ?? 0;
+  // 공격자 측 플랫 보정(+focus − sap)과 수화(feral/feral-heavy ×2)도 일관 반영 —
+  //   격자는 *어떤 전투원이든* 같은 상태이상 규칙을 따른다(combat.ts와 동일 합성: base ×feral + str + focus − sap).
+  const atkFlat = damageFlatBonus(attacker.statuses);
+  const atkWild = isWild(attacker.statuses);
+  const composeAtk = (cardBase: number): number => {
+    const wb = atkWild ? cardBase * 2 : cardBase;
+    return Math.max(0, wb + enemyStrength + atkFlat);
+  };
 
   // 근접 폴백 — gridBehavior 없는 적. 인접(거리1) *또는 같은 칸*(거리0, 겹침)이면 근접 타격.
   if (attackIdx < 0 || !attacker.attacks || !attacker.attacks[attackIdx]) {
     if (manhattan(attacker.pos, state.player.pos) <= 1 && state.player.hp > 0) {
-      const dmg = (attacker.attack ?? 0) + enemyStrength;
+      const dmg = composeAtk(attacker.attack ?? 0);
       applyDamage(state, state.player, dmg, attacker.statuses);
       pushLog(state, `${attacker.name ?? '적'}의 공격`);
     }
@@ -2449,7 +2725,7 @@ function execAttack(
 
   const atk = attacker.attacks[attackIdx];
   void plannedTiles; // 예측 칸은 텔레그래프용 — 실행은 실제 위치 기준 shape로 재계산.
-  const baseDamage = (atk.damage ?? attacker.attack ?? 0) + enemyStrength;
+  const baseDamage = composeAtk(atk.damage ?? attacker.attack ?? 0);
   const perTileMul = atk.perTileMul ?? [];
 
   // perTileMul을 atk.shape 인덱스에 정렬(walkable 필터로 인덱스가 밀리지 않게 shape 직접 순회).
@@ -2500,11 +2776,23 @@ function targetHandSize(state: GridCombatState): number {
 function refillManaPerRound(state: GridCombatState): void {
   const bonus = currentBonuses();
   const relicMana = gridManaExtra(state);  // mana-extra-add(들뜬 등불 등).
+  const s = state.player.statuses;
+  // 점액(slime): 매 라운드 마나 -스택(최소 0, combat.ts effMaxMana). 비-DECAYING이라 여기서 직접 -1 감쇠.
+  const slime = s['slime'] ?? 0;
   state.maxMana = Math.max(1, DEFAULT_MAX_MANA + bonus.manaExtra + relicMana);
+  const effMana = Math.max(0, state.maxMana - slime);
   // next-turn-energy(칼리번) — 다음 라운드 시작 마나 보너스 1회 반영 후 0 리셋.
   const energyBonus = state.nextTurnEnergyBonus ?? 0;
-  state.mana = state.maxMana + energyBonus;
+  state.mana = effMana + energyBonus;
   state.nextTurnEnergyBonus = 0;
+  // 경련(spasm): 이번(다음) 라운드 마나 0(combat.ts). 비-DECAYING이라 여기서 직접 -1 감쇠.
+  const spasm = s['spasm'] ?? 0;
+  if (spasm > 0) {
+    state.mana = 0;
+    if (spasm - 1 <= 0) delete s['spasm']; else s['spasm'] = spasm - 1;
+  }
+  // slime 자기 감쇠(읽은 뒤 -1) — DECAYING_STATUSES에 넣지 않고 inline 처리(마나 리필이 감쇠 루프 뒤라 off-by-one 회피).
+  if (slime > 0) { if (slime - 1 <= 0) delete s['slime']; else s['slime'] = slime - 1; }
 }
 
 // ============================================================================

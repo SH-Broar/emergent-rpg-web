@@ -285,6 +285,13 @@ export interface Card extends NamedEntity {
    * 조준 칸을 중심으로 shape가 적용된다. 미설정 시 기본 3.
    */
   aimRange?: number;
+  /**
+   * 즉시 발동 카드(2026-06-19) — true면 손패에서 누르는 *즉시* 효과가 발동되고 버린 더미로 간다.
+   * 계획(playerPlan)에 올라가지 않고 적 템포도 진행시키지 않는다(자유 행동).
+   * 드로우/버프 유틸 카드용 — 특히 드로우가 붙은 카드는 즉시여야 뽑은 카드를 이번 턴에 쓸 수 있어 의미가 생긴다.
+   * 효과는 *현재 위치* 기준 고정 shape로 즉시 적용(조준/투척 카드에는 부여하지 않음).
+   */
+  instant?: boolean;
 }
 
 /** 효과 핸들러 시그니처 — Phase 2d에서 systems/combat.ts가 사용. */

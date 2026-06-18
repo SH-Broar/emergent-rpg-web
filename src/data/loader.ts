@@ -343,6 +343,7 @@ function parseOneCard(id: string, f: IniSection): Card | null {
     targetMode: f.target_mode === 'self' || f.target_mode === 'pattern' || f.target_mode === 'aimed' || f.target_mode === 'throw'
       ? f.target_mode : undefined,
     aimRange: f.aim_range !== undefined ? Math.max(1, parseNumber(f.aim_range, 3)) : undefined,
+    instant: f.instant === 'true' ? true : undefined,
   };
 }
 

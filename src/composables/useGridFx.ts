@@ -42,20 +42,25 @@ const REDUCED =
   typeof window.matchMedia === 'function' &&
   window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/** 숫자 표시 시간(짧게). */
-const NUMBER_TTL = REDUCED ? 600 : 850;
-/** 피격 흔들림 지속(≤0.1초 D11 — 흔들림 자체는 짧게). */
-const HIT_TTL = REDUCED ? 0 : 100;
+/** 숫자 표시 시간 — 행동 1개 dwell(0.4s)보다 길게 남겨 읽히게. */
+const NUMBER_TTL = REDUCED ? 600 : 1100;
+/** 피격 흔들림 지속(흔들림 모션 자체는 짧게 — dwell과 별개). */
+const HIT_TTL = REDUCED ? 0 : 160;
 /**
- * 이동 트랜지션 시간(CSS .token transition과 맞춤) — 한 행동의 이동 모션 길이.
- * 이 시간이 지나야 다음 행동으로 넘어간다(모션 완료 대기).
+ * 이동 트랜지션 시간(CSS .token transition과 맞춤) — 토큰이 칸을 미끄러지는 시간.
+ * dwell(ACTION_MIN) 안에 들어오도록 살짝 짧게.
  */
-const MOVE_MS = REDUCED ? 0 : 100;
+const MOVE_MS = REDUCED ? 0 : 380;
 /**
- * 진짜 순차 재생(A) — *행동 사이* 간격(ms, 0.3~0.5 범위). 한 캐릭터 모션이 끝난 뒤 이만큼 쉬고 다음.
- * reduced-motion이면 0.
+ * 한 행동(그룹) *최소 표시 시간*(#5) — 모든 내·적 행동은 각각 ≥0.4초 동안 단독으로 보인다.
+ * 이동/피격 모션이 더 짧아도 이 시간만큼은 그 행동만 화면에 머문다(동시 재생 금지).
  */
-const ACTION_GAP = REDUCED ? 0 : 350;
+const ACTION_MIN = REDUCED ? 0 : 400;
+/**
+ * 진짜 순차 재생(A) — *행동 사이* 간격(#5). 한 행동 dwell이 끝난 뒤 이만큼 더 쉬고 다음 행동.
+ * 3행동이면 (0.4 dwell + 0.4 gap) × 3 ≈ 2.4초 이상. reduced-motion이면 0.
+ */
+const ACTION_GAP = REDUCED ? 0 : 400;
 
 export function useGridFx() {
   const floats = ref<GridFloatingNumber[]>([]);
@@ -228,15 +233,14 @@ export function useGridFx() {
   }
 
   /**
-   * 한 행동 그룹(actionIndex)의 모션 길이 추정 — 이동 있으면 MOVE_MS, 없으면 HIT 길이.
+   * 한 행동 그룹(actionIndex)의 *단독 표시* 길이(#5) — 항상 ACTION_MIN(0.4s) 이상.
+   * 이동/피격 모션이 더 길면 그 길이를 쓴다. 이 시간 동안 이 행동만 화면에 머문다.
    */
   function groupMotionMs(group: FxEvent[]): number {
-    if (REDUCED) return 0;
+    if (REDUCED || group.length === 0) return 0;
     const hasMove = group.some((e) => e.kind === 'move' || e.kind === 'spawn');
-    const hasHit = group.some((e) => e.kind === 'hit' || e.kind === 'block-absorb' || e.kind === 'block-gain' || e.kind === 'heal' || e.kind === 'death');
-    let ms = 0;
+    let ms = ACTION_MIN;
     if (hasMove) ms = Math.max(ms, MOVE_MS);
-    if (hasHit) ms = Math.max(ms, HIT_TTL);
     return ms;
   }
 
