@@ -183,6 +183,30 @@
   function metaFor(id) { return lsGet('review-meta-' + id, null); }
   function resultsFor(id) { return lsGet('review-' + id, {}) || {}; }
 
+  /* 이미 검수 끝난 시트: 최초 1회 자동 숨김(seed). 이후 '숨긴 항목 보기'로 열람·개별 복원 가능.
+     새로 추가하는 시트(body_6 이후 등)는 목록에 없으므로 자동으로 보임. */
+  var DEFAULT_HIDDEN = [
+    '05_name_proposals','06_flavor_review2',
+    'body_1','body_1_fix','body_2','body_2_fix','body_3','body_3_fix','body_4','body_4_fix','body_5','body_5_fix',
+    'card_finale','card_fix_1','card_fix_2','card_fix_3','card_fix_4','card_full_1','card_full_2','card_full_3',
+    'card_pilot_1','card_pilot_2','card_pilot_3','cardname_arcana_1','cardname_fix_1','cardname_mvr_1',
+    'chaos_fix_1','desc_all_1','flavor_all_1','flavor_all_2','flavor_all_3','human_redesign_1','human_redesign_2',
+    'lore_interview_1','monster_dedup_1','monster_dedup_2','monster_dedup_3','monster_dedup_4','monster_fix_1',
+    'monster_respec_1','monster_respec_2','name_all_1','name_all_2','name_all_3','name_fix_1','name_fix_2','name_fix_3',
+    'name_pilot_1','name3_fix_1','name3_fix_2','node_fix_1','node_full_1','node_pilot_1',
+    'perf_card_1','perf_card_2','perf_card_3','perf_card_4','perf_card_5','perf_card_6','perf_item',
+    'perf_relic_1','perf_relic_2','perf_relic_3','perf_relic_4','perf_relic_5','perf_relic_6',
+    'plus_batch_1','plus_batch_1_fix','plus_batch_1_fix2','plus_batch_2','plus_fix_1','plus_human_1','plus_pilot_1',
+    'screening_sample'
+  ];
+  (function seedHidden() {
+    if (lsGet('review-hidden-seeded', false)) return;
+    var h = hiddenSet();
+    DEFAULT_HIDDEN.forEach(function (id) { if (h.indexOf(id) < 0) h.push(id); });
+    lsSet(HIDDEN_KEY, h);
+    lsSet('review-hidden-seeded', true);
+  })();
+
   /* ================= 라우팅 ================= */
   if (!dataset) { showIndex(); }
   else { loadSheet(); }
