@@ -30,7 +30,7 @@ source = race
 element = earth
 cost = 1
 trigger = manual
-effects = block:5:self
+effects = block:6:self
 upgrade_to = c-defend-plus
 flavor = "막고 나서 생각해도 늦지 않아."
 # 격자: 제자리 방어막.

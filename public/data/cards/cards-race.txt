@@ -4487,3 +4487,72 @@ per_tile_mul= 1.0,0.7,0.7,0.7,0.7
 target_mode= pattern
 cast_speed= slow
 flavor = 펼쳐지는 띠가 더 넓어, 쏟아지는 색도 감싸는 빛도 한층 거세다.
+
+# ============================================================
+# 격자 시작 덱 표준화(US-002) — 6종 필수 보강분. flavor는 추후 검수로 채움.
+# ============================================================
+
+# --- 하코(인간): 강공격(범위↓·dmg↑) + 원거리(aimed) + 빠른이동 ---
+[card.c-human-cleave]
+name = 내려베기
+rank = common
+source = race
+element = light
+cost = 1
+trigger = manual
+effects = damage:10:enemy
+shape = 0,-1
+per_tile_mul = 1.0
+target_mode = pattern
+cast_speed = normal
+
+[card.c-human-throw]
+name = 던지기
+rank = common
+source = race
+element = wind
+cost = 1
+trigger = manual
+effects = damage:7:enemy
+shape = 0,0
+per_tile_mul = 1.0
+target_mode = aimed
+aim_range = 3
+cast_speed = normal
+
+[card.c-human-step]
+name = 발놀림
+rank = common
+source = race
+element = wind
+cost = 1
+trigger = manual
+effects = move-self:2:self:toward
+target_mode = self
+cast_speed = fast
+
+# --- 리무(나방): 원거리(aimed, 정체성·강함) + 빠른이동 ---
+[card.c-moth-snipe]
+name = 겨눈 화살
+rank = common
+source = race
+element = wind
+cost = 1
+trigger = manual
+effects = damage:9:enemy
+shape = 0,0
+per_tile_mul = 1.0
+target_mode = aimed
+aim_range = 4
+cast_speed = fast
+
+[card.c-moth-flit]
+name = 깃 스치기
+rank = common
+source = race
+element = wind
+cost = 1
+trigger = manual
+effects = move-self:2:self:away
+target_mode = self
+cast_speed = fast

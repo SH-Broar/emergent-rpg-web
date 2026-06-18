@@ -13,9 +13,10 @@ attack = 7
 defense = 2
 vigor = 11
 # 시작 덱 — 빠른 검(베기/쌍각) + 잔상/시간 + 차원보 기동. 공용 최소화(전용 8할).
-starting_deck = c-wf-slash, c-wf-slash, c-wf-twin, c-wf-afterimage, c-wf-haste, c-wf-blink, c-wf-retreat, c-wf-slow-cut, c-wf-parry, c-wf-grow, c-strike, c-wf-reach, c-recover
+# 6종: 일반(reach 범위↑)·강(slash 범위↓·dmg↑)·원거리(edgewave 검기)·방어(parry block6)·이동(blink/retreat)·회복(recover).
+starting_deck = c-wf-slash, c-wf-slash, c-wf-twin, c-wf-reach, c-wf-edgewave, c-wf-afterimage, c-wf-haste, c-wf-blink, c-wf-retreat, c-wf-slow-cut, c-wf-parry, c-wf-grow, c-recover
 # 시드 풀 — 활동 보상·덱 부족분 추첨용. 전용 18종 전체.
-seed_cards = c-wf-slash, c-wf-twin, c-wf-afterimage, c-wf-haste, c-wf-cuttime, c-wf-slow-cut, c-wf-blink, c-wf-retreat, c-wf-chain, c-wf-grow, c-wf-parry, c-wf-afterguard, c-wf-timeedge, c-wf-stillness, c-wf-reach, c-wf-cross, c-wf-doublecast, c-wf-finisher
+seed_cards = c-wf-slash, c-wf-twin, c-wf-edgewave, c-wf-afterimage, c-wf-haste, c-wf-cuttime, c-wf-slow-cut, c-wf-blink, c-wf-retreat, c-wf-chain, c-wf-grow, c-wf-parry, c-wf-afterguard, c-wf-timeedge, c-wf-stillness, c-wf-reach, c-wf-cross, c-wf-doublecast, c-wf-finisher
 seed_relics = r-race-whitefang
 hp_bonus = 0
 mp_bonus = 0

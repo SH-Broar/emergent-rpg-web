@@ -14,11 +14,13 @@ attack = 7
 defense = 2
 vigor = 13
 # 시작 덱 — 컨셉 "속도/연사/드로우". 전용 카드 중심: 0코스트 연타(잰 화살), 드로우 곁들인 경량 회전.
-starting_deck = c-moth-flutter, c-moth-flutter, c-moth-flutter, c-moth-volley, c-moth-volley, c-moth-glide, c-moth-glide, c-quickdraw, c-quickdraw, c-strike, c-strike, c-moth-gale, c-recover
+# 격자 시작 덱 6종 표준화(US-002): 일반(flutter)·강(volley)·원거리(snipe×2 정체성)·방어(defend)·이동(flit)·회복(recover).
+# c-quickdraw(draw-only)는 의미 없어 제거 → 원거리 정체성 카드로 대체.
+starting_deck = c-moth-flutter, c-moth-flutter, c-moth-snipe, c-moth-snipe, c-moth-volley, c-moth-volley, c-moth-glide, c-defend, c-moth-flit, c-strike, c-strike, c-moth-gale, c-recover
 # 시드 풀 — 속도/연사/콤보/드로우 정체성 카드(활동 보상·덱 부족분 추첨용). 신규 0코·다단·콤보 포함.
 # 시드 풀 - 활동 보상·덱 부족분 추첨용. 속도/연사/콤보/드로우 정체성 + 신규 사일런트 색채(poise·toxinburst·shiv) +
 #   toxinburst 페어링용 burn 부여(spark)·기존 burn(emberbrand 외) 동선 일치(검토 P2-B). 컨셉별 균형 확대(검토 P2-C).
-seed_cards = c-moth-flutter, c-moth-volley, c-quickdraw, c-moth-gale, c-moth-glide, c-moth-quickjab, c-moth-barrage, c-moth-recall, c-moth-accel, c-moth-combostrike, c-moth-dive, c-moth-doubletap, c-moth-skim, c-moth-flurry, c-moth-scatter, c-moth-momentum, c-moth-blitz, c-moth-flick, c-moth-triplet, c-moth-stinger, c-moth-tempocut, c-moth-crescendo, c-moth-overdrive, c-moth-slipstream, c-moth-tempest, c-moth-stormcall, c-moth-skyfall, c-moth-poise, c-moth-toxinburst, c-moth-shiv, c-moth-spark
+seed_cards = c-moth-snipe, c-moth-flit, c-moth-flutter, c-moth-volley, c-moth-gale, c-moth-glide, c-moth-quickjab, c-moth-barrage, c-moth-recall, c-moth-accel, c-moth-combostrike, c-moth-dive, c-moth-doubletap, c-moth-skim, c-moth-flurry, c-moth-scatter, c-moth-momentum, c-moth-blitz, c-moth-flick, c-moth-triplet, c-moth-stinger, c-moth-tempocut, c-moth-crescendo, c-moth-overdrive, c-moth-slipstream, c-moth-tempest, c-moth-stormcall, c-moth-skyfall, c-moth-poise, c-moth-toxinburst, c-moth-shiv, c-moth-spark
 seed_relics = r-race-moth
 # 시작 회복 아이템 — 전투밸런스(회복 카드 소멸화) 이후 초반 회복 보완(37-①). 공통 작은 회복약에 더해 지급.
 seed_items = i-potion-small, i-potion-small

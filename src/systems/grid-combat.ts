@@ -525,7 +525,7 @@ function relicHandManaExtras(loadout: Relic[]): { draw: number; mana: number } {
 
 // 라운드마다 -1 감쇠되는 *일시* 상태. strength·파워(metallicize 등)는 STS 관례대로 *영구*(감쇠 제외).
 // ghost(유령화)는 양날 상태로 라운드 감쇠.
-const DECAYING_STATUSES = new Set<string>(['weakness', 'vulnerable', 'frail', 'ghost', 'anchored']);
+const DECAYING_STATUSES = new Set<string>(['weakness', 'vulnerable', 'frail', 'ghost', 'anchored', 'slowed']);
 
 /** 샤유아 전파/연쇄 대상 디버프 키(status-spread·chain-explosion). */
 const SPREADABLE_DEBUFFS = ['vulnerable', 'weakness', 'frail', 'poison', 'burn', 'regress'] as const;
@@ -1358,7 +1358,9 @@ function tickEnemyTempo(state: GridCombatState): void {
   for (const enemy of state.enemies) {
     if (state.outcome) return;
     if (enemy.hp <= 0) continue;
-    const tempo = Math.max(1, (enemy.tempo ?? DEFAULT_TEMPO) + slow);
+    // 둔화(slowed) 상태 — 격자 신규 디버프(US-004): 실효 템포 +스택(적이 그만큼 덜 자주 행동). 라운드 감쇠.
+    const slowed = enemy.statuses['slowed'] ?? 0;
+    const tempo = Math.max(1, (enemy.tempo ?? DEFAULT_TEMPO) + slow + slowed);
     enemy.tempoCounter = (enemy.tempoCounter ?? 0) + 1;
     if (enemy.tempoCounter < tempo) continue;
     enemy.tempoCounter -= tempo;

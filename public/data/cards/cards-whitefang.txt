@@ -14,7 +14,6 @@ shape = 0,-1
 per_tile_mul = 1.0
 cast_speed = fast
 target_mode = pattern
-flavor = "검이 먼저 닿는다."
 
 [card.c-wf-twin]
 name = 쌍각
@@ -27,7 +26,6 @@ shape = -1,-1|1,-1
 per_tile_mul = 1.0,1.0
 cast_speed = fast
 target_mode = pattern
-flavor = "두 번 벤다, 거의 동시에."
 
 [card.c-wf-reach]
 name = 긴 베기
@@ -40,7 +38,6 @@ shape = 0,-1|0,-2|0,-3
 per_tile_mul = 1.0,0.8,0.6
 cast_speed = normal
 target_mode = pattern
-flavor = "팔이 닿지 않는 거리까지."
 
 [card.c-wf-cross]
 name = 십자 베기
@@ -53,7 +50,6 @@ shape = 0,-1|0,1|-1,0|1,0
 per_tile_mul = 1.0,1.0,1.0,1.0
 cast_speed = normal
 target_mode = pattern
-flavor = "사방을 한 번에."
 
 # === 잔상(지연 타격) ===
 [card.c-wf-afterimage]
@@ -67,7 +63,6 @@ shape = 0,-1
 per_tile_mul = 1.0
 cast_speed = normal
 target_mode = pattern
-flavor = "잔상이 한 박 늦게 친다."
 
 [card.c-wf-afterguard]
 name = 잔상 방패
@@ -78,7 +73,6 @@ trigger = manual
 effects = block:5:self, delayed-damage:4:enemy:1
 cast_speed = normal
 target_mode = self
-flavor = "잔상이 막아 선다."
 
 # === 시간 조작 ===
 [card.c-wf-haste]
@@ -90,7 +84,6 @@ trigger = manual
 effects = next-turn-energy:2:self
 cast_speed = fast
 target_mode = self
-flavor = "한 박, 세상이 뒤처진다."
 
 [card.c-wf-cuttime]
 name = 시간 끊기
@@ -101,7 +94,6 @@ trigger = manual
 effects = skip-enemy-action:1:self
 cast_speed = normal
 target_mode = self
-flavor = "닿을 자리가, 비어 있다."
 
 [card.c-wf-slow-cut]
 name = 느림 베기
@@ -114,7 +106,6 @@ shape = 0,-1|0,-2
 per_tile_mul = 1.0,0.7
 cast_speed = fast
 target_mode = pattern
-flavor = "벤 자리에서 시간이 늘어진다."
 
 [card.c-wf-doublecast]
 name = 겹수
@@ -125,7 +116,6 @@ trigger = manual
 effects = next-card-double:1:self
 cast_speed = fast
 target_mode = self
-flavor = "벤 자리에 잔상이 겹친다."
 
 [card.c-wf-timeedge]
 name = 시간의 칼날
@@ -136,7 +126,6 @@ trigger = manual
 effects = this-turn-amp:50:self, exhaust-self:0:self
 cast_speed = normal
 target_mode = self
-flavor = "한 호흡, 모든 검이 빨라진다."
 
 [card.c-wf-stillness]
 name = 정지
@@ -147,7 +136,6 @@ trigger = manual
 effects = skip-enemy-action:2:self, exhaust-self:0:self
 cast_speed = slow
 target_mode = self
-flavor = "세계가 잠시 멎는다."
 
 # === 차원보(이동 부가) ===
 [card.c-wf-blink]
@@ -161,7 +149,6 @@ shape = 0,-1
 per_tile_mul = 1.0
 cast_speed = fast
 target_mode = pattern
-flavor = "한 칸을 접고 들어간다."
 
 [card.c-wf-retreat]
 name = 물러 베기
@@ -174,7 +161,6 @@ shape = 0,-1
 per_tile_mul = 1.0
 cast_speed = fast
 target_mode = pattern
-flavor = "베고, 사라진다."
 
 # === 성장·콤보 ===
 [card.c-wf-grow]
@@ -188,7 +174,6 @@ shape = 0,-1
 per_tile_mul = 1.0
 cast_speed = normal
 target_mode = pattern
-flavor = "벨 때마다 날이 선다."
 
 [card.c-wf-chain]
 name = 연각
@@ -201,7 +186,6 @@ shape = 0,-1|0,-2
 per_tile_mul = 1.0,0.7
 cast_speed = fast
 target_mode = pattern
-flavor = "벨수록 빨라진다."
 
 # === 방어 ===
 [card.c-wf-parry]
@@ -210,10 +194,23 @@ rank = common
 source = race
 cost = 1
 trigger = manual
-effects = block:8:self
+effects = block:6:self
 cast_speed = fast
 target_mode = self
-flavor = "흘려 넘긴다."
+
+# === 원거리(aimed) — 검기(projectile slash). 사거리 내 조준 칸을 베어 보낸다. ===
+[card.c-wf-edgewave]
+name = 검기
+rank = common
+source = race
+cost = 1
+trigger = manual
+effects = damage:7:enemy
+shape = 0,0
+per_tile_mul = 1.0
+cast_speed = fast
+target_mode = aimed
+aim_range = 3
 
 # === 마무리 ===
 [card.c-wf-finisher]
@@ -227,4 +224,3 @@ shape = 0,-1
 per_tile_mul = 1.0
 cast_speed = slow
 target_mode = pattern
-flavor = "증명의 일격."

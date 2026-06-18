@@ -13,9 +13,10 @@ attack = 5
 defense = 3
 vigor = 12
 # 시작 덱 — 상태 도포(점액/녹이기/끈적) + 막기/통통 + 분열. 공용 최소화(전용 8할).
-starting_deck = c-sl-glob, c-sl-glob, c-sl-splash, c-sl-corrode, c-sl-sticky, c-sl-body, c-sl-bounce, c-sl-puddle, c-sl-split, c-sl-chainpop, c-strike, c-sl-clean, c-recover
+# 6종: 일반(splash 범위↑)·강(glob 범위↓)·원거리(spit 뱉기)·방어(body block6)·이동(bounce)·회복(recover, 전 종족 동일).
+starting_deck = c-sl-splash, c-sl-glob, c-sl-glob, c-sl-spit, c-sl-corrode, c-sl-sticky, c-sl-body, c-sl-bounce, c-sl-puddle, c-sl-split, c-sl-chainpop, c-strike, c-recover
 # 시드 풀 — 전용 18종 전체.
-seed_cards = c-sl-glob, c-sl-splash, c-sl-sticky, c-sl-corrode, c-sl-hot, c-sl-chainpop, c-sl-spread, c-sl-body, c-sl-bounce, c-sl-puddle, c-sl-clean, c-sl-bigglob, c-sl-bubble, c-sl-grow, c-sl-split, c-sl-transfer, c-sl-chainburst, c-sl-twobody
+seed_cards = c-sl-spit, c-sl-glob, c-sl-splash, c-sl-sticky, c-sl-corrode, c-sl-hot, c-sl-chainpop, c-sl-spread, c-sl-body, c-sl-bounce, c-sl-puddle, c-sl-clean, c-sl-bigglob, c-sl-bubble, c-sl-grow, c-sl-split, c-sl-transfer, c-sl-chainburst, c-sl-twobody
 seed_relics = r-race-slime
 hp_bonus = 0
 mp_bonus = 0
