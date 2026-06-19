@@ -1810,8 +1810,11 @@ export function commitRound(state: GridCombatState): void {
   if (!state.outcome && state.player.hp > 0) {
     fxActionIndex += 1;
     execWait(state);
-    // 세뇌(#4): 대기 때 세뇌를 건 적(가장 가까운 적) 쪽으로 끌려간다.
-    if ((state.player.statuses['brainwash'] ?? 0) > 0) dashPlayer(state, 1, 'toward');
+    // 세뇌(#4): 대기 때 *세뇌를 건 적* 쪽으로 1칸 끌려간다(출처 추적).
+    if ((state.player.statuses['brainwash'] ?? 0) > 0) {
+      const bw = state.brainwashBy ? state.enemies.find((e) => e.id === state.brainwashBy && e.hp > 0) : undefined;
+      if (bw) stepToward(state, bw.pos);
+    }
     // 혼란(confusion, #12): 대기 때 인접 8칸 중 무작위로 비틀거린다.
     if ((state.player.statuses['confusion'] ?? 0) > 0) confuseMove(state);
     // 퇴행(#10): 턴 종료 대기가 *시간을 쓰지 않음*(적 템포 미진행). 그 외엔 대기 1턴 진행.
@@ -1998,6 +2001,8 @@ function execMove(state: GridCombatState, actor: GridCombatant, to: GridPos): vo
   if (actor.team === 'player') collectItemAt(state, to);
   // 점액(#6): 이동마다 -1.
   { const sl = actor.statuses['slime'] ?? 0; if (sl > 0) { if (sl - 1 <= 0) delete actor.statuses['slime']; else actor.statuses['slime'] = sl - 1; } }
+  // 빙의(#12): 플레이어는 *이동 1회당 -1*(게임 내에서 이동으로 떨쳐냄, 못 떨치고 나가면 런에 잔존).
+  if (actor.team === 'player') { const ps = actor.statuses['possession'] ?? 0; if (ps > 0) { if (ps - 1 <= 0) delete actor.statuses['possession']; else actor.statuses['possession'] = ps - 1; } }
 }
 
 /** 바닥 아이템 픽업 — itemDrops에서 제거 + 런 인벤토리에 추가. */
@@ -2118,6 +2123,20 @@ function gainPlayerBlock(state: GridCombatState, amount: number): void {
  * 카드 효과 부가이동(이동 프로필 무시 — 카드가 부여한 기동). 매 칸 우세 축으로 1칸, 벽/void/밖이면 중단.
  * 한 칸이라도 움직였으면 move fx 1회(카드 행동 그룹에 묶여 애니).
  */
+/** 플레이어를 targetPos 쪽으로 1칸 이동(우세 축 우선). 막히면 제자리. 세뇌(#4) 끌림용. */
+function stepToward(state: GridCombatState, targetPos: GridPos): void {
+  const from = { ...state.player.pos };
+  const dx = targetPos.x - from.x, dy = targetPos.y - from.y;
+  let sx = 0, sy = 0;
+  if (Math.abs(dx) >= Math.abs(dy)) sx = Math.sign(dx); else sy = Math.sign(dy);
+  if (sx === 0 && sy === 0) return;
+  const next = { x: from.x + sx, y: from.y + sy };
+  if (!tileWalkable(state.stage, next)) return;
+  state.player.pos = next;
+  pushFx(state, { kind: 'move', actorId: state.player.id, from, to: { ...next } });
+  collectItemAt(state, next);
+}
+
 /** 혼란(confusion, #12) — 인접 8칸 중 무작위 통행 칸으로 비틀거리며 이동(대기 때). 갈 곳 없으면 제자리. */
 function confuseMove(state: GridCombatState): void {
   const from = { ...state.player.pos };
@@ -2353,8 +2372,8 @@ function applyCardEffects(
       }
       case 'heal': {
         const hv = Math.floor(v);
-        // 세뇌(#4): 회복하면 세뇌를 건 적(가장 가까운 적)도 그만큼 회복.
-        if (hv > 0 && brainwashed) { const be = nearestEnemy(state); if (be) { be.hp = Math.min(be.maxHp, be.hp + hv); pushFx(state, { kind: 'heal', actorId: be.id, amount: hv }); } }
+        // 세뇌(#4): 회복하면 *세뇌를 건 적*도 그만큼 회복(출처 추적, 죽었으면 무효).
+        if (hv > 0 && brainwashed) { const be = state.brainwashBy ? state.enemies.find((e) => e.id === state.brainwashBy && e.hp > 0) : undefined; if (be) { be.hp = Math.min(be.maxHp, be.hp + hv); pushFx(state, { kind: 'heal', actorId: be.id, amount: hv }); } }
         if (hv > 0) {
           // 심수화(feral-heavy): 회복 전면 차단(combat.ts healBlocked). 일반 수화는 회복 가능.
           if (isHealBlocked(playerStatuses)) break;
@@ -2814,6 +2833,8 @@ function execAttack(
   // perTileMul을 atk.shape 인덱스에 정렬(walkable 필터로 인덱스가 밀리지 않게 shape 직접 순회).
   // 칸에 플레이어가 *겹쳐 있어도* 맞도록 combatantsAt(전부)로 판정.
   let hitAny = false;
+  let possessionCast = false;
+  const appliedStatus = (atk.applyStatus ?? '').split(':')[0];
   (atk.shape ?? []).forEach((off, i) => {
     const p = { x: attacker.pos.x + off.dx, y: attacker.pos.y + off.dy };
     if (!canAttackTile(state.stage, p)) return;
@@ -2822,11 +2843,20 @@ function execAttack(
       if (target.team === 'player' && target.hp > 0) {
         applyDamage(state, target, Math.floor(baseDamage * mul), attacker.statuses);
         applyStatusToken(target, atk.applyStatus);
+        // 세뇌(#4): 출처 적 기록(회복·이동이 이 적을 향함). 빙의(#12): 시전자는 처치 취급.
+        if (appliedStatus === 'brainwash') state.brainwashBy = attacker.id;
+        if (appliedStatus === 'possession') possessionCast = true;
         hitAny = true;
       }
     }
   });
   if (hitAny) pushLog(state, `${attacker.name ?? '적'}의 ${atk.name ?? '공격'}`);
+  // 빙의(#12): 빙의를 건 적은 스스로를 바쳐 사라진다(처치 취급 — 전투가 빨리 끝남).
+  if (possessionCast && attacker.hp > 0) {
+    attacker.hp = 0;
+    pushFx(state, { kind: 'death', actorId: attacker.id });
+    pushLog(state, `${attacker.name ?? '적'}이(가) 들러붙으며 사라졌다`);
+  }
 }
 
 /** 덱에서 n장 손패로(10장 캡). 드로운 장수만큼 on-draw 유물 발동(1장당 1회). */

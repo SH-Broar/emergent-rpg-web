@@ -554,6 +554,10 @@ export interface GridCombatState {
    */
   gridEnemySlow?: number;
   /**
+   * 세뇌(brainwash, #4) 출처 적 id — 세뇌 부여 시 기록. 회복 시 그 적도 회복·대기 시 그 적 쪽으로 끌려간다.
+   */
+  brainwashBy?: string;
+  /**
    * 적 행동 박제(skip-enemy-action) — 남은 *스킵 횟수*. >0이면 적 행동 1개를 건너뛰고 -1.
    */
   gridEnemySkip?: number;
