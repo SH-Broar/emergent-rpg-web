@@ -707,7 +707,7 @@ function relicHandManaExtras(loadout: Relic[]): { draw: number; mana: number } {
 //   - metallicize/barricade/feelNoPain/rupture/juggernaut/feral-heavy : 전투 휘발 파워/잔존(감쇠 안 함).
 const DECAYING_STATUSES = new Set<string>([
   'weakness', 'vulnerable', 'ghost', 'anchored', 'slowed', 'airborne',
-  'brainwash', 'sap', 'regress', 'feral', 'sleep', 'focus', 'haste',
+  'brainwash', 'regress', 'sleep', 'focus', 'haste',
 ]);
 
 /**
@@ -717,23 +717,29 @@ const DECAYING_STATUSES = new Set<string>([
 function isWild(statuses: Record<string, number> | undefined): boolean {
   return (statuses?.['feral'] ?? 0) > 0 || (statuses?.['feral-heavy'] ?? 0) > 0;
 }
+/** 수화 공격 배수(2026-06-19 검수) — 심수화 ×2, 일반 수화 ×1.5, 아니면 1. */
+function wildMul(statuses: Record<string, number> | undefined): number {
+  if ((statuses?.['feral-heavy'] ?? 0) > 0) return 2;
+  if ((statuses?.['feral'] ?? 0) > 0) return 1.5;
+  return 1;
+}
 /** 심수화(feral-heavy)면 회복 전면 차단(combat.ts healBlocked 동일). 일반 수화는 회복 가능. */
 function isHealBlocked(statuses: Record<string, number> | undefined): boolean {
   return (statuses?.['feral-heavy'] ?? 0) > 0;
 }
 /**
- * 주는 피해의 *플랫* 보정(strength 외) — combat.ts statusBonusForCardEffectKind('damage')와 동일:
- *   +focus(집중) − sap(잠식). strength는 호출처에서 별도 가산(dealToShape/execAttack)이라 제외.
+ * 주는 피해의 *플랫* 보정(strength 외) — +focus(집중)만. strength는 호출처 별도 가산.
+ * (sap(잠식)은 2026-06-19 검수로 *순수 HP 도트*로 전환 — 더는 피해/방어를 깎지 않음.)
  */
 function damageFlatBonus(statuses: Record<string, number> | undefined): number {
-  return (statuses?.['focus'] ?? 0) - (statuses?.['sap'] ?? 0);
+  return (statuses?.['focus'] ?? 0);
 }
 /**
- * 방어의 *플랫* 보정(dexterity 외) — − sap(잠식)만. dexterity는 호출처 별도 가산. 최종 음수 방지는 호출처 clamp.
- * (frail(취약)은 2026-06-19 폐지 — '방어 파괴'(break-armor) 즉시 효과로 대체.)
+ * 방어의 *플랫* 보정(dexterity 외) — 현재 방어를 깎는 디버프 없음(frail·sap 폐지). 항상 0.
+ * (dexterity는 호출처 별도 가산. 유지 시 향후 방어 감소 디버프 삽입점.)
  */
-function blockFlatBonus(statuses: Record<string, number> | undefined): number {
-  return -(statuses?.['sap'] ?? 0);
+function blockFlatBonus(_statuses: Record<string, number> | undefined): number {
+  return 0;
 }
 
 // 격자에 *이식하지 않은* 상태(구조적 부적합 — 부여돼도 안전 무시, crash 없음):
@@ -900,6 +906,24 @@ function tickRoundStatuses(state: GridCombatState): void {
         if (c.hp - before > 0) pushFx(state, { kind: 'heal', actorId: c.id, amount: c.hp - before });
       }
       if (regen - 1 <= 0) delete s['regen']; else s['regen'] = regen - 1;
+    }
+
+    // 잠식(sap) — *순수 HP 도트*(2026-06-19 검수): 스택만큼 직접 HP 피해. 감쇠 없음(전투 종료/정화로만 해소).
+    const sap = s['sap'] ?? 0;
+    if (sap > 0 && c.hp > 0) {
+      const before = c.hp;
+      c.hp = Math.max(0, c.hp - sap);
+      if (before - c.hp > 0) pushFx(state, { kind: 'hit', actorId: c.id, amount: before - c.hp });
+    }
+
+    // 수화(feral, 2026-06-19 검수) — 10 이상이면 심수화(feral-heavy)로 전이, 아니면 3턴마다 -1 감쇠.
+    const feral = s['feral'] ?? 0;
+    if (feral >= 10) {
+      s['feral-heavy'] = Math.max(1, s['feral-heavy'] ?? 0);
+      delete s['feral'];
+      if (c.team === 'player') pushLog(state, '수화가 심수화로 치달았다');
+    } else if (feral > 0 && state.turn % 3 === 0) {
+      if (feral - 1 <= 0) delete s['feral']; else s['feral'] = feral - 1;
     }
 
     // DoT/잠식으로 죽는 전이 순간 death fx(직접 hp 차감이라 applyDamage 경로를 안 탐).
@@ -2239,8 +2263,8 @@ function applyCardEffects(
   const dealToShape = (base: number, addStrength = true): void => {
     let v: number;
     if (addStrength) {
-      const wb = wild ? base * 2 : base;                 // 수화: 카드 base만 ×2(색/힘 가산 전).
-      const composed = wb + bonus.damage + strength + dmgFlat; // 색(regress 0) + 힘 + focus − sap.
+      const wb = Math.floor(base * wildMul(playerStatuses)); // 수화 ×1.5 / 심수화 ×2(색/힘 가산 전).
+      const composed = wb + bonus.damage + strength + dmgFlat; // 색(regress 0) + 힘 + focus.
       v = applyDamageRelicMods(state, Math.max(0, composed));  // 유물 주는 피해 보정.
     } else {
       if (base <= 0) return;
@@ -2718,9 +2742,8 @@ function execAttack(
   // 공격자 측 플랫 보정(+focus − sap)과 수화(feral/feral-heavy ×2)도 일관 반영 —
   //   격자는 *어떤 전투원이든* 같은 상태이상 규칙을 따른다(combat.ts와 동일 합성: base ×feral + str + focus − sap).
   const atkFlat = damageFlatBonus(attacker.statuses);
-  const atkWild = isWild(attacker.statuses);
   const composeAtk = (cardBase: number): number => {
-    const wb = atkWild ? cardBase * 2 : cardBase;
+    const wb = Math.floor(cardBase * wildMul(attacker.statuses)); // 수화 ×1.5 / 심수화 ×2.
     return Math.max(0, wb + enemyStrength + atkFlat);
   };
 
@@ -2796,11 +2819,11 @@ function refillManaPerRound(state: GridCombatState): void {
   const energyBonus = state.nextTurnEnergyBonus ?? 0;
   state.mana = effMana + energyBonus;
   state.nextTurnEnergyBonus = 0;
-  // 경련(spasm): 이번(다음) 라운드 마나 0(combat.ts). 비-DECAYING이라 여기서 직접 -1 감쇠.
+  // 경련(spasm, 2026-06-19 검수): 이번 라운드 마나 -스택(최소 0), 턴 경과 시 *전부 소멸*(한 번에).
   const spasm = s['spasm'] ?? 0;
   if (spasm > 0) {
-    state.mana = 0;
-    if (spasm - 1 <= 0) delete s['spasm']; else s['spasm'] = spasm - 1;
+    state.mana = Math.max(0, state.mana - spasm);
+    delete s['spasm'];
   }
   // slime 자기 감쇠(읽은 뒤 -1) — DECAYING_STATUSES에 넣지 않고 inline 처리(마나 리필이 감쇠 루프 뒤라 off-by-one 회피).
   if (slime > 0) { if (slime - 1 <= 0) delete s['slime']; else s['slime'] = slime - 1; }

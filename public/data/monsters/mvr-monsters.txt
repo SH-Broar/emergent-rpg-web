@@ -101,7 +101,7 @@ card_drops =
 
 # 분열(split) 처치 시 절반 HP로 부활. split_count=2면 총 3번 잡아야 진짜 패배.
 [monster.m-demo-splitter]
-name = 듀얼 슬라임
+name = 쌍둥이 슬라임
 tier = normal
 species = slime
 hp = 70
@@ -127,7 +127,7 @@ card_drops =
 
 # 잠식(drain-stat) 플레이어 스탯을 깎고 적이 그만큼 강해진다(sap + 적 strength).
 [monster.m-demo-sapper]
-name = 노멀 서큐버스
+name = 서큐버스
 tier = normal
 species = succubus
 hp = 120

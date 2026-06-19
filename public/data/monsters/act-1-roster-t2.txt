@@ -6,7 +6,7 @@
 # ============================================================
 
 [monster.mr-moss-fireworm]
-name = 화도 지렁이
+name = 용암 지렁이
 tier = normal
 species = insect
 hp = 84
@@ -35,7 +35,7 @@ time_shards = 4
 card_drops =
 
 [monster.mr-moss-anvil-arachne]
-name = 화로 거미
+name = 화덕 거미
 tier = normal
 species = arachne
 hp = 81
@@ -169,7 +169,7 @@ time_shards = 4
 card_drops =
 
 [monster.mr-ria-thunder-fox]
-name = 뇌전 여우
+name = 번개 여우
 tier = normal
 species = fox
 hp = 91
@@ -200,7 +200,7 @@ time_shards = 3
 card_drops =
 
 [monster.mr-ria-voltage-goat]
-name = 고압 염소
+name = 번개 염소
 tier = normal
 species = beastkin
 hp = 126
@@ -287,7 +287,7 @@ time_shards = 3
 card_drops =
 
 [monster.mr-ali-stone-bear]
-name = 돌 곰
+name = 바위 곰
 tier = normal
 species = beastkin
 hp = 161
@@ -492,7 +492,7 @@ time_shards = 3
 card_drops =
 
 [monster.mr-mano-limun-ward]
-name = 깨어난 리문상
+name = 깨어난 석상
 tier = normal
 species = automaton
 hp = 140
@@ -505,7 +505,7 @@ time_shards = 5
 card_drops =
 
 [monster.mr-mano-iron-scorpion]
-name = 철강 전갈
+name = 무쇠 전갈
 tier = normal
 species = insect
 hp = 109
@@ -542,7 +542,7 @@ companion_skill_desc = 적에게 취약 2를 건다. 스산한 기운이 몸을 
 companion_skill_effects = apply-status:2:enemy:vulnerable
 
 [monster.mr-mano-ruin-lurker]
-name = 유적 잠복자
+name = 유적 망령
 tier = normal
 species = wraith
 hp = 102

@@ -37,7 +37,7 @@ time_shards = 9
 card_drops =
 
 [monster.mr-yusezria-rust-hound]
-name = 녹슨 강철견
+name = 고철 늑대
 tier = normal
 species = werewolf
 hp = 196
@@ -51,7 +51,7 @@ time_shards = 10
 card_drops =
 
 [monster.mr-yusezria-pressure-mite]
-name = 수압 벌레
+name = 심해 벌레
 tier = normal
 species = insect
 hp = 168
@@ -64,7 +64,7 @@ time_shards = 8
 card_drops =
 
 [monster.mr-yusezria-deep-leech]
-name = 심층 뱀파이어
+name = 심해 흡혈귀
 tier = normal
 species = leech
 hp = 189
@@ -77,7 +77,7 @@ time_shards = 9
 card_drops =
 
 [monster.mr-yusezria-ore-spike]
-name = 광맥 가시충
+name = 동굴 가시벌레
 tier = normal
 species = insect
 hp = 175
@@ -232,7 +232,7 @@ card_drops =
 # --- 일반 ---
 
 [monster.mr-emberforge-ash-hound]
-name = 잿불 사냥개
+name = 잿불 들개
 tier = normal
 species = werewolf
 hp = 189
