@@ -43,7 +43,7 @@ import { bonusesFromEffective } from './equipment';
 import type { CombatBonuses } from './stats';
 import { resolveLoadout } from './loadout';
 import { applyColorBoost, applyColorBoostAll, type ColorKey } from './colors';
-import { rng } from './rng';
+import { rng, setRng, getRng, createSeededRng } from './rng';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import {
@@ -414,6 +414,32 @@ export function previewCardTiles(
 /** 원거리 조준 카드(targetMode='aimed')인가. */
 export function isAimedCard(card: Card): boolean {
   return card.targetMode === 'aimed';
+}
+
+/**
+ * 카드가 *타격(피해)형* 효과를 하나라도 가졌는가(#4 장판 판정) — damage 계열 effect 존재 여부.
+ * 순수 회복/방어/드로우/버프 카드면 false → 장판 대신 자기 발동 펄스(#3)로 표현.
+ * break-armor(방어 파괴)·consume-*(상태 소모 추가타) 등 *대상 칸에 작용*하는 효과도 타격으로 본다.
+ */
+const DAMAGE_EFFECT_KINDS = new Set<string>([
+  'damage', 'damage-min-color', 'damage-top-color', 'damage-color-count', 'damage-per-hand',
+  'damage-per-confine', 'damage-low-hand', 'damage-per-debuff', 'damage-from-hp', 'block-to-damage',
+  'spend-all-energy', 'damage-per-companion', 'damage-per-relic', 'damage-per-cards-played',
+  'heavy-blade', 'adaptive-strike', 'consume-vulnerable', 'consume-burn', 'consume-poison',
+  'amplify-debuff', 'break-armor',
+]);
+export function cardDealsDamage(card: Card): boolean {
+  return card.effects.some((e) => DAMAGE_EFFECT_KINDS.has(e.kind));
+}
+
+/** 카드 장판(#4) 유형 — throw / aimed=ranged / 그 외는 shape 도달거리로 melee·ranged. */
+function cardStrikeStyle(card: Card): 'melee' | 'ranged' | 'throw' {
+  if (card.targetMode === 'throw') return 'throw';
+  if (card.targetMode === 'aimed') return 'ranged';
+  for (const o of card.shape ?? []) {
+    if (Math.max(Math.abs(o.dx), Math.abs(o.dy)) > 1) return 'ranged';
+  }
+  return 'melee';
 }
 
 /**
@@ -971,6 +997,33 @@ function pushFx(state: GridCombatState, ev: Omit<FxEvent, 'seq'>): void {
 function pushLog(state: GridCombatState, text: string): void {
   if (!text) return;
   state.log = [...(state.log ?? []), text].slice(-LOG_MAX);
+}
+
+/**
+ * 공격 장판(#4) — 이 행동이 *때리는 칸* 목록 + 유형을 fx로 남긴다(현재 fxActionIndex 그룹).
+ * 뷰가 그 행동 dwell 동안만 칸을 강조했다가 데미지 숫자와 함께 사라지게 한다(동시 표시 금지).
+ * 빈 칸이면 push하지 않는다(self/제자리 버프 등은 발동 펄스로 대신).
+ */
+function pushAttackTilesFx(
+  state: GridCombatState,
+  actorId: string,
+  tiles: GridPos[],
+  style: 'melee' | 'ranged' | 'throw',
+): void {
+  if (!tiles.length) return;
+  pushFx(state, { kind: 'attack-tiles', actorId, tiles: tiles.map((t) => ({ ...t })), style });
+}
+
+/**
+ * 공격 shape의 장판 유형 판정(#4) — 적 격자 공격용.
+ * shape 칸이 *전부 인접*(체비셰프 ≤1, 자기 칸 포함)이면 melee(근접), 한 칸이라도 멀면 ranged(원거리 직선).
+ * 빈 shape(근접 폴백)는 호출처에서 melee로 직접 지정한다.
+ */
+function attackShapeStyle(shape: GridOffset[] | undefined): 'melee' | 'ranged' {
+  for (const o of shape ?? []) {
+    if (Math.max(Math.abs(o.dx), Math.abs(o.dy)) > 1) return 'ranged';
+  }
+  return 'melee';
 }
 
 // ============================================================================
@@ -1676,6 +1729,114 @@ function recomputeAllEnemyPlans(state: GridCombatState): void {
   }
 }
 
+/**
+ * 플레이어 계획의 *이동 후 최종 위치*(엔진판 effectivePlayerPos) — 큐의 마지막 move 도착점.
+ * 카드/아이템은 위치 불변(닻 가드는 실행 시점). 텔레그래프가 "내가 갈 곳" 기준으로 적 의도를 읽게 한다(#5).
+ */
+function plannedPlayerPos(state: GridCombatState): GridPos {
+  let pos = { ...state.player.pos };
+  for (const a of state.playerPlan) if (a.kind === 'move') pos = { ...a.to };
+  return pos;
+}
+
+// ============================================================================
+// 적 행동 텔레그래프(#5) — 임박 적의 *이번 턴* 위협을 계획 반영해 미리 표시
+// ----------------------------------------------------------------------------
+// 버그(2026-06-19): 뷰가 stale한 intentQueue(직전 라운드 종료 시 *옛 플레이어 위치* 기준 계산)를
+// 그대로 따라가, 플레이어가 이동을 계획해도 적 위협이 옛 위치를 가리켜 "버그처럼" 보였다.
+// 근본 수정: 텔레그래프를 *현재 계획의 도착 위치* 기준으로 적 의도를 다시 계산한다(plannedPlayerPos).
+// 동시에 commitRound의 takeCombatantTurn이 *실행 직전* 의도를 재계산해(아래) 표시와 실행을 일치시킨다.
+// ============================================================================
+
+/** 적 e가 이번 라운드(현재 계획 + 턴종료 자동 대기 1틱)에 *행동하는가*. tut<=1 과 동일 의미를 엔진에서 판정. */
+function enemyActsThisRound(state: GridCombatState, e: GridCombatant): boolean {
+  const slow = (state.gridEnemySlow ?? 0) > 0 ? 1 : 0;
+  const tempo = Math.max(1, (e.tempo ?? DEFAULT_TEMPO) + slow + (e.statuses['slowed'] ?? 0));
+  // 이번 라운드 누적 틱 = 계획 행동 수 + 자동 대기 1(퇴행이면 자동 대기는 시간 미소모 → 미포함).
+  const planTicks = state.playerPlan.length;
+  const autoWait = (state.player.statuses['regress'] ?? 0) > 0 ? 0 : 1;
+  const ticks = planTicks + autoWait;
+  const c0 = e.tempoCounter ?? 0;
+  return Math.floor((c0 + ticks) / tempo) > Math.floor(c0 / tempo);
+}
+
+/**
+ * 텔레그래프 전용 *비반응(plain) 클론* — enemyPlan의 AI가 enemy.pos를 잠시 바꿔가며 평가하므로,
+ * 라이브 *반응형* 상태를 건드리면 computed 안에서 자기 의존성을 변형해 무한 갱신(Maximum recursive
+ * updates)이 난다. 그래서 AI가 읽고/잠시 쓰는 필드를 plain 객체로 떠서 그 위에서만 시뮬레이션한다.
+ * stage는 AI가 *읽기만* 하므로 참조 공유(클론 불필요). player.pos는 *계획 도착*으로 미리 치환해 둔다.
+ */
+function cloneStateForTelegraph(state: GridCombatState): GridCombatState {
+  // 완전 분리(non-reactive deep clone) — AI 시뮬은 enumerateStepActions에서 ctx.enemy.pos를 잠시
+  //   바꿔가며 reachableTiles를 평가한다. 라이브 *reactive* 상태를 조금이라도 공유하면(얕은 클론·
+  //   stage 참조 공유) 그 변형이 computed/watch의 자기 의존성을 건드려 "Maximum recursive updates"가
+  //   난다. GridCombatState는 직렬화 가능(세이브 코드)하므로 깊은 복제로 라이브와의 모든 참조를 끊는다.
+  const clone = JSON.parse(JSON.stringify(state)) as GridCombatState;
+  clone.player.pos = { ...plannedPlayerPos(state) }; // 적이 *내가 갈 위치*를 노리게.
+  clone.playerPlan = [];                              // 적 의도만 — 플레이어 계획 재실행 금지.
+  clone.player.intentQueue = undefined;
+  for (const e of clone.enemies) e.intentQueue = undefined;
+  if (clone.allies) for (const a of clone.allies) a.intentQueue = undefined;
+  return clone;
+}
+
+/**
+ * 적 행동 텔레그래프 계산(#5) — 이번 턴에 행동할 적의 *이동 도착칸*(move) + *공격 타격칸*(attack)을
+ * 플레이어 계획(도착 위치)을 반영해 다시 계산한다. 뷰가 이 결과로 칸을 강조한다.
+ *
+ * 핵심: stale intentQueue를 따라가지 않고, *플레이어가 갈 위치*(plannedPlayerPos) 기준으로 적 의도를
+ * 그 자리에서 새로 평가한다 → 플레이어가 이동을 계획하면 적 위협도 그 위치 기준으로 갱신된다.
+ * 라이브 상태 불변: 비반응 클론(cloneStateForTelegraph) 위에서만 시뮬레이션한다(무한 갱신 방지).
+ */
+export function previewEnemyTelegraph(live: GridCombatState): { attack: GridPos[]; move: GridPos[] } {
+  const atk = new Map<string, GridPos>();
+  const mv = new Map<string, GridPos>();
+  const add = (m: Map<string, GridPos>, p: GridPos) => { m.set(`${p.x},${p.y}`, { ...p }); };
+
+  // 행동 여부 판정은 *라이브* 카운터/계획 기준(이번 라운드에 실제로 행동하는가). 의도 계산만 클론에서.
+  const clone = cloneStateForTelegraph(live);
+
+  // 게임트리 AI는 동점 타이브레이크에 rng()를 쓰는데, *라이브 rng()*는 RunState.rngState(반응형)를 진행시켜
+  //   computed 안에서 자기 의존성을 변형(무한 갱신) + 결정 시드 오염을 일으킨다. 그래서 텔레그래프 동안만
+  //   *로컬* PRNG로 갈아끼운다(상태/위치 해시 시드 → 같은 계획 단계에서 안정). 끝나면 반드시 원복.
+  const prevRng = getRng(); // *실제 등록 함수*를 떠 둔다(rng 래퍼를 setRng하면 자기재귀라 금지).
+  let seed = 0x9e3779b9 ^ (clone.turn | 0);
+  for (const e of clone.enemies) seed = (seed * 31 + (e.pos.x * 73856093) + (e.pos.y * 19349663)) >>> 0;
+  const localPrng = createSeededRng(seed >>> 0);
+  setRng(() => localPrng.next());
+  try {
+    for (let i = 0; i < live.enemies.length; i++) {
+      const liveE = live.enemies[i];
+      if (liveE.hp <= 0) continue;
+      if (!enemyActsThisRound(live, liveE)) continue;
+      const e = clone.enemies[i];
+      if (!e) continue;
+      // 이번 턴 의도를 *지금* 다시 계산(플레이어 도착 위치 기준, 클론 위) — stale 회피.
+      const plan = enemyPlan(clone, e);
+      let simPos = { ...e.pos };
+      for (const a of plan) {
+        if (a.kind === 'move') { add(mv, a.to); simPos = { ...a.to }; }
+        else if (a.kind === 'attack') {
+          if (a.targetTiles?.length) { for (const t of a.targetTiles) add(atk, t); }
+          else if (a.attackIdx >= 0) {
+            const def = e.attacks?.[a.attackIdx];
+            if (def) for (const t of previewAttackTiles(clone, { ...e, pos: simPos }, def)) add(atk, t);
+          } else {
+            // 근접 폴백(attackIdx -1) — simPos 직교 인접 4칸이 위협 범위.
+            for (const d of ROOK_DIRS) {
+              const p = { x: simPos.x + d.dx, y: simPos.y + d.dy };
+              if (canAttackTile(clone.stage, p)) add(atk, p);
+            }
+          }
+        }
+      }
+    }
+  } finally {
+    setRng(prevRng); // 라이브 rng 원복(반드시).
+  }
+  return { attack: [...atk.values()], move: [...mv.values()] };
+}
+
 // ============================================================================
 // 스피드 모델(US-001) — 플레이어 행동마다 적 템포 카운터, 도달 시 적 1턴
 // ============================================================================
@@ -1699,6 +1860,10 @@ function postActionCleanup(state: GridCombatState): boolean {
 function takeCombatantTurn(state: GridCombatState, c: GridCombatant): void {
   // 수면(sleep, #5): 이번 턴 행동 불가(스킵). 피해를 받으면 즉시 깸(applyDamage). 라운드 종료 시 -1 감쇠.
   if ((c.statuses['sleep'] ?? 0) > 0) return;
+  // 텔레그래프 일치(#5) — *실행 직전* 의도를 현재 위치 기준으로 다시 계산해, 화면에 보여 준 위협(plannedPlayerPos
+  // 기준 텔레그래프)과 실제 행동이 어긋나지 않게 한다. 적은 플레이어가 *간 자리*를 노린다(stale 추격 제거).
+  // (아군 토큰은 enemyPlan 대상이 아니므로 기존 intentQueue 유지 — 적만 재계산.)
+  if (c.team === 'enemy' && c.hp > 0) c.intentQueue = enemyPlan(state, c);
   const turn = c.intentQueue ?? [];
   for (const action of turn) {
     if (state.outcome) break;
@@ -2043,6 +2208,21 @@ function execCard(
 
   // 손에서 제거(효과 적용 전에 빼서 자기참조 효과 안전).
   state.hand.splice(idx, 1);
+
+  // 장판(#4) — 카드가 *때리는 칸*을 데미지 *전에* 강조 fx로 남긴다(현재 위치 기준 재계산, 텔레그래프 stale 방지).
+  //   타격형 카드: 그 칸들을 melee/ranged/throw 유형으로. 비타격(버프/회복) 카드: 자기 발동 펄스(#3)로 대신.
+  if (cardDealsDamage(card)) {
+    const strike = previewCardTiles(state, card, state.player.pos, aimOffset);
+    pushAttackTilesFx(state, state.player.id, strike, cardStrikeStyle(card));
+  } else {
+    // 즉시/버프 카드(#3) — hit/move fx가 없어 화면에 안 보이던 것을 자기 발동 펄스 + (설치 등) 작용 칸 플래시로.
+    pushFx(state, { kind: 'status', actorId: state.player.id });
+    const placed = card.effects.some((e) => e.kind === 'place-installation');
+    if (placed) {
+      const tiles = previewCardTiles(state, card, state.player.pos, aimOffset);
+      pushAttackTilesFx(state, state.player.id, tiles, 'ranged');
+    }
+  }
 
   applyCardEffects(state, card, targetTiles, doubled, aimOffset);
 
@@ -2818,6 +2998,8 @@ function execAttack(
   // 근접 폴백 — gridBehavior 없는 적. 인접(거리1) *또는 같은 칸*(거리0, 겹침)이면 근접 타격.
   if (attackIdx < 0 || !attacker.attacks || !attacker.attacks[attackIdx]) {
     if (manhattan(attacker.pos, state.player.pos) <= 1 && state.player.hp > 0) {
+      // 장판(#4) — 근접 폴백은 플레이어 칸 1칸을 melee로 강조 후 타격.
+      pushAttackTilesFx(state, attacker.id, [{ ...state.player.pos }], 'melee');
       const dmg = composeAtk(attacker.attack ?? 0);
       applyDamage(state, state.player, dmg, attacker.statuses);
       pushLog(state, `${attacker.name ?? '적'}의 공격`);
@@ -2829,6 +3011,15 @@ function execAttack(
   void plannedTiles; // 예측 칸은 텔레그래프용 — 실행은 실제 위치 기준 shape로 재계산.
   const baseDamage = composeAtk(atk.damage ?? attacker.attack ?? 0);
   const perTileMul = atk.perTileMul ?? [];
+
+  // 장판(#4) — 이 공격이 때리는 모든 유효 칸(절대)을 데미지 *전에* 강조용 fx로 남긴다.
+  //   유형: shape가 전부 인접이면 melee, 멀리 닿으면 ranged(직선 결). 데미지 숫자가 뜰 때 사라진다.
+  const strikeTiles: GridPos[] = [];
+  for (const off of atk.shape ?? []) {
+    const p = { x: attacker.pos.x + off.dx, y: attacker.pos.y + off.dy };
+    if (canAttackTile(state.stage, p)) strikeTiles.push(p);
+  }
+  pushAttackTilesFx(state, attacker.id, strikeTiles, attackShapeStyle(atk.shape));
 
   // perTileMul을 atk.shape 인덱스에 정렬(walkable 필터로 인덱스가 밀리지 않게 shape 직접 순회).
   // 칸에 플레이어가 *겹쳐 있어도* 맞도록 combatantsAt(전부)로 판정.

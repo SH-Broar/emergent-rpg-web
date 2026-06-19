@@ -17,7 +17,7 @@
  * 씬 전환 소프트락 회귀 방지(project_scene_transition_softlock_fix): 단일 루트 wrapper.
  */
 
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, ref, shallowRef, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useRunStore } from '@/stores/run';
 import { useUiStore } from '@/stores/ui';
@@ -40,8 +40,9 @@ import {
   dequeuePlayerAction,
   isInstantCard,
   previewDashTarget,
+  previewEnemyTelegraph,
 } from '@/systems/grid-combat';
-import { traceLineOfSight, TILE_PROPS, canAttackTile } from '@/systems/tiles';
+import { traceLineOfSight, TILE_PROPS } from '@/systems/tiles';
 import { statusLabel } from '@/systems/labels';
 import type { Item } from '@/data/schemas';
 import { scaledValue, enhanceBadge } from '@/systems/enhance';
@@ -83,8 +84,27 @@ type Mode = 'idle' | 'move' | 'card';
 const mode = ref<Mode>('idle');
 /** 카드 조준 중인 손패 인스턴스 id. */
 const aimingCardId = ref<string | null>(null);
+/** 데스크탑 hover 중인 손패 인스턴스 id(#2) — 마우스만 올려도 격자에 사거리/패턴 즉시 미리보기. */
+const hoverCardId = ref<string | null>(null);
 /** aimed(원거리 조준) 카드의 현재 선택 조준 칸. null이면 아직 조준 칸 미선택(후보 하이라이트 단계). */
 const aimCell = ref<GridPos | null>(null);
+
+/**
+ * 격자 미리보기 대상 카드 id(#2) — 사거리/패턴/조준선을 어느 카드 기준으로 그릴지.
+ *  - 카드 조준 모드(mode==='card'): 조준 중인 카드(aimingCardId).
+ *  - 그 외(idle, 커밋 아님): hover(데스크탑) 또는 롱프레스(터치, detailCardId) 카드.
+ * 커밋/비전투면 null(미리보기 없음).
+ */
+function previewCardId(): string | null {
+  if (committing.value || phase.value !== 'combat') return null;
+  if (mode.value === 'card') return aimingCardId.value;
+  if (mode.value !== 'idle') return null; // 이동 모드 등에선 카드 미리보기 안 함.
+  return hoverCardId.value ?? detailCardId.value;
+}
+/** 미리보기가 *조준 확정(card 모드)*이 아니라 hover/롱프레스 단계인가 — aimed 후보칸을 보일지 판단. */
+function isHoverPreview(): boolean {
+  return mode.value !== 'card' && previewCardId() !== null;
+}
 /** 조준 중 호버 칸 — 시야 라인 미리보기용(#3). */
 const losPreviewCell = ref<GridPos | null>(null);
 /** 커밋(라운드 해소) 진행 중 — 입력 잠금. */
@@ -206,13 +226,14 @@ const highlightTiles = computed<Set<string>>(() => {
     // 퇴행 2번째 이동 등은 *이동 후 위치* 기준으로 도달칸 계산(없으면 현재 위치).
     return new Set(reachableTiles(state, { ...state.player, pos: effectivePlayerPos.value }).map(posKey));
   }
-  if (mode.value === 'card' && aimingCardId.value) {
-    const card = state.hand.find((c) => c.instanceId === aimingCardId.value);
+  const pid = previewCardId();
+  if (pid) {
+    const card = state.hand.find((c) => c.instanceId === pid);
     if (!card) return new Set();
     const caster = effectivePlayerPos.value;
     if (isAimedCard(card)) {
-      // aimed: 조준 칸 미선택이면 *후보 칸*(이동 후 위치 사거리 내), 선택 후면 shape 미리보기.
-      if (!aimCell.value) return new Set(aimableTiles(state, card, caster).map(posKey));
+      // aimed: 조준 칸 미선택(또는 hover 미리보기)이면 *후보 칸*(사거리 내), 선택 후면 shape 미리보기.
+      if (isHoverPreview() || !aimCell.value) return new Set(aimableTiles(state, card, caster).map(posKey));
       const off = { dx: aimCell.value.x - caster.x, dy: aimCell.value.y - caster.y };
       return new Set(previewCardTiles(state, card, caster, off).map(posKey));
     }
@@ -225,8 +246,9 @@ const highlightTiles = computed<Set<string>>(() => {
 const strongHighlightTiles = computed<Set<string>>(() => {
   const state = gc.value;
   if (!state || committing.value || phase.value !== 'combat') return new Set();
-  if (mode.value !== 'card' || !aimingCardId.value) return new Set();
-  const card = state.hand.find((c) => c.instanceId === aimingCardId.value);
+  const pid = previewCardId();
+  if (!pid) return new Set();
+  const card = state.hand.find((c) => c.instanceId === pid);
   if (!card || !card.shape || card.shape.length === 0) return new Set();
   const out = new Set<string>();
   // 투척 — 해소된 타격칸 중 수렴(강) 칸을 강조.
@@ -239,7 +261,7 @@ const strongHighlightTiles = computed<Set<string>>(() => {
   const muls = card.perTileMul ?? [];
   let anchor = effectivePlayerPos.value;
   if (isAimedCard(card)) {
-    if (!aimCell.value) return new Set();
+    if (!aimCell.value) return new Set(); // 조준 칸 미선택(hover 단계)이면 강 칸 미표시.
     anchor = aimCell.value;
   }
   card.shape.forEach((s, i) => {
@@ -261,8 +283,9 @@ const throwHints = computed<Map<string, string>>(() => {
   const state = gc.value;
   const m = new Map<string, string>();
   if (!state || committing.value || phase.value !== 'combat') return m;
-  if (mode.value !== 'card' || !aimingCardId.value) return m;
-  const card = state.hand.find((c) => c.instanceId === aimingCardId.value);
+  const pid = previewCardId();
+  if (!pid) return m;
+  const card = state.hand.find((c) => c.instanceId === pid);
   if (!card || card.targetMode !== 'throw') return m;
   const caster = effectivePlayerPos.value;
   for (const h of resolveThrowHits(state, card, caster)) {
@@ -314,6 +337,11 @@ function installAt(x: number, y: number): { glyph: string; kind: string } | null
 }
 /** 플레이어 비행 상태 여부(토큰 배지). */
 const playerAirborne = computed<boolean>(() => (gc.value?.player.statuses?.['airborne'] ?? 0) > 0);
+
+/** 공격 장판(#4) — 순차 재생 중 *지금 때리는 칸*의 유형('melee'|'ranged'|'throw'). 없으면 null. */
+function strikeStyleAt(x: number, y: number): string | null {
+  return fx.displayStrikes.value.get(`${x},${y}`) ?? null;
+}
 
 /** aimed 조준 칸 자체(중심 표시용 — shape 미리보기와 구분). */
 function isAimCenter(x: number, y: number): boolean {
@@ -367,8 +395,10 @@ const aimLine = computed<{ x1: number; y1: number; x2: number; y2: number; block
 /** move-self(대시) 카드 조준 중 — 이동 목적지 잔상(Q3). */
 const dashPreviewCell = computed<GridPos | null>(() => {
   const state = gc.value;
-  if (!state || mode.value !== 'card' || !aimingCardId.value) return null;
-  const card = state.hand.find((c) => c.instanceId === aimingCardId.value);
+  if (!state) return null;
+  const pid = previewCardId();
+  if (!pid) return null;
+  const card = state.hand.find((c) => c.instanceId === pid);
   if (!card || !card.effects.some((e) => e.kind === 'move-self')) return null;
   return previewDashTarget(state, card);
 });
@@ -403,36 +433,32 @@ const inspectedEnemy = computed<GridCombatant | undefined>(() =>
  * intentQueue를 따라가며 이동은 도착 칸(move), 공격은 (이동 후 위치 기준) 타격 칸(attack)을 모은다.
  * 계획을 쌓을수록(queuedTempoTicks 변동) 임박 적이 늘어 — 체스처럼 상대 수를 읽고 대응하게 한다.
  */
-const enemyTelegraph = computed<{ attack: Set<string>; move: Set<string> }>(() => {
-  const atk = new Set<string>();
-  const mv = new Set<string>();
-  const state = gc.value;
-  if (!state || committing.value || phase.value !== 'combat') return { attack: atk, move: mv };
-  for (const e of liveEnemies.value) {
-    if (tempoUntilTurnLive(e) > 1) continue; // 임박한 적만.
-    let simPos = { ...e.pos };
-    for (const a of e.intentQueue ?? []) {
-      if (a.kind === 'move') {
-        mv.add(`${a.to.x},${a.to.y}`);
-        simPos = { ...a.to };
-      } else if (a.kind === 'attack') {
-        if (a.targetTiles?.length) {
-          for (const t of a.targetTiles) atk.add(`${t.x},${t.y}`);
-        } else if (a.attackIdx >= 0) {
-          const def = e.attacks?.[a.attackIdx];
-          if (def) for (const t of previewAttackTiles(state, { ...e, pos: simPos }, def)) atk.add(`${t.x},${t.y}`);
-        } else {
-          // 기본 근접 폴백(attackIdx -1) — 인접 4칸이 위협 범위.
-          for (const d of [{ dx: 0, dy: -1 }, { dx: 0, dy: 1 }, { dx: -1, dy: 0 }, { dx: 1, dy: 0 }]) {
-            const p = { x: simPos.x + d.dx, y: simPos.y + d.dy };
-            if (canAttackTile(state.stage, p)) atk.add(`${p.x},${p.y}`);
-          }
-        }
-      }
+// 무한갱신 회피(#3): 텔레그래프 AI(enemyPlan/게임트리)는 무겁고 reactive 의존성을 건드려, computed로
+//   렌더 중 동기 계산하면 "Maximum recursive updates"가 났다. 그래서 *post-flush watch*에서 계산해
+//   shallowRef에 기록한다(렌더 플러시와 분리 — 콜백 내 reactive read/write는 추적되지 않아 루프 불가).
+//   source는 계획·적 위치·턴 등 *필요 신호만* 추려 의존(전체 state 깊은 의존 회피).
+const enemyTelegraph = shallowRef<{ attack: Set<string>; move: Set<string> }>({ attack: new Set(), move: new Set() });
+watch(
+  () => {
+    const s = gc.value;
+    if (!s || committing.value || phase.value !== 'combat') return '';
+    const p = plan.value.map((a) => (a.kind === 'move' ? `m${a.to.x},${a.to.y}` : a.kind)).join('>');
+    const e = liveEnemies.value.map((en) => `${en.id}@${en.pos.x},${en.pos.y}#${en.tempoCounter ?? 0}/${en.hp}`).join('|');
+    return `${s.turn}~${p}~${e}`;
+  },
+  () => {
+    const s = gc.value;
+    const atk = new Set<string>();
+    const mv = new Set<string>();
+    if (s && !committing.value && phase.value === 'combat') {
+      const tele = previewEnemyTelegraph(s);
+      for (const t of tele.attack) atk.add(`${t.x},${t.y}`);
+      for (const t of tele.move) mv.add(`${t.x},${t.y}`);
     }
-  }
-  return { attack: atk, move: mv };
-});
+    enemyTelegraph.value = { attack: atk, move: mv };
+  },
+  { immediate: true, flush: 'post' },
+);
 function isEnemyAtkTele(x: number, y: number): boolean { return enemyTelegraph.value.attack.has(`${x},${y}`); }
 function isEnemyMoveTele(x: number, y: number): boolean { return enemyTelegraph.value.move.has(`${x},${y}`); }
 
@@ -852,7 +878,12 @@ function potionSummary(item: Item): string {
   return parts.join(' · ');
 }
 
-/** 핸드 카드 탭 — 조준 모드 진입(이미 조준 중인 같은 카드면 해제). */
+/**
+ * 핸드 카드 탭(#2) — 한 번 탭에 선택/등록.
+ *  - 즉시(instant) 카드: 누르는 즉시 발동(현행).
+ *  - 원거리(aimed=투척/조준) 카드: 탭1=조준 진입 → 타깃 칸 탭=등록(현행 2단계 유지).
+ *  - 패턴/제자리(비조준) 카드: *탭 한 번에 즉시 큐잉*(기존 "같은 카드 다시 탭" 2탭 제거).
+ */
 function selectCard(c: Card) {
   if (pressFired) { pressFired = false; return; } // 롱프레스(상세) 직후의 click 억제
   if (committing.value) return;
@@ -863,16 +894,48 @@ function selectCard(c: Card) {
   swapPanelOpen.value = false;
   // 즉시 카드(#7) — 누르는 즉시 발동(조준/계획 없이). planFull과 무관.
   if (cardIsInstant(c)) { doInstant(c); return; }
-  // 두 번 누르면 등록(#3) — 조준 중인 같은 카드를 다시 누르면 취소가 아니라 *확정*.
-  if (mode.value === 'card' && aimingCardId.value === c.instanceId) {
-    if (isAimedCard(c) && !aimCell.value) { ui.toast('info', '조준 칸을 먼저 고르세요.'); return; }
-    confirmCard();
+  // 원거리 조준 카드 — 2단계(조준 진입 → 칸 탭 등록). 조준 중 같은 카드 다시 탭 = 확정.
+  if (isAimedCard(c)) {
+    if (mode.value === 'card' && aimingCardId.value === c.instanceId) {
+      if (!aimCell.value) { ui.toast('info', '조준 칸을 먼저 고르세요.'); return; }
+      confirmCard();
+      return;
+    }
+    mode.value = 'card';
+    aimingCardId.value = c.instanceId;
+    aimCell.value = null;
+    ui.toast('info', '사거리 안의 조준 칸을 고르세요.');
     return;
   }
-  mode.value = 'card';
-  aimingCardId.value = c.instanceId;
-  aimCell.value = null;
-  if (isAimedCard(c)) ui.toast('info', '사거리 안의 조준 칸을 고르세요.');
+  // 패턴/제자리 카드(#2) — 한 탭에 즉시 큐잉(조준 불필요).
+  queuePatternCard(c);
+}
+
+/** 비조준(패턴/제자리) 카드를 *현재 위치 기준* 고정 패턴으로 즉시 계획 큐에 등록(#2). */
+function queuePatternCard(c: Card) {
+  const state = gc.value;
+  if (!state || !c.instanceId) return;
+  const caster = effectivePlayerPos.value;
+  const targetTiles = previewCardTiles(state, c, caster);
+  const ok = queuePlayerAction(state, { kind: 'card', cardInstanceId: c.instanceId, targetTiles });
+  if (ok) {
+    mode.value = 'idle';
+    aimingCardId.value = null;
+    aimCell.value = null;
+  } else {
+    ui.toast('warning', '그 카드를 지금 사용할 수 없다.');
+  }
+}
+
+/** 카드 hover 진입(데스크탑, #2) — idle에서 그 카드의 사거리/패턴을 격자에 즉시 미리보기. */
+function onCardHover(c: Card) {
+  if (committing.value || mode.value !== 'idle') return; // 조준/이동 중엔 hover 미리보기 안 함.
+  if (!c.instanceId) return;
+  hoverCardId.value = c.instanceId;
+}
+/** 카드 hover 이탈(#2) — 그 카드였을 때만 해제(다른 카드로 옮겨가는 중이면 그쪽 enter가 갱신). */
+function onCardLeave(c: Card) {
+  if (hoverCardId.value === c.instanceId) hoverCardId.value = null;
 }
 
 /** self/제자리 카드(조준 칸 없음)인가 — shape 미설정 또는 빈 결과. */
@@ -1227,6 +1290,7 @@ onUnmounted(() => {
                 class="cell"
                 :class="[
                   `cell--${cellType(x - 1, y - 1)}`,
+                  strikeStyleAt(x - 1, y - 1) ? `cell--strike-${strikeStyleAt(x - 1, y - 1)}` : '',
                   {
                     'cell--highlight': isHighlighted(x - 1, y - 1),
                     'cell--strong': isStrongTile(x - 1, y - 1),
@@ -1317,7 +1381,7 @@ onUnmounted(() => {
           >
             <div
               class="token__inner"
-              :class="{ 'is-hit': fx.hitActors.value.has('player') }"
+              :class="{ 'is-hit': fx.hitActors.value.has('player'), 'is-cast': fx.castActors.value.has('player') }"
               :style="{ transform: tokenOffset(gc.player) }"
             >
               <div class="token__circle token__circle--player"></div>
@@ -1349,6 +1413,7 @@ onUnmounted(() => {
               class="token__inner"
               :class="{
                 'is-hit': fx.hitActors.value.has(e.id),
+                'is-cast': fx.castActors.value.has(e.id),
                 'is-dying': e.hp <= 0 && fx.dyingActors.value.has(e.id),
               }"
               :style="{ transform: tokenOffset(e) }"
@@ -1593,6 +1658,8 @@ onUnmounted(() => {
             :data-card-iid="c.instanceId"
             @click="selectCard(c)"
             @pointerdown="onCardPointerDown(c)"
+            @mouseenter="onCardHover(c)"
+            @mouseleave="onCardLeave(c)"
           >
             <div class="card__top">
               <span class="card__cost">{{ cardCost(c) }}</span>
@@ -1694,7 +1761,8 @@ onUnmounted(() => {
   position: relative;
 }
 .board {
-  --cell: 64px;
+  /* 보드 그래픽 확대(#1) — 데스크탑 76px(상한 76). 큰 맵이 넘치면 board-wrap이 스크롤. */
+  --cell: 76px;
   position: relative;
   display: grid;
   gap: 2px;
@@ -1702,11 +1770,12 @@ onUnmounted(() => {
   background: rgba(0,0,0,0.25);
   border-radius: 8px;
 }
-@media (max-width: 640px) { .board { --cell: 48px; } }
+@media (max-width: 640px) { .board { --cell: 58px; } }
 
 .cell {
   width: var(--cell); height: var(--cell);
   box-sizing: border-box;
+  position: relative; /* 장판/설치/투척 오버레이(::before, ::after, 자식 absolute) 기준. */
   display: flex; align-items: center; justify-content: center;
   border-radius: 4px;
   font-size: 0.9rem;
@@ -1790,6 +1859,50 @@ onUnmounted(() => {
 .cell--aim-center {
   background: rgba(255,224,130,0.34);
   border: 2px solid rgba(255,224,130,0.95);
+}
+
+/* === 공격 장판(#4) — 순차 재생 중 *지금 때리는 칸*을 데미지 숫자가 뜰 때까지 강조 + 유형별 애니메이션.
+   ::before 사용(텔레그래프의 ::after와 분리). z-index로 토큰(5) 아래·셀 배경 위. pointer-events 없음. */
+.cell--strike-melee::before,
+.cell--strike-ranged::before,
+.cell--strike-throw::before {
+  content: ''; position: absolute; inset: 0; border-radius: 4px; pointer-events: none; z-index: 2;
+}
+/* 근접 — 짧고 강한 충격 플래시(흰→투명) + 베기 결. */
+.cell--strike-melee::before {
+  background: radial-gradient(circle at 50% 50%, rgba(255,240,200,0.85), rgba(255,150,90,0.35) 60%, transparent 75%);
+  box-shadow: inset 0 0 0 2px rgba(255,210,140,0.9);
+  animation: strike-melee 400ms ease-out;
+}
+@keyframes strike-melee {
+  0% { opacity: 0; transform: scale(1.25); }
+  25% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.96); }
+}
+/* 원거리 — 직선 결 빔/스윕(세로 결이 쓸고 지나가는 느낌). */
+.cell--strike-ranged::before {
+  background: linear-gradient(180deg, transparent, rgba(150,210,255,0.8), transparent);
+  box-shadow: inset 0 0 0 2px rgba(150,210,255,0.85);
+  animation: strike-ranged 400ms ease-out;
+}
+@keyframes strike-ranged {
+  0% { opacity: 0; background-position: 0 -100%; }
+  30% { opacity: 1; }
+  100% { opacity: 0; background-position: 0 120%; }
+}
+/* 투척 — 호를 그리며 착탄하는 버스트(중심에서 퍼지는 링). */
+.cell--strike-throw::before {
+  background: radial-gradient(circle at 50% 50%, rgba(255,200,130,0.9), rgba(255,140,80,0.4) 50%, transparent 72%);
+  box-shadow: inset 0 0 0 2px rgba(255,180,110,0.9);
+  animation: strike-throw 400ms cubic-bezier(0.2,0.7,0.3,1);
+}
+@keyframes strike-throw {
+  0% { opacity: 0; transform: scale(0.3); }
+  40% { opacity: 1; transform: scale(1.12); }
+  100% { opacity: 0; transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cell--strike-melee::before, .cell--strike-ranged::before, .cell--strike-throw::before { animation: none; opacity: 0.7; }
 }
 
 /* === 전투원 토큰 ===
@@ -1891,6 +2004,14 @@ onUnmounted(() => {
   0% { filter: brightness(2.2); }
   100% { filter: brightness(1); }
 }
+
+/* 발동 펄스(#3) — 즉시/버프 카드 등 hit/move 없는 행동의 자기 발동 표시(원에 밝은 링이 퍼졌다 사라짐). */
+.token__inner.is-cast .token__circle { animation: cast-pulse 360ms ease-out; }
+@keyframes cast-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(180,230,255,0.9), 0 0 8px rgba(140,200,255,0.6); filter: brightness(1.6); }
+  100% { box-shadow: 0 0 0 14px rgba(180,230,255,0), 0 0 6px rgba(140,200,255,0); filter: brightness(1); }
+}
+@media (prefers-reduced-motion: reduce) { .token__inner.is-cast .token__circle { animation: none; } }
 
 /* 플로팅 숫자 */
 .float-num {

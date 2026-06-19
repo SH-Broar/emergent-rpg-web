@@ -17,6 +17,8 @@ import { ref } from 'vue';
 import type { FxEvent, GridPos } from '@/data/schemas';
 
 export type GridFxKind = 'damage' | 'blocked' | 'heal';
+/** 공격 장판(#4) 유형 — 칸 단위 애니메이션 클래스 분기. */
+export type GridStrikeStyle = 'melee' | 'ranged' | 'throw';
 
 /** 한 전투원 원 위에 잠깐 떠오르는 숫자. */
 export interface GridFloatingNumber {
@@ -46,6 +48,8 @@ const REDUCED =
 const NUMBER_TTL = REDUCED ? 600 : 1100;
 /** 피격 흔들림 지속(흔들림 모션 자체는 짧게 — dwell과 별개). */
 const HIT_TTL = REDUCED ? 0 : 160;
+/** 발동 펄스(#3) 지속 — 즉시/버프 카드 자기 발동 플래시. dwell 안에서 보이게 짧게. */
+const CAST_TTL = REDUCED ? 0 : 360;
 /**
  * 이동 트랜지션 시간(CSS .token transition과 맞춤) — 토큰이 칸을 미끄러지는 시간.
  * dwell(ACTION_MIN) 안에 들어오도록 살짝 짧게.
@@ -68,6 +72,16 @@ export function useGridFx() {
   const hitActors = ref<Set<string>>(new Set());
   /** 소멸 중인 전투원 id 집합(원에 .is-dying 클래스 — 페이드아웃). */
   const dyingActors = ref<Set<string>>(new Set());
+  /**
+   * 발동 펄스(#3) 중인 전투원 id 집합(원에 .is-cast 클래스 — 짧은 플래시/링).
+   * 즉시/버프 카드처럼 hit/move가 없는 행동도 화면에 보이게 한다(status fx → 펄스).
+   */
+  const castActors = ref<Set<string>>(new Set());
+  /**
+   * 현재 행동(그룹)이 *때리는 칸* 강조(#4) — 칸 키 'x,y' → 장판 유형. 한 행동 dwell 동안만 채워지고
+   * 데미지 숫자가 뜰 때 비워진다(동시 표시 금지 — 다음 행동 전 clear). 비어 있으면 장판 없음.
+   */
+  const displayStrikes = ref<Map<string, GridStrikeStyle>>(new Map());
 
   // === display state(A) — 순차 재생 중 토큰이 바인딩하는 *표시* 위치/HP/방어. ===
   // 비어 있으면(idle) 뷰가 엔진 state로 폴백. 순차 재생이 끝나면 비워 final로 수렴.
@@ -123,6 +137,29 @@ export function useGridFx() {
       after.delete(actorId);
       dyingActors.value = after;
     }, NUMBER_TTL);
+  }
+
+  /** 발동 펄스(#3) — 그 전투원 원에 짧게 .is-cast(플래시/링). 즉시·버프 카드가 보이게. */
+  function pulseCast(actorId: string) {
+    if (CAST_TTL <= 0) return;
+    const next = new Set(castActors.value);
+    next.add(actorId);
+    castActors.value = next;
+    window.setTimeout(() => {
+      const after = new Set(castActors.value);
+      after.delete(actorId);
+      castActors.value = after;
+    }, CAST_TTL);
+  }
+
+  /** 공격 장판(#4) 칸 강조 set/clear — 새 Map으로 교체(반응성). */
+  function setStrikes(tiles: GridPos[], style: GridStrikeStyle) {
+    const m = new Map(displayStrikes.value);
+    for (const t of tiles) m.set(`${t.x},${t.y}`, style);
+    displayStrikes.value = m;
+  }
+  function clearStrikes() {
+    if (displayStrikes.value.size > 0) displayStrikes.value = new Map();
   }
 
   // === display 갱신 헬퍼(새 Map으로 교체해 반응성 보장) ===
@@ -193,7 +230,14 @@ export function useGridFx() {
       case 'spawn':
         if (ev.to) setDisplayPos(actorId, ev.to);
         break;
+      case 'attack-tiles':
+        // 장판(#4) — 이 행동이 때리는 칸을 그룹 dwell 동안 강조(playRound가 그룹 끝에 clearStrikes).
+        if (ev.tiles?.length) setStrikes(ev.tiles, (ev.style ?? 'melee') as GridStrikeStyle);
+        break;
       case 'status':
+        // 발동 펄스(#3) — 즉시/버프 카드(또는 보스 자세 전환)처럼 hit/move 없는 행동의 자기 발동 표시.
+        if (actorId) pulseCast(actorId);
+        break;
       default:
         break;
     }
@@ -289,12 +333,15 @@ export function useGridFx() {
     }
 
     // 3) 그룹 순차 — 각 그룹 시작 시각 = 이전 그룹들의 (모션 + ACTION_GAP) 누적.
+    //    장판(#4): 그룹 시작에 *이전 장판을 비우고* 그 그룹 fx 적용(attack-tiles가 새 장판 set).
+    //    그룹 dwell 끝(at+motion)에 장판을 비워 데미지 숫자와 함께 사라지게 한다(동시 표시 금지).
     let cursor = 0;
     for (let gi = 0; gi < groups.length; gi++) {
       const group = groups[gi];
       const at = cursor;
-      later(() => { for (const ev of group) applyFx(ev); }, at);
+      later(() => { clearStrikes(); for (const ev of group) applyFx(ev); }, at);
       const motion = groupMotionMs(group);
+      later(() => { clearStrikes(); }, at + motion);
       cursor = at + motion + ACTION_GAP;
     }
 
@@ -310,12 +357,13 @@ export function useGridFx() {
     displayPos.value = new Map();
     displayHp.value = new Map();
     displayBlock.value = new Map();
+    clearStrikes();
   }
 
   return {
     reduced: REDUCED,
-    floats, hitActors, dyingActors,
-    displayPos, displayHp, displayBlock, playing,
+    floats, hitActors, dyingActors, castActors,
+    displayPos, displayHp, displayBlock, displayStrikes, playing,
     consume, consumeAll, playRound, clearDisplay,
   };
 }

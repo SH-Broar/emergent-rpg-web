@@ -424,11 +424,22 @@ export type PlannedAction =
  */
 export interface FxEvent {
   // block-gain = 방어 *획득*(파란 +N) / block-absorb = 방어가 피해를 *흡수*(파란 -N).
-  kind: 'move' | 'hit' | 'block-absorb' | 'block-gain' | 'spawn' | 'death' | 'heal' | 'status';
+  // attack-tiles = 그 행동이 *때리는 칸*(장판) 미리보기 — 데미지 숫자가 뜰 때까지 칸을 강조(#4).
+  kind: 'move' | 'hit' | 'block-absorb' | 'block-gain' | 'spawn' | 'death' | 'heal' | 'status' | 'attack-tiles';
   actorId?: string;
   from?: GridPos;
   to?: GridPos;
   amount?: number;
+  /**
+   * attack-tiles 전용 — 이 행동이 타격하는 절대 칸 목록(장판). 그 행동 그룹 dwell 동안만 표시 후 사라진다.
+   * 같은 actionIndex의 hit/move fx와 함께 묶여 *순차*로만 보인다(동시 표시 금지).
+   */
+  tiles?: GridPos[];
+  /**
+   * attack-tiles 전용 — 장판 애니메이션 유형. melee=근접 충격, ranged=직선 결, throw=착탄 버스트.
+   * 거리/조준 방식으로 엔진이 판정해 싣는다(인접=melee / 원거리 조준=ranged / 투척=throw).
+   */
+  style?: 'melee' | 'ranged' | 'throw';
   seq: number;
   /**
    * 해소 순서 그룹 인덱스(0-기준) — 한 라운드에서 *몇 번째 행동*이 이 fx를 냈는지.

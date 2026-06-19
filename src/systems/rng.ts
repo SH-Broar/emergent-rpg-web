@@ -19,6 +19,15 @@ export function setRng(fn: () => number): void {
   _rng = fn;
 }
 
+/**
+ * 현재 등록된 PRNG 함수 자체를 반환(임시 교체 후 *원복*용).
+ * 주의: rng()는 매 호출 _rng를 위임하는 래퍼라 그것을 다시 setRng하면 자기재귀가 된다.
+ * 반드시 이 getRng()로 *실제 등록 함수*를 떠 두었다가 setRng로 되돌릴 것.
+ */
+export function getRng(): () => number {
+  return _rng;
+}
+
 /** 현재 등록된 PRNG로 [0, 1) 난수 1개 반환. */
 export function rng(): number {
   return _rng();
