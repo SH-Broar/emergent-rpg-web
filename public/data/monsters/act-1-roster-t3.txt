@@ -83,7 +83,7 @@ card_drops =
 [monster.mr-luna-forbidden-wisp]
 name = 서고 도깨비불
 tier = normal
-species = wraith
+species = fae
 hp = 133
 attack = 10
 grid_attack_1 = 내지르기 | 0,-1 0,-2 0,1 0,2 -1,0 -2,0 1,0 2,0 | 1,0.7,1,0.7,1,0.7,1,0.7 | 10 | slow | true |
@@ -173,9 +173,9 @@ time_shards = 6
 card_drops =
 
 [monster.mr-tacomi-barrier-sprite]
-name = 결계 유령
+name = 결계 요정
 tier = normal
-species = wraith
+species = fae
 hp = 140
 attack = 9
 grid_attack_1 = 내지르기 | 0,-1 0,-2 0,1 0,2 -1,0 -2,0 1,0 2,0 | 1,0.7,1,0.7,1,0.7,1,0.7 | 9 | slow | true |
@@ -295,9 +295,9 @@ time_shards = 6
 card_drops =
 
 [monster.mr-demon-windfall-gale-blade]
-name = 회오리 유령
+name = 회오리 요정
 tier = normal
-species = wraith
+species = fae
 hp = 154
 attack = 16
 grid_attack_1 = 휘둘러치기 | -1,-1 1,-1 -1,1 1,1 | 1,1,1,1 | 16 | normal | true |
@@ -311,9 +311,9 @@ time_shards = 7
 card_drops =
 
 [monster.mr-demon-windfall-time-freezer]
-name = 멈춘 유령
+name = 멈춘 요정
 tier = normal
-species = wraith
+species = fae
 hp = 133
 attack = 9
 grid_attack_1 = 휘둘러치기 | -1,-1 1,-1 -1,1 1,1 | 1,1,1,1 | 9 | normal | true |
@@ -339,9 +339,9 @@ time_shards = 8
 card_drops =
 
 [monster.mr-demon-windfall-storm-tyrant]
-name = 성난 폭풍 유령
+name = 성난 폭풍 요정
 tier = elite
-species = wraith
+species = fae
 hp = 560
 attack = 23
 grid_attack_1 = 휩쓸기 | 0,-1 0,1 -1,0 1,0 -1,-1 1,-1 -1,1 1,1 | 1,1,1,1,1,1,1,1 | 26 | normal | true |
@@ -498,9 +498,9 @@ time_shards = 7
 card_drops =
 
 [monster.mr-triflower-flame-spirit]
-name = 불꽃 유령
+name = 불꽃 요정
 tier = normal
-species = wraith
+species = fae
 hp = 133
 attack = 9
 grid_attack_1 = 할퀴기 | 0,-1 0,1 -1,0 1,0 | 1,1,1,1 | 9 | fast | true |
@@ -526,9 +526,9 @@ time_shards = 8
 card_drops =
 
 [monster.mr-triflower-scorchling]
-name = 잿불 유령
+name = 잿불 요정
 tier = normal
-species = wraith
+species = fae
 hp = 119
 attack = 12
 grid_attack_1 = 내지르기 | 0,-1 0,-2 0,1 0,2 -1,0 -2,0 1,0 2,0 | 1,0.7,1,0.7,1,0.7,1,0.7 | 12 | slow | true |

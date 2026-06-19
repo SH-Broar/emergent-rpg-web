@@ -445,6 +445,7 @@ const SPECIES_COLOR: Record<string, string> = {
   spirit: '#a8e0ff', wraith: '#b09ad0', golem: '#a89878', arachne: '#c08eaa',
   lamia: '#9ad0a0', slime: '#9ee0c0', fox: '#ffb86c', dragon: '#ff9a6c',
   angel: '#ffe6a0', demon: '#ef8fb0', centaur: '#c2925f', lizardman: '#6fbf76', minotaur: '#a86a4a',
+  fae: '#d8c0ff',
 };
 function enemyColor(e: GridCombatant): string {
   const species = e.monsterId ? data.monsters.get(e.monsterId)?.species : undefined;

@@ -423,6 +423,8 @@ export const SPECIES_GIMMICK: Record<string, string> = {
   centaur: 'charge:3',
   lizardman: 'drain-stat:2',
   minotaur: 'charge:4',
+  // --- 요정(구 spirit 대체): 가루로 시야 교란 ---
+  fae: 'obscure:2',
 };
 
 /** all-gimmick 폴백 — 종족 미정의/누락 시 보편 교란 기믹. */

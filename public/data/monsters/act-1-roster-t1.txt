@@ -89,7 +89,7 @@ card_drops =
 [monster.mr-iluneon-lantern-imp]
 name = 가로등 불씨
 tier = normal
-species = wraith
+species = fae
 hp = 42
 attack = 4
 grid_attack_1 = 할퀴기 | 0,-1 0,1 -1,0 1,0 | 1,1,1,1 | 4 | fast | true |
@@ -183,7 +183,7 @@ grid_attack_1 = 시간 균열 | -1,-1 0,-1 1,-1 -1,0 1,0 | 0.7,1.0,0.7,0.5,0.5 |
 [monster.mr-iluneon-spirit-herald]
 name = 시미브
 tier = elite
-species = wraith
+species = fae
 hp = 180
 attack = 10
 grid_attack_1 = 휩쓸기 | 0,-1 0,1 -1,0 1,0 -1,-1 1,-1 -1,1 1,1 | 1,1,1,1,1,1,1,1 | 12 | normal | true |
