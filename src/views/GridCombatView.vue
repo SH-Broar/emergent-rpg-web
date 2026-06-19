@@ -192,15 +192,19 @@ const hasPlannedMove = computed<boolean>(() => {
   const e = effectivePlayerPos.value;
   return e.x !== state.player.pos.x || e.y !== state.player.pos.y;
 });
-/** 이동은 한 라운드 1회(US-001) — 이미 큐에 있으면 [이동] 비활성. */
-const moveQueued = computed<boolean>(() => plan.value.some((a) => a.kind === 'move'));
+/** 이동은 한 라운드 1회(US-001), 단 퇴행(#10)이면 2회까지. 한도 도달 시 [이동] 비활성. */
+const moveQueued = computed<boolean>(() => {
+  const limit = (gc.value?.player.statuses?.['regress'] ?? 0) > 0 ? 2 : 1;
+  return plan.value.filter((a) => a.kind === 'move').length >= limit;
+});
 
 /** 현재 모드에 따른 하이라이트 칸 집합(키 'x,y'). */
 const highlightTiles = computed<Set<string>>(() => {
   const state = gc.value;
   if (!state || committing.value || phase.value !== 'combat') return new Set();
   if (mode.value === 'move') {
-    return new Set(reachableTiles(state, state.player).map(posKey));
+    // 퇴행 2번째 이동 등은 *이동 후 위치* 기준으로 도달칸 계산(없으면 현재 위치).
+    return new Set(reachableTiles(state, { ...state.player, pos: effectivePlayerPos.value }).map(posKey));
   }
   if (mode.value === 'card' && aimingCardId.value) {
     const card = state.hand.find((c) => c.instanceId === aimingCardId.value);

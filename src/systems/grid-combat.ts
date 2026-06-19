@@ -241,10 +241,13 @@ function slideReach(
  * rook/bishop/king은 경로 막힘 반영(slideReach), knight는 점프(착지 가능 칸).
  */
 export function reachableTiles(state: GridCombatState, combatant: GridCombatant): GridPos[] {
-  const prof = combatant.moveProfile;
+  const st = combatant.statuses;
+  const slimed = (st?.['slime'] ?? 0) > 0;
+  // 점액(slime, #6): 이동이 상하좌우 1칸으로 제한(이동속도 보너스 무시). 그 외엔 종족 프로필 + 상태 이동 보너스.
+  const prof: MoveProfile = slimed ? { pattern: 'orthogonal1', range: 1 } : combatant.moveProfile;
   const from = combatant.pos;
-  const range = Math.max(1, prof.range ?? 1);
-  const air = isAirborne(combatant);
+  const range = Math.max(1, (prof.range ?? 1) + (slimed ? 0 : statusMoveBonus(st)));
+  const air = movesAsAir(st);
   const canPass = (p: GridPos): boolean => (air ? canAirThrough(state.stage, p) : canMoveThrough(state.stage, p));
   const canLand = (p: GridPos): boolean => (air ? canAirStop(state.stage, p) : canStopAt(state.stage, p));
 
@@ -543,9 +546,13 @@ export function queuePlayerAction(state: GridCombatState, action: PlannedAction)
   if (action.kind === 'move') {
     // 닻(anchored) 상태면 이동 불가(보스 anchor 기믹).
     if ((state.player.statuses['anchored'] ?? 0) > 0) return false;
-    // 이동은 한 라운드 계획에 1회만(사용자 규칙). 합법성은 *이동 후 위치 기준 누적*이 아니라 현재 위치 기준 best-effort.
-    if (state.playerPlan.some((a) => a.kind === 'move')) return false;
-    if (!isLegalMove(state, state.player, action.to)) return false;
+    // 이동은 한 라운드 1회(퇴행 #10이면 2회). 합법성은 현재 위치 기준 best-effort.
+    const moveLimit = (state.player.statuses['regress'] ?? 0) > 0 ? 2 : 1;
+    if (state.playerPlan.filter((a) => a.kind === 'move').length >= moveLimit) return false;
+    // 이동 후 위치(이전 큐 이동 반영) 기준 합법성 — 다중 이동(퇴행) 지원.
+    let fromPos = state.player.pos;
+    for (const a of state.playerPlan) if (a.kind === 'move') fromPos = a.to;
+    if (!isLegalMove(state, { ...state.player, pos: fromPos }, action.to)) return false;
     state.playerPlan.push(action);
     return true;
   }
@@ -707,8 +714,9 @@ function relicHandManaExtras(loadout: Relic[]): { draw: number; mana: number } {
 //   - metallicize/barricade/feelNoPain/rupture/juggernaut/feral-heavy : 전투 휘발 파워/잔존(감쇠 안 함).
 const DECAYING_STATUSES = new Set<string>([
   'weakness', 'vulnerable', 'ghost', 'anchored', 'slowed', 'airborne',
-  'brainwash', 'regress', 'sleep', 'focus', 'haste',
+  'brainwash', 'slime', 'sleep', 'haste', 'move-haste',
 ]);
+// (퇴행 regress는 #10으로 영구화 — 비감쇠, 아이템/이벤트로만 해제. 집중 focus·반격진 등은 폐지.)
 
 /**
  * 전투원이 수화(feral)/심수화(feral-heavy)인가 — 둘 다 공격 ×2 + 방어 0(combat.ts playerWild 동일).
@@ -722,6 +730,14 @@ function wildMul(statuses: Record<string, number> | undefined): number {
   if ((statuses?.['feral-heavy'] ?? 0) > 0) return 2;
   if ((statuses?.['feral'] ?? 0) > 0) return 1.5;
   return 1;
+}
+/** 상태이상에 의한 이동 사거리 보너스(2026-06-19) — 심수화 +1, 가속(move-haste) +스택. */
+function statusMoveBonus(statuses: Record<string, number> | undefined): number {
+  return ((statuses?.['feral-heavy'] ?? 0) > 0 ? 1 : 0) + (statuses?.['move-haste'] ?? 0);
+}
+/** 이동이 *공중 속성*인가(2026-06-19) — 비행/유령화/퇴행이면 장애물 위를 넘어간다. */
+function movesAsAir(statuses: Record<string, number> | undefined): boolean {
+  return (statuses?.['airborne'] ?? 0) > 0 || (statuses?.['ghost'] ?? 0) > 0 || (statuses?.['regress'] ?? 0) > 0;
 }
 /** 심수화(feral-heavy)면 회복 전면 차단(combat.ts healBlocked 동일). 일반 수화는 회복 가능. */
 function isHealBlocked(statuses: Record<string, number> | undefined): boolean {
@@ -766,14 +782,13 @@ function damageMultipliers(
   if ((attacker?.weakness ?? 0) > 0) r = Math.floor(r * 0.75);
   // 세뇌(brainwash): 홀려서 손이 무뎌진다 — 공격자가 주는 피해 ×0.66.
   if ((attacker?.brainwash ?? 0) > 0) r = Math.floor(r * 0.66);
-  // 각인(imprint): 새겨진 표식이 힘을 빼앗는다 — 공격자가 주는 피해 ×0.85(빙의 전조).
-  if ((attacker?.imprint ?? 0) > 0) r = Math.floor(r * 0.85);
-  // 혼란(possession): 몸을 절반쯤 빼앗긴다 — 공격자가 주는 피해 ×0.5(강력, 비감쇠).
+  // 각인(imprint, #13): 스택당 주는 피해 -10% *복리*(×0.9^스택).
+  const imp = attacker?.imprint ?? 0;
+  if (imp > 0) r = Math.floor(r * Math.pow(0.9, imp));
+  // 혼란(possession): 공격자가 주는 피해 ×0.5(강력, 비감쇠). (#12 빙의 분리는 후속 배치)
   if ((attacker?.possession ?? 0) > 0) r = Math.floor(r * 0.5);
-  // 유령화(ghost): 공격자가 유령화면 주는 피해 ×0.5, 대상이 유령화면 받는 피해 ×0.5(양날).
-  if ((attacker?.ghost ?? 0) > 0) r = Math.floor(r * 0.5);
   if ((target?.vulnerable ?? 0) > 0) r = Math.floor(r * 1.5);
-  if ((target?.ghost ?? 0) > 0) r = Math.floor(r * 0.5);
+  // 유령화(ghost, #11): ×0.5 피해 폐지 — 공중 이동·원거리 비표적·유령끼리 공격불가로 재설계.
   return r;
 }
 
@@ -787,6 +802,8 @@ function applyDamage(
   rawValue: number,
   attackerStatuses: Record<string, number> | undefined,
 ): void {
+  // 유령화끼리는 서로 공격 불가(#11) — 공격자·대상 모두 유령화면 피해 0.
+  if ((attackerStatuses?.['ghost'] ?? 0) > 0 && (target.statuses?.['ghost'] ?? 0) > 0) return;
   let v = damageMultipliers(rawValue, attackerStatuses, target.statuses);
   // 플레이어가 *받는* 피해에 유물 damage-in-mul 적용(유리 송곳니 등 — combat.ts와 동일).
   if (target.team === 'player') {
@@ -858,14 +875,10 @@ function tickRoundStatuses(state: GridCombatState): void {
   for (const c of aliveCombatants(state)) {
     const s = c.statuses;
 
-    // imprint(각인) → possession(혼란) 전이 — HP 잠식 *전에* 처리(전이분도 이번 라운드부터 잠식).
+    // 각인(imprint, #13) — 5 이하면 3턴마다 -1, 6 이상이면 감쇠 없음(특수 이벤트로만 해소). 혼란 전이 폐지.
     const imp = s['imprint'] ?? 0;
-    if (imp >= 5) {
-      const left = imp - 5;
-      if (left <= 0) delete s['imprint'];
-      else s['imprint'] = left;
-      s['possession'] = (s['possession'] ?? 0) + 1;
-      if (c.team === 'player') pushLog(state, '각인이 깊어져 혼란으로 번졌다');
+    if (imp > 0 && imp <= 5 && state.turn % 3 === 0) {
+      if (imp - 1 <= 0) delete s['imprint']; else s['imprint'] = imp - 1;
     }
 
     // possession(혼란) — 매 라운드 HP 잠식(스택 비례, 캡 6, 최소 HP 1). 비감쇠.
@@ -1783,8 +1796,9 @@ export function commitRound(state: GridCombatState): void {
   if (!state.outcome && state.player.hp > 0) {
     fxActionIndex += 1;
     execWait(state);
+    // 퇴행(#10): 턴 종료 대기가 *시간을 쓰지 않음*(적 템포 미진행). 그 외엔 대기 1턴 진행.
     if (!postActionCleanup(state)) {
-      tickEnemyTempo(state);
+      if ((state.player.statuses['regress'] ?? 0) === 0) tickEnemyTempo(state);
       postActionCleanup(state);
     }
   }
@@ -1967,6 +1981,8 @@ function execMove(state: GridCombatState, actor: GridCombatant, to: GridPos): vo
   pushFx(state, { kind: 'move', actorId: actor.id, from, to: { ...to } });
   // 바닥 아이템 — 플레이어가 그 칸에 서면 획득(슬라이스: 기록만, 실제 인벤 추가는 스토어).
   if (actor.team === 'player') collectItemAt(state, to);
+  // 점액(#6): 이동마다 -1.
+  { const sl = actor.statuses['slime'] ?? 0; if (sl > 0) { if (sl - 1 <= 0) delete actor.statuses['slime']; else actor.statuses['slime'] = sl - 1; } }
 }
 
 /** 바닥 아이템 픽업 — itemDrops에서 제거 + 런 인벤토리에 추가. */
@@ -2026,6 +2042,8 @@ function execCard(
   // 카드 사용 후 유물(on-card-played-after) — 카운터형(헤아림의 염주·벼림의 띠 등).
   gridRelicOnCardPlayed(state, card.id);
   pushLog(state, `「${card.name}」`);
+  // 점액(#6): 카드 사용(행동)마다 -1.
+  { const sl = state.player.statuses['slime'] ?? 0; if (sl > 0) { if (sl - 1 <= 0) delete state.player.statuses['slime']; else state.player.statuses['slime'] = sl - 1; } }
 }
 
 /**
@@ -2206,12 +2224,11 @@ function applyCardEffects(
   aimOffset?: GridOffset,
 ): void {
   const playerStatuses = state.player.statuses;
-  // 퇴행(regress): 컬러 보너스(ATK/DEF) 전부 무효 — combat.ts playerBonuses 동일. 컬러 *직접* 피해
-  //   (damage-top-color 등)는 컬러값 자체라 영향 없음(아래 색피해 case는 bonus를 안 씀).
+  // 퇴행(regress, #10): 컬러 보너스(ATK/DEF) *절반*(기존 전무효에서 완화). 대신 이동 2회·공중·무코스트 대기.
   const regress = (playerStatuses['regress'] ?? 0) > 0;
   const rawBonus = currentBonuses();
   const bonus = regress
-    ? { ...rawBonus, damage: 0, block: 0 }
+    ? { ...rawBonus, damage: Math.floor(rawBonus.damage / 2), block: Math.floor(rawBonus.block / 2) }
     : rawBonus;
   const strength = playerStatuses.strength ?? 0;
   const wild = isWild(playerStatuses);               // 수화/심수화: 카드 base 피해 ×2 + 방어 0.
@@ -2227,11 +2244,15 @@ function applyCardEffects(
   const shape = card.shape ?? [];
   const perTileMul = card.perTileMul ?? [];
   const shapeHits: { target: GridCombatant; mul: number }[] = [];
+  // 원거리(aimed/throw)는 유령화(ghost) 적을 타게팅 못 함(#11). 근접(pattern)은 가능.
+  const rangedCard = card.targetMode === 'aimed' || card.targetMode === 'throw';
+  const canHit = (c: GridCombatant): boolean =>
+    c.team === 'enemy' && c.hp > 0 && !(rangedCard && (c.statuses?.['ghost'] ?? 0) > 0);
   if (card.targetMode === 'throw') {
     // 투척(US-003) — 플레이어 기준 레이캐스트 해소(장애물 앞 정지 + 수렴 강칸). anchor 무시.
     for (const hit of resolveThrowHits(state, card, state.player.pos)) {
       for (const c of combatantsAt(state, hit.pos)) {
-        if (c.team === 'enemy' && c.hp > 0) shapeHits.push({ target: c, mul: hit.mul });
+        if (canHit(c)) shapeHits.push({ target: c, mul: hit.mul });
       }
     }
   } else {
@@ -2241,7 +2262,7 @@ function applyCardEffects(
       // 그 칸의 *모든* 적군을 대상에 포함(겹침 허용 — 한 칸에 적 여럿/플레이어와 겹쳐도). perTileMul은 칸 인덱스 기준.
       const mul = perTileMul[i] ?? 1;
       for (const c of combatantsAt(state, pos)) {
-        if (c.team === 'enemy' && c.hp > 0) shapeHits.push({ target: c, mul });
+        if (canHit(c)) shapeHits.push({ target: c, mul });
       }
     });
   }
@@ -2259,7 +2280,8 @@ function applyCardEffects(
     let v: number;
     if (addStrength) {
       const wb = Math.floor(base * wildMul(playerStatuses)); // 수화 ×1.5 / 심수화 ×2(색/힘 가산 전).
-      const composed = wb + bonus.damage + strength + dmgFlat; // 색(regress 0) + 힘 + focus.
+      const slimePen = rangedCard ? 0 : (playerStatuses['slime'] ?? 0); // 점액(#6): 근접 피해 -스택(원거리 제외).
+      const composed = wb + bonus.damage + strength + dmgFlat - slimePen; // 색(regress 0) + 힘 - 점액.
       v = applyDamageRelicMods(state, Math.max(0, composed));  // 유물 주는 피해 보정.
     } else {
       if (base <= 0) return;
@@ -2806,10 +2828,9 @@ function refillManaPerRound(state: GridCombatState): void {
   const bonus = currentBonuses();
   const relicMana = gridManaExtra(state);  // mana-extra-add(들뜬 등불 등).
   const s = state.player.statuses;
-  // 점액(slime): 매 라운드 마나 -스택(최소 0, combat.ts effMaxMana). 비-DECAYING이라 여기서 직접 -1 감쇠.
-  const slime = s['slime'] ?? 0;
+  // (점액(slime)은 #6 재설계로 마나 무관 — 이동 상하좌우1 + 근접 -스택 + 행동마다 감쇠. 여기선 미처리.)
   state.maxMana = Math.max(1, DEFAULT_MAX_MANA + bonus.manaExtra + relicMana);
-  const effMana = Math.max(0, state.maxMana - slime);
+  const effMana = state.maxMana;
   // next-turn-energy(칼리번) — 다음 라운드 시작 마나 보너스 1회 반영 후 0 리셋.
   const energyBonus = state.nextTurnEnergyBonus ?? 0;
   state.mana = effMana + energyBonus;
@@ -2820,8 +2841,6 @@ function refillManaPerRound(state: GridCombatState): void {
     state.mana = Math.max(0, state.mana - spasm);
     delete s['spasm'];
   }
-  // slime 자기 감쇠(읽은 뒤 -1) — DECAYING_STATUSES에 넣지 않고 inline 처리(마나 리필이 감쇠 루프 뒤라 off-by-one 회피).
-  if (slime > 0) { if (slime - 1 <= 0) delete s['slime']; else s['slime'] = slime - 1; }
 }
 
 // ============================================================================
