@@ -713,7 +713,7 @@ function relicHandManaExtras(loadout: Relic[]): { draw: number; mana: number } {
 //   - possession/imprint : 영구(비감쇠). possession은 매 라운드 HP 잠식, imprint는 5↑이면 possession으로 전이.
 //   - metallicize/barricade/feelNoPain/rupture/juggernaut/feral-heavy : 전투 휘발 파워/잔존(감쇠 안 함).
 const DECAYING_STATUSES = new Set<string>([
-  'weakness', 'vulnerable', 'ghost', 'anchored', 'slowed', 'airborne',
+  'weakness', 'vulnerable', 'ghost', 'anchored', 'drowsy', 'airborne',
   'brainwash', 'slime', 'sleep', 'haste', 'move-haste',
 ]);
 // (퇴행 regress는 #10으로 영구화 — 비감쇠, 아이템/이벤트로만 해제. 집중 focus·반격진 등은 폐지.)
@@ -845,6 +845,13 @@ function applyStatusToken(target: GridCombatant, token: string | undefined): voi
   const v = vStr ? Number(vStr) : 1;
   if (!Number.isFinite(v) || v === 0) return;
   target.statuses[name] = (target.statuses[name] ?? 0) + v;
+  // 졸음(drowsy, #8) 2스택 → 수면(sleep)으로 전이.
+  if (name === 'drowsy' && (target.statuses['drowsy'] ?? 0) >= 2) {
+    delete target.statuses['drowsy'];
+    target.statuses['sleep'] = (target.statuses['sleep'] ?? 0) + 1;
+  }
+  // 수면(sleep, #5): 비행(airborne) 해제.
+  if ((target.statuses['sleep'] ?? 0) > 0) target.statuses['airborne'] = 0;
 }
 
 /** 매 라운드 종료 상태이상 감쇠(-1, 0이면 제거). */
@@ -1688,6 +1695,8 @@ function postActionCleanup(state: GridCombatState): boolean {
  * 각 행동은 fxActionIndex 그룹으로 분리(순차 재생). 실행 후 의도 재계산.
  */
 function takeCombatantTurn(state: GridCombatState, c: GridCombatant): void {
+  // 수면(sleep, #5): 이번 턴 행동 불가(스킵). 피해를 받으면 즉시 깸(applyDamage). 라운드 종료 시 -1 감쇠.
+  if ((c.statuses['sleep'] ?? 0) > 0) return;
   const turn = c.intentQueue ?? [];
   for (const action of turn) {
     if (state.outcome) break;
@@ -1712,9 +1721,9 @@ function tickEnemyTempo(state: GridCombatState): void {
   for (const enemy of state.enemies) {
     if (state.outcome) return;
     if (enemy.hp <= 0) continue;
-    // 둔화(slowed) 상태 — 격자 신규 디버프(US-004): 실효 템포 +스택(적이 그만큼 덜 자주 행동). 라운드 감쇠.
-    const slowed = enemy.statuses['slowed'] ?? 0;
-    const tempo = Math.max(1, (enemy.tempo ?? DEFAULT_TEMPO) + slow + slowed);
+    // 졸음(drowsy, #8: 구 둔화 대체) — 실효 템포 +스택(적이 그만큼 덜·늦게 행동). 2스택이면 수면으로(tickRoundStatuses).
+    const drowsy = enemy.statuses['drowsy'] ?? 0;
+    const tempo = Math.max(1, (enemy.tempo ?? DEFAULT_TEMPO) + slow + drowsy);
     enemy.tempoCounter = (enemy.tempoCounter ?? 0) + 1;
     if (enemy.tempoCounter < tempo) continue;
     enemy.tempoCounter -= tempo;
@@ -1772,6 +1781,9 @@ function tickInstallations(state: GridCombatState): void {
  */
 export function commitRound(state: GridCombatState): void {
   if (state.outcome) return;
+
+  // 수면(sleep, #5): 잠든 플레이어는 이번 라운드 행동 불가 — 계획 무효(자동 대기로 드로우만, 적은 진행).
+  if ((state.player.statuses['sleep'] ?? 0) > 0) state.playerPlan = [];
 
   // 순차 재생용 행동 그룹 인덱스 리셋 — 이 라운드의 fx가 0번부터 그룹된다.
   fxActionIndex = 0;
@@ -1942,13 +1954,10 @@ function executeAction(state: GridCombatState, actor: GridCombatant, action: Pla
  * 이미 목표 이상이면 드로우 없음(대기는 한 스텝 소비로 의미). drawIntoHand가 더미 고갈/재셔플 처리.
  */
 function execWait(state: GridCombatState): void {
-  // 수면(sleep)/가속(haste)이 *이번 보충 드로우 수*를 조절(combat.ts drawNewHand 동일):
-  //   - sleep: 보충 목표 −스택(최소 0). 매 라운드 1 감쇠(decayStatuses).
-  //   - haste: 보충 목표 +1(켜져 있으면, 스택 수 무관). 매 라운드 1 감쇠.
+  // 사고 가속(haste)이 보충 드로우 +1(켜져 있으면). (수면 sleep은 #5 재설계로 드로우 감소 폐지 — 턴 스킵.)
   const s = state.player.statuses;
-  const sleepDraw = s['sleep'] ?? 0;
   const hasteDraw = (s['haste'] ?? 0) > 0 ? 1 : 0;
-  const target = Math.max(0, targetHandSize(state) - sleepDraw + hasteDraw);
+  const target = Math.max(0, targetHandSize(state) + hasteDraw);
   const need = target - state.hand.length;
   if (need > 0) {
     const before = state.hand.length;
@@ -2352,13 +2361,10 @@ function applyCardEffects(
         const status = String(eff.params?.status ?? '');
         if (!status) break;
         const sv = Math.floor(rawV); // 상태 스택은 amp 미적용.
-        if ((eff.target ?? 'enemy') === 'self') {
-          state.player.statuses[status] = (state.player.statuses[status] ?? 0) + sv;
-        } else {
-          for (const { target } of shapeHits) {
-            target.statuses[status] = (target.statuses[status] ?? 0) + sv;
-          }
-        }
+        if (sv === 0) break;
+        // applyStatusToken 경유 — 졸음→수면 전이·수면 비행해제 같은 특수 규칙을 카드/몬스터가 공유.
+        if ((eff.target ?? 'enemy') === 'self') applyStatusToken(state.player, `${status}:${sv}`);
+        else for (const { target } of shapeHits) applyStatusToken(target, `${status}:${sv}`);
         break;
       }
 
