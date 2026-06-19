@@ -301,7 +301,7 @@ export const VALID_LOCK_CONDITIONS = ['block', 'damage', 'draw', 'no-attack', 'n
 export const VALID_STATUS_KEYS = [
   'vulnerable', 'weakness', 'frail', 'poison', 'burn', 'regress', 'feral', 'feral-heavy',
   'paralyze', 'spasm', 'ghost', 'sleep', 'slime', 'brainwash', 'imprint', 'possession', 'sap',
-  'anchored', 'slowed', 'drowsy', 'move-haste',
+  'anchored', 'slowed', 'drowsy', 'move-haste', 'confusion',
   'strength', 'dexterity',
   // 이로운(버프) 상태 — apply-status:N:self:<key> / combat-self-status:<key>:N 로 부여.
   'regen', 'haste', 'ward', 'thorns', 'focus', 'resolve',

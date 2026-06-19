@@ -714,7 +714,7 @@ function relicHandManaExtras(loadout: Relic[]): { draw: number; mana: number } {
 //   - metallicize/barricade/feelNoPain/rupture/juggernaut/feral-heavy : 전투 휘발 파워/잔존(감쇠 안 함).
 const DECAYING_STATUSES = new Set<string>([
   'weakness', 'vulnerable', 'ghost', 'anchored', 'drowsy', 'airborne',
-  'brainwash', 'slime', 'sleep', 'haste', 'move-haste',
+  'brainwash', 'slime', 'sleep', 'haste', 'move-haste', 'confusion',
 ]);
 // (퇴행 regress는 #10으로 영구화 — 비감쇠, 아이템/이벤트로만 해제. 집중 focus·반격진 등은 폐지.)
 
@@ -844,7 +844,9 @@ function applyStatusToken(target: GridCombatant, token: string | undefined): voi
   if (!name) return;
   const v = vStr ? Number(vStr) : 1;
   if (!Number.isFinite(v) || v === 0) return;
-  target.statuses[name] = (target.statuses[name] ?? 0) + v;
+  // 세뇌(brainwash, #4): 게이지형 — 중첩 없이 갱신(최댓값).
+  if (name === 'brainwash') target.statuses['brainwash'] = Math.max(target.statuses['brainwash'] ?? 0, v);
+  else target.statuses[name] = (target.statuses[name] ?? 0) + v;
   // 졸음(drowsy, #8) 2스택 → 수면(sleep)으로 전이.
   if (name === 'drowsy' && (target.statuses['drowsy'] ?? 0) >= 2) {
     delete target.statuses['drowsy'];
@@ -1808,6 +1810,10 @@ export function commitRound(state: GridCombatState): void {
   if (!state.outcome && state.player.hp > 0) {
     fxActionIndex += 1;
     execWait(state);
+    // 세뇌(#4): 대기 때 세뇌를 건 적(가장 가까운 적) 쪽으로 끌려간다.
+    if ((state.player.statuses['brainwash'] ?? 0) > 0) dashPlayer(state, 1, 'toward');
+    // 혼란(confusion, #12): 대기 때 인접 8칸 중 무작위로 비틀거린다.
+    if ((state.player.statuses['confusion'] ?? 0) > 0) confuseMove(state);
     // 퇴행(#10): 턴 종료 대기가 *시간을 쓰지 않음*(적 템포 미진행). 그 외엔 대기 1턴 진행.
     if (!postActionCleanup(state)) {
       if ((state.player.statuses['regress'] ?? 0) === 0) tickEnemyTempo(state);
@@ -2112,6 +2118,21 @@ function gainPlayerBlock(state: GridCombatState, amount: number): void {
  * 카드 효과 부가이동(이동 프로필 무시 — 카드가 부여한 기동). 매 칸 우세 축으로 1칸, 벽/void/밖이면 중단.
  * 한 칸이라도 움직였으면 move fx 1회(카드 행동 그룹에 묶여 애니).
  */
+/** 혼란(confusion, #12) — 인접 8칸 중 무작위 통행 칸으로 비틀거리며 이동(대기 때). 갈 곳 없으면 제자리. */
+function confuseMove(state: GridCombatState): void {
+  const from = { ...state.player.pos };
+  const dirs = [...KING_DIRS].sort(() => rng() - 0.5);
+  for (const d of dirs) {
+    const p = { x: from.x + d.dx, y: from.y + d.dy };
+    if (tileWalkable(state.stage, p)) {
+      state.player.pos = p;
+      pushFx(state, { kind: 'move', actorId: state.player.id, from, to: { ...p } });
+      collectItemAt(state, p);
+      return;
+    }
+  }
+}
+
 function dashPlayer(state: GridCombatState, tiles: number, mode: 'toward' | 'away'): void {
   if (tiles <= 0) return;
   const enemy = nearestEnemy(state);
@@ -2255,8 +2276,11 @@ function applyCardEffects(
   const shapeHits: { target: GridCombatant; mul: number }[] = [];
   // 원거리(aimed/throw)는 유령화(ghost) 적을 타게팅 못 함(#11). 근접(pattern)은 가능.
   const rangedCard = card.targetMode === 'aimed' || card.targetMode === 'throw';
+  // 세뇌(brainwash, #4): 플레이어 공격이 *아군*에게도 적중한다.
+  const brainwashed = (state.player.statuses['brainwash'] ?? 0) > 0;
   const canHit = (c: GridCombatant): boolean =>
-    c.team === 'enemy' && c.hp > 0 && !(rangedCard && (c.statuses?.['ghost'] ?? 0) > 0);
+    (c.team === 'enemy' || (brainwashed && c.team === 'ally')) && c.hp > 0
+    && !(rangedCard && (c.statuses?.['ghost'] ?? 0) > 0);
   if (card.targetMode === 'throw') {
     // 투척(US-003) — 플레이어 기준 레이캐스트 해소(장애물 앞 정지 + 수렴 강칸). anchor 무시.
     for (const hit of resolveThrowHits(state, card, state.player.pos)) {
@@ -2329,6 +2353,8 @@ function applyCardEffects(
       }
       case 'heal': {
         const hv = Math.floor(v);
+        // 세뇌(#4): 회복하면 세뇌를 건 적(가장 가까운 적)도 그만큼 회복.
+        if (hv > 0 && brainwashed) { const be = nearestEnemy(state); if (be) { be.hp = Math.min(be.maxHp, be.hp + hv); pushFx(state, { kind: 'heal', actorId: be.id, amount: hv }); } }
         if (hv > 0) {
           // 심수화(feral-heavy): 회복 전면 차단(combat.ts healBlocked). 일반 수화는 회복 가능.
           if (isHealBlocked(playerStatuses)) break;
