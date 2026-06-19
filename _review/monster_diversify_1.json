@@ -1,0 +1,38 @@
+{
+ "meta": {
+  "id": "monster_diversify_1",
+  "title": "몬스터 종족 다양화 24종 — 짐승 쏠림↓, 천사·악마·정령 신설(라이트노벨 톤, 다크/언데드/심연 금지). 이름까지 재테마. text=현재, proposal=새 이름. 종족(species)은 내부값(카오스 기믹·토큰색)이라 세이브 안전 — 이름이 곧 컨셉. 상징 짐승(멧돼지·늑대·곰·여우 등)은 유지. 코멘트로 확정/수정/반려."
+ },
+ "items": [
+  {"n": 1, "kind": "→ 천사 (angel)", "loc": "harpy · 팔콘가든(하늘) · mr-falcon-garden-gust-harpy", "text": "돌풍 하피", "proposal": "질풍 천사"},
+  {"n": 2, "kind": "→ 천사 (angel)", "loc": "harpy · 팔콘가든(하늘) · mr-falcon-garden-sky-raven", "text": "하늘 까마귀", "proposal": "창공 천사"},
+  {"n": 3, "kind": "→ 천사 (angel)", "loc": "windfae · 팔콘가든(하늘) · mr-falcon-garden-talon-striker", "text": "발톱 매", "proposal": "예리한 천사"},
+  {"n": 4, "kind": "→ 천사 (angel)", "loc": "windfae · 팔콘가든(하늘) · mr-falcon-garden-wind-lancer", "text": "바람 제비", "proposal": "산들 천사"},
+  {"n": 5, "kind": "→ 천사 (angel)", "loc": "windfae · 팔콘가든(하늘) · mr-falcon-garden-gale-sentry", "text": "폭풍 종달새", "proposal": "지저귀는 천사"},
+  {"n": 6, "kind": "→ 천사 (angel) · 엘리트(이름 유지 제안)", "loc": "harpy elite · 팔콘가든(하늘) · mr-falcon-garden-storm-sovereign", "text": "라크리", "proposal": "라크리"},
+  {"n": 7, "kind": "→ 천사 (angel) · 엘리트(이름 유지 제안)", "loc": "harpy elite · 팔콘가든(하늘) · mr-falcon-garden-sky-empress", "text": "피레치아", "proposal": "피레치아"},
+
+  {"n": 8, "kind": "→ 악마 (demon)", "loc": "raccoon · 일루네온(시작) · mr-iluneon-market-sneak", "text": "시장 족제비", "proposal": "시장 잔망이"},
+  {"n": 9, "kind": "→ 악마 (demon)", "loc": "beastkin · 일루네온(시작) · mr-iluneon-guild-rat", "text": "곳간 쥐떼", "proposal": "곳간 말썽쟁이"},
+  {"n": 10, "kind": "→ 악마 (demon)", "loc": "raccoon · 일루네온(시작) · mr-iluneon-toll-warden", "text": "통행세 수금원", "proposal": "길목 심술쟁이"},
+  {"n": 11, "kind": "→ 악마 (demon)", "loc": "beastkin · 교역소 · mr-tradepost-caravan-thief", "text": "상단 박쥐", "proposal": "노상 악동"},
+
+  {"n": 12, "kind": "→ 폭풍 정령 (stormling)", "loc": "beastkin · 리아그랄타(폭풍) · mr-ria-storm-sheep", "text": "폭풍 양", "proposal": "휘몰이 정령"},
+  {"n": 13, "kind": "→ 폭풍 정령 (stormling)", "loc": "beastkin · 리아그랄타(폭풍) · mr-ria-voltage-goat", "text": "번개 염소", "proposal": "벼락 정령"},
+  {"n": 14, "kind": "→ 폭풍 정령 (stormling) · 엘리트", "loc": "werewolf elite · 리아그랄타(폭풍) · mr-ria-arc-wolf", "text": "라이아 아크", "proposal": "뇌전 정령"},
+  {"n": 15, "kind": "→ 폭풍 정령 (stormling)", "loc": "serpent · 리아그랄타(폭풍) · mr-ria-gale-serpent", "text": "폭풍 뱀", "proposal": "회오리 정령"},
+
+  {"n": 16, "kind": "→ 자연 정수 (dryad)", "loc": "beastkin · 알리메스(안개) · mr-ali-mist-deer", "text": "안개 사슴", "proposal": "안개 정수"},
+  {"n": 17, "kind": "→ 자연 정수 (dryad)", "loc": "beastkin · 알리메스(안개) · mr-ali-dew-moth", "text": "이슬 나방", "proposal": "이슬 정령"},
+
+  {"n": 18, "kind": "→ 불 정령 (flamelet)", "loc": "beastkin · 화산광 · mr-emberforge-cinder-bat", "text": "용암 박쥐", "proposal": "불티 정령"},
+  {"n": 19, "kind": "→ 불 정령 (flamelet)", "loc": "werewolf · 화산광 · mr-emberforge-ash-hound", "text": "잿불 들개", "proposal": "잿불 정령"},
+  {"n": 20, "kind": "→ 불 정령 (flamelet)", "loc": "beastkin · 라르 숲 · mr-lar-forest-ember-sala", "text": "불 도롱뇽", "proposal": "불씨 정령"},
+
+  {"n": 21, "kind": "→ 빛 정령 (lumen)", "loc": "beastkin · 타코미(외래어 교체) · mr-tacomi-pixel-beast", "text": "픽셀 야수", "proposal": "반짝이는 정령"},
+  {"n": 22, "kind": "→ 빛 정령 (lumen)", "loc": "beastkin · 타코미(외래어 교체) · mr-tacomi-hologram-jester", "text": "홀로그래픽", "proposal": "어른거림"},
+  {"n": 23, "kind": "→ 빛 정령 (lumen) · 엘리트", "loc": "beastkin elite · 타코미(외래어 교체) · mr-tacomi-hologram-titan", "text": "환영 거인상", "proposal": "빛의 거상"},
+
+  {"n": 24, "kind": "→ 물 정령 (naiad)", "loc": "beastkin · 산호 해안 · mr-coral-coast-jellyfish-drifter", "text": "떠도는 해파리", "proposal": "물보라 정령"}
+ ]
+}
