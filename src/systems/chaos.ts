@@ -416,6 +416,13 @@ export const SPECIES_GIMMICK: Record<string, string> = {
   imp: 'drain:6',
   // --- 신수 몬무스(강력 삼킴) ---
   mythicbeast: 'devour:5:4',
+  // --- 천사·악마(천상/지옥): 천사=눈부심 교란, 악마=흡혈 ---
+  angel: 'obscure:2',
+  demon: 'drain:6',
+  // --- 고전 크리쳐: 켄타우로스=돌격, 리저드맨=독니(잠식), 미노타우로스=강돌격 ---
+  centaur: 'charge:3',
+  lizardman: 'drain-stat:2',
+  minotaur: 'charge:4',
 };
 
 /** all-gimmick 폴백 — 종족 미정의/누락 시 보편 교란 기믹. */

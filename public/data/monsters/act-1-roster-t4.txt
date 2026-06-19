@@ -132,9 +132,9 @@ card_drops =
 # --- 일반 ---
 
 [monster.mr-falcon-garden-gust-harpy]
-name = 돌풍 하피
+name = 질풍 천사
 tier = normal
-species = harpy
+species = angel
 hp = 182
 attack = 17
 grid_attack_1 = 휘둘러치기 | -1,-1 1,-1 -1,1 1,1 | 1,1,1,1 | 17 | normal | true |
@@ -147,9 +147,9 @@ time_shards = 9
 card_drops =
 
 [monster.mr-falcon-garden-talon-striker]
-name = 발톱 매
+name = 예리한 천사
 tier = normal
-species = windfae
+species = angel
 hp = 196
 attack = 19
 grid_attack_1 = 휘둘러치기 | -1,-1 1,-1 -1,1 1,1 | 1,1,1,1 | 19 | normal | true |
@@ -161,9 +161,9 @@ time_shards = 10
 card_drops =
 
 [monster.mr-falcon-garden-wind-lancer]
-name = 바람 제비
+name = 산들 천사
 tier = normal
-species = windfae
+species = angel
 hp = 203
 attack = 20
 grid_attack_1 = 할퀴기 | 0,-1 0,1 -1,0 1,0 | 1,1,1,1 | 20 | fast | true |
@@ -175,9 +175,9 @@ time_shards = 10
 card_drops =
 
 [monster.mr-falcon-garden-sky-raven]
-name = 하늘 까마귀
+name = 창공 천사
 tier = normal
-species = harpy
+species = angel
 hp = 179
 attack = 16
 grid_attack_1 = 할퀴기 | 0,-1 0,1 -1,0 1,0 | 1,1,1,1 | 16 | fast | true |
@@ -191,9 +191,9 @@ time_shards = 9
 card_drops =
 
 [monster.mr-falcon-garden-gale-sentry]
-name = 폭풍 종달새
+name = 지저귀는 천사
 tier = normal
-species = windfae
+species = angel
 hp = 210
 attack = 18
 grid_attack_1 = 휘둘러치기 | -1,-1 1,-1 -1,1 1,1 | 1,1,1,1 | 18 | normal | true |
@@ -209,7 +209,7 @@ card_drops =
 [monster.mr-falcon-garden-storm-sovereign]
 name = 라크리
 tier = elite
-species = harpy
+species = angel
 hp = 820
 attack = 34
 grid_attack_1 = 휩쓸기 | 0,-1 0,1 -1,0 1,0 -1,-1 1,-1 -1,1 1,1 | 1,1,1,1,1,1,1,1 | 39 | normal | true |
@@ -224,7 +224,7 @@ card_drops =
 [monster.mr-falcon-garden-sky-empress]
 name = 피레치아
 tier = elite
-species = harpy
+species = angel
 hp = 720
 attack = 30
 grid_attack_1 = 휩쓸기 | 0,-1 0,1 -1,0 1,0 -1,-1 1,-1 -1,1 1,1 | 1,1,1,1,1,1,1,1 | 34 | normal | true |
@@ -302,9 +302,9 @@ time_shards = 8
 card_drops =
 
 [monster.mr-emberforge-slag-crusher]
-name = 용암 도롱뇽
+name = 용암 리저드맨
 tier = normal
-species = emberling
+species = lizardman
 hp = 224
 attack = 19
 grid_attack_1 = 내지르기 | 0,-1 0,-2 0,1 0,2 -1,0 -2,0 1,0 2,0 | 1,0.7,1,0.7,1,0.7,1,0.7 | 19 | slow | true |
@@ -342,7 +342,7 @@ card_drops =
 [monster.mr-oldshrine-spirit-flame]
 name = 도깨비불
 tier = normal
-species = spirit
+species = wraith
 hp = 175
 attack = 15
 grid_attack_1 = 휘둘러치기 | -1,-1 1,-1 -1,1 1,1 | 1,1,1,1 | 15 | normal | true |

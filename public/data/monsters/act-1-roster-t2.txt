@@ -67,9 +67,9 @@ time_shards = 5
 card_drops =
 
 [monster.mr-moss-flame-lizard]
-name = 화염 도마뱀
+name = 불비늘 리저드맨
 tier = normal
-species = emberling
+species = lizardman
 hp = 98
 attack = 9
 grid_attack_1 = 할퀴기 | 0,-1 0,1 -1,0 1,0 | 1,1,1,1 | 9 | fast | true |
@@ -84,7 +84,7 @@ card_drops =
 [monster.mr-moss-forge-imp]
 name = 라로그
 tier = normal
-species = spirit
+species = wraith
 hp = 77
 attack = 8
 grid_attack_1 = 할퀴기 | 0,-1 0,1 -1,0 1,0 | 1,1,1,1 | 8 | fast | true |
@@ -164,9 +164,9 @@ card_drops =
 # ============================================================
 
 [monster.mr-ria-storm-sheep]
-name = 폭풍 양
+name = 폭풍 켄타우로스
 tier = normal
-species = beastkin
+species = centaur
 hp = 105
 attack = 9
 grid_attack_1 = 휘둘러치기 | -1,-1 1,-1 -1,1 1,1 | 1,1,1,1 | 9 | normal | true |
@@ -210,9 +210,9 @@ time_shards = 3
 card_drops =
 
 [monster.mr-ria-voltage-goat]
-name = 번개 염소
+name = 벼락 켄타우로스
 tier = normal
-species = beastkin
+species = centaur
 hp = 126
 attack = 9
 grid_attack_1 = 내지르기 | 0,-1 0,-2 0,1 0,2 -1,0 -2,0 1,0 2,0 | 1,0.7,1,0.7,1,0.7,1,0.7 | 9 | slow | true |
@@ -224,9 +224,9 @@ time_shards = 4
 card_drops =
 
 [monster.mr-ria-gale-serpent]
-name = 폭풍 뱀
+name = 번개 리저드맨
 tier = normal
-species = serpent
+species = lizardman
 hp = 102
 attack = 8
 grid_attack_1 = 내지르기 | 0,-1 0,-2 0,1 0,2 -1,0 -2,0 1,0 2,0 | 1,0.7,1,0.7,1,0.7,1,0.7 | 8 | slow | true |
@@ -258,9 +258,9 @@ card_drops =
 # ============================================================
 
 [monster.mr-ali-mist-deer]
-name = 안개 사슴
+name = 안개 켄타우로스
 tier = normal
-species = beastkin
+species = centaur
 hp = 98
 attack = 8
 grid_attack_1 = 휘둘러치기 | -1,-1 1,-1 -1,1 1,1 | 1,1,1,1 | 8 | normal | true |
@@ -286,9 +286,9 @@ time_shards = 4
 card_drops =
 
 [monster.mr-ali-fog-sprite]
-name = 안개 정령
+name = 안개 유령
 tier = normal
-species = spirit
+species = wraith
 hp = 84
 attack = 6
 grid_attack_1 = 할퀴기 | 0,-1 0,1 -1,0 1,0 | 1,1,1,1 | 6 | fast | true |
@@ -301,9 +301,9 @@ time_shards = 3
 card_drops =
 
 [monster.mr-ali-stone-bear]
-name = 바위 곰
+name = 바위 미노타우로스
 tier = normal
-species = beastkin
+species = minotaur
 hp = 161
 attack = 11
 grid_attack_1 = 휘둘러치기 | -1,-1 1,-1 -1,1 1,1 | 1,1,1,1 | 11 | normal | true |
@@ -346,9 +346,9 @@ time_shards = 4
 card_drops =
 
 [monster.mr-ali-fog-sovereign]
-name = "안개"
+name = 안개
 tier = elite
-species = spirit
+species = wraith
 hp = 360
 attack = 15
 grid_attack_1 = 휩쓸기 | 0,-1 0,1 -1,0 1,0 -1,-1 1,-1 -1,1 1,1 | 1,1,1,1,1,1,1,1 | 17 | normal | true |
@@ -423,9 +423,9 @@ time_shards = 4
 card_drops =
 
 [monster.mr-martin-tide-spirit]
-name = 물보라 요정
+name = 물보라 유령
 tier = normal
-species = spirit
+species = wraith
 hp = 91
 attack = 8
 grid_attack_1 = 내지르기 | 0,-1 0,-2 0,1 0,2 -1,0 -2,0 1,0 2,0 | 1,0.7,1,0.7,1,0.7,1,0.7 | 8 | slow | true |
