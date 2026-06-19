@@ -1817,14 +1817,7 @@ export function commitRound(state: GridCombatState): void {
   // === 라운드 종료 ===
   state.turn += 1;
 
-  // 파워 틱(라운드 종료) — 강철(metallicize): player.block += metallicize.
-  //  D6(방어 반감)과 충돌 주의: 매 라운드 +block을 반감 *전에* 더해 함께 반감되게 한다(눈덩이 방지).
-  //  무통(feel-no-pain)은 exhaust 시점에 이미 부여되므로 여기선 미적용. 반격진(juggernaut)은
-  //  gainPlayerBlock 경유라 자동.
-  {
-    const metal = state.player.statuses['metallicize'] ?? 0;
-    if (metal > 0) gainPlayerBlock(state, metal);
-  }
+  // (강철 redesign 2026-06-19: 매 턴 +방어 틱 폐지 — 강철은 이제 *방어 감쇠 완화* 플래그. 아래 block 감쇠에서 처리.)
 
   // 지속 상태 틱(poison/burn/regen + possession 잠식 + imprint→possession) — 모든 살아 있는 전투원.
   //   *감쇠 전*에 적용해 poison:3 → 3 피해 후 2가 되도록(틱 안에서 자기 감쇠). 별도 fx 그룹으로 순차 재생.
@@ -1838,10 +1831,12 @@ export function commitRound(state: GridCombatState): void {
     return;
   }
 
-  // 모든 전투원 block 반감(D6) + 상태 감쇠. barricade(불굴)면 플레이어 block 반감 면제.
-  const barricaded = (state.player.statuses['barricade'] ?? 0) > 0;
+  // 모든 전투원 block 감쇠(D6: 절반) + 상태 감쇠.
+  //   강철(metallicize, 2026-06-19 검수): 플레이어 방어는 절반이 아니라 -1씩만 감소(플래그). 불굴(barricade) 폐지.
+  const metalProtected = (state.player.statuses['metallicize'] ?? 0) > 0;
   for (const c of aliveCombatants(state)) {
-    if (!(c === state.player && barricaded)) c.block = Math.floor(c.block / 2);
+    if (c === state.player && metalProtected) c.block = Math.max(0, c.block - 1);
+    else c.block = Math.floor(c.block / 2);
     decayStatuses(c);
   }
 

@@ -350,29 +350,6 @@ effects = block:11:self, draw:2:self
 target_mode = self
 flavor = "준비 완료다."
 
-[card.c-human-secondwind]
-name = 무통
-rank = common
-source = race
-element = wind
-cost = 1
-trigger = manual
-effects = feel-no-pain:3:self, exhaust-self:0:self
-target_mode = self
-upgrade_to = c-human-secondwind-plus
-flavor =
-
-[card.c-human-secondwind-plus]
-name = 무통+
-rank = common
-source = race
-element = wind
-cost = 1
-trigger = manual
-effects = feel-no-pain:4:self, exhaust-self:0:self
-target_mode = self
-flavor =
-
 [card.c-human-bulwark]
 name = 철벽
 rank = rare
@@ -507,25 +484,25 @@ target_mode = self
 flavor =
 
 [card.c-human-pivot]
-name = 불굴의 진
+name = 버팀세
 rank = rare
 source = race
 element = iron
 cost = 3
 trigger = manual
-effects = barricade:0:self, exhaust-self:0:self
+effects = metallicize:1:self, exhaust-self:0:self
 target_mode = self
 upgrade_to = c-human-pivot-plus
 flavor =
 
 [card.c-human-pivot-plus]
-name = 불굴의 진+
+name = 버팀세+
 rank = rare
 source = race
 element = iron
 cost = 2
 trigger = manual
-effects = barricade:0:self, exhaust-self:0:self
+effects = metallicize:1:self, exhaust-self:0:self
 target_mode = self
 flavor =
 
@@ -683,58 +660,6 @@ flavor =
 
 # ---- 필러: 상태이상 다양화 (적 실효 상태만) ----
 
-[card.c-human-disarm]
-name = 유연
-rank = common
-source = race
-element = wind
-cost = 0
-trigger = manual
-effects = apply-status:3:self:focus
-target_mode = self
-upgrade_to = c-human-disarm-plus
-flavor =
-
-[card.c-human-disarm-plus]
-name = 유연+
-rank = common
-source = race
-element = wind
-cost = 0
-trigger = manual
-effects = apply-status:4:self:focus
-target_mode = self
-flavor =
-
-[card.c-human-expose]
-name = 거중 반격
-rank = rare
-source = race
-element = iron
-cost = 2
-trigger = manual
-effects = juggernaut:3:enemy, exhaust-self:0:self
-shape = 0,-1|1,0|0,1|-1,0|0,-2|2,0|0,2|-2,0
-per_tile_mul = 1.0,1.0
-target_mode= pattern
-cast_speed = slow
-upgrade_to = c-human-expose-plus
-flavor =
-
-[card.c-human-expose-plus]
-name = 거중 반격+
-rank = rare
-source = race
-element = iron
-cost = 2
-trigger = manual
-effects = juggernaut:5:enemy, exhaust-self:0:self
-shape = 0,-1|1,0|0,1|-1,0|0,-2|2,0|0,2|-2,0
-per_tile_mul = 1.0,1.0
-target_mode= pattern
-cast_speed = slow
-flavor =
-
 [card.c-human-laceration]
 name = 깊은 자상
 rank = common
@@ -792,29 +717,6 @@ per_tile_mul = 1.0,1.0,1.0
 target_mode= pattern
 cast_speed = normal
 flavor = 한번 옮겨붙은 불은, 쉬이 꺼지지 않는다.
-
-[card.c-human-fullbreak]
-name = 각혈
-rank = rare
-source = race
-element = fire
-cost = 1
-trigger = manual
-effects = rupture:1:self, exhaust-self:0:self
-target_mode = self
-upgrade_to = c-human-fullbreak-plus
-flavor =
-
-[card.c-human-fullbreak-plus]
-name = 각혈+
-rank = rare
-source = race
-element = fire
-cost = 1
-trigger = manual
-effects = rupture:2:self, exhaust-self:0:self
-target_mode = self
-flavor =
 
 [card.c-human-followthrough]
 name = 혈투

@@ -2660,31 +2660,6 @@ target_mode = self
 cast_speed = normal
 flavor = 스치기만 해도 따끔해서, 다들 멀찍이 선다.
 
-[card.c-clear-focus]
-name = 또렷한 집중
-rank = common
-source = event
-element = electric
-cost = 1
-trigger = manual
-effects = apply-status:3:self:focus
-target_mode = self
-cast_speed = fast
-upgrade_to = c-clear-focus-plus
-flavor = 소음이 멀어지고 과녁만 남는다.
-
-[card.c-clear-focus-plus]
-name = 또렷한 집중+
-rank = common
-source = event
-element = electric
-cost = 1
-trigger = manual
-effects = apply-status:4:self:focus
-target_mode = self
-cast_speed = fast
-flavor = 이제 과녁 말고는, 아무것도 들어오지 않는다.
-
 [card.c-steady-heart]
 name = 단단한 마음
 rank = common
