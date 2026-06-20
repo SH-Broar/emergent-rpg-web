@@ -15,8 +15,15 @@ import { useUiStore } from '@/stores/ui';
 import { useMetaStore } from '@/stores/meta';
 import { rng } from '@/systems/rng';
 import { applyAffinityDelta } from '@/systems/affinity';
-import { cardEffectKindLabel, cardEffectDescription } from '@/systems/labels';
+import { cardEffectKindLabel, cardEffectDescription, colorLabel } from '@/systems/labels';
 import { availableCards } from '@/systems/unlocks';
+import {
+  canFulfill,
+  fulfillContract,
+  heldTradeCount,
+  tradeItemName,
+  type TradeRequirement,
+} from '@/systems/delivery';
 import {
   canCraftPotion,
   craftPotion,
@@ -283,6 +290,63 @@ function calmFeral() {
   ui.toast('success', '숨을 고르니 수화가 가라앉았다.');
 }
 
+// === 거래(인정 게이트) 계약 — 마을에서 완료할 수 있는 활성 거래 목록. ===
+/** 한 계약 행의 표시·완료에 필요한 정보. */
+interface TradeRow {
+  nodeId: string;
+  nodeLabel: string;
+  req: TradeRequirement;
+  reqName: string;
+  upperName: string;
+  held: number;
+  ready: boolean;
+}
+
+/** 노드 id → 라벨(맵에서 조회). */
+function nodeLabelOf(id: string): string {
+  const map = data.nodeMaps.get(data.timelines.get(run.data.timelineId)?.nodeMapId ?? '');
+  return map?.nodes.find((n) => n.id === id)?.label ?? id;
+}
+
+const tradeRows = computed<TradeRow[]>(() => {
+  const contracts = run.data.tradeContracts ?? {};
+  return Object.entries(contracts).map(([nodeId, c]) => {
+    const req: TradeRequirement = {
+      itemId: c.itemId,
+      upperItemId: c.upperItemId,
+      count: c.count,
+      element: c.element as TradeRequirement['element'],
+      tier: c.tier,
+    };
+    return {
+      nodeId,
+      nodeLabel: nodeLabelOf(nodeId),
+      req,
+      reqName: tradeItemName(c.itemId),
+      upperName: c.upperItemId ? tradeItemName(c.upperItemId) : '',
+      held: heldTradeCount(req),
+      ready: canFulfill(req),
+    };
+  });
+});
+
+/** 마을에서 거래 완료 — 소비 + 그 노드 해결 + 보상. */
+function completeTradeAt(row: TradeRow) {
+  if (!row.ready) {
+    ui.toast('warning', '아직 건넬 만큼 모이지 않았다.');
+    return;
+  }
+  const result = fulfillContract(row.nodeId);
+  if (!result) {
+    ui.toast('warning', '거래를 마칠 수 없다.');
+    return;
+  }
+  ui.toast(
+    'success',
+    `거래를 마쳤다 — ${row.reqName} ${result.consumed.length}개. 생활 경험 +${result.lifeXp}, ${colorLabel(result.color)} +${result.colorGain}.`,
+  );
+}
+
 const rankColors: Record<string, string> = {
   basic: '#a4a4b0',
   common: '#8effb8',
@@ -322,6 +386,28 @@ const rankColors: Record<string, string> = {
       <div v-if="(run.data.feralHeavy ?? 0) > 0" class="cleanse cleanse--feral">
         <p class="cleanse__msg">아직 심수화 상태다. 공격이 2배지만 회복도 방어도 못 하고, 탐색 보상이 늘어난다. 가라앉힐까?</p>
         <button class="cleanse__btn" @click="calmFeral">수화를 가라앉힌다</button>
+      </div>
+
+      <!-- 거래 계약 — 게이트에서 수주한 거래를 여기서 완료(요구 품목 충분할 때). -->
+      <div v-if="tradeRows.length > 0" class="trade-list">
+        <h3 class="trade-list__title">맡은 거래</h3>
+        <div v-for="row in tradeRows" :key="row.nodeId" class="trade-row">
+          <div class="trade-row__main">
+            <div class="trade-row__where">{{ row.nodeLabel }}</div>
+            <div class="trade-row__req">
+              {{ row.reqName }} {{ row.req.count }}개
+              <span v-if="row.upperName" class="trade-row__sub">({{ row.upperName }}도 1개로 셈)</span>
+            </div>
+            <div class="trade-row__meter" :class="{ 'trade-row__meter--ok': row.ready }">
+              보유 {{ row.held }} / {{ row.req.count }}
+            </div>
+          </div>
+          <button
+            class="trade-row__btn"
+            :disabled="!row.ready"
+            @click="completeTradeAt(row)"
+          >{{ row.ready ? '완료' : '모자람' }}</button>
+        </div>
       </div>
 
       <!-- NPC 목록 — 대화·영입은 *대화 시스템 도입 후* 활성. 지금은 *마주침*만 표시. -->
@@ -468,6 +554,20 @@ h1 { color: #8effb8; margin: 0; }
 .opt__title { font-weight: 600; color: #f6e8b8; }
 .opt__hint { font-size: 0.85rem; color: #888; }
 .opt--leave { background: rgba(255,255,255,0.02); }
+
+/* 거래 계약 목록 */
+.trade-list { display: grid; gap: 0.5rem; margin-bottom: 0.6rem; }
+.trade-list__title { color: #c0b693; font-size: 0.85rem; letter-spacing: 0.08em; margin: 0.4rem 0 0.2rem; }
+.trade-row { display: flex; align-items: center; gap: 0.8rem; padding: 0.7rem 0.9rem; background: rgba(216, 180, 106, 0.08); border: 1px solid rgba(216, 180, 106, 0.32); border-radius: 8px; }
+.trade-row__main { flex: 1; min-width: 0; display: grid; gap: 0.15rem; }
+.trade-row__where { color: #f6e8b8; font-weight: 600; font-size: 0.9rem; }
+.trade-row__req { color: #d6d6e0; font-size: 0.85rem; }
+.trade-row__sub { color: #9a9aa8; font-size: 0.78rem; }
+.trade-row__meter { color: #d8b46a; font-size: 0.82rem; }
+.trade-row__meter--ok { color: #a8e88e; }
+.trade-row__btn { padding: 0.45rem 0.9rem; background: rgba(142, 232, 142, 0.16); border: 1px solid rgba(142, 232, 142, 0.45); color: #d6f0d6; border-radius: 6px; cursor: pointer; font: inherit; font-size: 0.85rem; font-weight: 600; white-space: nowrap; }
+.trade-row__btn:hover:not(:disabled) { background: rgba(142, 232, 142, 0.3); }
+.trade-row__btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
 /* NPC 목록 */
 .npc-list { display: grid; gap: 0.6rem; margin-bottom: 0.6rem; }

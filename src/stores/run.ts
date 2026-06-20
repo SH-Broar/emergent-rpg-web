@@ -149,6 +149,8 @@ const EMPTY_RUN: RunState = {
   lifeLevel: 1,
   plots: {},
   lifeCooldowns: {},
+  // 거래(인정 게이트) 계약 — 노드별 활성 거래. 구세이브 자동 backfill({}).
+  tradeContracts: {},
   possessed: 0,
   possessions: {},
   feralHeavy: 0,
@@ -845,6 +847,8 @@ export const useRunStore = defineStore('run', {
       if (!r.nodeStates[nodeId]) r.nodeStates[nodeId] = { visited: true };
       r.nodeStates[nodeId].combatCleared = true;
       r.nodeStates[nodeId].combatStealthed = false;
+      // 노드가 전투 승리로 해결되면 그 노드의 거래 계약은 무의미 — 정리(거래 완료 경로는 이미 삭제).
+      if (r.tradeContracts?.[nodeId]) delete r.tradeContracts[nodeId];
     },
 
     /** 전투 회피(은밀) 마킹 — 재방문 시 "싸울지/지나칠지" 선택. */

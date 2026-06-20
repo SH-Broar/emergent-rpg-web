@@ -108,7 +108,7 @@ const percent = (v: number, max: number) =>
   Math.min(100, Math.round((v / Math.max(1, max)) * 100));
 
 function back() {
-  router.push('/main');
+  router.push('/save-manage');
 }
 function toChaos() {
   router.push('/chaos');
@@ -122,7 +122,7 @@ onMounted(() => {
 <template>
   <main class="research-view">
     <header class="hdr">
-      <button class="back" @click="back">← 메인 메뉴</button>
+      <button class="back" @click="back">← 세이브 관리</button>
       <h1>연구</h1>
       <p class="sub">메타 자원을 들여 영영 풀리는 콘텐츠를 산다. 한 번 연 것은 닫히지 않는다.</p>
     </header>

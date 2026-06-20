@@ -74,7 +74,7 @@ function formatTime(ms: number): string {
 }
 
 function goMain() {
-  router.push('/main');
+  router.push('/save-manage');
 }
 
 onMounted(() => {
@@ -85,7 +85,7 @@ onMounted(() => {
 <template>
   <main class="log-view">
     <header class="hdr">
-      <button class="back" @click="goMain">← 메인</button>
+      <button class="back" @click="goMain">← 세이브 관리</button>
       <h1>기록</h1>
       <p class="sub">지난 여정들. 가장 가까운 것이 위에 있어.</p>
       <p class="totals">전생 {{ meta.totalRuns }} · 보스 클리어 {{ meta.totalBossClears }}</p>

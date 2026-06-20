@@ -1266,23 +1266,24 @@ function enterLabel(): string {
 .node-group--visited .node-dot { opacity: 0.7; }
 .node-group--cleared .node-dot { opacity: 0.35; }
 .node-group--done .node-dot { opacity: 0.45; }
-/* 소비 완료 노드 — 확실한 회색 비활성(#006/#008).
-   전투 클리어·사건 발동·휴식/채집/활동 완료에만 적용. 현재 머무는 노드(--current)는 제외.
+/* 소비 완료 노드 — 확실한 회색 비활성(#006/#008/#G08).
+   전투 클리어·사건 발동·휴식/채집/활동 완료에 적용. *현재 위치여도 회색 유지*(#G08, 2026-06-21)
+   — 위치는 별도 마커(--current 테두리 + .current-arrow)가 표시하므로 색 복원이 혼란을 준다.
    마을/상점/공방은 소비 상태가 없어 회색되지 않는다(재진입은 pass-only + 이동으로 제어). */
-.node-group--cleared:not(.node-group--current) .node-dot,
-.node-group--event-done:not(.node-group--current) .node-dot,
-.node-group--done:not(.node-group--current) .node-dot {
+.node-group--cleared .node-dot,
+.node-group--event-done .node-dot,
+.node-group--done .node-dot {
   fill: #5a5a5a !important;
   opacity: 0.5;
   animation: none;
   filter: none;
 }
-.node-group--cleared:not(.node-group--current) .node-label,
-.node-group--event-done:not(.node-group--current) .node-label,
-.node-group--done:not(.node-group--current) .node-label,
-.node-group--cleared:not(.node-group--current) .node-kind,
-.node-group--event-done:not(.node-group--current) .node-kind,
-.node-group--done:not(.node-group--current) .node-kind {
+.node-group--cleared .node-label,
+.node-group--event-done .node-label,
+.node-group--done .node-label,
+.node-group--cleared .node-kind,
+.node-group--event-done .node-kind,
+.node-group--done .node-kind {
   fill: #6a6a6a;
 }
 .node-group--stealthed .node-dot {

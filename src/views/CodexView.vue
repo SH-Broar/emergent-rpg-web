@@ -43,7 +43,7 @@ function displayName(kind: string, id: string): string {
 }
 
 function back() {
-  router.push('/main');
+  router.push('/save-manage');
 }
 
 onMounted(() => {
@@ -55,7 +55,7 @@ onMounted(() => {
 <template>
   <main class="codex-view">
     <header class="hdr">
-      <button class="back" @click="back">← 메인 메뉴</button>
+      <button class="back" @click="back">← 세이브 관리</button>
       <h1>도감</h1>
     </header>
 

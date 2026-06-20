@@ -71,7 +71,7 @@ function levelsOf(c: Chaos): { intensity: number; score: number; summary: string
 }
 
 function back() {
-  router.push('/main');
+  router.push('/save-manage');
 }
 
 onMounted(() => {
@@ -82,7 +82,7 @@ onMounted(() => {
 <template>
   <main class="chaos-view">
     <header class="hdr">
-      <button class="back" @click="back">← 메인 메뉴</button>
+      <button class="back" @click="back">← 세이브 관리</button>
       <h1>카오스</h1>
       <p class="sub">
         높을수록 원래 세계에서 멀어진다. 영혼으로 사두면 매 런 자유로 켤 수 있고, 도전 점수만 기록된다.

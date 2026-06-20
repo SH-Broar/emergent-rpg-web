@@ -639,6 +639,29 @@ export interface PlotState {
   growthProgress: number;
 }
 
+/**
+ * 거래(인정 게이트) 계약 — `RunState.tradeContracts`의 노드별 값.
+ *
+ * 전투/엘리트 노드의 게이트에서 [거래한다]를 누르면 등록된다(재료가 없어도 가능).
+ * 노드는 *미해결*로 둔다(전투 안 함·통과 아님). 요구 품목을 충분히 모으면 마을/현장에서 완료
+ * → 소비 + 노드 해결(combatCleared) + 보상. 완료/전투승리 시 제거.
+ *
+ * 요구는 *수주 시점에 확정*(권역 배정 활동의 산출물 + tier 기반 개수)되어 그대로 이행된다.
+ * 전부 직렬화 가능한 단순 값 — 세이브 round-trip 안전.
+ */
+export interface TradeContract {
+  /** 요구 품목(하위 산출물) id. */
+  itemId: string;
+  /** 상위(-fine) 산출물 id — 요구 충족에 하위 1개를 대체(1개로 카운트). 없으면 미설정. */
+  upperItemId?: string;
+  /** 요구 개수 — 1 + tier(tier1=2 … tier4=5). */
+  count: number;
+  /** 완료 보상 컬러 종류(권역 primaryColor 폴백 활동 element). */
+  element: string;
+  /** 권역 tier — 완료 보상(생활 XP·컬러) 산정용. */
+  tier: number;
+}
+
 /** 한 런 전체의 휘발 상태. */
 export interface RunState {
   // === 컨텍스트 ===
@@ -747,6 +770,13 @@ export interface RunState {
    */
   lifeCooldowns?: Record<NodeId, number>;
 
+  /**
+   * 거래(인정 게이트) 계약 — 노드별 활성 거래. 전투/엘리트 노드 게이트에서 [거래한다]로 등록.
+   * 요구 품목을 모아 마을/현장에서 완료하면 그 노드를 해결(combatCleared) + 보상 후 제거.
+   * 전투 승리로 노드가 해결돼도 제거. 키 없는 노드 = 활성 계약 없음. 런 휘발.
+   * 옛 세이브 호환 — optional(EMPTY_RUN에 {}로 backfill).
+   */
+  tradeContracts?: Record<NodeId, TradeContract>;
 
   /**
    * 우체부(로큐) 유물 `r-postman-mail` 효과 카운터.
