@@ -986,7 +986,15 @@ export const useRunStore = defineStore('run', {
 
       // 결정론 시드 — 런 시드 + 노드 id(같은 노드 재진입 시 같은 무대).
       // 맵 크기는 런 진행(방문 노드 수=런 턴) 기준 점증(사용자 사양) — 몬스터 수·tier 무관.
-      const stage = generateStage(`${r.rngSeed}:${id}`, node?.region ?? 'unknown', stageTier, r.visitedNodes.length);
+      // 적 수: 일반·엘리트 모두 *1마리 고정* + 증원 없음(밸런스, 2026-06-21). 엘리트는 1마리지만
+      //   stageTier(baseTier+1)로 더 크고 깊은 무대 + eliteEnemyPool의 강한 1마리로 차별화.
+      const stage = generateStage(
+        `${r.rngSeed}:${id}`,
+        node?.region ?? 'unknown',
+        stageTier,
+        r.visitedNodes.length,
+        { enemyCount: 1, reinforce: false },
+      );
 
       // 다종 적 그룹(US-002) — 권역 풀에서 섞어 배치(슬롯 0=노드 테마 적). 엘리트는 eliteEnemyPool 우선.
       const pool = isElite

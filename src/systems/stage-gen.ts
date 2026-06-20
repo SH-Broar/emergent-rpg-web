@@ -258,7 +258,13 @@ function reachableCount(cells: CellType[][], start: GridPos): number {
  * @param region 권역 id(아키타입 선택 다양화에 섞임).
  * @param tier   권역 깊이 1~4.
  */
-export function generateStage(seed: number | string, region: string, tier: number, turn = 0): GridStage {
+export function generateStage(
+  seed: number | string,
+  region: string,
+  tier: number,
+  turn = 0,
+  opts?: { enemyCount?: number; reinforce?: boolean },
+): GridStage {
   const rand = mulberry32(hashSeed(`${seed}|${region}|${tier}|${Math.floor(turn / GROW_EVERY)}`));
   const p = tierParams(tier);
   // 크기는 *런 턴* 기준(몬스터 수·tier 무관). 비정사각 허용.
@@ -296,7 +302,9 @@ export function generateStage(seed: number | string, region: string, tier: numbe
 
   // 적 시작 — 우상단 영역의 통행 칸. enemyCount는 맵 크기에 맞게 캡(작은 맵 과밀 방지).
   const walkRoom = walkableCells(cells).length;
-  const enemyCount = Math.max(1, Math.min(p.enemyCount, Math.floor(walkRoom / 3)));
+  // 호출자 오버라이드(opts.enemyCount) 우선 — 일반/엘리트 전투는 1마리로 고정(밸런스, 2026-06-21).
+  const desiredCount = opts?.enemyCount ?? p.enemyCount;
+  const enemyCount = Math.max(1, Math.min(desiredCount, Math.floor(walkRoom / 3)));
   const enemyStarts = pickEnemyStarts(cells, playerStart, enemyCount, rand);
 
   // 아이템 드롭 — tier 3+ 1칸(통행 빈 칸에 item 셀 + itemDrops). 아이템 id는 권역 보상 시스템이
@@ -305,7 +313,8 @@ export function generateStage(seed: number | string, region: string, tier: numbe
 
   // 증원 — spawn 셀 후보 마킹 + StageSpawn 규칙. enemyId는 호출자(스토어)가 권역 풀로 채우거나
   // 슬라이스에선 첫 적 정의 id를 재사용한다(아래 stageSpawns에 placeholder 없이 좌표만).
-  const spawns = buildSpawns(cells, playerStart, enemyStarts, p, rand);
+  // 증원 — opts.reinforce === false면 끔(일반/엘리트 1마리 고정 시 추가 스폰 방지).
+  const spawns = opts?.reinforce === false ? [] : buildSpawns(cells, playerStart, enemyStarts, p, rand);
 
   return {
     id: `stage-${region}-t${tier}-${hashSeed(`${seed}|${region}|${tier}`).toString(36)}`,
