@@ -31,6 +31,9 @@ export const REPEAT_COOLDOWN = 3;
 
 export type LifeActivityType = 'delayed' | 'repeat';
 
+/** 활동 산출 순간에 띄우는 채집 미니게임 종류(GatherView와 동일 3종 재사용). */
+export type LifeMinigame = 'tap' | 'react' | 'matrix';
+
 /** 한 생활 활동의 정의(레지스트리 원소). */
 export interface LifeActivityDef {
   id: string;
@@ -39,6 +42,11 @@ export interface LifeActivityDef {
   /** 활동 속성 — 산출 컬러 + 상위확률 판정 컬러. 8색 1:1. */
   element: Element;
   type: LifeActivityType;
+  /**
+   * 산출 순간에 띄우는 채집 미니게임(스킬 표현). 결과 점수가 그 회차 상위확률에 보너스로 더해진다.
+   * 못 띄우거나 닫으면 즉시 산출(폴백) — 핵심 산출 수학은 불변.
+   */
+  minigame: LifeMinigame;
   // --- delayed 전용 ---
   /** 지연형이 재사용하는 farming.ts CROPS의 cropId. delayed면 필수. */
   cropId?: string;
@@ -55,26 +63,31 @@ export interface LifeActivityDef {
  * 8활동 레지스트리 — element별 1개. 5 delayed(농사 grow 엔진 재사용) + 3 repeat(즉시 산출).
  *   delayed: earth=농사 / fire=숯굽기 / wind=사냥 / light=볕말림 / dark=버섯재배
  *   repeat : water=낚시 / iron=채광 / electric=집전
+ *
+ * minigame 배정(스킬 표현, 8→3종) — 행동의 결에 맞춰:
+ *   tap(좌우 연타, 힘쓰는 노동)  = 농사·숯굽기·사냥
+ *   react(반응 속도, 순간 포착)  = 낚시·집전
+ *   matrix(숫자 격자, 더듬어 찾기) = 채광·볕말림·버섯재배
  */
 export const LIFE_ACTIVITIES: LifeActivityDef[] = [
   // === 지연형 (farming.ts CROPS 재사용) ===
-  { id: 'act-farm', name: '농사', element: 'earth', type: 'delayed', cropId: 'crop-grain' },
-  { id: 'act-char', name: '숯굽기', element: 'fire', type: 'delayed', cropId: 'crop-char' },
-  { id: 'act-hunt', name: '사냥', element: 'wind', type: 'delayed', cropId: 'crop-snare' },
-  { id: 'act-dry', name: '볕말림', element: 'light', type: 'delayed', cropId: 'crop-dry' },
-  { id: 'act-mush', name: '버섯재배', element: 'dark', type: 'delayed', cropId: 'crop-mush' },
+  { id: 'act-farm', name: '농사', element: 'earth', type: 'delayed', cropId: 'crop-grain', minigame: 'tap' },
+  { id: 'act-char', name: '숯굽기', element: 'fire', type: 'delayed', cropId: 'crop-char', minigame: 'tap' },
+  { id: 'act-hunt', name: '사냥', element: 'wind', type: 'delayed', cropId: 'crop-snare', minigame: 'tap' },
+  { id: 'act-dry', name: '볕말림', element: 'light', type: 'delayed', cropId: 'crop-dry', minigame: 'matrix' },
+  { id: 'act-mush', name: '버섯재배', element: 'dark', type: 'delayed', cropId: 'crop-mush', minigame: 'matrix' },
   // === 반복형 (즉시 산출 + 쿨다운) ===
   {
     id: 'act-fish', name: '낚시', element: 'water', type: 'repeat', verb: '낚시한다',
-    lowerItemId: 'i-life-fish', upperItemId: 'i-life-fish-fine',
+    lowerItemId: 'i-life-fish', upperItemId: 'i-life-fish-fine', minigame: 'react',
   },
   {
     id: 'act-mine', name: '채광', element: 'iron', type: 'repeat', verb: '채광한다',
-    lowerItemId: 'i-life-ore', upperItemId: 'i-life-ore-fine',
+    lowerItemId: 'i-life-ore', upperItemId: 'i-life-ore-fine', minigame: 'matrix',
   },
   {
     id: 'act-charge', name: '집전', element: 'electric', type: 'repeat', verb: '모은다',
-    lowerItemId: 'i-life-charge', upperItemId: 'i-life-charge-fine',
+    lowerItemId: 'i-life-charge', upperItemId: 'i-life-charge-fine', minigame: 'react',
   },
 ];
 
@@ -121,6 +134,29 @@ export function activityForNode(nodeId: string, region?: string): LifeActivityDe
 // 반복형 경로 (delayed는 farming.ts가 담당)
 // ----------------------------------------------------------------------------
 
+// === 미니게임 점수 → 상위확률 보너스 ===
+/** 미니게임 성공 판정 임계(GatherView gatherScoreThreshold와 동일 균일 상수). */
+export const LIFE_MINIGAME_THRESHOLD = 0.55;
+/** 임계 도달 시 상위확률 가산(%p). */
+export const LIFE_MINIGAME_BONUS = 25;
+/** 대성공(점수 ≥ 1.0) 시 상위확률 가산(%p). */
+export const LIFE_MINIGAME_GREAT_BONUS = 40;
+/** 실패(임계 미만) 시 상위확률 감산(%p, 음수). */
+export const LIFE_MINIGAME_FAIL_PENALTY = -10;
+
+/**
+ * 미니게임 점수(0..1.2) → 이 회차 상위확률 보너스(%p).
+ *   점수 ≥ 1.0  대성공 → +LIFE_MINIGAME_GREAT_BONUS
+ *   점수 ≥ 0.55 성공   → +LIFE_MINIGAME_BONUS
+ *   그 미만     실패   → LIFE_MINIGAME_FAIL_PENALTY(음수)
+ * 핵심 산출 수학은 안 바꾸고, harvest/performRepeat의 판정 chance에만 가산하는 데 쓴다.
+ */
+export function minigameUpperBonus(score: number): number {
+  if (score >= 1.0) return LIFE_MINIGAME_GREAT_BONUS;
+  if (score >= LIFE_MINIGAME_THRESHOLD) return LIFE_MINIGAME_BONUS;
+  return LIFE_MINIGAME_FAIL_PENALTY;
+}
+
 /** 반복형 쿨다운 만료까지 남은 전역 턴(0이면 즉시 수행 가능). */
 export function getCooldownRemaining(nodeId: string): number {
   const r = useRunStore().data;
@@ -163,9 +199,11 @@ export interface RepeatResult {
  *  - 생활 XP = 1 + (상위면 +1).
  *  - lifeCooldowns[nodeId] = now + REPEAT_COOLDOWN.
  * 쿨다운 중이면 null(수행 거부). delayed 활동을 잘못 넘기면 null(가드).
- * (미니게임 연동 없음 — 즉시 산출. 후속 polish로 미니게임 추가 가능.)
+ *
+ * upperBonus(선택, %p) — 이 회차에만 상위확률에 더하는 보너스(미니게임 결과 등).
+ *   판정 chance에만 가산하고 산출 개수·컬러·XP 공식은 불변. 인자 없이 호출하면 기존 동작과 동일.
  */
-export function performRepeat(nodeId: string, act: LifeActivityDef): RepeatResult | null {
+export function performRepeat(nodeId: string, act: LifeActivityDef, upperBonus = 0): RepeatResult | null {
   if (act.type !== 'repeat') return null;
   const run = useRunStore();
   const r = run.data;
@@ -177,9 +215,10 @@ export function performRepeat(nodeId: string, act: LifeActivityDef): RepeatResul
   const data = useDataStore();
   const lifeLevel = r.lifeLevel ?? 1;
 
-  // 상위/하위 판정(결정적 rng) — 농사 harvest와 동일 모델.
+  // 상위/하위 판정(결정적 rng) — 농사 harvest와 동일 모델. upperBonus는 이 회차 한정 가산.
   const roll = Math.round(rng() * 100);
-  const upper = roll <= repeatUpperChance(act);
+  const chance = Math.max(0, Math.min(100, repeatUpperChance(act) + upperBonus));
+  const upper = roll <= chance;
 
   // 산출 개수.
   const count = 1 + Math.floor(lifeLevel / 3) + (upper ? 1 : 0);

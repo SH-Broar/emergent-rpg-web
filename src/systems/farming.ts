@@ -303,8 +303,12 @@ export interface HarvestResult {
  *  - 개수는 생활레벨·컬러로 약간 스케일(1 + floor(lifeLevel/3) + (상위면 +1)).
  *  - 작물 element 컬러 부여(+colorGain) + 생활 XP 적립(addLifeXp).
  * 수확 불가(텃밭 없음/미완성)면 null.
+ *
+ * upperBonus(선택, %p) — 이 *한 회차*에만 상위확률에 더하는 보너스(미니게임 결과 등).
+ *   판정 chance에만 가산하고 산출 개수·컬러·XP 공식은 그대로(상위확률 기본 모델 불변).
+ *   인자 없이 호출하면 기존 동작과 동일(0%p) → 미니게임 미연동 화면 회귀 0.
  */
-export function harvest(nodeId: string): HarvestResult | null {
+export function harvest(nodeId: string, upperBonus = 0): HarvestResult | null {
   const run = useRunStore();
   const r = run.data;
   const plot = r.plots?.[nodeId];
@@ -324,9 +328,10 @@ export function harvest(nodeId: string): HarvestResult | null {
   const data = useDataStore();
   const lifeLevel = r.lifeLevel ?? 1;
 
-  // 상위/하위 판정 (결정적 rng).
+  // 상위/하위 판정 (결정적 rng). upperBonus는 이 회차 한정 가산(미니게임 등), 기본 모델은 불변.
   const roll = Math.round(rng() * 100);
-  const upper = roll <= harvestUpperChance(crop);
+  const chance = Math.max(0, Math.min(100, harvestUpperChance(crop) + upperBonus));
+  const upper = roll <= chance;
 
   // 산출 개수 — 기본 1 + 생활레벨/3 + 상위 보너스. (후반일수록 더 많이.)
   const count = 1 + Math.floor(lifeLevel / 3) + (upper ? 1 : 0);

@@ -40,9 +40,14 @@ import {
   getCooldownRemaining,
   performRepeat,
   repeatUpperChance,
+  minigameUpperBonus,
   type RepeatResult,
+  type LifeMinigame,
 } from '@/systems/life-activity';
 import SceneCharacter from '@/components/SceneCharacter.vue';
+import GatherTap from '@/components/gather/GatherTap.vue';
+import GatherMatrix from '@/components/gather/GatherMatrix.vue';
+import GatherReact from '@/components/gather/GatherReact.vue';
 
 const router = useRouter();
 const run = useRunStore();
@@ -71,6 +76,62 @@ const lifeLevel = computed(() => run.data.lifeLevel ?? 1);
 /** 이 노드에 배정된 생활 활동(권역 결정적). */
 const activity = computed(() => activityForNode(nodeId.value, currentNode.value?.region));
 const isDelayed = computed(() => activity.value.type === 'delayed');
+
+// ============================================================================
+// 미니게임 (스킬 표현) — 산출 순간에 띄워 점수→상위확률 보너스. 닫으면 즉시 산출 폴백.
+// ----------------------------------------------------------------------------
+
+/** 활동 노드 권역의 tier(1~4). 미니게임 난이도 스케일 — GatherView와 동일 모델. */
+const regionTier = computed<number>(() => {
+  const node = currentNode.value;
+  const region = node?.region ? map.value?.regions.find((r) => r.id === node.region) : undefined;
+  const t = region?.tier ?? 1;
+  return t < 1 ? 1 : t > 4 ? 4 : t;
+});
+
+/** tier로 미니게임 파라미터 스케일(GatherView 값 미러). */
+const tapParams = computed(() => ({ targetPresses: 14 + regionTier.value * 4, timeMs: 5000 }));
+const matrixParams = computed(() => {
+  const gridN = Math.min(5, Math.max(3, 2 + regionTier.value));
+  return { gridN, targetTimeMs: gridN * gridN * 700 };
+});
+const reactParams = computed(() => {
+  const t = regionTier.value;
+  return { minRtMs: 120, maxRtMs: 780 - t * 80, targets: Math.min(3, Math.max(1, t - 1)) };
+});
+
+/** 미니게임 모달이 열려 있는가 + 어떤 종류 + 어떤 산출(수확/반복)에 연결되는가. */
+const minigameOpen = ref(false);
+const minigameKind = ref<LifeMinigame>('tap');
+const pendingAction = ref<'harvest' | 'repeat' | null>(null);
+
+/** 산출 클릭 → 그 활동 미니게임을 띄운다(현 phase가 산출 가능할 때만 호출됨). */
+function openMinigame(action: 'harvest' | 'repeat') {
+  minigameKind.value = activity.value.minigame;
+  pendingAction.value = action;
+  minigameOpen.value = true;
+}
+
+/** 미니게임 종료 — 점수→보너스 적용해 실제 산출. */
+function onMinigameDone(score: number, _record: string) {
+  if (!minigameOpen.value) return;
+  finishAction(minigameUpperBonus(score));
+}
+
+/** 미니게임 건너뛰기/닫기 — 보너스 0(기존 즉시 산출과 동일, 회귀 0). */
+function skipMinigame() {
+  if (!minigameOpen.value) return;
+  finishAction(0);
+}
+
+/** 보너스를 실어 실제 산출을 수행하고 모달을 닫는다. */
+function finishAction(upperBonus: number) {
+  const action = pendingAction.value;
+  minigameOpen.value = false;
+  pendingAction.value = null;
+  if (action === 'harvest') runHarvest(upperBonus);
+  else if (action === 'repeat') runRepeat(upperBonus);
+}
 
 // ============================================================================
 // 지연형 (delayed) — farming.ts 재사용
@@ -138,8 +199,14 @@ function doCare() {
   }
 }
 
+/** 수확 클릭 → 미니게임을 띄운다(결과로 상위확률 보너스). */
 function doHarvest() {
-  const result = harvest(nodeId.value);
+  openMinigame('harvest');
+}
+
+/** 실제 수확(보너스 반영). 미니게임 done/skip에서만 호출. */
+function runHarvest(upperBonus: number) {
+  const result = harvest(nodeId.value, upperBonus);
   if (result) {
     lastHarvest.value = result;
     tick.value++;
@@ -178,8 +245,14 @@ const repeatChance = computed(() => repeatUpperChance(activity.value));
 /** 직전 반복 수행 결과. */
 const lastRepeat = ref<RepeatResult | null>(null);
 
+/** 수행 클릭 → 미니게임을 띄운다(결과로 상위확률 보너스). */
 function doRepeat() {
-  const result = performRepeat(nodeId.value, activity.value);
+  openMinigame('repeat');
+}
+
+/** 실제 반복 수행(보너스 반영). 미니게임 done/skip에서만 호출. */
+function runRepeat(upperBonus: number) {
+  const result = performRepeat(nodeId.value, activity.value, upperBonus);
   if (result) {
     lastRepeat.value = result;
     tick.value++;
@@ -291,6 +364,38 @@ onMounted(() => {
         </template>
       </section>
     </template>
+
+    <!-- ===== 미니게임 모달 (스킬 표현) ===== -->
+    <div v-if="minigameOpen" class="mg-overlay" @click.self="skipMinigame">
+      <div class="mg-modal">
+        <header class="mg-modal__hdr">
+          <h2>{{ activity.name }}</h2>
+          <button class="mg-modal__skip" @click="skipMinigame">건너뛰기</button>
+        </header>
+        <p class="mg-modal__hint">잘할수록 상품이 나올 확률이 오른다.</p>
+        <div class="mg-modal__body">
+          <GatherTap
+            v-if="minigameKind === 'tap'"
+            :target-presses="tapParams.targetPresses"
+            :time-ms="tapParams.timeMs"
+            @done="onMinigameDone"
+          />
+          <GatherMatrix
+            v-else-if="minigameKind === 'matrix'"
+            :grid-n="matrixParams.gridN"
+            :target-time-ms="matrixParams.targetTimeMs"
+            @done="onMinigameDone"
+          />
+          <GatherReact
+            v-else
+            :min-rt-ms="reactParams.minRtMs"
+            :max-rt-ms="reactParams.maxRtMs"
+            :targets="reactParams.targets"
+            @done="onMinigameDone"
+          />
+        </div>
+      </div>
+    </div>
   </main>
 </template>
 
@@ -341,6 +446,27 @@ onMounted(() => {
 .action--harvest:hover { background: rgba(168,232,142,0.3); }
 .action--water { background: rgba(142,237,255,0.16); border-color: rgba(142,237,255,0.5); color: #8eedff; }
 .action--water:hover { background: rgba(142,237,255,0.28); }
+
+/* ===== 미니게임 모달 ===== */
+.mg-overlay {
+  position: fixed; inset: 0; z-index: var(--z-overlay, 990);
+  background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center; padding: 1.5rem;
+}
+.mg-modal {
+  width: 100%; max-width: 460px; border-radius: 16px; padding: 1.4rem 1.6rem 1.8rem;
+  background: #1b1b24; border: 1px solid rgba(255,255,255,0.14);
+  box-shadow: 0 18px 48px rgba(0,0,0,0.5);
+}
+.mg-modal__hdr { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+.mg-modal__hdr h2 { margin: 0; color: #f0d68e; font-size: 1.2rem; }
+.mg-modal__skip {
+  padding: 0.4rem 0.9rem; border-radius: 8px; cursor: pointer; font: inherit; font-size: 0.84rem;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.2); color: #b6b6c4; white-space: nowrap;
+}
+.mg-modal__skip:hover { background: rgba(255,255,255,0.12); }
+.mg-modal__hint { color: #9a9aa8; font-size: 0.88rem; margin: 0.4rem 0 1.2rem; }
+.mg-modal__body { padding-top: 0.4rem; }
 
 @media (max-width: 560px) {
   .life-view { padding: 2rem 1.2rem; }
