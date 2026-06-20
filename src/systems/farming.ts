@@ -99,13 +99,13 @@ export const CROPS: CropDef[] = [
   },
   {
     id: 'crop-dry',
-    seedName: '볕말림 채반',
+    seedName: '별빛 채반',
     growTurns: 5,
     waterAt: [2, 4],
     element: 'light',
     lowerItemId: 'i-life-dried',
     upperItemId: 'i-life-dried-fine',
-    careLabel: '볕 쬐기',
+    careLabel: '별빛 쬐기',
     plotLabel: '건조대',
   },
   {

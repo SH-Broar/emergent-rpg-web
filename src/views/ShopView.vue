@@ -18,6 +18,7 @@ import {
 } from '@/systems/shop';
 import { getCraftingDiscount } from '@/systems/relic';
 import { relicEffectText, relicTriggerLabel, cardDetailText, relicDetailText } from '@/systems/labels';
+import Collapsible from '@/components/Collapsible.vue';
 import type { Card } from '@/data/schemas';
 
 const router = useRouter();
@@ -108,9 +109,13 @@ onMounted(() => {
       <span v-if="discountPercent > 0" class="disc">할인 {{ discountPercent }}%</span>
     </div>
 
-    <!-- 카드 진열 -->
-    <section class="rack">
-      <h2 class="rack__title">카드</h2>
+    <!-- 카드 진열 — 핵심 매대라 기본 펼침. -->
+    <Collapsible
+      title="카드"
+      default-open
+      :badge="`${inventory.cards.length}장`"
+      class="rack-collapse"
+    >
       <ul class="rack__grid">
         <li
           v-for="(slot, i) in inventory.cards"
@@ -139,11 +144,10 @@ onMounted(() => {
           </button>
         </li>
       </ul>
-    </section>
+    </Collapsible>
 
     <!-- 유물 진열 -->
-    <section class="rack">
-      <h2 class="rack__title">유물</h2>
+    <Collapsible title="유물" :badge="`${inventory.relics.length}개`" class="rack-collapse">
       <ul class="rack__grid">
         <li
           v-for="(slot, i) in inventory.relics"
@@ -172,11 +176,15 @@ onMounted(() => {
           </button>
         </li>
       </ul>
-    </section>
+    </Collapsible>
 
     <!-- 재료 진열 -->
-    <section v-if="inventory.materials && inventory.materials.length > 0" class="rack">
-      <h2 class="rack__title">재료</h2>
+    <Collapsible
+      v-if="inventory.materials && inventory.materials.length > 0"
+      title="재료"
+      :badge="`${inventory.materials.length}종`"
+      class="rack-collapse"
+    >
       <ul class="rack__grid">
         <li
           v-for="(slot, i) in inventory.materials"
@@ -198,11 +206,10 @@ onMounted(() => {
           </button>
         </li>
       </ul>
-    </section>
+    </Collapsible>
 
     <!-- 회복 구매 (카오스 황폐 전용) -->
-    <section v-if="inventory.restPurchase" class="rack">
-      <h2 class="rack__title">회복</h2>
+    <Collapsible v-if="inventory.restPurchase" title="회복" class="rack-collapse">
       <ul class="rack__grid">
         <li class="slot slot--common" :class="{ 'slot--sold': inventory.restPurchase.used }">
           <div class="slot__head">
@@ -219,7 +226,7 @@ onMounted(() => {
           </button>
         </li>
       </ul>
-    </section>
+    </Collapsible>
 
     <button class="leave" @click="leave">떠나기</button>
   </main>
@@ -235,8 +242,7 @@ h1 { color: #c08eff; margin: 0; }
 .resources .gold { color: #ffd870; font-weight: 600; }
 .resources .disc { color: #8effb8; margin-left: auto; }
 
-.rack { margin-top: 1.5rem; }
-.rack__title { color: #f6e8b8; font-size: 1.05rem; margin: 0 0 0.6rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.3rem; }
+.rack-collapse { margin-top: 0.8rem; }
 .rack__grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));

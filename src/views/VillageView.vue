@@ -31,6 +31,7 @@ import {
   potionCostFor,
 } from '@/systems/workshop';
 import SceneCharacter from '@/components/SceneCharacter.vue';
+import Collapsible from '@/components/Collapsible.vue';
 import type { Card, Companion, Item, Npc, Rank } from '@/data/schemas';
 
 const router = useRouter();
@@ -153,6 +154,15 @@ function recruitSummary(npc: Npc): string {
 // 대화 = NPC.background 단락(친밀도 깊이만큼 공개) 또는 tagline 표시.
 // Item 37-② Stage C(1B): 친밀도 상승은 *하루 1회*(같은 날 재대화는 대사만). affinity는 *영속 메타*.
 const activeDialogue = ref<{ name: string; line: string; rewards: string[] } | null>(null);
+
+// NPC 개별 접이식 행 — 펼쳐진 NPC id 집합(로컬 UI 상태, 세이브 무관). 기본 전부 접힘.
+const openNpcIds = ref<Set<string>>(new Set());
+function toggleNpc(id: string) {
+  const next = new Set(openNpcIds.value);
+  if (next.has(id)) next.delete(id);
+  else next.add(id);
+  openNpcIds.value = next;
+}
 
 /** 친밀도 — 영속 메타값(cross-run). run working mirror도 동기지만 meta가 권위. */
 function affinityOf(npc: Npc): number {
@@ -389,8 +399,12 @@ const rankColors: Record<string, string> = {
       </div>
 
       <!-- 거래 계약 — 게이트에서 수주한 거래를 여기서 완료(요구 품목 충분할 때). -->
-      <div v-if="tradeRows.length > 0" class="trade-list">
-        <h3 class="trade-list__title">맡은 거래</h3>
+      <Collapsible
+        v-if="tradeRows.length > 0"
+        title="맡은 거래"
+        :badge="`${tradeRows.length}건`"
+      >
+        <div class="trade-list">
         <div v-for="row in tradeRows" :key="row.nodeId" class="trade-row">
           <div class="trade-row__main">
             <div class="trade-row__where">{{ row.nodeLabel }}</div>
@@ -408,57 +422,69 @@ const rankColors: Record<string, string> = {
             @click="completeTradeAt(row)"
           >{{ row.ready ? '완료' : '모자람' }}</button>
         </div>
-      </div>
+        </div>
+      </Collapsible>
 
-      <!-- NPC 목록 — 대화·영입은 *대화 시스템 도입 후* 활성. 지금은 *마주침*만 표시. -->
-      <div v-if="nodeNpcs.length > 0" class="npc-list">
-        <h3 class="npc-list__title">이 곳의 사람들</h3>
+      <!-- NPC 목록 — 섹션 접이식 + 각 NPC도 개별 접이식 행(헤더=이름·종족·친밀도, 본문=대사+버튼). -->
+      <Collapsible
+        v-if="nodeNpcs.length > 0"
+        title="이 곳의 사람들"
+        :badge="`${nodeNpcs.length}명`"
+      >
+        <div class="npc-list">
         <div
           v-for="npc in nodeNpcs"
           :key="npc.id"
           class="npc-card"
+          :class="{ 'npc-card--open': openNpcIds.has(npc.id) }"
         >
-          <div class="npc-card__hd">
+          <button class="npc-card__hd" @click="toggleNpc(npc.id)">
+            <span class="npc-card__arrow">{{ openNpcIds.has(npc.id) ? '▾' : '▸' }}</span>
             <span class="npc-card__name">{{ npc.name }}</span>
             <span class="npc-card__meta">{{ npc.raceId }} · {{ npc.role }}</span>
             <span class="npc-card__aff">친밀도 {{ affinityOf(npc) }}</span>
-          </div>
-          <p v-if="npc.tagline" class="npc-card__tagline">{{ npc.tagline }}</p>
-          <div class="npc-card__actions">
-            <button class="npc-card__btn npc-card__btn--talk" @click="talk(npc)">대화한다</button>
-          </div>
-          <!-- 동료 권유 UI — companion(또는 legacy recruit) 정의가 있는 NPC만 표시. -->
-          <div v-if="companionOf(npc)" class="npc-card__recruit">
-            <span class="npc-card__summary">{{ recruitSummary(npc) }}</span>
-            <button
-              v-if="!run.inRoster(npc.id)"
-              class="npc-card__btn"
-              :disabled="!canRecruit(npc)"
-              :title="recruitWhyDisabled(npc)"
-              @click="tryRecruit(npc)"
-            >동행을 권한다</button>
-            <button
-              v-else
-              class="npc-card__btn npc-card__btn--dismiss"
-              @click="tryDismiss(npc)"
-            >이별을 고한다</button>
+          </button>
+          <div v-if="openNpcIds.has(npc.id)" class="npc-card__body">
+            <p v-if="npc.tagline" class="npc-card__tagline">{{ npc.tagline }}</p>
+            <div class="npc-card__actions">
+              <button class="npc-card__btn npc-card__btn--talk" @click="talk(npc)">대화한다</button>
+            </div>
+            <!-- 동료 권유 UI — companion(또는 legacy recruit) 정의가 있는 NPC만 표시. -->
+            <div v-if="companionOf(npc)" class="npc-card__recruit">
+              <span class="npc-card__summary">{{ recruitSummary(npc) }}</span>
+              <button
+                v-if="!run.inRoster(npc.id)"
+                class="npc-card__btn"
+                :disabled="!canRecruit(npc)"
+                :title="recruitWhyDisabled(npc)"
+                @click="tryRecruit(npc)"
+              >동행을 권한다</button>
+              <button
+                v-else
+                class="npc-card__btn npc-card__btn--dismiss"
+                @click="tryDismiss(npc)"
+              >이별을 고한다</button>
+            </div>
           </div>
         </div>
-      </div>
+        </div>
+      </Collapsible>
 
-      <button class="opt" @click="rollCraft">
-        <span class="opt__title">간이 카드 제작</span>
-        <span class="opt__hint">시간의 조각 {{ VILLAGE_CRAFT_COST }} — 무작위 일반 카드 {{ VILLAGE_CRAFT_CHOICES }}장 중 1장 선택</span>
-      </button>
+      <!-- 제작 — 간이 카드 제작 + 포션 제작을 한 섹션으로 묶어 접이식. -->
+      <Collapsible title="제작" subtitle="카드 · 포션">
+        <button class="opt" @click="rollCraft">
+          <span class="opt__title">간이 카드 제작</span>
+          <span class="opt__hint">시간의 조각 {{ VILLAGE_CRAFT_COST }} — 무작위 일반 카드 {{ VILLAGE_CRAFT_CHOICES }}장 중 1장 선택</span>
+        </button>
 
-      <button class="opt" @click="potionPanelOpen = !potionPanelOpen">
-        <span class="opt__title">포션 제작</span>
-        <span class="opt__hint">시간의 조각 + 일반 재료 — 일반 포션 제작</span>
-      </button>
+        <button class="opt" @click="potionPanelOpen = !potionPanelOpen">
+          <span class="opt__title">포션 제작</span>
+          <span class="opt__hint">시간의 조각 + 일반 재료 — 일반 포션 제작</span>
+        </button>
 
-      <!-- 일반 포션 제작 패널 -->
-      <div v-if="potionPanelOpen" class="potion-panel">
-        <ul class="potion-list">
+        <!-- 일반 포션 제작 패널 -->
+        <div v-if="potionPanelOpen" class="potion-panel">
+          <ul class="potion-list">
           <li v-for="itm in craftablePotions" :key="itm.id" class="potion-item">
             <div class="potion-main">
               <div class="potion-name">
@@ -476,7 +502,8 @@ const rankColors: Record<string, string> = {
           </li>
           <li v-if="craftablePotions.length === 0" class="potion-empty">제작 가능한 포션이 없습니다.</li>
         </ul>
-      </div>
+        </div>
+      </Collapsible>
 
       <button class="opt opt--leave" @click="leave">떠나기</button>
     </section>
@@ -572,11 +599,15 @@ h1 { color: #8effb8; margin: 0; }
 /* NPC 목록 */
 .npc-list { display: grid; gap: 0.6rem; margin-bottom: 0.6rem; }
 .npc-list__title { color: #c0b693; font-size: 0.85rem; letter-spacing: 0.08em; margin: 0.4rem 0 0.2rem; }
-.npc-card { padding: 0.7rem 0.9rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; display: grid; gap: 0.3rem; }
-.npc-card__hd { display: flex; gap: 0.6rem; align-items: baseline; }
+.npc-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; overflow: hidden; }
+.npc-card--open { border-color: rgba(192,142,255,0.35); background: rgba(192,142,255,0.05); }
+.npc-card__hd { display: flex; gap: 0.6rem; align-items: baseline; width: 100%; padding: 0.6rem 0.9rem; background: none; border: none; color: inherit; cursor: pointer; text-align: left; font: inherit; }
+.npc-card__hd:hover { background: rgba(255,255,255,0.04); }
+.npc-card__arrow { color: #c0b693; font-size: 0.8rem; flex-shrink: 0; }
+.npc-card__body { padding: 0.2rem 0.9rem 0.7rem; display: grid; gap: 0.3rem; border-top: 1px solid rgba(255,255,255,0.08); }
 .npc-card__name { color: #f6e8b8; font-weight: 600; }
 .npc-card__meta { font-size: 0.78rem; color: #888; }
-.npc-card__tagline { color: #a4a4b0; font-size: 0.85rem; margin: 0; font-style: italic; }
+.npc-card__tagline { color: #a4a4b0; font-size: 0.85rem; margin: 0.4rem 0 0; font-style: italic; }
 .npc-card__aff { font-size: 0.75rem; color: #c08eff; margin-left: auto; }
 .npc-card__actions { display: flex; gap: 0.5rem; margin-top: 0.2rem; }
 .npc-card__btn--talk { background: rgba(142, 200, 255, 0.16); border-color: rgba(142, 200, 255, 0.45); }

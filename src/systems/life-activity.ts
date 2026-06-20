@@ -74,7 +74,7 @@ export const LIFE_ACTIVITIES: LifeActivityDef[] = [
   { id: 'act-farm', name: '농사', element: 'earth', type: 'delayed', cropId: 'crop-grain', minigame: 'tap' },
   { id: 'act-char', name: '숯굽기', element: 'fire', type: 'delayed', cropId: 'crop-char', minigame: 'tap' },
   { id: 'act-hunt', name: '사냥', element: 'wind', type: 'delayed', cropId: 'crop-snare', minigame: 'tap' },
-  { id: 'act-dry', name: '볕말림', element: 'light', type: 'delayed', cropId: 'crop-dry', minigame: 'matrix' },
+  { id: 'act-dry', name: '별빛 건조', element: 'light', type: 'delayed', cropId: 'crop-dry', minigame: 'matrix' },
   { id: 'act-mush', name: '버섯재배', element: 'dark', type: 'delayed', cropId: 'crop-mush', minigame: 'matrix' },
   // === 반복형 (즉시 산출 + 쿨다운) ===
   {
