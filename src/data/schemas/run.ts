@@ -608,6 +608,37 @@ export interface NodeStateRecord {
   gatherCount?: number;
 }
 
+/**
+ * 농사 텃밭 상태 (생활 시스템, 코어) — `RunState.plots`의 노드별 값.
+ *
+ * 한 노드에 작물 하나를 심으면 생성되고, 수확하면 제거된다(재심기 가능).
+ * 시간 진행은 *전역 턴*(visitedNodes.length) 경과로 growthProgress가 자란다(refreshPlot이
+ * 조회 시점에 lazy 정산). visitNode/advanceDay를 직접 건드리지 않으므로 일일 리롤·전투와 분리.
+ *
+ * 물 게이트: growthProgress가 waterAt의 다음 임계에 닿으면 물을 줄 때까지 진행이 멈추고,
+ * *그동안 흐른 턴은 성장에 쳐지지 않는다*("물을 줘야 나머지 턴이 지나감"). → 물 주러 그
+ * 텃밭으로 돌아오는 동선이 생긴다.
+ */
+export interface PlotState {
+  /** 심은 작물 정의 id (systems/farming.ts CROPS). */
+  cropId: string;
+  /** 심은 시점 — visitedNodes.length 스냅샷(기록·디버그용). */
+  plantedTurn: number;
+  /**
+   * 마지막으로 성장 정산한 전역 턴(visitedNodes.length). refreshPlot이 (now - lastTickTurn)을
+   * 성장에 반영한 뒤 now로 갱신. 물 게이트에 막히면 막힌 turn들은 forfeit(성장 미반영)된다.
+   */
+  lastTickTurn: number;
+  /** 이 작물이 다 자라는 데 필요한 (물로 막히지 않은) 턴 수(작물 정의 growTurns 스냅샷). */
+  growTurns: number;
+  /** 물 요구 임계 시점들(작물 정의 waterAt 스냅샷, 결정적). */
+  waterAt: number[];
+  /** 지금까지 물을 준 횟수 — waterAt 중 충족한 임계 수. */
+  wateredCount: number;
+  /** 성장 진행도 — 정산된 턴마다 +1, growTurns에서 완성. 물 게이트에 막히면 정지. */
+  growthProgress: number;
+}
+
 /** 한 런 전체의 휘발 상태. */
 export interface RunState {
   // === 컨텍스트 ===
@@ -689,6 +720,32 @@ export interface RunState {
    * 캐릭터 메뉴에서도 사용 가능. 런 휘발.
    */
   pendingEnhancePicks?: number;
+
+  // === 생활 (농사 등 비전투 행동, 코어) — 전부 additive·optional, 구세이브 backfill. ===
+  /**
+   * 생활 레벨 — 모든 생활 행동(농사 수확 등)이 적립, XP 3/레벨(전투 xp/level 미러).
+   * 누적 lifeXp가 3 도달 시 차감되고 lifeLevel++. 전투 레벨과 별개. 런 휘발.
+   * 강화권 같은 보상은 없다 — lifeLevel 자체가 보상(수확 상위확률·산출에 반영).
+   */
+  lifeXp?: number;
+  /** 생활 레벨 — 시작 1. lifeXp 누적으로 상승. 런 휘발. */
+  lifeLevel?: number;
+  /**
+   * 농사 텃밭 — 노드별 작물 상태(생활 시스템). 신규 top-level 필드.
+   * advanceDay(일일 리롤)는 nodeStates만 손대므로 plots는 보존된다.
+   * 키 없는 노드 = 텃밭 없음. 수확하면 키 삭제. 런 휘발.
+   */
+  plots?: Record<NodeId, PlotState>;
+
+  /**
+   * 반복형 생활 활동(낚시·채광·집전 등)의 노드별 *쿨다운 만료 전역 턴*.
+   * value = 그 노드에서 다시 수행 가능해지는 전역 턴(visitedNodes.length).
+   * 수행 시 lifeCooldowns[nodeId] = visitedNodes.length + COOLDOWN으로 세팅.
+   * 지연형(농사 grow 엔진)은 plots를 쓰므로 여기 등재되지 않는다.
+   * 키 없는 노드 = 쿨다운 없음(즉시 수행 가능). 런 휘발.
+   * 옛 세이브 호환 — optional(EMPTY_RUN에 {}로 backfill).
+   */
+  lifeCooldowns?: Record<NodeId, number>;
 
 
   /**

@@ -10,7 +10,7 @@
  * (시작형 타이밍 수정: 덱·컬러 셋업이 끝난 *뒤* applyStartChaos 1회 — 저주덱/시드봉인/색봉인 보존.)
  */
 
-import { computed, onMounted, reactive } from 'vue';
+import { computed, onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUiStore } from '@/stores/ui';
 import { useDataStore } from '@/stores/data';
@@ -98,12 +98,47 @@ function scoreOf(c: Chaos): number {
   return chaosScoreOf(c, intensityOf(c));
 }
 
+/** 소유한 카오스가 하나라도 있는가 — 없으면 선택 창을 건너뛰고 브리핑만 띄운다(#004). */
+const hasChaos = computed(() => ownedChaos.value.length > 0);
+
+/** 런 시작 직전 브리핑 팝업 표시 여부(#005). */
+const showBriefing = ref(false);
+
+/** 챕터 번호(표시용) — 연도 오름차순 인덱스. */
+const chapterNo = computed(() => {
+  const tl = timeline.value;
+  if (!tl) return 1;
+  const sorted = [...data.timelines.values()].sort((a, b) => a.year - b.year);
+  const idx = sorted.findIndex((t) => t.id === tl.id);
+  return idx >= 0 ? idx + 1 : 1;
+});
+
+/** 브리핑에 표시할 활성 카오스 요약(이름 + 점수). */
+const activeChaosList = computed<{ name: string; score: number }[]>(() =>
+  active.value.map((a) => {
+    const c = data.chaosDefs.get(a.id);
+    return { name: c?.name ?? a.id, score: c ? chaosScoreOf(c, a.intensity) : 0 };
+  }),
+);
+
+function openBriefing() {
+  showBriefing.value = true;
+}
+function closeBriefing() {
+  // 카오스가 없어 선택 창을 건너뛴 경우엔 닫을 화면이 없으므로 캐릭터 선택으로 돌아간다.
+  if (!hasChaos.value) {
+    router.push('/game/race-select');
+    return;
+  }
+  showBriefing.value = false;
+}
+
 const SEASONS: Season[] = ['spring', 'summer', 'autumn', 'winter', 'monsoon', 'twilight'];
 function randomSeason(): Season {
   return SEASONS[Math.floor(Math.random() * SEASONS.length)];
 }
 
-async function startRun() {
+async function confirmStart() {
   const tl = timeline.value;
   const r = race.value;
   if (!tl || !r) {
@@ -222,7 +257,11 @@ async function startRun() {
   const { applyPassiveRelicsAtRunStart } = await import('@/systems/relic');
   applyPassiveRelicsAtRunStart();
 
-  router.push('/game/map');
+  // #007 — 시작 노드가 마을이면 "마을에 입장된 상태"로 런을 연다(누르게 하지 않음).
+  //   시작 노드는 startRun에서 currentNodeId(=pass-only)로 마킹되므로, 맵에 떨궈 두면
+  //   "보이는데 못 들어가는" 어색함이 생긴다. 마을이면 곧장 VillageView로(시간 비용 없음).
+  const startKind = map.nodes.find((n) => n.id === map.startNodeId)?.kind;
+  router.push(startKind === 'village' ? '/game/village' : '/game/map');
 }
 
 /**
@@ -257,24 +296,30 @@ function back() {
   router.push('/game/race-select');
 }
 
-onMounted(() => {
-  data.ensureLoaded();
+onMounted(async () => {
+  await data.ensureLoaded();
   if (!ui.pendingRunSetup.timelineId) {
     router.push('/game/timeline-select');
-  } else if (!ui.pendingRunSetup.raceId) {
-    router.push('/game/race-select');
+    return;
   }
+  if (!ui.pendingRunSetup.raceId) {
+    router.push('/game/race-select');
+    return;
+  }
+  // #004 — 카오스가 하나도 해금되지 않았으면 선택 창을 건너뛰고 곧장 브리핑을 띄운다.
+  if (!hasChaos.value) showBriefing.value = true;
 });
 </script>
 
 <template>
   <main class="chaos-select-view">
     <header class="hdr">
-      <button class="back" @click="back">← 종족 선택</button>
+      <button class="back" @click="back">← 캐릭터 선택</button>
       <h1>카오스</h1>
-      <p class="sub">카오스가 높을수록 원래 세계에서 멀어진다. 도전 점수만 기록된다.</p>
+      <p class="sub">카오스 레벨을 선택해주세요. 카오스 수치가 높을수록 원래 세계에서 멀어집니다.</p>
     </header>
 
+    <template v-if="hasChaos">
     <!-- 점수 요약 -->
     <section class="score-bar">
       <div class="score">
@@ -282,13 +327,13 @@ onMounted(() => {
         <span class="score__val">{{ totalScore }}</span>
       </div>
       <div class="score score--best">
-        <span class="score__label">이 연표 최고 기록</span>
+        <span class="score__label">이 챕터의 최고 기록</span>
         <span class="score__val">{{ bestScore }}</span>
       </div>
     </section>
 
     <!-- 소유 카오스 -->
-    <section v-if="groups.length > 0" class="catalog">
+    <section class="catalog">
       <div v-for="g in groups" :key="g.tier" class="group">
         <h2 class="group__title">{{ chaosTierLabel(g.tier) }}</h2>
         <div class="group__items">
@@ -326,13 +371,41 @@ onMounted(() => {
         </div>
       </div>
     </section>
-    <section v-else class="empty">
-      <p>소유한 카오스가 없다. 연구에서 영혼으로 카오스를 구매할 수 있다.</p>
-    </section>
 
     <footer class="foot">
-      <button class="start" @click="startRun">런 시작 (도전 점수 {{ totalScore }})</button>
+      <button class="start" @click="openBriefing">런 시작 (도전 점수 {{ totalScore }})</button>
     </footer>
+    </template>
+
+    <!-- 런 시작 직전 브리핑 팝업(#005) — 미션·제한시간·카오스 재확인. -->
+    <transition name="brief-fade">
+      <div v-if="showBriefing" class="brief-backdrop" role="dialog" aria-modal="true">
+        <div class="brief-modal">
+          <h2 class="brief-modal__title">{{ chapterNo }}장</h2>
+          <dl class="brief-meta">
+            <div>
+              <dt>제한 시간</dt>
+              <dd>{{ timeline?.timeLimit ?? '—' }}턴</dd>
+            </div>
+          </dl>
+          <p class="brief-mission"><strong>미션</strong> · {{ timeline?.missionGoal ?? '—' }}</p>
+
+          <div v-if="activeChaosList.length > 0" class="brief-chaos">
+            <span class="brief-chaos__title">카오스 · 도전 점수 {{ totalScore }}</span>
+            <ul>
+              <li v-for="c in activeChaosList" :key="c.name">
+                {{ c.name }} <span class="brief-chaos__score">+{{ c.score }}</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="brief-actions">
+            <button class="brief-btn brief-btn--cancel" @click="closeBriefing">뒤로</button>
+            <button class="brief-btn brief-btn--go" @click="confirmStart">시작</button>
+          </div>
+        </div>
+      </div>
+    </transition>
   </main>
 </template>
 
@@ -399,6 +472,49 @@ h1 { color: #f6e8b8; margin: 0; }
   font: inherit; font-weight: 600; font-size: 1rem;
 }
 .start:hover { background: rgba(192,142,255,0.32); }
+
+/* 런 시작 직전 브리핑 팝업(#005) */
+.brief-backdrop {
+  position: fixed; inset: 0; z-index: var(--z-overlay);
+  background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center; padding: 1rem;
+}
+.brief-modal {
+  max-width: 460px; width: 100%;
+  background: #16171f;
+  border: 1px solid rgba(192, 142, 255, 0.4);
+  border-radius: 12px;
+  padding: 1.6rem 1.7rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  display: grid; gap: 1rem;
+}
+.brief-modal__title { color: #f6e8b8; margin: 0; font-size: 1.7rem; }
+.brief-meta { display: flex; gap: 1.6rem; margin: 0; }
+.brief-meta div { display: grid; gap: 0.15rem; }
+.brief-meta dt { font-size: 0.72rem; color: #888; letter-spacing: 0.06em; }
+.brief-meta dd { color: #f6e8b8; margin: 0; font-weight: 500; font-variant-numeric: tabular-nums; }
+.brief-mission {
+  background: rgba(0,0,0,0.25);
+  border-left: 2px solid rgba(246, 232, 184, 0.45);
+  padding: 0.6rem 0.9rem; margin: 0;
+  color: #d6cfb8; font-size: 0.92rem;
+}
+.brief-mission strong { color: #f6e8b8; }
+.brief-chaos { display: grid; gap: 0.4rem; }
+.brief-chaos__title { font-size: 0.82rem; color: #c08eff; letter-spacing: 0.03em; }
+.brief-chaos ul { margin: 0; padding-left: 1.1rem; color: #bdb6a0; font-size: 0.88rem; display: grid; gap: 0.2rem; }
+.brief-chaos__score { color: #ffe88e; font-variant-numeric: tabular-nums; }
+.brief-actions { display: flex; gap: 0.6rem; margin-top: 0.3rem; }
+.brief-btn {
+  flex: 1; padding: 0.7rem 1rem; border-radius: 6px; cursor: pointer;
+  font: inherit; font-weight: 600; font-size: 0.95rem; border: 1px solid transparent;
+  transition: filter 120ms ease, transform 120ms ease;
+}
+.brief-btn--go { background: linear-gradient(180deg, #c0b693 0%, #a39872 100%); color: #1a1a26; }
+.brief-btn--cancel { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.18); color: #b6b6c4; }
+.brief-btn:hover { transform: translateY(-1px); filter: brightness(1.06); }
+.brief-fade-enter-active, .brief-fade-leave-active { transition: opacity 200ms ease; }
+.brief-fade-enter-from, .brief-fade-leave-to { opacity: 0; }
 
 @media (max-width: 640px) { .chaos-select-view { padding: 1.2rem; } }
 </style>

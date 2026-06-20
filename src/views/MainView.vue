@@ -10,7 +10,7 @@
  * (제목·도입문구·메뉴 설명 등)
  */
 
-import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useMetaStore } from '@/stores/meta';
 import { useRunStore } from '@/stores/run';
@@ -24,19 +24,44 @@ const data = useDataStore();
 /** 저장된 런이 있으면 modal 띄움 — 사용자가 Y/N 선택. */
 const showResume = ref(false);
 
+/**
+ * "한 번이라도 플레이했는가" — 점진적 노출(2026-06-20). 첫 진입에는 게임 시작/세이브 코드만,
+ * 플레이 흔적이 생긴 뒤에야 "세이브 관리"(연구·도감·기록·카오스) 카드를 노출.
+ * 메타 기준(반응형): 완료한 런·기록·도감 항목 중 하나라도 있으면 true.
+ */
+const hasPlayed = computed(
+  () =>
+    meta.totalRuns > 0 ||
+    (meta.runHistory?.length ?? 0) > 0 ||
+    meta.codex.length > 0,
+);
+
+/** 디버그 전투는 숨김 — 메인에서 "debug" 를 타이핑하면 진입(특수 커맨드). */
+let debugBuffer = '';
+
 onMounted(async () => {
   // 데이터가 아직이면 기다림 (resume이 의미 있으려면 timelines/cards 로드 필요).
   await data.ensureLoaded();
   if (run.hasSavedRun()) showResume.value = true;
-  window.addEventListener('keydown', onResumeKey);
+  window.addEventListener('keydown', onKey);
 });
 
 onBeforeUnmount(() => {
-  window.removeEventListener('keydown', onResumeKey);
+  window.removeEventListener('keydown', onKey);
 });
 
-/** 사용자 사양: Y/N 키로 즉시 응답. modal 떠 있을 때만 작동. */
-function onResumeKey(e: KeyboardEvent) {
+/** 키 핸들러 — 디버그 커맨드 버퍼 + (모달 떠 있을 때) Y/N 응답. */
+function onKey(e: KeyboardEvent) {
+  // 1) 디버그 커맨드 — 모달과 무관하게 "debug" 시퀀스 감지.
+  if (!showResume.value && /^[a-zA-Z]$/.test(e.key)) {
+    debugBuffer = (debugBuffer + e.key.toLowerCase()).slice(-5);
+    if (debugBuffer === 'debug') {
+      debugBuffer = '';
+      router.push('/debug-battle');
+      return;
+    }
+  }
+  // 2) 이어하기 모달 Y/N.
   if (!showResume.value) return;
   const k = e.key.toLowerCase();
   if (k === 'y' || k === 'enter') {
@@ -76,20 +101,8 @@ const VERSION = `v.${__APP_VERSION__}`;
 function goTimelineSelect() {
   router.push('/game/timeline-select');
 }
-function goResearch() {
-  router.push('/research');
-}
-function goChaos() {
-  router.push('/chaos');
-}
-function goCodex() {
-  router.push('/codex');
-}
-function goLog() {
-  router.push('/log');
-}
-function goDebugBattle() {
-  router.push('/debug-battle');
+function goSaveManage() {
+  router.push('/save-manage');
 }
 function goSaveCode() {
   router.push('/save-code');
@@ -108,39 +121,18 @@ function goSaveCode() {
         <span class="menu-card__title">게임 시작</span>
       </button>
 
-      <button class="menu-card" type="button" @click="goResearch">
-        <span class="menu-card__title">연구</span>
-        <span class="menu-card__sub">진행도 {{ Math.round(meta.compositeRatio * 100) }}%</span>
+      <!-- 점진적 노출 — 한 번이라도 플레이한 뒤에만 등장. -->
+      <button v-if="hasPlayed" class="menu-card" type="button" @click="goSaveManage">
+        <span class="menu-card__title">세이브 관리</span>
+        <span class="menu-card__sub">연구 · 도감 · 기록 · 카오스</span>
       </button>
 
-      <button class="menu-card" type="button" @click="goCodex">
-        <span class="menu-card__title">도감</span>
-        <span class="menu-card__sub">{{ meta.codex.length }}개 항목</span>
-      </button>
-
-      <button class="menu-card" type="button" @click="goLog">
-        <span class="menu-card__title">기록</span>
-        <span class="menu-card__sub">{{ (meta.runHistory ?? []).length }}개의 기록</span>
-      </button>
-
-      <button class="menu-card menu-card--chaos" type="button" @click="goChaos">
-        <span class="menu-card__title">카오스</span>
-      </button>
-
+      <!-- 세이브 코드는 세이브 관리 뒤에. (첫 진입엔 관리가 없어 게임 시작 다음에 옴) -->
       <button class="menu-card" type="button" @click="goSaveCode">
         <span class="menu-card__title">세이브 코드</span>
         <span class="menu-card__sub">텍스트로 저장 / 불러오기</span>
       </button>
-
-      <button class="menu-card menu-card--debug" type="button" @click="goDebugBattle">
-        <span class="menu-card__title">디버그 전투</span>
-        <span class="menu-card__sub">몬스터·보스·카드 테스트</span>
-      </button>
     </section>
-
-    <footer class="legacy-note">
-      <small>전생 {{ meta.totalRuns }} · 보스 클리어 {{ meta.totalBossClears }}</small>
-    </footer>
 
     <!-- 빌드 버전 — 우하단 고정. 새 빌드 배포 확인용. -->
     <div class="version-badge" :title="`빌드 버전 ${VERSION}`">{{ VERSION }}</div>

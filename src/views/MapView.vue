@@ -26,7 +26,6 @@ import { getNeighbors, getNode, isTimeUp, effectiveKind as systemEffectiveKind }
 import { restHealMul, lockedTownCount, isShopLimited, canEnterShop, recordShopEntry, isRestHealBlocked } from '@/systems/chaos';
 import { isActivityDone } from '@/systems/activity';
 import { isGatherDone } from '@/systems/gathering';
-import { rng } from '@/systems/rng';
 import type { Node, NodeId, NodeKind, NodeMap } from '@/data/schemas';
 
 const router = useRouter();
@@ -226,19 +225,8 @@ function getEnterAction(): EnterAction {
   }
 }
 
-/** 방울 표식 — 다음 *일반 전투*를 엘리트로 격상(1회). 전투 진입 직전 호출. */
-function maybeApplyBellMark(node: Node) {
-  if ((run.data.bellMarked ?? 0) <= 0) return;
-  if (systemEffectiveKind(node, run.data) !== 'combat') return; // 이미 엘리트/보스면 패스(다음 일반 전투까지 유지)
-  const region = node.region ? nodeMap.value?.regions.find((rg) => rg.id === node.region) : undefined;
-  const pool = region?.eliteEnemyPool ?? [];
-  if (pool.length === 0) return;
-  const elite = pool[Math.floor(rng() * pool.length)];
-  run.data.nodeKindOverrides[node.id] = 'elite';
-  run.data.nodeContentOverrides[node.id] = { enemyGroupId: elite };
-  run.data.bellMarked = 0;
-  ui.toast('warning', '방울이 울린다 — 강한 것이 다가온다 (엘리트 전투).');
-}
+// 방울 표식(엘리트 격상)은 인정 게이트 도입(납품 v1)으로 GateView.maybeApplyBellMark로 이관.
+//   전투/엘리트 노드는 enterSelected에서 /game/gate로 보내고, [전투] 선택 시 게이트가 bell mark를 적용한다.
 
 function enterSelected() {
   const node = selectedNode.value;
@@ -278,14 +266,10 @@ function enterSelected() {
       if (action === 'pass') {
         ui.toast('info', '이미 정리된 곳입니다.');
       } else {
-        // 방울 표식(엘리트 격상)을 먼저 적용 — enterGridCombat이 노드 content를 읽기 전에.
-        maybeApplyBellMark(node);
-        // 격자 전투(Phase D) 무대 생성 + 적 해석. 성공해야 전투 화면으로 진입.
-        if (run.enterGridCombat(node.id)) {
-          router.push('/game/combat');
-        } else {
-          ui.toast('error', '전투를 시작할 수 없습니다.');
-        }
+        // 인정 게이트(납품 시스템 v1) — 곧장 전투가 아니라 [전투]/[납품]/[지나치기] 선택 화면으로.
+        //   bell mark 적용·enterGridCombat은 게이트의 [전투] 선택 시 GateView가 수행한다.
+        //   회피했던 전투(choose-combat) 재방문도 게이트로 보내 다시 선택하게 한다. (보스는 별개.)
+        router.push('/game/gate');
       }
       break;
     case 'event':
@@ -338,12 +322,8 @@ function enterSelected() {
       router.push('/game/shop');
       break;
     case 'gather':
-      // 이미 다녀간 채집은 사건처럼 자동 통과. 아니면 미니게임 화면으로.
-      if (isGatherDone(node.id)) {
-        ui.toast('info', '이미 다녀간 채집입니다.');
-      } else {
-        router.push('/game/gather');
-      }
+      // 농사(텃밭) 화면으로. 텃밭은 done을 쓰지 않으므로 언제든 다시 들를 수 있다.
+      router.push('/game/farm');
       break;
     case 'activity':
       // 이미 다녀간 활동은 사건처럼 자동 통과.
@@ -953,6 +933,7 @@ function enterLabel(): string {
                   'node-group--visited': run.data.nodeStates[node.id]?.visited,
                   'node-group--cleared': run.data.nodeStates[node.id]?.combatCleared,
                   'node-group--stealthed': run.data.nodeStates[node.id]?.combatStealthed,
+                  'node-group--event-done': run.data.nodeStates[node.id]?.eventTriggered,
                   'node-group--done': run.data.nodeStates[node.id]?.activityDone || run.data.nodeStates[node.id]?.restDone || run.data.nodeStates[node.id]?.gatherDone,
                   'node-group--selected': selectedNodeId === node.id,
                   'node-group--chaos-locked': chaosLockedNodes.has(node.id),
@@ -1285,6 +1266,25 @@ function enterLabel(): string {
 .node-group--visited .node-dot { opacity: 0.7; }
 .node-group--cleared .node-dot { opacity: 0.35; }
 .node-group--done .node-dot { opacity: 0.45; }
+/* 소비 완료 노드 — 확실한 회색 비활성(#006/#008).
+   전투 클리어·사건 발동·휴식/채집/활동 완료에만 적용. 현재 머무는 노드(--current)는 제외.
+   마을/상점/공방은 소비 상태가 없어 회색되지 않는다(재진입은 pass-only + 이동으로 제어). */
+.node-group--cleared:not(.node-group--current) .node-dot,
+.node-group--event-done:not(.node-group--current) .node-dot,
+.node-group--done:not(.node-group--current) .node-dot {
+  fill: #5a5a5a !important;
+  opacity: 0.5;
+  animation: none;
+  filter: none;
+}
+.node-group--cleared:not(.node-group--current) .node-label,
+.node-group--event-done:not(.node-group--current) .node-label,
+.node-group--done:not(.node-group--current) .node-label,
+.node-group--cleared:not(.node-group--current) .node-kind,
+.node-group--event-done:not(.node-group--current) .node-kind,
+.node-group--done:not(.node-group--current) .node-kind {
+  fill: #6a6a6a;
+}
 .node-group--stealthed .node-dot {
   opacity: 0.55;
   stroke: #8eedff;

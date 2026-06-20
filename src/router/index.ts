@@ -55,6 +55,12 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/LogView.vue'),
     meta: { scene: 'main' },
   },
+  {
+    path: '/save-manage',
+    name: 'save-manage',
+    component: () => import('@/views/SaveManageView.vue'),
+    meta: { scene: 'main' },
+  },
 
   // === 게임 씬 ===
   {
@@ -101,6 +107,15 @@ const routes: RouteRecordRaw[] = [
     meta: { scene: 'game' },
   },
   {
+    // 인정 게이트(납품 시스템 v1) — 전투/엘리트 노드 진입 시 [전투]/[납품]/[지나치기] 선택.
+    //   MapView가 visitNode 후 이 라우트로 보낸다(현 노드 = run.data.currentNodeId).
+    //   [전투]는 여기서 bell mark 적용 후 enterGridCombat→/game/combat. 보스는 별개(boss-intro).
+    path: '/game/gate',
+    name: 'game-gate',
+    component: () => import('@/views/GateView.vue'),
+    meta: { scene: 'game' },
+  },
+  {
     path: '/game/event',
     name: 'game-event',
     component: () => import('@/views/EventView.vue'),
@@ -116,6 +131,14 @@ const routes: RouteRecordRaw[] = [
     path: '/game/gather',
     name: 'game-gather',
     component: () => import('@/views/GatherView.vue'),
+    meta: { scene: 'game' },
+  },
+  {
+    // 생활 활동(8색=8활동) — 채집 노드(kind 'gather')를 이 화면으로 repoint. 권역별 배정 활동을
+    // dispatch(지연형=농사 엔진 / 반복형=즉시 산출). 구 FarmingView는 보존(되돌리기·단일 농사용).
+    path: '/game/farm',
+    name: 'game-farm',
+    component: () => import('@/views/LifeActivityView.vue'),
     meta: { scene: 'game' },
   },
   {

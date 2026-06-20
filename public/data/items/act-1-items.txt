@@ -414,3 +414,236 @@ region_id = oldshrine
 element = light
 effects =
 consumable = true
+
+# --- 작물 수확물 (농사 코어) ---
+# 텃밭에서 거둔 산출. category=material, element=작물 속성. effects 비움(제작 재료).
+# 각 작물마다 평작(common) / 상품(rare, -fine) 두 등급.
+
+[item.i-crop-grain]
+name = 들곡
+description = 텃밭에서 거둔 곡식. 단단하게 여물었다.
+rank = common
+category = material
+element = earth
+effects =
+consumable = false
+
+[item.i-crop-grain-fine]
+name = 여문 들곡
+description = 알이 굵게 찬 들곡. 손에 묵직하다.
+rank = rare
+category = material
+element = earth
+effects =
+consumable = false
+
+[item.i-crop-herb]
+name = 물풀
+description = 물가에서 자란 풀. 줄기에 물기가 돈다.
+rank = common
+category = material
+element = water
+effects =
+consumable = false
+
+[item.i-crop-herb-fine]
+name = 푸른 물풀
+description = 빛깔이 짙은 물풀. 잎이 두껍다.
+rank = rare
+category = material
+element = water
+effects =
+consumable = false
+
+[item.i-crop-pepper]
+name = 불꽃 고추
+description = 텃밭에서 거둔 고추. 끝이 발갛게 익었다.
+rank = common
+category = material
+element = fire
+effects =
+consumable = false
+
+[item.i-crop-pepper-fine]
+name = 잘 익은 불꽃 고추
+description = 속까지 붉게 익은 고추. 매운 기운이 강하다.
+rank = rare
+category = material
+element = fire
+effects =
+consumable = false
+
+[item.i-crop-vine]
+name = 바람넝쿨
+description = 줄기가 바람을 따라 자란 넝쿨.
+rank = common
+category = material
+element = wind
+effects =
+consumable = false
+
+[item.i-crop-vine-fine]
+name = 긴 바람넝쿨
+description = 길고 질기게 뻗은 넝쿨. 줄기가 곧다.
+rank = rare
+category = material
+element = wind
+effects =
+consumable = false
+
+[item.i-crop-lumina]
+name = 빛송이
+description = 빛을 머금고 자란 꽃송이.
+rank = common
+category = material
+element = light
+effects =
+consumable = false
+
+[item.i-crop-lumina-fine]
+name = 환한 빛송이
+description = 속까지 빛이 차오른 송이. 손끝이 밝아진다.
+rank = rare
+category = material
+element = light
+effects =
+consumable = false
+
+# --- 생활 활동 산출물 (8색=8활동 일반화) ---
+# 채집 노드의 권역별 배정 활동에서 거둔 산출. category=material, element=활동 속성.
+# 지연형(숯굽기 fire·사냥 wind·볕말림 light·버섯재배 dark)은 farming 엔진 재사용,
+# 반복형(낚시 water·채광 iron·집전 electric)은 즉시 산출. 각 평작(common)/상품(rare,-fine).
+# (농사 earth는 기존 i-crop-grain / -fine 재사용.)
+
+# 숯굽기 (fire, 지연형)
+[item.i-life-char]
+name = 숯
+description = 가마에서 구워낸 숯. 검고 단단하다.
+rank = common
+category = material
+element = fire
+effects =
+consumable = false
+
+[item.i-life-char-fine]
+name = 백탄
+description = 속까지 단단히 구워진 숯. 두드리면 맑은 소리가 난다.
+rank = rare
+category = material
+element = fire
+effects =
+consumable = false
+
+# 사냥 (wind, 지연형)
+[item.i-life-game]
+name = 사냥감
+description = 덫에 걸린 들짐승. 손질하면 쓸 곳이 많다.
+rank = common
+category = material
+element = wind
+effects =
+consumable = false
+
+[item.i-life-game-fine]
+name = 큰 사냥감
+description = 살이 두툼하게 오른 들짐승. 덫이 제대로 걸렸다.
+rank = rare
+category = material
+element = wind
+effects =
+consumable = false
+
+# 볕말림 (light, 지연형)
+[item.i-life-dried]
+name = 말린 것
+description = 볕에 잘 말린 거리. 오래 두어도 상하지 않는다.
+rank = common
+category = material
+element = light
+effects =
+consumable = false
+
+[item.i-life-dried-fine]
+name = 잘 마른 것
+description = 속까지 고루 마른 거리. 빛깔이 곱다.
+rank = rare
+category = material
+element = light
+effects =
+consumable = false
+
+# 버섯재배 (dark, 지연형)
+[item.i-life-mush]
+name = 버섯
+description = 그늘에서 키운 버섯. 갓이 도톰하다.
+rank = common
+category = material
+element = dark
+effects =
+consumable = false
+
+[item.i-life-mush-fine]
+name = 큰 버섯
+description = 갓이 크게 벌어진 버섯. 살이 두껍다.
+rank = rare
+category = material
+element = dark
+effects =
+consumable = false
+
+# 낚시 (water, 반복형)
+[item.i-life-fish]
+name = 물고기
+description = 물가에서 낚은 물고기. 비늘이 싱싱하다.
+rank = common
+category = material
+element = water
+effects =
+consumable = false
+
+[item.i-life-fish-fine]
+name = 큰 물고기
+description = 묵직하게 낚인 물고기. 살이 차올랐다.
+rank = rare
+category = material
+element = water
+effects =
+consumable = false
+
+# 채광 (iron, 반복형)
+[item.i-life-ore]
+name = 광석
+description = 광산차 갱도에서 캔 돌. 쇳기가 비친다.
+rank = common
+category = material
+element = iron
+effects =
+consumable = false
+
+[item.i-life-ore-fine]
+name = 좋은 광석
+description = 쇳기가 짙게 박힌 돌. 묵직하다.
+rank = rare
+category = material
+element = iron
+effects =
+consumable = false
+
+# 집전 (electric, 반복형)
+[item.i-life-charge]
+name = 모은 전하
+description = 모아 담은 전하. 손끝이 찌릿하다.
+rank = common
+category = material
+element = electric
+effects =
+consumable = false
+
+[item.i-life-charge-fine]
+name = 짙은 전하
+description = 가득 모은 전하. 가까이 대면 머리카락이 선다.
+rank = rare
+category = material
+element = electric
+effects =
+consumable = false

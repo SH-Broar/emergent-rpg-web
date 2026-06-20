@@ -144,6 +144,11 @@ const EMPTY_RUN: RunState = {
   xp: 0,
   level: 1,
   pendingEnhancePicks: 0,
+  // 생활 (농사 등 비전투) — 전투 xp/level 미러. 구세이브 자동 backfill.
+  lifeXp: 0,
+  lifeLevel: 1,
+  plots: {},
+  lifeCooldowns: {},
   possessed: 0,
   possessions: {},
   feralHeavy: 0,
@@ -456,6 +461,8 @@ export const useRunStore = defineStore('run', {
       const r = this.data;
       r.currentDay += 1;
       r.dayPassedSeq += 1;
+      // 농사 텃밭(r.plots)은 top-level 별도 필드라 일일 리롤의 영향을 받지 않는다 —
+      // 아래 nodeStates 초기화/콘텐츠 재추첨 루프에서 plots는 절대 건드리지 않는다(의도적 보존).
       // 하루 경과마다 덱 슬롯 10 확장 — 카드를 새로 얻으면 자동 세팅될 여지가 생긴다.
       r.deckSize += 10;
       // 혼란(possession)은 하루가 지나면 풀린다 — 잔존 페널티의 안전 밸브.
@@ -561,6 +568,24 @@ export const useRunStore = defineStore('run', {
       }
       if (levels > 0) {
         r.pendingEnhancePicks = (r.pendingEnhancePicks ?? 0) + levels;
+      }
+      return levels;
+    },
+
+    /**
+     * 생활 경험치 적립 + 생활 레벨업 (전투 gainXp 미러, XP_PER_LEVEL=3 동일 스케일).
+     * 모든 비전투 생활 행동(농사 수확 등)이 lifeXp를 적립한다. 반환: 이번에 오른 생활 레벨 수.
+     * 전투 레벨과 달리 강화권 발급은 없다 — lifeLevel 자체가 보상(수확 상위확률·산출 스케일).
+     */
+    addLifeXp(amount: number): number {
+      if (amount <= 0) return 0;
+      const r = this.data;
+      r.lifeXp = (r.lifeXp ?? 0) + amount;
+      let levels = 0;
+      while ((r.lifeXp ?? 0) >= XP_PER_LEVEL) {
+        r.lifeXp = (r.lifeXp ?? 0) - XP_PER_LEVEL;
+        r.lifeLevel = (r.lifeLevel ?? 1) + 1;
+        levels += 1;
       }
       return levels;
     },

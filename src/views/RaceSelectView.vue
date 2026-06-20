@@ -95,9 +95,9 @@ onMounted(() => {
 <template>
   <main class="race-view">
     <header class="hdr">
-      <button class="back" @click="back">← 시간대 선택</button>
-      <h1>종족 선택</h1>
-      <p class="sub">이 시대에 깃들 종족을 고른다. 종족이 곧 시작 덱·시드·시작 위치를 결정한다. 다음은 카오스 선택.</p>
+      <button class="back" @click="back">← 챕터 선택</button>
+      <h1>캐릭터 선택</h1>
+      <p class="sub">플레이할 캐릭터를 선택해주세요.</p>
     </header>
 
     <section v-if="raceOptions.length > 0" class="grid">
@@ -113,12 +113,6 @@ onMounted(() => {
           <span class="card__cat">{{ race.category }}</span>
         </div>
         <p v-if="race.description" class="card__desc">{{ race.description }}</p>
-        <div class="card__stats">
-          <span>HP {{ race.baseStats.hp + (race.startHpBonus ?? 0) }}</span>
-          <span>MP {{ race.baseStats.mp + (race.startMpBonus ?? 0) }}</span>
-          <span v-if="race.deckSize">덱 {{ race.deckSize }}</span>
-          <span>시드 카드 {{ race.seedCardIds.length }}</span>
-        </div>
         <span v-if="!canSelectRace(race.id)" class="card__lock">🔒 연구에서 해금</span>
       </button>
     </section>

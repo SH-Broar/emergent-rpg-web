@@ -88,6 +88,7 @@ onMounted(() => {
       <button class="back" @click="goMain">← 메인</button>
       <h1>기록</h1>
       <p class="sub">지난 여정들. 가장 가까운 것이 위에 있어.</p>
+      <p class="totals">전생 {{ meta.totalRuns }} · 보스 클리어 {{ meta.totalBossClears }}</p>
     </header>
 
     <section v-if="history.length > 0" class="list">
@@ -206,6 +207,7 @@ onMounted(() => {
 .log-view { max-width: 760px; margin: 0 auto; padding: 2rem; min-height: 100vh; min-height: 100dvh; }
 .hdr { margin-bottom: 1.4rem; }
 .back { background: none; border: 1px solid rgba(255,255,255,0.2); color: #c0b693; padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; margin-bottom: 1rem; }
+.totals { color: #c0b693; margin: 0.2rem 0 0; font-size: 0.85rem; font-variant-numeric: tabular-nums; }
 h1 { color: #f6e8b8; margin: 0; }
 .sub { color: #888; margin: 0.4rem 0 0; font-size: 0.92rem; }
 
