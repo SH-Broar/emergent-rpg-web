@@ -120,11 +120,48 @@ function stableHash(s: string): number {
 }
 
 /**
- * 노드에 배정된 생활 활동을 결정 — *권역 문자열의 안정적 해시*로 8활동 중 1개.
- * 같은 권역의 채집 노드는 모두 같은 활동(권역 단위 일관). region 없으면 nodeId 해시 폴백.
- * (손튜닝 권역→활동 매핑은 후속 — 지금은 균등 해시. 항상 정의 1개를 반환.)
+ * 손튜닝 권역→활동 매핑 (맵 재설계 분배표 map_layout_1 기반).
+ * 각 권역은 [주력, ...보조] 활동. 활동은 권역 속성과 무관하게 권역 톤으로 배정한다.
+ * 한 권역에 활동이 둘 이상이면 노드별 결정적 해시로 분배(주력·보조가 채집/조우 노드에 섞임).
+ * 미등록 권역은 아래 FNV 해시 폴백(8활동 균등) — 신규 지대(어촌/별빛고원/버섯/광산)는 맵 재구성 시 추가.
+ */
+const REGION_ACTIVITIES: Record<string, string[]> = {
+  iluneon: ['act-dry'], // 별빛 건조 + 거래 거점
+  'lar-forest': ['act-farm', 'act-mush'], // 농사 + 세계수 그늘 버섯
+  tradepost: ['act-farm'], // 농사 + 교역 거점
+  reshud: ['act-charge'], // 집전 + 교통 허브
+  'moss-north': ['act-char', 'act-mine'], // 숯굽기 + 채광 겸용(대장간)
+  'moss-south': ['act-char'], // 항구 거래 거점, 채집은 숯굽기 보조
+  martin: ['act-fish'], // 낚시 + 항구/해로 허브
+  riagralta: ['act-hunt', 'act-charge'], // 초원 사냥 + 집전 혼합
+  manonickla: ['act-mine'], // 채광
+  alimes: ['act-fish', 'act-mush'], // 낚시 + 안개숲 버섯
+  tacomi: ['act-charge'], // 집전 + 야시장 거점
+  enicham: ['act-charge'], // 집전(발전소 핵심)
+  luna: ['act-mush'], // 지하 버섯 + 학교 거점
+  diropel: ['act-dry'], // 별빛 건조(빛이 더 희소)
+  triflower: ['act-char'], // 위험형 숯굽기 + 고티어 전투
+  'coral-coast': ['act-fish'], // 심해 낚시 + 산호 전투
+  'demon-castle': ['act-mush'], // 심층 버섯 + 고티어 전투
+  yusezria: ['act-mine'], // 극한 채광 + 데드엔드
+  'demon-windfall': ['act-hunt'], // 보스 직전 사냥 보급
+  'falcon-garden': ['act-hunt'], // 고급 사냥(공중)
+  oldshrine: ['act-charge'], // 집전(번개 신전) + 유물
+};
+
+/**
+ * 노드에 배정된 생활 활동을 결정 — 권역 손튜닝 매핑(REGION_ACTIVITIES) 우선,
+ * 다활동 권역은 노드 id 해시로 결정적 분배. 미등록 권역/노 region이면 FNV 해시(8활동 균등) 폴백.
+ * 결정적(저장·세션 무관)이라 같은 노드는 항상 같은 활동. 항상 정의 1개를 반환.
  */
 export function activityForNode(nodeId: string, region?: string): LifeActivityDef {
+  const mapped = region ? REGION_ACTIVITIES[region] : undefined;
+  if (mapped && mapped.length > 0) {
+    const pick =
+      mapped.length === 1 ? mapped[0] : mapped[stableHash(`node:${nodeId}`) % mapped.length];
+    const act = getActivity(pick);
+    if (act) return act;
+  }
   const key = region && region.length > 0 ? `region:${region}` : `node:${nodeId}`;
   const idx = stableHash(key) % LIFE_ACTIVITIES.length;
   return LIFE_ACTIVITIES[idx];
