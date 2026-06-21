@@ -21,6 +21,7 @@ import type {
   Boss,
   BossPhase,
   Card,
+  CastSpeed,
   FxEvent,
   GridAttack,
   GridCombatState,
@@ -1876,30 +1877,59 @@ function takeCombatantTurn(state: GridCombatState, c: GridCombatant): void {
   if (c.hp > 0) c.intentQueue = enemyPlan(state, c);
 }
 
+/** 적 enemy의 실효 템포 — 전역 slow + 졸음(drowsy) 반영. "플레이어 N행동마다 1턴"의 N. */
+function effectiveEnemyTempo(state: GridCombatState, enemy: GridCombatant): number {
+  const slow = (state.gridEnemySlow ?? 0) > 0 ? 1 : 0;
+  // 졸음(drowsy, #8: 구 둔화 대체) — 실효 템포 +스택(적이 그만큼 덜·늦게 행동). 2스택이면 수면으로(tickRoundStatuses).
+  const drowsy = enemy.statuses['drowsy'] ?? 0;
+  return Math.max(1, (enemy.tempo ?? DEFAULT_TEMPO) + slow + drowsy);
+}
+
 /**
- * 플레이어 1행동 후 적 템포 진행 — 모든 살아 있는 적의 카운터 +1.
- * counter >= effectiveTempo면 그 적 1턴(takeCombatantTurn) + counter -= effectiveTempo.
- *  - slow-enemy(gridEnemySlow) 활성: 실효 템포 +1(덜 자주 행동).
- *  - skip-enemy-action(gridEnemySkip): 발동될 턴을 1개 건너뜀(카운터는 소비).
- * 전투 종료면 즉시 중단.
+ * 스텝 1틱 — 모든 살아 있는 적의 카운터 +1 후, *이번 틱에 행동할 차례가 된*(counter>=tempo) 적 목록을 모은다.
+ * 카운터 차감·skip 소비·실제 행동은 *행동 시점*(actDueEnemy)에 한다 — 적↔플레이어 속도 우선순위 판정 뒤로 미룬다.
+ * (구 tickEnemyTempo를 둘로 쪼갠 전반부.)
+ */
+function collectDueEnemies(state: GridCombatState): GridCombatant[] {
+  const due: GridCombatant[] = [];
+  for (const enemy of state.enemies) {
+    if (enemy.hp <= 0) continue;
+    const tempo = effectiveEnemyTempo(state, enemy);
+    enemy.tempoCounter = (enemy.tempoCounter ?? 0) + 1;
+    if ((enemy.tempoCounter ?? 0) >= tempo) due.push(enemy);
+  }
+  return due;
+}
+
+/**
+ * due 적 1마리를 *실제로 행동*시킨다(구 tickEnemyTempo 후반부).
+ *  - 카운터 차감(실효 템포만큼) — collectDueEnemies가 이미 +1 했으므로 행동 소비분만 뺀다.
+ *  - skip-enemy-action(gridEnemySkip): 발동될 턴을 1개 건너뜀(카운터는 이미 소비됨).
+ *  - 죽었거나 전투 종료면 무동작.
+ */
+function actDueEnemy(state: GridCombatState, enemy: GridCombatant): void {
+  if (state.outcome) return;
+  if (enemy.hp <= 0) return;
+  const tempo = effectiveEnemyTempo(state, enemy);
+  enemy.tempoCounter = (enemy.tempoCounter ?? 0) - tempo;
+  // 적 행동 박제 — 발동될 턴을 건너뛴다(카운터는 이미 소비).
+  if ((state.gridEnemySkip ?? 0) > 0) {
+    state.gridEnemySkip = (state.gridEnemySkip ?? 0) - 1;
+    return;
+  }
+  takeCombatantTurn(state, enemy);
+}
+
+/**
+ * 플레이어 1행동 후 적 템포 진행(속도 우선순위 *없이* 일괄) — 모든 due 적이 순서대로 행동.
+ * 턴종료 자동 대기(execWait)처럼 비교할 플레이어 카드가 없는 스텝에서 쓴다.
  */
 function tickEnemyTempo(state: GridCombatState): void {
-  const slow = (state.gridEnemySlow ?? 0) > 0 ? 1 : 0;
-  for (const enemy of state.enemies) {
+  const due = collectDueEnemies(state);
+  for (const enemy of due) {
     if (state.outcome) return;
-    if (enemy.hp <= 0) continue;
-    // 졸음(drowsy, #8: 구 둔화 대체) — 실효 템포 +스택(적이 그만큼 덜·늦게 행동). 2스택이면 수면으로(tickRoundStatuses).
-    const drowsy = enemy.statuses['drowsy'] ?? 0;
-    const tempo = Math.max(1, (enemy.tempo ?? DEFAULT_TEMPO) + slow + drowsy);
-    enemy.tempoCounter = (enemy.tempoCounter ?? 0) + 1;
-    if (enemy.tempoCounter < tempo) continue;
-    enemy.tempoCounter -= tempo;
-    // 적 행동 박제 — 발동될 턴을 건너뛴다(카운터는 이미 소비).
-    if ((state.gridEnemySkip ?? 0) > 0) {
-      state.gridEnemySkip = (state.gridEnemySkip ?? 0) - 1;
-      continue;
-    }
-    takeCombatantTurn(state, enemy);
+    actDueEnemy(state, enemy);
+    if (postActionCleanup(state)) return;
   }
 }
 
@@ -1939,14 +1969,20 @@ function tickInstallations(state: GridCombatState): void {
 // 라운드 해소 — commitRound
 // ============================================================================
 
+/** castSpeed → 랭크(작을수록 빠름·먼저). fast=0 / normal=1 / slow=2. 미설정=normal(1). */
+function castSpeedRank(cs: CastSpeed | undefined): number {
+  return cs === 'fast' ? 0 : cs === 'slow' ? 2 : 1;
+}
+
 /**
- * 플레이어 계획 행동의 *발동 속도 랭크*(작을수록 먼저 해소). 안정 정렬 키.
+ * 플레이어 *한 행동*의 발동 속도 랭크(작을수록 빠름) — 같은 스텝의 적과 우선순위를 비교하는 데 쓴다.
+ * (플레이어 계획은 *재정렬하지 않는다* — 설치 순서 그대로 실행. 이 랭크는 적↔플레이어 비교 전용.)
  *  - 카드 행동: 그 카드의 castSpeed(fast=0 / normal=1 / slow=2). 손패 인스턴스에서 읽고,
  *               (드물게) 손에 없으면 데이터 정의로 폴백. 미설정 카드는 normal(1).
- *  - 이동(move): 항상 3 — slow보다도 뒤(맨 끝). "먼저 행동하고 마지막에 움직인다".
+ *  - 이동(move): 항상 3 — slow보다도 더 느림(맨 뒤). 그 스텝에 행동할 적은 항상 이동보다 먼저.
  *  - 그 외(item/swap/wait 등): normal(1) 기본.
  */
-function actionSpeedRank(state: GridCombatState, action: PlannedAction): number {
+function playerActionSpeedRank(state: GridCombatState, action: PlannedAction): number {
   if (action.kind === 'move') return 3;
   if (action.kind === 'card') {
     let card: Card | undefined = state.hand.find((c) => c.instanceId === action.cardInstanceId);
@@ -1957,16 +1993,30 @@ function actionSpeedRank(state: GridCombatState, action: PlannedAction): number 
         card = useDataStore().cards.get(baseId);
       } catch { /* 무해 */ }
     }
-    const cs = card?.castSpeed;
-    return cs === 'fast' ? 0 : cs === 'slow' ? 2 : 1;
+    return castSpeedRank(card?.castSpeed);
   }
   return 1; // item/swap/wait 등 — normal.
 }
 
 /**
+ * 적이 *이번에 쓸 행동*의 발동 속도 랭크(작을수록 빠름) — 같은 스텝의 플레이어 카드와 우선순위를 비교.
+ * 적의 현재 intentQueue(텔레그래프로 플레이어에게 보여 준 의도)에서 첫 공격 행동의 castSpeed를 읽는다.
+ *  - GridAttack.castSpeed(enemy.attacks[attackIdx]) 사용. 없으면 normal(1).
+ *  - 근접 폴백(attackIdx<0)·이동/대기뿐이거나 큐가 비면 normal(1). (구 enemy.castSpeed/speed 필드는 폐지.)
+ */
+function enemyActionSpeedRank(enemy: GridCombatant): number {
+  for (const a of enemy.intentQueue ?? []) {
+    if (a.kind === 'attack' && a.attackIdx >= 0) {
+      return castSpeedRank(enemy.attacks?.[a.attackIdx]?.castSpeed);
+    }
+  }
+  return 1; // 근접 폴백·이동/대기뿐·빈 큐 → normal.
+}
+
+/**
  * 라운드 해소 (스피드 모델 US-001).
- * playerPlan을 *발동 속도(castSpeed)로 안정 정렬*한 순서로 실행(fast→normal→slow→이동).
- * 동률(같은 랭크)이면 *큐 순서*를 유지 — 플레이어가 그 그룹의 순서를 통제한다.
+ * playerPlan을 *설치(큐) 순서 그대로* 실행한다(속도순 재정렬 X). castSpeed는 *같은 스텝의
+ * 적↔플레이어 우선순위 판정*에만 쓴다 — 적이 더 빠르면 카드 전, 느리거나 같으면 카드 뒤(이동=최하위).
  * 각 플레이어 행동마다 모든 적 템포 카운터 +1 →
  * counter>=tempo인 적이 1턴 수행(누적, 라운드 넘어감). 계획 후 아군 1턴씩.
  * 매 동작마다 fx push(순차 재생). 동작마다 증원·처치 정리·승패 판정.
@@ -1981,25 +2031,46 @@ export function commitRound(state: GridCombatState): void {
   // 순차 재생용 행동 그룹 인덱스 리셋 — 이 라운드의 fx가 0번부터 그룹된다.
   fxActionIndex = 0;
 
-  // 스피드 모델(US-001) — 플레이어 계획을 *발동 속도(castSpeed)로 안정 정렬*해 실행.
-  //   랭크: 카드 fast(0)→normal(1)→slow(2), 이동(3, 항상 맨 끝). 같은 랭크는 큐 순서 유지(플레이어 통제).
-  //   각 플레이어 행동마다 적 템포 카운터 +1, 도달한 적이 1턴 수행(누적). 구 foresight 스텝 인터리브는 폐지.
-  //   정렬 키는 *실행 전*에 스냅샷한다 — executeAction이 손패를 비우므로(splice) 정렬 중 castSpeed 조회가 흔들리지 않게.
-  const orderedPlan = state.playerPlan
-    .map((action, idx) => ({ action, idx, rank: actionSpeedRank(state, action) }))
-    .sort((a, b) => (a.rank - b.rank) || (a.idx - b.idx)) // 안정 정렬 — 동률은 원래 큐 인덱스 순.
-    .map((entry) => entry.action);
-  for (let i = 0; i < orderedPlan.length; i++) {
+  // 스피드 모델 — 플레이어 계획은 *설치(큐) 순서 그대로* 실행한다(속도순 재정렬 금지).
+  //   속도(castSpeed)는 *같은 스텝의 적↔플레이어 우선순위 판정*에만 쓴다:
+  //   각 플레이어 행동(스텝)마다 (1) 모든 적 카운터 +1 → 이번 스텝에 행동할 차례가 된(due) 적을 모으고,
+  //   (2) 그 적의 행동 속도와 플레이어 카드 속도를 비교해 빠른 적은 카드 *전*, 느리거나 같은 적은 카드 *뒤*에 해소한다.
+  //     - 적이 더 빠름(적 랭크 < 플레이어 랭크) → 적 먼저(빠른 공격이 느린 카드보다 먼저 들어옴).
+  //     - 플레이어가 빠르거나 같음 → 플레이어 카드 먼저(동률 플레이어 우선, 기존 관례).
+  //     - 이동(move)은 가장 느림(랭크 3) → 그 스텝의 due 적은 항상 이동보다 먼저.
+  for (let i = 0; i < state.playerPlan.length; i++) {
     if (state.outcome) break;
-    const pAction = orderedPlan[i];
+    const pAction = state.playerPlan[i];
+    // 이번 스텝의 적 템포 진행 — 카운터 +1 후 due 적 목록 확보(차감/skip/행동은 우선순위 판정 뒤로 미룸).
+    const due = collectDueEnemies(state);
+    const pRank = playerActionSpeedRank(state, pAction);
+    // due 적을 플레이어 카드보다 빠른 그룹 / 느리거나 같은 그룹으로 분할(안정 — enemies 순서 유지).
+    const fasterDue: GridCombatant[] = [];
+    const slowerDue: GridCombatant[] = [];
+    for (const e of due) (enemyActionSpeedRank(e) < pRank ? fasterDue : slowerDue).push(e);
+
+    // (a) 플레이어보다 빠른 due 적 — 카드 *전*에 해소.
+    for (const e of fasterDue) {
+      if (state.outcome) break;
+      actDueEnemy(state, e);
+      if (postActionCleanup(state)) break;
+    }
+    if (state.outcome) break;
+
+    // (b) 플레이어 카드 실행.
     if (state.player.hp > 0) {
       fxActionIndex += 1;
       executeAction(state, state.player, pAction);
     }
     if (postActionCleanup(state)) break;
-    // 적 템포 진행 — 행동당 카운터 +1(2026-06-19: 대기 직접 선택 폐지 → 행동당 일괄 1).
-    tickEnemyTempo(state);
-    if (postActionCleanup(state)) break;
+
+    // (c) 플레이어보다 느리거나 같은 due 적 — 카드 *뒤*에 해소.
+    for (const e of slowerDue) {
+      if (state.outcome) break;
+      actDueEnemy(state, e);
+      if (postActionCleanup(state)) break;
+    }
+    if (state.outcome) break;
   }
 
   // 턴 종료 자동 대기(2026-06-19, #4) — 플레이어가 직접 고르지 않고 *항상 턴 끝에 1회* 붙는다.
