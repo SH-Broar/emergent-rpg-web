@@ -36,7 +36,7 @@ const MAX_GATHER_MUL = 2.5;
 
 function clampTier(t: number | undefined): number {
   if (!t || t < 1) return 1;
-  return t > 4 ? 4 : t;
+  return t > 6 ? 6 : t;
 }
 
 /**

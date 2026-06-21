@@ -70,7 +70,7 @@ legendary_cards = c-moss-ember-strike
 [nodemap.nm-act-1-era4-061.region.manonickla]
 name = 마노니클라 평원
 description = 극동 섬의 해 지는 평원. 절벽 바람이 사구의 모래를 쓸어 올린다.
-tier = 2
+tier = 3
 enemy_pool = mr-mano-cliff-crab, mr-mano-sand-wraith, mr-mano-sunset-raven, mr-mano-limun-ward, mr-mano-iron-scorpion, mr-mano-dusk-shade, mr-mano-ruin-lurker, mr-mano-tide-golem
 elite_enemy_pool = mr-mano-limun-sovereign, mr-mano-sunset-drake
 event_pool = ev-mano-sunset-flask, ev-mono-whisper, ev-fountain-vow, ev-mano-betelgeuse-passage, ev-mano-seed-1-anomaly, ev-mano-seed-2-embrace, ev-mano-cayou-notebook, ev-mano-dune-pillar, ev-mano-old-coin, ev-mano-fox-glance, ev-mano-guild-board, ev-mano-stone-cairn, ev-mano-sunset-beast, ev-mano-old-shrine-incense, ev-mano-cliff-walk-breath, ev-mano-seed-3-rumor, ev-mano-rok-step, ev-mano-valencia-spear, ev-mano-limun-script, ev-mano-night-tide, ev-spar-cayo, ev-spar-rok, ev-guardian-blessing, ev-nekomata-bell, ev-baby-dragon-breath
@@ -91,7 +91,7 @@ specialty_item = i-storm-fang
 [nodemap.nm-act-1-era4-061.region.alimes]
 name = 알리메스
 description = 산맥에 끼인 외딴 마을과 그 너머의 안개 숲. 약초와 비단 냄새가 운무에 섞인다.
-tier = 2
+tier = 3
 enemy_pool = mr-ali-mist-deer, mr-ali-herb-bandit, mr-ali-fog-sprite, mr-ali-stone-bear, mr-ali-dew-moth, mr-ali-marsh-creeper
 elite_enemy_pool = mr-ali-fog-sovereign, mr-ali-ancient-treant
 event_pool = ev-ali-mist-trader, ev-stranger-favor, ev-time-cracker, ev-alimes-mist-trail, ev-alimes-mist-grain, ev-alimes-mist-between, ev-alimes-mist-end-shayua, ev-alimes-erumen-entry, ev-alimes-tarko-pressure, ev-alimes-cloud-sketch, ev-alimes-peak-wind, ev-alimes-erumen-pool, ev-alimes-erumen-stele, ev-alimes-erumen-deep, ev-alimes-yoon-pri-contract, ev-alimes-spring-shayua, ev-guardian-blessing, ev-nekomata-bell, ev-baby-dragon-breath, ev-possession-wisp-follow, ev-possession-shadow-doll, ev-hanabridge-shrine
@@ -102,7 +102,7 @@ legendary_cards = c-alimes-mist-vow
 [nodemap.nm-act-1-era4-061.region.luna]
 name = 마법학교 루나 · 마왕성
 description = 남서쪽의 마법 학교와 그 너머의 첨탑들. 잉크와 금서 냄새가 먼지 낀 복도에 밴다.
-tier = 3
+tier = 4
 enemy_pool = mr-luna-ink-fiend, mr-luna-grimoire-shadow, mr-luna-phantom-scribe, mr-luna-cursed-page, mr-luna-mirror-shade, mr-luna-forbidden-wisp, mr-luna-corridor-phantom
 elite_enemy_pool = mr-luna-arcane-devourer, mr-luna-headmaster-shade
 event_pool = ev-luna-forbidden-page, ev-mono-whisper, ev-luna-entrance, ev-luna-library-floating-book, ev-luna-old-magicircle, ev-luna-grimoire-blind-title, ev-luna-illusion-late-face, ev-luna-classroom-test, ev-luna-ward-shake, ev-luna-old-desk-note, ev-luna-garden-plant, ev-luna-dorm-empty, ev-luna-febiel-stellaville, ev-guardian-blessing, ev-nekomata-bell, ev-baby-dragon-breath, ev-possession-wisp-follow, ev-possession-shadow-doll, ev-hanabridge-shrine
@@ -123,7 +123,7 @@ legendary_cards = c-tacomi-hologram-mirror
 [nodemap.nm-act-1-era4-061.region.demon-windfall]
 name = 풍혈지대
 description = 타코미로 넘어가는 바람의 길목. 사방에서 강풍이 끊임없이 몰아친다.
-tier = 3
+tier = 6
 enemy_pool = mr-demon-windfall-paper-ghost, mr-demon-windfall-gale-blade, mr-demon-windfall-time-freezer, mr-demon-windfall-anchor-wraith
 elite_enemy_pool = mr-demon-windfall-storm-tyrant
 event_pool = ev-demon-stamp-pile, ev-mono-whisper, ev-guardian-blessing, ev-nekomata-bell, ev-baby-dragon-breath, ev-possession-wisp-follow, ev-possession-shadow-doll, ev-hanabridge-shrine
@@ -163,7 +163,7 @@ specialty_item = i-storm-fang
 [nodemap.nm-act-1-era4-061.region.yusezria]
 name = 유스제리아
 description = 리아그랄타 너머의 막다른 고위험 사냥터. 항상 거센 눈보라가 치고 있다.
-tier = 4
+tier = 5
 enemy_pool = mr-yusezria-iron-sentinel, mr-yusezria-tide-wraith, mr-yusezria-rust-hound, mr-yusezria-pressure-mite, mr-yusezria-deep-leech, mr-yusezria-ore-spike
 elite_enemy_pool = mr-yusezria-core-colossus, mr-yusezria-abyssal-warden
 event_pool = ev-yuse-iron-vein, ev-yuse-tide-pool, ev-yuse-dead-end, ev-guardian-blessing, ev-nekomata-bell, ev-baby-dragon-breath
@@ -173,7 +173,7 @@ specialty_item = i-emberforge-ore
 [nodemap.nm-act-1-era4-061.region.triflower]
 name = 트리플라워 화산
 description = 라르 숲과 모스 사이의 활화산. 용암과 재가 끓어오르고 열기가 자욱하다.
-tier = 3
+tier = 4
 enemy_pool = mr-triflower-ember-arachne, mr-triflower-lava-salamander, mr-triflower-flame-spirit, mr-triflower-magma-crab, mr-triflower-scorchling, mr-emberforge-ash-hound, mr-emberforge-furnace-golem, mr-emberforge-lava-crawler, mr-emberforge-cinder-bat, mr-emberforge-slag-crusher
 elite_enemy_pool = mr-triflower-ignia-queen, mr-emberforge-magma-titan
 event_pool = ev-lar-triflower-spirit, ev-lar-crater-rim-heat, ev-lar-lava-vein-spark, ev-lar-cooled-slag-rest, ev-tri-web-nest, ev-tri-magma-core, ev-emberforge-lair, ev-emberforge-core, ev-guardian-blessing, ev-nekomata-bell, ev-baby-dragon-breath
@@ -183,7 +183,7 @@ specialty_item = i-lava-scale
 [nodemap.nm-act-1-era4-061.region.falcon-garden]
 name = 팔콘 가든
 description = 클러치 등대 너머 바다 위에 떠 있는 공중 군도. 강풍이 깃털을 흩날린다.
-tier = 4
+tier = 6
 enemy_pool = mr-falcon-garden-gust-harpy, mr-falcon-garden-talon-striker, mr-falcon-garden-wind-lancer, mr-falcon-garden-sky-raven, mr-falcon-garden-gale-sentry
 elite_enemy_pool = mr-falcon-garden-storm-sovereign, mr-falcon-garden-sky-empress
 event_pool = ev-falcon-shore, ev-falcon-core, ev-guardian-blessing, ev-nekomata-bell, ev-baby-dragon-breath
@@ -203,7 +203,7 @@ specialty_item = i-world-tree-bud
 [nodemap.nm-act-1-era4-061.region.diropel]
 name = 딜롭 부족
 description = 에루멘 숲의 숨은 골짜기. 언어가 통하지 않는 딜롭이라는 종족이 살고 있다.
-tier = 3
+tier = 4
 enemy_pool = mr-diropel-long-ear-sentinel, mr-diropel-short-ear-dancer, mr-diropel-totem-warden, mr-diropel-pattern-shaman
 elite_enemy_pool = mr-diropel-grove-elder
 event_pool = ev-diropel-paint, ev-diropel-totem, ev-guardian-blessing, ev-nekomata-bell, ev-baby-dragon-breath
@@ -213,7 +213,7 @@ specialty_item = i-world-tree-bud
 [nodemap.nm-act-1-era4-061.region.coral-coast]
 name = 산호 해안
 description = 키시나 해변 너머 바닷속의 산호 사냥터. 산호초 사이로 노랫소리가 깃든다.
-tier = 3
+tier = 4
 enemy_pool = mr-coral-coast-jellyfish-drifter, mr-coral-coast-siren-charmer, mr-coral-coast-coral-grappler, mr-coral-coast-mermaid-hunter, mr-coral-coast-tide-specter
 elite_enemy_pool = mr-coral-coast-abyss-queen
 event_pool = ev-coral-rest, ev-coral-song, ev-guardian-blessing, ev-nekomata-bell, ev-baby-dragon-breath
@@ -223,7 +223,7 @@ specialty_item = i-salt-pearl
 [nodemap.nm-act-1-era4-061.region.oldshrine]
 name = 신전 터
 description = 타코미 너머, 번개가 깃든 옛 신전 유적. 부서진 기둥 사이로 정전기가 인다.
-tier = 4
+tier = 6
 enemy_pool = mr-oldshrine-spirit-flame, mr-oldshrine-shrine-warden, mr-oldshrine-thunder-wraith, mr-oldshrine-barrier-golem, mr-oldshrine-relic-hunter
 elite_enemy_pool = mr-oldshrine-lightning-archon
 event_pool = ev-oldshrine-altar, ev-oldshrine-core, ev-guardian-blessing, ev-nekomata-bell, ev-baby-dragon-breath
@@ -237,7 +237,7 @@ specialty_item = i-storm-fang
 [nodemap.nm-act-1-era4-061.region.demon-castle]
 name = 마왕성
 description = 루나 남쪽 끝의 마왕성과 금단의 회랑. 닫힌 문들에 먼지가 두껍게 쌓여 있다.
-tier = 3
+tier = 5
 enemy_pool = mr-luna-corridor-phantom, mr-luna-forbidden-wisp, mr-luna-mirror-shade, mr-luna-cursed-page, mr-luna-phantom-scribe
 elite_enemy_pool = mr-luna-headmaster-shade, mr-luna-arcane-devourer
 event_pool = ev-luna-forbidden-page, ev-luna-ward-shake, ev-mono-whisper, ev-guardian-blessing, ev-nekomata-bell, ev-baby-dragon-breath, ev-possession-wisp-follow, ev-possession-shadow-doll, ev-hanabridge-shrine

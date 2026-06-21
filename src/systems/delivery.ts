@@ -3,7 +3,7 @@
  *
  * v1(즉시 납품)에서 *수주형 퀘스트*로 재설계:
  *  - 요구가 막연한 "난이도 합"이 아니라 *구체적 품목 + 개수*다. 각 전투 노드의 거래 요구 =
- *    그 노드 권역에 배정된 생활 활동(activityForNode)의 산출물 N개. N = 1 + tier(tier1=2 … tier4=5).
+ *    그 노드 권역에 배정된 생활 활동(activityForNode)의 산출물 N개. N = 1 + tier(tier1=2 … tier6=7).
  *    "이 권역이 내놓는 물건"을 원한다(테마적). 상위(-fine) 산출물은 하위 1개를 대체(1개로 카운트).
  *  - [거래한다]는 *항상 활성*. 재료가 없어도 누르면 그 노드에 거래 계약을 등록(tradeContracts)하고
  *    노드는 *미해결*로 둔다(전투 안 함·통과 아님). 안내: "○○ N개를 가져오면 완료. 마을이나 이 자리에서."
@@ -28,7 +28,7 @@ import type { Item, TradeContract } from '@/data/schemas';
 
 /** tier를 못 찾을 때 쓰는 기본 tier(요구 개수 산정·보상에 쓰임). */
 const DEFAULT_TIER = 2;
-/** 요구 개수 = 1 + tier (tier1=2 … tier4=5). */
+/** 요구 개수 = 1 + tier (tier1=2 … tier6=7). */
 const COUNT_PER_TIER_BASE = 1;
 
 /** 권역 tier 조회 헬퍼 — 현재 노드 맵에서 노드→권역→tier. 못 찾으면 undefined. */
@@ -65,7 +65,7 @@ function nodeElement(nodeId: string, activityElement: ColorKey): ColorKey {
  * 노드의 거래 요구 — 그 노드 권역 배정 활동의 *하위 산출물*과 그 *상위 산출물*, 요구 개수, element, tier.
  *  - lowerItemId : 요구 품목(하위 산출물). delayed=crop.lowerItemId / repeat=act.lowerItemId.
  *  - upperItemId : 상위(-fine) 산출물 — 요구 충족에 하위 1개를 대체(1개로 카운트). 없으면 undefined.
- *  - count       : 1 + tier(tier1=2 … tier4=5). tier 못 찾으면 DEFAULT_TIER 기준.
+ *  - count       : 1 + tier(tier1=2 … tier6=7). tier 못 찾으면 DEFAULT_TIER 기준.
  *  - element     : 보상 컬러(권역 primaryColor 폴백 활동 element).
  *  - tier        : 보상 산정용(요구 개수·XP·컬러).
  */

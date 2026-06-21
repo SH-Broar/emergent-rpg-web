@@ -25,20 +25,20 @@ const MATERIAL_COMMON_ID = 'i-material-common';
 const MATERIAL_RARE_ID = 'i-material-rare';
 const MATERIAL_LEGENDARY_ID = 'i-time-answer';
 
-// 티어 1~4 인덱스(0번은 미사용). 권역 깊이 비례 보상 테이블.
-const NORMAL_COLOR_BY_TIER = [0, 2, 3, 4, 5];
-const ELITE_COLOR_BY_TIER = [0, 4, 6, 8, 10];
-const NORMAL_SPECIALTY_BY_TIER = [0, 0.25, 0.32, 0.40, 0.48];
-const ELITE_SPECIALTY_BY_TIER = [0, 0.50, 0.60, 0.70, 0.80];
+// 티어 1~6 인덱스(0번은 미사용). 권역 깊이 비례 보상 테이블.
+const NORMAL_COLOR_BY_TIER = [0, 2, 3, 4, 5, 6, 7];
+const ELITE_COLOR_BY_TIER = [0, 4, 6, 8, 10, 12, 14];
+const NORMAL_SPECIALTY_BY_TIER = [0, 0.25, 0.32, 0.40, 0.48, 0.56, 0.64];
+const ELITE_SPECIALTY_BY_TIER = [0, 0.50, 0.60, 0.70, 0.80, 0.90, 1.00];
 // === 재료 드롭 매트릭스 (Q8) ===
 // 일반 몹 → *일반 재료* (저확률, 흔하므로 양은 적게).
-const NORMAL_COMMON_MAT_BY_TIER = [0, 0.30, 0.35, 0.40, 0.45];
+const NORMAL_COMMON_MAT_BY_TIER = [0, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55];
 // 엘리트 → *희귀 재료* (권역 tier 비례).
-const ELITE_RARE_MAT_BY_TIER = [0, 0.30, 0.40, 0.50, 0.62];
-// 엘리트 + 일반몹 → *전설 재료* (극희소): 엘리트는 T3부터, T4 엘리트만 의미 있는 확률. 일반몹엔 없음.
-const ELITE_LEGENDARY_MAT_BY_TIER = [0, 0, 0, 0.06, 0.14];
-// 질 — 엘리트 유물 드롭(심화 이상): T3 0.12 / T4 0.22.
-const ELITE_RELIC_BY_TIER = [0, 0, 0, 0.12, 0.22];
+const ELITE_RARE_MAT_BY_TIER = [0, 0.30, 0.40, 0.50, 0.62, 0.74, 0.85];
+// 엘리트 + 일반몹 → *전설 재료* (극희소): 엘리트는 T3부터 의미 있는 확률으로 깊어질수록 증가. 일반몹엔 없음.
+const ELITE_LEGENDARY_MAT_BY_TIER = [0, 0, 0, 0.06, 0.14, 0.22, 0.30];
+// 질 — 엘리트 유물 드롭(심화 이상): T3 0.12 ~ T6 0.42.
+const ELITE_RELIC_BY_TIER = [0, 0, 0, 0.12, 0.22, 0.32, 0.42];
 // 질 — 엘리트 전설 카드 드롭(권역에 legendaryCardIds 있을 때): 0.06 + 0.03·tier.
 function eliteLegendaryChance(tier: number): number {
   return 0.06 + 0.03 * tier;
@@ -48,7 +48,7 @@ const ELITE_SOUL_REWARD = 1;
 
 function clampTier(t: number | undefined): number {
   if (!t || t < 1) return 1;
-  return t > 4 ? 4 : t;
+  return t > 6 ? 6 : t;
 }
 
 /**

@@ -32,12 +32,12 @@ const map = computed(() => data.nodeMaps.get(data.timelines.get(run.data.timelin
 const currentNode = computed(() => map.value?.nodes.find((n: { id: string }) => n.id === run.data.currentNodeId));
 const nodeName = computed(() => currentNode.value?.label ?? '채집');
 
-/** 채집 노드 권역의 tier(1~4). 미상이면 1. */
+/** 채집 노드 권역의 tier(1~6). 미상이면 1. */
 const regionTier = computed<number>(() => {
   const node = currentNode.value;
   const region = node?.region ? map.value?.regions.find((r) => r.id === node.region) : undefined;
   const t = region?.tier ?? 1;
-  return t < 1 ? 1 : t > 4 ? 4 : t;
+  return t < 1 ? 1 : t > 6 ? 6 : t;
 });
 
 const alreadyDone = ref(false);

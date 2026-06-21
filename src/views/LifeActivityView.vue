@@ -81,12 +81,12 @@ const isDelayed = computed(() => activity.value.type === 'delayed');
 // 미니게임 (스킬 표현) — 산출 순간에 띄워 점수→상위확률 보너스. 닫으면 즉시 산출 폴백.
 // ----------------------------------------------------------------------------
 
-/** 활동 노드 권역의 tier(1~4). 미니게임 난이도 스케일 — GatherView와 동일 모델. */
+/** 활동 노드 권역의 tier(1~6). 미니게임 난이도 스케일 — GatherView와 동일 모델. */
 const regionTier = computed<number>(() => {
   const node = currentNode.value;
   const region = node?.region ? map.value?.regions.find((r) => r.id === node.region) : undefined;
   const t = region?.tier ?? 1;
-  return t < 1 ? 1 : t > 4 ? 4 : t;
+  return t < 1 ? 1 : t > 6 ? 6 : t;
 });
 
 /** tier로 미니게임 파라미터 스케일(GatherView 값 미러). */

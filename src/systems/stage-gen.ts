@@ -6,8 +6,8 @@
  *  - 'open'  : 직사각 개방 + 약간의 wall.
  *  - 'cross' : 비직사각 십자(모서리를 void로 제거 — D8 비정사각 검증용).
  *
- * tier(권역 깊이 1~4)로 크기·적 수·foresight·증원 스케줄을 파라미터화.
- * foresight 기본 2~3(tier1·2=2, tier3=3), tier4=4(속도 고난이도). 1은 특수전 한정(일반 tier 미사용).
+ * tier(권역 깊이 1~6)로 크기·적 수·foresight·증원 스케줄을 파라미터화.
+ * foresight 기본 2~3(tier1·2=2, tier3=3), tier4=4, tier5·6=5(속도 고난이도). 1은 특수전 한정(일반 tier 미사용).
  */
 
 import type { CellType, EncounterDef, GridPos, GridStage, StageSpawn } from '@/data/schemas';
@@ -162,7 +162,7 @@ function turnDims(turn: number, rand: () => number): { width: number; height: nu
 }
 
 function tierParams(tier: number): TierParams {
-  const t = Math.max(1, Math.min(4, tier || 1));
+  const t = Math.max(1, Math.min(6, tier || 1));
   // 장애물(wall)은 넉넉히(사용자: "장애물 많이") — 연결성은 ensureConnectivity가 보정.
   switch (t) {
     // 적 수 하향(#10, 2026-06-19) — HP40 인간이 2~3마리 동시에 너무 버거움. 초반 위주로 마릿수↓.
@@ -173,8 +173,12 @@ function tierParams(tier: number): TierParams {
     case 3:
       return { enemyCount: 3, foresight: 3, wallChance: 0.20, reinforceTurn: 3, emptySpawns: 0 };
     case 4:
-    default:
       return { enemyCount: 3, foresight: 4, wallChance: 0.22, reinforceTurn: 3, emptySpawns: 1 };
+    case 5:
+      return { enemyCount: 3, foresight: 5, wallChance: 0.24, reinforceTurn: 2, emptySpawns: 1 };
+    case 6:
+    default:
+      return { enemyCount: 3, foresight: 5, wallChance: 0.26, reinforceTurn: 2, emptySpawns: 2 };
   }
 }
 
@@ -256,7 +260,7 @@ function reachableCount(cells: CellType[][], start: GridPos): number {
  * 권역/tier로 결정론 격자 스테이지 생성.
  * @param seed   문자열/숫자 시드(같으면 같은 결과).
  * @param region 권역 id(아키타입 선택 다양화에 섞임).
- * @param tier   권역 깊이 1~4.
+ * @param tier   권역 깊이 1~6.
  */
 export function generateStage(
   seed: number | string,

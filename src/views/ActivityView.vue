@@ -41,7 +41,7 @@ const map = computed(() => data.nodeMaps.get(data.timelines.get(run.data.timelin
 const currentNode = computed(() => map.value?.nodes.find((n: { id: string }) => n.id === run.data.currentNodeId));
 const nodeName = computed(() => currentNode.value?.label ?? '활동');
 
-/** 활동 노드 권역의 tier(1~4). 미상이면 1. */
+/** 활동 노드 권역의 tier(1~6). 미상이면 1. */
 const regionTier = computed<number>(() => {
   const node = currentNode.value;
   const region = node?.region ? map.value?.regions.find((r) => r.id === node.region) : undefined;

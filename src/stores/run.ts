@@ -986,7 +986,7 @@ export const useRunStore = defineStore('run', {
       const kind = node ? effectiveKind(node, r) : 'combat';
       // 엘리트 무대 강화(US-003) — 한 단계 깊은 tier(더 크고 적 많고 foresight↑) + 엘리트 풀.
       const isElite = kind === 'elite';
-      const stageTier = isElite ? Math.min(4, baseTier + 1) : baseTier;
+      const stageTier = isElite ? Math.min(6, baseTier + 1) : baseTier;
 
       // 결정론 시드 — 런 시드 + 노드 id(같은 노드 재진입 시 같은 무대).
       // 맵 크기는 런 진행(방문 노드 수=런 턴) 기준 점증(사용자 사양) — 몬스터 수·tier 무관.

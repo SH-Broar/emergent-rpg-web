@@ -654,7 +654,7 @@ export interface TradeContract {
   itemId: string;
   /** 상위(-fine) 산출물 id — 요구 충족에 하위 1개를 대체(1개로 카운트). 없으면 미설정. */
   upperItemId?: string;
-  /** 요구 개수 — 1 + tier(tier1=2 … tier4=5). */
+  /** 요구 개수 — 1 + tier(tier1=2 … tier6=7). */
   count: number;
   /** 완료 보상 컬러 종류(권역 primaryColor 폴백 활동 element). */
   element: string;
