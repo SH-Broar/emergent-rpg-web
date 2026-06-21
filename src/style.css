@@ -74,7 +74,12 @@
 
 body {
   margin: 0;
-  min-height: 100vh; min-height: 100dvh;
+  /* 윈도우(body) 스크롤 제거 — 스크롤은 앱 셸 안의 .scene-scroller가 전담한다.
+     키 큰 화면(연구/지도/디버그)에서 스크롤한 뒤 *짧은 화면으로 라우트 전환*하면
+     window.scrollY가 보존된 채 콘텐츠 높이가 줄며 0으로 강제 클램프돼 화면이
+     위로 튀던 버그(게임 시작/전투 진입 시 스크롤 튐)를 차단한다. */
+  height: 100vh; height: 100dvh;
+  overflow: hidden;
   background:
     radial-gradient(ellipse 90% 60% at 50% -20%, rgba(192, 142, 255, 0.08), transparent 70%),
     radial-gradient(ellipse 60% 40% at 50% 110%, rgba(255, 232, 142, 0.05), transparent 70%),
@@ -110,8 +115,10 @@ button {
 }
 
 #app {
-  min-height: 100vh; min-height: 100dvh;
+  /* 셸도 뷰포트 고정 — 내부 .scene-scroller만 스크롤(위 body 주석 참조). */
+  height: 100vh; height: 100dvh;
   width: 100%;
+  overflow: hidden;
 }
 
 /* v-tooltip — 효과/상태 설명 플로팅 (body 직속, 단일 재사용 요소) */

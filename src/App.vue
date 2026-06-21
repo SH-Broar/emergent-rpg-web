@@ -8,7 +8,8 @@
  * - 라우터 뷰 + 전역 토스트.
  */
 
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import { useUiStore } from '@/stores/ui';
 import { useDataStore } from '@/stores/data';
 import { useRunStore } from '@/stores/run';
@@ -25,6 +26,21 @@ import '@/systems/event-effects';
 const ui = useUiStore();
 const data = useDataStore();
 const run = useRunStore();
+const route = useRoute();
+
+// 스크롤 컨테이너 핸들 — 윈도우 대신 이 요소가 스크롤을 전담한다.
+const sceneScroller = ref<HTMLElement | null>(null);
+
+// 라우트가 바뀌면 *새 화면은 항상 맨 위에서* 시작 — 이전 화면의 스크롤 위치가
+// 남아 보이거나(클램프) 전환 직후 위치가 튀는 것을 막는다. 다음 tick(새 콘텐츠
+// 마운트 후)에 0으로 리셋.
+watch(
+  () => route.path,
+  () => {
+    const el = sceneScroller.value;
+    if (el) el.scrollTop = 0;
+  },
+);
 
 // 3 메뉴 토글 (캐릭터 / 소지품 / 설정) — 상호 배타.
 const characterOpen = ref(false);
@@ -84,13 +100,20 @@ onMounted(async () => {
       영구히 빈 화면이 된다(패배/보스 종료 후 메인 복귀 불가). wrapper div로 감싸
       transition이 보는 자식을 단일 요소로 고정한다.
     -->
-    <router-view v-slot="{ Component, route }">
-      <transition name="scene-fade" mode="out-in">
-        <div :key="route.path" class="scene-root">
-          <component :is="Component" />
-        </div>
-      </transition>
-    </router-view>
+    <!--
+      스크롤은 이 컨테이너가 전담한다(윈도우/body는 overflow:hidden — style.css).
+      키 큰 화면에서 스크롤한 뒤 짧은 화면으로 전환할 때 window.scrollY가 클램프되며
+      화면이 튀던 문제를 차단(전환 시 watch가 scrollTop=0으로 리셋).
+    -->
+    <div ref="sceneScroller" class="scene-scroller">
+      <router-view v-slot="{ Component, route: r }">
+        <transition name="scene-fade" mode="out-in">
+          <div :key="r.path" class="scene-root">
+            <component :is="Component" />
+          </div>
+        </transition>
+      </router-view>
+    </div>
 
     <!-- M3: CharacterMenu (6 컬러 + 스탯 + 덱 + 동료) -->
     <CharacterMenu :open="characterOpen" @close="characterOpen = false" />
@@ -131,9 +154,27 @@ onMounted(async () => {
 <style scoped>
 .app-shell {
   position: relative;
-  min-height: 100vh; min-height: 100dvh;
+  /* 뷰포트 고정 셸 — 윈도우 스크롤 없음. 내부 .scene-scroller만 스크롤. */
+  height: 100vh; height: 100dvh;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
+
+/* 단일 스크롤 컨테이너 — 모든 화면 스크롤을 이 요소가 흡수한다.
+   HUD는 position:fixed로 이 위에 떠 있고(흐름 밖), 각 화면은 :deep(main) padding-top으로
+   HUD 높이만큼 비운다. dvh가 이 요소 = 뷰포트 높이라 화면 height:100dvh도 정확히 맞물린다. */
+.scene-scroller {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  /* 스크롤 중 인접 화면 콘텐츠 점프(스크롤 앵커) 억제. */
+  overflow-anchor: none;
+}
+.scene-root { min-height: 100%; }
 /* HUD 슬림화 (M2) — 1줄 4슬롯+3버튼이므로 padding 축소. */
 .app-shell--in-run :deep(main) {
   padding-top: 3.0rem;
@@ -161,16 +202,16 @@ onMounted(async () => {
 .toast--warning { background: #78350f; color: #fef3c7; }
 .toast--error { background: #7f1d1d; color: #fecaca; }
 
+/* 순수 페이드 — translateY 제거. 세로 이동(±6px)이 화면 전환마다 수직 튐으로
+   보이던 문제 방지(게임 시작/전투 진입 포함 모든 라우트 전환). */
 .scene-fade-enter-active, .scene-fade-leave-active {
-  transition: opacity 320ms ease-out, transform 320ms ease-out;
+  transition: opacity 240ms ease-out;
 }
 .scene-fade-enter-from {
   opacity: 0;
-  transform: translateY(6px);
 }
 .scene-fade-leave-to {
   opacity: 0;
-  transform: translateY(-6px);
 }
 .toast-enter-active, .toast-leave-active { transition: all 220ms ease; }
 .toast-enter-from, .toast-leave-to { opacity: 0; transform: translateY(8px); }
