@@ -199,15 +199,20 @@ function choosePass() {
     </header>
 
     <div class="gate-options">
-      <!-- 전투 — 적 스펙(적 수·체력·공격/턴·속도)을 미리 보고 고른다. 전투를 이미 이겼으면 숨김. -->
-      <button v-if="!combatDone" type="button" class="gate-opt gate-opt--combat" @click="chooseCombat">
-        <span class="gate-opt__title">싸운다</span>
+      <!-- 세 선택지 모두 *info 박스 + 큰 액션 버튼*으로 통일(전투/거래/지나치기 시각 대칭). -->
+
+      <!-- 전투 — 적 스펙을 보고 [싸운다]. 전투를 이미 이겼으면 숨김. -->
+      <div v-if="!combatDone" class="gate-opt gate-opt--combat">
+        <span class="gate-opt__title">전투</span>
         <EnemySpecPanel v-if="enemySpec" :spec="enemySpec" />
-      </button>
+        <div class="gate-opt__actions">
+          <button type="button" class="gate-opt__btn gate-opt__btn--combat" @click="chooseCombat">싸운다</button>
+        </div>
+      </div>
 
       <!-- 거래 (수주형) — 거래를 이미 완료했으면 숨김. -->
       <div v-if="!tradeDone" class="gate-opt gate-opt--trade">
-        <span class="gate-opt__title">거래한다</span>
+        <span class="gate-opt__title">거래</span>
         <!-- 요구는 flavor가 아니라 *기능 정보* — 품목명·개수·보유를 표시. -->
         <span class="gate-opt__req">
           {{ reqItemName }} {{ requirement.count }}개
@@ -217,21 +222,33 @@ function choosePass() {
           보유 {{ heldCount }} / {{ requirement.count }}
           <template v-if="contracted"> · 수주한 거래</template>
         </span>
-        <!-- 거래는 *보유 충분할 때만* 버튼 노출 — 재료 없을 때의 "맡아 둔다"(빈 수주) 버튼은 제거(혼란 방지).
-             재료가 모자라면 위 보유 미터만 보여 주고(가져오면 됨), 별도 큰 버튼은 두지 않는다. -->
-        <div v-if="fulfillable" class="gate-opt__actions">
+        <div class="gate-opt__actions">
+          <!-- 미수주: 보유 충분하면 즉시 완료, 아니면 맡아 둔다(수주 후 맵). -->
           <button
+            v-if="!contracted"
             type="button"
             class="gate-opt__btn"
-            @click="contracted ? completeTrade() : chooseTrade()"
-          >{{ contracted ? '거래 완료' : '거래한다 (지금 건넨다)' }}</button>
+            @click="chooseTrade"
+          >{{ fulfillable ? '거래한다 (지금 건넨다)' : '거래한다 (맡아 둔다)' }}</button>
+          <!-- 수주됨: 보유 충분할 때만 완료. -->
+          <button
+            v-else
+            type="button"
+            class="gate-opt__btn"
+            :class="{ 'gate-opt__btn--disabled': !fulfillable }"
+            :disabled="!fulfillable"
+            @click="completeTrade"
+          >{{ fulfillable ? '거래 완료' : '아직 모자라다' }}</button>
         </div>
       </div>
 
       <!-- 지나치기 -->
-      <button type="button" class="gate-opt gate-opt--pass" @click="choosePass">
-        <span class="gate-opt__title">그냥 지나친다</span>
-      </button>
+      <div class="gate-opt gate-opt--pass">
+        <span class="gate-opt__title">지나치기</span>
+        <div class="gate-opt__actions">
+          <button type="button" class="gate-opt__btn gate-opt__btn--pass" @click="choosePass">그냥 지나친다</button>
+        </div>
+      </div>
     </div>
   </main>
 </template>
@@ -281,19 +298,7 @@ function choosePass() {
   color: inherit;
   font: inherit;
 }
-/* 버튼형 선택지(전투·지나치기)만 hover/cursor. */
-button.gate-opt {
-  cursor: pointer;
-  transition: background 140ms ease, border-color 140ms ease, transform 120ms ease;
-}
-button.gate-opt:hover {
-  background: rgba(40, 42, 54, 0.9);
-  transform: translateY(-1px);
-}
-button.gate-opt:active {
-  transform: translateY(0);
-}
-.gate-opt--combat:hover { border-color: #ff8e8e; }
+/* 선택지 박스는 이제 모두 div(정보 컨테이너) — 클릭은 안의 .gate-opt__btn이 받는다. */
 
 .gate-opt__title {
   font-size: 1.15rem;
@@ -317,19 +322,37 @@ button.gate-opt:active {
 .gate-opt__actions {
   margin-top: 0.5rem;
 }
+/* 큰 액션 버튼 — 세 선택지 공통(전폭·중앙). 색만 변형으로 구분(거래=초록 기본/전투=빨강/지나치기=회색). */
 .gate-opt__btn {
-  padding: 0.55rem 1rem;
+  width: 100%;
+  padding: 0.7rem 1rem;
   border-radius: 8px;
   border: 1px solid #a8e88e;
   background: rgba(142, 232, 142, 0.14);
   color: inherit;
   font: inherit;
-  font-weight: 600;
+  font-size: 1.02rem;
+  font-weight: 700;
+  text-align: center;
   cursor: pointer;
   transition: background 140ms ease;
 }
 .gate-opt__btn:hover:not(.gate-opt__btn--disabled) {
   background: rgba(142, 232, 142, 0.28);
+}
+.gate-opt__btn--combat {
+  border-color: #ff8e8e;
+  background: rgba(255, 142, 142, 0.14);
+}
+.gate-opt__btn--combat:hover:not(.gate-opt__btn--disabled) {
+  background: rgba(255, 142, 142, 0.28);
+}
+.gate-opt__btn--pass {
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.06);
+}
+.gate-opt__btn--pass:hover:not(.gate-opt__btn--disabled) {
+  background: rgba(255, 255, 255, 0.14);
 }
 .gate-opt__btn--disabled {
   opacity: 0.5;
