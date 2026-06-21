@@ -38,6 +38,8 @@ import {
 } from '@/systems/delivery';
 import { colorLabel } from '@/systems/labels';
 import { eulReul } from '@/systems/josa';
+import { summarizeEnemies } from '@/systems/enemy-spec';
+import EnemySpecPanel from '@/components/EnemySpecPanel.vue';
 import type { Node } from '@/data/schemas';
 
 const router = useRouter();
@@ -57,6 +59,17 @@ const nodeLabel = computed(() => node.value?.label ?? '갈림길');
 const isElite = computed(() =>
   node.value ? systemEffectiveKind(node.value, run.data) === 'elite' : false,
 );
+
+/**
+ * [싸운다] 시 만날 적의 스펙(읽기 전용 프리뷰). enterGridCombat과 *같은* buildCombatStage를 쓰는
+ * run.previewStageEnemies로 초기 배치 적을 산출 → summarizeEnemies로 표기 항목 계산.
+ * 결정론 시드(`${rngSeed}:${nodeId}`)라 프리뷰=실제 일치. run/세이브 상태는 바꾸지 않는다.
+ *
+ * 주의(방울 표식): bellMarked>0인 *일반* 노드는 [싸운다] 순간 엘리트로 격상되지만(maybeApplyBellMark),
+ *   그 격상은 무작위 풀 추첨 + 상태 기록이라 읽기 전용 프리뷰로 재현할 수 없다(rng 동기화 깨짐).
+ *   따라서 프리뷰는 *현재 유효 상태* 기준이다(방울이 없는 대다수 경우엔 정확, 방울은 의도된 기습).
+ */
+const enemySpec = computed(() => summarizeEnemies(run.previewStageEnemies(nodeId.value)));
 
 /** 이 노드에 이미 활성 거래 계약이 있는가(재방문). */
 const contracted = computed(() => hasContract(nodeId.value));
@@ -175,9 +188,10 @@ function choosePass() {
     </header>
 
     <div class="gate-options">
-      <!-- 전투 -->
+      <!-- 전투 — 적 스펙(적 수·체력·공격/턴·속도)을 미리 보고 고른다. -->
       <button type="button" class="gate-opt gate-opt--combat" @click="chooseCombat">
         <span class="gate-opt__title">싸운다</span>
+        <EnemySpecPanel v-if="enemySpec" :spec="enemySpec" />
       </button>
 
       <!-- 거래 (수주형) -->

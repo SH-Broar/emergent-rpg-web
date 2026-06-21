@@ -23,6 +23,7 @@ import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
 import { effectiveContent } from '@/systems/map';
 import SceneCharacter from '@/components/SceneCharacter.vue';
+import EnemySpecPanel from '@/components/EnemySpecPanel.vue';
 import type { Boss } from '@/data/schemas';
 
 const router = useRouter();
@@ -122,6 +123,8 @@ onMounted(() => {
 
         <!-- 대사를 다 본 뒤에만 선택지 노출. -->
         <div v-else class="intro__choices" @click.stop>
+          <!-- 보스 스펙은 미지의 위압 — 전부 ???로(unknown). -->
+          <EnemySpecPanel class="boss-spec" unknown />
           <!-- arc: 도전/회피 둘 다. 연표 종말 보스: 도전만(최종 게이트). -->
           <button class="begin" @click="challenge">
             {{ isArc ? (boss.challengeLabel || '실력을 시험한다') : '싸움을 시작한다' }} →
@@ -151,6 +154,8 @@ onMounted(() => {
 .advance-hint { color: #8a8a99; font-size: 0.85rem; margin-top: 1.5rem; user-select: none; animation: hint-pulse 1.6s ease-in-out infinite; }
 @keyframes hint-pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 .intro__choices { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 1.5rem; }
+/* 보스 스펙(???) — 선택지 위 전폭 한 줄. */
+.boss-spec { flex-basis: 100%; max-width: 320px; margin: 0 auto 0.5rem; }
 .begin { padding: 0.8rem 1.5rem; background: rgba(255,232,142,0.2); border: 1px solid rgba(255,232,142,0.5); color: #ffe88e; border-radius: 6px; cursor: pointer; font-weight: 600; font: inherit; }
 .begin:hover { background: rgba(255,232,142,0.32); }
 .decline { padding: 0.8rem 1.5rem; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.25); color: #b6b6c4; border-radius: 6px; cursor: pointer; font-weight: 600; font: inherit; }

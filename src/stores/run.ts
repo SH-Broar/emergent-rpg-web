@@ -231,6 +231,96 @@ export const CARD_SALVAGE_SHARDS: Record<Rank, number> = {
   legendary: 7,
 };
 
+/**
+ * 격자 전투 스테이지 + 초기 배치 적 정의를 *결정론*으로 산출하는 순수 빌더(2026-06-21).
+ *
+ * enterGridCombat(실제 진입)과 previewStageEnemies(게이트 프리뷰)가 *같은 코드*를 쓰게 추출한다 —
+ * 그래야 게이트에서 보여준 적과 [싸운다] 시 나오는 적이 반드시 일치한다(결정론 시드 `${rngSeed}:${nodeId}`).
+ *
+ * run/세이브 상태를 일절 바꾸지 않는다(읽기 전용). generateStage가 매번 *새* stage 객체를 만들고
+ * 여기서 그 객체의 spawns만 채우므로(공유 RunState 불변), 부수효과 0이다.
+ *
+ * 반환: { stage, enemyDefs }(enemyDefs는 stage.enemyStarts 슬롯 순서). 노드/맵 없으면 null.
+ */
+function buildCombatStage(
+  r: RunState,
+  data: ReturnType<typeof useDataStore>,
+  id: string,
+): { stage: ReturnType<typeof generateStage>; enemyDefs: Monster[] } | null {
+  const map = data.nodeMaps.get(data.timelines.get(r.timelineId)?.nodeMapId ?? '');
+  const node = map?.nodes.find((n) => n.id === id);
+
+  // 적 그룹 해석 — 노드 콘텐츠(권역 재추첨 반영). 폴백: shadow-pup.
+  const content = node ? effectiveContent(node, r) : undefined;
+  const enemyId = content?.enemyGroupId ?? 'shadow-pup';
+  const baseDef = data.monsters.get(enemyId);
+  if (!baseDef) console.warn('[grid] 알 수 없는 enemyGroupId — 폴백 그림자 사용:', enemyId);
+
+  // 폴백 적 정의(테마 적/인카운터 몬스터 미해석 시 공용).
+  const fallback: Monster = baseDef ?? {
+    id: 'fallback',
+    name: '알 수 없는 그림자',
+    hp: 14,
+    attack: 5,
+    defense: 0,
+    intents: [{ encoded: 'attack:5' }],
+    drop: { gold: 3, timeShards: 1 },
+  };
+
+  // 저작 인카운터(US-001) — 노드에 encounter 지정 + 빌드 성공 시 *절차 생성 대신* 사용.
+  if (node?.encounter) {
+    const enc = data.encounters.get(node.encounter);
+    const built = enc ? buildEncounterStage(enc) : null;
+    if (built) {
+      const encDefs: Monster[] = built.monsterIds.map((mid) => data.monsters.get(mid) ?? fallback);
+      return { stage: built.stage, enemyDefs: encDefs };
+    }
+    if (enc) console.warn('[grid] 인카운터 빌드 실패 — 절차 생성 폴백:', node.encounter);
+  }
+
+  // tier/region — 권역 깊이로 무대 파라미터.
+  const region = map && node ? findRegion(map, node.region) : undefined;
+  const baseTier = region?.tier ?? 1;
+  const kind = node ? effectiveKind(node, r) : 'combat';
+  // 엘리트 무대 강화(US-003) — 한 단계 깊은 tier(더 크고 적 많고 foresight↑) + 엘리트 풀.
+  const isElite = kind === 'elite';
+  const stageTier = isElite ? Math.min(6, baseTier + 1) : baseTier;
+
+  // 결정론 시드 — 런 시드 + 노드 id(같은 노드 재진입 시 같은 무대).
+  // 맵 크기는 런 진행(방문 노드 수=런 턴) 기준 점증(사용자 사양) — 몬스터 수·tier 무관.
+  // 적 수: 일반·엘리트 모두 *1마리 고정* + 증원 없음(밸런스, 2026-06-21). 엘리트는 1마리지만
+  //   stageTier(baseTier+1)로 더 크고 깊은 무대 + eliteEnemyPool의 강한 1마리로 차별화.
+  const stage = generateStage(
+    `${r.rngSeed}:${id}`,
+    node?.region ?? 'unknown',
+    stageTier,
+    r.visitedNodes.length,
+    { enemyCount: 1, reinforce: false },
+  );
+
+  // 다종 적 그룹(US-002) — 권역 풀에서 섞어 배치(슬롯 0=노드 테마 적). 엘리트는 eliteEnemyPool 우선.
+  const pool = isElite
+    ? (region?.eliteEnemyPool?.length ? region.eliteEnemyPool : (region?.enemyPool ?? []))
+    : (region?.enemyPool ?? []);
+  const slots = stage.enemyStarts.length;
+  const ids = pickEnemyIds(`${r.rngSeed}:${id}`, pool, enemyId, slots);
+  const enemyDefs: Monster[] = [];
+  for (let i = 0; i < slots; i++) {
+    const pickId = ids[i] ?? enemyId;
+    enemyDefs.push(data.monsters.get(pickId) ?? fallback);
+  }
+
+  // 증원 placeholder enemyId('')를 실제 적 id로 치환(풀이 있으면 그 첫 종, 없으면 테마 적).
+  if (stage.spawns) {
+    const reinforceId = pool.length > 0 ? pool[0] : fallback.id;
+    for (const sp of stage.spawns) {
+      if (!sp.enemyId) sp.enemyId = reinforceId;
+    }
+  }
+
+  return { stage, enemyDefs };
+}
+
 export const useRunStore = defineStore('run', {
   state: (): { active: boolean; data: RunState } => ({
     active: false,
@@ -948,80 +1038,24 @@ export const useRunStore = defineStore('run', {
       const r = this.data;
       const data = useDataStore();
       const id = nodeId ?? r.currentNodeId;
-      const map = data.nodeMaps.get(data.timelines.get(r.timelineId)?.nodeMapId ?? '');
-      const node = map?.nodes.find((n) => n.id === id);
-
-      // 적 그룹 해석 — 노드 콘텐츠(권역 재추첨 반영). 폴백: shadow-pup.
-      const content = node ? effectiveContent(node, r) : undefined;
-      const enemyId = content?.enemyGroupId ?? 'shadow-pup';
-      const baseDef = data.monsters.get(enemyId);
-      if (!baseDef) console.warn('[grid] 알 수 없는 enemyGroupId — 폴백 그림자 사용:', enemyId);
-
-      // 폴백 적 정의(테마 적/인카운터 몬스터 미해석 시 공용).
-      const fallback: Monster = baseDef ?? {
-        id: 'fallback',
-        name: '알 수 없는 그림자',
-        hp: 14,
-        attack: 5,
-        defense: 0,
-        intents: [{ encoded: 'attack:5' }],
-        drop: { gold: 3, timeShards: 1 },
-      };
-
-      // 저작 인카운터(US-001) — 노드에 encounter 지정 + 빌드 성공 시 *절차 생성 대신* 사용.
-      if (node?.encounter) {
-        const enc = data.encounters.get(node.encounter);
-        const built = enc ? buildEncounterStage(enc) : null;
-        if (built) {
-          const encDefs: Monster[] = built.monsterIds.map((mid) => data.monsters.get(mid) ?? fallback);
-          this.data.gridCombat = startGridCombat(r, built.stage, encDefs);
-          return true;
-        }
-        if (enc) console.warn('[grid] 인카운터 빌드 실패 — 절차 생성 폴백:', node.encounter);
-      }
-
-      // tier/region — 권역 깊이로 무대 파라미터.
-      const region = map && node ? findRegion(map, node.region) : undefined;
-      const baseTier = region?.tier ?? 1;
-      const kind = node ? effectiveKind(node, r) : 'combat';
-      // 엘리트 무대 강화(US-003) — 한 단계 깊은 tier(더 크고 적 많고 foresight↑) + 엘리트 풀.
-      const isElite = kind === 'elite';
-      const stageTier = isElite ? Math.min(6, baseTier + 1) : baseTier;
-
-      // 결정론 시드 — 런 시드 + 노드 id(같은 노드 재진입 시 같은 무대).
-      // 맵 크기는 런 진행(방문 노드 수=런 턴) 기준 점증(사용자 사양) — 몬스터 수·tier 무관.
-      // 적 수: 일반·엘리트 모두 *1마리 고정* + 증원 없음(밸런스, 2026-06-21). 엘리트는 1마리지만
-      //   stageTier(baseTier+1)로 더 크고 깊은 무대 + eliteEnemyPool의 강한 1마리로 차별화.
-      const stage = generateStage(
-        `${r.rngSeed}:${id}`,
-        node?.region ?? 'unknown',
-        stageTier,
-        r.visitedNodes.length,
-        { enemyCount: 1, reinforce: false },
-      );
-
-      // 다종 적 그룹(US-002) — 권역 풀에서 섞어 배치(슬롯 0=노드 테마 적). 엘리트는 eliteEnemyPool 우선.
-      const pool = isElite
-        ? (region?.eliteEnemyPool?.length ? region.eliteEnemyPool : (region?.enemyPool ?? []))
-        : (region?.enemyPool ?? []);
-      const slots = stage.enemyStarts.length;
-      const ids = pickEnemyIds(`${r.rngSeed}:${id}`, pool, enemyId, slots);
-      const enemyDefs: Monster[] = [];
-      for (let i = 0; i < slots; i++) {
-        const pickId = ids[i] ?? enemyId;
-        enemyDefs.push(data.monsters.get(pickId) ?? fallback);
-      }
-
-      // 증원 placeholder enemyId('')를 실제 적 id로 치환(풀이 있으면 그 첫 종, 없으면 테마 적).
-      if (stage.spawns) {
-        const reinforceId = pool.length > 0 ? pool[0] : fallback.id;
-        for (const sp of stage.spawns) {
-          if (!sp.enemyId) sp.enemyId = reinforceId;
-        }
-      }
-
-      this.data.gridCombat = startGridCombat(r, stage, enemyDefs);
+      const built = buildCombatStage(r, data, id);
+      if (!built) return false;
+      this.data.gridCombat = startGridCombat(r, built.stage, built.enemyDefs);
       return true;
+    },
+
+    /**
+     * 전투 프리뷰(읽기 전용, 2026-06-21) — 인정 게이트에서 "그 노드의 [싸운다] 시 만날 적"의 스펙을 미리 본다.
+     * enterGridCombat과 *동일한* buildCombatStage를 써서 적 선택·스테이지를 산출 → 프리뷰=실제 일치 보장
+     * (결정론 시드 `${rngSeed}:${nodeId}`라 같은 입력=같은 적). run/세이브 상태는 일절 바꾸지 않는다.
+     * 반환: 초기 배치 적 정의들(enemyStarts 슬롯 순서). 노드/맵 없으면 null.
+     */
+    previewStageEnemies(nodeId?: string): Monster[] | null {
+      const r = this.data;
+      const data = useDataStore();
+      const id = nodeId ?? r.currentNodeId;
+      const built = buildCombatStage(r, data, id);
+      return built ? built.enemyDefs : null;
     },
 
     /**
