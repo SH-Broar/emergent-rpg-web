@@ -511,7 +511,7 @@ consumable = false
 
 # --- 생활 활동 산출물 (8색=8활동 일반화) ---
 # 채집 노드의 권역별 배정 활동에서 거둔 산출. category=material, element=활동 속성.
-# 지연형(숯굽기 fire·사냥 wind·볕말림 light·버섯재배 dark)은 farming 엔진 재사용,
+# 지연형(숯굽기 fire·사냥 wind·별빛 건조 light·버섯재배 dark)은 farming 엔진 재사용,
 # 반복형(낚시 water·채광 iron·집전 electric)은 즉시 산출. 각 평작(common)/상품(rare,-fine).
 # (농사 earth는 기존 i-crop-grain / -fine 재사용.)
 
@@ -553,7 +553,7 @@ element = wind
 effects =
 consumable = false
 
-# 볕말림 (light, 지연형)
+# 별빛 건조 (light, 지연형)
 [item.i-life-dried]
 name = 말린 것
 description = 볕에 잘 말린 거리. 오래 두어도 상하지 않는다.

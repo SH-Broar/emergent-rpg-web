@@ -61,13 +61,13 @@ export interface LifeActivityDef {
 
 /**
  * 8활동 레지스트리 — element별 1개. 5 delayed(농사 grow 엔진 재사용) + 3 repeat(즉시 산출).
- *   delayed: earth=농사 / fire=숯굽기 / wind=사냥 / light=볕말림 / dark=버섯재배
+ *   delayed: earth=농사 / fire=숯굽기 / wind=사냥 / light=별빛 건조 / dark=버섯재배
  *   repeat : water=낚시 / iron=채광 / electric=집전
  *
  * minigame 배정(스킬 표현, 8→3종) — 행동의 결에 맞춰:
  *   tap(좌우 연타, 힘쓰는 노동)  = 농사·숯굽기·사냥
  *   react(반응 속도, 순간 포착)  = 낚시·집전
- *   matrix(숫자 격자, 더듬어 찾기) = 채광·볕말림·버섯재배
+ *   matrix(숫자 격자, 더듬어 찾기) = 채광·별빛 건조·버섯재배
  */
 export const LIFE_ACTIVITIES: LifeActivityDef[] = [
   // === 지연형 (farming.ts CROPS 재사용) ===

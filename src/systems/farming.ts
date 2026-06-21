@@ -59,7 +59,7 @@ export interface CropDef {
 
 /**
  * 작물 카탈로그 — 지연형 생활 활동 5종. element별 1종(earth·fire·wind·light·dark).
- * earth=농사, fire=숯굽기, wind=사냥(덫), light=볕말림, dark=버섯재배.
+ * earth=농사, fire=숯굽기, wind=사냥(덫), light=별빛 건조, dark=버섯재배.
  *  - 성장/물게이트/수확 수학(growTurns·waterAt 정산)은 농사 시절과 동일. element·라벨만 분화.
  *  - 반복형(water 낚시·iron 채광·electric 집전)은 farming 엔진을 쓰지 않는다 → life-activity.ts.
  */
@@ -133,7 +133,7 @@ export function plotLabelFor(crop: CropDef | undefined): string {
 
 /**
  * 작물 산출물의 짧은 표시 이름 — seedName에서 행동 접미사를 떼어 결과물 명칭으로.
- * (들곡 씨앗→들곡 / 숯가마 장작→숯 / 사냥 덫→사냥감 / 볕말림 채반→말린 것 / 버섯 종균→버섯)
+ * (들곡 씨앗→들곡 / 숯가마 장작→숯 / 사냥 덫→사냥감 / 별빛 건조 채반→말린 것 / 버섯 종균→버섯)
  * 단순 치환이라 신규 작물 추가 시 맞춰 준다. 미정의면 seedName 그대로.
  */
 export function cropDisplayName(crop: CropDef | undefined): string {
