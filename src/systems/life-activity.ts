@@ -147,6 +147,10 @@ const REGION_ACTIVITIES: Record<string, string[]> = {
   'demon-windfall': ['act-hunt'], // 보스 직전 사냥 보급
   'falcon-garden': ['act-hunt'], // 고급 사냥(공중)
   oldshrine: ['act-charge'], // 집전(번개 신전) + 유물
+  'starlight-plateau': ['act-dry'], // 별빛 건조(고원의 긴 밤)
+  'mushroom-cave': ['act-mush'], // 버섯재배(빛 없는 동굴)
+  'fishing-village': ['act-fish'], // 낚시(외딴 어촌)
+  'mine-shaft': ['act-mine'], // 채광(깊은 갱도)
 };
 
 /**

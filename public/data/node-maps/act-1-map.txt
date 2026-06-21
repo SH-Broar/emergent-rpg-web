@@ -230,6 +230,46 @@ event_pool = ev-oldshrine-altar, ev-oldshrine-core, ev-guardian-blessing, ev-nek
 primary_color = electric
 specialty_item = i-storm-fang
 
+[nodemap.nm-act-1-era4-061.region.starlight-plateau]
+name = 별빛 고원
+description = 일루네온 위로 올라선 메마른 고원. 밤이 길고 별빛이 오래 남는다.
+tier = 2
+enemy_pool = mr-iluneon-cutpurse, mr-iluneon-trickster, mr-iluneon-guild-rat, mr-iluneon-alley-thug, mr-iluneon-lantern-imp, mr-iluneon-market-sneak, mr-iluneon-clock-shade, mr-iluneon-toll-warden
+elite_enemy_pool = mr-iluneon-clockwraith, mr-iluneon-spirit-herald, mr-iluneon-twin-clockwork
+event_pool = ev-iluneon-clockchime, ev-traveler-fork, ev-mono-whisper, ev-time-cracker, ev-iluneon-plaza-flow, ev-iluneon-market-row, ev-iluneon-guild-board, ev-iluneon-diner-seat, ev-iluneon-larder, ev-iluneon-olyu-observatory, ev-iluneon-imperisia-meeting, ev-iluneon-time-trace, ev-iluneon-bellroom, ev-iluneon-niayur-fountain, ev-iluneon-niayur-pause, ev-iluneon-east-gate, ev-iluneon-spire-shadow, ev-guardian-blessing, ev-nekomata-bell, ev-baby-dragon-breath
+primary_color = light
+specialty_item = i-shrine-relic
+
+[nodemap.nm-act-1-era4-061.region.mushroom-cave]
+name = 버섯 동굴
+description = 루나 옆으로 뚫린 축축한 지하 동굴. 빛이 들지 않아 늘 어둡다.
+tier = 3
+enemy_pool = mr-luna-ink-fiend, mr-luna-grimoire-shadow, mr-luna-phantom-scribe, mr-luna-cursed-page, mr-luna-mirror-shade, mr-luna-forbidden-wisp, mr-luna-corridor-phantom
+elite_enemy_pool = mr-luna-arcane-devourer, mr-luna-headmaster-shade
+event_pool = ev-luna-forbidden-page, ev-mono-whisper, ev-luna-entrance, ev-luna-library-floating-book, ev-luna-old-magicircle, ev-luna-grimoire-blind-title, ev-luna-illusion-late-face, ev-luna-classroom-test, ev-luna-ward-shake, ev-luna-old-desk-note, ev-luna-garden-plant, ev-luna-dorm-empty, ev-luna-febiel-stellaville, ev-guardian-blessing, ev-nekomata-bell, ev-baby-dragon-breath, ev-possession-wisp-follow, ev-possession-shadow-doll, ev-hanabridge-shrine
+primary_color = dark
+specialty_item = i-grimoire-ink
+
+[nodemap.nm-act-1-era4-061.region.fishing-village]
+name = 어촌 군집
+description = 마틴 항 너머 외딴 바닷가에 모인 작은 어촌. 파도가 방파제를 쉼 없이 두드린다.
+tier = 3
+enemy_pool = mr-martin-dock-rat, mr-martin-sea-thug, mr-martin-kelp-creeper, mr-martin-tide-spirit, mr-martin-gull-raider
+elite_enemy_pool = mr-kishina-siren
+event_pool = ev-mono-whisper, ev-fountain-vow, ev-martin-cargo-line, ev-martin-lighthouse, ev-kishina-shells, ev-kishina-spirit-bead, ev-martin-boat-passage, ev-guardian-blessing, ev-nekomata-bell, ev-baby-dragon-breath
+primary_color = water
+specialty_item = i-salt-pearl
+
+[nodemap.nm-act-1-era4-061.region.mine-shaft]
+name = 광산 갱도
+description = 모스와 마노니클라 사이에 뚫린 깊은 갱도. 갱도 안은 광석 먼지로 자욱하다.
+tier = 4
+enemy_pool = mr-mano-cliff-crab, mr-mano-sand-wraith, mr-mano-sunset-raven, mr-mano-limun-ward, mr-mano-iron-scorpion, mr-mano-dusk-shade, mr-mano-ruin-lurker, mr-mano-tide-golem
+elite_enemy_pool = mr-mano-limun-sovereign, mr-mano-sunset-drake
+event_pool = ev-mano-sunset-flask, ev-mono-whisper, ev-fountain-vow, ev-mano-betelgeuse-passage, ev-mano-seed-1-anomaly, ev-mano-seed-2-embrace, ev-mano-cayou-notebook, ev-mano-dune-pillar, ev-mano-old-coin, ev-mano-fox-glance, ev-mano-guild-board, ev-mano-stone-cairn, ev-mano-sunset-beast, ev-mano-old-shrine-incense, ev-mano-cliff-walk-breath, ev-mano-seed-3-rumor, ev-mano-rok-step, ev-mano-valencia-spear, ev-mano-limun-script, ev-mano-night-tide, ev-spar-cayo, ev-spar-rok, ev-guardian-blessing, ev-nekomata-bell, ev-baby-dragon-breath
+primary_color = iron
+specialty_item = i-emberforge-ore
+
 # ============================================================
 # 일루네온 권역 시작
 # ============================================================
@@ -1003,7 +1043,7 @@ label = 환전소
 description = 시장 모퉁이의 작은 환전소. 동전 더미가 쌓여 있다.
 x = 0.4223
 y = 0.4276
-neighbors = n-iluneon-diner, n-ilu-diner-back, n-ilu-back-alley, n-ilu-larder
+neighbors = n-iluneon-diner, n-ilu-diner-back, n-ilu-back-alley, n-ilu-larder, n-starlight-rise
 
 [nodemap.nm-act-1-era4-061.node.n-ilu-curiocity]
 kind = shop
@@ -1022,7 +1062,7 @@ label = 식당 뒷골목
 description = 식당 뒤편의 좁고 어두운 길.
 x = 0.4462
 y = 0.4276
-neighbors = n-ria-grass-hill, n-ilu-larder, n-ilu-changers, n-ilu-inn-court
+neighbors = n-ria-grass-hill, n-ilu-larder, n-ilu-changers, n-ilu-inn-court, n-starlight-watch
 enemy = mr-iluneon-alley-thug
 
 [nodemap.nm-act-1-era4-061.node.n-ilu-larder]
@@ -1442,7 +1482,7 @@ label = 부두
 description = 클러치 상륙장 옆의 작은 부두. 마틴에서 오는 배편이 닿는다.
 x = 0.8047
 y = 0.4276
-neighbors = n-moss-armor-stall, n-clutch-lighthouse, n-clutch-warehouse
+neighbors = n-moss-armor-stall, n-clutch-lighthouse, n-clutch-warehouse, n-mineshaft-entry
 
 [nodemap.nm-act-1-era4-061.node.n-clutch-warehouse]
 kind = gather
@@ -1783,7 +1823,7 @@ label = 도서관
 description = 루나의 도서관. 책장 사이에 오래된 종이가 차곡차곡 쌓여 있다.
 x = 0.2431
 y = 0.6966
-neighbors = n-luna-dining, n-luna-classroom, n-luna-illusion-spot
+neighbors = n-luna-dining, n-luna-classroom, n-luna-illusion-spot, n-mushroom-mouth
 events = ev-luna-library-floating-book
 npcs = npc-febiel, npc-maro
 
@@ -2279,7 +2319,7 @@ label = 돌무더기
 description = 해변 가의 돌무더기. 소금 진주 한 알이 돌 사이에 박혀 있다.
 x = 0.5299
 y = 0.6966
-neighbors = n-martin-quay-watch, n-martin-fish-market, n-martin-cargo
+neighbors = n-martin-quay-watch, n-martin-fish-market, n-martin-cargo, n-fishing-pier
 events = ev-kishina-shells
 
 [nodemap.nm-act-1-era4-061.node.n-kishina-tide-pool]
@@ -2806,4 +2846,120 @@ description = 성소 안쪽의 가장 조용한 곳. 빛바랜 유물이 벽에 
 x = 0.267
 y = 0.6138
 neighbors = n-oldshrine-inner
+
+# ============================================================
+# 신규 4지대 (별빛 고원 / 버섯 동굴 / 어촌 군집 / 광산 갱도)
+# ============================================================
+
+[nodemap.nm-act-1-era4-061.node.n-starlight-rise]
+kind = village
+region = starlight-plateau
+label = 별빛 고원 마을
+description = 고원으로 오르는 길목의 작은 마을. 밤바람이 차다.
+x = 0.4343
+y = 0.3862
+neighbors = n-starlight-field, n-starlight-watch, n-ilu-changers
+
+[nodemap.nm-act-1-era4-061.node.n-starlight-field]
+kind = gather
+region = starlight-plateau
+label = 건조 밭
+description = 별빛 아래 약초를 말리는 너른 밭.
+x = 0.4582
+y = 0.3655
+neighbors = n-starlight-rise, n-starlight-watch
+
+[nodemap.nm-act-1-era4-061.node.n-starlight-watch]
+kind = combat
+region = starlight-plateau
+label = 고원 망대
+description = 고원 끝에 선 낡은 망대. 사방이 트여 있다.
+x = 0.4104
+y = 0.3655
+neighbors = n-starlight-rise, n-starlight-field, n-ilu-diner-back
+enemy = mr-iluneon-cutpurse
+
+[nodemap.nm-act-1-era4-061.node.n-mushroom-mouth]
+kind = village
+region = mushroom-cave
+label = 동굴 어귀
+description = 동굴 입구에 자리 잡은 채집꾼들의 거처.
+x = 0.2073
+y = 0.7173
+neighbors = n-mushroom-bed, n-mushroom-hollow, n-luna-library
+
+[nodemap.nm-act-1-era4-061.node.n-mushroom-bed]
+kind = gather
+region = mushroom-cave
+label = 버섯밭
+description = 어둠 속에서 버섯이 줄지어 자라는 굴 안쪽.
+x = 0.1834
+y = 0.738
+neighbors = n-mushroom-mouth, n-mushroom-hollow
+
+[nodemap.nm-act-1-era4-061.node.n-mushroom-hollow]
+kind = combat
+region = mushroom-cave
+label = 깊은 굴
+description = 발소리가 메아리치는 동굴 가장 깊은 곳.
+x = 0.1954
+y = 0.7587
+neighbors = n-mushroom-mouth, n-mushroom-bed
+enemy = mr-luna-ink-fiend
+
+[nodemap.nm-act-1-era4-061.node.n-fishing-pier]
+kind = village
+region = fishing-village
+label = 어촌 선창
+description = 고깃배가 늘어선 선창. 그물 손질이 한창이다.
+x = 0.5538
+y = 0.738
+neighbors = n-fishing-shoal, n-fishing-cove, n-kishina-rocks
+
+[nodemap.nm-act-1-era4-061.node.n-fishing-shoal]
+kind = gather
+region = fishing-village
+label = 갯바위 여울
+description = 물이 빠지면 드러나는 갯바위 여울.
+x = 0.5777
+y = 0.7587
+neighbors = n-fishing-pier, n-fishing-cove
+
+[nodemap.nm-act-1-era4-061.node.n-fishing-cove]
+kind = combat
+region = fishing-village
+label = 후미진 만
+description = 마을 끝, 파도가 높은 후미진 만.
+x = 0.5657
+y = 0.7794
+neighbors = n-fishing-pier, n-fishing-shoal
+enemy = mr-martin-dock-rat
+
+[nodemap.nm-act-1-era4-061.node.n-mineshaft-entry]
+kind = village
+region = mine-shaft
+label = 갱도 입구
+description = 광부들이 드나드는 갱도 입구의 막사.
+x = 0.8286
+y = 0.4483
+neighbors = n-mineshaft-vein, n-mineshaft-deep, n-clutch-pier
+
+[nodemap.nm-act-1-era4-061.node.n-mineshaft-vein]
+kind = gather
+region = mine-shaft
+label = 광맥
+description = 벽면을 따라 광석이 드러난 채광 막장.
+x = 0.8405
+y = 0.469
+neighbors = n-mineshaft-entry, n-mineshaft-deep
+
+[nodemap.nm-act-1-era4-061.node.n-mineshaft-deep]
+kind = combat
+region = mine-shaft
+label = 갱도 막장
+description = 어둠이 짙게 깔린 갱도 가장 깊은 막장.
+x = 0.8286
+y = 0.4897
+neighbors = n-mineshaft-entry, n-mineshaft-vein
+enemy = mr-mano-cliff-crab
 events = ev-oldshrine-core
