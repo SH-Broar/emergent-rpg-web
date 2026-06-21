@@ -1940,8 +1940,34 @@ function tickInstallations(state: GridCombatState): void {
 // ============================================================================
 
 /**
+ * 플레이어 계획 행동의 *발동 속도 랭크*(작을수록 먼저 해소). 안정 정렬 키.
+ *  - 카드 행동: 그 카드의 castSpeed(fast=0 / normal=1 / slow=2). 손패 인스턴스에서 읽고,
+ *               (드물게) 손에 없으면 데이터 정의로 폴백. 미설정 카드는 normal(1).
+ *  - 이동(move): 항상 3 — slow보다도 뒤(맨 끝). "먼저 행동하고 마지막에 움직인다".
+ *  - 그 외(item/swap/wait 등): normal(1) 기본.
+ */
+function actionSpeedRank(state: GridCombatState, action: PlannedAction): number {
+  if (action.kind === 'move') return 3;
+  if (action.kind === 'card') {
+    let card: Card | undefined = state.hand.find((c) => c.instanceId === action.cardInstanceId);
+    if (!card) {
+      // 폴백 — 손패에 없으면(이론상 없음) instanceId의 정의 id로 데이터 조회.
+      try {
+        const baseId = action.cardInstanceId.split('#')[0];
+        card = useDataStore().cards.get(baseId);
+      } catch { /* 무해 */ }
+    }
+    const cs = card?.castSpeed;
+    return cs === 'fast' ? 0 : cs === 'slow' ? 2 : 1;
+  }
+  return 1; // item/swap/wait 등 — normal.
+}
+
+/**
  * 라운드 해소 (스피드 모델 US-001).
- * playerPlan을 *큐 순서대로* 실행. 각 플레이어 행동마다 모든 적 템포 카운터 +1 →
+ * playerPlan을 *발동 속도(castSpeed)로 안정 정렬*한 순서로 실행(fast→normal→slow→이동).
+ * 동률(같은 랭크)이면 *큐 순서*를 유지 — 플레이어가 그 그룹의 순서를 통제한다.
+ * 각 플레이어 행동마다 모든 적 템포 카운터 +1 →
  * counter>=tempo인 적이 1턴 수행(누적, 라운드 넘어감). 계획 후 아군 1턴씩.
  * 매 동작마다 fx push(순차 재생). 동작마다 증원·처치 정리·승패 판정.
  * 라운드 종료: turn++, block 반감, 상태 감쇠, *마나만* 풀충전(손패는 유지), 적 의도 재계산, plan 비움.
@@ -1955,11 +1981,17 @@ export function commitRound(state: GridCombatState): void {
   // 순차 재생용 행동 그룹 인덱스 리셋 — 이 라운드의 fx가 0번부터 그룹된다.
   fxActionIndex = 0;
 
-  // 스피드 모델(US-001) — 플레이어 계획을 *큐 순서대로* 실행. 각 플레이어 행동마다 적 템포 카운터 +1,
-  //   도달한 적이 1턴 수행(누적). 구 foresight 스텝 인터리브/castSpeed 정렬은 폐지(플레이어가 순서 통제).
-  for (let i = 0; i < state.playerPlan.length; i++) {
+  // 스피드 모델(US-001) — 플레이어 계획을 *발동 속도(castSpeed)로 안정 정렬*해 실행.
+  //   랭크: 카드 fast(0)→normal(1)→slow(2), 이동(3, 항상 맨 끝). 같은 랭크는 큐 순서 유지(플레이어 통제).
+  //   각 플레이어 행동마다 적 템포 카운터 +1, 도달한 적이 1턴 수행(누적). 구 foresight 스텝 인터리브는 폐지.
+  //   정렬 키는 *실행 전*에 스냅샷한다 — executeAction이 손패를 비우므로(splice) 정렬 중 castSpeed 조회가 흔들리지 않게.
+  const orderedPlan = state.playerPlan
+    .map((action, idx) => ({ action, idx, rank: actionSpeedRank(state, action) }))
+    .sort((a, b) => (a.rank - b.rank) || (a.idx - b.idx)) // 안정 정렬 — 동률은 원래 큐 인덱스 순.
+    .map((entry) => entry.action);
+  for (let i = 0; i < orderedPlan.length; i++) {
     if (state.outcome) break;
-    const pAction = state.playerPlan[i];
+    const pAction = orderedPlan[i];
     if (state.player.hp > 0) {
       fxActionIndex += 1;
       executeAction(state, state.player, pAction);

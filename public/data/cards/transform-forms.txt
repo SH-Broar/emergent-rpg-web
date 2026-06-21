@@ -121,7 +121,7 @@ trigger = manual
 effects = block:11:self
 # 격자: 자기 자신. 환영으로 몸을 가린다.
 target_mode = self
-cast_speed = normal
+cast_speed = fast
 upgrade_to = c-fox-illusion-plus
 flavor = 어느 쪽이 진짜인지 가끔 나도 헷갈린다.
 
@@ -135,7 +135,7 @@ trigger = manual
 effects = block:15:self
 # 격자: 자기 자신. 더 두꺼운 환영막.
 target_mode = self
-cast_speed = normal
+cast_speed = fast
 flavor = 흩어진 그림자가 더 빽빽하게 겹쳐 선다.
 
 [card.c-fox-nine-tails]
@@ -288,7 +288,7 @@ trigger = manual
 effects = skip-enemy-action:1, block:8:self
 # 격자: 자기 자신. 허상 뒤에 몸도 숨긴다.
 target_mode = self
-cast_speed = normal
+cast_speed = fast
 flavor = 허상 뒤로 몸을 숨긴다.
 
 [card.c-fox-ninetails]
@@ -390,7 +390,7 @@ trigger = manual
 effects = slow-enemy:2, block:10:self
 # 격자: 자기 자신. 안개로 몸을 가리며 적을 늦춘다.
 target_mode = self
-cast_speed = normal
+cast_speed = fast
 upgrade_to = c-fox-veil-plus
 flavor = 안개 속에서는 여우가 길을 정한다.
 
@@ -404,7 +404,7 @@ trigger = manual
 effects = slow-enemy:3, block:14:self
 # 격자: 자기 자신. 더 자욱한 안개.
 target_mode = self
-cast_speed = normal
+cast_speed = fast
 flavor = 안개가 더 자욱하다. 상대의 발은 더 늦고, 가려 주는 막은 더 단단하다.
 
 [card.c-fox-devour]
@@ -686,7 +686,7 @@ trigger = manual
 effects = block:13:self
 # 격자: 자기 자신. 안개를 끌어모아 막는다.
 target_mode = self
-cast_speed = normal
+cast_speed = fast
 upgrade_to = c-fox-fogwall-plus
 flavor = 발끝도 안 보이는 게 차라리 마음 편하다.
 
@@ -700,7 +700,7 @@ trigger = manual
 effects = block:18:self
 # 격자: 자기 자신. 더 자욱하게 끌어모은다.
 target_mode = self
-cast_speed = normal
+cast_speed = fast
 flavor = 끌어모은 안개가 더 자욱하다.
 
 [card.c-fox-dreamhaze]
@@ -713,7 +713,7 @@ trigger = manual
 effects = slow-enemy:3, block:8:self
 # 격자: 자기 자신. 꿈결 같은 안개가 적을 늦추고 몸을 감싼다.
 target_mode = self
-cast_speed = normal
+cast_speed = fast
 upgrade_to = c-fox-dreamhaze-plus
 flavor = 꿈인지 아닌지는 깨 봐야 안다.
 
@@ -727,7 +727,7 @@ trigger = manual
 effects = slow-enemy:4, block:12:self
 # 격자: 자기 자신. 꿈결이 더 아득하다.
 target_mode = self
-cast_speed = normal
+cast_speed = fast
 flavor = 꿈결이 더 아득하다. 상대의 손은 느려지고 내 몸은 단단해진다.
 
 # ============================================================
@@ -1286,7 +1286,7 @@ trigger = manual
 effects = heal:8:self, block:5:self
 # 격자: 자기 자신. 자기 상처를 돌본다.
 target_mode = self
-cast_speed = normal
+cast_speed = fast
 upgrade_to = c-fox-lick-plus
 flavor = 혀로 핥는 게 제일 빠르다니, 아직도 어색하다.
 
@@ -1300,7 +1300,7 @@ trigger = manual
 effects = heal:12:self, block:7:self
 # 격자: 자기 자신. 상처가 더 빨리 아문다.
 target_mode = self
-cast_speed = normal
+cast_speed = fast
 flavor = 상처가 더 빨리 아문다.
 
 [card.c-fox-foxguard]
@@ -1314,7 +1314,7 @@ effects = block:9:self, apply-status:2:enemy:weakness
 # 격자: 전방 단일+자기. 웅크린 채로 가만히 노려보며 방어한다.
 shape = 0,-1
 target_mode = pattern
-cast_speed = normal
+cast_speed = fast
 upgrade_to = c-fox-foxguard-plus
 flavor = 웅크린 채로 가만히 노려본다.
 
@@ -1329,7 +1329,7 @@ effects = block:13:self, apply-status:3:enemy:weakness
 # 격자: 전방 단일+자기. 더 단단히 도사린다.
 shape = 0,-1
 target_mode = pattern
-cast_speed = normal
+cast_speed = fast
 flavor = 더 단단히 도사린다. 빼내는 힘도 더 많다.
 
 [card.c-fox-finalflame]

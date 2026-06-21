@@ -140,7 +140,7 @@ element = water
 cost = 2
 trigger = manual
 effects = summon-ally:2:self:6:4, block:4:self
-cast_speed = normal
+cast_speed = fast
 target_mode = self
 
 # === 큰 한 방·지연 ===
@@ -177,7 +177,7 @@ element = earth
 cost = 1
 trigger = manual
 effects = block:6:self
-cast_speed = normal
+cast_speed = fast
 target_mode = self
 
 [card.c-sl-bounce]
@@ -211,7 +211,7 @@ element = earth
 cost = 1
 trigger = manual
 effects = growing-block:6:self
-cast_speed = normal
+cast_speed = fast
 target_mode = self
 
 [card.c-sl-clean]
