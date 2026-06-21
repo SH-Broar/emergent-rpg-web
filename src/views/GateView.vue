@@ -217,23 +217,14 @@ function choosePass() {
           보유 {{ heldCount }} / {{ requirement.count }}
           <template v-if="contracted"> · 수주한 거래</template>
         </span>
-        <div class="gate-opt__actions">
-          <!-- 미수주: [거래한다](항상) — 보유 충분하면 즉시 완료, 아니면 수주 후 맵. -->
+        <!-- 거래는 *보유 충분할 때만* 버튼 노출 — 재료 없을 때의 "맡아 둔다"(빈 수주) 버튼은 제거(혼란 방지).
+             재료가 모자라면 위 보유 미터만 보여 주고(가져오면 됨), 별도 큰 버튼은 두지 않는다. -->
+        <div v-if="fulfillable" class="gate-opt__actions">
           <button
-            v-if="!contracted"
             type="button"
             class="gate-opt__btn"
-            @click="chooseTrade"
-          >{{ fulfillable ? '거래한다 (지금 건넨다)' : '거래한다 (맡아 둔다)' }}</button>
-          <!-- 수주됨: 보유 충분하면 완료 버튼만. -->
-          <button
-            v-else
-            type="button"
-            class="gate-opt__btn"
-            :class="{ 'gate-opt__btn--disabled': !fulfillable }"
-            :disabled="!fulfillable"
-            @click="completeTrade"
-          >{{ fulfillable ? '거래 완료' : '아직 모자라다' }}</button>
+            @click="contracted ? completeTrade() : chooseTrade()"
+          >{{ contracted ? '거래 완료' : '거래한다 (지금 건넨다)' }}</button>
         </div>
       </div>
 
