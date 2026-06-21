@@ -584,14 +584,23 @@ export interface GridCombatState {
  *
  *  - 미방문 노드: 키 없음.
  *  - 첫 방문 후: visited=true. 노드 종류별 추가 필드.
- *  - 전투 클리어: combatCleared=true → 재방문 시 전투 없이 통과.
+ *  - 전투 승리: combatCleared=true → 그 노드의 *전투* 소비.
+ *  - 거래(납품) 완료: tradeCleared=true → 그 노드의 *거래* 소비.
+ *    전투/엘리트 게이트 노드는 둘 다 소비돼야 '정리됨'(회색·자동통과). 한쪽만 소비면
+ *    게이트로 재라우팅돼 남은 옵션만 보인다(systems/map.ts isNodeSettled).
  *  - 전투 회피 (은밀): combatStealthed=true → 재방문 시 "싸울지/지나칠지" 선택.
  *  - 이벤트 발생: eventTriggered=event-id + eventCount 증가.
  *    데이터에 2회+ 분기가 있으면 다음 방문 시 그것이 발동.
  */
 export interface NodeStateRecord {
   visited: boolean;
+  /** 전투 승리 소비 — markCombatCleared/전투승리 경로만 세팅(거래와 독립). */
   combatCleared?: boolean;
+  /**
+   * 납품(거래) 완료 소비 — fulfillContract만 세팅(전투 승리와 독립, optional·backfill 안전).
+   * 일반 전투 노드는 다음날(advanceDay)에 풀리고, 엘리트는 영구.
+   */
+  tradeCleared?: boolean;
   combatStealthed?: boolean;
   eventTriggered?: string;
   eventCount?: number;
@@ -800,13 +809,15 @@ export interface RunState {
 
   /**
    * 노드별 *런타임 kind 오버라이드*.
-   * 30턴 경과(advanceDay) 시 일부 비-마을 노드의 kind가 재추첨되어 여기에 기록.
+   * 방울 표식(일반→엘리트 격상, GateView)·카오스(post-apocalypse 전투→휴식 등)가 여기에 기록.
+   * (노드 재활성 모델 2026-06-21: 일일 kind 재추첨은 폐지 — advanceDay는 더 이상 쓰지 않는다.)
    * 키 없는 노드는 NodeMap의 원본 kind 사용.
    */
   nodeKindOverrides: Record<NodeId, NodeKind>;
 
   /**
-   * 노드별 *런타임 콘텐츠 오버라이드* — 권역 풀에서 재추첨된 enemy/event 등.
+   * 노드별 *런타임 콘텐츠 오버라이드* — 방울 표식이 엘리트 격상 시 적 그룹을 여기 기록.
+   * (노드 재활성 모델 2026-06-21: 일일 content 재추첨은 폐지. 이제 방울 표식 등 특수 경로만 기록.)
    * 키 없는 노드는 NodeMap의 원본 contentRef 사용.
    */
   nodeContentOverrides: Record<NodeId, {

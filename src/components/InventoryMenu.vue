@@ -13,6 +13,7 @@ import { computed, ref, watch } from 'vue';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useItem, isUsableItem } from '@/systems/item';
+import { isNodeSettled } from '@/systems/map';
 import { relicEffectText, relicTriggerLabel, colorLabel, statusLabel } from '@/systems/labels';
 import type { Item, Node, Relic } from '@/data/schemas';
 
@@ -91,7 +92,8 @@ const reviveTargets = computed<Node[]>(() => {
     const st = run.data.nodeStates[n.id];
     if (!st) return false;
     return (
-      !!st.combatCleared ||
+      // 게이트형(전투/엘리트/보스) — 전투·거래 둘 다 소비된 '정리됨' 노드만(부분 소비는 이미 재진입 가능).
+      isNodeSettled(n, st, run.data) ||
       !!st.combatStealthed ||
       !!st.eventTriggered ||
       !!st.activityDone ||

@@ -22,7 +22,7 @@ import { useRouter } from 'vue-router';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
-import { getNeighbors, getNode, isTimeUp, effectiveKind as systemEffectiveKind } from '@/systems/map';
+import { getNeighbors, getNode, isTimeUp, isNodeSettled, effectiveKind as systemEffectiveKind } from '@/systems/map';
 import { restHealMul, lockedTownCount, isShopLimited, canEnterShop, recordShopEntry, isRestHealBlocked } from '@/systems/chaos';
 import { isActivityDone } from '@/systems/activity';
 import { isGatherDone } from '@/systems/gathering';
@@ -193,7 +193,8 @@ function getEnterAction(): EnterAction {
   switch (systemEffectiveKind(node, run.data)) {
     case 'combat':
     case 'elite':
-      if (st?.combatCleared) return 'pass';
+      // 전투·거래 *둘 다* 소비돼야 자동 통과. 한쪽만 소비(부분)면 게이트로 보내 남은 옵션을 띄운다.
+      if (isNodeSettled(node, st, run.data)) return 'pass';
       if (st?.combatStealthed) return 'choose-combat';
       return 'enter';
     case 'event':
@@ -202,7 +203,8 @@ function getEnterAction(): EnterAction {
     case 'boss':
       // arc 보스 노드는 승리 시 combatCleared로 마킹된다(런 지속) → 재방문 시 통과.
       // 연표 종말 보스(boss_gate)는 승리=런 종료라 cleared가 남지 않으므로 항상 'boss'.
-      if (st?.combatCleared) return 'pass';
+      // 보스엔 거래가 없어 isNodeSettled는 combatCleared만 본다(기존 동작 동일).
+      if (isNodeSettled(node, st, run.data)) return 'pass';
       return 'boss';
     case 'rest':
       if (st?.restDone) return 'rest-done';
@@ -462,6 +464,19 @@ const nodeVisuals = computed<Map<NodeId, { kind: NodeKind; color: string; kindLa
 });
 function nodeColorOf(id: NodeId): string { return nodeVisuals.value.get(id)?.color ?? '#8eedff'; }
 function nodeKindLabelOf(id: NodeId): string { return nodeVisuals.value.get(id)?.kindLabel ?? ''; }
+
+/**
+ * 노드가 '정리됨'(회색·자동통과)인가 — 게이트형(전투/엘리트/보스) 종류별 소비 판정(systems isNodeSettled).
+ * 전투/엘리트는 전투·거래 *둘 다* 소비돼야 true(부분 소비는 회색 X → 게이트로 다시 들어가 남은 옵션).
+ * 그 외 종류는 false(회색은 event-done/done 클래스가 따로 칠한다).
+ */
+function isSettledNode(id: NodeId): boolean {
+  const map = nodeMap.value;
+  if (!map) return false;
+  const node = getNode(map, id);
+  if (!node) return false;
+  return isNodeSettled(node, run.data.nodeStates[id], run.data);
+}
 
 /** focusRegion이 아닌 권역이면서 focusRegion 노드와 인접한 노드들(권역 출구). */
 const gateways = computed<Set<NodeId>>(() => {
@@ -860,10 +875,14 @@ function nodeStatusLabel(node: Node): string {
   if (!st || !st.visited) return '미방문';
   const k = systemEffectiveKind(node, run.data);
   if (k === 'combat' || k === 'elite') {
-    if (st.combatCleared) return '정리됨';
+    // 전투·거래 둘 다 소비 = 정리됨. 한쪽만 소비면 남은 쪽을 알려준다(게이트로 들어가면 보인다).
+    if (isNodeSettled(node, st, run.data)) return '정리됨';
+    if (st.combatCleared) return '전투 끝 (거래 남음)';
+    if (st.tradeCleared) return '거래 끝 (전투 남음)';
     if (st.combatStealthed) return '회피됨';
     return '방문';
   }
+  if (k === 'boss' && st.combatCleared) return '정리됨';
   if (k === 'event' && st.eventTriggered) return '지나감';
   return '방문';
 }
@@ -931,7 +950,7 @@ function enterLabel(): string {
                   'node-group--current': node.id === run.data.currentNodeId,
                   'node-group--reachable': reachable.has(node.id),
                   'node-group--visited': run.data.nodeStates[node.id]?.visited,
-                  'node-group--cleared': run.data.nodeStates[node.id]?.combatCleared,
+                  'node-group--cleared': isSettledNode(node.id),
                   'node-group--stealthed': run.data.nodeStates[node.id]?.combatStealthed,
                   'node-group--event-done': run.data.nodeStates[node.id]?.eventTriggered,
                   'node-group--done': run.data.nodeStates[node.id]?.activityDone || run.data.nodeStates[node.id]?.restDone || run.data.nodeStates[node.id]?.gatherDone,

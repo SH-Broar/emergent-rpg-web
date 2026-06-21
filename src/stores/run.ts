@@ -21,7 +21,7 @@ import type {
   TimelineId,
 } from '@/data/schemas';
 import { instantiateCard } from '@/systems/deck';
-import { createSeededRng, generateInitialSeed, rng, setRng } from '@/systems/rng';
+import { createSeededRng, generateInitialSeed, setRng } from '@/systems/rng';
 import { getSkipTurnEveryN } from '@/systems/relic';
 import { gridRelicCombatEnd } from '@/systems/grid-relic';
 import { applyStartChaos, nodeHpLoss } from '@/systems/chaos';
@@ -122,9 +122,9 @@ function migrateRoster(filled: RunState, parsed: Partial<RunState>): void {
 }
 
 const DECK_SLOT_SIZE = 10;
-/** 100턴마다 하루 경과 — 비-마을 노드 cleared 초기화 + 권역 풀에서 content 재추첨.
+/** 100턴마다 하루 경과 — 일반 전투 노드의 전투/거래 소비를 충전(엘리트·내용은 영속).
  *  사용자 결정 (2026-05-19): 한 런=300턴=3일, 권역 평균 ~22노드(전체 ~200노드)에 맞춘 사양.
- *  지도 모양은 유지(노드 kind 고정), content만 권역 풀에서 매일 새로 추첨.
+ *  노드 재활성 모델(2026-06-21): 지도 모양·노드 content는 *완전 고정*(매일 재추첨 없음).
  */
 const TURNS_PER_DAY = 100;
 
@@ -543,18 +543,23 @@ export const useRunStore = defineStore('run', {
     },
 
     /**
-     * 하루 경과 트리거 — 사용자 결정에 따라 *지도 모양(노드 kind)은 유지*.
-     *   - currentDay +1
-     *   - dayPassedSeq +1 (UI watch용)
-     *   - 비-마을·비-보스·비-shop·비-workshop·비-시작 노드의 cleared/eventTriggered/stealthed 초기화
-     *   - 같은 종류의 content(enemy/event)를 그 노드 *권역 풀에서* 재추첨
+     * 하루 경과 트리거 — *완전 영속* 맵(노드 재활성 모델, 2026-06-21).
+     *   - currentDay +1 / dayPassedSeq +1 (UI watch용)
+     *   - **content 재추첨(리롤) 없음**: 노드 내용은 원래 contentRef로 고정. 매일 enemy/event를
+     *     권역 풀에서 다시 뽑던 로직을 제거했다(effectiveContent는 override 미존재 시 contentRef를
+     *     쓰므로 정상 해석). 방울 표식(GateView)의 nodeContentOverrides 경로는 별개로 그대로 동작.
+     *   - 소비 리셋은 *종류별*:
+     *       · 일반 전투 노드 : combatCleared·tradeCleared 둘 다 false(다음날 충전).
+     *       · 엘리트 노드    : 전투·거래 *영구 소비* — 리셋하지 않는다(동일 개체, 재생 없음).
+     *       · event/gather/rest/activity : 기존 리셋(eventTriggered/gatherDone/restDone/activityDone) 유지.
+     *   - 마을·보스·상점·공방·시작 노드는 그대로.
      */
     advanceDay() {
       const r = this.data;
       r.currentDay += 1;
       r.dayPassedSeq += 1;
-      // 농사 텃밭(r.plots)은 top-level 별도 필드라 일일 리롤의 영향을 받지 않는다 —
-      // 아래 nodeStates 초기화/콘텐츠 재추첨 루프에서 plots는 절대 건드리지 않는다(의도적 보존).
+      // 농사 텃밭(r.plots)은 top-level 별도 필드라 일일 리셋의 영향을 받지 않는다 —
+      // 아래 nodeStates 초기화 루프에서 plots는 절대 건드리지 않는다(의도적 보존).
       // 하루 경과마다 덱 슬롯 10 확장 — 카드를 새로 얻으면 자동 세팅될 여지가 생긴다.
       r.deckSize += 10;
       // 혼란(possession)은 하루가 지나면 풀린다 — 잔존 페널티의 안전 밸브.
@@ -569,36 +574,6 @@ export const useRunStore = defineStore('run', {
       if (!map) return;
 
       const protectedKinds = new Set<NodeKind>(['village', 'boss', 'shop', 'workshop']);
-      // 권역 ID → Region 매핑.
-      const regionMap = new Map(map.regions.map((rg) => [rg.id, rg]));
-
-      const pickRandom = <T,>(arr: T[]): T | undefined =>
-        arr.length === 0 ? undefined : arr[Math.floor(rng() * arr.length)];
-
-      /** 노드 종류에 맞는 content를 그 권역 풀에서 추첨. 풀이 비면 원본 contentRef 그대로. */
-      const pickContentForKind = (
-        node: import('@/data/schemas').Node,
-        kind: NodeKind,
-        region: import('@/data/schemas').Region | undefined,
-      ): { enemyGroupId?: string; eventIdPool?: string[] } => {
-        switch (kind) {
-          case 'combat': {
-            const pool = region?.enemyPool ?? [];
-            return { enemyGroupId: pickRandom(pool) ?? node.contentRef?.enemyGroupId };
-          }
-          case 'elite': {
-            const pool = region?.eliteEnemyPool ?? [];
-            return { enemyGroupId: pickRandom(pool) ?? node.contentRef?.enemyGroupId };
-          }
-          case 'event': {
-            const pool = region?.eventPool ?? [];
-            const pick = pickRandom(pool);
-            return { eventIdPool: pick ? [pick] : node.contentRef?.eventIdPool };
-          }
-          default:
-            return {};
-        }
-      };
 
       for (const node of map.nodes) {
         // 시작 노드(현재 위치)는 건드리지 않음.
@@ -606,26 +581,24 @@ export const useRunStore = defineStore('run', {
         // 마을·보스·상점·공방은 항상 그대로.
         if (protectedKinds.has(node.kind)) continue;
 
-        // 1) cleared / eventTriggered / combatStealthed 초기화 — visited는 유지.
         const st = r.nodeStates[node.id];
-        if (st) {
-          st.combatCleared = false;
-          st.combatStealthed = false;
-          st.eventTriggered = undefined;
-          st.eventCount = 0;
-          st.activityDone = false;  // 활동 재발동 가능.
-          st.restDone = false;      // 휴식 재사용 가능.
-          st.gatherDone = false;    // 채집 재개방.
-          st.gatherCount = 0;       // (구) 채집 효율 — 폐기, 호환용 정리.
-        }
+        if (!st) continue;
 
-        // 2) 노드 *원본 kind는 그대로* — 지도 모양 유지.
-        //    content만 권역 풀에서 재추첨.
-        const region = regionMap.get(node.region ?? '');
-        const content = pickContentForKind(node, node.kind, region);
-        if (content.enemyGroupId || content.eventIdPool) {
-          r.nodeContentOverrides[node.id] = content;
+        // 엘리트 노드는 전투·거래 소비가 *영구*다 — 다음날 충전 X(동일 개체 재생 없음).
+        // effectiveKind로 판정(방울 표식 등 런타임 격상 반영). 엘리트면 combat/trade 리셋을 건너뛴다.
+        const isElite = effectiveKind(node, r) === 'elite';
+        if (!isElite) {
+          st.combatCleared = false;   // 일반 전투 노드 — 전투 다음날 충전.
+          st.tradeCleared = false;    // 일반 전투 노드 — 거래(납품) 다음날 충전.
         }
+        // 회피(은밀) 표식·event/gather/rest/activity 소비는 종류 무관 기존대로 리셋(이번 범위 밖).
+        st.combatStealthed = false;
+        st.eventTriggered = undefined;
+        st.eventCount = 0;
+        st.activityDone = false;  // 활동 재발동 가능.
+        st.restDone = false;      // 휴식 재사용 가능.
+        st.gatherDone = false;    // 채집 재개방.
+        st.gatherCount = 0;       // (구) 채집 효율 — 폐기, 호환용 정리.
       }
     },
 
@@ -931,14 +904,16 @@ export const useRunStore = defineStore('run', {
       r.deck = next;
     },
 
-    /** 전투 클리어 마킹 — 재방문 시 전투 없이 통과. */
+    /**
+     * 전투 승리 마킹 — 그 노드의 *전투* 소비(combatCleared). 거래(tradeCleared)와 독립이라
+     * 여기서 거래 계약은 건드리지 않는다(전투만 이겨도 납품을 위해 재진입 가능). 둘 다 소비돼야
+     * '정리됨'(isNodeSettled)이 되어 자동 통과한다.
+     */
     markCombatCleared(nodeId: string) {
       const r = this.data;
       if (!r.nodeStates[nodeId]) r.nodeStates[nodeId] = { visited: true };
       r.nodeStates[nodeId].combatCleared = true;
       r.nodeStates[nodeId].combatStealthed = false;
-      // 노드가 전투 승리로 해결되면 그 노드의 거래 계약은 무의미 — 정리(거래 완료 경로는 이미 삭제).
-      if (r.tradeContracts?.[nodeId]) delete r.tradeContracts[nodeId];
     },
 
     /** 전투 회피(은밀) 마킹 — 재방문 시 "싸울지/지나칠지" 선택. */

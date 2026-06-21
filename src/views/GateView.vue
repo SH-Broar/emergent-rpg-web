@@ -8,9 +8,11 @@
  *                 수주하면 노드는 *미해결*로 두고 맵으로 돌아간다 — 요구 품목을 모아 마을/현장에서 완료.
  *                 이미 요구 품목을 충분히 가졌으면 그 자리서 [지금 건넨다]로 즉시 완료(한 턴 절약).
  *                 이미 계약이 있는 노드 재방문이면 요구/보유를 보여주고 충분할 때 [거래 완료]만 띄운다.
- *  - [그냥 지나친다] : 보상 없이 통과. *노드는 해결하지 않는다*(combatCleared 마킹 X) → 재진입 자유.
+ *  - [그냥 지나친다] : 보상 없이 통과. *어느 소비도 하지 않는다* → 재진입 자유.
  *
- * 노드 해결(combatCleared)은 *오직* 전투 승리 또는 거래 완료에서만 일어난다.
+ * 종류별 독립 소비(노드 재활성 모델): [싸운다]=combatCleared, [거래]=tradeCleared가 *각각* 따로 소비된다.
+ *  전투만 이긴 뒤 재진입하면 [거래/지나치기]만, 거래만 한 뒤 재진입하면 [싸운다/지나치기]만 보인다.
+ *  (둘 다 소비면 MapView가 'pass'로 자동 통과시켜 이 화면에 오지 않는다.)
  *
  * MapView가 visitNode를 *먼저* 호출하고 /game/gate로 라우팅하므로, 진입 시점에
  * run.data.currentNodeId = 대상 노드다(FarmingView/ActivityView와 동일 패턴).
@@ -59,6 +61,15 @@ const nodeLabel = computed(() => node.value?.label ?? '갈림길');
 const isElite = computed(() =>
   node.value ? systemEffectiveKind(node.value, run.data) === 'elite' : false,
 );
+
+/**
+ * 종류별 독립 소비(노드 재활성 모델) — 그 노드의 전투/거래가 *이미* 소비됐는가.
+ *  - combatDone(combatCleared): [싸운다] 숨김(전투 이긴 뒤 재진입).
+ *  - tradeDone(tradeCleared)  : [거래한다/거래완료] 숨김(납품만 한 뒤 재진입).
+ * 둘 다 소비면 MapView가 애초에 게이트로 안 보낸다('pass'). [지나친다]는 항상 노출.
+ */
+const combatDone = computed(() => !!run.data.nodeStates[nodeId.value]?.combatCleared);
+const tradeDone = computed(() => !!run.data.nodeStates[nodeId.value]?.tradeCleared);
 
 /**
  * [싸운다] 시 만날 적의 스펙(읽기 전용 프리뷰). enterGridCombat과 *같은* buildCombatStage를 쓰는
@@ -188,14 +199,14 @@ function choosePass() {
     </header>
 
     <div class="gate-options">
-      <!-- 전투 — 적 스펙(적 수·체력·공격/턴·속도)을 미리 보고 고른다. -->
-      <button type="button" class="gate-opt gate-opt--combat" @click="chooseCombat">
+      <!-- 전투 — 적 스펙(적 수·체력·공격/턴·속도)을 미리 보고 고른다. 전투를 이미 이겼으면 숨김. -->
+      <button v-if="!combatDone" type="button" class="gate-opt gate-opt--combat" @click="chooseCombat">
         <span class="gate-opt__title">싸운다</span>
         <EnemySpecPanel v-if="enemySpec" :spec="enemySpec" />
       </button>
 
-      <!-- 거래 (수주형) -->
-      <div class="gate-opt gate-opt--trade">
+      <!-- 거래 (수주형) — 거래를 이미 완료했으면 숨김. -->
+      <div v-if="!tradeDone" class="gate-opt gate-opt--trade">
         <span class="gate-opt__title">거래한다</span>
         <!-- 요구는 flavor가 아니라 *기능 정보* — 품목명·개수·보유를 표시. -->
         <span class="gate-opt__req">

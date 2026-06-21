@@ -10,8 +10,9 @@
  *  - 보유 시 즉시 완료(한 턴 절약): 게이트에서 이미 요구 품목을 충분히 가졌으면 그 자리서 완료.
  *  - 완료처 = 마을(VillageView 계약 목록) + 현장(GateView 그 노드 재방문). 충분하면 소비 + 노드 해결 + 보상.
  *
- * 노드 해결 규칙(핵심): 노드 combatCleared(통과/회색)는 *오직* ①전투 승리 ②거래 완료 두 경우만.
- *  [그냥 지나친다]·[거래 수주]는 노드를 해결하지 않는다(재진입 자유).
+ * 노드 소비 규칙(핵심): 전투/엘리트 게이트 노드는 [전투]·[거래]를 *독립*으로 소비한다.
+ *  전투 승리=combatCleared, 거래 완료=tradeCleared. 둘 다 소비돼야 '정리됨'(회색·자동통과,
+ *  systems/map.ts isNodeSettled). [그냥 지나친다]·[거래 수주]는 어느 쪽도 소비하지 않는다(재진입 자유).
  *
  * 보상(거래 완료): addLifeXp(1+tier) + 대표 element 컬러 +tier×2. (v1 deliver 보상 식 유지.)
  *
@@ -167,7 +168,7 @@ function reqFromContract(c: TradeContract): TradeRequirement {
 
 /**
  * 거래 완료 실행 — 요구 품목을 충분히 보유하면 *하위부터* 소비(상위는 모자랄 때만), 보상 부여,
- * 노드 해결(combatCleared) + 계약 제거. 부족하면 null(소비/해결 없음).
+ * 거래 소비(tradeCleared) + 계약 제거. 부족하면 null(소비/해결 없음).
  *
  * 소비 우선순위: 하위 산출물부터 빼고, 모자라면 상위(-fine)로 채운다(상위를 아껴 줌).
  * 보상: addLifeXp(1 + tier) + element 컬러(+tier×2).
@@ -212,10 +213,11 @@ export function fulfillContract(nodeId: string): TradeResult | null {
   run.addLifeXp(lifeXp);
   applyColorBoost(color, colorGain);
 
-  // 노드 해결 — combatCleared(재방문 시 'pass'로 자동 통과) + 계약 제거.
+  // 거래(납품) 소비 — tradeCleared만 세팅(전투 승리 combatCleared와 독립). 둘 다 소비돼야
+  //   노드가 '정리됨'(isNodeSettled)이 되어 자동 통과한다. 계약은 완료했으니 제거.
   if (!r.nodeStates[nodeId]) r.nodeStates[nodeId] = { visited: true };
   r.nodeStates[nodeId].visited = true;
-  r.nodeStates[nodeId].combatCleared = true;
+  r.nodeStates[nodeId].tradeCleared = true;
   delete r.tradeContracts![nodeId];
 
   return { consumed, lifeXp, colorGain, color, tier };

@@ -7,7 +7,7 @@
  *  - 시간 임계 도달 시 *덱 확장* 또는 *보스 게이트 활성*
  */
 
-import type { NodeId, NodeKind, NodeMap, Node, Region, RunState } from '@/data/schemas';
+import type { NodeId, NodeKind, NodeMap, Node, NodeStateRecord, Region, RunState } from '@/data/schemas';
 
 /**
  * 노드의 *유효 kind* — RunState의 nodeKindOverrides 우선, 없으면 원본.
@@ -33,6 +33,33 @@ export function effectiveContent(
     bossId: base.bossId,
     npcIdPool: base.npcIdPool,
   };
+}
+
+/**
+ * 노드가 *정리됨*(회색·자동통과)인가 — 종류별 소비 판정. (노드 재활성 모델, 2026-06-21)
+ *
+ * 이 헬퍼는 *게이트형*(전투/엘리트/보스) 노드 전용이다 — 그 노드를 자동 통과('pass')시켜도 되는지,
+ * 맵에서 회색으로 칠해도 되는지를 결정한다. event/gather/rest/activity 등은 호출하지 않는다
+ * (그쪽은 eventTriggered/gatherDone 등 자체 플래그로 기존대로 판정).
+ *
+ *  - boss/arc 보스 : combatCleared만으로 정리됨(보스 노드엔 거래가 없다).
+ *  - 전투/엘리트   : combatCleared && tradeCleared *둘 다*라야 정리됨.
+ *      한쪽만 소비(부분)면 정리 아님 → 게이트로 라우팅돼 남은 옵션만 보인다.
+ *  - 그 외 종류    : 이 헬퍼 비대상 — false(호출부가 기존 경로를 쓰게 둔다).
+ *
+ * state는 그 노드의 NodeStateRecord(없을 수 있음). undefined면 미소비(false).
+ */
+export function isNodeSettled(node: Node, state: NodeStateRecord | undefined, runState: RunState): boolean {
+  const kind = effectiveKind(node, runState);
+  switch (kind) {
+    case 'boss':
+      return !!state?.combatCleared;
+    case 'combat':
+    case 'elite':
+      return !!state?.combatCleared && !!state?.tradeCleared;
+    default:
+      return false;
+  }
 }
 
 /** 노드 맵에서 해당 ID의 region 정의를 찾음. */

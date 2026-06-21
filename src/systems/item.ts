@@ -253,6 +253,7 @@ function applyItemEffect(
         break;
       }
       st.combatCleared = false;
+      st.tradeCleared = false;   // 거래 소비도 해제(전투/거래 둘 다 다시 가능).
       st.combatStealthed = false;
       st.eventTriggered = undefined;
       st.eventCount = 0;
