@@ -487,15 +487,6 @@ function enemyColor(e: GridCombatant): string {
   return SPECIES_COLOR[String(species ?? '')] ?? '#ff7a7a';
 }
 
-// === 활성 유물 표시 — 로드아웃(전투형) + 패시브/즉발(상시). 간단 칩. ===
-const activeRelics = computed(() => {
-  const loadout = gc.value?.loadout ?? [];
-  const loadoutIds = new Set(loadout.map((r) => r.id));
-  // 비-전투형(패시브·즉발)도 전투에 영향 → 함께 보여 준다. 중복 제외.
-  const passives = (run.data.relics ?? []).filter((r) => !loadoutIds.has(r.id));
-  return { loadout, passives };
-});
-
 // ============================================================================
 // 헬퍼
 // ============================================================================
@@ -1331,24 +1322,7 @@ onUnmounted(() => {
         </button>
       </div>
 
-      <!-- 활성 유물 칩 — 로드아웃(전투형, 금빛) + 패시브/즉발(상시, 회색). -->
-      <div
-        v-if="activeRelics.loadout.length > 0 || activeRelics.passives.length > 0"
-        class="relic-strip"
-      >
-        <span
-          v-for="r in activeRelics.loadout"
-          :key="`lo-${r.id}`"
-          class="relic-chip relic-chip--loadout"
-          :title="r.name"
-        >{{ r.name }}</span>
-        <span
-          v-for="r in activeRelics.passives"
-          :key="`pa-${r.id}`"
-          class="relic-chip relic-chip--passive"
-          :title="r.name"
-        >{{ r.name }}</span>
-      </div>
+      <!-- (유물 칩 스트립 제거 — 격자에 공간 양보. 유물은 소지품 메뉴에서 확인.) -->
 
       <!-- 보스 배너(#4) — 이름·페이즈·큰 HP바. 일반 전투에선 미표시. -->
       <div v-if="isBoss && bossUnit" class="boss-banner">
@@ -1604,53 +1578,55 @@ onUnmounted(() => {
         </aside>
       </section>
 
-      <!-- 계획 큐 (스피드 모델: 마나 한도까지 자유 배치, 실행 시 순서대로 해소). 세로 나열(US-004). -->
-      <div class="plan">
-        <ul class="plan__slots">
-          <li
-            v-for="(a, i) in plan"
-            :key="`slot-${i}`"
-            class="plan__slot plan__slot--filled"
-          >
-            <span class="plan__num">{{ i + 1 }}</span>
-            <span class="plan__txt">{{ planLabel(a) }}</span>
-            <button class="plan__x" :disabled="committing" @click="removePlanLine(i)" aria-label="이 줄 취소">×</button>
-          </li>
-          <li v-if="plan.length === 0" class="plan__slot plan__slot--empty">행동을 배치하거나 [턴 종료]</li>
-        </ul>
-        <button class="plan__clear" :disabled="plan.length === 0 || committing" @click="clearPlan">비우기</button>
-      </div>
-
-      <!-- 행동 바 -->
-      <div class="action-bar">
-        <button
-          class="act"
-          :class="{ 'act--on': mode === 'move' }"
-          :disabled="committing || planFull || moveQueued"
-          :title="moveQueued ? '이동은 한 턴에 한 번' : ''"
-          @click="selectMoveMode"
-        >이동</button>
-        <button
-          class="act act--item"
-          :class="{ 'act--on': itemPanelOpen }"
-          :disabled="committing || planFull || potionLocked || potions.length === 0"
-          :title="potions.length === 0 ? '쓸 아이템 없음' : '아이템 · 라운드당 1회'"
-          @click="toggleItemPanel"
-        >아이템<span v-if="potions.length > 0" class="act__count">{{ potions.length }}</span></button>
-        <button
-          v-if="swapTargets.length > 0"
-          class="act act--swap"
-          :class="{ 'act--on': swapPanelOpen }"
-          :disabled="committing || planFull || !canSwap"
-          title="동료 교대 · 라운드당 1회 (다음 턴 동료 조종)"
-          @click="toggleSwapPanel"
-        >교대<span class="act__count">{{ swapTargets.length }}</span></button>
-        <button
-          class="act act--commit"
-          :disabled="committing"
-          :title="plan.length === 0 ? '행동 없이 턴을 넘긴다(대기 — 손패 보충)' : ''"
-          @click="commit"
-        >{{ plan.length === 0 ? '턴 종료 →' : '실행 →' }}</button>
+      <!-- 행동 존(요청) — 한 줄: [배치된 카드 리스트 — 왼쪽 절반] [이동][아이템][교대] [턴종료=정사각형 오른쪽 끝]. -->
+      <div class="action-zone">
+        <!-- 배치된 카드/행동 리스트 — 가로 나열, 왼쪽 절반. -->
+        <div class="plan plan--inline">
+          <ul class="plan__slots plan__slots--inline">
+            <li
+              v-for="(a, i) in plan"
+              :key="`slot-${i}`"
+              class="plan__slot plan__slot--filled"
+            >
+              <span class="plan__num">{{ i + 1 }}</span>
+              <span class="plan__txt">{{ planLabel(a) }}</span>
+              <button class="plan__x" :disabled="committing" @click="removePlanLine(i)" aria-label="이 줄 취소">×</button>
+            </li>
+            <li v-if="plan.length === 0" class="plan__slot plan__slot--empty">행동 배치</li>
+          </ul>
+          <button v-if="plan.length > 0" class="plan__clear" :disabled="committing" @click="clearPlan">비우기</button>
+        </div>
+        <!-- 이동/아이템/교대 = 작은 직사각형, 턴종료 = 정사각형(오른쪽 끝). -->
+        <div class="action-bar action-bar--inline">
+          <button
+            class="act"
+            :class="{ 'act--on': mode === 'move' }"
+            :disabled="committing || planFull || moveQueued"
+            :title="moveQueued ? '이동은 한 턴에 한 번' : ''"
+            @click="selectMoveMode"
+          >이동</button>
+          <button
+            class="act act--item"
+            :class="{ 'act--on': itemPanelOpen }"
+            :disabled="committing || planFull || potionLocked || potions.length === 0"
+            :title="potions.length === 0 ? '쓸 아이템 없음' : '아이템 · 라운드당 1회'"
+            @click="toggleItemPanel"
+          >아이템<span v-if="potions.length > 0" class="act__count">{{ potions.length }}</span></button>
+          <button
+            v-if="swapTargets.length > 0"
+            class="act act--swap"
+            :class="{ 'act--on': swapPanelOpen }"
+            :disabled="committing || planFull || !canSwap"
+            title="동료 교대 · 라운드당 1회 (다음 턴 동료 조종)"
+            @click="toggleSwapPanel"
+          >교대<span class="act__count">{{ swapTargets.length }}</span></button>
+          <button
+            class="act act--commit act--commit-sq"
+            :disabled="committing"
+            :title="plan.length === 0 ? '행동 없이 턴을 넘긴다(대기 — 손패 보충)' : ''"
+            @click="commit"
+          >{{ plan.length === 0 ? '종료' : '실행' }}</button>
+        </div>
       </div>
 
       <!-- 포션 선택 패널 (아이템 모드) -->
@@ -2357,6 +2333,18 @@ onUnmounted(() => {
 .act--item { position: relative; }
 .act--swap { position: relative; background: rgba(255,200,120,0.16); border-color: rgba(255,200,120,0.5); }
 .act--swap:hover:not(:disabled) { background: rgba(255,200,120,0.3); }
+/* === 행동 존(요청) — 계획 리스트(왼쪽 절반) + 작은 행동 버튼 + 턴종료 정사각형. === */
+.action-zone { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+.plan--inline { flex: 1 1 50%; min-width: 0; flex-direction: row; align-items: center; gap: 0.4rem; padding: 0.3rem 0.4rem; }
+.plan--inline .plan__slots--inline { flex-direction: row; overflow-x: auto; flex: 1; min-width: 0; }
+.plan--inline .plan__slot { flex: 0 0 auto; max-width: 12rem; }
+.plan--inline .plan__clear { flex: none; margin: 0; }
+.action-bar--inline { flex: 0 0 auto; gap: 0.4rem; align-items: center; }
+.action-bar--inline .act { flex: 0 0 auto; padding: 0.45rem 0.7rem; font-size: 0.82rem; }
+.action-bar--inline .act--commit-sq {
+  width: 3rem; height: 3rem; min-width: 3rem; padding: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 0.88rem;
+}
 .act__count {
   margin-left: 0.35rem; font-size: 0.7rem; font-weight: 700;
   background: rgba(142,255,184,0.22); color: #8effb8;
@@ -2434,12 +2422,17 @@ onUnmounted(() => {
 .card--disabled { opacity: 0.4; cursor: not-allowed; }
 .card__top { display: flex; align-items: center; gap: 0.4rem; }
 .card__cost { background: #c08eff; color: #0d0e14; min-width: 1.2rem; text-align: center; border-radius: 50%; font-weight: 700; font-size: 0.78rem; padding: 0.05rem; }
-.card__name { color: #f6e8b8; font-weight: 600; font-size: 0.85rem; line-height: 1.15; }
+/* 한 줄 말줄임표(item 3) — 긴 이름이 줄바꿈돼 카드가 세로로 늘어나던 문제 방지. */
+.card__name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #f6e8b8; font-weight: 600; font-size: 0.85rem; line-height: 1.15; }
 .card__enh { color: #8effb8; font-size: 0.72rem; margin-left: 0.2rem; }
 .card__eff { color: #a8a8b8; font-size: 0.74rem; line-height: 1.2; }
 .card__queued-tag { position: absolute; top: 0.2rem; right: 0.35rem; font-size: 0.62rem; color: #c08eff; }
 /* 손패 간략 모드(item 3) — 효과 텍스트 숨김 + 카드 폭 축소로 이름 위주 컴팩트. 효과는 hover/길게누르기/[효과 보기]. */
-.hand--compact .card { width: 94px; min-height: 0; }
+.hand--compact .card { width: 90px; min-height: 0; padding: 0.4rem 0.45rem; }
+.hand--compact .card__top { gap: 0.25rem; }
+.hand--compact .card__name { font-size: 0.76rem; }
+.hand--compact .card__cost { font-size: 0.7rem; min-width: 1rem; }
+.hand--compact .card__speed { font-size: 0.55rem; padding: 0.04rem 0.28rem; }
 .piles { display: flex; align-items: center; gap: 1rem; padding: 0.2rem 0.3rem; color: #888; font-size: 0.78rem; }
 .hand-toggle {
   margin-left: auto; padding: 0.15rem 0.6rem; border-radius: 5px; cursor: pointer; font: inherit; font-size: 0.74rem;

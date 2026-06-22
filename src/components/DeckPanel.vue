@@ -18,6 +18,7 @@ import { bonusesFromEffective } from '@/systems/equipment';
 import { cardEffectKindLabel, cardEffectDescription, effectTargetLabel } from '@/systems/labels';
 import { isNoRemoval } from '@/systems/chaos';
 import { cardShapePreview } from '@/systems/grid-combat';
+import { scaledValue, enhanceBadge } from '@/systems/enhance';
 import type { Card, CardEffect } from '@/data/schemas';
 
 const props = defineProps<{ open: boolean }>();
@@ -163,10 +164,13 @@ function removeCard(card: Card) {
   ui.toast('info', `'${card.name}' 카드를 버렸다. 시간의 조각 +${shards}`);
 }
 
-/** 카드 effect의 *현재 컬러 보너스 반영된* 표시값. B1 fix: effective(베이스+장비) 사용. */
+/**
+ * 카드 effect의 표시값 — *강화(enhanceLevel/각성) 스케일* + 컬러 보너스 반영.
+ * 전투 화면은 scaledValue로 강화를 반영하는데 덱 편집은 base만 보여 주던 버그 수정(강화가 안 보임).
+ */
 const currentBonuses = computed(() => bonusesFromEffective(run.data, data.equipments));
-function effectiveValue(eff: CardEffect): number {
-  return (eff.value ?? 0) + colorBonusForCardEffectKind(eff.kind, currentBonuses.value);
+function effectiveValue(eff: CardEffect, card: Card): number {
+  return scaledValue(eff.value ?? 0, card) + colorBonusForCardEffectKind(eff.kind, currentBonuses.value);
 }
 </script>
 
@@ -197,7 +201,7 @@ function effectiveValue(eff: CardEffect): number {
             <div class="card__row">
               <span class="card__check">{{ activeIds.has(keyOf(c)) ? '◉' : '○' }}</span>
               <span class="card__cost">{{ c.cost }}</span>
-              <span class="card__name">{{ c.name }}</span>
+              <span class="card__name">{{ c.name }}<span v-if="enhanceBadge(c)" class="card__enh">{{ enhanceBadge(c) }}</span></span>
               <span class="card__rank" :style="{ color: rankColors[c.rank] }">{{ c.rank }}</span>
               <button
                 v-if="!editLocked"
@@ -209,7 +213,7 @@ function effectiveValue(eff: CardEffect): number {
             </div>
             <div class="card__effects">
               <span v-for="(e, ei) in c.effects" :key="ei" class="effect" v-tooltip="cardEffectDescription(e)">
-                {{ cardEffectKindLabel(e) }} {{ effectiveValue(e) || (e.value ?? '') }} {{ effectTargetLabel(e.target) }}
+                {{ cardEffectKindLabel(e) }} {{ effectiveValue(e, c) || (e.value ?? '') }} {{ effectTargetLabel(e.target) }}
               </span>
             </div>
             <!-- 격자 범위 미리보기(US-005) — 파랑=내 위치, 빨강=피격 칸. aimed면 사거리 표기. -->
@@ -295,6 +299,7 @@ function effectiveValue(eff: CardEffect): number {
 .card__check { color: #c08eff; width: 12px; font-weight: 700; }
 .card__cost { background: #c08eff; color: #0d0e14; padding: 0.05rem 0.4rem; border-radius: 50%; font-weight: 700; font-size: 0.75rem; }
 .card__name { flex: 1; color: #f6e8b8; font-weight: 600; font-size: 0.9rem; }
+.card__enh { margin-left: 0.3rem; color: #8effb8; font-size: 0.74rem; font-weight: 700; }
 .card__rank { font-size: 0.65rem; text-transform: uppercase; }
 .card__del {
   background: rgba(255, 142, 142, 0.12);

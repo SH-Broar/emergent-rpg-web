@@ -273,8 +273,8 @@ export function performRepeat(nodeId: string, act: LifeActivityDef, upperBonus =
     }
   }
 
-  // element 컬러 부여 + 생활 XP.
-  const colorGain = 2 + Math.floor(lifeLevel / 2) + (upper ? 1 : 0);
+  // element 컬러 부여 — +2(상품이면 +3). 생활레벨 스케일 제거(컬러가 너무 빨리 차던 문제, +2~3 고정).
+  const colorGain = 2 + (upper ? 1 : 0);
   applyColorBoost(elementColorKey(act.element), colorGain);
   const xpGain = 1 + (upper ? 1 : 0);
   run.addLifeXp(xpGain);

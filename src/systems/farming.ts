@@ -385,8 +385,8 @@ export function harvest(nodeId: string, upperBonus = 0): HarvestResult | null {
     }
   }
 
-  // 작물 element 컬러 부여 — 후반(고레벨)일수록 약간 큼. 상위 산출이면 +1.
-  const colorGain = 2 + Math.floor(lifeLevel / 2) + (upper ? 1 : 0);
+  // 작물 element 컬러 부여 — +2(상품이면 +3). 생활레벨 스케일 제거(컬러가 너무 빨리 차던 문제, +2~3로 고정).
+  const colorGain = 2 + (upper ? 1 : 0);
   applyColorBoost(elementColorKey(crop.element), colorGain);
 
   // 생활 XP 적립 — 상위면 +1.
