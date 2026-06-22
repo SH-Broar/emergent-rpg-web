@@ -19,8 +19,8 @@ element = light
 cost = 1
 trigger = manual
 effects = damage:9:enemy, block:4:self
-shape = 0,0|-1,-1|0,-1|1,-1
-per_tile_mul = 1.0,1.0,1.0,1.0
+# 격자: 사방 1칸(자기+상하좌우) — 균형형 기본 공격, 어느 방향이든 친다.
+shape = 0,0|0,-1|0,1|-1,0|1,0
 target_mode = pattern
 cast_speed = normal
 upgrade_to = c-human-balance-plus
@@ -33,9 +33,9 @@ source = race
 element = light
 cost = 1
 trigger = manual
+# 격자: 사방 1칸(자기+상하좌우) — 강화 균형 공격, 어느 방향이든 친다.
 effects = damage:11:enemy, block:7:self
-shape = 0,0|-1,-1|0,-1|1,-1
-per_tile_mul = 1.0,1.0,1.0,1.0
+shape = 0,0|0,-1|0,1|-1,0|1,0
 target_mode = pattern
 cast_speed = fast
 flavor = "마음에 흔들림이 있다면 더욱 수련에 정진해야 한다"
@@ -4558,9 +4558,10 @@ element = wind
 cost = 1
 trigger = manual
 effects = damage:7:enemy
-shape = 0,-2
-per_tile_mul = 1.0
-target_mode = throw
+# 격자: 자유 조준 원거리(사거리 3) — 원하는 칸을 골라 던진다. 아래쪽 적도 맞힐 수 있다.
+shape = 0,0
+target_mode = aimed
+aim_range = 3
 cast_speed = normal
 
 [card.c-human-step]

@@ -1642,6 +1642,15 @@ function enumerateStepActions(ctx: AiContext, fromPos: GridPos): PlannedAction[]
     }
   }
 
+  // 1.5) 인접 근접 폴백(item 6) — gridBehavior 공격이 플레이어를 못 덮어도, *붙어 있으면* 기본 근접 타격
+  //   (attackIdx -1, 플레이어 칸)으로 친다. 고정 방향 패턴이라 반대편에 붙은 적이 영영 공격 못 하고
+  //   이동만 반복하던 문제 방지. 이미 덮는 공격이 있으면 추가하지 않는다(중복 회피).
+  const adjacent = manhattan(fromPos, ctx.playerPos) <= 1;
+  const hasCoveringAttack = out.some((a) => a.kind === 'attack');
+  if (adjacent && !hasCoveringAttack) {
+    out.push({ kind: 'attack', attackIdx: -1, targetTiles: [{ ...ctx.playerPos }] });
+  }
+
   // 2) 이동 후보 — fromPos 기준 reachable 중 플레이어에 가까운 순 상위 K(자신 위치 임시 변경 후 원복).
   const realPos = ctx.enemy.pos;
   ctx.enemy.pos = fromPos;
@@ -1672,6 +1681,10 @@ function applyCandidate(ctx: AiContext, node: AiSimNode, cand: PlannedAction): A
 
 /** 이 스텝 공격이 플레이어에게 줄 것으로 추정한 피해(블록 무시 — 우선순위용 근사). */
 function estimateAttackDamage(ctx: AiContext, fromPos: GridPos, attackIdx: number): number {
+  // 인접 근접 폴백(attackIdx<0, item 6) — 플레이어가 붙어 있으면 기본 공격치로 평가(AI가 공격을 택하게).
+  if (attackIdx < 0) {
+    return manhattan(fromPos, ctx.playerPos) <= 1 ? ctx.baseAtk : 0;
+  }
   const atk = ctx.enemy.attacks?.[attackIdx];
   if (!atk) return 0;
   const base = (atk.damage ?? ctx.enemy.attack ?? 0) + (ctx.enemy.statuses.strength ?? 0);

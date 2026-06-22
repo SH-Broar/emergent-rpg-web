@@ -162,6 +162,15 @@ const potionLocked = computed<boolean>(() => {
 const stage = computed(() => gc.value?.stage);
 /** 계획 큐 안전 상한(마나 외) — grid-combat MAX_PLAN과 일치. 카드는 마나로 별도 제한. */
 const PLAN_CAP = 12;
+/** 전투 로그 패널 열림 여부(item 4) — 기본 접힘. 상단 [기록] 버튼으로 토글(레이아웃 안 밀리게 오버레이). */
+const logOpen = ref(false);
+
+/**
+ * 손패 간략 모드(item 3) — 기본 ON: 카드에 비용·이름·속도만(효과 텍스트 숨김)으로 컴팩트.
+ * 효과/범위는 카드를 hover하거나 길게 눌러 상세 패널로 본다. [자세히] 토글로 인라인 효과도 켤 수 있다.
+ */
+const handCompact = ref(true);
+
 const plan = computed<PlannedAction[]>(() => gc.value?.playerPlan ?? []);
 const planFull = computed(() => plan.value.length >= PLAN_CAP);
 
@@ -1237,15 +1246,30 @@ onUnmounted(() => {
       <!-- 상단 바: 턴 / 마나 / 로그 -->
       <header class="topbar">
         <div class="topbar__turn">⚔ 턴 {{ gc.turn }}</div>
-        <div class="topbar__mana">마나 {{ remainingMana }} / {{ gc.maxMana }}<span v-if="queuedManaCost > 0" class="topbar__mana-q"> (계획 -{{ queuedManaCost }})</span></div>
+        <!-- 마나: 파란 별 pips(item 5). 밝은 별=보유, 흐린 별=계획 소비/사용. -->
+        <div class="topbar__mana" :title="`마나 ${remainingMana} / ${gc.maxMana}`">
+          <span
+            v-for="i in gc.maxMana"
+            :key="i"
+            class="mana-pip"
+            :class="{ 'mana-pip--on': i <= remainingMana }"
+          >✦</span>
+        </div>
         <div class="topbar__hp">HP {{ tokenHp(gc.player) }} / {{ gc.player.maxHp }}
           <span v-if="tokenBlock(gc.player) > 0" class="topbar__block">🛡 {{ tokenBlock(gc.player) }}</span>
         </div>
+        <!-- 전투 기록 토글(item 4) — 기본 접힘. 누르면 최근 기록 오버레이. -->
+        <button
+          class="topbar__logbtn"
+          :class="{ 'topbar__logbtn--on': logOpen }"
+          @click="logOpen = !logOpen"
+        >기록</button>
         <div v-if="committing" class="topbar__resolving">해소 중…</div>
+        <!-- 로그 패널 — 열었을 때만(레이아웃을 밀지 않게 오버레이). 최근 12줄. -->
+        <div v-if="logOpen && (gc.log?.length ?? 0) > 0" class="combat-log combat-log--panel">
+          <div v-for="(line, i) in gc.log!.slice(-12)" :key="i" class="combat-log__line">{{ line }}</div>
+        </div>
       </header>
-      <div v-if="(gc.log?.length ?? 0) > 0" class="combat-log">
-        {{ gc.log![gc.log!.length - 1] }}
-      </div>
 
       <!-- 활성 유물 칩 — 로드아웃(전투형, 금빛) + 패시브/즉발(상시, 회색). -->
       <div
@@ -1643,6 +1667,7 @@ onUnmounted(() => {
         </div>
         <div
           class="hand"
+          :class="{ 'hand--compact': handCompact }"
           @pointermove="onHandPointerMove"
           @pointerup="endCardPress"
           @pointercancel="endCardPress"
@@ -1672,13 +1697,14 @@ onUnmounted(() => {
               <span class="card__name">{{ c.name }}<span v-if="enhanceBadge(c)" class="card__enh">{{ enhanceBadge(c) }}</span></span>
               <span class="card__speed" :class="`card__speed--${castSpeedKey(c)}`">{{ castSpeedLabel(c) }}</span>
             </div>
-            <div class="card__eff">{{ cardEffectSummary(c) }}</div>
+            <div v-if="!handCompact" class="card__eff">{{ cardEffectSummary(c) }}</div>
             <div v-if="c.instanceId && queuedCardIds.has(c.instanceId)" class="card__queued-tag">계획됨</div>
           </button>
         </div>
         <div class="piles">
           <span>드로우 {{ gc.drawPile.length }}</span>
           <span>버림 {{ gc.discardPile.length }}</span>
+          <button class="hand-toggle" @click="handCompact = !handCompact">{{ handCompact ? '효과 보기' : '간략히' }}</button>
         </div>
       </div>
     </main>
@@ -1716,20 +1742,36 @@ onUnmounted(() => {
 
 /* === 상단 바 === */
 .topbar {
+  position: relative;
   display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
   padding: 0.5rem 0.9rem; background: rgba(0,0,0,0.4); border-radius: 8px;
   color: #b6b6c4; flex-shrink: 0;
 }
 .topbar__turn { color: #f6e8b8; font-weight: 600; }
-.topbar__mana { color: #c08eff; font-weight: 600; }
+/* 마나 별 pips(item 5) — 파란 사각 별. 밝음=보유, 흐림=계획 소비/사용. */
+.topbar__mana { display: inline-flex; align-items: center; gap: 0.15rem; }
+.mana-pip { color: rgba(106,166,255,0.22); font-size: 1.15rem; line-height: 1; transition: color 140ms ease; }
+.mana-pip--on { color: #6aa6ff; text-shadow: 0 0 5px rgba(106,166,255,0.7); }
 .topbar__hp { color: #8effb8; }
 .topbar__block { color: #8eedff; margin-left: 0.3rem; }
-.topbar__resolving { margin-left: auto; color: #ffb88e; font-size: 0.82rem; animation: pulse 900ms ease-in-out infinite; }
+/* 기록 토글(item 4). */
+.topbar__logbtn {
+  margin-left: auto; padding: 0.2rem 0.6rem; border-radius: 6px; cursor: pointer; font: inherit; font-size: 0.78rem;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.18); color: #b6b6c4;
+}
+.topbar__logbtn--on { background: rgba(246,232,184,0.18); border-color: rgba(246,232,184,0.5); color: #f6e8b8; }
+.topbar__resolving { color: #ffb88e; font-size: 0.82rem; animation: pulse 900ms ease-in-out infinite; }
 @keyframes pulse { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
 
-.combat-log {
-  text-align: center; color: #e2dcc4; font-size: 0.82rem; min-height: 1.1rem; flex-shrink: 0;
+/* 전투 로그 패널(item 4) — 오버레이(레이아웃 안 밀림). 최근 기록 위→아래. */
+.combat-log--panel {
+  position: absolute; top: calc(100% + 0.3rem); right: 0; z-index: 30;
+  width: min(360px, 90vw); max-height: 40vh; overflow-y: auto;
+  padding: 0.6rem 0.8rem; border-radius: 8px;
+  background: rgba(14, 15, 22, 0.96); border: 1px solid rgba(255,255,255,0.16);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
+.combat-log__line { color: #d6d6c4; font-size: 0.82rem; line-height: 1.6; }
 
 /* === 보스 배너(#4) — 이름·페이즈·큰 HP바 === */
 .boss-banner {
@@ -2282,7 +2324,14 @@ onUnmounted(() => {
 .card__enh { color: #8effb8; font-size: 0.72rem; margin-left: 0.2rem; }
 .card__eff { color: #a8a8b8; font-size: 0.74rem; line-height: 1.2; }
 .card__queued-tag { position: absolute; top: 0.2rem; right: 0.35rem; font-size: 0.62rem; color: #c08eff; }
-.piles { display: flex; gap: 1rem; padding: 0.2rem 0.3rem; color: #888; font-size: 0.78rem; }
+/* 손패 간략 모드(item 3) — 효과 텍스트 숨김 + 카드 폭 축소로 이름 위주 컴팩트. 효과는 hover/길게누르기/[효과 보기]. */
+.hand--compact .card { width: 94px; min-height: 0; }
+.piles { display: flex; align-items: center; gap: 1rem; padding: 0.2rem 0.3rem; color: #888; font-size: 0.78rem; }
+.hand-toggle {
+  margin-left: auto; padding: 0.15rem 0.6rem; border-radius: 5px; cursor: pointer; font: inherit; font-size: 0.74rem;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.18); color: #b6b6c4;
+}
+.hand-toggle:hover { background: rgba(255,255,255,0.12); }
 
 /* === 결과 화면 === */
 .result {

@@ -107,10 +107,6 @@ const selectedNode = computed<Node | undefined>(() => {
   if (!nodeMap.value || !selectedNodeId.value) return undefined;
   return getNode(nodeMap.value, selectedNodeId.value);
 });
-const selectedState = computed(() => {
-  return selectedNodeId.value ? run.data.nodeStates[selectedNodeId.value] : undefined;
-});
-
 /**
  * 드로어용 권역 정보 — 선택 노드의 권역 이름(단어 "권역" 제거) + 설명.
  * 예: "일루네온 권역" → "일루네온". "권역"이 없는 이름은 그대로.
@@ -139,7 +135,7 @@ const nodeKindColors: Record<NodeKind, string> = {
 };
 const nodeKindLabels: Record<NodeKind, string> = {
   village: '마을',
-  combat: '전투',
+  combat: '조우',
   event: '사건',
   elite: '엘리트',
   boss: '보스',
@@ -184,13 +180,9 @@ type EnterAction =
   | 'activity-possessed'
   | 'unreachable';
 
-function getEnterAction(): EnterAction {
-  const node = selectedNode.value;
-  const st = selectedState.value;
-  if (!node) return 'enter';
-  if (node.id === run.data.currentNodeId) return 'pass-only';
-  if (!reachable.value.has(node.id)) return 'unreachable';
-
+/** 노드 종류별 입장 액션(상태 반영) — getEnterAction과 현재 노드 재진입 판정이 공유. */
+function nodeActionByKind(node: Node): EnterAction {
+  const st = run.data.nodeStates[node.id];
   switch (systemEffectiveKind(node, run.data)) {
     case 'combat':
     case 'elite':
@@ -202,9 +194,6 @@ function getEnterAction(): EnterAction {
       if (st?.eventTriggered) return 'event-pass';
       return 'enter';
     case 'boss':
-      // arc 보스 노드는 승리 시 combatCleared로 마킹된다(런 지속) → 재방문 시 통과.
-      // 연표 종말 보스(boss_gate)는 승리=런 종료라 cleared가 남지 않으므로 항상 'boss'.
-      // 보스엔 거래가 없어 isNodeSettled는 combatCleared만 본다(기존 동작 동일).
       if (isNodeSettled(node, st, run.data)) return 'pass';
       return 'boss';
     case 'rest':
@@ -213,13 +202,12 @@ function getEnterAction(): EnterAction {
     case 'shop':
       return 'shop-enter';
     case 'gather':
-      // 채집도 *노드당 1회*. 하루 경과 시 노드 리프레시로 재개방.
-      if (isGatherDone(selectedNodeId.value!)) return 'gather-done';
+      if (isGatherDone(node.id)) return 'gather-done';
       return 'gather-enter';
     case 'activity':
       // 빙의(possession) 중에는 활동에 들어갈 수 없다.
       if ((run.data.possessed ?? 0) > 0) return 'activity-possessed';
-      if (isActivityDone(selectedNodeId.value!)) return 'activity-done';
+      if (isActivityDone(node.id)) return 'activity-done';
       return 'activity-enter';
     case 'village':
     case 'workshop':
@@ -228,13 +216,34 @@ function getEnterAction(): EnterAction {
   }
 }
 
+function getEnterAction(): EnterAction {
+  const node = selectedNode.value;
+  if (!node) return 'enter';
+  if (node.id === run.data.currentNodeId) return 'pass-only';
+  if (!reachable.value.has(node.id)) return 'unreachable';
+  return nodeActionByKind(node);
+}
+
+/** 현재 노드 재진입 가능 액션 — 소비/완료(pass/done/possessed)는 제외(item 8). */
+const REENTERABLE_ACTIONS = new Set<EnterAction>([
+  'enter', 'gather-enter', 'activity-enter', 'shop-enter', 'rest-repeat', 'choose-combat', 'boss',
+]);
+/** 지금 서 있는 노드를 1턴 써서 다시 들어갈 수 있는가 — 아직 소비되지 않은 노드만(item 8). */
+function canReenterCurrent(): boolean {
+  const node = selectedNode.value;
+  if (!node || node.id !== run.data.currentNodeId) return false;
+  return REENTERABLE_ACTIONS.has(nodeActionByKind(node));
+}
+
 // 방울 표식(엘리트 격상)은 인정 게이트 도입(납품 v1)으로 GateView.maybeApplyBellMark로 이관.
 //   전투/엘리트 노드는 enterSelected에서 /game/gate로 보내고, [전투] 선택 시 게이트가 bell mark를 적용한다.
 
 function enterSelected() {
   const node = selectedNode.value;
   if (!node || !timeline.value) return;
-  const action = getEnterAction();
+  // 현재 서 있는 노드면 *재진입*(item 8) — 1턴을 써서 다시 들어간다(미소비 노드만).
+  const isCurrent = node.id === run.data.currentNodeId;
+  const action = isCurrent ? nodeActionByKind(node) : getEnterAction();
 
   if (action === 'unreachable') {
     ui.toast('warning', '인접한 노드가 아닙니다 — 한 칸씩만 이동할 수 있습니다.');
@@ -242,6 +251,11 @@ function enterSelected() {
   }
   if (action === 'activity-possessed') {
     ui.toast('warning', '혼란 상태에선 활동에 들어갈 수 없다 — 마을이나 전투에서 정화하거나 하루가 지나야 한다.');
+    return;
+  }
+  // 현재 노드 재진입 — 이미 소비/완료된 노드면 막는다.
+  if (isCurrent && !REENTERABLE_ACTIONS.has(action)) {
+    ui.toast('info', '다시 들어갈 만한 곳이 아니다.');
     return;
   }
 
@@ -459,7 +473,17 @@ const nodeVisuals = computed<Map<NodeId, { kind: NodeKind; color: string; kindLa
   if (!map) return m;
   for (const n of map.nodes) {
     const kind = systemEffectiveKind(n, run.data);
-    m.set(n.id, { kind, color: nodeKindColors[kind], kindLabel: nodeKindLabels[kind] });
+    let color = nodeKindColors[kind];
+    // 조우(전투)/엘리트 — 전투/거래 *부분 소비* 상태를 색으로 구분(item 2).
+    //   둘 다 안 함=기본색 / 전투만 끝(거래 남음)=초록 / 거래만 끝(전투 남음)=파랑 / 둘 다=cleared 클래스가 회색.
+    if (kind === 'combat' || kind === 'elite') {
+      const st = run.data.nodeStates[n.id];
+      const cDone = !!st?.combatCleared;
+      const tDone = !!st?.tradeCleared;
+      if (cDone && !tDone) color = '#8effb8';        // 전투 끝, 거래 남음
+      else if (tDone && !cDone) color = '#8ecbff';   // 거래 끝, 전투 남음
+    }
+    m.set(n.id, { kind, color, kindLabel: nodeKindLabels[kind] });
   }
   return m;
 });
@@ -1088,6 +1112,14 @@ function enterLabel(): string {
         >
           {{ enterLabel() }}
         </button>
+        <!-- 현재 노드 재진입(item 8) — 미소비 노드를 1턴 써서 다시 들어간다. -->
+        <button
+          v-if="selectedNode.id === run.data.currentNodeId && canReenterCurrent()"
+          class="drawer__enter drawer__enter--reenter"
+          @click="enterSelected"
+        >
+          다시 들어간다 (1턴)
+        </button>
         <button
           v-if="getEnterAction() === 'choose-combat'"
           class="drawer__pass"
@@ -1463,6 +1495,11 @@ function enterLabel(): string {
 .drawer__desc { color: #b6b6c4; line-height: 1.6; margin: 0; }
 
 .drawer__actions { display: flex; flex-direction: column; gap: 0.5rem; margin-top: auto; }
+.drawer__enter.drawer__enter--reenter {
+  background: rgba(168, 232, 142, 0.16);
+  border-color: rgba(168, 232, 142, 0.5);
+  color: #a8e88e;
+}
 .drawer__enter {
   padding: 0.7rem 1rem;
   background: rgba(192, 142, 255, 0.2);

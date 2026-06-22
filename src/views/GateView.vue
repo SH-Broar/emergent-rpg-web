@@ -182,7 +182,7 @@ function chooseTrade() {
   const name = reqItemName.value;
   ui.toast(
     'info',
-    `거래를 맡았다 — ${name} ${requirement.value.count}개${eulReul(name)} 모아 오면 된다 (마을이나 이 자리에서).`,
+    `거래 수주 — ${name} ${requirement.value.count}개${eulReul(name)} 모아 오면 된다 (마을이나 이 자리에서).`,
   );
   router.push('/game/map');
 }
@@ -197,7 +197,7 @@ function choosePass() {
 <template>
   <main v-if="node" class="gate-view">
     <header class="gate-hdr">
-      <span class="gate-kind">[{{ isElite ? '엘리트' : '전투' }}]</span>
+      <span class="gate-kind">[{{ isElite ? '엘리트' : '조우' }}]</span>
       <h1>{{ nodeLabel }}</h1>
     </header>
 
@@ -232,7 +232,7 @@ function choosePass() {
             type="button"
             class="gate-opt__btn"
             @click="chooseTrade"
-          >{{ fulfillable ? '거래한다 (지금 건넨다)' : '거래한다 (맡아 둔다)' }}</button>
+          >{{ fulfillable ? '거래한다 (지금 건넨다)' : '거래한다' }}</button>
           <!-- 수주됨: 보유 충분할 때만 완료. -->
           <button
             v-else

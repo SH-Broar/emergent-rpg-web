@@ -27,3 +27,104 @@ source = boss
 trigger = passive
 effects = activity-success-add:10, activity-reward-mul:0.4
 flavor = 같은 일을 다시 겪는 사람은 두 번째에 더 능숙해진다. 성공도 수확도 함께 커진다.
+
+# ── 생활(조달) 테마 유물 ─────────────────────────────────────────────────────
+# 전투 외 생활 루프(농사/낚시/채광/요리/교역/장인/채집)를 강화. 효과는 모두
+# RELIC_EFFECT_KINDS에 존재하는 유효 kind만 사용. trigger는 kind 의미에 맞춤
+# (활동 보정=passive, 일회 자원/색=on-acquire, 노드 회복=on-node-enter 등).
+
+[relic.r-farm-furrow-rhythm]
+name = 고랑의 가락
+rank = common
+source = event
+trigger = passive
+effects = activity-success-add:12
+flavor = 이랑을 따라 발을 옮기다 보면 일의 결이 손에 익는다.
+
+[relic.r-fish-tide-almanac]
+name = 물때 책력
+rank = common
+source = shop
+trigger = passive
+effects = activity-reward-mul:0.3
+flavor = 물이 드나드는 시각을 적어 둔 낡은 책이다. 때를 아는 손은 빈 그물로 돌아오지 않는다.
+
+[relic.r-mine-vein-sense]
+name = 광맥을 읽는 눈
+rank = common
+source = event
+trigger = passive
+effects = activity-success-add:10
+flavor = 돌결의 흐름만 봐도 어디를 쪼아야 할지 안다.
+
+[relic.r-gather-deep-basket]
+name = 깊은 멜빵 바구니
+rank = rare
+source = shop
+trigger = passive
+effects = activity-reward-mul:0.45
+flavor = 등에 지면 허리까지 닿는 큰 바구니다. 한 번 나가면 두 번 나갈 일을 줄여 준다.
+
+[relic.r-cook-hearth-stew]
+name = 화덕의 물엿국
+rank = common
+source = event
+trigger = on-node-enter
+effects = node-enter-heal:3
+flavor = 어디에 자리를 잡든 먼저 불을 지피고 국을 안친다. 따뜻한 한 술이 다리를 다시 일으킨다.
+
+[relic.r-cook-traveler-lunch]
+name = 길양식 도시락
+rank = rare
+source = event
+trigger = on-combat-end
+effects = combat-end-heal:6
+flavor = 일이 끝나면 나무 그늘에 앉아 싸 온 끼니를 푼다. 잘 먹는 사람이 멀리 간다.
+
+[relic.r-craft-thrifty-bench]
+name = 알뜰한 작업대
+rank = common
+source = shop
+trigger = passive
+effects = discount:0.2
+flavor = 자투리 재료까지 아껴 쓰는 손때 묻은 작업대다. 같은 물건을 더 적은 밑천으로 짓는다.
+
+[relic.r-craft-master-jig]
+name = 장인의 본틀
+rank = rare
+source = elite
+trigger = passive
+effects = discount:0.35
+flavor = 치수가 한 치도 어긋나지 않는 본틀이다. 다시 깎고 버리는 낭비가 사라진다.
+
+[relic.r-trade-honest-scale]
+name = 정직한 저울
+rank = common
+source = event
+trigger = on-acquire
+effects = gain-time-shards:5
+flavor = 눈금을 속이지 않는 저울이다. 믿고 거래하는 단골이 늘면 하루가 길어진다.
+
+[relic.r-trade-caravan-ledger]
+name = 행상 장부
+rank = rare
+source = npc
+trigger = on-acquire
+effects = boost-color:6:earth, gain-time-shards:4
+flavor = 어느 마을이 무엇을 찾는지 빼곡히 적힌 장부다. 발품을 단단한 밑천으로 바꿔 준다.
+
+[relic.r-life-seasonal-hands]
+name = 철 따라 바뀌는 손
+rank = rare
+source = event
+trigger = on-node-enter
+effects = chance-random-color-1:40
+flavor = 봄에는 호미, 여름에는 그물, 가을에는 곡괭이를 든다. 철마다 손에 익는 재주가 다르다.
+
+[relic.r-life-village-renown]
+name = 마을의 신망
+rank = legendary
+source = boss
+trigger = passive
+effects = activity-success-add:8, activity-reward-mul:0.3, discount:0.15
+flavor = 오래 한자리에서 성실히 일한 사람에게 마을이 돌려주는 마음이다. 무슨 일을 하든 손이 가볍다.

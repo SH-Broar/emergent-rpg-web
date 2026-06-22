@@ -18,8 +18,8 @@ trigger = manual
 effects = damage:6:enemy
 upgrade_to = c-strike-plus
 flavor = 어디서든 통하는 가장 오래된 수.
-# 격자: 정면 찌르기(자기+전방 1칸). 빠른 기본 타격.
-shape = 0,0|0,-1
+# 격자: 사방 1칸(자기+상하좌우) — 어느 방향의 인접 적이든 친다(기본 신뢰 공격).
+shape = 0,0|0,-1|0,1|-1,0|1,0
 cast_speed = fast
 target_mode = pattern
 
@@ -223,8 +223,8 @@ cost = 1
 trigger = manual
 effects = damage:9:enemy
 flavor = 조금 개량된 검술.
-# 격자: 앞부채 3칸(강화로 정면 찌르기보다 넓어짐).
-shape = 0,0|-1,-1|0,-1|1,-1
+# 격자: 사방 1칸(자기+상하좌우) — 강화로 피해 상승. 어느 방향이든 친다.
+shape = 0,0|0,-1|0,1|-1,0|1,0
 target_mode = pattern
 cast_speed = fast
 

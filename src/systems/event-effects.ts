@@ -9,6 +9,7 @@
 
 import { registerEventEffect } from '@/systems/event-runner';
 import { grantPossession } from '@/systems/possession';
+import { rng } from '@/systems/rng';
 import type { ColorKey } from '@/systems/colors';
 
 // === 회복 / 자원 ===
@@ -158,4 +159,46 @@ registerEventEffect('grant-possession', (ctx) => {
 });
 registerEventEffect('grant-possession-guardian', (ctx) => {
   if (grantPossession('guardian')) ctx.lines.push('카드: 들린 마음 (떼어낼 수 없다)');
+});
+
+// === 도박형(hidden 선택지 전용) — 확률로 대박 또는 손실. ===
+// 골드 전부 걸기: 55% 두 배, 45% 전부 상실. (큰 리스크 큰 보상.)
+registerEventEffect('gamble-all-gold', (ctx) => {
+  const r = ctx.run;
+  const stake = r.gold;
+  if (stake <= 0) {
+    ctx.lines.push('걸 골드가 없다.');
+    return;
+  }
+  if (rng() < 0.55) {
+    r.gold = stake * 2;
+    ctx.lines.push(`골드 +${stake} (두 배! ${r.gold})`);
+  } else {
+    r.gold = 0;
+    ctx.lines.push(`골드 -${stake} (전부 잃었다)`);
+  }
+});
+
+// 모노의 내기 — 시간조각 전부 걸기: 50% 강한 카드 획득(조각 유지), 50% 조각 전부 상실.
+registerEventEffect('mono-wager-shards', (ctx) => {
+  const r = ctx.run;
+  const stake = r.timeShards;
+  if (stake <= 0) {
+    ctx.lines.push('걸 시간의 조각이 없다.');
+    return;
+  }
+  if (rng() < 0.5) {
+    const card = ctx.data.cards.get('c-transcend-strike');
+    if (card) {
+      void import('@/stores/run').then(({ useRunStore }) => {
+        useRunStore().addCardToCollection(card);
+      });
+      ctx.lines.push(`카드 획득: ${card.name} (맞혔다!)`);
+    } else {
+      ctx.lines.push('모노가 빈손을 보였다.');
+    }
+  } else {
+    r.timeShards = 0;
+    ctx.lines.push(`시간의 조각 -${stake} (모노가 가져갔다)`);
+  }
 });
