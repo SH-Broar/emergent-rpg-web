@@ -158,9 +158,12 @@ function completeTrade() {
     ui.toast('warning', '아직 건넬 만큼 모이지 않았다.');
     return;
   }
+  const extra = result.elite
+    ? ` 골드 +${result.gold}, 시간의 조각 +${result.shards}.`
+    : '';
   ui.toast(
     'success',
-    `거래를 마쳤다 — ${reqItemName.value} ${result.consumed.length}개. 생활 경험 +${result.lifeXp}, ${colorLabel(result.color)} +${result.colorGain}.`,
+    `거래를 마쳤다 — ${reqItemName.value} ${result.consumed.length}개. 생활 경험 +${result.lifeXp}, ${colorLabel(result.color)} +${result.colorGain}.${extra}`,
   );
   router.push('/game/map');
 }

@@ -647,3 +647,80 @@ category = material
 element = electric
 effects =
 consumable = false
+
+# --- 2차 가공품 (공방 가공, item 9) ---
+# 생활 산출물(티어1)을 공방에서 가공해 만드는 한 단계 위 재료. 8색 각 1종.
+# 엘리트 의뢰가 요구하는 품목(일반 의뢰는 티어1, 엘리트는 이 가공품 이상).
+# category=material, element=8색, rank=rare, effects 비움, consumable=false.
+
+[item.i-craft-earth]
+name = 곡식 가루
+description = 들곡을 곱게 빻아 모은 가루. 오래 두어도 쓰기 좋다.
+rank = rare
+category = material
+element = earth
+effects =
+consumable = false
+
+[item.i-craft-fire]
+name = 다진 숯
+description = 숯을 잘게 다져 단단히 굳힌 덩어리. 화력이 고르다.
+rank = rare
+category = material
+element = fire
+effects =
+consumable = false
+
+[item.i-craft-wind]
+name = 말린 고기
+description = 사냥감을 손질해 바람에 말린 것. 질기지만 든든하다.
+rank = rare
+category = material
+element = wind
+effects =
+consumable = false
+
+[item.i-craft-light]
+name = 별빛 농축
+description = 말린 것을 다시 졸여 빛 기운만 모은 응결물. 은은히 빛난다.
+rank = rare
+category = material
+element = light
+effects =
+consumable = false
+
+[item.i-craft-dark]
+name = 버섯 가루
+description = 버섯을 말려 곱게 간 가루. 그늘 냄새가 짙다.
+rank = rare
+category = material
+element = dark
+effects =
+consumable = false
+
+[item.i-craft-water]
+name = 절인 생선
+description = 물고기를 소금에 절여 갈무리한 것. 오래 간다.
+rank = rare
+category = material
+element = water
+effects =
+consumable = false
+
+[item.i-craft-iron]
+name = 제련 주괴
+description = 광석을 녹여 불순물을 거르고 굳힌 덩어리. 묵직하고 매끈하다.
+rank = rare
+category = material
+element = iron
+effects =
+consumable = false
+
+[item.i-craft-electric]
+name = 축전지
+description = 모은 전하를 단단한 그릇에 갈무리한 것. 손대면 또렷이 찌릿하다.
+rank = rare
+category = material
+element = electric
+effects =
+consumable = false

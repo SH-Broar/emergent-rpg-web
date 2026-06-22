@@ -13,6 +13,17 @@ export interface Toast {
   duration: number;
 }
 
+/**
+ * 컬러 상승 팝 — 컬러값이 *오를 때* 화면 상단 중앙에 잠깐 띄우는 시각 피드백(토스트와 별개).
+ * applyColorBoost(colors.ts)가 실제 상승분(delta>0)에 대해 호출한다. total = 상승 후 누적값(/100).
+ */
+export interface ColorPop {
+  id: number;
+  color: string;
+  delta: number;
+  total: number;
+}
+
 /** 디버그/특수효과 토글 (분기 "버그" 화면). */
 export interface DebugFlags {
   /** 모든 카드 항상 사용 가능 (마나 무한). */
@@ -55,6 +66,7 @@ function loadDebugFlags(): DebugFlags {
 }
 
 let toastSeq = 0;
+let colorPopSeq = 0;
 
 /** 런 시작 직전, 임시로 선택된 옵션. */
 export interface PendingRunSetup {
@@ -67,6 +79,7 @@ export interface PendingRunSetup {
 export const useUiStore = defineStore('ui', {
   state: () => ({
     toasts: [] as Toast[],
+    colorPops: [] as ColorPop[],
     modalOpen: false as boolean,
     modalContent: null as string | null,
     debug: loadDebugFlags(),
@@ -99,6 +112,18 @@ export const useUiStore = defineStore('ui', {
 
     dismissToast(id: number) {
       this.toasts = this.toasts.filter((t) => t.id !== id);
+    },
+
+    /**
+     * 컬러 상승 팝 — 상단 중앙에 잠깐 띄운다(약 1.6초 뒤 자동 제거). delta는 상승분, total은 누적값.
+     * 같은 컬러가 연달아 오르면 여러 개가 쌓였다가 순차 소멸한다(ColorPopOverlay가 렌더).
+     */
+    colorPop(color: string, delta: number, total: number) {
+      const id = ++colorPopSeq;
+      this.colorPops.push({ id, color, delta, total });
+      window.setTimeout(() => {
+        this.colorPops = this.colorPops.filter((p) => p.id !== id);
+      }, 1600);
     },
 
     openModal(content: string) {

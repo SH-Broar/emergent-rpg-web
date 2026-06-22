@@ -25,6 +25,8 @@ import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { applyColorBoost, type ColorKey } from '@/systems/colors';
 import { activityForNode, cropForActivity } from '@/systems/life-activity';
+import { craftItemIdForElement } from '@/systems/workshop';
+import { effectiveKind } from '@/systems/map';
 import type { Item, TradeContract } from '@/data/schemas';
 
 /** tier를 못 찾을 때 쓰는 기본 tier(요구 개수 산정·보상에 쓰임). */
@@ -49,6 +51,15 @@ function nodeRegionId(nodeId: string): string | undefined {
   const data = useDataStore();
   const map = data.nodeMaps.get(data.timelines.get(run.data.timelineId)?.nodeMapId ?? '');
   return map?.nodes.find((n) => n.id === nodeId)?.region;
+}
+
+/** 이 노드가 엘리트(런타임 격상 포함)인가 — 엘리트 의뢰는 2차 가공품을 요구한다(item 9). */
+function isEliteNode(nodeId: string): boolean {
+  const run = useRunStore();
+  const data = useDataStore();
+  const map = data.nodeMaps.get(data.timelines.get(run.data.timelineId)?.nodeMapId ?? '');
+  const node = map?.nodes.find((n) => n.id === nodeId);
+  return node ? effectiveKind(node, run.data) === 'elite' : false;
 }
 
 /** 노드의 대표 element — 권역 primaryColor, 없으면 그 노드 배정 활동의 element, 그래도 없으면 earth. */
@@ -82,12 +93,21 @@ export function tradeRequirement(nodeId: string): TradeRequirement {
   const tier = nodeRegionTier(nodeId) ?? DEFAULT_TIER;
   const region = nodeRegionId(nodeId);
   const act = activityForNode(nodeId, region);
-  // 산출물 — 지연형은 cropForActivity의 crop, 반복형은 활동 정의.
+  const element = nodeElement(nodeId, act.element as ColorKey);
+
+  // 엘리트 의뢰(item 9) — 그 활동 속성의 *2차 가공품*을 요구한다(공방 가공을 거쳐야 모인다).
+  //   가공품은 비싸므로 개수는 일반보다 적게(1 + ceil(tier/2)). 상위 대체 없음.
+  if (isEliteNode(nodeId)) {
+    const craftId = craftItemIdForElement(act.element);
+    const count = 1 + Math.ceil(Math.max(1, tier) / 2);
+    return { itemId: craftId, upperItemId: undefined, count, element, tier };
+  }
+
+  // 일반 의뢰 — 그 노드 권역 배정 활동의 티어1 산출물(하위, 상위는 대체).
   const crop = cropForActivity(act);
   const itemId = (crop ? crop.lowerItemId : act.lowerItemId) ?? 'i-crop-grain';
   const upperItemId = crop ? crop.upperItemId : act.upperItemId;
   const count = COUNT_PER_TIER_BASE + Math.max(1, tier);
-  const element = nodeElement(nodeId, act.element as ColorKey);
   return { itemId, upperItemId, count, element, tier };
 }
 
@@ -150,6 +170,11 @@ export interface TradeResult {
   colorGain: number;
   color: ColorKey;
   tier: number;
+  /** 엘리트 거래 추가 보상 — 골드/시간의 조각(일반 거래는 0). */
+  gold: number;
+  shards: number;
+  /** 엘리트(2차 가공품) 거래였는가 — UI 표기용. */
+  elite: boolean;
 }
 
 /**
@@ -205,13 +230,19 @@ export function fulfillContract(nodeId: string): TradeResult | null {
     }
   }
 
+  // 엘리트 거래(2차 가공품)는 투자가 큰 만큼 보상도 크다 — XP·컬러 2배 + 골드·조각.
+  const elite = req.itemId.startsWith('i-craft-');
   const tier = req.tier;
-  const lifeXp = 1 + tier;
-  const colorGain = tier * 2;
+  const lifeXp = (1 + tier) * (elite ? 2 : 1);
+  const colorGain = tier * 2 * (elite ? 2 : 1);
   const color = req.element;
+  const gold = elite ? 20 + tier * 10 : 0;
+  const shards = elite ? 3 + tier : 0;
 
   run.addLifeXp(lifeXp);
   applyColorBoost(color, colorGain);
+  if (gold > 0) r.gold += gold;
+  if (shards > 0) r.timeShards += shards;
 
   // 거래(납품) 소비 — tradeCleared만 세팅(전투 승리 combatCleared와 독립). 둘 다 소비돼야
   //   노드가 '정리됨'(isNodeSettled)이 되어 자동 통과한다. 계약은 완료했으니 제거.
@@ -220,7 +251,7 @@ export function fulfillContract(nodeId: string): TradeResult | null {
   r.nodeStates[nodeId].tradeCleared = true;
   delete r.tradeContracts![nodeId];
 
-  return { consumed, lifeXp, colorGain, color, tier };
+  return { consumed, lifeXp, colorGain, color, tier, gold, shards, elite };
 }
 
 /**

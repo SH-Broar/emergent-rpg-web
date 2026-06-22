@@ -19,6 +19,7 @@ import { isNoRemoval } from '@/systems/chaos';
 import { isPossessionLocked } from '@/systems/possession';
 import { isFormPoolActive, activeFormCardPool, RELEASE_CARD_ID } from '@/systems/form-pool';
 import { awakenCostFor, needsAwakening, matchingSpecialties } from '@/systems/enhance';
+import { LIFE_ACTIVITIES, cropForActivity } from '@/systems/life-activity';
 
 // 가격·제작비·슬롯 수는 config/balance.txt 에서 로드 (useDataStore().balance). 누락 시 DEFAULT_BALANCE.
 // 희귀도 사다리 재료 id (Item Economy). 'i-time-answer'(전설)는 RARE_MATERIAL_ID_ACT1로 호환 유지.
@@ -496,5 +497,104 @@ export function craftPotion(itm: Item): boolean {
   r.items.splice(matIdx, 1); // 등급 재료 1개 소모.
   run.addItem(itm); // 인스턴스 ID 부여하며 추가.
   ui.toast('success', `아이템: ${itm.name} (제작)`);
+  return true;
+}
+
+// ============================================================
+// 아이템 가공 — 생활 산출물(티어1) → 2차 가공품(티어2). (item 9)
+//   레시피: 그 속성의 티어1 산출물 PROCESS_INPUT_COUNT개(하위/상위 혼용) → 가공품 1개.
+//   가공품(i-craft-{element})은 엘리트 의뢰가 요구하는 품목이다(공방 거쳐야 모인다).
+//   8색 1:1(LIFE_ACTIVITIES element). 원재료/조각은 안 쓰고 *모은 산출물*을 연료로 한다.
+// ============================================================
+
+/** 가공품 1개를 만드는 데 드는 티어1 산출물 수(하위/상위 합산). */
+export const PROCESS_INPUT_COUNT = 3;
+
+/** 속성 → 2차 가공품 아이템 id. */
+export function craftItemIdForElement(element: string): string {
+  return `i-craft-${element}`;
+}
+
+/** 한 가공 레시피 — 입력(티어1 하위/상위) → 출력(2차 가공품). */
+export interface ProcessRecipe {
+  element: string;
+  /** 출력 가공품 id/이름. */
+  outputId: string;
+  outputName: string;
+  /** 입력 티어1 하위 산출물 id/이름. */
+  lowerId: string;
+  lowerName: string;
+  /** 입력 티어1 상위(-fine) 산출물 id(있으면 — 하위와 합산해 카운트). */
+  upperId?: string;
+  upperName?: string;
+  /** 필요한 입력 총수. */
+  inputCount: number;
+}
+
+/** 전체 가공 레시피(8색) — LIFE_ACTIVITIES element별 티어1 → i-craft-{element}. 출력 정의가 있는 것만. */
+export function listProcessingRecipes(): ProcessRecipe[] {
+  const data = useDataStore();
+  const out: ProcessRecipe[] = [];
+  for (const act of LIFE_ACTIVITIES) {
+    const crop = cropForActivity(act);
+    const lowerId = crop ? crop.lowerItemId : act.lowerItemId;
+    const upperId = crop ? crop.upperItemId : act.upperItemId;
+    if (!lowerId) continue;
+    const outputId = craftItemIdForElement(act.element);
+    const outDef = data.items.get(outputId);
+    const lowerDef = data.items.get(lowerId);
+    if (!outDef || !lowerDef) continue;
+    out.push({
+      element: act.element,
+      outputId,
+      outputName: outDef.name,
+      lowerId,
+      lowerName: lowerDef.name,
+      upperId,
+      upperName: upperId ? data.items.get(upperId)?.name : undefined,
+      inputCount: PROCESS_INPUT_COUNT,
+    });
+  }
+  return out;
+}
+
+/** 보유한 그 속성 티어1 산출물 수(하위+상위). */
+export function processInputHeld(r: ProcessRecipe): number {
+  const items = useRunStore().data.items;
+  const lower = items.filter((i) => i.id === r.lowerId).length;
+  const upper = r.upperId ? items.filter((i) => i.id === r.upperId).length : 0;
+  return lower + upper;
+}
+
+/** 지금 가공할 수 있는가 — 입력 산출물 ≥ inputCount. */
+export function canProcessItem(r: ProcessRecipe): boolean {
+  return processInputHeld(r) >= r.inputCount;
+}
+
+/** 가공 실행 — 입력(하위 우선, 모자라면 상위) 소비 후 가공품 1개 지급. 성공 시 true. */
+export function processItem(r: ProcessRecipe): boolean {
+  const run = useRunStore();
+  const data = useDataStore();
+  const ui = useUiStore();
+  const rd = run.data;
+  if (!canProcessItem(r)) {
+    ui.toast('warning', '가공할 재료가 부족합니다.');
+    return false;
+  }
+  // 입력 소비 — 하위부터, 모자라면 상위(-fine). 총 inputCount개.
+  let remaining = r.inputCount;
+  for (const id of [r.lowerId, ...(r.upperId ? [r.upperId] : [])]) {
+    while (remaining > 0) {
+      const idx = rd.items.findIndex((i) => i.id === id);
+      if (idx < 0) break;
+      rd.items.splice(idx, 1);
+      remaining -= 1;
+    }
+    if (remaining <= 0) break;
+  }
+  const outDef = data.items.get(r.outputId);
+  if (!outDef) return false;
+  run.addItem(outDef);
+  ui.toast('success', `가공: ${outDef.name}`);
   return true;
 }

@@ -311,9 +311,33 @@ export function generateStage(
   const enemyCount = Math.max(1, Math.min(desiredCount, Math.floor(walkRoom / 3)));
   const enemyStarts = pickEnemyStarts(cells, playerStart, enemyCount, rand);
 
-  // 아이템 드롭 — tier 3+ 1칸(통행 빈 칸에 item 셀 + itemDrops). 아이템 id는 권역 보상 시스템이
-  // 채우는 게 정석이지만 슬라이스에선 비워 둔다(엔진은 itemDrops 좌표만 소비).
-  const itemDrops: GridStage['itemDrops'] = [];
+  // 바닥 보상(item 5) — 이동에 보상 동기를 주려 1~2칸에 보상 마커를 둔다(tier 3+는 2칸).
+  //   여기서는 *위치만* 정하고(통행 floor 칸, 시작점 제외), 내용(골드/아이템)은 buildCombatStage가 채운다.
+  //   플레이어 시작에서 먼 칸을 선호해 "주우러 가는" 이동이 생기게 한다.
+  const itemDrops: NonNullable<GridStage['itemDrops']> = [];
+  {
+    const occupied = new Set<string>([
+      `${playerStart.x},${playerStart.y}`,
+      ...enemyStarts.map((e) => `${e.x},${e.y}`),
+    ]);
+    const rewardCandidates = walkableCells(cells)
+      .filter((c) => cells[c.y][c.x] === 'floor' && !occupied.has(`${c.x},${c.y}`))
+      // 플레이어에서 먼 순(주우러 가는 동선). 동률은 입력 순서(결정론).
+      .sort(
+        (a, b) =>
+          (Math.abs(b.x - playerStart.x) + Math.abs(b.y - playerStart.y)) -
+          (Math.abs(a.x - playerStart.x) + Math.abs(a.y - playerStart.y)),
+      );
+    const rewardCount = tier >= 3 ? 2 : 1;
+    // 상위 후보군(먼 칸 절반)에서 결정론적으로 분산 배치.
+    const topPool = rewardCandidates.slice(0, Math.max(rewardCount, Math.ceil(rewardCandidates.length / 2)));
+    for (let i = 0; i < rewardCount && topPool.length > 0; i++) {
+      const idx = Math.floor(rand() * topPool.length);
+      const c = topPool.splice(idx, 1)[0];
+      cells[c.y][c.x] = 'item';
+      itemDrops.push({ pos: { x: c.x, y: c.y } });
+    }
+  }
 
   // 증원 — spawn 셀 후보 마킹 + StageSpawn 규칙. enemyId는 호출자(스토어)가 권역 풀로 채우거나
   // 슬라이스에선 첫 적 정의 id를 재사용한다(아래 stageSpawns에 placeholder 없이 좌표만).

@@ -242,6 +242,44 @@ export const CARD_SALVAGE_SHARDS: Record<Rank, number> = {
  *
  * 반환: { stage, enemyDefs }(enemyDefs는 stage.enemyStarts 슬롯 순서). 노드/맵 없으면 null.
  */
+/** 엘리트 스탯 밴드(item 9) — 같은 권역 일반 몬스터 대비 HP/공격력 최소·최대 배수. */
+const ELITE_MIN_MULT = 3;
+const ELITE_MAX_MULT = 5;
+
+/** 권역 일반 몬스터(enemyPool)의 평균 HP/공격 — 엘리트 스탯 밴드의 기준선. 풀이 비면 null(스케일 안 함). */
+function regionNormalBaseline(
+  region: { enemyPool?: string[] } | undefined,
+  data: ReturnType<typeof useDataStore>,
+): { hp: number; attack: number } | null {
+  const pool = region?.enemyPool ?? [];
+  const defs = pool.map((mid) => data.monsters.get(mid)).filter((m): m is Monster => !!m);
+  if (defs.length === 0) return null;
+  const hp = defs.reduce((s, d) => s + (d.hp ?? 0), 0) / defs.length;
+  const attack = defs.reduce((s, d) => s + (d.attack ?? 0), 0) / defs.length;
+  return { hp: Math.max(1, hp), attack: Math.max(1, attack) };
+}
+
+/**
+ * 엘리트 def를 *같은 권역 일반 몬스터 대비 3~5배* 밴드로 캡(item 9) — 데이터를 직접 고치지 않고 클론에 적용.
+ * 사용자 피드백: 엘리트가 "너무 너무 강해요" → 일반의 5배를 넘으면 5배로 내리고, 3배 미만이면 3배로 올린다.
+ * gridBehavior에 명시 damage가 있으면 같은 공격 비율로 함께 축소해, 공격 캡이 실제 타격에 반영되게 한다.
+ */
+function scaleEliteDef(def: Monster, baseline: { hp: number; attack: number } | null): Monster {
+  if (!baseline) return def;
+  const targetHp = Math.round(Math.max(baseline.hp * ELITE_MIN_MULT, Math.min(baseline.hp * ELITE_MAX_MULT, def.hp)));
+  const baseAtk = def.attack ?? 0;
+  const targetAtk = Math.round(Math.max(baseline.attack * ELITE_MIN_MULT, Math.min(baseline.attack * ELITE_MAX_MULT, baseAtk)));
+  if (targetHp === def.hp && targetAtk === baseAtk) return def;
+  const atkScale = baseAtk > 0 ? targetAtk / baseAtk : 1;
+  const scaled: Monster = { ...def, hp: targetHp, attack: targetAtk };
+  if (def.gridBehavior?.length && atkScale !== 1) {
+    scaled.gridBehavior = def.gridBehavior.map((a) =>
+      a.damage != null ? { ...a, damage: Math.max(1, Math.round(a.damage * atkScale)) } : a,
+    );
+  }
+  return scaled;
+}
+
 function buildCombatStage(
   r: RunState,
   data: ReturnType<typeof useDataStore>,
@@ -298,16 +336,30 @@ function buildCombatStage(
     { enemyCount: 1, reinforce: false },
   );
 
+  // 바닥 보상 내용 채우기(item 5) — 위치는 stage-gen이 정했고, 여기서 골드/아이템을 배정한다.
+  //   첫 칸은 골드(권역 tier 비례), 추가 칸(엘리트/고tier)은 공용 재료 아이템(있으면), 없으면 골드.
+  if (stage.itemDrops?.length) {
+    const goldBase = 6 + baseTier * 4;
+    const hasMaterial = !!data.items.get('i-material-common');
+    stage.itemDrops.forEach((d, i) => {
+      if (i >= 1 && baseTier >= 2 && hasMaterial) d.itemId = 'i-material-common';
+      else d.gold = goldBase + i * 3;
+    });
+  }
+
   // 다종 적 그룹(US-002) — 권역 풀에서 섞어 배치(슬롯 0=노드 테마 적). 엘리트는 eliteEnemyPool 우선.
   const pool = isElite
     ? (region?.eliteEnemyPool?.length ? region.eliteEnemyPool : (region?.enemyPool ?? []))
     : (region?.enemyPool ?? []);
   const slots = stage.enemyStarts.length;
   const ids = pickEnemyIds(`${r.rngSeed}:${id}`, pool, enemyId, slots);
+  // 엘리트 스탯 밴드(item 9) — 같은 권역 일반 몬스터 평균 대비 3~5배로 캡(기준선 없으면 스케일 안 함).
+  const eliteBaseline = isElite ? regionNormalBaseline(region, data) : null;
   const enemyDefs: Monster[] = [];
   for (let i = 0; i < slots; i++) {
     const pickId = ids[i] ?? enemyId;
-    enemyDefs.push(data.monsters.get(pickId) ?? fallback);
+    const def = data.monsters.get(pickId) ?? fallback;
+    enemyDefs.push(isElite ? scaleEliteDef(def, eliteBaseline) : def);
   }
 
   // 증원 placeholder enemyId('')를 실제 적 id로 치환(풀이 있으면 그 첫 종, 없으면 테마 적).

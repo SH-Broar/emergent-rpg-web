@@ -20,6 +20,7 @@ import SettingsMenu from '@/components/SettingsMenu.vue';
 import EnhancePickModal from '@/components/EnhancePickModal.vue';
 import DayBanner from '@/components/DayBanner.vue';
 import LoadingOverlay from '@/components/LoadingOverlay.vue';
+import ColorPopOverlay from '@/components/ColorPopOverlay.vue';
 // side-effect: 이벤트 customEffect 핸들러 자동 등록.
 import '@/systems/event-effects';
 
@@ -134,6 +135,9 @@ onMounted(async () => {
       v-if="data.loading || !data.loaded"
       :message="data.error ? `데이터 로드 실패: ${data.error}` : undefined"
     />
+
+    <!-- 컬러 상승 팝 (상단 중앙) — 컬러가 오를 때마다 잠깐 표시. -->
+    <ColorPopOverlay />
 
     <!-- 전역 토스트 -->
     <div class="toast-stack" aria-live="polite">

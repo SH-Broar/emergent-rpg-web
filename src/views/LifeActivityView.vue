@@ -48,6 +48,7 @@ import SceneCharacter from '@/components/SceneCharacter.vue';
 import GatherTap from '@/components/gather/GatherTap.vue';
 import GatherMatrix from '@/components/gather/GatherMatrix.vue';
 import GatherReact from '@/components/gather/GatherReact.vue';
+import GatherRhythm from '@/components/gather/GatherRhythm.vue';
 
 const router = useRouter();
 const run = useRunStore();
@@ -77,6 +78,24 @@ const lifeLevel = computed(() => run.data.lifeLevel ?? 1);
 const activity = computed(() => activityForNode(nodeId.value, currentNode.value?.region));
 const isDelayed = computed(() => activity.value.type === 'delayed');
 
+// === 정성껏(재료 사용) — 상점에서 산 재료를 들이면 상품을 거의 보장한다(item 8, 골드 sink). ===
+/** 생활 활동 강화 재료 id(상점 구매). */
+const ENHANCE_MATERIAL_ID = 'i-material-common';
+/** 정성껏 시 상위확률 추가 보너스(%p) — 상품 거의 보장. */
+const ENHANCE_BONUS = 50;
+const materialName = computed(() => data.items.get(ENHANCE_MATERIAL_ID)?.name ?? '재료');
+const materialCount = computed(() => { void tick.value; return run.data.items.filter((i) => i.id === ENHANCE_MATERIAL_ID).length; });
+const hasMaterial = computed(() => materialCount.value > 0);
+/** 이번 행동이 정성껏(재료 소비)인가 — 미니게임 done/skip 시 finishAction이 읽는다. */
+const pendingEnhanced = ref(false);
+/** 강화 재료 1개 소비. 있으면 true. */
+function consumeEnhanceMaterial(): boolean {
+  const idx = run.data.items.findIndex((i) => i.id === ENHANCE_MATERIAL_ID);
+  if (idx < 0) return false;
+  run.data.items.splice(idx, 1);
+  return true;
+}
+
 // ============================================================================
 // 미니게임 (스킬 표현) — 산출 순간에 띄워 점수→상위확률 보너스. 닫으면 즉시 산출 폴백.
 // ----------------------------------------------------------------------------
@@ -99,14 +118,22 @@ const reactParams = computed(() => {
   const t = regionTier.value;
   return { minRtMs: 120, maxRtMs: 780 - t * 80, targets: Math.min(3, Math.max(1, t - 1)) };
 });
+const rhythmParams = computed(() => {
+  const t = regionTier.value;
+  // 비트 수 T1 1 → T6 3, 속도(횡단 ms) T1 1100 → 깊을수록 빨라짐(어려움).
+  return { beats: Math.min(3, Math.max(1, Math.ceil(t / 2))), speedMs: Math.max(520, 1200 - t * 110) };
+});
 
 /** 미니게임 모달이 열려 있는가 + 어떤 종류 + 어떤 산출(수확/반복)에 연결되는가. */
 const minigameOpen = ref(false);
 const minigameKind = ref<LifeMinigame>('tap');
-const pendingAction = ref<'harvest' | 'repeat' | null>(null);
+const pendingAction = ref<'plant' | 'harvest' | 'repeat' | null>(null);
 
-/** 산출 클릭 → 그 활동 미니게임을 띄운다(현 phase가 산출 가능할 때만 호출됨). */
-function openMinigame(action: 'harvest' | 'repeat') {
+/**
+ * 미니게임을 띄운다. 지연형은 *심을 때*('plant') 미니게임을 해 보너스를 텃밭에 적립하고(item 3),
+ * 반복형은 수행 직전('repeat'), (구) 수확 경로('harvest')는 보존.
+ */
+function openMinigame(action: 'plant' | 'harvest' | 'repeat') {
   minigameKind.value = activity.value.minigame;
   pendingAction.value = action;
   minigameOpen.value = true;
@@ -124,13 +151,20 @@ function skipMinigame() {
   finishAction(0);
 }
 
-/** 보너스를 실어 실제 산출을 수행하고 모달을 닫는다. */
+/** 보너스를 실어 실제 행동(심기/수확/반복)을 수행하고 모달을 닫는다. 정성껏이면 재료 소비 + 보너스 가산. */
 function finishAction(upperBonus: number) {
   const action = pendingAction.value;
+  let bonus = upperBonus;
+  if (pendingEnhanced.value && consumeEnhanceMaterial()) {
+    bonus += ENHANCE_BONUS;
+    ui.toast('info', `${materialName.value}${eulReul(materialName.value)} 들였다 — 상품이 거의 확실하다.`);
+  }
+  pendingEnhanced.value = false;
   minigameOpen.value = false;
   pendingAction.value = null;
-  if (action === 'harvest') runHarvest(upperBonus);
-  else if (action === 'repeat') runRepeat(upperBonus);
+  if (action === 'plant') runPlant(bonus);
+  else if (action === 'harvest') runHarvest(bonus);
+  else if (action === 'repeat') runRepeat(bonus);
 }
 
 // ============================================================================
@@ -184,9 +218,24 @@ const plotLabel = computed(() => plotLabelFor(plotCrop.value ?? activityCrop.val
 /** 직전 수확 결과. */
 const lastHarvest = ref<HarvestResult | null>(null);
 
+/** 심기 클릭 → 미니게임을 *먼저* 띄운다(item 3: 지연형은 시작할 때 솜씨를 발휘, 결과는 수확 때 반영). */
 function doPlant() {
+  if (!activityCrop.value) return;
+  pendingEnhanced.value = false;
+  openMinigame('plant');
+}
+
+/** 정성껏 심기(item 8) — 재료 1개를 들여 상품을 거의 보장. 재료 없으면 무효(버튼 비활성). */
+function doPlantFine() {
+  if (!activityCrop.value || !hasMaterial.value) return;
+  pendingEnhanced.value = true;
+  openMinigame('plant');
+}
+
+/** 실제 심기(미니게임 보너스를 텃밭에 적립). 미니게임 done/skip에서만 호출. */
+function runPlant(bonus: number) {
   const crop = activityCrop.value;
-  if (crop && plant(nodeId.value, crop.id)) {
+  if (crop && plant(nodeId.value, crop.id, bonus)) {
     lastHarvest.value = null;
     tick.value++;
   }
@@ -199,12 +248,12 @@ function doCare() {
   }
 }
 
-/** 수확 클릭 → 미니게임을 띄운다(결과로 상위확률 보너스). */
+/** 수확 — 미니게임은 *심을 때* 이미 했으므로(item 3) 여기서는 바로 거둔다(텃밭에 적립된 보너스 반영). */
 function doHarvest() {
-  openMinigame('harvest');
+  runHarvest(0);
 }
 
-/** 실제 수확(보너스 반영). 미니게임 done/skip에서만 호출. */
+/** 실제 수확(인자 보너스 + 텃밭 적립 보너스는 harvest 내부에서 가산). */
 function runHarvest(upperBonus: number) {
   const result = harvest(nodeId.value, upperBonus);
   if (result) {
@@ -247,6 +296,14 @@ const lastRepeat = ref<RepeatResult | null>(null);
 
 /** 수행 클릭 → 미니게임을 띄운다(결과로 상위확률 보너스). */
 function doRepeat() {
+  pendingEnhanced.value = false;
+  openMinigame('repeat');
+}
+
+/** 정성껏 수행(item 8) — 재료 1개를 들여 상품을 거의 보장. 재료 없으면 무효(버튼 비활성). */
+function doRepeatFine() {
+  if (!hasMaterial.value) return;
+  pendingEnhanced.value = true;
   openMinigame('repeat');
 }
 
@@ -296,16 +353,29 @@ onMounted(() => {
       <section v-if="!plot" class="start">
         <p class="sub">{{ plotLabel }}{{ iGa(plotLabel) }} 비어 있다. {{ activity.name }}{{ eulReul(activity.name) }} 시작한다.</p>
         <p v-if="lastHarvest" class="harvest-note">방금 거둔 자리. {{ harvestSummary }}</p>
-        <button
-          class="seed seed--single"
-          :style="{ '--hex': elementHex(activity.element) }"
-          @click="doPlant"
-        >
-          <span class="seed__dot" :style="{ background: elementHex(activity.element) }" />
-          <span class="seed__name">{{ activityCrop?.seedName ?? activity.name }}</span>
-          <span class="seed__meta">완성 {{ activityCrop?.growTurns ?? 0 }}턴</span>
-          <span class="seed__meta">{{ careLabel }} {{ activityCrop?.waterAt.length ?? 0 }}회</span>
-        </button>
+        <div class="seed-row">
+          <button
+            class="seed seed--single"
+            :style="{ '--hex': elementHex(activity.element) }"
+            @click="doPlant"
+          >
+            <span class="seed__dot" :style="{ background: elementHex(activity.element) }" />
+            <span class="seed__name">{{ activityCrop?.seedName ?? activity.name }}</span>
+            <span class="seed__meta">완성 {{ activityCrop?.growTurns ?? 0 }}턴</span>
+            <span class="seed__meta">{{ careLabel }} {{ activityCrop?.waterAt.length ?? 0 }}회</span>
+          </button>
+          <button
+            class="seed seed--single seed--fine"
+            :disabled="!hasMaterial"
+            @click="doPlantFine"
+          >
+            <span class="seed__dot seed__dot--fine" />
+            <span class="seed__name">정성껏 심기</span>
+            <span class="seed__meta">{{ materialName }} 1 소모</span>
+            <span class="seed__meta">상품 확률 크게 ↑</span>
+          </button>
+        </div>
+        <p class="mat-line">보유 재료: {{ materialName }} {{ materialCount }} <span class="mat-line__hint">(상점에서 구매)</span></p>
       </section>
 
       <!-- 자라는 중 / 수확 가능 -->
@@ -356,6 +426,12 @@ onMounted(() => {
             :style="{ '--hex': elementHex(activity.element) }"
             @click="doRepeat"
           >{{ activity.verb }}</button>
+          <button
+            class="action action--fine"
+            :disabled="!hasMaterial"
+            @click="doRepeatFine"
+          >정성껏 {{ activity.verb }} ({{ materialName }} 1 소모, 상품 ↑)</button>
+          <p class="mat-line">보유 재료: {{ materialName }} {{ materialCount }} <span class="mat-line__hint">(상점에서 구매)</span></p>
         </template>
 
         <template v-else>
@@ -387,10 +463,16 @@ onMounted(() => {
             @done="onMinigameDone"
           />
           <GatherReact
-            v-else
+            v-else-if="minigameKind === 'react'"
             :min-rt-ms="reactParams.minRtMs"
             :max-rt-ms="reactParams.maxRtMs"
             :targets="reactParams.targets"
+            @done="onMinigameDone"
+          />
+          <GatherRhythm
+            v-else
+            :beats="rhythmParams.beats"
+            :speed-ms="rhythmParams.speedMs"
             @done="onMinigameDone"
           />
         </div>
@@ -424,6 +506,14 @@ onMounted(() => {
 .seed__dot { width: 12px; height: 12px; border-radius: 50%; margin-bottom: 0.15rem; }
 .seed__name { font-weight: 600; color: var(--hex); font-size: 0.95rem; }
 .seed__meta { font-size: 0.76rem; color: #9a9aa8; }
+.seed-row { display: flex; gap: 0.7rem; flex-wrap: wrap; }
+.seed--fine { border-style: dashed; border-color: rgba(240,214,142,0.45); }
+.seed--fine:hover:not(:disabled) { background: rgba(240,214,142,0.12); border-color: #f0d68e; }
+.seed--fine .seed__name { color: #f0d68e; }
+.seed--fine:disabled { opacity: 0.4; cursor: not-allowed; }
+.seed__dot--fine { background: #f0d68e; }
+.mat-line { color: #9a9aa8; font-size: 0.82rem; margin: 0.7rem 0 0; }
+.mat-line__hint { color: #777; }
 
 .plot__head { display: flex; align-items: center; gap: 0.5rem; margin: 0.6rem 0 1.2rem; }
 .plot__dot { width: 14px; height: 14px; border-radius: 50%; }
@@ -446,6 +536,9 @@ onMounted(() => {
 .action--harvest:hover { background: rgba(168,232,142,0.3); }
 .action--water { background: rgba(142,237,255,0.16); border-color: rgba(142,237,255,0.5); color: #8eedff; }
 .action--water:hover { background: rgba(142,237,255,0.28); }
+.action--fine { background: rgba(240,214,142,0.16); border-color: rgba(240,214,142,0.5); color: #f0d68e; margin-top: 0.5rem; }
+.action--fine:hover:not(:disabled) { background: rgba(240,214,142,0.28); }
+.action--fine:disabled { opacity: 0.4; cursor: not-allowed; }
 
 /* ===== 미니게임 모달 ===== */
 .mg-overlay {

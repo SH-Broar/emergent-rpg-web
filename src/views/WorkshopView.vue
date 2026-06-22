@@ -29,7 +29,13 @@ import {
   potionCostFor,
   purchaseForgeCard,
   removeCardAtWorkshop,
+  listProcessingRecipes,
+  canProcessItem,
+  processItem,
+  processInputHeld,
+  PROCESS_INPUT_COUNT,
   type LegendaryRecipe,
+  type ProcessRecipe,
 } from '@/systems/workshop';
 import type { Item, Rank } from '@/data/schemas';
 
@@ -116,6 +122,12 @@ function itemEffectShort(e: Item['effects'][number]): string {
 }
 function doCraftPotion(itm: Item) {
   craftPotion(itm);
+}
+
+// === 아이템 가공 (티어1 → 2차 가공품, item 9) ===
+const processRecipes = computed<ProcessRecipe[]>(() => listProcessingRecipes());
+function doProcess(r: ProcessRecipe) {
+  processItem(r);
 }
 
 // === 전설 제작 — 이 공방 *권역*의 전설만 (화이트리스트). ===
@@ -273,6 +285,41 @@ onMounted(() => {
           </button>
         </li>
         <li v-if="craftablePotions.length === 0" class="empty">제작 가능한 희귀 포션이 없습니다.</li>
+      </ul>
+    </section>
+
+    <!-- 아이템 가공 섹션 (item 9) — 생활 산출물(티어1) → 2차 가공품(엘리트 의뢰가 요구하는 품목). -->
+    <section class="section">
+      <header class="section__hdr">
+        <h2>아이템 가공 <span class="cost">— 생활 산출물 {{ PROCESS_INPUT_COUNT }}개 → 2차 가공품 1개 (엘리트 의뢰용)</span></h2>
+      </header>
+      <p class="awaken__desc">채집·농사로 모은 산출물을 가공하면 엘리트가 요구하는 2차 가공품이 된다. 하위·상위 산출물 모두 재료로 쓴다.</p>
+      <ul class="forge__grid">
+        <li
+          v-for="r in processRecipes"
+          :key="r.outputId"
+          class="slot slot--rare"
+          :class="{ 'legendary--ready': canProcessItem(r) }"
+        >
+          <div class="slot__head">
+            <span class="slot__name">{{ r.outputName }}</span>
+            <span class="slot__rank">가공품</span>
+          </div>
+          <p class="slot__req">
+            재료:
+            <span :class="{ ok: canProcessItem(r), miss: !canProcessItem(r) }">
+              {{ r.lowerName }}<template v-if="r.upperName"> / {{ r.upperName }}</template>
+              {{ processInputHeld(r) }} / {{ r.inputCount }}
+            </span>
+          </p>
+          <button
+            class="slot__buy"
+            :disabled="!canProcessItem(r)"
+            @click="doProcess(r)"
+          >
+            가공
+          </button>
+        </li>
       </ul>
     </section>
 

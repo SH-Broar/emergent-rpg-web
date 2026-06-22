@@ -78,8 +78,8 @@ export const CROPS: CropDef[] = [
   {
     id: 'crop-char',
     seedName: '숯가마 장작',
-    growTurns: 3,
-    waterAt: [1, 2],
+    growTurns: 4,
+    waterAt: [2],
     element: 'fire',
     lowerItemId: 'i-life-char',
     upperItemId: 'i-life-char-fine',
@@ -100,8 +100,8 @@ export const CROPS: CropDef[] = [
   {
     id: 'crop-dry',
     seedName: '별빛 채반',
-    growTurns: 5,
-    waterAt: [2, 4],
+    growTurns: 10,
+    waterAt: [5],
     element: 'light',
     lowerItemId: 'i-life-dried',
     upperItemId: 'i-life-dried-fine',
@@ -112,7 +112,7 @@ export const CROPS: CropDef[] = [
     id: 'crop-mush',
     seedName: '버섯 종균',
     growTurns: 4,
-    waterAt: [1, 3],
+    waterAt: [2],
     element: 'dark',
     lowerItemId: 'i-life-mush',
     upperItemId: 'i-life-mush-fine',
@@ -173,8 +173,9 @@ function elementColorKey(element: Element): ColorKey {
 /**
  * 작물 심기 — 노드에 텃밭 생성. 이미 텃밭이 있으면 무효(false).
  * plantedTurn = visitedNodes.length 스냅샷. growthProgress=0, wateredCount=0.
+ * bonus(선택, %p) — 심을 때 미니게임으로 적립한 상위확률 보너스. 수확 시 harvest가 가산한다(item 3).
  */
-export function plant(nodeId: string, cropId: string): boolean {
+export function plant(nodeId: string, cropId: string, bonus = 0): boolean {
   const run = useRunStore();
   const r = run.data;
   if (!r.plots) r.plots = {};
@@ -192,6 +193,7 @@ export function plant(nodeId: string, cropId: string): boolean {
     waterAt: [...crop.waterAt],
     wateredCount: 0,
     growthProgress: 0,
+    bonus: Math.round(bonus),
   };
   useUiStore().toast('success', `${crop.seedName}${eulReul(crop.seedName)} 심었다.`);
   return true;
@@ -257,6 +259,44 @@ export function refreshPlot(nodeId: string): void {
     available -= 1;
   }
   plot.lastTickTurn = now;
+}
+
+/** 텃밭 진행 상태(읽기 전용) — 맵 노드 뱃지/드로어 표시용(item 1). 상태를 변형하지 않는다. */
+export interface PlotStatus {
+  /** 이 노드에 자라는 작물이 있는가. */
+  active: boolean;
+  /** 완성까지 남은 *유효* 성장 턴(경과 턴을 반영한 추정, 0이면 완성 직전/완성). */
+  remaining: number;
+  /** 지금 돌봄(물주기 등)이 필요한가 — 성장이 게이트에 막혀 있다. */
+  needsCare: boolean;
+  /** 수확 가능한가(완성 + 모든 물 임계 충족). */
+  ready: boolean;
+}
+
+/**
+ * 텃밭 진행 상태를 *변형 없이* 계산 — refreshPlot의 lazy 정산 로직을 읽기 전용으로 재현한다.
+ * 맵 화면은 텃밭 화면을 거치지 않으므로 plot.growthProgress가 stale(마지막 방문 시점)이다.
+ * 여기서 경과 전역 턴(now - lastTickTurn)을 물 게이트까지 반영해 *지금* 기준의 남은 턴/돌봄/수확을 돌려준다.
+ */
+export function plotStatus(nodeId: string): PlotStatus {
+  const r = useRunStore().data;
+  const plot = r.plots?.[nodeId];
+  if (!plot) return { active: false, remaining: 0, needsCare: false, ready: false };
+  // 물 임계 판정(읽기 전용) — growthProgress가 지나온 물 임계 수가 wateredCount보다 많으면 게이트 막힘.
+  const gated = (prog: number): boolean =>
+    plot.waterAt.filter((t) => prog >= t).length > plot.wateredCount;
+  // 경과 턴을 게이트에 막히기 전까지 성장에 반영(refreshPlot 미러, 변형 없음).
+  let progress = plot.growthProgress;
+  let available = Math.max(0, r.visitedNodes.length - plot.lastTickTurn);
+  while (available > 0 && progress < plot.growTurns) {
+    if (gated(progress)) break;
+    progress += 1;
+    available -= 1;
+  }
+  const needsCare = progress < plot.growTurns && gated(progress);
+  const requiredWaters = plot.waterAt.filter((t) => t <= plot.growTurns).length;
+  const ready = progress >= plot.growTurns && plot.wateredCount >= requiredWaters;
+  return { active: true, remaining: Math.max(0, plot.growTurns - progress), needsCare, ready };
 }
 
 /** 수확 가능한가 — 완성 도달 + 모든 물 임계 충족. */
@@ -328,9 +368,9 @@ export function harvest(nodeId: string, upperBonus = 0): HarvestResult | null {
   const data = useDataStore();
   const lifeLevel = r.lifeLevel ?? 1;
 
-  // 상위/하위 판정 (결정적 rng). upperBonus는 이 회차 한정 가산(미니게임 등), 기본 모델은 불변.
+  // 상위/하위 판정 (결정적 rng). upperBonus(이 회차 인자) + plot.bonus(심을 때 미니게임 적립, item 3) 가산.
   const roll = Math.round(rng() * 100);
-  const chance = Math.max(0, Math.min(100, harvestUpperChance(crop) + upperBonus));
+  const chance = Math.max(0, Math.min(100, harvestUpperChance(crop) + upperBonus + (plot.bonus ?? 0)));
   const upper = roll <= chance;
 
   // 산출 개수 — 기본 1 + 생활레벨/3 + 상위 보너스. (후반일수록 더 많이.)

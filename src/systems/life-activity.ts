@@ -31,8 +31,8 @@ export const REPEAT_COOLDOWN = 3;
 
 export type LifeActivityType = 'delayed' | 'repeat';
 
-/** 활동 산출 순간에 띄우는 채집 미니게임 종류(GatherView와 동일 3종 재사용). */
-export type LifeMinigame = 'tap' | 'react' | 'matrix';
+/** 활동 산출 순간에 띄우는 채집 미니게임 종류(tap/react/matrix + 신규 rhythm). */
+export type LifeMinigame = 'tap' | 'react' | 'matrix' | 'rhythm';
 
 /** 한 생활 활동의 정의(레지스트리 원소). */
 export interface LifeActivityDef {
@@ -73,7 +73,7 @@ export const LIFE_ACTIVITIES: LifeActivityDef[] = [
   // === 지연형 (farming.ts CROPS 재사용) ===
   { id: 'act-farm', name: '농사', element: 'earth', type: 'delayed', cropId: 'crop-grain', minigame: 'tap' },
   { id: 'act-char', name: '숯굽기', element: 'fire', type: 'delayed', cropId: 'crop-char', minigame: 'tap' },
-  { id: 'act-hunt', name: '사냥', element: 'wind', type: 'delayed', cropId: 'crop-snare', minigame: 'tap' },
+  { id: 'act-hunt', name: '사냥', element: 'wind', type: 'delayed', cropId: 'crop-snare', minigame: 'rhythm' },
   { id: 'act-dry', name: '별빛 건조', element: 'light', type: 'delayed', cropId: 'crop-dry', minigame: 'matrix' },
   { id: 'act-mush', name: '버섯재배', element: 'dark', type: 'delayed', cropId: 'crop-mush', minigame: 'matrix' },
   // === 반복형 (즉시 산출 + 쿨다운) ===
@@ -87,7 +87,7 @@ export const LIFE_ACTIVITIES: LifeActivityDef[] = [
   },
   {
     id: 'act-charge', name: '집전', element: 'electric', type: 'repeat', verb: '모은다',
-    lowerItemId: 'i-life-charge', upperItemId: 'i-life-charge-fine', minigame: 'react',
+    lowerItemId: 'i-life-charge', upperItemId: 'i-life-charge-fine', minigame: 'rhythm',
   },
 ];
 

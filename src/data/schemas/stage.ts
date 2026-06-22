@@ -61,8 +61,12 @@ export interface GridStage {
   playerStart: GridPos;
   /** 초기 적 배치 칸(enemyIds와 인덱스 정렬). */
   enemyStarts: GridPos[];
-  /** 바닥 아이템 — 그 칸에 서면 획득. */
-  itemDrops?: { pos: GridPos; itemId: string }[];
+  /**
+   * 바닥 보상 — 그 칸에 서면 획득(이동에 보상 동기 부여, item 5).
+   * itemId면 그 아이템을, gold면 그만큼 골드를 준다(둘 중 하나). 위치는 stage-gen이 정하고
+   * 내용(itemId/gold)은 buildCombatStage가 권역/tier로 채운다.
+   */
+  itemDrops?: { pos: GridPos; itemId?: string; gold?: number }[];
   /** 증원 규칙. */
   spawns?: StageSpawn[];
   /**

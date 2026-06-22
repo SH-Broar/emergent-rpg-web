@@ -646,6 +646,11 @@ export interface PlotState {
   wateredCount: number;
   /** 성장 진행도 — 정산된 턴마다 +1, growTurns에서 완성. 물 게이트에 막히면 정지. */
   growthProgress: number;
+  /**
+   * 심을 때 미니게임으로 적립한 상위확률 보너스(%p). 수확 시 harvest에 가산된다(item 3).
+   * 지연형 활동은 미니게임을 *심을 때* 하므로, 그 결과를 여기 저장해 두었다가 수확에 반영한다. 미설정=0.
+   */
+  bonus?: number;
 }
 
 /**

@@ -95,7 +95,6 @@ const HANDLERS: Record<string, ActivityHandler> = {
   'n-mano-night-market': () => {
     const run = useRunStore();
     const r = run.data;
-    notify('좌판을 둘러본다');
 
     const gold = 6 + Math.floor(rng() * 5);
     r.gold += gold;
@@ -122,7 +121,6 @@ const DEFAULT_COLORS: ColorKey[] = [
 function defaultActivity(): void {
   const run = useRunStore();
   const r = run.data;
-  notify('자리를 둘러본다');
 
   // 기본: 골드 또는 시간의 조각 (둘 중 하나는 확정).
   if (rng() < 0.5) {

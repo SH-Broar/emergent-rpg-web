@@ -508,9 +508,15 @@ function isAttackPreview(x: number, y: number): boolean {
   return inspectAttackTiles.value.has(`${x},${y}`);
 }
 
-/** 그 칸에 itemDrop 마커가 있는가. */
+/** 그 칸에 바닥 보상 마커가 있는가. */
 function hasItemDrop(x: number, y: number): boolean {
   return (stage.value?.itemDrops ?? []).some((d) => d.pos.x === x && d.pos.y === y);
+}
+/** 보상 글리프 — 골드는 코인(◈), 아이템은 별(✦). 마커 없으면 빈 문자열. */
+function dropGlyph(x: number, y: number): string {
+  const d = (stage.value?.itemDrops ?? []).find((dd) => dd.pos.x === x && dd.pos.y === y);
+  if (!d) return '';
+  return d.gold ? '◈' : '✦';
 }
 
 // === 표시(display) 상태 — 순차 재생(A) 중에는 엔진 final이 아니라 fx.display* 로 렌더. ===
@@ -1309,7 +1315,7 @@ onUnmounted(() => {
                 <span v-else-if="cellType(x - 1, y - 1) === 'pit'" class="cell__pit">◌</span>
                 <span v-else-if="cellType(x - 1, y - 1) === 'bush'" class="cell__bush">❀</span>
                 <span v-else-if="cellType(x - 1, y - 1) === 'fence'" class="cell__fence">⊞</span>
-                <span v-else-if="hasItemDrop(x - 1, y - 1)" class="cell__item">✦</span>
+                <span v-else-if="hasItemDrop(x - 1, y - 1)" class="cell__item" :class="{ 'cell__item--gold': dropGlyph(x - 1, y - 1) === '◈' }">{{ dropGlyph(x - 1, y - 1) }}</span>
                 <span v-else-if="cellType(x - 1, y - 1) === 'spawn'" class="cell__spawn">·</span>
                 <span v-if="throwArrowAt(x - 1, y - 1)" class="cell__throw">{{ throwArrowAt(x - 1, y - 1) }}</span>
                 <span
@@ -1788,6 +1794,7 @@ onUnmounted(() => {
 .cell--void { background: transparent; pointer-events: none; }
 .cell__wall { color: #6a6a7a; }
 .cell__item { color: #8eedff; }
+.cell__item--gold { color: #f0d56a; }
 .cell__spawn { color: rgba(192,142,255,0.5); }
 /* 신규 타일(맵 타일 속성) — 구덩이/수풀/난간. */
 .cell--pit { background: #0a0a10; }
@@ -2013,17 +2020,22 @@ onUnmounted(() => {
 }
 @media (prefers-reduced-motion: reduce) { .token__inner.is-cast .token__circle { animation: none; } }
 
-/* 플로팅 숫자 */
+/* 플로팅 숫자 — 피해/방어/회복. 격자 위에서 한눈에 읽히도록 크게 + 진한 외곽선(item 7 가독성). */
 .float-num {
   position: absolute; top: -2px; left: 50%;
   transform: translateX(-50%);
-  font-weight: 800; font-size: 1rem;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.8); white-space: nowrap;
+  font-weight: 900; font-size: 1.25rem;
+  /* 어떤 배경에서도 읽히는 외곽선(어두운 테두리 4방 + 그림자). */
+  text-shadow:
+    -1.4px -1.4px 0 #0b0b12, 1.4px -1.4px 0 #0b0b12, -1.4px 1.4px 0 #0b0b12, 1.4px 1.4px 0 #0b0b12,
+    0 2px 5px rgba(0,0,0,0.85);
+  white-space: nowrap;
   pointer-events: none;
   animation: float-up 850ms ease-out forwards;
   z-index: 20;
 }
-.float-num--damage { color: #ff6b6b; }
+/* 피해 숫자는 가장 중요 — 한 단계 더 크게. */
+.float-num--damage { color: #ff7a7a; font-size: 1.5rem; }
 .float-num--blocked { color: #8eedff; }
 .float-num--heal { color: #8effb8; }
 @keyframes float-up {

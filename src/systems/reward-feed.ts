@@ -13,7 +13,6 @@
  */
 
 import { useUiStore } from '@/stores/ui';
-import { colorLabel } from '@/systems/labels';
 import { useRunStore } from '@/stores/run';
 import type { Item } from '@/data/schemas';
 
@@ -42,10 +41,13 @@ export function rewardItemNamed(name: string, prefix = '아이템'): void {
 export function rewardCard(name: string): void { toast(`카드: ${name}`); }
 export function rewardRelic(name: string): void { toast(`유물: ${name}`); }
 export function rewardClue(name: string): void { toast(`단서: ${name}`); }
-/** 컬러 — 한글 컬러명 + 증가량. amount<=0이면 표시 안 함. */
-export function rewardColor(color: string, amount: number): void {
-  if (amount <= 0) return;
-  toast(`컬러: ${colorLabel(color)} +${amount}`);
+/**
+ * 컬러 — 상승 피드백은 이제 *상단 중앙 컬러 팝*(applyColorBoost→ui.colorPop, ColorPopOverlay)으로
+ * 일원화한다(item 6). 모든 호출처가 applyColorBoost 직후 호출하므로 팝이 이미 떠 있어, 여기서
+ * 토스트를 또 띄우면 같은 정보가 중복된다 → 토스트 생략(no-op). 함수/시그니처는 호환을 위해 보존.
+ */
+export function rewardColor(_color: string, _amount: number): void {
+  /* no-op: 컬러 상승은 ColorPopOverlay(상단 팝)가 담당. */
 }
 export function rewardGold(amount: number): void { if (amount !== 0) toast(`골드 +${amount}`); }
 export function rewardShards(amount: number): void { if (amount !== 0) toast(`시간의 조각 +${amount}`); }

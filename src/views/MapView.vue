@@ -26,6 +26,7 @@ import { getNeighbors, getNode, isTimeUp, isNodeSettled, effectiveKind as system
 import { restHealMul, lockedTownCount, isShopLimited, canEnterShop, recordShopEntry, isRestHealBlocked } from '@/systems/chaos';
 import { isActivityDone } from '@/systems/activity';
 import { isGatherDone } from '@/systems/gathering';
+import { plotStatus, type PlotStatus } from '@/systems/farming';
 import type { Node, NodeId, NodeKind, NodeMap } from '@/data/schemas';
 
 const router = useRouter();
@@ -887,6 +888,33 @@ function nodeStatusLabel(node: Node): string {
   return '방문';
 }
 
+// === 진행 중 생활 제작(텃밭) 뱃지 (item 1) ===
+/** 현재 보이는 노드 중 자라는 텃밭이 있는 노드 → 진행 상태. 맵 뱃지/드로어가 읽는다(읽기 전용). */
+const plotStatuses = computed<Map<string, PlotStatus>>(() => {
+  const m = new Map<string, PlotStatus>();
+  for (const n of visibleNodes.value) {
+    const s = plotStatus(n.id);
+    if (s.active) m.set(n.id, s);
+  }
+  return m;
+});
+/** 뱃지 글자 — 수확 가능 ✓ / 돌봄 필요 ! / 자라는 중 남은 턴 수. */
+function plotBadgeText(s: PlotStatus): string {
+  if (s.ready) return '✓';
+  if (s.needsCare) return '!';
+  return String(s.remaining);
+}
+/** 뱃지 상태 클래스 키. */
+function plotBadgeState(s: PlotStatus): 'ready' | 'care' | 'grow' {
+  return s.ready ? 'ready' : s.needsCare ? 'care' : 'grow';
+}
+/** 드로어 진행 문구. */
+function plotStatusLine(s: PlotStatus): string {
+  if (s.ready) return '제작 완료 — 수확할 수 있다.';
+  if (s.needsCare) return '제작 중 — 손질이 필요하다.';
+  return `제작 중 — 완성까지 ${s.remaining}턴.`;
+}
+
 function enterLabel(): string {
   const action = getEnterAction();
   switch (action) {
@@ -968,6 +996,15 @@ function enterLabel(): string {
               <circle :r="NODE_RADIUS" :fill="nodeColorOf(node.id)" class="node-dot" />
               <text y="5.5" class="node-label">{{ node.label }}</text>
               <text y="7.4" class="node-kind">[{{ nodeKindLabelOf(node.id) }}]</text>
+              <!-- 진행 중 생활 제작 뱃지(item 1) — 우상단 모서리. 남은 턴 / 손질 필요(!) / 수확 가능(✓). -->
+              <g
+                v-if="plotStatuses.get(node.id)"
+                class="plot-badge"
+                :class="`plot-badge--${plotBadgeState(plotStatuses.get(node.id)!)}`"
+              >
+                <circle cx="3.3" cy="-3.3" r="2" class="plot-badge__bg" />
+                <text x="3.3" y="-2.55" class="plot-badge__txt">{{ plotBadgeText(plotStatuses.get(node.id)!) }}</text>
+              </g>
             </g>
           </g>
           <!-- 현재 위치 화살표 마커.
@@ -1034,6 +1071,11 @@ function enterLabel(): string {
         <span class="drawer__region-name">{{ selectedRegion.name }}</span>
       </div>
       <div class="drawer__status">상태: {{ nodeStatusLabel(selectedNode) }}</div>
+      <div
+        v-if="plotStatuses.get(selectedNode.id)"
+        class="drawer__plot"
+        :class="`drawer__plot--${plotBadgeState(plotStatuses.get(selectedNode.id)!)}`"
+      >{{ plotStatusLine(plotStatuses.get(selectedNode.id)!) }}</div>
       <p v-if="chaosLockedNodes.has(selectedNode.id)" class="drawer__locked">🔒 카오스로 닫혀 들어갈 수 없다.</p>
       <p class="drawer__desc">{{ selectedNode.description }}</p>
 
@@ -1392,6 +1434,31 @@ function enterLabel(): string {
 .drawer__region-desc { font-size: 0.8rem; color: #8a8aa0; line-height: 1.5; }
 
 .drawer__status { font-size: 0.85rem; color: #c08eff; }
+.drawer__plot { font-size: 0.85rem; font-weight: 600; }
+.drawer__plot--grow { color: #f6e8b8; }
+.drawer__plot--care { color: #8eedff; }
+.drawer__plot--ready { color: #a8e88e; }
+
+/* 진행 중 생활 제작 뱃지(item 1) — 노드 우상단 작은 알약. */
+.plot-badge__bg { stroke: rgba(0, 0, 0, 0.55); stroke-width: 0.3; }
+.plot-badge__txt {
+  font-size: 2.2px; font-weight: 800; text-anchor: middle; fill: #16161e;
+  font-variant-numeric: tabular-nums; pointer-events: none; user-select: none;
+}
+.plot-badge--grow .plot-badge__bg { fill: #f6e8b8; }
+.plot-badge--care .plot-badge__bg { fill: #8eedff; }
+.plot-badge--ready .plot-badge__bg { fill: #a8e88e; }
+/* 손질 필요/수확 가능은 주의를 끌도록 천천히 깜빡. */
+.plot-badge--care .plot-badge__bg,
+.plot-badge--ready .plot-badge__bg { animation: plot-badge-pulse 1.4s ease-in-out infinite; }
+@keyframes plot-badge-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .plot-badge--care .plot-badge__bg,
+  .plot-badge--ready .plot-badge__bg { animation: none; }
+}
 .drawer__locked { font-size: 0.85rem; color: #9a8fb8; margin: 0; }
 .drawer__desc { color: #b6b6c4; line-height: 1.6; margin: 0; }
 

@@ -44,7 +44,7 @@ import { bonusesFromEffective } from './equipment';
 import type { CombatBonuses } from './stats';
 import { resolveLoadout } from './loadout';
 import { applyColorBoost, applyColorBoostAll, type ColorKey } from './colors';
-import { rng, setRng, getRng, createSeededRng } from './rng';
+import { rng } from './rng';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import {
@@ -1730,23 +1730,14 @@ function recomputeAllEnemyPlans(state: GridCombatState): void {
   }
 }
 
-/**
- * 플레이어 계획의 *이동 후 최종 위치*(엔진판 effectivePlayerPos) — 큐의 마지막 move 도착점.
- * 카드/아이템은 위치 불변(닻 가드는 실행 시점). 텔레그래프가 "내가 갈 곳" 기준으로 적 의도를 읽게 한다(#5).
- */
-function plannedPlayerPos(state: GridCombatState): GridPos {
-  let pos = { ...state.player.pos };
-  for (const a of state.playerPlan) if (a.kind === 'move') pos = { ...a.to };
-  return pos;
-}
-
 // ============================================================================
-// 적 행동 텔레그래프(#5) — 임박 적의 *이번 턴* 위협을 계획 반영해 미리 표시
+// 적 행동 텔레그래프(item 7) — 임박 적의 *확정된* 이번 턴 위협을 미리 표시
 // ----------------------------------------------------------------------------
-// 버그(2026-06-19): 뷰가 stale한 intentQueue(직전 라운드 종료 시 *옛 플레이어 위치* 기준 계산)를
-// 그대로 따라가, 플레이어가 이동을 계획해도 적 위협이 옛 위치를 가리켜 "버그처럼" 보였다.
-// 근본 수정: 텔레그래프를 *현재 계획의 도착 위치* 기준으로 적 의도를 다시 계산한다(plannedPlayerPos).
-// 동시에 commitRound의 takeCombatantTurn이 *실행 직전* 의도를 재계산해(아래) 표시와 실행을 일치시킨다.
+// 의도는 직전 라운드 종료(recomputeAllEnemyPlans)·전투 시작·직전 자기 행동 뒤에 *고정*된 intentQueue다.
+// 텔레그래프는 그 고정 의도를 적의 *현재 위치* 기준으로 투영만 한다 — 플레이어가 계획을 바꿔도(이동 큐 추가)
+// 예고가 흔들리지 않는다. 그리고 takeCombatantTurn이 *재계산 없이* 그 고정 의도를 실행하므로, 예고한 칸을
+// 벗어나면(이동) 공격이 빗나간다 = 회피가 의미를 갖는다(사용자 요구: 예고=실행 보장).
+// 읽기 전용 투영이라(enemyPlan 미호출) 클론/로컬 rng 스왑이 불필요 — "Maximum recursive updates" 위험 없음.
 // ============================================================================
 
 /** 적 e가 이번 라운드(현재 계획 + 턴종료 자동 대기 1틱)에 *행동하는가*. tut<=1 과 동일 의미를 엔진에서 판정. */
@@ -1762,78 +1753,39 @@ function enemyActsThisRound(state: GridCombatState, e: GridCombatant): boolean {
 }
 
 /**
- * 텔레그래프 전용 *비반응(plain) 클론* — enemyPlan의 AI가 enemy.pos를 잠시 바꿔가며 평가하므로,
- * 라이브 *반응형* 상태를 건드리면 computed 안에서 자기 의존성을 변형해 무한 갱신(Maximum recursive
- * updates)이 난다. 그래서 AI가 읽고/잠시 쓰는 필드를 plain 객체로 떠서 그 위에서만 시뮬레이션한다.
- * stage는 AI가 *읽기만* 하므로 참조 공유(클론 불필요). player.pos는 *계획 도착*으로 미리 치환해 둔다.
- */
-function cloneStateForTelegraph(state: GridCombatState): GridCombatState {
-  // 완전 분리(non-reactive deep clone) — AI 시뮬은 enumerateStepActions에서 ctx.enemy.pos를 잠시
-  //   바꿔가며 reachableTiles를 평가한다. 라이브 *reactive* 상태를 조금이라도 공유하면(얕은 클론·
-  //   stage 참조 공유) 그 변형이 computed/watch의 자기 의존성을 건드려 "Maximum recursive updates"가
-  //   난다. GridCombatState는 직렬화 가능(세이브 코드)하므로 깊은 복제로 라이브와의 모든 참조를 끊는다.
-  const clone = JSON.parse(JSON.stringify(state)) as GridCombatState;
-  clone.player.pos = { ...plannedPlayerPos(state) }; // 적이 *내가 갈 위치*를 노리게.
-  clone.playerPlan = [];                              // 적 의도만 — 플레이어 계획 재실행 금지.
-  clone.player.intentQueue = undefined;
-  for (const e of clone.enemies) e.intentQueue = undefined;
-  if (clone.allies) for (const a of clone.allies) a.intentQueue = undefined;
-  return clone;
-}
-
-/**
- * 적 행동 텔레그래프 계산(#5) — 이번 턴에 행동할 적의 *이동 도착칸*(move) + *공격 타격칸*(attack)을
- * 플레이어 계획(도착 위치)을 반영해 다시 계산한다. 뷰가 이 결과로 칸을 강조한다.
+ * 적 행동 텔레그래프 계산(item 7) — 이번 라운드에 행동할 적의 *확정된* intentQueue를 읽어
+ * 이동 도착칸(move) + 공격 타격칸(attack)을 적의 현재 위치 기준으로 투영한다. 뷰가 이 칸을 강조한다.
  *
- * 핵심: stale intentQueue를 따라가지 않고, *플레이어가 갈 위치*(plannedPlayerPos) 기준으로 적 의도를
- * 그 자리에서 새로 평가한다 → 플레이어가 이동을 계획하면 적 위협도 그 위치 기준으로 갱신된다.
- * 라이브 상태 불변: 비반응 클론(cloneStateForTelegraph) 위에서만 시뮬레이션한다(무한 갱신 방지).
+ * 재계산하지 않는다 — intentQueue는 직전 라운드 종료/전투 시작/직전 행동 뒤에 이미 고정돼 있고,
+ * takeCombatantTurn도 그 고정 의도를 그대로 실행한다 → 예고와 실행이 항상 일치(이동으로 회피 가능).
+ * enemyPlan을 호출하지 않으므로 라이브 상태를 건드리지 않고(읽기 전용), 무한 갱신·rng 오염 위험이 없다.
  */
 export function previewEnemyTelegraph(live: GridCombatState): { attack: GridPos[]; move: GridPos[] } {
   const atk = new Map<string, GridPos>();
   const mv = new Map<string, GridPos>();
   const add = (m: Map<string, GridPos>, p: GridPos) => { m.set(`${p.x},${p.y}`, { ...p }); };
 
-  // 행동 여부 판정은 *라이브* 카운터/계획 기준(이번 라운드에 실제로 행동하는가). 의도 계산만 클론에서.
-  const clone = cloneStateForTelegraph(live);
-
-  // 게임트리 AI는 동점 타이브레이크에 rng()를 쓰는데, *라이브 rng()*는 RunState.rngState(반응형)를 진행시켜
-  //   computed 안에서 자기 의존성을 변형(무한 갱신) + 결정 시드 오염을 일으킨다. 그래서 텔레그래프 동안만
-  //   *로컬* PRNG로 갈아끼운다(상태/위치 해시 시드 → 같은 계획 단계에서 안정). 끝나면 반드시 원복.
-  const prevRng = getRng(); // *실제 등록 함수*를 떠 둔다(rng 래퍼를 setRng하면 자기재귀라 금지).
-  let seed = 0x9e3779b9 ^ (clone.turn | 0);
-  for (const e of clone.enemies) seed = (seed * 31 + (e.pos.x * 73856093) + (e.pos.y * 19349663)) >>> 0;
-  const localPrng = createSeededRng(seed >>> 0);
-  setRng(() => localPrng.next());
-  try {
-    for (let i = 0; i < live.enemies.length; i++) {
-      const liveE = live.enemies[i];
-      if (liveE.hp <= 0) continue;
-      if (!enemyActsThisRound(live, liveE)) continue;
-      const e = clone.enemies[i];
-      if (!e) continue;
-      // 이번 턴 의도를 *지금* 다시 계산(플레이어 도착 위치 기준, 클론 위) — stale 회피.
-      const plan = enemyPlan(clone, e);
-      let simPos = { ...e.pos };
-      for (const a of plan) {
-        if (a.kind === 'move') { add(mv, a.to); simPos = { ...a.to }; }
-        else if (a.kind === 'attack') {
-          if (a.targetTiles?.length) { for (const t of a.targetTiles) add(atk, t); }
-          else if (a.attackIdx >= 0) {
-            const def = e.attacks?.[a.attackIdx];
-            if (def) for (const t of previewAttackTiles(clone, { ...e, pos: simPos }, def)) add(atk, t);
-          } else {
-            // 근접 폴백(attackIdx -1) — simPos 직교 인접 4칸이 위협 범위.
-            for (const d of ROOK_DIRS) {
-              const p = { x: simPos.x + d.dx, y: simPos.y + d.dy };
-              if (canAttackTile(clone.stage, p)) add(atk, p);
-            }
+  for (const e of live.enemies) {
+    if (e.hp <= 0) continue;
+    if (!enemyActsThisRound(live, e)) continue; // 이번 라운드에 행동하는 적만 예고.
+    const plan = e.intentQueue ?? [];           // *고정* 의도(재계산 없음).
+    let simPos = { ...e.pos };
+    for (const a of plan) {
+      if (a.kind === 'move') { add(mv, a.to); simPos = { ...a.to }; }
+      else if (a.kind === 'attack') {
+        if (a.targetTiles?.length) { for (const t of a.targetTiles) add(atk, t); }
+        else if (a.attackIdx >= 0) {
+          const def = e.attacks?.[a.attackIdx];
+          if (def) for (const t of previewAttackTiles(live, { ...e, pos: simPos }, def)) add(atk, t);
+        } else {
+          // 근접 폴백(attackIdx -1) — simPos 직교 인접 4칸이 위협 범위.
+          for (const d of ROOK_DIRS) {
+            const p = { x: simPos.x + d.dx, y: simPos.y + d.dy };
+            if (canAttackTile(live.stage, p)) add(atk, p);
           }
         }
       }
     }
-  } finally {
-    setRng(prevRng); // 라이브 rng 원복(반드시).
   }
   return { attack: [...atk.values()], move: [...mv.values()] };
 }
@@ -1861,10 +1813,10 @@ function postActionCleanup(state: GridCombatState): boolean {
 function takeCombatantTurn(state: GridCombatState, c: GridCombatant): void {
   // 수면(sleep, #5): 이번 턴 행동 불가(스킵). 피해를 받으면 즉시 깸(applyDamage). 라운드 종료 시 -1 감쇠.
   if ((c.statuses['sleep'] ?? 0) > 0) return;
-  // 텔레그래프 일치(#5) — *실행 직전* 의도를 현재 위치 기준으로 다시 계산해, 화면에 보여 준 위협(plannedPlayerPos
-  // 기준 텔레그래프)과 실제 행동이 어긋나지 않게 한다. 적은 플레이어가 *간 자리*를 노린다(stale 추격 제거).
-  // (아군 토큰은 enemyPlan 대상이 아니므로 기존 intentQueue 유지 — 적만 재계산.)
-  if (c.team === 'enemy' && c.hp > 0) c.intentQueue = enemyPlan(state, c);
+  // 의도 확정(item 7) — *실행 직전 재계산을 하지 않는다*. 적은 직전 라운드 종료 시점(recomputeAllEnemyPlans)
+  //   또는 직전 자기 행동 뒤(아래 1877)에 *고정해 둔* intentQueue를 그대로 수행한다 = 화면에 예고한 그 행동.
+  //   플레이어가 예고를 보고 이동해 *예고 칸을 벗어나면* 그 공격은 빗나간다(이동=회피가 의미를 갖는다).
+  //   (예전엔 여기서 enemyPlan으로 재계산해 플레이어가 간 자리를 다시 노렸다 — 예고와 실행이 어긋나 사용자 불만.)
   const turn = c.intentQueue ?? [];
   for (const action of turn) {
     if (state.outcome) break;
@@ -2273,18 +2225,26 @@ function execMove(state: GridCombatState, actor: GridCombatant, to: GridPos): vo
   if (actor.team === 'player') { const ps = actor.statuses['possession'] ?? 0; if (ps > 0) { if (ps - 1 <= 0) delete actor.statuses['possession']; else actor.statuses['possession'] = ps - 1; } }
 }
 
-/** 바닥 아이템 픽업 — itemDrops에서 제거 + 런 인벤토리에 추가. */
+/** 바닥 보상 픽업(item 5) — itemDrops에서 제거 + 골드/아이템을 런에 반영. 마커 칸은 floor로 되돌린다. */
 function collectItemAt(state: GridCombatState, pos: GridPos): void {
   const drops = state.stage.itemDrops;
   if (!drops || drops.length === 0) return;
   const idx = drops.findIndex((d) => samePos(d.pos, pos));
   if (idx < 0) return;
   const [picked] = drops.splice(idx, 1);
+  // 보상 마커(item 셀) 제거 — 주운 칸은 일반 바닥으로(✦ 사라짐).
+  const row = state.stage.cells[picked.pos.y];
+  if (row && row[picked.pos.x] === 'item') row[picked.pos.x] = 'floor';
   try {
-    const itm = useDataStore().items.get(picked.itemId);
-    if (itm) {
-      useRunStore().addItem(itm);
-      pushLog(state, `${itm.name} 획득`);
+    if (picked.gold && picked.gold > 0) {
+      useRunStore().data.gold += picked.gold;
+      pushLog(state, `골드 +${picked.gold} 획득`);
+    } else if (picked.itemId) {
+      const itm = useDataStore().items.get(picked.itemId);
+      if (itm) {
+        useRunStore().addItem(itm);
+        pushLog(state, `${itm.name} 획득`);
+      }
     }
   } catch { /* 무해 */ }
 }

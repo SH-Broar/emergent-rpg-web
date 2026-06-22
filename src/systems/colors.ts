@@ -11,9 +11,16 @@
 
 import type { ColorValues } from '@/data/schemas';
 import { useRunStore } from '@/stores/run';
+import { useUiStore } from '@/stores/ui';
 import { colorLabel } from '@/systems/labels';
 
 export const COLOR_MAX = 100;
+
+/**
+ * 컬러 상승 팝 억제 플래그 — 런 시작 시드 컬러(applySeedColors)는 한꺼번에 8색이 오르므로
+ * 상단 팝이 폭주하지 않게 잠시 끈다. 게임 중 실제 행동으로 오르는 컬러만 팝을 띄운다.
+ */
+let suppressColorPop = false;
 
 export type ColorKey = keyof ColorValues;
 
@@ -54,6 +61,14 @@ export function applyColorBoost(color: ColorKey, amount: number, lines?: string[
       inColorGain = false;
     }
   }
+  // 컬러 상승 시각 피드백(item 6) — 상단 중앙 팝. 시드 컬러 일괄 적용 중엔 억제.
+  if (delta > 0 && !suppressColorPop) {
+    try {
+      useUiStore().colorPop(color, delta, after);
+    } catch {
+      // 스토어 미초기화(테스트 등) — 팝 생략, 핵심 로직 무영향.
+    }
+  }
   // (F5: 색→최대 HP(VIT)는 은퇴. 물=드로우·바람=이동으로 분리됐으므로 HP 재조정 없음.)
   return delta;
 }
@@ -68,12 +83,17 @@ export function applyColorBoostAll(amount: number, lines?: string[]): void {
   }
 }
 
-/** 종족·캐릭터 시드 컬러 적용 — 런 시작 시 1회 호출. cap은 100. */
+/** 종족·캐릭터 시드 컬러 적용 — 런 시작 시 1회 호출. cap은 100. (시드 일괄 적용 중엔 상단 팝 억제.) */
 export function applySeedColors(seed: Partial<ColorValues> | undefined): void {
   if (!seed) return;
-  for (const [k, v] of Object.entries(seed)) {
-    if (typeof v !== 'number') continue;
-    applyColorBoost(k as ColorKey, v);
+  suppressColorPop = true;
+  try {
+    for (const [k, v] of Object.entries(seed)) {
+      if (typeof v !== 'number') continue;
+      applyColorBoost(k as ColorKey, v);
+    }
+  } finally {
+    suppressColorPop = false;
   }
 }
 
