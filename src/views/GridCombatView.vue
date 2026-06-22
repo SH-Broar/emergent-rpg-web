@@ -641,6 +641,40 @@ function enemyNextIntent(e: GridCombatant): { icon: string; text: string; kind: 
   }
 }
 
+// === 상단 적 패널(요청) — 대치 몬스터별 이름·HP·남은턴·의도. 감출 수 있고, 카드가 노리면 테두리. ===
+/** 적 패널 펼침 여부 — 기본 펼침, [감추기]로 접는다. */
+const enemyPanelOpen = ref(true);
+
+/** 플레이어 카드(지금 조준/hover 중 + 계획에 올린 카드)가 타격하는 칸 — 적 박스 테두리 강조용. */
+const targetedEnemyPositions = computed<Set<string>>(() => {
+  const state = gc.value;
+  const set = new Set<string>();
+  if (!state || phase.value !== 'combat') return set;
+  // 지금 조준/hover 중인 카드 미리보기(이동 모드 제외 — 이동칸은 적 타겟이 아님).
+  if (mode.value !== 'move') for (const k of highlightTiles.value) set.add(k);
+  // 계획에 올린 카드들의 타격 칸.
+  for (const a of plan.value) {
+    if (a.kind !== 'card') continue;
+    const card = state.hand.find((c) => c.instanceId === a.cardInstanceId);
+    if (!card) continue;
+    for (const t of previewCardTiles(state, card, undefined, a.aimOffset)) set.add(posKey(t));
+  }
+  return set;
+});
+/** 이 적이 지금 플레이어 카드의 타격 대상인가(테두리 표시). */
+function isEnemyTargeted(e: GridCombatant): boolean {
+  return targetedEnemyPositions.value.has(posKey(e.pos));
+}
+/** 적 패널 행 클릭 → 인스펙트 토글(상세 패널). */
+function toggleInspect(e: GridCombatant): void {
+  inspectedId.value = inspectedId.value === e.id ? null : e.id;
+}
+/** 적 HP 게이지 비율(%) — 순차 재생 중에는 display hp 기준. */
+function enemyHpPct(e: GridCombatant): number {
+  const max = Math.max(1, e.maxHp);
+  return Math.max(0, Math.min(100, Math.round((tokenHp(e) / max) * 100)));
+}
+
 // === 카드 표시 ===
 const rankColors: Record<string, string> = {
   basic: '#a4a4b0', common: '#8effb8', rare: '#8eedff', legendary: '#ffe88e',
@@ -1245,19 +1279,10 @@ onUnmounted(() => {
     <main v-if="phase === 'combat' && gc && stage" class="grid-combat">
       <!-- 상단 바: 턴 / 마나 / 로그 -->
       <header class="topbar">
-        <div class="topbar__turn">⚔ 턴 {{ gc.turn }}</div>
-        <!-- 마나: 파란 별 pips(item 5). 밝은 별=보유, 흐린 별=계획 소비/사용. -->
-        <div class="topbar__mana" :title="`마나 ${remainingMana} / ${gc.maxMana}`">
-          <span
-            v-for="i in gc.maxMana"
-            :key="i"
-            class="mana-pip"
-            :class="{ 'mana-pip--on': i <= remainingMana }"
-          >✦</span>
-        </div>
-        <div class="topbar__hp">HP {{ tokenHp(gc.player) }} / {{ gc.player.maxHp }}
-          <span v-if="tokenBlock(gc.player) > 0" class="topbar__block">🛡 {{ tokenBlock(gc.player) }}</span>
-        </div>
+        <!-- 적 패널 토글(요청: 감출 수 있게). -->
+        <button class="enemy-toggle" @click="enemyPanelOpen = !enemyPanelOpen">
+          대치 {{ liveEnemies.length }} {{ enemyPanelOpen ? '▾' : '▸' }}
+        </button>
         <!-- 전투 기록 토글(item 4) — 기본 접힘. 누르면 최근 기록 오버레이. -->
         <button
           class="topbar__logbtn"
@@ -1270,6 +1295,41 @@ onUnmounted(() => {
           <div v-for="(line, i) in gc.log!.slice(-12)" :key="i" class="combat-log__line">{{ line }}</div>
         </div>
       </header>
+
+      <!-- 상단 적 패널(요청) — 대치 몬스터별 한 줄: 이름 · HP(빨강) · 남은 턴(노랑) · 의도.
+           카드가 그 적을 노리면 테두리 강조. 여럿이면 여러 줄. [대치] 토글로 감춘다. -->
+      <div v-if="enemyPanelOpen && liveEnemies.length > 0" class="enemy-panel">
+        <button
+          v-for="e in liveEnemies"
+          :key="e.id"
+          class="enemy-row"
+          :class="{
+            'enemy-row--targeted': isEnemyTargeted(e),
+            'enemy-row--soon': tempoUntilTurnLive(e) <= 1,
+            'enemy-row--inspected': inspectedId === e.id,
+          }"
+          @click="toggleInspect(e)"
+        >
+          <span class="enemy-row__name" :style="{ color: enemyColor(e) }">{{ e.name ?? '적' }}</span>
+          <!-- HP 게이지(빨강 막대) + 수치. -->
+          <span class="ehp">
+            <span class="ehp__bar"><span class="ehp__fill" :style="{ width: enemyHpPct(e) + '%' }"></span></span>
+            <span class="ehp__num">{{ tokenHp(e) }}<span class="ehp__sub">/{{ e.maxHp }}</span><span v-if="tokenBlock(e) > 0" class="ebox__blk">🛡{{ tokenBlock(e) }}</span></span>
+          </span>
+          <!-- 남은 턴 pips — 대기 턴=주황, 행동 턴(마지막)=빨강. tempo 4면 주황3+빨강1, 카운트다운으로 줄어든다. -->
+          <span class="eturn" :title="`${tempoUntilTurnLive(e)}수 뒤 행동`">
+            <span
+              v-for="n in tempoUntilTurnLive(e)"
+              :key="n"
+              class="eturn__pip"
+              :class="n === tempoUntilTurnLive(e) ? 'eturn__pip--act' : 'eturn__pip--wait'"
+            ></span>
+          </span>
+          <span class="enemy-row__intent" :class="`enemy-row__intent--${enemyNextIntent(e).kind}`">
+            {{ enemyNextIntent(e).icon }}<template v-if="enemyNextIntent(e).text"> {{ enemyNextIntent(e).text }}</template>
+          </span>
+        </button>
+      </div>
 
       <!-- 활성 유물 칩 — 로드아웃(전투형, 금빛) + 패시브/즉발(상시, 회색). -->
       <div
@@ -1701,9 +1761,19 @@ onUnmounted(() => {
             <div v-if="c.instanceId && queuedCardIds.has(c.instanceId)" class="card__queued-tag">계획됨</div>
           </button>
         </div>
-        <div class="piles">
-          <span>드로우 {{ gc.drawPile.length }}</span>
-          <span>버림 {{ gc.discardPile.length }}</span>
+        <!-- 하단 플레이어 바(요청) — 턴 · 마나(별) · HP · 덱(합산) · 손패 토글. -->
+        <div class="playerbar">
+          <span class="playerbar__turn">⚔ 턴 {{ gc.turn }}</span>
+          <span class="playerbar__mana" :title="`마나 ${remainingMana} / ${gc.maxMana}`">
+            <span
+              v-for="i in gc.maxMana"
+              :key="i"
+              class="mana-pip"
+              :class="{ 'mana-pip--on': i <= remainingMana }"
+            >✦</span>
+          </span>
+          <span class="playerbar__hp">HP {{ tokenHp(gc.player) }}/{{ gc.player.maxHp }}<span v-if="tokenBlock(gc.player) > 0" class="topbar__block"> 🛡{{ tokenBlock(gc.player) }}</span></span>
+          <span class="playerbar__deck" :title="`드로우 ${gc.drawPile.length} · 버림 ${gc.discardPile.length}`">덱 {{ gc.drawPile.length + gc.discardPile.length }}<span class="playerbar__deck-sub"> ({{ gc.drawPile.length }}/{{ gc.discardPile.length }})</span></span>
           <button class="hand-toggle" @click="handCompact = !handCompact">{{ handCompact ? '효과 보기' : '간략히' }}</button>
         </div>
       </div>
@@ -1772,6 +1842,53 @@ onUnmounted(() => {
   box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 .combat-log__line { color: #d6d6c4; font-size: 0.82rem; line-height: 1.6; }
+
+/* === 상단 적 패널(요청) — 대치 몬스터 행: 이름·HP(빨강)·남은턴(노랑)·의도. 카드 타겟 시 테두리. === */
+.enemy-toggle {
+  padding: 0.2rem 0.6rem; border-radius: 6px; cursor: pointer; font: inherit; font-size: 0.8rem; font-weight: 600;
+  background: rgba(255,122,122,0.12); border: 1px solid rgba(255,122,122,0.4); color: #ff9a9a;
+}
+.enemy-panel { display: flex; flex-direction: column; gap: 0.3rem; flex-shrink: 0; }
+.enemy-row {
+  display: flex; align-items: center; gap: 0.5rem; width: 100%; text-align: left;
+  padding: 0.3rem 0.5rem; border-radius: 7px; cursor: pointer; font: inherit;
+  background: rgba(20,22,32,0.7); border: 2px solid transparent; transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+.enemy-row:hover { background: rgba(30,33,46,0.85); }
+.enemy-row--inspected { background: rgba(40,44,60,0.92); }
+/* 임박(다음 행동까지 1수) — 왼쪽 빨간 띠. */
+.enemy-row--soon { box-shadow: inset 3px 0 0 #ff7a7a; }
+/* 카드가 이 적을 노리는 중(요청) — 노란 테두리. (임박 띠와 함께 보일 수 있음.) */
+.enemy-row--targeted { border-color: #ffd86a; box-shadow: 0 0 7px rgba(255,216,106,0.55); }
+.enemy-row--targeted.enemy-row--soon { box-shadow: 0 0 7px rgba(255,216,106,0.55), inset 3px 0 0 #ff7a7a; }
+.enemy-row__name { font-weight: 700; font-size: 0.86rem; min-width: 4.2em; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* HP 게이지(요청) — 빨강 막대 + 수치(네모 X). */
+.ehp { display: inline-flex; align-items: center; gap: 0.35rem; }
+.ehp__bar { width: 72px; height: 9px; border-radius: 5px; background: rgba(255,255,255,0.12); overflow: hidden; flex-shrink: 0; }
+.ehp__fill { display: block; height: 100%; background: linear-gradient(90deg, #e24a4a, #ff7a6a); border-radius: 5px; transition: width 220ms ease; }
+.ehp__num { font-size: 0.78rem; font-weight: 700; font-variant-numeric: tabular-nums; color: #e8e0d4; white-space: nowrap; }
+.ehp__sub { opacity: 0.6; font-weight: 600; font-size: 0.7rem; }
+.ebox__blk { margin-left: 0.25rem; color: #cfe9ff; font-size: 0.74rem; }
+/* 남은 턴 pips(요청) — 대기 턴=주황, 행동 턴(마지막)=빨강. tempo만큼 그리고 카운트다운으로 줄어든다. */
+.eturn { display: inline-flex; align-items: center; gap: 2px; }
+.eturn__pip { width: 7px; height: 13px; border-radius: 2px; }
+.eturn__pip--wait { background: #f0a83c; }
+.eturn__pip--act { background: #e24a4a; box-shadow: 0 0 5px rgba(226,74,74,0.7); }
+.enemy-row__intent { margin-left: auto; font-size: 0.82rem; color: #d6d6c4; white-space: nowrap; }
+.enemy-row__intent--attack { color: #ff9a9a; font-weight: 700; }
+.enemy-row__intent--move { color: #9ad6ff; }
+.enemy-row__intent--wait { color: #888; }
+
+/* === 하단 플레이어 바(요청) — 턴·마나(별)·HP·덱(합산). === */
+.playerbar {
+  display: flex; align-items: center; gap: 0.9rem; flex-wrap: wrap;
+  padding: 0.35rem 0.5rem; color: #b6b6c4; font-size: 0.85rem;
+}
+.playerbar__turn { color: #f6e8b8; font-weight: 600; }
+.playerbar__mana { display: inline-flex; align-items: center; gap: 0.15rem; }
+.playerbar__hp { color: #8effb8; font-weight: 600; font-variant-numeric: tabular-nums; }
+.playerbar__deck { color: #9a9aa8; font-variant-numeric: tabular-nums; }
+.playerbar__deck-sub { color: #6a6a78; font-size: 0.76rem; }
 
 /* === 보스 배너(#4) — 이름·페이즈·큰 HP바 === */
 .boss-banner {
