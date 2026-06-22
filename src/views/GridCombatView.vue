@@ -1606,7 +1606,6 @@ onUnmounted(() => {
 
       <!-- 계획 큐 (스피드 모델: 마나 한도까지 자유 배치, 실행 시 순서대로 해소). 세로 나열(US-004). -->
       <div class="plan">
-        <span class="plan__label">계획 ({{ plan.length }}) · 마나 {{ remainingMana }}/{{ gc.maxMana }}<span v-if="queuedManaCost > 0" class="plan__manaq"> (-{{ queuedManaCost }})</span></span>
         <ul class="plan__slots">
           <li
             v-for="(a, i) in plan"
@@ -2237,8 +2236,6 @@ onUnmounted(() => {
   display: flex; flex-direction: column; align-items: stretch; gap: 0.4rem;
   padding: 0.4rem 0.6rem; background: rgba(0,0,0,0.3); border-radius: 8px; flex-shrink: 0; min-width: 132px;
 }
-.plan__label { color: #c0b693; font-size: 0.82rem; }
-.plan__manaq { color: #c08eff; }
 .plan__slots { list-style: none; display: flex; flex-direction: column; gap: 0.3rem; padding: 0; margin: 0; }
 .plan__slot {
   padding: 0.28rem 0.5rem; border-radius: 6px; font-size: 0.78rem;
