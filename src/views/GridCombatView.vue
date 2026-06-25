@@ -40,8 +40,10 @@ import {
   dequeuePlayerAction,
   isInstantCard,
   previewDashTarget,
-  previewEnemyTelegraph,
+  simulatePlayerPos,
+  forecastRound,
 } from '@/systems/grid-combat';
+import type { ForecastStep } from '@/systems/grid-combat';
 import { traceLineOfSight, TILE_PROPS } from '@/systems/tiles';
 import { statusLabel } from '@/systems/labels';
 import type { Item } from '@/data/schemas';
@@ -203,6 +205,19 @@ const liveAllies = computed<GridCombatant[]>(() =>
 const gridCols = computed(() => stage.value?.width ?? 0);
 const gridRows = computed(() => stage.value?.height ?? 0);
 
+/** 보드 참조 셀 px(데스크탑 76 / 모바일 58) — matchMedia로 반응형 갱신. */
+const refCellPx = ref(76);
+/**
+ * 격자 셀 크기(#4) — 큰/세로로 긴 격자에서 전체 보드를 *3×3 기준 크기에 고정*하고 셀을 줄인다(정사각 유지).
+ * 더 큰 차원(cols·rows, 최소 3)이 3*refCell 범위에 들어가도록 cell = floor(3*refCell / max(cols,rows,3)).
+ *  - 3×3 이하: refCell 그대로(종전 크기).  - 세로/가로 4칸+: 셀이 줄어 보드가 넘치지 않고 한눈에 들어온다.
+ * 보드는 인라인 --cell로 이 값을 받는다(CSS 기본/미디어쿼리는 폴백).
+ */
+const cellPx = computed<number>(() => {
+  const span = Math.max(gridCols.value, gridRows.value, 3);
+  return Math.max(24, Math.floor((3 * refCellPx.value) / span));
+});
+
 /**
  * 계획에 이동이 큐돼 있으면 *이동 후* 플레이어 위치(US-002). 이후 카드의 범위/조준은 이 위치 기준.
  * 이동은 한 라운드 1회(US-001)라 마지막 큐 이동의 도착점.
@@ -210,9 +225,8 @@ const gridRows = computed(() => stage.value?.height ?? 0);
 const effectivePlayerPos = computed<GridPos>(() => {
   const state = gc.value;
   if (!state) return { x: 0, y: 0 };
-  let pos = { ...state.player.pos };
-  for (const a of plan.value) if (a.kind === 'move') pos = { ...a.to };
-  return pos;
+  // 이동 + 대시(move-self 카드)를 큐 순서대로 시뮬(#2) — 현재 위치가 아니라 *이동 후 위치* 기준 체이닝.
+  return simulatePlayerPos(state, plan.value);
 });
 /** 이동이 큐돼 현재 위치와 이동 후 위치가 다른가(잔상 토큰 표시 여부). */
 const hasPlannedMove = computed<boolean>(() => {
@@ -409,7 +423,8 @@ const dashPreviewCell = computed<GridPos | null>(() => {
   if (!pid) return null;
   const card = state.hand.find((c) => c.instanceId === pid);
   if (!card || !card.effects.some((e) => e.kind === 'move-self')) return null;
-  return previewDashTarget(state, card);
+  // 대시(미리보기 카드)는 아직 큐에 없으므로 *현재 큐 끝의 이동 후 위치*에서 시작(#2).
+  return previewDashTarget(state, card, effectivePlayerPos.value);
 });
 
 /** 인스펙트 중인 적의 다음 공격 미리보기 칸(키 집합). */
@@ -435,21 +450,24 @@ const inspectAttackTiles = computed<Set<string>>(() => {
 // (inspectedEnemy 제거 — 적 클릭 설명 패널 폐지. inspectedId는 격자 사거리 강조(inspectAttackTiles)에만 사용.)
 
 /**
- * 적 행동 텔레그래프 — *이번 턴에 행동할(임박한)* 적의 공격 범위 + 이동 목적지를 자동 표시.
- * tempoUntilTurnLive(e) <= 1 이면 이 적은 계획 + 자동 대기로 곧 1턴을 수행한다 → 미리 보여 준다.
- * intentQueue를 따라가며 이동은 도착 칸(move), 공격은 (이동 후 위치 기준) 타격 칸(attack)을 모은다.
- * 계획을 쌓을수록(queuedTempoTicks 변동) 임박 적이 늘어 — 체스처럼 상대 수를 읽고 대응하게 한다.
+ * 라운드 예측(forecastRound) — 이번 라운드에 행동할 적의 위협 칸(텔레그래프) + 행동 리스트 인터리브(#6).
+ * 엔진이 commitRound 인터리브를 클론+샌드박스 rng로 미러해, 플레이어 큐(이동·대시)를 반영한 적 행동 시점·위협을
+ * 계산한다. 계획을 쌓을수록(이동/카드) 임박 적이 늘고 위협 위치가 바뀐다 — 체스처럼 수를 읽고 대응하게 한다.
  */
-// 무한갱신 회피(#3): 텔레그래프 AI(enemyPlan/게임트리)는 무겁고 reactive 의존성을 건드려, computed로
+// 무한갱신 회피(#3): 예측 AI(enemyPlan/게임트리)는 무겁고 reactive 의존성을 건드려, computed로
 //   렌더 중 동기 계산하면 "Maximum recursive updates"가 났다. 그래서 *post-flush watch*에서 계산해
 //   shallowRef에 기록한다(렌더 플러시와 분리 — 콜백 내 reactive read/write는 추적되지 않아 루프 불가).
-//   source는 계획·적 위치·턴 등 *필요 신호만* 추려 의존(전체 state 깊은 의존 회피).
+//   source는 계획(카드 id 포함)·적 위치·턴 등 *필요 신호만* 추려 의존(전체 state 깊은 의존 회피).
 const enemyTelegraph = shallowRef<{ attack: Set<string>; move: Set<string> }>({ attack: new Set(), move: new Set() });
+const forecastTimeline = shallowRef<ForecastStep[]>([]);
 watch(
   () => {
     const s = gc.value;
     if (!s || committing.value || phase.value !== 'combat') return '';
-    const p = plan.value.map((a) => (a.kind === 'move' ? `m${a.to.x},${a.to.y}` : a.kind)).join('>');
+    const p = plan.value.map((a) =>
+      a.kind === 'move' ? `m${a.to.x},${a.to.y}`
+        : a.kind === 'card' ? `c${a.cardInstanceId}`
+          : a.kind).join('>');
     const e = liveEnemies.value.map((en) => `${en.id}@${en.pos.x},${en.pos.y}#${en.tempoCounter ?? 0}/${en.hp}`).join('|');
     return `${s.turn}~${p}~${e}`;
   },
@@ -457,12 +475,15 @@ watch(
     const s = gc.value;
     const atk = new Set<string>();
     const mv = new Set<string>();
+    let timeline: ForecastStep[] = [];
     if (s && !committing.value && phase.value === 'combat') {
-      const tele = previewEnemyTelegraph(s);
-      for (const t of tele.attack) atk.add(`${t.x},${t.y}`);
-      for (const t of tele.move) mv.add(`${t.x},${t.y}`);
+      const fc = forecastRound(s);
+      for (const t of fc.telegraph.attack) atk.add(`${t.x},${t.y}`);
+      for (const t of fc.telegraph.move) mv.add(`${t.x},${t.y}`);
+      timeline = fc.timeline;
     }
     enemyTelegraph.value = { attack: atk, move: mv };
+    forecastTimeline.value = timeline;
   },
   { immediate: true, flush: 'post' },
 );
@@ -807,6 +828,42 @@ function planLabel(a: PlannedAction): string {
   }
 }
 
+/**
+ * 행동 리스트 행(#6) — 플레이어 행동 + *적 턴 예고*를 forecastRound 타임라인 순서(속도 반영)대로 인터리브.
+ * 적 행은 어느 플레이어 행동 사이에 누가 치는지(공격이면 피해량)를 보여 준다. 예측이 없으면(커밋 등)
+ * 플레이어 행동만 단순 나열(폴백). planIndex는 player 행에서만 유효(× 취소용), enemy 행은 -1.
+ */
+interface PlanRow {
+  type: 'player' | 'enemy';
+  planIndex: number;
+  label: string;
+  enemyName: string;
+  intentIcon: string;
+  intentText: string;
+  intentKind: string;
+}
+const planRows = computed<PlanRow[]>(() => {
+  const p = plan.value;
+  const tl = forecastTimeline.value;
+  const mkPlayer = (i: number): PlanRow => ({
+    type: 'player', planIndex: i, label: planLabel(p[i]),
+    enemyName: '', intentIcon: '', intentText: '', intentKind: '',
+  });
+  if (!tl.length || committing.value) return p.map((_, i) => mkPlayer(i));
+  const rows: PlanRow[] = [];
+  for (const step of tl) {
+    if (step.kind === 'player') {
+      if (p[step.index]) rows.push(mkPlayer(step.index));
+    } else {
+      rows.push({
+        type: 'enemy', planIndex: -1, label: step.name,
+        enemyName: step.name, intentIcon: step.intentIcon, intentText: step.intentText, intentKind: step.intentKind,
+      });
+    }
+  }
+  return rows;
+});
+
 // ============================================================================
 // 입력 핸들러
 // ============================================================================
@@ -895,10 +952,10 @@ function potionSummary(item: Item): string {
 }
 
 /**
- * 핸드 카드 탭(#2) — 한 번 탭에 선택/등록.
- *  - 즉시(instant) 카드: 누르는 즉시 발동(현행).
- *  - 원거리(aimed=투척/조준) 카드: 탭1=조준 진입 → 타깃 칸 탭=등록(현행 2단계 유지).
- *  - 패턴/제자리(비조준) 카드: *탭 한 번에 즉시 큐잉*(기존 "같은 카드 다시 탭" 2탭 제거).
+ * 핸드 카드 탭 — 한 번 탭에 선택/등록.
+ *  - 즉시(instant) 카드(#7): 탭1=범위 표시(조준 진입), 탭2(같은 카드)=발동. 오발 방지.
+ *  - 원거리(aimed=투척/조준) 카드: 탭1=조준 진입 → 타깃 칸 탭=등록(2단계 유지).
+ *  - 패턴/제자리(비조준) 카드: *탭 한 번에 즉시 큐잉*.
  */
 function selectCard(c: Card) {
   if (pressFired) { pressFired = false; return; } // 롱프레스(상세) 직후의 click 억제
@@ -908,8 +965,15 @@ function selectCard(c: Card) {
   tileInfo.value = null;
   itemPanelOpen.value = false;
   swapPanelOpen.value = false;
-  // 즉시 카드(#7) — 누르는 즉시 발동(조준/계획 없이). planFull과 무관.
-  if (cardIsInstant(c)) { doInstant(c); return; }
+  // 즉시 카드(#7) — 1탭: 범위 표시(조준 진입), 2탭(같은 카드): 발동. planFull과 무관.
+  if (cardIsInstant(c)) {
+    if (mode.value === 'card' && aimingCardId.value === c.instanceId) { confirmCard(); return; }
+    mode.value = 'card';
+    aimingCardId.value = c.instanceId;
+    aimCell.value = null;
+    ui.toast('info', '범위 확인 — 카드를 다시 눌러 발동');
+    return;
+  }
   // 원거리 조준 카드 — 2단계(조준 진입 → 칸 탭 등록). 조준 중 같은 카드 다시 탭 = 확정.
   if (isAimedCard(c)) {
     if (mode.value === 'card' && aimingCardId.value === c.instanceId) {
@@ -970,6 +1034,14 @@ const aimingCardIsAimed = computed<boolean>(() => {
   if (mode.value !== 'card' || !aimingCardId.value || !state) return false;
   const card = state.hand.find((c) => c.instanceId === aimingCardId.value);
   return !!card && isAimedCard(card);
+});
+
+/** 조준 중인 카드가 즉시(instant) 카드인가(#7) — aim-bar 힌트/버튼 라벨 분기용(확정=발동). */
+const aimingCardIsInstant = computed<boolean>(() => {
+  const state = gc.value;
+  if (mode.value !== 'card' || !aimingCardId.value || !state) return false;
+  const card = state.hand.find((c) => c.instanceId === aimingCardId.value);
+  return !!card && cardIsInstant(card);
 });
 
 /**
@@ -1049,6 +1121,8 @@ function confirmCard() {
   if (!state || !aimingCardId.value) return;
   const card = state.hand.find((c) => c.instanceId === aimingCardId.value);
   if (!card) return;
+  // 즉시 카드(#7) — 큐잉이 아니라 바로 발동(조준/범위 표시 단계에서 확정 = 발동). 모든 확정 경로 공통.
+  if (cardIsInstant(card)) { doInstant(card); return; }
   // aimed: 조준 칸을 먼저 골라야 한다. 그 칸의 플레이어 기준 오프셋을 함께 넘긴다.
   // 오프셋은 *이동 후 위치* 기준(US-002). 실행 시 이동이 먼저 해소돼 player.pos가 이동 후가 되므로 일치.
   const caster = effectivePlayerPos.value;
@@ -1206,7 +1280,14 @@ watch(
   },
 );
 
+// 보드 셀 크기(#4) 반응형 — 좁은 화면이면 참조 셀 58px, 아니면 76px. matchMedia 변화 구독.
+let cellMql: MediaQueryList | null = null;
+function syncRefCell() { refCellPx.value = cellMql?.matches ? 58 : 76; }
+
 onMounted(() => {
+  cellMql = window.matchMedia('(max-width: 640px)');
+  syncRefCell();
+  cellMql.addEventListener('change', syncRefCell);
   if (!run.active) {
     router.push('/main');
     return;
@@ -1233,9 +1314,10 @@ onMounted(() => {
   else if (o === 'lose') phase.value = 'defeat';
 });
 
-// 언마운트 — 진행 중 순차 재생 타이머 정리(전이 후 콜백 발사 방지).
+// 언마운트 — 진행 중 순차 재생 타이머 정리(전이 후 콜백 발사 방지) + 미디어쿼리 구독 해제.
 onUnmounted(() => {
   fx.clearDisplay();
+  cellMql?.removeEventListener('change', syncRefCell);
 });
 </script>
 
@@ -1315,6 +1397,7 @@ onUnmounted(() => {
         <div
           class="board"
           :style="{
+            '--cell': `${cellPx}px`,
             'grid-template-columns': `repeat(${gridCols}, var(--cell))`,
             'grid-template-rows': `repeat(${gridRows}, var(--cell))`,
           }"
@@ -1534,18 +1617,25 @@ onUnmounted(() => {
 
       <!-- 행동 존(요청) — 한 줄: [배치된 카드 리스트 — 왼쪽 절반] [이동][아이템][교대] [턴종료=정사각형 오른쪽 끝]. -->
       <div class="action-zone">
-        <!-- 배치된 카드/행동 리스트 — 세로(위로 길어짐). 비우기는 작은 ×로 리스트 상단. -->
+        <!-- 배치된 카드/행동 리스트 — 세로(위로 길어짐). 적 턴 예고가 속도순으로 사이에 끼어든다(#6). -->
         <div class="plan plan--inline">
           <button v-if="plan.length > 0" class="plan__clear-x" :disabled="committing" @click="clearPlan" title="모두 비우기" aria-label="모두 비우기">×</button>
           <ul class="plan__slots">
             <li
-              v-for="(a, i) in plan"
-              :key="`slot-${i}`"
-              class="plan__slot plan__slot--filled"
+              v-for="(row, i) in planRows"
+              :key="`row-${i}`"
+              class="plan__slot"
+              :class="row.type === 'enemy' ? ['plan__slot--enemy', `plan__slot--enemy-${row.intentKind}`] : 'plan__slot--filled'"
             >
-              <span class="plan__num">{{ i + 1 }}</span>
-              <span class="plan__txt">{{ planLabel(a) }}</span>
-              <button class="plan__x" :disabled="committing" @click="removePlanLine(i)" aria-label="이 줄 취소">×</button>
+              <template v-if="row.type === 'player'">
+                <span class="plan__num">{{ row.planIndex + 1 }}</span>
+                <span class="plan__txt">{{ row.label }}</span>
+                <button class="plan__x" :disabled="committing" @click="removePlanLine(row.planIndex)" aria-label="이 줄 취소">×</button>
+              </template>
+              <template v-else>
+                <span class="plan__enemy-icon">{{ row.intentIcon }}</span>
+                <span class="plan__txt plan__txt--enemy">{{ row.enemyName }}<span v-if="row.intentText" class="plan__enemy-dmg"> {{ row.intentText }}</span></span>
+              </template>
             </li>
             <li v-if="plan.length === 0" class="plan__slot plan__slot--empty">행동 배치</li>
           </ul>
@@ -1621,13 +1711,14 @@ onUnmounted(() => {
       <!-- 카드 조준 확정/취소 (조준 중일 때) — 적 없어도 발동 가능. -->
       <div v-if="mode === 'card'" class="aim-bar">
         <span class="aim-bar__hint">
-          <template v-if="aimingCardIsAimed && !aimCell">조준 칸을 고르세요 (사거리 내)</template>
+          <template v-if="aimingCardIsInstant">즉시 발동 — 범위 확인 후 카드/범위를 다시 눌러 발동</template>
+          <template v-else-if="aimingCardIsAimed && !aimCell">조준 칸을 고르세요 (사거리 내)</template>
           <template v-else-if="aimingCardIsAimed">조준 완료 — 카드 다시 눌러 확정</template>
           <template v-else-if="aimingCardSelfTarget">제자리 발동 — 카드 다시 눌러 확정</template>
           <template v-else-if="!aimingHasEnemyTarget">빈 칸 발동 — 카드 다시 눌러 확정</template>
           <template v-else>범위 안의 적에 적용 — 카드 다시 눌러 확정</template>
         </span>
-        <button class="aim-bar__confirm" @click="confirmCard">확정</button>
+        <button class="aim-bar__confirm" @click="confirmCard">{{ aimingCardIsInstant ? '발동' : '확정' }}</button>
         <button class="aim-bar__cancel" @click="cancelAim">취소</button>
       </div>
 
@@ -1691,8 +1782,9 @@ onUnmounted(() => {
             <div v-if="c.instanceId && queuedCardIds.has(c.instanceId)" class="card__queued-tag">계획됨</div>
           </button>
         </div>
-        <!-- 하단 플레이어 바(요청) — 턴 · 마나(별) · HP · 덱(합산) · 손패 토글. -->
-        <div class="playerbar">
+        <!-- 하단 플레이어 바(요청) — 백판 전체가 HP 게이지(#5): 테두리=틀, 가로 채움=체력(줄면 가로로 줄어듦). -->
+        <div class="playerbar" :class="{ 'playerbar--low': hpRatio(gc.player) <= 0.3 }">
+          <span class="playerbar__hpfill" :style="{ width: `${hpRatio(gc.player) * 100}%` }"></span>
           <span class="playerbar__turn">⚔ 턴 {{ gc.turn }}</span>
           <span class="playerbar__mana" :title="`마나 ${remainingMana} / ${gc.maxMana}`">
             <span
@@ -1809,16 +1901,47 @@ onUnmounted(() => {
 .enemy-row__intent--move { color: #9ad6ff; }
 .enemy-row__intent--wait { color: #888; }
 
-/* === 하단 플레이어 바(요청) — 턴·마나(별)·HP·덱(합산). === */
+/* === 하단 플레이어 바(요청) — 백판 전체가 HP 게이지(#5). 테두리=틀, __hpfill 가로 채움=체력. === */
 .playerbar {
+  position: relative; overflow: hidden;
   display: flex; align-items: center; gap: 0.9rem; flex-wrap: wrap;
-  padding: 0.35rem 0.5rem; color: #b6b6c4; font-size: 0.85rem;
+  padding: 0.4rem 0.6rem; color: #b6b6c4; font-size: 0.85rem;
+  border: 1px solid rgba(142,255,184,0.45); border-radius: 8px;
+  background: rgba(10,16,12,0.6); /* 빈(잃은) 체력 구간의 어두운 바탕. */
 }
+/* HP 채움 — 왼쪽부터 가로로 채우고, 체력이 줄면 width가 줄어 가로로 축소(요청). 토큰/숫자는 위(z-index). */
+.playerbar__hpfill {
+  position: absolute; left: 0; top: 0; bottom: 0; z-index: 0;
+  background: linear-gradient(90deg, rgba(74,200,120,0.5), rgba(142,255,184,0.42));
+  border-right: 1px solid rgba(142,255,184,0.7);
+  transition: width 240ms ease, background 240ms ease;
+  pointer-events: none;
+}
+/* 위험(≤30%) — 채움을 붉게. */
+.playerbar--low { border-color: rgba(255,122,122,0.6); }
+.playerbar--low .playerbar__hpfill {
+  background: linear-gradient(90deg, rgba(226,74,74,0.55), rgba(255,138,122,0.45));
+  border-right-color: rgba(255,122,122,0.8);
+}
+.playerbar > :not(.playerbar__hpfill) { position: relative; z-index: 1; }
 .playerbar__turn { color: #f6e8b8; font-weight: 600; }
 .playerbar__mana { display: inline-flex; align-items: center; gap: 0.15rem; }
-.playerbar__hp { color: #8effb8; font-weight: 600; font-variant-numeric: tabular-nums; }
-.playerbar__deck { color: #9a9aa8; font-variant-numeric: tabular-nums; }
-.playerbar__deck-sub { color: #6a6a78; font-size: 0.76rem; }
+.playerbar__hp { color: #eafff2; font-weight: 700; font-variant-numeric: tabular-nums; text-shadow: 0 1px 2px rgba(0,0,0,0.7); }
+.playerbar__deck { color: #c2c2cc; font-variant-numeric: tabular-nums; }
+.playerbar__deck-sub { color: #8a8a96; font-size: 0.76rem; }
+
+/* === 행동 리스트의 적 턴 예고(#6) — 플레이어 행동 사이에 끼어드는 적 마커. === */
+.plan__slot--enemy {
+  color: #ffcaca; background: rgba(226,74,74,0.14); border-style: solid; border-color: rgba(255,122,122,0.5);
+}
+.plan__slot--enemy-move { color: #cfe6ff; background: rgba(120,180,255,0.12); border-color: rgba(120,180,255,0.45); }
+.plan__slot--enemy-wait { color: #b0b0bc; background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.18); }
+.plan__enemy-icon {
+  display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+  width: 1.1rem; height: 1.1rem; font-size: 0.82rem; line-height: 1;
+}
+.plan__txt--enemy { font-weight: 600; }
+.plan__enemy-dmg { color: #ffe2a0; font-variant-numeric: tabular-nums; font-weight: 800; }
 
 /* === 보스 배너(#4) — 이름·페이즈·큰 HP바 === */
 .boss-banner {

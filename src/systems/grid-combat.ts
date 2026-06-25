@@ -44,7 +44,7 @@ import { bonusesFromEffective } from './equipment';
 import type { CombatBonuses } from './stats';
 import { resolveLoadout } from './loadout';
 import { applyColorBoost, applyColorBoostAll, type ColorKey } from './colors';
-import { rng } from './rng';
+import { rng, getRng, setRng, createSeededRng } from './rng';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import {
@@ -334,33 +334,41 @@ function isLegalMove(state: GridCombatState, combatant: GridCombatant, to: GridP
 // ============================================================================
 
 /**
- * 투척 1칸 해소(US-003) — caster에서 shape offset 칸을 향해 직선 투척.
- * 경로(직선)는 *관통(pierce)* 가능 칸을 지나가고, 관통 불가 칸을 만나면 *그 앞*의 공격 가능 칸이 타격점.
- * 다 뚫리면 대상 칸(공격 가능 시). 관통 미정의=공격과 동일(레지스트리에서 일치). 착지 불가면 null(불발).
- * 비직선 offset은 폴백(대상 칸이 공격 가능하면 그 칸).
+ * 투척 1칸 해소(US-003 + 2026-06-25 재설계) — caster에서 shape offset 방향으로 직선 투척.
+ * 핵심: *방향상 첫 적이 있는 칸에서 정지*해 그 칸을 타격점으로 삼는다(적을 지나쳐 빈 칸까지 날아가지 않음).
+ *  - 거리 0(시전자 칸)에 적이 *겹쳐* 있으면 그 칸을 타격(같은 칸 타격 — US #3-2). 시전자 칸이 비면 통과.
+ *  - 방향을 따라가다 처음 만난 적의 칸에서 정지(US #3-1).
+ *  - 적이 하나도 없으면 종전대로 *관통 가능 경로 끝*(장애물 앞 또는 최대 사거리)의 공격 가능 칸이 타격점.
+ * 비직선 offset은 폴백(대상 칸이 공격 가능하면 그 칸). 착지/적 모두 없으면 null(불발).
  */
 function resolveThrowCell(state: GridCombatState, caster: GridPos, off: GridOffset): GridPos | null {
   const adx = Math.abs(off.dx), ady = Math.abs(off.dy);
   const steps = Math.max(adx, ady);
-  if (steps === 0) return null;
   const straight = adx === 0 || ady === 0 || adx === ady;
+  const enemyAt = (p: GridPos): boolean =>
+    combatantsAt(state, p).some((c) => c.team === 'enemy' && c.hp > 0);
   if (!straight) {
     const p = { x: caster.x + off.dx, y: caster.y + off.dy };
     return canAttackTile(state.stage, p) ? p : null;
   }
   const sx = Math.sign(off.dx), sy = Math.sign(off.dy);
   let lastHit: GridPos | null = null;
-  for (let i = 1; i <= steps; i++) {
+  for (let i = 0; i <= steps; i++) {
     const p = { x: caster.x + sx * i, y: caster.y + sy * i };
-    if (canAttackTile(state.stage, p)) lastHit = p;          // 여기 착지 가능 — 앞 칸 후보 갱신.
-    if (i < steps && !canPierceTile(state.stage, p)) break;  // 중간 칸이 관통 불가 — 더 못 감(lastHit가 타격점).
+    const attackable = canAttackTile(state.stage, p);
+    // 방향상 첫 적(거리 0=같은 칸 포함)이 있는 칸에서 정지 — 적을 지나치지 않는다(US #3-1·#3-2).
+    if (attackable && enemyAt(p)) return { ...p };
+    if (i > 0 && attackable) lastHit = { ...p };               // 적 없는 착지 후보(시전자 칸 자신은 착지점 아님).
+    if (i >= 1 && i < steps && !canPierceTile(state.stage, p)) break;  // 장애물 앞 정지(시전자 칸은 통과).
   }
   return lastHit;
 }
 
 /**
- * 투척 카드 전체 해소 — 각 shape 칸을 투척해 타격점 집계. *둘 이상이 같은 칸*으로 귀결되면
- * 그 칸은 강 칸(1.5×)으로 승격(수렴, US-003). 반환 mul = per_tile_mul × (수렴 시 ≥1.5).
+ * 투척 카드 전체 해소 — 각 shape offset을 *독립 투척*해 타격점을 모은다(2026-06-25 재설계).
+ * 종전의 "둘 이상이 같은 칸으로 수렴 → 강 칸(1.5×)" 병합을 폐지: 같은 칸에 여러 투척이 도달하면
+ * *각각이 별도 타격*으로 들어간다(US #3-3 — 거리가 다른 두 던지기가 같은 적을 맞히면 2회 타격).
+ * 반환은 offset당 1개 항목(같은 좌표 중복 허용). mul = 그 offset의 per_tile_mul.
  */
 export function resolveThrowHits(
   state: GridCombatState,
@@ -369,20 +377,12 @@ export function resolveThrowHits(
 ): { pos: GridPos; mul: number }[] {
   const caster = casterPos ?? state.player.pos;
   const muls = card.perTileMul ?? [];
-  const acc = new Map<string, { pos: GridPos; baseMul: number; count: number }>();
+  const out: { pos: GridPos; mul: number }[] = [];
   (card.shape ?? []).forEach((off, i) => {
     const hit = resolveThrowCell(state, caster, off);
-    if (!hit) return;
-    const k = `${hit.x},${hit.y}`;
-    const m = muls[i] ?? 1;
-    const ex = acc.get(k);
-    if (ex) { ex.count += 1; ex.baseMul = Math.max(ex.baseMul, m); }
-    else acc.set(k, { pos: hit, baseMul: m, count: 1 });
+    if (hit) out.push({ pos: { ...hit }, mul: muls[i] ?? 1 });
   });
-  return [...acc.values()].map((v) => ({
-    pos: v.pos,
-    mul: v.count >= 2 ? Math.max(v.baseMul, STRONG_MUL) : v.baseMul,
-  }));
+  return out;
 }
 
 /**
@@ -676,27 +676,39 @@ export function playInstantCard(state: GridCombatState, cardInstanceId: string):
  * move-self(대시) 카드의 이동 목적지 미리보기(2026-06-19) — dashPlayer와 동일 경로를 *불변*으로 계산.
  * 가장 가까운 적 기준 toward/away로 tiles칸. 못 움직이면 null. UI 잔상(목적지) 표시용.
  */
-export function previewDashTarget(state: GridCombatState, card: Card): GridPos | null {
+export function previewDashTarget(state: GridCombatState, card: Card, fromPos?: GridPos): GridPos | null {
   const eff = card.effects.find((e) => e.kind === 'move-self');
   if (!eff) return null;
   const tiles = Math.max(1, Math.floor(eff.value ?? 0) || 1);
   const mode = eff.params?.mode === 'toward' ? 'toward' : 'away';
-  const enemy = nearestEnemy(state);
-  if (!enemy) return null;
-  const from = { ...state.player.pos };
-  let cur = { ...from };
-  for (let i = 0; i < tiles; i++) {
-    const dx = enemy.pos.x - cur.x;
-    const dy = enemy.pos.y - cur.y;
-    let sx = 0, sy = 0;
-    if (Math.abs(dx) >= Math.abs(dy)) sx = Math.sign(dx); else sy = Math.sign(dy);
-    if (mode === 'away') { sx = -sx; sy = -sy; }
-    if (sx === 0 && sy === 0) break;
-    const next = { x: cur.x + sx, y: cur.y + sy };
-    if (!tileWalkable(state.stage, next)) break;
-    cur = next;
-  }
+  const from = fromPos ?? state.player.pos;
+  const cur = computeDashDestination(state, from, tiles, mode);
   return samePos(cur, from) ? null : cur;
+}
+
+/**
+ * 플레이어 계획(plan) 시뮬레이션(#2) — 큐의 이동·대시(move-self 카드)를 *순서대로* 적용한 위치.
+ * 큐에 이미 이동/대시가 있으면 그 *이동 후 위치*에서 다음 카드/대시가 체이닝되도록 한다
+ * (종전엔 항상 현재 위치 기준이라 발놀림 등 이동 카드 이후 시뮬레이션이 어긋났다).
+ * upTo 지정 시 그 인덱스 *직전*까지만 적용(특정 행동 시점의 위치). 순수 계산(상태 불변).
+ */
+export function simulatePlayerPos(state: GridCombatState, plan: PlannedAction[], upTo?: number): GridPos {
+  let pos = { ...state.player.pos };
+  const end = upTo === undefined ? plan.length : Math.min(upTo, plan.length);
+  for (let i = 0; i < end; i++) {
+    const a = plan[i];
+    if (a.kind === 'move') { pos = { ...a.to }; continue; }
+    if (a.kind === 'card') {
+      const card = state.hand.find((c) => c.instanceId === a.cardInstanceId);
+      const eff = card?.effects.find((e) => e.kind === 'move-self');
+      if (eff) {
+        const tiles = Math.max(1, Math.floor(eff.value ?? 0) || 1);
+        const mode = eff.params?.mode === 'toward' ? 'toward' : 'away';
+        pos = computeDashDestination(state, pos, tiles, mode);
+      }
+    }
+  }
+  return pos;
 }
 
 // ============================================================================
@@ -1744,63 +1756,166 @@ function recomputeAllEnemyPlans(state: GridCombatState): void {
 }
 
 // ============================================================================
-// 적 행동 텔레그래프(item 7) — 임박 적의 *확정된* 이번 턴 위협을 미리 표시
+// 라운드 예측(forecastRound) — 적 행동 텔레그래프 + 행동 리스트 인터리브(#1·#6, 2026-06-25)
 // ----------------------------------------------------------------------------
-// 의도는 직전 라운드 종료(recomputeAllEnemyPlans)·전투 시작·직전 자기 행동 뒤에 *고정*된 intentQueue다.
-// 텔레그래프는 그 고정 의도를 적의 *현재 위치* 기준으로 투영만 한다 — 플레이어가 계획을 바꿔도(이동 큐 추가)
-// 예고가 흔들리지 않는다. 그리고 takeCombatantTurn이 *재계산 없이* 그 고정 의도를 실행하므로, 예고한 칸을
-// 벗어나면(이동) 공격이 빗나간다 = 회피가 의미를 갖는다(사용자 요구: 예고=실행 보장).
-// 읽기 전용 투영이라(enemyPlan 미호출) 클론/로컬 rng 스왑이 불필요 — "Maximum recursive updates" 위험 없음.
+// 실행(commitRound)이 *적 행동 시점마다 enemyPlan을 다시 뽑아* 그때의 플레이어 위치를 노리도록 바뀌었다(#1).
+// 따라서 예고도 같은 방식이어야 일치한다: 플레이어 큐(이동·대시)를 *순서대로* 시뮬레이션하며, 적이 due가 되는
+// 시점의 *시뮬레이션된 플레이어 위치*를 기준으로 enemyPlan을 재계산해 위협 칸과 행동 마커를 만든다.
+//  - commitRound의 인터리브(스텝마다 적 카운터+1 → 속도 우선순위로 faster/slower 분할 → 플레이어 행동 사이에
+//    적 행동)를 그대로 미러한다 → 행동 리스트(#6)가 "어느 행동 사이에 어느 적이 친다"를 속도까지 반영해 보여 준다.
+//  - *클론 + 샌드박스 rng*로 돈다: 라이브 상태/런 rng를 건드리지 않아(읽기 전용) "Maximum recursive updates"·
+//    rng 오염이 없다. post-flush watch에서 호출(렌더 동기 계산 아님).
 // ============================================================================
 
-/** 적 e가 이번 라운드(현재 계획 + 턴종료 자동 대기 1틱)에 *행동하는가*. tut<=1 과 동일 의미를 엔진에서 판정. */
-function enemyActsThisRound(state: GridCombatState, e: GridCombatant): boolean {
-  const slow = (state.gridEnemySlow ?? 0) > 0 ? 1 : 0;
-  const tempo = Math.max(1, (e.tempo ?? DEFAULT_TEMPO) + slow + (e.statuses['slowed'] ?? 0));
-  // 이번 라운드 누적 틱 = 계획 행동 수 + 자동 대기 1(퇴행이면 자동 대기는 시간 미소모 → 미포함).
-  const planTicks = state.playerPlan.length;
-  const autoWait = (state.player.statuses['regress'] ?? 0) > 0 ? 0 : 1;
-  const ticks = planTicks + autoWait;
-  const c0 = e.tempoCounter ?? 0;
-  return Math.floor((c0 + ticks) / tempo) > Math.floor(c0 / tempo);
+/** 라운드 예측 한 스텝 — 플레이어 행동(plan index) 또는 적 1턴 마커. */
+export interface ForecastPlayerStep { kind: 'player'; index: number; }
+export interface ForecastEnemyStep {
+  kind: 'enemy';
+  enemyId: string;
+  name: string;
+  /** 이 턴의 요약(첫 유의미 행동) — 행동 리스트 아이콘/피해 표기용. */
+  intentKind: 'attack' | 'move' | 'wait';
+  intentIcon: string;
+  intentText: string;
+  /** 이 턴에 위협하는 공격 칸 / 이동 도착 칸(텔레그래프). */
+  strikeTiles: GridPos[];
+  moveTiles: GridPos[];
+}
+export type ForecastStep = ForecastPlayerStep | ForecastEnemyStep;
+export interface RoundForecast {
+  timeline: ForecastStep[];
+  telegraph: { attack: GridPos[]; move: GridPos[] };
+}
+
+/** 예측 전용 경량 클론 — player/enemies의 pos·tempoCounter만 새 객체로(나머지 ref 공유: 읽기 전용). */
+function cloneForForecast(state: GridCombatState): GridCombatState {
+  return {
+    ...state,
+    player: { ...state.player, pos: { ...state.player.pos } },
+    enemies: state.enemies.map((e) => ({ ...e, pos: { ...e.pos } })),
+  };
+}
+
+/** 시뮬레이션에 플레이어 1행동의 위치 변화(이동·대시)를 반영(#2 체이닝과 동일 규칙). */
+function applyPlayerActionToSim(sim: GridCombatState, a: PlannedAction): void {
+  if (a.kind === 'move') { sim.player.pos = { ...a.to }; return; }
+  if (a.kind === 'card') {
+    const card = sim.hand.find((c) => c.instanceId === a.cardInstanceId);
+    const eff = card?.effects.find((e) => e.kind === 'move-self');
+    if (eff) {
+      const tiles = Math.max(1, Math.floor(eff.value ?? 0) || 1);
+      const mode = eff.params?.mode === 'toward' ? 'toward' : 'away';
+      sim.player.pos = computeDashDestination(sim, sim.player.pos, tiles, mode);
+    }
+  }
 }
 
 /**
- * 적 행동 텔레그래프 계산(item 7) — 이번 라운드에 행동할 적의 *확정된* intentQueue를 읽어
- * 이동 도착칸(move) + 공격 타격칸(attack)을 적의 현재 위치 기준으로 투영한다. 뷰가 이 칸을 강조한다.
- *
- * 재계산하지 않는다 — intentQueue는 직전 라운드 종료/전투 시작/직전 행동 뒤에 이미 고정돼 있고,
- * takeCombatantTurn도 그 고정 의도를 그대로 실행한다 → 예고와 실행이 항상 일치(이동으로 회피 가능).
- * enemyPlan을 호출하지 않으므로 라이브 상태를 건드리지 않고(읽기 전용), 무한 갱신·rng 오염 위험이 없다.
+ * due가 된 적 1마리를 시뮬레이션에서 *실제로 행동*시킨다(actDueEnemy/takeCombatantTurn 미러).
+ * 의도는 호출처(runStep)가 *행동 시점 플레이어 위치* 기준으로 이미 갱신해 둔 e.intentQueue를 그대로 쓴다(실행과 동일).
+ * 이동/공격 칸을 텔레그래프에 누적하고 타임라인에 적 마커를 push. 적 이동은 sim에 반영(다음 스텝/텔레가 옮긴 위치 기준).
  */
-export function previewEnemyTelegraph(live: GridCombatState): { attack: GridPos[]; move: GridPos[] } {
-  const atk = new Map<string, GridPos>();
-  const mv = new Map<string, GridPos>();
-  const add = (m: Map<string, GridPos>, p: GridPos) => { m.set(`${p.x},${p.y}`, { ...p }); };
-
-  for (const e of live.enemies) {
-    if (e.hp <= 0) continue;
-    if (!enemyActsThisRound(live, e)) continue; // 이번 라운드에 행동하는 적만 예고.
-    const plan = e.intentQueue ?? [];           // *고정* 의도(재계산 없음).
-    let simPos = { ...e.pos };
-    for (const a of plan) {
-      if (a.kind === 'move') { add(mv, a.to); simPos = { ...a.to }; }
-      else if (a.kind === 'attack') {
-        if (a.targetTiles?.length) { for (const t of a.targetTiles) add(atk, t); }
-        else if (a.attackIdx >= 0) {
-          const def = e.attacks?.[a.attackIdx];
-          if (def) for (const t of previewAttackTiles(live, { ...e, pos: simPos }, def)) add(atk, t);
-        } else {
-          // 근접 폴백(attackIdx -1) — simPos 직교 인접 4칸이 위협 범위.
-          for (const d of ROOK_DIRS) {
-            const p = { x: simPos.x + d.dx, y: simPos.y + d.dy };
-            if (canAttackTile(live.stage, p)) add(atk, p);
-          }
+function actEnemyForecast(
+  sim: GridCombatState,
+  e: GridCombatant,
+  timeline: ForecastStep[],
+  atkTele: Map<string, GridPos>,
+  mvTele: Map<string, GridPos>,
+): void {
+  const tempo = effectiveEnemyTempo(sim, e);
+  e.tempoCounter = (e.tempoCounter ?? 0) - tempo;
+  // 적 박제(skip-enemy-action) — 발동될 턴을 건너뜀(카운터는 소비). 마커도 남기지 않는다.
+  if ((sim.gridEnemySkip ?? 0) > 0) { sim.gridEnemySkip = (sim.gridEnemySkip ?? 0) - 1; return; }
+  const acts = e.intentQueue ?? [];
+  let simPos = { ...e.pos };
+  const strikeTiles: GridPos[] = [];
+  const moveTiles: GridPos[] = [];
+  let kind: 'attack' | 'move' | 'wait' = 'wait';
+  let icon = '·';
+  let text = '';
+  const addTo = (m: Map<string, GridPos>, p: GridPos) => m.set(`${p.x},${p.y}`, { ...p });
+  for (const a of acts) {
+    if (a.kind === 'move') {
+      addTo(mvTele, a.to); moveTiles.push({ ...a.to }); simPos = { ...a.to };
+      if (kind === 'wait') { kind = 'move'; icon = '»'; }
+    } else if (a.kind === 'attack') {
+      let tiles: GridPos[] = [];
+      if (a.attackIdx >= 0) {
+        const def = e.attacks?.[a.attackIdx];
+        if (def) tiles = previewAttackTiles(sim, { ...e, pos: simPos }, def);
+      } else {
+        for (const d of ROOK_DIRS) {
+          const p = { x: simPos.x + d.dx, y: simPos.y + d.dy };
+          if (canAttackTile(sim.stage, p)) tiles.push(p);
         }
       }
+      for (const t of tiles) { addTo(atkTele, t); strikeTiles.push({ ...t }); }
+      const def = a.attackIdx >= 0 ? e.attacks?.[a.attackIdx] : undefined;
+      const dmg = (def?.damage ?? e.attack ?? 0) + (e.statuses.strength ?? 0);
+      kind = 'attack'; icon = '⚔'; text = dmg > 0 ? String(dmg) : '';
     }
   }
-  return { attack: [...atk.values()], move: [...mv.values()] };
+  e.pos = simPos; // 적 이동 반영(다음 스텝 재계산/텔레가 옮긴 위치 기준이 되도록).
+  timeline.push({ kind: 'enemy', enemyId: e.id, name: e.name ?? '적', intentKind: kind, intentIcon: icon, intentText: text, strikeTiles, moveTiles });
+}
+
+/**
+ * 라운드 예측(#1 텔레그래프 일치 + #6 행동 리스트) — commitRound 인터리브를 클론+샌드박스 rng로 미러.
+ * 반환: timeline(플레이어 행동·적 턴 마커가 속도 순서대로) + telegraph(이번 라운드 위협 칸 합집합).
+ */
+export function forecastRound(state: GridCombatState): RoundForecast {
+  const timeline: ForecastStep[] = [];
+  const atkTele = new Map<string, GridPos>();
+  const mvTele = new Map<string, GridPos>();
+  if (state.outcome || state.player.hp <= 0) return { timeline, telegraph: { attack: [], move: [] } };
+
+  const prevRng = getRng();
+  // 결정론 시드(턴 기반) — 프레임마다 같은 예측(깜빡임 없음). 라이브 rng는 건드리지 않는다(샌드박스).
+  setRng(createSeededRng((((state.turn ?? 0) + 1) * 2654435761) >>> 0).next);
+  try {
+    const sim = cloneForForecast(state);
+    const plan = state.playerPlan ?? [];
+    const regress = (sim.player.statuses['regress'] ?? 0) > 0;
+
+    // 한 스텝 — commitRound를 그대로 미러(큐 순서, 이동도 카드와 동일한 한 스텝).
+    //   카운터+1 → due 의도 갱신 → 속도 분할 → faster적 → 플레이어(+이동/대시 반영) → slower적(재갱신).
+    const runStep = (pAction: PlannedAction | null, playerIndex: number | null): void => {
+      const due: GridCombatant[] = [];
+      for (const e of sim.enemies) {
+        if (e.hp <= 0) continue;
+        const tempo = effectiveEnemyTempo(sim, e);
+        e.tempoCounter = (e.tempoCounter ?? 0) + 1;
+        if ((e.tempoCounter ?? 0) >= tempo) { e.intentQueue = enemyPlan(sim, e); due.push(e); }
+      }
+      const pRank = pAction ? playerActionSpeedRank(sim, pAction) : Number.POSITIVE_INFINITY;
+      const faster: GridCombatant[] = [];
+      const slower: GridCombatant[] = [];
+      for (const e of due) (enemyActionSpeedRank(e) < pRank ? faster : slower).push(e);
+      for (const e of faster) actEnemyForecast(sim, e, timeline, atkTele, mvTele);
+      if (playerIndex !== null) {
+        timeline.push({ kind: 'player', index: playerIndex });
+        if (pAction) applyPlayerActionToSim(sim, pAction); // 이동/대시 반영(slower 적이 새 위치를 봄).
+      }
+      for (const e of slower) {
+        if (e.hp > 0) e.intentQueue = enemyPlan(sim, e);
+        actEnemyForecast(sim, e, timeline, atkTele, mvTele);
+      }
+    };
+
+    plan.forEach((a, i) => runStep(a, i));
+    if (!regress) runStep(null, null); // 턴종료 자동 대기 1틱(퇴행이면 시간 미소모).
+  } finally {
+    setRng(prevRng);
+  }
+  return { timeline, telegraph: { attack: [...atkTele.values()], move: [...mvTele.values()] } };
+}
+
+/**
+ * 적 행동 텔레그래프(호환 래퍼) — forecastRound의 telegraph만 추려 돌려준다.
+ * (예전엔 고정 intentQueue를 투영했으나, #1로 실행이 행동 시점 재계산으로 바뀌어 forecastRound로 통일.)
+ */
+export function previewEnemyTelegraph(live: GridCombatState): { attack: GridPos[]; move: GridPos[] } {
+  return forecastRound(live).telegraph;
 }
 
 // ============================================================================
@@ -1826,10 +1941,10 @@ function postActionCleanup(state: GridCombatState): boolean {
 function takeCombatantTurn(state: GridCombatState, c: GridCombatant): void {
   // 수면(sleep, #5): 이번 턴 행동 불가(스킵). 피해를 받으면 즉시 깸(applyDamage). 라운드 종료 시 -1 감쇠.
   if ((c.statuses['sleep'] ?? 0) > 0) return;
-  // 의도 확정(item 7) — *실행 직전 재계산을 하지 않는다*. 적은 직전 라운드 종료 시점(recomputeAllEnemyPlans)
-  //   또는 직전 자기 행동 뒤(아래 1877)에 *고정해 둔* intentQueue를 그대로 수행한다 = 화면에 예고한 그 행동.
-  //   플레이어가 예고를 보고 이동해 *예고 칸을 벗어나면* 그 공격은 빗나간다(이동=회피가 의미를 갖는다).
-  //   (예전엔 여기서 enemyPlan으로 재계산해 플레이어가 간 자리를 다시 노렸다 — 예고와 실행이 어긋나 사용자 불만.)
+  // 행동 시점 의도(#1, 2026-06-25) — 적은 호출처(collectDueEnemies / commitRound slower 재갱신)가 *행동 직전
+  //   플레이어 위치* 기준으로 갱신해 둔 intentQueue를 그대로 수행한다 = 화면 예고(forecastRound)와 동일.
+  //   이렇게 하면 속도 랭크 판정과 실행이 같은 의도를 보고, 플레이어가 이동한 위치를 정확히 노린다(빈 칸 공격 해소).
+  //   아군(ally)은 자기 추격 의도(recomputeAllyPlans)를 유지.
   const turn = c.intentQueue ?? [];
   for (const action of turn) {
     if (state.outcome) break;
@@ -1853,6 +1968,11 @@ function effectiveEnemyTempo(state: GridCombatState, enemy: GridCombatant): numb
 /**
  * 스텝 1틱 — 모든 살아 있는 적의 카운터 +1 후, *이번 틱에 행동할 차례가 된*(counter>=tempo) 적 목록을 모은다.
  * 카운터 차감·skip 소비·실제 행동은 *행동 시점*(actDueEnemy)에 한다 — 적↔플레이어 속도 우선순위 판정 뒤로 미룬다.
+ *
+ * #1(2026-06-25): due가 *된 순간* 그 적의 의도를 enemyPlan으로 재계산한다 — 속도 랭크(enemyActionSpeedRank)와
+ * 실제 실행(takeCombatantTurn)이 *같은 신선 의도*를 보게 해 정렬↔실행 불일치를 없앤다. 이 시점은 "이 행동 직전"
+ * 위치라, 플레이어보다 먼저 행동하는(faster) 적은 이 의도가 정확하다(아직 플레이어 미행동). 플레이어 *뒤*에
+ * 행동하는(slower) 적은 commitRound가 플레이어 행동 후 한 번 더 갱신한다(이동 후 위치 반영).
  * (구 tickEnemyTempo를 둘로 쪼갠 전반부.)
  */
 function collectDueEnemies(state: GridCombatState): GridCombatant[] {
@@ -1861,7 +1981,7 @@ function collectDueEnemies(state: GridCombatState): GridCombatant[] {
     if (enemy.hp <= 0) continue;
     const tempo = effectiveEnemyTempo(state, enemy);
     enemy.tempoCounter = (enemy.tempoCounter ?? 0) + 1;
-    if ((enemy.tempoCounter ?? 0) >= tempo) due.push(enemy);
+    if ((enemy.tempoCounter ?? 0) >= tempo) { enemy.intentQueue = enemyPlan(state, enemy); due.push(enemy); }
   }
   return due;
 }
@@ -1963,6 +2083,7 @@ function playerActionSpeedRank(state: GridCombatState, action: PlannedAction): n
   return 1; // item/swap/wait 등 — normal.
 }
 
+
 /**
  * 적이 *이번에 쓸 행동*의 발동 속도 랭크(작을수록 빠름) — 같은 스텝의 플레이어 카드와 우선순위를 비교.
  * 적의 현재 intentQueue(텔레그래프로 플레이어에게 보여 준 의도)에서 첫 공격 행동의 castSpeed를 읽는다.
@@ -1996,25 +2117,22 @@ export function commitRound(state: GridCombatState): void {
   // 순차 재생용 행동 그룹 인덱스 리셋 — 이 라운드의 fx가 0번부터 그룹된다.
   fxActionIndex = 0;
 
-  // 스피드 모델 — 플레이어 계획은 *설치(큐) 순서 그대로* 실행한다(속도순 재정렬 금지).
+  // 스피드 모델 — 플레이어 계획은 *큐 순서 그대로* 실행한다(이동도 카드와 동일한 한 *스텝*; 재정렬 금지).
+  //   이동은 사실상 "0코스트 느림 카드"(playerActionSpeedRank=3, 가장 느림)다 — 같은 스텝의 적은 이동보다 먼저.
   //   속도(castSpeed)는 *같은 스텝의 적↔플레이어 우선순위 판정*에만 쓴다:
-  //   각 플레이어 행동(스텝)마다 (1) 모든 적 카운터 +1 → 이번 스텝에 행동할 차례가 된(due) 적을 모으고,
-  //   (2) 그 적의 행동 속도와 플레이어 카드 속도를 비교해 빠른 적은 카드 *전*, 느리거나 같은 적은 카드 *뒤*에 해소한다.
-  //     - 적이 더 빠름(적 랭크 < 플레이어 랭크) → 적 먼저(빠른 공격이 느린 카드보다 먼저 들어옴).
-  //     - 플레이어가 빠르거나 같음 → 플레이어 카드 먼저(동률 플레이어 우선, 기존 관례).
-  //     - 이동(move)은 가장 느림(랭크 3) → 그 스텝의 due 적은 항상 이동보다 먼저.
+  //   각 플레이어 행동(스텝)마다 모든 적 카운터 +1 → due 확보 → 적 랭크 < 플레이어 랭크면 행동 *전*, 아니면 *뒤*.
+  //   적 의도는 due 시점(collectDueEnemies)·카드 뒤(slowerDue) 재계산 → 적은 *그 시점까지 시뮬된* 플레이어 위치를 노린다.
   for (let i = 0; i < state.playerPlan.length; i++) {
     if (state.outcome) break;
     const pAction = state.playerPlan[i];
-    // 이번 스텝의 적 템포 진행 — 카운터 +1 후 due 적 목록 확보(차감/skip/행동은 우선순위 판정 뒤로 미룸).
+    // 이번 스텝의 적 템포 진행 — 카운터 +1 후 due 적 목록 확보.
     const due = collectDueEnemies(state);
     const pRank = playerActionSpeedRank(state, pAction);
-    // due 적을 플레이어 카드보다 빠른 그룹 / 느리거나 같은 그룹으로 분할(안정 — enemies 순서 유지).
     const fasterDue: GridCombatant[] = [];
     const slowerDue: GridCombatant[] = [];
     for (const e of due) (enemyActionSpeedRank(e) < pRank ? fasterDue : slowerDue).push(e);
 
-    // (a) 플레이어보다 빠른 due 적 — 카드 *전*에 해소.
+    // (a) 플레이어보다 빠른 due 적 — 행동 *전*에 해소.
     for (const e of fasterDue) {
       if (state.outcome) break;
       actDueEnemy(state, e);
@@ -2022,16 +2140,17 @@ export function commitRound(state: GridCombatState): void {
     }
     if (state.outcome) break;
 
-    // (b) 플레이어 카드 실행.
+    // (b) 플레이어 행동 실행.
     if (state.player.hp > 0) {
       fxActionIndex += 1;
       executeAction(state, state.player, pAction);
     }
     if (postActionCleanup(state)) break;
 
-    // (c) 플레이어보다 느리거나 같은 due 적 — 카드 *뒤*에 해소.
+    // (c) 플레이어보다 느리거나 같은 due 적 — 행동 *뒤*에 해소. 플레이어 이동/대시로 위치가 바뀌었을 수 있어 재계산.
     for (const e of slowerDue) {
       if (state.outcome) break;
+      if (e.hp > 0) e.intentQueue = enemyPlan(state, e);
       actDueEnemy(state, e);
       if (postActionCleanup(state)) break;
     }
@@ -2408,12 +2527,22 @@ function confuseMove(state: GridCombatState): void {
   }
 }
 
-function dashPlayer(state: GridCombatState, tiles: number, mode: 'toward' | 'away'): void {
-  if (tiles <= 0) return;
-  const enemy = nearestEnemy(state);
-  if (!enemy) return;
-  const from = { ...state.player.pos };
-  let cur = { ...state.player.pos };
+/**
+ * 대시(move-self) 목적지 계산(2026-06-25 추출) — from에서 *from 기준* 가장 가까운 적으로 toward/away 최대 tiles칸.
+ * 매 칸 우세 축으로 1칸씩, 벽/void/격자 밖이면 중단. *순수 계산*(상태 불변).
+ * dashPlayer(실행)·previewDashTarget·simulatePlayerPos(미리보기)가 공유 — 큐에 이미 이동/대시가 있으면
+ * 그 *이동 후 위치*에서 체이닝되도록 from을 받는다(#2: 현재 위치가 아니라 이동 후 위치 기준).
+ */
+function computeDashDestination(
+  state: GridCombatState,
+  from: GridPos,
+  tiles: number,
+  mode: 'toward' | 'away',
+): GridPos {
+  if (tiles <= 0) return { ...from };
+  const enemy = nearestEnemyTo(state, from);
+  if (!enemy) return { ...from };
+  let cur = { ...from };
   for (let i = 0; i < tiles; i++) {
     const dx = enemy.pos.x - cur.x;
     const dy = enemy.pos.y - cur.y;
@@ -2425,6 +2554,12 @@ function dashPlayer(state: GridCombatState, tiles: number, mode: 'toward' | 'awa
     if (!tileWalkable(state.stage, next)) break; // 벽/void/밖 — 중단.
     cur = next;
   }
+  return cur;
+}
+
+function dashPlayer(state: GridCombatState, tiles: number, mode: 'toward' | 'away'): void {
+  const from = { ...state.player.pos };
+  const cur = computeDashDestination(state, from, tiles, mode);
   if (!samePos(cur, from)) {
     state.player.pos = cur;
     pushFx(state, { kind: 'move', actorId: state.player.id, from, to: { ...cur } });
@@ -2458,15 +2593,9 @@ function shoveEnemy(state: GridCombatState, enemy: GridCombatant, tiles: number,
 }
 
 /** 플레이어에 가장 가까운 살아 있는 적(맨해튼). 없으면 undefined. */
+/** 플레이어 위치에서 가장 가까운 살아 있는 적. (위치 인자판 nearestEnemyTo는 아군 섹션에 정의 — 대시 체이닝 #2 공용.) */
 function nearestEnemy(state: GridCombatState): GridCombatant | undefined {
-  let best: GridCombatant | undefined;
-  let bestD = Infinity;
-  for (const e of state.enemies) {
-    if (e.hp <= 0) continue;
-    const d = manhattan(state.player.pos, e.pos);
-    if (d < bestD) { bestD = d; best = e; }
-  }
-  return best;
+  return nearestEnemyTo(state, state.player.pos);
 }
 
 /** 8 컬러 값 배열(현재 런). 스토어 미접근 시 전부 0. */
