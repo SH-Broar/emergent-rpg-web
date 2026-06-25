@@ -90,6 +90,9 @@ export function useGridFx() {
   const displayBlock = ref<Map<string, number>>(new Map());
   /** 순차 재생 진행 중 여부 — 뷰가 display 우선 렌더할지 판단. */
   const playing = ref(false);
+  /** 순차 재생 진행도(#4) — 현재 재생 중인 행동 그룹 인덱스 / 전체 그룹 수. 뷰가 행동 큐 행을 순차 강조/제거하는 데 쓴다. */
+  const currentGroup = ref(0);
+  const totalGroups = ref(0);
 
   let seq = 0;
   /** 진행 중 타임아웃 핸들(전투 종료/언마운트 시 정리용). */
@@ -311,6 +314,7 @@ export function useGridFx() {
     displayHp.value = hm;
     displayBlock.value = bm;
     playing.value = true;
+    currentGroup.value = 0;
 
     // 2) actionIndex 그룹(등장 순서 보존).
     const sorted = [...events].sort((a, b) => a.seq - b.seq);
@@ -322,6 +326,7 @@ export function useGridFx() {
       if (gi === undefined) { gi = groups.length; indexOfGroup.set(key, gi); groups.push([]); }
       groups[gi].push(ev);
     }
+    totalGroups.value = groups.length;
 
     const finish = () => { playing.value = false; onDone(); };
 
@@ -339,7 +344,8 @@ export function useGridFx() {
     for (let gi = 0; gi < groups.length; gi++) {
       const group = groups[gi];
       const at = cursor;
-      later(() => { clearStrikes(); for (const ev of group) applyFx(ev); }, at);
+      const gIdx = gi;
+      later(() => { currentGroup.value = gIdx; clearStrikes(); for (const ev of group) applyFx(ev); }, at);
       const motion = groupMotionMs(group);
       later(() => { clearStrikes(); }, at + motion);
       cursor = at + motion + ACTION_GAP;
@@ -354,6 +360,8 @@ export function useGridFx() {
   function clearDisplay(): void {
     clearTimers();
     playing.value = false;
+    currentGroup.value = 0;
+    totalGroups.value = 0;
     displayPos.value = new Map();
     displayHp.value = new Map();
     displayBlock.value = new Map();
@@ -364,6 +372,7 @@ export function useGridFx() {
     reduced: REDUCED,
     floats, hitActors, dyingActors, castActors,
     displayPos, displayHp, displayBlock, displayStrikes, playing,
+    currentGroup, totalGroups,
     consume, consumeAll, playRound, clearDisplay,
   };
 }

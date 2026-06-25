@@ -205,8 +205,8 @@ const liveAllies = computed<GridCombatant[]>(() =>
 const gridCols = computed(() => stage.value?.width ?? 0);
 const gridRows = computed(() => stage.value?.height ?? 0);
 
-/** 보드 참조 셀 px(데스크탑 76 / 모바일 58) — matchMedia로 반응형 갱신. */
-const refCellPx = ref(76);
+/** 보드 참조 셀 px(데스크탑 99 / 모바일 75, 2026-06-25 1.3배) — matchMedia로 반응형 갱신. */
+const refCellPx = ref(99);
 /**
  * 격자 셀 크기(#4) — 큰/세로로 긴 격자에서 전체 보드를 *3×3 기준 크기에 고정*하고 셀을 줄인다(정사각 유지).
  * 더 큰 차원(cols·rows, 최소 3)이 3*refCell 범위에 들어가도록 cell = floor(3*refCell / max(cols,rows,3)).
@@ -867,6 +867,31 @@ const planRows = computed<PlanRow[]>(() => {
   return rows;
 });
 
+/**
+ * 순차 재생용 행동 큐 스냅샷(#4, 2026-06-25) — 커밋 직전 planRows를 떠 둔다(커밋이 plan을 비워도 유지).
+ * 재생 중에는 이 스냅샷을 렌더하며, 재생 진행도(fx.currentGroup/totalGroups)에 따라 행을 순차로
+ * 빛내고(active) 지나간 행은 사라지게(done) 한다. 재생이 끝나면(onDone) 비운다.
+ */
+const replayRows = ref<PlanRow[]>([]);
+/** 화면에 그릴 행동 큐 — 재생 중이면 스냅샷, 아니면 라이브 planRows. */
+const displayRows = computed<PlanRow[]>(() =>
+  committing.value && replayRows.value.length > 0 ? replayRows.value : planRows.value,
+);
+/** 재생 중 *지금 빛나는* 행 인덱스 — 그룹 진행도를 행 수에 비례 매핑(근사). 비재생이면 -1. */
+const replayActiveIndex = computed<number>(() => {
+  if (!committing.value || replayRows.value.length === 0) return -1;
+  const total = Math.max(1, fx.totalGroups.value);
+  return Math.min(replayRows.value.length - 1, Math.floor((fx.currentGroup.value / total) * replayRows.value.length));
+});
+/** 재생 중 행 i의 상태 — 'done'(지나감·사라짐) / 'active'(지금 빛남) / 'pending'(대기). 비재생이면 ''. */
+function replayRowState(i: number): string {
+  if (!committing.value || replayRows.value.length === 0) return '';
+  const a = replayActiveIndex.value;
+  if (i < a) return 'done';
+  if (i === a) return 'active';
+  return 'pending';
+}
+
 // ============================================================================
 // 입력 핸들러
 // ============================================================================
@@ -1191,6 +1216,8 @@ function snapshotActors(state: NonNullable<typeof gc.value>): ActorSnapshot[] {
 function doCommit() {
   const before = gc.value;
   if (!before) return;
+  // 순차 재생용 행동 큐 스냅샷(#4) — committing=true 전에(planRows가 적 마커 포함 전체 리스트일 때) 떠 둔다.
+  replayRows.value = planRows.value.slice();
   committing.value = true;
   mode.value = 'idle';
   aimingCardId.value = null;
@@ -1213,6 +1240,7 @@ function doCommit() {
   //    재생이 끝나면(onDone) display를 비워 엔진 final로 수렴 + 입력 허용 + 승패 전이.
   fx.playRound(start, events, () => {
     fx.clearDisplay(); // display 제거 → 토큰이 엔진 final로 수렴.
+    replayRows.value = [];  // 재생 큐 스냅샷 비움(#4) → 빈 큐로 수렴.
     committing.value = false;
     settleOutcome(outcome);
   });
@@ -1283,9 +1311,9 @@ watch(
   },
 );
 
-// 보드 셀 크기(#4) 반응형 — 좁은 화면이면 참조 셀 58px, 아니면 76px. matchMedia 변화 구독.
+// 보드 셀 크기(#4) 반응형 — 좁은 화면이면 참조 셀 75px, 아니면 99px(2026-06-25 1.3배 확대). matchMedia 변화 구독.
 let cellMql: MediaQueryList | null = null;
-function syncRefCell() { refCellPx.value = cellMql?.matches ? 58 : 76; }
+function syncRefCell() { refCellPx.value = cellMql?.matches ? 75 : 99; }
 
 onMounted(() => {
   cellMql = window.matchMedia('(max-width: 640px)');
@@ -1625,22 +1653,25 @@ onUnmounted(() => {
           <button v-if="plan.length > 0" class="plan__clear-x" :disabled="committing" @click="clearPlan" title="모두 비우기" aria-label="모두 비우기">×</button>
           <ul class="plan__slots">
             <li
-              v-for="(row, i) in planRows"
+              v-for="(row, i) in displayRows"
               :key="`row-${i}`"
               class="plan__slot"
-              :class="row.type === 'enemy' ? ['plan__slot--enemy', `plan__slot--enemy-${row.intentKind}`] : 'plan__slot--filled'"
+              :class="[
+                row.type === 'enemy' ? ['plan__slot--enemy', `plan__slot--enemy-${row.intentKind}`] : 'plan__slot--filled',
+                replayRowState(i) ? `plan__slot--replay-${replayRowState(i)}` : '',
+              ]"
             >
               <template v-if="row.type === 'player'">
                 <span class="plan__num">{{ row.planIndex + 1 }}</span>
                 <span class="plan__txt">{{ row.label }}</span>
-                <button class="plan__x" :disabled="committing" @click="removePlanLine(row.planIndex)" aria-label="이 줄 취소">×</button>
+                <button v-if="!committing" class="plan__x" @click="removePlanLine(row.planIndex)" aria-label="이 줄 취소">×</button>
               </template>
               <template v-else>
                 <span class="plan__enemy-icon">{{ row.intentIcon }}</span>
                 <span class="plan__txt plan__txt--enemy">{{ row.enemyName }}<span v-if="row.intentText" class="plan__enemy-dmg"> {{ row.intentText }}</span></span>
               </template>
             </li>
-            <li v-if="plan.length === 0" class="plan__slot plan__slot--empty">행동 배치</li>
+            <li v-if="displayRows.length === 0" class="plan__slot plan__slot--empty">행동 배치</li>
           </ul>
         </div>
         <!-- 이동/아이템/교대 = 세로 스택(낮은 높이). -->
@@ -1677,56 +1708,57 @@ onUnmounted(() => {
         >{{ plan.length === 0 ? '종료' : '실행' }}</button>
       </div>
 
-      <!-- 포션 선택 패널 (아이템 모드) -->
-      <div v-if="itemPanelOpen" class="item-panel">
-        <span class="item-panel__hint">아이템 · 라운드당 1회</span>
-        <ul class="item-panel__list">
-          <li v-for="it in potions" :key="it.instanceId ?? it.id">
-            <button class="potion" @click="usecPotion(it)">
-              <span class="potion__name">{{ it.name }}</span>
-              <span class="potion__eff">{{ potionSummary(it) }}</span>
-            </button>
-          </li>
-        </ul>
-        <button class="item-panel__close" @click="itemPanelOpen = false">닫기</button>
-      </div>
-
-      <!-- 동료 교대 선택 패널 -->
-      <div v-if="swapPanelOpen" class="item-panel">
-        <span class="item-panel__hint">교대 · 라운드당 1회 (교대 턴은 대기, 다음 턴 동료 조종)</span>
-        <ul class="item-panel__list">
-          <li v-for="c in swapTargets" :key="c.id">
-            <button class="potion" @click="queueSwap(c.id)">
-              <span class="potion__name">{{ c.name }}</span>
-              <span class="potion__eff">전용 스킬로 1턴 · 낮은 HP</span>
-            </button>
-          </li>
-        </ul>
-        <button class="item-panel__close" @click="swapPanelOpen = false">닫기</button>
-      </div>
-
-      <!-- 교대 상태 배너 -->
-      <div v-if="gc.swap" class="swap-banner" :class="{ 'swap-banner--active': isControllingCompanion }">
-        <template v-if="isControllingCompanion">동료 조종 중: {{ gc.player.name }} — 1턴 뒤 복귀</template>
-        <template v-else>교대 준비 — 다음 턴 동료 조종</template>
-      </div>
-
-      <!-- 카드 조준 확정/취소 (조준 중일 때) — 적 없어도 발동 가능. -->
-      <div v-if="mode === 'card'" class="aim-bar">
-        <span class="aim-bar__hint">
-          <template v-if="aimingCardIsInstant">즉시 발동 — 범위 확인 후 카드/범위를 다시 눌러 발동</template>
-          <template v-else-if="aimingCardIsAimed && !aimCell">조준 칸을 고르세요 (사거리 내)</template>
-          <template v-else-if="aimingCardIsAimed">조준 완료 — 카드 다시 눌러 확정</template>
-          <template v-else-if="aimingCardSelfTarget">제자리 발동 — 카드 다시 눌러 확정</template>
-          <template v-else-if="!aimingHasEnemyTarget">빈 칸 발동 — 카드 다시 눌러 확정</template>
-          <template v-else>범위 안의 적에 적용 — 카드 다시 눌러 확정</template>
-        </span>
-        <button class="aim-bar__confirm" @click="confirmCard">{{ aimingCardIsInstant ? '발동' : '확정' }}</button>
-        <button class="aim-bar__cancel" @click="cancelAim">취소</button>
-      </div>
-
       <!-- 손패 -->
       <div class="hand-wrap">
+        <!-- 하단 상호작용 패널(오버레이, #1) — 손패 *위*에 떠서 격자를 밀지 않는다. 한 번에 하나만 표시. -->
+        <div class="bottom-overlays">
+          <!-- 포션 선택 패널 (아이템 모드) -->
+          <div v-if="itemPanelOpen" class="item-panel">
+            <span class="item-panel__hint">아이템 · 라운드당 1회</span>
+            <ul class="item-panel__list">
+              <li v-for="it in potions" :key="it.instanceId ?? it.id">
+                <button class="potion" @click="usecPotion(it)">
+                  <span class="potion__name">{{ it.name }}</span>
+                  <span class="potion__eff">{{ potionSummary(it) }}</span>
+                </button>
+              </li>
+            </ul>
+            <button class="item-panel__close" @click="itemPanelOpen = false">닫기</button>
+          </div>
+
+          <!-- 동료 교대 선택 패널 -->
+          <div v-if="swapPanelOpen" class="item-panel">
+            <span class="item-panel__hint">교대 · 라운드당 1회 (교대 턴은 대기, 다음 턴 동료 조종)</span>
+            <ul class="item-panel__list">
+              <li v-for="c in swapTargets" :key="c.id">
+                <button class="potion" @click="queueSwap(c.id)">
+                  <span class="potion__name">{{ c.name }}</span>
+                  <span class="potion__eff">전용 스킬로 1턴 · 낮은 HP</span>
+                </button>
+              </li>
+            </ul>
+            <button class="item-panel__close" @click="swapPanelOpen = false">닫기</button>
+          </div>
+
+          <!-- 교대 상태 배너 -->
+          <div v-if="gc.swap" class="swap-banner" :class="{ 'swap-banner--active': isControllingCompanion }">
+            <template v-if="isControllingCompanion">동료 조종 중: {{ gc.player.name }} — 1턴 뒤 복귀</template>
+            <template v-else>교대 준비 — 다음 턴 동료 조종</template>
+          </div>
+
+          <!-- 카드 조준 확정/취소 — 즉발 카드는 aim-bar 미표시(#3, 카드에 '클릭으로 발동' 표기). -->
+          <div v-if="mode === 'card' && !aimingCardIsInstant" class="aim-bar">
+            <span class="aim-bar__hint">
+              <template v-if="aimingCardIsAimed && !aimCell">조준 칸을 고르세요 (사거리 내)</template>
+              <template v-else-if="aimingCardIsAimed">조준 완료 — 카드 다시 눌러 확정</template>
+              <template v-else-if="aimingCardSelfTarget">제자리 발동 — 카드 다시 눌러 확정</template>
+              <template v-else-if="!aimingHasEnemyTarget">빈 칸 발동 — 카드 다시 눌러 확정</template>
+              <template v-else>범위 안의 적에 적용 — 카드 다시 눌러 확정</template>
+            </span>
+            <button class="aim-bar__confirm" @click="confirmCard">확정</button>
+            <button class="aim-bar__cancel" @click="cancelAim">취소</button>
+          </div>
+        </div>
         <!-- 카드 상세(US-005) — 손패 카드를 길게 누르면 범위·효과. 누른 채 드래그하면 다른 카드로 전환. -->
         <div v-if="detailCard && detailShape" class="card-detail">
           <div class="card-detail__hdr">
@@ -1782,6 +1814,8 @@ onUnmounted(() => {
               <span class="card__name" :style="{ color: cardNameColor(c) }">{{ c.name }}<span v-if="enhanceBadge(c)" class="card__enh">{{ enhanceBadge(c) }}</span></span>
             </div>
             <div v-if="!handCompact" class="card__eff">{{ cardEffectSummary(c) }}</div>
+            <!-- 즉발 카드 발동 안내(#3) — 누른(armed) 즉발 카드에만, 상세(효과 보기)에서만 작고 붉게. 간략 모드는 표기 없음. -->
+            <div v-if="!handCompact && cardIsInstant(c) && aimingCardId === c.instanceId" class="card__instant-hint">클릭으로 발동</div>
             <div v-if="c.instanceId && queuedCardIds.has(c.instanceId)" class="card__queued-tag">계획됨</div>
           </button>
         </div>
@@ -1945,6 +1979,25 @@ onUnmounted(() => {
 }
 .plan__txt--enemy { font-weight: 600; }
 .plan__enemy-dmg { color: #ffe2a0; font-variant-numeric: tabular-nums; font-weight: 800; }
+
+/* === 순차 재생 큐 동기화(#4) — 재생 중 행을 하나씩 빛내고(active) 지나간 행은 사라지게(done). === */
+.plan__slot--replay-pending { opacity: 0.4; }
+.plan__slot--replay-active {
+  opacity: 1;
+  animation: plan-replay-glow 640ms ease-in-out infinite alternate;
+}
+@keyframes plan-replay-glow {
+  from { box-shadow: 0 0 0 2px rgba(255,224,130,0.55), 0 0 6px rgba(255,224,130,0.4); }
+  to   { box-shadow: 0 0 0 2px rgba(255,224,130,1), 0 0 14px rgba(255,224,130,0.85); }
+}
+.plan__slot--replay-done {
+  opacity: 0; max-height: 0; min-height: 0;
+  padding-top: 0; padding-bottom: 0; margin-top: -0.25rem; border-width: 0; overflow: hidden;
+  transition: opacity 200ms ease, max-height 260ms ease, padding 260ms ease, margin 260ms ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .plan__slot--replay-active { animation: none; box-shadow: 0 0 0 2px rgba(255,224,130,0.9); }
+}
 
 /* === 보스 배너(#4) — 이름·페이즈·큰 HP바 === */
 .boss-banner {
@@ -2425,9 +2478,11 @@ onUnmounted(() => {
 .act--swap:hover:not(:disabled) { background: rgba(255,200,120,0.3); }
 /* === 행동 존(요청) — 계획 리스트(왼쪽 절반) + 작은 행동 버튼 + 턴종료 정사각형. === */
 /* 행동 존(요청) — 하단 정렬(계획은 위로 길어짐). [계획 세로 리스트] [이동/아이템/교대 세로] [턴종료 정사각형 우측]. */
-.action-zone { display: flex; align-items: flex-end; gap: 0.5rem; flex-shrink: 0; }
+/* min-height 고정(#1) — 계획 최대 높이(clear-x+slots 3.4rem+여백 ≈ 5.5rem)를 덮어, 계획이 늘어도 행동존 높이가
+   일정해 격자가 밀리지 않는다(계획은 max-height 내 스크롤). */
+.action-zone { display: flex; align-items: flex-end; gap: 0.5rem; flex-shrink: 0; min-height: 5.6rem; }
 .plan--inline { flex: 1 1 auto; min-width: 0; flex-direction: column; align-items: stretch; gap: 0.2rem; padding: 0.25rem 0.35rem; }
-.plan--inline .plan__slots { flex-direction: column; gap: 0.25rem; max-height: 9rem; overflow-y: auto; }
+.plan--inline .plan__slots { flex-direction: column; gap: 0.25rem; max-height: 3.4rem; overflow-y: auto; }
 .plan__clear-x {
   align-self: flex-end; width: 1.3rem; height: 1.3rem; line-height: 1; padding: 0; font-size: 0.9rem;
   background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.2); color: #b6b6c4; border-radius: 5px; cursor: pointer;
@@ -2500,6 +2555,14 @@ onUnmounted(() => {
 .aim-bar__confirm { padding: 0.4rem 0.9rem; font: inherit; font-weight: 600; border-radius: 6px; cursor: pointer; background: rgba(142,255,184,0.2); border: 1px solid rgba(142,255,184,0.55); color: #d6ffe6; }
 .aim-bar__cancel { padding: 0.4rem 0.9rem; font: inherit; border-radius: 6px; cursor: pointer; background: none; border: 1px solid rgba(255,255,255,0.2); color: #b6b6c4; }
 
+/* === 하단 상호작용 패널 오버레이(#1) — 손패 위에 떠서 카드 탭 시 격자가 밀리지 않는다. === */
+.bottom-overlays {
+  position: absolute; left: 0; right: 0; bottom: calc(100% + 0.3rem); z-index: 30;
+  display: flex; flex-direction: column; gap: 0.3rem; align-items: stretch;
+  pointer-events: none; /* 빈 영역은 격자로 통과. 패널만 클릭 가능. */
+}
+.bottom-overlays > * { pointer-events: auto; }
+
 /* === 손패 === */
 .hand-wrap { flex-shrink: 0; position: relative; }
 .hand {
@@ -2523,6 +2586,8 @@ onUnmounted(() => {
 .card__name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #f6e8b8; font-weight: 600; font-size: 0.85rem; line-height: 1.15; }
 .card__enh { color: #8effb8; font-size: 0.72rem; margin-left: 0.2rem; }
 .card__eff { color: #a8a8b8; font-size: 0.74rem; line-height: 1.2; }
+/* 즉발 카드 발동 안내(#3) — 작고 붉게. armed 즉발 카드 + 상세보기에서만. */
+.card__instant-hint { color: #ff7a7a; font-size: 0.66rem; font-weight: 700; line-height: 1.1; }
 .card__queued-tag { position: absolute; top: 0.2rem; right: 0.35rem; font-size: 0.62rem; color: #c08eff; }
 /* 손패 간략 모드(item 3) — 효과 텍스트 숨김 + 카드 폭 축소로 이름 위주 컴팩트. 효과는 hover/길게누르기/[효과 보기]. */
 .hand--compact .card { width: 90px; min-height: 0; padding: 0.4rem 0.45rem; }
