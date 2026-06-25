@@ -421,6 +421,9 @@ const dashPreviewCell = computed<GridPos | null>(() => {
   if (!state) return null;
   const pid = previewCardId();
   if (!pid) return null;
+  // 이미 큐에 든 대시 카드는 미리보기 안 함 — effectivePlayerPos(#2)에 그 대시가 이미 반영돼,
+  //   여기서 또 대시를 계산하면 *연속 두 번* 보인다(잔상은 planned-move 고스트가 표시). 버그 수정.
+  if (plan.value.some((a) => a.kind === 'card' && a.cardInstanceId === pid)) return null;
   const card = state.hand.find((c) => c.instanceId === pid);
   if (!card || !card.effects.some((e) => e.kind === 'move-self')) return null;
   // 대시(미리보기 카드)는 아직 큐에 없으므로 *현재 큐 끝의 이동 후 위치*에서 시작(#2).
