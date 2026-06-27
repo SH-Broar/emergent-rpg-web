@@ -20,6 +20,7 @@ import { instantiateCard } from '@/systems/deck';
 import { applySeedColors } from '@/systems/colors';
 import { injectStartChaosCards, computeChaosScore, chaosTierLabel, maxIntensityOf, chaosLevelSummary, chaosScoreOf, applyPostApocalypseMap } from '@/systems/chaos';
 import { rng } from '@/systems/rng';
+import { durationLabel } from '@/systems/time';
 import type { Card, Chaos, Race, Season } from '@/data/schemas';
 
 const router = useRouter();
@@ -385,7 +386,7 @@ onMounted(async () => {
           <dl class="brief-meta">
             <div>
               <dt>제한 시간</dt>
-              <dd>{{ timeline?.timeLimit ?? '—' }}턴</dd>
+              <dd>{{ timeline ? durationLabel(timeline.timeLimit) : '—' }}</dd>
             </div>
           </dl>
           <p class="brief-mission"><strong>미션</strong> · {{ timeline?.missionGoal ?? '—' }}</p>

@@ -25,6 +25,7 @@ import { createSeededRng, generateInitialSeed, setRng } from '@/systems/rng';
 import { getSkipTurnEveryN } from '@/systems/relic';
 import { gridRelicCombatEnd } from '@/systems/grid-relic';
 import { applyStartChaos, nodeHpLoss } from '@/systems/chaos';
+import { dayOfTurn } from '@/systems/time';
 import { XP_PER_LEVEL, canEnhance, needsAwakening } from '@/systems/enhance';
 import { generateStage, pickEnemyIds, buildEncounterStage } from '@/systems/stage-gen';
 import { startGridCombat, startGridBossCombat, commitRound as commitGridRoundEngine, playInstantCard as playInstantCardEngine } from '@/systems/grid-combat';
@@ -126,7 +127,7 @@ const DECK_SLOT_SIZE = 10;
  *  사용자 결정 (2026-05-19): 한 런=300턴=3일, 권역 평균 ~22노드(전체 ~200노드)에 맞춘 사양.
  *  노드 재활성 모델(2026-06-21): 지도 모양·노드 content는 *완전 고정*(매일 재추첨 없음).
  */
-const TURNS_PER_DAY = 100;
+// 일차 경계는 systems/time.ts dayOfTurn(자정 통과)으로 판정 — 정오(12:00) 시작이라 비균일(50·150·250턴).
 
 const EMPTY_RUN: RunState = {
   timelineId: '',
@@ -178,6 +179,8 @@ const EMPTY_RUN: RunState = {
   maxMp: 0,
   gold: 0,
   timeShards: 0,
+  // 타이머 — 사건 개입 자원. startRun에서 10(+연구 보너스)로 주입. 구세이브는 스프레드로 backfill(0/0).
+  timers: { cur: 0, max: 0 },
   // 목숨 (Item 28) — 기본 2/2. 구세이브는 loadActiveRun의 {...EMPTY_RUN, ...parsed}로 자동 2/2.
   lives: 2,
   maxLives: 2,
@@ -222,6 +225,9 @@ const EMPTY_RUN: RunState = {
   ended: false,
   metaAbsorbed: false,
 };
+
+/** 타이머 기본 보유량 — 런 시작 시 주입되는 고정값. 연구 해금이 최대 +2 합산(상한 12). */
+export const BASE_TIMERS = 10;
 
 /** 카드를 버릴(제거할) 때 등급만큼 환급되는 시간의 조각 — 분해 보상. shop 제거 슬롯도 공유. */
 export const CARD_SALVAGE_SHARDS: Record<Rank, number> = {
@@ -428,6 +434,9 @@ export const useRunStore = defineStore('run', {
       fresh.maxHp = params.maxHp;
       fresh.mp = params.maxMp;
       fresh.maxMp = params.maxMp;
+      // 타이머 — 런 시작 고정값(BASE_TIMERS) + 연구 영구 상향(meta.timerBonus, 상한 2). 런 중 증가 없음.
+      const timerMax = BASE_TIMERS + (useMetaStore().timerBonus ?? 0);
+      fresh.timers = { cur: timerMax, max: timerMax };
       // 카오스 확정 — 시작형 적용·상시형 조회·점수 산정의 원천.
       fresh.activeChaos = params.activeChaos ? [...params.activeChaos] : [];
       // 친밀도 working mirror 시드 (Item 37-② Stage C, 1B) — 권위 소스인 영속 메타값을 비춘다.
@@ -586,8 +595,9 @@ export const useRunStore = defineStore('run', {
       // 덱 슬롯 확장은 사용자 사양 변경으로 폐기 — deckSize 고정 (10)
       void _unusedThresholds;
 
-      // 30턴마다 하루 경과 — 시간 카운트된 경우에만 트리거.
-      if (timeCounted && r.visitedNodes.length > 0 && r.visitedNodes.length % TURNS_PER_DAY === 0) {
+      // 자정 통과 시 하루 경과 — 정오(12:00) 시작이라 경계는 50·150·250턴(균일 100 아님).
+      //   직전 턴과 일차가 달라지면 자정을 넘은 것. (systems/time.ts dayOfTurn)
+      if (timeCounted && r.visitedNodes.length > 0 && dayOfTurn(r.visitedNodes.length) !== dayOfTurn(r.visitedNodes.length - 1)) {
         this.advanceDay();
       }
 
@@ -981,6 +991,34 @@ export const useRunStore = defineStore('run', {
       if (!r.nodeStates[nodeId]) r.nodeStates[nodeId] = { visited: true };
       r.nodeStates[nodeId].eventTriggered = eventId;
       r.nodeStates[nodeId].eventCount = (r.nodeStates[nodeId].eventCount ?? 0) + 1;
+    },
+
+    /**
+     * 타이머 사건(바리에이션) 방문 횟수 +1 — 반환은 *증가 후* 값(1-base, minVisits 판정 기준).
+     * 바리 사건은 eventTriggered를 세우지 않아(지나치기 재진입 가능) 별도 카운터로 추적한다.
+     * 새 노드 상태가 없으면 생성. 옛 세이브 호환(eventVisits absent=0).
+     */
+    incrementEventVisits(nodeId: string): number {
+      const r = this.data;
+      if (!r.nodeStates[nodeId]) r.nodeStates[nodeId] = { visited: true };
+      const next = (r.nodeStates[nodeId].eventVisits ?? 0) + 1;
+      r.nodeStates[nodeId].eventVisits = next;
+      return next;
+    },
+
+    /**
+     * 타이머 사건 *개입 소비* 결과 저장 — NodeState.timerResolved에 스냅샷.
+     * 재진입 시 EventView가 이 값으로 resolvedBody + 결과 라인을 복원한다(개입 1회 영속).
+     * lines는 사본을 저장(런타임 배열 공유 방지). 직렬화 가능한 단순 값 — 세이브 round-trip 안전.
+     */
+    markTimerResolved(nodeId: string, payload: { index: number; resolvedBody: string; lines: string[] }) {
+      const r = this.data;
+      if (!r.nodeStates[nodeId]) r.nodeStates[nodeId] = { visited: true };
+      r.nodeStates[nodeId].timerResolved = {
+        index: payload.index,
+        resolvedBody: payload.resolvedBody,
+        lines: [...payload.lines],
+      };
     },
 
     /** 노드 상태 조회 (없으면 미방문). */

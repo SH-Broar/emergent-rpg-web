@@ -145,7 +145,8 @@ export function getOrCreateShopInventory(nodeId: string): ShopInventory {
   }
 
   const cardCandidates = pickRandom(getShopCardPool(), bal.shopNumCards);
-  const relicCandidates = pickRandom(getShopRelicPool(), bal.shopNumRelics);
+  // 유물 해체 — 상점 유물 진열 중단(0개 픽). 종족 시작 유물(seedRelics)만 잔존.
+  const relicCandidates = pickRandom(getShopRelicPool(), 0);
 
   const cards: ShopCardSlot[] = cardCandidates.map((c) => {
     const instance = instantiateCard(c);

@@ -23,7 +23,7 @@ import { applyColorBoost, applyColorBoostAll, type ColorKey } from '@/systems/co
 import { colorLabel, cardDetailText, relicDetailText, josa } from '@/systems/labels';
 import { rng } from '@/systems/rng';
 import SceneCharacter from '@/components/SceneCharacter.vue';
-import type { Card, Event, EventChoice, EventChoiceEffect } from '@/data/schemas';
+import type { Card, Event, EventChoice, EventChoiceEffect, EventVariation } from '@/data/schemas';
 
 const ALL_8_COLORS: ColorKey[] = ['fire', 'water', 'electric', 'iron', 'earth', 'wind', 'light', 'dark'];
 
@@ -36,6 +36,36 @@ const currentEvent = ref<Event | undefined>();
 const result = ref<{ lines: string[] } | null>(null);
 /** followupEventId 체인 가드 — 같은 이벤트 무한 루프 방지. */
 const followupChain = ref<Set<string>>(new Set());
+
+// === 바리에이션 모드 (타이머 사건) ===
+// currentEvent.variations가 있으면 진입 시 1개 바리를 선택해 "고정 2버튼"(개입/지나치기)으로 렌더.
+// variation이 set이면 바리 모드, null이면 기존 choices 모드. (choices 모드는 이 ref를 절대 건드리지 않음.)
+/** 이번 진입에 선택된 바리(없으면 choices 모드). */
+const variation = ref<EventVariation | null>(null);
+/** 개입했거나(또는 재진입으로) 해결된 상태인가 — true면 resolvedBody + 결과 라인 + [나간다]만. */
+const variationResolved = ref(false);
+/** 개입/재진입으로 표시할 결과 라인(타이머 차감·보상 등). */
+const variationLines = ref<string[]>([]);
+/** 해결 시 표시할 본문(개입 후 resolvedBody 스냅샷). 미해결이면 비움. */
+const resolvedBodyText = ref('');
+
+/** 바리 모드 여부 — variation이 선택되어 있으면 바리 모드. */
+const isVariationMode = computed(() => variation.value !== null);
+/** 선택 바리의 개입 비용(없으면 0). */
+const varTimerCost = computed(() => variation.value?.timerCost ?? 0);
+/** 개입 버튼 노출 — 미해결 + 개입 비용이 있는 바리에서만(timerCost=0 바리는 지나치기만). */
+const showInterveneButton = computed(() => !variationResolved.value && varTimerCost.value > 0);
+/** 개입 가능 — 미해결 + 비용>0 + 타이머 보유 충분. */
+const canIntervene = computed(
+  () => !variationResolved.value && varTimerCost.value > 0 && run.data.timers.cur >= varTimerCost.value,
+);
+/** 화면 본문 — 해결 후엔 resolvedBody, 그 전엔 바리 body. */
+const displayBody = computed(() => {
+  const v = variation.value;
+  if (!v) return '';
+  if (variationResolved.value) return resolvedBodyText.value || v.resolvedBody || v.body;
+  return v.body;
+});
 
 const currentNode = computed(() => {
   const map = data.nodeMaps.get(data.timelines.get(run.data.timelineId)?.nodeMapId ?? '');
@@ -73,6 +103,13 @@ function applyChoice(choice: EventChoice) {
     return;
   }
 
+  // 타이머 개입 비용 차감 — canAfford가 보유를 게이트하므로 여기선 안전하게 깎는다.
+  //   spar(즉시 라우팅) 선택지는 위에서 return되어 도달 안 함 → 비용 없음. 무비용(지나치기)도 0.
+  if (choice.timerCost && choice.timerCost > 0) {
+    run.data.timers.cur = Math.max(0, run.data.timers.cur - choice.timerCost);
+    lines.push(`타이머 -${choice.timerCost}`);
+  }
+
   // 효과들을 순서대로 적용. 마지막 effect에 followupEventId가 있으면 체인 진입.
   let followupId: string | undefined;
   for (const eff of choice.effects) {
@@ -94,6 +131,8 @@ function applyChoice(choice: EventChoice) {
         // 사용자 경험: "결과 라인 + 다음 이벤트의 본문이 곧바로 이어진다."
         currentEvent.value = next;
         result.value = null;
+        // followup이 바리 사건이면 바리 모드로 전환(드문 저작 케이스 — 빈 화면 방지).
+        if (next.variations && next.variations.length > 0) initVariation(next);
         return;
       } else {
         lines.push(`(알 수 없는 후속 이벤트: ${followupId})`);
@@ -247,6 +286,8 @@ function isAvailable(c: EventChoice): boolean {
 /** 자원을 *깎는* 선택지는 보유량이 부족하면 고를 수 없다(골드/시간의 조각/컬러/카드). 클램프로 몰래 0이 되는 것 방지. */
 function canAfford(c: EventChoice): boolean {
   const r = run.data;
+  // 타이머 개입 비용 — 보유 미만이면 고를 수 없다(개입 선택지 게이트).
+  if (c.timerCost && r.timers.cur < c.timerCost) return false;
   for (const eff of c.effects) {
     if (eff.goldDelta !== undefined && eff.goldDelta < 0 && r.gold < -eff.goldDelta) return false;
     if (eff.timeShardsDelta !== undefined && eff.timeShardsDelta < 0 && r.timeShards < -eff.timeShardsDelta) return false;
@@ -328,6 +369,94 @@ function choiceRewardTip(c: EventChoice): string {
   return parts.filter(Boolean).join('  /  ');
 }
 
+// === 바리에이션 모드 로직 ===
+
+/**
+ * 진입 시 현재 상태로 바리 1개 선택.
+ *  후보 = fromTurn(경과턴) 충족 + minVisits(이 노드 방문 횟수) + requireClue/forbidClue 게이트 통과.
+ *  선택 = 후보 중 fromTurn 최대(동률이면 index 큰 것 = 더 구체적/최신).
+ *  폴백 = 후보 없으면 fromTurn 최소인 첫 바리(항상 무언가는 보이도록).
+ *
+ * elapsed = visitedNodes.length(경과 턴), visits = 이 노드 바리 방문 횟수(증가 *후* 값 — 호출 전 증가).
+ */
+function selectVariation(ev: Event, elapsed: number, visits: number): EventVariation | null {
+  const vars = ev.variations ?? [];
+  if (vars.length === 0) return null;
+  const clues = run.data.clues ?? [];
+  const hasClue = (id: string) => clues.some((c) => c.id === id);
+  const candidates = vars.filter(
+    (v) =>
+      elapsed >= v.fromTurn &&
+      (v.minVisits == null || visits >= v.minVisits) &&
+      (v.requireClue == null || hasClue(v.requireClue)) &&
+      (v.forbidClue == null || !hasClue(v.forbidClue)),
+  );
+  if (candidates.length > 0) {
+    return candidates.reduce((best, v) =>
+      v.fromTurn > best.fromTurn || (v.fromTurn === best.fromTurn && v.index > best.index) ? v : best,
+    );
+  }
+  // 폴백 — fromTurn 최소인 첫 바리(동률이면 먼저 나온 것 유지: `<`로만 교체).
+  return vars.reduce((best, v) => (v.fromTurn < best.fromTurn ? v : best));
+}
+
+/**
+ * 바리 모드 진입 초기화 — 이미 개입(소비)된 노드면 저장된 결과로 재진입 표시,
+ * 아니면 방문 횟수 +1 후 현재 상태로 바리를 선택한다.
+ * (바리 사건은 eventTriggered를 세우지 않아 지나치기 재진입이 항상 가능하다.)
+ */
+function initVariation(ev: Event) {
+  const nodeId = run.data.currentNodeId;
+  const resolved = run.getNodeState(nodeId)?.timerResolved;
+  if (resolved) {
+    // 재진입 — 저장된 바리 인덱스로 복원(못 찾으면 현 상태 기준 재선택으로 폴백).
+    const found = (ev.variations ?? []).find((v) => v.index === resolved.index);
+    variation.value = found ?? selectVariation(ev, run.data.visitedNodes.length, run.getNodeState(nodeId)?.eventVisits ?? 0);
+    variationResolved.value = true;
+    variationLines.value = resolved.lines ?? [];
+    resolvedBodyText.value = resolved.resolvedBody;
+    return;
+  }
+  // 신규 진입 — 방문 횟수 증가 후 선택(선택은 증가 *후* 값 기준 — 첫 진입 visits=1).
+  const visits = run.incrementEventVisits(nodeId);
+  variation.value = selectVariation(ev, run.data.visitedNodes.length, visits);
+  variationResolved.value = false;
+  variationLines.value = [];
+  resolvedBodyText.value = '';
+}
+
+/**
+ * 개입 — 타이머 비용을 차감하고 바리 effects를 적용해 결과 라인을 수집,
+ * 본문을 resolvedBody로 교체하고 노드 개입 소비(timerResolved)를 저장한다.
+ * 버튼 disabled(canIntervene)가 보유를 게이트하므로 여기선 안전하게 차감한다.
+ */
+function intervene() {
+  const v = variation.value;
+  if (!v || variationResolved.value || v.timerCost <= 0) return;
+  if (run.data.timers.cur < v.timerCost) return; // 보유 부족 가드(버튼 비활성이지만 이중 방어).
+
+  const lines: string[] = [];
+  run.data.timers.cur = Math.max(0, run.data.timers.cur - v.timerCost);
+  lines.push(`타이머 -${v.timerCost}`);
+
+  // 바리 effects 적용 — 기존 applyEffectWithNames 재사용(이름 lookup·보상 라인 수집).
+  //   applyEffectWithNames는 timerCost를 건드리지 않으므로 위의 차감과 중복되지 않는다.
+  if (v.effects) {
+    const shim: EventChoice = { label: v.name, effects: v.effects };
+    for (const eff of v.effects) {
+      applyEffectWithNames(shim, eff, lines);
+      if (eff.resultText) lines.push(eff.resultText);
+    }
+  }
+
+  const body = v.resolvedBody ?? v.body;
+  resolvedBodyText.value = body;
+  variationLines.value = lines;
+  variationResolved.value = true;
+  // 노드 개입 소비 처리 — 재진입 시 이 스냅샷으로 resolvedBody + 라인을 복원.
+  run.markTimerResolved(run.data.currentNodeId, { index: v.index, resolvedBody: body, lines });
+}
+
 function leave() {
   router.push('/game/map');
 }
@@ -340,8 +469,15 @@ const fillerPool = computed<Event[]>(() =>
 
 onMounted(() => {
   currentEvent.value = pickEvent(pool.value) ?? pickEvent(fillerPool.value);
-  if (currentEvent.value) {
-    run.markEventTriggered(run.data.currentNodeId, currentEvent.value.id);
+  const ev = currentEvent.value;
+  if (!ev) return;
+  if (ev.variations && ev.variations.length > 0) {
+    // 바리 모드 — eventTriggered를 *세우지 않는다*. 지나치기(미소비)로 맵에 돌아가도
+    //   재방문 시 다시 들어올 수 있어야 하고, 개입 소비는 timerResolved로 따로 추적한다.
+    initVariation(ev);
+  } else {
+    // choices 모드(기존) — 그대로 eventTriggered 마킹(재진입 시 MapView가 event-pass).
+    run.markEventTriggered(run.data.currentNodeId, ev.id);
   }
 });
 </script>
@@ -353,6 +489,41 @@ onMounted(() => {
   />
   <main class="event-view">
     <article v-if="currentEvent" class="event">
+      <!-- ===== 바리에이션 모드(타이머 사건) — 고정 2버튼(개입/지나치기) ===== -->
+      <template v-if="isVariationMode">
+        <h1 class="var-name">
+          <span>{{ variation?.name }}</span>
+          <span class="var-index">#{{ variation?.index }}</span>
+        </h1>
+        <p class="body">{{ displayBody }}</p>
+
+        <!-- 개입/재진입 결과 라인 -->
+        <ul v-if="variationResolved && variationLines.length" class="result-list var-result">
+          <li v-for="(line, i) in variationLines" :key="i">{{ line }}</li>
+        </ul>
+
+        <div class="choices">
+          <!-- 개입 — 비용>0 + 미해결일 때만. 보유<비용이면 비활성. -->
+          <button
+            v-if="showInterveneButton"
+            class="choice choice--intervene"
+            :disabled="!canIntervene"
+            @click="canIntervene && intervene()"
+          >
+            <span class="choice__label">개입한다<span class="choice__timer">⏳{{ varTimerCost }}</span></span>
+            <span class="choice__preview" :class="{ 'choice__preview--short': !canIntervene }">
+              보유 {{ run.data.timers.cur }}<template v-if="!canIntervene"> · 타이머가 부족하다</template>
+            </span>
+          </button>
+          <!-- 지나치기(미해결) / 나간다(해결) -->
+          <button class="choice choice--leave-fallback" @click="leave">
+            <span class="choice__label">{{ variationResolved ? '나간다' : '그냥 지나친다' }}</span>
+          </button>
+        </div>
+      </template>
+
+      <!-- ===== choices 모드(기존) ===== -->
+      <template v-else>
       <h1>{{ currentEvent.name }}</h1>
       <p class="body">{{ currentEvent.body }}</p>
 
@@ -367,7 +538,7 @@ onMounted(() => {
           v-tooltip.hold="choiceRewardTip(c)"
           @click="isAvailable(c) && choose(c)"
         >
-          <span class="choice__label">{{ c.label }}</span>
+          <span class="choice__label">{{ c.label }}<span v-if="c.timerCost" class="choice__timer">⏳{{ c.timerCost }}</span></span>
           <span v-if="choicePreview(c)" class="choice__preview" :class="{ 'choice__preview--hidden': c.hidden }">{{ choicePreview(c) }}</span>
         </button>
         <!-- 막힘 방지: 고를 수 있는 선택지가 하나도 없으면 떠나는 선택지를 노출 -->
@@ -390,6 +561,7 @@ onMounted(() => {
         </ul>
         <button class="leave" @click="leave">계속 →</button>
       </div>
+      </template>
     </article>
     <section v-else class="empty-event">
       <p>이 자리엔 사건이 없었다.</p>
@@ -407,11 +579,21 @@ onMounted(() => {
 .choice:hover:not(:disabled) { background: rgba(142,237,255,0.1); border-color: rgba(142,237,255,0.4); }
 .choice:disabled { opacity: 0.4; cursor: not-allowed; }
 .choice__label { font-weight: 600; }
+.choice__timer { margin-left: 0.5rem; padding: 0.05rem 0.4rem; font-size: 0.78rem; color: #ffd98e; background: rgba(255,217,142,0.12); border: 1px solid rgba(255,217,142,0.35); border-radius: 999px; font-variant-numeric: tabular-nums; }
 .choice__preview { font-size: 0.82rem; color: #8effb8; font-variant-numeric: tabular-nums; }
 .choice__preview--hidden { color: #c08eff; letter-spacing: 0.1em; }
 .choice--leave-fallback { border-color: rgba(192,142,255,0.5); background: rgba(192,142,255,0.12); }
 .choice--leave-fallback:hover { background: rgba(192,142,255,0.22); border-color: rgba(192,142,255,0.7); }
 .choice--leave-fallback .choice__preview { color: #b9a0e8; }
+/* 바리에이션 모드 — 사건 이름 + 우하단 #index */
+.var-name { display: flex; align-items: flex-end; justify-content: space-between; gap: 0.5rem; color: #8eedff; margin-bottom: 1rem; }
+.var-index { font-size: 0.72rem; font-weight: 400; color: #6c6c7c; font-variant-numeric: tabular-nums; line-height: 1; padding-bottom: 0.15rem; }
+.var-result { margin: 0 0 1.5rem; padding-left: 1.2rem; color: #d6d6e0; list-style: none; }
+.var-result li { padding: 0.2rem 0; color: #8effb8; font-variant-numeric: tabular-nums; }
+.choice--intervene { border-color: rgba(255,217,142,0.5); background: rgba(255,217,142,0.1); }
+.choice--intervene:hover:not(:disabled) { background: rgba(255,217,142,0.18); border-color: rgba(255,217,142,0.7); }
+.choice--intervene .choice__preview { color: #ffd98e; }
+.choice__preview--short { color: #c08e8e; }
 .result { margin-top: 2rem; padding: 1.2rem; background: rgba(0,0,0,0.4); border-left: 3px solid #8eedff; border-radius: 4px; }
 .result h3 { margin: 0 0 0.6rem; color: #8eedff; font-size: 1rem; }
 .result-list { margin: 0 0 1rem; padding-left: 1.2rem; color: #d6d6e0; }

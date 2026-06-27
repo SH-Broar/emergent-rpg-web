@@ -18,6 +18,7 @@ import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
 import { colorLabel } from '@/systems/labels';
+import { minutesLabel } from '@/systems/time';
 import {
   CROPS,
   getCrop,
@@ -167,7 +168,7 @@ onMounted(() => {
         >
           <span class="seed__dot" :style="{ background: elementHex(crop.element) }" />
           <span class="seed__name">{{ crop.seedName }}</span>
-          <span class="seed__meta">성장 {{ crop.growTurns }}턴</span>
+          <span class="seed__meta">성장 {{ minutesLabel(crop.growTurns) }}</span>
           <span class="seed__meta">물 {{ crop.waterAt.length }}회</span>
         </button>
       </div>

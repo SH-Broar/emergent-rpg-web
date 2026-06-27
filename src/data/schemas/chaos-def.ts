@@ -36,6 +36,7 @@
  *   - 'time-limit-mul'     런 시작 시 시간 한도 ×(1-param). param 예: '0.25'. (startRun에서 1회.)
  *   - 'color-seal'         런 시작 시 무작위 1색 봉인 → RunState.chaosBannedColor. param='random'.
  *   - 'seed-seal'          종족 시드 컬러 0으로(시작형, RaceSelect 색셋업 타이밍은 Phase C 재정렬).
+ *   - 'start-timer-add'    런 시작 타이머 +N (사건 개입 예산 증가). param=정수. trade-off는 데이터에서 위험 카오스와 페어링.
  *
  * 상시형 — 전투:
  *   - 'enemy-hp-mul'       모든 적 HP 배수 가산 (param=비율). startCombat.
@@ -74,6 +75,7 @@ export type ChaosEffectKind =
   // === 시작형 (start-*) ===
   | 'start-hp'
   | 'start-inject-card'
+  | 'start-timer-add'
   | 'time-limit-mul'
   | 'color-seal'
   | 'seed-seal'

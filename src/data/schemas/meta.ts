@@ -156,6 +156,12 @@ export interface MetaProgress {
   runHistory?: RunSummary[];
 
   /**
+   * 타이머 영구 상향 — 연구로 해금. 런 시작 타이머 기본 10에 합산(상한 +2 → 최대 12).
+   * (세이브 backfill — loadMeta가 누락 시 0.)
+   */
+  timerBonus?: number;
+
+  /**
    * 메타 세이브 버전. v3=카오스, v4=NPC 친밀도 영속(1B), v5=런 기록. 마이그레이션 판단·기록용.
    * 옛 세이브엔 없을 수 있음(undefined ⇒ v3 이하로 간주, 누락 필드 backfill).
    */

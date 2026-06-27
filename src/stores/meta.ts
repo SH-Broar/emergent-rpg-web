@@ -50,6 +50,8 @@ function createEmptyMeta(): MetaProgress {
     npcAffinity: {},
     // 런 기록 (v5).
     runHistory: [],
+    // 타이머 영구 상향 — 연구 해금으로 0→2(상한). 런 시작 타이머 기본 10에 합산.
+    timerBonus: 0,
     saveVersion: META_SAVE_VERSION,
   };
 }
@@ -98,6 +100,7 @@ function loadMeta(): MetaProgress {
     parsed.npcAffinity ??= {};
     // 세이브 v5 마이그레이션 — 런 기록 필드 누락 시 빈 배열로 채움. 기존 값은 보존.
     parsed.runHistory ??= [];
+    parsed.timerBonus ??= 0;
     parsed.saveVersion = META_SAVE_VERSION;
     return parsed;
   } catch {
@@ -333,6 +336,10 @@ export const useMetaStore = defineStore('meta', {
       pushUnique(this.unlockedRelicIds, u.grantsRelicIds);
       pushUnique(this.unlockedCardIds, u.grantsCardIds);
       pushUnique(this.unlockedTimelineIds, u.grantsTimelineIds);
+      // 타이머 영구 상향 — 상한 2. 이미 더 높은 보너스를 샀으면 유지(되돌아가지 않음).
+      if (u.grantsTimerBonus) {
+        this.timerBonus = Math.min(2, Math.max(this.timerBonus ?? 0, u.grantsTimerBonus));
+      }
       this.persist();
       return true;
     },

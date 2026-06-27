@@ -49,6 +49,7 @@ import type {
   Event,
   EventChoice,
   EventChoiceEffect,
+  EventVariation,
   GiftPreference,
   Item,
   ItemEffect,
@@ -478,6 +479,14 @@ function parseOneEvent(id: string, f: IniSection, ini: IniData): Event {
     choices.push(parseChoice(cf));
   }
 
+  // 타이머 사건 바리에이션 — [event.{id}.var.{N}] 자식 섹션. 턴 구간별 내용.
+  const variations: EventVariation[] = [];
+  for (let i = 1; i <= 99; i++) {
+    const vf = ini[`event.${id}.var.${i}`];
+    if (!vf) break;
+    variations.push(parseVariation(vf, i));
+  }
+
   return {
     id,
     name: f.name ?? id,
@@ -493,13 +502,12 @@ function parseOneEvent(id: string, f: IniSection, ini: IniData): Event {
     },
     choices,
     featuredNpcIds: parseList(f.featured_npcs),
+    variations: variations.length > 0 ? variations : undefined,
   };
 }
 
-function parseChoice(f: IniSection): EventChoice {
-  const effects: EventChoiceEffect[] = [];
-
-  // 단일 효과들을 키별로 추출 (간단한 표현)
+/** INI 필드 → EventChoiceEffect 하나 추출. choice·variation 공용. */
+function extractEffect(f: IniSection): EventChoiceEffect {
   const eff: EventChoiceEffect = {};
   if (f.hp !== undefined) eff.hpDelta = parseNumber(f.hp, 0);
   if (f.gold !== undefined) eff.goldDelta = parseNumber(f.gold, 0);
@@ -533,14 +541,35 @@ function parseChoice(f: IniSection): EventChoice {
   if (f.custom) eff.customEffectId = f.custom;
   if (f.clue) eff.grantClueId = f.clue;
   if (f.result_text) eff.resultText = f.result_text;
+  return eff;
+}
 
-  if (Object.keys(eff).length > 0) effects.push(eff);
-
+function parseChoice(f: IniSection): EventChoice {
+  const eff = extractEffect(f);
   return {
     label: f.label ?? '???',
     condition: f.condition,
-    effects,
+    effects: Object.keys(eff).length > 0 ? [eff] : [],
     hidden: parseBool(f.hidden, false),
+    // 개입 비용 — `timer_cost = 2`. 0/미지정이면 무비용(지나치기). canAfford가 보유를 게이트.
+    timerCost: parseNumber(f.timer_cost, 0),
+  };
+}
+
+/** 타이머 사건 바리에이션 — [event.{id}.var.{N}]. 턴 구간(from_turn)별 내용 + 개입 보상. */
+function parseVariation(f: IniSection, index: number): EventVariation {
+  const eff = extractEffect(f);
+  return {
+    index,
+    fromTurn: parseNumber(f.from_turn, 0),
+    minVisits: f.min_visits !== undefined ? parseNumber(f.min_visits, 0) : undefined,
+    requireClue: f.require_clue,
+    forbidClue: f.forbid_clue,
+    name: f.name ?? '',
+    body: f.body ?? '',
+    timerCost: parseNumber(f.timer_cost, 0),
+    resolvedBody: f.resolved,
+    effects: Object.keys(eff).length > 0 ? [eff] : undefined,
   };
 }
 
@@ -1349,6 +1378,7 @@ export function parseUnlocks(ini: IniData): Map<string, MetaUnlock> {
     const grantsCardIds = parseList(fields.grants_card);
     const grantsRelicIds = parseList(fields.grants_relic);
     const grantsTimelineIds = parseList(fields.grants_timeline);
+    const grantsTimerBonus = parseNumber(fields.grants_timer, 0);
     result.set(id, {
       id,
       name: fields.name ?? id,
@@ -1359,6 +1389,7 @@ export function parseUnlocks(ini: IniData): Map<string, MetaUnlock> {
       grantsCardIds: grantsCardIds.length > 0 ? grantsCardIds : undefined,
       grantsRelicIds: grantsRelicIds.length > 0 ? grantsRelicIds : undefined,
       grantsTimelineIds: grantsTimelineIds.length > 0 ? grantsTimelineIds : undefined,
+      grantsTimerBonus: grantsTimerBonus > 0 ? grantsTimerBonus : undefined,
     });
   }
   return result;

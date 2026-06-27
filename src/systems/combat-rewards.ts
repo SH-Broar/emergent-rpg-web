@@ -37,8 +37,8 @@ const NORMAL_COMMON_MAT_BY_TIER = [0, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55];
 const ELITE_RARE_MAT_BY_TIER = [0, 0.30, 0.40, 0.50, 0.62, 0.74, 0.85];
 // 엘리트 + 일반몹 → *전설 재료* (극희소): 엘리트는 T3부터 의미 있는 확률으로 깊어질수록 증가. 일반몹엔 없음.
 const ELITE_LEGENDARY_MAT_BY_TIER = [0, 0, 0, 0.06, 0.14, 0.22, 0.30];
-// 질 — 엘리트 유물 드롭(심화 이상): T3 0.12 ~ T6 0.42.
-const ELITE_RELIC_BY_TIER = [0, 0, 0, 0.12, 0.22, 0.32, 0.42];
+// 유물 해체 — 엘리트 유물 드롭 중단(전 티어 0). 종족 시작 유물만 잔존.
+const ELITE_RELIC_BY_TIER = [0, 0, 0, 0, 0, 0, 0];
 // 질 — 엘리트 전설 카드 드롭(권역에 legendaryCardIds 있을 때): 0.06 + 0.03·tier.
 function eliteLegendaryChance(tier: number): number {
   return 0.06 + 0.03 * tier;

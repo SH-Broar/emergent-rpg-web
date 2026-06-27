@@ -115,8 +115,38 @@ export interface EventChoice {
   /** 선택 시 발생할 효과들. */
   effects: EventChoiceEffect[];
 
+  /** 개입 비용 — 이 선택지를 고르면 타이머 N개 소비(가변 1·2·3·5). 0/미지정 = 무비용(지나치기). */
+  timerCost?: number;
+
   /** true면 선택 전 효과 미리보기를 숨김(???). *의도적 미스터리* 선택지에만. (기본 false = 투명) */
   hidden?: boolean;
+}
+
+/**
+ * 타이머 사건 바리에이션 — 턴 구간별 내용. variations가 있는 Event는 *고정 2버튼* 모드
+ * (개입[타이머 N] / 그냥 지나친다). 개입 시 body→resolvedBody로 교체되고 노드가 소비된다.
+ */
+export interface EventVariation {
+  /** 데이터 순서(1-base) — 화면 우하단에 작게 표시(몇 번째 결말). loader가 부여. */
+  index: number;
+  /** 이 턴(visitedNodes.length 경과)부터 활성. 시간대 하한. */
+  fromTurn: number;
+  /** (선택) 이 노드 N번째 방문 이상일 때만. */
+  minVisits?: number;
+  /** (선택) 단서/아이템 보유 게이트. */
+  requireClue?: string;
+  /** (선택) 단서/아이템 *미보유* 게이트. */
+  forbidClue?: string;
+  /** 타이머 이벤트 이름(바리별 — 시간대마다 분위기 다르게 가능). */
+  name: string;
+  /** 진입 텍스트(개입 전). */
+  body: string;
+  /** 개입 비용. 0이면 개입 불가(지나치기만). */
+  timerCost: number;
+  /** 개입(타이머 사용) 후 바뀌는 텍스트. */
+  resolvedBody?: string;
+  /** 개입 보상(기존 효과 재사용 — color/gold/clue/card 등). */
+  effects?: EventChoiceEffect[];
 }
 
 export interface Event extends NamedEntity {
@@ -133,4 +163,7 @@ export interface Event extends NamedEntity {
 
   /** 등장 NPC (도감 등록 트리거). */
   featuredNpcIds?: string[];
+
+  /** 타이머 사건 — 턴 구간별 바리에이션. 있으면 고정 2버튼(개입/지나치기) 모드. */
+  variations?: EventVariation[];
 }

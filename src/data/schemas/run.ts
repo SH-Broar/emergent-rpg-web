@@ -604,6 +604,21 @@ export interface NodeStateRecord {
   combatStealthed?: boolean;
   eventTriggered?: string;
   eventCount?: number;
+  /**
+   * 타이머 사건(바리에이션) 방문 횟수 — 이 노드에서 바리 사건에 진입한 누적 횟수(1-base).
+   * 바리 선택의 `minVisits` 판정에 쓰인다(진입마다 +1, 선택은 증가 *후* 값 기준).
+   * 지나치기(미소비)로 재진입해도 계속 누적된다. 옛 세이브 호환 — optional(absent=0).
+   */
+  eventVisits?: number;
+  /**
+   * 타이머 사건 *개입 소비* 결과 — set이면 그 노드의 바리 사건은 *해결됨*(개입 1회 영속).
+   * 재진입 시 EventView가 이 값으로 resolvedBody + 결과 라인을 그대로 복원해 [나간다]만 보인다.
+   *  - index        : 개입한 바리의 index(복원 표시·#번호).
+   *  - resolvedBody : 개입 후 본문(바리 resolvedBody 스냅샷).
+   *  - lines        : 개입으로 발생한 결과 라인 스냅샷(타이머 차감·보상 등).
+   * 옛 세이브 호환 — optional(absent=미개입). 바리 없는 choices 사건은 이 필드를 쓰지 않는다.
+   */
+  timerResolved?: { index: number; resolvedBody: string; lines: string[] };
   /** 활동 노드 발동 여부 — true면 다음 하루 경과(갱신) 전까지 재발동 안 함. */
   activityDone?: boolean;
   /** 휴식 노드 사용 여부 — true면 다음 하루 경과(갱신) 전까지 회복 없이 통과만. */
@@ -915,6 +930,12 @@ export interface RunState {
    * (세이브 v2 호환 — optional)
    */
   clues?: import('./clue').Clue[];
+
+  /**
+   * 타이머 — 사건 개입에 쓰는 희소 자원. 런 시작 10 고정(+연구 최대 2). 런 중 증가 없음.
+   * cur=현재 보유, max=이 런의 상한(표시·UI용). (세이브 backfill — EMPTY_RUN이 보장)
+   */
+  timers: { cur: number; max: number };
 
   // === 장비 (M9) ===
   /** 장착 중 — 슬롯별 1개씩. null이면 비어있음. */

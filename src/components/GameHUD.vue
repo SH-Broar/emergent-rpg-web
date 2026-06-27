@@ -15,6 +15,7 @@ import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
 import { XP_PER_LEVEL } from '@/systems/enhance';
+import { clockOfTurn, clockLabel } from '@/systems/time';
 import Tooltip from '@/components/Tooltip.vue';
 
 const props = defineProps<{
@@ -71,8 +72,14 @@ const timeline = computed(() => data.timelines.get(run.data.timelineId));
 const timeUrgent = computed(() => {
   const tl = timeline.value;
   if (!tl) return false;
-  return run.data.remainingTime <= Math.max(3, Math.floor(tl.timeLimit * 0.1));
+  // 경과 턴(시계 진실원 = visitedNodes)이 제한의 90%를 넘으면 위급 — remainingTime 의존 제거(B4 정합).
+  const elapsed = run.data.visitedNodes.length;
+  return elapsed >= tl.timeLimit - Math.max(3, Math.floor(tl.timeLimit * 0.1));
 });
+
+// 현재 게임 시각 — visitedNodes.length(경과 턴) 기반 시계. day는 currentDay와 동기. (systems/time.ts)
+const clock = computed(() => clockOfTurn(run.data.visitedNodes.length));
+const clockHHMM = computed(() => clockLabel(run.data.visitedNodes.length));
 
 /**
  * 표시용 HP — 전투 중이면 *전투 내 실시간 HP*를 우선한다(B1 수정).
@@ -209,12 +216,21 @@ const persistentStatuses = computed(() => {
         </div>
       </Tooltip>
 
-      <!-- 시간 -->
-      <Tooltip text="남은 시간 — 0이 되면 즉시 런 종료. 시간 소모는 행동·이동에서 발생.">
+      <!-- 타이머 — 사건 개입 자원 -->
+      <Tooltip text="타이머 — 사건 개입에 쓰는 희소 자원. 런 시작 10(연구로 최대 12). 런 중에는 늘지 않는다.">
+        <div class="slot">
+          <span class="emoji">⏱️</span>
+          <span class="lbl">타이머</span>
+          <span class="num">{{ run.data.timers.cur }}/{{ run.data.timers.max }}</span>
+        </div>
+      </Tooltip>
+
+      <!-- 시계 — 현재 게임 시각 (1일차 정오 시작, 행동마다 14.4분 경과) -->
+      <Tooltip text="현재 시각 — 1일차 정오에 시작해 행동·이동마다 시간이 흐른다(1회 14.4분). 3일이 다하면(4일차 정오) 런 종료.">
         <div class="slot" :class="{ 'slot--urgent': timeUrgent }">
-          <span class="emoji">⌛</span>
-          <span class="lbl">시간</span>
-          <span class="num">{{ run.data.remainingTime }}</span>
+          <span class="emoji">🕛</span>
+          <span class="lbl">{{ clock.day }}일차</span>
+          <span class="num">{{ clockHHMM }}</span>
         </div>
       </Tooltip>
 

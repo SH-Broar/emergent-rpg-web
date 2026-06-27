@@ -246,6 +246,15 @@ export function applyStartChaos(run: RunState): void {
         };
         break;
       }
+      case 'start-timer-add': {
+        // 사건 개입 타이머 +N — 런 시작 1회. param=정수(예: '2'). cur·max 동시 증가.
+        const add = Math.floor(Number(param) || 0);
+        if (add > 0 && run.timers) {
+          run.timers.cur += add;
+          run.timers.max += add;
+        }
+        break;
+      }
       // 그 외 상시형 — 시작 시 처리할 것 없음(조회 시점 적용).
       default:
         break;

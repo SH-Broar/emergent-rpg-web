@@ -15,9 +15,8 @@ import { useMetaStore } from '@/stores/meta';
 import { useCodexStore } from '@/stores/codex';
 import { useUiStore } from '@/stores/ui';
 import { applyColorBoost } from '@/systems/colors';
-import { rewardItem, rewardColor, rewardCard, rewardRelic, rewardGold, rewardXp, rewardLevelUp } from '@/systems/reward-feed';
+import { rewardItem, rewardColor, rewardCard, rewardGold, rewardXp, rewardLevelUp } from '@/systems/reward-feed';
 import { XP_BOSS, XP_ARC_REPEAT } from '@/systems/enhance';
-import { acquireRelic } from '@/systems/relic';
 import { revealNextTierOnClear, recordBestChaos, bossRewardMul } from '@/systems/chaos';
 
 const DEFAULT_BOSS_GOLD = 30;
@@ -143,14 +142,8 @@ export function applyArcRewards(boss: Boss): void {
     rewardGold(reward.gold);
   }
 
-  // 2) 유물 — acquireRelic(중앙화: on-acquire/passive 트리거·도감·encounter 처리).
-  for (const id of reward.relicIds ?? []) {
-    const relic = data.relics.get(id);
-    if (relic) {
-      acquireRelic(relic);
-      rewardRelic(relic.name);
-    }
-  }
+  // 2) 유물 — 해체됨. 보스 유물 보상 중단(reward.relicIds는 데이터에 남아도 미지급).
+  //    유물 시스템은 종족 시작 유물(seedRelics)만 잔존.
 
   // 3) 카드 — collection 추가(자리 있으면 덱 자동 등록).
   for (const id of reward.cardIds ?? []) {

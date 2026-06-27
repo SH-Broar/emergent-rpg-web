@@ -13,6 +13,7 @@ import { useUiStore } from '@/stores/ui';
 import { useDataStore } from '@/stores/data';
 import { useMetaStore } from '@/stores/meta';
 import { canEnterTimeline } from '@/frame/Mono';
+import { durationLabel } from '@/systems/time';
 import type { Timeline } from '@/data/schemas';
 
 const router = useRouter();
@@ -79,7 +80,7 @@ function back() {
         <dl class="chapter__meta">
           <div>
             <dt>제한 시간</dt>
-            <dd>{{ t.timeLimit }}턴</dd>
+            <dd>{{ durationLabel(t.timeLimit) }}</dd>
           </div>
           <div>
             <dt>도감 해금</dt>

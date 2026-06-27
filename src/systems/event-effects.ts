@@ -202,3 +202,18 @@ registerEventEffect('mono-wager-shards', (ctx) => {
     ctx.lines.push(`시간의 조각 -${stake} (모노가 가져갔다)`);
   }
 });
+
+// === 타이머 개입(수직 슬라이스) — 비용은 선택지 timer_cost로 이미 지불. 결과만 50/50 도박. ===
+// 길보: 무작위 색 +8(성장). 흉보: 체력 -8. 개입의 "좋거나/나쁘거나"를 확인하는 최소 사건.
+registerEventEffect('timer-rift-gamble', (ctx) => {
+  const r = ctx.run;
+  if (rng() < 0.5) {
+    void import('@/systems/colors').then(({ applyColorBoost }) => {
+      applyColorBoost(pickRandom(ALL_8_COLORS), 8, ctx.lines);
+    });
+    ctx.lines.push('균열 너머에서 빛이 쏟아진다. (길보)');
+  } else {
+    r.hp = Math.max(1, r.hp - 8);
+    ctx.lines.push('균열이 사납게 닫힌다. 체력 -8 (흉보)');
+  }
+});

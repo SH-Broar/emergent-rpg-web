@@ -17,6 +17,7 @@ import { useUiStore } from '@/stores/ui';
 import { useDataStore } from '@/stores/data';
 import { colorLabel } from '@/systems/labels';
 import { eulReul, iGa } from '@/systems/josa';
+import { minutesLabel } from '@/systems/time';
 import {
   getCrop,
   getPlot,
@@ -361,7 +362,7 @@ onMounted(() => {
           >
             <span class="seed__dot" :style="{ background: elementHex(activity.element) }" />
             <span class="seed__name">{{ activityCrop?.seedName ?? activity.name }}</span>
-            <span class="seed__meta">완성 {{ activityCrop?.growTurns ?? 0 }}턴</span>
+            <span class="seed__meta">완성 {{ minutesLabel(activityCrop?.growTurns ?? 0) }}</span>
             <span class="seed__meta">{{ careLabel }} {{ activityCrop?.waterAt.length ?? 0 }}회</span>
           </button>
           <button
@@ -435,7 +436,7 @@ onMounted(() => {
         </template>
 
         <template v-else>
-          <p class="hint hint--water">방금 다녀갔다. {{ cooldownLeft }}턴쯤 지나야 다시 할 수 있다.</p>
+          <p class="hint hint--water">방금 다녀갔다. {{ minutesLabel(cooldownLeft) }}쯤 지나야 다시 할 수 있다.</p>
           <button class="action action--leave" @click="leave">다녀오기</button>
         </template>
       </section>

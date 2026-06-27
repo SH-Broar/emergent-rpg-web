@@ -254,3 +254,23 @@ result_text = 찌릿한 충격과 함께 전기의 기운이 크게 올랐다.
 label = 부품을 떼어 판다
 gold = 14
 result_text = 쓸 만한 금속을 떼어 챙겼다.
+
+# 타이머 개입 슬라이스 — 개입(timer_cost=2, 결과 숨김 도박) / 지나치기(무비용).
+#   개입의 핵심 결정축(희소 타이머를 이 사건에 쓸 가치가 있나)을 검증하는 최소 사건.
+[event.ev-filler-timer-rift]
+name = 시간의 균열
+node_kinds = event
+once_per_run = false
+weight = 1
+body = 길 한복판 허공이 비스듬히 갈라져 있다. 틈 너머로 무언가 어른거린다. 손을 넣어 휘저어 볼 수도, 그냥 지나칠 수도 있다.
+
+[event.ev-filler-timer-rift.choice.1]
+label = 틈에 개입한다
+timer_cost = 2
+hidden = true
+custom = timer-rift-gamble
+result_text = 틈이 출렁이며 반응한다.
+
+[event.ev-filler-timer-rift.choice.2]
+label = 그냥 지나친다
+result_text = 균열을 등지고 걸음을 옮긴다.

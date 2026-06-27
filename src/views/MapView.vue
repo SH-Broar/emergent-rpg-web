@@ -27,6 +27,7 @@ import { restHealMul, lockedTownCount, isShopLimited, canEnterShop, recordShopEn
 import { isActivityDone } from '@/systems/activity';
 import { isGatherDone } from '@/systems/gathering';
 import { plotStatus, type PlotStatus } from '@/systems/farming';
+import { minutesLabel } from '@/systems/time';
 import type { Node, NodeId, NodeKind, NodeMap } from '@/data/schemas';
 
 const router = useRouter();
@@ -936,7 +937,7 @@ function plotBadgeState(s: PlotStatus): 'ready' | 'care' | 'grow' {
 function plotStatusLine(s: PlotStatus): string {
   if (s.ready) return '제작 완료 — 수확할 수 있다.';
   if (s.needsCare) return '제작 중 — 손질이 필요하다.';
-  return `제작 중 — 완성까지 ${s.remaining}턴.`;
+  return `제작 중 — 완성까지 ${minutesLabel(s.remaining)}.`;
 }
 
 function enterLabel(): string {
@@ -1118,7 +1119,7 @@ function enterLabel(): string {
           class="drawer__enter drawer__enter--reenter"
           @click="enterSelected"
         >
-          다시 들어간다 (1턴)
+          다시 들어간다 ({{ minutesLabel(1) }})
         </button>
         <button
           v-if="getEnterAction() === 'choose-combat'"

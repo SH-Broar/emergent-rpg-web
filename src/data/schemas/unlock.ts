@@ -28,4 +28,6 @@ export interface MetaUnlock {
   grantsCardIds?: CardId[];
   grantsRelicIds?: RelicId[];
   grantsTimelineIds?: TimelineId[];
+  /** 구매 시 타이머 영구 상향(연구). meta.timerBonus를 이 값까지 끌어올림(상한 2). */
+  grantsTimerBonus?: number;
 }
