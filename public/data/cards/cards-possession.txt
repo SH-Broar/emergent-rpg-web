@@ -21,7 +21,7 @@ shape = -1,-1|0,-1|1,-1
 per_tile_mul = 1.0,1.0,1.0
 target_mode = pattern
 cast_speed = normal
-flavor = 어깨가 가벼운 날도, 무거운 날도 있다.
+flavor = 원인 모를 두통과 함께 기생하는 정체불명의 마력. 때로는 육체를 가볍게, 때로는 끔찍하게 짓누른다.
 
 # ========== 수호령 변신 결과 (좋음) ==========
 [card.c-blessed]
@@ -37,7 +37,7 @@ shape = -1,-1|0,-1|1,-1
 per_tile_mul = 1.0,1.0,1.0
 target_mode = pattern
 cast_speed = normal
-flavor = "옆에 있을게."
+flavor = "옆에 있을게." 따뜻하고 성스러운 기운이 온몸을 감싼다. 상처를 치유하고 악의를 몰아내는 절대적인 수호.
 
 # ========== 악령 변신 결과 (나쁨, 상점에서만 제거) ==========
 [card.c-cursed]
@@ -52,4 +52,4 @@ effects = curse-tick:2
 # 격자: 자기 자신. curse-tick은 내부 처리(self 유지).
 target_mode = self
 cast_speed = normal
-flavor = "같이 가자. 응? 같이 가자."
+flavor = "같이 가자. 응? 같이 가자." 귓가에 끊임없이 속삭이는 불길한 저주. 등골을 타고 오르는 끔찍한 냉기가 기력을 갉아먹는다.

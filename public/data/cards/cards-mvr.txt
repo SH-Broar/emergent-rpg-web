@@ -17,7 +17,7 @@ cost = 1
 trigger = manual
 effects = damage:6:enemy
 upgrade_to = c-strike-plus
-flavor = 어디서든 통하는 가장 오래된 수.
+flavor = 무기를 휘두르는 가장 기초적인 동작. 오래된 방식이지만 언제나 유효하다.
 # 격자: 사방 1칸(자기+상하좌우) — 어느 방향의 인접 적이든 친다(기본 신뢰 공격).
 shape = 0,0|0,-1|0,1|-1,0|1,0
 cast_speed = fast
@@ -33,7 +33,7 @@ trigger = manual
 effects = block:6:self
 cast_speed = fast
 upgrade_to = c-defend-plus
-flavor = "막고 나서 생각해도 늦지 않아."
+flavor = "막고 나서 생각해도 늦지 않아." 일단 몸을 웅크려 치명상을 피한다.
 # 격자: 제자리 방어막.
 target_mode = self
 
@@ -47,7 +47,7 @@ trigger = manual
 effects = draw:1:self
 instant = true
 upgrade_to = c-quickdraw-plus
-flavor = "생각은 나중에!"
+flavor = "생각은 나중에!" 머리보다 몸이 먼저 반응한다.
 # 격자: 제자리 드로우.
 target_mode = self
 cast_speed = fast
@@ -60,7 +60,7 @@ cost = 1
 trigger = manual
 effects = heal:4:self, exhaust-self:0:self
 upgrade_to = c-recover-plus
-flavor = 싸움의 절반은 숨이다.
+flavor = 깊게 들이켠 숨결이 거친 심장 박동을 가라앉힌다. 싸움의 절반은 호흡에 달렸다.
 # 격자: 제자리 회복. 느리게 발동(행동 타이밍 늦춤).
 target_mode = self
 cast_speed = slow
@@ -76,7 +76,7 @@ cost = 1
 trigger = manual
 effects = damage:11:enemy, block:4:self
 upgrade_to = c-resolve-flash-plus
-flavor = "여기서 멈출 수는 없어."
+flavor = "여기서 멈출 수는 없어." 굳은 결의가 빛이 되어 전장을 가른다.
 # 격자: 자기 십자(전후좌우+자기). 공격+방어 동시, 인간 균형 컨셉.
 shape = 0,0|0,-1|0,1|-1,0|1,0
 target_mode = pattern
@@ -91,7 +91,7 @@ cost = 1
 trigger = manual
 effects = block:11:self
 upgrade_to = c-gentle-guard-plus
-flavor = 물결은 칼자국이 남지 않는다.
+flavor = 일렁이는 수면은 아무리 강한 칼날이라도 흉터를 남길 수 없다.
 # 격자: 제자리 강방어. 위치 무관.
 target_mode = self
 cast_speed = fast
@@ -105,7 +105,7 @@ cost = 1
 trigger = manual
 effects = damage-per-hand:3:enemy
 upgrade_to = c-double-strike-plus
-flavor = 기세로 놀라게 한다.
+flavor = 폭발적인 기세가 상대를 덮친다. 쥐고 있는 패가 많을수록 더욱 거칠어진다.
 # 격자: 좌우베기(자기+좌우). 손패가 많을수록 폭발적. 빠른 속도.
 shape = 0,0|-1,0|1,0
 target_mode = pattern
@@ -121,7 +121,7 @@ trigger = manual
 effects = draw:3:self
 instant = true
 upgrade_to = c-focused-mind-plus
-flavor = "조용히. 지금 생각 중이야."
+flavor = "조용히. 지금 생각 중이야." 시끄러운 전장 속에서도 흔들리지 않는 통찰을 끌어낸다.
 # 격자: 제자리 대량 드로우.
 target_mode = self
 cast_speed = slow
@@ -135,7 +135,7 @@ cost = 1
 trigger = manual
 effects = damage:4:enemy, apply-status:5:enemy:burn
 upgrade_to = c-burn-mark-plus
-flavor = "불조심하라니까."
+flavor = "불조심하라니까." 피어오른 불꽃이 곧 거대한 회오리가 되어 주변을 집어삼킨다.
 # 격자: 회오리(자기+대각 X 4칸). 화염 광역. 느린 속도.
 shape = 0,0|-1,-1|1,-1|-1,1|1,1
 target_mode = pattern
@@ -152,7 +152,7 @@ element = water
 cost = 1
 trigger = manual
 effects = heal:6:self, draw:1:self, exhaust-self:0:self
-flavor = 바람이 이마의 땀을 식혀 준다.
+flavor = 시원한 바람결이 이마에 맺힌 식은땀을 닦아낸다. 지친 몸에 다시 활기가 돈다.
 upgrade_to = c-second-wind-plus
 # 격자: 제자리 회복+드로우. 소멸.
 target_mode = self
@@ -166,7 +166,7 @@ element = wind
 cost = 0
 trigger = manual
 effects = draw:1:self, heal:1:self, damage:8:enemy, exhaust-self:0:self
-flavor = 임시 방편이라도 소중히.
+flavor = 다급한 상황 속에서 짜낸 짧은 휴식. 급한 불은 끄고 반격을 준비한다.
 upgrade_to = c-deep-breath-plus
 # 격자: 정면 찌르기+자가 회복. 빠른 속도+소멸.
 shape = 0,0|0,-1
@@ -183,7 +183,7 @@ element = light
 cost = 2
 trigger = manual
 effects = damage:42:enemy, consume-vulnerable:3:enemy
-flavor = "......잘 다뤄 줘."
+flavor = "......잘 다뤄 줘." 차원이 다른 빛의 일격. 무겁게 내리꽂히며 모든 것을 꿰뚫는다.
 upgrade_to = c-transcend-strike-plus
 # 격자: 긴 창(자기+전방 3칸 직선). 끝칸은 강 칸. 느린 대신 파괴적.
 shape = 0,0|0,-1|0,-2|0,-3
@@ -201,7 +201,7 @@ element = dark
 cost = 1
 trigger = manual
 effects = damage:11:enemy, apply-status:1:enemy:vulnerable
-flavor = "잡았다, 그림자."
+flavor = "잡았다, 그림자." 발밑에서 뻗어 나온 짙은 어둠이 상대의 허점을 파고든다.
 upgrade_to = c-shadow-rebuke-plus
 # 격자: 앞부채 3칸(자기+전방 3칸 호). 발밑 그림자를 밟는 컨셉.
 shape = 0,0|-1,-1|0,-1|1,-1
@@ -222,7 +222,7 @@ element = iron
 cost = 1
 trigger = manual
 effects = damage:9:enemy
-flavor = 조금 개량된 검술.
+flavor = 경험으로 다져진 깔끔한 궤적. 군더더기 없는 일격이 꽂힌다.
 # 격자: 사방 1칸(자기+상하좌우) — 강화로 피해 상승. 어느 방향이든 친다.
 shape = 0,0|0,-1|0,1|-1,0|1,0
 target_mode = pattern
@@ -237,7 +237,7 @@ cost = 1
 trigger = manual
 effects = block:8:self
 cast_speed = fast
-flavor = "생각을 먼저 해도, 대부분은 막아야 해."
+flavor = "생각을 먼저 해도, 대부분은 막아야 해." 공격보다 생존이 최우선이다.
 target_mode = self
 
 [card.c-quickdraw-plus]
@@ -249,7 +249,7 @@ cost = 0
 trigger = manual
 effects = draw:2:self
 instant = true
-flavor = "일단 움직여!"
+flavor = "일단 움직여!" 고민할 시간에 한 번이라도 더 몸을 내던진다.
 target_mode = self
 cast_speed = fast
 [card.c-recover-plus]
@@ -260,7 +260,7 @@ element = water
 cost = 1
 trigger = manual
 effects = heal:7:self, exhaust-self:0:self
-flavor = 깊게 숨을 쉬어 진정한다.
+flavor = 깊은 들숨과 함께 시야가 맑아진다. 다음 일격을 위한 완벽한 정적.
 target_mode = self
 cast_speed = slow
 
@@ -272,7 +272,7 @@ element = light
 cost = 1
 trigger = manual
 effects = damage:15:enemy, block:7:self
-flavor = "아직 포기하긴 일러!"
+flavor = "아직 포기하긴 일러!" 부서지지 않는 의지가 등불처럼 타오른다.
 # 격자: 회오리(자기+대각 X). 강화로 사거리가 대각까지 번진다.
 shape = 0,0|-1,-1|1,-1|-1,1|1,1
 target_mode = pattern
@@ -286,7 +286,7 @@ element = water
 cost = 1
 trigger = manual
 effects = block:17:self
-flavor = 물 속에서는 누구라도 팔이 느려진다.
+flavor = 밀도 높은 물의 장벽이 쏟아지는 공격을 끈적하게 집어삼킨다.
 target_mode = self
 cast_speed = fast
 
@@ -298,7 +298,7 @@ element = iron
 cost = 1
 trigger = manual
 effects = damage-per-hand:4:enemy
-flavor = 눈도 깜짝 않던 상대가 슬며시 뒷걸음친다.
+flavor = 눈도 깜짝 않던 적의 발걸음이 무의식중에 뒤로 물러선다.
 # 격자: 전방 T(자기+앞 호+한 칸 더). 강화로 좌우베기보다 멀리 닿는다.
 shape = 0,0|-1,-1|0,-1|1,-1|0,-2
 target_mode = pattern
@@ -313,7 +313,7 @@ cost = 1
 trigger = manual
 effects = draw:4:self
 instant = true
-flavor = 쉿. 이제 막 좋은 수가 떠올랐어.
+flavor = "쉿. 이제 막 좋은 수가 떠올랐어." 머릿속을 맴돌던 파편들이 완벽한 수로 짜맞춰진다.
 target_mode = self
 cast_speed = slow
 
@@ -325,7 +325,7 @@ element = fire
 cost = 1
 trigger = manual
 effects = damage:7:enemy, apply-status:7:enemy:burn
-flavor = "그러게, 조심하랬지."
+flavor = "그러게, 조심하랬지." 사방으로 흩어진 불똥이 삽시간에 주변을 재로 만든다.
 # 격자: 3x3 휩쓸기. 자기 칸은 강 칸. 강화로 회오리에서 전방위 화염으로.
 shape = 0,0|0,-1|0,1|-1,0|1,0|-1,-1|1,-1|-1,1|1,1
 per_tile_mul = 1.5,1,1,1,1,1,1,1,1
@@ -350,7 +350,7 @@ effects = damage:16:enemy, apply-status:1:enemy:paralyze
 shape = 0,0|-1,-1|0,-1|1,-1|0,-2
 target_mode = pattern
 cast_speed = slow
-flavor = 일루네온의 큰 시계는 가끔 정오에 멈춘다.
+flavor = 일루네온 광장의 거대한 시계는 아주 가끔 정오에 멈춘다. 그 찰나의 침묵은 숨 막히도록 길다.
 upgrade_to = c-iluneon-stopped-noon-plus
 
 [card.c-moss-ember-strike]
@@ -365,7 +365,7 @@ effects = damage:16:enemy, apply-status:14:enemy:burn
 shape = 0,0|0,-1|0,-2|0,-3
 target_mode = pattern
 cast_speed = slow
-flavor = 모스의 화로는 꺼진 적이 없다.
+flavor = 모스의 심장부에서 타오르는 화로는 단 한 번도 꺼진 적이 없다. 그 열기가 시야를 매끄럽게 일그러뜨린다.
 upgrade_to = c-moss-ember-strike-plus
 per_tile_mul = 1,1,1,1.5
 [card.c-tacomi-hologram-mirror]
@@ -378,7 +378,7 @@ trigger = manual
 effects = block:18:self, apply-status:1:self:ghost
 target_mode = self
 cast_speed = fast
-flavor = "진짜 나는 어느 쪽이게?"
+flavor = "진짜 나는 어느 쪽이게?" 수십 개의 홀로그램이 동시에 일그러지며 상대를 혼란에 빠뜨린다.
 upgrade_to = c-tacomi-hologram-mirror-plus
 
 [card.c-alimes-mist-vow]
@@ -394,7 +394,7 @@ shape = 0,0|0,-1|0,-2
 per_tile_mul = 1,1,1.5
 target_mode = pattern
 cast_speed = slow
-flavor = 알리메스의 안개는 들은 약속을 잊지 않는다고 한다.
+flavor = 알리메스의 안개는 맺은 약속을 결코 잊지 않는다. 짙은 수증기가 날카로운 원한을 머금고 쇄도한다.
 upgrade_to = c-alimes-mist-vow-plus
 
 [card.c-manonickla-sunset-wall]
@@ -409,7 +409,7 @@ effects = block:35:self, damage-top-color:1:enemy
 shape = 0,0|-1,0|1,0
 target_mode = pattern
 cast_speed = slow
-flavor = 마노니클라의 노을은 좀처럼 지지 않는다.
+flavor = 마노니클라의 하늘을 덮은 붉은 노을은 웬만해선 지지 않는다. 결코 무너지지 않을 듯한 거대한 장벽이 솟아오른다.
 upgrade_to = c-manonickla-sunset-wall-plus
 
 # ========== NPC 영입 카드 ==========
@@ -424,7 +424,7 @@ trigger = manual
 effects = draw:1:self, next-turn-energy:1:self, heal:-4:self
 target_mode = self
 cast_speed = fast
-flavor = "올라탔으면 멈추지 마!"
+flavor = "올라탔으면 멈추지 마!" 발밑을 맴돌던 바람이 단숨에 몸을 띄워 올린다.
 upgrade_to = c-swift-step-plus
 
 [card.c-fast-mail]
@@ -437,7 +437,7 @@ trigger = manual
 effects = draw:1:self, next-turn-energy:1:self, heal:-4:self
 target_mode = self
 cast_speed = fast
-flavor = "등기입니다! 도장 주세요!"
+flavor = "등기입니다! 도장 주세요!" 당황할 새도 없이, 눈앞에 스쳐 지나간 잔상만이 남는다.
 upgrade_to = c-fast-mail-plus
 
 [card.c-balanced-edge]
@@ -452,7 +452,7 @@ effects = damage-min-color:1:enemy
 shape = 0,0|-1,-1|1,-1
 target_mode = pattern
 cast_speed = normal
-flavor = "......좋은 검이네."
+flavor = "......좋은 검이네." 쇳소리와 함께 날카로운 궤적이 빈틈을 파고든다.
 upgrade_to = c-balanced-edge-plus
 
 [card.c-binding-ward]
@@ -467,7 +467,7 @@ effects = apply-status:3:enemy:weakness
 shape = 0,0|0,-1|0,1|-1,0|1,0
 target_mode = pattern
 cast_speed = normal
-flavor = "그날로 돌아갈 수만 있다면."
+flavor = "그날로 돌아갈 수만 있다면." 짙은 미련이 그림자처럼 들러붙어 적의 발목을 옥죈다.
 upgrade_to = c-binding-ward-plus
 
 [card.c-quiet-arc]
@@ -482,7 +482,7 @@ effects = apply-status:2:enemy:vulnerable, apply-status:1:enemy:weakness
 shape = 0,0|-1,-1|0,-1|1,-1
 target_mode = pattern
 cast_speed = slow
-flavor = "우선, 심호흡부터요."
+flavor = "우선, 심호흡부터요." 거칠어진 호흡을 가다듬으며, 다음 일격을 위한 완벽한 각도를 잰다.
 upgrade_to = c-quiet-arc-plus
 
 [card.c-flash-capture]
@@ -497,7 +497,7 @@ effects = apply-status:2:enemy:paralyze
 shape = 0,0|0,-1|0,1|-1,0|1,0|-1,-1|1,-1|-1,1|1,1
 target_mode = pattern
 cast_speed = slow
-flavor = "여기 보세요. 찰칵!"
+flavor = "여기 보세요. 찰칵!" 터질 듯한 섬광이 망막을 찢고 들어와 일순간 모든 것을 굳혀버린다.
 upgrade_to = c-flash-capture-plus
 per_tile_mul = 1.0,1.0,1.0
 [card.c-rize-relay]
@@ -513,13 +513,13 @@ shape = 0,0
 target_mode = aimed
 aim_range = 3
 cast_speed = fast
-flavor = "격투의 장점은, 뭐니뭐니해도 빠르다는거야!"
+flavor = "격투의 장점은, 뭐니뭐니해도 빠르다는 거야!" 말이 채 끝나기도 전에 주먹이 꽂힌다.
 
 # 한 판 갈래의 *돌아온 한 판* — 같은 이름·비용 0의 별개 카드. 이 카드는 다시 돌아오지 않는다(무한 복제 방지).
 # source=form → 어떤 풀(상점/이벤트/보상)에도 등장하지 않고, 전투 중 c-rize-relay 사용 시에만 생성된다.
 [card.c-rize-relay-echo]
 name = 연속 타격
-flavor = "아직 안 끝났어!"
+flavor = "아직 안 끝났어!" 뒤이어 날아오는 두 번째 일격이 틈을 놓치지 않는다.
 rank = common
 source = form
 element = fire
@@ -544,7 +544,7 @@ effects = damage-color-count:3:enemy, draw:1:self
 shape = 0,0|-1,-1|1,-1
 target_mode = pattern
 cast_speed = normal
-flavor = "다들 모였어? 그럼 간다!"
+flavor = "다들 모였어? 그럼 간다!" 억눌려 있던 영혼들이 일제히 비명을 지르며 튀어 나간다.
 
 [card.c-warm-cup]
 name = 따뜻한 한 잔
@@ -558,7 +558,7 @@ effects = heal:3:self, draw:1:self, damage:8:enemy, exhaust-self:0:self
 shape = 0,0|0,-1
 target_mode = pattern
 cast_speed = normal
-flavor = 신시안이 준비해준 찻잎으로 끓인 차. 기분 좋은 향기가 난다.
+flavor = 신시안의 찻잎으로 끓여낸 맑은 차. 혀끝에 감도는 온기가 피로를 씻어 내린다.
 
 [card.c-tripps-rage]
 name = 트립스
@@ -573,7 +573,7 @@ shape = 0,0|0,-1|0,-2|0,-3
 per_tile_mul = 1,1,1,1.5
 target_mode = pattern
 cast_speed = slow
-flavor = "......지금은, 못 참아요."
+flavor = "......지금은, 못 참아요." 임계점을 넘은 분노가 통제할 수 없는 화염으로 폭발한다.
 
 [card.c-trace-step]
 name = 발자취
@@ -585,7 +585,7 @@ trigger = manual
 effects = draw:2:self, return-hand-to-deck:1:self, next-turn-energy:1:self
 target_mode = self
 cast_speed = fast
-flavor = "......이 길이야."
+flavor = "......이 길이야." 지워진 발자국을 더듬어 가며 가장 확실한 활로를 찾는다.
 
 [card.c-growing-leaf]
 name = 자라나는 잎새
@@ -597,7 +597,7 @@ trigger = manual
 effects = growing-block:2:self
 target_mode = self
 cast_speed = fast
-flavor = "매일 조금씩 크고 있어. 진짜야."
+flavor = "매일 조금씩 크고 있어. 진짜야." 여린 잎새가 딱딱한 흙을 뚫고 나와 생명력을 과시한다.
 
 [card.c-zero-spark]
 name = 전류 자국
@@ -612,7 +612,7 @@ shape = 0,0|0,-1|0,1|-1,0|1,0
 target_mode = aimed
 aim_range = 3
 cast_speed = fast
-flavor = "접지 잘하고 만져."
+flavor = "접지 잘하고 만져." 허공을 가른 불꽃 튀는 전류가 벼락처럼 내리꽂힌다.
 [card.c-alti-resonance]
 name = 알티-알타의 신호
 rank = rare
@@ -626,7 +626,7 @@ shape = 0,0
 target_mode = aimed
 aim_range = 3
 cast_speed = normal
-flavor = "둘이 같은 신호를 보내면, 못 갈 데가 없어요."
+flavor = "둘이 같은 신호를 보내면, 못 갈 데가 없어요." 미세한 파장이 겹쳐지며 폭발적인 공명을 일으킨다.
 [card.c-flame-web]
 name = 화염 거미줄
 rank = rare
@@ -639,7 +639,7 @@ effects = damage:12:enemy, apply-status:3:enemy:vulnerable
 shape = 0,0|-1,-1|1,-1|-1,1|1,1
 target_mode = pattern
 cast_speed = slow
-flavor = "꽉 묶어 줄게. 따뜻하지?"
+flavor = "꽉 묶어 줄게. 따뜻하지?" 사방으로 뻗어 나간 불길이 끈적한 거미줄처럼 적을 옥죈다.
 [card.c-orca-tide]
 name = 범고래의 물결
 rank = rare
@@ -652,7 +652,7 @@ effects = damage:14:enemy, block:8:self
 shape = 0,0|0,-1|0,1|-1,0|1,0
 target_mode = pattern
 cast_speed = slow
-flavor = 물결이 갈라지면, 이미 늦었다.
+flavor = 갈라지는 파도 사이로 무겁고 서늘한 살의가 번뜩인다. 피하기엔 이미 늦었다.
 [card.c-trade-coil]
 name = 꼬리 감기
 rank = rare
@@ -665,7 +665,7 @@ effects = damage:12:enemy, block:9:self
 shape = 0,0|-1,0|1,0
 target_mode = pattern
 cast_speed = slow
-flavor = 꼬리로 칭칭 감아 조인다.
+flavor = 거대한 꼬리가 뱀처럼 휘감기며 순식간에 숨통을 비틀어 막는다.
 [card.c-lop-sign]
 name = 리포의 신호
 rank = rare
@@ -676,7 +676,7 @@ trigger = manual
 effects = draw:1:self, block:8:self
 target_mode = self
 cast_speed = fast
-flavor = "......들려요. 곧 와요."
+flavor = "......들려요. 곧 와요." 땅 밑을 타고 흐르는 미세한 진동이 심상치 않다.
 
 [card.c-tide-veil]
 name = 물의 방패
@@ -688,7 +688,7 @@ trigger = manual
 effects = block:9:self, heal:3:self, exhaust-self:0:self
 target_mode = self
 cast_speed = fast
-flavor = "괜찮아요. 절 믿어요."
+flavor = "괜찮아요. 절 믿어요." 온몸을 감싸는 맑은 물방울이 모든 상처를 부드럽게 감싸 안는다.
 
 [card.c-bear-bastion]
 name = 곰의 방벽
@@ -703,7 +703,7 @@ shape = 0,0|-1,-1|0,-1|1,-1|0,-2
 per_tile_mul = 1.5,1,1,1,1
 target_mode = pattern
 cast_speed = slow
-flavor = "......자격을, 보여라."
+flavor = "......자격을, 보여라." 태산처럼 거대한 장벽이 우뚝 솟아 앞길을 철저히 막아선다.
 
 [card.c-tiger-rush]
 name = 빠른 삼연
@@ -718,7 +718,7 @@ shape = 0,0|0,-1|0,1|-1,0|1,0
 target_mode = aimed
 aim_range = 3
 cast_speed = fast
-flavor = "셋을 셀 동안 끝내 주지."
+flavor = "셋을 셀 동안 끝내 주지." 짐승의 송곳니를 닮은 세 번의 일격이 벼락처럼 쇄도한다.
 
 
 # ============================================================
@@ -738,7 +738,7 @@ shape = 0,0
 target_mode = aimed
 aim_range = 3
 cast_speed = normal
-flavor = 어두운 하늘에 깔리는, 아름다운 색의 장막.
+flavor = 칠흑 같은 밤하늘을 가로지르는 찬란한 오로라. 그 아름다운 장막 뒤에는 파멸이 숨어 있다.
 
 [card.c-prism-guard]
 name = 간파
@@ -750,7 +750,7 @@ trigger = manual
 effects = block-top-color:1:self
 target_mode = self
 cast_speed = fast
-flavor = "버릇이란 게, 막을 때도 나오거든."
+flavor = "버릇이란 게, 막을 때도 나오거든." 상대의 작은 흔들림조차 놓치지 않고 완벽하게 흘려낸다.
 
 [card.c-spectrum-edge]
 name = 무지갯빛 칼날
@@ -765,7 +765,7 @@ shape = 0,0|0,-1|0,1|-1,0|1,0|-1,-1|1,-1|-1,1|1,1
 per_tile_mul = 1.5,1,1,1,1,1,1,1,1
 target_mode = pattern
 cast_speed = slow
-flavor = 칼날이 보는 각도마다 다른 색으로 빛난다.
+flavor = 빛을 머금은 칼날이 각도에 따라 일곱 빛깔로 번뜩인다. 궤적을 예측하는 것은 불가능에 가깝다.
 [card.c-blood-pact]
 name = 피의 계약
 rank = rare
@@ -779,7 +779,7 @@ shape = 0,0|0,-1|0,-2
 per_tile_mul = 1,1,1.5
 target_mode = pattern
 cast_speed = slow
-flavor = "이 정도 아픈 건 셈에 안 넣어."
+flavor = "이 정도 아픈 건 셈에 안 넣어." 찢겨나간 상처 틈새로 미친 듯이 끓어오르는 화염이 분출된다.
 
 
 # ============================================================
@@ -803,7 +803,7 @@ effects = apply-status:1:self:feral, damage:7:enemy
 shape = 0,0|-1,-1|1,-1
 target_mode = pattern
 cast_speed = fast
-flavor = "......오늘은 제정신이 아닐지도 몰라."
+flavor = "......오늘은 제정신이 아닐지도 몰라." 이성을 억누르던 끈이 끊어지는 순간, 야생의 본능만이 남는다.
 
 [card.c-fang-frenzy]
 name = 사냥 본능
@@ -817,7 +817,7 @@ effects = damage:8:enemy
 shape = 0,0|-1,-1|0,-1|1,-1
 target_mode = pattern
 cast_speed = fast
-flavor = "......사냥 시작."
+flavor = "......사냥 시작." 포식자의 낮고 서늘한 속삭임이 사냥감의 귓가를 파고든다.
 
 # ---------- 퇴행(regress) 활용 2장 ----------
 per_tile_mul = 1.0,1.0
@@ -835,7 +835,7 @@ shape = 0,0|0,-1|0,-2
 per_tile_mul = 1,1,1.5
 target_mode = pattern
 cast_speed = slow
-flavor = "물러설 곳이 없으면, 앞만 보면 돼."
+flavor = "물러설 곳이 없으면, 앞만 보면 돼." 퇴로가 막힌 벼랑 끝에서 도리어 가장 날카로운 투기가 뿜어져 나온다.
 
 [card.c-elder-curse]
 name = 태고의 저주
@@ -849,7 +849,7 @@ effects = apply-status:2:enemy:regress, damage:9:enemy
 shape = 0,0|0,-1|0,1|-1,0|1,0
 target_mode = pattern
 cast_speed = slow
-flavor = 아주 오래된 어둠이 천천히 눈을 뜬다.
+flavor = 망각의 심연 속에 잠들어 있던 태고의 저주가 아주 천천히, 무겁게 눈을 뜬다.
 
 # ---------- damage-per-debuff 2장 ----------
 
@@ -865,7 +865,7 @@ effects = damage-per-debuff:6:enemy
 shape = 0,0|-1,0|1,0
 target_mode = pattern
 cast_speed = normal
-flavor = 너무 미움을 많이 사서는 안 됐다.
+flavor = 사방에서 쏟아지는 원망과 증오가 날 선 흉기가 되어 육신을 찢어발긴다.
 
 [card.c-cursed-blade]
 name = 저주받은 검
@@ -880,7 +880,7 @@ shape = 0,0|0,-1|0,-2|0,-3
 per_tile_mul = 1,1,1,1.5
 target_mode = pattern
 cast_speed = slow
-flavor = 검집을 처음부터 만들지 않은 검이다.
+flavor = 애초에 검집 따위는 만들지 않았다. 칼자루를 쥔 자의 생명조차 갉아먹는 불길한 마검이다.
 
 # ---------- consume-vulnerable 1장 ----------
 [card.c-vuln-detonate]
@@ -896,7 +896,7 @@ shape = 0,0|0,-1|0,1|-1,0|1,0
 target_mode = aimed
 aim_range = 3
 cast_speed = fast
-flavor = 금 간 곳은 두드리면 깨진다.
+flavor = 미세하게 갈라진 틈새를 후벼 파며 돌이킬 수 없는 파괴를 이끌어낸다.
 
 # ---------- draw-if-color 1장 ----------
 # draw-if-color:N:self:<color>:<threshold> 4번째=컬러, 5번째=임계(생략 시 5).
@@ -912,7 +912,7 @@ trigger = manual
 effects = draw:2:self, draw-if-color:2:self:wind:5
 target_mode = self
 cast_speed = fast
-flavor = "바람 분다! 연 날리기 좋겠다!"
+flavor = "바람 분다! 연 날리기 좋겠다!" 터져 나온 바람결이 주변의 기류를 크게 뒤흔든다.
 
 # ---------- damage-from-hp 1장 ----------
 
@@ -929,7 +929,7 @@ shape = 0,0|0,-1|0,-2
 per_tile_mul = 1,1,1.5
 target_mode = pattern
 cast_speed = slow
-flavor = "여기서 더는 못 물러나."
+flavor = "여기서 더는 못 물러나." 벼랑 끝에 몰린 짐승의 절박한 역공이 시작된다.
 
 # ---------- 기존 효과 창의 조합 1장 (방어 + 반격) ----------
 
@@ -945,7 +945,7 @@ effects = block:16:self, damage-per-hand:3:enemy
 shape = 0,0|0,-1|0,1|-1,0|1,0
 target_mode = pattern
 cast_speed = slow
-flavor = "......만지면, 아파요."
+flavor = "......만지면, 아파요." 무심코 손을 뻗었다간 치명적인 가시에 찔리게 된다.
 
 # ---------- status 조합 2장 ----------
 
@@ -961,7 +961,7 @@ effects = apply-status:4:enemy:poison, damage:3:enemy
 shape = 0,0|-1,-1|0,-1|1,-1
 target_mode = pattern
 cast_speed = normal
-flavor = 꽃말은 '천천히'.
+flavor = 이 꽃의 꽃말은 '천천히'. 뿌리내린 맹독이 서서히 혈관을 타고 오른다.
 
 [card.c-double-hex]
 name = 가시 돋친 말
@@ -975,7 +975,7 @@ effects = apply-status:2:enemy:weakness, apply-status:1:enemy:vulnerable
 shape = 0,0|-1,-1|1,-1
 target_mode = pattern
 cast_speed = normal
-flavor = 들은 쪽만 밤새 뒤척인다.
+flavor = 내뱉은 자는 잊어버리지만, 들은 자는 밤새 뒤척이며 괴로워하는 지독한 저주다.
 
 
 # ============================================================
@@ -1005,7 +1005,7 @@ shape = 0,0|0,-1|0,-2|0,-3
 per_tile_mul = 1,1,1,1.5
 target_mode = pattern
 cast_speed = slow
-flavor = "고마웠다."
+flavor = "고마웠다." 검을 돌려주며 모든 미련을 베어내는 마지막 일격.
 
 [card.c-last-bulwark]
 name = 마지막 보루
@@ -1017,7 +1017,7 @@ trigger = manual
 effects = block:43:self, exhaust-self:0:self
 target_mode = self
 cast_speed = fast
-flavor = "......여기서부터는, 안 돼."
+flavor = "......여기서부터는, 안 돼." 스스로를 깎아내며 쌓아 올린 최후의 방어벽이 앞을 가로막는다.
 
 [card.c-doom-mark]
 name = 파멸의 낙인
@@ -1031,7 +1031,7 @@ effects = apply-status:5:enemy:vulnerable, apply-status:4:enemy:weakness, exhaus
 shape = 0,0|-1,-1|1,-1|-1,1|1,1
 target_mode = pattern
 cast_speed = normal
-flavor = 한번 새겨지면 지울 수 없다.
+flavor = 한 번 피부에 각인된 불길한 문양은 목숨이 끊어질 때까지 지워지지 않는다.
 
 # ---------- block-to-damage 2장 (방어→공격 전환) ----------
 per_tile_mul = 1.0,1.0,1.0
@@ -1047,7 +1047,7 @@ effects = block-to-damage:1:enemy
 shape = 0,0|-1,0|1,0
 target_mode = pattern
 cast_speed = normal
-flavor = "......갑니다."
+flavor = "......갑니다." 방패 삼던 껍데기를 통째로 내던져 육중한 타격을 가한다.
 
 [card.c-bastion-counter]
 name = 성벽의 반격
@@ -1061,7 +1061,7 @@ effects = block:12:self, block-to-damage:1:enemy
 shape = 0,0|0,-1|0,1|-1,0|1,0
 target_mode = pattern
 cast_speed = slow
-flavor = "......물러서지, 않는다."
+flavor = "......물러서지, 않는다." 쏟아지는 공격을 고스란히 받아낸 뒤, 그 충격을 그대로 돌려준다.
 
 # ---------- spend-all-energy 2장 (남은 마나 몰빵) ----------
 
@@ -1077,7 +1077,7 @@ effects = spend-all-energy:5:enemy
 shape = 0,0|0,-1
 target_mode = pattern
 cast_speed = fast
-flavor = "남겨서 뭐 하게?"
+flavor = "남겨서 뭐 하게?" 마력 회로가 타들어 가는 것도 아랑곳하지 않고 모든 기운을 쏟아붓는다.
 per_tile_mul = 1.0,1.0,1.0,1.0
 [card.c-overdraw-burst]
 name = 과부하 폭발
@@ -1091,7 +1091,7 @@ effects = spend-all-energy:7:enemy
 shape = 0,0|0,-1|0,1|-1,0|1,0|-1,-1|1,-1|-1,1|1,1
 target_mode = pattern
 cast_speed = fast
-flavor = 퓨즈가 나가는 냄새가 난다.
+flavor = 코를 찌르는 매캐한 냄새. 한계 용량을 초과한 에너지가 사방으로 터져 나간다.
 
 # ---------- damage-per-companion 2장 (동료 많을수록) ----------
 per_tile_mul = 1.0,1.0,1.0,1.0,1.0,1.0
@@ -1108,7 +1108,7 @@ shape = 0,0
 target_mode = aimed
 aim_range = 3
 cast_speed = fast
-flavor = "혼자가 아니야."
+flavor = "혼자가 아니야." 맞잡은 손이 많을수록 내딛는 걸음은 무거워지고 타격은 거세진다.
 per_tile_mul = 1.0,1.0
 [card.c-bonded-strike]
 name = 인연의 일격
@@ -1123,7 +1123,7 @@ shape = 0,0|-1,-1|0,-1|1,-1|0,-2
 per_tile_mul = 1.5,1,1,1,1
 target_mode = pattern
 cast_speed = slow
-flavor = 떠올릴 얼굴이 많다는 건 좋은 일이다.
+flavor = 뒤에서 지켜보는 이들의 무게가 든든한 방패이자 거대한 망치가 되어 준다.
 
 # ---------- damage-per-relic 2장 (유물 많을수록) ----------
 [card.c-collectors-strike]
@@ -1138,7 +1138,7 @@ effects = damage-per-relic:5:enemy
 shape = 0,0|-1,-1|1,-1|-1,1|1,1
 target_mode = pattern
 cast_speed = normal
-flavor = "전부 다 쓸 데가 있다니까."
+flavor = "전부 다 쓸 데가 있다니까." 잡동사니라 비웃던 것들이 모여 치명적인 무기로 돌변한다.
 per_tile_mul = 1.0,1.0,1.0
 [card.c-hoarders-wrath]
 name = 보물의 분노
@@ -1153,7 +1153,7 @@ shape = 0,0|0,-1|0,1|-1,0|1,0|-1,-1|1,-1|-1,1|1,1
 per_tile_mul = 1.5,1,1,1,1,1,1,1,1
 target_mode = pattern
 cast_speed = slow
-flavor = "내 보물에 손대지 마!"
+flavor = "내 보물에 손대지 마!" 수집품이 뿜어내는 기운이 분노와 결합하여 무자비한 폭풍을 일으킨다.
 
 # ---------- growing-damage 2장 (쓸수록 강해지는 공격) ----------
 [card.c-rising-fang]
@@ -1168,7 +1168,7 @@ effects = growing-damage:5:enemy
 shape = 0,0|-1,-1|1,-1
 target_mode = pattern
 cast_speed = normal
-flavor = "한번 물면 놓지 않아."
+flavor = "한번 물면 놓지 않아." 피를 맛볼수록 살의는 더욱 짙어지고 이빨은 끝없이 자라난다.
 
 [card.c-mounting-storm]
 name = 부풀어 오르는 폭풍
@@ -1183,7 +1183,7 @@ shape = 0,0
 target_mode = aimed
 aim_range = 3
 cast_speed = slow
-flavor = 폭풍은 처음에 산들바람인 척을 한다.
+flavor = 기분 좋은 산들바람으로 시작된 기류가 어느새 뼈를 깎아내는 폭풍으로 변모한다.
 
 # ---------- heal-per-hand 2장 (손패 수만큼 회복) ----------
 
@@ -1197,7 +1197,7 @@ trigger = manual
 effects = heal-per-hand:2:self
 target_mode = self
 cast_speed = normal
-flavor = "같이 숨 쉬어요. 천천히."
+flavor = "같이 숨 쉬어요. 천천히." 등을 맞댄 동료들의 고른 숨소리가 기적처럼 상처를 아물게 한다.
 
 [card.c-bloom-recovery]
 name = 만개의 회복
@@ -1209,7 +1209,7 @@ trigger = manual
 effects = heal-per-hand:4:self, draw:2:self
 target_mode = self
 cast_speed = slow
-flavor = 꽃이 피는 데 이유는 없다.
+flavor = 혹독한 전장 한가운데서 피어난 생명이 메마른 상처를 감싸 안는다.
 
 # ---------- next-card-double 1장 (다음 카드 2배, 콤보 셋업) ----------
 
@@ -1223,7 +1223,7 @@ trigger = manual
 effects = next-card-double:0:self
 target_mode = self
 cast_speed = fast
-flavor = "방금 그거, 다시 보여 드릴게요."
+flavor = "방금 그거, 다시 보여 드릴게요." 눈앞에 일렁이는 거울상이 다음 행동을 똑같이 복제할 준비를 마친다.
 
 # ---------- 기존 효과 창의 조합 4장 (측정 어려운) ----------
 
@@ -1239,7 +1239,7 @@ effects = apply-status:3:enemy:poison, damage-per-debuff:4:enemy
 shape = 0,0|-1,-1|0,-1|1,-1
 target_mode = pattern
 cast_speed = normal
-flavor = 그 탑에는 새도 앉지 않는다.
+flavor = 가까이 가는 것만으로도 살갗이 썩어 들어가는 맹독의 첨탑. 새조차 앉기를 꺼린다.
 per_tile_mul = 1.0,1.0
 [card.c-prism-overload]
 name = 과욕
@@ -1253,7 +1253,7 @@ effects = damage-color-count:3:enemy, damage-top-color:1:enemy
 shape = 0,0|0,-1|0,1|-1,0|1,0
 target_mode = pattern
 cast_speed = slow
-flavor = "욕심 좀 부리면 어때."
+flavor = "욕심 좀 부리면 어때." 임계점을 넘은 빛의 기운이 통제를 벗어나 사방으로 뻗어 나간다.
 
 [card.c-frail-rupture]
 name = 취약의 균열
@@ -1267,7 +1267,7 @@ effects = apply-status:2:enemy:vulnerable, consume-vulnerable:3:enemy
 shape = 0,0|-1,-1|1,-1
 target_mode = pattern
 cast_speed = normal
-flavor = 쩍, 하고 갈라지는 소리가 났다.
+flavor = 쩍, 하고 방어막이 찢어지는 소리와 함께 치명적인 균열이 형태를 드러낸다.
 
 [card.c-sacrifice-edge]
 name = 희생의 칼날
@@ -1281,7 +1281,7 @@ effects = damage-from-hp:7:enemy, draw:1:self
 shape = 0,0|0,-1
 target_mode = pattern
 cast_speed = normal
-flavor = "피 값은 비싸. 그만큼 받아 내야지."
+flavor = "피 값은 비싸. 그만큼 받아 내야지." 붉게 젖은 칼날이 자신의 고통을 적에게 고스란히 돌려준다.
 
 
 # ============================================================
@@ -1300,7 +1300,7 @@ effects = damage:10:enemy
 shape = 0,0|0,-1
 target_mode = pattern
 cast_speed = normal
-flavor = "기본에 충실한 물건입니다."
+flavor = "기본에 충실한 물건입니다." 상단에서 흔히 취급하는, 장식 없이 실용적인 형태의 칼날.
 
 [card.c-shop-brace]
 name = 무난한 막기
@@ -1312,7 +1312,7 @@ trigger = manual
 effects = block:10:self
 target_mode = self
 cast_speed = fast
-flavor = "이만하면 충분하실 겁니다."
+flavor = "이만하면 충분하실 겁니다." 무겁고 둔탁하지만 생명을 지키기엔 부족함이 없는 방패.
 
 [card.c-shop-flick]
 name = 가벼운 손짓
@@ -1324,7 +1324,7 @@ trigger = manual
 effects = draw:1:self
 target_mode = self
 cast_speed = fast
-flavor = "손에 익으면 편하실 거예요."
+flavor = "손에 익으면 편하실 거예요." 부드러운 바람이 손끝을 스치며 다음 동작을 매끄럽게 돕는다.
 
 [card.c-shop-sip]
 name = 한 모금
@@ -1336,7 +1336,7 @@ trigger = manual
 effects = heal:6:self, exhaust-self:0:self
 target_mode = self
 cast_speed = normal
-flavor = "리필은 안 됩니다."
+flavor = "리필은 안 됩니다." 단숨에 털어 넣으면 속이 확 풀리는 강렬한 수분감.
 
 [card.c-shop-poke]
 name = 잽
@@ -1350,7 +1350,7 @@ effects = damage:4:enemy
 shape = 0,0|-1,0|1,0
 target_mode = pattern
 cast_speed = fast
-flavor = "작아도 쓸모는 합니다."
+flavor = "작아도 쓸모는 합니다." 손끝에서 일어난 작은 불꽃이 신경을 거슬리게 하는 잽이 되어 쏘아진다.
 
 [card.c-shop-heavy]
 name = 묵직한 일격
@@ -1365,7 +1365,7 @@ shape = 0,0|0,-1|0,-2
 per_tile_mul = 1,1,1.5
 target_mode = pattern
 cast_speed = slow
-flavor = "비싼 값을 하는 물건입니다."
+flavor = "비싼 값을 하는 물건입니다." 힘을 실어 내리찍는 묵직한 무게감이 어설픈 방어막을 으스러뜨린다.
 
 [card.c-shop-wall]
 name = 든든한 벽
@@ -1377,7 +1377,7 @@ trigger = manual
 effects = block:18:self
 target_mode = self
 cast_speed = fast
-flavor = "튼튼한 게 최고지요."
+flavor = "튼튼한 게 최고지요." 돌기둥을 통째로 깎아 만든 듯 굳건하고 변함없는 장벽.
 
 [card.c-shop-study]
 name = 잠깐 살핌
@@ -1389,7 +1389,7 @@ trigger = manual
 effects = draw:3:self
 target_mode = self
 cast_speed = normal
-flavor = "천천히 둘러보세요."
+flavor = "천천히 둘러보세요." 차분한 시선으로 전황을 한눈에 읽어내며 수 싸움을 대비한다.
 
 [card.c-shop-salve]
 name = 응급 처치
@@ -1401,7 +1401,7 @@ trigger = manual
 effects = heal:4:self, block:4:self, exhaust-self:0:self
 target_mode = self
 cast_speed = fast
-flavor = "많이는 안 아플 거예요."
+flavor = "많이는 안 아플 거예요." 능숙한 솜씨로 붕대를 감아 응급처치를 끝낸다.
 
 
 # ============================================================
@@ -1421,7 +1421,7 @@ shape = 0,0|-1,-1|1,-1|-1,1|1,1
 per_tile_mul = 1.5,1,1,1,1
 target_mode = pattern
 cast_speed = slow
-flavor = 트리플라워에서는 비 대신 재가 내린다.
+flavor = 비 대신 뜨거운 재가 내리는 트리플라워의 하늘. 끓어오르는 잿불이 폭풍이 되어 몰아친다.
 
 [card.c-falcon-skydive]
 name = 급강하
@@ -1436,7 +1436,7 @@ shape = 0,0|0,-1|0,1|-1,0|1,0
 target_mode = aimed
 aim_range = 3
 cast_speed = fast
-flavor = 팔콘 가든의 바람은 아래에서 위로 분다.
+flavor = 하늘로 솟구치는 바람을 타고 맹금류처럼 날카롭게 허공에서 내리꽂힌다.
 per_tile_mul = 1.0,1.0,1.0
 [card.c-yusezria-corebreak]
 name = 정수핵 깨기
@@ -1450,7 +1450,7 @@ effects = block:32:self, block-to-damage:1:enemy
 shape = 0,0|0,-1|0,1|-1,0|1,0
 target_mode = pattern
 cast_speed = slow
-flavor = 유스제리아의 벽 앞에서는 다들 말이 없어진다.
+flavor = 침묵을 강요하는 거대한 유스제리아의 장벽. 부딪히는 모든 것을 튕겨내는 절대적인 방어다.
 
 [card.c-diropel-totem]
 name = 무늬의 빛
@@ -1465,7 +1465,7 @@ shape = 0,0|0,-1|0,1|-1,0|1,0|-1,-1|1,-1|-1,1|1,1
 per_tile_mul = 1.5,1,1,1,1,1,1,1,1
 target_mode = pattern
 cast_speed = normal
-flavor = 딜롭 사람들은 얼굴에 빛을 그린다.
+flavor = 얼굴에 새겨진 기이한 빛의 무늬가 요동치며 사방으로 알 수 없는 기운을 흩뿌린다.
 
 
 # ============================================================
@@ -1483,7 +1483,7 @@ effects = damage-per-debuff:5:enemy, apply-status:2:enemy:poison
 shape = 0,0|-1,-1|0,-1|1,-1|0,-2
 target_mode = pattern
 cast_speed = slow
-flavor = 낫질에는 때가 있다.
+flavor = 서늘한 낫날이 목덜미에 닿는 순간, 거두어질 영혼의 운명은 이미 결정된 후다.
 per_tile_mul = 1.0,1.0
 [card.c-wild-rush]
 name = 야성의 돌진
@@ -1497,7 +1497,7 @@ effects = apply-status:1:self:feral, damage-per-hand:3:enemy
 shape = 0,0|-1,-1|1,-1
 target_mode = pattern
 cast_speed = fast
-flavor = "앞만 봐. 앞만."
+flavor = "앞만 봐. 앞만." 이성을 내던진 맹수처럼 두 눈에 불을 켜고 적진 한가운데로 쇄도한다.
 
 [card.c-color-surge]
 name = 범람
@@ -1512,7 +1512,7 @@ shape = 0,0
 target_mode = aimed
 aim_range = 3
 cast_speed = normal
-flavor = 차오른 것은 언젠가 넘친다.
+flavor = 가득 차오른 빛의 파도가 한계점을 넘어 폭발하듯 쏟아져 내린다.
 
 
 # ============================================================
@@ -1534,7 +1534,7 @@ trigger = manual
 effects = heal:9:self, draw:1:self, exhaust-self:0:self
 target_mode = self
 cast_speed = normal
-flavor = 이마를 스친 바람이 등 뒤까지 밀어 준다.
+flavor = 이마를 훔쳐낸 시원한 돌풍이 이내 등줄기를 거세게 밀어 올린다.
 
 [card.c-deep-breath-plus]
 name = 응급 치료+
@@ -1548,7 +1548,7 @@ effects = draw:2:self, heal:1:self, damage:11:enemy, exhaust-self:0:self
 shape = 0,0|-1,0|1,0
 target_mode = pattern
 cast_speed = fast
-flavor = 지금 가장 적절한 처치를 한다.
+flavor = 생사가 오가는 찰나, 망설임 없이 가장 정확하고 확실한 응급처치를 꿰어맨다.
 
 [card.c-transcend-strike-plus]
 name = 이세계의 검+
@@ -1563,7 +1563,7 @@ shape = 0,0|0,-1|0,-2|0,-3
 per_tile_mul = 1,1,1,1.5
 target_mode = pattern
 cast_speed = slow
-flavor = "걱정하지 마."
+flavor = "걱정하지 마." 모든 것을 종결짓겠다는 듯 거대한 빛의 기둥이 수직으로 내리꽂힌다.
 [card.c-shadow-rebuke-plus]
 name = 그��자 밟기+
 rank = rare
@@ -1576,7 +1576,7 @@ effects = damage:12:enemy, apply-status:2:enemy:vulnerable
 shape = 0,0|-1,-1|0,-1|1,-1|0,-2
 target_mode = pattern
 cast_speed = normal
-flavor = 더는 어디에도 숨지 못한다.
+flavor = 짙게 깔린 그림자마저 적의 발밑을 기어올라 숨통을 조인다. 더는 도망칠 곳이 없다.
 per_tile_mul = 1.0,1.0,1.0
 [card.c-iluneon-stopped-noon-plus]
 name = 멈춘 시계+
@@ -1590,7 +1590,7 @@ effects = damage:21:enemy, apply-status:1:enemy:paralyze, apply-status:1:enemy:v
 shape = 0,0|0,-1|0,1|-1,0|1,0|-1,-1|1,-1|-1,1|1,1
 target_mode = pattern
 cast_speed = slow
-flavor = 마치 이 순간이 영원한 것처럼.
+flavor = 시곗바늘이 멈춘 세상에서, 모든 물리 법칙이 붕괴된 채 지독한 영원이 펼쳐진다.
 
 [card.c-moss-ember-strike-plus]
 name = 꺼지지 않는 불+
@@ -1604,7 +1604,7 @@ effects = damage:21:enemy, apply-status:20:enemy:burn
 shape = 0,0|0,-1|0,-2|0,-3
 target_mode = pattern
 cast_speed = slow
-flavor = 모스 대장간의 불이 태우지 못하는 건 없다.
+flavor = 태고의 풀무질로 지펴낸 지옥불. 잿더미조차 남기지 않고 모조리 불살라버린다.
 per_tile_mul = 1,1,1,1.5
 [card.c-tacomi-hologram-mirror-plus]
 name = 홀로매트릭스+
@@ -1616,7 +1616,7 @@ trigger = manual
 effects = block:21:self, apply-status:1:self:ghost
 target_mode = self
 cast_speed = fast
-flavor = 어느 쪽을 베어도, 진짜는 따로 있어.
+flavor = "어느 쪽을 베어도, 진짜는 따로 있어." 어지럽게 교차하는 환영 속에서 적의 칼날은 번번이 허공만 가른다.
 
 [card.c-alimes-mist-vow-plus]
 name = 안개의 약속+
@@ -1631,7 +1631,7 @@ shape = 0,0|0,-1|0,-2|0,-3
 per_tile_mul = 1,1,1,1.5
 target_mode = pattern
 cast_speed = slow
-flavor = 아직 당신이 기억하고 있기를.
+flavor = "아직 당신이 기억하고 있기를." 피로 맺은 맹세가 서늘한 안개와 섞여 치명적인 복수로 돌아온다.
 
 [card.c-manonickla-sunset-wall-plus]
 name = 석양의 벽+
@@ -1645,7 +1645,7 @@ effects = block:35:self, damage-top-color:1.2
 shape = 0,0|0,-1|0,1|-1,0|1,0
 target_mode = pattern
 cast_speed = slow
-flavor = 온 세상을 덮은 노을의 끝에.
+flavor = 세상을 붉게 물들인 최후의 노을. 그 빛을 등진 채 결코 뚫리지 않는 거대한 강철 장벽을 세운다.
 
 # ---------- NPC 영입 ----------
 per_tile_mul = 1.0,1.0,1.0
@@ -1659,7 +1659,7 @@ trigger = manual
 effects = draw:1:self, next-turn-energy:1:self
 target_mode = self
 cast_speed = fast
-flavor = "오늘은 바람이 좋은걸!"
+flavor = "오늘은 바람이 좋은걸!" 매섭게 휘몰아치는 기류에 올라타 단숨에 사각지대로 파고든다.
 
 [card.c-fast-mail-plus]
 name = 등기 우편+
@@ -1671,7 +1671,7 @@ trigger = manual
 effects = draw:2:self, next-turn-energy:1:self, heal:-4
 target_mode = self
 cast_speed = fast
-flavor = "특급 우편이야!"
+flavor = "특급 우편이야!" 눈으로 쫓기조차 버거운 속도로, 죽음보다 확실한 일격을 배달한다.
 
 [card.c-balanced-edge-plus]
 name = 균형검+
@@ -1685,7 +1685,7 @@ effects = damage-min-color:1.5:enemy
 shape = 0,0|-1,-1|0,-1|1,-1|0,-2
 target_mode = pattern
 cast_speed = normal
-flavor = "......나도, 이런 거 만들어 보고 싶다."
+flavor = "......나도, 이런 거 만들어 보고 싶다." 투박해 보이지만 빈틈없이 설계된 칼날이 적의 약점을 예리하게 발라낸다.
 
 [card.c-binding-ward-plus]
 name = 후회+
@@ -1699,7 +1699,7 @@ effects = apply-status:4:enemy:weakness
 shape = 0,0|0,-1|0,1|-1,0|1,0|-1,-1|1,-1|-1,1|1,1
 target_mode = pattern
 cast_speed = normal
-flavor = "그때, 내가 도망치지 않았다면."
+flavor = "그때, 내가 도망치지 않았다면." 뼈저린 후회가 끈적한 어둠의 늪이 되어 상대를 옭아맨다.
 
 [card.c-quiet-arc-plus]
 name = 가라앉음+
@@ -1713,7 +1713,7 @@ effects = apply-status:3:enemy:vulnerable, apply-status:2:enemy:weakness
 shape = 0,0|-1,-1|0,-1|1,-1|0,-2
 target_mode = pattern
 cast_speed = slow
-flavor = "난폭한 일은 하고 싶지 않아요."
+flavor = "난폭한 일은 하고 싶지 않아요." 나직한 속삭임과 달리, 부드럽게 가라앉는 파동이 뼛속까지 시리게 파고든다.
 
 [card.c-flash-capture-plus]
 name = 찰칵!+
@@ -1727,7 +1727,7 @@ effects = apply-status:2:enemy:paralyze, apply-status:1:enemy:spasm
 shape = 0,0|0,-1|0,1|-1,0|1,0|-1,-1|1,-1|-1,1|1,1
 target_mode = pattern
 cast_speed = slow
-flavor = "한 장 더! 이번엔 웃는 얼굴로!"
+flavor = "한 장 더! 이번엔 웃는 얼굴로!" 연속으로 터지는 치명적인 섬광에 시야와 감각이 송두리째 마비된다.
 per_tile_mul = 1.0,1.0,1.0
 [card.c-rize-relay-plus]
 name = 연속 타격+
@@ -1742,7 +1742,7 @@ shape = 0,0|0,-1|0,1|-1,0|1,0
 target_mode = aimed
 aim_range = 3
 cast_speed = fast
-flavor = "그 정도로는 내 주먹을 피할 수 없을 걸!"
+flavor = "그 정도로는 내 주먹을 피할 수 없을 걸!" 폭풍처럼 쏟아지는 난타가 방어할 틈조차 주지 않는다.
 
 # 한 판 갈래+의 *돌아온 한 판* — 복제하지 않는 비용 0 별개 카드. source=form(풀 제외).
 [card.c-rize-relay-echo-plus]
@@ -1757,7 +1757,7 @@ effects = damage:7:enemy
 shape = 0,0|-1,0|1,0
 target_mode = pattern
 cast_speed = fast
-flavor = "다시 간다!"
+flavor = "다시 간다!" 피를 말리는 공세 속에서 한계 없이 뻗어 나가는 후속타.
 
 [card.c-spirit-call-plus]
 name = 모인 영혼들+
@@ -1771,7 +1771,7 @@ effects = damage-color-count:4:enemy, draw:1:self
 shape = 0,0|-1,-1|0,-1|1,-1|0,-2
 target_mode = pattern
 cast_speed = normal
-flavor = "어, 더 늘었네? 좋아, 다 같이 간다!"
+flavor = "어, 더 늘었네? 좋아, 다 같이 간다!" 사방에서 울부짖는 원혼들이 무리를 지어 파멸의 소용돌이를 만들어낸다.
 
 [card.c-warm-cup-plus]
 name = 따뜻한 한 잔+
@@ -1785,7 +1785,7 @@ effects = heal:4:self, draw:1:self, damage:13:enemy, exhaust-self:0:self
 shape = 0,0|-1,0|1,0
 target_mode = pattern
 cast_speed = normal
-flavor = 우유를 타서 밀크티로 만들어 봤더니 좋더라고.
+flavor = 부드러운 우유를 섞어 끓여낸 찻잔. 피비린내 나는 전장에서 잠시나마 포근한 착각을 불러일으킨다.
 
 [card.c-tripps-rage-plus]
 name = 트립스+
@@ -1800,7 +1800,7 @@ shape = 0,0|0,-1|0,-2|0,-3
 per_tile_mul = 1,1,1,1.5
 target_mode = pattern
 cast_speed = slow
-flavor = "더는, 못 본 체 할 수 없어."
+flavor = "더는, 못 본 체 할 수 없어." 터질 듯 억눌렀던 감정이 통제 불능의 불길이 되어 주변을 태운다.
 
 [card.c-trace-step-plus]
 name = 발자취+
@@ -1812,7 +1812,7 @@ trigger = manual
 effects = draw:2:self, return-hand-to-deck:1:self, next-turn-energy:1:self
 target_mode = self
 cast_speed = fast
-flavor = "......정말, 이 길이야. 확실해."
+flavor = "......정말, 이 길이야. 확실해." 희미하게 남은 흔적을 쫓아 짐승 같은 직감으로 활로를 뚫어낸다.
 
 [card.c-growing-leaf-plus]
 name = 자라나는 잎새+
@@ -1824,7 +1824,7 @@ trigger = manual
 effects = growing-block:4:self
 target_mode = self
 cast_speed = fast
-flavor = "어느새 이만큼 컸어. 거봐, 진짜라니까."
+flavor = "어느새 이만큼 컸어. 거봐, 진짜라니까." 바위조차 뚫고 자라난 거대한 줄기가 든든한 방패막이 되어준다.
 
 [card.c-zero-spark-plus]
 name = 전류 자국+
@@ -1839,7 +1839,7 @@ shape = 0,0|0,-1|0,1|-1,0|1,0
 target_mode = aimed
 aim_range = 3
 cast_speed = fast
-flavor = "하하, 따끔했어?"
+flavor = "하하, 따끔했어?" 비웃음과 함께 터져 나온 섬광이 조준점 한가운데를 정확히 꿰뚫는다.
 [card.c-alti-resonance-plus]
 name = 알티-알타의 신호+
 rank = rare
@@ -1853,7 +1853,7 @@ shape = 0,0|0,-1|0,1|-1,0|1,0
 target_mode = aimed
 aim_range = 3
 cast_speed = normal
-flavor = "신호 하나만 더 겹치면, 끝까지 닿아요."
+flavor = "신호 하나만 더 겹치면, 끝까지 닿아요." 공명하는 파장들이 기하급수적으로 증폭되며 광역 파괴를 일으킨다.
 [card.c-flame-web-plus]
 name = 화염 거미줄+
 rank = rare
@@ -1866,7 +1866,7 @@ effects = damage:17:enemy, apply-status:4:enemy:vulnerable
 shape = 0,0|0,-1|0,1|-1,0|1,0|-1,-1|1,-1|-1,1|1,1
 target_mode = pattern
 cast_speed = slow
-flavor = "이제 빠져나갈 틈은 없어!"
+flavor = "이제 빠져나갈 틈은 없어!" 사방을 뒤덮은 시뻘건 거미줄이 도주로를 완벽하게 차단한다.
 per_tile_mul = 1.0,1.0,1.0,1.0,1.0
 [card.c-orca-tide-plus]
 name = 범고래의 물결+
@@ -1880,7 +1880,7 @@ effects = damage:20:enemy, block:12:self
 shape = 0,0|0,-1|0,1|-1,0|1,0|-1,-1|1,-1|-1,1|1,1
 target_mode = pattern
 cast_speed = slow
-flavor = 검푸른 포식자에게서 도망칠 수 없다.
+flavor = 검푸른 심연에서 솟구친 포식자의 그림자가 사방을 집어삼킨다.
 per_tile_mul = 1.0,1.0,1.0
 [card.c-trade-coil-plus]
 name = 꼬리 감기+
@@ -1894,7 +1894,7 @@ effects = damage:17:enemy, block:14:self
 shape = 0,0|0,-1|0,1|-1,0|1,0
 target_mode = pattern
 cast_speed = slow
-flavor = 빈틈없이 조여 와, 빠져나갈 수가 없다.
+flavor = 뼛속까지 파고드는 끔찍한 압박감. 전신을 옭아맨 꼬리가 숨통을 끊어 놓는다.
 per_tile_mul = 1.0,1.0,1.0,1.0
 [card.c-lop-sign-plus]
 name = 리포의 신호+
@@ -1906,7 +1906,7 @@ trigger = manual
 effects = draw:1:self, block:12:self
 target_mode = self
 cast_speed = fast
-flavor = "......아직 보이지도 않지만."
+flavor = "......아직 보이지도 않지만." 희미한 울림이 점차 거대한 진동으로 변해 대지를 뒤흔든다.
 
 [card.c-tide-veil-plus]
 name = 물의 방패+
@@ -1918,7 +1918,7 @@ trigger = manual
 effects = block:14:self, heal:5:self, exhaust-self:0:self
 target_mode = self
 cast_speed = fast
-flavor = "이번에도, 절 믿으면 돼요."
+flavor = "이번에도, 절 믿으면 돼요." 부드럽고 따뜻한 수류가 휘몰아치며 치명적인 일격마저 무효화한다.
 
 [card.c-bear-bastion-plus]
 name = 곰의 방벽+
@@ -1933,7 +1933,7 @@ shape = 0,0|-1,-1|0,-1|1,-1|0,-2
 per_tile_mul = 1.5,1,1,1,1
 target_mode = pattern
 cast_speed = slow
-flavor = "......물러설 거면, 처음부터 서지 마라."
+flavor = "......물러설 거면, 처음부터 서지 마라." 폭주하는 맹수처럼 거친 기세로 장벽 째 상대를 밀어붙인다.
 
 [card.c-tiger-rush-plus]
 name = 빠른 삼연+
@@ -1948,7 +1948,7 @@ shape = 0,0|0,-1|0,1|-1,0|1,0
 target_mode = aimed
 aim_range = 3
 cast_speed = fast
-flavor = "거봐, 셋도 충분하지?"
+flavor = "거봐, 셋도 충분하지?" 자비 없는 연타가 벼락처럼 내리꽂히며 적의 방진을 찢어발긴다.
 
 # ---------- 측정 어려운 1차 ----------
 per_tile_mul = 1.0,1.0
@@ -1965,7 +1965,7 @@ shape = 0,0|0,-1|0,1|-1,0|1,0
 target_mode = aimed
 aim_range = 3
 cast_speed = normal
-flavor = 고개를 들면, 색이 하늘 끝까지 번져 있다.
+flavor = 무심코 고개를 든 순간, 찬란하게 번진 오로라가 시야를 가리며 영혼을 압도한다.
 
 [card.c-prism-guard-plus]
 name = 간파+
@@ -1977,7 +1977,7 @@ trigger = manual
 effects = block-top-color:2:self
 target_mode = self
 cast_speed = fast
-flavor = "버릇을 파악하면 다른 모든 동작도 한 눈에 보이지."
+flavor = "버릇을 파악하면 다른 모든 동작도 한 눈에 보이지." 날아오는 궤적을 완전히 읽어낸 듯 가볍게 튕겨낸다.
 
 [card.c-spectrum-edge-plus]
 name = 무지갯빛 칼날+
@@ -1992,7 +1992,7 @@ shape = 0,0|0,-1|0,1|-1,0|1,0|-1,-1|1,-1|-1,1|1,1
 per_tile_mul = 1.5,1,1,1,1,1,1,1,1
 target_mode = pattern
 cast_speed = slow
-flavor = 휘두른 검에는 무지개 잔상이 남았다.
+flavor = 사방으로 휘둘러진 검격이 허공에 짙은 무지갯빛 잔상을 흩뿌린다.
 [card.c-blood-pact-plus]
 name = 피의 계약+
 rank = rare
@@ -2006,7 +2006,7 @@ shape = 0,0|0,-1|0,-2
 per_tile_mul = 1,1,1.5
 target_mode = pattern
 cast_speed = slow
-flavor = 조금 더 내주면, 그만큼 더 돌려받는다.
+flavor = 살을 내주고 뼈를 취한다. 치명적인 상처에서 흘러나온 피가 펄펄 끓는 살의가 된다.
 
 # ---------- 측정 어려운 2차 (수화/퇴행/디버프) ----------
 
@@ -2022,7 +2022,7 @@ effects = apply-status:1:self:feral, damage:11:enemy
 shape = 0,0|-1,-1|0,-1|1,-1
 target_mode = pattern
 cast_speed = fast
-flavor = "......이미 발톱이 나와 버렸어."
+flavor = "......이미 발톱이 나와 버렸어." 완전히 이성을 잃은 짐승의 발톱이 자비 없이 허공을 가른다.
 
 [card.c-fang-frenzy-plus]
 name = 사냥 본능+
@@ -2036,7 +2036,7 @@ effects = damage:13:enemy
 shape = 0,0|-1,-1|0,-1|1,-1|0,-2
 target_mode = pattern
 cast_speed = fast
-flavor = "......이미 냄새를 맡았어."
+flavor = "......이미 냄새를 맡았어." 피비린내를 쫓는 사냥개의 집요함이 적의 숨통을 집어삼킨다.
 per_tile_mul = 1.0,1.0
 [card.c-primal-collapse-plus]
 name = 배수진+
@@ -2052,7 +2052,7 @@ shape = 0,0|0,-1|0,-2
 per_tile_mul = 1,1,1.5
 target_mode = pattern
 cast_speed = slow
-flavor = "여기가 끝이라면, 끝까지 간다."
+flavor = "여기가 끝이라면, 끝까지 간다." 퇴로를 잃은 자의 마지막 광기가 사방을 찢어발기며 폭주한다.
 
 [card.c-elder-curse-plus]
 name = 태고의 저주+
@@ -2066,7 +2066,7 @@ effects = apply-status:3:enemy:regress, damage:14:enemy
 shape = 0,0|0,-1|0,1|-1,0|1,0|-1,-1|1,-1|-1,1|1,1
 target_mode = pattern
 cast_speed = slow
-flavor = 상식 밖의 존재 앞에서는 누구나 어려지고 만다.
+flavor = 절대적인 공포 앞에서는 그 어떤 저항도 무의미하다. 모든 지식과 힘이 모래처럼 흩어진다.
 
 [card.c-debuff-storm-plus]
 name = 네메시스+
@@ -2080,7 +2080,7 @@ effects = damage-per-debuff:8:enemy
 shape = 0,0|-1,-1|0,-1|1,-1
 target_mode = pattern
 cast_speed = normal
-flavor = 임계점을 넘어 버렸다면ㅡ
+flavor = 억눌렸던 분노와 원망이 임계점을 돌파하는 순간, 파멸의 폭풍이 휘몰아친다.
 
 [card.c-cursed-blade-plus]
 name = 저주받은 검+
@@ -2095,7 +2095,7 @@ shape = 0,0|0,-1|0,-2|0,-3
 per_tile_mul = 1,1,1,1.5
 target_mode = pattern
 cast_speed = slow
-flavor = 상처가 겹친 곳일수록 검이 매섭게 든다.
+flavor = 너덜너덜해진 상처 틈새를 집요하게 파고들며 가장 끔찍한 고통을 선사한다.
 [card.c-vuln-detonate-plus]
 name = 균열+
 rank = common
@@ -2109,7 +2109,7 @@ shape = 0,0|0,-1|0,1|-1,0|1,0
 target_mode = aimed
 aim_range = 3
 cast_speed = fast
-flavor = 갈라진 곳은, 건드리기만 해도 무너진다.
+flavor = 아주 작은 균열조차 기하급수적으로 뜯어발기며 형체를 산산조각 낸다.
 
 [card.c-prism-overflow-plus]
 name = 바람 넘침+
@@ -2121,7 +2121,7 @@ trigger = manual
 effects = draw:2:self, draw-if-color:3:self:wind:4
 target_mode = self
 cast_speed = fast
-flavor = "바람 좋은 날엔, 연이 알아서 올라가."
+flavor = "바람 좋은 날엔, 연이 알아서 올라가." 스스로 소용돌이치는 기류가 기분 좋게 귓가를 때리며 기운을 불어넣는다.
 
 [card.c-last-stand-plus]
 name = 마지막 버팀+
@@ -2136,7 +2136,7 @@ shape = 0,0|0,-1|0,-2
 per_tile_mul = 1,1,1.5
 target_mode = pattern
 cast_speed = slow
-flavor = "물러설 데가 없으니, 남은 걸 다 건다."
+flavor = "물러설 데가 없으니, 남은 걸 다 건다." 온몸을 내던진 벼랑 끝의 결의가 가장 치명적인 일격으로 승화된다.
 
 [card.c-tortoise-thorn-plus]
 name = 등껍질의 가시+
@@ -2150,7 +2150,7 @@ effects = block:22:self, damage-per-hand:4:enemy
 shape = 0,0|0,-1|0,1|-1,0|1,0|-1,-1|1,-1|-1,1|1,1
 target_mode = pattern
 cast_speed = slow
-flavor = "......그래도 만지면, 더욱 아플 거예요."
+flavor = "......그래도 만지면, 더욱 아플 거예요." 사방으로 돋아난 흉악한 가시밭길. 다가오는 모든 것을 자비 없이 찔러댄다.
 
 [card.c-venom-bloom-plus]
 name = 독꽃 피우기+
@@ -2164,7 +2164,7 @@ effects = apply-status:6:enemy:poison, damage:4:enemy
 shape = 0,0|-1,-1|0,-1|1,-1|0,-2
 target_mode = pattern
 cast_speed = normal
-flavor = 천천히, 그렇지만 빠짐없이.
+flavor = 치사량의 맹독이 소리 없이 퍼져 나가며 모든 생명체의 혈관을 서서히 부식시킨다.
 
 [card.c-double-hex-plus]
 name = 가시 돋친 말+
@@ -2178,7 +2178,7 @@ effects = apply-status:3:enemy:weakness, apply-status:2:enemy:vulnerable
 shape = 0,0|-1,-1|0,-1|1,-1
 target_mode = pattern
 cast_speed = normal
-flavor = 어쩌면 정말 내 잘못일지도 몰라.
+flavor = 끊임없이 귓가에 맴도는 환청. 결국 스스로를 파멸로 몰아넣게 만드는 지독한 세뇌다.
 
 # ---------- 측정 어려운 3차 (소멸/전환/마나/연동/성장) ----------
 
@@ -2195,7 +2195,7 @@ shape = 0,0|0,-1|0,-2|0,-3
 per_tile_mul = 1,1,1,1.5
 target_mode = pattern
 cast_speed = slow
-flavor = "......잘 지내."
+flavor = "......잘 지내." 모든 것을 베어버린 자리에는 텅 빈 고요함만이 내려앉는다.
 
 [card.c-last-bulwark-plus]
 name = 마지막 보루+
@@ -2207,7 +2207,7 @@ trigger = manual
 effects = block:62:self, exhaust-self:0:self
 target_mode = self
 cast_speed = fast
-flavor = "......이 선만은, 누구도 못 넘어."
+flavor = "......이 선만은, 누구도 못 넘어." 생명력을 깎아내어 세운 거대한 요새가 모든 공격을 완벽하게 차단한다.
 
 [card.c-doom-mark-plus]
 name = 파멸의 낙인+
@@ -2221,7 +2221,7 @@ effects = apply-status:5:enemy:vulnerable, apply-status:4:enemy:weakness, exhaus
 shape = 0,0|0,-1|0,1|-1,0|1,0|-1,-1|1,-1|-1,1|1,1
 target_mode = pattern
 cast_speed = fast
-flavor = 한번 찍힌 낙인은, 좀처럼 흐려지지 않는다.
+flavor = 피부 깊숙이 지져진 저주의 문양. 숨통이 끊어지는 마지막 순간까지 영혼을 좀먹는다.
 per_tile_mul = 1.0,1.0,1.0
 [card.c-shell-slam-plus]
 name = 등껍질 후려치기+
@@ -2235,7 +2235,7 @@ effects = block-to-damage:2:enemy
 shape = 0,0|0,-1|0,1|-1,0|1,0
 target_mode = pattern
 cast_speed = normal
-flavor = "......진짜 "방어"를 할 수밖에 없네요."
+flavor = "......진짜 "방어"를 할 수밖에 없네요." 두꺼운 장갑 자체를 흉기처럼 휘둘러 묵직한 파괴력을 뿜어낸다.
 
 [card.c-bastion-counter-plus]
 name = 성벽의 반격+
@@ -2249,7 +2249,7 @@ effects = block:19:self, block-to-damage:1:enemy
 shape = 0,0|0,-1|0,1|-1,0|1,0|-1,-1|1,-1|-1,1|1,1
 target_mode = pattern
 cast_speed = slow
-flavor = "......공격은 이제 끝인가?"
+flavor = "......공격은 이제 끝인가?" 거센 공격을 고스란히 튕겨내며, 받은 충격을 몇 배로 되돌려준다.
 
 [card.c-all-in-plus]
 name = 전부 쏟기+
@@ -2263,7 +2263,7 @@ effects = spend-all-energy:7:enemy
 shape = 0,0|-1,0|1,0
 target_mode = pattern
 cast_speed = fast
-flavor = "어차피 쓸 거면, 바닥까지 긁어 써야지."
+flavor = "어차피 쓸 거면, 바닥까지 긁어 써야지." 마력의 근원까지 끌어올려 단 한 번의 파괴적인 일격에 모든 것을 건다.
 per_tile_mul = 1.0,1.0,1.0,1.0
 [card.c-overdraw-burst-plus]
 name = 과부하 폭발+
@@ -2277,7 +2277,7 @@ effects = spend-all-energy:10:enemy
 shape = 0,0|0,-1|0,1|-1,0|1,0|-1,-1|1,-1|-1,1|1,1
 target_mode = pattern
 cast_speed = fast
-flavor = 타는 냄새가 심해지다 보면, 결국 펑 소리가 난다.
+flavor = 임계점을 아득히 초과한 마력. 시야를 하얗게 점멸시키는 대폭발이 일어난다.
 per_tile_mul = 1.0,1.0,1.0,1.0,1.0,1.0
 [card.c-comrades-charge-plus]
 name = 동행의 돌격+
@@ -2292,7 +2292,7 @@ shape = 0,0|0,-1|0,1|-1,0|1,0
 target_mode = aimed
 aim_range = 3
 cast_speed = fast
-flavor = "모두가 있으니까."
+flavor = "모두가 있으니까." 등 뒤를 받쳐주는 이들이 많을수록 걸음은 무거워지고, 돌격은 멈출 줄 모른다.
 per_tile_mul = 1.0,1.0
 [card.c-bonded-strike-plus]
 name = 인연의 일격+
@@ -2307,7 +2307,7 @@ shape = 0,0|-1,-1|0,-1|1,-1|0,-2
 per_tile_mul = 1.5,1,1,1,1
 target_mode = pattern
 cast_speed = slow
-flavor = 떠올린 이름이 하나하나, 주먹에 얹힌다.
+flavor = 홀로 휘두르는 주먹이 아니다. 수많은 인연의 무게가 거대한 타격이 되어 내려꽂힌다.
 [card.c-collectors-strike-plus]
 name = 수집가의 일격+
 rank = common
@@ -2320,7 +2320,7 @@ effects = damage-per-relic:7:enemy
 shape = 0,0|0,-1|0,1|-1,0|1,0|-1,-1|1,-1|-1,1|1,1
 target_mode = pattern
 cast_speed = normal
-flavor = "거봐, 하나도 버릴 게 없다니까."
+flavor = "거봐, 하나도 버릴 게 없다니까." 쓸모없어 보이던 잡동사니들이 모여 누구도 무시할 수 없는 살상 무기가 된다.
 per_tile_mul = 1.0,1.0,1.0
 [card.c-hoarders-wrath-plus]
 name = 보물의 분노+
@@ -2335,7 +2335,7 @@ shape = 0,0|0,-1|0,1|-1,0|1,0|-1,-1|1,-1|-1,1|1,1
 per_tile_mul = 1.5,1,1,1,1,1,1,1,1
 target_mode = pattern
 cast_speed = slow
-flavor = "하나라도 건드리면, 가만 안 둬!"
+flavor = "하나라도 건드리면, 가만 안 둬!" 집착에 가까운 소유욕이 폭주하여 무자비한 뇌전을 뿜어낸다.
 [card.c-rising-fang-plus]
 name = 자라나는 송곳니+
 rank = common
@@ -2348,7 +2348,7 @@ effects = growing-damage:7:enemy
 shape = 0,0|-1,-1|0,-1|1,-1
 target_mode = pattern
 cast_speed = normal
-flavor = "한번 노리면 놓치지 않아."
+flavor = "한번 노리면 놓치지 않아." 피 냄새를 맡을 때마다 더욱 크고 날카롭게 자라나는 재앙의 송곳니.
 
 [card.c-mounting-storm-plus]
 name = 부풀어 오르는 폭풍+
@@ -2363,7 +2363,7 @@ shape = 0,0|0,-1|0,1|-1,0|1,0
 target_mode = aimed
 aim_range = 3
 cast_speed = slow
-flavor = 더 이상 숨길 필요가 없을 때, 모든 것을 날려 버린다.
+flavor = 고요히 숨죽이던 폭풍이 본색을 드러내는 순간, 대지는 형체도 없이 쓸려나간다.
 
 [card.c-shared-breath-plus]
 name = 안정+
@@ -2375,7 +2375,7 @@ trigger = manual
 effects = heal-per-hand:3:self
 target_mode = self
 cast_speed = normal
-flavor = "가라앉히는 거예요. 후우-"
+flavor = "가라앉히는 거예요. 후우-" 호흡을 맞추며 퍼지는 파동이 요동치던 육체와 정신을 포근하게 잠재운다.
 
 [card.c-bloom-recovery-plus]
 name = 만개의 회복+
@@ -2387,7 +2387,7 @@ trigger = manual
 effects = heal-per-hand:6:self, draw:2:self
 target_mode = self
 cast_speed = slow
-flavor = 꽃이 지는 날은 정해져 있다.
+flavor = 가장 화려하게 만개한 생명력이 죽어가는 대지 위로 쏟아지며 극적인 치유를 선사한다.
 
 [card.c-mirror-echo-plus]
 name = 거울의 메아리+
@@ -2399,7 +2399,7 @@ trigger = manual
 effects = next-card-double:0:self
 target_mode = self
 cast_speed = fast
-flavor = "다시 한번, 똑같이. 보셨죠?"
+flavor = "다시 한번, 똑같이. 보셨죠?" 거울 속에 맺힌 상이 실체가 되어 소름 돋도록 완벽한 궤적을 덧그린다.
 
 [card.c-toxic-spire-plus]
 name = 독의 첨탑+
@@ -2413,7 +2413,7 @@ effects = apply-status:4:enemy:poison, damage-per-debuff:5:enemy
 shape = 0,0|-1,-1|0,-1|1,-1|0,-2
 target_mode = pattern
 cast_speed = normal
-flavor = 탑이 높아질수록, 그 아래 그늘도 깊어진다.
+flavor = 높게 쌓아 올린 맹독의 탑이 짙은 죽음의 그림자를 길게 드리운다.
 per_tile_mul = 1.0,1.0
 [card.c-prism-overload-plus]
 name = 과욕+
@@ -2427,7 +2427,7 @@ effects = damage-color-count:4:enemy, damage-top-color:2:enemy
 shape = 0,0|0,-1|0,1|-1,0|1,0|-1,-1|1,-1|-1,1|1,1
 target_mode = pattern
 cast_speed = slow
-flavor = "이왕 부린 욕심, 끝까지 가 보는 거야."
+flavor = "이왕 부린 욕심, 끝까지 가 보는 거야." 억누를 수 없는 탐욕이 맹렬한 빛의 폭풍이 되어 사방을 집어삼킨다.
 
 [card.c-frail-rupture-plus]
 name = 취약의 균열+
@@ -2441,7 +2441,7 @@ effects = apply-status:3:enemy:vulnerable, consume-vulnerable:4:enemy
 shape = 0,0|-1,-1|0,-1|1,-1
 target_mode = pattern
 cast_speed = normal
-flavor = 갈라진 틈은, 이내 더 벌어진다.
+flavor = 보잘것없는 틈새에 검은 기운이 스며들어 돌이킬 수 없는 파멸의 상흔을 남긴다.
 
 [card.c-sacrifice-edge-plus]
 name = 희생의 칼날+
@@ -2455,7 +2455,7 @@ effects = damage-from-hp:10:enemy, draw:1:self
 shape = 0,0|-1,0|1,0
 target_mode = pattern
 cast_speed = normal
-flavor = "다 계획이 있단 말씀."
+flavor = "다 계획이 있단 말씀." 치명상을 대가로 쥐어 짜낸 한 줄기 핏빛 투기가 적의 숨통을 노린다.
 
 # ---------- 상점 평범 ----------
 
@@ -2471,7 +2471,7 @@ effects = damage:14:enemy
 shape = 0,0|-1,0|1,0
 target_mode = pattern
 cast_speed = normal
-flavor = "손에 익으면 평생을 같이 갑니다."
+flavor = "손에 익으면 평생을 같이 갑니다." 화려함은 덜어내고 베는 기능에만 극단적으로 충실한 묵직한 강철.
 
 [card.c-shop-brace-plus]
 name = 무난한 막기+
@@ -2483,7 +2483,7 @@ trigger = manual
 effects = block:14:self
 target_mode = self
 cast_speed = fast
-flavor = "받쳐 보시면, 생각보다 든든합니다."
+flavor = "받쳐 보시면, 생각보다 든든합니다." 장식 없이 넓게 퍼진 방벽이 바위산처럼 굳건하게 공격을 튕겨낸다.
 
 [card.c-shop-flick-plus]
 name = 가벼운 손짓+
@@ -2495,7 +2495,7 @@ trigger = manual
 effects = draw:2:self
 target_mode = self
 cast_speed = fast
-flavor = "익숙해지면, 손이 먼저 움직여요."
+flavor = "익숙해지면, 손이 먼저 움직여요." 춤추듯 가벼운 몸놀림 사이로 스며든 바람이 빈틈없는 연속기를 보조한다.
 
 [card.c-shop-sip-plus]
 name = 한 모금+
@@ -2507,7 +2507,7 @@ trigger = manual
 effects = heal:9:self, exhaust-self:0:self
 target_mode = self
 cast_speed = normal
-flavor = "아껴 드세요. 그게 전부니까."
+flavor = "아껴 드세요. 그게 전부니까." 한 방울조차 낭비할 수 없는 귀중한 영약이 메마른 기력을 폭발적으로 회복시킨다.
 
 [card.c-shop-poke-plus]
 name = 잽+
@@ -2521,7 +2521,7 @@ effects = damage:6:enemy
 shape = 0,0|-1,-1|0,-1|1,-1
 target_mode = pattern
 cast_speed = fast
-flavor = "빠르기 때문에 무시 못 합니다."
+flavor = "빠르기 때문에 무시 못 합니다." 눈 깜짝할 새 뻗어 나간 불꽃이 상대의 허점을 날카롭게 파고든다.
 
 [card.c-shop-heavy-plus]
 name = 묵직한 일격+
@@ -2536,7 +2536,7 @@ shape = 0,0|0,-1|0,-2
 per_tile_mul = 1,1,1.5
 target_mode = pattern
 cast_speed = slow
-flavor = 같은 칼이 한결 묵직하다.
+flavor = 같은 칼집에서 뽑아냈음에도, 짓누르는 무게감은 차원이 다른 흉악함을 띤다.
 
 [card.c-shop-wall-plus]
 name = 든든한 벽+
@@ -2548,7 +2548,7 @@ trigger = manual
 effects = block:25:self
 target_mode = self
 cast_speed = fast
-flavor = "이만하면, 웬만한 건 다 막습니다."
+flavor = "이만하면, 웬만한 건 다 막습니다." 대지마저 짓누를 듯 육중한 장갑이 절대적인 안정감을 준다.
 
 [card.c-shop-study-plus]
 name = 잠깐 살핌+
@@ -2560,7 +2560,7 @@ trigger = manual
 effects = draw:4:self
 target_mode = self
 cast_speed = normal
-flavor = "급할 거 없습니다, 안목은 시간이 만드는 법이니."
+flavor = "급할 거 없습니다, 안목은 시간이 만드는 법이니." 날카로운 통찰력으로 전황을 낱낱이 파악해낸다.
 
 [card.c-shop-salve-plus]
 name = 응급 처치+
@@ -2572,7 +2572,7 @@ trigger = manual
 effects = heal:6:self, block:7:self, exhaust-self:0:self
 target_mode = self
 cast_speed = fast
-flavor = "이건 자국도 잘 안 남아요."
+flavor = "이건 자국도 잘 안 남아요." 흉터조차 허락하지 않는 완벽한 처치로 육체를 원상복구시킨다.
 
 # ---------- 미니 마을 전설 ----------
 
@@ -2589,7 +2589,7 @@ shape = 0,0|-1,-1|1,-1|-1,1|1,1
 per_tile_mul = 1.5,1,1,1,1
 target_mode = pattern
 cast_speed = slow
-flavor = 재가 멎은 자리에도, 불씨는 한참을 탄다.
+flavor = 시야를 가리는 잿바람 속에서, 결코 꺼지지 않는 악의적인 불씨가 살갗에 들러붙는다.
 
 [card.c-falcon-skydive-plus]
 name = 급강하+
@@ -2604,7 +2604,7 @@ shape = 0,0|0,-1|0,1|-1,0|1,0
 target_mode = aimed
 aim_range = 3
 cast_speed = fast
-flavor = 높이 오른 만큼, 내리꽂는 힘도 실린다.
+flavor = 구름을 찢고 내려온 압도적인 가속도가 저항할 수 없는 충격파를 발생시킨다.
 per_tile_mul = 1.0,1.0,1.0
 [card.c-yusezria-corebreak-plus]
 name = 정수핵 깨기+
@@ -2618,7 +2618,7 @@ effects = block:46:self, block-to-damage:1:enemy
 shape = 0,0|0,-1|0,1|-1,0|1,0|-1,-1|1,-1|-1,1|1,1
 target_mode = pattern
 cast_speed = slow
-flavor = 단단히 막은 만큼 크게 되돌린다.
+flavor = 절대 부서지지 않는 철벽에 부딪힌 대가는 파멸적인 메아리가 되어 돌아간다.
 
 [card.c-diropel-totem-plus]
 name = 무늬의 빛+
@@ -2633,7 +2633,7 @@ shape = 0,0|0,-1|0,1|-1,0|1,0|-1,-1|1,-1|-1,1|1,1
 per_tile_mul = 1.5,1,1,1,1,1,1,1,1
 target_mode = pattern
 cast_speed = normal
-flavor = 색을 더할수록, 그린 무늬가 환히 살아난다.
+flavor = 덧칠해진 빛무리가 시력을 빼앗을 듯 기괴하게 발광하며 사방으로 에너지를 폭발시킨다.
 
 # ---------- 마무리 조합 ----------
 [card.c-soul-harvest-plus]
@@ -2648,7 +2648,7 @@ effects = damage-per-debuff:7:enemy, apply-status:3:enemy:poison
 shape = 0,0|0,-1|0,-2|0,-3
 target_mode = pattern
 cast_speed = slow
-flavor = 순환이란 자연의 섭리일지니.
+flavor = 허공을 길게 가른 거대한 낫의 궤적은 어떤 생명도 비껴갈 수 없는 절대적인 섭리다.
 per_tile_mul = 1.0,1.0
 [card.c-wild-rush-plus]
 name = 야성의 돌진+
@@ -2662,7 +2662,7 @@ effects = apply-status:1:self:feral, damage-per-hand:4:enemy
 shape = 0,0|-1,-1|0,-1|1,-1
 target_mode = pattern
 cast_speed = fast
-flavor = "돌아볼 것도 없어, 그냥 달려!"
+flavor = "돌아볼 것도 없어, 그냥 달려!" 앞을 가로막는 모든 것을 산산조각 내며 야생마처럼 돌진한다.
 
 [card.c-color-surge-plus]
 name = 범람+
@@ -2677,7 +2677,7 @@ shape = 0,0|0,-1|0,1|-1,0|1,0
 target_mode = aimed
 aim_range = 3
 cast_speed = normal
-flavor = 한번 넘친 물은, 멈출 줄을 모른다.
+flavor = 통제력을 상실한 거대한 해일이 닥치는 대로 휩쓸며 사방을 초토화한다.
 
 # === 유령화(비실체) 카오스와 별개 양날 상태. 자기 ghost N턴. ===
 [card.c-phase-out]
@@ -2691,7 +2691,7 @@ effects = ghost-self:2:self
 target_mode = self
 cast_speed = normal
 upgrade_to = c-phase-out-plus
-flavor = 몸이 반쯤 스르르 풀린다.
+flavor = 윤곽이 흐릿해지며 일렁이는 그림자. 물리적인 타격이 그대로 허공을 통과한다.
 
 [card.c-phase-out-plus]
 name = 흐려지기+
@@ -2703,7 +2703,7 @@ trigger = manual
 effects = ghost-self:3:self
 target_mode = self
 cast_speed = slow
-flavor = 원래부터 거기 없던 것처럼.
+flavor = 일렁이는 아지랑이처럼 육체의 경계가 흐릿해지더니 이내 완전히 허공으로 녹아든다.
 
 # === 이로운(버프) 상태 부여 카드 (Colorz 18-c). 자신에게 apply-status. ===
 # 재생/가속/보호막/반격/집중/정신력 — 각 카드 1종씩. 매 턴 1 감소.
@@ -2719,7 +2719,7 @@ effects = apply-status:3:self:regen
 target_mode = self
 cast_speed = normal
 upgrade_to = c-gentle-mend-plus
-flavor = 상처가 아물 때는 조금 간지럽다.
+flavor = 찢어진 살갗 위로 따스한 빛이 내려앉으며, 기분 좋은 온기와 함께 상처를 메워나간다.
 
 [card.c-gentle-mend-plus]
 name = 보드라운 새살+
@@ -2731,7 +2731,7 @@ trigger = manual
 effects = apply-status:4:self:regen
 target_mode = self
 cast_speed = normal
-flavor = "딱지 긁으면 안 돼!"
+flavor = "딱지 긁으면 안 돼!" 과도한 생명력이 주입되어 흉터조차 남기지 않고 순식간에 육체를 재건한다.
 
 [card.c-quickstep]
 name = 종종걸음
@@ -2744,7 +2744,7 @@ effects = apply-status:3:self:haste
 target_mode = self
 cast_speed = fast
 upgrade_to = c-quickstep-plus
-flavor = "먼저 갈게!"
+flavor = "먼저 갈게!" 깃털처럼 가벼워진 발걸음이 바람을 타며 전장을 자유롭게 누빈다.
 
 [card.c-quickstep-plus]
 name = 종종걸음+
@@ -2756,7 +2756,7 @@ trigger = manual
 effects = apply-status:4:self:haste
 target_mode = self
 cast_speed = fast
-flavor = 이미 떠나고 없다.
+flavor = 시야에서 사라진 순간, 이미 닿을 수 없는 사각지대로 이동해 있다.
 
 [card.c-soft-ward]
 name = 포근한 보호막
@@ -2769,7 +2769,7 @@ effects = block:8:self, apply-status:2:self:ward
 target_mode = self
 cast_speed = fast
 upgrade_to = c-soft-ward-plus
-flavor = 감싸인 동안은 아무 일도 없을 것 같다.
+flavor = 보이지 않는 단단한 막이 몸을 감싸며 어설픈 공격을 부드럽게 튕겨낸다.
 
 [card.c-soft-ward-plus]
 name = 포근한 보호막+
@@ -2781,7 +2781,7 @@ trigger = manual
 effects = block:11:self, apply-status:3:self:ward
 target_mode = self
 cast_speed = fast
-flavor = 잠깐의 여유를 즐길 수 있을 것 같다.
+flavor = 겹겹이 둘러쳐진 절대적인 안식처. 외부의 폭력으로부터 온전히 격리된다.
 
 [card.c-prickle-coat]
 name = 까슬한 가시옷
@@ -2794,7 +2794,7 @@ effects = apply-status:4:self:thorns, exhaust-self:0:self
 target_mode = self
 cast_speed = normal
 upgrade_to = c-prickle-coat-plus
-flavor = 껴안기 전에 알아서 피하게 된다.
+flavor = 피부를 뚫고 돋아난 날카로운 돌기들이 접근하는 모든 것에 자비 없는 반격을 가한다.
 
 [card.c-prickle-coat-plus]
 name = 까슬한 가시옷+
@@ -2806,7 +2806,7 @@ trigger = manual
 effects = apply-status:5:self:thorns, exhaust-self:0:self
 target_mode = self
 cast_speed = normal
-flavor = 스치기만 해도 따끔해서, 다들 멀찍이 선다.
+flavor = 전신을 휘감은 끔찍한 가시덤불. 스치는 것만으로도 살점이 뜯겨나가는 고통을 안겨준다.
 
 [card.c-steady-heart]
 name = 단단한 마음
@@ -2819,7 +2819,7 @@ effects = apply-status:4:self:resolve, exhaust-self:0:self
 target_mode = self
 cast_speed = slow
 upgrade_to = c-steady-heart-plus
-flavor = "흔들리는 건 부끄러운 게 아니야."
+flavor = "흔들리는 건 부끄러운 게 아니야." 고요히 차오르는 수면처럼 흔들리던 정신이 다시 제자리를 찾는다.
 
 [card.c-steady-heart-plus]
 name = 단단한 마음+
@@ -2831,7 +2831,7 @@ trigger = manual
 effects = apply-status:5:self:resolve, exhaust-self:0:self
 target_mode = self
 cast_speed = slow
-flavor = "흔들려도, 다시 곧게 서면 그만이야."
+flavor = "흔들려도, 다시 곧게 서면 그만이야." 어떤 절망 앞에서도 꺾이지 않는 강인한 의지가 눈빛에 서린다.
 
 # === 설치(placement, 2026-06-18) — 설치 가능 칸에 효과 장판/함정. targetMode=aimed로 칸 조준. flavor 추후 검수. ===
 [card.c-place-ember]
@@ -2844,6 +2844,7 @@ shape = 0,0
 target_mode = aimed
 aim_range = 3
 cast_speed = normal
+flavor = 바닥에 깔린 매캐한 화약 냄새가 치명적인 화염을 예고한다.
 
 [card.c-place-bomb]
 name = 폭발 함정
@@ -2855,6 +2856,7 @@ shape = 0,0
 target_mode = aimed
 aim_range = 3
 cast_speed = normal
+flavor = 발밑에서 들려오는 미세한 째깍 소리. 알아차렸을 땐 이미 늦었다.
 
 [card.c-place-ward]
 name = 수호진
@@ -2866,3 +2868,4 @@ shape = 0,0
 target_mode = aimed
 aim_range = 2
 cast_speed = normal
+flavor = 은은하게 빛나는 마법진이 그 위에 선 자를 단단히 수호한다.

@@ -23,7 +23,7 @@ result_text = 카요가 고개를 끄덕이고 다시 모루로 돌아간다.
 # === 칼리번 (npc-caliburn) — 모스의 모험가. 모스 권역. ===
 [event.ev-spar-caliburn]
 name = 비창
-body = 칼리번이 검을 가볍게 돌리며 다가온다. 몸 좀 풀자고, 눈을 반짝인다.
+body = 칼리번이 커다란 여행가방을 내려놓으며 지팡이를 가볍게 돌린다. 몸 좀 풀자고, 눈을 반짝인다.
 weight = 2
 once_per_run = false
 node_kinds = event
@@ -36,7 +36,7 @@ spar = npc-spar-caliburn
 
 [event.ev-spar-caliburn.choice.2]
 label = 다음에
-result_text = 칼리번이 어깨를 으쓱하고 검을 거둔다.
+result_text = 칼리번이 어깨를 으쓱하고 지팡이를 거둔다.
 
 # === 로크 (npc-rok) — 깨어난 골렘. 마노니클라 권역. ===
 [event.ev-spar-rok]

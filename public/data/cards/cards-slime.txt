@@ -14,8 +14,8 @@ trigger = manual
 effects = damage:5:enemy, apply-status:1:enemy:weakness
 shape = 0,0|0,-1|0,1|-1,0|1,0
 per_tile_mul = 1.0,1.0,1.0,1.0,1.0
-cast_speed = normal
 target_mode = pattern
+flavor = 산성을 띤 걸쭉한 체액. 피부에 닿는 순간 불쾌한 냄새와 함께 근육의 힘이 빠져나간다.
 
 [card.c-sl-splash]
 name = 튀기기
@@ -27,8 +27,8 @@ trigger = manual
 effects = damage:4:enemy, apply-status:1:enemy:vulnerable
 shape = 0,0|-1,0|1,0
 per_tile_mul = 1.0,1.0,1.0
-cast_speed = normal
 target_mode = pattern
+flavor = 사방으로 튀어 오르는 점액의 방울들. 갑옷의 틈새로 스며들어 방어력을 취약하게 만든다.
 
 [card.c-sl-sticky]
 name = 끈적
@@ -40,8 +40,8 @@ trigger = manual
 effects = apply-status:1:enemy:weakness, apply-status:2:enemy:drowsy
 shape = 0,0|0,-1
 per_tile_mul = 1.0,1.0
-cast_speed = normal
 target_mode = pattern
+flavor = 발목을 붙잡는 기분 나쁜 점성. 행동이 둔해지고 극심한 피로감이 몰려온다.
 
 [card.c-sl-corrode]
 name = 녹이기
@@ -53,8 +53,8 @@ trigger = manual
 effects = apply-status:3:enemy:poison
 shape = 0,0|-1,-1|0,-1|1,-1
 per_tile_mul = 1.0,1.0,1.0,1.0
-cast_speed = normal
 target_mode = pattern
+flavor = 무기질조차 녹여버리는 지독한 소화액. 지독한 독성이 혈관을 타고 치명적으로 퍼져나간다.
 
 [card.c-sl-hot]
 name = 뜨거운 점액
@@ -66,8 +66,8 @@ trigger = manual
 effects = apply-status:3:enemy:burn
 shape = 0,0|0,-1|0,-2
 per_tile_mul = 1,1,1.5
-cast_speed = normal
 target_mode = pattern
+flavor = 끓어오르는 점액의 덩어리. 살갗에 들러붙어 끔찍한 화상을 입히며 지독하게 타들어간다.
 
 # === 전파·연쇄 (신규 엔진) ===
 [card.c-sl-spread]
@@ -80,8 +80,8 @@ trigger = manual
 effects = amplify-debuff:1:enemy
 shape = 0,0|0,-1|0,1|-1,0|1,0
 per_tile_mul = 1.0,1.0,1.0,1.0,1.0
-cast_speed = normal
 target_mode = pattern
+flavor = 닿은 곳을 매개로 삼아 더 넓게 오염시킨다. 한 번 묻은 점액은 스스로 증식하며 고통을 배가한다.
 
 [card.c-sl-transfer]
 name = 옮기기
@@ -93,8 +93,8 @@ trigger = manual
 effects = status-spread:1:enemy
 shape = 0,0|-1,-1|1,-1|-1,1|1,1
 per_tile_mul = 1.0,1.0,1.0,1.0,1.0
-cast_speed = normal
 target_mode = pattern
+flavor = 타겟의 몸에 묻은 오염 물질을 주변으로 흩뿌린다. 끔찍한 독과 상처가 전염병처럼 퍼져나간다.
 
 [card.c-sl-chainpop]
 name = 연쇄 톡톡
@@ -106,8 +106,8 @@ trigger = manual
 effects = damage-per-debuff:3:enemy
 shape = 0,0|0,-1|0,1|-1,0|1,0|-1,-1|1,-1|-1,1|1,1
 per_tile_mul = 1.5,1,1,1,1,1,1,1,1
-cast_speed = normal
 target_mode = pattern
+flavor = 오염된 부위가 연쇄적으로 폭발한다. 상태 이상이 중첩될수록 파열음은 더욱 끔찍하게 커진다.
 
 [card.c-sl-chainburst]
 name = 연쇄 폭발
@@ -117,8 +117,8 @@ element = water
 cost = 2
 trigger = manual
 effects = chain-explosion:8:enemy
-cast_speed = normal
 target_mode = self
+flavor = 내재된 에너지를 한계까지 압축시켜 거대한 폭발을 일으킨다. 주변의 모든 오염 물질과 공명하여 전장을 날려버린다.
 
 # === 분열 소환 (신규 엔진) ===
 [card.c-sl-split]
@@ -129,8 +129,8 @@ element = water
 cost = 2
 trigger = manual
 effects = summon-ally:2:self:6:4
-cast_speed = normal
 target_mode = self
+flavor = 자신의 일부를 떼어내어 새로운 개체를 창조한다. 본체와 완벽하게 동일한 본능으로 움직이는 분신.
 
 [card.c-sl-twobody]
 name = 두 몸
@@ -140,8 +140,8 @@ element = water
 cost = 2
 trigger = manual
 effects = summon-ally:2:self:6:4, block:4:self
-cast_speed = fast
 target_mode = self
+flavor = 육체를 둘로 갈라 적의 혼란을 유도한다. 나뉜 몸은 서로를 감싸며 빈틈없는 방어벽을 형성한다.
 
 # === 큰 한 방·지연 ===
 [card.c-sl-bigglob]
@@ -154,8 +154,8 @@ trigger = manual
 effects = damage:9:enemy
 shape = 0,0|0,-1|0,1|-1,0|1,0|-1,-1|1,-1|-1,1|1,1
 per_tile_mul = 1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0
-cast_speed = normal
 target_mode = pattern
+flavor = 자신의 체형만큼 거대한 점액 구체를 형성하여 짓누른다. 피할 수 없는 육중한 압사.
 
 [card.c-sl-bubble]
 name = 불어나는 거품
@@ -165,8 +165,8 @@ element = water
 cost = 2
 trigger = manual
 effects = delayed-damage:12:enemy:2
-cast_speed = normal
 target_mode = self
+flavor = 한계 이상으로 부풀어 오르는 거대한 물방울. 팽창의 끝에는 끔찍한 파괴력이 기다리고 있다.
 
 # === 막기·기동·유지 ===
 [card.c-sl-body]
@@ -177,8 +177,8 @@ element = earth
 cost = 1
 trigger = manual
 effects = block:6:self
-cast_speed = fast
 target_mode = self
+flavor = 탄력 있는 체질을 이용해 물리적인 타격을 튕겨낸다. 뼈와 살이 없기에 가능한 무식한 방어법.
 
 [card.c-sl-bounce]
 name = 통통
@@ -188,8 +188,8 @@ element = water
 cost = 1
 trigger = manual
 effects = move-self:2:self:away, block:4:self
-cast_speed = fast
 target_mode = self
+flavor = 고무공처럼 바닥을 튕기며 순식간에 거리를 벌린다. 적의 허를 찌르는 기만적인 회피 기동.
 
 [card.c-sl-puddle]
 name = 웅덩이
@@ -200,8 +200,8 @@ cost = 1
 trigger = manual
 effects = draw:2:self, slow-enemy:1:self
 instant = true
-cast_speed = normal
 target_mode = self
+flavor = 바닥에 납작하게 엎드려 주변 환경과 동화된다. 적의 발목을 붙잡는 동시에 다음 수를 준비할 여유를 번다.
 
 [card.c-sl-grow]
 name = 점점 크게
@@ -211,8 +211,8 @@ element = earth
 cost = 1
 trigger = manual
 effects = growing-block:6:self
-cast_speed = fast
 target_mode = self
+flavor = 수분을 흡수하여 몸집을 기괴하게 불려 나간다. 커진 부피만큼 타격을 견뎌내는 맷집도 비약적으로 상승한다.
 
 [card.c-sl-clean]
 name = 맑아지기
@@ -222,8 +222,8 @@ element = water
 cost = 1
 trigger = manual
 effects = heal:8:self
-cast_speed = normal
 target_mode = self
+flavor = 오염된 표피를 벗겨내고 순수한 본질만을 남긴다. 손상된 조직을 빠르게 재생시키는 자연의 치유력.
 
 # === 원거리(aimed) — 사거리 내 조준 칸에 점액을 뱉는다(약한 원거리 + 약화). ===
 [card.c-sl-spit]
@@ -237,5 +237,5 @@ effects = damage:5:enemy, apply-status:1:enemy:weakness
 shape = 0,0
 per_tile_mul = 1.0
 cast_speed = normal
-target_mode = aimed
 aim_range = 3
+flavor = 체내에 응축된 소화액을 총알처럼 뱉어낸다. 불쾌한 점액질이 적의 눈을 가리고 힘을 앗아간다.

@@ -11,7 +11,7 @@ rank = legendary
 effects = combat-block:18, combat-self-status:strength:2
 combat = true
 consumable = true
-flavor = 화로의 온기가 온전히 병 속에 담겨 있다.
+flavor = 목을 타고 넘어가는 묵직하고 거친 온기. 전신의 혈관이 일제히 팽창하며 폭발적인 투지를 일깨운다.
 
 # --- 티프레 (번개) — 전투 중 마나 + 드로우. ---
 [item.i-arc-tifre-spark-vial]
@@ -21,7 +21,7 @@ rank = legendary
 effects = combat-mana:2, combat-draw:1
 combat = true
 consumable = true
-flavor = 흔들면 안에서 작은 우레가 친다.
+flavor = 유리병 속에 밀봉된 소형 뇌전. 들이켜는 순간 벼락이 치듯 뇌리가 맑아지며 신경이 극도로 가속된다.
 
 # --- 타마모 (변신) — 구속 해제 + 중급 디버프 정화. ---
 [item.i-arc-tamamo-tail-charm]
@@ -31,4 +31,4 @@ rank = legendary
 effects = combat-free-grapple, cleanse-group:mid
 combat = true
 consumable = true
-flavor = 손에 쥐면 아홉 갈래 그림자가 잠깐 어른거린다.
+flavor = 물리적인 구속은 물론, 혼에 새겨진 마력적 속박마저 일거에 끊어내는 신비한 부적.

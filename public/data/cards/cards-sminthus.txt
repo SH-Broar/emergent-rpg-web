@@ -17,6 +17,7 @@ shape = 0,0|-1,0|1,0
 target_mode = aimed
 aim_range = 3
 cast_speed = normal
+flavor = 조잡하지만 확실한 살상 병기. 밟는 순간 피부가 눌어붙는 끔찍한 화염이 치솟는다.
 
 # 취약(흔함) — 3칸: 조준 칸 + 앞뒤.
 [card.c-smi-spiketrap]
@@ -31,6 +32,7 @@ shape = 0,0|0,-1|0,1
 target_mode = aimed
 aim_range = 3
 cast_speed = normal
+flavor = 불규칙하게 돋아난 강철 가시밭. 발을 딛는 즉시 관절이 꿰뚫려 치명적인 빈틈을 노출한다.
 
 # 중독(중간) — 2칸.
 [card.c-smi-poisontrap]
@@ -45,6 +47,7 @@ shape = 0,0|0,-1
 target_mode = aimed
 aim_range = 3
 cast_speed = normal
+flavor = 치사량의 맹독을 머금은 덫. 발을 내딛는 자의 혈관에 즉각적인 파멸을 주입한다.
 
 # 힘의 발판(중간·강화) — 2칸, 플레이어가 밟으면 힘.
 [card.c-smi-forge]
@@ -59,6 +62,7 @@ shape = 0,0|0,1
 target_mode = aimed
 aim_range = 2
 cast_speed = normal
+flavor = 급조된 마력 증폭 장치. 위에 서는 것만으로도 근육에 비정상적인 활력이 돈다.
 
 # 폭약(희귀) — 1칸, 접촉 즉발 큰 피해.
 [card.c-smi-bomb]
@@ -73,6 +77,7 @@ shape = 0,0
 target_mode = aimed
 aim_range = 3
 cast_speed = normal
+flavor = 불안정하게 진동하는 고성능 폭약. 건드리는 순간 압도적인 굉음과 함께 모든 것을 가루로 만든다.
 
 # === 밀기/당기기(설치 칸 유도) ===
 # 갈고리 — 조준 적을 플레이어 쪽으로 2칸 당김 + 약간 피해(플레이어 근처 설치 칸으로 유도).
@@ -89,6 +94,7 @@ per_tile_mul = 1.0
 target_mode = aimed
 aim_range = 4
 cast_speed = normal
+flavor = 살점을 찢고 들어가는 무자비한 철갈고리. 피투성이가 된 적을 억지로 끌어당긴다.
 
 # 밀치기 — 전방 적을 2칸 밀어냄 + 피해(앞쪽 설치 칸으로).
 [card.c-smi-shove]
@@ -103,6 +109,7 @@ shape = 0,0|-1,0|1,0
 per_tile_mul = 1.0,1.0,1.0
 cast_speed = fast
 target_mode = pattern
+flavor = 중장비의 무게를 실어 거칠게 밀어붙인다. 파괴적인 마찰음과 함께 적을 함정으로 걷어찬다.
 
 # 끌어모으기 — 전방 일렬의 적을 1칸씩 당김(다수 유도).
 [card.c-smi-reel]
@@ -117,6 +124,7 @@ shape = 0,0|0,-1|0,1|-1,0|1,0
 per_tile_mul = 1.0,1.0,1.0,1.0,1.0
 target_mode = pattern
 cast_speed = normal
+flavor = 기계적인 힘으로 주변의 모든 것을 강제로 당겨온다. 자비 없는 톱니바퀴의 회전.
 
 # === 6종 표준 ===
 # 일반 공격 — 전방 1칸 렌치질(범위 보통).
@@ -132,6 +140,7 @@ shape = 0,0|0,-1
 per_tile_mul = 1.0,1.0
 target_mode = pattern
 cast_speed = normal
+flavor = 육중한 렌치로 뼈를 으스러뜨리는 단순하고 폭력적인 타격.
 
 # 강 공격 — 전방 1칸 강타(범위↓, 핵심칸 1.5×).
 [card.c-smi-slam]
@@ -146,6 +155,7 @@ shape = 0,0|0,-1|0,-2
 per_tile_mul = 1,1,1.5
 target_mode = pattern
 cast_speed = normal
+flavor = 온 체중을 실어 중장비를 머리 위로 꽂아 넣는다. 지면조차 움푹 패이는 파멸적인 타격.
 
 # 원거리 — 공구 던지기(조준).
 [card.c-smi-throw]
@@ -161,6 +171,7 @@ per_tile_mul = 1.0
 target_mode = aimed
 aim_range = 3
 cast_speed = normal
+flavor = 손에 잡히는 무거운 쇳덩어리를 가차 없이 내던진다. 투박하지만 치명적인 파괴력.
 
 # 빠른 이동 — 잰걸음(쥐답게 재빠르게 물러남).
 [card.c-smi-scurry]
@@ -173,3 +184,4 @@ trigger = manual
 effects = move-self:2:self:away
 target_mode = self
 cast_speed = fast
+flavor = 본능에 가까운 재빠른 회피. 요란한 기계음을 흘리며 순식간에 안전거리 밖으로 도망친다.

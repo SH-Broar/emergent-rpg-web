@@ -15,6 +15,7 @@ shape = 0,0|0,-1|0,-2
 per_tile_mul = 1,1,1.5
 cast_speed = fast
 target_mode = pattern
+flavor = 군더더기 없는 완벽한 궤적. 검끝이 공기를 가르는 파공음조차 들리지 않는 매끄러운 일격.
 
 [card.c-wf-twin]
 name = 쌍각
@@ -27,6 +28,7 @@ shape = -1,-1|1,-1|-1,1|1,1
 per_tile_mul = 1.0,1.0,1.0,1.0
 cast_speed = fast
 target_mode = pattern
+flavor = 좌우를 동시에 찢어발기는 변칙적인 참격. 시야 밖에서 날아드는 두 개의 날이 적의 사각을 노린다.
 
 [card.c-wf-reach]
 name = 긴 베기
@@ -39,6 +41,7 @@ shape = 0,0|0,-1|0,-2|0,-3
 per_tile_mul = 1,1,1,1.5
 cast_speed = normal
 target_mode = pattern
+flavor = 검신의 길이를 착각하게 만드는 기만적인 찌르기. 안전거리라고 믿었던 공간을 순식간에 관통한다.
 
 [card.c-wf-cross]
 name = 십자 베기
@@ -51,6 +54,7 @@ shape = 0,0|0,-1|0,1|-1,0|1,0
 per_tile_mul = 1.0,1.0,1.0,1.0,1.0
 cast_speed = normal
 target_mode = pattern
+flavor = 공간에 선명한 십자 흉터를 새겨넣는 연격. 교차하는 두 개의 참격이 도망칠 틈을 지워버린다.
 
 # === 잔상(지연 타격) ===
 [card.c-wf-afterimage]
@@ -64,6 +68,7 @@ shape = 0,0|-1,-1|1,-1|-1,1|1,1
 per_tile_mul = 1.0,1.0,1.0,1.0,1.0
 cast_speed = normal
 target_mode = pattern
+flavor = 베인 상처가 뒤늦게 벌어진다. 눈앞의 검이 허상임을 깨달은 순간, 진짜 칼날은 이미 등 뒤를 지나간 후다.
 
 [card.c-wf-afterguard]
 name = 잔상 방패
@@ -74,6 +79,7 @@ trigger = manual
 effects = block:5:self, delayed-damage:4:enemy:1
 cast_speed = normal
 target_mode = self
+flavor = 너무나 빠른 참격이 허공에 물리적인 벽을 형성한다. 적의 공격을 튕겨냄과 동시에 시각적인 환영으로 혼란을 준다.
 
 # === 시간 조작 ===
 [card.c-wf-haste]
@@ -85,6 +91,7 @@ trigger = manual
 effects = next-turn-energy:2:self
 cast_speed = fast
 target_mode = self
+flavor = 심박수를 비정상적으로 끌어올려 세상의 흐름을 늦춘다. 폭발적인 아드레날린이 다음 행동의 제한을 푼다.
 
 [card.c-wf-cuttime]
 name = 시간 끊기
@@ -95,6 +102,7 @@ trigger = manual
 effects = skip-enemy-action:1:self
 cast_speed = normal
 target_mode = self
+flavor = 시간의 축마저 베어버리는 절묘한 타이밍. 적의 행동이 인과율의 틈새로 영원히 유실된다.
 
 [card.c-wf-slow-cut]
 name = 느림 베기
@@ -107,6 +115,7 @@ shape = 0,0|0,-1
 per_tile_mul = 1.0,1.0
 cast_speed = fast
 target_mode = pattern
+flavor = 시간의 흐름을 얽어매는 주술적인 검기. 타격당한 부위의 시간이 상대적으로 느리게 흐른다.
 
 [card.c-wf-doublecast]
 name = 겹수
@@ -117,6 +126,7 @@ trigger = manual
 effects = next-card-double:1:self
 cast_speed = fast
 target_mode = self
+flavor = 하나의 동작을 두 개의 현실로 복사한다. 불가능한 연격이 차원을 찢고 시전된다.
 
 [card.c-wf-timeedge]
 name = 시간의 칼날
@@ -127,6 +137,7 @@ trigger = manual
 effects = this-turn-amp:50:self, exhaust-self:0:self
 cast_speed = normal
 target_mode = self
+flavor = 찰나의 순간을 영원으로 늘려 그 속에서 칼날을 벼린다. 다음 일격에 초월적인 파괴력을 담는다.
 
 [card.c-wf-stillness]
 name = 정지
@@ -137,6 +148,7 @@ trigger = manual
 effects = skip-enemy-action:2:self, exhaust-self:0:self
 cast_speed = slow
 target_mode = self
+flavor = 세상의 숨통을 끊어버리는 압도적인 살기. 공간 전체가 얼어붙은 듯, 적들은 숨조차 쉬지 못한다.
 
 # === 차원보(이동 부가) ===
 [card.c-wf-blink]
@@ -150,6 +162,7 @@ shape = 0,0|0,-1
 per_tile_mul = 1.0,1.0
 cast_speed = fast
 target_mode = pattern
+flavor = 시야에서 사라짐과 동시에 적의 품으로 파고든다. 거리를 지워버리는 축지법의 극의.
 
 [card.c-wf-retreat]
 name = 물러 베기
@@ -162,6 +175,7 @@ shape = 0,0|-1,0|1,0
 per_tile_mul = 1.0,1.0,1.0
 cast_speed = fast
 target_mode = pattern
+flavor = 일격을 꽂아넣은 반동을 이용해 가볍게 뒤로 물러선다. 공격과 회피가 완벽하게 맞물린 기술.
 
 # === 성장·콤보 ===
 [card.c-wf-grow]
@@ -175,6 +189,7 @@ shape = 0,0|-1,-1|0,-1|1,-1
 per_tile_mul = 1.0,1.0,1.0,1.0
 cast_speed = normal
 target_mode = pattern
+flavor = 피를 마실수록 칼날이 더 예리해진다. 전투가 길어질수록 참격은 무거워지고 기세는 맹렬해진다.
 
 [card.c-wf-chain]
 name = 연각
@@ -187,6 +202,7 @@ shape = 0,0|-1,-1|1,-1|-1,1|1,1
 per_tile_mul = 1.0,1.0,1.0,1.0,1.0
 cast_speed = fast
 target_mode = pattern
+flavor = 이전의 모든 움직임이 이 한 방을 위한 포석이었다. 쌓아 올린 콤보가 파괴적인 연쇄 폭발로 이어진다.
 
 # === 방어 ===
 [card.c-wf-parry]
@@ -198,6 +214,7 @@ trigger = manual
 effects = block:6:self
 cast_speed = fast
 target_mode = self
+flavor = 힘의 흐름을 읽고 최소한의 움직임으로 빗겨낸다. 적의 거센 공격도 바람처럼 부드럽게 흘러갈 뿐이다.
 
 # === 원거리(aimed) — 검기(projectile slash). 사거리 내 조준 칸을 베어 보낸다. ===
 [card.c-wf-edgewave]
@@ -212,6 +229,7 @@ per_tile_mul = 1.0
 cast_speed = fast
 target_mode = aimed
 aim_range = 3
+flavor = 대기를 갈라 압축된 공기의 칼날을 쏘아 보낸다. 허공을 찢는 비명소리와 함께 멀리 떨어진 적을 두동강 낸다.
 
 # === 마무리 ===
 [card.c-wf-finisher]
@@ -225,6 +243,7 @@ shape = 0,0|-1,-1|1,-1
 per_tile_mul = 1.0,1.0,1.0
 cast_speed = slow
 target_mode = pattern
+flavor = 모든 것을 끝내기 위해 숨겨둔 필살의 기수. 적의 숨통을 단숨에 끊는 무자비한 처형의 칼춤.
 
 # === 투척(throw, US-003) — 전방 직선으로 검을 던진다. 경로가 뚫리면 3칸 관통,
 #     장애물이 막으면 그 앞 칸으로 수렴해 강타(1.5×). 자유 조준 아님(고정 방향). ===
@@ -239,3 +258,4 @@ shape = 0,0|0,-1|0,-2|0,-3
 per_tile_mul = 1,1,1,1.5
 cast_speed = normal
 target_mode = throw
+flavor = 회수할 생각 없이 혼신의 힘을 다해 검을 투척한다. 꿰뚫을 수 없다면 그 자리에 처박혀 폭발한다.

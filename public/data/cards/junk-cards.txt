@@ -15,7 +15,7 @@ trigger = manual
 effects =
 target_mode = self
 cast_speed = normal
-flavor = 자꾸 욱신거려서 신경이 쓰인다.
+flavor = 뼈를 깎아내는 듯한 날카로운 통증. 집중력이 흐트러져 손발이 뜻대로 움직이지 않는다.
 
 [card.c-junk-blank]
 name = 빈 카드
@@ -26,7 +26,7 @@ trigger = manual
 effects = exhaust-self
 target_mode = self
 cast_speed = fast
-flavor = 아무것도 적혀 있지 않다.
+flavor = 무의미한 공백만이 가득한 기묘한 카드. 손에 쥐는 것만으로도 막연한 허탈감이 밀려온다.
 
 [card.c-junk-curse]
 name = 저주
@@ -37,4 +37,4 @@ trigger = manual
 effects = curse-tick:2, exhaust-self
 target_mode = self
 cast_speed = normal
-flavor = 주머니 속에서 자꾸 꼼지락거린다.
+flavor = 피부 밑을 기어 다니는 듯한 불길한 오한. 시간이 지날수록 생명력이 한 줌씩 빨려 나간다.

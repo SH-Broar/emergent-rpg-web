@@ -16,7 +16,7 @@ shape = 0,-1|-1,0|1,0
 per_tile_mul = 1.0,1.0,1.0
 target_mode = pattern
 cast_speed = slow
-flavor = "......버틸 수 있겠나."
+flavor = "......버틸 수 있겠나." 태산이 무너져 내리는 듯한 묵직한 압박감. 전방의 모든 것을 무자비하게 으스러뜨리는 파괴적인 일격.
 
 # --- 티프레 (번개의 신수 호랑이) — 번개 밟기 관통. 전방 직선 2칸, 빠른 연타. ---
 [card.c-arc-tifre-thunderstep]
@@ -32,7 +32,7 @@ shape = 0,-1|0,-2
 per_tile_mul = 1.0,1.0
 target_mode = pattern
 cast_speed = fast
-flavor = "눈 깜빡이지 마라. 놓친다."
+flavor = "눈 깜빡이지 마라. 놓친다." 시각을 기만하는 극초음속의 뇌전. 신경이 반응하기도 전에 치명상을 남기고 지나간다.
 
 # --- 타마모 (변신의 구미호) — 여우불 부채꼴. 전방+대각, 어둠 속 불길이 퍼진다. ---
 [card.c-arc-tamamo-foxfire]
@@ -48,4 +48,4 @@ shape = -1,-1|0,-1|1,-1|0,-2
 per_tile_mul = 1.0,1.0,1.0,1.0
 target_mode = pattern
 cast_speed = normal
-flavor = "하나쯤 나눠 줄까? 꼬리 말고, 불."
+flavor = "하나쯤 나눠 줄까? 꼬리 말고, 불." 요염하게 피어오르는 보랏빛 여우불. 이성과 육체를 동시에 불태우는 치명적인 불길의 부채꼴.
