@@ -4062,3 +4062,480 @@ timer_cost = 4
 grant_card = c-blizzard-wall
 resolved = 어둠 속에서 거대한 고철 더미 가장자리를 수색하여, 날이 시퍼렇게 살아 있는 고대 기계의 절단 톱날을 습득했다.
 
+
+
+[event.ev-filler-roadside-spring]
+node_kinds = event
+weight = 1
+
+[event.ev-filler-roadside-spring.var.1]
+from_turn = 0
+name = 아침의 맑은 온천
+body = 길가에 맑은 온천이 솟아나고 있다. 아침 햇살을 받아 에메랄드빛으로 반짝이는 수면 위로 몽환적인 물안개가 피어오른다. 발을 담그면 여행의 피로가 눈 녹듯 사라질 것 같은 따스하고 상쾌한 기운이 맴돈다.
+timer_cost = 2
+resolved = 온천수에 발을 담그고 휴식을 취했다. 개운해진 몸으로 체력을 회복했다.
+color = gold:20
+
+[event.ev-filler-roadside-spring.var.2]
+from_turn = 100
+name = 끓어오르는 온천
+body = 한낮의 온천은 지열이 치솟아 펄펄 끓어오르고 있다. 물안개 대신 매캐한 유황 냄새가 진동하며, 잘못 발을 디뎠다간 화상을 입을 정도로 수온이 위험하게 올랐다. 자연의 쉼터가 한순간에 험악한 함정으로 변했다.
+timer_cost = 2
+resolved = 펄펄 끓는 물을 식혀주는 대가로 온천 바닥에 가라앉은 치유의 마석을 주웠다.
+color = gold:20
+
+[event.ev-filler-roadside-spring.var.3]
+from_turn = 200
+name = 얼어붙은 샘
+body = 깊은 밤, 온천수는 차갑게 식어 단단한 얼음판이 되었다. 몽환적이던 물빛은 칠흑 같은 어둠에 먹혀버렸고, 주위에는 서늘한 밤공기만이 감돈다. 낮의 따스함은 거짓말처럼 사라진 삭막한 자정의 풍경이다.
+timer_cost = 2
+resolved = 얼음을 깨고 그 아래 응축된 순수한 마력수를 한 병 떠서 마나를 회복했다.
+color = gold:20
+
+[event.ev-guardian-blessing]
+node_kinds = event
+weight = 1
+
+[event.ev-guardian-blessing.var.1]
+from_turn = 0
+name = 아침의 꼬마 수호정령
+body = 아침 이슬이 맺힌 풀잎 위에서 손바닥만 한 꼬마 정령이 동그란 눈으로 당신을 올려다본다. "나랑 놀자!" 투명한 날개를 파닥거리며 주변을 맴도는 모습이 앙증맞다. 척박한 세계에서 만난 순수하고 따스한 요정의 환대다.
+timer_cost = 2
+resolved = 꼬마 정령과 숨바꼭질을 하며 놀아주었다. 정령이 기뻐하며 행운의 가호를 걸어주었다.
+color = gold:20
+
+[event.ev-guardian-blessing.var.2]
+from_turn = 100
+name = 길을 잃은 정령
+body = 대낮의 강렬한 햇빛 아래, 꼬마 정령이 길을 잃고 덤불에 날개가 걸려 바둥거리고 있다. 아침의 명랑함은 사라지고 겁에 질려 훌쩍거리는 소리만 애처롭게 들린다. 작은 몬스터들이 이 나약한 정령을 노리고 주변을 어슬렁거린다.
+timer_cost = 2
+resolved = 덤불을 치우고 몬스터를 쫓아내 정령을 구했다. 정령이 감사의 뜻으로 빛나는 가루를 주었다.
+color = gold:20
+
+[event.ev-guardian-blessing.var.3]
+from_turn = 200
+name = 잠든 수호정령
+body = 깊은 밤, 꼬마 정령은 잎사귀를 이불 삼아 곤히 잠들어 있다. 희미하게 뿜어져 나오는 반딧불이 같은 마력 빛만이 칠흑 같은 어둠 속에서 유일한 위안이 된다. 세상의 모든 위협이 피해갈 듯한 평화롭고 고요한 수면이다.
+timer_cost = 2
+resolved = 정령이 깨지 않도록 조용히 곁을 지키며 휴식했다. 마음이 정화되어 통찰력이 상승했다.
+color = gold:20
+
+[event.ev-nekomata-bell]
+node_kinds = event
+weight = 1
+
+[event.ev-nekomata-bell.var.1]
+from_turn = 0
+name = 햇살 아래의 네코마타
+body = 두 갈래 꼬리를 가진 고양이 요괴 네코마타가 아침 햇살을 쬐며 그루밍을 하고 있다. 발끝으로 굴리는 황금빛 방울이 경쾌한 소리를 낸다. "야옹?" 당신을 발견하고는 요염하게 꼬리를 살랑이며 방울을 흔들어 보인다.
+timer_cost = 2
+resolved = 네코마타의 턱을 긁어주자 기분 좋은 골골송과 함께 마력이 담긴 황금 방울을 하나 선물로 주었다.
+color = gold:20
+
+[event.ev-nekomata-bell.var.2]
+from_turn = 100
+name = 경계하는 고양이
+body = 한낮의 소음 속에서 네코마타는 털을 곤두세우고 하악질을 하고 있다. 주위에 포식자의 기척이 느껴졌는지, 귀여웠던 방울 소리는 날카로운 경고음으로 변해 신경을 긁는다. 경계심 가득한 야생 동물의 본능이 팽팽한 긴장감을 만든다.
+timer_cost = 2
+resolved = 주변의 마수 기척을 지워주어 네코마타를 안심시켰다. 녀석이 고맙다며 사냥감(골드)을 물어다 주었다.
+color = gold:20
+
+[event.ev-nekomata-bell.var.3]
+from_turn = 200
+name = 달빛 요괴
+body = 밤이 되자 네코마타의 눈동자가 달빛을 받아 스산한 에메랄드빛으로 빛난다. 방울 소리는 환청처럼 기괴하게 귓가를 맴돌고, 두 갈래 꼬리가 어둠 속에서 아지랑이 일듯 일렁인다. 몽환적이면서도 등골이 서늘해지는 요괴의 본모습이다.
+timer_cost = 2
+resolved = 환술에 홀리지 않고 네코마타의 방울을 빼앗아, 은신과 속임수에 특화된 요력 스탯을 얻었다.
+color = gold:20
+
+[event.ev-baby-dragon-breath]
+node_kinds = event
+weight = 1
+
+[event.ev-baby-dragon-breath.var.1]
+from_turn = 0
+name = 아침의 아기 드래곤
+body = 바위 그늘 아래서 강아지 크기의 아기 드래곤이 꾸벅꾸벅 졸고 있다. 콧구멍에서 뿜어져 나오는 미지근한 불티가 아침의 서늘한 공기를 데워준다. 당신이 다가가자 눈을 동그랗게 뜨고는 "꺄아!" 하며 반갑게 날개를 퍼덕인다.
+timer_cost = 2
+resolved = 아기 드래곤에게 마른 장작을 주어 불장난을 치게 도왔다. 녀석이 기뻐하며 화염 저항력을 걸어주었다.
+color = gold:20
+
+[event.ev-baby-dragon-breath.var.2]
+from_turn = 100
+name = 배고픈 꼬마 용
+body = 대낮의 더위 속에서 아기 드래곤이 배고픔에 지쳐 바닥을 뒹굴며 칭얼거리고 있다. 짜증이 났는지 뿜어내는 불길이 제법 매서워져 바위들이 까맣게 그을렸다. 귀여웠던 아침의 모습은 온데간데없고 떼쓰는 맹수의 본능만이 남았다.
+timer_cost = 2
+resolved = 가방에서 신선한 고기를 꺼내어 먹였다. 포식한 드래곤이 뱉어낸 단단한 용의 비늘(무기 재료)을 획득했다.
+color = gold:20
+
+[event.ev-baby-dragon-breath.var.3]
+from_turn = 200
+name = 잠든 맹수
+body = 깊은 밤, 아기 드래곤은 완전히 곯아떨어졌다. 쌔근거리는 숨소리와 함께 내뿜는 열기가 추운 밤바람을 막아준다. 하지만 주변에는 어미 드래곤의 무시무시한 마력 잔향이 배어 있어, 함부로 건드렸다간 목숨을 부지하기 어려워 보인다.
+timer_cost = 2
+resolved = 드래곤의 단잠을 깨우지 않고 곁에서 뿜어져 나오는 순수한 용의 마력을 흡수해 최대 체력을 늘렸다.
+color = gold:20
+
+[event.ev-possession-wisp-follow]
+node_kinds = event
+weight = 1
+
+[event.ev-possession-wisp-follow.var.1]
+from_turn = 0
+name = 호기심 많은 도깨비불
+body = 아침 안개 사이로 작은 푸른 도깨비불 하나가 둥둥 떠다닌다. 당신의 주위를 빙글빙글 돌며 마치 길을 안내하려는 듯 장난을 친다. 무서운 악령이라기보다는 길 잃은 영혼의 귀여운 춤사위처럼 보여 입가에 미소가 지어진다.
+timer_cost = 2
+resolved = 도깨비불의 장난에 어울려주며 안개를 헤쳐나갔다. 맑은 기운이 스며들어 마나 회복력이 상승했다.
+color = gold:20
+
+[event.ev-possession-wisp-follow.var.2]
+from_turn = 100
+name = 길을 잃은 영혼
+body = 대낮의 강렬한 햇빛에 도깨비불의 푸른빛이 희미하게 사그라들고 있다. 갈 곳을 잃고 방황하며 당장이라도 소멸할 듯 바닥에 주저앉아 덜덜 떤다. 아침의 쾌활함은 사라지고 오직 허무하게 바스러져 가는 영혼의 비애만이 느껴진다.
+timer_cost = 2
+resolved = 마력을 주입하여 도깨비불의 불씨를 되살려주었다. 그가 감사의 표시로 숨겨진 보물의 위치를 알려주었다.
+color = gold:20
+
+[event.ev-possession-wisp-follow.var.3]
+from_turn = 200
+name = 서늘한 인도자
+body = 밤이 되자 도깨비불은 본연의 차갑고 소름 끼치는 빛을 발산한다. 칠흑 같은 어둠 속에서 묵묵히 한 방향만을 가리키며 떠 있는 모습이, 마치 저승으로 이끄는 사신처럼 기괴하다. 서늘한 한기가 등골을 오싹하게 파고든다.
+timer_cost = 2
+resolved = 공포를 억누르고 도깨비불이 가리키는 방향을 파헤쳐 고대의 무덤에서 부장품(유물)을 찾아냈다.
+color = gold:20
+
+[event.ev-possession-shadow-doll]
+node_kinds = event
+weight = 1
+
+[event.ev-possession-shadow-doll.var.1]
+from_turn = 0
+name = 아침의 인형극
+body = 길 옆 돌 위에 손 크기만 한 그림자 인형이 동그랗게 웅크려 앉아 있다. 아침 햇살을 받아 벽에 비친 그림자가 꼬물꼬물 움직이며 무언가 이야기를 하려는 듯 앙증맞은 연극을 펼친다. 서늘한 외형과 달리 꽤 귀여운 재롱이다.
+timer_cost = 2
+resolved = 그림자 인형의 연극을 끝까지 관람하며 박수를 쳐 주었다. 기분 좋은 기운이 맴돌아 통찰력이 상승했다.
+color = gold:20
+
+[event.ev-possession-shadow-doll.var.2]
+from_turn = 100
+name = 흐릿한 그림자
+body = 한낮의 햇빛이 수직으로 내리쬐어 그림자가 완전히 사라질 위기에 처했다. 인형은 형태를 잃고 바닥에 납작 엎드려 덜덜 떨고 있다. 화려했던 아침의 연극은 온데간데없고, 그저 태양을 피하려는 나약한 어둠의 찌끄러기만이 남았다.
+timer_cost = 2
+resolved = 외투로 그늘을 만들어주어 그림자를 살려냈다. 인형이 숨겨두었던 낡은 장신구를 몰래 건네주었다.
+color = gold:20
+
+[event.ev-possession-shadow-doll.var.3]
+from_turn = 200
+name = 괴물 그림자
+body = 밤이 되자 그림자 인형은 달빛을 등지고 거대한 괴물의 형상으로 벽을 뒤덮는다. 귀여웠던 연극은 살육과 피가 난무하는 끔찍한 공포극으로 변질되었다. 그림자의 춤사위 하나하나가 영혼을 베어낼 듯 날카롭고 서늘하게 곤두서 있다.
+timer_cost = 2
+resolved = 환영에 압도당하지 않고 그림자의 마력 패턴을 파악하여, 어둠의 장막(마법 방어력)을 깨우쳤다.
+color = gold:20
+
+[event.ev-hanabridge-shrine]
+node_kinds = event
+weight = 1
+
+[event.ev-hanabridge-shrine.var.1]
+from_turn = 0
+name = 아침의 하나브릿지 신전
+body = 나무넝쿨이 얽힌 아담한 하나브릿지 신전 안에서 부드러운 빛이 새어 나온다. 제단 위에 둥근 마력 덩어리가 기분 좋게 떠다니며 아침의 싱그러운 기운을 내뿜는다. 척박한 세상과 단절된, 완벽하게 평화로운 숲속 성역이다.
+timer_cost = 2
+resolved = 제단에 정중히 기도하며 아침의 평화를 만끽했다. 신전의 축복을 받아 모든 상태 이상이 치료되었다.
+color = gold:20
+
+[event.ev-hanabridge-shrine.var.2]
+from_turn = 100
+name = 오염된 성역
+body = 한낮의 신전은 흉측한 마수들에게 점거당해 엉망이 되었다. 제단의 빛은 탁한 핏빛으로 변질되었고, 부드러웠던 공기는 역겨운 피 냄새로 물들었다. 평화의 성역이 폭력 앞에 유린당하는 잔혹한 광경이다.
+timer_cost = 2
+resolved = 마수들을 처치하고 제단을 정화했다. 빛을 되찾은 신전이 감사의 의미로 영구적인 방어력을 올려주었다.
+color = gold:20
+
+[event.ev-hanabridge-shrine.var.3]
+from_turn = 200
+name = 침묵하는 제단
+body = 밤이 되자 신전의 빛은 위태롭게 흔들리다 잦아든다. 칠흑 같은 어둠이 성역을 집어삼키고, 서늘한 바람만이 돌기둥 사이를 맴돈다. 신성함조차 밤의 거대한 무심함 앞에서는 그저 차갑고 삭막한 폐허의 일부분일 뿐이다.
+timer_cost = 2
+resolved = 어둠 속 제단 뒤편을 더듬어, 과거의 순례자들이 헌금으로 남겨둔 두툼한 골드를 획득했다.
+color = gold:20
+
+[event.ev-blood-altar]
+node_kinds = event
+weight = 1
+
+[event.ev-blood-altar.var.1]
+from_turn = 0
+name = 붉은 제단의 맥박
+body = 길 한가운데 검붉은 돌제단이 박혀 있다. 표면이 미지근하고, 손을 대면 심장처럼 한 번 뛴다. 제단 안쪽 홈에는 "붉은 기운을 나누어 주면 잊힌 무기를 주마"라는 낡은 글씨가 새겨져 있다. 고대의 기괴한 계약이 피어오르는 아침이다.
+timer_cost = 2
+resolved = 손끝에 작은 상처를 내어 체력을 조금 희생하고 붉은 제단과 계약했다. 오래전 봉인된 마검(무기)을 획득했다.
+color = gold:20
+
+[event.ev-blood-altar.var.2]
+from_turn = 100
+name = 굶주린 제단
+body = 대낮의 제단은 지열을 받아 미친 듯이 박동하며 주변의 마력을 빨아들이고 있다. 제단 주위로 붉은 안개가 피어오르고, 지나가던 작은 동물들이 그 기운에 닿아 바싹 말라죽고 만다. 모든 것을 빨아들이려는 끝없는 갈증의 제단이다.
+timer_cost = 2
+resolved = 자연의 마력을 제단에 대신 주입하여 폭주를 막았다. 안정화된 제단이 뱉어낸 고대의 마력석을 챙겼다.
+color = gold:20
+
+[event.ev-blood-altar.var.3]
+from_turn = 200
+name = 차갑게 식은 제단
+body = 깊은 밤, 제단의 맥박은 완전히 멈추어 차가운 바위 덩어리로 굳어버렸다. 붉었던 색깔도 어둠 속에 묻혀 칙칙한 잿빛으로 보이고, 낮의 위협적인 기운은 자취를 감췄다. 그저 버려진 무덤처럼 음산한 흉측함만이 감도는 공간이다.
+timer_cost = 2
+resolved = 굳어버린 제단의 틈새를 무기 손잡이로 부수어, 그 안에 숨겨져 있던 피의 결정체(희귀 연금술 재료)를 캐냈다.
+color = gold:20
+
+[event.ev-vault-collapse]
+node_kinds = event
+weight = 1
+
+[event.ev-vault-collapse.var.1]
+from_turn = 0
+name = 햇살이 스미는 보고
+body = 천장이 반쯤 내려앉은 고대의 방. 뚫린 구멍으로 아침 햇살이 비치며, 바닥에 흩어진 금화와 보석들이 영롱하게 반짝인다. 위험해 보이는 그림자들이 구석에 웅크리고 있지만, 찬란한 빛의 기운이 어둠의 습격을 아슬아슬하게 억제하고 있다.
+timer_cost = 2
+resolved = 햇살이 비치는 안전한 구역을 따라 신속하게 움직여, 바닥에 떨어진 값비싼 고대의 금화들을 긁어모았다.
+color = gold:20
+
+[event.ev-vault-collapse.var.2]
+from_turn = 100
+name = 무너지는 천장
+body = 대낮의 강한 진동과 함께 보고의 천장이 미친 듯이 무너져 내리고 있다. 흙먼지가 시야를 가리고, 거대한 바위들이 황금 산 위로 쏟아진다. 구석의 그림자 괴물들마저 놀라 사방으로 도망치는, 그야말로 무자비한 붕괴의 아수라장이다.
+timer_cost = 2
+resolved = 떨어지는 바위들을 피하며 무너진 틈새에 끼어 있던 진귀한 룬스톤(강화 재료)을 아슬아슬하게 빼냈다.
+color = gold:20
+
+[event.ev-vault-collapse.var.3]
+from_turn = 200
+name = 그림자의 요새
+body = 깊은 밤, 보고는 완전히 칠흑 속에 잠겼다. 천장의 구멍으로 달빛조차 스며들지 못하고, 억눌려 있던 그림자 괴물들이 보물 더미 위를 소름 끼치게 기어 다닌다. 인간의 얄팍한 탐욕을 비웃듯, 완벽한 어둠과 죽음의 공포만이 공간을 지배한다.
+timer_cost = 2
+resolved = 어둠에 동화되는 마법을 사용하여 그림자 괴물들 몰래 가장 깊숙한 곳의 보물상자를 열어 유물을 획득했다.
+color = gold:20
+
+[event.ev-filler-old-shrine]
+node_kinds = event
+weight = 1
+
+[event.ev-filler-old-shrine.var.1]
+from_turn = 0
+name = 아침의 낡은 사당
+body = 길 끝에 세워진 작고 낡은 사당. 이끼가 잔뜩 끼어 오래 비워진 듯하지만, 누군가 불을 피웠는지 향로에서는 아직 따스한 온기와 기분 좋은 향냄새가 피어오른다. 험난한 여행길에서 마주친 작고 평화로운 안식처다.
+timer_cost = 2
+resolved = 향로 앞에 동전 몇 닢을 두고 조용히 기도를 올렸다. 마음이 차분해지며 마법 저항력이 영구적으로 상승했다.
+color = gold:20
+
+[event.ev-filler-old-shrine.var.2]
+from_turn = 100
+name = 들짐승의 둥지
+body = 대낮의 사당 안은 흙투성이다. 사나운 멧돼지 마수가 사당 안을 파헤치며 제단과 향로를 모두 박살 내고 둥지를 틀려 하고 있다. 고대의 신성한 기운 따위는 야생의 맹목적인 생존 본능 앞에서 힘없이 짓밟혀버렸다.
+timer_cost = 2
+resolved = 멧돼지 마수를 쫓아내고 사당을 정리해주었다. 부서진 제단 밑에서 고대의 수호 부적(장신구)을 발견했다.
+color = gold:20
+
+[event.ev-filler-old-shrine.var.3]
+from_turn = 200
+name = 적막한 폐허
+body = 밤이 되자 향로의 불씨는 차갑게 식었고 사당은 완벽한 폐허의 어둠 속에 잠겼다. 서늘한 밤바람이 이끼 낀 돌 틈을 훑으며 기괴한 휘파람 소리를 낸다. 오랜 세월 버려진 고대 유적의 음울하고 삭막한 공포만이 피부를 찌른다.
+timer_cost = 2
+resolved = 어둠 속에서 사당 기둥의 숨겨진 장치를 찾아내어, 과거 사제들이 숨겨둔 성스러운 은화 꾸러미를 얻었다.
+color = gold:20
+
+[event.ev-filler-fork-merchant]
+node_kinds = event
+weight = 1
+
+[event.ev-filler-fork-merchant.var.1]
+from_turn = 0
+name = 아침의 갈림길 상인
+body = 안개가 걷히는 갈림길. 능글맞은 인상의 떠돌이 상인이 짐수레를 세워두고 차를 끓이고 있다. "오른쪽 길엔 마수가 득실거리지. 부적 하나 안 사겠어?" 그가 사람 좋은 웃음을 지으며 물건을 내민다. 모험의 시작을 알리는 활기찬 호객 행위다.
+timer_cost = 2
+resolved = 상인과 기분 좋게 흥정하여 부적과 약초를 싼값에 구매했다. 앞으로의 모험에 필요한 생존력이 상승했다.
+color = gold:20
+
+[event.ev-filler-fork-merchant.var.2]
+from_turn = 100
+name = 강도 만난 상인
+body = 한낮의 갈림길은 부서진 짐수레와 흩어진 물건들로 엉망이다. 도적 떼가 상인을 덮치고 도망간 탓에, 그는 바닥에 주저앉아 엉엉 울고 있다. 능글맞던 웃음은 절망으로 바뀌었고, 안전할 것 같았던 길목은 약육강식의 비정함을 여실히 보여준다.
+timer_cost = 2
+resolved = 도적들이 떨어뜨리고 간 장물과 상인의 물건을 수습해주었다. 그가 보답으로 귀한 특수 아이템을 건넸다.
+color = gold:20
+
+[event.ev-filler-fork-merchant.var.3]
+from_turn = 200
+name = 야반도주
+body = 밤이 되자 갈림길엔 버려진 수레바퀴 자국만이 남았다. 상인은 짐을 챙겨 칠흑 같은 어둠 속으로 야반도주를 해버렸다. 사기꾼이었는지 빚쟁이에게 쫓긴 건지 알 수 없지만, 적막한 밤바람만이 텅 빈 공터에 남아 기괴한 스산함을 더한다.
+timer_cost = 2
+resolved = 상인이 다급하게 도망치다 진흙탕에 빠뜨린 두툼한 금화 주머니를 주워 쏠쏠한 이득을 챙겼다.
+color = gold:20
+
+[event.ev-filler-quiet-pond]
+node_kinds = event
+weight = 1
+
+[event.ev-filler-quiet-pond.var.1]
+from_turn = 0
+name = 아침의 고요한 못
+body = 바람 한 점 없는 고요한 연못이 거울처럼 파란 아침 하늘을 온전히 담아내고 있다. 물가에 다가가 앉으면 복잡했던 잡생각이 맑은 물빛 속으로 스며들어 가라앉는다. 여정의 고단함을 씻어주는 수정처럼 맑고 고요한 평화다.
+timer_cost = 2
+resolved = 연못가에 앉아 고요한 수면을 바라보며 깊은 명상에 빠졌다. 마음의 평안을 얻어 지능과 최대 마나가 상승했다.
+color = gold:20
+
+[event.ev-filler-quiet-pond.var.2]
+from_turn = 100
+name = 진흙탕 연못
+body = 대낮의 연못은 거대 진흙 괴물이 몸을 씻고 간 탓에 흉측한 흙탕물로 변했다. 맑았던 거울 수면은 더러운 늪지처럼 역겨운 냄새를 풍기고, 물고기들이 숨을 헐떡이며 수면 위로 떠오른다. 아름답던 자연의 평화가 추악하게 짓밟힌 현장이다.
+timer_cost = 2
+resolved = 진흙탕 속에서 괴물이 떨어뜨린 단단한 늪지의 코어(방어구 강화 재료)를 낚아채어 물로 씻어냈다.
+color = gold:20
+
+[event.ev-filler-quiet-pond.var.3]
+from_turn = 200
+name = 검은 심연
+body = 밤이 되자 연못은 칠흑 같은 심연으로 변했다. 별빛조차 수면에 반사되지 않고 기괴하게 빨려 들어간다. 깊이를 알 수 없는 검은 물웅덩이는 마치 들여다보는 자의 영혼마저 집어삼킬 듯 무겁고 서늘한 공포를 내뿜고 있다.
+timer_cost = 2
+resolved = 두려움을 억누르고 검은 연못 깊숙한 곳에 잠수하여, 수백 년 전 가라앉은 고대의 성배(유물)를 건져냈다.
+color = gold:20
+
+[event.ev-filler-traveling-bard]
+node_kinds = event
+weight = 1
+
+[event.ev-filler-traveling-bard.var.1]
+from_turn = 0
+name = 아침의 음유시인
+body = 나무 그늘 아래서 낡은 류트를 든 음유시인이 경쾌한 아침의 선율을 연주하고 있다. "여행자여, 동전 한 닢이면 힘이 나는 노래를 들려드리지." 그의 쾌활한 목소리와 리듬감 넘치는 음악이 척박한 길목에 따스한 생기와 낭만을 불어넣는다.
+timer_cost = 2
+resolved = 동전을 던져주고 경쾌한 연주를 감상했다. 발걸음이 가벼워지고 영구적으로 민첩 스탯이 상승했다.
+color = gold:20
+
+[event.ev-filler-traveling-bard.var.2]
+from_turn = 100
+name = 현이 끊어진 류트
+body = 대낮의 더위 속에서 시인은 짜증스럽게 류트의 끊어진 현을 쳐다보고 있다. 마수의 습격이라도 받았는지 옷은 찢겨 있고, 유쾌했던 노랫소리 대신 거친 욕설만이 길가에 맴돈다. 예술가의 낭만이 거친 대자연 앞에서 옹색하게 무너진 모습이다.
+timer_cost = 2
+resolved = 가방에 있던 질긴 짐승의 힘줄을 건네어 현을 고치게 도와주었다. 시인이 감동하여 특별한 버프 가호를 걸어주었다.
+color = gold:20
+
+[event.ev-filler-traveling-bard.var.3]
+from_turn = 200
+name = 서늘한 진혼곡
+body = 깊은 밤, 시인은 모닥불도 없이 어둠 속에서 구슬프고 소름 끼치는 진혼곡을 연주하고 있다. 낮의 경쾌함은 온데간데없고, 마치 망령들을 불러모으는 듯한 처절한 멜로디가 등골을 오싹하게 만든다. 밤의 삭막함이 음악마저 기괴하게 비틀어놓았다.
+timer_cost = 2
+resolved = 진혼곡에 담긴 고대의 마력 패턴을 분석하여, 정신계 마법에 저항하는 강력한 통찰력과 지능을 깨우쳤다.
+color = gold:20
+
+[event.ev-filler-emberfly-swarm]
+node_kinds = event
+weight = 1
+
+[event.ev-filler-emberfly-swarm.var.1]
+from_turn = 0
+name = 춤추는 불나방 떼
+body = 길을 덮을 듯 몰려다니는 붉은 불나방 떼. 아침 이슬을 피해 따스한 햇살 속에서 춤을 추듯 맴돌고 있다. 손을 뻗으면 따끔하지만, 작은 생명체들이 뿜어내는 생기발랄한 온기가 기분 좋은 활력을 불어넣어 준다.
+timer_cost = 2
+resolved = 불나방들의 궤적을 쫓으며 마력의 흐름을 읽어냈다. 따스한 기운이 몸에 스며들어 체력이 크게 회복되었다.
+color = gold:20
+
+[event.ev-filler-emberfly-swarm.var.2]
+from_turn = 100
+name = 미쳐 날뛰는 불꽃
+body = 한낮의 지열에 자극받은 불나방 떼가 통제를 잃고 맹렬한 화염 폭풍으로 변모했다. 춤추던 요정 같았던 벌레들이 피부를 녹일 듯한 끔찍한 불길을 뿜어내며 길을 막아선다. 아름다웠던 자연 현상이 순식간에 재앙적인 장벽으로 둔갑했다.
+timer_cost = 2
+resolved = 방패를 앞세워 화염 폭풍을 뚫고 지나가며, 나방들이 타죽고 남긴 고순도의 화염 가루(연금술 재료)를 모았다.
+color = gold:20
+
+[event.ev-filler-emberfly-swarm.var.3]
+from_turn = 200
+name = 사그라든 잿더미
+body = 밤이 되자 불나방 떼는 모두 차갑게 식어 바닥에 잿더미처럼 떨어져 죽어 있다. 붉은 온기도, 날갯짓의 궤적도 모두 칠흑 같은 어둠 속에 묻혀버렸다. 하루살이 생명의 덧없음과 밤의 무자비한 냉기가 만나 소름 끼치는 정적을 이룬다.
+timer_cost = 2
+resolved = 어둠 속에서 죽은 불나방들의 잔해를 뒤져, 열기를 간직하고 결정화된 붉은 인분(희귀 마력석)을 채집했다.
+color = gold:20
+
+[event.ev-filler-stone-circle]
+node_kinds = event
+weight = 1
+
+[event.ev-filler-stone-circle.var.1]
+from_turn = 0
+name = 아침의 요정 서클
+body = 아침 햇살이 비추는 신비로운 돌무지 서클. 누군가 정성스레 쌓아 올린 둥근 돌들 중앙에서 맑고 청아한 마력의 공명음이 들려온다. 손을 대보면 땅의 따스한 박동이 전해지며, 요정들이 금방이라도 튀어나올 것 같은 몽환적인 평화가 느껴진다.
+timer_cost = 2
+resolved = 서클 중앙에 앉아 땅의 박동과 호흡을 맞추며 명상했다. 자연의 가호를 받아 최대 체력과 마나가 상승했다.
+color = gold:20
+
+[event.ev-filler-stone-circle.var.2]
+from_turn = 100
+name = 파괴된 서클
+body = 대낮의 서클은 흉측한 골렘의 발자국에 짓밟혀 산산조각 났다. 돌무지는 무너졌고 공명음은 불쾌한 파열음으로 변해 귀를 찌른다. 요정의 흔적 따위는 묵직한 바위 덩어리의 폭력 앞에 무참히 바스러졌다. 낭만이 파괴된 거칠고 잔인한 현장이다.
+timer_cost = 2
+resolved = 무너진 돌무지 사이를 파헤쳐, 부서지지 않고 빛을 잃지 않은 중심 마력석을 간신히 건져냈다.
+color = gold:20
+
+[event.ev-filler-stone-circle.var.3]
+from_turn = 200
+name = 저주받은 결계
+body = 깊은 밤, 돌무지 서클에서 뿜어져 나오던 마력이 음산한 핏빛으로 변질되었다. 서늘한 한기와 함께 기괴한 저주의 속삭임이 돌들 사이로 흘러나온다. 밤의 어둠이 순수했던 마력을 끔찍한 흑마법의 결계로 타락시켜버린, 숨 막히는 공포의 공간이다.
+timer_cost = 2
+resolved = 흑마법의 속삭임에 저항하며 서클에 맺힌 저주의 결정을 강제로 추출하여, 파괴적인 흑마법 재료로 삼았다.
+color = gold:20
+
+[event.ev-filler-night-lantern]
+node_kinds = event
+weight = 1
+
+[event.ev-filler-night-lantern.var.1]
+from_turn = 0
+name = 빛바랜 길가 등불
+body = 안개가 자욱한 아침 길가에 낡은 마력 등불이 세워져 있다. 이미 해가 떴지만, 등불은 꿋꿋하게 부드러운 호박색 빛을 내며 지난밤 길을 잃었던 자들의 흔적을 품고 있다. 차가운 아침 공기 속에서 은은하게 빛나는 작은 낭만의 상징이다.
+timer_cost = 2
+resolved = 등불에 새겨진 고대의 길잡이 룬 문자를 해독하여, 앞으로 나아갈 방향에 대한 통찰력(스탯 상승)을 얻었다.
+color = gold:20
+
+[event.ev-filler-night-lantern.var.2]
+from_turn = 100
+name = 깨진 등불
+body = 한낮의 강풍에 등불이 바닥으로 쓰러져 유리가 산산조각 났다. 호박색 빛은 사라졌고, 기름이 새어 나와 매캐한 냄새를 풍긴다. 누군가의 희망이었던 이정표가 한순간의 자연재해에 의해 흉측한 쓰레기로 전락해버린 삭막한 풍경이다.
+timer_cost = 2
+resolved = 깨진 유리 파편들 속에서 불타지 않은 심지의 마력 결정체(고급 강화 재료)를 찾아내 챙겼다.
+color = gold:20
+
+[event.ev-filler-night-lantern.var.3]
+from_turn = 200
+name = 꺼져 가는 심지
+body = 깊은 밤, 칠흑 같은 어둠 속에서 등불이 마지막 심지를 태우며 위태롭게 깜빡거린다. 기름은 떨어져 가고, 덮쳐오는 짙은 어둠의 공포가 숨통을 조여온다. 희망이 완전히 꺼지기 직전의 처절하고도 오싹한 긴장감이 공간을 무겁게 짓누른다.
+timer_cost = 2
+resolved = 가진 기름을 조금 나누어 주어 등불의 불씨를 살렸다. 되살아난 빛이 잠시 동안 주변의 악마들을 쫓아냈다.
+color = gold:20
+
+[event.ev-filler-timer-rift]
+node_kinds = event
+weight = 1
+
+[event.ev-filler-timer-rift.var.1]
+from_turn = 0
+name = 아침의 시간 균열
+body = 길 한복판 허공이 유리창처럼 비스듬히 갈라져 있다. 틈 너머로 과거의 푸르른 아침 숲 풍경이 아른거린다. 위험한 폭주 없이 그저 조용히 열려 있는 균열은, 잃어버린 시간에 대한 묘한 향수와 신비로움을 동시에 자아낸다.
+timer_cost = 2
+resolved = 균열 틈새로 손을 뻗어 과거의 시간이 응축된 이슬방울을 채집했다. 복용하자 체력과 마나가 완전히 회복되었다.
+color = gold:20
+
+[event.ev-filler-timer-rift.var.2]
+from_turn = 100
+name = 요동치는 균열
+body = 대낮의 더위와 함께 균열이 날카로운 쇳소리를 내며 요동친다. 틈새가 불규칙하게 찢어지며 시공간의 폭풍을 뿜어내어 주변의 바위와 나무를 무자비하게 빨아들인다. 몽환적이던 현상이 순식간에 만물을 찢어발기는 파괴적인 구멍으로 변모했다.
+timer_cost = 2
+resolved = 강력한 흡입력을 버티며, 균열이 뱉어낸 시공간의 파편(유물 조각)을 간발의 차이로 주워 빠져나왔다.
+color = gold:20
+
+[event.ev-filler-timer-rift.var.3]
+from_turn = 200
+name = 칠흑의 틈새
+body = 깊은 밤, 균열 너머의 풍경은 끔찍한 칠흑으로 덮였다. 빛도 소리도 없는 완벽한 허무의 공간이 입을 벌리고 당신을 응시하는 듯하다. 마치 우주의 끝자락을 마주한 것처럼, 서늘하고 기괴한 공포가 이성을 마비시킬 듯 등골을 타고 흐른다.
+timer_cost = 2
+resolved = 균열 너머의 공허를 똑바로 응시하며 정신을 단련했다. 공포를 극복한 보상으로 영구적인 마법 저항력을 얻었다.
+color = gold:20
