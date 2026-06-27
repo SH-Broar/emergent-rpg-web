@@ -7,7 +7,6 @@ year = 310
 era = 평온
 tagline = "겉으로는 잔잔하나, 봉인된 그림자가 꿈틀거리는 해."
 node_map = nm-peace-310
-events = ev-traveler-fork, ev-stranger-favor, ev-mono-whisper
 characters = first-trans
 npcs = stranger-old-woman, friendly-fisher
 time_limit = 7

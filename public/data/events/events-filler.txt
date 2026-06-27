@@ -30,30 +30,6 @@ label = 손을 씻고 쉰다
 heal_pct = 35
 result_text = 찬물에 얼굴을 씻으니 정신이 든다.
 
-[event.ev-filler-wandering-peddler]
-name = 떠돌이 행상
-node_kinds = event, village
-once_per_run = false
-weight = 2
-body = 등짐을 진 행상이 길을 막고 물건을 펼친다. "구경은 공짜요. 사는 건 골드고." 알록달록한 가루병이 줄지어 놓여 있다.
-
-[event.ev-filler-wandering-peddler.choice.1]
-label = 노란 가루를 산다
-hidden = true
-gold = -8
-color = electric:7
-result_text = 가루를 삼키자 손끝이 찌릿하다.
-
-[event.ev-filler-wandering-peddler.choice.2]
-label = 회색 가루를 산다
-gold = -8
-color = iron:7
-result_text = 입안에 쇠 맛이 돈다. 단단해지는 느낌이다.
-
-[event.ev-filler-wandering-peddler.choice.3]
-label = 그냥 지나간다
-result_text = 행상이 어깨를 으쓱하고 짐을 다시 싼다.
-
 [event.ev-filler-old-shrine]
 name = 이끼 낀 사당
 node_kinds = event
@@ -79,26 +55,6 @@ label = 향로 곁에서 쉰다
 heal_pct = 50
 result_text = 따뜻한 향로 옆에서 잠시 숨을 돌렸다.
 
-[event.ev-filler-prism-shard]
-name = 반짝임
-node_kinds = event
-once_per_run = false
-weight = 1
-body = 빛을 받으면 여덟 빛깔로 갈라지는 유리 조각이 풀숲에 박혀 있다. 깨뜨려 흩뿌릴 수도, 통째로 품을 수도 있다.
-
-[event.ev-filler-prism-shard.choice.1]
-label = 깨뜨려 흩뿌린다
-hp = -3
-color = all:2
-result_text = 빛가루가 사방에 퍼지며 모든 색이 조금씩 짙어졌다.
-
-[event.ev-filler-prism-shard.choice.2]
-label = 한 빛깔만 품는다
-hidden = true
-color_cost = iron:3
-color = random:8
-result_text = 손에 쥐자 한 빛깔만 강하게 스며들었다.
-
 [event.ev-filler-fork-merchant]
 name = 원정 거래
 node_kinds = event
@@ -118,25 +74,6 @@ label = 부적을 받는다
 color_cost = iron:3
 color = wind:7
 result_text = 종이가 바람에 파르르 떨더니 품으로 스민다.
-
-[event.ev-filler-buried-cache]
-name = 묻혀 있던 꾸러미
-node_kinds = event
-once_per_run = false
-weight = 1
-body = 발끝에 단단한 것이 걸린다. 파 보니 천에 싸인 꾸러미다. 매듭이 단단해 안이 보이지 않는다.
-
-[event.ev-filler-buried-cache.choice.1]
-label = 조심히 풀어 본다
-gold = 15
-result_text = 모아 둔 잔돈이 가득하다.
-
-[event.ev-filler-buried-cache.choice.2]
-label = 단숨에 뜯는다
-hidden = true
-gold = -4
-color = random:10
-result_text = 안에서 빛 덩어리가 터져 나와 몸에 스몄다. 한 빛깔이 크게 짙어졌다.
 
 [event.ev-filler-quiet-pond]
 name = 고요한 못
@@ -237,26 +174,6 @@ color_cost = light:3
 color = dark:8
 result_text = 등불이 꺼지자 사방이 검다. 어둠의 기운이 짙어진다.
 
-[event.ev-filler-spark-pylon]
-name = 버려진 송전탑
-node_kinds = event
-once_per_run = false
-weight = 1
-body = 녹슨 송전탑이 아직 희미하게 윙윙거린다. 손을 대면 찌릿한 기운이 흐를 것 같다.
-
-[event.ev-filler-spark-pylon.choice.1]
-label = 전선을 만진다
-hp = -3
-color = electric:9
-result_text = 찌릿한 충격과 함께 전기의 기운이 크게 올랐다.
-
-[event.ev-filler-spark-pylon.choice.2]
-label = 부품을 떼어 판다
-gold = 14
-result_text = 쓸 만한 금속을 떼어 챙겼다.
-
-# 타이머 개입 슬라이스 — 개입(timer_cost=2, 결과 숨김 도박) / 지나치기(무비용).
-#   개입의 핵심 결정축(희소 타이머를 이 사건에 쓸 가치가 있나)을 검증하는 최소 사건.
 [event.ev-filler-timer-rift]
 name = 시간의 균열
 node_kinds = event
