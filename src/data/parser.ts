@@ -58,7 +58,10 @@ export function parseIni(text: string): IniData {
     const eqIdx = cleaned.indexOf('=');
     if (eqIdx <= 0) continue;
     const key = cleaned.slice(0, eqIdx).trim();
-    const value = cleaned.slice(eqIdx + 1).trim();
+    let value = cleaned.slice(eqIdx + 1).trim();
+    if (value.includes('\\n')) {
+      value = value.replace(/\\n/g, '\n');
+    }
     if (!key) continue;
     result[currentSection][key] = value;
   }

@@ -60,7 +60,7 @@ name = 원정 거래
 node_kinds = event
 once_per_run = false
 weight = 1
-body = 갈림길에 약초상이 좌판을 폈다. "왼쪽은 약초, 오른쪽은 부적이라우." 좌판 위로 마른 잎과 낡은 종이가 나란하다.
+body = 갈림길에 약초상이 좌판을 폈다.\n\n"왼쪽은 약초, 오른쪽은 부적이라우."\n\n좌판 위로 마른 잎과 낡은 종이가 나란하다.
 
 [event.ev-filler-fork-merchant.choice.1]
 label = 약초를 받는다
@@ -98,7 +98,7 @@ name = 떠도는 악사
 node_kinds = event, village
 once_per_run = false
 weight = 1
-body = 악사가 낡은 현을 고른다. "동전 한 닢이면 한 곡 들려드리지." 곡조에 따라 듣는 이의 기운이 달라진다고들 한다.
+body = 악사가 낡은 현을 고른다.\n\n"동전 한 닢이면 한 곡 들려드리지."\n\n곡조에 따라 듣는 이의 기운이 달라진다고들 한다.
 
 [event.ev-filler-traveling-bard.choice.1]
 label = 빠른 곡을 청한다
