@@ -1005,7 +1005,7 @@ function enterLabel(): string {
                   'node-group--visited': run.data.nodeStates[node.id]?.visited,
                   'node-group--cleared': isSettledNode(node.id),
                   'node-group--stealthed': run.data.nodeStates[node.id]?.combatStealthed,
-                  'node-group--event-done': run.data.nodeStates[node.id]?.eventTriggered,
+                  'node-group--event-done': run.data.nodeStates[node.id]?.eventTriggered || run.data.nodeStates[node.id]?.timerResolved,
                   'node-group--done': run.data.nodeStates[node.id]?.activityDone || run.data.nodeStates[node.id]?.restDone || run.data.nodeStates[node.id]?.gatherDone,
                   'node-group--selected': selectedNodeId === node.id,
                   'node-group--chaos-locked': chaosLockedNodes.has(node.id),
