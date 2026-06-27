@@ -99,12 +99,6 @@ const hpRatio = computed(() => {
   return displayHp.value / displayMaxHp.value;
 });
 
-/** 목숨 (Item 28) — 구세이브 폴백 2/2. 하트로 표시(남은 채움 + 빈 칸). */
-const lives = computed(() => run.data.lives ?? 2);
-const maxLives = computed(() => run.data.maxLives ?? 2);
-const lifeHearts = computed(() =>
-  '❤'.repeat(Math.max(0, lives.value)) + '🤍'.repeat(Math.max(0, maxLives.value - lives.value)),
-);
 const hpColor = computed(() => {
   const r = hpRatio.value;
   if (r > 0.6) return '#8effb8';
@@ -155,7 +149,7 @@ const persistentStatuses = computed(() => {
   <header class="hud">
     <div class="row row--main">
       <!-- HP -->
-      <Tooltip text="HP — 체력. 0이 되면 런 종료. 회복약/유물로 보충.">
+      <Tooltip text="체력. 0이 되면 목숨 1개 소모.">
         <div class="slot slot--hp">
           <span class="emoji">❤</span>
           <span class="lbl">HP</span>
@@ -165,7 +159,7 @@ const persistentStatuses = computed(() => {
       </Tooltip>
 
       <!-- 레벨·경험치 (XP·각성) — 전투 승리로 적립. 강화권이 있으면 눌러서 강화 픽 모달을 연다. -->
-      <Tooltip :text="`레벨 ${level} · 경험치 ${xp}/${XP_PER_LEVEL}${pendingPicks > 0 ? ` · 강화권 ${pendingPicks} (눌러서 사용)` : ''} — 전투 승리로 쌓인다.`">
+      <Tooltip :text="`경험치 ${xp}/${XP_PER_LEVEL}${pendingPicks > 0 ? ` · 강화권 ${pendingPicks} (눌러서 사용)` : ''}`">
         <button
           class="slot slot--level"
           :class="{ 'slot--level-pick': pendingPicks > 0 }"
@@ -180,15 +174,16 @@ const persistentStatuses = computed(() => {
         </button>
       </Tooltip>
 
-      <!-- 목숨 (Item 28) — 전투 패배 시 목숨 1 소모하고 도망. 0이면 런 종료. -->
-      <Tooltip :text="`목숨 ${lives}/${maxLives} — 전투에서 쓰러져도 목숨이 남으면 도망쳐 살아남는다. 0이 되면 런이 끝난다.`">
-        <div class="slot slot--lives">
-          <span class="hearts">{{ lifeHearts }}</span>
-          <span class="num">{{ lives }}/{{ maxLives }}</span>
+      <!-- 현재 시각 — 1일차 정오 시작, 행동·이동마다 시간이 흐른다(1회 14.4분). -->
+      <Tooltip text="4일차 정오에 런 종료.">
+        <div class="slot" :class="{ 'slot--urgent': timeUrgent }">
+          <span class="emoji">🕛</span>
+          <span class="lbl">{{ clock.day }}일차</span>
+          <span class="num">{{ clockHHMM }}</span>
         </div>
       </Tooltip>
 
-      <!-- 전투 후 지속 상태 — 활성인 것만. 체력과 골드 사이. -->
+      <!-- 전투 후 지속 상태 — 활성인 것만. -->
       <div v-if="persistentStatuses.length" class="slot slot--status">
         <Tooltip v-for="s in persistentStatuses" :key="s.key" :text="s.tip">
           <span class="statusbadge" :class="{ 'statusbadge--bad': s.bad }">
@@ -198,44 +193,8 @@ const persistentStatuses = computed(() => {
         </Tooltip>
       </div>
 
-      <!-- 골드 -->
-      <Tooltip text="골드 — 마을·작업장에서 카드/유물/아이템 구매에 사용.">
-        <div class="slot">
-          <span class="emoji">💰</span>
-          <span class="lbl">골드</span>
-          <span class="num">{{ run.data.gold }}</span>
-        </div>
-      </Tooltip>
-
-      <!-- 시간의 조각 -->
-      <Tooltip text="시간의 조각 — 카드/유물 강화·재료. 던전 깊은 곳일수록 더 모인다.">
-        <div class="slot">
-          <span class="emoji">⏳</span>
-          <span class="lbl">조각</span>
-          <span class="num">{{ run.data.timeShards }}</span>
-        </div>
-      </Tooltip>
-
-      <!-- 타이머 — 사건 개입 자원 -->
-      <Tooltip text="타이머 — 사건 개입에 쓰는 희소 자원. 런 시작 10(연구로 최대 12). 런 중에는 늘지 않는다.">
-        <div class="slot">
-          <span class="emoji">⏱️</span>
-          <span class="lbl">타이머</span>
-          <span class="num">{{ run.data.timers.cur }}/{{ run.data.timers.max }}</span>
-        </div>
-      </Tooltip>
-
-      <!-- 시계 — 현재 게임 시각 (1일차 정오 시작, 행동마다 14.4분 경과) -->
-      <Tooltip text="현재 시각 — 1일차 정오에 시작해 행동·이동마다 시간이 흐른다(1회 14.4분). 3일이 다하면(4일차 정오) 런 종료.">
-        <div class="slot" :class="{ 'slot--urgent': timeUrgent }">
-          <span class="emoji">🕛</span>
-          <span class="lbl">{{ clock.day }}일차</span>
-          <span class="num">{{ clockHHMM }}</span>
-        </div>
-      </Tooltip>
-
       <!-- 데스크톱: 3 버튼 분리. (모바일에서는 .desk-only로 숨김) -->
-      <Tooltip text="캐릭터 — 6 컬러, 스탯, 덱, 동료를 본다.">
+      <Tooltip text="캐릭터의 스테이터스를 확인한다.">
         <button
           class="slot slot--btn slot--menu desk-only"
           :class="{ 'slot--btn-on': characterOpen }"
@@ -247,7 +206,7 @@ const persistentStatuses = computed(() => {
         </button>
       </Tooltip>
 
-      <Tooltip text="소지품 — 현재 일차, 유물, 아이템을 본다.">
+      <Tooltip text="가지고 있는 아이템을 확인한다.">
         <button
           class="slot slot--btn slot--menu desk-only"
           :class="{ 'slot--btn-on': inventoryOpen }"
@@ -338,11 +297,6 @@ const persistentStatuses = computed(() => {
 .slot--hp { flex: 1; min-width: 140px; max-width: 260px; }
 .slot--hp .bar { flex: 1; height: 8px; background: rgba(0,0,0,0.4); border-radius: 4px; overflow: hidden; }
 .slot--hp .bar__fill { height: 100%; transition: width 220ms ease, background 220ms ease; }
-
-/* 목숨 슬롯 — 하트 + 숫자. */
-.slot--lives { gap: 0.28rem; }
-.slot--lives .hearts { font-size: 0.85rem; letter-spacing: -1px; }
-.slot--lives .num { color: #ffb8c4; }
 
 /* 레벨 슬롯 — 버튼(강화권 있을 때만 활성). 강화권 잔여 시 노란 펄스 배지. */
 .slot--level { gap: 0.28rem; cursor: default; }

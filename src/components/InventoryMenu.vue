@@ -23,7 +23,14 @@ const emit = defineEmits<{ (e: 'close'): void }>();
 const run = useRunStore();
 const data = useDataStore();
 
-const tab = ref<'relic' | 'item' | 'clue'>('relic');
+const tab = ref<'resource' | 'relic' | 'item' | 'clue'>('resource');
+
+// 상단 자원 탭 — HUD에서 이전(목숨/골드/시간 조각/타이머). 목숨은 하트로 표시.
+const lives = computed(() => run.data.lives ?? 2);
+const maxLives = computed(() => run.data.maxLives ?? 2);
+const lifeHearts = computed(() =>
+  '❤'.repeat(Math.max(0, lives.value)) + '🤍'.repeat(Math.max(0, maxLives.value - lives.value)),
+);
 const expandedClueId = ref<string | null>(null);
 function toggleClue(id: string) {
   expandedClueId.value = expandedClueId.value === id ? null : id;
@@ -36,7 +43,7 @@ watch(
     if (!o) {
       teleportFor.value = null;
       reviveFor.value = null;
-      tab.value = 'relic';
+      tab.value = 'resource';
     }
   },
 );
@@ -171,6 +178,16 @@ function itemEffectLabel(eff: Item['effects'][number]): string {
         <div class="inv-tabs" role="tablist">
           <button
             class="inv-tab"
+            :class="{ 'inv-tab--on': tab === 'resource' }"
+            role="tab"
+            :aria-selected="tab === 'resource'"
+            @click="tab = 'resource'"
+          >
+            <span class="inv-tab__icon">📊</span>
+            <span>자원</span>
+          </button>
+          <button
+            class="inv-tab"
             :class="{ 'inv-tab--on': tab === 'relic' }"
             role="tab"
             :aria-selected="tab === 'relic'"
@@ -201,8 +218,54 @@ function itemEffectLabel(eff: Item['effects'][number]): string {
           </button>
         </div>
 
+        <!-- 자원 탭 — 목숨/골드/시간 조각/타이머 (HUD에서 이전) -->
+        <div v-if="tab === 'resource'" class="inv-body">
+          <ul class="res-list">
+            <li class="res">
+              <span class="res__icon">❤</span>
+              <div class="res__main">
+                <div class="res__row">
+                  <span class="res__name">목숨</span>
+                  <span class="res__val">{{ lifeHearts }} {{ lives }}/{{ maxLives }}</span>
+                </div>
+                <p class="res__desc">0이 되면 런이 끝난다.</p>
+              </div>
+            </li>
+            <li class="res">
+              <span class="res__icon">💰</span>
+              <div class="res__main">
+                <div class="res__row">
+                  <span class="res__name">골드</span>
+                  <span class="res__val">{{ run.data.gold }}</span>
+                </div>
+                <p class="res__desc">각종 아이템을 살 수 있다.</p>
+              </div>
+            </li>
+            <li class="res">
+              <span class="res__icon">⏳</span>
+              <div class="res__main">
+                <div class="res__row">
+                  <span class="res__name">시간 조각</span>
+                  <span class="res__val">{{ run.data.timeShards }}</span>
+                </div>
+                <p class="res__desc">각종 아이템을 만들 수 있다.</p>
+              </div>
+            </li>
+            <li class="res">
+              <span class="res__icon">⏱️</span>
+              <div class="res__main">
+                <div class="res__row">
+                  <span class="res__name">타이머</span>
+                  <span class="res__val">{{ run.data.timers.cur }}/{{ run.data.timers.max }}</span>
+                </div>
+                <p class="res__desc">사건에 개입할 수 있는 요소.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+
         <!-- 유물 탭 -->
-        <div v-if="tab === 'relic'" class="inv-body">
+        <div v-else-if="tab === 'relic'" class="inv-body">
           <p v-if="run.data.relics.length === 0" class="empty">아직 유물이 없습니다.</p>
           <ul v-else class="rel-list">
             <li
@@ -392,6 +455,24 @@ function itemEffectLabel(eff: Item['effects'][number]): string {
 
 .hint { font-size: 0.78rem; color: #888; margin: 0 0 0.3rem; }
 .empty { color: #6c6c7c; text-align: center; padding: 1.6rem; font-style: italic; margin: 0; }
+
+/* 자원 탭 — 목숨/골드/시간 조각/타이머 */
+.res-list { list-style: none; padding: 0; margin: 0.2rem 0 0; display: flex; flex-direction: column; gap: 0.5rem; }
+.res {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.6rem 0.8rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+}
+.res__icon { font-size: 1.3rem; flex-shrink: 0; width: 1.6rem; text-align: center; }
+.res__main { flex: 1; display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
+.res__row { display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem; }
+.res__name { color: #f6e8b8; font-weight: 600; font-size: 0.95rem; }
+.res__val { color: #f6e8b8; font-variant-numeric: tabular-nums; font-weight: 600; }
+.res__desc { margin: 0; font-size: 0.8rem; color: #a4a4b0; }
 
 /* 단서 탭 */
 .clue-list { list-style: none; padding: 0; margin: 0.4rem 0 0; display: flex; flex-direction: column; gap: 0.4rem; }
