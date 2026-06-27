@@ -16,14 +16,14 @@ import {
   isChoiceAvailable,
   invokeCustomEffect,
 } from '@/systems/event-runner';
-import { effectiveContent } from '@/systems/map';
+import { effectiveContent, findRegion } from '@/systems/map';
 import { applyAffinityDelta } from '@/systems/affinity';
 import { acquireRelic } from '@/systems/relic';
 import { applyColorBoost, applyColorBoostAll, type ColorKey } from '@/systems/colors';
 import { colorLabel, cardDetailText, relicDetailText, josa } from '@/systems/labels';
 import { rng } from '@/systems/rng';
 import SceneCharacter from '@/components/SceneCharacter.vue';
-import type { Card, Event, EventChoice, EventChoiceEffect, EventVariation } from '@/data/schemas';
+import type { Card, Event, EventChoice, EventChoiceEffect, EventVariation, Node } from '@/data/schemas';
 
 const ALL_8_COLORS: ColorKey[] = ['fire', 'water', 'electric', 'iron', 'earth', 'wind', 'light', 'dark'];
 
@@ -67,10 +67,80 @@ const displayBody = computed(() => {
   return v.body;
 });
 
-const currentNode = computed(() => {
-  const map = data.nodeMaps.get(data.timelines.get(run.data.timelineId)?.nodeMapId ?? '');
-  return map?.nodes.find((n: { id: string }) => n.id === run.data.currentNodeId);
-});
+/** 현재 런의 노드 맵(권역 1:1 매칭에 권역 풀·형제 노드 목록이 필요). */
+const nodeMap = computed(() =>
+  data.nodeMaps.get(data.timelines.get(run.data.timelineId)?.nodeMapId ?? ''),
+);
+
+const currentNode = computed(() =>
+  nodeMap.value?.nodes.find((n: { id: string }) => n.id === run.data.currentNodeId),
+);
+
+// === 사건 노드 ↔ 권역 타이머 사건 1:1 매칭 ===
+// 명시 events가 없는 event 노드에 권역 event_pool의 *고유 타이머 사건*을 결정론적으로 고정 배정.
+//   같은 노드 = 항상 같은 사건(재진입 동일), 다른 노드 = 다른 사건.
+//   권역 사건 < 노드 → 남는 노드는 filler 폴백, 권역 사건 > 노드 → 일부 미사용(허용).
+
+/** 모든 권역 풀에 공통으로 끼어 있는 공용 사건(축복/방울/새끼용/빙의/하나브릿지) — 1:1 대상 제외. */
+const COMMON_EVENT_IDS = new Set<string>([
+  'ev-guardian-blessing',
+  'ev-nekomata-bell',
+  'ev-baby-dragon-breath',
+  'ev-possession-wisp-follow',
+  'ev-possession-shadow-doll',
+  'ev-hanabridge-shrine',
+]);
+
+/** 1:1 대상 = 권역 고유 *타이머 사건*(variations 보유) ∧ 공용 사건 아님. */
+function isRegionTimerEvent(e: Event): boolean {
+  return !COMMON_EVENT_IDS.has(e.id) && !!e.variations && e.variations.length > 0;
+}
+
+/** 노드가 데이터에 *명시 events*(contentRef.eventIdPool)를 가졌는가 — 이미 1:1이므로 보존. */
+function nodeHasExplicitEvents(n: Node): boolean {
+  return !!(n.contentRef?.eventIdPool && n.contentRef.eventIdPool.length > 0);
+}
+
+/**
+ * 이 event 노드에 결정론적으로 대응되는 권역 타이머 사건(없으면 undefined → 기존/폴백 경로).
+ *  - 명시 events가 있는 노드는 보존(undefined 반환).
+ *  - 권역 event_pool에서 공용·이미배정 사건을 뺀 타이머 사건 목록을 선언 순서로 만들고,
+ *    권역 내 '명시 events 없는' event 노드를 id 정렬한 순서 i번째에 1:1 배정.
+ */
+function matchedRegionTimerEvent(node: Node): Event | undefined {
+  // 구조적 기준(node.kind/region/contentRef)만 사용 — 런타임 override와 무관하게 매핑 불변.
+  if (node.kind !== 'event') return undefined;
+  if (nodeHasExplicitEvents(node)) return undefined;
+  const m = nodeMap.value;
+  if (!m) return undefined;
+  const region = findRegion(m, node.region);
+  if (!region) return undefined;
+
+  // 이미 명시 배정된 권역 사건 id — 중복 배정 방지(타이머 사건이 두 노드에 겹치지 않게).
+  const placed = new Set<string>();
+  for (const n of m.nodes) {
+    if (n.region !== node.region || n.kind !== 'event') continue;
+    for (const id of n.contentRef?.eventIdPool ?? []) placed.add(id);
+  }
+
+  // 권역 고유 타이머 사건 풀(event_pool 선언 순서, 공용·중복 제외).
+  const timerEvents: Event[] = [];
+  for (const id of region.eventPool) {
+    if (placed.has(id)) continue;
+    const e = data.events.get(id);
+    if (e && isRegionTimerEvent(e)) timerEvents.push(e);
+  }
+  if (timerEvents.length === 0) return undefined;
+
+  // 권역 내 '명시 events 없는' event 노드 — id 정렬(결정론 순서).
+  const openNodeIds = m.nodes
+    .filter((n) => n.kind === 'event' && n.region === node.region && !nodeHasExplicitEvents(n))
+    .map((n) => n.id)
+    .sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+  const i = openNodeIds.indexOf(node.id);
+  if (i < 0 || i >= timerEvents.length) return undefined; // 남는 노드 → 기존/필러 폴백.
+  return timerEvents[i];
+}
 
 const pool = computed<Event[]>(() => {
   const node = currentNode.value;
@@ -468,7 +538,11 @@ const fillerPool = computed<Event[]>(() =>
 );
 
 onMounted(() => {
-  currentEvent.value = pickEvent(pool.value) ?? pickEvent(fillerPool.value);
+  // 1순위: 사건 노드 ↔ 권역 타이머 사건 1:1 결정론 매칭(명시 events 없는 event 노드 한정).
+  //   매칭 실패(남는 노드·풀 소진)면 기존 경로: 노드 풀 추첨 → 필러 폴백.
+  const node = currentNode.value;
+  const matched = node ? matchedRegionTimerEvent(node) : undefined;
+  currentEvent.value = matched ?? pickEvent(pool.value) ?? pickEvent(fillerPool.value);
   const ev = currentEvent.value;
   if (!ev) return;
   if (ev.variations && ev.variations.length > 0) {
