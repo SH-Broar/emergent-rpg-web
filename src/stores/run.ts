@@ -26,6 +26,7 @@ import { getSkipTurnEveryN } from '@/systems/relic';
 import { gridRelicCombatEnd } from '@/systems/grid-relic';
 import { applyStartChaos, nodeHpLoss } from '@/systems/chaos';
 import { dayOfTurn } from '@/systems/time';
+import { tickMail, initialMailState } from '@/systems/mail';
 import { XP_PER_LEVEL, canEnhance, needsAwakening } from '@/systems/enhance';
 import { generateStage, pickEnemyIds, buildEncounterStage } from '@/systems/stage-gen';
 import { startGridCombat, startGridBossCombat, commitRound as commitGridRoundEngine, playInstantCard as playInstantCardEngine } from '@/systems/grid-combat';
@@ -104,6 +105,17 @@ function migrateColorHp(filled: RunState): void {
   filled.colorHpBonus = 0;
 }
 
+/**
+ * 길드 우편 마이그레이션 (2026-07-02) — mail 필드가 없던 구세이브는 *현재 경과턴* 기준으로 다음 배달을 예약.
+ * 신세이브(parsed.mail 존재)는 그대로 둔다. EMPTY_RUN spread가 넣어 둔 기본값(nextReadyAtTurn 30)을
+ * 실제 경과턴으로 교정해, 이미 30턴 넘게 진행한 세이브가 로드 직후 우편이 쏟아지지 않게 한다.
+ */
+function migrateMail(filled: RunState, parsed: Partial<RunState>): void {
+  if (!parsed.mail) {
+    filled.mail = initialMailState(filled.visitedNodes.length);
+  }
+}
+
 function migrateRoster(filled: RunState, parsed: Partial<RunState>): void {
   const hasNewRoster = Array.isArray(parsed.roster);
   if (!hasNewRoster) {
@@ -179,8 +191,11 @@ const EMPTY_RUN: RunState = {
   maxMp: 0,
   gold: 0,
   timeShards: 0,
-  // 타이머 — 사건 개입 자원. startRun에서 10(+연구 보너스)로 주입. 구세이브는 스프레드로 backfill(0/0).
+  // 타이머 — 사건 개입 자원. 선지급 폐지(2026-07-02): startRun에서 cur=보너스만·max=10(+보너스). 구세이브 backfill(0/0).
   timers: { cur: 0, max: 0 },
+  // 길드 우편 — 타이머 배달 큐(2026-07-02). 30 = MAIL_INTERVAL(경과 0턴 기준 첫 배달). startRun은 이 기본값을
+  //   그대로 쓰고(structuredClone), mail 없는 구세이브는 migrateMail이 현재 경과턴 기준으로 교정한다.
+  mail: { nextReadyAtTurn: 30, pending: 0 },
   // 목숨 (Item 28) — 기본 2/2. 구세이브는 loadActiveRun의 {...EMPTY_RUN, ...parsed}로 자동 2/2.
   lives: 2,
   maxLives: 2,
@@ -434,9 +449,10 @@ export const useRunStore = defineStore('run', {
       fresh.maxHp = params.maxHp;
       fresh.mp = params.maxMp;
       fresh.maxMp = params.maxMp;
-      // 타이머 — 런 시작 고정값(BASE_TIMERS) + 연구 영구 상향(meta.timerBonus, 상한 2). 런 중 증가 없음.
-      const timerMax = BASE_TIMERS + (useMetaStore().timerBonus ?? 0);
-      fresh.timers = { cur: timerMax, max: timerMax };
+      // 타이머 — 선지급 폐지(2026-07-02): 시작 보유는 연구 보너스(0~2)만, 상한은 10(+보너스).
+      //   이후 충전은 길드 우편(systems/mail.ts)으로만. mail 기본값(nextReadyAtTurn 30)은 structuredClone(EMPTY_RUN)에서 온다.
+      const timerBonus = useMetaStore().timerBonus ?? 0;
+      fresh.timers = { cur: timerBonus, max: BASE_TIMERS + timerBonus };
       // 카오스 확정 — 시작형 적용·상시형 조회·점수 산정의 원천.
       fresh.activeChaos = params.activeChaos ? [...params.activeChaos] : [];
       // 친밀도 working mirror 시드 (Item 37-② Stage C, 1B) — 권위 소스인 영속 메타값을 비춘다.
@@ -531,6 +547,8 @@ export const useRunStore = defineStore('run', {
         migratePlusCards(filled);
         // 색→최대 HP(VIT) 은퇴(F5) — 구세이브 maxHp에 박힌 colorHpBonus 환원.
         migrateColorHp(filled);
+        // 길드 우편(2026-07-02) — mail 없는 구세이브를 현재 경과턴 기준으로 backfill(로드 직후 폭주 방지).
+        migrateMail(filled, parsed);
         // 격자 전투 전환(D1/E1) — 진행 중이던 *구형 1v1 전투*와 미완 격자 전투는 폐기한다.
         //   전투는 휘발 상태이므로 복원하지 않고, 플레이어는 currentNodeId(맵)에서 재개한다.
         //   (구 combat은 새 GridCombatView와 호환되지 않아 그대로 두면 빈 화면/크래시 위험.)
@@ -584,6 +602,8 @@ export const useRunStore = defineStore('run', {
         // 최소 1로 클램프(여기서 즉사 X — 시간만료/전투처럼 별도 종료 경로에 맡김).
         const loss = nodeHpLoss();
         if (loss > 0) r.hp = Math.max(1, r.hp - loss);
+        // 길드 우편 사이클 — 경과 30턴마다 우편 2통(미수령 동안 정지). visitedNodes 증가 후 판정.
+        tickMail(r);
       }
 
       // 노드 상태 마킹 (시간 카운트와 무관)

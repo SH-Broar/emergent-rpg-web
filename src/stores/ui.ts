@@ -14,6 +14,16 @@ export interface Toast {
 }
 
 /**
+ * 보상 패널(2026-07-02) — 승리 전리품·수확·우편 등 *여러 보상을 한 번에* 모아 보여주는 중앙 오버레이.
+ * reward-feed의 배치(endRewardBatch)나 직접 pushRewardPanel이 큐에 넣고, RewardPanel이 큐 앞을 순차 표시.
+ * 토스트와 달리 사라지지 않고 확인을 눌러야 닫힌다(보상 무효감 방지).
+ */
+export interface RewardPanelData {
+  title: string;
+  lines: string[];
+}
+
+/**
  * 컬러 상승 팝 — 컬러값이 *오를 때* 화면 상단 중앙에 잠깐 띄우는 시각 피드백(토스트와 별개).
  * applyColorBoost(colors.ts)가 실제 상승분(delta>0)에 대해 호출한다. total = 상승 후 누적값(/100).
  */
@@ -80,6 +90,8 @@ export const useUiStore = defineStore('ui', {
   state: () => ({
     toasts: [] as Toast[],
     colorPops: [] as ColorPop[],
+    /** 보상 패널 큐 — 맨 앞(0번)을 RewardPanel이 표시. 연속 배치는 순차로 쌓였다가 하나씩 소비된다. */
+    rewardPanels: [] as RewardPanelData[],
     modalOpen: false as boolean,
     modalContent: null as string | null,
     debug: loadDebugFlags(),
@@ -112,6 +124,16 @@ export const useUiStore = defineStore('ui', {
 
     dismissToast(id: number) {
       this.toasts = this.toasts.filter((t) => t.id !== id);
+    },
+
+    /** 보상 패널을 큐에 추가 — 여러 배치가 연달아 끝나면 순차 표시(RewardPanel이 앞에서 하나씩 소비). */
+    pushRewardPanel(panel: RewardPanelData) {
+      this.rewardPanels.push(panel);
+    },
+
+    /** 현재(맨 앞) 보상 패널을 닫고 다음으로 넘어간다 — 확인/ESC/바깥 클릭에서 호출. */
+    dismissRewardPanel() {
+      this.rewardPanels.shift();
     },
 
     /**

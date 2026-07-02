@@ -22,6 +22,8 @@ import { acquireRelic } from '@/systems/relic';
 import { applyColorBoost, applyColorBoostAll, type ColorKey } from '@/systems/colors';
 import { colorLabel, cardDetailText, relicDetailText, josa } from '@/systems/labels';
 import { rng } from '@/systems/rng';
+import { grantInterventionRewards, previewInterventionRewards } from '@/systems/mail';
+import { beginRewardBatch, collectRewardBatch } from '@/systems/reward-feed';
 import SceneCharacter from '@/components/SceneCharacter.vue';
 import type { Card, Event, EventChoice, EventChoiceEffect, EventVariation, Node } from '@/data/schemas';
 
@@ -59,6 +61,13 @@ const showInterveneButton = computed(() => !variationResolved.value && varTimerC
 const canIntervene = computed(
   () => !variationResolved.value && varTimerCost.value > 0 && run.data.timers.cur >= varTimerCost.value,
 );
+/** 변형 개입 버튼에 표시할 배정 보상 이름(미리보기) — 지급과 동일 계산. 비용 0/사건 없으면 빈 문자열. */
+const interveneReward = computed(() => {
+  const v = variation.value;
+  const ev = currentEvent.value;
+  if (!v || !ev || v.timerCost <= 0) return '';
+  return previewInterventionRewards(ev.id, v.timerCost, v.premiumReward).join(' · ');
+});
 /** 화면 본문 — 해결 후엔 resolvedBody, 그 전엔 바리 body. */
 const displayBody = computed(() => {
   const v = variation.value;
@@ -178,6 +187,11 @@ function applyChoice(choice: EventChoice) {
   if (choice.timerCost && choice.timerCost > 0) {
     run.data.timers.cur = Math.max(0, run.data.timers.cur - choice.timerCost);
     lines.push(`타이머 -${choice.timerCost}`);
+    // 개입 보상(2026-07-02) — 배치로 감싸 프리미엄 보상 라인을 *결과 목록에 인라인*으로 넣는다(토스트 대신).
+    //   뷰가 이미 패널(결과 화면)이라 오버레이는 띄우지 않는다. 항목은 mail.ts가 결정론 산출.
+    beginRewardBatch();
+    grantInterventionRewards(currentEvent.value?.id ?? '', choice.timerCost, choice.premiumReward);
+    lines.push(...collectRewardBatch());
   }
 
   // 효과들을 순서대로 적용. 마지막 effect에 followupEventId가 있으면 체인 진입.
@@ -422,6 +436,11 @@ function effectPreviewTokens(eff: EventChoiceEffect): string[] {
 function choicePreview(c: EventChoice): string {
   if (c.hidden) return '???';
   const tokens = c.effects.flatMap(effectPreviewTokens);
+  // 개입(timerCost) 선택지엔 배정된 프리미엄 보상 이름을 덧붙인다(노드별 고유, 지급과 동일 계산).
+  if (c.timerCost && c.timerCost > 0) {
+    const rewards = previewInterventionRewards(currentEvent.value?.id ?? '', c.timerCost, c.premiumReward);
+    if (rewards.length) tokens.push(`보상: ${rewards.join(' · ')}`);
+  }
   return tokens.join(' · ');
 }
 
@@ -508,6 +527,11 @@ function intervene() {
   const lines: string[] = [];
   run.data.timers.cur = Math.max(0, run.data.timers.cur - v.timerCost);
   lines.push(`타이머 -${v.timerCost}`);
+  // 개입 보상(2026-07-02) — 배치로 감싸 프리미엄 보상 라인을 *결과 목록에 인라인*으로 넣는다(토스트 대신).
+  //   뷰가 이미 패널(바리 결과)이라 오버레이는 띄우지 않는다. 항목은 mail.ts가 결정론 산출.
+  beginRewardBatch();
+  grantInterventionRewards(currentEvent.value?.id ?? '', v.timerCost, v.premiumReward);
+  lines.push(...collectRewardBatch());
 
   // 바리 effects 적용 — 기존 applyEffectWithNames 재사용(이름 lookup·보상 라인 수집).
   //   applyEffectWithNames는 timerCost를 건드리지 않으므로 위의 차감과 중복되지 않는다.
@@ -585,6 +609,7 @@ onMounted(() => {
             @click="canIntervene && intervene()"
           >
             <span class="choice__label">개입한다<span class="choice__timer">⏳{{ varTimerCost }}</span></span>
+            <span v-if="interveneReward" class="choice__reward">보상: {{ interveneReward }}</span>
             <span class="choice__preview" :class="{ 'choice__preview--short': !canIntervene }">
               보유 {{ run.data.timers.cur }}<template v-if="!canIntervene"> · 타이머가 부족하다</template>
             </span>
@@ -655,6 +680,7 @@ onMounted(() => {
 .choice__label { font-weight: 600; }
 .choice__timer { margin-left: 0.5rem; padding: 0.05rem 0.4rem; font-size: 0.78rem; color: #ffd98e; background: rgba(255,217,142,0.12); border: 1px solid rgba(255,217,142,0.35); border-radius: 999px; font-variant-numeric: tabular-nums; }
 .choice__preview { font-size: 0.82rem; color: #8effb8; font-variant-numeric: tabular-nums; }
+.choice__reward { font-size: 0.82rem; color: #ffd98e; font-variant-numeric: tabular-nums; }
 .choice__preview--hidden { color: #c08eff; letter-spacing: 0.1em; }
 .choice--leave-fallback { border-color: rgba(192,142,255,0.5); background: rgba(192,142,255,0.12); }
 .choice--leave-fallback:hover { background: rgba(192,142,255,0.22); border-color: rgba(192,142,255,0.7); }

@@ -14,6 +14,7 @@ import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
 import { useMetaStore } from '@/stores/meta';
 import { rng } from '@/systems/rng';
+import { collectMail, turnsUntilMail } from '@/systems/mail';
 import { applyAffinityDelta } from '@/systems/affinity';
 import { cardEffectKindLabel, cardEffectDescription, colorLabel } from '@/systems/labels';
 import { availableCards } from '@/systems/unlocks';
@@ -284,6 +285,22 @@ function doCraftPotion(itm: Item) {
   craftPotion(itm);
 }
 
+// === 길드 우편(타이머 드립) — 수령 대기 우편 수 + 다음 배달까지 남은 턴. ===
+const mailPending = computed(() => run.data.mail?.pending ?? 0);
+const mailTurns = computed(() => turnsUntilMail(run.data));
+
+/** 길드 우편 수령 — 대기 우편을 타이머로 전환(상한 초과분은 버려진다). 로직은 systems/mail.ts. */
+function receiveMail() {
+  const before = run.data.timers.cur;
+  const got = collectMail();
+  if (got <= 0) return;
+  const gained = run.data.timers.cur - before;
+  // 토스트 대신 보상 패널(길드 우편)로 — 전환 없이 명시적으로 확인하고 닫는다. (2026-07-02)
+  const lines = [`타이머 +${gained}`];
+  if (gained < got) lines.push(`상한에 닿아 ${got - gained}통은 흘려보냈다`);
+  ui.pushRewardPanel({ title: '길드 우편', lines });
+}
+
 function leave() {
   router.push('/game/map');
 }
@@ -397,6 +414,25 @@ const rankColors: Record<string, string> = {
         <p class="cleanse__msg">아직 심수화 상태다. 공격이 2배지만 회복도 방어도 못 하고, 탐색 보상이 늘어난다. 가라앉힐까?</p>
         <button class="cleanse__btn" @click="calmFeral">수화를 가라앉힌다</button>
       </div>
+
+      <!-- 길드 우편 — 타이머(개입권)는 이곳에서 조금씩 받는다(선지급 폐지). 대기 우편이 있으면 자동으로 펼친다. -->
+      <Collapsible
+        title="길드"
+        subtitle="우편 수령"
+        :badge="mailPending > 0 ? `우편 ${mailPending}통` : ''"
+        :default-open="mailPending > 0"
+      >
+        <div class="guild-mail">
+          <template v-if="mailPending > 0">
+            <p class="guild-mail__msg">길드 직원이 창구 너머로 손짓한다. 앞으로 온 우편이 쌓여 있다.</p>
+            <button class="guild-mail__btn" @click="receiveMail">
+              우편 수령
+              <span class="guild-mail__gain">타이머 +{{ mailPending }}</span>
+            </button>
+          </template>
+          <p v-else class="guild-mail__msg guild-mail__wait">다음 우편까지 {{ mailTurns }}턴.</p>
+        </div>
+      </Collapsible>
 
       <!-- 거래 계약 — 게이트에서 수주한 거래를 여기서 완료(요구 품목 충분할 때). -->
       <Collapsible
@@ -575,6 +611,14 @@ h1 { color: #8effb8; margin: 0; }
 .cleanse__msg { margin: 0; color: #d6c8f0; font-size: 0.88rem; }
 .cleanse__btn { padding: 0.55rem 0.9rem; background: rgba(192,142,255,0.25); border: 1px solid rgba(192,142,255,0.6); color: #f0e8ff; border-radius: 6px; cursor: pointer; font: inherit; font-weight: 600; }
 .cleanse__btn:hover { background: rgba(192,142,255,0.4); }
+
+/* 길드 우편 */
+.guild-mail { display: grid; gap: 0.6rem; }
+.guild-mail__msg { margin: 0; color: #d6d6e0; font-size: 0.88rem; }
+.guild-mail__wait { color: #b6b6c4; }
+.guild-mail__btn { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; padding: 0.7rem 1rem; background: rgba(246, 232, 184, 0.14); border: 1px solid rgba(246, 232, 184, 0.45); color: #f6e8b8; border-radius: 8px; cursor: pointer; font: inherit; font-weight: 600; }
+.guild-mail__btn:hover { background: rgba(246, 232, 184, 0.26); }
+.guild-mail__gain { color: #ffd98e; font-size: 0.85rem; font-variant-numeric: tabular-nums; }
 .opt { padding: 1rem 1.2rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.15); color: inherit; border-radius: 8px; cursor: pointer; text-align: left; font: inherit; display: flex; flex-direction: column; gap: 0.2rem; }
 .opt:hover:not(:disabled) { background: rgba(142, 255, 184, 0.1); border-color: rgba(142, 255, 184, 0.4); }
 .opt:disabled { opacity: 0.4; cursor: not-allowed; }

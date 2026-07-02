@@ -260,6 +260,8 @@ function runHarvest(upperBonus: number) {
   if (result) {
     lastHarvest.value = result;
     tick.value++;
+    // 수확 전리품을 보상 패널로 — 요약을 라인으로 분해(컬러 팝은 별개로 유지). (2026-07-02)
+    ui.pushRewardPanel({ title: '수확', lines: harvestSummary.value.split(' · ') });
   }
 }
 
@@ -314,6 +316,8 @@ function runRepeat(upperBonus: number) {
   if (result) {
     lastRepeat.value = result;
     tick.value++;
+    // 반복 산출을 보상 패널로 — 요약을 라인으로 분해(컬러 팝은 별개로 유지). (2026-07-02)
+    ui.pushRewardPanel({ title: '수확', lines: repeatSummary.value.split(' · ') });
   }
 }
 

@@ -553,6 +553,8 @@ function parseChoice(f: IniSection): EventChoice {
     hidden: parseBool(f.hidden, false),
     // 개입 비용 — `timer_cost = 2`. 0/미지정이면 무비용(지나치기). canAfford가 보유를 게이트.
     timerCost: parseNumber(f.timer_cost, 0),
+    // 개입 보상 고정 지정 — `premium_reward = <id>`. 미지정이면 mail.ts가 eventId 해시로 배정.
+    premiumReward: f.premium_reward,
   };
 }
 
@@ -570,6 +572,8 @@ function parseVariation(f: IniSection, index: number): EventVariation {
     timerCost: parseNumber(f.timer_cost, 0),
     resolvedBody: f.resolved,
     effects: Object.keys(eff).length > 0 ? [eff] : undefined,
+    // 개입 보상 고정 지정 — `premium_reward = <id>`. 미지정이면 mail.ts가 eventId 해시로 배정.
+    premiumReward: f.premium_reward,
   };
 }
 
@@ -736,6 +740,24 @@ function parseOneBoss(id: string, f: IniSection, ini: IniData): Boss {
 
 // ========== Node Map ==========
 
+/**
+ * 조건부 간선 파싱 — `conditional_neighbors = <nodeId>|<requires>, <nodeId>|<requires>`.
+ * 쌍 구분은 콤마(parseList), nodeId와 requires 구분은 *첫 파이프*(requires DSL은 콜론만 쓰므로 안전).
+ * 키가 없으면 undefined(기존 데이터 무해). requires 평가는 systems/map.ts isEdgeRequirementMet.
+ */
+function parseConditionalNeighbors(raw: string | undefined): Node['conditionalNeighbors'] {
+  if (!raw) return undefined;
+  const out: NonNullable<Node['conditionalNeighbors']> = [];
+  for (const tok of parseList(raw)) {
+    const bar = tok.indexOf('|');
+    if (bar < 0) continue; // '<nodeId>|<requires>' 형식이 아니면 무시.
+    const nodeId = tok.slice(0, bar).trim();
+    const requires = tok.slice(bar + 1).trim();
+    if (nodeId && requires) out.push({ nodeId, requires });
+  }
+  return out.length > 0 ? out : undefined;
+}
+
 export function parseNodeMap(ini: IniData, id: string): NodeMap | null {
   const headerSection = `nodemap.${id}`;
   const header = ini[headerSection];
@@ -781,6 +803,7 @@ export function parseNodeMap(ini: IniData, id: string): NodeMap | null {
         y: parseNumber(fields.y, 0.5),
       },
       neighbors: parseList(fields.neighbors),
+      conditionalNeighbors: parseConditionalNeighbors(fields.conditional_neighbors),
       contentRef: {
         enemyGroupId: fields.enemy,
         bossId: fields.boss,
@@ -791,6 +814,19 @@ export function parseNodeMap(ini: IniData, id: string): NodeMap | null {
       isStart: parseBool(fields.is_start, false),
       isBossGate: parseBool(fields.is_boss_gate, false),
     });
+  }
+
+  // 조건부 간선 양방향 정규화 — A→B가 한쪽 노드에만 정의돼도 양쪽에서 보이고 통행되도록,
+  // 대상 노드 B에도 A로의 *동일 조건* 간선을 심는다(B가 이미 A로의 조건 간선을 명시했으면 존중).
+  const nodeById = new Map(nodes.map((n) => [n.id, n] as const));
+  for (const node of nodes) {
+    if (!node.conditionalNeighbors) continue;
+    for (const cn of node.conditionalNeighbors) {
+      const target = nodeById.get(cn.nodeId);
+      if (!target || target.id === node.id) continue; // 대상 없음/자기참조 무시.
+      if (target.conditionalNeighbors?.some((e) => e.nodeId === node.id)) continue; // 반대편에 이미 정의.
+      (target.conditionalNeighbors ??= []).push({ nodeId: node.id, requires: cn.requires });
+    }
   }
 
   return {
@@ -1443,6 +1479,8 @@ const DATA_FILES = [
   'data/cards/cards-possession.txt',
   // === arc 보스 시그니처 카드 (작업 29) — rank=legendary + source=boss, arc 승리 자동 드롭 전용(일반 풀 제외). ===
   'data/cards/cards-arc.txt',
+  // === 타이머 보상 시그니처 카드 (2026-07-02) — rank=legendary + source=event, 타이머 소비 보상 전용(일반 풀 제외). ===
+  'data/cards/cards-timer.txt',
   // === 격자 전투 신규 클래스 전용 카드 (4b, 2026-06-18) — source=race, 시작 전용. ===
   'data/cards/cards-whitefang.txt',
   'data/cards/cards-slime.txt',
@@ -1461,6 +1499,8 @@ const DATA_FILES = [
   'data/relics/relics-activity.txt',
   // === arc 보스 시그니처 유물 (작업 29) — source=boss, arc 승리 자동 드롭 전용(상점/엘리트 풀 제외). ===
   'data/relics/relics-arc.txt',
+  // === 타이머 보상 시그니처 유물 (2026-07-02) — source=event, 타이머 소비 보상 전용(grant-relic 명시 참조). ===
+  'data/relics/relics-timer.txt',
   'data/events/events-mvr.txt',
   'data/events/act-1-region-events.txt',
   // 필러 사건 (2026-05-22) — 반복형·조건無. 사건 노드 빈노드 폴백 + 컬러 보상 다양성.
@@ -1471,6 +1511,8 @@ const DATA_FILES = [
   'data/events/events-possession.txt',
   // NPC 스파링(안전 대련) 사건 (2026-06-10) — affinity:npc-X>=3, spar= 토큰. 해당 권역 풀에 배선.
   'data/events/npc-spar-events.txt',
+  // 소권역 확충 사건 (2026-07-02) — 별빛고원/버섯동굴/어촌/광산/르슈드 15종. 확충 노드 events=로 참조.
+  'data/events/act-1-smallregion-events.txt',
   'data/monsters/mvr-monsters.txt',
   // 구 38종(act-1-region-monsters.txt)은 특별 기믹 없는 attack/defend류라 로스터 v2로 전면 대체 후 삭제됨(2026-05-25).
   // === 몬스터 로스터 v2 (Stage 3, 2026-05-21) — 권역별 ~147종, 지리 4티어 HP + 종족 기믹. ===
@@ -1483,6 +1525,8 @@ const DATA_FILES = [
   'data/items/act-1-items.txt',
   // === arc 보스 시그니처 아이템 (작업 29) — rank=legendary 전투 포션, arc 승리 자동 드롭 전용(공방/마을 제작 풀 제외). ===
   'data/items/act-1-arc-items.txt',
+  // === 타이머 보상 시그니처 아이템 (2026-07-02) — rank=legendary, 타이머 소비 보상 전용(제작 풀 제외). ===
+  'data/items/act-1-timer-items.txt',
   'data/equipment/equipment-mvr.txt',
   // === 카오스 (r4 레거시 placeholder) — 2026-06-14 전량 제거. chaos-mvr.txt는 더 이상 로드 안 함. ===
   // === 카오스 도전-점수 시스템 (Phase A) — [chaos.ch-*] 정의. ===

@@ -1,0 +1,362 @@
+# ============================================================
+# Act 1 소권역 확충 사건 (2026-07-02)
+# 용도: 소규모 권역(별빛고원/버섯동굴/어촌/광산/르슈드)의 발견형 사건.
+#       노드 eventIdPool에서 참조됨. 5권역 x 3종 = 15종, 전부 단발.
+# 포맷: choice 기반. [event.<id>] + [event.<id>.choice.N].
+#       권역당 1종(각 -01)은 timer_cost 개입 분기(개입 보상 훅과 자동 연동).
+# 보상 키: color / time_shards / gold / hp / heal_pct / timer_cost 만 사용.
+# ============================================================
+
+# ============================================================
+# 별빛고원 (T2 / light): 별빛 건조장이 있는 고원
+# ============================================================
+[event.ev-splat-01]
+name = 별빛 너는 아이
+body = 고원 꼭대기의 건조대에 은빛 실이 널려 있다. 어린 하피 소녀가 발끝을 세워 가장 높은 줄에 별빛을 걸려다 자꾸 놓친다.\n\n"조금만... 더어..."
+node_kinds = event
+weight = 1
+
+[event.ev-splat-01.choice.1]
+label = 높은 줄까지 별빛을 걸어 준다
+timer_cost = 1
+premium_reward = c-tm-flicker
+color = light:8
+result_text = 함께 별빛을 다 널고 나니, 잘 마른 별빛이 온몸에 은은하게 스몄다.
+
+[event.ev-splat-01.choice.2]
+label = 떨어진 별빛만 주워 건넨다
+color = light:4
+hp = 6
+result_text = 흩어진 별빛을 모아 건네자 소녀가 환하게 웃으며 따뜻한 별빛차를 나눠 주었다.
+
+[event.ev-splat-01.choice.3]
+label = 지켜보다 발길을 옮긴다
+hp = 5
+result_text = 소녀가 혼자서 별빛을 다 너는 모습을 보니 마음이 놓였다. 잠시 쉬어 갔다.
+
+[event.ev-splat-02]
+name = 바람 든 채반
+body = 별빛 건조장 한쪽, 양 수인 아주머니가 널어 둔 채반이 고원 바람에 자꾸 뒤집힌다. 마른 약초가 날아갈까 그녀가 발을 동동 구른다.
+node_kinds = event
+weight = 1
+
+[event.ev-splat-02.choice.1]
+label = 채반을 눌러 바람을 막아 준다
+heal_pct = 25
+result_text = 함께 채반을 붙들어 갈무리하자, 아주머니가 잘 마른 약초를 우려 따뜻한 차를 대접했다. 노곤함이 스르르 풀렸다.
+
+[event.ev-splat-02.choice.2]
+label = 날아가는 약초를 뒤쫓는다
+hp = -4
+color = light:6
+result_text = 바람을 안고 뛰어다니며 약초를 그러모았다. 숨이 찼지만 별볕에 마른 향이 옷깃에 가득 뱄다.
+
+[event.ev-splat-02.choice.3]
+label = 바람이 잦아들기를 기다린다
+gold = 40
+result_text = 바람이 멎기를 기다렸다가 채반 정리를 거들었다. 아주머니가 품삯이라며 잔돈을 얹어 주었다.
+
+[event.ev-splat-03]
+name = 고원의 밤손님
+body = 해가 진 고원, 별을 보러 왔다는 올빼미 수인이 망원경을 들고 서 있다. 그녀가 옆자리를 권하듯 방석을 툭 내려놓는다.\n\n"오늘은 별이 유난히 낮게 떠요."
+node_kinds = event
+weight = 1
+
+[event.ev-splat-03.choice.1]
+label = 나란히 앉아 별을 본다
+color = light:6
+time_shards = 2
+result_text = 낮게 뜬 별을 오래 바라보았다. 고요한 밤이 조각처럼 마음에 쌓였다.
+
+[event.ev-splat-03.choice.2]
+label = 망원경을 잠깐 빌린다
+color = dark:5
+result_text = 망원경 너머로 밤하늘이 손에 잡힐 듯 가까웠다. 어둠에 눈이 밝아지는 기분이었다.
+
+[event.ev-splat-03.choice.3]
+label = 인사만 남기고 떠난다
+hp = 6
+result_text = 짧은 인사를 나누고 자리를 떴다. 서늘한 밤공기에 머리가 맑아졌다.
+
+# ============================================================
+# 버섯동굴 (T3 / dark): 발광 포자 동굴
+# ============================================================
+[event.ev-mush-01]
+name = 발광 포자밭
+body = 동굴 벽을 따라 발광 포자가 은은하게 빛난다. 두꺼비 수인 버섯지기가 사다리에 올라 천장의 큰 갓에서 포자를 받아 내리다가 무게에 휘청인다.\n\n"우왓, 이거 놓치면 안 되는데!"
+node_kinds = event
+weight = 1
+
+[event.ev-mush-01.choice.1]
+label = 사다리를 붙잡고 함께 받는다
+timer_cost = 1
+premium_reward = r-tm-mending-hours
+color = dark:8
+result_text = 흔들리던 사다리를 받쳐 포자를 무사히 갈무리했다. 은은한 포자 빛이 몸에 스몄다.
+
+[event.ev-mush-01.choice.2]
+label = 쏟아진 포자를 자루에 담는다
+color = dark:4
+gold = 40
+result_text = 바닥에 흩어진 포자를 주워 담아 주자, 버섯지기가 잘 여문 것을 골라 나눠 주었다.
+
+[event.ev-mush-01.choice.3]
+label = 빛나는 포자밭을 구경만 한다
+hp = 6
+result_text = 벽을 수놓은 포자 빛을 가만히 바라보았다. 서늘한 동굴 공기가 편안했다.
+
+[event.ev-mush-02]
+name = 갓 아래 낮잠
+body = 사람 키만 한 버섯 갓 그늘 아래, 박쥐 수인이 거꾸로 매달려 새근새근 잠들어 있다. 발치에는 그녀가 따 모은 버섯이 소복하다.
+node_kinds = event
+weight = 1
+
+[event.ev-mush-02.choice.1]
+label = 깨지 않게 버섯을 지켜 준다
+color = dark:6
+result_text = 곁을 지키는 동안 아무도 버섯에 손대지 못했다. 잠에서 깬 박쥐 수인이 잘 익은 것을 고마움에 나눠 주었다.
+
+[event.ev-mush-02.choice.2]
+label = 낯선 버섯을 슬쩍 맛본다
+hp = -5
+color = dark:8
+result_text = 알싸한 맛에 혀끝이 얼얼했지만, 곧 어둠 속이 또렷하게 보였다.
+
+[event.ev-mush-02.choice.3]
+label = 조용히 지나간다
+gold = 30
+result_text = 곤히 잠든 얼굴을 깨우지 않고 발소리를 죽여 지나쳤다. 갓 밑에서 잔돈 꾸러미를 주웠다.
+
+[event.ev-mush-03]
+name = 길 잃은 슬라임
+body = 갈래진 동굴에서 자그마한 슬라임이 몸을 떨며 굳어 있다. 나가는 길을 잃었는지, 이쪽을 보며 젤리 같은 몸을 쭈뼛 내민다.
+node_kinds = event
+weight = 1
+
+[event.ev-mush-03.choice.1]
+label = 밝은 쪽으로 길을 알려 준다
+color = water:6
+result_text = 손짓으로 방향을 일러 주자 슬라임이 통통 뛰며 빛이 드는 쪽으로 사라졌다. 맑은 기운이 남았다.
+
+[event.ev-mush-03.choice.2]
+label = 겁먹지 않게 곁을 지켜 준다
+hp = 8
+color = dark:4
+result_text = 슬라임이 진정할 때까지 가만히 기다려 주었다. 말랑한 온기가 손에 닿아 마음이 놓였다.
+
+# ============================================================
+# 어촌 (T3 / water): 낚시 군집
+# ============================================================
+[event.ev-fishv-01]
+name = 젖은 그물 손질
+body = 부둣가에서 인어 소녀가 젖은 그물을 끌어올리다 매듭이 엉켜 쩔쩔맨다. 뭍일이 서툰지 지느러미로 자꾸 미끄러진다.\n\n"으으, 이 매듭이 왜 이렇게..."
+node_kinds = event
+weight = 1
+
+[event.ev-fishv-01.choice.1]
+label = 엉킨 그물을 함께 푼다
+timer_cost = 1
+premium_reward = i-tm-greeting-alley
+color = water:8
+result_text = 손발이 맞으니 매듭이 술술 풀렸다. 인어 소녀가 물살처럼 맑은 웃음으로 고마움을 전했다.
+
+[event.ev-fishv-01.choice.2]
+label = 그물에 걸린 물고기를 골라 담는다
+gold = 60
+result_text = 팔딱이는 물고기를 통에 담아 주자, 소녀가 그중 실한 것을 팔아 잔돈을 나눠 주었다.
+
+[event.ev-fishv-01.choice.3]
+label = 마른 지느러미에 물을 끼얹어 준다
+color = water:4
+hp = 5
+result_text = 바닷물을 끼얹어 주자 소녀가 훨씬 편해진 얼굴로 콧노래를 불렀다.
+
+[event.ev-fishv-02]
+name = 물때를 놓친 배
+body = 썰물에 밀려 작은 조각배가 갯벌에 얹혔다. 수달 수인 어부가 노를 잡은 채 배를 밀어 보지만 꿈쩍도 하지 않는다.
+node_kinds = event
+weight = 1
+
+[event.ev-fishv-02.choice.1]
+label = 어깨를 대고 배를 민다
+hp = -6
+color = water:8
+result_text = 갯벌에 발이 푹푹 빠졌지만 힘껏 밀어 배를 띄웠다. 온몸이 바다 내음에 절었어도 속은 개운했다.
+
+[event.ev-fishv-02.choice.2]
+label = 밀물이 들 때까지 함께 기다린다
+color = water:5
+time_shards = 2
+result_text = 어부와 나란히 앉아 물이 차오르기를 기다렸다. 느긋한 바다 시간이 천천히 흘렀다.
+
+[event.ev-fishv-02.choice.3]
+label = 그물 손질을 거들고 간다
+gold = 40
+result_text = 기다리는 동안 낡은 그물코를 함께 기웠다. 어부가 품삯 삼아 마른 생선을 얹어 주었다.
+
+[event.ev-fishv-03]
+name = 파도가 밀어온 상자
+body = 밀려온 파도가 낡은 나무 상자를 갯가에 부려 놓았다. 자물쇠는 삭아 떨어졌고, 안에서 물기 먹은 무언가가 달그락거린다.
+node_kinds = event
+weight = 1
+
+[event.ev-fishv-03.choice.1]
+label = 상자를 열어 본다
+gold = 80
+result_text = 소금기에 절은 뱃사람의 유품 사이에서, 아직 빛을 잃지 않은 옛 동전이 나왔다.
+
+[event.ev-fishv-03.choice.2]
+label = 젖은 짐을 헤집는다
+hp = -5
+color = water:6
+result_text = 미끈한 해초를 헤치다 손끝을 베였지만, 바닥에서 바다 기운이 밴 조가비를 찾아냈다.
+
+[event.ev-fishv-03.choice.3]
+label = 파도에 돌려보낸다
+color = water:5
+result_text = 임자 모를 상자를 다시 바다로 떠나보냈다. 밀려가는 바닷물을 보니 마음이 잔잔해졌다.
+
+# ============================================================
+# 광산 (T4 / iron): 철 갱도
+# ============================================================
+[event.ev-mine-01]
+name = 광부의 새참
+body = 갱도 초입, 두더지 수인 광부가 무너진 받침목에 깔린 수레를 꺼내려 낑낑댄다. 새참 바구니가 흙먼지 속에 나뒹군다.\n\n"끄응, 혼자서는 무리인걸."
+node_kinds = event
+weight = 1
+
+[event.ev-mine-01.choice.1]
+label = 받침목을 함께 들어 올린다
+timer_cost = 2
+premium_reward = r-tmx-borrowed-eternity
+color = iron:10
+result_text = 둘이 힘을 합쳐 받침목을 치우고 수레를 꺼냈다. 광부가 갱도에서 캔 단단한 철석을 답례로 안겨 주었다.
+
+[event.ev-mine-01.choice.2]
+label = 혼자서 받침목을 밀어 본다
+hp = -8
+color = iron:6
+result_text = 이를 악물고 받침목을 밀어냈다. 어깨가 뻐근했지만 수레 밑에서 굵은 광석이 굴러 나왔다.
+
+[event.ev-mine-01.choice.3]
+label = 흩어진 새참을 주워 건넨다
+heal_pct = 25
+result_text = 흙에 떨어진 새참을 주워 건네자 광부가 고맙다며 따뜻한 감자를 쪼개 나눴다. 든든하게 배를 채웠다.
+
+[event.ev-mine-02]
+name = 무너진 갱도
+body = 안쪽 갱도가 무너져 길이 막혔다. 돌무더기 너머에서 코볼트 광부의 다급한 목소리가 새어 나온다.\n\n"거기 누구 없어요? 여기 갇혔어요!"
+node_kinds = event
+weight = 1
+
+[event.ev-mine-02.choice.1]
+label = 돌무더기를 치워 길을 낸다
+hp = -6
+color = iron:8
+result_text = 무거운 돌을 걷어내 빠져나올 길을 냈다. 코볼트가 제 몫으로 캐 둔 광석을 안겨 주었다.
+
+[event.ev-mine-02.choice.2]
+label = 옆으로 난 길을 찾아 안내한다
+color = earth:6
+result_text = 갱도 지리를 더듬어 낡은 우회로를 찾아냈다. 코볼트가 무사히 밝은 곳으로 걸어 나왔다.
+
+[event.ev-mine-02.choice.3]
+label = 사람을 부르러 달려간다
+gold = 40
+result_text = 서둘러 일손을 불러왔다. 구조된 코볼트가 사례라며 잔돈을 모아 건넸다.
+
+[event.ev-mine-03]
+name = 멈춘 광차
+body = 녹슨 선로 위에 광차가 비스듬히 멈춰 서 있다. 바퀴에 굵은 돌이 물려 오도 가도 못 하는 모양이다.
+node_kinds = event
+weight = 1
+
+[event.ev-mine-03.choice.1]
+label = 바퀴에 물린 돌을 빼낸다
+color = iron:6
+gold = 50
+result_text = 낀 돌을 빼내자 광차가 스르르 굴러 내려갔다. 짐칸 바닥에 남은 광석 부스러기를 챙겼다.
+
+[event.ev-mine-03.choice.2]
+label = 광차를 선로 끝까지 밀어 본다
+hp = -5
+color = electric:6
+result_text = 있는 힘껏 광차를 밀자 선로 끝 도르래가 요란하게 돌며 불꽃을 튀겼다. 짜릿한 기운이 손끝에 남았다.
+
+[event.ev-mine-03.choice.3]
+label = 선로를 따라 걸어 내려간다
+hp = 6
+result_text = 광차를 두고 선로를 따라 천천히 내려왔다. 서늘한 갱도 바람에 이마의 땀이 식었다.
+
+# ============================================================
+# 르슈드 (T1): 교차로 벌판
+# ============================================================
+[event.ev-reshud-01]
+name = 이정표 아래
+body = 갈림길의 낡은 이정표가 비바람에 쓰러져 방향을 가리키지 못한다. 토끼 수인 우편배달부가 어느 길로 가야 할지 몰라 발만 구른다.\n\n"으에, 이래서는 편지를 못 부치는데..."
+node_kinds = event
+weight = 1
+
+[event.ev-reshud-01.choice.1]
+label = 쓰러진 이정표를 다시 세운다
+timer_cost = 1
+premium_reward = i-tm-back-pay
+color = wind:8
+result_text = 무거운 기둥을 바로 세우고 방향을 맞췄다. 배달부가 고맙다며 가까운 지름길을 귀띔해 주었다.
+
+[event.ev-reshud-01.choice.2]
+label = 아는 길을 일러 준다
+color = wind:5
+gold = 40
+result_text = 기억을 더듬어 마을로 가는 길을 알려 주었다. 배달부가 사례로 잔돈을 남기고 총총 떠났다.
+
+[event.ev-reshud-01.choice.3]
+label = 함께 길을 헤매 준다
+hp = 6
+result_text = 배달부와 이 길 저 길 걷다 보니 어느새 마을 어귀였다. 느긋한 걸음에 다리가 개운했다.
+
+[event.ev-reshud-02]
+name = 마른 벌판의 우물
+body = 벌판 한가운데 오래된 우물이 있다. 두레박 줄이 삭아 끊겼고, 여우 수인 행상이 목이 타는지 우물가를 서성인다.
+node_kinds = event
+weight = 1
+
+[event.ev-reshud-02.choice.1]
+label = 끊긴 줄을 이어 물을 긷는다
+heal_pct = 30
+result_text = 줄을 단단히 이어 시원한 물을 길어 올렸다. 행상과 나눠 마시니 갈증이 싹 가셨다.
+
+[event.ev-reshud-02.choice.2]
+label = 우물 안으로 직접 내려간다
+hp = -6
+color = water:8
+result_text = 이끼 낀 벽을 조심조심 짚고 내려갔다. 바닥에 고인 맑은 샘물에 손을 담그니 서늘한 기운이 올라왔다.
+
+[event.ev-reshud-02.choice.3]
+label = 가진 물을 나눠 주고 간다
+color = earth:4
+result_text = 물통을 기울여 행상과 나눴다. 고맙다며 벌판에서 캔 마른 뿌리 약재를 건네주었다.
+
+[event.ev-reshud-03]
+name = 갈림길 행상
+body = 짐을 가득 실은 너구리 수인 행상이 수레 곁에 앉아 손님을 기다린다. 대단한 물건은 아니어도 먼 길을 돌아온 티가 난다.\n\n"구경만 해도 괜찮아요!"
+node_kinds = event
+weight = 1
+
+[event.ev-reshud-03.choice.1]
+label = 물건을 사 준다
+gold = -50
+color = all:3
+result_text = 온갖 고장을 돌아온 수레에서 마음에 드는 물건을 골라 값을 치렀다. 여기저기의 기운이 은은하게 묻어났다.
+
+[event.ev-reshud-03.choice.2]
+label = 여행 이야기를 청해 듣는다
+color = wind:6
+time_shards = 2
+result_text = 넘어온 고개와 건넌 강 이야기가 흘러나왔다. 낯선 바람 냄새가 오래 맴돌았다.
+
+[event.ev-reshud-03.choice.3]
+label = 수레 미는 것을 거들고 간다
+hp = 8
+gold = 30
+result_text = 무거운 수레를 언덕 위까지 밀어 주었다. 행상이 고맙다며 노잣돈을 보태 주었다.

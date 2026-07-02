@@ -16,8 +16,54 @@ import { useUiStore } from '@/stores/ui';
 import { useRunStore } from '@/stores/run';
 import type { Item } from '@/data/schemas';
 
+// === 보상 배치(2026-07-02) — 승리/수확 등 여러 보상을 한 패널로 모으는 버퍼. ===
+// batchActive면 reward* 호출이 토스트 대신 이 버퍼에 라인을 쌓는다. begin → (reward* …) → end/collect로 감싼다.
+let batchActive = false;
+let batchLines: string[] = [];
+
 function toast(line: string): void {
+  if (batchActive) { batchLines.push(line); return; }
   useUiStore().toast('success', line);
+}
+
+/** 보상 배치 시작 — 이후 reward* 호출은 토스트 대신 버퍼에 라인을 쌓는다(중첩 미지원, 마지막 begin이 이김). */
+export function beginRewardBatch(): void {
+  batchActive = true;
+  batchLines = [];
+}
+
+/**
+ * 보상 배치 종료 + 공용 RewardPanel(오버레이) 표시 — 수집 라인이 있으면 ui 큐에 넣는다.
+ * 수확·우편처럼 *뷰가 패널이 아닌* 곳에서 사용. 반환: 수집된 라인(참고용).
+ */
+export function endRewardBatch(title: string): string[] {
+  const lines = batchLines;
+  batchActive = false;
+  batchLines = [];
+  if (lines.length > 0) useUiStore().pushRewardPanel({ title, lines });
+  return lines;
+}
+
+/**
+ * 보상 배치 종료(오버레이 없이) — 수집 라인만 반환. 승리 화면·사건처럼 *뷰가 이미 패널*이라
+ * 오버레이 대신 라인을 인라인으로 직접 표시할 때.
+ */
+export function collectRewardBatch(): string[] {
+  const lines = batchLines;
+  batchActive = false;
+  batchLines = [];
+  return lines;
+}
+
+/**
+ * 보상 라인을 *스크롤 없이* 담도록 압축 — max줄 초과면 (max-1)줄 + "외 N건" 한 줄.
+ * RewardPanel과 승리 화면 임베드 공용. 기본 max 9(초과 시 8줄 + 요약).
+ */
+export function compressRewardLines(lines: string[], max = 9): string[] {
+  if (lines.length <= max) return lines;
+  const head = lines.slice(0, max - 1);
+  head.push(`외 ${lines.length - (max - 1)}건`);
+  return head;
 }
 
 /** 축복(blessing) 활성 시 보상 배율 1.25, 아니면 1. 채집/활동/전투 보상이 참조. */

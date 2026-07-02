@@ -46,6 +46,7 @@ import {
 import type { ForecastStep } from '@/systems/grid-combat';
 import { traceLineOfSight, TILE_PROPS } from '@/systems/tiles';
 import { statusLabel } from '@/systems/labels';
+import { beginRewardBatch, collectRewardBatch, compressRewardLines } from '@/systems/reward-feed';
 import type { Item } from '@/data/schemas';
 import { scaledValue, enhanceBadge } from '@/systems/enhance';
 import { useGridFx } from '@/composables/useGridFx';
@@ -1246,9 +1247,33 @@ function doCommit() {
   });
 }
 
+// 승리 전리품(2026-07-02) — 보상을 승리 화면 *안*에 임베드(전환 중 토스트 증발 방지, FunQA 대응).
+//   보상 적용(endGridCombat)을 배치로 감싸 라인을 수집하고, 승리 화면에서 목록으로 보여준다.
+const victoryLoot = ref<string[]>([]);
+/** endGridCombat 반환(맵 복귀=true / 런 종료=false) — [계속]의 라우팅에 사용. */
+let victoryToMap = true;
+/** 보상 1회 적용 가드(승리 감지·복원·계속에서 중복 지급 방지). */
+let victoryApplied = false;
+
+/** 승리 보상 1회 적용 — 배치로 감싸 전리품 라인을 수집. endGridCombat이 실제 지급/정리를 수행. */
+function applyVictory() {
+  if (victoryApplied) return;
+  victoryApplied = true;
+  beginRewardBatch();
+  try {
+    victoryToMap = run.endGridCombat('win');
+  } finally {
+    victoryLoot.value = collectRewardBatch();
+  }
+}
+
+/** 승리 화면에 표시할(스크롤 없는) 전리품 목록. */
+const victoryLootDisplay = computed(() => compressRewardLines(victoryLoot.value));
+
 /** 승패 전이 — 커밋/즉시 발동 공용. win=승리 화면, lose=목숨 분기(도망 or 패배). */
 function settleOutcome(outcome: 'win' | 'lose' | undefined) {
   if (outcome === 'win') {
+    applyVictory();
     phase.value = 'victory';
   } else if (outcome === 'lose') {
     // 패배 — 목숨 분기. endGridCombat이 true면 도망(맵 복귀), false면 런 종료.
@@ -1285,11 +1310,11 @@ function doInstant(c: Card) {
   });
 }
 
-// 승리 확정 후 [계속] — 보상/클리어 마킹 처리 후 전이.
+// 승리 확정 후 [계속] — 보상은 이미 applyVictory(승리 화면 진입 시)에서 적용됨. 여기선 라우팅만.
 //   일반/아크 보스 → 맵 복귀(true). 연표 종말 보스 → 런 종료 요약(false).
 function finishVictory() {
-  const toMap = run.endGridCombat('win');
-  router.push(toMap ? '/game/map' : '/game/end');
+  applyVictory(); // 복원 엣지 방어 — 이미 적용됐으면 no-op.
+  router.push(victoryToMap ? '/game/map' : '/game/end');
 }
 
 // 패배 확정 후 [돌아간다] — 런 종료 요약으로(엔진이 endRun까지 처리했으므로 화면만 전이).
@@ -1341,7 +1366,7 @@ onMounted(() => {
   if (run.data.gridCombat?.fx) run.data.gridCombat.fx.length = 0;
   // 이미 outcome이 박혀 있으면(복원 엣지) 그 결과 화면으로.
   const o = run.data.gridCombat?.outcome;
-  if (o === 'win') phase.value = 'victory';
+  if (o === 'win') { applyVictory(); phase.value = 'victory'; }
   else if (o === 'lose') phase.value = 'defeat';
 });
 
@@ -1838,10 +1863,13 @@ onUnmounted(() => {
       </div>
     </main>
 
-    <!-- 승리 화면 -->
+    <!-- 승리 화면 — 전리품을 화면 안에 임베드(전환 중 증발 방지). -->
     <main v-else-if="phase === 'victory'" class="result result--win">
       <h1>승리</h1>
       <p class="result__note">전장을 정리했다.</p>
+      <ul v-if="victoryLootDisplay.length" class="result__loot">
+        <li v-for="(line, i) in victoryLootDisplay" :key="i">{{ line }}</li>
+      </ul>
       <footer class="result__footer">
         <button class="continue" @click="finishVictory">계속 →</button>
       </footer>
@@ -2613,6 +2641,14 @@ onUnmounted(() => {
 .result--win h1 { color: #8effb8; }
 .result--lose h1 { color: #ff8e8e; }
 .result__note { color: #888; font-style: italic; }
+/* 승리 전리품 목록 — 중앙 카드. compressRewardLines로 9줄 이하라 스크롤 없음. */
+.result__loot {
+  list-style: none; margin: 0; padding: 1rem 1.4rem;
+  display: flex; flex-direction: column; gap: 0.4rem;
+  background: rgba(0,0,0,0.35); border: 1px solid rgba(142,255,184,0.25); border-radius: 10px;
+  min-width: 240px; max-width: 100%;
+}
+.result__loot li { color: #8effb8; font-size: 1rem; text-align: center; font-variant-numeric: tabular-nums; }
 .result__footer { margin-top: auto; padding-top: 1rem; }
 .continue {
   padding: 0.8rem 1.6rem; font: inherit; font-weight: 600; border-radius: 6px; cursor: pointer;

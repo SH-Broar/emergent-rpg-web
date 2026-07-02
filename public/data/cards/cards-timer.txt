@@ -1,0 +1,137 @@
+# Cards 타이머 보상 시그니처 (2026-07-02)
+# rank=legendary + source=event → 상점(legendary 제외)·활동 시드풀(race 전용)·공방 제작풀 전부 밖.
+# 타이머(개입권) 소비 보상 전용 — grant-card / 이벤트 grant_card로 명시 id 참조해 지급.
+# 테마: 시간(모노). 런당 최대 10회 획득 전제의 프리미엄 성능(등급 보너스 상회 의도).
+
+# --- 찰나 — 0코 속공. 깜빡임 사이에 끼어드는 일격. ---
+[card.c-tm-flicker]
+name = 찰나
+rank = legendary
+source = event
+element = wind
+cost = 0
+trigger = manual
+effects = damage:8:enemy, draw:1:self
+# 격자: 전방 1칸.
+shape = 0,-1
+per_tile_mul = 1.0
+target_mode = pattern
+cast_speed = fast
+flavor = 깜빡이는 사이에도 세계는 조금 움직인다. 그 사이에 끼어드는 법을 아는 손이 있다.
+
+# --- 가불 — 즉발. 내일의 시간을 미리 꾸어 온다(드로 + 다음 턴 마나). ---
+[card.c-tm-advance]
+name = 가불
+rank = legendary
+source = event
+element = electric
+cost = 1
+trigger = manual
+effects = draw:2:self, next-turn-energy:1:self
+instant = true
+shape = 0,0
+per_tile_mul = 1.0
+target_mode = pattern
+cast_speed = normal
+flavor = 내일 몫의 시간을 오늘 조금 꾸어 온다. 시간의 신은 이자를 받지 않는다.
+
+# --- 미리 쓴 결말 — 자유 조준. 다음 라운드에 터지는 시간차 대미지. ---
+[card.c-tm-written-end]
+name = 미리 쓴 결말
+rank = legendary
+source = event
+element = dark
+cost = 1
+trigger = manual
+effects = delayed-damage:20:enemy:1
+# 격자: 자유 조준(사거리 3). 지금 새겨 두면 다음 라운드에 집행된다.
+shape = 0,0
+per_tile_mul = 1.0
+target_mode = aimed
+aim_range = 3
+cast_speed = normal
+flavor = 끝을 먼저 적어 두면 이야기는 그리로 흘러간다. 지워지지 않는 문장이다.
+
+# --- 느린 오후 — 주변 광역 + 적 전체 둔화(템포 하락). ---
+[card.c-tm-slow-noon]
+name = 느린 오후
+rank = legendary
+source = event
+element = water
+cost = 2
+trigger = manual
+effects = damage:9:enemy, slow-enemy:1
+# 격자: 주변 8방.
+shape = 0,-1|1,-1|1,0|1,1|0,1|-1,1|-1,0|-1,-1
+per_tile_mul = 1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0
+target_mode = pattern
+cast_speed = slow
+flavor = 볕이 무겁게 내려앉은 오후에는 서두르던 것들도 걸음을 늦춘다.
+
+# --- 마침표 — 전방 단일 최대 일격. ---
+[card.c-tm-full-stop]
+name = 마침표
+rank = legendary
+source = event
+element = iron
+cost = 2
+trigger = manual
+effects = damage:24:enemy
+# 격자: 전방 1칸.
+shape = 0,-1
+per_tile_mul = 1.0
+target_mode = pattern
+cast_speed = slow
+flavor = 기다림이 길었던 만큼 끝은 짧다. 더 무를 것도 없다.
+
+# ============================================================
+# T2 (tmx) — 타이머 2~3개 개입 전용. T1보다 확연히 희귀·강력.
+# ============================================================
+
+# --- 사이 찌르기 — 속공 단일 강타 + 취약. ---
+[card.c-tmx-blink-step]
+name = 사이 찌르기
+rank = legendary
+source = event
+element = wind
+cost = 1
+trigger = manual
+effects = damage:12:enemy, apply-status:1:enemy:vulnerable
+# 격자: 전방 1칸.
+shape = 0,-1
+per_tile_mul = 1.0
+target_mode = pattern
+cast_speed = fast
+flavor = 순간과 순간이 이어지기 전, 그 사이에 칼이 먼저 도착한다.
+
+# --- 오늘 접기 — 즉발 대형 유틸(드로 + 다음 턴 마나). ---
+[card.c-tmx-hourfold]
+name = 오늘 접기
+rank = legendary
+source = event
+element = light
+cost = 1
+trigger = manual
+effects = draw:3:self, next-turn-energy:2:self
+instant = true
+shape = 0,0
+per_tile_mul = 1.0
+target_mode = pattern
+cast_speed = normal
+flavor = 종이처럼 반으로 접으면 오늘이 남는 만큼 내일이 두툼해진다.
+
+# --- 영겁의 날 — 전방 단일 최강 일격. ---
+[card.c-tmx-eon-edge]
+name = 영겁의 날
+rank = legendary
+source = event
+element = dark
+cost = 2
+trigger = manual
+effects = damage:34:enemy
+# 격자: 전방 1칸.
+shape = 0,-1
+per_tile_mul = 1.0
+target_mode = pattern
+cast_speed = slow
+flavor = 아주 오래 벼려 온 것은 무엇이든 벤다. 시간마저 예외가 아니다.

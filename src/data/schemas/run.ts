@@ -932,10 +932,20 @@ export interface RunState {
   clues?: import('./clue').Clue[];
 
   /**
-   * 타이머 — 사건 개입에 쓰는 희소 자원. 런 시작 10 고정(+연구 최대 2). 런 중 증가 없음.
+   * 타이머 — 사건 개입에 쓰는 희소 자원. 선지급 폐지(2026-07-02): 런 시작 cur=연구 보너스(0~2)만,
+   * max=10(+보너스). 이후 길드 우편(mail)으로만 충전된다.
    * cur=현재 보유, max=이 런의 상한(표시·UI용). (세이브 backfill — EMPTY_RUN이 보장)
    */
   timers: { cur: number; max: number };
+
+  /**
+   * 길드 우편(타이머 드립, 2026-07-02) — 타이머 선지급을 대신하는 배달 큐.
+   *  - nextReadyAtTurn : 다음 우편이 도착하는 경과턴(visitedNodes.length 기준). 수령 시 현재+30으로 재기산.
+   *  - pending         : 마을에서 수령을 기다리는 우편 수. >0이면 다음 배달이 멈춘다(받아야 사이클 재개).
+   * 런 시작 { nextReadyAtTurn: 30, pending: 0 }. 옛 세이브 호환 — optional(loadActiveRun의 migrateMail이
+   * mail 없는 세이브를 현재 경과턴 기준으로 backfill). systems/mail.ts가 생성·수령·보상을 관장.
+   */
+  mail?: { nextReadyAtTurn: number; pending: number };
 
   // === 장비 (M9) ===
   /** 장착 중 — 슬롯별 1개씩. null이면 비어있음. */

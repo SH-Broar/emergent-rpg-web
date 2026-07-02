@@ -22,12 +22,14 @@ import { useRouter } from 'vue-router';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
-import { getNeighbors, getNode, isTimeUp, isNodeSettled, effectiveKind as systemEffectiveKind } from '@/systems/map';
+import { getNeighbors, getNode, isTimeUp, isNodeSettled, isEdgeRequirementMet, effectiveKind as systemEffectiveKind } from '@/systems/map';
 import { restHealMul, lockedTownCount, isShopLimited, canEnterShop, recordShopEntry, isRestHealBlocked } from '@/systems/chaos';
 import { isActivityDone } from '@/systems/activity';
 import { isGatherDone } from '@/systems/gathering';
 import { plotStatus, type PlotStatus } from '@/systems/farming';
 import { minutesLabel } from '@/systems/time';
+import { colorLabel } from '@/systems/labels';
+import { eulReul, iGa } from '@/systems/josa';
 import type { Node, NodeId, NodeKind, NodeMap } from '@/data/schemas';
 
 const router = useRouter();
@@ -576,6 +578,90 @@ const visibleEdges = computed<{ a: Node; b: Node; key: string }[]>(() => {
   return out;
 });
 
+/**
+ * 조건부 간선(간선 잠금) — 렌더용 (a,b) 쌍 목록. 로드 시 양끝 노드에 정규화돼 있어 정렬 쌍으로 dedup.
+ * met=조건 충족(개통 — 일반 간선처럼 실선) / 미충족(점선 + 자물쇠 표식). 숨김(끝점 vis-d) 간선은 컬링.
+ * 이미 기본 인접(neighbors)인 쌍은 제외(중복 실선 방지).
+ */
+const conditionalEdges = computed<{ a: Node; b: Node; met: boolean; key: string }[]>(() => {
+  const map = nodeMap.value;
+  if (!map) return [];
+  const seen = new Set<string>();
+  const out: { a: Node; b: Node; met: boolean; key: string }[] = [];
+  for (const node of map.nodes) {
+    if (!node.conditionalNeighbors) continue;
+    for (const cn of node.conditionalNeighbors) {
+      const other = getNode(map, cn.nodeId);
+      if (!other) continue;
+      if (node.neighbors.includes(cn.nodeId)) continue; // 이미 기본 간선 — 조건부로 그리지 않음.
+      const pair = node.id < cn.nodeId ? `${node.id}|${cn.nodeId}` : `${cn.nodeId}|${node.id}`;
+      if (seen.has(pair)) continue;
+      seen.add(pair);
+      if (edgeHidden(node.id, cn.nodeId)) continue; // 숨김(끝점 vis-d) 간선 컬링.
+      out.push({ a: node, b: other, met: isEdgeRequirementMet(cn.requires, run.data), key: `cond-${pair}` });
+    }
+  }
+  return out;
+});
+/** 조건부 간선 중점(자물쇠 표식 위치). */
+function condEdgeMidX(a: Node, b: Node): number { return (svgX(a) + svgX(b)) / 2; }
+function condEdgeMidY(a: Node, b: Node): number { return (svgY(a) + svgY(b)) / 2; }
+
+/**
+ * requires DSL → 사람이 읽는 한국어 사유 1줄. 노드/컬러/단서/아이템 라벨을 조회해 표기.
+ * 라벨을 못 찾으면 id로 폴백. (드로어 잠긴 간선 사유 표시 전용.)
+ */
+function edgeRequirementLabel(requires: string): string {
+  const map = nodeMap.value;
+  const parts = requires.split(':').map((s) => s.trim());
+  const nodeLabel = (id: string) => (map ? getNode(map, id)?.label : undefined) ?? id;
+  switch (parts[0]) {
+    case 'cleared': {
+      const n = nodeLabel(parts[1]);
+      return `'${n}'${eulReul(n)} 정리해야 열린다.`;
+    }
+    case 'event': {
+      const n = nodeLabel(parts[1]);
+      return `'${n}'의 사건을 겪어야 열린다.`;
+    }
+    case 'clue': {
+      const c = data.clues.get(parts[1])?.name ?? parts[1];
+      return `단서 '${c}'${iGa(c)} 있어야 열린다.`;
+    }
+    case 'item': {
+      const it = data.items.get(parts[1])?.name ?? parts[1];
+      return `'${it}'${iGa(it)} 있어야 열린다.`;
+    }
+    case 'level':
+      return `레벨 ${parts[1]} 이상이어야 열린다.`;
+    case 'day':
+      return `${parts[1]}일차부터 열린다.`;
+    case 'color': {
+      const label = colorLabel(parts[1]) || parts[1];
+      return `${label} 수치가 ${parts[2]} 이상이어야 열린다.`;
+    }
+    default:
+      return '아직 열 수 없는 길이다.';
+  }
+}
+
+/**
+ * 선택 노드로 가는 *잠긴 조건부 간선* 사유 — 현재 위치와 선택 노드를 잇는 조건 간선이 미충족이면
+ * 사람이 읽는 사유(없거나 이미 열렸으면 null). 정규화로 양끝에 조건이 있어 양쪽 다 조회한다.
+ */
+const lockedEdgeReason = computed<string | null>(() => {
+  const map = nodeMap.value;
+  const sel = selectedNode.value;
+  if (!map || !sel) return null;
+  const curId = run.data.currentNodeId;
+  if (sel.id === curId) return null;
+  const cur = getNode(map, curId);
+  const cn = cur?.conditionalNeighbors?.find((c) => c.nodeId === sel.id)
+    ?? sel.conditionalNeighbors?.find((c) => c.nodeId === curId);
+  if (!cn || isEdgeRequirementMet(cn.requires, run.data)) return null;
+  return edgeRequirementLabel(cn.requires);
+});
+
 // === 수동 팬 (드래그) + 줌 (wheel/버튼/핀치) ===
 const panOffset = ref({ x: 0, y: 0 }); // focusNode 기준 월드 단위 이동(0=focus 추적).
 // 기본 줌 — 모바일(coarse pointer)에서는 살짝 확대된 상태로 시작해 노드가 작게 보이지 않게.
@@ -991,6 +1077,25 @@ function enterLabel(): string {
               :class="['edge', { 'edge--active': isFocusEdge(e.a.id, e.b.id) }]"
             />
           </g>
+          <!-- 조건부 간선(간선 잠금) — 충족 시 일반 간선처럼 실선, 미충족 시 점선 + 자물쇠 표식. -->
+          <g class="cond-edges">
+            <template v-for="e in conditionalEdges" :key="e.key">
+              <path
+                :d="edgePath(e.a, e.b)"
+                :class="[
+                  'cond-edge',
+                  e.met ? 'cond-edge--open' : 'cond-edge--locked',
+                  { 'edge--active': e.met && isFocusEdge(e.a.id, e.b.id) },
+                ]"
+              />
+              <text
+                v-if="!e.met"
+                :x="condEdgeMidX(e.a, e.b)"
+                :y="condEdgeMidY(e.a, e.b)"
+                class="cond-lock"
+              >🔒</text>
+            </template>
+          </g>
           <!-- 노드 -->
           <g class="nodes">
             <g
@@ -1102,6 +1207,7 @@ function enterLabel(): string {
         :class="`drawer__plot--${plotBadgeState(plotStatuses.get(selectedNode.id)!)}`"
       >{{ plotStatusLine(plotStatuses.get(selectedNode.id)!) }}</div>
       <p v-if="chaosLockedNodes.has(selectedNode.id)" class="drawer__locked">🔒 카오스로 닫혀 들어갈 수 없다.</p>
+      <p v-if="lockedEdgeReason" class="drawer__locked drawer__locked--edge">🔒 {{ lockedEdgeReason }}</p>
       <p class="drawer__desc">{{ selectedNode.description }}</p>
 
       <div class="drawer__actions">
@@ -1326,6 +1432,23 @@ function enterLabel(): string {
   0%, 100% { stroke: #ffe8a0; filter: drop-shadow(0 0 1.1px rgba(255,232,142,0.7)); }
   50%      { stroke: #fff6d0; filter: drop-shadow(0 0 2.2px rgba(255,240,180,0.95)) drop-shadow(0 0 1px #fff6d0); }
 }
+/* 조건부 간선(간선 잠금).
+   open: 조건 충족 — 기본 간선과 동일한 흐린 실선(.edges .edge와 동일 수치). focusNode에 닿으면 .edge--active 글로우.
+   locked: 미충족 — 자물쇠 색(연보라) 점선. 중점에 🔒 표식. */
+.cond-edge { fill: none; transition: opacity 200ms ease; }
+.cond-edge--open { stroke: rgba(255, 255, 255, 0.12); stroke-width: 0.18; }
+.cond-edge--locked {
+  stroke: rgba(200, 160, 255, 0.55);
+  stroke-width: 0.22;
+  stroke-dasharray: 0.7 0.5;
+}
+.cond-lock {
+  font-size: 2.4px;
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+  opacity: 0.9;
+}
 .node-group { cursor: pointer; opacity: 1; transition: opacity 200ms ease; }
 .node-hitbox {
   fill: transparent;
@@ -1493,6 +1616,8 @@ function enterLabel(): string {
   .plot-badge--ready .plot-badge__bg { animation: none; }
 }
 .drawer__locked { font-size: 0.85rem; color: #9a8fb8; margin: 0; }
+/* 잠긴 조건부 간선 사유 — 카오스 잠금과 구분되게 연보라(조건부 간선 색과 통일). */
+.drawer__locked--edge { color: #c8b0ff; }
 .drawer__desc { color: #b6b6c4; line-height: 1.6; margin: 0; }
 
 .drawer__actions { display: flex; flex-direction: column; gap: 0.5rem; margin-top: auto; }

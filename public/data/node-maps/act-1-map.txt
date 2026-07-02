@@ -701,7 +701,7 @@ label = 르슈드 분기
 description = 세계 각지를 잇는 작은 마차 교차로. 정거장에서 종이 울린다.
 x = 0.3045
 y = 0.3942
-neighbors = n-reshud-bell, n-reshud-station, n-windfall-valley
+neighbors = n-reshud-bell, n-reshud-station, n-windfall-valley, n-reshud-dustfield
 npcs = npc-airi
 
 [nodemap.nm-act-1-era4-061.node.n-bagreat]
@@ -920,7 +920,7 @@ label = 르슈드 협로
 description = 르슈드에서 풍혈지대로 오르는 협로. 바람이 거세지기 시작한다.
 x = 0.3275
 y = 0.4172
-neighbors = n-reshud-station, n-reshud-bell, n-ilu-west-gate
+neighbors = n-reshud-station, n-reshud-bell, n-ilu-west-gate, n-reshud-mile
 enemy = mr-reshud-bandit
 
 [nodemap.nm-act-1-era4-061.node.n-bagreat-foot]
@@ -1602,7 +1602,7 @@ label = 길가 휴게소
 description = 마차가 오는 곳 근처의 자그마한 휴게소. 바람이 불면 소리가 나는 작은 종이 있다.
 x = 0.3045
 y = 0.4172
-neighbors = n-reshud-junction, n-reshud-pass, n-ali-inn-court
+neighbors = n-reshud-junction, n-reshud-pass, n-ali-inn-court, n-reshud-oldgate
 
 # --- E. 외곽 ---
 [nodemap.nm-act-1-era4-061.node.n-ria-slope-end]
@@ -1829,7 +1829,7 @@ kind = rest
 region = luna
 label = 루나 식당
 description = 학교 안의 식당. 기다란 식탁이 줄지어 놓여 있다.
-x = 0.267
+x = 0.2670
 y = 0.6966
 neighbors = n-luna-classroom, n-luna-illusion-spot, n-luna-academy, n-luna-library, n-luna-old-desk, n-luna-rooftop
 
@@ -1848,7 +1848,7 @@ kind = event
 region = luna
 label = 마법진
 description = 실습홀 구석의 오래된 마법진.
-x = 0.267
+x = 0.2410
 y = 0.6552
 neighbors = n-luna-classroom, n-oldshrine-altar
 events = ev-luna-old-magicircle
@@ -2864,7 +2864,7 @@ label = 건조 밭
 description = 별빛 아래 약초를 말리는 너른 밭.
 x = 0.4582
 y = 0.3655
-neighbors = n-starlight-rise, n-starlight-watch
+neighbors = n-starlight-rise, n-starlight-watch, n-starlight-loom
 
 [nodemap.nm-act-1-era4-061.node.n-starlight-watch]
 kind = combat
@@ -2873,7 +2873,7 @@ label = 고원 망대
 description = 고원 끝에 선 낡은 망대. 사방이 트여 있다.
 x = 0.4104
 y = 0.3655
-neighbors = n-starlight-rise, n-starlight-field, n-ilu-diner-back
+neighbors = n-starlight-rise, n-starlight-field, n-ilu-diner-back, n-starlight-hollow
 enemy = mr-iluneon-cutpurse
 
 [nodemap.nm-act-1-era4-061.node.n-mushroom-mouth]
@@ -2892,7 +2892,7 @@ label = 버섯밭
 description = 어둠 속에서 버섯이 줄지어 자라는 굴 안쪽.
 x = 0.1834
 y = 0.738
-neighbors = n-mushroom-mouth, n-mushroom-hollow
+neighbors = n-mushroom-mouth, n-mushroom-hollow, n-mush-spore-run
 
 [nodemap.nm-act-1-era4-061.node.n-mushroom-hollow]
 kind = combat
@@ -2901,7 +2901,7 @@ label = 깊은 굴
 description = 발소리가 메아리치는 동굴 가장 깊은 곳.
 x = 0.1954
 y = 0.7587
-neighbors = n-mushroom-mouth, n-mushroom-bed
+neighbors = n-mushroom-mouth, n-mushroom-bed, n-mush-gill
 enemy = mr-luna-ink-fiend
 
 [nodemap.nm-act-1-era4-061.node.n-fishing-pier]
@@ -2920,7 +2920,7 @@ label = 갯바위 여울
 description = 물이 빠지면 드러나는 갯바위 여울.
 x = 0.5777
 y = 0.7587
-neighbors = n-fishing-pier, n-fishing-cove
+neighbors = n-fishing-pier, n-fishing-cove, n-fishv-pier
 
 [nodemap.nm-act-1-era4-061.node.n-fishing-cove]
 kind = combat
@@ -2929,7 +2929,7 @@ label = 후미진 만
 description = 마을 끝, 파도가 높은 후미진 만.
 x = 0.5657
 y = 0.7794
-neighbors = n-fishing-pier, n-fishing-shoal
+neighbors = n-fishing-pier, n-fishing-shoal, n-fishv-netyard
 enemy = mr-martin-dock-rat
 
 [nodemap.nm-act-1-era4-061.node.n-mineshaft-entry]
@@ -2948,7 +2948,7 @@ label = 광맥
 description = 벽면을 따라 광석이 드러난 채광 막장.
 x = 0.8405
 y = 0.469
-neighbors = n-mineshaft-entry, n-mineshaft-deep
+neighbors = n-mineshaft-entry, n-mineshaft-deep, n-mine-lamprow
 
 [nodemap.nm-act-1-era4-061.node.n-mineshaft-deep]
 kind = combat
@@ -2957,6 +2957,250 @@ label = 갱도 막장
 description = 어둠이 짙게 깔린 갱도 가장 깊은 막장.
 x = 0.8286
 y = 0.4897
-neighbors = n-mineshaft-entry, n-mineshaft-vein
+neighbors = n-mineshaft-entry, n-mineshaft-vein, n-mine-crossdig
 enemy = mr-mano-cliff-crab
 events = ev-oldshrine-core
+
+# ============================================================
+# 소권역 심층 확충 (기존 입구 뒤로 이어지는 심층 사슬 + 잠금 엘리트)
+# 별빛 고원 / 버섯 동굴 / 어촌 군집 / 광산 갱도 / 르슈드
+# ============================================================
+
+# --- 별빛 고원 (starlight-plateau, T2) ---
+[nodemap.nm-act-1-era4-061.node.n-starlight-loom]
+kind = gather
+region = starlight-plateau
+label = 별초 엮는 터
+description = 밤새 말린 별풀을 다발로 엮는 바람 잘 드는 곳.
+x = 0.4720
+y = 0.3460
+neighbors = n-starlight-field, n-starlight-shrine
+
+[nodemap.nm-act-1-era4-061.node.n-starlight-hollow]
+kind = combat
+region = starlight-plateau
+label = 별그늘 우묵골
+description = 고원 구석이 움푹 파여 별빛도 잘 들지 않는 곳.
+x = 0.3838
+y = 0.3677
+neighbors = n-starlight-watch, n-starlight-shrine, n-starlight-ledge
+conditional_neighbors = n-starlight-crown|cleared:n-starlight-hollow
+enemy = mr-iluneon-lantern-imp
+
+[nodemap.nm-act-1-era4-061.node.n-starlight-shrine]
+kind = event
+region = starlight-plateau
+label = 별점 돌단
+description = 옛 사람들이 별을 세며 소원을 빌던 낮은 돌단.
+x = 0.4340
+y = 0.3320
+neighbors = n-starlight-loom, n-starlight-hollow
+events = ev-splat-01, ev-splat-02, ev-splat-03
+
+[nodemap.nm-act-1-era4-061.node.n-starlight-ledge]
+kind = rest
+region = starlight-plateau
+label = 별 보는 바위턱
+description = 고원 끝 바위턱에 앉으면 별이 가득 쏟아진다.
+x = 0.3860
+y = 0.3270
+neighbors = n-starlight-hollow
+
+[nodemap.nm-act-1-era4-061.node.n-starlight-crown]
+kind = elite
+region = starlight-plateau
+label = 구름 위 마루
+description = 구름보다 높은 고원 꼭대기. 사나운 것이 자리를 지킨다.
+x = 0.4033
+y = 0.3361
+neighbors = n-starlight-hollow
+enemy = mr-iluneon-spirit-herald
+
+# --- 버섯 동굴 (mushroom-cave, T3) ---
+[nodemap.nm-act-1-era4-061.node.n-mush-spore-run]
+kind = gather
+region = mushroom-cave
+label = 포자 두렁
+description = 발을 디딜 때마다 포자가 뽀얗게 피어오르는 두렁.
+x = 0.1640
+y = 0.7560
+neighbors = n-mushroom-bed, n-mush-glowpool
+
+[nodemap.nm-act-1-era4-061.node.n-mush-gill]
+kind = combat
+region = mushroom-cave
+label = 주름갓 방
+description = 커다란 버섯 갓이 천장을 이룬 어둑한 방.
+x = 0.1770
+y = 0.7820
+neighbors = n-mushroom-hollow, n-mush-glowpool, n-mush-warm-nook
+conditional_neighbors = n-mush-heartcap|cleared:n-mush-gill
+enemy = mr-luna-forbidden-wisp
+
+[nodemap.nm-act-1-era4-061.node.n-mush-glowpool]
+kind = event
+region = mushroom-cave
+label = 이끼불 못
+description = 푸르게 빛나는 이끼가 물가를 둘러싼 고요한 못.
+x = 0.1470
+y = 0.7760
+neighbors = n-mush-spore-run, n-mush-gill
+events = ev-mush-01, ev-mush-02, ev-mush-03
+
+[nodemap.nm-act-1-era4-061.node.n-mush-warm-nook]
+kind = rest
+region = mushroom-cave
+label = 훈훈한 구들목
+description = 땅속 온기가 올라와 몸을 데우기 좋은 구석.
+x = 0.1560
+y = 0.8010
+neighbors = n-mush-gill
+
+[nodemap.nm-act-1-era4-061.node.n-mush-heartcap]
+kind = elite
+region = mushroom-cave
+label = 심장갓 언덕
+description = 동굴 깊은 곳에 우뚝 솟은 커다란 버섯 언덕.
+x = 0.1330
+y = 0.8060
+neighbors = n-mush-gill
+enemy = mr-luna-arcane-devourer
+
+# --- 어촌 군집 (fishing-village, T3) ---
+[nodemap.nm-act-1-era4-061.node.n-fishv-pier]
+kind = gather
+region = fishing-village
+label = 낚시 좌대
+description = 물 위로 길게 뻗은 좌대에서 종일 낚싯대를 드리운다.
+x = 0.5980
+y = 0.7690
+neighbors = n-fishing-shoal, n-fishv-tidecave
+
+[nodemap.nm-act-1-era4-061.node.n-fishv-netyard]
+kind = combat
+region = fishing-village
+label = 그물 마당
+description = 손질하던 그물이 마당 가득 널린 비좁은 작업터.
+x = 0.5820
+y = 0.7980
+neighbors = n-fishing-cove, n-fishv-tidecave, n-fishv-driftfire
+conditional_neighbors = n-fishv-deepreef|cleared:n-fishv-netyard
+enemy = mr-martin-gull-raider
+
+[nodemap.nm-act-1-era4-061.node.n-fishv-tidecave]
+kind = event
+region = fishing-village
+label = 밀물 굴
+description = 밀물이 들면 바닷물이 발치까지 차오르는 바위굴.
+x = 0.6130
+y = 0.7920
+neighbors = n-fishv-pier, n-fishv-netyard
+events = ev-fishv-01, ev-fishv-02, ev-fishv-03
+
+[nodemap.nm-act-1-era4-061.node.n-fishv-driftfire]
+kind = rest
+region = fishing-village
+label = 장작 모닥불
+description = 떠내려온 나무로 지핀 모닥불 곁에서 몸을 녹인다.
+x = 0.5960
+y = 0.8170
+neighbors = n-fishv-netyard
+
+[nodemap.nm-act-1-era4-061.node.n-fishv-deepreef]
+kind = elite
+region = fishing-village
+label = 먼바다 암초
+description = 뭍에서 멀리 떨어진 암초. 사나운 것이 물살을 가른다.
+x = 0.6260
+y = 0.8160
+neighbors = n-fishv-netyard
+enemy = mr-kishina-siren
+
+# --- 광산 갱도 (mine-shaft, T4) ---
+[nodemap.nm-act-1-era4-061.node.n-mine-lamprow]
+kind = gather
+region = mine-shaft
+label = 등불 굽이
+description = 등불이 줄지어 걸린 굽이를 따라 광석을 줍는다.
+x = 0.8644
+y = 0.4401
+neighbors = n-mineshaft-vein, n-mine-ventshaft
+
+[nodemap.nm-act-1-era4-061.node.n-mine-crossdig]
+kind = combat
+region = mine-shaft
+label = 엇갈린 갱
+description = 갱도가 어긋나게 뚫린 채 만나는 좁은 길.
+x = 0.8269
+y = 0.5091
+neighbors = n-mineshaft-deep, n-mine-ventshaft, n-mine-toolroom
+conditional_neighbors = n-mine-motherlode|cleared:n-mine-crossdig
+enemy = mr-mano-iron-scorpion
+
+[nodemap.nm-act-1-era4-061.node.n-mine-ventshaft]
+kind = event
+region = mine-shaft
+label = 바람 굴뚝
+description = 위로 곧게 뚫려 바깥바람이 새어드는 수직 통로.
+x = 0.8669
+y = 0.4740
+neighbors = n-mine-lamprow, n-mine-crossdig
+events = ev-mine-01, ev-mine-02, ev-mine-03
+
+[nodemap.nm-act-1-era4-061.node.n-mine-toolroom]
+kind = activity
+region = mine-shaft
+label = 연장 두는 칸
+description = 곡괭이와 등불을 챙겨 두는 갱도 안 작은 칸.
+x = 0.8863
+y = 0.4526
+neighbors = n-mine-crossdig
+
+[nodemap.nm-act-1-era4-061.node.n-mine-motherlode]
+kind = elite
+region = mine-shaft
+label = 노다지 광맥
+description = 갱도 가장 깊은 곳, 노다지가 드러난 광맥을 무언가 지킨다.
+x = 0.8586
+y = 0.4935
+neighbors = n-mine-crossdig
+enemy = mr-mano-sunset-drake
+
+# --- 르슈드 (reshud, T1, 엘리트 없음) ---
+[nodemap.nm-act-1-era4-061.node.n-reshud-dustfield]
+kind = gather
+region = reshud
+label = 흙먼지 벌
+description = 마차가 지날 때마다 흙먼지가 이는 마른 벌판.
+x = 0.2800
+y = 0.4050
+neighbors = n-reshud-junction, n-reshud-wayrest
+
+[nodemap.nm-act-1-era4-061.node.n-reshud-mile]
+kind = combat
+region = reshud
+label = 이정표 둔덕
+description = 길가 둔덕에 낡은 이정표가 비스듬히 서 있다.
+x = 0.3510
+y = 0.4400
+neighbors = n-reshud-pass, n-reshud-oldgate
+enemy = mr-reshud-drifter
+
+[nodemap.nm-act-1-era4-061.node.n-reshud-oldgate]
+kind = event
+region = reshud
+label = 낡은 성문
+description = 지금은 아무도 지키지 않는, 벌판에 홀로 남은 성문.
+x = 0.3160
+y = 0.4460
+neighbors = n-reshud-bell, n-reshud-mile, n-reshud-wayrest
+events = ev-reshud-01, ev-reshud-02, ev-reshud-03
+
+[nodemap.nm-act-1-era4-061.node.n-reshud-wayrest]
+kind = rest
+region = reshud
+label = 길손 쉼터
+description = 오가는 길손이 다리를 쉬어 가는 나무 그늘.
+x = 0.2820
+y = 0.4400
+neighbors = n-reshud-oldgate, n-reshud-dustfield

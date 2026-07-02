@@ -81,11 +81,12 @@ export interface Node {
   neighbors: NodeId[];
 
   /**
-   * 조건부 인접 노드 — 특정 조건 만족 시 *추가로 보이는* 인접.
-   * 예: 이벤트 완료 후 새 길이 열리는 경우.
-   * 데이터 구조만 준비 (현재 사용 X).
+   * 조건부 인접 노드 — requires 충족 시 양방향으로 열리는 간선.
+   * INI: `conditional_neighbors = <nodeId>|<requires>, ...`
+   * (파싱: data/loader.ts parseConditionalNeighbors, 평가: systems/map.ts isEdgeRequirementMet)
    *
-   * requires 예시: "event:n-grove:cleared", "boss:cleared", "affinity:npc-x:3+"
+   * requires 지원 형식(7종): cleared:<nodeId> · event:<nodeId>:cleared · clue:<clueId>
+   * · item:<itemId> · level:<n> · day:<n> · color:<key>:<n>
    */
   conditionalNeighbors?: Array<{
     nodeId: NodeId;

@@ -16,6 +16,7 @@ import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
 import { XP_PER_LEVEL } from '@/systems/enhance';
 import { clockOfTurn, clockLabel } from '@/systems/time';
+import { turnsUntilMail } from '@/systems/mail';
 import Tooltip from '@/components/Tooltip.vue';
 
 const props = defineProps<{
@@ -80,6 +81,10 @@ const timeUrgent = computed(() => {
 // 현재 게임 시각 — visitedNodes.length(경과 턴) 기반 시계. day는 currentDay와 동기. (systems/time.ts)
 const clock = computed(() => clockOfTurn(run.data.visitedNodes.length));
 const clockHHMM = computed(() => clockLabel(run.data.visitedNodes.length));
+
+// 길드 우편 — 도착 대기 우편 수 + 다음 배달까지 남은 턴(HUD 뱃지/툴팁). (systems/mail.ts)
+const mailPending = computed(() => run.data.mail?.pending ?? 0);
+const mailTurns = computed(() => turnsUntilMail(run.data));
 
 /**
  * 표시용 HP — 전투 중이면 *전투 내 실시간 HP*를 우선한다(B1 수정).
@@ -180,6 +185,14 @@ const persistentStatuses = computed(() => {
           <span class="emoji">🕛</span>
           <span class="lbl">{{ clock.day }}일차</span>
           <span class="num">{{ clockHHMM }}</span>
+        </div>
+      </Tooltip>
+
+      <!-- 길드 우편 — 도착하면 강조 + 개수 뱃지, 대기 중이면 흐리게(툴팁으로 남은 턴). -->
+      <Tooltip :text="mailPending > 0 ? '길드에 우편이 도착했다. 마을에서 수령하자.' : `다음 우편까지 ${mailTurns}턴`">
+        <div class="slot slot--mail" :class="{ 'slot--mail-ready': mailPending > 0 }">
+          <span class="emoji">✉</span>
+          <span v-if="mailPending > 0" class="mailbadge">{{ mailPending }}</span>
         </div>
       </Tooltip>
 
@@ -335,6 +348,15 @@ const persistentStatuses = computed(() => {
 
 .slot--urgent { background: rgba(255, 100, 100, 0.15); border-color: rgba(255, 100, 100, 0.5); }
 .slot--urgent .num { color: #ff8e8e; }
+
+/* 길드 우편 슬롯 — 대기 중엔 흐리게(툴팁으로 남은 턴), 도착 시 강조 + 개수 뱃지. */
+.slot--mail { opacity: 0.6; }
+.slot--mail-ready { opacity: 1; background: rgba(246, 232, 184, 0.16); border-color: rgba(246, 232, 184, 0.5); }
+.mailbadge {
+  font-size: 0.66rem; font-weight: 800; color: #0d0e14;
+  background: #ffe88e; border-radius: 8px; padding: 0.02rem 0.34rem;
+  font-variant-numeric: tabular-nums;
+}
 
 .slot--btn { cursor: pointer; transition: background 120ms ease, border-color 120ms ease; }
 .slot--btn:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2); }

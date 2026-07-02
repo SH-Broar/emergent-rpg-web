@@ -1,0 +1,80 @@
+# Relics 타이머 보상 시그니처 (2026-07-02)
+# rank=legendary + source=event — 상점 진열 0·엘리트 드롭 0(공급차단 유지)이라 풀 누출 없음.
+# 타이머(개입권) 소비 보상 전용 — grant-relic / 이벤트 grant_relic로 명시 id 참조해 지급.
+# 테마: 시간(모노). 각각이 전투 규칙 하나를 바꾼다(수치보다 규칙 변경 위주).
+
+# --- 넉넉한 하루 — 전투 시작 마나 +1, 드로 +1. ---
+[relic.r-tm-generous-day]
+name = 넉넉한 하루
+rank = legendary
+source = event
+trigger = on-combat-start
+effects = bonus-mana:1, combat-start-draw:1
+flavor = 같은 하루라도 어떤 날은 유난히 넉넉하다. 쓸 시간이 남고, 손이 먼저 나간다.
+
+# --- 어제의 몫 — 마나·방어가 다음 턴으로 이월. ---
+[relic.r-tm-yesterday-share]
+name = 어제의 몫
+rank = legendary
+source = event
+trigger = passive
+effects = mana-carryover, block-carryover
+flavor = 어제 아껴 둔 것은 오늘도 그 자리에 있다. 시간은 성실한 창고지기다.
+
+# --- 뭉근한 저녁 — 2턴째부터 매 턴 힘이 붙는 장기전 가속. ---
+[relic.r-tm-simmering-evening]
+name = 뭉근한 저녁
+rank = legendary
+source = event
+trigger = on-turn-start
+effects = turn-after-strength:2:2
+flavor = 급히 끓인 것은 금방 식는다. 뭉근하게 오래 끓인 것은 좀처럼 식지 않는다.
+
+# --- 아무는 시간 — 전투가 끝날 때마다 크게 회복. ---
+[relic.r-tm-mending-hours]
+name = 아무는 시간
+rank = legendary
+source = event
+trigger = on-combat-end
+effects = combat-end-heal:12
+flavor = 흉터에게도 시간이 필요하다. 다행히 이 시간은 늘 조금 빨리 흐른다.
+
+# --- 부지런한 손 — 매 턴 드로 +1, 모든 공격 피해 +2. ---
+[relic.r-tm-diligent-hands]
+name = 부지런한 손
+rank = legendary
+source = event
+trigger = passive
+effects = draw-extra-add:1, damage-out-add:2
+flavor = 일찍 일어난 손은 하루 내내 바쁘고, 바쁜 손은 대체로 정확하다.
+
+# ============================================================
+# T2 (tmx) — 타이머 2~3개 개입 전용. T1보다 확연히 희귀·강력.
+# ============================================================
+
+# --- 지지 않는 볕 — 전투 시작 마나 +1, 드로 +2. ---
+[relic.r-tmx-endless-noon]
+name = 지지 않는 볕
+rank = legendary
+source = event
+trigger = on-combat-start
+effects = bonus-mana:1, combat-start-draw:2
+flavor = 이 볕 아래서는 하루가 저무는 법을 잊는다. 손이 마를 새가 없다.
+
+# --- 빌린 영원 — 매 턴 마나 +1, 드로 +1. ---
+[relic.r-tmx-borrowed-eternity]
+name = 빌린 영원
+rank = legendary
+source = event
+trigger = passive
+effects = mana-extra-add:1, draw-extra-add:1
+flavor = 갚을 날이 오지 않는 빚이 있다. 시간의 신은 그걸 알고도 빌려 주었다.
+
+# --- 마지막 약속 — 전투가 끝날 때마다 크게 아문다. ---
+[relic.r-tmx-last-promise]
+name = 마지막 약속
+rank = legendary
+source = event
+trigger = on-combat-end
+effects = combat-end-heal:20
+flavor = 어떤 싸움이 끝나도 반드시 돌아온다는 약속. 지켜질 때마다 상처가 아문다.

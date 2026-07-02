@@ -7,7 +7,7 @@
  *  - 시간 임계 도달 시 *덱 확장* 또는 *보스 게이트 활성*
  */
 
-import type { NodeId, NodeKind, NodeMap, Node, NodeStateRecord, Region, RunState } from '@/data/schemas';
+import type { ColorValues, NodeId, NodeKind, NodeMap, Node, NodeStateRecord, Region, RunState } from '@/data/schemas';
 
 /**
  * 노드의 *유효 kind* — RunState의 nodeKindOverrides 우선, 없으면 원본.
@@ -70,7 +70,9 @@ export function findRegion(map: NodeMap, regionId: string | undefined): Region |
 
 /**
  * 현재 노드에서 이동 가능한 인접 노드 목록.
- * runState가 주어지면 *조건부 인접*도 평가하여 추가.
+ * runState가 주어지면 *조건부 간선*(conditionalNeighbors)도 평가하여 충족분을 인접에 합류한다.
+ * 조건부 간선은 로드 시 양끝 노드에 정규화돼 있어(loader.ts), 어느 쪽에 서 있든 대칭으로 열린다.
+ * runState 미지정 시 조건부 간선은 평가하지 않는다(잠긴 것으로 취급).
  */
 export function getNeighbors(
   map: NodeMap,
@@ -82,10 +84,9 @@ export function getNeighbors(
 
   const ids = new Set<NodeId>(current.neighbors);
 
-  // 조건부 인접 평가 (현재 미사용 — 데이터 구조만 준비)
   if (current.conditionalNeighbors && runState) {
     for (const cn of current.conditionalNeighbors) {
-      if (evaluateCondition(cn.requires, runState)) {
+      if (isEdgeRequirementMet(cn.requires, runState)) {
         ids.add(cn.nodeId);
       }
     }
@@ -96,20 +97,64 @@ export function getNeighbors(
     .filter((n): n is Node => n !== undefined);
 }
 
+/** 이미 경고한 미지 requires 형식 — console 스팸 방지(형식당 1회). getNeighbors는 매 렌더 호출된다. */
+const warnedRequires = new Set<string>();
+
 /**
- * 조건 표현식 평가. 매우 단순 (확장 가능).
- * 형식 예시:
- *   "event:<nodeId>:triggered"  — 해당 노드 이벤트가 발생했는가
- *   "combat:<nodeId>:cleared"   — 해당 노드 전투가 클리어됐는가
- *   "node:<nodeId>:visited"     — 해당 노드를 방문했는가
+ * 간선 잠금(조건부 간선) requires DSL 평가 — 조건 충족 시 true(간선 개통), 미충족이면 false(잠김).
+ * 파생 계산 — 저장 상태 없이 매번 runState로 평가한다.
+ *
+ * 형식:
+ *   cleared:<nodeId>        — 그 노드의 전투 또는 거래 소비(OR — 둘 중 하나면 열림. isNodeSettled의 AND와 다름).
+ *   event:<nodeId>:cleared  — 그 노드의 사건 발동(eventTriggered 존재).
+ *   clue:<clueId>           — 단서 보유.
+ *   item:<itemId>           — 아이템 보유(id 일치, instanceId 무관).
+ *   level:<n>               — 플레이어 레벨 n 이상.
+ *   day:<n>                 — n일차 이상.
+ *   color:<key>:<n>         — 그 컬러(fire/water/…) 수치 n 이상.
+ * 알 수 없거나 형식이 어긋난 requires는 false(잠금 유지) + 형식당 1회 console.warn.
  */
-function evaluateCondition(condition: string, state: RunState): boolean {
-  const [kind, nodeId, what] = condition.split(':');
-  const ns = state.nodeStates[nodeId];
-  if (!ns) return false;
-  if (kind === 'node' && what === 'visited') return ns.visited;
-  if (kind === 'event' && what === 'triggered') return !!ns.eventTriggered;
-  if (kind === 'combat' && what === 'cleared') return !!ns.combatCleared;
+export function isEdgeRequirementMet(requires: string, runData: RunState): boolean {
+  const parts = requires.split(':').map((s) => s.trim());
+  switch (parts[0]) {
+    case 'cleared': {
+      if (!parts[1]) break;
+      const ns = runData.nodeStates[parts[1]];
+      return !!ns && (!!ns.combatCleared || !!ns.tradeCleared);
+    }
+    case 'event': {
+      // event:<nodeId>:cleared
+      if (!parts[1] || parts[2] !== 'cleared') break;
+      return !!runData.nodeStates[parts[1]]?.eventTriggered;
+    }
+    case 'clue':
+      if (!parts[1]) break;
+      return (runData.clues ?? []).some((c) => c.id === parts[1]);
+    case 'item':
+      if (!parts[1]) break;
+      return runData.items.some((it) => it.id === parts[1]);
+    case 'level': {
+      const n = Number(parts[1]);
+      if (!Number.isFinite(n)) break;
+      return (runData.level ?? 1) >= n;
+    }
+    case 'day': {
+      const n = Number(parts[1]);
+      if (!Number.isFinite(n)) break;
+      return runData.currentDay >= n;
+    }
+    case 'color': {
+      const key = parts[1];
+      const n = Number(parts[2]);
+      if (!key || !Number.isFinite(n) || !(key in runData.colors)) break;
+      return (runData.colors[key as keyof ColorValues] ?? 0) >= n;
+    }
+  }
+  // 미지/오형식 — 잠금 유지 + 형식당 1회 경고.
+  if (!warnedRequires.has(requires)) {
+    warnedRequires.add(requires);
+    console.warn(`[edge-lock] 알 수 없는 간선 조건: "${requires}" — 간선을 잠근 채 유지합니다.`);
+  }
   return false;
 }
 

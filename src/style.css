@@ -40,6 +40,7 @@
    *   --z-modal-nested  중첩 모달 (DeckPanel — CharacterMenu 위에 띄움)
    *   --z-day-banner  DayBanner (하루 경과 안내)
    *   --z-overlay     MainView 큰 오버레이 / LoadingOverlay
+   *   --z-reward      보상 패널 (전리품/수확/우편 — 확인 모달)
    *   --z-toast       Toast 스택 (모든 레이어 위)
    *
    * 새 레이어 추가 시 위 표에 한 줄 + 토큰 추가 + 사용처에서 var(--z-...)
@@ -51,6 +52,7 @@
   --z-modal-nested: 960;
   --z-day-banner: 970;
   --z-overlay: 990;
+  --z-reward: 995;
   --z-toast: 1000;
 
   --sans: 'Pretendard', 'Noto Sans KR', system-ui, 'Segoe UI', Roboto, sans-serif;

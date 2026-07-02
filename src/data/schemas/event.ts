@@ -118,6 +118,12 @@ export interface EventChoice {
   /** 개입 비용 — 이 선택지를 고르면 타이머 N개 소비(가변 1·2·3·5). 0/미지정 = 무비용(지나치기). */
   timerCost?: number;
 
+  /**
+   * 개입 보상 고정 지정(2026-07-02) — 이 선택지 개입 시 지급할 프리미엄 id(카드/아이템/유물).
+   * 미지정이면 eventId 해시로 티어 풀에서 결정론 배정한다(노드별 고유 보상, systems/mail.ts).
+   */
+  premiumReward?: string;
+
   /** true면 선택 전 효과 미리보기를 숨김(???). *의도적 미스터리* 선택지에만. (기본 false = 투명) */
   hidden?: boolean;
 }
@@ -147,6 +153,11 @@ export interface EventVariation {
   resolvedBody?: string;
   /** 개입 보상(기존 효과 재사용 — color/gold/clue/card 등). */
   effects?: EventChoiceEffect[];
+  /**
+   * 개입 보상 고정 지정(2026-07-02) — 개입 시 지급할 프리미엄 id(카드/아이템/유물).
+   * 미지정이면 eventId 해시로 티어 풀에서 결정론 배정한다(노드별 고유 보상, systems/mail.ts).
+   */
+  premiumReward?: string;
 }
 
 export interface Event extends NamedEntity {
