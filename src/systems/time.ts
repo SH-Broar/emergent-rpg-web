@@ -57,3 +57,16 @@ export function durationLabel(turns: number): string {
 export function minutesLabel(turns: number): string {
   return `${Math.round(turns * MINUTES_PER_TURN)}분`;
 }
+
+/**
+ * 잔여 턴 → "N시간 M분" 복합 라벨 (60분 미만은 "M분"). 우편 등 중기 카운트다운 표시용.
+ * durationLabel(시간만)은 30분 미만이 "0시간"이 되고 minutesLabel(분만)은 큰 값이 "432분"이 되어,
+ * 수 시간~수십 분을 오가는 잔여 시간에는 둘 다 어색하므로 시·분을 함께 쓴다.
+ */
+export function remainingTimeLabel(turns: number): string {
+  const mins = Math.round(turns * MINUTES_PER_TURN);
+  if (mins < 60) return `${mins}분`;
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return m > 0 ? `${h}시간 ${m}분` : `${h}시간`;
+}

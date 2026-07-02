@@ -15,6 +15,7 @@ import { useUiStore } from '@/stores/ui';
 import { useMetaStore } from '@/stores/meta';
 import { rng } from '@/systems/rng';
 import { collectMail, turnsUntilMail } from '@/systems/mail';
+import { remainingTimeLabel } from '@/systems/time';
 import { applyAffinityDelta } from '@/systems/affinity';
 import { cardEffectKindLabel, cardEffectDescription, colorLabel } from '@/systems/labels';
 import { availableCards } from '@/systems/unlocks';
@@ -285,9 +286,9 @@ function doCraftPotion(itm: Item) {
   craftPotion(itm);
 }
 
-// === 길드 우편(타이머 드립) — 수령 대기 우편 수 + 다음 배달까지 남은 턴. ===
+// === 길드 우편(타이머 드립) — 수령 대기 우편 수 + 다음 배달까지 남은 시간. ===
 const mailPending = computed(() => run.data.mail?.pending ?? 0);
-const mailTurns = computed(() => turnsUntilMail(run.data));
+const mailWait = computed(() => remainingTimeLabel(turnsUntilMail(run.data)));
 
 /** 길드 우편 수령 — 대기 우편을 타이머로 전환(상한 초과분은 버려진다). 로직은 systems/mail.ts. */
 function receiveMail() {
@@ -430,7 +431,7 @@ const rankColors: Record<string, string> = {
               <span class="guild-mail__gain">타이머 +{{ mailPending }}</span>
             </button>
           </template>
-          <p v-else class="guild-mail__msg guild-mail__wait">다음 우편까지 {{ mailTurns }}턴.</p>
+          <p v-else class="guild-mail__msg guild-mail__wait">다음 우편까지 {{ mailWait }}.</p>
         </div>
       </Collapsible>
 

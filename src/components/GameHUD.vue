@@ -15,7 +15,7 @@ import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
 import { XP_PER_LEVEL } from '@/systems/enhance';
-import { clockOfTurn, clockLabel } from '@/systems/time';
+import { clockOfTurn, clockLabel, remainingTimeLabel } from '@/systems/time';
 import { turnsUntilMail } from '@/systems/mail';
 import Tooltip from '@/components/Tooltip.vue';
 
@@ -82,9 +82,9 @@ const timeUrgent = computed(() => {
 const clock = computed(() => clockOfTurn(run.data.visitedNodes.length));
 const clockHHMM = computed(() => clockLabel(run.data.visitedNodes.length));
 
-// 길드 우편 — 도착 대기 우편 수 + 다음 배달까지 남은 턴(HUD 뱃지/툴팁). (systems/mail.ts)
+// 길드 우편 — 도착 대기 우편 수 + 다음 배달까지 남은 시간(HUD 뱃지/툴팁). (systems/mail.ts)
 const mailPending = computed(() => run.data.mail?.pending ?? 0);
-const mailTurns = computed(() => turnsUntilMail(run.data));
+const mailWait = computed(() => remainingTimeLabel(turnsUntilMail(run.data)));
 
 /**
  * 표시용 HP — 전투 중이면 *전투 내 실시간 HP*를 우선한다(B1 수정).
@@ -188,8 +188,8 @@ const persistentStatuses = computed(() => {
         </div>
       </Tooltip>
 
-      <!-- 길드 우편 — 도착하면 강조 + 개수 뱃지, 대기 중이면 흐리게(툴팁으로 남은 턴). -->
-      <Tooltip :text="mailPending > 0 ? '길드에 우편이 도착했다. 마을에서 수령하자.' : `다음 우편까지 ${mailTurns}턴`">
+      <!-- 길드 우편 — 도착하면 강조 + 개수 뱃지, 대기 중이면 흐리게(툴팁으로 남은 시간). -->
+      <Tooltip :text="mailPending > 0 ? '길드에 우편이 도착했다. 마을에서 수령하자.' : `다음 우편까지 ${mailWait}`">
         <div class="slot slot--mail" :class="{ 'slot--mail-ready': mailPending > 0 }">
           <span class="emoji">✉</span>
           <span v-if="mailPending > 0" class="mailbadge">{{ mailPending }}</span>
