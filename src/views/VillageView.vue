@@ -395,29 +395,22 @@ const rankColors: Record<string, string> = {
       <h1>{{ currentNode?.label ?? '마을' }}</h1>
     </header>
 
-    <p v-if="currentNode?.description" class="desc">{{ currentNode.description }}</p>
 
     <!-- 메뉴 -->
     <section v-if="phase === 'menu'" class="menu">
-      <div class="resources">
-        <span>HP {{ run.data.hp }}/{{ run.data.maxHp }}</span>
-        <span>골드 {{ run.data.gold }}</span>
-        <span>시간의 조각 {{ run.data.timeShards }}</span>
-      </div>
-
-      <Collapsible title="주변 살펴보기" :default-open="true">
+      <Collapsible title="주변 살펴보기">
         <WorldInteractionPanel />
       </Collapsible>
 
       <!-- 빙의 정화 — 마을에서 풀 수 있는 경로(잔존 빙의가 있을 때만). -->
       <div v-if="(run.data.possessed ?? 0) > 0" class="cleanse">
-        <p class="cleanse__msg">몸에 혼란이 남아 있다. 활동에 들 수 없고 길도 일부 막혔다.</p>
-        <button class="cleanse__btn" @click="cleansePossession">마을에서 혼란을 씻어낸다</button>
+        <p class="cleanse__msg">혼란 · 활동 제한</p>
+        <button class="cleanse__btn" @click="cleansePossession">정화</button>
       </div>
 
       <!-- 수화 중 진정 — 선택형(공격 2배·탐색 보상↑ 유지 vs 회복/방어 회복). -->
       <div v-if="(run.data.feralHeavy ?? 0) > 0" class="cleanse cleanse--feral">
-        <p class="cleanse__msg">아직 심수화 상태다. 공격이 2배지만 회복도 방어도 못 하고, 탐색 보상이 늘어난다. 가라앉힐까?</p>
+        <p class="cleanse__msg">심수화 · 공격 2배 / 회복·방어 불가</p>
         <button class="cleanse__btn" @click="calmFeral">수화를 가라앉힌다</button>
       </div>
 
@@ -430,7 +423,6 @@ const rankColors: Record<string, string> = {
       >
         <div class="guild-mail">
           <template v-if="mailPending > 0">
-            <p class="guild-mail__msg">길드 직원이 창구 너머로 손짓한다. 앞으로 온 우편이 쌓여 있다.</p>
             <button class="guild-mail__btn" @click="receiveMail">
               우편 수령
               <span class="guild-mail__gain">타이머 +{{ mailPending }}</span>
@@ -516,12 +508,11 @@ const rankColors: Record<string, string> = {
       <Collapsible title="제작" subtitle="카드 · 포션">
         <button class="opt" @click="rollCraft">
           <span class="opt__title">간이 카드 제작</span>
-          <span class="opt__hint">시간의 조각 {{ VILLAGE_CRAFT_COST }} — 무작위 일반 카드 {{ VILLAGE_CRAFT_CHOICES }}장 중 1장 선택</span>
+          <span class="opt__hint">조각 {{ VILLAGE_CRAFT_COST }} · {{ VILLAGE_CRAFT_CHOICES }}장 중 선택</span>
         </button>
 
         <button class="opt" @click="potionPanelOpen = !potionPanelOpen">
           <span class="opt__title">포션 제작</span>
-          <span class="opt__hint">시간의 조각 + 일반 재료 — 일반 포션 제작</span>
         </button>
 
         <!-- 일반 포션 제작 패널 -->

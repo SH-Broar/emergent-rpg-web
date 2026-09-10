@@ -22,18 +22,16 @@ function choose(index: number | null) {
   <section v-if="choices.length" class="tactical-draft" aria-label="전술 카드 보상">
     <header class="tactical-draft__heading">
       <div>
-        <h2>다음 전투의 한 수</h2>
-        <p>카드 1장을 골라 현재 덱에 추가하세요. 나중에 지도에서 선택할 수도 있습니다.</p>
-        <p>덱이 가득 찼다면 첫 기본 카드를 컬렉션으로 돌립니다. 기본 카드가 없으면 덱의 마지막 카드를 교체합니다.</p>
+        <h2>카드 선택</h2>
+        <details><summary>덱에 추가</summary><p>덱이 가득 차면 기본 카드부터 교체합니다. 교체된 카드는 컬렉션에 남습니다.</p></details>
       </div>
-      <button class="tactical-draft__skip" @click="choose(null)">보상 건너뛰기</button>
+      <button class="tactical-draft__skip" @click="choose(null)">건너뛰기</button>
     </header>
     <div class="tactical-draft__choices">
       <button v-for="(card, index) in choices" :key="card.instanceId ?? card.id" class="tactical-draft__card" @click="choose(index)">
-        <span class="tactical-draft__cost">마나 {{ card.cost ?? 0 }} · 행동 1</span>
+        <span class="tactical-draft__cost">마나 {{ card.cost ?? 0 }}</span>
         <strong>{{ card.name }}</strong>
         <span class="tactical-draft__effect">{{ card.description }}</span>
-        <span class="tactical-draft__pick">이 카드 획득</span>
       </button>
     </div>
   </section>

@@ -15,11 +15,13 @@ import { useRouter } from 'vue-router';
 import { useMetaStore } from '@/stores/meta';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
+import { useUiStore } from '@/stores/ui';
 
 const router = useRouter();
 const meta = useMetaStore();
 const run = useRunStore();
 const data = useDataStore();
+const ui = useUiStore();
 
 /** 저장된 런이 있으면 modal 띄움 — 사용자가 Y/N 선택. */
 const showResume = ref(false);
@@ -52,6 +54,7 @@ onBeforeUnmount(() => {
 
 /** 키 핸들러 — 디버그 커맨드 버퍼 + (모달 떠 있을 때) Y/N 응답. */
 function onKey(e: KeyboardEvent) {
+  if (ui.tutorialTopic) return;
   // 1) 디버그 커맨드 — 모달과 무관하게 "debug" 시퀀스 감지.
   if (!showResume.value && /^[a-zA-Z]$/.test(e.key)) {
     debugBuffer = (debugBuffer + e.key.toLowerCase()).slice(-5);
@@ -121,6 +124,10 @@ function goSaveCode() {
         <span class="menu-card__title">게임 시작</span>
       </button>
 
+      <button class="menu-card" type="button" @click="ui.tutorialTopic = 'combat'">
+        <span class="menu-card__title">튜토리얼</span>
+      </button>
+
       <!-- 점진적 노출 — 한 번이라도 플레이한 뒤에만 등장. -->
       <button v-if="hasPlayed" class="menu-card" type="button" @click="goSaveManage">
         <span class="menu-card__title">세이브 관리</span>
@@ -130,7 +137,6 @@ function goSaveCode() {
       <!-- 세이브 코드는 세이브 관리 뒤에. (첫 진입엔 관리가 없어 게임 시작 다음에 옴) -->
       <button class="menu-card" type="button" @click="goSaveCode">
         <span class="menu-card__title">세이브 코드</span>
-        <span class="menu-card__sub">텍스트로 저장 / 불러오기</span>
       </button>
     </section>
 
@@ -141,11 +147,11 @@ function goSaveCode() {
     <transition name="resume-fade">
       <div v-if="showResume" class="resume-backdrop" role="dialog" aria-modal="true">
         <div class="resume-modal">
-          <h2 class="resume-modal__title">진행 중인 런이 있습니다</h2>
-          <p class="resume-modal__body">이어서 시작하시겠습니까? (N을 누르면 저장된 진행이 삭제됩니다)</p>
+          <h2 class="resume-modal__title">이어서 할까요?</h2>
+          <p class="resume-modal__body">새로 시작하면 현재 진행이 삭제됩니다.</p>
           <div class="resume-modal__actions">
-            <button class="resume-btn resume-btn--yes" autofocus @click="resumeRun">Y — 이어하기</button>
-            <button class="resume-btn resume-btn--no" @click="discardRun">N — 새로 시작</button>
+            <button class="resume-btn resume-btn--yes" autofocus @click="resumeRun">이어하기</button>
+            <button class="resume-btn resume-btn--no" @click="discardRun">새로 시작</button>
           </div>
         </div>
       </div>

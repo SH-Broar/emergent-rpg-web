@@ -12,10 +12,6 @@ const data = useDataStore();
 const selectedId = ref<string | null>(null);
 const busy = ref(false);
 const feedback = ref<{ ok: boolean; message: string } | null>(null);
-const currentNode = computed(() => {
-  const map = data.nodeMaps.get(data.timelines.get(run.data.timelineId)?.nodeMapId ?? '');
-  return map?.nodes.find(node => node.id === run.data.currentNodeId);
-});
 const targets = computed(() => observedTargets(run.data));
 const selected = computed(() => targets.value.find(target => target.id === selectedId.value));
 const actions = computed(() => selected.value ? affordances(run.data, 'player', selected.value.id) : []);
@@ -84,12 +80,6 @@ watch(targets, value => {
 
 <template>
   <section class="world-panel" aria-label="현재 장소의 대상과 행동">
-    <header class="world-panel__header">
-      <span class="world-panel__eyebrow">지금 이곳</span>
-      <h2>{{ currentNode?.label ?? '주변 살펴보기' }}</h2>
-      <p>대상을 선택해 살펴보고 행동하세요. 주변에서 본 일과 전해 들은 이야기가 기록됩니다.</p>
-    </header>
-
     <details class="world-panel__profession">
       <summary>나의 일 · {{ professions[run.data.profession ?? 'traveler'] }}</summary>
       <label>
@@ -98,7 +88,6 @@ watch(targets, value => {
           <option v-for="(label, value) in professions" :key="value" :value="value">{{ label }}</option>
         </select>
       </label>
-      <p>종족의 신체 특성과 직업에 따라 할 수 있는 노동이 달라집니다.</p>
     </details>
 
     <div class="world-panel__targets" aria-label="관찰한 대상">
@@ -109,20 +98,19 @@ watch(targets, value => {
         :class="{ 'is-selected': selectedId === target.id }"
         @click="chooseTarget(target.id)"
       >
-        <span>{{ target.id === 'player' ? '자신' : kinds[target.kind] }}</span>
         <strong>{{ target.name }}</strong>
-        <small v-if="target.ownerId && target.ownerId !== target.id">{{ ownerName(target) }}</small>
       </button>
     </div>
-    <p v-if="!targets.length" class="world-panel__empty">주변에 관찰된 대상이 없습니다. 지도로 돌아가 다른 장소를 찾아보세요.</p>
-    <p v-else-if="!selected" class="world-panel__empty">무엇을 살펴볼까요?</p>
+    <p v-if="!targets.length" class="world-panel__empty">아직 발견한 대상 없음</p>
 
     <section v-if="selected" class="world-panel__target" :aria-label="selected.name">
       <header>
         <h3>{{ selected.name }}</h3>
-        <p>{{ kinds[selected.kind] }}<template v-if="selected.species"> · {{ speciesName(selected.species) }}</template><template v-if="selected.profession"> · {{ professions[selected.profession] ?? selected.profession }}</template></p>
-        <small>{{ clockFull(selected.turn) }}에 관찰</small>
       </header>
+      <details :key="selected.id" class="world-panel__details">
+      <summary>살펴보기</summary>
+      <p>{{ kinds[selected.kind] }}<template v-if="selected.species"> · {{ speciesName(selected.species) }}</template><template v-if="selected.profession"> · {{ professions[selected.profession] ?? selected.profession }}</template></p>
+      <small>{{ clockFull(selected.turn) }} 관찰</small>
       <div class="world-panel__colors" aria-label="컬러 성질">
         <span v-for="[color, value] in visibleColors" :key="color">{{ colorLabel(color) }} {{ numberLabel(value) }}</span>
       </div>
@@ -135,23 +123,22 @@ watch(targets, value => {
         <h4>{{ selected.kind === 'actor' ? '확인한 소지품' : '확인한 자원' }}</h4>
         <p v-for="(count, id) in selected.stock" :key="id">{{ resourceName(id) }} <b>{{ count }}</b></p>
       </section>
+      </details>
       <section class="world-panel__actions" aria-label="가능한 행동">
-        <h4>할 수 있는 일</h4>
         <article v-for="action in actions" :key="action.id">
           <button type="button" :disabled="!action.enabled || busy" @click="perform(action)">
             <strong>{{ action.label }}</strong>
-            <span>{{ action.duration > 0 ? `${action.duration}턴 · ${minutesLabel(action.duration)}` : '시간 소모 없음' }}</span>
+            <span>{{ action.duration > 0 ? minutesLabel(action.duration) : '즉시' }}</span>
           </button>
-          <p>{{ action.description }}</p>
           <p v-if="!action.enabled && action.reason" class="world-panel__reason">{{ action.reason }}</p>
         </article>
-        <p v-if="!actions.length" class="world-panel__empty">지금은 이 대상에게 할 수 있는 행동이 없습니다.</p>
+        <p v-if="!actions.length" class="world-panel__empty">가능한 행동 없음</p>
       </section>
     </section>
 
     <p v-if="feedback" role="status" aria-live="polite" class="world-panel__feedback" :class="{ 'world-panel__feedback--failed': !feedback.ok }">{{ feedback.message }}</p>
 
-    <details class="world-panel__history" open>
+    <details class="world-panel__history">
       <summary>관찰 기록 <span>{{ observations.length }}</span></summary>
       <ol v-if="observations.length">
         <li v-for="fact in observations" :key="fact.id">
@@ -210,4 +197,8 @@ watch(targets, value => {
 .world-panel__history li small { color: #98a6ba; font-size: .7rem; }
 .world-panel__history li p { font-size: .77rem; overflow-wrap: anywhere; }
 .world-panel__history summary span { color: #91a2b8; font-size: .75rem; }
+.world-panel__details > :not(summary) { margin-top: .6rem; }
+.world-panel__actions { grid-template-columns: 1fr; }
+.world-panel button { min-height: 44px; }
+.world-panel summary { cursor: pointer; padding-block: .5rem; }
 </style>

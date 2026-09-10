@@ -27,7 +27,7 @@ import { restHealMul, lockedTownCount, isShopLimited, canEnterShop, recordShopEn
 import { isActivityDone } from '@/systems/activity';
 import { isGatherDone } from '@/systems/gathering';
 import { plotStatus, type PlotStatus } from '@/systems/farming';
-import { minutesLabel, remainingTimeLabel } from '@/systems/time';
+import { minutesLabel } from '@/systems/time';
 import WorldInteractionPanel from '@/components/WorldInteractionPanel.vue';
 import TacticalDraft from '@/components/combat/TacticalDraft.vue';
 import { colorLabel } from '@/systems/labels';
@@ -1052,7 +1052,7 @@ function enterLabel(): string {
 </script>
 
 <template>
-  <main v-if="nodeMap" class="map-view" :class="{ 'map-view--interaction-expanded': interactionExpanded && (!selectedNode || selectedNode.id === run.data.currentNodeId) }">
+  <main v-if="nodeMap" class="map-view" :class="{ 'map-view--overview': !selectedNode && !interactionExpanded, 'map-view--interaction-expanded': interactionExpanded && (!selectedNode || selectedNode.id === run.data.currentNodeId) }">
     <TacticalDraft class="map-draft" />
     <section class="graph">
       <svg
@@ -1192,9 +1192,8 @@ function enterLabel(): string {
     </section>
 
     <aside v-if="!selectedNode" class="drawer" aria-label="현재 장소 살펴보기">
-      <button class="drawer__expand" :aria-expanded="interactionExpanded" @click="interactionExpanded = !interactionExpanded">{{ interactionExpanded ? '지도 넓게 보기' : '주변 정보 펼치기' }}</button>
-      <p class="drawer__time">남은 원정 시간 {{ remainingTimeLabel(Math.max(0, (timeline?.timeLimit ?? 0) - run.data.visitedNodes.length)) }}</p>
-      <WorldInteractionPanel />
+      <button class="drawer__expand" :aria-expanded="interactionExpanded" @click="interactionExpanded = !interactionExpanded">{{ interactionExpanded ? '주변 접기' : '주변 살펴보기' }}</button>
+      <WorldInteractionPanel v-if="interactionExpanded" />
     </aside>
 
     <!-- Drawer -->
@@ -1211,7 +1210,6 @@ function enterLabel(): string {
         <span class="drawer__region-name">{{ selectedRegion.name }}</span>
       </div>
       <div class="drawer__status">상태: {{ nodeStatusLabel(selectedNode) }}</div>
-      <p class="drawer__time">이동·재입장 {{ minutesLabel(1) }} · 남은 시간 {{ remainingTimeLabel(Math.max(0, (timeline?.timeLimit ?? 0) - run.data.visitedNodes.length)) }}</p>
       <div
         v-if="plotStatuses.get(selectedNode.id)"
         class="drawer__plot"
@@ -1219,10 +1217,10 @@ function enterLabel(): string {
       >{{ plotStatusLine(plotStatuses.get(selectedNode.id)!) }}</div>
       <p v-if="chaosLockedNodes.has(selectedNode.id)" class="drawer__locked">🔒 카오스로 닫혀 들어갈 수 없다.</p>
       <p v-if="lockedEdgeReason" class="drawer__locked drawer__locked--edge">🔒 {{ lockedEdgeReason }}</p>
-      <p class="drawer__desc">{{ selectedNode.description }}</p>
+      <details v-if="selectedNode.description" class="drawer__desc"><summary>장소 정보</summary><p>{{ selectedNode.description }}</p></details>
       <template v-if="selectedNode.id === run.data.currentNodeId">
-        <button class="drawer__expand" :aria-expanded="interactionExpanded" @click="interactionExpanded = !interactionExpanded">{{ interactionExpanded ? '지도 넓게 보기' : '주변 정보 펼치기' }}</button>
-        <WorldInteractionPanel />
+        <button class="drawer__expand" :aria-expanded="interactionExpanded" @click="interactionExpanded = !interactionExpanded">{{ interactionExpanded ? '주변 접기' : '주변 살펴보기' }}</button>
+        <WorldInteractionPanel v-if="interactionExpanded" />
       </template>
 
       <div class="drawer__actions">
@@ -1689,7 +1687,9 @@ function enterLabel(): string {
   font: inherit;
 }
 
-.drawer__expand { display: none; }
+.drawer__expand { display: block; flex-shrink: 0; min-height: 44px; border: 1px solid #536279; border-radius: 6px; padding: .45rem .65rem; color: #cddcf0; background: #263040; font: inherit; cursor: pointer; }
+.map-view--overview { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; }
+.map-view--overview .drawer { grid-column: 1; grid-row: 2; height: auto; }
 
 /* 모바일: 지도(위) + 드로어(아래) 2행 — 드로어가 오버레이가 아니라 한 행을 차지하므로
    지도가 드로어를 *제외한 나머지 영역*에 맞춰 줄어든다. 드로어는 완전 불투명. */
@@ -1701,7 +1701,7 @@ function enterLabel(): string {
     grid-template-columns: 1fr;
     /* 지도 영역을 1.3~1.4배 확보 — 기존 1fr/46vh → 1fr/32vh (지도 ≈ 68vh).
        드로어는 미선택 시 빈 패널(노드 선택 안내)이 채워 화면이 흔들리지 않는다. */
-    grid-template-rows: 1fr 32vh;
+    grid-template-rows: minmax(0, 1fr) auto;
     /* 좌우 패딩도 살짝 축소 — 지도가 가로로 더 넉넉히. */
     padding: 0.6rem 0.6rem 0.6rem;
     gap: 0.6rem;
@@ -1714,7 +1714,7 @@ function enterLabel(): string {
     grid-column: 1;
     grid-row: 2;
     position: static;
-    height: 100%;
+    height: auto;
     max-height: 32vh;
     overflow-y: auto;
     padding: 0.8rem;

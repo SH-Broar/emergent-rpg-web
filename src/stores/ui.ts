@@ -88,6 +88,7 @@ export interface PendingRunSetup {
 
 export const useUiStore = defineStore('ui', {
   state: () => ({
+    tutorialTopic: null as 'combat' | 'colors' | 'life' | 'world' | null,
     toasts: [] as Toast[],
     colorPops: [] as ColorPop[],
     /** 보상 패널 큐 — 맨 앞(0번)을 RewardPanel이 표시. 연속 배치는 순차로 쌓였다가 하나씩 소비된다. */

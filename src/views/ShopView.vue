@@ -17,7 +17,7 @@ import {
   purchaseShopRest,
 } from '@/systems/shop';
 import { getCraftingDiscount } from '@/systems/relic';
-import { relicEffectText, relicTriggerLabel, cardDetailText, relicDetailText } from '@/systems/labels';
+import { relicEffectText, relicTriggerLabel, cardDetailText, relicDetailText, colorLabel } from '@/systems/labels';
 import Collapsible from '@/components/Collapsible.vue';
 import type { Card } from '@/data/schemas';
 
@@ -101,10 +101,8 @@ onMounted(() => {
       <h1>{{ currentNode?.label ?? '상점' }}</h1>
     </header>
 
-    <p v-if="currentNode?.description" class="desc">{{ currentNode.description }}</p>
 
     <div class="resources">
-      <span>HP {{ run.data.hp }}/{{ run.data.maxHp }}</span>
       <span class="gold">골드 {{ run.data.gold }}</span>
       <span v-if="discountPercent > 0" class="disc">할인 {{ discountPercent }}%</span>
     </div>
@@ -129,12 +127,10 @@ onMounted(() => {
             <span class="slot__rank">{{ rankLabel(cardDef(slot.cardId)?.rank ?? '') }}</span>
           </div>
           <p class="slot__meta">
-            cost {{ cardDef(slot.cardId)?.cost ?? 0 }}
-            · {{ cardDef(slot.cardId)?.element ?? '—' }}
+            마나 {{ cardDef(slot.cardId)?.cost ?? 0 }}
+            · {{ colorLabel(cardDef(slot.cardId)?.element) }}
           </p>
-          <p v-if="cardDef(slot.cardId)?.flavor" class="slot__flavor">
-            {{ cardDef(slot.cardId)?.flavor }}
-          </p>
+          <details class="slot__flavor"><summary>효과</summary><p>{{ cardDetailText(cardDef(slot.cardId)) }}</p></details>
           <button
             class="slot__buy"
             :disabled="slot.purchased || run.data.gold < slot.price"
@@ -164,9 +160,6 @@ onMounted(() => {
           <ul class="slot__effects">
             <li v-for="(t, ei) in relicLines(slot.relicId)" :key="ei">· {{ t }}</li>
           </ul>
-          <p v-if="relicDef(slot.relicId)?.flavor" class="slot__flavor">
-            {{ relicDef(slot.relicId)?.flavor }}
-          </p>
           <button
             class="slot__buy"
             :disabled="slot.purchased || run.data.gold < slot.price"
@@ -196,7 +189,7 @@ onMounted(() => {
             <span class="slot__name">{{ itemName(slot.itemId) }}</span>
             <span class="slot__rank">재고 {{ slot.stock }}</span>
           </div>
-          <p v-if="itemDesc(slot.itemId)" class="slot__flavor">{{ itemDesc(slot.itemId) }}</p>
+          <details v-if="itemDesc(slot.itemId)" class="slot__flavor"><summary>용도</summary><p>{{ itemDesc(slot.itemId) }}</p></details>
           <button
             class="slot__buy"
             :disabled="slot.stock <= 0 || run.data.gold < slot.price"
@@ -216,7 +209,6 @@ onMounted(() => {
             <span class="slot__name">휴식</span>
             <span class="slot__rank">HP +{{ restHealAmount }}</span>
           </div>
-          <p class="slot__flavor">지친 몸을 잠시 누인다.</p>
           <button
             class="slot__buy"
             :disabled="inventory.restPurchase.used || run.data.gold < inventory.restPurchase.price"

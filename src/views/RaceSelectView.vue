@@ -97,7 +97,6 @@ onMounted(() => {
     <header class="hdr">
       <button class="back" @click="back">← 챕터 선택</button>
       <h1>캐릭터 선택</h1>
-      <p class="sub">플레이할 캐릭터를 선택해주세요.</p>
     </header>
 
     <section v-if="raceOptions.length > 0" class="grid">
@@ -110,9 +109,8 @@ onMounted(() => {
       >
         <div class="card__head">
           <span class="card__name">{{ raceLabel(race) }}</span>
-          <span class="card__cat">{{ race.category }}</span>
         </div>
-        <p v-if="race.description" class="card__desc">{{ race.description }}</p>
+        <p v-if="race.description && canSelectRace(race.id)" class="card__desc">{{ race.description }}</p>
         <span v-if="!canSelectRace(race.id)" class="card__lock">🔒 연구에서 해금</span>
       </button>
     </section>

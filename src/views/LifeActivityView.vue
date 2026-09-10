@@ -7,7 +7,6 @@ import { useRunStore } from '@/stores/run';
 import { useUiStore } from '@/stores/ui';
 import { useDataStore } from '@/stores/data';
 import { colorLabel } from '@/systems/labels';
-import { eulReul, iGa } from '@/systems/josa';
 import { remainingTimeLabel } from '@/systems/time';
 import { lifeCapabilities, productionDuration, productionYield, PRODUCTION_MODES, type ProductionMode } from '@/systems/life-production';
 import LifeMasteryPanel from '@/components/LifeMasteryPanel.vue';
@@ -26,7 +25,6 @@ import {
   plotMinimumYield,
   hasAutomaticCare,
   careLabelFor,
-  plotLabelFor,
   cropDisplayName,
   type CropDef,
   type HarvestResult,
@@ -218,16 +216,14 @@ const careCost = computed(() => {
   if (cropId === 'crop-char') return '숯 1개 사용';
   return '배치와 상태 조정';
 });
-const plotLabel = computed(() => plotLabelFor(plotCrop.value ?? activityCrop.value));
 
 /** 직전 수확 결과. */
 const lastHarvest = ref<HarvestResult | null>(null);
 
-/** 심기 클릭 → 미니게임을 *먼저* 띄운다(item 3: 지연형은 시작할 때 솜씨를 발휘, 결과는 수확 때 반영). */
+/** 기본 심기는 즉시 처리하고, 정성껏 심기에만 미니게임을 제공한다. */
 function doPlant() {
   if (!activityCrop.value) return;
-  pendingEnhanced.value = false;
-  openMinigame('plant');
+  runPlant(0);
 }
 
 /** 정성껏 심기(item 8) — 재료 1개를 들여 상품을 거의 보장. 재료 없으면 무효(버튼 비활성). */
@@ -237,7 +233,7 @@ function doPlantFine() {
   openMinigame('plant');
 }
 
-/** 실제 심기(미니게임 보너스를 텃밭에 적립). 미니게임 done/skip에서만 호출. */
+/** 기본 심기 또는 정성껏 심기의 보너스를 텃밭에 적립한다. */
 function runPlant(bonus: number, enhanceMaterialId?: string) {
   const crop = activityCrop.value;
   if (crop && plant(nodeId.value, crop.id, bonus, productionMode.value, enhanceMaterialId)) {
@@ -253,7 +249,7 @@ function doCare() {
   }
 }
 
-/** 수확 — 미니게임은 *심을 때* 이미 했으므로(item 3) 여기서는 바로 거둔다(텃밭에 적립된 보너스 반영). */
+/** 텃밭에 적립된 보너스를 반영하여 바로 수확한다. */
 function doHarvest() {
   runHarvest(0);
 }
@@ -264,8 +260,6 @@ function runHarvest(upperBonus: number) {
   if (result) {
     lastHarvest.value = result;
     tick.value++;
-    // 수확 전리품을 보상 패널로 — 요약을 라인으로 분해(컬러 팝은 별개로 유지). (2026-07-02)
-    ui.pushRewardPanel({ title: '수확', lines: harvestSummary.value.split(' · ') });
   }
 }
 
@@ -301,10 +295,9 @@ const repeatChance = computed(() => repeatUpperChance(activity.value));
 /** 직전 반복 수행 결과. */
 const lastRepeat = ref<RepeatResult | null>(null);
 
-/** 수행 클릭 → 미니게임을 띄운다(결과로 상위확률 보너스). */
+/** 기본 채집은 즉시 처리한다. */
 function doRepeat() {
-  pendingEnhanced.value = false;
-  openMinigame('repeat');
+  runRepeat(0);
 }
 
 /** 정성껏 수행(item 8) — 재료 1개를 들여 상품을 거의 보장. 재료 없으면 무효(버튼 비활성). */
@@ -314,14 +307,12 @@ function doRepeatFine() {
   openMinigame('repeat');
 }
 
-/** 실제 반복 수행(보너스 반영). 미니게임 done/skip에서만 호출. */
+/** 기본 채집 또는 미니게임 보너스를 반영한 채집을 처리한다. */
 function runRepeat(upperBonus: number, enhanceMaterialId?: string) {
   const result = performRepeat(nodeId.value, activity.value, upperBonus, enhanceMaterialId);
   if (result) {
     lastRepeat.value = result;
     tick.value++;
-    // 반복 산출을 보상 패널로 — 요약을 라인으로 분해(컬러 팝은 별개로 유지). (2026-07-02)
-    ui.pushRewardPanel({ title: '수확', lines: repeatSummary.value.split(' · ') });
   }
 }
 
@@ -353,18 +344,14 @@ onMounted(() => {
         <h1>{{ nodeLabel }} <span class="hdr__tag" :style="{ '--hex': elementHex(activity.element) }">{{ activity.name }}</span></h1>
         <button class="back" @click="leave">← 맵으로</button>
       </div>
-      <p class="life">생활 레벨 {{ lifeLevel }} · 생산·돌봄·수확은 각각 {{ remainingTimeLabel(1) }}</p>
     </header>
 
-    <LifeMasteryPanel v-model="productionMode" :show-modes="isDelayed && !plot" />
-
     <!-- ===== 지연형 (농사 엔진) ===== -->
-    <section v-if="siteDestroyed" class="plot"><p class="hint">생산지가 파괴되어 사용할 수 없습니다. 남아 있던 생산도 멈췄습니다.</p><button class="action" @click="leave">지도로 돌아가기</button></section>
+    <section v-if="siteDestroyed" class="plot"><p class="hint">파괴된 생산지</p><button class="action" @click="leave">떠나기</button></section>
     <template v-else-if="isDelayed">
       <!-- 빈자리 — 시작 -->
       <section v-if="!plot" class="start">
-        <p class="sub">{{ plotLabel }}{{ iGa(plotLabel) }} 비어 있다. {{ activity.name }}{{ eulReul(activity.name) }} 시작한다.</p>
-        <p v-if="lastHarvest" class="harvest-note">방금 거둔 자리. {{ harvestSummary }}</p>
+        <p v-if="lastHarvest" class="harvest-note" role="status">{{ harvestSummary }}</p>
         <div class="seed-row">
           <button
             class="seed seed--single"
@@ -374,7 +361,6 @@ onMounted(() => {
             <span class="seed__dot" :style="{ background: elementHex(activity.element) }" />
             <span class="seed__name">{{ activityCrop?.seedName ?? activity.name }}</span>
             <span class="seed__meta">완성 {{ durationFor(activityCrop?.growTurns ?? 0) }}</span>
-            <span class="seed__meta">돌봄 없이도 완성</span>
           </button>
           <button
             class="seed seed--single seed--fine"
@@ -387,8 +373,7 @@ onMounted(() => {
             <span class="seed__meta">상품 확률 +50%p</span>
           </button>
         </div>
-        <p class="preview">기본 산출 2개 · 수확 시 생활 경험치 +1~2. 원정 중에도 자라고, 완성 후 자연히 시들지는 않지만, 다른 이도 이곳을 이용할 수 있습니다.</p>
-        <p class="mat-line">보유 재료: {{ materialName }} {{ materialCount }} <span class="mat-line__hint">(상점에서 구매)</span></p>
+        <p class="preview">원정 중에도 성장 · 기본 2개</p>
       </section>
 
       <!-- 자라는 중 / 수확 가능 -->
@@ -401,13 +386,8 @@ onMounted(() => {
         <div class="bar">
           <div class="bar__fill" :style="{ width: growPct + '%', background: elementHex(plotCrop?.element ?? '') }" />
         </div>
-        <p class="bar__label">{{ productionLabel }} · {{ ready ? '완성 · 현장 보관 중' : '완성까지 ' + remainingTimeLabel(currentStatus.remaining) }} · 선택 돌봄 {{ plot.wateredCount }} / {{ plot.waterAt.length }}회</p>
-        <p v-if="automaticCare" class="preview">보존 관리가 적용됩니다. 떠나 있는 동안 선택 돌봄도 자동으로 이루어집니다.</p>
-        <p class="preview">상품 확률 {{ delayedUpperChance }}% · {{ ready ? '보관 중인 산출' : '현재 보장 산출' }} {{ minimumYield }}개 <span v-if="!ready">(상품이면 +1개)</span></p>
-
-        <p v-if="ready" class="hint">생산이 끝나 이곳에 보관 중입니다. 다른 이가 가져가면 남은 양만 수확합니다.</p>
-        <p v-else class="hint">세계 시간이 흐르는 동안 계속 생산됩니다. 다른 이도 이곳의 생산을 돌보거나 수확할 수 있습니다.</p>
-        <button v-if="wantsCare" class="action action--water" @click="doCare">{{ careLabel }} (선택: {{ careCost }} · 품질과 산출 증가)</button>
+        <p class="bar__label">{{ ready ? '수확 가능' : remainingTimeLabel(currentStatus.remaining) + ' 후 완성' }} · {{ minimumYield }}개</p>
+        <button v-if="wantsCare" class="action action--water" @click="doCare">{{ careLabel }} · {{ careCost }}</button>
         <button v-if="ready" class="action action--harvest" @click="doHarvest">수확</button>
         <button class="action action--leave" @click="leave">원정 다녀오기</button>
       </section>
@@ -416,32 +396,35 @@ onMounted(() => {
     <!-- ===== 반복형 (즉시 산출 + 쿨다운) ===== -->
     <template v-else>
       <section class="repeat">
-        <p class="sub">{{ activity.name }}{{ eulReul(activity.name) }} 할 수 있는 자리다.</p>
-        <p v-if="lastRepeat" class="harvest-note">방금 거둔 것. {{ repeatSummary }}</p>
+        <p v-if="lastRepeat" class="harvest-note" role="status">{{ repeatSummary }}</p>
 
         <template v-if="repeatReady">
-          <p class="hint">{{ activity.verb }}.</p>
-          <p class="preview">상품 확률 {{ repeatChance }}% · 보장 산출 {{ productionYield(lifeLevel, false) }}개 (상품이면 +1개)</p>
-          <p class="preview">수확 후 재생까지 {{ remainingTimeLabel(REPEAT_COOLDOWN) }}. 다른 곳을 다녀오면 다시 채집할 수 있습니다.</p>
           <button
             class="action action--harvest"
             :style="{ '--hex': elementHex(activity.element) }"
             @click="doRepeat"
-          >{{ activity.verb }}</button>
+          >{{ activity.verb }} · {{ productionYield(lifeLevel, false) }}개 이상</button>
           <button
             class="action action--fine"
             :disabled="!hasMaterial"
             @click="doRepeatFine"
-          >정성껏 {{ activity.verb }} ({{ materialName }} 1 소모, 상품 ↑)</button>
-          <p class="mat-line">보유 재료: {{ materialName }} {{ materialCount }} <span class="mat-line__hint">(상점에서 구매)</span></p>
+          >정성껏 · {{ materialName }} 1 · 상품 ↑</button>
         </template>
 
         <template v-else>
-          <p class="hint hint--water">방금 다녀갔다. {{ remainingTimeLabel(cooldownLeft) }}쯤 지나야 다시 할 수 있다.</p>
+          <p class="hint hint--water">{{ remainingTimeLabel(cooldownLeft) }} 후 재생</p>
           <button class="action action--leave" @click="leave">다녀오기</button>
         </template>
       </section>
     </template>
+
+    <details class="production-details">
+      <summary>생산 정보 · 숙련 {{ lifeLevel }}</summary>
+      <LifeMasteryPanel v-model="productionMode" :show-modes="isDelayed && !plot" />
+      <p>행동 {{ remainingTimeLabel(1) }} · 재료 {{ materialCount }}개</p>
+      <p v-if="isDelayed && plot">{{ productionLabel }} · 상품 {{ delayedUpperChance }}% · 돌봄 {{ plot.wateredCount }}/{{ plot.waterAt.length }}<template v-if="automaticCare"> · 자동 관리</template></p>
+      <p v-else-if="!isDelayed">상품 {{ repeatChance }}% · 재생 {{ remainingTimeLabel(REPEAT_COOLDOWN) }}</p>
+    </details>
 
     <!-- ===== 미니게임 모달 (스킬 표현) ===== -->
     <div v-if="minigameOpen" class="mg-overlay" @click.self="skipMinigame">
@@ -450,7 +433,6 @@ onMounted(() => {
           <h2>{{ activity.name }}</h2>
           <button class="mg-modal__skip" @click="skipMinigame">건너뛰기</button>
         </header>
-        <p class="mg-modal__hint">잘할수록 상품이 나올 확률이 오른다.</p>
         <div class="mg-modal__body">
           <GatherTap
             v-if="minigameKind === 'tap'"
@@ -484,6 +466,9 @@ onMounted(() => {
 </template>
 
 <style scoped>
+.production-details { color: #b6b6c4; font-size: .85rem; }
+.production-details summary { cursor: pointer; padding: .7rem 0; }
+.life-view .action { min-height: 48px; }
 .life-view { max-width: 680px; margin: 0 auto; padding: 3rem 2rem; min-height: 100vh; min-height: 100dvh; }
 .hdr__top { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
 .hdr h1 { color: #f0d68e; margin: 0 0 0.3rem; }

@@ -10,7 +10,7 @@ import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
-import { cardEffectKindLabel, cardDetailText } from '@/systems/labels';
+import { cardEffectKindLabel, cardDetailText, colorLabel } from '@/systems/labels';
 import {
   RARE_MATERIAL_ID_ACT1,
   awakenCard,
@@ -42,6 +42,12 @@ import type { Item, Rank } from '@/data/schemas';
 const router = useRouter();
 const run = useRunStore();
 const data = useDataStore();
+const workTabs = [
+  { id: 'craft', name: '카드' }, { id: 'potion', name: '포션' },
+  { id: 'process', name: '가공' }, { id: 'awaken', name: '각성' },
+  { id: 'legendary', name: '전설' }, { id: 'remove', name: '정리' },
+] as const;
+const workTab = ref<(typeof workTabs)[number]['id']>('craft');
 
 const nodeId = computed(() => run.data.currentNodeId);
 
@@ -173,35 +179,35 @@ onMounted(() => {
       <h1>{{ currentNode?.label ?? '공방' }}</h1>
     </header>
 
-    <p v-if="currentNode?.description" class="desc">{{ currentNode.description }}</p>
 
     <div class="resources">
-      <span>HP {{ run.data.hp }}/{{ run.data.maxHp }}</span>
       <span>골드 {{ run.data.gold }}</span>
       <span class="shards">시간의 조각 {{ run.data.timeShards }}</span>
     </div>
 
+    <nav class="work-tabs" aria-label="공방 작업"><button v-for="tab in workTabs" :key="tab.id" :aria-pressed="workTab === tab.id" @click="workTab = tab.id">{{ tab.name }}</button></nav>
+
     <!-- 카드 각성 섹션 — 5강에 닿은 카드를 속성 특산물 + 사다리 재료로 진화. -->
-    <section class="section">
+    <section v-if="workTab === 'awaken'" class="section">
       <header class="section__hdr">
-        <h2>카드 각성 <span class="cost">— 5강 카드를 속성 특산물 + 사다리 재료로 진화</span></h2>
+        <h2>카드 각성</h2>
         <button v-if="!awakenMode" class="toggle" @click="awakenMode = true" :disabled="awakenables.length === 0">
-          각성할 카드 고르기 ({{ awakenables.length }}장 가능)
+          카드 선택 ({{ awakenables.length }})
         </button>
         <button v-else class="cancel" @click="awakenMode = false">접기</button>
       </header>
-      <p class="awaken__desc">레벨업으로 5강에 닿은 카드를 각성하면 더 강한 모습으로 바뀌고 6~10강이 열린다.</p>
+      <p class="awaken__desc">5강 → 각성 · 10강까지 성장</p>
       <ul v-if="awakenMode" class="upgrade__list">
         <li v-for="c in awakenables" :key="c.instanceId" class="upgrade__item upgrade__item--awaken">
           <div class="upgrade__main">
             <div class="upgrade__name">{{ c.name }} <span class="rank">{{ rankLabel(c.rank) }} · 5강</span></div>
-            <div class="upgrade__meta">cost {{ c.cost }} · {{ effectSummary(c) }}</div>
+            <div class="upgrade__meta">마나 {{ c.cost }} · {{ effectSummary(c) }}</div>
             <div class="upgrade__reqline">각성 비용: {{ awakenCostLabel(c) }}</div>
           </div>
           <div class="upgrade__arrow">+</div>
           <div class="upgrade__main upgrade__target">
             <div class="upgrade__name">{{ c.upgradeToId ? (cardDef(c.upgradeToId)?.name ?? c.upgradeToId) : (c.name + ' (강화)') }}</div>
-            <div class="upgrade__meta" v-if="c.upgradeToId">cost {{ cardDef(c.upgradeToId)?.cost ?? '?' }} · {{ effectSummary(cardDef(c.upgradeToId)) }}</div>
+            <div class="upgrade__meta" v-if="c.upgradeToId">마나 {{ cardDef(c.upgradeToId)?.cost ?? '?' }} · {{ effectSummary(cardDef(c.upgradeToId)) }}</div>
             <div class="upgrade__meta" v-else>수치 도약 (전용 진화형 없음)</div>
           </div>
           <button
@@ -217,9 +223,9 @@ onMounted(() => {
     </section>
 
     <!-- 희귀+ 제작 섹션 -->
-    <section class="section">
+    <section v-if="workTab === 'craft'" class="section">
       <header class="section__hdr">
-        <h2>희귀+ 카드 제작 <span class="cost">— 시간조각 {{ forgePrice }} / 1장 한정</span></h2>
+        <h2>카드 제작 <span class="cost">조각 {{ forgePrice }} · 1장 한정</span></h2>
       </header>
       <ul class="forge__grid">
         <li
@@ -234,13 +240,10 @@ onMounted(() => {
             <span class="slot__rank">{{ rankLabel(cardDef(slot.cardId)?.rank ?? '') }}</span>
           </div>
           <p class="slot__meta">
-            cost {{ cardDef(slot.cardId)?.cost ?? 0 }}
-            · {{ cardDef(slot.cardId)?.element ?? '—' }}
+            마나 {{ cardDef(slot.cardId)?.cost ?? 0 }}
+            · {{ colorLabel(cardDef(slot.cardId)?.element) }}
           </p>
           <p class="slot__effects">{{ effectSummary(cardDef(slot.cardId)) }}</p>
-          <p v-if="cardDef(slot.cardId)?.flavor" class="slot__flavor">
-            {{ cardDef(slot.cardId)?.flavor }}
-          </p>
           <p v-if="slot.requiredSpecialtyId" class="slot__req">
             요구 특산물:
             <span :class="{ ok: hasItem(slot.requiredSpecialtyId), miss: !hasItem(slot.requiredSpecialtyId) }">
@@ -259,9 +262,9 @@ onMounted(() => {
     </section>
 
     <!-- 희귀 포션 제작 섹션 -->
-    <section class="section">
+    <section v-if="workTab === 'potion'" class="section">
       <header class="section__hdr">
-        <h2>희귀 포션 제작 <span class="cost">— 시간조각 + 희귀 재료 / 매번 가능</span></h2>
+        <h2>포션 제작</h2>
       </header>
       <ul class="forge__grid">
         <li
@@ -274,7 +277,6 @@ onMounted(() => {
             <span class="slot__rank">{{ itm.combat ? '전투' : '맵' }}</span>
           </div>
           <p class="slot__effects">{{ potionEffectSummary(itm) }}</p>
-          <p v-if="itm.description" class="slot__flavor">{{ itm.description }}</p>
           <p class="slot__req">필요: {{ potionCostLabel(itm.rank) }}</p>
           <button
             class="slot__buy"
@@ -289,11 +291,10 @@ onMounted(() => {
     </section>
 
     <!-- 아이템 가공 섹션 (item 9) — 생활 산출물(티어1) → 2차 가공품(엘리트 의뢰가 요구하는 품목). -->
-    <section class="section">
+    <section v-if="workTab === 'process'" class="section">
       <header class="section__hdr">
-        <h2>아이템 가공 <span class="cost">— 생활 산출물 {{ PROCESS_INPUT_COUNT }}개 → 2차 가공품 1개 (엘리트 의뢰용)</span></h2>
+        <h2>가공 <span class="cost">산출물 {{ PROCESS_INPUT_COUNT }}개 → 가공품 1개</span></h2>
       </header>
-      <p class="awaken__desc">채집·농사로 모은 산출물을 가공하면 엘리트가 요구하는 2차 가공품이 된다. 하위·상위 산출물 모두 재료로 쓴다.</p>
       <ul class="forge__grid">
         <li
           v-for="r in processRecipes"
@@ -324,13 +325,12 @@ onMounted(() => {
     </section>
 
     <!-- 전설 제작 — 마을 고유 풀 -->
-    <section class="section">
+    <section v-if="workTab === 'legendary'" class="section">
       <header class="section__hdr">
-        <h2>전설 제작 <span class="cost">— 시간조각 {{ legendaryCost }} + 특산물 + 희소 재료 / 매번 가능</span></h2>
+        <h2>전설 제작 <span class="cost">조각 {{ legendaryCost }} + 재료</span></h2>
       </header>
       <p class="rare-status">
         희소 재료 보유: <strong>{{ rareMaterialCount() }}</strong>
-        <span v-if="rareMaterialCount() === 0" class="hint"> (엘리트·보스·이벤트·후반 채집에서 획득)</span>
       </p>
       <ul class="legendary__grid">
         <li v-for="r in legendaryRecipes" :key="r.cardId" class="legendary slot slot--legendary" :class="{ 'legendary--ready': canCraftLegendary(r) }">
@@ -339,9 +339,6 @@ onMounted(() => {
             <span class="legendary__region">{{ r.regionName }}</span>
           </div>
           <p class="slot__effects">{{ effectSummary(cardDef(r.cardId)) }}</p>
-          <p v-if="cardDef(r.cardId)?.flavor" class="slot__flavor">
-            {{ cardDef(r.cardId)?.flavor }}
-          </p>
           <div class="legendary__req">
             <span :class="{ ok: run.data.timeShards >= legendaryCost, miss: run.data.timeShards < legendaryCost }">
               시간조각 {{ legendaryCost }}
@@ -366,9 +363,9 @@ onMounted(() => {
     </section>
 
     <!-- 카드 제거 섹션 -->
-    <section class="section">
+    <section v-if="workTab === 'remove'" class="section">
       <header class="section__hdr">
-        <h2>카드 제거 <span class="cost">— 덱이 꽉 찰 때만 가능 / 제거 시 슬롯 -1</span></h2>
+        <h2>카드 제거</h2>
         <button
           v-if="!removalMode"
           class="toggle"
@@ -379,11 +376,11 @@ onMounted(() => {
         </button>
         <button v-else class="cancel" @click="removalMode = false">취소</button>
       </header>
-      <p class="removal__desc">컬렉션의 카드 1장을 영구 제거합니다. 제거 시 덱 슬롯도 1 감소합니다.</p>
+      <p class="removal__desc">카드 영구 제거 · 덱 슬롯 −1</p>
       <ul v-if="removalMode" class="removal__list">
         <li v-for="c in run.data.collection" :key="c.instanceId" class="removal__item">
           <span class="removal__name">{{ c.name }}</span>
-          <span class="removal__meta">cost {{ c.cost }} · {{ rankLabel(c.rank) }}</span>
+          <span class="removal__meta">마나 {{ c.cost }} · {{ rankLabel(c.rank) }}</span>
           <button class="removal__pick" @click="pickRemovalTarget(c.instanceId!)">제거</button>
         </li>
       </ul>
@@ -394,6 +391,11 @@ onMounted(() => {
 </template>
 
 <style scoped>
+.work-tabs { display: flex; gap: .35rem; margin: 1rem 0; }
+.work-tabs button { flex: 1; min-height: 44px; padding: .4rem; font: inherit; color: #b6b6c4; background: #24212f; border: 1px solid #514b65; border-radius: 6px; cursor: pointer; }
+.work-tabs button[aria-pressed="true"] { color: #f6e8b8; border-color: #f6e8b8; }
+.work-tabs button:focus-visible { outline: 2px solid #c08eff; outline-offset: 2px; }
+@media (max-width: 420px) { .work-tabs { display: grid; grid-template-columns: repeat(3, 1fr); } }
 .workshop-view { max-width: 880px; margin: 0 auto; padding: 2rem; min-height: 100vh; min-height: 100dvh; }
 .back { background: none; border: 1px solid rgba(255,255,255,0.2); color: #c0b693; padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; margin-bottom: 1rem; font: inherit; }
 h1 { color: #c08eff; margin: 0; }
@@ -471,7 +473,6 @@ h1 { color: #c08eff; margin: 0; }
 .slot__rank { color: #888; font-size: 0.75rem; }
 .slot__meta { color: #b6b6c4; font-size: 0.8rem; margin: 0; }
 .slot__effects { color: #d0f0ff; font-size: 0.82rem; margin: 0; }
-.slot__flavor { color: #888; font-size: 0.78rem; font-style: italic; margin: 0; }
 
 .slot__buy {
   margin-top: auto;

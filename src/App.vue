@@ -22,6 +22,7 @@ import DayBanner from '@/components/DayBanner.vue';
 import LoadingOverlay from '@/components/LoadingOverlay.vue';
 import ColorPopOverlay from '@/components/ColorPopOverlay.vue';
 import RewardPanel from '@/components/RewardPanel.vue';
+import TutorialDialog from '@/components/TutorialDialog.vue';
 // side-effect: 이벤트 customEffect 핸들러 자동 등록.
 import '@/systems/event-effects';
 
@@ -142,6 +143,7 @@ onMounted(async () => {
 
     <!-- 보상 패널 (전리품/수확/우편) — 큐 앞을 순차 표시. 토스트와 달리 확인해야 닫힌다. -->
     <RewardPanel />
+    <TutorialDialog />
 
     <!-- 전역 토스트 -->
     <div class="toast-stack" aria-live="polite">

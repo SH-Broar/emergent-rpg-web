@@ -1,7 +1,7 @@
 # 전술은 항상 가능한 기본 행동을 확장한다. 수치는 피해만 강화되고 지속시간은 고정.
 [card.c-tactic-water]
 name = 물길 열기
-description = 조준한 십자 5칸을 3라운드 적신다. 불을 끄면 연기 2라운드. 젖은 마물에게 전격을 연결하자.
+description = 십자 범위 · 젖음 3라운드
 rank = common
 source = shop
 element = water
@@ -15,7 +15,7 @@ cast_speed = fast
 
 [card.c-tactic-spark]
 name = 도전성 섬광
-description = 조준 칸에 전격 피해. 젖은 칸의 마물은 추가 피해 4를 받고 그 칸의 물이 소모된다.
+description = 전격 7 · 젖으면 +4, 물 소모
 rank = common
 source = shop
 element = electric
@@ -29,7 +29,7 @@ cast_speed = normal
 
 [card.c-tactic-shove]
 name = 경로 바꾸기
-description = 인접 마물들에게 피해를 주고 한 칸 밀어낸다. 벽이나 다른 전투원에 막히면 충돌 피해 3. 불길로 밀어 넣을 수 있다.
+description = 인접 피해 5 · 밀치기 1칸 · 충돌 +3
 rank = common
 source = shop
 element = wind
@@ -42,7 +42,7 @@ cast_speed = fast
 
 [card.c-tactic-fire]
 name = 흩뿌린 잿불
-description = 조준한 십자 5칸에 불길 3라운드. 불길 위의 모든 전투원은 라운드 끝에 피해 3. 젖은 칸에서는 불 대신 연기 2라운드.
+description = 십자 불길 3라운드 · 매 라운드 피아 피해 3
 rank = common
 source = shop
 element = fire
@@ -56,7 +56,7 @@ cast_speed = slow
 
 [card.c-tactic-smoke]
 name = 연막 가루
-description = 자신과 사방에 연기 2라운드. 연기를 사이에 둔 먼 마물은 공격 대상을 잃지만 인접 공격은 계속된다. 물자 회수나 재배치에 활용한다.
+description = 주변 연기 2라운드 · 원거리 시야 차단
 rank = common
 source = shop
 element = dark
@@ -69,7 +69,7 @@ cast_speed = fast
 
 [card.c-tactic-lure]
 name = 메아리 미끼
-description = 조준 칸에서 2라운드 소음을 낸다. 인접하지 않은 마물은 소음 쪽으로 이동한다. 미끼를 불길에 던지거나 퇴로에서 멀리 던질 수 있다.
+description = 소음 2라운드 · 먼 마물 유인
 rank = common
 source = shop
 element = iron

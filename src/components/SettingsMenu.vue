@@ -68,6 +68,7 @@ function doAbandon() {
         </header>
 
         <div class="set-body">
+          <button class="set-btn" @click="emit('close'); ui.tutorialTopic = 'combat'">튜토리얼</button>
           <!-- 1) 현재 시대 -->
           <section class="set-sec">
             <h3 class="set-sec__title">현재 시대</h3>
@@ -80,21 +81,19 @@ function doAbandon() {
           <!-- 2) 프로토타입 — 그림 placeholder 토글 (기본 OFF). -->
           <section class="set-sec">
             <h3 class="set-sec__title">프로토타입</h3>
-            <p class="set-hint">캐릭터가 들어갈 자리에 도형이 표시됩니다. 그림 작업용 미리보기로, 게임 진행에는 영향이 없습니다.</p>
             <label class="set-toggle">
               <input
                 type="checkbox"
                 :checked="ui.debug.showPortraits"
                 @change="togglePortraits"
               />
-              <span>그림 프로토타입 (도형 placeholder 표시)</span>
+              <span>캐릭터 도형 표시</span>
             </label>
           </section>
 
           <!-- 3) 런 포기 -->
           <section class="set-sec">
             <h3 class="set-sec__title">런</h3>
-            <p class="set-hint">진행 중인 런을 포기합니다. 진행도(컬러·도감 등)는 메타에 반영되고, 활성 런은 종료됩니다.</p>
             <button
               v-if="!confirmStep"
               class="set-btn set-btn--danger"

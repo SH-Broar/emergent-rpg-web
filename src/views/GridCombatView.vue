@@ -189,7 +189,7 @@ const logOpen = ref(false);
  * 효과를 기본 표시한다. 익숙해지면 간략 모드로 바꿀 수 있다.
  * 상세 범위는 카드 hover·키보드 focus·길게 누르기로 확인한다.
  */
-const handCompact = ref(false);
+const handCompact = ref(true);
 
 const plan = computed<PlannedAction[]>(() => gc.value?.playerPlan ?? []);
 const planFull = computed(() => actionsLeft.value <= 0);
@@ -638,7 +638,7 @@ function enemyNextIntent(e: GridCombatant): { icon: string; text: string; kind: 
 
 // === 상단 적 패널(요청) — 대치 몬스터별 이름·HP·남은턴·의도. 감출 수 있고, 카드가 노리면 테두리. ===
 /** 적 패널 펼침 여부 — 기본 펼침, [감추기]로 접는다. */
-const enemyPanelOpen = ref(true);
+const enemyPanelOpen = ref(false);
 
 /** 플레이어 카드(지금 조준/hover 중 + 계획에 올린 카드)가 타격하는 칸 — 적 박스 테두리 강조용. */
 const targetedEnemyPositions = computed<Set<string>>(() => {
@@ -1440,7 +1440,7 @@ watch(
 
 // 보드 셀 크기(#4) 반응형 — 좁은 화면이면 참조 셀 75px, 아니면 99px(2026-06-25 1.3배 확대). matchMedia 변화 구독.
 let cellMql: MediaQueryList | null = null;
-function syncRefCell() { refCellPx.value = cellMql?.matches ? 96 : 110; }
+function syncRefCell() { refCellPx.value = cellMql?.matches ? 80 : 110; }
 
 onMounted(() => {
   cellMql = window.matchMedia('(max-width: 640px)');
@@ -1487,9 +1487,10 @@ onUnmounted(() => {
       <!-- 상단 바: 턴 / 마나 / 로그 -->
       <header class="topbar">
         <strong class="topbar__turn">라운드 {{ gc.turn }}</strong>
-        <span class="topbar__ap" aria-live="polite">남은 행동 <b>{{ actionsLeft }}</b> / {{ ACTIONS_PER_ROUND }}</span>
-        <span class="topbar__hp">체력 {{ tokenHp(gc.player) }} / {{ gc.player.maxHp }}<span v-if="tokenBlock(gc.player)"> · 방어 {{ tokenBlock(gc.player) }}</span></span>
+        <span class="topbar__ap" aria-live="polite">행동 <b>{{ actionsLeft }}</b> / {{ ACTIONS_PER_ROUND }}</span>
+        <span v-if="tokenBlock(gc.player)" class="topbar__hp">방어 {{ tokenBlock(gc.player) }}</span>
         <span class="topbar__mana">마나 {{ remainingMana }} / {{ gc.maxMana }}</span>
+        <details class="combat-tools"><summary>메뉴</summary><div class="combat-tools__body">
         <!-- 적 패널 토글 -->
         <button class="enemy-toggle" @click="enemyPanelOpen = !enemyPanelOpen">
           마물 {{ liveEnemies.length }} {{ enemyPanelOpen ? '▾' : '▸' }}
@@ -1500,7 +1501,9 @@ onUnmounted(() => {
           :class="{ 'topbar__logbtn--on': logOpen }"
           @click="logOpen = !logOpen"
         >기록</button>
-        <div v-if="committing" class="topbar__resolving">해소 중…</div>
+        <button class="topbar__logbtn" :disabled="committing" @click="ui.tutorialTopic = 'combat'">연습</button>
+        </div></details>
+        <div v-if="committing" class="topbar__resolving">실행 중…</div>
         <!-- 로그 패널 — 열었을 때만(레이아웃을 밀지 않게 오버레이). 최근 12줄. -->
         <div v-if="logOpen && (gc.log?.length ?? 0) > 0" class="combat-log combat-log--panel">
           <div v-for="(line, i) in gc.log!.slice(-12)" :key="i" class="combat-log__line">{{ line }}</div>
@@ -1525,14 +1528,12 @@ onUnmounted(() => {
 
       <section v-if="gc.objective" class="mission" aria-label="전투 목표">
         <div>
-          <strong>{{ gc.objective.label }}</strong>
-          <p>{{ gc.objective.recovered ? '보급품 확보. 출구로 이동한 뒤 철수를 선택하세요.' : '◆ 보급품에 인접해 회수 → 출구로 이동 → 철수. 모든 마물을 처치해도 승리합니다.' }}</p>
+          <strong>{{ gc.objective.recovered ? '출구로 귀환' : '◆ 보급품 회수 / 소탕' }}</strong>
         </div>
-        <span class="mission__state">{{ gc.objective.recovered ? '회수 완료' : recoveryPlanned ? '회수 계획됨' : '회수 대기' }}</span>
+        <span v-if="recoveryPlanned && !gc.objective.recovered" class="mission__state">회수 예약</span>
       </section>
       <section v-else class="mission mission--combat" aria-label="전투 목표">
         <strong>{{ isBoss ? '우두머리 마물 격파' : '전장의 마물 처치' }}</strong>
-        <p>이동·공격·방어는 손패와 무관하게 사용할 수 있습니다. 환경과 카드로 유리한 자리를 만드세요.</p>
       </section>
       <div class="tactics-layout">
       <!-- 격자 본체 -->
@@ -1784,10 +1785,10 @@ onUnmounted(() => {
           </div>
         </div>
 
-        <div class="field-key" aria-label="전장 범례">
+        <details class="field-key"><summary>범례</summary><div aria-label="전장 범례">
           <span>◉ 물통</span><span>♨ 화로</span><span v-if="gc.objective">◆ 보급품</span><span v-if="gc.objective">출구: 철수 지점</span>
-        </div>
-        <p v-if="mode !== 'idle'" class="board-hint">{{ mode === 'move' ? '파란 칸을 선택하세요. 행동이 남으면 연속 이동할 수 있습니다.' : mode === 'card' ? '빛나는 칸에서 카드의 범위를 확인하세요.' : '물통·화로·보급품 옆으로 이동하면 상호작용할 수 있습니다.' }}</p>
+        </div></details>
+        <p v-if="mode === 'move'" class="board-hint">이동할 칸 선택</p>
 
 
         <!-- 바닥 정보(#1) — idle에서 빈 칸을 탭하면 그 칸 타일 특성(이동/공중이동/공격/관통/설치/시야). -->
@@ -1815,9 +1816,8 @@ onUnmounted(() => {
       <!-- 행동 존(요청) — 한 줄: [배치된 카드 리스트 — 왼쪽 절반] [이동][아이템][교대] [턴종료=정사각형 오른쪽 끝]. -->
       <div class="action-zone">
         <!-- 배치된 카드/행동 리스트 — 세로(위로 길어짐). 적 턴 예고가 속도순으로 사이에 끼어든다(#6). -->
-        <div class="plan plan--inline">
-          <div class="plan__heading"><strong>이번 라운드 계획</strong><span>행동 {{ ACTIONS_PER_ROUND - actionsLeft }}/{{ ACTIONS_PER_ROUND }} · 예약 마나 {{ queuedManaCost }}</span></div>
-          <p class="plan__forecast-note">적의 현재 의도와 예상 적중입니다. 이동·상태 변화에 따라 달라질 수 있습니다.</p>
+        <div v-if="displayRows.length" class="plan plan--inline">
+          <div class="plan__heading"><strong>행동 순서</strong><span v-if="queuedManaCost">마나 −{{ queuedManaCost }}</span></div>
           <button v-if="plan.length > 0" class="plan__clear-x" :disabled="committing" @click="clearPlan" title="모두 비우기" aria-label="모두 비우기">×</button>
           <ul class="plan__slots">
             <li
@@ -1833,21 +1833,21 @@ onUnmounted(() => {
                 <span class="plan__num">{{ row.planIndex + 1 }}</span>
                 <span class="plan__txt">{{ row.label }}
                   <small v-if="!committing && planWarning(row.planIndex)" class="plan__warning">⚠ {{ planWarning(row.planIndex) }}</small>
-                  <small v-else-if="!committing && planHits(row.planIndex) > 0" class="plan__hits">예상 적중 {{ planHits(row.planIndex) }} 대상</small>
+                  <small v-else-if="!committing && planHits(row.planIndex) > 0" class="plan__hits">적중 {{ planHits(row.planIndex) }}</small>
                 </span>
                 <button v-if="!committing" class="plan__x" @click="removePlanLine(row.planIndex)" aria-label="이 줄 취소">×</button>
               </template>
               <template v-else>
                 <span class="plan__enemy-icon">{{ row.intentIcon }}</span>
-                <span class="plan__txt plan__txt--enemy">예상: {{ row.enemyName }}<span v-if="row.intentText" class="plan__enemy-dmg"> {{ row.intentText }}</span></span>
+                <span class="plan__txt plan__txt--enemy">{{ row.enemyName }}<span v-if="row.intentText" class="plan__enemy-dmg"> {{ row.intentText }}</span></span>
               </template>
             </li>
-            <li v-if="displayRows.length === 0" class="plan__slot plan__slot--empty">기본 행동이나 카드를 선택하세요.<br>행동 1회마다 마물의 행동 시점도 가까워집니다.</li>
+            <li v-if="displayRows.length === 0" class="plan__slot plan__slot--empty">대기</li>
           </ul>
         </div>
         <div v-if="availableObjects.length" class="field-actions">
           <button v-for="object in availableObjects" :key="object.id" class="act" :disabled="committing || planFull" :title="OBJECT_INFO[object.kind].hint" @click="queueBasic({ kind: 'interact', objectId: object.id })">
-            {{ OBJECT_INFO[object.kind].glyph }} {{ OBJECT_INFO[object.kind].action }} <small>행동 1</small>
+            {{ OBJECT_INFO[object.kind].glyph }} {{ OBJECT_INFO[object.kind].action }}
           </button>
         </div>
         <!-- 기본 행동 -->
@@ -1858,10 +1858,10 @@ onUnmounted(() => {
             :disabled="committing || planFull"
             title="행동 1 · 마나 0. 라운드 안에 여러 번 이동 가능"
             @click="selectMoveMode"
-          >이동 <small>행동 1</small></button>
-          <button class="act act--sm" :disabled="committing || planFull" title="행동 1 · 마나 0. 인접한 마물 하나를 공격" @click="queueBasic({ kind: 'basic-attack' })">기본 공격 <small>기본 피해 5 · 행동 1</small></button>
-          <button class="act act--sm" :disabled="committing || planFull" title="행동 1 · 마나 0. 방어를 얻는다" @click="queueBasic({ kind: 'basic-guard' })">기본 방어 <small>방어 6 · 행동 1</small></button>
-          <button v-if="gc.objective" class="act act--extract" :disabled="committing || planFull || !canExtract" :title="plan.some(a => a.kind === 'extract') ? '철수가 계획에 등록되어 있습니다.' : canExtract ? '행동 1. 보급품과 함께 전투를 끝냅니다.' : '보급품을 회수한 뒤 출구 칸에 서세요.'" @click="queueBasic({ kind: 'extract' })">철수 <small>행동 1</small></button>
+          >이동</button>
+          <button class="act act--sm" :disabled="committing || planFull" title="행동 1 · 마나 0. 인접한 마물 하나를 공격" @click="queueBasic({ kind: 'basic-attack' })">공격 <small>5</small></button>
+          <button class="act act--sm" :disabled="committing || planFull" title="행동 1 · 마나 0. 방어를 얻는다" @click="queueBasic({ kind: 'basic-guard' })">방어 <small>6</small></button>
+          <button v-if="gc.objective && recoveryPlanned" class="act act--extract" :disabled="committing || planFull || !canExtract" :title="plan.some(a => a.kind === 'extract') ? '철수 예약됨' : canExtract ? '보급품과 함께 철수' : '출구로 이동 필요'" @click="queueBasic({ kind: 'extract' })">철수</button>
           <button
             v-if="potions.length > 0"
             class="act act--sm act--item"
@@ -1886,13 +1886,12 @@ onUnmounted(() => {
           :title="plan.length === 0 ? '행동 없이 턴을 넘긴다(대기 — 손패 보충)' : ''"
           @click="commit"
         >{{ committing ? '실행 중…' : plan.length === 0 ? '라운드 종료' : '계획 실행' }}</button>
-        <p class="action-note">카드도 행동 1을 사용합니다. 즉시는 지금 발동하며, 예약 행동은 실행할 때 처리됩니다.</p>
       </div>
       </div>
 
       <!-- 손패 -->
       <div class="hand-wrap">
-        <div class="hand-heading"><strong>전술 카드</strong><span>뽑을 카드 {{ gc.drawPile.length }} · 버린 카드 {{ gc.discardPile.length }}</span><button class="hand-toggle" @click="handCompact = !handCompact">{{ handCompact ? '효과 보기' : '간략히' }}</button></div>
+        <div class="hand-heading"><strong>손패</strong><button class="hand-toggle" @click="handCompact = !handCompact">{{ handCompact ? '효과 펼치기' : '접기' }}</button><span v-if="!handCompact">뽑기 {{ gc.drawPile.length }} · 버림 {{ gc.discardPile.length }}</span></div>
         <!-- 하단 상호작용 패널(오버레이, #1) — 손패 *위*에 떠서 격자를 밀지 않는다. 한 번에 하나만 표시. -->
         <div class="bottom-overlays">
           <!-- 포션 선택 패널 (아이템 모드) -->
@@ -1911,7 +1910,7 @@ onUnmounted(() => {
 
           <!-- 동료 교대 선택 패널 -->
           <div v-if="swapPanelOpen" class="item-panel">
-            <span class="item-panel__hint">교대 · 라운드당 1회 (교대 턴은 대기, 다음 턴 동료 조종)</span>
+            <span class="item-panel__hint">교대 · 다음 라운드에 조종</span>
             <ul class="item-panel__list">
               <li v-for="c in swapTargets" :key="c.id">
                 <button class="potion" @click="queueSwap(c.id)">
@@ -1932,13 +1931,9 @@ onUnmounted(() => {
           <!-- 즉시·조준 카드 모두 명시적인 확인 버튼을 제공한다. -->
           <div v-if="mode === 'card'" class="aim-bar" role="status">
             <span class="aim-bar__hint">
-              <template v-if="aimingCardIsInstant">현재 위치에서 즉시 발동 · 행동 1 사용.{{ !aimingHasEnemyTarget ? ' ⚠ 예상 명중 대상 없음. 공격은 빗나가도 나머지 효과는 적용됩니다.' : '' }}</template>
-              <template v-else-if="aimingCardIsAimed && !aimCell">조준 칸을 고르세요 (사거리 내)</template>
-              <template v-else-if="aimingCardIsAimed && !aimingHasEnemyTarget">⚠ 예상 명중 대상 없음. 범위와 조준 위치를 확인하세요.</template>
-              <template v-else-if="aimingCardIsAimed">조준 완료 — 계획에 추가하면 예약됩니다.</template>
-              <template v-else-if="aimingCardSelfTarget">제자리 발동 — 카드 다시 눌러 확정</template>
-              <template v-else-if="!aimingHasEnemyTarget">⚠ 예상 명중 대상 없음. 범위 밖의 마물에게는 피해가 없습니다.</template>
-              <template v-else>범위 안의 적에 적용 — 카드 다시 눌러 확정</template>
+              <template v-if="aimingCardIsAimed && !aimCell">대상 칸 선택</template>
+              <template v-else-if="!aimingHasEnemyTarget && !aimingCardSelfTarget">⚠ 적중 대상 없음</template>
+              <template v-else>{{ aimingCardIsInstant ? '즉시 발동' : '준비 완료' }}</template>
             </span>
             <button class="aim-bar__confirm" :disabled="aimingCardIsAimed && !aimCell" @click="confirmCard">{{ aimingCardIsInstant ? '즉시 발동' : '계획에 추가' }}</button>
             <button class="aim-bar__cancel" @click="cancelAim">취소</button>
@@ -2000,9 +1995,9 @@ onUnmounted(() => {
               <span class="card__cost" :aria-label="`마나 ${cardCost(c)}`">{{ cardCost(c) }}</span>
               <span class="card__name" :style="{ color: cardNameColor(c) }">{{ c.name }}<span v-if="enhanceBadge(c)" class="card__enh">{{ enhanceBadge(c) }}</span></span>
             </div>
-            <div class="card__meta"><span :class="`card__speed--${castSpeedKey(c)}`">{{ castSpeedLabel(c) }}{{ cardIsInstant(c) ? ' 발동' : ' · 예약' }}</span><span>행동 1</span></div>
-            <div v-if="!handCompact" class="card__eff">{{ cardEffectSummary(c) }}</div>
-            <div v-if="!handCompact" class="card__range">{{ cardRangeLabel(c) }}</div>
+            <div class="card__meta"><span :class="`card__speed--${castSpeedKey(c)}`">{{ castSpeedLabel(c) }}</span></div>
+            <div v-if="!handCompact || aimingCardId === c.instanceId" class="card__eff">{{ cardEffectSummary(c) }}</div>
+            <div v-if="!handCompact || aimingCardId === c.instanceId" class="card__range">{{ cardRangeLabel(c) }}</div>
             <!-- 즉발 카드 발동 안내(#3) — 누른(armed) 즉발 카드에만, 상세(효과 보기)에서만 작고 붉게. 간략 모드는 표기 없음. -->
             <div v-if="!handCompact && cardIsInstant(c) && aimingCardId === c.instanceId" class="card__instant-hint">클릭으로 발동</div>
             <div v-if="c.instanceId && queuedCardIds.has(c.instanceId)" class="card__queued-tag">계획됨</div>
@@ -2015,8 +2010,7 @@ onUnmounted(() => {
     <!-- 승리 화면 — 전리품을 화면 안에 임베드(전환 중 증발 방지). -->
     <main v-else-if="phase === 'victory'" class="result result--win">
       <h1 tabindex="-1">{{ victoryResolution === 'recovered' ? '회수 성공' : '승리' }}</h1>
-      <p class="result__note">{{ victoryResolution === 'recovered' ? '보급품을 확보하고 마물의 영역을 빠져나왔다.' : '전장의 마물을 처치했다.' }}</p>
-      <p v-if="victoryResolution === 'recovered' && inLivingRegion(run.data.currentNodeId)" class="result__note">회수한 들곡 3개를 소지품에 보관했다. 원하는 대상에게 건네 나눌 수 있다.</p>
+      <p v-if="victoryResolution === 'recovered' && inLivingRegion(run.data.currentNodeId)" class="result__note">들곡 +3</p>
       <ul v-if="victoryLootDisplay.length" class="result__loot">
         <li v-for="(line, i) in victoryLootDisplay" :key="i">{{ line }}</li>
       </ul>
@@ -2029,7 +2023,6 @@ onUnmounted(() => {
     <!-- 패배 화면 -->
     <main v-else class="result result--lose">
       <h1 tabindex="-1">패배</h1>
-      <p class="result__note">이 런은 여기서 끝난다. 메타 진행은 기록된다.</p>
       <footer class="result__footer">
         <button class="continue" @click="returnToEnd">돌아간다 →</button>
       </footer>
@@ -2071,6 +2064,10 @@ onUnmounted(() => {
 }
 .topbar__logbtn--on { background: rgba(246,232,184,0.18); border-color: rgba(246,232,184,0.5); color: #f6e8b8; }
 .topbar__resolving { color: #ffb88e; font-size: 0.82rem; animation: pulse 900ms ease-in-out infinite; }
+.combat-tools { margin-left: auto; position: relative; }
+.combat-tools summary { cursor: pointer; padding: .65rem .4rem; }
+.combat-tools__body { position: absolute; right: 0; top: 100%; z-index: 35; display: grid; gap: .4rem; width: 140px; padding: .6rem; background: #171923; border: 1px solid #55536a; border-radius: 8px; }
+.combat-tools__body button { margin: 0; min-height: 44px; }
 @keyframes pulse { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
 
 /* 전투 로그 패널(item 4) — 오버레이(레이아웃 안 밀림). 최근 기록 위→아래. */
@@ -2851,18 +2848,28 @@ onUnmounted(() => {
 .grid-combat button:focus-visible { outline: 3px solid #ffe19a; outline-offset: 3px; z-index: 28; }
 .aim-bar__confirm:disabled { opacity: 0.5; cursor: not-allowed; }
 @media (max-width: 760px) {
-  .grid-combat { padding: 0.55rem; }
+  .grid-combat { padding: 0.55rem; gap: .4rem; }
   .tactics-layout { grid-template-columns: 1fr; gap: 0.65rem; }
   .mission { align-items: flex-start; gap: 0.5rem; padding: 0.65rem; }
   .mission__state { font-size: 0.7rem; }
   .enemy-panel--overlay { max-height: 95px; }
   .action-zone { gap: 0.4rem; }
-  .plan--inline { padding: 0.65rem; }
+  .plan--inline { padding: .4rem .5rem; gap: .2rem; }
+  .plan--inline .plan__slots { flex-direction: row; min-height: 0; max-height: 82px; overflow: auto; gap: .4rem; }
+  .plan__slot { flex: 0 0 auto; min-width: 88px; max-width: 220px; }
+  .action-bar--inline { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .action-bar--inline .act { flex-direction: row; justify-content: center; align-items: center; }
+  .act--commit-sq { min-height: 44px; padding: .45rem; }
+  .field-actions .act { min-height: 44px; }
   .hand { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .topbar { gap: 0.5rem; font-size: 0.78rem; padding: 0.55rem; }
+  .topbar { gap: 0.5rem; font-size: 0.78rem; padding: 0 .55rem; }
   .enemy-row { gap: 0.4rem; }
   .ehp__bar { width: 46px; }
-  .card { min-height: 126px; }
+  .card { min-height: 100px; }
+  .hand--compact { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .35rem; }
+  .hand--compact .card { min-height: 64px; padding: .4rem; }
+  .hand--compact .card__name { font-size: .75rem; }
+  .hand--compact .card--aiming { grid-column: span 2; }
 }
 @media (prefers-reduced-motion: reduce) {
   .grid-combat *, .grid-combat *::before, .grid-combat *::after { animation: none !important; transition: none !important; }

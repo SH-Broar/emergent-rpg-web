@@ -186,8 +186,8 @@ function effectiveValue(eff: CardEffect, card: Card): number {
           <button class="x" @click="emit('close')" aria-label="닫기">×</button>
         </header>
 
-        <p v-if="editLocked" class="hint hint--locked">지워지지 않는다 — 덱을 바꿀 수 없다. 최근에 얻은 카드로 덱이 굳어졌다.</p>
-        <p v-else class="hint">컬렉션의 카드를 클릭해 덱에 넣거나 뺍니다. 정확히 {{ run.data.deckSize }}장이어야 저장됩니다.</p>
+        <p v-if="editLocked" class="hint hint--locked">카오스 · 덱 변경 불가</p>
+        <p v-else class="hint">{{ run.data.deckSize }}장 선택</p>
 
         <ul v-if="sortedCollection.length > 0" class="cards">
           <li

@@ -289,7 +289,6 @@ function itemEffectLabel(eff: Item['effects'][number]): string {
 
         <!-- 아이템 탭 -->
         <div v-else-if="tab === 'item'" class="inv-body">
-          <p class="hint">클릭 한 번이면 즉시 효과가 적용됩니다. 재료·특산물은 공방 제작에만 쓰입니다.</p>
           <ul v-if="groupedItems.length > 0" class="items">
             <li
               v-for="g in groupedItems"
@@ -349,7 +348,6 @@ function itemEffectLabel(eff: Item['effects'][number]): string {
 
         <!-- 단서 탭 -->
         <div v-else class="inv-body">
-          <p class="hint">단서를 클릭하면 내용이 펼쳐집니다. 단서는 사라지지 않습니다.</p>
           <ul v-if="(run.data.clues?.length ?? 0) > 0" class="clue-list">
             <li
               v-for="c in run.data.clues"

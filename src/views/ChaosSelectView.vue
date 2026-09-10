@@ -326,7 +326,6 @@ onMounted(async () => {
     <header class="hdr">
       <button class="back" @click="back">← 캐릭터 선택</button>
       <h1>카오스</h1>
-      <p class="sub">카오스 레벨을 선택해주세요. 카오스 수치가 높을수록 원래 세계에서 멀어집니다.</p>
     </header>
 
     <template v-if="hasChaos">
@@ -358,7 +357,7 @@ onMounted(async () => {
               <span class="chaos__name">{{ c.name }}</span>
               <span class="chaos__score">+{{ isOn(c.id) ? scoreOf(c) : chaosScoreOf(c, 1) }}점</span>
             </button>
-            <p class="chaos__desc">{{ c.description }}</p>
+            <details class="chaos__desc"><summary>효과</summary>{{ c.description }}</details>
 
             <!-- 강도 스텝 (numeric/start-hp) -->
             <div v-if="isOn(c.id) && hasSteps(c)" class="steps">
