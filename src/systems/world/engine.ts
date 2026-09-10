@@ -1,6 +1,7 @@
 import type { ColorProfile, InteractionAction, InteractionResult, InteractionWorld, WorldEntity, WorldFact } from './types';
 import { iGa } from '../josa';
 import { resourceTags } from './resources';
+import { cardinal, distance, entitiesAt, hasSight, positionKey, walkable } from './spatial';
 
 export interface PropertyChange { property: string; before: number; after: number }
 const finite = (n: number) => Number.isFinite(n);
@@ -44,16 +45,17 @@ export function applyMaterialInfluence(properties: Record<string, number>, color
     .map(key => ({ property: key, before: before[key] ?? 0, after: properties[key]! }));
 }
 
-function visibleWitnesses(world: InteractionWorld, nodeId: string, actorId?: string): string[] {
+function visibleWitnesses(world: InteractionWorld, nodeId: string, actorId?: string, targetId?: string): string[] {
   const obscured = Object.values(world.entities).some(e => e.nodeId === nodeId && (e.properties.smoke ?? 0) >= 2);
   return Object.values(world.entities).filter(e => e.kind === 'actor' && e.nodeId === nodeId
-    && (e.properties.integrity ?? 100) > 0 && (!obscured || e.id === actorId)).map(e => e.id);
+    && (e.properties.integrity ?? 100) > 0 && (!obscured || e.id === actorId || !!world.spaces?.[nodeId])
+    && (!targetId || !world.entities[targetId] || hasSight(world, e, world.entities[targetId]!))).map(e => e.id);
 }
 
 export function recordFact(world: InteractionWorld, fact: Omit<WorldFact, 'id' | 'witnesses'>): WorldFact {
   const saved: WorldFact = { ...fact, targetTags: fact.targetTags ?? [...(world.entities[fact.targetId]?.tags ?? [])],
     resourceTags: fact.resourceTags ?? resourceTags(fact.resourceId),
-    id: ++world.sequence, witnesses: visibleWitnesses(world, fact.nodeId, fact.actorId) };
+    id: ++world.sequence, witnesses: visibleWitnesses(world, fact.nodeId, fact.actorId, fact.targetId) };
   world.events.push(saved);
   if (world.events.length > 240) world.events.splice(0, world.events.length - 240);
   for (const id of saved.witnesses) {
@@ -72,7 +74,7 @@ export function observeWorld(world: InteractionWorld, actorId: string): void {
   for (const old of Object.values(known.targets)) if (old.nodeId === actor.nodeId) delete known.targets[old.id];
   const obscured = Object.values(world.entities).some(e => e.nodeId === actor.nodeId && (e.properties.smoke ?? 0) >= 2);
   for (const e of Object.values(world.entities)) {
-    if (e.nodeId !== actor.nodeId || (obscured && e.id !== actorId)) continue;
+    if (e.nodeId !== actor.nodeId || e.carriedBy && e.carriedBy !== actorId || (obscured && e.id !== actorId && !world.spaces?.[actor.nodeId]) || !hasSight(world, actor, e)) continue;
     const publicProperties = ['integrity', 'moisture', 'heat', 'burning', 'smoke', 'flammability', 'conductivity', 'hardness', 'work', 'workRequired', 'irrigation', 'safety', 'light', 'attention', 'heatTolerance', 'laborPower'];
     if (e.id === actorId) publicProperties.push('mana', 'lifeLevel', 'practice');
     known.targets[e.id] = {
@@ -87,13 +89,47 @@ export function observeWorld(world: InteractionWorld, actorId: string): void {
 
 function sideEntity(actor: WorldEntity, target: WorldEntity, side = 'target') { return side === 'actor' ? actor : target; }
 
+/** Material reactions are identical for gestures, creatures and the passing of time. */
+export function influenceEntity(world: InteractionWorld, entity: WorldEntity, property: string, amount: number, actorId?: string, message = `${entity.name}의 상태가 바뀌었다.`): WorldFact[] {
+  const wasAlive = (entity.properties.integrity ?? 100) > 0;
+  const facts = applyMaterialInfluence(entity.properties, entity.colors, property, amount).map(change => recordFact(world, {
+    turn: world.turn, nodeId: entity.nodeId, actorId, targetId: entity.id, kind: 'property', ...change,
+    ownerId: entity.ownerId, labor: entity.labor ?? 0, message,
+  }));
+  if (wasAlive && (entity.properties.integrity ?? 100) <= 0) {
+    const stock = entity.stock;
+    entity.production = undefined;
+    entity.stock = {};
+    if (entity.carriedBy) {
+      const carrier = world.entities[entity.carriedBy];
+      entity.pos = carrier?.pos ? { ...carrier.pos } : undefined;
+      entity.carriedBy = undefined;
+    }
+    const space = world.spaces?.[entity.nodeId];
+    const liquid = Object.entries(stock).filter(([id]) => resourceTags(id).includes('water')).reduce((n, [, count]) => n + count, 0);
+    if (space && entity.pos && liquid > 0 && (entity.properties.spillOnBreak ?? 0) > 0) {
+      const cells = [entity.pos, ...cardinal(entity.pos)].filter(p => space.tiles[p.y]?.[p.x] && space.tiles[p.y]![p.x] !== 'wall');
+      for (const pos of cells) {
+        const id = `${space.id}:residue:${positionKey(pos)}`;
+        const floor = world.entities[id] ??= { id, name: '바닥', kind: 'terrain', nodeId: space.id, pos: { ...pos }, colors: {}, tags: ['ground', 'storage', 'shared'], stock: {}, properties: { integrity: 100 } };
+        for (const touched of [floor, ...entitiesAt(world, space.id, pos).filter(e => e.id !== id && e.id !== entity.id)]) {
+          if ((touched.properties.integrity ?? 100) > 0) facts.push(...influenceEntity(world, touched, 'moisture', Math.min(6, liquid), actorId, '물이 퍼졌다.'));
+        }
+      }
+    }
+  }
+  return facts;
+}
+
 export function interactionDisabled(world: InteractionWorld, actorId: string, targetId: string, action: InteractionAction): string | undefined {
   const actor = world.entities[actorId], target = world.entities[targetId];
   if (!actor || !target) return '대상을 찾을 수 없다.';
   if (!finite(action.duration) || !Number.isInteger(action.duration) || action.duration < 0) return '잘못된 행동 시간이다.';
   if ((actor.properties.integrity ?? 100) <= 0) return '행동할 수 없는 상태다.';
-  const movement = action.effects.length > 0 && action.effects.every(e => e.kind === 'move');
+  const movement = action.effects.length > 0 && action.effects.every(e => e.kind === 'move' || e.kind === 'relocate' && e.side === 'actor');
   if (!movement && actor.nodeId !== target.nodeId) return '현재 장소에 없는 대상이다.';
+  const targetPos = target.pos ?? (target.carriedBy ? world.entities[target.carriedBy]?.pos : undefined);
+  if (!movement && actor.pos && targetPos && world.spaces?.[actor.nodeId] && distance(actor.pos, targetPos) > (action.reach ?? 1)) return '조금 더 가까이.';
   if (!movement && (target.properties.integrity ?? 100) <= 0 && !action.effects.every(e => e.kind === 'signal')) return '대상이 파괴되었다.';
   if (action.requires?.tags?.some(tag => !target.tags.includes(tag))) return '대상에 필요한 성질이 없다.';
   for (const [key, value] of Object.entries(action.requires?.min ?? {})) if ((target.properties[key] ?? 0) < value) return '아직 필요한 상태에 이르지 않았다.';
@@ -113,6 +149,14 @@ export function interactionDisabled(world: InteractionWorld, actorId: string, ta
       const inventory = stock.get(sideEntity(actor, target, effect.side).id)!;
       inventory[effect.resourceId] = (inventory[effect.resourceId] ?? 0) + effect.amount;
       if (inventory[effect.resourceId]! < 0) return '필요한 재료가 부족하다.';
+    } else if (effect.kind === 'relocate') {
+      const entity = sideEntity(actor, target, effect.side);
+      if (!entity.pos || distance(entity.pos, effect.pos) !== 1 || !walkable(world, entity.nodeId, effect.pos, entity.id)) return '막힌 곳이다.';
+    } else if (effect.kind === 'carry') {
+      if (effect.held) {
+        if (target.id === actor.id || target.kind === 'actor' || !(target.properties.portable ?? 0) || target.carriedBy || Object.values(world.entities).some(e => e.carriedBy === actor.id)) return '들 수 없다.';
+        if ((target.properties.mass ?? 1) > (actor.properties.carryCapacity ?? 3)) return '너무 무겁다.';
+      } else if (target.carriedBy !== actor.id || !effect.pos || !actor.pos || distance(actor.pos, effect.pos) > 1 || !walkable(world, actor.nodeId, effect.pos, target.id)) return '여기에는 내려놓을 수 없다.';
     } else if ((effect.kind === 'influence' || effect.kind === 'work') && !finite(effect.amount)) return '영향량이 올바르지 않다.';
     else if (effect.kind === 'production' && effect.batch && target.production) return '이미 생산 중이다.';
   }
@@ -143,17 +187,10 @@ export function resolveInteraction(world: InteractionWorld, actorId: string, tar
       return;
     }
     const priorPractice = entity.properties.practice ?? 0;
-    for (const change of applyMaterialInfluence(entity.properties, entity.colors, property, amount)) {
-      fact(entity, { kind: 'property', ...change, message: `${actor.name}: ${target.name} — ${action.label}` });
-    }
+    facts.push(...influenceEntity(world, entity, property, amount, actorId, `${actor.name}: ${target.name} — ${action.label}`));
     if (property === 'practice' && amount > 0) {
       entity.properties.lifeLevel = (entity.properties.lifeLevel ?? 1)
         + Math.floor((entity.properties.practice ?? 0) / 3) - Math.floor(priorPractice / 3);
-    }
-    if ((entity.properties.integrity ?? 100) <= 0) {
-      // Destruction ends the actual batch and stock, not merely the map marker.
-      entity.production = undefined;
-      entity.stock = {};
     }
   };
   for (const effect of action.effects) {
@@ -198,6 +235,18 @@ export function resolveInteraction(world: InteractionWorld, actorId: string, tar
         if (origin !== actor.nodeId) fact(actor, { kind: 'move', message: `${subject} 이곳에 도착했다.` });
         break;
       }
+      case 'relocate': {
+        const entity = sideEntity(actor, target, effect.side);
+        entity.pos = { ...effect.pos };
+        fact(entity, { kind: 'move', message: `${entity.name}의 위치가 바뀌었다.` });
+        break;
+      }
+      case 'carry': {
+        if (effect.held) { target.carriedBy = actor.id; target.pos = undefined; }
+        else { target.carriedBy = undefined; target.nodeId = actor.nodeId; target.pos = { ...effect.pos! }; }
+        fact(target, { kind: 'move', message: `${target.name}: ${effect.held ? '들림' : '놓임'}` });
+        break;
+      }
       case 'signal': fact(target, { kind: 'signal', message: effect.message, sourceFactId: effect.sourceFactId }); break;
       case 'production': {
         target.production = effect.batch ? JSON.parse(JSON.stringify(effect.batch)) : undefined;
@@ -216,14 +265,25 @@ export function resolveInteraction(world: InteractionWorld, actorId: string, tar
 }
 
 /** Time applies the same property reducer as actions; no action-to-action reaction table. */
-export function tickMaterials(world: InteractionWorld): void {
+export function tickMaterials(world: InteractionWorld, spatial?: 'only' | 'exclude'): void {
+  // Snapshot sources: a new fire cannot cross an entire field in one tick.
+  const sources = Object.values(world.entities).filter(e => spatial !== 'exclude' && world.spaces?.[e.nodeId] && e.pos && !e.carriedBy && (e.properties.integrity ?? 100) > 0)
+    .map(e => ({ id: e.id, nodeId: e.nodeId, pos: { ...e.pos! }, heat: e.properties.heat ?? 0, moisture: e.properties.moisture ?? 0, burning: e.properties.burning ?? 0 }));
+  for (const source of sources) {
+    const cells = source.burning > 0 ? [source.pos, ...cardinal(source.pos)] : [source.pos];
+    for (const pos of cells) for (const target of entitiesAt(world, source.nodeId, pos)) {
+      if (target.id === source.id || (target.properties.integrity ?? 100) <= 0) continue;
+      const contact = distance(source.pos, pos) === 0;
+      if (contact && source.moisture > (target.properties.moisture ?? 0)) influenceEntity(world, target, 'moisture', Math.min(3, source.moisture - (target.properties.moisture ?? 0)));
+      if ((source.burning > 0 || contact && source.heat > 0) && source.heat > (target.properties.heat ?? 0)) influenceEntity(world, target, 'heat', Math.min(2, source.heat - (target.properties.heat ?? 0)));
+    }
+  }
   for (const entity of Object.values(world.entities)) {
+    const positioned = !!world.spaces?.[entity.nodeId];
+    if (spatial === 'only' && !positioned || spatial === 'exclude' && positioned) continue;
     if ((entity.properties.integrity ?? 100) <= 0) continue;
     if ((entity.properties.burning ?? 0) > 0) {
-      const changes = applyMaterialInfluence(entity.properties, entity.colors, 'integrity', -3);
-      for (const change of changes) recordFact(world, { turn: world.turn, nodeId: entity.nodeId, targetId: entity.id, kind: 'property', ...change,
-        ownerId: entity.ownerId, labor: entity.labor ?? 0, message: `${entity.name}${iGa(entity.name)} 타고 있다.` });
-      if ((entity.properties.integrity ?? 100) <= 0) { entity.production = undefined; entity.stock = {}; }
+      influenceEntity(world, entity, 'integrity', -3, undefined, `${entity.name}${iGa(entity.name)} 타고 있다.`);
     }
     for (const key of ['smoke','heat','burning']) if ((entity.properties[key] ?? 0) > 0) entity.properties[key]!--;
     if (entity.renewable && entity.renewable.nextTurn <= world.turn) {

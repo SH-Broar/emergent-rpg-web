@@ -34,6 +34,7 @@ const timeline = computed(() => {
   const id = ui.pendingRunSetup.timelineId;
   return id ? data.timelines.get(id) : undefined;
 });
+const fieldMission = computed(() => (timeline.value?.missionGoal ?? '던전 깊은 곳을 탐험하세요.').replace(/\d+턴 안에\s*/, '').replace('월드 어딘가에 있는', '던전 깊은 곳의'));
 const race = computed<Race | undefined>(() => {
   const id = ui.pendingRunSetup.raceId;
   return id ? data.races.get(id) : undefined;
@@ -267,11 +268,7 @@ async function confirmStart() {
   const { applyPassiveRelicsAtRunStart } = await import('@/systems/relic');
   applyPassiveRelicsAtRunStart();
 
-  // #007 — 시작 노드가 마을이면 "마을에 입장된 상태"로 런을 연다(누르게 하지 않음).
-  //   시작 노드는 startRun에서 currentNodeId(=pass-only)로 마킹되므로, 맵에 떨궈 두면
-  //   "보이는데 못 들어가는" 어색함이 생긴다. 마을이면 곧장 VillageView로(시간 비용 없음).
-  const startKind = map.nodes.find((n) => n.id === map.startNodeId)?.kind;
-  router.push(startKind === 'village' ? '/game/village' : '/game/map');
+  router.push('/game/field');
 }
 
 /**
@@ -397,7 +394,7 @@ onMounted(async () => {
               <dd>{{ timeline ? durationLabel(timeline.timeLimit) : '—' }}</dd>
             </div>
           </dl>
-          <p class="brief-mission"><strong>미션</strong> · {{ timeline?.missionGoal ?? '—' }}</p>
+          <p class="brief-mission"><strong>미션</strong> · {{ fieldMission }}</p>
 
           <div v-if="activeChaosList.length > 0" class="brief-chaos">
             <span class="brief-chaos__title">카오스 · 도전 점수 {{ totalScore }}</span>

@@ -13,6 +13,7 @@
 import type { Card, CardEffect } from './card';
 import type { RegionWorldState } from '@/systems/region-world';
 import type { InteractionWorld } from '@/systems/world/types';
+import type { FieldState } from '@/systems/field-types';
 import type { Item } from './item';
 import type { Relic } from './relic';
 import type { Equipment, EquipmentId } from './equipment';
@@ -709,6 +710,7 @@ export interface TradeContract {
 
 /** 한 런 전체의 휘발 상태. */
 export interface RunState {
+  field?: FieldState;
   tacticalDraft?: Card[];
   regionWorld?: RegionWorldState;
   interactionWorld?: InteractionWorld;

@@ -82,9 +82,10 @@ const routes: RouteRecordRaw[] = [
     meta: { scene: 'game' },
   },
   {
-    path: '/game/map',
+    path: '/game/field',
+    alias: '/game/map',
     name: 'game-map',
-    component: () => import('@/views/MapView.vue'),
+    component: () => import('@/views/FieldView.vue'),
     meta: { scene: 'game' },
   },
   {

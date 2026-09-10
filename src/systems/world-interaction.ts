@@ -206,10 +206,10 @@ export function tickInteractionWorld(run: RunState): void {
   const world = ensureInteractionWorld(run);
   while (world.turn < run.visitedNodes.length) {
     world.turn++;
-    tickMaterials(world);
+    tickMaterials(world, world.spaces ? 'exclude' : undefined);
     settleLifeWorld(run, world, world.turn);
     processSocialFacts(world);
-    tickSocialAgents(world, world.turn, (actor, target) => availableWorldActions(run, world, actor, target));
+    tickSocialAgents(world, world.turn, (actor, target) => world.spaces?.[world.entities[actor]?.nodeId ?? ''] ? [] : availableWorldActions(run, world, actor, target));
     processSocialFacts(world);
     for (const actor of Object.values(world.entities)) if (actor.kind === 'actor') observeWorld(world, actor.id);
   }

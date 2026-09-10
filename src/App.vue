@@ -84,10 +84,10 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="app-shell" :class="{ 'app-shell--in-run': run.active }">
+  <div class="app-shell" :class="{ 'app-shell--in-run': run.active, 'app-shell--field': route.name === 'game-map' }">
     <!-- 고정 HUD (런 중에만) -->
     <GameHUD
-      v-if="run.active"
+      v-if="run.active && route.name !== 'game-map'"
       :character-open="characterOpen"
       :inventory-open="inventoryOpen"
       :settings-open="settingsOpen"
@@ -185,6 +185,8 @@ onMounted(async () => {
   overflow-anchor: none;
 }
 .scene-root { min-height: 100%; }
+.app-shell--field .scene-scroller { overflow: hidden; }
+.app-shell--field .scene-root { height: 100%; }
 /* HUD 슬림화 (M2) — 1줄 4슬롯+3버튼이므로 padding 축소. */
 .app-shell--in-run :deep(main) {
   padding-top: 3.0rem;

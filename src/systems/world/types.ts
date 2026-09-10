@@ -1,4 +1,6 @@
 import type { ColorValues, PlotState } from '@/data/schemas';
+import type { GridPos } from '@/data/schemas/base';
+import type { FieldCreature, FieldSpace } from '../field-types';
 
 export const PLAYER_ACTOR_ID = 'player';
 export type ColorProfile = Partial<ColorValues>;
@@ -39,6 +41,10 @@ export interface WorldEntity {
   name: string;
   kind: 'actor' | 'resource' | 'facility' | 'plot' | 'terrain';
   nodeId: string;
+  pos?: GridPos;
+  carriedBy?: string;
+  npcId?: string;
+  creature?: FieldCreature;
   colors: ColorProfile;
   tags: string[];
   /** Material state and capacities, all effects use this vocabulary. */
@@ -104,6 +110,7 @@ export interface InteractionWorld {
   receipts: string[];
   /** Legacy aggregate rewards are migrated once, never replayed. */
   legacyMigrated?: boolean;
+  spaces?: Record<string, FieldSpace>;
 }
 export type EntitySide = 'actor' | 'target';
 export type PrimitiveEffect =
@@ -112,6 +119,8 @@ export type PrimitiveEffect =
   | { kind: 'stock'; resourceId: string; amount: number; side?: EntitySide }
   | { kind: 'work'; amount: number }
   | { kind: 'move'; nodeId: string }
+  | { kind: 'relocate'; pos: GridPos; side?: EntitySide }
+  | { kind: 'carry'; held: boolean; pos?: GridPos }
   | { kind: 'signal'; message: string; sourceFactId?: number }
   | { kind: 'production'; batch?: ProductionBatch };
 export interface InteractionAction {
@@ -119,6 +128,7 @@ export interface InteractionAction {
   label: string;
   description: string;
   duration: number;
+  reach?: number;
   effects: PrimitiveEffect[];
   requires?: { tags?: string[]; min?: Record<string, number>; max?: Record<string, number>; actorMin?: Record<string, number> };
   /** Actual fulfillment after successful execution; travel is only expected utility. */

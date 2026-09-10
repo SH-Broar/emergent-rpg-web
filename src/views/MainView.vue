@@ -85,7 +85,7 @@ function resumeRun() {
   }
   showResume.value = false;
   // 전투 중 저장이면 그 전투로 복귀, 아니면 맵.
-  router.push(run.data.combat ? '/game/combat' : '/game/map');
+  router.push('/game/field');
 }
 
 function discardRun() {
