@@ -41,10 +41,20 @@ export function fieldPath(world: InteractionWorld, spaceId: string, from: GridPo
   return undefined;
 }
 export function hasSight(world: InteractionWorld, observer: WorldEntity, target: WorldEntity | GridPos): boolean {
+  return createSightTest(world,observer)(target);
+}
+/** One local obstacle snapshot can answer every observation made in the same operation. */
+export function createSightTest(world: InteractionWorld, observer: WorldEntity) {
+  const smoke=new Set<string>(),solid=new Set<string>();
+  for(const e of Object.values(world.entities)) if(e.nodeId===observer.nodeId&&e.pos&&!e.carriedBy) {
+    if((e.properties.smoke??0)>0)smoke.add(positionKey(e.pos));
+    if((e.properties.solid??0)>0&&!e.creature&&(e.properties.integrity??100)>0)solid.add(positionKey(e.pos));
+  }
+  return (target:WorldEntity|GridPos):boolean=>{
   const point = 'id' in target ? target.pos : target;
   if (!observer.pos || !point || !world.spaces?.[observer.nodeId]) return true;
   if (distance(observer.pos, point) > 7) return false;
-  if (distance(observer.pos, point) > 1 && [observer.pos, point].some(pos => entitiesAt(world, observer.nodeId, pos).some(e => (e.properties.smoke ?? 0) > 0))) return false;
+  if (distance(observer.pos, point) > 1 && [observer.pos, point].some(pos => smoke.has(positionKey(pos)))) return false;
   let x = observer.pos.x, y = observer.pos.y;
   const dx = Math.abs(point.x - x), dy = Math.abs(point.y - y);
   const sx = Math.sign(point.x - x), sy = Math.sign(point.y - y);
@@ -55,7 +65,9 @@ export function hasSight(world: InteractionWorld, observer: WorldEntity, target:
     if (e2 < dx) { err += dx; y += sy; }
     if (x === point.x && y === point.y) return true;
     if (world.spaces[observer.nodeId]!.tiles[y]?.[x] === 'wall') return false;
-    if (entitiesAt(world, observer.nodeId, { x, y }).some(e => (e.properties.smoke ?? 0) > 0 || ((e.properties.solid ?? 0) > 0 && !e.creature))) return false;
+    const key=positionKey({x,y});
+    if(smoke.has(key)||solid.has(key))return false;
   }
   return true;
+  };
 }

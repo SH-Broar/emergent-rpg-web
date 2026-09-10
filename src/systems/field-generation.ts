@@ -61,9 +61,10 @@ function residents(run: RunState, world: InteractionWorld, space: FieldSpace, no
     const id = `npc:${npc.id}`;
     if (world.entities[id]) continue;
     const colors = npc.colorValues ? Object.fromEntries(Object.entries(npc.colorValues).map(([k, v]) => [k, v <= 1 ? v * 100 : v])) : {};
+    const body = data.races.get(npc.raceId)?.baseStats;
     placeFieldEntity(world, space, {
       id, npcId: npc.id, name: npc.name, kind: 'actor', nodeId: space.id, ownerId: id, colors, tags: ['person', 'resident', ...(npc.tags ?? [])], stock: { 'i-crop-grain': 1 },
-      properties: { integrity: 100, lifeLevel: 1, practice: 0, laborPower: 12 },
+      properties: { integrity: 100, lifeLevel: 1, practice: 0, laborPower: body ? body.vigor + body.attack / 4 : 12, hardness: body ? body.defense / 2 : 0 },
       agent: createSocialProfile(npc.raceId, npc.role || 'traveler', { homeNodeId: node.id, turn: run.visitedNodes.length }),
     }, { x: 5 + i % 4, y: 4 + Math.floor(i / 4) * 3 });
   }
@@ -159,5 +160,6 @@ export function ensureFieldSpace(run: RunState, world: InteractionWorld, id: str
     const cache = object(world, space, 'cache', '오래된 보관함', { x: 12, y: 9 }, ['storage', 'shared'], { solid: 1, portable: 1, mass: 3, hardness: 3 }, { 'i-crop-grain': 3, water: 3, 'i-life-char': 2 });
     cache.labor = 20;
   }
+  for (const e of Object.values(world.entities).filter(e=>e.nodeId===space.id)) { e.fieldUpdatedAt=run.field?.elapsedSeconds??0; e.fieldNpcAt=e.fieldUpdatedAt; }
   return space;
 }

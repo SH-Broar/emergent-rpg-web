@@ -1,17 +1,22 @@
 <script setup lang="ts">
-import { onBeforeUnmount, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import { GESTURES, GLYPHS, type Gesture } from '@/systems/field-types';
-import { recognizeGesture, type StrokePoint } from '@/systems/gestures';
+import { recognizeGestureMatch, type StrokePoint } from '@/systems/gestures';
+import { GESTURE_CATALOG, gestureDefinition } from '@/systems/gesture-catalog';
 
-const props = withDefaults(defineProps<{ disabled?: boolean; available?: Gesture[]; compact?: boolean }>(), { disabled: false, available: () => [...GESTURES] });
-const emit = defineEmits<{ gesture: [gesture: Gesture]; unrecognized: [] }>();
+const props = withDefaults(defineProps<{ disabled?: boolean; available?: Gesture[]; compact?: boolean; guide?: string; palette?: string[] }>(), { disabled: false, available: () => [...GESTURES] });
+const emit = defineEmits<{ gesture: [gesture: Gesture, quality: number, drawn: boolean]; unrecognized: []; drawing: [active: boolean] }>();
 const pad = ref<SVGSVGElement | null>(null);
 const points = ref<StrokePoint[]>([]);
 const drawing = ref(false);
 const result = ref('');
+const candidate = ref('');
+const buttons = computed(() => GESTURE_CATALOG.filter(g => !g.drawOnly && (props.palette ? props.palette.includes(g.id) : g.quick || g.id===props.guide)));
+const guidePoints = computed(() => gestureDefinition(props.guide ?? '')?.points.map(p=>`${28+p.x*144},${28+p.y*144}`).join(' '));
 let pointerId: number | undefined;
+let previewAt = 0;
 let timer: ReturnType<typeof setTimeout> | undefined;
-const names: Record<Gesture, string> = { up: '위 선', down: '아래 선', left: '왼쪽 선', right: '오른쪽 선', triangle: '정삼각형', inverted: '역삼각형', circle: '원' };
+function recognize() { const scale=(pad.value?.getBoundingClientRect().width ?? 168)/200; return recognizeGestureMatch(points.value.map(p=>({x:p.x*scale,y:p.y*scale}))); }
 function point(event: PointerEvent): StrokePoint {
   const box = pad.value!.getBoundingClientRect();
   return { x: (event.clientX - box.left) / box.width * 200, y: (event.clientY - box.top) / box.height * 200 };
@@ -21,29 +26,34 @@ function begin(event: PointerEvent) {
   event.preventDefault();
   clearTimeout(timer);
   pointerId = event.pointerId;
-  points.value = [point(event)]; result.value = ''; drawing.value = true;
+  points.value = [point(event)]; result.value = ''; candidate.value = ''; drawing.value = true; emit('drawing',true);
   pad.value?.setPointerCapture(event.pointerId);
 }
 function move(event: PointerEvent) {
   if (event.pointerId !== pointerId || !drawing.value) return;
   event.preventDefault();
-  const p = point(event), last = points.value.at(-1)!;
-  if (Math.hypot(p.x - last.x, p.y - last.y) >= 1) points.value.push(p);
+  const samples = event.getCoalescedEvents?.() ?? [];
+  for(const sample of samples.length?samples:[event]) {
+    const p=point(sample),last=points.value.at(-1)!;
+    if(Math.hypot(p.x-last.x,p.y-last.y)>=.5) points.value.push(p);
+  }
+  if(event.timeStamp-previewAt>80) { previewAt=event.timeStamp; candidate.value=GLYPHS[recognize()?.gesture ?? '']??''; }
 }
-function cancel() { pointerId = undefined; drawing.value = false; points.value = []; result.value = ''; }
-function submit(gesture: Gesture) {
+function cancel() { pointerId = undefined; drawing.value = false; points.value = []; result.value = ''; candidate.value=''; emit('drawing',false); }
+function submit(gesture: Gesture, quality=1, drawn=false) {
   if (props.disabled) return;
+  if(gestureDefinition(gesture)?.drawOnly&&!drawn) return;
   result.value = GLYPHS[gesture];
-  emit('gesture', gesture);
+  emit('gesture', gesture, quality, drawn);
 }
 function end(event: PointerEvent) {
   if (event.pointerId !== pointerId) return;
   event.preventDefault();
   points.value.push(point(event));
-  const gesture = recognizeGesture(points.value);
-  pointerId = undefined; drawing.value = false;
+  const match = recognize();
+  pointerId = undefined; drawing.value = false; candidate.value=''; emit('drawing',false);
   if (pad.value?.hasPointerCapture(event.pointerId)) pad.value.releasePointerCapture(event.pointerId);
-  if (!props.disabled && gesture) submit(gesture);
+  if (!props.disabled && match) submit(match.gesture,match.quality,true);
   else if (!props.disabled) { result.value = '·'; emit('unrecognized'); }
   timer = setTimeout(() => { points.value = []; result.value = ''; }, 700);
 }
@@ -57,11 +67,12 @@ onBeforeUnmount(() => { clearTimeout(timer); cancel(); });
       <path d="M100 16V184M16 100H184" class="guides" />
       <path d="M18 30V18H30M170 18H182V30M182 170V182H170M30 182H18V170" class="corners" />
       <circle cx="100" cy="100" r="3" class="center" />
+      <polyline v-if="guidePoints" :points="guidePoints" fill="none" stroke="#d3c899" stroke-width="2" stroke-dasharray="4 5" opacity=".35"/>
       <polyline v-if="points.length" :points="points.map(p => `${p.x},${p.y}`).join(' ')" class="stroke" />
-      <text v-if="result" x="100" y="112" text-anchor="middle" class="recognized">{{ result }}</text>
+      <text v-if="result || candidate" x="100" y="112" text-anchor="middle" class="recognized">{{ result || candidate }}</text>
     </svg>
     <div class="glyph-keys" aria-label="도형 선택">
-      <button v-for="gesture in GESTURES" :key="gesture" :aria-label="names[gesture]" :disabled="disabled" :class="{ possible: available.includes(gesture) }" @click="submit(gesture)">{{ GLYPHS[gesture] }}</button>
+      <button v-for="gesture in buttons" :key="gesture.id" :aria-label="gesture.name" :disabled="disabled" :class="{ possible: available.includes(gesture.id) }" @click="submit(gesture.id)">{{ gesture.glyph }}</button>
     </div>
   </div>
 </template>

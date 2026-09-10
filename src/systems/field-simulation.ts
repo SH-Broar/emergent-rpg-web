@@ -3,9 +3,10 @@ import type { GridPos } from '@/data/schemas/base';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { ensureInteractionWorld, syncPlayerToWorld, syncPlayerFromWorld, availableWorldActions } from './world-interaction';
-import { observeWorld, recordFact, resolveInteraction, tickMaterials } from './world/engine';
+import { influenceEntity, observeWorld, recordFact, resolveInteraction, tickMaterials } from './world/engine';
+import { gestureDefinition } from './gesture-catalog';
 import { processSocialFacts, rankSocialActions } from './world/social';
-import { cardinal, distance, entitiesAt, fieldPath, hasSight, positionKey, walkable } from './world/spatial';
+import { cardinal, createSightTest, distance, entitiesAt, fieldPath, hasSight, positionKey, walkable } from './world/spatial';
 import type { InteractionAction, InteractionWorld, WorldEntity } from './world/types';
 import { ensureFieldSpace, fieldItemName, fieldMap, placeFieldEntity, spawnCreature } from './field-generation';
 import { GESTURES, GLYPHS, type Gesture, type FieldResult, type FieldSpace } from './field-types';
@@ -37,18 +38,23 @@ export function ensureField(run = useRunStore().data): { world: InteractionWorld
   run.field.elapsedSeconds = Math.max(run.field.elapsedSeconds, run.visitedNodes.length * LEGACY_SECONDS);
   const space = ensureFieldSpace(run, world, run.currentNodeId);
   const player = world.entities.player!;
-  player.properties.carryCapacity = 2 + gestureLevel(run, 'up');
+  if (!run.field.controlsVersion) {
+    for (const [old,id] of [['up','lift'],['down','place'],['left','take'],['right','give']]) run.field.gestureXp[id!] ??= run.field.gestureXp[old!] ?? 0;
+    run.field.controlsVersion=2;
+  }
+  player.properties.carryCapacity = 2 + gestureLevel(run, 'lift');
   if (!player.pos || !space.tiles[player.pos.y]?.[player.pos.x] || space.tiles[player.pos.y]![player.pos.x] === 'wall') placeFieldEntity(world, space, player, space.spawn);
   for (const held of Object.values(world.entities).filter(e => e.carriedBy === player.id)) held.nodeId = player.nodeId;
   syncPlayerFromWorld(run, world);
-  for (const actor of Object.values(world.entities)) if (actor.kind === 'actor' && actor.pos) observeWorld(world, actor.id);
+  observeWorld(world, player.id);
   return { world, space, player };
 }
 export function visibleFieldEntities(run: RunState): WorldEntity[] {
   const world = run.interactionWorld;
   const player = world?.entities.player;
   if (!world || !player) return [];
-  return Object.values(world.entities).filter(e => e.nodeId === player.nodeId && !e.carriedBy && e.pos && (valid(e) || e.kind !== 'actor') && hasSight(world, player, e));
+  const sees=createSightTest(world,player);
+  return Object.values(world.entities).filter(e => e.nodeId === player.nodeId && !e.carriedBy && e.pos && (valid(e) || e.kind !== 'actor') && sees(e));
 }
 export function carriedEntity(world: InteractionWorld, actorId = 'player'): WorldEntity | undefined { return Object.values(world.entities).find(e => e.carriedBy === actorId); }
 export function groundAt(run: RunState, pos: GridPos): WorldEntity {
@@ -65,15 +71,17 @@ function program(gesture: Gesture, effects: InteractionAction['effects'], extra:
 export function fieldAction(run: RunState, world: InteractionWorld, actor: WorldEntity, target: WorldEntity, gesture: Gesture, pos: GridPos, selectedItem?: string): InteractionAction | undefined {
   const level = actor.id === 'player' ? gestureLevel(run, gesture) : 1 + Math.floor(actor.agent?.skills.work ?? 0);
   const held = carriedEntity(world, actor.id);
-  if (gesture === 'up') return (target.properties.portable ?? 0) > 0 && !held ? program(gesture, [{ kind: 'carry', held: true }]) : undefined;
-  if (gesture === 'down') return held ? program(gesture, [{ kind: 'carry', held: false, pos }]) : undefined;
-  if (gesture === 'left') {
+  const effect = gestureDefinition(gesture)?.effect;
+  if (effect) return program(gesture, [{kind:'influence',side:'actor',property:'mana',amount:-effect.mana},{kind:'influence',property:effect.property,amount:effect.amount+level*2}], {reach:effect.reach,requires:{actorMin:{mana:effect.mana}}});
+  if (gesture === 'up' || gesture === 'lift') return (target.properties.portable ?? 0) > 0 && !held ? program(gesture, [{ kind: 'carry', held: true }]) : undefined;
+  if (gesture === 'down' || gesture === 'place') return held ? program(gesture, [{ kind: 'carry', held: false, pos }], {reach:1+Math.floor(level/4)}) : undefined;
+  if (gesture === 'left' || gesture === 'take') {
     const resource = selectedItem && (target.stock[selectedItem] ?? 0) > 0 ? selectedItem : Object.keys(target.stock).find(id => (target.stock[id] ?? 0) > 0);
     if (!resource || target.id === actor.id) return undefined;
     const quantity = Math.min(target.stock[resource]!, 1 + Math.floor(level / 3));
     return program(gesture, [{ kind: 'transfer', resourceId: resource, quantity, from: 'target', to: 'actor' }], { utility: { food: isFoodResource(resource) ? .7 : .05, work: .15 } });
   }
-  if (gesture === 'right') {
+  if (gesture === 'right' || gesture === 'give') {
     const resource = selectedItem;
     if (!resource || (actor.stock[resource] ?? 0) <= 0 || target.id === actor.id) return undefined;
     return program(gesture, [{ kind: 'transfer', resourceId: resource, quantity: 1, from: 'actor', to: 'target' }], { reach: 1 + Math.floor(level / 4), utility: { sharing: .3 } });
@@ -130,15 +138,15 @@ function grantPractice(run: RunState, gesture: Gesture, target: WorldEntity, res
   if (field.practiceAt[key] !== undefined && field.elapsedSeconds - field.practiceAt[key]! < 60) return;
   field.practiceAt[key] = field.elapsedSeconds;
   field.gestureXp[gesture] = Math.min(600, (field.gestureXp[gesture] ?? 0) + 1);
-  if (gesture === 'left' && (target.tags.includes('field-plot') || target.tags.includes('brush'))) useRunStore().addLifeXp(1);
+  if (gesture === 'take' && (target.tags.includes('field-plot') || target.tags.includes('brush'))) useRunStore().addLifeXp(1);
 }
-function settleProduction(run: RunState, world: InteractionWorld) {
-  for (const e of Object.values(world.entities)) {
+function settleProduction(run: RunState, world: InteractionWorld, activeIds?: ReadonlySet<string>) {
+  for (const e of activeIds ? [...activeIds].map(id=>world.entities[id]!).filter(Boolean) : Object.values(world.entities)) {
     if (!e.tags.includes('field-plot')) continue;
     if (!valid(e)) { e.production = undefined; continue; }
     const batch = e.production;
     if (!batch) continue;
-    if (!batch.settled && run.field!.elapsedSeconds >= (batch.startedTurn + batch.duration) * LEGACY_SECONDS) {
+    if (!batch.settled && run.field!.elapsedSeconds >= Math.round((batch.startedTurn + batch.duration) * LEGACY_SECONDS)) {
       const bonus = Math.min(2, Math.floor((e.properties.moisture ?? 0) / 3));
       batch.output['i-crop-grain'] = 2 + bonus;
       for (const [id, n] of Object.entries(batch.output)) e.stock[id] = (e.stock[id] ?? 0) + n;
@@ -149,20 +157,25 @@ function settleProduction(run: RunState, world: InteractionWorld) {
     if (batch.settled && Object.values(e.stock).every(n => n <= 0)) { e.production = undefined; e.name = '빈 밭'; e.properties.moisture = 0; }
   }
 }
-function tickResidents(run: RunState, world: InteractionWorld) {
-  for (const actor of Object.values(world.entities).filter(e => e.agent && e.id !== 'player' && e.pos && world.spaces?.[e.nodeId] && valid(e))) {
+function tickResidents(run: RunState, world: InteractionWorld, activeIds: ReadonlySet<string>) {
+  // Candidate evaluation is read-only. Keep shared entity references but exclude unrelated areas
+  // from its repeated inventory, occupancy and path queries; commit the chosen action to the world.
+  const local: InteractionWorld = { ...world, entities: Object.fromEntries(Object.entries(world.entities).filter(([,e])=>e.nodeId===run.currentNodeId)) };
+  for (const actor of [...activeIds].map(id=>world.entities[id]!).filter(e => e?.agent && e.id !== 'player' && e.pos && valid(e))) {
+    if (run.field!.elapsedSeconds-(actor.fieldNpcAt??0)<90) continue;
+    actor.fieldNpcAt=run.field!.elapsedSeconds;
     actor.agent!.needs.work = Math.min(1, actor.agent!.needs.work + .025);
     actor.agent!.needs.food = Math.min(1, actor.agent!.needs.food + .012);
-    observeWorld(world, actor.id);
-    const choices = rankSocialActions(world, actor.id, (actorId, targetId) => {
-      const target = world.entities[targetId];
+    observeWorld(local, actor.id);
+    const choices = rankSocialActions(local, actor.id, (actorId, targetId) => {
+      const target = local.entities[targetId];
       if (!target || !target.pos || target.nodeId !== actor.nodeId || target.creature) return [];
       const programs = [
-        ...availableWorldActions(run, world, actorId, targetId).filter(a => a.effects.every(e => e.kind !== 'move') && !['force','heat','charge'].includes(a.id)),
-        ...(['left', 'inverted', 'circle'] as const).map(g => fieldAction(run, world, actor, target, g, target.pos!)).filter((a): a is InteractionAction => !!a),
+        ...availableWorldActions(run, local, actorId, targetId).filter(a => a.effects.every(e => e.kind !== 'move') && !['force','heat','charge'].includes(a.id)),
+        ...(['left', 'inverted', 'circle'] as const).map(g => fieldAction(run, local, actor, target, g, target.pos!)).filter((a): a is InteractionAction => !!a),
       ];
       if (distance(actor.pos!, target.pos) <= 1) return programs;
-      const step = fieldPath(world, actor.nodeId, actor.pos!, target.pos, actor.id, true)?.[0];
+      const step = fieldPath(local, actor.nodeId, actor.pos!, target.pos, actor.id, true)?.[0];
       return step ? programs.map(a => ({ ...a, duration: 1, effects: [{ kind: 'relocate' as const, side: 'actor' as const, pos: step }] })) : [];
     });
     const choice = choices[0];
@@ -217,9 +230,9 @@ function defeatCreature(run: RunState, world: InteractionWorld, e: WorldEntity) 
     run.timeShards += 10;
   }
 }
-function tickCreatures(run: RunState, world: InteractionWorld) {
+function tickCreatures(run: RunState, world: InteractionWorld, activeIds: ReadonlySet<string>) {
   const player = world.entities.player!;
-  for (const e of Object.values(world.entities).filter(e => e.creature && e.nodeId === player.nodeId)) {
+  for (const e of [...activeIds].map(id=>world.entities[id]!).filter(e => e?.creature && e.nodeId === player.nodeId)) {
     if (!valid(e)) { defeatCreature(run, world, e); continue; }
     if (!e.pos || !player.pos || !valid(player)) continue;
     const c = e.creature!;
@@ -255,7 +268,7 @@ function tickCreatures(run: RunState, world: InteractionWorld) {
       if (next) resolveInteraction(world, e.id, e.id, program('right', [{ kind: 'relocate', side: 'actor', pos: next }]));
     }
   }
-  for (const e of Object.values(world.entities).filter(e => e.creature)) defeatCreature(run, world, e);
+  for (const e of [...activeIds].map(id=>world.entities[id]!).filter(e => e?.creature)) defeatCreature(run, world, e);
 }
 function checkPlayer(run: RunState, world: InteractionWorld): boolean {
   syncPlayerFromWorld(run, world);
@@ -274,6 +287,46 @@ function checkPlayer(run: RunState, world: InteractionWorld): boolean {
   syncPlayerToWorld(run, world);
   return false;
 }
+let fieldViewport: { columns:number; rows:number } | undefined;
+export function setFieldViewport(viewport?: {columns:number;rows:number}) { fieldViewport=viewport; }
+export function activeFieldIds(run:RunState, world:InteractionWorld): Set<string> {
+  const space=world.spaces![run.currentNodeId]!,player=world.entities.player!;
+  const cols=fieldViewport?.columns??space.width,rows=fieldViewport?.rows??space.height;
+  const x=Math.max(0,Math.min(space.width-cols,player.pos!.x-Math.floor(cols/2)));
+  const y=Math.max(0,Math.min(space.height-rows,player.pos!.y-Math.floor(rows/2)));
+  const within=(pos:GridPos)=>pos.x>=x-1&&pos.y>=y-1&&pos.x<x+cols+1&&pos.y<y+rows+1;
+  return new Set(Object.values(world.entities).filter(e=>e.nodeId===space.id&&(e.id==='player'||e.carriedBy==='player'||e.pos&&within(e.pos)||e.creature?.intent?.some(within))).map(e=>e.id));
+}
+/** Distant areas settle elapsed state arithmetically; no pathfinding or replay of missed attacks. */
+function settleDormant(run:RunState,world:InteractionWorld,e:WorldEntity,until:number) {
+  const steps=Math.max(0,Math.floor((until-(e.fieldUpdatedAt??until))/STEP_SECONDS));
+  if(steps>0&&valid(e)) {
+    const burns=Math.min(steps,e.properties.burning??0);
+    if(burns>0) influenceEntity(world,e,'integrity',-3*burns,undefined,`${e.name}에 시간이 흘렀다.`);
+    for(const key of ['heat','burning','smoke']) e.properties[key]=Math.max(0,(e.properties[key]??0)-steps);
+    if(e.creature) { e.creature.intent=undefined; if(!valid(e)) defeatCreature(run,world,e); }
+    if(e.renewable && e.renewable.nextTurn<=world.turn && e.renewable.interval>0 && valid(e)) {
+      e.stock[e.renewable.resourceId]=Math.max(e.stock[e.renewable.resourceId]??0,e.renewable.capacity);
+      e.renewable.nextTurn+=(Math.floor((world.turn-e.renewable.nextTurn)/e.renewable.interval)+1)*e.renewable.interval;
+    }
+  }
+  e.fieldUpdatedAt=until;
+  const cycles=Math.floor((until-(e.fieldNpcAt??until))/90);
+  if(e.agent&&e.id!=='player'&&valid(e)&&cycles>0) {
+    e.agent.needs.food=Math.min(1,e.agent.needs.food+.012*cycles);
+    e.agent.needs.work=Math.min(1,e.agent.needs.work+.025*cycles);
+    e.fieldNpcAt=until;
+    const food=Object.keys(e.stock).find(id=>isFoodResource(id)&&e.stock[id]!>0);
+    if(food&&e.agent.needs.food>.5) {
+      const quantity=Math.min(e.stock[food]!,Math.max(1,Math.floor(cycles/4)));
+      resolveInteraction(world,e.id,e.id,program('take',[{kind:'stock',side:'actor',resourceId:food,amount:-quantity}],{satisfies:{food:quantity*.2}}));
+    }
+    if(e.pos&&e.agent.needs.work>.4) {
+      const bench=Object.values(world.entities).find(t=>t.nodeId===e.nodeId&&t.workRecipe&&t.pos&&distance(e.pos!,t.pos)<=1&&valid(t));
+      if(bench) resolveInteraction(world,e.id,bench.id,program('circle',[{kind:'work',amount:Math.min(3,cycles)}],{satisfies:{work:.1}}));
+    }
+  }
+}
 export function advanceFieldTime(seconds: number): void {
   if (!Number.isInteger(seconds) || seconds < 0 || seconds % STEP_SECONDS !== 0) throw new Error('Field time must use 30-second steps');
   const store = useRunStore(), run = store.data;
@@ -281,11 +334,19 @@ export function advanceFieldTime(seconds: number): void {
   const origin = run.currentNodeId;
   for (let left = seconds; left > 0 && !run.ended; left -= STEP_SECONDS) {
     run.field!.elapsedSeconds += STEP_SECONDS;
-    tickMaterials(world, 'only');
-    settleProduction(run, world);
-    tickCreatures(run, world);
+    const active=activeFieldIds(run,world),now=run.field!.elapsedSeconds;
+    for(const id of active) settleDormant(run,world,world.entities[id]!,now-STEP_SECONDS);
+    tickMaterials(world, 'only', active);
+    for(const id of active) world.entities[id]!.fieldUpdatedAt=now;
+    const coarse=now-run.field!.lastWorldStep>=300;
+    if(coarse) {
+      for(const e of Object.values(world.entities)) if(!active.has(e.id)&&world.spaces?.[e.nodeId]) settleDormant(run,world,e,now);
+      run.field!.lastWorldStep=now;
+    }
+    settleProduction(run, world, coarse ? undefined : active);
+    tickCreatures(run, world, active);
     if (!checkPlayer(run, world) || run.currentNodeId !== origin) break;
-    if (run.field!.elapsedSeconds - run.field!.lastNpcStep >= 90) { run.field!.lastNpcStep = run.field!.elapsedSeconds; tickResidents(run, world); }
+    tickResidents(run, world, active);
     syncPlayerFromWorld(run, world);
     while (run.visitedNodes.length < Math.floor(run.field!.elapsedSeconds / LEGACY_SECONDS) && !run.ended) store.spendWorldTime(1);
     processSocialFacts(world);
@@ -308,6 +369,9 @@ export function travelField(to: string): FieldResult {
   const back = next.exits.find(e => e.to === space.id);
   const preferred = back ? cardinal(back.pos).find(p => walkable(world, next.id, p, player.id) && p.x > 0 && p.y > 0 && p.x < next.width - 1 && p.y < next.height - 1) : undefined;
   placeFieldEntity(world, next, player, preferred ?? next.spawn);
+  const active=activeFieldIds(run,world);
+  for(const id of active) settleDormant(run,world,world.entities[id]!,run.field!.elapsedSeconds);
+  settleProduction(run,world,active);
   for (const held of Object.values(world.entities).filter(e => e.carriedBy === player.id)) held.nodeId = next.id;
   (run.nodeStates[next.nodeId] ??= { visited: true }).visited = true;
   observeWorld(world, player.id);
@@ -325,16 +389,26 @@ export function stepField(pos: GridPos): FieldResult {
   const exit = space.exits.find(e => distance(e.pos, pos) === 0);
   return exit ? travelField(exit.to) : { ok: true, message: '' };
 }
-export function performFieldGesture(gesture: Gesture, targetId: string | undefined, pos: GridPos): FieldResult {
+export function performFieldGesture(gesture: Gesture, targetId: string | undefined, pos: GridPos, input?: {quality:number;drawn:boolean}): FieldResult {
   const run = useRunStore().data;
   const { world, space, player } = ensureField(run);
   if (!GESTURES.includes(gesture) || run.ended) return { ok: false, message: '' };
+  const definition=gestureDefinition(gesture)!;
+  if(definition.drawOnly&&(!input?.drawn||input.quality<1-definition.tolerance)) return {ok:false,message:'무늬가 흐트러졌다.'};
+  if(definition.direction) {
+    const destination={x:player.pos!.x+definition.direction.x,y:player.pos!.y+definition.direction.y};
+    if(walkable(world,space.id,destination,player.id)) { const result=stepField(destination); return {...result,targetId:'player',targetPos:{...player.pos!}}; }
+    const adjacent=entitiesAt(world,space.id,destination).filter(valid).sort((a,b)=>Number(b.kind==='actor')-Number(a.kind==='actor'))[0];
+    if(!adjacent) return {ok:false,message:'길이 막혀 있다.',targetPos:destination};
+    const interaction=adjacent.creature?'triangle':adjacent.kind==='actor'?'circle':(adjacent.properties.portable??0)>0?'lift':Object.values(adjacent.stock).some(n=>n>0)&&!adjacent.workRecipe?'take':'circle';
+    return {...performFieldGesture(interaction,adjacent.id,destination),targetId:adjacent.id,targetPos:destination};
+  }
   if (!Number.isInteger(pos.x) || !Number.isInteger(pos.y) || !space.tiles[pos.y]?.[pos.x] || space.tiles[pos.y]![pos.x] === 'wall') return { ok: false, message: '닿을 수 없는 곳.' };
   if (gesture === 'circle') {
     const exit = space.exits.find(e => distance(e.pos, pos) === 0 && distance(player.pos!, pos) <= 1);
     if (exit) { const result = travelField(exit.to); if (result.ok) advanceFieldTime(STEP_SECONDS); return result; }
   }
-  const target: WorldEntity | undefined = gesture === 'down' ? carriedEntity(world) : targetId ? world.entities[targetId] : groundAt(run, pos);
+  const target: WorldEntity | undefined = gesture === 'place' ? carriedEntity(world) : targetId ? world.entities[targetId] : groundAt(run, pos);
   if (!target || target.nodeId !== player.nodeId || target.carriedBy && target.carriedBy !== player.id || !hasSight(world, player, target)) return { ok: false, message: '대상이 보이지 않는다.' };
   if (gesture === 'circle' && target.tags.includes('dungeon-entry')) {
     if (!target.pos || distance(player.pos!, target.pos) > 1) return { ok: false, message: '조금 더 가까이.' };
@@ -351,7 +425,7 @@ export function performFieldGesture(gesture: Gesture, targetId: string | undefin
   let speech;
   if (gesture === 'circle' && target.kind === 'actor' && target.id !== player.id && !target.creature) { speech = speechFor(run, target); run.field!.spoken[target.id] = (run.field!.spoken[target.id] ?? 0) + 1; }
   const transferred = result.facts.find(f => f.kind === 'transfer');
-  let message = transferred ? `${fieldItemName(transferred.resourceId!)} ${gesture === 'left' ? '+' : '−'}${transferred.quantity}` : gesture === 'up' ? `${target.name} ↑` : gesture === 'down' ? `${target.name} ↓` : target.production && !target.production.settled ? '싹이 자란다.' : result.facts.some(f => f.property === 'integrity' && f.after! < f.before!) ? `−${Math.ceil((beforeHp - (target.properties.integrity ?? 100)) * (target.creature?.maxHp ?? 100) / 100)}` : GLYPHS[gesture];
+  let message = transferred ? `${fieldItemName(transferred.resourceId!)} ${gesture === 'take' ? '+' : '−'}${transferred.quantity}` : gesture === 'lift' ? `${target.name} ∧` : gesture === 'place' ? `${target.name} ∨` : target.production && !target.production.settled ? '싹이 자란다.' : result.facts.some(f => f.property === 'integrity' && f.after! < f.before!) ? `−${Math.ceil((beforeHp - (target.properties.integrity ?? 100)) * (target.creature?.maxHp ?? 100) / 100)}` : GLYPHS[gesture];
   if (result.facts.some(f => f.message === '물이 퍼졌다.')) message = '물이 퍼졌다.';
   if (target.production && target.tags.includes('field-plot')) target.name = '자라는 들곡';
   grantPractice(run, gesture, target, result);

@@ -97,11 +97,20 @@ function interpretation(profile: SocialProfile, fact: WorldFact, target: WorldEn
 /** Each witness interprets once. Relayed reports retain the original fact and lower confidence. */
 export function processSocialFacts(world: InteractionWorld): void {
   const facts = [...world.events].sort((a, b) => a.id - b.id);
-  for (const observer of Object.values(world.entities).filter(e => e.agent).sort((a, b) => a.id.localeCompare(b.id))) {
+  const witnessed = new Map<string, WorldFact[]>();
+  for (const fact of facts) for (const id of fact.witnesses) {
+    if (id === fact.actorId || !world.entities[id]?.agent) continue;
+    const list = witnessed.get(id) ?? [];
+    list.push(fact);
+    witnessed.set(id, list);
+  }
+  for (const [id, observations] of [...witnessed].sort(([a], [b]) => a.localeCompare(b))) {
+    const observer = world.entities[id]!;
     const profile = observer.agent!;
     const prefix = 'social-observed:' + observer.id + ':';
     const cursor = marker(world, prefix);
-    for (const fact of facts) {
+    if (cursor >= observations.at(-1)!.id) continue;
+    for (const fact of observations) {
       if (fact.id <= cursor || !fact.witnesses.includes(observer.id) || fact.actorId === observer.id) continue;
       let evidence = fact;
       let confidence = 1;
@@ -147,7 +156,7 @@ export function processSocialFacts(world: InteractionWorld): void {
       else profile.beliefs.push(belief);
     }
     // Keep evidence with its once-applied delta for save-safe rumor deduplication.
-    if (facts.length) mark(world, prefix, facts[facts.length - 1]!.id);
+    mark(world, prefix, observations.at(-1)!.id);
   }
 }
 

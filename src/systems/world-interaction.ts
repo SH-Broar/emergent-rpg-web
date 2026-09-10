@@ -58,6 +58,7 @@ export function syncPlayerFromWorld(run: RunState, world: InteractionWorld): voi
 }
 
 export function ensureInteractionWorld(run: RunState): InteractionWorld {
+  if (run.field && run.interactionWorld) { syncPlayerToWorld(run, run.interactionWorld); return run.interactionWorld; }
   const world = run.interactionWorld ??= seedWorld(run);
   const map = currentMap(run);
   if (map) for (const node of map.nodes) {
@@ -204,6 +205,7 @@ export function performWorldInteraction(run: RunState, request: InteractionReque
 
 export function tickInteractionWorld(run: RunState): void {
   const world = ensureInteractionWorld(run);
+  if (run.field) { world.turn = run.visitedNodes.length; settleLifeWorld(run, world, world.turn); syncPlayerFromWorld(run, world); return; }
   while (world.turn < run.visitedNodes.length) {
     world.turn++;
     tickMaterials(world, world.spaces ? 'exclude' : undefined);

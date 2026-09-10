@@ -58,26 +58,40 @@ try {
   passed.push('movement is orthogonal and exactly 30 seconds; fractional legacy time is preserved');
 
   ({world,space,player}=start());
+  park(world,space,player,{x:7,y:6});
+  const bumpBarrel=Object.values(world.entities).find(e=>e.nodeId===space.id&&e.tags.includes('barrel'));
+  bumpBarrel.pos={x:6,y:6};
+  for(const e of Object.values(world.entities)) if(e.id!=='player'&&e.id!==bumpBarrel.id&&e.nodeId===space.id&&e.pos&&spatial.distance(e.pos,{x:7,y:5})===0)e.pos={x:1,y:1};
+  assert.equal(field.performFieldGesture('up',bumpBarrel.id,bumpBarrel.pos).ok,true);assert.deepEqual(player.pos,{x:7,y:5});assert.equal(bumpBarrel.carriedBy,undefined,'direction ignores the selected distant object');
+  assert.equal(field.performFieldGesture('down',undefined,player.pos).ok,true);assert.deepEqual(player.pos,{x:7,y:6});
+  assert.equal(field.performFieldGesture('left',undefined,player.pos).ok,true);assert.deepEqual(player.pos,{x:7,y:6});assert.equal(bumpBarrel.carriedBy,'player');assert.equal(run.data.field.elapsedSeconds,90,'bump interaction spends one turn, not two');
+  space.tiles[6][8]='wall';const blockedTime=run.data.field.elapsedSeconds;
+  assert.equal(field.performFieldGesture('right',undefined,player.pos).ok,false);assert.equal(run.data.field.elapsedSeconds,blockedTime);
+  const speaker=Object.values(world.entities).find(e=>e.agent&&e.id!=='player'&&e.nodeId===space.id);speaker.pos={x:7,y:5};
+  const bumpTalk=field.performFieldGesture('up',undefined,player.pos);assert.ok(bumpTalk.speech?.lines.length);assert.deepEqual(player.pos,{x:7,y:6});
+  passed.push('direction gestures move to the adjacent tile, interact with blocking objects or NPCs, and never double-spend time');
+
+  ({world,space,player}=start());
   const barrel=Object.values(world.entities).find(e=>e.nodeId===space.id&&e.tags.includes('barrel'));
   park(world,space,player,{x:barrel.pos.x+1,y:barrel.pos.y});
-  assert.equal(field.performFieldGesture('up',barrel.id,barrel.pos).ok,true); assert.equal(barrel.carriedBy,'player'); assert.equal(barrel.pos,undefined);
+  assert.equal(field.performFieldGesture('lift',barrel.id,barrel.pos).ok,true); assert.equal(barrel.carriedBy,'player'); assert.equal(barrel.pos,undefined);
   const rock=Object.values(world.entities).find(e=>e.nodeId===space.id&&e.tags.includes('stone'));
-  assert.equal(field.performFieldGesture('up',rock.id,rock.pos).ok,false);
+  assert.equal(field.performFieldGesture('lift',rock.id,rock.pos).ok,false);
   const place=spatial.cardinal(player.pos).find(p=>spatial.walkable(world,space.id,p,barrel.id));
   const water=barrel.stock.water;
-  assert.equal(field.performFieldGesture('down',undefined,place).ok,true); assert.deepEqual(barrel.pos,place); assert.equal(barrel.carriedBy,undefined); assert.equal(barrel.stock.water,water);
+  assert.equal(field.performFieldGesture('place',undefined,place).ok,true); assert.deepEqual(barrel.pos,place); assert.equal(barrel.carriedBy,undefined); assert.equal(barrel.stock.water,water);
   assert.equal(spatial.walkable(world,space.id,place,'player'),false);
   const physical=()=>JSON.stringify(Object.values(world.entities).map(e=>[e.id,e.pos,e.stock,e.carriedBy,e.production]));
   const before=physical(), time=run.data.field.elapsedSeconds;
-  assert.equal(field.performFieldGesture('down',undefined,player.pos).ok,false); assert.equal(run.data.field.elapsedSeconds,time); assert.ok(physical()===before, 'failed drop preserves physical state');
+  assert.equal(field.performFieldGesture('place',undefined,player.pos).ok,false); assert.equal(run.data.field.elapsedSeconds,time); assert.ok(physical()===before, 'failed drop preserves physical state');
   passed.push('carry and placement conserve the object and stock, block walking, reject duplicate or invalid drops');
 
   ({world,space,player}=start());
   const ground=field.groundAt(run.data,{x:7,y:7}); park(world,space,player,{x:7,y:6});
   run.data.field.selectedItem='water'; const waterBefore=player.stock.water;
-  assert.equal(field.performFieldGesture('right',ground.id,ground.pos).ok,true); assert.equal(ground.stock.water,1); assert.equal(player.stock.water,waterBefore-1);
-  assert.equal(field.performFieldGesture('left',ground.id,ground.pos).ok,true); assert.equal(ground.stock.water,0); assert.equal(player.stock.water,waterBefore);
-  assert.equal(field.performFieldGesture('left',ground.id,ground.pos).ok,false);
+  assert.equal(field.performFieldGesture('give',ground.id,ground.pos).ok,true); assert.equal(ground.stock.water,1); assert.equal(player.stock.water,waterBefore-1);
+  assert.equal(field.performFieldGesture('take',ground.id,ground.pos).ok,true); assert.equal(ground.stock.water,0); assert.equal(player.stock.water,waterBefore);
+  assert.equal(field.performFieldGesture('take',ground.id,ground.pos).ok,false);
   passed.push('items can be placed on a tile and picked up without duplication');
 
   ({world,space,player}=start());
@@ -90,7 +104,7 @@ try {
   const other=generation.fieldMap(run.data).nodes.find(n=>n.id!==space.id && n.kind==='village');
   const otherSpace=generation.ensureFieldSpace(run.data,world,other.id); run.data.currentNodeId=other.id; player.nodeId=other.id; player.pos={...otherSpace.spawn};
   field.advanceFieldTime(1800);
-  assert.equal(plot.production.settled,true); assert.ok(plot.stock['i-crop-grain']>=2);
+  assert.equal(plot.production.settled,true,JSON.stringify({batch:plot.production,seconds:run.data.field.elapsedSeconds,coarse:run.data.field.lastWorldStep})); assert.ok(plot.stock['i-crop-grain']>=2);
   const output={...plot.stock}; field.advanceFieldTime(300); assert.deepEqual(plot.stock,output,'settles once');
   passed.push('multiple tile crops consume seeds, accept shared water and grow once while player is elsewhere');
 
@@ -161,8 +175,17 @@ try {
   field.advanceFieldTime(30); assert.deepEqual(attacker.pos,{x:8,y:7},'food placed on a tile redirects an unprovoked creature');
   field.advanceFieldTime(30); assert.equal(bait.stock['i-crop-grain'],1,'feeding consumes the actual stock');
   const count=Object.keys(world.entities).length, seconds=run.data.field.elapsedSeconds;
-  assert.equal(field.performFieldGesture('right',undefined,{x:-1,y:6}).ok,false); assert.equal(Object.keys(world.entities).length,count); assert.equal(run.data.field.elapsedSeconds,seconds);
+  assert.equal(field.performFieldGesture('give',undefined,{x:-1,y:6}).ok,false); assert.equal(Object.keys(world.entities).length,count); assert.equal(run.data.field.elapsedSeconds,seconds);
   passed.push('creatures telegraph before hitting, movement evades locked cells, real food lures them and invalid gestures create no off-map entities');
+
+  ({world,space,player}=start(monsterNode.id));
+  const spellTarget=Object.values(world.entities).find(e=>e.nodeId===space.id&&e.creature);
+  park(world,space,player,spatial.cardinal(spellTarget.pos).find(p=>spatial.walkable(world,space.id,p,'player')));
+  const mana=run.data.mp,initialIntegrity=spellTarget.properties.integrity;
+  assert.equal(field.performFieldGesture('star',spellTarget.id,spellTarget.pos).ok,false,'advanced rune has no button shortcut');
+  assert.equal(field.performFieldGesture('star',spellTarget.id,spellTarget.pos,{drawn:true,quality:.8}).ok,false);assert.equal(run.data.mp,mana);assert.equal(run.data.field.elapsedSeconds,0);
+  assert.equal(field.performFieldGesture('star',spellTarget.id,spellTarget.pos,{drawn:true,quality:.99}).ok,true);assert.equal(run.data.mp,mana-3);assert.ok(spellTarget.properties.integrity<initialIntegrity);assert.equal(run.data.field.elapsedSeconds,30);
+  passed.push('advanced drawn patterns require accuracy and spend real mana through the shared property reducer');
 
   ({world,space,player}=start());
   for (const node of generation.fieldMap(run.data).nodes) {
@@ -171,5 +194,15 @@ try {
     for(const exit of area.exits) { assert.equal(area.tiles[exit.pos.y][exit.pos.x],'path'); assert.ok(spatial.fieldPath(world,area.id,area.spawn,exit.pos,'player'),`${node.id} exit ${exit.to} is reachable`); }
   }
   passed.push('every authored place becomes a tile area with all authored connections preserved');
+  field.setFieldViewport({columns:7,rows:5});
+  const total=Object.values(world.entities).length,active=field.activeFieldIds(run.data,world);
+  assert.ok(active.size<total/10,'fine simulation stays bounded by the current camera');
+  const distant=Object.values(world.entities).filter(e=>e.nodeId!==space.id&&e.pos&&(e.agent||e.creature));
+  const positions=JSON.stringify(distant.map(e=>[e.id,e.pos]));
+  const timings=[];for(let i=0;i<10;i++){const started=performance.now();field.advanceFieldTime(30);timings.push(Math.round(performance.now()-started));}const elapsedMs=timings.reduce((a,b)=>a+b,0);
+  assert.equal(JSON.stringify(distant.map(e=>[e.id,e.pos])),positions,'coarse simulation does not replay distant paths or attacks');
+  assert.ok(distant.some(e=>e.fieldUpdatedAt===300),'distant entities still settle elapsed state');
+  field.setFieldViewport();
+  passed.push(`viewport detail and arithmetic distant settlement: ${active.size}/${total} detailed entities, 10 steps in ${elapsedMs}ms (${timings.join(',')})`);
   console.log(JSON.stringify({status:'PASS',count:passed.length,scenarios:passed},null,2));
 } finally { await server.close(); globalThis.window=oldWindow; globalThis.localStorage=oldStorage; }

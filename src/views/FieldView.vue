@@ -1,20 +1,31 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useRunStore } from '@/stores/run';
 import { useUiStore } from '@/stores/ui';
 import type { GridPos } from '@/data/schemas/base';
 import { GESTURES, GLYPHS, type Gesture, type FieldSpeech } from '@/systems/field-types';
 import { fieldItemName, FIELD_ITEMS } from '@/systems/field-generation';
-import { carriedEntity, ensureField, fieldAction, fieldClock, gestureLevel, performFieldGesture, stepField, visibleFieldEntities } from '@/systems/field-simulation';
+import { advanceFieldTime, carriedEntity, ensureField, fieldAction, fieldClock, gestureLevel, performFieldGesture, setFieldViewport, stepField, visibleFieldEntities } from '@/systems/field-simulation';
+import { GESTURE_CATALOG, gestureDefinition } from '@/systems/gesture-catalog';
+import { createFieldIdleClock } from '@/systems/field-idle';
 import { cardinal, distance, fieldPath, positionKey, walkable } from '@/systems/world/spatial';
 import { interactionDisabled } from '@/systems/world/engine';
 import GesturePad from '@/components/GesturePad.vue';
 import FieldEntityGlyph from '@/components/FieldEntityGlyph.vue';
 import SettingsMenu from '@/components/SettingsMenu.vue';
+import FieldAtlas from '@/components/FieldAtlas.vue';
 
 const run = useRunStore(), ui = useUiStore(), router = useRouter();
 const initialized = ref(false), moving = ref(false), bagOpen = ref(false), skillsOpen = ref(false), settingsOpen = ref(false);
+const mapOpen=ref(false),drawing=ref(false),pointerHeld=ref(false),hidden=ref(document.hidden),guide=ref<string>(),idleProgress=ref(0);
+const idle=createFieldIdleClock();
+let idleTimer:ReturnType<typeof setInterval>|undefined;
+const paused=computed(()=>moving.value||drawing.value||pointerHeld.value||hidden.value||bagOpen.value||skillsOpen.value||settingsOpen.value||mapOpen.value||!!speech.value||ui.tutorialTopic!==null);
+function wake(){idle.reset(Date.now());idleProgress.value=0;}
+function press(){pointerHeld.value=true;wake();}
+function release(){pointerHeld.value=false;wake();}
+function visibility(){hidden.value=document.hidden;wake();}
 const selectedId = ref<string>(), selectedPos = ref<GridPos>({ x: 0, y: 0 });
 const notice = ref(''), speech = ref<FieldSpeech>(), line = ref(0), lastGesture = ref<Gesture>();
 const stageElement = ref<HTMLElement | null>(null), width = ref(390), height = ref(430);
@@ -31,6 +42,8 @@ const targetStock = computed(() => target.value?.id === 'player' ? [] : Object.e
 const layeredTargets = computed(() => at(target.value?.pos ?? selectedPos.value));
 const columns = computed(() => Math.max(5, Math.min(11, Math.floor(width.value / 48))));
 const rows = computed(() => Math.max(4, Math.min(9, Math.floor(height.value / 48))));
+watch([columns,rows],([columns,rows])=>setFieldViewport({columns,rows}),{immediate:true,flush:'sync'});
+watch(paused,wake,{flush:'sync'});
 const tileSize = computed(() => Math.floor(Math.min(width.value / columns.value, height.value / rows.value)));
 const camera = computed(() => ({ x: Math.max(0, Math.min((space.value?.width ?? 15) - columns.value, (player.value?.pos?.x ?? 7) - Math.floor(columns.value / 2))), y: Math.max(0, Math.min((space.value?.height ?? 13) - rows.value, (player.value?.pos?.y ?? 6) - Math.floor(rows.value / 2))) }));
 const cells = computed(() => Array.from({ length: rows.value * columns.value }, (_, i) => ({ x: camera.value.x + i % columns.value, y: camera.value.y + Math.floor(i / columns.value) })));
@@ -38,7 +51,8 @@ const danger = computed(() => new Set(entities.value.flatMap(e => e.creature?.in
 const glyphs = computed(() => {
   if (!player.value || !target.value || !initialized.value) return [...GESTURES];
   return GESTURES.filter(g => {
-    const t = g === 'down' ? held.value : target.value;
+    if(gestureDefinition(g)?.direction) return true;
+    const t = g === 'place' ? held.value : target.value;
     if (!t) return false;
     const action = fieldAction(run.data, world.value, player.value!, t, g, selectedPos.value, run.data.field?.selectedItem);
     return !!action && !interactionDisabled(world.value, 'player', t.id, action);
@@ -79,7 +93,7 @@ async function clickCell(pos: GridPos) {
   if (run.data.currentNodeId !== origin) selectSelf();
   if (run.data.ended) router.push('/game/end');
 }
-function perform(gesture: Gesture) {
+function perform(gesture: Gesture, quality=1, drawn=false) {
   if (!initialized.value || run.data.ended) return;
   stop();
   lastGesture.value = gesture;
@@ -88,13 +102,15 @@ function perform(gesture: Gesture) {
     return;
   }
   let pos = target.value?.pos ?? selectedPos.value;
-  if (gesture === 'down' && held.value && player.value?.pos && distance(player.value.pos, pos) === 0) pos = cardinal(player.value.pos).find(p => walkable(world.value, run.data.currentNodeId, p, held.value?.id)) ?? pos;
+  if (gesture === 'place' && held.value && player.value?.pos && distance(player.value.pos, pos) === 0) pos = cardinal(player.value.pos).find(p => walkable(world.value, run.data.currentNodeId, p, held.value?.id)) ?? pos;
   const origin = run.data.currentNodeId;
-  const result = performFieldGesture(gesture, selectedId.value, pos);
+  const result = performFieldGesture(gesture, selectedId.value, pos, {quality,drawn});
   say(result.message);
   if (result.speech) { speech.value = result.speech; line.value = 0; }
+  if(result.targetPos) { selectedPos.value=result.targetPos; selectedId.value=result.targetId; }
   if (run.data.currentNodeId !== origin) selectSelf();
-  if (gesture === 'down' && result.ok) { selectedPos.value = pos; selectedId.value = undefined; }
+  if (gesture === 'place' && result.ok) { selectedPos.value = pos; selectedId.value = undefined; }
+  wake();
   if (run.data.ended) router.push('/game/end');
 }
 function chooseItem(id: string) { run.data.field!.selectedItem = run.data.field!.selectedItem === id ? undefined : id; }
@@ -105,12 +121,23 @@ onMounted(async () => {
   await nextTick();
   observer = new ResizeObserver(entries => { const rect = entries[0]?.contentRect; if (rect) { width.value = rect.width; height.value = rect.height; } });
   if (stageElement.value) observer.observe(stageElement.value);
+  wake();
+  window.addEventListener('pointerup',release);window.addEventListener('pointercancel',release);document.addEventListener('visibilitychange',visibility);
+  idleTimer=setInterval(()=>{
+    if(!initialized.value||run.data.ended)return;
+    if(idle.poll(Date.now(),paused.value)) {
+      const origin=run.data.currentNodeId;advanceFieldTime(30);
+      if(run.data.currentNodeId!==origin)selectSelf();
+      if(run.data.ended)router.push('/game/end');
+    }
+    idleProgress.value=paused.value?0:idle.progress(Date.now());
+  },100);
 });
-onBeforeUnmount(() => { stop(); observer?.disconnect(); clearTimeout(timer); });
+onBeforeUnmount(() => { stop(); observer?.disconnect(); clearTimeout(timer);clearInterval(idleTimer);setFieldViewport();window.removeEventListener('pointerup',release);window.removeEventListener('pointercancel',release);document.removeEventListener('visibilitychange',visibility); });
 </script>
 
 <template>
-  <main v-if="initialized && space && player" class="field-view">
+  <main v-if="initialized && space && player" class="field-view" @pointerdown.capture="press" @keydown.capture="wake">
     <header class="field-heading"><div><span class="eyebrow">COLORZ</span><h1>{{ space.name }}</h1></div><div class="field-clock"><time>{{ fieldClock(run.data) }}</time><span><b>♥</b> {{ run.data.hp }}/{{ run.data.maxHp }} <i>·</i> {{ '◈'.repeat(Math.max(0, run.data.lives)) }}</span></div></header>
     <div ref="stageElement" class="field-stage" :class="{ dungeon: !!space.dungeon }">
       <div class="field-board" role="group" aria-label="격자 필드" :style="{ gridTemplateColumns: `repeat(${columns}, ${tileSize}px)`, gridTemplateRows: `repeat(${rows}, ${tileSize}px)` }">
@@ -125,20 +152,23 @@ onBeforeUnmount(() => { stop(); observer?.disconnect(); clearTimeout(timer); });
       <div v-if="space.cleared && space.dungeon" class="room-clear">◇ 길이 열렸다</div>
     </div>
     <section class="field-console" aria-label="하단 조작 패널">
+      <div class="idle-clock" role="progressbar" :aria-label="paused?'시간 일시정지':'다음 30초까지'" :aria-valuenow="Math.round(idleProgress*100)" aria-valuemin="0" aria-valuemax="100"><i :style="{width:`${idleProgress*100}%`}"/><span>{{ paused?'Ⅱ':'5초 · 30초' }}</span></div>
       <section v-if="speech" class="field-dialogue" aria-label="대화"><div><strong>{{ speech.name }}</strong><button aria-label="대화 닫기" @click="speech = undefined">×</button></div><blockquote>{{ speech.lines[line] }}</blockquote><small>{{ line + 1 }} / {{ speech.lines.length }} <span>○</span></small></section>
       <section v-if="bagOpen" class="field-drawer" aria-label="소지품"><button v-for="[id, count] in inventory" :key="id" :aria-pressed="run.data.field?.selectedItem === id" @click="chooseItem(id)"><span :style="{ color: FIELD_ITEMS[id]?.color ?? '#d3cab2' }">{{ FIELD_ITEMS[id]?.glyph ?? '◇' }}</span> {{ fieldItemName(id) }} <b>{{ count }}</b></button><p v-if="!inventory.length">빈 가방</p></section>
-      <section v-if="skillsOpen" class="field-drawer field-skills" aria-label="도형 숙련"><div v-for="g in GESTURES" :key="g"><b>{{ GLYPHS[g] }}</b><span>{{ gestureLevel(run.data, g) }}</span><meter min="0" :max="6 * gestureLevel(run.data, g) ** 2" :value="run.data.field?.gestureXp[g] ?? 0" /></div></section>
+      <section v-if="skillsOpen" class="field-drawer field-skills" aria-label="도형 모음"><button v-for="g in GESTURE_CATALOG" :key="g.id" :aria-label="`${g.name} 연습선`" @click="guide=g.id;skillsOpen=false"><b>{{ g.glyph }}</b><span>{{ gestureLevel(run.data,g.id) }}</span><small>{{ g.drawOnly?'직접 그리기':'연습선' }}</small></button></section>
       <div class="console-target"><div><span class="target-dot"/><strong>{{ targetName }}</strong><small v-if="target?.creature">{{ Math.ceil(target.creature.maxHp * (target.properties.integrity ?? 100) / 100) }} HP</small><small v-else-if="target?.production && !target.production.settled">{{ Math.max(0, Math.ceil(((target.production.startedTurn + target.production.duration) * 864 - run.data.field!.elapsedSeconds) / 60)) }}분</small></div><button v-if="moving" aria-label="이동 멈추기" @click="stop">■</button><button v-else aria-label="자신 선택" @click="selectSelf">◎</button></div>
       <div v-if="layeredTargets.length > 1" class="target-stock" aria-label="같은 칸의 대상"><button v-for="entity in layeredTargets" :key="entity.id" :aria-pressed="selectedId === entity.id" @click="stop(); selectedId = entity.id">{{ entity.name }}</button></div>
       <div v-if="targetStock.length && !bagOpen" class="target-stock"><button v-for="[id, n] in targetStock" :key="id" :aria-pressed="run.data.field?.selectedItem === id" @click="chooseItem(id)">{{ fieldItemName(id) }} <b>{{ n }}</b></button></div>
-      <div class="console-body"><div class="hand-slot"><span class="hand-label">{{ held ? '들고 있음' : '손' }}</span><FieldEntityGlyph v-if="held" :entity="held"/><span v-else class="hand-glyph">{{ FIELD_ITEMS[run.data.field?.selectedItem ?? '']?.glyph ?? '·' }}</span><strong>{{ held?.name ?? (run.data.field?.selectedItem ? fieldItemName(run.data.field.selectedItem) : '빈손') }}</strong><small v-if="lastGesture">{{ GLYPHS[lastGesture] }} {{ gestureLevel(run.data, lastGesture) }}</small></div><GesturePad :available="glyphs" :disabled="ui.tutorialTopic !== null || settingsOpen" @gesture="perform" @unrecognized="say('다시 그려보세요.')"/></div>
-      <nav class="console-nav" aria-label="필드 메뉴"><button :aria-pressed="bagOpen" @click="bagOpen = !bagOpen; skillsOpen = false"><span>▣</span> 소지품</button><button :aria-pressed="skillsOpen" @click="skillsOpen = !skillsOpen; bagOpen = false"><span>◇</span> 숙련</button><button aria-label="튜토리얼" @click="help">?</button><button aria-label="설정" @click="stop(); settingsOpen = true">⚙</button></nav>
+      <div class="console-body"><div class="hand-slot"><span class="hand-label">{{ held ? '들고 있음' : '손' }}</span><FieldEntityGlyph v-if="held" :entity="held"/><span v-else class="hand-glyph">{{ FIELD_ITEMS[run.data.field?.selectedItem ?? '']?.glyph ?? '·' }}</span><strong>{{ held?.name ?? (run.data.field?.selectedItem ? fieldItemName(run.data.field.selectedItem) : '빈손') }}</strong><small v-if="lastGesture">{{ GLYPHS[lastGesture] }} {{ gestureLevel(run.data, lastGesture) }}</small></div><GesturePad :available="glyphs" :guide="guide" :disabled="ui.tutorialTopic !== null || settingsOpen || mapOpen" @drawing="drawing=$event" @gesture="perform" @unrecognized="say('다시 그려보세요.');wake()"/></div>
+      <nav class="console-nav" aria-label="필드 메뉴"><button :aria-pressed="bagOpen" @click="stop();bagOpen = !bagOpen; skillsOpen = false"><span>▣</span> 소지품</button><button :aria-pressed="skillsOpen" @click="stop();skillsOpen = !skillsOpen; bagOpen = false"><span>◇</span> 도형</button><button aria-label="지도" @click="stop();mapOpen=true">지도</button><button aria-label="튜토리얼" @click="help">?</button><button aria-label="설정" @click="stop(); settingsOpen = true">⚙</button></nav>
     </section>
     <SettingsMenu :open="settingsOpen" @close="settingsOpen = false"/>
+    <FieldAtlas :open="mapOpen" @close="mapOpen=false"/>
   </main>
 </template>
 
 <style scoped>
+.idle-clock{height:3px;position:relative;background:#08160e66;margin:0 -14px}.idle-clock i{display:block;height:100%;background:#c9b477;transition:width .1s linear}.idle-clock span{position:absolute;right:12px;top:-14px;font-size:9px;color:#c5c7a9;background:#192b20b3;border-radius:3px;padding:0 3px}.field-skills button{display:flex;align-items:center;gap:12px;min-height:44px;padding:7px 10px;color:#e1d6b0;background:#223527;border:1px solid #99aa7644;border-radius:6px}.field-skills button b{font-size:25px}.field-skills button small{color:#a4b69a;font-size:10px}
 .field-view { height: 100dvh; min-height: 480px; width: 100%; max-width: 1100px; margin: 0 auto; padding: 0 !important; display: flex; flex-direction: column; color: #e0e0cd; background: #17221e; overflow: hidden; font-family: 'Pretendard', system-ui, sans-serif; }
 .field-heading { flex: none; height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 18px; border-bottom: 1px solid #63715a33; background: #18211e; }
 .eyebrow { font-size: 9px; letter-spacing: .25em; color: #9aaa8d; }

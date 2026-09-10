@@ -45,6 +45,8 @@ export interface WorldEntity {
   carriedBy?: string;
   npcId?: string;
   creature?: FieldCreature;
+  fieldUpdatedAt?: number;
+  fieldNpcAt?: number;
   colors: ColorProfile;
   tags: string[];
   /** Material state and capacities, all effects use this vocabulary. */

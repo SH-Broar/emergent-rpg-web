@@ -1,7 +1,7 @@
 import type { ColorProfile, InteractionAction, InteractionResult, InteractionWorld, WorldEntity, WorldFact } from './types';
 import { iGa } from '../josa';
 import { resourceTags } from './resources';
-import { cardinal, distance, entitiesAt, hasSight, positionKey, walkable } from './spatial';
+import { cardinal, createSightTest, distance, entitiesAt, hasSight, positionKey, walkable } from './spatial';
 
 export interface PropertyChange { property: string; before: number; after: number }
 const finite = (n: number) => Number.isFinite(n);
@@ -73,8 +73,9 @@ export function observeWorld(world: InteractionWorld, actorId: string): void {
   const known = world.knowledge[actorId] ??= { targets: {}, facts: [] };
   for (const old of Object.values(known.targets)) if (old.nodeId === actor.nodeId) delete known.targets[old.id];
   const obscured = Object.values(world.entities).some(e => e.nodeId === actor.nodeId && (e.properties.smoke ?? 0) >= 2);
+  const sees=createSightTest(world,actor);
   for (const e of Object.values(world.entities)) {
-    if (e.nodeId !== actor.nodeId || e.carriedBy && e.carriedBy !== actorId || (obscured && e.id !== actorId && !world.spaces?.[actor.nodeId]) || !hasSight(world, actor, e)) continue;
+    if (e.nodeId !== actor.nodeId || e.carriedBy && e.carriedBy !== actorId || (obscured && e.id !== actorId && !world.spaces?.[actor.nodeId]) || !sees(e)) continue;
     const publicProperties = ['integrity', 'moisture', 'heat', 'burning', 'smoke', 'flammability', 'conductivity', 'hardness', 'work', 'workRequired', 'irrigation', 'safety', 'light', 'attention', 'heatTolerance', 'laborPower'];
     if (e.id === actorId) publicProperties.push('mana', 'lifeLevel', 'practice');
     known.targets[e.id] = {
@@ -156,7 +157,7 @@ export function interactionDisabled(world: InteractionWorld, actorId: string, ta
       if (effect.held) {
         if (target.id === actor.id || target.kind === 'actor' || !(target.properties.portable ?? 0) || target.carriedBy || Object.values(world.entities).some(e => e.carriedBy === actor.id)) return '들 수 없다.';
         if ((target.properties.mass ?? 1) > (actor.properties.carryCapacity ?? 3)) return '너무 무겁다.';
-      } else if (target.carriedBy !== actor.id || !effect.pos || !actor.pos || distance(actor.pos, effect.pos) > 1 || !walkable(world, actor.nodeId, effect.pos, target.id)) return '여기에는 내려놓을 수 없다.';
+      } else if (target.carriedBy !== actor.id || !effect.pos || !actor.pos || distance(actor.pos, effect.pos) > (action.reach ?? 1) || !walkable(world, actor.nodeId, effect.pos, target.id)) return '여기에는 내려놓을 수 없다.';
     } else if ((effect.kind === 'influence' || effect.kind === 'work') && !finite(effect.amount)) return '영향량이 올바르지 않다.';
     else if (effect.kind === 'production' && effect.batch && target.production) return '이미 생산 중이다.';
   }
@@ -265,20 +266,23 @@ export function resolveInteraction(world: InteractionWorld, actorId: string, tar
 }
 
 /** Time applies the same property reducer as actions; no action-to-action reaction table. */
-export function tickMaterials(world: InteractionWorld, spatial?: 'only' | 'exclude'): void {
+export function tickMaterials(world: InteractionWorld, spatial?: 'only' | 'exclude', activeIds?: ReadonlySet<string>): void {
   // Snapshot sources: a new fire cannot cross an entire field in one tick.
-  const sources = Object.values(world.entities).filter(e => spatial !== 'exclude' && world.spaces?.[e.nodeId] && e.pos && !e.carriedBy && (e.properties.integrity ?? 100) > 0)
+  const entities = activeIds ? [...activeIds].map(id=>world.entities[id]!).filter(Boolean) : Object.values(world.entities);
+  const sources = entities.filter(e => spatial !== 'exclude' && world.spaces?.[e.nodeId] && e.pos && !e.carriedBy && (e.properties.integrity ?? 100) > 0)
     .map(e => ({ id: e.id, nodeId: e.nodeId, pos: { ...e.pos! }, heat: e.properties.heat ?? 0, moisture: e.properties.moisture ?? 0, burning: e.properties.burning ?? 0 }));
+  const contacts=new Map<string,WorldEntity[]>(),spaces=new Set(sources.map(s=>s.nodeId));
+  for(const e of Object.values(world.entities)) if(e.pos&&!e.carriedBy&&spaces.has(e.nodeId)) {const key=`${e.nodeId}:${positionKey(e.pos)}`;contacts.set(key,[...(contacts.get(key)??[]),e]);}
   for (const source of sources) {
     const cells = source.burning > 0 ? [source.pos, ...cardinal(source.pos)] : [source.pos];
-    for (const pos of cells) for (const target of entitiesAt(world, source.nodeId, pos)) {
+    for (const pos of cells) for (const target of contacts.get(`${source.nodeId}:${positionKey(pos)}`)??[]) {
       if (target.id === source.id || (target.properties.integrity ?? 100) <= 0) continue;
       const contact = distance(source.pos, pos) === 0;
       if (contact && source.moisture > (target.properties.moisture ?? 0)) influenceEntity(world, target, 'moisture', Math.min(3, source.moisture - (target.properties.moisture ?? 0)));
       if ((source.burning > 0 || contact && source.heat > 0) && source.heat > (target.properties.heat ?? 0)) influenceEntity(world, target, 'heat', Math.min(2, source.heat - (target.properties.heat ?? 0)));
     }
   }
-  for (const entity of Object.values(world.entities)) {
+  for (const entity of entities) {
     const positioned = !!world.spaces?.[entity.nodeId];
     if (spatial === 'only' && !positioned || spatial === 'exclude' && positioned) continue;
     if ((entity.properties.integrity ?? 100) <= 0) continue;

@@ -1,8 +1,9 @@
 import type { GridPos } from '@/data/schemas/base';
 
-export const GESTURES = ['up', 'down', 'left', 'right', 'triangle', 'inverted', 'circle'] as const;
-export type Gesture = typeof GESTURES[number];
-export const GLYPHS: Record<Gesture, string> = { up: '↑', down: '↓', left: '←', right: '→', triangle: '△', inverted: '▽', circle: '○' };
+import { GESTURE_CATALOG } from './gesture-catalog';
+export const GESTURES = GESTURE_CATALOG.map(g => g.id);
+export type Gesture = string;
+export const GLYPHS: Record<Gesture, string> = Object.fromEntries(GESTURE_CATALOG.map(g => [g.id,g.glyph]));
 export type FieldTile = 'grass' | 'path' | 'water' | 'wall' | 'soil' | 'stone';
 export interface FieldExit { pos: GridPos; to: string; label: string; requirement?: string }
 export interface FieldSpace {
@@ -30,6 +31,7 @@ export interface FieldState {
   lastWorldStep: number;
   sequence: number;
   completedDungeons: string[];
+  controlsVersion?: 2;
 }
 export interface FieldCreature {
   definitionId: string;
@@ -45,4 +47,4 @@ export interface FieldCreature {
   reward: { gold: number; shards: number; itemId?: string };
 }
 export interface FieldSpeech { actorId: string; name: string; lines: string[] }
-export interface FieldResult { ok: boolean; message: string; speech?: FieldSpeech; travel?: boolean; changed?: string[] }
+export interface FieldResult { ok: boolean; message: string; speech?: FieldSpeech; travel?: boolean; changed?: string[]; targetId?: string; targetPos?: GridPos }
