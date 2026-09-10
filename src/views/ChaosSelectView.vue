@@ -17,6 +17,7 @@ import { useDataStore } from '@/stores/data';
 import { useRunStore } from '@/stores/run';
 import { useMetaStore } from '@/stores/meta';
 import { instantiateCard } from '@/systems/deck';
+import { starterTactics } from '@/systems/tactical-cards';
 import { applySeedColors } from '@/systems/colors';
 import { injectStartChaosCards, computeChaosScore, chaosTierLabel, maxIntensityOf, chaosLevelSummary, chaosScoreOf, applyPostApocalypseMap } from '@/systems/chaos';
 import { rng } from '@/systems/rng';
@@ -194,6 +195,14 @@ async function confirmStart() {
   run.data.deckSize = deckSize;
   run.data.collection = allInstances;
   run.data.deck = allInstances.slice(0, deckSize);
+  const tactics = starterTactics();
+  run.data.collection.push(...tactics);
+  const retained = [...run.data.deck];
+  for (let i = 0; i < tactics.length; i++) {
+    const basic = retained.findIndex(c => c.rank === 'basic');
+    retained.splice(basic >= 0 ? basic : retained.length - 1, 1);
+  }
+  run.data.deck = [...tactics, ...retained].slice(0, deckSize);
 
   // 시작 아이템 — 전 종족 공통 회복약.
   const starter = data.items.get('i-potion-small');

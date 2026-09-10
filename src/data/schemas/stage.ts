@@ -51,6 +51,7 @@ export interface EncounterDef {
 }
 
 export interface GridStage {
+  objects?: { id: string; kind: 'water-barrel' | 'brazier' | 'supply'; pos: GridPos; used?: boolean }[];
   id: string;
   /** 바운딩 박스. cells[y][x], 0 <= x < width, 0 <= y < height. */
   width: number;

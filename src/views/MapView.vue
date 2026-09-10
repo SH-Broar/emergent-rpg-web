@@ -27,7 +27,9 @@ import { restHealMul, lockedTownCount, isShopLimited, canEnterShop, recordShopEn
 import { isActivityDone } from '@/systems/activity';
 import { isGatherDone } from '@/systems/gathering';
 import { plotStatus, type PlotStatus } from '@/systems/farming';
-import { minutesLabel } from '@/systems/time';
+import { minutesLabel, remainingTimeLabel } from '@/systems/time';
+import WorldInteractionPanel from '@/components/WorldInteractionPanel.vue';
+import TacticalDraft from '@/components/combat/TacticalDraft.vue';
 import { colorLabel } from '@/systems/labels';
 import { eulReul, iGa } from '@/systems/josa';
 import type { Node, NodeId, NodeKind, NodeMap } from '@/data/schemas';
@@ -106,6 +108,7 @@ const reachable = computed<Set<NodeId>>(() => {
 
 // === Drawer 상태 ===
 const selectedNodeId = ref<NodeId | null>(null);
+const interactionExpanded = ref(false);
 const selectedNode = computed<Node | undefined>(() => {
   if (!nodeMap.value || !selectedNodeId.value) return undefined;
   return getNode(nodeMap.value, selectedNodeId.value);
@@ -1009,10 +1012,10 @@ const plotStatuses = computed<Map<string, PlotStatus>>(() => {
   }
   return m;
 });
-/** 뱃지 글자 — 수확 가능 ✓ / 돌봄 필요 ! / 자라는 중 남은 턴 수. */
+/** 뱃지 글자 — 수확 가능 ✓ / 선택 돌봄 + / 자라는 중 남은 턴 수. */
 function plotBadgeText(s: PlotStatus): string {
   if (s.ready) return '✓';
-  if (s.needsCare) return '!';
+  if (s.needsCare) return '+';
   return String(s.remaining);
 }
 /** 뱃지 상태 클래스 키. */
@@ -1022,7 +1025,7 @@ function plotBadgeState(s: PlotStatus): 'ready' | 'care' | 'grow' {
 /** 드로어 진행 문구. */
 function plotStatusLine(s: PlotStatus): string {
   if (s.ready) return '제작 완료 — 수확할 수 있다.';
-  if (s.needsCare) return '제작 중 — 손질이 필요하다.';
+  if (s.needsCare) return `선택 손질 가능 · 자리를 비워도 성장 · 완성까지 ${minutesLabel(s.remaining)}.`;
   return `제작 중 — 완성까지 ${minutesLabel(s.remaining)}.`;
 }
 
@@ -1049,7 +1052,8 @@ function enterLabel(): string {
 </script>
 
 <template>
-  <main v-if="nodeMap" class="map-view">
+  <main v-if="nodeMap" class="map-view" :class="{ 'map-view--interaction-expanded': interactionExpanded && (!selectedNode || selectedNode.id === run.data.currentNodeId) }">
+    <TacticalDraft class="map-draft" />
     <section class="graph">
       <svg
         ref="svgEl"
@@ -1187,6 +1191,12 @@ function enterLabel(): string {
       </button>
     </section>
 
+    <aside v-if="!selectedNode" class="drawer" aria-label="현재 장소 살펴보기">
+      <button class="drawer__expand" :aria-expanded="interactionExpanded" @click="interactionExpanded = !interactionExpanded">{{ interactionExpanded ? '지도 넓게 보기' : '주변 정보 펼치기' }}</button>
+      <p class="drawer__time">남은 원정 시간 {{ remainingTimeLabel(Math.max(0, (timeline?.timeLimit ?? 0) - run.data.visitedNodes.length)) }}</p>
+      <WorldInteractionPanel />
+    </aside>
+
     <!-- Drawer -->
     <aside v-if="selectedNode" class="drawer" :class="{ 'drawer--current': selectedNode.id === run.data.currentNodeId }">
       <header class="drawer__hdr">
@@ -1201,6 +1211,7 @@ function enterLabel(): string {
         <span class="drawer__region-name">{{ selectedRegion.name }}</span>
       </div>
       <div class="drawer__status">상태: {{ nodeStatusLabel(selectedNode) }}</div>
+      <p class="drawer__time">이동·재입장 {{ minutesLabel(1) }} · 남은 시간 {{ remainingTimeLabel(Math.max(0, (timeline?.timeLimit ?? 0) - run.data.visitedNodes.length)) }}</p>
       <div
         v-if="plotStatuses.get(selectedNode.id)"
         class="drawer__plot"
@@ -1209,6 +1220,10 @@ function enterLabel(): string {
       <p v-if="chaosLockedNodes.has(selectedNode.id)" class="drawer__locked">🔒 카오스로 닫혀 들어갈 수 없다.</p>
       <p v-if="lockedEdgeReason" class="drawer__locked drawer__locked--edge">🔒 {{ lockedEdgeReason }}</p>
       <p class="drawer__desc">{{ selectedNode.description }}</p>
+      <template v-if="selectedNode.id === run.data.currentNodeId">
+        <button class="drawer__expand" :aria-expanded="interactionExpanded" @click="interactionExpanded = !interactionExpanded">{{ interactionExpanded ? '지도 넓게 보기' : '주변 정보 펼치기' }}</button>
+        <WorldInteractionPanel />
+      </template>
 
       <div class="drawer__actions">
         <button
@@ -1217,7 +1232,7 @@ function enterLabel(): string {
           :disabled="getEnterAction() === 'unreachable' || getEnterAction() === 'activity-possessed'"
           @click="enterSelected"
         >
-          {{ enterLabel() }}
+          {{ enterLabel() }} · {{ minutesLabel(1) }}
         </button>
         <!-- 현재 노드 재진입(item 8) — 미소비 노드를 1턴 써서 다시 들어간다. -->
         <button
@@ -1249,6 +1264,21 @@ function enterLabel(): string {
   height: 100vh;
   height: 100dvh;
   padding: 1rem 1.5rem;
+}
+
+.map-draft {
+  position: fixed;
+  top: calc(4rem + env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: calc(var(--z-hud, 800) - 1);
+  width: min(960px, calc(100% - 1.2rem));
+  margin: 0;
+  max-height: calc(100vh - 5rem - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  max-height: calc(100dvh - 5rem - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  box-shadow: 0 12px 50px rgba(0, 0, 0, .65);
 }
 
 .graph {
@@ -1590,6 +1620,7 @@ function enterLabel(): string {
 .drawer__region-desc { font-size: 0.8rem; color: #8a8aa0; line-height: 1.5; }
 
 .drawer__status { font-size: 0.85rem; color: #c08eff; }
+.drawer__time { margin: 0; color: #c3ccd8; font-size: .82rem; }
 .drawer__plot { font-size: 0.85rem; font-weight: 600; }
 .drawer__plot--grow { color: #f6e8b8; }
 .drawer__plot--care { color: #8eedff; }
@@ -1658,9 +1689,14 @@ function enterLabel(): string {
   font: inherit;
 }
 
+.drawer__expand { display: none; }
+
 /* 모바일: 지도(위) + 드로어(아래) 2행 — 드로어가 오버레이가 아니라 한 행을 차지하므로
    지도가 드로어를 *제외한 나머지 영역*에 맞춰 줄어든다. 드로어는 완전 불투명. */
 @media (max-width: 720px) {
+  .drawer__expand { display: block; flex-shrink: 0; border: 1px solid #536279; border-radius: 6px; padding: .45rem .65rem; color: #cddcf0; background: #263040; font: inherit; cursor: pointer; }
+  .map-view.map-view--interaction-expanded { grid-template-rows: minmax(130px, 1fr) 56dvh; }
+  .map-view--interaction-expanded .drawer { max-height: 56dvh; }
   .map-view {
     grid-template-columns: 1fr;
     /* 지도 영역을 1.3~1.4배 확보 — 기존 1fr/46vh → 1fr/32vh (지도 ≈ 68vh).

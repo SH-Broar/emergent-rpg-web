@@ -1065,8 +1065,8 @@ enemy = mr-iluneon-alley-thug
 [nodemap.nm-act-1-era4-061.node.n-ilu-larder]
 kind = gather
 region = iluneon
-label = 식료 저장고
-description = 식당 옆의 시원한 저장고. 식재료가 가지런히 쌓여 있다.
+label = 저장고 곁 텃밭
+description = 식당에 곡식을 대는 작은 텃밭. 씨를 심고 다른 곳을 다녀와도 자라며, 수확물은 길드 보급과 관개 복구에 쓸 수 있다.
 x = 0.4343
 y = 0.4483
 neighbors = n-ilu-curiocity, n-ilu-diner-back, n-ilu-inn-court, n-iluneon-diner, n-iluneon-square, n-ilu-changers

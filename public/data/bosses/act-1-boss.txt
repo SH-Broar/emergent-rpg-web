@@ -5,7 +5,7 @@
 
 [boss.bs-act-1-anchor]
 name = 시간의 정령
-description = 형태가 흐릿한 어린 정령.
+description = 사람 아이의 윤곽을 띤 시간의 정령. 흐릿한 몸 주위에서 시간이 느려진다.
 timeline = tl-act-1-era4-061
 hp = 1800
 attack = 14

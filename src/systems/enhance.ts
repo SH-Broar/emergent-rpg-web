@@ -25,7 +25,7 @@ export const XP_BOSS = 9;
 export const XP_ARC_REPEAT = XP_ELITE;
 
 // === 강화 체계 ===
-/** 강당 수치 배율(+12%). 누적은 1.12^level. */
+/** 강당 기본값의 +12%. 합연산으로 후반 지수 폭증을 막는다. */
 export const ENHANCE_PER_LEVEL = 0.12;
 /** 최대 강화 단계 (비공격 카드 — 방어/유틸). */
 export const MAX_ENHANCE_LEVEL = 10;
@@ -67,28 +67,22 @@ export function awakenCostFor(rank: Rank): AwakenCost {
 
 // === 스케일 계산 ===
 
-/**
- * 유효 강화 단계 — awakened 카드는 *plus 정의가 이미 base를 올린 상태*이므로
- * 각성 이후 구간(6~10강)만 센다: level-5. 미각성은 level 그대로.
- * (풀강 배율이 plus 점프 × 1.12^10 곱연산으로 폭주하지 않게 — 사용자 승인 상한 ×3 준수.
- *  구세이브 -plus 마이그레이션(enhanceLevel 5·awakened)은 유효 0 → plus 수치 그대로.)
- */
+/** 각성해도 투자한 강화 단계를 유지한다. 저장된 값은 해당 카드 상한까지 제한한다. */
 function effectiveLevel(card: Card | undefined): number {
   const lvl = card?.enhanceLevel ?? 0;
-  if (!card?.awakened) return lvl;
-  return Math.max(0, lvl - AWAKEN_GATE_LEVEL);
+  return Math.max(0, Math.min(maxLevelFor(card), lvl));
 }
 
 /**
- * 강화 배율 — 미각성 1.12^level / 각성 1.12^(level-5) × 폴백 점프.
+ * 강화 배율 — 1 + 0.12 × 전체 강화 단계. 각성 시 이전 5단계를 차감하지 않는다.
  * 폴백 점프: 각성했지만 plus 정의가 없어 교체되지 못한 카드(id가 -plus가 아님)는 수치 +38%.
- * 풀강(10강+각성) 실효 ≈ 미강화 ×2.6~3.1 (plus 점프 폭에 따름) — 스펙 목표 ×3.0 이내.
+ * plus 정의의 기본값 개선 또는 폴백 점프에 강화가 곱해진다.
  */
 export function enhanceMul(card: Card | undefined): number {
   const lvl = effectiveLevel(card);
   const jump = card?.awakened && !card.id.endsWith('-plus') ? 1 + AWAKEN_NUMERIC_JUMP : 1;
   if (lvl <= 0) return jump;
-  return jump * Math.pow(1 + ENHANCE_PER_LEVEL, lvl);
+  return jump * (1 + ENHANCE_PER_LEVEL * lvl);
 }
 
 /**

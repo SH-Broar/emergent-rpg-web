@@ -81,6 +81,10 @@ export type CardTriggerKind =
 
 /** 효과 종류 — MVR 단계에서는 5종만. 확장 가능. */
 export type CardEffectKind =
+  | 'terrain-water'
+  | 'terrain-fire'
+  | 'terrain-smoke'
+  | 'lure'
   | 'damage'              // 적에게 데미지
   | 'damage-min-color'    // 8 컬러 중 *최솟값* × value 데미지, ATK 보너스 무시
   | 'heal'                // 자신 회복 (음수 = 자기 HP 페널티)

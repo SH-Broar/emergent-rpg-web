@@ -6,7 +6,8 @@
 # ============================================================
 
 [monster.mr-iluneon-cutpurse]
-name = 먼지 고양이
+name = 먼지 발톱 고양이
+description = 먼지 털을 곤두세운 고양이형 마물. 빠른 발톱으로 가까운 칸을 할퀴고 그르렁거려 졸음을 부른다.
 tier = normal
 species = cat
 hp = 29
@@ -24,7 +25,8 @@ grid_attack_1 = 할퀴기 | 0,-1 -1,-1 1,-1 | 1.5,1,1 | 4 | fast | true |
 grid_attack_2 = 그르렁 | 0,-1 -1,0 1,0 | 1,1,1 | 2 | normal | true | drowsy:1
 
 [monster.mr-iluneon-trickster]
-name = 흩어지는 그림자
+name = 투척 그림자
+description = 납작하게 흩어지는 그림자 마물. 떨어진 거리에서 물건을 던지고 가까이 오면 기력을 잠식한다.
 tier = normal
 species = shade
 hp = 29
@@ -50,7 +52,8 @@ grid_attack_1 = 투척 | 0,-3 0,-2 -1,-2 1,-2 | 1.5,1,0.7,0.7 | 2 | normal | tru
 grid_attack_2 = 그림자 잠식 | 0,-1 -1,-1 1,-1 | 1,1,1 | 2 | normal | true | sap:2
 
 [monster.mr-iluneon-guild-rat]
-name = 곳간 말썽쟁이
+name = 곳간 발톱쥐
+description = 곡물 자루를 갉아먹는 쥐형 마물. 재빨리 앞발을 휘두르며 상대의 기력을 빼앗는다.
 tier = normal
 species = demon
 hp = 30
@@ -73,6 +76,7 @@ recruit_per_turn = block:1
 
 [monster.mr-iluneon-alley-thug]
 name = 뒷골목 너구리
+description = 몸을 길게 늘리는 너구리형 마물. 느린 내지르기로 두 칸 앞까지 공격하고 꼬리로 졸음을 유도한다.
 tier = normal
 species = raccoon
 hp = 34
@@ -88,6 +92,7 @@ card_drops =
 
 [monster.mr-iluneon-lantern-imp]
 name = 가로등 불씨
+description = 가로등에서 떨어져 나온 불씨형 마물. 빠른 공격 뒤 어른거리는 빛으로 방향 감각을 흐린다.
 tier = normal
 species = fae
 hp = 22
@@ -109,7 +114,8 @@ companion_skill_desc = 적에게 약화 2를 건다. 불빛이 한 번 깜빡여
 companion_skill_effects = apply-status:2:enemy:weakness
 
 [monster.mr-iluneon-market-sneak]
-name = 시장 잔망이
+name = 가판 꼬리짐승
+description = 네 발로 가판 아래를 기는 꼬리짐승 마물. 꼬리를 사방으로 휘두르고 졸음을 퍼뜨린다.
 tier = normal
 species = demon
 hp = 25
@@ -126,6 +132,7 @@ card_drops =
 
 [monster.mr-iluneon-clock-shade]
 name = 시계탑 그림자
+description = 시계탑 벽에서 떨어져 떠다니는 얼룩형 마물. 멀리 뻗는 느린 공격과 기력을 빼앗는 공격을 쓴다.
 tier = normal
 species = phantom
 hp = 27
@@ -140,7 +147,8 @@ time_shards = 3
 card_drops =
 
 [monster.mr-iluneon-toll-warden]
-name = 길목 심술쟁이
+name = 길막 등껍질짐승
+description = 둥근 등껍질로 길을 틀어막는 마물. 단단히 웅크린 뒤 앞쪽을 느리게 강타한다.
 tier = normal
 species = demon
 hp = 37
@@ -157,7 +165,8 @@ grid_attack_1 = 강타 | 0,-1 0,-2 | 1.5,1 | 5 | slow | true |
 grid_attack_2 = 방어 자세 | 0,0 | 1 | 2 | slow | false | vulnerable:0
 
 [monster.mr-iluneon-clockwraith]
-name = 시계탑 잔영
+name = 시계탑 인간형 잔영
+description = 사람의 윤곽과 길게 뻗은 팔을 갖춘 마물. 대각선으로 자리를 바꾸며 넓은 범위에 시간 균열을 낸다.
 tier = elite
 species = phantom
 hp = 94
@@ -182,6 +191,7 @@ grid_attack_1 = 시간 균열 | -1,-1 0,-1 1,-1 0,-2 -2,0 2,0 | 0.7,1.5,0.7,1,0.
 
 [monster.mr-iluneon-spirit-herald]
 name = 시미브
+description = 시미브라는 이름을 지닌 인간형 마물. 사람과 닮은 몸짓으로 넓게 휩쓸고 환혹한다.
 tier = elite
 species = fae
 hp = 85
@@ -198,7 +208,7 @@ card_drops =
 # 멀티액션 엘리트 — 한 턴에 두 번 행동(마나 2). 각 행동은 작지만 합치면 위협적.
 [monster.mr-iluneon-twin-clockwork]
 name = 태엽 인형
-description = 두 바늘이 제각기 도는 태엽 장치. 멈춘 사이에 두 번 친다.
+description = 사람 모양의 태엽 몸체를 가진 마물. 두 바늘이 제각기 돌며 휩쓸기와 과부하를 준비한다.
 tier = elite
 species = construct
 hp = 89
@@ -220,6 +230,7 @@ card_drops =
 
 [monster.mr-lar-forest-mosswolf]
 name = 이끼 늑대
+description = 네 발로 낮게 달리는 늑대형 마물. 날카로운 이빨과 발톱으로 접근한 상대를 노린다.
 tier = normal
 species = werewolf
 hp = 32
@@ -244,6 +255,7 @@ grid_attack_2 = 물어뜯기 | 0,-1 0,-2 -1,-1 | 1,1,1 | 2 | normal | true | sap
 
 [monster.mr-lar-forest-thornbird]
 name = 가시 새
+description = 가시 새의 모습을 한 마물. 주변의 자원과 길목을 차지하고 있다.
 tier = normal
 species = harpy
 hp = 23
@@ -270,6 +282,7 @@ grid_attack_2 = 자장가 | 0,-1 0,-2 1,-1 | 1,1,1 | 2 | normal | true | drowsy:
 
 [monster.mr-lar-forest-spiderling]
 name = 숲 새끼거미
+description = 숲 새끼거미의 모습을 한 마물. 주변의 자원과 길목을 차지하고 있다.
 tier = normal
 species = spider
 hp = 22
@@ -293,6 +306,7 @@ companion_skill_effects = skip-enemy-action:1
 
 [monster.mr-lar-forest-rootcrawler]
 name = 흙 지렁이
+description = 흙 지렁이의 모습을 한 마물. 주변의 자원과 길목을 차지하고 있다.
 tier = normal
 species = insect
 hp = 37
@@ -309,7 +323,8 @@ grid_attack_1 = 강타 | 0,-1 0,-2 | 1.5,1 | 4 | slow | true |
 grid_attack_2 = 끈끈이 | 0,-1 -1,0 1,0 | 1,1,1 | 2 | normal | true | slime:2
 
 [monster.mr-lar-forest-ember-sala]
-name = 불꽃 리저드맨
+name = 불꽃 도마뱀
+description = 낮게 기어다니는 도마뱀형 마물. 두꺼운 비늘 사이로 마력이 샌다.
 tier = normal
 species = lizardman
 hp = 30
@@ -325,6 +340,7 @@ card_drops =
 
 [monster.mr-lar-forest-dryad-sapling]
 name = 드라이어드 묘목
+description = 뿌리와 잎이 얽혀 움직이는 식물형 마물. 사람의 얼굴 없이 줄기가 꿈틀거린다.
 tier = normal
 species = plant
 hp = 27
@@ -340,7 +356,8 @@ move_range = 1
 grid_attack_1 = 독 포자 | 0,-3 0,-2 -1,-1 1,-1 | 1.5,0.8,0.6,0.6 | 3 | slow | true | poison:2
 
 [monster.mr-lar-forest-boar]
-name = 엄니 미노타우로스
+name = 엄니 멧돼지
+description = 네 발로 걷는 육중한 짐승형 마물. 두꺼운 몸과 뿔로 앞길을 밀어낸다.
 tier = normal
 species = minotaur
 hp = 41
@@ -357,6 +374,7 @@ card_drops =
 
 [monster.mr-lar-forest-mudcrab]
 name = 진흙 게
+description = 진흙 게의 모습을 한 마물. 주변의 자원과 길목을 차지하고 있다.
 tier = normal
 species = crab
 hp = 34
@@ -372,6 +390,7 @@ card_drops =
 
 [monster.mr-lar-forest-spider-queen]
 name = 숲 거미 여왕
+description = 사람의 상체와 거미 다리를 갖춘 마물. 숲의 거미줄을 두 팔로 모아 먹잇감을 붙든다.
 tier = elite
 species = spider
 hp = 113
@@ -389,6 +408,7 @@ grid_attack_2 = 독 물기 | 0,-1 0,-2 -1,-1 1,-1 | 1.5,0.7,0.7,0.7 | 6 | normal
 
 [monster.mr-lar-forest-ancient-dryad]
 name = 고목 드라이어드
+description = 고목의 껍질 사이로 사람의 얼굴과 두 팔이 드러난 마물. 뿌리로 몸을 지탱한다.
 tier = elite
 species = plant
 hp = 122
@@ -409,6 +429,7 @@ card_drops =
 
 [monster.mr-reshud-bandit]
 name = 길목 바이알 떼
+description = 길목 바이알 떼의 모습을 한 마물. 주변의 자원과 길목을 차지하고 있다.
 tier = normal
 species = vial
 hp = 34
@@ -423,7 +444,8 @@ time_shards = 3
 card_drops =
 
 [monster.mr-reshud-stray-ram]
-name = 들판 켄타우로스
+name = 들판 뿔양
+description = 사람의 상체 없이 네 발과 뿔을 갖춘 짐승형 마물. 들판을 달리며 먹잇감을 추격한다.
 tier = normal
 species = centaur
 hp = 39
@@ -439,6 +461,7 @@ card_drops =
 
 [monster.mr-reshud-spark-hound]
 name = 번개 들개
+description = 네 발로 낮게 달리는 늑대형 마물. 날카로운 이빨과 발톱으로 접근한 상대를 노린다.
 tier = normal
 species = werewolf
 hp = 27
@@ -455,6 +478,7 @@ card_drops =
 
 [monster.mr-reshud-drifter]
 name = 들판 다람쥐
+description = 들판 다람쥐의 모습을 한 마물. 주변의 자원과 길목을 차지하고 있다.
 tier = normal
 species = squirrel
 hp = 30
@@ -469,6 +493,7 @@ card_drops =
 
 [monster.mr-reshud-toll-raider]
 name = 위습 페어리
+description = 날개와 빛으로 이루어진 작은 마물. 사람의 형체 없이 공중을 맴돈다.
 tier = normal
 species = fairy
 hp = 25
@@ -482,7 +507,8 @@ time_shards = 3
 card_drops =
 
 [monster.mr-reshud-thunder-wolf]
-name = 천둥 들개 두목
+name = 천둥 갈기 수인
+description = 두 발로 선 사람형 몸에 늑대의 머리와 천둥 갈기를 지닌 마물.
 tier = elite
 species = werewolf
 hp = 103
@@ -502,7 +528,8 @@ card_drops =
 # ============================================================
 
 [monster.mr-tradepost-stray-hound]
-name = 굶주린 늑대수인
+name = 굶주린 마견
+description = 네 발로 낮게 달리는 늑대형 마물. 날카로운 이빨과 발톱으로 접근한 상대를 노린다.
 tier = normal
 species = werewolf
 hp = 27
@@ -525,7 +552,8 @@ companion_skill_desc = 적에게 12 피해를 준다. 굶주린 발톱이 단숨
 companion_skill_effects = damage:12:enemy
 
 [monster.mr-tradepost-caravan-thief]
-name = 노상 악동
+name = 짐칸 어금니
+description = 짐칸에 숨어드는 네발 마물. 몸보다 큰 어금니로 포장과 먹잇감을 함께 물어뜯는다.
 tier = normal
 species = demon
 hp = 29
@@ -548,7 +576,8 @@ companion_skill_desc = 적에게 8 피해를 주고 5 회복한다. 빨아들인
 companion_skill_effects = damage:8:enemy, heal:5:self
 
 [monster.mr-tradepost-wanderer]
-name = 상단 오크
+name = 상단 멧돼지
+description = 상단의 짐 냄새를 따라다니는 멧돼지형 마물. 짧은 다리와 크게 벌어진 턱으로 길을 헤집는다.
 tier = normal
 species = orc
 hp = 34
@@ -562,7 +591,8 @@ time_shards = 3
 card_drops =
 
 [monster.mr-tradepost-lamia-guard]
-name = 주술사 라미아
+name = 주술 비늘뱀
+description = 비늘 위에 주술 무늬가 번지는 뱀형 마물. 사람의 상체 없이 긴 몸으로 기어 다닌다.
 tier = normal
 species = lamia
 hp = 37
@@ -577,6 +607,7 @@ card_drops =
 
 [monster.mr-tradepost-dust-rat]
 name = 먼지 쥐 무리
+description = 먼지 쥐 무리의 모습을 한 마물. 주변의 자원과 길목을 차지하고 있다.
 tier = normal
 species = beastkin
 hp = 23
@@ -592,6 +623,7 @@ card_drops =
 
 [monster.mr-tradepost-lamia-enforcer]
 name = 휘슬
+description = 휘슬이라는 이름을 지닌 마물. 사람의 상체 아래로 긴 뱀 꼬리가 이어진다.
 tier = elite
 species = lamia
 hp = 99

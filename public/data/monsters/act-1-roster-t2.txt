@@ -7,6 +7,7 @@
 
 [monster.mr-moss-fireworm]
 name = 용암 지렁이
+description = 용암 지렁이의 모습을 한 마물. 주변의 자원과 길목을 차지하고 있다.
 tier = normal
 species = insect
 hp = 36
@@ -22,6 +23,7 @@ card_drops =
 
 [monster.mr-moss-cindermoth]
 name = 불나방
+description = 불나방의 모습을 한 마물. 주변의 자원과 길목을 차지하고 있다.
 tier = normal
 species = beastkin
 hp = 39
@@ -37,6 +39,7 @@ card_drops =
 
 [monster.mr-moss-anvil-arachne]
 name = 화덕 거미
+description = 사람의 상체 없이 여러 다리로 기어 다니는 거미형 마물.
 tier = normal
 species = arachne
 hp = 35
@@ -53,6 +56,7 @@ card_drops =
 
 [monster.mr-moss-slag-golem]
 name = 쇳물 덩이
+description = 바위와 금속이 낮은 짐승의 몸처럼 뭉친 마물. 무거운 껍질 아래에서 짧은 다리가 움직인다.
 tier = normal
 species = golem
 hp = 63
@@ -67,7 +71,8 @@ time_shards = 5
 card_drops =
 
 [monster.mr-moss-flame-lizard]
-name = 불비늘 리저드맨
+name = 불비늘 도마뱀
+description = 낮게 기어다니는 도마뱀형 마물. 두꺼운 비늘 사이로 마력이 샌다.
 tier = normal
 species = lizardman
 hp = 42
@@ -83,6 +88,7 @@ card_drops =
 
 [monster.mr-moss-forge-imp]
 name = 라로그
+description = 작은 빛 덩어리로 떠다니는 마물. 사람의 윤곽 없이 마력이 모였다 흩어진다.
 tier = normal
 species = fae
 hp = 33
@@ -97,6 +103,7 @@ card_drops =
 
 [monster.mr-moss-char-wraith]
 name = "잔불"
+description = 공중에 흐릿하게 번지는 비정형 마물. 몸의 윤곽이 안개처럼 흐트러진다.
 tier = normal
 species = wraith
 hp = 38
@@ -111,6 +118,7 @@ card_drops =
 
 [monster.mr-moss-iron-guardian]
 name = 이끼 바위
+description = 바위와 금속이 낮은 짐승의 몸처럼 뭉친 마물. 무거운 껍질 아래에서 짧은 다리가 움직인다.
 tier = normal
 species = golem
 hp = 66
@@ -133,6 +141,7 @@ companion_skill_effects = block:14:self
 
 [monster.mr-moss-forge-titan]
 name = 시실렘
+description = 시실렘이라는 이름을 지닌 인간형 마물. 불꽃과 쇳가루가 사람의 윤곽을 따라 모여든다.
 tier = elite
 species = sprite
 hp = 160
@@ -148,6 +157,7 @@ card_drops =
 
 [monster.mr-moss-smelter-queen]
 name = 플레이머
+description = 플레이머라는 이름을 지닌 인간형 마물. 화덕의 빛이 두 팔과 얼굴의 윤곽을 드러낸다.
 tier = elite
 species = emberling
 hp = 143
@@ -166,7 +176,8 @@ card_drops =
 # ============================================================
 
 [monster.mr-ria-storm-sheep]
-name = 폭풍 켄타우로스
+name = 폭풍 뿔양
+description = 사람의 상체 없이 네 발과 뿔을 갖춘 짐승형 마물. 들판을 달리며 먹잇감을 추격한다.
 tier = normal
 species = centaur
 hp = 45
@@ -182,6 +193,7 @@ card_drops =
 
 [monster.mr-ria-thunder-fox]
 name = 번개 여우
+description = 번개 여우의 모습을 한 마물. 주변의 자원과 길목을 차지하고 있다.
 tier = normal
 species = fox
 hp = 39
@@ -197,6 +209,7 @@ card_drops =
 
 [monster.mr-ria-spark-wasp]
 name = 번개 말벌
+description = 번개 말벌의 모습을 한 마물. 주변의 자원과 길목을 차지하고 있다.
 tier = normal
 species = insect
 hp = 35
@@ -212,7 +225,8 @@ time_shards = 3
 card_drops =
 
 [monster.mr-ria-voltage-goat]
-name = 벼락 켄타우로스
+name = 벼락 산양
+description = 사람의 상체 없이 네 발과 뿔을 갖춘 짐승형 마물. 들판을 달리며 먹잇감을 추격한다.
 tier = normal
 species = centaur
 hp = 54
@@ -227,7 +241,8 @@ time_shards = 4
 card_drops =
 
 [monster.mr-ria-gale-serpent]
-name = 번개 리저드맨
+name = 번개 비늘뱀
+description = 낮게 기어다니는 도마뱀형 마물. 두꺼운 비늘 사이로 마력이 샌다.
 tier = normal
 species = lizardman
 hp = 44
@@ -243,6 +258,7 @@ card_drops =
 
 [monster.mr-ria-arc-wolf]
 name = 라이아 아크
+description = 라이아 아크라는 이름을 지닌 마물. 사람처럼 선 몸에 늑대의 갈기와 번개가 흐른다.
 tier = elite
 species = werewolf
 hp = 134
@@ -261,7 +277,8 @@ card_drops =
 # ============================================================
 
 [monster.mr-ali-mist-deer]
-name = 안개 켄타우로스
+name = 안개 사슴
+description = 사람의 상체 없이 네 발과 뿔을 갖춘 짐승형 마물. 들판을 달리며 먹잇감을 추격한다.
 tier = normal
 species = centaur
 hp = 42
@@ -276,6 +293,7 @@ card_drops =
 
 [monster.mr-ali-herb-bandit]
 name = 몽롱한 그림자
+description = 납작하게 흩어지는 그림자형 마물. 어두운 흔적이 바닥을 따라 움직인다.
 tier = normal
 species = shade
 hp = 39
@@ -290,6 +308,7 @@ card_drops =
 
 [monster.mr-ali-fog-sprite]
 name = 안개 요정
+description = 작은 빛 덩어리로 떠다니는 마물. 사람의 윤곽 없이 마력이 모였다 흩어진다.
 tier = normal
 species = fae
 hp = 36
@@ -304,7 +323,8 @@ time_shards = 3
 card_drops =
 
 [monster.mr-ali-stone-bear]
-name = 바위 미노타우로스
+name = 바위 곰
+description = 네 발로 걷는 육중한 짐승형 마물. 두꺼운 몸과 뿔로 앞길을 밀어낸다.
 tier = normal
 species = minotaur
 hp = 69
@@ -319,6 +339,7 @@ card_drops =
 
 [monster.mr-ali-dew-moth]
 name = 이슬 나방
+description = 이슬 나방의 모습을 한 마물. 주변의 자원과 길목을 차지하고 있다.
 tier = normal
 species = beastkin
 hp = 38
@@ -334,6 +355,7 @@ card_drops =
 
 [monster.mr-ali-marsh-creeper]
 name = 습지 잠자리
+description = 습지 잠자리의 모습을 한 마물. 주변의 자원과 길목을 차지하고 있다.
 tier = normal
 species = insect
 hp = 44
@@ -350,6 +372,7 @@ card_drops =
 
 [monster.mr-ali-fog-sovereign]
 name = 안개
+description = 안개라는 이름을 지닌 인간형 마물. 사람의 얼굴이 보였다가 흐릿한 안개 속으로 가라앉는다.
 tier = elite
 species = fae
 hp = 151
@@ -365,6 +388,7 @@ card_drops =
 
 [monster.mr-ali-ancient-treant]
 name = 트라이언트
+description = 트라이언트라는 이름을 지닌 마물. 줄기가 사람의 몸통과 두 팔을 이루고 뿌리가 다리처럼 움직인다.
 tier = elite
 species = plant
 hp = 181
@@ -384,6 +408,7 @@ card_drops =
 
 [monster.mr-martin-dock-rat]
 name = 부두 쥐
+description = 부두 쥐의 모습을 한 마물. 주변의 자원과 길목을 차지하고 있다.
 tier = normal
 species = beastkin
 hp = 36
@@ -399,6 +424,7 @@ card_drops =
 
 [monster.mr-martin-sea-thug]
 name = 부둣가 수달
+description = 부둣가 수달의 모습을 한 마물. 주변의 자원과 길목을 차지하고 있다.
 tier = normal
 species = otter
 hp = 48
@@ -414,6 +440,7 @@ card_drops =
 
 [monster.mr-martin-kelp-creeper]
 name = 해초 덩굴
+description = 해초 덩굴의 모습을 한 마물. 주변의 자원과 길목을 차지하고 있다.
 tier = normal
 species = insect
 hp = 44
@@ -429,6 +456,7 @@ card_drops =
 
 [monster.mr-martin-tide-spirit]
 name = 물보라 요정
+description = 작은 빛 덩어리로 떠다니는 마물. 사람의 윤곽 없이 마력이 모였다 흩어진다.
 tier = normal
 species = fae
 hp = 39
@@ -442,7 +470,8 @@ time_shards = 3
 card_drops =
 
 [monster.mr-martin-gull-raider]
-name = 파이렛 하피
+name = 갈취 갈매기
+description = 갈취 갈매기의 모습을 한 마물. 주변의 자원과 길목을 차지하고 있다.
 tier = normal
 species = harpy
 hp = 35
@@ -458,6 +487,7 @@ card_drops =
 
 [monster.mr-kishina-siren]
 name = 오션
+description = 오션이라는 이름을 지닌 마물. 사람의 얼굴과 상체를 드러내고 물결 사이에서 노래한다.
 tier = elite
 species = siren
 hp = 130
@@ -477,6 +507,7 @@ card_drops =
 
 [monster.mr-mano-cliff-crab]
 name = 절벽 게
+description = 절벽 게의 모습을 한 마물. 주변의 자원과 길목을 차지하고 있다.
 tier = normal
 species = crab
 hp = 57
@@ -491,6 +522,7 @@ card_drops =
 
 [monster.mr-mano-sand-wraith]
 name = 모래 잔영
+description = 공중에 흐릿하게 번지는 비정형 마물. 몸의 윤곽이 안개처럼 흐트러진다.
 tier = normal
 species = wraith
 hp = 39
@@ -505,6 +537,7 @@ card_drops =
 
 [monster.mr-mano-sunset-raven]
 name = 석양 까마귀
+description = 석양 까마귀의 모습을 한 마물. 주변의 자원과 길목을 차지하고 있다.
 tier = normal
 species = harpy
 hp = 36
@@ -519,7 +552,8 @@ time_shards = 3
 card_drops =
 
 [monster.mr-mano-limun-ward]
-name = 깨어난 석상
+name = 깨어난 짐승 석상
+description = 작은 기계 몸체를 움직이는 마물. 사람의 형체 없이 관절과 태엽이 맞물린다.
 tier = normal
 species = automaton
 hp = 60
@@ -534,6 +568,7 @@ card_drops =
 
 [monster.mr-mano-iron-scorpion]
 name = 무쇠 전갈
+description = 무쇠 전갈의 모습을 한 마물. 주변의 자원과 길목을 차지하고 있다.
 tier = normal
 species = insect
 hp = 47
@@ -549,6 +584,7 @@ card_drops =
 
 [monster.mr-mano-dusk-shade]
 name = 황혼 그림자
+description = 공중에 흐릿하게 번지는 비정형 마물. 몸의 윤곽이 안개처럼 흐트러진다.
 tier = normal
 species = wraith
 hp = 41
@@ -572,6 +608,7 @@ companion_skill_effects = apply-status:2:enemy:vulnerable
 
 [monster.mr-mano-ruin-lurker]
 name = 유적 망령
+description = 공중에 흐릿하게 번지는 비정형 마물. 몸의 윤곽이 안개처럼 흐트러진다.
 tier = normal
 species = wraith
 hp = 44
@@ -587,6 +624,7 @@ card_drops =
 
 [monster.mr-mano-tide-golem]
 name = 해초 골렘
+description = 바위와 금속이 낮은 짐승의 몸처럼 뭉친 마물. 무거운 껍질 아래에서 짧은 다리가 움직인다.
 tier = normal
 species = golem
 hp = 74
@@ -602,6 +640,7 @@ card_drops =
 
 [monster.mr-mano-limun-sovereign]
 name = "리문의 영광"
+description = 리문의 영광이라 불리는 인간형 마물. 석재와 금속이 사람 모양의 관절을 이룬다.
 tier = elite
 species = automaton
 hp = 176
@@ -617,6 +656,7 @@ card_drops =
 
 [monster.mr-mano-sunset-drake]
 name = 크레그
+description = 크레그라는 이름을 지닌 마물. 사람의 몸처럼 곧게 선 비늘 몸체에 용의 뿔이 솟아 있다.
 tier = elite
 species = drake
 hp = 193

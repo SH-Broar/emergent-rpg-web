@@ -9,7 +9,8 @@
 # --- 일반 ---
 
 [monster.mr-yusezria-iron-sentinel]
-name = 무쇠 골렘
+name = 무쇠 등껍질
+description = 바위와 금속이 낮은 짐승의 몸처럼 뭉친 마물. 무거운 껍질 아래에서 짧은 다리가 움직인다.
 tier = normal
 species = golem
 hp = 69
@@ -24,6 +25,7 @@ card_drops =
 
 [monster.mr-yusezria-tide-wraith]
 name = 보댜노이
+description = 공중에 흐릿하게 번지는 비정형 마물. 몸의 윤곽이 안개처럼 흐트러진다.
 tier = normal
 species = wraith
 hp = 59
@@ -39,6 +41,7 @@ card_drops =
 
 [monster.mr-yusezria-rust-hound]
 name = 고철 늑대
+description = 네 발로 낮게 달리는 늑대형 마물. 날카로운 이빨과 발톱으로 접근한 상대를 노린다.
 tier = normal
 species = werewolf
 hp = 64
@@ -54,6 +57,7 @@ card_drops =
 
 [monster.mr-yusezria-pressure-mite]
 name = 심해 벌레
+description = 심해 벌레의 모습을 한 마물. 주변의 자원과 길목을 차지하고 있다.
 tier = normal
 species = insect
 hp = 55
@@ -67,7 +71,8 @@ time_shards = 8
 card_drops =
 
 [monster.mr-yusezria-deep-leech]
-name = 심해 흡혈귀
+name = 심해 거머리
+description = 심해 거머리의 모습을 한 마물. 주변의 자원과 길목을 차지하고 있다.
 tier = normal
 species = leech
 hp = 62
@@ -82,6 +87,7 @@ card_drops =
 
 [monster.mr-yusezria-ore-spike]
 name = 동굴 가시벌레
+description = 동굴 가시벌레의 모습을 한 마물. 주변의 자원과 길목을 차지하고 있다.
 tier = normal
 species = insect
 hp = 58
@@ -98,7 +104,8 @@ card_drops =
 # --- 엘리트 ---
 
 [monster.mr-yusezria-core-colossus]
-name = 심층 원석
+name = 심층 결정인
+description = 사람의 몸통과 팔다리 형태로 자란 결정 마물. 심층 원석이 가슴 한가운데 박혀 있다.
 tier = elite
 species = gemling
 hp = 328
@@ -114,6 +121,7 @@ card_drops =
 
 [monster.mr-yusezria-abyssal-warden]
 name = 심연의 감시자
+description = 어두운 결정으로 사람의 얼굴과 몸을 이룬 마물. 심연의 감시자라 불린다.
 tier = elite
 species = gemling
 hp = 286
@@ -134,7 +142,8 @@ card_drops =
 # --- 일반 ---
 
 [monster.mr-falcon-garden-gust-harpy]
-name = 질풍 천사
+name = 질풍 날개
+description = 깃털과 날개가 두드러진 새 형상의 마물. 사람의 얼굴이나 팔 없이 공중을 가른다.
 tier = normal
 species = angel
 hp = 59
@@ -149,7 +158,8 @@ time_shards = 9
 card_drops =
 
 [monster.mr-falcon-garden-talon-striker]
-name = 예리한 천사
+name = 칼깃 매
+description = 깃털과 날개가 두드러진 새 형상의 마물. 사람의 얼굴이나 팔 없이 공중을 가른다.
 tier = normal
 species = angel
 hp = 64
@@ -163,7 +173,8 @@ time_shards = 10
 card_drops =
 
 [monster.mr-falcon-garden-wind-lancer]
-name = 산들 천사
+name = 산들 바람새
+description = 깃털과 날개가 두드러진 새 형상의 마물. 사람의 얼굴이나 팔 없이 공중을 가른다.
 tier = normal
 species = angel
 hp = 66
@@ -177,7 +188,8 @@ time_shards = 10
 card_drops =
 
 [monster.mr-falcon-garden-sky-raven]
-name = 창공 천사
+name = 창공 까마귀
+description = 깃털과 날개가 두드러진 새 형상의 마물. 사람의 얼굴이나 팔 없이 공중을 가른다.
 tier = normal
 species = angel
 hp = 58
@@ -193,7 +205,8 @@ time_shards = 9
 card_drops =
 
 [monster.mr-falcon-garden-gale-sentry]
-name = 지저귀는 천사
+name = 울음 바람새
+description = 깃털과 날개가 두드러진 새 형상의 마물. 사람의 얼굴이나 팔 없이 공중을 가른다.
 tier = normal
 species = angel
 hp = 69
@@ -210,6 +223,7 @@ card_drops =
 
 [monster.mr-falcon-garden-storm-sovereign]
 name = 라크리
+description = 라크리라는 이름을 지닌 인간형 마물. 사람의 몸과 커다란 날개를 갖추고 폭풍을 두른다.
 tier = elite
 species = angel
 hp = 344
@@ -225,6 +239,7 @@ card_drops =
 
 [monster.mr-falcon-garden-sky-empress]
 name = 피레치아
+description = 피레치아라는 이름을 지닌 인간형 마물. 사람의 얼굴 아래로 깃털과 날개가 펼쳐진다.
 tier = elite
 species = angel
 hp = 302
@@ -246,6 +261,7 @@ card_drops =
 
 [monster.mr-emberforge-ash-hound]
 name = 잿불 들개
+description = 네 발로 낮게 달리는 늑대형 마물. 날카로운 이빨과 발톱으로 접근한 상대를 노린다.
 tier = normal
 species = werewolf
 hp = 62
@@ -261,6 +277,7 @@ card_drops =
 
 [monster.mr-emberforge-furnace-golem]
 name = 화덕 골렘
+description = 바위와 금속이 낮은 짐승의 몸처럼 뭉친 마물. 무거운 껍질 아래에서 짧은 다리가 움직인다.
 tier = normal
 species = golem
 hp = 80
@@ -275,6 +292,7 @@ card_drops =
 
 [monster.mr-emberforge-lava-crawler]
 name = 용암 반딧불이
+description = 용암 반딧불이의 모습을 한 마물. 주변의 자원과 길목을 차지하고 있다.
 tier = normal
 species = insect
 hp = 59
@@ -290,6 +308,7 @@ card_drops =
 
 [monster.mr-emberforge-cinder-bat]
 name = 용암 박쥐
+description = 용암 박쥐의 모습을 한 마물. 주변의 자원과 길목을 차지하고 있다.
 tier = normal
 species = beastkin
 hp = 56
@@ -304,7 +323,8 @@ time_shards = 8
 card_drops =
 
 [monster.mr-emberforge-slag-crusher]
-name = 용암 리저드맨
+name = 용암 도마뱀
+description = 낮게 기어다니는 도마뱀형 마물. 두꺼운 비늘 사이로 마력이 샌다.
 tier = normal
 species = lizardman
 hp = 73
@@ -322,6 +342,7 @@ card_drops =
 
 [monster.mr-emberforge-magma-titan]
 name = 카울렘
+description = 카울렘이라는 이름을 지닌 인간형 마물. 뜨거운 몸통과 두 팔의 틈으로 잿불이 흘러나온다.
 tier = elite
 species = emberling
 hp = 294
@@ -345,6 +366,7 @@ card_drops =
 
 [monster.mr-oldshrine-spirit-flame]
 name = 도깨비불
+description = 작은 빛 덩어리로 떠다니는 마물. 사람의 윤곽 없이 마력이 모였다 흩어진다.
 tier = normal
 species = fae
 hp = 58
@@ -360,6 +382,7 @@ card_drops =
 
 [monster.mr-oldshrine-shrine-warden]
 name = 신전 가고일
+description = 신전 가고일의 모습을 한 마물. 주변의 자원과 길목을 차지하고 있다.
 tier = normal
 species = gargoyle
 hp = 69
@@ -375,6 +398,7 @@ card_drops =
 
 [monster.mr-oldshrine-thunder-wraith]
 name = 번개 잔영
+description = 공중에 흐릿하게 번지는 비정형 마물. 몸의 윤곽이 안개처럼 흐트러진다.
 tier = normal
 species = wraith
 hp = 61
@@ -389,6 +413,7 @@ card_drops =
 
 [monster.mr-oldshrine-barrier-golem]
 name = 도모보이
+description = 바위와 금속이 낮은 짐승의 몸처럼 뭉친 마물. 무거운 껍질 아래에서 짧은 다리가 움직인다.
 tier = normal
 species = golem
 hp = 78
@@ -402,7 +427,8 @@ time_shards = 10
 card_drops =
 
 [monster.mr-oldshrine-relic-hunter]
-name = 악마 성직자
+name = 제단 돌박쥐
+description = 제단 아래에 매달리는 돌박쥐형 마물. 접혀 있던 날개와 발톱을 펼쳐 유적을 지킨다.
 tier = normal
 species = gargoyle
 hp = 62
@@ -419,6 +445,7 @@ card_drops =
 
 [monster.mr-oldshrine-lightning-archon]
 name = 카넌
+description = 카넌이라는 이름을 지닌 마물. 사람 모양의 돌 몸체에 날개와 번개의 흔적이 새겨져 있다.
 tier = elite
 species = gargoyle
 hp = 311

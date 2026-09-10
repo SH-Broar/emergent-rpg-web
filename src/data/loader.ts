@@ -1433,6 +1433,7 @@ export function parseUnlocks(ini: IniData): Map<string, MetaUnlock> {
 
 /** 데이터 파일들. 이후 확장 시 파일 추가만. */
 const DATA_FILES = [
+  'data/cards/cards-tactics.txt',
   // === 1장 (제 4시대 61년) — main 연표 ===
   'data/timelines/act-1-era4-061.txt',
   'data/node-maps/act-1-map.txt',

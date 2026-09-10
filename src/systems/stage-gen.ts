@@ -139,7 +139,7 @@ interface TierParams {
 }
 
 // 맵 크기는 *런 턴* 기준(사용자 사양) — 몬스터 수·tier 무관. 초반 작게(3), 이동 강화 시기(~40턴)부터 조금씩, 상한 7.
-const MIN_DIM = 3;
+const MIN_DIM = 4;
 const MAX_DIM = 7;
 const GROW_START_TURN = 40; // 이동 강화 시기.
 const GROW_EVERY = 50;      // 이후 N턴마다 한 변 +1.

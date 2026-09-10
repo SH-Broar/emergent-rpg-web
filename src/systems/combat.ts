@@ -1012,6 +1012,11 @@ function healBlocked(c: CombatState): boolean {
 }
 
 const EFFECT_HANDLERS: Record<CardEffectKind, (e: CardEffect, c: CombatState) => void> = {
+  // 격자 없는 레거시 결투에서는 지형 전술의 대응 상태 효과를 적용한다.
+  'terrain-water': (_e, c) => { c.enemy.statuses.weakness = Math.max(c.enemy.statuses.weakness ?? 0, 1); },
+  'terrain-fire': (_e, c) => { c.enemy.statuses.burn = (c.enemy.statuses.burn ?? 0) + 3; },
+  'terrain-smoke': (_e, c) => { c.player.block += 6; },
+  lure: (_e, c) => { c.enemy.statuses.weakness = Math.max(c.enemy.statuses.weakness ?? 0, 2); },
   damage: (e, c) => {
     const targets = resolveTargets(e.target ?? 'enemy', c);
     // 강화 스케일을 base 수치에 먼저 적용(카드 사용 시에만). 그 뒤 feral ×2.

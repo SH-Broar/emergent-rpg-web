@@ -34,6 +34,7 @@ import {
 } from '@/systems/workshop';
 import SceneCharacter from '@/components/SceneCharacter.vue';
 import Collapsible from '@/components/Collapsible.vue';
+import WorldInteractionPanel from '@/components/WorldInteractionPanel.vue';
 import type { Card, Companion, Item, Npc, Rank } from '@/data/schemas';
 
 const router = useRouter();
@@ -404,6 +405,10 @@ const rankColors: Record<string, string> = {
         <span>시간의 조각 {{ run.data.timeShards }}</span>
       </div>
 
+      <Collapsible title="주변 살펴보기" :default-open="true">
+        <WorldInteractionPanel />
+      </Collapsible>
+
       <!-- 빙의 정화 — 마을에서 풀 수 있는 경로(잔존 빙의가 있을 때만). -->
       <div v-if="(run.data.possessed ?? 0) > 0" class="cleanse">
         <p class="cleanse__msg">몸에 혼란이 남아 있다. 활동에 들 수 없고 길도 일부 막혔다.</p>
@@ -465,7 +470,7 @@ const rankColors: Record<string, string> = {
       <!-- NPC 목록 — 섹션 접이식 + 각 NPC도 개별 접이식 행(헤더=이름·종족·친밀도, 본문=대사+버튼). -->
       <Collapsible
         v-if="nodeNpcs.length > 0"
-        title="이 곳의 사람들"
+        title="대화와 동행"
         :badge="`${nodeNpcs.length}명`"
       >
         <div class="npc-list">

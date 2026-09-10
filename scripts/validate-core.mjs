@@ -81,6 +81,7 @@ function sectionIdSuffix(section) {
 // ===========================================================================
 
 export const DATA_FILES = [
+  'cards/cards-tactics.txt',
   'timelines/act-1-era4-061.txt',
   'node-maps/act-1-map.txt',
   'encounters/act-1-encounters.txt',
@@ -193,6 +194,7 @@ export const VALID_ITEM_CATEGORIES = ['consumable', 'specialty', 'material', 'ra
  * 카드 효과 kind — src/systems/combat.ts EFFECT_HANDLERS 키 (= schemas/card.ts CardEffectKind).
  */
 export const VALID_CARD_EFFECT_KINDS = [
+  'terrain-water', 'terrain-fire', 'terrain-smoke', 'lure',
   'damage', 'damage-min-color', 'heal', 'block', 'break-armor', 'draw', 'apply-status',
   'return-hand-to-deck', 'next-turn-energy', 'growing-block',
   'damage-top-color', 'damage-color-count', 'block-top-color', 'draw-if-color',

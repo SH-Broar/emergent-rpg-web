@@ -41,6 +41,9 @@ import {
 import { colorLabel } from '@/systems/labels';
 import { eulReul } from '@/systems/josa';
 import { summarizeEnemies } from '@/systems/enemy-spec';
+import { inLivingRegion, regionCombatSupport } from '@/systems/region-world';
+import WorldInteractionPanel from '@/components/WorldInteractionPanel.vue';
+import Collapsible from '@/components/Collapsible.vue';
 import EnemySpecPanel from '@/components/EnemySpecPanel.vue';
 import type { Node } from '@/data/schemas';
 
@@ -80,7 +83,18 @@ const tradeDone = computed(() => !!run.data.nodeStates[nodeId.value]?.tradeClear
  *   그 격상은 무작위 풀 추첨 + 상태 기록이라 읽기 전용 프리뷰로 재현할 수 없다(rng 동기화 깨짐).
  *   따라서 프리뷰는 *현재 유효 상태* 기준이다(방울이 없는 대다수 경우엔 정확, 방울은 의도된 기습).
  */
-const enemySpec = computed(() => summarizeEnemies(run.previewStageEnemies(nodeId.value)));
+const enemies = computed(() => run.previewStageEnemies(nodeId.value));
+const enemySpec = computed(() => summarizeEnemies(enemies.value));
+const patrolSupport = computed(() => regionCombatSupport(run.data, nodeId.value).block);
+const combatLoot = computed(() => ({
+  gold: (enemies.value ?? []).reduce((sum, enemy) => sum + (enemy.drop?.gold ?? 0), 0),
+  shards: (enemies.value ?? []).reduce((sum, enemy) => sum + (enemy.drop?.timeShards ?? 0), 0),
+}));
+const deliveryReward = computed(() => {
+  const r = requirement.value;
+  const elite = r.itemId.startsWith('i-craft-');
+  return { xp: (1 + r.tier) * (elite ? 2 : 1), color: r.tier * 2 * (elite ? 2 : 1) };
+});
 
 /** 이 노드에 이미 활성 거래 계약이 있는가(재방문). */
 const contracted = computed(() => hasContract(nodeId.value));
@@ -197,8 +211,10 @@ function choosePass() {
 <template>
   <main v-if="node" class="gate-view">
     <header class="gate-hdr">
-      <span class="gate-kind">[{{ isElite ? '엘리트' : '조우' }}]</span>
+      <span class="gate-kind">[{{ isElite ? '인간형 마물 · 엘리트' : '마물 조우' }}]</span>
       <h1>{{ nodeLabel }}</h1>
+      <p class="gate-note">이동 시간은 이미 지불했다. 진입 방식을 고르는 데 추가 시간은 들지 않는다. 주변 행동의 시간은 별도로 표시된다.</p>
+      <p class="gate-note">마물 대응과 길드 납품은 각각 완료할 수 있다. 납품 상대는 길드의 보급 담당자다.</p>
     </header>
 
     <div class="gate-options">
@@ -208,6 +224,10 @@ function choosePass() {
       <div v-if="!combatDone" class="gate-opt gate-opt--combat">
         <span class="gate-opt__title">전투</span>
         <EnemySpecPanel v-if="enemySpec" :spec="enemySpec" />
+        <p class="gate-consequence">소탕 → 경험 +{{ isElite ? 3 : 1 }} · 기본 전리품 골드 {{ combatLoot.gold }} / 조각 {{ combatLoot.shards }}</p>
+        <p v-if="!isElite" class="gate-consequence">회수 목표가 있는 전장: 보급 회수 후 출발 지점으로 탈출 → 경험 +1<template v-if="inLivingRegion(nodeId)"> · 들곡 3개 회수(소지품)</template>. 남은 마물의 처치 보상은 없다.</p>
+        <p class="gate-risk">패배 → 목숨 1 소모</p>
+        <p v-if="patrolSupport" class="gate-consequence">현재 장소의 안전 지원 · 전투 시작 방어 +{{ patrolSupport }}</p>
         <div class="gate-opt__actions">
           <button type="button" class="gate-opt__btn gate-opt__btn--combat" @click="chooseCombat">싸운다</button>
         </div>
@@ -215,7 +235,7 @@ function choosePass() {
 
       <!-- 거래 (수주형) — 거래를 이미 완료했으면 숨김. -->
       <div v-if="!tradeDone" class="gate-opt gate-opt--trade">
-        <span class="gate-opt__title">거래</span>
+        <span class="gate-opt__title">길드 보급 납품</span>
         <!-- 요구는 flavor가 아니라 *기능 정보* — 품목명·개수·보유를 표시. -->
         <span class="gate-opt__req">
           {{ reqItemName }} {{ requirement.count }}개
@@ -225,6 +245,8 @@ function choosePass() {
           보유 {{ heldCount }} / {{ requirement.count }}
           <template v-if="contracted"> · 수주한 거래</template>
         </span>
+        <p class="gate-consequence">산출물 소비 → 생활 경험 +{{ deliveryReward.xp }} · {{ colorLabel(requirement.element) }} +{{ deliveryReward.color }}</p>
+        <p class="gate-note">재료가 없으면 의뢰를 맡아 둔다. 마을에서도 납품할 수 있다.</p>
         <div class="gate-opt__actions">
           <!-- 미수주: 보유 충분하면 즉시 완료, 아니면 맡아 둔다(수주 후 맵). -->
           <button
@@ -248,10 +270,14 @@ function choosePass() {
       <!-- 지나치기 -->
       <div class="gate-opt gate-opt--pass">
         <span class="gate-opt__title">지나치기</span>
+        <p class="gate-note">자원 소비·보상 없음. 마물과 납품 의뢰는 남아 있고 다시 방문할 수 있다.</p>
         <div class="gate-opt__actions">
           <button type="button" class="gate-opt__btn gate-opt__btn--pass" @click="choosePass">그냥 지나친다</button>
         </div>
       </div>
+      <Collapsible title="주변 살펴보기">
+        <WorldInteractionPanel />
+      </Collapsible>
     </div>
   </main>
 </template>
@@ -268,9 +294,10 @@ function choosePass() {
   padding: 2rem 1.5rem;
 }
 
-.gate-hdr {
-  text-align: center;
-}
+.gate-hdr { text-align: center; max-width: 600px; }
+.gate-note { margin: .3rem 0; color: #adb3c1; font-size: .8rem; line-height: 1.5; }
+.gate-consequence { margin: .25rem 0; color: #b6dfca; font-size: .83rem; line-height: 1.5; }
+.gate-risk { margin: .2rem 0; color: #e9b4a5; font-size: .8rem; }
 .gate-kind {
   color: #ff8e8e;
   font-size: 0.95rem;

@@ -52,6 +52,12 @@ export function applyColorBoost(color: ColorKey, amount: number, lines?: string[
   if (lines && delta !== 0) {
     lines.push(`컬러: ${colorLabel(color)} ${delta >= 0 ? '+' : ''}${delta} (${after}/${COLOR_MAX})`);
   }
+  announceColorGain(color, delta, after);
+  return delta;
+}
+
+/** Shared-world color updates retain the same relic hooks and visible growth feedback. */
+export function announceColorGain(color: ColorKey, delta: number, after: number): void {
   // 컬러가 실제로 *오른* 경우에만 on-color-gain 발동 (재진입 가드).
   if (delta > 0 && colorGainHook && !inColorGain) {
     inColorGain = true;
@@ -70,7 +76,6 @@ export function applyColorBoost(color: ColorKey, amount: number, lines?: string[
     }
   }
   // (F5: 색→최대 HP(VIT)는 은퇴. 물=드로우·바람=이동으로 분리됐으므로 HP 재조정 없음.)
-  return delta;
 }
 
 /** 8 컬러 모두에 amount 일괄 적용. */

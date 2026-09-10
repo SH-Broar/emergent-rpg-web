@@ -1,405 +1,126 @@
-/**
- * 농사 시스템 (생활 코어) — 텃밭에 작물을 심고, 돌보고, 수확한다.
- *
- * 설계(레이어1a 코어 — UI 제외):
- *  - 작물 정의는 v1에서 TS 상수(CROPS). 데이터화(.txt)는 후속.
- *  - 시간 진행 = *전역 턴 경과*(visitedNodes.length). refreshPlot이 조회 시점에 lazy 정산하므로
- *    visitNode/advanceDay를 직접 건드리지 않는다 → 전투·게이트·맵 구조·일일 리롤과 분리(추가형).
- *    여러 텃밭을 심고 돌아다니면 모두 함께 자란다.
- *  - 물 게이트: growthProgress가 waterAt의 다음 임계에 닿으면 물을 줄 때까지 정지하고,
- *    *막힌 동안 흐른 턴은 성장에 쳐지지 않는다*("물을 줘야 나머지 턴이 지나감") → 물 주러
- *    그 텃밭으로 돌아오는 동선이 생긴다.
- *  - 수확: 상위확률 = clamp(BASE + lifeLevel*K + 해당 element 컬러 스케일, 0, 100).
- *    후반(고 생활레벨/고 컬러)일수록 상위 산출. 수확 시 작물 element 컬러 부여 + 생활 XP 적립.
- *
- * 상태는 RunState.plots[nodeId]: PlotState. 수확하면 키 삭제(재심기 가능).
- * UI는 이 모듈의 함수를 호출한다(전부 export). 상태 변경은 run 스토어를 통해서만.
- */
-
-import type { Element, PlotState } from '@/data/schemas';
+/** Store facade over shared world production; NPCs use the same actions and stocks. */
+import type { PlotState } from '@/data/schemas';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
-import { applyColorBoost, type ColorKey } from '@/systems/colors';
-import { rng } from '@/systems/rng';
-import { eulReul } from '@/systems/josa';
+import { irrigationActive } from '@/systems/region-world';
+import { ensureInteractionWorld, syncPlayerToWorld } from '@/systems/world-interaction';
+import { ensureLifeSite, lifeActions, lifeEntityId, plantLifeAction, settleLifeWorld } from '@/systems/world/life-world';
+import { getCrop, type CropDef } from '@/systems/life-catalog';
+import { canCareForPlot, lifeCapabilities, projectedPlot, productionQualityBonus, productionYield, type ProductionMode } from '@/systems/life-production';
+export { CROPS, getCrop, cropDisplayName, careLabelFor, plotLabelFor, type CropDef } from '@/systems/life-catalog';
 
-/**
- * 작물 정의 (v1 상수). element는 작물 속성 = 수확 시 부여 컬러 + 상위확률 판정 컬러.
- * lowerItemId/upperItemId = 결과물 아이템 id (public/data/items/act-1-items.txt에 정의).
- *  - lower = 평작(common), upper = 상품(rare).
- * growTurns = 완성에 필요한 돌보기 횟수. waterAt = 진행 중 물 요구 임계(결정적).
- */
-export interface CropDef {
-  id: string;
-  /** 씨앗 표시 이름 (UI·로그용). */
-  seedName: string;
-  /** 완성까지 필요한 돌보기 횟수. */
-  growTurns: number;
-  /** 물 요구 임계 시점 — growthProgress가 이 값에 닿으면 돌봄 게이트가 열릴 때까지 정지. */
-  waterAt: number[];
-  /** 작물 속성 — 수확 시 부여 컬러 + 상위확률 판정 컬러. 8색 분산. */
-  element: Element;
-  /** 평작 결과물 아이템 id. */
-  lowerItemId: string;
-  /** 상품 결과물 아이템 id. */
-  upperItemId: string;
-  /**
-   * 돌봄 게이트 행동 라벨 — 지연형 생활 활동의 element별 표현(농사=물주기, 숯굽기=불 지피기 등).
-   * water()/needsWater()의 수학은 그대로지만 UI/토스트 문구는 이 라벨을 쓴다(생활 활동 일반화).
-   * 미설정이면 '물주기'(농사 기본).
-   */
-  careLabel?: string;
-  /**
-   * 빈 텃밭(미경작) 상태에서의 행동 명사 — UI 빈자리 안내용(예: '텃밭', '가마', '덫', '건조대', '버섯밭').
-   * 미설정이면 '텃밭'(농사 기본).
-   */
-  plotLabel?: string;
-}
-
-/**
- * 작물 카탈로그 — 지연형 생활 활동 5종. element별 1종(earth·fire·wind·light·dark).
- * earth=농사, fire=숯굽기, wind=사냥(덫), light=별빛 건조, dark=버섯재배.
- *  - 성장/물게이트/수확 수학(growTurns·waterAt 정산)은 농사 시절과 동일. element·라벨만 분화.
- *  - 반복형(water 낚시·iron 채광·electric 집전)은 farming 엔진을 쓰지 않는다 → life-activity.ts.
- */
-export const CROPS: CropDef[] = [
-  {
-    id: 'crop-grain',
-    seedName: '들곡 씨앗',
-    growTurns: 3,
-    waterAt: [1],
-    element: 'earth',
-    lowerItemId: 'i-crop-grain',
-    upperItemId: 'i-crop-grain-fine',
-    careLabel: '물주기',
-    plotLabel: '텃밭',
-  },
-  {
-    id: 'crop-char',
-    seedName: '숯가마 장작',
-    growTurns: 4,
-    waterAt: [2],
-    element: 'fire',
-    lowerItemId: 'i-life-char',
-    upperItemId: 'i-life-char-fine',
-    careLabel: '불 지피기',
-    plotLabel: '가마',
-  },
-  {
-    id: 'crop-snare',
-    seedName: '사냥 덫',
-    growTurns: 4,
-    waterAt: [2],
-    element: 'wind',
-    lowerItemId: 'i-life-game',
-    upperItemId: 'i-life-game-fine',
-    careLabel: '덫 살피기',
-    plotLabel: '덫자리',
-  },
-  {
-    id: 'crop-dry',
-    seedName: '별빛 채반',
-    growTurns: 10,
-    waterAt: [5],
-    element: 'light',
-    lowerItemId: 'i-life-dried',
-    upperItemId: 'i-life-dried-fine',
-    careLabel: '별빛 쬐기',
-    plotLabel: '건조대',
-  },
-  {
-    id: 'crop-mush',
-    seedName: '버섯 종균',
-    growTurns: 4,
-    waterAt: [2],
-    element: 'dark',
-    lowerItemId: 'i-life-mush',
-    upperItemId: 'i-life-mush-fine',
-    careLabel: '이슬 주기',
-    plotLabel: '버섯밭',
-  },
-];
-
-/** 작물의 돌봄 게이트 행동 라벨(미설정이면 '물주기'). */
-export function careLabelFor(crop: CropDef | undefined): string {
-  return crop?.careLabel ?? '물주기';
-}
-
-/** 작물의 빈자리 명사(미설정이면 '텃밭'). */
-export function plotLabelFor(crop: CropDef | undefined): string {
-  return crop?.plotLabel ?? '텃밭';
-}
-
-/**
- * 작물 산출물의 짧은 표시 이름 — seedName에서 행동 접미사를 떼어 결과물 명칭으로.
- * (들곡 씨앗→들곡 / 숯가마 장작→숯 / 사냥 덫→사냥감 / 별빛 건조 채반→말린 것 / 버섯 종균→버섯)
- * 단순 치환이라 신규 작물 추가 시 맞춰 준다. 미정의면 seedName 그대로.
- */
-export function cropDisplayName(crop: CropDef | undefined): string {
-  if (!crop) return '작물';
-  const map: Record<string, string> = {
-    'crop-grain': '들곡',
-    'crop-char': '숯',
-    'crop-snare': '사냥감',
-    'crop-dry': '말린 것',
-    'crop-mush': '버섯',
-  };
-  return map[crop.id] ?? crop.seedName.replace(/\s*(씨앗|장작|덫|채반|종균)$/, '');
-}
-
-// === 상위확률 튜닝 (activity.ts 모델 미러) ===
-/** 컬러·레벨과 무관한 기본 상위확률 보정. */
 export const HARVEST_BASE_BONUS = 10;
-/** 생활 레벨 1당 상위확률 가산(%). lifeLevel 5면 +20%. */
 export const HARVEST_LEVEL_K = 5;
-/** 작물 element 컬러값(0~100)당 상위확률 가산 계수 — colorValue * 이 값(%). */
 export const HARVEST_COLOR_SCALE = 0.4;
 
-/** 작물 정의 조회. 미정의 id면 undefined. */
-export function getCrop(cropId: string): CropDef | undefined {
-  return CROPS.find((c) => c.id === cropId);
-}
-
-/** element → ColorKey (동일 문자열, 타입 좁히기용). */
-function elementColorKey(element: Element): ColorKey {
-  return element as ColorKey;
-}
-
-// ============================================================================
-// 텃밭 행동
-// ----------------------------------------------------------------------------
-
-/**
- * 작물 심기 — 노드에 텃밭 생성. 이미 텃밭이 있으면 무효(false).
- * plantedTurn = visitedNodes.length 스냅샷. growthProgress=0, wateredCount=0.
- * bonus(선택, %p) — 심을 때 미니게임으로 적립한 상위확률 보너스. 수확 시 harvest가 가산한다(item 3).
- */
-export function plant(nodeId: string, cropId: string, bonus = 0): boolean {
+/** Command preparation is separate from read-only map projections. */
+export function prepareLifeSite(nodeId: string) {
   const run = useRunStore();
-  const r = run.data;
-  if (!r.plots) r.plots = {};
-  if (r.plots[nodeId]) {
-    useUiStore().toast('info', '이미 자리가 잡혀 있다.');
-    return false;
-  }
-  const crop = getCrop(cropId);
-  if (!crop) return false;
-  r.plots[nodeId] = {
-    cropId: crop.id,
-    plantedTurn: r.visitedNodes.length,
-    lastTickTurn: r.visitedNodes.length,
-    growTurns: crop.growTurns,
-    waterAt: [...crop.waterAt],
-    wateredCount: 0,
-    growthProgress: 0,
-    bonus: Math.round(bonus),
-  };
-  useUiStore().toast('success', `${crop.seedName}${eulReul(crop.seedName)} 심었다.`);
-  return true;
+  const world = ensureInteractionWorld(run.data);
+  syncPlayerToWorld(run.data, world);
+  const data = useDataStore();
+  const mapId = data.timelines.get(run.data.timelineId)?.nodeMapId;
+  const region = mapId ? data.nodeMaps.get(mapId)?.nodes.find(node => node.id === nodeId)?.region : undefined;
+  const target = ensureLifeSite(run.data, world, nodeId, region);
+  settleLifeWorld(run.data, world, world.turn);
+  return { run, world, target };
 }
 
-/** 노드의 텃밭 상태 조회 (없으면 undefined). */
+function targetFor(nodeId: string) {
+  return useRunStore().data.interactionWorld?.entities[lifeEntityId(nodeId)];
+}
+
+export function plant(nodeId: string, cropId: string, bonus = 0, mode: ProductionMode = 'standard', enhanceMaterialId?: string): boolean {
+  const { run, world, target } = prepareLifeSite(nodeId);
+  const action = plantLifeAction(world, 'player', target.id, cropId, bonus, mode, enhanceMaterialId);
+  if (!action) return false;
+  const result = run.executeWorldAction(target.id, action);
+  useUiStore().toast(result.ok ? 'success' : 'info', result.message);
+  return result.ok;
+}
+
 export function getPlot(nodeId: string): PlotState | undefined {
+  const entity = targetFor(nodeId);
+  if (entity) return (entity.properties.integrity ?? 0) > 0 ? entity.production?.plot : undefined;
   return useRunStore().data.plots?.[nodeId];
 }
 
-/**
- * 지금 물이 필요한가 — growthProgress가 아직 충족하지 않은 다음 물 임계에 도달했는가.
- * 충족한 물 임계 수(wateredCount)보다 더 많은 임계를 growthProgress가 지났으면 true.
- */
+export function hasAutomaticCare(nodeId: string): boolean {
+  const r = useRunStore().data;
+  return (targetFor(nodeId)?.production?.automaticCare ?? lifeCapabilities(r.lifeLevel ?? 1).automaticCare) || irrigationActive(r, nodeId);
+}
+
 export function needsWater(nodeId: string): boolean {
+  const entity = targetFor(nodeId);
+  if (entity?.production?.settled) return false;
   const plot = getPlot(nodeId);
-  if (!plot) return false;
-  // 진행도가 지나온 물 임계 개수.
-  const reached = plot.waterAt.filter((t) => plot.growthProgress >= t).length;
-  return reached > plot.wateredCount;
+  return !!plot && canCareForPlot(projectedPlot(plot, useRunStore().data.visitedNodes.length, hasAutomaticCare(nodeId)));
 }
 
-/**
- * 돌봄 게이트 행동(농사=물 주기) — 게이트가 열린 상태면 wateredCount+1 하고 진행 재개. 성공 시 true.
- * 수학(needsWater/wateredCount)은 농사와 동일. 토스트 문구만 작물 careLabel을 따른다.
- */
 export function water(nodeId: string): boolean {
-  const run = useRunStore();
-  const plot = run.data.plots?.[nodeId];
-  if (!plot) return false;
-  const label = careLabelFor(getCrop(plot.cropId));
-  if (!needsWater(nodeId)) {
-    useUiStore().toast('info', `지금은 ${label}${eulReul(label)} 할 때가 아니다.`);
-    return false;
-  }
-  plot.wateredCount += 1;
-  useUiStore().toast('success', `${label}${eulReul(label)} 마쳤다.`);
-  return true;
+  const { run, world, target } = prepareLifeSite(nodeId);
+  const action = lifeActions(run.data, world, 'player', target.id).find(action => action.id === 'care');
+  if (!action) return false;
+  const result = run.executeWorldAction(target.id, action);
+  useUiStore().toast(result.ok ? 'success' : 'info', result.message);
+  return result.ok;
 }
 
-/**
- * 텃밭 성장 lazy 정산 — 마지막 정산 이후 흐른 전역 턴만큼 growthProgress를 진행한다.
- * UI는 텃밭을 표시하기 직전·물 준 직후에 이걸 호출한다(조회 시점 정산). harvest도 내부 호출.
- *  - now = visitedNodes.length(전역 턴). available = now - lastTickTurn.
- *  - 물 게이트(needsWater)에 막히면 break → 막힌 시점 이후의 available 턴은 forfeit(성장 미반영).
- *  - 어느 경우든 lastTickTurn을 now로 끌어올려, 막힌 동안 흐른 턴이 나중에 소급되지 않게 한다.
- * 부작용은 growthProgress/lastTickTurn 갱신뿐(아이템·컬러·XP는 harvest에서만).
- */
 export function refreshPlot(nodeId: string): void {
-  const r = useRunStore().data;
-  const plot = r.plots?.[nodeId];
-  if (!plot) return;
-  const now = r.visitedNodes.length;
-  if (plot.growthProgress >= plot.growTurns) {
-    plot.lastTickTurn = now;
-    return;
-  }
-  let available = now - plot.lastTickTurn;
-  if (available <= 0) return;
-  while (available > 0 && plot.growthProgress < plot.growTurns) {
-    if (needsWater(nodeId)) break; // 물 게이트 — 남은 available 턴 forfeit.
-    plot.growthProgress += 1;
-    available -= 1;
-  }
-  plot.lastTickTurn = now;
+  prepareLifeSite(nodeId);
 }
 
-/** 텃밭 진행 상태(읽기 전용) — 맵 노드 뱃지/드로어 표시용(item 1). 상태를 변형하지 않는다. */
-export interface PlotStatus {
-  /** 이 노드에 자라는 작물이 있는가. */
-  active: boolean;
-  /** 완성까지 남은 *유효* 성장 턴(경과 턴을 반영한 추정, 0이면 완성 직전/완성). */
-  remaining: number;
-  /** 지금 돌봄(물주기 등)이 필요한가 — 성장이 게이트에 막혀 있다. */
-  needsCare: boolean;
-  /** 수확 가능한가(완성 + 모든 물 임계 충족). */
-  ready: boolean;
-}
+export interface PlotStatus { active: boolean; remaining: number; needsCare: boolean; ready: boolean }
 
-/**
- * 텃밭 진행 상태를 *변형 없이* 계산 — refreshPlot의 lazy 정산 로직을 읽기 전용으로 재현한다.
- * 맵 화면은 텃밭 화면을 거치지 않으므로 plot.growthProgress가 stale(마지막 방문 시점)이다.
- * 여기서 경과 전역 턴(now - lastTickTurn)을 물 게이트까지 반영해 *지금* 기준의 남은 턴/돌봄/수확을 돌려준다.
- */
 export function plotStatus(nodeId: string): PlotStatus {
-  const r = useRunStore().data;
-  const plot = r.plots?.[nodeId];
-  if (!plot) return { active: false, remaining: 0, needsCare: false, ready: false };
-  // 물 임계 판정(읽기 전용) — growthProgress가 지나온 물 임계 수가 wateredCount보다 많으면 게이트 막힘.
-  const gated = (prog: number): boolean =>
-    plot.waterAt.filter((t) => prog >= t).length > plot.wateredCount;
-  // 경과 턴을 게이트에 막히기 전까지 성장에 반영(refreshPlot 미러, 변형 없음).
-  let progress = plot.growthProgress;
-  let available = Math.max(0, r.visitedNodes.length - plot.lastTickTurn);
-  while (available > 0 && progress < plot.growTurns) {
-    if (gated(progress)) break;
-    progress += 1;
-    available -= 1;
-  }
-  const needsCare = progress < plot.growTurns && gated(progress);
-  const requiredWaters = plot.waterAt.filter((t) => t <= plot.growTurns).length;
-  const ready = progress >= plot.growTurns && plot.wateredCount >= requiredWaters;
-  return { active: true, remaining: Math.max(0, plot.growTurns - progress), needsCare, ready };
+  const saved = getPlot(nodeId);
+  if (!saved) return { active: false, remaining: 0, needsCare: false, ready: false };
+  const plot = projectedPlot(saved, useRunStore().data.visitedNodes.length);
+  const settled = targetFor(nodeId)?.production?.settled;
+  return {
+    active: true, remaining: Math.max(0, plot.growTurns - plot.growthProgress),
+    needsCare: !settled && needsWater(nodeId),
+    ready: !!settled || plot.growthProgress >= plot.growTurns,
+  };
 }
 
-/** 수확 가능한가 — 완성 도달 + 모든 물 임계 충족. */
-export function isReady(nodeId: string): boolean {
-  const plot = getPlot(nodeId);
-  if (!plot) return false;
-  if (plot.growthProgress < plot.growTurns) return false;
-  // 완성 시점까지의 모든 물 임계가 충족되어야 함.
-  const requiredWaters = plot.waterAt.filter((t) => t <= plot.growTurns).length;
-  return plot.wateredCount >= requiredWaters;
-}
+export function isReady(nodeId: string): boolean { return plotStatus(nodeId).ready; }
 
-/**
- * 수확 상위확률(0~100) — clamp(BASE + lifeLevel*K + 작물 element 컬러 스케일).
- * activity.ts의 성공확률 모델 미러. 후반(고레벨/고컬러)일수록 상위 산출이 잦다.
- */
 export function harvestUpperChance(crop: CropDef): number {
   const r = useRunStore().data;
-  const lifeLevel = r.lifeLevel ?? 1;
-  const colorValue = r.colors[elementColorKey(crop.element)] ?? 0;
-  const chance =
-    HARVEST_BASE_BONUS +
-    lifeLevel * HARVEST_LEVEL_K +
-    Math.round(colorValue) * HARVEST_COLOR_SCALE;
-  return Math.max(0, Math.min(100, Math.round(chance)));
+  return Math.max(0, Math.min(100, Math.round(10 + (r.lifeLevel ?? 1) * 5 + (r.colors[crop.element] ?? 0) * 0.4)));
 }
 
-/** 수확 결과 — 산출 아이템 목록 + 부여 컬러량 + 적립 생활 XP. (UI 표시·테스트용 반환.) */
-export interface HarvestResult {
-  cropId: string;
-  /** 상위 산출 여부(상위확률 판정 결과). */
-  upper: boolean;
-  /** 산출한 아이템 id 목록(개수만큼 중복). */
-  itemIds: string[];
-  /** 부여한 작물 컬러량. */
-  colorGain: number;
-  /** 적립한 생활 XP. */
-  lifeXp: number;
-}
-
-/**
- * 수확 — 텃밭을 거두고 산출을 run에 반영, plots에서 제거.
- *  - 상위확률 판정(harvestUpperChance) → 상위/하위 결과물.
- *  - 개수는 생활레벨·컬러로 약간 스케일(1 + floor(lifeLevel/3) + (상위면 +1)).
- *  - 작물 element 컬러 부여(+colorGain) + 생활 XP 적립(addLifeXp).
- * 수확 불가(텃밭 없음/미완성)면 null.
- *
- * upperBonus(선택, %p) — 이 *한 회차*에만 상위확률에 더하는 보너스(미니게임 결과 등).
- *   판정 chance에만 가산하고 산출 개수·컬러·XP 공식은 그대로(상위확률 기본 모델 불변).
- *   인자 없이 호출하면 기존 동작과 동일(0%p) → 미니게임 미연동 화면 회귀 0.
- */
-export function harvest(nodeId: string, upperBonus = 0): HarvestResult | null {
-  const run = useRunStore();
-  const r = run.data;
-  const plot = r.plots?.[nodeId];
-  if (!plot) return null;
-  refreshPlot(nodeId); // 판정 전 성장 정산.
-  if (!isReady(nodeId)) {
-    useUiStore().toast('info', '아직 거둘 때가 아니다.');
-    return null;
-  }
+export function plotUpperChance(nodeId: string): number {
+  const plot = getPlot(nodeId);
+  if (!plot) return 0;
+  const batch = targetFor(nodeId)?.production;
+  if (batch?.settled) return batch.upper ? 100 : 0;
   const crop = getCrop(plot.cropId);
-  if (!crop) {
-    // 정의가 사라진 작물 — 안전하게 텃밭만 제거.
-    delete r.plots![nodeId];
-    return null;
-  }
+  const base = batch ? 10 + batch.level * 5 + batch.colorValue * 0.4 : crop ? harvestUpperChance(crop) : 0;
+  return Math.max(0, Math.min(100, Math.round(base + productionQualityBonus(plot))));
+}
 
-  const data = useDataStore();
-  const lifeLevel = r.lifeLevel ?? 1;
+export function plotMinimumYield(nodeId: string): number {
+  const r = useRunStore().data, target = targetFor(nodeId), plot = getPlot(nodeId);
+  if (!plot) return 0;
+  if (target?.production?.settled) return Object.keys(target.production.output).reduce((sum, id) => sum + (target.stock[id] ?? 0), 0);
+  return productionYield(target?.production?.level ?? r.lifeLevel ?? 1, false, plot);
+}
 
-  // 상위/하위 판정 (결정적 rng). upperBonus(이 회차 인자) + plot.bonus(심을 때 미니게임 적립, item 3) 가산.
-  const roll = Math.round(rng() * 100);
-  const chance = Math.max(0, Math.min(100, harvestUpperChance(crop) + upperBonus + (plot.bonus ?? 0)));
-  const upper = roll <= chance;
+export interface HarvestResult { cropId: string; upper: boolean; itemIds: string[]; colorGain: number; lifeXp: number }
 
-  // 산출 개수 — 기본 1 + 생활레벨/3 + 상위 보너스. (후반일수록 더 많이.)
-  const count = 1 + Math.floor(lifeLevel / 3) + (upper ? 1 : 0);
-  const itemId = upper ? crop.upperItemId : crop.lowerItemId;
-  const itemDef = data.items.get(itemId);
-  const itemIds: string[] = [];
-  if (itemDef) {
-    for (let i = 0; i < count; i++) {
-      run.addItem(itemDef);
-      itemIds.push(itemId);
-    }
-  }
-
-  // 작물 element 컬러 부여 — +2(상품이면 +3). 생활레벨 스케일 제거(컬러가 너무 빨리 차던 문제, +2~3로 고정).
-  const colorGain = 2 + (upper ? 1 : 0);
-  applyColorBoost(elementColorKey(crop.element), colorGain);
-
-  // 생활 XP 적립 — 상위면 +1.
-  const xpGain = 1 + (upper ? 1 : 0);
-  run.addLifeXp(xpGain);
-
-  // 텃밭 제거 (재심기 가능).
-  delete r.plots![nodeId];
-
-  useUiStore().toast(
-    'success',
-    `${cropDisplayName(crop)} 수확 — ${upper ? '상품' : '평작'} ${count}개.`,
-  );
-
-  return { cropId: crop.id, upper, itemIds, colorGain, lifeXp: xpGain };
+/** The result describes this transaction; later NPC actions cannot award it again. */
+export function harvest(nodeId: string, _legacyUpperBonus = 0): HarvestResult | null {
+  const { run, world, target } = prepareLifeSite(nodeId);
+  const batch = target.production;
+  if (!batch?.settled) return null;
+  const action = lifeActions(run.data, world, 'player', target.id).find(action => action.id === 'harvest');
+  if (!action) return null;
+  const itemIds = action.effects.flatMap(effect => effect.kind === 'transfer' && effect.from === 'target' ? Array(effect.quantity).fill(effect.resourceId) as string[] : []);
+  if (itemIds.some(id => !useDataStore().items.has(id))) return null;
+  const result = run.executeWorldAction(target.id, action);
+  if (!result.ok) { useUiStore().toast('info', result.message); return null; }
+  return { cropId: batch.recipeId, upper: batch.upper, itemIds, colorGain: 2 + Number(batch.upper), lifeXp: 1 + Number(batch.upper) };
 }

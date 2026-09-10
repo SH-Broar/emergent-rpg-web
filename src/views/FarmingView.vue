@@ -1,16 +1,5 @@
 <script setup lang="ts">
-/**
- * 농사 화면 — 텃밭에 작물을 심고, 물 주고, 수확한다.
- *
- * 흐름: 채집 노드(kind 'gather')가 농사 화면으로 repoint된다.
- *   - 텃밭이 없으면 씨앗 선택(작물 5종 카드 그리드) → 심기.
- *   - 자라는 중이면 성장 막대 + 물 상태. 물이 필요하면 물 주기 강조.
- *     막힌 동안 흐른 턴은 forfeit되므로(systems/farming.ts), 물을 주고 다른 곳을 다녀와야 자란다.
- *   - 다 자라고 물도 충족하면 수확.
- *
- * 시간 진행은 *전역 턴 경과*라 이 화면이 직접 자라게 하지 않는다 — onMounted/물 준 직후 refreshPlot으로
- *   조회 시점 정산만 한다. 상태는 run.data.plots(reactive)에 있어 computed가 자동 갱신된다.
- */
+/** Production continues during world travel; care improves quality and quantity. */
 
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -18,7 +7,9 @@ import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
 import { colorLabel } from '@/systems/labels';
-import { minutesLabel } from '@/systems/time';
+import { remainingTimeLabel } from '@/systems/time';
+import { lifeCapabilities, productionDuration, PRODUCTION_MODES, type ProductionMode } from '@/systems/life-production';
+import LifeMasteryPanel from '@/components/LifeMasteryPanel.vue';
 import {
   CROPS,
   getCrop,
@@ -29,7 +20,10 @@ import {
   water,
   isReady,
   harvest,
-  harvestUpperChance,
+  plotStatus,
+  plotUpperChance,
+  plotMinimumYield,
+  hasAutomaticCare,
   type CropDef,
   type HarvestResult,
 } from '@/systems/farming';
@@ -58,6 +52,15 @@ const currentNode = computed(() => map.value?.nodes.find((n: { id: string }) => 
 const nodeLabel = computed(() => currentNode.value?.label ?? '텃밭');
 
 const lifeLevel = computed(() => run.data.lifeLevel ?? 1);
+const productionMode = ref<ProductionMode>('standard');
+const automaticCare = computed(() => hasAutomaticCare(nodeId.value));
+const currentStatus = computed(() => plotStatus(nodeId.value));
+const minimumYield = computed(() => plotMinimumYield(nodeId.value));
+const productionLabel = computed(() => PRODUCTION_MODES.find(mode => mode.id === plot.value?.productionMode)?.name ?? '기본 생산');
+function durationFor(turns: number): string {
+  const mode = lifeCapabilities(lifeLevel.value).specialization ? productionMode.value : 'standard';
+  return remainingTimeLabel(productionDuration(turns, mode));
+}
 
 /** 현재 노드 텃밭(반응형). tick에 의존시켜 액션 후 재평가. */
 const plot = computed(() => {
@@ -87,20 +90,19 @@ const ready = computed(() => {
 const growPct = computed(() => {
   const p = plot.value;
   if (!p || p.growTurns <= 0) return 0;
-  return Math.round(Math.min(1, p.growthProgress / p.growTurns) * 100);
+  return Math.round(Math.min(1, (p.growTurns - currentStatus.value.remaining) / p.growTurns) * 100);
 });
 
 /** 상위(상품) 산출 확률 미리보기. */
 const upperChance = computed(() => {
-  const c = plotCrop.value;
-  return c ? harvestUpperChance(c) : 0;
+  return plotUpperChance(nodeId.value);
 });
 
 /** 직전 수확 결과(결과 표시용). */
 const lastHarvest = ref<HarvestResult | null>(null);
 
 function doPlant(crop: CropDef) {
-  if (plant(nodeId.value, crop.id)) {
+  if (plant(nodeId.value, crop.id, 0, productionMode.value)) {
     lastHarvest.value = null;
     tick.value++;
   }
@@ -108,7 +110,7 @@ function doPlant(crop: CropDef) {
 
 function doWater() {
   if (water(nodeId.value)) {
-    refreshPlot(nodeId.value); // 물 준 직후 정산 — 막혔던 성장 재개.
+    refreshPlot(nodeId.value); // 선택 돌봄 이후 표시 갱신.
     tick.value++;
   }
 }
@@ -154,6 +156,8 @@ onMounted(() => {
       <p class="life">생활 레벨 {{ lifeLevel }}</p>
     </header>
 
+    <LifeMasteryPanel v-model="productionMode" :show-modes="!plot" />
+
     <!-- 텃밭 없음 — 씨앗 선택 -->
     <section v-if="!plot" class="seeds">
       <p class="sub">빈 텃밭이다. 씨앗을 골라 심는다.</p>
@@ -168,8 +172,8 @@ onMounted(() => {
         >
           <span class="seed__dot" :style="{ background: elementHex(crop.element) }" />
           <span class="seed__name">{{ crop.seedName }}</span>
-          <span class="seed__meta">성장 {{ minutesLabel(crop.growTurns) }}</span>
-          <span class="seed__meta">물 {{ crop.waterAt.length }}회</span>
+          <span class="seed__meta">성장 {{ durationFor(crop.growTurns) }}</span>
+          <span class="seed__meta">돌봄 없이도 완성</span>
         </button>
       </div>
     </section>
@@ -184,27 +188,14 @@ onMounted(() => {
       <div class="bar">
         <div class="bar__fill" :style="{ width: growPct + '%', background: elementHex(plotCrop?.element ?? '') }" />
       </div>
-      <p class="bar__label">성장 {{ plot.growthProgress }} / {{ plot.growTurns }} · 물 {{ plot.wateredCount }} / {{ plot.waterAt.length }}회</p>
+      <p class="bar__label">{{ productionLabel }} · {{ ready ? '완성 · 안전 보관 중' : '완성까지 ' + remainingTimeLabel(currentStatus.remaining) }} · 선택 돌봄 {{ plot.wateredCount }} / {{ plot.waterAt.length }}회</p>
+      <p v-if="automaticCare" class="preview">보존 관리가 선택 돌봄을 자동으로 해줍니다.</p>
+      <p class="preview">상품 확률 {{ upperChance }}% · 현재 보장 산출 {{ minimumYield }}개 (상품이면 +1개)</p>
 
-      <!-- 수확 가능 -->
-      <template v-if="ready">
-        <p class="hint">다 자랐다. 거둘 수 있다.</p>
-        <p class="preview">상품 확률 {{ upperChance }}%</p>
-        <button class="action action--harvest" @click="doHarvest">수확</button>
-      </template>
-
-      <!-- 물이 필요 -->
-      <template v-else-if="wantsWater">
-        <p class="hint hint--water">물이 마른다. 물을 줘야 다시 자란다.</p>
-        <button class="action action--water" @click="doWater">물 주기</button>
-      </template>
-
-      <!-- 자라는 중 (물 충분) -->
-      <template v-else>
-        <p class="hint">자라고 있다. 다른 곳을 다녀오면 그만큼 자란다.</p>
-        <p class="preview">상품 확률 {{ upperChance }}%</p>
-        <button class="action action--leave" @click="leave">다녀오기</button>
-      </template>
+      <p class="hint">{{ ready ? '다 자랐습니다. 수확할 때까지 안전하게 보존됩니다.' : '떠나 있어도 세계 시간이 흐르는 만큼 계속 자랍니다.' }}</p>
+      <button v-if="wantsWater" class="action action--water" @click="doWater">선택 돌봄 (상품 확률 +10%p · 돌본 생산지 산출 +1개)</button>
+      <button v-if="ready" class="action action--harvest" @click="doHarvest">수확</button>
+      <button class="action action--leave" @click="leave">원정 다녀오기</button>
     </section>
   </main>
 </template>
@@ -252,6 +243,7 @@ onMounted(() => {
   width: 100%; padding: 0.95rem; border-radius: 8px; cursor: pointer; font: inherit; font-weight: 600;
   background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.2); color: #d6d6e0;
 }
+.action + .action { margin-top: .65rem; }
 .action:hover { background: rgba(255,255,255,0.12); }
 .action--harvest { background: rgba(168,232,142,0.18); border-color: rgba(168,232,142,0.5); color: #a8e88e; }
 .action--harvest:hover { background: rgba(168,232,142,0.3); }

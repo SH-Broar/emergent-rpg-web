@@ -11,6 +11,8 @@
  */
 
 import type { Card, CardEffect } from './card';
+import type { RegionWorldState } from '@/systems/region-world';
+import type { InteractionWorld } from '@/systems/world/types';
 import type { Item } from './item';
 import type { Relic } from './relic';
 import type { Equipment, EquipmentId } from './equipment';
@@ -409,6 +411,10 @@ export interface GridCombatant {
 
 /** 한 스텝에 한 참가자가 수행하는 계획된 행동. */
 export type PlannedAction =
+  | { kind: 'basic-attack' }
+  | { kind: 'basic-guard' }
+  | { kind: 'interact'; objectId: string }
+  | { kind: 'extract' }
   | { kind: 'move'; to: GridPos }
   // aimOffset: targetMode='aimed' 카드의 *플레이어 기준 조준 오프셋*. 실행 시 anchor = player.pos + aimOffset.
   | { kind: 'card'; cardInstanceId: string; targetTiles: GridPos[]; aimOffset?: GridOffset }
@@ -463,6 +469,14 @@ export interface GridInstallation {
 }
 
 export interface GridCombatState {
+  /** 현장 전리품은 승리/철수 정산 전까지 런 인벤토리에 지급하지 않는다. */
+  pendingLoot?: { itemId?: string; gold?: number }[];
+  /** 즉시 사용한 행동 수. 계획과 합쳐 라운드당 3행동. 구세이브는 0. */
+  actionsUsed?: number;
+  environment?: Record<string, { wet?: number; fire?: number; smoke?: number }>;
+  noise?: { pos: GridPos; rounds: number };
+  objective?: { kind: 'recover'; label: string; recovered: boolean; exit: GridPos };
+  resolution?: 'cleared' | 'recovered';
   stage: GridStage;
   player: GridCombatant;
   enemies: GridCombatant[];
@@ -644,22 +658,24 @@ export interface NodeStateRecord {
  * 텃밭으로 돌아오는 동선이 생긴다.
  */
 export interface PlotState {
+  growthVersion?: 2;
+  productionMode?: 'standard' | 'abundant' | 'select';
   /** 심은 작물 정의 id (systems/farming.ts CROPS). */
   cropId: string;
   /** 심은 시점 — visitedNodes.length 스냅샷(기록·디버그용). */
   plantedTurn: number;
   /**
    * 마지막으로 성장 정산한 전역 턴(visitedNodes.length). refreshPlot이 (now - lastTickTurn)을
-   * 성장에 반영한 뒤 now로 갱신. 물 게이트에 막히면 막힌 turn들은 forfeit(성장 미반영)된다.
+   * 성장에 반영한 뒤 now로 갱신. 플레이어가 떠나 있어도 성장한다.
    */
   lastTickTurn: number;
-  /** 이 작물이 다 자라는 데 필요한 (물로 막히지 않은) 턴 수(작물 정의 growTurns 스냅샷). */
+  /** 이 작물이 다 자라는 데 필요한 전역 턴 수(파종 시 확정). */
   growTurns: number;
-  /** 물 요구 임계 시점들(작물 정의 waterAt 스냅샷, 결정적). */
+  /** 선택적 관리 보너스를 받을 수 있는 성장 시점들. */
   waterAt: number[];
   /** 지금까지 물을 준 횟수 — waterAt 중 충족한 임계 수. */
   wateredCount: number;
-  /** 성장 진행도 — 정산된 턴마다 +1, growTurns에서 완성. 물 게이트에 막히면 정지. */
+  /** 성장 진행도 — 정산된 턴마다 +1, growTurns에서 완성. 완숙 후 유지된다. */
   growthProgress: number;
   /**
    * 심을 때 미니게임으로 적립한 상위확률 보너스(%p). 수확 시 harvest에 가산된다(item 3).
@@ -693,6 +709,11 @@ export interface TradeContract {
 
 /** 한 런 전체의 휘발 상태. */
 export interface RunState {
+  tacticalDraft?: Card[];
+  regionWorld?: RegionWorldState;
+  interactionWorld?: InteractionWorld;
+  /** Chosen practice, independent from the many species in colorz. */
+  profession?: 'traveler' | 'grower' | 'artisan' | 'researcher';
   // === 컨텍스트 ===
   timelineId: TimelineId;
   /** 이 런에서 깃든 종족 (구 characterId — characters/ 폐기 후 race로 통합). */

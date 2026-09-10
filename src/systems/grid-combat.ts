@@ -62,6 +62,11 @@ import {
   gridDamageInMul,
 } from './grid-relic';
 import { useItemInGrid, registerGridItemHooks } from './grid-item';
+import { scaledValue } from './enhance';
+import { cardEffectKindLabel, cardEffectDescription } from './labels';
+import { regionCombatSupport } from './region-world';
+import { environmentAt, environmentKey, prepareTacticalStage, paintEnvironment, nearbyTiles, smokeHides, wetConductionBonus } from './tactical-environment';
+export { environmentAt } from './tactical-environment';
 
 // ============================================================================
 // 상수
@@ -76,7 +81,10 @@ const DEFAULT_TEMPO = 4;
 /** 보스 기본 템포(강한 적 — 더 자주 행동). */
 const BOSS_TEMPO = 2;
 /** 한 라운드(실행)에 플레이어가 큐에 넣을 수 있는 행동 총 상한(마나 외 안전 캡). */
-const MAX_PLAN = 12;
+export const ACTIONS_PER_ROUND = 3;
+export function remainingActions(state: GridCombatState): number {
+  return Math.max(0, ACTIONS_PER_ROUND - (state.actionsUsed ?? 0) - state.playerPlan.length);
+}
 
 /**
  * 유물·포션 격자 적용 계층(grid-relic.ts/grid-item.ts)에 격자 헬퍼를 주입한다.
@@ -518,7 +526,7 @@ export function previewAttackTiles(
 // ============================================================================
 
 /** 카드의 실효 비용 — base cost + 유물 cost-mod(음수=할인) - 이번 라운드 hand-cost-down(최소 0). */
-function cardCost(state: GridCombatState, card: Card): number {
+export function cardCost(state: GridCombatState, card: Card): number {
   const down = state.handCostDown ?? 0;
   const relicMod = gridCostMod(state); // cost-mod-add(소매치기 장갑 등, 음수면 할인).
   return Math.max(0, (card.cost ?? 0) + relicMod - down);
@@ -526,6 +534,7 @@ function cardCost(state: GridCombatState, card: Card): number {
 
 /** 마나·사용 불가 검증. */
 export function canPlayCard(state: GridCombatState, card: Card): boolean {
+  if (state.outcome || (state.player.statuses.sleep ?? 0) > 0) return false;
   if (!card) return false;
   if (card.unplayable) return false;
   return state.mana >= cardCost(state, card);
@@ -542,7 +551,7 @@ export function canPlayCard(state: GridCombatState, card: Card): boolean {
  * 성공 시 true.
  */
 export function queuePlayerAction(state: GridCombatState, action: PlannedAction): boolean {
-  if (state.playerPlan.length >= MAX_PLAN) return false; // 안전 캡(마나 외). 카드는 아래 누적 마나로 제한.
+  if (state.outcome || state.player.hp <= 0 || remainingActions(state) <= 0 || (state.player.statuses.sleep ?? 0) > 0) return false;
 
   if (action.kind === 'card') {
     const card = state.hand.find((c) => c.instanceId === action.cardInstanceId);
@@ -573,12 +582,7 @@ export function queuePlayerAction(state: GridCombatState, action: PlannedAction)
   if (action.kind === 'move') {
     // 닻(anchored) 상태면 이동 불가(보스 anchor 기믹).
     if ((state.player.statuses['anchored'] ?? 0) > 0) return false;
-    // 이동은 한 라운드 1회(퇴행 #10이면 2회). 합법성은 현재 위치 기준 best-effort.
-    const moveLimit = (state.player.statuses['regress'] ?? 0) > 0 ? 2 : 1;
-    if (state.playerPlan.filter((a) => a.kind === 'move').length >= moveLimit) return false;
-    // 이동 후 위치(이전 큐 이동 반영) 기준 합법성 — 다중 이동(퇴행) 지원.
-    let fromPos = state.player.pos;
-    for (const a of state.playerPlan) if (a.kind === 'move') fromPos = a.to;
+    const fromPos = simulatePlayerPos(state);
     if (!isLegalMove(state, { ...state.player, pos: fromPos }, action.to)) return false;
     state.playerPlan.push(action);
     return true;
@@ -603,7 +607,21 @@ export function queuePlayerAction(state: GridCombatState, action: PlannedAction)
     return true;
   }
 
-  if (action.kind === 'wait') {
+  if (action.kind === 'interact') {
+    if (!interactableObjects(state, simulatePlayerPos(state)).some(o => o.id === action.objectId)) return false;
+    if (state.playerPlan.some(a => a.kind === 'interact' && a.objectId === action.objectId)) return false;
+    state.playerPlan.push(action);
+    return true;
+  }
+  if (action.kind === 'extract') {
+    const o = state.objective;
+    const collecting = state.playerPlan.some(a => a.kind === 'interact'
+      && state.stage.objects?.some(obj => obj.id === a.objectId && obj.kind === 'supply'));
+    if (!o || (!o.recovered && !collecting) || !samePos(simulatePlayerPos(state), o.exit)) return false;
+    state.playerPlan.push(action);
+    return true;
+  }
+  if (action.kind === 'wait' || action.kind === 'basic-attack' || action.kind === 'basic-guard') {
     state.playerPlan.push(action);
     return true;
   }
@@ -664,11 +682,20 @@ export function playInstantCard(state: GridCombatState, cardInstanceId: string):
   const card = state.hand.find((c) => c.instanceId === cardInstanceId);
   if (!card || !isInstantCard(card) || card.unplayable) return undefined;
   if (!canPlayCard(state, card)) return undefined;
+  if (remainingActions(state) <= 0 || state.playerPlan.some(a => a.kind === 'card' && a.cardInstanceId === cardInstanceId)) return undefined;
+  const reserved = state.playerPlan.reduce((sum, a) => {
+    const c = a.kind === 'card' ? state.hand.find(h => h.instanceId === a.cardInstanceId) : undefined;
+    return sum + (c ? cardCost(state, c) : 0);
+  }, 0);
+  if (reserved + cardCost(state, card) > state.mana) return undefined;
+  state.actionsUsed = (state.actionsUsed ?? 0) + 1;
   // 이 즉시 발동의 fx를 한 그룹(1번)으로 — 뷰가 짧게 순차 재생.
   fxActionIndex = 1;
   const targetTiles = previewCardTiles(state, card); // 현재 위치 고정 shape(조준 없음).
   execCard(state, cardInstanceId, targetTiles, undefined);
-  postActionCleanup(state);
+  if (!postActionCleanup(state)) { tickEnemyTempo(state); postActionCleanup(state); }
+  if (state.outcome && state.swap?.controlling) revertSwap(state, false);
+  recomputeAllEnemyPlans(state);
   return state.outcome;
 }
 
@@ -692,12 +719,15 @@ export function previewDashTarget(state: GridCombatState, card: Card, fromPos?: 
  * (종전엔 항상 현재 위치 기준이라 발놀림 등 이동 카드 이후 시뮬레이션이 어긋났다).
  * upTo 지정 시 그 인덱스 *직전*까지만 적용(특정 행동 시점의 위치). 순수 계산(상태 불변).
  */
-export function simulatePlayerPos(state: GridCombatState, plan: PlannedAction[], upTo?: number): GridPos {
+export function simulatePlayerPos(state: GridCombatState, plan: PlannedAction[] = state.playerPlan, upTo?: number): GridPos {
   let pos = { ...state.player.pos };
   const end = upTo === undefined ? plan.length : Math.min(upTo, plan.length);
   for (let i = 0; i < end; i++) {
     const a = plan[i];
-    if (a.kind === 'move') { pos = { ...a.to }; continue; }
+    if (a.kind === 'move') {
+      if (isLegalMove(state, { ...state.player, pos }, a.to)) pos = { ...a.to };
+      continue;
+    }
     if (a.kind === 'card') {
       const card = state.hand.find((c) => c.instanceId === a.cardInstanceId);
       const eff = card?.effects.find((e) => e.kind === 'move-self');
@@ -1052,6 +1082,7 @@ export function startGridCombat(
   stage: GridStage,
   enemyDefs: Monster[],
 ): GridCombatState {
+  stage = prepareTacticalStage(stage, enemyDefs.every(e => e.tier !== 'elite'));
   // fx 시퀀스를 전투마다 리셋 — 새 전투가 fx:[]로 시작하므로 잔존 fx 혼입 방지.
   fxSeq = 0;
   ensureGridHooks(); // 유물·포션 격자 헬퍼 1회 주입(전투 시작 시점 — 순환 import 안전).
@@ -1090,6 +1121,8 @@ export function startGridCombat(
 
   const state: GridCombatState = {
     stage,
+    actionsUsed: 0,
+    environment: {},
     player,
     enemies,
     foresight: Math.max(1, stage.foresight || 1),
@@ -1108,6 +1141,10 @@ export function startGridCombat(
     cardsPlayedThisTurn: 0,
   };
 
+  state.player.block += regionCombatSupport(run, run.currentNodeId).block;
+  if (stage.objects?.some(o => o.kind === 'supply')) {
+    state.objective = { kind: 'recover', label: '유실 물자 회수', recovered: false, exit: { ...stage.playerStart } };
+  }
   // 전투 시작 유물(on-combat-start) — 방어/드로우/상태/마나 등을 격자 state에 적용.
   gridRelicCombatStart(state);
   // 적 초기 의도 큐 계산(foresight 만큼 예측 — 전투 시작 유물 적용 후 위치/상태 반영).
@@ -1269,6 +1306,7 @@ export function startGridBossCombat(
   stage: GridStage,
   boss: Boss,
 ): GridCombatState {
+  stage = prepareTacticalStage(stage, false);
   fxSeq = 0;
   ensureGridHooks(); // 유물·포션 격자 헬퍼 1회 주입.
   const loadout = resolveLoadout(run);
@@ -1403,6 +1441,14 @@ function currentBossDef(state: GridCombatState): Boss | undefined {
  * best-effort 예측 — 실제 실행 시점엔 commitRound가 상태를 재평가한다.
  */
 export function enemyPlan(state: GridCombatState, enemy: GridCombatant): PlannedAction[] {
+  if (smokeHides(state, enemy.pos, state.player.pos) || (state.noise && manhattan(enemy.pos, state.player.pos) > 1)) {
+    const target = state.noise?.pos;
+    if (target) {
+      const tiles = reachableTiles(state, enemy).sort((a, b) => manhattan(a, target) - manhattan(b, target));
+      if (tiles[0] && manhattan(tiles[0], target) < manhattan(enemy.pos, target)) return [{ kind: 'move', to: tiles[0] }];
+    }
+    return [{ kind: 'wait' }];
+  }
   const useTree = !enemy.fixedAi && (enemy.attacks?.length ?? 0) > 0;
   return useTree ? planEnemyGameTree(state, enemy) : greedyEnemyPlan(state, enemy);
 }
@@ -1787,25 +1833,37 @@ export interface RoundForecast {
   telegraph: { attack: GridPos[]; move: GridPos[] };
 }
 
-/** 예측 전용 경량 클론 — player/enemies의 pos·tempoCounter만 새 객체로(나머지 ref 공유: 읽기 전용). */
+/** Environment/objects/statuses are projected too; no mutable live references escape. */
 function cloneForForecast(state: GridCombatState): GridCombatState {
-  return {
-    ...state,
-    player: { ...state.player, pos: { ...state.player.pos } },
-    enemies: state.enemies.map((e) => ({ ...e, pos: { ...e.pos } })),
-  };
+  return JSON.parse(JSON.stringify(state));
 }
 
 /** 시뮬레이션에 플레이어 1행동의 위치 변화(이동·대시)를 반영(#2 체이닝과 동일 규칙). */
 function applyPlayerActionToSim(sim: GridCombatState, a: PlannedAction): void {
-  if (a.kind === 'move') { sim.player.pos = { ...a.to }; return; }
+  if (a.kind === 'move') { if (isLegalMove(sim, sim.player, a.to)) sim.player.pos = { ...a.to }; return; }
+  if (a.kind === 'interact') {
+    const obj = interactableObjects(sim).find(o => o.id === a.objectId);
+    if (!obj) return;
+    obj.used = true;
+    if (obj.kind === 'supply') { if (sim.objective) sim.objective.recovered = true; }
+    else { paintEnvironment(sim, nearbyTiles(obj.pos), obj.kind === 'water-barrel' ? 'wet' : 'fire'); sim.noise = { pos: { ...obj.pos }, rounds: 2 }; }
+    return;
+  }
   if (a.kind === 'card') {
     const card = sim.hand.find((c) => c.instanceId === a.cardInstanceId);
-    const eff = card?.effects.find((e) => e.kind === 'move-self');
-    if (eff) {
-      const tiles = Math.max(1, Math.floor(eff.value ?? 0) || 1);
-      const mode = eff.params?.mode === 'toward' ? 'toward' : 'away';
-      sim.player.pos = computeDashDestination(sim, sim.player.pos, tiles, mode);
+    if (!card) return;
+    const anchor = a.aimOffset ? { x: sim.player.pos.x + a.aimOffset.dx, y: sim.player.pos.y + a.aimOffset.dy } : { ...sim.player.pos };
+    const area = previewCardTiles(sim, card, sim.player.pos, a.aimOffset);
+    const targets = sim.enemies.filter(e => e.hp > 0 && area.some(p => samePos(p, e.pos)));
+    for (const eff of card.effects) {
+      if (eff.kind === 'move-self') {
+        sim.player.pos = computeDashDestination(sim, sim.player.pos, Math.max(1, eff.value ?? 1), eff.params?.mode === 'toward' ? 'toward' : 'away');
+      } else if (eff.kind === 'terrain-water' || eff.kind === 'terrain-fire' || eff.kind === 'terrain-smoke') {
+        paintEnvironment(sim, area.length ? area : [anchor], eff.kind === 'terrain-water' ? 'wet' : eff.kind === 'terrain-fire' ? 'fire' : 'smoke', Math.max(1, eff.value ?? 3));
+      } else if (eff.kind === 'lure') sim.noise = { pos: anchor, rounds: Math.max(1, eff.value ?? 2) };
+      else if (eff.kind === 'push-enemy' || eff.kind === 'pull-enemy') {
+        for (const target of targets) target.pos = displacedPosition(sim, target, Math.max(1, eff.value ?? 1), eff.kind === 'push-enemy' ? 'away' : 'toward').to;
+      }
     }
   }
 }
@@ -1874,7 +1932,7 @@ export function forecastRound(state: GridCombatState): RoundForecast {
   setRng(createSeededRng((((state.turn ?? 0) + 1) * 2654435761) >>> 0).next);
   try {
     const sim = cloneForForecast(state);
-    const plan = state.playerPlan ?? [];
+    const plan = (state.player.statuses.sleep ?? 0) > 0 ? [] : state.playerPlan.slice(0, Math.max(0, ACTIONS_PER_ROUND - (state.actionsUsed ?? 0)));
     const regress = (sim.player.statuses['regress'] ?? 0) > 0;
 
     // 한 스텝 — commitRound를 그대로 미러(큐 순서, 이동도 카드와 동일한 한 스텝).
@@ -2068,6 +2126,8 @@ function castSpeedRank(cs: CastSpeed | undefined): number {
  *  - 그 외(item/swap/wait 등): normal(1) 기본.
  */
 function playerActionSpeedRank(state: GridCombatState, action: PlannedAction): number {
+  if (action.kind === 'basic-guard') return 0;
+  if (action.kind === 'interact' || action.kind === 'extract') return 2;
   if (action.kind === 'move') return 3;
   if (action.kind === 'card') {
     let card: Card | undefined = state.hand.find((c) => c.instanceId === action.cardInstanceId);
@@ -2110,6 +2170,7 @@ function enemyActionSpeedRank(enemy: GridCombatant): number {
  */
 export function commitRound(state: GridCombatState): void {
   if (state.outcome) return;
+  state.playerPlan = state.playerPlan.slice(0, Math.max(0, ACTIONS_PER_ROUND - (state.actionsUsed ?? 0)));
 
   // 수면(sleep, #5): 잠든 플레이어는 이번 라운드 행동 불가 — 계획 무효(자동 대기로 드로우만, 적은 진행).
   if ((state.player.statuses['sleep'] ?? 0) > 0) state.playerPlan = [];
@@ -2188,6 +2249,7 @@ export function commitRound(state: GridCombatState): void {
   // 설치물 효과(라운드 끝) — 그 칸에 선 전투원에 적용 + 폭발/만료 정리. 즉발 피해로 처치/승패 가능.
   if (!state.outcome) {
     tickInstallations(state);
+    tickEnvironment(state);
     postActionCleanup(state);
   }
 
@@ -2280,11 +2342,42 @@ export function commitRound(state: GridCombatState): void {
   // 플레이어 계획 비움.
   state.playerPlan = [];
   state.cardsPlayedThisTurn = 0;
+  state.actionsUsed = 0;
 }
 
 /** 한 행동 실행(스피드 모델: 큐-순서 직접 실행, ScheduledAction 래퍼 제거). */
 function executeAction(state: GridCombatState, actor: GridCombatant, action: PlannedAction): void {
   switch (action.kind) {
+    case 'basic-attack': {
+      const target = state.enemies.filter(e => e.hp > 0 && manhattan(e.pos, actor.pos) <= 1)
+        .sort((a, b) => a.hp - b.hp)[0];
+      if (target) applyDamage(state, target, Math.max(0, 5 + (actor.statuses.strength ?? 0)), actor.statuses);
+      pushLog(state, target ? `기본 공격 → ${target.name ?? '마물'}` : '기본 공격: 인접한 마물이 없음');
+      break;
+    }
+    case 'basic-guard':
+      if (!isWild(actor.statuses)) gainPlayerBlock(state, 6);
+      pushLog(state, isWild(actor.statuses) ? '수화 중에는 방어막을 얻을 수 없다' : '기본 방어 · 방어막 +6');
+      break;
+    case 'interact': {
+      const object = interactableObjects(state).find(o => o.id === action.objectId);
+      if (!object) { pushLog(state, '상호작용 실패: 대상에서 너무 멀어짐'); break; }
+      object.used = true;
+      if (object.kind === 'supply' && state.objective) {
+        state.objective.recovered = true;
+        pushLog(state, '물자 회수 완료 · 입구에서 철수 가능');
+      } else {
+        paintEnvironment(state, nearbyTiles(object.pos), object.kind === 'water-barrel' ? 'wet' : 'fire');
+        state.noise = { pos: { ...object.pos }, rounds: 2 };
+        pushLog(state, object.kind === 'water-barrel' ? '물통을 터뜨렸다 · 젖음과 소음' : '화로를 넘어뜨렸다 · 화염과 소음');
+      }
+      break;
+    }
+    case 'extract':
+      if (state.objective?.recovered && samePos(actor.pos, state.objective.exit)) {
+        state.resolution = 'recovered'; state.outcome = 'win'; pushLog(state, '물자를 확보하고 철수했다');
+      } else pushLog(state, '철수 실패: 물자를 챙기고 입구로 돌아와야 한다');
+      break;
     case 'move':
       execMove(state, actor, action.to);
       break;
@@ -2335,6 +2428,10 @@ function execMove(state: GridCombatState, actor: GridCombatant, to: GridPos): vo
     pushLog(state, '닻에 묶여 움직일 수 없다');
     return;
   }
+  if (actor.team === 'player' && !isLegalMove(state, actor, to)) {
+    pushLog(state, '이동 취소 · 변경된 위치에서 갈 수 없는 칸');
+    return;
+  }
   // 실행 시점 합법성 재평가 — 비행 중이면 airStop, 아니면 지상 착지 가능 칸이어야.
   const air = isAirborne(actor);
   const landOk = (p: GridPos): boolean => (air ? canAirStop(state.stage, p) : isFreeTile(state, p));
@@ -2357,7 +2454,7 @@ function execMove(state: GridCombatState, actor: GridCombatant, to: GridPos): vo
   if (actor.team === 'player') { const ps = actor.statuses['possession'] ?? 0; if (ps > 0) { if (ps - 1 <= 0) delete actor.statuses['possession']; else actor.statuses['possession'] = ps - 1; } }
 }
 
-/** 바닥 보상 픽업(item 5) — itemDrops에서 제거 + 골드/아이템을 런에 반영. 마커 칸은 floor로 되돌린다. */
+/** 바닥 전리품은 전투에 보관하고 승리 또는 회수 철수 때만 지급한다. */
 function collectItemAt(state: GridCombatState, pos: GridPos): void {
   const drops = state.stage.itemDrops;
   if (!drops || drops.length === 0) return;
@@ -2367,18 +2464,9 @@ function collectItemAt(state: GridCombatState, pos: GridPos): void {
   // 보상 마커(item 셀) 제거 — 주운 칸은 일반 바닥으로(✦ 사라짐).
   const row = state.stage.cells[picked.pos.y];
   if (row && row[picked.pos.x] === 'item') row[picked.pos.x] = 'floor';
-  try {
-    if (picked.gold && picked.gold > 0) {
-      useRunStore().data.gold += picked.gold;
-      pushLog(state, `골드 +${picked.gold} 획득`);
-    } else if (picked.itemId) {
-      const itm = useDataStore().items.get(picked.itemId);
-      if (itm) {
-        useRunStore().addItem(itm);
-        pushLog(state, `${itm.name} 획득`);
-      }
-    }
-  } catch { /* 무해 */ }
+  state.pendingLoot ??= [];
+  state.pendingLoot.push({ gold: picked.gold, itemId: picked.itemId });
+  pushLog(state, picked.gold ? `골드 ${picked.gold} 확보 · 승리/철수 시 수령` : '물건 확보 · 승리/철수 시 수령');
 }
 
 /** 카드 실행 — 마나 차감 + shape 칸 대상에 효과. aimOffset(aimed 카드)면 조준 칸 중심으로 적용. */
@@ -2574,18 +2662,7 @@ function dashPlayer(state: GridCombatState, tiles: number, mode: 'toward' | 'awa
 function shoveEnemy(state: GridCombatState, enemy: GridCombatant, tiles: number, mode: 'toward' | 'away'): void {
   if (tiles <= 0) return;
   const from = { ...enemy.pos };
-  let cur = { ...enemy.pos };
-  for (let i = 0; i < tiles; i++) {
-    const dx = state.player.pos.x - cur.x;
-    const dy = state.player.pos.y - cur.y;
-    let sx = 0, sy = 0;
-    if (Math.abs(dx) >= Math.abs(dy)) sx = Math.sign(dx); else sy = Math.sign(dy);
-    if (mode === 'away') { sx = -sx; sy = -sy; }
-    if (sx === 0 && sy === 0) break;            // 플레이어와 같은 칸(겹침) — 더 당길 곳 없음.
-    const next = { x: cur.x + sx, y: cur.y + sy };
-    if (!canStopAt(state.stage, next)) break;   // 벽/구덩이/난간/밖 — 직전에 정지.
-    cur = next;
-  }
+  const cur = displacedPosition(state, enemy, tiles, mode).to;
   if (!samePos(cur, from)) {
     enemy.pos = cur;
     pushFx(state, { kind: 'move', actorId: enemy.id, from, to: { ...cur } });
@@ -2726,7 +2803,9 @@ function applyCardEffects(
     }
     if (v <= 0) return;
     for (const { target, mul } of shapeHits) {
-      applyDamage(state, target, Math.floor(v * mul), playerStatuses);
+      const conducted = card.element === 'electric' ? wetConductionBonus(state, target.pos) : 0;
+      applyDamage(state, target, Math.floor(v * mul) + conducted, playerStatuses);
+      if (conducted) { delete state.environment?.[environmentKey(target.pos)]?.wet; pushLog(state, `젖음 감전 · 추가 피해 ${conducted}`); }
     }
   };
   /** 플레이어 방어 획득(juggernaut 경유). 수화(feral/feral-heavy)면 방어 0(combat.ts block 핸들러 동일). */
@@ -2747,9 +2826,28 @@ function applyCardEffects(
   };
 
   for (const eff of card.effects) {
-    const rawV = eff.value ?? 0;
+    const rawV = enhancedEffectValue(card, eff.kind, eff.value ?? 0);
     const v = ampValue(state, rawV, doubled); // this-turn-amp + next-card-double 반영(수치형 base).
     switch (eff.kind) {
+      case 'terrain-water':
+      case 'terrain-fire':
+      case 'terrain-smoke': {
+        const tiles = shape.map(off => ({ x: anchor.x + off.dx, y: anchor.y + off.dy }));
+        paintEnvironment(state, tiles.length ? tiles : [anchor], eff.kind === 'terrain-water' ? 'wet' : eff.kind === 'terrain-fire' ? 'fire' : 'smoke', Math.max(1, eff.value ?? 3));
+        break;
+      }
+      case 'lure':
+        state.noise = { pos: { ...anchor }, rounds: Math.max(1, eff.value ?? 2) };
+        break;
+      case 'push-enemy':
+        for (const target of new Set(shapeHits.map(h => h.target))) {
+          if (target.hp <= 0) continue;
+          const from = { ...target.pos };
+          const { to, blocked } = displacedPosition(state, target, Math.max(1, eff.value ?? 1), 'away');
+          if (!samePos(from, to)) { target.pos = to; pushFx(state, { kind: 'move', actorId: target.id, from, to }); }
+          if (blocked) { applyDamage(state, target, 3, playerStatuses); pushLog(state, '충돌 피해 3'); }
+        }
+        break;
       // === 기본 5종 ===
       case 'damage': {
         dealToShape(Math.floor(v)); // 색/힘/focus/sap/feral은 dealToShape 내부에서 합성.
@@ -3081,8 +3179,7 @@ function applyCardEffects(
         break;
       }
       // === 밀기/당기기(미유, 2026-06-18) — 맞은 적을 플레이어 기준 끌거나 민다(설치 칸 유도). ===
-      case 'pull-enemy':
-      case 'push-enemy': {
+      case 'pull-enemy': {
         const dist = Math.max(1, Math.floor(rawV) || 1);
         const mode = eff.kind === 'pull-enemy' ? 'toward' : 'away';
         const moved = new Set<GridCombatant>();
@@ -3191,6 +3288,7 @@ function execAttack(
   attackIdx: number,
   plannedTiles: GridPos[],
 ): void {
+  if (smokeHides(state, attacker.pos, state.player.pos)) { pushLog(state, '연기에 가려 공격하지 못했다'); return; }
   const enemyStrength = attacker.statuses.strength ?? 0;
   // 공격자 측 플랫 보정(+focus − sap)과 수화(feral/feral-heavy ×2)도 일관 반영 —
   //   격자는 *어떤 전투원이든* 같은 상태이상 규칙을 따른다(combat.ts와 동일 합성: base ×feral + str + focus − sap).
@@ -3586,6 +3684,7 @@ function execSwap(state: GridCombatState, companionId: string): void {
 
 /** 승패 판정 — set하면 true. 플레이어 hp<=0 → lose, 살아 있는 적 0 + 미소비 증원 0 → win. */
 function checkOutcome(state: GridCombatState): boolean {
+  if (state.outcome) return true;
   if (state.player.hp <= 0) {
     state.outcome = 'lose';
     return true;
@@ -3596,6 +3695,7 @@ function checkOutcome(state: GridCombatState): boolean {
   );
   if (!aliveEnemies && !pendingSpawns) {
     state.outcome = 'win';
+    state.resolution = 'cleared';
     return true;
   }
   return false;
@@ -3611,4 +3711,95 @@ export function isWin(state: GridCombatState): boolean {
 
 export function isLose(state: GridCombatState): boolean {
   return state.outcome === 'lose';
+}
+
+/** Only effect magnitudes grow; counts, durations, ratios and self-costs remain stable. */
+export function enhancedEffectValue(card: Card, kind: string, value: number): number {
+  return ['damage', 'block', 'heal', 'growing-damage', 'growing-block', 'adaptive-strike',
+    'damage-low-hand', 'delayed-damage', 'buff-card-instance', 'heavy-blade'].includes(kind)
+    ? scaledValue(value, card) : value;
+}
+
+export function interactableObjects(state: GridCombatState, fromPos = state.player.pos) {
+  return (state.stage.objects ?? []).filter(o => !o.used && chebyshev(fromPos, o.pos) <= 1);
+}
+
+function displacedPosition(state: GridCombatState, target: GridCombatant, distance: number, mode: 'away' | 'toward') {
+  let to = { ...target.pos };
+  for (let i = 0; i < distance; i++) {
+    const dx = to.x - state.player.pos.x, dy = to.y - state.player.pos.y;
+    const sign = mode === 'away' ? 1 : -1;
+    const next = Math.abs(dx) >= Math.abs(dy) ? { x: to.x + (Math.sign(dx) || 1) * sign, y: to.y } : { x: to.x, y: to.y + Math.sign(dy) * sign };
+    if (!canStopAt(state.stage, next) || combatantsAt(state, next).some(c => c !== target && c.hp > 0)) return { to, blocked: true };
+    to = next;
+  }
+  return { to, blocked: false };
+}
+
+function tickEnvironment(state: GridCombatState): void {
+  for (const c of aliveCombatants(state)) {
+    if (environmentAt(state, c.pos).fire) {
+      applyDamage(state, c, 3, {});
+      pushLog(state, `${c.name ?? '플레이어'} · 불길 피해 3`);
+    }
+  }
+  for (const [key, cell] of Object.entries(state.environment ?? {})) {
+    for (const kind of ['wet', 'fire', 'smoke'] as const) {
+      if (cell[kind]) { cell[kind]! -= 1; if (cell[kind]! <= 0) delete cell[kind]; }
+    }
+    if (!cell.wet && !cell.fire && !cell.smoke) delete state.environment![key];
+  }
+  if (state.noise && --state.noise.rounds <= 0) state.noise = undefined;
+}
+
+export function gridCardSummary(state: GridCombatState, card: Card): string {
+  const labels: Record<string, string> = { damage: '기본 피해', block: '방어', heal: '회복', draw: '뽑기',
+    'terrain-water': '젖음', 'terrain-fire': '불길', 'terrain-smoke': '연기', 'push-enemy': '밀치기', lure: '소음 유인' };
+  const values = card.effects.map(e => {
+    const value = enhancedEffectValue(card, e.kind, e.value ?? 0);
+    const label = labels[e.kind] ?? cardEffectKindLabel(e);
+    const explanation = !labels[e.kind] && !card.description ? cardEffectDescription(e) : '';
+    return `${label}${e.value ? ` ${value}` : ''}${explanation ? `: ${explanation}` : ''}`;
+  });
+  if (card.element === 'electric' && card.effects.some(e => e.kind === 'damage')) values.push('젖은 칸 +4 피해');
+  const summary = values.join(' · ');
+  void state;
+  return [summary, card.description].filter(Boolean).join(' / ') || card.effects.map(e => e.kind).join(' · ');
+}
+
+/** Position/intent projection only. Never executes rewards, RNG draws or actual damage. */
+export function previewPlan(state: GridCombatState): { index: number; label: string; hits: number; warning?: string }[] {
+  const timeline = forecastRound(state).timeline;
+  const sim = cloneForForecast(state);
+  const enemies = sim.enemies;
+  const out: { index: number; label: string; hits: number; warning?: string }[] = [];
+  for (const step of timeline) {
+    if (step.kind === 'enemy') {
+      const e = enemies.find(e => e.id === step.enemyId);
+      if (e && step.moveTiles?.length) e.pos = { ...step.moveTiles[step.moveTiles.length - 1] };
+      continue;
+    }
+    const action = state.playerPlan[step.index];
+    if (!action) continue;
+    let label: string = action.kind, hits = 0, warning: string | undefined;
+    if (action.kind === 'move') { label = '이동'; if (!isLegalMove(sim, sim.player, action.to)) warning = '이동 불가 예상'; else sim.player.pos = { ...action.to }; }
+    else if (action.kind === 'card') {
+      const card = state.hand.find(c => c.instanceId === action.cardInstanceId);
+      label = card?.name ?? '카드 없음';
+      if (card) {
+        const tiles = previewCardTiles(sim, card, sim.player.pos, action.aimOffset);
+        hits = enemies.filter(e => e.hp > 0 && tiles.some(p => samePos(p, e.pos))).length;
+        if (hits === 0 && card.effects.some(e => e.kind.includes('damage') || e.kind === 'push-enemy')) warning = '적중 대상 없음 예상';
+      }
+    } else if (action.kind === 'basic-attack') {
+      label = '기본 공격'; hits = enemies.some(e => e.hp > 0 && manhattan(e.pos, sim.player.pos) <= 1) ? 1 : 0;
+      if (!hits) warning = '인접한 마물 없음 예상';
+    } else if (action.kind === 'basic-guard') label = '기본 방어';
+    else if (action.kind === 'interact') { label = '현장 상호작용'; if (!interactableObjects(sim).some(o => o.id === action.objectId)) warning = '상호작용 거리 밖 예상'; }
+    else if (action.kind === 'extract') label = '물자 확보 후 철수';
+    else if (action.kind === 'wait') label = '손패 보충';
+    out.push({ index: step.index, label, hits, warning });
+    if (action.kind !== 'move') applyPlayerActionToSim(sim, action);
+  }
+  return out;
 }

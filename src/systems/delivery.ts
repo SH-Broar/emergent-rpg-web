@@ -27,6 +27,7 @@ import { applyColorBoost, type ColorKey } from '@/systems/colors';
 import { activityForNode, cropForActivity } from '@/systems/life-activity';
 import { craftItemIdForElement } from '@/systems/workshop';
 import { effectiveKind } from '@/systems/map';
+import { reportRegionDelivery } from '@/systems/region-world';
 import type { Item, TradeContract } from '@/data/schemas';
 
 /** tier를 못 찾을 때 쓰는 기본 tier(요구 개수 산정·보상에 쓰임). */
@@ -250,6 +251,7 @@ export function fulfillContract(nodeId: string): TradeResult | null {
   r.nodeStates[nodeId].visited = true;
   r.nodeStates[nodeId].tradeCleared = true;
   delete r.tradeContracts![nodeId];
+  reportRegionDelivery(r, nodeId, req.count, pick.map(item => item.id));
 
   return { consumed, lifeXp, colorGain, color, tier, gold, shards, elite };
 }

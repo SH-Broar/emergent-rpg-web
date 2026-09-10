@@ -19,6 +19,7 @@ import { XP_NORMAL, XP_ELITE } from '@/systems/enhance';
 import { availableRelics } from '@/systems/unlocks';
 import { rng } from '@/systems/rng';
 import { effectiveKind as systemEffectiveKind } from '@/systems/map';
+import { offerTacticalReward } from './tactical-cards';
 
 // 희귀도 사다리 재료 id (Item Economy).
 const MATERIAL_COMMON_ID = 'i-material-common';
@@ -55,7 +56,7 @@ function clampTier(t: number | undefined): number {
  * 전투 승리 시 호출 — markCombatCleared *전*에 호출해야 *이번 클리어가 첫 클리어*인지 안다.
  * (이미 cleared면 보상 없이 반환.)
  */
-export function applyCombatVictoryReward(nodeId: string): void {
+export function applyCombatVictoryReward(nodeId: string, options?: { recovered?: boolean }): void {
   const run = useRunStore();
   const data = useDataStore();
   const r = run.data;
@@ -78,10 +79,12 @@ export function applyCombatVictoryReward(nodeId: string): void {
 
   // === 경험치 (XP·레벨업) — 첫 클리어 가드 안(위에서 return됨)이라 재클리어 무적립. ===
   // 일반 1 / 엘리트 3. 레벨업 시 강화권 발급(run.gainXp가 처리).
-  const xpGain = isElite ? XP_ELITE : XP_NORMAL;
+  const xpGain = isElite && !options?.recovered ? XP_ELITE : XP_NORMAL;
   const levels = run.gainXp(xpGain);
   rewardXp(xpGain);
   rewardLevelUp(levels);
+  offerTacticalReward();
+  if (options?.recovered) return;
 
   // === 양 ===
   // 컬러 부스트 — 권역 primaryColor에 티어·일반/엘리트 차등.

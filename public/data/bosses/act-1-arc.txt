@@ -16,7 +16,7 @@
 
 [boss.bs-arc-dun]
 name = 던
-description = 곧게 선 신수. 기사처럼 흐트러짐 없는 자세다.
+description = 곰의 귀와 발톱을 지닌 사람 형태의 신수 마물. 기사처럼 곧게 선 자세가 흐트러지지 않는다.
 kind = arc
 timeline = tl-act-1-era4-061
 hp = 1040
@@ -63,7 +63,7 @@ grid_attack_2 = 들이받기|1,0 2,0 -1,0 -2,0 0,1 0,2 0,-1 0,-2|1,1,1,1,1,1,1,1
 
 [boss.bs-arc-tifre]
 name = 티프레
-description = 빛 무늬 위에 앉은 호랑이 신수. 호기심 가득한 눈으로 상대를 바라본다.
+description = 호랑이의 귀와 꼬리, 빛나는 줄무늬를 지닌 사람 형태의 신수 마물. 호기심 가득한 눈으로 상대를 바라본다.
 kind = arc
 timeline = tl-act-1-era4-061
 hp = 1080
@@ -111,7 +111,7 @@ grid_attack_2 = 대각 낙뢰|1,1 2,2 -1,-1 -2,-2 1,-1 2,-2 -1,1 -2,2|1,1,1,1,1,
 
 [boss.bs-arc-tamamo]
 name = 타마모
-description = 아홉 꼬리를 살랑이는 구미호. 달빛 아래 표정이 시시각각 바뀐다.
+description = 사람의 모습에 아홉 꼬리와 여우 귀가 드러난 구미호 마물. 달빛 아래 표정이 시시각각 바뀐다.
 kind = arc
 timeline = tl-act-1-era4-061
 hp = 480

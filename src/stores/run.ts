@@ -27,12 +27,15 @@ import { gridRelicCombatEnd } from '@/systems/grid-relic';
 import { applyStartChaos, nodeHpLoss } from '@/systems/chaos';
 import { dayOfTurn } from '@/systems/time';
 import { tickMail, initialMailState } from '@/systems/mail';
+import { ensureRegionWorld, tickRegionWorld, reportRegionEncounter, inLivingRegion } from '@/systems/region-world';
+import { ensureInteractionWorld, commitWorldInteraction, performWorldInteraction, changeWorldProfession } from '@/systems/world-interaction';
+import type { InteractionAction, InteractionRequest, InteractionResult } from '@/systems/world/types';
 import { XP_PER_LEVEL, canEnhance, needsAwakening } from '@/systems/enhance';
 import { generateStage, pickEnemyIds, buildEncounterStage } from '@/systems/stage-gen';
 import { startGridCombat, startGridBossCombat, commitRound as commitGridRoundEngine, playInstantCard as playInstantCardEngine } from '@/systems/grid-combat';
 import { applyCombatVictoryReward } from '@/systems/combat-rewards';
 import { applyBossRewards, applyArcRewards } from '@/systems/boss-rewards';
-import { rewardGold, rewardShards } from '@/systems/reward-feed';
+import { rewardGold, rewardShards, rewardItem } from '@/systems/reward-feed';
 import { companionRewardMul } from '@/systems/companion';
 import { effectiveContent, effectiveKind, findRegion } from '@/systems/map';
 import { useDataStore } from './data';
@@ -458,6 +461,7 @@ export const useRunStore = defineStore('run', {
       // 친밀도 working mirror 시드 (Item 37-② Stage C, 1B) — 권위 소스인 영속 메타값을 비춘다.
       //   조건 DSL(affinity:)·UI 표시가 cross-run 누적값을 반영하도록.
       fresh.npcAffinity = { ...(useMetaStore().npcAffinity ?? {}) };
+      if (inLivingRegion(fresh.currentNodeId)) ensureRegionWorld(fresh);
       this.data = fresh;
       this.active = true;
       this.bindRng();
@@ -549,6 +553,7 @@ export const useRunStore = defineStore('run', {
         migrateColorHp(filled);
         // 길드 우편(2026-07-02) — mail 없는 구세이브를 현재 경과턴 기준으로 backfill(로드 직후 폭주 방지).
         migrateMail(filled, parsed);
+        if (inLivingRegion(filled.currentNodeId)) ensureRegionWorld(filled);
         // 격자 전투 전환(D1/E1) — 진행 중이던 *구형 1v1 전투*와 미완 격자 전투는 폐기한다.
         //   전투는 휘발 상태이므로 복원하지 않고, 플레이어는 currentNodeId(맵)에서 재개한다.
         //   (구 combat은 새 GridCombatView와 호환되지 않아 그대로 두면 빈 화면/크래시 위험.)
@@ -579,9 +584,51 @@ export const useRunStore = defineStore('run', {
       }
     },
 
-    /** 노드 방문 — 시간 1 카운트 감소 + 방문 상태 마킹 + 30턴마다 하루 경과. */
+    /** In-place actions advance the same clock without replaying node-entry rewards or travel relics. */
+    spendWorldTime(turns: number) {
+      const r = this.data;
+      for (let i = 0; i < turns && !r.ended; i++) {
+        r.visitedNodes.push(r.currentNodeId);
+        r.remainingTime = Math.max(0, r.remainingTime - 1);
+        tickMail(r);
+        tickRegionWorld(r);
+        if (dayOfTurn(r.visitedNodes.length) !== dayOfTurn(r.visitedNodes.length - 1)) this.advanceDay();
+        if (r.hp <= 0) this.endRun('hp-zero');
+        else if (r.remainingTime <= 0) this.endRun('time-up');
+      }
+    },
+
+    executeWorldAction(targetId: string, action: InteractionAction): InteractionResult {
+      const world = ensureInteractionWorld(this.data);
+      const before = world.entities.player?.properties.practice ?? 0;
+      const result = commitWorldInteraction(this.data, targetId, action);
+      if (result.ok) {
+        this.addLifeXp(Math.max(0, (world.entities.player?.properties.practice ?? 0) - before));
+        this.spendWorldTime(result.duration);
+      }
+      return result;
+    },
+
+    performWorldAction(request: InteractionRequest): InteractionResult {
+      const world = ensureInteractionWorld(this.data);
+      const before = world.entities.player?.properties.practice ?? 0;
+      const result = performWorldInteraction(this.data, request);
+      if (result.ok) {
+        this.addLifeXp(Math.max(0, (world.entities.player?.properties.practice ?? 0) - before));
+        this.spendWorldTime(result.duration);
+      }
+      return result;
+    },
+
+    setProfession(profession: NonNullable<RunState['profession']>) {
+      if (!['traveler', 'grower', 'artisan', 'researcher'].includes(profession) || this.data.ended) return;
+      changeWorldProfession(this.data, profession);
+    },
+
+    /** 노드 방문 — 시간 1 카운트 감소 + 방문 상태 마킹 + 자정 통과 시 하루 경과. */
     visitNode(nodeId: string, _unusedThresholds?: [number, number]) {
       const r = this.data;
+      ensureInteractionWorld(r);
       r.currentNodeId = nodeId;
 
       // skip-turn-every 유물 효과 (r-postman-mail) — N번 방문마다 *시간 카운트 생략*.
@@ -604,6 +651,7 @@ export const useRunStore = defineStore('run', {
         if (loss > 0) r.hp = Math.max(1, r.hp - loss);
         // 길드 우편 사이클 — 경과 30턴마다 우편 2통(미수령 동안 정지). visitedNodes 증가 후 판정.
         tickMail(r);
+        tickRegionWorld(r);
       }
 
       // 노드 상태 마킹 (시간 카운트와 무관)
@@ -1211,6 +1259,8 @@ export const useRunStore = defineStore('run', {
     endGridCombat(result: 'win' | 'lose'): boolean {
       const r = this.data;
       const gc = r.gridCombat;
+      if (!gc) return !r.ended;
+      const recovered = gc.resolution === 'recovered';
       const nodeId = r.currentNodeId;
       const wasBoss = gc?.isBoss === true;
       const bossKind = gc?.bossKind;
@@ -1225,6 +1275,22 @@ export const useRunStore = defineStore('run', {
         r.possessed = poss > 0 ? poss : 0;
         const fh = gc.player.statuses?.['feral-heavy'] ?? 0;
         r.feralHeavy = fh > 0 ? fh : 0;
+      }
+
+      // 바닥에서 챙긴 물품은 안전하게 전장을 나온 뒤에만 확정한다.
+      // 진행 중 저장을 복원하면 gridCombat과 pendingLoot가 함께 폐기되어 재수집 악용을 막는다.
+      if (result === 'win' && !r.nodeStates[nodeId]?.combatCleared) {
+        const pendingLoot = gc.pendingLoot ?? [];
+        gc.pendingLoot = [];
+        for (const loot of pendingLoot) {
+          if (loot.gold && loot.gold > 0) {
+            r.gold += loot.gold;
+            rewardGold(loot.gold);
+          } else if (loot.itemId) {
+            const item = useDataStore().items.get(loot.itemId);
+            if (item) { this.addItem(item); rewardItem(item); }
+          }
+        }
       }
 
       // === 보스 승리(#4) — boss-rewards 경로로 분기(일반 권역 보상 아님). ===
@@ -1253,7 +1319,7 @@ export const useRunStore = defineStore('run', {
         // 적 드롭(골드·시간조각) 크레딧 — 구 applyMonsterDrop(combat.ts) 패턴 이식.
         //   격자는 다중 적이므로 *처치된 적 전체 drop을 합산*(승리=전멸). 카드 드롭은 슬라이스 미이식.
         //   첫 클리어만 인정 — combatCleared 가드(applyCombatVictoryReward와 동일 의미).
-        if (gc && !r.nodeStates[nodeId]?.combatCleared) {
+        if (!recovered && !r.nodeStates[nodeId]?.combatCleared) {
           let gold = 0;
           let shards = 0;
           for (const e of gc.enemies) {
@@ -1266,7 +1332,8 @@ export const useRunStore = defineStore('run', {
           if (shards > 0) { r.timeShards += shards; rewardShards(shards); }
         }
         // 권역 보상 — *클리어 마킹 전* 동기 호출(첫 클리어 인정).
-        applyCombatVictoryReward(nodeId);
+        reportRegionEncounter(r, nodeId, recovered ? 'recovered' : 'win');
+        applyCombatVictoryReward(nodeId, { recovered });
         // on-combat-end 유물(combat-end-heal·bonus-gold 등) — 로드아웃 규칙 준수 격자 경로.
         if (gc) { try { gridRelicCombatEnd(gc); } catch { /* 무해 */ } }
         this.markCombatCleared(nodeId);
@@ -1275,6 +1342,7 @@ export const useRunStore = defineStore('run', {
       }
 
       // 패배 — 목숨 분기.
+      reportRegionEncounter(r, nodeId, 'lose');
       r.gridCombat = undefined;
       if (this.loseLife()) {
         this.flee(nodeId);
