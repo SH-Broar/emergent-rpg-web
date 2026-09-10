@@ -4,30 +4,33 @@ import { useRouter } from 'vue-router';
 import { useRunStore } from '@/stores/run';
 import { useUiStore } from '@/stores/ui';
 import type { GridPos } from '@/data/schemas/base';
-import { GESTURES, GLYPHS, type Gesture, type FieldSpeech } from '@/systems/field-types';
+import { GLYPHS, type Gesture, type FieldSpeech } from '@/systems/field-types';
 import { fieldItemName, FIELD_ITEMS } from '@/systems/field-generation';
-import { advanceFieldTime, carriedEntity, ensureField, fieldAction, fieldClock, gestureLevel, performFieldGesture, setFieldViewport, stepField, visibleFieldEntities } from '@/systems/field-simulation';
-import { GESTURE_CATALOG, gestureDefinition } from '@/systems/gesture-catalog';
+import { advanceFieldTime, carriedEntity, ensureField, fieldHints, gestureLevel, performFieldGesture, setFieldViewport, stepField, visibleFieldEntities } from '@/systems/field-simulation';
+import { GESTURE_CATALOG } from '@/systems/gesture-catalog';
+import { PRODUCTION_MODES } from '@/systems/life-production';
 import { createFieldIdleClock } from '@/systems/field-idle';
 import { cardinal, distance, fieldPath, positionKey, walkable } from '@/systems/world/spatial';
-import { interactionDisabled } from '@/systems/world/engine';
 import GesturePad from '@/components/GesturePad.vue';
 import FieldEntityGlyph from '@/components/FieldEntityGlyph.vue';
 import SettingsMenu from '@/components/SettingsMenu.vue';
 import FieldAtlas from '@/components/FieldAtlas.vue';
+import CharacterMenu from '@/components/CharacterMenu.vue';
+import InventoryMenu from '@/components/InventoryMenu.vue';
 
 const run = useRunStore(), ui = useUiStore(), router = useRouter();
 const initialized = ref(false), moving = ref(false), bagOpen = ref(false), skillsOpen = ref(false), settingsOpen = ref(false);
-const mapOpen=ref(false),drawing=ref(false),pointerHeld=ref(false),hidden=ref(document.hidden),guide=ref<string>(),idleProgress=ref(0);
+const mapOpen=ref(false),drawing=ref(false),pointerHeld=ref(false),hidden=ref(document.hidden),guide=ref<string>();
+const progressOpen=ref(false),detailsOpen=ref(false),characterOpen=ref(false),inventoryOpen=ref(false);
 const idle=createFieldIdleClock();
 let idleTimer:ReturnType<typeof setInterval>|undefined;
-const paused=computed(()=>moving.value||drawing.value||pointerHeld.value||hidden.value||bagOpen.value||skillsOpen.value||settingsOpen.value||mapOpen.value||!!speech.value||ui.tutorialTopic!==null);
-function wake(){idle.reset(Date.now());idleProgress.value=0;}
+const paused=computed(()=>moving.value||drawing.value||pointerHeld.value||hidden.value||bagOpen.value||skillsOpen.value||settingsOpen.value||mapOpen.value||detailsOpen.value||progressOpen.value||characterOpen.value||inventoryOpen.value||!!speech.value||ui.tutorialTopic!==null);
+function wake(){idle.reset(Date.now());}
 function press(){pointerHeld.value=true;wake();}
 function release(){pointerHeld.value=false;wake();}
 function visibility(){hidden.value=document.hidden;wake();}
 const selectedId = ref<string>(), selectedPos = ref<GridPos>({ x: 0, y: 0 });
-const notice = ref(''), speech = ref<FieldSpeech>(), line = ref(0), lastGesture = ref<Gesture>();
+const notice = ref(''), speech = ref<FieldSpeech>(), line = ref(0);
 const stageElement = ref<HTMLElement | null>(null), width = ref(390), height = ref(430);
 let observer: ResizeObserver | undefined, timer: ReturnType<typeof setTimeout> | undefined, movement = 0;
 const world = computed(() => run.data.interactionWorld!);
@@ -40,24 +43,15 @@ const targetName = computed(() => target.value?.name ?? space.value?.exits.find(
 const inventory = computed(() => Object.entries(player.value?.stock ?? {}).filter(([, n]) => n > 0));
 const targetStock = computed(() => target.value?.id === 'player' ? [] : Object.entries(target.value?.stock ?? {}).filter(([, n]) => n > 0));
 const layeredTargets = computed(() => at(target.value?.pos ?? selectedPos.value));
-const columns = computed(() => Math.max(5, Math.min(11, Math.floor(width.value / 48))));
-const rows = computed(() => Math.max(4, Math.min(9, Math.floor(height.value / 48))));
+const columns = computed(() => Math.min(space.value?.width??6,Math.max(4, Math.min(11, Math.floor(width.value / 48)))));
+const rows = computed(() => Math.min(space.value?.height??6,Math.max(4, Math.min(9, Math.floor(height.value / 48)))));
 watch([columns,rows],([columns,rows])=>setFieldViewport({columns,rows}),{immediate:true,flush:'sync'});
 watch(paused,wake,{flush:'sync'});
 const tileSize = computed(() => Math.floor(Math.min(width.value / columns.value, height.value / rows.value)));
 const camera = computed(() => ({ x: Math.max(0, Math.min((space.value?.width ?? 15) - columns.value, (player.value?.pos?.x ?? 7) - Math.floor(columns.value / 2))), y: Math.max(0, Math.min((space.value?.height ?? 13) - rows.value, (player.value?.pos?.y ?? 6) - Math.floor(rows.value / 2))) }));
 const cells = computed(() => Array.from({ length: rows.value * columns.value }, (_, i) => ({ x: camera.value.x + i % columns.value, y: camera.value.y + Math.floor(i / columns.value) })));
 const danger = computed(() => new Set(entities.value.flatMap(e => e.creature?.intent ?? []).map(positionKey)));
-const glyphs = computed(() => {
-  if (!player.value || !target.value || !initialized.value) return [...GESTURES];
-  return GESTURES.filter(g => {
-    if(gestureDefinition(g)?.direction) return true;
-    const t = g === 'place' ? held.value : target.value;
-    if (!t) return false;
-    const action = fieldAction(run.data, world.value, player.value!, t, g, selectedPos.value, run.data.field?.selectedItem);
-    return !!action && !interactionDisabled(world.value, 'player', t.id, action);
-  });
-});
+const hints=computed(()=>initialized.value?fieldHints(run.data,world.value,target.value,selectedPos.value):[]);
 function at(p: GridPos) { return entities.value.filter(e => e.pos && distance(e.pos, p) === 0).sort((a,b) => Number(a.kind === 'actor') - Number(b.kind === 'actor')); }
 function tile(p: GridPos) { return space.value?.tiles[p.y]?.[p.x] ?? 'wall'; }
 function exitAt(p: GridPos) { return space.value?.exits.find(e => distance(e.pos, p) === 0); }
@@ -96,9 +90,8 @@ async function clickCell(pos: GridPos) {
 function perform(gesture: Gesture, quality=1, drawn=false) {
   if (!initialized.value || run.data.ended) return;
   stop();
-  lastGesture.value = gesture;
   if (speech.value) {
-    if (gesture === 'circle') { if (++line.value >= speech.value.lines.length) speech.value = undefined; }
+    if (gesture === 'tap'||gesture==='circle') nextLine();
     return;
   }
   let pos = target.value?.pos ?? selectedPos.value;
@@ -111,10 +104,13 @@ function perform(gesture: Gesture, quality=1, drawn=false) {
   if (run.data.currentNodeId !== origin) selectSelf();
   if (gesture === 'place' && result.ok) { selectedPos.value = pos; selectedId.value = undefined; }
   wake();
-  if (run.data.ended) router.push('/game/end');
+  if (run.data.ended) router.push('/game/end');else if(result.route)router.push(result.route);
 }
+function nextLine(){if(speech.value&&++line.value>=speech.value.lines.length)speech.value=undefined;wake();}
 function chooseItem(id: string) { run.data.field!.selectedItem = run.data.field!.selectedItem === id ? undefined : id; }
-function help() { stop(); ui.tutorialTopic = 'combat'; }
+watch(()=>run.data.currentNodeId,()=>{if(initialized.value){ensureField(run.data);selectSelf();}});
+watch([bagOpen,skillsOpen,progressOpen,settingsOpen,mapOpen,detailsOpen,characterOpen,inventoryOpen],values=>{if(values.some(Boolean))stop();});
+watch([characterOpen,inventoryOpen],()=>{if(initialized.value)ensureField(run.data);});
 onMounted(async () => {
   if (!run.active) { router.replace('/main'); return; }
   ensureField(run.data); initialized.value = true; selectSelf();
@@ -130,7 +126,6 @@ onMounted(async () => {
       if(run.data.currentNodeId!==origin)selectSelf();
       if(run.data.ended)router.push('/game/end');
     }
-    idleProgress.value=paused.value?0:idle.progress(Date.now());
   },100);
 });
 onBeforeUnmount(() => { stop(); observer?.disconnect(); clearTimeout(timer);clearInterval(idleTimer);setFieldViewport();window.removeEventListener('pointerup',release);window.removeEventListener('pointercancel',release);document.removeEventListener('visibilitychange',visibility); });
@@ -138,7 +133,7 @@ onBeforeUnmount(() => { stop(); observer?.disconnect(); clearTimeout(timer);clea
 
 <template>
   <main v-if="initialized && space && player" class="field-view" @pointerdown.capture="press" @keydown.capture="wake">
-    <header class="field-heading"><div><span class="eyebrow">COLORZ</span><h1>{{ space.name }}</h1></div><div class="field-clock"><time>{{ fieldClock(run.data) }}</time><span><b>♥</b> {{ run.data.hp }}/{{ run.data.maxHp }} <i>·</i> {{ '◈'.repeat(Math.max(0, run.data.lives)) }}</span></div></header>
+    <header class="field-heading"><div><span class="eyebrow">COLORZ</span><h1>{{ space.name }}</h1></div><div class="field-clock"><span><b>♥</b> {{ run.data.hp }}/{{ run.data.maxHp }} <i>·</i> {{ '◈'.repeat(Math.max(0, run.data.lives)) }}</span></div></header>
     <div ref="stageElement" class="field-stage" :class="{ dungeon: !!space.dungeon }">
       <div class="field-board" role="group" aria-label="격자 필드" :style="{ gridTemplateColumns: `repeat(${columns}, ${tileSize}px)`, gridTemplateRows: `repeat(${rows}, ${tileSize}px)` }">
         <button v-for="pos in cells" :key="positionKey(pos)" class="field-cell" :class="[`tile--${tile(pos)}`, { selected: distance(selectedPos, pos) === 0, danger: danger.has(positionKey(pos)), exit: !!exitAt(pos) }]" :aria-label="label(pos)" @click="clickCell(pos)">
@@ -146,29 +141,69 @@ onBeforeUnmount(() => { stop(); observer?.disconnect(); clearTimeout(timer);clea
           <span v-if="exitAt(pos)" class="exit-mark" aria-hidden="true">{{ space.dungeon ? '≋' : '⋮' }}</span>
           <span v-for="entity in at(pos)" :key="entity.id" class="field-piece" :class="{ 'field-piece--player': entity.id === 'player' }"><FieldEntityGlyph :entity="entity"/><span v-if="entity.creature" class="creature-hp"><i :style="{ width: `${entity.properties.integrity ?? 100}%` }"/></span><span v-if="entity.creature?.intent" class="intent-mark">!</span><span v-if="entity.id === speech?.actorId" class="speech-bubble">{{ speech.lines[line]?.slice(0, 22) }}{{ (speech.lines[line]?.length ?? 0) > 22 ? '…' : '' }}</span></span>
           <span v-if="exitAt(pos)" class="exit-label">{{ exitAt(pos)?.label }}</span>
+          <span v-if="distance(selectedPos,pos)===0&&hints.length&&target?.id!=='player'" class="tile-hints" aria-hidden="true">{{ hints.map(h=>GLYPHS[h.id]).join(' ') }}</span>
         </button>
       </div>
       <div v-if="notice" class="field-notice" role="status">{{ notice }}</div>
       <div v-if="space.cleared && space.dungeon" class="room-clear">◇ 길이 열렸다</div>
     </div>
     <section class="field-console" aria-label="하단 조작 패널">
-      <div class="idle-clock" role="progressbar" :aria-label="paused?'시간 일시정지':'다음 30초까지'" :aria-valuenow="Math.round(idleProgress*100)" aria-valuemin="0" aria-valuemax="100"><i :style="{width:`${idleProgress*100}%`}"/><span>{{ paused?'Ⅱ':'5초 · 30초' }}</span></div>
-      <section v-if="speech" class="field-dialogue" aria-label="대화"><div><strong>{{ speech.name }}</strong><button aria-label="대화 닫기" @click="speech = undefined">×</button></div><blockquote>{{ speech.lines[line] }}</blockquote><small>{{ line + 1 }} / {{ speech.lines.length }} <span>○</span></small></section>
-      <section v-if="bagOpen" class="field-drawer" aria-label="소지품"><button v-for="[id, count] in inventory" :key="id" :aria-pressed="run.data.field?.selectedItem === id" @click="chooseItem(id)"><span :style="{ color: FIELD_ITEMS[id]?.color ?? '#d3cab2' }">{{ FIELD_ITEMS[id]?.glyph ?? '◇' }}</span> {{ fieldItemName(id) }} <b>{{ count }}</b></button><p v-if="!inventory.length">빈 가방</p></section>
-      <section v-if="skillsOpen" class="field-drawer field-skills" aria-label="도형 모음"><button v-for="g in GESTURE_CATALOG" :key="g.id" :aria-label="`${g.name} 연습선`" @click="guide=g.id;skillsOpen=false"><b>{{ g.glyph }}</b><span>{{ gestureLevel(run.data,g.id) }}</span><small>{{ g.drawOnly?'직접 그리기':'연습선' }}</small></button></section>
-      <div class="console-target"><div><span class="target-dot"/><strong>{{ targetName }}</strong><small v-if="target?.creature">{{ Math.ceil(target.creature.maxHp * (target.properties.integrity ?? 100) / 100) }} HP</small><small v-else-if="target?.production && !target.production.settled">{{ Math.max(0, Math.ceil(((target.production.startedTurn + target.production.duration) * 864 - run.data.field!.elapsedSeconds) / 60)) }}분</small></div><button v-if="moving" aria-label="이동 멈추기" @click="stop">■</button><button v-else aria-label="자신 선택" @click="selectSelf">◎</button></div>
-      <div v-if="layeredTargets.length > 1" class="target-stock" aria-label="같은 칸의 대상"><button v-for="entity in layeredTargets" :key="entity.id" :aria-pressed="selectedId === entity.id" @click="stop(); selectedId = entity.id">{{ entity.name }}</button></div>
-      <div v-if="targetStock.length && !bagOpen" class="target-stock"><button v-for="[id, n] in targetStock" :key="id" :aria-pressed="run.data.field?.selectedItem === id" @click="chooseItem(id)">{{ fieldItemName(id) }} <b>{{ n }}</b></button></div>
-      <div class="console-body"><div class="hand-slot"><span class="hand-label">{{ held ? '들고 있음' : '손' }}</span><FieldEntityGlyph v-if="held" :entity="held"/><span v-else class="hand-glyph">{{ FIELD_ITEMS[run.data.field?.selectedItem ?? '']?.glyph ?? '·' }}</span><strong>{{ held?.name ?? (run.data.field?.selectedItem ? fieldItemName(run.data.field.selectedItem) : '빈손') }}</strong><small v-if="lastGesture">{{ GLYPHS[lastGesture] }} {{ gestureLevel(run.data, lastGesture) }}</small></div><GesturePad :available="glyphs" :guide="guide" :disabled="ui.tutorialTopic !== null || settingsOpen || mapOpen" @drawing="drawing=$event" @gesture="perform" @unrecognized="say('다시 그려보세요.');wake()"/></div>
-      <nav class="console-nav" aria-label="필드 메뉴"><button :aria-pressed="bagOpen" @click="stop();bagOpen = !bagOpen; skillsOpen = false"><span>▣</span> 소지품</button><button :aria-pressed="skillsOpen" @click="stop();skillsOpen = !skillsOpen; bagOpen = false"><span>◇</span> 도형</button><button aria-label="지도" @click="stop();mapOpen=true">지도</button><button aria-label="튜토리얼" @click="help">?</button><button aria-label="설정" @click="stop(); settingsOpen = true">⚙</button></nav>
+      <section v-if="speech" class="field-dialogue" aria-label="대화">
+        <div><strong>{{ speech.name }}</strong><button aria-label="대화 닫기" @click="speech=undefined">×</button></div>
+        <blockquote>{{ speech.lines[line] }}</blockquote>
+        <button class="dialogue-next" @click="nextLine">● {{ line+1===speech.lines.length?'대화 마치기':'계속' }}</button>
+      </section>
+      <section v-if="bagOpen" class="field-drawer" aria-label="소지품 선택">
+        <header><strong>손에 쓸 물건</strong><button @click="bagOpen=false;inventoryOpen=true">소지품 관리</button><button aria-label="소지품 선택 닫기" @click="bagOpen=false">×</button></header>
+        <button v-for="[id,count] in inventory" :key="id" :aria-pressed="run.data.field?.selectedItem===id" @click="chooseItem(id);bagOpen=false"><span>{{ FIELD_ITEMS[id]?.glyph??'◇' }}</span> {{ fieldItemName(id) }} <b>{{ count }}</b></button>
+        <p v-if="!inventory.length">빈 가방</p>
+      </section>
+      <section v-if="skillsOpen" class="field-drawer field-skills" aria-label="도형 모음">
+        <header><strong>연습선</strong><button aria-label="도형 모음 닫기" @click="skillsOpen=false">×</button></header>
+        <button v-for="g in GESTURE_CATALOG" :key="g.id" :aria-label="g.name+' 연습선'" @click="guide=g.id;skillsOpen=false"><b>{{ g.glyph }}</b><span>{{ g.name }}</span><small>{{ gestureLevel(run.data,g.id) }}</small></button>
+      </section>
+      <section v-if="progressOpen" class="field-drawer field-progress" aria-label="생활과 도형 성장">
+        <header><strong>생활 숙련 {{ run.data.lifeLevel??1 }} <small>· {{ run.data.lifeXp??0 }}/3</small></strong><button aria-label="성장 닫기" @click="progressOpen=false">×</button></header>
+        <div class="growth-marks"><span :class="{earned:(run.data.lifeLevel??1)>=2}">2 · 자동 돌봄</span><span :class="{earned:(run.data.lifeLevel??1)>=3}">3 · 생산 선택</span><span :class="{earned:(run.data.lifeLevel??1)>=5}">5 · 산출 +1</span></div>
+        <div v-if="(run.data.lifeLevel??1)>=3" class="production-modes"><button v-for="mode in PRODUCTION_MODES" :key="mode.id" :aria-pressed="(run.data.field?.productionMode??'standard')===mode.id" @click="run.data.field!.productionMode=mode.id">{{ mode.name }}<small>{{ mode.description }}</small></button></div>
+        <div class="growth-marks"><span v-for="id in ['strike','tend','lift','take']" :key="id">{{ GLYPHS[id] }} {{ gestureLevel(run.data,id) }}</span></div>
+        <button @click="progressOpen=false;characterOpen=true">캐릭터 정보</button>
+      </section>
+      <section v-if="detailsOpen" class="field-drawer" aria-label="대상 살펴보기">
+        <header><strong>{{ targetName }}</strong><button aria-label="대상 살펴보기 닫기" @click="detailsOpen=false">×</button></header>
+        <div v-if="layeredTargets.length>1" class="target-stock" aria-label="같은 칸의 대상"><button v-for="entity in layeredTargets" :key="entity.id" :aria-pressed="selectedId===entity.id" @click="selectedId=entity.id">{{ entity.name }}</button></div>
+        <div class="target-stock"><button v-for="[id,n] in targetStock" :key="id" :aria-pressed="run.data.field?.selectedItem===id" @click="chooseItem(id);detailsOpen=false">{{ fieldItemName(id) }} <b>{{ n }}</b></button></div>
+        <p v-if="!targetStock.length">놓인 물건 없음</p>
+      </section>
+      <div class="console-target">
+        <div><strong>{{ targetName }}</strong><small v-if="target?.creature">{{ Math.ceil(target.creature.maxHp*(target.properties.integrity??100)/100) }} HP</small><small v-else-if="target?.production&&!target.production.settled">성장 중</small></div>
+        <button v-if="targetStock.length||layeredTargets.length>1" aria-label="대상 살펴보기" @click="stop();progressOpen=false;detailsOpen=!detailsOpen;bagOpen=false;skillsOpen=false">···</button>
+        <button v-if="moving" aria-label="이동 멈추기" @click="stop">■</button><button v-else aria-label="자신 선택" @click="selectSelf">◎</button>
+      </div>
+      <div class="console-body">
+        <div class="context-tools">
+          <button class="hand-slot" @click="stop();progressOpen=false;bagOpen=!bagOpen;skillsOpen=false;detailsOpen=false"><span>{{ held?'들고 있음':'손' }}</span><strong>{{ held?.name??(run.data.field?.selectedItem?fieldItemName(run.data.field.selectedItem):'빈손') }}</strong></button>
+          <div class="context-hints" aria-label="가능한 동작"><button v-for="hint in hints" :key="hint.id" :aria-label="hint.label+' 연습선'" @click="guide=hint.id"><b>{{ GLYPHS[hint.id] }}</b><span>{{ hint.label }}</span></button></div>
+          <small v-if="!hints.length">대상을 가까이에서 선택하세요.</small>
+        </div>
+        <GesturePad :guide="guide" :disabled="ui.tutorialTopic!==null||settingsOpen||mapOpen||bagOpen||skillsOpen||detailsOpen||progressOpen||characterOpen||inventoryOpen" @drawing="drawing=$event" @gesture="perform" @unrecognized="say('다시 그려보세요.');wake()"/>
+      </div>
+      <nav class="console-nav" aria-label="필드 메뉴">
+        <button :aria-pressed="bagOpen" @click="stop();progressOpen=false;bagOpen=!bagOpen;skillsOpen=false;detailsOpen=false">가방</button>
+        <button @click="stop();progressOpen=!progressOpen;bagOpen=false;skillsOpen=false;detailsOpen=false">성장</button>
+        <button @click="stop();progressOpen=false;bagOpen=false;skillsOpen=false;detailsOpen=false;mapOpen=true">지도</button>
+        <button :aria-pressed="skillsOpen" @click="stop();progressOpen=false;skillsOpen=!skillsOpen;bagOpen=false;detailsOpen=false">도형</button>
+        <button @click="stop();progressOpen=false;bagOpen=false;skillsOpen=false;detailsOpen=false;settingsOpen=true">설정</button>
+      </nav>
     </section>
+    <CharacterMenu :open="characterOpen" @close="characterOpen=false"/>
+    <InventoryMenu :open="inventoryOpen" @close="inventoryOpen=false"/>
     <SettingsMenu :open="settingsOpen" @close="settingsOpen = false"/>
     <FieldAtlas :open="mapOpen" @close="mapOpen=false"/>
   </main>
 </template>
 
 <style scoped>
-.idle-clock{height:3px;position:relative;background:#08160e66;margin:0 -14px}.idle-clock i{display:block;height:100%;background:#c9b477;transition:width .1s linear}.idle-clock span{position:absolute;right:12px;top:-14px;font-size:9px;color:#c5c7a9;background:#192b20b3;border-radius:3px;padding:0 3px}.field-skills button{display:flex;align-items:center;gap:12px;min-height:44px;padding:7px 10px;color:#e1d6b0;background:#223527;border:1px solid #99aa7644;border-radius:6px}.field-skills button b{font-size:25px}.field-skills button small{color:#a4b69a;font-size:10px}
 .field-view { height: 100dvh; min-height: 480px; width: 100%; max-width: 1100px; margin: 0 auto; padding: 0 !important; display: flex; flex-direction: column; color: #e0e0cd; background: #17221e; overflow: hidden; font-family: 'Pretendard', system-ui, sans-serif; }
 .field-heading { flex: none; height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 18px; border-bottom: 1px solid #63715a33; background: #18211e; }
 .eyebrow { font-size: 9px; letter-spacing: .25em; color: #9aaa8d; }
@@ -195,4 +230,21 @@ h1 { font-size: 16px; line-height: 1.4; margin: 0; font-weight: 600; color: #e3d
 @media (min-width: 800px) { .field-view { border-left: 1px solid #8a977133; border-right: 1px solid #8a977133; }.field-console { padding-left: 24%; padding-right: 24%; }.field-dialogue { left: 18%; right: 18%; }.field-drawer { padding-left: 20%; padding-right: 20%; } }
 @media (max-width: 360px) { .field-heading { padding: 0 12px; } h1 { font-size: 14px; }.field-console { padding-left: 8px; padding-right: 8px; }.console-body { gap: 5px; }.hand-slot { width: 49px; } }
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
+
+.field-view{--pad-size:168px}.field-console{height:calc(var(--pad-size) + 92px + env(safe-area-inset-bottom));box-sizing:border-box;display:grid;grid-template-rows:40px calc(var(--pad-size) + 12px) 40px;padding:0 14px env(safe-area-inset-bottom);overflow:visible}
+.console-target{height:40px;box-sizing:border-box;width:min(100%,460px);margin:auto}.console-target>div{flex:1}.console-target button{width:34px;height:34px}
+.console-body{display:grid;grid-template-columns:minmax(0,1fr) var(--pad-size);gap:16px;padding:6px 0;width:min(100%,460px);height:calc(var(--pad-size) + 12px);box-sizing:border-box;margin:auto;overflow:hidden}
+.context-tools{height:100%;display:flex;flex-direction:column;justify-content:center;gap:6px;min-width:0}.context-tools>small{font-size:11px;color:#a1af9c}
+.hand-slot{display:flex;align-items:center;justify-content:space-between;gap:6px;width:100%;min-height:34px;padding:5px 7px;box-sizing:border-box;border:1px solid #80947844;border-radius:5px;background:#1b2a21;color:#d5dabf;font:inherit;text-align:left}
+.hand-slot span{font-size:10px;color:#9caa95;white-space:nowrap}.hand-slot strong{font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.context-hints{display:grid;gap:3px}.context-hints button{display:grid;grid-template-columns:30px minmax(0,1fr);align-items:center;gap:4px;min-height:30px;padding:2px 4px;border:0;background:none;color:#d9d1ae;font:inherit;text-align:left;border-radius:4px}
+.context-hints b{font-size:23px;text-align:center;font-weight:400}.context-hints span{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.context-hints button:hover{background:#80947822}
+.console-nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;padding:0;width:min(100%,460px);margin:auto;height:40px;box-sizing:border-box}.console-nav button{min-width:0;height:36px;padding:3px;font-size:12px}
+.field-drawer{max-height:min(45dvh,320px);box-sizing:border-box;padding:12px;z-index:25}.field-drawer header{display:flex;align-items:center;gap:8px;width:100%;font-size:13px}.field-drawer header strong{flex:1}.field-drawer header button{min-height:34px;padding:5px 9px}
+.field-drawer .target-stock{width:100%;flex-wrap:wrap;padding:0}.field-skills{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.field-skills header{grid-column:1/-1}.field-skills button{min-width:0;gap:7px;padding:8px}.field-skills button span{font-size:11px}.field-skills button small{margin-left:auto}.field-skills button b{margin:0}
+.field-dialogue .dialogue-next{display:block;margin-left:auto;font-size:12px;min-height:36px}.tile-hints{position:absolute;top:-14px;left:50%;transform:translateX(-50%);padding:1px 5px;white-space:nowrap;z-index:8;background:#f0e3bc;color:#30422f;border-radius:4px;font-size:13px;pointer-events:none}
+.tile--sand{background:#a59168}.tile--wood{background:repeating-linear-gradient(90deg,#817159 0 13px,#6b614c 13px 15px)}
+@media(min-width:800px){.field-console{padding-left:14px;padding-right:14px}.field-drawer{left:calc(50% - 240px);right:calc(50% - 240px);padding:12px}}
+@media(max-height:710px){.field-view{--pad-size:138px}.context-hints button{min-height:25px}.hand-slot{min-height:28px}}
+.field-progress{display:block}.growth-marks{display:flex;flex-wrap:wrap;gap:12px;margin:10px 0;font-size:12px;color:#a4b19e}.growth-marks .earned{color:#e7d497}.production-modes{display:flex;gap:6px}.production-modes button{flex:1;font-size:11px}.production-modes small{display:block;margin-top:5px;font-size:10px}.production-modes button[aria-pressed=true]{border-color:#dac890}
 </style>

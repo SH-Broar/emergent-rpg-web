@@ -61,25 +61,26 @@ function shapeDistance(a: StrokePoint[],b: StrokePoint[]) {
   const nearest=(from:StrokePoint[],to:StrokePoint[])=>from.reduce((sum,p)=>sum+Math.min(...to.map(q=>length(p,q))),0)/from.length;
   return (nearest(a,b)+nearest(b,a))/2;
 }
-const templates = new Map(GESTURE_CATALOG.filter(g=>!g.direction).map(g=>[g.id,normalized(g.points)]));
+const templates = new Map(GESTURE_CATALOG.filter(g=>!g.direction&&!g.tap&&!g.lineSectors).map(g=>[g.id,normalized(g.points)]));
 /** Basic patterns tolerate uneven sides and imperfect closure; advanced patterns enforce their authored threshold. */
 export function recognizeGestureMatch(input: readonly StrokePoint[], catalog: readonly GestureDefinition[] = GESTURE_CATALOG): GestureMatch | undefined {
   const points:StrokePoint[]=[];
   for(const p of input) if(Number.isFinite(p.x)&&Number.isFinite(p.y)&&(!points.length||length(p,points.at(-1)!)>.3)) points.push(p);
-  if(points.length<2) return;
+  if(!points.length) return;
   const b=bounds(points),first=points[0]!,last=points.at(-1)!;
   const path=points.slice(1).reduce((n,p,i)=>n+length(points[i]!,p),0);
   const travel=length(first,last),diagonal=Math.hypot(b.w,b.h);
+  if(diagonal<=5&&path<=10&&catalog.some(g=>g.tap)) return {gesture:catalog.find(g=>g.tap)!.id,quality:1,directions:[]};
   if(Math.max(b.w,b.h)<8||path<8) return;
   const directions=strokeDirections(points);
   if(travel/path>.84) {
     const direction=(Math.round(Math.atan2(last.y-first.y,last.x-first.x)/(Math.PI/4))+8)%8;
-    const candidate=catalog.find(g=>g.direction && (Math.round(Math.atan2(g.direction.y,g.direction.x)/(Math.PI/4))+8)%8===direction);
+    const candidate=catalog.find(g=>g.lineSectors?.includes(direction)||g.direction && (Math.round(Math.atan2(g.direction.y,g.direction.x)/(Math.PI/4))+8)%8===direction);
     return candidate?{gesture:candidate.id,quality:travel/path,directions}:undefined;
   }
   if(Math.min(b.w,b.h)<12||Math.max(b.w/b.h,b.h/b.w)>3) return;
   const ranked:{definition:GestureDefinition;score:number}[]=[];
-  for(const definition of catalog.filter(g=>!g.direction)) {
+  for(const definition of catalog.filter(g=>!g.direction&&!g.tap&&!g.lineSectors)) {
     if(definition.closed && travel>diagonal*(definition.drawOnly ? .25:.52)) continue;
     if(!definition.closed && travel<diagonal*.30) continue;
     if(definition.closed && directions.length<3) continue;

@@ -110,7 +110,7 @@ onMounted(() => {
     <!-- 카드 진열 — 핵심 매대라 기본 펼침. -->
     <Collapsible
       title="카드"
-      default-open
+      :default-open="!run.data.field"
       :badge="`${inventory.cards.length}장`"
       class="rack-collapse"
     >
@@ -175,6 +175,7 @@ onMounted(() => {
     <Collapsible
       v-if="inventory.materials && inventory.materials.length > 0"
       title="재료"
+      :default-open="!!run.data.field"
       :badge="`${inventory.materials.length}종`"
       class="rack-collapse"
     >

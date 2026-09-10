@@ -22,7 +22,7 @@ try {
     assert.equal(recognizeGesture(reverse?sampled.reverse():sampled),'triangle',`uneven triangle ${counts.triangles}`);counts.triangles++;
   }
   assert.equal(recognizeGesture(line([{x:0,y:0},{x:0,y:10}])),'down');
-  assert.equal(recognizeGesture([{x:10,y:10},{x:12,y:11},{x:10,y:13}]),undefined);
+  assert.equal(recognizeGesture([{x:10,y:10},{x:12,y:11},{x:10,y:13}]),'tap');
   assert.deepEqual(strokeDirections(line([{x:30,y:0},{x:60,y:60},{x:0,y:60},{x:30,y:0}])),[1,4,7]);
   const extra={id:'custom-lightning',glyph:'ϟ',name:'번개',points:[{x:1,y:0},{x:0,y:.45},{x:1,y:.55},{x:0,y:1}],tolerance:.1};
   assert.equal(recognizeGestureMatch(line(extra.points.map(p=>({x:p.x*100,y:p.y*100}))),[extra]).gesture,extra.id,'new patterns do not require recognizer branches');

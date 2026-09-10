@@ -296,7 +296,7 @@ function onUnequipClick(slot: EquipmentSlot) {
 
           <!-- 6 컬러 (effective — base + 장비 합산) -->
           <section class="cm-sec">
-            <h3 class="cm-sec__title">6 컬러</h3>
+            <h3 class="cm-sec__title">8 컬러</h3>
             <div class="cm-colors">
               <Tooltip
                 v-for="c in colorBars"
@@ -352,7 +352,7 @@ function onUnequipClick(slot: EquipmentSlot) {
           </section>
 
           <!-- 3) 장비 (M10) — 사용자 요청으로 가방 UI에서 숨김. 시스템(전투 보너스)은 유지. -->
-          <section v-if="SHOW_EQUIPMENT" class="cm-sec">
+          <section v-if="SHOW_EQUIPMENT || (run.data.field && run.data.equipmentInventory.length > 0)" class="cm-sec">
             <h3 class="cm-sec__title">장비</h3>
             <div class="cm-equip-slots">
               <div

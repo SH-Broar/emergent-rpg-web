@@ -3,7 +3,7 @@ import type { GridPos } from '@/data/schemas/base';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { ensureInteractionWorld, syncPlayerToWorld, syncPlayerFromWorld, availableWorldActions } from './world-interaction';
-import { influenceEntity, observeWorld, recordFact, resolveInteraction, tickMaterials } from './world/engine';
+import { influenceEntity, interactionDisabled, observeWorld, recordFact, resolveInteraction, tickMaterials } from './world/engine';
 import { gestureDefinition } from './gesture-catalog';
 import { processSocialFacts, rankSocialActions } from './world/social';
 import { cardinal, createSightTest, distance, entitiesAt, fieldPath, hasSight, positionKey, walkable } from './world/spatial';
@@ -12,6 +12,8 @@ import { ensureFieldSpace, fieldItemName, fieldMap, placeFieldEntity, spawnCreat
 import { GESTURES, GLYPHS, type Gesture, type FieldResult, type FieldSpace } from './field-types';
 import { isEdgeRequirementMet } from './map';
 import { isFoodResource } from './world/resources';
+import { lifeActions, plantLifeAction } from './world/life-world';
+import { bonusesFromEffective } from './equipment';
 import { applyArcRewards, applyBossRewards } from './boss-rewards';
 
 export const STEP_SECONDS = 30;
@@ -42,6 +44,7 @@ export function ensureField(run = useRunStore().data): { world: InteractionWorld
     for (const [old,id] of [['up','lift'],['down','place'],['left','take'],['right','give']]) run.field.gestureXp[id!] ??= run.field.gestureXp[old!] ?? 0;
     run.field.controlsVersion=2;
   }
+  if((run.field.controlsVersion??0)<3){run.field.gestureXp.strike??=run.field.gestureXp.triangle??0;run.field.gestureXp.tend??=run.field.gestureXp.inverted??0;run.field.controlsVersion=3;}
   player.properties.carryCapacity = 2 + gestureLevel(run, 'lift');
   if (!player.pos || !space.tiles[player.pos.y]?.[player.pos.x] || space.tiles[player.pos.y]![player.pos.x] === 'wall') placeFieldEntity(world, space, player, space.spawn);
   for (const held of Object.values(world.entities).filter(e => e.carriedBy === player.id)) held.nodeId = player.nodeId;
@@ -70,6 +73,16 @@ function program(gesture: Gesture, effects: InteractionAction['effects'], extra:
 /** This adapter chooses primitives by capabilities, never a per-object action pair table. */
 export function fieldAction(run: RunState, world: InteractionWorld, actor: WorldEntity, target: WorldEntity, gesture: Gesture, pos: GridPos, selectedItem?: string): InteractionAction | undefined {
   const level = actor.id === 'player' ? gestureLevel(run, gesture) : 1 + Math.floor(actor.agent?.skills.work ?? 0);
+  if(gesture==='strike')gesture='triangle';
+  if(gesture==='tend')gesture='inverted';
+  if(gesture==='tap'&&target.tags.includes('life-site')) {
+    let action:InteractionAction|undefined=lifeActions(run,world,actor.id,target.id)[0];
+    const batch=action?.effects.find(e=>e.kind==='production'&&e.batch);
+    if(actor.id==='player'&&batch?.kind==='production'&&batch.batch)action=plantLifeAction(world,actor.id,target.id,batch.batch.recipeId,0,run.field?.productionMode);
+    return action?{...action,duration:0}:undefined;
+  }
+  if(gesture==='tap'&&target.kind!=='actor'&&!target.tags.some(t=>t.startsWith('service:')||t==='shelter'||t==='dungeon-entry')&&!target.workRecipe&&Object.values(target.stock).some(n=>n>0))gesture='take';
+  const combat=actor.id==='player'?bonusesFromEffective(run,useDataStore().equipments):{damage:0,block:0};
   const held = carriedEntity(world, actor.id);
   const effect = gestureDefinition(gesture)?.effect;
   if (effect) return program(gesture, [{kind:'influence',side:'actor',property:'mana',amount:-effect.mana},{kind:'influence',property:effect.property,amount:effect.amount+level*2}], {reach:effect.reach,requires:{actorMin:{mana:effect.mana}}});
@@ -87,11 +100,11 @@ export function fieldAction(run: RunState, world: InteractionWorld, actor: World
     return program(gesture, [{ kind: 'transfer', resourceId: resource, quantity: 1, from: 'actor', to: 'target' }], { reach: 1 + Math.floor(level / 4), utility: { sharing: .3 } });
   }
   if (gesture === 'triangle') {
-    if (target.id === actor.id) return program(gesture, [{ kind: 'influence', property: 'guard', amount: 4 + level * 2 }]);
+    if (target.id === actor.id) return program(gesture, [{ kind: 'influence', property: 'guard', amount: 4 + level * 2 + combat.block }]);
     const coal = selectedItem === 'i-life-char' && (actor.stock['i-life-char'] ?? 0) > 0;
     const electric = selectedItem === 'i-life-charge' && (actor.stock['i-life-charge'] ?? 0) > 0;
-    const power = 5 + level * 2 + Math.floor((actor.colors.fire ?? 0) / 20);
-    const amount = target.creature ? power / target.creature.maxHp * 100 + (target.properties.hardness ?? 0) : 12 + level * 3;
+    const power = 5 + level * 2 + combat.damage;
+    const amount = target.creature ? power / target.creature.maxHp * 100 + (target.properties.hardness ?? 0) : 12 + level * 3 + combat.damage;
     const effects: InteractionAction['effects'] = coal || electric
       ? [{ kind: 'stock', resourceId: selectedItem!, amount: -1, side: 'actor' }, { kind: 'influence', property: coal ? 'heat' : 'charge', amount: coal ? 4 + level : 8 + level * 2 }]
       : [{ kind: 'influence', property: 'force', amount }];
@@ -138,7 +151,7 @@ function grantPractice(run: RunState, gesture: Gesture, target: WorldEntity, res
   if (field.practiceAt[key] !== undefined && field.elapsedSeconds - field.practiceAt[key]! < 60) return;
   field.practiceAt[key] = field.elapsedSeconds;
   field.gestureXp[gesture] = Math.min(600, (field.gestureXp[gesture] ?? 0) + 1);
-  if (gesture === 'take' && (target.tags.includes('field-plot') || target.tags.includes('brush'))) useRunStore().addLifeXp(1);
+  if (result.facts.some(f=>f.kind==='transfer'&&(f.after??0)<(f.before??0)) && (target.tags.includes('field-plot') || target.tags.includes('brush'))) useRunStore().addLifeXp(1);
 }
 function settleProduction(run: RunState, world: InteractionWorld, activeIds?: ReadonlySet<string>) {
   for (const e of activeIds ? [...activeIds].map(id=>world.entities[id]!).filter(Boolean) : Object.values(world.entities)) {
@@ -373,7 +386,7 @@ export function travelField(to: string): FieldResult {
   for(const id of active) settleDormant(run,world,world.entities[id]!,run.field!.elapsedSeconds);
   settleProduction(run,world,active);
   for (const held of Object.values(world.entities).filter(e => e.carriedBy === player.id)) held.nodeId = next.id;
-  (run.nodeStates[next.nodeId] ??= { visited: true }).visited = true;
+  if(!next.road)(run.nodeStates[next.nodeId] ??= { visited: true }).visited = true;
   observeWorld(world, player.id);
   return { ok: true, message: next.name, travel: true };
 }
@@ -397,20 +410,20 @@ export function performFieldGesture(gesture: Gesture, targetId: string | undefin
   if(definition.drawOnly&&(!input?.drawn||input.quality<1-definition.tolerance)) return {ok:false,message:'무늬가 흐트러졌다.'};
   if(definition.direction) {
     const destination={x:player.pos!.x+definition.direction.x,y:player.pos!.y+definition.direction.y};
-    if(walkable(world,space.id,destination,player.id)) { const result=stepField(destination); return {...result,targetId:'player',targetPos:{...player.pos!}}; }
+    if(walkable(world,space.id,destination,player.id)) { const result=stepField(destination); const ground=entitiesAt(world,player.nodeId,player.pos!).find(e=>e.id!=='player');return {...result,targetId:ground?.id??'player',targetPos:{...player.pos!}}; }
     const adjacent=entitiesAt(world,space.id,destination).filter(valid).sort((a,b)=>Number(b.kind==='actor')-Number(a.kind==='actor'))[0];
     if(!adjacent) return {ok:false,message:'길이 막혀 있다.',targetPos:destination};
-    const interaction=adjacent.creature?'triangle':adjacent.kind==='actor'?'circle':(adjacent.properties.portable??0)>0?'lift':Object.values(adjacent.stock).some(n=>n>0)&&!adjacent.workRecipe?'take':'circle';
+    const interaction=adjacent.creature?'strike':adjacent.kind==='actor'?'tap':(adjacent.properties.portable??0)>0?'lift':'tap';
     return {...performFieldGesture(interaction,adjacent.id,destination),targetId:adjacent.id,targetPos:destination};
   }
   if (!Number.isInteger(pos.x) || !Number.isInteger(pos.y) || !space.tiles[pos.y]?.[pos.x] || space.tiles[pos.y]![pos.x] === 'wall') return { ok: false, message: '닿을 수 없는 곳.' };
-  if (gesture === 'circle') {
+  if (gesture === 'circle'||gesture==='tap') {
     const exit = space.exits.find(e => distance(e.pos, pos) === 0 && distance(player.pos!, pos) <= 1);
     if (exit) { const result = travelField(exit.to); if (result.ok) advanceFieldTime(STEP_SECONDS); return result; }
   }
   const target: WorldEntity | undefined = gesture === 'place' ? carriedEntity(world) : targetId ? world.entities[targetId] : groundAt(run, pos);
   if (!target || target.nodeId !== player.nodeId || target.carriedBy && target.carriedBy !== player.id || !hasSight(world, player, target)) return { ok: false, message: '대상이 보이지 않는다.' };
-  if (gesture === 'circle' && target.tags.includes('dungeon-entry')) {
+  if ((gesture === 'circle'||gesture==='tap') && target.tags.includes('dungeon-entry')) {
     if (!target.pos || distance(player.pos!, target.pos) > 1) return { ok: false, message: '조금 더 가까이.' };
     const result = travelField(`${space.nodeId}::dungeon:1`);
     if (result.ok) advanceFieldTime(STEP_SECONDS);
@@ -423,19 +436,43 @@ export function performFieldGesture(gesture: Gesture, targetId: string | undefin
   if (!result.ok) return { ok: false, message: result.reason ?? result.message };
   if (target.creature && (target.properties.integrity ?? 100) < beforeHp) target.creature.angry = true;
   let speech;
-  if (gesture === 'circle' && target.kind === 'actor' && target.id !== player.id && !target.creature) { speech = speechFor(run, target); run.field!.spoken[target.id] = (run.field!.spoken[target.id] ?? 0) + 1; }
+  if ((gesture === 'circle'||gesture==='tap') && target.kind === 'actor' && target.id !== player.id && !target.creature) { speech = speechFor(run, target); run.field!.spoken[target.id] = (run.field!.spoken[target.id] ?? 0) + 1; }
   const transferred = result.facts.find(f => f.kind === 'transfer');
-  let message = transferred ? `${fieldItemName(transferred.resourceId!)} ${gesture === 'take' ? '+' : '−'}${transferred.quantity}` : gesture === 'lift' ? `${target.name} ∧` : gesture === 'place' ? `${target.name} ∨` : target.production && !target.production.settled ? '싹이 자란다.' : result.facts.some(f => f.property === 'integrity' && f.after! < f.before!) ? `−${Math.ceil((beforeHp - (target.properties.integrity ?? 100)) * (target.creature?.maxHp ?? 100) / 100)}` : GLYPHS[gesture];
+  let message = transferred ? `${fieldItemName(transferred.resourceId!)} ${gesture === 'give' ? '−' : '+'}${transferred.quantity}` : gesture === 'lift' ? `${target.name} ∧` : gesture === 'place' ? `${target.name} ∨` : target.production && !target.production.settled ? '자라기 시작했다.' : result.facts.some(f => f.property === 'integrity' && f.after! < f.before!) ? `−${Math.ceil((beforeHp - (target.properties.integrity ?? 100)) * (target.creature?.maxHp ?? 100) / 100)}` : '';
   if (result.facts.some(f => f.message === '물이 퍼졌다.')) message = '물이 퍼졌다.';
-  if (target.production && target.tags.includes('field-plot')) target.name = '자라는 들곡';
+  if (target.production && target.tags.includes('field-plot')&&!target.tags.includes('life-site')) target.name = '자라는 들곡';
+  if(target.tags.includes('life-site')) {
+    const gained=result.facts.filter(f=>f.targetId==='player'&&f.property==='practice').reduce((sum,f)=>sum+Math.max(0,(f.after??0)-(f.before??0)),0);
+    if(gained)useRunStore().addLifeXp(gained);
+    const output=result.facts.find(f=>f.targetId==='player'&&f.kind==='production'&&f.quantity);
+    if(output?.resourceId)message=`${fieldItemName(output.resourceId)} +${output.quantity}`;
+  }
   grantPractice(run, gesture, target, result);
   processSocialFacts(world);
   syncPlayerFromWorld(run, world);
-  const resting = gesture === 'circle' && (target.id === 'player' || target.tags.includes('shelter'));
+  const resting = (gesture === 'circle'||gesture==='tap'&&target.tags.includes('shelter')) && (target.id === 'player' || target.tags.includes('shelter'));
   if (resting && !Object.values(world.entities).some(e => e.nodeId === space.id && e.creature && valid(e))) {
     advanceFieldTime(600);
     if (!run.ended) { run.hp = Math.min(run.maxHp, run.hp + Math.ceil(run.maxHp * .15)); syncPlayerToWorld(run, world); }
     message = '10분이 흘렀다.';
   } else advanceFieldTime(STEP_SECONDS);
-  return { ok: true, message, speech, changed: result.facts.map(f => f.targetId) };
+  const service=gesture==='tap'?target.tags.find(t=>t.startsWith('service:'))?.slice(8):undefined;
+  const routes:Record<string,string>={shop:'/game/shop',workshop:'/game/workshop',village:'/game/village',activity:'/game/activity',event:'/game/event'};
+  return { ok: true, message, speech, route:service?routes[service]:undefined, changed: result.facts.map(f => f.targetId) };
+}
+
+/** Context help uses the same action construction and validation as actual input. */
+export function fieldHints(run:RunState,world:InteractionWorld,target:WorldEntity|undefined,pos:GridPos) {
+  const player=world.entities.player;if(!player)return [];
+  if(!target)return [{id:'tap',label:world.spaces?.[player.nodeId]?.exits.some(e=>distance(e.pos,pos)===0)?'길 따라가기':'주변 살피기'}];
+  const service=target.tags.find(t=>t.startsWith('service:'));
+  const tapLabel=target.id==='player'?'주변 살피기':target.kind==='actor'?'대화':service?'들어가기':target.tags.includes('dungeon-entry')?'던전 들어가기':target.tags.includes('shelter')?'쉬기':target.workRecipe?'작업':target.tags.includes('life-site')?(lifeActions(run,world,'player',target.id)[0]?.label??'성장 중'):Object.values(target.stock).some(n=>n>0)?'가져오기':'살피기';
+  const options=[{id:'tap',label:tapLabel},{id:'lift',label:'들어 올리기'},{id:'place',label:'내려놓기'},{id:'strike',label:target.id==='player'?'방어':'힘 가하기'},{id:'tend',label:target.id==='player'?'먹기':target.properties.soil?'심기 · 돌보기':'물 주기'},{id:'give',label:'건네기'}];
+  return options.filter(h=>{
+    if(h.id==='tap'&&target.creature)return false;
+    const t=h.id==='place'?carriedEntity(world):target;if(!t)return false;
+    const at=h.id==='place'&&player.pos&&distance(player.pos,pos)===0?cardinal(player.pos).find(p=>walkable(world,player.nodeId,p,t.id))??pos:pos;
+    const action=fieldAction(run,world,player,t,h.id,at,run.field?.selectedItem);
+    return !!action&&!interactionDisabled(world,'player',t.id,action);
+  }).slice(0,3);
 }

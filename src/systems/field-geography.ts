@@ -1,0 +1,65 @@
+import type { Node, NodeMap } from '@/data/schemas';
+import type { GridPos } from '@/data/schemas/base';
+import type { FieldSpace, FieldTile } from './field-types';
+
+export function fieldHash(text:string):number {let n=2166136261;for(const c of text)n=Math.imul(n^c.charCodeAt(0),16777619);return n>>>0;}
+const spacing = new WeakMap<NodeMap,number>();
+export function roadCount(map:NodeMap,from:Node,to:Node):number {
+  let unit=spacing.get(map);
+  if(!unit){const nodes=new Map(map.nodes.map(n=>[n.id,n]));const lengths=map.nodes.flatMap(n=>n.neighbors.map(id=>nodes.get(id)).filter((n):n is Node=>!!n).map(t=>Math.hypot(t.position.x-n.position.x,t.position.y-n.position.y))).filter(n=>n>0).sort((a,b)=>a-b);unit=lengths[Math.floor(lengths.length/2)]??1;spacing.set(map,unit);}
+  return Math.max(0,Math.ceil(Math.hypot(from.position.x-to.position.x,from.position.y-to.position.y)/unit/2)-1);
+}
+export function roadId(a:string,b:string,index:number):string {return `road|${encodeURIComponent(a)}|${encodeURIComponent(b)}|${index}`;}
+export function readRoad(id:string,map:NodeMap) {
+  const [prefix,a,b,i]=id.split('|');if(prefix!=='road'||!a||!b)return;
+  const from=map.nodes.find(n=>n.id===decodeURIComponent(a)),to=map.nodes.find(n=>n.id===decodeURIComponent(b));
+  if(!from||!to||from.id>=to.id||!from.neighbors.includes(to.id)&&!from.conditionalNeighbors?.some(e=>e.nodeId===to.id)&&!to.neighbors.includes(from.id)&&!to.conditionalNeighbors?.some(e=>e.nodeId===from.id))return;
+  const count=roadCount(map,from,to),index=Number(i);
+  return Number.isInteger(index)&&index>=0&&index<count?{from,to,count,index}:undefined;
+}
+export function fieldConnection(map:NodeMap,from:Node,to:Node) {
+  const count=roadCount(map,from,to),[a,b]=[from.id,to.id].sort();
+  return {to:count?roadId(a!,b!,from.id===a?0:count-1):to.id,count};
+}
+export function fieldDimensions(node:Node,npcCount=0):{width:number;height:number} {
+  if(node.kind==='village')return {width:npcCount>5?12:10,height:10};
+  if(node.kind==='boss')return {width:9,height:8};
+  if(node.kind==='elite')return {width:8,height:8};
+  if(node.kind==='combat')return {width:8,height:7};
+  if(npcCount>2)return {width:8,height:7};
+  return {width:6,height:6};
+}
+export function fieldTheme(node:Node):'town'|'forest'|'coast'|'volcanic'|'cave'|'meadow' {
+  if(['village','shop','workshop'].includes(node.kind)||/식당|본부|길드|여관|광장/.test(node.label))return 'town';
+  if(/mushroom|mine|castle/.test(node.region??'')||/동굴|갱도|지하/.test(node.label))return 'cave';
+  if(/moss-north|triflower/.test(node.region??''))return 'volcanic';
+  if(/coast|fishing|moss-south|martin/.test(node.region??'')||/해안|항구|나루|강변|호수/.test(node.label))return 'coast';
+  if(/forest|alimes|diropel/.test(node.region??'')||/숲|수풀|나무/.test(node.label))return 'forest';
+  return 'meadow';
+}
+export function terrainFor(node:Node,width:number,height:number,dungeon=false):FieldTile[][] {
+  const theme=fieldTheme(node),seed=fieldHash(node.id);
+  return Array.from({length:height},(_,y)=>Array.from({length:width},(_,x)=>{
+    if(x===0||y===0||x===width-1||y===height-1)return 'wall';
+    if(dungeon||theme==='cave')return (x*7+y*3+seed)%13===0?'wall':'stone';
+    if(theme==='town')return (x+y+seed)%4===0?'wood':'stone';
+    if(node.region==='manonickla')return (x+y+seed)%7===0?'stone':'sand';
+    if(theme==='coast')return x<=1+(seed%2)&&y%4!==0?'water':'sand';
+    if(theme==='volcanic')return (x*3+y+seed)%7===0?'sand':'stone';
+    if(theme==='forest'&&(x*3+y*7+seed)%11===0)return 'wall';
+    return 'grass';
+  }));
+}
+export function carvePath(space:FieldSpace,from:GridPos,to:GridPos) {
+  let {x,y}=from;space.tiles[y]![x]='path';
+  const horizontal=fieldHash(space.id)%2===0;
+  while(x!==to.x||y!==to.y){if(horizontal&&x!==to.x||y===to.y)x+=Math.sign(to.x-x);else y+=Math.sign(to.y-y);space.tiles[y]![x]='path';}
+}
+export function boundaryFor(space:FieldSpace,dx:number,dy:number,used:readonly GridPos[]):GridPos {
+  const points:GridPos[]=[];
+  for(let x=1;x<space.width-1;x++)points.push({x,y:0},{x,y:space.height-1});
+  for(let y=1;y<space.height-1;y++)points.push({x:0,y},{x:space.width-1,y});
+  const len=Math.hypot(dx,dy)||1,cx=(space.width-1)/2,cy=(space.height-1)/2;
+  const ideal={x:cx+dx/len*cx,y:cy+dy/len*cy};
+  return points.filter(p=>!used.some(q=>p.x===q.x&&p.y===q.y)).sort((a,b)=>Math.hypot(a.x-ideal.x,a.y-ideal.y)-Math.hypot(b.x-ideal.x,b.y-ideal.y))[0]!;
+}

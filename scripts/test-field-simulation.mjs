@@ -42,10 +42,10 @@ try {
     for (const scale of [.55,1,1.4]) for (const reverse of [false,true]) { const shifted=sample.map(p=>({x:p.x*scale+23,y:p.y*scale-14})); assert.equal(gestures.recognizeGesture(reverse?shifted.reverse():shifted),g); }
   }
   for (const reverse of [-1,1]) for (const phase of [0,.7,2.2]) assert.equal(gestures.recognizeGesture(Array.from({length:100},(_,i)=>({x:100+75*Math.cos(i/99*Math.PI*2*reverse+phase),y:100+60*Math.sin(i/99*Math.PI*2*reverse+phase)}))),'circle');
-  assert.equal(gestures.recognizeGesture([{x:0,y:0},{x:10,y:5}]),undefined);
-  assert.equal(gestures.recognizeGesture(line([{x:20,y:20},{x:170,y:170}])),undefined);
+  assert.equal(gestures.recognizeGesture([{x:0,y:0},{x:10,y:5}]),'tend');
+  assert.equal(gestures.recognizeGesture(line([{x:20,y:20},{x:170,y:170}])), 'tend');
   assert.equal(gestures.recognizeGesture(line([{x:20,y:20},{x:180,y:180},{x:20,y:180},{x:180,y:20}])),undefined);
-  passed.push('seven gestures tolerate scale and direction; diagonal, tiny and crossed strokes do not execute');
+  passed.push('gestures tolerate scale and direction; diagonal strokes act and crossed strokes reject');
 
   let {world,space,player} = start();
   park(world,space,player,{x:7,y:6});
@@ -111,7 +111,7 @@ try {
   ({world,space,player}=start());
   const resident=Object.values(world.entities).find(e=>e.nodeId===space.id&&e.agent&&e.id!=='player');
   assert.ok(resident); park(world,space,player,spatial.cardinal(resident.pos).flatMap(p=>spatial.cardinal(p)).find(p=>spatial.distance(p,resident.pos)===2&&spatial.walkable(world,space.id,p,'player')&&spatial.hasSight(world,{...player,pos:p},resident)));
-  const talk=field.performFieldGesture('circle',resident.id,resident.pos); assert.equal(talk.ok,true); assert.ok(talk.speech?.lines.length); assert.equal(talk.speech.name,resident.name);
+  const talk=field.performFieldGesture('tap',resident.id,resident.pos); assert.equal(talk.ok,true); assert.ok(talk.speech?.lines.length); assert.equal(talk.speech.name,resident.name);
   const snapshot=JSON.stringify(resident); field.advanceFieldTime(270); assert.notEqual(JSON.stringify(resident),snapshot);
   passed.push('NPCs speak actual lines and advance their own actions on the field');
 
@@ -121,7 +121,7 @@ try {
   const second=generation.ensureFieldSpace(run.data,world,monsterNode.id+'::dungeon:2');
   assert.equal(first.dungeon.floor,1); assert.equal(second.dungeon.floor,2);
   assert.ok(Object.values(world.entities).some(e=>e.nodeId===second.id&&e.creature?.rank==='elite'));
-  run.data.currentNodeId=first.id; player.nodeId=first.id; player.pos={x:12,y:6};
+  run.data.currentNodeId=first.id; player.nodeId=first.id; player.pos=spatial.cardinal(first.exits.find(e=>e.to===second.id).pos).find(p=>spatial.walkable(world,first.id,p,'player'));
   assert.equal(field.travelField(second.id).ok,false,'locked exit cannot be bypassed');
   first.cleared=true; assert.equal(field.travelField(second.id).ok,true);
   assert.equal(run.data.currentNodeId,second.id); assert.equal(field.travelField(monsterNode.id).ok,false,'cannot teleport to arbitrary space');
@@ -167,12 +167,12 @@ try {
   assert.ok(attacker);
   for(const e of Object.values(world.entities)) if(e.id!=='player'&&e.id!==attacker.id&&e.nodeId===space.id) delete world.entities[e.id];
   space.tiles=Array.from({length:space.height},()=>Array(space.width).fill('grass'));
-  player.pos={x:6,y:6}; attacker.pos={x:7,y:6}; attacker.creature.angry=true;
-  const fullHp=run.data.hp; field.advanceFieldTime(30); assert.deepEqual(attacker.creature.intent,[{x:6,y:6}]); assert.equal(run.data.hp,fullHp,'telegraph costs a step before damage');
-  assert.equal(field.stepField({x:6,y:5}).ok,true); assert.equal(run.data.hp,fullHp,'moving off the locked tile avoids the attack');
-  attacker.creature.angry=false; attacker.pos={x:8,y:6}; player.pos={x:2,y:6};
-  const bait=field.groundAt(run.data,{x:8,y:8}); bait.stock['i-crop-grain']=2;
-  field.advanceFieldTime(30); assert.deepEqual(attacker.pos,{x:8,y:7},'food placed on a tile redirects an unprovoked creature');
+  player.pos={x:3,y:3}; attacker.pos={x:4,y:3}; attacker.creature.angry=true;
+  const fullHp=run.data.hp; field.advanceFieldTime(30); assert.ok(attacker.creature.intent.some(p=>p.x===3&&p.y===3)); assert.equal(run.data.hp,fullHp,'telegraph costs a step before damage');
+  assert.equal(field.stepField({x:3,y:2}).ok,true); assert.equal(run.data.hp,fullHp,'moving off the locked tile avoids the attack');
+  attacker.creature.angry=false; attacker.pos={x:6,y:3}; player.pos={x:1,y:3};
+  const bait=field.groundAt(run.data,{x:6,y:5}); bait.stock['i-crop-grain']=2;
+  field.advanceFieldTime(30); assert.deepEqual(attacker.pos,{x:6,y:4},'food placed on a tile redirects an unprovoked creature');
   field.advanceFieldTime(30); assert.equal(bait.stock['i-crop-grain'],1,'feeding consumes the actual stock');
   const count=Object.keys(world.entities).length, seconds=run.data.field.elapsedSeconds;
   assert.equal(field.performFieldGesture('give',undefined,{x:-1,y:6}).ok,false); assert.equal(Object.keys(world.entities).length,count); assert.equal(run.data.field.elapsedSeconds,seconds);
@@ -186,6 +186,115 @@ try {
   assert.equal(field.performFieldGesture('star',spellTarget.id,spellTarget.pos,{drawn:true,quality:.8}).ok,false);assert.equal(run.data.mp,mana);assert.equal(run.data.field.elapsedSeconds,0);
   assert.equal(field.performFieldGesture('star',spellTarget.id,spellTarget.pos,{drawn:true,quality:.99}).ok,true);assert.equal(run.data.mp,mana-3);assert.ok(spellTarget.properties.integrity<initialIntegrity);assert.equal(run.data.field.elapsedSeconds,30);
   passed.push('advanced drawn patterns require accuracy and spend real mana through the shared property reducer');
+
+
+  const geography=await server.ssrLoadModule('/src/systems/field-geography.ts');
+  const life=await server.ssrLoadModule('/src/systems/life-catalog.ts');
+  const lifeWorld=await server.ssrLoadModule('/src/systems/world/life-world.ts');
+  ({world,space,player}=start());
+  const authored=generation.fieldMap(run.data), coordinates=JSON.stringify(authored.nodes.map(n=>[n.id,n.position,n.neighbors,n.conditionalNeighbors]));
+  const roadIds=new Set(), dimensions=new Set(), themes=new Set();
+  for(const node of authored.nodes){
+    const area=generation.ensureFieldSpace(run.data,world,node.id);
+    dimensions.add(area.width+'x'+area.height);themes.add(area.theme);
+    if(!['village','combat','elite','boss'].includes(node.kind)&&!Object.values(world.entities).filter(e=>e.nodeId===node.id&&e.npcId).length)assert.equal(area.width,6);
+    for(const exit of area.exits){
+      const destination=authored.nodes.find(n=>n.id===exit.destination);
+      assert.equal(exit.roads,geography.roadCount(authored,node,destination));
+      const ids=[node.id,destination.id].sort();
+      for(let i=0;i<exit.roads;i++)roadIds.add(geography.roadId(ids[0],ids[1],i));
+    }
+    for(const object of Object.values(world.entities).filter(e=>e.nodeId===node.id&&e.pos&&e.id!=='player'))
+      assert.ok(spatial.fieldPath(world,node.id,area.spawn,object.pos,'player',true),node.id+' object '+object.name+' can be approached');
+  }
+  for(const id of roadIds){const area=generation.ensureFieldSpace(run.data,world,id);assert.deepEqual([area.width,area.height],[6,6]);for(const exit of area.exits)assert.ok(spatial.fieldPath(world,id,area.spawn,exit.pos,'player'));}
+  assert.equal(JSON.stringify(authored.nodes.map(n=>[n.id,n.position,n.neighbors,n.conditionalNeighbors])),coordinates);
+  assert.ok(dimensions.size>=4);assert.ok(themes.size>=5);
+  const longest=authored.nodes.flatMap(a=>a.neighbors.map(id=>({a,b:authored.nodes.find(n=>n.id===id)}))).sort((x,y)=>geography.roadCount(authored,y.a,y.b)-geography.roadCount(authored,x.a,x.b))[0];
+  const chain=[],origin=longest.a.id,destination=longest.b.id;
+  run.data.currentNodeId=origin;player.nodeId=origin;delete run.data.nodeStates[destination];
+  for(let i=0;i<20&&run.data.currentNodeId!==destination;i++){
+    const area=generation.ensureFieldSpace(run.data,world,run.data.currentNodeId),exit=area.exits.find(e=>e.destination===destination);
+    assert.ok(exit);player.pos={...exit.pos};assert.equal(field.travelField(exit.to).ok,true);chain.push(run.data.currentNodeId);
+    if(run.data.currentNodeId!==destination)assert.ok(!run.data.nodeStates[destination]?.visited,'crossing a road does not visit the destination early');
+  }
+  assert.equal(run.data.currentNodeId,destination);assert.equal(chain.length,geography.roadCount(authored,longest.a,longest.b)+1);
+  passed.push('authored '+authored.nodes.length+' places preserve geography, '+roadIds.size+' intermediate road sections remain traversable, '+themes.size+' terrain themes and '+dimensions.size+' footprints');
+
+  for(const kind of ['village','shop','workshop','activity','event']){
+    const node=authored.nodes.find(n=>n.kind===kind);({world,space,player}=start(node.id));
+    const site=Object.values(world.entities).find(e=>e.nodeId===space.id&&e.tags.includes('service:'+kind));
+    park(world,space,player,spatial.cardinal(site.pos).find(p=>spatial.walkable(world,space.id,p,'player')));
+    assert.ok(field.fieldHints(run.data,world,site,site.pos).some(h=>h.id==='tap'));
+    assert.equal(field.performFieldGesture('tap',site.id,site.pos).route,'/game/'+kind);
+  }
+  passed.push('tap connects village, shop, workshop, activity and event facilities to existing screens');
+
+  const activities=new Set();
+  for(const node of authored.nodes.filter(n=>n.kind==='gather')){
+    const activity=life.activityForNode(node.id,node.region);if(activities.has(activity.id))continue;activities.add(activity.id);
+    ({world,space,player}=start(node.id));
+    const site=Object.values(world.entities).find(e=>e.nodeId===space.id&&e.tags.includes('life-site'));
+    park(world,space,player,spatial.cardinal(site.pos).find(p=>spatial.walkable(world,space.id,p,'player')));
+    const action=lifeWorld.lifeActions(run.data,world,'player',site.id)[0];assert.ok(action);
+    assert.ok(field.fieldHints(run.data,world,site,site.pos).some(h=>h.id==='tap'));
+    const xp=(run.data.lifeLevel-1)*3+run.data.lifeXp;
+    const result=field.performFieldGesture('tap',site.id,site.pos);assert.equal(result.ok,true,activity.id+': '+result.message);
+    if(activity.type==='repeat'){
+      assert.ok((player.stock[activity.lowerItemId]??0)+(player.stock[activity.upperItemId]??0)>0);
+      assert.ok((run.data.lifeLevel-1)*3+run.data.lifeXp>xp);
+      const before=JSON.stringify(player.stock);assert.equal(field.performFieldGesture('tap',site.id,site.pos).ok,false);assert.equal(JSON.stringify(player.stock),before);
+    }else assert.ok(site.production&&!site.production.settled);
+  }
+  assert.equal(activities.size,8);
+  passed.push('all eight regional life activities execute on their tiles; extraction consumes stock and grants life growth');
+
+  ({world,space,player}=start());
+  const portable=Object.values(world.entities).find(e=>e.nodeId===space.id&&e.tags.includes('barrel'));
+  park(world,space,player,spatial.cardinal(portable.pos).find(p=>spatial.walkable(world,space.id,p,'player')));
+  assert.ok(field.fieldHints(run.data,world,portable,portable.pos).some(h=>h.id==='lift'));
+  field.performFieldGesture('lift',portable.id,portable.pos);
+  assert.ok(field.fieldHints(run.data,world,player,player.pos).some(h=>h.id==='place'),'held object shows how to put it down');
+
+
+  const compactNode=authored.nodes.find(n=>n.kind==='event'&&n.neighbors.length>=3);
+  const old={id:compactNode.id,nodeId:compactNode.id,name:compactNode.label,width:15,height:13,spawn:{x:7,y:6},tiles:Array.from({length:13},()=>Array(15).fill('grass')),exits:[]};
+  world.spaces[old.id]=old;
+  for(let i=0;i<14;i++)world.entities['legacy:'+i]={id:'legacy:'+i,name:'saved '+i,kind:'resource',nodeId:old.id,pos:{x:1+i%13,y:2+i%9},tags:['storage'],properties:{integrity:80,solid:i<7?1:0},stock:{water:i+1},colors:{earth:30}};
+  world.entities['legacy:10'].production={id:'saved-crop',recipeId:'field-grain',startedTurn:0,duration:4,settled:false,output:{'i-crop-grain':3},level:2,colorValue:20,upper:false,producerId:'player'};
+  const originals=Object.values(world.entities).filter(e=>e.nodeId===old.id).map(e=>({id:e.id,stock:JSON.stringify(e.stock),properties:JSON.stringify(e.properties),production:JSON.stringify(e.production)}));
+  const migrated=generation.ensureFieldSpace(run.data,world,old.id);
+  for(const oldEntity of originals){const e=world.entities[oldEntity.id];assert.equal(JSON.stringify(e.stock),oldEntity.stock);assert.equal(JSON.stringify(e.properties),oldEntity.properties);assert.equal(JSON.stringify(e.production),oldEntity.production);assert.ok(e.pos.x>0&&e.pos.x<migrated.width-1&&e.pos.y>0&&e.pos.y<migrated.height-1);}
+  for(const exit of migrated.exits)assert.ok(spatial.fieldPath(world,migrated.id,migrated.spawn,exit.pos,'player'),'migrated exit '+exit.to+' remains reachable');
+  assert.equal(portable.carriedBy,'player');assert.deepEqual(generation.ensureFieldSpace(run.data,world,old.id),migrated,'migration happens once');
+  passed.push('15x13 saved fields retain stocks, crops and held objects while compacting without blocking exits');
+
+  ({world,space,player}=start());
+  const trainingTarget=Object.values(world.entities).find(e=>e.nodeId===space.id&&e.tags.includes('barrel'));
+  park(world,space,player,spatial.cardinal(trainingTarget.pos).find(p=>spatial.walkable(world,space.id,p,'player')));
+  const force=()=>field.fieldAction(run.data,world,player,trainingTarget,'strike',trainingTarget.pos).effects.find(e=>e.property==='force').amount;
+  const baseForce=force(),baseColors=JSON.stringify(run.data.colors);
+  run.data.field.gestureXp.strike=24;assert.ok(force()>baseForce,'one-stroke practice increases actual force');
+  const trainedForce=force();
+  run.data.equipmentInventory.push({id:'test-field-equipment',name:'test',slot:'weapon',rank:'common',colorEffects:[{color:'fire',value:40},{color:'electric',value:40},{color:'earth',value:40},{color:'iron',value:40}]});
+  run.data.equippedWeapon='test-field-equipment';
+  assert.ok(force()>trainedForce,'equipped colors increase field force');
+  const guard=field.fieldAction(run.data,world,player,player,'strike',player.pos).effects[0].amount;
+  run.data.equippedWeapon=null;
+  assert.ok(guard>field.fieldAction(run.data,world,player,player,'strike',player.pos).effects[0].amount);
+  assert.equal(JSON.stringify(run.data.colors),baseColors,'equipment bonuses never become permanent base colors');
+  const brush=Object.values(world.entities).find(e=>e.nodeId===space.id&&e.tags.includes('brush'));
+  park(world,space,player,spatial.cardinal(brush.pos).find(p=>spatial.walkable(world,space.id,p,'player')));
+  const lifeBefore=(run.data.lifeLevel-1)*3+run.data.lifeXp;
+  assert.equal(field.performFieldGesture('tap',brush.id,brush.pos).ok,true);assert.ok((run.data.lifeLevel-1)*3+run.data.lifeXp>lifeBefore);
+  const delayed=authored.nodes.find(n=>n.kind==='gather'&&life.activityForNode(n.id,n.region).type==='delayed');
+  ({world,space,player}=start(delayed.id));run.data.lifeLevel=3;run.data.field.productionMode='abundant';
+  ({world,space,player}=field.ensureField(run.data));
+  const productionSite=Object.values(world.entities).find(e=>e.nodeId===space.id&&e.tags.includes('life-site'));
+  park(world,space,player,spatial.cardinal(productionSite.pos).find(p=>spatial.walkable(world,space.id,p,'player')));
+  assert.equal(field.performFieldGesture('tap',productionSite.id,productionSite.pos).ok,true);
+  assert.equal(productionSite.production.plot.productionMode,'abundant');assert.equal(productionSite.production.automaticCare,true);
+  passed.push('gesture mastery and equipped colors affect force and guard; tap harvesting grants XP and life specialization configures real production');
 
   ({world,space,player}=start());
   for (const node of generation.fieldMap(run.data).nodes) {

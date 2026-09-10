@@ -1,20 +1,20 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from 'vue';
-import { GESTURES, GLYPHS, type Gesture } from '@/systems/field-types';
+import { GLYPHS, type Gesture } from '@/systems/field-types';
 import { recognizeGestureMatch, type StrokePoint } from '@/systems/gestures';
-import { GESTURE_CATALOG, gestureDefinition } from '@/systems/gesture-catalog';
+import { gestureDefinition } from '@/systems/gesture-catalog';
 
-const props = withDefaults(defineProps<{ disabled?: boolean; available?: Gesture[]; compact?: boolean; guide?: string; palette?: string[] }>(), { disabled: false, available: () => [...GESTURES] });
+const props = withDefaults(defineProps<{ disabled?: boolean; compact?: boolean; guide?: string }>(), { disabled: false });
 const emit = defineEmits<{ gesture: [gesture: Gesture, quality: number, drawn: boolean]; unrecognized: []; drawing: [active: boolean] }>();
 const pad = ref<SVGSVGElement | null>(null);
 const points = ref<StrokePoint[]>([]);
 const drawing = ref(false);
 const result = ref('');
 const candidate = ref('');
-const buttons = computed(() => GESTURE_CATALOG.filter(g => !g.drawOnly && (props.palette ? props.palette.includes(g.id) : g.quick || g.id===props.guide)));
 const guidePoints = computed(() => gestureDefinition(props.guide ?? '')?.points.map(p=>`${28+p.x*144},${28+p.y*144}`).join(' '));
 let pointerId: number | undefined;
 let previewAt = 0;
+let beganAt = 0;
 let timer: ReturnType<typeof setTimeout> | undefined;
 function recognize() { const scale=(pad.value?.getBoundingClientRect().width ?? 168)/200; return recognizeGestureMatch(points.value.map(p=>({x:p.x*scale,y:p.y*scale}))); }
 function point(event: PointerEvent): StrokePoint {
@@ -26,6 +26,7 @@ function begin(event: PointerEvent) {
   event.preventDefault();
   clearTimeout(timer);
   pointerId = event.pointerId;
+  beganAt = event.timeStamp;
   points.value = [point(event)]; result.value = ''; candidate.value = ''; drawing.value = true; emit('drawing',true);
   pad.value?.setPointerCapture(event.pointerId);
 }
@@ -50,7 +51,8 @@ function end(event: PointerEvent) {
   if (event.pointerId !== pointerId) return;
   event.preventDefault();
   points.value.push(point(event));
-  const match = recognize();
+  const recognized = recognize();
+  const match = recognized?.gesture==='tap'&&event.timeStamp-beganAt>550 ? undefined : recognized;
   pointerId = undefined; drawing.value = false; candidate.value=''; emit('drawing',false);
   if (pad.value?.hasPointerCapture(event.pointerId)) pad.value.releasePointerCapture(event.pointerId);
   if (!props.disabled && match) submit(match.gesture,match.quality,true);
@@ -71,9 +73,6 @@ onBeforeUnmount(() => { clearTimeout(timer); cancel(); });
       <polyline v-if="points.length" :points="points.map(p => `${p.x},${p.y}`).join(' ')" class="stroke" />
       <text v-if="result || candidate" x="100" y="112" text-anchor="middle" class="recognized">{{ result || candidate }}</text>
     </svg>
-    <div class="glyph-keys" aria-label="도형 선택">
-      <button v-for="gesture in buttons" :key="gesture.id" :aria-label="gesture.name" :disabled="disabled" :class="{ possible: available.includes(gesture.id) }" @click="submit(gesture.id)">{{ gesture.glyph }}</button>
-    </div>
   </div>
 </template>
 
@@ -85,13 +84,7 @@ onBeforeUnmount(() => { clearTimeout(timer); cancel(); });
 .center { fill: #d3d8b5; opacity: .35; }
 .stroke { fill: none; stroke: #eee3b4; stroke-width: 4; stroke-linejoin: round; stroke-linecap: round; filter: drop-shadow(0 0 5px #f5d69677); }
 .recognized { fill: #ffe8ae; font: 42px sans-serif; paint-order: stroke; stroke: #1b2822; stroke-width: 5px; }
-.glyph-keys { display: grid; grid-template-columns: repeat(2, 44px); gap: 6px; }
-.glyph-keys button { height: 38px; border: 1px solid #414d43; border-radius: 8px; color: #738077; background: #19211d; font: 23px system-ui; cursor: pointer; }
-.glyph-keys button.possible { color: #f1e1b6; border-color: #82775b; background: #34372c; }
-.glyph-keys button:last-child { grid-column: 1 / -1; }
-.glyph-keys button:focus-visible { outline: 2px solid #f6dca2; outline-offset: 2px; }
 .disabled { opacity: .55; }
 .gesture-control--compact .gesture-pad { width: 138px; height: 138px; }
-.gesture-control--compact .glyph-keys button { height: 30px; }
-@media (max-height: 710px) { .gesture-pad { width: 138px; height: 138px; } .glyph-keys button { height: 30px; } }
+@media (max-height: 710px) { .gesture-pad { width: 138px; height: 138px; } }
 </style>

@@ -12,15 +12,15 @@ const done = computed(() => step.value >= (ui.tutorialTopic === 'combat' || ui.t
 const prompt = computed(() => {
   if (done.value) return '직접 해봤습니다. 다음으로 가볼까요?';
   if (ui.tutorialTopic === 'combat') return '빛나는 칸을 눌러 한 칸씩 걸어보세요.';
-  if (ui.tutorialTopic === 'colors') return ['금이 간 물통을 바라보고 ∧를 그려보세요.', '빈 칸을 바라보고 ∨를 그려보세요.', '금이 간 물통을 향해 △를 그려보세요.'][step.value];
-  if (ui.tutorialTopic === 'life') return ['씨앗을 들고 빈 밭에 ▽를 그려보세요.', '자리를 떠나도 작물은 자랍니다. ○로 시간을 보내세요.', '여문 작물을 향해 ⊂를 그려보세요.'][step.value];
-  return '주민을 향해 ○를 그리면 대화가 시작됩니다.';
+  if (ui.tutorialTopic === 'colors') return ['금이 간 물통을 바라보고 ∧를 그려보세요.', '빈 칸을 바라보고 ∨를 그려보세요.', '금이 간 물통을 향해 ╱를 그려보세요.'][step.value];
+  if (ui.tutorialTopic === 'life') return ['씨앗을 들고 빈 밭에 ╲를 그려보세요.', '자리를 떠나도 작물은 자랍니다. 연습판을 톡 눌러 자란 모습을 보세요.', '여문 작물을 향해 톡 눌러보세요.'][step.value];
+  return '주민을 향해 톡 누르면 대화가 시작됩니다.';
 });
 const rules = computed(() => ({
   combat: ['빈 칸을 누르거나 ↑ ↓ ← →를 그리면 상하좌우로 걸어갑니다. 한 칸은 30초입니다.', '방향 입력으로 막힌 칸을 향하면 그곳의 대상과 상호작용합니다. 길 끝은 별도의 고정 구역으로 이어집니다.', '플레이 화면에서 5초간 입력이 없으면 30초가 흐릅니다. 대화·메뉴·그리는 중에는 멈춥니다.', '붉은 칸은 다음 공격 위치입니다. 던전 안에는 엘리트와 보스가 기다립니다. 지도에서 현재 구역과 세계의 연결을 볼 수 있습니다.'],
-  colors: ['도형은 같은 원리로 작동하지만 대상과 손에 든 재료에 따라 결과가 달라집니다.', '∧ ∨는 물건의 위치, ⊂ ⊃는 재료의 흐름, △ ▽는 대상의 상태, ○는 교류에 관여합니다.', '하단 도형 모음에서 연습선을 켤 수 있습니다. 삼각형은 어느 꼭짓점에서 시작해도 됩니다.', '☆는 마력 3을 쓰는 강한 전하 무늬입니다. 연습선을 따라 직접 정확히 그려야 발동합니다.'],
+  colors: ['도형은 같은 원리로 작동하지만 대상과 손에 든 재료에 따라 결과가 달라집니다.', '∧ ∨는 물건의 위치, ⊂ ⊃는 재료의 흐름, ╱ ╲는 대상의 상태, ●는 교류에 관여합니다.', '하단 도형 모음에서 연습선을 켤 수 있습니다. 삼각형은 어느 꼭짓점에서 시작해도 됩니다.', '☆는 마력 3을 쓰는 강한 전하 무늬입니다. 연습선을 따라 직접 정확히 그려야 발동합니다.'],
   life: ['손에 쓸 재료는 하단 소지품에서 고릅니다. 선택한 재료를 다시 누르면 빈손이 됩니다.', '작물은 떠나 있어도 자랍니다. 물을 주면 산출이 좋아지지만 돌봄을 강제하지 않습니다.', '놓아둔 물건은 NPC와 마물에게도 영향을 줍니다. 같은 물과 불, 힘과 재고 규칙을 공유합니다.'],
-  world: ['대사는 한 번에 하나씩 표시됩니다. ○로 다음 대사를 듣습니다.', '주민은 직접 보거나 들은 일을 바탕으로 관계를 바꿉니다. 종족이 도덕성을 정하지는 않습니다.', '풍부한 자원과 가공에 든 노동은 다르게 여겨집니다. 마음껏 시도하고 반응을 살펴보세요.'],
+  world: ['대사는 한 번에 하나씩 표시됩니다. 톡 눌러 다음 대사를 듣습니다.', '주민은 직접 보거나 들은 일을 바탕으로 관계를 바꿉니다. 종족이 도덕성을 정하지는 않습니다.', '풍부한 자원과 가공에 든 노동은 다르게 여겨집니다. 마음껏 시도하고 반응을 살펴보세요.'],
 }[ui.tutorialTopic ?? 'combat']));
 watch(() => ui.tutorialTopic, async value => { step.value = 0; cell.value = 3; message.value = ''; if (value) { await nextTick(); if (!dialog.value?.open) dialog.value?.showModal(); } else dialog.value?.close(); });
 function close() { ui.tutorialTopic = null; }
@@ -28,7 +28,7 @@ function next() { const topic = topics[lesson.value + 1]; if (topic) ui.tutorial
 function walk(at: number) { if (ui.tutorialTopic === 'combat' && at === cell.value + 1 && step.value < 2) { cell.value = at; step.value++; } }
 function draw(g: Gesture) {
   if (done.value) return;
-  const expected = ui.tutorialTopic === 'colors' ? ['lift', 'place', 'triangle'] : ui.tutorialTopic === 'life' ? ['inverted', 'circle', 'take'] : ['circle', 'circle'];
+  const expected = ui.tutorialTopic === 'colors' ? ['lift', 'place', 'strike'] : ui.tutorialTopic === 'life' ? ['tend', 'tap', 'tap'] : ['tap', 'tap'];
   if (g !== expected[step.value]) { message.value = '이 장면에서는 다른 반응이 없습니다.'; return; }
   step.value++; message.value = '';
 }
@@ -45,7 +45,7 @@ function draw(g: Gesture) {
         <template v-else><span class="person npc">주민</span><blockquote v-if="step > 0">{{ step === 1 ? '왔구나. 잠깐 쉬었다 갈래?' : '재료는 많아. 쓸 만하게 다듬는 데 손이 많이 갈 뿐이지.' }}</blockquote></template>
       </div>
       <div v-if="ui.tutorialTopic === 'combat'" class="practice-clock">12:{{ step === 2 ? '01:00' : step === 1 ? '00:30' : '00:00' }}</div>
-      <GesturePad v-else compact :guide="ui.tutorialTopic==='colors'?['lift','place','triangle'][step]:ui.tutorialTopic==='life'?['inverted','circle','take'][step]:'circle'" :palette="ui.tutorialTopic==='colors'?['lift','place','triangle']:ui.tutorialTopic==='life'?['inverted','circle','take']:['circle']" @gesture="draw" @unrecognized="message = '한 번 더 그려보세요.'"/>
+      <GesturePad v-else compact :guide="ui.tutorialTopic==='colors'?['lift','place','strike'][step]:ui.tutorialTopic==='life'?['tend','tap','tap'][step]:'tap'" @gesture="draw" @unrecognized="message = '한 번 더 그려보세요.'"/>
       <details :key="ui.tutorialTopic ?? 'closed'"><summary>더 알아보기</summary><ul><li v-for="rule in rules" :key="rule">{{ rule }}</li></ul></details>
       <footer><span>{{ lesson + 1 }} / 4 · 연습용</span><button @click="next">{{ lesson === 3 ? '마치기' : done ? '다음' : '건너뛰기' }}</button></footer>
     </div>
