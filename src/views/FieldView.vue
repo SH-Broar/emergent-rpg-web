@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { resolveFieldEncounter } from '@/systems/field-combat';
+import { statusEntries, STATUS_HELP } from '@/systems/world/status';
+import { statusLabel } from '@/systems/labels';
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useRunStore } from '@/stores/run';
@@ -6,7 +9,7 @@ import { useUiStore } from '@/stores/ui';
 import type { GridPos } from '@/data/schemas/base';
 import { GLYPHS, type Gesture, type FieldSpeech } from '@/systems/field-types';
 import { fieldItemName, FIELD_ITEMS } from '@/systems/field-generation';
-import { advanceFieldTime, carriedEntity, ensureField, fieldHints, gestureLevel, performFieldGesture, setFieldViewport, stepField, visibleFieldEntities } from '@/systems/field-simulation';
+import { advanceFieldTime, carriedEntity, dashFailure, ensureField, fieldHints, gestureLevel, performFieldGesture, setFieldViewport, stepField, visibleFieldEntities } from '@/systems/field-simulation';
 import { GESTURE_CATALOG } from '@/systems/gesture-catalog';
 import { PRODUCTION_MODES } from '@/systems/life-production';
 import { createFieldIdleClock } from '@/systems/field-idle';
@@ -24,11 +27,12 @@ const mapOpen=ref(false),drawing=ref(false),pointerHeld=ref(false),hidden=ref(do
 const progressOpen=ref(false),detailsOpen=ref(false),characterOpen=ref(false),inventoryOpen=ref(false);
 const idle=createFieldIdleClock();
 let idleTimer:ReturnType<typeof setInterval>|undefined;
-const paused=computed(()=>moving.value||drawing.value||pointerHeld.value||hidden.value||bagOpen.value||skillsOpen.value||settingsOpen.value||mapOpen.value||detailsOpen.value||progressOpen.value||characterOpen.value||inventoryOpen.value||!!speech.value||ui.tutorialTopic!==null);
+const paused=computed(()=>moving.value||drawing.value||pointerHeld.value||hidden.value||bagOpen.value||skillsOpen.value||settingsOpen.value||mapOpen.value||detailsOpen.value||progressOpen.value||characterOpen.value||inventoryOpen.value||aimDash.value||!!speech.value||!!run.data.field?.encounter||ui.tutorialTopic!==null);
 function wake(){idle.reset(Date.now());}
 function press(){pointerHeld.value=true;wake();}
 function release(){pointerHeld.value=false;wake();}
 function visibility(){hidden.value=document.hidden;wake();}
+const aimDash=ref(false), routeCells=ref<GridPos[]>([]);
 const selectedId = ref<string>(), selectedPos = ref<GridPos>({ x: 0, y: 0 });
 const notice = ref(''), speech = ref<FieldSpeech>(), line = ref(0);
 const stageElement = ref<HTMLElement | null>(null), width = ref(390), height = ref(430);
@@ -38,7 +42,38 @@ const player = computed(() => world.value?.entities.player);
 const space = computed(() => world.value?.spaces?.[run.data.currentNodeId]);
 const entities = computed(() => initialized.value ? visibleFieldEntities(run.data) : []);
 const held = computed(() => initialized.value ? carriedEntity(world.value) : undefined);
-const target = computed(() => selectedId.value ? world.value?.entities[selectedId.value] : undefined);
+const target = computed(() => {
+  const e=selectedId.value==='player'?player.value:entities.value.find(e=>e.id===selectedId.value)??(held.value?.id===selectedId.value?held.value:undefined);
+  return e&&e.nodeId===run.data.currentNodeId&&(!e.creature||(e.properties.integrity??100)>0)?e:undefined;
+});
+const selection=computed(()=>target.value?.carriedBy===player.value?.id?player.value?.pos??selectedPos.value:target.value?.pos??selectedPos.value);
+const dashKeys=computed(()=>new Set(aimDash.value&&space.value&&player.value?cells.value.filter(p=>!dashFailure(world.value,space.value!,player.value!,p)).map(positionKey):[]));
+const pathKeys=computed(()=>new Set(routeCells.value.map(positionKey)));
+const effects=ref<{id:number;pos:GridPos;text:string;kind:string}[]>([]);
+let effectCursor=0;
+watch(()=>world.value?.sequence,()=>{
+  if(!initialized.value)return;
+  const fresh=world.value.events.filter(f=>f.id>effectCursor);
+  effectCursor=world.value.sequence;
+  for(const f of fresh){
+    if(f.nodeId!==run.data.currentNodeId||!f.pos)continue;
+    const e=world.value.entities[f.targetId];
+    let text='',kind='damage';
+    if(f.property==='integrity'&&f.before!==undefined&&f.after!==undefined){
+      const n=Math.round((f.after-f.before)*(e?.properties.maxHp??100)/100);
+      if(n!==0){text=n>0?'+'+n:String(n);kind=n>0?'heal':'damage';}
+    } else if(f.property==='guard'&&(f.before??0)>(f.after??0)&&f.actorId!==undefined){text='방어 '+Math.round(f.before!-f.after!);kind='guard';}
+    else if(f.kind==='signal'&&f.message==='빗나감'){text='빗나감';kind='miss';}
+    if(text){effects.value.push({id:f.id,pos:{...f.pos},text,kind});setTimeout(()=>effects.value=effects.value.filter(x=>x.id!==f.id),1600);}
+  }
+  effects.value=effects.value.slice(-24);
+},{flush:'post'});
+watch(()=>run.data.field?.notification,n=>{if(n){stop();speech.value=n;line.value=0;run.data.field!.notification=undefined;}});
+const encounter=computed(()=>run.data.field?.encounter);
+watch(encounter,e=>{if(e){stop();speech.value=e;line.value=0;}});
+function encounterChoice(accept:boolean){resolveFieldEncounter(run.data,accept);speech.value=undefined;wake();}
+const imminent=computed(()=>new Set(entities.value.flatMap(e=>e.creature?.pending?.remaining===1?e.creature.intent??[]:[]).map(positionKey)));
+
 const targetName = computed(() => target.value?.name ?? space.value?.exits.find(e => distance(e.pos, selectedPos.value) === 0)?.label ?? (space.value?.tiles[selectedPos.value.y]?.[selectedPos.value.x] === 'soil' ? '빈 밭' : '바닥'));
 const inventory = computed(() => Object.entries(player.value?.stock ?? {}).filter(([, n]) => n > 0));
 const targetStock = computed(() => target.value?.id === 'player' ? [] : Object.entries(target.value?.stock ?? {}).filter(([, n]) => n > 0));
@@ -51,39 +86,43 @@ const tileSize = computed(() => Math.floor(Math.min(width.value / columns.value,
 const camera = computed(() => ({ x: Math.max(0, Math.min((space.value?.width ?? 15) - columns.value, (player.value?.pos?.x ?? 7) - Math.floor(columns.value / 2))), y: Math.max(0, Math.min((space.value?.height ?? 13) - rows.value, (player.value?.pos?.y ?? 6) - Math.floor(rows.value / 2))) }));
 const cells = computed(() => Array.from({ length: rows.value * columns.value }, (_, i) => ({ x: camera.value.x + i % columns.value, y: camera.value.y + Math.floor(i / columns.value) })));
 const danger = computed(() => new Set(entities.value.flatMap(e => e.creature?.intent ?? []).map(positionKey)));
-const hints=computed(()=>initialized.value?fieldHints(run.data,world.value,target.value,selectedPos.value):[]);
+const hints=computed(()=>initialized.value?fieldHints(run.data,world.value,target.value,selection.value):[]);
 function at(p: GridPos) { return entities.value.filter(e => e.pos && distance(e.pos, p) === 0).sort((a,b) => Number(a.kind === 'actor') - Number(b.kind === 'actor')); }
 function tile(p: GridPos) { return space.value?.tiles[p.y]?.[p.x] ?? 'wall'; }
 function exitAt(p: GridPos) { return space.value?.exits.find(e => distance(e.pos, p) === 0); }
 function label(p: GridPos) { return `${p.x + 1}열 ${p.y + 1}행, ${at(p).map(e => e.name).join(', ') || (exitAt(p)?.label ?? (tile(p) === 'wall' ? '벽' : tile(p) === 'soil' ? '밭' : '빈 칸'))}`; }
-function selectSelf() { selectedId.value = 'player'; if (player.value?.pos) selectedPos.value = { ...player.value.pos }; }
+function selectSelf() { aimDash.value=false; selectedId.value = 'player'; if (player.value?.pos) selectedPos.value = { ...player.value.pos }; }
 function say(text: string) { notice.value = text; clearTimeout(timer); if (text) timer = setTimeout(() => notice.value = '', 3500); }
-function stop() { movement++; moving.value = false; }
+function stop() { movement++; moving.value = false; routeCells.value=[]; }
 async function clickCell(pos: GridPos) {
   if (!player.value?.pos || speech.value || run.data.ended) return;
   stop();
+  if(aimDash.value){
+    const result=performFieldGesture('dash',undefined,pos,{quality:1,drawn:true});
+    say(result.message);if(result.ok){aimDash.value=false;selectSelf();}
+    wake();return;
+  }
   const candidates = at(pos);
-  const sameCell = distance(selectedPos.value, pos) === 0;
-  const e = sameCell && candidates.length > 1 ? candidates[(candidates.findIndex(e => e.id === selectedId.value) + 1) % candidates.length] : candidates.find(e => e.kind === 'actor') ?? candidates.at(-1);
+  const e = candidates.find(e=>e.id===selectedId.value)??candidates.find(e => e.kind === 'actor') ?? candidates.at(-1);
   selectedId.value = e?.id;
   selectedPos.value = { ...pos };
-  if (e?.id === 'player') return;
-  const near = !!held.value || !!e && (e.kind === 'actor' || (e.properties.solid ?? 0) > 0 || (e.properties.portable ?? 0) > 0 || e.kind === 'plot');
+  if (e?.kind === 'actor') return;
+  const near = !!held.value || !!e && ((e.properties.solid ?? 0) > 0 || (e.properties.portable ?? 0) > 0 || e.kind === 'plot');
   const path = fieldPath(world.value, run.data.currentNodeId, player.value.pos, pos, 'player', near);
   if (!path) { say('길이 막혀 있다.'); return; }
   const token = movement;
   const origin = run.data.currentNodeId;
-  moving.value = true;
+  moving.value = true; routeCells.value=[...path];
   for (const p of path) {
     if (token !== movement || run.data.ended) break;
-    const result = stepField(p);
+    const result = stepField(p);routeCells.value=routeCells.value.filter(q=>distance(q,p)!==0);
     if (result.message) say(result.message);
     if (!result.ok || result.travel || run.data.currentNodeId !== origin) break;
     // A new telegraph pauses travel so a long tap never walks blindly into the next hit.
     if (danger.value.size) break;
     await new Promise(resolve => setTimeout(resolve, 90));
   }
-  if (token === movement) moving.value = false;
+  if (token === movement) {moving.value = false;routeCells.value=[];if(!e)selectSelf();}
   if (run.data.currentNodeId !== origin) selectSelf();
   if (run.data.ended) router.push('/game/end');
 }
@@ -94,10 +133,12 @@ function perform(gesture: Gesture, quality=1, drawn=false) {
     if (gesture === 'tap'||gesture==='circle') nextLine();
     return;
   }
-  let pos = target.value?.pos ?? selectedPos.value;
+  if(gesture==='dash'){aimDash.value=!aimDash.value;say(aimDash.value?'ϟ 도착할 칸을 선택하세요.':'');return;}
+  aimDash.value=false;
+  let pos = selection.value;
   if (gesture === 'place' && held.value && player.value?.pos && distance(player.value.pos, pos) === 0) pos = cardinal(player.value.pos).find(p => walkable(world.value, run.data.currentNodeId, p, held.value?.id)) ?? pos;
   const origin = run.data.currentNodeId;
-  const result = performFieldGesture(gesture, selectedId.value, pos, {quality,drawn});
+  const result = performFieldGesture(gesture, target.value?.id, pos, {quality,drawn});
   say(result.message);
   if (result.speech) { speech.value = result.speech; line.value = 0; }
   if(result.targetPos) { selectedPos.value=result.targetPos; selectedId.value=result.targetId; }
@@ -106,14 +147,15 @@ function perform(gesture: Gesture, quality=1, drawn=false) {
   wake();
   if (run.data.ended) router.push('/game/end');else if(result.route)router.push(result.route);
 }
-function nextLine(){if(speech.value&&++line.value>=speech.value.lines.length)speech.value=undefined;wake();}
+function nextLine(){if(speech.value&&line.value+1<speech.value.lines.length)line.value++;else if(!encounter.value)speech.value=undefined;wake();}
 function chooseItem(id: string) { run.data.field!.selectedItem = run.data.field!.selectedItem === id ? undefined : id; }
 watch(()=>run.data.currentNodeId,()=>{if(initialized.value){ensureField(run.data);selectSelf();}});
 watch([bagOpen,skillsOpen,progressOpen,settingsOpen,mapOpen,detailsOpen,characterOpen,inventoryOpen],values=>{if(values.some(Boolean))stop();});
 watch([characterOpen,inventoryOpen],()=>{if(initialized.value)ensureField(run.data);});
 onMounted(async () => {
   if (!run.active) { router.replace('/main'); return; }
-  ensureField(run.data); initialized.value = true; selectSelf();
+  ensureField(run.data); effectCursor=world.value.sequence; initialized.value = true; selectSelf();
+  if(run.data.field?.encounter){speech.value=run.data.field.encounter;line.value=0;}
   await nextTick();
   observer = new ResizeObserver(entries => { const rect = entries[0]?.contentRect; if (rect) { width.value = rect.width; height.value = rect.height; } });
   if (stageElement.value) observer.observe(stageElement.value);
@@ -133,25 +175,29 @@ onBeforeUnmount(() => { stop(); observer?.disconnect(); clearTimeout(timer);clea
 
 <template>
   <main v-if="initialized && space && player" class="field-view" @pointerdown.capture="press" @keydown.capture="wake">
-    <header class="field-heading"><div><span class="eyebrow">COLORZ</span><h1>{{ space.name }}</h1></div><div class="field-clock"><span><b>♥</b> {{ run.data.hp }}/{{ run.data.maxHp }} <i>·</i> {{ '◈'.repeat(Math.max(0, run.data.lives)) }}</span></div></header>
+    <header class="field-heading"><div><span class="eyebrow">COLORZ</span><h1>{{ space.name }}</h1></div><div class="field-clock"><span><b>♥</b> {{ run.data.hp }}/{{ run.data.maxHp }} <i>·</i> {{ '◈'.repeat(Math.max(0, run.data.lives)) }}</span><span class="mana-pips" :aria-label="'마나 '+run.data.mp+' / 3'"><i v-for="n in 3" :key="n" :class="{filled:run.data.mp>=n}">◆</i></span></div></header>
     <div ref="stageElement" class="field-stage" :class="{ dungeon: !!space.dungeon }">
       <div class="field-board" role="group" aria-label="격자 필드" :style="{ gridTemplateColumns: `repeat(${columns}, ${tileSize}px)`, gridTemplateRows: `repeat(${rows}, ${tileSize}px)` }">
-        <button v-for="pos in cells" :key="positionKey(pos)" class="field-cell" :class="[`tile--${tile(pos)}`, { selected: distance(selectedPos, pos) === 0, danger: danger.has(positionKey(pos)), exit: !!exitAt(pos) }]" :aria-label="label(pos)" @click="clickCell(pos)">
+        <button v-for="pos in cells" :key="positionKey(pos)" class="field-cell" :class="[`tile--${tile(pos)}`, { selected: distance(selection, pos) === 0, danger: danger.has(positionKey(pos)), imminent:imminent.has(positionKey(pos)), path:pathKeys.has(positionKey(pos)), 'dash-aim':dashKeys.has(positionKey(pos)), exit: !!exitAt(pos) }]" :aria-label="label(pos)" @click="clickCell(pos)">
+          <span v-for="fx in effects.filter(f=>distance(f.pos,pos)===0)" :key="fx.id" class="combat-float" :class="'combat-float--'+fx.kind" aria-live="polite">{{ fx.text }}</span>
           <span v-if="tile(pos) === 'grass'" class="grass-marks" aria-hidden="true">{{ (pos.x * 3 + pos.y) % 4 === 0 ? 'ˎ ˏ' : '·' }}</span>
           <span v-if="exitAt(pos)" class="exit-mark" aria-hidden="true">{{ space.dungeon ? '≋' : '⋮' }}</span>
-          <span v-for="entity in at(pos)" :key="entity.id" class="field-piece" :class="{ 'field-piece--player': entity.id === 'player' }"><FieldEntityGlyph :entity="entity"/><span v-if="entity.creature" class="creature-hp"><i :style="{ width: `${entity.properties.integrity ?? 100}%` }"/></span><span v-if="entity.creature?.intent" class="intent-mark">!</span><span v-if="entity.id === speech?.actorId" class="speech-bubble">{{ speech.lines[line]?.slice(0, 22) }}{{ (speech.lines[line]?.length ?? 0) > 22 ? '…' : '' }}</span></span>
+          <span v-for="entity in at(pos)" :key="entity.id" class="field-piece" :class="{ 'field-piece--player': entity.id === 'player' }"><FieldEntityGlyph :entity="entity"/><span v-if="entity.creature" class="creature-hp"><i :style="{ width: `${entity.properties.integrity ?? 100}%` }"/></span><span v-if="entity.creature?.pending" class="intent-mark">{{ entity.creature.pending.remaining }}</span><span v-if="entity.id === speech?.actorId" class="speech-bubble">{{ speech.lines[line]?.slice(0, 22) }}{{ (speech.lines[line]?.length ?? 0) > 22 ? '…' : '' }}</span></span>
           <span v-if="exitAt(pos)" class="exit-label">{{ exitAt(pos)?.label }}</span>
-          <span v-if="distance(selectedPos,pos)===0&&hints.length&&target?.id!=='player'" class="tile-hints" aria-hidden="true">{{ hints.map(h=>GLYPHS[h.id]).join(' ') }}</span>
+          <span v-if="distance(selection,pos)===0&&hints.length&&target?.id!=='player'" class="tile-hints" aria-hidden="true">{{ hints.map(h=>GLYPHS[h.id]).join(' ') }}</span>
         </button>
       </div>
+      <div v-if="statusEntries(player).length" class="field-statuses" aria-label="내 상태"><button v-for="s in statusEntries(player)" :key="s.key" :aria-label="statusLabel(s.key)+' '+s.value" @click="say(STATUS_HELP[s.key]??statusLabel(s.key))">{{ statusLabel(s.key) }} {{ s.value }}</button></div>
       <div v-if="notice" class="field-notice" role="status">{{ notice }}</div>
       <div v-if="space.cleared && space.dungeon" class="room-clear">◇ 길이 열렸다</div>
     </div>
     <section class="field-console" aria-label="하단 조작 패널">
       <section v-if="speech" class="field-dialogue" aria-label="대화">
-        <div><strong>{{ speech.name }}</strong><button aria-label="대화 닫기" @click="speech=undefined">×</button></div>
+        <div><strong>{{ speech.name }}</strong><button aria-label="대화 닫기" @click="encounter?encounterChoice(false):speech=undefined">×</button></div>
         <blockquote>{{ speech.lines[line] }}</blockquote>
-        <button class="dialogue-next" @click="nextLine">● {{ line+1===speech.lines.length?'대화 마치기':'계속' }}</button>
+        <div v-if="encounter&&line+1===speech.lines.length" class="encounter-choices"><button @click="encounterChoice(true)">도전한다</button><button @click="encounterChoice(false)">물러난다</button></div>
+        <div v-else-if="speech.topics&&line+1===speech.lines.length" class="dialogue-topics"><button v-for="topic in speech.topics" :key="topic.label" @click="speech.lines=[...topic.lines];line=0">{{ topic.label }}</button><button @click="speech=undefined">다음에 또</button></div>
+        <button v-else class="dialogue-next" @click="nextLine">● {{ line+1===speech.lines.length?'대화 마치기':'계속' }}</button>
       </section>
       <section v-if="bagOpen" class="field-drawer" aria-label="소지품 선택">
         <header><strong>손에 쓸 물건</strong><button @click="bagOpen=false;inventoryOpen=true">소지품 관리</button><button aria-label="소지품 선택 닫기" @click="bagOpen=false">×</button></header>
@@ -173,11 +219,11 @@ onBeforeUnmount(() => { stop(); observer?.disconnect(); clearTimeout(timer);clea
         <header><strong>{{ targetName }}</strong><button aria-label="대상 살펴보기 닫기" @click="detailsOpen=false">×</button></header>
         <div v-if="layeredTargets.length>1" class="target-stock" aria-label="같은 칸의 대상"><button v-for="entity in layeredTargets" :key="entity.id" :aria-pressed="selectedId===entity.id" @click="selectedId=entity.id">{{ entity.name }}</button></div>
         <div class="target-stock"><button v-for="[id,n] in targetStock" :key="id" :aria-pressed="run.data.field?.selectedItem===id" @click="chooseItem(id);detailsOpen=false">{{ fieldItemName(id) }} <b>{{ n }}</b></button></div>
-        <p v-if="!targetStock.length">놓인 물건 없음</p>
+        <div v-if="target?.creature" class="target-states"><p>{{ target.creature.pending?.name??'경계 중' }}</p><p v-for="s in statusEntries(target)" :key="s.key">{{ statusLabel(s.key) }} {{ s.value }} · {{ STATUS_HELP[s.key] }}</p></div><p v-else-if="!targetStock.length">놓인 물건 없음</p>
       </section>
       <div class="console-target">
-        <div><strong>{{ targetName }}</strong><small v-if="target?.creature">{{ Math.ceil(target.creature.maxHp*(target.properties.integrity??100)/100) }} HP</small><small v-else-if="target?.production&&!target.production.settled">성장 중</small></div>
-        <button v-if="targetStock.length||layeredTargets.length>1" aria-label="대상 살펴보기" @click="stop();progressOpen=false;detailsOpen=!detailsOpen;bagOpen=false;skillsOpen=false">···</button>
+        <div><strong>{{ aimDash?'ϟ 도착할 칸':targetName }}</strong><small v-if="target?.creature">{{ Math.ceil(target.creature.maxHp*(target.properties.integrity??100)/100) }} HP · {{ target.creature.pending?.name??'경계 중' }}</small><small v-else-if="target?.production&&!target.production.settled">성장 중</small></div>
+        <button v-if="targetStock.length||layeredTargets.length>1||target?.creature" aria-label="대상 살펴보기" @click="stop();progressOpen=false;detailsOpen=!detailsOpen;bagOpen=false;skillsOpen=false">···</button>
         <button v-if="moving" aria-label="이동 멈추기" @click="stop">■</button><button v-else aria-label="자신 선택" @click="selectSelf">◎</button>
       </div>
       <div class="console-body">
@@ -215,6 +261,7 @@ h1 { font-size: 16px; line-height: 1.4; margin: 0; font-weight: 600; color: #e3d
 .field-cell { appearance: none; display: block; position: relative; min-width: 0; width: 100%; height: 100%; padding: 0; margin: 0; border: 0; border-right: 1px solid #172b2520; border-bottom: 1px solid #172b2520; border-radius: 0; box-sizing: border-box; cursor: pointer; touch-action: manipulation; }
 .tile--grass { background: #415e45; }.tile--grass:nth-child(3n) { background: #456148; }.tile--path { background: #77856b; }.tile--soil { background: repeating-linear-gradient(165deg, #725e44 0 7px, #66533e 7px 9px); }.tile--water { background: #608992; }.tile--stone { background: #535c59; }.tile--wall { background: #263b2d; box-shadow: inset 0 -7px #15281f66; }.dungeon .tile--wall { background: #303735; box-shadow: inset 0 -7px #171c1ccc; }
 .grass-marks { color: #a0ba823b; font-size: 22px; position: absolute; bottom: 4px; left: 8px; }.field-cell:focus-visible { outline: 3px solid #e9d898; z-index: 4; }
+.field-cell.path::before{content:'·';position:absolute;inset:0;display:grid;place-items:center;color:#f3e2a7;font-size:30px;z-index:1}.field-cell.dash-aim{box-shadow:inset 0 0 0 2px #90d9e9}.field-cell.imminent{outline:1px solid #ffb096;outline-offset:-3px}.mana-pips{display:flex;gap:5px}.mana-pips i{color:#486365;opacity:1}.mana-pips i.filled{color:#9ddaea}.combat-float{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:23px;font-weight:800;white-space:nowrap;color:#fff0df;text-shadow:0 2px 2px #321716,1px 0 #321716,-1px 0 #321716;z-index:20;pointer-events:none;animation:damage-rise 1.6s ease-out forwards}.combat-float--heal{color:#b6edbb}.combat-float--guard,.combat-float--miss{font-size:13px;color:#d0e8f3}.field-statuses{position:absolute;top:7px;left:8px;right:8px;display:flex;gap:4px;overflow-x:auto;z-index:6}.field-statuses button{padding:4px 6px;background:#182b29e8;color:#f5cbb5;border:1px solid #8c8f70;border-radius:4px;font-size:10px;white-space:nowrap}.dialogue-topics{display:flex;gap:8px;flex-wrap:wrap}.dialogue-topics button{padding:9px 10px;border:1px solid #aaa184;background:#263d35;color:#ecdfb7;border-radius:4px}.encounter-choices{display:flex;gap:12px}.encounter-choices button{flex:1;padding:10px;border:1px solid #aaa184;border-radius:4px;background:#263d35;color:#ecdfb7}@keyframes damage-rise{0%{transform:translateY(0) scale(.7);opacity:1}20%{transform:translateY(-9px) scale(1.08);opacity:1}75%{opacity:1}100%{transform:translateY(-32px);opacity:0}}
 .field-cell.selected::after { content: ''; position: absolute; inset: 3px; border: 1.5px solid #f4df9c; border-radius: 5px; z-index: 4; pointer-events: none; }.field-cell.danger { background-image: repeating-linear-gradient(135deg, #d1796733 0 5px, #d1796799 5px 7px); box-shadow: inset 0 0 0 2px #eaa18a; }
 .field-piece { position: absolute; inset: -4px 2px 2px; z-index: 2; pointer-events: none; }.field-piece--player { z-index: 3; }.creature-hp { position: absolute; left: 12%; right: 12%; bottom: 1px; height: 3px; background: #352d2c; border-radius: 3px; }.creature-hp i { display: block; height: 100%; background: #d78687; border-radius: inherit; }
 .intent-mark { position: absolute; right: 0; top: -4px; background: #d88875; color: #31201d; font-weight: bold; width: 14px; height: 17px; border-radius: 6px; font-size: 12px; }

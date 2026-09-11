@@ -1,3 +1,4 @@
+import { connectionVector } from './field-geography';
 import type { RunState, Node, Monster, Boss } from '@/data/schemas';
 import type { GridPos } from '@/data/schemas/base';
 import { useDataStore } from '@/stores/data';
@@ -57,15 +58,16 @@ function object(world: InteractionWorld, space: FieldSpace, suffix: string, name
   const existing=world.entities[`${space.id}:field:${suffix}`];if(existing)return existing;
   return placeFieldEntity(world, space, { id: `${space.id}:field:${suffix}`, name, kind: 'resource', nodeId: space.id, colors: {}, tags, stock, properties: { integrity: 100, ...properties } }, pos);
 }
+export const fieldCreatureHp=(hp:number,rank:string)=>Math.max(10,Math.round(hp/(rank==='boss'?4:rank==='elite'?1.5:1)));
 export function spawnCreature(run: RunState, world: InteractionWorld, space: FieldSpace, definition: Monster | Boss, index: number, rank: 'normal' | 'elite' | 'boss'): WorldEntity {
   const existing=world.entities[`${space.id}:creature:${index}`];if(existing)return existing;
-  const maxHp = Math.max(10, definition.hp);
+  const maxHp = fieldCreatureHp(definition.hp,rank);
   const drop = 'drop' in definition ? definition.drop : undefined;
   const e: WorldEntity = {
     id: `${space.id}:creature:${index}`, name: definition.name, kind: 'actor', nodeId: space.id,
     colors: {}, stock: {}, tags: ['monster', rank, ...(rank !== 'normal' ? ['humanoid'] : [])],
-    properties: { integrity: 100, hardness: Math.max(0, (definition.defense ?? 0) / 3), flammability: 1, moisture: 0, solid: 1 },
-    creature: { definitionId: definition.id, rank, maxHp, attack: Math.max(2, definition.attack), range: rank === 'normal' ? 1 : 2,
+    properties: { integrity: 100, maxHp, hardness: Math.max(0, (definition.defense ?? 0) / 3), flammability: 1, moisture: 0, solid: 1 },
+    creature: { balanceVersion:1, definitionId: definition.id, species:'species' in definition?definition.species:undefined, rank, maxHp, attack: Math.max(2, definition.attack), range: rank === 'normal' ? 1 : 2,
       reward: { gold: drop?.gold ?? (rank === 'normal' ? 3 : 12), shards: drop?.timeShards ?? (rank === 'normal' ? 1 : 5), itemId: baseNode(run, space.id)?.region ? fieldMap(run)?.regions.find(r => r.id === baseNode(run, space.id)?.region)?.specialtyItemId : undefined } },
   };
   const locations = [{ x:space.width-3,y:2 },{ x:space.width-2,y:space.height-3 },{ x:space.width-4,y:space.height-2 }];
@@ -92,7 +94,8 @@ function connectExits(space: FieldSpace, node: Node, run: RunState) {
   const entries = [...node.neighbors.map(to => ({ to, requirement: undefined as string | undefined })), ...(node.conditionalNeighbors ?? []).filter(c => !node.neighbors.includes(c.nodeId)).map(c => ({ to: c.nodeId, requirement: c.requires }))];
   entries.forEach(entry => {
     const destination=map?.nodes.find(n=>n.id===entry.to);if(!destination)return;
-    const pos = boundaryFor(space,destination.position.x-node.position.x,destination.position.y-node.position.y,space.exits.map(e=>e.pos));
+    const {dx,dy}=connectionVector(node,destination);
+    const pos = boundaryFor(space,dx,dy,space.exits.map(e=>e.pos));
     if (!pos) return;
     const connection=fieldConnection(map!,node,destination);
     space.exits.push({ ...entry, to:connection.to, destination:destination.id, roads:connection.count, pos, label:destination.label });
@@ -102,7 +105,7 @@ function connectExits(space: FieldSpace, node: Node, run: RunState) {
 }
 export function ensureFieldSpace(run: RunState, world: InteractionWorld, id: string): FieldSpace {
   world.spaces ??= {};
-  const old=world.spaces[id];if(old?.layoutVersion===2)return old;
+  const old=world.spaces[id];if(old?.layoutVersion===3)return old;
   const data=useDataStore(),map=fieldMap(run);
   if(!map)throw new Error('플레이할 장소가 없습니다.');
   const road=readRoad(id,map),split=id.split('::dungeon:');
@@ -113,14 +116,15 @@ export function ensureFieldSpace(run: RunState, world: InteractionWorld, id: str
   const {width,height}=road?{width:6,height:6}:dungeon?{width:10,height:9}:fieldDimensions(node,npcs.length);
   const spawn={x:dungeon?2:Math.floor(width/2),y:Math.floor(height/2)};
   const space:FieldSpace={id,nodeId:node.id,name:road?road.from.label+' — '+road.to.label+' · '+(road.index+1)+'/'+road.count:dungeon?node.label+' · 지하 '+floor+'층':node.label,
-    width,height,tiles:terrainFor(node,width,height,dungeon),spawn,exits:[],layoutVersion:2,theme:dungeon?'cave':fieldTheme(node),cleared:old?.cleared,
+    width,height,tiles:terrainFor(node,width,height,dungeon),spawn,exits:[],layoutVersion:3,theme:dungeon?'cave':fieldTheme(node),cleared:old?.cleared,
     ...(dungeon?{dungeon:{origin:node.id,floor,totalFloors:3}}:{}),...(road?{road:{from:road.from.id,to:road.to.id,index:road.index,count:road.count}}:{})};
   world.spaces[id]=space;space.tiles[spawn.y]![spawn.x]='path';
   if(road){
     const forward=road.from.neighbors.includes(road.to.id)?undefined:road.from.conditionalNeighbors?.find(e=>e.nodeId===road.to.id)?.requires;
     const backward=road.to.neighbors.includes(road.from.id)?undefined:road.to.conditionalNeighbors?.find(e=>e.nodeId===road.from.id)?.requires;
-    space.exits=[{pos:{x:0,y:3},to:road.index===0?road.from.id:roadId(road.from.id,road.to.id,road.index-1),label:road.from.label,destination:road.from.id,requirement:backward},
-      {pos:{x:5,y:2},to:road.index===road.count-1?road.to.id:roadId(road.from.id,road.to.id,road.index+1),label:road.to.label,destination:road.to.id,requirement:forward}];
+    const {dx,dy}=connectionVector(road.from,road.to);
+    space.exits=[{pos:boundaryFor(space,-dx,-dy,[]),to:road.index===0?road.from.id:roadId(road.from.id,road.to.id,road.index-1),label:road.from.label,destination:road.from.id,requirement:backward},
+      {pos:boundaryFor(space,dx,dy,[]),to:road.index===road.count-1?road.to.id:roadId(road.from.id,road.to.id,road.index+1),label:road.to.label,destination:road.to.id,requirement:forward}];
     for(const exit of space.exits)carvePath(space,exit.pos,spawn);
   }else if(dungeon){
     space.exits=[{pos:{x:0,y:spawn.y},to:floor===1?node.id:node.id+'::dungeon:'+(floor-1),label:floor===1?'지상':'윗층'}];

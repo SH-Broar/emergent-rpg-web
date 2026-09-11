@@ -1,3 +1,4 @@
+import { changeStatus } from './status';
 import type { ColorProfile, InteractionAction, InteractionResult, InteractionWorld, WorldEntity, WorldFact } from './types';
 import { iGa } from '../josa';
 import { resourceTags } from './resources';
@@ -13,9 +14,11 @@ export function conductivityMultiplier(properties: Record<string, number>): numb
 /** Property reactions have no knowledge of card, crop, profession or action IDs. */
 export function applyMaterialInfluence(properties: Record<string, number>, colors: ColorProfile, property: string, amount: number): PropertyChange[] {
   if (!finite(amount)) return [];
+  if (property === 'integrity' && amount > 0 && (properties['status:feral-heavy'] ?? 0) > 0) return [];
   const before = { ...properties };
   const max = ['work', 'practice', 'lifeLevel', 'mana'].includes(property) ? Number.MAX_SAFE_INTEGER : 100;
-  properties[property] = clamp((properties[property] ?? 0) + amount, 0, max);
+  if (property.startsWith('status:')) changeStatus(properties, property.slice(7), amount);
+  else properties[property] = clamp((properties[property] ?? 0) + amount, 0, max);
   // Moisture absorbs heat. The same rule handles a field, a barrel and a combat tile.
   if ((properties.moisture ?? 0) > 0 && (properties.heat ?? 0) > 0) {
     const absorbed = Math.min(properties.moisture!, properties.heat!);
@@ -40,6 +43,15 @@ export function applyMaterialInfluence(properties: Record<string, number>, color
     properties.integrity = clamp((properties.integrity ?? 100) - amount * conduction);
     properties.charge = 0;
   }
+  // Living actors use HP-unit guard and incoming status modifiers for every material attack.
+  if (properties.maxHp && ['force','charge'].includes(property) && amount > 0) {
+    let damage = Math.max(0, (before.integrity ?? 100) - (properties.integrity ?? 100)) * properties.maxHp / 100;
+    if (properties['status:vulnerable']) damage *= 1.5;
+    const guard = Math.min(before.guard ?? 0, damage);
+    properties.guard = Math.max(0, (before.guard ?? 0) - guard);
+    properties.integrity = clamp((before.integrity ?? 100) - Math.max(0, Math.ceil(damage - guard - 1e-8)) / properties.maxHp * 100);
+  }
+  if ((properties.integrity ?? 100) < (before.integrity ?? 100)) properties['status:sleep'] = 0;
   if ((properties.integrity ?? 100) <= 0) { properties.burning = 0; properties.heat = 0; }
   return Object.keys(properties).filter(key => (before[key] ?? 0) !== properties[key])
     .map(key => ({ property: key, before: before[key] ?? 0, after: properties[key]! }));
@@ -53,7 +65,7 @@ function visibleWitnesses(world: InteractionWorld, nodeId: string, actorId?: str
 }
 
 export function recordFact(world: InteractionWorld, fact: Omit<WorldFact, 'id' | 'witnesses'>): WorldFact {
-  const saved: WorldFact = { ...fact, targetTags: fact.targetTags ?? [...(world.entities[fact.targetId]?.tags ?? [])],
+  const saved: WorldFact = { ...fact, pos: fact.pos ?? (world.entities[fact.targetId]?.pos ? {...world.entities[fact.targetId]!.pos!} : undefined), targetTags: fact.targetTags ?? [...(world.entities[fact.targetId]?.tags ?? [])],
     resourceTags: fact.resourceTags ?? resourceTags(fact.resourceId),
     id: ++world.sequence, witnesses: visibleWitnesses(world, fact.nodeId, fact.actorId, fact.targetId) };
   world.events.push(saved);
@@ -97,6 +109,10 @@ export function influenceEntity(world: InteractionWorld, entity: WorldEntity, pr
     turn: world.turn, nodeId: entity.nodeId, actorId, targetId: entity.id, kind: 'property', ...change,
     ownerId: entity.ownerId, labor: entity.labor ?? 0, message,
   }));
+  const source=actorId?world.entities[actorId]:undefined;
+  if(source&&source.id!==entity.id&&entity.properties['status:thorns']&&['force','charge'].includes(property)&&facts.some(f=>f.property==='integrity'&&f.after!<f.before!)) {
+    facts.push(...influenceEntity(world,source,'integrity',-entity.properties['status:thorns']/(source.properties.maxHp??100)*100,entity.id));
+  }
   if (wasAlive && (entity.properties.integrity ?? 100) <= 0) {
     const stock = entity.stock;
     entity.production = undefined;

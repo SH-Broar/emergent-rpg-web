@@ -23,6 +23,7 @@ export function syncPlayerToWorld(run: RunState, world: InteractionWorld): void 
   actor.colors = { ...run.colors };
   actor.properties.integrity = run.maxHp > 0 ? run.hp / run.maxHp * 100 : 100;
   actor.properties.mana = run.mp;
+  if(run.field){actor.properties['status:possession']=run.possessed??0;actor.properties['status:feral-heavy']=run.feralHeavy??0;}
   actor.properties.lifeLevel = run.lifeLevel ?? 1;
   const definitions = useDataStore().items;
   const carriedIds = new Set(run.items.map(item => item.id));
@@ -53,6 +54,7 @@ export function syncPlayerFromWorld(run: RunState, world: InteractionWorld): voi
   for (const { key, value } of gains) run.colors[key] = value;
   run.hp = Math.max(0, Math.min(run.maxHp, Math.ceil((actor.properties.integrity ?? 100) / 100 * run.maxHp - 1e-8)));
   run.mp = Math.max(0, Math.min(run.maxMp, actor.properties.mana ?? run.mp));
+  if(run.field){run.possessed=actor.properties['status:possession']??0;run.feralHeavy=actor.properties['status:feral-heavy']??0;}
   for (const { key, value, delta } of gains) if (delta > 0) announceColorGain(key, delta, value);
   actor.colors = { ...run.colors };
 }

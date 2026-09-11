@@ -360,3 +360,95 @@ label = 수레 미는 것을 거들고 간다
 hp = 8
 gold = 30
 result_text = 무거운 수레를 언덕 위까지 밀어 주었다. 행상이 고맙다며 노잣돈을 보태 주었다.
+
+# Restored referenced NPC encounters
+
+[event.ev-lar-twins-home-1]
+name = 오두막 앞에서
+body = 마로가 문을 받친 채 장작을 옮기고 있다. 엔야는 뒤에서 더 높이 쌓아 보겠다고 우긴다.\n“일단 문부터 닫을 수 있게 해 줘.”
+node_kinds = event
+once_per_run = true
+featured_npcs = npc-maro
+
+[event.ev-lar-twins-home-1.choice.1]
+label = 장작을 나누어 든다
+affinity = npc-maro:1
+result_text = 고마워요. 엔야 것까지 한꺼번에 들려고 했더니 자꾸 흘렸네요.
+
+[event.ev-lar-twins-home-1.choice.2]
+label = 다음에 들른다
+
+[event.ev-lar-twins-talk-3]
+name = 늦은 마중
+body = 엔야가 길가에 앉아 나뭇가지로 선을 긋는다. 마로가 돌아오자 서둘러 일어났다.\n“기다린 건 아닌데. 그냥 여기 있었어.”
+node_kinds = event
+once_per_run = true
+featured_npcs = npc-arvaro-enya
+
+[event.ev-lar-twins-talk-3.choice.1]
+label = 함께 집으로 걷는다
+affinity = npc-arvaro-enya:1
+result_text = 누나가 내일은 같이 가도 된대. 너도 올 거야?
+
+[event.ev-lar-twins-talk-3.choice.2]
+label = 다음에 들른다
+
+[event.ev-lar-caliburn-trace-1]
+name = 낡은 흔적
+body = 칼리번이 칼집 모양의 자국을 종이에 옮긴다.\n“여기에 둔 건지 여기서 만든 건지 모르겠어요. 저쪽에도 같은 흔적이 있나요?”
+node_kinds = event
+once_per_run = true
+featured_npcs = npc-caliburn
+
+[event.ev-lar-caliburn-trace-1.choice.1]
+label = 주변을 함께 살핀다
+affinity = npc-caliburn:1
+result_text = 여기도 있네요. 하나만 보고 짐작했으면 놓칠 뻔했어요.
+
+[event.ev-lar-caliburn-trace-1.choice.2]
+label = 다음에 들른다
+
+[event.ev-lar-caliburn-elnest-meet-2]
+name = 두 사람의 지도
+body = 엘네스트가 길을 가리키자 칼리번이 지도에 표시했다.\n“여긴 다녀왔고. 다음은?”\n“다녀온 곳에 뭘 봤는지부터 적고요.”
+node_kinds = event
+once_per_run = true
+featured_npcs = npc-caliburn
+
+[event.ev-lar-caliburn-elnest-meet-2.choice.1]
+label = 지나온 길을 알려 준다
+affinity = npc-caliburn:1
+result_text = 그곳부터 다시 봐야겠네요. 알려 주셔서 고마워요.
+
+[event.ev-lar-caliburn-elnest-meet-2.choice.2]
+label = 다음에 들른다
+
+[event.ev-lar-arvaro-spirit-2]
+name = 장난이 멎은 자리
+body = 엔야가 허공에 그은 선이 지워지지 않는다. 웃던 얼굴이 조금 굳었다.\n“이거, 누나 오기 전에 지울 수 있겠지?”
+node_kinds = event
+once_per_run = true
+featured_npcs = npc-arvaro-enya
+
+[event.ev-lar-arvaro-spirit-2.choice.1]
+label = 마로를 불러온다
+affinity = npc-arvaro-enya:1
+result_text = 혼나긴 했는데 지워졌어. 다음엔 종이에만 그릴래.
+
+[event.ev-lar-arvaro-spirit-2.choice.2]
+label = 다음에 들른다
+
+[event.ev-coral-deep]
+name = 물 아래의 울림
+body = 세이라의 노래가 바위 너머에서 들려온다. 마린이 손을 들어 물살이 잦아들 때까지 기다리라고 알린다.
+node_kinds = event
+once_per_run = true
+featured_npcs = npc-marin
+
+[event.ev-coral-deep.choice.1]
+label = 물살을 함께 살핀다
+affinity = npc-marin:1
+result_text = 이제 건너도 돼요. 소리가 끊기면 물가에서 조금 물러나시고요.
+
+[event.ev-coral-deep.choice.2]
+label = 다음에 들른다

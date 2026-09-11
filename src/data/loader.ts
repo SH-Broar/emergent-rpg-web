@@ -1,3 +1,4 @@
+import { NPC_DIALOGUE } from './npc-dialogue';
 /**
  * 데이터 로더 — INI 텍스트를 도메인 모델로 변환.
  *
@@ -461,7 +462,7 @@ export function parseEvents(ini: IniData): Map<string, Event> {
   const result = new Map<string, Event>();
   for (const [section, fields] of Object.entries(ini)) {
     if (!section.startsWith('event.')) continue;
-    if (section.includes('.choice.')) continue; // 자식 섹션
+    if (section.includes('.choice.') || section.includes('.var.')) continue; // 자식 섹션
     const id = sectionIdSuffix(section);
     const ev = parseOneEvent(id, fields, ini);
     if (ev) result.set(ev.id, ev);
@@ -489,7 +490,7 @@ function parseOneEvent(id: string, f: IniSection, ini: IniData): Event {
 
   return {
     id,
-    name: f.name ?? id,
+    name: f.name || variations[0]?.name || id,
     description: f.description,
     body: f.body ?? '',
     trigger: {
@@ -1106,7 +1107,7 @@ export function parseNpcs(ini: IniData): Map<string, Npc> {
       giftPrefs: parseGiftPrefs(fields),
       tags: parseList(fields.tags),
       signatureElement: sigEl,
-      tagline: fields.tagline,
+      tagline: NPC_DIALOGUE[id]?.greeting.split('\n')[0] ?? fields.tagline,
       portrait: fields.portrait,
       recruit: parseRecruitBonuses(fields),
       companion: parseCompanion(fields),

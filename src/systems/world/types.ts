@@ -60,6 +60,7 @@ export interface WorldEntity {
   workRecipe?: { required: number; inputs: Record<string, number>; outputs: Record<string, number>; changes?: Record<string, number>; repeat: boolean };
 }
 export interface WorldFact {
+  pos?: GridPos;
   id: number;
   turn: number;
   nodeId: string;

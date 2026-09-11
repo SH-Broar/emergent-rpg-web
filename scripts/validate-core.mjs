@@ -132,6 +132,7 @@ export const DATA_FILES = [
   'relics/relics-arc.txt',
   'events/events-mvr.txt',
   'events/act-1-region-events.txt',
+  'events/act-1-smallregion-events.txt',
   'events/events-filler.txt',
   'events/events-persistent.txt',
   'events/events-possession.txt',
@@ -428,7 +429,7 @@ export function validateData(dataDir, readFile) {
     else if (section.startsWith('boss.') && !section.includes('.phase.') && !section.includes('.signature.')) bossIds.add(sectionIdSuffix(section));
     else if (section.startsWith('race.')) raceIds.add(sectionIdSuffix(section));
     else if (section.startsWith('npc.')) npcIds.add(sectionIdSuffix(section));
-    else if (section.startsWith('event.') && !section.includes('.choice.')) eventIds.add(sectionIdSuffix(section));
+    else if (section.startsWith('event.') && !section.includes('.choice.') && !section.includes('.var.')) eventIds.add(sectionIdSuffix(section));
     else if (section.startsWith('equipment.')) equipmentIds.add(sectionIdSuffix(section));
     else if (section.startsWith('clue.')) clueIds.add(sectionIdSuffix(section));
   }
@@ -654,18 +655,18 @@ export function validateData(dataDir, readFile) {
   for (const id of eventIds) {
     const f = merged[`event.${id}`];
     const w = whereOf(`event.${id}`);
-    if (!f.name) push(diag('error', 'required-fields', `이벤트 '${id}' name 누락`, w));
+    if (!f.name && !merged[`event.${id}.var.1`]?.name) push(diag('error', 'required-fields', `이벤트 '${id}' name 누락`, w));
     for (const nk of parseList(f.node_kinds)) {
       if (!VALID_NODE_KINDS.includes(nk)) push(diag('error', 'whitelist-kind', `이벤트 '${id}' 알 수 없는 node_kind '${nk}'`, w));
     }
     for (const npcId of parseList(f.featured_npcs)) {
       if (!npcIds.has(npcId)) push(diag('error', 'dangling', `이벤트 '${id}' featured_npcs NPC '${npcId}' 미정의`, w));
     }
-    // 선택지 섹션.
-    for (let i = 1; i <= 6; i++) {
-      const cf = merged[`event.${id}.choice.${i}`];
-      if (!cf) continue;
-      const cw = whereOf(`event.${id}.choice.${i}`);
+    // Outcome variations carry the same references as choices.
+    const children=Object.keys(merged).filter(key=>key.startsWith('event.'+id+'.choice.')||key.startsWith('event.'+id+'.var.'));
+    for (const section of children) {
+      const cf=merged[section],i=section.slice(('event.'+id+'.').length),cw=whereOf(section);
+      for(const npcId of parseList(cf.featured_npcs))if(!npcIds.has(npcId))push(diag('error','dangling',`이벤트 '${id}' ${i} featured_npcs NPC '${npcId}' 미정의`,cw));
       if (cf.grant_card && !cardIds.has(cf.grant_card)) push(diag('error', 'dangling', `이벤트 '${id}' choice ${i} grant_card '${cf.grant_card}' 미정의`, cw));
       if (cf.grant_relic && !relicIds.has(cf.grant_relic)) push(diag('error', 'dangling', `이벤트 '${id}' choice ${i} grant_relic '${cf.grant_relic}' 미정의`, cw));
       if (cf.clue && !clueIds.has(cf.clue)) push(diag('error', 'dangling', `이벤트 '${id}' choice ${i} clue '${cf.clue}' 미정의`, cw));

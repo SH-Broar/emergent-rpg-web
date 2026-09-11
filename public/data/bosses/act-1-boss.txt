@@ -12,8 +12,8 @@ attack = 14
 defense = 4
 reward_soul = 30
 reward_codex = bs-act-1-anchor
-intro = 공기가 멈춘다. 작은 그림자가 떠 있다. 그것은 아무 말도 하지 않는다.
-defeat_text = 정령이 천천히, 손을 편다. 붙잡고 있던 것들이 떠나간다. "……" 시간이 다시 흐른다.
+intro = 닻줄이 바닥을 긁는다. 시간의 정령이 길 한가운데 내려섰다.
+defeat_text = 닻줄이 느슨해졌다. 멎었던 소리가 먼 곳부터 돌아왔다.
 # 격자 거동(#4) — 떠 있는 정령은 느리게 한 칸씩 다가오고(king range1), 사거리가 넓다.
 # fixed_ai=true(기본) → 페이즈 grid_attack 순서대로 그리디 로테이션(읽히는 텔레그래프).
 move_pattern = king
@@ -22,6 +22,9 @@ move_range = 1
 # 강상태이상은 시간 테마 + 페이즈 기믹과 비중복 + 사이클당 1~2회만(사용자 사양).
 #  P1(anchor=카드 잠금): 가벼움 취약 1 + 충전. P2(stillness=정지): 비용교란+은폐(정지와 비중복).
 #  P3(rewind=회복): 잠식(스탯 흡수)+충전 큰 한 방. 패턴 6~8턴.
+dialogue = 돌아갈 길은 아직 열려 있다., 지나가겠다면 그 발로 증명해라.
+challenge_label = 앞으로 간다
+decline_label = 물러난다
 
 [boss.bs-act-1-anchor.phase.1]
 starts_at = 1.0

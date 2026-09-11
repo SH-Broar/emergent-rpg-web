@@ -33,6 +33,7 @@ export const GESTURE_CATALOG: readonly GestureDefinition[] = [
   { id:'place', glyph:'∨', name:'아래로 꺾인 선', points:points([0,0],[.5,1],[1,0]), tolerance:.13 },
   { id:'take', glyph:'⊂', name:'왼쪽 열린 네모', points:points([1,0],[0,0],[0,1],[1,1]), tolerance:.13 },
   { id:'give', glyph:'⊃', name:'오른쪽 열린 네모', points:points([0,0],[1,0],[1,1],[0,1]), tolerance:.13 },
+  { id:'dash', glyph:'ϟ', name:'번개선', points:points([1,0],[0,.5],[1,.5],[0,1]), tolerance:.13 },
   { id:'star', glyph:'☆', name:'오각별', points:star, closed:true, drawOnly:true, tolerance:.075, effect:{property:'charge',amount:28,mana:3,reach:4} },
 ];
 export const gestureDefinition = (id: string) => GESTURE_CATALOG.find(g => g.id === id);

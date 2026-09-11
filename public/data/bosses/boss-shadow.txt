@@ -10,8 +10,9 @@ defense = 2
 reward_unlocks = unlock-tl-shadow-410, unlock-character-shadowtouched
 reward_soul = 10
 reward_codex = bs-shadow-lake
-intro = 검은 안개가 호수 위로 올라온다. "…늦었구나. 이 시간에 다다른 자가." 안개가 형태를 갖춘다.
-defeat_text = "다음 시간엔, 좀 더 일찍 와 주시오." 안개가 호수 아래로 다시 내려갔다.
+intro = 호수에 비친 그림자가 물가로 올라왔다.
+defeat_text = 그림자가 물 위로 흩어졌다. 잔물결 사이로 하늘이 비쳤다.
+dialogue = 거기서 기다려라. 아직 네 모습이 다 비치지 않았다.
 
 [boss.bs-shadow-lake.phase.1]
 starts_at = 1.0

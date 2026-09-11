@@ -18,7 +18,7 @@ export interface FieldSpace {
   exits: FieldExit[];
   dungeon?: { origin: string; floor: number; totalFloors: number };
   cleared?: boolean;
-  layoutVersion?: 2;
+  layoutVersion?: 2 | 3;
   theme?: string;
   road?: {from:string;to:string;index:number;count:number};
 }
@@ -37,9 +37,20 @@ export interface FieldState {
   sequence: number;
   completedDungeons: string[];
   controlsVersion?: 2 | 3;
+  combatVersion?: 1;
+  manaStep?: number;
+  encounter?: FieldSpeech;
+  notification?: FieldSpeech;
 }
 export interface FieldCreature {
   definitionId: string;
+  species?: string;
+  balanceVersion?: 1;
+  pending?: FieldAttack;
+  recovery?: number;
+  tempoStep?: number;
+  engaged?: boolean;
+  challengeAfter?: number;
   rank: 'normal' | 'elite' | 'boss';
   maxHp: number;
   attack: number;
@@ -51,5 +62,15 @@ export interface FieldCreature {
   phase?: number;
   reward: { gold: number; shards: number; itemId?: string };
 }
-export interface FieldSpeech { actorId: string; name: string; lines: string[] }
+export interface FieldSpeech { actorId: string; name: string; lines: string[]; topics?: {label:string;lines:string[]}[] }
 export interface FieldResult { ok: boolean; message: string; speech?: FieldSpeech; travel?: boolean; route?:string; changed?: string[]; targetId?: string; targetPos?: GridPos }
+
+export interface FieldAttack {
+  name:string;
+  cells:{pos:GridPos;multiplier:number}[];
+  damage:number;
+  status?:string;
+  remaining:number;
+  castTurns:number;
+  castSpeed:'fast'|'normal'|'slow';
+}

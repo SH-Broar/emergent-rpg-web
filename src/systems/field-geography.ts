@@ -56,10 +56,17 @@ export function carvePath(space:FieldSpace,from:GridPos,to:GridPos) {
   while(x!==to.x||y!==to.y){if(horizontal&&x!==to.x||y===to.y)x+=Math.sign(to.x-x);else y+=Math.sign(to.y-y);space.tiles[y]![x]='path';}
 }
 export function boundaryFor(space:FieldSpace,dx:number,dy:number,used:readonly GridPos[]):GridPos {
-  const points:GridPos[]=[];
-  for(let x=1;x<space.width-1;x++)points.push({x,y:0},{x,y:space.height-1});
-  for(let y=1;y<space.height-1;y++)points.push({x:0,y},{x:space.width-1,y});
-  const len=Math.hypot(dx,dy)||1,cx=(space.width-1)/2,cy=(space.height-1)/2;
-  const ideal={x:cx+dx/len*cx,y:cy+dy/len*cy};
-  return points.filter(p=>!used.some(q=>p.x===q.x&&p.y===q.y)).sort((a,b)=>Math.hypot(a.x-ideal.x,a.y-ideal.y)-Math.hypot(b.x-ideal.x,b.y-ideal.y))[0]!;
+  const horizontal=Math.abs(dx)>=Math.abs(dy);
+  const points:GridPos[]=horizontal
+    ? Array.from({length:space.height-2},(_,i)=>({x:dx>=0?space.width-1:0,y:i+1}))
+    : Array.from({length:space.width-2},(_,i)=>({x:i+1,y:dy>=0?space.height-1:0}));
+  const ideal=horizontal?(space.height-1)/2:(space.width-1)/2;
+  return points.filter(p=>!used.some(q=>p.x===q.x&&p.y===q.y)).sort((a,b)=>Math.abs((horizontal?a.y:a.x)-ideal)-Math.abs((horizontal?b.y:b.x)-ideal))[0]!;
+}
+export function inward(space:FieldSpace,pos:GridPos):GridPos {
+  return {x:pos.x===0?1:pos.x===space.width-1?-1:0,y:pos.y===0?1:pos.y===space.height-1?-1:0};
+}
+export function connectionVector(from:Node,to:Node) {
+  const dx=to.position.x-from.position.x,dy=to.position.y-from.position.y;
+  return dx||dy?{dx,dy}:{dx:from.id<to.id?1:-1,dy:0};
 }
