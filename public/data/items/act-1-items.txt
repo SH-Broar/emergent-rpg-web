@@ -29,11 +29,11 @@ flavor = 붉은빛이 감도는 묽은 액체. 값싼 약초 특유의 쓴맛이
 
 [item.i-truename-mirror]
 name = 본명의 거울
-description = 비친 얼굴이 진짜 나를 일깨운다. 변신(체인지)에 걸렸을 때 깨면 원래 모습으로 돌아온다.
+description = 흐려진 정신을 되찾게 하는 거울. 종족을 바꾼 술법은 풀지 못한다.
 rank = rare
 effects = cleanse-transform
 consumable = true
-flavor = 표면의 먼지를 닦아내고 들여다보면 잊고 있던 본래의 얼굴이 비친다. 거짓된 형태를 산산이 조각내는 진실의 파편.
+flavor = 먼지를 닦고 들여다본다. 생각이 조금 또렷해진다.
 
 [item.i-extra-life-ember]
 name = 되살아나는 불씨

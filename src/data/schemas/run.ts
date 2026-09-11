@@ -1067,7 +1067,8 @@ export interface RunState {
   newNpcEncounters: NpcId[];
 
   /**
-   * 변신(체인지/TSF) 상태 — 희귀 특수 몬스터가 종족+덱 전체를 폼으로 교체(Stage 5).
+   * 변신 상태. field가 있으면 원본 기술과 투자를 봉인하고 실제 NPC 능력으로만 해제한다.
+   * 아래 releaseStack 규칙은 구 전투 저장 자료이며 필드에서는 사용하지 않는다.
    * set이면 *변신 중*: raceId/deck/collection/deckSize는 폼 값, 원본은 stash에 보관.
    *  - 변신 시 releaseStack=5 부여. 폼 덱의 *해제 카드*(release-transform)를 쓰면 스택 -2.
    *    스택 ≤ 0이면 원복(원본 종족·덱·컬렉션·덱슬롯 복원). 스택은 전투 종료·패배·도망 무관 유지(자동 감쇠 없음).
@@ -1084,6 +1085,8 @@ export interface RunState {
     stashDeckSize: number;
     /** 변신 해제 진행 스택 — 변신 시 5, '본모습' 카드마다 -2, ≤0이면 원복. */
     releaseStack: number;
+    /** Field forms seal investments; only an actual capable NPC can restore them. */
+    field?: { version: 1; skills: import('@/systems/field-skills').FieldSkills; body: Record<string,number>; startedTurn: number };
   };
 
   // === 전투 ===

@@ -113,6 +113,10 @@ export function useItem(item: Item, ctx?: UseItemContext): string {
     }
   }
 
+  if(r.field&&r.transform&&item.effects.every(e=>e.kind==='cleanse-transform')&&!(r.possessed??0)){
+    const message='이 변신은 풀 수 있는 이를 찾아야 한다.';
+    ui.toast('info',message);return message;
+  }
   const lines: string[] = [];
   for (const eff of item.effects) {
     applyItemEffect(eff, ctx, lines, inCombat);
@@ -273,7 +277,7 @@ function applyItemEffect(
         lines.push('혼란이 정화되었다');
         did = true;
       }
-      if (!did) lines.push('정화할 상태가 없다');
+      if (!did) lines.push(r.field&&r.transform?'이 변신은 풀 수 있는 이를 찾아야 한다.':'정화할 상태가 없다');
       break;
     }
     case 'gain-life': {

@@ -1380,3 +1380,98 @@ effects = release-transform
 target_mode = self
 cast_speed = normal
 flavor = "후, 돌아왔다." 육체를 지배하던 이질적인 요기가 서서히 걷힌다. 익숙하고도 무거운 인간의 감각이 다시금 전신을 채운다.
+
+# 두 꼬리의 인간형 수행 여우 — 필드 변신 전용. 원래 기술은 봉인된다.
+
+[card.c-fox-apprentice-fire]
+name = 작은 여우불
+rank = common
+source = form
+element = fire
+cost = 1
+trigger = manual
+effects = damage:6:enemy, apply-status:2:enemy:burn
+target_mode = aimed
+shape = 0,0
+cast_speed = normal
+aim_range = 3
+magic_strokes = 2
+magic_glyphs = corner
+magic_mana = 1
+magic_cooldown = 3
+magic_role = 조준 공격
+flavor = 손끝에 붙인 불씨를 조심스럽게 보낸다.
+
+[card.c-fox-apprentice-veil]
+name = 수행자의 장막
+rank = common
+source = form
+element = water
+cost = 1
+trigger = manual
+effects = block:7:self
+target_mode = self
+cast_speed = fast
+aim_range = 3
+magic_strokes = 2
+magic_glyphs = angle
+magic_mana = 1
+magic_cooldown = 4
+magic_role = 방어
+flavor = 소매를 여미자 얇은 환영이 몸을 감싼다.
+
+[card.c-fox-apprentice-tails]
+name = 두 꼬리 쓸기
+rank = common
+source = form
+element = earth
+cost = 2
+trigger = manual
+effects = damage:6:enemy, push-enemy:1:enemy
+target_mode = pattern
+shape = 1,0|-1,0|0,1|0,-1
+cast_speed = normal
+aim_range = 3
+magic_strokes = 3
+magic_glyphs = triangle
+magic_mana = 2
+magic_cooldown = 4
+magic_role = 주변 밀기
+flavor = 아직 낯선 두 꼬리로 몸을 지킨다.
+
+[card.c-fox-apprentice-step]
+name = 물러서는 걸음
+rank = common
+source = form
+element = wind
+cost = 1
+trigger = manual
+effects = move-self:2:self
+target_mode = self
+cast_speed = fast
+aim_range = 3
+magic_strokes = 3
+magic_glyphs = inverted
+magic_mana = 1
+magic_cooldown = 3
+magic_role = 거리 벌리기
+flavor = 가까운 상대에게서 두 걸음 물러난다.
+
+[card.c-fox-apprentice-charm]
+name = 흐린 부적
+rank = common
+source = form
+element = dark
+cost = 2
+trigger = manual
+effects = apply-status:2:enemy:weakness, apply-status:1:enemy:drowsy
+target_mode = aimed
+shape = 0,0
+cast_speed = normal
+aim_range = 3
+magic_strokes = 4
+magic_glyphs = circle
+magic_mana = 2
+magic_cooldown = 5
+magic_role = 약화
+flavor = 덜 마른 먹이 잠깐 눈앞을 흐린다.

@@ -1,5 +1,7 @@
 import { ensureFieldSkills, SKILL_GESTURES, castFieldSkill, tickFieldSkills } from './field-skills';
 import { NPC_DIALOGUE } from '@/data/npc-dialogue';
+import { reconcileFieldTransformation, cureFieldTransformation } from './field-transformation';
+import { XP_NORMAL, XP_ELITE } from './enhance';
 import { inward } from './field-geography';
 import { combatDefinition, phaseFor, planAttack, resolveAttack, tickStatuses, finishStatusStep, afterMovement, moveCreature, beginBossEncounter, clearCombatStatuses } from './field-combat';
 import { actionRestriction, movementRange, movesAsAir, outgoingDamage, status, changeStatus } from './world/status';
@@ -14,7 +16,7 @@ import { processSocialFacts, rankSocialActions } from './world/social';
 import { cardinal, createSightTest, distance, entitiesAt, fieldPath, hasSight, positionKey, walkable } from './world/spatial';
 import type { InteractionAction, InteractionWorld, WorldEntity } from './world/types';
 import { ensureFieldSpace, fieldCreatureHp, fieldItemName, fieldMap, placeFieldEntity, spawnCreature } from './field-generation';
-import { GESTURES, GLYPHS, type Gesture, type FieldResult, type FieldSpace } from './field-types';
+import { GESTURES, GLYPHS, type Gesture, type FieldResult, type FieldSpace, type FieldSpeech } from './field-types';
 import { isEdgeRequirementMet } from './map';
 import { isFoodResource } from './world/resources';
 import { lifeActions, plantLifeAction } from './world/life-world';
@@ -52,6 +54,14 @@ export function ensureField(run = useRunStore().data): { world: InteractionWorld
   if((run.field.controlsVersion??0)<3){run.field.gestureXp.strike??=run.field.gestureXp.triangle??0;run.field.gestureXp.tend??=run.field.gestureXp.inverted??0;run.field.controlsVersion=3;}
   run.maxMp=3;run.mp=Math.min(3,run.mp);player.properties.mana=run.mp;
   if(!run.field.combatVersion){run.field.combatVersion=1;run.field.manaStep=0;player.properties['status:possession']=run.possessed??0;player.properties['status:feral-heavy']=run.feralHeavy??0;}
+  if(!run.field.formVersion){
+    for(const actor of Object.values(world.entities))if(actor.npcId){
+      const capabilities=useDataStore().npcs.get(actor.npcId)?.tags?.filter(t=>t.startsWith('restore:'))??[];
+      actor.tags=[...new Set([...actor.tags,...capabilities])];
+    }
+    run.field.formVersion=1;
+  }
+  reconcileFieldTransformation(run,world);
   ensureFieldSkills(run);
   player.properties.maxHp=run.maxHp;
   for(const e of Object.values(world.entities).filter(e=>e.nodeId===space.id&&e.kind==='actor')){
@@ -146,13 +156,34 @@ export function fieldAction(run: RunState, world: InteractionWorld, actor: World
   if (target.workRecipe) return program(gesture, [{ kind: 'work', amount: 1 + Math.floor(level / 2) }], { utility: { work: .8 } });
   return program(gesture, [{ kind: 'signal', message: target.kind === 'actor' ? `${actor.name}: ${target.name}에게 말을 건넸다.` : `${actor.name}: ${target.name} 곁에 머물렀다.` }], { reach: target.kind === 'actor' ? 3 : 1, utility: { rest: .1 } });
 }
-function speechFor(run:RunState,actor:WorldEntity) {
+export function speechFor(run:RunState,actor:WorldEntity):FieldSpeech {
   const dialogue=NPC_DIALOGUE[actor.npcId??''];
   const trust=actor.agent?.relations.player?.trust??0;
-  void run;
   const lines=dialogue?.greeting.split('\n')??[actor.name+'이 고개를 돌렸다.'];
+  const topics:NonNullable<FieldSpeech['topics']>=dialogue?.topics.map(t=>({...t,lines:[...t.lines]}))??[];
+  const form=run.transform?.field?run.transform.formRaceId:undefined;
+  if(form){
+    if(actor.tags.includes('restore:'+form)){
+      lines.splice(0,lines.length,'꼬리가 둘이네. 타마모가 손댔어?');
+      topics.unshift({label:'원래 모습으로',lines:[],action:'restore-form'},
+        {label:'이 몸에 대해',lines:['아직 술법이 손에 안 붙지? 네가 익힌 게 사라진 건 아니야. 이 몸이 받아들이질 못하는 거지.']});
+    }else{
+      lines.unshift((run.field?.spoken[actor.id]??0)>0?'목소리는 그대로인데… 무슨 일이 있었어?':'꼬리, 문에 끼이지 않게 조심해.');
+      const knows=actor.tags.includes('mage')||['npc-cayo','npc-valencia'].includes(actor.npcId??'');
+      topics.unshift({label:'변신을 풀려면',lines:[knows?'카시스에게 물어봐. 모스의 대장간에도 가끔 들르던데. 나는 그 술법을 잘 몰라.':'미안해. 나는 그런 술법은 다룰 줄 몰라.']});
+    }
+  }
   if(trust<-.25)lines.unshift('잠깐. 지금은 긴 이야기를 나누고 싶지 않아.');
-  return {actorId:actor.id,name:actor.name,lines,topics:dialogue?.topics.map(t=>({...t,lines:[...t.lines],label:t.label}))};
+  return {actorId:actor.id,name:actor.name,lines,topics};
+}
+/** Dialogue choices revalidate the actual NPC at execution time. */
+export function performFieldService(actorId:string,action:string):FieldResult {
+  const run=useRunStore().data,{world}=ensureField(run);
+  if(action!=='restore-form'||run.field?.encounter)return {ok:false,message:'지금은 부탁할 수 없다.'};
+  const result=cureFieldTransformation(run,world,actorId);
+  if(!result.ok)return result;
+  processSocialFacts(world);syncPlayerFromWorld(run,world);advanceFieldTime(STEP_SECONDS,false);
+  return {...result,speech:{actorId,name:world.entities[actorId]!.name,lines:['됐어. 손끝부터 천천히 움직여 봐.']}};
 }
 function grantPractice(run: RunState, gesture: Gesture, target: WorldEntity, result: ReturnType<typeof resolveInteraction>) {
   const field = run.field!;
@@ -213,6 +244,7 @@ function defeatCreature(run: RunState, world: InteractionWorld, e: WorldEntity) 
   const id = `${e.id}:loot`;
   world.entities[id] = { id, name: '남겨진 물품', kind: 'resource', nodeId: e.nodeId, pos: e.pos ? { ...e.pos } : undefined, colors: {}, tags: ['storage', 'shared', 'loot'], properties: { integrity: 100, portable: 1, mass: 1 }, stock: { 'i-crop-grain': c.rank === 'normal' ? 1 : 2, ...(c.reward.itemId ? { [c.reward.itemId]: 1 } : {}) } };
   run.gold += c.reward.gold; run.timeShards += c.reward.shards;
+  if(c.rank!=='boss'&&!e.tags.includes('split-child'))useRunStore().gainXp(c.rank==='elite'?XP_ELITE:XP_NORMAL);
   const definition=combatDefinition(e);
   if(definition&&'splitCount'in definition&&definition.splitCount&&!e.tags.includes('split-child')){
     for(let i=0;i<definition.splitCount;i++){
@@ -228,6 +260,7 @@ function defeatCreature(run: RunState, world: InteractionWorld, e: WorldEntity) 
       else { applyBossRewards(boss); run.bossesCleared.push(boss.id); }
     }
   }
+  if(world.entities.player)world.entities.player.properties.level=run.level??1;
   const space = world.spaces![e.nodeId]!;
   space.cleared = !Object.values(world.entities).some(other => other.nodeId === space.id && other.creature && valid(other));
   if(space.cleared&&space.id===world.entities.player?.nodeId)clearCombatStatuses(world.entities.player!);
@@ -254,7 +287,7 @@ function tickCreatures(run: RunState, world: InteractionWorld, activeIds: Readon
       }
     }
     if(c.pending){
-      if(--c.pending.remaining<=0)resolveAttack(world,e);
+      if(--c.pending.remaining<=0){resolveAttack(world,e);reconcileFieldTransformation(run,world);}
       continue;
     }
     if(c.recovery){c.recovery--;continue;}

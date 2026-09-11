@@ -1,10 +1,13 @@
 # 변신 폼 여우(구미호). (Stage 5 체인지/TSF)
 # category = transform-form. 어떤 timeline의 available_race_ids에도 없으므로 종족 선택 화면에 미노출.
 # 변신 발동 시 applyTransformation이 이 race의 starting_deck을 폼 덱으로 인스턴스화한다.
-# baseStats는 변신에선 미사용(HP 유지) 시작 선택용 자리값일 뿐.
+# 필드는 HP/마나/컬러를 유지하고 노동 능력과 몸의 단단함만 종족에 맞춘다.
+# starting_deck은 구 전투 자료. 현재 필드는 field_skills만 사용하며 NPC가 해제한다.
 
 [race.race-form-fox]
-name = 여우
+name = 두 꼬리 여우
+description = 사람 체형에 여우 귀와 꼬리 둘을 지닌 수행 여우.
+field_skills = c-fox-apprentice-fire, c-fox-apprentice-veil, c-fox-apprentice-tails, c-fox-apprentice-step, c-fox-apprentice-charm
 category = transform-form
 primary_element = wind
 secondary_element = dark

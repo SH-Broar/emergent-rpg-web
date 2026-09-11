@@ -107,7 +107,7 @@ export function parseBool(value: string | undefined, fallback = false): boolean 
  * 파일 fetch + parse. Vite 환경에서 public/ 경로 기준.
  */
 export async function fetchIni(path: string): Promise<IniData> {
-  const res = await fetch(path);
+  const res = await fetch(path, { cache: 'no-cache' }); // Revalidate mutable Pages data after a code update.
   if (!res.ok) throw new Error(`Failed to fetch ${path}: ${res.status}`);
   const text = await res.text();
   return parseIni(text);

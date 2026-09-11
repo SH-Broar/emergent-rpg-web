@@ -145,7 +145,7 @@ function itemEffectLabel(eff: Item['effects'][number]): string {
     case 'grant-relic': return `유물 ${data.relics.get(String(eff.param ?? ''))?.name ?? eff.param}`;
     case 'teleport-village': return '마을로 즉시 이동';
     case 'revive-node': return '다녀온 장소 1곳 되살리기';
-    case 'cleanse-transform': return '변신 정화';
+    case 'cleanse-transform': return run.data.field?'정신 정화':'변신 정화';
     case 'gain-life': return `목숨 +${eff.value ?? 1}`;
     case 'combat-mana': return `[전투] 마나 +${eff.value ?? 0}`;
     case 'combat-draw': return `[전투] 드로우 ${eff.value ?? 0}`;

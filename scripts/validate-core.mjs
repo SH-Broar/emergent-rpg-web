@@ -621,6 +621,10 @@ export function validateData(dataDir, readFile) {
     for (const cardId of parseList(f.starting_deck)) {
       if (!cardIds.has(cardId)) push(diag('error', 'dangling', `race '${id}' starting_deck 카드 '${cardId}' 미정의`, w));
     }
+    for (const cardId of parseList(f.field_skills)) {
+      if (!cardIds.has(cardId)) push(diag('error', 'dangling', `race '${id}' field_skills 카드 '${cardId}' 미정의`, w));
+      else if(merged[`card.${cardId}`]?.source!=='form')push(diag('error','xref',`race '${id}' field_skills는 form 카드여야 한다`,w));
+    }
     for (const cardId of parseList(f.seed_cards)) {
       if (!cardIds.has(cardId)) push(diag('error', 'dangling', `race '${id}' seed_cards 카드 '${cardId}' 미정의`, w));
       // 강화판(-plus)은 풀 제외 — 시드 풀(활동/시작 보충)에도 base 카드만 둔다(강화는 enhanceLevel로).

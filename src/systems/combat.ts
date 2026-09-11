@@ -2532,7 +2532,7 @@ function applyTransformation(c: CombatState, formRaceId: string): void {
 export function revertTransformationState(): boolean {
   const r = useRunStore().data;
   const t = r.transform;
-  if (!t) return false;
+  if (!t || r.field) return false;
   r.raceId = t.originalRaceId;
   r.deck = t.stashDeck;
   r.collection = t.stashCollection;

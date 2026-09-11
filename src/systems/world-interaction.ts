@@ -1,4 +1,5 @@
 import type { RunState, NodeMap } from '@/data/schemas';
+import { reconcileFieldTransformation } from './field-transformation';
 import { useDataStore } from '@/stores/data';
 import { iGa } from './josa';
 import { isFoodResource } from './world/resources';
@@ -19,6 +20,8 @@ function currentMap(run: RunState): NodeMap | undefined {
 export function syncPlayerToWorld(run: RunState, world: InteractionWorld): void {
   const actor = world.entities[PLAYER_ACTOR_ID];
   if (!actor) return;
+  reconcileFieldTransformation(run,world);
+  actor.properties.level=run.level??1;
   actor.nodeId = run.currentNodeId;
   actor.colors = { ...run.colors };
   actor.properties.integrity = run.maxHp > 0 ? run.hp / run.maxHp * 100 : 100;
@@ -50,6 +53,7 @@ export function syncPlayerFromWorld(run: RunState, world: InteractionWorld): voi
     if (definition) for (let i = 0; i < count; i++) keep.push({ ...definition, instanceId: instanceId(id) });
   }
   run.items = keep;
+  reconcileFieldTransformation(run,world);
   const gains = (Object.keys(run.colors) as (keyof typeof run.colors)[]).map(key => ({ key, value: actor.colors[key] ?? 0, delta: (actor.colors[key] ?? 0) - run.colors[key] }));
   for (const { key, value } of gains) run.colors[key] = value;
   run.hp = Math.max(0, Math.min(run.maxHp, Math.ceil((actor.properties.integrity ?? 100) / 100 * run.maxHp - 1e-8)));

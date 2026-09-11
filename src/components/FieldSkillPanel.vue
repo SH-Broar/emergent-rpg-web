@@ -3,7 +3,7 @@ import { computed, ref, watch } from 'vue';
 import { useRunStore } from '@/stores/run';
 import { GLYPHS } from '@/systems/field-types';
 import { GESTURE_CATALOG } from '@/systems/gesture-catalog';
-import { SKILL_GESTURES, equippedSkill, equipFieldSkill, skillUnavailable, skillMana, skillCooldown, skillRemaining, skillCastTurns, skillLoadoutLocked } from '@/systems/field-skills';
+import { SKILL_GESTURES, equippedSkill, equipFieldSkill, fieldSkillRestriction, skillMana, skillCooldown, skillRemaining, skillCastTurns, skillLoadoutLocked } from '@/systems/field-skills';
 import SkillWorkshop from './SkillWorkshop.vue';
 import { skillStrokes, skillFitsGesture, skillEffectText } from '@/systems/field-skill-rules';
 import type { Card } from '@/data/schemas';
@@ -15,7 +15,7 @@ const selected = ref<string>(SKILL_GESTURES[0]), tab = ref<'equip'|'practice'|'w
 const query = ref(''), page = ref(0), all = ref(false), notice = ref('');
 const current = computed(() => equippedSkill(run.data,selected.value));
 const locked = computed(() => skillLoadoutLocked(run.data));
-const cards = computed(() => run.data.collection.filter(c => (all.value || !skillUnavailable(c)) && c.name.includes(query.value)));
+const cards = computed(() => run.data.collection.filter(c => (all.value || !fieldSkillRestriction(run.data,c)) && c.name.includes(query.value)));
 const pages = computed(() => Math.max(1,Math.ceil(cards.value.length/5)));
 const visible = computed(() => cards.value.slice(page.value*5,page.value*5+5));
 watch([query,all],()=>page.value=0);
@@ -33,6 +33,7 @@ function brief(card:Card) {return lines(card).slice(0,3).join(' · ');}
       <header><h2>기술</h2><button aria-label="기술 닫기" @click="emit('close')">×</button></header>
       <nav class="tabs"><button :aria-pressed="tab==='equip'" @click="tab='equip'">장착</button><button :aria-pressed="tab==='workshop'" @click="tab='workshop'">강화</button><button :aria-pressed="tab==='practice'" @click="tab='practice'">도형 연습</button></nav>
       <template v-if="tab==='equip'">
+        <p v-if="run.data.transform?.field" class="notice">두 꼬리 여우 · 본래 카드 {{ run.data.transform.stashCollection.length }}장 봉인</p>
         <div class="slots" aria-label="기술 도형 8칸">
           <button v-for="id in SKILL_GESTURES" :key="id" :aria-pressed="selected===id" :aria-label="GLYPHS[id]+' '+(equippedSkill(run.data,id)?.name??'빈 기술 칸')" @click="selected=id;notice=''">
             <b>{{ GLYPHS[id] }}<small>{{ GESTURE_CATALOG.find(g=>g.id===id)?.strokes }}</small></b><span>{{ equippedSkill(run.data,id)?.name??'비어 있음' }}</span>
@@ -51,8 +52,8 @@ function brief(card:Card) {return lines(card).slice(0,3).join(' · ');}
         <div class="filters"><input v-model="query" type="search" placeholder="기술 찾기" aria-label="기술 검색"><label><input v-model="all" type="checkbox"> 전체 카드</label></div>
         <div class="card-list">
           <div v-for="card in visible" :key="card.instanceId" class="card-row">
-            <div><strong>{{ card.name }} <small v-if="card.enhanceLevel">+{{ card.enhanceLevel }}</small></strong><small>{{ skillUnavailable(card)??(skillStrokes(card)+'획↑ · ◆ '+skillMana(card)+' · 재사용 '+skillCooldown(card)+'턴') }}</small></div>
-            <button :disabled="locked||!!skillUnavailable(card)||!skillFitsGesture(card,selected)" @click="equip(card)">장착</button>
+            <div><strong>{{ card.name }} <small v-if="card.enhanceLevel">+{{ card.enhanceLevel }}</small></strong><small>{{ fieldSkillRestriction(run.data,card)??(skillStrokes(card)+'획↑ · ◆ '+skillMana(card)+' · 재사용 '+skillCooldown(card)+'턴') }}</small></div>
+            <button :disabled="locked||!!fieldSkillRestriction(run.data,card)||!skillFitsGesture(card,selected)" @click="equip(card)">장착</button>
           </div>
           <p v-if="!cards.length" class="empty">{{ query?'찾는 카드가 없다.':'장착할 기술이 없다. 전체 카드에서 준비 상태를 볼 수 있다.' }}</p>
         </div>

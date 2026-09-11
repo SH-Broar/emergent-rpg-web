@@ -138,7 +138,7 @@ domain_high = Passionate, Adaptable, Inventive, Flexible, Patient, Freesprited, 
 domain_low = Cautious, Rigid, Stagnant, Stubborn, Restless, Grounded, Apathetic, Honest
 background = 불의 사천왕이자 구미호.|정령과 마법에 정통하며 마나 시스템에 대해 이유르에게 조언을 많이 해 준 인연이 있다.|트리플라워 출신이라 빠르게 불타고 빠르게 식는 성격이며, 구미호다운 일면도 보이지만 선을 넘지는 않는다.|자유롭게 마법 연구를 하는 타입으로, 가끔 모스 대장간에 얼굴을 비춘다.
 tagline = "선은 안 넘어요. 그쪽도 그러시길."
-tags = foxkin, sitenwang-fire, mage
+tags = foxkin, sitenwang-fire, mage, restore:race-form-fox
 affinity_rewards = 3:card=c-double-strike:gauge=4
 # 영입 (Item 37-② Stage C 배치2). 구미호 — 여우불을 길게 붙여 태우고 손끝으로 한 번 더 친다.
 recruit_enabled = true

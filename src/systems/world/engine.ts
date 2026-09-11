@@ -1,4 +1,5 @@
 import { changeStatus } from './status';
+import { syncEntityForm } from './form-rules';
 import type { ColorProfile, InteractionAction, InteractionResult, InteractionWorld, WorldEntity, WorldFact } from './types';
 import { iGa } from '../josa';
 import { resourceTags } from './resources';
@@ -109,6 +110,7 @@ export function influenceEntity(world: InteractionWorld, entity: WorldEntity, pr
     turn: world.turn, nodeId: entity.nodeId, actorId, targetId: entity.id, kind: 'property', ...change,
     ownerId: entity.ownerId, labor: entity.labor ?? 0, message,
   }));
+  syncEntityForm(entity,property,actorId);
   const source=actorId?world.entities[actorId]:undefined;
   if(source&&source.id!==entity.id&&entity.properties['status:thorns']&&['force','charge'].includes(property)&&facts.some(f=>f.property==='integrity'&&f.after!<f.before!)) {
     facts.push(...influenceEntity(world,source,'integrity',-entity.properties['status:thorns']/(source.properties.maxHp??100)*100,entity.id));

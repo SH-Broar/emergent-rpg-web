@@ -43,6 +43,7 @@ export function upgradeQuote(card: Card, path: SkillUpgradePath) {
 }
 function contextFailure(run:RunState) {
   if(run.ended)return '여정이 끝났다.';
+  if(run.transform?.field)return '변신이 풀린 뒤에 기술을 강화할 수 있다.';
   if(!atSkillWorkshop(run))return '공방 가까이에서 사용할 수 있다.';
   if(skillLoadoutLocked(run))return '위험이 사라진 뒤에 작업할 수 있다.';
 }

@@ -118,7 +118,7 @@ hp = 480
 attack = 16
 defense = 0
 intro = 타마모가 앉아 있던 자리에서 몸을 돌렸다. 꼬리가 길 위로 펼쳐진다.
-dialogue = 구경만 하러 온 건 아니지? 그렇게 한참 쳐다보고 있었는데., 좋아. 해 보자. 못 피하겠으면 미리 말해 줘.
+dialogue = 구경만 하러 온 건 아니지? 한참 쳐다보고 있었으면서., 좋아. 다만 내 불에 오래 닿지는 마. 꼬리 둘쯤 달고 돌아가게 될 테니까.
 defeat_text = 타마모가 흩어진 꼬리를 거두었다. "아쉽네. 한 번은 더 잡을 수 있을 줄 알았는데."
 challenge_label = 한 걸음 나선다
 decline_label = 인사만 하고 간다
@@ -138,15 +138,16 @@ move_pattern = knight
 [boss.bs-arc-tamamo.phase.1]
 starts_at = 1.0
 intents = debuff:3:feral~feral=attack:12, debuff:3:weakness, charge:1, obscure:2, drain-stat:3, attack:10, defend:14, attack:12
-# 격자 P1 — 꼬리 후리기(인접 4칸 약화) + 여우불(대각 인접 4칸).
-grid_attack_1 = 꼬리 후리기|1,0 -1,0 0,1 0,-1|1,1,1,1|10|||weakness:1
+# 격자 P1 — 꼬리 후리기 수화 + 대각 여우불.
+grid_attack_1 = 꼬리 후리기|1,0 -1,0 0,1 0,-1|1,1,1,1|10|||feral:3
 grid_attack_2 = 여우불|1,1 1,-1 -1,1 -1,-1|1,1,1,1|12
 
 # P2 — 가속(0.5 이하): 변신(change:race-form-fox=여우폼)으로 판을 뒤집고 잠식·은폐 연타.
 [boss.bs-arc-tamamo.phase.2]
 starts_at = 0.5
 intents = defend:18~feral=change:race-form-fox, obscure:2, drain-stat:4, attack:14, charge:2, attack:16
-# 격자 P2 — 홀림불(주변 8칸 취약) + 멀리 튀는 여우불(대각 사거리2). 진입 시 황혼 그림자 둘 소환.
-grid_attack_1 = 홀림불|1,0 -1,0 0,1 0,-1 1,1 1,-1 -1,1 -1,-1|1,1,1,1,1,1,1,1|14|||vulnerable:1
+# 격자 P2 — 수화를 이어가며 2턴 예고 낙인으로 변신을 시도. 빗나가면 판정하지 않는다.
+grid_attack_1 = 홀림불|1,0 -1,0 0,1 0,-1 1,1 1,-1 -1,1 -1,-1|1,1,1,1,1,1,1,1|14|||feral:3
 grid_attack_2 = 튀는 여우불|1,1 2,2 -1,-1 -2,-2 1,-1 2,-2 -1,1 -2,2|1,1,1,1,1,1,1,1|16
+grid_attack_3 = 수행의 낙인|1,0 -1,0 0,1 0,-1 1,1 1,-1 -1,1 -1,-1||0|slow|true||race-form-fox:feral
 spawn_minions = mr-mano-dusk-shade, mr-mano-dusk-shade

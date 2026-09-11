@@ -12,7 +12,7 @@ const GROUPS = [
   { id:'space', label:'격자·환경 연결', note:'범위·경로·충돌·도착 칸 판정을 보존. 이동과 환경 속성 처리 재사용.', kinds:['terrain-water','terrain-fire','terrain-smoke','lure','move-self','pull-enemy','push-enemy','place-installation','status-spread','chain-explosion'] },
   { id:'hand', label:'손패 효과의 기술 역할 변환', note:'드로우·버림은 다른 기술 재사용 단축, 소멸·반환은 재사용 시간, 손패 수는 준비된 기술 수로 변환. 나머지 특수 효과는 후속.', kinds:['draw','return-hand-to-deck','draw-if-color','damage-per-hand','exhaust-self','return-self-to-hand','heal-per-hand','next-card-double','curse-tick','damage-per-cards-played','buff-card-instance','refill','hand-cost-down','damage-low-hand','feel-no-pain'] },
   { id:'duration', label:'발동·지속 범위 확인', note:'필드의 턴·교전·사용 횟수 수명을 정하고 기존 수치를 연결.', kinds:['next-turn-energy','growing-block','growing-damage','skip-enemy-action','slow-enemy','delayed-damage','random-effect','negate-reflect','bloom-strength','this-turn-amp','metallicize','barricade','rupture','juggernaut'] },
-  { id:'actor', label:'동료·변신 연동', note:'동료 엔티티 또는 종족·덱 변경 시스템 포팅과 함께 처리.', kinds:['damage-per-companion','release-transform','summon-ally'] },
+  { id:'actor', label:'변신 및 이번 버전 제외 효과', note:'변신은 별도 기술 봉인과 NPC 해제로 연결. 동료·해제 카드 효과는 이번 버전에서 지원하지 않는다.', kinds:['damage-per-companion','release-transform','summon-ally'] },
 ];
 const root=fileURLToPath(new URL('../',import.meta.url));
 const publicDir=resolve(root,'public'),output=resolve(root,'docs/card-port-matrix.md');
@@ -60,7 +60,7 @@ try {
   doc+='- 기존 보유 카드와 강화·각성 투자를 보존한다. 상점 카드 판매는 폐지하고 탐험·교류·공방 제작으로 획득한다. 기술 장착형으로 확정했다. 기존 덱·컬렉션과 강화 단계는 보존하고 별도의 도형 슬롯으로 참조한다.\n\n';
   doc+='## 실측\n\n';
   doc+='| 항목 | 수 |\n| --- | ---: |\n';
-  doc+='| 현재 장착 가능 정의 | '+cards.filter(c=>!skillUnavailable(c)).length+' |\n';
+  doc+='| 일반 장착 가능 정의 | '+cards.filter(c=>c.source!=='form'&&!skillUnavailable(c)).length+' |\n| 변신 중 전용 기술 | '+cards.filter(c=>c.source==='form'&&!skillUnavailable(c)).length+' |\n';
   doc+='| 실행 카드 정의 | '+cards.length+' |\n| 스키마 효과 종류 | '+declared.length+' |\n| 실제 사용 효과 종류 | '+[...uses.values()].filter(s=>s.size).length+' |\n| 원본 손패 효과 보유 카드 | '+hand.length+' |\n| 기본 마나 비용 3 초과 | '+cards.filter(c=>c.cost>3).length+' |\n| 비수동 발동 | '+cards.filter(c=>c.trigger!=='manual').length+' |\n| 즉시 발동 | '+cards.filter(c=>c.instant).length+' |\n| custom 함수 슬롯 | '+cards.filter(c=>c.customEffectId).length+' |\n\n';
   doc+='강화판·종족 폼·잡카드·빙의 카드·실행 시 합성되는 카드도 포함한다. 손패 의존 수는 손패 효과 또는 on-draw 발동을 포함하는 서로 다른 카드 수다. 분류별 수는 중복될 수 있다.\n\n';
   doc+='## 효과별 연결 계획\n\n| 효과 | 포함 카드 수 | 분류 | 원시 효과 연결 | 작업 |\n| --- | ---: | --- | --- | --- |\n';
@@ -76,7 +76,7 @@ try {
   doc+='## 분포\n\n';
   for(const key of ['source','trigger','targetMode','castSpeed'])doc+='- '+key+': '+Object.entries(countBy(key)).map(([k,n])=>k+' '+n).join(', ')+'\n';
   doc+='\n## 카드별 인벤토리\n\n<details>\n<summary>전체 '+cards.length+'종 펼치기</summary>\n\n| ID | 이름 | 비용 | 효과 | 연결 분류 | 추가 조건 | 현재 장착 |\n| --- | --- | ---: | --- | --- | --- | --- |\n';
-  for(const c of cards)doc+='| '+[c.id,c.name,c.cost,c.effects.map(e=>e.kind).join(', '),[...new Set(c.effects.map(e=>byKind.get(e.kind).label))].join(', '),metadata(c).join(', ')||'없음',skillUnavailable(c)||'가능'].map(esc).join(' | ')+' |\n';
+  for(const c of cards)doc+='| '+[c.id,c.name,c.cost,c.effects.map(e=>e.kind).join(', '),[...new Set(c.effects.map(e=>byKind.get(e.kind).label))].join(', '),metadata(c).join(', ')||'없음',skillUnavailable(c)||(c.source==='form'?'해당 종족으로 변신 중':'가능')].map(esc).join(' | ')+' |\n';
   doc+='\n</details>\n';
   if(process.argv.includes('--write'))writeFileSync(output,doc);
   if(process.argv.includes('--check'))assert.equal(readFileSync(output,'utf8'),doc,'Regenerate the card port matrix');

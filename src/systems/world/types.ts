@@ -45,6 +45,7 @@ export interface WorldEntity {
   carriedBy?: string;
   npcId?: string;
   creature?: FieldCreature;
+  form?: { raceId: string; originalSpecies: string; sourceId?: string };
   fieldUpdatedAt?: number;
   fieldNpcAt?: number;
   colors: ColorProfile;

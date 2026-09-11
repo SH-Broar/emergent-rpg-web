@@ -179,6 +179,7 @@ function parseGridAttack(raw: string): GridAttack | null {
   if (isCastSpeed(parts[4])) attack.castSpeed = parts[4];
   if (parts[5]) attack.requiresInRange = parseBool(parts[5], true);
   if (parts[6]) attack.applyStatus = parts[6];
+  if (parts[7]) { const [raceId,requiresStatus]=parts[7].split(':'); if(raceId)attack.transform={raceId,requiresStatus}; }
   return attack;
 }
 
@@ -450,6 +451,7 @@ export function parseRaces(ini: IniData): Map<string, Race> {
         vigor: parseNumber(fields.vigor, 10),
       },
       startingDeck: parseList(fields.starting_deck),
+      fieldSkills: fields.field_skills ? parseList(fields.field_skills) : undefined,
       seedCardIds: parseList(fields.seed_cards),
       seedRelicIds: parseList(fields.seed_relics),
       seedItemIds: parseList(fields.seed_items),

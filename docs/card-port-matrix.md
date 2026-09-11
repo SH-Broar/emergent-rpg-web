@@ -13,8 +13,9 @@
 
 | 항목 | 수 |
 | --- | ---: |
-| 현재 장착 가능 정의 | 509 |
-| 실행 카드 정의 | 694 |
+| 일반 장착 가능 정의 | 509 |
+| 변신 중 전용 기술 | 5 |
+| 실행 카드 정의 | 699 |
 | 스키마 효과 종류 | 67 |
 | 실제 사용 효과 종류 | 59 |
 | 원본 손패 효과 보유 카드 | 266 |
@@ -29,11 +30,11 @@
 
 | 효과 | 포함 카드 수 | 분류 | 원시 효과 연결 | 작업 |
 | --- | ---: | --- | --- | --- |
-| damage | 225 | 공통 속성 연산 재사용 | 연결 | 대상·비용·수치 계산 후 influence로 연결. field-skills에서 카드별 전체 효과 지원 여부를 검사. |
+| damage | 227 | 공통 속성 연산 재사용 | 연결 | 대상·비용·수치 계산 후 influence로 연결. field-skills에서 카드별 전체 효과 지원 여부를 검사. |
 | heal | 28 | 공통 속성 연산 재사용 | 연결 | 대상·비용·수치 계산 후 influence로 연결. field-skills에서 카드별 전체 효과 지원 여부를 검사. |
-| block | 109 | 공통 속성 연산 재사용 | 연결 | 대상·비용·수치 계산 후 influence로 연결. field-skills에서 카드별 전체 효과 지원 여부를 검사. |
+| block | 110 | 공통 속성 연산 재사용 | 연결 | 대상·비용·수치 계산 후 influence로 연결. field-skills에서 카드별 전체 효과 지원 여부를 검사. |
 | break-armor | 8 | 공통 속성 연산 재사용 | 연결 | 대상·비용·수치 계산 후 influence로 연결. field-skills에서 카드별 전체 효과 지원 여부를 검사. |
-| apply-status | 134 | 공통 속성 연산 재사용 | 연결 | 대상·비용·수치 계산 후 influence로 연결. field-skills에서 카드별 전체 효과 지원 여부를 검사. |
+| apply-status | 136 | 공통 속성 연산 재사용 | 연결 | 대상·비용·수치 계산 후 influence로 연결. field-skills에서 카드별 전체 효과 지원 여부를 검사. |
 | ghost-self | 2 | 공통 속성 연산 재사용 | 연결 | 대상·비용·수치 계산 후 influence로 연결. field-skills에서 카드별 전체 효과 지원 여부를 검사. |
 | grant-airborne | 1 | 공통 속성 연산 재사용 | 연결 | 대상·비용·수치 계산 후 influence로 연결. field-skills에서 카드별 전체 효과 지원 여부를 검사. |
 | grant-color | 25 | 공통 속성 연산 재사용 | 후속 | 대상·비용·수치 계산 후 influence로 연결. field-skills에서 카드별 전체 효과 지원 여부를 검사. |
@@ -58,9 +59,9 @@
 | terrain-fire | 1 | 격자·환경 연결 | 연결 | 범위·경로·충돌·도착 칸 판정을 보존. 이동과 환경 속성 처리 재사용. |
 | terrain-smoke | 1 | 격자·환경 연결 | 연결 | 범위·경로·충돌·도착 칸 판정을 보존. 이동과 환경 속성 처리 재사용. |
 | lure | 1 | 격자·환경 연결 | 후속 | 범위·경로·충돌·도착 칸 판정을 보존. 이동과 환경 속성 처리 재사용. |
-| move-self | 6 | 격자·환경 연결 | 연결 | 범위·경로·충돌·도착 칸 판정을 보존. 이동과 환경 속성 처리 재사용. |
+| move-self | 7 | 격자·환경 연결 | 연결 | 범위·경로·충돌·도착 칸 판정을 보존. 이동과 환경 속성 처리 재사용. |
 | pull-enemy | 2 | 격자·환경 연결 | 연결 | 범위·경로·충돌·도착 칸 판정을 보존. 이동과 환경 속성 처리 재사용. |
-| push-enemy | 2 | 격자·환경 연결 | 연결 | 범위·경로·충돌·도착 칸 판정을 보존. 이동과 환경 속성 처리 재사용. |
+| push-enemy | 3 | 격자·환경 연결 | 연결 | 범위·경로·충돌·도착 칸 판정을 보존. 이동과 환경 속성 처리 재사용. |
 | place-installation | 8 | 격자·환경 연결 | 후속 | 범위·경로·충돌·도착 칸 판정을 보존. 이동과 환경 속성 처리 재사용. |
 | status-spread | 1 | 격자·환경 연결 | 후속 | 범위·경로·충돌·도착 칸 판정을 보존. 이동과 환경 속성 처리 재사용. |
 | chain-explosion | 1 | 격자·환경 연결 | 후속 | 범위·경로·충돌·도착 칸 판정을 보존. 이동과 환경 속성 처리 재사용. |
@@ -93,9 +94,9 @@
 | barricade | 0 | 발동·지속 범위 확인 | 후속 | 필드의 턴·교전·사용 횟수 수명을 정하고 기존 수치를 연결. |
 | rupture | 0 | 발동·지속 범위 확인 | 후속 | 필드의 턴·교전·사용 횟수 수명을 정하고 기존 수치를 연결. |
 | juggernaut | 0 | 발동·지속 범위 확인 | 후속 | 필드의 턴·교전·사용 횟수 수명을 정하고 기존 수치를 연결. |
-| damage-per-companion | 4 | 동료·변신 연동 | 후속 | 동료 엔티티 또는 종족·덱 변경 시스템 포팅과 함께 처리. |
-| release-transform | 1 | 동료·변신 연동 | 후속 | 동료 엔티티 또는 종족·덱 변경 시스템 포팅과 함께 처리. |
-| summon-ally | 2 | 동료·변신 연동 | 후속 | 동료 엔티티 또는 종족·덱 변경 시스템 포팅과 함께 처리. |
+| damage-per-companion | 4 | 변신 및 이번 버전 제외 효과 | 후속 | 변신은 별도 기술 봉인과 NPC 해제로 연결. 동료·해제 카드 효과는 이번 버전에서 지원하지 않는다. |
+| release-transform | 1 | 변신 및 이번 버전 제외 효과 | 후속 | 변신은 별도 기술 봉인과 NPC 해제로 연결. 동료·해제 카드 효과는 이번 버전에서 지원하지 않는다. |
+| summon-ally | 2 | 변신 및 이번 버전 제외 효과 | 후속 | 변신은 별도 기술 봉인과 NPC 해제로 연결. 동료·해제 카드 효과는 이번 버전에서 지원하지 않는다. |
 
 ## 별도 확인할 규칙
 
@@ -109,15 +110,15 @@
 
 ## 분포
 
-- source: boss 7, event 56, form 94, hyperion 24, junk 3, npc 80, possession 3, race 385, shop 42
-- trigger: manual 694
-- targetMode: aimed 80, pattern 377, self 236, throw 1
-- castSpeed: fast 245, normal 206, slow 133, 미지정 110
+- source: boss 7, event 56, form 99, hyperion 24, junk 3, npc 80, possession 3, race 385, shop 42
+- trigger: manual 699
+- targetMode: aimed 82, pattern 378, self 238, throw 1
+- castSpeed: fast 247, normal 209, slow 133, 미지정 110
 
 ## 카드별 인벤토리
 
 <details>
-<summary>전체 694종 펼치기</summary>
+<summary>전체 699종 펼치기</summary>
 
 | ID | 이름 | 비용 | 효과 | 연결 분류 | 추가 조건 | 현재 장착 |
 | --- | --- | ---: | --- | --- | --- | --- |
@@ -213,16 +214,16 @@
 | c-blood-pact-plus | 피의 계약+ | 1 | damage-from-hp | 수치 계산 이식 | 없음 | 가능 |
 | c-bloom-recovery | 만개의 회복 | 2 | heal-per-hand, draw | 손패 효과의 기술 역할 변환 | 없음 | 가능 |
 | c-bloom-recovery-plus | 만개의 회복+ | 2 | heal-per-hand, draw | 손패 효과의 기술 역할 변환 | 없음 | 가능 |
-| c-bonded-strike | 인연의 일격 | 2 | damage-per-companion, block | 동료·변신 연동, 공통 속성 연산 재사용 | 없음 | 효과 포팅 중 |
-| c-bonded-strike-plus | 인연의 일격+ | 2 | damage-per-companion, block | 동료·변신 연동, 공통 속성 연산 재사용 | 없음 | 효과 포팅 중 |
+| c-bonded-strike | 인연의 일격 | 2 | damage-per-companion, block | 변신 및 이번 버전 제외 효과, 공통 속성 연산 재사용 | 없음 | 효과 포팅 중 |
+| c-bonded-strike-plus | 인연의 일격+ | 2 | damage-per-companion, block | 변신 및 이번 버전 제외 효과, 공통 속성 연산 재사용 | 없음 | 효과 포팅 중 |
 | c-burn-mark | 화염구 | 1 | damage, apply-status | 공통 속성 연산 재사용 | 없음 | 가능 |
 | c-burn-mark-plus | 화염구+ | 1 | damage, apply-status | 공통 속성 연산 재사용 | 없음 | 가능 |
 | c-collectors-strike | 수집가의 일격 | 1 | damage-per-relic | 수치 계산 이식 | 없음 | 가능 |
 | c-collectors-strike-plus | 수집가의 일격+ | 1 | damage-per-relic | 수치 계산 이식 | 없음 | 가능 |
 | c-color-surge | 범람 | 1 | damage-top-color, draw-if-color | 수치 계산 이식, 손패 효과의 기술 역할 변환 | 없음 | 가능 |
 | c-color-surge-plus | 범람+ | 1 | damage-top-color, draw-if-color | 수치 계산 이식, 손패 효과의 기술 역할 변환 | 없음 | 가능 |
-| c-comrades-charge | 동행의 돌격 | 1 | damage-per-companion | 동료·변신 연동 | 없음 | 효과 포팅 중 |
-| c-comrades-charge-plus | 동행의 돌격+ | 1 | damage-per-companion | 동료·변신 연동 | 없음 | 효과 포팅 중 |
+| c-comrades-charge | 동행의 돌격 | 1 | damage-per-companion | 변신 및 이번 버전 제외 효과 | 없음 | 효과 포팅 중 |
+| c-comrades-charge-plus | 동행의 돌격+ | 1 | damage-per-companion | 변신 및 이번 버전 제외 효과 | 없음 | 효과 포팅 중 |
 | c-cursed | 들러붙은 그림자 | 1 | curse-tick | 손패 효과의 기술 역할 변환 | 저주 제거 제한 | 변신·빙의 기술 준비 중 |
 | c-cursed-blade | 저주받은 검 | 2 | damage-per-debuff | 수치 계산 이식 | 없음 | 가능 |
 | c-cursed-blade-plus | 저주받은 검+ | 2 | damage-per-debuff | 수치 계산 이식 | 없음 | 가능 |
@@ -256,6 +257,11 @@
 | c-flash-capture-plus | 찰칵!+ | 3 | apply-status, apply-status | 공통 속성 연산 재사용 | 없음 | 가능 |
 | c-focused-mind | 집중 | 1 | draw | 손패 효과의 기술 역할 변환 | 즉시 발동 | 가능 |
 | c-focused-mind-plus | 집중+ | 1 | draw | 손패 효과의 기술 역할 변환 | 즉시 발동 | 가능 |
+| c-fox-apprentice-charm | 흐린 부적 | 2 | apply-status, apply-status | 공통 속성 연산 재사용 | 변신 폼 | 해당 종족으로 변신 중 |
+| c-fox-apprentice-fire | 작은 여우불 | 1 | damage, apply-status | 공통 속성 연산 재사용 | 변신 폼 | 해당 종족으로 변신 중 |
+| c-fox-apprentice-step | 물러서는 걸음 | 1 | move-self | 격자·환경 연결 | 변신 폼 | 해당 종족으로 변신 중 |
+| c-fox-apprentice-tails | 두 꼬리 쓸기 | 2 | damage, push-enemy | 공통 속성 연산 재사용, 격자·환경 연결 | 변신 폼 | 해당 종족으로 변신 중 |
+| c-fox-apprentice-veil | 수행자의 장막 | 1 | block | 공통 속성 연산 재사용 | 변신 폼 | 해당 종족으로 변신 중 |
 | c-fox-beguile | 현혹 | 1 | apply-status | 공통 속성 연산 재사용 | 변신 폼 | 변신·빙의 기술 준비 중 |
 | c-fox-beguile-plus | 현혹+ | 1 | apply-status | 공통 속성 연산 재사용 | 변신 폼 | 변신·빙의 기술 준비 중 |
 | c-fox-bite | 여우 송곳니 | 1 | damage | 공통 속성 연산 재사용 | 변신 폼 | 변신·빙의 기술 준비 중 |
@@ -667,7 +673,7 @@
 | c-quiet-arc-plus | 가라앉음+ | 1 | apply-status, apply-status | 공통 속성 연산 재사용 | 없음 | 가능 |
 | c-recover | 숨 고르기 | 1 | heal, exhaust-self | 공통 속성 연산 재사용, 손패 효과의 기술 역할 변환 | 없음 | 가능 |
 | c-recover-plus | 숨 고르기+ | 1 | heal, exhaust-self | 공통 속성 연산 재사용, 손패 효과의 기술 역할 변환 | 없음 | 가능 |
-| c-release-change | 본모습 | 1 | release-transform | 동료·변신 연동 | 변신 폼 | 변신·빙의 기술 준비 중 |
+| c-release-change | 본모습 | 1 | release-transform | 변신 및 이번 버전 제외 효과 | 변신 폼 | 변신·빙의 기술 준비 중 |
 | c-resolve-flash | 결심의 섬광 | 1 | damage, block | 공통 속성 연산 재사용 | 없음 | 가능 |
 | c-resolve-flash-plus | 결심의 섬광+ | 1 | damage, block | 공통 속성 연산 재사용 | 없음 | 가능 |
 | c-rising-fang | 자라나는 송곳니 | 1 | growing-damage | 발동·지속 범위 확인 | 없음 | 효과 포팅 중 |
@@ -718,11 +724,11 @@
 | c-sl-puddle | 웅덩이 | 1 | draw, slow-enemy | 손패 효과의 기술 역할 변환, 발동·지속 범위 확인 | 즉시 발동 | 효과 포팅 중 |
 | c-sl-spit | 뱉기 | 1 | damage, apply-status | 공통 속성 연산 재사용 | 없음 | 가능 |
 | c-sl-splash | 튀기기 | 1 | damage, apply-status | 공통 속성 연산 재사용 | 없음 | 가능 |
-| c-sl-split | 분열! | 2 | summon-ally | 동료·변신 연동 | 없음 | 효과 포팅 중 |
+| c-sl-split | 분열! | 2 | summon-ally | 변신 및 이번 버전 제외 효과 | 없음 | 효과 포팅 중 |
 | c-sl-spread | 번지기 | 1 | amplify-debuff | 수치 계산 이식 | 없음 | 효과 포팅 중 |
 | c-sl-sticky | 끈적 | 1 | apply-status, apply-status | 공통 속성 연산 재사용 | 없음 | 가능 |
 | c-sl-transfer | 옮기기 | 1 | status-spread | 격자·환경 연결 | 없음 | 효과 포팅 중 |
-| c-sl-twobody | 두 몸 | 2 | summon-ally, block | 동료·변신 연동, 공통 속성 연산 재사용 | 없음 | 효과 포팅 중 |
+| c-sl-twobody | 두 몸 | 2 | summon-ally, block | 변신 및 이번 버전 제외 효과, 공통 속성 연산 재사용 | 없음 | 효과 포팅 중 |
 | c-smi-bomb | 폭약 설치 | 2 | place-installation | 격자·환경 연결 | 없음 | 효과 포팅 중 |
 | c-smi-firetrap | 화염 깔개 | 1 | place-installation | 격자·환경 연결 | 없음 | 효과 포팅 중 |
 | c-smi-forge | 힘의 발판 | 1 | place-installation | 격자·환경 연결 | 없음 | 효과 포팅 중 |

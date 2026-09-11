@@ -36,6 +36,8 @@ export interface Race extends NamedEntity {
    * deckSize 미달 시 seedCardIds에서 가중 랜덤으로 채움.
    */
   startingDeck: CardId[];
+  /** Temporary equipped skills while this species is imposed in the field. */
+  fieldSkills?: CardId[];
 
   /** 시작 30장 풀의 *기본 등급* 카드 — 종족이 시작 덱 부족분을 여기서 추첨/선택. */
   seedCardIds: CardId[];

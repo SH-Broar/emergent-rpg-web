@@ -33,6 +33,7 @@ export interface GridAttack {
   requiresInRange?: boolean;
   /** 부여 상태이상(선택) — "vulnerable:2" 형태. */
   applyStatus?: string;
+  transform?: { raceId: string; requiresStatus?: string };
 }
 
 /**

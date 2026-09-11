@@ -38,6 +38,7 @@ export interface FieldState {
   completedDungeons: string[];
   controlsVersion?: 2 | 3;
   combatVersion?: 1;
+  formVersion?: 1;
   skills?: import('./field-skills').FieldSkills;
   manaStep?: number;
   encounter?: FieldSpeech;
@@ -63,7 +64,7 @@ export interface FieldCreature {
   phase?: number;
   reward: { gold: number; shards: number; itemId?: string };
 }
-export interface FieldSpeech { actorId: string; name: string; lines: string[]; topics?: {label:string;lines:string[]}[] }
+export interface FieldSpeech { actorId: string; name: string; lines: string[]; topics?: {label:string;lines:string[];action?:string}[] }
 export interface FieldResult { ok: boolean; message: string; speech?: FieldSpeech; travel?: boolean; route?:string; changed?: string[]; targetId?: string; targetPos?: GridPos }
 
 export interface FieldAttack {
@@ -71,6 +72,7 @@ export interface FieldAttack {
   cells:{pos:GridPos;multiplier:number}[];
   damage:number;
   status?:string;
+  transform?: import('@/data/schemas/monster').GridAttack['transform'];
   remaining:number;
   castTurns:number;
   castSpeed:'fast'|'normal'|'slow';

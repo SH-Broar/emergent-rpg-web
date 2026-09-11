@@ -1,4 +1,6 @@
 import type { RunState } from '@/data/schemas';
+import { rng } from './rng';
+import { transformationChance } from './world/form-rules';
 import type { GridPos } from '@/data/schemas/base';
 import type { GridAttack } from '@/data/schemas/monster';
 import { useDataStore } from '@/stores/data';
@@ -65,7 +67,7 @@ export function planAttack(world:InteractionWorld,e:WorldEntity,player:WorldEnti
   if(!cells && atk.requiresInRange!==false)return;
   const chosen=cells??rotations[0]!;
   if(!chosen.length)return;
-  return {name:atk.name??'공격',cells:chosen,damage:atk.damage??c.attack,status:atk.applyStatus,remaining:turns,castTurns:turns,castSpeed:atk.castSpeed??'normal'};
+  return {name:atk.name??'공격',cells:chosen,damage:atk.damage??c.attack,status:atk.applyStatus,transform:atk.transform?{...atk.transform}:undefined,remaining:turns,castTurns:turns,castSpeed:atk.castSpeed??'normal'};
 }
 export function resolveAttack(world:InteractionWorld,e:WorldEntity) {
   const c=e.creature!,attack=c.pending!;
@@ -77,6 +79,13 @@ export function resolveAttack(world:InteractionWorld,e:WorldEntity) {
       hitAny=true;
       hit(world,e,target,Math.floor(attack.damage*multiplier),distance(e.pos!,pos)>1);
       if(target.kind==='actor')applyStatus(world,target,attack.status,e);
+      const form=attack.transform;
+      if(form && target.kind==='actor' && !target.form && (target.properties.integrity??100)>0 &&
+        useDataStore().races.get(form.raceId)?.fieldSkills?.length &&
+        (!form.requiresStatus || status(target,form.requiresStatus) || form.requiresStatus==='feral'&&status(target,'feral-heavy'))) {
+        if(rng()<transformationChance(target.properties.level))influenceEntity(world,target,'form:'+form.raceId,1,e.id,'몸의 형상이 바뀌었다.');
+        else recordFact(world,{turn:world.turn,nodeId:target.nodeId,actorId:e.id,targetId:target.id,kind:'signal',labor:0,message:'변신 저항'});
+      }
       if(attack.status?.startsWith('possession:')&&target.kind==='actor')influenceEntity(world,e,'integrity',-100,e.id);
     }
   }

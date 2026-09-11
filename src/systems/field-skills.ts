@@ -40,7 +40,7 @@ const hostileEffect = (e: CardEffect) => !selfEffect(e) && !environmental(e);
 /** Reject the whole skill when even one effect lacks a faithful field implementation. */
 export function skillUnavailable(card: Card): string | undefined {
   if (card.unplayable || card.source === 'junk') return '사용할 수 없는 카드';
-  if (card.possession || card.curse || card.source === 'possession' || card.source === 'form') return '변신·빙의 기술 준비 중';
+  if (card.possession || card.curse || card.source === 'possession' || card.source === 'form' && !card.magic) return '변신·빙의 기술 준비 중';
   if (card.trigger !== 'manual' || card.customEffectId || !skillEffects(card).length) return '발동 규칙 준비 중';
   if (!Number.isInteger(skillStrokes(card)) || skillStrokes(card)<2 || card.magic?.glyphs?.some(g=>!SKILL_GESTURES.includes(g as SkillGesture))) return '도형 규칙 확인 필요';
   if (!Number.isFinite(card.cost) || card.cost < 0 || !Number.isFinite(skillMana(card)) || skillMana(card) > 3 || !Number.isInteger(skillCooldown(card))) return '마나 규칙 준비 중';
@@ -50,12 +50,19 @@ export function skillUnavailable(card: Card): string | undefined {
     (selfEffect(e) && !DECAYING.has(String(e.params?.status)) && !['regen','paralyze','spasm','poison','burn'].includes(String(e.params?.status)))))) return '지속 효과 준비 중';
   if (skillEffects(card).some(e => !Number.isFinite(e.value ?? 0))) return '수치 확인 필요';
 }
+/** A supported spell can still be sealed for this particular body. */
+export function fieldSkillRestriction(run:RunState,card:Card):string|undefined {
+  const allowed=run.transform?.field ? useDataStore().races.get(run.transform.formRaceId)?.fieldSkills??[] : [];
+  if(run.transform?.field && !allowed.includes(card.id))return '본래 기술이 봉인되어 있다.';
+  if(card.source==='form' && !allowed.includes(card.id))return '변신 중에만 사용할 수 있다.';
+  return skillUnavailable(card);
+}
 export function ensureFieldSkills(run: RunState): FieldSkills {
   const field = run.field!;
   if (!field.skills) {
     const slots: FieldSkills['slots'] = {}, seen = new Set<string>();
     for (const card of [...run.deck, ...run.collection]) {
-      if (!card.instanceId || skillUnavailable(card) || seen.has(skillFamily(card)) || !run.collection.some(c => c.instanceId === card.instanceId)) continue;
+      if (!card.instanceId || fieldSkillRestriction(run,card) || seen.has(skillFamily(card)) || !run.collection.some(c => c.instanceId === card.instanceId)) continue;
       const gesture = SKILL_GESTURES.find(g=>!slots[g]&&skillFitsGesture(card,g)); if (!gesture) continue;
       slots[gesture] = card.instanceId; seen.add(skillFamily(card));
     }
@@ -86,7 +93,7 @@ export function equipFieldSkill(run: RunState, gesture: string, instanceId?: str
   if (!run.field || !SKILL_GESTURES.includes(gesture as SkillGesture)) return '기술 도형을 선택하세요.';
   if (skillLoadoutLocked(run)) return '안전한 곳에서 기술을 바꿀 수 있다.';
   const skills = ensureFieldSkills(run), card = run.collection.find(c => c.instanceId === instanceId);
-  if (instanceId && (!card || skillUnavailable(card))) return card ? skillUnavailable(card) : '카드를 찾을 수 없다.';
+  if (instanceId && (!card || fieldSkillRestriction(run,card))) return card ? fieldSkillRestriction(run,card) : '카드를 찾을 수 없다.';
   if (card && !skillFitsGesture(card,gesture)) return skillStrokes(card)+'획 이상 도형이 필요하다.';
   if (card) {
     for (const id of SKILL_GESTURES) {
@@ -119,7 +126,7 @@ const targetsAt = (world: InteractionWorld, player: WorldEntity, cells: SkillCel
   entitiesAt(world, player.nodeId, cell.pos).filter(e => e.id !== player.id && (e.properties.integrity ?? 100) > 0)
     .map(target => ({target, multiplier: cell.multiplier})));
 export function skillFailure(run: RunState, world: InteractionWorld, card: Card, cells: SkillCell[]): string | undefined {
-  const unavailable = skillUnavailable(card); if (unavailable) return unavailable;
+  const unavailable = fieldSkillRestriction(run,card); if (unavailable) return unavailable;
   const player = world.entities.player!;
   if (run.field?.skills?.pending) return '기술을 시전 중이다.';
   const blocked = actionRestriction(player); if (blocked) return blocked;
@@ -157,6 +164,7 @@ function displace(world: InteractionWorld, actor: WorldEntity, target: WorldEnti
   }
 }
 export function resolveFieldSkill(run: RunState, world: InteractionWorld, card: Card, cells: SkillCell[], paid: number, power=1) {
+  if(fieldSkillRestriction(run,card))return;
   const player = world.entities.player!;
   const ranged = card.targetMode === 'aimed';
   const targets = targetsAt(world, player, cells).filter(({target})=>!(status(target,'ghost') && (ranged || status(player,'ghost'))));

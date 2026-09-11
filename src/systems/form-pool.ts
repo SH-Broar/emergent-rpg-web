@@ -25,7 +25,9 @@ const FORM_CARD_PREFIX: Record<string, string> = {
 
 /** 지금 변신 중이고 폼 풀 전환 대상인 폼 race id (아니면 undefined). */
 export function activeFormRaceId(): string | undefined {
-  const t = useRunStore().data.transform;
+  const run=useRunStore().data;
+  if(run.field)return undefined; // Field forms seal skills; rewards remain ordinary cards.
+  const t = run.transform;
   if (!t) return undefined;
   return FORM_CARD_PREFIX[t.formRaceId] ? t.formRaceId : undefined;
 }

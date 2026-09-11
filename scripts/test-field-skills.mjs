@@ -121,7 +121,7 @@ try {
   assert((barrel.properties.moisture??0)>0);
   results.push('terrain skills influence actors and objects through the shared material router');
 
-  const supported=[...data.cards.values()].filter(c=>!skills.skillUnavailable(c));
+  const supported=[...data.cards.values()].filter(c=>c.source!=='form'&&!skills.skillUnavailable(c)); // Form-only casts have their own lifecycle test.
   assert(supported.length>100);
   for(const def of supported){
     a=reset();card=add(a,def.id,clone(def.effects),{...clone(def),instanceId:def.id+':audit'});

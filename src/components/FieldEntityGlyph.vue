@@ -21,7 +21,18 @@ const tint=computed(()=>{let n=0;for(const c of species.value)n=(n*31+c.charCode
 <template>
   <svg viewBox="0 0 48 52" aria-hidden="true" class="entity-art" :class="{ hostile: !!entity.creature, person: entity.kind === 'actor' }">
     <ellipse cx="24" cy="43" rx="15" ry="5" fill="#09140c" opacity=".35" />
-    <g v-if="entity.id === 'player'" fill="#e6d8ad" stroke="#324b3a" stroke-width="1.8"><path d="M15 39l2-18h14l3 18-9 5z" fill="#7d9e8a"/><circle cx="24" cy="15" r="8"/><path d="M16 13l3-8 11 2 4 8" fill="#c6aa74"/><path d="M12 24l5-3M31 22l6 10M20 40v7m9-7v7"/></g>
+    <g v-if="entity.form?.raceId==='race-form-fox'||entity.agent?.species==='race-form-fox'" data-form="two-tail-fox" stroke="#534552" stroke-width="1.5">
+      <path data-tail="left" d="M19 39C3 46 0 26 7 16c-1 14 13 10 16 20" fill="#bf936d"/>
+      <path data-tail="right" d="M29 39c16 7 19-13 12-23 1 14-13 10-16 20" fill="#bf936d"/>
+      <path d="M7 16q-5 10-2 16l5-4q-4-4-3-12m34 0q5 10 2 16l-5-4q4-4 3-12" fill="#eee0c2"/>
+      <path d="m15 11 1-9 7 7m3 0 7-7 1 10" fill="#bf936d"/>
+      <circle cx="24" cy="15" r="7" fill="#edd6b7"/>
+      <path d="M16 23l-4 17 12 4 12-4-4-17z" fill="#b5afa0"/>
+      <path d="m19 22 8 14 3-14M14 35h20" fill="none" stroke="#6a667e"/>
+      <path d="m17 24-7 9m21-9 7 9M20 43v5m8-5v5" fill="none"/>
+      <path d="M20 14h2m4 0h2" stroke="#745247"/><path d="m34 29 5 1-1 8-5-1z" fill="#e4d1a1"/>
+    </g>
+    <g v-else-if="entity.id === 'player'" fill="#e6d8ad" stroke="#324b3a" stroke-width="1.8"><path d="M15 39l2-18h14l3 18-9 5z" fill="#7d9e8a"/><circle cx="24" cy="15" r="8"/><path d="M16 13l3-8 11 2 4 8" fill="#c6aa74"/><path d="M12 24l5-3M31 22l6 10M20 40v7m9-7v7"/></g>
     <g v-else-if="entity.creature && entity.creature.rank !== 'normal'" stroke="#342234" stroke-width="1.6"><path d="M12 40l6-23h12l7 23-13 5z" :fill="entity.creature.rank === 'boss' ? '#bc5f79' : '#ad7f9f'"/><circle cx="24" cy="13" r="7" fill="#dfb1b2"/><path d="M17 10l-4-7 8 4m10 3 4-7-8 4M16 25L7 37m25-12 9 12M20 42l-2 6m10-6 2 6" fill="none"/><path d="M20 14h2m4 0h2" stroke="#502431"/></g>
     <g v-else-if="entity.creature && form==='slime'" stroke="#304849" stroke-width="1.5"><path d="M7 39C5 28 17 13 24 17S43 30 41 40C36 48 13 48 7 39" :fill="tint"/><path d="M18 36h3m6 0h3" stroke="#223734"/></g>
     <g v-else-if="entity.creature && form==='shade'" stroke="#5d537e"><path d="M11 46l4-13-7-4 9-7-2-13 11 5 9-7-2 16 8 10-9 6 4 9-12-5z" :fill="tint"/><path d="M17 27l5 2m5-2 5-2" stroke="#ffdcad" stroke-width="3"/></g>
