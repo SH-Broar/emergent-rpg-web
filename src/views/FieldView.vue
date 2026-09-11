@@ -17,6 +17,7 @@ import FieldSkillPanel from '@/components/FieldSkillPanel.vue';
 import { SKILL_GESTURES, equippedSkill, fieldSkillCells, skillRemaining, fieldSkillMana } from '@/systems/field-skills';
 import GesturePad from '@/components/GesturePad.vue';
 import FieldEntityGlyph from '@/components/FieldEntityGlyph.vue';
+import FieldStatusFeedback from '@/components/FieldStatusFeedback.vue';
 import SettingsMenu from '@/components/SettingsMenu.vue';
 import FieldAtlas from '@/components/FieldAtlas.vue';
 import CharacterMenu from '@/components/CharacterMenu.vue';
@@ -195,6 +196,7 @@ onBeforeUnmount(() => { stop(); observer?.disconnect(); clearTimeout(timer);clea
           <span v-if="distance(selection,pos)===0&&hints.length&&target?.id!=='player'" class="tile-hints" aria-hidden="true">{{ hints.map(h=>GLYPHS[h.id]).join(' ') }}</span>
         </button>
       </div>
+      <FieldStatusFeedback :entity="player" :transformed="!!run.data.transform"/>
       <div v-if="statusEntries(player).length" class="field-statuses" aria-label="내 상태"><button v-for="s in statusEntries(player)" :key="s.key" :aria-label="statusLabel(s.key)+' '+s.value" @click="say(STATUS_HELP[s.key]??statusLabel(s.key))">{{ statusLabel(s.key) }} {{ s.value }}</button></div>
       <div v-if="notice" class="field-notice" role="status">{{ notice }}</div>
       <div v-if="space.cleared && space.dungeon" class="room-clear">◇ 길이 열렸다</div>
