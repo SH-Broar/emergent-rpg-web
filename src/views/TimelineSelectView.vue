@@ -3,7 +3,7 @@
  * 챕터 선택 — 미니멀 리스트 (2026-06-20 정보 과다 정리).
  *
  * 감성 문구·"연표" 용어·메타 나열(덱 확장/선택 종족/등장 NPC/설명/미션)을 화면에서 걷어내고,
- * 챕터명(N장) / 제한 시간 / 도감 해금 % 만 노출한다. 미션은 런 시작 직전 브리핑 팝업에서 다시 안내.
+ * 챕터명(N장) / 도감 해금 % 만 노출한다. 미션은 런 시작 직전 브리핑 팝업에서 다시 안내.
  * 진입 버튼은 건조하게 "선택". (내부 데이터/변수는 timeline 용어를 유지 — 표시만 "챕터".)
  */
 
@@ -13,7 +13,6 @@ import { useUiStore } from '@/stores/ui';
 import { useDataStore } from '@/stores/data';
 import { useMetaStore } from '@/stores/meta';
 import { canEnterTimeline } from '@/frame/Mono';
-import { durationLabel } from '@/systems/time';
 import type { Timeline } from '@/data/schemas';
 
 const router = useRouter();
@@ -78,10 +77,6 @@ function back() {
       >
         <span class="chapter__no">{{ i + 1 }}장</span>
         <dl class="chapter__meta">
-          <div>
-            <dt>제한 시간</dt>
-            <dd>{{ durationLabel(t.timeLimit) }}</dd>
-          </div>
           <div>
             <dt>도감 해금</dt>
             <dd>{{ codexPercent }}%</dd>

@@ -741,7 +741,7 @@ export interface RunState {
   visitedNodes: NodeId[];
   /** 노드별 상태 (재방문 정책). */
   nodeStates: Record<NodeId, NodeStateRecord>;
-  /** 시간 만료까지 남은 카운트 (시간 만료 = 즉시 런 종료). */
+  /** 구 저장 호환 필드. 현재 게임은 제한시간이 없고 이 값을 소비하지 않는다. */
   remainingTime: number;
 
   /**

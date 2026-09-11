@@ -234,7 +234,7 @@ try {
   const world = ensureInteractionWorld(run.data);
   for (const entity of Object.values(world.entities)) if (entity.agent) entity.agent.nextActionTurn = 9999;
   assert.equal(farming.plant('field', 'crop-grain', -1000), true);
-  assert.equal(run.data.remainingTime, 299);
+  assert.equal(run.data.ended, false);
   const viewBefore = JSON.stringify(run.data.plots);
   for (let i = 0; i < 10; i++) farming.plotStatus('field');
   assert.equal(JSON.stringify(run.data.plots), viewBefore, 'previews do not mutate world state');
@@ -249,7 +249,7 @@ try {
   assert.equal(result.itemIds.length, 2);
   assert.equal(run.data.items.filter(i => i.id === 'i-crop-grain').length, 2);
   assert.equal(run.data.lifeXp, 1);
-  assert.equal(run.data.remainingTime, timeBefore - 1);
+  assert.equal(run.data.remainingTime, timeBefore);
   const rewardsBefore = JSON.stringify({ items: run.data.items, xp: run.data.lifeXp, colors: run.data.colors, time: run.data.remainingTime });
   assert.equal(farming.harvest('field'), null);
   assert.equal(JSON.stringify({ items: run.data.items, xp: run.data.lifeXp, colors: run.data.colors, time: run.data.remainingTime }), rewardsBefore);

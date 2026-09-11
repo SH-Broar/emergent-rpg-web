@@ -54,7 +54,7 @@ try {
   assert.equal(field.stepField(diagonal).ok,false); assert.equal(run.data.field.elapsedSeconds,0);
   assert.equal(field.stepField(next).ok,true); assert.equal(run.data.field.elapsedSeconds,30); assert.equal(field.fieldClock(run.data),'1일 12:00:30');
   assert.equal(run.data.visitedNodes.length,0);
-  field.advanceFieldTime(840); assert.equal(run.data.field.elapsedSeconds,870); assert.equal(run.data.visitedNodes.length,1); assert.equal(run.data.remainingTime,299);
+  field.advanceFieldTime(840); assert.equal(run.data.field.elapsedSeconds,870); assert.equal(run.data.visitedNodes.length,1); assert.equal(run.data.ended,false);
   passed.push('movement is orthogonal and exactly 30 seconds; fractional legacy time is preserved');
 
   ({world,space,player}=start());
@@ -98,9 +98,9 @@ try {
   const plot=Object.values(world.entities).find(e=>e.nodeId===space.id&&e.tags.includes('field-plot')&&!Object.values(e.stock).some(n=>n>0));
   park(world,space,player,spatial.cardinal(plot.pos).find(p=>spatial.walkable(world,space.id,p,'player')));
   const seeds=player.stock['field-seed'];
-  assert.equal(field.performFieldGesture('inverted',plot.id,plot.pos).ok,true); assert.equal(player.stock['field-seed'],seeds-1); assert.ok(plot.production);
+  assert.equal(field.performFieldGesture('tend',plot.id,plot.pos).ok,true); assert.equal(player.stock['field-seed'],seeds-1); assert.ok(plot.production);
   const batch=plot.production.id;
-  assert.equal(field.performFieldGesture('inverted',plot.id,plot.pos).ok,true); assert.equal(plot.production.id,batch,'second gesture waters rather than replacing crop');
+  assert.equal(field.performFieldGesture('tend',plot.id,plot.pos).ok,true); assert.equal(plot.production.id,batch,'second gesture waters rather than replacing crop');
   const other=generation.fieldMap(run.data).nodes.find(n=>n.id!==space.id && n.kind==='village');
   const otherSpace=generation.ensureFieldSpace(run.data,world,other.id); run.data.currentNodeId=other.id; player.nodeId=other.id; player.pos={...otherSpace.spawn};
   field.advanceFieldTime(1800);
@@ -182,6 +182,8 @@ try {
   ({world,space,player}=start(monsterNode.id));
   const spellTarget=Object.values(world.entities).find(e=>e.nodeId===space.id&&e.creature);
   park(world,space,player,spatial.cardinal(spellTarget.pos).find(p=>spatial.walkable(world,space.id,p,'player')));
+  const skill={id:'test-star',instanceId:'test-star-copy',name:'별의 힘',rank:'common',source:'race',cost:3,trigger:'manual',effects:[{kind:'damage',value:30}],targetMode:'aimed',shape:[{dx:0,dy:0}],aimRange:4,castSpeed:'fast'};
+  run.data.collection.push(skill);run.data.field.skills.slots.star=skill.instanceId;
   const mana=run.data.mp,initialIntegrity=spellTarget.properties.integrity;
   assert.equal(field.performFieldGesture('star',spellTarget.id,spellTarget.pos).ok,false,'advanced rune has no button shortcut');
   assert.equal(field.performFieldGesture('star',spellTarget.id,spellTarget.pos,{drawn:true,quality:.8}).ok,false);assert.equal(run.data.mp,mana);assert.equal(run.data.field.elapsedSeconds,0);

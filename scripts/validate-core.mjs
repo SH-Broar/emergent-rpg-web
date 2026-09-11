@@ -460,7 +460,7 @@ export function validateData(dataDir, readFile) {
     if (f.trigger && !VALID_CARD_TRIGGERS.includes(f.trigger)) push(diag('error', 'whitelist-kind', `카드 '${id}' 알 수 없는 trigger '${f.trigger}'`, w));
     if (f.element && !VALID_COLORS.includes(f.element)) push(diag('error', 'whitelist-kind', `카드 '${id}' 알 수 없는 element '${f.element}'`, w));
     // 효과 kind + apply-status status.
-    for (const tok of parseList(f.effects)) {
+    for (const tok of [...parseList(f.effects), ...parseList(f.magic_effects)]) {
       const parts = tok.split(':').map((s) => s.trim());
       const kind = parts[0];
       if (!kind) continue;
@@ -481,6 +481,10 @@ export function validateData(dataDir, readFile) {
         const color = parts[3];
         if (color && !['random', 'all', ...VALID_COLORS].includes(color)) push(diag('error', 'whitelist-kind', `카드 '${id}' grant-color 알 수 없는 color '${color}'`, w));
       }
+    }
+    for (const [key, minimum, maximum] of [['magic_strokes',2,Infinity],['magic_mana',1,3],['magic_cooldown',1,Infinity]]) {
+      if (f[key] !== undefined && (!Number.isInteger(Number(f[key])) || Number(f[key]) < minimum || Number(f[key]) > maximum))
+        push(diag('error', 'required-fields', "카드 '"+id+"' 잘못된 "+key+" '"+f[key]+"'", w));
     }
     // upgrade_to (-plus 연결) 존재.
     if (f.upgrade_to && !cardIds.has(f.upgrade_to)) push(diag('error', 'dangling', `카드 '${id}' upgrade_to '${f.upgrade_to}' 카드 미정의`, w));

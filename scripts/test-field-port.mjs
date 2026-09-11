@@ -155,7 +155,7 @@ try {
   field.stepField({x:6,y:4});assert.equal(run.data.possessed,2);
   field.ensureField(run.data);assert.equal(status.status(a.player,'possession'),2);
   run.data.feralHeavy=0;field.ensureField(run.data);assert.equal(status.status(a.player,'feral-heavy'),0,'village cleansing reaches field properties');
-  field.performFieldGesture('circle','player',a.player.pos);assert.equal(run.data.possessed,0);assert.equal(status.status(a.player,'possession'),0);
+  field.performFieldGesture('tap','player',a.player.pos);assert.equal(run.data.possessed,0);assert.equal(status.status(a.player,'possession'),0);
   results.push('legacy persistent statuses survive migration and movement, and clear through village services or rest');
 
   a=arena();a.enemy.properties['status:thorns']=3;

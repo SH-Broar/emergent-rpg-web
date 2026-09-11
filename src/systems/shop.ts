@@ -1,37 +1,16 @@
-/**
- * 상점 시스템 — 노드 진입 시 *재고 1회 생성*, 구매 처리, 카드 제거.
- *
- * 사양:
- *  - 재고는 시드 추첨으로 1회 생성 후 RunState에 스냅샷. 재방문해도 동일.
- *  - 카드 5장 + 유물 2개 + 카드 제거 1슬롯.
- *  - 가격: rank별 고정. discount 유물 효과 적용 (ceil).
- *  - 구매하면 슬롯 purchased=true. 카드는 collection에 인스턴스 추가, 유물은 relics에 push.
- */
+/** 상점의 재료·특산물·서비스 거래. 카드 판매는 폐지했으며 저장된 카드 슬롯도 비운다. */
 
-import type { Card, Rank, Relic, ShopCardSlot, ShopInventory, ShopMaterialSlot, ShopRelicSlot } from '@/data/schemas';
+import type { Rank, Relic, ShopCardSlot, ShopInventory, ShopMaterialSlot, ShopRelicSlot } from '@/data/schemas';
 import { useRunStore, CARD_SALVAGE_SHARDS } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
-import { instantiateCard } from '@/systems/deck';
 import { isPossessionLocked } from '@/systems/possession';
 import { getCraftingDiscount, acquireRelic } from '@/systems/relic';
-import { availableCards, availableRelics } from '@/systems/unlocks';
+import { availableRelics } from '@/systems/unlocks';
 import { rng } from '@/systems/rng';
 import { shopPriceMul, isNoRemoval, offersShopRest } from '@/systems/chaos';
-import { isFormPoolActive, activeFormCardPool } from '@/systems/form-pool';
 
 // 가격·슬롯은 config/balance.txt 에서 로드 (useDataStore().balance). 누락 시 DEFAULT_BALANCE.
-/** 카드 기본 가격 (골드) — 등급별. */
-function cardBasePrice(rank: Rank): number {
-  const b = useDataStore().balance;
-  switch (rank) {
-    case 'basic': return b.shopCardPriceBasic;
-    case 'common': return b.shopCardPriceCommon;
-    case 'rare': return b.shopCardPriceRare;
-    case 'legendary': return b.shopCardPriceLegendary;
-    default: return b.shopCardPriceCommon;
-  }
-}
 /** 유물 기본 가격 (골드) — 등급별. */
 function relicBasePrice(rank: Rank): number {
   const b = useDataStore().balance;
@@ -65,35 +44,6 @@ function pickRandom<T>(arr: T[], n: number): T[] {
   return out;
 }
 
-/**
- * 상점 카드 풀 — *시작 덱 출처 제외* + *전설 제외*.
- * source가 'race'/'character'는 시작 덱 — 중복 회피.
- * 전설 카드(legendary)는 *권역 공방 전용 제작*이므로 상점에서 팔지 않는다(화이트리스트, 2026-05).
- */
-function getShopCardPool(): Card[] {
-  // Item 37-③ 여우 폼 — 변신 중이면 상점 카드 풀을 폼 풀로 역전(해제 카드 포함, 전설도 노출).
-  //   원복(미변신) 시 이 분기를 타지 않아 일반 풀(form 제외)로 복귀 → 누출 0.
-  if (isFormPoolActive()) {
-    const formPool = activeFormCardPool();
-    if (formPool.length > 0) return formPool;
-  }
-  const available = availableCards(); // 잠긴(미해금) 카드 제외
-  const pool: Card[] = [];
-  for (const c of available) {
-    if (c.source === 'race' || c.source === 'character') continue;
-    if (c.rank === 'legendary') continue; // 전설은 권역 공방에서만.
-    pool.push(c);
-  }
-  // 풀이 너무 작으면 (가용 카드 한정) 전설 제외만 적용한 폴백.
-  if (pool.length < useDataStore().balance.shopNumCards) {
-    return available.filter((c) => c.rank !== 'legendary');
-  }
-  return pool;
-}
-
-/**
- * 상점 유물 풀 — *현재 보유한 유물 제외*, boss/meta 출처 제외 (별도 경로 자원).
- */
 function getShopRelicPool(): Relic[] {
   const run = useRunStore();
   const owned = new Set(run.data.relics.map((r) => r.id));
@@ -138,25 +88,18 @@ export function getOrCreateShopInventory(nodeId: string): ShopInventory {
   if (existing) {
     // 옛 세이브 호환 — materials 슬롯이 없으면 지금 채운다.
     if (!existing.materials) existing.materials = buildMaterialSlots();
+    existing.cards = []; // Retire old unsold card offers without touching owned copies.
     // 카오스 no-respite(험한 세상) — 회복 구매 슬롯이 없으면 지금 채운다.
     // (post-apocalypse는 offersShopRest()가 false라 슬롯을 주지 않는다.)
     if (!existing.restPurchase && offersShopRest()) existing.restPurchase = buildRestPurchase();
     return existing;
   }
 
-  const cardCandidates = pickRandom(getShopCardPool(), bal.shopNumCards);
+
   // 유물 해체 — 상점 유물 진열 중단(0개 픽). 종족 시작 유물(seedRelics)만 잔존.
   const relicCandidates = pickRandom(getShopRelicPool(), 0);
 
-  const cards: ShopCardSlot[] = cardCandidates.map((c) => {
-    const instance = instantiateCard(c);
-    return {
-      cardId: c.id,
-      cardInstanceId: instance.instanceId!,
-      price: applyDiscount(cardBasePrice(c.rank)),
-      purchased: false,
-    };
-  });
+  const cards: ShopCardSlot[] = [];
 
   const relics: ShopRelicSlot[] = relicCandidates.map((r) => ({
     relicId: r.id,
@@ -233,32 +176,10 @@ export function purchaseShopMaterial(nodeId: string, slotIndex: number): boolean
   return true;
 }
 
-/** 카드 슬롯 구매. */
-export function purchaseShopCard(nodeId: string, slotIndex: number): boolean {
-  const run = useRunStore();
-  const data = useDataStore();
-  const ui = useUiStore();
-  const inv = run.data.shopInventories?.[nodeId];
-  if (!inv) return false;
-  const slot = inv.cards[slotIndex];
-  if (!slot || slot.purchased) return false;
-  if (run.data.gold < slot.price) {
-    ui.toast('warning', '골드가 부족합니다.');
-    return false;
-  }
-  const def = data.cards.get(slot.cardId);
-  if (!def) return false;
-
-  run.data.gold -= slot.price;
-  // 슬롯의 사전 인스턴스 ID를 그대로 collection으로 옮긴다.
-  const inst: Card = { ...def, instanceId: slot.cardInstanceId };
-  run.addCardToCollection(inst);
-  slot.purchased = true;
-  ui.toast('success', `카드: ${def.name} (-${slot.price} 골드)`);
-  return true;
+/** @deprecated 이전 구매 호출은 자원을 소모하지 않는다. */
+export function purchaseShopCard(_nodeId: string, _slotIndex: number): boolean {
+  return false;
 }
-
-/** 유물 슬롯 구매. passive면 즉시 적용. */
 export function purchaseShopRelic(nodeId: string, slotIndex: number): boolean {
   const run = useRunStore();
   const data = useDataStore();

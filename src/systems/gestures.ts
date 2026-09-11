@@ -61,6 +61,24 @@ function shapeDistance(a: StrokePoint[],b: StrokePoint[]) {
   const nearest=(from:StrokePoint[],to:StrokePoint[])=>from.reduce((sum,p)=>sum+Math.min(...to.map(q=>length(p,q))),0)/from.length;
   return (nearest(a,b)+nearest(b,a))/2;
 }
+/** Simplified corners keep a lopsided triangle distinct from newly registered quadrilaterals. */
+function cornerCount(input: StrokePoint[]): number {
+  const points=input.slice();
+  if(points.length>1&&length(points[0]!,points.at(-1)!)<.1)points.pop();
+  while(points.length>3){
+    let best=Infinity,index=-1;
+    for(let i=0;i<points.length;i++){
+      const a=points[(i+points.length-1)%points.length]!,b=points[i]!,c=points[(i+1)%points.length]!;
+      const dx=c.x-a.x,dy=c.y-a.y,denom=dx*dx+dy*dy;
+      const t=denom?Math.max(0,Math.min(1,((b.x-a.x)*dx+(b.y-a.y)*dy)/denom)):0;
+      const d=length(b,{x:a.x+t*dx,y:a.y+t*dy});
+      if(d<best){best=d;index=i;}
+    }
+    if(best>.085)break;
+    points.splice(index,1);
+  }
+  return points.length;
+}
 const templates = new Map(GESTURE_CATALOG.filter(g=>!g.direction&&!g.tap&&!g.lineSectors).map(g=>[g.id,normalized(g.points)]));
 /** Basic patterns tolerate uneven sides and imperfect closure; advanced patterns enforce their authored threshold. */
 export function recognizeGestureMatch(input: readonly StrokePoint[], catalog: readonly GestureDefinition[] = GESTURE_CATALOG): GestureMatch | undefined {
@@ -94,7 +112,9 @@ export function recognizeGestureMatch(input: readonly StrokePoint[], catalog: re
     const shape=shapeDistance(sample,template);
     const expectedDirections=strokeDirections(definition.points).length;
     const turnPenalty=Math.min(.06,Math.max(0,Math.abs(directions.length-expectedDirections)-2)*.012);
-    const score=definition.drawOnly?ordered*.8+shape*.2:ordered*.35+shape*.65+turnPenalty;
+    const corners=definition.closed?cornerCount(template):0;
+    const cornerPenalty=corners>=3&&corners<=4?Math.min(.09,Math.abs(cornerCount(sample)-corners)*.035):0;
+    const score=definition.drawOnly?ordered*.8+shape*.2:ordered*.35+shape*.65+turnPenalty+cornerPenalty;
     ranked.push({definition,score});
   }
   ranked.sort((a,b)=>a.score-b.score);

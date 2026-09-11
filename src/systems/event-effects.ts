@@ -62,8 +62,8 @@ for (const [id, amount] of Object.entries(colorPushers)) {
 
 // === 시간 만료 직전에만 의미 있는 효과 — 남은 시간 +10 ===
 registerEventEffect('time-extend-10', (ctx) => {
-  ctx.run.remainingTime += 10;
-  ctx.lines.push('남은 시간 +10');
+  ctx.run.timeShards += 10;
+  ctx.lines.push('시간의 조각 +10');
 });
 
 // === 약한 단계 컬러 부스트 (+1) — 단서/잡 보상용. push-*-5보다 한 단계 약함.

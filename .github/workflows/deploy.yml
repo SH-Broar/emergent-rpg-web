@@ -32,6 +32,9 @@ jobs:
       - run: npm run validate
       - run: node scripts/test-field-port.mjs
       - run: node scripts/test-field-simulation.mjs
+      - run: node scripts/test-gesture-input.mjs
+      - run: node scripts/test-field-skills.mjs
+      - run: node scripts/test-skill-growth.mjs
       - run: npm run build
       - uses: actions/configure-pages@v4
       - uses: actions/upload-pages-artifact@v3

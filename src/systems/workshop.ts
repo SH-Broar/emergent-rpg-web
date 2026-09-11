@@ -144,7 +144,7 @@ export function listAwakenableCards(): Card[] {
 function getForgePool(): Card[] {
   const pool: Card[] = [];
   for (const c of availableCards()) { // 잠긴(미해금) 카드 제외
-    if (!FORGE_RANKS.includes(c.rank)) continue;
+    if (!FORGE_RANKS.includes(c.rank) && !c.magic) continue;
     // 시작 덱 시드는 제외 — 일반 카드와 동일 정책.
     if (c.source === 'race' || c.source === 'character') continue;
     pool.push(c);

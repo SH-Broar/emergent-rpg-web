@@ -237,5 +237,6 @@ effects = damage:5:enemy, apply-status:1:enemy:weakness
 shape = 0,0
 per_tile_mul = 1.0
 cast_speed = normal
+target_mode = aimed
 aim_range = 3
 flavor = 체내에 응축된 소화액을 총알처럼 뱉어낸다. 불쾌한 점액질이 적의 눈을 가리고 힘을 앗아간다.

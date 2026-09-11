@@ -30,6 +30,7 @@ import { statusLabel } from '@/systems/labels';
 import { companionForEntry, rosterEntryName } from '@/systems/companion';
 import { XP_PER_LEVEL } from '@/systems/enhance';
 import type { Companion, Element, Equipment, EquipmentSlot, RosterEntry } from '@/data/schemas';
+import FieldSkillPanel from '@/components/FieldSkillPanel.vue';
 import DeckPanel from '@/components/DeckPanel.vue';
 import Tooltip from '@/components/Tooltip.vue';
 
@@ -284,13 +285,13 @@ function onUnequipClick(slot: EquipmentSlot) {
 
           <!-- 덱 (사용자 요청: 맨 위로) -->
           <section class="cm-sec">
-            <h3 class="cm-sec__title">덱</h3>
+            <h3 class="cm-sec__title">{{ run.data.field ? '기술' : '덱' }}</h3>
             <div class="cm-deck">
               <div class="cm-deck__summary">
-                <span class="cm-deck__count">{{ run.data.deck.length }} / {{ run.data.deckSize }}</span>
-                <span class="cm-deck__hint">전투에 들고 갈 카드</span>
+                <span class="cm-deck__count">{{ run.data.field ? Object.keys(run.data.field.skills?.slots??{}).length : run.data.deck.length }} / {{ run.data.field ? 8 : run.data.deckSize }}</span>
+                <span class="cm-deck__hint">{{ run.data.field ? '도형에 장착한 기술' : '전투에 들고 갈 카드' }}</span>
               </div>
-              <button class="cm-btn cm-btn--primary" @click="openDeckEdit">덱 편집</button>
+              <button class="cm-btn cm-btn--primary" @click="openDeckEdit">{{ run.data.field ? '기술 구성' : '덱 편집' }}</button>
             </div>
           </section>
 
@@ -480,7 +481,8 @@ function onUnequipClick(slot: EquipmentSlot) {
   </transition>
 
   <!-- nested 덱 편집 (z-index 960) -->
-  <DeckPanel :open="deckEditOpen" @close="deckEditOpen = false" />
+  <FieldSkillPanel v-if="run.data.field" :open="deckEditOpen" @close="deckEditOpen=false" />
+        <DeckPanel v-else :open="deckEditOpen" @close="deckEditOpen = false" />
 </template>
 
 <style scoped>

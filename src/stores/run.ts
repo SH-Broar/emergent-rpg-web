@@ -8,6 +8,7 @@
  * 이 스토어는 *그 시점 한 런*만 보유. 게임 시작 시 startRun()으로 초기화.
  */
 
+import { skillFamily, skillStrokes } from '@/systems/field-skill-rules';
 import { defineStore } from 'pinia';
 import type {
   Card,
@@ -24,7 +25,7 @@ import { instantiateCard } from '@/systems/deck';
 import { createSeededRng, generateInitialSeed, setRng } from '@/systems/rng';
 import { getSkipTurnEveryN } from '@/systems/relic';
 import { gridRelicCombatEnd } from '@/systems/grid-relic';
-import { applyStartChaos, nodeHpLoss } from '@/systems/chaos';
+import { applyStartChaos, computeChaosScore, nodeHpLoss } from '@/systems/chaos';
 import { dayOfTurn } from '@/systems/time';
 import { tickMail, initialMailState } from '@/systems/mail';
 import { ensureRegionWorld, tickRegionWorld, reportRegionEncounter, inLivingRegion } from '@/systems/region-world';
@@ -407,9 +408,6 @@ export const useRunStore = defineStore('run', {
     isCombatActive: (state) =>
       state.active && (state.data.combat !== undefined || state.data.gridCombat !== undefined),
     isEnded: (state) => state.data.ended,
-    /** 다음 덱 확장 임계까지 남은 시간 (단순 추정 — 실제는 timeline에서 가져옴). */
-    progressRatio: (state) =>
-      state.data.remainingTime > 0 ? 1 - state.data.remainingTime / 100 : 1,
   },
 
   actions: {
@@ -431,7 +429,7 @@ export const useRunStore = defineStore('run', {
       maxHp: number;
       maxMp: number;
       startNodeId: string;
-      timeLimit: number;
+      timeLimit?: number; // legacy caller compatibility; no deadline
       /** 이 런에서 활성화할 카오스 (강도 포함, 선택). 미지정이면 빈 배열(점수 0). */
       activeChaos?: { id: string; intensity: number }[];
     }) {
@@ -447,7 +445,7 @@ export const useRunStore = defineStore('run', {
       fresh.currentNodeId = params.startNodeId;
       // 시작 노드도 visited로 마킹 (재방문 시 시작 노드 본인 처리 X)
       fresh.nodeStates[params.startNodeId] = { visited: true };
-      fresh.remainingTime = params.timeLimit;
+      fresh.remainingTime = 0; // deprecated save field
       fresh.hp = params.maxHp;
       fresh.maxHp = params.maxHp;
       fresh.mp = params.maxMp;
@@ -549,6 +547,8 @@ export const useRunStore = defineStore('run', {
         migrateRoster(filled, parsed);
         // XP·각성 마이그레이션 — 구세이브 -plus 인스턴스를 각성됨(+5강)으로 승격 + 신필드 backfill.
         migratePlusCards(filled);
+        filled.remainingTime = 0;
+        filled.chaosScore = computeChaosScore(filled.activeChaos ?? []);
         // 색→최대 HP(VIT) 은퇴(F5) — 구세이브 maxHp에 박힌 colorHpBonus 환원.
         migrateColorHp(filled);
         // 길드 우편(2026-07-02) — mail 없는 구세이브를 현재 경과턴 기준으로 backfill(로드 직후 폭주 방지).
@@ -589,12 +589,10 @@ export const useRunStore = defineStore('run', {
       const r = this.data;
       for (let i = 0; i < turns && !r.ended; i++) {
         r.visitedNodes.push(r.currentNodeId);
-        r.remainingTime = Math.max(0, r.remainingTime - 1);
         tickMail(r);
         tickRegionWorld(r);
         if (dayOfTurn(r.visitedNodes.length) !== dayOfTurn(r.visitedNodes.length - 1)) this.advanceDay();
         if (r.hp <= 0) this.endRun('hp-zero');
-        else if (r.remainingTime <= 0) this.endRun('time-up');
       }
     },
 
@@ -644,7 +642,6 @@ export const useRunStore = defineStore('run', {
 
       if (timeCounted) {
         r.visitedNodes.push(nodeId);
-        r.remainingTime = Math.max(0, r.remainingTime - 1);
         // 카오스 attrition(스며드는 피로) — 노드 진입마다 HP -N. 시간 카운트된 이동에만.
         // 최소 1로 클램프(여기서 즉사 X — 시간만료/전투처럼 별도 종료 경로에 맡김).
         const loss = nodeHpLoss();
@@ -824,6 +821,9 @@ export const useRunStore = defineStore('run', {
             bonusDamage: cur.bonusDamage,
             bonusBlock: cur.bonusBlock,
             possession: cur.possession,
+            skillUpgrades: cur.skillUpgrades,
+            enchantment: cur.enchantment,
+            magic: { family: skillFamily(cur), strokes: skillStrokes(cur), ...cur.magic, ...plusDef.magic },
           }
         : { ...cur, awakened: true };
       r.collection.splice(idx, 1, next);

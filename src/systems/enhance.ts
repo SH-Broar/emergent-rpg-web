@@ -105,7 +105,7 @@ export function scaledValue(base: number, card: Card | undefined): number {
  */
 export function isAttackCard(card: Card | undefined): boolean {
   if (!card?.effects) return false;
-  return card.effects.some((e) => {
+  return (card.magic?.effects ?? card.effects).some((e) => {
     const k = e.kind;
     return k.includes('damage')
       || k === 'heavy-blade' || k === 'adaptive-strike' || k === 'spend-all-energy'

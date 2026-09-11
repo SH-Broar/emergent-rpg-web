@@ -6,6 +6,7 @@
  * 제작: 진입 시 희귀+ 3장 추첨, 시간조각으로 1장 선택 (1회).
  */
 
+import SkillWorkshop from '@/components/SkillWorkshop.vue';
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useRunStore } from '@/stores/run';
@@ -37,17 +38,19 @@ import {
   type LegendaryRecipe,
   type ProcessRecipe,
 } from '@/systems/workshop';
+import { skillEffectText } from '@/systems/field-skill-rules';
 import type { Item, Rank } from '@/data/schemas';
 
 const router = useRouter();
 const run = useRunStore();
 const data = useDataStore();
 const workTabs = [
+  { id:'skills',name:'기술 강화' },
   { id: 'craft', name: '카드' }, { id: 'potion', name: '포션' },
   { id: 'process', name: '가공' }, { id: 'awaken', name: '각성' },
   { id: 'legendary', name: '전설' }, { id: 'remove', name: '정리' },
 ] as const;
-const workTab = ref<(typeof workTabs)[number]['id']>('craft');
+const workTab = ref<(typeof workTabs)[number]['id']>('skills');
 
 const nodeId = computed(() => run.data.currentNodeId);
 
@@ -88,6 +91,7 @@ function hasItem(id?: string): boolean {
 
 function effectSummary(card: ReturnType<typeof cardDef>): string {
   if (!card) return '';
+  if(run.data.field)return skillEffectText(card).slice(0,3).join(' · ');
   return card.effects
     .map((eff) => `${cardEffectKindLabel(eff)}${eff.value !== undefined ? ' ' + eff.value : ''}`)
     .join(' · ');
@@ -187,6 +191,7 @@ onMounted(() => {
 
     <nav class="work-tabs" aria-label="공방 작업"><button v-for="tab in workTabs" :key="tab.id" :aria-pressed="workTab === tab.id" @click="workTab = tab.id">{{ tab.name }}</button></nav>
 
+    <SkillWorkshop v-if="workTab==='skills'"/>
     <!-- 카드 각성 섹션 — 5강에 닿은 카드를 속성 특산물 + 사다리 재료로 진화. -->
     <section v-if="workTab === 'awaken'" class="section">
       <header class="section__hdr">
@@ -196,7 +201,7 @@ onMounted(() => {
         </button>
         <button v-else class="cancel" @click="awakenMode = false">접기</button>
       </header>
-      <p class="awaken__desc">5강 → 각성 · 10강까지 성장</p>
+      <p class="awaken__desc">5강 → 각성 · 추가 강화</p>
       <ul v-if="awakenMode" class="upgrade__list">
         <li v-for="c in awakenables" :key="c.instanceId" class="upgrade__item upgrade__item--awaken">
           <div class="upgrade__main">

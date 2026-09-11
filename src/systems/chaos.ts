@@ -60,7 +60,7 @@ function normalizeActive(raw: unknown): ActiveChaos[] {
       out.push({ id: it.id, intensity: n });
     }
   }
-  return out;
+  return out.filter(a => chaosById(a.id)?.effectKind !== 'time-limit-mul');
 }
 
 /** 강도를 levels 범위로 클램프해 0-base 인덱스 반환. */
@@ -75,6 +75,7 @@ function levelIndex(chaos: Chaos, intensity: number): number {
 
 /** 한 카오스의 *그 강도* 도전 점수 — `levels[intensity-1].score`. 범위 밖/누락은 1점 폴백. */
 export function chaosScoreOf(chaos: Chaos, intensity: number): number {
+  if(chaos.effectKind === 'time-limit-mul')return 0;
   const idx = levelIndex(chaos, intensity);
   if (idx < 0) return 1;
   const s = chaos.levels[idx]?.score;
@@ -103,7 +104,7 @@ export function computeChaosScore(active: ActiveChaos[]): number {
 export function shopChaos(): Chaos[] {
   const revealed = useMetaStore().chaosTierRevealed;
   return [...useDataStore().chaosDefs.values()]
-    .filter((c) => c.tier <= revealed)
+    .filter((c) => c.tier <= revealed && c.effectKind !== 'time-limit-mul')
     .sort((a, b) => a.tier - b.tier);
 }
 
@@ -114,7 +115,7 @@ export function shopChaos(): Chaos[] {
 export function purchaseChaos(id: string): boolean {
   const meta = useMetaStore();
   const c = chaosById(id);
-  if (!c) return false;
+  if (!c || c.effectKind === 'time-limit-mul') return false;
   if (meta.unlockedChaosIds.includes(id)) return false; // 중복 가드
   const cost = chaosCostFor(c.tier);
   if (!meta.canAfford('soul', cost)) return false; // 잔액 가드
@@ -219,15 +220,7 @@ export function applyStartChaos(run: RunState): void {
         injectStartChaosCards({ ...run, activeChaos: [a] } as RunState);
         break;
       }
-      case 'time-limit-mul': {
-        // 런 시작 시 시간 한도 ×(1-param). param 예: '0.25' → 25% 단축.
-        const ratio = Number(param);
-        if (Number.isFinite(ratio) && ratio > 0) {
-          const factor = Math.max(0, 1 - ratio);
-          run.remainingTime = Math.max(1, Math.round(run.remainingTime * factor));
-        }
-        break;
-      }
+      case 'time-limit-mul': break; // retired; retained for old data
       case 'color-seal': {
         // 무작위 1색 봉인 → RunState.chaosBannedColor. param='random'(또는 특정 색이면 그 색).
         if (param && param !== 'random') {

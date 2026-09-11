@@ -182,8 +182,8 @@ try {
 
   reset(); run.data.remainingTime = 1;
   result = run.performWorldAction({ actorId: 'player', targetId: 'player', actionId: 'rest' });
-  assert.equal(result.ok, true); assert.equal(run.data.ended, true); assert.equal(run.data.endReason, 'time-up');
-  passed.push('the final in-place action expires the run through the normal end condition');
+  assert.equal(result.ok, true); assert.equal(run.data.ended, false); assert.equal(run.data.endReason, undefined);
+  passed.push('world actions remain available after the retired deadline');
   console.log(JSON.stringify({ pass: passed.length, scenarios: passed }, null, 2));
 } finally {
   globalThis.window = oldWindow; globalThis.localStorage = oldStorage; await server.close();

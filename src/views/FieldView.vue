@@ -10,10 +10,11 @@ import type { GridPos } from '@/data/schemas/base';
 import { GLYPHS, type Gesture, type FieldSpeech } from '@/systems/field-types';
 import { fieldItemName, FIELD_ITEMS } from '@/systems/field-generation';
 import { advanceFieldTime, carriedEntity, dashFailure, ensureField, fieldHints, gestureLevel, performFieldGesture, setFieldViewport, stepField, visibleFieldEntities } from '@/systems/field-simulation';
-import { GESTURE_CATALOG } from '@/systems/gesture-catalog';
 import { PRODUCTION_MODES } from '@/systems/life-production';
 import { createFieldIdleClock } from '@/systems/field-idle';
 import { cardinal, distance, fieldPath, positionKey, walkable } from '@/systems/world/spatial';
+import FieldSkillPanel from '@/components/FieldSkillPanel.vue';
+import { SKILL_GESTURES, equippedSkill, fieldSkillCells, skillRemaining, fieldSkillMana } from '@/systems/field-skills';
 import GesturePad from '@/components/GesturePad.vue';
 import FieldEntityGlyph from '@/components/FieldEntityGlyph.vue';
 import SettingsMenu from '@/components/SettingsMenu.vue';
@@ -32,6 +33,7 @@ function wake(){idle.reset(Date.now());}
 function press(){pointerHeld.value=true;wake();}
 function release(){pointerHeld.value=false;wake();}
 function visibility(){hidden.value=document.hidden;wake();}
+const aimSkill=ref<string>();
 const aimDash=ref(false), routeCells=ref<GridPos[]>([]);
 const selectedId = ref<string>(), selectedPos = ref<GridPos>({ x: 0, y: 0 });
 const notice = ref(''), speech = ref<FieldSpeech>(), line = ref(0);
@@ -48,6 +50,9 @@ const target = computed(() => {
 });
 const selection=computed(()=>target.value?.carriedBy===player.value?.id?player.value?.pos??selectedPos.value:target.value?.pos??selectedPos.value);
 const dashKeys=computed(()=>new Set(aimDash.value&&space.value&&player.value?cells.value.filter(p=>!dashFailure(world.value,space.value!,player.value!,p)).map(positionKey):[]));
+const selectedSkill=computed(()=>aimSkill.value?equippedSkill(run.data,aimSkill.value):undefined);
+const skillKeys=computed(()=>new Set(selectedSkill.value&&player.value?fieldSkillCells(world.value,player.value,selectedSkill.value,selection.value).map(c=>positionKey(c.pos)):[]));
+function prepareSkill(id:string){stop();aimDash.value=false;aimSkill.value=id;guide.value=id;wake();}
 const pathKeys=computed(()=>new Set(routeCells.value.map(positionKey)));
 const effects=ref<{id:number;pos:GridPos;text:string;kind:string}[]>([]);
 let effectCursor=0;
@@ -91,7 +96,7 @@ function at(p: GridPos) { return entities.value.filter(e => e.pos && distance(e.
 function tile(p: GridPos) { return space.value?.tiles[p.y]?.[p.x] ?? 'wall'; }
 function exitAt(p: GridPos) { return space.value?.exits.find(e => distance(e.pos, p) === 0); }
 function label(p: GridPos) { return `${p.x + 1}열 ${p.y + 1}행, ${at(p).map(e => e.name).join(', ') || (exitAt(p)?.label ?? (tile(p) === 'wall' ? '벽' : tile(p) === 'soil' ? '밭' : '빈 칸'))}`; }
-function selectSelf() { aimDash.value=false; selectedId.value = 'player'; if (player.value?.pos) selectedPos.value = { ...player.value.pos }; }
+function selectSelf() { aimSkill.value=undefined;aimDash.value=false; selectedId.value = 'player'; if (player.value?.pos) selectedPos.value = { ...player.value.pos }; }
 function say(text: string) { notice.value = text; clearTimeout(timer); if (text) timer = setTimeout(() => notice.value = '', 3500); }
 function stop() { movement++; moving.value = false; routeCells.value=[]; }
 async function clickCell(pos: GridPos) {
@@ -102,6 +107,7 @@ async function clickCell(pos: GridPos) {
     say(result.message);if(result.ok){aimDash.value=false;selectSelf();}
     wake();return;
   }
+  if(aimSkill.value){selectedId.value=at(pos).find(e=>e.kind==='actor')?.id;selectedPos.value={...pos};wake();return;}
   const candidates = at(pos);
   const e = candidates.find(e=>e.id===selectedId.value)??candidates.find(e => e.kind === 'actor') ?? candidates.at(-1);
   selectedId.value = e?.id;
@@ -133,6 +139,7 @@ function perform(gesture: Gesture, quality=1, drawn=false) {
     if (gesture === 'tap'||gesture==='circle') nextLine();
     return;
   }
+  if(!SKILL_GESTURES.includes(gesture as typeof SKILL_GESTURES[number]))aimSkill.value=undefined;
   if(gesture==='dash'){aimDash.value=!aimDash.value;say(aimDash.value?'ϟ 도착할 칸을 선택하세요.':'');return;}
   aimDash.value=false;
   let pos = selection.value;
@@ -140,6 +147,7 @@ function perform(gesture: Gesture, quality=1, drawn=false) {
   const origin = run.data.currentNodeId;
   const result = performFieldGesture(gesture, target.value?.id, pos, {quality,drawn});
   say(result.message);
+  if(result.ok)aimSkill.value=undefined;
   if (result.speech) { speech.value = result.speech; line.value = 0; }
   if(result.targetPos) { selectedPos.value=result.targetPos; selectedId.value=result.targetId; }
   if (run.data.currentNodeId !== origin) selectSelf();
@@ -178,7 +186,7 @@ onBeforeUnmount(() => { stop(); observer?.disconnect(); clearTimeout(timer);clea
     <header class="field-heading"><div><span class="eyebrow">COLORZ</span><h1>{{ space.name }}</h1></div><div class="field-clock"><span><b>♥</b> {{ run.data.hp }}/{{ run.data.maxHp }} <i>·</i> {{ '◈'.repeat(Math.max(0, run.data.lives)) }}</span><span class="mana-pips" :aria-label="'마나 '+run.data.mp+' / 3'"><i v-for="n in 3" :key="n" :class="{filled:run.data.mp>=n}">◆</i></span></div></header>
     <div ref="stageElement" class="field-stage" :class="{ dungeon: !!space.dungeon }">
       <div class="field-board" role="group" aria-label="격자 필드" :style="{ gridTemplateColumns: `repeat(${columns}, ${tileSize}px)`, gridTemplateRows: `repeat(${rows}, ${tileSize}px)` }">
-        <button v-for="pos in cells" :key="positionKey(pos)" class="field-cell" :class="[`tile--${tile(pos)}`, { selected: distance(selection, pos) === 0, danger: danger.has(positionKey(pos)), imminent:imminent.has(positionKey(pos)), path:pathKeys.has(positionKey(pos)), 'dash-aim':dashKeys.has(positionKey(pos)), exit: !!exitAt(pos) }]" :aria-label="label(pos)" @click="clickCell(pos)">
+        <button v-for="pos in cells" :key="positionKey(pos)" class="field-cell" :class="[`tile--${tile(pos)}`, { selected: distance(selection, pos) === 0, danger: danger.has(positionKey(pos)), imminent:imminent.has(positionKey(pos)), path:pathKeys.has(positionKey(pos)), 'dash-aim':dashKeys.has(positionKey(pos)), 'skill-aim':skillKeys.has(positionKey(pos)), exit: !!exitAt(pos) }]" :aria-label="label(pos)" @click="clickCell(pos)">
           <span v-for="fx in effects.filter(f=>distance(f.pos,pos)===0)" :key="fx.id" class="combat-float" :class="'combat-float--'+fx.kind" aria-live="polite">{{ fx.text }}</span>
           <span v-if="tile(pos) === 'grass'" class="grass-marks" aria-hidden="true">{{ (pos.x * 3 + pos.y) % 4 === 0 ? 'ˎ ˏ' : '·' }}</span>
           <span v-if="exitAt(pos)" class="exit-mark" aria-hidden="true">{{ space.dungeon ? '≋' : '⋮' }}</span>
@@ -204,10 +212,6 @@ onBeforeUnmount(() => { stop(); observer?.disconnect(); clearTimeout(timer);clea
         <button v-for="[id,count] in inventory" :key="id" :aria-pressed="run.data.field?.selectedItem===id" @click="chooseItem(id);bagOpen=false"><span>{{ FIELD_ITEMS[id]?.glyph??'◇' }}</span> {{ fieldItemName(id) }} <b>{{ count }}</b></button>
         <p v-if="!inventory.length">빈 가방</p>
       </section>
-      <section v-if="skillsOpen" class="field-drawer field-skills" aria-label="도형 모음">
-        <header><strong>연습선</strong><button aria-label="도형 모음 닫기" @click="skillsOpen=false">×</button></header>
-        <button v-for="g in GESTURE_CATALOG" :key="g.id" :aria-label="g.name+' 연습선'" @click="guide=g.id;skillsOpen=false"><b>{{ g.glyph }}</b><span>{{ g.name }}</span><small>{{ gestureLevel(run.data,g.id) }}</small></button>
-      </section>
       <section v-if="progressOpen" class="field-drawer field-progress" aria-label="생활과 도형 성장">
         <header><strong>생활 숙련 {{ run.data.lifeLevel??1 }} <small>· {{ run.data.lifeXp??0 }}/3</small></strong><button aria-label="성장 닫기" @click="progressOpen=false">×</button></header>
         <div class="growth-marks"><span :class="{earned:(run.data.lifeLevel??1)>=2}">2 · 자동 돌봄</span><span :class="{earned:(run.data.lifeLevel??1)>=3}">3 · 생산 선택</span><span :class="{earned:(run.data.lifeLevel??1)>=5}">5 · 산출 +1</span></div>
@@ -222,12 +226,19 @@ onBeforeUnmount(() => { stop(); observer?.disconnect(); clearTimeout(timer);clea
         <div v-if="target?.creature" class="target-states"><p>{{ target.creature.pending?.name??'경계 중' }}</p><p v-for="s in statusEntries(target)" :key="s.key">{{ statusLabel(s.key) }} {{ s.value }} · {{ STATUS_HELP[s.key] }}</p></div><p v-else-if="!targetStock.length">놓인 물건 없음</p>
       </section>
       <div class="console-target">
-        <div><strong>{{ aimDash?'ϟ 도착할 칸':targetName }}</strong><small v-if="target?.creature">{{ Math.ceil(target.creature.maxHp*(target.properties.integrity??100)/100) }} HP · {{ target.creature.pending?.name??'경계 중' }}</small><small v-else-if="target?.production&&!target.production.settled">성장 중</small></div>
+        <div><strong>{{ selectedSkill?selectedSkill.name:aimDash?'ϟ 도착할 칸':targetName }}</strong><small v-if="target?.creature">{{ Math.ceil(target.creature.maxHp*(target.properties.integrity??100)/100) }} HP · {{ target.creature.pending?.name??'경계 중' }}</small><small v-else-if="target?.production&&!target.production.settled">성장 중</small></div>
         <button v-if="targetStock.length||layeredTargets.length>1||target?.creature" aria-label="대상 살펴보기" @click="stop();progressOpen=false;detailsOpen=!detailsOpen;bagOpen=false;skillsOpen=false">···</button>
         <button v-if="moving" aria-label="이동 멈추기" @click="stop">■</button><button v-else aria-label="자신 선택" @click="selectSelf">◎</button>
       </div>
       <div class="console-body">
-        <div class="context-tools">
+        <div v-if="target?.creature||aimSkill" class="context-tools combat-tools">
+          <button class="hand-slot" @click="skillsOpen=true"><span>기술 구성</span><strong>◆ {{ selectedSkill?fieldSkillMana(run.data,selectedSkill):run.data.mp }}</strong></button>
+          <div class="skill-runes" aria-label="장착 기술">
+            <button v-for="id in SKILL_GESTURES" :key="id" :aria-pressed="aimSkill===id" :aria-label="GLYPHS[id]+' '+(equippedSkill(run.data,id)?.name??'비어 있음')" :class="{empty:!equippedSkill(run.data,id)}" @click="equippedSkill(run.data,id)?prepareSkill(id):skillsOpen=true"><b>{{ GLYPHS[id] }}</b><small v-if="equippedSkill(run.data,id)">{{ skillRemaining(run.data,equippedSkill(run.data,id)!)||'·' }}</small></button>
+          </div>
+          <div class="combat-basics"><button @click="aimSkill=undefined;guide='strike'" aria-label="기본 공격 연습선">╱ 기본</button><button @click="aimSkill=undefined;guide='dash'" aria-label="이동기 연습선">ϟ 이동 ◆1</button></div>
+        </div>
+        <div v-else class="context-tools">
           <button class="hand-slot" @click="stop();progressOpen=false;bagOpen=!bagOpen;skillsOpen=false;detailsOpen=false"><span>{{ held?'들고 있음':'손' }}</span><strong>{{ held?.name??(run.data.field?.selectedItem?fieldItemName(run.data.field.selectedItem):'빈손') }}</strong></button>
           <div class="context-hints" aria-label="가능한 동작"><button v-for="hint in hints" :key="hint.id" :aria-label="hint.label+' 연습선'" @click="guide=hint.id"><b>{{ GLYPHS[hint.id] }}</b><span>{{ hint.label }}</span></button></div>
           <small v-if="!hints.length">대상을 가까이에서 선택하세요.</small>
@@ -238,10 +249,11 @@ onBeforeUnmount(() => { stop(); observer?.disconnect(); clearTimeout(timer);clea
         <button :aria-pressed="bagOpen" @click="stop();progressOpen=false;bagOpen=!bagOpen;skillsOpen=false;detailsOpen=false">가방</button>
         <button @click="stop();progressOpen=!progressOpen;bagOpen=false;skillsOpen=false;detailsOpen=false">성장</button>
         <button @click="stop();progressOpen=false;bagOpen=false;skillsOpen=false;detailsOpen=false;mapOpen=true">지도</button>
-        <button :aria-pressed="skillsOpen" @click="stop();progressOpen=false;skillsOpen=!skillsOpen;bagOpen=false;detailsOpen=false">도형</button>
+        <button :aria-pressed="skillsOpen" @click="stop();progressOpen=false;skillsOpen=!skillsOpen;bagOpen=false;detailsOpen=false">기술</button>
         <button @click="stop();progressOpen=false;bagOpen=false;skillsOpen=false;detailsOpen=false;settingsOpen=true">설정</button>
       </nav>
     </section>
+    <FieldSkillPanel :open="skillsOpen" @close="skillsOpen=false" @guide="id=>SKILL_GESTURES.includes(id as typeof SKILL_GESTURES[number])?prepareSkill(id):guide=id"/>
     <CharacterMenu :open="characterOpen" @close="characterOpen=false"/>
     <InventoryMenu :open="inventoryOpen" @close="inventoryOpen=false"/>
     <SettingsMenu :open="settingsOpen" @close="settingsOpen = false"/>
@@ -294,4 +306,6 @@ h1 { font-size: 16px; line-height: 1.4; margin: 0; font-weight: 600; color: #e3d
 @media(min-width:800px){.field-console{padding-left:14px;padding-right:14px}.field-drawer{left:calc(50% - 240px);right:calc(50% - 240px);padding:12px}}
 @media(max-height:710px){.field-view{--pad-size:138px}.context-hints button{min-height:25px}.hand-slot{min-height:28px}}
 .field-progress{display:block}.growth-marks{display:flex;flex-wrap:wrap;gap:12px;margin:10px 0;font-size:12px;color:#a4b19e}.growth-marks .earned{color:#e7d497}.production-modes{display:flex;gap:6px}.production-modes button{flex:1;font-size:11px}.production-modes small{display:block;margin-top:5px;font-size:10px}.production-modes button[aria-pressed=true]{border-color:#dac890}
+.skill-runes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px}.skill-runes button{display:flex;justify-content:center;align-items:center;gap:3px;height:34px;min-width:0;padding:0;border:1px solid #89976b55;border-radius:4px;background:#263c30;color:#e9d69c;cursor:pointer}.skill-runes b{font-size:23px;font-weight:400}.skill-runes small{font-size:11px;color:#b5c0a9}.skill-runes button[aria-pressed=true]{border-color:#f0dc9c;background:#4a593a}.skill-runes button.empty{opacity:.45}.combat-tools>small{font-size:10px;min-height:12px}.field-cell.skill-aim{outline:2px solid #a5d7d6;outline-offset:-3px}.field-cell.skill-aim::before{content:'';position:absolute;inset:0;background:#83d2d42e;pointer-events:none;z-index:1}
+.combat-basics{display:flex;gap:4px}.combat-basics button{flex:1;min-width:0;min-height:24px;padding:2px;border:0;border-radius:3px;background:#263c30;color:#c8c5a9;font-size:10px;white-space:nowrap}.combat-tools>*{flex-shrink:0}
 </style>

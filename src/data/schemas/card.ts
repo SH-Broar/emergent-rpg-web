@@ -185,6 +185,10 @@ export interface Card extends NamedEntity {
   /** 런타임 인스턴스 ID — 데이터 정의에서는 비어 있고, 게임 런타임에서 부여. */
   instanceId?: string;
   rank: Rank;
+  /** Field magic identity and casting difficulty are independent of loot rarity. */
+  magic?: { family?: string; strokes?: number; glyphs?: string[]; mana?: number; cooldown?: number; effects?: CardEffect[]; role?: string };
+  skillUpgrades?: { efficiency?: number; recovery?: number; reach?: number };
+  enchantment?: 'ember' | 'shelter' | 'renewal';
   source: CardSource;
 
   /** 카드 색상 — 시각화 + 시너지 조건에 사용. */

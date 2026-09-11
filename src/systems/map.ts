@@ -168,13 +168,8 @@ export function isBossGate(map: NodeMap, id: NodeId): boolean {
   return map.bossGateNodeId === id;
 }
 
-/**
- * 시간 만료 — visitedNodes.length 가 timeLimit 이상이면 *보스 게이트만 갈 수 있는 상태*.
- * 이 함수는 *현재 상태*에서 보스 게이트 강제 활성 여부를 알려준다.
- */
-export function isTimeUp(visitedCount: number, timeLimit: number): boolean {
-  return visitedCount >= timeLimit;
-}
+/** @deprecated 여정 제한시간은 폐지했다. */
+export function isTimeUp(_visitedCount: number, _timeLimit: number): boolean { return false; }
 
 /**
  * 시간 만료 시: 현재 노드에서 보스 게이트까지의 *최단 경로* 길이 (BFS).

@@ -80,7 +80,7 @@ export function buildRunSummary(run: RunState, gains: AbsorbGains): RunSummary {
   const combats = Object.values(run.nodeStates).filter((s) => s.combatCleared).length;
 
   // 카오스 점수 — 캐시 우선, 없으면 활성 카오스로 재계산.
-  const chaosScore = run.chaosScore ?? computeChaosScore(run.activeChaos ?? []);
+  const chaosScore = computeChaosScore(run.activeChaos ?? []);
   const wasClear = run.endReason === 'boss-cleared' || (run.bossesCleared ?? []).length > 0;
   const best = meta.bestChaosScore[run.timelineId] ?? 0;
   const newRecord = wasClear && chaosScore > 0 && chaosScore >= best;
@@ -150,7 +150,7 @@ export function absorbRunIntoMeta(run: RunState) {
   const insight2 = bossesCleared * INSIGHT_PER_BOSS;
 
   // 카오스 도전 보너스 — 클리어(보스 처치) && 점수>0이면 floor(점수/10).
-  const chaosScore = run.chaosScore ?? computeChaosScore(run.activeChaos ?? []);
+  const chaosScore = computeChaosScore(run.activeChaos ?? []);
   const wasClear = run.endReason === 'boss-cleared' || bossesCleared > 0;
   const chaosBonus = wasClear && chaosScore > 0 ? Math.floor(chaosScore / 10) : 0;
 

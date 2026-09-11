@@ -38,6 +38,7 @@ export interface FieldState {
   completedDungeons: string[];
   controlsVersion?: 2 | 3;
   combatVersion?: 1;
+  skills?: import('./field-skills').FieldSkills;
   manaStep?: number;
   encounter?: FieldSpeech;
   notification?: FieldSpeech;

@@ -12,7 +12,6 @@
 
 import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import { useRunStore } from '@/stores/run';
-import { useDataStore } from '@/stores/data';
 import { useUiStore } from '@/stores/ui';
 import { XP_PER_LEVEL } from '@/systems/enhance';
 import { clockOfTurn, clockLabel, remainingTimeLabel } from '@/systems/time';
@@ -66,17 +65,8 @@ watch(
 );
 
 const run = useRunStore();
-const data = useDataStore();
 const ui = useUiStore();
 
-const timeline = computed(() => data.timelines.get(run.data.timelineId));
-const timeUrgent = computed(() => {
-  const tl = timeline.value;
-  if (!tl) return false;
-  // 경과 턴(시계 진실원 = visitedNodes)이 제한의 90%를 넘으면 위급 — remainingTime 의존 제거(B4 정합).
-  const elapsed = run.data.visitedNodes.length;
-  return elapsed >= tl.timeLimit - Math.max(3, Math.floor(tl.timeLimit * 0.1));
-});
 
 // 현재 게임 시각 — visitedNodes.length(경과 턴) 기반 시계. day는 currentDay와 동기. (systems/time.ts)
 const clock = computed(() => clockOfTurn(run.data.visitedNodes.length));
@@ -181,7 +171,7 @@ const persistentStatuses = computed(() => {
 
       <!-- 현재 시각 — 1일차 정오 시작, 행동·이동마다 시간이 흐른다(1회 14.4분). -->
       <Tooltip text="4일차 정오에 런 종료.">
-        <div class="slot" :class="{ 'slot--urgent': timeUrgent }">
+        <div class="slot" >
           <span class="emoji">🕛</span>
           <span class="lbl">{{ clock.day }}일차</span>
           <span class="num">{{ clockHHMM }}</span>

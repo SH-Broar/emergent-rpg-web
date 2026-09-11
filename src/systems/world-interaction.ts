@@ -182,7 +182,7 @@ export function affordances(run: RunState, actorId: string, targetId: string): A
   const world = run.interactionWorld;
   if (!world || !observedTargets(run, actorId).some(t => t.id === targetId)) return [];
   return availableWorldActions(run, world, actorId, targetId).map(action => {
-    const reason = run.ended ? '여정이 끝났다.' : run.gridCombat || run.combat ? '전투 중에는 사용할 수 없다.' : run.remainingTime < action.duration ? '남은 시간이 부족하다.' : interactionDisabled(world, actorId, targetId, action);
+    const reason = run.ended ? '여정이 끝났다.' : run.gridCombat || run.combat ? '전투 중에는 사용할 수 없다.' : interactionDisabled(world, actorId, targetId, action);
     return { id: action.id, label: action.label, description: action.description, duration: action.duration, enabled: !reason, reason };
   });
 }
@@ -190,7 +190,6 @@ export function affordances(run: RunState, actorId: string, targetId: string): A
 export function commitWorldInteraction(run: RunState, targetId: string, action: InteractionAction): InteractionResult {
   const fail = (message: string): InteractionResult => ({ ok: false, reason: message, message, duration: 0, facts: [] });
   if (run.ended || run.gridCombat || run.combat) return fail('지금은 세계 행동을 할 수 없다.');
-  if (run.remainingTime < action.duration) return fail('남은 시간이 부족하다.');
   const world = ensureInteractionWorld(run);
   if (targetId !== PLAYER_ACTOR_ID && !observedTargets(run).some(target => target.id === targetId)) return fail('현재 관찰할 수 없는 대상이다.');
   const result = resolveInteraction(world, PLAYER_ACTOR_ID, targetId, action);

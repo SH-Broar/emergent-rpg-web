@@ -1,3 +1,4 @@
+import { ensureFieldSkills, SKILL_GESTURES, castFieldSkill, tickFieldSkills } from './field-skills';
 import { NPC_DIALOGUE } from '@/data/npc-dialogue';
 import { inward } from './field-geography';
 import { combatDefinition, phaseFor, planAttack, resolveAttack, tickStatuses, finishStatusStep, afterMovement, moveCreature, beginBossEncounter, clearCombatStatuses } from './field-combat';
@@ -51,6 +52,7 @@ export function ensureField(run = useRunStore().data): { world: InteractionWorld
   if((run.field.controlsVersion??0)<3){run.field.gestureXp.strike??=run.field.gestureXp.triangle??0;run.field.gestureXp.tend??=run.field.gestureXp.inverted??0;run.field.controlsVersion=3;}
   run.maxMp=3;run.mp=Math.min(3,run.mp);player.properties.mana=run.mp;
   if(!run.field.combatVersion){run.field.combatVersion=1;run.field.manaStep=0;player.properties['status:possession']=run.possessed??0;player.properties['status:feral-heavy']=run.feralHeavy??0;}
+  ensureFieldSkills(run);
   player.properties.maxHp=run.maxHp;
   for(const e of Object.values(world.entities).filter(e=>e.nodeId===space.id&&e.kind==='actor')){
     e.properties.maxHp=e.id==='player'?run.maxHp:e.creature?.maxHp??100;
@@ -356,6 +358,7 @@ export function advanceFieldTime(seconds: number, waiting=true): void {
     for(const id of active){const e=world.entities[id]!;if(e.kind==='actor')tickStatuses(world,e,Math.floor(now/STEP_SECONDS),waiting);}
     run.field!.manaStep=(run.field!.manaStep??0)+1;
     if(run.field!.manaStep>=2){run.field!.manaStep=0;world.entities.player!.properties.mana=Math.min(3,(world.entities.player!.properties.mana??0)+1+(status(world.entities.player!,'haste')?1:0));}
+    tickFieldSkills(run, world);
     tickCreatures(run, world, active, blocked);
     for(const id of active)if(world.entities[id]?.kind==='actor')finishStatusStep(world.entities[id]!,previousStatuses.get(id)!);
     if (!checkPlayer(run, world) || run.currentNodeId !== origin) break;
@@ -438,6 +441,11 @@ export function performFieldGesture(gesture: Gesture, targetId: string | undefin
   }
   const blocked=actionRestriction(player);
   if(blocked){advanceFieldTime(STEP_SECONDS);return {ok:false,message:blocked};}
+  if(SKILL_GESTURES.includes(gesture as typeof SKILL_GESTURES[number])) {
+    const result=castFieldSkill(run,world,gesture,pos);
+    if(result.ok){syncPlayerFromWorld(run,world);advanceFieldTime(STEP_SECONDS,false);}
+    return result;
+  }
   if(gesture==='dash'){
     const reason=dashFailure(world,space,player,pos);if(reason)return {ok:false,message:reason};
     influenceEntity(world,player,'mana',-1,player.id);player.pos={...pos};afterMovement(player);
@@ -481,7 +489,7 @@ export function performFieldGesture(gesture: Gesture, targetId: string | undefin
   grantPractice(run, gesture, target, result);
   processSocialFacts(world);
   syncPlayerFromWorld(run, world);
-  const resting = (gesture === 'circle'||gesture==='tap'&&target.tags.includes('shelter')) && (target.id === 'player' || target.tags.includes('shelter'));
+  const resting = gesture === 'tap' && (target.id === 'player' || target.tags.includes('shelter'));
   if (resting && !Object.values(world.entities).some(e => e.nodeId === space.id && e.creature && valid(e))) {
     clearCombatStatuses(player,true);syncPlayerFromWorld(run,world);
     advanceFieldTime(600);
@@ -498,7 +506,7 @@ export function fieldHints(run:RunState,world:InteractionWorld,target:WorldEntit
   const player=world.entities.player;if(!player)return [];
   if(!target)return [{id:'dash',label:'이동기 · ◆1'},{id:'tap',label:world.spaces?.[player.nodeId]?.exits.some(e=>distance(e.pos,pos)===0)?'길 따라가기':'주변 살피기'}];
   const service=target.tags.find(t=>t.startsWith('service:'));
-  const tapLabel=target.id==='player'?'주변 살피기':target.kind==='actor'?'대화':service?'들어가기':target.tags.includes('dungeon-entry')?'던전 들어가기':target.tags.includes('shelter')?'쉬기':target.workRecipe?'작업':target.tags.includes('life-site')?(lifeActions(run,world,'player',target.id)[0]?.label??'성장 중'):Object.values(target.stock).some(n=>n>0)?'가져오기':'살피기';
+  const tapLabel=target.id==='player'?'쉬기':target.kind==='actor'?'대화':service?'들어가기':target.tags.includes('dungeon-entry')?'던전 들어가기':target.tags.includes('shelter')?'쉬기':target.workRecipe?'작업':target.tags.includes('life-site')?(lifeActions(run,world,'player',target.id)[0]?.label??'성장 중'):Object.values(target.stock).some(n=>n>0)?'가져오기':'살피기';
   const options=[{id:'tap',label:tapLabel},{id:'lift',label:'들어 올리기'},{id:'place',label:'내려놓기'},{id:'strike',label:target.id==='player'?'방어':'힘 가하기'},{id:'tend',label:target.id==='player'?'먹기':target.properties.soil?'심기 · 돌보기':'물 주기'},{id:'give',label:'건네기'}];
   return options.filter(h=>{
     if(h.id==='tap'&&target.creature)return false;

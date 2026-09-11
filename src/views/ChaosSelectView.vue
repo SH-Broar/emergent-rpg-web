@@ -21,7 +21,6 @@ import { starterTactics } from '@/systems/tactical-cards';
 import { applySeedColors } from '@/systems/colors';
 import { injectStartChaosCards, computeChaosScore, chaosTierLabel, maxIntensityOf, chaosLevelSummary, chaosScoreOf, applyPostApocalypseMap } from '@/systems/chaos';
 import { rng } from '@/systems/rng';
-import { durationLabel } from '@/systems/time';
 import type { Card, Chaos, Race, Season } from '@/data/schemas';
 
 const router = useRouter();
@@ -44,7 +43,7 @@ const race = computed<Race | undefined>(() => {
 const ownedChaos = computed<Chaos[]>(() => {
   const owned = new Set(meta.unlockedChaosIds);
   return [...data.chaosDefs.values()]
-    .filter((c) => owned.has(c.id))
+    .filter((c) => owned.has(c.id) && c.effectKind !== 'time-limit-mul')
     .sort((a, b) => a.tier - b.tier);
 });
 
@@ -383,17 +382,11 @@ onMounted(async () => {
     </footer>
     </template>
 
-    <!-- 런 시작 직전 브리핑 팝업(#005) — 미션·제한시간·카오스 재확인. -->
+    <!-- 런 시작 직전 브리핑 팝업(#005) — 미션·카오스 재확인. -->
     <transition name="brief-fade">
       <div v-if="showBriefing" class="brief-backdrop" role="dialog" aria-modal="true">
         <div class="brief-modal">
           <h2 class="brief-modal__title">{{ chapterNo }}장</h2>
-          <dl class="brief-meta">
-            <div>
-              <dt>제한 시간</dt>
-              <dd>{{ timeline ? durationLabel(timeline.timeLimit) : '—' }}</dd>
-            </div>
-          </dl>
           <p class="brief-mission"><strong>미션</strong> · {{ fieldMission }}</p>
 
           <div v-if="activeChaosList.length > 0" class="brief-chaos">
