@@ -79,6 +79,7 @@ export function useItem(item: Item, ctx?: UseItemContext): string {
   const data = useDataStore();
   const ui = useUiStore();
   const r = run.data;
+  if(r.field&&item.effects.length&&item.effects.every(e=>e.kind==='gain-life'))return '목숨은 무제한이다. 이 물약은 보관한다.';
   const inCombat = !!r.combat;
 
   // === 재료/특산물 가드 — 효과 없이 *제작 재료로만* 쓰이는 아이템은 사용 불가. ===

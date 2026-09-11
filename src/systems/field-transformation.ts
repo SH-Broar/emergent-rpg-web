@@ -40,16 +40,22 @@ export function reconcileFieldTransformation(run:RunState,world:InteractionWorld
     stash.field={version:1,skills:{version:2,slots:copy(prior.slots),readyAt:copy(prior.readyAt)},
       body:Object.fromEntries(bodyKeys.filter(key=>player.properties[key]!==undefined).map(key=>[key,player.properties[key]!])),
       startedTurn:Math.floor(run.field.elapsedSeconds/30)};
-    const cards=definitions.map(c=>instantiateCard(copy(c!)));
+    const training=run.field.formTraining?.[raceId];
+    const cards=training?copy(training.cards):definitions.map(c=>instantiateCard(copy(c!)));
+    for(const definition of definitions)if(!cards.some(c=>c.id===definition!.id))cards.push(instantiateCard(copy(definition!)));
     run.transform=stash;saved=stash;
     run.raceId=raceId;run.deck=cards;run.collection=[...cards,...acquired];run.deckSize=cards.length;
-    run.field.skills=undefined;ensureFieldSkills(run);
+    run.field.skills=training?copy(training.skills):undefined;ensureFieldSkills(run);
+    if(run.field.formTraining)delete run.field.formTraining[raceId];
     player.properties.laborPower=form!.baseStats.vigor+form!.baseStats.attack/4;
     player.properties.hardness=form!.baseStats.defense/2;
     if(player.agent)player.agent.species=raceId;
-    run.field.notification={actorId:'player',name:'두 꼬리 여우',lines:['낯선 귀가 소리를 좇고, 꼬리 둘이 옷자락을 밀어 올린다.','익숙한 기술에 응답이 없다. 이 몸으로 다룰 수 있는 것은 몇 가지뿐이다.']};
+    run.field.notification={actorId:'player',name:'두 꼬리 여우',lines:['낯선 귀가 소리를 좇고, 꼬리 둘이 옷자락을 밀어 올린다.','익숙한 기술 대신, 손끝에 작은 여우불이 맺힌다.']};
   }
   if(saved?.field && !player.form) {
+    const current=ensureFieldSkills(run);
+    (run.field.formTraining??={})[saved.formRaceId]={cards:copy(run.collection.filter(c=>c.source==='form')),
+      skills:{version:2,slots:copy(current.slots),readyAt:copy(current.readyAt)}};
     const sealed=new Set(saved.stashCollection.map(cardKey));
     const acquired=run.collection.filter(c=>c.source!=='form'&&!sealed.has(cardKey(c)));
     run.raceId=saved.originalRaceId;run.deck=saved.stashDeck;run.collection=[...saved.stashCollection,...acquired];run.deckSize=saved.stashDeckSize;

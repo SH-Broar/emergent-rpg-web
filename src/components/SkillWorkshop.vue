@@ -3,15 +3,18 @@ import { computed, ref, watch } from 'vue';
 import { useRunStore } from '@/stores/run';
 import { SKILL_UPGRADES, ENCHANTMENTS, upgradeQuote, upgradeSkill, materialFailure, atSkillWorkshop, enchantSkill, enchantFailure, ENCHANT_SHARDS, type SkillUpgradePath } from '@/systems/skill-workshop';
 import { skillStrokes, skillMana, skillCooldown } from '@/systems/field-skill-rules';
-import { skillUnavailable } from '@/systems/field-skills';
+import { fieldSkillRestriction } from '@/systems/field-skills';
+import { needsAwakening } from '@/systems/enhance';
+import { canAwaken, awakenCostLabel } from '@/systems/workshop';
+import { awakenFieldSkill } from '@/systems/skill-workshop';
 import type { Card } from '@/data/schemas';
 
 const props=defineProps<{initialId?:string}>();
-const run=useRunStore(), targetId=ref(props.initialId??run.data.collection.find(c=>!skillUnavailable(c))?.instanceId??'');
+const run=useRunStore(), targetId=ref(props.initialId??run.data.collection.find(c=>!fieldSkillRestriction(run.data,c))?.instanceId??'');
 const mode=ref<'upgrade'|'enchant'>('upgrade'),path=ref<SkillUpgradePath>('power');
 const materials=ref<string[]>([]),page=ref(0),notice=ref(''),enchantment=ref<NonNullable<Card['enchantment']>>('ember');
 const card=computed(()=>run.data.collection.find(c=>c.instanceId===targetId.value));
-const targets=computed(()=>run.data.collection.filter(c=>!skillUnavailable(c)));
+const targets=computed(()=>run.data.collection.filter(c=>!fieldSkillRestriction(run.data,c)));
 const quote=computed(()=>card.value?upgradeQuote(card.value,path.value):undefined);
 const candidates=computed(()=>run.data.collection.filter(c=>!!c.instanceId&&!materialFailure(run.data,c,targetId.value)));
 const pages=computed(()=>Math.max(1,Math.ceil(candidates.value.length/4)));
@@ -35,8 +38,9 @@ function enchant(){notice.value=enchantSkill(run.data,targetId.value,enchantment
     <template v-if="card&&mode==='upgrade'">
       <div class="paths"><button v-for="p in SKILL_UPGRADES" :key="p.id" :aria-pressed="path===p.id" @click="path=p.id"><strong>{{ p.name }}</strong><small>{{ p.description }}</small></button></div>
       <div v-if="quote" class="quote"><strong>{{ SKILL_UPGRADES.find(p=>p.id===path)?.name }} {{ quote.before }} → {{ quote.after }}</strong><span>카드 {{ quote.cards }}장<span v-if="quote.shards"> · 조각 {{ quote.shards }}</span></span></div>
+      <div v-if="path==='power'&&needsAwakening(card)"><p class="meta">{{ awakenCostLabel(card) }}</p><button class="commit" :disabled="!here||!canAwaken(card)" @click="notice=awakenFieldSkill(run.data,card.instanceId!)??'각성했다.'">각성</button></div>
       <p v-if="quote?.reason" class="notice">{{ quote.reason }}</p>
-      <template v-else>
+      <template v-else-if="quote?.reason===undefined">
         <p class="material-label">소모할 카드 {{ materials.length }}/{{ quote?.cards }}</p>
         <div class="materials"><button v-for="c in visible" :key="c.instanceId" :aria-pressed="materials.includes(c.instanceId!)" @click="toggle(c.instanceId!)"><span>{{ materials.includes(c.instanceId!)?'☑':'□' }} {{ c.name }}</span><small>+{{ c.enhanceLevel??0 }}</small></button></div>
         <div class="pages"><button :disabled="page===0" aria-label="이전 재료" @click="page--">‹</button><span>{{ page+1 }}/{{ pages }}</span><button :disabled="page+1>=pages" aria-label="다음 재료" @click="page++">›</button></div>

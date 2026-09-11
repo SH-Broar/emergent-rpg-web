@@ -77,7 +77,7 @@ watch(()=>world.value?.sequence,()=>{
 watch(()=>run.data.field?.notification,n=>{if(n){stop();speech.value=n;line.value=0;run.data.field!.notification=undefined;}});
 const encounter=computed(()=>run.data.field?.encounter);
 watch(encounter,e=>{if(e){stop();speech.value=e;line.value=0;}});
-function encounterChoice(accept:boolean){resolveFieldEncounter(run.data,accept);speech.value=undefined;wake();}
+function encounterChoice(accept:boolean){resolveFieldEncounter(run.data,accept);speech.value=undefined;advanceFieldTime(0);wake();}
 const imminent=computed(()=>new Set(entities.value.flatMap(e=>e.creature?.pending?.remaining===1?e.creature.intent??[]:[]).map(positionKey)));
 
 const targetName = computed(() => target.value?.name ?? space.value?.exits.find(e => distance(e.pos, selectedPos.value) === 0)?.label ?? (space.value?.tiles[selectedPos.value.y]?.[selectedPos.value.x] === 'soil' ? '빈 밭' : '바닥'));
@@ -124,6 +124,7 @@ async function clickCell(pos: GridPos) {
     if (token !== movement || run.data.ended) break;
     const result = stepField(p);routeCells.value=routeCells.value.filter(q=>distance(q,p)!==0);
     if (result.message) say(result.message);
+    if(result.speech){speech.value=result.speech;line.value=0;}
     if (!result.ok || result.travel || run.data.currentNodeId !== origin) break;
     // A new telegraph pauses travel so a long tap never walks blindly into the next hit.
     if (danger.value.size) break;
@@ -154,15 +155,18 @@ function perform(gesture: Gesture, quality=1, drawn=false) {
   if (run.data.currentNodeId !== origin) selectSelf();
   if (gesture === 'place' && result.ok) { selectedPos.value = pos; selectedId.value = undefined; }
   wake();
-  if (run.data.ended) router.push('/game/end');else if(result.route)router.push(result.route);
+  if (run.data.ended) router.push('/game/end');else if(result.route==='base-configure')skillsOpen.value=true;else if(result.route)router.push(result.route);
 }
 function chooseTopic(topic:NonNullable<FieldSpeech['topics']>[number]){
   if(!speech.value)return;
+  if(topic.action&&topic.lines.length){
+    speech.value={...speech.value,lines:[...topic.lines],topics:[{label:topic.confirmLabel??'함께하기',lines:[],action:topic.action},{label:'나중에',lines:['다음에 다시 이야기하자.']}]};line.value=0;return;
+  }
   if(topic.action){
     const result=performFieldService(speech.value.actorId,topic.action);
     say(result.message);
     if(result.speech){speech.value=result.speech;line.value=0;}
-    else if(!result.ok)speech.value=undefined;
+    else speech.value=undefined;
   }else{speech.value.lines=[...topic.lines];line.value=0;}
   wake();
 }
@@ -195,7 +199,7 @@ onBeforeUnmount(() => { stop(); observer?.disconnect(); clearTimeout(timer);clea
 
 <template>
   <main v-if="initialized && space && player" class="field-view" @pointerdown.capture="press" @keydown.capture="wake">
-    <header class="field-heading"><div><span class="eyebrow">COLORZ</span><h1>{{ space.name }}</h1></div><div class="field-clock"><span><b>♥</b> {{ run.data.hp }}/{{ run.data.maxHp }} <i>·</i> {{ '◈'.repeat(Math.max(0, run.data.lives)) }}</span><span class="mana-pips" :aria-label="'마나 '+run.data.mp+' / 3'"><i v-for="n in 3" :key="n" :class="{filled:run.data.mp>=n}">◆</i></span></div></header>
+    <header class="field-heading"><div><span class="eyebrow">COLORZ</span><h1>{{ space.name }}</h1></div><div class="field-clock"><span><b>♥</b> {{ run.data.hp }}/{{ run.data.maxHp }}</span><span class="mana-pips" :aria-label="'마나 '+run.data.mp+' / 3'"><i v-for="n in 3" :key="n" :class="{filled:run.data.mp>=n}">◆</i></span></div></header>
     <div ref="stageElement" class="field-stage" :class="{ dungeon: !!space.dungeon }">
       <div class="field-board" role="group" aria-label="격자 필드" :style="{ gridTemplateColumns: `repeat(${columns}, ${tileSize}px)`, gridTemplateRows: `repeat(${rows}, ${tileSize}px)` }">
         <button v-for="pos in cells" :key="positionKey(pos)" class="field-cell" :class="[`tile--${tile(pos)}`, { selected: distance(selection, pos) === 0, danger: danger.has(positionKey(pos)), imminent:imminent.has(positionKey(pos)), path:pathKeys.has(positionKey(pos)), 'dash-aim':dashKeys.has(positionKey(pos)), 'skill-aim':skillKeys.has(positionKey(pos)), exit: !!exitAt(pos) }]" :aria-label="label(pos)" @click="clickCell(pos)">
@@ -208,7 +212,7 @@ onBeforeUnmount(() => { stop(); observer?.disconnect(); clearTimeout(timer);clea
         </button>
       </div>
       <FieldStatusFeedback :entity="player" :transformed="!!run.data.transform"/>
-      <div v-if="statusEntries(player).length||run.data.transform" class="field-statuses" aria-label="내 상태"><button v-if="run.data.transform" @click="say('본래 기술은 봉인되어 있다. 변신을 풀어 줄 이를 찾아야 한다.')">두 꼬리 여우</button><button v-for="s in statusEntries(player)" :key="s.key" :aria-label="statusLabel(s.key)+' '+s.value" @click="say(STATUS_HELP[s.key]??statusLabel(s.key))">{{ statusLabel(s.key) }} {{ s.value }}</button></div>
+      <div v-if="statusEntries(player).length||run.data.transform" class="field-statuses" aria-label="내 상태"><button v-if="run.data.transform" @click="say('여우 기술은 공방에서 성장한다. 원래 모습으로 돌아와도 수련은 남는다.')">두 꼬리 여우</button><button v-for="s in statusEntries(player)" :key="s.key" :aria-label="statusLabel(s.key)+' '+s.value" @click="say(STATUS_HELP[s.key]??statusLabel(s.key))">{{ statusLabel(s.key) }} {{ s.value }}</button></div>
       <div v-if="notice" class="field-notice" role="status">{{ notice }}</div>
       <div v-if="space.cleared && space.dungeon" class="room-clear">◇ 길이 열렸다</div>
     </div>
@@ -236,7 +240,7 @@ onBeforeUnmount(() => { stop(); observer?.disconnect(); clearTimeout(timer);clea
         <header><strong>{{ targetName }}</strong><button aria-label="대상 살펴보기 닫기" @click="detailsOpen=false">×</button></header>
         <div v-if="layeredTargets.length>1" class="target-stock" aria-label="같은 칸의 대상"><button v-for="entity in layeredTargets" :key="entity.id" :aria-pressed="selectedId===entity.id" @click="selectedId=entity.id">{{ entity.name }}</button></div>
         <div class="target-stock"><button v-for="[id,n] in targetStock" :key="id" :aria-pressed="run.data.field?.selectedItem===id" @click="chooseItem(id);detailsOpen=false">{{ fieldItemName(id) }} <b>{{ n }}</b></button></div>
-        <div v-if="target?.creature" class="target-states"><p>{{ target.creature.pending?.name??'경계 중' }}</p><p v-if="target.creature.pending?.transform">수화 중 맞으면 종족 변신 · 레벨에 따라 저항</p><p v-for="s in statusEntries(target)" :key="s.key">{{ statusLabel(s.key) }} {{ s.value }} · {{ STATUS_HELP[s.key] }}</p></div><p v-else-if="!targetStock.length">놓인 물건 없음</p>
+        <div v-if="target?.creature" class="target-states"><p>{{ target.creature.pending?.name??'경계 중' }}</p><p v-if="target.creature.pending?.transform">첫 낙인은 수화 · 수화 중에는 변신 판정</p><p v-for="s in statusEntries(target)" :key="s.key">{{ statusLabel(s.key) }} {{ s.value }} · {{ STATUS_HELP[s.key] }}</p></div><p v-else-if="!targetStock.length">놓인 물건 없음</p>
       </section>
       <div class="console-target">
         <div><strong>{{ selectedSkill?selectedSkill.name:aimDash?'ϟ 도착할 칸':targetName }}</strong><small v-if="target?.creature">{{ Math.ceil(target.creature.maxHp*(target.properties.integrity??100)/100) }} HP · {{ target.creature.pending?.name??'경계 중' }}</small><small v-else-if="target?.production&&!target.production.settled">성장 중</small></div>

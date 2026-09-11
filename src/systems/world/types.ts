@@ -48,6 +48,7 @@ export interface WorldEntity {
   form?: { raceId: string; originalSpecies: string; sourceId?: string };
   fieldUpdatedAt?: number;
   fieldNpcAt?: number;
+  routine?:{goal:string;activity:string;route:string[];nextAt:number;travel?:{to:string;arrivesAt:number;from:string}};
   colors: ColorProfile;
   tags: string[];
   /** Material state and capacities, all effects use this vocabulary. */

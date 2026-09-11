@@ -35,6 +35,9 @@ try {
   const snapshot=()=>JSON.stringify({hp:run.data.hp,mp:run.data.mp,time:run.data.field.elapsedSeconds,skills:run.data.field.skills,collection:run.data.collection,entities:Object.values(run.data.interactionWorld.entities).map(e=>({id:e.id,pos:e.pos,properties:e.properties,stock:e.stock})),sequence:run.data.interactionWorld.sequence});
   function reset(){
     run.startRun({timelineId:timeline.id,raceId:'human',season:'spring',startNodeId:'n-iluneon-square',maxHp:50,maxMp:3,timeLimit:300});
+    field.ensureField(run.data);
+    run.data.currentNodeId='n-iluneon-square::player-home';
+    run.data.interactionWorld.entities.player.nodeId=run.data.currentNodeId;
     const a=field.ensureField(run.data);
     a.world.entities={player:a.player};a.space.width=9;a.space.height=9;a.space.tiles=Array.from({length:9},()=>Array(9).fill('grass'));a.space.exits=[];
     a.player.pos={x:4,y:4};a.player.colors={};run.data.colors={fire:0,electric:0,earth:0,iron:0,water:0,wind:0,light:0,dark:0};run.data.relics=[];

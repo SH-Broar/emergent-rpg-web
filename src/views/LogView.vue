@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { elapsedLabel } from "@/systems/field-bases";
 /**
  * 기록(로그) 페이지 — 지난 런들의 요약을 다시 들춰 보는 곳.
  *
@@ -106,7 +107,7 @@ onMounted(() => {
             {{ timelineName(r.timelineId) }}
             <span class="row__race">· {{ raceName(r.raceId) }}</span>
           </span>
-          <span class="row__day">{{ r.days }}일차</span>
+          <span class="row__day">{{ r.elapsedSeconds===undefined?r.days+'일차':elapsedLabel(r.elapsedSeconds) }}</span>
           <span v-if="r.chaosScore > 0" class="row__chaos">
             {{ r.chaosScore }}점<span v-if="r.newRecord" class="row__record"> ★</span>
           </span>

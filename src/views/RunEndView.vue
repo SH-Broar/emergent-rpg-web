@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { elapsedLabel } from "@/systems/field-bases";
 /**
  * 런 종료 정리(요약) 화면 — *모든* 종료 경로의 합류점.
  *
@@ -150,7 +151,7 @@ onMounted(async () => {
     <p v-if="timeline" class="tl">
       {{ timeline.name }}<span v-if="race" class="tl__race"> · {{ race.name }}</span>
     </p>
-    <p class="progress">{{ run.data.currentDay }}일차 · 방문 {{ run.data.visitedNodes.length }}곳</p>
+    <p v-if="run.data.field" class="progress">경과 {{ elapsedLabel(run.data.field.clearedAt??run.data.field.elapsedSeconds) }} · 기절 {{ run.data.field.bases?.knockouts??0 }}회</p><p v-else class="progress">{{ run.data.currentDay }}일차 · 방문 {{ run.data.visitedNodes.length }}곳</p>
 
     <!-- 종료 위치 -->
     <p v-if="endNode" class="end-loc">

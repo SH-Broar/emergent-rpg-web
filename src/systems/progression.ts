@@ -67,7 +67,7 @@ export function buildRunSummary(run: RunState, gains: AbsorbGains): RunSummary {
   // 종료 위치 — 노드 라벨 + 권역명 (맵/노드 조회 실패 시 생략).
   let endNodeLabel: string | undefined;
   let endRegionName: string | undefined;
-  const endNode = map?.nodes.find((n) => n.id === run.currentNodeId);
+  const endNode = map?.nodes.find((n) => n.id === (run.interactionWorld?.spaces?.[run.currentNodeId]?.nodeId??run.currentNodeId));
   if (endNode) {
     endNodeLabel = endNode.label;
     endRegionName = map?.regions.find((rg) => rg.id === endNode.region)?.name;
@@ -98,7 +98,9 @@ export function buildRunSummary(run: RunState, gains: AbsorbGains): RunSummary {
     endReason: (run.endReason ?? 'free-end') as RunSummary['endReason'],
     endNodeLabel,
     endRegionName,
-    days: run.currentDay,
+    days: run.field?Math.floor(((run.field.clearedAt??run.field.elapsedSeconds)+43200)/86400)+1:run.currentDay,
+    elapsedSeconds:run.field?.clearedAt??run.field?.elapsedSeconds,
+    knockouts:run.field?.bases?.knockouts,
     turns: (run.visitedNodes ?? []).length,
     regions,
     combats,

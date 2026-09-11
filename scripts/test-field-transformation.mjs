@@ -44,6 +44,9 @@ try {
   const results=[],clone=x=>JSON.parse(JSON.stringify(x));
   function reset(){
     run.startRun({timelineId:timeline.id,raceId:'human',season:'spring',startNodeId:'n-iluneon-square',maxHp:100,maxMp:3,timeLimit:300});
+    field.ensureField(run.data);
+    run.data.currentNodeId='n-iluneon-square::player-home';
+    run.data.interactionWorld.entities.player.nodeId=run.data.currentNodeId;
     const a=field.ensureField(run.data);
     a.world.entities={player:a.player};a.space.width=9;a.space.height=9;a.space.tiles=Array.from({length:9},()=>Array(9).fill('grass'));a.space.exits=[];
     a.player.pos={x:4,y:4};a.player.properties.hardness=3;a.player.properties.laborPower=17;
@@ -77,7 +80,7 @@ try {
   assert.equal(attack.name,'수행의 낙인');assert.equal(attack.castTurns,2);assert.equal(attack.transform.raceId,'race-form-fox');
   assert(attack.cells.length>=16);assert(attack.cells.length<80,'safe cells remain');
   boss.creature.pending=attack;rng.setRng(()=>0);
-  combat.resolveAttack(a.world,boss);assert(!a.player.form,'original feral prerequisite retained');
+  combat.resolveAttack(a.world,boss);assert(!a.player.form,'first mark does not immediately transform');assert.equal(a.player.properties['status:feral'],3,'first mark inflicts feral');
   boss.creature.pending=clone(attack);a.player.properties['status:feral']=3;
   a.player.pos={x:3,y:5};combat.resolveAttack(a.world,boss);assert(!a.player.form,'leaving the telegraph evades transformation');
   a.player.pos={x:4,y:4};boss.creature.pending=clone(attack);
@@ -121,7 +124,9 @@ try {
   const acquired={...clone(data.cards.get('c-strike')),instanceId:'earned-during-form'};run.data.collection.push(acquired);
   assert(skills.equipFieldSkill(run.data,'square',acquired.instanceId)?.includes('봉인'));
   const smith=target(a,'bench',{x:3,y:4});smith.kind='facility';smith.tags=['workshop'];
-  assert(workshop.upgradeSkill(run.data,run.data.collection[0].instanceId,[acquired.instanceId],'power')?.includes('변신'));
+  const material={...clone(acquired),instanceId:'form-upgrade-material'};run.data.collection.push(material);
+  assert.equal(workshop.upgradeSkill(run.data,run.data.collection[0].instanceId,[material.instanceId],'power'),undefined);
+  assert.equal(run.data.collection[0].enhanceLevel,1);assert(!run.data.collection.some(c=>c.instanceId===material.instanceId));
   let npc=healer(a);
   assert(field.speechFor(run.data,npc).topics.some(t=>t.action==='restore-form'));
   const staleId=npc.id,snapshot=()=>JSON.stringify({transform:run.data.transform,collection:run.data.collection,race:run.data.raceId});
@@ -176,7 +181,33 @@ try {
   run.saveActiveRun();field.advanceFieldTime(30);const outcome=!!run.data.transform;
   run.$reset();assert(run.loadActiveRun());field.advanceFieldTime(30);assert.equal(!!run.data.transform,outcome,'saved pending cast cannot reroll the outcome');
   a=reset();transform(a);const lives=run.data.lives;run.data.hp=0;a.player.properties.integrity=0;
-  field.advanceFieldTime(30);assert.equal(run.data.lives,lives-1);assert(run.data.transform,'losing a life does not cure the species');
+  field.advanceFieldTime(30);assert.equal(run.data.lives,lives);assert.equal(run.data.field.bases.knockouts,1);assert(run.data.transform,'waking at home does not cure the species');
   results.push('actual field turn resolves saved transformation metadata with deterministic contact outcome');
+
+  a=reset();transform(a);let formFire=run.data.collection.find(c=>c.id==='c-fox-apprentice-fire');
+  const smith2=target(a,'growth-bench',{x:3,y:4});smith2.kind='facility';smith2.tags=['workshop'];
+  const scaling=await server.ssrLoadModule('/src/systems/enhance.ts');
+  for(let level=0;level<30;level++){
+    if(level===5){const spec=[...data.items.values()].find(i=>i.category==='specialty'&&i.element==='fire');
+      for(let j=0;j<2;j++)run.data.items.push({...clone(spec),instanceId:'spec-'+j});
+      run.data.items.push({...clone(data.items.get('i-material-rare')),instanceId:'rare'});
+      assert.equal(workshop.awakenFieldSkill(run.data,formFire.instanceId),undefined);
+    }
+    formFire=run.data.collection.find(c=>c.instanceId===formFire.instanceId);
+    const quote=workshop.upgradeQuote(formFire,'power'),ids=[];
+    for(let j=0;j<quote.cards;j++){const id='fuel-'+level+'-'+j;ids.push(id);run.data.collection.push({...clone(data.cards.get('c-strike')),instanceId:id});}
+    assert.equal(workshop.upgradeSkill(run.data,formFire.instanceId,ids,'power'),undefined);
+  }
+  assert.equal(formFire.enhanceLevel,30);assert(scaling.scaledValue(6,formFire)>=36,'form can grow far beyond its initial damage');
+  run.data.timeShards=100;run.data.items.push(...[0,1].map(i=>({...clone(data.items.get('i-material-common')),instanceId:'enchant-'+i})));
+  assert.equal(workshop.enchantSkill(run.data,formFire.instanceId,'ember'),undefined);
+  assert.equal(workshop.upgradeSkill(run.data,formFire.instanceId,[],'power'),'최대 강화');
+  const learned=clone(formFire),loadout=clone(run.data.field.skills.slots);run.data.field.skills.readyAt[skills.skillFamily(formFire)]=999;
+  assert(forms.cureFieldTransformation(run.data,a.world,healer(a).id).ok);
+  run.saveActiveRun();run.$reset();assert(run.loadActiveRun());a=field.ensureField(run.data);transform(a);
+  assert.deepEqual(run.data.collection.find(c=>c.instanceId===learned.instanceId),learned);
+  assert.deepEqual(run.data.field.skills.slots,loadout);assert.equal(run.data.field.skills.readyAt[skills.skillFamily(formFire)],999);
+  assert.equal(run.data.collection.filter(c=>c.instanceId===learned.instanceId).length,1);
+  results.push('hidden profession grows to attack +30 with awakening and enchantment; investments and cooldowns survive cure, save and re-transformation without copies');
   console.log(JSON.stringify({status:'PASS',scenarios:results.length,results},null,2));
 } finally {globalThis.window=oldWindow;globalThis.localStorage=oldStorage;globalThis.fetch=oldFetch;await server.close();}

@@ -1,3 +1,4 @@
+import { configurationFailure } from './field-bases';
 import type { RunState, NodeMap } from '@/data/schemas';
 import { reconcileFieldTransformation } from './field-transformation';
 import { useDataStore } from '@/stores/data';
@@ -223,7 +224,8 @@ export function tickInteractionWorld(run: RunState): void {
   syncPlayerFromWorld(run, world);
 }
 
-export function changeWorldProfession(run: RunState, profession: NonNullable<RunState['profession']>): void {
+export function changeWorldProfession(run: RunState, profession: NonNullable<RunState['profession']>): string | undefined {
+  const failure=configurationFailure(run);if(failure)return failure;
   run.profession = profession;
   const actor = ensureInteractionWorld(run).entities[PLAYER_ACTOR_ID];
   if (!actor?.agent) return;

@@ -226,9 +226,9 @@ function itemEffectLabel(eff: Item['effects'][number]): string {
               <div class="res__main">
                 <div class="res__row">
                   <span class="res__name">목숨</span>
-                  <span class="res__val">{{ lifeHearts }} {{ lives }}/{{ maxLives }}</span>
+                  <span v-if="run.data.field" class="res__val">무제한</span><span v-else class="res__val">{{ lifeHearts }} {{ lives }}/{{ maxLives }}</span>
                 </div>
-                <p class="res__desc">0이 되면 런이 끝난다.</p>
+                <p class="res__desc">{{ run.data.field?'기절하면 마지막으로 방문한 집에서 깨어난다.':'0이 되면 런이 끝난다.' }}</p>
               </div>
             </li>
             <li class="res">

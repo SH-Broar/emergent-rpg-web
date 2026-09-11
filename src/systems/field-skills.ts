@@ -4,7 +4,8 @@ import type { InteractionWorld, WorldEntity } from './world/types';
 import { influenceEntity, recordFact, resolveInteraction } from './world/engine';
 import { cardinal, distance, entitiesAt, hasSight, positionKey, walkable } from './world/spatial';
 import { actionRestriction, DEBUFFS, DECAYING, outgoingDamage, status, STATUS_HELP } from './world/status';
-import { afterMovement, beginBossEncounter, combatDefinition } from './field-combat';
+import { configurationFailure } from './field-bases';
+import { enforceTamamoSubmission, afterMovement, beginBossEncounter, combatDefinition } from './field-combat';
 import { bonusesFromEffective } from './equipment';
 import { scaledValue } from './enhance';
 import { SKILL_GESTURES, type SkillGesture, skillEffects, skillFamily, skillStrokes, skillMana, skillCooldown, skillCastTurns, skillFitsGesture, skillReach } from './field-skill-rules';
@@ -91,7 +92,7 @@ export function skillLoadoutLocked(run: RunState): boolean {
 }
 export function equipFieldSkill(run: RunState, gesture: string, instanceId?: string): string | undefined {
   if (!run.field || !SKILL_GESTURES.includes(gesture as SkillGesture)) return '기술 도형을 선택하세요.';
-  if (skillLoadoutLocked(run)) return '안전한 곳에서 기술을 바꿀 수 있다.';
+  const access=configurationFailure(run);if(access)return access;
   const skills = ensureFieldSkills(run), card = run.collection.find(c => c.instanceId === instanceId);
   if (instanceId && (!card || fieldSkillRestriction(run,card))) return card ? fieldSkillRestriction(run,card) : '카드를 찾을 수 없다.';
   if (card && !skillFitsGesture(card,gesture)) return skillStrokes(card)+'획 이상 도형이 필요하다.';
@@ -164,7 +165,7 @@ function displace(world: InteractionWorld, actor: WorldEntity, target: WorldEnti
   }
 }
 export function resolveFieldSkill(run: RunState, world: InteractionWorld, card: Card, cells: SkillCell[], paid: number, power=1) {
-  if(fieldSkillRestriction(run,card))return;
+  if(enforceTamamoSubmission(run,world)||fieldSkillRestriction(run,card))return;
   const player = world.entities.player!;
   const ranged = card.targetMode === 'aimed';
   const targets = targetsAt(world, player, cells).filter(({target})=>!(status(target,'ghost') && (ranged || status(player,'ghost'))));
@@ -249,6 +250,7 @@ export function resolveFieldSkill(run: RunState, world: InteractionWorld, card: 
   recordFact(world,{turn:world.turn,nodeId:player.nodeId,actorId:player.id,targetId:player.id,kind:'signal',labor:0,message:card.name});
 }
 export function castFieldSkill(run: RunState, world: InteractionWorld, gesture: string, aim: GridPos): {ok:boolean;message:string} {
+  if(enforceTamamoSubmission(run,world))return {ok:false,message:''};
   const card = equippedSkill(run,gesture);
   if (!card) return {ok:false,message:'기술을 장착하세요.'};
   if(!skillFitsGesture(card,gesture))return {ok:false,message:skillStrokes(card)+'획 이상 도형이 필요하다.'};
@@ -268,6 +270,7 @@ export function castFieldSkill(run: RunState, world: InteractionWorld, gesture: 
   return {ok:true,message:castTurns > 1 ? card.name + ' 시전' : ''};
 }
 export function tickFieldSkills(run: RunState, world: InteractionWorld) {
+  if(enforceTamamoSubmission(run,world))return;
   const skills = run.field?.skills, pending = skills?.pending, player = world.entities.player;
   if(skills&&player&&(player.properties.integrity??0)>0){
     if(skills.nextPower&&skills.nextPower.expires<turn(run))skills.nextPower=undefined;

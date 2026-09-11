@@ -20,6 +20,9 @@ export interface FieldSpace {
   cleared?: boolean;
   layoutVersion?: 2 | 3;
   theme?: string;
+  housingVersion?:1;
+  basesVersion?:1;
+  residence?:{parent:string;kind:'home'|'court'|'commons'|'player-home'|'inn';npcId?:string};
   road?: {from:string;to:string;index:number;count:number};
 }
 export interface FieldState {
@@ -39,7 +42,14 @@ export interface FieldState {
   controlsVersion?: 2 | 3;
   combatVersion?: 1;
   formVersion?: 1;
+  residentsVersion?:1;
+  bases?:{owned:Record<string,boolean>;rentals:Record<string,number>;lastHouse:string;knockouts:number};
+  knockoutReason?:'tamamo';
+  clearedAt?:number;
+  residentEvents?:Record<string,number>;
   skills?: import('./field-skills').FieldSkills;
+  /** Inactive bodies retain their learned skills and absolute cooldowns. */
+  formTraining?: Record<string,{cards:import('@/data/schemas').Card[];skills:import('./field-skills').FieldSkills}>;
   manaStep?: number;
   encounter?: FieldSpeech;
   notification?: FieldSpeech;
@@ -64,7 +74,7 @@ export interface FieldCreature {
   phase?: number;
   reward: { gold: number; shards: number; itemId?: string };
 }
-export interface FieldSpeech { actorId: string; name: string; lines: string[]; topics?: {label:string;lines:string[];action?:string}[] }
+export interface FieldSpeech { actorId: string; name: string; lines: string[]; topics?: {label:string;lines:string[];action?:string;confirmLabel?:string}[] }
 export interface FieldResult { ok: boolean; message: string; speech?: FieldSpeech; travel?: boolean; route?:string; changed?: string[]; targetId?: string; targetPos?: GridPos }
 
 export interface FieldAttack {

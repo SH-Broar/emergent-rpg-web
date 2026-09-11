@@ -1,4 +1,6 @@
-import { connectionVector } from './field-geography';
+import { connectionVector, inward } from './field-geography';
+import { ensureBases, baseTown, playerHomeId, innId } from './field-bases';
+import { homeId, courtId, commonId } from '@/data/npc-calendar';
 import type { RunState, Node, Monster, Boss } from '@/data/schemas';
 import type { GridPos } from '@/data/schemas/base';
 import { useDataStore } from '@/stores/data';
@@ -79,7 +81,7 @@ function residents(run: RunState, world: InteractionWorld, space: FieldSpace, no
   const npcs = [...data.npcs.values()].filter(n => n.homeNodeId === node.id || pool.has(n.id));
   for (const [i, npc] of npcs.entries()) {
     const id = `npc:${npc.id}`;
-    if (world.entities[id]) continue;
+    if (world.entities[id] || run.field?.residentsVersion) continue;
     const colors = npc.colorValues ? Object.fromEntries(Object.entries(npc.colorValues).map(([k, v]) => [k, v <= 1 ? v * 100 : v])) : {};
     const body = data.races.get(npc.raceId)?.baseStats;
     placeFieldEntity(world, space, {
@@ -105,7 +107,8 @@ function connectExits(space: FieldSpace, node: Node, run: RunState) {
 }
 export function ensureFieldSpace(run: RunState, world: InteractionWorld, id: string): FieldSpace {
   world.spaces ??= {};
-  const old=world.spaces[id];if(old?.layoutVersion===3)return old;
+  const old=world.spaces[id];if(old?.layoutVersion===3){connectNeighborhood(run,world,old);connectBases(run,world,old);return old;}
+  if(id.includes('::home:')||id.endsWith('::residents')||id.endsWith('::commons')||id.endsWith('::player-home')||id.endsWith('::inn'))return createResidence(run,world,id);
   const data=useDataStore(),map=fieldMap(run);
   if(!map)throw new Error('플레이할 장소가 없습니다.');
   const road=readRoad(id,map),split=id.split('::dungeon:');
@@ -131,6 +134,7 @@ export function ensureFieldSpace(run: RunState, world: InteractionWorld, id: str
     if(floor<3)space.exits.push({pos:{x:width-1,y:spawn.y},to:node.id+'::dungeon:'+(floor+1),label:'아랫층',requirement:'room-clear'});
     for(const exit of space.exits)carvePath(space,exit.pos,spawn);
   }else connectExits(space,node,run);
+  connectNeighborhood(run,world,space);
   // Rebuild geometry once, retaining every actual object, crop, inventory and creature state.
   const existing=Object.values(world.entities).filter(e=>e.nodeId===id&&!e.carriedBy);
   const positions=new Map(existing.map(e=>[e.id,e.pos]));for(const e of existing)e.pos=undefined;
@@ -188,6 +192,80 @@ export function ensureFieldSpace(run: RunState, world: InteractionWorld, id: str
     if(node.kind!=='event'&&node.contentRef?.eventIdPool?.length)object(world,space,'story','이야기',at(12,2),['story','service:event'],{solid:1});
     if(node.kind==='gather'){const site=ensureLifeSite(run,world,node.id,node.region);if(!site.pos)placeFieldEntity(world,space,site,at(4,5));}
   }
-  for(const e of Object.values(world.entities).filter(e=>e.nodeId===id)){e.fieldUpdatedAt??=run.field?.elapsedSeconds??0;e.fieldNpcAt??=e.fieldUpdatedAt;}
+  for(const actor of Object.values(world.entities).filter(e=>e.npcId&&e.nodeId===id&&!e.pos&&!e.routine?.travel))placeFieldEntity(world,space,actor,space.spawn);
+ for(const e of Object.values(world.entities).filter(e=>e.nodeId===id)){e.fieldUpdatedAt??=run.field?.elapsedSeconds??0;e.fieldNpcAt??=e.fieldUpdatedAt;}
   return space;
+}
+
+/** Small connected spaces keep the original node geography and existing objects intact. */
+export function connectNeighborhood(run:RunState,_world:InteractionWorld,space:FieldSpace){
+ if(space.housingVersion||space.road||space.dungeon||space.residence)return;
+ space.housingVersion=1;
+ const node=baseNode(run,space.id);if(!node)return;
+ const inhabitants=[...useDataStore().npcs.values()].filter(n=>n.homeNodeId===node.id);
+ const links=[...(inhabitants.length?[{to:courtId(node.id),label:'집들이 모인 길'}]:[]),...(node.kind==='village'?[{to:commonId(node.id),label:'공동 마당'}]:[])];
+ for(const link of links){
+   const pos=[[0,1],[1,0],[0,-1],[-1,0]].map(([x,y])=>boundaryFor(space,x!,y!,space.exits.map(e=>e.pos))).find(Boolean);
+   if(!pos)continue;space.exits.push({...link,pos});carvePath(space,pos,space.spawn);
+ }
+}
+function createResidence(run:RunState,world:InteractionWorld,id:string):FieldSpace {
+ const data=useDataStore(),base=id.split('::')[0]!,node=fieldMap(run)?.nodes.find(n=>n.id===base);
+ if(!node)throw Error('거주지의 지역이 없다: '+id);
+ const npc=id.includes('::home:')?data.npcs.get(id.split('::home:')[1]!):undefined;
+ if(id.includes('::home:')&&(!npc||npc.homeNodeId!==base))throw Error('거주자가 없다: '+id);
+ const kind=npc?'home':id.endsWith('::player-home')?'player-home':id.endsWith('::inn')?'inn':id.endsWith('::commons')?'commons':'court';
+ const parent=npc?courtId(base):kind==='player-home'||kind==='inn'?commonId(base):base,parentSpace=ensureFieldSpace(run,world,parent);
+ const entry=parentSpace.exits.find(e=>e.to===id);if(!entry)throw Error('거주지의 입구가 없다: '+id);
+ const residents=[...data.npcs.values()].filter(n=>n.homeNodeId===base);
+ const width=kind==='court'&&residents.length>4?8:6,height=6;
+ const space:FieldSpace={id,nodeId:base,name:npc?npc.name+'의 집':kind==='player-home'?node.label+' · 내 집':kind==='inn'?node.label+' · 여관':kind==='commons'?node.label+' · 공동 마당':node.label+' · 주거지',width,height,spawn:{x:Math.floor(width/2),y:3},
+ tiles:Array.from({length:height},(_,y)=>Array.from({length:width},(_,x)=>x===0||y===0||x===width-1||y===height-1?'wall':['home','player-home','inn'].includes(kind)?'wood':'grass')),
+ exits:[],layoutVersion:3,housingVersion:1,theme:'town',residence:{parent,kind,npcId:npc?.id}};
+ world.spaces![id]=space;
+ const incoming=inward(parentSpace,entry.pos),back=boundaryFor(space,incoming.x,incoming.y,[]);
+ space.exits.push({to:parent,label:parentSpace.name,pos:back});carvePath(space,back,space.spawn);
+ if(kind==='court')for(const [i,resident]of residents.entries()){
+   const directions=[[0,-1],[-1,0],[1,0],[0,1]],used=space.exits.map(e=>e.pos);
+   const pos=[...directions.slice(i%4),...directions.slice(0,i%4)].map(([x,y])=>boundaryFor(space,x!,y!,used)).find(Boolean);
+   if(!pos)continue;
+   space.exits.push({to:homeId(resident),label:resident.name+'의 집',pos});carvePath(space,pos,space.spawn);
+   const door:WorldEntity={id:id+':door:'+resident.id,name:resident.name+'의 집',kind:'facility',nodeId:id,pos,colors:{},tags:['building','home-door'],properties:{integrity:100},stock:{},ownerId:'npc:'+resident.id};world.entities[door.id]=door;
+ }
+ if(kind==='player-home'||kind==='inn'){
+   const bed=object(world,space,'bed','침상',{x:1,y:1},['shelter','bed'],{hardness:2,flammability:1});bed.ownerId=kind==='player-home'?'player':'local-community';
+   const chest=object(world,space,'cabinet','내 보관함',{x:4,y:1},['storage','cabinet'],{solid:1,portable:1,mass:2,hardness:2});chest.ownerId='player';
+   const desk=object(world,space,'desk','준비대',{x:1,y:4},['table','base:configure'],{solid:1,hardness:2});desk.ownerId=bed.ownerId;
+ }else if(npc){
+   const owner='npc:'+npc.id;
+   const rest=object(world,space,'bed',npc.tags?.includes('construct')?'충전 자리':npc.tags?.includes('dryad')?'뿌리 내리는 자리':npc.tags?.some(t=>['mermaid','siren','slime'].includes(t))?'물가의 침상':'침상',{x:1,y:1},['shelter','bed'],{hardness:2,flammability:1,...(npc.tags?.includes('construct')?{conductivity:1}:npc.tags?.includes('dryad')?{soil:1,moisture:2}:npc.tags?.some(t=>['mermaid','siren','slime'].includes(t))?{moisture:4}:{})});rest.ownerId=owner;
+   const cabinet=object(world,space,'cabinet','작은 보관함',{x:width-2,y:1},['storage','cabinet'],{solid:1,portable:1,mass:2,hardness:2},{'i-crop-grain':2,'raw-fiber':2});cabinet.ownerId=owner;
+   const table=object(world,space,'table',npc.role==='Craftsman'?'손때 묻은 작업대':npc.tags?.includes('mage')?'술법 연구대':'낮은 탁자',{x:1,y:height-2},npc.role==='Craftsman'?['workshop']:['table'],{solid:1,hardness:3,work:0},{'raw-fiber':2});table.ownerId=owner;
+   if(npc.role==='Craftsman')table.workRecipe={required:3,inputs:{'raw-fiber':2},outputs:{'i-material-common':1},repeat:true};
+ }else{
+   object(world,space,'table','나눔 식탁',{x:1,y:1},['storage','shared','food','table'],{solid:1,hardness:2},{'i-crop-grain':4,water:4});
+   object(world,space,'seat','그늘 아래 의자',{x:width-2,y:1},['shelter','shared','seat'],{hardness:2});
+   if(kind==='commons'){
+     const plot=object(world,space,'soil','공동 텃밭',{x:1,y:height-2},['field-plot','shared'],{soil:1,moisture:2});plot.kind='plot';space.tiles[plot.pos!.y]![plot.pos!.x]='soil';
+     const bench=object(world,space,'bench','공동 작업대',{x:width-2,y:height-2},['workshop','shared'],{solid:1,hardness:3,work:0},{'raw-fiber':4});bench.workRecipe={required:3,inputs:{'raw-fiber':2},outputs:{'i-material-common':1},repeat:true};
+   }
+ }
+ connectBases(run,world,space);
+ for(const e of Object.values(world.entities).filter(e=>e.nodeId===id)){e.fieldUpdatedAt??=run.field?.elapsedSeconds??0;e.fieldNpcAt??=e.fieldUpdatedAt;}
+ return space;
+}
+
+/** Base doors share the town commons so the original map connections remain untouched. */
+export function connectBases(run:RunState,world:InteractionWorld,space:FieldSpace) {
+ if(space.residence?.kind!=='commons'||!baseTown(run,space.nodeId)||!run.field)return;
+ ensureBases(run);
+ if(space.basesVersion)return;
+ space.basesVersion=1;
+ for(const [kind,to,label]of [['build',playerHomeId(space.nodeId),'내 집'],['rent',innId(space.nodeId),'여관']]){
+  const used=space.exits.map(e=>e.pos),pos=[[1,0],[-1,0],[0,1],[0,-1]].map(([x,y])=>boundaryFor(space,x!,y!,used)).find(Boolean);
+  if(!pos)continue;
+  space.exits.push({to:to!,label:label!,pos});carvePath(space,pos,space.spawn);
+  const door=object(world,space,'base-'+kind,label!,pos,['building','base:'+kind],{hardness:3});
+  door.pos={...pos};door.kind='facility';door.ownerId=kind==='build'?'player':'local-community';
+ }
 }

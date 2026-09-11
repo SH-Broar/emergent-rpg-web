@@ -7,7 +7,7 @@ import { useDataStore } from '@/stores/data';
 import type { FieldAttack } from './field-types';
 import type { InteractionWorld, WorldEntity } from './world/types';
 import { influenceEntity, recordFact } from './world/engine';
-import { cardinal, distance, entitiesAt, fieldPath, walkable } from './world/spatial';
+import { cardinal, distance, entitiesAt, fieldPath, walkable, hasSight } from './world/spatial';
 import { actionRestriction, changeStatus, DECAYING, movesAsAir, outgoingDamage, status, statusEntries } from './world/status';
 
 export function combatDefinition(e:WorldEntity) {
@@ -81,9 +81,10 @@ export function resolveAttack(world:InteractionWorld,e:WorldEntity) {
       if(target.kind==='actor')applyStatus(world,target,attack.status,e);
       const form=attack.transform;
       if(form && target.kind==='actor' && !target.form && (target.properties.integrity??100)>0 &&
-        useDataStore().races.get(form.raceId)?.fieldSkills?.length &&
-        (!form.requiresStatus || status(target,form.requiresStatus) || form.requiresStatus==='feral'&&status(target,'feral-heavy'))) {
-        if(rng()<transformationChance(target.properties.level))influenceEntity(world,target,'form:'+form.raceId,1,e.id,'몸의 형상이 바뀌었다.');
+        useDataStore().races.get(form.raceId)?.fieldSkills?.length) {
+        const ready=!form.requiresStatus || status(target,form.requiresStatus) || form.requiresStatus==='feral'&&status(target,'feral-heavy');
+        if(!ready)applyStatus(world,target,form.requiresStatus+':3',e);
+        else if(rng()<transformationChance(target.properties.level))influenceEntity(world,target,'form:'+form.raceId,1,e.id,'몸의 형상이 바뀌었다.');
         else recordFact(world,{turn:world.turn,nodeId:target.nodeId,actorId:e.id,targetId:target.id,kind:'signal',labor:0,message:'변신 저항'});
       }
       if(attack.status?.startsWith('possession:')&&target.kind==='actor')influenceEntity(world,e,'integrity',-100,e.id);
@@ -153,6 +154,7 @@ export function moveCreature(world:InteractionWorld,e:WorldEntity,target:GridPos
 }
 export function beginBossEncounter(run:RunState,e:WorldEntity,explicit=false):boolean {
   const c=e.creature!;
+  if(run.interactionWorld&&enforceTamamoSubmission(run,run.interactionWorld,e.id))return true;
   if(c.rank!=='boss'||c.engaged)return false;
   if(!explicit&&(c.challengeAfter??0)>(run.field?.elapsedSeconds??0))return true;
   const def=combatDefinition(e);
@@ -162,10 +164,24 @@ export function beginBossEncounter(run:RunState,e:WorldEntity,explicit=false):bo
 export function resolveFieldEncounter(run:RunState,accept:boolean) {
   const encounter=run.field?.encounter;if(!encounter)return;
   const e=run.interactionWorld?.entities[encounter.actorId];
+  if(e&&run.interactionWorld&&enforceTamamoSubmission(run,run.interactionWorld,e.id))return;
   if(e?.creature){if(accept){e.creature.engaged=true;e.creature.angry=true;}else e.creature.challengeAfter=run.field!.elapsedSeconds+300;}
   run.field!.encounter=undefined;
 }
 export function clearCombatStatuses(e:WorldEntity,rest=false) {
   for(const {key} of statusEntries(e))if(rest||!['possession','regress','feral-heavy'].includes(key))e.properties['status:'+key]=0;
   e.properties.guard=0;
+}
+
+/** A transformed apprentice submits before either side can use a combat action. */
+export function enforceTamamoSubmission(run:RunState,world:InteractionWorld,explicitId?:string):boolean {
+ if(!run.field||!run.transform?.field||run.transform.formRaceId!=='race-form-fox'||run.ended)return false;
+ const player=world.entities.player;if(!player?.pos)return false;
+ const tamamo=Object.values(world.entities).find(e=>e.creature?.definitionId==='bs-arc-tamamo'&&e.nodeId===player.nodeId&&(e.properties.integrity??100)>0&&
+  (e.id===explicitId||e.creature.engaged||e.pos&&distance(e.pos,player.pos!)<=6&&hasSight(world,e,player)));
+ if(!tamamo)return false;
+ run.field.knockoutReason='tamamo';run.field.encounter=undefined;
+ if(run.field.skills)run.field.skills.pending=undefined;
+ player.properties.integrity=0;run.hp=0;
+ return true;
 }

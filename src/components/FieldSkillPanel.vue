@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 import { useRunStore } from '@/stores/run';
+import { configurationFailure } from '@/systems/field-bases';
 import { GLYPHS } from '@/systems/field-types';
 import { GESTURE_CATALOG } from '@/systems/gesture-catalog';
-import { SKILL_GESTURES, equippedSkill, equipFieldSkill, fieldSkillRestriction, skillMana, skillCooldown, skillRemaining, skillCastTurns, skillLoadoutLocked } from '@/systems/field-skills';
+import { SKILL_GESTURES, equippedSkill, equipFieldSkill, fieldSkillRestriction, skillMana, skillCooldown, skillRemaining, skillCastTurns } from '@/systems/field-skills';
 import SkillWorkshop from './SkillWorkshop.vue';
 import { skillStrokes, skillFitsGesture, skillEffectText } from '@/systems/field-skill-rules';
 import type { Card } from '@/data/schemas';
@@ -11,10 +12,11 @@ import type { Card } from '@/data/schemas';
 const props = defineProps<{open:boolean}>();
 const emit = defineEmits<{close:[];guide:[id:string]}>();
 const run = useRunStore();
-const selected = ref<string>(SKILL_GESTURES[0]), tab = ref<'equip'|'practice'|'workshop'>('equip');
+const selected = ref<string>(SKILL_GESTURES[0]), tab = ref<'equip'|'practice'|'workshop'|'profession'>('equip');
 const query = ref(''), page = ref(0), all = ref(false), notice = ref('');
 const current = computed(() => equippedSkill(run.data,selected.value));
-const locked = computed(() => skillLoadoutLocked(run.data));
+const locked = computed(() => configurationFailure(run.data));
+const professions={traveler:'여행자',grower:'재배자',artisan:'장인',researcher:'연구자'};
 const cards = computed(() => run.data.collection.filter(c => (all.value || !fieldSkillRestriction(run.data,c)) && c.name.includes(query.value)));
 const pages = computed(() => Math.max(1,Math.ceil(cards.value.length/5)));
 const visible = computed(() => cards.value.slice(page.value*5,page.value*5+5));
@@ -31,9 +33,9 @@ function brief(card:Card) {return lines(card).slice(0,3).join(' · ');}
   <div v-if="open" class="skills-backdrop" @click.self="emit('close')" @keydown.esc.stop="emit('close')">
     <section class="skills-panel" role="dialog" aria-modal="true" aria-label="기술 장착">
       <header><h2>기술</h2><button aria-label="기술 닫기" @click="emit('close')">×</button></header>
-      <nav class="tabs"><button :aria-pressed="tab==='equip'" @click="tab='equip'">장착</button><button :aria-pressed="tab==='workshop'" @click="tab='workshop'">강화</button><button :aria-pressed="tab==='practice'" @click="tab='practice'">도형 연습</button></nav>
+      <nav class="tabs"><button :aria-pressed="tab==='equip'" @click="tab='equip'">장착</button><button :aria-pressed="tab==='workshop'" @click="tab='workshop'">강화</button><button :aria-pressed="tab==='practice'" @click="tab='practice'">도형 연습</button><button :aria-pressed="tab==='profession'" @click="tab='profession'">직업</button></nav>
       <template v-if="tab==='equip'">
-        <p v-if="run.data.transform?.field" class="notice">두 꼬리 여우 · 본래 카드 {{ run.data.transform.stashCollection.length }}장 봉인</p>
+        <p v-if="run.data.transform?.field" class="notice">수행 여우 · 본래 카드 {{ run.data.transform.stashCollection.length }}장 봉인 · 공방 성장 가능</p>
         <div class="slots" aria-label="기술 도형 8칸">
           <button v-for="id in SKILL_GESTURES" :key="id" :aria-pressed="selected===id" :aria-label="GLYPHS[id]+' '+(equippedSkill(run.data,id)?.name??'빈 기술 칸')" @click="selected=id;notice=''">
             <b>{{ GLYPHS[id] }}<small>{{ GESTURE_CATALOG.find(g=>g.id===id)?.strokes }}</small></b><span>{{ equippedSkill(run.data,id)?.name??'비어 있음' }}</span>
@@ -45,20 +47,24 @@ function brief(card:Card) {return lines(card).slice(0,3).join(' · ');}
             <p>{{ skillStrokes(current) }}획 이상 · ◆ {{ skillMana(current) }} <span>재사용 {{ skillCooldown(current) }}턴</span><span v-if="skillRemaining(run.data,current)">남은 {{ skillRemaining(run.data,current) }}턴</span><span v-if="skillCastTurns(current)>1">시전 {{ skillCastTurns(current) }}턴</span></p>
             <p>{{ brief(current) }}</p>
             <details v-if="lines(current).length>3"><summary>효과 더 보기</summary><p>{{ lines(current).slice(3).join(' · ') }}</p></details>
-            <button class="subtle" :disabled="locked" @click="equip()">해제</button>
+            <button class="subtle" :disabled="!!locked" @click="equip()">해제</button>
           </template>
         </section>
-        <p v-if="locked" class="notice">안전한 곳에서 기술을 바꿀 수 있다.</p>
+        <p v-if="locked" class="notice">{{ locked }}</p>
         <div class="filters"><input v-model="query" type="search" placeholder="기술 찾기" aria-label="기술 검색"><label><input v-model="all" type="checkbox"> 전체 카드</label></div>
         <div class="card-list">
           <div v-for="card in visible" :key="card.instanceId" class="card-row">
             <div><strong>{{ card.name }} <small v-if="card.enhanceLevel">+{{ card.enhanceLevel }}</small></strong><small>{{ fieldSkillRestriction(run.data,card)??(skillStrokes(card)+'획↑ · ◆ '+skillMana(card)+' · 재사용 '+skillCooldown(card)+'턴') }}</small></div>
-            <button :disabled="locked||!!fieldSkillRestriction(run.data,card)||!skillFitsGesture(card,selected)" @click="equip(card)">장착</button>
+            <button :disabled="!!locked||!!fieldSkillRestriction(run.data,card)||!skillFitsGesture(card,selected)" @click="equip(card)">장착</button>
           </div>
           <p v-if="!cards.length" class="empty">{{ query?'찾는 카드가 없다.':'장착할 기술이 없다. 전체 카드에서 준비 상태를 볼 수 있다.' }}</p>
         </div>
         <div class="pages"><button :disabled="page===0" aria-label="이전 카드 목록" @click="page--">‹</button><span>{{ page+1 }} / {{ pages }}</span><button :disabled="page+1>=pages" aria-label="다음 카드 목록" @click="page++">›</button></div>
       </template>
+      <div v-else-if="tab==='profession'">
+        <p v-if="locked" class="notice">{{ locked }}</p>
+        <div class="practice"><button v-for="(label,id) in professions" :key="id" :disabled="!!locked" :aria-pressed="run.data.profession===id" @click="notice=run.setProfession(id)??(label+'로 일한다.')">{{ label }}</button></div>
+      </div>
       <SkillWorkshop v-else-if="tab==='workshop'" :initial-id="current?.instanceId"/>
       <div v-else><details class="skill-help"><summary>기술 안내</summary><p>도형을 고르고 기술을 장착하세요. 카드에 적힌 획수 이상의 도형에서 사용할 수 있습니다. 원은 4획입니다.</p><p>범위를 확인하고 격자를 선택한 뒤 그리세요. 마나는 최대 3, 두 턴마다 1 회복합니다.</p><p>공방에서 남는 카드로 강화하고, 한 카드에 인챈트 하나를 새길 수 있습니다.</p></details><div class="practice">
         <button v-for="g in GESTURE_CATALOG" :key="g.id" @click="guide(g.id)"><b>{{ g.glyph }}</b><span>{{ g.name }}</span></button>

@@ -60,6 +60,8 @@ export interface RunSummary {
   endRegionName?: string;
   /** currentDay. */
   days: number;
+  elapsedSeconds?:number;
+  knockouts?:number;
   /** visitedNodes.length. */
   turns: number;
   /** 도달 distinct 권역 수. */

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { configurationFailure } from '@/systems/field-bases';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRunStore } from '@/stores/run';
 import { useDataStore } from '@/stores/data';
@@ -63,8 +64,8 @@ function perform(action: ActionOffer): void {
 function changeProfession(event: Event): void {
   const value = (event.target as HTMLSelectElement).value;
   if (value === 'traveler' || value === 'grower' || value === 'artisan' || value === 'researcher') {
-    run.setProfession(value);
-    feedback.value = { ok: true, message: `이제 ${professions[value]}로 일합니다.` };
+    const failure=run.setProfession(value);
+    feedback.value = { ok: !failure, message: failure??`이제 ${professions[value]}로 일합니다.` };
   }
 }
 
@@ -84,7 +85,7 @@ watch(targets, value => {
       <summary>나의 일 · {{ professions[run.data.profession ?? 'traveler'] }}</summary>
       <label>
         직업
-        <select :value="run.data.profession ?? 'traveler'" @change="changeProfession">
+        <select :disabled="!!configurationFailure(run.data)" :title="configurationFailure(run.data)" :value="run.data.profession ?? 'traveler'" @change="changeProfession">
           <option v-for="(label, value) in professions" :key="value" :value="value">{{ label }}</option>
         </select>
       </label>

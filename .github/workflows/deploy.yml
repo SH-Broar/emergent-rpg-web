@@ -37,6 +37,8 @@ jobs:
       - run: node scripts/test-skill-growth.mjs
       - run: node scripts/test-status-feedback.mjs
       - run: node scripts/test-field-transformation.mjs
+      - run: node scripts/test-field-residents.mjs
+      - run: node scripts/test-field-bases.mjs
       - run: npm run build
       - uses: actions/configure-pages@v4
       - uses: actions/upload-pages-artifact@v3

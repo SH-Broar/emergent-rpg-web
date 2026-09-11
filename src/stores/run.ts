@@ -1,3 +1,5 @@
+import { configurationFailure } from '@/systems/field-bases';
+import { recoverFieldPlayer } from '@/systems/field-simulation';
 /**
  * Pinia 스토어 — 한 런의 휘발 상태.
  *
@@ -620,7 +622,7 @@ export const useRunStore = defineStore('run', {
 
     setProfession(profession: NonNullable<RunState['profession']>) {
       if (!['traveler', 'grower', 'artisan', 'researcher'].includes(profession) || this.data.ended) return;
-      changeWorldProfession(this.data, profession);
+      return changeWorldProfession(this.data, profession);
     },
 
     /** 노드 방문 — 시간 1 카운트 감소 + 방문 상태 마킹 + 자정 통과 시 하루 경과. */
@@ -688,7 +690,7 @@ export const useRunStore = defineStore('run', {
       // 농사 텃밭(r.plots)은 top-level 별도 필드라 일일 리셋의 영향을 받지 않는다 —
       // 아래 nodeStates 초기화 루프에서 plots는 절대 건드리지 않는다(의도적 보존).
       // 하루 경과마다 덱 슬롯 10 확장 — 카드를 새로 얻으면 자동 세팅될 여지가 생긴다.
-      r.deckSize += 10;
+      if(!r.field)r.deckSize += 10;
       // 혼란(possession)은 하루가 지나면 풀린다 — 잔존 페널티의 안전 밸브.
       if ((r.possessed ?? 0) > 0) {
         r.possessed = 0;
@@ -1021,6 +1023,7 @@ export const useRunStore = defineStore('run', {
      */
     setDeckFromCollection(instanceIds: string[]) {
       const r = this.data;
+      const failure=configurationFailure(r);if(failure)return failure;
       const map = new Map(
         r.collection
           .filter((c): c is import('@/data/schemas').Card & { instanceId: string } => !!c.instanceId)
@@ -1103,6 +1106,7 @@ export const useRunStore = defineStore('run', {
      */
     loseLife(): boolean {
       const r = this.data;
+      if(r.field){recoverFieldPlayer(r);return true;}
       if (r.lives == null) r.lives = r.maxLives ?? 2;
       r.lives -= 1;
       return r.lives > 0;
@@ -1114,6 +1118,7 @@ export const useRunStore = defineStore('run', {
      */
     gainLife(): boolean {
       const r = this.data;
+      if(r.field)return false;
       const max = r.maxLives ?? 2;
       const cur = r.lives ?? max;
       const next = Math.min(cur + 1, max);
@@ -1141,6 +1146,7 @@ export const useRunStore = defineStore('run', {
      */
     flee(nodeId: string) {
       const r = this.data;
+      if(r.field)return;
       // 노드 미클리어 유지 — combatCleared/Stealthed를 명시적으로 false로(재도전 보장).
       const st = r.nodeStates[nodeId];
       if (st) {
@@ -1354,6 +1360,7 @@ export const useRunStore = defineStore('run', {
 
     /** 런 종료 — endRun()을 호출하면 외부에서 codex/meta 갱신을 트리거. */
     endRun(reason: NonNullable<RunState['endReason']>) {
+      if(this.data.field&&['hp-zero','boss-defeated'].includes(reason)){recoverFieldPlayer(this.data);return;}
       this.data.ended = true;
       this.data.endReason = reason;
       this.active = false;

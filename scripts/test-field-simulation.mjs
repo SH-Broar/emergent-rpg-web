@@ -200,8 +200,8 @@ try {
   for(const node of authored.nodes){
     const area=generation.ensureFieldSpace(run.data,world,node.id);
     dimensions.add(area.width+'x'+area.height);themes.add(area.theme);
-    if(!['village','combat','elite','boss'].includes(node.kind)&&!Object.values(world.entities).filter(e=>e.nodeId===node.id&&e.npcId).length)assert.equal(area.width,6);
-    for(const exit of area.exits){
+    if(!['village','combat','elite','boss'].includes(node.kind)&&![...data.npcs.values()].filter(n=>n.homeNodeId===node.id||node.contentRef?.npcIdPool?.includes(n.id)).length)assert.equal(area.width,6);
+    for(const exit of area.exits.filter(e=>e.destination)){
       const destination=authored.nodes.find(n=>n.id===exit.destination);
       assert.equal(exit.roads,geography.roadCount(authored,node,destination));
       const ids=[node.id,destination.id].sort();
@@ -302,17 +302,17 @@ try {
   ({world,space,player}=start());
   for (const node of generation.fieldMap(run.data).nodes) {
     const area=generation.ensureFieldSpace(run.data,world,node.id);
-    assert.equal(area.exits.length,new Set([...node.neighbors,...(node.conditionalNeighbors??[]).map(c=>c.nodeId)]).size);
+    assert.equal(area.exits.filter(e=>e.destination).length,new Set([...node.neighbors,...(node.conditionalNeighbors??[]).map(c=>c.nodeId)]).size);
     for(const exit of area.exits) { assert.equal(area.tiles[exit.pos.y][exit.pos.x],'path'); assert.ok(spatial.fieldPath(world,area.id,area.spawn,exit.pos,'player'),`${node.id} exit ${exit.to} is reachable`); }
   }
   passed.push('every authored place becomes a tile area with all authored connections preserved');
   field.setFieldViewport({columns:7,rows:5});
   const total=Object.values(world.entities).length,active=field.activeFieldIds(run.data,world);
   assert.ok(active.size<total/10,'fine simulation stays bounded by the current camera');
-  const distant=Object.values(world.entities).filter(e=>e.nodeId!==space.id&&e.pos&&(e.agent||e.creature));
+  const distant=Object.values(world.entities).filter(e=>e.nodeId!==space.id&&e.pos&&e.creature);
   const positions=JSON.stringify(distant.map(e=>[e.id,e.pos]));
   const timings=[];for(let i=0;i<10;i++){const started=performance.now();field.advanceFieldTime(30);timings.push(Math.round(performance.now()-started));}const elapsedMs=timings.reduce((a,b)=>a+b,0);
-  assert.equal(JSON.stringify(distant.map(e=>[e.id,e.pos])),positions,'coarse simulation does not replay distant paths or attacks');
+  assert.equal(JSON.stringify(distant.map(e=>[e.id,e.pos])),positions,'coarse simulation does not replay distant monster paths or attacks; resident travel has separate arrival tests');
   assert.ok(distant.some(e=>e.fieldUpdatedAt===300),'distant entities still settle elapsed state');
   field.setFieldViewport();
   passed.push(`viewport detail and arithmetic distant settlement: ${active.size}/${total} detailed entities, 10 steps in ${elapsedMs}ms (${timings.join(',')})`);

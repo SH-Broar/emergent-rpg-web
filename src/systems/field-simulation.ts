@@ -1,5 +1,9 @@
+import { ensureBases, rememberHouse, wakeTime, playerHomeId, initialHomeNode, baseEntryFailure, baseOffer, purchaseBase } from './field-bases';
+import { absorbRunIntoMeta } from './progression';
+import { enforceTamamoSubmission } from './field-combat';
 import { ensureFieldSkills, SKILL_GESTURES, castFieldSkill, tickFieldSkills } from './field-skills';
 import { NPC_DIALOGUE } from '@/data/npc-dialogue';
+import { ensureResidentPopulation, placeArrivingResidents, tickResidentSchedules, residentAgenda, performResidentEvent } from './field-residents';
 import { reconcileFieldTransformation, cureFieldTransformation } from './field-transformation';
 import { XP_NORMAL, XP_ELITE } from './enhance';
 import { inward } from './field-geography';
@@ -15,7 +19,7 @@ import { gestureDefinition } from './gesture-catalog';
 import { processSocialFacts, rankSocialActions } from './world/social';
 import { cardinal, createSightTest, distance, entitiesAt, fieldPath, hasSight, positionKey, walkable } from './world/spatial';
 import type { InteractionAction, InteractionWorld, WorldEntity } from './world/types';
-import { ensureFieldSpace, fieldCreatureHp, fieldItemName, fieldMap, placeFieldEntity, spawnCreature } from './field-generation';
+import { ensureFieldSpace, fieldCreatureHp, fieldItemName, placeFieldEntity, spawnCreature } from './field-generation';
 import { GESTURES, GLYPHS, type Gesture, type FieldResult, type FieldSpace, type FieldSpeech } from './field-types';
 import { isEdgeRequirementMet } from './map';
 import { isFoodResource } from './world/resources';
@@ -45,6 +49,7 @@ export function ensureField(run = useRunStore().data): { world: InteractionWorld
     run.combat = undefined;
   }
   run.field.elapsedSeconds = Math.max(run.field.elapsedSeconds, run.visitedNodes.length * LEGACY_SECONDS);
+  ensureBases(run);
   const space = ensureFieldSpace(run, world, run.currentNodeId);
   const player = world.entities.player!;
   if (!run.field.controlsVersion) {
@@ -62,6 +67,7 @@ export function ensureField(run = useRunStore().data): { world: InteractionWorld
     run.field.formVersion=1;
   }
   reconcileFieldTransformation(run,world);
+  ensureResidentPopulation(run,world);placeArrivingResidents(run,world);
   ensureFieldSkills(run);
   player.properties.maxHp=run.maxHp;
   for(const e of Object.values(world.entities).filter(e=>e.nodeId===space.id&&e.kind==='actor')){
@@ -166,20 +172,33 @@ export function speechFor(run:RunState,actor:WorldEntity):FieldSpeech {
     if(actor.tags.includes('restore:'+form)){
       lines.splice(0,lines.length,'꼬리가 둘이네. 타마모가 손댔어?');
       topics.unshift({label:'원래 모습으로',lines:[],action:'restore-form'},
-        {label:'이 몸에 대해',lines:['아직 술법이 손에 안 붙지? 네가 익힌 게 사라진 건 아니야. 이 몸이 받아들이질 못하는 거지.']});
+        {label:'이 몸에 대해',lines:['손에 안 붙는다고 버릴 술법은 아니야. 공방에서 여우불을 다듬어 봐. 몸을 돌려놓아도 익힌 건 남아.']});
     }else{
       lines.unshift((run.field?.spoken[actor.id]??0)>0?'목소리는 그대로인데… 무슨 일이 있었어?':'꼬리, 문에 끼이지 않게 조심해.');
       const knows=actor.tags.includes('mage')||['npc-cayo','npc-valencia'].includes(actor.npcId??'');
       topics.unshift({label:'변신을 풀려면',lines:[knows?'카시스에게 물어봐. 모스의 대장간에도 가끔 들르던데. 나는 그 술법을 잘 몰라.':'미안해. 나는 그런 술법은 다룰 줄 몰라.']});
     }
   }
+  topics.push(...residentAgenda(run,actor)??[]);
   if(trust<-.25)lines.unshift('잠깐. 지금은 긴 이야기를 나누고 싶지 않아.');
   return {actorId:actor.id,name:actor.name,lines,topics};
 }
 /** Dialogue choices revalidate the actual NPC at execution time. */
 export function performFieldService(actorId:string,action:string):FieldResult {
   const run=useRunStore().data,{world}=ensureField(run);
-  if(action!=='restore-form'||run.field?.encounter)return {ok:false,message:'지금은 부탁할 수 없다.'};
+  enforceTamamoSubmission(run,world);if(!checkPlayer(run,world))return {ok:false,message:'집에서 눈을 떴다.',travel:true};
+  if(run.ended||run.field?.encounter)return {ok:false,message:'지금은 부탁할 수 없다.'};
+  if(action.startsWith('base:')){
+    const result=purchaseBase(run,actorId,action);
+    if(result.ok){syncPlayerFromWorld(run,world);advanceFieldTime(STEP_SECONDS,false);}
+    return result;
+  }
+  if(action.startsWith('resident-event:')){
+    const result=performResidentEvent(run,world,actorId,action.slice('resident-event:'.length));
+    if(result.ok){if('practice'in result&&result.practice)useRunStore().addLifeXp(result.practice);processSocialFacts(world);syncPlayerFromWorld(run,world);advanceFieldTime(STEP_SECONDS,false);}
+    return result;
+  }
+  if(action!=='restore-form')return {ok:false,message:'지금은 부탁할 수 없다.'};
   const result=cureFieldTransformation(run,world,actorId);
   if(!result.ok)return result;
   processSocialFacts(world);syncPlayerFromWorld(run,world);advanceFieldTime(STEP_SECONDS,false);
@@ -216,6 +235,8 @@ function tickResidents(run: RunState, world: InteractionWorld, activeIds: Readon
   // from its repeated inventory, occupancy and path queries; commit the chosen action to the world.
   const local: InteractionWorld = { ...world, entities: Object.fromEntries(Object.entries(world.entities).filter(([,e])=>e.nodeId===run.currentNodeId)) };
   for (const actor of [...activeIds].map(id=>world.entities[id]!).filter(e => e?.agent && e.id !== 'player' && e.pos && valid(e))) {
+    if(actor.routine&&(actor.routine.travel||actor.routine.goal!==actor.nodeId))continue;
+    if(actionRestriction(actor))continue;
     if (run.field!.elapsedSeconds-(actor.fieldNpcAt??0)<90) continue;
     actor.fieldNpcAt=run.field!.elapsedSeconds;
     actor.agent!.needs.work = Math.min(1, actor.agent!.needs.work + .025);
@@ -257,7 +278,7 @@ function defeatCreature(run: RunState, world: InteractionWorld, e: WorldEntity) 
     if(boss?.defeatText)run.field!.notification={actorId:e.id,name:e.name,lines:[boss.defeatText]};
     if (boss && !run.bossesCleared.includes(boss.id) && !run.arcsCleared?.includes(boss.id)) {
       if (boss.kind === 'arc') { applyArcRewards(boss); (run.arcsCleared ??= []).push(boss.id); }
-      else { applyBossRewards(boss); run.bossesCleared.push(boss.id); }
+      else { applyBossRewards(boss); run.bossesCleared.push(boss.id); run.field!.clearedAt=run.field!.elapsedSeconds; useRunStore().endRun('boss-cleared'); absorbRunIntoMeta(run); }
     }
   }
   if(world.entities.player)world.entities.player.properties.level=run.level??1;
@@ -273,6 +294,7 @@ function defeatCreature(run: RunState, world: InteractionWorld, e: WorldEntity) 
 function tickCreatures(run: RunState, world: InteractionWorld, activeIds: ReadonlySet<string>, blocked:ReadonlySet<string>) {
   const player = world.entities.player!;
   for (const e of [...activeIds].map(id=>world.entities[id]!).filter(e => e?.creature && e.nodeId === player.nodeId)) {
+    if(run.ended||!valid(player))break;
     if (!valid(e)) { defeatCreature(run, world, e); continue; }
     if (!e.pos || !player.pos || !valid(player) || blocked.has(e.id)) continue;
     const c=e.creature!,def=combatDefinition(e),phase=phaseFor(e);
@@ -287,7 +309,7 @@ function tickCreatures(run: RunState, world: InteractionWorld, activeIds: Readon
       }
     }
     if(c.pending){
-      if(--c.pending.remaining<=0){resolveAttack(world,e);reconcileFieldTransformation(run,world);}
+      if(--c.pending.remaining<=0){resolveAttack(world,e);reconcileFieldTransformation(run,world);enforceTamamoSubmission(run,world);}
       continue;
     }
     if(c.recovery){c.recovery--;continue;}
@@ -311,25 +333,45 @@ function tickCreatures(run: RunState, world: InteractionWorld, activeIds: Readon
   }
   for(const e of [...activeIds].map(id=>world.entities[id]!).filter(e=>e?.creature))defeatCreature(run,world,e);
 }
-function checkPlayer(run: RunState, world: InteractionWorld): boolean {
-  syncPlayerFromWorld(run, world);
-  if (run.hp > 0) return true;
-  const store = useRunStore();
-  if (!store.loseLife()) { store.endRun('hp-zero'); return false; }
-  const oldSpace = world.spaces![run.currentNodeId]!;
-  const destination = oldSpace.dungeon?.origin ?? fieldMap(run)!.startNodeId;
-  const player = world.entities.player!;
-  const held = carriedEntity(world);
-  if (held) { held.carriedBy = undefined; held.pos = { ...player.pos! }; }
-  clearCombatStatuses(player,true);run.possessed=0;run.feralHeavy=0;run.field!.encounter=undefined;
-  run.hp = Math.max(1, Math.ceil(run.maxHp * .5));
-  run.currentNodeId = destination;
-  const space = ensureFieldSpace(run, world, destination);
-  player.nodeId = destination; player.pos = { ...space.spawn };
-  syncPlayerToWorld(run, world);
-  return false;
+/** Unconscious time settles production and distant travel without replaying combat. */
+export function recoverFieldPlayer(run:RunState=useRunStore().data):void {
+ if(!run.field||run.ended)return;
+ const world=run.interactionWorld;if(!world?.entities.player)return;
+ const player=world.entities.player,bases=ensureBases(run),field=run.field;
+ const until=wakeTime(field.elapsedSeconds),reason=field.knockoutReason;
+ const destination=world.spaces?.[bases.lastHouse]?.residence?.kind==='home'||bases.lastHouse.endsWith('::player-home')?bases.lastHouse:playerHomeId(initialHomeNode(run));
+ const held=carriedEntity(world);if(held){held.carriedBy=undefined;held.pos=player.pos?{...player.pos}:undefined;}
+ clearCombatStatuses(player,true);run.possessed=0;run.feralHeavy=0;field.encounter=undefined;field.knockoutReason=undefined;
+ if(field.skills){field.skills.pending=undefined;field.skills.nextPower=undefined;field.skills.nextCost=undefined;field.skills.manaDue=[];}
+ for(const e of Object.values(world.entities))if(e.nodeId===player.nodeId&&e.creature){e.creature.pending=undefined;e.creature.intent=undefined;e.creature.engaged=false;}
+ run.hp=run.maxHp;run.mp=3;field.manaStep=0;
+ run.combat=undefined;run.gridCombat=undefined;
+ run.currentNodeId=destination;player.nodeId=destination;
+ const space=ensureFieldSpace(run,world,destination);placeFieldEntity(world,space,player,space.spawn);
+ syncPlayerToWorld(run,world);
+ // Five-minute scheduling samples only existing entities. Unvisited spaces remain abstract.
+ const inactive=new Set<string>();
+ while(field.elapsedSeconds<until){
+  field.elapsedSeconds=Math.min(until,field.elapsedSeconds+300);
+  tickResidentSchedules(run,world,inactive);
+ }
+ while(run.visitedNodes.length<Math.floor(until/LEGACY_SECONDS)&&!run.ended)useRunStore().spendWorldTime(1);
+ world.turn=run.visitedNodes.length;
+ for(const e of Object.values(world.entities))if(e.id!=='player')settleDormant(run,world,e,until);
+ settleProduction(run,world);
+ field.lastWorldStep=until;field.lastNpcStep=until;player.fieldUpdatedAt=until;player.fieldNpcAt=until;
+ bases.knockouts++;
+ run.hp=run.maxHp;run.mp=3;syncPlayerToWorld(run,world);
+ placeArrivingResidents(run,world);processSocialFacts(world);observeWorld(world,player.id);
+ field.notification={actorId:'player',name:space.name,lines:[...(reason==='tamamo'?['타마모 앞에서 두 꼬리가 저절로 낮아졌다.']:[]),fieldClock(run).slice(0,-3)+' · 눈을 떴다.']};
 }
-let fieldViewport: { columns:number; rows:number } | undefined;
+function checkPlayer(run: RunState, world: InteractionWorld): boolean {
+ syncPlayerFromWorld(run,world);
+ if(run.hp>0)return true;
+ recoverFieldPlayer(run);return false;
+}
+
+let fieldViewport:{columns:number;rows:number}|undefined;
 export function setFieldViewport(viewport?: {columns:number;rows:number}) { fieldViewport=viewport; }
 export function activeFieldIds(run:RunState, world:InteractionWorld): Set<string> {
   const space=world.spaces![run.currentNodeId]!,player=world.entities.player!;
@@ -373,6 +415,8 @@ export function advanceFieldTime(seconds: number, waiting=true): void {
   if (!Number.isInteger(seconds) || seconds < 0 || seconds % STEP_SECONDS !== 0) throw new Error('Field time must use 30-second steps');
   const store = useRunStore(), run = store.data;
   const { world } = ensureField(run);
+  enforceTamamoSubmission(run,world);
+  if(!checkPlayer(run,world)||run.ended)return;
   const origin = run.currentNodeId;
   for (let left = seconds; left > 0 && !run.ended && !run.field!.encounter; left -= STEP_SECONDS) {
     run.field!.elapsedSeconds += STEP_SECONDS;
@@ -395,6 +439,7 @@ export function advanceFieldTime(seconds: number, waiting=true): void {
     tickCreatures(run, world, active, blocked);
     for(const id of active)if(world.entities[id]?.kind==='actor')finishStatusStep(world.entities[id]!,previousStatuses.get(id)!);
     if (!checkPlayer(run, world) || run.currentNodeId !== origin) break;
+    tickResidentSchedules(run,world,active);
     tickResidents(run, world, active);
     syncPlayerFromWorld(run, world);
     while (run.visitedNodes.length < Math.floor(run.field!.elapsedSeconds / LEGACY_SECONDS) && !run.ended) store.spendWorldTime(1);
@@ -405,13 +450,20 @@ export function advanceFieldTime(seconds: number, waiting=true): void {
 export function travelField(to: string): FieldResult {
   const run = useRunStore().data;
   const { world, space, player } = ensureField(run);
+  enforceTamamoSubmission(run,world);if(!checkPlayer(run,world))return {ok:false,message:'집에서 눈을 떴다.',travel:true};
   const entry = space.exits.find(e => e.to === to && distance(e.pos, player.pos!) <= 1);
   const cave = entitiesAt(world, space.id, player.pos!).concat(Object.values(world.entities).filter(e => e.nodeId === space.id && e.pos && distance(player.pos!, e.pos) <= 1)).some(e => e.tags.includes('dungeon-entry'));
   const dungeonEntry = to === `${space.nodeId}::dungeon:1` && cave && !space.dungeon;
   if (!entry && !dungeonEntry) return { ok: false, message: '이어진 길이 아니다.' };
   if (entry?.requirement && (entry.requirement === 'room-clear' ? !space.cleared : !isEdgeRequirementMet(entry.requirement, run))) return { ok: false, message: entry.requirement === 'room-clear' ? '아직 마물이 남아 있다.' : '닫힌 길.' };
   if (run.ended) return { ok: false, message: '여정이 끝났다.' };
+  const access=baseEntryFailure(run,to);
+  if(access){
+    const door=Object.values(world.entities).find(e=>e.nodeId===space.id&&e.pos&&entry&&distance(e.pos,entry.pos)===0&&e.tags.some(t=>t==='base:build'||t==='base:rent'));
+    return {ok:false,message:access,speech:door?baseOffer(run,door):undefined};
+  }
   const next = ensureFieldSpace(run, world, to);
+  rememberHouse(run,next.id);
   run.currentNodeId = next.id;
   player.nodeId = next.id;
   // Return beside the connecting path, never immediately trigger the exit again.
@@ -423,6 +475,7 @@ export function travelField(to: string): FieldResult {
   const preferred=back&&backDirection?{x:back.pos.x+backDirection.x,y:back.pos.y+backDirection.y}:undefined;
   if(facing){player.properties.facingX=facing.x;player.properties.facingY=facing.y;}
   placeFieldEntity(world, next, player, preferred ?? next.spawn);
+  placeArrivingResidents(run,world);
   const active=activeFieldIds(run,world);
   for(const id of active) settleDormant(run,world,world.entities[id]!,run.field!.elapsedSeconds);
   settleProduction(run,world,active);
@@ -434,6 +487,7 @@ export function travelField(to: string): FieldResult {
 export function stepField(pos: GridPos): FieldResult {
   const run = useRunStore().data;
   const { world, player, space } = ensureField(run);
+  enforceTamamoSubmission(run,world);if(!checkPlayer(run,world))return {ok:false,message:'집에서 눈을 떴다.',travel:true};
   if (run.ended || !player.pos || distance(player.pos, pos) !== 1) return { ok: false, message: '한 칸씩 이동한다.' };
   if(run.field!.encounter)return {ok:false,message:''};
   const blocked=actionRestriction(player,true);if(blocked){advanceFieldTime(STEP_SECONDS);return {ok:false,message:blocked};}
@@ -444,7 +498,7 @@ export function stepField(pos: GridPos): FieldResult {
   afterMovement(player);
   syncPlayerFromWorld(run,world);
   advanceFieldTime(STEP_SECONDS,false);
-  if (run.currentNodeId !== space.id || run.ended) return { ok: true, message: '목숨을 잃고 물러났다.', travel: true };
+  if (run.currentNodeId !== space.id || run.ended) return { ok: true, message: '집에서 눈을 떴다.', travel: true };
   const exit = space.exits.find(e => distance(e.pos, pos) === 0);
   return exit ? travelField(exit.to) : { ok: true, message: '' };
 }
@@ -461,6 +515,7 @@ export function dashFailure(world:InteractionWorld,space:FieldSpace,player:World
 export function performFieldGesture(gesture: Gesture, targetId: string | undefined, pos: GridPos, input?: {quality:number;drawn:boolean}): FieldResult {
   const run = useRunStore().data;
   const { world, space, player } = ensureField(run);
+  enforceTamamoSubmission(run,world);if(!checkPlayer(run,world))return {ok:false,message:'집에서 눈을 떴다.',travel:true};
   if (!GESTURES.includes(gesture) || run.ended || run.field!.encounter) return { ok: false, message: '' };
   const definition=gestureDefinition(gesture)!;
   if(definition.drawOnly&&(!input?.drawn||input.quality<1-definition.tolerance)) return {ok:false,message:'무늬가 흐트러졌다.'};
@@ -476,6 +531,7 @@ export function performFieldGesture(gesture: Gesture, targetId: string | undefin
   if(blocked){advanceFieldTime(STEP_SECONDS);return {ok:false,message:blocked};}
   if(SKILL_GESTURES.includes(gesture as typeof SKILL_GESTURES[number])) {
     const result=castFieldSkill(run,world,gesture,pos);
+    if(!checkPlayer(run,world))return {ok:false,message:'집에서 눈을 떴다.',travel:true};
     if(result.ok){syncPlayerFromWorld(run,world);advanceFieldTime(STEP_SECONDS,false);}
     return result;
   }
@@ -498,7 +554,11 @@ export function performFieldGesture(gesture: Gesture, targetId: string | undefin
     if (result.ok) advanceFieldTime(STEP_SECONDS);
     return result;
   }
-  if(target.creature?.rank==='boss'&&!target.creature.engaged){beginBossEncounter(run,target,true);return {ok:true,message:''};}
+  if(gesture==='tap'&&target.pos&&distance(player.pos!,target.pos)<=1){
+    const offer=baseOffer(run,target);if(offer)return {ok:true,message:'',speech:offer};
+    if(target.tags.includes('base:configure'))return {ok:true,message:'',route:'base-configure'};
+  }
+  if(target.creature?.rank==='boss'&&!target.creature.engaged){beginBossEncounter(run,target,true);checkPlayer(run,world);return {ok:true,message:''};}
   if(target.kind==='actor'&&status(target,'ghost')&&(status(player,'ghost')||distance(player.pos!,target.pos!)>1)&&['strike','triangle','star'].includes(gesture))return {ok:false,message:'닿지 않는다.'};
   const action = fieldAction(run, world, player, target, gesture, pos, run.field!.selectedItem);
   if (!action) return { ok: false, message: '변화 없음' };

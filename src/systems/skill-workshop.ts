@@ -1,7 +1,8 @@
 import type { Card, RunState } from '@/data/schemas';
 import { canEnhance, maxLevelFor } from './enhance';
 import { skillMana, skillCooldown, skillReach, skillEffects, skillHasPower } from './field-skill-rules';
-import { skillLoadoutLocked, skillUnavailable } from './field-skills';
+import { skillLoadoutLocked, fieldSkillRestriction } from './field-skills';
+import { awakenCard } from './workshop';
 import { distance } from './world/spatial';
 
 export type SkillUpgradePath = 'power' | 'efficiency' | 'recovery' | 'reach';
@@ -26,7 +27,8 @@ export function materialFailure(run: RunState, card: Card, targetId: string): st
   if(card.instanceId===targetId)return '강화할 카드';
   if(Object.values(run.field?.skills?.slots??{}).includes(card.instanceId))return '장착 중';
   if(card.possession||card.curse||run.possessions?.[card.instanceId??''])return '봉인된 카드';
-  if(card.source==='form'||card.unplayable)return '임시 카드';
+  if(card.source==='form')return '종족 전용 기술';
+  if(card.unplayable)return '임시 카드';
 }
 export function upgradeQuote(card: Card, path: SkillUpgradePath) {
   const level=path==='power'?card.enhanceLevel??0:card.skillUpgrades?.[path]??0;
@@ -43,7 +45,6 @@ export function upgradeQuote(card: Card, path: SkillUpgradePath) {
 }
 function contextFailure(run:RunState) {
   if(run.ended)return '여정이 끝났다.';
-  if(run.transform?.field)return '변신이 풀린 뒤에 기술을 강화할 수 있다.';
   if(!atSkillWorkshop(run))return '공방 가까이에서 사용할 수 있다.';
   if(skillLoadoutLocked(run))return '위험이 사라진 뒤에 작업할 수 있다.';
 }
@@ -54,7 +55,7 @@ export function upgradeSkill(run: RunState, targetId: string, materialIds: strin
   const context=contextFailure(run);if(context)return context;
   if(!SKILL_UPGRADES.some(p=>p.id===path))return '강화 방향을 선택하세요.';
   const target=run.collection.find(c=>c.instanceId===targetId);if(!target)return '카드를 찾을 수 없다.';
-  if(skillUnavailable(target))return '현재 사용할 수 없는 기술이다.';
+  if(fieldSkillRestriction(run,target))return fieldSkillRestriction(run,target);
   const quote=upgradeQuote(target,path);if(quote.reason)return quote.reason;
   if(new Set(materialIds).size!==materialIds.length||materialIds.length!==quote.cards)return '재료 카드 '+quote.cards+'장을 선택하세요.';
   const materials=materialIds.map(id=>run.collection.find(c=>c.instanceId===id));
@@ -72,7 +73,7 @@ export const ENCHANT_SHARDS=12;
 export const ENCHANT_MATERIAL='i-material-common';
 export function enchantFailure(run:RunState,card:Card,enchantment:Card['enchantment']) {
   const context=contextFailure(run);if(context)return context;
-  if(skillUnavailable(card))return '현재 사용할 수 없는 기술이다.';
+  if(fieldSkillRestriction(run,card))return fieldSkillRestriction(run,card);
   if(!ENCHANTMENTS.some(e=>e.id===enchantment))return '인챈트를 선택하세요.';
   if(card.enchantment===enchantment)return '이미 새겨져 있다.';
   if(enchantment==='ember'&&!skillEffects(card).some(e=>e.kind.includes('damage')||e.kind==='heavy-blade'||e.kind==='adaptive-strike'))return '공격 기술 전용';
@@ -85,4 +86,11 @@ export function enchantSkill(run:RunState,instanceId:string,enchantment:Card['en
   run.timeShards-=ENCHANT_SHARDS;
   for(let i=0;i<2;i++)run.items.splice(run.items.findIndex(i=>i.id===ENCHANT_MATERIAL),1);
   card.enchantment=enchantment;syncCopies(run,card);
+}
+
+export function awakenFieldSkill(run:RunState,instanceId:string):string|undefined {
+  const context=contextFailure(run);if(context)return context;
+  const card=run.collection.find(c=>c.instanceId===instanceId);if(!card)return '기술을 찾을 수 없다.';
+  const reason=fieldSkillRestriction(run,card);if(reason)return reason;
+  if(!awakenCard(instanceId))return '각성 재료가 부족하다.';
 }
