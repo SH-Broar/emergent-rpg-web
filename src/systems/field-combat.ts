@@ -91,7 +91,7 @@ export function resolveAttack(world:InteractionWorld,e:WorldEntity) {
     }
   }
   recordFact(world,{turn:world.turn,nodeId:e.nodeId,actorId:e.id,targetId:e.id,kind:'signal',labor:0,message:hitAny?attack.name:'빗나감'});
-  c.pending=undefined;c.intent=undefined;c.recovery=attack.castSpeed==='fast'?0:1;
+  c.pending=undefined;c.intent=undefined;c.recovery=0;c.nextAction=undefined;
   e.properties.attacksMade=(e.properties.attacksMade??0)+1;
 }
 export function tickStatuses(world:InteractionWorld,e:WorldEntity,turn:number,waiting=false) {
@@ -102,6 +102,7 @@ export function tickStatuses(world:InteractionWorld,e:WorldEntity,turn:number,wa
     const n=status(e,key);if(!n)continue;
     const damage=key==='possession'?Math.min(Math.max(0,(e.properties.integrity??100)*hp/100-1),Math.min(6,1+n)):n;
     if(damage>0)influenceEntity(world,e,'integrity',-damage/hp*100);
+    if((e.properties.integrity??100)<=0)return;
     if(key==='poison')changeStatus(e.properties,key,-1);
     if(key==='burn')changeStatus(e.properties,key,-Math.ceil(n/2));
   }
@@ -124,7 +125,7 @@ export function afterMovement(e:WorldEntity) {
 export function creatureDestinations(world:InteractionWorld,e:WorldEntity):GridPos[] {
   if(!e.pos||actionRestriction(e,true))return [];
   const def=combatDefinition(e),profile=def&&('moveProfile'in def?def.moveProfile:'gridMoveProfile'in def?def.gridMoveProfile:undefined);
-  const range=status(e,'slime')?1:Math.max(1,profile?.range??1);
+  const range=status(e,'slime')||status(e,'slowed')||status(e,'drowsy')?1:Math.max(1,profile?.range??1);
   const result=new Map<string,GridPos>();
   const add=(dx:number,dy:number)=>{const p={x:e.pos!.x+dx,y:e.pos!.y+dy};if(walkable(world,e.nodeId,p,e.id))result.set(p.x+','+p.y,p);return p;};
   const patterns=status(e,'slime')?['orthogonal1']:profile?.pattern==='composite'?profile.compose??['orthogonal1']:[profile?.pattern??'orthogonal1'];
@@ -139,7 +140,7 @@ export function creatureDestinations(world:InteractionWorld,e:WorldEntity):GridP
   }
   return [...result.values()];
 }
-export function moveCreature(world:InteractionWorld,e:WorldEntity,target:GridPos) {
+export function nextCreaturePosition(world:InteractionWorld,e:WorldEntity,target:GridPos):GridPos|undefined {
   const destinations=creatureDestinations(world,e);if(!e.pos||!destinations.length)return;
   const victim=world.entities.player,old=e.pos;
   const firing=destinations.find(p=>{
@@ -150,7 +151,14 @@ export function moveCreature(world:InteractionWorld,e:WorldEntity,target:GridPos
   const costs=destinations.map(p=>({p,cost:fieldPath(world,e.nodeId,p,target,e.id,true)?.length??Infinity}));
   costs.sort((a,b)=>a.cost-b.cost||distance(a.p,target)-distance(b.p,target));
   const next=firing??(Number.isFinite(costs[0]?.cost)?costs[0]!.p:undefined);
-  if(next){e.pos={...next};afterMovement(e);recordFact(world,{turn:world.turn,nodeId:e.nodeId,actorId:e.id,targetId:e.id,kind:'move',labor:0,message:'이동'});}
+  return next;
+}
+export function commitCreatureMove(world:InteractionWorld,e:WorldEntity,next:GridPos) {
+  if(!creatureDestinations(world,e).some(p=>distance(p,next)===0))return;
+  e.pos={...next};afterMovement(e);recordFact(world,{turn:world.turn,nodeId:e.nodeId,actorId:e.id,targetId:e.id,kind:'move',labor:0,message:'이동'});
+}
+export function moveCreature(world:InteractionWorld,e:WorldEntity,target:GridPos) {
+ const next=nextCreaturePosition(world,e,target);if(next)commitCreatureMove(world,e,next);
 }
 export function beginBossEncounter(run:RunState,e:WorldEntity,explicit=false):boolean {
   const c=e.creature!;
@@ -165,7 +173,7 @@ export function resolveFieldEncounter(run:RunState,accept:boolean) {
   const encounter=run.field?.encounter;if(!encounter)return;
   const e=run.interactionWorld?.entities[encounter.actorId];
   if(e&&run.interactionWorld&&enforceTamamoSubmission(run,run.interactionWorld,e.id))return;
-  if(e?.creature){if(accept){e.creature.engaged=true;e.creature.angry=true;}else e.creature.challengeAfter=run.field!.elapsedSeconds+300;}
+  if(e?.creature){e.creature.nextAction=undefined;if(accept){e.creature.engaged=true;e.creature.angry=true;}else e.creature.challengeAfter=run.field!.elapsedSeconds+300;}
   run.field!.encounter=undefined;
 }
 export function clearCombatStatuses(e:WorldEntity,rest=false) {

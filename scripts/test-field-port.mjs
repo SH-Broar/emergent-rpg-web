@@ -158,7 +158,7 @@ try {
   field.performFieldGesture('tap','player',a.player.pos);assert.equal(run.data.possessed,0);assert.equal(status.status(a.player,'possession'),0);
   results.push('legacy persistent statuses survive migration and movement, and clear through village services or rest');
 
-  a=arena();a.enemy.properties['status:thorns']=3;
+  a=arena();a.enemy.properties['status:thorns']=3;a.enemy.properties['status:paralyze']=1;
   const hpBefore=run.data.hp;
   field.performFieldGesture('strike',a.enemy.id,a.enemy.pos);
   assert.equal(run.data.hp,hpBefore-3,'gesture recoil uses the same reducer as monster recoil');

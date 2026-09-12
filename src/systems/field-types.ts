@@ -22,6 +22,7 @@ export interface FieldSpace {
   theme?: string;
   housingVersion?:1;
   basesVersion?:1;
+  placementVersion?:1;
   residence?:{parent:string;kind:'home'|'court'|'commons'|'player-home'|'inn';npcId?:string};
   road?: {from:string;to:string;index:number;count:number};
 }
@@ -59,6 +60,7 @@ export interface FieldCreature {
   species?: string;
   balanceVersion?: 1;
   pending?: FieldAttack;
+  nextAction?:{kind:'move'|'eat'|'wait'|'encounter';label:string;pos?:GridPos;targetId?:string;resourceId?:string};
   recovery?: number;
   tempoStep?: number;
   engaged?: boolean;

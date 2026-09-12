@@ -35,7 +35,10 @@ function openPosition(world: InteractionWorld, space: FieldSpace, preferred: Gri
   for(let y=1;y<space.height-1;y++)for(let x=1;x<space.width-1;x++)points.push({x,y});
   points.sort((a,b)=>Math.abs(a.x-preferred.x)+Math.abs(a.y-preferred.y)-Math.abs(b.x-preferred.x)-Math.abs(b.y-preferred.y));
   const entity=id?world.entities[id]:undefined;
+  const occupied=new Set(Object.values(world.entities).filter(e=>e.nodeId===space.id&&e.pos&&!e.carriedBy&&e.id!==id&&(e.properties.integrity??100)>0&&e.kind!=='terrain'&&!e.tags.includes('ground')).map(e=>e.pos!.x+','+e.pos!.y));
+  const reserved=new Set(space.exits.flatMap(e=>{const d=inward(space,e.pos);return [e.pos,{x:e.pos.x+d.x,y:e.pos.y+d.y}];}).map(p=>p.x+','+p.y));
   const free=(p:GridPos)=>walkable(world,space.id,p,id);
+  const empty=(p:GridPos)=>!occupied.has(p.x+','+p.y)&&!reserved.has(p.x+','+p.y);
   if(!entity||id==='player')return points.find(free)??{...space.spawn};
   const others=Object.values(world.entities).filter(e=>e.nodeId===space.id&&e.pos&&!e.carriedBy&&e.id!=='player'&&e.id!==id);
   const fits=(p:GridPos)=>{
@@ -47,8 +50,10 @@ function openPosition(world: InteractionWorld, space: FieldSpace, preferred: Gri
     entity.pos=prior;return accessible;
   };
   const preferredPoints=[...points.filter(p=>space.tiles[p.y]![p.x]!=='path'),...points.filter(p=>space.tiles[p.y]![p.x]==='path')];
-  // Crowded old saves may share an object cell; their corridors must stay open.
-  return preferredPoints.find(p=>free(p)&&fits(p))??preferredPoints.find(p=>!['wall','water'].includes(space.tiles[p.y]![p.x]!)&&fits(p))??{...space.spawn};
+  // Use an empty cell before any legacy overflow. A full player-built room keeps its objects selectable.
+  return preferredPoints.find(p=>empty(p)&&free(p)&&fits(p))
+    ??preferredPoints.find(p=>empty(p)&&free(p)&&(entity.properties.solid??0)===0&&entity.kind!=='actor')
+    ??preferredPoints.find(p=>free(p)&&fits(p))??{...space.spawn};
 }
 export function placeFieldEntity(world: InteractionWorld, space: FieldSpace, entity: WorldEntity, preferred: GridPos): WorldEntity {
   entity.nodeId = space.id;
@@ -107,7 +112,7 @@ function connectExits(space: FieldSpace, node: Node, run: RunState) {
 }
 export function ensureFieldSpace(run: RunState, world: InteractionWorld, id: string): FieldSpace {
   world.spaces ??= {};
-  const old=world.spaces[id];if(old?.layoutVersion===3){connectNeighborhood(run,world,old);connectBases(run,world,old);return old;}
+  const old=world.spaces[id];if(old?.layoutVersion===3){connectNeighborhood(run,world,old);connectBases(run,world,old);repairFieldPlacements(world,old);return old;}
   if(id.includes('::home:')||id.endsWith('::residents')||id.endsWith('::commons')||id.endsWith('::player-home')||id.endsWith('::inn'))return createResidence(run,world,id);
   const data=useDataStore(),map=fieldMap(run);
   if(!map)throw new Error('플레이할 장소가 없습니다.');
@@ -194,6 +199,7 @@ export function ensureFieldSpace(run: RunState, world: InteractionWorld, id: str
   }
   for(const actor of Object.values(world.entities).filter(e=>e.npcId&&e.nodeId===id&&!e.pos&&!e.routine?.travel))placeFieldEntity(world,space,actor,space.spawn);
  for(const e of Object.values(world.entities).filter(e=>e.nodeId===id)){e.fieldUpdatedAt??=run.field?.elapsedSeconds??0;e.fieldNpcAt??=e.fieldUpdatedAt;}
+  repairFieldPlacements(world,space);
   return space;
 }
 
@@ -252,6 +258,7 @@ function createResidence(run:RunState,world:InteractionWorld,id:string):FieldSpa
  }
  connectBases(run,world,space);
  for(const e of Object.values(world.entities).filter(e=>e.nodeId===id)){e.fieldUpdatedAt??=run.field?.elapsedSeconds??0;e.fieldNpcAt??=e.fieldUpdatedAt;}
+ repairFieldPlacements(world,space);
  return space;
 }
 
@@ -267,5 +274,20 @@ export function connectBases(run:RunState,world:InteractionWorld,space:FieldSpac
   space.exits.push({to:to!,label:label!,pos});carvePath(space,pos,space.spawn);
   const door=object(world,space,'base-'+kind,label!,pos,['building','base:'+kind],{hardness:3});
   door.pos={...pos};door.kind='facility';door.ownerId=kind==='build'?'player':'local-community';
+ }
+}
+
+/** One migration moves only overlapping generated objects, preserving identities and production. */
+export function repairFieldPlacements(world:InteractionWorld,space:FieldSpace) {
+ if(space.placementVersion)return;
+ space.placementVersion=1;
+ const seen=new Set<string>(),entities=Object.values(world.entities).filter(e=>e.nodeId===space.id&&e.pos&&!e.carriedBy&&e.id!=='player'&&e.kind!=='terrain'&&(e.properties.integrity??100)>0);
+ // Doors must stay attached to their exits even when an NPC was saved on top.
+ const priority=(e:WorldEntity)=>e.tags.some(t=>t.startsWith('service:')||t.startsWith('base:')||t==='home-door'||t==='dungeon-entry')?4:e.kind==='facility'?3:e.kind==='plot'?2:e.kind==='actor'?1:0;
+ entities.sort((a,b)=>priority(b)-priority(a));
+ for(const e of entities){
+  const key=e.pos!.x+','+e.pos!.y;
+  if(seen.has(key))placeFieldEntity(world,space,e,e.pos!);
+  seen.add(e.pos!.x+','+e.pos!.y);
  }
 }

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue';
 import { useRunStore } from '@/stores/run';
+import { fieldPalette } from '@/systems/field-palette';
 import { baseTown } from '@/systems/field-bases';
 import { baseNode, fieldMap } from '@/systems/field-generation';
 import { fieldClock } from '@/systems/field-simulation';
@@ -42,7 +43,7 @@ const neighbors=computed(()=>[...new Set([...(selection.value?.neighbors??[]),..
 }));
 function selectNode(id:string){selectedNode.value=id;const n=map.value?.nodes.find(n=>n.id===id);if(selectedRegion.value&&n)selectedRegion.value=n.region??'';}
 function selectRegion(){selectedNode.value=nodes.value.find(n=>n.id===current.value?.id)?.id??nodes.value[0]?.id??'';}
-const colors:Record<string,string>={wall:'#253c30',water:'#78afc1',grass:'#657955',path:'#b8b38a',soil:'#96754f',stone:'#7d8380',sand:'#c5b58c',wood:'#9a8360'};
+const colors=computed(()=>fieldPalette(current.value,space.value));
 watch(()=>props.open,async open=>{if(open){mode.value='local';selectedRegion.value=current.value?.region??'';selectedNode.value=current.value?.id??'';await nextTick();dialog.value?.showModal();}else dialog.value?.close();});
 </script>
 <template>

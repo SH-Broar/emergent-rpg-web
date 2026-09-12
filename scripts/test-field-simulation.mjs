@@ -168,13 +168,15 @@ try {
   for(const e of Object.values(world.entities)) if(e.id!=='player'&&e.id!==attacker.id&&e.nodeId===space.id) delete world.entities[e.id];
   space.tiles=Array.from({length:space.height},()=>Array(space.width).fill('grass'));
   player.pos={x:3,y:3}; attacker.pos={x:4,y:3}; attacker.creature.angry=true;
-  const pace=data.monsters.get(attacker.creature.definitionId)?.tempo??2;
-  const fullHp=run.data.hp; field.advanceFieldTime(pace*30); assert.ok(attacker.creature.intent.some(p=>p.x===3&&p.y===3)); assert.equal(run.data.hp,fullHp,'telegraph costs a step before damage');
+  attacker.creature.pending=undefined;attacker.creature.nextAction=undefined;
+  const fullHp=run.data.hp; field.ensureField(run.data); assert.ok(attacker.creature.intent.some(p=>p.x===3&&p.y===3)); assert.equal(run.data.hp,fullHp,'intent is visible before the next player turn');
   assert.equal(field.stepField({x:3,y:2}).ok,true); assert.equal(run.data.hp,fullHp,'moving off the locked tile avoids the attack');
-  attacker.creature.angry=false; attacker.creature.recovery=0;attacker.creature.tempoStep=0; attacker.pos={x:6,y:3}; player.pos={x:1,y:3};
+  attacker.creature.angry=false; attacker.creature.recovery=0;attacker.creature.tempoStep=0;attacker.creature.pending=undefined;attacker.creature.nextAction=undefined; attacker.pos={x:6,y:3}; player.pos={x:1,y:3};
   const bait=field.groundAt(run.data,{x:6,y:5}); bait.stock['i-crop-grain']=2;
-  field.advanceFieldTime(pace*30); assert.deepEqual(attacker.pos,{x:6,y:4},'food placed on a tile redirects an unprovoked creature');
-  field.advanceFieldTime(pace*30); assert.equal(bait.stock['i-crop-grain'],1,'feeding consumes the actual stock');
+  // Finish arranging the fixture before planning the first food-directed turn.
+  attacker.creature.nextAction=undefined;
+  field.advanceFieldTime(30); assert.deepEqual(attacker.pos,{x:6,y:4},'food placed on a tile redirects an unprovoked creature');
+  field.advanceFieldTime(30); assert.equal(bait.stock['i-crop-grain'],1,'feeding consumes the actual stock');
   const count=Object.keys(world.entities).length, seconds=run.data.field.elapsedSeconds;
   assert.equal(field.performFieldGesture('give',undefined,{x:-1,y:6}).ok,false); assert.equal(Object.keys(world.entities).length,count); assert.equal(run.data.field.elapsedSeconds,seconds);
   passed.push('creatures telegraph before hitting, movement evades locked cells, real food lures them and invalid gestures create no off-map entities');

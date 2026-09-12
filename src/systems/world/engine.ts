@@ -8,6 +8,13 @@ import { cardinal, createSightTest, distance, entitiesAt, hasSight, positionKey,
 export interface PropertyChange { property: string; before: number; after: number }
 const finite = (n: number) => Number.isFinite(n);
 const clamp = (n: number, min = 0, max = 100) => Math.max(min, Math.min(max, n));
+/** Match whole-HP display to combat rounding. */
+export function displayedHp(properties:Record<string,number>):number {return Math.max(0,Math.ceil((properties.integrity??100)*(properties.maxHp??100)/100-1e-8));}
+/** Remove only numerical dust, measured in actual HP rather than percentage. */
+export function normalizeIntegrity(properties:Record<string,number>):void {
+ const hp=(properties.integrity??100)*(properties.maxHp??100)/100;
+ if(hp>0&&hp<1e-7)properties.integrity=0;
+}
 export function conductivityMultiplier(properties: Record<string, number>): number {
   return 1 + (properties.conductivity ?? 0) + Math.min(1, (properties.moisture ?? 0) / 3);
 }
@@ -52,6 +59,7 @@ export function applyMaterialInfluence(properties: Record<string, number>, color
     properties.guard = Math.max(0, (before.guard ?? 0) - guard);
     properties.integrity = clamp((before.integrity ?? 100) - Math.max(0, Math.ceil(damage - guard - 1e-8)) / properties.maxHp * 100);
   }
+  normalizeIntegrity(properties);
   if ((properties.integrity ?? 100) < (before.integrity ?? 100)) properties['status:sleep'] = 0;
   if ((properties.integrity ?? 100) <= 0) { properties.burning = 0; properties.heat = 0; }
   return Object.keys(properties).filter(key => (before[key] ?? 0) !== properties[key])
