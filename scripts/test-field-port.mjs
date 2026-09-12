@@ -144,7 +144,7 @@ try {
   }
   results.push(links+' authored directional links preserve entry orientation across different map sizes');
   assert.equal(Object.keys(NPC_DIALOGUE).length,data.npcs.size);
-  for(const n of data.npcs.values()){assert(NPC_DIALOGUE[n.id]);assert.equal(NPC_DIALOGUE[n.id].topics.length,2);}
+  for(const n of data.npcs.values()){assert(NPC_DIALOGUE[n.id]);assert.equal(NPC_DIALOGUE[n.id].topics.length,3);}
   assert([...data.events.keys()].every(id=>!id.includes('.var.')));
   assert([...data.events.values()].every(e=>e.name!==e.id));
   results.push('all 57 NPCs have spoken topics; event variations are not duplicate standalone events');

@@ -7,6 +7,7 @@ import { GESTURE_CATALOG } from '@/systems/gesture-catalog';
 import { SKILL_GESTURES, equippedSkill, equipFieldSkill, fieldSkillRestriction, skillMana, skillCooldown, skillRemaining, skillCastTurns } from '@/systems/field-skills';
 import SkillWorkshop from './SkillWorkshop.vue';
 import { skillStrokes, skillFitsGesture, skillEffectText } from '@/systems/field-skill-rules';
+import { unlockedSkillGestures, nextSkillGesture, SKILL_UNLOCK_LEVEL, skillGestureUnlocked } from '@/systems/field-skill-rules';
 import type { Card } from '@/data/schemas';
 
 const props = defineProps<{open:boolean}>();
@@ -14,10 +15,14 @@ const emit = defineEmits<{close:[];guide:[id:string]}>();
 const run = useRunStore();
 const selected = ref<string>(SKILL_GESTURES[0]), tab = ref<'equip'|'practice'|'workshop'|'profession'>('equip');
 const query = ref(''), page = ref(0), all = ref(false), notice = ref('');
+const unlocked = computed(()=>unlockedSkillGestures(run.data.level));
+const nextUnlock = computed(()=>nextSkillGesture(run.data.level));
+const practiceGestures = computed(()=>GESTURE_CATALOG.filter(g=>skillGestureUnlocked(run.data.level,g.id)));
+watch(unlocked,ids=>{if(!ids.includes(selected.value as typeof SKILL_GESTURES[number]))selected.value=ids[0]!;});
 const current = computed(() => equippedSkill(run.data,selected.value));
 const locked = computed(() => configurationFailure(run.data));
 const professions={traveler:'여행자',grower:'재배자',artisan:'장인',researcher:'연구자'};
-const cards = computed(() => run.data.collection.filter(c => (all.value || !fieldSkillRestriction(run.data,c)) && c.name.includes(query.value)));
+const cards = computed(() => [...run.data.collection].reverse().filter(c => (all.value || !fieldSkillRestriction(run.data,c)) && c.name.includes(query.value)));
 const pages = computed(() => Math.max(1,Math.ceil(cards.value.length/5)));
 const visible = computed(() => cards.value.slice(page.value*5,page.value*5+5));
 watch([query,all],()=>page.value=0);
@@ -36,11 +41,12 @@ function brief(card:Card) {return lines(card).slice(0,3).join(' · ');}
       <nav class="tabs"><button :aria-pressed="tab==='equip'" @click="tab='equip'">장착</button><button :aria-pressed="tab==='workshop'" @click="tab='workshop'">강화</button><button :aria-pressed="tab==='practice'" @click="tab='practice'">도형 연습</button><button :aria-pressed="tab==='profession'" @click="tab='profession'">직업</button></nav>
       <template v-if="tab==='equip'">
         <p v-if="run.data.transform?.field" class="notice">수행 여우 · 본래 카드 {{ run.data.transform.stashCollection.length }}장 봉인 · 공방 성장 가능</p>
-        <div class="slots" aria-label="기술 도형 8칸">
-          <button v-for="id in SKILL_GESTURES" :key="id" :aria-pressed="selected===id" :aria-label="GLYPHS[id]+' '+(equippedSkill(run.data,id)?.name??'빈 기술 칸')" @click="selected=id;notice=''">
+        <div class="slots" aria-label="배운 기술 도형">
+          <button v-for="id in unlocked" :key="id" :aria-pressed="selected===id" :aria-label="GLYPHS[id]+' '+(equippedSkill(run.data,id)?.name??'빈 기술 칸')" @click="selected=id;notice=''">
             <b>{{ GLYPHS[id] }}<small>{{ GESTURE_CATALOG.find(g=>g.id===id)?.strokes }}</small></b><span>{{ equippedSkill(run.data,id)?.name??'비어 있음' }}</span>
           </button>
         </div>
+        <p v-if="nextUnlock" class="notice">다음 도형 {{ GLYPHS[nextUnlock] }} · 레벨 {{ SKILL_UNLOCK_LEVEL[nextUnlock] }}</p>
         <section class="chosen">
           <div><strong>{{ GLYPHS[selected] }} {{ current?.name??'기술을 골라주세요' }} <small v-if="current?.enhanceLevel">+{{ current.enhanceLevel }}</small></strong><button @click="guide(selected)">연습선</button></div>
           <template v-if="current">
@@ -67,7 +73,7 @@ function brief(card:Card) {return lines(card).slice(0,3).join(' · ');}
       </div>
       <SkillWorkshop v-else-if="tab==='workshop'" :initial-id="current?.instanceId"/>
       <div v-else><details class="skill-help"><summary>기술 안내</summary><p>도형을 고르고 기술을 장착하세요. 카드에 적힌 획수 이상의 도형에서 사용할 수 있습니다. 원은 4획입니다.</p><p>범위를 확인하고 격자를 선택한 뒤 그리세요. 마나는 최대 3, 두 턴마다 1 회복합니다.</p><p>공방에서 남는 카드로 강화하고, 한 카드에 인챈트 하나를 새길 수 있습니다.</p></details><div class="practice">
-        <button v-for="g in GESTURE_CATALOG" :key="g.id" @click="guide(g.id)"><b>{{ g.glyph }}</b><span>{{ g.name }}</span></button>
+        <button v-for="g in practiceGestures" :key="g.id" @click="guide(g.id)"><b>{{ g.glyph }}</b><span>{{ g.name }}</span></button>
       </div>
       </div>
       <p class="notice" role="status">{{ notice }}</p>

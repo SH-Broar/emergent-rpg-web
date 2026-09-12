@@ -1,3 +1,4 @@
+import { regionDimensions, regionTerrain } from './field-biomes';
 import type { Node, NodeMap } from '@/data/schemas';
 import type { GridPos } from '@/data/schemas/base';
 import type { FieldSpace, FieldTile } from './field-types';
@@ -21,14 +22,7 @@ export function fieldConnection(map:NodeMap,from:Node,to:Node) {
   const count=roadCount(map,from,to),[a,b]=[from.id,to.id].sort();
   return {to:count?roadId(a!,b!,from.id===a?0:count-1):to.id,count};
 }
-export function fieldDimensions(node:Node,npcCount=0):{width:number;height:number} {
-  if(node.kind==='village')return {width:npcCount>5?12:10,height:10};
-  if(node.kind==='boss')return {width:9,height:8};
-  if(node.kind==='elite')return {width:8,height:8};
-  if(node.kind==='combat')return {width:8,height:7};
-  if(npcCount>2)return {width:8,height:7};
-  return {width:6,height:6};
-}
+export function fieldDimensions(node:Node,npcCount=0):{width:number;height:number} {return regionDimensions(node,npcCount);}
 export function fieldTheme(node:Node):'town'|'forest'|'coast'|'volcanic'|'cave'|'meadow' {
   if(['village','shop','workshop'].includes(node.kind)||/식당|본부|길드|여관|광장/.test(node.label))return 'town';
   if(/mushroom|mine|castle/.test(node.region??'')||/동굴|갱도|지하/.test(node.label))return 'cave';
@@ -38,17 +32,8 @@ export function fieldTheme(node:Node):'town'|'forest'|'coast'|'volcanic'|'cave'|
   return 'meadow';
 }
 export function terrainFor(node:Node,width:number,height:number,dungeon=false):FieldTile[][] {
-  const theme=fieldTheme(node),seed=fieldHash(node.id);
-  return Array.from({length:height},(_,y)=>Array.from({length:width},(_,x)=>{
-    if(x===0||y===0||x===width-1||y===height-1)return 'wall';
-    if(dungeon||theme==='cave')return (x*7+y*3+seed)%13===0?'wall':'stone';
-    if(theme==='town')return (x+y+seed)%4===0?'wood':'stone';
-    if(node.region==='manonickla')return (x+y+seed)%7===0?'stone':'sand';
-    if(theme==='coast')return x<=1+(seed%2)&&y%4!==0?'water':'sand';
-    if(theme==='volcanic')return (x*3+y+seed)%7===0?'sand':'stone';
-    if(theme==='forest'&&(x*3+y*7+seed)%11===0)return 'wall';
-    return 'grass';
-  }));
+ if(!dungeon)return regionTerrain(node,width,height,fieldHash(node.id));
+ return Array.from({length:height},(_,y)=>Array.from({length:width},(_,x)=>!x||!y||x===width-1||y===height-1?'wall':(x*7+y*3+fieldHash(node.id))%13===0?'wall':'stone'));
 }
 export function carvePath(space:FieldSpace,from:GridPos,to:GridPos) {
   let {x,y}=from;space.tiles[y]![x]='path';

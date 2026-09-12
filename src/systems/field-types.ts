@@ -18,11 +18,14 @@ export interface FieldSpace {
   exits: FieldExit[];
   dungeon?: { origin: string; floor: number; totalFloors: number };
   cleared?: boolean;
-  layoutVersion?: 2 | 3;
+  layoutVersion?: 2 | 3 | 4;
   theme?: string;
   housingVersion?:1;
   basesVersion?:1;
   placementVersion?:1;
+  forageVersion?:1;
+  practiceVersion?:1;
+  biomePropsVersion?:1;
   residence?:{parent:string;kind:'home'|'court'|'commons'|'player-home'|'inn';npcId?:string};
   road?: {from:string;to:string;index:number;count:number};
 }
@@ -48,6 +51,7 @@ export interface FieldState {
   knockoutReason?:'tamamo';
   clearedAt?:number;
   residentEvents?:Record<string,number>;
+  journey?: import('./field-journey').JourneyState;
   skills?: import('./field-skills').FieldSkills;
   /** Inactive bodies retain their learned skills and absolute cooldowns. */
   formTraining?: Record<string,{cards:import('@/data/schemas').Card[];skills:import('./field-skills').FieldSkills}>;

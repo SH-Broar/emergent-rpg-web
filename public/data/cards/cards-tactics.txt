@@ -80,3 +80,61 @@ shape = 0,0
 target_mode = aimed
 aim_range = 4
 cast_speed = fast
+
+# 일루네온에서 배우는 첫 기술. 다른 종족도 같은 원리로 익힌다.
+[card.c-field-pulse]
+name = 밀어내는 빛
+description = 지정한 칸에 피해 6 · 밀기 1칸
+rank = common
+source = event
+element = light
+cost = 1
+trigger = manual
+effects = damage:6:enemy,push-enemy:1:enemy
+magic_family = light-pulse
+magic_strokes = 2
+magic_mana = 1
+magic_cooldown = 2
+magic_role = 거리 벌리기
+shape = 0,0
+target_mode = aimed
+aim_range = 3
+cast_speed = fast
+
+[card.c-field-step]
+name = 바람 딛기
+description = 이동 2칸 · 방어 4
+rank = common
+source = event
+element = wind
+cost = 1
+trigger = manual
+effects = move-self:2:self,block:4:self
+magic_family = wind-step
+magic_strokes = 2
+magic_mana = 1
+magic_cooldown = 3
+magic_role = 이동과 엄폐
+shape = 0,0
+target_mode = aimed
+aim_range = 2
+cast_speed = fast
+
+[card.c-field-rain]
+name = 돌아오는 비
+description = 십자 범위에 물을 퍼뜨리고 체력 8 회복
+rank = rare
+source = event
+element = water
+cost = 2
+trigger = manual
+effects = terrain-water:3:enemy,heal:8:self
+magic_family = returning-rain
+magic_strokes = 3
+magic_mana = 2
+magic_cooldown = 4
+magic_role = 회복과 지형
+shape = 0,0|0,-1|0,1|-1,0|1,0
+target_mode = aimed
+aim_range = 3
+cast_speed = normal

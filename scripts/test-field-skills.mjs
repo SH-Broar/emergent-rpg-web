@@ -35,6 +35,7 @@ try {
   const snapshot=()=>JSON.stringify({hp:run.data.hp,mp:run.data.mp,time:run.data.field.elapsedSeconds,skills:run.data.field.skills,collection:run.data.collection,entities:Object.values(run.data.interactionWorld.entities).map(e=>({id:e.id,pos:e.pos,properties:e.properties,stock:e.stock})),sequence:run.data.interactionWorld.sequence});
   function reset(){
     run.startRun({timelineId:timeline.id,raceId:'human',season:'spring',startNodeId:'n-iluneon-square',maxHp:50,maxMp:3,timeLimit:300});
+    run.data.level=12; // These fixtures exercise equipped high-level skills; novice gates are covered in test-field-journey.
     field.ensureField(run.data);
     run.data.currentNodeId='n-iluneon-square::player-home';
     run.data.interactionWorld.entities.player.nodeId=run.data.currentNodeId;

@@ -40,6 +40,7 @@ try {
   let sequence=0;
   function reset(){
     run.startRun({timelineId:timeline.id,raceId:'human',season:'spring',startNodeId:'n-iluneon-square',maxHp:50,maxMp:3,timeLimit:1});
+    run.data.level=12; // These fixtures exercise equipped high-level skills; novice gates are covered in test-field-journey.
     field.ensureField(run.data);
     run.data.currentNodeId='n-iluneon-square::player-home';
     run.data.interactionWorld.entities.player.nodeId=run.data.currentNodeId;

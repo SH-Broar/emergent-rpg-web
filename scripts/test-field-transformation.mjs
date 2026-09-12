@@ -44,6 +44,7 @@ try {
   const results=[],clone=x=>JSON.parse(JSON.stringify(x));
   function reset(){
     run.startRun({timelineId:timeline.id,raceId:'human',season:'spring',startNodeId:'n-iluneon-square',maxHp:100,maxMp:3,timeLimit:300});
+    run.data.level=12; // These fixtures exercise equipped high-level skills; novice gates are covered in test-field-journey.
     field.ensureField(run.data);
     run.data.currentNodeId='n-iluneon-square::player-home';
     run.data.interactionWorld.entities.player.nodeId=run.data.currentNodeId;

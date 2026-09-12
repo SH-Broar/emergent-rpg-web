@@ -5,6 +5,10 @@ import { scaledValue } from './enhance';
 
 export const SKILL_GESTURES = ['corner','angle','triangle','inverted','circle','square','diamond','star'] as const;
 export type SkillGesture = typeof SKILL_GESTURES[number];
+export const SKILL_UNLOCK_LEVEL: Record<SkillGesture, number> = {corner:1,angle:2,triangle:3,inverted:4,circle:5,square:7,diamond:9,star:12};
+export const skillGestureUnlocked = (level:number|undefined, gesture:string) => !SKILL_GESTURES.includes(gesture as SkillGesture) || (level??1) >= SKILL_UNLOCK_LEVEL[gesture as SkillGesture];
+export const unlockedSkillGestures = (level:number|undefined) => SKILL_GESTURES.filter(g=>skillGestureUnlocked(level,g));
+export const nextSkillGesture = (level:number|undefined) => SKILL_GESTURES.find(g=>!skillGestureUnlocked(level,g));
 export const skillEffects = (card: Card) => card.magic?.effects ?? card.effects;
 export const skillFamily = (card: Card) => card.magic?.family ?? card.id.replace(/-plus$/, '');
 export const skillStrokes = (card: Card) => card.magic?.strokes ?? (card.rank === 'legendary' ? 5 : card.rank === 'rare' ? 4 : card.cost >= 2 ? 3 : 2);

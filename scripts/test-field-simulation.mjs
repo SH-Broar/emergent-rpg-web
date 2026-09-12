@@ -184,6 +184,7 @@ try {
   ({world,space,player}=start(monsterNode.id));
   const spellTarget=Object.values(world.entities).find(e=>e.nodeId===space.id&&e.creature);
   park(world,space,player,spatial.cardinal(spellTarget.pos).find(p=>spatial.walkable(world,space.id,p,'player')));
+  run.data.level=12; // Draw precision is tested with the star already learned.
   const skill={id:'test-star',instanceId:'test-star-copy',name:'별의 힘',rank:'common',source:'race',cost:3,trigger:'manual',effects:[{kind:'damage',value:30}],targetMode:'aimed',shape:[{dx:0,dy:0}],aimRange:4,castSpeed:'fast'};
   run.data.collection.push(skill);run.data.field.skills.slots.star=skill.instanceId;
   const mana=run.data.mp,initialIntegrity=spellTarget.properties.integrity;
@@ -202,7 +203,7 @@ try {
   for(const node of authored.nodes){
     const area=generation.ensureFieldSpace(run.data,world,node.id);
     dimensions.add(area.width+'x'+area.height);themes.add(area.theme);
-    if(!['village','combat','elite','boss'].includes(node.kind)&&![...data.npcs.values()].filter(n=>n.homeNodeId===node.id||node.contentRef?.npcIdPool?.includes(n.id)).length)assert.equal(area.width,6);
+    if(!['village','combat','elite','boss'].includes(node.kind)&&![...data.npcs.values()].filter(n=>n.homeNodeId===node.id||node.contentRef?.npcIdPool?.includes(n.id)).length)assert.ok(area.width>=6&&area.width<=10&&area.height>=6&&area.height<=10,node.id+' remains compact with a regional aspect ratio');
     for(const exit of area.exits.filter(e=>e.destination)){
       const destination=authored.nodes.find(n=>n.id===exit.destination);
       assert.equal(exit.roads,geography.roadCount(authored,node,destination));
@@ -248,6 +249,8 @@ try {
     if(activity.type==='repeat'){
       assert.ok((player.stock[activity.lowerItemId]??0)+(player.stock[activity.upperItemId]??0)>0);
       assert.ok((run.data.lifeLevel-1)*3+run.data.lifeXp>xp);
+      assert.equal(site.stock[activity.lowerItemId],1,'one gesture takes one item from a two-item patch');
+      assert.equal(field.performFieldGesture('tap',site.id,site.pos).ok,true);assert.equal(site.stock[activity.lowerItemId],0);
       const before=JSON.stringify(player.stock);assert.equal(field.performFieldGesture('tap',site.id,site.pos).ok,false);assert.equal(JSON.stringify(player.stock),before);
     }else assert.ok(site.production&&!site.production.settled);
   }

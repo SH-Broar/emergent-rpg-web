@@ -12,7 +12,7 @@ reward_soul = 10
 reward_codex = bs-shadow-lake
 intro = 호수에 비친 그림자가 물가로 올라왔다.
 defeat_text = 그림자가 물 위로 흩어졌다. 잔물결 사이로 하늘이 비쳤다.
-dialogue = 거기서 기다려라. 아직 네 모습이 다 비치지 않았다.
+dialogue = 움직이지 마라. 네 그림자가 아직 따라오지 못했다.
 
 [boss.bs-shadow-lake.phase.1]
 starts_at = 1.0

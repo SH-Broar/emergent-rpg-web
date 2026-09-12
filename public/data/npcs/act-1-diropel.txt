@@ -11,7 +11,7 @@ color_values = 0.4,0.4,0.4,0.4,0.7,0.6,0.4,0.4
 domain_high = Calm, Adaptable, Inventive, Flexible, Patient, Freesprited, Hopeful, Honest
 domain_low = Passionate, Indifferent, Methodical, Stubborn, Restless, Grounded, Cynical, Naive
 background = 딜롭 부족 늘어진 귀가 긴 형태.|두 귀가 발끝까지 늘어져, 걸을 때마다 바닥에 끌린다. 먼 소리를 누구보다 먼저 듣는다.|얼굴에 긴 곡선 무늬가 그어져 있다. 외부인은 그 무늬를 보고 리포라 부른다.|말은 통하지 않지만, 귀를 한 번 늘어뜨려 인사하고, 손바닥에 무늬를 그려 뜻을 전한다.
-tagline = "(긴 귀를 한 번 늘어뜨린다)"
+tagline = 앗, 지나가도 돼! 금방 정리할게.
 tags = diropel, long-ear, tribe
 affinity_rewards = 3:card=c-quickdraw:gauge=3
 # 영입 (Item 37-② Stage C 배치3). 딜롭 부족 긴 귀 리포 — 발을 굴러 땅을 울리며 적의 발을 묶는다.
@@ -35,7 +35,7 @@ color_values = 0.4,0.5,0.4,0.5,0.7,0.4,0.4,0.4
 domain_high = Excited, Empathetic, Inventive, Flexible, Generous, Grounded, Hopeful, Honest
 domain_low = Calm, Indifferent, Methodical, Stubborn, Restless, Freesprited, Cynical, Naive
 background = 딜롭 부족 늘어진 귀가 짧은 형태.|짧고 둥근 귀가 머리 옆에 폭신하게 붙어 있다. 손이 야무져, 부족의 얼굴 무늬를 가장 곱게 그린다.|얼굴에 둥근 점 무늬. 외부인은 그 무늬를 보고 코하라 부른다.|손님이 오면 먼저 다가와 손바닥에 작은 무늬를 그려 준다. "(웃으며 안료를 내민다)"
-tagline = "(둥근 귀를 쫑긋 세운다)"
+tagline = 리포가 또 어디 갔지? 같이 있지 않았어?
 tags = diropel, short-ear, tribe
 affinity_rewards = 3:card=c-recover:gauge=3
 # 영입 (Item 37-② Stage C 배치3). 딜롭 부족 짧은 귀 코하 — 단단한 가죽으로 막고 가시처럼 되받는다.

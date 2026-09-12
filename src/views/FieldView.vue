@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import { displayedHp } from '@/systems/world/engine';
+import FieldCraftPanel from '@/components/FieldCraftPanel.vue';
+import { SUPPLY_NAMES } from '@/systems/field-supplies';
+import FieldResourceGauge from '@/components/FieldResourceGauge.vue';
+import { resourceGauge } from '@/systems/field-forage';
 import FieldIntentBadge from '@/components/FieldIntentBadge.vue';
 import { creatureIntent } from '@/systems/field-ai';
 import { fieldTargets } from '@/systems/field-selection';
@@ -19,6 +23,7 @@ import { PRODUCTION_MODES } from '@/systems/life-production';
 import { createFieldIdleClock } from '@/systems/field-idle';
 import { cardinal, distance, fieldPath, positionKey, walkable } from '@/systems/world/spatial';
 import FieldSkillPanel from '@/components/FieldSkillPanel.vue';
+import { unlockedSkillGestures, nextSkillGesture, SKILL_UNLOCK_LEVEL } from '@/systems/field-skill-rules';
 import { SKILL_GESTURES, equippedSkill, fieldSkillCells, skillRemaining, fieldSkillMana } from '@/systems/field-skills';
 import GesturePad from '@/components/GesturePad.vue';
 import FieldEntityGlyph from '@/components/FieldEntityGlyph.vue';
@@ -26,15 +31,19 @@ import FieldStatusFeedback from '@/components/FieldStatusFeedback.vue';
 import SettingsMenu from '@/components/SettingsMenu.vue';
 import FieldAtlas from '@/components/FieldAtlas.vue';
 import CharacterMenu from '@/components/CharacterMenu.vue';
+import FieldJournal from '@/components/FieldJournal.vue';
+import { questMarker } from '@/systems/field-journey';
 import InventoryMenu from '@/components/InventoryMenu.vue';
 
 const run = useRunStore(), ui = useUiStore(), router = useRouter();
 const initialized = ref(false), moving = ref(false), bagOpen = ref(false), skillsOpen = ref(false), settingsOpen = ref(false);
+const craftOpen=ref(false);
 const mapOpen=ref(false),drawing=ref(false),pointerHeld=ref(false),hidden=ref(document.hidden),guide=ref<string>();
+const journalOpen=ref(false);
 const progressOpen=ref(false),detailsOpen=ref(false),characterOpen=ref(false),inventoryOpen=ref(false);
 const idle=createFieldIdleClock();
 let idleTimer:ReturnType<typeof setInterval>|undefined;
-const paused=computed(()=>moving.value||drawing.value||pointerHeld.value||hidden.value||bagOpen.value||skillsOpen.value||settingsOpen.value||mapOpen.value||detailsOpen.value||progressOpen.value||characterOpen.value||inventoryOpen.value||aimDash.value||!!speech.value||!!run.data.field?.encounter||ui.tutorialTopic!==null);
+const paused=computed(()=>moving.value||drawing.value||pointerHeld.value||hidden.value||bagOpen.value||skillsOpen.value||settingsOpen.value||mapOpen.value||detailsOpen.value||progressOpen.value||characterOpen.value||inventoryOpen.value||craftOpen.value||journalOpen.value||aimDash.value||!!speech.value||!!run.data.field?.encounter||ui.tutorialTopic!==null);
 function wake(){idle.reset(Date.now());}
 function press(){pointerHeld.value=true;wake();}
 function release(){pointerHeld.value=false;wake();}
@@ -42,6 +51,7 @@ function visibility(){hidden.value=document.hidden;wake();}
 const aimSkill=ref<string>();
 const aimDash=ref(false), routeCells=ref<GridPos[]>([]);
 const selectedId = ref<string>(), selectedPos = ref<GridPos>({ x: 0, y: 0 });
+watch(()=>run.data.level,(level,old)=>{const learned=unlockedSkillGestures(level).filter(g=>!unlockedSkillGestures(old).includes(g));if(learned.length)say(learned.map(g=>GLYPHS[g]).join(' ')+' 도형을 배웠다.');});
 const notice = ref(''), speech = ref<FieldSpeech>(), line = ref(0);
 const stageElement = ref<HTMLElement | null>(null), width = ref(390), height = ref(430);
 let observer: ResizeObserver | undefined, timer: ReturnType<typeof setTimeout> | undefined, movement = 0;
@@ -58,7 +68,7 @@ const selection=computed(()=>target.value?.carriedBy===player.value?.id?player.v
 const dashKeys=computed(()=>new Set(aimDash.value&&space.value&&player.value?cells.value.filter(p=>!dashFailure(world.value,space.value!,player.value!,p)).map(positionKey):[]));
 const selectedSkill=computed(()=>aimSkill.value?equippedSkill(run.data,aimSkill.value):undefined);
 const skillKeys=computed(()=>new Set(selectedSkill.value&&player.value?fieldSkillCells(world.value,player.value,selectedSkill.value,selection.value).map(c=>positionKey(c.pos)):[]));
-function prepareSkill(id:string){stop();aimDash.value=false;aimSkill.value=id;guide.value=id;wake();}
+function prepareSkill(id:string){if(!unlockedSkillGestures(run.data.level).includes(id as typeof SKILL_GESTURES[number]))return;stop();aimDash.value=false;aimSkill.value=id;guide.value=id;wake();}
 const pathKeys=computed(()=>new Set(routeCells.value.map(positionKey)));
 const effects=ref<{id:number;pos:GridPos;text:string;kind:string}[]>([]);
 let effectCursor=0;
@@ -212,7 +222,7 @@ onBeforeUnmount(() => { stop(); observer?.disconnect(); clearTimeout(timer);clea
           <span v-for="fx in effects.filter(f=>distance(f.pos,pos)===0)" :key="fx.id" class="combat-float" :class="'combat-float--'+fx.kind" aria-live="polite">{{ fx.text }}</span>
           <span v-if="tile(pos) === 'grass'" class="grass-marks" aria-hidden="true">{{ (pos.x * 3 + pos.y) % 4 === 0 ? 'ˎ ˏ' : '·' }}</span>
           <span v-if="exitAt(pos)" class="exit-mark" aria-hidden="true">{{ space.dungeon ? '≋' : '⋮' }}</span>
-          <span v-for="entity in at(pos)" :key="entity.id" class="field-piece" :class="{ 'field-piece--player': entity.id === 'player' }"><FieldEntityGlyph :entity="entity"/><span v-if="entity.creature" class="creature-hp"><i :style="{ width: `${entity.properties.integrity ?? 100}%` }"/></span><FieldIntentBadge v-if="entity.creature" :entity="entity"/><span v-if="entity.id === speech?.actorId" class="speech-bubble">{{ speech.lines[line]?.slice(0, 22) }}{{ (speech.lines[line]?.length ?? 0) > 22 ? '…' : '' }}</span></span>
+          <span v-for="entity in at(pos)" :key="entity.id" class="field-piece" :class="{ 'field-piece--player': entity.id === 'player' }"><FieldEntityGlyph :entity="entity"/><span v-if="questMarker(run.data,entity.npcId)" class="quest-mark" :aria-label="questMarker(run.data,entity.npcId)==='!'?'새 부탁':'부탁 완료'">{{ questMarker(run.data,entity.npcId) }}</span><FieldResourceGauge v-if="!entity.creature" :entity="entity"/><span v-if="entity.creature" class="creature-hp"><i :style="{ width: `${entity.properties.integrity ?? 100}%` }"/></span><FieldIntentBadge v-if="entity.creature" :entity="entity"/><span v-if="entity.id === speech?.actorId" class="speech-bubble">{{ speech.lines[line]?.slice(0, 22) }}{{ (speech.lines[line]?.length ?? 0) > 22 ? '…' : '' }}</span></span>
           <span v-if="exitAt(pos)" class="exit-label">{{ exitAt(pos)?.label }}</span>
           <span v-if="distance(selection,pos)===0&&hints.length&&target?.id!=='player'" class="tile-hints" aria-hidden="true">{{ hints.map(h=>GLYPHS[h.id]).join(' ') }}</span>
         </button>
@@ -231,12 +241,13 @@ onBeforeUnmount(() => { stop(); observer?.disconnect(); clearTimeout(timer);clea
         <button v-else class="dialogue-next" @click="nextLine">● {{ line+1===speech.lines.length?'대화 마치기':'계속' }}</button>
       </section>
       <section v-if="bagOpen" class="field-drawer" aria-label="소지품 선택">
-        <header><strong>손에 쓸 물건</strong><button @click="bagOpen=false;inventoryOpen=true">소지품 관리</button><button aria-label="소지품 선택 닫기" @click="bagOpen=false">×</button></header>
+        <header><strong>손에 쓸 물건</strong><button @click="bagOpen=false;inventoryOpen=true">소지품 관리</button><button @click="bagOpen=false;craftOpen=true">가공</button><button aria-label="소지품 선택 닫기" @click="bagOpen=false">×</button></header>
         <button v-for="[id,count] in inventory" :key="id" :aria-pressed="run.data.field?.selectedItem===id" @click="chooseItem(id);bagOpen=false"><span>{{ FIELD_ITEMS[id]?.glyph??'◇' }}</span> {{ fieldItemName(id) }} <b>{{ count }}</b></button>
         <p v-if="!inventory.length">빈 가방</p>
       </section>
       <section v-if="progressOpen" class="field-drawer field-progress" aria-label="생활과 도형 성장">
         <header><strong>생활 숙련 {{ run.data.lifeLevel??1 }} <small>· {{ run.data.lifeXp??0 }}/3</small></strong><button aria-label="성장 닫기" @click="progressOpen=false">×</button></header>
+        <p v-if="nextSkillGesture(run.data.level)">다음 도형 {{ GLYPHS[nextSkillGesture(run.data.level)!] }} · 레벨 {{ SKILL_UNLOCK_LEVEL[nextSkillGesture(run.data.level)!] }}</p>
         <div class="growth-marks"><span :class="{earned:(run.data.lifeLevel??1)>=2}">2 · 자동 돌봄</span><span :class="{earned:(run.data.lifeLevel??1)>=3}">3 · 생산 선택</span><span :class="{earned:(run.data.lifeLevel??1)>=5}">5 · 산출 +1</span></div>
         <div v-if="(run.data.lifeLevel??1)>=3" class="production-modes"><button v-for="mode in PRODUCTION_MODES" :key="mode.id" :aria-pressed="(run.data.field?.productionMode??'standard')===mode.id" @click="run.data.field!.productionMode=mode.id">{{ mode.name }}<small>{{ mode.description }}</small></button></div>
         <div class="growth-marks"><span v-for="id in ['strike','tend','lift','take']" :key="id">{{ GLYPHS[id] }} {{ gestureLevel(run.data,id) }}</span></div>
@@ -249,7 +260,7 @@ onBeforeUnmount(() => { stop(); observer?.disconnect(); clearTimeout(timer);clea
         <div v-if="target?.creature" class="target-states"><p>{{ creatureIntent(target).label }}</p><p v-if="target.creature.pending?.transform">첫 낙인은 수화 · 수화 중에는 변신 판정</p><p v-for="s in statusEntries(target)" :key="s.key">{{ statusLabel(s.key) }} {{ s.value }} · {{ STATUS_HELP[s.key] }}</p></div><p v-else-if="!targetStock.length">놓인 물건 없음</p>
       </section>
       <div class="console-target">
-        <div><strong>{{ selectedSkill?selectedSkill.name:aimDash?'ϟ 도착할 칸':targetName }}</strong><small v-if="target?.creature">{{ displayedHp(target.properties) }} HP · {{ creatureIntent(target).label }}</small><small v-else-if="target?.production&&!target.production.settled">성장 중</small></div>
+        <div><strong>{{ selectedSkill?selectedSkill.name:aimDash?'ϟ 도착할 칸':targetName }}</strong><small v-if="target?.creature">{{ displayedHp(target.properties) }} HP · {{ creatureIntent(target).label }}</small><small v-else-if="target&&resourceGauge(target)">남은 {{ resourceGauge(target)!.remaining }} / {{ resourceGauge(target)!.capacity }}</small><small v-else-if="target?.production&&!target.production.settled">성장 중</small></div>
         <button v-if="targetStock.length||layeredTargets.length>1||target?.creature" :class="{'layer-picker':layeredTargets.length>1}" :aria-label="layeredTargets.length>1?'같은 칸의 대상 선택':'대상 살펴보기'" @click="stop();progressOpen=false;detailsOpen=!detailsOpen;bagOpen=false;skillsOpen=false">{{ layeredTargets.length>1?'대상 '+layeredTargets.length:'···' }}</button>
         <button v-if="moving" aria-label="이동 멈추기" @click="stop">■</button><button v-else aria-label="자신 선택" @click="selectSelf">◎</button>
       </div>
@@ -257,25 +268,28 @@ onBeforeUnmount(() => { stop(); observer?.disconnect(); clearTimeout(timer);clea
         <div v-if="target?.creature||aimSkill" class="context-tools combat-tools">
           <button class="hand-slot" @click="skillsOpen=true"><span>기술 구성</span><strong>◆ {{ selectedSkill?fieldSkillMana(run.data,selectedSkill):run.data.mp }}</strong></button>
           <div class="skill-runes" aria-label="장착 기술">
-            <button v-for="id in SKILL_GESTURES" :key="id" :aria-pressed="aimSkill===id" :aria-label="GLYPHS[id]+' '+(equippedSkill(run.data,id)?.name??'비어 있음')" :class="{empty:!equippedSkill(run.data,id)}" @click="equippedSkill(run.data,id)?prepareSkill(id):skillsOpen=true"><b>{{ GLYPHS[id] }}</b><small v-if="equippedSkill(run.data,id)">{{ skillRemaining(run.data,equippedSkill(run.data,id)!)||'·' }}</small></button>
+            <button v-for="id in unlockedSkillGestures(run.data.level)" :key="id" :aria-pressed="aimSkill===id" :aria-label="GLYPHS[id]+' '+(equippedSkill(run.data,id)?.name??'비어 있음')" :class="{empty:!equippedSkill(run.data,id)}" @click="equippedSkill(run.data,id)?prepareSkill(id):skillsOpen=true"><b>{{ GLYPHS[id] }}</b><small v-if="equippedSkill(run.data,id)">{{ skillRemaining(run.data,equippedSkill(run.data,id)!)||'·' }}</small></button>
           </div>
-          <div class="combat-basics"><button @click="aimSkill=undefined;guide='strike'" aria-label="기본 공격 연습선">╱ 기본</button><button @click="aimSkill=undefined;guide='dash'" aria-label="이동기 연습선">ϟ 이동 ◆1</button></div>
+          <button v-if="run.data.field?.selectedItem&&SUPPLY_NAMES[run.data.field.selectedItem]" class="hand-slot" @click="guide='tend'">╲ {{ SUPPLY_NAMES[run.data.field.selectedItem] }}</button><div class="combat-basics"><button @click="aimSkill=undefined;guide='strike'" aria-label="기본 공격 연습선">╱ 기본</button><button @click="aimSkill=undefined;guide='dash'" aria-label="이동기 연습선">ϟ 이동 ◆1</button></div>
         </div>
         <div v-else class="context-tools">
           <button class="hand-slot" @click="stop();progressOpen=false;bagOpen=!bagOpen;skillsOpen=false;detailsOpen=false"><span>{{ held?'들고 있음':'손' }}</span><strong>{{ held?.name??(run.data.field?.selectedItem?fieldItemName(run.data.field.selectedItem):'빈손') }}</strong></button>
           <div class="context-hints" aria-label="가능한 동작"><button v-for="hint in hints" :key="hint.id" :aria-label="hint.label+' 연습선'" @click="guide=hint.id"><b>{{ GLYPHS[hint.id] }}</b><span>{{ hint.label }}</span></button></div>
           <small v-if="!hints.length">대상을 가까이에서 선택하세요.</small>
         </div>
-        <GesturePad :guide="guide" :disabled="ui.tutorialTopic!==null||settingsOpen||mapOpen||bagOpen||skillsOpen||detailsOpen||progressOpen||characterOpen||inventoryOpen" @drawing="drawing=$event" @gesture="perform" @unrecognized="say('다시 그려보세요.');wake()"/>
+        <GesturePad :guide="guide" :disabled="ui.tutorialTopic!==null||settingsOpen||mapOpen||bagOpen||skillsOpen||detailsOpen||progressOpen||characterOpen||inventoryOpen||craftOpen||journalOpen" @drawing="drawing=$event" @gesture="perform" @unrecognized="say('다시 그려보세요.');wake()"/>
       </div>
       <nav class="console-nav" aria-label="필드 메뉴">
         <button :aria-pressed="bagOpen" @click="stop();progressOpen=false;bagOpen=!bagOpen;skillsOpen=false;detailsOpen=false">가방</button>
         <button @click="stop();progressOpen=!progressOpen;bagOpen=false;skillsOpen=false;detailsOpen=false">성장</button>
         <button @click="stop();progressOpen=false;bagOpen=false;skillsOpen=false;detailsOpen=false;mapOpen=true">지도</button>
         <button :aria-pressed="skillsOpen" @click="stop();progressOpen=false;skillsOpen=!skillsOpen;bagOpen=false;detailsOpen=false">기술</button>
+        <button @click="stop();journalOpen=true">수첩</button>
         <button @click="stop();progressOpen=false;bagOpen=false;skillsOpen=false;detailsOpen=false;settingsOpen=true">설정</button>
       </nav>
     </section>
+    <FieldJournal :open="journalOpen" @close="journalOpen=false"/>
+    <FieldCraftPanel :open="craftOpen" @close="craftOpen=false"/>
     <FieldSkillPanel :open="skillsOpen" @close="skillsOpen=false" @guide="id=>SKILL_GESTURES.includes(id as typeof SKILL_GESTURES[number])?prepareSkill(id):guide=id"/>
     <CharacterMenu :open="characterOpen" @close="characterOpen=false"/>
     <InventoryMenu :open="inventoryOpen" @close="inventoryOpen=false"/>
@@ -300,7 +314,7 @@ h1 { font-size: 16px; line-height: 1.4; margin: 0; font-weight: 600; color: #e3d
 .field-cell.selected::after { content: ''; position: absolute; inset: 3px; border: 1.5px solid #f4df9c; border-radius: 5px; z-index: 4; pointer-events: none; }.field-cell.danger { background-image: repeating-linear-gradient(135deg, #d1796733 0 5px, #d1796799 5px 7px); box-shadow: inset 0 0 0 2px #eaa18a; }
 .field-piece { position: absolute; inset: -4px 2px 2px; z-index: 2; pointer-events: none; }.field-piece--player { z-index: 3; }.creature-hp { position: absolute; left: 12%; right: 12%; bottom: 1px; height: 3px; background: #352d2c; border-radius: 3px; }.creature-hp i { display: block; height: 100%; background: #d78687; border-radius: inherit; }
 
-.exit-mark { font-size: 26px; color: #edd89a; }.exit-label { position: absolute; left: 50%; bottom: -5px; transform: translate(-50%, 50%); white-space: nowrap; color: #f8eac0; background: #1a2622e6; border: 1px solid #c4b78e33; border-radius: 3px; font-size: 9px; padding: 1px 4px; z-index: 5; pointer-events: none; }.speech-bubble { position: absolute; bottom: 94%; left: 50%; transform: translateX(-50%); max-width: 150px; min-width: 80px; padding: 6px 8px; background: #eee4c6; color: #384c3e; border-radius: 8px 8px 8px 0; font-size: 10px; line-height: 1.5; z-index: 9; }
+.exit-mark { font-size: 26px; color: #edd89a; }.exit-label { position: absolute; left: 50%; bottom: -5px; transform: translate(-50%, 50%); white-space: nowrap; color: #f8eac0; background: #1a2622e6; border: 1px solid #c4b78e33; border-radius: 3px; font-size: 9px; padding: 1px 3px; max-width:calc(100% - 4px); box-sizing:border-box; overflow:hidden; text-overflow:ellipsis; z-index: 5; pointer-events: none; }.speech-bubble { position: absolute; bottom: 94%; left: 50%; transform: translateX(-50%); max-width: 150px; min-width: 80px; padding: 6px 8px; background: #eee4c6; color: #384c3e; border-radius: 8px 8px 8px 0; font-size: 10px; line-height: 1.5; z-index: 9; }
 .field-notice { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); background: #111c18ec; color: #eadcaa; font-size: 12px; padding: 7px 15px; border: 1px solid #b8b08033; border-radius: 20px; pointer-events: none; z-index: 10; white-space: nowrap; }.room-clear { position: absolute; top: 10px; right: 12px; font-size: 11px; color: #e4d398; }
 .field-console { flex: none; position: relative; padding: 0 14px max(5px, env(safe-area-inset-bottom)); border-top: 1px solid #8a97714d; background: linear-gradient(#242f27, #17211b); z-index: 20; box-shadow: 0 -10px 25px #0c170d30; }
 .console-target { height: 39px; display: flex; align-items: center; justify-content: space-between; gap: 6px; border-bottom: 1px solid #91a08122; }.console-target > div { display: flex; align-items: center; gap: 9px; min-width: 0; }.console-target strong { font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }.console-target small { font-size: 11px; color: #a6b9a5; white-space: nowrap; }.target-dot { width: 6px; height: 6px; border-radius: 50%; background: #dac893; }.console-target button { flex: none; width: 38px; height: 34px; color: #e3d6b0; border: 0; background: none; font-size: 22px; cursor: pointer; }
@@ -321,7 +335,7 @@ h1 { font-size: 16px; line-height: 1.4; margin: 0; font-weight: 600; color: #e3d
 .hand-slot span{font-size:10px;color:#9caa95;white-space:nowrap}.hand-slot strong{font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .context-hints{display:grid;gap:3px}.context-hints button{display:grid;grid-template-columns:30px minmax(0,1fr);align-items:center;gap:4px;min-height:30px;padding:2px 4px;border:0;background:none;color:#d9d1ae;font:inherit;text-align:left;border-radius:4px}
 .context-hints b{font-size:23px;text-align:center;font-weight:400}.context-hints span{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.context-hints button:hover{background:#80947822}
-.console-nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;padding:0;width:min(100%,460px);margin:auto;height:40px;box-sizing:border-box}.console-nav button{min-width:0;height:36px;padding:3px;font-size:12px}
+.console-nav{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:0;padding:0;width:min(100%,460px);margin:auto;height:40px;box-sizing:border-box}.console-nav button{min-width:0;height:36px;padding:3px;font-size:12px}
 .field-drawer{max-height:min(45dvh,320px);box-sizing:border-box;padding:12px;z-index:25}.field-drawer header{display:flex;align-items:center;gap:8px;width:100%;font-size:13px}.field-drawer header strong{flex:1}.field-drawer header button{min-height:34px;padding:5px 9px}
 .field-drawer .target-stock{width:100%;flex-wrap:wrap;padding:0}.field-skills{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.field-skills header{grid-column:1/-1}.field-skills button{min-width:0;gap:7px;padding:8px}.field-skills button span{font-size:11px}.field-skills button small{margin-left:auto}.field-skills button b{margin:0}
 .field-dialogue .dialogue-next{display:block;margin-left:auto;font-size:12px;min-height:36px}.tile-hints{position:absolute;top:-14px;left:50%;transform:translateX(-50%);padding:1px 5px;white-space:nowrap;z-index:8;background:#f0e3bc;color:#30422f;border-radius:4px;font-size:13px;pointer-events:none}
@@ -332,4 +346,5 @@ h1 { font-size: 16px; line-height: 1.4; margin: 0; font-weight: 600; color: #e3d
 .skill-runes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px}.skill-runes button{display:flex;justify-content:center;align-items:center;gap:3px;height:34px;min-width:0;padding:0;border:1px solid #89976b55;border-radius:4px;background:#263c30;color:#e9d69c;cursor:pointer}.skill-runes b{font-size:23px;font-weight:400}.skill-runes small{font-size:11px;color:#b5c0a9}.skill-runes button[aria-pressed=true]{border-color:#f0dc9c;background:#4a593a}.skill-runes button.empty{opacity:.45}.combat-tools>small{font-size:10px;min-height:12px}.field-cell.skill-aim{outline:2px solid #a5d7d6;outline-offset:-3px}.field-cell.skill-aim::before{content:'';position:absolute;inset:0;background:#83d2d42e;pointer-events:none;z-index:1}
 .combat-basics{display:flex;gap:4px}.combat-basics button{flex:1;min-width:0;min-height:24px;padding:2px;border:0;border-radius:3px;background:#263c30;color:#c8c5a9;font-size:10px;white-space:nowrap}.combat-tools>*{flex-shrink:0}
 .console-target .layer-picker{width:auto;min-width:52px;font-size:11px;border:1px solid #91a08155;border-radius:5px}
+.quest-mark{position:absolute;right:0;top:-4px;background:#dec578;color:#273426;border:1px solid #f7eac0;border-radius:50%;width:16px;height:16px;display:grid;place-items:center;font-size:12px;font-weight:800;z-index:4}
 </style>

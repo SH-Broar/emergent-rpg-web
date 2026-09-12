@@ -10,7 +10,7 @@ color_values = 0.3,0.9,0.4,0.4,0.4,0.5,0.5,0.4
 domain_high = Calm, Empathetic, Adaptable, Reliable, Patient, Grounded, Hopeful, Honest
 domain_low = Passionate, Indifferent, Impulsive, Stubborn, Restless, Freesprited, Cynical, Naive
 background = 산호 해안의 인어.|상반신은 사람, 하반신은 푸른 비늘 꼬리 너른 바위에 꼬리를 길게 늘어뜨린 채 물살을 고른다.|범고래와는 오랜 앙숙. "그 검은 등이 보이면, 다들 깊이 숨어요."|다친 이에게 물을 얇게 둘러 준다. 노래는 세이라만큼 짙지 않지만, 손이 따뜻하다.
-tagline = "물살은 내가 고를게요."
+tagline = 물에 들어오실 거면 짐은 저 바위에 두세요.
 tags = mermaid, sea, water-affinity
 affinity_rewards = 3:card=c-gentle-guard:gauge=4
 # 영입 (Item 37-② Stage C 배치2). 인어 — 물을 얇게 둘러 크게 치유하고 한 겹 가호를 덧입힌다.
@@ -34,7 +34,7 @@ color_values = 0.4,0.8,0.5,0.3,0.3,0.7,0.4,0.5
 domain_high = Passionate, Adaptable, Impulsive, Flexible, Patient, Freesprited, Cynical, Cunning
 domain_low = Calm, Indifferent, Methodical, Stubborn, Restless, Grounded, Apathetic, Naive
 background = 산호 해안의 세이렌.|상반신은 사람, 깃털 돋친 두 팔과 물고기 꼬리를 함께 가진다. 노래할 때 깃이 활짝 펴진다.|노래로 물살을 휘고 뱃사람을 홀린다 하나, 사실은 산호 해안을 지키려는 노래일 뿐.|범고래가 가장 싫어하는 음을 안다. "그 검은 것이 오면 한 소절이면 돼."
-tagline = "한 소절 들어 볼래요?"
+tagline = 노래가 들렸어? 여기까지 들리는 줄은 몰랐네.
 tags = siren, song, water-affinity
 affinity_rewards = 3:card=c-burn-mark:gauge=4
 # 영입 (Item 37-② Stage C). 세이렌 — 자장가로 적의 동작을 느리게 늘이고 손끝을 무디게 한다.

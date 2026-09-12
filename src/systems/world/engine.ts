@@ -118,6 +118,10 @@ export function influenceEntity(world: InteractionWorld, entity: WorldEntity, pr
     turn: world.turn, nodeId: entity.nodeId, actorId, targetId: entity.id, kind: 'property', ...change,
     ownerId: entity.ownerId, labor: entity.labor ?? 0, message,
   }));
+  if(property==='waterSource'&&entity.properties.waterSource&&entity.kind!=='actor'&&!entity.renewable&&(entity.properties.integrity??100)>0){
+   entity.renewable={resourceId:'water',capacity:6,interval:1,nextTurn:world.turn+1};entity.stock.water=(entity.stock.water??0)+6;
+   entity.tags=[...new Set([...entity.tags,'well','storage'])];entity.name='작은 샘';
+  }
   syncEntityForm(entity,property,actorId);
   const source=actorId?world.entities[actorId]:undefined;
   if(source&&source.id!==entity.id&&entity.properties['status:thorns']&&['force','charge'].includes(property)&&facts.some(f=>f.property==='integrity'&&f.after!<f.before!)) {

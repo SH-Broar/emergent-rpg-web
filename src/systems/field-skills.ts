@@ -10,6 +10,7 @@ import { bonusesFromEffective } from './equipment';
 import { scaledValue } from './enhance';
 import { SKILL_GESTURES, type SkillGesture, skillEffects, skillFamily, skillStrokes, skillMana, skillCooldown, skillCastTurns, skillFitsGesture, skillReach } from './field-skill-rules';
 export { SKILL_GESTURES, type SkillGesture, skillEffects, skillFamily, skillStrokes, skillMana, skillCooldown, skillCastTurns, skillFitsGesture, skillReach, skillEffectText } from './field-skill-rules';
+import { skillGestureUnlocked, SKILL_UNLOCK_LEVEL, type SkillGesture as UnlockedGesture } from './field-skill-rules';
 import { useDataStore } from '@/stores/data';
 
 export interface SkillCell { pos: GridPos; multiplier: number }
@@ -64,7 +65,7 @@ export function ensureFieldSkills(run: RunState): FieldSkills {
     const slots: FieldSkills['slots'] = {}, seen = new Set<string>();
     for (const card of [...run.deck, ...run.collection]) {
       if (!card.instanceId || fieldSkillRestriction(run,card) || seen.has(skillFamily(card)) || !run.collection.some(c => c.instanceId === card.instanceId)) continue;
-      const gesture = SKILL_GESTURES.find(g=>!slots[g]&&skillFitsGesture(card,g)); if (!gesture) continue;
+      const gesture = SKILL_GESTURES.find(g=>skillGestureUnlocked(run.level,g)&&!slots[g]&&skillFitsGesture(card,g)); if (!gesture) continue;
       slots[gesture] = card.instanceId; seen.add(skillFamily(card));
     }
     field.skills = { version: 2, slots, readyAt: {} };
@@ -92,6 +93,7 @@ export function skillLoadoutLocked(run: RunState): boolean {
 }
 export function equipFieldSkill(run: RunState, gesture: string, instanceId?: string): string | undefined {
   if (!run.field || !SKILL_GESTURES.includes(gesture as SkillGesture)) return '기술 도형을 선택하세요.';
+  if(!skillGestureUnlocked(run.level,gesture))return '레벨 '+SKILL_UNLOCK_LEVEL[gesture as UnlockedGesture]+'에 배우는 도형이다.';
   const access=configurationFailure(run);if(access)return access;
   const skills = ensureFieldSkills(run), card = run.collection.find(c => c.instanceId === instanceId);
   if (instanceId && (!card || fieldSkillRestriction(run,card))) return card ? fieldSkillRestriction(run,card) : '카드를 찾을 수 없다.';
@@ -251,6 +253,7 @@ export function resolveFieldSkill(run: RunState, world: InteractionWorld, card: 
 }
 export function castFieldSkill(run: RunState, world: InteractionWorld, gesture: string, aim: GridPos): {ok:boolean;message:string} {
   if(enforceTamamoSubmission(run,world))return {ok:false,message:''};
+  if(!skillGestureUnlocked(run.level,gesture))return {ok:false,message:'레벨 '+SKILL_UNLOCK_LEVEL[gesture as UnlockedGesture]+'에 배우는 도형이다.'};
   const card = equippedSkill(run,gesture);
   if (!card) return {ok:false,message:'기술을 장착하세요.'};
   if(!skillFitsGesture(card,gesture))return {ok:false,message:skillStrokes(card)+'획 이상 도형이 필요하다.'};

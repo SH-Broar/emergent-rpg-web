@@ -1,3 +1,5 @@
+import { ensureForage } from './field-forage';
+import { regionRocks } from './field-biomes';
 import { connectionVector, inward } from './field-geography';
 import { ensureBases, baseTown, playerHomeId, innId } from './field-bases';
 import { homeId, courtId, commonId } from '@/data/npc-calendar';
@@ -13,6 +15,11 @@ import { effectiveContent } from './map';
 import { boundaryFor, carvePath, fieldConnection, fieldDimensions, fieldTheme, readRoad, roadId, terrainFor } from './field-geography';
 
 export const FIELD_ITEMS: Record<string, { name: string; glyph: string; color: string }> = {
+  'field-springseed': { name: '샘의 씨앗', glyph: '✧', color: '#bfe9f1' },
+  'field-wrap': { name: '보강 붕대', glyph: '▤', color: '#c5c1a8' },
+  'field-smoke': { name: '연막 포자', glyph: '◌', color: '#c0b0d2' },
+  'field-salve': { name: '수액 연고', glyph: '◈', color: '#bdd39c' },
+  'field-spark': { name: '전하 소금', glyph: 'ϟ', color: '#f3d77d' },
   water: { name: '물', glyph: '◉', color: '#80d5ef' },
   'field-seed': { name: '들곡 씨앗', glyph: '⌁', color: '#dec58c' },
   'raw-fiber': { name: '풀섬유', glyph: '≋', color: '#a8c986' },
@@ -112,7 +119,7 @@ function connectExits(space: FieldSpace, node: Node, run: RunState) {
 }
 export function ensureFieldSpace(run: RunState, world: InteractionWorld, id: string): FieldSpace {
   world.spaces ??= {};
-  const old=world.spaces[id];if(old?.layoutVersion===3){connectNeighborhood(run,world,old);connectBases(run,world,old);repairFieldPlacements(world,old);return old;}
+  const old=world.spaces[id];if(old&&(old.layoutVersion===4||old.residence)){connectNeighborhood(run,world,old);connectBases(run,world,old);repairFieldPlacements(world,old);ensurePractice(world,old);const node=baseNode(run,old.id);if(node){ensureRegionalProps(world,old,node);ensureForage(run,world,old,node);}return old;}
   if(id.includes('::home:')||id.endsWith('::residents')||id.endsWith('::commons')||id.endsWith('::player-home')||id.endsWith('::inn'))return createResidence(run,world,id);
   const data=useDataStore(),map=fieldMap(run);
   if(!map)throw new Error('플레이할 장소가 없습니다.');
@@ -124,7 +131,7 @@ export function ensureFieldSpace(run: RunState, world: InteractionWorld, id: str
   const {width,height}=road?{width:6,height:6}:dungeon?{width:10,height:9}:fieldDimensions(node,npcs.length);
   const spawn={x:dungeon?2:Math.floor(width/2),y:Math.floor(height/2)};
   const space:FieldSpace={id,nodeId:node.id,name:road?road.from.label+' — '+road.to.label+' · '+(road.index+1)+'/'+road.count:dungeon?node.label+' · 지하 '+floor+'층':node.label,
-    width,height,tiles:terrainFor(node,width,height,dungeon),spawn,exits:[],layoutVersion:3,theme:dungeon?'cave':fieldTheme(node),cleared:old?.cleared,
+    width,height,tiles:terrainFor(node,width,height,dungeon),spawn,exits:[],layoutVersion:4,theme:dungeon?'cave':fieldTheme(node),cleared:old?.cleared,
     ...(dungeon?{dungeon:{origin:node.id,floor,totalFloors:3}}:{}),...(road?{road:{from:road.from.id,to:road.to.id,index:road.index,count:road.count}}:{})};
   world.spaces[id]=space;space.tiles[spawn.y]![spawn.x]='path';
   if(road){
@@ -161,13 +168,13 @@ export function ensureFieldSpace(run: RunState, world: InteractionWorld, id: str
       space.tiles[plot.pos!.y]![plot.pos!.x]='soil';
     }
     if(!dungeon&&(!town||node.kind==='village'&&!road)){
-      const shrub=object(world,space,'brush',space.theme==='coast'?'바닷풀':'섬유풀',at(12,10),['brush','renewable'],{flammability:3,moisture:1},{'raw-fiber':8});
-      shrub.renewable={resourceId:'raw-fiber',capacity:8,interval:4,nextTurn:world.turn+4};
+      const shrub=object(world,space,'brush',space.theme==='coast'?'바닷풀':'섬유풀',at(12,10),['brush','renewable'],{flammability:3,moisture:1},{'raw-fiber':2});
+      shrub.renewable={resourceId:'raw-fiber',capacity:2,interval:100,nextTurn:world.turn+100};
     }
     if(town||dungeon||seed%3===0){
       const barrel=object(world,space,'barrel','물통',at(10,3),['barrel','storage','shared'],{portable:1,mass:2,solid:1,moisture:2,hardness:1,spillOnBreak:1},{water:8});barrel.colors={water:50,earth:10};
     }
-    if(dungeon||!town&&seed%2===0||node.kind==='village')object(world,space,'stone','돌덩이',at(11,9),['stone','shared'],{portable:1,mass:3,solid:1,hardness:8});
+    if(dungeon||!town||node.kind==='village')for(let i=0;i<(dungeon?2:regionRocks(node));i++)object(world,space,'stone'+(i?'-'+i:''),space.theme==='volcanic'?'현무암':'바위',at(11-i*3,9-i*2),['stone','shared'],{portable:1,mass:3,solid:1,hardness:8});
     if(space.theme==='volcanic'||dungeon||node.kind==='workshop')object(world,space,'brazier','화로',at(2,2),['brazier','storage','shared'],{heat:4,solid:1,hardness:4},{'i-life-char':4});
     if(!dungeon&&(node.kind==='village'||space.theme==='coast')){
       const well=object(world,space,'well','샘',at(2,4),['well','storage','shared'],{solid:1,moisture:5,hardness:8},{water:30});
@@ -200,6 +207,9 @@ export function ensureFieldSpace(run: RunState, world: InteractionWorld, id: str
   for(const actor of Object.values(world.entities).filter(e=>e.npcId&&e.nodeId===id&&!e.pos&&!e.routine?.travel))placeFieldEntity(world,space,actor,space.spawn);
  for(const e of Object.values(world.entities).filter(e=>e.nodeId===id)){e.fieldUpdatedAt??=run.field?.elapsedSeconds??0;e.fieldNpcAt??=e.fieldUpdatedAt;}
   repairFieldPlacements(world,space);
+  ensurePractice(world,space);
+  ensureRegionalProps(world,space,node);
+  ensureForage(run,world,space,node);
   return space;
 }
 
@@ -227,7 +237,7 @@ function createResidence(run:RunState,world:InteractionWorld,id:string):FieldSpa
  const width=kind==='court'&&residents.length>4?8:6,height=6;
  const space:FieldSpace={id,nodeId:base,name:npc?npc.name+'의 집':kind==='player-home'?node.label+' · 내 집':kind==='inn'?node.label+' · 여관':kind==='commons'?node.label+' · 공동 마당':node.label+' · 주거지',width,height,spawn:{x:Math.floor(width/2),y:3},
  tiles:Array.from({length:height},(_,y)=>Array.from({length:width},(_,x)=>x===0||y===0||x===width-1||y===height-1?'wall':['home','player-home','inn'].includes(kind)?'wood':'grass')),
- exits:[],layoutVersion:3,housingVersion:1,theme:'town',residence:{parent,kind,npcId:npc?.id}};
+ exits:[],layoutVersion:4,housingVersion:1,theme:'town',residence:{parent,kind,npcId:npc?.id}};
  world.spaces![id]=space;
  const incoming=inward(parentSpace,entry.pos),back=boundaryFor(space,incoming.x,incoming.y,[]);
  space.exits.push({to:parent,label:parentSpace.name,pos:back});carvePath(space,back,space.spawn);
@@ -290,4 +300,21 @@ export function repairFieldPlacements(world:InteractionWorld,space:FieldSpace) {
   if(seen.has(key))placeFieldEntity(world,space,e,e.pos!);
   seen.add(e.pos!.x+','+e.pos!.y);
  }
+}
+
+/** One durable practice object; breaking or moving it is a real change. */
+function ensurePractice(world:InteractionWorld,space:FieldSpace){
+ if(space.id!=='n-iluneon-guild'||space.practiceVersion)return;
+ space.practiceVersion=1;
+ const dummy=object(world,space,'practice','연습 말뚝',{x:space.width-2,y:2},['practice','wood'],{solid:1,portable:1,mass:4,hardness:1,maxHp:1000,flammability:1});
+ dummy.kind='facility';
+}
+
+/** Existing saves gain the region's new props once; destroyed props are never revived. */
+function ensureRegionalProps(world:InteractionWorld,space:FieldSpace,node:Node){
+ if(space.biomePropsVersion||space.dungeon||space.road||space.residence)return;
+ space.biomePropsVersion=1;
+ if(regionRocks(node)<3)return;
+ const rocks=Object.values(world.entities).filter(e=>e.nodeId===space.id&&e.tags.includes('stone'));
+ for(let i=rocks.length;i<3;i++)object(world,space,'outcrop-'+i,space.theme==='volcanic'?'현무암':'바위',{x:space.width-2-i,y:space.height-2},['stone','shared'],{portable:1,mass:3,solid:1,hardness:8});
 }

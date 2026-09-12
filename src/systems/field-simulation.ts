@@ -1,3 +1,6 @@
+import { ensureJourney, noteJourney, questTopics, performQuest } from './field-journey';
+import { skillGestureUnlocked, SKILL_UNLOCK_LEVEL, type SkillGesture } from './field-skill-rules';
+import { supplyAction, SUPPLY_NAMES } from './field-supplies';
 import { fieldTargets } from './field-selection';
 import { prepareCreatureIntent } from './field-ai';
 import { ensureBases, rememberHouse, wakeTime, playerHomeId, initialHomeNode, baseEntryFailure, baseOffer, purchaseBase } from './field-bases';
@@ -52,6 +55,7 @@ export function ensureField(run = useRunStore().data): { world: InteractionWorld
   }
   run.field.elapsedSeconds = Math.max(run.field.elapsedSeconds, run.visitedNodes.length * LEGACY_SECONDS);
   ensureBases(run);
+  ensureJourney(run).visited[run.currentNodeId]=true;
   const space = ensureFieldSpace(run, world, run.currentNodeId);
   const player = world.entities.player!;
   if (!run.field.controlsVersion) {
@@ -107,8 +111,13 @@ function program(gesture: Gesture, effects: InteractionAction['effects'], extra:
 /** This adapter chooses primitives by capabilities, never a per-object action pair table. */
 export function fieldAction(run: RunState, world: InteractionWorld, actor: WorldEntity, target: WorldEntity, gesture: Gesture, pos: GridPos, selectedItem?: string): InteractionAction | undefined {
   const level = actor.id === 'player' ? gestureLevel(run, gesture) : 1 + Math.floor(actor.agent?.skills.work ?? 0);
+  if(gesture==='tend'&&selectedItem&&SUPPLY_NAMES[selectedItem])return supplyAction(actor,target,selectedItem);
   if(gesture==='strike')gesture='triangle';
   if(gesture==='tend')gesture='inverted';
+  if((gesture==='tap'||gesture==='take')&&target.tags.includes('forage')){
+   const resource=Object.keys(target.stock).find(id=>(target.stock[id]??0)>0);if(!resource)return;
+   return program(gesture,[{kind:'transfer',resourceId:resource,quantity:1,from:'target',to:'actor'}]);
+  }
   if(gesture==='tap'&&target.tags.includes('life-site')) {
     let action:InteractionAction|undefined=lifeActions(run,world,actor.id,target.id)[0];
     const batch=action?.effects.find(e=>e.kind==='production'&&e.batch);
@@ -174,17 +183,18 @@ export function speechFor(run:RunState,actor:WorldEntity):FieldSpeech {
   const form=run.transform?.field?run.transform.formRaceId:undefined;
   if(form){
     if(actor.tags.includes('restore:'+form)){
-      lines.splice(0,lines.length,'꼬리가 둘이네. 타마모가 손댔어?');
+      lines.splice(0,lines.length,'그 모습… 타마모한테 다녀왔구나. 잠깐, 꼬리부터 볼게.');
       topics.unshift({label:'원래 모습으로',lines:[],action:'restore-form'},
-        {label:'이 몸에 대해',lines:['손에 안 붙는다고 버릴 술법은 아니야. 공방에서 여우불을 다듬어 봐. 몸을 돌려놓아도 익힌 건 남아.']});
+        {label:'이 몸에 대해',lines:['몸을 돌려놓을 수는 있어. 그 전에 이 힘을 더 익혀 봐도 되고. 결정했으면 말해.']});
     }else{
-      lines.unshift((run.field?.spoken[actor.id]??0)>0?'목소리는 그대로인데… 무슨 일이 있었어?':'꼬리, 문에 끼이지 않게 조심해.');
+      lines.unshift((run.field?.spoken[actor.id]??0)>0?'어, 목소리는 알아듣겠어. 무슨 일이 있었던 거야?':'들어올 때 문턱 조심해. 꼬리 끝이 걸릴 것 같아서.');
       const knows=actor.tags.includes('mage')||['npc-cayo','npc-valencia'].includes(actor.npcId??'');
       topics.unshift({label:'변신을 풀려면',lines:[knows?'카시스에게 물어봐. 모스의 대장간에도 가끔 들르던데. 나는 그 술법을 잘 몰라.':'미안해. 나는 그런 술법은 다룰 줄 몰라.']});
     }
   }
+  topics.unshift(...questTopics(run,actor));
   topics.push(...residentAgenda(run,actor)??[]);
-  if(trust<-.25)lines.unshift('잠깐. 지금은 긴 이야기를 나누고 싶지 않아.');
+  if(trust<-.25)lines.unshift('미안하지만, 지금은 이야기하고 싶지 않아.');
   return {actorId:actor.id,name:actor.name,lines,topics};
 }
 /** Dialogue choices revalidate the actual NPC at execution time. */
@@ -192,6 +202,11 @@ export function performFieldService(actorId:string,action:string):FieldResult {
   const run=useRunStore().data,{world}=ensureField(run);
   enforceTamamoSubmission(run,world);if(!checkPlayer(run,world))return {ok:false,message:'집에서 눈을 떴다.',travel:true};
   if(run.ended||run.field?.encounter)return {ok:false,message:'지금은 부탁할 수 없다.'};
+  if(action.startsWith('quest:')){
+    const result=performQuest(run,world,actorId,action);
+    if(result.ok){syncPlayerFromWorld(run,world);advanceFieldTime(STEP_SECONDS,false);}
+    return result;
+  }
   if(action.startsWith('base:')){
     const result=purchaseBase(run,actorId,action);
     if(result.ok){syncPlayerFromWorld(run,world);advanceFieldTime(STEP_SECONDS,false);}
@@ -206,7 +221,7 @@ export function performFieldService(actorId:string,action:string):FieldResult {
   const result=cureFieldTransformation(run,world,actorId);
   if(!result.ok)return result;
   processSocialFacts(world);syncPlayerFromWorld(run,world);advanceFieldTime(STEP_SECONDS,false);
-  return {...result,speech:{actorId,name:world.entities[actorId]!.name,lines:['됐어. 손끝부터 천천히 움직여 봐.']}};
+  return {...result,speech:{actorId,name:world.entities[actorId]!.name,lines:['끝났어. 바로 일어나지 말고, 손부터 조금 움직여 봐.']}};
 }
 function grantPractice(run: RunState, gesture: Gesture, target: WorldEntity, result: ReturnType<typeof resolveInteraction>) {
   const field = run.field!;
@@ -215,7 +230,7 @@ function grantPractice(run: RunState, gesture: Gesture, target: WorldEntity, res
   if (field.practiceAt[key] !== undefined && field.elapsedSeconds - field.practiceAt[key]! < 60) return;
   field.practiceAt[key] = field.elapsedSeconds;
   field.gestureXp[gesture] = Math.min(600, (field.gestureXp[gesture] ?? 0) + 1);
-  if (result.facts.some(f=>f.kind==='transfer'&&(f.after??0)<(f.before??0)) && (target.tags.includes('field-plot') || target.tags.includes('brush'))) useRunStore().addLifeXp(1);
+  if (result.facts.some(f=>f.kind==='transfer'&&(f.after??0)<(f.before??0)) && (target.tags.includes('field-plot') || target.tags.includes('brush') || target.tags.includes('forage'))) useRunStore().addLifeXp(1);
 }
 function settleProduction(run: RunState, world: InteractionWorld, activeIds?: ReadonlySet<string>) {
   for (const e of activeIds ? [...activeIds].map(id=>world.entities[id]!).filter(Boolean) : Object.values(world.entities)) {
@@ -265,6 +280,7 @@ function tickResidents(run: RunState, world: InteractionWorld, activeIds: Readon
 function defeatCreature(run: RunState, world: InteractionWorld, e: WorldEntity) {
   const c = e.creature!;
   if (c.defeated || valid(e)) return;
+  noteJourney(run,'defeat');
   c.defeated = true; c.intent = undefined; c.pending=undefined;c.nextAction=undefined;
   const id = `${e.id}:loot`;
   const loot:WorldEntity = { id, name: '남겨진 물품', kind: 'resource', nodeId: e.nodeId, pos: e.pos ? { ...e.pos } : undefined, colors: {}, tags: ['storage', 'shared', 'loot'], properties: { integrity: 100, portable: 1, mass: 1 }, stock: { 'i-crop-grain': c.rank === 'normal' ? 1 : 2, ...(c.reward.itemId ? { [c.reward.itemId]: 1 } : {}) } };
@@ -461,6 +477,7 @@ export function travelField(to: string): FieldResult {
   }
   const next = ensureFieldSpace(run, world, to);
   rememberHouse(run,next.id);
+  ensureJourney(run).visited[next.id]=true;
   run.currentNodeId = next.id;
   player.nodeId = next.id;
   // Return beside the connecting path, never immediately trigger the exit again.
@@ -515,6 +532,7 @@ export function performFieldGesture(gesture: Gesture, targetId: string | undefin
   const { world, space, player } = ensureField(run);
   enforceTamamoSubmission(run,world);if(!checkPlayer(run,world))return {ok:false,message:'집에서 눈을 떴다.',travel:true};
   if (!GESTURES.includes(gesture) || run.ended || run.field!.encounter) return { ok: false, message: '' };
+  if(!skillGestureUnlocked(run.level,gesture))return {ok:false,message:'레벨 '+SKILL_UNLOCK_LEVEL[gesture as SkillGesture]+'에 배우는 도형이다.'};
   const definition=gestureDefinition(gesture)!;
   if(definition.drawOnly&&(!input?.drawn||input.quality<1-definition.tolerance)) return {ok:false,message:'무늬가 흐트러졌다.'};
   if(definition.direction) {
@@ -530,7 +548,7 @@ export function performFieldGesture(gesture: Gesture, targetId: string | undefin
   if(SKILL_GESTURES.includes(gesture as typeof SKILL_GESTURES[number])) {
     const result=castFieldSkill(run,world,gesture,pos);
     if(!checkPlayer(run,world))return {ok:false,message:'집에서 눈을 떴다.',travel:true};
-    if(result.ok){syncPlayerFromWorld(run,world);advanceFieldTime(STEP_SECONDS,false);}
+    if(result.ok){noteJourney(run,'skill');noteJourney(run,'skill:'+gesture);syncPlayerFromWorld(run,world);advanceFieldTime(STEP_SECONDS,false);}
     return result;
   }
   if(gesture==='dash'){
@@ -563,6 +581,7 @@ export function performFieldGesture(gesture: Gesture, targetId: string | undefin
   const beforeHp = target.properties.integrity ?? 100;
   const result = resolveInteraction(world, player.id, target.id, action);
   if (!result.ok) return { ok: false, message: result.reason ?? result.message };
+  if(gesture==='tend'&&run.field!.selectedItem&&SUPPLY_NAMES[run.field!.selectedItem]){noteJourney(run,'used');noteJourney(run,'used:'+run.field!.selectedItem);}
   if (target.creature && (target.properties.integrity ?? 100) < beforeHp) target.creature.angry = true;
   let speech;
   if ((gesture === 'circle'||gesture==='tap') && target.kind === 'actor' && target.id !== player.id && !target.creature) { speech = speechFor(run, target); run.field!.spoken[target.id] = (run.field!.spoken[target.id] ?? 0) + 1; }
@@ -598,7 +617,9 @@ export function fieldHints(run:RunState,world:InteractionWorld,target:WorldEntit
   if(!target)return [{id:'dash',label:'이동기 · ◆1'},{id:'tap',label:world.spaces?.[player.nodeId]?.exits.some(e=>distance(e.pos,pos)===0)?'길 따라가기':'주변 살피기'}];
   const service=target.tags.find(t=>t.startsWith('service:'));
   const tapLabel=target.id==='player'?'쉬기':target.kind==='actor'?'대화':service?'들어가기':target.tags.includes('dungeon-entry')?'던전 들어가기':target.tags.includes('shelter')?'쉬기':target.workRecipe?'작업':target.tags.includes('life-site')?(lifeActions(run,world,'player',target.id)[0]?.label??'성장 중'):Object.values(target.stock).some(n=>n>0)?'가져오기':'살피기';
-  const options=[{id:'tap',label:tapLabel},{id:'lift',label:'들어 올리기'},{id:'place',label:'내려놓기'},{id:'strike',label:target.id==='player'?'방어':'힘 가하기'},{id:'tend',label:target.id==='player'?'먹기':target.properties.soil?'심기 · 돌보기':'물 주기'},{id:'give',label:'건네기'}];
+  const selectedSupply=run.field?.selectedItem&&SUPPLY_NAMES[run.field.selectedItem]?supplyAction(player,target,run.field.selectedItem):undefined;
+  const options=[{id:'tap',label:tapLabel},{id:'lift',label:'들어 올리기'},{id:'place',label:'내려놓기'},{id:'strike',label:target.id==='player'?'방어':'힘 가하기'},{id:'tend',label:selectedSupply?.label??(target.id==='player'?'먹기':target.properties.soil?'심기 · 돌보기':'물 주기')},{id:'give',label:'건네기'}];
+  if(selectedSupply)options.sort((a,b)=>Number(b.id==='tend')-Number(a.id==='tend'));
   return options.filter(h=>{
     if(h.id==='tap'&&target.creature)return false;
     const t=h.id==='place'?carriedEntity(world):target;if(!t)return false;
