@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import FieldColorPanel from '@/components/FieldColorPanel.vue';
+import { COLOR_OPERATION_DEFS } from '@/systems/field-color-actions';
+import { fieldCastingLabel } from '@/systems/field-casting';
+import { labelOfColor } from '@/systems/equipment';
 import { displayedHp } from '@/systems/world/engine';
 import FieldCraftPanel from '@/components/FieldCraftPanel.vue';
 import { SUPPLY_NAMES } from '@/systems/field-supplies';
@@ -15,10 +19,10 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router';
 import { useRunStore } from '@/stores/run';
 import { useUiStore } from '@/stores/ui';
-import type { GridPos } from '@/data/schemas/base';
+import type { Element, GridPos } from '@/data/schemas/base';
 import { GLYPHS, type Gesture, type FieldSpeech } from '@/systems/field-types';
 import { baseNode, fieldItemName, FIELD_ITEMS } from '@/systems/field-generation';
-import { advanceFieldTime, carriedEntity, dashFailure, ensureField, fieldHints, gestureLevel, performFieldGesture, performFieldService, setFieldViewport, stepField, visibleFieldEntities } from '@/systems/field-simulation';
+import { advanceFieldTime, carriedEntity, dashFailure, ensureField, fieldHints, gestureLevel, performFieldColor, performFieldGesture, performFieldService, setFieldViewport, stepField, visibleFieldEntities } from '@/systems/field-simulation';
 import { PRODUCTION_MODES } from '@/systems/life-production';
 import { createFieldIdleClock } from '@/systems/field-idle';
 import { cardinal, distance, fieldPath, positionKey, walkable } from '@/systems/world/spatial';
@@ -37,13 +41,16 @@ import InventoryMenu from '@/components/InventoryMenu.vue';
 
 const run = useRunStore(), ui = useUiStore(), router = useRouter();
 const initialized = ref(false), moving = ref(false), bagOpen = ref(false), skillsOpen = ref(false), settingsOpen = ref(false);
-const craftOpen=ref(false);
+const craftOpen=ref(false),colorOpen=ref(false),colorMode=ref<Element>();
+const colorTools=computed(()=>COLOR_OPERATION_DEFS.filter(d=>d.color===colorMode.value));
+function prepareColor(color:Element,direction:'out'|'in'){stop();colorMode.value=color;colorOpen.value=false;aimSkill.value=undefined;aimDash.value=false;guide.value=direction==='out'?'strike':'tend';wake();}
+function openColors(){stop();colorOpen.value=!colorOpen.value;bagOpen.value=false;detailsOpen.value=false;progressOpen.value=false;wake();}
 const mapOpen=ref(false),drawing=ref(false),pointerHeld=ref(false),hidden=ref(document.hidden),guide=ref<string>();
 const journalOpen=ref(false);
 const progressOpen=ref(false),detailsOpen=ref(false),characterOpen=ref(false),inventoryOpen=ref(false);
 const idle=createFieldIdleClock();
 let idleTimer:ReturnType<typeof setInterval>|undefined;
-const paused=computed(()=>moving.value||drawing.value||pointerHeld.value||hidden.value||bagOpen.value||skillsOpen.value||settingsOpen.value||mapOpen.value||detailsOpen.value||progressOpen.value||characterOpen.value||inventoryOpen.value||craftOpen.value||journalOpen.value||aimDash.value||!!speech.value||!!run.data.field?.encounter||ui.tutorialTopic!==null);
+const paused=computed(()=>colorOpen.value||moving.value||drawing.value||pointerHeld.value||hidden.value||bagOpen.value||skillsOpen.value||settingsOpen.value||mapOpen.value||detailsOpen.value||progressOpen.value||characterOpen.value||inventoryOpen.value||craftOpen.value||journalOpen.value||aimDash.value||!!speech.value||!!run.data.field?.encounter||ui.tutorialTopic!==null);
 function wake(){idle.reset(Date.now());}
 function press(){pointerHeld.value=true;wake();}
 function release(){pointerHeld.value=false;wake();}
@@ -68,7 +75,7 @@ const selection=computed(()=>target.value?.carriedBy===player.value?.id?player.v
 const dashKeys=computed(()=>new Set(aimDash.value&&space.value&&player.value?cells.value.filter(p=>!dashFailure(world.value,space.value!,player.value!,p)).map(positionKey):[]));
 const selectedSkill=computed(()=>aimSkill.value?equippedSkill(run.data,aimSkill.value):undefined);
 const skillKeys=computed(()=>new Set(selectedSkill.value&&player.value?fieldSkillCells(world.value,player.value,selectedSkill.value,selection.value).map(c=>positionKey(c.pos)):[]));
-function prepareSkill(id:string){if(!unlockedSkillGestures(run.data.level).includes(id as typeof SKILL_GESTURES[number]))return;stop();aimDash.value=false;aimSkill.value=id;guide.value=id;wake();}
+function prepareSkill(id:string){colorMode.value=undefined;colorOpen.value=false;if(!unlockedSkillGestures(run.data.level).includes(id as typeof SKILL_GESTURES[number]))return;stop();aimDash.value=false;aimSkill.value=id;guide.value=id;wake();}
 const pathKeys=computed(()=>new Set(routeCells.value.map(positionKey)));
 const effects=ref<{id:number;pos:GridPos;text:string;kind:string}[]>([]);
 let effectCursor=0;
@@ -85,6 +92,7 @@ watch(()=>world.value?.sequence,()=>{
       if(n!==0){text=n>0?'+'+n:String(n);kind=n>0?'heal':'damage';}
     } else if(f.property==='guard'&&(f.before??0)>(f.after??0)&&f.actorId!==undefined){text='방어 '+Math.round(f.before!-f.after!);kind='guard';}
     else if(f.kind==='signal'&&['빗나감','변신 저항'].includes(f.message)){text=f.message;kind='miss';}
+    if(f.kind==='signal'&&(f.message.includes('집중이 풀렸다.')||f.message==='집중을 이어갈 수 없다.'))say(f.message);
     if(text){effects.value.push({id:f.id,pos:{...f.pos},text,kind});setTimeout(()=>effects.value=effects.value.filter(x=>x.id!==f.id),1600);}
   }
   effects.value=effects.value.slice(-24);
@@ -106,6 +114,9 @@ watch(paused,wake,{flush:'sync'});
 const tileSize = computed(() => Math.floor(Math.min(width.value / columns.value, height.value / rows.value)));
 const camera = computed(() => ({ x: Math.max(0, Math.min((space.value?.width ?? 15) - columns.value, (player.value?.pos?.x ?? 7) - Math.floor(columns.value / 2))), y: Math.max(0, Math.min((space.value?.height ?? 13) - rows.value, (player.value?.pos?.y ?? 6) - Math.floor(rows.value / 2))) }));
 const cells = computed(() => Array.from({ length: rows.value * columns.value }, (_, i) => ({ x: camera.value.x + i % columns.value, y: camera.value.y + Math.floor(i / columns.value) })));
+const traces=computed(()=>entities.value.filter(e=>e.tags.includes('casting-trace')&&(e.properties.integrity??0)>0));
+const traceKeys=computed(()=>new Set(traces.value.filter(e=>e.pos).map(e=>positionKey(e.pos!))));
+const preparation=computed(()=>{const skills=run.data.field?.skills;if(skills?.pending)return skills.pending.card.name+' · '+Math.max(1,skills.pending.due-Math.floor(run.data.field!.elapsedSeconds/30))+'턴'+(skills.pending.card.castSpeed==='slow'?' · 이동·피격 시 취소':'');if(skills?.nextPower)return '다음 술식 ×'+skills.nextPower.multiplier;return '';});
 const danger = computed(() => new Set(entities.value.flatMap(e => e.creature?.intent ?? []).map(positionKey)));
 const hints=computed(()=>initialized.value?fieldHints(run.data,world.value,target.value,selection.value):[]);
 function at(p: GridPos) { return entities.value.filter(e => e.pos && distance(e.pos, p) === 0).sort((a,b) => Number(a.kind === 'actor') - Number(b.kind === 'actor')); }
@@ -123,6 +134,7 @@ async function clickCell(pos: GridPos) {
     say(result.message);if(result.ok){aimDash.value=false;selectSelf();}
     wake();return;
   }
+  if(colorMode.value){selectedId.value=fieldTargets(at(pos))[0]?.id;selectedPos.value={...pos};wake();return;}
   if(aimSkill.value){selectedId.value=at(pos).find(e=>e.kind==='actor')?.id;selectedPos.value={...pos};wake();return;}
   const candidates = at(pos);
   const e = candidates.find(e=>e.id===selectedId.value)??fieldTargets(candidates)[0];
@@ -163,7 +175,9 @@ function perform(gesture: Gesture, quality=1, drawn=false) {
   let pos = selection.value;
   if (gesture === 'place' && held.value && player.value?.pos && distance(player.value.pos, pos) === 0) pos = cardinal(player.value.pos).find(p => walkable(world.value, run.data.currentNodeId, p, held.value?.id)) ?? pos;
   const origin = run.data.currentNodeId;
-  const result = performFieldGesture(gesture, target.value?.id, pos, {quality,drawn});
+  const operation=colorMode.value&&['strike','tend'].includes(gesture)?colorMode.value+':'+(gesture==='strike'?'out':'in'):undefined;
+  if(!operation&&!['up','down','left','right'].includes(gesture))colorMode.value=undefined;
+  const result = operation?performFieldColor(operation,target.value?.id,pos):performFieldGesture(gesture, target.value?.id, pos, {quality,drawn});
   say(result.message);
   if(result.ok)aimSkill.value=undefined;
   if (result.speech) { speech.value = result.speech; line.value = 0; }
@@ -218,17 +232,19 @@ onBeforeUnmount(() => { stop(); observer?.disconnect(); clearTimeout(timer);clea
     <header class="field-heading"><div><span class="eyebrow">COLORZ</span><h1>{{ space.name }}</h1></div><div class="field-clock"><span><b>♥</b> {{ run.data.hp }}/{{ run.data.maxHp }}</span><span class="mana-pips" :aria-label="'마나 '+run.data.mp+' / 3'"><i v-for="n in 3" :key="n" :class="{filled:run.data.mp>=n}">◆</i></span></div></header>
     <div ref="stageElement" class="field-stage" :class="{ dungeon: !!space.dungeon }">
       <div class="field-board" role="group" aria-label="격자 필드" :style="{ gridTemplateColumns: `repeat(${columns}, ${tileSize}px)`, gridTemplateRows: `repeat(${rows}, ${tileSize}px)` }">
-        <button v-for="pos in cells" :key="positionKey(pos)" class="field-cell" :class="[`tile--${tile(pos)}`, { selected: distance(selection, pos) === 0, danger: danger.has(positionKey(pos)), imminent:imminent.has(positionKey(pos)), path:pathKeys.has(positionKey(pos)), 'dash-aim':dashKeys.has(positionKey(pos)), 'skill-aim':skillKeys.has(positionKey(pos)), exit: !!exitAt(pos) }]" :aria-label="label(pos)" @click="clickCell(pos)">
+        <button v-for="pos in cells" :key="positionKey(pos)" class="field-cell" :class="[`tile--${tile(pos)}`, { selected: distance(selection, pos) === 0, danger: danger.has(positionKey(pos)), 'casting-cell':traceKeys.has(positionKey(pos)), imminent:imminent.has(positionKey(pos)), path:pathKeys.has(positionKey(pos)), 'dash-aim':dashKeys.has(positionKey(pos)), 'skill-aim':skillKeys.has(positionKey(pos)), exit: !!exitAt(pos) }]" :aria-label="label(pos)" @click="clickCell(pos)">
           <span v-for="fx in effects.filter(f=>distance(f.pos,pos)===0)" :key="fx.id" class="combat-float" :class="'combat-float--'+fx.kind" aria-live="polite">{{ fx.text }}</span>
           <span v-if="tile(pos) === 'grass'" class="grass-marks" aria-hidden="true">{{ (pos.x * 3 + pos.y) % 4 === 0 ? 'ˎ ˏ' : '·' }}</span>
           <span v-if="exitAt(pos)" class="exit-mark" aria-hidden="true">{{ space.dungeon ? '≋' : '⋮' }}</span>
           <span v-for="entity in at(pos)" :key="entity.id" class="field-piece" :class="{ 'field-piece--player': entity.id === 'player' }"><FieldEntityGlyph :entity="entity"/><span v-if="questMarker(run.data,entity.npcId)" class="quest-mark" :aria-label="questMarker(run.data,entity.npcId)==='!'?'새 부탁':'부탁 완료'">{{ questMarker(run.data,entity.npcId) }}</span><FieldResourceGauge v-if="!entity.creature" :entity="entity"/><span v-if="entity.creature" class="creature-hp"><i :style="{ width: `${entity.properties.integrity ?? 100}%` }"/></span><FieldIntentBadge v-if="entity.creature" :entity="entity"/><span v-if="entity.id === speech?.actorId" class="speech-bubble">{{ speech.lines[line]?.slice(0, 22) }}{{ (speech.lines[line]?.length ?? 0) > 22 ? '…' : '' }}</span></span>
+          <span v-if="traceKeys.has(positionKey(pos))" class="trace-count">{{ Math.max(0,...traces.filter(e=>e.pos&&distance(e.pos,pos)===0).map(e=>Math.ceil(((e.properties.castingExpiresAt??0)-run.data.field!.elapsedSeconds)/30))) }}</span>
           <span v-if="exitAt(pos)" class="exit-label">{{ exitAt(pos)?.label }}</span>
           <span v-if="distance(selection,pos)===0&&hints.length&&target?.id!=='player'" class="tile-hints" aria-hidden="true">{{ hints.map(h=>GLYPHS[h.id]).join(' ') }}</span>
         </button>
       </div>
       <FieldStatusFeedback :entity="player" :transformed="!!run.data.transform"/>
       <div v-if="statusEntries(player).length||run.data.transform" class="field-statuses" aria-label="내 상태"><button v-if="run.data.transform" @click="say('여우 기술은 공방에서 성장한다. 원래 모습으로 돌아와도 수련은 남는다.')">두 꼬리 여우</button><button v-for="s in statusEntries(player)" :key="s.key" :aria-label="statusLabel(s.key)+' '+s.value" @click="say(STATUS_HELP[s.key]??statusLabel(s.key))">{{ statusLabel(s.key) }} {{ s.value }}</button></div>
+      <div v-if="preparation" class="casting-preparation" role="status">{{ preparation }}</div>
       <div v-if="notice" class="field-notice" role="status">{{ notice }}</div>
       <div v-if="space.cleared && space.dungeon" class="room-clear">◇ 길이 열렸다</div>
     </div>
@@ -257,15 +273,22 @@ onBeforeUnmount(() => { stop(); observer?.disconnect(); clearTimeout(timer);clea
         <header><strong>{{ targetName }}</strong><button aria-label="대상 살펴보기 닫기" @click="detailsOpen=false">×</button></header>
         <div v-if="layeredTargets.length>1" class="target-stock" aria-label="같은 칸의 대상"><button v-for="entity in layeredTargets" :key="entity.id" :aria-pressed="selectedId===entity.id" @click="selectedId=entity.id">{{ entity.name }}</button></div>
         <div class="target-stock"><button v-for="[id,n] in targetStock" :key="id" :aria-pressed="run.data.field?.selectedItem===id" @click="chooseItem(id);detailsOpen=false">{{ fieldItemName(id) }} <b>{{ n }}</b></button></div>
-        <div v-if="target?.creature" class="target-states"><p>{{ creatureIntent(target).label }}</p><p v-if="target.creature.pending?.transform">첫 낙인은 수화 · 수화 중에는 변신 판정</p><p v-for="s in statusEntries(target)" :key="s.key">{{ statusLabel(s.key) }} {{ s.value }} · {{ STATUS_HELP[s.key] }}</p></div><p v-else-if="!targetStock.length">놓인 물건 없음</p>
+        <div v-if="target?.creature" class="target-states"><p>{{ creatureIntent(target).label }}</p><p v-if="target.creature.pending?.transform">첫 낙인은 수화 · 수화 중에는 변신 판정</p><p v-for="s in statusEntries(target)" :key="s.key">{{ statusLabel(s.key) }} {{ s.value }} · {{ STATUS_HELP[s.key] }}</p></div><p v-else-if="target&&fieldCastingLabel(target,run.data.field!.elapsedSeconds)">{{ fieldCastingLabel(target,run.data.field!.elapsedSeconds) }}</p><p v-else-if="!targetStock.length">놓인 물건 없음</p><p v-if="target" class="material-values">{{ [['moisture','수분'],['heat','열'],['hardness','경도'],['insulation','절연'],['mass','무게'],['solid','통행 차단'],['light','빛'],['smoke','연기']].filter(([key])=>target!.properties[key!]!>0).map(([key,name])=>name+' '+Math.round(target!.properties[key!]!*10)/10).join(' · ') }}</p>
       </section>
+      <FieldColorPanel v-if="colorOpen" class="field-drawer" :world="world" :target="target" :pos="selection" :selected="colorMode" @close="colorOpen=false" @choose="prepareColor"/>
       <div class="console-target">
         <div><strong>{{ selectedSkill?selectedSkill.name:aimDash?'ϟ 도착할 칸':targetName }}</strong><small v-if="target?.creature">{{ displayedHp(target.properties) }} HP · {{ creatureIntent(target).label }}</small><small v-else-if="target&&resourceGauge(target)">남은 {{ resourceGauge(target)!.remaining }} / {{ resourceGauge(target)!.capacity }}</small><small v-else-if="target?.production&&!target.production.settled">성장 중</small></div>
-        <button v-if="targetStock.length||layeredTargets.length>1||target?.creature" :class="{'layer-picker':layeredTargets.length>1}" :aria-label="layeredTargets.length>1?'같은 칸의 대상 선택':'대상 살펴보기'" @click="stop();progressOpen=false;detailsOpen=!detailsOpen;bagOpen=false;skillsOpen=false">{{ layeredTargets.length>1?'대상 '+layeredTargets.length:'···' }}</button>
+        <button class="color-toggle" :aria-pressed="colorOpen||!!colorMode" aria-label="컬러 조율 열기" @click="openColors">컬러</button>
+        <button v-if="target||layeredTargets.length>1" :class="{'layer-picker':layeredTargets.length>1}" :aria-label="layeredTargets.length>1?'같은 칸의 대상 선택':'대상 살펴보기'" @click="stop();progressOpen=false;detailsOpen=!detailsOpen;bagOpen=false;skillsOpen=false">{{ layeredTargets.length>1?'대상 '+layeredTargets.length:'···' }}</button>
         <button v-if="moving" aria-label="이동 멈추기" @click="stop">■</button><button v-else aria-label="자신 선택" @click="selectSelf">◎</button>
       </div>
       <div class="console-body">
-        <div v-if="target?.creature||aimSkill" class="context-tools combat-tools">
+        <div v-if="colorMode" class="context-tools color-tools">
+          <button class="hand-slot" @click="openColors"><strong>{{ labelOfColor(colorMode) }} 조율</strong><span>바꾸기</span></button>
+          <div class="context-hints"><button v-for="op in colorTools" :key="op.id" @click="guide=op.direction==='out'?'strike':'tend'"><b>{{ op.direction==='out'?'╱':'╲' }}</b><span>{{ op.label }} · ◆{{ op.mana }}</span></button></div>
+          <button class="hand-slot" @click="colorMode=undefined;guide=undefined"><span>기본 동작으로</span></button>
+        </div>
+        <div v-else-if="target?.creature||aimSkill" class="context-tools combat-tools">
           <button class="hand-slot" @click="skillsOpen=true"><span>기술 구성</span><strong>◆ {{ selectedSkill?fieldSkillMana(run.data,selectedSkill):run.data.mp }}</strong></button>
           <div class="skill-runes" aria-label="장착 기술">
             <button v-for="id in unlockedSkillGestures(run.data.level)" :key="id" :aria-pressed="aimSkill===id" :aria-label="GLYPHS[id]+' '+(equippedSkill(run.data,id)?.name??'비어 있음')" :class="{empty:!equippedSkill(run.data,id)}" @click="equippedSkill(run.data,id)?prepareSkill(id):skillsOpen=true"><b>{{ GLYPHS[id] }}</b><small v-if="equippedSkill(run.data,id)">{{ skillRemaining(run.data,equippedSkill(run.data,id)!)||'·' }}</small></button>
@@ -277,7 +300,7 @@ onBeforeUnmount(() => { stop(); observer?.disconnect(); clearTimeout(timer);clea
           <div class="context-hints" aria-label="가능한 동작"><button v-for="hint in hints" :key="hint.id" :aria-label="hint.label+' 연습선'" @click="guide=hint.id"><b>{{ GLYPHS[hint.id] }}</b><span>{{ hint.label }}</span></button></div>
           <small v-if="!hints.length">대상을 가까이에서 선택하세요.</small>
         </div>
-        <GesturePad :guide="guide" :disabled="ui.tutorialTopic!==null||settingsOpen||mapOpen||bagOpen||skillsOpen||detailsOpen||progressOpen||characterOpen||inventoryOpen||craftOpen||journalOpen" @drawing="drawing=$event" @gesture="perform" @unrecognized="say('다시 그려보세요.');wake()"/>
+        <GesturePad :guide="guide" :disabled="colorOpen||ui.tutorialTopic!==null||settingsOpen||mapOpen||bagOpen||skillsOpen||detailsOpen||progressOpen||characterOpen||inventoryOpen||craftOpen||journalOpen" @drawing="drawing=$event" @gesture="perform" @unrecognized="say('다시 그려보세요.');wake()"/>
       </div>
       <nav class="console-nav" aria-label="필드 메뉴">
         <button :aria-pressed="bagOpen" @click="stop();progressOpen=false;bagOpen=!bagOpen;skillsOpen=false;detailsOpen=false">가방</button>
@@ -347,4 +370,5 @@ h1 { font-size: 16px; line-height: 1.4; margin: 0; font-weight: 600; color: #e3d
 .combat-basics{display:flex;gap:4px}.combat-basics button{flex:1;min-width:0;min-height:24px;padding:2px;border:0;border-radius:3px;background:#263c30;color:#c8c5a9;font-size:10px;white-space:nowrap}.combat-tools>*{flex-shrink:0}
 .console-target .layer-picker{width:auto;min-width:52px;font-size:11px;border:1px solid #91a08155;border-radius:5px}
 .quest-mark{position:absolute;right:0;top:-4px;background:#dec578;color:#273426;border:1px solid #f7eac0;border-radius:50%;width:16px;height:16px;display:grid;place-items:center;font-size:12px;font-weight:800;z-index:4}
+.console-target .color-toggle{font-size:11px;width:40px;border:1px solid #7f97754d;border-radius:5px}.console-target .color-toggle[aria-pressed=true]{border-color:#caba83;color:#f5e0a7}.console-target>div{overflow:hidden}.console-target small{overflow:hidden;text-overflow:ellipsis}.casting-cell{box-shadow:inset 0 0 0 2px #b9a4d2}.trace-count{position:absolute;right:3px;bottom:3px;min-width:15px;border-radius:3px;background:#322f42;color:#eee0fa;font-size:10px;z-index:4}.casting-preparation{position:absolute;bottom:45px;left:50%;transform:translateX(-50%);max-width:90%;padding:5px 9px;border-radius:4px;background:#203239ef;color:#c5dce5;font-size:11px;white-space:nowrap;z-index:7}.material-values{font-size:11px;line-height:1.7;color:#bdcdb4}
 </style>

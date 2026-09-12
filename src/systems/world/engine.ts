@@ -16,7 +16,7 @@ export function normalizeIntegrity(properties:Record<string,number>):void {
  if(hp>0&&hp<1e-7)properties.integrity=0;
 }
 export function conductivityMultiplier(properties: Record<string, number>): number {
-  return 1 + (properties.conductivity ?? 0) + Math.min(1, (properties.moisture ?? 0) / 3);
+  return (1 + (properties.conductivity ?? 0) + Math.min(1, (properties.moisture ?? 0) / 3)) / (1 + Math.max(0, properties.insulation ?? 0));
 }
 
 /** Property reactions have no knowledge of card, crop, profession or action IDs. */
@@ -75,6 +75,7 @@ function visibleWitnesses(world: InteractionWorld, nodeId: string, actorId?: str
 
 export function recordFact(world: InteractionWorld, fact: Omit<WorldFact, 'id' | 'witnesses'>): WorldFact {
   const saved: WorldFact = { ...fact, pos: fact.pos ?? (world.entities[fact.targetId]?.pos ? {...world.entities[fact.targetId]!.pos!} : undefined), targetTags: fact.targetTags ?? [...(world.entities[fact.targetId]?.tags ?? [])],
+    targetKind: fact.targetKind ?? world.entities[fact.targetId]?.kind,
     resourceTags: fact.resourceTags ?? resourceTags(fact.resourceId),
     id: ++world.sequence, witnesses: visibleWitnesses(world, fact.nodeId, fact.actorId, fact.targetId) };
   world.events.push(saved);
@@ -97,7 +98,7 @@ export function observeWorld(world: InteractionWorld, actorId: string): void {
   const sees=createSightTest(world,actor);
   for (const e of Object.values(world.entities)) {
     if (e.nodeId !== actor.nodeId || e.carriedBy && e.carriedBy !== actorId || (obscured && e.id !== actorId && !world.spaces?.[actor.nodeId]) || !sees(e)) continue;
-    const publicProperties = ['integrity', 'moisture', 'heat', 'burning', 'smoke', 'flammability', 'conductivity', 'hardness', 'work', 'workRequired', 'irrigation', 'safety', 'light', 'attention', 'heatTolerance', 'laborPower'];
+    const publicProperties = ['integrity', 'moisture', 'heat', 'burning', 'smoke', 'flammability', 'conductivity', 'hardness', 'work', 'workRequired', 'irrigation', 'safety', 'light', 'attention', 'heatTolerance', 'laborPower', 'insulation', 'solid', 'mass'];
     if (e.id === actorId) publicProperties.push('mana', 'lifeLevel', 'practice');
     known.targets[e.id] = {
       id: e.id, name: e.name, kind: e.kind, nodeId: e.nodeId, turn: world.turn,
@@ -113,6 +114,10 @@ function sideEntity(actor: WorldEntity, target: WorldEntity, side = 'target') { 
 
 /** Material reactions are identical for gestures, creatures and the passing of time. */
 export function influenceEntity(world: InteractionWorld, entity: WorldEntity, property: string, amount: number, actorId?: string, message = `${entity.name}의 상태가 바뀌었다.`): WorldFact[] {
+  const damage = property === 'integrity' && amount < 0 || ['force', 'charge'].includes(property) && amount > 0;
+  const sourceActor = actorId ? world.entities[actorId] : undefined;
+  if (damage && entity.creature?.rank === 'boss' && (!sourceActor || sourceActor.kind !== 'actor')) return [];
+  if (damage && entity.creature?.definitionId === 'bs-act-1-anchor' && !entity.creature.engaged) return [];
   const wasAlive = (entity.properties.integrity ?? 100) > 0;
   const facts = applyMaterialInfluence(entity.properties, entity.colors, property, amount).map(change => recordFact(world, {
     turn: world.turn, nodeId: entity.nodeId, actorId, targetId: entity.id, kind: 'property', ...change,

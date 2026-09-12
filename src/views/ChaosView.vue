@@ -23,6 +23,7 @@ import {
   chaosLevelSummary,
 } from '@/systems/chaos';
 import type { Chaos } from '@/data/schemas';
+import { isFracturedTimeUnlocked } from '@/systems/field-chaos';
 
 const router = useRouter();
 const data = useDataStore();
@@ -85,10 +86,11 @@ onMounted(() => {
       <button class="back" @click="back">← 세이브 관리</button>
       <h1>카오스</h1>
       <p class="sub">
-        높을수록 원래 세계에서 멀어진다. 영혼으로 사두면 매 런 자유로 켤 수 있고, 도전 점수만 기록된다.
-        적용은 <strong>런 시작 직전</strong>에 한다.
+        영혼으로 해금한 카오스는 <strong>새 여정을 시작할 때</strong> 켤 수 있습니다.
       </p>
     </header>
+
+    <p v-if="isFracturedTimeUnlocked(meta)" class="story-unlock">갈라진 시간 · 해금됨<br><small>새 여정의 카오스 선택에서 켤 수 있습니다.</small></p>
 
     <section class="status-bar">
       <div class="chip">
@@ -153,6 +155,8 @@ h1 { color: #f6e8b8; margin: 0; }
 .sub { color: #888; margin: 0.4rem 0 0; font-size: 0.9rem; line-height: 1.5; }
 .sub strong { color: #c08eff; }
 
+.story-unlock { padding: .85rem 1rem; border: 1px solid rgba(192,142,255,.35); border-radius: 8px; color: #dac9f4; }
+.story-unlock small { color: #bdb6a0; }
 .status-bar { display: flex; gap: 1rem; margin: 1rem 0 1.6rem; flex-wrap: wrap; }
 .chip {
   display: flex; flex-direction: column; gap: 0.2rem;

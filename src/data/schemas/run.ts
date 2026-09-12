@@ -711,6 +711,7 @@ export interface TradeContract {
 /** 한 런 전체의 휘발 상태. */
 export interface RunState {
   field?: FieldState;
+  timeStory?: import('@/systems/time-story').TimeStoryState;
   tacticalDraft?: Card[];
   regionWorld?: RegionWorldState;
   interactionWorld?: InteractionWorld;

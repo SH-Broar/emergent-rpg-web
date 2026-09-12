@@ -10,7 +10,7 @@ const saved = new Map();
 const oldWindow = globalThis.window, oldStorage = globalThis.localStorage, oldFetch=globalThis.fetch;
 globalThis.window = { setTimeout: () => 0 };
 globalThis.localStorage = { getItem: key => saved.get(key) ?? null, setItem: (key,value) => saved.set(key,value), removeItem: key => saved.delete(key) };
-const server = await createServer({ root, server: { middlewareMode: true }, appType: 'custom' });
+const server = await createServer({ root, server: { middlewareMode: true, hmr: false }, appType: 'custom' });
 try {
   setActivePinia(createPinia());
   const { useRunStore } = await server.ssrLoadModule('/src/stores/run.ts');
@@ -97,6 +97,21 @@ try {
   assert.equal(skills.equippedSkill(run.data,'square'),undefined);
   results.push('slow cast and locked cells survive serialization; swapping, copies and awakening share cooldown');
 
+
+  a=reset();card=add(a,'slow-moving',[{kind:'damage',value:12}],{cost:2,castSpeed:'slow'});enemy=target(a);
+  assert(field.performFieldGesture('triangle',enemy.id,enemy.pos).ok);
+  const paidMp=run.data.mp;assert(field.performFieldGesture('left').ok);
+  assert.equal(run.data.field.skills.pending,undefined);assert.equal(enemy.properties.integrity,100);
+  assert(a.world.events.some(e=>/움직여서 집중/.test(e.message)));
+  assert.equal(run.data.mp,paidMp+1,'the only mana return is the normal two-turn regeneration, never a cast refund');
+  assert(skills.skillRemaining(run.data,card)>0);
+  a=reset();card=add(a,'slow-hit',[{kind:'damage',value:12}],{cost:2,castSpeed:'slow'});enemy=target(a);
+  assert(field.performFieldGesture('triangle',enemy.id,enemy.pos).ok);
+  engine.influenceEntity(a.world,a.player,'force',10,enemy.id);skills.tickFieldSkills(run.data,a.world);
+  assert.equal(run.data.field.skills.pending,undefined);assert.equal(enemy.properties.integrity,100);
+  assert(a.world.events.some(e=>/피격으로 집중/.test(e.message)));assert.equal(run.data.mp,1);
+  results.push('real slow-cast inputs cancel on movement or routed damage, retain spent mana and cooldown, and report the reason');
+
   a=reset();card=add(a,'area',[{kind:'damage',value:20}],{shape:[{dx:-1,dy:-1},{dx:0,dy:-1},{dx:1,dy:-1}],perTileMul:[.25,1,.5]});
   a.space.tiles[3][3]='wall';enemy=target(a);const side=target(a,'side',{x:5,y:3});
   const preview=skills.fieldSkillCells(a.world,a.player,card,{x:0,y:0});
@@ -130,7 +145,11 @@ try {
   for(const def of supported){
     a=reset();card=add(a,def.id,clone(def.effects),{...clone(def),instanceId:def.id+':audit'});
     const cells=skills.fieldSkillCells(a.world,a.player,card,{x:4,y:2});
-    for(const [i,c]of cells.entries()) if(spatial.distance(c.pos,a.player.pos)>0)target(a,'target-'+i,c.pos);
+    if(!skills.skillEffects(card).some(e=>e.kind==='place-installation'))
+      for(const [i,c]of cells.entries()) if(spatial.distance(c.pos,a.player.pos)>0)target(a,'target-'+i,c.pos);
+    if(skills.skillEffects(card).some(e=>e.kind==='chain-explosion')) {
+      const marked=target(a,'marked',{x:3,y:4});engine.influenceEntity(a.world,marked,'status:poison',3,'player');
+    }
     const glyph=skills.SKILL_GESTURES.find(g=>skills.equippedSkill(run.data,g)?.instanceId===card.instanceId);
     const result=field.performFieldGesture(glyph,undefined,{x:4,y:2},{drawn:true,quality:1});
       assert(result.ok,def.id+': '+result.message);field.advanceFieldTime(30);

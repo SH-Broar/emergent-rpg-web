@@ -108,7 +108,7 @@ try {
  guide.properties.integrity=0;assert(!journey.performQuest(run.data,a.world,guide.id,'quest:finish:home').ok);guide.properties.integrity=100;
  assert(journey.performQuest(run.data,a.world,guide.id,'quest:finish:home').ok);const xp=run.data.xp;
  assert(!journey.performQuest(run.data,a.world,guide.id,'quest:finish:home').ok);assert.equal(run.data.xp,xp);
- for(const q of JOURNEY_QUESTS.filter(q=>q.main&&q.id!=='home')){
+ for(const q of JOURNEY_QUESTS.filter(q=>['first-shape','fibers','provisions'].includes(q.id))){
    a.world.entities={player:a.player};const giver=nearby(a,q.npcId);
    assert(journey.performQuest(run.data,a.world,giver.id,'quest:accept:'+q.id).ok,q.id+' accept');
    for(const g of q.goals){if(g.kind==='visit')journey.ensureJourney(run.data).visited[g.key]=true;else if(g.kind==='talk')run.data.field.spoken['npc:'+g.key]=1;else if(g.kind==='deliver')a.player.stock[g.key]=(a.player.stock[g.key]??0)+(g.amount??1);else journey.noteJourney(run.data,g.key,g.amount??1);}
@@ -117,9 +117,9 @@ try {
    assert(journey.performQuest(run.data,a.world,recipient.id,'quest:finish:'+q.id).ok,q.id+' finish');
    for(const g of q.goals.filter(g=>g.kind==='deliver')){assert.equal(a.player.stock[g.key],stocks[g.key]-(g.amount??1)+(q.reward.stock?.[g.key]??0));assert.equal(recipient.stock[g.key],g.amount??1);}
  }
- assert(!journey.currentJourney(run.data));assert.equal(JOURNEY_QUESTS.filter(q=>q.main).length,16);
- run.saveActiveRun();run.$reset();assert(run.loadActiveRun());assert.equal(Object.keys(run.data.field.journey.completed).length,16);
- results.push('complete 16-stage story chain resolves; multi-NPC handoffs, delivered material conservation, one-time card/XP rewards and missing/restricted NPC guards work');
+ assert.equal(journey.currentJourney(run.data)?.id,'time-01');assert.equal(JOURNEY_QUESTS.filter(q=>q.main).length,20);
+ run.saveActiveRun();run.$reset();assert(run.loadActiveRun());assert.equal(Object.keys(run.data.field.journey.completed).length,4);
+ results.push('four onboarding quests unlock the 20-stage time story; delivered material conservation, one-time card/XP rewards and missing/restricted NPC guards work');
  a=start();for(const id of ['npc-niayur','npc-hako','npc-echo','npc-olyu','npc-miyu'])assert(residentGoal(data.npcs.get(id),map,0).nodeId.startsWith('n-iluneon-'));
  assert.equal(Object.keys(NPC_DIALOGUE).length,data.npcs.size);assert(Object.values(NPC_DIALOGUE).every(d=>d.topics.length===3&&d.greeting.length<100));
  for(const event of data.events.values()){

@@ -51,6 +51,8 @@ export interface CodexEntry {
 export interface RunSummary {
   /** 종료 시각 (ms). 최신순 정렬·표시용. */
   endedAt: number;
+  storyEnding?: import('@/data/time-endings').TimeEndingId;
+  storyWitnesses?: import('@/data/time-endings').TimeEndingWitnesses;
   timelineId: string;
   raceId: string;
   endReason: 'time-up' | 'free-end' | 'hp-zero' | 'boss-cleared' | 'boss-defeated';
@@ -138,6 +140,7 @@ export interface MetaProgress {
   // === 카오스 도전-점수 시스템 (Phase A, 세이브 v3) ===
   /** 영혼으로 영구 구매한 카오스 id 목록. 기본 []. */
   unlockedChaosIds: string[];
+  storyEndings?: { seen: string[]; chaosUnlocked: boolean };
   /** 상점에 진열되는 최고 티어 (1~4). T(n) 카오스 켜고 클리어 시 +1. 기본 1. */
   chaosTierRevealed: number;
   /** 연표(timeline)별 최고 카오스 도전 점수. 기본 {}. */

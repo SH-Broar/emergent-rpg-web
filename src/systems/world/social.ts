@@ -1,5 +1,6 @@
 import type { InteractionAction, InteractionWorld, SocialProfile, WorldEntity, WorldFact } from './types';
 import { PLAYER_ACTOR_ID } from './types';
+import { DEBUFFS } from './status';
 import { isFoodResource } from './resources';
 import { interactionDisabled, observeWorld, resolveInteraction } from './engine';
 
@@ -70,6 +71,8 @@ function interpretation(profile: SocialProfile, fact: WorldFact, target: WorldEn
   const norms = effectiveNorms(profile);
   const tags = fact.targetTags ?? target?.tags ?? [];
   const ownedByOther = !!fact.ownerId && fact.ownerId !== fact.actorId;
+  const affectsOtherPerson = !!fact.actorId && fact.actorId !== fact.targetId
+    && (fact.targetKind ?? target?.kind) === 'actor' && tags.includes('person');
   if (fact.kind === 'transfer' && (fact.after ?? 0) < (fact.before ?? 0)) {
     if (!ownedByOther || tags.includes('shared')) return { delta: 0, text: '공유 자원을 가져감: 제재할 사유로 보지 않는다.' };
     const food = fact.resourceTags ? fact.resourceTags.includes('food') : tags.includes('food');
@@ -82,11 +85,18 @@ function interpretation(profile: SocialProfile, fact: WorldFact, target: WorldEn
       ? { delta: 0, text: '이미 충분한 재고에 보탰다. 추가적인 호의로 과장하지 않는다.' }
       : { delta: .04 * profile.values.sharing, text: '부족한 자원을 보탠 행동을 호의로 기억한다.' };
   }
-  if (fact.kind === 'property' && fact.property === 'integrity' && (fact.after ?? 0) < (fact.before ?? 0) && ownedByOther) {
-    return { delta: -.18 * norms.harmAversion, text: '시설이나 남의 물건을 훼손한 장면을 우려한다.' };
+  if (affectsOtherPerson && fact.kind === 'move') {
+    return { delta: -.08 * norms.harmAversion, text: '다른 이의 몸을 강제로 옮긴 일을 우려한다.' };
   }
-  if (fact.kind === 'property' && fact.property === 'burning' && (fact.after ?? 0) > (fact.before ?? 0) && ownedByOther) {
-    return { delta: -.08 * norms.harmAversion, text: '남의 시설에 불을 붙여 위험을 만들었다고 본다.' };
+  if (affectsOtherPerson && fact.kind === 'property' && fact.property?.startsWith('status:')
+    && DEBUFFS.has(fact.property.slice(7)) && (fact.after ?? 0) > (fact.before ?? 0)) {
+    return { delta: -.08 * norms.harmAversion, text: '다른 이에게 해로운 상태를 강제로 건 일을 우려한다.' };
+  }
+  if (fact.kind === 'property' && fact.property === 'integrity' && (fact.after ?? 0) < (fact.before ?? 0) && (ownedByOther || affectsOtherPerson)) {
+    return { delta: -.18 * norms.harmAversion, text: affectsOtherPerson ? '다른 이를 다치게 한 장면을 우려한다.' : '시설이나 남의 물건을 훼손한 장면을 우려한다.' };
+  }
+  if (fact.kind === 'property' && fact.property === 'burning' && (fact.after ?? 0) > (fact.before ?? 0) && (ownedByOther || affectsOtherPerson)) {
+    return { delta: -.08 * norms.harmAversion, text: affectsOtherPerson ? '다른 이의 몸에 불을 붙여 위험을 만들었다고 본다.' : '남의 시설에 불을 붙여 위험을 만들었다고 본다.' };
   }
   if (fact.kind === 'work' && fact.ownerId !== fact.actorId) {
     return { delta: .025 * norms.laborRespect, text: '공용 작업에 들인 노동을 인정한다.' };

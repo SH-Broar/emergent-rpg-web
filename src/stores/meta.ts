@@ -44,6 +44,7 @@ function createEmptyMeta(): MetaProgress {
     totalBossClears: 0,
     // 카오스 도전-점수 시스템 (v3).
     unlockedChaosIds: [],
+    storyEndings: { seen: [], chaosUnlocked: false },
     chaosTierRevealed: 1,
     bestChaosScore: {},
     // NPC 친밀도 영속 (v4, Item 37-② Stage C 1B).
@@ -94,6 +95,7 @@ function loadMeta(): MetaProgress {
     parsed.unlockedRaceIds ??= [];
     // 세이브 v3 마이그레이션 — 카오스 필드 누락 시 안전 기본값으로 채움. 기존 값은 보존.
     parsed.unlockedChaosIds ??= [];
+    parsed.storyEndings ??= { seen: [], chaosUnlocked: false };
     parsed.chaosTierRevealed ??= 1;
     parsed.bestChaosScore ??= {};
     // 세이브 v4 마이그레이션 (1B) — NPC 친밀도 영속 필드 누락 시 빈 객체로 채움. 기존 값은 보존.
@@ -362,6 +364,7 @@ export const useMetaStore = defineStore('meta', {
       this.totalRuns = fresh.totalRuns;
       this.totalBossClears = fresh.totalBossClears;
       this.unlockedChaosIds = fresh.unlockedChaosIds;
+      this.storyEndings = fresh.storyEndings;
       this.chaosTierRevealed = fresh.chaosTierRevealed;
       this.bestChaosScore = fresh.bestChaosScore;
       this.npcAffinity = fresh.npcAffinity;

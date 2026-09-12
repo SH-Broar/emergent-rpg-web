@@ -21,6 +21,7 @@ import { useMetaStore } from '@/stores/meta';
 import { useRunStore } from '@/stores/run';
 import { instantiateCard } from '@/systems/deck';
 import { rng } from '@/systems/rng';
+import { FRACTURED_TIME_CHAOS_ID, isFracturedTimeUnlocked } from './field-chaos';
 
 /** 활성 카오스 1개 — id + 강도(1-base). */
 export interface ActiveChaos {
@@ -60,7 +61,8 @@ function normalizeActive(raw: unknown): ActiveChaos[] {
       out.push({ id: it.id, intensity: n });
     }
   }
-  return out.filter(a => chaosById(a.id)?.effectKind !== 'time-limit-mul');
+  return out.filter(a => chaosById(a.id)?.effectKind !== 'time-limit-mul' &&
+    (a.id !== FRACTURED_TIME_CHAOS_ID || isFracturedTimeUnlocked(useMetaStore())));
 }
 
 /** 강도를 levels 범위로 클램프해 0-base 인덱스 반환. */
@@ -104,7 +106,7 @@ export function computeChaosScore(active: ActiveChaos[]): number {
 export function shopChaos(): Chaos[] {
   const revealed = useMetaStore().chaosTierRevealed;
   return [...useDataStore().chaosDefs.values()]
-    .filter((c) => c.tier <= revealed && c.effectKind !== 'time-limit-mul')
+    .filter((c) => c.tier <= revealed && c.effectKind !== 'time-limit-mul' && c.id !== FRACTURED_TIME_CHAOS_ID)
     .sort((a, b) => a.tier - b.tier);
 }
 
@@ -115,7 +117,7 @@ export function shopChaos(): Chaos[] {
 export function purchaseChaos(id: string): boolean {
   const meta = useMetaStore();
   const c = chaosById(id);
-  if (!c || c.effectKind === 'time-limit-mul') return false;
+  if (!c || c.effectKind === 'time-limit-mul' || id === FRACTURED_TIME_CHAOS_ID) return false;
   if (meta.unlockedChaosIds.includes(id)) return false; // 중복 가드
   const cost = chaosCostFor(c.tier);
   if (!meta.canAfford('soul', cost)) return false; // 잔액 가드
@@ -689,6 +691,7 @@ export function maxIntensityOf(chaos: Chaos): number {
  * "몬무스" 단어 미사용 — color-seal 등 종족 무관 효과만 다룸.
  */
 export function chaosLevelSummary(chaos: Chaos, intensity: number): string {
+  if (chaos.id === FRACTURED_TIME_CHAOS_ID) return '적 체력 +40% · 공격 +25%';
   const param = effectParamOf(chaos, intensity);
   const pctUp = (p: string) => `+${Math.round(Number(p) * 100)}%`;
   // param이 음수(start-hp '-0.5')든 양수(rest-heal '0.30')든 항상 단일 '-' 접두로 표기.

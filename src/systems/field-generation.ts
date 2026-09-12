@@ -1,3 +1,5 @@
+import { fieldChaosHpMultiplier, fieldChaosDefenseBonus } from './field-chaos';
+import { ensureFieldRecords } from './field-readings';
 import { ensureForage } from './field-forage';
 import { regionRocks } from './field-biomes';
 import { connectionVector, inward } from './field-geography';
@@ -75,13 +77,13 @@ function object(world: InteractionWorld, space: FieldSpace, suffix: string, name
 export const fieldCreatureHp=(hp:number,rank:string)=>Math.max(10,Math.round(hp/(rank==='boss'?4:rank==='elite'?1.5:1)));
 export function spawnCreature(run: RunState, world: InteractionWorld, space: FieldSpace, definition: Monster | Boss, index: number, rank: 'normal' | 'elite' | 'boss'): WorldEntity {
   const existing=world.entities[`${space.id}:creature:${index}`];if(existing)return existing;
-  const maxHp = fieldCreatureHp(definition.hp,rank);
+  const maxHp = Math.ceil(fieldCreatureHp(definition.hp,rank) * fieldChaosHpMultiplier(run,rank));
   const drop = 'drop' in definition ? definition.drop : undefined;
   const e: WorldEntity = {
     id: `${space.id}:creature:${index}`, name: definition.name, kind: 'actor', nodeId: space.id,
     colors: {}, stock: {}, tags: ['monster', rank, ...(rank !== 'normal' ? ['humanoid'] : [])],
-    properties: { integrity: 100, maxHp, hardness: Math.max(0, (definition.defense ?? 0) / 3), flammability: 1, moisture: 0, solid: 1 },
-    creature: { balanceVersion:1, definitionId: definition.id, species:'species' in definition?definition.species:undefined, rank, maxHp, attack: Math.max(2, definition.attack), range: rank === 'normal' ? 1 : 2,
+    properties: { integrity: 100, maxHp, guard: fieldChaosDefenseBonus(run), hardness: Math.max(0, (definition.defense ?? 0) / 3), flammability: 1, moisture: 0, solid: 1 },
+    creature: { balanceVersion:2, definitionId: definition.id, species:'species' in definition?definition.species:undefined, rank, maxHp, attack: Math.max(2, definition.attack), range: rank === 'normal' ? 1 : 2,
       reward: { gold: drop?.gold ?? (rank === 'normal' ? 3 : 12), shards: drop?.timeShards ?? (rank === 'normal' ? 1 : 5), itemId: baseNode(run, space.id)?.region ? fieldMap(run)?.regions.find(r => r.id === baseNode(run, space.id)?.region)?.specialtyItemId : undefined } },
   };
   const locations = [{ x:space.width-3,y:2 },{ x:space.width-2,y:space.height-3 },{ x:space.width-4,y:space.height-2 }];
@@ -119,7 +121,7 @@ function connectExits(space: FieldSpace, node: Node, run: RunState) {
 }
 export function ensureFieldSpace(run: RunState, world: InteractionWorld, id: string): FieldSpace {
   world.spaces ??= {};
-  const old=world.spaces[id];if(old&&(old.layoutVersion===4||old.residence)){connectNeighborhood(run,world,old);connectBases(run,world,old);repairFieldPlacements(world,old);ensurePractice(world,old);const node=baseNode(run,old.id);if(node){ensureRegionalProps(world,old,node);ensureForage(run,world,old,node);}return old;}
+  const old=world.spaces[id];if(old&&(old.layoutVersion===4||old.residence)){connectNeighborhood(run,world,old);connectBases(run,world,old);repairFieldPlacements(world,old);ensurePractice(world,old);const node=baseNode(run,old.id);if(node){ensureRegionalProps(world,old,node);ensureForage(run,world,old,node);}ensureFieldRecords(world,old,placeFieldEntity);return old;}
   if(id.includes('::home:')||id.endsWith('::residents')||id.endsWith('::commons')||id.endsWith('::player-home')||id.endsWith('::inn'))return createResidence(run,world,id);
   const data=useDataStore(),map=fieldMap(run);
   if(!map)throw new Error('플레이할 장소가 없습니다.');
@@ -210,6 +212,7 @@ export function ensureFieldSpace(run: RunState, world: InteractionWorld, id: str
   ensurePractice(world,space);
   ensureRegionalProps(world,space,node);
   ensureForage(run,world,space,node);
+  ensureFieldRecords(world,space,placeFieldEntity);
   return space;
 }
 

@@ -49,6 +49,10 @@ const tint=computed(()=>{let n=0;for(const c of species.value)n=(n*31+c.charCode
       <path v-if="entity.agent?.species === 'slime'" d="M8 40c0-10 8-20 17-20s17 10 17 20c0 9-34 9-34 0z" fill="#8cc8bd"/>
       <g v-else><path d="M14 41l5-19h11l5 19z" fill="#9aacc9"/><circle cx="25" cy="15" r="7" fill="#d1b89a"/><path v-if="entity.agent?.species !== 'human'" d="M19 10l-7-6 2 12m17-6 7-6-2 12" fill="#ae97c3"/><path d="M20 40v7m9-7v7" fill="none"/></g>
     </g>
+    <g v-else-if="entity.tags.includes('spell-echo')" data-spell="echo" fill="none" stroke="#ded3f5" stroke-width="2"><path d="M7 37 24 9l17 28zm7-4 10-17 10 17z"/><path d="M8 44h32" stroke-dasharray="3 3"/></g>
+    <g v-else-if="entity.tags.includes('installation')" data-spell="installation" stroke="#efe0bb" stroke-width="1.5"><ellipse cx="24" cy="37" rx="17" ry="8" fill="#775e91"/><path d="m10 34 7-8 7 8 7-8 7 8M17 26l7-10 7 10" fill="none"/><circle cx="24" cy="36" r="4" fill="#eec390"/></g>
+    <g v-else-if="entity.kind==='terrain'&&entity.properties.solid" data-terrain="raised-ground" fill="#9f8666" stroke="#564d3d" stroke-width="2"><path d="m5 42 7-16 12-6 14 9 6 13z"/><path d="m12 26 13 11 13-8" fill="none"/></g>
+    <g v-else-if="entity.recordId" data-record="readable" stroke="#71664d" stroke-width="1.6" fill="#d9cba2"><path d="M9 10h23l7 8v27H9z"/><path d="M32 10v9h7M15 25h17M15 31h17M15 37h11" fill="none"/></g>
     <g v-else-if="entity.tags.includes('rare-source')" fill="#b9e0d4" stroke="#587b74" stroke-width="1.5"><path d="M24 8 35 28 24 43 13 28z"/><path d="M24 8v35M13 28h22" fill="none"/><path d="m8 14 2-4 2 4-2 4m27 3 2-4 2 4-2 4" fill="#fff0b4"/></g>
     <g v-else-if="entity.tags.includes('mineral')||entity.tags.includes('forage')&&entity.renewable?.resourceId.includes('ore')" fill="#87998f" stroke="#45544d" stroke-width="1.5"><path d="m7 40 4-18 10-8 8 10 9-5 5 23z"/><path d="m20 18 2 18 10-8m-20-3 10 11 14 5" fill="none" stroke="#d5ca8c"/></g>
     <g v-else-if="entity.tags.includes('forage')&&entity.renewable?.resourceId.includes('fish')" stroke="#46737b" fill="#9dbdb8"><ellipse cx="24" cy="35" rx="19" ry="8" fill="#6a9da3"/><path d="m11 33 12-6 9 5 7-4-2 10-5-4-10 6z"/></g>
@@ -73,6 +77,7 @@ const tint=computed(()=>{let n=0;for(const c of species.value)n=(n*31+c.charCode
     <path v-if="(entity.properties.burning ?? 0) > 0" d="M8 44c-4-9 3-12 4-20 2 9 10 14 8 20m11 0c-4-9 3-12 4-20 2 9 10 14 8 20" fill="#efa564"/>
     <g v-if="(entity.properties.smoke ?? 0) > 0" fill="#b5c7c3" opacity=".7"><circle cx="16" cy="13" r="11"/><circle cx="30" cy="16" r="13"/></g>
     <path v-if="(entity.properties.moisture ?? 0) > 1" d="M41 27q-8 11 0 11t0-11" fill="#99d5e3"/>
+    <path v-if="(entity.properties.insulation??0)>0" d="M5 18v17q0 9 9 11m29-28v17q0 9-9 11" stroke="#e4d497" stroke-width="2" fill="none" stroke-dasharray="3 3"/>
   </svg>
 </template>
 <style scoped>.entity-art { width: 100%; height: 108%; overflow: visible; filter: drop-shadow(0 2px 1px #10160b35); pointer-events: none; }.hostile { filter: drop-shadow(0 1px 3px #7d384738); }</style>

@@ -31,6 +31,13 @@ jobs:
       - run: npm ci
       - run: npm run validate
       - run: node scripts/test-field-journey.mjs
+      - run: node scripts/test-field-story.mjs
+      - run: node scripts/test-field-chaos.mjs
+      - run: node scripts/test-field-boss-gates.mjs
+      - run: node scripts/test-field-color-actions.mjs
+      - run: node scripts/test-field-color-input.mjs
+      - run: node scripts/test-field-casting.mjs
+      - run: node scripts/test-time-endings.mjs
       - run: node scripts/test-field-corrections.mjs
       - run: node scripts/test-field-port.mjs
       - run: node scripts/test-field-simulation.mjs

@@ -44,6 +44,7 @@ export interface WorldEntity {
   pos?: GridPos;
   carriedBy?: string;
   npcId?: string;
+  recordId?: string;
   creature?: FieldCreature;
   form?: { raceId: string; originalSpecies: string; sourceId?: string };
   fieldUpdatedAt?: number;
@@ -78,6 +79,8 @@ export interface WorldFact {
   labor: number;
   message: string;
   witnesses: string[];
+  /** Public target classification when the fact occurred, retained by relayed reports. */
+  targetKind?: WorldEntity['kind'];
   targetTags?: string[];
   /** Resource classification at the time, independent of a mixed container. */
   resourceTags?: string[];

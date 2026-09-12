@@ -307,3 +307,13 @@ category = world-corruption
 chaos_type = legend
 effect_kind = post-apocalypse
 levels = on:6
+
+# Story challenge, granted after a Dun or Tifre ending; never sold.
+[chaos.ch-fractured-time]
+name = 갈라진 시간
+description = 적 체력 +40%, 공격 +25%. 던과 티프레의 시간을 함께 잇는 길이 열린다.
+tier = 4
+category = story-challenge
+chaos_type = legend
+effect_kind = enemy-hp-mul
+levels = 0.40:6

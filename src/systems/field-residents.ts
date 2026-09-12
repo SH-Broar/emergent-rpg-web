@@ -1,3 +1,4 @@
+import { isTimeAlly } from './time-story';
 import type { NodeMap, RunState } from '@/data/schemas';
 import { useDataStore } from '@/stores/data';
 import { courtId, commonId, homeId, residentGoal, RESIDENT_EVENTS, eventActive, worldDate, WEEK_DAYS } from '@/data/npc-calendar';
@@ -85,7 +86,7 @@ export function tickResidentSchedules(run:RunState,world:InteractionWorld,active
  const now=run.field!.elapsedSeconds,map=fieldMap(run);if(!map)return;
  const edges=graph(map);
  for(const actor of Object.values(world.entities)){
-   if(!actor.npcId||!actor.agent||(actor.properties.integrity??100)<=0)continue;
+   if(!actor.npcId||!actor.agent||(actor.properties.integrity??100)<=0||isTimeAlly(run,actor))continue;
    const npc=useDataStore().npcs.get(actor.npcId);if(!npc?.homeNodeId)continue;
    const goal=residentGoal(npc,map,now),r=actor.routine??={goal:goal.nodeId,activity:goal.activity,route:[],nextAt:now};
    // A restraint delays a journey instead of letting the timetable move the actor through it.

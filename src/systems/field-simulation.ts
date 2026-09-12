@@ -1,4 +1,10 @@
-import { ensureJourney, noteJourney, questTopics, performQuest } from './field-journey';
+import { colorOperationAction, colorOperationDisabled } from './field-color-actions';
+import { tickFieldCasting, triggerFieldInstallations } from './field-casting';
+import { bossEncounterFailure } from './field-combat';
+import { fieldReading, recordReading } from './field-readings';
+import { arriveTimeAllies, tickTimeAllies, isTimeAlly, timeAllyTopics, recruitTimeAlly, resolveTimeEnding } from './time-story';
+import { fieldChaosHpMultiplier } from './field-chaos';
+import { ensureJourney, noteJourney, questTopics, performQuest, completeBossQuests } from './field-journey';
 import { skillGestureUnlocked, SKILL_UNLOCK_LEVEL, type SkillGesture } from './field-skill-rules';
 import { supplyAction, SUPPLY_NAMES } from './field-supplies';
 import { fieldTargets } from './field-selection';
@@ -79,7 +85,7 @@ export function ensureField(run = useRunStore().data): { world: InteractionWorld
   for(const e of Object.values(world.entities).filter(e=>e.nodeId===space.id&&e.kind==='actor')){
     e.properties.maxHp=e.id==='player'?run.maxHp:e.creature?.maxHp??100;
     normalizeIntegrity(e.properties);
-    if(e.creature&&!e.creature.balanceVersion){const def=combatDefinition(e);if(def)e.creature.maxHp=fieldCreatureHp(def.hp,e.creature.rank);e.creature.balanceVersion=1;e.properties.maxHp=e.creature.maxHp;}
+    if(e.creature&&(e.creature.balanceVersion??0)<2){const def=combatDefinition(e);if(def)e.creature.maxHp=Math.ceil(fieldCreatureHp(def.hp,e.creature.rank)*fieldChaosHpMultiplier(run,e.creature.rank));e.creature.balanceVersion=2;e.properties.maxHp=e.creature.maxHp;}
     if(e.creature){e.creature.species??=useDataStore().monsters.get(e.creature.definitionId)?.species;}
   }
   player.properties.carryCapacity = 2 + gestureLevel(run, 'lift');
@@ -95,15 +101,18 @@ export function visibleFieldEntities(run: RunState): WorldEntity[] {
   const player = world?.entities.player;
   if (!world || !player) return [];
   const sees=createSightTest(world,player);
-  return Object.values(world.entities).filter(e => e.nodeId === player.nodeId && !e.carriedBy && e.pos && (valid(e) || e.kind !== 'actor') && sees(e));
+  return Object.values(world.entities).filter(e => e.nodeId === player.nodeId && !e.carriedBy && e.pos && (valid(e) || e.kind !== 'actor' && !e.tags.includes('casting-trace')) && sees(e));
 }
 export function carriedEntity(world: InteractionWorld, actorId = 'player'): WorldEntity | undefined { return Object.values(world.entities).find(e => e.carriedBy === actorId); }
-export function groundAt(run: RunState, pos: GridPos): WorldEntity {
-  const { world, space } = ensureField(run);
+function groundTarget(world:InteractionWorld,space:FieldSpace,pos:GridPos):WorldEntity {
   const existing = fieldTargets(entitiesAt(world, space.id, pos).filter(e => e.id !== 'player' && e.kind !== 'actor' && valid(e)))[0];
   if (existing) return existing;
   const id = `${space.id}:ground:${positionKey(pos)}`;
-  return world.entities[id] ??= { id, name: space.tiles[pos.y]?.[pos.x] === 'soil' ? '빈 밭' : '바닥', kind: 'terrain', nodeId: space.id, pos: { ...pos }, colors: {}, stock: {}, tags: ['ground', 'storage', 'shared', ...(space.tiles[pos.y]?.[pos.x] === 'soil' ? ['field-plot'] : [])], properties: { integrity: 100, soil: space.tiles[pos.y]?.[pos.x] === 'soil' ? 1 : 0 } };
+  return world.entities[id] ?? { id, name: space.tiles[pos.y]?.[pos.x] === 'soil' ? '빈 밭' : '바닥', kind: 'terrain', nodeId: space.id, pos: { ...pos }, colors: {}, stock: {}, tags: ['ground', 'storage', 'shared', ...(space.tiles[pos.y]?.[pos.x] === 'soil' ? ['field-plot'] : [])], properties: { integrity: 100, soil: space.tiles[pos.y]?.[pos.x] === 'soil' ? 1 : 0 } };
+}
+export function groundAt(run: RunState, pos: GridPos): WorldEntity {
+  const {world,space}=ensureField(run),target=groundTarget(world,space,pos);
+  return world.entities[target.id]??=target;
 }
 function program(gesture: Gesture, effects: InteractionAction['effects'], extra: Partial<InteractionAction> = {}): InteractionAction {
   return { id: `glyph:${gesture}`, label: GLYPHS[gesture], description: '', duration: 0, effects, ...extra };
@@ -112,6 +121,7 @@ function program(gesture: Gesture, effects: InteractionAction['effects'], extra:
 export function fieldAction(run: RunState, world: InteractionWorld, actor: WorldEntity, target: WorldEntity, gesture: Gesture, pos: GridPos, selectedItem?: string): InteractionAction | undefined {
   const level = actor.id === 'player' ? gestureLevel(run, gesture) : 1 + Math.floor(actor.agent?.skills.work ?? 0);
   if(gesture==='tend'&&selectedItem&&SUPPLY_NAMES[selectedItem])return supplyAction(actor,target,selectedItem);
+  if(gesture==='tap'&&target.recordId){const reading=fieldReading(target);return reading?program(gesture,[{kind:'signal',message:reading.lines[0]??target.name}]):undefined;}
   if(gesture==='strike')gesture='triangle';
   if(gesture==='tend')gesture='inverted';
   if((gesture==='tap'||gesture==='take')&&target.tags.includes('forage')){
@@ -192,7 +202,7 @@ export function speechFor(run:RunState,actor:WorldEntity):FieldSpeech {
       topics.unshift({label:'변신을 풀려면',lines:[knows?'카시스에게 물어봐. 모스의 대장간에도 가끔 들르던데. 나는 그 술법을 잘 몰라.':'미안해. 나는 그런 술법은 다룰 줄 몰라.']});
     }
   }
-  topics.unshift(...questTopics(run,actor));
+  topics.unshift(...questTopics(run,actor), ...timeAllyTopics(run,actor));
   topics.push(...residentAgenda(run,actor)??[]);
   if(trust<-.25)lines.unshift('미안하지만, 지금은 이야기하고 싶지 않아.');
   return {actorId:actor.id,name:actor.name,lines,topics};
@@ -202,6 +212,11 @@ export function performFieldService(actorId:string,action:string):FieldResult {
   const run=useRunStore().data,{world}=ensureField(run);
   enforceTamamoSubmission(run,world);if(!checkPlayer(run,world))return {ok:false,message:'집에서 눈을 떴다.',travel:true};
   if(run.ended||run.field?.encounter)return {ok:false,message:'지금은 부탁할 수 없다.'};
+  if(action==='story:recruit'){
+    const result=recruitTimeAlly(run,world,actorId);
+    if(result.ok)advanceFieldTime(STEP_SECONDS,false);
+    return result;
+  }
   if(action.startsWith('quest:')){
     const result=performQuest(run,world,actorId,action);
     if(result.ok){syncPlayerFromWorld(run,world);advanceFieldTime(STEP_SECONDS,false);}
@@ -254,6 +269,7 @@ function tickResidents(run: RunState, world: InteractionWorld, activeIds: Readon
   // from its repeated inventory, occupancy and path queries; commit the chosen action to the world.
   const local: InteractionWorld = { ...world, entities: Object.fromEntries(Object.entries(world.entities).filter(([,e])=>e.nodeId===run.currentNodeId)) };
   for (const actor of [...activeIds].map(id=>world.entities[id]!).filter(e => e?.agent && e.id !== 'player' && e.pos && valid(e))) {
+    if(isTimeAlly(run,actor))continue;
     if(actor.routine&&(actor.routine.travel||actor.routine.goal!==actor.nodeId))continue;
     if(actionRestriction(actor))continue;
     if (run.field!.elapsedSeconds-(actor.fieldNpcAt??0)<90) continue;
@@ -299,7 +315,7 @@ function defeatCreature(run: RunState, world: InteractionWorld, e: WorldEntity) 
     if(boss?.defeatText)run.field!.notification={actorId:e.id,name:e.name,lines:[boss.defeatText]};
     if (boss && !run.bossesCleared.includes(boss.id) && !run.arcsCleared?.includes(boss.id)) {
       if (boss.kind === 'arc') { applyArcRewards(boss); (run.arcsCleared ??= []).push(boss.id); }
-      else { applyBossRewards(boss); run.bossesCleared.push(boss.id); run.field!.clearedAt=run.field!.elapsedSeconds; useRunStore().endRun('boss-cleared'); absorbRunIntoMeta(run); }
+      else { applyBossRewards(boss); run.bossesCleared.push(boss.id); completeBossQuests(run,world,boss.id); resolveTimeEnding(run,world); run.field!.clearedAt=run.field!.elapsedSeconds; useRunStore().endRun('boss-cleared'); absorbRunIntoMeta(run); }
     }
   }
   if(world.entities.player)world.entities.player.properties.level=run.level??1;
@@ -335,7 +351,7 @@ function tickCreatures(run: RunState, world: InteractionWorld, activeIds: Readon
       continue;
     }
     const next=c.nextAction;c.nextAction=undefined;
-    if(next?.kind==='move'&&next.pos)commitCreatureMove(world,e,next.pos);
+    if(next?.kind==='move'&&next.pos){commitCreatureMove(world,e,next.pos);triggerFieldInstallations(run,world,e.id);}
     else if(next?.kind==='eat'&&next.targetId&&next.resourceId){
       const food=world.entities[next.targetId];
       if(food?.pos&&valid(food)&&food.nodeId===e.nodeId&&distance(e.pos,food.pos)<=1&&hasSight(world,e,food)&&(food.stock[next.resourceId]??0)>0)
@@ -444,15 +460,19 @@ export function advanceFieldTime(seconds: number, waiting=true): void {
     settleProduction(run, world, coarse ? undefined : active);
     const previousStatuses=new Map([...active].map(id=>[id,{...world.entities[id]!.properties}]));
     const blocked=new Set([...active].filter(id=>actionRestriction(world.entities[id]!)!==undefined));
-    for(const id of active){const e=world.entities[id]!;if(e.kind==='actor')tickStatuses(world,e,Math.floor(now/STEP_SECONDS),waiting);}
+    for(const id of active){const e=world.entities[id]!;if(e.kind==='actor'){tickStatuses(world,e,Math.floor(now/STEP_SECONDS),waiting);triggerFieldInstallations(run,world,e.id);}}
     run.field!.manaStep=(run.field!.manaStep??0)+1;
     if(run.field!.manaStep>=2){run.field!.manaStep=0;world.entities.player!.properties.mana=Math.min(3,(world.entities.player!.properties.mana??0)+1+(status(world.entities.player!,'haste')?1:0));}
+    tickFieldCasting(run, world);
     tickFieldSkills(run, world);
+    tickTimeAllies(run, world, blocked);
+    for(const id of active)triggerFieldInstallations(run,world,id);
     tickCreatures(run, world, active, blocked);
     for(const id of active)if(world.entities[id]?.kind==='actor')finishStatusStep(world.entities[id]!,previousStatuses.get(id)!);
     if (!checkPlayer(run, world) || run.currentNodeId !== origin) break;
     tickResidentSchedules(run,world,active);
     tickResidents(run, world, active);
+    for(const id of active)triggerFieldInstallations(run,world,id);
     for(const id of active){const e=world.entities[id];if(e?.creature)prepareCreatureIntent(run,world,e);}
     syncPlayerFromWorld(run, world);
     while (run.visitedNodes.length < Math.floor(run.field!.elapsedSeconds / LEGACY_SECONDS) && !run.ended) store.spendWorldTime(1);
@@ -490,6 +510,7 @@ export function travelField(to: string): FieldResult {
   if(facing){player.properties.facingX=facing.x;player.properties.facingY=facing.y;}
   placeFieldEntity(world, next, player, preferred ?? next.spawn);
   placeArrivingResidents(run,world);
+  arriveTimeAllies(run,world,next,space.id,entry?.pos??space.spawn);
   const active=activeFieldIds(run,world);
   for(const id of active) settleDormant(run,world,world.entities[id]!,run.field!.elapsedSeconds);
   settleProduction(run,world,active);
@@ -511,6 +532,7 @@ export function stepField(pos: GridPos): FieldResult {
   const result = resolveInteraction(world, 'player', 'player', action);
   if (!result.ok) return result;
   afterMovement(player);
+  triggerFieldInstallations(run,world,player.id);
   syncPlayerFromWorld(run,world);
   advanceFieldTime(STEP_SECONDS,false);
   if (run.currentNodeId !== space.id || run.ended) return { ok: true, message: '집에서 눈을 떴다.', travel: true };
@@ -553,7 +575,10 @@ export function performFieldGesture(gesture: Gesture, targetId: string | undefin
   }
   if(gesture==='dash'){
     const reason=dashFailure(world,space,player,pos);if(reason)return {ok:false,message:reason};
-    influenceEntity(world,player,'mana',-1,player.id);player.pos={...pos};afterMovement(player);
+    influenceEntity(world,player,'mana',-1,player.id);
+    const steps=movesAsAir(player)?[pos]:fieldPath(world,space.id,player.pos!,pos,player.id)??[pos];
+    for(const step of steps){player.pos={...step};triggerFieldInstallations(run,world,player.id);if(!valid(player))break;}
+    afterMovement(player);
     recordFact(world,{turn:world.turn,nodeId:space.id,actorId:player.id,targetId:player.id,kind:'move',labor:0,message:'몸을 날렸다.'});
     syncPlayerFromWorld(run,world);advanceFieldTime(STEP_SECONDS,false);return {ok:true,message:'',targetId:'player',targetPos:{...player.pos!}};
   }
@@ -574,16 +599,17 @@ export function performFieldGesture(gesture: Gesture, targetId: string | undefin
     const offer=baseOffer(run,target);if(offer)return {ok:true,message:'',speech:offer};
     if(target.tags.includes('base:configure'))return {ok:true,message:'',route:'base-configure'};
   }
-  if(target.creature?.rank==='boss'&&!target.creature.engaged){beginBossEncounter(run,target,true);checkPlayer(run,world);return {ok:true,message:''};}
+  if(target.creature?.rank==='boss'&&!target.creature.engaged){const locked=bossEncounterFailure(run,target);if(locked)return {ok:false,message:locked};beginBossEncounter(run,target,true);checkPlayer(run,world);return {ok:true,message:''};}
   if(target.kind==='actor'&&status(target,'ghost')&&(status(player,'ghost')||distance(player.pos!,target.pos!)>1)&&['strike','triangle','star'].includes(gesture))return {ok:false,message:'닿지 않는다.'};
   const action = fieldAction(run, world, player, target, gesture, pos, run.field!.selectedItem);
   if (!action) return { ok: false, message: '변화 없음' };
   const beforeHp = target.properties.integrity ?? 100;
   const result = resolveInteraction(world, player.id, target.id, action);
   if (!result.ok) return { ok: false, message: result.reason ?? result.message };
+  for(const id of new Set(result.facts.filter(f=>f.kind==='move').map(f=>f.targetId)))triggerFieldInstallations(run,world,id);
   if(gesture==='tend'&&run.field!.selectedItem&&SUPPLY_NAMES[run.field!.selectedItem]){noteJourney(run,'used');noteJourney(run,'used:'+run.field!.selectedItem);}
   if (target.creature && (target.properties.integrity ?? 100) < beforeHp) target.creature.angry = true;
-  let speech;
+  let speech = gesture==='tap'&&target.recordId?recordReading(run,target):undefined;
   if ((gesture === 'circle'||gesture==='tap') && target.kind === 'actor' && target.id !== player.id && !target.creature) { speech = speechFor(run, target); run.field!.spoken[target.id] = (run.field!.spoken[target.id] ?? 0) + 1; }
   const transferred = result.facts.find(f => f.kind === 'transfer');
   let message = transferred ? `${fieldItemName(transferred.resourceId!)} ${gesture === 'give' ? '−' : '+'}${transferred.quantity}` : gesture === 'lift' ? `${target.name} ∧` : gesture === 'place' ? `${target.name} ∨` : target.production && !target.production.settled ? '자라기 시작했다.' : result.facts.some(f => f.property === 'integrity' && f.after! < f.before!) ? `−${Math.ceil((beforeHp - (target.properties.integrity ?? 100)) * (target.creature?.maxHp ?? 100) / 100)}` : '';
@@ -611,12 +637,44 @@ export function performFieldGesture(gesture: Gesture, targetId: string | undefin
   return { ok: true, message, speech, route:service?routes[service]:undefined, changed: result.facts.map(f => f.targetId) };
 }
 
+
+/** Color programs use the same paid transaction, simulation clock and social evidence as every other gesture. */
+export function performFieldColor(operationId:string,targetId:string|undefined,pos:GridPos):FieldResult {
+  const run=useRunStore().data,{world,space,player}=ensureField(run);
+  enforceTamamoSubmission(run,world);
+  if(!checkPlayer(run,world))return {ok:false,message:'집에서 눈을 떴다.',travel:true};
+  if(run.ended||run.field!.encounter)return {ok:false,message:''};
+  if(!Number.isInteger(pos.x)||!Number.isInteger(pos.y)||!space.tiles[pos.y]?.[pos.x]||space.tiles[pos.y]![pos.x]==='wall')
+    return {ok:false,message:'닿을 수 없는 곳.'};
+  const target=targetId?world.entities[targetId]:groundTarget(world,space,pos);
+  if(!target||target.nodeId!==player.nodeId||target.carriedBy&&target.carriedBy!==player.id||!hasSight(world,player,target))
+    return {ok:false,message:'대상이 보이지 않는다.'};
+  const fresh=!world.entities[target.id],preview=fresh?{...world,entities:{...world.entities,[target.id]:target}}:world;
+  const action=colorOperationAction(preview,player.id,target.id,operationId);
+  const reason=colorOperationDisabled(preview,player.id,target.id,action);
+  if(reason||!action)return {ok:false,message:reason??'변화 없음'};
+  if(target.creature?.rank==='boss'&&!target.creature.engaged) {
+    const locked=bossEncounterFailure(run,target);if(locked)return {ok:false,message:locked};
+    beginBossEncounter(run,target,true);return {ok:false,message:''};
+  }
+  const before=target.properties.integrity??100;
+  if(fresh)world.entities[target.id]=target;
+  const result=resolveInteraction(world,player.id,target.id,action);
+  if(!result.ok){if(fresh)delete world.entities[target.id];return {ok:false,message:result.reason??result.message};}
+  for(const id of new Set(result.facts.filter(f=>f.kind==='move').map(f=>f.targetId)))triggerFieldInstallations(run,world,id);
+  if(target.creature&&(target.properties.integrity??100)<before)target.creature.angry=true;
+  grantPractice(run,operationId.endsWith(':out')?'strike':'tend',target,result);
+  processSocialFacts(world);syncPlayerFromWorld(run,world);
+  advanceFieldTime(STEP_SECONDS,false);
+  return {ok:true,message:action.label,changed:result.facts.map(f=>f.targetId),targetId:target.id,targetPos:target.pos?{...target.pos}:pos};
+}
+
 /** Context help uses the same action construction and validation as actual input. */
 export function fieldHints(run:RunState,world:InteractionWorld,target:WorldEntity|undefined,pos:GridPos) {
   const player=world.entities.player;if(!player)return [];
   if(!target)return [{id:'dash',label:'이동기 · ◆1'},{id:'tap',label:world.spaces?.[player.nodeId]?.exits.some(e=>distance(e.pos,pos)===0)?'길 따라가기':'주변 살피기'}];
   const service=target.tags.find(t=>t.startsWith('service:'));
-  const tapLabel=target.id==='player'?'쉬기':target.kind==='actor'?'대화':service?'들어가기':target.tags.includes('dungeon-entry')?'던전 들어가기':target.tags.includes('shelter')?'쉬기':target.workRecipe?'작업':target.tags.includes('life-site')?(lifeActions(run,world,'player',target.id)[0]?.label??'성장 중'):Object.values(target.stock).some(n=>n>0)?'가져오기':'살피기';
+  const tapLabel=target.recordId?'읽기':target.id==='player'?'쉬기':target.kind==='actor'?'대화':service?'들어가기':target.tags.includes('dungeon-entry')?'던전 들어가기':target.tags.includes('shelter')?'쉬기':target.workRecipe?'작업':target.tags.includes('life-site')?(lifeActions(run,world,'player',target.id)[0]?.label??'성장 중'):Object.values(target.stock).some(n=>n>0)?'가져오기':'살피기';
   const selectedSupply=run.field?.selectedItem&&SUPPLY_NAMES[run.field.selectedItem]?supplyAction(player,target,run.field.selectedItem):undefined;
   const options=[{id:'tap',label:tapLabel},{id:'lift',label:'들어 올리기'},{id:'place',label:'내려놓기'},{id:'strike',label:target.id==='player'?'방어':'힘 가하기'},{id:'tend',label:selectedSupply?.label??(target.id==='player'?'먹기':target.properties.soil?'심기 · 돌보기':'물 주기')},{id:'give',label:'건네기'}];
   if(selectedSupply)options.sort((a,b)=>Number(b.id==='tend')-Number(a.id==='tend'));

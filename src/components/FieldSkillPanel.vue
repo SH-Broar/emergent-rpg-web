@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { fieldCombatStyle } from '@/data/field-professions';
 import { computed, ref, watch } from 'vue';
 import { useRunStore } from '@/stores/run';
 import { configurationFailure } from '@/systems/field-bases';
@@ -19,6 +20,7 @@ const unlocked = computed(()=>unlockedSkillGestures(run.data.level));
 const nextUnlock = computed(()=>nextSkillGesture(run.data.level));
 const practiceGestures = computed(()=>GESTURE_CATALOG.filter(g=>skillGestureUnlocked(run.data.level,g.id)));
 watch(unlocked,ids=>{if(!ids.includes(selected.value as typeof SKILL_GESTURES[number]))selected.value=ids[0]!;});
+const combatStyle=computed(()=>fieldCombatStyle(run.data.raceId));
 const current = computed(() => equippedSkill(run.data,selected.value));
 const locked = computed(() => configurationFailure(run.data));
 const professions={traveler:'여행자',grower:'재배자',artisan:'장인',researcher:'연구자'};
@@ -51,7 +53,7 @@ function brief(card:Card) {return lines(card).slice(0,3).join(' · ');}
           <div><strong>{{ GLYPHS[selected] }} {{ current?.name??'기술을 골라주세요' }} <small v-if="current?.enhanceLevel">+{{ current.enhanceLevel }}</small></strong><button @click="guide(selected)">연습선</button></div>
           <template v-if="current">
             <p>{{ skillStrokes(current) }}획 이상 · ◆ {{ skillMana(current) }} <span>재사용 {{ skillCooldown(current) }}턴</span><span v-if="skillRemaining(run.data,current)">남은 {{ skillRemaining(run.data,current) }}턴</span><span v-if="skillCastTurns(current)>1">시전 {{ skillCastTurns(current) }}턴</span></p>
-            <p>{{ brief(current) }}</p>
+            <p>{{ brief(current) }}</p><p v-if="current.castSpeed==='slow'">집중 중 이동하거나 체력을 잃으면 시전이 취소됩니다.</p>
             <details v-if="lines(current).length>3"><summary>효과 더 보기</summary><p>{{ lines(current).slice(3).join(' · ') }}</p></details>
             <button class="subtle" :disabled="!!locked" @click="equip()">해제</button>
           </template>
@@ -68,6 +70,7 @@ function brief(card:Card) {return lines(card).slice(0,3).join(' · ');}
         <div class="pages"><button :disabled="page===0" aria-label="이전 카드 목록" @click="page--">‹</button><span>{{ page+1 }} / {{ pages }}</span><button :disabled="page+1>=pages" aria-label="다음 카드 목록" @click="page++">›</button></div>
       </template>
       <div v-else-if="tab==='profession'">
+        <section v-if="combatStyle" class="chosen"><strong>{{ combatStyle.name }}</strong><p>{{ combatStyle.prepare }} {{ combatStyle.release }}</p><p>{{ combatStyle.risk }}</p></section>
         <p v-if="locked" class="notice">{{ locked }}</p>
         <div class="practice"><button v-for="(label,id) in professions" :key="id" :disabled="!!locked" :aria-pressed="run.data.profession===id" @click="notice=run.setProfession(id)??(label+'로 일한다.')">{{ label }}</button></div>
       </div>

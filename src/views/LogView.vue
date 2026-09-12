@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { TIME_ENDINGS, endingPresentation } from '@/data/time-endings';
 import { elapsedLabel } from "@/systems/field-bases";
 /**
  * 기록(로그) 페이지 — 지난 런들의 요약을 다시 들춰 보는 곳.
@@ -26,7 +27,14 @@ const history = computed<RunSummary[]>(() => meta.runHistory ?? []);
 
 /** 펼쳐진 행 인덱스 (한 번에 하나). null=모두 접힘. */
 const openIndex = ref<number | null>(null);
+const endingPage = ref(0);
+const openEnding = computed(() => {
+  const r = openIndex.value === null ? undefined : history.value[openIndex.value];
+  return r?.storyEnding ? endingPresentation(r.storyEnding, r.storyWitnesses) : undefined;
+});
+const storyPage = computed(() => openEnding.value?.pages[endingPage.value]);
 function toggle(i: number) {
+  endingPage.value = 0;
   openIndex.value = openIndex.value === i ? null : i;
 }
 
@@ -101,7 +109,7 @@ onMounted(() => {
       >
         <button class="row__head" @click="toggle(i)">
           <span class="badge" :style="{ color: endReasonColor(r.endReason), borderColor: endReasonColor(r.endReason) }">
-            {{ endReasonLabel(r.endReason) }}
+            {{ r.storyEnding ? TIME_ENDINGS[r.storyEnding].title : endReasonLabel(r.endReason) }}
           </span>
           <span class="row__title">
             {{ timelineName(r.timelineId) }}
@@ -116,6 +124,18 @@ onMounted(() => {
 
         <!-- 상세 (아코디언) -->
         <div v-if="openIndex === i" class="detail">
+          <details v-if="openEnding" class="story-replay">
+            <summary>결말 다시 읽기 · {{ openEnding.variant }}</summary>
+            <section v-if="storyPage" aria-label="저장된 이야기의 결말" aria-live="polite">
+              <small>{{ endingPage + 1 }}/{{ openEnding.pages.length }}</small>
+              <strong v-if="storyPage.speaker">{{ storyPage.speaker }}</strong>
+              <p>{{ storyPage.text }}</p>
+              <div class="story-replay__actions">
+                <button :disabled="endingPage === 0" @click="endingPage--">이전</button>
+                <button :disabled="endingPage + 1 === openEnding.pages.length" @click="endingPage++">다음</button>
+              </div>
+            </section>
+          </details>
           <!-- 종료 위치 -->
           <p v-if="r.endNodeLabel" class="detail__loc">
             여기서 끝났어. <strong>{{ r.endNodeLabel }}</strong>
@@ -244,6 +264,14 @@ h1 { color: #f6e8b8; margin: 0; }
   display: flex; flex-direction: column; gap: 0.8rem;
   border-top: 1px solid rgba(255,255,255,0.08);
 }
+.story-replay { padding: .7rem 0; color: #e4d8c1; }
+.story-replay summary { cursor: pointer; font-size: .86rem; }
+.story-replay section { display: flex; flex-direction: column; gap: .6rem; padding-top: 1rem; }
+.story-replay small { color: #9e9588; }
+.story-replay p { margin: 0; line-height: 1.8; word-break: keep-all; overflow-wrap: anywhere; }
+.story-replay__actions { display: flex; justify-content: space-between; gap: 1rem; }
+.story-replay button { padding: .65rem 1rem; border: 1px solid #716752; border-radius: 6px; background: transparent; color: #e4d8c1; cursor: pointer; }
+.story-replay button:disabled { opacity: .3; cursor: default; }
 .detail__loc { color: #b6b6c4; margin: 0.6rem 0 0; font-size: 0.9rem; }
 .detail__loc strong { color: #f6e8b8; }
 .detail__region { color: #888; margin-left: 0.3rem; }

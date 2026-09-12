@@ -21,6 +21,7 @@ import { starterTactics } from '@/systems/tactical-cards';
 import { applySeedColors } from '@/systems/colors';
 import { injectStartChaosCards, computeChaosScore, chaosTierLabel, maxIntensityOf, chaosLevelSummary, chaosScoreOf, applyPostApocalypseMap } from '@/systems/chaos';
 import { rng } from '@/systems/rng';
+import { FRACTURED_TIME_CHAOS_ID, isFracturedTimeUnlocked } from '@/systems/field-chaos';
 import type { Card, Chaos, Race, Season } from '@/data/schemas';
 
 const router = useRouter();
@@ -43,7 +44,8 @@ const race = computed<Race | undefined>(() => {
 const ownedChaos = computed<Chaos[]>(() => {
   const owned = new Set(meta.unlockedChaosIds);
   return [...data.chaosDefs.values()]
-    .filter((c) => owned.has(c.id) && c.effectKind !== 'time-limit-mul')
+    .filter((c) => c.effectKind !== 'time-limit-mul' && (c.id === FRACTURED_TIME_CHAOS_ID
+      ? isFracturedTimeUnlocked(meta) : owned.has(c.id)))
     .sort((a, b) => a.tier - b.tier);
 });
 
@@ -325,6 +327,7 @@ onMounted(async () => {
     </header>
 
     <template v-if="hasChaos">
+    <p v-if="isFracturedTimeUnlocked(meta)" class="story-path">갈라진 시간을 켜고, 두 사람에게 다시 물어보세요.</p>
     <!-- 점수 요약 -->
     <section class="score-bar">
       <div class="score">
@@ -414,6 +417,7 @@ onMounted(async () => {
 .back { background: none; border: 1px solid rgba(255,255,255,0.2); color: #c0b693; padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; margin-bottom: 1rem; }
 h1 { color: #f6e8b8; margin: 0; }
 .sub { color: #888; margin: 0.4rem 0 0; font-size: 0.92rem; }
+.story-path { color: #d7c8a4; font-size: .88rem; line-height: 1.5; }
 
 .score-bar { display: flex; gap: 1rem; margin: 1rem 0 1.6rem; flex-wrap: wrap; }
 .score {

@@ -31,6 +31,7 @@ try {
   const status=await server.ssrLoadModule('/src/systems/world/status.ts');
   const geo=await server.ssrLoadModule('/src/systems/field-geography.ts');
   const {NPC_DIALOGUE}=await server.ssrLoadModule('/src/data/npc-dialogue.ts');
+  const {JOURNEY_QUESTS}=await server.ssrLoadModule('/src/data/journey-quests.ts');
   const results=[];
   function arena(id='mr-iluneon-cutpurse',rank='normal'){
     run.startRun({timelineId:timeline.id,raceId:'human',season:'spring',startNodeId:'n-iluneon-square',maxHp:50,maxMp:8,timeLimit:300});
@@ -115,7 +116,12 @@ try {
   results.push(patternCount+' authored monster attacks retain damage, shape, cast speed and '+statusCount+' status tokens');
 
   for(const boss of data.bosses.values()){
-    a=arena(boss.id,'boss');assert(combat.beginBossEncounter(run.data,a.enemy));const t=run.data.field.elapsedSeconds;
+    a=arena(boss.id,'boss');
+    // This isolated pattern test starts from an accepted story encounter.
+    // Rejection before acceptance and legacy engaged saves are covered by test-field-boss-gates.mjs.
+    const finalQuest=JOURNEY_QUESTS.find(q=>q.completeOnBoss===boss.id);
+    if(finalQuest)run.data.field.journey.accepted[finalQuest.id]=run.data.field.elapsedSeconds+1;
+    assert(combat.beginBossEncounter(run.data,a.enemy));const t=run.data.field.elapsedSeconds;
     field.advanceFieldTime(60);assert.equal(run.data.field.elapsedSeconds,t);
     combat.resolveFieldEncounter(run.data,false);assert(!a.enemy.creature.engaged);
     a.enemy.creature.challengeAfter=0;combat.beginBossEncounter(run.data,a.enemy);combat.resolveFieldEncounter(run.data,true);

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { endingPresentation } from '@/data/time-endings';
+import { TIME_ALLIES, livingTimeAlly } from '@/systems/time-story';
 import { elapsedLabel } from "@/systems/field-bases";
 /**
  * 런 종료 정리(요약) 화면 — *모든* 종료 경로의 합류점.
@@ -35,6 +37,9 @@ interface AbsorbResult {
 }
 
 const result = ref<AbsorbResult | null>(null);
+const endingPage = ref(0);
+const ending = computed(() => { const saved = run.data.timeStory?.ending; return saved ? endingPresentation(saved.id, saved.witnesses) : undefined; });
+const page = computed(() => ending.value?.pages[endingPage.value]);
 const timeline = computed(() => data.timelines.get(run.data.timelineId));
 const race = computed(() => data.races.get(run.data.raceId));
 
@@ -50,7 +55,7 @@ const endNode = computed(() => {
 
 // === 행적: 동료 (Item 37-② — roster 기준, 그 런에 영입한 동료 전체) ===
 const companionNames = computed(() =>
-  (run.data.roster ?? [])
+  [...(run.data.roster ?? []), ...TIME_ALLIES.filter(id => livingTimeAlly(run.data, id)).map(id => ({ id, src: 'npc' }))]
     .map((e) => (e.src === 'npc' ? data.npcs.get(e.id)?.name : undefined) ?? e.id)
     .filter((n): n is string => !!n),
 );
@@ -146,7 +151,17 @@ onMounted(async () => {
 
 <template>
   <main class="run-end-view">
-    <h1>런 종료</h1>
+    <section v-if="page && ending" class="ending-reader" aria-label="이야기의 결말" aria-live="polite">
+      <small>{{ ending.title }} · {{ ending.variant }} · {{ endingPage + 1 }}/{{ ending.pages.length }}</small>
+      <h1>{{ page.speaker ?? ending.title }}</h1>
+      <p class="ending-line">{{ page.text }}</p>
+      <div class="ending-actions"><button v-if="endingPage > 0" @click="endingPage--">이전</button><button @click="endingPage++">{{ endingPage + 1 === ending.pages.length ? '여정의 기록' : '다음' }}</button></div>
+    </section>
+    <template v-else>
+    <h1>{{ ending?.title ?? '여정의 끝' }}</h1>
+    <p v-if="ending" class="reason">{{ ending.variant }}</p>
+    <p v-if="run.data.timeStory?.ending?.reason" class="reason">{{ run.data.timeStory.ending.reason }}</p>
+    <p v-if="ending && run.data.timeStory?.ending?.id !== 'together'" class="story-unlock">카오스 「갈라진 시간」 해금<br><small>새 여정에서 선택하면 다른 해법을 찾을 수 있다.</small></p>
     <p class="reason">{{ endReasonText(run.data.endReason) }}</p>
     <p v-if="timeline" class="tl">
       {{ timeline.name }}<span v-if="race" class="tl__race"> · {{ race.name }}</span>
@@ -253,10 +268,12 @@ onMounted(async () => {
     <p v-if="result" class="logged">이 여정은 기록에 담겼어. 메인에서 다시 들춰 볼 수 있어.</p>
 
     <button class="finish" @click="returnMain">메인 메뉴로 →</button>
+    </template>
   </main>
 </template>
 
 <style scoped>
+.ending-reader{width:100%;min-height:70dvh;display:flex;flex-direction:column;justify-content:center;gap:24px;box-sizing:border-box}.ending-reader small{color:#b9a981;font-size:12px;letter-spacing:.08em}.ending-reader h1{font-size:1.4rem;color:#e1d5b0}.ending-line{font-size:1.08rem;line-height:2;color:#dad5c6;word-break:keep-all;margin:0;min-height:160px}.ending-actions{display:flex;justify-content:flex-end;gap:12px}.ending-actions button{min-width:80px;min-height:44px;padding:8px 16px;border:1px solid #81775a;border-radius:6px;background:#252b2a;color:#ece1c6;font:inherit}.story-unlock{text-align:center;color:#d4bd80;line-height:1.8}.story-unlock small{color:#9ea6a1;font-size:12px}
 .run-end-view {
   max-width: 600px;
   margin: 0 auto;

@@ -5,13 +5,14 @@ import { influenceEntity, recordFact, resolveInteraction } from './world/engine'
 import { cardinal, distance, entitiesAt, hasSight, positionKey, walkable } from './world/spatial';
 import { actionRestriction, DEBUFFS, DECAYING, outgoingDamage, status, STATUS_HELP } from './world/status';
 import { configurationFailure } from './field-bases';
-import { enforceTamamoSubmission, afterMovement, beginBossEncounter, combatDefinition } from './field-combat';
+import { enforceTamamoSubmission, afterMovement, beginBossEncounter, combatDefinition, bossEncounterFailure } from './field-combat';
 import { bonusesFromEffective } from './equipment';
 import { scaledValue } from './enhance';
 import { SKILL_GESTURES, type SkillGesture, skillEffects, skillFamily, skillStrokes, skillMana, skillCooldown, skillCastTurns, skillFitsGesture, skillReach } from './field-skill-rules';
 export { SKILL_GESTURES, type SkillGesture, skillEffects, skillFamily, skillStrokes, skillMana, skillCooldown, skillCastTurns, skillFitsGesture, skillReach, skillEffectText } from './field-skill-rules';
 import { skillGestureUnlocked, SKILL_UNLOCK_LEVEL, type SkillGesture as UnlockedGesture } from './field-skill-rules';
 import { useDataStore } from '@/stores/data';
+import { CASTING_EFFECTS, castingEffectFailure, castingMarkedTargets, castingPlacementCells, resolveCastingEffect, triggerFieldInstallations, castCommitment, brokenCastCommitment, type CastCommitment } from './field-casting';
 
 export interface SkillCell { pos: GridPos; multiplier: number }
 export interface FieldSkills {
@@ -23,7 +24,7 @@ export interface FieldSkills {
   nextCost?: { amount: number; expires: number };
   manaDue?: { amount: number; due: number }[];
   recent?: { family: string; turn: number }[];
-  pending?: { card: Card; nodeId: string; cells: SkillCell[]; due: number; paid: number; power: number };
+  pending?: { card: Card; nodeId: string; cells: SkillCell[]; due: number; paid: number; power: number; commitment?: CastCommitment };
 }
 export const FIELD_SKILL_EFFECTS: ReadonlySet<CardEffectKind> = new Set([
   'damage', 'heal', 'block', 'break-armor', 'apply-status', 'ghost-self', 'grant-airborne',
@@ -32,11 +33,11 @@ export const FIELD_SKILL_EFFECTS: ReadonlySet<CardEffectKind> = new Set([
   'damage-from-hp', 'damage-per-confine', 'block-to-damage', 'adaptive-strike',
   'spend-all-energy', 'damage-per-relic', 'double-block', 'heavy-blade',
   'draw','return-hand-to-deck','draw-if-color','exhaust-self','return-self-to-hand','damage-per-hand','heal-per-hand','damage-low-hand','damage-per-cards-played','next-card-double','hand-cost-down','next-turn-energy','this-turn-amp',
-  'move-self', 'push-enemy', 'pull-enemy', 'terrain-water', 'terrain-fire', 'terrain-smoke',
+  'move-self', 'push-enemy', 'pull-enemy', 'slow-enemy', 'terrain-water', 'terrain-fire', 'terrain-smoke', ...CASTING_EFFECTS,
 ]);
 const turn = (run: RunState) => Math.floor((run.field?.elapsedSeconds ?? 0) / 30);
 const selfEffect = (e: CardEffect) => e.target === 'self' || ['heal','block','block-top-color','double-block','ghost-self','grant-airborne','move-self','draw','return-hand-to-deck','draw-if-color','exhaust-self','return-self-to-hand','heal-per-hand','next-card-double','hand-cost-down','next-turn-energy','this-turn-amp'].includes(e.kind);
-const environmental = (e: CardEffect) => e.kind.startsWith('terrain-');
+const environmental = (e: CardEffect) => e.kind.startsWith('terrain-') || e.kind === 'place-installation' || e.kind === 'delayed-damage';
 const hostileEffect = (e: CardEffect) => !selfEffect(e) && !environmental(e);
 
 /** Reject the whole skill when even one effect lacks a faithful field implementation. */
@@ -48,6 +49,7 @@ export function skillUnavailable(card: Card): string | undefined {
   if (!Number.isFinite(card.cost) || card.cost < 0 || !Number.isFinite(skillMana(card)) || skillMana(card) > 3 || !Number.isInteger(skillCooldown(card))) return '마나 규칙 준비 중';
   if (card.targetMode === 'throw') return '투척 기술 준비 중';
   if (skillEffects(card).some(e => !FIELD_SKILL_EFFECTS.has(e.kind))) return '효과 포팅 중';
+  const castingFailure = skillEffects(card).map(castingEffectFailure).find(Boolean); if (castingFailure) return castingFailure;
   if (skillEffects(card).some(e => e.kind === 'apply-status' && (!STATUS_HELP[String(e.params?.status)] ||
     (selfEffect(e) && !DECAYING.has(String(e.params?.status)) && !['regen','paralyze','spasm','poison','burn'].includes(String(e.params?.status)))))) return '지속 효과 준비 중';
   if (skillEffects(card).some(e => !Number.isFinite(e.value ?? 0))) return '수치 확인 필요';
@@ -136,8 +138,10 @@ export function skillFailure(run: RunState, world: InteractionWorld, card: Card,
   const cooldown = skillRemaining(run, card); if (cooldown) return cooldown + '턴 남음';
   if ((player.properties.mana ?? 0) < fieldSkillMana(run,card)) return '마나 부족';
   if (!cells.length) return '사거리 밖이다.';
+  if (skillEffects(card).some(e => e.kind === 'place-installation') && !castingPlacementCells(world,player,cells).length) return '설치할 빈 칸이 없다.';
   if (skillEffects(card).some(e => e.kind === 'move-self') && actionRestriction(player, true)) return actionRestriction(player, true);
-  if (skillEffects(card).every(hostileEffect) && !targetsAt(world, player, cells).some(({target}) =>
+  if (skillEffects(card).some(e=>e.kind==='chain-explosion') && !castingMarkedTargets(world,player).length) return '약화가 묻은 대상이 없다.';
+  if (!skillEffects(card).some(e=>e.kind==='chain-explosion') && skillEffects(card).every(hostileEffect) && !targetsAt(world, player, cells).some(({target}) =>
     !(status(target, 'ghost') && (card.targetMode === 'aimed' || status(player,'ghost'))))) return '범위 안에 대상이 없다.';
 }
 function change(world: InteractionWorld, actor: WorldEntity, target: WorldEntity, property: string, amount: number) {
@@ -152,7 +156,7 @@ function damage(world: InteractionWorld, actor: WorldEntity, target: WorldEntity
   if (target.creature && value > 0) target.creature.angry = true;
   return facts.some(f => (f.property === 'integrity' || f.property === 'guard') && f.after! < f.before!);
 }
-function displace(world: InteractionWorld, actor: WorldEntity, target: WorldEntity, origin: GridPos, count: number, toward: boolean) {
+function displace(run: RunState, world: InteractionWorld, actor: WorldEntity, target: WorldEntity, origin: GridPos, count: number, toward: boolean) {
   if (!target.pos || actionRestriction(target,true)) return;
   for (let i = 0; i < count; i++) {
     const current = target.pos;
@@ -164,6 +168,7 @@ function displace(world: InteractionWorld, actor: WorldEntity, target: WorldEnti
     const result = resolveInteraction(world, actor.id, target.id, {id:'skill:move',label:'이동',description:'',duration:0,reach:99,effects:[{kind:'relocate',pos:next}]});
     if (!result.ok) break;
     afterMovement(target);
+    triggerFieldInstallations(run,world,target.id);
   }
 }
 export function resolveFieldSkill(run: RunState, world: InteractionWorld, card: Card, cells: SkillCell[], paid: number, power=1) {
@@ -188,7 +193,9 @@ export function resolveFieldSkill(run: RunState, world: InteractionWorld, card: 
   };
   for (const effect of skillEffects(card)) {
     const v = effect.value ?? 0;
+    if (resolveCastingEffect({run,world,card,effect,cells,targets,value:boost(v),bonusDamage:bonus.damage})) continue;
     switch (effect.kind) {
+      case 'slow-enemy': for (const {target} of targets) change(world,player,target,'status:slowed',v); break;
       case 'draw': recharge(Math.min(2,v)); break;
       case 'return-hand-to-deck': recharge(2); break;
       case 'draw-if-color': { const color=String(effect.params?.color??'water');if((player.colors[color as keyof typeof player.colors]??0)>=Number(effect.params?.threshold??30))recharge(Math.min(2,v)); break; }
@@ -231,9 +238,9 @@ export function resolveFieldSkill(run: RunState, world: InteractionWorld, card: 
       }
       case 'move-self': {
         const nearest = Object.values(world.entities).filter(e=>e.id!==player.id&&e.nodeId===player.nodeId&&e.pos&&e.kind==='actor'&&(e.properties.integrity??100)>0&&hasSight(world,player,e)).sort((a,b)=>distance(player.pos!,a.pos!)-distance(player.pos!,b.pos!))[0];
-        if (nearest?.pos) displace(world,player,player,nearest.pos,Math.max(1,v),effect.params?.mode === 'toward'); break;
+        if (nearest?.pos) displace(run,world,player,player,nearest.pos,Math.max(1,v),effect.params?.mode === 'toward'); break;
       }
-      case 'push-enemy': case 'pull-enemy': targets.forEach(({target}) => displace(world,player,target,player.pos!,Math.max(1,v),effect.kind === 'pull-enemy')); break;
+      case 'push-enemy': case 'pull-enemy': targets.forEach(({target}) => displace(run,world,player,target,player.pos!,Math.max(1,v),effect.kind === 'pull-enemy')); break;
       case 'terrain-water': case 'terrain-fire': case 'terrain-smoke': {
         const property = effect.kind === 'terrain-water' ? 'moisture' : effect.kind === 'terrain-fire' ? 'heat' : 'smoke';
         for (const {pos} of cells) {
@@ -260,7 +267,7 @@ export function castFieldSkill(run: RunState, world: InteractionWorld, gesture: 
   const player = world.entities.player!, cells = fieldSkillCells(world,player,card,aim);
   const failure = skillFailure(run,world,card,cells); if (failure) return {ok:false,message:failure};
   const boss = targetsAt(world,player,cells).find(({target}) => target.creature?.rank === 'boss' && !target.creature.engaged)?.target;
-  if (boss) {beginBossEncounter(run,boss,true);return {ok:false,message:''};}
+  if (boss) {const locked=bossEncounterFailure(run,boss);if(locked)return {ok:false,message:locked};beginBossEncounter(run,boss,true);return {ok:false,message:''};}
   const paid = skillEffects(card).some(e=>e.kind === 'spend-all-energy') ? player.properties.mana ?? 0 : fieldSkillMana(run,card);
   change(world,player,player,'mana',-paid);
   const skills = ensureFieldSkills(run), power=skills.nextPower&&skills.nextPower.expires>=turn(run)?skills.nextPower.multiplier:1;
@@ -269,7 +276,7 @@ export function castFieldSkill(run: RunState, world: InteractionWorld, gesture: 
   const castTurns = skillCastTurns(card);
   skills.readyAt[skillFamily(card)] = turn(run) + 1 + skillCooldown(card);
   if (castTurns === 0) resolveFieldSkill(run,world,card,cells,paid,power);
-  else skills.pending = {card:JSON.parse(JSON.stringify(card)),nodeId:player.nodeId,cells,due:turn(run)+castTurns,paid,power};
+  else skills.pending = {card:JSON.parse(JSON.stringify(card)),nodeId:player.nodeId,cells,due:turn(run)+castTurns,paid,power,commitment:castCommitment(card,player)};
   return {ok:true,message:castTurns > 1 ? card.name + ' 시전' : ''};
 }
 export function tickFieldSkills(run: RunState, world: InteractionWorld) {
@@ -282,6 +289,12 @@ export function tickFieldSkills(run: RunState, world: InteractionWorld) {
     skills.manaDue=skills.manaDue?.filter(d=>d.due>turn(run));
   }
   if (!pending || !player) return;
+  const interrupted = brokenCastCommitment(pending.commitment,player);
+  if (interrupted) {
+    skills!.pending=undefined;
+    recordFact(world,{turn:world.turn,nodeId:player.nodeId,actorId:player.id,targetId:player.id,kind:'signal',labor:0,message:interrupted});
+    return;
+  }
   if (pending.nodeId !== player.nodeId || (player.properties.integrity ?? 100) <= 0 || actionRestriction(player)) {
     skills!.pending = undefined; return;
   }

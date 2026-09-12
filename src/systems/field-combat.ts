@@ -1,3 +1,6 @@
+import { useRunStore } from '@/stores/run';
+import { fieldChaosAttackMultiplier } from './field-chaos';
+import { JOURNEY_QUESTS } from '@/data/journey-quests';
 import type { RunState } from '@/data/schemas';
 import { rng } from './rng';
 import { transformationChance } from './world/form-rules';
@@ -67,7 +70,7 @@ export function planAttack(world:InteractionWorld,e:WorldEntity,player:WorldEnti
   if(!cells && atk.requiresInRange!==false)return;
   const chosen=cells??rotations[0]!;
   if(!chosen.length)return;
-  return {name:atk.name??'공격',cells:chosen,damage:atk.damage??c.attack,status:atk.applyStatus,transform:atk.transform?{...atk.transform}:undefined,remaining:turns,castTurns:turns,castSpeed:atk.castSpeed??'normal'};
+  return {name:atk.name??'공격',cells:chosen,damage:Math.ceil((atk.damage??c.attack)*fieldChaosAttackMultiplier(useRunStore().data,c.rank)),status:atk.applyStatus,transform:atk.transform?{...atk.transform}:undefined,remaining:turns,castTurns:turns,castSpeed:atk.castSpeed??'normal'};
 }
 export function resolveAttack(world:InteractionWorld,e:WorldEntity) {
   const c=e.creature!,attack=c.pending!;
@@ -101,7 +104,7 @@ export function tickStatuses(world:InteractionWorld,e:WorldEntity,turn:number,wa
   for(const key of ['poison','burn','sap','possession']){
     const n=status(e,key);if(!n)continue;
     const damage=key==='possession'?Math.min(Math.max(0,(e.properties.integrity??100)*hp/100-1),Math.min(6,1+n)):n;
-    if(damage>0)influenceEntity(world,e,'integrity',-damage/hp*100);
+    if(damage>0)influenceEntity(world,e,'integrity',-damage/hp*100,e.id);
     if((e.properties.integrity??100)<=0)return;
     if(key==='poison')changeStatus(e.properties,key,-1);
     if(key==='burn')changeStatus(e.properties,key,-Math.ceil(n/2));
@@ -128,7 +131,7 @@ export function creatureDestinations(world:InteractionWorld,e:WorldEntity):GridP
   const range=status(e,'slime')||status(e,'slowed')||status(e,'drowsy')?1:Math.max(1,profile?.range??1);
   const result=new Map<string,GridPos>();
   const add=(dx:number,dy:number)=>{const p={x:e.pos!.x+dx,y:e.pos!.y+dy};if(walkable(world,e.nodeId,p,e.id))result.set(p.x+','+p.y,p);return p;};
-  const patterns=status(e,'slime')?['orthogonal1']:profile?.pattern==='composite'?profile.compose??['orthogonal1']:[profile?.pattern??'orthogonal1'];
+  const patterns=(status(e,'slime')||status(e,'slowed'))?['orthogonal1']:profile?.pattern==='composite'?profile.compose??['orthogonal1']:[profile?.pattern??'orthogonal1'];
   for(const pattern of patterns){
     if(pattern==='knight'){for(const [x,y]of [[1,2],[2,1],[-1,2],[-2,1],[1,-2],[2,-1],[-1,-2],[-2,-1]])add(x!,y!);continue;}
     if(pattern==='custom'){for(const p of profile?.customOffsets??[])add(p.dx,p.dy);continue;}
@@ -160,25 +163,33 @@ export function commitCreatureMove(world:InteractionWorld,e:WorldEntity,next:Gri
 export function moveCreature(world:InteractionWorld,e:WorldEntity,target:GridPos) {
  const next=nextCreaturePosition(world,e,target);if(next)commitCreatureMove(world,e,next);
 }
+export function bossEncounterFailure(run: RunState, e: WorldEntity): string | undefined {
+  if (e.creature?.definitionId === 'bs-act-1-anchor' && !JOURNEY_QUESTS.some(q => q.completeOnBoss === e.creature!.definitionId && run.field?.journey?.accepted[q.id]))
+    return '츠요사이에게 마지막 부탁을 받고 오자.';
+}
 export function beginBossEncounter(run:RunState,e:WorldEntity,explicit=false):boolean {
+  if (bossEncounterFailure(run,e)) return false;
   const c=e.creature!;
   if(run.interactionWorld&&enforceTamamoSubmission(run,run.interactionWorld,e.id))return true;
   if(c.rank!=='boss'||c.engaged)return false;
   if(!explicit&&(c.challengeAfter??0)>(run.field?.elapsedSeconds??0))return true;
   const def=combatDefinition(e);
-  run.field!.encounter={actorId:e.id,name:e.name,lines:def&&'dialogue'in def&&def.dialogue?.length?def.dialogue:[def&&'introText'in def?def.introText??e.name:e.name]};
+  const story=JOURNEY_QUESTS.find(q=>q.encounter?.bossId===c.definitionId&&run.field?.journey?.accepted[q.id]&&!run.field.journey.completed[q.id]);
+  run.field!.encounter={actorId:e.id,name:e.name,lines:story?.encounter?.lines??(def&&'dialogue'in def&&def.dialogue?.length?def.dialogue:[def&&'introText'in def?def.introText??e.name:e.name])};
   return true;
 }
 export function resolveFieldEncounter(run:RunState,accept:boolean) {
   const encounter=run.field?.encounter;if(!encounter)return;
   const e=run.interactionWorld?.entities[encounter.actorId];
   if(e&&run.interactionWorld&&enforceTamamoSubmission(run,run.interactionWorld,e.id))return;
+  if(e && bossEncounterFailure(run,e)){run.field!.encounter=undefined;return;}
   if(e?.creature){e.creature.nextAction=undefined;if(accept){e.creature.engaged=true;e.creature.angry=true;}else e.creature.challengeAfter=run.field!.elapsedSeconds+300;}
   run.field!.encounter=undefined;
 }
 export function clearCombatStatuses(e:WorldEntity,rest=false) {
   for(const {key} of statusEntries(e))if(rest||!['possession','regress','feral-heavy'].includes(key))e.properties['status:'+key]=0;
   e.properties.guard=0;
+  e.properties.castingStrength=0;e.properties.castingStrengthExpiresAt=0;
 }
 
 /** A transformed apprentice submits before either side can use a combat action. */

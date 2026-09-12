@@ -15,6 +15,7 @@ import { useMetaStore } from '@/stores/meta';
 import { useCodexStore } from '@/stores/codex';
 import { useUiStore } from '@/stores/ui';
 import { useDataStore } from '@/stores/data';
+import { recordTimeEnding, TIME_ALLIES, livingTimeAlly } from './time-story';
 import { computeChaosScore } from '@/systems/chaos';
 
 /** absorb가 산정한 외부 획득 표시값 — buildRunSummary가 그대로 박제. */
@@ -93,6 +94,8 @@ export function buildRunSummary(run: RunState, gains: AbsorbGains): RunSummary {
 
   return {
     endedAt: Date.now(),
+    storyEnding: run.timeStory?.ending?.id,
+    storyWitnesses: run.timeStory?.ending?.witnesses ? JSON.parse(JSON.stringify(run.timeStory.ending.witnesses)) : undefined,
     timelineId: run.timelineId,
     raceId: run.raceId,
     endReason: (run.endReason ?? 'free-end') as RunSummary['endReason'],
@@ -108,7 +111,7 @@ export function buildRunSummary(run: RunState, gains: AbsorbGains): RunSummary {
     chaosScore,
     chaos: (run.activeChaos ?? []).map((a) => ({ ...a })),
     newRecord,
-    companions: (run.roster ?? []).map((e) => ({ id: e.id, src: e.src })),
+    companions: [...(run.roster ?? []).map((e) => ({ id: e.id, src: e.src })), ...TIME_ALLIES.filter(id => livingTimeAlly(run, id)).map(id => ({ id, src: 'npc' as const }))],
     relicIds: (run.relics ?? []).map((r) => r.id),
     cards: [...cardGroups.entries()].map(([id, count]) => ({ id, count })),
     gold: run.gold,
@@ -141,7 +144,7 @@ export function absorbRunIntoMeta(run: RunState) {
 
   // === 살아있는 런 성과 집계 (역할 재정의, 2026-06-10) ===
   const regions = countReachedRegions(run);
-  const companions = (run.roster ?? []).length;
+  const companions = new Set([...(run.roster ?? []).map(e => e.id), ...TIME_ALLIES.filter(id => livingTimeAlly(run, id))]).size;
   const arcsCleared = (run.arcsCleared ?? []).length;
   const bossesCleared = (run.bossesCleared ?? []).length;
 
@@ -167,6 +170,7 @@ export function absorbRunIntoMeta(run: RunState) {
     return { granted: [], soulGain, hyperionGain, researchGain };
   }
   run.metaAbsorbed = true;
+  recordTimeEnding(run, meta);
 
   // 게이지 변환 (meta.ts의 absorbRunResult가 게이지 누적 + 임계 토큰 발급 처리).
   //   임계 돌파 시 _applyUnlockKey가 영혼 +5를 추가로 지급(R2) — soulGain 표시값과 별개.

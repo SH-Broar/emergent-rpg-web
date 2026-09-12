@@ -3,13 +3,14 @@ import type { InteractionWorld,WorldEntity } from './world/types';
 import { actionRestriction,status } from './world/status';
 import { distance,hasSight } from './world/spatial';
 import { isFoodResource } from './world/resources';
-import { nextCreaturePosition,planAttack } from './field-combat';
+import { nextCreaturePosition,planAttack,bossEncounterFailure } from './field-combat';
 
 /** Planning never moves an entity or spends a turn. The plan survives saving and player movement. */
 export function prepareCreatureIntent(run:RunState,world:InteractionWorld,e:WorldEntity) {
  const c=e.creature,player=world.entities.player;
  if(!c||!e.pos||!player?.pos||e.nodeId!==player.nodeId||(e.properties.integrity??100)<=0)return;
  c.recovery=0;c.tempoStep=0;
+ if(bossEncounterFailure(run,e)){c.engaged=false;c.pending=undefined;c.intent=undefined;c.nextAction={kind:'wait',label:'기다림'};return;}
  const blocked=actionRestriction(e);
  if(blocked){c.nextAction={kind:'wait',label:blocked};return;}
  if(c.pending){c.nextAction=undefined;c.intent=c.pending.cells.map(c=>({...c.pos}));return;}

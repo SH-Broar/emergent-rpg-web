@@ -32,7 +32,10 @@ export function skillEffectText(card: Card): string[] {
     const v=e.value??0,n=skillValue(v,card);
     const simple:Record<string,string>={damage:'기본 피해 '+n,heal:'회복 '+n,block:'기본 방어 '+n,
       'break-armor':'방어 파괴','ghost-self':'유령화 '+v+'턴','grant-airborne':'비행 '+v+'턴',
-      'move-self':'이동 '+v+'칸','push-enemy':'밀기 '+v+'칸','pull-enemy':'끌기 '+v+'칸',
+      'move-self':'이동 '+v+'칸','push-enemy':'밀기 '+v+'칸','pull-enemy':'끌기 '+v+'칸','slow-enemy':'이동 둔화 '+v+'턴',
+      'delayed-damage':Number(e.params?.delay??2)+'턴 뒤 같은 칸에 피해 '+n,
+      'amplify-debuff':'가장 강한 약화 두 배 · 해당 수치 ×'+n+' 피해',
+      'status-spread':'인접 대상에 약화 옮기기','chain-explosion':'약화 대상과 인접 칸에 피해 '+n,
       'terrain-water':'물 퍼뜨리기','terrain-fire':'불 퍼뜨리기','terrain-smoke':'연기 퍼뜨리기',
       draw:'다른 기술 재사용 −'+Math.min(2,v)+'턴','return-hand-to-deck':'다른 기술 재사용 −2턴',
       'draw-if-color':'컬러 조건 충족 시 다른 기술 재사용 단축',
@@ -48,9 +51,13 @@ export function skillEffectText(card: Card): string[] {
       'damage-from-hp':'체력을 써서 공격','damage-per-confine':'막힌 인접 칸마다 추가 피해','block-to-damage':'방어에 비례한 피해',
       'adaptive-strike':'방어 중이면 공격, 아니면 방어','spend-all-energy':'모든 마나로 공격','damage-per-relic':'유물 수에 비례한 피해',
       'double-block':'방어 두 배','heavy-blade':'힘에 비례한 피해'};
+    if(e.kind==='place-installation') {
+      const kind=String(e.params?.kind??'burn'),names:Record<string,string>={burn:'화염',poison:'독',vulnerable:'가시','atk-up':'힘','def-up':'방어','mana-up':'마나',explosion:'폭약'};
+      return (names[kind]??'설치물')+' '+n+' · 다음 턴 접촉 시 발동 · '+Number(e.params?.duration??3)+'턴 유지'+(kind==='atk-up'?' · 힘은 3턴, 중첩 불가':'');
+    }
     if(e.kind==='apply-status')return statusLabel(String(e.params?.status ?? '상태'))+' '+v;
     return simple[e.kind]??'특수 효과';
   });
 }
 
-export const skillHasPower = (card:Card) => skillEffects(card).some(e => ['damage','heal','block','damage-per-hand','heal-per-hand','damage-low-hand','damage-per-cards-played','damage-min-color','damage-top-color','damage-color-count','block-top-color','damage-per-confine','damage-per-relic','block-to-damage','double-block','spend-all-energy','damage-from-hp','adaptive-strike','heavy-blade','damage-per-debuff','consume-vulnerable','consume-burn','consume-poison'].includes(e.kind));
+export const skillHasPower = (card:Card) => skillEffects(card).some(e => ['place-installation','delayed-damage','amplify-debuff','chain-explosion','damage','heal','block','damage-per-hand','heal-per-hand','damage-low-hand','damage-per-cards-played','damage-min-color','damage-top-color','damage-color-count','block-top-color','damage-per-confine','damage-per-relic','block-to-damage','double-block','spend-all-energy','damage-from-hp','adaptive-strike','heavy-blade','damage-per-debuff','consume-vulnerable','consume-burn','consume-poison'].includes(e.kind));

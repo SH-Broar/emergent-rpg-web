@@ -10,6 +10,7 @@
  * 데이터 매핑: `tl.availableRaceIds`를 순회하며 data.races 직접 조회.
  */
 
+import { fieldCombatStyle } from '@/data/field-professions';
 import { computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUiStore } from '@/stores/ui';
@@ -110,7 +111,7 @@ onMounted(() => {
         <div class="card__head">
           <span class="card__name">{{ raceLabel(race) }}</span>
         </div>
-        <p v-if="race.description && canSelectRace(race.id)" class="card__desc">{{ race.description }}</p>
+        <template v-if="fieldCombatStyle(race.id) && canSelectRace(race.id)"><strong class="card__style">{{ fieldCombatStyle(race.id)!.name }}</strong><p class="card__desc">{{ fieldCombatStyle(race.id)!.prepare }} {{ fieldCombatStyle(race.id)!.release }}</p></template><p v-else-if="race.description && canSelectRace(race.id)" class="card__desc">{{ race.description }}</p>
         <span v-if="!canSelectRace(race.id)" class="card__lock">🔒 연구에서 해금</span>
       </button>
     </section>
@@ -178,4 +179,5 @@ onMounted(() => {
   .race-view { padding: 1.2rem; }
   .card { padding: 1.1rem; }
 }
+.card__style{font-size:12px;color:#bdbca7;font-weight:500}
 </style>

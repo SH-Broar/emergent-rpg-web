@@ -27,6 +27,7 @@ import { instantiateCard } from '@/systems/deck';
 import { createSeededRng, generateInitialSeed, setRng } from '@/systems/rng';
 import { getSkipTurnEveryN } from '@/systems/relic';
 import { gridRelicCombatEnd } from '@/systems/grid-relic';
+import { initializeTimeStory } from '@/systems/time-story';
 import { applyStartChaos, computeChaosScore, nodeHpLoss } from '@/systems/chaos';
 import { dayOfTurn } from '@/systems/time';
 import { tickMail, initialMailState } from '@/systems/mail';
@@ -467,6 +468,7 @@ export const useRunStore = defineStore('run', {
       this.bindRng();
       // 시작형 카오스 1회 적용 (start-hp 등). bindRng 후 — instantiateCard가 결정론 rng를 쓰도록.
       applyStartChaos(this.data);
+      initializeTimeStory(this.data, useMetaStore());
     },
 
     /**

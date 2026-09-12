@@ -24,6 +24,7 @@ export interface FieldSpace {
   basesVersion?:1;
   placementVersion?:1;
   forageVersion?:1;
+  recordsVersion?:number;
   practiceVersion?:1;
   biomePropsVersion?:1;
   residence?:{parent:string;kind:'home'|'court'|'commons'|'player-home'|'inn';npcId?:string};
@@ -62,7 +63,7 @@ export interface FieldState {
 export interface FieldCreature {
   definitionId: string;
   species?: string;
-  balanceVersion?: 1;
+  balanceVersion?: 1 | 2;
   pending?: FieldAttack;
   nextAction?:{kind:'move'|'eat'|'wait'|'encounter';label:string;pos?:GridPos;targetId?:string;resourceId?:string};
   recovery?: number;
