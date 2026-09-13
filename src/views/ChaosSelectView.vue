@@ -18,6 +18,7 @@ import { useRunStore } from '@/stores/run';
 import { useMetaStore } from '@/stores/meta';
 import { instantiateCard } from '@/systems/deck';
 import { starterTactics } from '@/systems/tactical-cards';
+import { grantStartingFieldSkills } from '@/systems/field-skills';
 import { applySeedColors } from '@/systems/colors';
 import { injectStartChaosCards, computeChaosScore, chaosTierLabel, maxIntensityOf, chaosLevelSummary, chaosScoreOf, applyPostApocalypseMap } from '@/systems/chaos';
 import { rng } from '@/systems/rng';
@@ -197,6 +198,7 @@ async function confirmStart() {
   run.data.deckSize = deckSize;
   run.data.collection = allInstances;
   run.data.deck = allInstances.slice(0, deckSize);
+  grantStartingFieldSkills(run.data,data.cards);
   const tactics = starterTactics();
   run.data.collection.push(...tactics);
   const retained = [...run.data.deck];

@@ -9,10 +9,11 @@ import { nextCreaturePosition,planAttack,bossEncounterFailure } from './field-co
 export function prepareCreatureIntent(run:RunState,world:InteractionWorld,e:WorldEntity) {
  const c=e.creature,player=world.entities.player;
  if(!c||!e.pos||!player?.pos||e.nodeId!==player.nodeId||(e.properties.integrity??100)<=0)return;
- c.recovery=0;c.tempoStep=0;
+ c.tempoStep=0;
  if(bossEncounterFailure(run,e)){c.engaged=false;c.pending=undefined;c.intent=undefined;c.nextAction={kind:'wait',label:'기다림'};return;}
  const blocked=actionRestriction(e);
  if(blocked){c.nextAction={kind:'wait',label:blocked};return;}
+ if((c.recovery??0)>0){c.pending=undefined;c.intent=undefined;c.nextAction={kind:'recover',label:'빈틈 · '+c.recovery+'턴'};return;}
  if(c.pending){c.nextAction=undefined;c.intent=c.pending.cells.map(c=>({...c.pos}));return;}
  if(c.nextAction&&c.nextAction.kind!=='wait'&&!(c.nextAction.kind==='encounter'&&c.engaged))return;
  c.nextAction=undefined;c.intent=undefined;
@@ -34,6 +35,7 @@ export function prepareCreatureIntent(run:RunState,world:InteractionWorld,e:Worl
 }
 export function creatureIntent(e:WorldEntity):{glyph:string;label:string} {
  const c=e.creature;if(!c)return {glyph:'',label:''};
+ if(c.nextAction?.kind==='recover')return {glyph:'◇'+(c.recovery??0),label:c.nextAction.label};
  if(c.nextAction?.kind==='wait')return {glyph:'…',label:c.nextAction.label};
  if(c.pending)return {glyph:'⚔'+c.pending.remaining,label:c.pending.name+' · '+c.pending.remaining+'턴'};
  const next=c.nextAction;

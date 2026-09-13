@@ -5,7 +5,7 @@ import { scaledValue } from './enhance';
 
 export const SKILL_GESTURES = ['corner','angle','triangle','inverted','circle','square','diamond','star'] as const;
 export type SkillGesture = typeof SKILL_GESTURES[number];
-export const SKILL_UNLOCK_LEVEL: Record<SkillGesture, number> = {corner:1,angle:2,triangle:3,inverted:4,circle:5,square:7,diamond:9,star:12};
+export const SKILL_UNLOCK_LEVEL: Record<SkillGesture, number> = {corner:1,angle:1,triangle:3,inverted:4,circle:5,square:7,diamond:9,star:12};
 export const skillGestureUnlocked = (level:number|undefined, gesture:string) => !SKILL_GESTURES.includes(gesture as SkillGesture) || (level??1) >= SKILL_UNLOCK_LEVEL[gesture as SkillGesture];
 export const unlockedSkillGestures = (level:number|undefined) => SKILL_GESTURES.filter(g=>skillGestureUnlocked(level,g));
 export const nextSkillGesture = (level:number|undefined) => SKILL_GESTURES.find(g=>!skillGestureUnlocked(level,g));
@@ -48,7 +48,7 @@ export function skillEffectText(card: Card): string[] {
       'damage-min-color':'최저 컬러 ×'+v+' 피해','damage-top-color':'최고 컬러 ×'+v+' 피해',
       'damage-color-count':'컬러 수 ×'+v+' 피해','block-top-color':'최고 컬러 ×'+v+' 방어',
       'damage-per-debuff':'약화 수치 ×'+n+' 피해','consume-vulnerable':'취약 소모 피해','consume-burn':'화상 소모 피해','consume-poison':'독 소모 피해',
-      'damage-from-hp':'체력을 써서 공격','damage-per-confine':'막힌 인접 칸마다 추가 피해','block-to-damage':'방어에 비례한 피해',
+      'damage-from-hp':'체력을 써서 공격','damage-per-confine':'막힌 인접 칸마다 추가 피해','block-to-damage':'방어 소모 ×'+n+' 피해',
       'adaptive-strike':'방어 중이면 공격, 아니면 방어','spend-all-energy':'모든 마나로 공격','damage-per-relic':'유물 수에 비례한 피해',
       'double-block':'방어 두 배','heavy-blade':'힘에 비례한 피해'};
     if(e.kind==='place-installation') {

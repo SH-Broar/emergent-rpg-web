@@ -12,7 +12,9 @@ import { SKILL_GESTURES, type SkillGesture, skillEffects, skillFamily, skillStro
 export { SKILL_GESTURES, type SkillGesture, skillEffects, skillFamily, skillStrokes, skillMana, skillCooldown, skillCastTurns, skillFitsGesture, skillReach, skillEffectText } from './field-skill-rules';
 import { skillGestureUnlocked, SKILL_UNLOCK_LEVEL, type SkillGesture as UnlockedGesture } from './field-skill-rules';
 import { useDataStore } from '@/stores/data';
-import { CASTING_EFFECTS, castingEffectFailure, castingMarkedTargets, castingPlacementCells, resolveCastingEffect, triggerFieldInstallations, castCommitment, brokenCastCommitment, type CastCommitment } from './field-casting';
+import { fieldCombatStyle } from '@/data/field-professions';
+import { instantiateCard } from './deck';
+import { CASTING_EFFECTS, SPREADABLE_STATUSES, castingEffectFailure, castingMarkedTargets, castingPlacementCells, resolveCastingEffect, triggerFieldInstallations, castCommitment, brokenCastCommitment, type CastCommitment } from './field-casting';
 
 export interface SkillCell { pos: GridPos; multiplier: number }
 export interface FieldSkills {
@@ -20,6 +22,7 @@ export interface FieldSkills {
   slots: Partial<Record<SkillGesture, string>>;
   /** Definition family, so duplicate copies / awakening / reassignment cannot reset a skill. */
   readyAt: Record<string, number>;
+  preparationVersion?: 1;
   nextPower?: { multiplier: number; expires: number };
   nextCost?: { amount: number; expires: number };
   manaDue?: { amount: number; due: number }[];
@@ -61,11 +64,20 @@ export function fieldSkillRestriction(run:RunState,card:Card):string|undefined {
   if(card.source==='form' && !allowed.includes(card.id))return '변신 중에만 사용할 수 있다.';
   return skillUnavailable(card);
 }
+/** Grant the authored learning path once at character creation; reconfiguring never creates cards. */
+export function grantStartingFieldSkills(run: RunState, definitions: ReadonlyMap<string,Card>) {
+  for (const id of fieldCombatStyle(run.raceId)?.cardIds ?? []) {
+    const card=definitions.get(id);
+    if(card && !run.collection.some(c=>c.id===id))run.collection.push(instantiateCard(card));
+  }
+}
 export function ensureFieldSkills(run: RunState): FieldSkills {
   const field = run.field!;
+  if(field.skills && !field.skills.preparationVersion)grantStartingFieldSkills(run,useDataStore().cards);
   if (!field.skills) {
     const slots: FieldSkills['slots'] = {}, seen = new Set<string>();
-    for (const card of [...run.deck, ...run.collection]) {
+    const preferred=(fieldCombatStyle(run.raceId)?.starter??[]).flatMap(id=>run.collection.find(c=>c.id===id)??[]);
+    for (const card of [...preferred, ...run.deck, ...run.collection]) {
       if (!card.instanceId || fieldSkillRestriction(run,card) || seen.has(skillFamily(card)) || !run.collection.some(c => c.instanceId === card.instanceId)) continue;
       const gesture = SKILL_GESTURES.find(g=>skillGestureUnlocked(run.level,g)&&!slots[g]&&skillFitsGesture(card,g)); if (!gesture) continue;
       slots[gesture] = card.instanceId; seen.add(skillFamily(card));
@@ -73,6 +85,13 @@ export function ensureFieldSkills(run: RunState): FieldSkills {
     field.skills = { version: 2, slots, readyAt: {} };
   }
   const skills = field.skills;
+  if(!skills.preparationVersion){
+    for(const card of run.collection){
+      const authored=useDataStore().cards.get(card.id)?.magic;
+      if(authored?.effects)card.magic={...card.magic,effects:JSON.parse(JSON.stringify(authored.effects)),role:authored.role??card.magic?.role};
+    }
+    skills.preparationVersion=1;
+  }
   if(skills.version!==2){
     const prior=SKILL_GESTURES.map(g=>skills.slots[g]).filter((id):id is string=>!!id);skills.slots={};
     for(const iid of prior){const c=run.collection.find(c=>c.instanceId===iid);if(!c)continue;const g=SKILL_GESTURES.find(g=>!skills.slots[g]&&skillFitsGesture(c,g));if(g)skills.slots[g]=iid;}
@@ -138,17 +157,20 @@ export function skillFailure(run: RunState, world: InteractionWorld, card: Card,
   const cooldown = skillRemaining(run, card); if (cooldown) return cooldown + '턴 남음';
   if ((player.properties.mana ?? 0) < fieldSkillMana(run,card)) return '마나 부족';
   if (!cells.length) return '사거리 밖이다.';
+  if (skillEffects(card).some(e=>e.kind==='block-to-damage') && (player.properties.guard??0)<=0) return '먼저 방어를 세우자.';
+  if (skillEffects(card).some(e=>e.kind==='amplify-debuff') && !targetsAt(world,player,cells).some(({target})=>SPREADABLE_STATUSES.some(key=>status(target,key)>0))) return '먼저 약화를 묻히자.';
   if (skillEffects(card).some(e => e.kind === 'place-installation') && !castingPlacementCells(world,player,cells).length) return '설치할 빈 칸이 없다.';
   if (skillEffects(card).some(e => e.kind === 'move-self') && actionRestriction(player, true)) return actionRestriction(player, true);
   if (skillEffects(card).some(e=>e.kind==='chain-explosion') && !castingMarkedTargets(world,player).length) return '약화가 묻은 대상이 없다.';
-  if (!skillEffects(card).some(e=>e.kind==='chain-explosion') && skillEffects(card).every(hostileEffect) && !targetsAt(world, player, cells).some(({target}) =>
+  const leadShot=card.targetMode==='aimed' && skillCastTurns(card)>1;
+  if (!leadShot && !skillEffects(card).some(e=>e.kind==='chain-explosion') && skillEffects(card).every(hostileEffect) && !targetsAt(world, player, cells).some(({target}) =>
     !(status(target, 'ghost') && (card.targetMode === 'aimed' || status(player,'ghost'))))) return '범위 안에 대상이 없다.';
 }
 function change(world: InteractionWorld, actor: WorldEntity, target: WorldEntity, property: string, amount: number) {
   return influenceEntity(world, target, property, amount, actor.id);
 }
 function damage(world: InteractionWorld, actor: WorldEntity, target: WorldEntity, base: number, multiplier: number, addStats: boolean, bonus: number, ranged: boolean) {
-  if ((target.properties.integrity ?? 100) <= 0 || status(target,'ghost') && (ranged || status(actor,'ghost'))) return;
+  if ((target.properties.integrity ?? 100) <= 0 || target.creature?.rank==='boss'&&!target.creature.engaged || status(target,'ghost') && (ranged || status(actor,'ghost'))) return;
   const value = Math.max(0, Math.floor((addStats ? outgoingDamage(actor, base + bonus, ranged) : base) * multiplier) -
     (target.creature ? combatDefinition(target)?.defense ?? 0 : 0));
   const amount = value / (target.properties.maxHp ?? 100) * 100;
@@ -221,7 +243,7 @@ export function resolveFieldSkill(run: RunState, world: InteractionWorld, card: 
       case 'block-top-color': block(Math.floor(Math.max(0,...colors) * v),false); break;
       case 'damage-per-confine': deal(cardinal(player.pos!).filter(p => !walkable(world,player.nodeId,p,player.id)).length * v,false); break;
       case 'damage-per-relic': deal(run.relics.length * v); break;
-      case 'block-to-damage': deal((player.properties.guard ?? 0) * v,false); break;
+      case 'block-to-damage': { const guard=player.properties.guard??0;deal(guard*v,false);change(world,player,player,'guard',-guard);break; }
       case 'double-block': block(player.properties.guard ?? 0,false); break;
       case 'spend-all-energy': deal(paid * v,false); break;
       case 'damage-from-hp': {

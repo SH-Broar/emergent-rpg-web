@@ -2,9 +2,9 @@ import { colorOperationAction, colorOperationDisabled } from './field-color-acti
 import { tickFieldCasting, triggerFieldInstallations } from './field-casting';
 import { bossEncounterFailure } from './field-combat';
 import { fieldReading, recordReading } from './field-readings';
-import { arriveTimeAllies, tickTimeAllies, isTimeAlly, timeAllyTopics, recruitTimeAlly, resolveTimeEnding } from './time-story';
+import { arriveTimeAllies, tickTimeAllies, reconcileTimePeople, isTimeAlly, timeAllyTopics, recruitTimeAlly, resolveTimeEnding } from './time-story';
 import { fieldChaosHpMultiplier } from './field-chaos';
-import { ensureJourney, noteJourney, questTopics, performQuest, completeBossQuests } from './field-journey';
+import { ensureJourney, noteJourney, questTopics, performQuest, completeBossQuests, ensureQuestRemains } from './field-journey';
 import { skillGestureUnlocked, SKILL_UNLOCK_LEVEL, type SkillGesture } from './field-skill-rules';
 import { supplyAction, SUPPLY_NAMES } from './field-supplies';
 import { fieldTargets } from './field-selection';
@@ -34,7 +34,7 @@ import { ensureFieldSpace, fieldCreatureHp, fieldItemName, placeFieldEntity, spa
 import { GESTURES, GLYPHS, type Gesture, type FieldResult, type FieldSpace, type FieldSpeech } from './field-types';
 import { isEdgeRequirementMet } from './map';
 import { isFoodResource } from './world/resources';
-import { lifeActions, plantLifeAction } from './world/life-world';
+import { lifeActions, plantLifeAction, gatherForageAction } from './world/life-world';
 import { bonusesFromEffective } from './equipment';
 import { applyArcRewards, applyBossRewards } from './boss-rewards';
 
@@ -80,6 +80,8 @@ export function ensureField(run = useRunStore().data): { world: InteractionWorld
   }
   reconcileFieldTransformation(run,world);
   ensureResidentPopulation(run,world);placeArrivingResidents(run,world);
+  reconcileTimePeople(run,world);
+  ensureQuestRemains(run,world,space,placeFieldEntity);
   ensureFieldSkills(run);
   player.properties.maxHp=run.maxHp;
   for(const e of Object.values(world.entities).filter(e=>e.nodeId===space.id&&e.kind==='actor')){
@@ -125,8 +127,7 @@ export function fieldAction(run: RunState, world: InteractionWorld, actor: World
   if(gesture==='strike')gesture='triangle';
   if(gesture==='tend')gesture='inverted';
   if((gesture==='tap'||gesture==='take')&&target.tags.includes('forage')){
-   const resource=Object.keys(target.stock).find(id=>(target.stock[id]??0)>0);if(!resource)return;
-   return program(gesture,[{kind:'transfer',resourceId:resource,quantity:1,from:'target',to:'actor'}]);
+   const action=gatherForageAction(world,actor.id,target.id);return action?{...action,duration:0}:undefined;
   }
   if(gesture==='tap'&&target.tags.includes('life-site')) {
     let action:InteractionAction|undefined=lifeActions(run,world,actor.id,target.id)[0];
@@ -333,7 +334,8 @@ function tickCreatures(run: RunState, world: InteractionWorld, activeIds: Readon
   for (const e of [...activeIds].map(id=>world.entities[id]!).filter(e => e?.creature && e.nodeId === player.nodeId)) {
     if(run.ended||!valid(player))break;
     if (!valid(e)) { defeatCreature(run, world, e); continue; }
-    if (!e.pos || !player.pos || !valid(player) || blocked.has(e.id)) continue;
+    if (blocked.has(e.id)) { e.creature!.recovery=Math.max(0,(e.creature!.recovery??0)-1); continue; }
+    if (!e.pos || !player.pos || !valid(player)) continue;
     const c=e.creature!,def=combatDefinition(e),phase=phaseFor(e);
     if(phase && def && 'phases' in def) {
       const index=def.phases.indexOf(phase);
@@ -351,7 +353,8 @@ function tickCreatures(run: RunState, world: InteractionWorld, activeIds: Readon
       continue;
     }
     const next=c.nextAction;c.nextAction=undefined;
-    if(next?.kind==='move'&&next.pos){commitCreatureMove(world,e,next.pos);triggerFieldInstallations(run,world,e.id);}
+    if(next?.kind==='recover')c.recovery=Math.max(0,(c.recovery??0)-1);
+    else if(next?.kind==='move'&&next.pos){commitCreatureMove(world,e,next.pos);triggerFieldInstallations(run,world,e.id);}
     else if(next?.kind==='eat'&&next.targetId&&next.resourceId){
       const food=world.entities[next.targetId];
       if(food?.pos&&valid(food)&&food.nodeId===e.nodeId&&distance(e.pos,food.pos)<=1&&hasSight(world,e,food)&&(food.stock[next.resourceId]??0)>0)
@@ -465,9 +468,11 @@ export function advanceFieldTime(seconds: number, waiting=true): void {
     if(run.field!.manaStep>=2){run.field!.manaStep=0;world.entities.player!.properties.mana=Math.min(3,(world.entities.player!.properties.mana??0)+1+(status(world.entities.player!,'haste')?1:0));}
     tickFieldCasting(run, world);
     tickFieldSkills(run, world);
+    reconcileTimePeople(run, world);
     tickTimeAllies(run, world, blocked);
     for(const id of active)triggerFieldInstallations(run,world,id);
     tickCreatures(run, world, active, blocked);
+    reconcileTimePeople(run, world);
     for(const id of active)if(world.entities[id]?.kind==='actor')finishStatusStep(world.entities[id]!,previousStatuses.get(id)!);
     if (!checkPlayer(run, world) || run.currentNodeId !== origin) break;
     tickResidentSchedules(run,world,active);
@@ -615,7 +620,7 @@ export function performFieldGesture(gesture: Gesture, targetId: string | undefin
   let message = transferred ? `${fieldItemName(transferred.resourceId!)} ${gesture === 'give' ? '−' : '+'}${transferred.quantity}` : gesture === 'lift' ? `${target.name} ∧` : gesture === 'place' ? `${target.name} ∨` : target.production && !target.production.settled ? '자라기 시작했다.' : result.facts.some(f => f.property === 'integrity' && f.after! < f.before!) ? `−${Math.ceil((beforeHp - (target.properties.integrity ?? 100)) * (target.creature?.maxHp ?? 100) / 100)}` : '';
   if (result.facts.some(f => f.message === '물이 퍼졌다.')) message = '물이 퍼졌다.';
   if (target.production && target.tags.includes('field-plot')&&!target.tags.includes('life-site')) target.name = '자라는 들곡';
-  if(target.tags.includes('life-site')) {
+  if(target.tags.includes('life-site')||target.tags.includes('forage')) {
     const gained=result.facts.filter(f=>f.targetId==='player'&&f.property==='practice').reduce((sum,f)=>sum+Math.max(0,(f.after??0)-(f.before??0)),0);
     if(gained)useRunStore().addLifeXp(gained);
     const output=result.facts.find(f=>f.targetId==='player'&&f.kind==='production'&&f.quantity);

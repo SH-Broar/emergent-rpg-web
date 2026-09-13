@@ -24,6 +24,7 @@ export function outgoingDamage(actor: WorldEntity, base:number, ranged=false):nu
   return Math.max(0,Math.floor(amount));
 }
 export function actionRestriction(e:WorldEntity, moving=false):string|undefined {
+  if(e.properties.defeatPending)return '쓰러져 있다.';
   if(status(e,'sleep'))return '잠들어 있다.';
   if(status(e,'paralyze'))return '몸이 움직이지 않는다.';
   if(moving && status(e,'anchored'))return '발이 묶여 있다.';

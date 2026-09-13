@@ -65,7 +65,7 @@ export interface FieldCreature {
   species?: string;
   balanceVersion?: 1 | 2;
   pending?: FieldAttack;
-  nextAction?:{kind:'move'|'eat'|'wait'|'encounter';label:string;pos?:GridPos;targetId?:string;resourceId?:string};
+  nextAction?:{kind:'move'|'eat'|'wait'|'recover'|'encounter';label:string;pos?:GridPos;targetId?:string;resourceId?:string};
   recovery?: number;
   tempoStep?: number;
   engaged?: boolean;
@@ -92,5 +92,7 @@ export interface FieldAttack {
   transform?: import('@/data/schemas/monster').GridAttack['transform'];
   remaining:number;
   castTurns:number;
+  /** Authored commitment before walls clip the attack footprint. */
+  recoveryTurns?:number;
   castSpeed:'fast'|'normal'|'slow';
 }

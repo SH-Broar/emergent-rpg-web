@@ -240,34 +240,59 @@ export function lifeActions(_run: RunState, world: InteractionWorld, actorId: st
   return gather ? [gather] : [];
 }
 
-/** Extraction is a recipe using the same site inventory for player and NPC. */
-export function gatherLifeAction(
-  world: InteractionWorld, actorId: string, targetId: string, bonus = 0, enhanceMaterialId?: string,
+/** Extraction consumes this patch's stock before converting it into selected goods. */
+function extractLifeAction(
+  world: InteractionWorld, actor: WorldEntity, target: WorldEntity,
+  activity: LifeActivityDef, lowerId: string, upperId: string, bonus = 0, enhanceMaterialId?: string,
 ): InteractionAction | undefined {
-  const target = world.entities[targetId], actor = world.entities[actorId];
-  if (!target || !actor || !target.renewable || (target.properties.integrity ?? 0) <= 0) return;
-  const activity = activityOf(target);
-  if (activity.type !== 'repeat') return;
   const source = target.renewable;
+  if (!source || source.resourceId !== lowerId || (target.properties.integrity ?? 0) <= 0) return;
   const count = Math.min(source.capacity, target.stock[source.resourceId] ?? 0);
   if (count <= 0) return;
   const level = Math.max(1, actor.properties.lifeLevel ?? 1);
   const chance = Math.max(0, Math.min(100, 10 + level * 5 + (actor.colors[activity.element] ?? 0) * 0.4 + bonus + (enhanceMaterialId ? 50 : 0)));
-  const upper = fixedRoll(`${targetId}:${actorId}:${world.turn}:${world.sequence}`) * 100 < chance;
-  const itemId = (upper ? activity.upperItemId : activity.lowerItemId)!;
+  const upper = fixedRoll(target.id + ':' + actor.id + ':' + world.turn + ':' + world.sequence) * 100 < chance;
+  const itemId = upper ? upperId : lowerId;
   const yieldCount = Math.max(1, productionYield(level, upper) - (source.capacity - count));
   return {
-    id: 'gather', label: activity.verb ?? '채집',
-    description: '남아 있는 원물을 채집·선별한다. 재고는 누구에게나 같은 실제 자원이다.', duration: 1,
+    id: 'gather', label: activity.verb ?? '채집', description: '남은 원물을 채집·선별한다.', duration: 1,
     requires: { min: { integrity: 1 } },
     effects: [
       ...(enhanceMaterialId ? [{ kind: 'stock' as const, side: 'actor' as const, resourceId: enhanceMaterialId, amount: -1 }] : []),
       { kind: 'stock', resourceId: source.resourceId, amount: -count },
       { kind: 'stock', resourceId: itemId, amount: yieldCount, side: 'actor' },
       { kind: 'influence', property: 'practice', amount: 1 + Number(upper), side: 'actor' },
-      { kind: 'influence', property: `color:${activity.element}`, amount: 2 + Number(upper), side: 'actor' },
+      { kind: 'influence', property: 'color:' + activity.element, amount: 2 + Number(upper), side: 'actor' },
       { kind: 'work', amount: 1 },
     ],
-    utility: { food: activity.element === 'water' ? 0.6 : 0, work: 0.65 }, satisfies: { work: 0.15 },
+    utility: { food: target.tags.includes('food') || activity.element === 'water' ? .6 : 0, work: .65 },
+    satisfies: { work: .15 },
   };
+}
+
+/** Field patches, including crops found in the wild, share the same extraction rules. */
+export function gatherForageAction(world: InteractionWorld, actorId: string, targetId: string): InteractionAction | undefined {
+  const actor = world.entities[actorId], target = world.entities[targetId];
+  if (!actor || !target?.tags.includes('forage') || (target.properties.integrity ?? 0) <= 0) return;
+  // Unique finds are transferred as physical items; skill never multiplies them.
+  if (target.tags.includes('rare-source') || !target.renewable) {
+    const resourceId = Object.keys(target.stock).find(id => (target.stock[id] ?? 0) > 0);
+    return resourceId ? { id:'gather-find',label:'줍기',description:'',duration:1,
+      effects:[{kind:'transfer',resourceId,quantity:1,from:'target',to:'actor'}] } : undefined;
+  }
+  const activity = activityOf(target), crop = activity.cropId ? getCrop(activity.cropId) : undefined;
+  const lowerId = crop?.lowerItemId ?? activity.lowerItemId, upperId = crop?.upperItemId ?? activity.upperItemId;
+  if (!lowerId || !upperId) return;
+  return extractLifeAction(world, actor, target, activity, lowerId, upperId);
+}
+
+/** The same site recipe remains available to legacy life screens and NPC decisions. */
+export function gatherLifeAction(
+  world: InteractionWorld, actorId: string, targetId: string, bonus = 0, enhanceMaterialId?: string,
+): InteractionAction | undefined {
+  const target = world.entities[targetId], actor = world.entities[actorId];
+  if (!target || !actor) return;
+  const activity = activityOf(target);
+  if (activity.type !== 'repeat' || !activity.lowerItemId || !activity.upperItemId) return;
+  return extractLifeAction(world, actor, target, activity, activity.lowerItemId, activity.upperItemId, bonus, enhanceMaterialId);
 }

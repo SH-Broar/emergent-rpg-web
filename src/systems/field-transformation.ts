@@ -37,7 +37,7 @@ export function reconcileFieldTransformation(run:RunState,world:InteractionWorld
     }
     const acquired=saved?run.collection.filter(c=>c.source!=='form'&&!stash.stashCollection.some(s=>cardKey(s)===cardKey(c))):[];
     // A paid cast and its one-shot preparations stop here; they never fire from the sealed body.
-    stash.field={version:1,skills:{version:2,slots:copy(prior.slots),readyAt:copy(prior.readyAt)},
+    stash.field={version:1,skills:{version:2,preparationVersion:prior.preparationVersion,slots:copy(prior.slots),readyAt:copy(prior.readyAt)},
       body:Object.fromEntries(bodyKeys.filter(key=>player.properties[key]!==undefined).map(key=>[key,player.properties[key]!])),
       startedTurn:Math.floor(run.field.elapsedSeconds/30)};
     const training=run.field.formTraining?.[raceId];
@@ -55,7 +55,7 @@ export function reconcileFieldTransformation(run:RunState,world:InteractionWorld
   if(saved?.field && !player.form) {
     const current=ensureFieldSkills(run);
     (run.field.formTraining??={})[saved.formRaceId]={cards:copy(run.collection.filter(c=>c.source==='form')),
-      skills:{version:2,slots:copy(current.slots),readyAt:copy(current.readyAt)}};
+      skills:{version:2,preparationVersion:current.preparationVersion,slots:copy(current.slots),readyAt:copy(current.readyAt)}};
     const sealed=new Set(saved.stashCollection.map(cardKey));
     const acquired=run.collection.filter(c=>c.source!=='form'&&!sealed.has(cardKey(c)));
     run.raceId=saved.originalRaceId;run.deck=saved.stashDeck;run.collection=[...saved.stashCollection,...acquired];run.deckSize=saved.stashDeckSize;

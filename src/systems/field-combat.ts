@@ -51,6 +51,10 @@ export function planAttack(world:InteractionWorld,e:WorldEntity,player:WorldEnti
   const atk=authored??fallback,space=world.spaces![e.nodeId]!;
   const turns=atk.castSpeed==='slow'?2:1;
   const scale=c.rank==='boss'?3:c.rank==='elite'?2:1;
+  const footprint=new Set<string>();
+  for(const off of atk.shape)for(let step=1;step<=(Math.max(Math.abs(off.dx),Math.abs(off.dy))<=1?scale:1);step++)
+    if(off.dx||off.dy)footprint.add(off.dx*step+','+off.dy*step);
+  const recoveryTurns=atk.castSpeed==='slow'?2:footprint.size>=4?1:0;
   const rotations=[0,1,2,3].map(n=>{
     const cells=new Map<string,{pos:GridPos;multiplier:number}>();
     for(const [i,off]of atk.shape.entries()){
@@ -70,16 +74,16 @@ export function planAttack(world:InteractionWorld,e:WorldEntity,player:WorldEnti
   if(!cells && atk.requiresInRange!==false)return;
   const chosen=cells??rotations[0]!;
   if(!chosen.length)return;
-  return {name:atk.name??'공격',cells:chosen,damage:Math.ceil((atk.damage??c.attack)*fieldChaosAttackMultiplier(useRunStore().data,c.rank)),status:atk.applyStatus,transform:atk.transform?{...atk.transform}:undefined,remaining:turns,castTurns:turns,castSpeed:atk.castSpeed??'normal'};
+  return {name:atk.name??'공격',cells:chosen,damage:Math.ceil((atk.damage??c.attack)*fieldChaosAttackMultiplier(useRunStore().data,c.rank)),status:atk.applyStatus,transform:atk.transform?{...atk.transform}:undefined,remaining:turns,castTurns:turns,castSpeed:atk.castSpeed??'normal',recoveryTurns};
 }
 export function resolveAttack(world:InteractionWorld,e:WorldEntity) {
   const c=e.creature!,attack=c.pending!;
-  let hitAny=false;
+  let hitAny=false,hitActor=false;
   for(const {pos,multiplier} of attack.cells) {
     for(const target of entitiesAt(world,e.nodeId,pos)) {
       if(target.id===e.id||(target.properties.integrity??100)<=0)continue;
       if(status(target,'ghost')&&(distance(e.pos!,pos)>1||status(e,'ghost')))continue;
-      hitAny=true;
+      hitAny=true;if(target.kind==='actor')hitActor=true;
       hit(world,e,target,Math.floor(attack.damage*multiplier),distance(e.pos!,pos)>1);
       if(target.kind==='actor')applyStatus(world,target,attack.status,e);
       const form=attack.transform;
@@ -93,8 +97,12 @@ export function resolveAttack(world:InteractionWorld,e:WorldEntity) {
       if(attack.status?.startsWith('possession:')&&target.kind==='actor')influenceEntity(world,e,'integrity',-100,e.id);
     }
   }
-  recordFact(world,{turn:world.turn,nodeId:e.nodeId,actorId:e.id,targetId:e.id,kind:'signal',labor:0,message:hitAny?attack.name:'빗나감'});
-  c.pending=undefined;c.intent=undefined;c.recovery=0;c.nextAction=undefined;
+  // Committing a heavy swing creates a punish window only when it misses a body.
+  // Existing vulnerability makes every damage source benefit, including prepared spells and traps.
+  c.recovery=hitActor?0:attack.recoveryTurns??(attack.castSpeed==='slow'?2:attack.cells.length>=4?1:0);
+  if(c.recovery)e.properties['status:vulnerable']=Math.max(c.recovery,status(e,'vulnerable'));
+  recordFact(world,{turn:world.turn,nodeId:e.nodeId,actorId:e.id,targetId:e.id,kind:'signal',labor:0,message:c.recovery?'빈틈':hitAny?attack.name:'빗나감'});
+  c.pending=undefined;c.intent=undefined;c.nextAction=undefined;
   e.properties.attacksMade=(e.properties.attacksMade??0)+1;
 }
 export function tickStatuses(world:InteractionWorld,e:WorldEntity,turn:number,waiting=false) {
@@ -120,7 +128,8 @@ export function tickStatuses(world:InteractionWorld,e:WorldEntity,turn:number,wa
 }
 export function finishStatusStep(e:WorldEntity,previous:Record<string,number>) {
   for(const key of DECAYING)if(previous['status:'+key])changeStatus(e.properties,key,-1);
-  if(!previous['status:ward'])e.properties.guard=Math.max(0,status(e,'metallicize')?(e.properties.guard??0)-1:Math.floor((e.properties.guard??0)/2));
+  if(e.creature?.recovery)e.properties['status:vulnerable']=Math.max(e.creature.recovery,status(e,'vulnerable'));
+  if(!previous['status:ward']&&!status(e,'ward'))e.properties.guard=Math.max(0,status(e,'metallicize')?(e.properties.guard??0)-1:Math.floor((e.properties.guard??0)/2));
 }
 export function afterMovement(e:WorldEntity) {
   changeStatus(e.properties,'possession',-1);changeStatus(e.properties,'slime',-1);e.properties['status:airborne']=0;

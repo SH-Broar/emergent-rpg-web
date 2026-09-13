@@ -1,24 +1,8 @@
 /**
- * 거래(인정 게이트) 시스템 v2 — 전투/엘리트 노드를 "전투 vs 거래(수주형) vs 통과" 선택지로 만든다.
- *
- * v1(즉시 납품)에서 *수주형 퀘스트*로 재설계:
- *  - 요구가 막연한 "난이도 합"이 아니라 *구체적 품목 + 개수*다. 각 전투 노드의 거래 요구 =
- *    그 노드 권역에 배정된 생활 활동(activityForNode)의 산출물 N개. N = 1 + tier(tier1=2 … tier6=7).
- *    "이 권역이 내놓는 물건"을 원한다(테마적). 상위(-fine) 산출물은 하위 1개를 대체(1개로 카운트).
- *  - [거래한다]는 *항상 활성*. 재료가 없어도 누르면 그 노드에 거래 계약을 등록(tradeContracts)하고
- *    노드는 *미해결*로 둔다(전투 안 함·통과 아님). 안내: "○○ N개를 가져오면 완료. 마을이나 이 자리에서."
- *  - 보유 시 즉시 완료(한 턴 절약): 게이트에서 이미 요구 품목을 충분히 가졌으면 그 자리서 완료.
- *  - 완료처 = 마을(VillageView 계약 목록) + 현장(GateView 그 노드 재방문). 충분하면 소비 + 노드 해결 + 보상.
- *
- * 노드 소비 규칙(핵심): 전투/엘리트 게이트 노드는 [전투]·[거래]를 *독립*으로 소비한다.
- *  전투 승리=combatCleared, 거래 완료=tradeCleared. 둘 다 소비돼야 '정리됨'(회색·자동통과,
- *  systems/map.ts isNodeSettled). [그냥 지나친다]·[거래 수주]는 어느 쪽도 소비하지 않는다(재진입 자유).
- *
- * 보상(거래 완료): addLifeXp(1+tier) + 대표 element 컬러 +tier×2. (v1 deliver 보상 식 유지.)
- *
- * 신규 런 필드 `tradeContracts`(optional, EMPTY_RUN {} backfill) — 세이브 안전.
- *
- * 범위 밖(후속): 보스 게이트(boss-intro 불변), 마감/실패 패널티, 공방 2차 가공, 미니게임.
+ * 지역 납품 의뢰. 일반 의뢰는 생활 산출물, 엘리트 의뢰는 공방 가공품을 요구한다.
+ * 필드에서는 살아 있는 마을 창구 옆에서 같은 권역 의뢰를 받고, 받은 의뢰는 어느 마을에서나 완료한다.
+ * 물품은 공통 라우터로 창구 재고에 이전한다. 완수는 tradeCleared만 기록하며 실제 마물 격파와 별개다.
+ * 기존 게이트 화면은 비필드 런에서만 유지한다. 수주 시 품목·개수·보상을 고정하여 저장한다.
  */
 
 import { useRunStore } from '@/stores/run';
@@ -29,6 +13,45 @@ import { craftItemIdForElement } from '@/systems/workshop';
 import { effectiveKind } from '@/systems/map';
 import { reportRegionDelivery } from '@/systems/region-world';
 import type { Item, TradeContract } from '@/data/schemas';
+import { actionRestriction } from './world/status';
+import { distance, hasSight } from './world/spatial';
+import { resolveInteraction } from './world/engine';
+import { processSocialFacts } from './world/social';
+import { syncPlayerFromWorld, syncPlayerToWorld } from './world-interaction';
+
+function deliveryMap() {
+  const run = useRunStore().data, data = useDataStore();
+  return data.nodeMaps.get(data.timelines.get(run.timelineId)?.nodeMapId ?? '');
+}
+function fieldDeliveryBoard() {
+  const run = useRunStore().data, world = run.interactionWorld, player = world?.entities.player;
+  if (!run.field || !world || !player?.pos || player.nodeId !== run.currentNodeId) return;
+  const node = deliveryMap()?.nodes.find(n => n.id === run.currentNodeId);
+  if (node?.kind !== 'village') return;
+  return Object.values(world.entities).find(e => e.nodeId === player.nodeId && e.pos &&
+    e.tags.includes('service:village') && (e.properties.integrity ?? 100) > 0 &&
+    distance(e.pos, player.pos!) <= 1 && hasSight(world, player, e));
+}
+/** Field contracts are offered and handed over at an actual village counter. */
+export function deliveryFailure(nodeId: string, accepting = false): string | undefined {
+  const run = useRunStore().data, map = deliveryMap(), node = map?.nodes.find(n => n.id === nodeId);
+  if (!node || !['combat','elite'].includes(effectiveKind(node, run))) return '납품처를 찾을 수 없다.';
+  if (run.nodeStates[nodeId]?.tradeCleared) return '이미 납품했다.';
+  if (run.ended || run.hp <= 0) return '지금은 거래할 수 없다.';
+  if (!run.field) return;
+  const world = run.interactionWorld, player = world?.entities.player;
+  if (!world || !player || actionRestriction(player) || run.field.encounter || run.field.skills?.pending ||
+    Object.values(world.entities).some(e => e.nodeId === player.nodeId && e.creature && (e.properties.integrity ?? 100) > 0 && hasSight(world,player,e))) return '위험이 지나간 뒤 거래할 수 있다.';
+  if (!fieldDeliveryBoard()) return '마을 창구 가까이에서 거래할 수 있다.';
+  if (accepting && node.region !== map?.nodes.find(n => n.id === run.currentNodeId)?.region) return '이 지역의 의뢰만 받을 수 있다.';
+}
+
+export function availableDeliveryContracts() {
+  const run = useRunStore().data, map = deliveryMap(), here = map?.nodes.find(n => n.id === run.currentNodeId);
+  if (here?.kind !== 'village') return [];
+  return (map?.nodes ?? []).filter(n => n.region === here.region && ['combat','elite'].includes(effectiveKind(n,run)) &&
+    !run.nodeStates[n.id]?.tradeCleared && !run.tradeContracts?.[n.id]).map(node => ({node,req:tradeRequirement(node.id)}));
+}
 
 /** tier를 못 찾을 때 쓰는 기본 tier(요구 개수 산정·보상에 쓰임). */
 const DEFAULT_TIER = 2;
@@ -144,12 +167,14 @@ export function getContract(nodeId: string): TradeContract | undefined {
 
 /**
  * 거래 수주 — 그 노드에 계약을 등록한다(노드는 미해결로 둔다 — 전투 안 함·통과 아님).
- * 재료가 없어도 항상 가능. 이미 계약이 있으면 갱신(요구는 tier/활동 기반이라 동일).
+ * 재료는 수주 시 없어도 된다. 이미 받은 계약은 당시 조건을 유지한다.
  * 반환: 등록한 계약.
  */
-export function acceptContract(nodeId: string): TradeContract {
+export function acceptContract(nodeId: string): TradeContract | undefined {
   const run = useRunStore();
   const r = run.data;
+  if (deliveryFailure(nodeId, true)) return;
+  if (r.tradeContracts?.[nodeId]) return r.tradeContracts[nodeId];
   const req = tradeRequirement(nodeId);
   if (!r.tradeContracts) r.tradeContracts = {};
   const contract: TradeContract = {
@@ -203,7 +228,7 @@ export function fulfillContract(nodeId: string): TradeResult | null {
   const run = useRunStore();
   const r = run.data;
   const contract = r.tradeContracts?.[nodeId];
-  if (!contract) return null;
+  if (!contract || deliveryFailure(nodeId)) return null;
   const req = reqFromContract(contract);
   if (heldTradeCount(req) < req.count) return null;
 
@@ -220,15 +245,24 @@ export function fulfillContract(nodeId: string): TradeResult | null {
     pick.push(it);
   }
 
-  // 실제 제거 — instanceId(없으면 id) 기준으로 run.data.items에서 splice.
-  const consumed: string[] = [];
-  for (const it of pick) {
+  const consumed = pick.map(it => it.instanceId ?? it.id);
+  if (r.field) {
+    const world = r.interactionWorld!, counter = fieldDeliveryBoard()!;
+    // Item identities and world stock are synchronized before the atomic transfer.
+    syncPlayerToWorld(r, world);
+    const quantities: Record<string,number> = {};
+    for (const item of pick) quantities[item.id] = (quantities[item.id] ?? 0) + 1;
+    const result = resolveInteraction(world, 'player', counter.id, {
+      id:'delivery:' + nodeId,label:'납품',description:'',duration:0,reach:1,
+      effects:Object.entries(quantities).map(([resourceId,quantity]) => ({kind:'transfer',resourceId,quantity,from:'actor',to:'target'})),
+    });
+    if (!result.ok) return null;
+    syncPlayerFromWorld(r, world);
+    processSocialFacts(world);
+  } else for (const it of pick) {
     const key = it.instanceId ?? it.id;
-    const idx = r.items.findIndex((x) => (x.instanceId ?? x.id) === key);
-    if (idx >= 0) {
-      r.items.splice(idx, 1);
-      consumed.push(it.instanceId ?? it.id);
-    }
+    const idx = r.items.findIndex(x => (x.instanceId ?? x.id) === key);
+    if (idx >= 0) r.items.splice(idx, 1);
   }
 
   // 엘리트 거래(2차 가공품)는 투자가 큰 만큼 보상도 크다 — XP·컬러 2배 + 골드·조각.
@@ -251,7 +285,8 @@ export function fulfillContract(nodeId: string): TradeResult | null {
   r.nodeStates[nodeId].visited = true;
   r.nodeStates[nodeId].tradeCleared = true;
   delete r.tradeContracts![nodeId];
-  reportRegionDelivery(r, nodeId, req.count, pick.map(item => item.id));
+  if (r.field) syncPlayerToWorld(r, r.interactionWorld!);
+  else reportRegionDelivery(r, nodeId, req.count, pick.map(item => item.id));
 
   return { consumed, lifeXp, colorGain, color, tier, gold, shards, elite };
 }

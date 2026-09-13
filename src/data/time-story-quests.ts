@@ -48,7 +48,8 @@ export const TIME_STORY_QUESTS: JourneyQuest[] = [
       {
         "kind": "talk",
         "key": "npc-imperisia",
-        "label": "임페리시아와 대화하기"
+        "label": "임페리시아와 대화하기",
+        "testimony": "time-02"
       }
     ],
     "reward": {
@@ -89,7 +90,11 @@ export const TIME_STORY_QUESTS: JourneyQuest[] = [
     "series": "시간의 닻",
     "after": [
       "time-02"
-    ]
+    ],
+    "reportRecords": [
+      "time-lar-overlay"
+    ],
+    "reportText": "겹친 수위 기록을 옮겼다. 돌아온 시각과 기다린 시각이 맞지 않는다."
   },
   {
     "id": "time-04",
@@ -97,7 +102,7 @@ export const TIME_STORY_QUESTS: JourneyQuest[] = [
     "title": "얼마나 오래",
     "npcId": "npc-maro",
     "offer": [
-      "오래 살았다는 말과 나이를 먹었다는 말은, 제게는 조금 달라요.",
+      "날짜는 같은데, 그 안에 남은 기억은 다르다는 이야기를 들었어요.",
       "루나의 페비엘 씨에게도 물어봐 주세요. 다만 고향 얘기는 재촉하지 말아 주세요."
     ],
     "reminder": "루나에서 페비엘 씨를 만나고, 교정의 보관 봉투를 확인해 주세요.",
@@ -106,7 +111,8 @@ export const TIME_STORY_QUESTS: JourneyQuest[] = [
       {
         "kind": "talk",
         "key": "npc-febiel",
-        "label": "페비엘과 대화하기"
+        "label": "페비엘과 대화하기",
+        "testimony": "time-04"
       },
       {
         "kind": "read",
@@ -120,8 +126,12 @@ export const TIME_STORY_QUESTS: JourneyQuest[] = [
     "main": true,
     "series": "시간의 닻",
     "after": [
-      "time-03"
-    ]
+      "time-02"
+    ],
+    "reportRecords": [
+      "time-luna-envelope"
+    ],
+    "reportText": "같은 날짜가 같은 기억을 뜻하지는 않는다. 페비엘의 말과 보관 봉투를 함께 남겼다."
   },
   {
     "id": "time-05",
@@ -147,8 +157,12 @@ export const TIME_STORY_QUESTS: JourneyQuest[] = [
     "main": true,
     "series": "시간의 닻",
     "after": [
-      "time-04"
-    ]
+      "time-13"
+    ],
+    "reportRecords": [
+      "time-mine-tag"
+    ],
+    "reportText": "작업 표찰의 마지막 칸을 남겨 두었다. 구조한 사람 수만으로는 설명되지 않는다."
   },
   {
     "id": "time-06",
@@ -174,8 +188,12 @@ export const TIME_STORY_QUESTS: JourneyQuest[] = [
     "main": true,
     "series": "시간의 닻",
     "after": [
-      "time-05"
-    ]
+      "time-13"
+    ],
+    "reportRecords": [
+      "time-dun-plate"
+    ],
+    "reportText": "놓은 적 없는 손의 자국이 겹쳤다. 기둥을 받친 흔적과 함께 보관했다."
   },
   {
     "id": "time-07",
@@ -211,6 +229,7 @@ export const TIME_STORY_QUESTS: JourneyQuest[] = [
     "main": true,
     "series": "시간의 닻",
     "after": [
+      "time-05",
       "time-06"
     ]
   },
@@ -239,7 +258,11 @@ export const TIME_STORY_QUESTS: JourneyQuest[] = [
     "series": "시간의 닻",
     "after": [
       "time-07"
-    ]
+    ],
+    "reportRecords": [
+      "time-rescue-roll"
+    ],
+    "reportText": "이름이 빠진 칸을 그대로 옮겼다. 기억하지 못한다는 사실도 기록이다."
   },
   {
     "id": "time-09",
@@ -247,8 +270,8 @@ export const TIME_STORY_QUESTS: JourneyQuest[] = [
     "title": "티프레가 돌아온 길",
     "npcId": "npc-toramimi",
     "offer": [
-      "던한테서 왔어? 그 녀석, 아직도 그때 얘기야?",
-      "신전 회랑을 봐. 난 분명 사람들을 밖에 데려다 놓고 돌아갔어. 발자국까지 남았거든."
+      "그때 갱도 일을 물으러 왔어? 난 분명 사람들을 밖에 데려다 놓고 돌아갔어.",
+      "신전 회랑을 봐. 발자국까지 남았거든."
     ],
     "reminder": "구 신전 회랑의 탄 돌판이야. 안으로 간 자국과 나온 자국을 비교해 봐.",
     "finish": "나올 때 난 흠집 위에 들어갈 때의 그을음이 있어? …잠깐. 그럼 나는 언제 들어간 거지?",
@@ -265,8 +288,12 @@ export const TIME_STORY_QUESTS: JourneyQuest[] = [
     "main": true,
     "series": "시간의 닻",
     "after": [
-      "time-08"
-    ]
+      "time-13"
+    ],
+    "reportRecords": [
+      "time-shrine-tracks"
+    ],
+    "reportText": "들어간 그을음과 나온 흠집의 순서가 뒤집혔다. 한쪽을 지우지 않았다."
   },
   {
     "id": "time-10",
@@ -297,8 +324,13 @@ export const TIME_STORY_QUESTS: JourneyQuest[] = [
     "main": true,
     "series": "시간의 닻",
     "after": [
-      "time-09"
-    ]
+      "time-13"
+    ],
+    "reportRecords": [
+      "time-shrine-flash",
+      "time-station-passage"
+    ],
+    "reportText": "번개 자국과 통행판의 시각을 나란히 적었다. 어느 하나만 틀렸다고 할 수 없다."
   },
   {
     "id": "time-11",
@@ -307,7 +339,7 @@ export const TIME_STORY_QUESTS: JourneyQuest[] = [
     "npcId": "npc-toramimi",
     "offer": [
       "그래도 여기서 멈춰 있을 순 없잖아. 날 따라잡아 봐.",
-      "던을 밀어냈다며? 이번엔 비켜서기만 해서는 안 될걸."
+      "번개가 지나갈 자리를 봐. 이번엔 비켜서기만 해서는 안 될걸."
     ],
     "reminder": "제단 너머 겨룸터로 와. 세 번째 층에서 기다릴게. 번개가 지나간 자리도 조심하고.",
     "finish": "하, 잡혔네. 먼저 달린다고 혼자 빠져나갈 수 있는 건 아니구나.",
@@ -334,6 +366,7 @@ export const TIME_STORY_QUESTS: JourneyQuest[] = [
     "main": true,
     "series": "시간의 닻",
     "after": [
+      "time-09",
       "time-10"
     ]
   },
@@ -362,7 +395,11 @@ export const TIME_STORY_QUESTS: JourneyQuest[] = [
     "series": "시간의 닻",
     "after": [
       "time-11"
-    ]
+    ],
+    "reportRecords": [
+      "time-shrine-letter"
+    ],
+    "reportText": "꺼낸 사람 수가 맞아도 빠진 기억은 남는다. 쪽지를 구조 명부와 함께 두었다."
   },
   {
     "id": "time-13",
@@ -370,33 +407,28 @@ export const TIME_STORY_QUESTS: JourneyQuest[] = [
     "title": "어느 쪽을 믿을까",
     "npcId": "npc-imperisia",
     "offer": [
-      "[보고]:: 두 증언은 각자의 흔적과 일치합니다. 한쪽을 오기로 처리할 수 없습니다.",
-      "[질문]:: 던은 남은 것을 먼저 지키려 합니다. 티프레는 멈춘 시간을 먼저 풀려 합니다. 어느 쪽부터 시도하시겠습니까?"
+      "[정리]:: 남은 흔적을 지켜야 한다는 방법과, 멈춘 시간을 풀어야 한다는 방법이 있습니다.",
+      "[질문]:: 던과 티프레를 각각 찾아보십시오. 어느 쪽 준비부터 하시겠습니까?"
     ],
-    "reminder": "[확인]:: 어느 쪽을 택해도 나머지 기록은 보관하겠습니다.",
-    "finish": "[기록]:: 선택은 남겼습니다. 아직 설명되지 않은 빈칸도 남겨 두겠습니다.",
-    "goals": [
-      {
-        "kind": "boss",
-        "key": "bs-arc-dun",
-        "label": "던의 겨룸과 증언 확인"
-      },
-      {
-        "kind": "boss",
-        "key": "bs-arc-tifre",
-        "label": "티프레의 겨룸과 증언 확인"
-      }
-    ],
+    "reminder": "[안내]:: 두 지역 모두 조사할 수 있습니다. 먼저 살펴볼 쪽을 골라 주십시오.",
+    "finish": "[기록]:: 조사 순서와 준비 물품을 적었습니다. 다른 지역으로 먼저 가셔도 괜찮습니다.",
+    "goals": [],
     "choices": [
       {
         "id": "dun",
-        "label": "던처럼, 남은 것을 먼저 지킨다",
-        "reply": "[확인]:: 더 잃지 않도록 멈춰 세우는 방법부터 찾겠습니다."
+        "label": "던부터 살펴본다 · 보강 붕대 2",
+        "reply": "[확인]:: 더 잃지 않도록 멈춰 세우는 방법부터 찾겠습니다.",
+        "stock": {
+          "field-wrap": 2
+        }
       },
       {
         "id": "tifre",
-        "label": "티프레처럼, 멈춘 시간을 먼저 푼다",
-        "reply": "[확인]:: 빠져나갈 길을 먼저 열겠습니다. 풀려나는 순간 무엇이 사라지는지도 살펴보겠습니다."
+        "label": "티프레부터 살펴본다 · 전하 조각 2",
+        "reply": "[확인]:: 빠져나갈 길을 먼저 열겠습니다. 풀려나는 순간 무엇이 사라지는지도 살펴보겠습니다.",
+        "stock": {
+          "field-spark": 2
+        }
       }
     ],
     "reward": {
@@ -405,7 +437,8 @@ export const TIME_STORY_QUESTS: JourneyQuest[] = [
     "main": true,
     "series": "시간의 닻",
     "after": [
-      "time-12"
+      "time-03",
+      "time-04"
     ]
   },
   {
@@ -438,7 +471,12 @@ export const TIME_STORY_QUESTS: JourneyQuest[] = [
     "series": "시간의 닻",
     "after": [
       "time-13"
-    ]
+    ],
+    "reportRecords": [
+      "time-grid-strip",
+      "time-battery-log"
+    ],
+    "reportText": "발전기는 돌았고 전력은 쓰였다. 그 시간을 산 사람이 기록에서 빠졌다."
   },
   {
     "id": "time-15",
@@ -460,7 +498,8 @@ export const TIME_STORY_QUESTS: JourneyQuest[] = [
       {
         "kind": "talk",
         "key": "npc-miyu",
-        "label": "미유와 대화하기"
+        "label": "미유와 대화하기",
+        "testimony": "time-15"
       }
     ],
     "reward": {
@@ -469,6 +508,8 @@ export const TIME_STORY_QUESTS: JourneyQuest[] = [
     "main": true,
     "series": "시간의 닻",
     "after": [
+      "time-08",
+      "time-12",
       "time-14"
     ]
   },
@@ -497,7 +538,11 @@ export const TIME_STORY_QUESTS: JourneyQuest[] = [
     "series": "시간의 닻",
     "after": [
       "time-15"
-    ]
+    ],
+    "reportRecords": [
+      "time-child-stones"
+    ],
+    "reportText": "줄지은 돌의 끝을 표시했다. 아이가 기다리는 시간을 마음대로 지울 수는 없다."
   },
   {
     "id": "time-17",
@@ -510,23 +555,7 @@ export const TIME_STORY_QUESTS: JourneyQuest[] = [
     ],
     "reminder": "던의 손자국과 티프레의 번개는 함께 남아 있다. 지금 감당할 수 있는 방법을 골라라.",
     "finish": "그 선택대로 준비하자. 닻 앞에서는 말만으로 버틸 수 없다.",
-    "goals": [
-      {
-        "kind": "read",
-        "key": "time-dun-plate",
-        "label": "던의 흔적 보관"
-      },
-      {
-        "kind": "read",
-        "key": "time-shrine-flash",
-        "label": "티프레의 흔적 보관"
-      },
-      {
-        "kind": "read",
-        "key": "time-battery-log",
-        "label": "빠진 시간의 흔적 보관"
-      }
-    ],
+    "goals": [],
     "choices": [
       {
         "id": "dun",
@@ -560,17 +589,12 @@ export const TIME_STORY_QUESTS: JourneyQuest[] = [
     "title": "돌아올 힘",
     "npcId": "npc-tsuyosai",
     "offer": [
-      "오래 버텨야 하는 싸움이다. 보강 붕대를 두 개 가져와라.",
-      "두 사람에게 동행을 청할 수는 있다. 함께하지 못해도 길은 열린다. 그만큼 네가 준비할 몫이 늘 뿐이다."
+      "보강 붕대 두 개가 있으면 지금 준비를 마칠 수 있다.",
+      "동행을 청할지는 닻을 다룰 방법을 정한 뒤 생각해도 된다. 혼자 간다면 네가 준비할 몫이 늘겠지."
     ],
-    "reminder": "던전 하나를 마치고 보강 붕대 두 개를 준비해라. 동행이 필요하면 던과 티프레를 찾아가도 좋다.",
+    "reminder": "보강 붕대 두 개를 준비해라. 재료를 구한 곳이나 만든 방법은 상관없다.",
     "finish": "준비는 됐다. 남은 힘으로 끝까지 가는 일만 생각해라.",
     "goals": [
-      {
-        "kind": "dungeon",
-        "key": "clear",
-        "label": "던전 하나를 마치기"
-      },
       {
         "kind": "deliver",
         "key": "field-wrap",
@@ -588,8 +612,9 @@ export const TIME_STORY_QUESTS: JourneyQuest[] = [
     "main": true,
     "series": "시간의 닻",
     "after": [
-      "time-17"
-    ]
+      "time-15"
+    ],
+    "completeOnAccept": true
   },
   {
     "id": "time-19",
@@ -615,8 +640,13 @@ export const TIME_STORY_QUESTS: JourneyQuest[] = [
     "main": true,
     "series": "시간의 닻",
     "after": [
+      "time-17",
       "time-18"
-    ]
+    ],
+    "reportRecords": [
+      "time-last-stone"
+    ],
+    "reportText": "마지막 돌에 적힌 말을 옮겼다. 이제 아이에게 기다림 밖의 길을 보여 줄 차례다."
   },
   {
     "id": "time-20",

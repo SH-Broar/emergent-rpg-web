@@ -6,12 +6,15 @@ import { FRACTURED_TIME_CHAOS_ID, hasFracturedTime } from './field-chaos';
 import { actionRestriction, status, outgoingDamage } from './world/status';
 import { distance, fieldPath, hasSight, walkable } from './world/spatial';
 import { influenceEntity, recordFact } from './world/engine';
+import { ensureFieldSpace, placeFieldEntity } from './field-generation';
 
 export interface TimeStoryState {
   version: 1;
   /** A new challenge must begin after a recorded imperfect ending. Old saves default to false. */
   chaosEligible: boolean;
   allies: Record<string, { joinedAt: number; supportAt?: number }>;
+  recovering?: Record<string, number>;
+  withdrawals?: Record<string, number>;
   ending?: { id: TimeEndingId; at: number; reason?: string; witnesses?: TimeEndingWitnesses };
 }
 export const TIME_ALLIES = ['npc-kumamimi', 'npc-toramimi'] as const;
@@ -23,6 +26,35 @@ export function initializeTimeStory(run: RunState, meta: MetaProgress) {
 }
 export function chaosStoryAvailable(run: RunState): boolean {
   return !!run.timeStory?.chaosEligible && hasFracturedTime(run);
+}
+/** Only these two story people withdraw instead of dying; ordinary residents keep their existing mortality. */
+export function reconcileTimePeople(run: RunState, world: InteractionWorld) {
+  if (!run.field) return;
+  run.timeStory ??= {version:1,chaosEligible:false,allies:{}};
+  const state=run.timeStory, now=run.field.elapsedSeconds;
+  state.recovering ??= {}; state.withdrawals ??= {};
+  for (const npcId of TIME_ALLIES) {
+    const actor=world.entities['npc:'+npcId];
+    if (!actor) continue;
+    actor.properties.defeatProtected=1;
+    if ((actor.properties.integrity??100)<=0 || actor.properties.defeatPending) {
+      actor.properties.defeatPending=0; actor.properties.integrity=Math.max(1,actor.properties.integrity??1);
+      actor.properties.guard=0;
+      for (const key of Object.keys(actor.properties)) if(key.startsWith('status:'))actor.properties[key]=0;
+      actor.properties.heat=0;actor.properties.burning=0;actor.properties.smoke=0;
+      const home=actor.agent?.homeNodeId ?? (npcId==='npc-kumamimi'?'n-emberforge-lair':'n-oldshrine-altar');
+      const space=ensureFieldSpace(run,world,home);
+      actor.carriedBy=undefined;placeFieldEntity(world,space,actor,space.spawn);
+      actor.fieldUpdatedAt=now;delete state.allies[npcId];
+      state.recovering[npcId]=now+600;state.withdrawals[npcId]=now+1;
+      actor.properties['status:sleep']=20;
+      if(actor.routine){actor.routine.travel=undefined;actor.routine.route=[];actor.routine.goal=home;actor.routine.nextAt=now+600;}
+      recordFact(world,{turn:world.turn,nodeId:home,actorId:actor.id,targetId:actor.id,kind:'signal',labor:0,message:actor.name+'이 물러나 거점에서 몸을 추스른다.'});
+    } else if (state.recovering[npcId]!==undefined && now>=state.recovering[npcId]!) {
+      delete state.recovering[npcId];actor.properties.integrity=100;actor.properties['status:sleep']=0;
+    }
+    for(const held of Object.values(world.entities))if(held.carriedBy===actor.id)held.nodeId=actor.nodeId;
+  }
 }
 export function isTimeAlly(run: RunState, actor: WorldEntity): boolean {
   return !!actor.npcId && !!run.timeStory?.allies[actor.npcId];
@@ -49,7 +81,7 @@ export function recruitTimeAlly(run: RunState, world: InteractionWorld, actorId:
     run.ended || run.field?.encounter || !wantsAlliance(run) || !run.arcsCleared?.includes(ARC_BY_ALLY[npcId]!) ||
     !actor.pos || !player.pos || actor.nodeId !== player.nodeId || actor.routine?.travel ||
     distance(actor.pos, player.pos) > 1 || !hasSight(world, player, actor) ||
-    (actor.properties.integrity ?? 0) <= 0 || actionRestriction(actor) || actionRestriction(player) ||
+    (actor.properties.integrity ?? 0) <= 0 || actor.properties.defeatPending || run.timeStory?.recovering?.[npcId] !== undefined || actionRestriction(actor) || actionRestriction(player) ||
     (actor.agent?.relations.player?.trust ?? 0) < -.25) return { ok: false, message: '지금은 동행을 부탁할 수 없다.' };
   if (isTimeAlly(run, actor)) return { ok: false, message: '이미 함께 가기로 했다.' };
   run.timeStory!.allies[npcId] = { joinedAt: run.field!.elapsedSeconds + 1 };
@@ -71,6 +103,7 @@ export function arriveTimeAllies(run: RunState, world: InteractionWorld, space: 
       .sort((a, b) => distance(a, player.pos!) - distance(b, player.pos!));
     if (!cells[0]) continue;
     ally.nodeId = player.nodeId; ally.pos = cells[0]; ally.fieldUpdatedAt = run.field!.elapsedSeconds;
+    for(const held of Object.values(world.entities))if(held.carriedBy===ally.id)held.nodeId=ally.nodeId;
     if (ally.routine) { ally.routine.travel = undefined; ally.routine.goal = ally.nodeId; }
   }
 }
@@ -82,7 +115,7 @@ export function tickTimeAllies(run: RunState, world: InteractionWorld, blocked: 
     (e.properties.integrity ?? 0) > 0 && (e.creature.rank !== 'boss' || e.creature.engaged));
   for (const npcId of TIME_ALLIES) {
     const ally = livingTimeAlly(run, npcId);
-    if (!ally?.pos || ally.nodeId !== player.nodeId || blocked.has(ally.id) || actionRestriction(ally)) continue;
+    if (!ally?.pos || ally.nodeId !== player.nodeId || ally.properties.defeatPending || blocked.has(ally.id) || actionRestriction(ally)) continue;
     if (distance(ally.pos, player.pos) > 2 && !actionRestriction(ally, true)) {
       const step = fieldPath(world, ally.nodeId, ally.pos, player.pos, ally.id, true)?.[0];
       if (step) ally.pos = step;
@@ -106,7 +139,7 @@ export function tickTimeAllies(run: RunState, world: InteractionWorld, blocked: 
     state.supportAt = now;
   }
 }
-/** Keep absence, death and physical presence separate from the chosen solution. */
+/** Record participation and recovery separately from the chosen solution. */
 export function snapshotTimeWitnesses(run: RunState, world: InteractionWorld): TimeEndingWitnesses {
   const anchor = Object.values(world.entities).find(e => e.creature?.definitionId === 'bs-act-1-anchor');
   const victoryNode = anchor?.nodeId ?? 'n-anchor-point';
@@ -114,24 +147,24 @@ export function snapshotTimeWitnesses(run: RunState, world: InteractionWorld): T
     const actor = world.entities['npc:' + npcId];
     const joined = !!run.timeStory?.allies[npcId];
     if (!actor) return { state: 'unknown', joined };
-    if ((actor.properties.integrity ?? 100) <= 0) return { state: 'dead', joined };
-    return { state: actor.pos && !actor.carriedBy && !actor.routine?.travel && actor.nodeId === victoryNode ? 'present' : 'absent', joined };
+    if ((actor.properties.integrity ?? 100) <= 0 || actor.properties.defeatPending || run.timeStory?.recovering?.[npcId] !== undefined) return { state: 'recovering', joined: false };
+    return { state: joined && actor.pos && !actor.carriedBy && !actor.routine?.travel && actor.nodeId === victoryNode ? 'present' : 'absent', joined };
   };
   return { dun: snapshot('npc-kumamimi'), tifre: snapshot('npc-toramimi') };
 }
 export function resolveTimeEnding(run: RunState, world: InteractionWorld) {
   if (run.timeStory?.ending || !run.bossesCleared.includes('bs-act-1-anchor')) return;
+  reconcileTimePeople(run,world);
   const journey = run.field?.journey;
   if (!journey || !Array.from({ length: 20 }, (_, i) => 'time-' + String(i + 1).padStart(2, '0')).every(id => !!journey.completed[id])) return;
   const first = journey.decisions?.['time-13'], choice = journey.decisions?.['time-17'];
   if (!['dun', 'tifre'].includes(first ?? '')) return;
   run.timeStory ??= { version: 1, chaosEligible: false, allies: {} };
   const witnesses = snapshotTimeWitnesses(run, world);
-  const lost = [witnesses.dun.state === 'dead' ? '던' : '', witnesses.tifre.state === 'dead' ? '티프레' : ''].filter(Boolean);
-  const together = choice === 'both' && chaosStoryAvailable(run) && lost.length === 0;
+  const together = choice === 'both' && chaosStoryAvailable(run);
   const side = choice === 'dun' || choice === 'tifre' ? choice : first;
   run.timeStory.ending = { id: together ? 'together' : side === 'dun' ? 'stillness' : 'severance', at: run.field!.elapsedSeconds,
-    reason: choice === 'both' && !together ? (lost.length ? lost.join('과 ') + '의 빈자리가 남았다.' : '갈라진 시간에서 확인하지 못한 해법이었다.') : undefined,
+    reason: choice === 'both' && !together ? '갈라진 시간에서 확인하지 못한 해법이었다.' : undefined,
     witnesses };
 }
 export function recordTimeEnding(run: RunState, meta: MetaProgress) {

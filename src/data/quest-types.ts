@@ -3,6 +3,7 @@ export interface JourneyGoal {
   key: string;
   label: string;
   amount?: number;
+  testimony?: string;
   whenChoice?: { questId: string; choiceId: string };
 }
 export interface JourneyChoice {
@@ -10,6 +11,7 @@ export interface JourneyChoice {
   label: string;
   reply: string;
   requiresChaos?: boolean;
+  stock?: Record<string, number>;
 }
 export interface JourneyQuest {
   id: string;
@@ -19,6 +21,9 @@ export interface JourneyQuest {
   title: string;
   npcId: string;
   turnInNpcId?: string;
+  /** Physical records where this investigation can be started and filed. */
+  reportRecords?: string[];
+  reportText?: string;
   after?: string[];
   offer: string[];
   reminder: string;
@@ -27,6 +32,7 @@ export interface JourneyQuest {
   choices?: JourneyChoice[];
   /** Finish at the actual final victory, before the run is archived. */
   completeOnBoss?: string;
+  completeOnAccept?: boolean;
   encounter?: { bossId: string; lines: string[] };
   lessonCard?: string;
   reward: { xp?: number; life?: number; card?: string; stock?: Record<string, number> };

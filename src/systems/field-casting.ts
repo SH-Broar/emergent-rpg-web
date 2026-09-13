@@ -114,7 +114,7 @@ export function resolveCastingEffect(ctx: CastingResolution): boolean {
       if (strongest) {
         influenceEntity(world, target, 'status:' + strongest[0], strongest[1], source.id);
         damage(target, strongest[1] * value, multiplier);
-      } else damage(target, value, multiplier);
+      } else recordFact(world,{turn:world.turn,nodeId:target.nodeId,actorId:source.id,targetId:target.id,kind:'signal',labor:0,message:'약화가 사라졌다.'});
     }
     return true;
   }

@@ -89,6 +89,22 @@ export function spawnCreature(run: RunState, world: InteractionWorld, space: Fie
   const locations = [{ x:space.width-3,y:2 },{ x:space.width-2,y:space.height-3 },{ x:space.width-4,y:space.height-2 }];
   return placeFieldEntity(world, space, e, locations[index % locations.length]!);
 }
+/** Keep authored regional enemies, pairing different reach, movement and status roles. */
+export function dungeonCompanion(normal:Monster,pool:Monster[],seed:number,leader:Monster=normal):Monster {
+  const candidates=pool.filter(m=>m.id!==leader.id);
+  if(!candidates.length)return normal;
+  const traits=(m:Monster)=>new Set([
+    'move:'+(m.moveProfile?.pattern??'orthogonal1'),
+    ...(m.gridBehavior??[]).flatMap(a=>[
+      'reach:'+Math.min(3,Math.max(1,...a.shape.map(p=>Math.abs(p.dx)+Math.abs(p.dy)))),
+      'pace:'+(a.castSpeed??'normal'),...(a.applyStatus?['status:'+a.applyStatus.split(':')[0]]:[]),
+    ]),
+  ]);
+  const baseline=traits(leader),offset=seed%candidates.length;
+  const ordered=[...candidates.slice(offset),...candidates.slice(0,offset)];
+  const difference=(m:Monster)=>[...traits(m)].filter(t=>!baseline.has(t)).length;
+  return ordered.sort((a,b)=>difference(b)-difference(a))[0]!;
+}
 function residents(run: RunState, world: InteractionWorld, space: FieldSpace, node: Node) {
   const data = useDataStore();
   const pool = new Set(node.contentRef?.npcIdPool ?? []);
@@ -195,9 +211,13 @@ export function ensureFieldSpace(run: RunState, world: InteractionWorld, id: str
     if(dungeon){
       const boss=data.bosses.get(content.bossId??(node.isBossGate||node.kind==='boss'?data.timelines.get(run.timelineId)?.bossId??'':''));
       if(floor===3&&boss)spawnCreature(run,world,space,boss,0,'boss');else if(floor>=2&&elite)spawnCreature(run,world,space,elite,0,'elite');
-      if(normal&&floor<3)for(let i=floor===1?0:1;i<2;i++)spawnCreature(run,world,space,normal,i,'normal');
+      if(normal&&floor<3){
+        if(floor===1)spawnCreature(run,world,space,normal,0,'normal');
+        spawnCreature(run,world,space,dungeonCompanion(normal,monsters,seed,floor===2?elite??normal:normal),1,'normal');
+      }
       if(floor===3&&!boss&&!elite&&normal)spawnCreature(run,world,space,normal,0,'normal');
-      object(world,space,'cache','오래된 보관함',at(12,10),['storage','shared'],{solid:1,portable:1,mass:3,hardness:3},{'i-crop-grain':3,water:3,'i-life-char':2});
+      const supplies:Record<string,number>[]=[{'i-crop-grain':2,'field-wrap':1,water:2},{'i-life-char':2,'field-smoke':1,water:3},{'i-life-charge':2,'field-salve':1,'raw-fiber':2}];
+      object(world,space,'cache','오래된 보관함',at(12,10),['storage','shared'],{solid:1,portable:1,mass:3,hardness:3},supplies[seed%supplies.length]);
     }
   }
   if(!dungeon&&!road){

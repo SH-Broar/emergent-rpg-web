@@ -245,13 +245,18 @@ try {
     const action=lifeWorld.lifeActions(run.data,world,'player',site.id)[0];assert.ok(action);
     assert.ok(field.fieldHints(run.data,world,site,site.pos).some(h=>h.id==='tap'));
     const xp=(run.data.lifeLevel-1)*3+run.data.lifeXp;
+    const lowerBefore=player.stock[activity.lowerItemId]??0,upperBefore=player.stock[activity.upperItemId]??0,colorBefore=run.data.colors[activity.element];
+    const neighbors=Object.values(world.entities).filter(e=>e.nodeId===space.id&&e.id!==site.id&&e.tags.includes('forage')).map(e=>[e.id,JSON.stringify(e.stock)]);
     const result=field.performFieldGesture('tap',site.id,site.pos);assert.equal(result.ok,true,activity.id+': '+result.message);
     if(activity.type==='repeat'){
-      assert.ok((player.stock[activity.lowerItemId]??0)+(player.stock[activity.upperItemId]??0)>0);
-      assert.ok((run.data.lifeLevel-1)*3+run.data.lifeXp>xp);
-      assert.equal(site.stock[activity.lowerItemId],1,'one gesture takes one item from a two-item patch');
-      assert.equal(field.performFieldGesture('tap',site.id,site.pos).ok,true);assert.equal(site.stock[activity.lowerItemId],0);
-      const before=JSON.stringify(player.stock);assert.equal(field.performFieldGesture('tap',site.id,site.pos).ok,false);assert.equal(JSON.stringify(player.stock),before);
+      const lower=(player.stock[activity.lowerItemId]??0)-lowerBefore,upper=(player.stock[activity.upperItemId]??0)-upperBefore;
+      assert.equal(lower+upper,upper?3:2,'level-one extraction selects a normal or fine batch');assert.equal(upper?lower:upper,0);
+      assert.equal((run.data.lifeLevel-1)*3+run.data.lifeXp-xp,upper?2:1);
+      assert.equal(run.data.colors[activity.element]-colorBefore,upper?3:2);
+      assert.equal(site.stock[activity.lowerItemId],0,'one extraction consumes this patch before mastery changes its output');
+      for(const [id,stock]of neighbors)assert.equal(JSON.stringify(world.entities[id].stock),stock,'nearby patch keeps its own stock');
+      const before=JSON.stringify({stock:player.stock,xp:run.data.lifeXp,level:run.data.lifeLevel,colors:run.data.colors});
+      assert.equal(field.performFieldGesture('tap',site.id,site.pos).ok,false);assert.equal(JSON.stringify({stock:player.stock,xp:run.data.lifeXp,level:run.data.lifeLevel,colors:run.data.colors}),before);
     }else assert.ok(site.production&&!site.production.settled);
   }
   assert.equal(activities.size,8);

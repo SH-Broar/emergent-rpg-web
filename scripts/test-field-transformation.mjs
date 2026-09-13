@@ -85,6 +85,7 @@ try {
   boss.creature.pending=clone(attack);a.player.properties['status:feral']=3;
   a.player.pos={x:3,y:5};combat.resolveAttack(a.world,boss);assert(!a.player.form,'leaving the telegraph evades transformation');
   a.player.pos={x:4,y:4};boss.creature.pending=clone(attack);
+  boss.creature.recovery=0; // Next independent contact trial starts after the evaded swing's recovery.
   rng.setRng(()=>.5);run.data.level=20;field.ensureField(run.data);combat.resolveAttack(a.world,boss);assert(!a.player.form);
   assert(a.world.events.some(e=>e.message==='변신 저항'));
   boss.creature.pending=clone(attack);run.data.level=1;field.ensureField(run.data);combat.resolveAttack(a.world,boss);
@@ -210,5 +211,15 @@ try {
   assert.deepEqual(run.data.field.skills.slots,loadout);assert.equal(run.data.field.skills.readyAt[skills.skillFamily(formFire)],999);
   assert.equal(run.data.collection.filter(c=>c.instanceId===learned.instanceId).length,1);
   results.push('hidden profession grows to attack +30 with awakening and enchantment; investments and cooldowns survive cure, save and re-transformation without copies');
+  a=reset();skills.grantStartingFieldSkills(run.data,data.cards);
+  run.data.collection=run.data.collection.filter(c=>c.id!=='c-human-riposte');
+  for(let cycle=0;cycle<2;cycle++){
+    const transformed=transform(a);assert.equal(transformed.field.skills.preparationVersion,1);
+    assert(forms.cureFieldTransformation(run.data,a.world,healer(a).id).ok);
+    assert.equal(run.data.field.skills.preparationVersion,1);
+    assert.equal(run.data.field.formTraining['race-form-fox'].skills.preparationVersion,1);
+    assert(!run.data.collection.some(c=>c.id==='c-human-riposte'),'spent starting cards cannot return through repeated transformation and cure');
+  }
+  results.push('preparation migration marker survives both sealed and learned bodies; repeated cure cannot regenerate spent starter cards');
   console.log(JSON.stringify({status:'PASS',scenarios:results.length,results},null,2));
 } finally {globalThis.window=oldWindow;globalThis.localStorage=oldStorage;globalThis.fetch=oldFetch;await server.close();}

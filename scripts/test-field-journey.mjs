@@ -86,7 +86,7 @@ try {
  a.player.stock['field-wrap']=1;assert(engine.resolveInteraction(a.world,'player','player',supplies.supplyAction(a.player,a.player,'field-wrap')).ok);assert.equal(a.player.properties.guard,12);
  results.push('atomic crafting, failed craft conservation, salve healing, smoke, electrical damage, guard and permanent player-placed spring use the shared world router');
  a=arena();const card=instantiateCard(data.cards.get('c-field-pulse'));run.data.collection.push(card);run.data.field.skills.slots.corner=card.instanceId;run.data.field.skills.slots.star=card.instanceId;
- assert.deepEqual(rules.unlockedSkillGestures(1),['corner']);
+ assert.deepEqual(rules.unlockedSkillGestures(1),['corner','angle']);
  for(const [id,level]of Object.entries(rules.SKILL_UNLOCK_LEVEL)){assert(rules.skillGestureUnlocked(level,id));if(level>1)assert(!rules.skillGestureUnlocked(level-1,id));}
  const lockedSnapshot=JSON.stringify({mp:run.data.mp,time:run.data.field.elapsedSeconds,cooldowns:run.data.field.skills.readyAt});
  assert(!field.performFieldGesture('star','player',a.player.pos,{drawn:true,quality:1}).ok);
@@ -97,7 +97,7 @@ try {
  assert(field.performFieldGesture('corner',dummy.id,dummy.pos,{drawn:true,quality:1}).ok);assert(dummy.properties.integrity<100);assert.equal(run.data.field.journey.counts.skill,1);
  run.data.level=12;assert.equal(rules.unlockedSkillGestures(run.data.level).length,8);
  run.saveActiveRun();run.$reset();assert(run.loadActiveRun());assert(run.data.collection.some(c=>c.instanceId===card.instanceId));assert.equal(run.data.field.skills.slots.star,card.instanceId);
- results.push('level 1 has one spell shape; all eight unlock at authored levels; locked API calls spend no mana or time; cards and loadouts survive saves');
+ results.push('level 1 has two simple spell shapes; all eight unlock at authored levels; locked API calls spend no mana or time; cards and loadouts survive saves');
  a=arena();const guide=nearby(a,'npc-niayur');const count=run.data.collection.length;
  assert(journey.performQuest(run.data,a.world,guide.id,'quest:accept:home').ok);assert.equal(run.data.collection.length,count+1);
  assert(!journey.performQuest(run.data,a.world,guide.id,'quest:accept:home').ok);assert.equal(run.data.collection.length,count+1);

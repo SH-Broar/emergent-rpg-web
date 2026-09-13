@@ -91,7 +91,7 @@ watch(()=>world.value?.sequence,()=>{
       const n=Math.round((f.after-f.before)*(e?.properties.maxHp??100)/100);
       if(n!==0){text=n>0?'+'+n:String(n);kind=n>0?'heal':'damage';}
     } else if(f.property==='guard'&&(f.before??0)>(f.after??0)&&f.actorId!==undefined){text='방어 '+Math.round(f.before!-f.after!);kind='guard';}
-    else if(f.kind==='signal'&&['빗나감','변신 저항'].includes(f.message)){text=f.message;kind='miss';}
+    else if(f.kind==='signal'&&['빗나감','변신 저항','빈틈'].includes(f.message)){text=f.message;kind='miss';}
     if(f.kind==='signal'&&(f.message.includes('집중이 풀렸다.')||f.message==='집중을 이어갈 수 없다.'))say(f.message);
     if(text){effects.value.push({id:f.id,pos:{...f.pos},text,kind});setTimeout(()=>effects.value=effects.value.filter(x=>x.id!==f.id),1600);}
   }

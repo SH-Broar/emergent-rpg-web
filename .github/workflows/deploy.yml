@@ -38,6 +38,10 @@ jobs:
       - run: node scripts/test-field-color-input.mjs
       - run: node scripts/test-field-casting.mjs
       - run: node scripts/test-time-endings.mjs
+      - run: node scripts/test-quest-evidence.mjs
+      - run: node scripts/test-field-starter-combos.mjs
+      - run: node scripts/test-field-life-growth.mjs
+      - run: node scripts/test-field-tempo.mjs
       - run: node scripts/test-field-corrections.mjs
       - run: node scripts/test-field-port.mjs
       - run: node scripts/test-field-simulation.mjs

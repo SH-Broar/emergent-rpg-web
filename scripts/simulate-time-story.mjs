@@ -16,9 +16,9 @@ const saved = new Map(), prior = { window: globalThis.window, storage: globalThi
 globalThis.window = { setTimeout: () => 0 };
 globalThis.localStorage = { getItem: k => saved.get(k) ?? null, setItem: (k,v) => saved.set(k,v), removeItem: k => saved.delete(k) };
 const server = await createServer({ root, server: { middlewareMode: true, hmr: false }, appType: 'custom' });
-const artifact = 'time-story-followup-20260912';
+const artifact = 'time-story-quality-20260913-retreat';
 mkdirSync(join(root,'scratch'),{recursive:true});
-const report = { revision: '2026-09-12 optional presence, actual death imperfect, final quest gate, environmental boss immunity', method: 'Vite SSR + Pinia, actual services, gestures and combat turns; controlled starting loadout, player arrivals and optional final-battle arrival of living recruited allies; one deliberate NPC death uses actual strikes', scenarios: [], errors: [] };
+const report = { revision: '2026-09-13 parallel investigations, physical local reporting, explicit testimony, protected ally retreat and ordinary NPC death recovery', method: 'Vite SSR + Pinia, actual services, gestures and combat turns; controlled starting loadout, player arrivals and optional final-battle arrival of living recruited allies; one deliberate NPC death uses actual strikes', scenarios: [], errors: [] };
 try {
   setActivePinia(createPinia());
   const mod = p => server.ssrLoadModule('/src/' + p);
@@ -29,6 +29,7 @@ try {
   const timeline = [...data.timelines.values()].find(t => data.nodeMaps.get(t.nodeMapId)?.nodes.some(n => n.id === 'n-iluneon-square'));
   const field = await mod('systems/field-simulation.ts'), generation = await mod('systems/field-generation.ts');
   const journey = await mod('systems/field-journey.ts'), combat = await mod('systems/field-combat.ts');
+  const selection = await mod('systems/field-selection.ts'),engine=await mod('systems/world/engine.ts');
   const skills = await mod('systems/field-skills.ts'), spatial = await mod('systems/world/spatial.ts');
   const supplies = await mod('systems/field-supplies.ts'), geo = await mod('systems/field-geography.ts');
   const { instantiateCard } = await mod('systems/deck.ts'), random = await mod('systems/rng.ts');
@@ -97,9 +98,18 @@ try {
     function settleEncounter() {
       if(run.data.field.encounter){log.encounters.push(clone(run.data.field.encounter));combat.resolveFieldEncounter(run.data,true);}
     }
-    function atNpc(npcId) {
+    function atNpc(npcId,allowRemains=false) {
       let {world}=live(),actor=Object.values(world.entities).find(e=>e.npcId===npcId);
       assert(actor,'NPC missing: '+npcId);
+
+      if(actor.properties.integrity<=0&&allowRemains){
+        arrive(actor.nodeId,'유품 조사 '+actor.name);
+        const remains=live().world.entities['quest-remains:'+npcId];
+        assert(remains,'Physical remains missing: '+npcId);placeNear(remains);
+        assert(selection.fieldTargets(field.visibleFieldEntities(run.data)).some(e=>e.id===remains.id),'Remains are not selectable');
+        return remains;
+      }
+      for(let i=0;run.data.timeStory?.recovering?.[npcId]!==undefined&&i<25;i++){field.advanceFieldTime(30);settleEncounter();log.scheduleWaits++;live();}
       for(let i=0;actor.routine?.travel&&i<150;i++){field.advanceFieldTime(30);settleEncounter();log.scheduleWaits++;}
       assert(!actor.routine?.travel,'NPC still travelling: '+npcId);
       assert(actor.properties.integrity>0,'NPC died: '+npcId);
@@ -107,15 +117,23 @@ try {
       return actor;
     }
     function service(npcId,action) {
-      const actor=atNpc(npcId),result=field.performFieldService(actor.id,action);
+      const actor=atNpc(npcId,action.startsWith('quest:'));
+      if(actor.tags.includes('quest-remains')){const opened=field.performFieldGesture('tap',actor.id,actor.pos);assert(opened.ok);assert(opened.speech?.topics?.some(t=>t.action===action),'Remains topic missing: '+action);}
+      const result=field.performFieldService(actor.id,action);
       log.actions.push({action,npc:npcId,ok:result.ok,message:result.message,lines:result.speech?.lines});
       assert(result.ok,action+': '+result.message);
       return result;
     }
-    function talk(npcId) {
-      const actor=atNpc(npcId),result=field.performFieldGesture('tap',actor.id,actor.pos);
+    function talk(npcId,goal) {
+      const actor=atNpc(npcId,true),result=field.performFieldGesture('tap',actor.id,actor.pos);
       log.actions.push({action:'talk',npc:npcId,ok:result.ok,lines:result.speech?.lines});
       assert(result.ok,'Talk failed: '+npcId+' '+result.message);
+      if(goal?.testimony){
+        const topic=result.speech?.topics?.find(t=>t.action?.endsWith(':'+goal.testimony));
+        assert(topic,'Actual testimony topic missing: '+goal.testimony);placeNear(actor);
+        const heard=field.performFieldService(actor.id,topic.action);
+        log.actions.push({action:topic.action,npc:npcId,ok:heard.ok,lines:heard.speech?.lines});assert(heard.ok,heard.message);
+      }
     }
     function read(id) {
       const definition=FIELD_RECORDS.find(r=>r.id===id);assert(definition,'Unknown reading '+id);
@@ -189,21 +207,15 @@ try {
       log.finalGate={lockedBeforeAcceptance:true,message:result.message,damage:0,turns:0};
       arrive(from,'잠금 확인 뒤 복귀');
     }
-    function causeControlledNpcDeath(npcId) {
-      assert(run.data.field.journey.accepted['time-20'],'Death fixture follows actual final quest acceptance');
-      let actor=atNpc(npcId);
-      const event={npcId,cause:'Controlled player strikes after final quest acceptance; not an estimate of natural NPC mortality',startIntegrity:actor.properties.integrity,actions:[]};
-      log.controlledDeath=event;
-      for(let i=0;actor.properties.integrity>0&&i<60;i++){
-        if(live().player.nodeId!==actor.nodeId)arrive(actor.nodeId,'통제된 사망 검증: 대상 추적');
-        placeNear(actor);
-        const before=actor.properties.integrity;
-        const result=field.performFieldGesture('strike',actor.id,actor.pos);
-        event.actions.push({ok:result.ok,message:result.message,before,after:actor.properties.integrity});
-        assert(result.ok,'Actual NPC strike failed: '+result.message);settleEncounter();
-      }
-      assert(actor.properties.integrity<=0,'Actual strikes did not kill NPC');
-      event.finalIntegrity=actor.properties.integrity;
+    function causeControlledNpcOutcome(npcId) {
+      const actor=atNpc(npcId),protectedPerson=!!actor.properties.defeatProtected;
+      const event={npcId,cause:'Controlled environmental integrity damage through the actual world engine; no player blame or direct HP assignment',startIntegrity:actor.properties.integrity};
+      const facts=engine.influenceEntity(live().world,actor,'integrity',-100,undefined);
+      field.advanceFieldTime(30);live();
+      event.facts=clone(facts);event.finalIntegrity=actor.properties.integrity;event.node=actor.nodeId;
+      event.outcome=protectedPerson?'withdrew':'dead';log.controlledNpcOutcome=event;
+      if(protectedPerson){assert(actor.properties.integrity>0);assert(run.data.timeStory.withdrawals[npcId]);assert(!run.data.timeStory.allies[npcId]);}
+      else assert(actor.properties.integrity<=0);
     }
     function fight(bossId) {
       const node=map.nodes.find(n=>n.contentRef?.bossId===bossId);
@@ -272,7 +284,7 @@ try {
     function goal(goal) {
       if(!goalActive(goal)||journey.goalProgress(run.data,goal)>=(goal.amount??1))return;
       if(goal.kind==='visit'){arrive(goal.key,'방문 '+goal.label);return;}
-      if(goal.kind==='talk'){talk(goal.key);return;}
+      if(goal.kind==='talk'){talk(goal.key,goal);return;}
       if(goal.kind==='read'){read(goal.key);return;}
       if(goal.kind==='boss'){fight(goal.key);return;}
       if(goal.kind==='count'){countGoal(goal);return;}
@@ -280,8 +292,21 @@ try {
       if(goal.kind==='deliver'){assert(live().player.stock[goal.key]>=(goal.amount??1),'Controlled starting inventory insufficient: '+goal.key);return;}
       throw Error('Goal needs actual implementation: '+JSON.stringify(goal));
     }
-    function start(name,choice,chaos=false,{key=choice,party=[],deathNpc}={}) {
-      log={name,key,choice,chaos,party,deathNpc,arrivals:[],localPlacements:0,scheduleWaits:0,actions:[],encounters:[],battles:[],quests:[]};report.scenarios.push(log);
+    function questService(q,verb,choiceId) {
+      const action='quest:'+verb+':'+q.id+(choiceId?':'+choiceId:'');
+      if(log.localReports&&q.reportRecords?.length){
+        const recordId=verb==='accept'?q.reportRecords[0]:q.reportRecords.at(-1),definition=FIELD_RECORDS.find(r=>r.id===recordId);
+        arrive(definition.nodeId,'현장 조사 '+q.id);const actor=live().world.entities['record:'+recordId];placeNear(actor);
+        assert(selection.fieldTargets(field.visibleFieldEntities(run.data)).some(e=>e.id===actor.id));
+        const opened=field.performFieldGesture('tap',actor.id,actor.pos);
+        assert(opened.ok&&opened.speech?.topics?.some(t=>t.action===action),'Physical report topic missing: '+action);
+        const result=field.performFieldService(actor.id,action);assert(result.ok,result.message);
+        log.actions.push({action,record:recordId,ok:result.ok,lines:result.speech?.lines});return result;
+      }
+      return service(verb==='accept'?q.npcId:q.turnInNpcId??q.npcId,action);
+    }
+    function start(name,choice,chaos=false,{key=choice,party=[],incapacitateNpc,incapacitateBefore='time-05',localReports=true}={}) {
+      log={name,key,choice,chaos,party,incapacitateNpc,incapacitateBefore,localReports,arrivals:[],localPlacements:0,scheduleWaits:0,actions:[],encounters:[],battles:[],quests:[]};report.scenarios.push(log);
       run.startRun({timelineId:timeline.id,raceId:'human',season:'spring',startNodeId:'n-iluneon-square',maxHp:300,maxMp:3,timeLimit:300,activeChaos:chaos?[{id:'ch-fractured-time',intensity:1}]:[]});
       const seeded=random.createSeededRng(20260912);random.setRng(()=>seeded.next());
       run.data.level=12;run.data.relics=[];
@@ -293,17 +318,21 @@ try {
       if(process.argv.includes('--combat-probe')){fight('bs-arc-dun');fight('bs-arc-tifre');return;}
       walkFirstStreet();
       checkUnacceptedFinalGate();
-      for(const q of [...['home','first-shape','fibers','provisions'].map(id=>JOURNEY_QUESTS.find(q=>q.id===id)),...main]){
+      const order=choice==='tifre'?[1,2,4,3,13,14,9,10,11,12,6,5,7,8,15,16,17,18,19,20]:[1,2,3,4,13,5,6,7,8,14,9,10,11,12,15,18,16,17,19,20];
+      log.investigationOrder=order.map(n=>'time-'+String(n).padStart(2,'0'));
+      for(const q of [...['home','first-shape','fibers','provisions'].map(id=>JOURNEY_QUESTS.find(q=>q.id===id)),...log.investigationOrder.map(id=>main.find(q=>q.id===id))]){
         const before=run.data.field.elapsedSeconds;
-        service(q.npcId,'quest:accept:'+q.id);
+        assert(journey.questAvailable(run.data,q),'Investigation order violates prerequisite: '+q.id);
+        if(q.id===incapacitateBefore&&incapacitateNpc)causeControlledNpcOutcome(incapacitateNpc);
+        questService(q,'accept');
         log.quests.push({id:q.id,title:q.title,npc:q.npcId,goals:clone(q.goals),offer:q.offer,reminder:q.reminder});
-        if(q.id==='time-20'&&deathNpc)causeControlledNpcDeath(deathNpc);
-        for(const g of q.goals)goal(g);
+        if(!run.data.field.journey.completed[q.id])for(const g of q.goals)goal(g);
         if(q.completeOnBoss){assert(run.data.field.journey.completed[q.id],q.id+' must complete at actual victory');}
+        else if(run.data.field.journey.completed[q.id]){log.quests.at(-1).completedOnAccept=true;}
         else if(q.choices?.length){
           const chosen=q.id==='time-17'&&chaos?'both':choice;
-          service(q.turnInNpcId??q.npcId,'quest:choose:'+q.id+':'+chosen);
-        }else service(q.turnInNpcId??q.npcId,'quest:finish:'+q.id);
+          questService(q,'choose',chosen);
+        }else questService(q,'finish');
         if(q.id==='time-17')for(const npcId of party)service(npcId,'story:recruit');
         log.quests.at(-1).turns=(run.data.field.elapsedSeconds-before)/30;
         console.log(name+' '+q.id+' '+q.title+' '+log.quests.at(-1).turns+' turns');
@@ -314,13 +343,17 @@ try {
       writeFileSync(join(root,'scratch/'+artifact+'-preview-'+log.key+'.json'),JSON.stringify({run:run.data,meta:meta.$state}));log.elapsedSeconds=run.data.field.elapsedSeconds;
       log.routeEdges=log.arrivals.reduce((sum,a)=>sum+(a.edges??0),0);log.roadSpaces=log.arrivals.reduce((sum,a)=>sum+(a.roads??0),0);
       assert(run.data.ended);assert.equal(log.completed.length,20);
-      assert.equal(log.ending?.id,chaos&&!deathNpc?'together':choice==='dun'?'stillness':'severance');
+      assert.equal(log.ending?.id,chaos?'together':choice==='dun'?'stillness':'severance');
       assert(log.finalGate.lockedBeforeAcceptance&&log.finalGate.acceptedBeforeBattle);
       const witnesses=log.ending.witnesses;
       for(const [key,npcId] of [['dun','npc-kumamimi'],['tifre','npc-toramimi']]){
-        assert.equal(witnesses[key].state,npcId===deathNpc?'dead':party.includes(npcId)?'present':'absent',key+' actual fate');
-        assert.equal(witnesses[key].joined,party.includes(npcId));
+        const actor=run.data.interactionWorld.entities['npc:'+npcId],joined=!!log.allies[npcId];
+        assert(actor.properties.integrity>0,'Protected NPC cannot be dead');
+        const expected=run.data.timeStory.recovering?.[npcId]!==undefined?'recovering':joined&&actor.nodeId==='n-anchor-point::dungeon:3'?'present':'absent';
+        assert.equal(witnesses[key].state,expected,key+' actual participation');
+        assert.equal(witnesses[key].joined,expected==='recovering'?false:joined);
       }
+      log.withdrawals=clone(run.data.timeStory.withdrawals??{});log.recovering=clone(run.data.timeStory.recovering??{});
       log.presentation=clone(endingPresentation(log.ending.id,witnesses));
       for(const [key,name] of [['dun','던'],['tifre','티프레']])if(witnesses[key].state!=='present')
         assert(!log.presentation.pages.some(p=>p.speaker===name),'Absent/dead NPC must not speak physically at the ending');
@@ -331,7 +364,8 @@ try {
       start('티프레의 방법','tifre');
       start('갈라진 시간 · 두 사람과 함께','dun',true,{key:'chaos-party',party:['npc-kumamimi','npc-toramimi']});
       start('갈라진 시간 · 생존한 두 사람을 두고 독행','dun',true,{key:'chaos-solo'});
-      start('갈라진 시간 · 던 사망 후 독행','dun',true,{key:'chaos-death',deathNpc:'npc-kumamimi'});
+      start('갈라진 시간 · 조사 전 던 이탈과 회복','dun',true,{key:'chaos-early-withdrawal',incapacitateNpc:'npc-kumamimi',localReports:false});
+      start('갈라진 시간 · 조사 전 올뤼 사망','dun',true,{key:'chaos-guide-remains',incapacitateNpc:'npc-olyu',incapacitateBefore:'time-02',localReports:false});
     }
     report.status='PASS';
     console.log(JSON.stringify({status:report.status,scenarios:report.scenarios.map(s=>({name:s.name,quests:s.completed?.length,ending:s.ending,battles:s.battles.map(b=>({boss:b.bossId,hp:b.hp,turns:b.turns,damage:b.damageTaken})),arrivals:s.arrivals.length,routeEdges:s.routeEdges,roadSpaces:s.roadSpaces}))},null,2));

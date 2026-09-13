@@ -147,6 +147,8 @@ try {
     const cells=skills.fieldSkillCells(a.world,a.player,card,{x:4,y:2});
     if(!skills.skillEffects(card).some(e=>e.kind==='place-installation'))
       for(const [i,c]of cells.entries()) if(spatial.distance(c.pos,a.player.pos)>0)target(a,'target-'+i,c.pos);
+    if(skills.skillEffects(card).some(e=>e.kind==='block-to-damage'))a.player.properties.guard=6;
+    if(skills.skillEffects(card).some(e=>e.kind==='amplify-debuff'))for(const e of Object.values(a.world.entities))if(e.id!=='player'&&e.kind==='actor')engine.influenceEntity(a.world,e,'status:poison',3,'player');
     if(skills.skillEffects(card).some(e=>e.kind==='chain-explosion')) {
       const marked=target(a,'marked',{x:3,y:4});engine.influenceEntity(a.world,marked,'status:poison',3,'player');
     }

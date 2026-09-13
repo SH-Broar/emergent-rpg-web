@@ -8,7 +8,7 @@ export const PRODUCTION_MODES: { id: ProductionMode; name: string; description: 
   { id: 'select', name: '선별 재배', description: '상품 확률 +30%p · 생산 시간 동일' },
 ];
 
-/** Producer capabilities are deliberately bounded within the three-day run. */
+/** Mastery unlocks upkeep, production choices and one extra unit of yield. */
 export function lifeCapabilities(level: number) {
   return {
     automaticCare: level >= 2,

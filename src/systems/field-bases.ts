@@ -7,6 +7,20 @@ import type { FieldSpeech, FieldResult } from './field-types';
 import type { WorldEntity } from './world/types';
 
 export const HOME_COST: Readonly<Record<string,number>> = {'raw-fiber':12,'raw-stone':8,'i-material-common':4};
+/** Construction accepts local mineral stock; fine ore supplies two masonry units. */
+export const HOME_STONE_MATERIALS = [
+ {id:'raw-stone',units:1},{id:'i-life-ore',units:1},{id:'i-life-ore-fine',units:2},
+] as const;
+export function homeBuildQuote(stock:Readonly<Record<string,number>>) {
+ const costs:Record<string,number>={'raw-fiber':HOME_COST['raw-fiber']!,'i-material-common':HOME_COST['i-material-common']!};
+ let remaining=HOME_COST['raw-stone']!;
+ for(const material of HOME_STONE_MATERIALS) {
+  const available=Math.max(0,Math.floor(stock[material.id]??0));
+  const count=Math.min(available,Math.ceil(remaining/material.units));
+  if(count>0){costs[material.id]=count;remaining=Math.max(0,remaining-count*material.units);}
+ }
+ return {costs,stoneMissing:remaining,ready:remaining===0&&Object.entries(costs).every(([id,n])=>(stock[id]??0)>=n)};
+}
 export const INN_PRICE = 10;
 export const DAY_SECONDS = 86400;
 export const MAJOR_TOWNS = ['n-iluneon-square','n-moss','n-manonickla','n-alimes','n-tacomi','n-martin-port'];
@@ -55,7 +69,7 @@ export function baseOffer(run:RunState,target:WorldEntity):FieldSpeech|undefined
  if(!action)return;
  const own=ensureBases(run).owned[target.nodeId.split('::')[0]!];
  if(action==='base:build'&&own)return;
- return {actorId:target.id,name:target.name,lines:[action==='base:build'?'이곳에 내 집을 지을 수 있다.':'하루 동안 쓸 방을 빌린다.'],topics:[{label:action==='base:build'?'집 짓기':'하루 숙박',lines:[action==='base:build'?'풀섬유 12 · 원석 8 · 일반 소재 4':'10 G · 결제부터 24시간'],confirmLabel:action==='base:build'?'소재를 써서 짓기':'10 G 지불',action}]};
+ return {actorId:target.id,name:target.name,lines:[action==='base:build'?'이곳에 내 집을 지을 수 있다.':'하루 동안 쓸 방을 빌린다.'],topics:[{label:action==='base:build'?'집 짓기':'하루 숙박',lines:[action==='base:build'?'풀섬유 12 · 석재 8 · 일반 소재 4\n원석·광석은 1, 좋은 광석은 2로 센다.':'10 G · 결제부터 24시간'],confirmLabel:action==='base:build'?'소재를 써서 짓기':'10 G 지불',action}]};
 }
 export function purchaseBase(run:RunState,actorId:string,action:string):FieldResult {
  const world=run.interactionWorld!,player=world.entities.player!,target=world.entities[actorId];
@@ -66,8 +80,9 @@ export function purchaseBase(run:RunState,actorId:string,action:string):FieldRes
  if(!baseTown(run,node))return fail('이곳에는 집을 지을 수 없다.');
  if(action==='base:build'){
   if(bases.owned[node])return fail('이미 내 집이 있다.');
-  if(Object.entries(HOME_COST).some(([id,n])=>(player.stock[id]??0)<n))return fail('풀섬유 12 · 원석 8 · 일반 소재 4 필요');
-  const result=resolveInteraction(world,player.id,target.id,{id:'base-build',label:'집 짓기',description:'',duration:0,effects:Object.entries(HOME_COST).map(([resourceId,n])=>({kind:'stock' as const,resourceId,amount:-n,side:'actor' as const}))});
+  const quote=homeBuildQuote(player.stock);
+  if(!quote.ready)return fail('풀섬유 12 · 석재 8 · 일반 소재 4 필요');
+  const result=resolveInteraction(world,player.id,target.id,{id:'base-build',label:'집 짓기',description:'',duration:0,effects:Object.entries(quote.costs).map(([resourceId,n])=>({kind:'stock' as const,resourceId,amount:-n,side:'actor' as const}))});
   if(!result.ok)return fail(result.reason??result.message);
   bases.owned[node]=true;
   return {ok:true,message:'집이 완성되었다. 문으로 들어가자.'};

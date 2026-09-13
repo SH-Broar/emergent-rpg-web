@@ -48,7 +48,7 @@ try {
     a.world.entities={player:a.player};a.space.width=9;a.space.height=9;a.space.tiles=Array.from({length:9},()=>Array(9).fill('grass'));a.space.exits=[];
     a.player.pos={x:4,y:4};a.player.colors={};run.data.colors={fire:0,electric:0,earth:0,iron:0,water:0,wind:0,light:0,dark:0};run.data.relics=[];
     a.world.entities.forge={id:'forge',name:'공방',kind:'prop',nodeId:a.space.id,pos:{x:3,y:4},colors:{},stock:{},tags:['service:workshop'],properties:{integrity:100}};
-    run.data.timeShards=100;run.data.collection=[];run.data.deck=[];run.data.field.skills={version:2,slots:{},readyAt:{}};
+    run.data.timeShards=100;run.data.collection=[];run.data.deck=[];run.data.field.skills={version:2,preparationVersion:1,slots:{},readyAt:{}}; // Current save; migration is tested separately.
     return a;
   }
   function add(extra={}){

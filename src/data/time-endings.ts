@@ -1,6 +1,6 @@
 export type TimeEndingId = 'stillness' | 'severance' | 'together';
 export interface TimeEndingPage { speaker?: string; text: string }
-export interface TimeEndingWitness { state: 'present' | 'absent' | 'dead' | 'unknown'; joined: boolean }
+export interface TimeEndingWitness { state: 'present' | 'absent' | 'recovering' | 'dead' | 'unknown'; joined: boolean }
 export interface TimeEndingWitnesses { dun: TimeEndingWitness; tifre: TimeEndingWitness }
 interface TimeEnding { title: string; pages: TimeEndingPage[] }
 
@@ -43,7 +43,7 @@ export function endingPresentation(id: TimeEndingId, witnesses?: TimeEndingWitne
   const edition = TIME_ENDINGS[id];
   const pages = edition.pages.map(page => ({ ...page }));
   if (!witnesses) return { title: edition.title, pages, variant: '동행 기록 없음' };
-  const presentDun = witnesses.dun.state === 'present', presentTifre = witnesses.tifre.state === 'present';
+  const presentDun = witnesses.dun.state === 'present' && witnesses.dun.joined, presentTifre = witnesses.tifre.state === 'present' && witnesses.tifre.joined;
   const dun = presentDun && witnesses.dun.joined, tifre = presentTifre && witnesses.tifre.joined;
   let variant = dun && tifre ? '두 사람과 함께' : dun ? '던과 함께' : tifre ? '티프레와 함께' : '홀로';
   const voices: TimeEndingPage[] = [];
@@ -63,12 +63,10 @@ export function endingPresentation(id: TimeEndingId, witnesses?: TimeEndingWitne
     if (presentTifre) voices.push({ speaker: '티프레', text: '길은 열렸는데. 왜 돌아오는 발소리가 안 들리지?' });
   }
   pages.splice(id === 'together' ? 1 : 3, 0, ...voices);
-  const dead = [witnesses.dun.state === 'dead' ? '던' : '', witnesses.tifre.state === 'dead' ? '티프레' : ''].filter(Boolean);
-  if (dead.length) {
-    variant += ' · ' + (dead.length === 1 && dead[0] === '던' ? '던을' : dead.join('·') + '를') + ' 기억하며';
-    pages.push({ text: id === 'together'
-      ? dead.join('과 ') + '에게 이 소식을 전할 수는 없었다. 닻에서 풀려난 시간도 이미 잃은 사람을 돌려주지는 않았다. 당신은 그 이름을 기록의 마지막 장에 남겼다.'
-      : dead.join('과 ') + '의 이름 앞에서 당신은 오래 멈췄다. 이 결말에 관한 대답을, 이제 그 목소리로 들을 수는 없었다.' });
+  const recovering = [['던', witnesses.dun.state], ['티프레', witnesses.tifre.state]].filter(([,state])=>state==='recovering'||state==='dead').map(([name])=>name!);
+  if (recovering.length) {
+    variant += ' · 동료 회복 중';
+    pages.push({text: recovering.join('과 ') + (recovering.at(-1)==='던'?'은':'는') + ' 거점에서 몸을 추스르고 있다. 당신은 돌아가서 전할 이야기를 수첩에 남겼다.'});
   } else {
     const absent = [witnesses.dun.state === 'absent' ? '던' : '', witnesses.tifre.state === 'absent' ? '티프레' : ''].filter(Boolean);
     if (absent.length) pages.push({ text: absent.join('과 ') + '에게 전할 이야기가 남았다. 당신은 닻에서 있었던 일을 적었다. 무엇을 지켰고, 무엇을 놓쳤는지.' });

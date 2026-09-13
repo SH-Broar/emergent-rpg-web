@@ -60,8 +60,12 @@ export function applyMaterialInfluence(properties: Record<string, number>, color
     properties.integrity = clamp((before.integrity ?? 100) - Math.max(0, Math.ceil(damage - guard - 1e-8)) / properties.maxHp * 100);
   }
   normalizeIntegrity(properties);
+  // Protected people are defeated without creating a dead body; the field handles their retreat.
+  if(properties.defeatProtected&&(before.integrity??100)>0&&(properties.integrity??100)<=0){
+    properties.integrity=100/Math.max(1,properties.maxHp??100);properties.defeatPending=1;
+  }
   if ((properties.integrity ?? 100) < (before.integrity ?? 100)) properties['status:sleep'] = 0;
-  if ((properties.integrity ?? 100) <= 0) { properties.burning = 0; properties.heat = 0; }
+  if ((properties.integrity ?? 100) <= 0 || properties.defeatPending) { properties.burning = 0; properties.heat = 0; }
   return Object.keys(properties).filter(key => (before[key] ?? 0) !== properties[key])
     .map(key => ({ property: key, before: before[key] ?? 0, after: properties[key]! }));
 }

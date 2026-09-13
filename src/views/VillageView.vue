@@ -34,6 +34,7 @@ import {
 } from '@/systems/workshop';
 import SceneCharacter from '@/components/SceneCharacter.vue';
 import Collapsible from '@/components/Collapsible.vue';
+import DeliveryBoard from '@/components/DeliveryBoard.vue';
 import WorldInteractionPanel from '@/components/WorldInteractionPanel.vue';
 import type { Card, Companion, Item, Npc, Rank } from '@/data/schemas';
 
@@ -434,7 +435,7 @@ const rankColors: Record<string, string> = {
 
       <!-- 거래 계약 — 게이트에서 수주한 거래를 여기서 완료(요구 품목 충분할 때). -->
       <Collapsible
-        v-if="tradeRows.length > 0"
+        v-if="!run.data.field && tradeRows.length > 0"
         title="맡은 거래"
         :badge="`${tradeRows.length}건`"
       >
@@ -459,9 +460,11 @@ const rankColors: Record<string, string> = {
         </div>
       </Collapsible>
 
+      <DeliveryBoard v-if="run.data.field" />
+
       <!-- NPC 목록 — 섹션 접이식 + 각 NPC도 개별 접이식 행(헤더=이름·종족·친밀도, 본문=대사+버튼). -->
       <Collapsible
-        v-if="nodeNpcs.length > 0"
+        v-if="!run.data.field && nodeNpcs.length > 0"
         title="대화와 동행"
         :badge="`${nodeNpcs.length}명`"
       >
